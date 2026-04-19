@@ -25,6 +25,16 @@ This skill is a refinement step after module and entity ownership have already b
 - Support workflow submit/save paths with shared validation gate (`onSave`, `onSubmit`)
 - Use grid layout `row row-sm` for form sections to keep vertical spacing compact and consistent
 - Use Vietnamese labels/messages for Vietnamese portals (title, button, field label, notify)
+- Use **signal-first** style for form screen UI state:
+  - `entity`, `mode/state`, `loading`, `submitting`, tab flags -> `signal()`
+  - derived flags/messages (`isDetail`, `canSubmit`, `pageTitle`) -> `computed()`
+  - keep `FormGroup` for validation, but do not model mutable UI state as plain class fields
+  - example:
+    ```typescript
+    readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
+    readonly entity = signal<Partial<ProductSaveReq>>({});
+    readonly pageTitle = computed(() => this.state() === 'CREATE' ? 'Tạo mới' : 'Chi tiết');
+    ```
 
 ### MUST NOT ❌
 - Skip form validation before submission
@@ -33,6 +43,7 @@ This skill is a refinement step after module and entity ownership have already b
 - Over-design validation rules at `CREATE` stage when business rules are still incomplete
 - Allow form submission while invalid
 - Duplicate validation logic across save/submit/approve handlers
+- Store mutable form-screen UI state in plain mutable fields/getters instead of signals
 
 ## 4. Template
 
@@ -184,7 +195,7 @@ import { [Entity]DTO } from '../services/[entity].model';
 
     <div class="d-flex align-items-center" style="gap: 8px">
       <sd-button title="Bỏ qua" (click)="onCancel()"></sd-button>
-      <sd-button title="Lưu" type="fill" (click)="onSave()" [loading]="saving"></sd-button>
+      <sd-button title="Lưu" type="fill" (click)="onSave()" [loading]="saving()"></sd-button>
     </div>
   `,
 })
@@ -192,9 +203,9 @@ export class DetailComponent implements OnInit {
   uploadFiles = viewChildren(SdUploadFile);
 
   form = new FormGroup({});
-  saving = false;
-  state: 'CREATE' | 'UPDATE' | 'DETAIL' = 'CREATE';
-  entity: Partial<[Entity]DTO> = {};
+  readonly saving = signal(false);
+  readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
+  readonly entity = signal<Partial<[Entity]DTO>>({});
 
   typeOptions = [
     { value: 'A', display: 'Loại A' },
@@ -208,16 +219,16 @@ export class DetailComponent implements OnInit {
   ngOnInit(): void {
     const id = this.#activatedRoute.snapshot.paramMap.get('id');
     if (id) {
-      this.state = 'UPDATE';
+      this.state.set('UPDATE');
       this.#loadEntity(id);
     } else {
-      this.state = 'CREATE';
+      this.state.set('CREATE');
     }
   }
 
   async #loadEntity(id: string): Promise<void> {
     try {
-      this.entity = await this.#service.detail(id);
+      this.entity.set(await this.#service.detail(id));
     } catch (error) {
       console.error(error);
     }
@@ -229,22 +240,23 @@ export class DetailComponent implements OnInit {
       return;
     }
 
-    this.saving = true;
+    this.saving.set(true);
     try {
       if (this.uploadFiles().length) {
         await Promise.all(this.uploadFiles().map(file => file.upload()));
       }
 
-      if (this.entity.id) {
-        await this.#service.update(this.entity.id, this.entity as [Entity]DTO);
+      const currentEntity = this.entity();
+      if (currentEntity.id) {
+        await this.#service.update(currentEntity.id, currentEntity as [Entity]DTO);
       } else {
-        await this.#service.create(this.entity as [Entity]DTO);
+        await this.#service.create(currentEntity as [Entity]DTO);
       }
       this.#router.navigate(['..'], { relativeTo: this.#activatedRoute });
     } catch (error) {
       console.error(error);
     } finally {
-      this.saving = false;
+      this.saving.set(false);
     }
   }
 
@@ -256,7 +268,7 @@ export class DetailComponent implements OnInit {
 
 ### detail-advanced.component.ts (With Dynamic Fields)
 ```typescript
-import { Component, OnInit, FormBuilder, Validators, inject } from '@angular/core';
+import { Component, OnInit, FormBuilder, Validators, computed, inject, signal } from '@angular/core';
 import { FormGroup, FormArray, ReactiveFormsModule } from '@angular/forms';
 import { SdInput, SdButton } from 'sd-angular';
 
@@ -435,7 +447,7 @@ import {
   SdSelect,
   SdSwitch,
   SdTextarea,
-} from 'sd-angular';
+} from '@sd-angular/core/components';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { ProductDTO, ProductSaveReq, PRODUCT_CATEGORIES } from '../../services/product.model';
@@ -456,9 +468,9 @@ import { ProductValidators } from '../../validators/product-validators';
     SdTextarea,
   ],
   template: `
-    <sd-page [title]="pageTitle">
+    <sd-page [title]="pageTitle()">
       <div class="d-flex gap-8" headerRight>
-        @if (state === 'UPDATE') {
+        @if (state() === 'UPDATE') {
           <sd-button
             title="Delete"
             type="fill"
@@ -467,7 +479,7 @@ import { ProductValidators } from '../../validators/product-validators';
             (click)="onDelete()">
           </sd-button>
         }
-        @if (state !== 'DETAIL') {
+        @if (state() !== 'DETAIL') {
           <sd-button
             title="Save"
             type="fill"
@@ -492,7 +504,7 @@ import { ProductValidators } from '../../validators/product-validators';
               formControlName="code"
               required
               maxlength="32"
-              [viewed]="state === 'DETAIL'">
+              [viewed]="state() === 'DETAIL'">
               @if (getFieldError('code'); as error) {
                 <span class="text-error">{{ getErrorMessage('code', error) }}</span>
               }
@@ -503,7 +515,7 @@ import { ProductValidators } from '../../validators/product-validators';
               formControlName="name"
               required
               maxlength="255"
-              [viewed]="state === 'DETAIL'">
+              [viewed]="state() === 'DETAIL'">
               @if (getFieldError('name'); as error) {
                 <span class="text-error">{{ getErrorMessage('name', error) }}</span>
               }
@@ -513,7 +525,7 @@ import { ProductValidators } from '../../validators/product-validators';
               label="Description"
               formControlName="description"
               maxlength="1000"
-              [viewed]="state === 'DETAIL'">
+              [viewed]="state() === 'DETAIL'">
             </sd-textarea>
 
             <sd-input-number
@@ -522,7 +534,7 @@ import { ProductValidators } from '../../validators/product-validators';
               required
               [min]="0"
               [step]="0.01"
-              [viewed]="state === 'DETAIL'">
+              [viewed]="state() === 'DETAIL'">
               @if (getFieldError('price'); as error) {
                 <span class="text-error">{{ getErrorMessage('price', error) }}</span>
               }
@@ -535,7 +547,7 @@ import { ProductValidators } from '../../validators/product-validators';
               [items]="PRODUCT_CATEGORIES"
               valueField="value"
               displayField="display"
-              [viewed]="state === 'DETAIL'">
+              [viewed]="state() === 'DETAIL'">
               @if (getFieldError('category'); as error) {
                 <span class="text-error">{{ getErrorMessage('category', error) }}</span>
               }
@@ -544,7 +556,7 @@ import { ProductValidators } from '../../validators/product-validators';
             <sd-switch
               label="Active"
               formControlName="isActivated"
-              [viewed]="state === 'DETAIL'">
+              [viewed]="state() === 'DETAIL'">
             </sd-switch>
           </form>
         </sd-section>
@@ -554,9 +566,12 @@ import { ProductValidators } from '../../validators/product-validators';
 })
 export class DetailComponent implements OnInit {
   form!: FormGroup;
-  state: 'CREATE' | 'UPDATE' | 'DETAIL' = 'CREATE';
-  entity: Partial<ProductSaveReq> = {};
-  pageTitle = '';
+  readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
+  readonly entity = signal<Partial<ProductSaveReq>>({});
+  readonly pageTitle = computed(() => {
+    if (this.state() === 'CREATE') return 'Tạo sản phẩm';
+    return this.state() === 'DETAIL' ? 'Chi tiết sản phẩm' : 'Cập nhật sản phẩm';
+  });
   readonly PRODUCT_CATEGORIES = PRODUCT_CATEGORIES;
 
   readonly #formBuilder = inject(FormBuilder);
@@ -570,14 +585,13 @@ export class DetailComponent implements OnInit {
     const id = this.#activatedRoute.snapshot.paramMap.get('id');
 
     if (url.includes('update') && id) {
-      this.state = 'UPDATE';
+      this.state.set('UPDATE');
       this.#loadEntity(id);
     } else if (url.includes('detail') && id) {
-      this.state = 'DETAIL';
+      this.state.set('DETAIL');
       this.#loadEntity(id);
     } else {
-      this.state = 'CREATE';
-      this.pageTitle = 'Create Product';
+      this.state.set('CREATE');
     }
   }
 
@@ -594,10 +608,10 @@ export class DetailComponent implements OnInit {
 
   async #loadEntity(id: string): Promise<void> {
     try {
-      this.entity = await this.#productService.detail(id);
-      this.form.patchValue(this.entity);
+      const entity = await this.#productService.detail(id);
+      this.entity.set(entity);
+      this.form.patchValue(entity);
       this.form.markAsPristine();
-      this.pageTitle = `${this.state === 'DETAIL' ? 'View' : 'Edit'} Product`;
     } catch (error) {
       console.error(error);
     }
@@ -611,10 +625,11 @@ export class DetailComponent implements OnInit {
 
     const formValue = this.form.value;
     try {
-      if (this.entity.id) {
-        await this.#productService.update(this.entity.id, formValue);
+      const currentEntity = this.entity();
+      if (currentEntity.id) {
+        await this.#productService.update(currentEntity.id, formValue);
       } else {
-        this.entity = await this.#productService.create(formValue);
+        this.entity.set(await this.#productService.create(formValue));
       }
       this.#router.navigate(['..'], { relativeTo: this.#activatedRoute });
     } catch (error) {
@@ -623,9 +638,10 @@ export class DetailComponent implements OnInit {
   }
 
   async onDelete(): Promise<void> {
-    if (confirm('Are you sure?') && this.entity.id) {
+    const currentEntity = this.entity();
+    if (confirm('Are you sure?') && currentEntity.id) {
       try {
-        await this.#productService.remove(this.entity.id);
+        await this.#productService.remove(currentEntity.id);
         this.#router.navigate(['..'], { relativeTo: this.#activatedRoute });
       } catch (error) {
         console.error(error);
