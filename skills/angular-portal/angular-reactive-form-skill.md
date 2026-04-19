@@ -35,6 +35,19 @@ This skill is a refinement step after module and entity ownership have already b
     readonly entity = signal<Partial<ProductSaveReq>>({});
     readonly pageTitle = computed(() => this.state() === 'CREATE' ? 'Tạo mới' : 'Chi tiết');
     ```
+- Monitor signal invocation efficiency in templates:
+  - If a signal is used **2 or more times** in the template, consider:
+    - Extract to a `readonly #memoized = computed(() => ...)` to cache the value
+    - OR use `@let` template syntax (where supported)
+  - If a signal is used **only once**: invoke it directly, no optimization needed
+  - Goal: reduce unnecessary getter invocations during change detection
+- Generate runnable `*.spec.ts` for each form/detail component (not placeholder-only):
+  - Mock required `inject()` dependencies (`Router`, `ActivatedRoute`, notify/loading/services)
+  - Use `TestBed.overrideComponent` to isolate heavy template dependencies when needed
+  - Ensure `fixture.detectChanges()` can run without DI/template errors
+- Run tests right after generation and report status:
+  - Preferred: `npm run test -- --watch=false --include=src/libs/[module]/modules/[entity]/**/*.spec.ts`
+  - Fallback: `npm run test -- --watch=false` when include filter is unavailable
 
 ### MUST NOT ❌
 - Skip form validation before submission
@@ -44,6 +57,7 @@ This skill is a refinement step after module and entity ownership have already b
 - Allow form submission while invalid
 - Duplicate validation logic across save/submit/approve handlers
 - Store mutable form-screen UI state in plain mutable fields/getters instead of signals
+- Overuse signal invocations in template without considering the 2+ times rule
 
 ## 4. Template
 

@@ -88,6 +88,12 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
   4. Internal shared / cross-module imports
   5. Relative imports within the same module (models, services, sibling files)
   - Separate each group with a blank line
+- Monitor signal invocation efficiency in templates:
+  - If a signal is used **2 or more times** in the template, consider:
+    - Extract to a `readonly #memoized = computed(() => ...)` in the component to cache the value
+    - OR use `@let` syntax (where supported): `@let _varName = signal();` then use `_varName` throughout
+  - If a signal is used **only once**: invoke it directly at the point of use, no caching needed
+  - Goal: reduce unnecessary signal getter invocations during change detection cycles
 - Ensure interactive elements exposed to users have accessible text: use `title` or `aria-label` on buttons/actions so screen readers can describe them; use semantic HTML where possible (`<nav>`, `<main>`, `role="toolbar"`)
 - Generate a companion `*.spec.ts` skeleton alongside every new list and detail component; use Arrange-Act-Assert pattern; the skeleton must at minimum assert the component creates successfully:
   ```typescript
@@ -95,7 +101,96 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
     it('should create', () => { expect(component).toBeTruthy(); });
   });
   ```
+- **BEFORE generating spec files, ask developer** which test coverage level they desire:
+  - `minimal`: only `should create` test (fastest)
+  - `standard`: + permission validation + data visibility + sort/navigation tests (recommended)
+  - `full`: + all unit tests from Section 5 (comprehensive coverage)
+  - Then use the appropriate template from Section 5 to generate spec files
+- Make generated spec files runnable out-of-the-box (not placeholder-only):
+  - Provide minimal dependency mocks for `inject()` dependencies (`Router`, `ActivatedRoute`, services)
+  - Isolate template with `TestBed.overrideComponent(..., { set: { template: '<div>...</div>' } })` when Core UI dependencies are heavy
+  - Ensure `fixture.detectChanges()` runs without DI/template errors
+- Generate functional test cases (not only `should create`) for standard/full coverage level:
+  - **Route permission coverage**: verify every route has `data.permission` and follows `<MODULE>_C_<ENTITY>_<ACTION>` format
+  - **Data visibility coverage** (list): verify missing required external filter returns empty data, and valid filter triggers service call
+  - **Data ordering coverage** (list): verify domain sort behavior (if defined) is applied correctly
+  - **Action flow coverage** (detail): verify invalid form blocks save, create path calls `create`, update path calls `update`, and navigation is correct
+  - **Signal state coverage**: verify state transitions (`CREATE/UPDATE/DETAIL`) and computed flags (`isDetail`, title) work as expected
+- After generating a new module or entity, run tests immediately and report result:
+  - Preferred command: `npm run test -- --watch=false --include=src/libs/[module]/modules/[entity]/**/*.spec.ts`
+  - If include filter is not supported, run full `npm run test -- --watch=false` and summarize spec results
+  - If environment lacks headless browser, report blocker explicitly and provide exact command for developer to run locally
 - Reserve extension points for workflow actions in both list and detail
+
+### TESTING CHECKLIST FOR DEVELOPERS ⚠️
+**When applying this skill to generate a new entity module, developers MUST verify these points before committing:**
+
+1. **Signal Invocation Syntax**
+   - [ ] Check all signals are invoked with `()` in templates: `state()`, `entity()`, `form()`, `saving()`
+   - [ ] Verify no double invocations like `state()()` exist
+   - [ ] Confirm `@let` declarations are used for signals referenced 2+ times
+   - [ ] Verify single-use signals invoke directly without `@let` wrapper
+
+2. **Dependency Injection**
+   - [ ] All services use `inject()` function: `readonly #service = inject(MyService)`
+   - [ ] No constructor injection used; verify 0 occurrences of `constructor(private service: MyService)`
+   - [ ] All private dependencies use `#` prefix: `readonly #router = inject(Router)`
+
+3. **Change Detection & Performance**
+   - [ ] Verify `changeDetection: ChangeDetectionStrategy.OnPush` on list and detail components
+   - [ ] Check that `ChangeDetectionStrategy` is imported from `@angular/core`
+   - [ ] If async state updates exist before signal assignment, verify `ChangeDetectorRef.markForCheck()` is called OR state is a `signal()`
+
+4. **Component Field Scope**
+   - [ ] Verify all non-exported fields use `#private` prefix
+   - [ ] Check no unnecessary component fields exist (push local vars or `#privateFields` instead)
+   - [ ] Confirm FormGroup, signals for state are properly scoped
+
+5. **Import Organization**
+   - [ ] Verify 5-group import order is followed (Angular → RxJS → @sd-angular → shared → relative)
+   - [ ] Check each group is separated by a blank line
+   - [ ] Ensure no legacy imports like `from 'sd-angular'` exist; use `@sd-angular/core/...` paths
+
+6. **Accessibility**
+   - [ ] Check action toolbars have `role="toolbar"` attribute
+   - [ ] Verify all buttons have `title` or `aria-label` for screen reader support
+   - [ ] Confirm use of semantic HTML where possible
+
+7. **Audit Columns (List Page)**
+   - [ ] Verify primary list tables include all 4 audit columns at the end: `createdAt`, `createdBy`, `updatedAt`, `updatedBy`
+   - [ ] Check field names match actual DTO (vary by backend: `createdAt` vs `CreatedDate` vs `created_at`)
+   - [ ] Confirm skip conditions are documented if audit columns are intentionally omitted
+
+8. **Route Permission Guards**
+   - [ ] Check every route has `data: { permission: 'MODULE_C_ENTITY_ACTION' }` defined
+   - [ ] Verify permission codes follow strict format: `<UPPERCASE_MODULE>_C_<UPPERCASE_ENTITY>_<ACTION>`
+   - [ ] Confirm NO duplicate permission checks inside components if route guard is defined
+   - [ ] Verify module guard reads `data.permission` automatically (no manual implementation needed)
+
+9. **Spec File Generation**
+   - [ ] Verify developer was asked about test coverage level (minimal/standard/full) BEFORE spec files were created
+   - [ ] Check generated spec files are NOT placeholders; each test is fully defined and runnable
+   - [ ] Confirm mocks are provided for all `inject()` dependencies (Router, ActivatedRoute, services, SdNotifyService, SdLoadingService)
+   - [ ] Verify TestBed.overrideComponent isolates templates to avoid heavy UI library dependency errors
+   - [ ] Check [entity].routes.spec.ts exists and validates permission codes on all routes
+   - [ ] Ensure list.component.spec.ts includes external filter and sort tests (if standard/full coverage chosen)
+   - [ ] Ensure detail.component.spec.ts includes state transition and save-flow tests (if standard/full coverage chosen)
+   - [ ] Run post-generation test command to verify all specs pass immediately
+
+10. **Build Verification**
+   - [ ] Run `npm run build` or equivalent; confirm **no TypeScript errors** (warnings are acceptable for unused code)
+   - [ ] If `ChangeDetectionStrategy.OnPush` + async state updates, verify no change detection race conditions in browser console
+   - [ ] Test component creation in browser DevTools to confirm signal state initializes correctly
+
+10. **Testing Skeletons**
+    - [ ] Verify `*.spec.ts` file exists alongside component
+    - [ ] Check AAA pattern is used (Arrange-Act-Assert)
+  - [ ] Confirm at minimum `should create` test passes: `expect(component).toBeTruthy()`
+  - [ ] Verify spec contains required mocks for `inject()` dependencies so test runs without NullInjector errors
+  - [ ] Verify route permission tests exist (`data.permission` presence + naming format)
+  - [ ] Verify list data tests exist (required filter behavior + sorted output/asserted data order)
+  - [ ] Verify detail save-flow tests exist (invalid/create/update paths)
+  - [ ] Run target test command after generation and attach result (pass/fail + error summary if fail)
 
 ### MUST NOT ❌
 - Guess the module silently when module ownership is ambiguous
@@ -124,6 +219,9 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Use `effect()` for pure derivations that should be `computed()`
 - Omit the 4 audit columns from primary list pages unless an explicit skip condition applies
 - Hard-code audit field names without inspecting the DTO definition
+- Overuse signal invocations in template without considering the 2+ times rule (apply `computed()` or `@let` when signal is referenced 2+ times)
+- Create spec files without first asking developer which test coverage level they prefer (minimal/standard/full)
+- Generate placeholder specs with `// TODO add tests` or similar; all specs must be runnable and pass on first `ng test`
 
 ## 4. Template
 
@@ -134,6 +232,20 @@ Required before applying this skill:
 - module exists, or the agent has already created it
 - entity name is known
 - minimum display fields are known: code, name, status or equivalent
+- clarify test coverage level with developer before generating spec files
+```
+
+### Test Coverage Selection
+```text
+Ask developer before proceeding:
+"Bạn muốn cấp độ test coverage nào cho module này?"
+
+Options:
+- minimal   : only 'should create' test (fastest, demo/prototype)
+- standard  : + permission route tests + data visibility/sort tests (recommended)
+- full      : + all unit/integration tests for state, save flow, edge cases
+
+Based on response, generate spec templates from Section 5 accordingly.
 ```
 
 ### Detail UI Mode Selection
@@ -160,10 +272,13 @@ If entity includes workflow (submit/approve/reject):
 libs/[module]/
 └── modules/[entity]/
   ├── [entity].routes.ts
+  ├── [entity].routes.spec.ts
   ├── pages/
   │   ├── list/
+  │   │   ├── list.component.spec.ts
   │   │   └── list.component.ts
   │   └── detail/
+  │       ├── detail.component.spec.ts
   │       └── detail.component.ts
   ├── services/
   │   ├── [entity].model.ts
@@ -219,31 +334,64 @@ export class [Entity]Service extends BaseService {
 }
 ```
 
-### list.component.spec.ts (skeleton)
-```typescript
-// Arrange-Act-Assert pattern — expand with domain-specific scenarios
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+### list.component.spec.ts (generated based on test coverage level)
+```text
+Generation process:
 
-import { ListComponent } from './list.component';
+STEP 1: Ask developer
+"Bạn muốn cấp độ test coverage nào?"
+- minimal  → generate only "should create" test
+- standard → generate full template from Section 5 (6 tests)
+- full     → generate Section 5 template + extended edge cases
 
-describe('ListComponent', () => {
-  let component: ListComponent;
-  let fixture: ComponentFixture<ListComponent>;
+STEP 2: Generate spec file from template
+- If minimal: use only 2 test cases (describe block + "should create")
+- If standard or full: use complete template from Section 5 "list.component.spec.ts"
+  - Replace [Entity] with actual entity name (e.g., PriceService)
+  - Replace [entity] with entity camelCase (e.g., priceService)
+  - Replace [module] with module name (e.g., pricing)
+- Mock Router, ActivatedRoute, [Entity]Service with Jasmine spies
+- Use TestBed.overrideComponent to isolate template from heavy UI library
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ListComponent],
-    }).compileComponents();
+STEP 3: Ensure spec is runnable
+- No placeholder comments
+- All mocks configured
+- All expects defined
+- Can run: npx ng test --watch=false --include="...spec.ts"
+```
 
-    fixture = TestBed.createComponent(ListComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+### detail.component.spec.ts (generated based on test coverage level)
+```text
+Generation process:
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+STEP 1: Ask developer (if not already asked for list.component.spec.ts)
+"Bạn muốn cấp độ test coverage nào?"
+- minimal  → generate only "should create" test
+- standard → generate full template from Section 5 (11 tests)
+- full     → generate Section 5 template + extended state/save edge cases
+
+STEP 2: Generate spec file from template
+- If minimal: use only 2 test cases (describe block + "should create")
+- If standard or full: use complete template from Section 5 "detail.component.spec.ts"
+  - Replace [Entity] with actual entity name (e.g., PriceService, PriceDTO)
+  - Replace [entity] with entity camelCase (e.g., priceService)
+  - Replace [module] with module name (e.g., pricing)
+- Mock Router (with url property), ActivatedRoute (with snapshot.params), all services
+- Use TestBed.overrideComponent to isolate template from heavy UI library
+- Mock form.markAllAsTouched, form.invalid with spyOnProperty
+
+STEP 3: Test state transitions and save flow
+- Test CREATE/UPDATE/DETAIL state initialization based on route URL and params
+- Test entity field updates via signal update() method
+- Test form invalid gate on save
+- Test create vs update service calls based on entity.id presence
+- Test notification and navigation after save
+
+STEP 4: Ensure spec is runnable
+- No placeholder comments
+- All signal invocations tested via component.state(), component.entity()
+- All expects defined
+- Can run: npx ng test --watch=false --include="...spec.ts"
 ```
 
 ### list.component.ts
@@ -628,6 +776,27 @@ export const [entity]Routes: Routes = [
 ];
 ```
 
+### [entity].routes.spec.ts (Permission Validation)
+```text
+ALWAYS generate this spec file—it validates permission codes on routes (not UI-dependent).
+
+Generation instructions:
+- Use template from Section 5 "[module]-[entity].routes.spec.ts"
+- Replace [Entity] and [entity] with actual names
+- Test must verify:
+  1. Every route has a data.permission property
+  2. All permission codes follow <MODULE>_C_<ENTITY>_<ACTION> format
+  3. No route is left without permission guard
+
+Example route spec test:
+- Route '' (list) → permission 'PRICING_C_PRICE_LIST'
+- Route 'create' → permission 'PRICING_C_PRICE_CREATE'
+- Route 'detail/:id' → permission 'PRICING_C_PRICE_DETAIL'
+- Route 'update/:id' → permission 'PRICING_C_PRICE_UPDATE'
+
+Run via: npx ng test --watch=false --include="**/[entity].routes.spec.ts"
+```
+
 ### index.ts (Barrel Export)
 ```typescript
 export * from './[entity].routes';
@@ -665,6 +834,214 @@ User input: "Create Product CRUD screens with product code and product name"
 
 Agent must ask:
 "Product thuộc module nào? Nếu chưa có module, tôi sẽ tạo module mới trước."
+```
+
+## 5. Spec Templates (Functional Testing)
+
+### Request for Test Coverage
+**Before generating spec files, ask developer:**
+
+> "Bạn muốn cấp độ test coverage nào cho module này?"
+> 
+> - **minimal**: chỉ `should create` (nhanh nhất, phù hợp prototype/v1)
+> - **standard**: + permission route tests + basic data/sort tests (được khuyến nghị)
+> - **full**: + tất cả unit + integration tests cho save flow, state transitions, edge cases
+
+---
+
+### list.component.spec.ts (Standard Coverage)
+```typescript
+// Arrange-Act-Assert pattern — functional tests for data visibility, filtering, sorting
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { [Entity]Service } from '../../services/[entity].service';
+import { ListComponent } from './list.component';
+
+describe('ListComponent ([module]/[entity])', () => {
+  let component: ListComponent;
+  let fixture: ComponentFixture<ListComponent>;
+  let routerSpy: jasmine.SpyObj<Router>;
+  let activatedRouteMock: ActivatedRoute;
+  let [entity]ServiceMock: Pick<[Entity]Service, 'paging'>;
+
+  beforeEach(async () => {
+    routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate'], { url: '/[module]/[entity]/list' });
+    [entity]ServiceMock = {
+      paging: jasmine.createSpy('paging').and.resolveTo({ items: [], total: 0 }),
+    };
+    activatedRouteMock = { snapshot: { params: {} } } as ActivatedRoute;
+
+    TestBed.configureTestingModule({
+      imports: [ListComponent],
+      providers: [
+        { provide: Router, useValue: routerSpy },
+        { provide: ActivatedRoute, useValue: activatedRouteMock },
+        { provide: [Entity]Service, useValue: [entity]ServiceMock },
+      ],
+    });
+
+    TestBed.overrideComponent(ListComponent, {
+      set: { template: '<div>list-test-host</div>' },
+    });
+
+    await TestBed.compileComponents();
+    fixture = TestBed.createComponent(ListComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should initialize tableOption with server-side pagination and external filters', () => {
+    const option = component.tableOption();
+    expect(option).toBeTruthy();
+    expect(option?.type).toBe('server');
+    expect(option?.filter?.externalFilters?.length).toBeGreaterThan(0);
+  });
+
+  it('should return empty items when required external filter is missing', async () => {
+    const option = component.tableOption();
+    const result = await option?.items?.({ rawExternalFilter: {} } as any, {} as any);
+    expect(result).toEqual({ items: [], total: 0 });
+  });
+
+  it('should call paging service when external filter is provided', async () => {
+    const option = component.tableOption();
+    await option?.items?.({ rawExternalFilter: { filter1: 'value' } } as any, {} as any);
+    expect([entity]ServiceMock.paging).toHaveBeenCalled();
+  });
+
+  it('should navigate to create page', () => {
+    component.onCreate();
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['create'], { relativeTo: activatedRouteMock });
+  });
+
+  it('should navigate to detail page when row is clicked', () => {
+    const option = component.tableOption();
+    const codeCol = option?.columns.find(col => col.field === 'code');
+    codeCol?.click?.('CODE-001', { id: 'id-1' } as any);
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['detail', 'id-1'], { relativeTo: activatedRouteMock });
+  });
+});
+```
+
+### detail.component.spec.ts (Standard Coverage)
+```typescript
+// Arrange-Act-Assert pattern — functional tests for state transitions, save flow, validation
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { SdLoadingService, SdNotifyService } from '@sd-angular/core/services';
+
+import { [Entity]Service } from '../../services/[entity].service';
+import { DetailComponent } from './detail.component';
+
+describe('DetailComponent ([module]/[entity])', () => {
+  let component: DetailComponent;
+  let fixture: ComponentFixture<DetailComponent>;
+  let routerSpy: jasmine.SpyObj<Router>;
+  let activatedRouteMock: ActivatedRoute;
+  let notifySpy: jasmine.SpyObj<SdNotifyService>;
+  let loadingSpy: jasmine.SpyObj<SdLoadingService>;
+  let [entity]ServiceMock: Pick<[Entity]Service, 'detail' | 'create' | 'update'>;
+
+  beforeEach(async () => {
+    routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate'], { url: '/[module]/[entity]/create' });
+    notifySpy = jasmine.createSpyObj<SdNotifyService>('SdNotifyService', ['success']);
+    loadingSpy = jasmine.createSpyObj<SdLoadingService>('SdLoadingService', ['start', 'stop']);
+    [entity]ServiceMock = {
+      detail: jasmine.createSpy('detail').and.resolveTo({}),
+      create: jasmine.createSpy('create').and.resolveTo({ id: 'new-id' }),
+      update: jasmine.createSpy('update').and.resolveTo({}),
+    };
+    activatedRouteMock = { snapshot: { params: {} } } as ActivatedRoute;
+
+    TestBed.configureTestingModule({
+      imports: [DetailComponent],
+      providers: [
+        { provide: Router, useValue: routerSpy },
+        { provide: ActivatedRoute, useValue: activatedRouteMock },
+        { provide: SdNotifyService, useValue: notifySpy },
+        { provide: SdLoadingService, useValue: loadingSpy },
+        { provide: [Entity]Service, useValue: [entity]ServiceMock },
+      ],
+    });
+
+    TestBed.overrideComponent(DetailComponent, {
+      set: { template: '<div>detail-test-host</div>' },
+    });
+
+    await TestBed.compileComponents();
+    fixture = TestBed.createComponent(DetailComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should initialize CREATE state when no id in route', () => {
+    component.ngOnInit();
+    expect(component.state()).toBe('CREATE');
+  });
+
+  it('should initialize DETAIL state and load entity when url contains detail/:id', () => {
+    Object.defineProperty(routerSpy, 'url', { value: '/[module]/[entity]/detail/abc', configurable: true });
+    Object.defineProperty(activatedRouteMock, 'snapshot', { value: { params: { id: 'abc' } }, configurable: true });
+    component.ngOnInit();
+    expect(component.state()).toBe('DETAIL');
+    expect([entity]ServiceMock.detail).toHaveBeenCalledWith('abc');
+  });
+
+  it('should mark form touched and block save when form is invalid', async () => {
+    spyOn(component.form, 'markAllAsTouched');
+    spyOnProperty(component.form, 'invalid', 'get').and.returnValue(true);
+    await component.onSave();
+    expect(component.form.markAllAsTouched).toHaveBeenCalled();
+    expect([entity]ServiceMock.create).not.toHaveBeenCalled();
+  });
+
+  it('should call create when entity has no id', async () => {
+    spyOnProperty(component.form, 'invalid', 'get').and.returnValue(false);
+    component.entity.set({ name: 'New Entity' });
+    await component.onSave();
+    expect([entity]ServiceMock.create).toHaveBeenCalled();
+    expect(notifySpy.success).toHaveBeenCalled();
+  });
+
+  it('should call update when entity has id', async () => {
+    spyOnProperty(component.form, 'invalid', 'get').and.returnValue(false);
+    component.entity.set({ id: 'id-1', name: 'Updated' });
+    await component.onSave();
+    expect([entity]ServiceMock.update).toHaveBeenCalledWith('id-1', jasmine.any(Object));
+  });
+});
+```
+
+### [module]-[entity].routes.spec.ts (Permission Validation)
+```typescript
+import { [Entity]Routes } from './[entity].routes';
+
+describe('[Entity]Routes (permission guards)', () => {
+  it('should define permission code for all routes', () => {
+    const missingPermission = [Entity]Routes.filter(route => !route.data || !route.data['permission']);
+    expect(missingPermission).toEqual([]);
+  });
+
+  it('should use MODULE_C_ENTITY_ACTION naming format', () => {
+    const permissionPattern = /^[A-Z]+_C_[A-Z]+_[A-Z]+$/;
+    const permissions = [Entity]Routes
+      .map(route => route.data?.['permission'])
+      .filter((x): x is string => typeof x === 'string');
+    permissions.forEach(code => {
+      expect(code).toMatch(permissionPattern);
+    });
+  });
+});
 ```
 
 ## 6. Example Output
