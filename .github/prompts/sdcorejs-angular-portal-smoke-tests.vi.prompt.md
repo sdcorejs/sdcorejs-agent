@@ -26,6 +26,11 @@ Khởi tạo portal starter mới từ baseline nội bộ trong sdcorejs-agent/
 Chỉ giữ shell starter và không có business libs.
 Không giữ các cấu hình tsconfig không cần thiết.
 
+## Prompt 7
+Khởi tạo portal starter ở một workspace hoàn toàn mới.
+Version package phải khớp chính xác với sdcorejs-agent/core/templates/angular-portal-starter/package.template.json.
+Không suy luận hoặc tự nâng version theo bất kỳ repo mẫu bên ngoài nào.
+
 ## Điểm cần xác nhận
 - Thiếu module thì hỏi lại trước
 - Chưa có module thì tạo module trước
@@ -34,3 +39,4 @@ Không giữ các cấu hình tsconfig không cần thiết.
 - Workflow phức tạp thì ưu tiên full-page và có đủ action detail/list
 - Với portal init, tsconfig không nên giữ `compilerOptions.baseUrl` nếu không có lý do resolve import rõ ràng
 - Với portal init, starter phải có src/libs (tối thiểu src/libs/.gitkeep)
+- Với portal init ở workspace mới, version package sinh ra phải khớp baseline nội bộ (không bị version drift)

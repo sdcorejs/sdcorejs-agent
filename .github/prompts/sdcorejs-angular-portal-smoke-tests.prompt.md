@@ -26,6 +26,11 @@ Initialize a new portal starter from the internal baseline templates in sdcorejs
 Keep only starter shell and no business libs.
 Do not keep unnecessary tsconfig settings.
 
+## Prompt 7
+Initialize a portal starter in a brand-new workspace.
+Package versions must match sdcorejs-agent/core/templates/angular-portal-starter/package.template.json exactly.
+Do not infer or upgrade versions from any external sample repository.
+
 ## What to validate
 - Missing module asks clarification first
 - Missing module fallback creates module first
@@ -34,3 +39,4 @@ Do not keep unnecessary tsconfig settings.
 - Complex workflow defaults to full page + detail/list workflow actions
 - For portal init, tsconfig should not keep `compilerOptions.baseUrl` unless there is a clear import-resolution reason
 - For portal init, generated starter must include src/libs scaffold (minimum src/libs/.gitkeep)
+- For portal init in new workspace, generated package versions must match internal package template baseline (no version drift)

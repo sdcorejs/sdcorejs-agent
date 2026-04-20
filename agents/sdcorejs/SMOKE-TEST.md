@@ -10,6 +10,7 @@ This smoke test validates SDCoreJS agent behavior for Angular Portal in VS Code 
 - Workflow actions on detail and list
 - Cross-model response contract consistency (Claude/Gemini/Codex)
 - Portal starter tsconfig hygiene (`baseUrl` kept only when truly needed)
+- Package version baseline stability from internal template (no version drift)
 
 ## Preconditions
 - Open this repository in VS Code
@@ -26,6 +27,7 @@ This smoke test validates SDCoreJS agent behavior for Angular Portal in VS Code 
 - Agent includes workflow detail actions and list bulk actions when requested
 - Agent keeps response envelope consistent across models: Resolved Context -> Planned Skill Chain -> Files To Create/Update -> Post-Gen Double Check
 - Agent does not force `baseUrl: "./"` in starter tsconfig unless there is an explicit import-resolution reason
+- Agent keeps generated package versions aligned with `core/templates/angular-portal-starter/package.template.json` in brand-new workspaces
 
 ## Test Cases
 
@@ -104,6 +106,19 @@ Expected:
 Pass if:
 - Output or generated tsconfig shows no unnecessary `baseUrl` entry
 
+### TC07 - Portal init should avoid package version drift
+Prompt:
+Initialize a portal starter in a brand-new workspace.
+Package versions must match sdcorejs-agent/core/templates/angular-portal-starter/package.template.json exactly.
+
+Expected:
+- Agent uses internal package baseline as source of truth
+- Agent does not auto-upgrade/downgrade Angular or sd-angular package versions from external samples
+- Generated package.json dependency and devDependency versions match internal template
+
+Pass if:
+- Generated package versions are equal to internal baseline template versions
+
 ## Quick Execution Log Template
 - Date:
 - Tester:
@@ -114,6 +129,8 @@ Pass if:
 - TC03: Pass/Fail
 - TC04: Pass/Fail
 - TC05: Pass/Fail
+- TC06: Pass/Fail
+- TC07: Pass/Fail
 - Notes:
 
 ## Failure Triage Hints
