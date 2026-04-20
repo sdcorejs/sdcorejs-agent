@@ -12,6 +12,7 @@ This skill exists because in sdcorejs architecture every CRUD screen belongs to 
 
 ### MUST DO ✅
 - Treat module ownership as required context for every entity request
+- Detect developer language from request and respond in the same language
 - Ask for the module name if the user requests an entity UI without specifying its module
 - Offer to create a new module if there is no suitable module yet
 - Apply module configuration skill first when creating a brand-new module
@@ -19,7 +20,15 @@ This skill exists because in sdcorejs architecture every CRUD screen belongs to 
 - Generate a minimal CRUD skeleton if the module is known but the fields are only partially defined
 - Prefer `side-drawer` for common entity forms with around 5-6 fields
 - For common flows, ensure side-drawer content fits without vertical scroll in typical desktop viewport
+- For page-based detail flows, classify layout into one of 3 variants and confirm when ambiguous:
+  - `UnifiedCompact`: same layout for CREATE/UPDATE/DETAIL, no split title/form columns
+  - `UnifiedSplit`: same split layout for CREATE/UPDATE/DETAIL (left title, right form/content)
+  - `AdaptiveSplitDetail`: CREATE/UPDATE use editable split layout, DETAIL uses different read-only split layout
+- If PRD indicates many fields/sections, propose using `sd-anchor-v2` together with section grouping for faster scroll navigation
 - Preserve sdcorejs generation order: request resolution -> module setup -> entity CRUD -> form refinement
+- For large requests, enforce full generation order: portal init -> module init -> CRUD generation -> mock data readiness -> double-check
+- When generation includes permission configuration, ensure `SD_PERMISSION_CONFIGURATION` is provided at app root (`main.ts`) for root-scoped permission service
+- When generation includes upload-file configuration, ensure `SD_UPLOAD_FILE_CONFIGURATION` is provided at app root (`main.ts`) and keyed by module (`key='moduleName'`, portal default `key=undefined`)
 - When user provides implementation improvements/conventions, ask whether to update the skill library if they did not explicitly request skill updates
 
 ### MUST NOT ❌
@@ -28,6 +37,8 @@ This skill exists because in sdcorejs architecture every CRUD screen belongs to 
 - Ask for every optional detail up front if a minimal skeleton can be produced safely
 - Skip module creation when the user confirms no suitable module exists
 - Default to full page detail for short, common forms when side-drawer is sufficient
+- Reply in a language different from the developer language without explicit request
+- Lock into one page layout variant without clarifying when PRD/screenshot suggests another variant
 
 ## 4. Template
 
@@ -66,6 +77,14 @@ If detail style is missing:
   - 5-6 common fields -> side-drawer
   - many groups/sections or large table + attachments -> full page detail
 
+If page detail is chosen but layout variant is unclear:
+  Ask:
+  - "Bạn muốn layout dạng UnifiedCompact, UnifiedSplit hay AdaptiveSplitDetail?"
+
+If PRD has many sections/long form:
+  Suggest:
+  - "Mình sẽ dùng sd-anchor-v2 + sd-anchor-item-v2 để tạo thanh neo scroll nhanh theo từng section, bạn giữ phương án này chứ?"
+
 If user gives improve feedback (for example naming, layout, filter, permission convention):
   Ask one follow-up before ending task:
   - "Bạn có muốn mình cập nhật rule này vào skills luôn không?"
@@ -84,6 +103,7 @@ Useful but optional for first pass:
 - validation rules
 - import/export requirements
 - side drawer vs page detail style
+- page layout variant if using full page (`UnifiedCompact` / `UnifiedSplit` / `AdaptiveSplitDetail`)
 - workflow actions needed in detail (submit, approve, reject, etc.)
 - workflow actions needed in list (bulk submit, bulk approve, bulk reject)
 

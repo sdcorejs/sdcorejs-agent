@@ -8,6 +8,8 @@ Tài liệu này dùng để kiểm tra nhanh hành vi của SDCoreJS agent cho 
 - Sinh CRUD tối thiểu khi yêu cầu còn mơ hồ
 - Quyết định side-drawer hay full-page cho màn hình chi tiết
 - Hành vi workflow actions ở detail và bulk actions ở list
+- Tính nhất quán contract phản hồi giữa các mô hình (Claude/Gemini/Codex)
+- Vệ sinh cấu hình tsconfig của portal starter (`baseUrl` chỉ giữ khi thực sự cần)
 
 ## Điều kiện trước khi test
 - Mở repo này trong VS Code
@@ -22,6 +24,8 @@ Tài liệu này dùng để kiểm tra nhanh hành vi của SDCoreJS agent cho 
 - Form phổ biến khoảng 5-6 field, agent ưu tiên side-drawer
 - Workflow phức tạp, agent chọn full-page
 - Khi có yêu cầu workflow, agent đưa cả action ở detail và bulk action ở list
+- Envelope phản hồi nên nhất quán giữa model: Resolved Context -> Planned Skill Chain -> Files To Create/Update -> Post-Gen Double Check
+- Không ép giữ `baseUrl: "./"` trong tsconfig nếu không có nhu cầu import tuyệt đối tương ứng
 
 ## Bộ test
 
@@ -85,6 +89,19 @@ Kỳ vọng:
 
 Pass khi:
 - Có đầy đủ quyết định full-page và cả action detail/list
+
+### TC06 - Khởi tạo portal không giữ baseUrl thừa
+Prompt:
+Khởi tạo portal starter mới từ portal-template.
+Chỉ giữ shell starter và không có business libs.
+
+Kỳ vọng:
+- Agent kiểm tra kiểu import/alias trước khi quyết định cấu hình tsconfig
+- Agent bỏ `compilerOptions.baseUrl` nếu không cần
+- Nếu vẫn giữ `baseUrl`, agent giải thích rõ import pattern nào cần dùng
+
+Pass khi:
+- Kết quả hoặc tsconfig sinh ra không còn `baseUrl` thừa
 
 ## Mẫu log test nhanh
 - Ngày test:

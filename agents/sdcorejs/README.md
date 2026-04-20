@@ -6,6 +6,7 @@ Thư mục này mô tả profile agent SDCoreJS dùng cho VS Code Chat.
 ## Files / Tệp
 - .github/chatmodes/sdcorejs.chatmode.md
 - .github/prompts/sdcorejs-angular-portal.prompt.md
+- .github/prompts/sdcorejs-angular-portal-claude-github.prompt.md
 - .github/prompts/sdcorejs-angular-portal-smoke-tests.prompt.md
 - .github/prompts/sdcorejs-angular-portal-smoke-tests.vi.prompt.md
 - agents/sdcorejs/SMOKE-TEST.md
@@ -29,8 +30,57 @@ Meaning of "fallback prompts":
 
 Use prompt files manually / Dùng prompt thủ công:
 - Open .github/prompts/sdcorejs-angular-portal.prompt.md
+- Or open .github/prompts/sdcorejs-angular-portal-claude-github.prompt.md (for Claude Code + GitHub links)
 - Replace {{input}} with your request / Thay {{input}} bằng yêu cầu của bạn
 - Send to Chat / Gửi vào Chat
+
+## Cross-Model Setup (Claude Code / Gemini / Codex)
+## Thiết lập đa mô hình (Claude Code / Gemini / Codex)
+
+Use one shared prompt contract to reduce behavior drift between models.
+Dùng một prompt contract thống nhất để giảm lệch hành vi giữa các mô hình.
+
+Required contract / Contract bắt buộc:
+- Same pipeline: request intake -> module resolve -> module init -> CRUD -> refine
+- Same blocking clarification: missing module must be asked first
+- Same defaults: vague fields -> minimal CRUD; no API contract -> localStorage mock CRUD
+- Same guardrails: do not touch global CSS/SCSS; prefer Core UI first
+
+### Claude Code with direct GitHub link
+### Claude Code với link GitHub trực tiếp
+
+You can paste repository links directly in Claude Code prompt so it can follow the same skills.
+Bạn có thể dán link repository trực tiếp vào prompt Claude Code để bám cùng bộ skills.
+
+Recommended links / Link khuyến nghị:
+- Skills root: https://github.com/sdcorejs/sdcorejs-agent/tree/main/skills/angular-portal
+- Main guide: https://github.com/sdcorejs/sdcorejs-agent/blob/main/skills/angular-portal/README.md
+- Intake skill: https://github.com/sdcorejs/sdcorejs-agent/blob/main/skills/angular-portal/angular-request-intake-skill.md
+
+Paste this in Claude Code / Dán khối này vào Claude Code:
+
+```text
+Use SDCoreJS Angular Portal rules from:
+1) https://github.com/sdcorejs/sdcorejs-agent/tree/main/skills/angular-portal
+2) https://github.com/sdcorejs/sdcorejs-agent/blob/main/skills/angular-portal/README.md
+
+Mandatory behavior:
+- Ask module first if missing
+- If module not exists: create module first
+- If fields are vague: create minimal CRUD skeleton first
+- No API contract: use localStorage mock CRUD first
+- Do not modify global CSS/SCSS
+- Prefer Core UI first, warn when custom UI is used
+
+Output format:
+1) Resolved Context
+2) Planned Skill Chain
+3) Files To Create/Update
+4) Post-Gen Double Check
+
+My request:
+{{input}}
+```
 
 ## Teammate Quick Start (Share GitHub Link Only)
 ## Khởi động nhanh cho đồng nghiệp (chỉ cần gửi link GitHub)

@@ -19,10 +19,12 @@ Meaning of fallback prompts / Nghĩa của fallback prompts:
 
 1. Use prompt files:
 - .github/prompts/sdcorejs-angular-portal.prompt.md
+- .github/prompts/sdcorejs-angular-portal-claude-github.prompt.md
 - .github/prompts/sdcorejs-angular-portal-smoke-tests.vi.prompt.md
 
 1. Dùng các file prompt:
 - .github/prompts/sdcorejs-angular-portal.prompt.md
+- .github/prompts/sdcorejs-angular-portal-claude-github.prompt.md
 - .github/prompts/sdcorejs-angular-portal-smoke-tests.vi.prompt.md
 
 2. Add these scope constraints in every prompt:

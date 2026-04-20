@@ -21,8 +21,42 @@ Resolves incomplete user requests before generation starts.
 - Decision whether to reuse or create a module
 - Generation order for a new portal repo
 - UI mode decision: side-drawer vs full page detail
+- Page layout variant resolution: `UnifiedCompact` / `UnifiedSplit` / `AdaptiveSplitDetail`
+- Ask-for-confirm flow when PRD/screenshot implies different detail layout
 
 **Use when:** The user says things like `create CRUD screens for product` without enough architectural context.
+
+---
+
+### 0.5. [Portal Project Initialization Skill](angular-portal-project-init-skill.md)
+
+Generates a brand-new portal repository from `portal-template`, but keeps only the minimal starter pieces needed to boot locally.
+
+**Generates/Keeps:**
+- standalone Angular application shell
+- `@sd-angular/core` integration
+- requested environment files (`dev`, `qc`, `uat`, `prod`, ...)
+- minimal auth/layout/permission configuration
+- 1-2 example routes under `src/app/features/*`
+- working `npm start` flow
+
+**Use when:** The developer asks to initialize a new portal repo before any feature module exists.
+
+**Example output:**
+```text
+portal-ops/
+├── angular.json
+├── package.json
+├── src/main.ts
+├── src/app/app.routes.ts
+├── src/app/features/home/home.page.ts
+├── src/app/features/about/about.page.ts
+└── src/environments/
+  ├── environment.dev.ts
+  ├── environment.qc.ts
+  ├── environment.uat.ts
+  └── environment.prod.ts
+```
 
 ---
 
@@ -31,11 +65,13 @@ Resolves incomplete user requests before generation starts.
 Generates complete entity management modules with full CRUD operations.
 
 **Generates:**
-- Service extending BaseService with CRUD methods
+- Service with mock-first CRUD (`localStorage`) by default; switch to BaseService/API mode when backend contract is explicit
 - Data models (SaveReq interface + DTO type)
 - List page component with SdTable and server-side pagination
 - Detail page component with 3-state machine (CREATE/UPDATE/DETAIL)
 - Route configuration with lazy loading
+- Full-page detail anchor navigation using `sd-anchor-v2` when fields/sections are large
+- Read-only DETAIL blocks with `sd-section` + `sd-section-item` for split detail dashboards
 
 **Use when:** Creating entity management features (Product, Employee, Customer, etc.)
 
@@ -170,6 +206,60 @@ Use **Workflow Actions Skill**
 
 ### Result: Complete Product Module
 ```
+
+---
+
+## ✅ Mandatory Generation Pipeline
+
+When handling large generation requests, always follow this order:
+
+1. Initialize portal starter
+2. Initialize target module (lib)
+3. Generate entity CRUD pages/services/routes
+4. Ensure generated CRUD can run immediately with mock data (default: localStorage)
+5. Run post-generation validation checklist
+
+If any step is skipped, the generation is considered incomplete.
+
+---
+
+## 🧭 Global Guardrails
+
+These rules apply to all skills in this category:
+
+1. Do not modify global CSS/SCSS files during feature generation.
+  - Forbidden by default: `src/styles.scss`, global theme bundles, shared reset files.
+2. Prefer Core UI components first.
+  - If Core UI does not provide a required component, the agent must explicitly warn developer that this part is custom-written.
+3. Always run a double-check pass after generation.
+  - Verify routes, providers, permission keys, upload keys, and compile status.
+4. Reply language must follow developer language.
+  - Vietnamese input -> Vietnamese response.
+  - English input -> English response.
+
+---
+
+## 🤝 Cross-Model Compatibility Contract (Claude/Gemini/Codex)
+
+To keep behavior consistent across model families, all portal skills must follow this shared contract:
+
+1. Same skill order and blocking clarifications
+  - Request intake -> portal init (if needed) -> module init -> entity CRUD -> form/workflow refine.
+  - If module is missing, always ask first. Do not guess.
+2. Same output envelope
+  - Every generation response should include: `Resolved Context`, `Planned Skill Chain`, `Files To Create/Update`, `Post-Gen Double Check`.
+3. Same fallback defaults
+  - Vague fields -> generate minimal CRUD skeleton first.
+  - No API contract -> use localStorage mock CRUD first.
+  - 5-6 common fields -> side-drawer preference.
+  - many sections/long form -> page detail; consider `sd-anchor-v2`.
+4. Same safety boundaries
+  - Never modify global CSS/SCSS unless developer explicitly asks.
+  - Prefer Core UI components first; if custom UI is needed, warn explicitly.
+5. Same language behavior
+  - Detect developer language and answer in the same language.
+
+If one model behaves differently, the agent should restate and enforce this contract before generating code.
 libs/product/
 ├── product.configuration.ts
 ├── routes.ts
@@ -198,6 +288,42 @@ libs/product/
 ---
 
 ## 🏗️ Architecture Overview
+
+## 🔐 SdPermission Quick Guide (Agent + Dev)
+
+Use this as the default rule when generating or reviewing permission-related code.
+
+1. Register `SD_PERMISSION_CONFIGURATION` at app root (`main.ts`).
+2. If system has multiple permission domains, each configuration MUST have a unique `key`.
+3. Route-level permission checks MUST include:
+  - `data.permission`: permission code (`<MODULE>_C_<ENTITY>_<ACTION>`)
+  - `data.permissionKey`: matching configuration key (optional for default key `undefined`)
+4. In templates, use directive with key when needed:
+  - `*sdPermission="'SAMPLE_C_EMPLOYEE_CREATE'; sdPermissionKey: 'sample'"`
+5. Do not expect module/route local `SD_PERMISSION_CONFIGURATION` providers to be auto-visible to root-scoped `SdPermissionService`.
+
+### Dev Checklist (Permission)
+- Confirm permission configuration is provided in `main.ts`.
+- Confirm every configuration key is unique (`undefined` is also treated as a key).
+- Confirm route `permissionKey` matches the intended configuration key.
+- Confirm UI actions use `sdPermission` and `sdPermissionKey` consistently.
+- Confirm no manual duplicated permission logic is added in components when route guard/directive already handles it.
+
+## 📎 SdUploadFile Quick Guide (Agent + Dev)
+
+Use this as the default rule when generating upload-file configuration code.
+
+1. Register `SD_UPLOAD_FILE_CONFIGURATION` at app root (`main.ts`) with `multi: true`.
+2. Use `key = undefined` for portal default upload configuration.
+3. Use explicit key per module upload configuration (for example `key = 'sample'`, `key = 'crm'`).
+4. For module-specific screens/components, pass `[key]` to `sd-upload-file` so it resolves the right upload/details/download handlers.
+5. Do not rely on module route-level upload providers when upload resolution is expected from root-scoped consumers.
+
+### Dev Checklist (Upload)
+- Confirm upload-file configurations are provided in `main.ts`.
+- Confirm each upload configuration key is unique (`undefined` is allowed only as portal default).
+- Confirm module upload config uses a non-empty module key.
+- Confirm `sd-upload-file` usages in module screens pass matching `[key]` where needed.
 
 ### Module Structure
 ```

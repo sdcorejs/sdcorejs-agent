@@ -8,6 +8,8 @@ This smoke test validates SDCoreJS agent behavior for Angular Portal in VS Code 
 - Minimal CRUD skeleton generation when fields are vague
 - Side-drawer vs full-page decision
 - Workflow actions on detail and list
+- Cross-model response contract consistency (Claude/Gemini/Codex)
+- Portal starter tsconfig hygiene (`baseUrl` kept only when truly needed)
 
 ## Preconditions
 - Open this repository in VS Code
@@ -22,6 +24,8 @@ This smoke test validates SDCoreJS agent behavior for Angular Portal in VS Code 
 - Agent picks side-drawer for common 5-6 field forms
 - Agent picks full page for complex workflow screens
 - Agent includes workflow detail actions and list bulk actions when requested
+- Agent keeps response envelope consistent across models: Resolved Context -> Planned Skill Chain -> Files To Create/Update -> Post-Gen Double Check
+- Agent does not force `baseUrl: "./"` in starter tsconfig unless there is an explicit import-resolution reason
 
 ## Test Cases
 
@@ -85,6 +89,19 @@ Expected:
 
 Pass if:
 - Full-page decision and both detail/list workflow actions are present
+
+### TC06 - Portal init should avoid unnecessary tsconfig baseUrl
+Prompt:
+Initialize a new portal starter from portal-template.
+Keep only starter shell and no business libs.
+
+Expected:
+- Agent verifies local imports/aliases before deciding tsconfig options
+- Agent removes `compilerOptions.baseUrl` when not needed
+- If agent keeps `baseUrl`, it explains the exact import pattern that requires it
+
+Pass if:
+- Output or generated tsconfig shows no unnecessary `baseUrl` entry
 
 ## Quick Execution Log Template
 - Date:

@@ -33,13 +33,39 @@ Resolves incomplete requests before any UI generation starts.
 
 ---
 
+### 0.5. Portal Project Initialization Skill
+**File:** [angular-portal-project-init-skill.md](angular-portal-project-init-skill.md)
+
+Generates a new portal repository from the existing `portal-template` but trims it to a starter that does not yet include business libs.
+
+**Key Responsibilities:**
+- Resolve project name and target environments
+- Keep `@sd-angular/core` integrated and version-pinned
+- Remove demo/business lib references from routes and tsconfig paths
+- Generate 1-2 working example routes in `src/app/features/*`
+- Preserve standalone bootstrap, core configuration, and plop generators
+- Verify the new starter with `npm install` and `npm start`
+
+**When to use:**
+- Developer asks to initialize a brand-new portal repo
+- Team needs a clean starter before creating modules/entities
+- Request looks like: `Khoi tao du an portal-ops co dev, qc, uat, prod`
+
+**Outputs:**
+- Starter Angular portal repo
+- Multi-environment configuration
+- Minimal shell + example routes
+- Verified local startup flow
+
+---
+
 ### 1. Entity CRUD Module Skill
 **File:** [angular-entity-crud-skill.md](angular-entity-crud-skill.md)
 
 Generates complete entity management with service, models, list and detail pages.
 
 **Key Components:**
-- Service extending BaseService
+- Service with mock-first CRUD (`localStorage`) by default; switch to BaseService/API mode when backend contract is explicit
 - Models (SaveReq + DTO)
 - List page with SdTable and pagination
 - Detail page with 3-state machine (CREATE/UPDATE/DETAIL)
@@ -151,6 +177,16 @@ Defines workflow actions for entity lifecycle and bulk operations.
 - Khi user nhắc một convention/improve mới trong quá trình code review hoặc refine UI, agent phải chủ động hỏi: `Bạn có muốn mình cập nhật rule này vào skills luôn không?` nếu user chưa yêu cầu rõ việc update skill.
 
 ### Creating a New Feature Module (Complete Example)
+
+**-1. Start with Portal Project Initialization Skill when repo does not exist yet**
+```
+Input: "Khoi tao du an portal-ops co dev, qc, uat va prod"
+Output:
+  - new portal repo scaffolded from portal-template
+  - @sd-angular/core kept in place
+  - only shell/config/environments/example routes remain
+  - npm install + npm start verification
+```
 
 **0. Start with Request Intake Skill**
 ```

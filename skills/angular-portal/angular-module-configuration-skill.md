@@ -13,7 +13,13 @@ In a brand-new portal repo, this skill is the first generation step whenever the
 ### MUST DO ✅
 - Apply this skill before entity CRUD when the module does not exist
 - Create `routes.ts` at module root level
-- Provide `SD_API_CONFIG` and `SD_UPLOAD_FILE_CONFIGURATION` at route level
+- Provide `SD_API_CONFIG` at route level
+- Do not modify global CSS/SCSS while creating module structure/configuration
+- Keep `SD_PERMISSION_CONFIGURATION` at app root injector (`main.ts`) so root-scoped `SdPermissionService` receives full configuration set immediately
+- Keep `SD_UPLOAD_FILE_CONFIGURATION` at app root injector (`main.ts`) so root-scoped upload consumers can resolve all keyed configurations
+- Define unique `key` for each permission configuration when multiple permission domains exist
+- Define unique `key` for each upload-file configuration when multiple module domains exist
+- Ensure module routes set `data.permissionKey` to match the configuration `key`
 - Define module configuration interface with `InjectionToken`
 - If entity services use `providedIn: 'root'`, also provide `[MODULE]_CONFIGURATION` at app root bootstrap (`main.ts`)
 - Implement `ApiConfiguration` class for request/response interceptors
@@ -22,6 +28,7 @@ In a brand-new portal repo, this skill is the first generation step whenever the
 - Create `[module].configuration.ts` for interface definition
 - Lazy load all child entities with `loadChildren()`
 - Export routes as `const [module]Routes: Routes = [...]`
+- Run a post-generation double-check: token wiring, provider scope, route key consistency, and unresolved imports
 
 ### MUST NOT ❌
 - Provide services in route-level configuration (only for interceptors/guards)
@@ -30,6 +37,13 @@ In a brand-new portal repo, this skill is the first generation step whenever the
 - Skip error handling in interceptors
 - Use global interceptors (module-scoped only)
 - Assume route-level providers are visible to root-scoped services
+- Do not provide `SD_PERMISSION_CONFIGURATION` at module route level when using root-scoped `SdPermissionService`
+- Do not provide `SD_UPLOAD_FILE_CONFIGURATION` at module route level when using root-scoped upload configuration resolution
+- Do not mark module-local permission providers as `multi: true` and expect root `SdPermissionService` to auto-merge them
+- Do not mark module-local upload providers as `multi: true` and expect root consumers to auto-merge them
+- Do not reuse the same permission `key` across different configurations
+- Do not reuse the same upload `key` across different configurations
+- Do not mix route `data.permissionKey='A'` with configuration `key='B'`
 
 ## 4. Template
 
@@ -93,11 +107,12 @@ export class ApiConfiguration implements ISdApiConfiguration {
 ### configurations/upload-file.configuration.ts (Optional)
 ```typescript
 import { Injectable, inject } from '@angular/core';
-import { SD_UPLOAD_FILE_CONFIGURATION, ISdUploadFileConfiguration } from 'sd-angular';
+import { ISdUploadFileConfiguration } from 'sd-angular';
 import { I[Module]Configuration, [MODULE]_CONFIGURATION } from '../[module].configuration';
 
 @Injectable()
 export class UploadFileConfiguration implements ISdUploadFileConfiguration {
+  key = '[module]';
   readonly #configuration = inject<I[Module]Configuration>([MODULE]_CONFIGURATION);
 
   uploadUri = `${this.#configuration.host}/file/upload`;
@@ -123,9 +138,8 @@ export const [module]Guard: CanActivateFn = () => {
 ### routes.ts
 ```typescript
 import { Routes } from '@angular/router';
-import { SD_API_CONFIG, SD_UPLOAD_FILE_CONFIGURATION } from 'sd-angular';
+import { SD_API_CONFIG } from 'sd-angular';
 import { ApiConfiguration } from './configurations/api.configuration';
-import { UploadFileConfiguration } from './configurations/upload-file.configuration';
 import { [module]Guard } from './guards/[module].guard';
 import { [MODULE]_CONFIGURATION, I[Module]Configuration } from './[module].configuration';
 
@@ -139,7 +153,6 @@ export const [module]Routes: Routes = [
     canActivate: [[module]Guard],
     providers: [
       { provide: SD_API_CONFIG, useClass: ApiConfiguration, multi: true },
-      { provide: SD_UPLOAD_FILE_CONFIGURATION, useClass: UploadFileConfiguration, multi: true },
     ],
     children: [
       {
@@ -159,14 +172,58 @@ export const [module]Routes: Routes = [
 ### main.ts (when service is root-scoped)
 ```typescript
 import { bootstrapApplication } from '@angular/platform-browser';
+import { SD_UPLOAD_FILE_CONFIGURATION } from '@sd-angular/core/components';
+import { SD_PERMISSION_CONFIGURATION } from 'sd-angular';
 import { [MODULE]_CONFIGURATION } from '@[module]/configurations';
 import { [Module]Configuration } from './app/configurations/[module].configuration';
+import { PermissionConfiguration } from './app/configurations/permission.configuration';
+import { UploadFileConfiguration } from './app/configurations/upload-file.configuration';
 
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: [MODULE]_CONFIGURATION, useClass: [Module]Configuration },
+    // Keep permission configuration at root injector for root-scoped SdPermissionService
+    { provide: SD_PERMISSION_CONFIGURATION, useClass: PermissionConfiguration, multi: true },
+    // Keep upload-file configuration at root injector and distinguish by key
+    { provide: SD_UPLOAD_FILE_CONFIGURATION, useClass: UploadFileConfiguration, multi: true },
   ],
 });
+```
+
+### permission.configuration.ts (Keyed)
+```typescript
+import { Injectable } from '@angular/core';
+import { ISdPermissionConfiguration } from '@sd-angular/core/modules';
+
+@Injectable()
+export class PermissionConfiguration implements ISdPermissionConfiguration {
+  key = 'sample';
+  disabled = false;
+
+  loadPermissions = async () => {
+    return [
+      'SAMPLE_C_EMPLOYEE_LIST',
+      'SAMPLE_C_EMPLOYEE_DETAIL',
+      'SAMPLE_C_EMPLOYEE_CREATE',
+    ];
+  };
+
+  onForbiden = () => {
+    // redirect forbidden page
+  };
+}
+```
+
+### Route Data Contract (Permission)
+```typescript
+{
+  path: 'employee',
+  loadChildren: () => import('./modules/employee').then(m => m.employeeRoutes),
+  data: {
+    permission: 'SAMPLE_C_EMPLOYEE_LIST',
+    permissionKey: 'sample',
+  },
+}
 ```
 
 ### index.ts (Module Barrel Export)
@@ -285,9 +342,8 @@ export const sampleGuard: CanActivateFn = () => {
 ### File: `libs/sample/routes.ts`
 ```typescript
 import { Routes } from '@angular/router';
-import { SD_API_CONFIG, SD_UPLOAD_FILE_CONFIGURATION } from 'sd-angular';
+import { SD_API_CONFIG } from 'sd-angular';
 import { ApiConfiguration } from './configurations/api.configuration';
-import { UploadFileConfiguration } from './configurations/upload-file.configuration';
 import { sampleGuard } from './guards/sample.guard';
 import { SAMPLE_CONFIGURATION, ISampleConfiguration } from './sample.configuration';
 
@@ -302,7 +358,6 @@ export const sampleRoutes: Routes = [
     providers: [
       { provide: SAMPLE_CONFIGURATION, useValue: SAMPLE_CONFIG },
       { provide: SD_API_CONFIG, useClass: ApiConfiguration, multi: true },
-      { provide: SD_UPLOAD_FILE_CONFIGURATION, useClass: UploadFileConfiguration, multi: true },
     ],
     children: [
       {

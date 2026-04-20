@@ -15,7 +15,8 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 ### MUST DO ✅
 - Confirm target module before generating entity files
 - Generate the feature module first if it does not exist
-- Extend `BaseService` for entity services
+- Generate entity service with runnable mock CRUD by default (`localStorage`) when backend API contract is not provided yet
+- If backend API contract is provided explicitly, service may switch to `BaseService`-based API integration
 - Create separate files: `model.ts`, `service.ts` for each entity
 - Define request model (SaveReq) and response type (DTO extends BaseEntity)
 - Use permission code format: `<MODULE>_C_<ENTITY>_<ACTION>`
@@ -28,7 +29,12 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Use two-way binding: `[(model)]="entity.field"` with `[form]="form"`
 - Define table columns with explicit type and width
 - Use `SdTable` with server-side pagination (`type: 'server'`)
+- Prioritize Core UI components first for all generated screens/forms/tables/actions
+- If a required UI piece has no Core UI equivalent, explicitly mark it as custom and warn developer in generation summary
+- Do not modify global CSS/SCSS during entity generation (`src/styles.scss` and shared global theme files are out of scope)
 - Add `data: { permission: '<CODE>' }` to every route entry using the standard permission code format; the module guard reads this to block unauthorized navigation automatically
+- When module uses keyed permission configuration, add `data.permissionKey` on each route and keep it consistent inside the same module flow
+- When module uses keyed upload-file configuration, set `[key]` on `sd-upload-file` to match module upload configuration key
 - When routes have `data.permission` guard, do NOT add extra `canViewList` / `canCreate` manual checks inside list/detail components
 - For filters rendered outside table columns, define them in `tableOption.filter.externalFilters` instead of custom controls above table
 - Mark blocking external filters as `required: true` and rely on table filter validation instead of rendering guidance text like "Vui lòng chọn ..."
@@ -62,6 +68,17 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Choose detail style by complexity:
   - 5-6 common fields -> side-drawer
   - complex multi-section workflows -> full page
+- For full-page detail with many fields/sections, combine section grouping with `sd-anchor-v2` for fast scroll navigation
+  - Use `sd-anchor-v2 type="vertical" ellipsis` as wrapper
+  - Use one `sd-anchor-item-v2` per business section (for example: "Thông tin chung", "Rổ hàng", "Hồ sơ")
+  - Keep each anchor item body inside `sd-section` so navigation and section collapse can work together
+- Support 3 page-layout variants for CREATE/UPDATE/DETAIL, and choose based on context:
+  - `UnifiedCompact`: CREATE/UPDATE/DETAIL share one unified layout, no split title/form columns
+  - `UnifiedSplit`: CREATE/UPDATE/DETAIL share one unified split layout (left title block, right form/content block)
+  - `AdaptiveSplitDetail`: CREATE/UPDATE use editable split layout, DETAIL uses a different read-only split layout (like dashboard cards/sections)
+- For `AdaptiveSplitDetail`, DETAIL screen should prefer `sd-section` + `sd-section-item` for read-only display blocks instead of editable form controls
+- When the request does not clearly define expected detail layout, ask one clarification question before final generation:
+  - "Bạn muốn giữ layout mặc định hay đổi sang UnifiedCompact / UnifiedSplit / AdaptiveSplitDetail?"
 - Reserve extension points for workflow actions in both list and detail
 - Use `inject()` function (not constructor injection) for all service and dependency injection inside components, services, and directives:
   ```typescript
@@ -121,6 +138,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
   - If include filter is not supported, run full `npm run test -- --watch=false` and summarize spec results
   - If environment lacks headless browser, report blocker explicitly and provide exact command for developer to run locally
 - Reserve extension points for workflow actions in both list and detail
+- Always run a final double-check pass: route data, permission keys, upload keys, service wiring, and basic build/test status
 
 ### TESTING CHECKLIST FOR DEVELOPERS ⚠️
 **When applying this skill to generate a new entity module, developers MUST verify these points before committing:**
@@ -211,6 +229,8 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Expose extra component fields/getters when a local variable or `#privateField` is sufficient
 - Use template-bound method calls for permission checks or similar boolean guards
 - Omit `data.permission` from route definitions
+- Do not omit `data.permissionKey` when the module is designed to use keyed permission configuration
+- Do not omit `sd-upload-file [key]` when the module is designed to use keyed upload-file configuration
 - Duplicate route-level permission guard as in-component `canViewList` / `canCreate` checks
 - Use constructor injection; always use `inject()` function instead
 - Omit `changeDetection: ChangeDetectionStrategy.OnPush` from list/detail component declarations
@@ -222,6 +242,8 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Overuse signal invocations in template without considering the 2+ times rule (apply `computed()` or `@let` when signal is referenced 2+ times)
 - Create spec files without first asking developer which test coverage level they prefer (minimal/standard/full)
 - Generate placeholder specs with `// TODO add tests` or similar; all specs must be runnable and pass on first `ng test`
+- Render long multi-section page forms without anchor navigation when `sd-anchor-v2` is already available
+- Use editable inputs in DETAIL read-only summary sections when `AdaptiveSplitDetail` layout is selected
 
 ## 4. Template
 
@@ -233,6 +255,106 @@ Required before applying this skill:
 - entity name is known
 - minimum display fields are known: code, name, status or equivalent
 - clarify test coverage level with developer before generating spec files
+
+If permission is key-based:
+- permissionKey is known (or explicitly use default key = undefined)
+```
+
+### Detail Layout Variant Template
+```typescript
+// Variant A: UnifiedCompact
+// CREATE/UPDATE/DETAIL share same no-split layout
+<sd-page>
+  <sd-section title="Thông tin chung"> ...form/read-only blocks... </sd-section>
+</sd-page>
+
+// Variant B: UnifiedSplit
+// CREATE/UPDATE/DETAIL share same split layout (left title, right form)
+<sd-page>
+  <div class="c-item align-items-start">
+    <div class="c-item__label">Thông tin đợt mở bán</div>
+    <div class="c-item__content"> ...fields... </div>
+  </div>
+</sd-page>
+
+// Variant C: AdaptiveSplitDetail
+// CREATE/UPDATE: split editable form + anchor
+// DETAIL: split read-only cards with sd-section-item
+<sd-page>
+  @if (state === 'DETAIL') {
+    <div class="row row-sm mx-0">
+      <sd-section class="col-4" title="Thông tin chung" noPaddingBody collapsable>
+        <sd-section-item label="Mã" labelWidth="136px"><div>{{ entity.code }}</div></sd-section-item>
+      </sd-section>
+      <sd-section class="col-12 mt-16" title="Rổ hàng" collapsable>
+        <sd-table [option]="tableOption"></sd-table>
+      </sd-section>
+    </div>
+  } @else {
+    <sd-anchor-v2 type="vertical" ellipsis>
+      <sd-anchor-item-v2 title="Thông tin chung">
+        <sd-section title="Thông tin chung" noPaddingBody collapsable> ...editable fields... </sd-section>
+      </sd-anchor-item-v2>
+      <sd-anchor-item-v2 title="Rổ hàng">
+        <sd-section title="Rổ hàng" collapsable> ...table/actions... </sd-section>
+      </sd-anchor-item-v2>
+    </sd-anchor-v2>
+  }
+</sd-page>
+```
+
+### Anchor Activation Heuristic
+```text
+Enable sd-anchor-v2 when one of these is true:
+- form has >= 12 fields, or
+- form has >= 3 business sections, or
+- page includes at least one large child table/upload block plus other sections
+
+If none match, keep regular section layout without anchor.
+```
+
+### Permission Keyed Route Template
+```typescript
+export const employeeRoutes: Routes = [
+  {
+    path: '',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/list/list.component').then(m => m.ListComponent),
+        data: {
+          permission: 'SAMPLE_C_EMPLOYEE_LIST',
+          permissionKey: 'sample',
+        },
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./pages/detail/detail.component').then(m => m.DetailComponent),
+        data: {
+          permission: 'SAMPLE_C_EMPLOYEE_DETAIL',
+          permissionKey: 'sample',
+        },
+      },
+    ],
+  },
+];
+```
+
+### Permission Directive Template
+```html
+<!-- Keyed permission -->
+<button
+  *sdPermission="'SAMPLE_C_EMPLOYEE_CREATE'; sdPermissionKey: 'sample'"
+  mat-flat-button
+  color="primary"
+>
+  Thêm mới
+</button>
+
+<!-- Default key (undefined) -->
+<button *sdPermission="'SAMPLE_C_EMPLOYEE_EXPORT'" mat-stroked-button>
+  Xuất dữ liệu
+</button>
 ```
 
 ### Test Coverage Selection
@@ -1476,12 +1598,12 @@ export class DetailComponent implements OnInit {
 ## Implementation Checklist
 
 - [ ] Create model file with SaveReq interface and DTO type
-- [ ] Create service extending BaseService
+- [ ] Create service with mock-first CRUD (`localStorage`) by default; use BaseService/API mode only when backend contract is explicit
 - [ ] Create list component with @SdTabComponent decorator
 - [ ] Create detail component with 3-state machine
 - [ ] Define route configuration with lazy loading
 - [ ] Export all from barrel index.ts
-- [ ] Add service to route providers (NOT root)
+- [ ] Set service provider scope correctly (default `providedIn: 'root'` for mock/root usage, or module/route scope only when intentionally required)
 - [ ] Test CREATE/UPDATE/DETAIL flows
 - [ ] Validate form before save
 - [ ] Test file upload functionality
