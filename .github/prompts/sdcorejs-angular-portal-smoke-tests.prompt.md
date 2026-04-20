@@ -22,7 +22,7 @@ List page needs bulk submit and bulk approve.
 Detail has sections, child table items, and attachment review.
 
 ## Prompt 6
-Initialize a new portal starter from portal-template.
+Initialize a new portal starter from the internal baseline templates in sdcorejs-agent/core/templates/angular-portal-starter.
 Keep only starter shell and no business libs.
 Do not keep unnecessary tsconfig settings.
 
@@ -33,3 +33,4 @@ Do not keep unnecessary tsconfig settings.
 - Simple forms default to side-drawer
 - Complex workflow defaults to full page + detail/list workflow actions
 - For portal init, tsconfig should not keep `compilerOptions.baseUrl` unless there is a clear import-resolution reason
+- For portal init, generated starter must include src/libs scaffold (minimum src/libs/.gitkeep)

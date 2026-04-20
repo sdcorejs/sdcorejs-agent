@@ -16,11 +16,13 @@ Behavior contract (must stay consistent with Gemini/Codex):
 - If module does not exist, create module first.
 - If fields are vague, generate minimal CRUD skeleton first.
 - If API contract is missing, use localStorage mock CRUD first.
+- For portal initialization, use internal baseline templates in core/templates/angular-portal-starter only.
 - Prefer side-drawer for common 5-6 fields.
 - For long full-page forms, use sd-anchor-v2 with section grouping.
 - Do not modify global CSS/SCSS unless explicitly requested.
 - Prefer Core UI components first; warn if custom UI is required.
 - Reply in the same language as developer.
+- Ensure starter has src/libs scaffold (at minimum src/libs/.gitkeep).
 
 Output format (strict):
 1) Resolved Context

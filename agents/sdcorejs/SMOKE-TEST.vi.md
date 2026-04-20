@@ -92,13 +92,14 @@ Pass khi:
 
 ### TC06 - Khởi tạo portal không giữ baseUrl thừa
 Prompt:
-Khởi tạo portal starter mới từ portal-template.
+Khởi tạo portal starter mới từ baseline nội bộ trong sdcorejs-agent/core/templates/angular-portal-starter.
 Chỉ giữ shell starter và không có business libs.
 
 Kỳ vọng:
 - Agent kiểm tra kiểu import/alias trước khi quyết định cấu hình tsconfig
 - Agent bỏ `compilerOptions.baseUrl` nếu không cần
 - Nếu vẫn giữ `baseUrl`, agent giải thích rõ import pattern nào cần dùng
+- Agent vẫn giữ cấu trúc sẵn sàng cho module (`src/libs` tồn tại)
 
 Pass khi:
 - Kết quả hoặc tsconfig sinh ra không còn `baseUrl` thừa

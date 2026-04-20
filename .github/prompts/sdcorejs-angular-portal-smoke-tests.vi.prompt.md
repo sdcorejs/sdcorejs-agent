@@ -22,7 +22,7 @@ List page cần bulk submit và bulk approve.
 Detail có nhiều section, child table item, và review attachment.
 
 ## Prompt 6
-Khởi tạo portal starter mới từ portal-template.
+Khởi tạo portal starter mới từ baseline nội bộ trong sdcorejs-agent/core/templates/angular-portal-starter.
 Chỉ giữ shell starter và không có business libs.
 Không giữ các cấu hình tsconfig không cần thiết.
 
@@ -33,3 +33,4 @@ Không giữ các cấu hình tsconfig không cần thiết.
 - Form đơn giản thì ưu tiên side-drawer
 - Workflow phức tạp thì ưu tiên full-page và có đủ action detail/list
 - Với portal init, tsconfig không nên giữ `compilerOptions.baseUrl` nếu không có lý do resolve import rõ ràng
+- Với portal init, starter phải có src/libs (tối thiểu src/libs/.gitkeep)

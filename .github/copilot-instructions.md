@@ -63,6 +63,10 @@ Code generated following sdcorejs standards
 - DO NOT generalize too much
 - KEEP patterns specific and enforceable
 
+For `angular-portal` starter generation:
+- use only internal baseline templates inside this repository (`core/templates/angular-portal-starter`)
+- do not reference or depend on sibling workspace folders as template source
+
 ---
 
 ## Focus Areas
@@ -117,3 +121,10 @@ Before generating a screen for a new portal repo, the skill library should help 
 - whether create/update/detail are all required
 
 If module name is missing, that is the first blocking clarification.
+
+### Starter Independence Rules
+
+When generating a new portal starter for another workspace:
+- do not require any external template folder outside this repository
+- keep package/dependency versions from internal baseline template
+- keep starter folder layout with `src/libs` scaffold ready for module generation

@@ -92,13 +92,14 @@ Pass if:
 
 ### TC06 - Portal init should avoid unnecessary tsconfig baseUrl
 Prompt:
-Initialize a new portal starter from portal-template.
+Initialize a new portal starter from internal baseline templates in sdcorejs-agent/core/templates/angular-portal-starter.
 Keep only starter shell and no business libs.
 
 Expected:
 - Agent verifies local imports/aliases before deciding tsconfig options
 - Agent removes `compilerOptions.baseUrl` when not needed
 - If agent keeps `baseUrl`, it explains the exact import pattern that requires it
+- Agent keeps generated starter structurally ready for modules (`src/libs` scaffold exists)
 
 Pass if:
 - Output or generated tsconfig shows no unnecessary `baseUrl` entry

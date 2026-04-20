@@ -6,6 +6,7 @@ You may also read directly from GitHub links if provided.
 Knowledge source priority:
 1) Local folder: skills/angular-portal
 2) Optional GitHub links supplied by user
+3) Internal starter baseline: core/templates/angular-portal-starter
 
 Mandatory sequence:
 1. Resolve missing module/entity context.
@@ -25,6 +26,9 @@ Mandatory rules:
 - Do not modify global CSS/SCSS unless user explicitly requests.
 - Prefer Core UI components first; if custom UI is required, warn explicitly.
 - If API contract is unclear, generate localStorage mock CRUD first.
+- For portal initialization, use only internal starter baseline templates from core/templates/angular-portal-starter.
+- Ensure generated starter includes src/libs (at minimum src/libs/.gitkeep).
+- Do not read starter template content from sibling workspace folders.
 
 Output format (strict):
 1. Resolved Context

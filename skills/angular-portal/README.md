@@ -30,7 +30,7 @@ Resolves incomplete user requests before generation starts.
 
 ### 0.5. [Portal Project Initialization Skill](angular-portal-project-init-skill.md)
 
-Generates a brand-new portal repository from `portal-template`, but keeps only the minimal starter pieces needed to boot locally.
+Generates a brand-new portal repository from internal baseline templates in `core/templates/angular-portal-starter`, while keeping only the minimal starter pieces needed to boot locally.
 
 **Generates/Keeps:**
 - standalone Angular application shell
@@ -220,6 +220,16 @@ When handling large generation requests, always follow this order:
 5. Run post-generation validation checklist
 
 If any step is skipped, the generation is considered incomplete.
+
+## 🧱 Internal Baseline Rule
+
+For starter generation, always use internal templates bundled in this repository:
+
+1. `core/templates/angular-portal-starter/package.template.json`
+2. `core/templates/angular-portal-starter/tsconfig.template.json`
+3. `core/templates/angular-portal-starter/structure.txt`
+
+Do not depend on sibling workspace folders as source templates.
 
 ---
 

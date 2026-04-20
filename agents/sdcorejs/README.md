@@ -45,6 +45,7 @@ Required contract / Contract bắt buộc:
 - Same blocking clarification: missing module must be asked first
 - Same defaults: vague fields -> minimal CRUD; no API contract -> localStorage mock CRUD
 - Same guardrails: do not touch global CSS/SCSS; prefer Core UI first
+- Same source-of-truth: use internal starter baseline in `core/templates/angular-portal-starter` (no sibling workspace template reads)
 
 ### Claude Code with direct GitHub link
 ### Claude Code với link GitHub trực tiếp
@@ -69,6 +70,8 @@ Mandatory behavior:
 - If module not exists: create module first
 - If fields are vague: create minimal CRUD skeleton first
 - No API contract: use localStorage mock CRUD first
+- For portal init: use internal baseline templates at core/templates/angular-portal-starter
+- Ensure src/libs scaffold exists (minimum src/libs/.gitkeep)
 - Do not modify global CSS/SCSS
 - Prefer Core UI first, warn when custom UI is used
 

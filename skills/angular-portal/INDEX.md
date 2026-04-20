@@ -36,7 +36,7 @@ Resolves incomplete requests before any UI generation starts.
 ### 0.5. Portal Project Initialization Skill
 **File:** [angular-portal-project-init-skill.md](angular-portal-project-init-skill.md)
 
-Generates a new portal repository from the existing `portal-template` but trims it to a starter that does not yet include business libs.
+Generates a new portal repository from internal baseline templates in `core/templates/angular-portal-starter`, trimmed to a starter that does not yet include business libs.
 
 **Key Responsibilities:**
 - Resolve project name and target environments
@@ -180,9 +180,9 @@ Defines workflow actions for entity lifecycle and bulk operations.
 
 **-1. Start with Portal Project Initialization Skill when repo does not exist yet**
 ```
-Input: "Khoi tao du an portal-ops co dev, qc, uat va prod"
+Input: "Khoi tao du an portal-starter-moi co dev, qc, uat va prod"
 Output:
-  - new portal repo scaffolded from portal-template
+  - new portal repo scaffolded from internal baseline templates
   - @sd-angular/core kept in place
   - only shell/config/environments/example routes remain
   - npm install + npm start verification

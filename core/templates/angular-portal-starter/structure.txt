@@ -1,0 +1,25 @@
+[project-root]/
+├── angular.json
+├── package.json
+├── tsconfig.json
+├── tsconfig.app.json
+├── tsconfig.spec.json
+├── eslint.config.js
+├── plopfile.js
+├── public/
+│   └── silent-renew.html
+└── src/
+    ├── app/
+    │   ├── app.component.ts
+    │   ├── app.routes.ts
+    │   ├── components/
+    │   │   └── main/
+    │   ├── configurations/
+    │   └── features/
+    ├── environments/
+    ├── libs/
+    │   ├── .gitkeep
+    │   └── sample/
+    ├── index.html
+    ├── main.ts
+    └── styles.scss

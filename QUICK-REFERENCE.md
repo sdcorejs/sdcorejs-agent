@@ -493,5 +493,5 @@ import { SdButton } from '@sd-angular/core/components';
 
 **Quick Links**:
 - Full Patterns Document: [PATTERNS-FINDINGS.md](PATTERNS-FINDINGS.md)
-- Portal Template: `c:\Users\nghiatt15_onemount\Desktop\New folder\portal-template`
-- vn-Angular Library: `c:\Users\nghiatt15_onemount\Documents\mh\lib-core-angular\vn-angular`
+- Internal Starter Baseline: [core/templates/angular-portal-starter/README.md](core/templates/angular-portal-starter/README.md)
+- Internal Starter Package Baseline: [core/templates/angular-portal-starter/package.template.json](core/templates/angular-portal-starter/package.template.json)

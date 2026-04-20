@@ -1,17 +1,18 @@
 # Angular Skill: Portal Project Initialization
 
 ## 1. Skill Name
-**Portal Project Initialization from portal-template**
+**Portal Project Initialization from Internal Baseline**
 
 ## 2. Description
-Generates a new Angular portal repository from the existing `portal-template` workspace, but trims it down to a clean starter that does not yet include feature libs. The generated starter must already integrate `@sd-angular/core`, define the requested environments, include 1-2 working example routes, and be able to run with `npm start` immediately after installation.
+Generates a new Angular portal repository from the internal baseline templates inside `sdcorejs-agent`, producing a clean starter that does not yet include business feature libs. The generated starter must already integrate `@sd-angular/core`, define the requested environments, include 1-2 working example routes, and be able to run with `npm start` immediately after installation.
 
 This skill is for the very first step of a brand-new portal repo, before module/entity generation begins.
 
 ## 3. Rules
 
 ### MUST DO ✅
-- Base the starter strictly on files and conventions that already exist in `portal-template`
+- Base the starter strictly on internal baseline templates in `core/templates/angular-portal-starter`
+- Do not read starter conventions from sibling workspace folders
 - Ask the developer for:
   - project name
   - environment list (minimum: `dev`, `qc`, `uat`, `prod`)
@@ -19,7 +20,7 @@ This skill is for the very first step of a brand-new portal repo, before module/
   - preferred dev port if different from `4200`
   - whether example routes should use pure `src/app/features/*` pages or placeholder `src/libs/*` modules
 - Default to generating a **minimal repo without feature libs** under `src/libs`
-- Keep `@sd-angular/core` installed and pinned to the current verified package version used by the workspace
+- Keep `@sd-angular/core` installed and pinned according to `core/templates/angular-portal-starter/package.template.json`
 - At the moment of writing this skill, use `@sd-angular/core` version `19.0.0-beta.72`
 - Generate all requested environment files under `src/environments/`
 - Generate matching build scripts for each requested environment in `package.json`
@@ -34,11 +35,12 @@ This skill is for the very first step of a brand-new portal repo, before module/
   - redirect `/` to an example route
   - keep a shell route using `MainComponent`
   - keep fallback `**` redirect
-- Ensure the starter still compiles without `@sample`, `@pricing`, `@crm`, or any existing demo libs from `portal-template`
+- Ensure the starter still compiles without unrelated demo/business aliases that are not part of requested starter scope
 - Update `angular.json` serve/build configurations so the new project name and requested environments are aligned
 - Update `tsconfig.json` path aliases only for paths that still exist in the starter
 - Keep `tsconfig.json` minimal: remove `compilerOptions.baseUrl` when the starter does not use local absolute imports (`src/...`, `app/...`, `libs/...`)
 - Keep `compilerOptions.paths` aliases explicit and valid without relying on `baseUrl`
+- Ensure `src/libs` exists in generated starter (at minimum `src/libs/.gitkeep`)
 - Verify the generated repo by running:
   - `npm install`
   - `npm start`
@@ -54,7 +56,7 @@ This skill is for the very first step of a brand-new portal repo, before module/
 - Do not hard-code environment names different from the developer request
 - Do not create a repo with zero example routes; the starter must visibly demonstrate navigation
 - Do not assume the dev wants Plop generators removed; keep them if they still work in the starter
-- Do not leave package name, Angular project name, or output path as `portal-template`
+- Do not depend on any external workspace path as starter source
 - Do not place `SD_PERMISSION_CONFIGURATION` in module or route providers with `multi: true` and expect root permission service to consume them
 - Do not place `SD_UPLOAD_FILE_CONFIGURATION` in module or route providers and expect root upload resolution to consume them
 - Do not keep `baseUrl: "./"` by habit when there is no concrete import-resolution need for it
@@ -64,7 +66,7 @@ This skill is for the very first step of a brand-new portal repo, before module/
 ### Preconditions
 ```text
 Required before applying this skill:
-- source template is the existing portal-template workspace
+- internal baseline templates exist in `core/templates/angular-portal-starter`
 - developer confirmed project name
 - developer confirmed environment names
 - developer confirmed starter should not include feature libs yet
@@ -249,8 +251,8 @@ export class HomePage {}
 ### Verification Steps
 ```text
 After generation:
-1. Confirm package name, Angular project name, and output path were renamed from portal-template
-2. Confirm no imports remain for @sample, @pricing, @crm, @examples, @components, @forms, @services, @patterns, @instructions, @utilities
+1. Confirm package name, Angular project name, and output path match developer request
+2. Confirm starter is generated from `core/templates/angular-portal-starter` without workspace-external dependencies
 3. Confirm `tsconfig.json` has no unnecessary `compilerOptions.baseUrl` (or document why it is needed)
 4. Run npm install
 5. Run npm start
@@ -261,7 +263,7 @@ After generation:
 ## 5. Example Input
 
 ```text
-Khoi tao du an portal-ops co cac moi truong dev, qc, uat va prod.
+Khoi tao du an portal-starter-moi co cac moi truong dev, qc, uat va prod.
 Chua can business libs.
 Tich hop san @sd-angular/core.
 Cho san 2 route vi du de dev bat dau code.
@@ -271,10 +273,10 @@ Cho san 2 route vi du de dev bat dau code.
 
 ### Agent Decision
 ```text
-Use portal-template as source.
-Create project portal-ops.
+Use internal baseline under core/templates/angular-portal-starter as source.
+Create project portal-starter-moi.
 Keep only app shell, core configuration, environments, and plop generator files.
-Remove demo/business library dependencies from routing and tsconfig paths.
+Keep src/libs scaffold (including .gitkeep) for future module generation.
 Generate /home and /about example routes under src/app/features.
 Pin @sd-angular/core to file:sd-angular-core-19.0.0-beta.72.tgz.
 Then run npm install and npm start to verify the starter boots.
@@ -282,20 +284,21 @@ Then run npm install and npm start to verify the starter boots.
 
 ### Files Generated/Updated
 ```text
-portal-ops/package.json
-portal-ops/angular.json
-portal-ops/tsconfig.json
-portal-ops/src/main.ts
-portal-ops/src/app/app.routes.ts
-portal-ops/src/app/components/main/main.component.ts
-portal-ops/src/app/components/main/main.component.html
-portal-ops/src/app/configurations/auth.configuration.ts
-portal-ops/src/app/configurations/layout.configuration.ts
-portal-ops/src/app/configurations/permission.configuration.ts
-portal-ops/src/app/features/home/home.page.ts
-portal-ops/src/app/features/about/about.page.ts
-portal-ops/src/environments/environment.dev.ts
-portal-ops/src/environments/environment.qc.ts
-portal-ops/src/environments/environment.uat.ts
-portal-ops/src/environments/environment.prod.ts
+[project-name]/package.json
+[project-name]/angular.json
+[project-name]/tsconfig.json
+[project-name]/src/main.ts
+[project-name]/src/app/app.routes.ts
+[project-name]/src/app/components/main/main.component.ts
+[project-name]/src/app/components/main/main.component.html
+[project-name]/src/app/configurations/auth.configuration.ts
+[project-name]/src/app/configurations/layout.configuration.ts
+[project-name]/src/app/configurations/permission.configuration.ts
+[project-name]/src/app/features/home/home.page.ts
+[project-name]/src/app/features/about/about.page.ts
+[project-name]/src/environments/environment.dev.ts
+[project-name]/src/environments/environment.qc.ts
+[project-name]/src/environments/environment.uat.ts
+[project-name]/src/environments/environment.prod.ts
+[project-name]/src/libs/.gitkeep
 ```
