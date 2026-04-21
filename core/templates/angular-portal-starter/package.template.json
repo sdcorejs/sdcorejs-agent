@@ -31,7 +31,7 @@
     "@angular/router": "~20.3.18",
     "@ng-matero/extensions": "^20.4.2",
     "@ng-matero/extensions-moment-adapter": "^20.0.0",
-    "@sd-angular/core": "file:sd-angular-core-19.0.0-beta.72.tgz",
+    "@sd-angular/core": "19.0.0-beta.72",
     "chart.js": "^4.5.1",
     "ng2-charts": "^5.0.0",
     "rxjs": "~7.8.0",

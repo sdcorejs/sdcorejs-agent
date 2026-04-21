@@ -22,7 +22,9 @@ Behavior contract (must stay consistent with Gemini/Codex):
 - Do not modify global CSS/SCSS unless explicitly requested.
 - Prefer Core UI components first; warn if custom UI is required.
 - Reply in the same language as developer.
-- Ensure starter has src/libs scaffold (at minimum src/libs/.gitkeep).
+- Ensure starter has src/libs/sample scaffold with seeded employee and product entities.
+- For portal init, keep @sd-angular/core as npm version string from internal baseline (never file:*.tgz).
+- Do not generate app/features placeholder pages (home/about) for starter mode.
 
 Output format (strict):
 1) Resolved Context

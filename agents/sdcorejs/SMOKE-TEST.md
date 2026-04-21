@@ -11,6 +11,7 @@ This smoke test validates SDCoreJS agent behavior for Angular Portal in VS Code 
 - Cross-model response contract consistency (Claude/Gemini/Codex)
 - Portal starter tsconfig hygiene (`baseUrl` kept only when truly needed)
 - Package version baseline stability from internal template (no version drift)
+- Starter structure contract (`src/libs/sample` seeded; no app/features home-about placeholders)
 
 ## Preconditions
 - Open this repository in VS Code
@@ -28,6 +29,9 @@ This smoke test validates SDCoreJS agent behavior for Angular Portal in VS Code 
 - Agent keeps response envelope consistent across models: Resolved Context -> Planned Skill Chain -> Files To Create/Update -> Post-Gen Double Check
 - Agent does not force `baseUrl: "./"` in starter tsconfig unless there is an explicit import-resolution reason
 - Agent keeps generated package versions aligned with `core/templates/angular-portal-starter/package.template.json` in brand-new workspaces
+- Agent keeps `@sd-angular/core` as npm version string (no `file:*.tgz` dependency style)
+- Agent seeds `src/libs/sample/modules/employee` and `src/libs/sample/modules/product`
+- Agent does not generate `src/app/features/home` or `src/app/features/about`
 
 ## Test Cases
 
@@ -95,7 +99,7 @@ Pass if:
 ### TC06 - Portal init should avoid unnecessary tsconfig baseUrl
 Prompt:
 Initialize a new portal starter from internal baseline templates in sdcorejs-agent/core/templates/angular-portal-starter.
-Keep only starter shell and no business libs.
+Keep starter shell plus mandatory src/libs/sample scaffold.
 
 Expected:
 - Agent verifies local imports/aliases before deciding tsconfig options
@@ -115,9 +119,13 @@ Expected:
 - Agent uses internal package baseline as source of truth
 - Agent does not auto-upgrade/downgrade Angular or sd-angular package versions from external samples
 - Generated package.json dependency and devDependency versions match internal template
+- Generated starter does not use local tgz dependency style for `@sd-angular/core`
+- Generated starter scaffold includes `src/libs/sample` with employee and product modules
+- Generated starter excludes app-level placeholder pages under `src/app/features/home|about`
 
 Pass if:
 - Generated package versions are equal to internal baseline template versions
+- `@sd-angular/core` is normal npm version string and starter structure matches sample scaffold contract
 
 ## Quick Execution Log Template
 - Date:

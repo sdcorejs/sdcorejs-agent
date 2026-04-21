@@ -8,6 +8,8 @@ Generates the complete feature module configuration including route setup, modul
 
 In a brand-new portal repo, this skill is the first generation step whenever the target module does not exist yet.
 
+Default mode is standalone-first, but this skill can generate hybrid-compatible structure when the target application still uses NgModule with standalone components.
+
 ## 3. Rules
 
 ### MUST DO ✅
@@ -28,11 +30,14 @@ In a brand-new portal repo, this skill is the first generation step whenever the
 - Create `[module].configuration.ts` for interface definition
 - Lazy load all child entities with `loadChildren()`
 - Export routes as `const [module]Routes: Routes = [...]`
+- Support `skeleton module` generation when business details are missing: generate minimum routes/config/guard/index/spec scaffolding first
+- Generate module unit tests (`routes.spec.ts`, `guard.spec.ts`, and configuration smoke spec) in the same pass
+- If project is hybrid NgModule + standalone, generate compatibility wiring without forcing full migration
 - Run a post-generation double-check: token wiring, provider scope, route key consistency, and unresolved imports
 
 ### MUST NOT ❌
 - Provide services in route-level configuration (only for interceptors/guards)
-- Mix NgModule with standalone route configuration
+- Force migration to pure standalone when developer did not request migration and existing codebase is hybrid
 - Hardcode API URLs (inject via configuration)
 - Skip error handling in interceptors
 - Use global interceptors (module-scoped only)
@@ -46,6 +51,14 @@ In a brand-new portal repo, this skill is the first generation step whenever the
 - Do not mix route `data.permissionKey='A'` with configuration `key='B'`
 
 ## 4. Template
+
+### Hybrid Compatibility Note
+```text
+If target codebase uses NgModule root/module wiring:
+- keep existing NgModule bootstrap/module boundaries intact
+- generate standalone components/routes that can be imported or lazy-loaded from NgModule routes
+- avoid breaking changes in app bootstrap path unless developer asks for migration
+```
 
 ### [module].configuration.ts
 ```typescript
@@ -395,6 +408,7 @@ export const sampleRoutes: Routes = [
 - [ ] Create upload file configuration
 - [ ] Create module guard
 - [ ] Create routes.ts with providers
+- [ ] Generate module skeleton specs (`routes.spec.ts`, `guard.spec.ts`, `api.configuration.spec.ts`)
 - [ ] Test configuration injection in child modules
 - [ ] Test API error handling
 - [ ] Test file upload configuration

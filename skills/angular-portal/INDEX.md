@@ -36,13 +36,14 @@ Resolves incomplete requests before any UI generation starts.
 ### 0.5. Portal Project Initialization Skill
 **File:** [angular-portal-project-init-skill.md](angular-portal-project-init-skill.md)
 
-Generates a new portal repository from internal baseline templates in `core/templates/angular-portal-starter`, trimmed to a starter that does not yet include business libs.
+Generates a new portal repository from internal baseline templates in `core/templates/angular-portal-starter`, with mandatory `src/libs/sample` scaffold and seeded sample entities.
 
 **Key Responsibilities:**
 - Resolve project name and target environments
-- Keep `@sd-angular/core` integrated and version-pinned
-- Remove demo/business lib references from routes and tsconfig paths
-- Generate 1-2 working example routes in `src/app/features/*`
+- Keep `@sd-angular/core` integrated and pinned as npm version from internal baseline (not local tgz)
+- Remove unrelated demo/business lib references from routes and tsconfig paths
+- Generate starter sample route wiring via `src/libs/sample/routes.ts`
+- Seed 2 sample entities (`employee`, `product`) under `src/libs/sample/modules/*`
 - Preserve standalone bootstrap, core configuration, and plop generators
 - Verify the new starter with `npm install` and `npm start`
 
@@ -54,8 +55,10 @@ Generates a new portal repository from internal baseline templates in `core/temp
 **Outputs:**
 - Starter Angular portal repo
 - Multi-environment configuration
-- Minimal shell + example routes
+- Minimal shell + sample routes
 - Verified local startup flow
+- Disabled-by-default starter permission configuration
+- `src/libs/sample` scaffold ready for module generation with 2 entities
 
 ---
 
@@ -170,6 +173,20 @@ Defines workflow actions for entity lifecycle and bulk operations.
 
 ---
 
+### 5. SD Angular Core Beta72 Catalog
+**File:** [sd-angular-core-beta72-catalog.md](sd-angular-core-beta72-catalog.md)
+
+Internal snapshot of supported `@sd-angular/core` component/form/module categories.
+
+Use when:
+- selecting Core UI pieces for generated screens
+- deciding whether a custom UI element is required
+
+Outputs:
+- consistent Core UI-first mapping across module/entity generation
+
+---
+
 ## 🔄 Skill Integration Flow
 
 ## 🔁 Improvement Sync Rule
@@ -183,8 +200,8 @@ Defines workflow actions for entity lifecycle and bulk operations.
 Input: "Khoi tao du an portal-starter-moi co dev, qc, uat va prod"
 Output:
   - new portal repo scaffolded from internal baseline templates
-  - @sd-angular/core kept in place
-  - only shell/config/environments/example routes remain
+  - @sd-angular/core pinned from npm baseline (no `file:*.tgz`)
+  - shell/config/environments plus `src/libs/sample` with employee and product remain
   - npm install + npm start verification
 ```
 

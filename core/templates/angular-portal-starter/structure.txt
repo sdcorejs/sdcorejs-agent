@@ -14,12 +14,46 @@
     │   ├── app.routes.ts
     │   ├── components/
     │   │   └── main/
-    │   ├── configurations/
-    │   └── features/
+    │   └── configurations/
     ├── environments/
     ├── libs/
-    │   ├── .gitkeep
     │   └── sample/
+    │       ├── sample.configuration.ts
+    │       ├── routes.ts
+    │       ├── configurations/
+    │       │   ├── api.configuration.ts
+    │       │   └── upload-file.configuration.ts
+    │       ├── guards/
+    │       │   └── sample.guard.ts
+    │       └── modules/
+    │           ├── employee/
+    │           │   ├── employee.routes.ts
+    │           │   ├── employee.routes.spec.ts
+    │           │   ├── services/
+    │           │   │   ├── employee.model.ts
+    │           │   │   ├── employee.service.ts
+    │           │   │   └── employee.service.spec.ts
+    │           │   └── pages/
+    │           │       ├── list/
+    │           │       │   ├── list.component.ts
+    │           │       │   └── list.component.spec.ts
+    │           │       └── detail/
+    │           │           ├── detail.component.ts
+    │           │           └── detail.component.spec.ts
+    │           └── product/
+    │               ├── product.routes.ts
+    │               ├── product.routes.spec.ts
+    │               ├── services/
+    │               │   ├── product.model.ts
+    │               │   ├── product.service.ts
+    │               │   └── product.service.spec.ts
+    │               └── pages/
+    │                   ├── list/
+    │                   │   ├── list.component.ts
+    │                   │   └── list.component.spec.ts
+    │                   └── detail/
+    │                       ├── detail.component.ts
+    │                       └── detail.component.spec.ts
     ├── index.html
     ├── main.ts
     └── styles.scss

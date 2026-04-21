@@ -1,0 +1,21 @@
+@use '@sd-angular/core/assets/scss/themes/default' as sd;
+@use '@angular/material' as mat;
+
+html {
+  @include sd.theme(
+    (
+      info: #2962ff,
+      info-light: #e7e9ff,
+      success: #4caf50,
+      success-light: #dbefdc,
+      warning: #ff9600,
+      warning-light: #ffeacc,
+      error: #f82c13,
+      error-light: #fed5d0,
+      secondary: #757575,
+      secondary-light: #e9e9e9,
+      light: #f8f9fa,
+      dark: #343a40,
+    )
+  );
+}

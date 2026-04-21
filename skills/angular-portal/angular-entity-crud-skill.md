@@ -4,7 +4,9 @@
 **Entity CRUD Module Generation**
 
 ## 2. Description
-Generates a complete entity management module following sdcorejs architecture patterns. Creates service layer (with BaseService integration), models/interfaces, and page components (list and detail) with full CRUD operations, reactive forms, and data tables.
+Generates a complete entity management module following sdcorejs architecture patterns. Creates service layer, models/interfaces, and page components (list and detail) with full CRUD operations, reactive forms, and data tables.
+
+This skill can synthesize UI structure from PRD text, screenshot/attribute images, and sample cURL payloads, then map those into CREATE/UPDATE/DETAIL rendering strategies.
 
 This skill assumes the target feature module is already known. If the request does not specify a module, the agent must resolve that first using the request intake flow.
 
@@ -17,6 +19,20 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Generate the feature module first if it does not exist
 - Generate entity service with runnable mock CRUD by default (`localStorage`) when backend API contract is not provided yet
 - If backend API contract is provided explicitly, service may switch to `BaseService`-based API integration
+- Parse and normalize input artifacts when available:
+  - PRD text sections
+  - screenshot or attribute image hints
+  - sample cURL request/response
+- Derive a field matrix from artifacts before coding:
+  - list columns
+  - create/update editable fields
+  - detail read-only fields
+  - validators and enum candidates
+  - request/response field mapping
+- Apply cURL mapping by state:
+  - request payload fields -> CREATE/UPDATE editable controls
+  - response meta/status/audit fields -> DETAIL read-only blocks
+  - list endpoint lightweight fields -> LIST columns
 - Create separate files: `model.ts`, `service.ts` for each entity
 - Define request model (SaveReq) and response type (DTO extends BaseEntity)
 - Use permission code format: `<MODULE>_C_<ENTITY>_<ACTION>`
@@ -113,6 +129,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
   - Goal: reduce unnecessary signal getter invocations during change detection cycles
 - Ensure interactive elements exposed to users have accessible text: use `title` or `aria-label` on buttons/actions so screen readers can describe them; use semantic HTML where possible (`<nav>`, `<main>`, `role="toolbar"`)
 - Generate a companion `*.spec.ts` skeleton alongside every new list and detail component; use Arrange-Act-Assert pattern; the skeleton must at minimum assert the component creates successfully:
+- Generate companion `*.spec.ts` files alongside service/routes/list/detail with runnable tests; use Arrange-Act-Assert pattern; specs must include at minimum component/service/route creation and one behavior assertion each:
   ```typescript
   describe('ListComponent', () => {
     it('should create', () => { expect(component).toBeTruthy(); });
@@ -139,6 +156,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
   - If environment lacks headless browser, report blocker explicitly and provide exact command for developer to run locally
 - Reserve extension points for workflow actions in both list and detail
 - Always run a final double-check pass: route data, permission keys, upload keys, service wiring, and basic build/test status
+- Support hybrid NgModule + standalone integration when target codebase still uses NgModule boundaries
 
 ### TESTING CHECKLIST FOR DEVELOPERS ⚠️
 **When applying this skill to generate a new entity module, developers MUST verify these points before committing:**
@@ -212,7 +230,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 
 ### MUST NOT ❌
 - Guess the module silently when module ownership is ambiguous
-- Mix standalone and NgModule approaches
+- Do not force a full standalone migration when developer requests hybrid NgModule + standalone compatibility mode
 - Use ad-hoc permission code naming that does not follow `<MODULE>_C_<ENTITY>_<ACTION>`
 - Hard-code API URLs (use configuration tokens)
 - Add logic to components (delegate to services)
@@ -244,6 +262,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Generate placeholder specs with `// TODO add tests` or similar; all specs must be runnable and pass on first `ng test`
 - Render long multi-section page forms without anchor navigation when `sd-anchor-v2` is already available
 - Use editable inputs in DETAIL read-only summary sections when `AdaptiveSplitDetail` layout is selected
+- Ignore provided cURL contract or PRD image when they define API fields or UI sections
 
 ## 4. Template
 

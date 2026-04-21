@@ -11,6 +11,12 @@ Thư mục này mô tả profile agent SDCoreJS dùng cho VS Code Chat.
 - .github/prompts/sdcorejs-angular-portal-smoke-tests.vi.prompt.md
 - agents/sdcorejs/SMOKE-TEST.md
 - agents/sdcorejs/SMOKE-TEST.vi.md
+- agents/sdcorejs/HANDOFF-YYYY-MM-DD.md
+
+## Daily Handoff Rule
+
+- Always create a new handoff file by date (`HANDOFF-YYYY-MM-DD.md`).
+- Do not append new day updates into previous handoff files.
 
 ## Usage in VS Code Chat / Cách dùng trong VS Code Chat
 1. Open Chat. / Mở Chat.
@@ -71,7 +77,9 @@ Mandatory behavior:
 - If fields are vague: create minimal CRUD skeleton first
 - No API contract: use localStorage mock CRUD first
 - For portal init: use internal baseline templates at core/templates/angular-portal-starter
-- Ensure src/libs scaffold exists (minimum src/libs/.gitkeep)
+- Ensure src/libs/sample scaffold exists with seeded employee and product entities
+- Keep @sd-angular/core as npm version string from internal baseline (never file:*.tgz)
+- Do not generate app/features placeholder pages (home/about) in starter mode
 - Do not modify global CSS/SCSS
 - Prefer Core UI first, warn when custom UI is used
 
