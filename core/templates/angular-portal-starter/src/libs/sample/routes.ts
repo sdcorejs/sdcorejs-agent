@@ -20,6 +20,10 @@ export const sampleRoutes: Routes = [
       { path: 'product', loadChildren: () => import('@sample/modules/product').then(m => m.productRoutes) },
       // AdaptiveSplitDetail: DETAIL uses read-only sections, CREATE/UPDATE uses editable form
       { path: 'department', loadChildren: () => import('@sample/modules/department').then(m => m.departmentRoutes) },
+      // AdaptiveSplitDetail for customer management
+      { path: 'customer', loadChildren: () => import('@sample/modules/customer').then(m => m.customerRoutes) },
+      // Anchor-based full page detail/create/update with 3 sections
+      { path: 'sale-event', loadChildren: () => import('@sample/modules/sale-event').then(m => m.saleEventRoutes) },
     ],
   },
 ];

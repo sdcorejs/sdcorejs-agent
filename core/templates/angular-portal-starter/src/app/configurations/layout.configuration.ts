@@ -4,6 +4,7 @@ import { ISdLayoutConfiguration, SdAuthService } from '@sd-angular/core/modules'
 @Injectable()
 export class LayoutConfiguration implements ISdLayoutConfiguration {
   #authService = inject(SdAuthService);
+  homeUrl = './home';
 
   userInfo: ISdLayoutConfiguration['userInfo'] = () => ({
     username: 'demo-user',

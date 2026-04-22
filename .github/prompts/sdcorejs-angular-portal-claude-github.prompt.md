@@ -24,7 +24,7 @@ Behavior contract (must stay consistent with Gemini/Codex):
 - Reply in the same language as developer.
 - Ensure starter has src/libs/sample scaffold with seeded employee and product entities.
 - For portal init, keep @sd-angular/core as npm version string from internal baseline (never file:*.tgz).
-- Do not generate app/features placeholder pages (home/about) for starter mode.
+- For portal init, support custom home page under src/app/pages/home and wire LayoutConfiguration.homeUrl.
 
 Output format (strict):
 1) Resolved Context

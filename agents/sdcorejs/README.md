@@ -47,17 +47,8 @@ Use one shared prompt contract to reduce behavior drift between models.
 Dùng một prompt contract thống nhất để giảm lệch hành vi giữa các mô hình.
 
 Required contract / Contract bắt buộc:
-- Same pipeline: request intake -> module resolve -> module init -> CRUD -> refine
-- Same blocking clarification: missing module must be asked first
-- Same defaults: vague fields -> minimal CRUD; no API contract -> localStorage mock CRUD
-- Same guardrails: do not touch global CSS/SCSS; prefer Core UI first
-- Same source-of-truth: use internal starter baseline in `core/templates/angular-portal-starter` (no sibling workspace template reads)
 
-### Claude Code with direct GitHub link
-### Claude Code với link GitHub trực tiếp
-
-You can paste repository links directly in Claude Code prompt so it can follow the same skills.
-Bạn có thể dán link repository trực tiếp vào prompt Claude Code để bám cùng bộ skills.
+ Starter may include src/app/pages/home and should wire LayoutConfiguration.homeUrl for custom home navigation
 
 Recommended links / Link khuyến nghị:
 - Skills root: https://github.com/sdcorejs/sdcorejs-agent/tree/main/skills/angular-portal
@@ -79,7 +70,7 @@ Mandatory behavior:
 - For portal init: use internal baseline templates at core/templates/angular-portal-starter
 - Ensure src/libs/sample scaffold exists with seeded employee and product entities
 - Keep @sd-angular/core as npm version string from internal baseline (never file:*.tgz)
-- Do not generate app/features placeholder pages (home/about) in starter mode
+- Starter may include src/app/pages/home and should wire LayoutConfiguration.homeUrl for custom home navigation
 - Do not modify global CSS/SCSS
 - Prefer Core UI first, warn when custom UI is used
 

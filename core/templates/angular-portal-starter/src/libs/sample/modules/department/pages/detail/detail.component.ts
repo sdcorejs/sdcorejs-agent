@@ -3,7 +3,6 @@ import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { SdButton, SdSection, SdTabComponent } from '@sd-angular/core/components';
-import { SdSectionItem } from '@sd-angular/core/components/section';
 import { SdInput, SdSelect, SdTextarea } from '@sd-angular/core/forms';
 import { SdPageComponent } from '@sd-angular/core/modules';
 import { SdLoadingService, SdNotifyService } from '@sd-angular/core/services';
@@ -19,7 +18,7 @@ import { DepartmentService } from '../../services/department.service';
 @Component({
   selector: 'department-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SdInput, SdSelect, SdTextarea, SdButton, SdSection, SdSectionItem, SdPageComponent],
+  imports: [SdInput, SdSelect, SdTextarea, SdButton, SdSection, SdPageComponent],
   template: `
     <sd-page [title]="title">
       <div class="d-flex align-items-center" style="gap: 8px" headerRight>
@@ -32,42 +31,30 @@ import { DepartmentService } from '../../services/department.service';
       </div>
 
       <div class="h-full p-8">
-        @if (state === 'DETAIL') {
-          <!-- AdaptiveSplitDetail: DETAIL uses read-only section-item layout -->
-          <sd-section title="Thông tin chung" collapsable>
-            <sd-section-item label="Mã" labelWidth="120px">{{ entity.code }}</sd-section-item>
-            <sd-section-item label="Tên" labelWidth="120px">{{ entity.name }}</sd-section-item>
-            <sd-section-item label="Trạng thái" labelWidth="120px">
-              {{ entity.isActivated ? 'Hoạt động' : 'Ngừng hoạt động' }}
-            </sd-section-item>
-            <sd-section-item label="Mô tả" labelWidth="120px">{{ entity.description }}</sd-section-item>
-          </sd-section>
-        } @else {
-          <!-- CREATE / UPDATE: standard editable form -->
-          <sd-section title="Thông tin chung">
-            <div class="row row-sm mx-0">
-              <div class="col-6">
-                <sd-input label="Mã" [(model)]="entity.code" [form]="form" required maxlength="32"></sd-input>
-              </div>
-              <div class="col-6">
-                <sd-input label="Tên" [(model)]="entity.name" [form]="form" required></sd-input>
-              </div>
-              <div class="col-6">
-                <sd-select
-                  label="Trạng thái"
-                  [(model)]="entity.isActivated"
-                  [form]="form"
-                  [items]="statusOptions"
-                  valueField="value"
-                  displayField="display">
-                </sd-select>
-              </div>
-              <div class="col-12">
-                <sd-textarea label="Mô tả" [(model)]="entity.description" [form]="form"></sd-textarea>
-              </div>
+        <sd-section title="Thông tin chung">
+          <div class="row row-sm mx-0">
+            <div class="col-6">
+              <sd-input label="Mã" [(model)]="entity.code" [form]="form" required maxlength="32" [viewed]="state === 'DETAIL'"></sd-input>
             </div>
-          </sd-section>
-        }
+            <div class="col-6">
+              <sd-input label="Tên" [(model)]="entity.name" [form]="form" required [viewed]="state === 'DETAIL'"></sd-input>
+            </div>
+            <div class="col-6">
+              <sd-select
+                label="Trạng thái"
+                [(model)]="entity.isActivated"
+                [form]="form"
+                [items]="statusOptions"
+                valueField="value"
+                displayField="display"
+                [viewed]="state === 'DETAIL'">
+              </sd-select>
+            </div>
+            <div class="col-12">
+              <sd-textarea label="Mô tả" [(model)]="entity.description" [form]="form" [viewed]="state === 'DETAIL'"></sd-textarea>
+            </div>
+          </div>
+        </sd-section>
       </div>
     </sd-page>
   `,
@@ -128,6 +115,10 @@ export class DetailComponent implements OnInit {
       .detail(id)
       .then(entity => {
         this.entity = entity;
+      })
+      .catch(() => {
+        this.#notifyService.warning('Không tìm thấy phòng ban. Vui lòng chọn lại từ danh sách.');
+        this.#router.navigate(['../../'], { relativeTo: this.#route, state: { replaceTab: true } });
       })
       .finally(() => this.#loadingService.stop());
   };

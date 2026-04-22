@@ -30,7 +30,7 @@ Do not keep unnecessary tsconfig settings.
 Initialize a portal starter in a brand-new workspace.
 Package versions must match sdcorejs-agent/core/templates/angular-portal-starter/package.template.json exactly.
 Do not infer or upgrade versions from any external sample repository.
-Do not generate app/features home/about pages.
+Support starter home page under src/app/pages/home and wire LayoutConfiguration.homeUrl.
 Generate src/libs/sample with employee and product seeded.
 
 ## What to validate
@@ -43,5 +43,5 @@ Generate src/libs/sample with employee and product seeded.
 - For portal init, generated starter must include src/libs/sample scaffold with seeded employee and product entities
 - For portal init in new workspace, generated package versions must match internal package template baseline (no version drift)
 - For portal init, `@sd-angular/core` must be a normal npm version string (not `file:*.tgz`)
-- For portal init, do not create `src/app/features/home` or `src/app/features/about`
+- For portal init, home page is customizable via `src/app/pages/home` + `LayoutConfiguration.homeUrl`
 - For portal init, create `src/libs/sample/modules/employee` and `src/libs/sample/modules/product`

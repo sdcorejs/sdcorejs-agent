@@ -7,7 +7,7 @@ import { SampleConfiguration } from './configurations/sample.configuration';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'layout/home',
+    redirectTo: 'home',
     pathMatch: 'full',
   },
   {
@@ -20,6 +20,10 @@ export const routes: Routes = [
         path: '',
         canActivate: [SdPortalGuard],
         children: [
+          {
+            path: 'home',
+            loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent),
+          },
           {
             path: 'layout',
             loadChildren: () => import('@sd-angular/core/modules/layout').then(m => m.SdLayoutModule),

@@ -26,6 +26,18 @@ export class MainComponent {
           path: '/sample/product',
           title: 'Products',
         },
+        {
+          path: '/sample/department',
+          title: 'Departments',
+        },
+        {
+          path: '/sample/customer',
+          title: 'Customers',
+        },
+        {
+          path: '/sample/sale-event',
+          title: 'Sale Events',
+        },
       ],
     },
   ];

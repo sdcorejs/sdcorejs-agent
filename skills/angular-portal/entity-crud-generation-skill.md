@@ -4,7 +4,7 @@
 
 Transform EntitySchema + generic templates into complete CRUD entity code:
 - Model (DTO, SaveReq, validators)
-- Service (extends BaseService)
+- Service (mock-first CRUD via centralized seed data file)
 - Routes (lazy-loaded)
 - Components (List, Detail)
 
@@ -121,32 +121,46 @@ export interface ProductSaveReq {
 export type ProductDTO = Required<ProductSaveReq> & BaseEntity;
 ```
 
-### Step 3: Generate Service (product.service.ts)
+### Step 3: Generate Mock Data + Service (product.mock-data.ts + product.service.ts)
 
-Pattern: extend BaseService, register CRUD methods
+Pattern: create one centralized mock data file per entity, then wire service to localStorage-backed mock CRUD store.
 
 **Template Usage:**
-- Inject BaseService
-- Call `this.register<DTO, SaveReq>('{{ entity }}')`
-- Expose all CRUD methods as public async methods
+- Create `{{ entityKebab }}.mock-data.ts` with around 100 seed rows
+- Import `MockCrudStore` + seed data in service
+- Expose all CRUD methods (`paging/search/all/detail/create/update/remove`) from store
+- Only switch to `BaseService` API integration after backend contract is explicit
+- Ensure `MockCrudStore` can reseed when existing localStorage value is missing, empty (`[]`), or corrupted JSON
 
 **Output (product.service.ts):**
 ```typescript
-import { Injectable, inject } from '@angular/core';
-import { BaseService } from '../base/base.service';
+import { Injectable } from '@angular/core';
+import { MockCrudStore } from '@sample/services';
 import { ProductDTO, ProductSaveReq } from './product.model';
+import { PRODUCT_SEED_DATA } from './product.mock-data';
 
 @Injectable({ providedIn: 'root' })
-export class ProductService extends BaseService {
-  readonly #api = this.register<ProductDTO, ProductSaveReq>('product');
+export class ProductService {
+  readonly #store = new MockCrudStore<ProductDTO, ProductSaveReq>(
+    'product',
+    () => [...PRODUCT_SEED_DATA],
+    (existing, req) => ({
+      ...(existing ?? ({} as ProductDTO)),
+      code: String(req.code ?? existing?.code ?? ''),
+      name: String(req.name ?? existing?.name ?? ''),
+      price: Number(req.price ?? existing?.price ?? 0),
+      isActivated: Boolean(req.isActivated ?? existing?.isActivated ?? true),
+      note: String(req.note ?? existing?.note ?? ''),
+    })
+  );
 
-  async paging(req: any) { return this.#api.paging(req); }
-  async search(keyword: string, filters?: any) { return this.#api.search(keyword, filters); }
-  async all() { return this.#api.all(); }
-  async detail(id: string) { return this.#api.detail(id); }
-  async create(req: ProductSaveReq) { return this.#api.create(req); }
-  async update(id: string, req: ProductSaveReq) { return this.#api.update(id, req); }
-  async remove(ids: string | string[]) { return this.#api.remove(ids); }
+  paging = this.#store.paging;
+  search = this.#store.search;
+  all = this.#store.all;
+  detail = this.#store.detail;
+  create = this.#store.create;
+  update = this.#store.update;
+  remove = this.#store.remove;
 }
 ```
 
@@ -207,6 +221,10 @@ export const productRoutes: Routes = [
 - Generate form validation rules
 - Handle CREATE/UPDATE/DETAIL state transitions
 - Render appropriate form fields (SdInput, SdSelect, SdDate, etc.) based on field type
+- Add fallback for stale IDs in DETAIL/UPDATE routes:
+  - Catch `detail(id)` errors (`Entity not found`)
+  - Notify user with warning
+  - Navigate back to list route (`../../`) with replace-tab state
 
 **Output (pages/detail/detail.component.ts):**
 - Full CRUD form
@@ -223,7 +241,8 @@ export const productRoutes: Routes = [
 src/libs/{{ module }}/modules/{{ entityKebab }}/
   ├── services/
   │   ├── {{ entityKebab }}.model.ts       (DTO, SaveReq, constants)
-  │   ├── {{ entityKebab }}.service.ts     (extends BaseService)
+  │   ├── {{ entityKebab }}.mock-data.ts   (~100 centralized seed rows)
+  │   ├── {{ entityKebab }}.service.ts     (mock-first CRUD via MockCrudStore)
   │   └── index.ts                         (exports)
   ├── pages/
   │   ├── list/
@@ -287,9 +306,13 @@ product/
 │   │   - ProductDTO type
 │   │   - PRODUCT_ROLES constant (if applicable)
 │   │
+│   ├── product.mock-data.ts
+│   │   - PRODUCT_SEED_DATA with ~100 rows
+│   │   - centralized seed source for mock CRUD
+│   │
 │   ├── product.service.ts
-│   │   - class ProductService extends BaseService
-│   │   - #api register with DTO, SaveReq
+│   │   - class ProductService (mock-first)
+│   │   - #store = MockCrudStore with DTO, SaveReq
 │   │   - paging, search, all, detail, create, update, remove methods
 │   │
 │   └── index.ts
@@ -324,9 +347,12 @@ Before returning generated code:
 ✅ All imports are correct (no circular dependencies)  
 ✅ All fields from EntitySchema are included  
 ✅ Form validation matches field requirements  
-✅ Service methods match API endpoints  
+✅ `{{ entityKebab }}.mock-data.ts` exists with centralized seed rows (~100)  
+✅ Service methods are wired to mock store by default  
+✅ Mock store reseeds if persisted dataset is empty or corrupted  
 ✅ Component decorators (@SdTabComponent) are present  
 ✅ State management (CREATE/UPDATE/DETAIL) works correctly  
+✅ DETAIL route handles stale entity IDs by recovering to list instead of rendering blank fields  
 ✅ Routes are lazy-loaded  
 ✅ Column visibility matches schema  
 ✅ Error handling is comprehensive  
@@ -351,12 +377,13 @@ Before returning generated code:
 4. ✅ Fields confirmed with types/validation
 5. ✅ Generate EntitySchema (EMPLOYEE_SCHEMA)
 6. ✅ Generate model (employee.model.ts)
-7. ✅ Generate service (employee.service.ts)
-8. ✅ Generate routes (employee.routes.ts)
-9. ✅ Generate list component
-10. ✅ Generate detail component
-11. ✅ Verify all 5 files compile without errors
-12. ✅ Return complete code package ready to add to module
+7. ✅ Generate mock data file (employee.mock-data.ts)
+8. ✅ Generate service (employee.service.ts)
+9. ✅ Generate routes (employee.routes.ts)
+10. ✅ Generate list component
+11. ✅ Generate detail component
+12. ✅ Verify all files compile without errors
+13. ✅ Return complete code package ready to add to module
 
 **Result:**
 ```
