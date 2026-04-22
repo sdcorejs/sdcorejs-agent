@@ -69,12 +69,13 @@ portal-new/
 │   │   └── configurations/        # Auth, Layout, Permission, Sample
 │   └── libs/
 │       └── sample/
-│           ├── routes.ts          # Employee + Product routes
+│           ├── routes.ts          # Employee + Product + Department routes
 │           ├── configurations/    # API interceptor, upload config
 │           ├── services/base/     # BaseService with CRUD
 │           └── modules/
-│               ├── employee/      # List + Detail pages
-│               └── product/       # List + Detail pages
+│               ├── employee/      # UnifiedCompact: full-page detail (same layout CREATE/UPDATE/DETAIL)
+│               ├── product/       # Side-drawer: CRUD embedded in list, no sub-routes
+│               └── department/    # AdaptiveSplitDetail: DETAIL = read-only sections, CREATE/UPDATE = editable form
 ├── .prettierrc.json               # Code formatting
 ├── .vscode/                       # IDE settings
 └── plopfile.js                    # Optional generators
@@ -156,12 +157,13 @@ export const appRoutes: Routes = [
 
 ### Sample Module (src/libs/sample/)
 
-**Routes:**
-- `/sample/employee` → List page
-- `/sample/employee/create` → Create form
-- `/sample/employee/detail/:id` → Detail view
-- `/sample/employee/update/:id` → Edit form
-- `/sample/product/*` → Same pattern
+**3 Demo Entities — each demonstrates a distinct detail UI pattern:**
+
+| Entity | Detail Pattern | Routes |
+|---|---|---|
+| `employee` | **UnifiedCompact** — same full-page layout for CREATE / UPDATE / DETAIL | `/sample/employee`, `/sample/employee/create`, `/sample/employee/detail/:id`, `/sample/employee/update/:id` |
+| `product` | **Side-drawer** — all CRUD in embedded `SdSideDrawer`, no sub-routes | `/sample/product` only |
+| `department` | **AdaptiveSplitDetail** — DETAIL shows read-only `sd-section-item`, CREATE/UPDATE shows editable form | `/sample/department`, `/sample/department/create`, `/sample/department/detail/:id`, `/sample/department/update/:id` |
 
 **Service Layer:**
 ```typescript
@@ -171,7 +173,7 @@ BaseService.register<EmployeeDTO, EmployeeSaveReq>('employee')
 
 // Entity service
 EmployeeService extends BaseService
-  → async paging(req)
+  → paging = this.#api.paging
   → async create(req)
   → async update(id, req)
   → async remove(ids)
@@ -199,17 +201,17 @@ EmployeeService extends BaseService
 **Result:** (After copying baseline + npm install + npm start)
 
 ```bash
-✓ Portal created: C:\path\to\hr-portal\
-✓ npm install: 1038 packages added
+✓ Portal created
+✓ npm install: packages installed
 ✓ npm run build-dev: Build complete (0 errors)
-✓ npm start: Server running at http://localhost:54439/
+✓ npm start: Server running at http://localhost:4200/
 
 Portal features:
-✓ Employee list with pagination, filter, delete
-✓ Employee create/update/detail forms
-✓ Product list with same CRUD
+✓ Employee list + full-page detail (UnifiedCompact: same layout for CREATE/UPDATE/DETAIL)
+✓ Product list + side-drawer CRUD (all states in embedded SdSideDrawer, no sub-routes)
+✓ Department list + full-page detail (AdaptiveSplitDetail: DETAIL read-only sections vs editable form)
 ✓ Keycloak authentication (if configured)
-✓ Permission-based UI (@sdPermission directive)
+✓ Permission-based UI (*sdPermission directive)
 ✓ Hot reload on file changes
 ```
 
@@ -290,14 +292,18 @@ Before using starter:
 
 - [x] Baseline template location correct: `core/templates/angular-portal-starter/`
 - [x] package.json uses npm version of @sd-angular/core: `"19.0.0-beta.72"`
-- [x] tsconfig.json has: `"baseUrl": "./"` + `"@sample": ["./src/libs/sample"]`
+- [x] tsconfig.json has: `"baseUrl": "./"` + `"@sample": ["./src/libs/sample"]` + `"@sample/*": ["./src/libs/sample/*"]`
 - [x] app.routes.ts lazy-loads sample module
 - [x] SAMPLE_CONFIGURATION provided at route level
-- [x] Employee + Product modules exist with list/detail pages
+- [x] 3 demo entities exist in `src/libs/sample/modules/`:
+  - `employee/` — UnifiedCompact full-page detail (same layout for CREATE/UPDATE/DETAIL)
+  - `product/` — Side-drawer CRUD embedded in list page (no sub-routes for detail)
+  - `department/` — AdaptiveSplitDetail (DETAIL shows read-only sd-section-item, CREATE/UPDATE shows editable form)
+- [x] All entity routes have `data.permission` and `data.permissionKey` defined
 - [x] BaseService implemented with CRUD register pattern
-- [x] npm install succeeds (1038 packages)
+- [x] npm install succeeds
 - [x] npm run build-dev: exit code 0
-- [x] npm start: http://localhost:54439/ loads
+- [x] npm start: http://localhost:4200/ loads
 - [x] Employee list page renders
 - [x] Create/Update/Detail flows work
 - [x] Prettier formats code on save

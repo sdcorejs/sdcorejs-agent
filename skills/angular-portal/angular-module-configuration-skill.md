@@ -10,6 +10,24 @@ In a brand-new portal repo, this skill is the first generation step whenever the
 
 Default mode is standalone-first, but this skill can generate hybrid-compatible structure when the target application still uses NgModule with standalone components.
 
+### Required vs Optional
+
+| File | Required | Notes |
+|---|---|---|
+| `[module].configuration.ts` | ✅ Always | Token + interface |
+| `configurations/api.configuration.ts` | ✅ Always | Request/error interceptors |
+| `guards/[module].guard.ts` | ✅ Always | Route protection |
+| `routes.ts` | ✅ Always | Lazy-load entity children |
+| `configurations/permission.configuration.ts` | ⚙️ Optional | Only when module has its own permission domain |
+| `configurations/upload-file.configuration.ts` | ⚙️ Optional | Only when module entities use file upload |
+
+When generating a new module, ask the developer:
+```
+1. Does this module have its own permission domain? (add permission.configuration.ts)
+2. Do any entities in this module use file upload? (add upload-file.configuration.ts)
+If unsure, skip both and generate minimal module first.
+```
+
 ## 3. Rules
 
 ### MUST DO ✅
@@ -17,8 +35,8 @@ Default mode is standalone-first, but this skill can generate hybrid-compatible 
 - Create `routes.ts` at module root level
 - Provide `SD_API_CONFIG` at route level
 - Do not modify global CSS/SCSS while creating module structure/configuration
-- Keep `SD_PERMISSION_CONFIGURATION` at app root injector (`main.ts`) so root-scoped `SdPermissionService` receives full configuration set immediately
-- Keep `SD_UPLOAD_FILE_CONFIGURATION` at app root injector (`main.ts`) so root-scoped upload consumers can resolve all keyed configurations
+- If `SD_PERMISSION_CONFIGURATION` is opted in: keep it at app root injector (`main.ts`) so root-scoped `SdPermissionService` receives full configuration set immediately
+- If `SD_UPLOAD_FILE_CONFIGURATION` is opted in: keep it at app root injector (`main.ts`) so root-scoped upload consumers can resolve all keyed configurations
 - Define unique `key` for each permission configuration when multiple permission domains exist
 - Define unique `key` for each upload-file configuration when multiple module domains exist
 - Ensure module routes set `data.permissionKey` to match the configuration `key`
@@ -42,6 +60,7 @@ Default mode is standalone-first, but this skill can generate hybrid-compatible 
 - Skip error handling in interceptors
 - Use global interceptors (module-scoped only)
 - Assume route-level providers are visible to root-scoped services
+- Generate `permission.configuration.ts` or `upload-file.configuration.ts` without confirmation that the module needs them
 - Do not provide `SD_PERMISSION_CONFIGURATION` at module route level when using root-scoped `SdPermissionService`
 - Do not provide `SD_UPLOAD_FILE_CONFIGURATION` at module route level when using root-scoped upload configuration resolution
 - Do not mark module-local permission providers as `multi: true` and expect root `SdPermissionService` to auto-merge them

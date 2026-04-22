@@ -14,8 +14,12 @@ export const sampleRoutes: Routes = [
     ],
     children: [
       { path: '', redirectTo: 'employee', pathMatch: 'full' },
+      // UnifiedCompact detail page: same layout for CREATE / UPDATE / DETAIL
       { path: 'employee', loadChildren: () => import('@sample/modules/employee').then(m => m.employeeRoutes) },
+      // Side-drawer: all CRUD handled inline in list page, no sub-routes
       { path: 'product', loadChildren: () => import('@sample/modules/product').then(m => m.productRoutes) },
+      // AdaptiveSplitDetail: DETAIL uses read-only sections, CREATE/UPDATE uses editable form
+      { path: 'department', loadChildren: () => import('@sample/modules/department').then(m => m.departmentRoutes) },
     ],
   },
 ];

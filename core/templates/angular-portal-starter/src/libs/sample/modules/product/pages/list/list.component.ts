@@ -1,53 +1,139 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { SdButton, SdTabComponent, SdTabelCellDefDirective, SdTable, SdTableOption } from '@sd-angular/core/components';
-import { SdSwitch } from '@sd-angular/core/forms';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, viewChild } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { SdButton, SdSection, SdTabComponent, SdTabelCellDefDirective, SdTable, SdTableOption } from '@sd-angular/core/components';
+import { SdSideDrawer } from '@sd-angular/core/components/side-drawer';
+import { SdInput, SdInputNumber, SdSelect, SdSwitch, SdTextarea } from '@sd-angular/core/forms';
 import { SdPageComponent, SdPermissionDirective } from '@sd-angular/core/modules';
 import { SdConfirmService, SdLoadingService, SdNotifyService } from '@sd-angular/core/services';
-import { ProductDTO } from '../../services/product.model';
+
+import { ProductDTO, ProductSaveReq } from '../../services/product.model';
 import { ProductService } from '../../services/product.service';
 
+/**
+ * Side-drawer pattern:
+ *   All CRUD (Create / Update / Detail) is handled inside a SdSideDrawer
+ *   embedded in the list page. No sub-routes are needed.
+ */
 @Component({
   selector: 'product-list',
-  imports: [SdButton, SdTable, SdTabelCellDefDirective, SdPermissionDirective, SdSwitch, SdPageComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    SdButton,
+    SdSection,
+    SdSideDrawer,
+    SdTable,
+    SdTabelCellDefDirective,
+    SdPermissionDirective,
+    SdInput,
+    SdInputNumber,
+    SdSelect,
+    SdSwitch,
+    SdTextarea,
+    SdPageComponent,
+  ],
   template: `
-    <sd-page title="sản phẩm">
-      <div class="d-flex align-items-center" headerRight>
+    <sd-page title="Sản phẩm">
+      <div class="d-flex align-items-center" role="toolbar" headerRight>
         <sd-button
-          *sdPermission="'SAMPLE_PRODUCT_CREATE'"
+          *sdPermission="'SAMPLE_C_PRODUCT_CREATE'; sdPermissionKey: 'sample'"
           title="Tạo mới"
           type="fill"
           prefixIcon="add"
-          size="sm"
           color="primary"
-          (click)="onCreate()"></sd-button>
+          (click)="onOpenCreate()">
+        </sd-button>
       </div>
+
       <div class="h-full p-8">
         @if (tableOption) {
           <sd-table [option]="tableOption" #table autoId="sample_product">
             <ng-template sdTableCellDef="isActivated" let-item="item">
-              <sd-switch class="d-block text-center" [(model)]="item.isActivated" (sdChange)="onChangeIsActivated(item)"></sd-switch>
+              <sd-switch
+                class="d-block text-center"
+                [(model)]="item.isActivated"
+                (sdChange)="onChangeIsActivated(item)">
+              </sd-switch>
             </ng-template>
           </sd-table>
         }
       </div>
     </sd-page>
+
+    <!-- Side-drawer: handles CREATE / UPDATE / DETAIL inline, no sub-routes needed -->
+    <sd-side-drawer #drawer [title]="drawerTitle" width="480px">
+      <div class="p-16">
+        <sd-section title="Thông tin chung" noPaddingBody>
+          <div class="row row-sm mx-0 pt-8">
+            <div class="col-12">
+              <sd-input label="Mã" [(model)]="drawerEntity.code" [form]="drawerForm" required maxlength="32"
+                [viewed]="drawerState === 'DETAIL'"></sd-input>
+            </div>
+            <div class="col-12">
+              <sd-input label="Tên" [(model)]="drawerEntity.name" [form]="drawerForm" required
+                [viewed]="drawerState === 'DETAIL'"></sd-input>
+            </div>
+            <div class="col-12">
+              <sd-input-number label="Giá" [(model)]="drawerEntity.price" [form]="drawerForm"
+                [viewed]="drawerState === 'DETAIL'"></sd-input-number>
+            </div>
+            <div class="col-12">
+              <sd-select label="Trạng thái" [(model)]="drawerEntity.isActivated" [form]="drawerForm"
+                [items]="statusOptions" valueField="value" displayField="display"
+                [viewed]="drawerState === 'DETAIL'"></sd-select>
+            </div>
+            <div class="col-12">
+              <sd-textarea label="Ghi chú" [(model)]="drawerEntity.note" [form]="drawerForm"
+                [viewed]="drawerState === 'DETAIL'"></sd-textarea>
+            </div>
+          </div>
+        </sd-section>
+
+        <div class="d-flex justify-content-end gap-8 mt-16">
+          @if (drawerState === 'DETAIL') {
+            <sd-button
+              *sdPermission="'SAMPLE_C_PRODUCT_UPDATE'; sdPermissionKey: 'sample'"
+              title="Cập nhật" type="fill" prefixIcon="edit" color="primary"
+              (click)="onDrawerEdit()">
+            </sd-button>
+          } @else {
+            <sd-button title="Hủy" (click)="drawer.close()"></sd-button>
+            <sd-button title="Lưu" type="fill" prefixIcon="save" color="primary"
+              [loading]="drawerSaving" (click)="onDrawerSave()">
+            </sd-button>
+          }
+        </div>
+      </div>
+    </sd-side-drawer>
   `,
 })
 @SdTabComponent({
   component: ListComponent,
-  name: 'sản phẩm',
+  name: 'Sản phẩm',
   color: 'primary',
 })
 export class ListComponent implements OnInit {
   @ViewChild(SdTable) table!: SdTable<ProductDTO>;
 
+  readonly #drawer = viewChild.required<SdSideDrawer>('drawer');
   readonly #router = inject(Router);
-  readonly #route = inject(ActivatedRoute);
   readonly #notifyService = inject(SdNotifyService);
   readonly #confirmService = inject(SdConfirmService);
   readonly #loadingService = inject(SdLoadingService);
   readonly #productService = inject(ProductService);
+
+  // Drawer state
+  drawerForm = new FormGroup({});
+  drawerSaving = false;
+  drawerEntity: Partial<ProductSaveReq & { id?: string }> = {};
+  drawerState: 'CREATE' | 'UPDATE' | 'DETAIL' = 'CREATE';
+  drawerTitle = 'Tạo mới sản phẩm';
+
+  statusOptions = [
+    { value: true, display: 'Hoạt động' },
+    { value: false, display: 'Ngừng hoạt động' },
+  ];
 
   tableOption!: SdTableOption<ProductDTO>;
 
@@ -74,7 +160,13 @@ export class ListComponent implements OnInit {
         ],
       },
       columns: [
-        { title: 'Mã', field: 'code', type: 'string', width: '150px', click: (value, row) => this.#onDetail(row.id) },
+        {
+          title: 'Mã',
+          field: 'code',
+          type: 'string',
+          width: '150px',
+          click: (_value, row) => this.#onOpenDetail(row),
+        },
         { title: 'Tên', field: 'name', type: 'string', minWidth: '250px' },
         { title: 'Giá', field: 'price', type: 'number', width: '150px' },
         {
@@ -82,20 +174,56 @@ export class ListComponent implements OnInit {
           field: 'isActivated',
           type: 'boolean',
           option: { displayOnTrue: 'Hoạt động', displayOnFalse: 'Khóa' },
-          width: '150px',
+          width: '130px',
         },
-        { title: 'Ghi chú', field: 'note', type: 'string', width: '300px' },
+        { title: 'Ghi chú', field: 'note', type: 'string', minWidth: '200px' },
         { title: 'Ngày tạo', field: 'createdAt', type: 'datetime', width: '180px' },
+        { title: 'Người tạo', field: 'createdBy', type: 'string', minWidth: '150px' },
+        { title: 'Ngày cập nhật', field: 'updatedAt', type: 'datetime', width: '180px' },
+        { title: 'Người cập nhật', field: 'updatedBy', type: 'string', minWidth: '150px' },
       ],
     };
   }
 
-  onCreate = () => {
-    this.#router.navigate(['create'], { relativeTo: this.#route });
+  onOpenCreate = () => {
+    this.drawerState = 'CREATE';
+    this.drawerTitle = 'Tạo mới sản phẩm';
+    this.drawerEntity = {};
+    this.drawerForm.reset();
+    this.#drawer().open();
   };
 
-  #onDetail = (id: string) => {
-    this.#router.navigate(['detail', id], { relativeTo: this.#route });
+  #onOpenDetail = (row: ProductDTO) => {
+    this.drawerState = 'DETAIL';
+    this.drawerTitle = 'Chi tiết sản phẩm';
+    this.drawerEntity = { ...row };
+    this.#drawer().open();
+  };
+
+  onDrawerEdit = () => {
+    this.drawerState = 'UPDATE';
+    this.drawerTitle = 'Cập nhật sản phẩm';
+  };
+
+  onDrawerSave = async () => {
+    if (this.drawerForm.invalid) {
+      this.drawerForm.markAllAsTouched();
+      return;
+    }
+    this.drawerSaving = true;
+    try {
+      if (this.drawerEntity['id']) {
+        await this.#productService.update(this.drawerEntity['id'], this.drawerEntity);
+        this.#notifyService.success('Cập nhật sản phẩm thành công');
+      } else {
+        await this.#productService.create(this.drawerEntity);
+        this.#notifyService.success('Tạo mới sản phẩm thành công');
+      }
+      this.#drawer().close();
+      this.table.reload();
+    } finally {
+      this.drawerSaving = false;
+    }
   };
 
   #onRemove = (ids: string[]) => {
@@ -106,7 +234,6 @@ export class ListComponent implements OnInit {
         this.#notifyService.success('Xóa sản phẩm thành công');
         this.table.reload();
       })
-      .catch(console.error)
       .finally(() => this.#loadingService.stop());
   };
 
