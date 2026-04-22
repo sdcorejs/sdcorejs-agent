@@ -7,6 +7,22 @@ Start building Angular portal modules with @sd-angular/core.
 - [Copilot Instructions](.github/copilot-instructions.md) - Agent guidelines and patterns
 - [Agents](agents/README.md) - Module orchestrators (to be implemented)
 
+## CLI Quick Commands
+
+This repository now exposes a CLI command alias: `sd-agent`.
+
+- Local run from this repo:
+	- `npx --yes --package file:. sd-agent skills list`
+	- `npx --yes --package file:. sd-agent skills path`
+- Build package preview:
+	- `npm run build`
+- Publish to npm (public):
+	- `npm run publish:npm`
+
+After publishing `@sdcorejs/agent`, users can run:
+- `npx @sdcorejs/agent skills list`
+- `npx @sdcorejs/agent skills path`
+
 ## Teammate Chat Onboarding (Quick)
 ## Onboarding Đồng Nghiệp (Nhanh)
 
@@ -39,6 +55,16 @@ Meaning of fallback prompts / Nghĩa của fallback prompts:
 
 Reference guide:
 - agents/sdcorejs/README.md
+
+## Repository Maintenance Rule
+
+Any task that edits files inside `sdcorejs-agent` must also write or update the current-day handoff in `agents/sdcorejs/HANDOFF-YYYY-MM-DD.md` before the task is considered complete.
+
+Minimum handoff content:
+- session focus
+- changed files or affected areas
+- verification status or remaining blockers
+
 ```
 sdcorejs-agent/
 ├── .github/

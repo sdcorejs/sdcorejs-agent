@@ -58,6 +58,7 @@ Skills for building enterprise Angular applications with SDCore components.
 3. **Base on existing code** - Extract patterns from real implementations
 4. **Test thoroughly** - Ensure all examples work
 5. **Document in category README** - Add reference to category index
+6. **Write handoff if this repository was edited** - Update `agents/sdcorejs/HANDOFF-YYYY-MM-DD.md` with scope and verification before ending the task
 
 ### Skill File Template
 
@@ -112,6 +113,7 @@ Skills are orchestrated by agents in the `../agents/` folder.
 ✅ Comprehensive examples  
 ✅ Implementation checklist  
 ✅ Based on existing code patterns  
+✅ Current-day handoff updated whenever `sdcorejs-agent` itself is modified  
 
 ---
 

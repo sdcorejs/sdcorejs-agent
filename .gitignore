@@ -1,0 +1,18 @@
+# Node artifacts
+node_modules/
+
+# npm package artifacts
+*.tgz
+
+# Keep CLI source file, ignore generated files in bin/
+bin/*
+!bin/
+!bin/sdcorejs-agent.mjs
+
+# Common generated outputs in bin/
+bin/**/*.js
+bin/**/*.cjs
+bin/**/*.map
+bin/**/*.d.ts
+bin/**/*.d.ts.map
+bin/**/*.tsbuildinfo

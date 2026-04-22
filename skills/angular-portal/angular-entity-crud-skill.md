@@ -18,7 +18,9 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Confirm target module before generating entity files
 - Generate the feature module first if it does not exist
 - Generate entity service with runnable mock CRUD by default (`localStorage`) when backend API contract is not provided yet
-- Generate `services/[entity].mock-data.ts` as the single centralized seed source for each entity (target: around 100 rows)
+- Generate `services/[entity].mock-data.ts` as the single centralized seed source for each entity (target: **20–40 rows**)
+- Generate mock data immediately after `SaveReq` and `DTO` are finalized (whether from user input or semantic inference); do not wait until after list/detail components are built
+- Seed rows must use domain-realistic values derived from the inferred field schema; never use generic placeholders like `"Name 1"`, `"Code 01"`, or repeated identical values across all rows
 - Ensure mock store reseeds automatically when stored JSON is missing, empty array, or corrupted JSON
 - If backend API contract is provided explicitly, service may switch to `BaseService`-based API integration
 - Parse and normalize input artifacts when available:
@@ -1977,7 +1979,7 @@ export class DetailComponent implements OnInit {
 ## Implementation Checklist
 
 - [ ] Create model file with SaveReq interface and DTO type
-- [ ] Create `services/[entity].mock-data.ts` with centralized seed data (~100 rows) for every generated entity
+- [ ] Create `services/[entity].mock-data.ts` with 20–40 domain-realistic seed rows immediately after SaveReq/DTO are finalized
 - [ ] Create service with mock-first CRUD (`localStorage`) by default; use BaseService/API mode only when backend contract is explicit
 - [ ] Create list component with @SdTabComponent decorator
 - [ ] Create detail component with 3-state machine

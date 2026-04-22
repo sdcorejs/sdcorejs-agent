@@ -283,10 +283,11 @@ To keep behavior consistent across model families, all portal skills must follow
 2. Same output envelope
   - Every generation response should include: `Resolved Context`, `Planned Skill Chain`, `Files To Create/Update`, `Post-Gen Double Check`.
 3. Same fallback defaults
-  - Vague fields -> generate minimal CRUD skeleton first.
+  - Vague fields -> infer a semantic first-pass schema first; do not fall back to a generic three-field CRUD unless the entity is truly lookup-simple.
   - No API contract -> use localStorage mock CRUD first.
-  - 5-6 common fields -> side-drawer preference.
+  - Compact one-section forms -> side-drawer preference.
   - many sections/long form -> page detail; consider `sd-anchor-v2`.
+  - Vietnamese portals -> generated labels/titles/messages must keep proper diacritics.
 4. Same safety boundaries
   - Never modify global CSS/SCSS unless developer explicitly asks.
   - Prefer Core UI components first; if custom UI is needed, warn explicitly.

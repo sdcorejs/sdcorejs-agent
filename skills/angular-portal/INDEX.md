@@ -17,7 +17,9 @@ Resolves incomplete requests before any UI generation starts.
 - Decide whether to reuse an existing module or create a new one
 - Ask the minimum required clarification questions
 - Choose generation order: module first, entity second, form refinement third
-- Choose detail UI mode: side-drawer for small common forms, page for complex workflows
+- Infer a semantic first-pass field contract when the user omits fields
+- Choose detail UI mode: side-drawer for compact one-section forms, page for complex workflows
+- Keep Vietnamese labels/messages fully accented for Vietnamese portals
 
 **When to use:**
 - User asks for CRUD screens but omits module name
@@ -29,7 +31,7 @@ Resolves incomplete requests before any UI generation starts.
 **Outputs:**
 - Clarified generation plan
 - Target module decision
-- Minimal field contract for list/detail screens
+- Semantic field contract for `SaveReq`, `DTO`, list/detail screens
 
 ---
 
@@ -75,6 +77,7 @@ Generates complete entity management with service, models, list and detail pages
 - Models (SaveReq + DTO)
 - List page with SdTable and pagination
 - Detail page in one of 3 patterns (chosen based on complexity and context):
+- Semantic schema inference when the request does not include explicit fields
 
 | Pattern | Use when | Starter example |
 |---|---|---|

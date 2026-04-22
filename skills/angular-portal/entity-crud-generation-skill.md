@@ -29,19 +29,42 @@ Before generating, clarify with user:
    - Examples: "Sản phẩm", "Nhân viên", "Đơn mua hàng"
    
 4. **Fields**: What fields should this entity have?
-   - Ask user to describe fields OR provide minimal schema
+  - Ask user to describe fields OR infer a semantic schema when fields are omitted
    - For each field: name, type (string/number/date/select/etc), required?, label
+  - When inferring, derive concrete domain fields from the entity meaning and current portal conventions
+  - For Vietnamese portals, all generated labels must use proper diacritics
    
 5. **UI Preferences**:
-   - Detail layout: full-page or side-drawer? (default: full-page)
+  - Detail layout: auto-select side-drawer or full-page from inferred complexity, unless user overrides
    - Has search? filter? delete? excel? (defaults: yes/yes/yes/no)
    - Permissions: use default naming pattern or custom? (default: {{ MODULE }}_{{ ENTITY }}_CREATE, etc.)
+
+### Semantic Inference Fallback
+
+If the user gives only the entity name or only a very vague description, do not stop at a generic skeleton. Build a first-pass `EntitySchema` from the entity semantics.
+
+Use this inference order:
+1. Entity noun meaning in Vietnamese/English
+2. Existing portal conventions already confirmed in this repository
+3. Common business fields for that entity class
+4. Safe defaults for status/audit/search fields
+
+Inference rules:
+- Always infer an identity pair: `code` + `name` or `title`
+- Add one or more classification fields when the entity naturally belongs to a type/category/group
+- Add amount/date/status fields when the entity semantics imply pricing, lifecycle, scheduling, or accounting
+- Add note/description only when the entity likely needs free-text explanation
+- Add attachment/upload only when the entity likely carries documents/images/files
+- Separate writable fields (`SaveReq`) from read-only/detail fields (`DTO`) such as approval status, created info, updated info, or derived totals
+- Produce at least 3 meaningful list columns when the entity supports them
+- Keep the inferred schema small enough to stay maintainable, but rich enough to render a believable business screen
+- If the inferred form fits one compact business section, use `side-drawer`; otherwise use full page
 
 ## Generation Process
 
 ### Step 1: Build EntitySchema
 
-From user input, construct EntitySchema object with all field metadata.
+From user input or semantic inference, construct `EntitySchema` with all field metadata.
 
 **Example user input:**
 ```
@@ -84,6 +107,40 @@ const PRODUCT_SCHEMA: EntitySchema = {
 };
 ```
 
+**Example when user omits fields:**
+```text
+Request: "Thêm entity khuyến mãi cho module sales"
+```
+
+**Inferred first-pass schema:**
+```typescript
+const PROMOTION_SCHEMA: EntitySchema = {
+  module: 'sales',
+  entity: 'promotion',
+  entityPascal: 'Promotion',
+  entityLabel: 'Khuyến mãi',
+  entityLabelPlural: 'Khuyến mãi',
+  apiEndpoint: 'promotion',
+
+  fields: [
+    { name: 'code', type: 'string', label: 'Mã khuyến mãi', required: true, maxLength: 32, visibleInList: true },
+    { name: 'name', type: 'string', label: 'Tên khuyến mãi', required: true, maxLength: 255, visibleInList: true },
+    { name: 'type', type: 'select', label: 'Loại khuyến mãi', required: true, visibleInList: true },
+    { name: 'discountValue', type: 'decimal', label: 'Giá trị giảm', required: true, min: 0, visibleInList: true },
+    { name: 'startDate', type: 'date', label: 'Ngày bắt đầu', required: true, visibleInList: true },
+    { name: 'endDate', type: 'date', label: 'Ngày kết thúc', required: true, visibleInList: true },
+    { name: 'status', type: 'select', label: 'Trạng thái', required: true, visibleInList: true },
+    { name: 'description', type: 'textarea', label: 'Mô tả' }
+  ],
+
+  detailLayout: 'full-page',
+  listPageSize: 10,
+  permissionCreate: 'SALES_PROMOTION_CREATE',
+  permissionUpdate: 'SALES_PROMOTION_UPDATE',
+  permissionDelete: 'SALES_PROMOTION_DELETE'
+};
+```
+
 ### Step 2: Generate Model (product.model.ts)
 
 From EntitySchema, generate:
@@ -91,6 +148,8 @@ From EntitySchema, generate:
 - `{{ entityPascal }}DTO` type (SaveReq + BaseEntity)
 - `{{ entityPascal }}_ROLES` constant (if any select options with static values)
 - Validation config (if needed)
+- Ensure `SaveReq` contains only writable business fields inferred for create/update
+- Ensure `DTO` also carries read-only display/meta fields when the domain suggests status/audit/derived values
 
 **Template Usage:**
 - Take field definitions
@@ -98,6 +157,7 @@ From EntitySchema, generate:
   - Add JSDoc comment explaining UI control (sd-input, sd-date, sd-select, etc.)
   - Mark as optional (?) if not required
   - Include validation hints in comments (maxlength, min/max)
+- Prefer concrete domain names over generic placeholders; for Vietnamese portals, labels/comments must preserve diacritics
 
 **Output (product.model.ts):**
 ```typescript
@@ -125,8 +185,17 @@ export type ProductDTO = Required<ProductSaveReq> & BaseEntity;
 
 Pattern: create one centralized mock data file per entity, then wire service to localStorage-backed mock CRUD store.
 
+**This step is mandatory after semantic schema inference.** Once `SaveReq` and `DTO` are determined (from user input or semantic inference), always generate the mock data file immediately so the list page renders with real-looking data on first load.
+
 **Template Usage:**
-- Create `{{ entityKebab }}.mock-data.ts` with around 100 seed rows
+- Create `{{ entityKebab }}.mock-data.ts` with **20–40 seed rows**
+- Rows must use domain-realistic values derived from the inferred field schema, not generic placeholders like `"Name 1"`, `"Code 01"`
+  - string/code fields: use realistic short codes or abbreviations matching the domain (e.g. `"SP001"`, `"KM-2024-01"`)
+  - name/title fields: use plausible business names matching the entity type (e.g. `"Áo thun basic"`, `"Khuyến mãi hè 2025"`)
+  - select/enum fields: distribute values across the enum options (not all the same value)
+  - date fields: spread across a realistic recent range (last 6–12 months)
+  - number/decimal fields: use plausible numeric ranges (price, stock, discount amount, etc.)
+  - boolean/status: mix true/false or active/inactive realistically
 - Import `MockCrudStore` + seed data in service
 - Expose all CRUD methods (`paging/search/all/detail/create/update/remove`) from store
 - Only switch to `BaseService` API integration after backend contract is explicit
@@ -163,6 +232,46 @@ export class ProductService {
   remove = this.#store.remove;
 }
 ```
+
+**Output example (promotion.mock-data.ts — inferred schema, domain-realistic):**
+```typescript
+import { v4 as uuidv4 } from 'uuid';
+import { PromotionDTO } from './promotion.model';
+
+export const PROMOTION_SEED_DATA: PromotionDTO[] = [
+  {
+    id: uuidv4(), code: 'KM-2024-01', name: 'Khuyến mãi hè 2024',
+    type: 'PERCENT', discountValue: 15,
+    startDate: '2024-06-01', endDate: '2024-08-31',
+    status: 'INACTIVE', description: 'Giảm 15% toàn bộ sản phẩm mùa hè',
+    isActivated: false, createdAt: '2024-05-20T08:00:00Z', updatedAt: '2024-05-20T08:00:00Z',
+  },
+  {
+    id: uuidv4(), code: 'KM-2024-02', name: 'Ưu đãi cuối năm 2024',
+    type: 'FIXED', discountValue: 50000,
+    startDate: '2024-12-01', endDate: '2024-12-31',
+    status: 'INACTIVE', description: 'Giảm 50.000đ cho đơn từ 500.000đ',
+    isActivated: false, createdAt: '2024-11-10T09:00:00Z', updatedAt: '2024-11-10T09:00:00Z',
+  },
+  {
+    id: uuidv4(), code: 'KM-2025-01', name: 'Flash sale 1/1/2025',
+    type: 'PERCENT', discountValue: 20,
+    startDate: '2025-01-01', endDate: '2025-01-01',
+    status: 'INACTIVE', description: 'Flash sale mừng năm mới',
+    isActivated: false, createdAt: '2024-12-20T10:00:00Z', updatedAt: '2024-12-20T10:00:00Z',
+  },
+  // ... tiếp tục đến 20–40 dòng, phân bổ đều các loại type/status
+];
+```
+
+**Mock data generation rules:**
+- Produce 20–40 rows total
+- Distribute select/enum fields across all available values (do not use one value for all rows)
+- Use a plausible date range spread across the past 12 months
+- Use realistic numeric ranges that match the domain (percentage 1–50%, fixed amount 10k–500k, stock 0–1000, etc.)
+- Use Vietnamese business names when the portal language is Vietnamese
+- Assign `id: uuidv4()` to every row so MockCrudStore can address each record
+- Spread `isActivated` roughly 70% true / 30% false unless domain logic says otherwise
 
 ### Step 4: Generate Routes (product.routes.ts)
 
@@ -201,6 +310,8 @@ export const productRoutes: Routes = [
 - Use list-component-template.md
 - Substitute placeholders: {{ module }}, {{ entity }}, {{ entityPascal }}, {{ entityLabel }}, etc.
 - Generate columns array from visibleInList fields
+- Ensure the chosen columns form a useful business summary instead of a generic placeholder table
+- Keep Vietnamese column labels and action text fully accented when the portal language is Vietnamese
 - Generate action buttons (edit, detail, delete)
 - Generate toggle isActivated if field exists
 
@@ -221,6 +332,8 @@ export const productRoutes: Routes = [
 - Generate form validation rules
 - Handle CREATE/UPDATE/DETAIL state transitions
 - Render appropriate form fields (SdInput, SdSelect, SdDate, etc.) based on field type
+- Group inferred fields into sensible business sections when the domain requires more than one section
+- Choose side-drawer only when the inferred form is compact enough to remain readable without heavy scrolling
 - Add fallback for stale IDs in DETAIL/UPDATE routes:
   - Catch `detail(id)` errors (`Entity not found`)
   - Notify user with warning
@@ -241,7 +354,7 @@ export const productRoutes: Routes = [
 src/libs/{{ module }}/modules/{{ entityKebab }}/
   ├── services/
   │   ├── {{ entityKebab }}.model.ts       (DTO, SaveReq, constants)
-  │   ├── {{ entityKebab }}.mock-data.ts   (~100 centralized seed rows)
+  │   ├── {{ entityKebab }}.mock-data.ts   (20–40 domain-realistic seed rows)
   │   ├── {{ entityKebab }}.service.ts     (mock-first CRUD via MockCrudStore)
   │   └── index.ts                         (exports)
   ├── pages/
@@ -307,7 +420,7 @@ product/
 │   │   - PRODUCT_ROLES constant (if applicable)
 │   │
 │   ├── product.mock-data.ts
-│   │   - PRODUCT_SEED_DATA with ~100 rows
+│   │   - PRODUCT_SEED_DATA with 20–40 domain-realistic rows
 │   │   - centralized seed source for mock CRUD
 │   │
 │   ├── product.service.ts
@@ -347,7 +460,8 @@ Before returning generated code:
 ✅ All imports are correct (no circular dependencies)  
 ✅ All fields from EntitySchema are included  
 ✅ Form validation matches field requirements  
-✅ `{{ entityKebab }}.mock-data.ts` exists with centralized seed rows (~100)  
+✅ `{{ entityKebab }}.mock-data.ts` exists with 20–40 domain-realistic seed rows  
+✅ Seed rows use realistic domain values derived from inferred field schema, not generic placeholders  
 ✅ Service methods are wired to mock store by default  
 ✅ Mock store reseeds if persisted dataset is empty or corrupted  
 ✅ Component decorators (@SdTabComponent) are present  

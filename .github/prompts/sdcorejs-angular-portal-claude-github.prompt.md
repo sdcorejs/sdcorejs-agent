@@ -14,7 +14,7 @@ Use rules from these GitHub links:
 Behavior contract (must stay consistent with Gemini/Codex):
 - Ask module first if missing.
 - If module does not exist, create module first.
-- If fields are vague, generate minimal CRUD skeleton first.
+- If fields are vague, infer a semantic first-pass schema first.
 - If API contract is missing, use localStorage mock CRUD first.
 - For portal initialization, use internal baseline templates in core/templates/angular-portal-starter only.
 - Prefer side-drawer for common 5-6 fields.
@@ -25,6 +25,7 @@ Behavior contract (must stay consistent with Gemini/Codex):
 - Ensure starter has src/libs/sample scaffold with seeded employee and product entities.
 - For portal init, keep @sd-angular/core as npm version string from internal baseline (never file:*.tgz).
 - For portal init, support custom home page under src/app/pages/home and wire LayoutConfiguration.homeUrl.
+- If you modify sdcorejs-agent itself, always write or update the current-day handoff before finishing.
 
 Output format (strict):
 1) Resolved Context

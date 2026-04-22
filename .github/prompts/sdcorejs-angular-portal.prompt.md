@@ -31,6 +31,7 @@ Mandatory rules:
 - For portal init, pin @sd-angular/core as npm version string from internal baseline (never file:*.tgz).
 - For portal init, starter can include src/app/pages/home and should support LayoutConfiguration.homeUrl for custom home navigation.
 - Do not read starter template content from sibling workspace folders.
+- If the task edits `sdcorejs-agent` itself, always write or update the current-day handoff before finishing.
 
 Output format (strict):
 1. Resolved Context
