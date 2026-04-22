@@ -8,7 +8,7 @@ import { SdInput, SdInputNumber, SdSelect, SdSwitch, SdTextarea } from '@sd-angu
 import { SdPageComponent, SdPermissionDirective } from '@sd-angular/core/modules';
 import { SdConfirmService, SdLoadingService, SdNotifyService } from '@sd-angular/core/services';
 
-import { ProductDTO, ProductSaveReq } from '../../services/product.model';
+import { ProductDTO } from '../../services/product.model';
 import { ProductService } from '../../services/product.service';
 
 /**
@@ -126,7 +126,7 @@ export class ListComponent implements OnInit {
   // Drawer state
   drawerForm = new FormGroup({});
   drawerSaving = false;
-  drawerEntity: Partial<ProductSaveReq & { id?: string }> = {};
+  drawerEntity: Partial<ProductDTO> = {};
   drawerState: 'CREATE' | 'UPDATE' | 'DETAIL' = 'CREATE';
   drawerTitle = 'Tạo mới sản phẩm';
 
@@ -212,8 +212,8 @@ export class ListComponent implements OnInit {
     }
     this.drawerSaving = true;
     try {
-      if (this.drawerEntity['id']) {
-        await this.#productService.update(this.drawerEntity['id'], this.drawerEntity);
+      if (this.drawerEntity.id) {
+        await this.#productService.update(this.drawerEntity.id, this.drawerEntity);
         this.#notifyService.success('Cập nhật sản phẩm thành công');
       } else {
         await this.#productService.create(this.drawerEntity);
