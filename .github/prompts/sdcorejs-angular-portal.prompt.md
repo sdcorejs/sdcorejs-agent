@@ -29,8 +29,9 @@ Mandatory rules:
 - For portal initialization, use only internal starter baseline templates from core/templates/angular-portal-starter.
 - Ensure generated starter includes src/libs/sample scaffold with seeded employee and product entities.
 - For portal init, pin @sd-angular/core as npm version string from internal baseline (never file:*.tgz).
-- Do not generate placeholder pages under src/app/features/home or src/app/features/about.
+- For portal init, starter can include src/app/pages/home and should support LayoutConfiguration.homeUrl for custom home navigation.
 - Do not read starter template content from sibling workspace folders.
+- If the task edits `sdcorejs-agent` itself, always write or update the current-day handoff before finishing.
 
 Output format (strict):
 1. Resolved Context

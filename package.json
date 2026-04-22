@@ -1,0 +1,36 @@
+{
+  "name": "@sdcorejs/agent",
+  "version": "0.0.1",
+  "description": "SDCoreJS agent CLI",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "sd-agent": "bin/sdcorejs-agent.mjs"
+  },
+  "files": [
+    "bin",
+    "skills",
+    "agents",
+    "core",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm pack --dry-run",
+    "publish:npm": "npm publish --access public",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "sdcorejs",
+    "agent",
+    "cli",
+    "skills",
+    "angular"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

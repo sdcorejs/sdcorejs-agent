@@ -14,6 +14,9 @@
     │   ├── app.routes.ts
     │   ├── components/
     │   │   └── main/
+    │   ├── pages/
+    │   │   └── home/
+    │   │       └── home.component.ts
     │   └── configurations/
     ├── environments/
     ├── libs/

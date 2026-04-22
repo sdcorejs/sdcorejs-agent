@@ -11,7 +11,7 @@ This smoke test validates SDCoreJS agent behavior for Angular Portal in VS Code 
 - Cross-model response contract consistency (Claude/Gemini/Codex)
 - Portal starter tsconfig hygiene (`baseUrl` kept only when truly needed)
 - Package version baseline stability from internal template (no version drift)
-- Starter structure contract (`src/libs/sample` seeded; no app/features home-about placeholders)
+- Starter structure contract (`src/libs/sample` seeded; optional custom home under `src/app/pages/home` via `LayoutConfiguration.homeUrl`)
 
 ## Preconditions
 - Open this repository in VS Code
@@ -31,7 +31,7 @@ This smoke test validates SDCoreJS agent behavior for Angular Portal in VS Code 
 - Agent keeps generated package versions aligned with `core/templates/angular-portal-starter/package.template.json` in brand-new workspaces
 - Agent keeps `@sd-angular/core` as npm version string (no `file:*.tgz` dependency style)
 - Agent seeds `src/libs/sample/modules/employee` and `src/libs/sample/modules/product`
-- Agent does not generate `src/app/features/home` or `src/app/features/about`
+- Agent supports customizable starter home via `src/app/pages/home` and `LayoutConfiguration.homeUrl`
 
 ## Test Cases
 
@@ -121,7 +121,7 @@ Expected:
 - Generated package.json dependency and devDependency versions match internal template
 - Generated starter does not use local tgz dependency style for `@sd-angular/core`
 - Generated starter scaffold includes `src/libs/sample` with employee and product modules
-- Generated starter excludes app-level placeholder pages under `src/app/features/home|about`
+- Generated starter supports optional custom home route under `src/app/pages/home` and `LayoutConfiguration.homeUrl`
 
 Pass if:
 - Generated package versions are equal to internal baseline template versions

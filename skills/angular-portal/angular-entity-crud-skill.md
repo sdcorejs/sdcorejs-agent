@@ -18,6 +18,10 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Confirm target module before generating entity files
 - Generate the feature module first if it does not exist
 - Generate entity service with runnable mock CRUD by default (`localStorage`) when backend API contract is not provided yet
+- Generate `services/[entity].mock-data.ts` as the single centralized seed source for each entity (target: **20–40 rows**)
+- Generate mock data immediately after `SaveReq` and `DTO` are finalized (whether from user input or semantic inference); do not wait until after list/detail components are built
+- Seed rows must use domain-realistic values derived from the inferred field schema; never use generic placeholders like `"Name 1"`, `"Code 01"`, or repeated identical values across all rows
+- Ensure mock store reseeds automatically when stored JSON is missing, empty array, or corrupted JSON
 - If backend API contract is provided explicitly, service may switch to `BaseService`-based API integration
 - Parse and normalize input artifacts when available:
   - PRD text sections
@@ -93,6 +97,8 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
   - `UnifiedSplit`: CREATE/UPDATE/DETAIL share one unified split layout (left title block, right form/content block)
   - `AdaptiveSplitDetail`: CREATE/UPDATE use editable split layout, DETAIL uses a different read-only split layout (like dashboard cards/sections)
 - For `AdaptiveSplitDetail`, DETAIL screen should prefer `sd-section` + `sd-section-item` for read-only display blocks instead of editable form controls
+- Regardless of DETAIL rendering style (`sd-section-item` or viewed controls), code/name must always render in DETAIL state
+- In DETAIL load flow, when entity ID is stale/not found, show a warning and navigate back to list instead of leaving empty placeholders
 - When the request does not clearly define expected detail layout, ask one clarification question before final generation:
   - "Bạn muốn giữ layout mặc định hay đổi sang UnifiedCompact / UnifiedSplit / AdaptiveSplitDetail?"
 - Reserve extension points for workflow actions in both list and detail
@@ -262,6 +268,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Generate placeholder specs with `// TODO add tests` or similar; all specs must be runnable and pass on first `ng test`
 - Render long multi-section page forms without anchor navigation when `sd-anchor-v2` is already available
 - Use editable inputs in DETAIL read-only summary sections when `AdaptiveSplitDetail` layout is selected
+- Leave DETAIL page in broken state when `detail(id)` fails (`Entity not found`) without user feedback or recovery navigation
 - Ignore provided cURL contract or PRD image when they define API fields or UI sections
 
 ## 4. Template
@@ -1972,6 +1979,7 @@ export class DetailComponent implements OnInit {
 ## Implementation Checklist
 
 - [ ] Create model file with SaveReq interface and DTO type
+- [ ] Create `services/[entity].mock-data.ts` with 20–40 domain-realistic seed rows immediately after SaveReq/DTO are finalized
 - [ ] Create service with mock-first CRUD (`localStorage`) by default; use BaseService/API mode only when backend contract is explicit
 - [ ] Create list component with @SdTabComponent decorator
 - [ ] Create detail component with 3-state machine

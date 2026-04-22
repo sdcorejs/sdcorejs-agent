@@ -373,7 +373,7 @@ Copy `src/libs/sample/modules/employee/` → `src/libs/mymodule/modules/myentity
 - Add a final double-check report covering: routes, provider wiring, environment scripts, and unresolved imports
 
 ### MUST NOT ❌
-- Do not generate app-level placeholder pages under `src/app/features/home` or `src/app/features/about`
+- Do not hard-code fixed app/features home/about restrictions; starter may include a customizable `src/app/pages/home` and wire `LayoutConfiguration.homeUrl`
 - Do not skip `src/libs/sample` in starter generation
 - Do not skip seeding 2 sample entities inside `src/libs/sample/modules`
 - Do not use local tarball dependency style for `@sd-angular/core` such as `file:sd-angular-core-*.tgz`

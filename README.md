@@ -7,6 +7,22 @@ Start building Angular portal modules with @sd-angular/core.
 - [Copilot Instructions](.github/copilot-instructions.md) - Agent guidelines and patterns
 - [Agents](agents/README.md) - Module orchestrators (to be implemented)
 
+## CLI Quick Commands
+
+This repository now exposes a CLI command alias: `sd-agent`.
+
+- Local run from this repo:
+	- `npx --yes --package file:. sd-agent skills list`
+	- `npx --yes --package file:. sd-agent skills path`
+- Build package preview:
+	- `npm run build`
+- Publish to npm (public):
+	- `npm run publish:npm`
+
+After publishing `@sdcorejs/agent`, users can run:
+- `npx @sdcorejs/agent skills list`
+- `npx @sdcorejs/agent skills path`
+
 ## Teammate Chat Onboarding (Quick)
 ## Onboarding Đồng Nghiệp (Nhanh)
 
@@ -39,7 +55,84 @@ Meaning of fallback prompts / Nghĩa của fallback prompts:
 
 Reference guide:
 - agents/sdcorejs/README.md
+
+## Repository Maintenance Rule
+
+Any task that edits files inside `sdcorejs-agent` must also write or update the current-day handoff in `agents/sdcorejs/HANDOFF-YYYY-MM-DD.md` before the task is considered complete.
+
+Minimum handoff content:
+- session focus
+- changed files or affected areas
+- verification status or remaining blockers
+
+## Quick Start: CLI + Chat Integration
+
+After `npm i @sdcorejs/agent -g`, use these commands to integrate with VS Code Chat:
+
+### 1. Portal Initialization
+```bash
+sd-agent chat portal
 ```
+→ Prints prompt. Copy into Chat and replace `{{input}}`:
+```
+Khởi tạo portal-myapp với dev, qc, uat, prod
+```
+
+### 2. Module Creation
+```bash
+sd-agent chat module
+```
+→ Prints prompt. Copy into Chat and replace `{{input}}`:
+```
+Tạo module sales cho portal
+```
+
+### 3. Entity CRUD Generation
+```bash
+sd-agent chat entity
+```
+→ Prints prompt. Copy into Chat and replace `{{input}}`:
+```
+Thêm entity product vào module catalog, các field: code, name, price, category, stock, status
+```
+
+### Full Workflow Example
+
+```bash
+# 1. Initialize portal
+sd-agent chat portal
+# → Copy prompt → Chat → "Khởi tạo portal-shop với dev, qc, uat, prod"
+
+# 2. Create module
+sd-agent chat module
+# → Copy prompt → Chat → "Tạo module catalog cho portal"
+
+# 3. Add entity
+sd-agent chat entity
+# → Copy prompt → Chat → "Thêm entity product vào module catalog"
+
+# 4. Continue refining in Chat
+# ...user feedback on UI, validation, workflow...
+```
+
+### Useful CLI Commands
+```bash
+sd-agent skills list       # List all skill groups
+sd-agent skills path       # Print path to skills folder
+sd-agent help             # Show all commands
+```
+
+## Using VS Code Chat Mode
+
+If your VS Code supports custom chat modes:
+1. Open Chat
+2. Select **SDCoreJS** mode (should auto-load from `.github/chatmodes/sdcorejs.chatmode.md`)
+3. Start with:
+   - "Khởi tạo portal-myapp"
+   - "Thêm entity khách hàng"
+   - "Tạo workflow approval"
+
+---
 sdcorejs-agent/
 ├── .github/
 │   └── copilot-instructions.md     # Agent configuration and guidelines
