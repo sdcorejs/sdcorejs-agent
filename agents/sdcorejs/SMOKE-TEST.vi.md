@@ -10,6 +10,7 @@ Tài liệu này dùng để kiểm tra nhanh hành vi của SDCoreJS agent cho 
 - Hành vi workflow actions ở detail và bulk actions ở list
 - Tính nhất quán contract phản hồi giữa các mô hình (Claude/Gemini/Codex)
 - Vệ sinh cấu hình tsconfig của portal starter (`baseUrl` chỉ giữ khi thực sự cần)
+- Ổn định version package theo baseline nội bộ (không bị version drift)
 
 ## Điều kiện trước khi test
 - Mở repo này trong VS Code
@@ -26,6 +27,7 @@ Tài liệu này dùng để kiểm tra nhanh hành vi của SDCoreJS agent cho 
 - Khi có yêu cầu workflow, agent đưa cả action ở detail và bulk action ở list
 - Envelope phản hồi nên nhất quán giữa model: Resolved Context -> Planned Skill Chain -> Files To Create/Update -> Post-Gen Double Check
 - Không ép giữ `baseUrl: "./"` trong tsconfig nếu không có nhu cầu import tuyệt đối tương ứng
+- Version package sinh ra phải khớp `core/templates/angular-portal-starter/package.template.json` khi generate ở workspace mới
 
 ## Bộ test
 
@@ -92,16 +94,30 @@ Pass khi:
 
 ### TC06 - Khởi tạo portal không giữ baseUrl thừa
 Prompt:
-Khởi tạo portal starter mới từ portal-template.
+Khởi tạo portal starter mới từ baseline nội bộ trong sdcorejs-agent/core/templates/angular-portal-starter.
 Chỉ giữ shell starter và không có business libs.
 
 Kỳ vọng:
 - Agent kiểm tra kiểu import/alias trước khi quyết định cấu hình tsconfig
 - Agent bỏ `compilerOptions.baseUrl` nếu không cần
 - Nếu vẫn giữ `baseUrl`, agent giải thích rõ import pattern nào cần dùng
+- Agent vẫn giữ cấu trúc sẵn sàng cho module (`src/libs` tồn tại)
 
 Pass khi:
 - Kết quả hoặc tsconfig sinh ra không còn `baseUrl` thừa
+
+### TC07 - Khởi tạo portal không bị lệch version package
+Prompt:
+Khởi tạo portal starter ở một workspace hoàn toàn mới.
+Version package phải khớp chính xác với sdcorejs-agent/core/templates/angular-portal-starter/package.template.json.
+
+Kỳ vọng:
+- Agent dùng baseline package nội bộ làm nguồn sự thật
+- Agent không tự nâng/hạ version Angular hoặc sd-angular theo repo mẫu bên ngoài
+- package.json sinh ra có dependency/devDependency khớp template nội bộ
+
+Pass khi:
+- Version package sinh ra trùng với version trong baseline nội bộ
 
 ## Mẫu log test nhanh
 - Ngày test:
@@ -113,6 +129,8 @@ Pass khi:
 - TC03: Pass/Fail
 - TC04: Pass/Fail
 - TC05: Pass/Fail
+- TC06: Pass/Fail
+- TC07: Pass/Fail
 - Ghi chú:
 
 ## Gợi ý khi fail

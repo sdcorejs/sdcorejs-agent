@@ -8,6 +8,26 @@ Generates the complete feature module configuration including route setup, modul
 
 In a brand-new portal repo, this skill is the first generation step whenever the target module does not exist yet.
 
+Default mode is standalone-first, but this skill can generate hybrid-compatible structure when the target application still uses NgModule with standalone components.
+
+### Required vs Optional
+
+| File | Required | Notes |
+|---|---|---|
+| `[module].configuration.ts` | ✅ Always | Token + interface |
+| `configurations/api.configuration.ts` | ✅ Always | Request/error interceptors |
+| `guards/[module].guard.ts` | ✅ Always | Route protection |
+| `routes.ts` | ✅ Always | Lazy-load entity children |
+| `configurations/permission.configuration.ts` | ⚙️ Optional | Only when module has its own permission domain |
+| `configurations/upload-file.configuration.ts` | ⚙️ Optional | Only when module entities use file upload |
+
+When generating a new module, ask the developer:
+```
+1. Does this module have its own permission domain? (add permission.configuration.ts)
+2. Do any entities in this module use file upload? (add upload-file.configuration.ts)
+If unsure, skip both and generate minimal module first.
+```
+
 ## 3. Rules
 
 ### MUST DO ✅
@@ -15,8 +35,8 @@ In a brand-new portal repo, this skill is the first generation step whenever the
 - Create `routes.ts` at module root level
 - Provide `SD_API_CONFIG` at route level
 - Do not modify global CSS/SCSS while creating module structure/configuration
-- Keep `SD_PERMISSION_CONFIGURATION` at app root injector (`main.ts`) so root-scoped `SdPermissionService` receives full configuration set immediately
-- Keep `SD_UPLOAD_FILE_CONFIGURATION` at app root injector (`main.ts`) so root-scoped upload consumers can resolve all keyed configurations
+- If `SD_PERMISSION_CONFIGURATION` is opted in: keep it at app root injector (`main.ts`) so root-scoped `SdPermissionService` receives full configuration set immediately
+- If `SD_UPLOAD_FILE_CONFIGURATION` is opted in: keep it at app root injector (`main.ts`) so root-scoped upload consumers can resolve all keyed configurations
 - Define unique `key` for each permission configuration when multiple permission domains exist
 - Define unique `key` for each upload-file configuration when multiple module domains exist
 - Ensure module routes set `data.permissionKey` to match the configuration `key`
@@ -28,15 +48,19 @@ In a brand-new portal repo, this skill is the first generation step whenever the
 - Create `[module].configuration.ts` for interface definition
 - Lazy load all child entities with `loadChildren()`
 - Export routes as `const [module]Routes: Routes = [...]`
+- Support `skeleton module` generation when business details are missing: generate minimum routes/config/guard/index/spec scaffolding first
+- Generate module unit tests (`routes.spec.ts`, `guard.spec.ts`, and configuration smoke spec) in the same pass
+- If project is hybrid NgModule + standalone, generate compatibility wiring without forcing full migration
 - Run a post-generation double-check: token wiring, provider scope, route key consistency, and unresolved imports
 
 ### MUST NOT ❌
 - Provide services in route-level configuration (only for interceptors/guards)
-- Mix NgModule with standalone route configuration
+- Force migration to pure standalone when developer did not request migration and existing codebase is hybrid
 - Hardcode API URLs (inject via configuration)
 - Skip error handling in interceptors
 - Use global interceptors (module-scoped only)
 - Assume route-level providers are visible to root-scoped services
+- Generate `permission.configuration.ts` or `upload-file.configuration.ts` without confirmation that the module needs them
 - Do not provide `SD_PERMISSION_CONFIGURATION` at module route level when using root-scoped `SdPermissionService`
 - Do not provide `SD_UPLOAD_FILE_CONFIGURATION` at module route level when using root-scoped upload configuration resolution
 - Do not mark module-local permission providers as `multi: true` and expect root `SdPermissionService` to auto-merge them
@@ -46,6 +70,14 @@ In a brand-new portal repo, this skill is the first generation step whenever the
 - Do not mix route `data.permissionKey='A'` with configuration `key='B'`
 
 ## 4. Template
+
+### Hybrid Compatibility Note
+```text
+If target codebase uses NgModule root/module wiring:
+- keep existing NgModule bootstrap/module boundaries intact
+- generate standalone components/routes that can be imported or lazy-loaded from NgModule routes
+- avoid breaking changes in app bootstrap path unless developer asks for migration
+```
 
 ### [module].configuration.ts
 ```typescript
@@ -395,6 +427,7 @@ export const sampleRoutes: Routes = [
 - [ ] Create upload file configuration
 - [ ] Create module guard
 - [ ] Create routes.ts with providers
+- [ ] Generate module skeleton specs (`routes.spec.ts`, `guard.spec.ts`, `api.configuration.spec.ts`)
 - [ ] Test configuration injection in child modules
 - [ ] Test API error handling
 - [ ] Test file upload configuration

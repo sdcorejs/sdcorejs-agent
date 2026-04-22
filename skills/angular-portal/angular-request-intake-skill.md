@@ -8,6 +8,8 @@ Resolves incomplete UI generation requests for a new Angular portal using Core U
 
 This skill exists because in sdcorejs architecture every CRUD screen belongs to a feature module. An entity request without module ownership is incomplete.
 
+This skill also normalizes inputs from PRD text, UI screenshots, and sample cURL contracts before handing off to module/entity generation skills.
+
 ## 3. Rules
 
 ### MUST DO ✅
@@ -18,6 +20,9 @@ This skill exists because in sdcorejs architecture every CRUD screen belongs to 
 - Apply module configuration skill first when creating a brand-new module
 - Reduce the first clarification round to the minimum required questions
 - Generate a minimal CRUD skeleton if the module is known but the fields are only partially defined
+- Use only knowledge and templates stored in `sdcorejs-agent` during generation; do not require runtime reads from external sample repositories
+- Resolve input sources in this order when available: PRD text -> UI screenshot/attribute image -> sample cURL request/response
+- Build a normalized field contract from those inputs: list fields, detail fields, required flags, enum candidates, and API payload hints
 - Prefer `side-drawer` for common entity forms with around 5-6 fields
 - For common flows, ensure side-drawer content fits without vertical scroll in typical desktop viewport
 - For page-based detail flows, classify layout into one of 3 variants and confirm when ambiguous:
@@ -27,6 +32,8 @@ This skill exists because in sdcorejs architecture every CRUD screen belongs to 
 - If PRD indicates many fields/sections, propose using `sd-anchor-v2` together with section grouping for faster scroll navigation
 - Preserve sdcorejs generation order: request resolution -> module setup -> entity CRUD -> form refinement
 - For large requests, enforce full generation order: portal init -> module init -> CRUD generation -> mock data readiness -> double-check
+- If test coverage level is not explicitly provided, default to `standard` spec coverage for generated module/entity
+- Detect whether target project is standalone-first or hybrid NgModule+standalone and select compatible generation path
 - When generation includes permission configuration, ensure `SD_PERMISSION_CONFIGURATION` is provided at app root (`main.ts`) for root-scoped permission service
 - When generation includes upload-file configuration, ensure `SD_UPLOAD_FILE_CONFIGURATION` is provided at app root (`main.ts`) and keyed by module (`key='moduleName'`, portal default `key=undefined`)
 - When user provides implementation improvements/conventions, ask whether to update the skill library if they did not explicitly request skill updates
@@ -39,6 +46,7 @@ This skill exists because in sdcorejs architecture every CRUD screen belongs to 
 - Default to full page detail for short, common forms when side-drawer is sufficient
 - Reply in a language different from the developer language without explicit request
 - Lock into one page layout variant without clarifying when PRD/screenshot suggests another variant
+- Ignore provided screenshot or cURL contract when they contain useful field/layout/API clues
 
 ## 4. Template
 
@@ -72,6 +80,14 @@ If fields are incomplete:
   - isActivated
   Then refine the detail form after clarification
 
+If PRD text + screenshot/cURL are provided:
+  Normalize to one field matrix before generation:
+  - list columns
+  - detail create/update editable fields
+  - detail read-only fields
+  - inferred validators
+  - payload/response mapping
+
 If detail style is missing:
   Use heuristics:
   - 5-6 common fields -> side-drawer
@@ -104,8 +120,10 @@ Useful but optional for first pass:
 - import/export requirements
 - side drawer vs page detail style
 - page layout variant if using full page (`UnifiedCompact` / `UnifiedSplit` / `AdaptiveSplitDetail`)
+- input source artifacts (PRD section, screenshot, attribute image, cURL sample)
 - workflow actions needed in detail (submit, approve, reject, etc.)
 - workflow actions needed in list (bulk submit, bulk approve, bulk reject)
+- architecture mode (`standalone-first` or `hybrid-ngmodule-standalone`)
 
 Default detail style if user does not choose:
 - `side-drawer` for 5-6 common fields and quick CRUD

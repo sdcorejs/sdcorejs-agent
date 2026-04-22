@@ -29,10 +29,12 @@ Meaning of fallback prompts / Nghĩa của fallback prompts:
 
 2. Add these scope constraints in every prompt:
 - Only read rules from: sdcorejs-agent/skills/angular-portal
+- For portal init, use starter baseline only from: sdcorejs-agent/core/templates/angular-portal-starter
 - Only create or edit files in their portal repository
 
 2. Thêm ràng buộc phạm vi trong mọi prompt:
 - Chỉ đọc rules từ: sdcorejs-agent/skills/angular-portal
+- Khi khởi tạo portal, chỉ dùng baseline từ: sdcorejs-agent/core/templates/angular-portal-starter
 - Chỉ tạo hoặc sửa file trong repo portal của họ
 
 Reference guide:

@@ -13,6 +13,7 @@
 - [ ] Confirm request-intake rules in [skills/angular-portal/angular-request-intake-skill.md](skills/angular-portal/angular-request-intake-skill.md).
 - [ ] Confirm CRUD rules in [skills/angular-portal/angular-entity-crud-skill.md](skills/angular-portal/angular-entity-crud-skill.md), including mock-first and layout variants.
 - [ ] Confirm portal-init rules in [skills/angular-portal/angular-portal-project-init-skill.md](skills/angular-portal/angular-portal-project-init-skill.md), including tsconfig baseUrl hygiene.
+- [ ] Confirm portal-init rules enforce internal baseline source only: [core/templates/angular-portal-starter/README.md](core/templates/angular-portal-starter/README.md).
 
 ## 3. Prompt and Model Compatibility
 
@@ -28,6 +29,7 @@
 - [ ] Evaluate EN results with [agents/sdcorejs/SMOKE-TEST.md](agents/sdcorejs/SMOKE-TEST.md).
 - [ ] Evaluate VI results with [agents/sdcorejs/SMOKE-TEST.vi.md](agents/sdcorejs/SMOKE-TEST.vi.md).
 - [ ] Confirm TC06 pass: portal-init output does not keep unnecessary compilerOptions.baseUrl.
+- [ ] Confirm portal-init output includes `src/libs` scaffold (minimum `src/libs/.gitkeep`).
 
 ## 5. Release Artifacts
 

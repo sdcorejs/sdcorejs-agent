@@ -4,7 +4,9 @@
 **Entity CRUD Module Generation**
 
 ## 2. Description
-Generates a complete entity management module following sdcorejs architecture patterns. Creates service layer (with BaseService integration), models/interfaces, and page components (list and detail) with full CRUD operations, reactive forms, and data tables.
+Generates a complete entity management module following sdcorejs architecture patterns. Creates service layer, models/interfaces, and page components (list and detail) with full CRUD operations, reactive forms, and data tables.
+
+This skill can synthesize UI structure from PRD text, screenshot/attribute images, and sample cURL payloads, then map those into CREATE/UPDATE/DETAIL rendering strategies.
 
 This skill assumes the target feature module is already known. If the request does not specify a module, the agent must resolve that first using the request intake flow.
 
@@ -16,7 +18,23 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Confirm target module before generating entity files
 - Generate the feature module first if it does not exist
 - Generate entity service with runnable mock CRUD by default (`localStorage`) when backend API contract is not provided yet
+- Generate `services/[entity].mock-data.ts` as the single centralized seed source for each entity (target: around 100 rows)
+- Ensure mock store reseeds automatically when stored JSON is missing, empty array, or corrupted JSON
 - If backend API contract is provided explicitly, service may switch to `BaseService`-based API integration
+- Parse and normalize input artifacts when available:
+  - PRD text sections
+  - screenshot or attribute image hints
+  - sample cURL request/response
+- Derive a field matrix from artifacts before coding:
+  - list columns
+  - create/update editable fields
+  - detail read-only fields
+  - validators and enum candidates
+  - request/response field mapping
+- Apply cURL mapping by state:
+  - request payload fields -> CREATE/UPDATE editable controls
+  - response meta/status/audit fields -> DETAIL read-only blocks
+  - list endpoint lightweight fields -> LIST columns
 - Create separate files: `model.ts`, `service.ts` for each entity
 - Define request model (SaveReq) and response type (DTO extends BaseEntity)
 - Use permission code format: `<MODULE>_C_<ENTITY>_<ACTION>`
@@ -77,6 +95,8 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
   - `UnifiedSplit`: CREATE/UPDATE/DETAIL share one unified split layout (left title block, right form/content block)
   - `AdaptiveSplitDetail`: CREATE/UPDATE use editable split layout, DETAIL uses a different read-only split layout (like dashboard cards/sections)
 - For `AdaptiveSplitDetail`, DETAIL screen should prefer `sd-section` + `sd-section-item` for read-only display blocks instead of editable form controls
+- Regardless of DETAIL rendering style (`sd-section-item` or viewed controls), code/name must always render in DETAIL state
+- In DETAIL load flow, when entity ID is stale/not found, show a warning and navigate back to list instead of leaving empty placeholders
 - When the request does not clearly define expected detail layout, ask one clarification question before final generation:
   - "Bạn muốn giữ layout mặc định hay đổi sang UnifiedCompact / UnifiedSplit / AdaptiveSplitDetail?"
 - Reserve extension points for workflow actions in both list and detail
@@ -113,6 +133,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
   - Goal: reduce unnecessary signal getter invocations during change detection cycles
 - Ensure interactive elements exposed to users have accessible text: use `title` or `aria-label` on buttons/actions so screen readers can describe them; use semantic HTML where possible (`<nav>`, `<main>`, `role="toolbar"`)
 - Generate a companion `*.spec.ts` skeleton alongside every new list and detail component; use Arrange-Act-Assert pattern; the skeleton must at minimum assert the component creates successfully:
+- Generate companion `*.spec.ts` files alongside service/routes/list/detail with runnable tests; use Arrange-Act-Assert pattern; specs must include at minimum component/service/route creation and one behavior assertion each:
   ```typescript
   describe('ListComponent', () => {
     it('should create', () => { expect(component).toBeTruthy(); });
@@ -139,6 +160,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
   - If environment lacks headless browser, report blocker explicitly and provide exact command for developer to run locally
 - Reserve extension points for workflow actions in both list and detail
 - Always run a final double-check pass: route data, permission keys, upload keys, service wiring, and basic build/test status
+- Support hybrid NgModule + standalone integration when target codebase still uses NgModule boundaries
 
 ### TESTING CHECKLIST FOR DEVELOPERS ⚠️
 **When applying this skill to generate a new entity module, developers MUST verify these points before committing:**
@@ -212,7 +234,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 
 ### MUST NOT ❌
 - Guess the module silently when module ownership is ambiguous
-- Mix standalone and NgModule approaches
+- Do not force a full standalone migration when developer requests hybrid NgModule + standalone compatibility mode
 - Use ad-hoc permission code naming that does not follow `<MODULE>_C_<ENTITY>_<ACTION>`
 - Hard-code API URLs (use configuration tokens)
 - Add logic to components (delegate to services)
@@ -244,6 +266,8 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Generate placeholder specs with `// TODO add tests` or similar; all specs must be runnable and pass on first `ng test`
 - Render long multi-section page forms without anchor navigation when `sd-anchor-v2` is already available
 - Use editable inputs in DETAIL read-only summary sections when `AdaptiveSplitDetail` layout is selected
+- Leave DETAIL page in broken state when `detail(id)` fails (`Entity not found`) without user feedback or recovery navigation
+- Ignore provided cURL contract or PRD image when they define API fields or UI sections
 
 ## 4. Template
 
@@ -389,7 +413,46 @@ If entity includes workflow (submit/approve/reject):
 ```
 ```
 
-### Project Structure
+### Detail UI Pattern Selection
+```text
+Choose ONE based on entity complexity:
+
+1. Side-drawer  (≤6 fields, simple form)
+   - All CRUD embedded in list page via <sd-side-drawer>
+   - No sub-routes (create/detail/update); only one list route
+   - Use viewChild.required<SdSideDrawer>('drawer') to open/close
+   - Starter reference: core/templates/angular-portal-starter/src/libs/sample/modules/product
+
+2. UnifiedCompact  (full page, same layout for CREATE/UPDATE/DETAIL)
+   - Sub-routes: list + create + detail/:id + update/:id
+   - Same component handles all 3 states via [viewed]="state === 'DETAIL'"
+   - Starter reference: core/templates/angular-portal-starter/src/libs/sample/modules/employee
+
+3. AdaptiveSplitDetail  (full page, DETAIL differs from CREATE/UPDATE)
+   - Sub-routes: list + create + detail/:id + update/:id
+   - DETAIL renders sd-section + sd-section-item (read-only label-value pairs)
+   - CREATE/UPDATE renders editable sd-input / sd-select / sd-textarea
+   - Import SdSectionItem from @sd-angular/core/components/section
+   - Starter reference: core/templates/angular-portal-starter/src/libs/sample/modules/department
+```
+
+### Side-drawer Project Structure
+```
+libs/[module]/
+└── modules/[entity]/
+  ├── [entity].routes.ts           # Only list route, no create/detail/update sub-routes
+  ├── [entity].routes.spec.ts
+  ├── pages/
+  │   └── list/
+  │       ├── list.component.spec.ts
+  │       └── list.component.ts    # Contains embedded <sd-side-drawer>
+  ├── services/
+  │   ├── [entity].model.ts
+  │   └── [entity].service.ts
+  └── index.ts
+```
+
+### Full-page Project Structure (UnifiedCompact / AdaptiveSplitDetail)
 ```
 libs/[module]/
 └── modules/[entity]/
@@ -652,6 +715,193 @@ export class ListComponent implements OnInit {
     this.#router.navigate(['detail', id]);
   }
 }
+```
+
+### list.component.ts (Side-drawer variant)
+```typescript
+// Use when: ≤6 fields, simple form, no separate page/route needed.
+// Reference: core/templates/angular-portal-starter/src/libs/sample/modules/product/pages/list/list.component.ts
+
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, viewChild } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { SdButton, SdSection, SdTabComponent, SdTabelCellDefDirective, SdTable, SdTableOption } from '@sd-angular/core/components';
+import { SdSideDrawer } from '@sd-angular/core/components/side-drawer';
+import { SdInput, SdInputNumber, SdSelect, SdSwitch, SdTextarea } from '@sd-angular/core/forms';
+import { SdPageComponent, SdPermissionDirective } from '@sd-angular/core/modules';
+import { SdConfirmService, SdLoadingService, SdNotifyService } from '@sd-angular/core/services';
+
+import { [Entity]DTO, [Entity]SaveReq } from '../../services/[entity].model';
+import { [Entity]Service } from '../../services/[entity].service';
+
+@Component({
+  selector: '[entity]-list',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [SdButton, SdSection, SdSideDrawer, SdTable, SdTabelCellDefDirective,
+            SdPermissionDirective, SdInput, SdInputNumber, SdSelect, SdSwitch, SdTextarea, SdPageComponent],
+  template: `
+    <sd-page title="[Entity Display Name]">
+      <div class="d-flex align-items-center" role="toolbar" headerRight>
+        <sd-button
+          *sdPermission="'[MODULE]_C_[ENTITY]_CREATE'; sdPermissionKey: '[module]'"
+          title="Tạo mới" type="fill" prefixIcon="add" color="primary"
+          (click)="onOpenCreate()">
+        </sd-button>
+      </div>
+      <div class="h-full p-8">
+        @if (tableOption) {
+          <sd-table [option]="tableOption" #table autoId="[module]_[entity]">
+            <ng-template sdTableCellDef="isActivated" let-item="item">
+              <sd-switch class="d-block text-center"
+                [(model)]="item.isActivated" (sdChange)="onChangeIsActivated(item)"></sd-switch>
+            </ng-template>
+          </sd-table>
+        }
+      </div>
+    </sd-page>
+
+    <!-- Side-drawer: handles CREATE / UPDATE / DETAIL inline, no sub-routes needed -->
+    <sd-side-drawer #drawer [title]="drawerTitle" width="480px">
+      <div class="p-16">
+        <sd-section title="Thông tin chung" noPaddingBody>
+          <div class="row row-sm mx-0 pt-8">
+            <!-- Add form fields here with [viewed]="drawerState === 'DETAIL'" -->
+            <div class="col-12">
+              <sd-input label="Mã" [(model)]="drawerEntity.code" [form]="drawerForm" required
+                [viewed]="drawerState === 'DETAIL'"></sd-input>
+            </div>
+            <div class="col-12">
+              <sd-input label="Tên" [(model)]="drawerEntity.name" [form]="drawerForm" required
+                [viewed]="drawerState === 'DETAIL'"></sd-input>
+            </div>
+          </div>
+        </sd-section>
+
+        <div class="d-flex justify-content-end gap-8 mt-16">
+          @if (drawerState === 'DETAIL') {
+            <sd-button *sdPermission="'[MODULE]_C_[ENTITY]_UPDATE'; sdPermissionKey: '[module]'"
+              title="Cập nhật" type="fill" prefixIcon="edit" color="primary"
+              (click)="onDrawerEdit()"></sd-button>
+          } @else {
+            <sd-button title="Hủy" (click)="drawer.close()"></sd-button>
+            <sd-button title="Lưu" type="fill" prefixIcon="save" color="primary"
+              [loading]="drawerSaving" (click)="onDrawerSave()"></sd-button>
+          }
+        </div>
+      </div>
+    </sd-side-drawer>
+  `,
+})
+@SdTabComponent({ component: ListComponent, name: '[Entity Display Name]', color: 'primary' })
+export class ListComponent implements OnInit {
+  @ViewChild(SdTable) table!: SdTable<[Entity]DTO>;
+  readonly #drawer = viewChild.required<SdSideDrawer>('drawer');
+  readonly #notifyService = inject(SdNotifyService);
+  readonly #confirmService = inject(SdConfirmService);
+  readonly #loadingService = inject(SdLoadingService);
+  readonly #[entity]Service = inject([Entity]Service);
+
+  tableOption!: SdTableOption<[Entity]DTO>;
+  drawerForm = new FormGroup({});
+  drawerSaving = false;
+  drawerEntity: Partial<[Entity]SaveReq & { id?: string }> = {};
+  drawerState: 'CREATE' | 'UPDATE' | 'DETAIL' = 'CREATE';
+  drawerTitle = 'Tạo mới [entity label]';
+
+  ngOnInit(): void {
+    this.tableOption = {
+      key: '[module]-[entity]-list',
+      type: 'server',
+      reload: { visible: true },
+      config: { visible: true },
+      items: async (_, pagingRequest) => this.#[entity]Service.paging(pagingRequest),
+      selector: {
+        actions: [{
+          icon: 'delete',
+          title: 'Xóa',
+          click: rows => {
+            this.#confirmService.confirm(`Xóa ${rows.length} dữ liệu đã chọn`).then(() => {
+              this.#onRemove(rows.map(e => e.id));
+            });
+          },
+        }],
+      },
+      columns: [
+        { title: 'Mã', field: 'code', type: 'string', width: '150px', click: (_v, row) => this.#onOpenDetail(row) },
+        { title: 'Tên', field: 'name', type: 'string', minWidth: '250px' },
+        { title: 'Trạng thái', field: 'isActivated', type: 'boolean',
+          option: { displayOnTrue: 'Hoạt động', displayOnFalse: 'Khóa' }, width: '130px' },
+        // Audit columns
+        { title: 'Ngày tạo', field: 'createdAt', type: 'datetime', width: '180px' },
+        { title: 'Người tạo', field: 'createdBy', type: 'string', minWidth: '150px' },
+        { title: 'Ngày cập nhật', field: 'updatedAt', type: 'datetime', width: '180px' },
+        { title: 'Người cập nhật', field: 'updatedBy', type: 'string', minWidth: '150px' },
+      ],
+    };
+  }
+
+  onOpenCreate = () => {
+    this.drawerState = 'CREATE';
+    this.drawerTitle = 'Tạo mới [entity label]';
+    this.drawerEntity = {};
+    this.drawerForm.reset();
+    this.#drawer().open();
+  };
+
+  #onOpenDetail = (row: [Entity]DTO) => {
+    this.drawerState = 'DETAIL';
+    this.drawerTitle = 'Chi tiết [entity label]';
+    this.drawerEntity = { ...row };
+    this.#drawer().open();
+  };
+
+  onDrawerEdit = () => { this.drawerState = 'UPDATE'; this.drawerTitle = 'Cập nhật [entity label]'; };
+
+  onDrawerSave = async () => {
+    if (this.drawerForm.invalid) { this.drawerForm.markAllAsTouched(); return; }
+    this.drawerSaving = true;
+    try {
+      if (this.drawerEntity['id']) {
+        await this.#[entity]Service.update(this.drawerEntity['id'], this.drawerEntity);
+        this.#notifyService.success('Cập nhật [entity label] thành công');
+      } else {
+        await this.#[entity]Service.create(this.drawerEntity);
+        this.#notifyService.success('Tạo mới [entity label] thành công');
+      }
+      this.#drawer().close();
+      this.table.reload();
+    } finally { this.drawerSaving = false; }
+  };
+
+  #onRemove = (ids: string[]) => {
+    this.#loadingService.start();
+    this.#[entity]Service.remove(ids)
+      .then(() => { this.#notifyService.success('Xóa [entity label] thành công'); this.table.reload(); })
+      .finally(() => this.#loadingService.stop());
+  };
+
+  onChangeIsActivated = (row: [Entity]DTO) => {
+    this.#[entity]Service.update(row.id, { isActivated: row.isActivated } as any).catch(console.error);
+  };
+}
+```
+
+### [entity].routes.ts (Side-drawer variant — list only, no sub-routes)
+```typescript
+export const [entity]Routes: Routes = [
+  {
+    path: '',
+    providers: [[Entity]Service],
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/list/list.component').then(m => m.ListComponent),
+        data: { permission: '[MODULE]_C_[ENTITY]_LIST', permissionKey: '[module]' },
+      },
+    ],
+  },
+];
 ```
 
 ### detail.component.ts
@@ -923,9 +1173,138 @@ Run via: npx ng test --watch=false --include="**/[entity].routes.spec.ts"
 ```typescript
 export * from './[entity].routes';
 export { ListComponent } from './pages/list/list.component';
+// For full-page patterns (UnifiedCompact / AdaptiveSplitDetail):
 export { DetailComponent } from './pages/detail/detail.component';
+// For side-drawer pattern: no DetailComponent export needed
 export { [Entity]Service } from './services/[entity].service';
 export * from './services/[entity].model';
+```
+
+### detail.component.ts (AdaptiveSplitDetail variant)
+```typescript
+// Use when: DETAIL must display read-only label-value pairs (sd-section-item),
+//           while CREATE/UPDATE use editable form controls.
+// Reference: core/templates/angular-portal-starter/src/libs/sample/modules/department/pages/detail/detail.component.ts
+
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { SdButton, SdSection, SdTabComponent } from '@sd-angular/core/components';
+import { SdSectionItem } from '@sd-angular/core/components/section';
+import { SdInput, SdSelect, SdTextarea } from '@sd-angular/core/forms';
+import { SdPageComponent } from '@sd-angular/core/modules';
+import { SdLoadingService, SdNotifyService } from '@sd-angular/core/services';
+
+import { [Entity]DTO } from '../../services/[entity].model';
+import { [Entity]Service } from '../../services/[entity].service';
+
+@Component({
+  selector: '[entity]-detail',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [SdInput, SdSelect, SdTextarea, SdButton, SdSection, SdSectionItem, SdPageComponent],
+  template: `
+    <sd-page [title]="title">
+      <div class="d-flex align-items-center" style="gap: 8px" headerRight>
+        <sd-button title="Quay lại" prefixIcon="replay" (click)="onBack()"></sd-button>
+        @if (state === 'DETAIL') {
+          <sd-button title="Cập nhật" type="fill" prefixIcon="edit" color="primary" (click)="onUpdate()"></sd-button>
+        } @else {
+          <sd-button title="Lưu" type="fill" prefixIcon="save" color="primary" (click)="onSave()" [loading]="saving"></sd-button>
+        }
+      </div>
+
+      <div class="h-full p-8">
+        @if (state === 'DETAIL') {
+          <!-- AdaptiveSplitDetail: read-only label-value layout -->
+          <sd-section title="Thông tin chung" collapsable>
+            <sd-section-item label="Mã" labelWidth="120px">{{ entity.code }}</sd-section-item>
+            <sd-section-item label="Tên" labelWidth="120px">{{ entity.name }}</sd-section-item>
+            <!-- Add more sd-section-item for each read-only field -->
+          </sd-section>
+        } @else {
+          <!-- CREATE / UPDATE: editable form -->
+          <sd-section title="Thông tin chung">
+            <div class="row row-sm mx-0">
+              <div class="col-6">
+                <sd-input label="Mã" [(model)]="entity.code" [form]="form" required maxlength="32"></sd-input>
+              </div>
+              <div class="col-6">
+                <sd-input label="Tên" [(model)]="entity.name" [form]="form" required></sd-input>
+              </div>
+              <!-- Add more form fields -->
+            </div>
+          </sd-section>
+        }
+      </div>
+    </sd-page>
+  `,
+})
+@SdTabComponent({
+  component: DetailComponent,
+  name: args => {
+    if (args?.url?.includes('update')) return 'Cập nhật [entity label]';
+    if (args?.url?.includes('detail')) return 'Chi tiết [entity label]';
+    return 'Tạo mới [entity label]';
+  },
+  color: args => {
+    if (args?.url?.includes('update')) return 'warning';
+    if (args?.url?.includes('detail')) return 'info';
+    return 'success';
+  },
+})
+export class DetailComponent implements OnInit {
+  readonly #router = inject(Router);
+  readonly #route = inject(ActivatedRoute);
+  readonly #notifyService = inject(SdNotifyService);
+  readonly #loadingService = inject(SdLoadingService);
+  readonly #[entity]Service = inject([Entity]Service);
+
+  form = new FormGroup({});
+  saving = false;
+  entity: Partial<[Entity]DTO> = {};
+  id = '';
+  state: 'CREATE' | 'UPDATE' | 'DETAIL' = 'CREATE';
+  title = '';
+
+  ngOnInit() {
+    this.id = this.#route.snapshot.params?.['id'];
+    if (this.#router.url.includes('update')) { this.state = 'UPDATE'; this.title = 'Cập nhật [entity label]'; }
+    else if (this.#router.url.includes('detail')) { this.state = 'DETAIL'; this.title = 'Chi tiết [entity label]'; }
+    else { this.state = 'CREATE'; this.title = 'Tạo mới [entity label]'; }
+    if (this.id) { this.#loadDetail(this.id); }
+  }
+
+  #loadDetail = (id: string) => {
+    this.#loadingService.start();
+    this.#[entity]Service.detail(id).then(e => { this.entity = e; }).finally(() => this.#loadingService.stop());
+  };
+
+  onBack = () => {
+    const path = this.state === 'CREATE' ? ['../'] : ['../../'];
+    this.#router.navigate(path, { relativeTo: this.#route, state: { replaceTab: true } });
+  };
+
+  onUpdate = () => {
+    this.#router.navigate(['../../update', this.id], { relativeTo: this.#route, state: { replaceTab: true } });
+  };
+
+  onSave = async () => {
+    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    this.saving = true;
+    try {
+      if (this.entity.id) {
+        await this.#[entity]Service.update(this.entity.id, this.entity);
+        this.#notifyService.success('Cập nhật [entity label] thành công');
+        this.#loadDetail(this.id);
+      } else {
+        const created = await this.#[entity]Service.create(this.entity);
+        this.#notifyService.success('Tạo mới [entity label] thành công');
+        this.#router.navigate(['../detail', created.id], { relativeTo: this.#route, state: { replaceTab: true } });
+      }
+    } finally { this.saving = false; }
+  };
+}
 ```
 
 ## 5. Example Input
@@ -1598,6 +1977,7 @@ export class DetailComponent implements OnInit {
 ## Implementation Checklist
 
 - [ ] Create model file with SaveReq interface and DTO type
+- [ ] Create `services/[entity].mock-data.ts` with centralized seed data (~100 rows) for every generated entity
 - [ ] Create service with mock-first CRUD (`localStorage`) by default; use BaseService/API mode only when backend contract is explicit
 - [ ] Create list component with @SdTabComponent decorator
 - [ ] Create detail component with 3-state machine

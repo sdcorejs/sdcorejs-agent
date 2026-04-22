@@ -10,6 +10,8 @@ This smoke test validates SDCoreJS agent behavior for Angular Portal in VS Code 
 - Workflow actions on detail and list
 - Cross-model response contract consistency (Claude/Gemini/Codex)
 - Portal starter tsconfig hygiene (`baseUrl` kept only when truly needed)
+- Package version baseline stability from internal template (no version drift)
+- Starter structure contract (`src/libs/sample` seeded; optional custom home under `src/app/pages/home` via `LayoutConfiguration.homeUrl`)
 
 ## Preconditions
 - Open this repository in VS Code
@@ -26,6 +28,10 @@ This smoke test validates SDCoreJS agent behavior for Angular Portal in VS Code 
 - Agent includes workflow detail actions and list bulk actions when requested
 - Agent keeps response envelope consistent across models: Resolved Context -> Planned Skill Chain -> Files To Create/Update -> Post-Gen Double Check
 - Agent does not force `baseUrl: "./"` in starter tsconfig unless there is an explicit import-resolution reason
+- Agent keeps generated package versions aligned with `core/templates/angular-portal-starter/package.template.json` in brand-new workspaces
+- Agent keeps `@sd-angular/core` as npm version string (no `file:*.tgz` dependency style)
+- Agent seeds `src/libs/sample/modules/employee` and `src/libs/sample/modules/product`
+- Agent supports customizable starter home via `src/app/pages/home` and `LayoutConfiguration.homeUrl`
 
 ## Test Cases
 
@@ -92,16 +98,34 @@ Pass if:
 
 ### TC06 - Portal init should avoid unnecessary tsconfig baseUrl
 Prompt:
-Initialize a new portal starter from portal-template.
-Keep only starter shell and no business libs.
+Initialize a new portal starter from internal baseline templates in sdcorejs-agent/core/templates/angular-portal-starter.
+Keep starter shell plus mandatory src/libs/sample scaffold.
 
 Expected:
 - Agent verifies local imports/aliases before deciding tsconfig options
 - Agent removes `compilerOptions.baseUrl` when not needed
 - If agent keeps `baseUrl`, it explains the exact import pattern that requires it
+- Agent keeps generated starter structurally ready for modules (`src/libs` scaffold exists)
 
 Pass if:
 - Output or generated tsconfig shows no unnecessary `baseUrl` entry
+
+### TC07 - Portal init should avoid package version drift
+Prompt:
+Initialize a portal starter in a brand-new workspace.
+Package versions must match sdcorejs-agent/core/templates/angular-portal-starter/package.template.json exactly.
+
+Expected:
+- Agent uses internal package baseline as source of truth
+- Agent does not auto-upgrade/downgrade Angular or sd-angular package versions from external samples
+- Generated package.json dependency and devDependency versions match internal template
+- Generated starter does not use local tgz dependency style for `@sd-angular/core`
+- Generated starter scaffold includes `src/libs/sample` with employee and product modules
+- Generated starter supports optional custom home route under `src/app/pages/home` and `LayoutConfiguration.homeUrl`
+
+Pass if:
+- Generated package versions are equal to internal baseline template versions
+- `@sd-angular/core` is normal npm version string and starter structure matches sample scaffold contract
 
 ## Quick Execution Log Template
 - Date:
@@ -113,6 +137,8 @@ Pass if:
 - TC03: Pass/Fail
 - TC04: Pass/Fail
 - TC05: Pass/Fail
+- TC06: Pass/Fail
+- TC07: Pass/Fail
 - Notes:
 
 ## Failure Triage Hints

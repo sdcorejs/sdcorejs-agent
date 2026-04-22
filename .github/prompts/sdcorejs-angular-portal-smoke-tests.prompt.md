@@ -22,9 +22,16 @@ List page needs bulk submit and bulk approve.
 Detail has sections, child table items, and attachment review.
 
 ## Prompt 6
-Initialize a new portal starter from portal-template.
-Keep only starter shell and no business libs.
+Initialize a new portal starter from the internal baseline templates in sdcorejs-agent/core/templates/angular-portal-starter.
+Keep starter shell plus mandatory src/libs/sample scaffold.
 Do not keep unnecessary tsconfig settings.
+
+## Prompt 7
+Initialize a portal starter in a brand-new workspace.
+Package versions must match sdcorejs-agent/core/templates/angular-portal-starter/package.template.json exactly.
+Do not infer or upgrade versions from any external sample repository.
+Support starter home page under src/app/pages/home and wire LayoutConfiguration.homeUrl.
+Generate src/libs/sample with employee and product seeded.
 
 ## What to validate
 - Missing module asks clarification first
@@ -33,3 +40,8 @@ Do not keep unnecessary tsconfig settings.
 - Simple forms default to side-drawer
 - Complex workflow defaults to full page + detail/list workflow actions
 - For portal init, tsconfig should not keep `compilerOptions.baseUrl` unless there is a clear import-resolution reason
+- For portal init, generated starter must include src/libs/sample scaffold with seeded employee and product entities
+- For portal init in new workspace, generated package versions must match internal package template baseline (no version drift)
+- For portal init, `@sd-angular/core` must be a normal npm version string (not `file:*.tgz`)
+- For portal init, home page is customizable via `src/app/pages/home` + `LayoutConfiguration.homeUrl`
+- For portal init, create `src/libs/sample/modules/employee` and `src/libs/sample/modules/product`

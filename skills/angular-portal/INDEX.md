@@ -36,13 +36,17 @@ Resolves incomplete requests before any UI generation starts.
 ### 0.5. Portal Project Initialization Skill
 **File:** [angular-portal-project-init-skill.md](angular-portal-project-init-skill.md)
 
-Generates a new portal repository from the existing `portal-template` but trims it to a starter that does not yet include business libs.
+Generates a new portal repository from internal baseline templates in `core/templates/angular-portal-starter`, with mandatory `src/libs/sample` scaffold and seeded sample entities.
 
 **Key Responsibilities:**
 - Resolve project name and target environments
-- Keep `@sd-angular/core` integrated and version-pinned
-- Remove demo/business lib references from routes and tsconfig paths
-- Generate 1-2 working example routes in `src/app/features/*`
+- Keep `@sd-angular/core` integrated and pinned as npm version from internal baseline (not local tgz)
+- Remove unrelated demo/business lib references from routes and tsconfig paths
+- Generate starter sample route wiring via `src/libs/sample/routes.ts`
+- Seed 3 sample entities under `src/libs/sample/modules/*`, each demonstrating a distinct detail UI pattern:
+  - `employee` → UnifiedCompact full-page detail (same layout for CREATE/UPDATE/DETAIL)
+  - `product` → Side-drawer CRUD (embedded in list page, no sub-routes)
+  - `department` → AdaptiveSplitDetail (DETAIL = read-only `sd-section-item`, CREATE/UPDATE = editable form)
 - Preserve standalone bootstrap, core configuration, and plop generators
 - Verify the new starter with `npm install` and `npm start`
 
@@ -54,8 +58,10 @@ Generates a new portal repository from the existing `portal-template` but trims 
 **Outputs:**
 - Starter Angular portal repo
 - Multi-environment configuration
-- Minimal shell + example routes
+- Minimal shell + sample routes
 - Verified local startup flow
+- Disabled-by-default starter permission configuration
+- `src/libs/sample` scaffold with 3 demo entities showing all 3 detail UI patterns
 
 ---
 
@@ -68,9 +74,16 @@ Generates complete entity management with service, models, list and detail pages
 - Service with mock-first CRUD (`localStorage`) by default; switch to BaseService/API mode when backend contract is explicit
 - Models (SaveReq + DTO)
 - List page with SdTable and pagination
-- Detail page with 3-state machine (CREATE/UPDATE/DETAIL)
-- Route configuration with lazy loading
-- External filter layout convention: nếu số filter ít (ví dụ `<=4`) thì dùng `externalFilterPerRow: 4`; nếu chỉ còn 1 hàng filter thì `hideExternalFilterToolbar: true`
+- Detail page in one of 3 patterns (chosen based on complexity and context):
+
+| Pattern | Use when | Starter example |
+|---|---|---|
+| **Side-drawer** | ~5 fields, simple form, no sub-routes needed | `sample/modules/product` |
+| **UnifiedCompact** | Full-page, same layout for CREATE/UPDATE/DETAIL | `sample/modules/employee` |
+| **AdaptiveSplitDetail** | Full-page, DETAIL shows read-only `sd-section-item`, CREATE/UPDATE shows editable form | `sample/modules/department` |
+
+- Route configuration with lazy loading and `data.permission` on every route
+- External filter layout convention: `externalFilterPerRow: 4` when ≤4 filters; `hideExternalFilterToolbar: true` when only 1 row
 
 **When to use:**
 - Creating new entity management modules
@@ -91,14 +104,17 @@ Generates complete entity management with service, models, list and detail pages
 ### 2. Feature Module Configuration Skill
 **File:** [angular-module-configuration-skill.md](angular-module-configuration-skill.md)
 
-Sets up module-level configuration, interceptors, and guards that multiple entities share.
+Sets up module-level configuration, interceptors, guards, and routes that multiple entities share.
 
-**Key Components:**
-- Module configuration interface
-- API interceptors (request/response handlers)
-- Upload file configuration
-- Route guards
-- Dependency injection setup
+**Always generated:**
+- `[module].configuration.ts` — InjectionToken + interface
+- `configurations/api.configuration.ts` — request/error interceptors
+- `guards/[module].guard.ts` — route protection
+- `routes.ts` — lazy-load entity children with providers
+
+**Optional (ask developer before generating):**
+- `configurations/permission.configuration.ts` — only when module has its own permission domain
+- `configurations/upload-file.configuration.ts` — only when entities in this module use file upload
 
 **When to use:**
 - Creating a new feature module
@@ -107,13 +123,6 @@ Sets up module-level configuration, interceptors, and guards that multiple entit
 - Setting up permissions and guards
 
 **Example:** "Set up Sample module with API host and error handling"
-
-**Outputs:**
-- `[module].configuration.ts` - Configuration interface
-- `configurations/api.configuration.ts` - API interceptor
-- `configurations/upload-file.configuration.ts` - File upload config
-- `guards/[module].guard.ts` - Route guard
-- `routes.ts` - Module routes with providers
 
 ---
 
@@ -170,6 +179,20 @@ Defines workflow actions for entity lifecycle and bulk operations.
 
 ---
 
+### 5. SD Angular Core Beta72 Catalog
+**File:** [sd-angular-core-beta72-catalog.md](sd-angular-core-beta72-catalog.md)
+
+Internal snapshot of supported `@sd-angular/core` component/form/module categories.
+
+Use when:
+- selecting Core UI pieces for generated screens
+- deciding whether a custom UI element is required
+
+Outputs:
+- consistent Core UI-first mapping across module/entity generation
+
+---
+
 ## 🔄 Skill Integration Flow
 
 ## 🔁 Improvement Sync Rule
@@ -180,11 +203,11 @@ Defines workflow actions for entity lifecycle and bulk operations.
 
 **-1. Start with Portal Project Initialization Skill when repo does not exist yet**
 ```
-Input: "Khoi tao du an portal-ops co dev, qc, uat va prod"
+Input: "Khoi tao du an portal-starter-moi co dev, qc, uat va prod"
 Output:
-  - new portal repo scaffolded from portal-template
-  - @sd-angular/core kept in place
-  - only shell/config/environments/example routes remain
+  - new portal repo scaffolded from internal baseline templates
+  - @sd-angular/core pinned from npm baseline (no `file:*.tgz`)
+  - shell/config/environments plus `src/libs/sample` with employee and product remain
   - npm install + npm start verification
 ```
 
@@ -199,23 +222,25 @@ Output:
 
 **1. Start with Feature Module Configuration Skill**
 ```
-Input: "Set up Sample module with Employee and Department entities"
+Input: "Set up Sample module with Employee, Product and Department entities"
 Output: 
   - libs/sample/sample.configuration.ts
   - libs/sample/configurations/api.configuration.ts
   - libs/sample/guards/sample.guard.ts
   - libs/sample/routes.ts (skeleton with providers)
+  - Ask developer: permission.configuration.ts needed? upload-file.configuration.ts needed?
 ```
 
 **2. Use Entity CRUD Module Skill for Each Entity**
 ```
-Input: "Create Employee CRUD with fields: code, name, salary"
-Output:
-  - libs/sample/modules/employee/services/employee.model.ts
-  - libs/sample/modules/employee/services/employee.service.ts
-  - libs/sample/modules/employee/pages/list/list.component.ts
-  - libs/sample/modules/employee/pages/detail/detail.component.ts
-  - libs/sample/modules/employee/employee.routes.ts
+Input: "Create Employee CRUD (UnifiedCompact page), Product CRUD (side-drawer), Department CRUD (AdaptiveSplitDetail)"
+Output per entity:
+  - libs/sample/modules/[entity]/services/[entity].model.ts
+  - libs/sample/modules/[entity]/services/[entity].service.ts
+  - libs/sample/modules/[entity]/pages/list/list.component.ts
+  - libs/sample/modules/[entity]/pages/detail/detail.component.ts  (page patterns)
+  - libs/sample/modules/[entity]/[entity].routes.ts
+  Side-drawer pattern: no separate detail component; list.component.ts contains SdSideDrawer
 ```
 
 **3. Customize with Reactive Form Skill**

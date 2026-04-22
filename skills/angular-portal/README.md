@@ -18,6 +18,7 @@ Resolves incomplete user requests before generation starts.
 - Missing module name
 - Missing display label
 - Missing field definitions
+- PRD/image/cURL normalization before generation
 - Decision whether to reuse or create a module
 - Generation order for a new portal repo
 - UI mode decision: side-drawer vs full page detail
@@ -30,15 +31,18 @@ Resolves incomplete user requests before generation starts.
 
 ### 0.5. [Portal Project Initialization Skill](angular-portal-project-init-skill.md)
 
-Generates a brand-new portal repository from `portal-template`, but keeps only the minimal starter pieces needed to boot locally.
+Generates a brand-new portal repository from internal baseline templates in `core/templates/angular-portal-starter`, with mandatory `src/libs/sample` scaffold and seeded sample entities.
 
 **Generates/Keeps:**
 - standalone Angular application shell
 - `@sd-angular/core` integration
 - requested environment files (`dev`, `qc`, `uat`, `prod`, ...)
 - minimal auth/layout/permission configuration
-- 1-2 example routes under `src/app/features/*`
+- sample routes under `src/libs/sample/routes.ts`
+- seeded entities `employee` and `product` under `src/libs/sample/modules/*`
 - working `npm start` flow
+- permission skeleton disabled by default in starter mode
+- starter-ready `src/libs` scaffold
 
 **Use when:** The developer asks to initialize a new portal repo before any feature module exists.
 
@@ -49,8 +53,9 @@ portal-ops/
 ├── package.json
 ├── src/main.ts
 ├── src/app/app.routes.ts
-├── src/app/features/home/home.page.ts
-├── src/app/features/about/about.page.ts
+├── src/libs/sample/routes.ts
+├── src/libs/sample/modules/employee/...
+├── src/libs/sample/modules/product/...
 └── src/environments/
   ├── environment.dev.ts
   ├── environment.qc.ts
@@ -72,6 +77,8 @@ Generates complete entity management modules with full CRUD operations.
 - Route configuration with lazy loading
 - Full-page detail anchor navigation using `sd-anchor-v2` when fields/sections are large
 - Read-only DETAIL blocks with `sd-section` + `sd-section-item` for split detail dashboards
+- runnable `.spec.ts` files for service/routes/list/detail
+- hybrid compatibility for projects that still combine NgModule and standalone
 
 **Use when:** Creating entity management features (Product, Employee, Customer, etc.)
 
@@ -217,9 +224,32 @@ When handling large generation requests, always follow this order:
 2. Initialize target module (lib)
 3. Generate entity CRUD pages/services/routes
 4. Ensure generated CRUD can run immediately with mock data (default: localStorage)
+5. For starter init, enforce `@sd-angular/core` as npm version string from internal baseline (no `file:*.tgz`)
 5. Run post-generation validation checklist
 
 If any step is skipped, the generation is considered incomplete.
+
+## 🧱 Internal Baseline Rule
+
+For starter generation, always use internal templates bundled in this repository:
+
+1. `core/templates/angular-portal-starter/package.template.json`
+2. `core/templates/angular-portal-starter/tsconfig.template.json`
+3. `core/templates/angular-portal-starter/structure.txt`
+
+Do not depend on sibling workspace folders as source templates.
+
+## 🧩 Component Catalog Rule
+
+Use internal component capability snapshot for beta72:
+
+1. [skills/angular-portal/sd-angular-core-beta72-catalog.md](sd-angular-core-beta72-catalog.md)
+
+If a needed UI element is missing from the catalog, mark generated part as custom and warn developer.
+
+Runtime knowledge boundary:
+- during generation in another workspace, use only knowledge files in `sdcorejs-agent`
+- do not require live reads from external sample repositories
 
 ---
 
@@ -229,11 +259,15 @@ These rules apply to all skills in this category:
 
 1. Do not modify global CSS/SCSS files during feature generation.
   - Forbidden by default: `src/styles.scss`, global theme bundles, shared reset files.
-2. Prefer Core UI components first.
+2. Never include local AI/tooling folders in generated starter output.
+  - Exclude by default: `.claude`, `.github`, `.git`, `.vscode-test`.
+  - Exclude `.gitkeep` placeholders from output (especially in `src/libs/**`).
+  - If present in target repo after render, remove before handing off.
+3. Prefer Core UI components first.
   - If Core UI does not provide a required component, the agent must explicitly warn developer that this part is custom-written.
-3. Always run a double-check pass after generation.
+4. Always run a double-check pass after generation.
   - Verify routes, providers, permission keys, upload keys, and compile status.
-4. Reply language must follow developer language.
+5. Reply language must follow developer language.
   - Vietnamese input -> Vietnamese response.
   - English input -> English response.
 
@@ -425,7 +459,7 @@ export class DetailComponent implements OnInit {
 
 ### MUST NOT ❌
 - Generate entity files before resolving which module owns them
-- Mix standalone and NgModule approaches
+- Do not force migration away from existing hybrid NgModule + standalone setup when developer requests compatibility mode
 - Use `providedIn: 'root'` for entity services
 - Hard-code API URLs (inject via configuration)
 - Add business logic to components
