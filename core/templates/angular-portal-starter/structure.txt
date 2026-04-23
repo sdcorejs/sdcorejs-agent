@@ -14,6 +14,10 @@
     │   ├── app.routes.ts
     │   ├── components/
     │   │   └── main/
+    │   ├── services/
+    │   │   └── base/
+    │   │       ├── base.model.ts
+    │   │       └── base.service.ts
     │   ├── pages/
     │   │   └── home/
     │   │       └── home.component.ts
@@ -38,77 +42,50 @@
     │       │   └── safe-html.pipe.ts
     │       ├── directives/
     │       │   └── permission-disabled.directive.ts
-    │       ├── services/
-    │       │   └── crud-base.service.ts
     │       └── modules/
     │           ├── employee/
     │           │   ├── index.ts
     │           │   ├── README.md
-    │           │   ├── employee.routes.ts
-    │           │   ├── employee.routes.spec.ts
-    │           │   ├── configurations/
-    │           │   │   ├── employee-api.configuration.ts
-    │           │   │   ├── employee-permission.configuration.ts
-    │           │   │   └── employee-upload-file.configuration.ts
-    │           │   ├── guards/
-    │           │   │   └── employee-permission.guard.ts
+    │           │   ├── routes.ts
+    │           │   ├── routes.spec.ts
     │           │   ├── pipes/
     │           │   │   └── employee-status.pipe.ts
     │           │   ├── directives/
     │           │   │   └── employee-highlight.directive.ts
-    │           │   ├── models/
-    │           │   │   ├── employee.model.ts
-    │           │   │   └── employee-filter.model.ts
     │           │   ├── mocks/
     │           │   │   └── employee.mock.ts
     │           │   ├── services/
-    │           │   │   ├── employee-base.service.ts
-    │           │   │   ├── employee.service.ts
-    │           │   │   └── employee.service.spec.ts
+    │           │   │   ├── employee.model.ts
+    │           │   │   └── employee.service.ts
     │           │   └── pages/
     │           │       ├── list/
-    │           │       │   ├── list.component.ts
+    │           │       │   ├── list.component.ts         ← route: /list
     │           │       │   └── list.component.spec.ts
-    │           │       ├── upsert/
-    │           │       │   ├── upsert.component.ts
-    │           │       │   └── upsert.component.spec.ts
     │           │       └── detail/
-    │           │           ├── detail.component.ts
+    │           │           ├── detail.component.ts       ← route: /detail, /create, /update/:id (state theo URL)
     │           │           └── detail.component.spec.ts
     │           └── product/
     │               ├── index.ts
     │               ├── README.md
-    │               ├── product.routes.ts
-    │               ├── product.routes.spec.ts
-    │               ├── configurations/
-    │               │   ├── product-api.configuration.ts
-    │               │   ├── product-permission.configuration.ts
-    │               │   └── product-upload-file.configuration.ts
-    │               ├── guards/
-    │               │   └── product-permission.guard.ts
+    │               ├── routes.ts
+    │               ├── routes.spec.ts
     │               ├── pipes/
     │               │   └── product-status.pipe.ts
     │               ├── directives/
     │               │   └── product-highlight.directive.ts
-    │               ├── models/
-    │               │   ├── product.model.ts
-    │               │   └── product-filter.model.ts
     │               ├── mocks/
     │               │   └── product.mock.ts
     │               ├── services/
-    │               │   ├── product-base.service.ts
-    │               │   ├── product.service.ts
-    │               │   └── product.service.spec.ts
+    │               │   ├── product.model.ts
+    │               │   └── product.service.ts
+    │               ├── components/
+    │               │   └── detail-side-drawer/
+    │               │       ├── detail-side-drawer.component.ts
+    │               │       └── detail-side-drawer.component.spec.ts
     │               └── pages/
-    │                   ├── list/
-    │                   │   ├── list.component.ts
-    │                   │   └── list.component.spec.ts
-    │                   ├── upsert/
-    │                   │   ├── upsert.component.ts
-    │                   │   └── upsert.component.spec.ts
-    │                   └── detail/
-    │                       ├── detail.component.ts
-    │                       └── detail.component.spec.ts
+    │                   └── list/
+    │                       ├── list.component.ts         ← side-drawer mode (detail trong components/detail-side-drawer)
+    │                       └── list.component.spec.ts
     ├── index.html
     ├── main.ts
     └── styles.scss

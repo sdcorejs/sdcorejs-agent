@@ -52,6 +52,13 @@ If unsure, skip both and generate minimal module first.
 - Generate module unit tests (`routes.spec.ts`, `guard.spec.ts`, and configuration smoke spec) in the same pass
 - If project is hybrid NgModule + standalone, generate compatibility wiring without forcing full migration
 - Run a post-generation double-check: token wiring, provider scope, route key consistency, and unresolved imports
+- Run tests immediately after module generation and report result:
+  - preferred: `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts`
+  - fallback: `npm run test -- --watch=false`
+  - include pass/fail summary and failing spec names
+- Keep output token-efficient:
+  - load this skill file only after request intake confirms module init is needed
+  - reuse existing templates and avoid regenerating unchanged boilerplate explanations
 
 ### MUST NOT ❌
 - Provide services in route-level configuration (only for interceptors/guards)
@@ -68,6 +75,7 @@ If unsure, skip both and generate minimal module first.
 - Do not reuse the same permission `key` across different configurations
 - Do not reuse the same upload `key` across different configurations
 - Do not mix route `data.permissionKey='A'` with configuration `key='B'`
+- Do not mark module init complete before test command has been executed (unless environment blocker is reported)
 
 ## 4. Template
 

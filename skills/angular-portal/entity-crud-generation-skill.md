@@ -273,7 +273,7 @@ export const PROMOTION_SEED_DATA: PromotionDTO[] = [
 - Assign `id: uuidv4()` to every row so MockCrudStore can address each record
 - Spread `isActivated` roughly 70% true / 30% false unless domain logic says otherwise
 
-### Step 4: Generate Routes (product.routes.ts)
+### Step 4: Generate Routes (routes.ts)
 
 Pattern: Lazy-load components, provide service
 
@@ -283,7 +283,7 @@ Pattern: Lazy-load components, provide service
 - Provide ProductService at route level
 - Lazy load components (COMPONENT_TYPE)
 
-**Output (product.routes.ts):**
+**Output (routes.ts):**
 ```typescript
 import { Routes } from '@angular/router';
 import { ProductService } from './services/product.service';
@@ -448,7 +448,7 @@ product/
 │           - Data loading for detail/update
 │           - Save/back/edit navigation
 │
-└── product.routes.ts
+└── routes.ts
     - Routes with path, providers, children
     - Lazy-load ListComponent and DetailComponent
 ```
@@ -493,7 +493,7 @@ Before returning generated code:
 6. ✅ Generate model (employee.model.ts)
 7. ✅ Generate mock data file (employee.mock-data.ts)
 8. ✅ Generate service (employee.service.ts)
-9. ✅ Generate routes (employee.routes.ts)
+9. ✅ Generate routes (routes.ts)
 10. ✅ Generate list component
 11. ✅ Generate detail component
 12. ✅ Verify all files compile without errors
@@ -509,5 +509,5 @@ src/libs/sample/modules/employee/
 ├── pages/
 │   ├── list/list.component.ts
 │   └── detail/detail.component.ts
-└── employee.routes.ts
+└── routes.ts
 ```

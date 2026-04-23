@@ -41,10 +41,22 @@ This skill also normalizes inputs from PRD text, UI screenshots, and sample cURL
 - Preserve sdcorejs generation order: request resolution -> module setup -> entity CRUD -> form refinement
 - For large requests, enforce full generation order: portal init -> module init -> CRUD generation -> mock data readiness -> double-check
 - If test coverage level is not explicitly provided, default to `standard` spec coverage for generated module/entity
+- Enforce blocking clarification checklist before generating entity screens in new portal repos:
+  - module name (first blocking item)
+  - entity name
+  - display label
+  - key list fields
+  - key detail fields
+  - confirm create/update/detail scope
+- Default full-page entity contract uses 2 page components (`pages/list`, `pages/detail`), with URL-driven states on detail (`/create`, `/update/:id`, `/detail/:id`); side-drawer is explicit compact exception
 - Detect whether target project is standalone-first or hybrid NgModule+standalone and select compatible generation path
 - When generation includes permission configuration, ensure `SD_PERMISSION_CONFIGURATION` is provided at app root (`main.ts`) for root-scoped permission service
 - When generation includes upload-file configuration, ensure `SD_UPLOAD_FILE_CONFIGURATION` is provided at app root (`main.ts`) and keyed by module (`key='moduleName'`, portal default `key=undefined`)
 - When user provides implementation improvements/conventions, ask whether to update the skill library if they did not explicitly request skill updates
+- Apply token budget mode by model class:
+  - low-cost model: strict checklist + template-first output, minimal narrative
+  - high-capability model: same checklist, but compress repeated rationale and avoid duplicated examples
+- Support developer Q&A mode when user asks architecture questions instead of generation; answer from existing skill/template rules first
 
 ### MUST NOT ❌
 - Start generating entity files when module ownership is still ambiguous

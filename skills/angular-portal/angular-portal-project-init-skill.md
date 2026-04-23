@@ -4,7 +4,7 @@
 
 Generates production-ready Angular portal starter from internal baseline template (`sdcorejs-agent/core/templates/angular-portal-starter/`).
 
-**Output:** Complete portal with sample module, 2 entities (employee + product), dev tools, ready for `npm start`.
+**Output:** Complete portal with sample module, seeded entities, dev tools, ready for `npm start`.
 
 **Status:** ✅ **IMPLEMENTED & TESTED**
 
@@ -58,7 +58,7 @@ Before generating, clarify with user:
 
 ```
 portal-new/
-├── package.json                   # @sd-angular/core: 19.0.0-beta.72 (npm)
+├── package.json                   # @sd-angular/core: 19.0.0-beta.73 (npm)
 ├── tsconfig.json                  # baseUrl + @sample paths
 ├── angular.json                   # build/serve configs
 ├── src/
@@ -84,7 +84,8 @@ portal-new/
 ### Step 2: Dependency Management
 
 **package.json Requirements:**
-- ✅ `@sd-angular/core@19.0.0-beta.72` (npm registry version, NOT tgz)
+- ✅ `@sd-angular/core@19.0.0-beta.73` (npm registry version, NOT tgz)
+- Source of truth: `skills/angular-portal/core-version.md`
 - ✅ `@angular/core@20.3.18`
 - ✅ `@angular/router@20.3.18`
 - ✅ `prettier@latest`
@@ -108,6 +109,22 @@ portal-new/
 **Command:** `npm start`
 
 **Expected:** Server launches at `http://localhost:54439/`
+
+### Step 5: Test Verification (Mandatory)
+
+Run after starter generation:
+
+```bash
+# Unit/integration
+npm run test -- --watch=false
+
+# E2E (only when project has e2e script/config)
+npm run e2e
+```
+
+Expected:
+- Unit tests pass, or failing specs are reported explicitly
+- E2E passes when available; if unavailable, report blocker and required setup
 
 ---
 
@@ -161,9 +178,14 @@ export const appRoutes: Routes = [
 
 | Entity | Detail Pattern | Routes |
 |---|---|---|
-| `employee` | **UnifiedCompact** — same full-page layout for CREATE / UPDATE / DETAIL | `/sample/employee`, `/sample/employee/create`, `/sample/employee/detail/:id`, `/sample/employee/update/:id` |
+| `employee` | **UnifiedCompact** — full-page with `pages/list` + `pages/detail` (state theo URL) | `/sample/employee`, `/sample/employee/create`, `/sample/employee/detail/:id`, `/sample/employee/update/:id` |
 | `product` | **Side-drawer** — all CRUD in embedded `SdSideDrawer`, no sub-routes | `/sample/product` only |
-| `department` | **AdaptiveSplitDetail** — DETAIL shows read-only `sd-section-item`, CREATE/UPDATE shows editable form | `/sample/department`, `/sample/department/create`, `/sample/department/detail/:id`, `/sample/department/update/:id` |
+| `department` | **AdaptiveSplitDetail** — `pages/detail` handles CREATE/UPDATE/DETAIL by URL state | `/sample/department`, `/sample/department/create`, `/sample/department/detail/:id`, `/sample/department/update/:id` |
+
+Entity route contract for full-page entities:
+- page components: `pages/list`, `pages/detail`
+- route states: `/create`, `/update/:id`, `/detail/:id` (all render `pages/detail`)
+- Side-drawer entity may keep all states in list page as compact exception
 
 **Service Layer:**
 ```typescript
@@ -291,7 +313,8 @@ export class AuthConfiguration implements ISdAuthConfiguration {
 Before using starter:
 
 - [x] Baseline template location correct: `core/templates/angular-portal-starter/`
-- [x] package.json uses npm version of @sd-angular/core: `"19.0.0-beta.72"`
+- [x] package.json uses npm version of @sd-angular/core: `"19.0.0-beta.73"`
+- [x] Core version source of truth documented in `skills/angular-portal/core-version.md`
 - [x] tsconfig.json has: `"baseUrl": "./"` + `"@sample": ["./src/libs/sample"]` + `"@sample/*": ["./src/libs/sample/*"]`
 - [x] app.routes.ts lazy-loads sample module
 - [x] SAMPLE_CONFIGURATION provided at route level
@@ -457,7 +480,7 @@ Ask the developer:
     │   └── sample.guard.ts
     └── modules/
       ├── employee/
-      │   ├── employee.routes.ts
+      │   ├── routes.ts
       │   ├── services/
       │   │   ├── employee.model.ts
       │   │   └── employee.service.ts
@@ -465,7 +488,7 @@ Ask the developer:
       │       ├── list/list.component.ts
       │       └── detail/detail.component.ts
       └── product/
-        ├── product.routes.ts
+        ├── routes.ts
         ├── services/
         │   ├── product.model.ts
         │   └── product.service.ts
@@ -490,7 +513,7 @@ Ask the developer:
     "plop:entity": "npx plop entity"
   },
   "dependencies": {
-    "@sd-angular/core": "19.0.0-beta.72"
+    "@sd-angular/core": "19.0.0-beta.73"
   }
 }
 ```
@@ -640,7 +663,7 @@ Create project portal-starter-moi.
 Keep app shell, core configuration, environments, and plop generator files.
 Generate src/libs/sample scaffold with seeded employee and product entities.
 Generate sample routes and app route wiring to /sample/*.
-Pin @sd-angular/core to npm version 19.0.0-beta.72 (no local tgz dependency).
+Pin @sd-angular/core to npm version 19.0.0-beta.73 (no local tgz dependency).
 Then run npm install and npm start to verify the starter boots.
 ```
 
@@ -658,8 +681,8 @@ Then run npm install and npm start to verify the starter boots.
 [project-name]/src/app/configurations/permission.configuration.ts
 [project-name]/src/libs/sample/routes.ts
 [project-name]/src/libs/sample/sample.configuration.ts
-[project-name]/src/libs/sample/modules/employee/employee.routes.ts
-[project-name]/src/libs/sample/modules/product/product.routes.ts
+[project-name]/src/libs/sample/modules/employee/routes.ts
+[project-name]/src/libs/sample/modules/product/routes.ts
 [project-name]/src/environments/environment.dev.ts
 [project-name]/src/environments/environment.qc.ts
 [project-name]/src/environments/environment.uat.ts

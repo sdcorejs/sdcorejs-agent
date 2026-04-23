@@ -54,14 +54,9 @@ portal-ops/
 ├── src/main.ts
 ├── src/app/app.routes.ts
 ├── src/libs/sample/routes.ts
-├── src/libs/sample/modules/employee/...
-├── src/libs/sample/modules/product/...
-└── src/environments/
-  ├── environment.dev.ts
   ├── environment.qc.ts
   ├── environment.uat.ts
   └── environment.prod.ts
-```
 
 ---
 
@@ -85,7 +80,7 @@ Generates complete entity management modules with full CRUD operations.
 **Example output:**
 ```
 libs/sample/modules/employee/
-├── employee.routes.ts
+├── routes.ts
 ├── services/
 │   ├── employee.model.ts
 │   └── employee.service.ts
@@ -104,32 +99,17 @@ Sets up the complete module infrastructure with configuration, interceptors, and
 - Module configuration interface with InjectionToken
 - API request/response interceptor configuration
 - File upload configuration
-- Route guards with permission checking
-- Module routes with lazy-loaded children
-
 **Use when:** Creating a new feature module container that will hold multiple entities
 
 **Example output:**
 ```
-libs/sample/
-├── sample.configuration.ts
 ├── routes.ts
-├── configurations/
 │   ├── api.configuration.ts
 │   └── upload-file.configuration.ts
 └── guards/
     └── sample.guard.ts
 ```
 
----
-
-### 3. [Reactive Form with Validation Skill](angular-reactive-form-skill.md)
-
-Creates reactive forms with comprehensive validation, custom validators, and error handling.
-
-**Generates:**
-- Lightweight model-binding FormGroup and save-boundary validation
-- Built-in validators (required, minLength, maxLength, min, max, pattern)
 - Custom validator implementations
 - Error message mapping for user feedback
 - Support for dynamic FormArray fields
@@ -145,18 +125,12 @@ Creates reactive forms with comprehensive validation, custom validators, and err
 ---
 
 ### 4. [Workflow Actions in Detail and List](angular-workflow-actions-skill.md)
-
 Adds state-based business actions in detail and bulk actions in list.
 
 **Generates:**
 - Detail action set by state (save, submit, approve, reject, edit)
 - Conditional visibility by permission and business flags (`editable`, `approvable`)
 - Bulk selector actions in list when multi-record operations are needed
-- Confirm dialog and notify patterns for transitions
-
-**Use when:** Entity requires approval/submission lifecycle or mass actions on list.
-
----
 
 ## 🔄 Integration Example
 
@@ -172,28 +146,17 @@ Agent behavior:
   - If form is common with 5-6 fields: choose side-drawer by default
   - Then continue with module configuration + entity CRUD
 ```
-
 ### Step 1: Module Configuration
 Use **Feature Module Configuration Skill**
 ```bash
 Input: "Set up Product module with API host http://localhost:3000/api/v1/product"
 Output: 
   - product.configuration.ts
-  - routes.ts (with providers)
-  - configurations/api.configuration.ts
-  - guards/product.guard.ts
-```
-
 ### Step 2: Entity CRUD
 Use **Entity CRUD Module Skill**
 ```bash
 Input: "Create Product entity with fields: code, name, price, category, stock"
-Output:
-  - modules/product/services/product.model.ts
-  - modules/product/services/product.service.ts
-  - modules/product/pages/list/list.component.ts
   - modules/product/pages/detail/detail.component.ts
-  - modules/product/product.routes.ts
 ```
 
 ### Step 3: Enhanced Validation
@@ -225,7 +188,7 @@ When handling large generation requests, always follow this order:
 3. Generate entity CRUD pages/services/routes
 4. Ensure generated CRUD can run immediately with mock data (default: localStorage)
 5. For starter init, enforce `@sd-angular/core` as npm version string from internal baseline (no `file:*.tgz`)
-5. Run post-generation validation checklist
+6. Run post-generation validation checklist
 
 If any step is skipped, the generation is considered incomplete.
 
@@ -241,17 +204,16 @@ Do not depend on sibling workspace folders as source templates.
 
 ## 🧩 Component Catalog Rule
 
-Use internal component capability snapshot for beta72:
+Use internal version source and component capability snapshot:
 
-1. [skills/angular-portal/sd-angular-core-beta72-catalog.md](sd-angular-core-beta72-catalog.md)
+1. [skills/angular-portal/core-version.md](core-version.md)
+2. [skills/angular-portal/sd-angular-core-catalog.md](sd-angular-core-catalog.md)
 
 If a needed UI element is missing from the catalog, mark generated part as custom and warn developer.
 
 Runtime knowledge boundary:
 - during generation in another workspace, use only knowledge files in `sdcorejs-agent`
 - do not require live reads from external sample repositories
-
----
 
 ## 🧭 Global Guardrails
 
@@ -295,30 +257,6 @@ To keep behavior consistent across model families, all portal skills must follow
   - Detect developer language and answer in the same language.
 
 If one model behaves differently, the agent should restate and enforce this contract before generating code.
-libs/product/
-├── product.configuration.ts
-├── routes.ts
-├── configurations/
-│   ├── api.configuration.ts
-│   └── upload-file.configuration.ts
-├── guards/
-│   └── product.guard.ts
-├── services/
-│   ├── base/
-│   │   ├── base.model.ts
-│   │   └── base.service.ts
-│   └── index.ts
-└── modules/
-    └── product/
-        ├── product.routes.ts
-        ├── services/
-        │   ├── product.model.ts
-        │   └── product.service.ts
-        ├── pages/
-        │   ├── list/list.component.ts
-        │   └── detail/detail.component.ts
-        └── index.ts
-```
 
 ---
 
