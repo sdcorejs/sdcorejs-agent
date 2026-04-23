@@ -18,7 +18,9 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Confirm target module before generating entity files
 - Generate the feature module first if it does not exist
 - Generate entity service with runnable mock CRUD by default (`localStorage`) when backend API contract is not provided yet
-- Generate `services/[entity].mock-data.ts` as the single centralized seed source for each entity (target: around 100 rows)
+- Generate `services/[entity].mock-data.ts` as the single centralized seed source for each entity (target: **20–40 rows**)
+- Generate mock data immediately after `SaveReq` and `DTO` are finalized (whether from user input or semantic inference); do not wait until after list/detail components are built
+- Seed rows must use domain-realistic values derived from the inferred field schema; never use generic placeholders like `"Name 1"`, `"Code 01"`, or repeated identical values across all rows
 - Ensure mock store reseeds automatically when stored JSON is missing, empty array, or corrupted JSON
 - If backend API contract is provided explicitly, service may switch to `BaseService`-based API integration
 - Parse and normalize input artifacts when available:
@@ -100,6 +102,24 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - When the request does not clearly define expected detail layout, ask one clarification question before final generation:
   - "Bạn muốn giữ layout mặc định hay đổi sang UnifiedCompact / UnifiedSplit / AdaptiveSplitDetail?"
 - Reserve extension points for workflow actions in both list and detail
+- Entity pages must use 2-component structure for full-page pattern:
+  - `pages/list/list.component.ts`
+  - `pages/detail/detail.component.ts`
+  - URL routes map to `detail.component.ts` states:
+    - `/create` -> CREATE
+    - `/update/:id` -> UPDATE
+    - `/detail/:id` -> DETAIL (read-only)
+  - Side-drawer pattern is the compact exception: `pages/list` + `components/detail-side-drawer`
+- If required UI is not available in Core UI, generate a custom UI skeleton instead of skipping:
+  - add `// CUSTOM_UI: <reason>` comment in component
+  - render placeholder block for that UI area
+  - wire actions to `alert('TODO: <EventName> - implement here')`
+  - include warning in generation summary: `Custom UI required: <ComponentName> - no Core UI equivalent`
+- Run tests immediately after module/entity generation:
+  - preferred: `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts`
+  - fallback: `npm run test -- --watch=false`
+  - report pass/fail and failing specs
+  - fix failing tests before marking generation complete
 - Use `inject()` function (not constructor injection) for all service and dependency injection inside components, services, and directives:
   ```typescript
   readonly #router = inject(Router);
@@ -337,7 +357,7 @@ Enable sd-anchor-v2 when one of these is true:
 If none match, keep regular section layout without anchor.
 ```
 
-### Permission Keyed Route Template
+### Permission Keyed Route Template (2 Components + URL States)
 ```typescript
 export const employeeRoutes: Routes = [
   {
@@ -352,7 +372,23 @@ export const employeeRoutes: Routes = [
         },
       },
       {
-        path: ':id',
+        path: 'create',
+        loadComponent: () => import('./pages/detail/detail.component').then(m => m.DetailComponent),
+        data: {
+          permission: 'SAMPLE_C_EMPLOYEE_CREATE',
+          permissionKey: 'sample',
+        },
+      },
+      {
+        path: 'update/:id',
+        loadComponent: () => import('./pages/detail/detail.component').then(m => m.DetailComponent),
+        data: {
+          permission: 'SAMPLE_C_EMPLOYEE_UPDATE',
+          permissionKey: 'sample',
+        },
+      },
+      {
+        path: 'detail/:id',
         loadComponent: () => import('./pages/detail/detail.component').then(m => m.DetailComponent),
         data: {
           permission: 'SAMPLE_C_EMPLOYEE_DETAIL',
@@ -440,8 +476,12 @@ Choose ONE based on entity complexity:
 ```
 libs/[module]/
 └── modules/[entity]/
-  ├── [entity].routes.ts           # Only list route, no create/detail/update sub-routes
-  ├── [entity].routes.spec.ts
+  ├── routes.ts                     # Only list route, no create/update/detail sub-routes
+  ├── routes.spec.ts
+  ├── components/
+  │   └── detail-side-drawer/
+  │       ├── detail-side-drawer.component.spec.ts
+  │       └── detail-side-drawer.component.ts
   ├── pages/
   │   └── list/
   │       ├── list.component.spec.ts
@@ -456,8 +496,8 @@ libs/[module]/
 ```
 libs/[module]/
 └── modules/[entity]/
-  ├── [entity].routes.ts
-  ├── [entity].routes.spec.ts
+  ├── routes.ts
+  ├── routes.spec.ts
   ├── pages/
   │   ├── list/
   │   │   ├── list.component.spec.ts
@@ -887,7 +927,7 @@ export class ListComponent implements OnInit {
 }
 ```
 
-### [entity].routes.ts (Side-drawer variant — list only, no sub-routes)
+### routes.ts (Side-drawer variant — list only, no sub-routes)
 ```typescript
 export const [entity]Routes: Routes = [
   {
@@ -1117,7 +1157,7 @@ export class DetailComponent implements OnInit {
 }
 ```
 
-### [entity].routes.ts
+### routes.ts
 ```typescript
 import { Routes } from '@angular/router';
 import { ListComponent } from './pages/list/list.component';
@@ -1977,7 +2017,7 @@ export class DetailComponent implements OnInit {
 ## Implementation Checklist
 
 - [ ] Create model file with SaveReq interface and DTO type
-- [ ] Create `services/[entity].mock-data.ts` with centralized seed data (~100 rows) for every generated entity
+- [ ] Create `services/[entity].mock-data.ts` with 20–40 domain-realistic seed rows immediately after SaveReq/DTO are finalized
 - [ ] Create service with mock-first CRUD (`localStorage`) by default; use BaseService/API mode only when backend contract is explicit
 - [ ] Create list component with @SdTabComponent decorator
 - [ ] Create detail component with 3-state machine

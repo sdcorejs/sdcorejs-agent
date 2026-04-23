@@ -1,0 +1,2 @@
+- Any task that edits files inside sdcorejs-agent is incomplete until the current-day handoff in agents/sdcorejs/HANDOFF-YYYY-MM-DD.md is written or updated.
+- Minimum handoff content: session focus, changed files/areas, and verification status or blockers.

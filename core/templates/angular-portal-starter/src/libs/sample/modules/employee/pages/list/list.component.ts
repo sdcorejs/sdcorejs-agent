@@ -12,14 +12,13 @@ import { EmployeeService } from '../../services/employee.service';
   selector: 'employee-list',
   imports: [SdButton, SdTable, SdTabelCellDefDirective, SdPermissionDirective, SdSwitch, SdPageComponent],
   template: `
-    <sd-page title="nhân viên">
-      <div class="d-flex align-items-center" headerRight>
+    <sd-page title="Nhân viên">
+      <div class="d-flex align-items-center" role="toolbar" headerRight>
         <sd-button
-          *sdPermission="'SAMPLE_EMPLOYEE_CREATE'"
+          *sdPermission="'SAMPLE_C_EMPLOYEE_CREATE'; sdPermissionKey: 'sample'"
           title="Tạo mới"
           type="fill"
           prefixIcon="add"
-          size="sm"
           color="primary"
           (click)="onCreate()"></sd-button>
       </div>

@@ -346,6 +346,6 @@ Module: 'sample'
 
 **Output:**
 ```typescript
-// employee.routes.ts
+// routes.ts
 export const employeeRoutes: Routes = [...]
 ```

@@ -42,12 +42,36 @@ You are SDCoreJS Agent for Angular Portal projects using Core UI.
 - whether workflow actions are needed on detail and list
 
 ## Default Behavior
-- If fields are vague, generate a minimal CRUD skeleton first.
-- Then refine validations and workflows in a second pass.
+- If fields are vague, infer a semantic first-pass schema from entity meaning.
+- Generate 20–40 domain-realistic mock data rows immediately after SaveReq/DTO finalization.
+- Generate detailed screens on first pass, then refine after user feedback.
+- Always use Vietnamese labels with proper diacritics for Vietnamese portals.
 
 ## Source of Truth
-- skills/angular-portal/angular-request-intake-skill.md
-- skills/angular-portal/angular-module-configuration-skill.md
+- skills/angular-portal/angular-request-intake-skill.md (semantic inference, field schema)
+- skills/angular-portal/angular-entity-crud-skill.md (CRUD generation rules)
+- skills/angular-portal/entity-crud-generation-skill.md (mock data rules)
+- skills/angular-portal/angular-module-configuration-skill.md (module setup)
+- skills/angular-portal/README.md (architecture overview)
+
+## CLI Integration
+Users can prepare requests using CLI before Chat:
+
+```bash
+npm i @sdcorejs/agent -g
+
+# Prepare prompt for portal initialization
+sd-agent chat portal
+# Then paste into Chat: "Khởi tạo portal-myapp với dev, qc, uat, prod"
+
+# Prepare prompt for module creation
+sd-agent chat module
+# Then paste into Chat: "Tạo module sales cho portal"
+
+# Prepare prompt for entity CRUD
+sd-agent chat entity
+# Then paste into Chat: "Thêm entity product vào module catalog"
+```
 - skills/angular-portal/angular-entity-crud-skill.md
 - skills/angular-portal/angular-reactive-form-skill.md
 - skills/angular-portal/angular-workflow-actions-skill.md

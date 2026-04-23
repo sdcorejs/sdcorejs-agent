@@ -19,12 +19,20 @@ This skill also normalizes inputs from PRD text, UI screenshots, and sample cURL
 - Offer to create a new module if there is no suitable module yet
 - Apply module configuration skill first when creating a brand-new module
 - Reduce the first clarification round to the minimum required questions
-- Generate a minimal CRUD skeleton if the module is known but the fields are only partially defined
+- If the module is known but the user does not provide fields, infer a first-pass semantic schema from the entity meaning before generating code
+- Generate concrete first-pass fields for `SaveReq`, `DTO`, list columns, and detail form based on the entity domain instead of falling back to only `code`, `name`, `isActivated`
+- For Vietnamese portals, generate field labels, column titles, and default action text in Vietnamese with proper diacritics
+- Infer field groups from entity semantics such as identity, classification, status, amount, date/time, owner, note, attachment, and audit information
+- Keep the inferred schema specific enough to render runnable list/detail screens, then refine after user feedback if needed
 - Use only knowledge and templates stored in `sdcorejs-agent` during generation; do not require runtime reads from external sample repositories
 - Resolve input sources in this order when available: PRD text -> UI screenshot/attribute image -> sample cURL request/response
 - Build a normalized field contract from those inputs: list fields, detail fields, required flags, enum candidates, and API payload hints
+- If no PRD/screenshot/cURL exists, build the normalized field contract from entity semantics plus known portal conventions from the current repository
 - Prefer `side-drawer` for common entity forms with around 5-6 fields
 - For common flows, ensure side-drawer content fits without vertical scroll in typical desktop viewport
+- Choose detail style from inferred complexity, not only raw field count:
+  - `side-drawer` for quick CRUD with one business section, few editable fields, and no child tables/attachments/workflow blocks
+  - `page` for entities with multiple business sections, long textarea content, file uploads, child tables, approval/workflow actions, or many derived read-only fields
 - For page-based detail flows, classify layout into one of 3 variants and confirm when ambiguous:
   - `UnifiedCompact`: same layout for CREATE/UPDATE/DETAIL, no split title/form columns
   - `UnifiedSplit`: same split layout for CREATE/UPDATE/DETAIL (left title, right form/content)
@@ -33,20 +41,34 @@ This skill also normalizes inputs from PRD text, UI screenshots, and sample cURL
 - Preserve sdcorejs generation order: request resolution -> module setup -> entity CRUD -> form refinement
 - For large requests, enforce full generation order: portal init -> module init -> CRUD generation -> mock data readiness -> double-check
 - If test coverage level is not explicitly provided, default to `standard` spec coverage for generated module/entity
+- Enforce blocking clarification checklist before generating entity screens in new portal repos:
+  - module name (first blocking item)
+  - entity name
+  - display label
+  - key list fields
+  - key detail fields
+  - confirm create/update/detail scope
+- Default full-page entity contract uses 2 page components (`pages/list`, `pages/detail`), with URL-driven states on detail (`/create`, `/update/:id`, `/detail/:id`); side-drawer is explicit compact exception
 - Detect whether target project is standalone-first or hybrid NgModule+standalone and select compatible generation path
 - When generation includes permission configuration, ensure `SD_PERMISSION_CONFIGURATION` is provided at app root (`main.ts`) for root-scoped permission service
 - When generation includes upload-file configuration, ensure `SD_UPLOAD_FILE_CONFIGURATION` is provided at app root (`main.ts`) and keyed by module (`key='moduleName'`, portal default `key=undefined`)
 - When user provides implementation improvements/conventions, ask whether to update the skill library if they did not explicitly request skill updates
+- Apply token budget mode by model class:
+  - low-cost model: strict checklist + template-first output, minimal narrative
+  - high-capability model: same checklist, but compress repeated rationale and avoid duplicated examples
+- Support developer Q&A mode when user asks architecture questions instead of generation; answer from existing skill/template rules first
 
 ### MUST NOT ❌
 - Start generating entity files when module ownership is still ambiguous
 - Assume an entity belongs to a module without user confirmation when more than one module is plausible
-- Ask for every optional detail up front if a minimal skeleton can be produced safely
+- Ask for every optional detail up front if a strong semantic first pass can be produced safely
 - Skip module creation when the user confirms no suitable module exists
 - Default to full page detail for short, common forms when side-drawer is sufficient
 - Reply in a language different from the developer language without explicit request
 - Lock into one page layout variant without clarifying when PRD/screenshot suggests another variant
 - Ignore provided screenshot or cURL contract when they contain useful field/layout/API clues
+- Generate placeholder Vietnamese labels without diacritics when the portal language is Vietnamese
+- Fall back to a generic three-field CRUD if the entity semantics clearly suggest richer domain fields
 
 ## 4. Template
 
@@ -74,11 +96,14 @@ If module does not exist:
   Then continue to entity CRUD skill
 
 If fields are incomplete:
-  Generate minimal screens with standard fields
-  - code
-  - name
-  - isActivated
-  Then refine the detail form after clarification
+  Infer a semantic field matrix from the entity name and portal conventions
+  - identity fields: code, name/title
+  - domain fields: category/type/amount/date/status/owner/note/attachment as relevant
+  - list columns: compact overview fields with Vietnamese labels if portal language is Vietnamese
+  - detail fields: editable fields grouped by business section
+  - SaveReq: writable fields only
+  - DTO: SaveReq + read-only display/audit/meta fields if relevant
+  Then refine the detail form after user feedback if needed
 
 If PRD text + screenshot/cURL are provided:
   Normalize to one field matrix before generation:
@@ -90,8 +115,9 @@ If PRD text + screenshot/cURL are provided:
 
 If detail style is missing:
   Use heuristics:
-  - 5-6 common fields -> side-drawer
-  - many groups/sections or large table + attachments -> full page detail
+  - one section, short fields, no child table/upload/workflow -> side-drawer
+  - many groups/sections, textarea-heavy form, child table, attachments, or workflow -> full page detail
+  - if semantic schema suggests mostly quick-edit metadata, prefer side-drawer even when field count is slightly above 6
 
 If page detail is chosen but layout variant is unclear:
   Ask:
@@ -126,8 +152,16 @@ Useful but optional for first pass:
 - architecture mode (`standalone-first` or `hybrid-ngmodule-standalone`)
 
 Default detail style if user does not choose:
-- `side-drawer` for 5-6 common fields and quick CRUD
-- `page` for complex workflows (approval, multi-section, child table)
+- `side-drawer` for quick CRUD with one compact section and no heavy supporting blocks
+- `page` for complex workflows (approval, multi-section, child table, attachment-heavy form, or large read-only summary)
+
+Semantic first-pass contract when user omits fields:
+- infer 5-10 domain-relevant fields from the entity name
+- keep labels human-readable and in the portal language; Vietnamese must use proper diacritics
+- include at least 3 useful list columns beyond action/status when the entity semantics allow it
+- define clear writable fields for `SaveReq`
+- define read-only/detail-only fields for `DTO` when semantics suggest status/audit/approval information
+- choose side-drawer or page after evaluating section count, control types, and workflow complexity
 
 If workflow actions are mentioned:
 - mark `workflow-enabled` for the entity
@@ -143,9 +177,10 @@ Agent:
 2. Nếu chưa có module, tôi sẽ tạo module mới trước.
 3. Sau đó tôi sẽ sinh:
    - module configuration
-   - product list page
-   - product detail page
-   - product service/model/routes
+  - product SaveReq/DTO suy luận theo ngữ nghĩa sản phẩm
+  - product list page với các cột cụ thể như Mã sản phẩm, Tên sản phẩm, Loại sản phẩm, Giá bán
+  - product detail page theo side-drawer hoặc page tùy độ phức tạp của schema suy luận
+  - product service/model/routes
 ```
 
 ## 5. Example Input
@@ -168,7 +203,7 @@ Nếu user trả lời:
 
 Thì thứ tự skill sẽ là:
 1. Feature Module Configuration Skill -> tạo libs/catalog
-2. Entity CRUD Module Skill -> tạo libs/catalog/modules/product
+2. Entity CRUD Module Skill -> suy luận schema sản phẩm rồi tạo libs/catalog/modules/product
 3. Reactive Form Skill -> refine form field cho product
 ```
 
@@ -179,5 +214,7 @@ Thì thứ tự skill sẽ là:
 - [ ] Ask for module if missing
 - [ ] Offer new module creation if needed
 - [ ] Route generation through module skill first when module is absent
-- [ ] Allow minimal first-pass CRUD when only core fields are known
+- [ ] Infer semantic first-pass CRUD when fields are omitted or only partially known
+- [ ] Ensure Vietnamese labels use proper diacritics when the portal language is Vietnamese
+- [ ] Choose detail style from inferred complexity rather than a hard-coded fallback
 - [ ] Hand off to entity and form skills in the correct order

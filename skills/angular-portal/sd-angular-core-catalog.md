@@ -1,4 +1,4 @@
-# SD Angular Core Beta72 Catalog Snapshot
+# SD Angular Core Catalog Snapshot
 
 This file is an internal knowledge snapshot for `@sd-angular/core` component capability used by angular-portal skills.
 
@@ -7,7 +7,7 @@ Source policy:
 - Do not require runtime references to external repositories.
 
 Version baseline:
-- @sd-angular/core: 19.0.0-beta.72
+- @sd-angular/core: read from `core-version.md`
 
 ## Components
 

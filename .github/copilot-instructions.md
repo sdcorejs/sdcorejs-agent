@@ -128,3 +128,19 @@ When generating a new portal starter for another workspace:
 - do not require any external template folder outside this repository
 - keep package/dependency versions from internal baseline template
 - keep starter folder layout with `src/libs` scaffold ready for module generation
+
+---
+
+## Persistent Repo Memory Mirror (MANDATORY)
+
+Before refining skills or generating angular-portal outputs, always consult:
+
+- `knowledge/repo-memory/README.md`
+- `knowledge/repo-memory/agent-handoff-rule.md`
+- `knowledge/repo-memory/entity-semantic-inference.md`
+- `knowledge/repo-memory/portal-init-skill.md`
+
+Rules:
+- Treat `knowledge/repo-memory/` as the repository-persistent memory reference for this project.
+- If a relevant rule appears in this mirror, follow it unless the user explicitly overrides it.
+- When adding or changing important repository memory, keep this mirror updated in the same task.

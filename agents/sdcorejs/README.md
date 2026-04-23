@@ -17,6 +17,8 @@ Thư mục này mô tả profile agent SDCoreJS dùng cho VS Code Chat.
 
 - Always create a new handoff file by date (`HANDOFF-YYYY-MM-DD.md`).
 - Do not append new day updates into previous handoff files.
+- Any change inside `sdcorejs-agent` is incomplete until the current-day handoff is written or updated.
+- Before ending a task that edits agent prompts, skills, templates, docs, or runtime files, record the scope, changed files, and verification status in the handoff.
 
 ## Usage in VS Code Chat / Cách dùng trong VS Code Chat
 1. Open Chat. / Mở Chat.
@@ -65,7 +67,7 @@ Use SDCoreJS Angular Portal rules from:
 Mandatory behavior:
 - Ask module first if missing
 - If module not exists: create module first
-- If fields are vague: create minimal CRUD skeleton first
+- If fields are vague: infer a semantic first-pass schema first
 - No API contract: use localStorage mock CRUD first
 - For portal init: use internal baseline templates at core/templates/angular-portal-starter
 - Ensure src/libs/sample scaffold exists with seeded employee and product entities
@@ -73,6 +75,7 @@ Mandatory behavior:
 - Starter may include src/app/pages/home and should wire LayoutConfiguration.homeUrl for custom home navigation
 - Do not modify global CSS/SCSS
 - Prefer Core UI first, warn when custom UI is used
+- If you modify sdcorejs-agent itself, always write or update the current-day handoff before finishing
 
 Output format:
 1) Resolved Context
@@ -122,7 +125,8 @@ Ràng buộc phạm vi (bắt buộc):
 Process rules:
 - If module is missing, ask me first.
 - If module does not exist, create module first, then generate entity CRUD.
-- If fields are vague, generate minimal CRUD skeleton first, then refine.
+- If fields are vague, infer a semantic first-pass schema first, then refine.
+- If you modify sdcorejs-agent itself, always write or update the current-day handoff before finishing.
 
 Quy tắc xử lý:
 - Nếu thiếu module thì hỏi lại trước.
@@ -153,9 +157,10 @@ Ràng buộc phạm vi (bắt buộc):
 Expected behavior checks:
 - Ask module first when module is missing
 - If module does not exist, create module first
-- Keep minimal CRUD skeleton when fields are vague
+- Infer semantic first-pass schema when fields are vague
 - Prefer side-drawer for common 5-6 fields
 - Prefer full-page for complex workflow + include detail/list actions
+- If sdcorejs-agent files are edited, the task must also update the current-day handoff
 
 Tiêu chí hành vi cần kiểm tra:
 - Thiếu module thì phải hỏi lại trước
