@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Admin/Documents/sdcorejs/**)",
+      "Read(//c/Users/Admin/Documents/sdcorejs/sdcorejs-react/**)"
+    ]
+  }
+}
