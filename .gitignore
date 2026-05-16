@@ -16,3 +16,7 @@ bin/**/*.map
 bin/**/*.d.ts
 bin/**/*.d.ts.map
 bin/**/*.tsbuildinfo
+
+# Claude Code local user settings (track .claude/skills/, README.md, sync-skills.sh)
+.claude/settings.json
+.claude/settings.local.json

@@ -18,6 +18,12 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 
 Each track exposes its capabilities as **skills** — markdown files with Anthropic-style YAML frontmatter (`name`, `description`, `allowed-tools`).
 
+## Claude Code native dispatch
+
+This repo also exposes the 23 skills (21 angular-portal + 2 shared) via the native `.claude/skills/<name>/SKILL.md` convention so Claude Code can dispatch them automatically without having to read this instruction file first. The mirror is generated from `skills/<track>/*.md` — re-run `.claude/sync-skills.sh` after editing any source skill.
+
+The source of truth remains `skills/<track>/*.md`. `.claude/skills/` is generated.
+
 ## Skill dispatch protocol
 
 1. **At session start**, glob `skills/*/*.md` and read each skill's YAML frontmatter only (cheap — body load happens later).
