@@ -163,6 +163,6 @@ must be updated. Mirror script will fail until paths are corrected.
 ## Anti-patterns
 - "update stuff", "fix bug", "wip" — meaningless subjects
 - Combining a feature + unrelated refactor + dep bump in one commit
-- Subject describing WHAT instead of WHY (the diff already shows WHAT — but for the subject, "what" is fine; reserve WHY for body)
+- Subject is fine describing WHAT changed (the diff already shows WHAT, but the subject is the human-readable summary). Body is where you explain WHY. Don't omit the body when the change is non-obvious — future-you wants the reason, not the diff again.
 - Manually crafting the commit message when scope detection would have produced something better
 - Skipping the body when the change is non-obvious — future-you will want to know WHY
