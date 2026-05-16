@@ -16,11 +16,21 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 | NestJS | `skills/nestjs/` | 🚧 Planned |
 | Next.js | `skills/nextjs/` | 🚧 Planned |
 
+Plus `skills/_shared/` — cross-track utility skills (auto-docs, memories, commit, pr-create, debug, recovery, env-setup, …).
+
 Each track exposes its capabilities as **skills** — markdown files with Anthropic-style YAML frontmatter (`name`, `description`, `allowed-tools`).
 
 ## Claude Code native dispatch
 
-This repo also exposes the 23 skills (21 angular-portal + 2 shared) via the native `.claude/skills/<name>/SKILL.md` convention so Claude Code can dispatch them automatically without having to read this instruction file first. The mirror is generated from `skills/<track>/*.md` — re-run `.claude/sync-skills.sh` after editing any source skill.
+This repo also exposes every skill via the native `.claude/skills/<name>/SKILL.md` convention so Claude Code can dispatch them automatically without having to read this instruction file first. The mirror is generated from `skills/<track>/*.md` — do NOT hand-edit `.claude/skills/`.
+
+Sync is enforced automatically: `lefthook.yml` runs `bash .claude/sync-skills.sh` on every commit that touches `skills/`, then stages the regenerated mirror. To install hooks once:
+
+```bash
+npm install && npx lefthook install
+```
+
+If lefthook is missing, run `npm run sync:skills` manually before committing. See `.claude/README.md`.
 
 The source of truth remains `skills/<track>/*.md`. `.claude/skills/` is generated.
 
@@ -82,6 +92,20 @@ _shared/memories          ← durable knowledge (when applicable) to <target>/.s
 7. **Core UI first.** Use `@sd-angular/core` components when one fits. Otherwise generate skeleton + `alert('TODO: ...')` stubs and mark for the developer.
 
 8. **Test after generation.** Run `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts` (Angular) and report summary + failing spec names.
+
+## Shared utility skills (`skills/_shared/`)
+
+Cross-track skills that apply to angular-portal, nestjs, nextjs alike. Match against their `description` like any other skill.
+
+| Skill | Trigger |
+| --- | --- |
+| `sdcorejs-auto-docs` | end of every code-writing task (mandatory) — session summary |
+| `sdcorejs-memories` | "ghi nhớ", durable knowledge — write to target `.sdcorejs/memories/<track>/` |
+| `sdcorejs-commit` | "commit", "tạo commit" — Conventional Commits + scope detection + git safety |
+| `sdcorejs-pr-create` | "tạo PR", "open PR" — PR title/body from commits + diff via `gh` |
+| `sdcorejs-debug` | "lỗi", "không hoạt động", "fix bug" — systematic debugging discipline |
+| `sdcorejs-recovery` | "tiếp tục", "resume", "where were we" — handoff from docs + memories + git state |
+| `sdcorejs-env-setup` | "thiết lập môi trường", "setup dev", project mới clone — per-stack bootstrap |
 
 ## Reference docs (load on demand only — do not preload)
 

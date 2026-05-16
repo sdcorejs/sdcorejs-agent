@@ -76,6 +76,20 @@ Sub-skills under `07-write-code` (angular-portal track):
 - Prompt files in `.github/prompts/` are legacy fallback prompts kept for teammates without skill-aware Copilot. They duplicate skill content in a single-prompt form.
 - When a skill's `allowed-tools` includes `Bash`, Copilot's terminal tool is the equivalent.
 
+## Shared utility skills (`skills/_shared/`)
+
+Cross-track skills — apply to all tracks. Dispatch by `description`:
+
+| Skill | Trigger |
+| --- | --- |
+| `sdcorejs-auto-docs` | end of every code-writing task (mandatory) |
+| `sdcorejs-memories` | "ghi nhớ", durable knowledge |
+| `sdcorejs-commit` | "commit", "tạo commit" — Conventional Commits + scope detection + git safety |
+| `sdcorejs-pr-create` | "tạo PR", "open PR" — PR body from commits + diff |
+| `sdcorejs-debug` | "lỗi", "error", "fix bug" — systematic debugging |
+| `sdcorejs-recovery` | "tiếp tục", "resume" — handoff from docs + memories + git state |
+| `sdcorejs-env-setup` | "thiết lập môi trường", "setup dev" — per-stack bootstrap |
+
 ## Reference docs (load on demand only)
 
 - `skills/angular-portal/_refs/core-version.md` — pinned `@sd-angular/core` version

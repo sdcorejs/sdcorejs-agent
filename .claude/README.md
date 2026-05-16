@@ -9,26 +9,62 @@ The mirror lets Claude Code dispatch skills automatically via its built-in skill
 ```
 .claude/
 ├── README.md              ← this file
-├── skills/                ← native mirror (23 SKILL.md files)
+├── skills/                ← native mirror (auto-generated, do NOT hand-edit)
 │   ├── angular-portal-onboarding/SKILL.md
-│   ├── angular-portal-brainstorm/SKILL.md
-│   └── … (one folder per skill)
-├── settings.json          ← (gitignored, local user settings)
-└── sync-skills.sh         ← regenerate the mirror from skills/*.md
+│   ├── sdcorejs-commit/SKILL.md
+│   └── … (one folder per skill, named after `name:` frontmatter)
+├── settings.json          ← gitignored, local user settings
+└── sync-skills.sh         ← regenerate / check the mirror
 ```
 
-## Maintenance
+## ⚠️ Source of truth is `skills/<track>/*.md`
 
-The source of truth is `skills/<track>/*.md`. After editing any source skill, run:
+Edit skills under `skills/angular-portal/`, `skills/_shared/`, etc.
+NEVER hand-edit `.claude/skills/<name>/SKILL.md` — it is overwritten on every sync.
+
+## Three ways the mirror stays in sync
+
+### 1. Automatic on commit (recommended)
+
+`lefthook.yml` ships a pre-commit hook that regenerates and stages the mirror whenever you commit a change under `skills/`. Install once:
 
 ```bash
-bash .claude/sync-skills.sh
+npm install                 # installs lefthook devDep
+npx lefthook install        # writes .git/hooks/pre-commit
 ```
 
-…to refresh the `.claude/skills/` mirror.
+After that, you never have to remember to run the sync script — it runs for you.
 
-DO NOT edit `.claude/skills/<name>/SKILL.md` directly — it gets overwritten.
+### 2. Manual
+
+```bash
+npm run sync:skills           # or: bash .claude/sync-skills.sh
+```
+
+### 3. CI / pre-merge check
+
+```bash
+npm run check:skills          # or: bash .claude/sync-skills.sh --check
+```
+
+Exits non-zero if the mirror is out of sync. Wire this into CI to catch PRs that edited `skills/` without regenerating the mirror.
+
+## Cleaning up
+
+If a source skill was deleted and the mirror still has a stale folder:
+
+```bash
+bash .claude/sync-skills.sh --clean
+```
 
 ## Why mirror instead of symlink?
 
-Symlinks are unreliable on Windows. Per-skill `SKILL.md` is small enough (~3-10 KB each, 23 files total ≈ 200 KB) that the duplication cost is negligible. Read once at session start; cached.
+- Symlinks unreliable on Windows
+- Per-skill `SKILL.md` ≈ 3–10 KB; whole mirror ≈ 200 KB — negligible
+- Mirror is read by Claude Code at session start; cached after
+
+## Why not edit `.claude/skills/` directly?
+
+- Track-folder structure (`skills/angular-portal/`, `skills/nestjs/`, etc.) gives clear workflow ordering via numeric prefixes (`00-onboarding.md`, `07-write-code.md`, `52-faq.md`) — the flat `.claude/skills/<name>/SKILL.md` layout doesn't.
+- GitHub Copilot and Codex read `skills/<track>/*.md` directly — Claude Code is the only tool needing the mirror.
+- Single source = single review surface in PRs.

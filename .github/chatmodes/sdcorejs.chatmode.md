@@ -74,6 +74,11 @@ The skill files are the primary source. Load on demand:
 - `skills/angular-portal/_refs/sd-angular-core-catalog.md` — components inventory (load when picking a Core UI component)
 - `skills/_shared/auto-docs.md` — session summary writer (mandatory tail-call)
 - `skills/_shared/memories.md` — durable knowledge writer
+- `skills/_shared/commit.md` — Conventional Commits + scope detection + git safety
+- `skills/_shared/pr-create.md` — PR body from commits + diff via `gh`
+- `skills/_shared/debug.md` — systematic debugging workflow
+- `skills/_shared/recovery.md` — resume from auto-docs + memories + git state
+- `skills/_shared/env-setup.md` — per-stack bootstrap (angular/nestjs/nextjs)
 
 ## See also
 

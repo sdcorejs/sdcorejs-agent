@@ -1,0 +1,29 @@
+# Lefthook — git hooks for sdcorejs-agent
+#
+# Install once after `npm install`:
+#   npx lefthook install
+#
+# What it enforces:
+# - .claude/skills/ stays in sync with skills/<track>/*.md (source of truth)
+# - any commit that edits skills/<track>/*.md regenerates the mirror and stages it
+#
+# If lefthook is missing, fall back to the manual command in .claude/README.md.
+
+pre-commit:
+  parallel: true
+  commands:
+    sync-skills:
+      # Trigger only when source skills changed.
+      glob: "skills/**/*.md"
+      run: bash .claude/sync-skills.sh && git add .claude/skills
+    check-mirror:
+      # Always verify the mirror is consistent (catches the case where
+      # someone hand-edits .claude/skills/ without touching skills/).
+      glob: ".claude/skills/**"
+      run: bash .claude/sync-skills.sh --check
+
+# Convenience: `lefthook run check` to verify locally without committing.
+check:
+  commands:
+    sync:
+      run: bash .claude/sync-skills.sh --check
