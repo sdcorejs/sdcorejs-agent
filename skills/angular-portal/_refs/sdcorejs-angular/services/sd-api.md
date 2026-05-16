@@ -74,7 +74,7 @@ get http(): HttpClient;
 
 ## Configuration / DI tokens
 
-### `SD_API_CONFIG` — `InjectionToken<ISdApiConfiguration>`
+### `SD_API_CONFIGURATION` — `InjectionToken<ISdApiConfiguration>`
 Provide an array of `ISdApiConfiguration` (multi: true) to register per-host handlers.
 
 ```typescript
@@ -93,7 +93,7 @@ export interface SdApiHandler {
 ```typescript
 // app.config.ts
 providers: [
-  { provide: SD_API_CONFIG, multi: true, useValue: <ISdApiConfiguration>{
+  { provide: SD_API_CONFIGURATION, multi: true, useValue: <ISdApiConfiguration>{
     handlers: [{
       hosts: ['https://api.example.com'],
       mapResponse: res => res?.data ?? res,

@@ -40,7 +40,7 @@ If unsure, skip both and generate minimal module first.
 ### MUST DO ✅
 - Apply this skill before entity CRUD when the module does not exist
 - Generate `[module].module.ts` as the primary public API (exposes `useClass()` + `useValue()` statics)
-- Put ALL module-scoped providers (`SD_API_CONFIG`, `SD_UPLOAD_FILE_CONFIGURATION`, custom interceptors, etc.) on `@NgModule({ providers: [...] })` — NOT on the route
+- Put ALL module-scoped providers (`SD_API_CONFIGURATION`, `SD_UPLOAD_FILE_CONFIGURATION`, custom interceptors, etc.) on `@NgModule({ providers: [...] })` — NOT on the route
 - Create `routes.ts` at lib root with guards + `loadChildren` only (no `providers` array)
 - Wire the lib at app root via `importProvidersFrom([Module]Module.useValue({...}))` in `main.ts` (or `imports: [[Module]Module.useValue(...)]` for legacy NgModule consumers)
 - Do not modify global CSS/SCSS while creating module structure/configuration
@@ -75,7 +75,7 @@ If unsure, skip both and generate minimal module first.
 - Force migration to pure standalone when developer did not request migration and existing codebase is hybrid
 - Hardcode API URLs (inject via configuration)
 - Skip error handling in interceptors
-- Use global interceptors (module-scoped only via `multi: true` on `SD_API_CONFIG`)
+- Use global interceptors (module-scoped only via `multi: true` on `SD_API_CONFIGURATION`)
 - Assume route-level providers are visible to root-scoped services — they are not
 - Generate `permission.configuration.ts` or `upload-file.configuration.ts` without confirmation that the module needs them
 - Do not provide `SD_PERMISSION_CONFIGURATION` at module route level when using root-scoped `SdPermissionService`
@@ -114,7 +114,7 @@ export const [MODULE]_CONFIGURATION = new InjectionToken<I[Module]Configuration>
 import { Injectable, inject } from '@angular/core';
 import { HttpErrorResponse, HttpRequest, HttpResponse } from '@angular/common/http';
 import {
-  SD_API_CONFIG,
+  SD_API_CONFIGURATION,
   ISdApiConfiguration,
   SdNotifyService,
 } from 'sd-angular';
@@ -190,7 +190,7 @@ This is the SINGLE place where module-scoped providers live. The lib is consumed
 
 ```typescript
 import { ModuleWithProviders, NgModule, Type } from '@angular/core';
-import { SD_API_CONFIG } from '@sd-angular/core/services';
+import { SD_API_CONFIGURATION } from '@sd-angular/core/services';
 import { SD_UPLOAD_FILE_CONFIGURATION } from '@sd-angular/core/components';
 import {
   [MODULE]_CONFIGURATION,
@@ -203,7 +203,7 @@ import { UploadFileConfiguration } from './configurations/upload-file.configurat
   declarations: [],
   providers: [
     // Module-scoped interceptors / configurations live HERE, not on the route.
-    { provide: SD_API_CONFIG, useClass: ApiConfiguration, multi: true },
+    { provide: SD_API_CONFIGURATION, useClass: ApiConfiguration, multi: true },
     { provide: SD_UPLOAD_FILE_CONFIGURATION, useClass: UploadFileConfiguration, multi: true },
   ],
 })
@@ -387,7 +387,7 @@ export const SAMPLE_CONFIGURATION = new InjectionToken<ISampleConfiguration>('sa
 import { Injectable, inject } from '@angular/core';
 import { HttpErrorResponse, HttpRequest, HttpResponse } from '@angular/common/http';
 import {
-  SD_API_CONFIG,
+  SD_API_CONFIGURATION,
   ISdApiConfiguration,
   SdNotifyService,
 } from 'sd-angular';
@@ -452,7 +452,7 @@ export const sampleGuard: CanActivateFn = () => {
 ### File: `libs/sample/sample.module.ts`
 ```typescript
 import { ModuleWithProviders, NgModule, Type } from '@angular/core';
-import { SD_API_CONFIG } from '@sd-angular/core/services';
+import { SD_API_CONFIGURATION } from '@sd-angular/core/services';
 import { SD_UPLOAD_FILE_CONFIGURATION } from '@sd-angular/core/components';
 import { ISampleConfiguration, SAMPLE_CONFIGURATION } from './sample.configuration';
 import { ApiConfiguration } from './configurations/api.configuration';
@@ -461,7 +461,7 @@ import { UploadFileConfiguration } from './configurations/upload-file.configurat
 @NgModule({
   declarations: [],
   providers: [
-    { provide: SD_API_CONFIG, useClass: ApiConfiguration, multi: true },
+    { provide: SD_API_CONFIGURATION, useClass: ApiConfiguration, multi: true },
     { provide: SD_UPLOAD_FILE_CONFIGURATION, useClass: UploadFileConfiguration, multi: true },
   ],
 })
