@@ -44,9 +44,10 @@ Request
   → 02-clarify-requirements
   → 03-write-spec → 04-review-spec      (approval gate)
   → 05-plan       → 06-review-plan      (approval gate)
-  → 07-write-code (dispatches sub-skills)
-  → 40-e2e-test → 50-review-code → 51-write-comments
-  → _shared/auto-docs (MANDATORY) + _shared/memories (durable knowledge)
+  → 07-write-code (dispatches sub-skills; uses _shared/subagent-driven-dev when fan-out ≥3)
+  → 40-e2e-test → 50-review-code → _shared/fix-loop (if findings) → 51-write-comments
+  → _shared/verify-before-done (MANDATORY acceptance gate)
+  → _shared/auto-docs (MANDATORY) → _shared/auto-task-tracker (MANDATORY) + _shared/memories (durable knowledge)
 ```
 
 Sub-skills under `07-write-code` (angular-portal track):
@@ -82,10 +83,14 @@ Cross-track skills — apply to all tracks. Dispatch by `description`:
 
 | Skill | Trigger | Mandatory? |
 | --- | --- | --- |
+| `sdcorejs-verify-before-done` | runs BEFORE auto-docs — verifies acceptance criteria from spec; blocks "done" | ✅ |
 | `sdcorejs-auto-docs` | end of every code-writing task — session summary | ✅ |
 | `sdcorejs-auto-task-tracker` | IMMEDIATELY after auto-docs — `.sdcorejs/tasks/<track>.md` | ✅ |
 | `sdcorejs-memories` | "ghi nhớ", durable knowledge | ✅ on trigger |
+| `sdcorejs-fix-loop` | after `50-review-code` outputs findings — apply + iterate until clean | ✅ on findings |
 | `sdcorejs-code-map` | new feature / reuse check — read-only architecture scan |  |
+| `sdcorejs-parallel-dispatch` | fan-out 3+ independent tasks — decision gate (should I split?) |  |
+| `sdcorejs-subagent-driven-dev` | after parallel-dispatch=YES — execution: decompose + brief + dispatch + merge |  |
 | `sdcorejs-commit` | "commit", "tạo commit" — Conventional Commits + scope + git safety |  |
 | `sdcorejs-pr-create` | "tạo PR", "open PR" — PR body from commits + diff |  |
 | `sdcorejs-debug` | "lỗi", "error", "fix bug" — systematic debugging |  |
@@ -94,7 +99,6 @@ Cross-track skills — apply to all tracks. Dispatch by `description`:
 | `sdcorejs-changelog` | "viết changelog", release — Keep a Changelog + semver bump |  |
 | `sdcorejs-security-review` | "review bảo mật", pre-release — Critical/Important/Minor report |  |
 | `sdcorejs-dep-update` | "cập nhật dependency", audit fix — safe upgrade workflow |  |
-| `sdcorejs-parallel-dispatch` | fan-out 3+ independent tasks — decision gate + briefing |  |
 
 ## Reference docs (load on demand only)
 

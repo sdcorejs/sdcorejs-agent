@@ -16,7 +16,7 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 | NestJS | `skills/nestjs/` | 🚧 Planned |
 | Next.js | `skills/nextjs/` | 🚧 Planned |
 
-Plus `skills/_shared/` — 12 cross-track utility skills (auto-docs, memories, auto-task-tracker, code-map, commit, pr-create, debug, recovery, env-setup, changelog, security-review, dep-update, parallel-dispatch).
+Plus `skills/_shared/` — 16 cross-track utility skills covering the full SDLC: analysis & planning support (code-map), execution discipline (subagent-driven-dev, parallel-dispatch), review & fix loop (fix-loop), verification gate (verify-before-done), session memory (auto-docs, memories, auto-task-tracker, recovery), release plumbing (commit, pr-create, changelog, dep-update), and bootstrap utilities (env-setup, debug, security-review).
 
 Each track exposes its capabilities as **skills** — markdown files with Anthropic-style YAML frontmatter (`name`, `description`, `allowed-tools`).
 
@@ -65,11 +65,18 @@ Request
    (10-init-portal | 11-init-module | 12-init-entity
     | 20-screen-list | 21-screen-detail | 22-screen-create | 23-screen-update
     | 30-reactive-form | 31-workflow-actions)
+   └─ when feature has 3+ independent units, dispatches via
+      _shared/subagent-driven-dev (after _shared/parallel-dispatch decision)
   ↓
 40-e2e-test               ← write E2E tests for what was just built
   ↓
-50-review-code            ← self-review against conventions
+50-review-code            ← self-review against conventions (Critical/Important/Minor)
+  ↓
+_shared/fix-loop          ← apply review findings + iterate until Critical+Important resolved
+  ↓
 51-write-comments         ← add comments + explanations
+  ↓
+_shared/verify-before-done ← MANDATORY acceptance-criteria gate before claiming "done"
   ↓
 _shared/auto-docs         ← MANDATORY session summary to <target>/.sdcorejs/docs/<track>/
 _shared/auto-task-tracker ← MANDATORY (immediately after auto-docs) — ticks done + appends new in <target>/.sdcorejs/tasks/<track>.md
@@ -100,10 +107,14 @@ Cross-track skills that apply to angular-portal, nestjs, nextjs alike. Match aga
 
 | Skill | Trigger | Mandatory? |
 | --- | --- | --- |
+| `sdcorejs-verify-before-done` | runs BEFORE auto-docs at end of feature — verifies each acceptance criterion from spec; blocks "done" until ✅ or user-acknowledged defer | ✅ |
 | `sdcorejs-auto-docs` | end of every code-writing task — session summary | ✅ |
 | `sdcorejs-auto-task-tracker` | runs IMMEDIATELY after auto-docs — ticks `[x]` done, appends new tasks to `.sdcorejs/tasks/<track>.md` | ✅ |
 | `sdcorejs-memories` | "ghi nhớ", durable knowledge — write to target `.sdcorejs/memories/<track>/` | ✅ on trigger |
+| `sdcorejs-fix-loop` | runs after `50-review-code` outputs findings — categorize / auto-apply / iterate until Critical+Important resolved | ✅ on findings |
 | `sdcorejs-code-map` | new major feature, "dùng lại shared component" — read-only architecture scan BEFORE generation |  |
+| `sdcorejs-parallel-dispatch` | about to fan out 3+ independent tasks — decision gate (should I split?) |  |
+| `sdcorejs-subagent-driven-dev` | after parallel-dispatch says YES — execution discipline: decompose, brief, dispatch, merge |  |
 | `sdcorejs-commit` | "commit", "tạo commit" — Conventional Commits + scope detection + git safety |  |
 | `sdcorejs-pr-create` | "tạo PR", "open PR" — PR title/body from commits + diff via `gh` |  |
 | `sdcorejs-debug` | "lỗi", "không hoạt động", "fix bug" — systematic debugging discipline |  |
@@ -112,7 +123,6 @@ Cross-track skills that apply to angular-portal, nestjs, nextjs alike. Match aga
 | `sdcorejs-changelog` | "viết changelog", release prep — Keep a Changelog entry from commits, semver bump |  |
 | `sdcorejs-security-review` | "review bảo mật", before release — cross-track security checklist with file:line findings |  |
 | `sdcorejs-dep-update` | "cập nhật dependency", `npm audit fix` — safe upgrade workflow (audit → branch → group → test) |  |
-| `sdcorejs-parallel-dispatch` | about to fan out 3+ independent tasks — decision gate + subagent briefing template |  |
 
 ## Reference docs (load on demand only — do not preload)
 

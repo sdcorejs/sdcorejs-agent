@@ -37,9 +37,10 @@ Request
   → 02-clarify-requirements
   → 03-write-spec → 04-review-spec      (approval gate)
   → 05-plan       → 06-review-plan      (approval gate)
-  → 07-write-code (sub-skills)
-  → 40-e2e-test → 50-review-code → 51-write-comments
-  → _shared/auto-docs (mandatory) + _shared/memories (when durable knowledge surfaces)
+  → 07-write-code (sub-skills; uses _shared/subagent-driven-dev when fan-out ≥3)
+  → 40-e2e-test → 50-review-code → _shared/fix-loop (if findings) → 51-write-comments
+  → _shared/verify-before-done (mandatory acceptance gate)
+  → _shared/auto-docs (mandatory) → _shared/auto-task-tracker (mandatory) + _shared/memories (when durable knowledge surfaces)
 ```
 
 For angular-portal, sub-skills under `07-write-code`:
@@ -85,6 +86,9 @@ The skill files are the primary source. Load on demand:
 - `skills/_shared/security-review.md` — cross-track security audit checklist
 - `skills/_shared/dep-update.md` — safe dependency upgrade workflow
 - `skills/_shared/parallel-dispatch.md` — when/how to fan out to parallel subagents
+- `skills/_shared/subagent-driven-dev.md` — execution discipline AFTER parallel-dispatch decides YES
+- `skills/_shared/fix-loop.md` — apply 50-review-code findings + iterate until clean
+- `skills/_shared/verify-before-done.md` — MANDATORY acceptance-criteria gate before claiming "done"
 
 ## See also
 
