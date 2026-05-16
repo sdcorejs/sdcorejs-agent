@@ -38,7 +38,8 @@ Request
   → 03-write-spec → 04-review-spec      (approval gate)
   → 05-plan       → 06-review-plan      (approval gate)
   → 07-write-code (sub-skills; uses _shared/subagent-driven-dev when fan-out ≥3)
-  → 40-e2e-test → 50-review-code → _shared/fix-loop (if findings) → 51-write-comments
+  → 40-e2e-test → 50-review-code → _shared/fix-loop (if findings)
+  → _shared/comment-code (mandatory ASK: skip/simple/medium/full → if full, dispatches 51-write-comments)
   → _shared/verify-before-done (mandatory acceptance gate)
   → _shared/auto-docs (mandatory) → _shared/auto-task-tracker (mandatory) + _shared/memories (when durable knowledge surfaces)
 ```
@@ -88,6 +89,7 @@ The skill files are the primary source. Load on demand:
 - `skills/_shared/parallel-dispatch.md` — when/how to fan out to parallel subagents
 - `skills/_shared/subagent-driven-dev.md` — execution discipline AFTER parallel-dispatch decides YES
 - `skills/_shared/fix-loop.md` — apply 50-review-code findings + iterate until clean
+- `skills/_shared/comment-code.md` — mandatory ASK gate (skip/simple/medium/full) before any comment work
 - `skills/_shared/verify-before-done.md` — MANDATORY acceptance-criteria gate before claiming "done"
 
 ## See also

@@ -45,7 +45,8 @@ Request
   → 03-write-spec → 04-review-spec      (approval gate)
   → 05-plan       → 06-review-plan      (approval gate)
   → 07-write-code (dispatches sub-skills; uses _shared/subagent-driven-dev when fan-out ≥3)
-  → 40-e2e-test → 50-review-code → _shared/fix-loop (if findings) → 51-write-comments
+  → 40-e2e-test → 50-review-code → _shared/fix-loop (if findings)
+  → _shared/comment-code (MANDATORY ASK: skip/simple/medium/full → if full, dispatches 51-write-comments)
   → _shared/verify-before-done (MANDATORY acceptance gate)
   → _shared/auto-docs (MANDATORY) → _shared/auto-task-tracker (MANDATORY) + _shared/memories (durable knowledge)
 ```
@@ -88,6 +89,7 @@ Cross-track skills — apply to all tracks. Dispatch by `description`:
 | `sdcorejs-auto-task-tracker` | IMMEDIATELY after auto-docs — `.sdcorejs/tasks/<track>.md` | ✅ |
 | `sdcorejs-memories` | "ghi nhớ", durable knowledge | ✅ on trigger |
 | `sdcorejs-fix-loop` | after `50-review-code` outputs findings — apply + iterate until clean | ✅ on findings |
+| `sdcorejs-comment-code` | ASK gate at comment phase — skip/simple/medium/full; ASK mandatory, outcome optional | ✅ ASK |
 | `sdcorejs-code-map` | new feature / reuse check — read-only architecture scan |  |
 | `sdcorejs-parallel-dispatch` | fan-out 3+ independent tasks — decision gate (should I split?) |  |
 | `sdcorejs-subagent-driven-dev` | after parallel-dispatch=YES — execution: decompose + brief + dispatch + merge |  |

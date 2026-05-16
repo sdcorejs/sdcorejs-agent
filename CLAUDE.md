@@ -16,7 +16,7 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 | NestJS | `skills/nestjs/` | 🚧 Planned |
 | Next.js | `skills/nextjs/` | 🚧 Planned |
 
-Plus `skills/_shared/` — 16 cross-track utility skills covering the full SDLC: analysis & planning support (code-map), execution discipline (subagent-driven-dev, parallel-dispatch), review & fix loop (fix-loop), verification gate (verify-before-done), session memory (auto-docs, memories, auto-task-tracker, recovery), release plumbing (commit, pr-create, changelog, dep-update), and bootstrap utilities (env-setup, debug, security-review).
+Plus `skills/_shared/` — 17 cross-track utility skills covering the full SDLC: analysis & planning support (code-map), execution discipline (subagent-driven-dev, parallel-dispatch), review & fix loop (fix-loop), comment ASK gate (comment-code), verification gate (verify-before-done), session memory (auto-docs, memories, auto-task-tracker, recovery), release plumbing (commit, pr-create, changelog, dep-update), and bootstrap utilities (env-setup, debug, security-review).
 
 Each track exposes its capabilities as **skills** — markdown files with Anthropic-style YAML frontmatter (`name`, `description`, `allowed-tools`).
 
@@ -74,7 +74,10 @@ Request
   ↓
 _shared/fix-loop          ← apply review findings + iterate until Critical+Important resolved
   ↓
-51-write-comments         ← add comments + explanations
+_shared/comment-code      ← MANDATORY ASK gate: skip / simple / medium / full
+   └─ if level=full → 51-write-comments (Angular FULL implementation)
+   └─ if simple|medium → applied inline by _shared/comment-code itself
+   └─ if skip → no comments added
   ↓
 _shared/verify-before-done ← MANDATORY acceptance-criteria gate before claiming "done"
   ↓
@@ -112,6 +115,7 @@ Cross-track skills that apply to angular-portal, nestjs, nextjs alike. Match aga
 | `sdcorejs-auto-task-tracker` | runs IMMEDIATELY after auto-docs — ticks `[x]` done, appends new tasks to `.sdcorejs/tasks/<track>.md` | ✅ |
 | `sdcorejs-memories` | "ghi nhớ", durable knowledge — write to target `.sdcorejs/memories/<track>/` | ✅ on trigger |
 | `sdcorejs-fix-loop` | runs after `50-review-code` outputs findings — categorize / auto-apply / iterate until Critical+Important resolved | ✅ on findings |
+| `sdcorejs-comment-code` | ASK gate at the comment phase — skip / simple / medium / full; outcome optional but ASK is mandatory | ✅ ASK |
 | `sdcorejs-code-map` | new major feature, "dùng lại shared component" — read-only architecture scan BEFORE generation |  |
 | `sdcorejs-parallel-dispatch` | about to fan out 3+ independent tasks — decision gate (should I split?) |  |
 | `sdcorejs-subagent-driven-dev` | after parallel-dispatch says YES — execution discipline: decompose, brief, dispatch, merge |  |
