@@ -1,20 +1,21 @@
 ---
 name: angular-portal-plan
-description: Use after 01-clarify-requirements has confirmed scope (module, entity, fields, screens, layout) and BEFORE 03-write-code generates anything. Writes a numbered file-by-file plan for the user to review and confirm. No code is written here. Triggers - "lên kế hoạch", "plan", "show me steps before coding", "kế hoạch trước khi code", "draft a plan". Bilingual (VI/EN).
+description: Use after 02-clarify-requirements has confirmed scope (module, entity, fields, screens, layout) and BEFORE 07-write-code generates anything. Writes a numbered file-by-file plan for the user to review and confirm. No code is written here. Hands off to 06-review-plan for user approval. Triggers - "lên kế hoạch", "plan", "show me steps before coding", "kế hoạch trước khi code", "draft a plan". Bilingual (VI/EN).
 allowed-tools: Read, Glob, Grep
 ---
 
-# 02 — Plan
+# 05 — Plan
 
 ## Purpose
-Translate the confirmed scope from `01-clarify-requirements` into a concrete, ordered, file-by-file plan that the user reviews and approves before any code is generated. The plan is the contract between the agent and the user — `03-write-code` executes exactly what was approved.
+Translate the confirmed scope from `02-clarify-requirements` (and any spec produced by `03-write-spec` / approved via `04-review-spec`) into a concrete, ordered, file-by-file plan that the user reviews and approves before any code is generated. The plan is the contract between the agent and the user — `07-write-code` executes exactly what was approved.
 
 ## When to use
-- After `01-clarify-requirements` has captured: module name, entity name, display label, field schema, detail layout (UnifiedCompact / UnifiedSplit / AdaptiveSplitDetail / side-drawer), workflow (yes/no), test coverage level
-- BEFORE invoking `03-write-code` or any of its sub-skills (10/11/12/20/21/22/23/30/31)
+- After `02-clarify-requirements` has captured: module name, entity name, display label, field schema, detail layout (UnifiedCompact / UnifiedSplit / AdaptiveSplitDetail / side-drawer), workflow (yes/no), test coverage level
+- BEFORE invoking `07-write-code` or any of its sub-skills (10/11/12/20/21/22/23/30/31)
 - When the user explicitly says "plan first", "lên kế hoạch", "draft a plan", "kế hoạch trước khi code"
+- After this skill writes the plan, hand off to `06-review-plan` for explicit user approval
 
-If the scope is still missing items, route back to `01-clarify-requirements` instead.
+If the scope is still missing items, route back to `02-clarify-requirements` instead.
 
 ## What a good plan looks like
 
@@ -70,9 +71,9 @@ A good plan has:
 
 ## Confirm
 Plan này có phù hợp không?
-- "OK, generate" → invoke `03-write-code`
+- "OK, generate" → invoke `06-review-plan` (which then hands off to `07-write-code`)
 - "Đổi <X>" → revise this plan
-- "Quay lại clarify" → invoke `01-clarify-requirements`
+- "Quay lại clarify" → invoke `02-clarify-requirements`
 ```
 
 ## Rules
@@ -91,20 +92,22 @@ Plan này có phù hợp không?
 
 ### MUST NOT
 - Write any code in this skill — only the plan
-- Invoke `03-write-code` or its sub-skills before the user confirms
+- Invoke `07-write-code` or its sub-skills before the user confirms via `06-review-plan`
 - Invent file paths that don't match the conventions in `12-init-entity` / `11-init-module`
 - Skip verification steps to keep the plan short
 - Hide trade-offs (if user picked AdaptiveSplitDetail but only has 4 fields, call it out: "AdaptiveSplitDetail is heavy for 4 fields, consider side-drawer?")
 
-## Hand-off to 03-write-code
-After the user confirms with "OK", "go ahead", "generate", "tiến hành":
-1. Pass the approved plan as input to `03-write-code`
-2. `03-write-code` orchestrates by invoking the right sub-skills for each numbered step
-3. After generation, `_shared/auto-doc` writes a session summary including a copy of this approved plan
+## Hand-off to 06-review-plan → 07-write-code
+After writing the plan, hand off to `06-review-plan`, which gates on explicit user approval. When the user confirms with "OK", "go ahead", "generate", "tiến hành":
+1. `06-review-plan` passes the approved plan as input to `07-write-code`
+2. `07-write-code` orchestrates by invoking the right sub-skills for each numbered step
+3. After generation, `_shared/auto-docs` writes a session summary including a copy of this approved plan
+4. If the work surfaced durable knowledge (corrections, constraints), also invoke `_shared/memories` in WRITE mode
 
 ## Anti-patterns
 - Bullet lists without numbers (user can't reference "step 7")
 - Plans without a verification section (user has no way to confirm correctness)
 - Skipping the explicit confirm prompt (agent assumes consent)
 - Mixing planning with code generation in one response
-- Re-asking clarify questions here — those belong in `01-clarify-requirements`
+- Re-asking clarify questions here — those belong in `02-clarify-requirements`
+- Skipping the `06-review-plan` gate and jumping straight to `07-write-code`

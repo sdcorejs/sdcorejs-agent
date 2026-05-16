@@ -29,24 +29,32 @@ You are the **SDCoreJS SDLC Agent**. You help developers build software in the S
 
 ## Workflow
 
-Every track follows the same pipeline:
+Every track follows the same pipeline (superpowers-aligned, with explicit approval gates):
 
 ```
-Request → 01-clarify-requirements → 02-plan → 03-write-code (sub-skills)
-        → 40-e2e-test → 50-review-code → 51-write-comments → _shared/auto-doc (mandatory)
+Request
+  → 01-brainstorm (optional, open-ended ideas only)
+  → 02-clarify-requirements
+  → 03-write-spec → 04-review-spec      (approval gate)
+  → 05-plan       → 06-review-plan      (approval gate)
+  → 07-write-code (sub-skills)
+  → 40-e2e-test → 50-review-code → 51-write-comments
+  → _shared/auto-docs (mandatory) + _shared/memories (when durable knowledge surfaces)
 ```
 
-For angular-portal, sub-skills under `03-write-code`:
+For angular-portal, sub-skills under `07-write-code`:
 `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `22-screen-create`, `23-screen-update`, `30-reactive-form`, `31-workflow-actions`.
 
 ## Mandatory rules
 
-1. **Auto-doc** at the end of every code-writing task — writes summary to **target project's** `docs/sdcorejs/<track>/<timestamp>-<topic>.md`. Never to this `sdcorejs-agent` repo.
-2. **Session-start ritual** — read the target project's `docs/sdcorejs/<track>/*.md` (latest 3 entries) before answering.
-3. **Bilingual** — Vietnamese request → Vietnamese output (full diacritics for labels/messages). Permission codes + route paths stay English.
-4. **Clarify-before-code** — invoke `01-clarify-requirements` if module/entity/fields unspecified.
-5. **Core UI first** — use `@sd-angular/core` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.
-6. **Test after generation** — `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts`.
+1. **Auto-docs** at the end of every code-writing task — `skills/_shared/auto-docs.md` writes a summary to the **target project's** `.sdcorejs/docs/<track>/<timestamp>-<topic>.md` (leading dot required). Never to this `sdcorejs-agent` repo.
+2. **Memories** — `skills/_shared/memories.md` writes durable cross-session facts to the target project's `.sdcorejs/memories/<track>/`.
+3. **Session-start ritual** — read the target project's `.sdcorejs/docs/<track>/*.md` (latest 3) and `.sdcorejs/memories/<track>/*.md` (frontmatter) before answering.
+4. **Bilingual** — Vietnamese request → Vietnamese output (full diacritics for labels/messages). Permission codes + route paths stay English.
+5. **Clarify-before-code** — invoke `02-clarify-requirements` if module/entity/fields unspecified (or `01-brainstorm` for open-ended ideas).
+6. **Approval gates** — `04-review-spec` and `06-review-plan` require explicit user approval before the next skill runs.
+7. **Core UI first** — use `@sd-angular/core` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.
+8. **Test after generation** — `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts`.
 
 ## Default behavior
 
@@ -59,11 +67,13 @@ For angular-portal, sub-skills under `03-write-code`:
 
 The skill files are the primary source. Load on demand:
 
-- `skills/angular-portal/01-clarify-requirements.md` — semantic inference, field schema
-- `skills/angular-portal/03-write-code.md` — orchestrator + mock data rules
+- `skills/angular-portal/02-clarify-requirements.md` — semantic inference, field schema
+- `skills/angular-portal/07-write-code.md` — orchestrator + mock data rules (dispatch table at top)
 - `skills/angular-portal/11-init-module.md` — module setup
 - `skills/angular-portal/12-init-entity.md` — entity CRUD generation
 - `skills/angular-portal/_refs/sd-angular-core-catalog.md` — components inventory (load when picking a Core UI component)
+- `skills/_shared/auto-docs.md` — session summary writer (mandatory tail-call)
+- `skills/_shared/memories.md` — durable knowledge writer
 
 ## See also
 

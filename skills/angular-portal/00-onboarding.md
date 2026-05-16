@@ -25,11 +25,19 @@ Welcome the developer and help them pick the right next skill. This is the entry
 ```
 Request
   ↓
-01-clarify-requirements   ← ask blocking questions (module, entity, fields, version)
+01-brainstorm             ← explore 2-3 approaches (only if scope is open-ended)
   ↓
-02-plan                   ← write step-by-step plan, user confirms
+02-clarify-requirements   ← ask blocking questions (module, entity, fields, version)
   ↓
-03-write-code             ← orchestrator, picks sub-skills:
+03-write-spec             ← write design spec (goals, architecture, acceptance criteria)
+  ↓
+04-review-spec            ← user-approval gate before planning
+  ↓
+05-plan                   ← write step-by-step plan, user confirms
+  ↓
+06-review-plan            ← user-approval gate before code
+  ↓
+07-write-code             ← orchestrator, picks sub-skills:
    ├─ 10-init-portal      (new portal repo)
    ├─ 11-init-module      (new feature module)
    ├─ 12-init-entity      (new entity CRUD pages)
@@ -45,7 +53,8 @@ Request
 50-review-code            ← self-review against conventions
 51-write-comments         ← add comments + explanations
   ↓
-_shared/auto-doc          ← MANDATORY summary to <target>/docs/sdcorejs/angular-portal/
+_shared/auto-docs         ← MANDATORY summary to <target>/.sdcorejs/docs/angular-portal/
+_shared/memories          ← write durable knowledge to <target>/.sdcorejs/memories/angular-portal/ (when relevant)
 ```
 
 ### 3. How to invoke skills
@@ -54,13 +63,14 @@ You don't need to memorize skill names. Just describe what you want — the agen
 | User says | Skill picked |
 |---|---|
 | "Khởi tạo portal-shop với dev/qc/uat/prod" | `10-init-portal` |
-| "Thêm entity product, fields code/name/price" | `01-clarify` (if needed) → `12-init-entity` |
+| "Thêm entity product, fields code/name/price" | `02-clarify-requirements` (if needed) → `12-init-entity` |
 | "Tạo màn list cho user" | `20-screen-list` |
 | "Review module catalog" | `50-review-code` |
 | "Test cho entity product" | `40-e2e-test` |
 
 ### 4. Mandatory rules (always apply)
-- **Auto-doc**: every code-writing task ends with a summary at `<target-project>/docs/sdcorejs/angular-portal/<YYYY-MM-DD-HH-mm>-<topic>.md`. The agent reads this folder at session start to recall prior work.
+- **Auto-docs**: every code-writing task ends with a summary at `<target-project>/.sdcorejs/docs/angular-portal/<YYYY-MM-DD-HH-mm>-<topic>.md`. The agent reads this folder at session start to recall prior work.
+- **Memories**: durable knowledge (corrections, stakeholder constraints, project decisions) lives at `<target-project>/.sdcorejs/memories/angular-portal/`. Agent reads frontmatter at session start; bodies on demand.
 - **Bilingual**: Vietnamese request → Vietnamese output (full diacritics). English request → English output. Permission codes and route paths stay English in both cases.
 - **Clarify-before-code**: agent will not generate code when module ownership, entity name, or key fields are unspecified.
 - **Test after generation**: `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts`. Report summary and failing spec names.
@@ -73,9 +83,9 @@ The agent only reads these when relevant — don't load upfront:
 - [`_refs/entity-field-types.md`](./_refs/entity-field-types.md) — field type → form control mapping
 
 ### 6. What to do next
-- **New project**: invoke `01-clarify-requirements` to define portal name + environments + first module
+- **New project**: invoke `02-clarify-requirements` to define portal name + environments + first module (or `01-brainstorm` first if scope is still open-ended)
 - **Existing project**: describe what to add (module / entity / screen). Agent dispatches the right sub-skill.
-- **Resuming work**: agent reads `<target>/docs/sdcorejs/angular-portal/` first to recall what's been built. Skim the latest entry yourself if you want a quick status.
+- **Resuming work**: agent reads `<target>/.sdcorejs/docs/angular-portal/` first to recall what's been built. Skim the latest entry yourself if you want a quick status.
 
 ## Output guidelines for this skill
 - Keep replies short. Skip preamble like "I am an AI assistant...".
@@ -85,5 +95,5 @@ The agent only reads these when relevant — don't load upfront:
 
 ## Anti-patterns
 - ❌ Don't repeat full rules from other skill files. Link to them.
-- ❌ Don't generate code from this skill. Defer to `03-write-code` and its sub-skills.
-- ❌ Don't ask clarifying questions about scope here — that's `01-clarify-requirements`'s job.
+- ❌ Don't generate code from this skill. Defer to `07-write-code` and its sub-skills.
+- ❌ Don't ask clarifying questions about scope here — that's `02-clarify-requirements`'s job.

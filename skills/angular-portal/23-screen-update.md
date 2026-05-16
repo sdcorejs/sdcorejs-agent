@@ -108,7 +108,7 @@ async onSave(): Promise<void> {
 ```
 
 ### Navigation after success
-Default: navigate up (`['..']`) — typically returns to list. Alternative (opt-in): navigate to the read-only `detail/:id` view. Document choice in auto-doc.
+Default: navigate up (`['..']`) — typically returns to list. Alternative (opt-in): navigate to the read-only `detail/:id` view. Document choice in auto-docs.
 
 ### Permission gate
 - Route: `data.permission: '<MODULE>_C_<ENTITY>_UPDATE'`

@@ -1,36 +1,29 @@
 {
-  "name": "@sdcorejs/agent",
-  "version": "0.0.1",
-  "description": "SDCoreJS agent CLI",
+  "name": "sdcorejs-agent",
+  "version": "0.1.0",
+  "description": "SDLC agent for the SDCoreJS stack (Angular portal with Core UI, NestJS + Postgres, Next.js public sites). Works in Claude Code, GitHub Copilot, and Codex.",
   "license": "MIT",
+  "private": true,
   "type": "module",
-  "bin": {
-    "sd-agent": "bin/sdcorejs-agent.mjs"
-  },
   "files": [
-    "bin",
     "skills",
-    "agents",
-    "core",
+    "CLAUDE.md",
+    "AGENTS.md",
     "README.md",
     "LICENSE"
   ],
-  "scripts": {
-    "build": "npm pack --dry-run",
-    "publish:npm": "npm publish --access public",
-    "prepublishOnly": "npm run build"
-  },
   "keywords": [
     "sdcorejs",
-    "agent",
-    "cli",
-    "skills",
-    "angular"
+    "sdlc-agent",
+    "claude-code",
+    "github-copilot",
+    "codex",
+    "angular",
+    "nestjs",
+    "nextjs"
   ],
   "engines": {
     "node": ">=18"
   },
-  "publishConfig": {
-    "access": "public"
-  }
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

@@ -185,35 +185,39 @@ get pageTabColor(): string {
 For each schema field, render one control. The `[viewed]` / `[readonly]` flag binds to `state() === 'DETAIL'` so the same template serves all three states.
 
 ```html
+<!-- IMPORTANT: @sd-angular/core form components do NOT implement ControlValueAccessor.
+     Bind the parent FormGroup via [form]="form" and the control name via name="...".
+     Each component self-registers into form via addControl(...) on init. -->
+
 <!-- String -->
-<sd-input formControlName="code" label="Mã" [viewed]="state() === 'DETAIL'" [required]="true" maxLength="16"></sd-input>
+<sd-input [form]="form" name="code" label="Mã" [viewed]="state() === 'DETAIL'" [required]="true" maxLength="16"></sd-input>
 
 <!-- Number -->
-<sd-input-number formControlName="salary" label="Lương" [viewed]="state() === 'DETAIL'" [min]="0" [decimals]="2"></sd-input-number>
+<sd-input-number [form]="form" name="salary" label="Lương" [viewed]="state() === 'DETAIL'" [min]="0" [decimals]="2"></sd-input-number>
 
 <!-- Date -->
-<sd-date formControlName="birthday" label="Ngày sinh" [viewed]="state() === 'DETAIL'"></sd-date>
+<sd-date [form]="form" name="birthday" label="Ngày sinh" [viewed]="state() === 'DETAIL'"></sd-date>
 
 <!-- Select (static) -->
-<sd-select formControlName="role" label="Chức vụ" [viewed]="state() === 'DETAIL'"
+<sd-select [form]="form" name="role" label="Chức vụ" [viewed]="state() === 'DETAIL'"
   [items]="EMPLOYEE_ROLES" valueField="value" labelField="display"></sd-select>
 
 <!-- Select (dynamic) -->
-<sd-select formControlName="departmentId" label="Phòng ban" [viewed]="state() === 'DETAIL'"
+<sd-select [form]="form" name="departmentId" label="Phòng ban" [viewed]="state() === 'DETAIL'"
   apiEndpoint="/api/departments" valueField="id" labelField="name"></sd-select>
 
 <!-- Boolean -->
-<sd-switch formControlName="isActivated" label="Kích hoạt" [disabled]="state() === 'DETAIL'"></sd-switch>
+<sd-switch [form]="form" name="isActivated" label="Kích hoạt" [disabled]="state() === 'DETAIL'"></sd-switch>
 
 <!-- Textarea -->
-<sd-textarea formControlName="note" label="Ghi chú" [viewed]="state() === 'DETAIL'" rows="5"></sd-textarea>
+<sd-textarea [form]="form" name="note" label="Ghi chú" [viewed]="state() === 'DETAIL'" rows="5"></sd-textarea>
 
 <!-- File upload -->
-<sd-upload-file formControlName="image" label="Hình ảnh" [viewed]="state() === 'DETAIL'"
+<sd-upload-file [form]="form" name="image" label="Hình ảnh" [viewed]="state() === 'DETAIL'"
   [multiple]="false" acceptTypes=".jpg,.png,.gif"></sd-upload-file>
 
 <!-- Rich text -->
-<sd-editor formControlName="description" label="Mô tả" [viewed]="state() === 'DETAIL'"></sd-editor>
+<sd-editor [form]="form" name="description" label="Mô tả" [viewed]="state() === 'DETAIL'"></sd-editor>
 ```
 
 Group fields by section if the schema declares them; otherwise wrap in one `<sd-section title="Thông tin chung">`.

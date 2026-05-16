@@ -1,34 +1,36 @@
 ---
-name: sdcorejs-auto-doc
-description: MANDATORY skill that runs automatically at the end of EVERY code-writing task across all SDCoreJS tracks (angular-portal, nestjs, nextjs). Writes a session summary as a new markdown file in the target project under `docs/sdcorejs/<track>/` so the next session can recall prior context. Also runs in READ-ONLY mode at session start to refresh memory. Triggers - end of any code-writing skill invocation (write-code orchestrator, init-X, screen-X, e2e-test, review-code, write-comments) AND start of a new session inside a target project. Applies to angular-portal, nestjs, nextjs.
+name: sdcorejs-auto-docs
+description: MANDATORY skill that runs automatically at the end of EVERY code-writing task across all SDCoreJS tracks (angular-portal, nestjs, nextjs). Writes a session summary as a new markdown file in the target project under `.sdcorejs/docs/<track>/` so the next session can recall prior context. Also runs in READ-ONLY mode at session start to refresh memory. Triggers - end of any code-writing skill invocation (write-code orchestrator, init-X, screen-X, e2e-test, review-code, write-comments) AND start of a new session inside a target project. Applies to angular-portal, nestjs, nextjs.
 allowed-tools: Read, Write, Bash, Glob
 ---
 
-# Auto-Doc — Session Summary
+# Auto-Docs — Session Summary
 
 ## Purpose
 Mandatory + automatic. Gives the next session a memory of what was done, what was decided, and what's still open. Without this, every new session starts blind.
 
-This skill is shared across SDCoreJS tracks (`angular-portal`, `nestjs`, `nextjs`). Substitute the `<track>` segment in paths accordingly.
+This skill is shared across SDCoreJS tracks (`angular-portal`, `nestjs`, `nextjs`). The agent substitutes the `<track>` placeholder below with the active track name when resolving paths.
 
 ## When invoked
 
 ### Auto-trigger at end of code-writing skills
-The agent MUST run this skill (write mode) at the end of every code-writing skill invocation, without prompting:
-- `03-write-code` (and the sub-skills it dispatches: `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `22-screen-create`, `23-screen-update`, `30-reactive-form`, `31-workflow-actions`)
+The agent MUST run this skill (write mode) at the end of every code-writing skill invocation, without prompting. For the angular-portal track that means:
+- `07-write-code` (and the sub-skills it dispatches: `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `22-screen-create`, `23-screen-update`, `30-reactive-form`, `31-workflow-actions`)
 - `40-e2e-test`
 - `50-review-code` (write a "review session" doc summarizing findings, even though no code changed)
 - `51-write-comments`
 
-If the skill being run did not change any code AND did not produce a new finding, skip auto-doc.
+For nestjs and nextjs tracks, the equivalent code-writing skills under each track folder trigger this skill the same way.
+
+If the skill being run did not change any code AND did not produce a new finding, skip auto-docs.
 
 ### Session-start ritual (read-only mode)
 At the START of any new session in a target project, the agent MUST:
 1. Resolve target project root: `git rev-parse --show-toplevel` from the user's CWD
-2. Glob `<target-root>/docs/sdcorejs/<track>/*.md` for the relevant track
+2. Glob `<target-root>/.sdcorejs/docs/<track>/*.md` for the relevant track
 3. Read the latest 3 files (sorted by filename — timestamp prefix sorts naturally)
 4. Summarize them to itself before answering the user's first question
-5. Acknowledge briefly: "Đã đọc 3 doc gần nhất từ docs/sdcorejs/<track>/. Bạn muốn ..." (or EN equivalent)
+5. Acknowledge briefly: "Đã đọc 3 doc gần nhất từ .sdcorejs/docs/<track>/. Bạn muốn ..." (or EN equivalent)
 
 This read-only step does NOT write a new doc.
 
@@ -38,11 +40,14 @@ This read-only step does NOT write a new doc.
 # Resolve target project root (NOT the sdcorejs-agent repo!)
 TARGET_ROOT=$(git rev-parse --show-toplevel)
 
-# Ensure folder exists
-mkdir -p "$TARGET_ROOT/docs/sdcorejs/angular-portal"   # or /nestjs, /nextjs
+# Pick the active <track>: angular-portal | nestjs | nextjs
+TRACK=angular-portal
+
+# Ensure folder exists (note the leading dot in .sdcorejs/)
+mkdir -p "$TARGET_ROOT/.sdcorejs/docs/$TRACK"
 
 # Filename pattern: YYYY-MM-DD-HH-mm-<kebab-topic>.md
-FILE="$TARGET_ROOT/docs/sdcorejs/angular-portal/2026-05-09-14-30-add-product-entity.md"
+FILE="$TARGET_ROOT/.sdcorejs/docs/$TRACK/2026-05-09-14-30-add-product-entity.md"
 ```
 
 The `<kebab-topic>` is a 3-6 word slug derived from what was actually done. Examples:
@@ -84,23 +89,25 @@ The `<kebab-topic>` is a 3-6 word slug derived from what was actually done. Exam
 - Optional: invoke `40-e2e-test` to add happy-path E2E coverage
 
 ## Skill provenance
-Skills invoked this session: `01-clarify-requirements` → `02-plan` → `03-write-code` → `12-init-entity`
+Skills invoked this session: `02-clarify-requirements` → `05-plan` → `07-write-code` → `12-init-entity`
 ```
 
 ## Rules
 
 ### MUST DO
 - Resolve `TARGET_ROOT` via `git rev-parse --show-toplevel` from the user's CWD; never write to the agent repo
-- Create the `docs/sdcorejs/<track>/` folder if it doesn't exist
+- Create the `.sdcorejs/docs/<track>/` folder if it doesn't exist (leading dot is required)
 - Use timestamp prefix `YYYY-MM-DD-HH-mm-` so files sort chronologically
 - Always create a NEW file — never overwrite an existing one
 - Include the file list with CREATE/EDIT markers
 - Capture decisions and trade-offs that future sessions would not infer from the code alone
 - Note open questions / follow-ups so the next session knows what's incomplete
 - At session start, read the 3 latest docs and acknowledge in ≤1 sentence so the user knows context was loaded
+- Pair with `_shared/memories.md`: auto-docs captures session-scoped facts; `memories.md` captures durable knowledge that survives across sessions
 
 ### MUST NOT
 - Write a doc to the `sdcorejs-agent` repo (the agent repo is the source for skills, not session memory)
+- Write to `docs/sdcorejs/` or `.docs/sdcorejs/` (legacy paths) — the canonical location is `.sdcorejs/docs/`
 - Overwrite an existing doc — collisions are impossible if the timestamp includes minutes; if collision still happens (rapid-fire), append `-2`, `-3` suffix
 - Write empty / template-only docs — if nothing was done, skip
 - Write docs in a language different from the user's session language (VI request → VI doc; EN request → EN doc; mixed → match the dominant language)
@@ -110,17 +117,19 @@ Skills invoked this session: `01-clarify-requirements` → `02-plan` → `03-wri
 ## Cross-track usage
 
 This skill applies to `angular-portal`, `nestjs`, and `nextjs` tracks. The only difference is the `<track>` segment in the output path:
-- Angular: `docs/sdcorejs/angular-portal/`
-- NestJS: `docs/sdcorejs/nestjs/`
-- NextJS: `docs/sdcorejs/nextjs/`
+- Angular: `.sdcorejs/docs/angular-portal/`
+- NestJS: `.sdcorejs/docs/nestjs/`
+- NextJS: `.sdcorejs/docs/nextjs/`
 
 When the agent works inside a multi-track repo, write to the track folder matching the work performed. If unsure, ask the user before writing.
 
 ## Anti-patterns
-- Writing the doc to the agent repo (`sdcorejs-agent/docs/...`) instead of the target project
+- Writing the doc to the agent repo (`sdcorejs-agent/.sdcorejs/...`) instead of the target project
+- Writing to `docs/sdcorejs/` or `.docs/sdcorejs/` (legacy paths) — canonical is `.sdcorejs/docs/`
 - Overwriting yesterday's doc with today's — destroys the history that makes this skill valuable
 - Empty doc with only a title (no info to recall later)
 - Doc that lists every file change with no decisions/rationale (the diff already exists in git)
 - Skipping session-start read because "user didn't ask for it" — this is mandatory automatic behavior
 - Dumping full file contents into the doc — keep it scannable (file path + 1-line intent)
 - Forgetting to set `<track>` correctly in multi-track repos
+- Hardcoding `angular-portal` when the active track is actually nestjs/nextjs

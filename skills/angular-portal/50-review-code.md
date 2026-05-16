@@ -10,7 +10,7 @@ allowed-tools: Read, Glob, Grep
 Audit generated or modified Angular portal code against SDCoreJS conventions. Surfaces violations the human reviewer should fix. Read-only — does not modify code.
 
 ## When to use
-- After `03-write-code` finishes a sizeable batch
+- After `07-write-code` finishes a sizeable batch
 - Before merging a feature branch
 - User says "review module X", "check code", "audit module sales", "rà soát module catalog"
 - After `40-e2e-test` to cross-check that test coverage matches code surface

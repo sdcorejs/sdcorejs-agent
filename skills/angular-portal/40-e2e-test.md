@@ -7,7 +7,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 # 40 — E2E Test
 
 ## Purpose
-After `03-write-code` (or any sub-skill) has produced a feature, write E2E tests that exercise the happy path of that feature in a real browser. Catches integration bugs unit tests miss (routing, guards, form submission, table reload).
+After `07-write-code` (or any sub-skill) has produced a feature, write E2E tests that exercise the happy path of that feature in a real browser. Catches integration bugs unit tests miss (routing, guards, form submission, table reload).
 
 ## When to use
 - Right after `12-init-entity` or `20-screen-list`/`21-screen-detail` finishes

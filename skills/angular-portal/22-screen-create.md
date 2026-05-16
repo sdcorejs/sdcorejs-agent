@@ -91,7 +91,7 @@ async onSave(): Promise<void> {
 ```
 
 ### Navigation after success
-Default: navigate up one level (`['..']`) → list page. Alternative (opt-in when user explicitly asks): navigate to `['../detail', created.id]`. Document the choice in the auto-doc skill output.
+Default: navigate up one level (`['..']`) → list page. Alternative (opt-in when user explicitly asks): navigate to `['../detail', created.id]`. Document the choice in the auto-docs skill output.
 
 ### Permission gate
 Save button uses `*sdPermission="'<MODULE>_C_<ENTITY>_CREATE'; sdPermissionKey: '<module>'"`.

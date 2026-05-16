@@ -297,39 +297,43 @@ import { SdInput, SdButton } from 'sd-angular';
   standalone: true,
   imports: [ReactiveFormsModule, SdInput, SdButton],
   template: `
+    <!-- NOTE: @sd-angular/core form components self-register via [form]+name="..."
+         (they do NOT implement ControlValueAccessor — formControlName won't bind).
+         For FormArray/FormGroup nesting, pass the nested FormGroup instance to [form]. -->
     <form [formGroup]="form">
       <sd-input
         label="Entity Name"
-        formControlName="name"
+        [form]="form"
+        name="name"
         required>
       </sd-input>
 
       <!-- Dynamic form array for items -->
-      <div formArrayName="items">
-        @for (let item of items.controls; let i = $index) {
-          <div [formGroupName]="i" class="item-group">
-            <sd-input
-              label="Item Name"
-              formControlName="itemName"
-              required>
-            </sd-input>
+      @for (let itemGroup of items.controls; let i = $index) {
+        <div class="item-group">
+          <sd-input
+            label="Item Name"
+            [form]="itemGroup"
+            name="itemName"
+            required>
+          </sd-input>
 
-            <sd-input
-              label="Quantity"
-              formControlName="quantity"
-              type="number"
-              required>
-            </sd-input>
+          <sd-input
+            label="Quantity"
+            [form]="itemGroup"
+            name="quantity"
+            type="number"
+            required>
+          </sd-input>
 
-            <sd-button
-              title="Remove"
-              (click)="removeItem(i)"
-              type="outline"
-              color="error">
-            </sd-button>
-          </div>
-        }
-      </div>
+          <sd-button
+            title="Remove"
+            (click)="removeItem(i)"
+            type="outline"
+            color="error">
+          </sd-button>
+        </div>
+      }
 
       <sd-button
         title="Add Item"
@@ -518,10 +522,13 @@ import { ProductValidators } from '../../validators/product-validators';
 
       <div class="p-8">
         <sd-section>
+          <!-- NOTE: @sd-angular/core form components self-register via [form]+name="..."
+               (they do NOT implement ControlValueAccessor — formControlName won't bind). -->
           <form [formGroup]="form">
             <sd-input
               label="Code"
-              formControlName="code"
+              [form]="form"
+              name="code"
               required
               maxlength="32"
               [viewed]="state() === 'DETAIL'">
@@ -532,7 +539,8 @@ import { ProductValidators } from '../../validators/product-validators';
 
             <sd-input
               label="Name"
-              formControlName="name"
+              [form]="form"
+              name="name"
               required
               maxlength="255"
               [viewed]="state() === 'DETAIL'">
@@ -543,14 +551,16 @@ import { ProductValidators } from '../../validators/product-validators';
 
             <sd-textarea
               label="Description"
-              formControlName="description"
+              [form]="form"
+              name="description"
               maxlength="1000"
               [viewed]="state() === 'DETAIL'">
             </sd-textarea>
 
             <sd-input-number
               label="Price"
-              formControlName="price"
+              [form]="form"
+              name="price"
               required
               [min]="0"
               [step]="0.01"
@@ -562,7 +572,8 @@ import { ProductValidators } from '../../validators/product-validators';
 
             <sd-select
               label="Category"
-              formControlName="category"
+              [form]="form"
+              name="category"
               required
               [items]="PRODUCT_CATEGORIES"
               valueField="value"
@@ -575,7 +586,8 @@ import { ProductValidators } from '../../validators/product-validators';
 
             <sd-switch
               label="Active"
-              formControlName="isActivated"
+              [form]="form"
+              name="isActivated"
               [viewed]="state() === 'DETAIL'">
             </sd-switch>
           </form>

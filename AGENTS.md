@@ -9,9 +9,9 @@ This repo is an SDLC agent for the SDCoreJS stack: Angular portal (Core UI), Nes
 
 ```
 skills/
-├── angular-portal/   ✅  17 skills (00-onboarding through 52-faq)
-│   ├── _refs/        reference data, no frontmatter, load on demand
-│   └── _shared/      cross-skill rules (auto-doc)
+├── _shared/          track-agnostic rules (auto-docs, memories)
+├── angular-portal/   ✅  21 skills (00-onboarding through 52-faq)
+│   └── _refs/        reference data, no frontmatter, load on demand
 ├── nestjs/           🚧  planned
 └── nextjs/           🚧  planned
 ```
@@ -37,31 +37,41 @@ allowed-tools: Read, Write, Edit, ...
 
 ## Workflow per track
 
-Every track shares the same workflow shape:
+Every track shares the same workflow shape (superpowers-aligned, with explicit user-approval gates):
 
 ```
-Request → 01-clarify-requirements → 02-plan → 03-write-code (dispatches sub-skills)
-        → 40-e2e-test → 50-review-code → 51-write-comments → _shared/auto-doc (MANDATORY)
+Request
+  → 01-brainstorm (optional, when scope is open-ended)
+  → 02-clarify-requirements
+  → 03-write-spec → 04-review-spec      (approval gate)
+  → 05-plan       → 06-review-plan      (approval gate)
+  → 07-write-code (dispatches sub-skills)
+  → 40-e2e-test → 50-review-code → 51-write-comments
+  → _shared/auto-docs (MANDATORY) + _shared/memories (when durable knowledge surfaces)
 ```
 
-For the angular-portal track, sub-skills under `03-write-code`:
+For the angular-portal track, sub-skills under `07-write-code`:
 `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `22-screen-create`, `23-screen-update`, `30-reactive-form`, `31-workflow-actions`.
 
 ## Mandatory rules
 
 To avoid drift, the source of truth for these rules is `CLAUDE.md`. Summary:
 
-1. **Auto-doc is mandatory** — at the end of every code-writing skill invocation, write a summary to the **target project's** `docs/sdcorejs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. Never to this `sdcorejs-agent` repo.
+1. **Auto-docs is mandatory** — at the end of every code-writing skill invocation, the track-agnostic `skills/_shared/auto-docs.md` writes a summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (note the leading dot). Never to this `sdcorejs-agent` repo.
 
-2. **Session-start ritual** — read the target project's `docs/sdcorejs/<track>/*.md` (latest 3 entries) before answering.
+2. **Memories** — durable cross-session knowledge lives under the target project's `.sdcorejs/memories/<track>/`, managed by `skills/_shared/memories.md`.
 
-3. **Bilingual** — match user's language. Vietnamese request → Vietnamese output (full diacritics). Permission codes and route paths stay English.
+3. **Session-start ritual** — read the target project's `.sdcorejs/docs/<track>/*.md` (latest 3) and `.sdcorejs/memories/<track>/*.md` (frontmatter) before answering.
 
-4. **Clarify-before-code** — do not generate code if scope is unspecified. Run `01-clarify-requirements` first.
+4. **Bilingual** — match user's language. Vietnamese request → Vietnamese output (full diacritics). Permission codes and route paths stay English.
 
-5. **Core UI first** — use `@sd-angular/core` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.
+5. **Clarify-before-code** — do not generate code if scope is unspecified. Run `02-clarify-requirements` first (or `01-brainstorm` for open-ended ideas).
 
-6. **Test after generation** — `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts` and report summary.
+6. **Approval gates** — `04-review-spec` and `06-review-plan` require explicit user approval before the next skill runs.
+
+7. **Core UI first** — use `@sd-angular/core` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.
+
+8. **Test after generation** — `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts` and report summary.
 
 ## Reference docs (load on demand)
 
@@ -73,7 +83,7 @@ To avoid drift, the source of truth for these rules is `CLAUDE.md`. Summary:
 
 - Don't author new skills without explicit user approval.
 - Don't skip clarify-before-code even when scope seems obvious.
-- Don't write `docs/sdcorejs/` content in this `sdcorejs-agent` repo. Auto-doc targets the user's working project.
+- Don't write `.sdcorejs/docs/` or `.sdcorejs/memories/` content in this `sdcorejs-agent` repo. Auto-docs and memories target the user's working project.
 - Don't load all skill bodies at session start — frontmatter only for dispatch.
 
 ## See also

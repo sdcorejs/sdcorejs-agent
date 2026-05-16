@@ -1,18 +1,36 @@
 ---
 name: angular-portal-write-code
-description: Use when the user has confirmed the plan from 02-plan and is ready to generate code. Orchestrator skill - dispatches sub-skills 10-init-portal, 11-init-module, 12-init-entity, 20-screen-list, 21-screen-detail, 22-screen-create, 23-screen-update, 30-reactive-form, 31-workflow-actions based on the confirmed scope. Triggers - "generate code", "viết code", "sinh code đi", "go ahead", "proceed with implementation". Bilingual (VI/EN).
+description: Use when the user has confirmed the plan via 06-review-plan (which was authored by 05-plan) and is ready to generate code. Orchestrator skill - dispatches sub-skills 10-init-portal, 11-init-module, 12-init-entity, 20-screen-list, 21-screen-detail, 22-screen-create, 23-screen-update, 30-reactive-form, 31-workflow-actions based on the confirmed scope. After completion, mandatory hand-off to 40-e2e-test, 50-review-code, 51-write-comments, and _shared/auto-docs. Triggers - "generate code", "viết code", "sinh code đi", "go ahead", "proceed with implementation". Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-# Skill: Generate Entity CRUD from Schema
+# 07 — Write Code (Orchestrator)
 
 ## Purpose
 
-Transform EntitySchema + generic templates into complete CRUD entity code:
+Transform an approved plan + EntitySchema into complete CRUD entity code:
 - Model (DTO, SaveReq, validators)
 - Service (mock-first CRUD via centralized seed data file)
 - Routes (lazy-loaded)
 - Components (List, Detail)
+
+This skill is an orchestrator: it does NOT itself generate every file — it dispatches the right sub-skill for each numbered step in the approved plan.
+
+## Dispatch table
+
+| Scope item in the approved plan | Sub-skill to invoke |
+|---|---|
+| New portal (no existing project yet) | `10-init-portal` (run FIRST before any module work) |
+| New module (`src/libs/<module>/`) | `11-init-module` |
+| New entity with full CRUD (model + service + routes + list + detail) | `12-init-entity` |
+| List page only (entity already exists) | `20-screen-list` |
+| Detail page only (entity already exists) | `21-screen-detail` |
+| Create screen / side-drawer flow | `22-screen-create` |
+| Update screen / side-drawer flow | `23-screen-update` |
+| Refine an existing reactive form (validators, conditional fields, layout) | `30-reactive-form` |
+| Add workflow action buttons (submit / approve / reject / bulk) | `31-workflow-actions` |
+
+Execution order: portal → module → entity → screens → form refinement → workflow actions. If the plan touches multiple items, run them in this order; do not parallelize. After all sub-skills finish, hand off in sequence to `40-e2e-test`, `50-review-code`, `51-write-comments`, then `_shared/auto-docs` (and `_shared/memories` if durable knowledge surfaced).
 
 ## When to Use
 
