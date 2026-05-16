@@ -181,7 +181,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
   - **Action flow coverage** (detail): verify invalid form blocks save, create path calls `create`, update path calls `update`, and navigation is correct
   - **Signal state coverage**: verify state transitions (`CREATE/UPDATE/DETAIL`) and computed flags (`isDetail`, title) work as expected
 - After generating a new module or entity, run tests immediately and report result:
-  - Preferred command: `npm run test -- --watch=false --include=src/libs/[module]/modules/[entity]/**/*.spec.ts`
+  - Preferred command: `npm run test -- --watch=false --include=src/libs/[module]/features/[entity]/**/*.spec.ts`
   - If include filter is not supported, run full `npm run test -- --watch=false` and summarize spec results
   - If environment lacks headless browser, report blocker explicitly and provide exact command for developer to run locally
 - Reserve extension points for workflow actions in both list and detail
@@ -463,25 +463,25 @@ Choose ONE based on entity complexity:
    - All CRUD embedded in list page via <sd-side-drawer>
    - No sub-routes (create/detail/update); only one list route
    - Use viewChild.required<SdSideDrawer>('drawer') to open/close
-   - Starter reference: core/templates/angular-portal-starter/src/libs/sample/modules/product
+   - Starter reference: core/templates/angular-portal-starter/src/libs/sample/features/product
 
 2. UnifiedCompact  (full page, same layout for CREATE/UPDATE/DETAIL)
    - Sub-routes: list + create + detail/:id + update/:id
    - Same component handles all 3 states via [viewed]="state === 'DETAIL'"
-   - Starter reference: core/templates/angular-portal-starter/src/libs/sample/modules/employee
+   - Starter reference: core/templates/angular-portal-starter/src/libs/sample/features/employee
 
 3. AdaptiveSplitDetail  (full page, DETAIL differs from CREATE/UPDATE)
    - Sub-routes: list + create + detail/:id + update/:id
    - DETAIL renders sd-section + sd-section-item (read-only label-value pairs)
    - CREATE/UPDATE renders editable sd-input / sd-select / sd-textarea
    - Import SdSectionItem from @sd-angular/core/components/section
-   - Starter reference: core/templates/angular-portal-starter/src/libs/sample/modules/department
+   - Starter reference: core/templates/angular-portal-starter/src/libs/sample/features/department
 ```
 
 ### Side-drawer Project Structure
 ```
 libs/[module]/
-└── modules/[entity]/
+└── features/[entity]/
   ├── routes.ts                     # Only list route, no create/update/detail sub-routes
   ├── routes.spec.ts
   ├── components/
@@ -501,7 +501,7 @@ libs/[module]/
 ### Full-page Project Structure (UnifiedCompact / AdaptiveSplitDetail)
 ```
 libs/[module]/
-└── modules/[entity]/
+└── features/[entity]/
   ├── routes.ts
   ├── routes.spec.ts
   ├── pages/
@@ -766,7 +766,7 @@ export class ListComponent implements OnInit {
 ### list.component.ts (Side-drawer variant)
 ```typescript
 // Use when: ≤6 fields, simple form, no separate page/route needed.
-// Reference: core/templates/angular-portal-starter/src/libs/sample/modules/product/pages/list/list.component.ts
+// Reference: core/templates/angular-portal-starter/src/libs/sample/features/product/pages/list/list.component.ts
 
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, viewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
@@ -1230,7 +1230,7 @@ export * from './services/[entity].model';
 ```typescript
 // Use when: DETAIL must display read-only label-value pairs (sd-section-item),
 //           while CREATE/UPDATE use editable form controls.
-// Reference: core/templates/angular-portal-starter/src/libs/sample/modules/department/pages/detail/detail.component.ts
+// Reference: core/templates/angular-portal-starter/src/libs/sample/features/department/pages/detail/detail.component.ts
 
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { FormGroup } from '@angular/forms';
@@ -1593,7 +1593,7 @@ describe('[Entity]Routes (permission guards)', () => {
 
 ## 6. Example Output
 
-### File: `libs/sample/modules/product/services/product.model.ts`
+### File: `libs/sample/features/product/services/product.model.ts`
 ```typescript
 import { BaseEntity } from '@sample/services';
 
@@ -1617,7 +1617,7 @@ export interface ProductSaveReq {
 export type ProductDTO = Required<ProductSaveReq> & BaseEntity;
 ```
 
-### File: `libs/sample/modules/product/services/product.service.ts`
+### File: `libs/sample/features/product/services/product.service.ts`
 ```typescript
 import { Injectable, inject } from '@angular/core';
 import { BaseService } from '@sample/services';
@@ -1637,7 +1637,7 @@ export class ProductService extends BaseService {
 }
 ```
 
-### File: `libs/sample/modules/product/pages/list/list.component.ts`
+### File: `libs/sample/features/product/pages/list/list.component.ts`
 ```typescript
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
@@ -1776,7 +1776,7 @@ export class ListComponent implements OnInit {
 }
 ```
 
-### File: `libs/sample/modules/product/pages/detail/detail.component.ts`
+### File: `libs/sample/features/product/pages/detail/detail.component.ts`
 ```typescript
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';

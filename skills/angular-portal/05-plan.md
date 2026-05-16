@@ -42,25 +42,26 @@ A good plan has:
 1. CREATE  src/libs/<module>/<module>.configuration.ts          — InjectionToken + interface
 2. CREATE  src/libs/<module>/configurations/api.configuration.ts — request/response interceptors
 3. CREATE  src/libs/<module>/guards/<module>.guard.ts             — permission gate
-4. CREATE  src/libs/<module>/routes.ts                            — lazy-load entity children
-5. EDIT    src/app/app.routes.ts                                  — register <module> route + provider
-6. EDIT    src/main.ts                                            — provide <MODULE>_CONFIGURATION at root
+4. CREATE  src/libs/<module>/<module>.module.ts                   — @NgModule with providers + useClass()/useValue() statics
+5. CREATE  src/libs/<module>/routes.ts                            — guards + lazy-load entity children (NO providers)
+6. EDIT    src/app/app.routes.ts                                  — register <module> route
+7. EDIT    src/main.ts                                            — importProvidersFrom(<Module>Module.useValue({...}))
 
 ### Entity (model + service + mock)
-7.  CREATE  src/libs/<module>/modules/<entity>/services/<entity>.model.ts
-8.  CREATE  src/libs/<module>/modules/<entity>/services/<entity>.mock-data.ts  — 20-40 realistic seed rows
-9.  CREATE  src/libs/<module>/modules/<entity>/services/<entity>.service.ts    — MockCrudStore wiring
-10. CREATE  src/libs/<module>/modules/<entity>/services/index.ts
+8.  CREATE  src/libs/<module>/features/<entity>/services/<entity>.model.ts
+9.  CREATE  src/libs/<module>/features/<entity>/services/<entity>.mock-data.ts  — 20-40 realistic seed rows
+10. CREATE  src/libs/<module>/features/<entity>/services/<entity>.service.ts    — MockCrudStore wiring
+11. CREATE  src/libs/<module>/features/<entity>/services/index.ts
 
 ### Entity (routes + components)
-11. CREATE  src/libs/<module>/modules/<entity>/<entity>.routes.ts
-12. CREATE  src/libs/<module>/modules/<entity>/pages/list/list.component.ts
-13. CREATE  src/libs/<module>/modules/<entity>/pages/detail/detail.component.ts
+12. CREATE  src/libs/<module>/features/<entity>/<entity>.routes.ts
+13. CREATE  src/libs/<module>/features/<entity>/pages/list/list.component.ts
+14. CREATE  src/libs/<module>/features/<entity>/pages/detail/detail.component.ts
 
 ### Tests (matching coverage level)
-14. CREATE  ...routes.spec.ts
-15. CREATE  ...list.component.spec.ts
-16. CREATE  ...detail.component.spec.ts
+15. CREATE  ...routes.spec.ts
+16. CREATE  ...list.component.spec.ts
+17. CREATE  ...detail.component.spec.ts
 
 ## Verification
 - `npm install` (only if new portal)

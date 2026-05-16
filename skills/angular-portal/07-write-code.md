@@ -375,7 +375,7 @@ export const productRoutes: Routes = [
 ### 1. File Naming & Paths
 
 ```
-src/libs/{{ module }}/modules/{{ entityKebab }}/
+src/libs/{{ module }}/features/{{ entityKebab }}/
   ├── services/
   │   ├── {{ entityKebab }}.model.ts       (DTO, SaveReq, constants)
   │   ├── {{ entityKebab }}.mock-data.ts   (20–40 domain-realistic seed rows)
@@ -525,7 +525,7 @@ Before returning generated code:
 
 **Result:**
 ```
-src/libs/sample/modules/employee/
+src/libs/sample/features/employee/
 ├── services/
 │   ├── employee.model.ts
 │   ├── employee.service.ts

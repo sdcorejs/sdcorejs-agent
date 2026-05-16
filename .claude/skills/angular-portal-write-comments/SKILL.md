@@ -77,12 +77,12 @@ For inline edits, summarize:
 ```markdown
 ## Comments added
 
-### src/libs/sales/modules/product/services/product.service.ts
+### src/libs/sales/features/product/services/product.service.ts
 - JSDoc on `update(id, req)` — documents `EntityNotFoundError` throw + audit-field assignment
 - `// why:` on line 47 — explains why `markAsPristine()` is called after `patchValue`
 - `// why:` on line 62 — uploads must complete before `update(...)` to avoid orphan blobs
 
-### src/libs/sales/modules/product/pages/detail/detail.component.ts
+### src/libs/sales/features/product/pages/detail/detail.component.ts
 - JSDoc on `loadEntityData(id)` — documents stale-id recovery contract
 - `// why:` on line 89 — explains `replaceUrl: true` for back-button safety
 ```

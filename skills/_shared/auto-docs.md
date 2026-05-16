@@ -66,11 +66,11 @@ The `<kebab-topic>` is a 3-6 word slug derived from what was actually done. Exam
 <1-3 sentence verbatim or paraphrased user request, in user's original language>
 
 ## What was changed
-- CREATE  src/libs/catalog/modules/product/services/product.model.ts — Product DTO + SaveReq with 6 fields
-- CREATE  src/libs/catalog/modules/product/services/product.mock-data.ts — 25 seed rows
-- CREATE  src/libs/catalog/modules/product/services/product.service.ts — MockCrudStore wiring
-- CREATE  src/libs/catalog/modules/product/pages/list/list.component.ts — list page with audit columns
-- CREATE  src/libs/catalog/modules/product/pages/detail/detail.component.ts — UnifiedCompact 3-state
+- CREATE  src/libs/catalog/features/product/services/product.model.ts — Product DTO + SaveReq with 6 fields
+- CREATE  src/libs/catalog/features/product/services/product.mock-data.ts — 25 seed rows
+- CREATE  src/libs/catalog/features/product/services/product.service.ts — MockCrudStore wiring
+- CREATE  src/libs/catalog/features/product/pages/list/list.component.ts — list page with audit columns
+- CREATE  src/libs/catalog/features/product/pages/detail/detail.component.ts — UnifiedCompact 3-state
 - EDIT    src/libs/catalog/routes.ts — registered product child route
 
 ## Decisions made
@@ -84,7 +84,7 @@ The `<kebab-topic>` is a 3-6 word slug derived from what was actually done. Exam
 - No workflow yet; if approval flow is needed later, invoke `31-workflow-actions`
 
 ## Next suggested action
-- Run `npm run test -- --watch=false --include=src/libs/catalog/modules/product/**/*.spec.ts`
+- Run `npm run test -- --watch=false --include=src/libs/catalog/features/product/**/*.spec.ts`
 - Open `http://localhost:4200/catalog/product` to verify list renders
 - Optional: invoke `40-e2e-test` to add happy-path E2E coverage
 

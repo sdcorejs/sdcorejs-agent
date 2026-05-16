@@ -52,7 +52,7 @@ This skill is a refinement step after module and entity ownership have already b
   - Use `TestBed.overrideComponent` to isolate heavy template dependencies when needed
   - Ensure `fixture.detectChanges()` can run without DI/template errors
 - Run tests right after generation and report status:
-  - Preferred: `npm run test -- --watch=false --include=src/libs/[module]/modules/[entity]/**/*.spec.ts`
+  - Preferred: `npm run test -- --watch=false --include=src/libs/[module]/features/[entity]/**/*.spec.ts`
   - Fallback: `npm run test -- --watch=false` when include filter is unavailable
 
 ### MUST NOT ❌
@@ -436,7 +436,7 @@ For workflow-enabled screens:
 
 ## 6. Example Output
 
-### File: `libs/sample/modules/product/validators/product-validators.ts`
+### File: `libs/sample/features/product/validators/product-validators.ts`
 ```typescript
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
@@ -458,7 +458,7 @@ export class ProductValidators {
 }
 ```
 
-### File: `libs/sample/modules/product/pages/detail/detail.component.ts`
+### File: `libs/sample/features/product/pages/detail/detail.component.ts`
 ```typescript
 import { Component, OnInit, FormBuilder, Validators, inject } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';

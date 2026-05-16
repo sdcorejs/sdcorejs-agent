@@ -44,10 +44,10 @@ Look for monorepo layout (`apps/`, `libs/`, `packages/`) vs flat. This shapes ev
 
 #### Angular Portal
 ```bash
-# Feature modules / libs
+# Feature libs (top-level domains)
 find src/libs -maxdepth 2 -type d 2>/dev/null              # or libs/ in nx repos
-# Sub-modules
-find src/libs/*/modules -maxdepth 1 -type d 2>/dev/null
+# Per-entity feature folders inside each lib
+find src/libs/*/features -maxdepth 1 -type d 2>/dev/null
 # Shared UI / pipes / directives
 find src/libs/shared -maxdepth 3 -type d 2>/dev/null
 # Route registries
@@ -137,7 +137,7 @@ Based on the planned work (<insert from caller's context>):
 - ⚠️ No existing module for `pricing` — will create new `src/libs/pricing/` per convention
 
 ### Path conventions detected
-- Modules live under `src/libs/<module>/modules/<sub-module>/`
+- Each lib lives at `src/libs/<lib>/`; per-entity feature folders are at `src/libs/<lib>/features/<entity>/`
 - Routes registered in `src/libs/<module>/routes.ts`, lazy-loaded
 - DTOs colocated with services: `services/<entity>.model.ts`
 - Mock data: `services/<entity>.mock-data.ts`

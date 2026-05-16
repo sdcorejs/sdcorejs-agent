@@ -21,9 +21,10 @@ Default mode is standalone-first, but this skill can generate hybrid-compatible 
 | File | Required | Notes |
 |---|---|---|
 | `[module].configuration.ts` | ✅ Always | Token + interface |
+| `[module].module.ts` | ✅ Always | `@NgModule` + `useClass()` / `useValue()` statics — primary public API |
 | `configurations/api.configuration.ts` | ✅ Always | Request/error interceptors |
 | `guards/[module].guard.ts` | ✅ Always | Route protection |
-| `routes.ts` | ✅ Always | Lazy-load entity children |
+| `routes.ts` | ✅ Always | Guards + lazy-load entity children. NO providers. (Filename `<module>.routing.ts` is an accepted alternative.) |
 | `configurations/permission.configuration.ts` | ⚙️ Optional | Only when module has its own permission domain |
 | `configurations/upload-file.configuration.ts` | ⚙️ Optional | Only when module entities use file upload |
 
@@ -38,8 +39,10 @@ If unsure, skip both and generate minimal module first.
 
 ### MUST DO ✅
 - Apply this skill before entity CRUD when the module does not exist
-- Create `routes.ts` at module root level
-- Provide `SD_API_CONFIG` at route level
+- Generate `[module].module.ts` as the primary public API (exposes `useClass()` + `useValue()` statics)
+- Put ALL module-scoped providers (`SD_API_CONFIG`, `SD_UPLOAD_FILE_CONFIGURATION`, custom interceptors, etc.) on `@NgModule({ providers: [...] })` — NOT on the route
+- Create `routes.ts` at lib root with guards + `loadChildren` only (no `providers` array)
+- Wire the lib at app root via `importProvidersFrom([Module]Module.useValue({...}))` in `main.ts` (or `imports: [[Module]Module.useValue(...)]` for legacy NgModule consumers)
 - Do not modify global CSS/SCSS while creating module structure/configuration
 - If `SD_PERMISSION_CONFIGURATION` is opted in: keep it at app root injector (`main.ts`) so root-scoped `SdPermissionService` receives full configuration set immediately
 - If `SD_UPLOAD_FILE_CONFIGURATION` is opted in: keep it at app root injector (`main.ts`) so root-scoped upload consumers can resolve all keyed configurations
@@ -67,12 +70,13 @@ If unsure, skip both and generate minimal module first.
   - reuse existing templates and avoid regenerating unchanged boilerplate explanations
 
 ### MUST NOT ❌
-- Provide services in route-level configuration (only for interceptors/guards)
+- Put `providers: [...]` on the route — that creates a lazy-bound injector invisible to root-scoped services like `SdPermissionService`. Use `[Module]Module` instead.
+- Provide `[MODULE]_CONFIGURATION` directly in `main.ts` providers — go through `[Module]Module.useValue({...})` so the consumer pattern stays consistent
 - Force migration to pure standalone when developer did not request migration and existing codebase is hybrid
 - Hardcode API URLs (inject via configuration)
 - Skip error handling in interceptors
-- Use global interceptors (module-scoped only)
-- Assume route-level providers are visible to root-scoped services
+- Use global interceptors (module-scoped only via `multi: true` on `SD_API_CONFIG`)
+- Assume route-level providers are visible to root-scoped services — they are not
 - Generate `permission.configuration.ts` or `upload-file.configuration.ts` without confirmation that the module needs them
 - Do not provide `SD_PERMISSION_CONFIGURATION` at module route level when using root-scoped `SdPermissionService`
 - Do not provide `SD_UPLOAD_FILE_CONFIGURATION` at module route level when using root-scoped upload configuration resolution
@@ -181,33 +185,70 @@ export const [module]Guard: CanActivateFn = () => {
 };
 ```
 
-### routes.ts
+### [module].module.ts (canonical — exposes the lib via `useClass()` / `useValue()`)
+This is the SINGLE place where module-scoped providers live. The lib is consumed at app root via `importProvidersFrom([Module]Module.useValue({...}))` (standalone bootstrap) or via `imports: [[Module]Module.useValue(...)]` (legacy NgModule consumers).
+
+```typescript
+import { ModuleWithProviders, NgModule, Type } from '@angular/core';
+import { SD_API_CONFIG } from '@sd-angular/core/services';
+import { SD_UPLOAD_FILE_CONFIGURATION } from '@sd-angular/core/components';
+import {
+  [MODULE]_CONFIGURATION,
+  I[Module]Configuration,
+} from './[module].configuration';
+import { ApiConfiguration } from './configurations/api.configuration';
+import { UploadFileConfiguration } from './configurations/upload-file.configuration';
+
+@NgModule({
+  declarations: [],
+  providers: [
+    // Module-scoped interceptors / configurations live HERE, not on the route.
+    { provide: SD_API_CONFIG, useClass: ApiConfiguration, multi: true },
+    { provide: SD_UPLOAD_FILE_CONFIGURATION, useClass: UploadFileConfiguration, multi: true },
+  ],
+})
+export class [Module]Module {
+  /** Inject a configuration via a class — useful when the configuration has its own deps. */
+  static useClass(
+    classConfiguration: Type<I[Module]Configuration>,
+  ): ModuleWithProviders<[Module]Module> {
+    return {
+      ngModule: [Module]Module,
+      providers: [{ provide: [MODULE]_CONFIGURATION, useClass: classConfiguration }],
+    };
+  }
+
+  /** Inject a configuration via a plain object — typical for `{ host: environment.baseUrl }`. */
+  static useValue(
+    valueConfiguration: I[Module]Configuration,
+  ): ModuleWithProviders<[Module]Module> {
+    return {
+      ngModule: [Module]Module,
+      providers: [{ provide: [MODULE]_CONFIGURATION, useValue: valueConfiguration }],
+    };
+  }
+}
+```
+
+### routes.ts (guards + lazy children only — NO providers)
 ```typescript
 import { Routes } from '@angular/router';
-import { SD_API_CONFIG } from 'sd-angular';
-import { ApiConfiguration } from './configurations/api.configuration';
 import { [module]Guard } from './guards/[module].guard';
-import { [MODULE]_CONFIGURATION, I[Module]Configuration } from './[module].configuration';
-
-const [MODULE]_CONFIG: I[Module]Configuration = {
-  host: 'http://localhost:3000/api/v1/[module]',
-};
 
 export const [module]Routes: Routes = [
   {
     path: '',
     canActivate: [[module]Guard],
-    providers: [
-      { provide: SD_API_CONFIG, useClass: ApiConfiguration, multi: true },
-    ],
     children: [
       {
         path: 'employee',
-        loadChildren: () => import('./modules/employee').then(m => m.employeeRoutes),
+        loadChildren: () => import('./features/employee').then(m => m.employeeRoutes),
+        data: { permission: '[MODULE]_C_EMPLOYEE_LIST', permissionKey: '[module]' },
       },
       {
         path: 'department',
-        loadChildren: () => import('./modules/department').then(m => m.departmentRoutes),
+        loadChildren: () => import('./features/department').then(m => m.departmentRoutes),
+        data: { permission: '[MODULE]_C_DEPARTMENT_LIST', permissionKey: '[module]' },
       },
       // Add more entities as needed
     ],
@@ -215,26 +256,50 @@ export const [module]Routes: Routes = [
 ];
 ```
 
-### main.ts (when service is root-scoped)
+> ⚠️ **No `providers: []` on the route.** All module-scoped providers (interceptors, configuration token, upload, etc.) belong on `[Module]Module`. Route-level providers create lazy-bound injectors that root-scoped services cannot see — leading to "no provider for `[MODULE]_CONFIGURATION`" errors when `SdPermissionService` / shared services run.
+>
+> Filename can also be `<module>.routing.ts` (alternative naming used in some projects); `routes.ts` is the preferred default.
+
+### main.ts (standalone bootstrap)
+The lib is consumed at root via `importProvidersFrom`. `useValue` for inline config, `useClass` when the configuration needs its own DI.
+
 ```typescript
 import { bootstrapApplication } from '@angular/platform-browser';
-import { SD_UPLOAD_FILE_CONFIGURATION } from '@sd-angular/core/components';
-import { SD_PERMISSION_CONFIGURATION } from 'sd-angular';
-import { [MODULE]_CONFIGURATION } from '@[module]/configurations';
-import { [Module]Configuration } from './app/configurations/[module].configuration';
+import { importProvidersFrom } from '@angular/core';
+import { SD_PERMISSION_CONFIGURATION } from '@sd-angular/core/modules';
+import { SdApiModule } from '@sd-angular/core/services';
+import { [Module]Module } from '@[module]';
 import { PermissionConfiguration } from './app/configurations/permission.configuration';
-import { UploadFileConfiguration } from './app/configurations/upload-file.configuration';
+import { environment } from './environments/environment';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    { provide: [MODULE]_CONFIGURATION, useClass: [Module]Configuration },
+    importProvidersFrom(
+      SdApiModule,
+      // Inline value — typical for { host: ... }
+      [Module]Module.useValue({ host: environment.[module]Host }),
+      // Or class form, when the configuration injects other deps:
+      // [Module]Module.useClass([Module]Configuration),
+    ),
     // Keep permission configuration at root injector for root-scoped SdPermissionService
     { provide: SD_PERMISSION_CONFIGURATION, useClass: PermissionConfiguration, multi: true },
-    // Keep upload-file configuration at root injector and distinguish by key
-    { provide: SD_UPLOAD_FILE_CONFIGURATION, useClass: UploadFileConfiguration, multi: true },
   ],
 });
 ```
+
+### Legacy NgModule consumer (when the app shell is still NgModule-based)
+```typescript
+@NgModule({
+  imports: [
+    [Module]Module.useValue({ host: environment.[module]Host }),
+    RouterModule.forRoot([...]),
+  ],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+The same `[Module]Module` works for both flows — that's the point of `ModuleWithProviders`.
 
 ### permission.configuration.ts (Keyed)
 ```typescript
@@ -264,7 +329,7 @@ export class PermissionConfiguration implements ISdPermissionConfiguration {
 ```typescript
 {
   path: 'employee',
-  loadChildren: () => import('./modules/employee').then(m => m.employeeRoutes),
+  loadChildren: () => import('./features/employee').then(m => m.employeeRoutes),
   data: {
     permission: 'SAMPLE_C_EMPLOYEE_LIST',
     permissionKey: 'sample',
@@ -272,15 +337,14 @@ export class PermissionConfiguration implements ISdPermissionConfiguration {
 }
 ```
 
-### index.ts (Module Barrel Export)
+### index.ts (Lib Barrel Export)
 ```typescript
-export * from './[module].configuration';
-export * from './routes';
+export * from './[module].module';        // primary public API — consumed via `.useValue()` / `.useClass()`
+export * from './[module].configuration'; // token + interface
+export * from './routes';                  // for app.routes lazy-load reference
 export * from './guards/[module].guard';
-export * from './configurations/api.configuration';
-export * from './configurations/upload-file.configuration';
 
-// Export services and models from base folder
+// Services and models from base folder
 export * from './services';
 ```
 
@@ -385,64 +449,117 @@ export const sampleGuard: CanActivateFn = () => {
 };
 ```
 
+### File: `libs/sample/sample.module.ts`
+```typescript
+import { ModuleWithProviders, NgModule, Type } from '@angular/core';
+import { SD_API_CONFIG } from '@sd-angular/core/services';
+import { SD_UPLOAD_FILE_CONFIGURATION } from '@sd-angular/core/components';
+import { ISampleConfiguration, SAMPLE_CONFIGURATION } from './sample.configuration';
+import { ApiConfiguration } from './configurations/api.configuration';
+import { UploadFileConfiguration } from './configurations/upload-file.configuration';
+
+@NgModule({
+  declarations: [],
+  providers: [
+    { provide: SD_API_CONFIG, useClass: ApiConfiguration, multi: true },
+    { provide: SD_UPLOAD_FILE_CONFIGURATION, useClass: UploadFileConfiguration, multi: true },
+  ],
+})
+export class SampleModule {
+  static useClass(
+    classConfiguration: Type<ISampleConfiguration>,
+  ): ModuleWithProviders<SampleModule> {
+    return {
+      ngModule: SampleModule,
+      providers: [{ provide: SAMPLE_CONFIGURATION, useClass: classConfiguration }],
+    };
+  }
+
+  static useValue(
+    valueConfiguration: ISampleConfiguration,
+  ): ModuleWithProviders<SampleModule> {
+    return {
+      ngModule: SampleModule,
+      providers: [{ provide: SAMPLE_CONFIGURATION, useValue: valueConfiguration }],
+    };
+  }
+}
+```
+
 ### File: `libs/sample/routes.ts`
 ```typescript
 import { Routes } from '@angular/router';
-import { SD_API_CONFIG } from 'sd-angular';
-import { ApiConfiguration } from './configurations/api.configuration';
 import { sampleGuard } from './guards/sample.guard';
-import { SAMPLE_CONFIGURATION, ISampleConfiguration } from './sample.configuration';
-
-const SAMPLE_CONFIG: ISampleConfiguration = {
-  host: 'http://localhost:3000/api/v1/sample',
-};
 
 export const sampleRoutes: Routes = [
   {
     path: '',
     canActivate: [sampleGuard],
-    providers: [
-      { provide: SAMPLE_CONFIGURATION, useValue: SAMPLE_CONFIG },
-      { provide: SD_API_CONFIG, useClass: ApiConfiguration, multi: true },
-    ],
     children: [
       {
         path: 'employee',
-        loadChildren: () => import('./modules/employee').then(m => m.employeeRoutes),
+        loadChildren: () => import('./features/employee').then(m => m.employeeRoutes),
+        data: { permission: 'SAMPLE_C_EMPLOYEE_LIST', permissionKey: 'sample' },
       },
       {
         path: 'department',
-        loadChildren: () => import('./modules/department').then(m => m.departmentRoutes),
+        loadChildren: () => import('./features/department').then(m => m.departmentRoutes),
+        data: { permission: 'SAMPLE_C_DEPARTMENT_LIST', permissionKey: 'sample' },
       },
     ],
   },
 ];
 ```
 
+### File: `src/main.ts` (consumer)
+```typescript
+import { bootstrapApplication } from '@angular/platform-browser';
+import { importProvidersFrom } from '@angular/core';
+import { SdApiModule } from '@sd-angular/core/services';
+import { SampleModule } from '@sample';
+import { environment } from './environments/environment';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    importProvidersFrom(
+      SdApiModule,
+      SampleModule.useValue({ host: environment.sampleHost }),
+    ),
+  ],
+});
+```
+
 ---
 
 ## Integration Points
 
-- Register in root `app.routes.ts`:
+- Register lib's child routes in root `app.routes.ts`:
   ```typescript
   export const routes: Routes = [
     // ... other routes
-    { 
-      path: 'sample', 
-      loadChildren: () => import('@sample').then(m => m.sampleRoutes) 
+    {
+      path: 'sample',
+      loadChildren: () => import('@sample').then(m => m.sampleRoutes),
     },
   ];
   ```
+- Bootstrap the lib in `main.ts`:
+  ```typescript
+  importProvidersFrom(SampleModule.useValue({ host: environment.sampleHost }))
+  ```
+  This is what wires `SAMPLE_CONFIGURATION` + interceptors + upload config into the app's root injector — the routes file knows nothing about providers.
 
 ## Implementation Checklist
 
-- [ ] Create configuration interface with required properties
+- [ ] Create configuration interface + `InjectionToken` (`[module].configuration.ts`)
+- [ ] Create `[module].module.ts` with `@NgModule({ providers })` + `useClass()` / `useValue()` statics
 - [ ] Create API configuration with interceptors
-- [ ] Create upload file configuration
+- [ ] Create upload file configuration (if file upload is in scope)
 - [ ] Create module guard
-- [ ] Create routes.ts with providers
-- [ ] Generate module skeleton specs (`routes.spec.ts`, `guard.spec.ts`, `api.configuration.spec.ts`)
-- [ ] Test configuration injection in child modules
-- [ ] Test API error handling
-- [ ] Test file upload configuration
-- [ ] Verify lazy loading works
+- [ ] Create `routes.ts` with guards + `loadChildren` only (NO `providers` array)
+- [ ] Wire lib at root via `importProvidersFrom([Module]Module.useValue({...}))` in `main.ts`
+- [ ] Generate module skeleton specs (`routes.spec.ts`, `guard.spec.ts`, `api.configuration.spec.ts`, `module.spec.ts`)
+- [ ] Test configuration injection in child features (root-scoped services see `[MODULE]_CONFIGURATION`)
+- [ ] Test API error handling end-to-end
+- [ ] Test file upload configuration resolves the right host
+- [ ] Verify lazy loading of each feature works

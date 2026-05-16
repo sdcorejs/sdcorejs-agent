@@ -30,7 +30,7 @@ Run the checklist below silently. If ANY item fails, edit the spec to fix it BEF
 - [ ] No internal contradictions (e.g. "Workflow: yes" in Architecture but no workflow acceptance criterion)
 - [ ] Scope-fit: if the spec is >2 pages, suggest splitting into 2+ smaller specs (decomposability check)
 - [ ] No ambiguous pronouns or vague verbs ("handle", "support", "manage" without object)
-- [ ] All file paths match SDCoreJS conventions (`src/libs/<module>/modules/<entity>/...`)
+- [ ] All file paths match SDCoreJS conventions (`src/libs/<lib>/features/<entity>/...`)
 - [ ] Language consistency: VI spec uses full diacritics; EN spec is grammatical
 - [ ] References to prior memories/auto-docs are concrete (path or topic), not handwaved
 

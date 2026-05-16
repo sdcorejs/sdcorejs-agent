@@ -143,13 +143,22 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(appRoutes, withComponentInputBinding(), withRouterConfig({...})),
     provideHttpClient(withInterceptors([SdKeycloakInterceptor])),
-    
-    // Global configurations
+
+    // Pull in shared lib modules + each feature lib via importProvidersFrom.
+    // Each lib's `.useValue()` / `.useClass()` static binds its configuration token
+    // and registers its interceptors at root injector — no route-level providers needed.
+    importProvidersFrom(
+      SdApiModule,
+      SampleModule.useValue({ host: environment.sampleHost }),
+      // CatalogModule.useValue({ host: environment.catalogHost }),
+      // OrderModule.useClass(OrderConfiguration), // when configuration has its own DI
+    ),
+
+    // Global (non-lib) configurations
     { provide: SD_CORE_CONFIGURATION, useClass: SdCoreConfiguration },
     { provide: SD_AUTH_CONFIGURATION, useClass: AuthConfiguration },
     { provide: SD_LAYOUT_CONFIGURATION, useClass: LayoutConfiguration },
-    { provide: SD_PERMISSION_CONFIGURATION, useClass: PermissionConfiguration },
-    { provide: SD_UPLOAD_FILE_CONFIGURATION, useClass: UploadFileConfiguration, multi: true }
+    { provide: SD_PERMISSION_CONFIGURATION, useClass: PermissionConfiguration, multi: true },
   ]
 });
 ```
@@ -159,21 +168,20 @@ bootstrapApplication(AppComponent, {
 ```typescript
 export const appRoutes: Routes = [
   { path: '', redirectTo: 'layout/home', pathMatch: 'full' },
-  
+
   {
     path: 'layout',
     loadChildren: () => import('@sd-angular/core/modules').then(m => m.sdLayoutRoutes),
     canActivate: [SdAuthGuard, SdPermissionGuard, SdPortalGuard]
   },
-  
+
   {
+    // Pure lazy-load — no providers here. SAMPLE_CONFIGURATION is already
+    // wired at root via importProvidersFrom(SampleModule.useValue({...})) above.
     path: 'sample',
     loadChildren: () => import('@sample').then(m => m.sampleRoutes),
-    providers: [
-      { provide: SAMPLE_CONFIGURATION, useClass: SampleConfiguration }
-    ]
   },
-  
+
   { path: '**', redirectTo: 'layout/not-found' }
 ];
 ```
@@ -279,7 +287,7 @@ export const customGuard: CanActivateFn = (route, state) => {
 
 ### Customize Entity Fields
 
-**File:** `src/libs/sample/modules/employee/services/employee.model.ts`
+**File:** `src/libs/sample/features/employee/services/employee.model.ts`
 
 ```typescript
 export interface EmployeeSaveReq {
@@ -323,8 +331,8 @@ Before using starter:
 - [x] Core version source of truth documented in `skills/angular-portal/core-version.md`
 - [x] tsconfig.json has: `"baseUrl": "./"` + `"@sample": ["./src/libs/sample"]` + `"@sample/*": ["./src/libs/sample/*"]`
 - [x] app.routes.ts lazy-loads sample module
-- [x] SAMPLE_CONFIGURATION provided at route level
-- [x] 3 demo entities exist in `src/libs/sample/modules/`:
+- [x] SAMPLE_CONFIGURATION wired at root via `importProvidersFrom(SampleModule.useValue({ host: environment.sampleHost }))` (no route-level providers)
+- [x] 3 demo entities exist in `src/libs/sample/features/`:
   - `employee/` — UnifiedCompact full-page detail (same layout for CREATE/UPDATE/DETAIL)
   - `product/` — Side-drawer CRUD embedded in list page (no sub-routes for detail)
   - `department/` — AdaptiveSplitDetail (DETAIL shows read-only sd-section-item, CREATE/UPDATE shows editable form)
@@ -370,7 +378,7 @@ Use **Entity CRUD Generation Skill** (see `entity-crud-generation-skill.md`) to 
 
 ### Option 3: Manual
 
-Copy `src/libs/sample/modules/employee/` → `src/libs/mymodule/modules/myentity/`, then customize field names.
+Copy `src/libs/sample/features/employee/` → `src/libs/mymodule/features/myentity/`, then customize field names.
 
 ---
 
@@ -569,6 +577,7 @@ export const routes: Routes = [
 
 ### main.ts Template
 ```typescript
+import { importProvidersFrom } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, withComponentInputBinding, withRouterConfig } from '@angular/router';
@@ -578,15 +587,26 @@ import {
   SD_LAYOUT_CONFIGURATION,
   SD_PERMISSION_CONFIGURATION,
 } from '@sd-angular/core/modules';
+import { SdApiModule } from '@sd-angular/core/services';
 
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { AuthConfiguration, LayoutConfiguration, PermissionConfiguration } from './app/configurations';
+import { SampleModule } from '@sample';
+import { environment } from './environments/environment';
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes, withComponentInputBinding(), withRouterConfig({ onSameUrlNavigation: 'reload' })),
     provideHttpClient(),
+
+    // Lib bootstraps — each feature lib's `useValue` / `useClass` static wires its
+    // configuration token + interceptors at the root injector.
+    importProvidersFrom(
+      SdApiModule,
+      SampleModule.useValue({ host: environment.sampleHost }),
+    ),
+
     {
       provide: SD_CORE_CONFIGURATION,
       useValue: {
@@ -595,7 +615,7 @@ bootstrapApplication(AppComponent, {
     },
     { provide: SD_AUTH_CONFIGURATION, useClass: AuthConfiguration },
     { provide: SD_LAYOUT_CONFIGURATION, useClass: LayoutConfiguration },
-    { provide: SD_PERMISSION_CONFIGURATION, useClass: PermissionConfiguration },
+    { provide: SD_PERMISSION_CONFIGURATION, useClass: PermissionConfiguration, multi: true },
   ],
 }).catch(err => console.error(err));
 ```
@@ -629,11 +649,11 @@ export const routes: Routes = [
   },
   {
     path: 'employee',
-    loadChildren: () => import('./modules/employee/employee.routes').then(m => m.routes),
+    loadChildren: () => import('./features/employee/employee.routes').then(m => m.routes),
   },
   {
     path: 'product',
-    loadChildren: () => import('./modules/product/product.routes').then(m => m.routes),
+    loadChildren: () => import('./features/product/product.routes').then(m => m.routes),
   },
 ];
 ```
@@ -687,12 +707,12 @@ Then run npm install and npm start to verify the starter boots.
 [project-name]/src/app/configurations/permission.configuration.ts
 [project-name]/src/libs/sample/routes.ts
 [project-name]/src/libs/sample/sample.configuration.ts
-[project-name]/src/libs/sample/modules/employee/routes.ts
-[project-name]/src/libs/sample/modules/product/routes.ts
+[project-name]/src/libs/sample/features/employee/routes.ts
+[project-name]/src/libs/sample/features/product/routes.ts
 [project-name]/src/environments/environment.dev.ts
 [project-name]/src/environments/environment.qc.ts
 [project-name]/src/environments/environment.uat.ts
 [project-name]/src/environments/environment.prod.ts
-[project-name]/src/libs/sample/modules/employee/services/employee.service.ts
-[project-name]/src/libs/sample/modules/product/services/product.service.ts
+[project-name]/src/libs/sample/features/employee/services/employee.service.ts
+[project-name]/src/libs/sample/features/product/services/product.service.ts
 ```

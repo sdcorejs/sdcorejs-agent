@@ -54,11 +54,11 @@ Reference any prior decisions captured in `.sdcorejs/memories/angular-portal/`.
 ## File structure
 List every file to create or modify (path + 1-line intent). This is the bridge from spec to plan — `05-plan` will turn this into numbered, ordered tasks.
 
-- CREATE  src/libs/sales/modules/promotion/services/promotion.model.ts — DTO + SaveReq
-- CREATE  src/libs/sales/modules/promotion/services/promotion.mock-data.ts — 25 seed rows
-- CREATE  src/libs/sales/modules/promotion/services/promotion.service.ts — MockCrudStore wiring
-- CREATE  src/libs/sales/modules/promotion/pages/list/list.component.ts — list page
-- CREATE  src/libs/sales/modules/promotion/pages/detail/detail.component.ts — UnifiedCompact 3-state
+- CREATE  src/libs/sales/features/promotion/services/promotion.model.ts — DTO + SaveReq
+- CREATE  src/libs/sales/features/promotion/services/promotion.mock-data.ts — 25 seed rows
+- CREATE  src/libs/sales/features/promotion/services/promotion.service.ts — MockCrudStore wiring
+- CREATE  src/libs/sales/features/promotion/pages/list/list.component.ts — list page
+- CREATE  src/libs/sales/features/promotion/pages/detail/detail.component.ts — UnifiedCompact 3-state
 - EDIT    src/libs/sales/routes.ts — register child route
 
 ## Acceptance criteria

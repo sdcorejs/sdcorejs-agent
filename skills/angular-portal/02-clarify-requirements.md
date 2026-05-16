@@ -209,7 +209,7 @@ Nếu user trả lời:
 
 Thì thứ tự skill sẽ là:
 1. Feature Module Configuration Skill -> tạo libs/catalog
-2. Entity CRUD Module Skill -> suy luận schema sản phẩm rồi tạo libs/catalog/modules/product
+2. Entity CRUD Module Skill -> suy luận schema sản phẩm rồi tạo libs/catalog/features/product
 3. Reactive Form Skill -> refine form field cho product
 ```
 
