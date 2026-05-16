@@ -14,7 +14,7 @@ skills/
 │   └── _refs/        reference data, no frontmatter, load on demand
 ├── nestjs/           🚧  planned (be-masterdata baseline reviewed)
 └── nextjs/
-    └── build-website/  🟡  in progress — Batch 1: onboarding / brainstorm / clarify / write-code / init-site / caching
+    └── build-website/  ✅  13 skills — SDLC entry (00/01/02/07) + 9 specialized (10-init / 11-theme / 12-pages / 13-seo / 14-og / 15-i18n / 16-caching / 17-responsive / 18-contact-form)
 ```
 
 Each skill file has Anthropic-style frontmatter:

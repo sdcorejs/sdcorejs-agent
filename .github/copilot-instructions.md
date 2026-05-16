@@ -14,7 +14,7 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem. When you (GitHu
 | --- | --- | --- |
 | Angular Portal | `skills/angular-portal/` | ✅ Complete (21 skills) |
 | NestJS | `skills/nestjs/` | 🚧 Planned |
-| Next.js | `skills/nextjs/` | 🟡 In progress — `build-website/` pack Batch 1 (6 skills) |
+| Next.js | `skills/nextjs/` | ✅ `build-website/` pack complete (13 skills) |
 
 ## Skill structure
 

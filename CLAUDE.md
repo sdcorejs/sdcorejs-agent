@@ -14,7 +14,7 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 | --- | --- | --- |
 | Angular Portal | `skills/angular-portal/` | ✅ Complete (21 skills) |
 | NestJS | `skills/nestjs/` | 🚧 Planned (be-masterdata baseline reviewed) |
-| Next.js | `skills/nextjs/` | 🟡 In progress — `build-website/` pack Batch 1 (6 skills: onboarding / brainstorm / clarify / write-code / init-site / caching) |
+| Next.js | `skills/nextjs/` | ✅ `build-website/` pack complete (13 skills: SDLC entry + 9 specialized sub-skills) |
 
 Plus `skills/_shared/` — 17 cross-track utility skills covering the full SDLC: analysis & planning support (code-map), execution discipline (subagent-driven-dev, parallel-dispatch), review & fix loop (fix-loop), comment ASK gate (comment-code), verification gate (verify-before-done), session memory (auto-docs, memories, auto-task-tracker, recovery), release plumbing (commit, pr-create, changelog, dep-update), and bootstrap utilities (env-setup, debug, security-review).
 
