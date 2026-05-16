@@ -16,7 +16,7 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 | NestJS | `skills/nestjs/` | 🚧 Planned |
 | Next.js | `skills/nextjs/` | 🚧 Planned |
 
-Plus `skills/_shared/` — cross-track utility skills (auto-docs, memories, commit, pr-create, debug, recovery, env-setup, …).
+Plus `skills/_shared/` — 12 cross-track utility skills (auto-docs, memories, auto-task-tracker, code-map, commit, pr-create, debug, recovery, env-setup, changelog, security-review, dep-update, parallel-dispatch).
 
 Each track exposes its capabilities as **skills** — markdown files with Anthropic-style YAML frontmatter (`name`, `description`, `allowed-tools`).
 
@@ -72,6 +72,7 @@ Request
 51-write-comments         ← add comments + explanations
   ↓
 _shared/auto-docs         ← MANDATORY session summary to <target>/.sdcorejs/docs/<track>/
+_shared/auto-task-tracker ← MANDATORY (immediately after auto-docs) — ticks done + appends new in <target>/.sdcorejs/tasks/<track>.md
 _shared/memories          ← durable knowledge (when applicable) to <target>/.sdcorejs/memories/<track>/
 ```
 
@@ -97,15 +98,21 @@ _shared/memories          ← durable knowledge (when applicable) to <target>/.s
 
 Cross-track skills that apply to angular-portal, nestjs, nextjs alike. Match against their `description` like any other skill.
 
-| Skill | Trigger |
-| --- | --- |
-| `sdcorejs-auto-docs` | end of every code-writing task (mandatory) — session summary |
-| `sdcorejs-memories` | "ghi nhớ", durable knowledge — write to target `.sdcorejs/memories/<track>/` |
-| `sdcorejs-commit` | "commit", "tạo commit" — Conventional Commits + scope detection + git safety |
-| `sdcorejs-pr-create` | "tạo PR", "open PR" — PR title/body from commits + diff via `gh` |
-| `sdcorejs-debug` | "lỗi", "không hoạt động", "fix bug" — systematic debugging discipline |
-| `sdcorejs-recovery` | "tiếp tục", "resume", "where were we" — handoff from docs + memories + git state |
-| `sdcorejs-env-setup` | "thiết lập môi trường", "setup dev", project mới clone — per-stack bootstrap |
+| Skill | Trigger | Mandatory? |
+| --- | --- | --- |
+| `sdcorejs-auto-docs` | end of every code-writing task — session summary | ✅ |
+| `sdcorejs-auto-task-tracker` | runs IMMEDIATELY after auto-docs — ticks `[x]` done, appends new tasks to `.sdcorejs/tasks/<track>.md` | ✅ |
+| `sdcorejs-memories` | "ghi nhớ", durable knowledge — write to target `.sdcorejs/memories/<track>/` | ✅ on trigger |
+| `sdcorejs-code-map` | new major feature, "dùng lại shared component" — read-only architecture scan BEFORE generation |  |
+| `sdcorejs-commit` | "commit", "tạo commit" — Conventional Commits + scope detection + git safety |  |
+| `sdcorejs-pr-create` | "tạo PR", "open PR" — PR title/body from commits + diff via `gh` |  |
+| `sdcorejs-debug` | "lỗi", "không hoạt động", "fix bug" — systematic debugging discipline |  |
+| `sdcorejs-recovery` | "tiếp tục", "resume", "where were we" — handoff from docs + memories + git state |  |
+| `sdcorejs-env-setup` | "thiết lập môi trường", "setup dev", project mới clone — per-stack bootstrap |  |
+| `sdcorejs-changelog` | "viết changelog", release prep — Keep a Changelog entry from commits, semver bump |  |
+| `sdcorejs-security-review` | "review bảo mật", before release — cross-track security checklist with file:line findings |  |
+| `sdcorejs-dep-update` | "cập nhật dependency", `npm audit fix` — safe upgrade workflow (audit → branch → group → test) |  |
+| `sdcorejs-parallel-dispatch` | about to fan out 3+ independent tasks — decision gate + subagent briefing template |  |
 
 ## Reference docs (load on demand only — do not preload)
 

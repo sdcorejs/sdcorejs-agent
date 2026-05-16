@@ -9,7 +9,7 @@ This repo is an SDLC agent for the SDCoreJS stack: Angular portal (Core UI), Nes
 
 ```
 skills/
-├── _shared/          cross-track utility skills (auto-docs, memories, commit, pr-create, debug, recovery, env-setup, …)
+├── _shared/          cross-track utility skills (12 files: auto-docs, auto-task-tracker, memories, code-map, commit, pr-create, debug, recovery, env-setup, changelog, security-review, dep-update, parallel-dispatch)
 ├── angular-portal/   ✅  21 skills (00-onboarding through 52-faq)
 │   └── _refs/        reference data, no frontmatter, load on demand
 ├── nestjs/           🚧  planned
@@ -77,15 +77,21 @@ To avoid drift, the source of truth for these rules is `CLAUDE.md`. Summary:
 
 Cross-track skills — apply to angular-portal, nestjs, nextjs alike. Dispatch by `description`:
 
-| Skill | Trigger |
-| --- | --- |
-| `sdcorejs-auto-docs` | end of every code-writing task (mandatory) |
-| `sdcorejs-memories` | "ghi nhớ", durable knowledge |
-| `sdcorejs-commit` | "commit", "tạo commit" — Conventional Commits + scope detection + git safety |
-| `sdcorejs-pr-create` | "tạo PR", "open PR" — PR body from commits + diff |
-| `sdcorejs-debug` | "lỗi", "error", "fix bug" — systematic debugging |
-| `sdcorejs-recovery` | "tiếp tục", "resume" — handoff from docs + memories + git state |
-| `sdcorejs-env-setup` | "thiết lập môi trường", "setup dev" — per-stack bootstrap |
+| Skill | Trigger | Mandatory? |
+| --- | --- | --- |
+| `sdcorejs-auto-docs` | end of every code-writing task — session summary | ✅ |
+| `sdcorejs-auto-task-tracker` | IMMEDIATELY after auto-docs — `.sdcorejs/tasks/<track>.md` | ✅ |
+| `sdcorejs-memories` | "ghi nhớ", durable knowledge | ✅ on trigger |
+| `sdcorejs-code-map` | new feature / reuse check — read-only architecture scan |  |
+| `sdcorejs-commit` | "commit", "tạo commit" — Conventional Commits + scope + git safety |  |
+| `sdcorejs-pr-create` | "tạo PR", "open PR" — PR body from commits + diff |  |
+| `sdcorejs-debug` | "lỗi", "error", "fix bug" — systematic debugging |  |
+| `sdcorejs-recovery` | "tiếp tục", "resume" — handoff from docs + memories + git state |  |
+| `sdcorejs-env-setup` | "thiết lập môi trường", "setup dev" — per-stack bootstrap |  |
+| `sdcorejs-changelog` | "viết changelog", release — Keep a Changelog + semver bump |  |
+| `sdcorejs-security-review` | "review bảo mật", pre-release — Critical/Important/Minor report |  |
+| `sdcorejs-dep-update` | "cập nhật dependency", audit fix — safe upgrade workflow |  |
+| `sdcorejs-parallel-dispatch` | fan-out 3+ independent tasks — decision gate + briefing |  |
 
 ## Reference docs (load on demand)
 

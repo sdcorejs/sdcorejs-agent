@@ -79,6 +79,12 @@ The skill files are the primary source. Load on demand:
 - `skills/_shared/debug.md` — systematic debugging workflow
 - `skills/_shared/recovery.md` — resume from auto-docs + memories + git state
 - `skills/_shared/env-setup.md` — per-stack bootstrap (angular/nestjs/nextjs)
+- `skills/_shared/auto-task-tracker.md` — MANDATORY post-auto-docs TODO maintenance
+- `skills/_shared/code-map.md` — pre-generation architecture discovery (read-only)
+- `skills/_shared/changelog.md` — Keep a Changelog entry + semver bump from commits
+- `skills/_shared/security-review.md` — cross-track security audit checklist
+- `skills/_shared/dep-update.md` — safe dependency upgrade workflow
+- `skills/_shared/parallel-dispatch.md` — when/how to fan out to parallel subagents
 
 ## See also
 
