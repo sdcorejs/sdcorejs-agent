@@ -299,25 +299,23 @@ export const PROMOTION_SEED_DATA: PromotionDTO[] = [
 
 ### Step 4: Generate Routes (routes.ts)
 
-Pattern: Lazy-load components, provide service
+Pattern: Lazy-load components. No providers on the route — the entity service is `@Injectable({ providedIn: 'root' })`, the lib-scoped tokens are wired by `<Lib>Module.useValue({...})` at root.
 
 **Template Usage:**
 - Declare routes: '' (list), 'create', 'detail/:id', 'update/:id'
 - Import ListComponent, DetailComponent
-- Provide ProductService at route level
-- Lazy load components (COMPONENT_TYPE)
+- Lazy-load components (COMPONENT_TYPE)
+- NO `providers: [...]` array (see `11-init-module.md` rationale)
 
 **Output (routes.ts):**
 ```typescript
 import { Routes } from '@angular/router';
-import { ProductService } from './services/product.service';
 import { ListComponent } from './pages/list/list.component';
 import { DetailComponent } from './pages/detail/detail.component';
 
 export const productRoutes: Routes = [
   {
     path: '',
-    providers: [ProductService],
     children: [
       { path: '', component: ListComponent },
       { path: 'create', component: DetailComponent },

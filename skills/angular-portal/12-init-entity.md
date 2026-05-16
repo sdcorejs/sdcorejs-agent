@@ -547,7 +547,7 @@ import { Injectable, inject } from '@angular/core';
 import { BaseService } from '@[module]/services';
 import { [Entity]DTO, [Entity]SaveReq } from './[entity].model';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class [Entity]Service extends BaseService {
   readonly #api = this.register<[Entity]DTO, [Entity]SaveReq>('[entity]');
 
@@ -938,7 +938,6 @@ export class ListComponent implements OnInit {
 export const [entity]Routes: Routes = [
   {
     path: '',
-    providers: [[Entity]Service],
     children: [
       {
         path: '',
@@ -949,6 +948,7 @@ export const [entity]Routes: Routes = [
   },
 ];
 ```
+> No `providers: [<Entity>Service]` on the route — `[Entity]Service` is `@Injectable({ providedIn: 'root' })` so DI resolves at the root injector. Route-level providers were the old pattern.
 
 ### detail.component.ts
 ```typescript
@@ -1623,7 +1623,7 @@ import { Injectable, inject } from '@angular/core';
 import { BaseService } from '@sample/services';
 import { ProductDTO, ProductSaveReq } from './product.model';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ProductService extends BaseService {
   readonly #api = this.register<ProductDTO, ProductSaveReq>('product');
 
@@ -2029,7 +2029,7 @@ export class DetailComponent implements OnInit {
 - [ ] Create detail component with 3-state machine
 - [ ] Define route configuration with lazy loading
 - [ ] Export all from barrel index.ts
-- [ ] Set service provider scope correctly (default `providedIn: 'root'` for mock/root usage, or module/route scope only when intentionally required)
+- [ ] Service is `@Injectable({ providedIn: 'root' })` (default) — no route-level provider; if scoping is intentionally narrower, document why in the file header
 - [ ] Test CREATE/UPDATE/DETAIL flows
 - [ ] Validate form before save
 - [ ] Test file upload functionality
