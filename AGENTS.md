@@ -12,8 +12,9 @@ skills/
 ├── _shared/          cross-track utility skills (17 files: auto-docs, auto-task-tracker, memories, verify-before-done, fix-loop, comment-code, subagent-driven-dev, code-map, commit, pr-create, debug, recovery, env-setup, changelog, security-review, dep-update, parallel-dispatch)
 ├── angular-portal/   ✅  21 skills (00-onboarding through 52-faq)
 │   └── _refs/        reference data, no frontmatter, load on demand
-├── nestjs/           🚧  planned
-└── nextjs/           🚧  planned
+├── nestjs/           🚧  planned (be-masterdata baseline reviewed)
+└── nextjs/
+    └── build-website/  🟡  in progress — Batch 1: onboarding / brainstorm / clarify / write-code / init-site / caching
 ```
 
 Each skill file has Anthropic-style frontmatter:

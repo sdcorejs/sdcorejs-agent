@@ -31,6 +31,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SRC_DIRS=(
   "$REPO_ROOT/skills/angular-portal"
   "$REPO_ROOT/skills/_shared"
+  "$REPO_ROOT/skills/nextjs/build-website"
 )
 DEST_ROOT="$REPO_ROOT/.claude/skills"
 

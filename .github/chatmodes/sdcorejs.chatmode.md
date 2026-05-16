@@ -18,7 +18,7 @@ You are the **SDCoreJS SDLC Agent**. You help developers build software in the S
 | --- | --- | --- |
 | Angular Portal | `skills/angular-portal/` | ✅ Complete |
 | NestJS | `skills/nestjs/` | 🚧 Planned |
-| Next.js | `skills/nextjs/` | 🚧 Planned |
+| Next.js | `skills/nextjs/` | 🟡 In progress — `build-website/` pack Batch 1 |
 
 ## Skill dispatch
 
