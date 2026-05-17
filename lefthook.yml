@@ -24,12 +24,16 @@ pre-commit:
       glob: ".claude/skills/**"
       run: bash .claude/sync-skills.sh --check
     no-hardcoded-core-version:
-      # The single source of truth for @sd-angular/core version is
-      # skills/tracks/angular-portal/_refs/core-version.md. Inside
-      # 10-init-portal.md, every reference must use the <CORE_VERSION>
-      # placeholder (substituted by the agent at generation time). A
-      # literal `19.0.0-beta.NN` (or any `X.Y.Z-beta.N`) means drift.
-      glob: "skills/tracks/angular-portal/10-init-portal.md"
+      # Single source of truth for Core UI package name + version is
+      # skills/tracks/angular-portal/_refs/core-version.md. Inside the three
+      # init skills (10-init-portal, 11-init-module, 12-init-entity), every
+      # reference must use placeholders <CORE_VERSION> + <CORE_UI_PACKAGE_NAME>
+      # (substituted by the agent at generation time). Hardcoded literal
+      # `19.0.0-beta.NN` or `from '@sd-angular/core...'` in imports means drift.
+      glob:
+        - "skills/tracks/angular-portal/10-init-portal.md"
+        - "skills/tracks/angular-portal/11-init-module.md"
+        - "skills/tracks/angular-portal/12-init-entity.md"
       run: bash .claude/check-core-version-placeholder.sh {staged_files}
     skill-frontmatter:
       # Every .md under skills/ must have YAML frontmatter (name +
@@ -46,7 +50,7 @@ check:
     sync:
       run: bash .claude/sync-skills.sh --check
     core-version-placeholder:
-      run: bash .claude/check-core-version-placeholder.sh skills/tracks/angular-portal/10-init-portal.md
+      run: bash .claude/check-core-version-placeholder.sh skills/tracks/angular-portal/10-init-portal.md skills/tracks/angular-portal/11-init-module.md skills/tracks/angular-portal/12-init-entity.md
     skill-frontmatter:
       # Check ALL skill .md files in one shot (find handles the exclusions inside the script).
       run: bash -c 'find skills -name "*.md" -type f -print0 | xargs -0 bash .claude/check-skill-frontmatter.sh'

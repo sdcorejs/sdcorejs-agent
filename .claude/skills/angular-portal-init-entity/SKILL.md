@@ -43,10 +43,25 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
   - request payload fields -> CREATE/UPDATE editable controls
   - response meta/status/audit fields -> DETAIL read-only blocks
   - list endpoint lightweight fields -> LIST columns
+- API URL convention is PROJECT-SPECIFIC, NOT skill-fixed. Scaffold defaults:
+  - `BaseService.register('<entity>')` — no version prefix
+  - `<entity>-select` template: `url="<entity>"` — same, no prefix
+  - When generating against a real project, FIRST inspect existing services in that project (e.g. `BaseService.register('v1/booking')` in `portal-agency`, or `register('api/v2/customer')` elsewhere). Match the project's convention exactly. Do NOT impose `v1/` or any prefix the project doesn't already use.
 - Create separate files: `model.ts`, `service.ts` for each entity
-- Define request model (SaveReq) and response type (DTO extends BaseEntity)
-- Use permission code format: `<MODULE>_C_<ENTITY>_<ACTION>`
-  - Examples: `CRM_C_PRODUCT_LIST`, `CRM_C_PRODUCT_DETAIL`, `CRM_C_PRODUCT_CREATE`, `CRM_C_PRODUCT_UPDATE`, `CRM_C_PRODUCT_APPROVE`
+- Define `<Entity>SaveReq` (POST/PUT payload) + `<Entity>DTO = Required<<Entity>SaveReq> & BaseEntity` (used for BOTH list and detail responses — scaffold default). Do NOT generate a separate `<Entity>Detail` in scaffold.
+- `<Entity>SaveReq` can be split into more specific request types when business needs differ:
+  - `<Entity>CreateReq` — POST /create payload (e.g. excludes `id`)
+  - `<Entity>UpdateReq` — PUT /:id payload (e.g. allows partial fields, excludes immutable fields)
+  - `<Entity>ImportReq` — POST /import payload (e.g. batch import with row-level metadata)
+  - Default scaffold uses single `<Entity>SaveReq` for both create + update; split only when shapes diverge.
+- Workflow action payloads use convention `<Entity><Action>Req`:
+  - `ProductApproveReq`, `OrderCancelReq`, `BookingRejectReq`
+  - Action name in PascalCase matches the route action (e.g. POST `/:id/approve` → `ProductApproveReq`)
+- Permission code convention is **flexible per project, consistent within a project**. Order is always Module → Entity → Action (large → small). Acceptable shapes — pick ONE per project and stay consistent:
+  - `<MODULE>_<ENTITY>_<ACTION>`   — scaffold default (e.g. `CRM_PRODUCT_LIST`)
+  - `<MODULE>_C_<ENTITY>_<ACTION>` — common variant (e.g. `CRM_C_PRODUCT_LIST`)
+  - `<MODULE>_<ENTITY>:<ACTION>`   — colon-separator variant (e.g. `CRM_PRODUCT:LIST`)
+  - When applying to an existing project, detect the established convention and follow it. Never mix two conventions in the same project.
 - For root-scoped services, ensure module configuration token is provided at app root (`main.ts`)
 - Use `FormGroup` for all forms with validation
 - Implement 3-state pattern (CREATE/UPDATE/DETAIL) for detail component
@@ -147,7 +162,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Follow this import order in every component/service file:
   1. Angular framework (`@angular/core`, `@angular/router`, `@angular/common`, `@angular/forms`)
   2. RxJS (if used)
-  3. Third-party / library (`@sd-angular/core/...`, other npm packages)
+  3. Third-party / library (Core UI imports — see `_refs/core-version.md` for current package name; templates use `<CORE_UI_PACKAGE_NAME>/...` placeholder)
   4. Internal shared / cross-module imports
   5. Relative imports within the same module (models, services, sibling files)
   - Separate each group with a blank line
@@ -175,7 +190,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
   - Isolate template with `TestBed.overrideComponent(..., { set: { template: '<div>...</div>' } })` when Core UI dependencies are heavy
   - Ensure `fixture.detectChanges()` runs without DI/template errors
 - Generate functional test cases (not only `should create`) for standard/full coverage level:
-  - **Route permission coverage**: verify every route has `data.permission` and follows `<MODULE>_C_<ENTITY>_<ACTION>` format
+  - **Route permission coverage**: verify every route has `data.permission` and follows the project's chosen convention (Module → Entity → Action order, single consistent shape)
   - **Data visibility coverage** (list): verify missing required external filter returns empty data, and valid filter triggers service call
   - **Data ordering coverage** (list): verify domain sort behavior (if defined) is applied correctly
   - **Action flow coverage** (detail): verify invalid form blocks save, create path calls `create`, update path calls `update`, and navigation is correct
@@ -215,7 +230,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 5. **Import Organization**
    - [ ] Verify 5-group import order is followed (Angular → RxJS → @sd-angular → shared → relative)
    - [ ] Check each group is separated by a blank line
-   - [ ] Ensure no legacy imports like `from 'sd-angular'` exist; use `@sd-angular/core/...` paths
+   - [ ] Ensure no legacy imports like `from 'sd-angular'` exist; use `<CORE_UI_PACKAGE_NAME>/...` paths (substituted from `_refs/core-version.md`)
 
 6. **Accessibility**
    - [ ] Check action toolbars have `role="toolbar"` attribute
@@ -228,8 +243,8 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
    - [ ] Confirm skip conditions are documented if audit columns are intentionally omitted
 
 8. **Route Permission Guards**
-   - [ ] Check every route has `data: { permission: 'MODULE_C_ENTITY_ACTION' }` defined
-   - [ ] Verify permission codes follow strict format: `<UPPERCASE_MODULE>_C_<UPPERCASE_ENTITY>_<ACTION>`
+   - [ ] Check every route has `data: { permission: '...' }` defined
+   - [ ] Verify permission codes follow the project's chosen convention: Module → Entity → Action order, UPPERCASE, single consistent shape across the whole project (no mixing of `_C_` and plain underscore variants)
    - [ ] Confirm NO duplicate permission checks inside components if route guard is defined
    - [ ] Verify module guard reads `data.permission` automatically (no manual implementation needed)
 
@@ -261,7 +276,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 ### MUST NOT ❌
 - Guess the module silently when module ownership is ambiguous
 - Do not force a full standalone migration when developer requests hybrid NgModule + standalone compatibility mode
-- Use ad-hoc permission code naming that does not follow `<MODULE>_C_<ENTITY>_<ACTION>`
+- Use ad-hoc permission code naming that breaks Module → Entity → Action order, or mix two conventions within the same project
 - Hard-code API URLs (use configuration tokens)
 - Add logic to components (delegate to services)
 - Skip form validation before save
@@ -365,7 +380,9 @@ If none match, keep regular section layout without anchor.
 
 ### Permission Keyed Route Template (2 Components + URL States)
 ```typescript
-export const employeeRoutes: Routes = [
+// Permission codes shown use the scaffold default convention `<MODULE>_<ENTITY>_<ACTION>`.
+// Substitute the project's actual convention if it differs (e.g. `<MODULE>_C_<ENTITY>_<ACTION>`).
+export const [entity]Routes: Routes = [
   {
     path: '',
     children: [
@@ -373,32 +390,32 @@ export const employeeRoutes: Routes = [
         path: '',
         loadComponent: () => import('./pages/list/list.component').then(m => m.ListComponent),
         data: {
-          permission: 'SAMPLE_C_EMPLOYEE_LIST',
-          permissionKey: 'sample',
+          permission: '[MODULE]_[ENTITY]_LIST',
+          permissionKey: '[module]',
         },
       },
       {
         path: 'create',
         loadComponent: () => import('./pages/detail/detail.component').then(m => m.DetailComponent),
         data: {
-          permission: 'SAMPLE_C_EMPLOYEE_CREATE',
-          permissionKey: 'sample',
+          permission: '[MODULE]_[ENTITY]_CREATE',
+          permissionKey: '[module]',
         },
       },
       {
         path: 'update/:id',
         loadComponent: () => import('./pages/detail/detail.component').then(m => m.DetailComponent),
         data: {
-          permission: 'SAMPLE_C_EMPLOYEE_UPDATE',
-          permissionKey: 'sample',
+          permission: '[MODULE]_[ENTITY]_UPDATE',
+          permissionKey: '[module]',
         },
       },
       {
         path: 'detail/:id',
         loadComponent: () => import('./pages/detail/detail.component').then(m => m.DetailComponent),
         data: {
-          permission: 'SAMPLE_C_EMPLOYEE_DETAIL',
-          permissionKey: 'sample',
+          permission: '[MODULE]_[ENTITY]_DETAIL',
+          permissionKey: '[module]',
         },
       },
     ],
@@ -410,7 +427,7 @@ export const employeeRoutes: Routes = [
 ```html
 <!-- Keyed permission -->
 <button
-  *sdPermission="'SAMPLE_C_EMPLOYEE_CREATE'; sdPermissionKey: 'sample'"
+  *sdPermission="'[MODULE]_[ENTITY]_CREATE'; sdPermissionKey: '[module]'"
   mat-flat-button
   color="primary"
 >
@@ -418,7 +435,7 @@ export const employeeRoutes: Routes = [
 </button>
 
 <!-- Default key (undefined) -->
-<button *sdPermission="'SAMPLE_C_EMPLOYEE_EXPORT'" mat-stroked-button>
+<button *sdPermission="'[MODULE]_[ENTITY]_EXPORT'" mat-stroked-button>
   Xuất dữ liệu
 </button>
 ```
@@ -474,13 +491,20 @@ Choose ONE based on entity complexity:
    - Sub-routes: list + create + detail/:id + update/:id
    - DETAIL renders sd-section + sd-section-item (read-only label-value pairs)
    - CREATE/UPDATE renders editable sd-input / sd-select / sd-textarea
-   - Import SdSectionItem from @sd-angular/core/components/section
+   - Import SdSectionItem from `<CORE_UI_PACKAGE_NAME>/components/section`
    - Starter reference: core/templates/angular-portal-starter/src/libs/sample/features/department
 ```
 
 ### Side-drawer Project Structure
 ```
 libs/[module]/
+├── components/                           # MODULE-LEVEL shared components (one copy, reused everywhere)
+│   ├── base-select/                      # Generic dropdown wrapper — generated by 11-init-module
+│   │   ├── base-select.component.ts
+│   │   └── base-select.component.html
+│   └── [entity]-select/                  # Per-entity wrapper around base-select — generated by 12-init-entity
+│       └── [entity]-select.component.ts
+│
 └── features/[entity]/
   ├── routes.ts                     # Only list route, no create/update/detail sub-routes
   ├── routes.spec.ts
@@ -497,6 +521,8 @@ libs/[module]/
   │   └── [entity].service.ts
   └── index.ts
 ```
+
+> **Where does `[entity]-select` live?** Always at MODULE level (`libs/[module]/components/[entity]-select/`), NEVER inside `features/[entity]/components/`. The whole point of the entity-select is reuse across entity forms — e.g. `order` form uses `<customer-select>` and `<project-select>`. If `[entity]-select` lived inside its own feature folder, every importer would need a deep relative path and the lib boundary becomes ambiguous.
 
 ### Full-page Project Structure (UnifiedCompact / AdaptiveSplitDetail)
 ```
@@ -527,7 +553,8 @@ export const [ENTITY_UPPER]_STATUSES = [
   { value: 'INACTIVE', display: 'Không hoạt động' },
 ];
 
-// Save request - used for create/update
+// Save request — used for BOTH create + update payloads.
+// In scaffold mode, single SaveReq covers both POST and PUT.
 export interface [Entity]SaveReq {
   code?: string;
   name?: string;
@@ -537,8 +564,24 @@ export interface [Entity]SaveReq {
   fileIds?: string[];
 }
 
-// Response - extends SaveReq with BaseEntity fields
+// DTO — used for BOTH list rows and detail response.
+// Required<SaveReq> means every editable field is non-optional in response,
+// & BaseEntity adds audit fields (id, createdAt, createdBy, updatedAt, updatedBy).
 export type [Entity]DTO = Required<[Entity]SaveReq> & BaseEntity;
+
+// ──────────────────────────────────────────────────────────────────
+// Optional — only when business needs diverge from the default
+// ──────────────────────────────────────────────────────────────────
+
+// Variant A: split SaveReq when create / update / import have different shapes.
+// export interface [Entity]CreateReq { /* POST /create payload */ }
+// export interface [Entity]UpdateReq { /* PUT /:id payload — may omit immutable fields */ }
+// export interface [Entity]ImportReq { /* POST /import row payload */ }
+
+// Variant B: workflow action payloads use convention `<Entity><Action>Req`.
+// export interface [Entity]ApproveReq { note?: string; }
+// export interface [Entity]CancelReq  { reason: string; }
+// export interface [Entity]RejectReq  { reason: string; }
 ```
 
 ### [entity].service.ts
@@ -562,6 +605,136 @@ export class [Entity]Service extends BaseService {
 
   // Optional: Custom API methods
   // async customAction(id: string) { return this.#api.baseUrl; }
+}
+```
+
+### components/[entity]-select/[entity]-select.component.ts
+
+A thin wrapper around `base-select` (defined at the module level, see `11-init-module.md`). One per entity. Lives in `libs/<module>/components/<entity>-select/` so it can be reused by ANY entity form in ANY module that imports it — e.g. the order form has a `<customer-select>` and a `<project-select>` without re-declaring sd-select boilerplate.
+
+**Scaffold rule for `url`:**
+- Default scaffold uses `url="[entity]"` — agent should NOT hardcode `v1/` or any version prefix.
+- When generating for a real project, read the actual API convention from the existing module's service files (e.g. `BaseService.register('v1/booking')` in `portal-agency`) and substitute the matching prefix.
+- The skill's job is to produce the wrapper; the URL prefix is project-specific.
+
+```typescript
+import { CommonModule } from '@angular/common';
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  model,
+  output,
+} from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { BaseSelectComponent } from '@[module]/components';
+import { [Entity]DTO } from '@[module]/services';
+import { SdFilter } from '<CORE_UI_PACKAGE_NAME>/utilities';
+
+/**
+ * Reusable [Entity] dropdown.
+ *
+ * Usage from any form in any module:
+ *   <[entity]-select
+ *     [(model)]="form.value.[entity]Id"
+ *     [form]="form"
+ *     [filters]="[{ field: 'someField', operator: 'EQUAL', data: someValue }]"
+ *   />
+ *
+ * Built-in business filters (e.g. `status = ACTIVE`) are added via
+ * `combinedFilters` so callers don't have to remember them every time.
+ */
+@Component({
+  selector: '[entity]-select',
+  imports: [CommonModule, BaseSelectComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  template: `
+    <base-select
+      url="[entity]"
+      [mode]="mode()"
+      [label]="label()"
+      [model]="valueModel()"
+      (modelChange)="onModelChange($event)"
+      (sdSelection)="onSelection($event)"
+      [autoId]="autoId()"
+      [form]="form()"
+      [name]="name() || autoId()"
+      [valueField]="valueField()"
+      [displayField]="displayField()"
+      [disabled]="disabled()"
+      [viewed]="viewed()"
+      [required]="required()"
+      [multiple]="multiple()"
+      [hideInlineError]="hideInlineError()"
+      [filters]="combinedFilters()">
+    </base-select>
+  `,
+})
+export class [Entity]SelectComponent {
+  // ──────────────────────────────────────────────────────────────────
+  // 1. INPUTS
+  // ──────────────────────────────────────────────────────────────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form = input<FormGroup<any>>();
+  label = input<string>('[Entity Display Label]');   // VI label by default
+  mode = input<'search' | 'all'>('all');             // 'all' is fine for small lookup tables; switch to 'search' for big ones
+  name = input<string>('');
+  autoId = input<string>('[entity]-select');
+
+  // Caller can override defaults if the entity uses different fields.
+  valueField = input<string>('id');
+  displayField = input<string>('name');              // adjust to whatever this entity uses as the human-readable label
+
+  // booleanAttribute lets the bare HTML attribute form work (`required` ⇒ true).
+  disabled = input(false, { transform: booleanAttribute });
+  viewed = input(false, { transform: booleanAttribute });
+  multiple = input(false, { transform: booleanAttribute });
+  required = input(false, { transform: booleanAttribute });
+  hideInlineError = input(false, { transform: booleanAttribute });
+
+  /** Extra filters from the caller — merged with the entity-specific defaults below. */
+  filters = input<SdFilter[]>([]);
+
+  // ──────────────────────────────────────────────────────────────────
+  // 2. MODEL & OUTPUTS
+  // ──────────────────────────────────────────────────────────────────
+  valueModel = model<string | string[] | null | undefined>(undefined, { alias: 'model' });
+  sdChange = output<string | string[] | null | undefined>();
+  sdSelection = output<[Entity]DTO[]>();
+
+  // ──────────────────────────────────────────────────────────────────
+  // 3. COMPUTED — merge caller filters with entity defaults.
+  //
+  // Why `computed` and not a plain method:
+  // - Methods called from templates re-execute on every change detection
+  //   tick. A computed memoises and only re-runs when `filters()` changes.
+  // - Array-reference matters for sd-select's cacheChecksum: a new array
+  //   each tick would invalidate the cache constantly.
+  // ──────────────────────────────────────────────────────────────────
+  combinedFilters = computed<SdFilter[]>(() => {
+    const customFilters = this.filters() ?? [];
+    return [
+      ...customFilters,
+      // Entity-specific default(s): e.g. only show ACTIVE rows.
+      // Adjust or remove if this entity doesn't have a status field.
+      { field: 'status', operator: 'EQUAL', data: 'ACTIVE' },
+    ];
+  });
+
+  // ──────────────────────────────────────────────────────────────────
+  // 4. HANDLERS
+  // ──────────────────────────────────────────────────────────────────
+  onModelChange = (val: string | string[] | null | undefined) => {
+    this.valueModel.set(val);
+    this.sdChange.emit(val);
+  };
+
+  onSelection = (items: [Entity]DTO[]) => {
+    this.sdSelection.emit(items);
+  };
 }
 ```
 
@@ -639,7 +812,7 @@ import {
   SdTabComponent,
   SdTableCellDefDirective,
   SdTableOption,
-} from '@sd-angular/core/components';
+} from '<CORE_UI_PACKAGE_NAME>/components';
 
 import { [Entity]DTO } from '../services/[entity].model';
 import { [Entity]Service } from '../services/[entity].service';
@@ -660,7 +833,7 @@ import { [Entity]Service } from '../services/[entity].service';
     <sd-page title="[Entity Display Name]">
       <div class="d-flex align-items-center" role="toolbar" headerRight>
         <sd-button
-          *sdPermission="'[MODULE]_C_[ENTITY]_CREATE'"
+          *sdPermission="'[MODULE]_[ENTITY]_CREATE'"
           title="Tạo mới"
           aria-label="Tạo mới"
           type="fill"
@@ -708,6 +881,10 @@ export class ListComponent implements OnInit {
         externalFilterPerRow,
         hideExternalFilterToolbar,
         externalFilters: [
+          // EXAMPLE filter — replace with the entity's actual business filters
+          // (or remove if the list has none). The `required: true` + empty
+          // result on missing value pattern is what we want to keep; the
+          // `projectId / 'P001 - Sample Project'` shape is placeholder data.
           {
             field: 'projectId',
             title: 'Dự án',
@@ -744,6 +921,13 @@ export class ListComponent implements OnInit {
           option: { displayOnTrue: 'Hoạt động', displayOnFalse: 'Khóa' },
           width: '150px',
         },
+        // Audit columns — mandatory on every primary list page. Check the
+        // actual DTO/BaseEntity field names (Spring uses `createdDate`, .NET
+        // `CreatedDate`, Django `created_at`, etc.) and adjust if needed.
+        { title: 'Ngày tạo', field: 'createdAt', type: 'datetime', width: '180px' },
+        { title: 'Người tạo', field: 'createdBy', type: 'string', minWidth: '180px' },
+        { title: 'Ngày cập nhật', field: 'updatedAt', type: 'datetime', width: '180px' },
+        { title: 'Người cập nhật', field: 'updatedBy', type: 'string', minWidth: '180px' },
       ],
     });
   }
@@ -753,7 +937,8 @@ export class ListComponent implements OnInit {
   }
 
   async onChangeIsActivated(item: [Entity]DTO): Promise<void> {
-    await this.#[entity]Service.update(item.id, { isActivated: item.isActivated } as any);
+    // All [Entity]SaveReq fields are optional (`?`), so a partial payload is type-safe.
+    await this.#[entity]Service.update(item.id, { isActivated: item.isActivated });
     this.table.reload();
   }
 
@@ -768,15 +953,15 @@ export class ListComponent implements OnInit {
 // Use when: ≤6 fields, simple form, no separate page/route needed.
 // Reference: core/templates/angular-portal-starter/src/libs/sample/features/product/pages/list/list.component.ts
 
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, computed, inject, signal, viewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { SdButton, SdSection, SdTabComponent, SdTabelCellDefDirective, SdTable, SdTableOption } from '@sd-angular/core/components';
-import { SdSideDrawer } from '@sd-angular/core/components/side-drawer';
-import { SdInput, SdInputNumber, SdSelect, SdSwitch, SdTextarea } from '@sd-angular/core/forms';
-import { SdPageComponent, SdPermissionDirective } from '@sd-angular/core/modules';
-import { SdConfirmService, SdLoadingService, SdNotifyService } from '@sd-angular/core/services';
+import { SdButton, SdSection, SdTabComponent, SdTabelCellDefDirective, SdTable, SdTableOption } from '<CORE_UI_PACKAGE_NAME>/components';
+import { SdSideDrawer } from '<CORE_UI_PACKAGE_NAME>/components/side-drawer';
+import { SdInput, SdInputNumber, SdSelect, SdSwitch, SdTextarea } from '<CORE_UI_PACKAGE_NAME>/forms';
+import { SdPageComponent, SdPermissionDirective } from '<CORE_UI_PACKAGE_NAME>/modules';
+import { SdConfirmService, SdLoadingService, SdNotifyService } from '<CORE_UI_PACKAGE_NAME>/services';
 
 import { [Entity]DTO, [Entity]SaveReq } from '../../services/[entity].model';
 import { [Entity]Service } from '../../services/[entity].service';
@@ -790,14 +975,14 @@ import { [Entity]Service } from '../../services/[entity].service';
     <sd-page title="[Entity Display Name]">
       <div class="d-flex align-items-center" role="toolbar" headerRight>
         <sd-button
-          *sdPermission="'[MODULE]_C_[ENTITY]_CREATE'; sdPermissionKey: '[module]'"
+          *sdPermission="'[MODULE]_[ENTITY]_CREATE'; sdPermissionKey: '[module]'"
           title="Tạo mới" type="fill" prefixIcon="add" color="primary"
           (click)="onOpenCreate()">
         </sd-button>
       </div>
       <div class="h-full p-8">
-        @if (tableOption) {
-          <sd-table [option]="tableOption" #table autoId="[module]_[entity]">
+        @if (tableOption(); as opt) {
+          <sd-table [option]="opt" #table autoId="[module]_[entity]">
             <ng-template sdTableCellDef="isActivated" let-item="item">
               <sd-switch class="d-block text-center"
                 [(model)]="item.isActivated" (sdChange)="onChangeIsActivated(item)"></sd-switch>
@@ -808,31 +993,38 @@ import { [Entity]Service } from '../../services/[entity].service';
     </sd-page>
 
     <!-- Side-drawer: handles CREATE / UPDATE / DETAIL inline, no sub-routes needed -->
-    <sd-side-drawer #drawer [title]="drawerTitle" width="480px">
+    @let _drawerState = drawerState();
+    <sd-side-drawer #drawer [title]="drawerTitle()" width="480px">
       <div class="p-16">
         <sd-section title="Thông tin chung" noPaddingBody>
           <div class="row row-sm mx-0 pt-8">
-            <!-- Add form fields here with [viewed]="drawerState === 'DETAIL'" -->
+            <!-- Add form fields here with [viewed]="_drawerState === 'DETAIL'" -->
             <div class="col-12">
-              <sd-input label="Mã" [(model)]="drawerEntity.code" [form]="drawerForm" required
-                [viewed]="drawerState === 'DETAIL'"></sd-input>
+              <sd-input label="Mã"
+                [model]="drawerEntity().code"
+                (modelChange)="onDrawerFieldChange('code', $event)"
+                [form]="drawerForm" required
+                [viewed]="_drawerState === 'DETAIL'"></sd-input>
             </div>
             <div class="col-12">
-              <sd-input label="Tên" [(model)]="drawerEntity.name" [form]="drawerForm" required
-                [viewed]="drawerState === 'DETAIL'"></sd-input>
+              <sd-input label="Tên"
+                [model]="drawerEntity().name"
+                (modelChange)="onDrawerFieldChange('name', $event)"
+                [form]="drawerForm" required
+                [viewed]="_drawerState === 'DETAIL'"></sd-input>
             </div>
           </div>
         </sd-section>
 
         <div class="d-flex justify-content-end gap-8 mt-16">
-          @if (drawerState === 'DETAIL') {
-            <sd-button *sdPermission="'[MODULE]_C_[ENTITY]_UPDATE'; sdPermissionKey: '[module]'"
+          @if (_drawerState === 'DETAIL') {
+            <sd-button *sdPermission="'[MODULE]_[ENTITY]_UPDATE'; sdPermissionKey: '[module]'"
               title="Cập nhật" type="fill" prefixIcon="edit" color="primary"
               (click)="onDrawerEdit()"></sd-button>
           } @else {
             <sd-button title="Hủy" (click)="drawer.close()"></sd-button>
             <sd-button title="Lưu" type="fill" prefixIcon="save" color="primary"
-              [loading]="drawerSaving" (click)="onDrawerSave()"></sd-button>
+              [loading]="drawerSaving()" (click)="onDrawerSave()"></sd-button>
           }
         </div>
       </div>
@@ -848,15 +1040,20 @@ export class ListComponent implements OnInit {
   readonly #loadingService = inject(SdLoadingService);
   readonly #[entity]Service = inject([Entity]Service);
 
-  tableOption!: SdTableOption<[Entity]DTO>;
+  readonly tableOption = signal<SdTableOption<[Entity]DTO> | null>(null);
   drawerForm = new FormGroup({});
-  drawerSaving = false;
-  drawerEntity: Partial<[Entity]SaveReq & { id?: string }> = {};
-  drawerState: 'CREATE' | 'UPDATE' | 'DETAIL' = 'CREATE';
-  drawerTitle = 'Tạo mới [entity label]';
+  readonly drawerSaving = signal(false);
+  readonly drawerEntity = signal<Partial<[Entity]SaveReq & { id?: string }>>({});
+  readonly drawerState = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
+  readonly drawerTitle = computed(() => {
+    const s = this.drawerState();
+    if (s === 'CREATE') return 'Tạo mới [entity label]';
+    if (s === 'UPDATE') return 'Cập nhật [entity label]';
+    return 'Chi tiết [entity label]';
+  });
 
   ngOnInit(): void {
-    this.tableOption = {
+    this.tableOption.set({
       key: '[module]-[entity]-list',
       type: 'server',
       reload: { visible: true },
@@ -884,40 +1081,43 @@ export class ListComponent implements OnInit {
         { title: 'Ngày cập nhật', field: 'updatedAt', type: 'datetime', width: '180px' },
         { title: 'Người cập nhật', field: 'updatedBy', type: 'string', minWidth: '150px' },
       ],
-    };
+    });
   }
 
   onOpenCreate = () => {
-    this.drawerState = 'CREATE';
-    this.drawerTitle = 'Tạo mới [entity label]';
-    this.drawerEntity = {};
+    this.drawerState.set('CREATE');
+    this.drawerEntity.set({});
     this.drawerForm.reset();
     this.#drawer().open();
   };
 
   #onOpenDetail = (row: [Entity]DTO) => {
-    this.drawerState = 'DETAIL';
-    this.drawerTitle = 'Chi tiết [entity label]';
-    this.drawerEntity = { ...row };
+    this.drawerState.set('DETAIL');
+    this.drawerEntity.set({ ...row });
     this.#drawer().open();
   };
 
-  onDrawerEdit = () => { this.drawerState = 'UPDATE'; this.drawerTitle = 'Cập nhật [entity label]'; };
+  onDrawerEdit = () => { this.drawerState.set('UPDATE'); };
+
+  onDrawerFieldChange<K extends keyof [Entity]SaveReq>(key: K, value: [Entity]SaveReq[K]): void {
+    this.drawerEntity.update(prev => ({ ...prev, [key]: value }));
+  }
 
   onDrawerSave = async () => {
     if (this.drawerForm.invalid) { this.drawerForm.markAllAsTouched(); return; }
-    this.drawerSaving = true;
+    this.drawerSaving.set(true);
     try {
-      if (this.drawerEntity['id']) {
-        await this.#[entity]Service.update(this.drawerEntity['id'], this.drawerEntity);
+      const current = this.drawerEntity();
+      if (current.id) {
+        await this.#[entity]Service.update(current.id, current);
         this.#notifyService.success('Cập nhật [entity label] thành công');
       } else {
-        await this.#[entity]Service.create(this.drawerEntity);
+        await this.#[entity]Service.create(current);
         this.#notifyService.success('Tạo mới [entity label] thành công');
       }
       this.#drawer().close();
       this.table.reload();
-    } finally { this.drawerSaving = false; }
+    } finally { this.drawerSaving.set(false); }
   };
 
   #onRemove = (ids: string[]) => {
@@ -928,7 +1128,7 @@ export class ListComponent implements OnInit {
   };
 
   onChangeIsActivated = (row: [Entity]DTO) => {
-    this.#[entity]Service.update(row.id, { isActivated: row.isActivated } as any).catch(console.error);
+    this.#[entity]Service.update(row.id, { isActivated: row.isActivated }).catch(console.error);
   };
 }
 ```
@@ -942,7 +1142,7 @@ export const [entity]Routes: Routes = [
       {
         path: '',
         loadComponent: () => import('./pages/list/list.component').then(m => m.ListComponent),
-        data: { permission: '[MODULE]_C_[ENTITY]_LIST', permissionKey: '[module]' },
+        data: { permission: '[MODULE]_[ENTITY]_LIST', permissionKey: '[module]' },
       },
     ],
   },
@@ -967,7 +1167,8 @@ import {
   SdSwitch,
   SdTextarea,
   SdUploadFile,
-} from '@sd-angular/core/components';
+} from '<CORE_UI_PACKAGE_NAME>/components';
+import { SdConfirmService } from '<CORE_UI_PACKAGE_NAME>/services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { [Entity]DTO, [Entity]SaveReq } from '../services/[entity].model';
 import { [Entity]Service } from '../services/[entity].service';
@@ -1084,6 +1285,7 @@ export class DetailComponent implements OnInit {
 
   readonly #activatedRoute = inject(ActivatedRoute);
   readonly #router = inject(Router);
+  readonly #confirmService = inject(SdConfirmService);
   readonly #[entity]Service = inject([Entity]Service);
 
   ngOnInit(): void {
@@ -1138,14 +1340,20 @@ export class DetailComponent implements OnInit {
 
   async onDelete(): Promise<void> {
     const currentEntity = this.entity();
+    if (!currentEntity.id) return;
 
-    if (confirm('Bạn có chắc muốn xóa?') && currentEntity.id) {
-      try {
-        await this.#[entity]Service.remove(currentEntity.id);
-        this.#router.navigate(['..'], { relativeTo: this.#activatedRoute });
-      } catch (error) {
-        console.error(error);
-      }
+    try {
+      await this.#confirmService.confirm('Bạn có chắc muốn xóa?');
+    } catch {
+      // User cancelled — SdConfirmService rejects on cancel.
+      return;
+    }
+
+    try {
+      await this.#[entity]Service.remove(currentEntity.id);
+      this.#router.navigate(['..'], { relativeTo: this.#activatedRoute });
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -1163,36 +1371,6 @@ export class DetailComponent implements OnInit {
 }
 ```
 
-### routes.ts
-```typescript
-import { Routes } from '@angular/router';
-import { ListComponent } from './pages/list/list.component';
-import { DetailComponent } from './pages/detail/detail.component';
-import { [Entity]Service } from './services/[entity].service';
-
-export const [entity]Routes: Routes = [
-  {
-    path: '',
-    component: ListComponent,
-    data: { permission: '[MODULE]_C_[ENTITY]_LIST' },
-  },
-  {
-    path: 'create',
-    component: DetailComponent,
-    data: { permission: '[MODULE]_C_[ENTITY]_CREATE' },
-  },
-  {
-    path: 'detail/:id',
-    component: DetailComponent,
-    data: { permission: '[MODULE]_C_[ENTITY]_DETAIL' },
-  },
-  {
-    path: 'update/:id',
-    component: DetailComponent,
-    data: { permission: '[MODULE]_C_[ENTITY]_UPDATE' },
-  },
-];
-```
 
 ### [entity].routes.spec.ts (Permission Validation)
 ```text
@@ -1203,14 +1381,14 @@ Generation instructions:
 - Replace [Entity] and [entity] with actual names
 - Test must verify:
   1. Every route has a data.permission property
-  2. All permission codes follow <MODULE>_C_<ENTITY>_<ACTION> format
+  2. All permission codes follow the project's chosen convention (Module → Entity → Action order, single consistent shape)
   3. No route is left without permission guard
 
-Example route spec test:
-- Route '' (list) → permission 'PRICING_C_PRICE_LIST'
-- Route 'create' → permission 'PRICING_C_PRICE_CREATE'
-- Route 'detail/:id' → permission 'PRICING_C_PRICE_DETAIL'
-- Route 'update/:id' → permission 'PRICING_C_PRICE_UPDATE'
+Example route spec test (uses scaffold default convention; substitute `_C_` etc. when the project uses a different shape):
+- Route '' (list) → permission 'PRICING_PRICE_LIST'
+- Route 'create' → permission 'PRICING_PRICE_CREATE'
+- Route 'detail/:id' → permission 'PRICING_PRICE_DETAIL'
+- Route 'update/:id' → permission 'PRICING_PRICE_UPDATE'
 
 Run via: npx ng test --watch=false --include="**/[entity].routes.spec.ts"
 ```
@@ -1232,17 +1410,17 @@ export * from './services/[entity].model';
 //           while CREATE/UPDATE use editable form controls.
 // Reference: core/templates/angular-portal-starter/src/libs/sample/features/department/pages/detail/detail.component.ts
 
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { SdButton, SdSection, SdTabComponent } from '@sd-angular/core/components';
-import { SdSectionItem } from '@sd-angular/core/components/section';
-import { SdInput, SdSelect, SdTextarea } from '@sd-angular/core/forms';
-import { SdPageComponent } from '@sd-angular/core/modules';
-import { SdLoadingService, SdNotifyService } from '@sd-angular/core/services';
+import { SdButton, SdSection, SdTabComponent } from '<CORE_UI_PACKAGE_NAME>/components';
+import { SdSectionItem } from '<CORE_UI_PACKAGE_NAME>/components/section';
+import { SdInput, SdSelect, SdTextarea } from '<CORE_UI_PACKAGE_NAME>/forms';
+import { SdPageComponent } from '<CORE_UI_PACKAGE_NAME>/modules';
+import { SdLoadingService, SdNotifyService } from '<CORE_UI_PACKAGE_NAME>/services';
 
-import { [Entity]DTO } from '../../services/[entity].model';
+import { [Entity]DTO, [Entity]SaveReq } from '../../services/[entity].model';
 import { [Entity]Service } from '../../services/[entity].service';
 
 @Component({
@@ -1250,22 +1428,24 @@ import { [Entity]Service } from '../../services/[entity].service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [SdInput, SdSelect, SdTextarea, SdButton, SdSection, SdSectionItem, SdPageComponent],
   template: `
-    <sd-page [title]="title">
+    @let _state = state();
+    @let _entity = entity();
+    <sd-page [title]="title()">
       <div class="d-flex align-items-center" style="gap: 8px" headerRight>
         <sd-button title="Quay lại" prefixIcon="replay" (click)="onBack()"></sd-button>
-        @if (state === 'DETAIL') {
+        @if (_state === 'DETAIL') {
           <sd-button title="Cập nhật" type="fill" prefixIcon="edit" color="primary" (click)="onUpdate()"></sd-button>
         } @else {
-          <sd-button title="Lưu" type="fill" prefixIcon="save" color="primary" (click)="onSave()" [loading]="saving"></sd-button>
+          <sd-button title="Lưu" type="fill" prefixIcon="save" color="primary" (click)="onSave()" [loading]="saving()"></sd-button>
         }
       </div>
 
       <div class="h-full p-8">
-        @if (state === 'DETAIL') {
+        @if (_state === 'DETAIL') {
           <!-- AdaptiveSplitDetail: read-only label-value layout -->
           <sd-section title="Thông tin chung" collapsable>
-            <sd-section-item label="Mã" labelWidth="120px">{{ entity.code }}</sd-section-item>
-            <sd-section-item label="Tên" labelWidth="120px">{{ entity.name }}</sd-section-item>
+            <sd-section-item label="Mã" labelWidth="120px">{{ _entity.code }}</sd-section-item>
+            <sd-section-item label="Tên" labelWidth="120px">{{ _entity.name }}</sd-section-item>
             <!-- Add more sd-section-item for each read-only field -->
           </sd-section>
         } @else {
@@ -1273,10 +1453,16 @@ import { [Entity]Service } from '../../services/[entity].service';
           <sd-section title="Thông tin chung">
             <div class="row row-sm mx-0">
               <div class="col-6">
-                <sd-input label="Mã" [(model)]="entity.code" [form]="form" required maxlength="32"></sd-input>
+                <sd-input label="Mã"
+                  [model]="_entity.code"
+                  (modelChange)="onFieldChange('code', $event)"
+                  [form]="form" required maxlength="32"></sd-input>
               </div>
               <div class="col-6">
-                <sd-input label="Tên" [(model)]="entity.name" [form]="form" required></sd-input>
+                <sd-input label="Tên"
+                  [model]="_entity.name"
+                  (modelChange)="onFieldChange('name', $event)"
+                  [form]="form" required></sd-input>
               </div>
               <!-- Add more form fields -->
             </div>
@@ -1307,48 +1493,64 @@ export class DetailComponent implements OnInit {
   readonly #[entity]Service = inject([Entity]Service);
 
   form = new FormGroup({});
-  saving = false;
-  entity: Partial<[Entity]DTO> = {};
-  id = '';
-  state: 'CREATE' | 'UPDATE' | 'DETAIL' = 'CREATE';
-  title = '';
+  readonly saving = signal(false);
+  readonly entity = signal<Partial<[Entity]DTO>>({});
+  readonly id = signal<string>('');
+  readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
+  readonly title = computed(() => {
+    const s = this.state();
+    if (s === 'CREATE') return 'Tạo mới [entity label]';
+    if (s === 'UPDATE') return 'Cập nhật [entity label]';
+    return 'Chi tiết [entity label]';
+  });
 
   ngOnInit() {
-    this.id = this.#route.snapshot.params?.['id'];
-    if (this.#router.url.includes('update')) { this.state = 'UPDATE'; this.title = 'Cập nhật [entity label]'; }
-    else if (this.#router.url.includes('detail')) { this.state = 'DETAIL'; this.title = 'Chi tiết [entity label]'; }
-    else { this.state = 'CREATE'; this.title = 'Tạo mới [entity label]'; }
-    if (this.id) { this.#loadDetail(this.id); }
+    const paramId = this.#route.snapshot.params?.['id'] ?? '';
+    this.id.set(paramId);
+
+    const url = this.#router.url;
+    if (url.includes('update')) this.state.set('UPDATE');
+    else if (url.includes('detail')) this.state.set('DETAIL');
+    else this.state.set('CREATE');
+
+    if (paramId) this.#loadDetail(paramId);
+  }
+
+  onFieldChange<K extends keyof [Entity]SaveReq>(key: K, value: [Entity]SaveReq[K]): void {
+    this.entity.update(prev => ({ ...prev, [key]: value }));
   }
 
   #loadDetail = (id: string) => {
     this.#loadingService.start();
-    this.#[entity]Service.detail(id).then(e => { this.entity = e; }).finally(() => this.#loadingService.stop());
+    this.#[entity]Service.detail(id)
+      .then(e => this.entity.set(e))
+      .finally(() => this.#loadingService.stop());
   };
 
   onBack = () => {
-    const path = this.state === 'CREATE' ? ['../'] : ['../../'];
+    const path = this.state() === 'CREATE' ? ['../'] : ['../../'];
     this.#router.navigate(path, { relativeTo: this.#route, state: { replaceTab: true } });
   };
 
   onUpdate = () => {
-    this.#router.navigate(['../../update', this.id], { relativeTo: this.#route, state: { replaceTab: true } });
+    this.#router.navigate(['../../update', this.id()], { relativeTo: this.#route, state: { replaceTab: true } });
   };
 
   onSave = async () => {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    this.saving = true;
+    this.saving.set(true);
     try {
-      if (this.entity.id) {
-        await this.#[entity]Service.update(this.entity.id, this.entity);
+      const current = this.entity();
+      if (current.id) {
+        await this.#[entity]Service.update(current.id, current);
         this.#notifyService.success('Cập nhật [entity label] thành công');
-        this.#loadDetail(this.id);
+        this.#loadDetail(this.id());
       } else {
-        const created = await this.#[entity]Service.create(this.entity);
+        const created = await this.#[entity]Service.create(current);
         this.#notifyService.success('Tạo mới [entity label] thành công');
         this.#router.navigate(['../detail', created.id], { relativeTo: this.#route, state: { replaceTab: true } });
       }
-    } finally { this.saving = false; }
+    } finally { this.saving.set(false); }
   };
 }
 ```
@@ -1481,7 +1683,7 @@ describe('ListComponent ([module]/[entity])', () => {
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { SdLoadingService, SdNotifyService } from '@sd-angular/core/services';
+import { SdLoadingService, SdNotifyService } from '<CORE_UI_PACKAGE_NAME>/services';
 
 import { [Entity]Service } from '../../services/[entity].service';
 import { DetailComponent } from './detail.component';
@@ -1579,8 +1781,10 @@ describe('[Entity]Routes (permission guards)', () => {
     expect(missingPermission).toEqual([]);
   });
 
-  it('should use MODULE_C_ENTITY_ACTION naming format', () => {
-    const permissionPattern = /^[A-Z]+_C_[A-Z]+_[A-Z]+$/;
+  it('should use a consistent Module → Entity → Action naming format across all routes', () => {
+    // Accepts any of: <MODULE>_<ENTITY>_<ACTION> | <MODULE>_C_<ENTITY>_<ACTION> | <MODULE>_<ENTITY>:<ACTION>
+    // Adjust the project's chosen pattern below; the suite verifies all routes use the SAME shape.
+    const permissionPattern = /^[A-Z]+(?:_C)?_[A-Z]+[_:][A-Z]+$/;
     const permissions = [Entity]Routes
       .map(route => route.data?.['permission'])
       .filter((x): x is string => typeof x === 'string');
@@ -1651,7 +1855,7 @@ import {
   SdTableCellDefDirective,
   SdTableOption,
   SdTabComponent,
-} from '@sd-angular/core/components';
+} from '<CORE_UI_PACKAGE_NAME>/components';
 
 import { ProductDTO, PRODUCT_CATEGORIES } from '../services/product.model';
 import { ProductService } from '../services/product.service';
@@ -1672,7 +1876,7 @@ import { ProductService } from '../services/product.service';
     <sd-page title="Sản phẩm">
       <div class="d-flex align-items-center" role="toolbar" headerRight>
         <sd-button
-          *sdPermission="'SAMPLE_C_PRODUCT_CREATE'"
+          *sdPermission="'SAMPLE_PRODUCT_CREATE'"
           title="Tạo mới"
           aria-label="Tạo mới"
           type="fill"
@@ -1766,7 +1970,7 @@ export class ListComponent implements OnInit {
   }
 
   async onChangeIsActivated(item: ProductDTO): Promise<void> {
-    await this.#productService.update(item.id, { isActivated: item.isActivated } as any);
+    await this.#productService.update(item.id, { isActivated: item.isActivated });
     this.table.reload();
   }
 
@@ -1791,7 +1995,7 @@ import {
   SdSwitch,
   SdTextarea,
   SdUploadFile,
-} from '@sd-angular/core/components';
+} from '<CORE_UI_PACKAGE_NAME>/components';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductDTO, ProductSaveReq, PRODUCT_CATEGORIES } from '../services/product.model';
 import { ProductService } from '../services/product.service';
@@ -1818,7 +2022,7 @@ import { ProductService } from '../services/product.service';
       <div class="d-flex gap-8" role="toolbar" headerRight>
         @if (state() === 'UPDATE') {
           <sd-button
-            *sdPermission="'SAMPLE_C_PRODUCT_DELETE'"
+            *sdPermission="'SAMPLE_PRODUCT_DELETE'"
             title="Xóa"
             aria-label="Xóa"
             type="fill"
