@@ -6,6 +6,8 @@
 # What it enforces:
 # - .claude/skills/ stays in sync with skills/<track>/*.md (source of truth)
 # - any commit that edits skills/<track>/*.md regenerates the mirror and stages it
+# - no hardcoded `@sd-angular/core` version in 10-init-portal.md (must use <CORE_VERSION> placeholder)
+# - every .md under skills/ (except _refs/, shared/templates/, shared/specs/) has YAML frontmatter
 #
 # If lefthook is missing, fall back to the manual command in .claude/README.md.
 
@@ -21,9 +23,30 @@ pre-commit:
       # someone hand-edits .claude/skills/ without touching skills/).
       glob: ".claude/skills/**"
       run: bash .claude/sync-skills.sh --check
+    no-hardcoded-core-version:
+      # The single source of truth for @sd-angular/core version is
+      # skills/tracks/angular-portal/_refs/core-version.md. Inside
+      # 10-init-portal.md, every reference must use the <CORE_VERSION>
+      # placeholder (substituted by the agent at generation time). A
+      # literal `19.0.0-beta.NN` (or any `X.Y.Z-beta.N`) means drift.
+      glob: "skills/tracks/angular-portal/10-init-portal.md"
+      run: bash .claude/check-core-version-placeholder.sh {staged_files}
+    skill-frontmatter:
+      # Every .md under skills/ must have YAML frontmatter (name +
+      # description) so the agent can dispatch it — except files in
+      # _refs/ (reference data) and shared/templates/, shared/specs/
+      # (placeholder dirs). Without frontmatter, sync-skills.sh
+      # silently drops the file from the mirror.
+      glob: "skills/**/*.md"
+      run: bash .claude/check-skill-frontmatter.sh {staged_files}
 
 # Convenience: `lefthook run check` to verify locally without committing.
 check:
   commands:
     sync:
       run: bash .claude/sync-skills.sh --check
+    core-version-placeholder:
+      run: bash .claude/check-core-version-placeholder.sh skills/tracks/angular-portal/10-init-portal.md
+    skill-frontmatter:
+      # Check ALL skill .md files in one shot (find handles the exclusions inside the script).
+      run: bash -c 'find skills -name "*.md" -type f -print0 | xargs -0 bash .claude/check-skill-frontmatter.sh'

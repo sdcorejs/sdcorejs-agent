@@ -6,7 +6,10 @@
       "Bash(bash .claude/sync-skills.sh)",
       "Bash(bash .claude/sync-skills.sh --check)",
       "Bash(git commit -m ' *)",
-      "Bash(echo \"=== Verify no SD_API_CONFIG\\\\\\\\b left in active skills ===\")"
+      "Bash(echo \"=== Verify no SD_API_CONFIG\\\\\\\\b left in active skills ===\")",
+      "Read(//c/Users/nghiatt15_onemount/Documents/sdcorejs/**)",
+      "Read(//c/Users/nghiatt15_onemount/Documents/mh/**)",
+      "Read(//c/Users/nghiatt15_onemount/Documents/**)"
     ]
   }
 }

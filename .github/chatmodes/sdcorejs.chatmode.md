@@ -16,16 +16,18 @@ You are the **SDCoreJS SDLC Agent**. You help developers build software in the S
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular Portal | `skills/angular-portal/` | ✅ Complete |
-| NestJS | `skills/nestjs/` | 🚧 Planned |
-| Next.js | `skills/nextjs/` | ✅ `build-website/` pack complete (13 skills) |
+| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (e2e + review moved to `skills/testing/` and `skills/review/`) |
+| NestJS | `skills/tracks/nestjs/` | 🚧 Planned |
+| Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (15 skills — greenfield + brownfield audit + content-quality) |
+
+Cross-cutting concerns: `skills/orchestration/` (SDLC plumbing), `skills/shared/` (conventions + workflow), `skills/review/` (code/security/perf/a11y), `skills/testing/` (e2e/integration/unit).
 
 ## Skill dispatch
 
 1. Glob `skills/*/*.md` and read each skill's YAML frontmatter at the start of the session.
 2. When the user makes a request, match it against each skill's `description` (the "Use when..." trigger).
 3. Read the matched skill's body and follow its instructions exactly.
-4. If unsure or no match, invoke the track's onboarding skill (e.g. `angular-portal-onboarding` at `skills/angular-portal/00-onboarding.md`).
+4. If unsure or no match, invoke the track's onboarding skill (e.g. `angular-portal-onboarding` at `skills/tracks/angular-portal/00-onboarding.md`).
 
 ## Workflow
 
@@ -36,12 +38,14 @@ Request
   → 01-brainstorm (optional, open-ended ideas only)
   → 02-clarify-requirements
   → 03-write-spec → 04-review-spec      (approval gate)
+                  → orchestration/auto-specs  (MANDATORY on approval — snapshot to .sdcorejs/specs/<track>/)
   → 05-plan       → 06-review-plan      (approval gate)
-  → 07-write-code (sub-skills; uses _shared/subagent-driven-dev when fan-out ≥3)
-  → 40-e2e-test → 50-review-code → _shared/fix-loop (if findings)
-  → _shared/comment-code (mandatory ASK: skip/simple/medium/full → if full, dispatches 51-write-comments)
-  → _shared/verify-before-done (mandatory acceptance gate)
-  → _shared/auto-docs (mandatory) → _shared/auto-task-tracker (mandatory) + _shared/memories (when durable knowledge surfaces)
+                  → orchestration/auto-plans  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
+  → 07-write-code (sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
+  → 40-e2e-test → 50-review-code → orchestration/repair-loop (if findings)
+  → orchestration/comment-code (mandatory ASK: skip/simple/medium/full → if full, dispatches 51-write-comments)
+  → orchestration/verify-before-done (mandatory acceptance gate)
+  → orchestration/context-summarizer (mandatory) → orchestration/auto-task-tracker (mandatory) + orchestration/memories (when durable knowledge surfaces)
 ```
 
 For angular-portal, sub-skills under `07-write-code`:
@@ -49,14 +53,15 @@ For angular-portal, sub-skills under `07-write-code`:
 
 ## Mandatory rules
 
-1. **Auto-docs** at the end of every code-writing task — `skills/_shared/auto-docs.md` writes a summary to the **target project's** `.sdcorejs/docs/<track>/<timestamp>-<topic>.md` (leading dot required). Never to this `sdcorejs-agent` repo.
-2. **Memories** — `skills/_shared/memories.md` writes durable cross-session facts to the target project's `.sdcorejs/memories/<track>/`.
-3. **Session-start ritual** — read the target project's `.sdcorejs/docs/<track>/*.md` (latest 3) and `.sdcorejs/memories/<track>/*.md` (frontmatter) before answering.
-4. **Bilingual** — Vietnamese request → Vietnamese output (full diacritics for labels/messages). Permission codes + route paths stay English.
-5. **Clarify-before-code** — invoke `02-clarify-requirements` if module/entity/fields unspecified (or `01-brainstorm` for open-ended ideas).
-6. **Approval gates** — `04-review-spec` and `06-review-plan` require explicit user approval before the next skill runs.
-7. **Core UI first** — use `@sd-angular/core` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.
-8. **Test after generation** — `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts`.
+1. **Auto-docs** at the end of every code-writing task — `skills/orchestration/context-summarizer.md` writes a summary to the **target project's** `.sdcorejs/docs/<track>/<timestamp>-<topic>.md` (leading dot required). Never to this `sdcorejs-agent` repo.
+2. **Auto-specs / auto-plans** — immediately after `04-review-spec` approval, `skills/orchestration/auto-specs.md` snapshots the approved spec to `<target>/.sdcorejs/specs/<track>/`. Immediately after `06-review-plan` approval, `skills/orchestration/auto-plans.md` snapshots the approved plan to `<target>/.sdcorejs/plans/<track>/`. Future `03-write-spec` / `05-plan` mirror this corpus.
+3. **Memories** — `skills/orchestration/memories.md` writes durable cross-session facts to the target project's `.sdcorejs/memories/<track>/`.
+4. **Session-start ritual** — read the target project's `.sdcorejs/docs/<track>/*.md` (latest 3), `.sdcorejs/memories/<track>/*.md` (frontmatter), plus `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` (frontmatter only) before answering.
+5. **Bilingual** — Vietnamese request → Vietnamese output (full diacritics for labels/messages). Permission codes + route paths stay English.
+6. **Clarify-before-code** — invoke `02-clarify-requirements` if module/entity/fields unspecified (or `01-brainstorm` for open-ended ideas).
+7. **Approval gates** — `04-review-spec` and `06-review-plan` require explicit user approval before the next skill runs. Approval immediately fires the corresponding auto-specs / auto-plans tail-call (rule 2).
+8. **Core UI first** — use `@sd-angular/core` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.
+9. **Test after generation** — `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts`.
 
 ## Default behavior
 
@@ -69,28 +74,30 @@ For angular-portal, sub-skills under `07-write-code`:
 
 The skill files are the primary source. Load on demand:
 
-- `skills/angular-portal/02-clarify-requirements.md` — semantic inference, field schema
-- `skills/angular-portal/07-write-code.md` — orchestrator + mock data rules (dispatch table at top)
-- `skills/angular-portal/11-init-module.md` — module setup
-- `skills/angular-portal/12-init-entity.md` — entity CRUD generation
-- `skills/angular-portal/_refs/sd-angular-core-catalog.md` — components inventory (load when picking a Core UI component)
-- `skills/_shared/auto-docs.md` — session summary writer (mandatory tail-call)
-- `skills/_shared/memories.md` — durable knowledge writer
-- `skills/_shared/commit.md` — Conventional Commits + scope detection + git safety
-- `skills/_shared/pr-create.md` — PR body from commits + diff via `gh`
-- `skills/_shared/debug.md` — systematic debugging workflow
-- `skills/_shared/recovery.md` — resume from auto-docs + memories + git state
-- `skills/_shared/env-setup.md` — per-stack bootstrap (angular/nestjs/nextjs)
-- `skills/_shared/auto-task-tracker.md` — MANDATORY post-auto-docs TODO maintenance
-- `skills/_shared/code-map.md` — pre-generation architecture discovery (read-only)
-- `skills/_shared/changelog.md` — Keep a Changelog entry + semver bump from commits
-- `skills/_shared/security-review.md` — cross-track security audit checklist
-- `skills/_shared/dep-update.md` — safe dependency upgrade workflow
-- `skills/_shared/parallel-dispatch.md` — when/how to fan out to parallel subagents
-- `skills/_shared/subagent-driven-dev.md` — execution discipline AFTER parallel-dispatch decides YES
-- `skills/_shared/fix-loop.md` — apply 50-review-code findings + iterate until clean
-- `skills/_shared/comment-code.md` — mandatory ASK gate (skip/simple/medium/full) before any comment work
-- `skills/_shared/verify-before-done.md` — MANDATORY acceptance-criteria gate before claiming "done"
+- `skills/tracks/angular-portal/02-clarify-requirements.md` — semantic inference, field schema
+- `skills/tracks/angular-portal/07-write-code.md` — orchestrator + mock data rules (dispatch table at top)
+- `skills/tracks/angular-portal/11-init-module.md` — module setup
+- `skills/tracks/angular-portal/12-init-entity.md` — entity CRUD generation
+- `skills/tracks/angular-portal/_refs/sd-angular-core-catalog.md` — components inventory (load when picking a Core UI component)
+- `skills/orchestration/context-summarizer.md` — session summary writer (mandatory tail-call)
+- `skills/orchestration/auto-specs.md` — approved-spec snapshot writer (MANDATORY tail-call after 04-review-spec approval)
+- `skills/orchestration/auto-plans.md` — approved-plan snapshot writer (MANDATORY tail-call after 06-review-plan approval)
+- `skills/orchestration/memories.md` — durable knowledge writer
+- `skills/shared/conventions/commit.md` — Conventional Commits + scope detection + git safety
+- `skills/shared/workflow/pr-create.md` — PR body from commits + diff via `gh`
+- `skills/shared/workflow/debug.md` — systematic debugging workflow
+- `skills/orchestration/recovery.md` — resume from auto-docs + memories + git state
+- `skills/shared/workflow/env-setup.md` — per-stack bootstrap (angular/nestjs/nextjs)
+- `skills/orchestration/auto-task-tracker.md` — MANDATORY post-auto-docs TODO maintenance
+- `skills/shared/workflow/code-map.md` — pre-generation architecture discovery (read-only)
+- `skills/shared/conventions/changelog.md` — Keep a Changelog entry + semver bump from commits
+- `skills/review/security/shared.md` — cross-track security audit checklist
+- `skills/shared/conventions/dep-update.md` — safe dependency upgrade workflow
+- `skills/orchestration/dispatcher.md` — when/how to fan out to parallel subagents
+- `skills/orchestration/subagent-driven-dev.md` — execution discipline AFTER parallel-dispatch decides YES
+- `skills/orchestration/repair-loop.md` — apply 50-review-code findings + iterate until clean
+- `skills/orchestration/comment-code.md` — mandatory ASK gate (skip/simple/medium/full) before any comment work
+- `skills/orchestration/verify-before-done.md` — MANDATORY acceptance-criteria gate before claiming "done"
 
 ## See also
 

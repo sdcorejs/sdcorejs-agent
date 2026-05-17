@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
-# Mirror source-of-truth skills (skills/angular-portal/*.md + skills/_shared/*.md)
-# into Claude Code's native .claude/skills/<name>/SKILL.md format.
+# Mirror source-of-truth skills into Claude Code's native .claude/skills/<name>/SKILL.md format.
 #
-# Source of truth: skills/<track>/*.md
-# Generated:       .claude/skills/<name>/SKILL.md
+# Source of truth tree:
+#   skills/tracks/<stack>/**/*.md       — stack-specific (angular-portal, nextjs/build-website, nestjs)
+#   skills/testing/**/*.md              — test discipline (cross-track principles + per-stack)
+#   skills/review/**/*.md               — review discipline (architecture, security, perf, a11y, code)
+#   skills/orchestration/*.md           — SDLC plumbing (dispatch, repair, summarize, plans, specs, …)
+#   skills/shared/**/*.md               — cross-cutting utilities (conventions, workflow)
 #
+# Excluded from scan:
+#   **/_refs/**           — reference data (no frontmatter)
+#   shared/templates/**   — frontmatter templates (no usable dispatch metadata)
+#   shared/specs/**       — convention docs (no dispatch metadata)
+#
+# Generated: .claude/skills/<name>/SKILL.md
 # Folder name comes from each source file's `name:` YAML frontmatter field.
 #
 # Modes:
@@ -28,11 +37,7 @@ esac
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-SRC_DIRS=(
-  "$REPO_ROOT/skills/angular-portal"
-  "$REPO_ROOT/skills/_shared"
-  "$REPO_ROOT/skills/nextjs/build-website"
-)
+SKILLS_ROOT="$REPO_ROOT/skills"
 DEST_ROOT="$REPO_ROOT/.claude/skills"
 
 # In check mode, write into a temp dir and diff against the committed mirror.
@@ -44,42 +49,49 @@ else
   mkdir -p "$WORK_ROOT"
 fi
 
+# Find every .md skill, excluding reference data and template placeholders.
+# NUL-delimited to handle any whitespace in paths.
+mapfile -d '' -t SRC_FILES < <(
+  find "$SKILLS_ROOT" -type f -name '*.md' \
+    -not -path '*/_refs/*' \
+    -not -path '*/shared/templates/*' \
+    -not -path '*/shared/specs/*' \
+    -print0 | sort -z
+)
+
 count=0
 declare -A KEPT
-for src_dir in "${SRC_DIRS[@]}"; do
-  [ -d "$src_dir" ] || continue
-  for src_file in "$src_dir"/*.md; do
-    [ -f "$src_file" ] || continue
+for src_file in "${SRC_FILES[@]}"; do
+  [ -f "$src_file" ] || continue
 
-    # Extract the first `name:` field from frontmatter.
-    name="$(awk '
-      /^---[[:space:]]*$/ { fm++; next }
-      fm == 1 && /^name:[[:space:]]*/ {
-        sub(/^name:[[:space:]]*/, "")
-        sub(/[[:space:]]+$/, "")
-        print
-        exit
-      }
-    ' "$src_file")"
+  # Extract the first `name:` field from frontmatter.
+  name="$(awk '
+    /^---[[:space:]]*$/ { fm++; next }
+    fm == 1 && /^name:[[:space:]]*/ {
+      sub(/^name:[[:space:]]*/, "")
+      sub(/[[:space:]]+$/, "")
+      print
+      exit
+    }
+  ' "$src_file")"
 
-    if [ -z "$name" ]; then
-      echo "WARN: no 'name:' frontmatter in $src_file — skipping" >&2
-      continue
-    fi
+  if [ -z "$name" ]; then
+    echo "WARN: no 'name:' frontmatter in $src_file — skipping" >&2
+    continue
+  fi
 
-    # Skip placeholder template names (e.g. `<kebab-slug>`).
-    case "$name" in
-      \<*\>) [ "$MODE" != "check" ] && echo "  skip template: $src_file (name=$name)"; continue ;;
-    esac
+  # Skip placeholder template names (e.g. `<kebab-slug>`).
+  case "$name" in
+    \<*\>) [ "$MODE" != "check" ] && echo "  skip template: $src_file (name=$name)"; continue ;;
+  esac
 
-    dest_dir="$WORK_ROOT/$name"
-    dest_file="$dest_dir/SKILL.md"
-    mkdir -p "$dest_dir"
-    cp "$src_file" "$dest_file"
-    KEPT["$name"]=1
-    count=$((count + 1))
-    [ "$MODE" = "sync" ] && echo "  $src_file -> .claude/skills/$name/SKILL.md"
-  done
+  dest_dir="$WORK_ROOT/$name"
+  dest_file="$dest_dir/SKILL.md"
+  mkdir -p "$dest_dir"
+  cp "$src_file" "$dest_file"
+  KEPT["$name"]=1
+  count=$((count + 1))
+  [ "$MODE" = "sync" ] && echo "  ${src_file#$REPO_ROOT/} -> .claude/skills/$name/SKILL.md"
 done
 
 if [ "$MODE" = "check" ]; then

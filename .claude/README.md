@@ -1,6 +1,6 @@
 # `.claude/` — Claude Code native integration
 
-This folder mirrors the source-of-truth skills (`skills/angular-portal/*.md` and `skills/_shared/*.md`) into Claude Code's native `.claude/skills/<name>/SKILL.md` format.
+This folder mirrors the source-of-truth skills (`skills/tracks/angular-portal/*.md` and `skills/orchestration/ + skills/shared/ + skills/review/ + skills/testing/*.md`) into Claude Code's native `.claude/skills/<name>/SKILL.md` format.
 
 The mirror lets Claude Code dispatch skills automatically via its built-in skill-discovery mechanism, in addition to reading the high-level `CLAUDE.md` at the repo root.
 
@@ -19,7 +19,7 @@ The mirror lets Claude Code dispatch skills automatically via its built-in skill
 
 ## ⚠️ Source of truth is `skills/<track>/*.md`
 
-Edit skills under `skills/angular-portal/`, `skills/_shared/`, etc.
+Edit skills under `skills/tracks/<stack>/`, `skills/orchestration/`, `skills/shared/`, `skills/review/`, `skills/testing/`.
 NEVER hand-edit `.claude/skills/<name>/SKILL.md` — it is overwritten on every sync.
 
 ## Three ways the mirror stays in sync
@@ -65,6 +65,6 @@ bash .claude/sync-skills.sh --clean
 
 ## Why not edit `.claude/skills/` directly?
 
-- Track-folder structure (`skills/angular-portal/`, `skills/nestjs/`, etc.) gives clear workflow ordering via numeric prefixes (`00-onboarding.md`, `07-write-code.md`, `52-faq.md`) — the flat `.claude/skills/<name>/SKILL.md` layout doesn't.
+- Concern-based layout (`skills/tracks/<stack>/` + `skills/orchestration/` + `skills/shared/` + `skills/review/` + `skills/testing/`) gives clear workflow ordering via numeric prefixes (`00-onboarding.md`, `07-write-code.md`, `52-faq.md`) — the flat `.claude/skills/<name>/SKILL.md` layout doesn't.
 - GitHub Copilot and Codex read `skills/<track>/*.md` directly — Claude Code is the only tool needing the mirror.
 - Single source = single review surface in PRs.
