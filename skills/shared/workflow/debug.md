@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-debug
-description: Use when the user reports a bug, says "không hoạt động", "lỗi", "doesn't work", "broken", "error", or asks to diagnose / fix unexpected behavior. Enforces systematic debugging — reproduce, isolate, hypothesize, test, root-cause — instead of shotgun fixes or symptom-masking. Applies to angular-portal, nestjs, nextjs.
+description: Use when the user reports a non-trivial bug and asks for diagnosis — "debug giúp mình", "trace this bug", "tại sao chỗ này sai", "systematic debugging", "fix this bug" (with a multi-line repro), or any failure that resists a one-line fix and needs reproduce → isolate → hypothesize → test → root-cause. Skip for trivial one-liners (typo, missing import, obvious null) and for cosmetic "lỗi nhỏ" asks — those don't need the discipline. Triggers - "debug giúp mình", "trace bug", "tại sao ... sai/không chạy", "root-cause", "systematic debugging", "không hiểu sao lại lỗi", or any bug whose first-glance fix isn't obvious. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Bash, Grep, Glob, Edit
 ---
 

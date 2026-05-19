@@ -12,11 +12,18 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem. When you (GitHu
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (19 skills + e2e/review moved out to `testing/` and `review/`) |
-| NestJS | `skills/tracks/nestjs/` | 🚧 Planned |
-| Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (15 skills — greenfield + brownfield audit + content-quality) |
+| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (13 track skills: onboarding, write-code orchestrator, 10/11/12-init-*, 20/21/22/23-screen-*, 30-reactive-form, 31-workflow-actions, 51-write-comments, 52-faq). Design phase + spec/plan moved to cross-track `skills/shared/sdlc/`. |
+| NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (00-onboarding + 07-write-code plan-walker). Sub-skills 10/11/12 planned. Design phase usable via shared/sdlc/; review + testing already in place. |
+| Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (13 track skills: onboarding, write-code orchestrator, audit-existing-site, 10-init-site … 19-content-quality). Design phase moved to cross-track shared/sdlc/. |
 
-Cross-cutting skills live in `skills/orchestration/` (SDLC plumbing — 11 files), `skills/shared/conventions/` + `shared/workflow/` (commits, debug, env, etc.), `skills/review/` (code/security/perf/a11y), `skills/testing/` (e2e/integration/unit). Dispatch is by skill `name:` frontmatter, not path.
+Cross-cutting skills live in:
+- `skills/shared/sdlc/` — **6 cross-track design-phase skills** (brainstorm, clarify-requirements, write-spec, review-spec, plan, review-plan) + `_refs/{angular-portal,nextjs,nestjs}.md`
+- `skills/orchestration/` — SDLC plumbing (11 files: dispatcher, subagent-driven-dev, repair-loop, context-summarizer, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, comment-code)
+- `skills/shared/conventions/` + `shared/workflow/` — commits, changelog, dep-update, debug, env-setup, pr-create, code-map
+- `skills/review/` — code review (per-track), security (cross-track + nestjs), performance (cross-track + per-track), architecture, accessibility
+- `skills/testing/` — philosophy (cross-track) + e2e/integration/unit per-track
+
+Dispatch is by skill `name:` frontmatter, not path.
 
 ## Skill structure
 
@@ -40,20 +47,27 @@ allowed-tools: Read, Write, Edit, ...
 
 ## Workflow per track
 
+Design phase is cross-track (`skills/shared/sdlc/`); code-writing is per-track.
+
 ```
 Request
-  → 01-brainstorm (optional)
-  → 02-clarify-requirements
-  → 03-write-spec → 04-review-spec      (approval gate)
-                  → orchestration/auto-specs  (MANDATORY on approval — snapshot to .sdcorejs/specs/<track>/)
-  → 05-plan       → 06-review-plan      (approval gate)
-                  → orchestration/auto-plans  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
-  → 07-write-code (dispatches sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
-  → 40-e2e-test → 50-review-code → orchestration/repair-loop (if findings)
-  → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full → if full, dispatches 51-write-comments)
+  → shared/sdlc/01-brainstorm   (sdcorejs-brainstorm, optional)
+  → shared/sdlc/02-clarify-requirements   (sdcorejs-clarify-requirements)
+  → shared/sdlc/03-write-spec → shared/sdlc/04-review-spec   (approval gate)
+                              → orchestration/auto-specs  (MANDATORY on approval — snapshot to .sdcorejs/specs/<track>/)
+  → shared/sdlc/05-plan       → shared/sdlc/06-review-plan  (approval gate)
+                              → orchestration/auto-plans  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
+  → <track>-write-code (track-specific orchestrator; dispatches sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
+       angular-portal:         angular-portal-write-code
+       nextjs (build-website): nextjs-build-website-write-code
+       nestjs:                 nestjs-write-code (SCAFFOLD)
+  → testing/e2e/<track>.md → review/code/<track>.md → orchestration/repair-loop (if findings)
+  → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full → if full and angular, dispatches angular-portal-write-comments)
   → orchestration/verify-before-done (MANDATORY acceptance gate)
   → orchestration/context-summarizer (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) + orchestration/memories (durable knowledge)
 ```
+
+Each cross-track design skill detects the target track at runtime and loads `skills/shared/sdlc/_refs/<track>.md` for track-specific patterns.
 
 Sub-skills under `07-write-code` (angular-portal track):
 `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `22-screen-create`, `23-screen-update`, `30-reactive-form`, `31-workflow-actions`.
@@ -62,17 +76,17 @@ Sub-skills under `07-write-code` (angular-portal track):
 
 1. **Auto-docs is mandatory.** At the end of every code-writing skill invocation, run the track-agnostic `auto-docs` skill at `skills/orchestration/context-summarizer.md`. This writes a session summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (leading dot is required). Do NOT write the doc to this `sdcorejs-agent` repo.
 
-2. **Auto-specs / auto-plans are mandatory.** Immediately after `04-review-spec` returns explicit user approval, run `skills/orchestration/auto-specs.md` to persist the approved spec snapshot to `<target>/.sdcorejs/specs/<track>/`. Immediately after `06-review-plan` approval, run `skills/orchestration/auto-plans.md` to persist the approved plan snapshot to `<target>/.sdcorejs/plans/<track>/`. The corpus lets future `03-write-spec` / `05-plan` mirror the user's confirmed structure.
+2. **Auto-specs / auto-plans are mandatory.** Immediately after `sdcorejs-review-spec` returns explicit user approval, run `skills/orchestration/auto-specs.md` to persist the approved spec snapshot to `<target>/.sdcorejs/specs/<track>/`. Immediately after `sdcorejs-review-plan` approval, run `skills/orchestration/auto-plans.md` to persist the approved plan snapshot to `<target>/.sdcorejs/plans/<track>/`. The corpus lets future `sdcorejs-write-spec` / `sdcorejs-plan` mirror the user's confirmed structure.
 
 3. **Memories.** Durable cross-session knowledge lives under the target project's `.sdcorejs/memories/<track>/`, managed by `skills/orchestration/memories.md`. Write when the user says "ghi nhớ"/"remember this" or when a recurring correction is detected.
 
-4. **Session-start ritual.** When opening a target project, glob the target's `.sdcorejs/docs/<track>/*.md` (latest 3) and `.sdcorejs/memories/<track>/*.md` (frontmatter), and silently load that as context before answering. Also glob `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` (frontmatter only) so the next `03-write-spec` / `05-plan` can mirror style.
+4. **Session-start ritual.** When opening a target project, glob the target's `.sdcorejs/docs/<track>/*.md` (latest 3) and `.sdcorejs/memories/<track>/*.md` (frontmatter), and silently load that as context before answering. Also glob `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` (frontmatter only) so the next `sdcorejs-write-spec` / `sdcorejs-plan` can mirror style.
 
 5. **Bilingual.** Vietnamese request → Vietnamese output (full diacritics for labels/messages). English → English. Permission codes and route paths stay English in both.
 
-6. **Clarify-before-code.** Do NOT generate code if module ownership, entity name, or key fields are unspecified. Invoke `02-clarify-requirements` first (or `01-brainstorm` for open-ended ideas).
+6. **Clarify-before-code.** Do NOT generate code if track-specific minimum-required answers are unconfirmed. Invoke `sdcorejs-clarify-requirements` first (or `sdcorejs-brainstorm` for open-ended ideas).
 
-7. **Approval gates.** `04-review-spec` and `06-review-plan` REQUIRE explicit user approval before proceeding. Approval immediately fires the corresponding auto-specs / auto-plans tail-call (rule 2).
+7. **Approval gates.** `sdcorejs-review-spec` and `sdcorejs-review-plan` REQUIRE explicit user approval before proceeding. Approval immediately fires the corresponding auto-specs / auto-plans tail-call (rule 2).
 
 8. **Core UI first.** Use `@sd-angular/core` components when one fits. Otherwise generate skeleton + `alert('TODO: ...')` stubs and mark for the developer.
 
@@ -84,37 +98,50 @@ Sub-skills under `07-write-code` (angular-portal track):
 - Prompt files in `.github/prompts/` are legacy fallback prompts kept for teammates without skill-aware Copilot. They duplicate skill content in a single-prompt form.
 - When a skill's `allowed-tools` includes `Bash`, Copilot's terminal tool is the equivalent.
 
-## Cross-track utility skills (`skills/orchestration/`, `skills/shared/`, `skills/review/`, `skills/testing/`)
+## Cross-track skills
 
-Cross-track skills — apply to all tracks. Dispatch by `description`; directory location is organizational, not a dispatch key:
+Cross-track skills — apply to all tracks. Dispatch by `description`; directory location is organizational, not a dispatch key.
 
+### Design phase (`skills/shared/sdlc/`)
 | Skill | Trigger | Mandatory? |
 | --- | --- | --- |
-| `sdcorejs-verify-before-done` | runs BEFORE auto-docs — verifies acceptance criteria from spec; blocks "done" | ✅ |
+| `sdcorejs-brainstorm` | open-ended idea before scope is fixed | optional |
+| `sdcorejs-clarify-requirements` | request for concrete artifacts | ✅ |
+| `sdcorejs-write-spec` | after clarify confirms | ✅ |
+| `sdcorejs-review-spec` | after write-spec | ✅ |
+| `sdcorejs-plan` | after review-spec approves | ✅ |
+| `sdcorejs-review-plan` | after plan | ✅ |
+
+### Orchestration + utility
+| Skill | Trigger | Mandatory? |
+| --- | --- | --- |
+| `sdcorejs-verify-before-done` | runs BEFORE auto-docs — verifies acceptance criteria; blocks "done" | ✅ |
 | `sdcorejs-auto-docs` | end of every code-writing task — session summary | ✅ |
-| `sdcorejs-auto-specs` | IMMEDIATELY after `04-review-spec` approval — snapshot approved spec to `.sdcorejs/specs/<track>/` | ✅ on approval |
-| `sdcorejs-auto-plans` | IMMEDIATELY after `06-review-plan` approval — snapshot approved plan to `.sdcorejs/plans/<track>/` | ✅ on approval |
-| `sdcorejs-auto-task-tracker` | IMMEDIATELY after auto-docs — `.sdcorejs/tasks/<track>.md` | ✅ |
+| `sdcorejs-auto-specs` | IMMEDIATELY after `sdcorejs-review-spec` approval | ✅ on approval |
+| `sdcorejs-auto-plans` | IMMEDIATELY after `sdcorejs-review-plan` approval | ✅ on approval |
+| `sdcorejs-auto-task-tracker` | IMMEDIATELY after auto-docs | ✅ |
 | `sdcorejs-memories` | "ghi nhớ", durable knowledge | ✅ on trigger |
-| `sdcorejs-fix-loop` | after `50-review-code` outputs findings — apply + iterate until clean | ✅ on findings |
-| `sdcorejs-comment-code` | ASK gate at comment phase — skip/simple/medium/full; ASK mandatory, outcome optional | ✅ ASK |
+| `sdcorejs-fix-loop` | after `review/code/<track>.md` outputs findings | ✅ on findings |
+| `sdcorejs-comment-code` | ASK gate at comment phase — skip/simple/medium/full | ✅ ASK |
 | `sdcorejs-code-map` | new feature / reuse check — read-only architecture scan |  |
-| `sdcorejs-parallel-dispatch` | fan-out 3+ independent tasks — decision gate (should I split?) |  |
-| `sdcorejs-subagent-driven-dev` | after parallel-dispatch=YES — execution: decompose + brief + dispatch + merge |  |
-| `sdcorejs-commit` | "commit", "tạo commit" — Conventional Commits + scope + git safety |  |
-| `sdcorejs-pr-create` | "tạo PR", "open PR" — PR body from commits + diff |  |
-| `sdcorejs-debug` | "lỗi", "error", "fix bug" — systematic debugging |  |
-| `sdcorejs-recovery` | "tiếp tục", "resume" — handoff from docs + memories + git state |  |
-| `sdcorejs-env-setup` | "thiết lập môi trường", "setup dev" — per-stack bootstrap |  |
-| `sdcorejs-changelog` | "viết changelog", release — Keep a Changelog + semver bump |  |
-| `sdcorejs-security-review` | "review bảo mật", pre-release — Critical/Important/Minor report |  |
-| `sdcorejs-dep-update` | "cập nhật dependency", audit fix — safe upgrade workflow |  |
+| `sdcorejs-parallel-dispatch` | fan-out 3+ independent tasks — decision gate |  |
+| `sdcorejs-subagent-driven-dev` | after parallel-dispatch=YES |  |
+| `sdcorejs-commit` | "commit", "tạo commit" — Conventional Commits |  |
+| `sdcorejs-pr-create` | "tạo PR", "open PR" |  |
+| `sdcorejs-debug` | non-trivial bug needing systematic debugging |  |
+| `sdcorejs-recovery` | "tiếp tục", "resume" |  |
+| `sdcorejs-env-setup` | "thiết lập môi trường", "setup dev" |  |
+| `sdcorejs-changelog` | "viết changelog", release |  |
+| `sdcorejs-review-security-shared` | cross-track security checklist (extended by `review/security/<stack>.md`) |  |
+| `sdcorejs-dep-update` | "cập nhật dependency", audit fix |  |
 
 ## Reference docs (load on demand only)
 
+- `skills/shared/sdlc/_refs/{angular-portal,nextjs,nestjs}.md` — track-specific design-phase patterns
 - `skills/tracks/angular-portal/_refs/core-version.md` — pinned `@sd-angular/core` version
 - `skills/tracks/angular-portal/_refs/sd-angular-core-catalog.md` — Core UI components inventory
 - `skills/tracks/angular-portal/_refs/entity-field-types.md` — field type → form control mapping
+- `skills/tracks/angular-portal/_refs/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for 12-init-entity
 
 ## Anti-patterns
 

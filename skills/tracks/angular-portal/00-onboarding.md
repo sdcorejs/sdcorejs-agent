@@ -1,6 +1,6 @@
 ---
 name: angular-portal-onboarding
-description: Use when the user opens this agent for the first time, asks "what can you do", "how do I start", "list skills", "help", "agent này làm được gì", or seems unsure which skill to invoke. Provides an overview of the SDLC workflow, lists available skills, and routes the user to the next concrete step (usually clarify-requirements).
+description: Use when the user opens this agent for the first time inside an Angular-portal project, asks "what can you do", "how do I start", "list skills", "help", "agent này làm được gì", or seems unsure which skill to invoke. Provides an overview of the Angular-portal SDLC workflow, lists available skills, and routes the user to the next concrete step (usually `sdcorejs-clarify-requirements` from shared/sdlc/, or `sdcorejs-brainstorm` if scope is open-ended). Bilingual (VI/EN).
 allowed-tools: Read, Glob, Grep
 ---
 

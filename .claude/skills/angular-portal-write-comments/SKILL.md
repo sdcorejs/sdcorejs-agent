@@ -1,6 +1,6 @@
 ---
 name: angular-portal-write-comments
-description: Use to add JSDoc / inline comments and a `WHY-X.md` brief explanation file when the developer asks for code documentation. Comments explain WHY (constraints, invariants, decisions) — never WHAT (good names handle that). Triggers - "thêm comment", "diễn giải code", "explain this code", "add docs", "viết tài liệu cho", "comment lại file". Bilingual (VI/EN).
+description: Angular-portal FULL-level commenting implementation — invoked by `orchestration/comment-code` when the user picks the `full` level after the ASK gate. Adds JSDoc on every public API, one-line `// why:` comments on non-trivial logic, and an opt-in `docs/<topic>.md` brief inside the module folder. Comments explain WHY (constraints, invariants, decisions) — never WHAT. Do NOT invoke directly for generic "add comments" requests — always go through `orchestration/comment-code` first so the user picks the level. Triggers - "FULL comment level for Angular", "thêm JSDoc đầy đủ", "Angular write-comments full pass", or automatic invocation by `orchestration/comment-code` when level=full and the target track is angular-portal. Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 

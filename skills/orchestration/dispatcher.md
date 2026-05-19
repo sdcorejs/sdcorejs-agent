@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-parallel-dispatch
-description: Use when the agent is about to execute work that could plausibly be split across parallel subagents — multiple independent entities, multi-file scans, batch screen generation, multi-stack audits. Decides WHETHER to parallelize (independence check, blast-radius check, budget) and HOW to brief each subagent (self-contained context, clear deliverable, return shape). Applies to angular-portal, nestjs, nextjs.
+description: Use when the agent is about to execute work that could plausibly be split across parallel subagents — multiple independent entities, multi-file scans, batch screen generation, multi-stack audits. Decides WHETHER to parallelize (independence check, blast-radius check, budget) and HOW to brief each subagent (self-contained context, clear deliverable, return shape). Triggers - "chạy song song", "dispatch parallel", "split into subagents", "fan out", "làm song song", "in parallel", or automatic invocation by 07-write-code (and other orchestrators) when ≥3 independent units are detected. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read
 ---
 
