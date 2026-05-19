@@ -41,7 +41,7 @@ Pass criteria:
 
 Prompt: `tôi đang phân vân giữa side-drawer và full-page detail cho entity user, nên dùng cái nào?`
 
-Expected: Agent invokes `angular-portal-brainstorm` (open-ended), presents 2-3 approaches with tradeoffs, recommends one. Does NOT directly write code.
+Expected: Agent invokes `sdcorejs-brainstorm` (cross-track; detects angular-portal and loads `_refs/angular-portal.md`), presents 2-3 approaches with tradeoffs, recommends one. Does NOT directly write code.
 
 Pass criteria:
 - Mentions multiple approaches (side-drawer vs full-page)
@@ -53,7 +53,7 @@ Pass criteria:
 
 Prompt: `thêm entity product`
 
-Expected: Agent invokes `angular-portal-clarify-requirements` because module / fields / scope are unspecified. Asks blocking questions.
+Expected: Agent invokes `sdcorejs-clarify-requirements` (cross-track; loads `_refs/angular-portal.md`) because module / fields / scope are unspecified. Asks blocking questions.
 
 Pass criteria:
 - Does NOT generate code
@@ -76,7 +76,7 @@ Pass criteria:
 
 Setup: walk through test 5 until plan is ready, then ask `proceed with implementation`.
 
-Expected: Agent invokes `angular-portal-review-plan` (if not yet shown) before `angular-portal-write-code`. Agent should NOT generate code without your explicit "OK".
+Expected: Agent invokes `sdcorejs-review-plan` (cross-track) before `angular-portal-write-code`. Agent should NOT generate code without your explicit "OK".
 
 Pass criteria:
 - Plan shown and approval requested
