@@ -45,7 +45,7 @@ Request
   → 40-e2e-test → 50-review-code → orchestration/repair-loop (if findings)
   → orchestration/comment-code (mandatory ASK: skip/simple/medium/full → if full, dispatches 51-write-comments)
   → orchestration/verify-before-done (mandatory acceptance gate)
-  → orchestration/context-summarizer (mandatory) → orchestration/auto-task-tracker (mandatory) + orchestration/memories (when durable knowledge surfaces)
+  → orchestration/auto-docs (mandatory) → orchestration/auto-task-tracker (mandatory) + orchestration/memories (when durable knowledge surfaces)
 ```
 
 For angular-portal, sub-skills under `07-write-code`:
@@ -53,7 +53,7 @@ For angular-portal, sub-skills under `07-write-code`:
 
 ## Mandatory rules
 
-1. **Auto-docs** at the end of every code-writing task — `skills/orchestration/context-summarizer.md` writes a summary to the **target project's** `.sdcorejs/docs/<track>/<timestamp>-<topic>.md` (leading dot required). Never to this `sdcorejs-agent` repo.
+1. **Auto-docs** at the end of every code-writing task — `skills/orchestration/auto-docs.md` writes a summary to the **target project's** `.sdcorejs/docs/<track>/<timestamp>-<topic>.md` (leading dot required). Never to this `sdcorejs-agent` repo.
 2. **Auto-specs / auto-plans** — immediately after `04-review-spec` approval, `skills/orchestration/auto-specs.md` snapshots the approved spec to `<target>/.sdcorejs/specs/<track>/`. Immediately after `06-review-plan` approval, `skills/orchestration/auto-plans.md` snapshots the approved plan to `<target>/.sdcorejs/plans/<track>/`. Future `03-write-spec` / `05-plan` mirror this corpus.
 3. **Memories** — `skills/orchestration/memories.md` writes durable cross-session facts to the target project's `.sdcorejs/memories/<track>/`.
 4. **Session-start ritual** — read the target project's `.sdcorejs/docs/<track>/*.md` (latest 3), `.sdcorejs/memories/<track>/*.md` (frontmatter), plus `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` (frontmatter only) before answering.
@@ -81,7 +81,7 @@ The skill files are the primary source. Load on demand:
 - `skills/tracks/angular-portal/12-init-entity.md` — entity CRUD generation (slim; templates in `_refs/templates/`)
 - `skills/tracks/angular-portal/_refs/templates/entity-{skeleton,tests,example-product}.md` — code templates loaded on demand by 12-init-entity
 - `skills/tracks/angular-portal/_refs/sd-angular-core-catalog.md` — components inventory (load when picking a Core UI component)
-- `skills/orchestration/context-summarizer.md` — session summary writer (mandatory tail-call)
+- `skills/orchestration/auto-docs.md` — session summary writer (mandatory tail-call)
 - `skills/orchestration/auto-specs.md` — approved-spec snapshot writer (MANDATORY tail-call after 04-review-spec approval)
 - `skills/orchestration/auto-plans.md` — approved-plan snapshot writer (MANDATORY tail-call after 06-review-plan approval)
 - `skills/orchestration/memories.md` — durable knowledge writer
@@ -95,7 +95,7 @@ The skill files are the primary source. Load on demand:
 - `skills/shared/conventions/changelog.md` — Keep a Changelog entry + semver bump from commits
 - `skills/review/security/shared.md` — cross-track security audit checklist
 - `skills/shared/conventions/dep-update.md` — safe dependency upgrade workflow
-- `skills/orchestration/dispatcher.md` — when/how to fan out to parallel subagents
+- `skills/orchestration/parallel-dispatch.md` — when/how to fan out to parallel subagents
 - `skills/orchestration/subagent-driven-dev.md` — execution discipline AFTER parallel-dispatch decides YES
 - `skills/orchestration/repair-loop.md` — apply 50-review-code findings + iterate until clean
 - `skills/orchestration/comment-code.md` — mandatory ASK gate (skip/simple/medium/full) before any comment work

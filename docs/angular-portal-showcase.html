@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SDCoreJS Angular Portal — SDLC Agent Showcase</title>
+<style>
+  :root {
+    --bg: #0b0d14;
+    --bg-2: #11141d;
+    --bg-3: #181c27;
+    --line: #23283a;
+    --text: #e6e9f2;
+    --muted: #8e93a8;
+    --primary: #6ee7b7;
+    --primary-2: #34d399;
+    --accent: #818cf8;
+    --warn: #fbbf24;
+    --danger: #f87171;
+    --code: #1e2230;
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--bg); color: var(--text); margin: 0; }
+  body {
+    font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Be Vietnam Pro", "Helvetica Neue", sans-serif;
+    padding: 0 0 80px;
+  }
+  a { color: var(--primary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, pre {
+    font: 13px/1.5 ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+    background: var(--code);
+    color: #e2e8f0;
+    border-radius: 4px;
+    padding: 1px 6px;
+  }
+  pre { padding: 12px 14px; overflow-x: auto; }
+  h1 { font-size: 32px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.02em; }
+  h2 { font-size: 22px; font-weight: 600; margin: 56px 0 12px; letter-spacing: -0.01em; }
+  h3 { font-size: 15px; font-weight: 600; margin: 18px 0 6px; color: var(--text); }
+  p { color: var(--muted); margin: 8px 0; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #0f1320 0%, #181c2c 50%, #1a1429 100%);
+    border-bottom: 1px solid var(--line);
+    padding: 56px 0 64px;
+    margin-bottom: 4px;
+  }
+  .hero .lead { font-size: 16px; color: var(--text); max-width: 720px; margin-top: 12px; }
+  .hero .meta { display: flex; gap: 16px; margin-top: 20px; flex-wrap: wrap; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px;
+    background: var(--bg-2); border: 1px solid var(--line);
+    font-size: 12px; color: var(--muted);
+  }
+  .badge.ok { color: var(--primary); border-color: rgba(110, 231, 183, .3); }
+  .badge.warn { color: var(--warn); border-color: rgba(251, 191, 36, .3); }
+  .badge.scaffold { color: var(--accent); border-color: rgba(129, 140, 248, .3); }
+
+  /* Pipeline */
+  .pipeline {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px; margin-top: 20px;
+  }
+  .stage {
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; position: relative;
+    transition: border-color .15s, transform .15s;
+  }
+  .stage:hover { border-color: var(--primary); transform: translateY(-2px); }
+  .stage .num {
+    font: 11px/1 ui-monospace; color: var(--muted);
+    letter-spacing: 0.1em; margin-bottom: 4px;
+  }
+  .stage h3 { margin: 0 0 6px; font-size: 14px; }
+  .stage .skill {
+    font: 12px ui-monospace; color: var(--accent); display: block; margin: 4px 0;
+  }
+  .stage .desc { font-size: 12px; color: var(--muted); margin: 6px 0 0; line-height: 1.45; }
+  .stage[data-kind="gate"] { border-color: rgba(251, 191, 36, .35); }
+  .stage[data-kind="gate"] .num::after { content: ' • APPROVAL GATE'; color: var(--warn); }
+  .stage[data-kind="mandatory"] { border-color: rgba(110, 231, 183, .35); }
+  .stage[data-kind="mandatory"] .num::after { content: ' • MANDATORY'; color: var(--primary); }
+
+  /* Two-col */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 800px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* Skill cards */
+  .skill-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 10px;
+  }
+  .skill-card {
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .skill-card .name {
+    display: flex; justify-content: space-between; align-items: center;
+    font: 13px ui-monospace; color: var(--primary);
+  }
+  .skill-card .name .tag {
+    font-size: 10px; padding: 2px 6px; border-radius: 3px;
+    background: var(--bg-3); color: var(--muted);
+  }
+  .skill-card .desc { font-size: 12px; color: var(--muted); margin: 6px 0 0; line-height: 1.45; }
+
+  /* Try-it */
+  .tryit { background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px; }
+  .tryit h3 { margin-top: 0; }
+  .tryit .prompt {
+    background: var(--code); border-left: 3px solid var(--accent);
+    padding: 10px 12px; border-radius: 4px;
+    font: 13px ui-monospace; color: #cbd5e1; white-space: pre-wrap;
+  }
+  .tryit .arrow { color: var(--muted); margin: 8px 0; font-size: 12px; }
+  .tryit .skill-name {
+    font: 13px ui-monospace; color: var(--primary);
+  }
+
+  /* Convention */
+  .conv {
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px;
+    padding: 12px 14px;
+  }
+  .conv h3 { margin-top: 0; font-size: 13px; color: var(--primary); }
+  .conv p { font-size: 12px; line-height: 1.5; margin: 4px 0; color: var(--muted); }
+  .conv code { font-size: 12px; }
+
+  /* Tail-call chain */
+  .chain {
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    font: 12px ui-monospace;
+  }
+  .chain .step {
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: 4px;
+    padding: 6px 10px;
+  }
+  .chain .step.mandatory { border-color: rgba(110, 231, 183, .4); color: var(--primary); }
+  .chain .arrow { color: var(--muted); }
+
+  footer { color: var(--muted); font-size: 12px; text-align: center; margin-top: 80px; }
+  footer a { color: var(--accent); }
+
+  /* Filter buttons */
+  .filters { display: flex; gap: 6px; margin: 16px 0 12px; flex-wrap: wrap; }
+  .filter {
+    background: var(--bg-2); border: 1px solid var(--line); color: var(--muted);
+    padding: 4px 10px; border-radius: 4px;
+    font: 11px ui-monospace; cursor: pointer;
+  }
+  .filter.active { background: var(--accent); color: #0b0d14; border-color: var(--accent); }
+  .filter:hover { color: var(--text); }
+
+  /* Stats strip */
+  .stats { display: flex; gap: 24px; flex-wrap: wrap; margin: 20px 0 0; }
+  .stat .num { font-size: 24px; font-weight: 700; color: var(--primary); }
+  .stat .lab { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="container">
+    <h1>SDCoreJS Angular Portal — SDLC Agent</h1>
+    <div class="lead">
+      Một AI agent dựng riêng cho Angular backoffice portals build trên <code>@sd-angular/core</code> (Core UI). Đi cùng developer từ ý tưởng → spec → plan → code → test → review → ship. Bilingual VI/EN, mock-first services, signal-based components, 4 layout variants, workflow actions, full audit columns — mọi convention đã cô đặc trong skill set.
+    </div>
+    <div class="meta">
+      <span class="badge ok">✅ 13 track skills</span>
+      <span class="badge ok">✅ 6 cross-track design skills</span>
+      <span class="badge ok">✅ 12 orchestration skills</span>
+      <span class="badge">SDLC SUPERPOWERS-ALIGNED</span>
+      <span class="badge">BILINGUAL VI / EN</span>
+      <span class="badge">CLAUDE CODE NATIVE</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num">7</div><div class="lab">SDLC stages</div></div>
+      <div class="stat"><div class="num">2</div><div class="lab">user-approval gates</div></div>
+      <div class="stat"><div class="num">8</div><div class="lab">mandatory tail-calls</div></div>
+      <div class="stat"><div class="num">4</div><div class="lab">detail layouts</div></div>
+      <div class="stat"><div class="num">100%</div><div class="lab">spec → plan → code → ship</div></div>
+    </div>
+  </div>
+</section>
+
+<main class="container">
+
+<h2>SDLC pipeline</h2>
+<p>Mỗi yêu cầu chạy qua pipeline dưới đây. Design phase là <em>cross-track</em> (cùng skill cho angular / nestjs / nextjs); code-writing là <em>track-specific</em> (riêng angular-portal). Mỗi stage hover để xem skill cụ thể.</p>
+
+<div class="pipeline">
+  <div class="stage">
+    <div class="num">01 • BRAINSTORM</div>
+    <h3>Khám phá ý tưởng</h3>
+    <span class="skill">sdcorejs-brainstorm</span>
+    <p class="desc">Vague idea? Đề xuất 2-3 approach với pros/cons → recommend 1 với reasoning. Skip nếu scope đã rõ.</p>
+  </div>
+  <div class="stage">
+    <div class="num">02 • CLARIFY</div>
+    <h3>Hard-confirm blockers</h3>
+    <span class="skill">sdcorejs-clarify-requirements</span>
+    <p class="desc">Hỏi module / entity / fields / layout / workflow / coverage (TDD vs post-hoc). Block đến khi đủ. Auto-route lại brainstorm nếu scope mơ hồ.</p>
+  </div>
+  <div class="stage">
+    <div class="num">03 • WRITE-SPEC</div>
+    <h3>Author design doc</h3>
+    <span class="skill">sdcorejs-write-spec</span>
+    <p class="desc">Goals, non-goals, architecture, file structure, acceptance criteria, risks. Lưu vào <code>.sdcorejs/docs/angular-portal/*-spec.md</code>.</p>
+  </div>
+  <div class="stage" data-kind="gate">
+    <div class="num">04 • REVIEW-SPEC</div>
+    <h3>User approval</h3>
+    <span class="skill">sdcorejs-review-spec</span>
+    <p class="desc">Self-review checklist → present summary → wait for "OK". Approval fires auto-specs snapshot.</p>
+  </div>
+  <div class="stage">
+    <div class="num">05 • PLAN</div>
+    <h3>Numbered file-by-file</h3>
+    <span class="skill">sdcorejs-plan</span>
+    <p class="desc">Module bootstrap → entity → routes/components → workflow → tests. Verification commands. Glob-check path conflicts.</p>
+  </div>
+  <div class="stage" data-kind="gate">
+    <div class="num">06 • REVIEW-PLAN</div>
+    <h3>User approval (2)</h3>
+    <span class="skill">sdcorejs-review-plan</span>
+    <p class="desc">Self-review → "OK" → auto-plans snapshot → dispatch write-code.</p>
+  </div>
+  <div class="stage">
+    <div class="num">07 • WRITE-CODE</div>
+    <h3>Orchestrator</h3>
+    <span class="skill">angular-portal-write-code</span>
+    <p class="desc">Dispatch sub-skills 10-31 theo plan. Run lint/test sau mỗi phase boundary.</p>
+  </div>
+  <div class="stage">
+    <div class="num">40 • E2E TEST</div>
+    <h3>Happy-path tests</h3>
+    <span class="skill">sdcorejs-testing-e2e-angular-portal</span>
+    <p class="desc">Cypress hoặc Playwright (auto-detect). List render → create → update → workflow flow.</p>
+  </div>
+  <div class="stage">
+    <div class="num">50 • REVIEW-CODE</div>
+    <h3>Convention check</h3>
+    <span class="skill">sdcorejs-review-code-angular-portal</span>
+    <p class="desc">Critical / Important / Minor findings với file:line refs. signals, OnPush, inject(), audit columns, permission codes.</p>
+  </div>
+  <div class="stage">
+    <div class="num">51 • REPAIR-LOOP</div>
+    <h3>Fix + re-verify</h3>
+    <span class="skill">sdcorejs-repair-loop</span>
+    <p class="desc">Verify finding correctness FIRST → categorize (auto/confirm/user) → apply → re-review. Cap 3 iterations.</p>
+  </div>
+  <div class="stage">
+    <div class="num">52 • COMMENT-CODE</div>
+    <h3>ASK gate</h3>
+    <span class="skill">sdcorejs-comment-code</span>
+    <p class="desc">skip / simple / medium / full. Cross-track rules; FULL delegates to <code>angular-portal-write-comments</code>.</p>
+  </div>
+  <div class="stage" data-kind="mandatory">
+    <div class="num">60 • VERIFY-DONE</div>
+    <h3>Acceptance gate</h3>
+    <span class="skill">sdcorejs-verify-before-done</span>
+    <p class="desc">Mỗi acceptance criterion trong spec phải ✅ verified hoặc ⚠️ user-acknowledged defer. Block "done".</p>
+  </div>
+  <div class="stage" data-kind="mandatory">
+    <div class="num">61 • BRANCH-READY</div>
+    <h3>Hygiene sweep</h3>
+    <span class="skill">sdcorejs-branch-ready</span>
+    <p class="desc">Debug logs, secrets, .only/.skip, conflict markers, lint+build+test pass. Inspired by superpowers:finishing-a-development-branch.</p>
+  </div>
+  <div class="stage" data-kind="mandatory">
+    <div class="num">62 • AUTO-DOCS</div>
+    <h3>Session summary</h3>
+    <span class="skill">sdcorejs-auto-docs</span>
+    <p class="desc">Markdown summary tại <code>.sdcorejs/docs/angular-portal/</code>. Next session đọc lại để rebuild context.</p>
+  </div>
+  <div class="stage" data-kind="mandatory">
+    <div class="num">63 • TASK-TRACKER</div>
+    <h3>TODO maintenance</h3>
+    <span class="skill">sdcorejs-auto-task-tracker</span>
+    <p class="desc">Tick `[x]` done tasks, append new từ "Next suggested action" / "Open questions".</p>
+  </div>
+  <div class="stage">
+    <div class="num">64 • MEMORIES</div>
+    <h3>Durable knowledge</h3>
+    <span class="skill">sdcorejs-memories</span>
+    <p class="desc">Conventions, stakeholder constraints, anti-patterns. Write khi user nói "ghi nhớ" hoặc agent detect recurring correction.</p>
+  </div>
+</div>
+
+<h2>Mandatory tail-call chain</h2>
+<p>Sau khi <code>angular-portal-write-code</code> hoàn thành, chain bắt buộc chạy tuần tự (không skip):</p>
+<div class="chain">
+  <span class="step">40-e2e-test</span><span class="arrow">→</span>
+  <span class="step">50-review-code</span><span class="arrow">→</span>
+  <span class="step">repair-loop</span><span class="arrow">→</span>
+  <span class="step">comment-code (ASK)</span><span class="arrow">→</span>
+  <span class="step mandatory">verify-before-done</span><span class="arrow">→</span>
+  <span class="step mandatory">branch-ready</span><span class="arrow">→</span>
+  <span class="step mandatory">auto-docs</span><span class="arrow">→</span>
+  <span class="step mandatory">auto-task-tracker</span><span class="arrow">→</span>
+  <span class="step">memories</span>
+</div>
+
+<h2>Sub-skills under <code>07-write-code</code></h2>
+<div class="filters">
+  <button class="filter active" data-filter="all">All</button>
+  <button class="filter" data-filter="init">Init</button>
+  <button class="filter" data-filter="screen">Screens</button>
+  <button class="filter" data-filter="form">Form / Workflow</button>
+  <button class="filter" data-filter="docs">Docs / FAQ</button>
+</div>
+<div class="skill-grid" id="track-skills">
+  <div class="skill-card" data-cat="init">
+    <div class="name"><span>10-init-portal</span><span class="tag">init</span></div>
+    <div class="desc">Bootstrap brand-new Angular portal từ <code>@sd-angular/core</code> baseline template. App shell, environments (dev/qc/uat/prod), sample module, configurations.</div>
+  </div>
+  <div class="skill-card" data-cat="init">
+    <div class="name"><span>11-init-module</span><span class="tag">init</span></div>
+    <div class="desc">New feature module: configuration token, routes, guards, interceptor, optional permission/upload configs.</div>
+  </div>
+  <div class="skill-card" data-cat="init">
+    <div class="name"><span>12-init-entity</span><span class="tag">init</span></div>
+    <div class="desc">Full CRUD vertical slice: <code>model.ts</code>, <code>mock-data.ts</code> (20-40 rows), <code>service.ts</code> (MockCrudStore), <code>routes.ts</code>, list + detail. Templates ở <code>_refs/templates/</code>.</div>
+  </div>
+  <div class="skill-card" data-cat="screen">
+    <div class="name"><span>20-screen-list</span><span class="tag">screen</span></div>
+    <div class="desc">Table với SdTable, server-side paging, external filters, action buttons, audit columns (4 audit fields), bulk delete.</div>
+  </div>
+  <div class="skill-card" data-cat="screen">
+    <div class="name"><span>21-screen-detail</span><span class="tag">screen</span></div>
+    <div class="desc">Read-only DETAIL state. Component shell shared với 22/23. Render via <code>[viewed]</code> hoặc <code>sd-section-item</code>.</div>
+  </div>
+  <div class="skill-card" data-cat="screen">
+    <div class="name"><span>22-screen-create</span><span class="tag">screen</span></div>
+    <div class="desc">CREATE state, URL <code>/create</code>, empty form, <code>service.create(...)</code>, navigate back to list on success.</div>
+  </div>
+  <div class="skill-card" data-cat="screen">
+    <div class="name"><span>23-screen-update</span><span class="tag">screen</span></div>
+    <div class="desc">UPDATE state, URL <code>/update/:id</code>, prefilled, <code>service.update(id, ...)</code>.</div>
+  </div>
+  <div class="skill-card" data-cat="form">
+    <div class="name"><span>30-reactive-form</span><span class="tag">form</span></div>
+    <div class="desc">Form validation refinement: custom validators, conditional fields, async validators, cross-field rules.</div>
+  </div>
+  <div class="skill-card" data-cat="form">
+    <div class="name"><span>31-workflow-actions</span><span class="tag">workflow</span></div>
+    <div class="desc">Action buttons + side-effects: approve / reject / submit / bulk approve. State-driven AND permission-driven visibility.</div>
+  </div>
+  <div class="skill-card" data-cat="docs">
+    <div class="name"><span>51-write-comments</span><span class="tag">docs</span></div>
+    <div class="desc">FULL-level commenting (Angular-specific): JSDoc trên signals/inject patterns, <code>// why:</code> non-obvious logic, <code>WHY-X.md</code> brief.</div>
+  </div>
+  <div class="skill-card" data-cat="docs">
+    <div class="name"><span>52-faq</span><span class="tag">docs</span></div>
+    <div class="desc">Trả lời câu hỏi convention / troubleshooting AFTER work đã xong (không phải fresh generation).</div>
+  </div>
+</div>
+
+<h2>Try it — example prompts</h2>
+<div class="grid-2">
+  <div class="tryit">
+    <h3>Open-ended idea</h3>
+    <div class="prompt">tôi đang phân vân giữa side-drawer và full-page detail cho entity user, nên dùng cái nào?</div>
+    <div class="arrow">→ Agent picks:</div>
+    <div class="skill-name">sdcorejs-brainstorm</div>
+    <p class="desc" style="margin-top:8px">Detect Angular project, load <code>_refs/angular-portal.md</code> layout matrix, present 2-3 approaches (side-drawer / UnifiedCompact / UnifiedSplit / AdaptiveSplitDetail) với pros/cons, recommend 1.</p>
+  </div>
+  <div class="tryit">
+    <h3>Concrete request</h3>
+    <div class="prompt">thêm entity product vào module catalog với fields code, name, price, category, status</div>
+    <div class="arrow">→ Agent picks:</div>
+    <div class="skill-name">sdcorejs-clarify-requirements</div>
+    <p class="desc" style="margin-top:8px">Skip brainstorm (scope concrete). Ask remaining blockers: detail layout, workflow yes/no, test coverage level, TDD vs post-hoc. Infer field types from semantics. Then route to <code>sdcorejs-write-spec</code>.</p>
+  </div>
+  <div class="tryit">
+    <h3>New portal</h3>
+    <div class="prompt">khởi tạo portal-shop với env dev/qc/uat/prod, sample module catalog</div>
+    <div class="arrow">→ Agent picks:</div>
+    <div class="skill-name">angular-portal-init-portal</div>
+    <p class="desc" style="margin-top:8px">Skip earlier stages (recognized recipe). Generate app shell, environments, configurations, sample module. Use <code>@sd-angular/core</code> baseline template per <code>_refs/core-version.md</code>.</p>
+  </div>
+  <div class="tryit">
+    <h3>Workflow flow</h3>
+    <div class="prompt">thêm approve/reject action cho entity purchase-order với permission CRM_C_PO_APPROVE</div>
+    <div class="arrow">→ Agent picks:</div>
+    <div class="skill-name">angular-portal-workflow-actions</div>
+    <p class="desc" style="margin-top:8px">Wire action buttons (state-driven + permission-driven). Update detail component with side-effects, route guards. Bilingual button labels.</p>
+  </div>
+  <div class="tryit">
+    <h3>Review</h3>
+    <div class="prompt">rà soát module catalog xem có đúng convention không</div>
+    <div class="arrow">→ Agent picks:</div>
+    <div class="skill-name">sdcorejs-review-code-angular-portal</div>
+    <p class="desc" style="margin-top:8px">Output Critical / Important / Minor findings. Each with file:line. Findings then go through <code>sdcorejs-repair-loop</code> (which first VERIFIES each finding is genuine before fixing — inspired by superpowers receiving-code-review).</p>
+  </div>
+  <div class="tryit">
+    <h3>Resume</h3>
+    <div class="prompt">tiếp tục công việc</div>
+    <div class="arrow">→ Agent picks:</div>
+    <div class="skill-name">sdcorejs-recovery</div>
+    <p class="desc" style="margin-top:8px">Glob latest 3 docs + memory frontmatter + git state + task tracker. Produce ≤200-word handoff: what was done last, what's open, next step suggestion.</p>
+  </div>
+</div>
+
+<h2>Core conventions enforced</h2>
+<div class="skill-grid">
+  <div class="conv">
+    <h3>Core UI first</h3>
+    <p>Mọi screen / form / table dùng <code>@sd-angular/core</code> components nếu có (SdTable, SdSection, SdAnchorV2, SdSideDrawer, SdUploadFile…). Custom UI chỉ khi không có equivalent — và phải mark <code>// CUSTOM_UI: &lt;reason&gt;</code> + alert TODO stub.</p>
+  </div>
+  <div class="conv">
+    <h3>Mock-first services</h3>
+    <p>Default <code>MockCrudStore</code> via localStorage cho mọi entity service. 20-40 domain-realistic seed rows (không "Name 1" / "Code 01"). Switch sang <code>BaseService</code> chỉ khi backend contract explicit.</p>
+  </div>
+  <div class="conv">
+    <h3>Signal-first state</h3>
+    <p><code>signal()</code> cho mutable state (loading, entity, tableOption, state machine). <code>computed()</code> cho derived. <code>effect()</code> chỉ cho side-effects. Templates dùng <code>@let</code> hoặc <code>computed</code> nếu signal ≥2 lần.</p>
+  </div>
+  <div class="conv">
+    <h3>inject() not constructor</h3>
+    <p><code>readonly #service = inject(MyService)</code> trên mọi DI. KHÔNG dùng constructor injection. <code>#private</code> prefix cho mọi field nội bộ. <code>changeDetection: ChangeDetectionStrategy.OnPush</code> mặc định.</p>
+  </div>
+  <div class="conv">
+    <h3>4 detail layout variants</h3>
+    <p><strong>side-drawer</strong> cho ≤6 fields, 1 section, no workflow. <strong>UnifiedCompact</strong> cho medium form. <strong>UnifiedSplit</strong> khi cần title context. <strong>AdaptiveSplitDetail</strong> cho workflow heavy + multi-section (DETAIL khác CREATE/UPDATE).</p>
+  </div>
+  <div class="conv">
+    <h3>Permission codes</h3>
+    <p>Module → Entity → Action order. UPPERCASE. <code>data: { permission: 'CRM_PRODUCT_LIST' }</code> trên mọi route. Module guard tự đọc — KHÔNG manual <code>canViewList</code> check trong component.</p>
+  </div>
+  <div class="conv">
+    <h3>4 audit columns</h3>
+    <p>Primary list pages luôn có <code>createdAt</code>, <code>createdBy</code>, <code>updatedAt</code>, <code>updatedBy</code> ở cuối. Type <code>datetime</code> + <code>string</code>, widths 180px. Skip cho sub-tables, lookup entities, dialog tables.</p>
+  </div>
+  <div class="conv">
+    <h3>Bilingual VI/EN</h3>
+    <p>VI request → VI output (full diacritics cho labels/messages). EN → EN. Permission codes + route paths stay English. Error messages bilingual <code>{ vi, en }</code> shape.</p>
+  </div>
+  <div class="conv">
+    <h3>Workflow action visibility</h3>
+    <p>State-driven AND permission-driven. Button "Approve" chỉ show khi <code>state===PENDING</code> AND user có permission APPROVE. Bulk actions on list cũng theo rule này.</p>
+  </div>
+</div>
+
+<h2>Cross-track design phase (shared/sdlc)</h2>
+<p>6 skill design phase áp dụng cho mọi track (Angular / NestJS / NextJS). Mỗi skill detect target ở runtime → load <code>_refs/&lt;track&gt;.md</code> chứa pattern cụ thể.</p>
+<div class="skill-grid">
+  <div class="skill-card"><div class="name"><span>sdcorejs-brainstorm</span><span class="tag">01</span></div><div class="desc">Explore 2-3 approaches; auto-route từ clarify nếu scope mơ hồ. Tham khảo superpowers:brainstorming.</div></div>
+  <div class="skill-card"><div class="name"><span>sdcorejs-clarify-requirements</span><span class="tag">02</span></div><div class="desc">Hard-confirm blockers theo track. Ask TDD vs post-hoc coverage approach. Vagueness gate route ngược lại brainstorm.</div></div>
+  <div class="skill-card"><div class="name"><span>sdcorejs-write-spec</span><span class="tag">03</span></div><div class="desc">Author spec với non-goals, acceptance criteria, file structure. Track-specific section depth.</div></div>
+  <div class="skill-card"><div class="name"><span>sdcorejs-review-spec</span><span class="tag">04</span></div><div class="desc">User-approval gate. Self-review checklist → present summary → wait for OK → fire auto-specs snapshot.</div></div>
+  <div class="skill-card"><div class="name"><span>sdcorejs-plan</span><span class="tag">05</span></div><div class="desc">Numbered file-by-file plan. Glob-check path conflicts. Phase grouping theo <code>_refs/&lt;track&gt;.md</code>. Mirror style từ approved plans cũ.</div></div>
+  <div class="skill-card"><div class="name"><span>sdcorejs-review-plan</span><span class="tag">06</span></div><div class="desc">User-approval gate. Self-review → present phase summary → OK → fire auto-plans → dispatch &lt;track&gt;-write-code.</div></div>
+</div>
+
+<h2>Skill quick search</h2>
+<p>Bạn cần làm gì → skill nào pick:</p>
+<table style="width:100%; border-collapse:collapse; margin-top:12px;">
+<thead><tr style="border-bottom:1px solid var(--line);"><th style="text-align:left; padding:8px; color:var(--muted); font-size:12px; font-weight:600;">User says</th><th style="text-align:left; padding:8px; color:var(--muted); font-size:12px; font-weight:600;">Skill picked</th></tr></thead>
+<tbody style="font-size:13px;">
+<tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 8px;">"khởi tạo portal-shop"</td><td style="padding:6px 8px;"><code>angular-portal-init-portal</code></td></tr>
+<tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 8px;">"tạo module catalog"</td><td style="padding:6px 8px;"><code>angular-portal-init-module</code></td></tr>
+<tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 8px;">"thêm entity product, fields code/name/price"</td><td style="padding:6px 8px;"><code>sdcorejs-clarify-requirements</code> → <code>angular-portal-init-entity</code></td></tr>
+<tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 8px;">"tôi đang phân vân giữa A và B"</td><td style="padding:6px 8px;"><code>sdcorejs-brainstorm</code></td></tr>
+<tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 8px;">"tạo màn list cho user"</td><td style="padding:6px 8px;"><code>angular-portal-screen-list</code></td></tr>
+<tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 8px;">"thêm validator cho form"</td><td style="padding:6px 8px;"><code>angular-portal-reactive-form</code></td></tr>
+<tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 8px;">"approve / reject action cho purchase-order"</td><td style="padding:6px 8px;"><code>angular-portal-workflow-actions</code></td></tr>
+<tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 8px;">"rà soát module catalog"</td><td style="padding:6px 8px;"><code>sdcorejs-review-code-angular-portal</code></td></tr>
+<tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 8px;">"thêm e2e test cho product"</td><td style="padding:6px 8px;"><code>sdcorejs-testing-e2e-angular-portal</code></td></tr>
+<tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 8px;">"tiếp tục công việc"</td><td style="padding:6px 8px;"><code>sdcorejs-recovery</code></td></tr>
+<tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 8px;">"tạo PR"</td><td style="padding:6px 8px;"><code>sdcorejs-pr-create</code></td></tr>
+<tr style="border-bottom:1px solid var(--line);"><td style="padding:6px 8px;">"ready to ship?"</td><td style="padding:6px 8px;"><code>sdcorejs-branch-ready</code></td></tr>
+<tr><td style="padding:6px 8px;">"agent này làm được gì"</td><td style="padding:6px 8px;"><code>angular-portal-onboarding</code></td></tr>
+</tbody>
+</table>
+
+<h2>Superpowers integration</h2>
+<p>Pipeline borrows từ <code>anthropic-skills:superpowers</code> để giữ discipline:</p>
+<div class="skill-grid">
+  <div class="conv"><h3>Brainstorming as MUST</h3><p>Auto-route từ clarify khi scope mơ hồ. Cheap brainstorm > expensive mis-targeted code.</p></div>
+  <div class="conv"><h3>Writing plans</h3><p>Numbered file-by-file plan với verification commands, user-approval gate trước khi code.</p></div>
+  <div class="conv"><h3>TDD option</h3><p>Clarify hỏi <em>post-hoc</em> hay <em>TDD</em>. TDD shifts test bones BEFORE code (validators, workflows, route guards).</p></div>
+  <div class="conv"><h3>Verification before completion</h3><p><code>verify-before-done</code> block "done" cho đến khi mỗi acceptance criterion ✅ verified.</p></div>
+  <div class="conv"><h3>Receiving code review</h3><p><code>repair-loop</code> verify finding correctness trước khi fix (drop stale / mis-scoped / redundant). Không apply mù.</p></div>
+  <div class="conv"><h3>Finishing development branch</h3><p><code>branch-ready</code> sweep debug logs / secrets / focused tests / lint pass trước khi commit.</p></div>
+  <div class="conv"><h3>Subagent-driven development</h3><p><code>parallel-dispatch</code> + <code>subagent-driven-dev</code> cho fan-out ≥3 independent units.</p></div>
+  <div class="conv"><h3>Systematic debugging</h3><p><code>sdcorejs-debug</code> enforce reproduce → isolate → hypothesize → root-cause cho non-trivial bugs.</p></div>
+</div>
+
+</main>
+
+<footer>
+  <p>SDCoreJS SDLC Agent · Angular Portal track · <a href="https://github.com">repo</a> · Built with skills @ <code>skills/tracks/angular-portal/</code>, <code>skills/shared/sdlc/</code>, <code>skills/orchestration/</code></p>
+</footer>
+
+<script>
+  document.querySelectorAll('.filter').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cat = btn.dataset.filter;
+      document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('#track-skills .skill-card').forEach(card => {
+        card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

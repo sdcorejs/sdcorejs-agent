@@ -199,7 +199,7 @@ If D → save report only, do NOT continue. The next session can pick up via `or
 
 ### Step 6 — Save audit artifact (auto-docs writes this)
 
-The audit report goes through `orchestration/context-summarizer` as a special doc type:
+The audit report goes through `orchestration/auto-docs` as a special doc type:
 
 ```
 <target>/.sdcorejs/docs/nextjs/<YYYY-MM-DD-HH-mm>-audit-<site-slug>.md
@@ -257,4 +257,4 @@ Pass these context fields to `02-clarify-requirements` so it knows to skip what'
 - `shared/workflow/code-map` — even more general read-only architecture scan (cross-track); this skill is NextJS-specific and quality-focused
 - `orchestration/recovery` — picks up here if a user resumes mid-sprint
 - Each finding's "Sub-skill to invoke" column points to `10-init-site` through `19-content-quality`
-- `orchestration/context-summarizer` — persists the audit report for future sessions
+- `orchestration/auto-docs` — persists the audit report for future sessions

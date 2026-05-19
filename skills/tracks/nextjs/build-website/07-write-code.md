@@ -1,6 +1,6 @@
 ---
 name: nextjs-build-website-write-code
-description: Use AFTER `06-review-plan` (or the cross-track equivalent) has approved a plan and the user is ready to generate code for a Next.js landing site. Orchestrator skill — dispatches sub-skills `10-init-site`, `11-theme`, `12-pages-and-blocks`, `13-seo`, `14-og-preview`, `15-i18n`, `16-caching`, `17-responsive`, `18-contact-form`, `19-content-quality` based on the confirmed scope. After completion, mandatory hand-off chain: `40-e2e-test` (when written) → `50-review-code` → `orchestration/repair-loop` → `orchestration/comment-code` → `orchestration/verify-before-done` → `orchestration/context-summarizer` → `orchestration/auto-task-tracker`. Triggers - "generate code", "viết code", "sinh code", "go ahead", "proceed with implementation". Bilingual (VI/EN).
+description: Use AFTER `06-review-plan` (or the cross-track equivalent) has approved a plan and the user is ready to generate code for a Next.js landing site. Orchestrator skill — dispatches sub-skills `10-init-site`, `11-theme`, `12-pages-and-blocks`, `13-seo`, `14-og-preview`, `15-i18n`, `16-caching`, `17-responsive`, `18-contact-form`, `19-content-quality` based on the confirmed scope. After completion, mandatory hand-off chain: `40-e2e-test` (when written) → `50-review-code` → `orchestration/repair-loop` → `orchestration/comment-code` → `orchestration/verify-before-done` → `orchestration/auto-docs` → `orchestration/auto-task-tracker`. Triggers - "generate code", "viết code", "sinh code", "go ahead", "proceed with implementation". Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Bash
 ---
 
@@ -88,7 +88,7 @@ orchestration/comment-code ← ASK gate (skip / simple / medium / full); applies
    ↓
 orchestration/verify-before-done ← BLOCK "done" until acceptance criteria from spec are ✅
    ↓
-orchestration/context-summarizer    ← session summary to .sdcorejs/docs/nextjs/
+orchestration/auto-docs    ← session summary to .sdcorejs/docs/nextjs/
 orchestration/auto-task-tracker ← tick done, append new
 orchestration/memories     ← durable knowledge (when applicable)
 ```
@@ -124,4 +124,4 @@ Each tail-call is mandatory (per the cross-track rules in CLAUDE.md / AGENTS.md 
 - Inputs: approved plan from `05-plan` / `06-review-plan` + brainstorm + clarify outputs
 - Sub-skills: `10-init-site` through `18-contact-form` (some in this batch, some in Batch 2)
 - Tail-call chain: see CLAUDE.md workflow chart
-- Parallel execution: `orchestration/dispatcher` + `orchestration/subagent-driven-dev`
+- Parallel execution: `orchestration/parallel-dispatch` + `orchestration/subagent-driven-dev`

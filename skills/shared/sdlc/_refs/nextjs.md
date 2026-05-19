@@ -188,7 +188,7 @@ npx lhci autorun --preset=mobile  # or `lighthouse http://localhost:3000/<route>
 ```
 
 ### Final-step expectations
-Last numbered step references the tail-call chain (40-e2e-test → 50-review-code → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/context-summarizer → orchestration/auto-task-tracker → orchestration/memories). The reviewer checks the chain is implicit, not omitted.
+Last numbered step references the tail-call chain (40-e2e-test → 50-review-code → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories). The reviewer checks the chain is implicit, not omitted.
 
 ### Existing-site improvement variant
 If the user is improving an EXISTING site (came via `08-audit-existing-site`), phases are gap-driven, not greenfield. The plan should be one phase per audit finding, ordered Critical → Important → Minor.

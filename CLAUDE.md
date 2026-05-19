@@ -18,7 +18,7 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 
 Cross-cutting concerns live outside `tracks/`:
 - `skills/shared/sdlc/` — **6 cross-track design-phase skills** (`sdcorejs-brainstorm`, `sdcorejs-clarify-requirements`, `sdcorejs-write-spec`, `sdcorejs-review-spec`, `sdcorejs-plan`, `sdcorejs-review-plan`) plus `_refs/{angular-portal,nestjs,nextjs}.md` for track-specific patterns. Replaces the duplicated per-track design files.
-- `skills/orchestration/` — 11 SDLC plumbing skills (dispatcher, subagent-driven-dev, repair-loop, context-summarizer, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, comment-code)
+- `skills/orchestration/` — 12 SDLC plumbing skills (parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code)
 - `skills/shared/conventions/` — Conventional Commits, changelog, dep-update
 - `skills/shared/workflow/` — env-setup, debug, pr-create, code-map
 - `skills/review/` — code review (per-track), security audit, performance, architecture, accessibility (filled per track where applicable)
@@ -103,14 +103,18 @@ orchestration/comment-code
 orchestration/verify-before-done
   ← MANDATORY acceptance-criteria gate before claiming "done"
   ↓
-orchestration/context-summarizer  ← MANDATORY session summary to <target>/.sdcorejs/docs/<track>/
+orchestration/branch-ready
+  ← branch-hygiene sweep (debug logs, secrets, .only/.skip, lint+build+test pass)
+  ← inspired by superpowers:finishing-a-development-branch
+  ↓
+orchestration/auto-docs  ← MANDATORY session summary to <target>/.sdcorejs/docs/<track>/
 orchestration/auto-task-tracker   ← MANDATORY (immediately after auto-docs) — tick done + append new in <target>/.sdcorejs/tasks/<track>.md
 orchestration/memories            ← durable knowledge (when applicable) to <target>/.sdcorejs/memories/<track>/
 ```
 
 ## Mandatory rules (apply to every track)
 
-1. **Auto-docs is mandatory.** At the end of every code-writing skill invocation, run the track-agnostic `auto-docs` skill at `skills/orchestration/context-summarizer.md`. This writes a session summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (note the leading dot in `.sdcorejs/`). Do NOT write the doc to this `sdcorejs-agent` repo.
+1. **Auto-docs is mandatory.** At the end of every code-writing skill invocation, run the track-agnostic `auto-docs` skill at `skills/orchestration/auto-docs.md`. This writes a session summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (note the leading dot in `.sdcorejs/`). Do NOT write the doc to this `sdcorejs-agent` repo.
 
 2. **Auto-specs / auto-plans are mandatory.** Immediately after `sdcorejs-review-spec` (cross-track) returns explicit user approval, run `skills/orchestration/auto-specs.md` to persist the approved spec snapshot to `<target>/.sdcorejs/specs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. Immediately after `sdcorejs-review-plan` returns explicit user approval, run `skills/orchestration/auto-plans.md` to persist the approved plan snapshot to `<target>/.sdcorejs/plans/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. The next step (`sdcorejs-plan` / `<track>-write-code`) waits for these writes to finish. The corpus lets future `sdcorejs-write-spec` / `sdcorejs-plan` invocations mirror the user's preferred structure and depth.
 
@@ -148,13 +152,14 @@ Loaded by every track at the start of every feature. Each detects the track at r
 
 | Skill | Trigger | Mandatory? |
 | --- | --- | --- |
-| `sdcorejs-verify-before-done` | runs BEFORE auto-docs at end of feature — verifies each acceptance criterion from spec; blocks "done" until ✅ or user-acknowledged defer | ✅ |
+| `sdcorejs-verify-before-done` | runs BEFORE branch-ready at end of feature — verifies each acceptance criterion from spec; blocks "done" until ✅ or user-acknowledged defer | ✅ |
+| `sdcorejs-branch-ready` | runs AFTER verify-before-done, BEFORE auto-docs — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test). Inspired by `superpowers:finishing-a-development-branch` | ✅ |
 | `sdcorejs-auto-docs` | end of every code-writing task — session summary | ✅ |
 | `sdcorejs-auto-specs` | runs IMMEDIATELY after `sdcorejs-review-spec` approval — snapshots to `.sdcorejs/specs/<track>/` so future `sdcorejs-write-spec` can mirror style | ✅ on approval |
 | `sdcorejs-auto-plans` | runs IMMEDIATELY after `sdcorejs-review-plan` approval — snapshots to `.sdcorejs/plans/<track>/` so future `sdcorejs-plan` can mirror style | ✅ on approval |
 | `sdcorejs-auto-task-tracker` | runs IMMEDIATELY after auto-docs — ticks `[x]` done, appends new tasks to `.sdcorejs/tasks/<track>.md` | ✅ |
 | `sdcorejs-memories` | "ghi nhớ", durable knowledge — write to target `.sdcorejs/memories/<track>/` | ✅ on trigger |
-| `sdcorejs-fix-loop` | runs after `review/code/<track>.md` outputs findings — categorize / auto-apply / iterate until Critical+Important resolved | ✅ on findings |
+| `sdcorejs-repair-loop` | runs after `review/code/<track>.md` outputs findings — categorize / auto-apply / iterate until Critical+Important resolved | ✅ on findings |
 | `sdcorejs-comment-code` | ASK gate at the comment phase — skip / simple / medium / full; outcome optional but ASK is mandatory | ✅ ASK |
 | `sdcorejs-parallel-dispatch` | about to fan out 3+ independent tasks — decision gate (should I split?) |  |
 | `sdcorejs-subagent-driven-dev` | after parallel-dispatch says YES — execution discipline: decompose, brief, dispatch, merge |  |

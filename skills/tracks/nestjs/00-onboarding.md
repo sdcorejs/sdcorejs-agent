@@ -66,7 +66,7 @@ Then mandatory tail-call chain:
   3. `orchestration/repair-loop` — apply review findings
   4. `orchestration/comment-code` — ASK gate
   5. `orchestration/verify-before-done` — acceptance criteria gate
-  6. `orchestration/context-summarizer` — session summary
+  6. `orchestration/auto-docs` — session summary
   7. `orchestration/auto-task-tracker` — tick / append
   8. `orchestration/memories` — durable knowledge (when applicable)
 ```

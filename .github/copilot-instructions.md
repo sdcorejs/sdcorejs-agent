@@ -18,7 +18,7 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem. When you (GitHu
 
 Cross-cutting skills live in:
 - `skills/shared/sdlc/` — **6 cross-track design-phase skills** (brainstorm, clarify-requirements, write-spec, review-spec, plan, review-plan) + `_refs/{angular-portal,nextjs,nestjs}.md`
-- `skills/orchestration/` — SDLC plumbing (11 files: dispatcher, subagent-driven-dev, repair-loop, context-summarizer, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, comment-code)
+- `skills/orchestration/` — SDLC plumbing (12 files: parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code)
 - `skills/shared/conventions/` + `shared/workflow/` — commits, changelog, dep-update, debug, env-setup, pr-create, code-map
 - `skills/review/` — code review (per-track), security (cross-track + nestjs), performance (cross-track + per-track), architecture, accessibility
 - `skills/testing/` — philosophy (cross-track) + e2e/integration/unit per-track
@@ -63,8 +63,8 @@ Request
        nestjs:                 nestjs-write-code (SCAFFOLD)
   → testing/e2e/<track>.md → review/code/<track>.md → orchestration/repair-loop (if findings)
   → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full → if full and angular, dispatches angular-portal-write-comments)
-  → orchestration/verify-before-done (MANDATORY acceptance gate)
-  → orchestration/context-summarizer (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) + orchestration/memories (durable knowledge)
+  → orchestration/verify-before-done (MANDATORY acceptance gate) → orchestration/branch-ready (branch-hygiene sweep)
+  → orchestration/auto-docs (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) + orchestration/memories (durable knowledge)
 ```
 
 Each cross-track design skill detects the target track at runtime and loads `skills/shared/sdlc/_refs/<track>.md` for track-specific patterns.
@@ -74,7 +74,7 @@ Sub-skills under `07-write-code` (angular-portal track):
 
 ## Mandatory rules (apply to every track)
 
-1. **Auto-docs is mandatory.** At the end of every code-writing skill invocation, run the track-agnostic `auto-docs` skill at `skills/orchestration/context-summarizer.md`. This writes a session summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (leading dot is required). Do NOT write the doc to this `sdcorejs-agent` repo.
+1. **Auto-docs is mandatory.** At the end of every code-writing skill invocation, run the track-agnostic `auto-docs` skill at `skills/orchestration/auto-docs.md`. This writes a session summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (leading dot is required). Do NOT write the doc to this `sdcorejs-agent` repo.
 
 2. **Auto-specs / auto-plans are mandatory.** Immediately after `sdcorejs-review-spec` returns explicit user approval, run `skills/orchestration/auto-specs.md` to persist the approved spec snapshot to `<target>/.sdcorejs/specs/<track>/`. Immediately after `sdcorejs-review-plan` approval, run `skills/orchestration/auto-plans.md` to persist the approved plan snapshot to `<target>/.sdcorejs/plans/<track>/`. The corpus lets future `sdcorejs-write-spec` / `sdcorejs-plan` mirror the user's confirmed structure.
 
@@ -116,12 +116,13 @@ Cross-track skills — apply to all tracks. Dispatch by `description`; directory
 | Skill | Trigger | Mandatory? |
 | --- | --- | --- |
 | `sdcorejs-verify-before-done` | runs BEFORE auto-docs — verifies acceptance criteria; blocks "done" | ✅ |
+| `sdcorejs-branch-ready` | branch-hygiene sweep AFTER verify-before-done (debug logs, secrets, focused tests, lint+build+test). Inspired by `superpowers:finishing-a-development-branch` | ✅ |
 | `sdcorejs-auto-docs` | end of every code-writing task — session summary | ✅ |
 | `sdcorejs-auto-specs` | IMMEDIATELY after `sdcorejs-review-spec` approval | ✅ on approval |
 | `sdcorejs-auto-plans` | IMMEDIATELY after `sdcorejs-review-plan` approval | ✅ on approval |
 | `sdcorejs-auto-task-tracker` | IMMEDIATELY after auto-docs | ✅ |
 | `sdcorejs-memories` | "ghi nhớ", durable knowledge | ✅ on trigger |
-| `sdcorejs-fix-loop` | after `review/code/<track>.md` outputs findings | ✅ on findings |
+| `sdcorejs-repair-loop` | after `review/code/<track>.md` outputs findings | ✅ on findings |
 | `sdcorejs-comment-code` | ASK gate at comment phase — skip/simple/medium/full | ✅ ASK |
 | `sdcorejs-code-map` | new feature / reuse check — read-only architecture scan |  |
 | `sdcorejs-parallel-dispatch` | fan-out 3+ independent tasks — decision gate |  |

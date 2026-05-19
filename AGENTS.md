@@ -21,7 +21,7 @@ skills/
 │   ├── conventions/      Conventional Commits, changelog, dep-update
 │   └── workflow/         env-setup, debug, pr-create, code-map
 │
-├── orchestration/        SDLC plumbing (11 files): dispatcher, subagent-driven-dev, repair-loop, context-summarizer, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, comment-code
+├── orchestration/        SDLC plumbing (12 files): parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code
 │
 ├── review/
 │   ├── code/             per-track code review (angular-portal.md, nestjs.md, nextjs.md)
@@ -74,8 +74,8 @@ Request
        nestjs:                 nestjs-write-code (SCAFFOLD — plan-walker until sub-skills ship)
   → testing/e2e/<track>.md → review/code/<track>.md → orchestration/repair-loop (if findings)
   → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full → if full and angular, dispatches angular-portal-write-comments)
-  → orchestration/verify-before-done (MANDATORY acceptance gate)
-  → orchestration/context-summarizer (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) → orchestration/memories (when durable knowledge surfaces)
+  → orchestration/verify-before-done (MANDATORY acceptance gate) → orchestration/branch-ready (branch-hygiene sweep)
+  → orchestration/auto-docs (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) → orchestration/memories (when durable knowledge surfaces)
 ```
 
 **Design phase is cross-track** (`skills/shared/sdlc/`). Each skill detects the target track from the project and loads `_refs/<track>.md` for track-specific patterns (industry table for nextjs, layout matrix for angular-portal, persistence/transaction matrix for nestjs).
@@ -87,7 +87,7 @@ For the angular-portal track, sub-skills under `07-write-code`:
 
 To avoid drift, the source of truth for these rules is `CLAUDE.md`. Summary:
 
-1. **Auto-docs is mandatory** — at the end of every code-writing skill invocation, the track-agnostic `skills/orchestration/context-summarizer.md` writes a summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (note the leading dot). Never to this `sdcorejs-agent` repo.
+1. **Auto-docs is mandatory** — at the end of every code-writing skill invocation, the track-agnostic `skills/orchestration/auto-docs.md` writes a summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (note the leading dot). Never to this `sdcorejs-agent` repo.
 
 2. **Auto-specs / auto-plans are mandatory** — immediately after `sdcorejs-review-spec` approval, `skills/orchestration/auto-specs.md` writes the approved spec to `<target>/.sdcorejs/specs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. Immediately after `sdcorejs-review-plan` approval, `skills/orchestration/auto-plans.md` writes the approved plan to `<target>/.sdcorejs/plans/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. These corpuses let future `sdcorejs-write-spec` / `sdcorejs-plan` mirror the user's confirmed style.
 
@@ -123,12 +123,13 @@ Cross-track skills — apply to angular-portal, nestjs, nextjs alike. Dispatch i
 | Skill | Trigger | Mandatory? |
 | --- | --- | --- |
 | `sdcorejs-verify-before-done` | runs BEFORE auto-docs — verifies acceptance criteria; blocks "done" | ✅ |
+| `sdcorejs-branch-ready` | branch-hygiene sweep AFTER verify-before-done (debug logs, secrets, focused tests, lint+build+test). Inspired by `superpowers:finishing-a-development-branch` | ✅ |
 | `sdcorejs-auto-docs` | end of every code-writing task — session summary | ✅ |
 | `sdcorejs-auto-specs` | IMMEDIATELY after `sdcorejs-review-spec` approval | ✅ on approval |
 | `sdcorejs-auto-plans` | IMMEDIATELY after `sdcorejs-review-plan` approval | ✅ on approval |
 | `sdcorejs-auto-task-tracker` | IMMEDIATELY after auto-docs | ✅ |
 | `sdcorejs-memories` | "ghi nhớ", durable knowledge | ✅ on trigger |
-| `sdcorejs-fix-loop` | after `review/code/<track>.md` outputs findings | ✅ on findings |
+| `sdcorejs-repair-loop` | after `review/code/<track>.md` outputs findings | ✅ on findings |
 | `sdcorejs-comment-code` | ASK gate at comment phase — skip/simple/medium/full | ✅ ASK |
 | `sdcorejs-code-map` | new feature / reuse check — read-only architecture scan |  |
 | `sdcorejs-parallel-dispatch` | fan-out 3+ independent tasks — decision gate |  |

@@ -47,7 +47,7 @@ Request: "tạo landing page cho X"         │   Request: "audit site này", "i
   ↓
 orchestration/comment-code (ASK gate) → orchestration/verify-before-done (acceptance gate)
   ↓
-orchestration/context-summarizer → orchestration/auto-task-tracker → orchestration/memories
+orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories
 ```
 
 ## When to invoke each skill directly
@@ -98,7 +98,7 @@ These come from `skills/orchestration/`, `skills/shared/`, `skills/review/`, `sk
 - **`sdcorejs-auto-task-tracker`** — living TODO per track
 - **`sdcorejs-memories`** — durable knowledge
 - **`sdcorejs-verify-before-done`** — acceptance gate before "done"
-- **`sdcorejs-fix-loop`** — after `50-review-code` findings
+- **`sdcorejs-repair-loop`** — after `50-review-code` findings
 - **`sdcorejs-comment-code`** — ASK gate at comment phase
 - **`sdcorejs-commit`** — Conventional Commits
 - **`sdcorejs-debug`** — when something breaks

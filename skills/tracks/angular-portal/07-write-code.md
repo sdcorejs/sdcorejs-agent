@@ -1,6 +1,6 @@
 ---
 name: angular-portal-write-code
-description: Use when the user has confirmed the plan via 06-review-plan (which was authored by 05-plan) and is ready to generate Angular-portal code. Orchestrator skill - dispatches sub-skills 10-init-portal, 11-init-module, 12-init-entity, 20-screen-list, 21-screen-detail, 22-screen-create, 23-screen-update, 30-reactive-form, 31-workflow-actions based on the confirmed scope. After completion, mandatory hand-off chain - 40-e2e-test → 50-review-code → orchestration/repair-loop → orchestration/comment-code (ASK gate; if level=full → 51-write-comments) → orchestration/verify-before-done → orchestration/context-summarizer → orchestration/auto-task-tracker → orchestration/memories (when applicable). Triggers - "generate code", "viết code", "sinh code đi", "go ahead", "proceed with implementation". Bilingual (VI/EN).
+description: Use when the user has confirmed the plan via 06-review-plan (which was authored by 05-plan) and is ready to generate Angular-portal code. Orchestrator skill - dispatches sub-skills 10-init-portal, 11-init-module, 12-init-entity, 20-screen-list, 21-screen-detail, 22-screen-create, 23-screen-update, 30-reactive-form, 31-workflow-actions based on the confirmed scope. After completion, mandatory hand-off chain - 40-e2e-test → 50-review-code → orchestration/repair-loop → orchestration/comment-code (ASK gate; if level=full → 51-write-comments) → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Triggers - "generate code", "viết code", "sinh code đi", "go ahead", "proceed with implementation". Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -37,7 +37,7 @@ Execution order: portal → module → entity → screens → form refinement �
 3. `orchestration/repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
 4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full); applies the chosen level inline. If level=full, delegates to `51-write-comments` for the Angular-specific JSDoc / inline / `WHY-X.md` set
 5. `orchestration/verify-before-done` — BLOCK "done" until acceptance criteria from the spec are ✅ verified or ⚠️ explicitly deferred
-6. `orchestration/context-summarizer` — session summary written to `<target>/.sdcorejs/docs/angular-portal/`
+6. `orchestration/auto-docs` — session summary written to `<target>/.sdcorejs/docs/angular-portal/`
 7. `orchestration/auto-task-tracker` — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
 8. `orchestration/memories` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 

@@ -146,7 +146,7 @@ Single table, sorted by status:
 🟡 **NOT DONE** — 1 failed criterion (#3), 1 issue flagged (#5), 1 manual pending (#6)
 
 ### Next actions
-- #3: `update()` in `product.service.ts` line 47 — investigate and fix (loop via `sdcorejs-fix-loop`)
+- #3: `update()` in `product.service.ts` line 47 — investigate and fix (loop via `sdcorejs-repair-loop`)
 - #5: add diacritics to 2 labels in `detail.component.html`
 - #4: skipped because no E2E framework — confirm with user that manual check is enough
 - #6: manual — user verify
@@ -163,7 +163,7 @@ The user's defer/won't-fix acknowledgment goes into the auto-docs entry under "O
 ### 6. Hand off
 After the report + user direction:
 - If ALL ✅ + no manual deferred → invoke `sdcorejs-auto-docs` with "Status: done", then `sdcorejs-commit`
-- If partial → invoke `sdcorejs-fix-loop` with the failed criteria as the findings list
+- If partial → invoke `sdcorejs-repair-loop` with the failed criteria as the findings list
 - If user defers → invoke `sdcorejs-auto-docs` with "Status: partial — see Open questions", do NOT auto-commit
 
 ## Examples
@@ -229,7 +229,7 @@ No spec found (small bug fix, no .sdcorejs/docs/<track>/*-spec.md)
 - **CI substitution**: trusting a green PR check as proof — CI runs an older commit OR didn't run the right subset
 
 ## Cross-references
-- `orchestration/context-summarizer` — runs AFTER this skill; this skill blocks auto-docs from claiming "done" prematurely
+- `orchestration/auto-docs` — runs AFTER this skill; this skill blocks auto-docs from claiming "done" prematurely
 - `orchestration/repair-loop` — invoked when this skill finds failed criteria
 - `orchestration/auto-task-tracker` — open criteria flow into the living TODO until resolved
 - `03-write-spec.md` (track-specific) — defines the Acceptance Criteria section format this skill reads

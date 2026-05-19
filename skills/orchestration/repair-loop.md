@@ -1,6 +1,6 @@
 ---
-name: sdcorejs-fix-loop
-description: Use after `50-review-code` (or any code review) produces a findings list with Critical / Important / Minor items. Applies fixes systematically, re-runs the relevant review check, and iterates until Critical + Important are resolved (or explicitly deferred by the user). Triggers - "fix các finding", "apply review findings", "sửa các lỗi review", "fix critical issues", or automatic invocation after `50-review-code` outputs findings. Applies to angular-portal, nestjs, nextjs.
+name: sdcorejs-repair-loop
+description: Use after `50-review-code` (or any code review) produces a findings list with Critical / Important / Minor items. First VERIFIES each finding is genuine (rejecting reviewer misunderstandings before any code change), then applies fixes systematically, re-runs the relevant review check, and iterates until Critical + Important are resolved (or explicitly deferred). Triggers - "fix các finding", "apply review findings", "sửa các lỗi review", "fix critical issues", or automatic invocation after `50-review-code` outputs findings. Applies to angular-portal, nestjs, nextjs.
 allowed-tools: Read, Edit, Write, Bash, Grep
 ---
 
@@ -25,6 +25,42 @@ Do NOT invoke for:
 - Source can be: chat message, doc file in `.sdcorejs/docs/<track>/`, or stdout from a linter / test runner
 
 ## Workflow
+
+### 0. Verify each finding is genuine (BEFORE categorizing)
+
+A review tool — automated or human — is faster than careful. Some findings will be reviewer misunderstandings of context the code already handles correctly. Applying those fixes is worse than ignoring them: you change correct code, the convention drifts, and the original intent is lost.
+
+For each finding, take 30 seconds to verify it BEFORE touching anything. This step is borrowed from `superpowers:receiving-code-review` — technical rigor over performative agreement.
+
+Run this 3-question check per finding:
+
+1. **Does the file:line actually contain what the finding describes?**
+   - Read the file. If the snippet doesn't match (file changed since review, wrong line number, wrong file), the finding is stale → drop it.
+2. **Does the convention the finding cites actually apply here?**
+   - Check the relevant skill / `_refs/` file. Conventions have scope ("primary list page", "writable endpoints only", "long-form pages"). If the file is out of scope, the finding is mis-targeted → drop it.
+3. **Does the existing code already satisfy the intent via a different mechanism?**
+   - Example: finding says "missing null check", but the code path has an upstream guard that makes the value impossible-null. The check is redundant noise → drop with a brief rationale.
+
+Mark each finding as one of:
+
+| Status | Meaning | Next |
+|---|---|---|
+| **VALID** | finding is correct, code needs change | proceed to Step 1 categorization |
+| **STALE** | snippet doesn't match the live file (file changed) | drop; note in summary |
+| **MIS-SCOPED** | convention doesn't apply here | drop with 1-line reason in summary |
+| **REDUNDANT** | code already handles it via a different mechanism | drop with reference to the existing mechanism |
+| **UNCLEAR** | can't tell without more context | ASK user, do not auto-drop |
+
+Report rejections to the user in the same summary as the fixes:
+
+> "Verified 18 findings: 14 valid, 2 stale (files moved during refactor), 1 mis-scoped (`audit columns` rule applies to primary list, this is a sub-table), 1 redundant (null check upstream at `service.ts:88`)."
+
+This protects against:
+- Linters that over-trigger on edge cases
+- AI reviewers misreading context
+- Conventions cited outside their scope (e.g. "use OnPush" applied to a host component that intentionally needs default for projection)
+
+Edge case: if MORE than 30% of findings turn out STALE/MIS-SCOPED/REDUNDANT, the review itself is low-signal — surface this to the user and suggest re-running `50-review-code` with refreshed input before continuing.
 
 ### 1. Categorize findings into 3 fix tiers
 

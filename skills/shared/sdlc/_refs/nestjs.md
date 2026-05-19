@@ -150,7 +150,7 @@ Until the `nestjs-write-code` orchestrator ships, the last plan step should call
 3. `orchestration/repair-loop` — apply review findings
 4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full)
 5. `orchestration/verify-before-done` — acceptance criteria gate
-6. `orchestration/context-summarizer` — session summary to `.sdcorejs/docs/nestjs/`
+6. `orchestration/auto-docs` — session summary to `.sdcorejs/docs/nestjs/`
 7. `orchestration/auto-task-tracker` — tick / append tasks
 8. `orchestration/memories` — durable knowledge if applicable
 

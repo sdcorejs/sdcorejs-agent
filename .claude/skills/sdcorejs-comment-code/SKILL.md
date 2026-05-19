@@ -108,20 +108,32 @@ Simple-level comments applied.
 Output report: same shape as simple, plus a count by category (JSDoc / inline / class-header).
 
 ### Level: `full`
-This level defers to the track-specific FULL-comments skill:
-- Angular: `skills/tracks/angular-portal/51-write-comments.md`
-- NestJS: TBD (`skills/nestjs/51-write-comments.md`)
-- NextJS: TBD (`skills/nextjs/51-write-comments.md`)
 
-Behavior:
+`full` does everything `medium` does, plus:
 - Every public method + every class gets JSDoc with `@param` / `@returns` / `@throws`
 - Inline `// why` for any line where intent isn't immediately obvious from name (no per-file cap; the cap is "no redundant comment")
 - `WHY-X.md` companion doc at `<target>/.sdcorejs/docs/<track>/<timestamp>-why-<topic>.md` summarizing the non-obvious design decisions of the module
 - Tests get `// asserts: <invariant>` headers on each `it()` describing what the test guards against
 
-The orchestration: `orchestration/comment-code` confirms level=full → dispatch to `51-write-comments` → return.
+**Dispatch pattern (cross-track design):**
+- The **cross-track rules above** (JSDoc shape, WHY-X.md format, test header convention) are authoritative — DO NOT duplicate them per-track
+- The **per-track FULL skill** adds only the track-specific layer on top:
 
-Output report: file path of the companion doc + summary stats.
+| Track | FULL skill | What the per-track skill adds |
+|---|---|---|
+| angular-portal | `tracks/angular-portal/51-write-comments.md` | JSDoc on `signal()` / `computed()` / `inject()` patterns; comment Core UI lifecycle hook ordering; signal-template invocation rules |
+| nestjs | `tracks/nestjs/51-write-comments.md` *(planned)* | JSDoc on decorators + guard order; TypeORM relation eager/lazy notes; QueryRunner transaction boundaries |
+| nextjs | `tracks/nextjs/51-write-comments.md` *(planned)* | `"use client"` / `"use server"` boundary annotations; `revalidate` window rationale; OG image generation notes |
+
+**Orchestration:**
+1. `comment-code` confirms level=full
+2. Detect target track (same logic as `sdcorejs-brainstorm` Step 0)
+3. Dispatch to the per-track FULL skill IF it exists; the skill consumes the cross-track rules from THIS file as its baseline + applies its track-specific delta
+4. IF the per-track skill is not yet implemented (e.g. NestJS today): apply the cross-track rules from THIS file alone, and flag the gap: "NestJS-specific FULL comments deferred — only cross-track rules applied."
+
+**Note for skill authors:** When adding a NestJS / NextJS per-track FULL skill, KEEP IT SHORT (~80 lines). The base rules live here. The per-track skill only documents the framework-specific JSDoc tags + workflow extras. This prevents the duplication that motivated the cross-track refactor.
+
+Output report: file path of the companion doc + summary stats + which per-track skill was used (or "cross-track baseline only" if not yet shipped).
 
 ## Common rules (all levels except `skip`)
 
@@ -178,7 +190,7 @@ The method ships as-is, no comments added. The agent reports:
 
 ## Cross-references
 - `51-write-comments.md` (angular-portal) — FULL level implementation; this skill dispatches to it
-- `orchestration/context-summarizer` — runs after this skill; the chosen level + count goes into the session summary
+- `orchestration/auto-docs` — runs after this skill; the chosen level + count goes into the session summary
 - `orchestration/verify-before-done` — runs after this skill; comment count is NOT an acceptance criterion (commenting is a styling concern, not feature correctness)
 - `orchestration/repair-loop` — if review surfaces missing-comment findings AND the user picked `skip`, those findings are auto-deferred (the user's choice overrides)
 

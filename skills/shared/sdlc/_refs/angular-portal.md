@@ -124,13 +124,34 @@ Capture:
 
 ## Plan
 
-### Phase grouping
+### Phase grouping — `post-hoc` coverage (default)
 1. **Module bootstrap** (only if new module): configuration, api configuration, guard, module, routes, register in app.routes + main.ts
 2. **Entity model + service + mock**: model.ts, mock-data.ts, service.ts (MockCrudStore), index.ts
 3. **Entity routes + components**: `<entity>.routes.ts`, `pages/list/list.component.ts`, `pages/detail/detail.component.ts`
 4. **Workflow (if enabled)**: workflow actions wiring via `31-workflow-actions`
 5. **Form refinement (if non-trivial)**: custom validators, conditional fields via `30-reactive-form`
 6. **Tests** (matching coverage level): `.routes.spec.ts`, `.list.component.spec.ts`, `.detail.component.spec.ts`
+
+### Phase grouping — `TDD` coverage (when chosen in clarify)
+TDD shifts test bones earlier. The mechanical "Module bootstrap" + "Entity model" phases don't change, but business-logic phases (form, workflow, route guards) get a test-first phase pair:
+
+1. **Module bootstrap** — same as post-hoc
+2. **Entity model + service + mock** — same as post-hoc (these are scaffold; TDD adds little here)
+3. **TDD test bones** (NEW, before any business-logic code): write *failing* tests from each acceptance criterion in the spec. Empty `it()` bodies are OK; what matters is each acceptance criterion has a named test that currently fails. Targets:
+   - `*.routes.spec.ts` — permission guards (test that unauthorized request is blocked)
+   - `*.list.component.spec.ts` — filter behavior, sort, bulk action visibility
+   - `*.detail.component.spec.ts` — state transitions (CREATE / UPDATE / DETAIL), validator triggers, side-effect (e.g. workflow action call)
+4. **Entity routes + components** — implement to make Phase 3 tests pass; verify each `it` flips red → green
+5. **Workflow (if enabled)** — extends Phase 3 with workflow tests, then implements actions
+6. **Form refinement** — same TDD loop for custom validators (validators are easy to TDD — pure functions)
+7. **Tests fill** — fill remaining `*.spec.ts` bodies that weren't covered in Phase 3 (e.g. edge cases beyond acceptance criteria)
+
+The verification command between phases is: `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts` — track the red→green transition. Plan steps include explicit "expect N tests failing" → "expect 0 tests failing" markers at each phase boundary.
+
+**Heuristic for when TDD pays off in Angular-portal**:
+- High pay-off: custom validators, workflow state machines, derived/computed business logic, route guards
+- Moderate pay-off: form field interdependencies (conditional fields, async validators)
+- Low pay-off: list table cell rendering, simple CRUD wiring through MockCrudStore (mostly mechanical)
 
 ### Verification commands
 ```bash
@@ -151,4 +172,4 @@ If layout is `side-drawer`, omit `pages/detail/` and add `components/detail-side
 - `*.detail.component.spec.ts` — form validation + CREATE/UPDATE/DETAIL state switching
 
 ### Final-step expectations
-The last numbered step should reference the mandatory tail-call chain (40-e2e-test → 50-review-code → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/context-summarizer → orchestration/auto-task-tracker → orchestration/memories). The reviewer of the plan checks that this chain is implicit, not omitted.
+The last numbered step should reference the mandatory tail-call chain (40-e2e-test → 50-review-code → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories). The reviewer of the plan checks that this chain is implicit, not omitted.
