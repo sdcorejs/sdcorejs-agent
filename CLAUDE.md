@@ -181,6 +181,7 @@ Loaded by every track at the start of every feature. Each detects the track at r
 ## Reference docs (load on demand only — do not preload)
 
 - `skills/shared/sdlc/_refs/{angular-portal,nextjs,nestjs}.md` — cross-track design-phase patterns per track (loaded by `sdcorejs-brainstorm` / `sdcorejs-clarify-requirements` / `sdcorejs-write-spec` / `sdcorejs-plan` at Step 0-1)
+- `skills/tracks/angular-portal/_refs/architecture-principles.md` — 16 WHY-principles governing generated Angular portal code (feature-first, signal-first, no cross-module imports, 4 canonical layouts, mock-first, …). Load when explaining decisions or reviewing deviations.
 - `skills/tracks/angular-portal/_refs/core-version.md` — pinned `@sd-angular/core` version
 - `skills/tracks/angular-portal/_refs/sd-angular-core-catalog.md` — Core UI components inventory
 - `skills/tracks/angular-portal/_refs/entity-field-types.md` — field type → form control mapping

@@ -100,9 +100,11 @@ You don't need to memorize skill names. Just describe what you want — the agen
 
 ### 5. Reference docs (loaded on demand)
 The agent only reads these when relevant — don't load upfront:
+- [`_refs/architecture-principles.md`](./_refs/architecture-principles.md) — **the WHY**: 16 principles governing what generated code looks like (feature-first, signal-first, no cross-module imports, OnPush default, 4 canonical layouts, mock-first, …). Load when explaining a decision, reviewing a deviation, or onboarding a new contributor.
 - [`_refs/core-version.md`](./_refs/core-version.md) — pinned `@sd-angular/core` version
 - [`_refs/sd-angular-core-catalog.md`](./_refs/sd-angular-core-catalog.md) — Core UI components and patterns
 - [`_refs/entity-field-types.md`](./_refs/entity-field-types.md) — field type → form control mapping
+- [`_refs/templates/entity-{skeleton,tests,example-product}.md`](./_refs/templates/) — canonical code templates emitted by `12-init-entity`
 
 ### 6. What to do next
 - **New project**: invoke `sdcorejs-clarify-requirements` (cross-track) to define portal name + environments + first module — or `sdcorejs-brainstorm` first if scope is still open-ended.

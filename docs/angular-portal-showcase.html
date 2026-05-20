@@ -406,6 +406,83 @@
   </div>
 </div>
 
+<h2>Architecture principles</h2>
+<p>16 nguyên tắc cấp cao quyết định <em>code thật</em> mà các skill sinh ra. Source of truth tại <a href="../skills/tracks/angular-portal/_refs/architecture-principles.md"><code>skills/tracks/angular-portal/_refs/architecture-principles.md</code></a>. Tóm tắt 6 nguyên tắc chính bên dưới — đọc full file cho 16 principles + anti-principles.</p>
+<div class="skill-grid">
+  <div class="conv">
+    <h3>1. Feature-first folder structure</h3>
+    <p><code>src/libs/&lt;module&gt;/features/&lt;entity&gt;/</code> — xoá feature = xoá 1 folder. Bug trong product = grep 1 folder. Không có module-by-type kiểu <code>controllers/</code>, <code>services/</code>, <code>views/</code>.</p>
+  </div>
+  <div class="conv">
+    <h3>3. No cross-module imports (killer rule)</h3>
+    <p>Module A KHÔNG import từ Module B. Cả 2 cùng import từ <code>@sd-angular/core</code> hoặc <code>src/shared/</code>. Enforced bởi <code>eslint-plugin-boundaries</code> + review flag <strong>Critical</strong> violation.</p>
+  </div>
+  <div class="conv">
+    <h3>4. UI dumb, services own logic</h3>
+    <p>Component: wire input → call service, display state, navigate. Service: business rules, derived data, caching. Method &gt;50 dòng trong service = split. Method &gt;15 dòng trong component = push xuống service.</p>
+  </div>
+  <div class="conv">
+    <h3>5. Signal-first, RxJS chỉ ở boundary</h3>
+    <p><code>signal()</code> mutable / <code>computed()</code> derived / <code>effect()</code> side-effect. RxJS chỉ tại HTTP + form valueChanges + 3rd-party APIs. <code>BehaviorSubject → signal</code>, <code>combineLatest → computed</code>.</p>
+  </div>
+  <div class="conv">
+    <h3>9. Bốn layout chuẩn (không phát minh)</h3>
+    <p><strong>side-drawer</strong> / <strong>UnifiedCompact</strong> / <strong>UnifiedSplit</strong> / <strong>AdaptiveSplitDetail</strong>. Screen không vừa = đang giải sai bài toán. Custom layout phải mark <code>// CUSTOM_LAYOUT: &lt;reason&gt;</code> + flag for design review.</p>
+  </div>
+  <div class="conv">
+    <h3>16. Portal ≠ Agent</h3>
+    <p>Skill set này sinh ra Angular portals. 16 principles này quy định code SINH RA, không phải code của agent. Khi principle đổi → propagate sang skill emit (11/12-init-*) + reviewer (50-review-code) + auto-docs template.</p>
+  </div>
+</div>
+
+<h2>Golden path — anatomy of one entity</h2>
+<p>Một entity hoàn chỉnh (vd <code>product</code> trong module <code>catalog</code>) sinh ra tree dưới đây. Code đầy đủ ở <a href="../skills/tracks/angular-portal/_refs/templates/example-product.md"><code>_refs/templates/example-product.md</code></a>.</p>
+<pre style="background:var(--code); border:1px solid var(--line); border-radius:6px; padding:14px 16px; overflow-x:auto;">src/libs/catalog/
+├── catalog.configuration.ts                        # InjectionToken + interface
+├── catalog.module.ts                                # NgModule (hybrid mode only)
+├── routes.ts                                        # lazy-load children + module-level guard
+├── guards/catalog.guard.ts                          # reads route data.permission
+└── features/product/
+    ├── product.routes.ts                            # data: { permission: 'CRM_PRODUCT_LIST' }
+    ├── pages/list/
+    │   ├── list.component.ts                        # SdTable + external filters + 4 audit cols
+    │   ├── list.component.html
+    │   └── list.component.spec.ts                   # permission + filter + sort tests
+    ├── pages/detail/
+    │   ├── detail.component.ts                      # 3-state CREATE/UPDATE/DETAIL
+    │   ├── detail.component.html
+    │   └── detail.component.spec.ts                 # state transitions + save-flow tests
+    ├── components/
+    │   └── product-select/                          # entity-internal autocomplete
+    └── services/
+        ├── product.model.ts                         # ProductSaveReq + ProductDTO
+        ├── product.mock-data.ts                     # 20-40 domain-realistic seed rows
+        ├── product.service.ts                       # @Injectable({providedIn:'root'}), MockCrudStore
+        └── index.ts                                 # barrel export</pre>
+<p>Mỗi file có 1 trách nhiệm rõ ràng. Convention bất biến: <code>pages/</code> cho route-level, <code>components/</code> cho entity-internal, <code>services/</code> cho data + business logic.</p>
+
+<h2>Testing strategy</h2>
+<div class="grid-2">
+  <div class="conv">
+    <h3>Coverage approach (chốt ở clarify)</h3>
+    <p><strong>post-hoc</strong> (default cho CRUD scaffolding) — code trước, test sau. <strong>TDD</strong> (default cho validators / workflows / route guards) — test bones trước, implement đến khi pass.</p>
+    <p>Borrowed từ <code>superpowers:test-driven-development</code>.</p>
+  </div>
+  <div class="conv">
+    <h3>Coverage levels</h3>
+    <p><strong>minimal</strong>: chỉ <code>should create</code>. <strong>standard</strong> (default): + permission + data visibility + sort + form save-flow. <strong>full</strong>: + edge cases + state transitions.</p>
+    <p>Người dùng chọn ở <code>sdcorejs-clarify-requirements</code>.</p>
+  </div>
+  <div class="conv">
+    <h3>Test pyramid (theo philosophy.md)</h3>
+    <p><strong>Unit</strong>: pure functions / validators / mappers / single-service-method. <strong>Integration</strong>: TestBed + HttpClientTestingModule + 2-3 collaborators. <strong>E2E</strong>: Cypress hoặc Playwright (auto-detect).</p>
+  </div>
+  <div class="conv">
+    <h3>Mocking strategy</h3>
+    <p>Services: <code>MockCrudStore</code> localStorage (production code itself; no extra mocking). Components: TestBed mocks cho <code>Router</code>, <code>ActivatedRoute</code>, services. Templates: <code>TestBed.overrideComponent</code> để isolate khi Core UI deps quá nặng.</p>
+  </div>
+</div>
+
 <h2>Core conventions enforced</h2>
 <div class="skill-grid">
   <div class="conv">
