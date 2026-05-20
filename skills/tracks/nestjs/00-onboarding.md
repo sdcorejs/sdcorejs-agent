@@ -1,6 +1,6 @@
 ---
 name: nestjs-onboarding
-description: Use when the user opens this agent inside a NestJS backend project for the first time, asks "what can you do for my backend", "how do I start a nestjs module", "list skills cho nestjs", "agent này làm được gì cho be", or seems unsure which skill to invoke. Provides an overview of the NestJS SDLC flow (using shared cross-track design-phase skills + per-track review/test), notes which orchestrator pieces are planned vs available, and routes the user to the next concrete step (usually `sdcorejs-clarify-requirements` or `sdcorejs-brainstorm`). Bilingual (VI/EN).
+description: Use when the user opens this agent inside a NestJS backend project for the first time, asks "what can you do for my backend", "how do I start a nestjs module", "list skills cho nestjs", "agent này làm được gì cho be", or seems unsure which skill to invoke. Provides an overview of the NestJS SDLC flow (using shared cross-track design-phase skills + per-track review/test), links to the WHY-rules in `_refs/architecture-principles.md`, notes which orchestrator pieces are planned vs available, and routes the user to the next concrete step (usually `sdcorejs-clarify-requirements` or `sdcorejs-brainstorm`). Bilingual (VI/EN).
 allowed-tools: Read, Glob, Grep
 ---
 

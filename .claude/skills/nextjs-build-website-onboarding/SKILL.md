@@ -1,6 +1,6 @@
 ---
 name: nextjs-build-website-onboarding
-description: Use when the user opens this agent inside a Next.js landing-site project for the first time, asks "what can you do for my website", "how do I start a landing site", "list skills cho website", "tạo landing page", or seems unsure which skill to invoke. Provides overview of the build-website skill pack, the SDLC flow, and routes the user to the next concrete step (usually `01-brainstorm`). Bilingual (VI/EN).
+description: Use when the user opens this agent inside a Next.js landing-site project for the first time, asks "what can you do for my website", "how do I start a landing site", "list skills cho website", "tạo landing page", or seems unsure which skill to invoke. Provides overview of the build-website skill pack, the SDLC flow, links to the WHY-rules in `_refs/architecture-principles.md`, and routes the user to the next concrete step (usually `sdcorejs-brainstorm`). Bilingual (VI/EN).
 allowed-tools: Read, Glob
 ---
 
