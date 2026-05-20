@@ -184,5 +184,5 @@ Tests that hurt expose design problems. Don't suppress the pain — fix the SUT.
 - E2E patterns per stack: `testing/e2e/<stack>.md`
 - Integration patterns per stack: `testing/integration/<stack>.md`
 - Unit patterns per stack: `testing/unit/<stack>.md`
-- TDD discipline: `superpowers:test-driven-development`
+- TDD discipline: `sdcorejs-tdd`
 - Verification: `orchestration/verify-before-done` ensures the right tests ran before "done"
