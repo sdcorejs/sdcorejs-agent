@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-repair-loop
-description: Use after `50-review-code` (or any code review) produces a findings list with Critical / Important / Minor items. First VERIFIES each finding is genuine (rejecting reviewer misunderstandings before any code change), then applies fixes systematically, re-runs the relevant review check, and iterates until Critical + Important are resolved (or explicitly deferred). Triggers - "fix các finding", "apply review findings", "sửa các lỗi review", "fix critical issues", or automatic invocation after `50-review-code` outputs findings. Applies to angular-portal, nestjs, nextjs.
+description: Use after sdcorejs-review-code-<track> (source: review-code) OR sdcorejs-verify-before-done (source: verify-before-done) produces findings. Caller MUST pass source context so the re-verify step runs the correct tool. First VERIFIES each finding is genuine, then fixes systematically, re-runs per-source verification, iterates until Critical + Important are resolved or deferred. Triggers: "fix các finding", "apply review findings", "sửa các lỗi review", "fix critical issues", or auto-invoked after sdcorejs-review-code-<track> or verify-before-done outputs findings. Applies to angular-portal, nestjs, nextjs.
 allowed-tools: Read, Edit, Write, Bash, Grep
 ---
 
@@ -10,7 +10,7 @@ allowed-tools: Read, Edit, Write, Bash, Grep
 A review finding without a fix loop is just a complaint. This skill turns a Critical/Important/Minor list into a closed-loop fix→re-verify→fix cycle until the code is shippable.
 
 ## When invoked
-- After `50-review-code` writes findings (auto-invoked)
+- After `sdcorejs-review-code-<track>` writes findings (auto-invoked)
 - User says "fix các finding", "apply review findings", "sửa các lỗi review", "fix critical issues"
 - A linter / typecheck / test reports findings that match the same shape
 - After a `superpowers:receiving-code-review` cycle, when the parent agent decides to act on feedback
@@ -23,6 +23,20 @@ Do NOT invoke for:
 ## Inputs
 - A list of findings, each with: `severity` (Critical / Important / Minor), `file:line`, `what`, `why`, `suggested fix`
 - Source can be: chat message, doc file in `.sdcorejs/docs/<track>/`, or stdout from a linter / test runner
+- **source** (required): origin of the findings — determines which re-verify command runs in Step 5
+
+  | source value | Meaning | Re-verify command |
+  |---|---|---|
+  | `review-code` | Findings from `sdcorejs-review-code-<track>` | Re-invoke `sdcorejs-review-code-<track>` with same file scope |
+  | `verify-before-done` | Failed acceptance criteria from `sdcorejs-verify-before-done` | Re-invoke `sdcorejs-verify-before-done` for the specific failed criteria |
+  | `linter` | Findings from `npm run lint` / `tsc --noEmit` | `npm run lint && tsc --noEmit` (or `npm run build`) |
+  | `manual` | Human-reported findings | No automated re-verify; report fix status to user |
+
+If `source` is not passed explicitly by the caller, infer it from context before proceeding:
+- Findings came from a `sdcorejs-review-code-<track>` invocation → use `review-code`
+- Findings are failed acceptance criteria from `sdcorejs-verify-before-done` → use `verify-before-done`
+- Findings came from `npm run lint` / `tsc --noEmit` / a CI log → use `linter`
+- Findings were written by a human in chat without a tool origin → use `manual`
 
 ## Workflow
 
@@ -60,7 +74,7 @@ This protects against:
 - AI reviewers misreading context
 - Conventions cited outside their scope (e.g. "use OnPush" applied to a host component that intentionally needs default for projection)
 
-Edge case: if MORE than 30% of findings turn out STALE/MIS-SCOPED/REDUNDANT, the review itself is low-signal — surface this to the user and suggest re-running `50-review-code` with refreshed input before continuing.
+Edge case: if MORE than 30% of findings turn out STALE/MIS-SCOPED/REDUNDANT, the review itself is low-signal — surface this to the user and suggest re-running `sdcorejs-review-code-<track>` with refreshed input before continuing.
 
 ### 1. Categorize findings into 3 fix tiers
 
@@ -103,11 +117,23 @@ Group them, then ask: "Áp dụng tất cả? Hay từng cái?". Default to "t�
 ### 4. Defer user-decision tier
 List them with their file:line and the question. Do NOT touch the code. User answers, then this skill re-runs with the answer applied as a new "confirm-then-apply" finding.
 
-### 5. Re-run the original review (lightweight)
-After tier 1 + tier 2 are applied, re-invoke `50-review-code` (or the originating linter). Look for:
+### 5. Re-run per source
+
+After tier 1 + tier 2 fixes are applied, re-verify using the tool that matches the
+invocation source:
+
+| source | Re-verify action |
+|---|---|
+| `review-code` | Re-invoke `sdcorejs-review-code-<track>` with the same file scope as the original review |
+| `verify-before-done` | Re-invoke `sdcorejs-verify-before-done` (full suite — the skill re-checks all criteria; previously-passing criteria will still pass, so the run is safe and complete) |
+| `linter` | `npm run lint && tsc --noEmit` (or the project's typecheck equivalent) |
+| `manual` | No automated re-verify. Report: "Applied N fixes — please verify manually." and pause for the user |
+
+Look for:
 - **Resolved findings** — same file:line no longer flagged → tick off
 - **New findings introduced by the fix** — flag as regressions; do NOT tick off
-- **Same finding still present** — fix didn't take; investigate (could be cached test, wrong file, syntax error swallowed)
+- **Same finding still present** — fix didn't take; investigate (cached test, wrong file,
+  syntax error swallowed by the build)
 
 ### 6. Iterate
 Loop steps 2–5 until:
@@ -132,14 +158,20 @@ Frame it as:
 > (c) revert toàn bộ batch, thử lại từ đầu"
 
 ### 8. Final commit prep
-Once converged, hand off to `sdcorejs-commit`. Suggested message shape:
+Once converged, hand off to `sdcorejs-commit`. Commit message shape by source:
+
 ```
-fix(scope): apply N review findings (Critical: A, Important: B, Minor: C)
+# source = review-code
+fix(<scope>): apply N review findings (Critical: A, Important: B, Minor: C)
 
-- short description per finding, grouped by file
-- reference to the review doc if applicable
+# source = verify-before-done
+fix(<scope>): resolve N failed acceptance criteria
 
-Refs: .sdcorejs/docs/<track>/<timestamp>-review-...md
+# source = linter
+fix(<scope>): resolve N lint / typecheck errors
+
+# source = manual
+fix(<scope>): apply N manually-reported fixes
 ```
 
 DO NOT commit before final lint + test pass.
@@ -216,7 +248,7 @@ Escalate: "X và Y mutually exclusive — bạn pick approach nào?"
 - **Premature commit**: commit before final re-review passes
 
 ## Cross-references
-- `50-review-code` (track-specific) — produces the findings this skill consumes
+- `sdcorejs-review-code-<track>` (track-specific) — produces the findings this skill consumes
 - `shared/workflow/debug` — for single-bug fix workflow (use when the input isn't a structured findings list)
 - `orchestration/verify-before-done` — final gate AFTER this loop converges
 - `shared/conventions/commit` — handoff destination after convergence

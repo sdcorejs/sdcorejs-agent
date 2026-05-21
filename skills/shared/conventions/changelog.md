@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-changelog
-description: Use when the user asks to generate a CHANGELOG entry, says "viết changelog", "tạo changelog", "update CHANGELOG", "what changed since vX.Y.Z", or is preparing a release. Reads commit history since the last tag, groups commits by Conventional Commits type, suggests a semver bump, and writes a `Keep a Changelog`-formatted entry under `## [Unreleased]` or `## [X.Y.Z]`. Applies to angular-portal, nestjs, nextjs and the sdcorejs-agent repo itself.
+description: Use when the user asks to generate a CHANGELOG entry, says "viết changelog", "tạo changelog", "update CHANGELOG", "what changed since vX.Y.Z", or is preparing a release, or auto-invoked by sdcorejs-ship on release path. Reads commit history since the last tag, groups commits by Conventional Commits type, suggests a semver bump, and writes a `Keep a Changelog`-formatted entry under `## [Unreleased]` or `## [X.Y.Z]`. Applies to angular-portal, nestjs, nextjs and the sdcorejs-agent repo itself.
 allowed-tools: Bash, Read, Edit, Write
 ---
 
@@ -13,6 +13,7 @@ Produce a release-ready CHANGELOG entry without manual scrubbing of `git log`. C
 - "viết changelog", "tạo changelog", "update CHANGELOG"
 - "what changed since vX.Y.Z" / "release notes"
 - Before a tag / release / publish
+- Auto-invoked by `sdcorejs-ship` when release mode is detected (Step 4 of ship chain)
 
 Do NOT invoke if:
 - The repo has no commits since the last entry
@@ -128,7 +129,8 @@ Include in the chat reply (not the file):
 - New version + reason for the bump
 - Number of commits processed / classified / dropped
 - Items needing human review (untyped commits, BREAKING items, security-adjacent fixes)
-- Suggest next step: tag + push + `sdcorejs-pr-create` if applicable
+- Suggest next step: if invoked standalone → tag + push + `sdcorejs-pr-create`; if
+  invoked via `sdcorejs-ship` → return control to the ship orchestrator; it continues at Step 5
 
 ## Examples
 

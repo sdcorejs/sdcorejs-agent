@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-tdd
-description: Use BEFORE writing any implementation code within a write-code task. Enforces Red-Green-Refactor per track — knows Angular TestBed, NestJS Jest, Next.js Jest so you don't re-derive boilerplate each time. Invoked by write-code orchestrators for EACH implementation chunk (service / component / function / handler). Self-contained; no external skill dependency. Triggers: "dùng TDD", "viết test trước", "TDD", "red-green-refactor", auto-invoked by write-code orchestrators. Bilingual (VI/EN).
+description: Use BEFORE writing any implementation code within a write-code task. Enforces Red-Green-Refactor per track — knows Angular TestBed, NestJS Jest, Next.js Jest so you don't re-derive boilerplate each time. Recommended before each implementation chunk (service / component / function / handler) in write-code tasks. Self-contained; no external skill dependency. Triggers: "dùng TDD", "viết test trước", "TDD", "red-green-refactor", auto-invoked by write-code orchestrators. Bilingual (VI/EN).
 allowed-tools: Read, Edit, Write, Bash
 ---
 
@@ -19,8 +19,8 @@ appears — stop. That is rationalization. Delete any such code and start with t
 
 ## When to invoke
 
-### Auto-invoked by write-code orchestrators
-Before implementing each chunk (service / component / function / handler / pipe / guard):
+### Recommended in write-code tasks
+Before implementing each chunk (service / component / function / handler / pipe / guard), invoke this skill:
 1. Write failing test → verify RED
 2. Implement minimal code → verify GREEN
 3. Refactor if needed

@@ -12,7 +12,7 @@ Acceptance criteria passing (the `verify-before-done` job) doesn't mean the bran
 It does NOT modify code. It surfaces issues so the user decides — fix in place, ignore, or defer.
 
 ## When invoked
-- **Automatic**: in the SDLC tail-call chain, right after `orchestration/verify-before-done` returns ✅ and before `sdcorejs-commit`
+- **Automatic**: in the SDLC tail-call chain, right after `orchestration/verify-before-done` returns ✅ and before `sdcorejs-commit`; also invoked as Step 3 by `sdcorejs-ship`
 - **Manual**: user says "branch xong chưa", "ready to ship", "kiểm tra branch", "check before commit", "final gate", "branch hygiene"
 
 Do NOT invoke for:
@@ -122,6 +122,50 @@ If the feature is non-trivial (>2 file changes) but no fresh doc exists for it �
 
 This is a soft check — not all branches need a doc. But it's a useful nudge.
 
+### 10. Specialized review hints ⚪
+
+```bash
+CHANGED=$(
+  { git diff --cached --name-only 2>/dev/null; git diff --name-only 2>/dev/null; } \
+  | sort -u
+)
+CHANGED_COUNT=$(echo "$CHANGED" | grep -c . 2>/dev/null)
+MODULE_COUNT=$(echo "$CHANGED" \
+  | grep -oE 'src/libs/[^/]+/' | sort -u | wc -l | tr -d ' ')
+SECURITY_FILES=$(echo "$CHANGED" \
+  | grep -icE '(auth|guard|permission|token|role|jwt|encrypt|secret)' 2>/dev/null)
+COMPONENT_COUNT=$(echo "$CHANGED" \
+  | grep -cE '\.(component|template)\.(ts|html)$' 2>/dev/null)
+NEW_SCREENS=$(
+  { git diff --cached --name-only --diff-filter=A 2>/dev/null; \
+    git diff --name-only --diff-filter=A 2>/dev/null; } \
+  | grep -ciE '(screen|page|list|detail|create|update)\.component' 2>/dev/null
+)
+TRACK=$(
+  echo "$CHANGED" | grep -q 'src/libs/' && echo angular \
+  || echo "$CHANGED" | grep -qE 'apps/(api|backend|nestjs|server)/' && echo nestjs \
+  || echo other
+)
+```
+
+Emit ⚪ Info suggestions based on thresholds (never block — advisory only):
+
+| Condition | Suggestion |
+|---|---|
+| `$CHANGED_COUNT > 8` AND `$MODULE_COUNT > 2` (both conditions simultaneously) | ⚪ Nhiều modules bị ảnh hưởng — consider `sdcorejs-review-architecture` before merging |
+| `$SECURITY_FILES > 0` | ⚪ Auth/security files trong diff — consider `sdcorejs-review-security-shared` (+ `sdcorejs-review-security-nestjs` for NestJS) |
+| Angular track AND `$COMPONENT_COUNT > 3` | ⚪ Nhiều Angular components — consider `sdcorejs-review-performance-angular-portal` |
+| Angular track AND `$NEW_SCREENS > 0` | ⚪ Screens mới — consider `sdcorejs-review-accessibility-angular-portal` |
+
+If no condition matches: omit this section from the output entirely (don't print "no suggestions").
+
+Example output when conditions match:
+```
+### ⚪ Info — Review suggestions
+- [architecture] 12 files across 4 modules → consider `sdcorejs-review-architecture`
+- [accessibility] 2 new screen components → consider `sdcorejs-review-accessibility-angular-portal`
+```
+
 ## Output format
 
 Match user's language. Output one block:
@@ -201,6 +245,7 @@ If `git worktree list` shows multiple worktrees on the same branch, surface as I
 ## Cross-references
 - `orchestration/verify-before-done` — runs before; acceptance-criteria gate
 - `sdcorejs-commit` — runs after when READY; uses Conventional Commits
+- `sdcorejs-ship` — calls this skill as Step 3 in the ship chain; returns here before proceeding to changelog/commit
 - `sdcorejs-pr-create` — runs after `sdcorejs-commit` when shipping
 - `shared/workflow/debug` — if a blocker is a failing test you don't understand
 - `superpowers:finishing-a-development-branch` — the source-of-inspiration; their version is more general (different ecosystem), this one is SDCoreJS-tailored
