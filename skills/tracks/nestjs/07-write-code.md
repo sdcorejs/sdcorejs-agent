@@ -36,11 +36,16 @@ For each numbered task in the plan, in order:
 
 1. Mark the task as `in_progress` via `TodoWrite` so the user sees what's happening
 2. Read all files the task references (existing entities, base classes, sibling modules)
-3. Apply the change:
+3. **Invoke `sdcorejs-tdd`** — before writing any production code, write the failing test:
+   - Unit test for service logic (business rules, validation, edge cases)
+   - e2e spec for controller endpoints (HTTP verb + expected status + response shape)
+   - Verify RED before touching production files
+4. Apply the change:
    - CREATE → `Write` tool, using conventions from `_refs/nestjs.md`
    - EDIT → `Read` then `Edit` tool
-4. If the task closes a phase boundary in the plan (e.g. "end of module bootstrap"), run the verification command listed in the plan's Verification section
-5. Mark task `completed` and move to next
+5. Verify GREEN — re-run the test(s) from step 3; confirm they pass before moving on
+6. If the task closes a phase boundary in the plan (e.g. "end of module bootstrap"), run the verification command listed in the plan's Verification section
+7. Mark task `completed` and move to next
 
 ### Step 4 — Apply mandatory baseline patterns
 

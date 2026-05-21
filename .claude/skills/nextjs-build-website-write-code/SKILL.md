@@ -104,6 +104,7 @@ Each tail-call is mandatory (per the cross-track rules in CLAUDE.md / AGENTS.md 
 - Use parallel dispatch only when `parallel-dispatch` decision tree allows
 - Run the tail-call chain in full — no shortcuts
 - Report progress after each sub-skill completes (1 line per skill)
+- Invoke `sdcorejs-tdd` within any sub-skill that writes testable logic (custom hooks, server actions, API route handlers, form validation in `18-contact-form`, utility functions) — write failing tests first, then implement
 
 ### MUST NOT
 - Generate code directly in this skill — always delegate
@@ -112,6 +113,7 @@ Each tail-call is mandatory (per the cross-track rules in CLAUDE.md / AGENTS.md 
 - Skip `verify-before-done` because tests passed — acceptance criteria are independent
 - Dispatch sub-skills out of order (e.g. `12-pages` before `11-theme`)
 - Mark "done" before `verify-before-done` returns green
+- Skip `sdcorejs-tdd` for sub-skills that write logic — config files and content may bypass; custom code must not
 
 ## Anti-patterns
 - Generating ALL pages first, THEN applying theme/i18n — leads to massive refactor when content gets externalized

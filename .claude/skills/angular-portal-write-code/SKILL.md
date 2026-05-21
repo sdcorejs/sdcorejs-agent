@@ -97,6 +97,20 @@ Inference rules:
 
 ## Generation Process
 
+### TDD Gate — mandatory before each code-generating step
+
+Before writing any production file in Steps 2, 3, 5, and 6, invoke `sdcorejs-tdd`:
+
+1. Write the failing `.spec.ts` for that chunk first → run test → confirm RED
+2. Generate the production file with minimal passing code → run test → confirm GREEN
+3. Refactor if needed → run test → confirm still GREEN
+
+Applies to: model (validators / type contracts), service (CRUD method contracts), list component (rendering + actions), detail component (form + state transitions).
+
+Skip for: `mock-data` seed rows (pure data, no testable logic) and `routes.ts` (Angular config, no business behaviour).
+
+---
+
 ### Step 1: Build EntitySchema
 
 From user input or semantic inference, construct `EntitySchema` with all field metadata.
@@ -490,6 +504,7 @@ product/
 
 Before returning generated code:
 
+✅ Each production file (model / service / list / detail) has a corresponding `.spec.ts` written RED before the file was created  
 ✅ All imports are correct (no circular dependencies)  
 ✅ All fields from EntitySchema are included  
 ✅ Form validation matches field requirements  
