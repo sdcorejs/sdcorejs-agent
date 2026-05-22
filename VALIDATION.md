@@ -1,6 +1,10 @@
 # Validation Report
 
-> ⚠️ **STALE SNAPSHOT** — This report was generated 2026-05-16 against the pre-cross-track-refactor skill layout. The "Source skill list" below references `skills/angular-portal/` (legacy path) and per-track design skills (`angular-portal-brainstorm`, `angular-portal-clarify-requirements`, etc.) that were consolidated into `skills/shared/sdlc/*` on 2026-05-20 (commit `071aa18`). Current structure: 73 active skills, design phase cross-track via `skills/shared/sdlc/`, code-writing per-track. See `CLAUDE.md` for the live layout.
+> ⚠️ **STALE SNAPSHOT** — This report was generated 2026-05-16 against the pre-cross-track-refactor skill layout. Several rounds of consolidation have happened since:
+> - 2026-05-20 (`071aa18`): per-track design skills moved into `skills/shared/sdlc/*`
+> - 2026-05-22: angular-portal UI skills consolidated 13 → 8 (`22-screen-create`, `23-screen-update`, `30-reactive-form` merged into `21-screen-detail`; `31-workflow-actions` → `31-actions`; `51-write-comments` absorbed into `orchestration/comment-code`; `52-faq` dropped)
+>
+> Current structure: see `CLAUDE.md` for the live layout. The skill-name mapping below is preserved as historical record only.
 
 **Date**: 2026-05-16
 **Repo HEAD**: `0c570f6` (pre-Phase-4 commit)

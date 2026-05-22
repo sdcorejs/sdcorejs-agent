@@ -142,7 +142,7 @@ Pass criteria:
 | Agent doesn't dispatch any skill, just answers generically | Entry-point file (CLAUDE.md / etc.) not found in cwd | Verify `CLAUDE.md` is at target project root |
 | Agent dispatches wrong skill | Description triggers don't match user's phrasing | Edit the skill's `description` frontmatter to add the missing trigger keywords |
 | Auto-docs writes to `sdcorejs-agent` instead of target | Agent confused about cwd | Add explicit reminder in `_shared/auto-docs.md` to use `git rev-parse --show-toplevel` to find target root |
-| `formControlName` keeps getting generated | Agent reading stale memory or example | Verify `21-screen-detail.md` and `30-reactive-form.md` use `[form]+name=` pattern, not `formControlName=` |
+| `formControlName` keeps getting generated | Agent reading stale memory or example | Verify `21-screen-detail.md` + `_refs/templates/screen-detail-component.md` + `_refs/templates/reactive-form-templates.md` all use `[form]+name=` pattern, not `formControlName=` |
 | Skills not visible to Claude Code | `.claude/skills/` not mirrored | Run `bash .claude/sync-skills.sh` (or manually `cp skills/angular-portal/<N>-<name>.md .claude/skills/angular-portal-<name>/SKILL.md`) |
 | Approval gate skipped | Skill body of `04-review-spec` / `06-review-plan` not blocking | Verify their `description` mentions "approval required" and body says "Wait for explicit user approval" |
 
