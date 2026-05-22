@@ -12,7 +12,7 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem. When you (GitHu
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (13 track skills: onboarding, write-code orchestrator, 10/11/12-init-*, 20/21/22/23-screen-*, 30-reactive-form, 31-workflow-actions, 51-write-comments, 52-faq). Design phase + spec/plan moved to cross-track `skills/shared/sdlc/`. |
+| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (8 track skills: onboarding, write-code orchestrator, 10/11/12-init-*, 20-screen-list, 21-screen-detail (CREATE / UPDATE / DETAIL states + form refinement), 31-actions (workflow / bulk / custom side-effects)). Design phase + spec/plan moved to cross-track `skills/shared/sdlc/`. Cross-track `orchestration/comment-code` absorbs the previous per-track `51-write-comments`. |
 | NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (00-onboarding + 07-write-code plan-walker). Sub-skills 10/11/12 planned. Design phase usable via shared/sdlc/; review + testing already in place. |
 | Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (13 track skills: onboarding, write-code orchestrator, audit-existing-site, 10-init-site … 19-content-quality). Design phase moved to cross-track shared/sdlc/. |
 
@@ -62,7 +62,7 @@ Request
        nextjs (build-website): nextjs-build-website-write-code
        nestjs:                 nestjs-write-code (SCAFFOLD)
   → testing/e2e/<track>.md → review/code/<track>.md → orchestration/repair-loop (if findings)
-  → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full → if full and angular, dispatches angular-portal-write-comments)
+  → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (MANDATORY acceptance gate) → orchestration/branch-ready (branch-hygiene sweep)
   → orchestration/auto-docs (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) + orchestration/memories (durable knowledge)
 ```
@@ -70,7 +70,7 @@ Request
 Each cross-track design skill detects the target track at runtime and loads `skills/shared/sdlc/_refs/<track>.md` for track-specific patterns.
 
 Sub-skills under `07-write-code` (angular-portal track):
-`10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `22-screen-create`, `23-screen-update`, `30-reactive-form`, `31-workflow-actions`.
+`10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `31-actions` (workflow / bulk / custom side-effects).
 
 ## Mandatory rules (apply to every track)
 

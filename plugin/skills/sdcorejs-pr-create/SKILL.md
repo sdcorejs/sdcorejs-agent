@@ -109,33 +109,34 @@ Print the PR URL so the user can open it.
 ## Examples
 
 ### Small feature PR (VI)
-Title: `feat(angular-portal): thêm skill 30-reactive-form`
+Title: `feat(angular-portal): broaden 31-actions scope beyond workflow`
 
 Body:
 ```markdown
 ## Summary
-- Bổ sung skill `30-reactive-form` để dispatch khi user yêu cầu refactor sang reactive form.
-- Tách logic ra khỏi `12-init-entity` để giữ skill này ngắn gọn.
+- Rename `31-workflow-actions` → `31-actions`. Broaden the description to cover bulk operations + custom side-effects (export, re-sync, recompute) — workflow is just one shape of action.
+- Update the dispatch table in `07-write-code` + all cross-refs in tests + onboarding.
 
 ## Changes
-- `skills/tracks/angular-portal/30-reactive-form.md`: skill mới (162 dòng)
-- `skills/tracks/angular-portal/12-init-entity.md`: cross-link sang 30-reactive-form
-- `CLAUDE.md`: cập nhật danh sách sub-skills của 07-write-code
+- `skills/tracks/angular-portal/31-actions.md`: renamed + broadened body
+- `skills/tracks/angular-portal/07-write-code.md`: dispatch table + description
+- `skills/tracks/angular-portal/00-onboarding.md`: workflow strip
+- `.claude/skills/`, `plugin/skills/`: mirror regenerated via sync-skills.sh
 
 ## Test plan
-- [ ] Mở Claude Code trong target project, gõ "refactor sang reactive form" → skill 30 được dispatch
-- [ ] Skill body có template đầy đủ (form group, validators, submit handler)
-- [ ] CI green
+- [ ] Open Claude Code in a target project, type "thêm nút xuất Excel" → `angular-portal-actions` dispatches
+- [ ] Type "thêm approve flow" → same skill dispatches
+- [ ] `bash .claude/sync-skills.sh --check` passes
 ```
 
 ### Bugfix PR (EN)
-Title: `fix(angular-portal): correct formControlName usage in 9 examples`
+Title: `fix(angular-portal): correct formControlName usage in form examples`
 
 Body:
 ```markdown
 ## Summary
 - No `@sd-angular/core` form component implements ControlValueAccessor.
-- Replaced 9 `formControlName=` usages with `[form]+name=` pattern across `21-screen-detail.md` and `30-reactive-form.md`.
+- Replaced `formControlName=` usages with `[form]+name=` pattern across `21-screen-detail.md` + the form templates in `_refs/templates/screen-detail-component.md` and `_refs/templates/reactive-form-templates.md`.
 
 ## Test plan
 - [ ] Generate a new entity from a clean target project and verify the rendered form binds correctly

@@ -238,14 +238,11 @@ export const productRoutes: Routes = [
 
 ## Step 5 / Step 6 — List + Detail components
 
-For the list and detail component bodies (`SdTable`, audit columns, action buttons, `CREATE/UPDATE/DETAIL` state machine, stale-id recovery), defer to the screen sub-skills the orchestrator dispatches:
+For the list and detail component bodies (`SdTable`, audit columns, action buttons, `CREATE/UPDATE/DETAIL` state machine, stale-id recovery, form refinement), defer to the screen sub-skills the orchestrator dispatches:
 
 - List page → see [`20-screen-list.md`](../../20-screen-list.md)
-- Detail shell + DETAIL state → see [`21-screen-detail.md`](../../21-screen-detail.md)
-- CREATE state → see [`22-screen-create.md`](../../22-screen-create.md)
-- UPDATE state → see [`23-screen-update.md`](../../23-screen-update.md)
-
-For form refinement (typed validators, conditional fields, FormArray) → see [`30-reactive-form.md`](../../30-reactive-form.md).
+- Detail component (shell + CREATE / UPDATE / DETAIL states + form refinement) → see [`21-screen-detail.md`](../../21-screen-detail.md)
+- Action buttons layered on top (workflow / bulk / custom side-effects) → see [`31-actions.md`](../../31-actions.md)
 
 ## Worked end-to-end — Employee entity
 

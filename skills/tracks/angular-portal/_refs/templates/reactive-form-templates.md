@@ -1,6 +1,6 @@
 # Reactive Form — Code Templates
 
-Code templates referenced from [`30-reactive-form.md`](../../30-reactive-form.md). The skill body owns the validation strategy, signal-first rules, and the "lightweight first, strict second" doctrine; this file holds the literal templates.
+Code templates referenced from [`21-screen-detail.md`](../../21-screen-detail.md) (form refinement section — validators, signal-first rules, FormArray). The skill body owns the validation strategy and the "lightweight first, strict second" doctrine; this file holds the literal templates.
 
 ## Table of contents
 

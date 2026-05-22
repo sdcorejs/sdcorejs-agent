@@ -12,7 +12,7 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (13 track-specific skills: onboarding, write-code orchestrator, init-portal/module/entity, screen-list/detail/create/update, reactive-form, workflow-actions, write-comments, faq). Design-phase + spec/plan/review skills moved to cross-track `skills/shared/sdlc/`. Cross-cutting code-review + e2e-test live in `skills/review/code/angular-portal.md` and `skills/testing/e2e/angular-portal.md`. |
+| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (8 track-specific skills: onboarding, write-code orchestrator, init-portal/module/entity, screen-list, screen-detail (covers CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design-phase + spec/plan/review skills moved to cross-track `skills/shared/sdlc/`. Cross-cutting code-review + e2e-test live in `skills/review/code/angular-portal.md` and `skills/testing/e2e/angular-portal.md`. Cross-track comment-code (`orchestration/comment-code`) absorbs the previous per-track `51-write-comments`. |
 | NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (`00-onboarding` + `07-write-code` plan-walking orchestrator). Sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) 🚧 planned. Design phase fully usable via shared/sdlc/; review + testing skills already in place under `review/code/nestjs.md`, `review/{security,performance}/nestjs.md`, `testing/*/nestjs.md`. |
 | Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (13 track-specific skills: onboarding, write-code orchestrator, audit-existing-site, 10-init-site, 11-theme, 12-pages-and-blocks, 13-seo, 14-og-preview, 15-i18n, 16-caching, 17-responsive, 18-contact-form, 19-content-quality). Design-phase moved to cross-track `skills/shared/sdlc/`. |
 
@@ -79,7 +79,7 @@ shared/sdlc/06-review-plan (sdcorejs-review-plan)
 orchestration/auto-plans   ← MANDATORY on approval — snapshot to <target>/.sdcorejs/plans/<track>/
   ↓
 <track>-write-code (07-write-code, track-specific orchestrator)
-  ← angular-portal:        angular-portal-write-code     → dispatches 10-init-portal | 11-init-module | 12-init-entity | 20/21/22/23-screen-* | 30-reactive-form | 31-workflow-actions
+  ← angular-portal:        angular-portal-write-code     → dispatches 10-init-portal | 11-init-module | 12-init-entity | 20-screen-list | 21-screen-detail (CREATE / UPDATE / DETAIL states + form refinement) | 31-actions (workflow / bulk / custom side-effects)
   ← nextjs (build-website): nextjs-build-website-write-code → dispatches 10-init-site | 11-theme | 12-pages-and-blocks | 13-seo | 14-og-preview | 15-i18n | 16-caching | 17-responsive | 18-contact-form | 19-content-quality
   ← nestjs:                nestjs-write-code              → SCAFFOLD (plan-walking until 10/11/12 sub-skills ship)
   └─ when feature has 3+ independent units, dispatches via
@@ -96,9 +96,9 @@ orchestration/repair-loop
   ↓
 orchestration/comment-code
   ← MANDATORY ASK gate: skip / simple / medium / full
-  ← if level=full and track is angular-portal → angular-portal-write-comments
-  ← if simple|medium → applied inline by orchestration/comment-code itself
-  ← if skip → no comments added
+  ← all levels applied inline by orchestration/comment-code (cross-track baseline +
+    per-track addenda live inside that skill; previous `51-write-comments`
+    was consolidated)
   ↓
 orchestration/verify-before-done
   ← MANDATORY acceptance-criteria gate before claiming "done"

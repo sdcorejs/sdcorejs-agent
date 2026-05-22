@@ -8,7 +8,7 @@
 **Change detection**: `OnPush` (form-render); default (form-builder)
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
-> **NOTE**: Despite the folder name `workflow`, this module does NOT render workflow-status timelines or transition badges. It is a **dynamic form schema system** — a designer (`<sd-form-builder>`) that produces an `SdFormGeneric` JSON, and a runtime renderer (`<sd-form-render>`) that materializes that JSON into a working Angular reactive form. For workflow status / actions UI, look elsewhere (skill `31-workflow-actions.md`) — that flow is implemented at the page level, not via this component.
+> **NOTE**: Despite the folder name `workflow`, this module does NOT render workflow-status timelines or transition badges. It is a **dynamic form schema system** — a designer (`<sd-form-builder>`) that produces an `SdFormGeneric` JSON, and a runtime renderer (`<sd-form-render>`) that materializes that JSON into a working Angular reactive form. For workflow status / actions UI, look elsewhere (skill `31-actions.md`) — that flow is implemented at the page level, not via this component.
 
 ## One-line purpose
 Schema-driven dynamic forms — author once with `<sd-form-builder>` (drag-and-drop designer producing JSON), render anywhere with `<sd-form-render>` (binds the JSON to a runtime `FormGroup` with conditional visibility, validation, and FEEL expressions).
@@ -204,4 +204,4 @@ The builder already includes a live `<sd-form-render>` toggle (`isPreview`). Use
 - `SD_WORKFLOW_CONFIGURATION` — required injection token for the renderer
 - `<sd-modal>` — used by the builder popups (view JSON, configure variables) and by `<sd-feel-expression>`
 - `<sd-table>`, `<sd-upload-file>`, `<sd-input>`, `<sd-select>`, `<sd-textarea>`, etc. — primitive controls that the runtime renderer composes
-- Skill ref `31-workflow-actions.md` — for the orthogonal "workflow actions / status" UX pattern at the page level
+- Skill ref `31-actions.md` — for the orthogonal "workflow actions / status" UX pattern at the page level

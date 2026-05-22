@@ -43,13 +43,13 @@ Request
                   → orchestration/auto-plans  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
   → 07-write-code (sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
   → 40-e2e-test → 50-review-code → orchestration/repair-loop (if findings)
-  → orchestration/comment-code (mandatory ASK: skip/simple/medium/full → if full, dispatches 51-write-comments)
+  → orchestration/comment-code (mandatory ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (mandatory acceptance gate)
   → orchestration/auto-docs (mandatory) → orchestration/auto-task-tracker (mandatory) + orchestration/memories (when durable knowledge surfaces)
 ```
 
 For angular-portal, sub-skills under `07-write-code`:
-`10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `22-screen-create`, `23-screen-update`, `30-reactive-form`, `31-workflow-actions`.
+`10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail` (handles CREATE / UPDATE / DETAIL states + reactive-form refinement), `31-actions` (workflow / bulk / custom side-effects).
 
 ## Mandatory rules
 

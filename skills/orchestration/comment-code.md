@@ -12,7 +12,6 @@ allowed-tools: Read, Edit, Write
 ## When invoked
 - **Auto-invoked** at the comment phase of every code-writing workflow:
   - After `50-review-code` and `orchestration/repair-loop` (if findings existed)
-  - BEFORE `51-write-comments` (Angular) / NestJS/NextJS equivalents
   - BEFORE `orchestration/verify-before-done`
 - User explicitly: "add comments", "viết comment", "thêm comment", "comment lại code", "comment level"
 
@@ -32,7 +31,7 @@ Bạn muốn comment cho code vừa generate ở mức nào?
   (1) skip    — Không thêm comment nào
   (2) simple  — JSDoc 1 dòng cho public methods; // why chỉ ở chỗ thật sự khó hiểu
   (3) medium  — JSDoc cho public + private phức tạp; // why ở logic non-obvious + magic numbers + workarounds
-  (4) full    — JSDoc đầy đủ + class header + WHY-X.md doc cho module lớn (xem `51-write-comments`)
+  (4) full    — JSDoc đầy đủ + class header + WHY-X.md doc cho module lớn
 
 Mặc định gợi ý: simple (giữ file gọn, chỉ comment chỗ cần thật sự).
 ```
@@ -44,7 +43,7 @@ Comment level for the code just generated?
   (1) skip    — No comments added
   (2) simple  — 1-line JSDoc on public methods; // why only where truly non-obvious
   (3) medium  — JSDoc on public + complex private; // why for non-obvious logic, magic numbers, workarounds
-  (4) full    — Full JSDoc + class headers + WHY-X.md companion for major modules (see `51-write-comments`)
+  (4) full    — Full JSDoc + class headers + WHY-X.md companion for major modules
 
 Default suggestion: simple (keep files lean, comment only where it pays off).
 ```
@@ -115,25 +114,106 @@ Output report: same shape as simple, plus a count by category (JSDoc / inline / 
 - `WHY-X.md` companion doc at `<target>/.sdcorejs/docs/<track>/<timestamp>-why-<topic>.md` summarizing the non-obvious design decisions of the module
 - Tests get `// asserts: <invariant>` headers on each `it()` describing what the test guards against
 
-**Dispatch pattern (cross-track design):**
-- The **cross-track rules above** (JSDoc shape, WHY-X.md format, test header convention) are authoritative — DO NOT duplicate them per-track
-- The **per-track FULL skill** adds only the track-specific layer on top:
+#### JSDoc shape (all tracks)
 
-| Track | FULL skill | What the per-track skill adds |
-|---|---|---|
-| angular-portal | `tracks/angular-portal/51-write-comments.md` | JSDoc on `signal()` / `computed()` / `inject()` patterns; comment Core UI lifecycle hook ordering; signal-template invocation rules |
-| nestjs | `tracks/nestjs/51-write-comments.md` *(planned)* | JSDoc on decorators + guard order; TypeORM relation eager/lazy notes; QueryRunner transaction boundaries |
-| nextjs | `tracks/nextjs/51-write-comments.md` *(planned)* | `"use client"` / `"use server"` boundary annotations; `revalidate` window rationale; OG image generation notes |
+Every exported function / method / class gets a JSDoc block with required tags when applicable. Skip `@param` if there are no params.
 
-**Orchestration:**
-1. `comment-code` confirms level=full
-2. Detect target track (same logic as `sdcorejs-brainstorm` Step 0)
-3. Dispatch to the per-track FULL skill IF it exists; the skill consumes the cross-track rules from THIS file as its baseline + applies its track-specific delta
-4. IF the per-track skill is not yet implemented (e.g. NestJS today): apply the cross-track rules from THIS file alone, and flag the gap: "NestJS-specific FULL comments deferred — only cross-track rules applied."
+```typescript
+/**
+ * <one-line summary, ends with period.>
+ *
+ * <optional 1-3 line elaboration covering invariants, side effects, or non-obvious behavior.>
+ *
+ * @param id - the entity id (must be a UUID; throws otherwise)
+ * @returns the persisted DTO including server-assigned audit fields
+ * @throws {EntityNotFoundError} when no record matches `id`
+ */
+async update(id: string, req: ProductSaveReq): Promise<ProductDTO> { ... }
+```
 
-**Note for skill authors:** When adding a NestJS / NextJS per-track FULL skill, KEEP IT SHORT (~80 lines). The base rules live here. The per-track skill only documents the framework-specific JSDoc tags + workflow extras. This prevents the duplication that motivated the cross-track refactor.
+#### Inline `// why` placement
 
-Output report: file path of the companion doc + summary stats + which per-track skill was used (or "cross-track baseline only" if not yet shipped).
+Apply on lines where the WHAT is obvious but the WHY is not. Format: `// why: <one-line reason>` (lower-case after `why:`, no trailing period for short notes; multi-line allowed when explaining a constraint).
+
+Common categories where `// why` earns its keep:
+- Workflow state transitions
+- Race-condition guards
+- Floating-point comparisons / rounding
+- Order-dependent operations (uploads before save, detach observers before destroy)
+- Unusual flag combinations (`replaceUrl: true` after stale-id recovery)
+- Backend quirks (`if (res.status === 204) return null` — backend returns 204 instead of empty array)
+
+#### `WHY-X.md` companion doc
+
+When a flow spans **3+ files** and the WHY can't fit in inline comments, write a brief at `<target>/.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-why-<topic>.md`. 30-80 lines, sections: **Context** → **Decision** → **Consequences** → **Files involved**. For trivial 3-line CRUD, skip — only worth writing for non-obvious cross-file design decisions.
+
+#### Tests
+
+Each `it()` / `test()` gets a `// asserts: <invariant>` header line describing what the test guards against. The header is BELOW the `it('name', () => {` line, not above it.
+
+```typescript
+it('rejects update when id is missing', () => {
+  // asserts: update without id is a programmer error, must throw — never silently create
+  expect(() => service.update(undefined, req)).toThrow();
+});
+```
+
+#### What NOT to comment (at any level — restated here because `full` tempts toward over-commenting)
+
+- ❌ Restating the code: `// loop through items` above `for (const item of items)`
+- ❌ Commented-out code blocks (delete them; git remembers)
+- ❌ TODO without ticket reference (`// TODO: fix later` is noise; `// TODO(JIRA-1234): replace with API call when backend ready` is actionable)
+- ❌ Author name + date headers (git blame gives you that)
+- ❌ Section dividers like `// ---- HELPERS ----` (use real headers in docs files instead)
+- ❌ JSDoc that just restates the signature (`@param id - the id` — worse than nothing)
+- ❌ Auto-translate the user's hand-written comments
+
+#### Track-specific addenda for `full`
+
+The cross-track rules above are authoritative. Each track adds a small framework-specific layer — apply both at level=full.
+
+**angular-portal:**
+- JSDoc on `signal()` / `computed()` / `inject()` patterns — note non-obvious dependency choices and signal write/read scopes
+- Comment Core UI lifecycle hook ordering when it differs from default (e.g. why `ngAfterViewInit` instead of `ngOnInit`); note `OnPush` triggers when relying on signal/input identity
+- Signal template-invocation rule: when a signal is read **2+ times** in a template, leave a `// why: ...` comment on the `computed()` or `@let` that caches it, explaining the perf rationale
+
+**nestjs** *(deferred — cross-track baseline applies; document the gap in the output report)*:
+- JSDoc on decorators + guard order (e.g. `@AuthGuard` before `@HasPermission`)
+- TypeORM relation `eager` / `lazy` annotation rationale
+- `QueryRunner` transaction boundary notes (commit / rollback / connection release)
+
+**nextjs** *(deferred — cross-track baseline applies; document the gap in the output report)*:
+- `"use client"` / `"use server"` boundary annotations when non-obvious
+- `revalidate` window rationale (why 30 min vs ISR-on-demand)
+- OG image generation notes when route uses `@vercel/og` dynamic generation
+
+#### Process at `full` level
+
+1. Read the file(s) the user asked about (or every file generated in the current session)
+2. Identify public APIs (exported functions, classes, methods) → add full JSDoc with `@param` / `@returns` / `@throws`
+3. Identify non-obvious logic → add `// why:` lines
+4. Identify cross-file design decisions spanning 3+ files → propose `WHY-X.md` brief and ask the user to confirm before writing it
+5. Apply the track-specific addendum from the matching sub-section above
+6. Diff what changed — show the user the comment additions only, not the full file
+
+#### Output report at `full` level
+
+```markdown
+## Comments applied (level=full, track=<track>)
+
+### <file path>
+- JSDoc on `<method>` — documents <key behavior>
+- `// why:` on line <N> — explains <constraint>
+
+### Companion doc (if written)
+- Wrote `.sdcorejs/docs/<track>/<timestamp>-why-<topic>.md` covering <files involved>
+
+### Track-specific layer applied
+- <track addendum bullet points that were applied>
+
+### Gaps
+- <track>-specific FULL addendum is deferred — only cross-track baseline applied. [Only when track addendum is marked deferred above.]
+```
 
 ## Common rules (all levels except `skip`)
 
@@ -189,7 +269,6 @@ The method ships as-is, no comments added. The agent reports:
 > "Bỏ qua comment theo lựa chọn của bạn. Hand off `orchestration/verify-before-done`."
 
 ## Cross-references
-- `51-write-comments.md` (angular-portal) — FULL level implementation; this skill dispatches to it
 - `orchestration/auto-docs` — runs after this skill; the chosen level + count goes into the session summary
 - `orchestration/verify-before-done` — runs after this skill; comment count is NOT an acceptance criterion (commenting is a styling concern, not feature correctness)
 - `orchestration/repair-loop` — if review surfaces missing-comment findings AND the user picked `skip`, those findings are auto-deferred (the user's choice overrides)

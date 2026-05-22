@@ -10,7 +10,7 @@ This repo is an SDLC agent for the SDCoreJS stack: Angular portal (Core UI), Nes
 ```
 skills/
 ├── tracks/                       stack-specific code-writing skills
-│   ├── angular-portal/   ✅  13 track skills — 00-onboarding, 07-write-code orchestrator, 10/11/12-init-*, 20/21/22/23-screen-*, 30-reactive-form, 31-workflow-actions, 51-write-comments, 52-faq
+│   ├── angular-portal/   ✅  8 track skills — 00-onboarding, 07-write-code orchestrator, 10/11/12-init-*, 20-screen-list, 21-screen-detail (CREATE/UPDATE/DETAIL states + form refinement), 31-actions (workflow / bulk / custom side-effects)
 │   │   └── _refs/        reference data (core-version, catalog, entity-field-types, templates/) — no frontmatter, load on demand
 │   ├── nestjs/           🟡  scaffold (00-onboarding + 07-write-code plan-walker); 10/11/12 sub-skills planned
 │   └── nextjs/
@@ -73,7 +73,7 @@ Request
        nextjs (build-website): nextjs-build-website-write-code
        nestjs:                 nestjs-write-code (SCAFFOLD — plan-walker until sub-skills ship)
   → testing/e2e/<track>.md → review/code/<track>.md → orchestration/repair-loop (if findings)
-  → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full → if full and angular, dispatches angular-portal-write-comments)
+  → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (MANDATORY acceptance gate) → orchestration/branch-ready (branch-hygiene sweep)
   → orchestration/auto-docs (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) → orchestration/memories (when durable knowledge surfaces)
 ```
@@ -81,7 +81,7 @@ Request
 **Design phase is cross-track** (`skills/shared/sdlc/`). Each skill detects the target track from the project and loads `_refs/<track>.md` for track-specific patterns (industry table for nextjs, layout matrix for angular-portal, persistence/transaction matrix for nestjs).
 
 For the angular-portal track, sub-skills under `07-write-code`:
-`10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `22-screen-create`, `23-screen-update`, `30-reactive-form`, `31-workflow-actions`.
+`10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail` (handles CREATE / UPDATE / DETAIL states + reactive-form refinement), `31-actions` (workflow transitions, bulk operations, custom side-effects).
 
 ## Mandatory rules
 

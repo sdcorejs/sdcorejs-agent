@@ -1,14 +1,16 @@
-# SDCoreJS SDLC Agent
+# SDCoreJS
 
-> One agent. Three stacks. Works in Claude Code, GitHub Copilot, and Codex.
+> An orchestrated SDLC for AI coding agents. Works in Claude Code, GitHub Copilot, and Codex.
 
-This repository is an **SDLC agent** for teams building software on the SDCoreJS stack:
+SDCoreJS turns Claude Code, GitHub Copilot, and Codex into accountable engineers on your stack. Requests flow through **clarify → spec → plan → write code → review → ship**, with user-approval gates between each phase and a documented audit trail.
 
-- **Backoffice portals** in Angular with `@sd-angular/core` (Core UI)
-- **Backend** in NestJS + Postgres
-- **Public sites** in Next.js (SSR)
+Three first-class tracks, each with stack-specific conventions, generators, reviews, and tests:
 
-The agent ships its capabilities as **skills** — markdown files with YAML frontmatter — that supported AI coding tools dispatch automatically when relevant. There is no runtime, no CLI, no compiler. Just skills + entry-point files that each tool reads.
+- **Angular Portal** — backoffice portals built on `@sd-angular/core` (Core UI)
+- **NestJS** — modular APIs with Postgres + DTOs + permissions
+- **Next.js** — public sites with bilingual content, SEO, ISR caching
+
+The system ships as **dispatchable skills** — markdown with YAML frontmatter — that AI coding tools match against intent and execute in order. No runtime, no CLI, no compiler; just the workflow layer your AI coding tool was missing.
 
 ## How it works
 
@@ -41,14 +43,13 @@ Request
 07-write-code              ← orchestrator that dispatches sub-skills (10-31)
 40-e2e-test                ← write E2E tests for what was built
 50-review-code             ← self-review against conventions
-51-write-comments          ← add JSDoc + WHY comments
-52-faq                     ← post-work Q&A
+orchestration/comment-code ← MANDATORY ASK gate: skip / simple / medium / full (all applied inline)
   ↓
-_shared/auto-docs          ← MANDATORY: summary to target project's .sdcorejs/docs/<track>/
-_shared/memories           ← when learning durable knowledge: target project's .sdcorejs/memories/<track>/
+orchestration/auto-docs    ← MANDATORY: summary to target project's .sdcorejs/docs/<track>/
+orchestration/memories     ← when learning durable knowledge: target project's .sdcorejs/memories/<track>/
 ```
 
-Sub-skills under `07-write-code` (Angular Portal): `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `22-screen-create`, `23-screen-update`, `30-reactive-form`, `31-workflow-actions`.
+Sub-skills under `07-write-code` (Angular Portal): `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `31-actions` (workflow / bulk / custom side-effects).
 
 ## Mandatory rules (every track)
 

@@ -15,10 +15,10 @@ This skill is shared across SDCoreJS tracks (`angular-portal`, `nestjs`, `nextjs
 
 ### Auto-trigger at end of code-writing skills
 The agent MUST run this skill (write mode) at the end of every code-writing skill invocation, without prompting. For the angular-portal track that means:
-- `07-write-code` (and the sub-skills it dispatches: `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `22-screen-create`, `23-screen-update`, `30-reactive-form`, `31-workflow-actions`)
+- `07-write-code` (and the sub-skills it dispatches: `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `31-actions`)
 - `40-e2e-test`
 - `50-review-code` (write a "review session" doc summarizing findings, even though no code changed)
-- `51-write-comments`
+- `orchestration/comment-code` when the chosen level is not `skip`
 
 For nestjs and nextjs tracks, the equivalent code-writing skills under each track folder trigger this skill the same way.
 
@@ -81,7 +81,7 @@ The `<kebab-topic>` is a 3-6 word slug derived from what was actually done. Exam
 
 ## Open questions / follow-ups
 - Backend API host not yet provided — service is mock-first; switch to BaseService when API contract lands
-- No workflow yet; if approval flow is needed later, invoke `31-workflow-actions`
+- No workflow yet; if approval flow is needed later, invoke `31-actions`
 
 ## Next suggested action
 - Run `npm run test -- --watch=false --include=src/libs/catalog/features/product/**/*.spec.ts`

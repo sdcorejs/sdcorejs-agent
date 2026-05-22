@@ -12,7 +12,7 @@ Unit tests cover the smallest meaningful piece of logic — a validator, a pipe,
 Read `testing/philosophy.md` first. This skill is the Angular-specific HOW.
 
 ## When invoked
-- After `30-reactive-form` (validators) or pure utility code lands
+- After `21-screen-detail` adds validators / form refinement, or pure utility code lands
 - User says "test validator", "test pipe", "test mapper", "test calculator"
 - Bug fix — write a failing unit test for the bug FIRST, then fix
 
@@ -276,5 +276,5 @@ Coverage target: ≥ 80% line on `services/` + `validators/` + `mappers/` + `pip
 - Principles: `testing/philosophy.md`
 - Integration tests: `testing/integration/angular-portal.md`
 - E2E tests: `testing/e2e/angular-portal.md`
-- Build skills producing testable code: `tracks/angular-portal/30-reactive-form.md` for validators, `12-init-entity.md` for services
+- Build skills producing testable code: `tracks/angular-portal/21-screen-detail.md` for validators / form refinement, `12-init-entity.md` for services
 - Verification: `orchestration/verify-before-done`

@@ -52,10 +52,9 @@ tracks/angular-portal/07-write-code  (angular-portal-write-code)
    ├─ 10-init-portal       (new portal repo)
    ├─ 11-init-module       (new feature module)
    ├─ 12-init-entity       (new entity CRUD pages — templates in _refs/templates/)
-   ├─ 20-screen-list
-   ├─ 21-screen-detail / 22-screen-create / 23-screen-update
-   ├─ 30-reactive-form     (form refinement)
-   └─ 31-workflow-actions  (action buttons, side-effects)
+   ├─ 20-screen-list       (list page)
+   ├─ 21-screen-detail     (detail.component.ts — CREATE / UPDATE / DETAIL + form refinement)
+   └─ 31-actions           (action buttons — workflow / bulk / custom side-effects)
   ↓
 testing/e2e/angular-portal       (sdcorejs-testing-e2e-angular-portal)
   ← happy-path E2E for what was just built
@@ -66,9 +65,7 @@ review/code/angular-portal       (sdcorejs-review-code-angular-portal)
 orchestration/repair-loop        ← apply findings + iterate until Critical+Important resolved
   ↓
 orchestration/comment-code       ← MANDATORY ASK gate: skip / simple / medium / full
-   └─ if level=full → 51-write-comments (Angular-specific FULL implementation)
-   └─ if simple|medium → applied inline by orchestration/comment-code
-   └─ if skip → no comments
+   └─ rules applied inline (cross-track baseline + per-track addenda live in this skill)
   ↓
 orchestration/verify-before-done ← MANDATORY acceptance-criteria gate; blocks "done" until ✅ / deferred
   ↓

@@ -1,6 +1,6 @@
 ---
 name: angular-portal-write-code
-description: Use when the user has confirmed the plan via 06-review-plan (which was authored by 05-plan) and is ready to generate Angular-portal code. Orchestrator skill - dispatches sub-skills 10-init-portal, 11-init-module, 12-init-entity, 20-screen-list, 21-screen-detail, 22-screen-create, 23-screen-update, 30-reactive-form, 31-workflow-actions based on the confirmed scope. After completion, mandatory hand-off chain - 40-e2e-test → 50-review-code → orchestration/repair-loop → orchestration/comment-code (ASK gate; if level=full → 51-write-comments) → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Triggers - "generate code", "viết code", "sinh code đi", "go ahead", "proceed with implementation". Bilingual (VI/EN).
+description: Use when the user has confirmed the plan via 06-review-plan (which was authored by 05-plan) and is ready to generate Angular-portal code. Orchestrator skill - dispatches sub-skills 10-init-portal, 11-init-module, 12-init-entity, 20-screen-list, 21-screen-detail (handles CREATE / UPDATE / DETAIL states + form refinement), 31-actions (workflow / bulk / custom side-effects) based on the confirmed scope. After completion, mandatory hand-off chain - 40-e2e-test → 50-review-code → orchestration/repair-loop → orchestration/comment-code (ASK gate: skip / simple / medium / full — applied inline) → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Triggers - "generate code", "viết code", "sinh code đi", "go ahead", "proceed with implementation". Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -24,24 +24,21 @@ This skill is an orchestrator: it does NOT itself generate every file — it dis
 | New module (`src/libs/<module>/`) | `11-init-module` |
 | New entity with full CRUD (model + service + routes + list + detail) | `12-init-entity` |
 | List page only (entity already exists) | `20-screen-list` |
-| Detail page only (entity already exists) | `21-screen-detail` |
-| Create screen / side-drawer flow | `22-screen-create` |
-| Update screen / side-drawer flow | `23-screen-update` |
-| Refine an existing reactive form (validators, conditional fields, layout) | `30-reactive-form` |
-| Add workflow action buttons (submit / approve / reject / bulk) | `31-workflow-actions` |
+| Detail component — any state (CREATE / UPDATE / DETAIL) or form refinement (validators, FormArray, async validators) | `21-screen-detail` |
+| Action buttons — workflow transitions, bulk operations, custom side-effects (export, re-sync, etc.) | `31-actions` |
 
-Execution order: portal → module → entity → screens → form refinement → workflow actions. If the plan touches multiple items, run them in this order; do not parallelize. After all sub-skills finish, hand off in sequence:
+Execution order: portal → module → entity → screens → actions. If the plan touches multiple items, run them in this order; do not parallelize. After all sub-skills finish, hand off in sequence:
 
 1. `40-e2e-test` (skills/testing/e2e/angular-portal.md) — happy-path tests for what was generated
 2. `50-review-code` (skills/review/code/angular-portal.md) — convention check; outputs Critical / Important / Minor findings
 3. `orchestration/repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
-4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full); applies the chosen level inline. If level=full, delegates to `51-write-comments` for the Angular-specific JSDoc / inline / `WHY-X.md` set
+4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full); applies the chosen level inline. Cross-track baseline + per-track addenda live inside `orchestration/comment-code` itself (no separate `51-write-comments` skill — was consolidated)
 5. `orchestration/verify-before-done` — BLOCK "done" until acceptance criteria from the spec are ✅ verified or ⚠️ explicitly deferred
 6. `orchestration/auto-docs` — session summary written to `<target>/.sdcorejs/docs/angular-portal/`
 7. `orchestration/auto-task-tracker` — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
 8. `orchestration/memories` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 
-Each tail-call is mandatory (per CLAUDE.md). Do NOT skip `verify-before-done` — that's how acceptance criteria silently slip. Do NOT run `51-write-comments` unconditionally — let `comment-code` decide the level first.
+Each tail-call is mandatory (per CLAUDE.md). Do NOT skip `verify-before-done` — that's how acceptance criteria silently slip. Do NOT skip the `orchestration/comment-code` ASK gate (the gate IS the value; auto-defaulting defeats the design).
 
 ## When to Use
 
