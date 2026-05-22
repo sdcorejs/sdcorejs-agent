@@ -6,261 +6,57 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 # Generic List Component Template
 
-## Template for CRUD List Page
+## Purpose
 
-Base on EntitySchema, generates full CRUD list component with SdTable, pagination, delete, toggle isActivated, etc.
+From an `EntitySchema`, generate a full CRUD list component with `SdTable`, server-side paging, bulk delete, optional `isActivated` toggle, and action buttons that route to create/update/detail. Used standalone OR dispatched by `07-write-code` (Step 5).
 
-### Component Template
+## When to use
 
-```typescript
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { SdPageComponent } from '@sd-angular/core/modules';
-import { BaseService } from '@{{ module }}/services';
-import { SdButton, SdTabComponent, SdTabelCellDefDirective, SdTable, SdTableOption, SdTableColumnConfig } from '@sd-angular/core/components';
-import { SdPermissionDirective } from '@sd-angular/core/modules';
-import { SdConfirmService, SdLoadingService, SdNotifyService } from '@sd-angular/core/services';
-import { SdSwitch } from '@sd-angular/core/forms';
-import { {{ entityPascal }}DTO } from '../../services/{{ entityKebab }}.model';
-import { {{ entityPascal }}Service } from '../../services/{{ entityKebab }}.service';
+- Generating a fresh entity's list page (typically after `12-init-entity`)
+- Refining an existing list — adding external filters, score cards, audit columns, custom actions
+- User asks "tạo màn list cho ...", "thêm cột vào table", "trang danh sách", "refine list page"
 
-@Component({
-  selector: '{{ entityKebab }}-list',
-  imports: [
-    SdButton, 
-    SdTable, 
-    SdTabelCellDefDirective, 
-    SdPermissionDirective, 
-    SdSwitch, 
-    SdPageComponent
-  ],
-  template: `
-    <sd-page title="{{ entityLabelPlural }}">
-      <!-- Header with Create Button -->
-      <div class="d-flex align-items-center" headerRight>
-        <sd-button
-          *sdPermission="'{{ permissionCreate }}'"
-          title="Tạo mới"
-          type="fill"
-          prefixIcon="add"
-          size="sm"
-          color="primary"
-          (click)="onCreate()"
-        ></sd-button>
-      </div>
+## Inputs the skill needs
 
-      <!-- Table Container -->
-      <div class="h-full p-8">
-        @if (tableOption) {
-          <sd-table 
-            [option]="tableOption" 
-            #table 
-            autoId="{{ module }}_{{ entity }}"
-          >
-            <!-- Toggle isActivated Column (if boolean field exists) -->
-            <ng-template sdTableCellDef="isActivated" let-item="item">
-              <sd-switch
-                class="d-block text-center"
-                [(model)]="item.isActivated"
-                (sdChange)="onToggleActivation(item)"
-                [disabled]="!item.editable"
-              ></sd-switch>
-            </ng-template>
-          </sd-table>
-        }
-      </div>
-    </sd-page>
-  `,
-})
-@SdTabComponent({
-  component: ListComponent,
-  name: '{{ entityLabel }}',
-  color: 'primary',
-})
-export class ListComponent implements OnInit {
-  @ViewChild(SdTable) table!: SdTable<{{ entityPascal }}DTO>;
+Resolve before generating:
 
-  readonly #router = inject(Router);
-  readonly #notifyService = inject(SdNotifyService);
-  readonly #confirmService = inject(SdConfirmService);
-  readonly #loadingService = inject(SdLoadingService);
-  readonly #baseService = inject(BaseService);
-  readonly #{{ entityCamel }}Service = inject({{ entityPascal }}Service);
+- `module`, `entity`, `entityPascal`, `entityCamel`, `entityKebab`, `entityLabel`, `entityLabelPlural` — from the `EntitySchema`
+- Visible columns: every field with `visibleInList: true`
+- Permission codes: `permissionCreate` / `permissionUpdate` / `permissionDelete` (Module → Entity → Action order)
+- Audit columns presence (4 columns by default for primary list pages — see `12-init-entity.md` MUST DO §audit-columns)
 
-  tableOption!: SdTableOption<{{ entityPascal }}DTO>;
+If any of the above is missing, ask the developer rather than guess.
 
-  ngOnInit(): void {
-    this.initTable();
-  }
+## Template + column patterns
 
-  private initTable(): void {
-    this.tableOption = {
-      key: '{{ module }}-{{ entity }}-list',
-      type: 'server',
-      reload: { visible: true },
-      config: { visible: true },
-      
-      // Paging from API
-      items: async filterRequest => {
-        const pagingRequest = await this.#baseService.convertTableFilter(filterRequest, {
-          columns: this.tableOption.columns,
-          externalFilters: this.tableOption.filter?.externalFilters,
-        });
-        return await this.#{{ entityCamel }}Service.paging(pagingRequest);
-      },
-      
-      // Delete Action
-      selector: {
-        actions: [
-          {
-            icon: 'delete',
-            title: '删除',
-            action: async (items: {{ entityPascal }}DTO[]) => {
-              if (items.length === 0) {
-                this.#notifyService.error('请选择数据');
-                return;
-              }
-              
-              const confirmed = await this.#confirmService.alert({
-                title: '确认删除',
-                body: `确认删除选中的 ${items.length} 项吗？`,
-                type: 'warning'
-              });
-              
-              if (!confirmed) return;
-              
-              try {
-                this.#loadingService.show();
-                const ids = items.map(x => x.id);
-                await this.#{{ entityCamel }}Service.remove(ids);
-                
-                this.#notifyService.success('删除成功');
-                this.table?.reload();
-              } catch (error) {
-                this.#notifyService.error('删除失败');
-              } finally {
-                this.#loadingService.hide();
-              }
-            }
-          }
-        ]
-      },
-      
-      // Table Columns (from schema)
-      columns: [
-        {{ columnsConfig }}
-        {
-          header: '操作',
-          key: 'action',
-          type: 'action',
-          width: '100px',
-          buttons: [
-            {
-              type: 'icon',
-              icon: 'edit',
-              title: '编辑',
-              action: (item: {{ entityPascal }}DTO) => this.onEdit(item)
-            },
-            {
-              type: 'icon',
-              icon: 'detail',
-              title: '详情',
-              action: (item: {{ entityPascal }}DTO) => this.onDetail(item)
-            }
-          ]
-        }
-      ]
-    };
-  }
+The literal `list.component.ts` body and the per-type column entries live in [`_refs/templates/screen-list-component.md`](./_refs/templates/screen-list-component.md):
 
-  onCreate(): void {
-    this.#router.navigate(['create'], { 
-      relativeTo: this.#activatedRoute 
-    });
-  }
+| Need | Section in templates ref |
+|---|---|
+| Full `list.component.ts` template (imports, `@SdTabComponent`, table option, paging, delete action, header buttons, action column, `onToggleActivation`) | [`#full-listcomponentts-template`](./_refs/templates/screen-list-component.md#full-listcomponentts-template) |
+| Per-field column entries to substitute for `{{ columnsConfig }}` (text / date / number-currency / select / boolean+template) | [`#column-configuration-patterns`](./_refs/templates/screen-list-component.md#column-configuration-patterns) |
 
-  onEdit(item: {{ entityPascal }}DTO): void {
-    this.#router.navigate(['update', item.id], { 
-      relativeTo: this.#activatedRoute 
-    });
-  }
+Pick the column pattern by field `type` from the schema. For boolean fields rendered as a toggle switch, the matching `<ng-template sdTableCellDef="...">` is already wired inside the main template.
 
-  onDetail(item: {{ entityPascal }}DTO): void {
-    this.#router.navigate(['detail', item.id], { 
-      relativeTo: this.#activatedRoute 
-    });
-  }
+## Generation rules
 
-  async onToggleActivation(item: {{ entityPascal }}DTO): Promise<void> {
-    try {
-      this.#loadingService.show();
-      await this.#{{ entityCamel }}Service.update(item.id, { isActivated: item.isActivated });
-      this.#notifyService.success('更新成功');
-    } catch (error) {
-      this.#notifyService.error('更新失败');
-      item.isActivated = !item.isActivated; // revert
-    } finally {
-      this.#loadingService.hide();
-    }
-  }
-}
-```
+- Server-side paging is the default (`type: 'server'`). Switch to `'client'` only when the user explicitly asks for an in-memory list AND the dataset is small/static.
+- External filters live in `tableOption.filter.externalFilters`, not as custom controls above the table (see `12-init-entity.md` §external-filters).
+- Audit columns (`createdAt`, `createdBy`, `updatedAt`, `updatedBy`) go at the END of the column array on primary list pages. Skip when the table is embedded, a lookup table, or in a compact drawer.
+- Action column always includes Edit + Detail. Add Delete when the user has bulk delete; the bulk-delete handler in `selector.actions` covers row-level delete via "select then delete".
+- Bind the Create button with `*sdPermission`; do not duplicate the route-level permission guard inside the component.
+- Use `@SdTabComponent` so the list opens as a named tab when the host shell uses the tab router pattern.
 
-### Column Configuration Generation
+## AI generation checklist
 
-For each field in schema with `visibleInList: true`:
-
-```typescript
-// Example for code field:
-{
-  header: 'Mã sản phẩm',
-  key: 'code',
-  type: 'text',
-  width: '120px'
-}
-
-// Example for date field:
-{
-  header: 'Ngày sinh',
-  key: 'birthday',
-  type: 'date',
-  format: 'yyyy-MM-dd'
-}
-
-// Example for decimal field with currency format:
-{
-  header: 'Lương',
-  key: 'salary',
-  type: 'number',
-  format: 'currency'
-}
-
-// Example for select field:
-{
-  header: 'Chức vụ',
-  key: 'role',
-  type: 'select',
-  selectOptions: EMPLOYEE_ROLES
-}
-
-// Example for boolean field:
-{
-  header: 'Kích hoạt',
-  key: 'isActivated',
-  type: 'boolean',
-  cellTemplate: 'isActivated' // => use custom ng-template
-}
-```
-
-### AI Generation Checklist
-
-✅ Import statements based on EntitySchema fields  
-✅ Component decorator with @SdTabComponent  
-✅ Table initialization in ngOnInit  
-✅ Paging call to service.paging()  
-✅ Delete action with confirmation  
-✅ Column array generated from visibleInList fields  
-✅ Action buttons (edit, detail)  
-✅ Toggle isActivated if field exists  
-✅ Navigation to create/update/detail routes  
-✅ Loading/notification service calls  
+- [ ] Imports match the schema (only the form/cell components actually used in the output)
+- [ ] `@SdTabComponent` decorator present with `name: '<entityLabel>'`
+- [ ] `tableOption` initialized in `ngOnInit` (not in field initializer — `inject` may not be ready)
+- [ ] `items: async filterRequest => ...` calls `service.paging(pagingRequest)` after `convertTableFilter`
+- [ ] Bulk delete action with confirm dialog + loading + notify + table reload
+- [ ] Columns array derived from `visibleInList` fields, in schema order, with the right `type` per field
+- [ ] Audit columns appended (unless skip condition applies)
+- [ ] Action column (Edit + Detail) at the end
+- [ ] Toggle `isActivated` template wired when the schema has that field
+- [ ] Navigation via `Router.navigate(['create' | 'update', id | 'detail', id], { relativeTo })`
+- [ ] Loading / notify / confirm services injected via `inject()` (not constructor)
