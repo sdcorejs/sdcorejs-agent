@@ -8,8 +8,9 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
-Single date + time-of-day picker — user picks a calendar date AND an `HH:mm` time in one popup. Wraps `@ng-matero/extensions/datetimepicker` with SDCoreJS label/validators/`viewed` read-only support.
+Single date + time-of-day picker — user picks a calendar date AND an `HH:mm` (optionally `HH:mm:ss`) time in a CDK Overlay popup. Uses `provideDateFnsAdapter` with SDCoreJS label, validators, and `[viewed]` read-only support.
 
 ## When to use
 - Capturing a precise moment (start time of a meeting, scheduled job, posting timestamp)
@@ -28,7 +29,7 @@ Single date + time-of-day picker — user picks a calendar date AND an `HH:mm` t
 | --- | --- | --- | --- |
 | `autoId` | `string \| null \| undefined` | `undefined` | Generates `data-autoId="forms-datetime-<value>"` for E2E selectors. |
 | `name` | `string` | random uuid | FormGroup control name when bound via `[form]`. |
-| `size` | `SdSize` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
+| `size` | `Size` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
 | `form` | `NgForm \| FormGroup \| undefined` | `undefined` | Parent form. NgForm is auto-unwrapped to its inner `FormGroup`. |
 | `label` | `string \| undefined` | `undefined` | Field label (rendered via `<sd-label>`). |
 | `helperText` | `string \| undefined` | `undefined` | Hint text near the label. |
@@ -43,9 +44,10 @@ Single date + time-of-day picker — user picks a calendar date AND an `HH:mm` t
 | `viewed` | `boolean` | `false` | Read-only DETAIL mode — hides input, renders formatted datetime (or `<ng-template sdViewDef>`). |
 | `hideInlineError` | `boolean` | `false` | Hide inline message; surfaces error as a tooltip via `errorTooltipMessage`. |
 | `inlineError` | `string \| undefined` | `undefined` | Forces an inline error message (synthetic `inlineError` validator). |
-| `model` | `string \| number \| Date \| null \| undefined` | `undefined` | Two-way bound value (use `[(model)]`). Stored / emitted as `yyyy/MM/dd HH:mm:ss` string. |
+| `model` | `string \| number \| Date \| null \| undefined` | `undefined` | Two-way bound value (use `[(model)]`). Stored / emitted as `yyyy/MM/dd HH:mm:ss` string (or `yyyy/MM/dd HH:mm:00` when `showSeconds = false`). |
+| `showSeconds` | `boolean` | `false` | When `true`, displays and stores seconds in the popup spinner and the stored/emitted format. |
 
-> **Coerce**: `required`, `disabled`, `viewed`, `hideInlineError` use `booleanAttribute` — bare attribute = `true`.
+> **Coerce**: `required`, `disabled`, `viewed`, `hideInlineError`, `showSeconds` use `booleanAttribute` — bare attribute = `true`.
 
 ## Outputs
 | Name | Type | Notes |
@@ -62,7 +64,26 @@ Single date + time-of-day picker — user picks a calendar date AND an `HH:mm` t
 - **Does NOT implement `ControlValueAccessor`.** Forms use the SDCoreJS pattern: pass the parent form via `[form]="formGroup"` (or `[form]="ngForm"`) plus a `name`. On `ngOnInit`, the component calls `formGroup.addControl(name, formControl)` and removes it in `ngOnDestroy`.
 - **`formControlName` and `[(ngModel)]` are NOT supported.** Use `[(model)]` for two-way value binding and `[form]+[name]` for FormGroup integration.
 - **`[viewed]="true"`** flips into DETAIL read-only mode: the input is hidden and the value (or `<ng-template sdViewDef>`) is rendered. If `hyperlink` is set, the value renders as a link.
-- **Validators**: `[required]` adds `Validators.required`. `[inlineError]="msg"` injects a synthetic error and shows `msg`. The picker emits its own `matDatepickerMin` / `matDatepickerMax` / `matDatetimePickerParse` errors. Error tooltip messages: required → "Vui lòng nhập thông tin"; min → "Ngày nhỏ nhất: <localized>"; max → "Ngày lớn nhất: <localized>"; parse → "Parse error: …"; bad format → "Sai định dạng".
+- **Validators**: `[required]` adds `Validators.required`. `[inlineError]="msg"` injects a synthetic error and shows `msg`. The picker emits its own `matDatepickerMin` / `matDatepickerMax` errors (via the min/max bounds on `<input>`). Direct text entry validates against `dd/MM/yyyy HH:mm` (and `dd/MM/yyyy HH:mm:ss`) regex — bad format sets a synthetic `date: 'Sai định dạng'` error. Error tooltip messages: required → "Vui lòng nhập thông tin"; min → "Ngày nhỏ nhất: <localized>"; max → "Ngày lớn nhất: <localized>"; bad format → "Sai định dạng"; `inlineError` → the provided message.
+- **Date adapter**: `provideDateFnsAdapter` configured with `dd/MM/yyyy HH:mm` parse/display. Internally native `Date` objects are used; emitted/stored values are `yyyy/MM/dd HH:mm:ss` strings (or `yyyy/MM/dd HH:mm:00` when `showSeconds = false`).
+
+## Public methods & getters
+
+| Member | Kind | Description |
+| --- | --- | --- |
+| `errorTooltipMessage` | getter `string \| undefined` | Returns a Vietnamese error message for the first active error on `formControl` (`required`, `matDatepickerMin`, `matDatepickerMax`, `date`, `customValidator`, `inlineError`). `undefined` when valid. |
+| `open()` | method | Opens the CDK Overlay datetime picker popup anchored to the component. No-op if already open or disabled. |
+| `close()` | method | Closes the popup overlay. |
+| `clear($event)` | method | Stops propagation, resets `formControl` and `valueModel` to `null`, emits `sdChange(null)`. No-op if control is already empty. |
+| `focus()` | method | Programmatically focuses the native input and opens the picker (deferred 100 ms). |
+| `blur()` | method | Programmatically blurs the native input. |
+| `focusInputElement()` | method | Focuses the native `<input>` without opening the picker. |
+| `onFocus()` | event handler | Sets `isFocused = true` and emits `sdFocus`. |
+| `onBlur()` | event handler | Sets `isFocused = false`. |
+| `onConfirmInput($event)` | event handler | Validates typed text against `dd/MM/yyyy HH:mm[ss]` regex on blur/enter; syncs back to `valueModel` and emits `sdChange` when valid. |
+| `formControl` | `SdFormControl` | Underlying reactive control. Accessible for direct validator inspection in tests. |
+| `pickerOpened` | `Signal<boolean>` | `true` while the CDK Overlay popup is open. |
+| `isFocused` | `boolean` | Current focus state (drives CSS classes). |
 
 ## Visual cues (helps agent map screenshots → component)
 - An outlined input field with a single calendar+clock icon on the trailing side

@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Multi-date picker rendered as chips — user opens a calendar popup and toggles individual dates; each selected date appears as a removable chip in the field. Uses Material `mat-chips` + `mat-calendar` inside a `mat-menu`.
 
@@ -29,7 +30,7 @@ Multi-date picker rendered as chips — user opens a calendar popup and toggles 
 | `name` | `string \| undefined` | random uuid | Control name registered into `[form]`. |
 | `appearance` | `MatFormFieldAppearance` | `'outline'` | Material form-field style. |
 | `floatLabel` | `FloatLabelType` | `'auto'` | When the label floats. |
-| `size` | `SdSize` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
+| `size` | `Size` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
 | `form` | `NgForm \| FormGroup \| undefined` | `undefined` | Parent form; NgForm auto-unwrapped. |
 | `label` | `string` | `''` | Field label. |
 | `placeholder` | `string \| undefined` | `undefined` | Placeholder for the trigger area. |
@@ -65,6 +66,10 @@ Multi-date picker rendered as chips — user opens a calendar popup and toggles 
 
 ## Chip / value structure
 Values are date strings formatted `'yyyy/MM/dd'` (produced internally via `DateUtilities.toFormat(date, 'yyyy/MM/dd')`). The component does not emit `Date` objects. Toggling a previously-selected date removes it from the array.
+
+> **Display vs. storage**: chips render the stored `'yyyy/MM/dd'` string through Angular's `date` pipe as `'dd/MM/yyyy'` (e.g. stored `2026/05/09` → displayed `09/05/2026`). The emitted `modelChange` array always contains the `'yyyy/MM/dd'` storage format.
+
+> **Date adapter**: the component uses `MatNativeDateModule` (no date-fns adapter). Do **not** provide `provideDateFnsAdapter()` — it is not required and will conflict.
 
 ## Visual cues (helps agent map screenshots → component)
 - Outlined input box showing one rounded-pill chip per selected date (e.g. `2026/05/09`), each with a ✕

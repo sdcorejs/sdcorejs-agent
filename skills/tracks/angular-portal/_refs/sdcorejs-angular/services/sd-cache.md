@@ -1,10 +1,12 @@
 # SdCacheService
 
+**Library version**: `@sd-angular/core@19.0.0-beta.86`
+
+
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdCacheService`
 **Provided in**: `'root'`
 **Import path**: `@sd-angular/core/services/cache`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
 
 ## One-line purpose
 Key-based cache factory that returns per-key handles (`get`/`set`/`has`/`remove`/`destroy`/`load`/`observer`) backed by an in-memory `Map` plus optional `localStorage` / `sessionStorage` persistence with hour-based TTL.
@@ -32,7 +34,7 @@ interface SdCacheOption<T = any> {
   type?: 'memory' | 'session' | 'local';   // default: 'memory'
   hours?: number;                            // TTL; if expired, entry is evicted on next read
   default?: T;                               // returned by get() when no entry
-  args?: Record<string, any>;
+  args?: Record<string, any>;               // reserved — not read by current implementation
 }
 
 interface SdCache<T = any> {
@@ -47,7 +49,7 @@ interface SdCache<T = any> {
 ```
 
 **Parameters**:
-- `key` (`string | object`): identifier; hashed via `SdUtilities.hash({ key })`.
+- `key` (`string | object`): identifier; hashed via `Utilities.hash({ key })`. Object keys are serialized with sorted keys before hashing — two objects with the same shape/values map to the same cache slot.
 - `option` (`SdCacheOption<T>`, optional): storage type, TTL, default value.
 
 **Returns**: `SdCache<T>` handle.
@@ -116,12 +118,42 @@ async deleteUser(id: string) {
 const cache = this.cacheSvc.create('app:bootstrap', { type: 'local', hours: 24 });
 ```
 
+### 5. Session-scoped persistence (tab-only, cleared on close)
+```typescript
+const cache = this.cacheSvc.create<string[]>('recent-searches', { type: 'session' });
+cache.set(['Angular', 'TypeScript']);
+```
+
+### 6. Full teardown (clear storage + destroy subject)
+```typescript
+// Call remove() before destroy() to also wipe the storage entry.
+cache.remove();
+cache.destroy();
+```
+
 ## Anti-patterns
 - Do NOT mutate objects returned by `get()` and expect the cache to update — they are deep clones; you must `set()` again.
 - Do NOT store class instances expecting methods to survive — `JSON.stringify` strips them.
 - Do NOT cache `Promise`s or `Observable`s — only the resolved value should go in.
 - Do NOT call `destroy()` while other components still hold the handle — they will keep their stale subject reference but new `create(...)` calls will get a fresh subject.
 
+## Testing
+
+Unit spec: `projects/sd-angular/services/cache/src/cache.service.spec.ts` (22 specs).
+
+Coverage areas:
+- Instantiation and API shape
+- `create()` throws on falsy key
+- `set()` / `get()` round-trip and deep-clone isolation
+- `has()` before and after `set()`
+- `remove()` clears value and emits `undefined`
+- `destroy()` completes the observable stream
+- TTL expiry via `jasmine.clock().mockDate()`
+- `observer` emissions and shared-subject across handles
+- `load()` — cache miss, cache hit, null/undefined skip, error propagation
+- `localStorage` persistence and removal
+- Object key namespace independence
+
 ## Related
 - `SdApiService` (`@sd-angular/core/services/api`) — uses `SdCacheService` for its persistent cache layer (`option.cacheOption`).
-- `SdUtilities.hash`, `DateUtilities.addHours` (`@sd-angular/core/utilities/extensions`) — used internally for key hashing and TTL math.
+- `Utilities.hash`, `DateUtilities.addHours` (`@sd-angular/core/utilities/extensions`) — used internally for key hashing and TTL math.

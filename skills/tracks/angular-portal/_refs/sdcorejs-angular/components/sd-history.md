@@ -8,6 +8,7 @@
 **Change detection**: default
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Vertical timeline that renders a list of history/audit events — each with title, optional status badge, timestamp, actor, source, and description.
 
@@ -35,7 +36,7 @@ interface SdHistoryItemType {
   title: string;            // Required — primary line ("Tạo phiếu", "Gửi duyệt")
   status?: {                // Optional badge to right of title
     title?: string;
-    color?: SdColor;        // 'primary' | 'success' | 'warning' | 'error' | ...
+    color?: Color;        // 'primary' | 'success' | 'warning' | 'error' | ...
     icon?: string;          // Material icon name
   };
   date?: string;            // ISO string — rendered with viewDateTime pipe (dd/MM/yyyy HH:mm)

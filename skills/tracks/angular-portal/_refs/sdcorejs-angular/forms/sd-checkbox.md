@@ -8,6 +8,7 @@
 **Change detection**: default (no `OnPush` set)
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Boolean toggle — a single labeled checkbox bound to a form/model. Wraps Angular Material `mat-checkbox` with SDCoreJS form-group registration and `inlineError` support.
 
@@ -46,10 +47,36 @@ Boolean toggle — a single labeled checkbox bound to a form/model. Wraps Angula
 None — text comes from the `label` input.
 
 ## Form integration
-- **Does NOT implement `ControlValueAccessor`.** SDCoreJS pattern: pass `[form]` + `name`; the component appends its internal `FormControl` to that group on `ngAfterViewInit`.
-- **`formControlName` is NOT supported.** Use `[(model)]` for two-way binding and `[form]+[name]` to register inside a FormGroup.
+- **Does NOT implement `ControlValueAccessor`.** SDCoreJS pattern: pass `[form]` + `name`; the component appends its internal `FormControl` to that group on `ngAfterViewInit` and removes it in `ngOnDestroy`.
+- **`formControlName` and `[(ngModel)]` are NOT supported.** Use `[(model)]` for two-way binding and `[form]+[name]` to register inside a FormGroup.
 - **`[viewed]` is NOT a supported input on `<sd-checkbox>`** (unlike most other form inputs in this batch). For DETAIL/read-only state, drive `[disabled]="true"` instead, or render the boolean as plain text in your DETAIL template.
 - **Validators**: only `[inlineError]` is wired (forces an `inlineError` error when truthy). For `Validators.required`-style behavior, manage it on the parent FormGroup or refactor the consumer.
+- **`model` setter deduplication**: the setter skips `formControl.setValue` if the incoming value equals the stored value, preventing redundant change cycles.
+
+### Three ways to integrate
+
+```html
+<!-- 1. Template-driven với [(model)] only (no FormGroup) -->
+<sd-checkbox label="Hoạt động" [(model)]="model.isActive"></sd-checkbox>
+
+<!-- 2. Reactive FormGroup (truyền form vào để checkbox tự addControl) -->
+<form [formGroup]="form">
+  <sd-checkbox name="agree" [form]="form"
+    label="Tôi đồng ý" [(model)]="model.agree"></sd-checkbox>
+</form>
+
+<!-- 3. NgForm (template-driven group) -->
+<form #f="ngForm">
+  <sd-checkbox name="agree" [form]="f"
+    label="Tôi đồng ý" [(model)]="model.agree"></sd-checkbox>
+</form>
+```
+
+> **How it works**: The `[form]` setter detects `NgForm` (via `instanceof NgForm`) and unwraps its `.form` (`FormGroup`) automatically. The component calls `addControl(name, formControl)` in `ngAfterViewInit` and `removeControl(name)` in `ngOnDestroy`.
+
+### `inlineError` flow
+
+Setting `[inlineError]="'Some message'"` triggers an internal `#updateValidator()` call that attaches a custom `ValidatorFn` (`customInlineErrorValidator`) returning `{ inlineError: true }`. The template then shows `<mat-error>{{ inlineError }}</mat-error>` when `formControl.errors?.['inlineError'] && formControl.touched`. Clearing `[inlineError]` to an empty string removes the validator and calls `updateValueAndValidity()`.
 
 ## Visual cues (helps agent map screenshots → component)
 - A square box on the left + label text on the right

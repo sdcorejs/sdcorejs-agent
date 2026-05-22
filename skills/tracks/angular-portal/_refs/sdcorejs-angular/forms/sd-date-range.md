@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Two-date range picker — user picks a start date AND an end date through a single 2-month calendar popup. Wraps Material `mat-date-range-picker` with SDCoreJS label/validators/min-max boundary support.
 
@@ -29,7 +30,7 @@ Two-date range picker — user picks a start date AND an end date through a sing
 | --- | --- | --- | --- |
 | `autoId` | `string \| null \| undefined` | `undefined` | Generates `data-autoId="forms-date-range-<value>"` for E2E selectors. |
 | `name` | `string` | random uuid | FormGroup control name when bound via `[form]`. The component also registers two internal sub-controls (random uuids) for the start/end inputs. |
-| `size` | `SdSize` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
+| `size` | `Size` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
 | `form` | `NgForm \| FormGroup \| undefined` | `undefined` | Parent form. NgForm is auto-unwrapped to its inner `FormGroup`. |
 | `label` | `string \| undefined` | `undefined` | Field label (rendered via `<sd-label>`). |
 | `helperText` | `string \| undefined` | `undefined` | Hint icon + tooltip in the label area. |
@@ -56,7 +57,27 @@ Two-date range picker — user picks a start date AND an end date through a sing
 - **Does NOT implement `ControlValueAccessor`.** Forms use the SDCoreJS pattern: pass the parent form via `[form]="formGroup"` (or `[form]="ngForm"`) plus a `name`. On `ngOnInit`, the component calls `formGroup.addControl(name, formControl)` PLUS two internal start/end controls under random uuids for fine-grained validity. All three are removed in `ngOnDestroy`.
 - **`formControlName` and `[(ngModel)]` are NOT supported.** Use `[(model)]` for two-way value binding and `[form]+[name]` for FormGroup integration.
 - **No `[viewed]` flag** — unlike `<sd-date>`, `<sd-datetime>`, `<sd-input>` etc., this component has no DETAIL read-only mode. For read-only display, either set `[disabled]="true"` or render the formatted range as plain text outside the component.
+- **Date adapter**: providers include `provideDateFnsAdapter` configured for `dd/MM/yyyy` parse/display. Internal storage in `control1`/`control2` uses native `Date` objects; the emitted `model` value is `{ from: 'yyyy/MM/dd', to: 'yyyy/MM/dd' }` strings.
 - **Validators**: `[required]` adds `Validators.required` to both internal controls and the aggregate. Material picker auto-emits `matDatepickerMin` / `matDatepickerMax` errors when `min`/`max` are violated. Error tooltip messages: required → "Vui lòng nhập thông tin"; min → "Ngày bắt đầu không hợp lệ (nhỏ hơn giới hạn)"; max → "Ngày kết thúc không hợp lệ (lớn hơn giới hạn)".
+
+## Public methods & getters
+
+| Member | Kind | Description |
+| --- | --- | --- |
+| `errorTooltipMessage` | getter `string \| undefined` | Returns a Vietnamese error message for the first active error across `formControl`, `control1`, `control2` (`required`, `matDatepickerMin`, `matDatepickerMax`). `undefined` when valid. |
+| `clear()` | method | Clears both `control1` and `control2` to `null`, resets the aggregate `formControl`, sets `valueModel` to `{ from: null, to: null }`, and emits `sdChange`. |
+| `onEnter()` | event handler | Triggers `#emit()` then immediately emits `sdChange` with the current `valueModel`. Bound to `keyup.enter` on both date inputs. |
+| `onFocus()` | event handler | Sets `#isFocus = true` and resets transient flags for enter/clear/model-change tracking. |
+| `onBlur()` | event handler | Sets `#isFocus = false`, triggers `#emit()`, then emits `sdChange` asynchronously if the model changed but was not already emitted by Enter or clear. |
+| `onClosePicker()` | event handler | Emits `sdChange` with the current `valueModel` when the range picker popup closes. |
+| `onOpenPicker($event)` | event handler | Stops click propagation and opens the picker if `formControl` is not disabled. |
+| `onStartChange(event)` | event handler | Triggers `#emit()` when the start-date input fires `(dateInput)` and the field is not focused. |
+| `onEndChange(event)` | event handler | Triggers `#emit()` when the end-date input fires `(dateInput)` and the field is not focused. |
+| `formControl` | `FormControl` | Aggregate reactive control registered into the parent `FormGroup` under `name`. Holds `{ from: Date, to: Date }` as value. |
+| `control1` | `FormControl` | Internal reactive control for the start date (native `Date` value). Registered under a random uuid in the parent form. |
+| `control2` | `FormControl` | Internal reactive control for the end date (native `Date` value). Registered under a random uuid in the parent form. |
+| `resolvedMin()` | computed `Date \| null` | Resolved `min` boundary — parses the `min` input string / Date / `'TODAY'` into a `Date`. |
+| `resolvedMax()` | computed `Date \| null` | Resolved `max` boundary — parses the `max` input string / Date / `'TODAY'` into a `Date`. |
 
 ## Visual cues (helps agent map screenshots → component)
 - A single Material outlined field with TWO date inputs side-by-side separated by an "→" / dash, each in `dd/MM/yyyy` format (e.g. `01/01/2025  →  31/12/2025`)

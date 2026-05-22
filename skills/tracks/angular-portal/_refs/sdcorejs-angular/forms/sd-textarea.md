@@ -8,6 +8,7 @@
 **Change detection**: default (no `OnPush` declared)
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Multi-line text input — `<textarea>` with label, validators (required/maxlength/pattern/custom), an optional auto-grow mode, a built-in `count/max` suffix counter when `maxlength` is set, and DETAIL `[viewed]` read-only mode.
 
@@ -28,7 +29,7 @@ Multi-line text input — `<textarea>` with label, validators (required/maxlengt
 | --- | --- | --- | --- |
 | `autoId` | `string \| null \| undefined` | `undefined` | Generates `data-autoId="forms-textarea-<value>"` for E2E selectors. |
 | `name` | `string` | random uuid | FormGroup control name when bound via `[form]`. |
-| `size` | `SdSize` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height (applied via `.sd-md` / `.sd-sm` class). |
+| `size` | `Size` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height (applied via `.sd-md` / `.sd-sm` class). |
 | `form` | `FormGroup \| NgForm \| { form: FormGroup } \| undefined` | `undefined` | Parent form. `NgForm` and `{ form }` wrappers are auto-unwrapped to `FormGroup`. |
 | `label` | `string \| undefined` | `undefined` | Field label. |
 | `helperText` | `string \| undefined` | `undefined` | Hint text (rendered as info icon next to label). |
@@ -64,7 +65,42 @@ Multi-line text input — `<textarea>` with label, validators (required/maxlengt
 - **`formControlName` and `[(ngModel)]` are NOT supported.** Use `[(model)]` for two-way value binding and `[form]+[name]` for FormGroup integration.
 - **`[viewed]="true"`** flips into DETAIL read-only mode: textarea is hidden, value is rendered as plain text (or via `<ng-template sdLabelDef>` for the label and `<ng-template sdViewDef>` for the value); falls back to em-dash via `sdEmpty` when empty.
 - **Validators**: `[required]` → `Validators.required`. `[maxlength]` → `Validators.maxLength`. `[pattern]` → `Validators.pattern` (raw regex string). `[validator]` → async custom validator. `[inlineError]="msg"` → synthetic `inlineError` validator. Error tooltip messages: required → "Vui lòng nhập thông tin"; maxlength → "Số ký tự tối đa: N"; pattern → "Định dạng không hợp lệ"; customValidator → message returned by validator; inlineError → echoes `inlineError`.
-- **Auto-trim on blur** — leading/trailing whitespace is stripped when the user blurs the field.
+- **Reactive validator updates** — validator inputs (`required` / `maxlength` / `pattern` / `inlineError` / `validator`) are signal inputs; an internal `effect()` re-runs `setValidators` + `updateValueAndValidity({ emitEvent: false })` whenever any of them changes. You can flip `required` on/off at runtime and the control re-validates automatically.
+- **`[disabled]` reactive** — toggling `disabled` calls `formControl.disable() / enable()` via an effect, with `emitEvent: false` (no spurious `statusChanges` emitted).
+- **`[(model)]` two-way** — host-side writes propagate via a signal effect: when `model` changes, the component calls `formControl.setValue(val, { emitEvent: false })` so the host won't re-trigger its own `(modelChange)` listener. The reverse direction (user typing → `valueChanges` → `valueModel.set()` → `(modelChange)` emit) runs through the normal Angular signal-model mechanism.
+- **Auto-trim on blur** — leading/trailing whitespace is stripped when the user blurs the field. This triggers a `setValue` which propagates to `sdChange` if the value actually changed.
+- **Default `appearance`** — when `[appearance]` is omitted, the component reads the `SD_FORM_CONFIGURATION` injection token (`{ appearance: MatFormFieldAppearance }`). Provide it once at application bootstrap to flip ALL form fields to `'fill'` (or any other appearance). Falls back to `'outline'` if the token is not provided.
+
+### Three ways to integrate
+
+```html
+<!-- 1. Standalone two-way binding (no FormGroup) -->
+<sd-textarea
+  label="Ghi chú"
+  [(model)]="model.note">
+</sd-textarea>
+
+<!-- 2. Reactive FormGroup (self-registers via addControl) -->
+<form [formGroup]="form">
+  <sd-textarea
+    label="Mô tả" name="description"
+    [form]="form" required
+    [maxlength]="500"
+    [(model)]="model.description">
+  </sd-textarea>
+</form>
+
+<!-- 3. Template-driven NgForm -->
+<form #f="ngForm">
+  <sd-textarea
+    label="Lý do" name="reason"
+    [form]="f" required
+    [(model)]="model.reason">
+  </sd-textarea>
+</form>
+```
+
+> **How it works**: the `[form]` signal-input has a `transform` that detects `NgForm` (via `instanceof NgForm` — unwraps `.form`) and `FormGroup` (used directly). It also accepts an object literal of shape `{ form: FormGroup }` as a safety fallback. In all three patterns the component manages `addControl` / `removeControl` lifecycle internally — never call them yourself.
 
 ## Visual cues (helps agent map screenshots → component)
 - A multi-line text box, default 5 rows tall, with the standard outlined Material chrome (label floats above on focus / when filled)

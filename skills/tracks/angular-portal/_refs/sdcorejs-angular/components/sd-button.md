@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Standard action button — used everywhere a user triggers an action (save, cancel, approve, navigate, ...). Wraps Angular Material with SDCoreJS variants, sizing, and built-in icon/loading/permission support.
 
@@ -27,9 +28,9 @@ Standard action button — used everywhere a user triggers an action (save, canc
 ## Inputs
 | Name | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `autoId` | `string \| null \| undefined` | `undefined` | Optional. Generates `data-autoId="button-<value>"` for E2E selectors. |
+| `autoId` | `string \| null \| undefined` | `undefined` | Optional. Generates `data-autoId="components-button-<value>"` for E2E selectors. |
 | `type` | `'fill' \| 'light' \| 'outline' \| 'link'` | `'light'` | Visual variant. `fill`=primary action, `light`=default, `outline`=secondary, `link`=text-style. |
-| `color` | `SdColor` | `'secondary'` | Material color tokens (`primary`, `accent`, `warn`, `success`, `info`, `secondary`, …). |
+| `color` | `Color` | `'secondary'` | Material color tokens (`primary`, `accent`, `warn`, `success`, `info`, `secondary`, …). |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'sm'` | Height: sm ≈ 28px, md ≈ 36px, lg ≈ 44px. |
 | `htmlType` | `'button' \| 'submit' \| 'reset'` | `'button'` | Sets the underlying `<button type="...">`. Use `'submit'` only when the button is INSIDE a `<form>`. |
 | `title` | `string` | `undefined` | Visible label. Required unless icon-only. |

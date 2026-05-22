@@ -1,10 +1,12 @@
 # SdApiService
 
+**Library version**: `@sd-angular/core@19.0.0-beta.86`
+
+
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdApiService`
 **Provided in**: `'root'`
 **Import path**: `@sd-angular/core/services/api`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
 
 ## One-line purpose
 HTTP client wrapper around Angular `HttpClient` adding per-host handlers, configurable timeout, in-flight request deduplication, and an optional persistent cache layer via `SdCacheService`.
@@ -19,6 +21,7 @@ HTTP client wrapper around Angular `HttpClient` adding per-host handlers, config
 - For non-HTTP side effects — use plain services.
 - When you need streaming/SSE — use `HttpClient` directly with `responseType: 'text'` and a parser.
 - When you need raw `HttpResponse` (headers/status) — `SdApiService` returns the response body only via `mapResponse`. Use `service.http` (the underlying `HttpClient`) for raw access.
+- When you need `PATCH` — the service has no `patch()` method; use `service.http.patch(...)` directly.
 
 ## Public API
 
@@ -52,14 +55,14 @@ delete = <T = any>(url: string, option?: SdDeleteOption): Promise<T>;
 ```
 
 ### `upload(url, option?): Promise<any>`
-Opens a native file picker (`SdUtilities.upload`), then POSTs the chosen file as `multipart/form-data` (field name `file`).
+Opens a native file picker (`BrowserUtilities.upload`), then POSTs the chosen file as `multipart/form-data` (field name `file`). Returns `undefined` if the user cancels the picker or the picker returns a non-`File` value.
 
 ```typescript
 upload = async (url: string, option?: { extensions?: string[]; maxSizeInMb?: number }): Promise<any>;
 ```
 
 ### `uploadFile(url, file): Promise<any>`
-POSTs a `File` you already have as `multipart/form-data`. Throws `'Invalid file extension'` if the file name has no `.`.
+POSTs a `File` you already have as `multipart/form-data`. Returns `null` immediately when `file` is falsy. Throws `'Invalid file extension'` if the file name has no `.`.
 
 ```typescript
 uploadFile = async (url: string, file: File): Promise<any>;
@@ -72,9 +75,22 @@ Getter exposing the underlying `HttpClient` for cases the wrapper doesn't cover.
 get http(): HttpClient;
 ```
 
+## Module setup
+
+### `SdApiModule`
+Import `SdApiModule` in an `NgModule`-based app to register `HttpClient` (with interceptors from DI) and `SdHttpInterceptor`. In standalone apps use `provideHttpClient(withInterceptorsFromDi())` directly and register the interceptor via `HTTP_INTERCEPTORS`.
+
+```typescript
+// NgModule-based app
+@NgModule({ imports: [SdApiModule] })
+export class AppModule {}
+```
+
+> **Note**: `SdHttpInterceptor` (inside `SdApiModule`) is the layer that executes the `intercept`, `beforeRemote`, and `afterRemote` hooks declared on `SdApiHandler`. The service core (`SdApiService`) only consumes `mapResponse` and `timeout` directly.
+
 ## Configuration / DI tokens
 
-### `SD_API_CONFIGURATION` — `InjectionToken<ISdApiConfiguration>`
+### `SD_API_CONFIG` — `InjectionToken<ISdApiConfiguration>`
 Provide an array of `ISdApiConfiguration` (multi: true) to register per-host handlers.
 
 ```typescript
@@ -93,7 +109,7 @@ export interface SdApiHandler {
 ```typescript
 // app.config.ts
 providers: [
-  { provide: SD_API_CONFIGURATION, multi: true, useValue: <ISdApiConfiguration>{
+  { provide: SD_API_CONFIG, multi: true, useValue: <ISdApiConfiguration>{
     handlers: [{
       hosts: ['https://api.example.com'],
       mapResponse: res => res?.data ?? res,
@@ -110,7 +126,8 @@ providers: [
 - **Auto-cache opt-out**: `option.autoCache: false` (or any `FormData` body) forces a unique key so dedup is bypassed.
 - **Response shape**: if body has `{ ok: false, ... }` it is thrown as the error. Otherwise the handler's `mapResponse` is applied if present.
 - **`responseType`**: pass it via `option.responseType` (e.g. `'blob'`, `'text'`).
-- **NOTE**: `intercept`, `beforeRemote`, and `afterRemote` are declared on `SdApiHandler` but the current core path only consumes `mapResponse` and `timeout`. To use the other hooks, wire them through a real Angular `HttpInterceptor` or via the `interceptors/` folder in the api package.
+- **NOTE**: `intercept`, `beforeRemote`, and `afterRemote` hooks are implemented in `SdHttpInterceptor` (the interceptor shipped by `SdApiModule`). They are NOT executed by the `SdApiService` core. You must register `SdApiModule` (NgModule) or the interceptor manually (standalone) to activate them.
+- **PATCH not supported**: `SdApiService` exposes only `get`, `post`, `put`, `delete`, `upload`, and `uploadFile`. For PATCH calls use `service.http.patch(...)` directly.
 
 ## Examples
 
@@ -153,4 +170,6 @@ const result = await this.api.upload('/api/files', {
 
 ## Related
 - `SdCacheService` (`@sd-angular/core/services/cache`) — backs the persistent cache layer.
-- `SdUtilities.upload` / `SdUtilities.hash` (`@sd-angular/core/utilities/extensions`) — power `upload()` and key generation.
+- `SdApiModule` — NgModule that registers `HttpClient` (with interceptors from DI) and `SdHttpInterceptor`.
+- `SdHttpInterceptor` (`interceptors/api.interceptor`) — executes `intercept`, `beforeRemote`, and `afterRemote` hooks from `SdApiHandler`.
+- `BrowserUtilities.upload` / `Utilities.hash` (`@sd-angular/core/utilities/extensions`) — power `upload()` and key generation.

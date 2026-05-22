@@ -46,9 +46,9 @@ interface ISdGenericConfiguration<TData = any> {
 
 interface SdRegister<T = any> {
   schema: () => Promise<SdSchema>;
-  paging: (req?: SdPagingReq<T>) => Promise<SdPagingRes<T>>;
-  all?: (req?: SdQueryReq<T>) => Promise<T[]>;       // optional — falls back to paging+SdUtilities.allWithPaging
-  search?: (req: SdSearchReq, filters?: SdFilter[]) => Promise<T[]>;  // optional — falls back to paging by IN/CONTAIN
+  paging: (req?: PagingReq<T>) => Promise<PagingRes<T>>;
+  all?: (req?: QueryReq<T>) => Promise<T[]>;       // optional — falls back to paging+Utilities.fetchAllByPaging
+  search?: (req: SdSearchReq, filters?: Filter[]) => Promise<T[]>;  // optional — falls back to paging by IN/CONTAIN
   detail?: (id: string | number) => Promise<T>;     // optional — falls back to search({ type:'VALUE', value:id })
   create?: (entity: Partial<T>) => Promise<T>;
   update?: (id: string | number, entity: Partial<T>) => Promise<T>;
@@ -152,7 +152,7 @@ export class ProductList {
 export class ProductFacade {
   private readonly generic = inject(SdGenericService);
 
-  async list(filters: SdFilter[]) {
+  async list(filters: Filter[]) {
     const reg = this.generic.getRegister<Product>('pcm', 'PRODUCT');
     return reg.all({ filters });
   }

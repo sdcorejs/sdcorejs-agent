@@ -51,10 +51,10 @@ interface ISdLayoutConfiguration {
   homeUrl?: string;
 
   /** Sidebar branding — sync object or factory */
-  sidebar: ISdSidebarConfiguration | (() => SdMaybeAsync<ISdSidebarConfiguration>);
+  sidebar: ISdSidebarConfiguration | (() => MaybeAsync<ISdSidebarConfiguration>);
 
   /** Current user — sync object or factory (typically reads SdAuthService) */
-  userInfo: SdLayoutUserInfo | (() => SdMaybeAsync<SdLayoutUserInfo>);
+  userInfo: SdLayoutUserInfo | (() => MaybeAsync<SdLayoutUserInfo>);
 
   signout: () => void | Promise<void>;
   changePassword?: () => void | Promise<void>;
@@ -149,7 +149,7 @@ export const routes: Routes = [
 
 ## Public API
 
-- **`<sd-layout [menus]>`** — host the app shell. `menus` is `SdLayoutMenu[]`. Internally selects `sidebar-v1` (desktop) or `sidebar-mobile-v1` (mobile/tablet) via `SdUtilities.isMobile()`.
+- **`<sd-layout [menus]>`** — host the app shell. `menus` is `SdLayoutMenu[]`. Internally selects `sidebar-v1` (desktop) or `sidebar-mobile-v1` (mobile/tablet) via `BrowserUtilities.isMobile()`.
 - **`<sd-page title description noHeader>`** — wrap each routed view; renders header bar with title/description.
 - **`SdLayoutService`** — read `userInfo` / `sidebar` signals (auto-resolved from `SD_LAYOUT_CONFIGURATION`).
 - **`SdLayoutStorageService`** — read/write sidebar state across reloads:
@@ -160,7 +160,7 @@ export const routes: Routes = [
 
 ## Behavior notes
 
-- **Mobile detection:** `SdUtilities.isMobile()` decides desktop vs mobile sidebar at component init. The signal does NOT live-update on viewport change — a navigation/refresh re-evaluates.
+- **Mobile detection:** `BrowserUtilities.isMobile()` decides desktop vs mobile sidebar at component init. The signal does NOT live-update on viewport change — a navigation/refresh re-evaluates.
 - **Sidebar lock state:** `menuLockStatus` is read at construction (`?? true`) — locked-open by default. On mobile, `isShowSidebar` is forced false at init regardless.
 - **Hover-to-expand:** when unlocked, `sidebar-v1` opens on `mouseenter` (`onhover=true`) and closes after a 400ms transition delay on `mouseleave` (`#handleMouseLeaveTransition`).
 - **`onPopupOfSideBarOpened/Closed`:** mat-menu / popup interactions inside the sidebar pin it open while the popup is showing.
@@ -212,10 +212,10 @@ constructor(auth: SdAuthService, storage: SdLayoutStorageService) {
 ## Anti-patterns
 
 - Do NOT mount `<sd-layout>` inside a route that's lazy-loaded under `/layout` — the sub-module owns `home/not-found/forbidden`, and you'd nest layouts.
-- Do NOT pass an Observable to `userInfo` — it expects a sync value or a function returning `SdMaybeAsync<SdLayoutUserInfo>` (sync / Promise).
+- Do NOT pass an Observable to `userInfo` — it expects a sync value or a function returning `MaybeAsync<SdLayoutUserInfo>` (sync / Promise).
 - Do NOT bypass `SdLayoutStorageService` to read sidebar state — its keys are UUID-based; reading raw localStorage breaks if the keys change.
 - Do NOT use `<sd-page>` outside an `<sd-layout>` — it expects the shell's CSS context.
-- Do NOT depend on `SdLayoutComponent` for SSR — sidebar layout uses browser-only `SdUtilities.isMobile()` (window check).
+- Do NOT depend on `SdLayoutComponent` for SSR — sidebar layout uses browser-only `BrowserUtilities.isMobile()` (window check).
 
 ## Related
 

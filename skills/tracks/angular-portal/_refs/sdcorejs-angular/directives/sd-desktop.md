@@ -4,8 +4,9 @@
 **Selector**: `[sdDesktop]`
 **Class**: `SdDesktopDirective`
 **Standalone**: no (declared module-style — no `standalone: true` flag)
-**Import path**: `@sd-angular/core/directives` (or direct: `@sd-angular/core/directives/sd-desktop`)
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
+
+**Import path**: `@sd-angular/core/directives` (or direct: `@sd-angular/core/directives/sd-desktop`)
 
 ## One-line purpose
 Structural directive that renders its template ONLY on desktop (non-mobile) viewports.
@@ -20,13 +21,13 @@ Structural directive that renders its template ONLY on desktop (non-mobile) view
 - For minor styling differences — use CSS media queries instead.
 
 ## Inputs
-None — the directive takes no inputs. Visibility is determined entirely by `SdUtilities.isMobile()` at the moment the host is constructed.
+None — the directive takes no inputs. Visibility is determined entirely by `BrowserUtilities.isMobile()` at the moment the host is constructed.
 
 ## Outputs
 None.
 
 ## Behavior
-- On construction, calls `SdUtilities.isMobile()`.
+- On construction, calls `BrowserUtilities.isMobile()`.
 - If FALSE (i.e. desktop), creates an embedded view of the template via `ViewContainerRef.createEmbeddedView`.
 - If TRUE (mobile), the template is never instantiated — DOM is empty.
 - No teardown / re-evaluation logic: the decision is sticky for the lifetime of the parent view.
@@ -58,4 +59,4 @@ None.
 
 ## Related
 - `*sdMobile` — the inverse: renders only on mobile.
-- `SdUtilities.isMobile()` — underlying detection helper (exported from `@sd-angular/core/utilities/extensions`).
+- `BrowserUtilities.isMobile()` — underlying detection helper (exported from `@sd-angular/core/utilities/extensions`).

@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Multi-value tag input — user types and presses Enter/comma to add a chip; chips can be removed individually. Backed by Material `mat-chips` and integrates with SDCoreJS forms (`[form]+[name]`, validators, `[viewed]` read-only).
 
@@ -28,7 +29,7 @@ Multi-value tag input — user types and presses Enter/comma to add a chip; chip
 | `name` | `string \| undefined` | random uuid | Control name registered into `[form]`. |
 | `appearance` | `MatFormFieldAppearance` | `'outline'` | Material form-field style. |
 | `floatLabel` | `FloatLabelType` | `'auto'` | When the label floats (`auto \| always`). |
-| `size` | `SdSize` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
+| `size` | `Size` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
 | `form` | `NgForm \| FormGroup \| undefined` | `undefined` | Parent form; NgForm auto-unwrapped. |
 | `label` | `string` | `''` | Field label. |
 | `placeholder` | `string \| undefined` | `undefined` | Placeholder for the typing area. |
@@ -58,10 +59,46 @@ Multi-value tag input — user types and presses Enter/comma to add a chip; chip
 - `<ng-template sdViewDef>` — read-only display template used in `[viewed]` mode
 
 ## Form integration
-- **Does NOT implement `ControlValueAccessor`.** Standard SDCoreJS form pattern: provide `[form]` + `name`, the component will `addControl(name, formControl)` on `ngAfterViewInit`.
+- **Does NOT implement `ControlValueAccessor`.** Standard SDCoreJS form pattern: provide `[form]` + `name`, the component will `addControl(name, formControl)` on `ngAfterViewInit` and remove it in `ngOnDestroy`.
 - **`formControlName` and `[(ngModel)]` are NOT supported.** Use `[model]` + `(modelChange)` (or `[(model)]` shorthand) and `[form]+[name]`.
 - **`[viewed]="true"`** = DETAIL read-only mode: chips display without ✕, no input box; honors `<ng-template sdViewDef>` for custom rendering and `hyperlink` for clickable values.
 - **Validators**: `[required]`, `[min]` (→ `minLength`), `[max]` (→ `maxLength`). Error tooltip messages: required → "Vui lòng nhập thông tin"; minlength → "Vui lòng nhập ít nhất N giá trị"; maxlength → "Vui lòng nhập tối đa N giá trị".
+- **Reactive validator updates** — validator inputs (`required` / `min` / `max`) are signal inputs; an internal `effect()` re-runs `setValidators` + `updateValueAndValidity` whenever any of them changes. Toggle `required` at runtime and the control re-validates automatically.
+- **`[disabled]` reactive** — toggling `disabled` calls `formControl.disable() / enable()` and `inputControl.disable() / enable()` via an effect — both the chip strip and the typing area are gated together.
+- **`[(model)]` two-way** — host-side writes propagate via an effect: when `model` changes, the component calls `formControl.setValue(values)`. The reverse direction (add/remove/clear chip → `modelChange` emit) runs through the component's `onAdd` / `onRemove` / `onClear` handlers.
+- **Separator keys** — Enter (`ENTER`) and comma (`COMMA`) from `@angular/cdk/keycodes` both commit a new chip. Duplicate values and empty strings are silently ignored.
+- **Duplicate guard** — `onAdd` checks `values.includes(value)` before pushing; identical chip values are never repeated.
+- **`addable=false` guard** — when `[addable]="false"`, typing new text is accepted in the input but `onAdd` silently discards it; existing chips remain.
+
+### Three ways to integrate
+
+```html
+<!-- 1. Model binding only (no FormGroup) -->
+<sd-chip label="Tags" placeholder="Add and press Enter" [(model)]="model.tags"></sd-chip>
+
+<!-- 2. Reactive FormGroup (self-registers via addControl) -->
+<form [formGroup]="form">
+  <sd-chip label="Tags" name="tags" [form]="form" required [(model)]="model.tags"></sd-chip>
+</form>
+
+<!-- 3. NgForm (template-driven group) -->
+<form #f="ngForm">
+  <sd-chip label="Tags" name="tags" [form]="f" required [(model)]="model.tags"></sd-chip>
+</form>
+```
+
+## Public API methods
+| Method | Signature | Notes |
+| --- | --- | --- |
+| `onAdd` | `(event: MatChipInputEvent) => void` | Called by `(matChipInputTokenEnd)` — trims value, deduplicates, pushes to formControl, emits `modelChange`+`sdChange`. |
+| `onRemove` | `(item: any) => void` | Filters item from formControl value, emits `modelChange`+`sdChange`, re-focuses input. |
+| `onClear` | `(event?: any) => void` | Resets formControl to `[]`, emits `modelChange`+`sdChange`. |
+| `onSelect` | `(event: MatAutocompleteSelectedEvent) => void` | Adds autocomplete-selected item (deduplicates). |
+| `focus` | `() => void` | Programmatically focuses the typing input after 100 ms (guards against blur race). |
+| `onFocus` | `() => void` | Sets `isFocused = true`, clears `inputControl`. |
+| `onBlur` | `() => void` | Sets `isFocused = false` after 150 ms (blur-race guard). |
+| `onClickChip` | `(event: Event, item: any) => void` | Stops propagation, re-focuses the input unless disabled. |
+| `onClick` | `() => void` | Used when `sdViewDef` is present — toggles edit mode on click. |
 
 ## Chip data structure
 Values are primitives — `string` or `number` (the component filters on `typeof item === 'string' \| 'number'`). It does NOT store object chips. If you need object chips, normalize to a string key first.

@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.92`
 
+
 ## One-line purpose
 The standard list/table component of SDCoreJS — renders tabular data with paging, sorting, inline column filters, external (toolbar) filters, multi-select with bulk actions, row commands, expansion, grouping, sticky columns, drag-and-drop row reorder, **drag-to-resize columns with persistence**, Excel/CSV export, and column-config persistence. Used on virtually every list page.
 
@@ -36,7 +37,7 @@ Everything is configured via the `SdTableOption<T>` object passed to `[option]`.
 | --- | --- | --- | --- |
 | `type` | `'local' \| 'server'` | yes | Discriminator. |
 | `items` (local) | `() => T[] \| Promise<T[]>` | yes (local) | Returns the full dataset. Filtering/sorting/paging done client-side. |
-| `items` (server) | `(filterReq, pagingReq) => Promise<{items: T[]; total: number}>` | yes (server) | Server fetches; both `SdTableFilterRequest` and `SdPagingReq` are passed. |
+| `items` (server) | `(filterReq, pagingReq) => Promise<{items: T[]; total: number}>` | yes (server) | Server fetches; both `SdTableFilterRequest` and `PagingReq` are passed. |
 | `onFilter` (server) | `(filterReq, { externalFilterValid }) => void` | no | Called BEFORE each server fetch; useful to cancel / log / sync URL. |
 | `columns` | `SdTableColumn<T>[]` | yes | Column definitions (see schema below). |
 | `key` | `string` | no | Storage key for persisted user column-config (visibility/order/width). |
@@ -60,7 +61,7 @@ A discriminated union over `type`. All variants share `SdTableColumnBase`:
 
 | Field | Type | Notes |
 | --- | --- | --- |
-| `field` | `SdNestedKeyOf<T>` (or `string` for `'children'`) | Nested key supported (e.g. `'user.name'`). |
+| `field` | `NestedKeyOf<T>` (or `string` for `'children'`) | Nested key supported (e.g. `'user.name'`). |
 | `type` | `'string' \| 'number' \| 'boolean' \| 'date' \| 'datetime' \| 'time' \| 'values' \| 'lazy-values' \| 'children'` | Determines cell renderer + filter UI + sort comparator. |
 | `title` | `string \| { title: string; templateRef?: TemplateRef<any> }` | Header text or templated header. |
 | `cell` | `{ templateRef?, copiable?, truncate?: { enable?, type?: 'more' \| 'tooltip' } }` | Custom cell renderer / copy-on-hover / truncation behavior. |
@@ -107,7 +108,7 @@ export interface TableOptionConfig {
 | `resizable` | `boolean` | When `true`, a 6px drag handle appears on the right edge of every **data** column header. Cursor switches to `col-resize` on hover; dragging updates the width live (mousemove updates inline style outside Angular zone for smoothness) and persists on mouseup. **Excluded from resize:** the special columns `sdSelection`, `sdCommand`, `sdGroup`, `sdSubInformation`, `reorder`, and `type: 'children'` parent header cells. |
 | `onResize` | `(field, width, columnWidth) => void` | Fires once per `mouseup`. `field` = column resized, `width` = new width (e.g. `'220px'`), `columnWidth` = snapshot `Record<field, width>` of **all** data columns that currently have a width set (including ones not resized this time). Useful for syncing width state to a remote profile or analytics. |
 
-**Persistence:** When `option.key` is provided, resize writes to the same storage entry used by the column-config dialog (under the prefix `TABLE_CONFIG`). Without a key it falls back to session storage keyed by `SdUtilities.hash(option)`.
+**Persistence:** When `option.key` is provided, resize writes to the same storage entry used by the column-config dialog (under the prefix `TABLE_CONFIG`). Without a key it falls back to session storage keyed by `Utilities.hash(option)`.
 
 **Reload semantics:** Resizing does **NOT** trigger a data reload, value cache refresh, or filter re-register — it only updates the configuration signal locally and writes storage silently (via the new `SdStorage.setSilent`). Safe to use on heavy server-mode tables.
 
@@ -130,7 +131,7 @@ export interface TableOptionConfig {
 `{ disabled?(row), onExpand?(row) => any \| Promise<any>, multiple?, always? }` — `always: true` keeps every row expanded; `multiple` allows multiple expanded simultaneously.
 
 ### Filter option (`SdTableOptionFilter`)
-`externalFilters?: { field, type: 'string' \| 'boolean' \| 'date' \| 'datetime' \| 'daterange' \| 'select' \| ...; defaultOperator?: SdOperator; required? }[]` controls the toolbar filter form.
+`externalFilters?: { field, type: 'string' \| 'boolean' \| 'date' \| 'datetime' \| 'daterange' \| 'select' \| ...; defaultOperator?: Operator; required? }[]` controls the toolbar filter form.
 
 ### Commands (`SdTableCommandNormal<T>`)
 `{ color?, icon?: string \| (row)=>string, fontSet?, title?: string \| (row)=>string, disabled?: boolean \| (row)=>boolean, hidden?: boolean \| (row)=>boolean \| Promise<boolean>, click(row), htmlTemplate?(row)=>string }`. Group via `{ ... children: SdTableCommandNormal<T>[] }`.
@@ -139,7 +140,7 @@ export interface TableOptionConfig {
 
 | Name | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `autoId` | `string \| null \| undefined` | `undefined` | Generates `data-autoId="table-<value>"` for E2E selectors. |
+| `autoId` | `string \| null \| undefined` | `undefined` | Generates `data-autoId="components-table-<value>"` for E2E selectors. |
 | `option` | `SdTableOption<T>` (REQUIRED) | — | The whole table configuration (see schema above). |
 
 ## Outputs
@@ -401,5 +402,5 @@ The drag handle hides automatically for columns excluded from resize. Widths rel
 - `*sdPermission` — for permission-gated rows / commands
 - `SD_TABLE_CONFIGURATION` — global default config provider
 - `SdSearch<T>` (forms autocomplete pattern) — used by `'lazy-values'` columns
-- `SdPagingReq`, `SdOperator` — request payload contract for server-mode tables
+- `PagingReq`, `Operator` — request payload contract for server-mode tables
 - Skill ref `30-list-page.md` (if present) — the recommended page-level scaffold using `<sd-table>`

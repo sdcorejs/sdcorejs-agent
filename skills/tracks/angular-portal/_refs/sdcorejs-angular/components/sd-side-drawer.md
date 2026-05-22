@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Right-edge slide-in panel rendered into `document.body` via CDK Portal — used for "create / edit / detail" forms that don't deserve a full route, but need more room than a modal: filters, side-by-side review, multi-step forms.
 
@@ -42,6 +43,8 @@ Right-edge slide-in panel rendered into `document.body` via CDK Portal — used 
 | `sdClosed` | `void` | Fires after the drawer is closed (via close button OR backdrop click, when allowed). Use to reset state in the parent. Does NOT fire when the parent component is destroyed without calling `close()`. |
 
 ## Public API (called via `@ViewChild` / template ref)
+
+### Methods
 | Method | Notes |
 | --- | --- |
 | `open()` | Opens the drawer. Sets `document.body.style.overflow = 'hidden'` to lock background scroll (saving the previous value to restore on close). |
@@ -49,7 +52,13 @@ Right-edge slide-in panel rendered into `document.body` via CDK Portal — used 
 | `startLoading()` | Shows the loading overlay inside the drawer (delegates to `SdLoadingService` keyed by drawer id). Use during async submit. |
 | `stopLoading()` | Hides the loading overlay. Auto-called on `close()`. |
 
-> **Property `isHovered$`**: an `Observable<boolean>` set up after first render; emits `true` on `mouseenter` and `false` on `mouseleave` of the drawer container. Useful if outer logic needs to detect "is the user still interacting with the drawer".
+### Readable properties
+| Property | Type | Notes |
+| --- | --- | --- |
+| `isOpened` | `boolean` | `true` while the drawer is visible. Read-only in practice — drive via `open()` / `close()`. |
+| `isLoading` | `boolean` | `true` while `startLoading()` is active and `stopLoading()` / `close()` has not been called. |
+| `isHovered$` | `Observable<boolean>` | Emits `true` on `mouseenter` and `false` on `mouseleave` of the drawer container. Set up lazily after the first render (`afterNextRender`) — do NOT subscribe before `open()` is called at least once. Useful if outer logic needs to detect "is the user still hovering over the drawer". |
+| `id` | `string` | Unique `I<uuid>` identifier of the drawer DOM element. Passed to `SdLoadingService` so multiple simultaneous drawers do not clash. |
 
 ## Content projection (slots)
 | Slot selector | Purpose |

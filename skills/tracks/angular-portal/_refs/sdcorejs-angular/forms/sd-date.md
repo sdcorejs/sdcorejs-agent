@@ -8,8 +8,9 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
-Single-date picker — Material datepicker with Moment adapter (Vietnamese `DD/MM/YYYY` parse/display) plus SDCoreJS form-group registration, `[viewed]` read-only mode, and built-in min/max date validation messages.
+Single-date picker — Material datepicker with date-fns adapter (`dd/MM/yyyy` parse/display) plus SDCoreJS form-group registration, `[viewed]` read-only mode, and built-in min/max date validation messages.
 
 ## When to use
 - Any single date field (birth date, expiry date, effective date)
@@ -26,7 +27,7 @@ Single-date picker — Material datepicker with Moment adapter (Vietnamese `DD/M
 | --- | --- | --- | --- |
 | `autoId` | `string \| null \| undefined` | `undefined` | Generates `data-autoId="forms-date-<value>"` for E2E hooks. |
 | `name` | `string` | random uuid | Control name registered into `[form]`. |
-| `size` | `SdSize` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
+| `size` | `Size` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
 | `form` | `FormGroup \| NgForm \| undefined` | `undefined` | Parent form. NgForm auto-unwrapped. Object containing a `.form` is also accepted. |
 | `label` | `string \| undefined` | `undefined` | Field label. |
 | `helperText` | `string \| undefined` | `undefined` | Hint under field. |
@@ -61,8 +62,22 @@ Single-date picker — Material datepicker with Moment adapter (Vietnamese `DD/M
 - **Does NOT implement `ControlValueAccessor`.** Standard SDCoreJS pattern: pass `[form]` + `name`, the internal `SdFormControl` registers into the group on `ngOnInit`.
 - **`formControlName` and `[(ngModel)]` are NOT supported.** Use `[(model)]` for two-way binding and `[form]+[name]` for FormGroup integration.
 - **`[viewed]="true"`** = DETAIL read-only mode: input + calendar icon are hidden, the formatted date (or `<ng-template sdViewDef>`) is shown. With `hyperlink` it renders a clickable link.
-- **Date adapter**: providers include `provideMomentDateAdapter` configured for `DD/MM/YYYY` parse/display. Internal storage uses Moment objects; emitted values are `'yyyy/MM/dd'` strings.
+- **Date adapter**: providers include `provideDateFnsAdapter` configured for `dd/MM/yyyy` parse/display. Internal storage uses native `Date` objects; emitted values are `'yyyy/MM/dd'` strings.
 - **Validators**: `[required]` adds `Validators.required`. `[min]` / `[max]` flow into Material's `matDatepickerMin` / `matDatepickerMax` validators. Manual typed text is regex-validated (`dd/MM/yyyy`) and bad input sets a synthetic `date: 'Sai định dạng'` error. `[inlineError]` injects a synthetic `inlineError` validator. `errorTooltipMessage` gives Vietnamese messages for each error key.
+
+## Public methods & getters
+
+| Member | Kind | Description |
+| --- | --- | --- |
+| `errorTooltipMessage` | getter `string \| undefined` | Returns a Vietnamese error message for the first active error on `formControl` (`required`, `matDatepickerMin`, `matDatepickerMax`, `date`, `inlineError`). `undefined` when valid. |
+| `clear($event)` | method | Stops propagation, nulls `formControl` value, updates `valueModel`, and emits `sdChange(null)`. No-op if the control is already empty. |
+| `focus()` | method | Programmatically focuses the native input and opens the datepicker popup (deferred 100 ms). |
+| `blur()` | method | Programmatically blurs the native input. |
+| `focusInputElement()` | method | Focuses the native `<input>` without opening the picker. |
+| `onFocus()` | event handler | Sets `isFocused = true` and emits `sdFocus`. |
+| `onBlur()` | event handler | Sets `isFocused = false`. |
+| `formControl` | `SdFormControl` | Underlying reactive control. Accessible for direct validator inspection in tests. |
+| `isFocused` | `boolean` | Current focus state (drives CSS classes and view-def toggle). |
 
 ## Visual cues (helps agent map screenshots → component)
 - Outlined input field showing `DD/MM/YYYY` formatted date
@@ -110,7 +125,7 @@ Single-date picker — Material datepicker with Moment adapter (Vietnamese `DD/M
 
 ## Anti-patterns
 - ❌ Using `formControlName` / `[(ngModel)]` — not wired; use `[(model)]` + `[form]+[name]`.
-- ❌ Setting `model` to a Moment object — pass `Date`, ISO string, or `'yyyy/MM/dd'` string. Component normalizes via `DateUtilities`.
+- ❌ Setting `model` to a moment object — pass `Date`, ISO string, or `'yyyy/MM/dd'` string. Component normalizes via `DateUtilities`.
 - ❌ Trying `[disabled]` for DETAIL state — use `[viewed]="true"` for the proper read-only visual.
 - ❌ Bypassing `min`/`max` and validating manually — built-in validators surface localized tooltip messages.
 - ❌ Using `<sd-date>` for a date+time field — switch to `<sd-datetime>`.

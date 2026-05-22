@@ -1,10 +1,12 @@
 # SdExcelService
 
+**Library version**: `@sd-angular/core@19.0.0-beta.86`
+
+
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdExcelService`
 **Provided in**: `'root'`
 **Import path**: `@sd-angular/core/services/excel`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
 
 ## One-line purpose
 Browser-side Excel/CSV utilities — generate a styled `.xlsx` import-template, export tabular data to `.xlsx` or `.csv`, and parse a user-uploaded `.xlsx` back to plain JS objects.
@@ -73,15 +75,17 @@ interface SdExcelExportOption<T = any> {
 
 **Numeric handling**: cell values that are JS `number` are written with `numFmt = '#'`.
 
+**Throws**: `'Column N: Field is required'`, `'Column N: Title is required'` (same validation as `generateTemplate`).
+
 ### `exportCSV(option): Promise<void>`
-Exports as CSV (UTF-8 with BOM, `,` separator, `"` quote, `.` decimal) using `export-to-csv`. Filename suffixed with `_yyyy-MM-dd-HH-mm-ss`.
+Exports as CSV (UTF-8 with BOM, `,` separator, `"` quote, RFC 4180-style escaping, CRLF line endings) via a self-written generator. Filename suffixed with `_yyyy-MM-dd-HH-mm-ss.csv`.
 
 ```typescript
 exportCSV(option: SdExcelExportOption): Promise<void>;
 ```
 
 ### `upload(): Promise<{ items: Record<string, any>[]; file: File | null }>`
-Opens the SD file picker (extensions: `['xlsx']`, max 10 MB), then parses the chosen file via `parse(file)`. Returns `{ items: [], file: null }` if the user cancels.
+Opens the SD file picker (extensions: `['xlsx']`, max 10 MB), then parses the chosen file via `parse(file)`. Returns `{ items: [], file: null }` if the user cancels. Re-throws any error from `parse()` (e.g. corrupt/empty buffer, no sheets).
 
 ```typescript
 upload(): Promise<{ items: Record<string, any>[]; file: File | null }>;
@@ -106,12 +110,12 @@ parse(file: File): Promise<{ items: Record<string, any>[]; file: File | null }>;
 None.
 
 ## Behavior notes
-- **Download mechanism**: generated workbooks go through `SdUtilities.downloadBlob(blob, fileName)` (`.xlsx` MIME type). CSV path uses `export-to-csv`'s `download(...)`.
+- **Download mechanism**: generated workbooks go through `BrowserUtilities.downloadBlob(blob, fileName)` (`.xlsx` MIME type). CSV path uses a self-written RFC 4180 generator (UTF-8 BOM + CRLF + double-quote escaping) and the same `BrowserUtilities.downloadBlob` helper (`text/csv;charset=utf-8;`).
 - **Header styling** is fixed (border `thin`, dark-blue fill `#143180` with white font for titles, `#FAFAFA` light fill for field row, `#FF1744` red highlight for required, `#CFD8DC` light grey for descriptions). Override via `column.fill` / `column.fontColor`.
 - **Column width**: `width: '120px'` is converted to `120 / 7 ≈ 17` Excel character units; missing/invalid → 20.
 - **Header layout**: row 1 = field code, row 2 = title, row 3 = description (only if any column has `description`), then data rows.
 - **Lookup sheets**: each `SdExcelSheet` becomes a separate worksheet, headers in rows 1+2, items from row 3 down.
-- **CSV title row**: `headerCSV` (an object of `field -> title`) is prepended to the items array, so the first CSV row is the human label row.
+- **CSV header row**: `column.title` values are written as the first CSV row (human-readable labels). Subsequent rows are built by reading `column.field` keys from each item.
 
 ## Examples
 
@@ -173,7 +177,6 @@ if (file && items.length) {
 - Do NOT include `#` in `fill` / `fontColor` — these are passed as raw ARGB hex strings to ExcelJS (e.g., `'FF1744'`, not `'#FF1744'`).
 
 ## Related
-- `exceljs` (peer dep) — workbook driver.
-- `export-to-csv` — CSV writer used by `exportCSV`.
-- `SdUtilities.upload` / `SdUtilities.downloadBlob` (`@sd-angular/core/utilities/extensions`) — file picker + download trigger.
+- `exceljs` (peer dep) — workbook driver. Loaded dynamically via `await import('exceljs')` inside `generateTemplate` / `export` / `parse` to keep it out of the main bundle.
+- `BrowserUtilities.upload` / `BrowserUtilities.downloadBlob` (`@sd-angular/core/utilities/extensions`) — file picker + download trigger.
 - `DateUtilities.toFormat` — used to suffix CSV filenames.

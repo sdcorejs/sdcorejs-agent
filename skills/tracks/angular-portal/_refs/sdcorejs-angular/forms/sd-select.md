@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Dropdown picker — single OR multi-select from a static array OR an async API. Built-in search/filter (auto-enabled when items > 10 or when `items` is a search function), `[multiple]` mode with checkboxes, paging via `[limit]`, label/value field accessors with nested-key support, and DETAIL `[viewed]` read-only mode. After `<sd-input>` this is the most-used form control.
 
@@ -29,14 +30,14 @@ Dropdown picker — single OR multi-select from a static array OR an async API. 
 | --- | --- | --- | --- |
 | `autoId` | `string \| null \| undefined` | `undefined` | Generates `data-autoId="forms-select-<value>"` for E2E selectors. |
 | `name` | `string` | random uuid | FormGroup control name when bound via `[form]`. |
-| `size` | `SdSize` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
+| `size` | `Size` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
 | `form` | `FormGroup \| NgForm \| { form: FormGroup } \| undefined` | `undefined` | Parent form. `NgForm` and `{ form }` wrappers are auto-unwrapped to `FormGroup`. |
 | `label` | `string \| undefined` | `undefined` | Field label. |
 | `helperText` | `string \| undefined` | `undefined` | Hint text (rendered as info icon next to label). |
 | `placeholder` | `string \| undefined` | `undefined` | Placeholder when empty. |
-| `valueField` | `SdNestedKeyOf<T>` (**required**) | — | Key in each item used as the bound value. Supports nested paths (e.g. `'meta.code'`). |
-| `displayField` | `SdNestedKeyOf<T>` (**required**) | — | Key in each item used as the visible label. Supports nested paths. |
-| `disabledField` | `SdNestedKeyOf<T> \| ''` | `''` | Key whose truthy value disables the option. |
+| `valueField` | `NestedKeyOf<T>` (**required**) | — | Key in each item used as the bound value. Supports nested paths (e.g. `'meta.code'`). |
+| `displayField` | `NestedKeyOf<T>` (**required**) | — | Key in each item used as the visible label. Supports nested paths. |
+| `disabledField` | `NestedKeyOf<T> \| ''` | `''` | Key whose truthy value disables the option. |
 | `cacheChecksum` | `any` | `undefined` | Invalidates async-search cache when the value changes. |
 | `limit` | `number` | `50` | Max items rendered in the panel (paging via `ArrayUtilities.paging`). |
 | `hyperlink` | `string \| null \| undefined` | `undefined` | In DETAIL mode, render value as a link. |
@@ -72,10 +73,46 @@ Dropdown picker — single OR multi-select from a static array OR an async API. 
 - **`formControlName` and `[(ngModel)]` are NOT supported.** Use `[(model)]` for two-way value binding and `[form]+[name]` for FormGroup integration.
 - **`[viewed]="true"`** flips into DETAIL read-only mode rendered by `<sd-view>` — selected item's `displayField` is shown, optionally as a hyperlink.
 - **Validators**: `[required]` → `Validators.required`. `[validator]` → async custom validator. `[inlineError]="msg"` → synthetic `inlineError` validator. Error tooltip messages: required → "Vui lòng nhập thông tin"; customValidator → message returned by validator; inlineError → echoes `inlineError`.
+- **Reactive validator updates** — `required`, `validator`, and `inlineError` are signal inputs; an internal `effect()` calls `setValidators` + `updateValueAndValidity({ emitEvent: false })` whenever any of them changes. Validators can be toggled at runtime without manual re-wiring.
+- **`[disabled]` reactive** — toggling `disabled` calls `formControl.disable() / enable()` via an effect with `emitEvent: false` (no spurious `statusChanges`).
+- **`[(model)]` two-way** — host writes propagate via an effect: when `model` changes the component calls `formControl.setValue(val, { emitEvent: false })` to avoid double-triggering `valueChanges`. The reverse direction (selection → `formControl.setValue` → `valueModel.set()` → `(modelChange)`) flows through the normal signal-model mechanism.
+- **`[form]` transform** — accepts `NgForm` (unwrapped to its inner `FormGroup`), `FormGroup` (used directly), or an object with shape `{ form: FormGroup }` as a safety fallback.
+- **Default `appearance`** — when `[appearance]` is omitted, reads `SD_FORM_CONFIGURATION` injection token; falls back to `'outline'` if the token is absent.
 - **Async search**: when `items` is a function, the component calls it on each search keystroke (debounced 500ms) with `{ type: 'SEARCH', searchText }`, and on initial bind / value-change with `{ type: 'VALUE', value }` to resolve already-selected values into items. Results are cached per `cacheChecksum`+`searchText`.
 
+### Three ways to integrate
+
+```html
+<!-- 1. Template-driven with [(model)] only (no FormGroup needed) -->
+<sd-select
+  label="Trạng thái" [items]="statusOptions"
+  valueField="code" displayField="name"
+  [(model)]="model.status">
+</sd-select>
+
+<!-- 2. Reactive FormGroup (component self-registers via addControl) -->
+<form [formGroup]="form">
+  <sd-select
+    label="Trạng thái" name="status" [form]="form"
+    [items]="statusOptions" valueField="code" displayField="name"
+    [(model)]="model.status" required>
+  </sd-select>
+</form>
+
+<!-- 3. NgForm (template-driven group) -->
+<form #f="ngForm">
+  <sd-select
+    label="Trạng thái" name="status" [form]="f"
+    [items]="statusOptions" valueField="code" displayField="name"
+    [(model)]="model.status">
+  </sd-select>
+</form>
+```
+
+> **How it works**: the `[form]` signal-input has a `transform` that detects `NgForm` (via `instanceof NgForm` — unwraps `.form`) and `FormGroup` (used directly). In all three patterns the component manages `addControl` / `removeControl` lifecycle internally — never call them yourself.
+
 ## Visual cues (helps agent map screenshots → component)
-- An input-like field with a chevron-down (`expand_more`) icon on the right
+- An input-like field with a chevron-down (`keyboard_arrow_down`) icon on the right
 - Click opens a dropdown panel below; if `items.length > 10` (or `items` is a function) a search input appears at the top of the panel
 - In `[multiple]="true"` mode: each row in the panel has a checkbox; the field shows a comma-joined list of display values, with a hover tooltip listing each as `• <value> - <display>`
 - Loading spinner appears in the panel while an async `SdSearch` is in flight

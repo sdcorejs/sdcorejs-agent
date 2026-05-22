@@ -1,10 +1,12 @@
 # SdNotifyService
 
+**Library version**: `@sd-angular/core@19.0.0-beta.86`
+
+
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdNotifyService`
 **Provided in**: `'root'`
 **Import path**: `@sd-angular/core/services/notify`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
 
 ## One-line purpose
 Toast notification service that auto-mounts a `SdToastContainerComponent` on `body` and exposes immediate (`success`, `info`) and debounced/buffered (`warning`, `error`) APIs backed by an Angular `signal<ToastData[]>`.
@@ -149,14 +151,70 @@ this.notify.clearByType('warning');   // clear all warning toasts
 this.notify.clearAll();               // wipe all + cancel pending buffers
 ```
 
+## Testing
+
+### In unit / integration tests
+
+`SdNotifyService` calls `createComponent(SdToastContainerComponent, ...)` in its constructor and appends the resulting DOM node to `document.body`. This side effect must be neutralised before `TestBed.inject()` so that:
+- No real Angular view is registered with `ApplicationRef`, and
+- No extra DOM node is attached to the test document's `<body>`.
+
+The recommended pattern is to spy on `document.body.appendChild` and on `ApplicationRef.attachView` **before** the service is constructed:
+
+```typescript
+import { ApplicationRef } from '@angular/core';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { SdNotifyService } from './notify.service';
+
+describe('SdNotifyService', () => {
+  let service: SdNotifyService;
+
+  beforeEach(() => {
+    spyOn(document.body, 'appendChild').and.stub();
+
+    TestBed.configureTestingModule({
+      imports: [NoopAnimationsModule],
+      providers: [SdNotifyService],
+    });
+
+    spyOn(TestBed.inject(ApplicationRef), 'attachView').and.stub();
+    service = TestBed.inject(SdNotifyService);
+  });
+
+  afterEach(() => service.clearAll()); // cancel pending debounce timers
+});
+```
+
+Key points:
+- **Do NOT provide a fake `DOCUMENT`** — Angular's renderer reads `DOCUMENT` for `createElement`. Replacing it entirely breaks the DI hierarchy.
+- **`fakeAsync` + `tick(500)`** is required to test buffered (`warning` / `error`) behavior.
+- `service.clearAll()` in `afterEach` cancels any pending `setTimeout` so debounce timers do not bleed into subsequent tests.
+
+### Spec file
+`projects/sd-angular/services/notify/src/notify.service.spec.ts`
+
+Covers (25 specs total):
+- Instantiation: created, `body.appendChild` called, initial empty signal
+- `success()`: immediate add, default 3000 ms duration, custom duration, title passthrough
+- `info()`: immediate add, default 3000 ms duration
+- `error()` (buffered): single flush after 500 ms, default 5000 ms duration, grouping with count title, dedup of identical messages, debounce timer reset
+- `warning()` (buffered): single flush after 500 ms, array input with all messages
+- `remove()`: by id, unknown id no-op
+- `clearAll()`: empties array, cancels pending timers
+- `clearByType()`: removes only target type
+- MAX_TOASTS cap: capped at 5, newest first
+- `actionLabel` + `onAction` passthrough
+- Signal reactivity
+
 ## Anti-patterns
 - Do NOT call `error()` in tight render loops — even with debouncing, the buffer grows until flush. Filter at the source.
 - Do NOT pass an array to `success()` / `info()` — only `warning` and `error` accept `string | string[]`.
 - Do NOT mount `SdToastContainerComponent` yourself — the service already does. A second container will produce duplicate toasts.
-- Do NOT depend on toast id format (`SdUtilities.generateUuid()`) — treat it as opaque and only use `remove(id)`.
+- Do NOT depend on toast id format (`Utilities.generateUuid()`) — treat it as opaque and only use `remove(id)`.
 - Do NOT use this for blocking confirmations (`Are you sure?`) — toasts dismiss themselves; use `SdConfirmService`.
 
 ## Related
 - `SdConfirmService` (`@sd-angular/core/services/confirm`) — modal alternative for blocking interactions.
 - `SdToastContainerComponent` (`@sd-angular/core/services/notify/components`) — the rendered host. Customize via global CSS.
-- `SdUtilities.generateUuid` (`@sd-angular/core/utilities`) — used internally for toast ids.
+- `Utilities.generateUuid` (`@sd-angular/core/utilities`) — used internally for toast ids.

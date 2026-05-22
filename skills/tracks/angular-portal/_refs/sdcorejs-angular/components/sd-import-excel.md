@@ -8,6 +8,7 @@
 **Change detection**: default
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 End-to-end Excel import workflow: download template, upload `.xlsx`, validate per row + cross-row, preview success/warning/error rows, export an annotated error file, and finally hand validated data back to the caller via `accept`.
 

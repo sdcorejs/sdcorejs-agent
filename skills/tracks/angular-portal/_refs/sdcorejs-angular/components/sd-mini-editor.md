@@ -8,6 +8,7 @@
 **Change detection**: default (implements `ControlValueAccessor`)
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Compact rich-text input (CKEditor 5 ClassicEditor) for short-form content like comments, notes, and chat-style messages — supports bold/italic/underline/font color/lists/links and optional `@mention`, with HTML or Markdown output.
 
@@ -36,7 +37,7 @@ Compact rich-text input (CKEditor 5 ClassicEditor) for short-form content like c
 interface SdMiniEditorOption {
   outputFormat?: 'html' | 'markdown';   // default 'html' — when 'markdown', loads CKEditor Markdown plugin
   placeholder?: string;
-  height?: string;                      // CSS height
+  height?: string;                      // CSS height (reserved; not yet wired to host style — use maxHeight for now)
   maxHeight?: string;                   // CSS max-height — wired to host var --sd-mini-editor-max-height
   enableMention?: boolean;              // false → mention plugin not loaded
   mentionConfig?: SdMiniEditorMentionConfig;  // { feeds: MentionFeed[], valueRender? }
@@ -45,6 +46,26 @@ interface SdMiniEditorOption {
   onFocus?: (event: FocusEvent) => void;
   onMentionSelect?: (item: SdMiniEditorMentionItem) => void;
 }
+```
+
+### `SdMiniEditorMentionConfig`
+```ts
+interface SdMiniEditorMentionConfig {
+  feeds?: MentionFeed[];    // CKEditor MentionFeed — each item has { marker, feed, minimumCharacters?, itemRenderer?, ... }
+  valueRender?: (item: MentionFeedObjectItem) => { text: string; attributes?: Record<string, string> };
+}
+```
+
+### `SdMiniEditorMentionItem`
+```ts
+type SdMiniEditorMentionItem<T = any> = MentionFeedObjectItem & { data?: T };
+// id: string  — raw marker-prefixed id (e.g. '@user-123'); marker is extracted as id[0], cleanId as id.slice(1)
+```
+
+### Exported type alias
+```ts
+type SdMiniEditorOutputFormat = 'html' | 'markdown';
+// Import: import { SdMiniEditorOutputFormat } from '@sd-angular/core/components/mini-editor';
 ```
 
 ## Outputs
@@ -65,6 +86,15 @@ interface SdMiniEditorOption {
 
 ## Content projection
 None — toolbar and editor are fully managed by CKEditor.
+
+## Behavior notes
+- **ControlValueAccessor**: the component implements `ControlValueAccessor` and works with both template-driven (`[(ngModel)]`) and reactive (`[formControl]`) forms. `writeValue` sets the internal `value` and, if the editor is already initialised, calls `setData` on it. `setDisabledState` is NOT yet implemented — use the `[disabled]` input directly.
+- **Throttle on content change**: the `change:data` event from CKEditor is funnelled through an RxJS `Subject` throttled at 500 ms (leading + trailing). Both `valueChange` and `contentChange` fire on the same throttled tick. `option.onChange` is also called inside the same subscriber.
+- **Output format**: when `option.outputFormat === 'markdown'`, the CKEditor `Markdown` plugin is loaded and `getData()` returns Markdown automatically. No manual conversion happens inside the component — `#convertOutput` is a pass-through.
+- **Mention plugin**: loaded dynamically only when `option.enableMention === true`. A custom `downcast` converter renders mentions as `<span class="ck-custom-mention" data-id="..." data-marker="...">` (marker-prefixed id is split: `id[0]` = marker, `id.slice(1)` = clean id). Backspace/Delete on a mention node removes the entire text node in one keypress.
+- **focusEditor()** and **setContent()** are safe to call before the editor is initialised (they no-op silently).
+- **Host CSS variable**: `--sd-mini-editor-max-height` is set on the host element via `@HostBinding` from `option.maxHeight`. The SCSS uses it to cap `.ck-editor__editable_inline`.
+- **Lifecycle**: `ngOnDestroy` unsubscribes the RxJS subscription and calls `editor.destroy()` to release CKEditor memory.
 
 ## Visual cues
 - A compact rich-text box: a small toolbar at the top (Bold | Italic | Underline | Font color | Bulleted list | Numbered list | Link), then a single editing region below
@@ -133,6 +163,13 @@ option: SdMiniEditorOption = {
 - DON'T forget `option` is required — leaving it `undefined` will throw on render
 - DON'T render many `<sd-mini-editor>` instances on one screen — each loads CKEditor; prefer one shared comment box
 - DON'T rely on `valueChange` / `contentChange` for keystroke-by-keystroke logic — they are throttled to 500ms
+
+## Accessibility
+- The CKEditor editing region is a `contenteditable` div — it receives focus in the natural tab order. Keyboard navigation of toolbar buttons is handled by CKEditor internals (arrow keys cycle through toolbar items).
+- When using `@mention`, the mention dropdown that opens is a CKEditor-native listbox; it is keyboard-accessible (arrow keys + Enter to select, Escape to dismiss).
+- The component does not add `aria-label` automatically — when embedding in a form, wrap with `<label>` or add an `aria-label` on the host: `<sd-mini-editor aria-label="Bình luận" ...>`.
+- Mention pills rendered as `<span class="ck-custom-mention" contenteditable="false">` are non-focusable by design; screen readers will read them as inline text.
+- `disabled` state passes the `[disabled]` flag to the CKEditor component which marks the editing area as non-interactive. No additional ARIA attribute is explicitly set by this component for the disabled state.
 
 ## Related
 - `<sd-editor>` — full rich text with images, alignment, font sizes, validation

@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Form-bound rich-text editor (CKEditor 5 ClassicEditor) with bold/italic/underline, font size & color, alignment, lists, and optional inline image upload + label/required/maxlength validation.
 
@@ -42,7 +43,7 @@ Form-bound rich-text editor (CKEditor 5 ClassicEditor) with bold/italic/underlin
 | `validator` | `SdCustomValidator \| undefined` | `undefined` | Async custom validator. |
 | `form` | `FormGroup \| NgForm` | `undefined` | When set + `key`/`name`, the editor registers its `formControl` as a child of this group. |
 | `key` | `string \| undefined` | `undefined` | Selects which `ISdEditorConfiguration` to use (when multiple are provided via DI). |
-| `autoId` | `string \| null \| undefined` | `undefined` | Generates `data-autoId="forms-editor-<value>"` for E2E. |
+| `autoId` | `string \| null \| undefined` | `undefined` | Generates `data-autoId="components-editor-<value>"` for E2E. |
 | `name` | `string` | random uuid | Form control name. |
 
 ## Outputs

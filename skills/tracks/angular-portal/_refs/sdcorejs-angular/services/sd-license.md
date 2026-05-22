@@ -1,10 +1,12 @@
 # SdLicenseService
 
+**Library version**: `@sd-angular/core@19.0.0-beta.86`
+
+
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdLicenseService`
 **Provided in**: `'root'`
 **Import path**: `@sd-angular/core/services/license`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
 
 ## One-line purpose
 Domain-binding license check that hashes `window.location.hostname` (with a built-in salt) and compares against `licenseKey` values from `SD_CORE_CONFIGURATION`; throws on unauthorized domains and bypasses verification on localhost.
@@ -101,11 +103,48 @@ class PremiumFeature {
 }
 ```
 
+## Testing
+
+### In unit / integration tests
+The constructor runs `#verify()` immediately. On `localhost` (Karma / Jest default) the bypass fires and the service is safe to inject. No mock needed for localhost-only tests.
+
+```typescript
+// Simplest — just inject: localhost bypass always passes in Karma
+TestBed.configureTestingModule({});
+const service = TestBed.inject(SdLicenseService);
+expect(() => service.enforceLicense()).not.toThrow();
+```
+
+For tests that must exercise non-localhost paths, provide a pre-computed hash via `SD_CORE_CONFIGURATION` **and** spy on `window.location.hostname`. Because `window.location` is read-only in many browser environments, use:
+
+```typescript
+spyOnProperty(window, 'location').and.returnValue({
+  ...window.location,
+  hostname: 'app.example.com',
+} as Location);
+```
+
+If the browser sandbox disallows the spy, mark those tests as `pending()`.
+
+To completely skip license enforcement in tests, provide a stub:
+
+```typescript
+{ provide: SdLicenseService, useValue: { enforceLicense: () => {} } }
+```
+
+### Spec file
+`projects/sd-angular/services/license/src/license.service.spec.ts`
+
+Covers (11 specs total, 4 unconditional + 7 hostname-spy-dependent):
+- localhost bypass: instantiation, `enforceLicense()` no-op, no-config tolerance, repeat call safety
+- non-localhost (spy-dependent): no-config throw, exact hash match, array key match, wildcard match, deep wildcard, mismatch throw, error message content
+
 ## Anti-patterns
 - Do NOT ship the SALT or generated keys as if they were security tokens — they're an obfuscation, not authentication.
 - Do NOT call `enforceLicense()` inside hot loops — it just re-checks a boolean, but the throw is uncaught and will crash the zone.
 - Do NOT add `localhost` to your `licenseKey` list — it already bypasses, and the dev banner won't show.
 - Do NOT compute keys in app code with `btoa(...)` of arbitrary strings — the vendor's hash algorithm must match exactly.
+- Do NOT forget that the `SD_CORE_CONFIGURATION` token is `@Optional()` — omitting it is not an error on localhost, but will throw on any real hostname.
 
 ## Related
 - `SD_CORE_CONFIGURATION` / `ISdCoreConfiguration` (`@sd-angular/core/configurations`) — supplies `licenseKey`.

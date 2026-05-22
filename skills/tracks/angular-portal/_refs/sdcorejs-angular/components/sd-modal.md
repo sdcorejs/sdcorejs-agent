@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Centered dialog (or mobile bottom-sheet) with optional title/header/footer slots, opened imperatively via a template reference and `open()` / `close()` methods.
 
@@ -27,8 +28,9 @@ Centered dialog (or mobile bottom-sheet) with optional title/header/footer slots
 ## Inputs
 | Name | Type | Default | Notes |
 | --- | --- | --- | --- |
+| `autoId` | `string \| null \| undefined` | `undefined` | E2E test hook. Computed prefix `components-modal-{autoId}`. The close (X) button automatically gets `components-modal-{autoId}-close`. Footer/body buttons live inside `<ng-content>` — consumer must set their own `[attr.data-autoId]` on those. |
 | `title` | `string` | `''` | Optional dialog title. When empty, the entire header row is hidden — use slots only. |
-| `color` | `SdColor` | `'primary'` | Reserved for future header tinting. |
+| `color` | `Color` | `'primary'` | Reserved for future header tinting. |
 | `width` | `'sx' \| 'sm' \| 'md' \| 'lg' \| string` | `'md'` | Token → `sx`≈20vw, `sm`≈40vw, `lg`≈80vw, `md`≈60vw. Any CSS value (e.g. `'600px'`) passes through. On mobile, the raw value is used. |
 | `height` | `string` | `'auto'` | CSS height. Reserved (Material dialog auto-sizes by default). |
 | `view` | `'dialog' \| 'bottom-sheet' \| undefined` | `undefined` | `undefined` = auto (dialog on desktop, bottom-sheet on mobile). Force a mode by setting explicitly. |
@@ -110,6 +112,13 @@ These are typically called via a `#modal` template reference: `<sd-modal #modal>
   <sd-history [items]="logs"></sd-history>
 </sd-modal>
 ```
+
+## Accessibility
+- Always provide a meaningful `title` (or `[sdHeaderLeft]` slot) so screen readers announce the dialog name
+- `disableBackdropClose` defaults to `true` — this prevents accidental data loss for forms; disable only for read-only modals where no input is at risk
+- Add a visible "Đóng" / "Cancel" button in the footer so keyboard users can exit without relying on ESC; ESC is suppressed when `disableBackdropClose="true"`
+- Do not place focus-trap-breaking elements (e.g. iframes without `tabindex`) inside the modal body — Angular CDK Dialog already manages focus trap automatically
+- Avoid very long un-scrollable content; the body region caps at `max-height: 80vh` and is `overflow-auto`, but headings and landmarks inside should be meaningful
 
 ## Anti-patterns
 - DON'T render `<sd-modal>` only when `*ngIf="open"` — keep it permanently in the template and toggle via `open()` / `close()` so animations and refs work

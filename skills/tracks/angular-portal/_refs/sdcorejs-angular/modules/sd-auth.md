@@ -30,13 +30,13 @@ Provider-agnostic auth abstraction: app supplies sign-out / change-password acti
 ```ts
 interface ISdAuthConfiguration {
   action?: {
-    signout: () => SdMaybeAsync<void>;
-    changePassword?: () => SdMaybeAsync<void>;
+    signout: () => MaybeAsync<void>;
+    changePassword?: () => MaybeAsync<void>;
   };
   guard?: {
     auth?: CanActivate['canActivate'];     // optional canActivate fn for SdAuthGuard
     portal?: CanActivate['canActivate'];   // optional canActivate fn for SdPortalGuard
-    authInfo: () => SdMaybeAsync<SdAuthInfo>; // required if you want a real user
+    authInfo: () => MaybeAsync<SdAuthInfo>; // required if you want a real user
   };
 }
 
@@ -156,6 +156,14 @@ export const routes: Routes = [
   },
 ];
 ```
+
+## Test coverage
+
+| File | Specs | Notes |
+|---|---|---|
+| `guards/auth.guard.spec.ts` | 6 | no-config pass-through, no-callback pass-through, delegate true/false/UrlTree |
+| `guards/portal.guard.spec.ts` | 6 | same pattern — delegates to `config.guard.portal` |
+| `services/auth.service.spec.ts` | 14 | constructor defaults, `getAuthInfo` signal, `signout()`, `changePassword()`, observable streams |
 
 ## Anti-patterns
 

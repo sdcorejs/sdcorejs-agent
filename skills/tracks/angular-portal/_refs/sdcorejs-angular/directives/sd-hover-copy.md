@@ -4,8 +4,9 @@
 **Selector**: `[sdHoverCopy]`
 **Class**: `SdHoverCopyDirective`
 **Standalone**: no (declared module-style — no `standalone: true` flag)
-**Import path**: `@sd-angular/core/directives` (or direct: `@sd-angular/core/directives/sd-hover-copy`)
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
+
+**Import path**: `@sd-angular/core/directives` (or direct: `@sd-angular/core/directives/sd-hover-copy`)
 
 ## One-line purpose
 On hover, overlays a small copy-to-clipboard button on the host element; clicking copies the supplied text and shows a "Copied" tooltip.
@@ -29,11 +30,15 @@ On hover, overlays a small copy-to-clipboard button on the host element; clickin
 None.
 
 ## Behavior
+- `ngOnChanges` (fires before `ngOnInit`): if `sdHoverCopyDisabled` changes to `false` and no button exists yet, creates one; if it changes to `true`, removes the existing button from the DOM.
 - `ngOnInit`: if not disabled, creates a small `<button>` (with inline copy SVG) absolutely positioned at the right of the host (`top: 50%, right: 4px, translateY(-50%)`), initially `display: none`. Forces host to `position: relative`. Also appends a tooltip `<span>` (initial text "Sao chép").
-- `mouseenter` on host: shows the button (`display: block`).
-- `mouseleave` on host: hides the button and resets tooltip.
-- Clicking the copy button: calls `SdUtilities.copyToClipboard(String(copyText))`, swaps tooltip text to "Copied" with `opacity: 1`, then auto-hides after 1000ms.
-- `ngOnChanges` on `sdHoverCopyDisabled`: dynamically creates or removes the button as the input flips.
+- `mouseenter` on host: shows the button (`display: block`); skipped when `sdHoverCopyDisabled` is `true` or the button was never created.
+- `mouseleave` on host: hides the button (`display: none`) and resets tooltip text to "Sao chép" with `opacity: 0`.
+- Clicking the copy button: calls `BrowserUtilities.copyToClipboard(String(copyText))`, swaps tooltip text to "Copied" with `opacity: 1`, then auto-hides after 1000 ms by resetting to "Sao chép" with `opacity: 0`.
+
+## Known issues
+- **Double-button creation on first render**: because `ngOnChanges` fires before `ngOnInit`, both hooks create a copy button when `sdHoverCopyDisabled` starts as `false`. The directive's internal reference points to the second button (created in `ngOnInit`), so behaviour is correct, but an orphaned first button element stays in the host's DOM. Tracked as a follow-up to SM-2287.
+- **No `aria-label`**: the generated `<button>` has no accessible label. Screen-reader users cannot identify its purpose. A future fix should add `aria-label="Sao chép"` (or the localised equivalent) to the button element.
 
 ## Examples
 
@@ -66,5 +71,5 @@ None.
 - Using on inline-only elements (`<span>` without block context) — absolute positioning may not align as expected.
 
 ## Related
-- `SdUtilities.copyToClipboard` — underlying clipboard helper.
+- `BrowserUtilities.copyToClipboard` — underlying clipboard helper.
 - `[sdTooltip]` — for richer hover UX without copy.

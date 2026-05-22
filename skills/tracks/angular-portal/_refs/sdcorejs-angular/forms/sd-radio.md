@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Radio-button group — user picks exactly ONE option from a small, fixed list. Items can be laid out inline (`row`) or stacked (`column`). Use when the full set of choices should be visible at once (≤ ~6 options); for longer lists, use `<sd-select>` instead.
 
@@ -56,10 +57,12 @@ Radio-button group — user picks exactly ONE option from a small, fixed list. I
 - `<ng-template sdViewDef>` — declared via `@ContentChild`; the current template falls back to plain text in `[viewed]` mode
 
 ## Form integration
-- **Does NOT implement `ControlValueAccessor`.** Forms use the SDCoreJS pattern: pass the parent form via `[form]="formGroup"` (or `[form]="ngForm"`) plus a `name`. On `ngAfterViewInit`, the component calls `formGroup.addControl(name, formControl)` and removes it in `ngOnDestroy`.
-- **`formControlName` and `[(ngModel)]` are NOT supported.** Use `[(model)]` for two-way value binding and `[form]+[name]` for FormGroup integration.
-- **`[viewed]="true"`** flips into DETAIL read-only mode: the radio group is hidden and the picked item's `displayField` value is rendered (via `<ng-template sdLabelDef>` / `hyperlink` if set).
-- **Validators**: `[required]` → `Validators.required`. `[inlineError]="msg"` → synthetic `inlineError` validator. Built-in inline errors: required → "Vui lòng nhập thông tin"; inlineError → echoes `inlineError`.
+
+**Pattern**: `SdRadio` không implement `ControlValueAccessor`. Dùng `[form]` + `name` để đăng ký control vào FormGroup cha. Trên `ngAfterViewInit`, component tự gọi `formGroup.addControl(name, formControl)` và `removeControl` khi destroy.
+
+- **`formControlName` và `[(ngModel)]` KHÔNG được hỗ trợ.** Dùng `[(model)]` cho two-way binding và `[form]+[name]` cho FormGroup integration.
+- **`[viewed]="true"`** chuyển sang DETAIL read-only mode: radio group bị ẩn, giá trị hiển thị là text thuần (hoặc link nếu có `hyperlink`).
+- **Validators**: `[required]` → `Validators.required`. `[inlineError]="msg"` → synthetic `inlineError` validator. Inline errors: required → "Vui lòng nhập thông tin"; inlineError → echoes `inlineError`.
 
 ## Visual cues (helps agent map screenshots → component)
 - A horizontal (`display="row"`) or vertical (`display="column"`) group of bullet circles, each with the option label to its right
@@ -71,7 +74,7 @@ Radio-button group — user picks exactly ONE option from a small, fixed list. I
 
 ## Examples
 
-### 1. Required gender picker (inline)
+### 1. Required gender picker (inline, with FormGroup)
 ```html
 <sd-radio
   [form]="form" name="gender"
@@ -81,8 +84,19 @@ Radio-button group — user picks exactly ONE option from a small, fixed list. I
   [(model)]="model.gender">
 </sd-radio>
 ```
+```typescript
+// Component class
+genderOptions = [
+  { code: 'M', name: 'Nam' },
+  { code: 'F', name: 'Nữ' },
+  { code: 'O', name: 'Khác' },
+];
+form = new FormGroup({});
+model = { gender: 'M' }; // pre-selected default
+```
+Dùng `required` bare attribute để bắt buộc chọn; giá trị pre-selected truyền qua `[(model)]` thay vì khởi tạo trong FormGroup.
 
-### 2. Stacked option list
+### 2. Stacked option list (column display)
 ```html
 <sd-radio
   [form]="form" name="approvalMode"
@@ -94,6 +108,17 @@ Radio-button group — user picks exactly ONE option from a small, fixed list. I
   (sdSelection)="onModeSelected($event)">
 </sd-radio>
 ```
+```typescript
+approvalModes = [
+  { id: 1, label: 'Duyệt tự động' },
+  { id: 2, label: 'Duyệt thủ công' },
+  { id: 3, label: 'Duyệt theo luồng' },
+];
+onModeSelected(event: { value: any; item?: any }) {
+  console.log('Selected item:', event.item);
+}
+```
+`display="column"` xếp chọn theo chiều dọc; `sdSelection` trả về cả `value` lẫn `item` object để tránh look-up thủ công.
 
 ### 3. DETAIL state with hyperlink
 ```html
@@ -106,13 +131,160 @@ Radio-button group — user picks exactly ONE option from a small, fixed list. I
   hyperlink="/customer-type/{{ model.customerTypeCode }}">
 </sd-radio>
 ```
+```typescript
+customerTypes = [
+  { code: 'IND', name: 'Cá nhân' },
+  { code: 'BIZ', name: 'Doanh nghiệp' },
+];
+```
+Khi `[viewed]="true"`, radio group bị ẩn và giá trị hiển thị dưới dạng text thuần hoặc link — phù hợp cho màn hình xem chi tiết (DETAIL mode).
+
+## Form integration (3 cách)
+
+### Cách 1: Template-driven `[(model)]` (không dùng FormGroup)
+Dùng khi chỉ cần two-way bind giá trị, không cần reactive validation từ FormGroup cha.
+
+```html
+<sd-radio
+  label="Trạng thái"
+  [items]="statusOptions"
+  valueField="value" displayField="label"
+  [(model)]="selectedStatus"
+  (sdChange)="onStatusChange($event)">
+</sd-radio>
+```
+```typescript
+statusOptions = [
+  { value: 'active', label: 'Hoạt động' },
+  { value: 'inactive', label: 'Không hoạt động' },
+];
+selectedStatus = 'active';
+onStatusChange(v: string) { console.log(v); }
+```
+
+### Cách 2: Reactive FormGroup (`[form]` + `name`)
+Dùng khi radio là một phần của form lớn hơn — `SdRadio` tự `addControl` vào FormGroup khi `ngAfterViewInit`.
+
+```html
+<form [formGroup]="myForm">
+  <sd-radio
+    [form]="myForm" name="type"
+    label="Loại" required
+    [items]="typeOptions"
+    valueField="id" displayField="text"
+    [(model)]="model.type">
+  </sd-radio>
+</form>
+```
+```typescript
+myForm = new FormGroup({});
+typeOptions = [
+  { id: 'A', text: 'Loại A' },
+  { id: 'B', text: 'Loại B' },
+];
+model = { type: null };
+
+onSubmit() {
+  if (this.myForm.valid) { /* ... */ }
+}
+```
+
+### Cách 3: NgForm (template-driven form)
+Dùng khi toàn bộ form dùng `#f="ngForm"` — truyền tham chiếu NgForm; component tự unwrap sang `NgForm.form` (`FormGroup` bên trong).
+
+```html
+<form #f="ngForm" (ngSubmit)="onSubmit(f)">
+  <sd-radio
+    [form]="f" name="priority"
+    label="Ưu tiên" required
+    [items]="priorityOptions"
+    valueField="key" displayField="label"
+    [(model)]="model.priority">
+  </sd-radio>
+  <button type="submit">Lưu</button>
+</form>
+```
+```typescript
+priorityOptions = [
+  { key: 'high', label: 'Cao' },
+  { key: 'medium', label: 'Trung bình' },
+  { key: 'low', label: 'Thấp' },
+];
+model = { priority: 'medium' };
+
+onSubmit(f: NgForm) {
+  if (f.valid) { /* ... */ }
+}
+```
 
 ## Anti-patterns
-- ❌ Using `<sd-radio>` for more than ~6 options or for API-loaded lists — use `<sd-select>` so the list scrolls/filters.
-- ❌ Using `formControlName` / `[(ngModel)]` — not wired; use `[form]+[name]` and `[(model)]`.
-- ❌ Forgetting `valueField` / `displayField` — both are `required: true` inputs; the component will throw without them.
-- ❌ Using `[disabled]="true"` to express read-only DETAIL state — use `[viewed]="true"` so labels/links render correctly.
-- ❌ Mixing object types in `items` (e.g. some objects, some primitives) — the lookup uses `item[valueField]`; primitives will fail.
+
+❌ **Dùng `<sd-radio>` cho nhiều hơn ~6 lựa chọn hoặc danh sách tải từ API**
+```html
+<!-- Đừng làm vậy -->
+<sd-radio [items]="apiLoadedItems" valueField="id" displayField="name" ...></sd-radio>
+```
+Thay vào đó hãy dùng:
+```html
+<sd-select [items]="apiLoadedItems" valueField="id" displayField="name" ...></sd-select>
+```
+`<sd-select>` hỗ trợ scroll, filter, lazy-load — tốt hơn khi list dài.
+
+---
+
+❌ **Dùng `formControlName` hoặc `[(ngModel)]`**
+```html
+<!-- Đừng làm vậy -->
+<sd-radio formControlName="type" ...></sd-radio>
+<sd-radio [(ngModel)]="model.type" ...></sd-radio>
+```
+Thay vào đó hãy dùng:
+```html
+<sd-radio [form]="myForm" name="type" [(model)]="model.type" ...></sd-radio>
+```
+`SdRadio` không implement `ControlValueAccessor`; dùng `[form]+[name]` là pattern chính thức.
+
+---
+
+❌ **Quên `valueField` hoặc `displayField`**
+```html
+<!-- Đừng làm vậy — sẽ throw lỗi runtime -->
+<sd-radio [items]="items" [(model)]="val"></sd-radio>
+```
+Thay vào đó hãy dùng:
+```html
+<sd-radio [items]="items" valueField="code" displayField="name" [(model)]="val"></sd-radio>
+```
+Cả hai đều là `required: true` inputs — thiếu một trong hai sẽ gây lỗi Angular compiler.
+
+---
+
+❌ **Dùng `[disabled]="true"` để biểu thị trạng thái đọc (DETAIL state)**
+```html
+<!-- Đừng làm vậy -->
+<sd-radio [disabled]="true" ...></sd-radio>
+```
+Thay vào đó hãy dùng:
+```html
+<sd-radio [viewed]="true" ...></sd-radio>
+```
+`[viewed]="true"` ẩn radio group và hiển thị text/link — đúng semantic cho màn hình xem chi tiết.
+
+---
+
+❌ **Trộn nhiều kiểu dữ liệu trong `items`**
+```typescript
+// Đừng làm vậy
+items = ['active', { code: 'inactive', name: 'Không hoạt động' }];
+```
+Thay vào đó hãy dùng:
+```typescript
+items = [
+  { code: 'active', name: 'Hoạt động' },
+  { code: 'inactive', name: 'Không hoạt động' },
+];
+```
+Lookup dùng `item[valueField]`; primitive trong array sẽ trả về `undefined`.
 
 ## Related
 - `<sd-select>` — dropdown picker for longer or API-loaded lists

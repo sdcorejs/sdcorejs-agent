@@ -1,10 +1,12 @@
 # SdStorageService
 
+**Library version**: `@sd-angular/core@19.0.0-beta.86`
+
+
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdStorageService`
 **Provided in**: `'root'`
 **Import path**: `@sd-angular/core/services/storage`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
 
 ## One-line purpose
 Reactive `localStorage` / `sessionStorage` wrapper that gives you a typed `SdStorage<T>` handle with `get / set / has / remove` plus a `BehaviorSubject` and `Observable` mirror, layered with an in-memory cache and pluggable key namespacing.
@@ -31,7 +33,7 @@ create<T = any>(key: string | object, option?: SdStorageOption<T>): SdStorage<T>
 ```
 
 **Parameters**:
-- `key` (`string | object`): if string, used directly; if object, hashed via `SdUtilities.hash(key)`. Then optionally rewritten by `SD_STORAGE_CONFIG.key`.
+- `key` (`string | object`): if string, used directly; if object, hashed via `Utilities.hash(key)`. Then optionally rewritten by `SD_STORAGE_CONFIG.key`.
 - `option` (`SdStorageOption<T>`, optional):
   - `type?: 'session'` — use `sessionStorage` (default `localStorage`).
   - `default?: T` — value returned by `get()` and seeded on the subject when nothing is stored.
@@ -114,7 +116,7 @@ draft.set(this.form.value);
 ```typescript
 const key = { userId: 42, page: 'reports' };
 const filters = this.storage.create<Filter[]>(key, { default: [] });
-// effective key = SdUtilities.hash({...})
+// effective key = Utilities.hash({...})
 ```
 
 ### 4. App-wide versioning via SD_STORAGE_CONFIG
@@ -136,4 +138,4 @@ providers: [
 
 ## Related
 - `SdCacheService` (`@sd-angular/core/services/cache`) — adds TTL semantics on top of similar storage primitives.
-- `SdUtilities.hash` (`@sd-angular/core/utilities`) — hashes object keys.
+- `Utilities.hash` (`@sd-angular/core/utilities`) — hashes object keys.

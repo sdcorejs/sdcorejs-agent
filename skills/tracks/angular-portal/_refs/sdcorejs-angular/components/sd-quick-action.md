@@ -5,107 +5,96 @@
 **Import path**: `@sd-angular/core/components/quick-action` (or barrel: `@sd-angular/core/components`)
 **Class**: `SdQuickAction`
 **Standalone**: yes
-**Change detection**: default
+**Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
-Two-slot row that pairs a left-side message with a right-side action button (or button group). Used for "quick action" rows in cards / lists — a short label + a CTA — rather than as a popover menu trigger.
+Floating bottom toolbar that slides up to reveal a message (left) and optional action buttons (right). Designed for "selection action" patterns — e.g. when the user selects rows in `<sd-table>`, this bar appears at the bottom showing "N selected" + bulk action buttons.
 
 ## When to use
-- Inside a `<sd-section>` body to present a quick CTA row (e.g. "Bạn có 3 yêu cầu đang chờ duyệt" + "Xem ngay" button)
-- Empty-state rows that pair a hint message with a primary action
-- Settings rows: "Thông báo qua email" + toggle / "Cấu hình" button
-- List header strips that show a count message and a bulk-action button on the right
-- Wherever you want a consistent `message ←→ action` row with built-in spacing
+- Bulk-action toolbar for table row selection (current canonical use: `<sd-table>`'s selector slot)
+- "Floating" CTA that should appear above content without affecting page layout (no reflow when toggled)
+- Sticky undo / clipboard / multi-select toolbars
 
 ## When NOT to use
-- For full-width form rows with multiple form fields → use `<sd-section-item>`
-- For icon-only buttons that open menus → just use `<sd-button>` with a popover; this component does not render a popover
-- For navigation tabs → `<sd-tab-router>`
-- For cards with rich content (image, multi-line, footer) → use `<sd-section>` with sub-items
+- ❌ For an inline message+action row inside a card body → use a plain `<div class="d-flex align-items-center gap-16">` with `<sd-button>`.
+- ❌ For a popover menu / dropdown → the component has no anchor logic; use `<sd-button>` + `mat-menu` or your own overlay.
+- ❌ For a top banner / system notification → use `<sd-notify>` (toast service) or build a banner component.
+- ❌ For modals → use `<sd-modal>`.
+
+## Visual / behavior
+- **Positioning**: `position: fixed; bottom: 90px; left: 0; right: 0; margin: auto;` — horizontally centered, floating 90px from the viewport bottom.
+- **Width**: `max-content` (sizes to natural content), capped at `min(90vw, 720px)`. No fixed `min-width`.
+- **Reveal animation**: slides up from below with `transform: translate3d(0, 100%, 0)` → `translate3d(0, 0, 0)`, opacity 0 → 1, 200ms ease-in-out. `visibility` toggled too so it's removed from the a11y tree when hidden.
+- **Empty action slot**: when `[sdAction]` projects nothing, the action wrapper is `display: none` and the gap collapses — so a message-only toolbar isn't stretched / lopsided.
 
 ## Inputs
 | Name | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `isOpened` | `'' \| boolean \| undefined \| null` | `false` | Coerces to boolean. Adds `.active` class to the host row when true. Bare attribute (`<sd-quick-action isOpened>`) = true. Used to highlight the row (e.g. when its action target is currently expanded elsewhere). |
-
-> **Coerce note**: `isOpened` is set through a setter (`set _isOpened`) that runs `!!value`, so empty string, `null`, `undefined` all become `false`.
+| `opened` | `boolean` (signal input with `booleanAttribute` transform) | `false` | Bare attribute (`<sd-quick-action opened>`) = true. When true, the host gets the `.active` class which triggers the slide-up animation. |
 
 ## Outputs
 None.
 
 ## Public API
-| Method | Notes |
-| --- | --- |
-| `open()` | Sets `isOpened = true` (synchronous). |
-| `close()` | Sets `isOpened = false` (synchronous). |
+None. The component is driven entirely by the `opened` input — no imperative methods. (Previously had `open()` / `close()`; those were removed in the signal refactor since no consumer used them.)
 
 ## Content projection (slots)
 | Slot selector | Purpose |
 | --- | --- |
-| `[sdMessage]` | Left side — the descriptive text. Renders inside a `flex-1` `T14R` (14px regular) wrapper so it grows to fill available space. |
-| `[sdAction]` | Right side — the action element(s). Typically one or two `<sd-button>`s, or a `<sd-toggle>`. Sits next to the message with a 16px gap (`gap-16`). |
-
-## Visual cues (helps agent map screenshots → component)
-- A horizontal flex row with class `c-quick-action`, vertical-center alignment, 16px gap
-- Left: text content from `[sdMessage]` slot (T14R typography token, 14px regular weight)
-- Right: action content from `[sdAction]` slot (inline, no flex grow → sits on the far right)
-- When `isOpened` is true: the host gets the `.active` class (typically used by SCSS to apply a tinted background or border to indicate the action is currently in-progress / expanded)
-- No icon, no popover, no caret — this is a layout shell, not a menu trigger
+| `[sdMessage]` | Left side — the descriptive text. Renders inside a `flex: 1 1 auto` wrapper with `T14R` typography (14px regular). Can be plain text, a count badge + label, or any inline content. |
+| `[sdAction]` | Right side — the action element(s), typically one or more `<sd-button>`s. If this slot has NO projected content, it's hidden and the inner gap collapses (no trailing whitespace). |
 
 ## Examples
 
-### 1. Hint row inside a section
+### 1. Canonical use — bulk actions in a table
 ```html
-<sd-section title="Yêu cầu của tôi">
-  <sd-quick-action>
-    <span sdMessage>Bạn có <b>3</b> yêu cầu đang chờ duyệt.</span>
-    <sd-button sdAction
-      type="link" color="primary" title="Xem ngay" suffixIcon="arrow_forward"
-      (click)="goToPending()">
-    </sd-button>
-  </sd-quick-action>
-</sd-section>
-```
-
-### 2. Setting row with a toggle
-```html
-<sd-quick-action>
-  <span sdMessage>Nhận thông báo qua email khi có yêu cầu mới</span>
-  <sd-toggle sdAction [(ngModel)]="settings.emailNotify"></sd-toggle>
+<!-- Inside sd-table's selector-action component -->
+<sd-quick-action [opened]="hasSelection()">
+  <div class="d-flex align-items-center" sdMessage>
+    <div class="c-bg-length"><span class="c-length">{{ selected().length }}</span></div>
+    <div class="c-message">{{ message() }}</div>
+  </div>
+  @if (actions().length > 0) {
+    <div class="d-flex align-items-center" sdAction>
+      @for (action of actions(); track action.title) {
+        <sd-button class="ml-4" [title]="action.title" (click)="onAction(action)"></sd-button>
+      }
+      <sd-button class="ml-4" prefixIcon="close" type="outline" (click)="onClear()"></sd-button>
+    </div>
+  }
 </sd-quick-action>
 ```
 
-### 3. Empty-state CTA
+When `actions()` is empty, only the count message renders — and the toolbar shrinks to fit (no awkward 320px stretch).
+
+### 2. Message-only floating notice
 ```html
-<sd-quick-action>
-  <span sdMessage class="text-secondary">Chưa có dữ liệu — hãy tạo bản ghi đầu tiên.</span>
-  <sd-button sdAction
-    type="fill" color="primary" prefixIcon="add" title="Tạo mới"
-    (click)="onCreate()">
-  </sd-button>
+<sd-quick-action [opened]="isSyncing()">
+  <span sdMessage>Đang đồng bộ dữ liệu…</span>
 </sd-quick-action>
 ```
 
-### 4. Highlighted row driven by parent state
+The empty `[sdAction]` slot is handled by `:has()` + `:empty` CSS rules — the toolbar fits the message naturally.
+
+### 3. Undo toast
 ```html
-<sd-quick-action [isOpened]="editingPanel === 'security'">
-  <span sdMessage>Bảo mật tài khoản</span>
-  <sd-button sdAction
-    type="outline" title="Cấu hình"
-    (click)="open('security')">
-  </sd-button>
+<sd-quick-action [opened]="lastDeleted() !== null">
+  <span sdMessage>Đã xoá {{ lastDeleted()?.name }}.</span>
+  <sd-button sdAction type="link" color="primary" title="Hoàn tác" (click)="undo()"></sd-button>
 </sd-quick-action>
 ```
 
 ## Anti-patterns
-- ❌ Putting form inputs inside `[sdAction]` — they will sit on the right with no label alignment; use `<sd-section-item>` for label+input rows instead
-- ❌ Treating this as a popover menu (it isn't — there's no overlay layer)
-- ❌ Stacking many `<sd-quick-action>`s without a divider parent — visually they blur together; group them inside a `<sd-section>` with body padding
-- ❌ Wrapping multiple buttons in `[sdAction]` without a flex container — they will stack inline with no spacing; use `<div sdAction class="d-flex gap-8">...</div>`
-- ❌ Forgetting the `sdMessage` / `sdAction` directive attributes — content without those selectors falls into the default slot, but neither slot has a default rendering, so the content is dropped
+- ❌ **Stacking multiple `<sd-quick-action>`s** — they all use `position: fixed` at the same bottom slot, so they'll overlap. Only ONE should be open at a time per page.
+- ❌ **Using it inline inside a card** — the `position: fixed` will pull it out of normal flow to the bottom of the viewport. Use a plain flex row instead for inline cases.
+- ❌ **Triggering `.open()` imperatively** — those methods were removed. Bind `[opened]` to a signal / variable instead.
+- ❌ **Putting very wide content in `[sdMessage]`** — the toolbar caps at `min(90vw, 720px)`. Long text will wrap (or be cut by your own `text-overflow: ellipsis`). Keep messages concise.
+- ❌ **Forgetting `sdMessage` / `sdAction` attributes** — content without those selectors falls into the default slot, but neither slot has a default rendering. Content is dropped silently.
 
 ## Related
-- `<sd-section>` — common parent (often quick-actions live in section bodies)
-- `<sd-section-item>` — label + content row (use for "label : value" data display)
+- `<sd-table>` — the main consumer (selector-action component embeds this for bulk-action UX)
 - `<sd-button>` — typical content of `[sdAction]`
+- `<sd-notify>` — for transient toast notifications (different pattern: top-right, auto-dismiss, no message+action structure)
+- `<sd-modal>` — for blocking dialogs

@@ -8,6 +8,7 @@
 **Change detection**: `OnPush` for all three
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Browser-style multi-tab router shell — every navigated route becomes a tab; tabs persist their component instances (no reload on switch), can be closed, reordered (drag), and replaced. Drives the "open many records side-by-side" UX seen in admin / CRM apps.
 
@@ -38,7 +39,7 @@ Browser-style multi-tab router shell — every navigated route becomes a tab; ta
 ### Inputs
 | Name | Type | Default | Notes |
 | --- | --- | --- | --- |
-| _none_ | — | — | All state is router-driven. Place this at the app shell level instead of `<router-outlet>`. |
+| `disabled` | `boolean` (coerced via `booleanAttribute`) | `false` | When `true`, the outlet bypasses all tab management. Navigation falls through to a standard `<router-outlet>` instead. Useful for embedding the outlet in contexts where tab behaviour should be suppressed (e.g. print view, modal shell). |
 
 ### Outputs
 None.
@@ -101,7 +102,7 @@ export class EmployeeDetailComponent { ... }
 | `name` | `string \| (args) => string` | Tab label. Function form receives `{ url, params, queryParams, data }`. |
 | `icon` | `string \| (args) => string` | Material icon name. |
 | `tooltip` | `string \| (args) => string` | Hover tooltip on the badge. |
-| `color` | `SdColor \| (args) => SdColor` | Badge color token. |
+| `color` | `Color \| (args) => Color` | Badge color token. |
 
 The decorator self-registers via `SdTabDecoratorService` so metadata is resolved when the route activates.
 
@@ -125,7 +126,7 @@ interface SdTabInfo {
   name: string;
   icon?: string;
   tooltip?: string;
-  color?: SdColor;
+  color?: Color;
 }
 ```
 

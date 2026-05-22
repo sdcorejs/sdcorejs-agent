@@ -1,10 +1,12 @@
 # SdLoadingService
 
+**Library version**: `@sd-angular/core@19.0.0-beta.86`
+
+
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdLoadingService`
 **Provided in**: `'root'`
 **Import path**: `@sd-angular/core/services/loading`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
 
 ## One-line purpose
 Imperatively attaches/detaches a full-cover spinner overlay to any DOM element (default `body`) by selector — uses Angular `Renderer2` and tracks per-element state via a `WeakMap`.
@@ -25,25 +27,37 @@ Imperatively attaches/detaches a full-cover spinner overlay to any DOM element (
 Creates and appends a full-cover spinner overlay to the first DOM element matching `element` (CSS selector). No-op if the element already has an overlay or no element matches.
 
 ```typescript
-start = (element?: string = 'body') => void;
+start(element?: string): void
 ```
 
 **Parameters**:
 - `element` (`string`, optional, default `'body'`): CSS selector passed to `document.querySelector`.
 
+**Returns**: `void`
+
 ### `stop(element?: string): void`
-Removes the overlay previously attached to the matched element. No-op if there is no overlay.
+Removes the overlay previously attached to the matched element. No-op if there is no overlay or no element matches the selector.
 
 ```typescript
-stop = (element?: string = 'body') => void;
+stop(element?: string): void
 ```
 
-### `isLoading(element?: string): boolean | null`
-Returns whether the matched element currently has an overlay. Returns falsy (`null`) when no element matches.
+**Parameters**:
+- `element` (`string`, optional, default `'body'`): CSS selector of the target element whose overlay should be removed.
+
+**Returns**: `void`
+
+### `isLoading(element?: string): Element | null | false`
+Returns truthy when the matched element currently has an active overlay; falsy otherwise. Specifically returns the `Element` if found and loading, `false` if found but not loading, and `null` if no element matches the selector.
 
 ```typescript
-isLoading = (element?: string = 'body') => boolean | null;
+isLoading(element?: string): Element | null | false
 ```
+
+**Parameters**:
+- `element` (`string`, optional, default `'body'`): CSS selector of the element to check.
+
+**Returns**: Truthy (`Element`) when the element exists and has an overlay; falsy (`null` or `false`) otherwise.
 
 ## Configuration / DI tokens
 None. The service has no external configuration.

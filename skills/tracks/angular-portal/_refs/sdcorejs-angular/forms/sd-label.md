@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Tiny presentational label primitive — renders the standard SDCoreJS field label row: `<text> [info-icon-with-tooltip] [*]` plus an optional description. Used internally by every `<sd-input>` / `<sd-select>` / `<sd-autocomplete>` / `<sd-date>` / etc. — and exposed for places where you need the same label styling without a form field.
 
@@ -51,7 +52,28 @@ None — all rendering is driven by the four inputs.
 
 ## Examples
 
+### 0. Import vào component
+
+```ts
+import { SdLabel } from '@sd-angular/core/forms/label';
+// hoặc barrel:
+// import { SdLabel } from '@sd-angular/core/forms';
+
+@Component({
+  standalone: true,
+  imports: [SdLabel],
+  templateUrl: './my.component.html',
+})
+export class MyComponent {
+  required = true;
+  helperText = 'Giải thích thêm về trường này';
+}
+```
+
 ### 1. Standalone label above a read-only computed value
+
+`helperText` hiển thị icon ⓘ; hover vào sẽ thấy tooltip phía dưới.
+
 ```html
 <div class="form-field">
   <sd-label
@@ -63,6 +85,9 @@ None — all rendering is driven by the four inputs.
 ```
 
 ### 2. Required + description
+
+`required` có thể truyền dưới dạng bare attribute (không cần `[required]="true"`). `description` xuất hiện ở dòng thứ hai bên dưới label, dùng style muted `T12R`.
+
 ```html
 <sd-label
   label="Mã khách hàng"
@@ -72,6 +97,9 @@ None — all rendering is driven by the four inputs.
 ```
 
 ### 3. Inside a custom widget panel
+
+Dùng `<sd-label>` để đồng nhất styling với các form control khác trên cùng trang, dù không có input ngay bên dưới.
+
 ```html
 <div class="panel">
   <sd-label label="Tài liệu đính kèm" helperText="Tối đa 10 file, mỗi file ≤ 10MB"></sd-label>

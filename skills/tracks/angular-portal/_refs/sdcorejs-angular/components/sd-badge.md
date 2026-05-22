@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Status / label indicator — shows a state (success / warning / error / info / …) as a colored dot, icon-with-text, or pill tag. Not a primary action; render-only by default but can opt into clicks.
 
@@ -28,7 +29,7 @@ Status / label indicator — shows a state (success / warning / error / info / �
 | Name | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `type` | `'tag' \| 'round' \| 'icon'` | `'icon'` | Visual variant. `icon`=icon-with-text inline; `round`=solid pill with text only (good for status/counters); `tag`=light-tinted card with icon + title + optional description. Falsy values coerce back to `'icon'`. |
-| `color` | `SdColor` (`'primary' \| 'secondary' \| 'success' \| 'info' \| 'warning' \| 'error' \| …`) | `'secondary'` | Color token. Falsy values coerce back to `'secondary'`. Overridden by the boolean shortcuts below. |
+| `color` | `Color` (`'primary' \| 'secondary' \| 'success' \| 'info' \| 'warning' \| 'error' \| …`) | `'secondary'` | Color token. Falsy values coerce back to `'secondary'`. Overridden by the boolean shortcuts below. |
 | `primary` | `boolean` | `false` | `transform: booleanAttribute` — bare attribute = true. Shortcut for `color="primary"`. |
 | `secondary` | `boolean` | `false` | `transform: booleanAttribute` — bare attribute = true. Shortcut for `color="secondary"`. |
 | `success` | `boolean` | `false` | `transform: booleanAttribute` — bare attribute = true. Shortcut for `color="success"`. |

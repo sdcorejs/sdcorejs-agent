@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Workhorse text input — single-line `text`/`email`/`password`/`number` field with label, validators (required/min/max-length/pattern), pattern presets, and DETAIL `[viewed]` read-only mode. Use this everywhere a user types free text.
 
@@ -31,7 +32,7 @@ Workhorse text input — single-line `text`/`email`/`password`/`number` field wi
 | `name` | `string` | random uuid | FormGroup control name when bound via `[form]`. |
 | `appearance` | `MatFormFieldAppearance` | from `SD_FORM_CONFIGURATION` ?? `'outline'` | Material form-field style. |
 | `floatLabel` | `FloatLabelType` | `'auto'` | Material float-label behaviour. |
-| `size` | `SdSize` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
+| `size` | `Size` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
 | `form` | `NgForm \| FormGroup \| undefined` | `undefined` | Parent form. NgForm is auto-unwrapped to its inner `FormGroup`. |
 | `label` | `string \| undefined` | `undefined` | Field label (rendered via `<sd-label>`). |
 | `helperText` | `string \| undefined` | `undefined` | Hint text under the field. |
@@ -39,7 +40,7 @@ Workhorse text input — single-line `text`/`email`/`password`/`number` field wi
 | `type` | `'text' \| 'number' \| 'password' \| 'email'` | `'text'` | HTML input type. For numeric formatting, prefer `<sd-input-number>` over `type="number"`. |
 | `minlength` | `number \| undefined` | `undefined` | Adds `Validators.minLength`. |
 | `maxlength` | `number \| undefined` | `undefined` | Adds `Validators.maxLength`. |
-| `pattern` | `SdPatternType \| string \| null \| undefined` | `undefined` | Either a known `SdPatternType` (e.g. `EMAIL`, `PHONE`, `TAX_CODE` — looked up in `SdPatternCommons`) OR a raw regex string. |
+| `pattern` | `ValidationPatternType \| string \| null \| undefined` | `undefined` | Either a known `ValidationPatternType` (e.g. `EMAIL`, `PHONE`, `TAX_CODE` — looked up in `VALIDATION_PATTERNS`) OR a raw regex string. |
 | `patternErrorMessage` | `string \| null \| undefined` | from preset | Override the error message for `pattern`. Falls back to the preset's built-in message. |
 | `validator` | `SdCustomValidator \| undefined` | `undefined` | Async custom validator (wrapped via `HandleSdCustomValidator`). |
 | `inlineError` | `string \| undefined` | `undefined` | Forces an inline error message (synthetic `inlineError` validator). |
@@ -74,8 +75,31 @@ Workhorse text input — single-line `text`/`email`/`password`/`number` field wi
 - **Does NOT implement `ControlValueAccessor`.** Forms use the SDCoreJS pattern: pass the parent form via `[form]="formGroup"` (or `[form]="ngForm"`) plus a `name`. On `ngAfterViewInit`, the component calls `formGroup.addControl(name, formControl)` and removes it in `ngOnDestroy`.
 - **`formControlName` and `[(ngModel)]` are NOT supported.** Use `[(model)]` for two-way value binding and `[form]+[name]` for FormGroup integration.
 - **`[viewed]="true"`** flips into DETAIL read-only mode: the input is hidden and the value (or `<ng-template sdViewDef>`) is rendered. If `hyperlink` is set, the value renders as a link.
-- **Validators**: `[required]` → `Validators.required`. `[minlength]` / `[maxlength]` → Angular's built-in length validators. `[pattern]` accepts either an `SdPatternType` preset (looked up in `SdPatternCommons`) or a raw regex string. `[validator]` accepts an async custom validator. `[inlineError]="msg"` injects a synthetic error. Built-in error tooltip messages: required → "Vui lòng nhập thông tin"; maxlength → "Số ký tự tối đa: N"; pattern → preset message or "Định dạng không hợp lệ"; inlineError → echoes `inlineError`.
+- **Validators**: `[required]` → `Validators.required`. `[minlength]` / `[maxlength]` → Angular's built-in length validators. `[pattern]` accepts either an `ValidationPatternType` preset (looked up in `VALIDATION_PATTERNS`) or a raw regex string. `[validator]` accepts an async custom validator. `[inlineError]="msg"` injects a synthetic error. Built-in error tooltip messages: required → "Vui lòng nhập thông tin"; maxlength → "Số ký tự tối đa: N"; pattern → preset message or "Định dạng không hợp lệ"; inlineError → echoes `inlineError`.
+- **Reactive validator updates** — validator inputs (`required` / `minlength` / `maxlength` / `pattern` / `inlineError` / `validator`) are signal inputs; an internal `effect()` re-runs `setValidators` + `updateValueAndValidity({ emitEvent: false })` whenever any of them changes. You can flip `required` on/off at runtime and the control re-validates automatically (no manual `reValidate()` needed).
+- **`[disabled]` reactive** — toggling `disabled` calls `formControl.disable() / enable()` via an effect, with `emitEvent: false` (no spurious `statusChanges`).
+- **`[(model)]` two-way** — host-side writes propagate via an effect: when `model` changes, the component calls `formControl.setValue(val, { emitEvent: false })` so the host won't re-trigger its own `(modelChange)` listener. The reverse direction (user typing → `valueChanges` → `valueModel.set()` → `(modelChange)` emit) runs through the normal Angular signal-model mechanism.
 - **Auto-trim on blur / Enter** — leading/trailing whitespace is stripped from the value when the user blurs or presses Enter.
+- **Default `appearance`** — when `[appearance]` is omitted, the component reads the `SD_FORM_CONFIGURATION` injection token (`{ appearance: MatFormFieldAppearance }`). Provide it once at the application bootstrap to flip ALL inputs to `'fill'` (or any other appearance) without touching each template. Falls back to `'outline'` if the token isn't provided.
+
+### Three ways to integrate
+
+```html
+<!-- 1. Template-driven with [(model)] (no FormGroup) -->
+<sd-input label="Họ tên" [(model)]="model.name"></sd-input>
+
+<!-- 2. Reactive FormGroup (pass the group in, the input self-registers via addControl) -->
+<form [formGroup]="form">
+  <sd-input label="Họ tên" name="name" [form]="form" required></sd-input>
+</form>
+
+<!-- 3. NgForm (template-driven group) -->
+<form #f="ngForm">
+  <sd-input label="Họ tên" name="name" [form]="f" required></sd-input>
+</form>
+```
+
+> **How it works**: the `[form]` signal-input has a `transform` that detects `NgForm` (via `instanceof NgForm` — unwraps `.form`) and `FormGroup` (used directly). It also accepts an object literal of shape `{ form: FormGroup }` as a safety fallback. In all three patterns the component manages `addControl` / `removeControl` lifecycle internally — never call them yourself.
 
 ## Visual cues (helps agent map screenshots → component)
 - A standard outlined Material input field with optional label (floats above on focus or when filled)
@@ -147,7 +171,7 @@ Workhorse text input — single-line `text`/`email`/`password`/`number` field wi
 - ❌ Using `[disabled]="true"` to express read-only DETAIL state — use `[viewed]="true"` instead so labels/links render correctly.
 - ❌ Using `type="number"` for VND amounts — use `<sd-input-number>` for proper thousand-separator formatting.
 - ❌ Wiring up trim logic in the parent — the component already trims on blur/Enter.
-- ❌ Hard-coding regex for common patterns — check `SdPatternCommons` first (`EMAIL`, `PHONE`, `TAX_CODE`, …) so error messages stay consistent.
+- ❌ Hard-coding regex for common patterns — check `VALIDATION_PATTERNS` first (`EMAIL`, `PHONE`, `TAX_CODE`, …) so error messages stay consistent.
 - ❌ Hand-rolling a "clear" suffix — most layouts prefer letting the user select-all / delete; only add an explicit clear button when the field is critical (search bars, filters).
 
 ## Related
@@ -157,6 +181,6 @@ Workhorse text input — single-line `text`/`email`/`password`/`number` field wi
 - `<sd-label>` — label primitive used internally
 - `SdSuffixDefDirective` — custom suffix template
 - `SdViewDefDirective` — DETAIL-mode template projection
-- `SdPatternCommons` / `SdPatternType` — pattern presets registry
+- `VALIDATION_PATTERNS` / `ValidationPatternType` — pattern presets registry
 - `SD_FORM_CONFIGURATION` token — global default `appearance`
 - `backendErrorValidator(msg)` — exported helper to surface a backend error message as a validator

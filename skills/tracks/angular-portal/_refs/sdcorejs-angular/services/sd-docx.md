@@ -1,10 +1,12 @@
 # SdDocxService
 
+**Library version**: `@sd-angular/core@19.0.0-beta.86`
+
+
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdDocxService`
 **Provided in**: `'root'`
 **Import path**: `@sd-angular/core/services/docx`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
 
 ## One-line purpose
 Converts `.doc` / `.docx` files to standalone HTML in the browser by lazily loading a Pandoc WebAssembly binary; exposes both an "open file picker" flow and a programmatic conversion API.
@@ -27,6 +29,13 @@ Opens a hidden `<input type="file" accept=".doc,.docx">`, awaits user selection,
 ```typescript
 open(options?: SdDocxConvertOptions): Promise<SdDocxConvertResult | null>;
 ```
+
+**Parameters**:
+- `options` (`SdDocxConvertOptions`, optional): validation options forwarded to `convertToHtml` (see interface below).
+
+**Returns**:
+- `SdDocxConvertResult` on successful conversion.
+- `null` if the user cancels the file picker, the file fails validation, or a WASM/network error occurs.
 
 **Behavior**: starts/stops `SdLoadingService` around the conversion, removes its own change listener, and reuses a single `<input>` element (lazily appended to `document.body`).
 
@@ -51,12 +60,19 @@ interface SdDocxConvertResult {
 }
 ```
 
+**Parameters**:
+- `input` (`File | Blob | ArrayBuffer`): the document to convert.
+  - `File` — extension and size are checked when validation flags are enabled.
+  - `Blob` — size is checked; format validation is skipped (no file name).
+  - `ArrayBuffer` — both format and size validation are skipped.
+- `options` (`SdDocxConvertOptions`, optional): see interface above.
+
 **Returns**:
 - `SdDocxConvertResult` on success.
 - `null` on validation failure (a Vietnamese error toast is shown via `SdNotifyService.error`) or on Pandoc/WASM error.
 
 ### `convertToHtmlString(input, options?): Promise<string | null>`
-Thin wrapper around `convertToHtml` returning only the HTML (or `null`).
+Thin wrapper around `convertToHtml` returning only the HTML string (or `null`).
 
 ```typescript
 convertToHtmlString(
@@ -64,6 +80,12 @@ convertToHtmlString(
   options?: SdDocxConvertOptions
 ): Promise<string | null>;
 ```
+
+**Parameters**: same as `convertToHtml` — `input` and `options` are forwarded unchanged.
+
+**Returns**:
+- The `html` string from `SdDocxConvertResult` on success.
+- `null` if `convertToHtml` returns `null` (validation failure or error).
 
 ## Configuration / DI tokens
 None. Constructor injects `SdNotifyService` and `SdLoadingService` for UX feedback.

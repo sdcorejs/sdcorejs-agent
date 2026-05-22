@@ -36,13 +36,13 @@ interface ISdPermissionConfiguration {
   disabled?: boolean;
 
   /** Resolver returning the user's permission codes — sync, Promise, or Observable */
-  loadPermissions: () => SdMaybeAsync<string[]>;
+  loadPermissions: () => MaybeAsync<string[]>;
 
   /** Called when canActivateChild denies — e.g. router.navigateByUrl('/layout/forbidden') */
   onForbiden?: () => void;
 
   /** Returns current access token — used by decodeToken() */
-  getToken?: () => SdMaybeAsync<string | undefined | null>;
+  getToken?: () => MaybeAsync<string | undefined | null>;
 }
 
 // Token accepts a single config OR an array (multi-tenant)

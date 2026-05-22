@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 iOS-style toggle switch — boolean ON/OFF in a single tap. Use for feature flags, settings, "active/inactive" rows where the change applies immediately or as part of a form submission.
 
@@ -27,10 +28,10 @@ iOS-style toggle switch — boolean ON/OFF in a single tap. Use for feature flag
 | --- | --- | --- | --- |
 | `autoId` | `string \| null \| undefined` | `undefined` | Generates `data-autoId="forms-switch-<value>"` for E2E selectors. |
 | `name` | `string` | random uuid | FormGroup control name when bound via `[form]`. |
-| `size` | `SdSize` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Reserved; current template does not branch on this. |
+| `size` | `Size` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Reserved; current template does not branch on this. |
 | `form` | `NgForm \| FormGroup \| undefined \| null` | `undefined` | Parent form. `NgForm` is auto-unwrapped to its inner `FormGroup`. |
 | `label` | `string \| undefined` | `undefined` | Label rendered to the right of the toggle (via `<sd-label>`). |
-| `color` | `SdColor` | `'primary'` | Material color for the ON state knob/track. |
+| `color` | `Color` | `'primary'` | Material color for the ON state knob/track. |
 | `model` | `boolean \| null \| undefined` | `false` | Two-way bound boolean (use `[(model)]`). |
 | `required` | `boolean` | `false` | Adds `Validators.required`. Bare attribute = `true`. |
 | `disabled` | `boolean` | `false` | Disables the underlying `FormControl`. Bare attribute = `true`. |
@@ -51,7 +52,26 @@ None — label comes from the `[label]` input.
 - **Does NOT implement `ControlValueAccessor`.** Forms use the SDCoreJS pattern: pass the parent form via `[form]="formGroup"` (or `[form]="ngForm"`) plus a `name`. On `ngAfterViewInit`, the component calls `formGroup.addControl(name, formControl)` and removes it in `ngOnDestroy`.
 - **`formControlName` and `[(ngModel)]` are NOT supported.** Use `[(model)]` for two-way value binding and `[form]+[name]` for FormGroup integration.
 - **No `[viewed]` mode** — the switch always renders as a toggle. For DETAIL display of a boolean, render plain text yourself (e.g. "Có" / "Không") in the parent view.
-- **Validators**: `[required]` → `Validators.required` (treats `false` as missing). Built-in inline error: required → "Vui lòng nhập thông tin"; suppressed when `[hideInlineError]="true"`.
+- **Validators**: `[required]` → `Validators.required` (rejects `null`/`undefined`/empty; `false` is treated as valid). Built-in inline error: required → "Vui lòng nhập thông tin"; suppressed when `[hideInlineError]="true"`.
+
+### Three ways to integrate
+
+```html
+<!-- 1. Template-driven với [(model)] (no FormGroup) -->
+<sd-switch label="Bật thông báo" [(model)]="settings.notify"></sd-switch>
+
+<!-- 2. Reactive FormGroup (truyền form vào để switch tự addControl) -->
+<form [formGroup]="form">
+  <sd-switch label="Bật" name="notify" [form]="form"></sd-switch>
+</form>
+
+<!-- 3. NgForm (template-driven group) -->
+<form #f="ngForm">
+  <sd-switch label="Bật" name="notify" [form]="f"></sd-switch>
+</form>
+```
+
+> **How it works**: The setter detects `NgForm` (via `instanceof NgForm`) and unwraps its `.form` (`FormGroup`) automatically. In all three patterns the component manages `addControl` / `removeControl` lifecycle internally.
 
 ## Visual cues (helps agent map screenshots → component)
 - A small horizontal pill (track) with a circular sliding knob; OFF state = gray track + knob on the left, ON state = colored track (`color`) + knob on the right

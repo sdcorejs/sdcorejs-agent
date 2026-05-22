@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Typeahead single-select dropdown — user types to filter a static array OR an async backend source, then picks one item. Wraps Material `mat-autocomplete` with SDCoreJS label/validators/`viewed` read-only support.
 
@@ -28,7 +29,7 @@ Typeahead single-select dropdown — user types to filter a static array OR an a
 | --- | --- | --- | --- |
 | `autoId` | `string \| null \| undefined` | `undefined` | Generates `data-autoId="forms-autocomplete-<value>"` for E2E selectors. |
 | `name` | `string` | random uuid | FormGroup control name when bound via `[form]`. |
-| `size` | `SdSize` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
+| `size` | `Size` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
 | `form` | `NgForm \| FormGroup \| undefined` | `undefined` | Parent form. NgForm is auto-unwrapped to its inner `FormGroup`. |
 | `label` | `string \| undefined` | `undefined` | Field label (rendered via `<sd-label>`). |
 | `helperText` | `string \| undefined` | `undefined` | Hint text under the field. |
@@ -66,16 +67,51 @@ Typeahead single-select dropdown — user types to filter a static array OR an a
 - `<ng-template sdViewDef>` — read-only display template used in `[viewed]` mode
 
 ## Form integration
-- **Does NOT implement `ControlValueAccessor`.** Forms use the SDCoreJS pattern: pass the parent form via `[form]="formGroup"` (or `[form]="ngForm"`) plus a `name`. The component then `addControl(name, formControl)` to that group on `ngAfterViewInit`.
+- **Does NOT implement `ControlValueAccessor`.** Forms use the SDCoreJS pattern: pass the parent form via `[form]="formGroup"` (or `[form]="ngForm"`) plus a `name`. The component then calls `formGroup.addControl(name, formControl)` on `ngAfterViewInit` and `formGroup.removeControl(name)` on `ngOnDestroy`.
 - **`formControlName` and `[(ngModel)]` are NOT supported.** Use `[(model)]` for two-way value binding and `[form]+[name]` for FormGroup integration.
 - **`[viewed]="true"`** flips into DETAIL read-only mode: input is hidden, the display label (or `<ng-template sdViewDef>`) is rendered. If `hyperlink` is set, the value renders as a link.
 - **Validators**: `[required]` adds `Validators.required`. `[validator]` accepts an async custom validator. `[inlineError]="msg"` injects a synthetic error and shows `msg`. Built-in error tooltip messages: required → "Vui lòng nhập thông tin"; custom validator and inline-error messages bubble up via `errorTooltipMessage`.
+- **Reactive validator updates** — `required`, `validator`, and `inlineError` are signal inputs; an internal `effect()` calls `setValidators` + `updateValueAndValidity({ emitEvent: false })` whenever any of them changes. You can flip validators on/off at runtime with no manual call needed.
+- **`[disabled]` reactive** — toggling `disabled` calls `inputControl.disable() / enable()` and `formControl.disable() / enable()` via an effect, with `emitEvent: false` (no spurious `statusChanges`).
+- **`[(model)]` two-way** — host writes propagate via an effect: when `model` changes, the component calls `formControl.setValue(val, { emitEvent: false })` to avoid triggering `valueChanges`. The reverse direction (selection → `formControl.setValue` → `valueModel.set()` → `(modelChange)`) flows through the normal signal-model mechanism.
+- **`[form]` transform** — the `form` input accepts `NgForm` (unwrapped to its inner `FormGroup`), `FormGroup` (used directly), or an object with shape `{ form: FormGroup }` as a safety fallback.
+- **Default `appearance`** — when `[appearance]` is omitted, reads `SD_FORM_CONFIGURATION` injection token. Falls back to `'outline'` if the token is absent.
+
+### Three ways to integrate
+
+```html
+<!-- 1. Template-driven with [(model)] only (no FormGroup needed) -->
+<sd-autocomplete
+  label="Trạng thái" [items]="statusOptions"
+  valueField="code" displayField="name"
+  [(model)]="model.status">
+</sd-autocomplete>
+
+<!-- 2. Reactive FormGroup (component self-registers via addControl) -->
+<form [formGroup]="form">
+  <sd-autocomplete
+    label="Trạng thái" name="status" [form]="form"
+    [items]="statusOptions" valueField="code" displayField="name"
+    [(model)]="model.status" required>
+  </sd-autocomplete>
+</form>
+
+<!-- 3. NgForm (template-driven group) -->
+<form #f="ngForm">
+  <sd-autocomplete
+    label="Trạng thái" name="status" [form]="f"
+    [items]="statusOptions" valueField="code" displayField="name"
+    [(model)]="model.status">
+  </sd-autocomplete>
+</form>
+```
+
+> **How it works**: the `[form]` signal-input has a `transform` that detects `NgForm` (via `instanceof NgForm` — unwraps `.form`) and `FormGroup` (used directly). In all three patterns the component manages `addControl` / `removeControl` lifecycle internally — never call them yourself.
 
 ## Visual cues (helps agent map screenshots → component)
 - Outlined input field with a label that floats on focus
-- Trailing icons: ▼ caret to toggle the panel; ✕ clear button when a value is set; optional "+" add button when `[addable]`
-- Below the field, a Material panel slides down listing matching options; each row uses `displayField` (or custom `sdValue` template)
-- Loading spinner appears in the panel when an async `items` function is in flight
+- Trailing icons: 🔍 search icon when empty; ✕ cancel icon (×) when a value is selected; loading spinner when an async source is in flight; optional "+" add button when `[addable]`
+- Below the field, a Material panel slides down listing matching options; each row uses `displayField` (or custom `sdItemDef` template)
 - Highlighted/selected option painted in primary color
 - In `[viewed]="true"` mode: no input box — just plain text (or hyperlink) of the resolved display value
 

@@ -8,6 +8,7 @@
 **Change detection**: `OnPush`
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ## One-line purpose
 Numeric input with locale-aware formatting (VN `1.234.567,89` or ISO `1,234,567.89`), keystroke filtering, optional negative/positive constraint, decimal precision, and min/max validators. Use for any monetary or quantity field.
 
@@ -29,7 +30,7 @@ Numeric input with locale-aware formatting (VN `1.234.567,89` or ISO `1,234,567.
 | --- | --- | --- | --- |
 | `autoId` | `string \| null \| undefined` | `undefined` | Generates `data-autoId="forms-input-number-<value>"` for E2E selectors. |
 | `name` | `string` | random uuid | FormGroup control name when bound via `[form]`. |
-| `size` | `SdSize` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
+| `size` | `Size` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
 | `form` | `NgForm \| FormGroup \| undefined` | `undefined` | Parent form. NgForm is auto-unwrapped to its inner `FormGroup`. |
 | `label` | `string \| undefined` | `undefined` | Field label (rendered via `<sd-label>`). |
 | `helperText` | `string \| undefined` | `undefined` | Hint text under the field. |
@@ -73,7 +74,31 @@ Numeric input with locale-aware formatting (VN `1.234.567,89` or ISO `1,234,567.
 - **`formControlName` and `[(ngModel)]` are NOT supported.** Use `[(model)]` for two-way value binding and `[form]+[name]` for FormGroup integration.
 - **`[viewed]="true"`** flips into DETAIL read-only mode: the input is hidden and the formatted number (or `<ng-template sdViewDef>`) is rendered. If `hyperlink` is set, the value renders as a link.
 - **Validators**: `[required]` → `Validators.required`. `[min]` / `[max]` → Angular's `Validators.min` / `Validators.max`. `[validator]` accepts an async custom validator. Error tooltip messages: required → "Vui lòng nhập thông tin"; min → "Giá trị không được nhỏ hơn N"; max → "Giá trị không được lớn hơn N"; inlineError → echoes `inlineError`.
+- **Reactive validator updates** — validator inputs (`required` / `min` / `max` / `inlineError` / `validator`) are signal inputs; an internal `effect()` re-runs `setValidators` + `updateValueAndValidity({ emitEvent: false })` whenever any of them changes. Validators update automatically at runtime — no manual `reValidate()` needed.
+- **`[disabled]` reactive** — toggling `disabled` calls `inputControl.disable() / enable()` and `formControl.disable() / enable()` via an effect, with `emitEvent: false` (no spurious `statusChanges`).
+- **`[(model)]` two-way** — host-side writes propagate via an effect: when `model` changes, the component calls `formControl.setValue(val, { emitEvent: false })` and syncs `inputControl` with the formatted display string so the host won't re-trigger its own `(modelChange)` listener. The reverse direction (user typing → `inputControl.valueChanges` → parse → `valueModel.set()` → `(modelChange)` emit) runs through the normal Angular signal-model mechanism.
 - **Locale formatting** is driven by `SD_CORE_CONFIGURATION.format.number`. When set to `'1.234.567,89'` (VN-style), thousands separator is `.` and decimal separator is `,`. Otherwise ISO-style: thousands `,` and decimal `.`. Keystrokes that would break the active regex are blocked; paste and IME composition are validated and rolled back if invalid.
+- **Blur clean-up** — on blur, a trailing decimal separator (e.g. `"123."`) is stripped; whitespace is trimmed; an empty or whitespace-only value resolves to `null`.
+- **Default `appearance`** — when `[appearance]` is omitted, the component reads the `SD_FORM_CONFIGURATION` injection token (`{ appearance: MatFormFieldAppearance }`). Provide it once at application bootstrap to flip ALL form fields to `'fill'` (or any other appearance). Falls back to `'outline'` if the token is not provided.
+
+### Three ways to integrate
+
+```html
+<!-- 1. Template-driven with [(model)] (no FormGroup) -->
+<sd-input-number label="Số tiền" [(model)]="model.amount"></sd-input-number>
+
+<!-- 2. Reactive FormGroup (pass the group in, the input self-registers via addControl) -->
+<form [formGroup]="form">
+  <sd-input-number label="Số tiền" name="amount" [form]="form" required></sd-input-number>
+</form>
+
+<!-- 3. NgForm (template-driven group) -->
+<form #f="ngForm">
+  <sd-input-number label="Số tiền" name="amount" [form]="f" required></sd-input-number>
+</form>
+```
+
+> **How it works**: the `[form]` signal-input has a `transform` that detects `NgForm` (via `instanceof NgForm` — unwraps `.form`) and `FormGroup` (used directly). It also accepts an object literal of shape `{ form: FormGroup }` as a safety fallback. In all three patterns the component manages `addControl` / `removeControl` lifecycle internally — never call them yourself.
 
 ## Visual cues (helps agent map screenshots → component)
 - An outlined input field that visually looks like `<sd-input>` BUT typed digits are auto-grouped — typing `1234567` shows `1.234.567` (VN) or `1,234,567` (ISO)

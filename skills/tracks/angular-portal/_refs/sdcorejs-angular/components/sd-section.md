@@ -8,6 +8,7 @@
 **Change detection**: default (signals-driven)
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
 
+
 ---
 
 ## `<sd-section>`
@@ -35,7 +36,7 @@ Card-style content panel with a header (icon + title + sub-title), optional coll
 | `title` | `string \| null \| undefined` | `undefined` | Header title. When set, the native `title` attribute is removed from the host (avoids duplicate browser tooltip). |
 | `subTitle` | `string \| null \| undefined` | `undefined` | Smaller second-line text under the title (`T12R text-secondary`). |
 | `icon` | `string \| null \| undefined` | `undefined` | Material icon name shown left of the title (only renders when no `[sdHeaderLeft]` slot content overrides it). |
-| `iconColor` | `SdColor` (`'primary' \| 'secondary' \| 'error' \| 'warning' \| 'success' \| ...`) | `'primary'` | Icon color token. Maps to `text-primary` / `text-secondary` / `text-error` / `text-warning` / `text-success` classes. |
+| `iconColor` | `Color` (`'primary' \| 'secondary' \| 'error' \| 'warning' \| 'success' \| ...`) | `'primary'` | Icon color token. Maps to `text-primary` / `text-secondary` / `text-error` / `text-warning` / `text-success` classes. |
 | `collapsed` | `boolean` (model — two-way) | `false` | Two-way bindable via `[(collapsed)]`. When true and `collapsable` is true, hides the body. |
 | `collapsable` | `boolean` | `false` | Bare attribute = true. Enables the click-to-collapse behavior on the header and shows the chevron icon (`expand_more` / `expand_less`). |
 | `hideHeader` | `boolean` | `false` | Bare attribute = true. Hides the entire header row; body renders without a top border. |
@@ -47,6 +48,11 @@ Card-style content panel with a header (icon + title + sub-title), optional coll
 | Name | Type | Notes |
 | --- | --- | --- |
 | `collapsedChange` | `boolean` | Emitted by the `collapsed` signal model whenever the user toggles via clicking the header. |
+
+### Public API
+| Method | Signature | Notes |
+| --- | --- | --- |
+| `toggleCollapse()` | `() => void` | Flips `collapsed` if `collapsable()` is true. If `collapsable` is false but the section is collapsed, forces it back to `false`. Safe to call programmatically (e.g. from a toolbar button or keyboard shortcut). |
 
 ### Content projection (slots)
 | Slot selector | Purpose |
@@ -135,22 +141,45 @@ Card-style content panel with a header (icon + title + sub-title), optional coll
 ### One-line purpose
 A single `label : value` row meant to live inside a `<sd-section>` body — used for compact info display on detail pages.
 
+### When to use
+- Read-only `label : value` display rows inside a `<sd-section>` (employee detail, contract info, etc.)
+- Any two-column info layout where labels share a consistent fixed width
+- Rows whose value side can contain rich content: chips, anchors, badges, formatted text
+
+### When NOT to use
+- For editable inputs — use a labeled `<sd-input>`, `<sd-select>`, etc. directly inside the section
+- For message + action rows → use `<sd-quick-action>`
+- As a standalone row outside any `<sd-section>` — it works, but it looks orphaned without the card wrapper
+
 ### Inputs
 | Name | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `label` | `string` (REQUIRED, signal input) | — | The left-column label text. Rendered with `T14R text-black400` typography. |
 | `labelWidth` | `string` | `'150px'` | Fixed width of the label column. Falsy values (`null`, `undefined`, `''`) coerce back to `'150px'`. |
 
-### Outputs / Public API
+> **Coerce note**: `labelWidth` transform: `(val) => val || '150px'` — any falsy value resets to the default.
+
+### Outputs
+None.
+
+### Public API
 None.
 
 ### Content projection
-Default slot — the value side. Renders inside a `flex: 1` div so it expands to fill the remaining row width.
+| Slot selector | Purpose |
+| --- | --- |
+| (default) | The value side. Renders inside a `flex: 1` div so it expands to fill the remaining row width. Accepts plain text, inline elements, badges, anchors, or any Angular component. |
 
-### Visual cues
-- Single horizontal row (`c-item`), label on the left at `labelWidth` px wide, value on the right
-- Label typography: 14px regular, 400-tone gray (muted)
-- Value: inherits parent typography; can be plain text, a chip, an `<sd-anchor>`, or any inline content
+### Visual cues (helps agent map screenshots → component)
+- Single horizontal row (`c-item`), label on the left at `labelWidth` wide, value on the right
+- Label typography: `T14R text-black400` — 14px regular, muted 400-tone gray
+- Value area: `flex: 1`, inherits parent typography; no padding imposed — value content controls its own spacing
+- No border between items — spacing between rows comes from the parent container (`<sd-section>` body)
+
+### Behaviors / quirks
+- `label` is a required signal input — Angular will throw `NG0950` at runtime if omitted
+- `labelWidth` coerces falsy values (`null`, `undefined`, empty string) back to `'150px'` automatically
+- The component has no collapse, loading, disabled, or selection state — it is purely presentational
 
 ### Examples
 ```html
@@ -167,6 +196,7 @@ Default slot — the value side. Renders inside a `flex: 1` div so it expands to
 - ❌ Forgetting `label` — it is required and Angular will throw at runtime
 - ❌ Mixing `<sd-section-item>`s with very different `labelWidth`s in the same section — labels won't visually align
 - ❌ Using for editable form rows — section-item is a read-only display pattern; for forms use a labeled `<sd-input>` directly
+- ❌ Passing a reactive expression as `label` without using `[label]` binding syntax — `label` is a signal input, not a plain attribute
 
 ---
 

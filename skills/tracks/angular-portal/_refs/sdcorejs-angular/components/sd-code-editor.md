@@ -6,8 +6,9 @@
 **Class**: `SdCodeEditor`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**View encapsulation**: `None` (so PrismJS color tokens reach the DOM)
 **Library version**: `@sd-angular/core@19.0.0-beta.86`
+
+**View encapsulation**: `None` (so PrismJS color tokens reach the DOM)
 
 ## One-line purpose
 Lightweight code viewer/editor with PrismJS syntax highlighting, copy-to-clipboard, and a friendly "macOS dots" header — supports `html`, `typescript`, `json`, `css`, `scss`. Two-way bindable via the `model` alias.
@@ -33,6 +34,8 @@ Lightweight code viewer/editor with PrismJS syntax highlighting, copy-to-clipboa
 | `maxHeight` | `string` | `'500px'` | Max height of the code area (CSS value); content scrolls vertically beyond this. |
 | `viewed` | `boolean` | `false` | `transform: booleanAttribute` — bare attribute = true. When true, hides the textarea and shows read-only highlighted code; header label switches to `(READ ONLY)`. When false, an editable textarea is overlaid on the highlighted code. |
 
+> **Exported type**: `CodeLanguage = 'html' | 'typescript' | 'json' | 'css' | 'scss'` — import from `@sd-angular/core/components/code-editor` when you need a typed variable.
+
 ## Outputs
 | Name | Type | Notes |
 | --- | --- | --- |
@@ -50,7 +53,7 @@ None — content is bound exclusively via `model`.
 - **Highlighting**: PrismJS imports `typescript`, `json`, `css`, `scss`, and `markup` (HTML).
 - **Trailing newline**: highlighted output appends `\n` to prevent a textarea cursor from clipping the last line.
 
-## Visual cues
+## Visual cues (helps agent map screenshots → component)
 - A dark-themed code "card" with a header bar at the top.
 - **Header (left)**: macOS-style traffic-light dots (red/yellow/green) — purely decorative.
 - **Header (center)**: language uppercase ("TYPESCRIPT") followed by a faint `(EDITING)` or `(READ ONLY)` label.
@@ -112,8 +115,9 @@ form = signal<any>({ name: 'demo', enabled: true });
 - Putting a `disabled`-styled wrapper around it instead of `viewed` — `viewed` is the official read-only toggle and updates the header label
 
 ## Accessibility
-- The visible code is read from the `<pre>`/`<code>` block; the overlaid textarea handles input but is `aria-hidden` is NOT set explicitly — screen readers should announce both. For purely read-only content, set `viewed` so no textarea is rendered.
-- `spellcheck="false"`, `autocomplete="off"`, `autocorrect="off"`, `autocapitalize="off"` are set to prevent browser interference with code text.
+- The `<pre><code>` block has `aria-hidden="true"` — it is decorative (PrismJS colors, not raw text); the overlaid `<textarea>` is the accessible input surface when in edit mode.
+- When `viewed=true` only the `<pre>` is rendered; consider adding a visually-hidden `<span>` with the raw text if the snippet must be announced by screen readers.
+- `spellcheck="false"`, `autocomplete="off"`, `autocorrect="off"`, `autocapitalize="off"` are set on the textarea to prevent browser interference with code text.
 
 ## Related
 - `<sd-input type="textarea">` — for plain-text multi-line input without highlighting

@@ -1,10 +1,12 @@
 # SdConfirmService
 
+**Library version**: `@sd-angular/core@19.0.0-beta.86`
+
+
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdConfirmService`
 **Provided in**: `'root'`
 **Import path**: `@sd-angular/core/services/confirm`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
 
 ## One-line purpose
 Opens a Material dialog (`DialogConfirmComponent`) for confirm/input/radio/date prompts and returns a `Promise` that resolves on Accept and rejects on Cancel.
@@ -32,8 +34,8 @@ confirm(
     title?: string;                  // default: 'Xác nhận'
     yesTitle?: string;               // default: 'Đồng ý'
     noTitle?: string;                // default: 'Hủy bỏ'
-    yesButtonColor?: SdColor;        // default: 'primary'
-    noButtonColor?: SdColor;         // default: 'secondary'
+    yesButtonColor?: Color;        // default: 'primary'
+    noButtonColor?: Color;         // default: 'secondary'
     width?: string;                  // default: '400px'
     disableBackdropClose?: boolean;  // default: true
   }
@@ -52,8 +54,8 @@ withInput(
     noTitle?: string;                // default: 'Không'
     required?: boolean;
     maxlength?: number;              // default: 255
-    yesButtonColor?: SdColor;
-    noButtonColor?: SdColor;
+    yesButtonColor?: Color;
+    noButtonColor?: Color;
     defaultValue?: string;
     disableBackdropClose?: boolean;  // default: true
   }
@@ -71,8 +73,8 @@ withRadio(
     yesTitle?: string;               // default: 'Có'
     noTitle?: string;                // default: 'Không'
     required?: boolean;
-    yesButtonColor?: SdColor;
-    noButtonColor?: SdColor;
+    yesButtonColor?: Color;
+    noButtonColor?: Color;
     defaultValue?: string | number;
     items: any[];                    // required at runtime
     valueField: string;              // key in items used as value (default 'value')
@@ -94,8 +96,8 @@ withDate(
     yesTitle?: string;               // default: 'Có'
     noTitle?: string;                // default: 'Không'
     required?: boolean;
-    yesButtonColor?: SdColor;
-    noButtonColor?: SdColor;
+    yesButtonColor?: Color;
+    noButtonColor?: Color;
     defaultValue?: string | Date;
     placeholder?: string;
     disableBackdropClose?: boolean;  // default: true
@@ -111,7 +113,7 @@ None. The service depends on `MatDialog` from `@angular/material/dialog`, so the
 - **Backdrop click**: disabled by default (`disableBackdropClose: true`). Pass `false` to allow clicking outside to dismiss.
 - **Cancel rejects, not resolves**: every method returns a `Promise` that **rejects** (with the string `'CANCEL'`) when the user cancels — wrap calls in `try/catch` (or `.then(...).catch(...)`).
 - **Width**: only `confirm()` exposes `width`. The other variants are fixed at `'400px'`.
-- **`SdColor`** comes from `@sd-angular/core/utilities/models` (theme color tokens like `'primary'`, `'secondary'`, etc.).
+- **`Color`** comes from `@sd-angular/core/utilities/models` (theme color tokens like `'primary'`, `'secondary'`, etc.).
 
 ## Examples
 
@@ -170,6 +172,57 @@ const dateIso = await confirmSvc.withDate('Schedule for', {
 });
 ```
 
+## Testing
+
+### In unit / integration tests
+
+`SdConfirmService` delegates to `MatDialog.open(DialogConfirmComponent, ...)` and wraps `afterClosed()` in a `Promise`. No real component or DOM is needed — replace `MatDialog` with a spy:
+
+```typescript
+import { TestBed } from '@angular/core/testing';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Subject } from 'rxjs';
+import { SdConfirmService } from './confirm.service';
+
+describe('SdConfirmService', () => {
+  let service: SdConfirmService;
+  let dialogOpenSpy: jasmine.Spy;
+  let afterClosed$: Subject<any>;
+
+  beforeEach(() => {
+    afterClosed$ = new Subject();
+    const fakeRef: Partial<MatDialogRef<any>> = {
+      afterClosed: () => afterClosed$.asObservable(),
+      close: jasmine.createSpy('close'),
+    };
+    const dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
+    dialogSpy.open.and.returnValue(fakeRef as MatDialogRef<any>);
+    dialogOpenSpy = dialogSpy.open;
+
+    TestBed.configureTestingModule({
+      providers: [{ provide: MatDialog, useValue: dialogSpy }],
+    });
+    service = TestBed.inject(SdConfirmService);
+  });
+});
+```
+
+Key points:
+- **No `NoopAnimationsModule` needed** — `MatDialog` is fully mocked; no real dialog is opened.
+- **`afterClosed$` subject** drives promise resolution: emit `{ action: 'ACCEPT', value: x }` to resolve, `{ action: 'CANCEL', value: null }` to reject.
+- Test `Promise` outcomes with Jasmine's `expectAsync(...).toBeResolvedTo(...)` / `toBeRejectedWith('CANCEL')`.
+- No `fakeAsync` / `tick` required — `Subject.next()` is synchronous.
+
+### Spec file
+`projects/sd-angular/services/confirm/src/lib/confirm.service.spec.ts`
+
+Covers (13 specs total):
+- Instantiation: service created
+- `confirm()`: opens `MatDialog`; default title "Xác nhận"; custom title/yesTitle/noTitle; resolves on ACCEPT; rejects with `'CANCEL'` on CANCEL; custom width; `disableClose` defaults to `true`
+- `withInput()`: opens dialog with `input` data + default `maxlength: 255`; resolves with entered value; rejects with `'CANCEL'`
+- `withRadio()`: opens dialog with `radio` data + default `display: 'row'`; resolves with selected value
+- `withDate()`: opens dialog with `date` data; resolves with selected date string
+
 ## Anti-patterns
 - Do NOT use `await confirmSvc.confirm(...)` without a `try/catch` — Cancel is a rejection, not a resolved `false`.
 - Do NOT pass UI-bound objects in `items` for `withRadio` — only primitive value/display fields are read.
@@ -179,4 +232,4 @@ const dateIso = await confirmSvc.withDate('Schedule for', {
 ## Related
 - `SdNotifyService` (`@sd-angular/core/services/notify`) — for non-blocking confirmations / toasts.
 - `MatDialog` (`@angular/material/dialog`) — underlying dialog driver.
-- `SdColor` (`@sd-angular/core/utilities/models`) — color token type for the buttons.
+- `Color` (`@sd-angular/core/utilities/models`) — color token type for the buttons.
