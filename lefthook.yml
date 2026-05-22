@@ -4,8 +4,9 @@
 #   npx lefthook install
 #
 # What it enforces:
-# - .claude/skills/ stays in sync with skills/<track>/*.md (source of truth)
-# - any commit that edits skills/<track>/*.md regenerates the mirror and stages it
+# - Both mirrors (.claude/skills/ for project-local + plugin/skills/ for the
+#   Claude Code plugin distribution) stay in sync with skills/<track>/*.md
+# - any commit that edits skills/<track>/*.md regenerates both mirrors and stages them
 # - no hardcoded `@sd-angular/core` version in 10-init-portal.md (must use <CORE_VERSION> placeholder)
 # - every .md under skills/ (except _refs/, shared/templates/, shared/specs/) has YAML frontmatter
 #
@@ -17,11 +18,13 @@ pre-commit:
     sync-skills:
       # Trigger only when source skills changed.
       glob: "skills/**/*.md"
-      run: bash .claude/sync-skills.sh && git add .claude/skills
+      run: bash .claude/sync-skills.sh && git add .claude/skills plugin/skills
     check-mirror:
-      # Always verify the mirror is consistent (catches the case where
-      # someone hand-edits .claude/skills/ without touching skills/).
-      glob: ".claude/skills/**"
+      # Always verify both mirrors are consistent (catches the case where
+      # someone hand-edits .claude/skills/ or plugin/skills/ without touching skills/).
+      glob:
+        - ".claude/skills/**"
+        - "plugin/skills/**"
       run: bash .claude/sync-skills.sh --check
     no-hardcoded-core-version:
       # Single source of truth for Core UI package name + version is
@@ -48,6 +51,7 @@ pre-commit:
 check:
   commands:
     sync:
+      # Checks BOTH .claude/skills/ and plugin/skills/ against the source.
       run: bash .claude/sync-skills.sh --check
     core-version-placeholder:
       run: bash .claude/check-core-version-placeholder.sh skills/tracks/angular-portal/10-init-portal.md skills/tracks/angular-portal/11-init-module.md skills/tracks/angular-portal/12-init-entity.md

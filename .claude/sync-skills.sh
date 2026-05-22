@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-# Mirror source-of-truth skills into Claude Code's native .claude/skills/<name>/SKILL.md format.
+# Mirror source-of-truth skills into BOTH Claude Code's native skill format paths:
+#   1. .claude/skills/<name>/SKILL.md  — project-local Claude Code skills
+#   2. plugin/skills/<name>/SKILL.md   — Claude Code plugin distribution
+#                                         (consumed via .claude-plugin/marketplace.json)
 #
 # Source of truth tree:
 #   skills/tracks/<stack>/**/*.md       — stack-specific (angular-portal, nextjs/build-website, nestjs)
@@ -13,14 +16,13 @@
 #   shared/templates/**   — frontmatter templates (no usable dispatch metadata)
 #   shared/specs/**       — convention docs (no dispatch metadata)
 #
-# Generated: .claude/skills/<name>/SKILL.md
 # Folder name comes from each source file's `name:` YAML frontmatter field.
 #
 # Modes:
-#   bash .claude/sync-skills.sh           # regenerate the mirror (default)
-#   bash .claude/sync-skills.sh --check   # exit 1 if the mirror is out of sync
+#   bash .claude/sync-skills.sh           # regenerate BOTH mirrors (default)
+#   bash .claude/sync-skills.sh --check   # exit 1 if either mirror is out of sync
 #                                         # (used by pre-commit hook + CI)
-#   bash .claude/sync-skills.sh --clean   # remove stale mirror entries
+#   bash .claude/sync-skills.sh --clean   # remove stale mirror entries in BOTH targets
 #                                         # whose source file no longer exists
 
 set -euo pipefail
@@ -38,15 +40,26 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 SKILLS_ROOT="$REPO_ROOT/skills"
-DEST_ROOT="$REPO_ROOT/.claude/skills"
+# Dual mirror targets — both kept in sync so project-local + plugin distribution agree.
+DEST_ROOTS=(
+  "$REPO_ROOT/.claude/skills"
+  "$REPO_ROOT/plugin/skills"
+)
 
-# In check mode, write into a temp dir and diff against the committed mirror.
+# In check mode, write into a temp dir per target and diff against the committed mirror.
+declare -a WORK_ROOTS
 if [ "$MODE" = "check" ]; then
-  WORK_ROOT="$(mktemp -d)"
-  trap 'rm -rf "$WORK_ROOT"' EXIT
+  WORK_BASE="$(mktemp -d)"
+  trap 'rm -rf "$WORK_BASE"' EXIT
+  for i in "${!DEST_ROOTS[@]}"; do
+    WORK_ROOTS[$i]="$WORK_BASE/dest-$i"
+    mkdir -p "${WORK_ROOTS[$i]}"
+  done
 else
-  WORK_ROOT="$DEST_ROOT"
-  mkdir -p "$WORK_ROOT"
+  WORK_ROOTS=("${DEST_ROOTS[@]}")
+  for dest in "${DEST_ROOTS[@]}"; do
+    mkdir -p "$dest"
+  done
 fi
 
 # Find every .md skill, excluding reference data and template placeholders.
@@ -85,42 +98,65 @@ for src_file in "${SRC_FILES[@]}"; do
     \<*\>) [ "$MODE" != "check" ] && echo "  skip template: $src_file (name=$name)"; continue ;;
   esac
 
-  dest_dir="$WORK_ROOT/$name"
-  dest_file="$dest_dir/SKILL.md"
-  mkdir -p "$dest_dir"
-  cp "$src_file" "$dest_file"
+  # Write to every configured target — keeps .claude/skills/ and plugin/skills/ identical.
+  for work_root in "${WORK_ROOTS[@]}"; do
+    dest_dir="$work_root/$name"
+    dest_file="$dest_dir/SKILL.md"
+    mkdir -p "$dest_dir"
+    cp "$src_file" "$dest_file"
+  done
   KEPT["$name"]=1
   count=$((count + 1))
-  [ "$MODE" = "sync" ] && echo "  ${src_file#$REPO_ROOT/} -> .claude/skills/$name/SKILL.md"
+  if [ "$MODE" = "sync" ]; then
+    echo "  ${src_file#$REPO_ROOT/} -> {.claude,plugin}/skills/$name/SKILL.md"
+  fi
 done
 
 if [ "$MODE" = "check" ]; then
-  # Compare temp tree against the committed mirror.
-  if diff -rq "$WORK_ROOT" "$DEST_ROOT" >/dev/null 2>&1; then
-    echo "✓ .claude/skills/ is in sync ($count source files)"
-    exit 0
-  fi
-  echo "✗ .claude/skills/ is OUT OF SYNC with skills/" >&2
-  echo "  Run: bash .claude/sync-skills.sh" >&2
-  echo "" >&2
-  diff -rq "$WORK_ROOT" "$DEST_ROOT" >&2 || true
-  exit 1
-fi
-
-if [ "$MODE" = "clean" ]; then
-  # Remove mirror entries with no matching source file.
-  removed=0
-  for entry in "$DEST_ROOT"/*; do
-    [ -d "$entry" ] || continue
-    base="$(basename "$entry")"
-    if [ -z "${KEPT[$base]:-}" ]; then
-      rm -rf "$entry"
-      echo "  removed stale: .claude/skills/$base"
-      removed=$((removed + 1))
+  # Compare each temp tree against its committed mirror.
+  drift=0
+  for i in "${!DEST_ROOTS[@]}"; do
+    dest="${DEST_ROOTS[$i]}"
+    work="${WORK_ROOTS[$i]}"
+    rel="${dest#$REPO_ROOT/}"
+    if diff -rq "$work" "$dest" >/dev/null 2>&1; then
+      echo "✓ $rel/ is in sync ($count source files)"
+    else
+      echo "✗ $rel/ is OUT OF SYNC with skills/" >&2
+      echo "" >&2
+      diff -rq "$work" "$dest" >&2 || true
+      drift=1
     fi
   done
-  echo "Cleaned $removed stale entry(ies). Mirror has $count active skill(s)."
+  if [ "$drift" -ne 0 ]; then
+    echo "" >&2
+    echo "  Run: bash .claude/sync-skills.sh" >&2
+    exit 1
+  fi
   exit 0
 fi
 
-echo "Mirrored $count skill(s) into .claude/skills/"
+if [ "$MODE" = "clean" ]; then
+  # Remove mirror entries with no matching source file, in every target.
+  removed=0
+  for dest_root in "${DEST_ROOTS[@]}"; do
+    [ -d "$dest_root" ] || continue
+    rel="${dest_root#$REPO_ROOT/}"
+    for entry in "$dest_root"/*; do
+      [ -d "$entry" ] || continue
+      base="$(basename "$entry")"
+      if [ -z "${KEPT[$base]:-}" ]; then
+        rm -rf "$entry"
+        echo "  removed stale: $rel/$base"
+        removed=$((removed + 1))
+      fi
+    done
+  done
+  echo "Cleaned $removed stale entry(ies). Each mirror has $count active skill(s)."
+  exit 0
+fi
+
+echo "Mirrored $count skill(s) into:"
+for dest in "${DEST_ROOTS[@]}"; do
+  echo "  - ${dest#$REPO_ROOT/}/"
+done

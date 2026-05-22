@@ -1,0 +1,23 @@
+{
+  "name": "sdcorejs-agent",
+  "description": "SDLC agent for the SDCoreJS stack — Angular Portal (Core UI), NestJS + Postgres, Next.js public sites. Ships 77 skills covering clarify → spec → plan → write-code → review → test → ship, with bilingual (VI/EN) triggers. Skills are auto-synced from `../skills/` source tree.",
+  "version": "0.1.0",
+  "author": {
+    "name": "SDCoreJS",
+    "url": "https://github.com/sdcorejs"
+  },
+  "homepage": "https://github.com/sdcorejs/sdcorejs-agent",
+  "repository": "https://github.com/sdcorejs/sdcorejs-agent",
+  "license": "MIT",
+  "keywords": [
+    "sdcorejs",
+    "sdlc",
+    "angular",
+    "angular-portal",
+    "nestjs",
+    "nextjs",
+    "skills",
+    "agent",
+    "bilingual"
+  ]
+}

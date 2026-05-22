@@ -1,0 +1,32 @@
+{
+  "name": "sdcorejs",
+  "description": "SDCoreJS plugin marketplace — SDLC agent for Angular Portal (Core UI), NestJS + Postgres, Next.js public sites",
+  "owner": {
+    "name": "SDCoreJS",
+    "url": "https://github.com/sdcorejs"
+  },
+  "plugins": [
+    {
+      "name": "sdcorejs-agent",
+      "description": "SDLC agent for the SDCoreJS stack — clarify, spec, plan, write-code, review, test, ship — across Angular Portal, NestJS, and Next.js. 77 skills covering the full lifecycle with bilingual (VI/EN) triggers.",
+      "version": "0.1.0",
+      "source": "./plugin/",
+      "author": {
+        "name": "SDCoreJS",
+        "url": "https://github.com/sdcorejs"
+      },
+      "homepage": "https://github.com/sdcorejs/sdcorejs-agent",
+      "repository": "https://github.com/sdcorejs/sdcorejs-agent",
+      "license": "MIT",
+      "keywords": [
+        "sdcorejs",
+        "sdlc",
+        "angular",
+        "nestjs",
+        "nextjs",
+        "skills",
+        "agent"
+      ]
+    }
+  ]
+}

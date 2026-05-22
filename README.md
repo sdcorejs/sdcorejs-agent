@@ -61,55 +61,77 @@ Sub-skills under `07-write-code` (Angular Portal): `10-init-portal`, `11-init-mo
 
 ## Quick start in a target project
 
+### Option 1 — Claude Code plugin (recommended for Claude Code users)
+
+Install via the Claude Code plugin marketplace. The repo ships its own single-plugin marketplace at `.claude-plugin/marketplace.json`, so you only need to add the repo as a marketplace and install the plugin:
+
+```
+/plugin marketplace add sdcorejs/sdcorejs-agent
+/plugin install sdcorejs-agent@sdcorejs
+```
+
+After install, all 76 skills (cross-track SDLC + angular-portal / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
+
+### Option 2 — git submodule (works for Claude Code + Copilot + Codex)
+
 ```bash
-# Option 1 — git submodule (recommended)
 cd <your-portal-project>
 git submodule add <repo-url> .sdcorejs-agent
 ln -s .sdcorejs-agent/CLAUDE.md CLAUDE.md
 ln -s .sdcorejs-agent/AGENTS.md AGENTS.md
 ln -s .sdcorejs-agent/skills skills-sdcorejs
-
-# Option 2 — copy entry points + skills
-cp -r <agent-repo>/{CLAUDE.md,AGENTS.md,skills} ./
-
-# Then open the project in Claude Code / Copilot / Codex and start describing what you want.
 ```
+
+### Option 3 — copy entry points + skills
+
+```bash
+cp -r <agent-repo>/{CLAUDE.md,AGENTS.md,skills} ./
+```
+
+Then open the project in Claude Code / Copilot / Codex and start describing what you want.
 
 ## Tool support priority
 
-1. **Claude Code** — primary target (reads `CLAUDE.md`)
+1. **Claude Code** — primary target. Two paths:
+   - Plugin marketplace (`/plugin marketplace add sdcorejs/sdcorejs-agent`) — recommended; reads `plugin/skills/<name>/SKILL.md`
+   - Direct repo attach — reads `CLAUDE.md` + `.claude/skills/<name>/SKILL.md`
 2. **GitHub Copilot** — reads `.github/copilot-instructions.md` + `.github/chatmodes/sdcorejs.chatmode.md`
 3. **Codex / Cursor / OpenAI Agents SDK** — reads `AGENTS.md`
 
-All three follow the same `skills/<track>/<numbered>.md` source. The entry-point files differ only in framing.
+All paths follow the same `skills/**/*.md` source of truth (kept in sync by `.claude/sync-skills.sh` — both Claude Code mirrors are auto-regenerated on every commit that touches `skills/`). The entry-point files differ only in framing.
 
 ## Repo layout
 
 ```
 sdcorejs-agent/
-├── CLAUDE.md                              # Claude Code entry
+├── CLAUDE.md                              # Claude Code entry (direct-attach mode)
 ├── AGENTS.md                              # Codex/Cursor entry
 ├── README.md                              # this file
 ├── LICENSE
 ├── .github/
 │   ├── copilot-instructions.md            # GitHub Copilot entry
 │   └── chatmodes/sdcorejs.chatmode.md     # Copilot chat mode
-├── skills/
-│   ├── _shared/                           # cross-track skills
-│   │   ├── auto-docs.md                   # mandatory session summary
-│   │   └── memories.md                    # durable knowledge capture
-│   ├── angular-portal/                    # ✅ complete
-│   │   ├── 00-onboarding.md
-│   │   ├── 01-brainstorm.md
-│   │   ├── 02-clarify-requirements.md
-│   │   ├── … (21 skills total)
-│   │   ├── _refs/sdcorejs-angular/        # 58 reference docs for Core UI components/forms/services
-│   │   └── _shared/                       # track-specific shared rules (if any)
-│   ├── nestjs/                            # 🚧
-│   └── nextjs/                            # 🚧
+├── .claude-plugin/
+│   └── marketplace.json                   # single-plugin marketplace manifest
+├── plugin/                                # Claude Code plugin distribution
+│   ├── .claude-plugin/plugin.json         # plugin manifest (name/version/author)
+│   └── skills/<name>/SKILL.md             # auto-synced from skills/ source
+├── .claude/
+│   └── skills/<name>/SKILL.md             # project-local Claude Code mirror (auto-synced)
+├── skills/                                # source of truth — flat .md per skill
+│   ├── tracks/
+│   │   ├── angular-portal/                # ✅ 13 skills + _refs/templates/
+│   │   ├── nestjs/                        # 🟡 scaffold
+│   │   └── nextjs/build-website/          # ✅ 13 skills + _refs/
+│   ├── shared/{sdlc,conventions,workflow}/
+│   ├── orchestration/                     # SDLC plumbing (13 skills)
+│   ├── review/{architecture,code,security,performance,accessibility}/
+│   └── testing/{philosophy,tdd,e2e,integration,unit}/
 ├── _legacy/                               # pre-pivot content kept for reference
 └── images/
 ```
+
+The two synced mirrors (`plugin/skills/` for plugin distribution + `.claude/skills/` for project-local Claude Code) are regenerated from `skills/` by `.claude/sync-skills.sh`, enforced via the lefthook pre-commit hook. Edit only the `skills/` source — never the mirrors directly.
 
 ## Not a multi-agent framework
 
