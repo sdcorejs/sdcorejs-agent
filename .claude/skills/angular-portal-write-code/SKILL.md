@@ -113,82 +113,9 @@ Skip for: `mock-data` seed rows (pure data, no testable logic) and `routes.ts` (
 
 ### Step 1: Build EntitySchema
 
-From user input or semantic inference, construct `EntitySchema` with all field metadata.
+From user input or semantic inference, construct `EntitySchema` with all field metadata. The schema is the single input every later step consumes.
 
-**Example user input:**
-```
-Module: sample
-Entity: product
-Label: Sản phẩm
-Fields:
-  - code (string, required, max 32)
-  - name (string, required, max 255)
-  - categoryId (select, label: Loại sản phẩm, api: /api/categories)
-  - price (decimal, required, min 0)
-  - stock (number, required, min 0)
-  - description (textarea)
-```
-
-**Result EntitySchema:**
-```typescript
-const PRODUCT_SCHEMA: EntitySchema = {
-  module: 'sample',
-  entity: 'product',
-  entityPascal: 'Product',
-  entityLabel: 'Sản phẩm',
-  entityLabelPlural: 'Sản phẩm',
-  apiEndpoint: 'product',
-  
-  fields: [
-    { name: 'code', type: 'string', label: 'Mã sản phẩm', required: true, maxLength: 32, visibleInList: true },
-    { name: 'name', type: 'string', label: 'Tên sản phẩm', required: true, maxLength: 255, visibleInList: true },
-    { name: 'categoryId', type: 'select', label: 'Loại sản phẩm', selectApiEndpoint: '/api/categories', selectApiValueField: 'id', selectApiLabelField: 'name' },
-    { name: 'price', type: 'decimal', label: 'Giá bán', required: true, min: 0, decimals: 2, visibleInList: true, columnFormat: 'currency' },
-    { name: 'stock', type: 'number', label: 'Tồn kho', required: true, min: 0, visibleInList: true },
-    { name: 'description', type: 'textarea', label: 'Mô tả' }
-  ],
-  
-  detailLayout: 'full-page',
-  listPageSize: 10,
-  permissionCreate: 'SAMPLE_PRODUCT_CREATE',
-  permissionUpdate: 'SAMPLE_PRODUCT_UPDATE',
-  permissionDelete: 'SAMPLE_PRODUCT_DELETE'
-};
-```
-
-**Example when user omits fields:**
-```text
-Request: "Thêm entity khuyến mãi cho module sales"
-```
-
-**Inferred first-pass schema:**
-```typescript
-const PROMOTION_SCHEMA: EntitySchema = {
-  module: 'sales',
-  entity: 'promotion',
-  entityPascal: 'Promotion',
-  entityLabel: 'Khuyến mãi',
-  entityLabelPlural: 'Khuyến mãi',
-  apiEndpoint: 'promotion',
-
-  fields: [
-    { name: 'code', type: 'string', label: 'Mã khuyến mãi', required: true, maxLength: 32, visibleInList: true },
-    { name: 'name', type: 'string', label: 'Tên khuyến mãi', required: true, maxLength: 255, visibleInList: true },
-    { name: 'type', type: 'select', label: 'Loại khuyến mãi', required: true, visibleInList: true },
-    { name: 'discountValue', type: 'decimal', label: 'Giá trị giảm', required: true, min: 0, visibleInList: true },
-    { name: 'startDate', type: 'date', label: 'Ngày bắt đầu', required: true, visibleInList: true },
-    { name: 'endDate', type: 'date', label: 'Ngày kết thúc', required: true, visibleInList: true },
-    { name: 'status', type: 'select', label: 'Trạng thái', required: true, visibleInList: true },
-    { name: 'description', type: 'textarea', label: 'Mô tả' }
-  ],
-
-  detailLayout: 'full-page',
-  listPageSize: 10,
-  permissionCreate: 'SALES_PROMOTION_CREATE',
-  permissionUpdate: 'SALES_PROMOTION_UPDATE',
-  permissionDelete: 'SALES_PROMOTION_DELETE'
-};
-```
+For two worked examples (user-supplied Product fields + inferred Promotion schema), see [`_refs/templates/orchestrator-step-examples.md#step-1--build-entityschema`](./_refs/templates/orchestrator-step-examples.md#step-1--build-entityschema).
 
 ### Step 2: Generate Model (product.model.ts)
 
@@ -208,27 +135,7 @@ From EntitySchema, generate:
   - Include validation hints in comments (maxlength, min/max)
 - Prefer concrete domain names over generic placeholders; for Vietnamese portals, labels/comments must preserve diacritics
 
-**Output (product.model.ts):**
-```typescript
-import { BaseEntity } from '@sample/services';
-
-export interface ProductSaveReq {
-  // UI: sd-input (required, maxLength 32)
-  code?: string;
-  // UI: sd-input (required, maxLength 255)
-  name?: string;
-  // UI: sd-select (Dynamic API: /api/categories, valueField: id, labelField: name)
-  categoryId?: string;
-  // UI: sd-input-number (required, decimals 2, min 0)
-  price?: number;
-  // UI: sd-input-number (required, min 0)
-  stock?: number;
-  // UI: sd-textarea
-  description?: string;
-}
-
-export type ProductDTO = Required<ProductSaveReq> & BaseEntity;
-```
+**Output (product.model.ts):** see [`_refs/templates/orchestrator-step-examples.md#step-2--generate-model-productmodelts`](./_refs/templates/orchestrator-step-examples.md#step-2--generate-model-productmodelts).
 
 ### Step 3: Generate Mock Data + Service (product.mock-data.ts + product.service.ts)
 
@@ -250,68 +157,7 @@ Pattern: create one centralized mock data file per entity, then wire service to 
 - Only switch to `BaseService` API integration after backend contract is explicit
 - Ensure `MockCrudStore` can reseed when existing localStorage value is missing, empty (`[]`), or corrupted JSON
 
-**Output (product.service.ts):**
-```typescript
-import { Injectable } from '@angular/core';
-import { MockCrudStore } from '@sample/services';
-import { ProductDTO, ProductSaveReq } from './product.model';
-import { PRODUCT_SEED_DATA } from './product.mock-data';
-
-@Injectable({ providedIn: 'root' })
-export class ProductService {
-  readonly #store = new MockCrudStore<ProductDTO, ProductSaveReq>(
-    'product',
-    () => [...PRODUCT_SEED_DATA],
-    (existing, req) => ({
-      ...(existing ?? ({} as ProductDTO)),
-      code: String(req.code ?? existing?.code ?? ''),
-      name: String(req.name ?? existing?.name ?? ''),
-      price: Number(req.price ?? existing?.price ?? 0),
-      isActivated: Boolean(req.isActivated ?? existing?.isActivated ?? true),
-      note: String(req.note ?? existing?.note ?? ''),
-    })
-  );
-
-  paging = this.#store.paging;
-  search = this.#store.search;
-  all = this.#store.all;
-  detail = this.#store.detail;
-  create = this.#store.create;
-  update = this.#store.update;
-  remove = this.#store.remove;
-}
-```
-
-**Output example (promotion.mock-data.ts — inferred schema, domain-realistic):**
-```typescript
-import { v4 as uuidv4 } from 'uuid';
-import { PromotionDTO } from './promotion.model';
-
-export const PROMOTION_SEED_DATA: PromotionDTO[] = [
-  {
-    id: uuidv4(), code: 'KM-2024-01', name: 'Khuyến mãi hè 2024',
-    type: 'PERCENT', discountValue: 15,
-    startDate: '2024-06-01', endDate: '2024-08-31',
-    status: 'INACTIVE', description: 'Giảm 15% toàn bộ sản phẩm mùa hè',
-    isActivated: false, createdAt: '2024-05-20T08:00:00Z', updatedAt: '2024-05-20T08:00:00Z',
-  },
-  {
-    id: uuidv4(), code: 'KM-2024-02', name: 'Ưu đãi cuối năm 2024',
-    type: 'FIXED', discountValue: 50000,
-    startDate: '2024-12-01', endDate: '2024-12-31',
-    status: 'INACTIVE', description: 'Giảm 50.000đ cho đơn từ 500.000đ',
-    isActivated: false, createdAt: '2024-11-10T09:00:00Z', updatedAt: '2024-11-10T09:00:00Z',
-  },
-  {
-    id: uuidv4(), code: 'KM-2025-01', name: 'Flash sale 1/1/2025',
-    type: 'PERCENT', discountValue: 20,
-    startDate: '2025-01-01', endDate: '2025-01-01',
-    status: 'INACTIVE', description: 'Flash sale mừng năm mới',
-    isActivated: false, createdAt: '2024-12-20T10:00:00Z', updatedAt: '2024-12-20T10:00:00Z',
-  },
-  // ... tiếp tục đến 20–40 dòng, phân bổ đều các loại type/status
-];
-```
+**Output (product.service.ts + promotion.mock-data.ts):** see [`_refs/templates/orchestrator-step-examples.md#step-3--generate-mock-data--service`](./_refs/templates/orchestrator-step-examples.md#step-3--generate-mock-data--service).
 
 **Mock data generation rules:**
 - Produce 20–40 rows total
@@ -332,24 +178,7 @@ Pattern: Lazy-load components. No providers on the route — the entity service 
 - Lazy-load components (COMPONENT_TYPE)
 - NO `providers: [...]` array (see `11-init-module.md` rationale)
 
-**Output (routes.ts):**
-```typescript
-import { Routes } from '@angular/router';
-import { ListComponent } from './pages/list/list.component';
-import { DetailComponent } from './pages/detail/detail.component';
-
-export const productRoutes: Routes = [
-  {
-    path: '',
-    children: [
-      { path: '', component: ListComponent },
-      { path: 'create', component: DetailComponent },
-      { path: 'detail/:id', component: DetailComponent },
-      { path: 'update/:id', component: DetailComponent }
-    ]
-  }
-];
-```
+**Output (routes.ts):** see [`_refs/templates/orchestrator-step-examples.md#step-4--generate-routes-productroutests`](./_refs/templates/orchestrator-step-examples.md#step-4--generate-routes-productroutests).
 
 ### Step 5: Generate List Component
 
@@ -525,37 +354,4 @@ Before returning generated code:
 
 ## Example: Complete Employee Entity Generation
 
-**User Request:**
-```
-生成 sample 模块的员工 CRUD
-字段: code, name, role, salary, birthday, isActivated, note
-```
-
-**Agent Process:**
-
-1. ✅ Confirm module: sample (exists)
-2. ✅ Entity name: employee
-3. ✅ Label: Nhân viên
-4. ✅ Fields confirmed with types/validation
-5. ✅ Generate EntitySchema (EMPLOYEE_SCHEMA)
-6. ✅ Generate model (employee.model.ts)
-7. ✅ Generate mock data file (employee.mock-data.ts)
-8. ✅ Generate service (employee.service.ts)
-9. ✅ Generate routes (routes.ts)
-10. ✅ Generate list component
-11. ✅ Generate detail component
-12. ✅ Verify all files compile without errors
-13. ✅ Return complete code package ready to add to module
-
-**Result:**
-```
-src/libs/sample/features/employee/
-├── services/
-│   ├── employee.model.ts
-│   ├── employee.service.ts
-│   └── index.ts
-├── pages/
-│   ├── list/list.component.ts
-│   └── detail/detail.component.ts
-└── routes.ts
-```
+A worked end-to-end example (user request → orchestrator steps 1-6 → final file tree) lives in [`_refs/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity`](./_refs/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity). Read it when you want to see how the dispatch table cashes out on a real request.
