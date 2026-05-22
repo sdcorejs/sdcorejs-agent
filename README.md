@@ -1,14 +1,16 @@
-# SDCoreJS SDLC Agent
+# SDCoreJS
 
-> One agent. Three stacks. Works in Claude Code, GitHub Copilot, and Codex.
+> An orchestrated SDLC for AI coding agents. Works in Claude Code, GitHub Copilot, and Codex.
 
-This repository is an **SDLC agent** for teams building software on the SDCoreJS stack:
+SDCoreJS turns Claude Code, GitHub Copilot, and Codex into accountable engineers on your stack. Requests flow through **clarify → spec → plan → write code → review → ship**, with user-approval gates between each phase and a documented audit trail.
 
-- **Backoffice portals** in Angular with `@sd-angular/core` (Core UI)
-- **Backend** in NestJS + Postgres
-- **Public sites** in Next.js (SSR)
+Three first-class tracks, each with stack-specific conventions, generators, reviews, and tests:
 
-The agent ships its capabilities as **skills** — markdown files with YAML frontmatter — that supported AI coding tools dispatch automatically when relevant. There is no runtime, no CLI, no compiler. Just skills + entry-point files that each tool reads.
+- **Angular Portal** — backoffice portals built on `@sd-angular/core` (Core UI)
+- **NestJS** — modular APIs with Postgres + DTOs + permissions
+- **Next.js** — public sites with bilingual content, SEO, ISR caching
+
+The system ships as **dispatchable skills** — markdown with YAML frontmatter — that AI coding tools match against intent and execute in order. No runtime, no CLI, no compiler; just the workflow layer your AI coding tool was missing.
 
 ## How it works
 
