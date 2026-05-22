@@ -1,0 +1,383 @@
+---
+const skills = [
+  { code: "00", name: "onboarding", note: "Entry — orient + dispatch" },
+  { code: "07", name: "write-code", note: "Orchestrator", primary: true },
+  { code: "10", name: "init-portal", note: "Bootstrap portal" },
+  { code: "11", name: "init-module", note: "Feature module" },
+  { code: "12", name: "init-entity", note: "Full CRUD entity", primary: true },
+  { code: "20", name: "screen-list", note: "SdTable + paging" },
+  { code: "21", name: "screen-detail", note: "Read-only + shell" },
+  { code: "22", name: "screen-create", note: "Empty form" },
+  { code: "23", name: "screen-update", note: "Prefilled form" },
+  { code: "30", name: "reactive-form", note: "Validators + FormArray" },
+  { code: "31", name: "workflow-actions", note: "Approve / reject" },
+  { code: "51", name: "write-comments", note: "JSDoc + WHY" },
+  { code: "52", name: "faq", note: "Conventions Q&A" },
+];
+
+const sdlcFlow = [
+  ["01", "brainstorm"],
+  ["02", "clarify"],
+  ["03", "write-spec"],
+  ["04", "review-spec"],
+  ["05", "plan"],
+  ["06", "review-plan"],
+  ["07", "write-code"],
+];
+---
+
+<section id="angular-portal" class="ap">
+  <div class="container">
+    <div class="head reveal">
+      <span class="eyebrow"
+        ><span class="bullet" aria-hidden="true"></span>Track focus</span
+      >
+      <h2>Angular Portal — generate full CRUD in one prompt</h2>
+      <p class="lead">
+        Built on <code>@sd-angular/core</code>. After the SDLC design phase
+        approves a plan, <code>angular-portal-write-code</code> dispatches the
+        right sub-skill per task. Every code-writing step gates through TDD,
+        review, repair-loop, comment-ask, verify-before-done.
+      </p>
+    </div>
+
+    <!-- SDLC flow strip -->
+    <div class="flow reveal delay-1" aria-label="SDLC workflow">
+      {
+        sdlcFlow.map(([code, name], i) => (
+          <Fragment>
+            <div class="flow-step">
+              <span class="flow-code">{code}</span>
+              <span class="flow-name">{name}</span>
+            </div>
+            {i < sdlcFlow.length - 1 && (
+              <span class="flow-arrow" aria-hidden="true">
+                →
+              </span>
+            )}
+          </Fragment>
+        ))
+      }
+    </div>
+
+    <!-- Two-column: skill grid + code preview -->
+    <div class="cols">
+      <div class="col-skills reveal delay-2">
+        <h3>Skills shipped in this track</h3>
+        <div class="skill-grid">
+          {
+            skills.map((s) => (
+              <div class={`skill-tag ${s.primary ? "primary" : ""}`}>
+                <span class="skill-code">{s.code}</span>
+                <span class="skill-name">{s.name}</span>
+                <span class="skill-note">{s.note}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="col-code reveal delay-3">
+        <h3>What you get</h3>
+        <div class="code-window">
+          <div class="code-chrome" aria-hidden="true">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span class="path">src/libs/catalog/features/product/</span>
+          </div>
+          <pre class="code-body"><code><span class="tok-c">// Generated from one prompt:</span>
+<span class="tok-c">// "Thêm entity product cho module catalog với code, name, price"</span>
+
+product/
+├── services/
+│   ├── product.model.ts         <span class="tok-c">// DTO + SaveReq + validators</span>
+│   ├── product.mock-data.ts     <span class="tok-c">// 20 seed rows (Vietnamese)</span>
+│   ├── product.service.ts       <span class="tok-c">// MockCrudStore-backed CRUD</span>
+│   └── index.ts
+├── pages/
+│   ├── list/list.component.ts   <span class="tok-c">// SdTable + paging + audit cols</span>
+│   └── detail/detail.component.ts <span class="tok-c">// CREATE / UPDATE / DETAIL</span>
+└── routes.ts                    <span class="tok-c">// Lazy-loaded + permissions</span>
+
+<span class="tok-c">// + matching .spec.ts at your chosen coverage level</span>
+<span class="tok-c">// + npm run test ↓ all green before handing off</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature pills -->
+    <div class="feats reveal delay-4">
+      {
+        [
+          "Bilingual VI / EN triggers",
+          "Standalone Angular 19+ first",
+          "Mock-first services, no backend required",
+          "TDD gate before every file",
+          "@HasPermission directive wiring",
+          "OnPush + signal-first state",
+          "Side-drawer vs full-page decision",
+          "69 Core UI component refs included",
+        ].map((f) => (
+          <span class="feat-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 12l5 5L20 7"
+              />
+            </svg>
+            {f}
+          </span>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .ap {
+    background:
+      linear-gradient(180deg, var(--c-bg-soft), var(--c-bg) 60%),
+      var(--c-bg);
+    border-block: 1px solid var(--c-border);
+  }
+
+  .head {
+    max-width: 760px;
+    margin-bottom: 48px;
+  }
+
+  .head code {
+    background: var(--c-bg);
+    padding: 2px 7px;
+    border-radius: 6px;
+    border: 1px solid var(--c-border);
+    font-size: 0.92em;
+    color: var(--c-blue-600);
+  }
+
+  .bullet {
+    width: 6px;
+    height: 6px;
+    background: var(--c-orange-500);
+    border-radius: 999px;
+  }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 56px;
+    padding: 20px 16px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .flow-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--c-bg-soft);
+    border-radius: 999px;
+    font-size: 0.88rem;
+    transition:
+      background 220ms var(--ease),
+      transform 200ms var(--ease-spring);
+  }
+
+  .flow-step:hover {
+    background: var(--c-blue-100);
+    transform: translateY(-2px);
+  }
+
+  .flow-code {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--c-orange-600);
+  }
+
+  .flow-name {
+    color: var(--c-text);
+    font-weight: 500;
+  }
+
+  .flow-arrow {
+    color: var(--c-text-muted);
+    font-weight: 700;
+    user-select: none;
+  }
+
+  /* Two-column */
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+    margin-bottom: 56px;
+  }
+
+  @media (max-width: 920px) {
+    .cols {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .col-skills h3,
+  .col-code h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--c-text-muted);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  /* Skill grid */
+  .skill-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .skill-tag {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    font-size: 0.92rem;
+    transition:
+      background 200ms var(--ease),
+      border-color 200ms var(--ease),
+      transform 220ms var(--ease-spring);
+  }
+
+  .skill-tag:hover {
+    border-color: var(--c-blue-500);
+    transform: translateX(4px);
+  }
+
+  .skill-tag.primary {
+    background: var(--c-blue-100);
+    border-color: rgba(33, 150, 243, 0.3);
+  }
+
+  .skill-code {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--c-orange-600);
+  }
+
+  .skill-name {
+    font-weight: 600;
+    color: var(--c-text);
+  }
+
+  .skill-note {
+    color: var(--c-text-muted);
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 480px) {
+    .skill-note {
+      display: none;
+    }
+  }
+
+  /* Code window */
+  .code-window {
+    background: #0d1b2e;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-glow);
+    color: #e7ecf2;
+  }
+
+  .code-chrome {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    background: #11253c;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .code-chrome .dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+  }
+  .dot.red {
+    background: #ff5f56;
+  }
+  .dot.yellow {
+    background: #ffbd2e;
+  }
+  .dot.green {
+    background: #27c93f;
+  }
+
+  .code-chrome .path {
+    margin-left: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: rgba(231, 236, 242, 0.65);
+  }
+
+  .code-body {
+    margin: 0;
+    padding: 20px;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    overflow-x: auto;
+    color: #e7ecf2;
+  }
+
+  .tok-c {
+    color: #7c8aa3;
+  }
+
+  /* Feature pills */
+  .feats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .feat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 999px;
+    font-size: 0.88rem;
+    color: var(--c-text);
+    transition:
+      background 200ms var(--ease),
+      transform 220ms var(--ease-spring);
+  }
+
+  .feat-pill:hover {
+    background: var(--c-blue-100);
+    transform: translateY(-2px);
+  }
+
+  .feat-pill svg {
+    color: var(--c-blue-600);
+  }
+</style>

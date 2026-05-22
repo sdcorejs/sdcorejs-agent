@@ -1,0 +1,19 @@
+{
+  "name": "sdcorejs-agent-site",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Showcase site for the SDCoreJS SDLC agent (Angular Portal + NestJS + Next.js skill pack).",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^4.16.18"
+  },
+  "engines": {
+    "node": ">=18.20.0"
+  }
+}

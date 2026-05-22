@@ -1,0 +1,147 @@
+---
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container inner">
+    <div class="brand">
+      <img src={`${base}/logo-text.png`} alt="SDCoreJS" />
+      <p>SDLC agent for the SDCoreJS stack.</p>
+    </div>
+
+    <nav class="links" aria-label="Footer">
+      <div class="col">
+        <h4>Tracks</h4>
+        <a href="#angular-portal">Angular Portal</a>
+        <a href="#tracks">NestJS</a>
+        <a href="#tracks">Next.js Sites</a>
+      </div>
+      <div class="col">
+        <h4>Resources</h4>
+        <a
+          href="https://github.com/sdcorejs/sdcorejs-agent"
+          target="_blank"
+          rel="noreferrer">GitHub repo</a
+        >
+        <a
+          href="https://github.com/sdcorejs/sdcorejs-agent#quick-start-in-a-target-project"
+          target="_blank"
+          rel="noreferrer">Install guide</a
+        >
+        <a
+          href="https://github.com/sdcorejs/sdcorejs-agent/blob/main/CLAUDE.md"
+          target="_blank"
+          rel="noreferrer">CLAUDE.md</a
+        >
+      </div>
+      <div class="col">
+        <h4>Community</h4>
+        <a
+          href="https://github.com/sdcorejs/sdcorejs-agent/issues"
+          target="_blank"
+          rel="noreferrer">Issues</a
+        >
+        <a
+          href="https://github.com/sdcorejs/sdcorejs-agent/blob/main/LICENSE"
+          target="_blank"
+          rel="noreferrer">License (MIT)</a
+        >
+      </div>
+    </nav>
+  </div>
+
+  <div class="container bottom">
+    <small>© {year} SDCoreJS. Released under MIT.</small>
+    <small class="muted">Built with Astro · Hosted on GitHub Pages</small>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--c-text);
+    color: rgba(255, 255, 255, 0.78);
+    padding-block: 56px 24px;
+  }
+
+  .inner {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 40px;
+    align-items: start;
+  }
+
+  @media (max-width: 720px) {
+    .inner {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+
+  .brand img {
+    height: 36px;
+    width: auto;
+    filter: brightness(0) invert(1) saturate(0) opacity(0.9);
+  }
+
+  .brand p {
+    margin: 12px 0 0;
+    font-size: 0.9rem;
+    max-width: 28ch;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  .links {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  @media (max-width: 520px) {
+    .links {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .col h4 {
+    margin: 0 0 8px;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+  }
+
+  .col a {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.92rem;
+    transition: color 160ms var(--ease);
+  }
+
+  .col a:hover {
+    color: #fff;
+  }
+
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  .muted {
+    color: rgba(255, 255, 255, 0.4);
+  }
+</style>
