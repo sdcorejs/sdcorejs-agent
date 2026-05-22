@@ -1,0 +1,85 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "SDCoreJS Agent — SDLC skills for Angular Portal, NestJS, Next.js",
+  description = "An SDLC agent that ships as skills inside Claude Code, GitHub Copilot, and Codex. Generates Angular portals, NestJS APIs, and Next.js public sites with bilingual VI/EN triggers.",
+} = Astro.props;
+
+// Astro automatically prepends `import.meta.env.BASE_URL` for `~/` paths,
+// but for direct asset URLs we resolve it explicitly so absolute paths
+// keep working both at the GitHub Pages base path and at the dev root.
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const ogImage = `${base}/icon.png`;
+const canonical = `${Astro.site ?? ""}${base}/`.replace(/\/+$/, "/");
+---
+
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#1976d2" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Branding -->
+    <link rel="icon" type="image/png" href={`${base}/icon.png`} />
+    <link rel="apple-touch-icon" href={`${base}/apple-touch-icon.png`} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Preload primary brand asset to avoid hero flash -->
+    <link
+      rel="preload"
+      as="image"
+      href={`${base}/logo-text.png`}
+      fetchpriority="high"
+    />
+  </head>
+  <body>
+    <slot />
+
+    <!-- Scroll-reveal via IntersectionObserver. Pure-JS, no framework.
+         Honors prefers-reduced-motion via the CSS rules in global.css. -->
+    <script is:inline>
+      (() => {
+        const items = document.querySelectorAll(".reveal");
+        if (!items.length || !("IntersectionObserver" in window)) {
+          items.forEach((el) => el.classList.add("is-visible"));
+          return;
+        }
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add("is-visible");
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+        );
+        items.forEach((el) => io.observe(el));
+      })();
+    </script>
+  </body>
+</html>

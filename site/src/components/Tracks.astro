@@ -1,0 +1,333 @@
+---
+const tracks = [
+  {
+    id: "angular-portal",
+    name: "Angular Portal",
+    status: "ready",
+    statusLabel: "Available",
+    tagline: "Backoffice portals with @sd-angular/core",
+    description:
+      "13 skills covering full CRUD: init project, init module, init entity, list / create / detail / update screens, reactive forms, workflow actions. Plus 69 Core UI component references.",
+    bullets: [
+      "Module → Entity → Screens orchestrator",
+      "Side-drawer vs full-page layout decision",
+      "MockCrudStore + seed data for offline dev",
+      "TDD-first generation gates",
+    ],
+    accent: "blue",
+    href: "#angular-portal",
+  },
+  {
+    id: "nestjs",
+    name: "NestJS",
+    status: "soon",
+    statusLabel: "Coming Soon",
+    tagline: "Modular APIs with Postgres + DTOs",
+    description:
+      "Backend skill pack for transactional services — controller / service / repository scaffolding, validation pipes, permission decorators, migrations, integration tests against real PG.",
+    bullets: [
+      "Module + entity + DTO + Zod schema",
+      "Transaction strategy decision gate",
+      "@HasPermission decorator wiring",
+      "Pg-mem / testcontainers integration tests",
+    ],
+    accent: "orange",
+  },
+  {
+    id: "nextjs",
+    name: "Next.js Public Sites",
+    status: "soon",
+    statusLabel: "Coming Soon",
+    tagline: "Marketing sites with bilingual content + SEO",
+    description:
+      "Build-website pack — bootstrap, theme tokens, page composition, full SEO baseline, Open Graph, i18n (next-intl), ISR caching, responsive, real working contact form, content quality gate.",
+    bullets: [
+      "VI / EN parity, no hardcoded strings",
+      "30-min ISR + on-demand revalidate",
+      "Resend-backed contact form (real, not stubbed)",
+      "Content-quality + on-page SEO checker",
+    ],
+    accent: "purple",
+  },
+];
+---
+
+<section id="tracks" class="tracks">
+  <div class="container">
+    <div class="head reveal">
+      <span class="eyebrow"
+        ><span class="bullet" aria-hidden="true"></span>One pack, three stacks</span
+      >
+      <h2>Pick the track your project needs</h2>
+      <p class="lead">
+        Each track is an opinionated skill set: clarify → spec → plan → write
+        code → review → ship. Cross-track design phase is shared; per-track
+        generation, review, and tests are specialized.
+      </p>
+    </div>
+
+    <div class="grid">
+      {
+        tracks.map((t, i) => (
+          <article
+            class={`card accent-${t.accent} status-${t.status} reveal delay-${i + 1}`}
+          >
+            <header>
+              <span class={`status-pill ${t.status}`}>
+                <span class="pill-dot" aria-hidden="true" />
+                {t.statusLabel}
+              </span>
+              <h3>{t.name}</h3>
+              <p class="tagline">{t.tagline}</p>
+            </header>
+
+            <p class="desc">{t.description}</p>
+
+            <ul class="bullets">
+              {t.bullets.map((b) => (
+                <li>
+                  <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M5 12l5 5L20 7"
+                    />
+                  </svg>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+
+            {t.href ? (
+              <a class="cta" href={t.href}>
+                Explore the track
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M5 12h14M13 5l7 7-7 7"
+                  />
+                </svg>
+              </a>
+            ) : (
+              <div class="cta cta-disabled" aria-disabled="true">
+                Stay tuned
+              </div>
+            )}
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .tracks {
+    background: var(--c-bg);
+  }
+
+  .head {
+    max-width: 720px;
+    margin-bottom: 56px;
+  }
+
+  .bullet {
+    width: 6px;
+    height: 6px;
+    background: var(--c-orange-500);
+    border-radius: 999px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    --accent-bg: var(--c-blue-100);
+    --accent-fg: var(--c-blue-600);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 24px 24px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition:
+      transform 280ms var(--ease-spring),
+      box-shadow 260ms var(--ease),
+      border-color 260ms var(--ease);
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-fg);
+    box-shadow: var(--shadow-md);
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      var(--accent-fg),
+      var(--accent-fg) 60%,
+      transparent
+    );
+    opacity: 0;
+    transition: opacity 260ms var(--ease);
+  }
+
+  .card:hover::before {
+    opacity: 1;
+  }
+
+  .card.accent-blue {
+    --accent-bg: var(--c-blue-100);
+    --accent-fg: var(--c-blue-600);
+  }
+
+  .card.accent-orange {
+    --accent-bg: var(--c-orange-100);
+    --accent-fg: var(--c-orange-600);
+  }
+
+  .card.accent-purple {
+    --accent-bg: #efe9fc;
+    --accent-fg: #7c3aed;
+  }
+
+  /* Coming-soon visual treatment */
+  .card.status-soon {
+    background:
+      linear-gradient(180deg, var(--c-bg-soft), var(--c-bg) 40%),
+      var(--c-bg);
+  }
+
+  .card.status-soon h3,
+  .card.status-soon .tagline,
+  .card.status-soon .desc {
+    color: var(--c-text-muted);
+  }
+
+  .card.status-soon .bullets {
+    color: var(--c-text-muted);
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--accent-bg);
+    color: var(--accent-fg);
+    align-self: flex-start;
+  }
+
+  .status-pill.soon {
+    background: var(--c-bg-muted);
+    color: var(--c-text-muted);
+  }
+
+  .pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: currentColor;
+  }
+
+  .card.status-ready .pill-dot {
+    animation: glow 1.8s ease-in-out infinite;
+  }
+
+  h3 {
+    margin-top: 14px;
+    color: var(--c-text);
+  }
+
+  .tagline {
+    margin: 6px 0 0;
+    color: var(--c-text-soft);
+    font-size: 0.95rem;
+  }
+
+  .desc {
+    margin: 18px 0 16px;
+    color: var(--c-text-soft);
+    font-size: 0.95rem;
+  }
+
+  .bullets {
+    list-style: none;
+    margin: 0 0 22px;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+    color: var(--c-text);
+    font-size: 0.92rem;
+  }
+
+  .bullets li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .bullets svg {
+    flex-shrink: 0;
+    margin-top: 4px;
+    color: var(--accent-fg);
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: auto;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: var(--accent-bg);
+    color: var(--accent-fg);
+    font-size: 0.9rem;
+    font-weight: 600;
+    align-self: flex-start;
+    transition:
+      background 220ms var(--ease),
+      color 220ms var(--ease),
+      transform 200ms var(--ease-spring);
+  }
+
+  .cta:hover {
+    background: var(--accent-fg);
+    color: var(--c-text-on-brand);
+    transform: translateX(3px);
+  }
+
+  .cta-disabled {
+    background: var(--c-bg-muted);
+    color: var(--c-text-muted);
+    cursor: default;
+    pointer-events: none;
+  }
+</style>

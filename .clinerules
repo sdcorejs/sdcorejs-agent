@@ -1,0 +1,50 @@
+# SDCoreJS SDLC Agent — Cline Rules
+
+> Cline IDE entry point. Mirrors `AGENTS.md` and `CLAUDE.md`.
+
+This repository is an **SDLC agent** for the SDCoreJS ecosystem:
+- **Backoffice portals** in Angular with `@sd-angular/core` (Core UI)
+- **Backend** in NestJS + Postgres
+- **Public sites** in Next.js (SSR)
+
+## How to use this skill set
+
+1. **Dispatch by skill description.** Skills live under `skills/<track>/*.md` with YAML frontmatter (`name`, `description`, `allowed-tools`). Match user requests against each skill's `description` and follow the matched skill's body exactly.
+
+2. **Workflow** (per track):
+   ```
+   Request
+     → sdcorejs-brainstorm        (optional, if scope is open-ended)
+     → sdcorejs-clarify-requirements
+     → sdcorejs-write-spec → sdcorejs-review-spec      (approval gate)
+                           → orchestration/auto-specs   (MANDATORY)
+     → sdcorejs-plan       → sdcorejs-review-plan       (approval gate)
+                           → orchestration/auto-plans   (MANDATORY)
+     → <track>-write-code  (orchestrator dispatches sub-skills)
+     → testing/e2e/<track> → review/code/<track> → orchestration/repair-loop
+     → orchestration/comment-code  (ASK gate)
+     → orchestration/verify-before-done (MANDATORY)
+     → orchestration/branch-ready  (branch-hygiene sweep)
+     → orchestration/auto-docs + auto-task-tracker + memories (MANDATORY)
+   ```
+
+3. **Source-of-truth files** (read on demand, do NOT preload all):
+   - `CLAUDE.md` / `AGENTS.md` — same content; either works as agent config
+   - `skills/tracks/<track>/_refs/architecture-principles.md` — WHY-rules per track
+   - `skills/shared/sdlc/_refs/<track>.md` — design-phase patterns per track
+
+4. **Bilingual**: Vietnamese request → Vietnamese output (full diacritics for labels/messages). English → English. Permission codes + route paths stay English.
+
+5. **Auto-docs / memories live in the TARGET project**, never in this `sdcorejs-agent` repo:
+   - `<target>/.sdcorejs/docs/<track>/` — per-session summaries
+   - `<target>/.sdcorejs/memories/<track>/` — durable cross-session knowledge
+   - `<target>/.sdcorejs/specs/<track>/` — approved spec snapshots
+   - `<target>/.sdcorejs/plans/<track>/` — approved plan snapshots
+   - `<target>/.sdcorejs/tasks/<track>.md` — living TODO
+
+## See also
+
+- `AGENTS.md` — primary entry point (Codex / Cursor / generic AGENTS.md-aware tools)
+- `CLAUDE.md` — Claude Code entry point
+- `.github/copilot-instructions.md` — GitHub Copilot entry point
+- `docs/angular-portal-showcase.html` — visual showcase of Angular Portal SDLC capabilities

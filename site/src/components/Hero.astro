@@ -1,0 +1,217 @@
+---
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+
+<section class="hero" id="top">
+  <div class="container hero-inner">
+    <div class="hero-text">
+      <span class="eyebrow reveal">
+        <span class="dot"></span>
+        Skill pack v0.0.1 • Bilingual VI / EN
+      </span>
+
+      <h1 class="reveal delay-1">
+        SDLC agent for the
+        <span class="grad">SDCoreJS</span>
+        stack
+      </h1>
+
+      <p class="lead reveal delay-2">
+        77 dispatchable skills that turn Claude Code, GitHub Copilot, and Codex
+        into a domain-aware engineer for Angular portals, NestJS APIs, and
+        Next.js public sites. Clarify → spec → plan → write code → review →
+        ship, with explicit user-approval gates.
+      </p>
+
+      <div class="actions reveal delay-3">
+        <a class="btn btn-primary" href="#install">
+          <span>Install plugin</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M5 12h14M13 5l7 7-7 7"
+            ></path>
+          </svg>
+        </a>
+        <a class="btn btn-ghost" href="#angular-portal">See Angular Portal</a>
+      </div>
+
+      <div class="meta reveal delay-4">
+        <div>
+          <strong>77</strong>
+          <span>skills</span>
+        </div>
+        <div>
+          <strong>3</strong>
+          <span>tracks</span>
+        </div>
+        <div>
+          <strong>69</strong>
+          <span>Core UI refs</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual reveal delay-2" aria-hidden="true">
+      <div class="logo-stage">
+        <div class="glow"></div>
+        <img src={`${base}/icon.png`} alt="" class="logo-float" width="320" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: clamp(80px, 12vw, 140px) clamp(60px, 10vw, 120px);
+    overflow: hidden;
+    background:
+      radial-gradient(
+        1100px 600px at 8% -10%,
+        var(--c-blue-100),
+        transparent 60%
+      ),
+      radial-gradient(
+        900px 500px at 100% 0%,
+        var(--c-orange-100),
+        transparent 55%
+      ),
+      var(--c-bg);
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(13, 39, 72, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(13, 39, 72, 0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(
+      ellipse 70% 60% at 50% 30%,
+      black 30%,
+      transparent 75%
+    );
+    -webkit-mask-image: radial-gradient(
+      ellipse 70% 60% at 50% 30%,
+      black 30%,
+      transparent 75%
+    );
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    align-items: center;
+    gap: clamp(32px, 6vw, 80px);
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (max-width: 880px) {
+    .hero-inner {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    .meta {
+      justify-content: center;
+    }
+  }
+
+  .grad {
+    background: linear-gradient(135deg, var(--c-blue-600), var(--c-orange-600));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    white-space: nowrap;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--c-orange-500);
+    box-shadow: 0 0 0 4px rgba(255, 122, 24, 0.15);
+    animation: glow 2.4s ease-in-out infinite;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  @media (max-width: 880px) {
+    .actions {
+      justify-content: center;
+    }
+  }
+
+  .meta {
+    display: flex;
+    gap: 32px;
+    margin-top: 40px;
+    padding-top: 28px;
+    border-top: 1px solid var(--c-border);
+  }
+
+  .meta strong {
+    display: block;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--c-text);
+    line-height: 1.1;
+  }
+
+  .meta span {
+    font-size: 0.85rem;
+    color: var(--c-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .hero-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .logo-stage {
+    position: relative;
+    width: clamp(220px, 32vw, 360px);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+  }
+
+  .logo-float {
+    width: 100%;
+    height: auto;
+    animation: float 6s ease-in-out infinite;
+    filter: drop-shadow(0 30px 50px rgba(33, 150, 243, 0.18))
+      drop-shadow(0 18px 30px rgba(239, 108, 0, 0.12));
+  }
+
+  .glow {
+    position: absolute;
+    inset: 8% 8% 8% 8%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(33, 150, 243, 0.35),
+      transparent 65%
+    );
+    filter: blur(40px);
+    animation: glow 4s ease-in-out infinite;
+    z-index: 0;
+  }
+</style>

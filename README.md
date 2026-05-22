@@ -1,181 +1,142 @@
+# SDCoreJS SDLC Agent
 
-Start building Angular portal modules with @sd-angular/core.
+> One agent. Three stacks. Works in Claude Code, GitHub Copilot, and Codex.
 
-**Key resources:**
-- [Angular Portal Skills](skills/angular-portal/) - Entity CRUD, Module Configuration, Forms
-- [Angular Portal README](skills/angular-portal/README.md) - Architecture overview and examples
-- [Copilot Instructions](.github/copilot-instructions.md) - Agent guidelines and patterns
-- [Agents](agents/README.md) - Module orchestrators (to be implemented)
+This repository is an **SDLC agent** for teams building software on the SDCoreJS stack:
 
-## CLI Quick Commands
+- **Backoffice portals** in Angular with `@sd-angular/core` (Core UI)
+- **Backend** in NestJS + Postgres
+- **Public sites** in Next.js (SSR)
 
-This repository now exposes a CLI command alias: `sd-agent`.
+The agent ships its capabilities as **skills** — markdown files with YAML frontmatter — that supported AI coding tools dispatch automatically when relevant. There is no runtime, no CLI, no compiler. Just skills + entry-point files that each tool reads.
 
-- Local run from this repo:
-	- `npx --yes --package file:. sd-agent skills list`
-	- `npx --yes --package file:. sd-agent skills path`
-- Build package preview:
-	- `npm run build`
-- Publish to npm (public):
-	- `npm run publish:npm`
+## How it works
 
-After publishing `@sdcorejs/agent`, users can run:
-- `npx @sdcorejs/agent skills list`
-- `npx @sdcorejs/agent skills path`
+1. You clone or attach this repo's `skills/` and entry-point files (`CLAUDE.md`, `AGENTS.md`, `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md`) to your target project.
+2. The AI tool reads the entry-point at session start.
+3. When you ask the tool to do something ("tạo entity product", "review module catalog"), it matches your request against each skill's `description` and follows the matched skill's instructions exactly.
 
-## Teammate Chat Onboarding (Quick)
-## Onboarding Đồng Nghiệp (Nhanh)
+## Tracks
 
-After cloning this repository, teammates can use VS Code Chat immediately with fallback prompts:
-Sau khi clone repository này, đồng nghiệp có thể dùng VS Code Chat ngay với fallback prompts.
+| Track | Path | Status |
+| --- | --- | --- |
+| Angular Portal | `skills/angular-portal/` | ✅ Complete (21 skills + 58 reference docs for Core UI) |
+| NestJS | `skills/nestjs/` | 🚧 Planned |
+| Next.js | `skills/nextjs/` | 🚧 Planned |
 
-Meaning of fallback prompts / Nghĩa của fallback prompts:
-- EN: Prepared prompt files used when SDCoreJS chat mode is not visible.
-- VI: Các file prompt chuẩn bị sẵn, dùng khi không thấy SDCoreJS chat mode.
+## Workflow (per track)
 
-1. Use prompt files:
-- .github/prompts/sdcorejs-angular-portal.prompt.md
-- .github/prompts/sdcorejs-angular-portal-claude-github.prompt.md
-- .github/prompts/sdcorejs-angular-portal-smoke-tests.vi.prompt.md
+Every track follows the same SDLC pipeline. Numbering reflects the order.
 
-1. Dùng các file prompt:
-- .github/prompts/sdcorejs-angular-portal.prompt.md
-- .github/prompts/sdcorejs-angular-portal-claude-github.prompt.md
-- .github/prompts/sdcorejs-angular-portal-smoke-tests.vi.prompt.md
-
-2. Add these scope constraints in every prompt:
-- Only read rules from: sdcorejs-agent/skills/angular-portal
-- For portal init, use starter baseline only from: sdcorejs-agent/core/templates/angular-portal-starter
-- Only create or edit files in their portal repository
-
-2. Thêm ràng buộc phạm vi trong mọi prompt:
-- Chỉ đọc rules từ: sdcorejs-agent/skills/angular-portal
-- Khi khởi tạo portal, chỉ dùng baseline từ: sdcorejs-agent/core/templates/angular-portal-starter
-- Chỉ tạo hoặc sửa file trong repo portal của họ
-
-Reference guide:
-- agents/sdcorejs/README.md
-
-## Repository Maintenance Rule
-
-Any task that edits files inside `sdcorejs-agent` must also write or update the current-day handoff in `agents/sdcorejs/HANDOFF-YYYY-MM-DD.md` before the task is considered complete.
-
-Minimum handoff content:
-- session focus
-- changed files or affected areas
-- verification status or remaining blockers
-
-## Quick Start: CLI + Chat Integration
-
-After `npm i @sdcorejs/agent -g`, use these commands to integrate with VS Code Chat:
-
-### 1. Portal Initialization
-```bash
-sd-agent chat portal
 ```
-→ Prints prompt. Copy into Chat and replace `{{input}}`:
-```
-Khởi tạo portal-myapp với dev, qc, uat, prod
+Request
+  ↓
+00-onboarding              ← orient the developer
+01-brainstorm              ← explore requirements open-ended
+02-clarify-requirements    ← hard-confirm scope (blocking questions)
+03-write-spec              ← author a spec document
+04-review-spec             ← user reviews + approves spec
+05-plan                    ← step-by-step plan
+06-review-plan             ← user reviews + approves plan
+07-write-code              ← orchestrator that dispatches sub-skills (10-31)
+40-e2e-test                ← write E2E tests for what was built
+50-review-code             ← self-review against conventions
+51-write-comments          ← add JSDoc + WHY comments
+52-faq                     ← post-work Q&A
+  ↓
+_shared/auto-docs          ← MANDATORY: summary to target project's .sdcorejs/docs/<track>/
+_shared/memories           ← when learning durable knowledge: target project's .sdcorejs/memories/<track>/
 ```
 
-### 2. Module Creation
-```bash
-sd-agent chat module
+Sub-skills under `07-write-code` (Angular Portal): `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `22-screen-create`, `23-screen-update`, `30-reactive-form`, `31-workflow-actions`.
+
+## Mandatory rules (every track)
+
+1. **Auto-docs** at the end of every code-writing task → writes to your **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. Read at session start to recall prior work.
+2. **Memories** when the agent learns durable knowledge (a convention, a stakeholder constraint, an anti-pattern) → writes to **target project's** `.sdcorejs/memories/<track>/<topic>.md`. Indexed at session start.
+3. **Bilingual** — Vietnamese request → Vietnamese output (full diacritics). English → English. Permission codes + route paths stay English.
+4. **Clarify-before-code** — agent refuses to generate code without module ownership / entity name / key fields.
+5. **Core UI first** (Angular Portal) — use `@sd-angular/core` components; otherwise skeleton + `alert('TODO: ...')` stubs.
+6. **Test after generation** — run framework tests and report.
+
+## Quick start in a target project
+
+### Option 1 — Claude Code plugin (recommended for Claude Code users)
+
+Install via the Claude Code plugin marketplace. The repo ships its own single-plugin marketplace at `.claude-plugin/marketplace.json`, so you only need to add the repo as a marketplace and install the plugin:
+
 ```
-→ Prints prompt. Copy into Chat and replace `{{input}}`:
-```
-Tạo module sales cho portal
+/plugin marketplace add sdcorejs/sdcorejs-agent
+/plugin install sdcorejs-agent@sdcorejs
 ```
 
-### 3. Entity CRUD Generation
-```bash
-sd-agent chat entity
-```
-→ Prints prompt. Copy into Chat and replace `{{input}}`:
-```
-Thêm entity product vào module catalog, các field: code, name, price, category, stock, status
-```
+After install, all 76 skills (cross-track SDLC + angular-portal / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
 
-### Full Workflow Example
+### Option 2 — git submodule (works for Claude Code + Copilot + Codex)
 
 ```bash
-# 1. Initialize portal
-sd-agent chat portal
-# → Copy prompt → Chat → "Khởi tạo portal-shop với dev, qc, uat, prod"
-
-# 2. Create module
-sd-agent chat module
-# → Copy prompt → Chat → "Tạo module catalog cho portal"
-
-# 3. Add entity
-sd-agent chat entity
-# → Copy prompt → Chat → "Thêm entity product vào module catalog"
-
-# 4. Continue refining in Chat
-# ...user feedback on UI, validation, workflow...
+cd <your-portal-project>
+git submodule add <repo-url> .sdcorejs-agent
+ln -s .sdcorejs-agent/CLAUDE.md CLAUDE.md
+ln -s .sdcorejs-agent/AGENTS.md AGENTS.md
+ln -s .sdcorejs-agent/skills skills-sdcorejs
 ```
 
-### Useful CLI Commands
+### Option 3 — copy entry points + skills
+
 ```bash
-sd-agent skills list       # List all skill groups
-sd-agent skills path       # Print path to skills folder
-sd-agent help             # Show all commands
+cp -r <agent-repo>/{CLAUDE.md,AGENTS.md,skills} ./
 ```
 
-## Using VS Code Chat Mode
+Then open the project in Claude Code / Copilot / Codex and start describing what you want.
 
-If your VS Code supports custom chat modes:
-1. Open Chat
-2. Select **SDCoreJS** mode (should auto-load from `.github/chatmodes/sdcorejs.chatmode.md`)
-3. Start with:
-   - "Khởi tạo portal-myapp"
-   - "Thêm entity khách hàng"
-   - "Tạo workflow approval"
+## Tool support priority
 
----
+1. **Claude Code** — primary target. Two paths:
+   - Plugin marketplace (`/plugin marketplace add sdcorejs/sdcorejs-agent`) — recommended; reads `plugin/skills/<name>/SKILL.md`
+   - Direct repo attach — reads `CLAUDE.md` + `.claude/skills/<name>/SKILL.md`
+2. **GitHub Copilot** — reads `.github/copilot-instructions.md` + `.github/chatmodes/sdcorejs.chatmode.md`
+3. **Codex / Cursor / OpenAI Agents SDK** — reads `AGENTS.md`
+
+All paths follow the same `skills/**/*.md` source of truth (kept in sync by `.claude/sync-skills.sh` — both Claude Code mirrors are auto-regenerated on every commit that touches `skills/`). The entry-point files differ only in framing.
+
+## Repo layout
+
+```
 sdcorejs-agent/
+├── CLAUDE.md                              # Claude Code entry (direct-attach mode)
+├── AGENTS.md                              # Codex/Cursor entry
+├── README.md                              # this file
+├── LICENSE
 ├── .github/
-│   └── copilot-instructions.md     # Agent configuration and guidelines
-├── skills/                          # Modular code generation skills
-│   ├── angular-portal/              # Angular portal skills (@sd-angular/core → @sdcorejs/angular)
-│   │   ├── angular-entity-crud-skill.md
-│   │   ├── angular-module-configuration-skill.md
-│   │   ├── angular-reactive-form-skill.md
-│   │   ├── INDEX.md
-│   │   └── README.md
-│   ├── nestjs/                      # NestJS backend skills (to be added)
-│   ├── shared/                      # Shared utilities & validators (to be added)
-│   └── README.md
-├── agents/                          # High-level orchestrators
-│   ├── angular-portal-agent/        # Angular portal module generation
-│   ├── nestjs-agent/                # NestJS module generation
-│   └── full-stack-agent/            # Complete full-stack generation
-├── core/                            # Shared utilities & interfaces
-│   ├── utilities/
-│   ├── interfaces/
-│   ├── validators/
-│   └── templates/
-└── README.md                        # This file
+│   ├── copilot-instructions.md            # GitHub Copilot entry
+│   └── chatmodes/sdcorejs.chatmode.md     # Copilot chat mode
+├── .claude-plugin/
+│   └── marketplace.json                   # single-plugin marketplace manifest
+├── plugin/                                # Claude Code plugin distribution
+│   ├── .claude-plugin/plugin.json         # plugin manifest (name/version/author)
+│   └── skills/<name>/SKILL.md             # auto-synced from skills/ source
+├── .claude/
+│   └── skills/<name>/SKILL.md             # project-local Claude Code mirror (auto-synced)
+├── skills/                                # source of truth — flat .md per skill
+│   ├── tracks/
+│   │   ├── angular-portal/                # ✅ 13 skills + _refs/templates/
+│   │   ├── nestjs/                        # 🟡 scaffold
+│   │   └── nextjs/build-website/          # ✅ 13 skills + _refs/
+│   ├── shared/{sdlc,conventions,workflow}/
+│   ├── orchestration/                     # SDLC plumbing (13 skills)
+│   ├── review/{architecture,code,security,performance,accessibility}/
+│   └── testing/{philosophy,tdd,e2e,integration,unit}/
+├── _legacy/                               # pre-pivot content kept for reference
+└── images/
 ```
-sdcorejs-agent is an AI-powered coding agent designed to generate backend and frontend code following a strict, opinionated architecture.
 
-It transforms natural language requirements into structured, production-ready modules by combining:
-- Architecture-aware planning
-- Modular skill system
-- Code generation with templates
-- Tool-based execution (file system, validation, etc.)
+The two synced mirrors (`plugin/skills/` for plugin distribution + `.claude/skills/` for project-local Claude Code) are regenerated from `skills/` by `.claude/sync-skills.sh`, enforced via the lefthook pre-commit hook. Edit only the `skills/` source — never the mirrors directly.
 
-The agent is optimized for:
-- NestJS backend (controller → service → repository)
-- Angular frontend with sdcorejs UI system
-- Scalable, maintainable enterprise architecture
+## Not a multi-agent framework
 
-Example:
-"Build product module with name, price and validation"
+This is not LangChain / AutoGPT / DeepAgents. There is no runtime, no orchestration code, no LLM calls. It is a curated set of markdown files that AI coding tools read and follow. The "agent" lives inside Claude Code / Copilot / Codex — this repo just gives it knowledge of the SDCoreJS stack.
 
-→ Automatically generates:
-- Entity
-- SaveReq/DTOs (create/update with validation)
-- Repository
-- Service
-- Controller
+## License
+
+MIT

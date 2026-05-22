@@ -1,0 +1,40 @@
+# Enforce LF line endings for all text files Git tracks.
+#
+# Without this, Windows contributors with `core.autocrlf=true` end up with
+# CRLF blobs in some commits and LF blobs in others (whatever was on disk
+# when committed). The lefthook sync-skills check compares the synced
+# output against `.claude/skills/` and `plugin/skills/` byte-for-byte;
+# any line-ending drift breaks the check and produces false-positive
+# "out of sync" reports.
+#
+# `text eol=lf` instructs Git to:
+#   - Normalize line endings to LF in the stored blob (regardless of OS)
+#   - Check files out as LF in the working tree (overrides `core.autocrlf`)
+#
+# After adding this file, run `git add --renormalize .` to renormalize
+# any blobs already stored with CRLF.
+
+*               text=auto
+*.md            text eol=lf
+*.json          text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+*.sh            text eol=lf
+*.ts            text eol=lf
+*.tsx           text eol=lf
+*.js            text eol=lf
+*.mjs           text eol=lf
+*.cjs           text eol=lf
+*.html          text eol=lf
+*.scss          text eol=lf
+*.css           text eol=lf
+
+# Binary — never normalize
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.svg           text eol=lf
+*.ico           binary
+*.woff          binary
+*.woff2         binary
