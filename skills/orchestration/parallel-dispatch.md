@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-parallel-dispatch
-description: Use when the agent is about to execute work that could plausibly be split across parallel subagents — multiple independent entities, multi-file scans, batch screen generation, multi-stack audits. Decides WHETHER to parallelize (independence check, blast-radius check, budget) and HOW to brief each subagent (self-contained context, clear deliverable, return shape). Triggers - "chạy song song", "dispatch parallel", "split into subagents", "fan out", "làm song song", "in parallel", or automatic invocation by 07-write-code (and other orchestrators) when ≥3 independent units are detected. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Decision gate that runs BEFORE `sdcorejs-subagent-driven-dev`. Use when the agent is about to execute work that could plausibly be split across parallel subagents — multiple independent entities, multi-file scans, batch screen generation, multi-stack audits. Decides WHETHER to parallelize via independence + blast-radius + reviewability + budget checks. Outputs a verdict: SEQUENTIAL or PARALLEL-CANDIDATE; when PARALLEL, hands off to `sdcorejs-subagent-driven-dev` which owns the briefing + dispatch + merge mechanics. Triggers - "chạy song song", "dispatch parallel", "split into subagents", "fan out", "làm song song", "in parallel", or automatic invocation by 07-write-code (and other orchestrators) when ≥3 independent units are detected. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read
 ---
 
@@ -183,3 +183,8 @@ Correct dispatch:
 - Split 23 → 5 batches of 4-5 components each
 - Each batch is one subagent that handles its 4-5 components sequentially internally
 - Avoids the 23-way fan-out, fits the budget
+
+## Cross-references
+- `orchestration/subagent-driven-dev.md` — runs NEXT when the verdict is PARALLEL-CANDIDATE; owns the briefing template, dispatch mechanics, partial-failure handling, and merge/verification steps. This skill stops at the decision; subagent-driven-dev executes it.
+- `orchestration/verify-before-done.md` — final acceptance gate after subagent-driven-dev's merge step.
+- `07-write-code.md` (each track) — orchestrator that invokes this skill when its dispatch table has 3+ rows.
