@@ -10,7 +10,7 @@ allowed-tools: Read, Bash, Glob, Grep
 "Tests pass" ≠ "feature done". A test suite covers the cases someone thought to write; acceptance criteria are what the user signed off on. This skill closes the gap — it makes the agent prove, criterion by criterion, that what was built matches what was specified.
 
 ## When invoked
-- **MANDATORY** automatic invocation BEFORE `sdcorejs-auto-docs` at the end of every code-writing skill (`07-write-code` and all its sub-skills, `40-e2e-test`, `30-reactive-form`, `31-workflow-actions`)
+- **MANDATORY** automatic invocation BEFORE `sdcorejs-auto-docs` at the end of every code-writing skill (`07-write-code` and all its sub-skills, `40-e2e-test`, `31-actions`)
 - Before `sdcorejs-commit` for a feature commit (not for chore/docs commits)
 - Before `sdcorejs-pr-create`
 - User says "verify", "kiểm tra acceptance", "check acceptance criteria", "đã xong chưa"

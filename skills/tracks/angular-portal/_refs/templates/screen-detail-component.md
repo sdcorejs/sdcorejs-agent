@@ -1,11 +1,12 @@
 # Screen — Detail Component (Shared Shell + State Branches)
 
-The three screen skills `21-screen-detail.md`, `22-screen-create.md`, and `23-screen-update.md` all write to the **same file**: `src/libs/<module>/<entity>/pages/detail/detail.component.ts`. This ref consolidates the literal code so the developer sees the whole component in one place, with state-specific overlays grouped together.
+The skill [`21-screen-detail.md`](../../21-screen-detail.md) owns all three states (CREATE / UPDATE / DETAIL) plus form refinement, because they all write to the **same file**: `src/libs/<module>/<entity>/pages/detail/detail.component.ts`. This ref consolidates the literal code so the developer sees the whole component in one place, with state-specific overlays grouped together.
 
-Each skill points to a different section here:
-- `21-screen-detail.md` → [`#shared-shell`](#shared-shell) (imports, FormGroup, ngOnInit dispatcher, loader, header buttons, nav helpers, tab name, form-field rendering) + [`#detail-state`](#detail-state)
-- `22-screen-create.md` → [`#create-state`](#create-state)
-- `23-screen-update.md` → [`#update-state`](#update-state)
+Sections to consult based on what you're generating / refining:
+- Shared shell (imports, FormGroup, ngOnInit dispatcher, loader, header buttons, nav helpers, tab name, form-field rendering): [`#shared-shell`](#shared-shell)
+- DETAIL state-specific rules: [`#detail-state`](#detail-state)
+- CREATE state-specific rules: [`#create-state`](#create-state)
+- UPDATE state-specific rules: [`#update-state`](#update-state)
 
 Placeholders: `{{ entityPascal }}`, `{{ entityKebab }}`, `ENTITY_LABEL` (VI display name constant), `<MODULE>` / `<ENTITY>` / `<module>` (permission code parts), `EntitySaveReq` (the entity's request type).
 
@@ -260,7 +261,7 @@ Stale-id recovery is implemented inside the shared loader — see [`#shared-enti
 
 ## CREATE state
 
-Empty-form branch reached via `/create`. Owned by [`22-screen-create.md`](../../22-screen-create.md).
+Empty-form branch reached via `/create`. Rules in [`21-screen-detail.md` § CREATE state rules](../../21-screen-detail.md).
 
 ### State detection (CREATE branch of the dispatcher)
 
@@ -316,7 +317,7 @@ Key points:
 
 ## UPDATE state
 
-Prefilled-editable-form branch reached via `/update/:id`. Owned by [`23-screen-update.md`](../../23-screen-update.md).
+Prefilled-editable-form branch reached via `/update/:id`. Rules in [`21-screen-detail.md` § UPDATE state rules](../../21-screen-detail.md).
 
 ### State detection (UPDATE branch of the dispatcher)
 

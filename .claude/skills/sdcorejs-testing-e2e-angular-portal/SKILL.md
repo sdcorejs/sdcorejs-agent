@@ -49,7 +49,7 @@ For a CRUD entity, write at minimum these specs:
 ### `<entity>-delete.e2e.spec.ts`
 - Select a row's checkbox → click bulk delete → confirm in dialog → expect success notify + row gone
 
-If the entity has workflow (`31-workflow-actions`), add `<entity>-workflow.e2e.spec.ts` covering submit / approve / reject.
+If the entity has workflow or other action buttons (`31-actions`), add `<entity>-workflow.e2e.spec.ts` (or `<entity>-actions.e2e.spec.ts`) covering the action flow — typically submit / approve / reject for workflows; export / re-sync / etc. for custom side-effects.
 
 ## Naming + placement
 

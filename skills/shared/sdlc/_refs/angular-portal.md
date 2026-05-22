@@ -18,7 +18,7 @@ When the user wants 2-3 options for a CRUD/workflow feature, present from this m
 
 ### Workflow brainstorm
 - No workflow → keep CRUD straight
-- Single-step submit-approve → add `31-workflow-actions` to plan
+- Single-step submit-approve → add `31-actions` to plan
 - Multi-step (draft → review → approve → publish) → spec must list each transition + permission
 
 ### Clarifying questions to seed
@@ -128,8 +128,8 @@ Capture:
 1. **Module bootstrap** (only if new module): configuration, api configuration, guard, module, routes, register in app.routes + main.ts
 2. **Entity model + service + mock**: model.ts, mock-data.ts, service.ts (MockCrudStore), index.ts
 3. **Entity routes + components**: `<entity>.routes.ts`, `pages/list/list.component.ts`, `pages/detail/detail.component.ts`
-4. **Workflow (if enabled)**: workflow actions wiring via `31-workflow-actions`
-5. **Form refinement (if non-trivial)**: custom validators, conditional fields via `30-reactive-form`
+4. **Form refinement (if non-trivial)**: custom validators, FormArray, cross-field rules — handled inside `21-screen-detail`
+5. **Actions (if any)**: workflow transitions, bulk operations, custom side-effects via `31-actions`
 6. **Tests** (matching coverage level): `.routes.spec.ts`, `.list.component.spec.ts`, `.detail.component.spec.ts`
 
 ### Phase grouping — `TDD` coverage (when chosen in clarify)
