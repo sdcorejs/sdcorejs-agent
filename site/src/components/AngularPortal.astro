@@ -2,17 +2,17 @@
 const skills = [
   { code: "00", name: "onboarding", note: "Entry — orient + dispatch" },
   { code: "07", name: "write-code", note: "Orchestrator", primary: true },
-  { code: "10", name: "init-portal", note: "Bootstrap portal" },
+  { code: "10", name: "init-portal", note: "Bootstrap portal + logo" },
   { code: "11", name: "init-module", note: "Feature module" },
   { code: "12", name: "init-entity", note: "Full CRUD entity", primary: true },
   { code: "20", name: "screen-list", note: "SdTable + paging" },
-  { code: "21", name: "screen-detail", note: "Read-only + shell" },
-  { code: "22", name: "screen-create", note: "Empty form" },
-  { code: "23", name: "screen-update", note: "Prefilled form" },
-  { code: "30", name: "reactive-form", note: "Validators + FormArray" },
-  { code: "31", name: "workflow-actions", note: "Approve / reject" },
-  { code: "51", name: "write-comments", note: "JSDoc + WHY" },
-  { code: "52", name: "faq", note: "Conventions Q&A" },
+  {
+    code: "21",
+    name: "screen-detail",
+    note: "CREATE / UPDATE / DETAIL + form",
+    primary: true,
+  },
+  { code: "31", name: "actions", note: "Workflow / bulk / custom" },
 ];
 
 const sdlcFlow = [

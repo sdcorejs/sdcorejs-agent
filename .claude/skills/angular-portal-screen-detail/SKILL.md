@@ -294,3 +294,16 @@ If referenced only once: invoke directly. Goal — reduce getter invocations dur
 - [`12-init-entity.md`](./12-init-entity.md) — when model / service / routes don't exist yet
 - [`_refs/templates/screen-detail-component.md`](./_refs/templates/screen-detail-component.md) — code templates for the shared shell + per-state branches
 - [`_refs/templates/reactive-form-templates.md`](./_refs/templates/reactive-form-templates.md) — code templates for form refinement
+
+<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
+
+**Response style (terse mode active for this skill — reduces token usage):**
+
+While executing this skill:
+
+- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
+- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
+- Pattern: `[thing] [action] [reason]. [next step].`
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
+- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
+- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

@@ -235,3 +235,16 @@ No spec found (small bug fix, no .sdcorejs/docs/<track>/*-spec.md)
 - `03-write-spec.md` (track-specific) — defines the Acceptance Criteria section format this skill reads
 - `40-e2e-test.md` (track-specific) — many acceptance criteria are best verified via E2E; cross-reference for the right framework
 - `nextjs-build-website-content-quality` (`19-content-quality`) — installs `check:i18n` + `check:content` scripts that this skill invokes; defines the bilingual parity + minimum content length contracts
+
+<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
+
+**Response style (terse mode active for this skill — reduces token usage):**
+
+While executing this skill:
+
+- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
+- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
+- Pattern: `[thing] [action] [reason]. [next step].`
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
+- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
+- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.
