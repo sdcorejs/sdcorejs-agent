@@ -100,25 +100,25 @@ If target codebase uses NgModule root/module wiring:
 
 ### Code templates
 
-All file-content templates referenced by Section 2 (Required vs Optional) live in [`_refs/templates/init-module-templates.md`](./_refs/templates/init-module-templates.md). Read it when materializing each file:
+All file-content templates referenced by Section 2 (Required vs Optional) live in [`_refs/angular-portal/templates/init-module-templates.md`](_refs/angular-portal/templates/init-module-templates.md). Read it when materializing each file:
 
 | File to generate | Section in templates ref |
 |---|---|
-| `[module].configuration.ts` (token + interface) | [`#moduleconfigurationts`](./_refs/templates/init-module-templates.md#moduleconfigurationts) |
-| `configurations/api.configuration.ts` (interceptor) | [`#configurationsapiconfigurationts`](./_refs/templates/init-module-templates.md#configurationsapiconfigurationts) |
-| `configurations/upload-file.configuration.ts` (optional) | [`#configurationsupload-fileconfigurationts-optional`](./_refs/templates/init-module-templates.md#configurationsupload-fileconfigurationts-optional) |
-| `guards/[module].guard.ts` | [`#guardsmoduleguardts`](./_refs/templates/init-module-templates.md#guardsmoduleguardts) |
-| `[module].module.ts` (primary public API) | [`#modulemodulets-canonical--exposes-the-lib`](./_refs/templates/init-module-templates.md#modulemodulets-canonical--exposes-the-lib) |
-| `routes.ts` (lib root — guards + lazy children, NO providers) | [`#routests-lib-root--guards--lazy-children-only`](./_refs/templates/init-module-templates.md#routests-lib-root--guards--lazy-children-only) |
-| `main.ts` wiring (standalone bootstrap) | [`#maints-standalone-bootstrap`](./_refs/templates/init-module-templates.md#maints-standalone-bootstrap) |
-| Legacy NgModule consumer (hybrid apps) | [`#legacy-ngmodule-consumer-when-the-app-shell-is-still-ngmodule-based`](./_refs/templates/init-module-templates.md#legacy-ngmodule-consumer-when-the-app-shell-is-still-ngmodule-based) |
-| `permission.configuration.ts` (keyed, optional) | [`#permissionconfigurationts-keyed`](./_refs/templates/init-module-templates.md#permissionconfigurationts-keyed) |
-| `components/base-select/base-select.component.ts` (load-bearing — preserve inline rationale verbatim) | [`#componentsbase-selectbase-selectcomponentts`](./_refs/templates/init-module-templates.md#componentsbase-selectbase-selectcomponentts) |
-| `components/base-select/base-select.component.html` | [`#componentsbase-selectbase-selectcomponenthtml`](./_refs/templates/init-module-templates.md#componentsbase-selectbase-selectcomponenthtml) |
-| Route data contract (`data: { permission, permissionKey }`) | [`#route-data-contract-permission`](./_refs/templates/init-module-templates.md#route-data-contract-permission) |
-| `index.ts` (lib barrel) | [`#indexts-lib-barrel`](./_refs/templates/init-module-templates.md#indexts-lib-barrel) |
+| `[module].configuration.ts` (token + interface) | [`#moduleconfigurationts`](_refs/angular-portal/templates/init-module-templates.md#moduleconfigurationts) |
+| `configurations/api.configuration.ts` (interceptor) | [`#configurationsapiconfigurationts`](_refs/angular-portal/templates/init-module-templates.md#configurationsapiconfigurationts) |
+| `configurations/upload-file.configuration.ts` (optional) | [`#configurationsupload-fileconfigurationts-optional`](_refs/angular-portal/templates/init-module-templates.md#configurationsupload-fileconfigurationts-optional) |
+| `guards/[module].guard.ts` | [`#guardsmoduleguardts`](_refs/angular-portal/templates/init-module-templates.md#guardsmoduleguardts) |
+| `[module].module.ts` (primary public API) | [`#modulemodulets-canonical--exposes-the-lib`](_refs/angular-portal/templates/init-module-templates.md#modulemodulets-canonical--exposes-the-lib) |
+| `routes.ts` (lib root — guards + lazy children, NO providers) | [`#routests-lib-root--guards--lazy-children-only`](_refs/angular-portal/templates/init-module-templates.md#routests-lib-root--guards--lazy-children-only) |
+| `main.ts` wiring (standalone bootstrap) | [`#maints-standalone-bootstrap`](_refs/angular-portal/templates/init-module-templates.md#maints-standalone-bootstrap) |
+| Legacy NgModule consumer (hybrid apps) | [`#legacy-ngmodule-consumer-when-the-app-shell-is-still-ngmodule-based`](_refs/angular-portal/templates/init-module-templates.md#legacy-ngmodule-consumer-when-the-app-shell-is-still-ngmodule-based) |
+| `permission.configuration.ts` (keyed, optional) | [`#permissionconfigurationts-keyed`](_refs/angular-portal/templates/init-module-templates.md#permissionconfigurationts-keyed) |
+| `components/base-select/base-select.component.ts` (load-bearing — preserve inline rationale verbatim) | [`#componentsbase-selectbase-selectcomponentts`](_refs/angular-portal/templates/init-module-templates.md#componentsbase-selectbase-selectcomponentts) |
+| `components/base-select/base-select.component.html` | [`#componentsbase-selectbase-selectcomponenthtml`](_refs/angular-portal/templates/init-module-templates.md#componentsbase-selectbase-selectcomponenthtml) |
+| Route data contract (`data: { permission, permissionKey }`) | [`#route-data-contract-permission`](_refs/angular-portal/templates/init-module-templates.md#route-data-contract-permission) |
+| `index.ts` (lib barrel) | [`#indexts-lib-barrel`](_refs/angular-portal/templates/init-module-templates.md#indexts-lib-barrel) |
 
-Resolve `<CORE_UI_PACKAGE_NAME>` from `_refs/core-version.md` before materializing any of these files.
+Resolve `<CORE_UI_PACKAGE_NAME>` from `_refs/angular-portal/core-version.md` before materializing any of these files.
 
 ## 5. Example Input
 

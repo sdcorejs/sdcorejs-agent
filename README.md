@@ -116,14 +116,21 @@ sdcorejs-agent/
 │   └── marketplace.json                   # single-plugin marketplace manifest
 ├── plugin/                                # Claude Code plugin distribution
 │   ├── .claude-plugin/plugin.json         # plugin manifest (name/version/author)
-│   └── skills/<name>/SKILL.md             # auto-synced from skills/ source
+│   ├── skills/<name>/SKILL.md             # auto-synced from skills/ source
+│   └── _refs/<track>/...                  # auto-synced from top-level _refs/
 ├── .claude/
-│   └── skills/<name>/SKILL.md             # project-local Claude Code mirror (auto-synced)
+│   ├── skills/<name>/SKILL.md             # project-local Claude Code mirror (auto-synced)
+│   └── _refs/<track>/...                  # auto-synced from top-level _refs/
+├── _refs/                                 # source of truth — reference data per track (one tree, mirrored once)
+│   ├── angular-portal/                    # core-version, catalog, entity-field-types, templates/, sdcorejs-angular/...
+│   ├── nestjs/                            # architecture-principles
+│   ├── nextjs/build-website/              # architecture-principles
+│   └── sdlc/                              # cross-track design-phase patterns ({angular-portal,nestjs,nextjs}.md)
 ├── skills/                                # source of truth — flat .md per skill
 │   ├── tracks/
-│   │   ├── angular-portal/                # ✅ 13 skills + _refs/templates/
+│   │   ├── angular-portal/                # ✅ 8 skills
 │   │   ├── nestjs/                        # 🟡 scaffold
-│   │   └── nextjs/build-website/          # ✅ 13 skills + _refs/
+│   │   └── nextjs/build-website/          # ✅ 13 skills
 │   ├── shared/{sdlc,conventions,workflow}/
 │   ├── orchestration/                     # SDLC plumbing (13 skills)
 │   ├── review/{architecture,code,security,performance,accessibility}/

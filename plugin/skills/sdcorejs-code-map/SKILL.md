@@ -159,7 +159,7 @@ If the caller is the user directly asking for the map → just present the repor
 
 ### Angular Portal
 - Some repos put modules under `src/libs/`, others under `projects/<project>/src/libs/` (Nx). Detect from `angular.json` first.
-- Watch for `@sd-angular/core` imports — the project's UI baseline. Cross-reference `_refs/sd-angular-core-catalog.md` when listing components in use.
+- Watch for `@sd-angular/core` imports — the project's UI baseline. Cross-reference `_refs/angular-portal/sd-angular-core-catalog.md` when listing components in use.
 
 ### NestJS
 - This stack typically uses custom validators, NOT `class-validator` — flag if you see both in use (one is dead code)

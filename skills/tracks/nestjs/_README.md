@@ -16,4 +16,4 @@ This directory holds the NestJS-specific code-writing skills. As of the cross-tr
 
 The cross-track design phase (`skills/shared/sdlc/01-brainstorm.md` → `06-review-plan.md`) covers everything from intent → approved plan. The review/test skills (`skills/review/code/nestjs.md`, `skills/testing/*/nestjs.md`) cover post-generation quality. The gap is the per-task code-writing automation.
 
-See `skills/shared/sdlc/_refs/nestjs.md` for the be-masterdata conventions any future sub-skill must enforce, plus the "Open questions" section that lists design calls still pending (shared-package layout, pagination shape, permission code naming).
+See `_refs/sdlc/nestjs.md` for the be-masterdata conventions any future sub-skill must enforce, plus the "Open questions" section that lists design calls still pending (shared-package layout, pagination shape, permission code naming).

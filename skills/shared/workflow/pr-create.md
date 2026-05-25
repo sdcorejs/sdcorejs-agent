@@ -136,7 +136,7 @@ Body:
 ```markdown
 ## Summary
 - No `@sd-angular/core` form component implements ControlValueAccessor.
-- Replaced `formControlName=` usages with `[form]+name=` pattern across `21-screen-detail.md` + the form templates in `_refs/templates/screen-detail-component.md` and `_refs/templates/reactive-form-templates.md`.
+- Replaced `formControlName=` usages with `[form]+name=` pattern across `21-screen-detail.md` + the form templates in `_refs/angular-portal/templates/screen-detail-component.md` and `_refs/angular-portal/templates/reactive-form-templates.md`.
 
 ## Test plan
 - [ ] Generate a new entity from a clean target project and verify the rendered form binds correctly

@@ -1,6 +1,6 @@
 ---
 name: nextjs-build-website-onboarding
-description: Use when the user opens this agent inside a Next.js landing-site project for the first time, asks "what can you do for my website", "how do I start a landing site", "list skills cho website", "tạo landing page", or seems unsure which skill to invoke. Provides overview of the build-website skill pack, the SDLC flow, links to the WHY-rules in `_refs/architecture-principles.md`, and routes the user to the next concrete step (usually `sdcorejs-brainstorm`). Bilingual (VI/EN).
+description: Use when the user opens this agent inside a Next.js landing-site project for the first time, asks "what can you do for my website", "how do I start a landing site", "list skills cho website", "tạo landing page", or seems unsure which skill to invoke. Provides overview of the build-website skill pack, the SDLC flow, links to the WHY-rules in `_refs/nextjs/build-website/architecture-principles.md`, and routes the user to the next concrete step (usually `sdcorejs-brainstorm`). Bilingual (VI/EN).
 allowed-tools: Read, Glob
 ---
 
@@ -117,7 +117,7 @@ Do NOT generate code or jump to `10-init-site` before brainstorm/audit + clarify
 ## See also
 
 - `skills/orchestration/`, `skills/shared/`, `skills/review/`, `skills/testing/` — cross-track utilities (split by concern)
-- `skills/tracks/nextjs/build-website/_refs/` — reference docs (created on demand as the pack grows)
+- `_refs/nextjs/build-website/` — reference docs (created on demand as the pack grows)
 - `CLAUDE.md` / `AGENTS.md` / `.github/copilot-instructions.md` — entry points for the 3 supported tools
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->

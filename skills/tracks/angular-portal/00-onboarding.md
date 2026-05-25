@@ -22,7 +22,7 @@ Welcome the developer and help them pick the right next skill. This is the entry
 
 ### 2. SDLC workflow at a glance
 
-Design phase is **cross-track** (`skills/shared/sdlc/`); each skill detects the target as `angular-portal` and loads `_refs/angular-portal.md`. Code-writing + tests + reviews are track-specific.
+Design phase is **cross-track** (`skills/shared/sdlc/`); each skill detects the target as `angular-portal` and loads `_refs/sdlc/angular-portal.md`. Code-writing + tests + reviews are track-specific.
 
 ```
 Request
@@ -51,7 +51,7 @@ tracks/angular-portal/07-write-code  (angular-portal-write-code)
   ← orchestrator, picks sub-skills based on plan:
    ├─ 10-init-portal       (new portal repo)
    ├─ 11-init-module       (new feature module)
-   ├─ 12-init-entity       (new entity CRUD pages — templates in _refs/templates/)
+   ├─ 12-init-entity       (new entity CRUD pages — templates in _refs/angular-portal/templates/)
    ├─ 20-screen-list       (list page)
    ├─ 21-screen-detail     (detail.component.ts — CREATE / UPDATE / DETAIL + form refinement)
    └─ 31-actions           (action buttons — workflow / bulk / custom side-effects)
@@ -97,11 +97,11 @@ You don't need to memorize skill names. Just describe what you want — the agen
 
 ### 5. Reference docs (loaded on demand)
 The agent only reads these when relevant — don't load upfront:
-- [`_refs/architecture-principles.md`](./_refs/architecture-principles.md) — **the WHY**: 16 principles governing what generated code looks like (feature-first, signal-first, no cross-module imports, OnPush default, 4 canonical layouts, mock-first, …). Load when explaining a decision, reviewing a deviation, or onboarding a new contributor.
-- [`_refs/core-version.md`](./_refs/core-version.md) — pinned `@sd-angular/core` version
-- [`_refs/sd-angular-core-catalog.md`](./_refs/sd-angular-core-catalog.md) — Core UI components and patterns
-- [`_refs/entity-field-types.md`](./_refs/entity-field-types.md) — field type → form control mapping
-- [`_refs/templates/entity-{skeleton,tests,example-product}.md`](./_refs/templates/) — canonical code templates emitted by `12-init-entity`
+- [`_refs/angular-portal/architecture-principles.md`](_refs/angular-portal/architecture-principles.md) — **the WHY**: 16 principles governing what generated code looks like (feature-first, signal-first, no cross-module imports, OnPush default, 4 canonical layouts, mock-first, …). Load when explaining a decision, reviewing a deviation, or onboarding a new contributor.
+- [`_refs/angular-portal/core-version.md`](_refs/angular-portal/core-version.md) — pinned `@sd-angular/core` version
+- [`_refs/angular-portal/sd-angular-core-catalog.md`](_refs/angular-portal/sd-angular-core-catalog.md) — Core UI components and patterns
+- [`_refs/angular-portal/entity-field-types.md`](_refs/angular-portal/entity-field-types.md) — field type → form control mapping
+- [`_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md`](_refs/angular-portal/templates/) — canonical code templates emitted by `12-init-entity`
 
 ### 6. What to do next
 - **New project**: invoke `sdcorejs-clarify-requirements` (cross-track) to define portal name + environments + first module — or `sdcorejs-brainstorm` first if scope is still open-ended.
