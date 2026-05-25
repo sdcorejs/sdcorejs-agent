@@ -213,6 +213,6 @@ Severity: depends on findings — Critical if 200+ ms tasks block UI; Important 
 
 ## Cross-references
 - Budget thresholds: `review/performance/budget.md`
-- Core UI patterns that affect perf: `tracks/angular-portal/_refs/sd-angular-core-catalog.md`
+- Core UI patterns that affect perf: `_refs/angular-portal/sd-angular-core-catalog.md`
 - Repair loop: `orchestration/repair-loop`
 - Verification: `orchestration/verify-before-done` runs probes as criteria

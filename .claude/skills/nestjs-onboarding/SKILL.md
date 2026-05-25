@@ -1,6 +1,6 @@
 ---
 name: nestjs-onboarding
-description: Use when the user opens this agent inside a NestJS backend project for the first time, asks "what can you do for my backend", "how do I start a nestjs module", "list skills cho nestjs", "agent này làm được gì cho be", or seems unsure which skill to invoke. Provides an overview of the NestJS SDLC flow (using shared cross-track design-phase skills + per-track review/test), links to the WHY-rules in `_refs/architecture-principles.md`, notes which orchestrator pieces are planned vs available, and routes the user to the next concrete step (usually `sdcorejs-clarify-requirements` or `sdcorejs-brainstorm`). Bilingual (VI/EN).
+description: Use when the user opens this agent inside a NestJS backend project for the first time, asks "what can you do for my backend", "how do I start a nestjs module", "list skills cho nestjs", "agent này làm được gì cho be", or seems unsure which skill to invoke. Provides an overview of the NestJS SDLC flow (using shared cross-track design-phase skills + per-track review/test), links to the WHY-rules in `_refs/nestjs/architecture-principles.md`, notes which orchestrator pieces are planned vs available, and routes the user to the next concrete step (usually `sdcorejs-clarify-requirements` or `sdcorejs-brainstorm`). Bilingual (VI/EN).
 allowed-tools: Read, Glob, Grep
 ---
 
@@ -41,7 +41,7 @@ Welcome the developer inside a NestJS project. This track is in **scaffold statu
 - `nestjs-service-logic` (21) — service-layer business logic + transactions
 - `nestjs-workflow-actions` (31) — approval / publish workflows via state machine
 
-See `skills/shared/sdlc/_refs/nestjs.md` "Open questions" for the design calls still to be made.
+See `_refs/sdlc/nestjs.md` "Open questions" for the design calls still to be made.
 
 ## Suggested first step
 
@@ -103,7 +103,7 @@ Bạn muốn bắt đầu từ đâu?
 ### MUST NOT
 - Promise sub-skills that don't exist yet (`nestjs-write-code`, `12-init-entity` — they're planned)
 - Auto-generate code without an approved plan; the manual code walk only kicks in AFTER `sdcorejs-review-plan` approves
-- Pretend the cross-track design skills are NestJS-specific — they share workflow, only the `_refs/nestjs.md` is track-specific
+- Pretend the cross-track design skills are NestJS-specific — they share workflow, only the `_refs/sdlc/nestjs.md` is track-specific
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
 

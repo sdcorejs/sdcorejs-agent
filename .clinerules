@@ -47,4 +47,3 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem:
 - `AGENTS.md` — primary entry point (Codex / Cursor / generic AGENTS.md-aware tools)
 - `CLAUDE.md` — Claude Code entry point
 - `.github/copilot-instructions.md` — GitHub Copilot entry point
-- `docs/angular-portal-showcase.html` — visual showcase of Angular Portal SDLC capabilities

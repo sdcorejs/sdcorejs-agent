@@ -76,7 +76,7 @@ Verification:
 Common Angular failures:
 - `NG6100` / module-not-found → run install again, may have been interrupted
 - `Port 4200 is already in use` → `<pm> start -- --port 4201` or kill the holder
-- White screen + console error about `inject()` outside context → version mismatch between Angular and `@sd-angular/core`; check `_refs/core-version.md`
+- White screen + console error about `inject()` outside context → version mismatch between Angular and `@sd-angular/core`; check `_refs/angular-portal/core-version.md`
 
 #### NestJS
 ```bash

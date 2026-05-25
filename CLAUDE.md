@@ -56,11 +56,11 @@ Every track shares the same workflow shape. **Design phase is cross-track** (`sk
 Request
   ↓
 shared/sdlc/01-brainstorm (sdcorejs-brainstorm)
-  ← cross-track; detects target track + loads `_refs/<track>.md`
+  ← cross-track; detects target track + loads `_refs/sdlc/<track>.md`
   ← explores 2-3 approaches (skip if scope already clear)
   ↓
 shared/sdlc/02-clarify-requirements (sdcorejs-clarify-requirements)
-  ← cross-track; blocking questions per `_refs/<track>.md`
+  ← cross-track; blocking questions per `_refs/sdlc/<track>.md`
   ↓
 shared/sdlc/03-write-spec (sdcorejs-write-spec)
   ← cross-track; authors spec at <target>/.sdcorejs/docs/<track>/<timestamp>-<topic>-spec.md
@@ -137,7 +137,7 @@ orchestration/memories            ← durable knowledge (when applicable) to <ta
 Cross-track skills that apply to angular-portal, nestjs, nextjs alike. Match against their `description` like any other skill. Dispatch is by skill `name:` frontmatter, not path — directory is for organization only.
 
 ### Design phase (`skills/shared/sdlc/`)
-Loaded by every track at the start of every feature. Each detects the track at runtime and loads `_refs/<track>.md` for track-specific patterns.
+Loaded by every track at the start of every feature. Each detects the track at runtime and loads `_refs/sdlc/<track>.md` for track-specific patterns.
 
 | Skill | Trigger | Mandatory? |
 | --- | --- | --- |
@@ -180,15 +180,15 @@ Loaded by every track at the start of every feature. Each detects the track at r
 
 ## Reference docs (load on demand only — do not preload)
 
-- `skills/shared/sdlc/_refs/{angular-portal,nextjs,nestjs}.md` — cross-track design-phase patterns per track (loaded by `sdcorejs-brainstorm` / `sdcorejs-clarify-requirements` / `sdcorejs-write-spec` / `sdcorejs-plan` at Step 0-1)
-- `skills/tracks/<track>/_refs/architecture-principles.md` — WHY-principles per track governing generated code. Load when explaining decisions, reviewing deviations, or onboarding contributors:
+- `_refs/sdlc/{angular-portal,nextjs,nestjs}.md` — cross-track design-phase patterns per track (loaded by `sdcorejs-brainstorm` / `sdcorejs-clarify-requirements` / `sdcorejs-write-spec` / `sdcorejs-plan` at Step 0-1)
+- `_refs/<track>/architecture-principles.md` — WHY-principles per track governing generated code. Load when explaining decisions, reviewing deviations, or onboarding contributors:
   - **angular-portal** (16 principles): feature-first, signal-first, no cross-module imports, 4 canonical layouts, mock-first, OnPush default, …
   - **nextjs/build-website** (15 principles): App Router default, server components default, content-as-data, i18n localized pathnames, SEO non-negotiable, 30-min ISR default, real contact form, mobile-first, …
   - **nestjs** (14 principles, scaffold): bounded-context modules, BaseEntity/Repo/Service mandatory, guard order AuthGuard→Zod→HasPermission, Zod in shared package, thin controllers, explicit QueryRunner transactions, bilingual error messages, …
-- `skills/tracks/angular-portal/_refs/core-version.md` — pinned `@sd-angular/core` version
-- `skills/tracks/angular-portal/_refs/sd-angular-core-catalog.md` — Core UI components inventory
-- `skills/tracks/angular-portal/_refs/entity-field-types.md` — field type → form control mapping
-- `skills/tracks/angular-portal/_refs/templates/entity-{skeleton,tests,example-product}.md` — code templates extracted from `12-init-entity.md` (split 2026-05-20 to keep SKILL.md under 500 lines)
+- `_refs/angular-portal/core-version.md` — pinned `@sd-angular/core` version
+- `_refs/angular-portal/sd-angular-core-catalog.md` — Core UI components inventory
+- `_refs/angular-portal/entity-field-types.md` — field type → form control mapping
+- `_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md` — code templates extracted from `12-init-entity.md` (split 2026-05-20 to keep SKILL.md under 500 lines)
 
 ## Anti-patterns
 
@@ -197,7 +197,7 @@ Loaded by every track at the start of every feature. Each detects the track at r
 - ❌ Don't write `.sdcorejs/docs/`, `.sdcorejs/specs/`, `.sdcorejs/plans/`, or `.sdcorejs/memories/` content in this `sdcorejs-agent` repo. Auto-docs / auto-specs / auto-plans / memories always target the user's working project.
 - ❌ Don't load all skill bodies at session start. Just read frontmatter for dispatch; full body only when picking a skill.
 - ❌ Don't bypass git hooks (`--no-verify`) or `.gitignore`d files when committing.
-- ❌ Don't generate code that imports `@sd-angular/core` features not in the catalog (`_refs/sd-angular-core-catalog.md`) without first checking that file.
+- ❌ Don't generate code that imports `@sd-angular/core` features not in the catalog (`_refs/angular-portal/sd-angular-core-catalog.md`) without first checking that file.
 
 ## See also
 

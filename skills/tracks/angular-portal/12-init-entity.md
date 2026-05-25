@@ -1,6 +1,6 @@
 ---
 name: angular-portal-init-entity
-description: Use when adding a new entity (with full CRUD pages - model, service, routes, list, detail) into an existing Angular-portal module. Generates `services/<entity>.{model,mock-data,service}.ts`, `<entity>.routes.ts`, `pages/list/list.component.ts`, `pages/detail/detail.component.ts`, plus matching spec files at the user's confirmed coverage level. Code templates live in `_refs/templates/entity-{skeleton,tests,example-product}.md` and are loaded on demand. Triggers - "thêm entity X vào module Y", "add entity", "create CRUD for X", "tạo CRUD entity", "generate entity". Bilingual (VI/EN).
+description: Use when adding a new entity (with full CRUD pages - model, service, routes, list, detail) into an existing Angular-portal module. Generates `services/<entity>.{model,mock-data,service}.ts`, `<entity>.routes.ts`, `pages/list/list.component.ts`, `pages/detail/detail.component.ts`, plus matching spec files at the user's confirmed coverage level. Code templates live in `_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md` and are loaded on demand. Triggers - "thêm entity X vào module Y", "add entity", "create CRUD for X", "tạo CRUD entity", "generate entity". Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -162,7 +162,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Follow this import order in every component/service file:
   1. Angular framework (`@angular/core`, `@angular/router`, `@angular/common`, `@angular/forms`)
   2. RxJS (if used)
-  3. Third-party / library (Core UI imports — see `_refs/core-version.md` for current package name; templates use `<CORE_UI_PACKAGE_NAME>/...` placeholder)
+  3. Third-party / library (Core UI imports — see `_refs/angular-portal/core-version.md` for current package name; templates use `<CORE_UI_PACKAGE_NAME>/...` placeholder)
   4. Internal shared / cross-module imports
   5. Relative imports within the same module (models, services, sibling files)
   - Separate each group with a blank line
@@ -230,7 +230,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 5. **Import Organization**
    - [ ] Verify 5-group import order is followed (Angular → RxJS → @sd-angular → shared → relative)
    - [ ] Check each group is separated by a blank line
-   - [ ] Ensure no legacy imports like `from 'sd-angular'` exist; use `<CORE_UI_PACKAGE_NAME>/...` paths (substituted from `_refs/core-version.md`)
+   - [ ] Ensure no legacy imports like `from 'sd-angular'` exist; use `<CORE_UI_PACKAGE_NAME>/...` paths (substituted from `_refs/angular-portal/core-version.md`)
 
 6. **Accessibility**
    - [ ] Check action toolbars have `role="toolbar"` attribute
@@ -315,7 +315,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 
 All `.ts` code templates the skill emits live in reference files — SKILL.md stays slim by linking out:
 
-- **Component + service + routes templates** — `_refs/templates/entity-skeleton.md`
+- **Component + service + routes templates** — `_refs/angular-portal/templates/entity-skeleton.md`
   - Preconditions, layout-variant decisions, anchor heuristic
   - Permission keyed route template (2 components + URL states)
   - Permission directive template
@@ -331,12 +331,12 @@ All `.ts` code templates the skill emits live in reference files — SKILL.md st
   - `[entity].routes.spec.ts` (permission validation)
   - `index.ts` (barrel export)
 
-- **Spec.ts templates** — `_refs/templates/entity-tests.md`
+- **Spec.ts templates** — `_refs/angular-portal/templates/entity-tests.md`
   - "Request for Test Coverage" clarify prompt
   - `list.component.spec.ts` and `detail.component.spec.ts` at Standard coverage
   - `[module]-[entity].routes.spec.ts` permission validation tests
 
-- **Worked example (Product entity)** — `_refs/templates/example-product.md`
+- **Worked example (Product entity)** — `_refs/angular-portal/templates/example-product.md`
   - Reference output to verify shape and conventions; do NOT copy-paste — emit the parameterized templates above with the user's confirmed inputs.
 
 Load the relevant ref file ON DEMAND when the corresponding sub-step runs; do NOT pre-load all of them.
@@ -373,10 +373,10 @@ Agent must ask:
 
 
 ## 5. Spec Templates (Functional Testing)
-Detailed spec.ts code is in `_refs/templates/entity-tests.md`. The clarify flow for choosing coverage level is at `_refs/templates/entity-tests.md#request-for-test-coverage`.
+Detailed spec.ts code is in `_refs/angular-portal/templates/entity-tests.md`. The clarify flow for choosing coverage level is at `_refs/angular-portal/templates/entity-tests.md#request-for-test-coverage`.
 
 ## 6. Example Output
-Worked Product entity (full code samples for model + service + list + detail) lives at `_refs/templates/example-product.md`. Treat it as a sanity reference, not a paste source.
+Worked Product entity (full code samples for model + service + list + detail) lives at `_refs/angular-portal/templates/example-product.md`. Treat it as a sanity reference, not a paste source.
 
 ## Implementation Checklist
 

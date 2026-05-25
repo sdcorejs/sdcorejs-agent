@@ -32,30 +32,30 @@ Defer to:
 
 File path: `src/libs/<module>/<entity>/pages/detail/detail.component.ts`
 
-All literal code lives in [`_refs/templates/screen-detail-component.md`](./_refs/templates/screen-detail-component.md), sectioned by state. Skill body owns the rules; the ref owns the code:
+All literal code lives in [`_refs/angular-portal/templates/screen-detail-component.md`](_refs/angular-portal/templates/screen-detail-component.md), sectioned by state. Skill body owns the rules; the ref owns the code:
 
 | Need | Section in templates ref |
 |---|---|
-| `ViewState` discriminator + `state` signal | [`#state-discriminator`](./_refs/templates/screen-detail-component.md#state-discriminator) |
-| Component imports (Angular + Core UI form components + entity model/service) | [`#imports`](./_refs/templates/screen-detail-component.md#imports) |
-| `initForm()` FormGroup definition (one control per `visibleInDetail` field) | [`#formgroup-definition`](./_refs/templates/screen-detail-component.md#formgroup-definition) |
-| `ngOnInit` dispatcher (CREATE / UPDATE / DETAIL branching) | [`#route-resolution-ngoninit-dispatcher`](./_refs/templates/screen-detail-component.md#route-resolution-ngoninit-dispatcher) |
-| Shared `loadEntityData(id)` with stale-id recovery (used by DETAIL + UPDATE) | [`#shared-entity-loader-with-stale-id-recovery`](./_refs/templates/screen-detail-component.md#shared-entity-loader-with-stale-id-recovery) |
-| `headerRight` template (Back always; Edit on DETAIL; Save on CREATE/UPDATE) | [`#header-buttons-template`](./_refs/templates/screen-detail-component.md#header-buttons-template) |
-| `onBack()` + `onEdit()` navigation helpers | [`#navigation-helpers`](./_refs/templates/screen-detail-component.md#navigation-helpers) |
-| `pageTabName` / `pageTabColor` per state | [`#conditional-tab-name--color`](./_refs/templates/screen-detail-component.md#conditional-tab-name--color) |
-| Per-field rendering snippets (`sd-input`, `sd-select`, `sd-date`, `sd-upload-file`, `sd-editor`, etc.) | [`#form-field-rendering-template`](./_refs/templates/screen-detail-component.md#form-field-rendering-template) |
-| **CREATE-specific:** state detection + `applyDefaults()` + `onSave()` | [`#create-state`](./_refs/templates/screen-detail-component.md#create-state) |
-| **UPDATE-specific:** state detection + optional loader override + `onSave()` | [`#update-state`](./_refs/templates/screen-detail-component.md#update-state) |
+| `ViewState` discriminator + `state` signal | [`#state-discriminator`](_refs/angular-portal/templates/screen-detail-component.md#state-discriminator) |
+| Component imports (Angular + Core UI form components + entity model/service) | [`#imports`](_refs/angular-portal/templates/screen-detail-component.md#imports) |
+| `initForm()` FormGroup definition (one control per `visibleInDetail` field) | [`#formgroup-definition`](_refs/angular-portal/templates/screen-detail-component.md#formgroup-definition) |
+| `ngOnInit` dispatcher (CREATE / UPDATE / DETAIL branching) | [`#route-resolution-ngoninit-dispatcher`](_refs/angular-portal/templates/screen-detail-component.md#route-resolution-ngoninit-dispatcher) |
+| Shared `loadEntityData(id)` with stale-id recovery (used by DETAIL + UPDATE) | [`#shared-entity-loader-with-stale-id-recovery`](_refs/angular-portal/templates/screen-detail-component.md#shared-entity-loader-with-stale-id-recovery) |
+| `headerRight` template (Back always; Edit on DETAIL; Save on CREATE/UPDATE) | [`#header-buttons-template`](_refs/angular-portal/templates/screen-detail-component.md#header-buttons-template) |
+| `onBack()` + `onEdit()` navigation helpers | [`#navigation-helpers`](_refs/angular-portal/templates/screen-detail-component.md#navigation-helpers) |
+| `pageTabName` / `pageTabColor` per state | [`#conditional-tab-name--color`](_refs/angular-portal/templates/screen-detail-component.md#conditional-tab-name--color) |
+| Per-field rendering snippets (`sd-input`, `sd-select`, `sd-date`, `sd-upload-file`, `sd-editor`, etc.) | [`#form-field-rendering-template`](_refs/angular-portal/templates/screen-detail-component.md#form-field-rendering-template) |
+| **CREATE-specific:** state detection + `applyDefaults()` + `onSave()` | [`#create-state`](_refs/angular-portal/templates/screen-detail-component.md#create-state) |
+| **UPDATE-specific:** state detection + optional loader override + `onSave()` | [`#update-state`](_refs/angular-portal/templates/screen-detail-component.md#update-state) |
 
-For form-level refinement (validators, FormArray, error messages), use [`_refs/templates/reactive-form-templates.md`](./_refs/templates/reactive-form-templates.md):
+For form-level refinement (validators, FormArray, error messages), use [`_refs/angular-portal/templates/reactive-form-templates.md`](_refs/angular-portal/templates/reactive-form-templates.md):
 
 | Need | Section in reactive-form ref |
 |---|---|
-| Shared `SdValidators` class (`notBlank` / `phoneNumber` / `email` / `url` / async `uniqueValue`) | [`#form-validatorts--shared-sdvalidators-class`](./_refs/templates/reactive-form-templates.md#form-validatorts--shared-sdvalidators-class) |
-| Lightweight `[(model)]` + `[form]` binding (default starting point) | [`#detailcomponentts--lightweight-model-binding-first`](./_refs/templates/reactive-form-templates.md#detailcomponentts--lightweight-model-binding-first) |
-| Advanced shape with `FormArray` for repeating sub-records | [`#detail-advancedcomponentts--with-formarray-dynamic-fields`](./_refs/templates/reactive-form-templates.md#detail-advancedcomponentts--with-formarray-dynamic-fields) |
-| Worked example with typed validators + per-field error messages | [`#worked-example-product-entity`](./_refs/templates/reactive-form-templates.md#worked-example-product-entity) |
+| Shared `SdValidators` class (`notBlank` / `phoneNumber` / `email` / `url` / async `uniqueValue`) | [`#form-validatorts--shared-sdvalidators-class`](_refs/angular-portal/templates/reactive-form-templates.md#form-validatorts--shared-sdvalidators-class) |
+| Lightweight `[(model)]` + `[form]` binding (default starting point) | [`#detailcomponentts--lightweight-model-binding-first`](_refs/angular-portal/templates/reactive-form-templates.md#detailcomponentts--lightweight-model-binding-first) |
+| Advanced shape with `FormArray` for repeating sub-records | [`#detail-advancedcomponentts--with-formarray-dynamic-fields`](_refs/angular-portal/templates/reactive-form-templates.md#detail-advancedcomponentts--with-formarray-dynamic-fields) |
+| Worked example with typed validators + per-field error messages | [`#worked-example-product-entity`](_refs/angular-portal/templates/reactive-form-templates.md#worked-example-product-entity) |
 
 ---
 
@@ -80,7 +80,7 @@ For form-level refinement (validators, FormArray, error messages), use [`_refs/t
 
 ### Edit transition
 
-Clicking Edit dispatches to UPDATE. Handler in [`#navigation-helpers`](./_refs/templates/screen-detail-component.md#navigation-helpers). Visible only when user has `<MODULE>_C_<ENTITY>_UPDATE`.
+Clicking Edit dispatches to UPDATE. Handler in [`#navigation-helpers`](_refs/angular-portal/templates/screen-detail-component.md#navigation-helpers). Visible only when user has `<MODULE>_C_<ENTITY>_UPDATE`.
 
 ### Stale-id recovery (shared with UPDATE)
 
@@ -130,7 +130,7 @@ Uploading AFTER save orphans the file blobs if save fails.
 
 ### Submit
 
-Validates → `form.markAllAsTouched()` on invalid → loading + notify → `service.create(payload)` → navigate. Code template in [`#create-state`](./_refs/templates/screen-detail-component.md#create-state).
+Validates → `form.markAllAsTouched()` on invalid → loading + notify → `service.create(payload)` → navigate. Code template in [`#create-state`](_refs/angular-portal/templates/screen-detail-component.md#create-state).
 
 ### Navigation after success
 
@@ -165,11 +165,11 @@ Both go through the same validation gate.
 
 ### Form prefill + enable
 
-The shared `loadEntityData(id)` handles prefill and enables the form when `state() === 'UPDATE'`. Override only when the project needs distinct UPDATE-vs-DETAIL behavior beyond enable/disable — see [`#update-state`](./_refs/templates/screen-detail-component.md#update-state).
+The shared `loadEntityData(id)` handles prefill and enables the form when `state() === 'UPDATE'`. Override only when the project needs distinct UPDATE-vs-DETAIL behavior beyond enable/disable — see [`#update-state`](_refs/angular-portal/templates/screen-detail-component.md#update-state).
 
 ### Submit
 
-Validates → `form.markAllAsTouched()` on invalid → upload files first → `service.update(id, payload)` → navigate. Code in [`#update-state`](./_refs/templates/screen-detail-component.md#update-state).
+Validates → `form.markAllAsTouched()` on invalid → upload files first → `service.update(id, payload)` → navigate. Code in [`#update-state`](_refs/angular-portal/templates/screen-detail-component.md#update-state).
 
 ### Navigation after success
 
@@ -292,5 +292,5 @@ If referenced only once: invoke directly. Goal — reduce getter invocations dur
 - [`20-screen-list.md`](./20-screen-list.md) — list page (separate file: `list.component.ts`)
 - [`31-actions.md`](./31-actions.md) — action buttons (workflow / bulk / custom side-effects) layered on top
 - [`12-init-entity.md`](./12-init-entity.md) — when model / service / routes don't exist yet
-- [`_refs/templates/screen-detail-component.md`](./_refs/templates/screen-detail-component.md) — code templates for the shared shell + per-state branches
-- [`_refs/templates/reactive-form-templates.md`](./_refs/templates/reactive-form-templates.md) — code templates for form refinement
+- [`_refs/angular-portal/templates/screen-detail-component.md`](_refs/angular-portal/templates/screen-detail-component.md) — code templates for the shared shell + per-state branches
+- [`_refs/angular-portal/templates/reactive-form-templates.md`](_refs/angular-portal/templates/reactive-form-templates.md) — code templates for form refinement

@@ -112,7 +112,7 @@ Skip for: `mock-data` seed rows (pure data, no testable logic) and `routes.ts` (
 
 From user input or semantic inference, construct `EntitySchema` with all field metadata. The schema is the single input every later step consumes.
 
-For two worked examples (user-supplied Product fields + inferred Promotion schema), see [`_refs/templates/orchestrator-step-examples.md#step-1--build-entityschema`](./_refs/templates/orchestrator-step-examples.md#step-1--build-entityschema).
+For two worked examples (user-supplied Product fields + inferred Promotion schema), see [`_refs/angular-portal/templates/orchestrator-step-examples.md#step-1--build-entityschema`](_refs/angular-portal/templates/orchestrator-step-examples.md#step-1--build-entityschema).
 
 ### Step 2: Generate Model (product.model.ts)
 
@@ -132,7 +132,7 @@ From EntitySchema, generate:
   - Include validation hints in comments (maxlength, min/max)
 - Prefer concrete domain names over generic placeholders; for Vietnamese portals, labels/comments must preserve diacritics
 
-**Output (product.model.ts):** see [`_refs/templates/orchestrator-step-examples.md#step-2--generate-model-productmodelts`](./_refs/templates/orchestrator-step-examples.md#step-2--generate-model-productmodelts).
+**Output (product.model.ts):** see [`_refs/angular-portal/templates/orchestrator-step-examples.md#step-2--generate-model-productmodelts`](_refs/angular-portal/templates/orchestrator-step-examples.md#step-2--generate-model-productmodelts).
 
 ### Step 3: Generate Mock Data + Service (product.mock-data.ts + product.service.ts)
 
@@ -154,7 +154,7 @@ Pattern: create one centralized mock data file per entity, then wire service to 
 - Only switch to `BaseService` API integration after backend contract is explicit
 - Ensure `MockCrudStore` can reseed when existing localStorage value is missing, empty (`[]`), or corrupted JSON
 
-**Output (product.service.ts + promotion.mock-data.ts):** see [`_refs/templates/orchestrator-step-examples.md#step-3--generate-mock-data--service`](./_refs/templates/orchestrator-step-examples.md#step-3--generate-mock-data--service).
+**Output (product.service.ts + promotion.mock-data.ts):** see [`_refs/angular-portal/templates/orchestrator-step-examples.md#step-3--generate-mock-data--service`](_refs/angular-portal/templates/orchestrator-step-examples.md#step-3--generate-mock-data--service).
 
 **Mock data generation rules:**
 - Produce 20–40 rows total
@@ -175,7 +175,7 @@ Pattern: Lazy-load components. No providers on the route — the entity service 
 - Lazy-load components (COMPONENT_TYPE)
 - NO `providers: [...]` array (see `11-init-module.md` rationale)
 
-**Output (routes.ts):** see [`_refs/templates/orchestrator-step-examples.md#step-4--generate-routes-productroutests`](./_refs/templates/orchestrator-step-examples.md#step-4--generate-routes-productroutests).
+**Output (routes.ts):** see [`_refs/angular-portal/templates/orchestrator-step-examples.md#step-4--generate-routes-productroutests`](_refs/angular-portal/templates/orchestrator-step-examples.md#step-4--generate-routes-productroutests).
 
 ### Step 5: Generate List Component
 
@@ -351,4 +351,4 @@ Before returning generated code:
 
 ## Example: Complete Employee Entity Generation
 
-A worked end-to-end example (user request → orchestrator steps 1-6 → final file tree) lives in [`_refs/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity`](./_refs/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity). Read it when you want to see how the dispatch table cashes out on a real request.
+A worked end-to-end example (user request → orchestrator steps 1-6 → final file tree) lives in [`_refs/angular-portal/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity`](_refs/angular-portal/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity). Read it when you want to see how the dispatch table cashes out on a real request.

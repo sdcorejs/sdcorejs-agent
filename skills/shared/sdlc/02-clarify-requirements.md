@@ -70,7 +70,7 @@ This rule does NOT trigger if:
 - The work is a known recipe with no decisions to explore (init portal, add screen to existing entity with known fields)
 
 ### Step 1 — Load the track-specific blocker checklist
-Read `skills/shared/sdlc/_refs/<TRACK>.md` (the **Clarify** section). Each track defines:
+Read `_refs/sdlc/<TRACK>.md` (the **Clarify** section). Each track defines:
 - **Minimum-required** answers (the spec cannot draft without these)
 - **Useful-optional** answers (defaults are safe if user skips)
 - **Block-level grouping** (3-4 questions per group so the user is not overwhelmed)
@@ -85,7 +85,7 @@ Keep the response language consistent throughout the clarify session.
 ### Step 3 — Ask blocking questions in groups
 Present 3-4 related questions per turn. Mark each `✓` once answered. Show progress so the user knows when they're close to done.
 
-Do NOT bundle all questions in one wall of text — split into the blocks defined in `_refs/<TRACK>.md`.
+Do NOT bundle all questions in one wall of text — split into the blocks defined in `_refs/sdlc/<TRACK>.md`.
 
 If the user provides PRD text, a screenshot, or a sample cURL/API contract, normalize it FIRST into the track's field/page contract before re-asking — don't repeat questions the artifacts already answered.
 
@@ -124,14 +124,14 @@ For each optional answer, propose the default explicitly so the user can accept 
 If the user says "you decide", pick the default WITH explanation. Never silently choose.
 
 ### Step 5 — Infer-and-confirm where safe
-If the user names an entity but skips fields, **infer a first-pass field set** from the entity semantics + track conventions (see `_refs/<TRACK>.md`), then present it for confirmation:
+If the user names an entity but skips fields, **infer a first-pass field set** from the entity semantics + track conventions (see `_refs/sdlc/<TRACK>.md`), then present it for confirmation:
 
 > "Product → suy luận fields: code, name, category, price, status, description, image, createdAt. OK hay sửa?"
 
 Inferring beats blank-questioning when there's a strong semantic match. Confirm before locking in.
 
 ### Step 6 — Produce the confirmed summary
-Once all blockers are answered, emit a concise summary table in user's language. Use the layout from `_refs/<TRACK>.md` (each track has its own summary template). End with:
+Once all blockers are answered, emit a concise summary table in user's language. Use the layout from `_refs/sdlc/<TRACK>.md` (each track has its own summary template). End with:
 
 > → Tiếp theo: `sdcorejs-write-spec` để mình draft spec; bạn duyệt rồi qua plan và viết code.
 
@@ -147,7 +147,7 @@ Track-level answers that will repeat across features (domain, hosting, brand col
 - Detect the user's session language and stick with it
 - For Vietnamese sessions, all generated labels / suggestions must use full diacritics
 - Infer fields/pages from semantics when safe — but always present for confirmation
-- End with the confirmed summary table from `_refs/<TRACK>.md`
+- End with the confirmed summary table from `_refs/sdlc/<TRACK>.md`
 - Suggest `orchestration/memories` for project-level answers that will repeat
 
 ### MUST NOT
@@ -156,7 +156,7 @@ Track-level answers that will repeat across features (domain, hosting, brand col
 - Combine unrelated questions into one mega-question
 - Accept "thôi cứ làm đại" — push back: name the minimum subset that's still required ("Cần ít nhất X và Y trước; phần khác lấy default được")
 - Defer answers that change the architecture (persistence, domain, layout) — those must be locked before the spec stage
-- Mix angular-portal blockers into a nextjs session, or vice versa — load the right `_refs/<TRACK>.md`
+- Mix angular-portal blockers into a nextjs session, or vice versa — load the right `_refs/sdlc/<TRACK>.md`
 
 ## Anti-patterns
 - Skipping production domain (nextjs) → sitemap + OG URLs ship with `localhost:3000`
@@ -173,7 +173,7 @@ On full confirmation:
 3. Optionally suggest `orchestration/memories` for durable answers
 
 ## Related skills
-- `_refs/<TRACK>.md` — track-specific blocker checklist (Clarify section) + summary template
+- `_refs/sdlc/<TRACK>.md` — track-specific blocker checklist (Clarify section) + summary template
 - `sdcorejs-brainstorm` — runs before this, sets direction
 - `sdcorejs-write-spec` — runs after this, drafts the spec
 - `orchestration/memories` — capture project-level answers (domain, hosting, conventions)

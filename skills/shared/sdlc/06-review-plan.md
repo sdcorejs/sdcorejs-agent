@@ -27,13 +27,13 @@ Run the checklist below silently. If ANY item fails, edit the plan to fix it BEF
 - [ ] No `TBD`, `TODO`, `???`, `<...>` placeholder text — every file path is concrete
 - [ ] Every task has: exact file path + CREATE/EDIT marker + 1-line intent
 - [ ] Tasks are numbered (so the user can reference "step 7")
-- [ ] Steps are grouped by phase per `_refs/<TRACK>.md`
+- [ ] Steps are grouped by phase per `_refs/sdlc/<TRACK>.md`
 - [ ] Verification section is present with exact commands
 - [ ] Each acceptance criterion from the spec maps to ≥1 numbered task
 - [ ] Frequent commit boundaries: no single task that bundles >5 files without a verification step
 - [ ] No CREATE path conflicts with an existing file in the target project; no EDIT path points to a non-existent file
 - [ ] Test-coverage tasks are present and match the agreed coverage level
-- [ ] Track-specific final-step references look correct (see `_refs/<TRACK>.md`)
+- [ ] Track-specific final-step references look correct (see `_refs/sdlc/<TRACK>.md`)
 
 ### 3. Render summary to user
 Present a CONCISE phase + verification summary, not the full numbered list (user already saw that in `sdcorejs-plan`).
@@ -103,7 +103,7 @@ Bạn duyệt plan này chứ?
 - Auto-approval based on confidence — confidence is the agent's, approval must be the user's.
 
 ## Related skills
-- `_refs/<TRACK>.md` — track-specific phase + verification conventions
+- `_refs/sdlc/<TRACK>.md` — track-specific phase + verification conventions
 - `sdcorejs-plan` — runs immediately before
 - `orchestration/auto-plans` — MANDATORY tail-call on approval
 - `<track>-write-code` — runs after auto-plans

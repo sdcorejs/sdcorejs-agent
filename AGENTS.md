@@ -8,16 +8,21 @@ This repo is an SDLC agent for the SDCoreJS stack: Angular portal (Core UI), Nes
 ## Skill structure
 
 ```
+_refs/                            reference data (no frontmatter, load on demand) — single top-level tree, sync'd once per mirror
+├── angular-portal/                core-version, catalog, entity-field-types, templates/, sdcorejs-angular/...
+├── nestjs/                        architecture-principles
+├── nextjs/build-website/          architecture-principles
+└── sdlc/                          cross-track design-phase patterns (angular-portal.md, nestjs.md, nextjs.md)
+
 skills/
 ├── tracks/                       stack-specific code-writing skills
 │   ├── angular-portal/   ✅  8 track skills — 00-onboarding, 07-write-code orchestrator, 10/11/12-init-*, 20-screen-list, 21-screen-detail (CREATE/UPDATE/DETAIL states + form refinement), 31-actions (workflow / bulk / custom side-effects)
-│   │   └── _refs/        reference data (core-version, catalog, entity-field-types, templates/) — no frontmatter, load on demand
 │   ├── nestjs/           🟡  scaffold (00-onboarding + 07-write-code plan-walker); 10/11/12 sub-skills planned
 │   └── nextjs/
 │       └── build-website/  ✅  13 track skills — 00-onboarding, 07-write-code orchestrator, 08-audit-existing-site, 10-init-site, 11-theme, 12-pages-and-blocks, 13-seo, 14-og-preview, 15-i18n, 16-caching, 17-responsive, 18-contact-form, 19-content-quality
 │
 ├── shared/
-│   ├── sdlc/             ✅  6 cross-track design-phase skills (01-brainstorm, 02-clarify-requirements, 03-write-spec, 04-review-spec, 05-plan, 06-review-plan) + `_refs/{angular-portal,nextjs,nestjs}.md`
+│   ├── sdlc/             ✅  6 cross-track design-phase skills (01-brainstorm, 02-clarify-requirements, 03-write-spec, 04-review-spec, 05-plan, 06-review-plan); patterns live in `_refs/sdlc/{angular-portal,nextjs,nestjs}.md`
 │   ├── conventions/      Conventional Commits, changelog, dep-update
 │   └── workflow/         env-setup, debug, pr-create, code-map
 │
@@ -78,7 +83,7 @@ Request
   → orchestration/auto-docs (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) → orchestration/memories (when durable knowledge surfaces)
 ```
 
-**Design phase is cross-track** (`skills/shared/sdlc/`). Each skill detects the target track from the project and loads `_refs/<track>.md` for track-specific patterns (industry table for nextjs, layout matrix for angular-portal, persistence/transaction matrix for nestjs).
+**Design phase is cross-track** (`skills/shared/sdlc/`). Each skill detects the target track from the project and loads `_refs/sdlc/<track>.md` for track-specific patterns (industry table for nextjs, layout matrix for angular-portal, persistence/transaction matrix for nestjs).
 
 For the angular-portal track, sub-skills under `07-write-code`:
 `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail` (handles CREATE / UPDATE / DETAIL states + reactive-form refinement), `31-actions` (workflow transitions, bulk operations, custom side-effects).
@@ -145,11 +150,11 @@ Cross-track skills — apply to angular-portal, nestjs, nextjs alike. Dispatch i
 
 ## Reference docs (load on demand)
 
-- `skills/shared/sdlc/_refs/{angular-portal,nextjs,nestjs}.md` — track-specific design-phase patterns
-- `skills/tracks/angular-portal/_refs/core-version.md` — pinned `@sd-angular/core` version
-- `skills/tracks/angular-portal/_refs/sd-angular-core-catalog.md` — Core UI components inventory
-- `skills/tracks/angular-portal/_refs/entity-field-types.md` — field type → form control mapping
-- `skills/tracks/angular-portal/_refs/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for 12-init-entity
+- `_refs/sdlc/{angular-portal,nextjs,nestjs}.md` — track-specific design-phase patterns
+- `_refs/angular-portal/core-version.md` — pinned `@sd-angular/core` version
+- `_refs/angular-portal/sd-angular-core-catalog.md` — Core UI components inventory
+- `_refs/angular-portal/entity-field-types.md` — field type → form control mapping
+- `_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for 12-init-entity
 
 ## Anti-patterns
 

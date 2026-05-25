@@ -31,7 +31,7 @@ Run the checklist below silently. If ANY item fails, edit the spec to fix it BEF
 - [ ] No internal contradictions (e.g. "Workflow: yes" in Architecture but no workflow acceptance criterion)
 - [ ] Scope-fit: if the spec is >2 pages, suggest splitting into 2+ smaller specs
 - [ ] No ambiguous pronouns or vague verbs ("handle", "support", "manage" without object)
-- [ ] All file paths match the track conventions (see `_refs/<TRACK>.md`)
+- [ ] All file paths match the track conventions (see `_refs/sdlc/<TRACK>.md`)
 - [ ] Language consistency: VI spec uses full diacritics; EN spec is grammatical
 - [ ] References to prior memories / auto-docs are concrete (path or topic), not handwaved
 

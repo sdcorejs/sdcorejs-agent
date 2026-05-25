@@ -34,7 +34,7 @@ Read the spec file passed in by `sdcorejs-review-spec` (path under `.sdcorejs/do
 - Acceptance criteria (each must map to ≥1 plan task)
 
 ### Step 2 — Load track-specific phase grouping
-Read `skills/shared/sdlc/_refs/<TRACK>.md` (the **Plan** section). Each track defines:
+Read `_refs/sdlc/<TRACK>.md` (the **Plan** section). Each track defines:
 - Standard phase order (e.g. angular: module bootstrap → entity model/service → routes/components → tests; nestjs: schema → entity → repository → service → controller → tests; nextjs: init → theme → i18n → pages → SEO → contact → caching → content quality)
 - Verification commands (track-specific `npm` scripts, smoke commands)
 
@@ -63,7 +63,7 @@ N+1. CREATE  <path>  — <1-line intent>
 ...
 
 ## Verification
-<Track-specific commands from `_refs/<TRACK>.md`>
+<Track-specific commands from `_refs/sdlc/<TRACK>.md`>
 - e.g. angular: `npm run build-dev`, `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts`
 - e.g. nextjs: `npm run build`, `npm run check:i18n`, `npm run check:content`
 - e.g. nestjs: `npm run build`, `npm run test:e2e`, `npm run typeorm migration:run`
@@ -87,7 +87,7 @@ Read the latest 1-3 approved plans in `.sdcorejs/plans/<TRACK>/` (if any) and mi
 - Recap scope in 2-4 lines before listing files — the user must see we agree on what was decided
 - Number every file step; show absolute path under the target project, not the agent repo
 - Mark each step as CREATE or EDIT explicitly
-- Group steps by phase per `_refs/<TRACK>.md`
+- Group steps by phase per `_refs/sdlc/<TRACK>.md`
 - Include verification steps with exact commands
 - Each acceptance criterion from the spec must map to ≥1 plan task
 - End with an explicit confirm / amend / revert prompt
@@ -97,7 +97,7 @@ Read the latest 1-3 approved plans in `.sdcorejs/plans/<TRACK>/` (if any) and mi
 ### MUST NOT
 - Write any code in this skill — only the plan
 - Invoke `<track>-write-code` before the user confirms via `sdcorejs-review-plan`
-- Invent file paths that don't match the conventions in `_refs/<TRACK>.md`
+- Invent file paths that don't match the conventions in `_refs/sdlc/<TRACK>.md`
 - Skip verification steps to keep the plan short
 - Hide trade-offs (if the user picked a heavy option but the spec is small, call it out)
 - Bundle >5 files into one step without a verification checkpoint
@@ -117,7 +117,7 @@ After writing the plan, hand off to `sdcorejs-review-plan`. On user approval the
 - Skipping the `sdcorejs-review-plan` gate and jumping straight to `<track>-write-code`
 
 ## Related skills
-- `_refs/<TRACK>.md` — track-specific phase grouping + verification commands
+- `_refs/sdlc/<TRACK>.md` — track-specific phase grouping + verification commands
 - `sdcorejs-review-spec` — runs before this (approves the spec)
 - `sdcorejs-review-plan` — runs after this (gates on user approval)
 - `orchestration/auto-plans` — MANDATORY tail-call on review-plan approval

@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
 # Mirror source-of-truth skills into BOTH Claude Code's native skill format paths:
-#   1. .claude/skills/<name>/SKILL.md  — project-local Claude Code skills
-#   2. plugin/skills/<name>/SKILL.md   — Claude Code plugin distribution
+#   1. .claude/skills/<name>/SKILL.md   — project-local Claude Code skills
+#   2. plugin/skills/<name>/SKILL.md    — Claude Code plugin distribution
 #                                         (consumed via .claude-plugin/marketplace.json)
+#
+# Reference data (`_refs/<track>/...`) lives at REPO ROOT in a single tree and is
+# mirrored ONCE per target into:
+#   1. .claude/_refs/<track>/...
+#   2. plugin/_refs/<track>/...
+# Skill bodies reference reference docs via repo-anchored paths like
+# `_refs/angular-portal/templates/entity-skeleton.md` so a single mirrored copy
+# resolves regardless of which skill links to it.
 #
 # Source of truth tree:
 #   skills/tracks/<stack>/**/*.md       — stack-specific (angular-portal, nextjs/build-website, nestjs)
@@ -10,9 +18,9 @@
 #   skills/review/**/*.md               — review discipline (architecture, security, perf, a11y, code)
 #   skills/orchestration/*.md           — SDLC plumbing (dispatch, repair, summarize, plans, specs, …)
 #   skills/shared/**/*.md               — cross-cutting utilities (conventions, workflow)
+#   _refs/<track>/**                    — track-scoped reference data (no frontmatter, copied wholesale)
 #
-# Excluded from scan:
-#   **/_refs/**           — reference data (no frontmatter)
+# Excluded from skill scan:
 #   shared/templates/**   — frontmatter templates (no usable dispatch metadata)
 #   shared/specs/**       — convention docs (no dispatch metadata)
 #
@@ -40,11 +48,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 SKILLS_ROOT="$REPO_ROOT/skills"
+REFS_ROOT="$REPO_ROOT/_refs"
 
-# Response Style block — auto-injected after the YAML frontmatter of every
-# mirrored SKILL.md so the agent answers terse during skill execution, cutting
-# token usage. Source files stay clean; only mirrors carry the directive.
-# To bump style: edit the heredoc below and rerun sync.
+# Response Style block — auto-injected at the END of every mirrored SKILL.md so
+# the agent answers terse during skill execution, cutting token usage. Source
+# files stay clean; only mirrors carry the directive.
 read -r -d '' RESPONSE_STYLE_BLOCK <<'STYLE_EOF' || true
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
@@ -61,33 +69,53 @@ While executing this skill:
 - If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.
 
 STYLE_EOF
+
 # Dual mirror targets — both kept in sync so project-local + plugin distribution agree.
-DEST_ROOTS=(
+DEST_SKILLS_ROOTS=(
   "$REPO_ROOT/.claude/skills"
   "$REPO_ROOT/plugin/skills"
 )
+DEST_REFS_ROOTS=(
+  "$REPO_ROOT/.claude/_refs"
+  "$REPO_ROOT/plugin/_refs"
+)
 
-# In check mode, write into a temp dir per target and diff against the committed mirror.
-declare -a WORK_ROOTS
+# In check mode, write into temp dirs and diff against the committed mirrors.
+declare -a WORK_SKILLS_ROOTS WORK_REFS_ROOTS
 if [ "$MODE" = "check" ]; then
   WORK_BASE="$(mktemp -d)"
   trap 'rm -rf "$WORK_BASE"' EXIT
-  for i in "${!DEST_ROOTS[@]}"; do
-    WORK_ROOTS[$i]="$WORK_BASE/dest-$i"
-    mkdir -p "${WORK_ROOTS[$i]}"
+  for i in "${!DEST_SKILLS_ROOTS[@]}"; do
+    WORK_SKILLS_ROOTS[$i]="$WORK_BASE/skills-$i"
+    WORK_REFS_ROOTS[$i]="$WORK_BASE/refs-$i"
+    mkdir -p "${WORK_SKILLS_ROOTS[$i]}" "${WORK_REFS_ROOTS[$i]}"
   done
 else
-  WORK_ROOTS=("${DEST_ROOTS[@]}")
-  for dest in "${DEST_ROOTS[@]}"; do
+  WORK_SKILLS_ROOTS=("${DEST_SKILLS_ROOTS[@]}")
+  WORK_REFS_ROOTS=("${DEST_REFS_ROOTS[@]}")
+  for dest in "${DEST_SKILLS_ROOTS[@]}" "${DEST_REFS_ROOTS[@]}"; do
     mkdir -p "$dest"
   done
 fi
 
-# Find every .md skill, excluding reference data and template placeholders.
-# NUL-delimited to handle any whitespace in paths.
+# ---------------------------------------------------------------------------
+# 1. Mirror _refs/ tree once per target (single source → single copy).
+# ---------------------------------------------------------------------------
+if [ -d "$REFS_ROOT" ]; then
+  for work_refs in "${WORK_REFS_ROOTS[@]}"; do
+    # Clean target then recopy — keeps mirror exact, removes deleted files.
+    rm -rf "$work_refs"
+    mkdir -p "$work_refs"
+    # cp -R copies into the dir (we want $REFS_ROOT/* to land directly under $work_refs).
+    cp -R "$REFS_ROOT"/. "$work_refs"/
+  done
+fi
+
+# ---------------------------------------------------------------------------
+# 2. Mirror skill files. Exclude templates/specs convention docs.
+# ---------------------------------------------------------------------------
 mapfile -d '' -t SRC_FILES < <(
   find "$SKILLS_ROOT" -type f -name '*.md' \
-    -not -path '*/_refs/*' \
     -not -path '*/shared/templates/*' \
     -not -path '*/shared/specs/*' \
     -print0 | sort -z
@@ -119,39 +147,13 @@ for src_file in "${SRC_FILES[@]}"; do
     \<*\>) [ "$MODE" != "check" ] && echo "  skip template: $src_file (name=$name)"; continue ;;
   esac
 
-  # Locate sibling _refs/ in the source tree (track-local reference data the
-  # skill links to via `./_refs/...`). The flat mirror loses the original
-  # sibling relationship, so we copy _refs/ next to every skill that shares it.
-  src_dir="$(dirname "$src_file")"
-  refs_src=""
-  probe="$src_dir"
-  while [ "$probe" != "$SKILLS_ROOT" ] && [ "$probe" != "/" ]; do
-    if [ -d "$probe/_refs" ]; then
-      refs_src="$probe/_refs"
-      break
-    fi
-    probe="$(dirname "$probe")"
-  done
-
   # Write to every configured target — keeps .claude/skills/ and plugin/skills/ identical.
-  for work_root in "${WORK_ROOTS[@]}"; do
+  for work_root in "${WORK_SKILLS_ROOTS[@]}"; do
     dest_dir="$work_root/$name"
     dest_file="$dest_dir/SKILL.md"
     mkdir -p "$dest_dir"
-    # Append RESPONSE_STYLE_BLOCK at the END of the mirrored SKILL.md. Source
-    # file stays unchanged on disk; only the mirror carries the directive so
-    # source diffs stay focused on skill content. Appending (vs prepending
-    # after the frontmatter) keeps the first body heading intact — some skill
-    # loaders fall back to "first body heading" as a display description when
-    # the frontmatter `description:` field is very long, and we don't want
-    # the injected block to clobber that fallback.
     cp "$src_file" "$dest_file"
     printf '\n%s\n' "$RESPONSE_STYLE_BLOCK" >> "$dest_file"
-    # Mirror sibling _refs/ so `./_refs/...` links inside SKILL.md resolve.
-    if [ -n "$refs_src" ]; then
-      rm -rf "$dest_dir/_refs"
-      cp -R "$refs_src" "$dest_dir/_refs"
-    fi
   done
   KEPT["$name"]=1
   count=$((count + 1))
@@ -160,18 +162,31 @@ for src_file in "${SRC_FILES[@]}"; do
   fi
 done
 
+# ---------------------------------------------------------------------------
+# 3. Mode-specific finalization.
+# ---------------------------------------------------------------------------
 if [ "$MODE" = "check" ]; then
-  # Compare each temp tree against its committed mirror.
   drift=0
-  for i in "${!DEST_ROOTS[@]}"; do
-    dest="${DEST_ROOTS[$i]}"
-    work="${WORK_ROOTS[$i]}"
+  for i in "${!DEST_SKILLS_ROOTS[@]}"; do
+    dest="${DEST_SKILLS_ROOTS[$i]}"
+    work="${WORK_SKILLS_ROOTS[$i]}"
     rel="${dest#$REPO_ROOT/}"
     if diff -rq "$work" "$dest" >/dev/null 2>&1; then
       echo "✓ $rel/ is in sync ($count source files)"
     else
       echo "✗ $rel/ is OUT OF SYNC with skills/" >&2
-      echo "" >&2
+      diff -rq "$work" "$dest" >&2 || true
+      drift=1
+    fi
+  done
+  for i in "${!DEST_REFS_ROOTS[@]}"; do
+    dest="${DEST_REFS_ROOTS[$i]}"
+    work="${WORK_REFS_ROOTS[$i]}"
+    rel="${dest#$REPO_ROOT/}"
+    if diff -rq "$work" "$dest" >/dev/null 2>&1; then
+      echo "✓ $rel/ is in sync"
+    else
+      echo "✗ $rel/ is OUT OF SYNC with _refs/" >&2
       diff -rq "$work" "$dest" >&2 || true
       drift=1
     fi
@@ -185,9 +200,8 @@ if [ "$MODE" = "check" ]; then
 fi
 
 if [ "$MODE" = "clean" ]; then
-  # Remove mirror entries with no matching source file, in every target.
   removed=0
-  for dest_root in "${DEST_ROOTS[@]}"; do
+  for dest_root in "${DEST_SKILLS_ROOTS[@]}"; do
     [ -d "$dest_root" ] || continue
     rel="${dest_root#$REPO_ROOT/}"
     for entry in "$dest_root"/*; do
@@ -205,6 +219,10 @@ if [ "$MODE" = "clean" ]; then
 fi
 
 echo "Mirrored $count skill(s) into:"
-for dest in "${DEST_ROOTS[@]}"; do
+for dest in "${DEST_SKILLS_ROOTS[@]}"; do
+  echo "  - ${dest#$REPO_ROOT/}/"
+done
+echo "Mirrored _refs/ tree into:"
+for dest in "${DEST_REFS_ROOTS[@]}"; do
   echo "  - ${dest#$REPO_ROOT/}/"
 done

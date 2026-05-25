@@ -1,6 +1,6 @@
 ---
 name: nestjs-write-code
-description: Use AFTER `sdcorejs-review-plan` has approved a NestJS plan, when the user is ready to generate backend code. SCAFFOLD STATUS — the dedicated sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) are planned but not yet implemented. Until they ship, this orchestrator walks the approved plan task-by-task manually using Read/Write/Edit and the conventions from `skills/shared/sdlc/_refs/nestjs.md` (be-masterdata baseline). After completion, mandatory hand-off chain - skills/testing/e2e/nestjs.md → skills/review/code/nestjs.md → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Triggers - "generate nestjs code", "viết code backend", "sinh code nestjs", "go ahead" (after a nestjs plan was approved), "proceed with backend implementation". Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-review-plan` has approved a NestJS plan, when the user is ready to generate backend code. SCAFFOLD STATUS — the dedicated sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) are planned but not yet implemented. Until they ship, this orchestrator walks the approved plan task-by-task manually using Read/Write/Edit and the conventions from `_refs/sdlc/nestjs.md` (be-masterdata baseline). After completion, mandatory hand-off chain - skills/testing/e2e/nestjs.md → skills/review/code/nestjs.md → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Triggers - "generate nestjs code", "viết code backend", "sinh code nestjs", "go ahead" (after a nestjs plan was approved), "proceed with backend implementation". Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -22,7 +22,7 @@ If no approved plan exists, route back to `sdcorejs-plan` / `sdcorejs-review-pla
 Read the plan file under `.sdcorejs/plans/nestjs/<timestamp>-<topic>.md` (just snapshotted by `orchestration/auto-plans`).
 
 ### Step 2 — Load baseline conventions
-Read `skills/shared/sdlc/_refs/nestjs.md` for:
+Read `_refs/sdlc/nestjs.md` for:
 - Path conventions (`src/modules/<module>/<sub-folder>/`)
 - Required base classes (`BaseEntity`, `BaseRepository`, `BaseService`)
 - Guard order (`AuthGuard` → `ZodValidationGuard` → `@HasPermission()`)
@@ -41,7 +41,7 @@ For each numbered task in the plan, in order:
    - e2e spec for controller endpoints (HTTP verb + expected status + response shape)
    - Verify RED before touching production files
 4. Apply the change:
-   - CREATE → `Write` tool, using conventions from `_refs/nestjs.md`
+   - CREATE → `Write` tool, using conventions from `_refs/sdlc/nestjs.md`
    - EDIT → `Read` then `Edit` tool
 5. Verify GREEN — re-run the test(s) from step 3; confirm they pass before moving on
 6. If the task closes a phase boundary in the plan (e.g. "end of module bootstrap"), run the verification command listed in the plan's Verification section
@@ -81,7 +81,7 @@ Each tail-call is mandatory. Do NOT skip `verify-before-done` — that's how acc
 ### MUST DO
 - Walk plan tasks in the order they're numbered — do not parallelize unless `orchestration/parallel-dispatch` approves (rare for backend work because most tasks share the DB / module state)
 - Track every task via `TodoWrite` (in_progress / completed)
-- Enforce baseline patterns from `_refs/nestjs.md` on every generated file
+- Enforce baseline patterns from `_refs/sdlc/nestjs.md` on every generated file
 - Run plan's verification command at every phase boundary, not just at the end
 - Match the user's language (VI/EN) — for VI, all error messages, log messages, and code comments use proper diacritics
 - Run the full tail-call chain after the last plan task
@@ -102,7 +102,7 @@ Each tail-call is mandatory. Do NOT skip `verify-before-done` — that's how acc
 - Mock-only tests for endpoints with auth — at minimum, integration test must wire `AuthGuard`
 
 ## Related skills
-- `skills/shared/sdlc/_refs/nestjs.md` — baseline conventions this skill enforces
+- `_refs/sdlc/nestjs.md` — baseline conventions this skill enforces
 - `sdcorejs-review-plan` — runs before; the approved plan is the input
 - `orchestration/auto-plans` — has already snapshotted the plan to `.sdcorejs/plans/nestjs/`
 - Tail-call chain — see Step 5 above

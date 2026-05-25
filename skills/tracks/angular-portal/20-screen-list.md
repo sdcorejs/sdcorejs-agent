@@ -29,12 +29,12 @@ If any of the above is missing, ask the developer rather than guess.
 
 ## Template + column patterns
 
-The literal `list.component.ts` body and the per-type column entries live in [`_refs/templates/screen-list-component.md`](./_refs/templates/screen-list-component.md):
+The literal `list.component.ts` body and the per-type column entries live in [`_refs/angular-portal/templates/screen-list-component.md`](_refs/angular-portal/templates/screen-list-component.md):
 
 | Need | Section in templates ref |
 |---|---|
-| Full `list.component.ts` template (imports, `@SdTabComponent`, table option, paging, delete action, header buttons, action column, `onToggleActivation`) | [`#full-listcomponentts-template`](./_refs/templates/screen-list-component.md#full-listcomponentts-template) |
-| Per-field column entries to substitute for `{{ columnsConfig }}` (text / date / number-currency / select / boolean+template) | [`#column-configuration-patterns`](./_refs/templates/screen-list-component.md#column-configuration-patterns) |
+| Full `list.component.ts` template (imports, `@SdTabComponent`, table option, paging, delete action, header buttons, action column, `onToggleActivation`) | [`#full-listcomponentts-template`](_refs/angular-portal/templates/screen-list-component.md#full-listcomponentts-template) |
+| Per-field column entries to substitute for `{{ columnsConfig }}` (text / date / number-currency / select / boolean+template) | [`#column-configuration-patterns`](_refs/angular-portal/templates/screen-list-component.md#column-configuration-patterns) |
 
 Pick the column pattern by field `type` from the schema. For boolean fields rendered as a toggle switch, the matching `<ng-template sdTableCellDef="...">` is already wired inside the main template.
 

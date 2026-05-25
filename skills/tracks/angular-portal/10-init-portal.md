@@ -8,7 +8,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 ## Overview
 
-Generates production-ready Angular portal starter by rendering every file from the code templates in [`_refs/templates/init-portal-templates.md`](./_refs/templates/init-portal-templates.md) plus the structure tree in §4. No external baseline directory is required.
+Generates production-ready Angular portal starter by rendering every file from the code templates in [`_refs/angular-portal/templates/init-portal-templates.md`](_refs/angular-portal/templates/init-portal-templates.md) plus the structure tree in §4. No external baseline directory is required.
 
 **Output:** Complete portal with sample lib (1 module, 2 entities), dev tools, ready for `npm start`.
 
@@ -18,23 +18,23 @@ Generates production-ready Angular portal starter by rendering every file from t
 
 This skill uses two placeholders wherever the Core UI package appears:
 
-| Placeholder | Resolved from `_refs/core-version.md` field |
+| Placeholder | Resolved from `_refs/angular-portal/core-version.md` field |
 |---|---|
 | `<CORE_UI_PACKAGE_NAME>` | `packageName` |
 | `<CORE_VERSION>` | `currentVersion` |
 
-> The actual values live ONLY in [`_refs/core-version.md`](./_refs/core-version.md). Do not duplicate them here — the drift-check hook will block any literal version or any import statement that hardcodes the Core UI package name in this file.
+> The actual values live ONLY in [`_refs/angular-portal/core-version.md`](_refs/angular-portal/core-version.md). Do not duplicate them here — the drift-check hook will block any literal version or any import statement that hardcodes the Core UI package name in this file.
 
 **BEFORE generating any file**, the agent MUST:
 
-1. Read [`_refs/core-version.md`](./_refs/core-version.md) and extract `packageName` + `currentVersion`
+1. Read [`_refs/angular-portal/core-version.md`](_refs/angular-portal/core-version.md) and extract `packageName` + `currentVersion`
 2. Substitute every `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` token in this skill's output with those values
 3. Apply the same substitution to import statements when the package name differs from the literal shown in templates (anticipates the planned migration `@sd-angular/core` → `@sdcorejs/angular`)
 4. NEVER hardcode a literal version string in generated `package.json` / commit message / verification text
 
-Single-file bump: change `_refs/core-version.md` and every future portal picks it up. Do NOT find-replace placeholders inside this skill file itself — they are intentional.
+Single-file bump: change `_refs/angular-portal/core-version.md` and every future portal picks it up. Do NOT find-replace placeholders inside this skill file itself — they are intentional.
 
-If `_refs/core-version.md` is missing or malformed, STOP and ask the user — never guess the version or package name.
+If `_refs/angular-portal/core-version.md` is missing or malformed, STOP and ask the user — never guess the version or package name.
 
 ---
 
@@ -64,11 +64,11 @@ Before generating, clarify with user:
 
 ### Step 1: Render Starter From Templates
 
-**Source:** [`_refs/templates/init-portal-templates.md`](./_refs/templates/init-portal-templates.md) + the structure tree in §4 ("Expected Starter Structure"). Every file listed in the tree maps to a section in the templates ref; render each one with `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` already substituted (see §"Source of truth — Core UI package" at the top).
+**Source:** [`_refs/angular-portal/templates/init-portal-templates.md`](_refs/angular-portal/templates/init-portal-templates.md) + the structure tree in §4 ("Expected Starter Structure"). Every file listed in the tree maps to a section in the templates ref; render each one with `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` already substituted (see §"Source of truth — Core UI package" at the top).
 
 **Brand asset (logo):**
-- Copy [`./_refs/assets/logo.png`](./_refs/assets/logo.png) into the generated portal at `public/logo.png`.
-- Wire it in [`src/app/configurations/layout.configuration.ts`](./_refs/templates/init-portal-templates.md#layoutconfigurationts) as `sidebar.logoUrl: '/logo.png'` (template handles this).
+- Copy [`_refs/angular-portal/assets/logo.png`](_refs/angular-portal/assets/logo.png) into the generated portal at `public/logo.png`.
+- Wire it in [`src/app/configurations/layout.configuration.ts`](_refs/angular-portal/templates/init-portal-templates.md#layoutconfigurationts) as `sidebar.logoUrl: '/logo.png'` (template handles this).
 - If the user supplies a project-specific logo later, they only need to replace `public/logo.png` — no code change.
 
 **Render Exclusion Rule (MANDATORY):**
@@ -143,9 +143,9 @@ Report pass/fail summary and failing spec names. If E2E missing, report blocker.
 ## 3. Rules
 
 ### MUST DO ✅
-- Read `_refs/core-version.md` and substitute placeholders BEFORE writing any file
-- Render every file from [`_refs/templates/init-portal-templates.md`](./_refs/templates/init-portal-templates.md) (no external baseline directory exists or is required)
-- Copy [`./_refs/assets/logo.png`](./_refs/assets/logo.png) to `<project>/public/logo.png` and ensure `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
+- Read `_refs/angular-portal/core-version.md` and substitute placeholders BEFORE writing any file
+- Render every file from [`_refs/angular-portal/templates/init-portal-templates.md`](_refs/angular-portal/templates/init-portal-templates.md) (no external baseline directory exists or is required)
+- Copy [`_refs/angular-portal/assets/logo.png`](_refs/angular-portal/assets/logo.png) to `<project>/public/logo.png` and ensure `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
 - Generate exactly ONE sample lib with TWO entities: `order` + `customer` (Order's create/update form uses `<customer-select>` — demonstrates the reusable dropdown pattern from `11-init-module`)
 - Use `features/` (NOT `modules/`) at the lib level — `src/libs/<lib>/features/<entity>/`
 - When applying this skill to a legacy project that already uses `modules/`, still generate new code under `features/` and recommend renaming the existing `modules/` directory
@@ -179,9 +179,9 @@ Report pass/fail summary and failing spec names. If E2E missing, report blocker.
 ### Preconditions
 ```text
 Required before applying this skill:
-- `_refs/templates/init-portal-templates.md` is present (file-content templates)
-- `_refs/core-version.md` is present (packageName + currentVersion)
-- `_refs/assets/logo.png` is present (default brand logo)
+- `_refs/angular-portal/templates/init-portal-templates.md` is present (file-content templates)
+- `_refs/angular-portal/core-version.md` is present (packageName + currentVersion)
+- `_refs/angular-portal/assets/logo.png` is present (default brand logo)
 - developer confirmed project name
 - developer confirmed environment names
 - developer confirmed starter should include sample scaffold under `src/libs/sample`
@@ -208,7 +208,7 @@ Ask the developer:
 ├── plopfile.js
 ├── public/
 │   ├── silent-renew.html
-│   └── logo.png                    # copied from _refs/assets/logo.png; replace per project
+│   └── logo.png                    # copied from _refs/angular-portal/assets/logo.png; replace per project
 ├── src/
 │   ├── index.html
 │   ├── main.ts
@@ -271,26 +271,26 @@ Ask the developer:
 
 ### Code templates
 
-All file-content templates referenced by the Generation Steps above live in [`_refs/templates/init-portal-templates.md`](./_refs/templates/init-portal-templates.md). Read it when writing the corresponding files:
+All file-content templates referenced by the Generation Steps above live in [`_refs/angular-portal/templates/init-portal-templates.md`](_refs/angular-portal/templates/init-portal-templates.md). Read it when writing the corresponding files:
 
 | File to generate | Section in templates ref |
 |---|---|
-| `package.json` | [`#packagejson`](./_refs/templates/init-portal-templates.md#packagejson) |
-| `src/app/app.routes.ts` | [`#approutests`](./_refs/templates/init-portal-templates.md#approutests) |
-| `src/main.ts` | [`#maints`](./_refs/templates/init-portal-templates.md#maints) — most rationale-heavy; preserve the inline `// Why ...` comments verbatim |
-| `src/app/configurations/permission.configuration.ts` | [`#permissionconfigurationts-starter-default--disabled`](./_refs/templates/init-portal-templates.md#permissionconfigurationts-starter-default--disabled) |
-| `src/app/configurations/layout.configuration.ts` | [`#layoutconfigurationts`](./_refs/templates/init-portal-templates.md#layoutconfigurationts) — wires `sidebar.logoUrl: '/logo.png'` |
-| `public/logo.png` | copy raw bytes from [`./_refs/assets/logo.png`](./_refs/assets/logo.png) (no substitution) |
-| `src/libs/sample/routes.ts` | [`#sampleroutests`](./_refs/templates/init-portal-templates.md#sampleroutests) |
+| `package.json` | [`#packagejson`](_refs/angular-portal/templates/init-portal-templates.md#packagejson) |
+| `src/app/app.routes.ts` | [`#approutests`](_refs/angular-portal/templates/init-portal-templates.md#approutests) |
+| `src/main.ts` | [`#maints`](_refs/angular-portal/templates/init-portal-templates.md#maints) — most rationale-heavy; preserve the inline `// Why ...` comments verbatim |
+| `src/app/configurations/permission.configuration.ts` | [`#permissionconfigurationts-starter-default--disabled`](_refs/angular-portal/templates/init-portal-templates.md#permissionconfigurationts-starter-default--disabled) |
+| `src/app/configurations/layout.configuration.ts` | [`#layoutconfigurationts`](_refs/angular-portal/templates/init-portal-templates.md#layoutconfigurationts) — wires `sidebar.logoUrl: '/logo.png'` |
+| `public/logo.png` | copy raw bytes from [`_refs/angular-portal/assets/logo.png`](_refs/angular-portal/assets/logo.png) (no substitution) |
+| `src/libs/sample/routes.ts` | [`#sampleroutests`](_refs/angular-portal/templates/init-portal-templates.md#sampleroutests) |
 
-Resolve `<CORE_UI_PACKAGE_NAME>` and `<CORE_VERSION>` from `_refs/core-version.md` **before** materializing any of these files (see §"Source of truth — Core UI package" at the top of this skill).
+Resolve `<CORE_UI_PACKAGE_NAME>` and `<CORE_VERSION>` from `_refs/angular-portal/core-version.md` **before** materializing any of these files (see §"Source of truth — Core UI package" at the top of this skill).
 
 ### Verification Steps
 ```text
 After generation:
 1. Confirm package name, Angular project name, and output path match developer request
-2. Confirm every file in §"Expected Starter Structure" was rendered from `_refs/templates/init-portal-templates.md` and that no workspace-external dependency is referenced
-3. Confirm `public/logo.png` exists in the target project (copied from `_refs/assets/logo.png`) and `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
+2. Confirm every file in §"Expected Starter Structure" was rendered from `_refs/angular-portal/templates/init-portal-templates.md` and that no workspace-external dependency is referenced
+3. Confirm `public/logo.png` exists in the target project (copied from `_refs/angular-portal/assets/logo.png`) and `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
 4. Confirm `tsconfig.json` has no unnecessary `compilerOptions.baseUrl` (or document why it is needed)
 5. Run npm install
 6. Run npm start
@@ -304,9 +304,9 @@ After generation:
 
 ## Validation Checklist (apply at end of generation)
 
-- [ ] `_refs/core-version.md` read; placeholders substituted (no literal version/package string left in generated files)
-- [ ] `_refs/templates/init-portal-templates.md` read and every listed section rendered into the target project (no external baseline copy used)
-- [ ] `public/logo.png` copied from `_refs/assets/logo.png`; `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
+- [ ] `_refs/angular-portal/core-version.md` read; placeholders substituted (no literal version/package string left in generated files)
+- [ ] `_refs/angular-portal/templates/init-portal-templates.md` read and every listed section rendered into the target project (no external baseline copy used)
+- [ ] `public/logo.png` copied from `_refs/angular-portal/assets/logo.png`; `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
 - [ ] `package.json` pins `<CORE_UI_PACKAGE_NAME>@<CORE_VERSION>` (npm, not tgz)
 - [ ] `tsconfig.json` has `"baseUrl": "./"` + `"@sample": ["./src/libs/sample"]` + `"@sample/*": ["./src/libs/sample/*"]`
 - [ ] `app.routes.ts` lazy-loads sample lib + Core UI layout
@@ -341,8 +341,8 @@ Tao src/libs/sample va seed 2 entity order, customer (Order su dung customer-sel
 
 ### Agent Decision
 ```text
-Render every file from _refs/templates/init-portal-templates.md as source.
-Copy _refs/assets/logo.png to public/logo.png and wire sidebar.logoUrl.
+Render every file from _refs/angular-portal/templates/init-portal-templates.md as source.
+Copy _refs/angular-portal/assets/logo.png to public/logo.png and wire sidebar.logoUrl.
 Create project portal-starter-moi.
 Keep app shell, core configuration, environments, and plop generator files.
 Generate src/libs/sample scaffold with:
@@ -350,7 +350,7 @@ Generate src/libs/sample scaffold with:
   - components/customer-select (per-entity dropdown)
   - features/order (uses <customer-select> in detail form)
   - features/customer
-Pin <CORE_UI_PACKAGE_NAME> to npm version <CORE_VERSION> via _refs/core-version.md (no local tgz).
+Pin <CORE_UI_PACKAGE_NAME> to npm version <CORE_VERSION> via _refs/angular-portal/core-version.md (no local tgz).
 Ship PermissionConfiguration with disabled=true so the portal boots without a permission backend.
 Then run npm install and npm start to verify the starter boots.
 ```

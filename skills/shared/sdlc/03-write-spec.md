@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-write-spec
-description: Use AFTER `sdcorejs-clarify-requirements` has captured every blocking input for the detected track, BEFORE `sdcorejs-plan`. Authors a spec document at `<target-project>/.sdcorejs/docs/<track>/<timestamp>-<topic>-spec.md` covering Problem & Goals, Non-goals, Architecture, File structure, Acceptance criteria, Risks, Out-of-scope. Track-specific section emphasis loaded from `_refs/<track>.md` (e.g. angular file-paths, nestjs persistence + transactions, nextjs SEO + caching). Triggers - "viết spec", "write spec", "draft spec", "tài liệu thiết kế", "design doc", "soạn spec cho ...". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-clarify-requirements` has captured every blocking input for the detected track, BEFORE `sdcorejs-plan`. Authors a spec document at `<target-project>/.sdcorejs/docs/<track>/<timestamp>-<topic>-spec.md` covering Problem & Goals, Non-goals, Architecture, File structure, Acceptance criteria, Risks, Out-of-scope. Track-specific section emphasis loaded from `_refs/sdlc/<track>.md` (e.g. angular file-paths, nestjs persistence + transactions, nextjs SEO + caching). Triggers - "viết spec", "write spec", "draft spec", "tài liệu thiết kế", "design doc", "soạn spec cho ...". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Glob, Grep, Bash
 ---
 
@@ -30,7 +30,7 @@ cd "$TARGET_ROOT"
 If detection fails, ask the user which track.
 
 ### Step 1 — Load track-specific section guidance
-Read `skills/shared/sdlc/_refs/<TRACK>.md` (the **Spec** section). Each track defines:
+Read `_refs/sdlc/<TRACK>.md` (the **Spec** section). Each track defines:
 - Which sections deserve extra depth (angular file paths, nestjs persistence, nextjs SEO + caching)
 - File-path conventions for the "File structure" section
 - What counts as a track-relevant acceptance criterion
@@ -72,14 +72,14 @@ Non-goals prevent scope creep. Aim for 2-5 items.
 Reference any prior decisions captured in `.sdcorejs/memories/<TRACK>/`.
 
 ## File structure
-List every file to create or modify (path + 1-line intent). Use the track-specific path conventions from `_refs/<TRACK>.md`. This is the bridge from spec to plan.
+List every file to create or modify (path + 1-line intent). Use the track-specific path conventions from `_refs/sdlc/<TRACK>.md`. This is the bridge from spec to plan.
 
-<Track-specific examples; see _refs/<TRACK>.md>
+<Track-specific examples; see _refs/sdlc/<TRACK>.md>
 
 ## Acceptance criteria
 Concrete, testable. Each item must be checkable by a human or an automated test.
 
-<Track-specific examples; see _refs/<TRACK>.md>
+<Track-specific examples; see _refs/sdlc/<TRACK>.md>
 
 ## Risks & mitigations
 - **Risk:** <description> → **Mitigation:** <approach>
@@ -129,7 +129,7 @@ Do NOT proceed to `sdcorejs-plan` until `sdcorejs-review-spec` confirms user app
 - Spec stored under `docs/sdcorejs/` or `.docs/sdcorejs/` (legacy paths) — canonical path is `.sdcorejs/docs/`
 
 ## Related skills
-- `_refs/<TRACK>.md` — track-specific section emphasis + path conventions
+- `_refs/sdlc/<TRACK>.md` — track-specific section emphasis + path conventions
 - `sdcorejs-brainstorm` — produces the direction this spec captures
 - `sdcorejs-clarify-requirements` — confirms the inputs this spec relies on
 - `sdcorejs-review-spec` — runs immediately after, gates on user approval

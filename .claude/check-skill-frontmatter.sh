@@ -21,11 +21,17 @@ if [ "$#" -eq 0 ]; then
 fi
 
 # Exclusion patterns — must mirror sync-skills.sh's find filters.
+# Files whose basename starts with `_` (e.g. `_README.md`) are track-local
+# docs, not dispatch-able skills; sync-skills.sh skips them with a WARN
+# because they have no `name:` frontmatter.
 is_excluded() {
   case "$1" in
     */_refs/*|*/shared/templates/*|*/shared/specs/*) return 0 ;;
-    *) return 1 ;;
   esac
+  case "$(basename "$1")" in
+    _*) return 0 ;;
+  esac
+  return 1
 }
 
 failed=0
