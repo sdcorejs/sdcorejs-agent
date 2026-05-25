@@ -8,7 +8,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 ## Overview
 
-Generates production-ready Angular portal starter from internal baseline template (`core/templates/angular-portal-starter/`).
+Generates production-ready Angular portal starter by rendering every file from the code templates in [`_refs/templates/init-portal-templates.md`](./_refs/templates/init-portal-templates.md) plus the structure tree in §4. No external baseline directory is required.
 
 **Output:** Complete portal with sample lib (1 module, 2 entities), dev tools, ready for `npm start`.
 
@@ -62,9 +62,14 @@ Before generating, clarify with user:
 
 ## Generation Steps
 
-### Step 1: Copy Baseline Template
+### Step 1: Render Starter From Templates
 
-**Source:** `core/templates/angular-portal-starter/`
+**Source:** [`_refs/templates/init-portal-templates.md`](./_refs/templates/init-portal-templates.md) + the structure tree in §4 ("Expected Starter Structure"). Every file listed in the tree maps to a section in the templates ref; render each one with `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` already substituted (see §"Source of truth — Core UI package" at the top).
+
+**Brand asset (logo):**
+- Copy [`./_refs/assets/logo.png`](./_refs/assets/logo.png) into the generated portal at `public/logo.png`.
+- Wire it in [`src/app/configurations/layout.configuration.ts`](./_refs/templates/init-portal-templates.md#layoutconfigurationts) as `sidebar.logoUrl: '/logo.png'` (template handles this).
+- If the user supplies a project-specific logo later, they only need to replace `public/logo.png` — no code change.
 
 **Render Exclusion Rule (MANDATORY):**
 - Never render local AI/tooling folders into the target starter repo
@@ -139,7 +144,8 @@ Report pass/fail summary and failing spec names. If E2E missing, report blocker.
 
 ### MUST DO ✅
 - Read `_refs/core-version.md` and substitute placeholders BEFORE writing any file
-- Generate starter from internal baseline `core/templates/angular-portal-starter` only
+- Render every file from [`_refs/templates/init-portal-templates.md`](./_refs/templates/init-portal-templates.md) (no external baseline directory exists or is required)
+- Copy [`./_refs/assets/logo.png`](./_refs/assets/logo.png) to `<project>/public/logo.png` and ensure `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
 - Generate exactly ONE sample lib with TWO entities: `order` + `customer` (Order's create/update form uses `<customer-select>` — demonstrates the reusable dropdown pattern from `11-init-module`)
 - Use `features/` (NOT `modules/`) at the lib level — `src/libs/<lib>/features/<entity>/`
 - When applying this skill to a legacy project that already uses `modules/`, still generate new code under `features/` and recommend renaming the existing `modules/` directory
@@ -173,11 +179,12 @@ Report pass/fail summary and failing spec names. If E2E missing, report blocker.
 ### Preconditions
 ```text
 Required before applying this skill:
-- internal baseline templates exist in `core/templates/angular-portal-starter`
+- `_refs/templates/init-portal-templates.md` is present (file-content templates)
+- `_refs/core-version.md` is present (packageName + currentVersion)
+- `_refs/assets/logo.png` is present (default brand logo)
 - developer confirmed project name
 - developer confirmed environment names
 - developer confirmed starter should include sample scaffold under `src/libs/sample`
-- _refs/core-version.md is present (packageName + currentVersion)
 ```
 
 ### Clarification Questions
@@ -200,7 +207,8 @@ Ask the developer:
 ├── eslint.config.js
 ├── plopfile.js
 ├── public/
-│   └── silent-renew.html
+│   ├── silent-renew.html
+│   └── logo.png                    # copied from _refs/assets/logo.png; replace per project
 ├── src/
 │   ├── index.html
 │   ├── main.ts
@@ -271,6 +279,8 @@ All file-content templates referenced by the Generation Steps above live in [`_r
 | `src/app/app.routes.ts` | [`#approutests`](./_refs/templates/init-portal-templates.md#approutests) |
 | `src/main.ts` | [`#maints`](./_refs/templates/init-portal-templates.md#maints) — most rationale-heavy; preserve the inline `// Why ...` comments verbatim |
 | `src/app/configurations/permission.configuration.ts` | [`#permissionconfigurationts-starter-default--disabled`](./_refs/templates/init-portal-templates.md#permissionconfigurationts-starter-default--disabled) |
+| `src/app/configurations/layout.configuration.ts` | [`#layoutconfigurationts`](./_refs/templates/init-portal-templates.md#layoutconfigurationts) — wires `sidebar.logoUrl: '/logo.png'` |
+| `public/logo.png` | copy raw bytes from [`./_refs/assets/logo.png`](./_refs/assets/logo.png) (no substitution) |
 | `src/libs/sample/routes.ts` | [`#sampleroutests`](./_refs/templates/init-portal-templates.md#sampleroutests) |
 
 Resolve `<CORE_UI_PACKAGE_NAME>` and `<CORE_VERSION>` from `_refs/core-version.md` **before** materializing any of these files (see §"Source of truth — Core UI package" at the top of this skill).
@@ -279,14 +289,15 @@ Resolve `<CORE_UI_PACKAGE_NAME>` and `<CORE_VERSION>` from `_refs/core-version.m
 ```text
 After generation:
 1. Confirm package name, Angular project name, and output path match developer request
-2. Confirm starter is generated from `core/templates/angular-portal-starter` without workspace-external dependencies
-3. Confirm `tsconfig.json` has no unnecessary `compilerOptions.baseUrl` (or document why it is needed)
-4. Run npm install
-5. Run npm start
-6. Open /sample/order and /sample/customer routes
-7. Open Order detail and verify the <customer-select> dropdown lists customers
-8. If build config exists, run npm run build-dev
-9. Run starter unit tests (at minimum route/bootstrap smoke specs)
+2. Confirm every file in §"Expected Starter Structure" was rendered from `_refs/templates/init-portal-templates.md` and that no workspace-external dependency is referenced
+3. Confirm `public/logo.png` exists in the target project (copied from `_refs/assets/logo.png`) and `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
+4. Confirm `tsconfig.json` has no unnecessary `compilerOptions.baseUrl` (or document why it is needed)
+5. Run npm install
+6. Run npm start
+7. Open /sample/order and /sample/customer routes — verify the sidebar renders the logo from `/logo.png`
+8. Open Order detail and verify the <customer-select> dropdown lists customers
+9. If build config exists, run npm run build-dev
+10. Run starter unit tests (at minimum route/bootstrap smoke specs)
 ```
 
 ---
@@ -294,6 +305,8 @@ After generation:
 ## Validation Checklist (apply at end of generation)
 
 - [ ] `_refs/core-version.md` read; placeholders substituted (no literal version/package string left in generated files)
+- [ ] `_refs/templates/init-portal-templates.md` read and every listed section rendered into the target project (no external baseline copy used)
+- [ ] `public/logo.png` copied from `_refs/assets/logo.png`; `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
 - [ ] `package.json` pins `<CORE_UI_PACKAGE_NAME>@<CORE_VERSION>` (npm, not tgz)
 - [ ] `tsconfig.json` has `"baseUrl": "./"` + `"@sample": ["./src/libs/sample"]` + `"@sample/*": ["./src/libs/sample/*"]`
 - [ ] `app.routes.ts` lazy-loads sample lib + Core UI layout
@@ -328,7 +341,8 @@ Tao src/libs/sample va seed 2 entity order, customer (Order su dung customer-sel
 
 ### Agent Decision
 ```text
-Use internal baseline under core/templates/angular-portal-starter as source.
+Render every file from _refs/templates/init-portal-templates.md as source.
+Copy _refs/assets/logo.png to public/logo.png and wire sidebar.logoUrl.
 Create project portal-starter-moi.
 Keep app shell, core configuration, environments, and plop generator files.
 Generate src/libs/sample scaffold with:
@@ -353,6 +367,7 @@ Then run npm install and npm start to verify the starter boots.
 [project-name]/src/app/configurations/auth.configuration.ts
 [project-name]/src/app/configurations/layout.configuration.ts
 [project-name]/src/app/configurations/permission.configuration.ts
+[project-name]/public/logo.png
 [project-name]/src/libs/sample/sample.configuration.ts
 [project-name]/src/libs/sample/sample.module.ts
 [project-name]/src/libs/sample/routes.ts
@@ -370,3 +385,16 @@ Then run npm install and npm start to verify the starter boots.
 [project-name]/src/environments/environment.uat.ts
 [project-name]/src/environments/environment.prod.ts
 ```
+
+<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
+
+**Response style (terse mode active for this skill — reduces token usage):**
+
+While executing this skill:
+
+- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
+- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
+- Pattern: `[thing] [action] [reason]. [next step].`
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
+- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
+- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

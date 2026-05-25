@@ -205,3 +205,16 @@ Confirm the change in conversation, apply via Edit, re-build, verify.
 - Inputs: hosting + caching answers from `02-clarify-requirements`
 - Outputs to: `orchestration/verify-before-done` (caching-rendering-mode is verifiable acceptance criterion)
 - Related: `13-seo` (sitemap may itself be cached), `18-contact-form` (revalidate after submit), `15-i18n` (cache per locale, automatic with App Router)
+
+<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
+
+**Response style (terse mode active for this skill — reduces token usage):**
+
+While executing this skill:
+
+- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
+- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
+- Pattern: `[thing] [action] [reason]. [next step].`
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
+- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
+- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

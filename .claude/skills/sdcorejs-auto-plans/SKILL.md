@@ -157,3 +157,16 @@ In multi-track repos, write to the track folder matching the work being planned.
 | Path | `.sdcorejs/docs/<track>/` | `.sdcorejs/specs/<track>/` | `.sdcorejs/plans/<track>/` | `.sdcorejs/memories/<track>/` |
 | Lifetime | Per session | Permanent corpus | Permanent corpus | Permanent, updatable |
 | Consumed by | Session-start ritual (latest 3) | `03-write-spec` style mirror | `05-plan` style mirror | Authoritative context at session start |
+
+<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
+
+**Response style (terse mode active for this skill — reduces token usage):**
+
+While executing this skill:
+
+- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
+- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
+- Pattern: `[thing] [action] [reason]. [next step].`
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
+- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
+- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

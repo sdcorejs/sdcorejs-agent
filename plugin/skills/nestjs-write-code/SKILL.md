@@ -107,3 +107,16 @@ Each tail-call is mandatory. Do NOT skip `verify-before-done` — that's how acc
 - `orchestration/auto-plans` — has already snapshotted the plan to `.sdcorejs/plans/nestjs/`
 - Tail-call chain — see Step 5 above
 - (Planned) `nestjs-init-project`, `nestjs-init-module`, `nestjs-init-entity` — will replace the manual walk once implemented
+
+<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
+
+**Response style (terse mode active for this skill — reduces token usage):**
+
+While executing this skill:
+
+- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
+- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
+- Pattern: `[thing] [action] [reason]. [next step].`
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
+- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
+- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

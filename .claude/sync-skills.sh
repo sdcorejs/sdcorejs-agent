@@ -40,6 +40,27 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 SKILLS_ROOT="$REPO_ROOT/skills"
+
+# Response Style block — auto-injected after the YAML frontmatter of every
+# mirrored SKILL.md so the agent answers terse during skill execution, cutting
+# token usage. Source files stay clean; only mirrors carry the directive.
+# To bump style: edit the heredoc below and rerun sync.
+read -r -d '' RESPONSE_STYLE_BLOCK <<'STYLE_EOF' || true
+
+<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
+
+**Response style (terse mode active for this skill — reduces token usage):**
+
+While executing this skill:
+
+- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
+- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
+- Pattern: `[thing] [action] [reason]. [next step].`
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
+- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
+- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.
+
+STYLE_EOF
 # Dual mirror targets — both kept in sync so project-local + plugin distribution agree.
 DEST_ROOTS=(
   "$REPO_ROOT/.claude/skills"
@@ -98,12 +119,39 @@ for src_file in "${SRC_FILES[@]}"; do
     \<*\>) [ "$MODE" != "check" ] && echo "  skip template: $src_file (name=$name)"; continue ;;
   esac
 
+  # Locate sibling _refs/ in the source tree (track-local reference data the
+  # skill links to via `./_refs/...`). The flat mirror loses the original
+  # sibling relationship, so we copy _refs/ next to every skill that shares it.
+  src_dir="$(dirname "$src_file")"
+  refs_src=""
+  probe="$src_dir"
+  while [ "$probe" != "$SKILLS_ROOT" ] && [ "$probe" != "/" ]; do
+    if [ -d "$probe/_refs" ]; then
+      refs_src="$probe/_refs"
+      break
+    fi
+    probe="$(dirname "$probe")"
+  done
+
   # Write to every configured target — keeps .claude/skills/ and plugin/skills/ identical.
   for work_root in "${WORK_ROOTS[@]}"; do
     dest_dir="$work_root/$name"
     dest_file="$dest_dir/SKILL.md"
     mkdir -p "$dest_dir"
+    # Append RESPONSE_STYLE_BLOCK at the END of the mirrored SKILL.md. Source
+    # file stays unchanged on disk; only the mirror carries the directive so
+    # source diffs stay focused on skill content. Appending (vs prepending
+    # after the frontmatter) keeps the first body heading intact — some skill
+    # loaders fall back to "first body heading" as a display description when
+    # the frontmatter `description:` field is very long, and we don't want
+    # the injected block to clobber that fallback.
     cp "$src_file" "$dest_file"
+    printf '\n%s\n' "$RESPONSE_STYLE_BLOCK" >> "$dest_file"
+    # Mirror sibling _refs/ so `./_refs/...` links inside SKILL.md resolve.
+    if [ -n "$refs_src" ]; then
+      rm -rf "$dest_dir/_refs"
+      cp -R "$refs_src" "$dest_dir/_refs"
+    fi
   done
   KEPT["$name"]=1
   count=$((count + 1))
