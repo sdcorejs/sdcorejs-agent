@@ -185,6 +185,7 @@ Correct dispatch:
 - Avoids the 23-way fan-out, fits the budget
 
 ## Cross-references
+- `orchestration/using-worktrees.md` — once the verdict is PARALLEL-CANDIDATE, give each unit an isolated workspace before dispatch
 - `orchestration/subagent-driven-dev.md` — runs NEXT when the verdict is PARALLEL-CANDIDATE; owns the briefing template, dispatch mechanics, partial-failure handling, and merge/verification steps. This skill stops at the decision; subagent-driven-dev executes it.
 - `orchestration/verify-before-done.md` — final acceptance gate after subagent-driven-dev's merge step.
 - `07-write-code.md` (each track) — orchestrator that invokes this skill when its dispatch table has 3+ rows.

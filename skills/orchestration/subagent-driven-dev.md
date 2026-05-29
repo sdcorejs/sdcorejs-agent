@@ -193,6 +193,7 @@ Category needs Product to exist first. Sequential. Don't parallelize.
 - **Speculative parallelism**: dispatching 2 subagents to try competing approaches; usually one careful brainstorm is cheaper
 
 ## Cross-references
+- `orchestration/using-worktrees.md` — give each dispatched unit an isolated workspace so parallel agents don't trample each other — invoke BEFORE fan-out
 - `orchestration/parallel-dispatch.md` — decision gate (should I split?) — invoke this BEFORE this skill
 - `orchestration/verify-before-done.md` — final verification gate after merging units
 - `07-write-code.md` (angular-portal) — orchestrator that triggers this skill when the dispatch table has 3+ rows
