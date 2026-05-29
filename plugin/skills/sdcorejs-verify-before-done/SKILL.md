@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-verify-before-done
-description: MANDATORY skill that runs BEFORE the agent claims a code-writing task is "done" / commits / hands off to `sdcorejs-auto-docs`. Loads the spec's Acceptance Criteria, identifies a verification command for each, runs all automatable ones, and presents a manual checklist for the rest. Blocks the "done" claim until every criterion is ✅ verified or ⚠️ explicitly acknowledged as deferred. Triggers - automatic before auto-docs at end of any code-writing skill; user says "verify", "kiểm tra acceptance", "check acceptance criteria". Applies to angular-portal, nestjs, nextjs.
+description: MANDATORY skill that runs BEFORE the agent claims a code-writing task is "done" / commits / hands off to `sdcorejs-auto-docs`. Loads the spec's Acceptance Criteria, identifies a verification command for each, runs all automatable ones, and presents a manual checklist for the rest. Blocks the "done" claim until every criterion is ✅ verified or ⚠️ explicitly acknowledged as deferred. Triggers - automatic before auto-docs at end of any code-writing skill; user says "verify", "kiểm tra acceptance", "check acceptance criteria". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Bash, Glob, Grep
 ---
 
@@ -205,7 +205,7 @@ No spec found (small bug fix, no .sdcorejs/docs/<track>/*-spec.md)
 - Run build + lint + full test before per-criterion checks
 - Run a smoke command for the stack — don't trust unit tests alone
 - Run stack-specific quality scripts if `package.json` defines them (`check:i18n`, `check:content`, `lighthouse`) — count failures as Critical, count missing-when-relevant as Important
-- For NextJS sites with bilingual or long-form scope: REQUIRE `check:i18n` + `check:content` to be installed (via `19-content-quality`) and passing before claiming done
+- For NextJS sites with bilingual or long-form scope: REQUIRE `check:i18n` + `check:content` to be installed (via `nextjs-build-website-content-quality`) and passing before claiming done
 - Surface partial failures explicitly; never round up to ✅
 - Block "done" until user confirms defer or all green
 

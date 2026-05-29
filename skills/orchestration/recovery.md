@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-recovery
-description: Use when the user says "tiếp tục", "tiếp tục công việc", "resume", "continue where we left off", "what was I doing", "where did we stop", or opens a session after a break and needs to rebuild context. Reads the latest auto-docs + memories + git state + task tracker and produces a one-screen handoff summary. Applies to angular-portal, nestjs, nextjs.
+description: Use when the user says "tiếp tục", "tiếp tục công việc", "resume", "continue where we left off", "what was I doing", "where did we stop", or opens a session after a break and needs to rebuild context. Reads the latest auto-docs + memories + git state + task tracker and produces a one-screen handoff summary. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Bash, Glob
 ---
 

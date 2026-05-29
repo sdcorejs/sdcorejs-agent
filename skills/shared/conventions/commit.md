@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-commit
-description: Use when the user asks to create a git commit, says "commit", "tạo commit", "ghi nhận thay đổi", or ends a code-writing task that should be committed. Generates a Conventional Commits message with auto-detected scope from staged paths, plus git-awareness checks (current branch, modified files, no force-push on main). Applies to angular-portal, nestjs, nextjs and the sdcorejs-agent repo itself.
+description: Use when the user asks to create a git commit, says "commit", "tạo commit", "ghi nhận thay đổi", or ends a code-writing task that should be committed. Generates a Conventional Commits message with auto-detected scope from staged paths, plus git-awareness checks (current branch, modified files, no force-push on main). Applies to angular-portal, nestjs, nextjs and the sdcorejs-agent repo itself. Bilingual (VI/EN).
 allowed-tools: Bash, Read
 ---
 

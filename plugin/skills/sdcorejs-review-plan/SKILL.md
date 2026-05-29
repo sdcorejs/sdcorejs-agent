@@ -17,6 +17,8 @@ Catching missing steps or wrong file paths here is far cheaper than catching the
 
 ## Process
 
+> **STOP — approval gate.** This skill BLOCKS code generation. After presenting the plan summary (step 3), you MUST wait for an explicit affirmative ("OK", "duyệt", "approve") before invoking `orchestration/auto-plans` or dispatching `<track>-write-code`. Silence or absence of objection is NOT approval. Never start a write-code task — not even step 1 — while the plan is still under review.
+
 ### 1. Re-read the plan
 Either re-read from the in-chat response (if `sdcorejs-plan` rendered it inline) or from the plan file if one was written. Re-read it as if you've never seen it.
 

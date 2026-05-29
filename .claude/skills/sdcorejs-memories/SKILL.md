@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-memories
-description: MANDATORY skill for durable cross-session knowledge across SDCoreJS tracks. Different from `auto-docs` — auto-docs captures one-session summaries, memories captures facts that should persist (project conventions, stakeholder constraints, recurring anti-patterns, external references). READ mode runs at session start (load relevant memories as authoritative context). WRITE mode runs when the user says "ghi nhớ", "remember this", "lưu vào memory", OR when the agent detects a user correction, a recurring constraint, or a non-obvious project decision. Triggers - "ghi nhớ", "remember this", "lưu memory", "save this for later", "lần sau nhớ", "from now on", "đừng quên". Applies to angular-portal, nestjs, nextjs.
+description: MANDATORY skill for durable cross-session knowledge across SDCoreJS tracks. Different from `auto-docs` — auto-docs captures one-session summaries, memories captures facts that should persist (project conventions, stakeholder constraints, recurring anti-patterns, external references). READ mode runs at session start (load relevant memories as authoritative context). WRITE mode runs when the user says "ghi nhớ", "remember this", "lưu vào memory", OR when the agent detects a user correction, a recurring constraint, or a non-obvious project decision. Triggers - "ghi nhớ", "remember this", "lưu memory", "save this for later", "lần sau nhớ", "from now on", "đừng quên". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob
 ---
 

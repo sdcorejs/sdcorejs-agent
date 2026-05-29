@@ -197,9 +197,37 @@ Verify RED:
 npm test -- --testPathPattern="<function>.test.ts"
 ```
 
-> **Note:** Next.js integration patterns (route handlers, server actions, API routes) will
-> be covered by a dedicated `sdcorejs-testing-integration-nextjs` skill when available.
-> For now, apply the NestJS integration test pattern as a reference.
+### Next.js — Integration test (route handler / server action)
+
+Drive the handler directly with a `Request`; assert on the `Response`. No running server needed — exercise the real route logic with external I/O (DB, email) mocked at the module boundary.
+
+```typescript
+// src/app/api/<route>/__tests__/route.test.ts
+import { POST } from '../route';
+
+jest.mock('@/lib/<feature>/service', () => ({
+  submit: jest.fn().mockResolvedValue({ id: 'abc' }),
+}));
+
+describe('POST /api/<route>', () => {
+  it('returns 400 when the payload fails validation', async () => {
+    // ARRANGE
+    const req = new Request('http://test/api/<route>', {
+      method: 'POST',
+      body: JSON.stringify({ /* invalid */ }),
+    });
+    // ACT
+    const res = await POST(req);
+    // ASSERT
+    expect(res.status).toBe(400);
+  });
+});
+```
+
+Verify RED:
+```bash
+npm test -- --testPathPattern="api/<route>/__tests__/route.test.ts"
+```
 
 ## RED state — verify for the right reason
 

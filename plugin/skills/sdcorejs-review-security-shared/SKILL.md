@@ -6,6 +6,8 @@ allowed-tools: Read, Grep, Glob, Bash
 
 # Security Review — Cross-Track Checklist
 
+**Extended by:** `review/security/angular-portal.md`, `review/security/nestjs.md`, `review/security/nextjs.md` — each runs this baseline first, then adds stack-specific numbered checks. Run the matching stack file(s) after this one.
+
 ## Purpose
 Catch common security mistakes BEFORE they ship. Not a substitute for pentest or SAST — this is the engineer-level sanity check that you'd want a reviewer to do, formalized.
 

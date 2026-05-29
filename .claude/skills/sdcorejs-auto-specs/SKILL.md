@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-specs
-description: MANDATORY skill that runs AUTOMATICALLY right after `04-review-spec` receives explicit user approval. Persists the approved spec into the target project under `.sdcorejs/specs/<track>/YYYY-MM-DD-HH-mm-<topic>.md` so future sessions build a corpus of user-approved specs and learn the user's preferred structure, depth, and conventions. Also runs in READ-ONLY mode at session start to load the latest 3 approved specs as style references for `03-write-spec`. Triggers - immediately after `04-review-spec` returns an explicit affirmative ("OK", "duyệt", "approve"), AND at session start in a target project. Applies to angular-portal, nestjs, nextjs.
+description: MANDATORY skill that runs AUTOMATICALLY right after `04-review-spec` receives explicit user approval. Persists the approved spec into the target project under `.sdcorejs/specs/<track>/YYYY-MM-DD-HH-mm-<topic>.md` so future sessions build a corpus of user-approved specs and learn the user's preferred structure, depth, and conventions. Also runs in READ-ONLY mode at session start to load the latest 3 approved specs as style references for `03-write-spec`. Triggers - immediately after `04-review-spec` returns an explicit affirmative ("OK", "duyệt", "approve"), AND at session start in a target project. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Bash, Glob
 ---
 

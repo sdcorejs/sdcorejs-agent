@@ -41,7 +41,10 @@ Read `_refs/sdlc/<TRACK>.md` (the **Plan** section). Each track defines:
 ### Step 3 — Glob-check for path conflicts
 Before writing the plan, `Glob` the target project to verify that every CREATE path doesn't already exist (surface conflicts) and every EDIT path does exist (surface phantom paths).
 
-### Step 4 — Draft the plan from the template
+### Step 4 — Mirror previous approved plans
+Read the latest 1-3 approved plans in `.sdcorejs/plans/<TRACK>/` (if any) and mirror their granularity BEFORE drafting. The user has a preferred phase grouping and verification style — match it so the draft lands right the first time.
+
+### Step 5 — Draft the plan from the template
 
 ```markdown
 ## Scope (recap from spec)
@@ -75,9 +78,6 @@ Plan này có phù hợp không?
 - "Đổi step <N>" → revise this plan
 - "Quay lại clarify" → invoke `sdcorejs-clarify-requirements`
 ```
-
-### Step 5 — Mirror previous approved plans
-Read the latest 1-3 approved plans in `.sdcorejs/plans/<TRACK>/` (if any) and mirror their granularity. The user has a preferred phase grouping and verification style — match it.
 
 ### Step 6 — Hand off to `sdcorejs-review-plan`
 

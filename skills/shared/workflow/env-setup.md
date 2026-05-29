@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-env-setup
-description: Use when the user is setting up a new clone, says "thiết lập môi trường", "setup dev", "first run", "cannot run", "nproject mới clone", or hits env-related errors (missing .env, port conflict, postgres connection refused, wrong node version). Provides per-stack bootstrap checklist (Angular / NestJS / NextJS) plus shared prerequisites. Applies to angular-portal, nestjs, nextjs.
+description: Use when the user is setting up a new clone, says "thiết lập môi trường", "setup dev", "first run", "cannot run", "nproject mới clone", or hits env-related errors (missing .env, port conflict, postgres connection refused, wrong node version). Provides per-stack bootstrap checklist (Angular / NestJS / NextJS) plus shared prerequisites. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Bash, Glob, Write
 ---
 

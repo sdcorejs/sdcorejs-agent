@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-repair-loop
-description: Use after sdcorejs-review-code-<track> (source: review-code) OR sdcorejs-verify-before-done (source: verify-before-done) produces findings. Caller MUST pass source context so the re-verify step runs the correct tool. First VERIFIES each finding is genuine, then fixes systematically, re-runs per-source verification, iterates until Critical + Important are resolved or deferred. Triggers: "fix các finding", "apply review findings", "sửa các lỗi review", "fix critical issues", or auto-invoked after sdcorejs-review-code-<track> or verify-before-done outputs findings. Applies to angular-portal, nestjs, nextjs.
+description: Use after sdcorejs-review-code-<track> (source: review-code) OR sdcorejs-verify-before-done (source: verify-before-done) produces findings. Caller MUST pass source context so the re-verify step runs the correct tool. First VERIFIES each finding is genuine, then fixes systematically, re-runs per-source verification, iterates until Critical + Important are resolved or deferred. Triggers - "fix các finding", "apply review findings", "sửa các lỗi review", "fix critical issues", or auto-invoked after sdcorejs-review-code-<track> or verify-before-done outputs findings. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Edit, Write, Bash, Grep
 ---
 

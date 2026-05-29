@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-plans
-description: MANDATORY skill that runs AUTOMATICALLY right after `06-review-plan` receives explicit user approval. Persists the approved plan into the target project under `.sdcorejs/plans/<track>/YYYY-MM-DD-HH-mm-<topic>.md` so future sessions build a corpus of user-approved plans and learn the user's preferred granularity, phasing, and verification style. Also runs in READ-ONLY mode at session start to load the latest 3 approved plans as style references for `05-plan`. Triggers - immediately after `06-review-plan` returns an explicit affirmative ("OK", "duyệt", "approve"), AND at session start in a target project. Applies to angular-portal, nestjs, nextjs.
+description: MANDATORY skill that runs AUTOMATICALLY right after `06-review-plan` receives explicit user approval. Persists the approved plan into the target project under `.sdcorejs/plans/<track>/YYYY-MM-DD-HH-mm-<topic>.md` so future sessions build a corpus of user-approved plans and learn the user's preferred granularity, phasing, and verification style. Also runs in READ-ONLY mode at session start to load the latest 3 approved plans as style references for `05-plan`. Triggers - immediately after `06-review-plan` returns an explicit affirmative ("OK", "duyệt", "approve"), AND at session start in a target project. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Bash, Glob
 ---
 

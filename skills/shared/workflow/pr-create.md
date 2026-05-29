@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-pr-create
-description: Use when the user asks to create a pull request, says "tạo PR", "mở PR", "open pull request", "gh pr create", or when a feature branch is ready to ship. Generates PR title + body from commits and diff since the base branch, pushes if needed, opens the PR via `gh` CLI. Applies to angular-portal, nestjs, nextjs and the sdcorejs-agent repo itself.
+description: Use when the user asks to create a pull request, says "tạo PR", "mở PR", "open pull request", "gh pr create", or when a feature branch is ready to ship. Generates PR title + body from commits and diff since the base branch, pushes if needed, opens the PR via `gh` CLI. Applies to angular-portal, nestjs, nextjs and the sdcorejs-agent repo itself. Bilingual (VI/EN).
 allowed-tools: Bash, Read
 ---
 

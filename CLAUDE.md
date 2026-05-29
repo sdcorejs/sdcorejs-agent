@@ -18,7 +18,7 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 
 Cross-cutting concerns live outside `tracks/`:
 - `skills/shared/sdlc/` — **6 cross-track design-phase skills** (`sdcorejs-brainstorm`, `sdcorejs-clarify-requirements`, `sdcorejs-write-spec`, `sdcorejs-review-spec`, `sdcorejs-plan`, `sdcorejs-review-plan`) plus `_refs/{angular-portal,nestjs,nextjs}.md` for track-specific patterns. Replaces the duplicated per-track design files.
-- `skills/orchestration/` — 12 SDLC plumbing skills (parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code)
+- `skills/orchestration/` — 14 SDLC plumbing skills (parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, using-worktrees, using-skills)
 - `skills/shared/conventions/` — Conventional Commits, changelog, dep-update
 - `skills/shared/workflow/` — env-setup, debug, pr-create, code-map
 - `skills/review/` — code review (per-track), security audit, performance, architecture, accessibility (filled per track where applicable)
@@ -163,6 +163,8 @@ Loaded by every track at the start of every feature. Each detects the track at r
 | `sdcorejs-comment-code` | ASK gate at the comment phase — skip / simple / medium / full; outcome optional but ASK is mandatory | ✅ ASK |
 | `sdcorejs-parallel-dispatch` | about to fan out 3+ independent tasks — decision gate (should I split?) |  |
 | `sdcorejs-subagent-driven-dev` | after parallel-dispatch says YES — execution discipline: decompose, brief, dispatch, merge |  |
+| `sdcorejs-using-worktrees` | before `<track>-write-code` or parallel fan-out when work needs isolation — detect/create isolated workspace + clean baseline |  |
+| `sdcorejs-using-skills` | session-start bootstrap (plugin context) — portable dispatch protocol so skills fire even without this CLAUDE.md present | auto (SessionStart hook) |
 
 ### Workflow utilities
 
