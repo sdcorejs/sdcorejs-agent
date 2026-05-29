@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-code-map
-description: READ-ONLY skill for architecture discovery. Use when starting a new major feature, when the user asks to "dùng lại shared component", "use existing shared components", "reuse what we have", or when generating code that should slot into existing modules. Scans the target project's structure to find existing modules, shared UI components, base DTOs/services, route registry, and permission codes — BEFORE writing code. Prevents hallucinated paths and duplicated abstractions. Applies to angular-portal, nestjs, nextjs.
+description: READ-ONLY skill for architecture discovery. Use when starting a new major feature, when the user asks to "dùng lại shared component", "use existing shared components", "reuse what we have", or when generating code that should slot into existing modules. Scans the target project's structure to find existing modules, shared UI components, base DTOs/services, route registry, and permission codes — BEFORE writing code. Prevents hallucinated paths and duplicated abstractions. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Bash, Glob, Read
 ---
 

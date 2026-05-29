@@ -28,7 +28,7 @@ npx --yes source-map-explorer dist/**/main*.js > /tmp/bundle-map.txt
 npx --yes webpack-bundle-analyzer dist/**/*.json
 ```
 
-Per-route lazy chunks should each be ≤ 100 KB gzipped. Main bundle ≤ 250 KB gzipped (Angular portals are heavier than landing sites — `@angular/core`, `@angular/cdk`, RxJS, `@sd-angular/core` add up).
+Per-route lazy chunks should each be ≤ 100 KB gzipped. Main bundle ≤ 250 KB gzipped. These are the **sanctioned Angular Portal overrides** of the universal budget (see "Per-track exceptions" in `review/performance/budget.md`) — portals ship `@angular/core` + `@angular/cdk` + RxJS + `@sd-angular/core`, run on desktop behind auth, and aren't SEO-indexed.
 
 Severity:
 - Critical: main bundle > 400 KB gz
@@ -121,8 +121,8 @@ console.log({
 "
 ```
 
-Targets (portals are heavier than landing sites; relaxed):
-- Performance ≥ 80 on desktop
+Targets (sanctioned Angular Portal override of the universal mobile budget — see "Per-track exceptions" in `review/performance/budget.md`):
+- Performance ≥ 80 on desktop preset
 - LCP ≤ 3.5 s
 - TBT ≤ 400 ms
 

@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-dep-update
-description: Use when the user asks to update / upgrade dependencies, says "cập nhật dependency", "update package", "bump version", "npm outdated", "audit fix", or after a security advisory. Runs a safe upgrade workflow — audit → classify (patch/minor/major) → branch → upgrade one logical group at a time → lockfile diff → tests → smoke run. Applies to angular-portal, nestjs, nextjs.
+description: Use when the user asks to update / upgrade dependencies, says "cập nhật dependency", "update package", "bump version", "npm outdated", "audit fix", or after a security advisory. Runs a safe upgrade workflow — audit → classify (patch/minor/major) → branch → upgrade one logical group at a time → lockfile diff → tests → smoke run. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Bash, Read, Edit
 ---
 

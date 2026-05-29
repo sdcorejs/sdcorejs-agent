@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-subagent-driven-dev
-description: Use when `07-write-code` (or its NestJS/NextJS equivalents) is about to execute a feature with 3+ independent sub-tasks — multiple entities under one module, batch screen generation, multi-stack work, large reference-doc batches. Different from `sdcorejs-parallel-dispatch` which decides WHETHER to parallelize; this skill governs HOW to execute the delegation — decompose, brief, dispatch, merge results, surface partial failures. Applies to angular-portal, nestjs, nextjs.
+description: Use when `07-write-code` (or its NestJS/NextJS equivalents) is about to execute a feature with 3+ independent sub-tasks — multiple entities under one module, batch screen generation, multi-stack work, large reference-doc batches. Different from `sdcorejs-parallel-dispatch` which decides WHETHER to parallelize; this skill governs HOW to execute the delegation — decompose, brief, dispatch, merge results, surface partial failures. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Agent, Bash
 ---
 

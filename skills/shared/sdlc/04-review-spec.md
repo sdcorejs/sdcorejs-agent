@@ -17,6 +17,8 @@ This skill is fully track-agnostic — the spec template, file paths, and tail-c
 
 ## Process
 
+> **STOP — approval gate.** This skill exists to BLOCK the workflow. After presenting the spec summary (step 3), you MUST wait for an explicit affirmative ("OK", "duyệt", "approve") before invoking `orchestration/auto-specs` or `sdcorejs-plan`. Silence, "thanks", or a follow-up question is NOT approval. Do not proceed on your own judgment that the spec "looks fine".
+
 ### 1. Re-read the spec
 Open the file just written under `<target-project>/.sdcorejs/docs/<TRACK>/*-spec.md`. Re-read it as if you've never seen it.
 

@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-comment-code
-description: Mandatory ASK gate at the comment phase of every code-writing workflow. Always asks the user which comment level to apply — `skip` / `simple` / `medium` / `full` — before any comments are written. Outcome is optional: `skip` produces no comments; the other 3 levels apply progressively richer JSDoc + inline rules. Runs after `50-review-code` / `orchestration/repair-loop` and BEFORE `orchestration/verify-before-done`. Triggers - automatic at the comment phase of any code-writing skill; or user says "add comments", "viết comment", "thêm comment", "comment lại code". Applies to angular-portal, nestjs, nextjs.
+description: Mandatory ASK gate at the comment phase of every code-writing workflow. Always asks the user which comment level to apply — `skip` / `simple` / `medium` / `full` — before any comments are written. Outcome is optional: `skip` produces no comments; the other 3 levels apply progressively richer JSDoc + inline rules. Runs after `50-review-code` / `orchestration/repair-loop` and BEFORE `orchestration/verify-before-done`. Triggers - automatic at the comment phase of any code-writing skill; or user says "add comments", "viết comment", "thêm comment", "comment lại code". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Edit, Write
 ---
 

@@ -6,6 +6,8 @@ allowed-tools: Read, Bash
 
 # Review — Performance Budget (Cross-Track)
 
+**Extended by:** `review/performance/angular-portal.md`, `review/performance/nextjs.md`, `review/performance/nestjs.md` — each inherits these budgets and adds stack-specific probes. Where a stack legitimately needs a different number, the exception is stated once in **Per-track exceptions** below; per-track skills must reference that override rather than silently diverging.
+
 ## Purpose
 "Slow" is subjective until you set numbers. This skill ships the numbers + the commands to measure them. Stack-specific performance skills (`review/performance/angular-portal.md`, `nextjs.md`, `nestjs.md`) reference these budgets and add probes that match the stack's bottlenecks.
 
@@ -113,6 +115,26 @@ Verifier (Node):
 # Sample RSS over time during load test
 while sleep 5; do ps -o rss= -p $PID; done | tee /tmp/rss.log
 ```
+
+## Per-track exceptions
+
+The universal budgets above target a **public, mobile-first landing site** (the Next.js `build-website` profile). Two stacks legitimately override specific numbers — these are the ONLY sanctioned deviations. A per-track skill applying a different threshold must point here.
+
+### Angular Portal (authenticated internal app, desktop-primary)
+Portals ship `@angular/core` + `@angular/cdk` + RxJS + `@sd-angular/core`, are used on desktop behind login, and are not SEO-sensitive. Sanctioned overrides:
+
+| Budget | Universal (landing) | Angular Portal override | Why |
+|---|---|---|---|
+| Initial/main JS (gz) | ≤ 170 KB target, > 250 KB fail | ≤ 250 KB target, > 400 KB fail | framework + Core UI baseline is unavoidable |
+| Per-route lazy chunk (gz) | ≤ 50 KB, > 100 KB fail | ≤ 100 KB, > 200 KB fail | feature modules are data-heavy |
+| Lighthouse Performance | ≥ 90 (mobile preset) | ≥ 80 (desktop preset) | desktop-primary, behind auth, not indexed |
+| LCP | ≤ 2.5 s | ≤ 3.5 s | data-table dashboards, not hero pages |
+
+### Next.js `build-website` (public landing site)
+No exceptions — uses the universal budgets verbatim (≥ 90 mobile Lighthouse, ≤ 170 KB initial JS, LCP ≤ 2.5 s). Stated here so the alignment is explicit rather than assumed.
+
+### NestJS (API)
+Frontend budgets (bundle, Core Web Vitals) do not apply. Only the API-response, DB-query, and memory sections are in scope.
 
 ## How to wire into CI / verify-before-done
 

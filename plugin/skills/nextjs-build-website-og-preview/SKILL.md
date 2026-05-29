@@ -150,7 +150,7 @@ export default async function OpengraphImage() {
 }
 ```
 
-If user accepts system fallback (Helvetica / Arial), skip font loading entirely — diacritics still render, just less branded.
+For **English / Latin-only** content you can skip font loading and let `@vercel/og` use its built-in default — less branded but fine. For **Vietnamese content, do NOT rely on a system "Arial" fallback**: `@vercel/og` runs in an isolated server environment with no access to OS fonts, and its bundled default does not cover the full Vietnamese diacritic set — affected glyphs (ữ, ặ, ẩ, ợ, …) render as boxes. Load a diacritic-capable font binary (Step 3) whenever the OG title may contain Vietnamese.
 
 ### Step 4 — Twitter card
 

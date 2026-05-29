@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-docs
-description: MANDATORY skill that runs automatically at the end of EVERY code-writing task across all SDCoreJS tracks (angular-portal, nestjs, nextjs). Writes a session summary as a new markdown file in the target project under `.sdcorejs/docs/<track>/` so the next session can recall prior context. Also runs in READ-ONLY mode at session start to refresh memory. Triggers - end of any code-writing skill invocation (write-code orchestrator, init-X, screen-X, e2e-test, review-code, write-comments) AND start of a new session inside a target project. Applies to angular-portal, nestjs, nextjs.
+description: MANDATORY skill that runs automatically at the end of EVERY code-writing task across all SDCoreJS tracks (angular-portal, nestjs, nextjs). Writes a session summary as a new markdown file in the target project under `.sdcorejs/docs/<track>/` so the next session can recall prior context. Also runs in READ-ONLY mode at session start to refresh memory. Triggers - end of any code-writing skill invocation (write-code orchestrator, init-X, screen-X, e2e-test, review-code, write-comments) AND start of a new session inside a target project. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Bash, Glob
 ---
 
