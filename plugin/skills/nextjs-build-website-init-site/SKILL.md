@@ -288,6 +288,10 @@ Verify:
 
 If any of these fail, halt and surface — do NOT proceed to next sub-skill with a broken bootstrap.
 
+### 6. Write the project summary
+
+Once the bootstrap is green, run `orchestration/auto-summary` in WRITE mode to create `.sdcorejs/summary.md` (domain, stack, app-router + content + i18n layout, conventions, current git HEAD). The next session and the `07-write-code` Step 0 pre-flight read this instead of re-scanning. A fresh site has none until this step runs.
+
 ## Rules
 
 ### MUST DO

@@ -27,6 +27,10 @@ This skill is an orchestrator: it does NOT itself generate every file — it dis
 | Detail component — any state (CREATE / UPDATE / DETAIL) or form refinement (validators, FormArray, async validators) | `21-screen-detail` |
 | Action buttons — workflow transitions, bulk operations, custom side-effects (export, re-sync, etc.) | `31-actions` |
 
+### Step 0 — Pre-flight: ensure project summary
+
+Before dispatching ANY sub-skill, run `orchestration/auto-summary`. If `<target>/.sdcorejs/summary.md` is missing, it MUST be generated first (auto-summary delegates the scan to `sdcorejs-code-map` and distills the brief) — this is the gate that stops generation from hallucinating paths / duplicating shared abstractions. If the summary exists, auto-summary reads it (and refreshes on drift) so dispatch slots into the real architecture. Exception: when this run is itself a brand-new `10-init-portal`, there is no project to summarize yet — auto-summary runs in WRITE mode at the END of init instead (see the init sub-skills).
+
 Execution order: portal → module → entity → screens → actions. If the plan touches multiple items, run them in this order; do not parallelize. After all sub-skills finish, hand off in sequence:
 
 1. `40-e2e-test` (skills/testing/e2e/angular-portal.md) — happy-path tests for what was generated

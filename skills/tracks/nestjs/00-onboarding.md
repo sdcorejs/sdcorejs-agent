@@ -30,6 +30,7 @@ Welcome the developer inside a NestJS project. This track is in **scaffold statu
 - `skills/testing/unit/nestjs.md` — unit tests with mocked dependencies
 - `skills/testing/integration/nestjs.md` — pg-mem + real DI
 - `skills/testing/e2e/nestjs.md` — supertest + testcontainers Postgres
+- `orchestration/auto-summary` — canonical `.sdcorejs/summary.md` project brief; generated (via `code-map`) before code-writing if missing, read at session start
 - All cross-track orchestration (`auto-docs`, `repair-loop`, `verify-before-done`, etc.)
 
 ### 🚧 Planned (not yet implemented)

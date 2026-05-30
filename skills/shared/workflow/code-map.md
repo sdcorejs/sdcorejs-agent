@@ -11,13 +11,15 @@ Before generating a new module / entity / screen, find what already exists. AI g
 
 ## When invoked
 
-### Mandatory triggers (auto-run before generation)
+Triggering is description-based: there is no orchestration hook that runs this skill automatically. When a code-writing skill (`07-write-code`, `10-init-*`, `11-init-module`) is about to generate into an existing repo, the agent is responsible for invoking this skill first — treat that as a strong default, not an enforced gate. Skipping it is the single biggest cause of hallucinated paths and duplicated abstractions, so only skip when the repo's layout is already established in the current session.
+
+### Invoke before generation (strongly recommended)
 - About to invoke `07-write-code` for a new module / entity / screen
 - About to invoke any `10-init-*` or `11-init-module` skill
-- User asks "dùng lại shared component nào", "use existing", "reuse"
-- User starts a major feature and the agent has no prior session context for this repo
+- User starts a major feature and the agent has no prior map of this repo
 
-### Optional triggers (on user request)
+### Invoke on explicit request
+- User asks "dùng lại shared component nào", "use existing", "reuse"
 - "show me the structure", "code map", "what modules exist"
 - Architecture review / audit
 
@@ -40,45 +42,74 @@ ls angular.json nest-cli.json next.config.* package.json apps/ libs/ packages/ 2
 ```
 Look for monorepo layout (`apps/`, `libs/`, `packages/`) vs flat. This shapes every subsequent glob.
 
+### 1b. Discover the ACTUAL source layout before globbing — don't assume
+
+Repos in the wild do not all put code where a template expects. The globs in step 2 are written against the *common* layout for each stack, but real repos vary widely, and a glob aimed at a path that doesn't exist silently returns nothing — which reads as "empty project" and is exactly how this skill hallucinates structure. So first find where source actually clusters, then point the step-2 globs at the roots you found.
+
+Layouts you will encounter (non-exhaustive — derive, don't memorize):
+- **Angular**: `src/app/`, `src/libs/<lib>/` (portal template), `projects/<lib>/{components,forms}/` (component-library / publishable entry points), `libs/<lib>/` or `projects/<app>/src/libs/` (Nx).
+- **NestJS**: `src/modules/`, `src/<domain>/`, `core-be/modules/` + `core-be/{base,guards,decorators}/` + `shared/<domain>/` (OneMount masterdata layout), `apps/<app>/src/` + `libs/<lib>/src/` (Nx monorepo).
+- **NextJS**: `app/` (App Router) or `pages/` (Pages Router); components at `components/`, `src/components/`, or co-located.
+
+Find the real roots, e.g.:
+```bash
+# Where do the stack's signature files actually live? (these answers drive step 2)
+# Angular: component/module/routes roots
+find . \( -name '*.component.ts' -o -name '*.routes.ts' -o -name 'routes.ts' \) \
+  -not -path '*/node_modules/*' -not -path '*/dist/*' 2>/dev/null | sed 's|/[^/]*$||' | sort -u | head -40
+# NestJS: controllers/modules/base classes
+grep -rl --include='*.ts' -E '@Controller\(|@Module\(|extends Base' . 2>/dev/null \
+  | grep -v node_modules | sed 's|/[^/]*$||' | sort -u | head -40
+# NextJS: route files
+find . \( -name 'page.tsx' -o -name 'route.ts' \) -not -path '*/node_modules/*' 2>/dev/null \
+  | sed 's|/[^/]*$||' | sort -u | head -40
+```
+Let the directories that come back define `<SRC>` for the next step. If the common-layout globs below return nothing, that's the signal the repo uses a different root — fall back to these discovery commands rather than concluding the project is empty.
+
 ### 2. Glob the structure (parallel — all read-only)
+
+Treat the paths below as the *common-case* roots. Substitute the real roots from step 1b wherever they differ (e.g. `core-be/modules` instead of `src/modules`, `projects/<lib>/components` instead of `src/libs`).
 
 #### Angular Portal
 ```bash
-# Feature libs (top-level domains)
-find src/libs -maxdepth 2 -type d 2>/dev/null              # or libs/ in nx repos
+# Feature libs / app modules (top-level domains) — covers src/libs, src/app, projects/*, Nx libs
+find src/libs src/app projects -maxdepth 3 -type d 2>/dev/null | grep -v node_modules
+# Publishable component-library entry points (component-per-folder layout)
+find projects -maxdepth 3 -type d \( -name components -o -name forms \) 2>/dev/null
 # Per-entity feature folders inside each lib
-find src/libs/*/features -maxdepth 1 -type d 2>/dev/null
+find src/libs/*/features projects/*/features -maxdepth 1 -type d 2>/dev/null
 # Shared UI / pipes / directives
-find src/libs/shared -maxdepth 3 -type d 2>/dev/null
-# Route registries
-find . -name 'routes.ts' -not -path '*/node_modules/*' 2>/dev/null
+find src/libs/shared projects/*/shared -maxdepth 3 -type d 2>/dev/null
+# Route registries (whole tree — names vary: routes.ts, *.routes.ts)
+find . \( -name 'routes.ts' -o -name '*.routes.ts' \) -not -path '*/node_modules/*' 2>/dev/null
 # Permission codes
-grep -r --include='*.ts' -E '_C_[A-Z_]+|_PERMISSIONS\s*=' src/ 2>/dev/null | head -30
+grep -r --include='*.ts' -E '_C_[A-Z_]+|_PERMISSIONS\s*=' src/ projects/ 2>/dev/null | head -30
 ```
 
 #### NestJS
 ```bash
-# Feature modules
-find src/modules -maxdepth 1 -type d 2>/dev/null
-# Shared / base classes
-find src/shared src/common src/libs/shared -maxdepth 2 -type d 2>/dev/null
-# Entities + DTOs
-find src -name '*.entity.ts' -not -path '*/node_modules/*' 2>/dev/null | head -50
-find src -name '*.dto.ts' -not -path '*/node_modules/*' 2>/dev/null | head -50
-# Decorators / guards
-grep -r --include='*.ts' -l 'HasPermission\|AuthGuard\|@Public' src/ 2>/dev/null | head -20
+# Feature modules — covers src/modules, core-be/modules, apps/*/src, src/<domain>
+find src/modules core-be/modules apps -maxdepth 3 -type d 2>/dev/null | grep -v node_modules
+# Shared / base classes — covers src/{shared,common}, core-be/{base,guards,decorators}, shared/*
+find src/shared src/common src/libs/shared core-be/base core-be/guards core-be/decorators shared \
+  -maxdepth 2 -type d 2>/dev/null | grep -v node_modules
+# Entities + DTOs (whole tree, node_modules excluded)
+find . -name '*.entity.ts' -not -path '*/node_modules/*' 2>/dev/null | head -50
+find . -name '*.dto.ts' -not -path '*/node_modules/*' 2>/dev/null | head -50
+# Decorators / guards / permission setup
+grep -rl --include='*.ts' -E 'HasPermission|AuthGuard|@Public' . 2>/dev/null | grep -v node_modules | head -20
 # Routes / controllers
-grep -r --include='*.ts' -E "@Controller\(['\"]" src/ 2>/dev/null
+grep -r --include='*.ts' -E "@Controller\(" . 2>/dev/null | grep -v node_modules | head -40
 ```
 
 #### NextJS
 ```bash
-# App router structure
-find app -maxdepth 3 -name 'page.tsx' -o -name 'route.ts' 2>/dev/null | head -50
+# App router structure (parenthesize the -o so -maxdepth applies to both, not just the first)
+find app src/app -maxdepth 3 \( -name 'page.tsx' -o -name 'route.ts' \) 2>/dev/null | head -50
 # Shared components
-find components -maxdepth 3 -type d 2>/dev/null
+find components src/components -maxdepth 3 -type d 2>/dev/null
 # Server actions / API
-find app -name 'actions.ts' -o -name 'route.ts' 2>/dev/null | head -20
+find app src/app \( -name 'actions.ts' -o -name 'route.ts' \) 2>/dev/null | head -20
 ```
 
 ### 3. Read just enough to summarize
@@ -158,13 +189,14 @@ If the caller is the user directly asking for the map → just present the repor
 ## Per-stack quirks
 
 ### Angular Portal
-- Some repos put modules under `src/libs/`, others under `projects/<project>/src/libs/` (Nx). Detect from `angular.json` first.
+- Module roots vary: `src/libs/` (portal template), `projects/<project>/src/libs/` (Nx), and `projects/<lib>/{components,forms}/` for **publishable component libraries** where each component is its own entry-point folder (e.g. `@sd-angular/core`). Detect from `angular.json` `projects` first; don't assume `src/libs`.
 - Watch for `@sd-angular/core` imports — the project's UI baseline. Cross-reference `_refs/angular-portal/sd-angular-core-catalog.md` when listing components in use.
 
 ### NestJS
 - This stack typically uses custom validators, NOT `class-validator` — flag if you see both in use (one is dead code)
 - `@HasPermission` decorator alone does nothing without `AuthGuard` registered — verify both are present
 - `BaseRepository` / `BaseEntity` patterns vary across OneMount sub-projects (`be-admin`, `be-masterdata`) — read the actual base class, don't assume
+- Module/base roots vary: `src/modules/` on greenfield apps, but the masterdata baseline puts feature modules under `core-be/modules/`, base classes/guards/decorators under `core-be/{base,guards,decorators}/`, and shared domain models under `shared/<domain>/`. If `src/modules` is empty, look there before reporting "no modules".
 
 ### NextJS
 - App Router (`app/`) vs Pages Router (`pages/`) — never mix recommendations

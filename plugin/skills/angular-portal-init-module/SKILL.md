@@ -161,6 +161,10 @@ Expected agent decision:
   ```
   This is what wires `[MODULE]_CONFIGURATION` + interceptors + upload config into the app's root injector — the routes file knows nothing about providers.
 
+## Post-init — refresh the project summary
+
+After a new module is scaffolded, run `orchestration/auto-summary` so `.sdcorejs/summary.md` reflects the new module (it patches the changed sections — module inventory, routes, conventions — rather than regenerating from scratch). Keeps the canonical brief in sync so later `07-write-code` runs see the module exists.
+
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
 
 **Response style (terse mode active for this skill — reduces token usage):**

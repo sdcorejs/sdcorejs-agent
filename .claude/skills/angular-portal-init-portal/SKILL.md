@@ -328,6 +328,12 @@ After generation:
 
 ---
 
+## Post-init — write the project summary
+
+A freshly scaffolded portal has no `.sdcorejs/summary.md` yet. After the validation checklist passes, run `orchestration/auto-summary` in WRITE mode to create it (domain, stack, the generated module/lib layout, reuse cheatsheet, conventions, current git HEAD). This is what the next session and the `07-write-code` Step 0 pre-flight will read instead of re-scanning blind. Skipping it means the very next code-writing run pays a full re-discovery.
+
+---
+
 ## 5. Example Input
 
 ```text
