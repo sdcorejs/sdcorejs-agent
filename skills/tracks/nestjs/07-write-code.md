@@ -18,6 +18,9 @@ If no approved plan exists, route back to `sdcorejs-plan` / `sdcorejs-review-pla
 
 ## Process
 
+### Step 0 — Pre-flight: ensure project summary
+Before loading the plan, run `orchestration/auto-summary`. If `<target>/.sdcorejs/summary.md` is missing it MUST be generated first (auto-summary delegates the scan to `sdcorejs-code-map` and distills the brief) — this is the gate that keeps generation from inventing module/base-class paths or duplicating shared abstractions. If it exists, auto-summary reads it (refreshing on drift) so the plan walk slots into the real layout. Exception: a brand-new project init has nothing to summarize yet — auto-summary then runs in WRITE mode after the scaffold is created.
+
 ### Step 1 — Load the approved plan
 Read the plan file under `.sdcorejs/plans/nestjs/<timestamp>-<topic>.md` (just snapshotted by `orchestration/auto-plans`).
 
