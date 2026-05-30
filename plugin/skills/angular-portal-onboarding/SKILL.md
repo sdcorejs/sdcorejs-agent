@@ -88,6 +88,7 @@ You don't need to memorize skill names. Just describe what you want — the agen
 | "Viết spec cho module catalog" | `sdcorejs-write-spec` (cross-track) |
 
 ### 4. Mandatory rules (always apply)
+- **Project summary (gate)**: a single canonical `<target-project>/.sdcorejs/summary.md` describes what the project IS (domain, stack, architecture, reuse cheatsheet). It's read at session start; if missing, `sdcorejs-auto-summary` MUST generate it (via `sdcorejs-code-map`) before any code-writing. Distinct from auto-docs — this is the evergreen overview, not per-session deltas.
 - **Auto-docs**: every code-writing task ends with a summary at `<target-project>/.sdcorejs/docs/angular-portal/<YYYY-MM-DD-HH-mm>-<topic>.md`. The agent reads this folder at session start to recall prior work.
 - **Memories**: durable knowledge (corrections, stakeholder constraints, project decisions) lives at `<target-project>/.sdcorejs/memories/angular-portal/`. Agent reads frontmatter at session start; bodies on demand.
 - **Bilingual**: Vietnamese request → Vietnamese output (full diacritics). English request → English output. Permission codes and route paths stay English in both cases.

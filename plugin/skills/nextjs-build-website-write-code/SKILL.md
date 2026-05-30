@@ -18,6 +18,10 @@ Do NOT invoke if:
 - No plan exists or plan is unapproved → go back to `05-plan` / `06-review-plan`
 - Scope changed since plan was approved → re-plan with `05-plan`
 
+## Step 0 — Pre-flight: ensure project summary
+
+Before reading the plan or dispatching, run `orchestration/auto-summary`. For an EXISTING site (taking over / extending), if `<target>/.sdcorejs/summary.md` is missing it MUST be generated first (auto-summary delegates the scan to `sdcorejs-code-map` and distills the brief) so generation slots into the real app-router / component / content structure instead of guessing. For a brand-new site (`10-init-site` in scope), there is nothing to summarize yet — auto-summary runs in WRITE mode AFTER init scaffolds the project.
+
 ## Dispatch table
 
 Read the approved plan. Match the work items to the sub-skill table; dispatch in the order listed below (order matters — theme + i18n + content architecture must exist BEFORE pages are composed).

@@ -94,6 +94,7 @@ A production-quality landing site needs more than a hero section and a contact f
 
 These come from `skills/orchestration/`, `skills/shared/`, `skills/review/`, `skills/testing/` (split by concern) and apply to every track:
 
+- **`sdcorejs-auto-summary`** — canonical `.sdcorejs/summary.md` project brief; generated (via `sdcorejs-code-map`) before code-writing if missing, read at session start
 - **`sdcorejs-auto-docs`** — mandatory session summary
 - **`sdcorejs-auto-task-tracker`** — living TODO per track
 - **`sdcorejs-memories`** — durable knowledge
