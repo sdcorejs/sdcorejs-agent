@@ -6,8 +6,7 @@
 **Class**: `SdQueryBuilder`
 **Standalone**: yes
 **Change detection**: default (no `OnPush`)
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Visual filter / rule builder — lets the user compose nested AND/OR groups of `field operator value` conditions through a tree UI, suitable for advanced search, dynamic queries, or saved-filter editors.

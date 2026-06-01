@@ -2,7 +2,7 @@
 
 - **Type:** `EnvironmentProviders` (`provideSdAuthOm`) **or** `NgModule.forRoot` (`SdAuthOmModule`)
 - **Import path:** `@sd-angular/core/modules/authom`
-- **Library version:** `@sd-angular/core@19.0.0-beta.86`
+- **Library version:** `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 

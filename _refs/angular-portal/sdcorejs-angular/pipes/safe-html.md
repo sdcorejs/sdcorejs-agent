@@ -5,7 +5,7 @@
 **Class**: `SdSafeHtmlPipe` (also `@Injectable({ providedIn: 'root' })`)
 **Standalone**: yes
 **Import path**: `@sd-angular/core/pipes` (or direct: `@sd-angular/core/pipes/safe-html`)
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Bypasses Angular's HTML sanitization via `DomSanitizer.bypassSecurityTrustHtml`, allowing trusted HTML strings to be rendered with `[innerHTML]`.

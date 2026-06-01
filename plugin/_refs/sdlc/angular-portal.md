@@ -106,7 +106,7 @@ For VI portals, all labels use full diacritics.
 ### Architecture section emphasis
 Capture:
 - Standalone-first vs hybrid NgModule mode
-- Which Core UI components are central (sd-table, sd-section, sd-anchor-v2, etc.)
+- Which Core UI components are central (sd-table, sd-section, sd-anchor, etc.)
 - Mock-first vs real-API readiness
 - Permission codes introduced
 - Upload-file configuration if relevant (must be at app root in `main.ts`)

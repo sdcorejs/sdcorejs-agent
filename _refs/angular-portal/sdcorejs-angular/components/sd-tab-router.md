@@ -6,8 +6,7 @@
 **Classes**: `SdTabRouterOutletComponent`, `SdTabRouterNavComponent`, `SdTabRouterItemComponent`
 **Standalone**: yes (all three)
 **Change detection**: `OnPush` for all three
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Browser-style multi-tab router shell — every navigated route becomes a tab; tabs persist their component instances (no reload on switch), can be closed, reordered (drag), and replaced. Drives the "open many records side-by-side" UX seen in admin / CRM apps.

@@ -6,8 +6,8 @@
 **Classes**: `SdBarChartComponent`, `SdLineChartComponent`, `SdPieChartComponent`, `SdDoughnutChartComponent`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
 **Underlying engine**: [Chart.js](https://www.chartjs.org/) (all `registerables` registered)
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Thin signal-based wrappers around Chart.js — render bar / line / pie / doughnut visualizations from declarative `data` / `options` / `plugins` inputs, with auto-update on signal changes.

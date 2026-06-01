@@ -3,8 +3,8 @@
 Use this file as the only place to update the Core UI package name and version for angular-portal skills.
 
 - packageName: `@sd-angular/core`
-- currentVersion: `19.0.0-beta.93`
-- lastUpdated: `2026-05-17`
+- currentVersion: `19.0.0-beta.105`
+- lastUpdated: `2026-06-01`
 - policy: npm registry version only (do not use local tgz `file:sd-angular-core-*.tgz`)
 
 > The package name is tracked here because the org plans to migrate from `@sd-angular/core` to `@sdcorejs/angular`. When the move happens, this is the only file that changes — every skill template references the placeholders `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>`.
@@ -14,7 +14,7 @@ Use this file as the only place to update the Core UI package name and version f
 | Placeholder | Resolves to (current) | Replaces when bumped |
 |---|---|---|
 | `<CORE_UI_PACKAGE_NAME>` | `@sd-angular/core` | `packageName` field above |
-| `<CORE_VERSION>` | `19.0.0-beta.93` | `currentVersion` field above |
+| `<CORE_VERSION>` | `19.0.0-beta.105` | `currentVersion` field above |
 
 ## Where these placeholders are referenced
 
@@ -24,7 +24,7 @@ Single source of truth. Every consumer uses placeholders, substituted at generat
 |---|---|---|
 | `_refs/angular-portal/core-version.md` | THIS file — `packageName` + `currentVersion` fields | ✅ Yes — the single edit |
 | `tracks/angular-portal/10-init-portal.md` | Uses `<CORE_UI_PACKAGE_NAME>` + `<CORE_VERSION>` in `package.json` template, tree diagram, checklist, verification, commit example. Agent reads this file and substitutes at generation time. | ❌ No edit needed — placeholders resolve dynamically |
-| `_refs/angular-portal/sdcorejs-angular/**/*.md` | "Library version" metadata = the version the catalog was GENERATED FROM (snapshot, currently `19.0.0-beta.86`). Separate concern from the pin. | ❌ No, unless catalog is regenerated from a different source version |
+| `_refs/angular-portal/sdcorejs-angular/**/*.md` | "Library version" metadata = the version the catalog was GENERATED FROM (snapshot, currently `19.0.0-beta.105`). Separate concern from the pin. | ❌ No, unless catalog is regenerated from a different source version |
 
 `shared/conventions/dep-update.md`, `shared/workflow/env-setup.md`, `tracks/angular-portal/00-onboarding.md` reference this file by PATH only — no literal version/name, no update.
 

@@ -1,12 +1,10 @@
 # SdNotifyService
 
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
-
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdNotifyService`
 **Provided in**: `'root'`
 **Import path**: `@sd-angular/core/services/notify`
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Toast notification service that auto-mounts a `SdToastContainerComponent` on `body` and exposes immediate (`success`, `info`) and debounced/buffered (`warning`, `error`) APIs backed by an Angular `signal<ToastData[]>`.

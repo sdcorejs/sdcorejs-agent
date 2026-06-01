@@ -1,12 +1,12 @@
-# `<sd-form-builder>` and `<sd-form-render>` (workflow module)
+# `<sd-form-builder>` and `<sd-form-render>` (form-generic module)
 
 **Type**: Components (two complementary)
 **Selectors**: `sd-form-builder`, `sd-form-render`, `sd-feel-expression`
-**Import path**: `@sd-angular/core/components/workflow` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sd-angular/core/components/form-generic` (own entry point — currently commented out of the `components` barrel, so import from the full path)
 **Classes**: `SdFormBuilder`, `SdFormRender`, `SdFeelExpression` (all `extends SdBaseSecureComponent`)
 **Standalone**: yes
 **Change detection**: `OnPush` (form-render); default (form-builder)
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 > **NOTE**: Despite the folder name `workflow`, this module does NOT render workflow-status timelines or transition badges. It is a **dynamic form schema system** — a designer (`<sd-form-builder>`) that produces an `SdFormGeneric` JSON, and a runtime renderer (`<sd-form-render>`) that materializes that JSON into a working Angular reactive form. For workflow status / actions UI, look elsewhere (skill `31-actions.md`) — that flow is implemented at the page level, not via this component.
 
@@ -126,10 +126,10 @@ interface SdFormGenericComponent {
 
 ## Configuration provider
 ```ts
-provide: SD_WORKFLOW_CONFIGURATION,
-useValue: { /* ISdWorkflowConfiguration — see workflow.configuration.ts */ }
+provide: SD_FORM_GENERIC_CONFIGURATION,
+useValue: { /* ISdFormGenericConfiguration — see form-generic.configuration.ts */ }
 ```
-Required for `<sd-form-render>` (injected via `@Inject(SD_WORKFLOW_CONFIGURATION)`).
+Required for `<sd-form-render>` (injected via `@Inject(SD_FORM_GENERIC_CONFIGURATION)`).
 
 ## Permission gating
 All three classes extend `SdBaseSecureComponent`. Inherits its permission scaffolding but no per-component permission inputs. Wrap with `*sdPermission` at the host if needed.
@@ -194,14 +194,14 @@ The builder already includes a live `<sd-form-render>` toggle (`isPreview`). Use
 - ❌ Treating this as a "workflow timeline" component — it is a form schema system. Workflow status/actions belong to a different page-level pattern.
 - ❌ Mutating `[formGeneric]` directly after passing it in — the builder deep-clones on assignment, so changes to your reference will NOT reflect.
 - ❌ Reusing the same `[form]` instance across two `<sd-form-render>` mounted simultaneously — the second will register controls on top of the first.
-- ❌ Forgetting to provide `SD_WORKFLOW_CONFIGURATION` — `<sd-form-render>` constructor will throw at runtime.
+- ❌ Forgetting to provide `SD_FORM_GENERIC_CONFIGURATION` — `<sd-form-render>` constructor will throw at runtime.
 - ❌ Hand-editing component `id`/`key` after first render — they are auto-generated random ids; changing them mid-life detaches the FormControl.
 - ❌ Storing the schema as a class property AND passing the same reference back to the builder after each save — you lose the deep-clone safety net. Persist a copy to the server.
 
 ## Related
 - `SdFormGeneric`, `SdFormGenericComponent`, `SdFormGenericGroup`, `SdFormGenericVariable`, `SdFormGenericValidation`, `SdFormGenericExpression` — schema models
 - `SdFormRenderConfiguration` — runtime renderer input shape
-- `SD_WORKFLOW_CONFIGURATION` — required injection token for the renderer
+- `SD_FORM_GENERIC_CONFIGURATION` — required injection token for the renderer
 - `<sd-modal>` — used by the builder popups (view JSON, configure variables) and by `<sd-feel-expression>`
 - `<sd-table>`, `<sd-upload-file>`, `<sd-input>`, `<sd-select>`, `<sd-textarea>`, etc. — primitive controls that the runtime renderer composes
 - Skill ref `31-actions.md` — for the orthogonal "workflow actions / status" UX pattern at the page level

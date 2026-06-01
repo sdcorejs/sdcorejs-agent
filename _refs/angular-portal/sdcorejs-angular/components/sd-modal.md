@@ -6,8 +6,7 @@
 **Class**: `SdModal`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Centered dialog (or mobile bottom-sheet) with optional title/header/footer slots, opened imperatively via a template reference and `open()` / `close()` methods.
@@ -132,3 +131,18 @@ These are typically called via a `#modal` template reference: `<sd-modal #modal>
 - `<sd-button>` — typical content of the footer slots
 - `<sd-history>` — common modal body for audit logs
 - `SdNotifyService` — non-blocking toast/snackbar alternative
+
+## E2E test attributes
+
+Because `sd-modal` renders into a MatDialog overlay (mounted at `document.body`), the QA anchor lives on a `<div class="sd-modal-root">` wrapper added inside the template:
+
+| Attribute | Value | Source |
+|---|---|---|
+| `data-autoid` | `components-modal-<autoId>` | input `autoId` |
+| `data-opened` | `"true"` while open; `"false"` while closed | `isOpened` signal |
+
+Selector example:
+
+```ts
+await page.locator('.sd-modal-root[data-autoid="components-modal-confirm"][data-opened="true"]').waitFor();
+```

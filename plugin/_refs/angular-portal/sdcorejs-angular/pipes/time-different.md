@@ -5,7 +5,7 @@
 **Class**: `SdTimeDifferentPipe`
 **Standalone**: yes
 **Import path**: `@sd-angular/core/pipes` (or direct: `@sd-angular/core/pipes/time-different`)
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Streams a relative time string ("2 phút trước") that updates every second while within the chosen threshold; falls back to absolute formatted date once the threshold is exceeded or the input is in the future.

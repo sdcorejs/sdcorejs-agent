@@ -6,8 +6,7 @@
 **Class**: `SdSelect<T>`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Dropdown picker — single OR multi-select from a static array OR an async API. Built-in search/filter (auto-enabled when items > 10 or when `items` is a search function), `[multiple]` mode with checkboxes, paging via `[limit]`, label/value field accessors with nested-key support, and DETAIL `[viewed]` read-only mode. After `<sd-input>` this is the most-used form control.
@@ -61,6 +60,15 @@ Dropdown picker — single OR multi-select from a static array OR an async API. 
 | --- | --- | --- |
 | `sdChange` | `any` | Emitted **only when the panel closes** AND the value changed since opening (intentional — avoids spamming on each click in `[multiple]` mode). |
 | `sdSelection` | `SdSelectionData` | Emitted alongside `sdChange`. Shape varies by `[multiple]`: single → `{ multiple: false, value, selectedItem, values, selectedItems }`; multi → `{ multiple: true, values, selectedItems }`. |
+
+## Host classes
+Applied automatically on `<sd-select>` for styling hooks:
+
+| Class | Condition | Effect |
+| --- | --- | --- |
+| `sd-has-label` | `[label]` is truthy | Adds `padding-top: 4px` so the floating label has room and is not clipped. Absent → no top padding. |
+| `sd-viewed` | `[viewed]="true"` | Removes top padding (read-only text only). Overrides `sd-has-label` when both are set (source order). |
+| `sd-bare` | `[bare]="true"` | Strips the mat-form-field shell for inline contexts (chip, token). |
 
 ## Content projection (slots)
 - `<ng-template #sdLabel>` — custom label template (used by `<sd-view>` in DETAIL mode)
@@ -116,7 +124,7 @@ Dropdown picker — single OR multi-select from a static array OR an async API. 
 - Click opens a dropdown panel below; if `items.length > 10` (or `items` is a function) a search input appears at the top of the panel
 - In `[multiple]="true"` mode: each row in the panel has a checkbox; the field shows a comma-joined list of display values, with a hover tooltip listing each as `• <value> - <display>`
 - Loading spinner appears in the panel while an async `SdSearch` is in flight
-- A small clear-button (× icon) appears as a suffix when a value is set (clears via `clear()`)
+- A slim clear-button (`.sd-clear-btn` — round transparent button with a thin `close` icon, grey → red on hover) appears as a suffix when a value is set and the field is not `required`/`disabled`; it **replaces the chevron** and clears via `clear()`. Because it replaces the dropdown icon, it is **always shown** when there's a value — NOT hover-gated (unlike `sd-input`/`sd-date`/`sd-datetime`). Styled identically via the shared class in `assets/scss/core/form.scss`.
 - Required marker shows as a red `*` next to the label
 - When `[hideInlineError]="true"`: red error-icon suffix with tooltip; otherwise inline `<mat-error>` below the field
 - In `[viewed]="true"` mode: rendered by `<sd-view>` — plain text (or hyperlink) of the selected display value(s)
@@ -181,6 +189,30 @@ Dropdown picker — single OR multi-select from a static array OR an async API. 
   [viewed]="true"
   hyperlink="/org-unit/{{ model.orgUnitCode }}">
 </sd-select>
+```
+
+## E2E test attributes
+
+Rendered on the `<mat-select>` element (same anchor as `data-autoid`):
+
+| Attribute | Value | Source |
+|---|---|---|
+| `data-autoid` | `forms-select-<autoId>` | input `autoId` |
+| `data-disabled` | `"true"` / `"false"` | `formControl.disabled` |
+| `data-loading` | `"true"` / `"false"` | async fetch in progress |
+| `data-empty` | `"true"` / `"false"` | `sdIsEmpty(formControl.value)` |
+| `data-value` | string | `sdSerializeDataValue(formControl.value)` |
+| `data-required` | `"true"` / `"false"` | `required` input; always present |
+| `data-error-message` | string | present only when the component is currently showing an error tooltip message |
+
+> **Note**: `sd-select` does not support maxlength / minlength / pattern. No `data-maxlength`, `data-minlength`, or `data-pattern` attributes are emitted.
+
+Selector example:
+
+```ts
+const el = page.locator('[data-autoid="forms-select-status"]');
+await expect(el).toHaveAttribute('data-empty', 'false');
+await expect(el).toHaveAttribute('data-required', 'true');
 ```
 
 ## Anti-patterns

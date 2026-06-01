@@ -6,9 +6,8 @@
 **Class**: `SdCodeEditor`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
 **View encapsulation**: `None` (so PrismJS color tokens reach the DOM)
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Lightweight code viewer/editor with PrismJS syntax highlighting, copy-to-clipboard, and a friendly "macOS dots" header — supports `html`, `typescript`, `json`, `css`, `scss`. Two-way bindable via the `model` alias.

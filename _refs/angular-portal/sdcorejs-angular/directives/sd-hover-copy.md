@@ -4,9 +4,8 @@
 **Selector**: `[sdHoverCopy]`
 **Class**: `SdHoverCopyDirective`
 **Standalone**: no (declared module-style — no `standalone: true` flag)
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
 **Import path**: `@sd-angular/core/directives` (or direct: `@sd-angular/core/directives/sd-hover-copy`)
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 On hover, overlays a small copy-to-clipboard button on the host element; clicking copies the supplied text and shows a "Copied" tooltip.

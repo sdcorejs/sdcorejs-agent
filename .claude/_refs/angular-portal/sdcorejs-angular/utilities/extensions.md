@@ -1,11 +1,12 @@
 # Utilities — Extensions
 
 **Import path**: `@sd-angular/core/utilities/extensions`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
+**Canonical source**: every namespace below is re-exported from `@sdcorejs/utils/fns`. Prefer importing from `@sdcorejs/utils/fns` directly when there is no Angular dependency.
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
-Pure-function utility namespaces. None of them mutate global prototypes (the `declare global { Array.prototype.* }` blocks in source are commented out — earlier monkey-patching has been deprecated in favour of explicit namespaced calls). Import the named export and call its members.
+Pure-function utility namespaces. None of them mutate global prototypes — earlier monkey-patching has been deprecated in favour of explicit namespaced calls. Import the named export and call its members.
 
-Each file exports a single object (e.g. `ArrayUtilities`, `StringUtilities`, ...) whose members are the functions documented below — except `color.extension.ts` (named `function` exports) and `detect-incognito.ts` (single `detectIncognito` export).
+Each file re-exports a single object (`ArrayUtilities`, `StringUtilities`, `NumberUtilities`, `DateUtilities`, `ColorUtilities`, `ValidationUtilities`, `Utilities`, `BrowserUtilities`) whose members are the functions documented below.
 
 ---
 
@@ -27,14 +28,16 @@ ArrayUtilities.search(users, 'Đỗ', ['fullName', 'email']); // matches "Do" to
 
 ---
 
-## `color.extension.ts` — named function exports
+## `color.extension.ts` — `ColorUtilities`
 
-Color conversion helpers (no namespace object).
+Color conversion helpers.
 
 | Name | Signature | Purpose |
 | --- | --- | --- |
 | `hslToHex` | `(h: number, s: number, l: number) => string` | Convert HSL (`0–360, 0–100, 0–100`) to `#rrggbb` hex. |
 | `rgbToHex` | `(r: number, g: number, b: number) => string` | Convert RGB (`0–255` each, clamped) to `#rrggbb` hex. |
+
+> Standalone exports `hslToHex` / `rgbToHex` are kept as deprecated aliases pointing to `ColorUtilities`. Migrate to `ColorUtilities.hslToHex` / `ColorUtilities.rgbToHex`.
 
 ---
 
@@ -57,18 +60,6 @@ Date arithmetic and formatting; tolerant of `string | Date | any`. All functions
 
 ---
 
-## `detect-incognito.ts` — `detectIncognito`
-
-Single-export browser private-mode detector adapted from `detectIncognito v1.3.0` (Joe Rutkowski).
-
-| Name | Signature | Purpose |
-| --- | --- | --- |
-| `detectIncognito` | `() => Promise<{ isPrivate: boolean; browserName: string }>` | Run browser-specific probes (Safari indexedDB blob, Chrome storage quota, Firefox `serviceWorker`, IE `indexedDB`) and resolve with detected browser name + private-mode flag. Rejects if the browser cannot be classified. |
-
-`browserName` ∈ `{ 'Safari', 'Chrome', 'Brave', 'Edge', 'Opera', 'Chromium', 'Firefox', 'Internet Explorer', 'Unknown' }`.
-
----
-
 ## `number.extension.ts` — `NumberUtilities`
 
 Number formatting and validation. Inputs are tolerant (`any`); strip commas before parsing.
@@ -87,13 +78,12 @@ Number formatting and validation. Inputs are tolerant (`any`); strip commas befo
 
 ## `string.extension.ts` — `StringUtilities`
 
-Vietnamese-aware string helpers, validation regexes, and lightweight templating.
+Vietnamese-aware string helpers, regex constants, and lightweight templating.
 
-Exposed regex constants: `REGEX_EMAIL`, `REGEX_PHONE`, `REGEX_PHONE_VN`, `REGEX_IDVN_OR_PASSPORT`, `REGEX_TIME` (also surfaced via `SdPatternCommons`).
+Exposed regex constants: `REGEX_EMAIL`, `REGEX_PHONE`, `REGEX_VN_PHONE`, `REGEX_VN_ID`, `REGEX_PASSPORT`, `REGEX_VN_ID_OR_PASSPORT`, `REGEX_TIME` (also surfaced via `VALIDATION_PATTERNS`).
 
 | Name | Signature | Purpose |
 | --- | --- | --- |
-| `isValidEmail` / `isValidPhone` / `isValidCode` | `(value: any) => boolean` | Regex validators. `isValidCode` enforces 2–20 alphanumeric / `@_-`. |
 | `isNullOrEmpty` | `(value: any) => boolean` | `undefined`, `null`, or `''`. |
 | `isNullOrWhiteSpace` | `(value: any) => boolean` | Above OR string of only spaces. |
 | `changeAliasLowerCase` | `(alias: any) => string` | Strip Vietnamese diacritics and special chars; lowercase, trim. |
@@ -106,25 +96,46 @@ Exposed regex constants: `REGEX_EMAIL`, `REGEX_PHONE`, `REGEX_PHONE_VN`, `REGEX_
 | `generateUniqueCode` | `(name: string, existingCodes: string[]) => string` | `convertToSnakeCaseCode` + suffix `_1`, `_2`, ... until unique. |
 | `sha256` | `(input: string) => Promise<string>` | URL-safe base64 SHA-256 via `crypto.subtle`. |
 
+> Deprecated: `isValidEmail` / `isValidPhone` / `isValidCode` (moved to `ValidationUtilities.isEmail` / `isPhone` / `isCode`). Kept as deprecated wrappers on `StringUtilities`.
+> Deprecated regex aliases: `REGEX_PHONE_VN` → `REGEX_VN_PHONE`, `REGEX_IDVN` → `REGEX_VN_ID`, `REGEX_IDVN_OR_PASSPORT` → `REGEX_VN_ID_OR_PASSPORT`.
+
 ---
 
-## `utility.extension.ts` — `SdUtilities`
+## `string.extension.ts` — `ValidationUtilities`
 
-Browser/file/object odds-and-ends.
+Higher-level value validators built on `StringUtilities.REGEX_*`. New canonical home for the `isValid*` helpers that used to live on `StringUtilities`.
+
+| Name | Signature | Purpose |
+| --- | --- | --- |
+| `isEmail` / `isPhone` / `isVnPhone` / `isVnId` / `isPassport` / `isVnIdOrPassport` / `isTime` / `isUrl` | `(value: any) => boolean` | Regex validators against the matching `REGEX_*` constant. |
+| `isCode` | `(value: any) => boolean` | 2–20 chars, alphanumeric + `@_-`. |
+
+---
+
+## `utility.extension.ts` — `Utilities` + `BrowserUtilities`
+
+`SdUtilities` from older releases has been split into two namespaces:
+
+### `Utilities` — generic helpers
+
+| Name | Signature | Purpose |
+| --- | --- | --- |
+| `fetchAllByPaging` | `<T>(func: (pageSize, pageNumber) => Promise<{items, total}>, defaultPageSize?) => Promise<T[]>` | Drain a paginated API into a single array (default page size `1000`). Renamed from `allWithPaging`. |
+| `randomId` | `(prefix?: string) => string` | Base-36 timestamp ID, optionally prefixed. |
+| `hash` | `(obj: any) => string` | Stable 32-bit non-crypto hash of any object — `h` + abs(int). Uses `stableStringify` (sorted keys, special-cases `File`). |
+| `parseQueryParams` | `(queryString?: string) => Record<string, string>` | Wrap `URLSearchParams` into a plain object. |
+| `generateUuid` | `() => string` | `crypto.randomUUID()` with timestamp+random fallback for legacy browsers. |
+| `getNestedValue` | `(obj: any, path: string) => any` | Read nested value by dotted path; safe against `undefined` segments. |
+
+### `BrowserUtilities` — browser/DOM helpers
 
 | Name | Signature | Purpose |
 | --- | --- | --- |
 | `upload` | `(option?: { extensions?, maxSizeInMb?, validator?, multiple? }) => Promise<File \| File[] \| null>` | Programmatic file picker — injects a hidden `<input type=file>`, validates extension/size/custom rule, resolves with selected file(s). |
 | `download` | `(fileOrPath: File \| string, fileName?) => void` | Trigger browser download of a `File` (via blob URL) or a string path/URL. External `http*` URLs open in new tab instead. |
 | `downloadBlob` | `(blob: Blob, fileName?) => void` | Trigger download of an arbitrary `Blob`. |
-| `changeAliasLowerCase` | `(alias: string) => string` | Same algo as `StringUtilities.changeAliasLowerCase` (duplicated here for utility callers). |
 | `copyToClipboard` | `(text: string) => void` | `navigator.clipboard.writeText`. |
-| `allWithPaging` | `<T>(func: (pageSize, pageNumber) => Promise<{items, total}>, defaultPageSize?) => Promise<T[]>` | Drain a paginated API into a single array (default page size `1000`). |
-| `isIncognito` | `() => Promise<boolean>` | Lightweight private-mode detection (storage quota + localStorage probe) — simpler/less reliable than `detectIncognito`. |
 | `isMobile` | `() => boolean` | UA sniff for `Mobi` or `Android`. |
-| `randomId` | `(prefix?: string) => string` | Base-36 timestamp ID, optionally prefixed. |
-| `hash` | `(obj: any) => string` | Stable 32-bit non-crypto hash of any object — `h` + abs(int). Uses `stableStringify` (sorted keys, special-cases `File`). |
-| `parseQueryParams` | `(queryString?: string) => Record<string, string>` | Wrap `URLSearchParams` into a plain object. |
-| `getClientPublicIp` | `() => Promise<string \| null>` | Calls `https://api.ipify.org?format=json`. Returns `null` on failure. |
-| `generateUuid` | `() => string` | `crypto.randomUUID()` with timestamp+random fallback for legacy browsers. |
-| `getNestedValue` | `(obj: any, path: string) => any` | Read nested value by dotted path; safe against `undefined` segments. |
+| `detectIncognito` | `() => Promise<{ isPrivate: boolean; browserName: string }>` | Run browser-specific probes (Safari indexedDB blob, Chrome storage quota, Firefox `serviceWorker`, IE `indexedDB`) and resolve with detected browser name + private-mode flag. `browserName` ∈ `{ 'Safari', 'Chrome', 'Brave', 'Edge', 'Opera', 'Chromium', 'Firefox', 'Internet Explorer', 'Unknown' }`. |
+
+> The legacy `SdUtilities` object is kept as a deprecated aggregate that proxies the union of `Utilities` + `BrowserUtilities` members (plus old `allWithPaging` / `isIncognito` names). Migrate to the split namespaces.

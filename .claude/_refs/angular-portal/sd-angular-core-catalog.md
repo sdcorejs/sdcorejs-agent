@@ -13,27 +13,35 @@ Version baseline:
 
 Snapshot categories:
 - anchor
-- anchor-v2
+- autoid-inspector
 - avatar
 - badge
 - base
 - button
+- chart
 - code-editor
 - document-builder
+- editor
+- form-generic
 - history
 - import-excel
+- inform
 - mini-editor
 - modal
+- operator
 - preview
+- query-bar
 - query-builder
 - quick-action
 - section
 - side-drawer
+- splitter
+- stepper
+- tab
 - tab-router
 - table
 - upload-file
 - view
-- workflow
 
 ## Forms
 
@@ -46,6 +54,7 @@ Snapshot categories:
 - date-range
 - datetime
 - input
+- input-color
 - input-number
 - label
 - radio
@@ -57,6 +66,7 @@ Snapshot categories:
 
 Snapshot categories:
 - auth
+- authom
 - generic
 - keycloak
 - layout

@@ -1,12 +1,10 @@
 # SdApiService
 
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
-
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdApiService`
 **Provided in**: `'root'`
 **Import path**: `@sd-angular/core/services/api`
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 HTTP client wrapper around Angular `HttpClient` adding per-host handlers, configurable timeout, in-flight request deduplication, and an optional persistent cache layer via `SdCacheService`.

@@ -2,7 +2,7 @@
 
 - **Type:** `EnvironmentProviders` (`provideSdKeycloak`) **or** `NgModule.forRoot` (`SdKeycloakModule`)
 - **Import path:** `@sd-angular/core/modules/keycloak`
-- **Library version:** `@sd-angular/core@19.0.0-beta.86`
+- **Library version:** `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 

@@ -2,7 +2,7 @@
 
 - **Type:** Tree-shakable services + guards (no `@NgModule`, providers via `providedIn: 'root'`)
 - **Import path:** `@sd-angular/core/modules/auth`
-- **Library version:** `@sd-angular/core@19.0.0-beta.86`
+- **Library version:** `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 

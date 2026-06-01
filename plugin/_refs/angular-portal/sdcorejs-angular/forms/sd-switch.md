@@ -6,8 +6,7 @@
 **Class**: `SdSwitch`
 **Standalone**: yes (declared via `imports`)
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 iOS-style toggle switch — boolean ON/OFF in a single tap. Use for feature flags, settings, "active/inactive" rows where the change applies immediately or as part of a form submission.
@@ -124,6 +123,28 @@ None — label comes from the `[label]` input.
 - ❌ Setting `[required]="true"` on a switch you actually want to allow `false` for — `Validators.required` rejects `false`. Drop `required` if `false` is a valid submission.
 - ❌ Building DETAIL view by setting `[disabled]="true"` — the toggle still renders. Render text ("Có" / "Không") yourself in the parent view.
 - ❌ Stacking many switches in a tight row without labels or grouping — confusing; use a `<sd-fieldset>` / `<sd-list>` layout.
+
+## E2E test attributes
+
+| Attribute | Value | Source |
+|---|---|---|
+| `data-autoid` | `forms-switch-<autoId>` | input `autoId` |
+| `data-disabled` | `"true"` / `"false"` | `formControl.disabled` |
+| `data-empty` | `"true"` / `"false"` | `sdIsEmpty(formControl.value)` — true when null |
+| `data-value` | `"true"` / `"false"` | `sdSerializeDataValue(formControl.value)` |
+| `data-required` | `"true"` / `"false"` | `required` input; always present |
+
+> **Note**: `sd-switch` emits only `data-required` from the new validation-meta set. It has no maxlength / minlength / pattern / errorMessage support.
+
+### Playwright selector example
+```typescript
+// Select by autoid
+const toggle = page.locator('[data-autoid="forms-switch-notify"]');
+expect(toggle).toHaveAttribute('data-value', 'true');
+
+// Select by state
+const disabledToggles = page.locator('sd-switch [data-disabled="true"]');
+```
 
 ## Related
 - `<sd-checkbox>` — boolean with checkbox metaphor (consent / list-row select)

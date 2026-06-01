@@ -1,12 +1,10 @@
 # SdStorageService
 
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
-
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdStorageService`
 **Provided in**: `'root'`
 **Import path**: `@sd-angular/core/services/storage`
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Reactive `localStorage` / `sessionStorage` wrapper that gives you a typed `SdStorage<T>` handle with `get / set / has / remove` plus a `BehaviorSubject` and `Observable` mirror, layered with an in-memory cache and pluggable key namespacing.

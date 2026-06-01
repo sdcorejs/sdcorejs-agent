@@ -6,8 +6,7 @@
 **Class**: `SdDocumentBuilder`
 **Standalone**: yes
 **Change detection**: default
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Full-featured WYSIWYG document composer (CKEditor 5 ClassicEditor) for authoring printable templates with headings, tables, images, page orientation, draggable variable placeholders, and inline comments — plus DOCX export.

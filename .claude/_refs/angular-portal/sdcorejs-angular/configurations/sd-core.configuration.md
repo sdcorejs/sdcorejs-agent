@@ -1,13 +1,11 @@
 # `SD_CORE_CONFIGURATION`
 
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
-
 **Type**: DI Token (`InjectionToken<ISdCoreConfiguration>`) + interface (`ISdCoreConfiguration`)
 **Symbol**: `'sd-core.configuration'`
 **Class / Token**: `SD_CORE_CONFIGURATION`
 **Import path**: `@sd-angular/core/configurations`
 **Provided in**: NOT provided by default — consumer app must register it in `app.config.ts`
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Root-level configuration token for `@sd-angular/core` — carries the per-domain license key(s) that unlock licensed features and global formatting preferences (e.g. number locale).

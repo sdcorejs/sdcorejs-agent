@@ -6,8 +6,7 @@
 **Class**: `SdCheckbox`
 **Standalone**: yes
 **Change detection**: default (no `OnPush` set)
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Boolean toggle — a single labeled checkbox bound to a form/model. Wraps Angular Material `mat-checkbox` with SDCoreJS form-group registration and `inlineError` support.
@@ -76,7 +75,7 @@ None — text comes from the `label` input.
 
 ### `inlineError` flow
 
-Setting `[inlineError]="'Some message'"` triggers an internal `#updateValidator()` call that attaches a custom `ValidatorFn` (`customInlineErrorValidator`) returning `{ inlineError: true }`. The template then shows `<mat-error>{{ inlineError }}</mat-error>` when `formControl.errors?.['inlineError'] && formControl.touched`. Clearing `[inlineError]` to an empty string removes the validator and calls `updateValueAndValidity()`.
+Setting `[inlineError]="'Some message'"` triggers an internal `#updateValidator()` call that attaches the shared `SdInlineErrorValidator` (from `@sd-angular/core/forms/models`) returning `{ inlineError: true }`. The template then shows `<mat-error>{{ inlineError }}</mat-error>` when `formControl.errors?.['inlineError'] && formControl.touched`. Clearing `[inlineError]` to an empty string removes the validator and calls `updateValueAndValidity()`.
 
 ## Visual cues (helps agent map screenshots → component)
 - A square box on the left + label text on the right
@@ -118,6 +117,17 @@ Setting `[inlineError]="'Some message'"` triggers an internal `#updateValidator(
 - ❌ Using a checkbox for a single ON/OFF setting in a settings page — prefer `<sd-switch>` for that visual idiom.
 - ❌ Stacking many checkboxes for mutually exclusive options — use `<sd-radio>`.
 - ❌ Forgetting `[form]` and trying to validate via the parent FormGroup — control won't be registered.
+
+## E2E test attributes
+
+Anchor: `<mat-checkbox>`, Prefix: `forms-checkbox-`
+
+| Attribute | Values | Notes |
+| --- | --- | --- |
+| `data-autoid` | string | Set from `autoId` input; e.g. `forms-checkbox-agree`. |
+| `data-disabled` | `'true'` \| `'false'` | Reflects FormControl disabled state. |
+| `data-empty` | `'true'` \| `'false'` | `'true'` when value is null/undefined; `'false'` for any boolean. |
+| `data-value` | `'true'` \| `'false'` | Serialized boolean (string form). |
 
 ## Related
 - `<sd-switch>` — toggle-style boolean

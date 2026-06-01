@@ -6,8 +6,7 @@
 **Class**: `SdSideDrawer extends SdBaseSecureComponent`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Right-edge slide-in panel rendered into `document.body` via CDK Portal — used for "create / edit / detail" forms that don't deserve a full route, but need more room than a modal: filters, side-by-side review, multi-step forms.
@@ -34,6 +33,7 @@ Right-edge slide-in panel rendered into `document.body` via CDK Portal — used 
 | `hideClose` | `boolean` | `false` | Bare attribute = true. Hides the built-in `×` close button in the header. |
 | `disableBackdropClose` | `boolean` | `false` | Bare attribute = true. Clicking the backdrop will NOT close the drawer (force the user to click an explicit action button). |
 | `drawerClass` | `any` (string \| string[] \| object) | `''` | Custom CSS classes for the root `.sd-side-drawer` container — bound via `[ngClass]`. |
+| `autoId` | `string \| undefined \| null` | `undefined` | Stable E2E identifier. When set, renders `data-autoid="components-side-drawer-<autoId>"` on the root element. |
 
 > **Coerce note**: `hideClose`, `disableBackdropClose` use `booleanAttribute`.
 
@@ -55,8 +55,8 @@ Right-edge slide-in panel rendered into `document.body` via CDK Portal — used 
 ### Readable properties
 | Property | Type | Notes |
 | --- | --- | --- |
-| `isOpened` | `boolean` | `true` while the drawer is visible. Read-only in practice — drive via `open()` / `close()`. |
-| `isLoading` | `boolean` | `true` while `startLoading()` is active and `stopLoading()` / `close()` has not been called. |
+| `isOpened` | `Signal<boolean>` | `true` while the drawer is visible. Read with `drawer.isOpened()`. Drive via `open()` / `close()`. |
+| `isLoading` | `Signal<boolean>` | `true` while `startLoading()` is active and `stopLoading()` / `close()` has not been called. Read with `drawer.isLoading()`. |
 | `isHovered$` | `Observable<boolean>` | Emits `true` on `mouseenter` and `false` on `mouseleave` of the drawer container. Set up lazily after the first render (`afterNextRender`) — do NOT subscribe before `open()` is called at least once. Useful if outer logic needs to detect "is the user still hovering over the drawer". |
 | `id` | `string` | Unique `I<uuid>` identifier of the drawer DOM element. Passed to `SdLoadingService` so multiple simultaneous drawers do not clash. |
 
@@ -152,6 +152,18 @@ async onSave(drawer: SdSideDrawer) {
 - Backdrop has `aria-hidden="true"` (decorative)
 - Background body scroll is locked while open (good — prevents scroll-leak)
 - No focus-trap is implemented — for forms with required focus management, manage focus manually after `open()`
+
+## E2E test attributes
+
+Rendered on the `.sd-side-drawer` root element (which lives at `document.body` via CdkPortal):
+
+| Attribute | Value | Source |
+|---|---|---|
+| `data-autoid` | `components-side-drawer-<autoId>` | NEW input `autoId` |
+| `data-opened` | `"true"` / `"false"` | `isOpened` signal |
+| `data-loading` | `"true"` / `"false"` | `isLoading` signal |
+
+> **BREAKING:** `isOpened` and `isLoading` are now `Signal<boolean>` (read with `drawer.isOpened()` / `drawer.isLoading()`) instead of plain booleans. Update any external consumer that reads them as properties.
 
 ## Related
 - `<sd-modal>` — full-center overlay; use for short forms / confirmations

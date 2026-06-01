@@ -6,8 +6,7 @@
 **Class**: `SdButton extends SdBaseSecureComponent`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Standard action button — used everywhere a user triggers an action (save, cancel, approve, navigate, ...). Wraps Angular Material with SDCoreJS variants, sizing, and built-in icon/loading/permission support.
@@ -119,6 +118,23 @@ The button itself does NOT enforce permission — wrap with the `*sdPermission` 
   [loading]="submitting()"
   (click)="onSubmitForApproval()">
 </sd-button>
+```
+
+## E2E test attributes
+
+Rendered on the inner `<button mat-*-button class="c-button">` element (same anchor as `data-autoid`, one per the 4 button-type branches):
+
+| Attribute | Value | Source |
+|---|---|---|
+| `data-autoid` | `components-button-<autoId>` | input `autoId` |
+| `data-disabled` | `"true"` / `"false"` | input `disabled` |
+| `data-loading` | `"true"` / `"false"` | input `loading` |
+
+Selector example:
+
+```ts
+const btn = page.locator('[data-autoid="components-button-save"]');
+await expect(btn).toHaveAttribute('data-loading', 'false');
 ```
 
 ## Anti-patterns

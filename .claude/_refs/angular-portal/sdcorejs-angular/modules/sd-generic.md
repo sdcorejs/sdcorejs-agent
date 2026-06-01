@@ -2,7 +2,7 @@
 
 - **Type:** Tree-shakable services + standalone components (no `@NgModule`, no `forRoot` — provide the config token via `multi: true`)
 - **Import path:** `@sd-angular/core/modules/generic`
-- **Library version:** `@sd-angular/core@19.0.0-beta.86`
+- **Library version:** `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 

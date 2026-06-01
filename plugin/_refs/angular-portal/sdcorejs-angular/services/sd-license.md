@@ -1,12 +1,10 @@
 # SdLicenseService
 
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
-
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdLicenseService`
 **Provided in**: `'root'`
 **Import path**: `@sd-angular/core/services/license`
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Domain-binding license check that hashes `window.location.hostname` (with a built-in salt) and compares against `licenseKey` values from `SD_CORE_CONFIGURATION`; throws on unauthorized domains and bypasses verification on localhost.

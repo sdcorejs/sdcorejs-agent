@@ -2,7 +2,7 @@
 
 - **Type:** `@NgModule` (`SdLayoutModule`) + standalone components / pipes / services
 - **Import path:** `@sd-angular/core/modules/layout`
-- **Library version:** `@sd-angular/core@19.0.0-beta.86`
+- **Library version:** `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 

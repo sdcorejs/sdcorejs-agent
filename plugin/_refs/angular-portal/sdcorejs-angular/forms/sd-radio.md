@@ -6,8 +6,7 @@
 **Class**: `SdRadio`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Radio-button group — user picks exactly ONE option from a small, fixed list. Items can be laid out inline (`row`) or stacked (`column`). Use when the full set of choices should be visible at once (≤ ~6 options); for longer lists, use `<sd-select>` instead.
@@ -285,6 +284,32 @@ items = [
 ];
 ```
 Lookup dùng `item[valueField]`; primitive trong array sẽ trả về `undefined`.
+
+## E2E test attributes
+
+The `<mat-radio-group>` element carries the following data attributes for E2E selector consistency:
+
+| Attribute | Values | Anchor | Prefix | Notes |
+| --- | --- | --- | --- | --- |
+| `data-autoid` | `forms-radio-<autoId>` | `mat-radio-group` | `forms-radio-` | Set when `[autoId]` input is provided. |
+| `data-disabled` | `'true' \| 'false'` | `mat-radio-group` | — | Reflects current FormControl disabled state. |
+| `data-empty` | `'true' \| 'false'` | `mat-radio-group` | — | `'true'` when value is null/undefined; `'false'` when a selection is active. |
+| `data-value` | `<selected-key>` | `mat-radio-group` | — | Serialized selected key (string); matches one of the item's `valueField`. |
+| `data-required` | `'true' \| 'false'` | `mat-radio-group` | — | Reflects `required` input; always present. |
+
+> **Note**: `sd-radio` emits only `data-required` from the new validation-meta set. It has no maxlength / minlength / pattern / errorMessage support.
+
+Example:
+```html
+<!-- When autoId="gender", disabled=false, value='M', items show gender options -->
+<mat-radio-group
+  data-autoid="forms-radio-gender"
+  data-disabled="false"
+  data-empty="false"
+  data-value="M">
+  <!-- ... -->
+</mat-radio-group>
+```
 
 ## Related
 - `<sd-select>` — dropdown picker for longer or API-loaded lists

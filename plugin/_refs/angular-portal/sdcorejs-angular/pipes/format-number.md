@@ -5,7 +5,7 @@
 **Class**: `SdFormatNumberPipe` (also `@Injectable({ providedIn: 'root' })` — usable via DI)
 **Standalone**: yes
 **Import path**: `@sd-angular/core/pipes` (or direct: `@sd-angular/core/pipes/format-number`)
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Locale-aware number formatting — uses Vietnamese style (`1.234.567,89`) when `SD_CORE_CONFIGURATION.format.number === '1.234.567,89'`, otherwise ISO style (`1,234,567.89`).

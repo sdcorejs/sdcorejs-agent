@@ -1,12 +1,10 @@
 # SdLoadingService
 
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
-
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdLoadingService`
 **Provided in**: `'root'`
 **Import path**: `@sd-angular/core/services/loading`
+**Library version**: `@sd-angular/core@19.0.0-beta.105`
 
 ## One-line purpose
 Imperatively attaches/detaches a full-cover spinner overlay to any DOM element (default `body`) by selector — uses Angular `Renderer2` and tracks per-element state via a `WeakMap`.

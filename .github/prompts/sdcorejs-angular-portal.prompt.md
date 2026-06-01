@@ -19,7 +19,7 @@ Mandatory sequence:
 Mandatory rules:
 - Prefer side-drawer when the form is around 5-6 common fields.
 - Use full page for complex workflows (approval, multi-sections, child tables, heavy attachments).
-- If page has many fields/sections, combine sd-section groups with sd-anchor-v2 for fast scroll.
+- If page has many fields/sections, combine sd-section groups with sd-anchor for fast scroll.
 - Keep actions state-based and permission-based.
 - Keep save and submit actions sharing one validation gate.
 - Keep approve and reject independent from field validation when operating on existing records.
