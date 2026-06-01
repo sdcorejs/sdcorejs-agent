@@ -6,7 +6,7 @@
 **Class**: `SdDate`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Single-date picker — Material datepicker with date-fns adapter (`dd/MM/yyyy` parse/display) plus SDCoreJS form-group registration, `[viewed]` read-only mode, and built-in min/max date validation messages.

@@ -6,7 +6,7 @@
 **Class**: `SdRadio`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Radio-button group — user picks exactly ONE option from a small, fixed list. Items can be laid out inline (`row`) or stacked (`column`). Use when the full set of choices should be visible at once (≤ ~6 options); for longer lists, use `<sd-select>` instead.

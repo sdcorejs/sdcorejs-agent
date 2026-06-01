@@ -4,7 +4,7 @@
 **Class**: `SdGlobalErrorHandler implements ErrorHandler`
 **Import path**: `@sdcorejs/angular/handlers`
 **Provided in**: NOT provided by default — consumer app must wire it via `providers` in `app.config.ts`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Catches uncaught application errors at the Angular root and, when the error is a chunk-load / dynamic-import failure (typical after a new build is deployed while the user has the old SPA cached), prompts the user to reload the page so they pick up the new bundle. All other errors fall through to `console.error`.

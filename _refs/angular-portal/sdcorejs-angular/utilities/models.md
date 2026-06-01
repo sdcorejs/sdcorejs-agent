@@ -2,7 +2,7 @@
 
 **Import path**: `@sdcorejs/angular/utilities/models`
 **Canonical source**: most types are re-exported from `@sdcorejs/utils/models` / `@sdcorejs/utils/constants`. Prefer importing from `@sdcorejs/utils` directly when there is no Angular dependency.
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 Type-only contracts shared across `@sdcorejs/angular` components, services, and the consuming app (filters, paging, ordering, theming tokens, ...). No runtime code beyond a couple of small constants and one `SdOperators` lookup table (i18n-keyed, Angular-only).
 

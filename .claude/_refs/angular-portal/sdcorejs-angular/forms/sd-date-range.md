@@ -6,7 +6,7 @@
 **Class**: `SdDateRange`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Two-date range picker — user picks a start date AND an end date through a single 2-month calendar popup. Wraps Material `mat-date-range-picker` with SDCoreJS label/validators/min-max boundary support.

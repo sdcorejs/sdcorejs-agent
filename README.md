@@ -6,7 +6,7 @@ SDCoreJS turns Claude Code, GitHub Copilot, and Codex into accountable engineers
 
 Three first-class tracks, each with stack-specific conventions, generators, reviews, and tests:
 
-- **Angular Portal** — backoffice portals built on `@sdcorejs/angular` (Core UI)
+- **Angular Portal** — backoffice portals built on [`@sdcorejs/angular`](https://www.npmjs.com/package/@sdcorejs/angular) (Core UI, Angular 19 / 20 / 21)
 - **NestJS** — modular APIs with Postgres + DTOs + permissions
 - **Next.js** — public sites with bilingual content, SEO, ISR caching
 

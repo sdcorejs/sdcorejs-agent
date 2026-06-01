@@ -4,7 +4,7 @@
 **Class**: `SdApiService`
 **Provided in**: `'root'`
 **Import path**: `@sdcorejs/angular/services/api`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 HTTP client wrapper around Angular `HttpClient` adding per-host handlers, configurable timeout, in-flight request deduplication, and an optional persistent cache layer via `SdCacheService`.

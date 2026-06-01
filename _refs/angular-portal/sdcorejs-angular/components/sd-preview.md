@@ -6,7 +6,7 @@
 **Class**: `SdPreviewImage`
 **Standalone**: yes (default)
 **Change detection**: `OnPush` (signal-driven)
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ---
 

@@ -3,7 +3,7 @@
 Use this file as the only place to update the Core UI package name and version for angular-portal skills.
 
 - packageName: `@sdcorejs/angular`
-- currentVersion: `20.0.0`
+- currentVersion: `20.0.1`
 - lastUpdated: `2026-06-01`
 - policy: npm registry version only (do not use local tgz `file:sd-angular-core-*.tgz`)
 
@@ -11,9 +11,9 @@ Use this file as the only place to update the Core UI package name and version f
 
 The Core UI library was republished under the ecosystem-aligned name **`@sdcorejs/angular`**. The two packages share identical API surface (same components, entry points, selectors) — only the npm name + the version line differ.
 
-- **New projects (default):** init with **`@sdcorejs/angular@20.0.0`** (paired with the Angular 20.3 baseline template). This is what `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` now resolve to.
+- **New projects (default):** init with **`@sdcorejs/angular@20.0.1`** (paired with the Angular 20.3 baseline template). This is what `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` now resolve to.
 - **Legacy projects:** keep importing from **`@sd-angular/core`**. Do NOT force-migrate an existing project's imports — the package alias is a project-level decision. When working in a legacy repo, detect its installed Core UI package and import from whatever it uses.
-- **Version map:** `@sdcorejs/angular@{19,20,21}.0.0` are equivalent builds of the same Core UI code, one per Angular major (19 / 20 / 21). The agent's init baseline is Angular 20.3 → pin `20.0.0`. Bump to `21.0.0` only when the starter template moves to Angular 21.
+- **Version map:** published on npm as [`@sdcorejs/angular`](https://www.npmjs.com/package/@sdcorejs/angular) — `19.0.1` / `20.0.1` / `21.0.1` are equivalent builds of the same Core UI code, one per Angular major (19 / 20 / 21). The agent's init baseline is Angular 20.3 → pin `20.0.1`. Bump to `21.0.1` only when the starter template moves to Angular 21.
 
 > The catalog under `_refs/angular-portal/sdcorejs-angular/**` documents the surface using the **new** package name (`@sdcorejs/angular/...`). For a legacy project, swap the prefix back to `@sd-angular/core/...` — entry-point sub-paths are identical.
 
@@ -22,7 +22,7 @@ The Core UI library was republished under the ecosystem-aligned name **`@sdcorej
 | Placeholder | Resolves to (current) | Replaces when bumped |
 |---|---|---|
 | `<CORE_UI_PACKAGE_NAME>` | `@sdcorejs/angular` | `packageName` field above |
-| `<CORE_VERSION>` | `20.0.0` | `currentVersion` field above |
+| `<CORE_VERSION>` | `20.0.1` | `currentVersion` field above |
 
 ## Where these placeholders are referenced
 
@@ -32,7 +32,7 @@ Single source of truth. Every consumer uses placeholders, substituted at generat
 |---|---|---|
 | `_refs/angular-portal/core-version.md` | THIS file — `packageName` + `currentVersion` fields | ✅ Yes — the single edit |
 | `tracks/angular-portal/10-init-portal.md` | Uses `<CORE_UI_PACKAGE_NAME>` + `<CORE_VERSION>` in `package.json` template, tree diagram, checklist, verification, commit example. Agent reads this file and substitutes at generation time. | ❌ No edit needed — placeholders resolve dynamically |
-| `_refs/angular-portal/sdcorejs-angular/**/*.md` | "Library version" metadata = the version the catalog was GENERATED FROM (snapshot, currently `@sdcorejs/angular@20.0.0`). Separate concern from the pin. | ❌ No, unless catalog is regenerated from a different source version |
+| `_refs/angular-portal/sdcorejs-angular/**/*.md` | "Library version" metadata = the version the catalog was GENERATED FROM (snapshot, currently `@sdcorejs/angular@20.0.1`). Separate concern from the pin. | ❌ No, unless catalog is regenerated from a different source version |
 
 `shared/conventions/dep-update.md`, `shared/workflow/env-setup.md`, `tracks/angular-portal/00-onboarding.md` reference this file by PATH only — no literal version/name, no update.
 

@@ -6,7 +6,7 @@
 **Class**: `SdInput`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Workhorse text input — single-line `text`/`email`/`password`/`number` field with label, validators (required/min/max-length/pattern), pattern presets, and DETAIL `[viewed]` read-only mode. Use this everywhere a user types free text.

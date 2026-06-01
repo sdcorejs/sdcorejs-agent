@@ -2,7 +2,7 @@
 
 - **Type:** Tree-shakable services + guards (no `@NgModule`, providers via `providedIn: 'root'`)
 - **Import path:** `@sdcorejs/angular/modules/auth`
-- **Library version:** `@sdcorejs/angular@20.0.0`
+- **Library version:** `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 

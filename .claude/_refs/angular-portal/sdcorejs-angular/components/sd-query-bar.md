@@ -6,7 +6,7 @@
 **Class**: `SdQueryBar`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 > Status: **v1.1 — full decomposition (7/7 sub-components extracted)**. Inline + popover modes, build flow, saved-filters, multi-select head+N display, BETWEEN date-range unified. Design source: `refs/design_handoff_sd_query_bar/`.
 

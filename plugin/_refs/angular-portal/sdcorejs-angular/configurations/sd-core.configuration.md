@@ -5,7 +5,7 @@
 **Class / Token**: `SD_CORE_CONFIGURATION`
 **Import path**: `@sdcorejs/angular/configurations`
 **Provided in**: NOT provided by default — consumer app must register it in `app.config.ts`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Root-level configuration token for `@sdcorejs/angular` — carries the per-domain license key(s) that unlock licensed features and global formatting preferences (e.g. number locale).

@@ -6,7 +6,7 @@
 **Class**: `SdBadge`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Status / label indicator — shows a state (success / warning / error / info / …) as a colored dot, icon-with-text, or pill tag. Not a primary action; render-only by default but can opt into clicks.

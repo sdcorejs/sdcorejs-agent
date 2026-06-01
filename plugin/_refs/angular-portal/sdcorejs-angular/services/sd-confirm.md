@@ -4,7 +4,7 @@
 **Class**: `SdConfirmService`
 **Provided in**: `'root'`
 **Import path**: `@sdcorejs/angular/services/confirm`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Opens a Material dialog (`DialogConfirmComponent`) for confirm/input/radio/date prompts and returns a `Promise` that resolves on Accept and rejects on Cancel.

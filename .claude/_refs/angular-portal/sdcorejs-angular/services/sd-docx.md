@@ -4,7 +4,7 @@
 **Class**: `SdDocxService`
 **Provided in**: `'root'`
 **Import path**: `@sdcorejs/angular/services/docx`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Converts `.doc` / `.docx` files to standalone HTML in the browser by lazily loading a Pandoc WebAssembly binary; exposes both an "open file picker" flow and a programmatic conversion API.

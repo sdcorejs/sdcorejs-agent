@@ -6,7 +6,7 @@
 **Class**: `SdQuickAction`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Floating bottom toolbar that slides up to reveal a message (left) and optional action buttons (right). Designed for "selection action" patterns — e.g. when the user selects rows in `<sd-table>`, this bar appears at the bottom showing "N selected" + bulk action buttons.

@@ -7,7 +7,7 @@
 **Standalone**: yes
 **Change detection**: `OnPush`
 **View encapsulation**: `None` (so PrismJS color tokens reach the DOM)
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Lightweight code viewer/editor with PrismJS syntax highlighting, copy-to-clipboard, and a friendly "macOS dots" header — supports `html`, `typescript`, `json`, `css`, `scss`. Two-way bindable via the `model` alias.

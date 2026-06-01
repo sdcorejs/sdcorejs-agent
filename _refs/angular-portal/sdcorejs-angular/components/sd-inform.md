@@ -6,7 +6,7 @@
 **Class**: `SdInform`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Page-level banner / alert (báo lỗi / cảnh báo / thông tin) neo trên page — a presentational notice with color, icon, title, description, optional action link and dismiss button. Presentational only: the consumer positions it.

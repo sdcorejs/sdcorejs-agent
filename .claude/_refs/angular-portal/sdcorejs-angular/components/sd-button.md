@@ -6,7 +6,7 @@
 **Class**: `SdButton extends SdBaseSecureComponent`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Standard action button — used everywhere a user triggers an action (save, cancel, approve, navigate, ...). Wraps Angular Material with SDCoreJS variants, sizing, and built-in icon/loading/permission support.

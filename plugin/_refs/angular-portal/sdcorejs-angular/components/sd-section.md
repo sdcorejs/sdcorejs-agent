@@ -6,7 +6,7 @@
 **Classes**: `SdSection extends SdBaseSecureComponent`, `SdSectionItem`
 **Standalone**: yes
 **Change detection**: default (signals-driven)
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ---
 

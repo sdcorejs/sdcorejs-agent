@@ -6,7 +6,7 @@
 **Class**: `SdLabel`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Tiny presentational label primitive — renders the standard SDCoreJS field label row: `<text> [info-icon-with-tooltip] [*]` plus an optional description. Used internally by every `<sd-input>` / `<sd-select>` / `<sd-autocomplete>` / `<sd-date>` / etc. — and exposed for places where you need the same label styling without a form field.

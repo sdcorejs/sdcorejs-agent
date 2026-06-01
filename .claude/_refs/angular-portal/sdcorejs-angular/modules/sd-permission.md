@@ -2,7 +2,7 @@
 
 - **Type:** Tree-shakable directive + service + guard (no `forRoot` — provide the config token directly)
 - **Import path:** `@sdcorejs/angular/modules/permission`
-- **Library version:** `@sdcorejs/angular@20.0.0`
+- **Library version:** `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 

@@ -6,7 +6,7 @@
 **Class**: `SdInputColor`
 **Standalone**: yes
 **Change detection**: OnPush
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 A hex color input with a swatch suffix that opens the browser's native color picker. Users can type a hex value manually or pick visually — both update the same model.

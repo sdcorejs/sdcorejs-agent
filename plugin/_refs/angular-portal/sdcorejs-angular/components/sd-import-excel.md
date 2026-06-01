@@ -6,7 +6,7 @@
 **Class**: `SdImportExcel`
 **Standalone**: yes
 **Change detection**: default
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 End-to-end Excel import workflow: download template, upload `.xlsx`, validate per row + cross-row, preview success/warning/error rows, export an annotated error file, and finally hand validated data back to the caller via `accept`.

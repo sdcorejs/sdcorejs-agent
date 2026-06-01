@@ -6,7 +6,7 @@
 **Class**: `SdSideDrawer extends SdBaseSecureComponent`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Right-edge slide-in panel rendered into `document.body` via CDK Portal — used for "create / edit / detail" forms that don't deserve a full route, but need more room than a modal: filters, side-by-side review, multi-step forms.

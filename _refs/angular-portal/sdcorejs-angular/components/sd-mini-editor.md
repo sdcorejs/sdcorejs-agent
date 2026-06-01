@@ -6,7 +6,7 @@
 **Class**: `SdMiniEditor`
 **Standalone**: yes
 **Change detection**: default (implements `ControlValueAccessor`)
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Compact rich-text input (CKEditor 5 ClassicEditor) for short-form content like comments, notes, and chat-style messages — supports bold/italic/underline/font color/lists/links and optional `@mention`, with HTML or Markdown output.

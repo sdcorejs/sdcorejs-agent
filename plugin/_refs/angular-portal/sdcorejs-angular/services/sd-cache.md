@@ -4,7 +4,7 @@
 **Class**: `SdCacheService`
 **Provided in**: `'root'`
 **Import path**: `@sdcorejs/angular/services/cache`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Key-based cache factory that returns per-key handles (`get`/`set`/`has`/`remove`/`destroy`/`load`/`observer`) backed by an in-memory `Map` plus optional `localStorage` / `sessionStorage` persistence with hour-based TTL.

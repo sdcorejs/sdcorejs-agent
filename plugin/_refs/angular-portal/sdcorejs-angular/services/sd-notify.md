@@ -4,7 +4,7 @@
 **Class**: `SdNotifyService`
 **Provided in**: `'root'`
 **Import path**: `@sdcorejs/angular/services/notify`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Toast notification service that auto-mounts a `SdToastContainerComponent` on `body` and exposes immediate (`success`, `info`) and debounced/buffered (`warning`, `error`) APIs backed by an Angular `signal<ToastData[]>`.

@@ -6,7 +6,7 @@
 **Classes**: `SdSplitterComponent`, `SdSplitterPanelComponent`
 **Standalone**: yes
 **Change detection**: Default (Angular default) on both — state is signal-driven via the internal `SplitterStateService`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ---
 

@@ -6,7 +6,7 @@
 **Class**: `SdSwitch`
 **Standalone**: yes (declared via `imports`)
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 iOS-style toggle switch — boolean ON/OFF in a single tap. Use for feature flags, settings, "active/inactive" rows where the change applies immediately or as part of a form submission.

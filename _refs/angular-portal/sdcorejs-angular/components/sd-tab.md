@@ -6,7 +6,7 @@
 **Classes**: `SdTabGroup extends SdBaseSecureComponent`, `SdTab`
 **Standalone**: yes
 **Change detection**: `OnPush` on both
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ---
 

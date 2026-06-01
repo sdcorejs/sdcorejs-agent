@@ -6,7 +6,7 @@
 **Class**: `SdView`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Read-only label/value display widget — renders a "label on top, value below" pair used to show a single field on a detail/view page (the read-only counterpart to `<sd-input>`/`<sd-select>`/etc.).

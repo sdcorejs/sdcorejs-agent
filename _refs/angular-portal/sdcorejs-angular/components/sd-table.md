@@ -6,7 +6,7 @@
 **Class**: `SdTable<T = unknown> extends SdBaseSecureComponent`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 The standard list/table component of SDCoreJS — renders tabular data with paging, sorting, inline column filters, external (toolbar) filters, multi-select with bulk actions, row commands, expansion, grouping, sticky columns, drag-and-drop row reorder, **drag-to-resize columns with persistence**, Excel/CSV export, and column-config persistence. Used on virtually every list page.

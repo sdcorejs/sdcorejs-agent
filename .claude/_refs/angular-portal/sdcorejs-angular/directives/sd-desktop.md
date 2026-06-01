@@ -5,7 +5,7 @@
 **Class**: `SdDesktopDirective`
 **Standalone**: no (declared module-style — no `standalone: true` flag)
 **Import path**: `@sdcorejs/angular/directives` (or direct: `@sdcorejs/angular/directives/sd-desktop`)
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Structural directive that renders its template ONLY on desktop (non-mobile) viewports.

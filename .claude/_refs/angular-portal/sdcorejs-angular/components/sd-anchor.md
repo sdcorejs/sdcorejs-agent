@@ -6,7 +6,7 @@
 **Class**: `SdAnchor`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Signal-based scroll-spy navigation (OnPush) — pairs a side TOC with the actual page sections so the active link auto-highlights as the user scrolls.

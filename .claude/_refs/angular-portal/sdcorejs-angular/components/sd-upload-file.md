@@ -6,7 +6,7 @@
 **Class**: `SdUploadFile<TArgs = any>`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 File picker + drag-drop + preview component — manages a list of "to-be-uploaded" and "already-uploaded" files (images, documents, generic), with built-in validation, preview thumbnails, reorder, image-resize, and a public `upload()` method to be called before form submit.

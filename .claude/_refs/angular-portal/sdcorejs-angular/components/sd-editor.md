@@ -6,7 +6,7 @@
 **Class**: `SdEditor`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Form-bound rich-text editor (CKEditor 5 ClassicEditor) with bold/italic/underline, font size & color, alignment, lists, and optional inline image upload + label/required/maxlength validation.

@@ -4,7 +4,7 @@
 **Class**: `SdExcelService`
 **Provided in**: `'root'`
 **Import path**: `@sdcorejs/angular/services/excel`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Browser-side Excel/CSV utilities — generate a styled `.xlsx` import-template, export tabular data to `.xlsx` or `.csv`, and parse a user-uploaded `.xlsx` back to plain JS objects.

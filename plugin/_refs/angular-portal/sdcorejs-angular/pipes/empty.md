@@ -5,7 +5,7 @@
 **Class**: `SdEmptyPipe`
 **Standalone**: yes
 **Import path**: `@sdcorejs/angular/pipes` (or direct: `@sdcorejs/angular/pipes/empty`)
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Replaces `null`, `undefined`, or empty-string values with the project-wide "empty" placeholder constant `EMPTY_STR` (typically `"-"` or `"--"` depending on configuration).

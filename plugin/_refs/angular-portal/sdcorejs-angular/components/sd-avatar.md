@@ -6,7 +6,7 @@
 **Class**: `SdAvatar`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Circular user avatar — auto-displays a profile image when `src` is a URL, otherwise generates colorful initials from the name (deterministic per name).

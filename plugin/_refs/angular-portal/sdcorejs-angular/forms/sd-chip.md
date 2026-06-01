@@ -6,7 +6,7 @@
 **Class**: `SdChip`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Multi-value tag input — user types and presses Enter/comma to add a chip; chips can be removed individually. Backed by Material `mat-chips` and integrates with SDCoreJS forms (`[form]+[name]`, validators, `[viewed]` read-only).

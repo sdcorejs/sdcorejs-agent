@@ -5,7 +5,7 @@
 **Import path**: `@sdcorejs/angular/interceptors` — single entry point. There is NO `…/unauthorized` secondary entry point: the `interceptors/` folder has one `index.ts` + `ng-package.json` that barrel-exports both `SdUnauthorizedInterceptor` and `SdNoInternetInterceptor`. Always import from `@sdcorejs/angular/interceptors`.
 **Provided in**: NOT provided by default — register via `HTTP_INTERCEPTORS` multi-provider
 **Dependencies**: `SdAuthService`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Centralizes unauthorized handling for all HTTP calls: when a request fails with `401`, trigger `authService.signout()` once to kick off the app's signout/redirect-to-login flow, then rethrow the original error so feature-level handlers still work as usual.

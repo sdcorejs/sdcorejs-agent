@@ -2,7 +2,7 @@
 
 - **Type:** Tree-shakable services + standalone components (no `@NgModule`, no `forRoot` — provide the config token via `multi: true`)
 - **Import path:** `@sdcorejs/angular/modules/generic`
-- **Library version:** `@sdcorejs/angular@20.0.0`
+- **Library version:** `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 

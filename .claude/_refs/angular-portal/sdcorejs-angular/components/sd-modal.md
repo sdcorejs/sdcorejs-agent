@@ -6,7 +6,7 @@
 **Class**: `SdModal`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Centered dialog (or mobile bottom-sheet) with optional title/header/footer slots, opened imperatively via a template reference and `open()` / `close()` methods.

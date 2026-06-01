@@ -7,7 +7,7 @@
 **Standalone**: yes
 **Change detection**: `OnPush`
 **Underlying engine**: [Chart.js](https://www.chartjs.org/) (all `registerables` registered)
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Thin signal-based wrappers around Chart.js — render bar / line / pie / doughnut visualizations from declarative `data` / `options` / `plugins` inputs, with auto-update on signal changes.

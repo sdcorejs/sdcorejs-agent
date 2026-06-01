@@ -4,7 +4,7 @@
 **Class**: `SdLicenseService`
 **Provided in**: `'root'`
 **Import path**: `@sdcorejs/angular/services/license`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Domain-binding license check that hashes `window.location.hostname` (with a built-in salt) and compares against `licenseKey` values from `SD_CORE_CONFIGURATION`; throws on unauthorized domains and bypasses verification on localhost.

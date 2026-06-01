@@ -1,4 +1,4 @@
-# @sdcorejs/angular — Reference Catalog (v20.0.0)
+# @sdcorejs/angular — Reference Catalog (v20.0.1)
 
 Concise index of every component, form, service, module, directive, pipe, handler, interceptor, utility, and configuration in the SDCoreJS Angular library. Agents load this file to know WHAT exists; load specific docs on demand.
 
@@ -168,4 +168,4 @@ When an agent needs to pick a component / service / etc. for a request:
 4. Cross-reference the per-file `When NOT to use` and `Related` sections to avoid wrong choices.
 5. If nothing matches, fall back to a generic Material / Angular CDK primitive and mark with `alert('TODO: ...')` so the developer reviews.
 
-This catalog is generated from `@sdcorejs/angular@20.0.0`. Upstream source is the `vn-angular` repo (`projects/sd-angular/<path>/`); on re-sync, map the package name and version per `core-version.md` → Upgrade Procedure. Each file adds a `**Library version**` banner.
+This catalog is generated from `@sdcorejs/angular@20.0.1`. Upstream source is the `vn-angular` repo (`projects/sd-angular/<path>/`); on re-sync, map the package name and version per `core-version.md` → Upgrade Procedure. Each file adds a `**Library version**` banner.

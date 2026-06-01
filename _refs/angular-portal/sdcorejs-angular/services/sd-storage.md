@@ -4,7 +4,7 @@
 **Class**: `SdStorageService`
 **Provided in**: `'root'`
 **Import path**: `@sdcorejs/angular/services/storage`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Reactive `localStorage` / `sessionStorage` wrapper that gives you a typed `SdStorage<T>` handle with `get / set / has / remove` plus a `BehaviorSubject` and `Observable` mirror, layered with an in-memory cache and pluggable key namespacing.

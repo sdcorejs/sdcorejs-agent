@@ -6,7 +6,7 @@
 **Class**: `SdCheckbox`
 **Standalone**: yes
 **Change detection**: default (no `OnPush` set)
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Boolean toggle — a single labeled checkbox bound to a form/model. Wraps Angular Material `mat-checkbox` with SDCoreJS form-group registration and `inlineError` support.

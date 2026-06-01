@@ -6,7 +6,7 @@
 **Class**: `SdAutocomplete<T = any>`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Typeahead single-select dropdown — user types to filter a static array OR an async backend source, then picks one item. Wraps Material `mat-autocomplete` with SDCoreJS label/validators/`viewed` read-only support.

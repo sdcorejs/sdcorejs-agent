@@ -6,7 +6,7 @@
 **Class**: `SdDatetime`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Single date + time-of-day picker — user picks a calendar date AND an `HH:mm` (optionally `HH:mm:ss`) time in a CDK Overlay popup. Uses `provideDateFnsAdapter` with SDCoreJS label, validators, and `[viewed]` read-only support.

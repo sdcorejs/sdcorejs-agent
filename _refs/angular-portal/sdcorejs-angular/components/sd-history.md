@@ -6,7 +6,7 @@
 **Class**: `SdHistoryItem`
 **Standalone**: yes
 **Change detection**: default
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Vertical timeline that renders a list of history/audit events — each with title, optional status badge, timestamp, actor, source, and description.

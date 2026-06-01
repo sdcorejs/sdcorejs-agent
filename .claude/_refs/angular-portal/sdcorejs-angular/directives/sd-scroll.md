@@ -5,7 +5,7 @@
 **Class**: `SdScrollDirective`
 **Standalone**: yes
 **Import path**: `@sdcorejs/angular/directives` (or direct: `@sdcorejs/angular/directives/sd-scroll`)
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Hover-aware horizontal scroll container — `overflow-x` is `hidden` by default and flips to `auto` only while the cursor is over the host (vertical overflow is permanently `auto`).

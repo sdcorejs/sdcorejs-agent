@@ -6,7 +6,7 @@
 **Class**: `SdAutoidInspector`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Floating dev/QA inspector — quét toàn bộ `[data-autoid]` trên page, audit element thiếu/trùng autoid, export danh sách ra CSV / JSON / Markdown POM skeleton cho AI viết auto-test.

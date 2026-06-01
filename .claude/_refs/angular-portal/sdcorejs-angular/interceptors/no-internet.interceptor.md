@@ -5,7 +5,7 @@
 **Import path**: `@sdcorejs/angular/interceptors/no-internet` (or barrel `@sdcorejs/angular/interceptors`)
 **Provided in**: NOT provided by default — register via `HTTP_INTERCEPTORS` multi-provider
 **Dependencies**: `MatSnackBar` (Angular Material), `I18nService` (`@sdcorejs/angular/i18n`), `HttpClient` (lazy, resolved via `Injector` to avoid circular DI), `Injector` (Angular core)
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## When to use
 - Wire it in every Angular SPA built with `@sdcorejs/angular` that makes HTTP calls to remote APIs, so users get a clear offline notification instead of silent failure

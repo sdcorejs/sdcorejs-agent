@@ -6,7 +6,7 @@
 **Class**: `SdSelect<T>`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Dropdown picker — single OR multi-select from a static array OR an async API. Built-in search/filter (auto-enabled when items > 10 or when `items` is a search function), `[multiple]` mode with checkboxes, paging via `[limit]`, label/value field accessors with nested-key support, and DETAIL `[viewed]` read-only mode. After `<sd-input>` this is the most-used form control.

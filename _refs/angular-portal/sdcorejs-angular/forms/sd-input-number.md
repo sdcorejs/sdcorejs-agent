@@ -6,7 +6,7 @@
 **Class**: `SdInputNumber`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sdcorejs/angular@20.0.0`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Numeric input with locale-aware formatting (VN `1.234.567,89` or ISO `1,234,567.89`), keystroke filtering, optional negative/positive constraint, decimal precision, and min/max validators. Use for any monetary or quantity field.
