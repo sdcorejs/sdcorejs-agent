@@ -168,4 +168,4 @@ When an agent needs to pick a component / service / etc. for a request:
 4. Cross-reference the per-file `When NOT to use` and `Related` sections to avoid wrong choices.
 5. If nothing matches, fall back to a generic Material / Angular CDK primitive and mark with `alert('TODO: ...')` so the developer reviews.
 
-This catalog is generated from `@sdcorejs/angular@20.0.0` (new default package name; legacy projects use the equivalent `@sd-angular/core` — identical API, swap the import prefix). Canonical MD lives next to each source file in the upstream library repo `vn-angular` (under `projects/sd-angular/<path>/`, still published there as `@sd-angular/core`); this folder is a near-identical mirror with the package name mapped to `@sdcorejs/angular` and a `**Library version**` banner added. When re-syncing, map `@sd-angular/core` → `@sdcorejs/angular` (see `core-version.md` → Upgrade Procedure).
+This catalog is generated from `@sdcorejs/angular@20.0.0`. Upstream source is the `vn-angular` repo (`projects/sd-angular/<path>/`); on re-sync, map the package name and version per `core-version.md` → Upgrade Procedure. Each file adds a `**Library version**` banner.

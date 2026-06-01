@@ -28,7 +28,7 @@ For every file under review, check the following.
 ### Core UI usage
 - Uses `@sdcorejs/angular/components`, `@sdcorejs/angular/forms`, `@sdcorejs/angular/modules` instead of hand-rolled equivalents
 - If a custom skeleton exists, it is marked with `// CUSTOM_UI: <reason>` and the generation summary mentioned it
-- Imports come from path-specific subpaths (e.g. `@sdcorejs/angular/components/section`, or legacy `@sd-angular/core/components/section` in older projects), not the barrel `from 'sd-angular'`
+- Imports come from path-specific subpaths (e.g. `@sdcorejs/angular/components/section`), not the barrel `from 'sd-angular'`
 
 ### Naming
 - Files: `<entity-kebab>.model.ts`, `<entity-kebab>.service.ts`, `<entity-kebab>.routes.ts`, `<entity-kebab>.mock-data.ts`
