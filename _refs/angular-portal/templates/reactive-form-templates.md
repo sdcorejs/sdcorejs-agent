@@ -91,8 +91,8 @@ import {
   SdDatetime,
   SdUploadFile,
   SdSection,
-} from '@sd-angular/core/components';
-import { SdFormsModule } from '@sd-angular/core/forms';
+} from '@sdcorejs/angular/components';
+import { SdFormsModule } from '@sdcorejs/angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { [Entity]Service } from '../services/[entity].service';
 import { [Entity]DTO } from '../services/[entity].model';
@@ -250,7 +250,7 @@ import { SdInput, SdButton } from 'sd-angular';
   standalone: true,
   imports: [ReactiveFormsModule, SdInput, SdButton],
   template: `
-    <!-- NOTE: @sd-angular/core form components self-register via [form]+name="..."
+    <!-- NOTE: @sdcorejs/angular form components self-register via [form]+name="..."
          (they do NOT implement ControlValueAccessor — formControlName won't bind).
          For FormArray/FormGroup nesting, pass the nested FormGroup instance to [form]. -->
     <form [formGroup]="form">
@@ -393,7 +393,7 @@ import {
   SdSelect,
   SdSwitch,
   SdTextarea,
-} from '@sd-angular/core/components';
+} from '@sdcorejs/angular/components';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { ProductDTO, ProductSaveReq, PRODUCT_CATEGORIES } from '../../services/product.model';
@@ -444,7 +444,7 @@ import { ProductValidators } from '../../validators/product-validators';
 
       <div class="p-8">
         <sd-section>
-          <!-- NOTE: @sd-angular/core form components self-register via [form]+name="..."
+          <!-- NOTE: @sdcorejs/angular form components self-register via [form]+name="..."
                (they do NOT implement ControlValueAccessor — formControlName won't bind). -->
           <form [formGroup]="form">
             <sd-input

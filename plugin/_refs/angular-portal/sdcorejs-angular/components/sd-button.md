@@ -2,11 +2,11 @@
 
 **Type**: Component
 **Selector**: `sd-button`
-**Import path**: `@sd-angular/core/components/button` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/button` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdButton extends SdBaseSecureComponent`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Standard action button — used everywhere a user triggers an action (save, cancel, approve, navigate, ...). Wraps Angular Material with SDCoreJS variants, sizing, and built-in icon/loading/permission support.

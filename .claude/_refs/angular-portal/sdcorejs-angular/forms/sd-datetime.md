@@ -2,11 +2,11 @@
 
 **Type**: Component (form input)
 **Selector**: `sd-datetime`
-**Import path**: `@sd-angular/core/forms/datetime` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/datetime` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdDatetime`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Single date + time-of-day picker — user picks a calendar date AND an `HH:mm` (optionally `HH:mm:ss`) time in a CDK Overlay popup. Uses `provideDateFnsAdapter` with SDCoreJS label, validators, and `[viewed]` read-only support.

@@ -3,7 +3,7 @@
 > Cline IDE entry point. Mirrors `AGENTS.md` and `CLAUDE.md`.
 
 This repository is an **SDLC agent** for the SDCoreJS ecosystem:
-- **Backoffice portals** in Angular with `@sd-angular/core` (Core UI)
+- **Backoffice portals** in Angular with `@sdcorejs/angular` (Core UI)
 - **Backend** in NestJS + Postgres
 - **Public sites** in Next.js (SSR)
 

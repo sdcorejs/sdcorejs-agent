@@ -2,11 +2,11 @@
 
 **Type**: Component
 **Selector**: `sd-modal`
-**Import path**: `@sd-angular/core/components/modal` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/modal` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdModal`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Centered dialog (or mobile bottom-sheet) with optional title/header/footer slots, opened imperatively via a template reference and `open()` / `close()` methods.

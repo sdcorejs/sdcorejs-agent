@@ -2,11 +2,11 @@
 
 **Type**: Component (form input)
 **Selector**: `sd-checkbox`
-**Import path**: `@sd-angular/core/forms/checkbox` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/checkbox` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdCheckbox`
 **Standalone**: yes
 **Change detection**: default (no `OnPush` set)
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Boolean toggle — a single labeled checkbox bound to a form/model. Wraps Angular Material `mat-checkbox` with SDCoreJS form-group registration and `inlineError` support.
@@ -75,7 +75,7 @@ None — text comes from the `label` input.
 
 ### `inlineError` flow
 
-Setting `[inlineError]="'Some message'"` triggers an internal `#updateValidator()` call that attaches the shared `SdInlineErrorValidator` (from `@sd-angular/core/forms/models`) returning `{ inlineError: true }`. The template then shows `<mat-error>{{ inlineError }}</mat-error>` when `formControl.errors?.['inlineError'] && formControl.touched`. Clearing `[inlineError]` to an empty string removes the validator and calls `updateValueAndValidity()`.
+Setting `[inlineError]="'Some message'"` triggers an internal `#updateValidator()` call that attaches the shared `SdInlineErrorValidator` (from `@sdcorejs/angular/forms/models`) returning `{ inlineError: true }`. The template then shows `<mat-error>{{ inlineError }}</mat-error>` when `formControl.errors?.['inlineError'] && formControl.touched`. Clearing `[inlineError]` to an empty string removes the validator and calls `updateValueAndValidity()`.
 
 ## Visual cues (helps agent map screenshots → component)
 - A square box on the left + label text on the right

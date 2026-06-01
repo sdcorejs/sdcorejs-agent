@@ -18,7 +18,7 @@ Welcome the developer and help them pick the right next skill. This is the entry
 ## Response template
 
 ### 1. One-sentence intro
-> "This agent helps you build Angular portal apps using `@sd-angular/core` (Core UI), following SDCoreJS conventions across the full SDLC — from requirement clarification to code, tests, review, and documentation."
+> "This agent helps you build Angular portal apps using `@sdcorejs/angular` (Core UI), following SDCoreJS conventions across the full SDLC — from requirement clarification to code, tests, review, and documentation."
 
 ### 2. SDLC workflow at a glance
 
@@ -94,12 +94,12 @@ You don't need to memorize skill names. Just describe what you want — the agen
 - **Bilingual**: Vietnamese request → Vietnamese output (full diacritics). English request → English output. Permission codes and route paths stay English in both cases.
 - **Clarify-before-code**: agent will not generate code when module ownership, entity name, or key fields are unspecified.
 - **Test after generation**: `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts`. Report summary and failing spec names.
-- **Core UI first**: use `@sd-angular/core` components when one fits; otherwise generate skeleton + `alert('TODO: ...')` stubs and mark for developer.
+- **Core UI first**: use `@sdcorejs/angular` components when one fits; otherwise generate skeleton + `alert('TODO: ...')` stubs and mark for developer.
 
 ### 5. Reference docs (loaded on demand)
 The agent only reads these when relevant — don't load upfront:
 - [`_refs/angular-portal/architecture-principles.md`](_refs/angular-portal/architecture-principles.md) — **the WHY**: 16 principles governing what generated code looks like (feature-first, signal-first, no cross-module imports, OnPush default, 4 canonical layouts, mock-first, …). Load when explaining a decision, reviewing a deviation, or onboarding a new contributor.
-- [`_refs/angular-portal/core-version.md`](_refs/angular-portal/core-version.md) — pinned `@sd-angular/core` version
+- [`_refs/angular-portal/core-version.md`](_refs/angular-portal/core-version.md) — pinned `@sdcorejs/angular` version
 - [`_refs/angular-portal/sd-angular-core-catalog.md`](_refs/angular-portal/sd-angular-core-catalog.md) — Core UI components and patterns
 - [`_refs/angular-portal/entity-field-types.md`](_refs/angular-portal/entity-field-types.md) — field type → form control mapping
 - [`_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md`](_refs/angular-portal/templates/) — canonical code templates emitted by `12-init-entity`

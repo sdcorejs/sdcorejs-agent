@@ -2,11 +2,11 @@
 
 **Type**: Component
 **Selector**: `sd-preview-image`
-**Import path**: `@sd-angular/core/components/preview` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/preview` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdPreviewImage`
 **Standalone**: yes (default)
 **Change detection**: `OnPush` (signal-driven)
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ---
 
@@ -268,7 +268,7 @@ onFiles(e: Event) {
 
 **Type**: Component
 **Selector**: `sd-preview-pdf`
-**Import path**: `@sd-angular/core/components/preview` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/preview` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdPreviewPdf`
 **Standalone**: yes
 **Change detection**: `OnPush` (signal-driven)

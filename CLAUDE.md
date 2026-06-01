@@ -2,7 +2,7 @@
 
 This repository (`sdcorejs-agent`) is an **SDLC agent** for the SDCoreJS ecosystem:
 
-- **Backoffice portals** in Angular with `@sd-angular/core` (Core UI)
+- **Backoffice portals** in Angular with `@sdcorejs/angular` (Core UI)
 - **Backend** in NestJS + Postgres
 - **Public sites** in Next.js (SSR)
 
@@ -128,7 +128,7 @@ orchestration/memories            ← durable knowledge (when applicable) to <ta
 
 7. **Approval gates.** `sdcorejs-review-spec` and `sdcorejs-review-plan` REQUIRE explicit user approval before the next skill runs. Silence is not approval. Approval immediately fires the corresponding auto-specs / auto-plans tail-call (see rule 2).
 
-8. **Core UI first.** Use `@sd-angular/core` components when one fits. Otherwise generate skeleton + `alert('TODO: ...')` stubs and mark for the developer.
+8. **Core UI first.** Use `@sdcorejs/angular` components when one fits. Otherwise generate skeleton + `alert('TODO: ...')` stubs and mark for the developer.
 
 9. **Test after generation.** Run `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts` (Angular) and report summary + failing spec names.
 
@@ -187,7 +187,7 @@ Loaded by every track at the start of every feature. Each detects the track at r
   - **angular-portal** (16 principles): feature-first, signal-first, no cross-module imports, 4 canonical layouts, mock-first, OnPush default, …
   - **nextjs/build-website** (15 principles): App Router default, server components default, content-as-data, i18n localized pathnames, SEO non-negotiable, 30-min ISR default, real contact form, mobile-first, …
   - **nestjs** (14 principles, scaffold): bounded-context modules, BaseEntity/Repo/Service mandatory, guard order AuthGuard→Zod→HasPermission, Zod in shared package, thin controllers, explicit QueryRunner transactions, bilingual error messages, …
-- `_refs/angular-portal/core-version.md` — pinned `@sd-angular/core` version
+- `_refs/angular-portal/core-version.md` — pinned `@sdcorejs/angular` version
 - `_refs/angular-portal/sd-angular-core-catalog.md` — Core UI components inventory
 - `_refs/angular-portal/entity-field-types.md` — field type → form control mapping
 - `_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md` — code templates extracted from `12-init-entity.md` (split 2026-05-20 to keep SKILL.md under 500 lines)
@@ -199,7 +199,7 @@ Loaded by every track at the start of every feature. Each detects the track at r
 - ❌ Don't write `.sdcorejs/docs/`, `.sdcorejs/specs/`, `.sdcorejs/plans/`, or `.sdcorejs/memories/` content in this `sdcorejs-agent` repo. Auto-docs / auto-specs / auto-plans / memories always target the user's working project.
 - ❌ Don't load all skill bodies at session start. Just read frontmatter for dispatch; full body only when picking a skill.
 - ❌ Don't bypass git hooks (`--no-verify`) or `.gitignore`d files when committing.
-- ❌ Don't generate code that imports `@sd-angular/core` features not in the catalog (`_refs/angular-portal/sd-angular-core-catalog.md`) without first checking that file.
+- ❌ Don't generate code that imports `@sdcorejs/angular` features not in the catalog (`_refs/angular-portal/sd-angular-core-catalog.md`) without first checking that file.
 
 ## See also
 

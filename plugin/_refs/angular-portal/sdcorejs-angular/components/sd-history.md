@@ -2,11 +2,11 @@
 
 **Type**: Component
 **Selector**: `sd-history`
-**Import path**: `@sd-angular/core/components/history` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/history` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdHistoryItem`
 **Standalone**: yes
 **Change detection**: default
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Vertical timeline that renders a list of history/audit events — each with title, optional status badge, timestamp, actor, source, and description.

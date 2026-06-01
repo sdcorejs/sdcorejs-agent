@@ -2,11 +2,11 @@
 
 **Type**: Component
 **Selector**: `sd-inform`
-**Import path**: `@sd-angular/core/components/inform` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/inform` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdInform`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Page-level banner / alert (báo lỗi / cảnh báo / thông tin) neo trên page — a presentational notice with color, icon, title, description, optional action link and dismiss button. Presentational only: the consumer positions it.

@@ -2,11 +2,11 @@
 
 **Type**: Component (composite — works with `<sd-anchor-item>` children)
 **Selector**: `sd-anchor`
-**Import path**: `@sd-angular/core/components/anchor` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/anchor` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdAnchor`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Signal-based scroll-spy navigation (OnPush) — pairs a side TOC with the actual page sections so the active link auto-highlights as the user scrolls.

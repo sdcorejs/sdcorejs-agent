@@ -46,13 +46,13 @@ Stored as a signal: `state = signal<ViewState>('DETAIL')`.
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { SdPageComponent, SdPermissionDirective } from '@sd-angular/core/modules';
-import { SdButton, SdTabComponent } from '@sd-angular/core/components';
+import { SdPageComponent, SdPermissionDirective } from '@sdcorejs/angular/modules';
+import { SdButton, SdTabComponent } from '@sdcorejs/angular/components';
 import {
   SdInput, SdInputNumber, SdDate, SdDatetime,
   SdSelect, SdSwitch, SdTextarea, SdUploadFile,
-} from '@sd-angular/core/forms';
-import { SdLoadingService, SdNotifyService } from '@sd-angular/core/services';
+} from '@sdcorejs/angular/forms';
+import { SdLoadingService, SdNotifyService } from '@sdcorejs/angular/services';
 import { {{ entityPascal }}DTO, {{ entityPascal }}SaveReq } from '../../services/{{ entityKebab }}.model';
 import { {{ entityPascal }}Service } from '../../services/{{ entityKebab }}.service';
 ```
@@ -202,7 +202,7 @@ get pageTabColor(): string {
 For each schema field, render one control. The `[viewed]` / `[readonly]` flag binds to `state() === 'DETAIL'` so the same template serves all three states.
 
 ```html
-<!-- IMPORTANT: @sd-angular/core form components do NOT implement ControlValueAccessor.
+<!-- IMPORTANT: @sdcorejs/angular form components do NOT implement ControlValueAccessor.
      Bind the parent FormGroup via [form]="form" and the control name via name="...".
      Each component self-registers into form via addControl(...) on init. -->
 

@@ -30,7 +30,7 @@ Không giữ các cấu hình tsconfig không cần thiết.
 Khởi tạo portal starter ở một workspace hoàn toàn mới.
 Version package phải khớp chính xác với sdcorejs-agent/core/templates/angular-portal-starter/package.template.json.
 Không suy luận hoặc tự nâng version theo bất kỳ repo mẫu bên ngoài nào.
-Không dùng dependency kiểu file:*.tgz cho @sd-angular/core.
+Không dùng dependency kiểu file:*.tgz cho @sdcorejs/angular.
 Cho phép starter có src/app/pages/home và hỗ trợ điều hướng home qua LayoutConfiguration.homeUrl.
 Phải tạo src/libs/sample/modules/employee và src/libs/sample/modules/product.
 

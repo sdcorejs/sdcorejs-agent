@@ -2,11 +2,11 @@
 
 **Type**: Component
 **Selector**: `sd-editor`
-**Import path**: `@sd-angular/core/components/editor` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/editor` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdEditor`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Form-bound rich-text editor (CKEditor 5 ClassicEditor) with bold/italic/underline, font size & color, alignment, lists, and optional inline image upload + label/required/maxlength validation.

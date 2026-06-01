@@ -2,11 +2,11 @@
 
 **Type**: Component (form input)
 **Selector**: `sd-chip`
-**Import path**: `@sd-angular/core/forms/chip` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/chip` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdChip`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Multi-value tag input — user types and presses Enter/comma to add a chip; chips can be removed individually. Backed by Material `mat-chips` and integrates with SDCoreJS forms (`[form]+[name]`, validators, `[viewed]` read-only).

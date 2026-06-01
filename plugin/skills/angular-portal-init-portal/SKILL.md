@@ -1,6 +1,6 @@
 ---
 name: angular-portal-init-portal
-description: Use when initializing a brand-new Angular portal repo using `@sd-angular/core` baseline template. Generates project skeleton (app shell, environments, sample module, configurations). Triggers - "khởi tạo portal", "init portal", "create portal-X", "new portal repo", "tạo dự án portal mới". Bilingual (VI/EN).
+description: Use when initializing a brand-new Angular portal repo using `@sdcorejs/angular` baseline template. Generates project skeleton (app shell, environments, sample module, configurations). Triggers - "khởi tạo portal", "init portal", "create portal-X", "new portal repo", "tạo dự án portal mới". Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -29,7 +29,7 @@ This skill uses two placeholders wherever the Core UI package appears:
 
 1. Read [`_refs/angular-portal/core-version.md`](_refs/angular-portal/core-version.md) and extract `packageName` + `currentVersion`
 2. Substitute every `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` token in this skill's output with those values
-3. Apply the same substitution to import statements when the package name differs from the literal shown in templates (anticipates the planned migration `@sd-angular/core` → `@sdcorejs/angular`)
+3. Apply the same substitution to import statements when the package name differs from the literal shown in templates. New projects default to `@sdcorejs/angular`; a legacy project may pin `@sd-angular/core` (equivalent API) — rewrite imports to match `<CORE_UI_PACKAGE_NAME>` from `core-version.md`.
 4. NEVER hardcode a literal version string in generated `package.json` / commit message / verification text
 
 Single-file bump: change `_refs/angular-portal/core-version.md` and every future portal picks it up. Do NOT find-replace placeholders inside this skill file itself — they are intentional.

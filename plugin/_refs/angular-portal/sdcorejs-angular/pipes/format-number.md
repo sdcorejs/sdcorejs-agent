@@ -4,8 +4,8 @@
 **Pure**: yes (default)
 **Class**: `SdFormatNumberPipe` (also `@Injectable({ providedIn: 'root' })` — usable via DI)
 **Standalone**: yes
-**Import path**: `@sd-angular/core/pipes` (or direct: `@sd-angular/core/pipes/format-number`)
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Import path**: `@sdcorejs/angular/pipes` (or direct: `@sdcorejs/angular/pipes/format-number`)
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Locale-aware number formatting — uses Vietnamese style (`1.234.567,89`) when `SD_CORE_CONFIGURATION.format.number === '1.234.567,89'`, otherwise ISO style (`1,234,567.89`).
@@ -55,6 +55,6 @@ transform(value: any, digits?: number): string | null
 - Using to render percentages — pipe doesn't append `%`; format the number then concatenate.
 
 ## Related
-- `SD_CORE_CONFIGURATION` injection token from `@sd-angular/core/configurations`.
+- `SD_CORE_CONFIGURATION` injection token from `@sdcorejs/angular/configurations`.
 - `NumberUtilities.toVN` / `toISO` — underlying formatters.
 - `| sdEmpty` — placeholder for missing numeric values.

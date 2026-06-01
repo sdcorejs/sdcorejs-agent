@@ -3,12 +3,12 @@
 **Type**: DI Token (`InjectionToken<ISdCoreConfiguration>`) + interface (`ISdCoreConfiguration`)
 **Symbol**: `'sd-core.configuration'`
 **Class / Token**: `SD_CORE_CONFIGURATION`
-**Import path**: `@sd-angular/core/configurations`
+**Import path**: `@sdcorejs/angular/configurations`
 **Provided in**: NOT provided by default — consumer app must register it in `app.config.ts`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
-Root-level configuration token for `@sd-angular/core` — carries the per-domain license key(s) that unlock licensed features and global formatting preferences (e.g. number locale).
+Root-level configuration token for `@sdcorejs/angular` — carries the per-domain license key(s) that unlock licensed features and global formatting preferences (e.g. number locale).
 
 ## Interface
 
@@ -38,7 +38,7 @@ export const SD_CORE_CONFIGURATION = new InjectionToken<ISdCoreConfiguration>('s
 ```ts
 // app.config.ts
 import { ApplicationConfig } from '@angular/core';
-import { SD_CORE_CONFIGURATION, ISdCoreConfiguration } from '@sd-angular/core/configurations';
+import { SD_CORE_CONFIGURATION, ISdCoreConfiguration } from '@sdcorejs/angular/configurations';
 import { environment } from '../environments/environment';
 
 const sdCoreConfig: ISdCoreConfiguration = {
@@ -58,7 +58,7 @@ export const appConfig: ApplicationConfig = {
 
 ## Consumers
 
-The token is read internally by `@sd-angular/core` services and components that need a global setting:
+The token is read internally by `@sdcorejs/angular` services and components that need a global setting:
 
 - License-gated components / features: validate `licenseKey` against current `window.location.hostname` at bootstrap.
 - Number-formatting pipes and form fields: pick the thousands/decimal separator from `format.number`.
@@ -68,7 +68,7 @@ To read the token in your own code:
 
 ```ts
 import { inject } from '@angular/core';
-import { SD_CORE_CONFIGURATION } from '@sd-angular/core/configurations';
+import { SD_CORE_CONFIGURATION } from '@sdcorejs/angular/configurations';
 
 const config = inject(SD_CORE_CONFIGURATION, { optional: true });
 const numberFormat = config?.format?.number ?? '1,234,567.89';

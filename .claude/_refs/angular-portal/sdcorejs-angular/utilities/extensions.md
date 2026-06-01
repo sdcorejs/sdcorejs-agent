@@ -1,8 +1,8 @@
 # Utilities — Extensions
 
-**Import path**: `@sd-angular/core/utilities/extensions`
+**Import path**: `@sdcorejs/angular/utilities/extensions`
 **Canonical source**: every namespace below is re-exported from `@sdcorejs/utils/fns`. Prefer importing from `@sdcorejs/utils/fns` directly when there is no Angular dependency.
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 Pure-function utility namespaces. None of them mutate global prototypes — earlier monkey-patching has been deprecated in favour of explicit namespaced calls. Import the named export and call its members.
 

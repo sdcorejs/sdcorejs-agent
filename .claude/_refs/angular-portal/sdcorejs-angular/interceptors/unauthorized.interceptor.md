@@ -2,16 +2,16 @@
 
 **Type**: HttpInterceptor (Angular `HttpInterceptor` class-based, multi-provider)
 **Class**: `SdUnauthorizedInterceptor implements HttpInterceptor`
-**Import path**: `@sd-angular/core/interceptors` — single entry point. There is NO `…/unauthorized` secondary entry point: the `interceptors/` folder has one `index.ts` + `ng-package.json` that barrel-exports both `SdUnauthorizedInterceptor` and `SdNoInternetInterceptor`. Always import from `@sd-angular/core/interceptors`.
+**Import path**: `@sdcorejs/angular/interceptors` — single entry point. There is NO `…/unauthorized` secondary entry point: the `interceptors/` folder has one `index.ts` + `ng-package.json` that barrel-exports both `SdUnauthorizedInterceptor` and `SdNoInternetInterceptor`. Always import from `@sdcorejs/angular/interceptors`.
 **Provided in**: NOT provided by default — register via `HTTP_INTERCEPTORS` multi-provider
 **Dependencies**: `SdAuthService`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Centralizes unauthorized handling for all HTTP calls: when a request fails with `401`, trigger `authService.signout()` once to kick off the app's signout/redirect-to-login flow, then rethrow the original error so feature-level handlers still work as usual.
 
 ## When to use
-- Wire it in every Angular SPA built with `@sd-angular/core` that uses token-based authentication, so expired/revoked sessions are automatically signed out without per-screen 401 handling
+- Wire it in every Angular SPA built with `@sdcorejs/angular` that uses token-based authentication, so expired/revoked sessions are automatically signed out without per-screen 401 handling
 - Useful when multiple parallel API calls may return `401` simultaneously — the built-in `#unauthorizedHandled` guard ensures `signout()` fires exactly once regardless of concurrency
 
 ## Behavior
@@ -35,7 +35,7 @@ This prevents duplicate signout triggers when many parallel requests return `401
 // app.config.ts
 import { ApplicationConfig } from '@angular/core';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { SdUnauthorizedInterceptor } from '@sd-angular/core/interceptors';
+import { SdUnauthorizedInterceptor } from '@sdcorejs/angular/interceptors';
 
 export const appConfig: ApplicationConfig = {
   providers: [

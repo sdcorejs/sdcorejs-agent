@@ -2,11 +2,11 @@
 
 **Type**: Component (two related components, documented together — used as a pair)
 **Selectors**: `sd-splitter`, `sd-splitter-panel`
-**Import path**: `@sd-angular/core/components/splitter`
+**Import path**: `@sdcorejs/angular/components/splitter`
 **Classes**: `SdSplitterComponent`, `SdSplitterPanelComponent`
 **Standalone**: yes
 **Change detection**: Default (Angular default) on both — state is signal-driven via the internal `SplitterStateService`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ---
 
@@ -61,7 +61,7 @@ Resizable split-pane container — divides its area horizontally or vertically i
 | --- | --- |
 | `<sd-splitter-panel>` (default) | 2+ `<sd-splitter-panel>` children. Discovered via `contentChildren(SdSplitterPanelComponent)`. The splitter inserts `<sd-splitter-handle>` between each pair imperatively after render — do NOT place handles in the template yourself. |
 
-The handle component (`<sd-splitter-handle>`) is internal and NOT exported from `@sd-angular/core/components/splitter`. It is created via `createComponent()` and re-arranged into the DOM as `panel0 → handle0 → panel1 → handle1 → … → panelN`.
+The handle component (`<sd-splitter-handle>`) is internal and NOT exported from `@sdcorejs/angular/components/splitter`. It is created via `createComponent()` and re-arranged into the DOM as `panel0 → handle0 → panel1 → handle1 → … → panelN`.
 
 ### Visual cues (helps agent map screenshots → component)
 - A container `display: flex` (row when `horizontal`, column when `vertical`) with `overflow: hidden`
@@ -116,8 +116,8 @@ The handle component (`<sd-splitter-handle>`) is internal and NOT exported from 
 #### 3. Multi-panel layout with collapsible sidebars + imperative API
 ```ts
 import { Component, viewChild } from '@angular/core';
-import { SdSplitterComponent, SdSplitterPanelComponent } from '@sd-angular/core/components/splitter';
-import { SdButton } from '@sd-angular/core/components/button';
+import { SdSplitterComponent, SdSplitterPanelComponent } from '@sdcorejs/angular/components/splitter';
+import { SdButton } from '@sdcorejs/angular/components/button';
 
 @Component({
   selector: 'orders-workspace',
@@ -158,7 +158,7 @@ import { SdButton } from '@sd-angular/core/components/button';
 export class OrdersWorkspace {
   readonly splitter = viewChild<SdSplitterComponent>('splitter');
 
-  onResizeEnd(layout: import('@sd-angular/core/components/splitter').SplitterLayoutState) {
+  onResizeEnd(layout: import('@sdcorejs/angular/components/splitter').SplitterLayoutState) {
     // E.g. persist to backend or analytics
     console.log('user committed layout', layout);
   }
@@ -255,9 +255,9 @@ import type {
   SplitterPanelUnit,          // 'px' | 'flex'
   SplitterPanelState,         // { id, size, unit, collapsed }
   SplitterLayoutState,        // { v: 1, panels: SplitterPanelState[] }
-} from '@sd-angular/core/components/splitter';
+} from '@sdcorejs/angular/components/splitter';
 
-// Color / Size tokens used across `@sd-angular/core` come from @sdcorejs/utils:
+// Color / Size tokens used across `@sdcorejs/angular` come from @sdcorejs/utils:
 import type { Color, Size } from '@sdcorejs/utils';
 ```
 
@@ -276,4 +276,4 @@ import type { Color, Size } from '@sdcorejs/utils';
 - `<sd-tab-group>` — switch between views (mutually exclusive); use when only one region should be visible at a time
 - `<sd-section>` — single bordered card; use when you don't need a draggable seam
 - `<sd-page>` — top-level page chrome (header / content / footer); the splitter goes INSIDE the content area
-- `SdStorageService` (`@sd-angular/core/services/storage`) — the persistence layer used by `[storageKey]`
+- `SdStorageService` (`@sdcorejs/angular/services/storage`) — the persistence layer used by `[storageKey]`

@@ -2,11 +2,11 @@
 
 **Type**: Component (generic over `T`)
 **Selector**: `sd-table`
-**Import path**: `@sd-angular/core/components/table` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/table` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdTable<T = unknown> extends SdBaseSecureComponent`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 The standard list/table component of SDCoreJS — renders tabular data with paging, sorting, inline column filters, external (toolbar) filters, multi-select with bulk actions, row commands, expansion, grouping, sticky columns, drag-and-drop row reorder, **drag-to-resize columns with persistence**, Excel/CSV export, and column-config persistence. Used on virtually every list page.
@@ -259,7 +259,7 @@ The component extends `SdBaseSecureComponent`. Bulk actions (`selector.actions`)
 </sd-page>
 ```
 ```ts
-import { SdTable, SdTableOption } from '@sd-angular/core/components/table';
+import { SdTable, SdTableOption } from '@sdcorejs/angular/components/table';
 
 @ViewChild(SdTable) tableRef!: SdTable<Employee>;
 

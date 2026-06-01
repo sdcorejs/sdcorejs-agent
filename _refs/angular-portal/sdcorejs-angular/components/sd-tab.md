@@ -2,11 +2,11 @@
 
 **Type**: Component (two related components, documented together — used as a pair)
 **Selectors**: `sd-tab-group`, `sd-tab`
-**Import path**: `@sd-angular/core/components/tab`
+**Import path**: `@sdcorejs/angular/components/tab`
 **Classes**: `SdTabGroup extends SdBaseSecureComponent`, `SdTab`
 **Standalone**: yes
 **Change detection**: `OnPush` on both
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ---
 

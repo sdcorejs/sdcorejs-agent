@@ -1,10 +1,10 @@
 # Utilities — Models
 
-**Import path**: `@sd-angular/core/utilities/models`
+**Import path**: `@sdcorejs/angular/utilities/models`
 **Canonical source**: most types are re-exported from `@sdcorejs/utils/models` / `@sdcorejs/utils/constants`. Prefer importing from `@sdcorejs/utils` directly when there is no Angular dependency.
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
-Type-only contracts shared across `@sd-angular/core` components, services, and the consuming app (filters, paging, ordering, theming tokens, ...). No runtime code beyond a couple of small constants and one `SdOperators` lookup table (i18n-keyed, Angular-only).
+Type-only contracts shared across `@sdcorejs/angular` components, services, and the consuming app (filters, paging, ordering, theming tokens, ...). No runtime code beyond a couple of small constants and one `SdOperators` lookup table (i18n-keyed, Angular-only).
 
 | File | Exported types / values | Source | Purpose |
 | --- | --- | --- | --- |
@@ -25,7 +25,7 @@ Type-only contracts shared across `@sd-angular/core` components, services, and t
 
 - `Filter`, `Order`, `PagingReq` all parameterize over an entity type `T` and use `NestedKeyOf<T>` to constrain `field` keys at compile time.
 - `SdOperators` is the only file in this folder that emits non-trivial runtime output — every other re-export is a type alias / interface / small constant.
-- `pattern.model.ts` no longer depends on `@sd-angular/core/utilities/extensions`: regex strings live inside `VALIDATION_PATTERNS` records (sourced from `@sdcorejs/utils/constants`).
+- `pattern.model.ts` no longer depends on `@sdcorejs/angular/utilities/extensions`: regex strings live inside `VALIDATION_PATTERNS` records (sourced from `@sdcorejs/utils/constants`).
 
 ## Deprecated aliases (kept for back-compat)
 

@@ -2,12 +2,12 @@
 
 **Type**: Component
 **Selector**: `sd-code-editor`
-**Import path**: `@sd-angular/core/components/code-editor` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/code-editor` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdCodeEditor`
 **Standalone**: yes
 **Change detection**: `OnPush`
 **View encapsulation**: `None` (so PrismJS color tokens reach the DOM)
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Lightweight code viewer/editor with PrismJS syntax highlighting, copy-to-clipboard, and a friendly "macOS dots" header — supports `html`, `typescript`, `json`, `css`, `scss`. Two-way bindable via the `model` alias.
@@ -33,7 +33,7 @@ Lightweight code viewer/editor with PrismJS syntax highlighting, copy-to-clipboa
 | `maxHeight` | `string` | `'500px'` | Max height of the code area (CSS value); content scrolls vertically beyond this. |
 | `viewed` | `boolean` | `false` | `transform: booleanAttribute` — bare attribute = true. When true, hides the textarea and shows read-only highlighted code; header label switches to `(READ ONLY)`. When false, an editable textarea is overlaid on the highlighted code. |
 
-> **Exported type**: `CodeLanguage = 'html' | 'typescript' | 'json' | 'css' | 'scss'` — import from `@sd-angular/core/components/code-editor` when you need a typed variable.
+> **Exported type**: `CodeLanguage = 'html' | 'typescript' | 'json' | 'css' | 'scss'` — import from `@sdcorejs/angular/components/code-editor` when you need a typed variable.
 
 ## Outputs
 | Name | Type | Notes |

@@ -2,11 +2,11 @@
 
 **Type**: Component (form input)
 **Selector**: `sd-autocomplete`
-**Import path**: `@sd-angular/core/forms/autocomplete` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/autocomplete` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdAutocomplete<T = any>`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Typeahead single-select dropdown — user types to filter a static array OR an async backend source, then picks one item. Wraps Material `mat-autocomplete` with SDCoreJS label/validators/`viewed` read-only support.

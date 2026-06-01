@@ -4,8 +4,8 @@
 **Selector**: `[sdMobile]`
 **Class**: `SdMobileDirective`
 **Standalone**: yes (Angular 19 default — no `standalone: true` flag needed)
-**Import path**: `@sd-angular/core/directives` (or direct: `@sd-angular/core/directives/sd-mobile`)
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Import path**: `@sdcorejs/angular/directives` (or direct: `@sdcorejs/angular/directives/sd-mobile`)
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Structural directive that renders its host template ONLY on mobile viewports, evaluated once at construction time.

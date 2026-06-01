@@ -2,11 +2,11 @@
 
 **Type**: Component
 **Selector**: `sd-badge`
-**Import path**: `@sd-angular/core/components/badge` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/badge` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdBadge`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Status / label indicator — shows a state (success / warning / error / info / …) as a colored dot, icon-with-text, or pill tag. Not a primary action; render-only by default but can opt into clicks.

@@ -2,11 +2,11 @@
 
 **Type**: Form control (composes `<sd-input>`)
 **Selector**: `sd-input-color`
-**Import path**: `@sd-angular/core/forms/input-color`
+**Import path**: `@sdcorejs/angular/forms/input-color`
 **Class**: `SdInputColor`
 **Standalone**: yes
 **Change detection**: OnPush
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 A hex color input with a swatch suffix that opens the browser's native color picker. Users can type a hex value manually or pick visually — both update the same model.

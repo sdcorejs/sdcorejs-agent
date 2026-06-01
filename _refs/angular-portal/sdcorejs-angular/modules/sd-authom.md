@@ -1,8 +1,8 @@
 # AuthOM Module
 
 - **Type:** `EnvironmentProviders` (`provideSdAuthOm`) **or** `NgModule.forRoot` (`SdAuthOmModule`)
-- **Import path:** `@sd-angular/core/modules/authom`
-- **Library version:** `@sd-angular/core@19.0.0-beta.105`
+- **Import path:** `@sdcorejs/angular/modules/authom`
+- **Library version:** `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 
@@ -60,7 +60,7 @@ The factory `loadTenantConfig` is called once at app-init — fetch tenant confi
 **Standalone (`app.config.ts`):**
 ```ts
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideSdAuthOm, SdAuthOmInterceptor } from '@sd-angular/core/modules/authom';
+import { provideSdAuthOm, SdAuthOmInterceptor } from '@sdcorejs/angular/modules/authom';
 
 export const appConfig: ApplicationConfig = {
   providers: [

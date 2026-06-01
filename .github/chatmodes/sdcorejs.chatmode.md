@@ -60,7 +60,7 @@ For angular-portal, sub-skills under `07-write-code`:
 5. **Bilingual** — Vietnamese request → Vietnamese output (full diacritics for labels/messages). Permission codes + route paths stay English.
 6. **Clarify-before-code** — invoke `02-clarify-requirements` if module/entity/fields unspecified (or `01-brainstorm` for open-ended ideas).
 7. **Approval gates** — `04-review-spec` and `06-review-plan` require explicit user approval before the next skill runs. Approval immediately fires the corresponding auto-specs / auto-plans tail-call (rule 2).
-8. **Core UI first** — use `@sd-angular/core` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.
+8. **Core UI first** — use `@sdcorejs/angular` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.
 9. **Test after generation** — `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts`.
 
 ## Default behavior

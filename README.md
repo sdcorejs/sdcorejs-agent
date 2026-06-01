@@ -6,7 +6,7 @@ SDCoreJS turns Claude Code, GitHub Copilot, and Codex into accountable engineers
 
 Three first-class tracks, each with stack-specific conventions, generators, reviews, and tests:
 
-- **Angular Portal** — backoffice portals built on `@sd-angular/core` (Core UI)
+- **Angular Portal** — backoffice portals built on `@sdcorejs/angular` (Core UI)
 - **NestJS** — modular APIs with Postgres + DTOs + permissions
 - **Next.js** — public sites with bilingual content, SEO, ISR caching
 
@@ -57,7 +57,7 @@ Sub-skills under `07-write-code` (Angular Portal): `10-init-portal`, `11-init-mo
 2. **Memories** when the agent learns durable knowledge (a convention, a stakeholder constraint, an anti-pattern) → writes to **target project's** `.sdcorejs/memories/<track>/<topic>.md`. Indexed at session start.
 3. **Bilingual** — Vietnamese request → Vietnamese output (full diacritics). English → English. Permission codes + route paths stay English.
 4. **Clarify-before-code** — agent refuses to generate code without module ownership / entity name / key fields.
-5. **Core UI first** (Angular Portal) — use `@sd-angular/core` components; otherwise skeleton + `alert('TODO: ...')` stubs.
+5. **Core UI first** (Angular Portal) — use `@sdcorejs/angular` components; otherwise skeleton + `alert('TODO: ...')` stubs.
 6. **Test after generation** — run framework tests and report.
 
 ## Quick start in a target project

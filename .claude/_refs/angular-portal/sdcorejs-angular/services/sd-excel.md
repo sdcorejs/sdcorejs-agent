@@ -3,8 +3,8 @@
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdExcelService`
 **Provided in**: `'root'`
-**Import path**: `@sd-angular/core/services/excel`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Import path**: `@sdcorejs/angular/services/excel`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Browser-side Excel/CSV utilities — generate a styled `.xlsx` import-template, export tabular data to `.xlsx` or `.csv`, and parse a user-uploaded `.xlsx` back to plain JS objects.
@@ -119,7 +119,7 @@ None.
 
 ### 1. Import-template download
 ```typescript
-import { SdExcelService } from '@sd-angular/core/services/excel';
+import { SdExcelService } from '@sdcorejs/angular/services/excel';
 import { inject } from '@angular/core';
 
 const excel = inject(SdExcelService);

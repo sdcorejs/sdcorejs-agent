@@ -2,11 +2,11 @@
 
 **Type**: Component (form input)
 **Selector**: `sd-chip-calendar`
-**Import path**: `@sd-angular/core/forms/chip-calendar` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/chip-calendar` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdChipCalendar`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Multi-date picker rendered as chips — user opens a calendar popup and toggles individual dates; each selected date appears as a removable chip in the field. Uses Material `mat-chips` + `mat-calendar` inside a `mat-menu`.

@@ -2,11 +2,11 @@
 
 **Type**: Components (two complementary)
 **Selectors**: `sd-form-builder`, `sd-form-render`, `sd-feel-expression`
-**Import path**: `@sd-angular/core/components/form-generic` (own entry point — currently commented out of the `components` barrel, so import from the full path)
+**Import path**: `@sdcorejs/angular/components/form-generic` (own entry point — currently commented out of the `components` barrel, so import from the full path)
 **Classes**: `SdFormBuilder`, `SdFormRender`, `SdFeelExpression` (all `extends SdBaseSecureComponent`)
 **Standalone**: yes
 **Change detection**: `OnPush` (form-render); default (form-builder)
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 > **NOTE**: Despite the folder name `workflow`, this module does NOT render workflow-status timelines or transition badges. It is a **dynamic form schema system** — a designer (`<sd-form-builder>`) that produces an `SdFormGeneric` JSON, and a runtime renderer (`<sd-form-render>`) that materializes that JSON into a working Angular reactive form. For workflow status / actions UI, look elsewhere (skill `31-actions.md`) — that flow is implemented at the page level, not via this component.
 

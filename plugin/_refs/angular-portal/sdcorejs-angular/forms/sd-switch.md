@@ -2,11 +2,11 @@
 
 **Type**: Component (form input)
 **Selector**: `sd-switch`
-**Import path**: `@sd-angular/core/forms/switch` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/switch` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdSwitch`
 **Standalone**: yes (declared via `imports`)
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 iOS-style toggle switch — boolean ON/OFF in a single tap. Use for feature flags, settings, "active/inactive" rows where the change applies immediately or as part of a form submission.

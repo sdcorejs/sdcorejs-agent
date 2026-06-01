@@ -4,7 +4,7 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem. When you (GitHu
 
 ## Stacks supported
 
-- **Backoffice portals** in Angular with `@sd-angular/core` (Core UI)
+- **Backoffice portals** in Angular with `@sdcorejs/angular` (Core UI)
 - **Backend** in NestJS + Postgres
 - **Public sites** in Next.js (SSR)
 
@@ -88,7 +88,7 @@ Sub-skills under `07-write-code` (angular-portal track):
 
 7. **Approval gates.** `sdcorejs-review-spec` and `sdcorejs-review-plan` REQUIRE explicit user approval before proceeding. Approval immediately fires the corresponding auto-specs / auto-plans tail-call (rule 2).
 
-8. **Core UI first.** Use `@sd-angular/core` components when one fits. Otherwise generate skeleton + `alert('TODO: ...')` stubs and mark for the developer.
+8. **Core UI first.** Use `@sdcorejs/angular` components when one fits. Otherwise generate skeleton + `alert('TODO: ...')` stubs and mark for the developer.
 
 9. **Test after generation.** Run `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts` and report summary + failing spec names.
 
@@ -139,7 +139,7 @@ Cross-track skills — apply to all tracks. Dispatch by `description`; directory
 ## Reference docs (load on demand only)
 
 - `skills/shared/sdlc/_refs/{angular-portal,nextjs,nestjs}.md` — track-specific design-phase patterns
-- `skills/tracks/angular-portal/_refs/core-version.md` — pinned `@sd-angular/core` version
+- `skills/tracks/angular-portal/_refs/core-version.md` — pinned `@sdcorejs/angular` version
 - `skills/tracks/angular-portal/_refs/sd-angular-core-catalog.md` — Core UI components inventory
 - `skills/tracks/angular-portal/_refs/entity-field-types.md` — field type → form control mapping
 - `skills/tracks/angular-portal/_refs/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for 12-init-entity

@@ -2,11 +2,11 @@
 
 **Type**: Component (two related components, documented together — used as a pair)
 **Selectors**: `sd-stepper`, `sd-step`
-**Import path**: `@sd-angular/core/components/stepper`
+**Import path**: `@sdcorejs/angular/components/stepper`
 **Classes**: `SdStepper extends SdBaseSecureComponent`, `SdStep`
 **Standalone**: yes
 **Change detection**: `OnPush` on both
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ---
 

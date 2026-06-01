@@ -2,11 +2,11 @@
 
 **Type**: Component (form input)
 **Selector**: `sd-input`
-**Import path**: `@sd-angular/core/forms/input` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/input` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdInput`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Workhorse text input — single-line `text`/`email`/`password`/`number` field with label, validators (required/min/max-length/pattern), pattern presets, and DETAIL `[viewed]` read-only mode. Use this everywhere a user types free text.

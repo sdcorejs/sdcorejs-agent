@@ -19,11 +19,14 @@ set -euo pipefail
 # Pattern: semver-with-beta-suffix used by @sd-angular/core, e.g. 19.0.0-beta.93.
 VERSION_PATTERN='[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+'
 
-# Pattern: literal package name in IMPORT statements only (the prose body of
-# the skill may mention `@sd-angular/core` for documentation). We flag
-# `from '@sd-angular/core...'` and `import '@sd-angular/core...'` — anything
-# inside a TS code block that ships verbatim to the generated project.
-PKG_PATTERN="(from|import)[[:space:]]+['\"]@sd-angular/core"
+# Pattern: literal Core UI package name in IMPORT statements only (the prose
+# body of the skill may mention the package for documentation). We flag
+# `from '@sdcorejs/angular...'` / `from '@sd-angular/core...'` (and `import`) —
+# anything inside a TS code block that ships verbatim to the generated project.
+# Both names are flagged: init skills must use <CORE_UI_PACKAGE_NAME>, so the
+# project's actual package (new `@sdcorejs/angular` or legacy `@sd-angular/core`)
+# resolves from core-version.md at generation time.
+PKG_PATTERN="(from|import)[[:space:]]+['\"]@(sdcorejs/angular|sd-angular/core)"
 
 TARGETS=(
   "skills/tracks/angular-portal/10-init-portal.md"
@@ -69,9 +72,9 @@ for file in "$@"; do
     echo "✗ Package-name drift in $file (hardcoded import path):" >&2
     cat /tmp/core-drift.log >&2
     echo "" >&2
-    echo "  Replace '@sd-angular/core' in import statements with <CORE_UI_PACKAGE_NAME>." >&2
+    echo "  Replace the Core UI package name in import statements with <CORE_UI_PACKAGE_NAME>." >&2
     echo "  Source of truth: skills/tracks/angular-portal/_refs/core-version.md (packageName field)" >&2
-    echo "  Rationale: agent will rewrite when migrating to '@sdcorejs/angular'." >&2
+    echo "  Rationale: default is '@sdcorejs/angular'; legacy projects use '@sd-angular/core'. Agent resolves at generation time." >&2
     failed=1
   fi
 done

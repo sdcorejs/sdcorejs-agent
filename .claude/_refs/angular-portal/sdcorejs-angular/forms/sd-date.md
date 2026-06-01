@@ -2,11 +2,11 @@
 
 **Type**: Component (form input)
 **Selector**: `sd-date`
-**Import path**: `@sd-angular/core/forms/date` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/date` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdDate`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Single-date picker — Material datepicker with date-fns adapter (`dd/MM/yyyy` parse/display) plus SDCoreJS form-group registration, `[viewed]` read-only mode, and built-in min/max date validation messages.

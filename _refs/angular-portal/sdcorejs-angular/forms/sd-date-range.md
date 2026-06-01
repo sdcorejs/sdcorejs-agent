@@ -2,11 +2,11 @@
 
 **Type**: Component (form input)
 **Selector**: `sd-date-range`
-**Import path**: `@sd-angular/core/forms/date-range` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/date-range` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdDateRange`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Two-date range picker — user picks a start date AND an end date through a single 2-month calendar popup. Wraps Material `mat-date-range-picker` with SDCoreJS label/validators/min-max boundary support.

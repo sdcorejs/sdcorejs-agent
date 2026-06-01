@@ -2,11 +2,11 @@
 
 **Type**: Component
 **Selector**: `sd-document-builder`
-**Import path**: `@sd-angular/core/components/document-builder` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/document-builder` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdDocumentBuilder`
 **Standalone**: yes
 **Change detection**: default
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Full-featured WYSIWYG document composer (CKEditor 5 ClassicEditor) for authoring printable templates with headings, tables, images, page orientation, draggable variable placeholders, and inline comments — plus DOCX export.

@@ -2,11 +2,11 @@
 
 **Type**: Component
 **Selector**: `sd-query-builder`
-**Import path**: `@sd-angular/core/components/query-builder` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/query-builder` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdQueryBuilder`
 **Standalone**: yes
 **Change detection**: default (no `OnPush`)
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Visual filter / rule builder — lets the user compose nested AND/OR groups of `field operator value` conditions through a tree UI, suitable for advanced search, dynamic queries, or saved-filter editors.

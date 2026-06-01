@@ -63,7 +63,7 @@ cp src/environments/environment.template.ts src/environments/environment.develop
 # Then edit API_BASE_URL, AUTH_URL, etc.
 
 # 2. Verify Core UI installed
-grep -q '@sd-angular/core' package.json && echo "Core UI present" || echo "MISSING @sd-angular/core"
+grep -qE '@sdcorejs/angular|@sd-angular/core' package.json && echo "Core UI present" || echo "MISSING Core UI (@sdcorejs/angular new / @sd-angular/core legacy)"
 
 # 3. Dev server
 <pm> start                # usually `ng serve` under the hood
@@ -76,7 +76,7 @@ Verification:
 Common Angular failures:
 - `NG6100` / module-not-found → run install again, may have been interrupted
 - `Port 4200 is already in use` → `<pm> start -- --port 4201` or kill the holder
-- White screen + console error about `inject()` outside context → version mismatch between Angular and `@sd-angular/core`; check `_refs/angular-portal/core-version.md`
+- White screen + console error about `inject()` outside context → version mismatch between Angular and `@sdcorejs/angular`; check `_refs/angular-portal/core-version.md`
 
 #### NestJS
 ```bash

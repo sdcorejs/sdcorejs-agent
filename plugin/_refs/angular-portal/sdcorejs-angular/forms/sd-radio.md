@@ -2,11 +2,11 @@
 
 **Type**: Component (form input)
 **Selector**: `sd-radio`
-**Import path**: `@sd-angular/core/forms/radio` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/radio` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdRadio`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Radio-button group — user picks exactly ONE option from a small, fixed list. Items can be laid out inline (`row`) or stacked (`column`). Use when the full set of choices should be visible at once (≤ ~6 options); for longer lists, use `<sd-select>` instead.

@@ -4,8 +4,8 @@
 **Pure**: yes (default; no explicit `pure: false`)
 **Class**: `SdEmptyPipe`
 **Standalone**: yes
-**Import path**: `@sd-angular/core/pipes` (or direct: `@sd-angular/core/pipes/empty`)
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Import path**: `@sdcorejs/angular/pipes` (or direct: `@sdcorejs/angular/pipes/empty`)
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Replaces `null`, `undefined`, or empty-string values with the project-wide "empty" placeholder constant `EMPTY_STR` (typically `"-"` or `"--"` depending on configuration).
@@ -53,5 +53,5 @@ transform(value: any): string
 - Relying on pipe to coerce non-strings to string — only the empty-replacement path returns the constant; pass-through values keep their original type.
 
 ## Related
-- `EMPTY_STR` constant from `@sd-angular/core/utilities/models` — the placeholder string itself.
+- `EMPTY_STR` constant from `@sdcorejs/angular/utilities/models` — the placeholder string itself.
 - `| sdFormatNumber` — pair with `| sdEmpty` for "missing number" cells.

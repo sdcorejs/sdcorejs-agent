@@ -69,7 +69,7 @@ Expected: Agent invokes `angular-portal-init-portal`. May still clarify some det
 Pass criteria:
 - Recognizes "portal-shop" as portal name
 - Recognizes the 4 envs
-- References Core UI / `@sd-angular/core` baseline template
+- References Core UI / `@sdcorejs/angular` baseline template
 - Proposes a plan or directly invokes init steps
 
 ### Test 6 — Approval gate
@@ -86,7 +86,7 @@ Pass criteria:
 
 ### Setup
 
-Clone a target Angular portal project (one that uses `@sd-angular/core`). Then:
+Clone a target Angular portal project (one that uses `@sdcorejs/angular`). Then:
 
 ```bash
 cd <target-portal-project>

@@ -2,11 +2,11 @@
 
 **Type**: Component (two related components, documented together — they are typically used as a pair)
 **Selectors**: `sd-section`, `sd-section-item`
-**Import path**: `@sd-angular/core/components/section` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/section` (or barrel: `@sdcorejs/angular/components`)
 **Classes**: `SdSection extends SdBaseSecureComponent`, `SdSectionItem`
 **Standalone**: yes
 **Change detection**: default (signals-driven)
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ---
 

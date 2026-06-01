@@ -3,8 +3,8 @@
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdNotifyService`
 **Provided in**: `'root'`
-**Import path**: `@sd-angular/core/services/notify`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Import path**: `@sdcorejs/angular/services/notify`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Toast notification service that auto-mounts a `SdToastContainerComponent` on `body` and exposes immediate (`success`, `info`) and debounced/buffered (`warning`, `error`) APIs backed by an Angular `signal<ToastData[]>`.
@@ -113,7 +113,7 @@ export interface ToastData {
 
 ### 1. Success after save
 ```typescript
-import { SdNotifyService } from '@sd-angular/core/services/notify';
+import { SdNotifyService } from '@sdcorejs/angular/services/notify';
 import { inject } from '@angular/core';
 
 class EditorPage {
@@ -213,6 +213,6 @@ Covers (25 specs total):
 - Do NOT use this for blocking confirmations (`Are you sure?`) — toasts dismiss themselves; use `SdConfirmService`.
 
 ## Related
-- `SdConfirmService` (`@sd-angular/core/services/confirm`) — modal alternative for blocking interactions.
-- `SdToastContainerComponent` (`@sd-angular/core/services/notify/components`) — the rendered host. Customize via global CSS.
+- `SdConfirmService` (`@sdcorejs/angular/services/confirm`) — modal alternative for blocking interactions.
+- `SdToastContainerComponent` (`@sdcorejs/angular/services/notify/components`) — the rendered host. Customize via global CSS.
 - `Utilities.generateUuid` (`@sdcorejs/utils/fns`) — used internally for toast ids.

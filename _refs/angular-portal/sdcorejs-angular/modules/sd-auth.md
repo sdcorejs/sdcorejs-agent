@@ -1,8 +1,8 @@
 # Auth Module
 
 - **Type:** Tree-shakable services + guards (no `@NgModule`, providers via `providedIn: 'root'`)
-- **Import path:** `@sd-angular/core/modules/auth`
-- **Library version:** `@sd-angular/core@19.0.0-beta.105`
+- **Import path:** `@sdcorejs/angular/modules/auth`
+- **Library version:** `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 
@@ -12,7 +12,7 @@ Provider-agnostic auth abstraction: app supplies sign-out / change-password acti
 
 - App already owns its auth flow (Keycloak, AuthOM, custom backend) and just wants a uniform `SdAuthService` for the layout/header to call `signout()` / `changePassword()` and read `getAuthInfo()`.
 - Need `SdAuthGuard` / `SdPortalGuard` route guards that an app can wire into `canActivate` / `canActivateChild` without coupling to a specific auth library.
-- Pair with `@sd-angular/core/modules/keycloak` or `@sd-angular/core/modules/authom` — those modules implement the actual sign-in / token logic, while this module gives the app shell a stable surface to consume.
+- Pair with `@sdcorejs/angular/modules/keycloak` or `@sdcorejs/angular/modules/authom` — those modules implement the actual sign-in / token logic, while this module gives the app shell a stable surface to consume.
 
 ## What it provides
 
@@ -58,8 +58,8 @@ Standalone (Angular 19) — `app.config.ts`:
 
 ```ts
 import { ApplicationConfig } from '@angular/core';
-import { SD_AUTH_CONFIGURATION } from '@sd-angular/core/modules/auth';
-import { SdKeycloakService } from '@sd-angular/core/modules/keycloak';
+import { SD_AUTH_CONFIGURATION } from '@sdcorejs/angular/modules/auth';
+import { SdKeycloakService } from '@sdcorejs/angular/modules/keycloak';
 
 export const appConfig: ApplicationConfig = {
   providers: [

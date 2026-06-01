@@ -2,11 +2,11 @@
 
 **Type**: Component
 **Selector**: `sd-side-drawer`
-**Import path**: `@sd-angular/core/components/side-drawer` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/side-drawer` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdSideDrawer extends SdBaseSecureComponent`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Right-edge slide-in panel rendered into `document.body` via CDK Portal — used for "create / edit / detail" forms that don't deserve a full route, but need more room than a modal: filters, side-by-side review, multi-step forms.

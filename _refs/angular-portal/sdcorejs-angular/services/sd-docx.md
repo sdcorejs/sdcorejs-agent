@@ -3,8 +3,8 @@
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdDocxService`
 **Provided in**: `'root'`
-**Import path**: `@sd-angular/core/services/docx`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Import path**: `@sdcorejs/angular/services/docx`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Converts `.doc` / `.docx` files to standalone HTML in the browser by lazily loading a Pandoc WebAssembly binary; exposes both an "open file picker" flow and a programmatic conversion API.
@@ -103,7 +103,7 @@ None. Constructor injects `SdNotifyService` and `SdLoadingService` for UX feedba
 
 ### 1. Preview a user-selected DOCX
 ```typescript
-import { SdDocxService } from '@sd-angular/core/services/docx';
+import { SdDocxService } from '@sdcorejs/angular/services/docx';
 import { inject } from '@angular/core';
 
 const docx = inject(SdDocxService);
@@ -138,6 +138,6 @@ await docx.convertToHtml(blob, { validateFormat: false, validateSize: false });
 - Do NOT call `open()` from non-user-gesture code paths — browsers may block the synthetic file picker click.
 
 ## Related
-- `SdLoadingService` (`@sd-angular/core/services/loading`) — global spinner toggled around `open()`.
-- `SdNotifyService` (`@sd-angular/core/services/notify`) — error toasts on validation/conversion failure.
+- `SdLoadingService` (`@sdcorejs/angular/services/loading`) — global spinner toggled around `open()`.
+- `SdNotifyService` (`@sdcorejs/angular/services/notify`) — error toasts on validation/conversion failure.
 - `pandoc-core` (sibling file) — thin wrapper around the Pandoc WASM module.

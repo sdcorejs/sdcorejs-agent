@@ -1,13 +1,13 @@
-# SD Angular Core Catalog Snapshot
+# SDCoreJS Angular Catalog Snapshot
 
-This file is an internal knowledge snapshot for `@sd-angular/core` component capability used by angular-portal skills.
+This file is an internal knowledge snapshot for `@sdcorejs/angular` component capability used by angular-portal skills. (`@sdcorejs/angular` is the new default package name; legacy projects use the equivalent `@sd-angular/core` — same API surface.)
 
 Source policy:
 - Knowledge is copied into `sdcorejs-agent` and consumed from this repository only.
 - Do not require runtime references to external repositories.
 
 Version baseline:
-- @sd-angular/core: read from `core-version.md`
+- `@sdcorejs/angular`: read packageName + currentVersion from `core-version.md`
 
 ## Components
 

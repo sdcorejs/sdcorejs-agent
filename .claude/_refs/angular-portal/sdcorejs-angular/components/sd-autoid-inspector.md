@@ -2,11 +2,11 @@
 
 **Type**: Component (DevTool / QA helper)
 **Selector**: `sd-autoid-inspector`
-**Import path**: `@sd-angular/core/components/autoid-inspector` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/autoid-inspector` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdAutoidInspector`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Floating dev/QA inspector — quét toàn bộ `[data-autoid]` trên page, audit element thiếu/trùng autoid, export danh sách ra CSV / JSON / Markdown POM skeleton cho AI viết auto-test.
@@ -116,7 +116,7 @@ Reuse được riêng — vd batch audit / CI script chỉ cần `SdAutoidScanne
 ### 1. Bật ở môi trường dev (Angular module bootstrap)
 ```ts
 // app.module.ts
-import { SdAutoidInspector } from '@sd-angular/core/components/autoid-inspector';
+import { SdAutoidInspector } from '@sdcorejs/angular/components/autoid-inspector';
 import { environment } from '../environments/environment';
 
 @NgModule({
@@ -135,7 +135,7 @@ export class AppModule {
 
 ### 2. Standalone bootstrap (Angular 19)
 ```ts
-import { SdAutoidInspector } from '@sd-angular/core/components/autoid-inspector';
+import { SdAutoidInspector } from '@sdcorejs/angular/components/autoid-inspector';
 
 @Component({
   selector: 'app-root',
@@ -162,7 +162,7 @@ export class AppComponent {}
 import {
   SdAutoidScannerService,
   SdAutoidAuditService,
-} from '@sd-angular/core/components/autoid-inspector';
+} from '@sdcorejs/angular/components/autoid-inspector';
 
 const scanner = new SdAutoidScannerService();
 const auditor = new SdAutoidAuditService();
@@ -229,7 +229,7 @@ export class CustomerCreatePage {
 ```
 
 ## Styling
-- Dùng **CSS custom properties** từ `@sd-angular/core` theme (`--sd-primary`, `--sd-primary-light/dark`, `--sd-info`, `--sd-success`, `--sd-warning`, `--sd-error` + `--sd-black100..500`).
+- Dùng **CSS custom properties** từ `@sdcorejs/angular` theme (`--sd-primary`, `--sd-primary-light/dark`, `--sd-info`, `--sd-success`, `--sd-warning`, `--sd-error` + `--sd-black100..500`).
 - Override màu sắc bằng cách override CSS variable ở `:root` hoặc theme parent — không cần đụng SCSS.
 - Fallback hex chỉ áp dụng khi consumer chưa import `sd-core.scss`.
 
@@ -254,7 +254,7 @@ Element nằm trong `<sd-table>` được tách thành section riêng `Inside <c
 
 ## E2E test attributes
 
-Cùng convention với các component khác trong `@sd-angular/core` (xem [`projects/sd-angular/docs/E2E-ATTRIBUTES.md`](../../docs/E2E-ATTRIBUTES.md)). Inspector hiển thị runtime state của các component KHÁC trên trang — xem mục **State display** ở trên. Vì đây là devtool, các attribute trên chính inspector tập trung vào **trạng thái runtime của inspector** thay vì `value/empty/invalid`.
+Cùng convention với các component khác trong `@sdcorejs/angular` (xem [`projects/sd-angular/docs/E2E-ATTRIBUTES.md`](../../docs/E2E-ATTRIBUTES.md)). Inspector hiển thị runtime state của các component KHÁC trên trang — xem mục **State display** ở trên. Vì đây là devtool, các attribute trên chính inspector tập trung vào **trạng thái runtime của inspector** thay vì `value/empty/invalid`.
 
 ### FAB button — `data-autoid="sd-autoid-inspector-fab"`
 

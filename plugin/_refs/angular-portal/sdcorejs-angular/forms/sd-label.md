@@ -2,11 +2,11 @@
 
 **Type**: Component (presentational — NOT a form control)
 **Selector**: `sd-label`
-**Import path**: `@sd-angular/core/forms/label` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/label` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdLabel`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Tiny presentational label primitive — renders the standard SDCoreJS field label row: `<text> [info-icon-with-tooltip] [*]` plus an optional description. Used internally by every `<sd-input>` / `<sd-select>` / `<sd-autocomplete>` / `<sd-date>` / etc. — and exposed for places where you need the same label styling without a form field.
@@ -54,9 +54,9 @@ None — all rendering is driven by the four inputs.
 ### 0. Import vào component
 
 ```ts
-import { SdLabel } from '@sd-angular/core/forms/label';
+import { SdLabel } from '@sdcorejs/angular/forms/label';
 // hoặc barrel:
-// import { SdLabel } from '@sd-angular/core/forms';
+// import { SdLabel } from '@sdcorejs/angular/forms';
 
 @Component({
   standalone: true,

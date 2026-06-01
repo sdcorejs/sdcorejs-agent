@@ -2,11 +2,11 @@
 
 **Type**: Component
 **Selector**: `sd-query-bar`
-**Import path**: `@sd-angular/core/components/query-bar`
+**Import path**: `@sdcorejs/angular/components/query-bar`
 **Class**: `SdQueryBar`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 > Status: **v1.1 — full decomposition (7/7 sub-components extracted)**. Inline + popover modes, build flow, saved-filters, multi-select head+N display, BETWEEN date-range unified. Design source: `refs/design_handoff_sd_query_bar/`.
 
@@ -37,7 +37,7 @@ Pick via `[mode]`:
 
 ## Models
 
-Reuses `Filter` and `Operator` from `@sdcorejs/utils/models` (re-exported by `@sd-angular/core/utilities/models`). No new operator vocabulary.
+Reuses `Filter` and `Operator` from `@sdcorejs/utils/models` (re-exported by `@sdcorejs/angular/utilities/models`). No new operator vocabulary.
 
 ```ts
 // Field config — discriminated union by `type` (mirrors sd-table column.type)
@@ -236,7 +236,7 @@ Without a key both buttons stay disabled / hidden. `<sd-query-saved-filters-menu
 
 ## Dependencies
 
-Internal: `@sd-angular/core/components/{operator, button}`, `@sd-angular/core/forms/{input, input-number, select, date, datetime, date-range}`, `@sd-angular/core/i18n`.
+Internal: `@sdcorejs/angular/components/{operator, button}`, `@sdcorejs/angular/forms/{input, input-number, select, date, datetime, date-range}`, `@sdcorejs/angular/i18n`.
 External: `@sdcorejs/utils` `^1.1.2` (`OPERATORS` table + `BETWEEN` icon).
 
 ## Test status

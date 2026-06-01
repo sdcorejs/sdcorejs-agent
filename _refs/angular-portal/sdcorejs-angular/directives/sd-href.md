@@ -4,8 +4,8 @@
 **Selector**: `a[sdHref]` (only matches an `<a>` element)
 **Class**: `SdHrefDirective`
 **Standalone**: yes
-**Import path**: `@sd-angular/core/directives` (or direct: `@sd-angular/core/directives/sd-href`)
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Import path**: `@sdcorejs/angular/directives` (or direct: `@sdcorejs/angular/directives/sd-href`)
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Smart `<a>` href that uses Angular Router for internal links and `window.open(_, '_blank')` for external (`http(s)://`) links.

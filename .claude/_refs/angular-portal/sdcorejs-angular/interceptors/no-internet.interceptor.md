@@ -2,13 +2,13 @@
 
 **Type**: HttpInterceptor (Angular `HttpInterceptor` class-based, multi-provider)
 **Class**: `SdNoInternetInterceptor implements HttpInterceptor`
-**Import path**: `@sd-angular/core/interceptors/no-internet` (or barrel `@sd-angular/core/interceptors`)
+**Import path**: `@sdcorejs/angular/interceptors/no-internet` (or barrel `@sdcorejs/angular/interceptors`)
 **Provided in**: NOT provided by default — register via `HTTP_INTERCEPTORS` multi-provider
-**Dependencies**: `MatSnackBar` (Angular Material), `I18nService` (`@sd-angular/core/i18n`), `HttpClient` (lazy, resolved via `Injector` to avoid circular DI), `Injector` (Angular core)
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Dependencies**: `MatSnackBar` (Angular Material), `I18nService` (`@sdcorejs/angular/i18n`), `HttpClient` (lazy, resolved via `Injector` to avoid circular DI), `Injector` (Angular core)
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## When to use
-- Wire it in every Angular SPA built with `@sd-angular/core` that makes HTTP calls to remote APIs, so users get a clear offline notification instead of silent failure
+- Wire it in every Angular SPA built with `@sdcorejs/angular` that makes HTTP calls to remote APIs, so users get a clear offline notification instead of silent failure
 - Useful when requests fail intermittently in low-connectivity environments (mobile, flaky wifi) — the interceptor distinguishes real offline from CORS/SSL/server-block before showing any notification
 - Pair with `SdUnauthorizedInterceptor` to cover all resilience scenarios: offline, CORS, 503, and 401
 
@@ -38,7 +38,7 @@ The "Tải lại trang" snackbar action calls `window.location.reload()`.
 // app.config.ts
 import { ApplicationConfig } from '@angular/core';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { SdNoInternetInterceptor } from '@sd-angular/core/interceptors';
+import { SdNoInternetInterceptor } from '@sdcorejs/angular/interceptors';
 
 export const appConfig: ApplicationConfig = {
   providers: [

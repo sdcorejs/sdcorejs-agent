@@ -50,10 +50,10 @@ For each outdated package, decide its risk tier:
 | **Patch** (1.2.3 → 1.2.4) | semver patch only, no breaking | Batch with other patches, single PR |
 | **Minor** (1.2.x → 1.3.0) | new features, no breaking promised | Group by ecosystem; read each changelog |
 | **Major** (1.x → 2.0) | breaking | One package per PR; read migration guide |
-| **Pinned** (e.g. `@sd-angular/core`) | locked by reference doc | DO NOT upgrade without re-pinning ref; see `_refs/angular-portal/core-version.md` |
+| **Pinned** (e.g. `@sdcorejs/angular`) | locked by reference doc | DO NOT upgrade without re-pinning ref; see `_refs/angular-portal/core-version.md` |
 | **Critical security** | npm audit High/Critical | Out-of-band fix, highest priority |
 
-For `@sd-angular/core` specifically — read `_refs/angular-portal/core-version.md`. If the target project pins to a version, do NOT upgrade unilaterally; ask the user and update the reference doc together.
+For `@sdcorejs/angular` specifically — read `_refs/angular-portal/core-version.md`. If the target project pins to a version, do NOT upgrade unilaterally; ask the user and update the reference doc together.
 
 ### 4. Upgrade — one logical group at a time
 
@@ -149,7 +149,7 @@ If the only fix requires a major upgrade → that's a separate workflow (step 3 
 
 ### Angular Portal
 - `@angular/*` packages MUST be upgraded together (same major)
-- `@sd-angular/core` is pinned via `_refs/angular-portal/core-version.md` — coordinate
+- `@sdcorejs/angular` is pinned via `_refs/angular-portal/core-version.md` — coordinate
 - `@angular/cli` major upgrades come with `ng update` schematics — prefer that to manual edits
 - TypeScript version is bounded by the Angular version's `peerDependencies`
 
@@ -172,7 +172,7 @@ If the only fix requires a major upgrade → that's a separate workflow (step 3 
 - One logical group per commit (patches OK to batch, majors never)
 - Run tests + lint + smoke between groups
 - Read the changelog for any minor/major upgrade — at least the breaking-change section
-- Update `_refs/angular-portal/core-version.md` if `@sd-angular/core` is bumped
+- Update `_refs/angular-portal/core-version.md` if `@sdcorejs/angular` is bumped
 - Commit lockfile changes — never `.gitignore` them
 
 ### MUST NOT

@@ -2,11 +2,11 @@
 
 **Type**: Component (form input)
 **Selector**: `sd-textarea`
-**Import path**: `@sd-angular/core/forms/textarea` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/textarea` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdTextarea`
 **Standalone**: yes
 **Change detection**: default (no `OnPush` declared)
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Multi-line text input — `<textarea>` with label, validators (required/maxlength/pattern/custom), an optional auto-grow mode, a built-in `count/max` suffix counter when `maxlength` is set, and DETAIL `[viewed]` read-only mode.

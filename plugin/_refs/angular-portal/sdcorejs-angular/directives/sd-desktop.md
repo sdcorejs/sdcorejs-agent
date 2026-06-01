@@ -4,8 +4,8 @@
 **Selector**: `[sdDesktop]`
 **Class**: `SdDesktopDirective`
 **Standalone**: no (declared module-style — no `standalone: true` flag)
-**Import path**: `@sd-angular/core/directives` (or direct: `@sd-angular/core/directives/sd-desktop`)
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Import path**: `@sdcorejs/angular/directives` (or direct: `@sdcorejs/angular/directives/sd-desktop`)
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Structural directive that renders its template ONLY on desktop (non-mobile) viewports.
@@ -58,4 +58,4 @@ None.
 
 ## Related
 - `*sdMobile` — the inverse: renders only on mobile.
-- `BrowserUtilities.isMobile()` — underlying detection helper (exported from `@sd-angular/core/utilities/extensions`).
+- `BrowserUtilities.isMobile()` — underlying detection helper (exported from `@sdcorejs/angular/utilities/extensions`).

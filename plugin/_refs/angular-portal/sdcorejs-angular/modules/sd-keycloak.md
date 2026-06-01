@@ -1,8 +1,8 @@
 # Keycloak Module
 
 - **Type:** `EnvironmentProviders` (`provideSdKeycloak`) **or** `NgModule.forRoot` (`SdKeycloakModule`)
-- **Import path:** `@sd-angular/core/modules/keycloak`
-- **Library version:** `@sd-angular/core@19.0.0-beta.105`
+- **Import path:** `@sdcorejs/angular/modules/keycloak`
+- **Library version:** `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 
@@ -52,7 +52,7 @@ interface ISdKeycloakConfiguration {
 **Standalone (`app.config.ts`):**
 ```ts
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideSdKeycloak, SdKeycloakInterceptor } from '@sd-angular/core/modules/keycloak';
+import { provideSdKeycloak, SdKeycloakInterceptor } from '@sdcorejs/angular/modules/keycloak';
 
 export const appConfig: ApplicationConfig = {
   providers: [

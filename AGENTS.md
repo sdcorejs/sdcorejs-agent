@@ -106,7 +106,7 @@ To avoid drift, the source of truth for these rules is `CLAUDE.md`. Summary:
 
 7. **Approval gates** — `sdcorejs-review-spec` and `sdcorejs-review-plan` require explicit user approval before the next skill runs. Approval immediately fires the corresponding auto-specs / auto-plans tail-call (rule 2).
 
-8. **Core UI first** — use `@sd-angular/core` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.
+8. **Core UI first** — use `@sdcorejs/angular` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.
 
 9. **Test after generation** — `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts` and report summary.
 
@@ -151,7 +151,7 @@ Cross-track skills — apply to angular-portal, nestjs, nextjs alike. Dispatch i
 ## Reference docs (load on demand)
 
 - `_refs/sdlc/{angular-portal,nextjs,nestjs}.md` — track-specific design-phase patterns
-- `_refs/angular-portal/core-version.md` — pinned `@sd-angular/core` version
+- `_refs/angular-portal/core-version.md` — pinned `@sdcorejs/angular` version
 - `_refs/angular-portal/sd-angular-core-catalog.md` — Core UI components inventory
 - `_refs/angular-portal/entity-field-types.md` — field type → form control mapping
 - `_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for 12-init-entity

@@ -2,12 +2,12 @@
 
 **Type**: Component family (4 separate components, one per chart type)
 **Selectors**: `sd-bar-chart`, `sd-line-chart`, `sd-pie-chart`, `sd-doughnut-chart`
-**Import path**: `@sd-angular/core/components/chart` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/chart` (or barrel: `@sdcorejs/angular/components`)
 **Classes**: `SdBarChartComponent`, `SdLineChartComponent`, `SdPieChartComponent`, `SdDoughnutChartComponent`
 **Standalone**: yes
 **Change detection**: `OnPush`
 **Underlying engine**: [Chart.js](https://www.chartjs.org/) (all `registerables` registered)
-**Library version**: `@sd-angular/core@19.0.0-beta.105`
+**Library version**: `@sdcorejs/angular@20.0.0`
 
 ## One-line purpose
 Thin signal-based wrappers around Chart.js — render bar / line / pie / doughnut visualizations from declarative `data` / `options` / `plugins` inputs, with auto-update on signal changes.

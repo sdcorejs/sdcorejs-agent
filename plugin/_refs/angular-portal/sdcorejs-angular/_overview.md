@@ -1,4 +1,4 @@
-# @sd-angular/core — Reference Catalog (v19.0.0-beta.105)
+# @sdcorejs/angular — Reference Catalog (v20.0.0)
 
 Concise index of every component, form, service, module, directive, pipe, handler, interceptor, utility, and configuration in the SDCoreJS Angular library. Agents load this file to know WHAT exists; load specific docs on demand.
 
@@ -150,7 +150,7 @@ Feature bundles (services + directives + components + guards) — opt-in via `im
 
 ## i18n (1)
 
-- [`I18nService` + `| translate`](i18n/i18n.md) — Bilingual+ runtime (default `vi/en/ja/ko/zh`) for every user-facing string inside `@sd-angular/core`: signal-based `I18nService`, `pure: true` `| translate` pipe, type-safe key catalog from `EN_MESSAGES`, custom-language hook. NOT re-exported from the main barrel — import from `@sd-angular/core/i18n`.
+- [`I18nService` + `| translate`](i18n/i18n.md) — Bilingual+ runtime (default `vi/en/ja/ko/zh`) for every user-facing string inside `@sdcorejs/angular`: signal-based `I18nService`, `pure: true` `| translate` pipe, type-safe key catalog from `EN_MESSAGES`, custom-language hook. NOT re-exported from the main barrel — import from `@sdcorejs/angular/i18n`.
 
 ## Utilities + Configurations
 
@@ -168,4 +168,4 @@ When an agent needs to pick a component / service / etc. for a request:
 4. Cross-reference the per-file `When NOT to use` and `Related` sections to avoid wrong choices.
 5. If nothing matches, fall back to a generic Material / Angular CDK primitive and mark with `alert('TODO: ...')` so the developer reviews.
 
-This catalog is generated from `@sd-angular/core@19.0.0-beta.105`. Canonical MD lives next to each source file in the upstream `@sd-angular/core` repo (under `projects/sd-angular/<path>/`); this folder is a near-identical mirror (each file adds a `**Library version**` banner line). When the library version changes, regenerate or re-sync from canonical.
+This catalog is generated from `@sdcorejs/angular@20.0.0` (new default package name; legacy projects use the equivalent `@sd-angular/core` — identical API, swap the import prefix). Canonical MD lives next to each source file in the upstream library repo `vn-angular` (under `projects/sd-angular/<path>/`, still published there as `@sd-angular/core`); this folder is a near-identical mirror with the package name mapped to `@sdcorejs/angular` and a `**Library version**` banner added. When re-syncing, map `@sd-angular/core` → `@sdcorejs/angular` (see `core-version.md` → Upgrade Procedure).
