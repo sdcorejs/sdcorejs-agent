@@ -38,7 +38,7 @@ import { MockComponent, MockProvider } from 'ng-mocks';
 
 import { ProductListComponent } from './list.component';
 import { ProductService } from '../../services/product.service';
-import { SD_API_CONFIGURATION } from '@sd-angular/core';
+import { SD_API_CONFIGURATION } from '@sdcorejs/angular';
 
 describe('ProductListComponent — integration', () => {
   let component: ProductListComponent;
@@ -156,11 +156,11 @@ describe('ProductCreateComponent — submit flow', () => {
 
 ### Step 3 — Mocking Core UI components
 
-Don't import the real `@sd-angular/core` components in unit/integration tests — they pull dozens of dependencies. Use `ng-mocks` to stub them:
+Don't import the real `@sdcorejs/angular` components in unit/integration tests — they pull dozens of dependencies. Use `ng-mocks` to stub them:
 
 ```typescript
 import { MockComponent } from 'ng-mocks';
-import { SdTableComponent, SdSearchBoxComponent } from '@sd-angular/core';
+import { SdTableComponent, SdSearchBoxComponent } from '@sdcorejs/angular';
 
 await TestBed.configureTestingModule({
   imports: [

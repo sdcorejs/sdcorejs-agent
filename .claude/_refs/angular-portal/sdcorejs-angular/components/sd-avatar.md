@@ -2,12 +2,11 @@
 
 **Type**: Component
 **Selector**: `sd-avatar`
-**Import path**: `@sd-angular/core/components/avatar` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/avatar` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdAvatar`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Circular user avatar — auto-displays a profile image when `src` is a URL, otherwise generates colorful initials from the name (deterministic per name).

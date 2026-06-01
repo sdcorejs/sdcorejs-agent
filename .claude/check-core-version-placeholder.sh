@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Enforce: skills/tracks/angular-portal/{10-init-portal,11-init-module,12-init-entity}.md
 # must use the <CORE_VERSION> and <CORE_UI_PACKAGE_NAME> placeholders — never a
-# hardcoded literal like "19.0.0-beta.93" or "@sd-angular/core" in import paths.
+# hardcoded version or Core UI package name in import paths.
 #
 # Source of truth: skills/tracks/angular-portal/_refs/core-version.md.
 # The agent reads `packageName` + `currentVersion` from there and substitutes
@@ -16,14 +16,12 @@
 
 set -euo pipefail
 
-# Pattern: semver-with-beta-suffix used by @sd-angular/core, e.g. 19.0.0-beta.93.
+# Pattern: pinned beta version literal, e.g. 19.0.0-beta.93.
 VERSION_PATTERN='[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+'
 
-# Pattern: literal package name in IMPORT statements only (the prose body of
-# the skill may mention `@sd-angular/core` for documentation). We flag
-# `from '@sd-angular/core...'` and `import '@sd-angular/core...'` — anything
-# inside a TS code block that ships verbatim to the generated project.
-PKG_PATTERN="(from|import)[[:space:]]+['\"]@sd-angular/core"
+# Pattern: literal Core UI package name in IMPORT statements only (prose may
+# mention it for docs). Both names flagged so init skills use the placeholder.
+PKG_PATTERN="(from|import)[[:space:]]+['\"]@(sdcorejs/angular|sd-angular/core)"
 
 TARGETS=(
   "skills/tracks/angular-portal/10-init-portal.md"
@@ -69,9 +67,8 @@ for file in "$@"; do
     echo "✗ Package-name drift in $file (hardcoded import path):" >&2
     cat /tmp/core-drift.log >&2
     echo "" >&2
-    echo "  Replace '@sd-angular/core' in import statements with <CORE_UI_PACKAGE_NAME>." >&2
+    echo "  Replace the Core UI package name in import statements with <CORE_UI_PACKAGE_NAME>." >&2
     echo "  Source of truth: skills/tracks/angular-portal/_refs/core-version.md (packageName field)" >&2
-    echo "  Rationale: agent will rewrite when migrating to '@sdcorejs/angular'." >&2
     failed=1
   fi
 done

@@ -2,12 +2,11 @@
 
 **Type**: Component (form input)
 **Selector**: `sd-input-number`
-**Import path**: `@sd-angular/core/forms/input-number` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/input-number` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdInputNumber`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Numeric input with locale-aware formatting (VN `1.234.567,89` or ISO `1,234,567.89`), keystroke filtering, optional negative/positive constraint, decimal precision, and min/max validators. Use for any monetary or quantity field.
@@ -28,7 +27,7 @@ Numeric input with locale-aware formatting (VN `1.234.567,89` or ISO `1,234,567.
 ## Inputs
 | Name | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `autoId` | `string \| null \| undefined` | `undefined` | Generates `data-autoId="forms-input-number-<value>"` for E2E selectors. |
+| `autoId` | `string \| null \| undefined` | `undefined` | Generates `data-autoid="forms-input-number-<value>"` for E2E selectors. |
 | `name` | `string` | random uuid | FormGroup control name when bound via `[form]`. |
 | `size` | `Size` (`'sm' \| 'md' \| 'lg'`) | `'md'` | Field height. |
 | `form` | `NgForm \| FormGroup \| undefined` | `undefined` | Parent form. NgForm is auto-unwrapped to its inner `FormGroup`. |
@@ -49,7 +48,7 @@ Numeric input with locale-aware formatting (VN `1.234.567,89` or ISO `1,234,567.
 | `disabled` | `boolean` | `false` | Disables the control. |
 | `viewed` | `boolean` | `false` | Read-only DETAIL mode — hides input, renders formatted number (or `<ng-template sdViewDef>`). |
 | `blurOnEnter` | `boolean` | `false` | If `true`, Enter blurs the field after emitting `keyupEnter`. |
-| `hideInlineError` | `boolean` | `false` | Hide inline message; surfaces error via `errorTooltipMessage`. |
+| `hideInlineError` | `boolean` | `false` | Hide inline message; surfaces error via `errorMessage`. |
 | `model` | `any` (`number \| null`) | `undefined` | Two-way bound numeric value (use `[(model)]`). Stored as a JS number; emitted as number on change. |
 
 > **Coerce**: `required`, `readonly`, `disabled`, `viewed`, `blurOnEnter`, `hideInlineError` use `booleanAttribute` — bare attribute = `true`.
@@ -62,6 +61,48 @@ Numeric input with locale-aware formatting (VN `1.234.567,89` or ISO `1,234,567.
 | `sdBlur` | `number \| null` | Fires on blur, payload = current numeric value (or `null` if cleared). |
 | `keyupEnter` | `string` | Fires on Enter keyup, payload = the formatted display string. |
 | `sdFocusForceBlur` | `void` (EventEmitter) | When a parent subscribes, focusing the input immediately blurs it and emits. |
+
+## Public methods
+| Name | Signature | Notes |
+| --- | --- | --- |
+| `clear($event?)` | `(Event?) => void` | Resets display + value to `null` and emits `sdChange(null)`. No-op when empty. Backs the built-in clear button. |
+| `showClear()` | `() => boolean` | Whether the built-in clear button renders: has a value AND not `required`/`disabled`/`readonly`. |
+
+## E2E test attributes
+
+Rendered on the inner `<input matInput>` element (same anchor as `data-autoid`):
+
+| Attribute | Value | Source |
+|---|---|---|
+| `data-autoid` | `forms-input-number-<autoId>` | input `autoId` |
+| `data-disabled` | `"true"` / `"false"` | `formControl.disabled` |
+| `data-invalid` | `"true"` / `"false"` | `formControl.invalid && (touched \|\| dirty)` |
+| `data-empty` | `"true"` / `"false"` | `sdIsEmpty(formControl.value)` |
+| `data-value` | string | `sdSerializeDataValue(formControl.value)` |
+| `data-required` | `"true"` / `"false"` | `required` input; always present |
+| `data-error-message` | string | present only when the component is currently showing an error tooltip message |
+
+> **Note**: `sd-input-number` does not support `maxlength` / `minlength` / `pattern` (it uses `min` / `max` for numeric bounds). No `data-maxlength`, `data-minlength`, or `data-pattern` attributes are emitted.
+
+Selector example:
+
+```ts
+const el = page.locator('[data-autoid="forms-input-number-amount"]');
+await expect(el).toHaveAttribute('data-empty', 'false');
+await expect(el).toHaveAttribute('data-value', '42');
+// validation meta
+await expect(el).toHaveAttribute('data-required', 'true');
+// error message — only when field is in error state
+await expect(el).toHaveAttribute('data-error-message', 'Vui lòng nhập thông tin');
+```
+
+## Host classes
+Applied automatically on `<sd-input-number>` for styling hooks:
+
+| Class | Condition | Effect |
+| --- | --- | --- |
+| `sd-has-label` | `[label]` is truthy | Adds `padding-top: 4px` so the floating label has room and is not clipped. Absent → no top padding. |
+| `sd-viewed` | `[viewed]="true"` | Removes top padding (read-only text only). Overrides `sd-has-label` when both are set (source order). |
 
 ## Content projection (slots)
 - `#sdLabel` template — custom label rendering
@@ -104,7 +145,7 @@ Numeric input with locale-aware formatting (VN `1.234.567,89` or ISO `1,234,567.
 - An outlined input field that visually looks like `<sd-input>` BUT typed digits are auto-grouped — typing `1234567` shows `1.234.567` (VN) or `1,234,567` (ISO)
 - Text often right-aligned (matches accountant convention) — actual alignment is set in the component CSS
 - Optional currency symbol or unit shows in the suffix slot via `sdSuffixDef` (e.g. `đ`, `VND`, `%`)
-- An ✕ clear button may appear in the suffix when applicable
+- Built-in **slim clear button** (`.sd-clear-btn`, thin `close` icon) when there's a value AND the field is not `required`/`disabled`/`readonly`. **Hover-gated** (`sd-hover`) — only visible on hover/focus. Click resets to `null` and emits `sdChange(null)`. Renders to the left of any `sdSuffixDef` unit symbol. Shared style with `sd-input`/`sd-input-color`/`sd-date`/`sd-datetime`.
 - In `[viewed]="true"` mode: no input chrome — just the formatted number as plain text (or as a hyperlink if `hyperlink` is set)
 
 ## Examples

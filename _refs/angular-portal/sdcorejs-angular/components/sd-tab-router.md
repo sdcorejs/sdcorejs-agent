@@ -2,12 +2,11 @@
 
 **Type**: Component group (3 components + 1 decorator, documented together)
 **Selectors**: `sd-tab-router-outlet`, `sd-tab-router-nav`, `sd-tab-router-item`
-**Import path**: `@sd-angular/core/components/tab-router` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/tab-router` (or barrel: `@sdcorejs/angular/components`)
 **Classes**: `SdTabRouterOutletComponent`, `SdTabRouterNavComponent`, `SdTabRouterItemComponent`
 **Standalone**: yes (all three)
 **Change detection**: `OnPush` for all three
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Browser-style multi-tab router shell — every navigated route becomes a tab; tabs persist their component instances (no reload on switch), can be closed, reordered (drag), and replaced. Drives the "open many records side-by-side" UX seen in admin / CRM apps.
@@ -153,7 +152,7 @@ interface SdTabInfo {
 
 ### 2. Decorating a routed component with tab metadata
 ```ts
-import { SdTabComponent } from '@sd-angular/core/components/tab-router';
+import { SdTabComponent } from '@sdcorejs/angular/components/tab-router';
 
 @SdTabComponent({
   component: EmployeeDetailComponent,

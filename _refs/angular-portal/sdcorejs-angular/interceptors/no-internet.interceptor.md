@@ -2,10 +2,15 @@
 
 **Type**: HttpInterceptor (Angular `HttpInterceptor` class-based, multi-provider)
 **Class**: `SdNoInternetInterceptor implements HttpInterceptor`
-**Import path**: `@sd-angular/core/interceptors/no-internet` (or barrel `@sd-angular/core/interceptors`)
+**Import path**: `@sdcorejs/angular/interceptors/no-internet` (or barrel `@sdcorejs/angular/interceptors`)
 **Provided in**: NOT provided by default — register via `HTTP_INTERCEPTORS` multi-provider
-**Dependencies**: `MatSnackBar` (Angular Material), `HttpClient` (lazy, via `Injector` to avoid circular DI)
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
+**Dependencies**: `MatSnackBar` (Angular Material), `I18nService` (`@sdcorejs/angular/i18n`), `HttpClient` (lazy, resolved via `Injector` to avoid circular DI), `Injector` (Angular core)
+**Library version**: `@sdcorejs/angular@20.0.1`
+
+## When to use
+- Wire it in every Angular SPA built with `@sdcorejs/angular` that makes HTTP calls to remote APIs, so users get a clear offline notification instead of silent failure
+- Useful when requests fail intermittently in low-connectivity environments (mobile, flaky wifi) — the interceptor distinguishes real offline from CORS/SSL/server-block before showing any notification
+- Pair with `SdUnauthorizedInterceptor` to cover all resilience scenarios: offline, CORS, 503, and 401
 
 ## One-line purpose
 Detects loss of internet connectivity on outgoing HTTP calls (status `0`) and shows a sticky snackbar that polls a public endpoint every 3 s until the connection comes back, while disambiguating real "no internet" from CORS/SSL/server-block (which look identical to the browser). Also surfaces a friendly snackbar for `503` server-maintenance responses.
@@ -17,10 +22,10 @@ Pipes every outgoing request through `next.handle(...)` and inspects errors:
   1. Sets `#isOffline = true`
   2. Lazy-resolves `HttpClient` from the `Injector` (avoids `HTTP_INTERCEPTORS` circular DI)
   3. Pings `https://jsonplaceholder.typicode.com/todos/1`
-     - If ping ALSO fails → genuine offline. Shows a sticky snackbar `"Không có kết nối mạng. Đang chờ kết nối..."` with a `"Tải lại trang"` action, then starts polling the same endpoint every 3 s. When polling succeeds → snackbar updates to `"Kết nối đã được khôi phục!"` (auto-dismiss 5 s) and `#isOffline` resets.
-     - If ping SUCCEEDS → it was a CORS/SSL/server-block error, NOT real offline. Shows a 5-s snackbar `"Không thể kết nối đến máy chủ (Lỗi CORS hoặc cấu hình)."` and resets `#isOffline`.
+     - If ping ALSO fails → genuine offline. Shows a sticky snackbar (i18n key `core.interceptor.no-internet.offline`) with a `core.common.reload` action button, then starts polling the same endpoint every 3 s. When polling succeeds → snackbar updates to i18n key `core.interceptor.no-internet.restored` (auto-dismiss 5 s) and `#isOffline` resets.
+     - If ping SUCCEEDS → it was a CORS/SSL/server-block error, NOT real offline. Shows a 5-s snackbar (i18n key `core.interceptor.no-internet.cors-error`) with a `core.common.close` action and resets `#isOffline`.
   4. Re-throws the original error so the caller still sees the failure.
-- **`error.status === 503`**: Shows a 5-s snackbar `"Máy chủ đang bảo trì. Vui lòng thử lại sau!"` and re-throws.
+- **`error.status === 503`**: Shows a 5-s snackbar (i18n key `core.interceptor.no-internet.maintenance`, action `core.common.close`) and re-throws.
 - **Any other status** (`401`, `404`, `500`, ...): Re-throws untouched — caller handles normally.
 
 State held on the singleton instance: `#isOffline`, `#snackBarRef`, `#pollInterval`, `#http`. Polling interval is cleared on recovery via `#stopPolling`.
@@ -33,7 +38,7 @@ The "Tải lại trang" snackbar action calls `window.location.reload()`.
 // app.config.ts
 import { ApplicationConfig } from '@angular/core';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { SdNoInternetInterceptor } from '@sd-angular/core/interceptors';
+import { SdNoInternetInterceptor } from '@sdcorejs/angular/interceptors';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -52,5 +57,8 @@ export const appConfig: ApplicationConfig = {
 
 ## Related
 - `SdGlobalErrorHandler` — sibling resilience layer for chunk-load errors after redeploy
+- `SdUnauthorizedInterceptor` — complementary interceptor handling `401` / signout
 - `MatSnackBar` — required peer; must be available in DI (Angular Material setup)
+- `I18nService` — drives all user-visible strings via i18n keys (see keys above)
 - `SD_CORE_CONFIGURATION` — root config; commonly provided alongside in `app.config.ts`
+- `no-internet.interceptor.spec.ts` — Jasmine/Karma unit test suite (17 specs)

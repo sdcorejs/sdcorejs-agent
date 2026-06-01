@@ -1,12 +1,10 @@
 # SdConfirmService
 
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
-
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdConfirmService`
 **Provided in**: `'root'`
-**Import path**: `@sd-angular/core/services/confirm`
+**Import path**: `@sdcorejs/angular/services/confirm`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Opens a Material dialog (`DialogConfirmComponent`) for confirm/input/radio/date prompts and returns a `Promise` that resolves on Accept and rejects on Cancel.
@@ -113,13 +111,13 @@ None. The service depends on `MatDialog` from `@angular/material/dialog`, so the
 - **Backdrop click**: disabled by default (`disableBackdropClose: true`). Pass `false` to allow clicking outside to dismiss.
 - **Cancel rejects, not resolves**: every method returns a `Promise` that **rejects** (with the string `'CANCEL'`) when the user cancels — wrap calls in `try/catch` (or `.then(...).catch(...)`).
 - **Width**: only `confirm()` exposes `width`. The other variants are fixed at `'400px'`.
-- **`Color`** comes from `@sd-angular/core/utilities/models` (theme color tokens like `'primary'`, `'secondary'`, etc.).
+- **`Color`** comes from `@sdcorejs/utils/models` (theme color tokens like `'primary'`, `'secondary'`, etc.).
 
 ## Examples
 
 ### 1. Plain delete confirmation
 ```typescript
-import { SdConfirmService } from '@sd-angular/core/services/confirm';
+import { SdConfirmService } from '@sdcorejs/angular/services/confirm';
 import { inject } from '@angular/core';
 
 const confirmSvc = inject(SdConfirmService);
@@ -230,6 +228,6 @@ Covers (13 specs total):
 - Do NOT use this for long-running async work inside the dialog — the dialog closes synchronously on user action.
 
 ## Related
-- `SdNotifyService` (`@sd-angular/core/services/notify`) — for non-blocking confirmations / toasts.
+- `SdNotifyService` (`@sdcorejs/angular/services/notify`) — for non-blocking confirmations / toasts.
 - `MatDialog` (`@angular/material/dialog`) — underlying dialog driver.
-- `Color` (`@sd-angular/core/utilities/models`) — color token type for the buttons.
+- `Color` (`@sdcorejs/utils/models`) — color token type for the buttons.

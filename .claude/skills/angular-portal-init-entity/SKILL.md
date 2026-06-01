@@ -109,9 +109,9 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Choose detail style by complexity:
   - 5-6 common fields -> side-drawer
   - complex multi-section workflows -> full page
-- For full-page detail with many fields/sections, combine section grouping with `sd-anchor-v2` for fast scroll navigation
-  - Use `sd-anchor-v2 type="vertical" ellipsis` as wrapper
-  - Use one `sd-anchor-item-v2` per business section (for example: "Thông tin chung", "Rổ hàng", "Hồ sơ")
+- For full-page detail with many fields/sections, combine section grouping with `sd-anchor` for fast scroll navigation
+  - Use `sd-anchor ellipsis` as wrapper
+  - Use one `sd-anchor-item` per business section (for example: "Thông tin chung", "Rổ hàng", "Hồ sơ")
   - Keep each anchor item body inside `sd-section` so navigation and section collapse can work together
 - Support 3 page-layout variants for CREATE/UPDATE/DETAIL, and choose based on context:
   - `UnifiedCompact`: CREATE/UPDATE/DETAIL share one unified layout, no split title/form columns
@@ -305,7 +305,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Overuse signal invocations in template without considering the 2+ times rule (apply `computed()` or `@let` when signal is referenced 2+ times)
 - Create spec files without first asking developer which test coverage level they prefer (minimal/standard/full)
 - Generate placeholder specs with `// TODO add tests` or similar; all specs must be runnable and pass on first `ng test`
-- Render long multi-section page forms without anchor navigation when `sd-anchor-v2` is already available
+- Render long multi-section page forms without anchor navigation when `sd-anchor` is already available
 - Use editable inputs in DETAIL read-only summary sections when `AdaptiveSplitDetail` layout is selected
 - Leave DETAIL page in broken state when `detail(id)` fails (`Entity not found`) without user feedback or recovery navigation
 - Ignore provided cURL contract or PRD image when they define API fields or UI sections

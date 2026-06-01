@@ -121,7 +121,7 @@ while sleep 5; do ps -o rss= -p $PID; done | tee /tmp/rss.log
 The universal budgets above target a **public, mobile-first landing site** (the Next.js `build-website` profile). Two stacks legitimately override specific numbers — these are the ONLY sanctioned deviations. A per-track skill applying a different threshold must point here.
 
 ### Angular Portal (authenticated internal app, desktop-primary)
-Portals ship `@angular/core` + `@angular/cdk` + RxJS + `@sd-angular/core`, are used on desktop behind login, and are not SEO-sensitive. Sanctioned overrides:
+Portals ship `@angular/core` + `@angular/cdk` + RxJS + `@sdcorejs/angular`, are used on desktop behind login, and are not SEO-sensitive. Sanctioned overrides:
 
 | Budget | Universal (landing) | Angular Portal override | Why |
 |---|---|---|---|

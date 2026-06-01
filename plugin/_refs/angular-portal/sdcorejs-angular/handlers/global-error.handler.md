@@ -2,15 +2,15 @@
 
 **Type**: ErrorHandler (Angular `ErrorHandler` implementation)
 **Class**: `SdGlobalErrorHandler implements ErrorHandler`
-**Import path**: `@sd-angular/core/handlers`
+**Import path**: `@sdcorejs/angular/handlers`
 **Provided in**: NOT provided by default — consumer app must wire it via `providers` in `app.config.ts`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Catches uncaught application errors at the Angular root and, when the error is a chunk-load / dynamic-import failure (typical after a new build is deployed while the user has the old SPA cached), prompts the user to reload the page so they pick up the new bundle. All other errors fall through to `console.error`.
 
 ## When to use
-- Wire it in every Angular SPA built with `@sd-angular/core` so users are not left staring at a broken page after a fresh deploy
+- Wire it in every Angular SPA built with `@sdcorejs/angular` so users are not left staring at a broken page after a fresh deploy
 - Especially useful for apps using lazy-loaded routes / dynamic `import()` (Angular 17+ esbuild/Vite, lazy modules, dynamic component loading)
 
 ## Behavior
@@ -26,18 +26,20 @@ The handler implements `handleError(error: any)` and runs:
    - `Failed to fetch dynamically imported module` (Angular esbuild/Vite — most common today)
    - `error loading dynamically imported module` (Firefox/Safari variants)
    - `missing source map`
-3. If matched: logs a `console.warn`, then shows a native `window.confirm` dialog (Vietnamese):
-   `"HỆ THỐNG CÓ BẢN CẬP NHẬT MỚI ... Vui lòng bấm OK để tải lại trang."`. On OK → `window.location.reload()`.
-4. If NOT matched: `console.error('Lỗi ứng dụng khác:', error)` and the error continues to propagate normally for devtools.
+3. If matched: logs a `console.warn`, then shows a native `window.confirm` dialog whose text is
+   composed via `I18nService.t()` using keys `core.handler.global-error.update-title` and
+   `core.handler.global-error.update-body`. On OK → `window.location.reload()`.
+4. If NOT matched: `console.error('Application error:', error)` and the error continues to propagate normally for devtools.
 
-The handler is stateless — no DI, no constructor parameters, no side-effects beyond the alert + reload.
+The handler has a single DI dependency (`I18nService`) for localising the confirm dialog text.
+It has no constructor parameters and no side-effects beyond the warn log, the confirm dialog, and the optional reload.
 
 ## Setup
 
 ```ts
 // app.config.ts
 import { ApplicationConfig, ErrorHandler } from '@angular/core';
-import { SdGlobalErrorHandler } from '@sd-angular/core/handlers';
+import { SdGlobalErrorHandler } from '@sdcorejs/angular/handlers';
 
 export const appConfig: ApplicationConfig = {
   providers: [

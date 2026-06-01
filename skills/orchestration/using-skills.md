@@ -6,7 +6,7 @@ allowed-tools: Read, Glob
 
 # Using sdcorejs Skills
 
-You have the **sdcorejs SDLC skill pack** — an orchestrated software-development lifecycle for three stacks: **Angular Portal** (`@sd-angular/core`), **NestJS + Postgres**, and **Next.js** public sites. This bootstrap establishes how to use it. It is injected at session start so it works in any project, with or without the repo's `CLAUDE.md`.
+You have the **sdcorejs SDLC skill pack** — an orchestrated software-development lifecycle for three stacks: **Angular Portal** (`@sdcorejs/angular`), **NestJS + Postgres**, and **Next.js** public sites. This bootstrap establishes how to use it. It is injected at session start so it works in any project, with or without the repo's `CLAUDE.md`.
 
 ## The rule
 
@@ -45,7 +45,7 @@ For isolation before generation or parallel work, run `sdcorejs-using-worktrees`
 - **Clarify before code.** Do NOT generate code until the track's minimum-required answers are confirmed (Angular: module + entity + fields + layout; NestJS: module + entity + persistence + transactions; Next.js: domain + contact + hosting + caching). Invoke `sdcorejs-clarify-requirements` first.
 - **Approval gates.** `sdcorejs-review-spec` and `sdcorejs-review-plan` require explicit user approval before the next skill runs. **Silence is not approval.**
 - **Bilingual.** Vietnamese request → Vietnamese output (full diacritics for labels/messages). English → English. Permission codes and route paths stay English in both.
-- **Core UI first (Angular).** Prefer `@sd-angular/core` components when one fits; otherwise scaffold a skeleton + `alert('TODO: …')` stub and flag it.
+- **Core UI first (Angular).** Prefer `@sdcorejs/angular` components when one fits; otherwise scaffold a skeleton + `alert('TODO: …')` stub and flag it.
 - **Don't author new skills without explicit user approval.**
 
 ## Skill priority

@@ -19,7 +19,7 @@ Mandatory sequence:
 Mandatory rules:
 - Prefer side-drawer when the form is around 5-6 common fields.
 - Use full page for complex workflows (approval, multi-sections, child tables, heavy attachments).
-- If page has many fields/sections, combine sd-section groups with sd-anchor-v2 for fast scroll.
+- If page has many fields/sections, combine sd-section groups with sd-anchor for fast scroll.
 - Keep actions state-based and permission-based.
 - Keep save and submit actions sharing one validation gate.
 - Keep approve and reject independent from field validation when operating on existing records.
@@ -28,7 +28,7 @@ Mandatory rules:
 - If API contract is unclear, generate localStorage mock CRUD first.
 - For portal initialization, use only internal starter baseline templates from core/templates/angular-portal-starter.
 - Ensure generated starter includes src/libs/sample scaffold with seeded employee and product entities.
-- For portal init, pin @sd-angular/core as npm version string from internal baseline (never file:*.tgz).
+- For portal init, pin @sdcorejs/angular as npm version string from internal baseline (never file:*.tgz).
 - For portal init, starter can include src/app/pages/home and should support LayoutConfiguration.homeUrl for custom home navigation.
 - Do not read starter template content from sibling workspace folders.
 - If the task edits `sdcorejs-agent` itself, always write or update the current-day handoff before finishing.

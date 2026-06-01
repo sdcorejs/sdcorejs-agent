@@ -1,3 +1,0 @@
-- Angular portal skills must infer a semantic first-pass schema when entity fields are omitted; do not default to a generic code/name/isActivated CRUD unless the entity is truly lookup-simple.
-- For Vietnamese portals, generated labels, list columns, detail titles, and action text must preserve proper diacritics.
-- Detail layout selection should use inferred complexity: compact one-section forms -> side-drawer; multi-section/workflow/attachment-heavy forms -> page.

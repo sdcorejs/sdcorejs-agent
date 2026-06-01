@@ -42,6 +42,6 @@ Generate src/libs/sample with employee and product seeded.
 - For portal init, tsconfig should not keep `compilerOptions.baseUrl` unless there is a clear import-resolution reason
 - For portal init, generated starter must include src/libs/sample scaffold with seeded employee and product entities
 - For portal init in new workspace, generated package versions must match internal package template baseline (no version drift)
-- For portal init, `@sd-angular/core` must be a normal npm version string (not `file:*.tgz`)
+- For portal init, `@sdcorejs/angular` must be a normal npm version string (not `file:*.tgz`)
 - For portal init, home page is customizable via `src/app/pages/home` + `LayoutConfiguration.homeUrl`
 - For portal init, create `src/libs/sample/modules/employee` and `src/libs/sample/modules/product`

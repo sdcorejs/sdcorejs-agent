@@ -2,12 +2,11 @@
 
 **Type**: Component
 **Selector**: `sd-editor`
-**Import path**: `@sd-angular/core/components/editor` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/editor` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdEditor`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Form-bound rich-text editor (CKEditor 5 ClassicEditor) with bold/italic/underline, font size & color, alignment, lists, and optional inline image upload + label/required/maxlength validation.
@@ -128,6 +127,27 @@ async onSave() {
   const finalHtml = await this.editor.upload();  // flushes pending images
   await this.api.save({ ...this.article, body: finalHtml });
 }
+```
+
+## E2E test attributes
+
+Rendered on the editor host element (the outer `div.sd-editor`):
+
+| Attribute | Value | Source |
+|---|---|---|
+| `data-autoid` | `components-editor-<autoId>` | input `autoId` |
+| `data-disabled` | `"true"` / `"false"` | input `disabled` |
+| `data-empty` | `"true"` / `"false"` | `sdIsEmpty(model())` |
+
+> **Not exposed:**
+> - `data-value` — editor content may be MB-sized; use `data-empty` to check whether the editor has any content.
+> - `data-loading` — the component does not currently expose a loading signal; may be added if Monaco init becomes observable.
+
+Selector example:
+
+```ts
+const ed = page.locator('[data-autoid="components-editor-bio"]');
+await expect(ed).toHaveAttribute('data-empty', 'false');
 ```
 
 ## Anti-patterns

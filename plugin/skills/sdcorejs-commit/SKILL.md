@@ -120,7 +120,7 @@ re-asking.
 fix(angular-portal): correct form binding pattern in 21-screen-detail
 
 Replaced 9 `formControlName=` occurrences with `[form]+name=` — no
-@sd-angular/core form component implements ControlValueAccessor.
+@sdcorejs/angular form component implements ControlValueAccessor.
 
 Refs #ENG-1247
 ```

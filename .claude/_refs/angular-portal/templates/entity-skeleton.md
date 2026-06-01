@@ -71,21 +71,21 @@ If permission is key-based:
       </sd-section>
     </div>
   } @else {
-    <sd-anchor-v2 type="vertical" ellipsis>
-      <sd-anchor-item-v2 title="Thông tin chung">
+    <sd-anchor ellipsis>
+      <sd-anchor-item title="Thông tin chung">
         <sd-section title="Thông tin chung" noPaddingBody collapsable> ...editable fields... </sd-section>
-      </sd-anchor-item-v2>
-      <sd-anchor-item-v2 title="Rổ hàng">
+      </sd-anchor-item>
+      <sd-anchor-item title="Rổ hàng">
         <sd-section title="Rổ hàng" collapsable> ...table/actions... </sd-section>
-      </sd-anchor-item-v2>
-    </sd-anchor-v2>
+      </sd-anchor-item>
+    </sd-anchor>
   }
 </sd-page>
 ```
 
 ### Anchor Activation Heuristic
 ```text
-Enable sd-anchor-v2 when one of these is true:
+Enable sd-anchor when one of these is true:
 - form has >= 12 fields, or
 - form has >= 3 business sections, or
 - page includes at least one large child table/upload block plus other sections

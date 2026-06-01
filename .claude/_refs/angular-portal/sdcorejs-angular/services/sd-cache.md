@@ -1,12 +1,10 @@
 # SdCacheService
 
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
-
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdCacheService`
 **Provided in**: `'root'`
-**Import path**: `@sd-angular/core/services/cache`
+**Import path**: `@sdcorejs/angular/services/cache`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Key-based cache factory that returns per-key handles (`get`/`set`/`has`/`remove`/`destroy`/`load`/`observer`) backed by an in-memory `Map` plus optional `localStorage` / `sessionStorage` persistence with hour-based TTL.
@@ -155,5 +153,5 @@ Coverage areas:
 - Object key namespace independence
 
 ## Related
-- `SdApiService` (`@sd-angular/core/services/api`) — uses `SdCacheService` for its persistent cache layer (`option.cacheOption`).
-- `Utilities.hash`, `DateUtilities.addHours` (`@sd-angular/core/utilities/extensions`) — used internally for key hashing and TTL math.
+- `SdApiService` (`@sdcorejs/angular/services/api`) — uses `SdCacheService` for its persistent cache layer (`option.cacheOption`).
+- `Utilities.hash`, `DateUtilities.addHours` (`@sdcorejs/utils/fns`) — used internally for key hashing and TTL math.

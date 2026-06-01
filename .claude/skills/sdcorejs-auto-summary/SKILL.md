@@ -97,7 +97,7 @@ generator: sdcorejs-auto-summary
 
 ## Stack & track
 - Track: <angular-portal | nestjs | nextjs> (+ framework versions)
-- Baseline / key deps: <@sd-angular/core x.y, @core/@shared aliases, etc.>
+- Baseline / key deps: <@sdcorejs/angular x.y, @core/@shared aliases, etc.>
 - Build / test commands: <the real ones>
 
 ## Architecture map (distilled)

@@ -71,7 +71,7 @@ track: angular-portal       # optional; omit if memory is track-agnostic
 
 **Why:** <One-line rationale — without this, future-you cannot judge when the rule still applies.>
 
-**How to apply:** <One concrete instruction the next session can follow, e.g. "When the user requests a detail page with >6 fields and any textarea, default to UnifiedSplit + sd-anchor-v2 instead of side-drawer.">
+**How to apply:** <One concrete instruction the next session can follow, e.g. "When the user requests a detail page with >6 fields and any textarea, default to UnifiedSplit + sd-anchor instead of side-drawer.">
 ```
 
 The `**Why:**` and `**How to apply:**` lines are MANDATORY for types `feedback` and `project`. Optional but encouraged for `user` and `reference`.

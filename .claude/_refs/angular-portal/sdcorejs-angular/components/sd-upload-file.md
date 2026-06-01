@@ -2,12 +2,11 @@
 
 **Type**: Component (generic over `TArgs`)
 **Selector**: `sd-upload-file`
-**Import path**: `@sd-angular/core/components/upload-file` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/upload-file` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdUploadFile<TArgs = any>`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 File picker + drag-drop + preview component — manages a list of "to-be-uploaded" and "already-uploaded" files (images, documents, generic), with built-in validation, preview thumbnails, reorder, image-resize, and a public `upload()` method to be called before form submit.
@@ -46,7 +45,7 @@ If multiple configs are provided as an array, **duplicate `key` values throw on 
 ## Inputs
 | Name | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `autoId` | `string \| null \| undefined` | `undefined` | E2E test hook. Computed prefix `components-upload-file-{autoId}` on the drop zone trigger. Each per-file remove button gets `components-upload-file-{autoId}-remove-{index}` (index-based for stability across duplicate filenames). |
+| `autoId` | `string \| null \| undefined` | `undefined` | E2E test hook. Computed prefix `components-upload-file-{autoId}` on the drop zone trigger (rendered via `data-autoid` attribute). Each per-file remove button gets `components-upload-file-{autoId}-remove-{index}` (index-based for stability across duplicate filenames). |
 | `args` | `TArgs` (generic) | `undefined` | Opaque payload forwarded to `upload`/`details`/`download` handlers as second arg. Use it to pass domain context (entity id, type, …). |
 | `label` | `string` | `undefined` | Field label rendered above the picker via `<sd-label>`. |
 | `key` | `string \| undefined` | `undefined` | Selects which config from `SD_UPLOAD_FILE_CONFIGURATION` array to use. |
@@ -116,6 +115,28 @@ interface PreviewFile {
 - **Disabled / viewed mode**: drop zone hidden; for image type, only first `maxOfImage` thumbnails shown; if more, an overlay `+N` count appears on the last to open the gallery popup.
 - **Required error**: red text `Vui lòng tải lên tệp/ảnh` below the row when touched and empty.
 - **Auto description** (when `[description]` not set): renders `Định dạng: png, jpg và tối đa: 5MB` style based on `extensions` + `maxSize`.
+
+## E2E test attributes
+
+Rendered on the existing input anchor (drop zone) that already carries `data-autoid`:
+
+| Attribute | Value | Source |
+|---|---|---|
+| `data-autoid` | `components-upload-file-<autoId>` | input `autoId` |
+| `data-disabled` | `"true"` / `"false"` | input `disabled` |
+| `data-empty` | `"true"` / `"false"` | `sdIsEmpty(previewFiles())` |
+| `data-count` | numeric string | `previewFiles().length` |
+
+> **Not exposed:**
+> - `data-value` — File objects don't serialize safely. Inspect `data-count` and `data-empty` for collection state.
+> - `data-loading` — the component does not currently expose a loading signal. May be added later if needed.
+
+Selector example:
+
+```ts
+const upload = page.locator('[data-autoid="components-upload-file-docs"]');
+await expect(upload).toHaveAttribute('data-count', '0');
+```
 
 ## Permission gating
 Not built-in. Wrap host with `*sdPermission` if upload itself is permission-gated, or hide via `*ngIf` based on user role.

@@ -2,12 +2,11 @@
 
 **Type**: Component (form input)
 **Selector**: `sd-datetime`
-**Import path**: `@sd-angular/core/forms/datetime` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/datetime` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdDatetime`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Single date + time-of-day picker — user picks a calendar date AND an `HH:mm` (optionally `HH:mm:ss`) time in a CDK Overlay popup. Uses `provideDateFnsAdapter` with SDCoreJS label, validators, and `[viewed]` read-only support.
@@ -42,7 +41,7 @@ Single date + time-of-day picker — user picks a calendar date AND an `HH:mm` (
 | `required` | `boolean` | `false` | Adds `Validators.required`. |
 | `disabled` | `boolean` | `false` | Disables input + picker trigger. |
 | `viewed` | `boolean` | `false` | Read-only DETAIL mode — hides input, renders formatted datetime (or `<ng-template sdViewDef>`). |
-| `hideInlineError` | `boolean` | `false` | Hide inline message; surfaces error as a tooltip via `errorTooltipMessage`. |
+| `hideInlineError` | `boolean` | `false` | Hide inline message; surfaces error as a tooltip via `errorMessage`. |
 | `inlineError` | `string \| undefined` | `undefined` | Forces an inline error message (synthetic `inlineError` validator). |
 | `model` | `string \| number \| Date \| null \| undefined` | `undefined` | Two-way bound value (use `[(model)]`). Stored / emitted as `yyyy/MM/dd HH:mm:ss` string (or `yyyy/MM/dd HH:mm:00` when `showSeconds = false`). |
 | `showSeconds` | `boolean` | `false` | When `true`, displays and stores seconds in the popup spinner and the stored/emitted format. |
@@ -54,6 +53,15 @@ Single date + time-of-day picker — user picks a calendar date AND an `HH:mm` (
 | --- | --- | --- |
 | `sdChange` | `string \| null` | Emitted when picker confirms a new value or when the field is cleared. |
 | `sdFocus` | `void` | Fires when the input element gains focus. |
+
+## Host classes
+Applied automatically on `<sd-datetime>` for styling hooks:
+
+| Class | Condition | Effect |
+| --- | --- | --- |
+| `sd-has-label` | `[label]` is truthy | Adds `padding-top: 4px` so the floating label has room and is not clipped. Absent → no top padding. |
+| `sd-viewed` | `[viewed]="true"` | Removes top padding (read-only text only). Overrides `sd-has-label` when both are set (source order). |
+| `sd-bare` | `[bare]="true"` | Strips the mat-form-field shell for inline contexts (chip, token). |
 
 ## Content projection (slots)
 - `#sdLabel` template — custom label rendering
@@ -71,7 +79,7 @@ Single date + time-of-day picker — user picks a calendar date AND an `HH:mm` (
 
 | Member | Kind | Description |
 | --- | --- | --- |
-| `errorTooltipMessage` | getter `string \| undefined` | Returns a Vietnamese error message for the first active error on `formControl` (`required`, `matDatepickerMin`, `matDatepickerMax`, `date`, `customValidator`, `inlineError`). `undefined` when valid. |
+| `errorMessage` | getter `string \| undefined` | Returns a Vietnamese error message for the first active error on `formControl` (`required`, `matDatepickerMin`, `matDatepickerMax`, `date`, `customValidator`, `inlineError`). `undefined` when valid. |
 | `open()` | method | Opens the CDK Overlay datetime picker popup anchored to the component. No-op if already open or disabled. |
 | `close()` | method | Closes the popup overlay. |
 | `clear($event)` | method | Stops propagation, resets `formControl` and `valueModel` to `null`, emits `sdChange(null)`. No-op if control is already empty. |
@@ -89,7 +97,7 @@ Single date + time-of-day picker — user picks a calendar date AND an `HH:mm` (
 - An outlined input field with a single calendar+clock icon on the trailing side
 - The text inside reads as `dd/MM/yyyy HH:mm` (e.g. `09/05/2026 14:30`)
 - Clicking the icon opens a popup: a month-grid calendar on top, a time picker (hours + minutes spinner/slider) below
-- An ✕ clear button appears when a value is set
+- A slim clear-button (`.sd-clear-btn` — round transparent button with a thin `close` icon, grey → red on hover) appears next to the calendar icon when a value is set and the field is not `required`/`disabled`; clears via `clear()` (emits `sdChange(null)`). **Hover-gated** (`sd-hover`) — hidden until the field is hovered or focused. Shared style with `sd-input`/`sd-input-number`/`sd-input-color`/`sd-date` (`assets/scss/core/form.scss`).
 - In `[viewed]="true"` mode: no input chrome — just the formatted datetime as plain text (or as a hyperlink if `hyperlink` is set)
 
 ## Examples
@@ -123,6 +131,30 @@ Single date + time-of-day picker — user picks a calendar date AND an `HH:mm` (
   [viewed]="true"
   hyperlink="/audit/{{ row.id }}">
 </sd-datetime>
+```
+
+## E2E test attributes
+
+Rendered on the inner `<input>` element (same anchor as `data-autoid`):
+
+| Attribute | Value | Source |
+|---|---|---|
+| `data-autoid` | `forms-datetime-<autoId>` | input `autoId` |
+| `data-disabled` | `"true"` / `"false"` | `formControl.disabled` |
+| `data-invalid` | `"true"` / `"false"` | `formControl.invalid && (touched \|\| dirty)` |
+| `data-empty` | `"true"` / `"false"` | `sdIsEmpty(formControl.value)` |
+| `data-value` | string | `sdSerializeDataValue(formControl.value)` |
+| `data-required` | `"true"` / `"false"` | `required` input; always present |
+| `data-error-message` | string | present only when the component is currently showing an error tooltip message |
+
+> **Note**: `sd-datetime` does not support maxlength / minlength / pattern. No `data-maxlength`, `data-minlength`, or `data-pattern` attributes are emitted.
+
+Selector example:
+
+```ts
+const el = page.locator('[data-autoid="forms-datetime-createdAt"]');
+await expect(el).toHaveAttribute('data-empty', 'false');
+await expect(el).toHaveAttribute('data-required', 'false');
 ```
 
 ## Anti-patterns

@@ -1,12 +1,10 @@
 # SdApiService
 
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
-
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdApiService`
 **Provided in**: `'root'`
-**Import path**: `@sd-angular/core/services/api`
+**Import path**: `@sdcorejs/angular/services/api`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 HTTP client wrapper around Angular `HttpClient` adding per-host handlers, configurable timeout, in-flight request deduplication, and an optional persistent cache layer via `SdCacheService`.
@@ -133,7 +131,7 @@ providers: [
 
 ### 1. Simple GET with mapping
 ```typescript
-import { SdApiService } from '@sd-angular/core/services/api';
+import { SdApiService } from '@sdcorejs/angular/services/api';
 import { inject } from '@angular/core';
 
 class UserService {
@@ -169,7 +167,7 @@ const result = await this.api.upload('/api/files', {
 - Do NOT subscribe to the returned promise twice expecting two requests — `shareReplay(1)` plus the dedup map mean within 1s you reuse the result.
 
 ## Related
-- `SdCacheService` (`@sd-angular/core/services/cache`) — backs the persistent cache layer.
+- `SdCacheService` (`@sdcorejs/angular/services/cache`) — backs the persistent cache layer.
 - `SdApiModule` — NgModule that registers `HttpClient` (with interceptors from DI) and `SdHttpInterceptor`.
 - `SdHttpInterceptor` (`interceptors/api.interceptor`) — executes `intercept`, `beforeRemote`, and `afterRemote` hooks from `SdApiHandler`.
-- `BrowserUtilities.upload` / `Utilities.hash` (`@sd-angular/core/utilities/extensions`) — power `upload()` and key generation.
+- `BrowserUtilities.upload` / `Utilities.hash` (`@sdcorejs/utils/fns`) — power `upload()` and key generation.

@@ -1,12 +1,10 @@
 # SdLoadingService
 
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
-
 **Type**: Service (Angular `@Injectable`)
 **Class**: `SdLoadingService`
 **Provided in**: `'root'`
-**Import path**: `@sd-angular/core/services/loading`
+**Import path**: `@sdcorejs/angular/services/loading`
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Imperatively attaches/detaches a full-cover spinner overlay to any DOM element (default `body`) by selector — uses Angular `Renderer2` and tracks per-element state via a `WeakMap`.
@@ -78,7 +76,7 @@ None. The service has no external configuration.
 
 ### 1. Global spinner for the whole page
 ```typescript
-import { SdLoadingService } from '@sd-angular/core/services/loading';
+import { SdLoadingService } from '@sdcorejs/angular/services/loading';
 import { inject } from '@angular/core';
 
 class AppShell {
@@ -127,5 +125,5 @@ class LoadingInterceptor implements HttpInterceptor {
 - Do NOT expect ref counting — wrap if your code path can re-enter (concurrent saves, parallel fetches).
 
 ## Related
-- `SdNotifyService` (`@sd-angular/core/services/notify`) — pair with toasts to confirm completion of the loaded operation.
+- `SdNotifyService` (`@sdcorejs/angular/services/notify`) — pair with toasts to confirm completion of the loaded operation.
 - Angular `HttpInterceptor` — the canonical place to call `start`/`stop` for global request loading.

@@ -18,12 +18,12 @@ Behavior contract (must stay consistent with Gemini/Codex):
 - If API contract is missing, use localStorage mock CRUD first.
 - For portal initialization, use internal baseline templates in core/templates/angular-portal-starter only.
 - Prefer side-drawer for common 5-6 fields.
-- For long full-page forms, use sd-anchor-v2 with section grouping.
+- For long full-page forms, use sd-anchor with section grouping.
 - Do not modify global CSS/SCSS unless explicitly requested.
 - Prefer Core UI components first; warn if custom UI is required.
 - Reply in the same language as developer.
 - Ensure starter has src/libs/sample scaffold with seeded employee and product entities.
-- For portal init, keep @sd-angular/core as npm version string from internal baseline (never file:*.tgz).
+- For portal init, keep @sdcorejs/angular as npm version string from internal baseline (never file:*.tgz).
 - For portal init, support custom home page under src/app/pages/home and wire LayoutConfiguration.homeUrl.
 - If you modify sdcorejs-agent itself, always write or update the current-day handoff before finishing.
 

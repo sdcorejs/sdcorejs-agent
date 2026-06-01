@@ -92,7 +92,7 @@ WCAG SC 3.3.1 Error Identification, 3.3.3 Error Suggestion.
 
 ### AP-5: SdTable keyboard navigation
 
-`@sd-angular/core`'s `SdTable` should support:
+`@sdcorejs/angular`'s `SdTable` should support:
 - Arrow keys to move between cells (or rows)
 - Enter to activate row action
 - Space to select checkbox (bulk select)

@@ -2,12 +2,11 @@
 
 **Type**: Component (form input)
 **Selector**: `sd-date`
-**Import path**: `@sd-angular/core/forms/date` (or barrel: `@sd-angular/core/forms`)
+**Import path**: `@sdcorejs/angular/forms/date` (or barrel: `@sdcorejs/angular/forms`)
 **Class**: `SdDate`
 **Standalone**: yes
 **Change detection**: `OnPush`
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Single-date picker — Material datepicker with date-fns adapter (`dd/MM/yyyy` parse/display) plus SDCoreJS form-group registration, `[viewed]` read-only mode, and built-in min/max date validation messages.
@@ -39,7 +38,7 @@ Single-date picker — Material datepicker with date-fns adapter (`dd/MM/yyyy` p
 | `required` | `boolean` | `false` | Adds `Validators.required`. |
 | `disabled` | `boolean` | `false` | Disables the field. |
 | `viewed` | `boolean` | `false` | DETAIL read-only mode — input hidden, formatted date (or `<ng-template sdViewDef>`) rendered. |
-| `hideInlineError` | `boolean` | `false` | Hide inline error; expose via `errorTooltipMessage`. |
+| `hideInlineError` | `boolean` | `false` | Hide inline error; expose via `errorMessage`. |
 | `inlineError` | `string \| undefined` | `undefined` | Forces an inline error message. |
 | `hyperlink` | `string \| null \| undefined` | `undefined` | Used in `[viewed]` mode to render the date as a link. |
 | `model` | `string \| number \| Date \| null \| undefined` | `undefined` | Two-way bound value (use `[(model)]`). Persisted as `'yyyy/MM/dd'` string internally. |
@@ -52,6 +51,15 @@ Single-date picker — Material datepicker with date-fns adapter (`dd/MM/yyyy` p
 | `sdChange` | `any` | Emits the new value as `'yyyy/MM/dd'` string (or `null` when cleared / on parse error). |
 | `sdFocus` | `void` | Emits when the input is focused. |
 
+## Host classes
+Applied automatically on `<sd-date>` for styling hooks:
+
+| Class | Condition | Effect |
+| --- | --- | --- |
+| `sd-has-label` | `[label]` is truthy | Adds `padding-top: 4px` so the floating label has room and is not clipped. Absent → no top padding. |
+| `sd-viewed` | `[viewed]="true"` | Removes top padding (read-only text only). Overrides `sd-has-label` when both are set (source order). |
+| `sd-bare` | `[bare]="true"` | Strips the mat-form-field shell for inline contexts (chip, token). |
+
 ## Content projection (slots)
 - `#sdLabel` template — custom label
 - `#sdValue` template — custom value rendering
@@ -63,13 +71,13 @@ Single-date picker — Material datepicker with date-fns adapter (`dd/MM/yyyy` p
 - **`formControlName` and `[(ngModel)]` are NOT supported.** Use `[(model)]` for two-way binding and `[form]+[name]` for FormGroup integration.
 - **`[viewed]="true"`** = DETAIL read-only mode: input + calendar icon are hidden, the formatted date (or `<ng-template sdViewDef>`) is shown. With `hyperlink` it renders a clickable link.
 - **Date adapter**: providers include `provideDateFnsAdapter` configured for `dd/MM/yyyy` parse/display. Internal storage uses native `Date` objects; emitted values are `'yyyy/MM/dd'` strings.
-- **Validators**: `[required]` adds `Validators.required`. `[min]` / `[max]` flow into Material's `matDatepickerMin` / `matDatepickerMax` validators. Manual typed text is regex-validated (`dd/MM/yyyy`) and bad input sets a synthetic `date: 'Sai định dạng'` error. `[inlineError]` injects a synthetic `inlineError` validator. `errorTooltipMessage` gives Vietnamese messages for each error key.
+- **Validators**: `[required]` adds `Validators.required`. `[min]` / `[max]` flow into Material's `matDatepickerMin` / `matDatepickerMax` validators. Manual typed text is regex-validated (`dd/MM/yyyy`) and bad input sets a synthetic `date: 'Sai định dạng'` error. `[inlineError]` injects a synthetic `inlineError` validator. `errorMessage` gives Vietnamese messages for each error key.
 
 ## Public methods & getters
 
 | Member | Kind | Description |
 | --- | --- | --- |
-| `errorTooltipMessage` | getter `string \| undefined` | Returns a Vietnamese error message for the first active error on `formControl` (`required`, `matDatepickerMin`, `matDatepickerMax`, `date`, `inlineError`). `undefined` when valid. |
+| `errorMessage` | getter `string \| undefined` | Returns a Vietnamese error message for the first active error on `formControl` (`required`, `matDatepickerMin`, `matDatepickerMax`, `date`, `inlineError`). `undefined` when valid. |
 | `clear($event)` | method | Stops propagation, nulls `formControl` value, updates `valueModel`, and emits `sdChange(null)`. No-op if the control is already empty. |
 | `focus()` | method | Programmatically focuses the native input and opens the datepicker popup (deferred 100 ms). |
 | `blur()` | method | Programmatically blurs the native input. |
@@ -82,7 +90,7 @@ Single-date picker — Material datepicker with date-fns adapter (`dd/MM/yyyy` p
 ## Visual cues (helps agent map screenshots → component)
 - Outlined input field showing `DD/MM/YYYY` formatted date
 - Trailing calendar icon button → opens Material datepicker popup
-- Clear ✕ when a value is set (suppresses parent click)
+- Slim clear-button (`.sd-clear-btn` — round transparent button with a thin `close` icon, grey → red on hover) when a value is set and the field is not `required`/`disabled`; shown alongside the calendar icon, suppresses parent click. **Hover-gated** (`sd-hover`) — hidden until the field is hovered or focused. Emits `sdChange(null)` on clear. Shared style with `sd-input`/`sd-input-number`/`sd-input-color`/`sd-datetime` (`assets/scss/core/form.scss`).
 - Min/max enforcement: dates outside the range are greyed-out and unselectable in the popup
 - Format error: red underline + tooltip "Sai định dạng" while the typed text doesn't match `D/M/YYYY` regex
 - In `[viewed]="true"` mode: no input, no icon — plain formatted date or hyperlink
@@ -121,6 +129,30 @@ Single-date picker — Material datepicker with date-fns adapter (`dd/MM/yyyy` p
   [viewed]="true"
   hyperlink="/audit/{{ model.id }}">
 </sd-date>
+```
+
+## E2E test attributes
+
+Rendered on the inner `<input>` element (same anchor as `data-autoid`):
+
+| Attribute | Value | Source |
+|---|---|---|
+| `data-autoid` | `forms-date-<autoId>` | input `autoId` |
+| `data-disabled` | `"true"` / `"false"` | `formControl.disabled` |
+| `data-invalid` | `"true"` / `"false"` | `formControl.invalid && (touched \|\| dirty)` |
+| `data-empty` | `"true"` / `"false"` | `sdIsEmpty(formControl.value)` |
+| `data-value` | string | `sdSerializeDataValue(formControl.value)` |
+| `data-required` | `"true"` / `"false"` | `required` input; always present |
+| `data-error-message` | string | present only when the component is currently showing an error tooltip message |
+
+> **Note**: `sd-date` does not support maxlength / minlength / pattern. No `data-maxlength`, `data-minlength`, or `data-pattern` attributes are emitted.
+
+Selector example:
+
+```ts
+const el = page.locator('[data-autoid="forms-date-hireDate"]');
+await expect(el).toHaveAttribute('data-empty', 'false');
+await expect(el).toHaveAttribute('data-required', 'true');
 ```
 
 ## Anti-patterns

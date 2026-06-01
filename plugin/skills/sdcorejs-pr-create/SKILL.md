@@ -135,7 +135,7 @@ Title: `fix(angular-portal): correct formControlName usage in form examples`
 Body:
 ```markdown
 ## Summary
-- No `@sd-angular/core` form component implements ControlValueAccessor.
+- No `@sdcorejs/angular` form component implements ControlValueAccessor.
 - Replaced `formControlName=` usages with `[form]+name=` pattern across `21-screen-detail.md` + the form templates in `_refs/angular-portal/templates/screen-detail-component.md` and `_refs/angular-portal/templates/reactive-form-templates.md`.
 
 ## Test plan

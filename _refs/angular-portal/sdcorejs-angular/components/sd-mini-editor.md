@@ -2,12 +2,11 @@
 
 **Type**: Component
 **Selector**: `sd-mini-editor`
-**Import path**: `@sd-angular/core/components/mini-editor` (or barrel: `@sd-angular/core/components`)
+**Import path**: `@sdcorejs/angular/components/mini-editor` (or barrel: `@sdcorejs/angular/components`)
 **Class**: `SdMiniEditor`
 **Standalone**: yes
 **Change detection**: default (implements `ControlValueAccessor`)
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 Compact rich-text input (CKEditor 5 ClassicEditor) for short-form content like comments, notes, and chat-style messages — supports bold/italic/underline/font color/lists/links and optional `@mention`, with HTML or Markdown output.
@@ -65,7 +64,7 @@ type SdMiniEditorMentionItem<T = any> = MentionFeedObjectItem & { data?: T };
 ### Exported type alias
 ```ts
 type SdMiniEditorOutputFormat = 'html' | 'markdown';
-// Import: import { SdMiniEditorOutputFormat } from '@sd-angular/core/components/mini-editor';
+// Import: import { SdMiniEditorOutputFormat } from '@sdcorejs/angular/components/mini-editor';
 ```
 
 ## Outputs

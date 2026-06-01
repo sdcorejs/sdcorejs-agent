@@ -1,39 +1,47 @@
-# SD Angular Core Catalog Snapshot
+# SDCoreJS Angular Catalog Snapshot
 
-This file is an internal knowledge snapshot for `@sd-angular/core` component capability used by angular-portal skills.
+This file is an internal knowledge snapshot for `@sdcorejs/angular` component capability used by angular-portal skills.
 
 Source policy:
 - Knowledge is copied into `sdcorejs-agent` and consumed from this repository only.
 - Do not require runtime references to external repositories.
 
 Version baseline:
-- @sd-angular/core: read from `core-version.md`
+- `@sdcorejs/angular`: read packageName + currentVersion from `core-version.md`
 
 ## Components
 
 Snapshot categories:
 - anchor
-- anchor-v2
+- autoid-inspector
 - avatar
 - badge
 - base
 - button
+- chart
 - code-editor
 - document-builder
+- editor
+- form-generic
 - history
 - import-excel
+- inform
 - mini-editor
 - modal
+- operator
 - preview
+- query-bar
 - query-builder
 - quick-action
 - section
 - side-drawer
+- splitter
+- stepper
+- tab
 - tab-router
 - table
 - upload-file
 - view
-- workflow
 
 ## Forms
 
@@ -46,6 +54,7 @@ Snapshot categories:
 - date-range
 - datetime
 - input
+- input-color
 - input-number
 - label
 - radio
@@ -57,6 +66,7 @@ Snapshot categories:
 
 Snapshot categories:
 - auth
+- authom
 - generic
 - keycloak
 - layout

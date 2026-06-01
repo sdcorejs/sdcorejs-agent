@@ -57,10 +57,10 @@ A new module is justified when ≥1 of: distinct user persona, distinct permissi
 
 Module A **MUST NOT** import from Module B directly. Both modules import from:
 
-- `@sd-angular/core` — Core UI components, base classes, shared utilities
+- `@sdcorejs/angular` — Core UI components, base classes, shared utilities
 - `src/shared/` (if it exists) — cross-cutting types, interceptors, app-wide guards
 
-If `module-a` needs data from `module-b`, the contract goes through `@sd-angular/core` (a base `<Entity>Service` extension) OR through a shared service registered at app root.
+If `module-a` needs data from `module-b`, the contract goes through `@sdcorejs/angular` (a base `<Entity>Service` extension) OR through a shared service registered at app root.
 
 **Why**: cross-module imports = the death spiral. Module A imports Module B's component → B starts shipping in A's lazy chunk → A's bundle bloats → A can't be code-split → CI build time doubles → no one notices until production. Plus: refactoring B breaks A silently.
 
@@ -226,7 +226,7 @@ Hybrid NgModule + standalone (legacy portal migration): supported but flagged. `
 ## 14. Core UI first; custom UI is a flagged exception
 
 Order of preference when picking a UI primitive:
-1. `@sd-angular/core` component fits → use it
+1. `@sdcorejs/angular` component fits → use it
 2. Composition of Core UI components fits → use them
 3. No Core UI fit → generate custom with explicit marker:
    ```ts
@@ -278,7 +278,7 @@ When a principle here changes, propagate to:
 
 ## Related references
 
-- `_refs/angular-portal/core-version.md` — pinned `@sd-angular/core` version
+- `_refs/angular-portal/core-version.md` — pinned `@sdcorejs/angular` version
 - `_refs/angular-portal/sd-angular-core-catalog.md` — Core UI components inventory
 - `_refs/angular-portal/entity-field-types.md` — field-type → form-control mapping
 - `_refs/angular-portal/templates/entity-skeleton.md` — canonical code templates these principles produce

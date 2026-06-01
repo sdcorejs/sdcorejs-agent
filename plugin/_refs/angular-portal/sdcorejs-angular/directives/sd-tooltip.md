@@ -4,9 +4,8 @@
 **Selector**: `[sdTooltip]`
 **Class**: `SdTooltipDirective` (uses internal `SdTooltipComponent` rendered via CDK Overlay)
 **Standalone**: yes
-**Library version**: `@sd-angular/core@19.0.0-beta.86`
-
-**Import path**: `@sd-angular/core/directives` (or direct: `@sd-angular/core/directives/sd-tooltip`)
+**Import path**: `@sdcorejs/angular/directives` (or direct: `@sdcorejs/angular/directives/sd-tooltip`)
+**Library version**: `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 CDK-Overlay-based tooltip with template support, configurable position/color/delay, and "stays open while cursor is over the tooltip itself" behavior (single global active tooltip at a time).

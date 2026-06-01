@@ -21,12 +21,12 @@ Placeholders used throughout: `{{ module }}`, `{{ entity }}` (kebab), `{{ entity
 ```typescript
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { SdPageComponent } from '@sd-angular/core/modules';
+import { SdPageComponent } from '@sdcorejs/angular/modules';
 import { BaseService } from '@{{ module }}/services';
-import { SdButton, SdTabComponent, SdTabelCellDefDirective, SdTable, SdTableOption, SdTableColumnConfig } from '@sd-angular/core/components';
-import { SdPermissionDirective } from '@sd-angular/core/modules';
-import { SdConfirmService, SdLoadingService, SdNotifyService } from '@sd-angular/core/services';
-import { SdSwitch } from '@sd-angular/core/forms';
+import { SdButton, SdTabComponent, SdTabelCellDefDirective, SdTable, SdTableOption, SdTableColumnConfig } from '@sdcorejs/angular/components';
+import { SdPermissionDirective } from '@sdcorejs/angular/modules';
+import { SdConfirmService, SdLoadingService, SdNotifyService } from '@sdcorejs/angular/services';
+import { SdSwitch } from '@sdcorejs/angular/forms';
 import { {{ entityPascal }}DTO } from '../../services/{{ entityKebab }}.model';
 import { {{ entityPascal }}Service } from '../../services/{{ entityKebab }}.service';
 

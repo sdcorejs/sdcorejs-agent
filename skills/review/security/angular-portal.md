@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review-security-angular-portal
-description: Use to audit Angular Portal-specific security concerns beyond the cross-track `review/security/shared.md` baseline — route guard coverage (`canActivate`), permission-code constants vs free strings, `bypassSecurityTrust*` / `[innerHTML]` XSS, token storage (localStorage vs httpOnly cookie), HttpClient interceptor order, prod source maps, leaked dev API URLs in `environment.production.ts`, and `@sd-angular/core` permission directive usage. Outputs Critical/Important/Minor findings. Triggers - "security review angular", "audit portal security", "check route guards", "innerHTML XSS", "token storage", or invocation pre-release. Applies to angular-portal. Bilingual (VI/EN).
+description: Use to audit Angular Portal-specific security concerns beyond the cross-track `review/security/shared.md` baseline — route guard coverage (`canActivate`), permission-code constants vs free strings, `bypassSecurityTrust*` / `[innerHTML]` XSS, token storage (localStorage vs httpOnly cookie), HttpClient interceptor order, prod source maps, leaked dev API URLs in `environment.production.ts`, and `@sdcorejs/angular` permission directive usage. Outputs Critical/Important/Minor findings. Triggers - "security review angular", "audit portal security", "check route guards", "innerHTML XSS", "token storage", or invocation pre-release. Applies to angular-portal. Bilingual (VI/EN).
 allowed-tools: Read, Bash, Glob, Grep
 ---
 
@@ -119,7 +119,7 @@ Severity: Critical per embedded secret.
 
 OWASP A02 Cryptographic Failures.
 
-### AG-9: `@sd-angular/core` permission directive used, not hand-rolled `*ngIf`
+### AG-9: `@sdcorejs/angular` permission directive used, not hand-rolled `*ngIf`
 
 ```bash
 # Confirm permission-gating uses the Core directive where one exists
@@ -197,7 +197,7 @@ OWASP A01.
 - Treat a route guard as a security control on its own — it's bypassable; the BE must enforce
 - Flag every `[innerHTML]` as Critical — check whether the data is author-controlled or server/user data
 - Read or echo any real credentials found
-- Assume `@sd-angular/core` sanitizes everything — `bypassSecurityTrust*` defeats it
+- Assume `@sdcorejs/angular` sanitizes everything — `bypassSecurityTrust*` defeats it
 
 ## Anti-patterns
 - **Relying on `*ngIf="isAdmin"` for security** — hiding a button is not access control; the endpoint must reject

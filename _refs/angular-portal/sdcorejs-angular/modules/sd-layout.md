@@ -1,8 +1,8 @@
 # Layout Module
 
 - **Type:** `@NgModule` (`SdLayoutModule`) + standalone components / pipes / services
-- **Import path:** `@sd-angular/core/modules/layout`
-- **Library version:** `@sd-angular/core@19.0.0-beta.86`
+- **Import path:** `@sdcorejs/angular/modules/layout`
+- **Library version:** `@sdcorejs/angular@20.0.1`
 
 ## One-line purpose
 
@@ -130,7 +130,7 @@ export const appConfig: ApplicationConfig = {
 export const routes: Routes = [
   {
     path: 'layout',
-    loadChildren: () => import('@sd-angular/core/modules/layout').then(m => m.SdLayoutModule),
+    loadChildren: () => import('@sdcorejs/angular/modules/layout').then(m => m.SdLayoutModule),
   },
   {
     path: '',
