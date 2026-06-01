@@ -135,7 +135,6 @@ sdcorejs-agent/
 │   ├── orchestration/                     # SDLC plumbing (13 skills)
 │   ├── review/{architecture,code,security,performance,accessibility}/
 │   └── testing/{philosophy,tdd,e2e,integration,unit}/
-├── _legacy/                               # pre-pivot content kept for reference
 └── images/
 ```
 
