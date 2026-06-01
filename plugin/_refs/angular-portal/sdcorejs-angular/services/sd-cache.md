@@ -154,4 +154,4 @@ Coverage areas:
 
 ## Related
 - `SdApiService` (`@sd-angular/core/services/api`) — uses `SdCacheService` for its persistent cache layer (`option.cacheOption`).
-- `Utilities.hash`, `DateUtilities.addHours` (`@sd-angular/core/utilities/extensions`) — used internally for key hashing and TTL math.
+- `Utilities.hash`, `DateUtilities.addHours` (`@sdcorejs/utils/fns`) — used internally for key hashing and TTL math.

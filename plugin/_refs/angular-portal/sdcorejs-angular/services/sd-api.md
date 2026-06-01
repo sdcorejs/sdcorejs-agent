@@ -170,4 +170,4 @@ const result = await this.api.upload('/api/files', {
 - `SdCacheService` (`@sd-angular/core/services/cache`) — backs the persistent cache layer.
 - `SdApiModule` — NgModule that registers `HttpClient` (with interceptors from DI) and `SdHttpInterceptor`.
 - `SdHttpInterceptor` (`interceptors/api.interceptor`) — executes `intercept`, `beforeRemote`, and `afterRemote` hooks from `SdApiHandler`.
-- `BrowserUtilities.upload` / `Utilities.hash` (`@sd-angular/core/utilities/extensions`) — power `upload()` and key generation.
+- `BrowserUtilities.upload` / `Utilities.hash` (`@sdcorejs/utils/fns`) — power `upload()` and key generation.

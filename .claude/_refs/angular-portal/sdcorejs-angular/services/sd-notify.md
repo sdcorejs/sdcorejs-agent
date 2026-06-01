@@ -215,4 +215,4 @@ Covers (25 specs total):
 ## Related
 - `SdConfirmService` (`@sd-angular/core/services/confirm`) — modal alternative for blocking interactions.
 - `SdToastContainerComponent` (`@sd-angular/core/services/notify/components`) — the rendered host. Customize via global CSS.
-- `Utilities.generateUuid` (`@sd-angular/core/utilities`) — used internally for toast ids.
+- `Utilities.generateUuid` (`@sdcorejs/utils/fns`) — used internally for toast ids.

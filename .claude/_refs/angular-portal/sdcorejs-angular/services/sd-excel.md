@@ -176,5 +176,5 @@ if (file && items.length) {
 
 ## Related
 - `exceljs` (peer dep) — workbook driver. Loaded dynamically via `await import('exceljs')` inside `generateTemplate` / `export` / `parse` to keep it out of the main bundle.
-- `BrowserUtilities.upload` / `BrowserUtilities.downloadBlob` (`@sd-angular/core/utilities/extensions`) — file picker + download trigger.
+- `BrowserUtilities.upload` / `BrowserUtilities.downloadBlob` (`@sdcorejs/utils/fns`) — file picker + download trigger.
 - `DateUtilities.toFormat` — used to suffix CSV filenames.

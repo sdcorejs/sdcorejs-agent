@@ -136,4 +136,4 @@ providers: [
 
 ## Related
 - `SdCacheService` (`@sd-angular/core/services/cache`) — adds TTL semantics on top of similar storage primitives.
-- `Utilities.hash` (`@sd-angular/core/utilities`) — hashes object keys.
+- `Utilities.hash` (`@sdcorejs/utils/fns`) — hashes object keys.
