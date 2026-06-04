@@ -1,10 +1,9 @@
----
-name: angular-portal-actions
-description: Use when wiring action buttons or side-effects on detail / list pages — workflow transitions (approve / reject / submit-for-approval), bulk operations on selected rows, or any custom action button that triggers a service call (export, re-sync, recompute, send notification, mark-as-read, archive, etc). Owns placement rules (detail headerRight vs list selector.actions), confirmation dialogs, permission gates, post-action navigation / reload, and the "Lưu & Gửi duyệt" pattern that combines save + workflow transition. Triggers - "thêm action button", "action button", "approve flow", "workflow action", "bulk approve", "bulk action", "custom action", "side effect button", "gửi duyệt", "phê duyệt", "từ chối", "xuất excel", "đồng bộ lại". Bilingual (VI/EN).
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
----
+> **Reference for the `angular-portal-write-code` orchestrator.** Loaded on demand when the
+> confirmed plan wires action buttons / side-effects (workflow transitions, bulk operations,
+> custom side-effects) on detail / list pages. Not a standalone skill — the orchestrator reads
+> this file when its dispatch table routes a step here.
 
-# 31 — Actions on Detail and List Pages
+# Actions on Detail and List Pages
 
 ## Purpose
 
@@ -20,12 +19,12 @@ Workflow actions are just one shape of action — the placement / confirm / perm
 ## When to use
 
 - User asks "thêm action button", "custom action", "approve flow", "workflow", "bulk approve", "export excel", "gửi duyệt", "phê duyệt", "từ chối", "xuất excel", "đồng bộ lại"
-- After [`21-screen-detail.md`](./21-screen-detail.md) or [`20-screen-list.md`](./20-screen-list.md) generated the base screen and you need to add side-effects on top
+- After [`./screen-detail.md`](./screen-detail.md) or [`./screen-list.md`](./screen-list.md) generated the base screen and you need to add side-effects on top
 - When a single button needs to combine validation + save + workflow transition (the "save and submit" pattern)
 
 Defer to:
-- [`21-screen-detail.md`](./21-screen-detail.md) when the request is about the form / state machine itself (CREATE / UPDATE / DETAIL), not the side-effect buttons
-- [`20-screen-list.md`](./20-screen-list.md) when the request is about table columns / paging / filters (NOT the row / bulk action buttons)
+- [`./screen-detail.md`](./screen-detail.md) when the request is about the form / state machine itself (CREATE / UPDATE / DETAIL), not the side-effect buttons
+- [`./screen-list.md`](./screen-list.md) when the request is about table columns / paging / filters (NOT the row / bulk action buttons)
 
 ## Placement matrix
 
@@ -97,7 +96,7 @@ The decisive question for placement: **does the action operate on the current re
 
 ## Code templates
 
-The literal HTML / TypeScript snippets for action wiring live in this skill body (they are short — no separate ref file). Use them as patterns; substitute domain-specific bits.
+The literal HTML / TypeScript snippets for action wiring live in this reference body (they are short — no separate templates file). Use them as patterns; substitute domain-specific bits.
 
 ### Detail headerRight — full state-aware example
 
@@ -268,8 +267,8 @@ onExport = async () => {
 - Long-running side-effect without disabling the button — multiple clicks fire duplicate calls
 - Trying to combine ALL actions into one menu — separate by scope, group only when truly the same scope
 
-## Related skills
+## Related references
 
-- [`21-screen-detail.md`](./21-screen-detail.md) — the detail component the action buttons attach to
-- [`20-screen-list.md`](./20-screen-list.md) — the list component for `selector.actions` + row action column
-- [`12-init-entity.md`](./12-init-entity.md) — when service methods (`approve`, `reject`, `bulkSubmit`, `exportExcel`) don't exist yet
+- [`./screen-detail.md`](./screen-detail.md) — the detail component the action buttons attach to
+- [`./screen-list.md`](./screen-list.md) — the list component for `selector.actions` + row action column
+- [`./init-entity.md`](./init-entity.md) — when service methods (`approve`, `reject`, `bulkSubmit`, `exportExcel`) don't exist yet

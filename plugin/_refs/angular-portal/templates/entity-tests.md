@@ -1,6 +1,6 @@
-# Entity Test Templates — angular-portal-init-entity
+# Entity Test Templates — init-entity (angular-portal-write-code)
 
-Spec.ts templates for the `angular-portal-init-entity` skill, organized by test coverage level. The skill picks which set to emit based on the user's confirmed coverage (`minimal` / `standard` / `full`).
+Spec.ts templates for the init-entity reference pack ([`init-entity.md`](../write-code/init-entity.md), loaded on demand by the `angular-portal-write-code` orchestrator), organized by test coverage level. The pack picks which set to emit based on the user's confirmed coverage (`minimal` / `standard` / `full`).
 
 ## Contents
 - Request for Test Coverage (clarify prompt)

@@ -1,10 +1,8 @@
----
-name: angular-portal-init-portal
-description: Use when initializing a brand-new Angular portal repo using `@sdcorejs/angular` baseline template. Generates project skeleton (app shell, environments, sample module, configurations). Triggers - "khởi tạo portal", "init portal", "create portal-X", "new portal repo", "tạo dự án portal mới". Bilingual (VI/EN).
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
----
+> **Reference for the `angular-portal-write-code` orchestrator.** Loaded on demand when the
+> confirmed plan includes initializing a brand-new portal repo. Not a standalone skill — the
+> orchestrator reads this file when its dispatch table routes a step here.
 
-# Skill: Angular Portal Project Initialization
+# Init Portal — Angular Portal Project Initialization
 
 ## Overview
 
@@ -16,7 +14,7 @@ Generates production-ready Angular portal starter by rendering every file from t
 
 ## Source of truth — Core UI package
 
-This skill uses two placeholders wherever the Core UI package appears:
+This reference uses two placeholders wherever the Core UI package appears:
 
 | Placeholder | Resolved from `_refs/angular-portal/core-version.md` field |
 |---|---|
@@ -28,11 +26,11 @@ This skill uses two placeholders wherever the Core UI package appears:
 **BEFORE generating any file**, the agent MUST:
 
 1. Read [`_refs/angular-portal/core-version.md`](_refs/angular-portal/core-version.md) and extract `packageName` + `currentVersion`
-2. Substitute every `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` token in this skill's output with those values
+2. Substitute every `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` token in this reference's output with those values
 3. Apply the same substitution to import statements, resolving `<CORE_UI_PACKAGE_NAME>` from `core-version.md` (default `@sdcorejs/angular`).
 4. NEVER hardcode a literal version string in generated `package.json` / commit message / verification text
 
-Single-file bump: change `_refs/angular-portal/core-version.md` and every future portal picks it up. Do NOT find-replace placeholders inside this skill file itself — they are intentional.
+Single-file bump: change `_refs/angular-portal/core-version.md` and every future portal picks it up. Do NOT find-replace placeholders inside this reference file itself — they are intentional.
 
 If `_refs/angular-portal/core-version.md` is missing or malformed, STOP and ask the user — never guess the version or package name.
 
@@ -54,7 +52,7 @@ Before generating, clarify with user:
 2. **Environments** (optional, defaults: `dev`, `qc`, `uat`, `prod`)
 3. **Application Title** (optional, default: `Portal`)
 4. **Sample Entity Names** (optional, defaults: `order`, `customer` — Order uses `<customer-select>` so the sample also demos the base-select / entity-select pattern)
-5. **Additional Modules** (optional) — answer: "Use plop or the `11-init-module` skill after generation"
+5. **Additional Modules** (optional) — answer: "Use plop or the init-module reference (`./init-module.md`) after generation"
 
 > **Port** is fixed at `4200` (Angular default). Do not ask.
 
@@ -146,9 +144,9 @@ Report pass/fail summary and failing spec names. If E2E missing, report blocker.
 - Read `_refs/angular-portal/core-version.md` and substitute placeholders BEFORE writing any file
 - Render every file from [`_refs/angular-portal/templates/init-portal-templates.md`](_refs/angular-portal/templates/init-portal-templates.md) (no external baseline directory exists or is required)
 - Copy [`_refs/angular-portal/assets/logo.png`](_refs/angular-portal/assets/logo.png) to `<project>/public/logo.png` and ensure `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
-- Generate exactly ONE sample lib with TWO entities: `order` + `customer` (Order's create/update form uses `<customer-select>` — demonstrates the reusable dropdown pattern from `11-init-module`)
+- Generate exactly ONE sample lib with TWO entities: `order` + `customer` (Order's create/update form uses `<customer-select>` — demonstrates the reusable dropdown pattern from the init-module reference, `./init-module.md`)
 - Use `features/` (NOT `modules/`) at the lib level — `src/libs/<lib>/features/<entity>/`
-- When applying this skill to a legacy project that already uses `modules/`, still generate new code under `features/` and recommend renaming the existing `modules/` directory
+- When applying this reference to a legacy project that already uses `modules/`, still generate new code under `features/` and recommend renaming the existing `modules/` directory
 - Place sample lib's reusable dropdowns at MODULE level: `src/libs/sample/components/base-select/` + `src/libs/sample/components/customer-select/`
 - Keep the layout route lazy-loaded from Core UI: `loadChildren: () => import('<CORE_UI_PACKAGE_NAME>/modules/layout').then(m => m.SdLayoutModule)`
 - Permission code convention is **flexible per project, consistent within a project**:
@@ -178,7 +176,7 @@ Report pass/fail summary and failing spec names. If E2E missing, report blocker.
 
 ### Preconditions
 ```text
-Required before applying this skill:
+Required before applying this reference:
 - `_refs/angular-portal/templates/init-portal-templates.md` is present (file-content templates)
 - `_refs/angular-portal/core-version.md` is present (packageName + currentVersion)
 - `_refs/angular-portal/assets/logo.png` is present (default brand logo)
@@ -283,7 +281,7 @@ All file-content templates referenced by the Generation Steps above live in [`_r
 | `public/logo.png` | copy raw bytes from [`_refs/angular-portal/assets/logo.png`](_refs/angular-portal/assets/logo.png) (no substitution) |
 | `src/libs/sample/routes.ts` | [`#sampleroutests`](_refs/angular-portal/templates/init-portal-templates.md#sampleroutests) |
 
-Resolve `<CORE_UI_PACKAGE_NAME>` and `<CORE_VERSION>` from `_refs/angular-portal/core-version.md` **before** materializing any of these files (see §"Source of truth — Core UI package" at the top of this skill).
+Resolve `<CORE_UI_PACKAGE_NAME>` and `<CORE_VERSION>` from `_refs/angular-portal/core-version.md` **before** materializing any of these files (see §"Source of truth — Core UI package" at the top of this reference).
 
 ### Verification Steps
 ```text
@@ -330,7 +328,7 @@ After generation:
 
 ## Post-init — write the project summary
 
-A freshly scaffolded portal has no `.sdcorejs/summary.md` yet. After the validation checklist passes, run `orchestration/auto-summary` in WRITE mode to create it (domain, stack, the generated module/lib layout, reuse cheatsheet, conventions, current git HEAD). This is what the next session and the `07-write-code` Step 0 pre-flight will read instead of re-scanning blind. Skipping it means the very next code-writing run pays a full re-discovery.
+A freshly scaffolded portal has no `.sdcorejs/summary.md` yet. After the validation checklist passes, run `orchestration/auto-summary` in WRITE mode to create it (domain, stack, the generated module/lib layout, reuse cheatsheet, conventions, current git HEAD). This is what the next session and the write-code orchestrator's Step 0 pre-flight will read instead of re-scanning blind. Skipping it means the very next code-writing run pays a full re-discovery.
 
 ---
 
@@ -391,16 +389,3 @@ Then run npm install and npm start to verify the starter boots.
 [project-name]/src/environments/environment.uat.ts
 [project-name]/src/environments/environment.prod.ts
 ```
-
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
-
-**Response style (terse mode active for this skill — reduces token usage):**
-
-While executing this skill:
-
-- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
-- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
-- Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
-- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
-- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

@@ -1,8 +1,8 @@
 # Write-Code Orchestrator — Step Examples
 
-Walkthrough examples referenced from [`07-write-code.md`](../../07-write-code.md). The skill body owns the dispatch table, TDD gate, input resolution, semantic inference rules, and the file/naming conventions; these examples show what the dispatched sub-skills (`12-init-entity`, `20-screen-list`, etc.) ultimately produce. Use them when you want to picture the end shape, or when explaining the flow to someone reading the orchestrator for the first time.
+Walkthrough examples referenced from [`07-write-code.md`](../../07-write-code.md) (the `angular-portal-write-code` orchestrator). The skill body owns the dispatch table, TDD gate, input resolution, semantic inference rules, and the file/naming conventions; these examples show what the on-demand reference packs it loads (`init-entity`, `screen-list`, etc.) ultimately produce. Use them when you want to picture the end shape, or when explaining the flow to someone reading the orchestrator for the first time.
 
-For the canonical entity-skeleton + tests + product example actually used by `12-init-entity`, see the sibling refs [`entity-skeleton.md`](./entity-skeleton.md), [`entity-tests.md`](./entity-tests.md), and [`example-product.md`](./example-product.md).
+For the canonical entity-skeleton + tests + product example actually used by the init-entity pack, see the sibling refs [`entity-skeleton.md`](./entity-skeleton.md), [`entity-tests.md`](./entity-tests.md), and [`example-product.md`](./example-product.md).
 
 ## Table of contents
 
@@ -216,7 +216,7 @@ export const PROMOTION_SEED_DATA: PromotionDTO[] = [
 
 ## Step 4 — Generate Routes (`product.routes.ts`)
 
-Lazy-load components. No `providers` array on the entity route — the entity service is `@Injectable({ providedIn: 'root' })`, and the lib-scoped tokens are wired by `<Lib>Module.useValue({...})` at root (see [`11-init-module.md`](../../11-init-module.md) §`[module].module.ts`).
+Lazy-load components. No `providers` array on the entity route — the entity service is `@Injectable({ providedIn: 'root' })`, and the lib-scoped tokens are wired by `<Lib>Module.useValue({...})` at root (see [`init-module.md`](../write-code/init-module.md) §`[module].module.ts`).
 
 ```typescript
 import { Routes } from '@angular/router';
@@ -238,11 +238,11 @@ export const productRoutes: Routes = [
 
 ## Step 5 / Step 6 — List + Detail components
 
-For the list and detail component bodies (`SdTable`, audit columns, action buttons, `CREATE/UPDATE/DETAIL` state machine, stale-id recovery, form refinement), defer to the screen sub-skills the orchestrator dispatches:
+For the list and detail component bodies (`SdTable`, audit columns, action buttons, `CREATE/UPDATE/DETAIL` state machine, stale-id recovery, form refinement), defer to the screen reference packs the orchestrator loads on demand:
 
-- List page → see [`20-screen-list.md`](../../20-screen-list.md)
-- Detail component (shell + CREATE / UPDATE / DETAIL states + form refinement) → see [`21-screen-detail.md`](../../21-screen-detail.md)
-- Action buttons layered on top (workflow / bulk / custom side-effects) → see [`31-actions.md`](../../31-actions.md)
+- List page → see [`screen-list.md`](../write-code/screen-list.md)
+- Detail component (shell + CREATE / UPDATE / DETAIL states + form refinement) → see [`screen-detail.md`](../write-code/screen-detail.md)
+- Action buttons layered on top (workflow / bulk / custom side-effects) → see [`actions.md`](../write-code/actions.md)
 
 ## Worked end-to-end — Employee entity
 
@@ -264,8 +264,8 @@ For the list and detail component bodies (`SdTable`, audit columns, action butto
 7. Generate `employee.mock-data.ts` (Step 3)
 8. Generate `employee.service.ts` (Step 3)
 9. Generate `employee.routes.ts` (Step 4)
-10. Generate list component (Step 5 — dispatched to `20-screen-list`)
-11. Generate detail component (Step 6 — dispatched to `21/22/23` family)
+10. Generate list component (Step 5 — using the `screen-list` reference pack)
+11. Generate detail component (Step 6 — using the `screen-detail` reference pack, all CREATE/UPDATE/DETAIL states)
 12. Verify all files compile without errors
 13. Return complete code package ready to add to module
 

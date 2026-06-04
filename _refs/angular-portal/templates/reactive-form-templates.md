@@ -1,6 +1,6 @@
 # Reactive Form — Code Templates
 
-Code templates referenced from [`21-screen-detail.md`](../../21-screen-detail.md) (form refinement section — validators, signal-first rules, FormArray). The skill body owns the validation strategy and the "lightweight first, strict second" doctrine; this file holds the literal templates.
+Code templates referenced from the screen-detail reference pack [`screen-detail.md`](../write-code/screen-detail.md) (form refinement section — validators, signal-first rules, FormArray; loaded on demand by the `angular-portal-write-code` orchestrator). The pack owns the validation strategy and the "lightweight first, strict second" doctrine; this file holds the literal templates.
 
 ## Table of contents
 

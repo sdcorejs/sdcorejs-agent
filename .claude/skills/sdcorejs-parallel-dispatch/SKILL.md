@@ -160,7 +160,7 @@ User says "tạo CRUD cho entity Product với 4 màn (list, detail, create, upd
 
 This LOOKS like 4 parallel tasks. But examine:
 - All 4 share the same `Product` DTO + service + module — there's shared state
-- Detail/Create/Update share a component shell (`21-screen-detail` owns it, the others extend)
+- Detail/Create/Update share a component shell (the `screen-detail` pack owns it, the others extend)
 - List is independent
 
 Correct dispatch:

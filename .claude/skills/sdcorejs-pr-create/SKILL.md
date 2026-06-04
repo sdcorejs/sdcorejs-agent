@@ -118,13 +118,13 @@ Body:
 - Update the dispatch table in `07-write-code` + all cross-refs in tests + onboarding.
 
 ## Changes
-- `skills/tracks/angular-portal/31-actions.md`: renamed + broadened body
+- `_refs/angular-portal/write-code/actions.md`: renamed + broadened body
 - `skills/tracks/angular-portal/07-write-code.md`: dispatch table + description
 - `skills/tracks/angular-portal/00-onboarding.md`: workflow strip
 - `.claude/skills/`, `plugin/skills/`: mirror regenerated via sync-skills.sh
 
 ## Test plan
-- [ ] Open Claude Code in a target project, type "thêm nút xuất Excel" → `angular-portal-actions` dispatches
+- [ ] Open Claude Code in a target project, type "thêm nút xuất Excel" → `angular-portal-write-code` (actions pack) dispatches
 - [ ] Type "thêm approve flow" → same skill dispatches
 - [ ] `bash .claude/sync-skills.sh --check` passes
 ```
@@ -136,7 +136,7 @@ Body:
 ```markdown
 ## Summary
 - No `@sdcorejs/angular` form component implements ControlValueAccessor.
-- Replaced `formControlName=` usages with `[form]+name=` pattern across `21-screen-detail.md` + the form templates in `_refs/angular-portal/templates/screen-detail-component.md` and `_refs/angular-portal/templates/reactive-form-templates.md`.
+- Replaced `formControlName=` usages with `[form]+name=` pattern across `_refs/angular-portal/write-code/screen-detail.md` + the form templates in `_refs/angular-portal/templates/screen-detail-component.md` and `_refs/angular-portal/templates/reactive-form-templates.md`.
 
 ## Test plan
 - [ ] Generate a new entity from a clean target project and verify the rendered form binds correctly

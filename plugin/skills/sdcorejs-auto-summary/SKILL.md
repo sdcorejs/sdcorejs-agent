@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-summary
-description: MANDATORY project-brief skill. Owns the single canonical `.sdcorejs/summary.md` — an evergreen "what this project IS" snapshot (domain, stack, architecture map, conventions, reuse cheatsheet). Use this skill BEFORE doing any substantive work in a target project: if `.sdcorejs/summary.md` is missing it MUST be generated first (by delegating the scan to `sdcorejs-code-map`, then distilling); if present it is read at session start to load project context cheaply. Also runs in WRITE mode right after a new project/module is initialized (`10-init-portal`, `11-init-module`), and refreshes itself when the recorded git HEAD has drifted. Distinct from `sdcorejs-auto-docs` (per-session deltas) — this is the one stable project overview. Triggers - session start in a target project, about to run `07-write-code` / `10-init-*` / `11-init-module`, user asks "tóm tắt dự án", "project summary", "dự án này là gì", "overview", "what is this project". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY project-brief skill. Owns the single canonical `.sdcorejs/summary.md` — an evergreen "what this project IS" snapshot (domain, stack, architecture map, conventions, reuse cheatsheet). Use this skill BEFORE doing any substantive work in a target project: if `.sdcorejs/summary.md` is missing it MUST be generated first (by delegating the scan to `sdcorejs-code-map`, then distilling); if present it is read at session start to load project context cheaply. Also runs in WRITE mode right after a new project/module is initialized (the `angular-portal-write-code` init-portal / init-module packs, or another track's init step), and refreshes itself when the recorded git HEAD has drifted. Distinct from `sdcorejs-auto-docs` (per-session deltas) — this is the one stable project overview. Triggers - session start in a target project, about to run `07-write-code` (the `angular-portal-write-code` orchestrator and its init packs) or another track's write-code orchestrator, user asks "tóm tắt dự án", "project summary", "dự án này là gì", "overview", "what is this project". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Bash, Glob, Grep
 ---
 
@@ -37,10 +37,10 @@ At the start of any session inside a target project:
 3. If it does NOT exist → tell the user it's missing and that you'll generate it before substantive work (GENERATE mode). For a pure question that needs no project context, you may answer first, but generate before any code-writing.
 
 ### 2. Before generation / on missing file (GENERATE mode = the gate)
-When about to run `07-write-code`, any `10-init-*`, or `11-init-module` AND `summary.md` is absent → generate it first. This is the "bắt buộc" gate.
+When about to run `07-write-code` (the `angular-portal-write-code` orchestrator, including its init-portal / init-module reference packs — or the equivalent init step in another track) AND `summary.md` is absent → generate it first. This is the "bắt buộc" gate.
 
 ### 3. Post-init (WRITE mode)
-Right after `10-init-portal` / `11-init-module` finishes scaffolding a brand-new project/module, generate (or update) `summary.md` — a fresh repo has none yet.
+Right after the `angular-portal-write-code` orchestrator (init-portal / init-module packs) finishes scaffolding a brand-new project/module, generate (or update) `summary.md` — a fresh repo has none yet.
 
 ### 4. On drift (REFRESH mode)
 If `summary.md` exists but the freshness check says it's stale → regenerate (or patch the changed sections).
@@ -130,7 +130,7 @@ Based on commit <short-sha> (<date>). Regenerate with `sdcorejs-auto-summary` if
 
 Description-matching alone is unreliable (a skill is only consulted when the agent thinks to). So this skill is backed by:
 1. **Hook (hard gate):** the plugin `SessionStart` hook checks `<project>/.sdcorejs/summary.md`; if absent it injects a directive instructing the agent to run this skill before substantive work.
-2. **Orchestrator wiring (medium):** `07-write-code` and the `10-init-*` / `11-init-module` skills call this skill as "Step 0 — ensure summary" (generate if missing) and as a post-init write.
+2. **Orchestrator wiring (medium):** `07-write-code` (the `angular-portal-write-code` orchestrator, including its init-portal / init-module reference packs) calls this skill as "Step 0 — ensure summary" (generate if missing) and as a post-init write.
 3. **Description (soft):** the pushy description above.
 
 If you are reading this because the hook injected a "summary missing" directive: generate it now (GENERATE mode) before the user's code-writing request.

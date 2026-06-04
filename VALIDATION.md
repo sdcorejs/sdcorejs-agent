@@ -3,6 +3,7 @@
 > ⚠️ **STALE SNAPSHOT** — This report was generated 2026-05-16 against the pre-cross-track-refactor skill layout. Several rounds of consolidation have happened since:
 > - 2026-05-20 (`071aa18`): per-track design skills moved into `skills/shared/sdlc/*`
 > - 2026-05-22: angular-portal UI skills consolidated 13 → 8 (`22-screen-create`, `23-screen-update`, `30-reactive-form` merged into `21-screen-detail`; `31-workflow-actions` → `31-actions`; `51-write-comments` absorbed into `orchestration/comment-code`; `52-faq` dropped)
+> - later: angular-portal consolidated 8 → 2 — the six sub-skills (`10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `31-actions`) were merged into the single `angular-portal-write-code` orchestrator and now live as on-demand reference packs (no frontmatter, not dispatchable) under `_refs/angular-portal/write-code/`. The track now exposes only `angular-portal-onboarding` + `angular-portal-write-code`; the native mirror dropped from 74 to 68 active skills
 >
 > Current structure: see `CLAUDE.md` for the live layout. The skill-name mapping below is preserved as historical record only.
 

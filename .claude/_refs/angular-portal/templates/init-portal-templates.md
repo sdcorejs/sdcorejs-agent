@@ -1,6 +1,6 @@
 # Init Portal — Code Templates
 
-Code templates referenced from [`10-init-portal.md`](../../10-init-portal.md). The skill body owns the decision logic, rules, and verification flow; this file holds the literal file content to write into the starter.
+Code templates referenced from the init-portal reference pack [`init-portal.md`](../write-code/init-portal.md) (loaded on demand by the `angular-portal-write-code` orchestrator). The pack owns the decision logic, rules, and verification flow; this file holds the literal file content to write into the starter.
 
 `<CORE_UI_PACKAGE_NAME>` and `<CORE_VERSION>` placeholders are resolved from [`../core-version.md`](../core-version.md) **before** writing any file (see skill body §"Source of truth — Core UI package").
 

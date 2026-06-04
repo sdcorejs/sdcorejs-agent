@@ -48,8 +48,8 @@ Request
   → orchestration/auto-docs (mandatory) → orchestration/auto-task-tracker (mandatory) + orchestration/memories (when durable knowledge surfaces)
 ```
 
-For angular-portal, sub-skills under `07-write-code`:
-`10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail` (handles CREATE / UPDATE / DETAIL states + reactive-form refinement), `31-actions` (workflow / bulk / custom side-effects).
+For angular-portal, `07-write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular-portal/write-code/` (no frontmatter, not dispatchable skills):
+`init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (handles CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow / bulk / custom side-effects).
 
 ## Mandatory rules
 
@@ -76,10 +76,10 @@ The skill files are the primary source. Load on demand:
 
 - `skills/shared/sdlc/02-clarify-requirements.md` — cross-track blocking questions; loads `_refs/angular-portal.md` for Angular-specific field/layout inference
 - `skills/shared/sdlc/_refs/angular-portal.md` — Angular field inference rules, layout matrix, phase grouping
-- `skills/tracks/angular-portal/07-write-code.md` — orchestrator + mock data rules (dispatch table at top)
-- `skills/tracks/angular-portal/11-init-module.md` — module setup
-- `skills/tracks/angular-portal/12-init-entity.md` — entity CRUD generation (slim; templates in `_refs/templates/`)
-- `skills/tracks/angular-portal/_refs/templates/entity-{skeleton,tests,example-product}.md` — code templates loaded on demand by 12-init-entity
+- `skills/tracks/angular-portal/07-write-code.md` — orchestrator + mock data rules (dispatch table at top; loads reference packs from `_refs/angular-portal/write-code/`)
+- `_refs/angular-portal/write-code/init-module.md` — module setup reference pack
+- `_refs/angular-portal/write-code/init-entity.md` — entity CRUD generation reference pack (slim; templates in `_refs/angular-portal/templates/`)
+- `skills/tracks/angular-portal/_refs/templates/entity-{skeleton,tests,example-product}.md` — code templates loaded on demand by the init-entity reference pack
 - `skills/tracks/angular-portal/_refs/sdcorejs-angular-catalog.md` — components inventory (load when picking a Core UI component)
 - `skills/orchestration/auto-docs.md` — session summary writer (mandatory tail-call)
 - `skills/orchestration/auto-specs.md` — approved-spec snapshot writer (MANDATORY tail-call after 04-review-spec approval)

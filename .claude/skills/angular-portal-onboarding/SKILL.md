@@ -48,13 +48,16 @@ shared/sdlc/06-review-plan       (sdcorejs-review-plan) — APPROVAL GATE
 orchestration/auto-plans         ← MANDATORY on approval; snapshot to .sdcorejs/plans/angular-portal/
   ↓
 tracks/angular-portal/07-write-code  (angular-portal-write-code)
-  ← orchestrator, picks sub-skills based on plan:
-   ├─ 10-init-portal       (new portal repo)
-   ├─ 11-init-module       (new feature module)
-   ├─ 12-init-entity       (new entity CRUD pages — templates in _refs/angular-portal/templates/)
-   ├─ 20-screen-list       (list page)
-   ├─ 21-screen-detail     (detail.component.ts — CREATE / UPDATE / DETAIL + form refinement)
-   └─ 31-actions           (action buttons — workflow / bulk / custom side-effects)
+  ← single orchestrator skill; reads the confirmed scope and loads the matching
+    on-demand reference pack under _refs/angular-portal/write-code/:
+   ├─ init-portal.md       (new portal repo)
+   ├─ init-module.md       (new feature module)
+   ├─ init-entity.md       (new entity CRUD = model/service/routes/list/detail — links to _refs/angular-portal/templates/)
+   ├─ screen-list.md       (list page)
+   ├─ screen-detail.md     (detail.component.ts — CREATE / UPDATE / DETAIL + form refinement)
+   └─ actions.md           (action buttons — workflow / bulk / custom side-effects)
+  (these 6 were standalone sub-skills before — now consolidated so the track
+   exposes ONE skill instead of seven)
   ↓
 testing/e2e/angular-portal       (sdcorejs-testing-e2e-angular-portal)
   ← happy-path E2E for what was just built
@@ -79,9 +82,9 @@ You don't need to memorize skill names. Just describe what you want — the agen
 
 | User says | Skill picked |
 |---|---|
-| "Khởi tạo portal-shop với dev/qc/uat/prod" | `10-init-portal` |
-| "Thêm entity product, fields code/name/price" | `sdcorejs-clarify-requirements` (cross-track) → `12-init-entity` |
-| "Tạo màn list cho user" | `20-screen-list` |
+| "Khởi tạo portal-shop với dev/qc/uat/prod" | `angular-portal-write-code` (→ init-portal pack) |
+| "Thêm entity product, fields code/name/price" | `sdcorejs-clarify-requirements` (cross-track) → `angular-portal-write-code` (→ init-entity pack) |
+| "Tạo màn list cho user" | `angular-portal-write-code` (→ screen-list pack) |
 | "Review module catalog" | `sdcorejs-review-code` |
 | "Test cho entity product" | `sdcorejs-testing-e2e-angular-portal` |
 | "Brainstorm cho module sales" | `sdcorejs-brainstorm` (cross-track) |
@@ -102,7 +105,8 @@ The agent only reads these when relevant — don't load upfront:
 - [`_refs/angular-portal/core-version.md`](_refs/angular-portal/core-version.md) — pinned `@sdcorejs/angular` version
 - [`_refs/angular-portal/sdcorejs-angular-catalog.md`](_refs/angular-portal/sdcorejs-angular-catalog.md) — Core UI components and patterns
 - [`_refs/angular-portal/entity-field-types.md`](_refs/angular-portal/entity-field-types.md) — field type → form control mapping
-- [`_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md`](_refs/angular-portal/templates/) — canonical code templates emitted by `12-init-entity`
+- [`_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md`](_refs/angular-portal/templates/) — canonical code templates emitted by `angular-portal-write-code` (init-entity pack)
+- [`_refs/angular-portal/write-code/*.md`](_refs/angular-portal/write-code/) — the 6 on-demand reference packs the write-code orchestrator dispatches to (init-portal / init-module / init-entity / screen-list / screen-detail / actions)
 
 ### 6. What to do next
 - **New project**: invoke `sdcorejs-clarify-requirements` (cross-track) to define portal name + environments + first module — or `sdcorejs-brainstorm` first if scope is still open-ended.
@@ -117,7 +121,7 @@ The agent only reads these when relevant — don't load upfront:
 
 ## Anti-patterns
 - ❌ Don't repeat full rules from other skill files. Link to them.
-- ❌ Don't generate code from this skill. Defer to `07-write-code` and its sub-skills.
+- ❌ Don't generate code from this skill. Defer to `angular-portal-write-code` and its reference packs.
 - ❌ Don't ask clarifying questions about scope here — that's `sdcorejs-clarify-requirements`'s job (cross-track).
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->

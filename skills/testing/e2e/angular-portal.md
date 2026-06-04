@@ -10,7 +10,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 After `07-write-code` (or any sub-skill) has produced a feature, write E2E tests that exercise the happy path of that feature in a real browser. Catches integration bugs unit tests miss (routing, guards, form submission, table reload).
 
 ## When to use
-- Right after `12-init-entity` or `20-screen-list`/`21-screen-detail` finishes
+- Right after the `angular-portal-write-code` orchestrator (init-entity / screen-list / screen-detail packs) finishes
 - User asks "viết e2e test cho ...", "add e2e for ...", "test luồng ..."
 - Before `sdcorejs-review-code` — review reads test results to verify behavior
 - User pastes an `sd-autoid-inspector` JSON / POM export, or asks to base E2E on the feature currently being coded → **Mode B (gated)** below
@@ -72,7 +72,7 @@ For a CRUD entity, write at minimum these specs:
 ### `<entity>-delete.e2e.spec.ts`
 - Select a row's checkbox → click bulk delete → confirm in dialog → expect success notify + row gone
 
-If the entity has workflow or other action buttons (`31-actions`), add `<entity>-workflow.e2e.spec.ts` (or `<entity>-actions.e2e.spec.ts`) covering the action flow — typically submit / approve / reject for workflows; export / re-sync / etc. for custom side-effects.
+If the entity has workflow or other action buttons (the actions pack of `angular-portal-write-code`), add `<entity>-workflow.e2e.spec.ts` (or `<entity>-actions.e2e.spec.ts`) covering the action flow — typically submit / approve / reject for workflows; export / re-sync / etc. for custom side-effects.
 
 ## Naming + placement
 

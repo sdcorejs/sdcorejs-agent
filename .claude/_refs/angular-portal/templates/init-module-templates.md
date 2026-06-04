@@ -1,6 +1,6 @@
 # Init Module — Code Templates
 
-Code templates referenced from [`11-init-module.md`](../../11-init-module.md). The skill body owns the decision logic (Required vs Optional, MUST DO / MUST NOT, hybrid compatibility) and chooses which of these templates to materialize for the requested module.
+Code templates referenced from the init-module reference pack [`init-module.md`](../write-code/init-module.md) (loaded on demand by the `angular-portal-write-code` orchestrator). The pack owns the decision logic (Required vs Optional, MUST DO / MUST NOT, hybrid compatibility) and chooses which of these templates to materialize for the requested module.
 
 Placeholders used throughout: `[module]` / `[Module]` / `[MODULE]` (kebab / Pascal / SCREAMING_SNAKE forms of the module name), `[entity-a]` / `[entity-b]` (entity kebab names), `<CORE_UI_PACKAGE_NAME>` (resolved from [`../core-version.md`](../core-version.md)).
 

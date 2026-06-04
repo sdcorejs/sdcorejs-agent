@@ -43,7 +43,7 @@ TASK: <verb + concrete target + scope, one sentence>
 
 CONTEXT (everything the subagent needs):
 - Stack / track / lib path (e.g. `src/libs/catalog/features/product/`)
-- Relevant skill body to follow (e.g. "Follow `12-init-entity.md` exactly")
+- Relevant skill body to follow (e.g. "Follow the `angular-portal-write-code` init-entity pack at `_refs/angular-portal/write-code/init-entity.md` exactly")
 - Field schema (paste it; don't reference "the spec")
 - Conventions already decided (mock-first vs api, layout pattern, permissions)
 - Surrounding files that already exist (so they don't duplicate)

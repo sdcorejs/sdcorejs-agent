@@ -15,7 +15,7 @@ This skill is shared across SDCoreJS tracks (`angular-portal`, `nestjs`, `nextjs
 
 ### Auto-trigger at end of code-writing skills
 The agent MUST run this skill (write mode) at the end of every code-writing skill invocation, without prompting. For the angular-portal track that means:
-- `07-write-code` (and the sub-skills it dispatches: `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `31-actions`)
+- `07-write-code` (the `angular-portal-write-code` orchestrator, plus the on-demand reference packs it loads: `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail`, `actions`)
 - `40-e2e-test`
 - `sdcorejs-review-code` (write a "review session" doc summarizing findings, even though no code changed)
 - `orchestration/comment-code` when the chosen level is not `skip`
@@ -81,7 +81,7 @@ The `<kebab-topic>` is a 3-6 word slug derived from what was actually done. Exam
 
 ## Open questions / follow-ups
 - Backend API host not yet provided — service is mock-first; switch to BaseService when API contract lands
-- No workflow yet; if approval flow is needed later, invoke `31-actions`
+- No workflow yet; if approval flow is needed later, invoke `angular-portal-write-code` (actions pack)
 
 ## Next suggested action
 - Run `npm run test -- --watch=false --include=src/libs/catalog/features/product/**/*.spec.ts`
@@ -89,7 +89,7 @@ The `<kebab-topic>` is a 3-6 word slug derived from what was actually done. Exam
 - Optional: invoke `40-e2e-test` to add happy-path E2E coverage
 
 ## Skill provenance
-Skills invoked this session: `02-clarify-requirements` → `05-plan` → `07-write-code` → `12-init-entity`
+Skills invoked this session: `02-clarify-requirements` → `05-plan` → `07-write-code` (init-entity pack)
 ```
 
 ## Rules

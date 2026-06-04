@@ -12,7 +12,7 @@ Integration tests wire 2-3 real Angular collaborators (component + service + rou
 Read `testing/philosophy.md` first for principles.
 
 ## When invoked
-- After `21-screen-detail` (any state) or `31-actions` skill completes
+- After the `angular-portal-write-code` orchestrator (screen-detail pack, any state, or actions pack) completes
 - User says "test luồng tạo mới", "test form submit", "integration test"
 - Before a feature merges (verify wiring with real-ish dependencies)
 
@@ -277,7 +277,7 @@ Target per module: ≥ 70% line coverage on `pages/` + `services/`.
 - Principles: `testing/philosophy.md`
 - Unit tests: `testing/unit/angular-portal.md`
 - E2E tests: `testing/e2e/angular-portal.md`
-- Build skills that produce testable code: `tracks/angular-portal/10-init-portal.md` → `31-actions.md`
+- Build skill that produces testable code: the `angular-portal-write-code` orchestrator (reference packs `_refs/angular-portal/write-code/init-portal.md` → `actions.md`)
 - Verification gate: `orchestration/verify-before-done`
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->

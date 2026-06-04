@@ -1,28 +1,28 @@
----
-name: angular-portal-init-entity
-description: Use when adding a new entity (with full CRUD pages - model, service, routes, list, detail) into an existing Angular-portal module. Generates `services/<entity>.{model,mock-data,service}.ts`, `<entity>.routes.ts`, `pages/list/list.component.ts`, `pages/detail/detail.component.ts`, plus matching spec files at the user's confirmed coverage level. Code templates live in `_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md` and are loaded on demand. Triggers - "thêm entity X vào module Y", "add entity", "create CRUD for X", "tạo CRUD entity", "generate entity". Bilingual (VI/EN).
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
----
+> **Reference for the `angular-portal-write-code` orchestrator.** Loaded on demand when the
+> confirmed plan adds a new entity with full CRUD pages (model + service + routes + list +
+> detail). Not a standalone skill — the orchestrator reads this file when its dispatch table
+> routes a step here. For list-only refinement see `./screen-list.md`; for detail/form work see
+> `./screen-detail.md`; for action buttons see `./actions.md`.
 
-# Angular Skill: Entity CRUD Module
+# Init Entity — Entity CRUD Module
 
-## 1. Skill Name
+## 1. Reference Name
 **Entity CRUD Module Generation**
 
 ## 2. Description
 Generates a complete entity management module following sdcorejs architecture patterns. Creates service layer, models/interfaces, and page components (list and detail) with full CRUD operations, reactive forms, and data tables.
 
-This skill can synthesize UI structure from PRD text, screenshot/attribute images, and sample cURL payloads, then map those into CREATE/UPDATE/DETAIL rendering strategies.
+This reference can synthesize UI structure from PRD text, screenshot/attribute images, and sample cURL payloads, then map those into CREATE/UPDATE/DETAIL rendering strategies.
 
-This skill assumes the target feature module is already known. If the request does not specify a module, the agent must resolve that first using the request intake flow.
+This reference assumes the target feature module is already known. If the request does not specify a module, the agent must resolve that first using the request intake flow.
 
-For common entity forms with around 5-6 fields, this skill should prefer a side-drawer detail UI before using a full page detail.
+For common entity forms with around 5-6 fields, prefer a side-drawer detail UI before using a full page detail.
 
 ## 3. Rules
 
 ### MUST DO ✅
 - Confirm target module before generating entity files
-- Generate the feature module first if it does not exist
+- Generate the feature module first if it does not exist (see `./init-module.md`)
 - Generate entity service with runnable mock CRUD by default (`localStorage`) when backend API contract is not provided yet
 - Generate `services/[entity].mock-data.ts` as the single centralized seed source for each entity (target: **20–40 rows**)
 - Generate mock data immediately after `SaveReq` and `DTO` are finalized (whether from user input or semantic inference); do not wait until after list/detail components are built
@@ -43,7 +43,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
   - request payload fields -> CREATE/UPDATE editable controls
   - response meta/status/audit fields -> DETAIL read-only blocks
   - list endpoint lightweight fields -> LIST columns
-- API URL convention is PROJECT-SPECIFIC, NOT skill-fixed. Scaffold defaults:
+- API URL convention is PROJECT-SPECIFIC, NOT fixed by this reference. Scaffold defaults:
   - `BaseService.register('<entity>')` — no version prefix
   - `<entity>-select` template: `url="<entity>"` — same, no prefix
   - When generating against a real project, FIRST inspect existing services in that project (e.g. `BaseService.register('v1/booking')` in `portal-agency`, or `register('api/v2/customer')` elsewhere). Match the project's convention exactly. Do NOT impose `v1/` or any prefix the project doesn't already use.
@@ -122,7 +122,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - In DETAIL load flow, when entity ID is stale/not found, show a warning and navigate back to list instead of leaving empty placeholders
 - When the request does not clearly define expected detail layout, ask one clarification question before final generation:
   - "Bạn muốn giữ layout mặc định hay đổi sang UnifiedCompact / UnifiedSplit / AdaptiveSplitDetail?"
-- Reserve extension points for workflow actions in both list and detail
+- Reserve extension points for workflow actions in both list and detail (wired by `./actions.md`)
 - Entity pages must use 2-component structure for full-page pattern:
   - `pages/list/list.component.ts`
   - `pages/detail/detail.component.ts`
@@ -204,7 +204,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 - Support hybrid NgModule + standalone integration when target codebase still uses NgModule boundaries
 
 ### TESTING CHECKLIST FOR DEVELOPERS ⚠️
-**When applying this skill to generate a new entity module, developers MUST verify these points before committing:**
+**When applying this reference to generate a new entity module, developers MUST verify these points before committing:**
 
 1. **Signal Invocation Syntax**
    - [ ] Check all signals are invoked with `()` in templates: `state()`, `entity()`, `form()`, `saving()`
@@ -313,7 +313,7 @@ For common entity forms with around 5-6 fields, this skill should prefer a side-
 
 ## 4. Templates and code samples
 
-All `.ts` code templates the skill emits live in reference files — SKILL.md stays slim by linking out:
+All `.ts` code templates this reference emits live in template files — this file stays slim by linking out:
 
 - **Component + service + routes templates** — `_refs/angular-portal/templates/entity-skeleton.md`
   - Preconditions, layout-variant decisions, anchor heuristic
@@ -393,16 +393,3 @@ Worked Product entity (full code samples for model + service + list + detail) li
 - [ ] Test file upload functionality
 - [ ] Test permission directives
 - [ ] Test server-side pagination
-
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
-
-**Response style (terse mode active for this skill — reduces token usage):**
-
-While executing this skill:
-
-- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
-- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
-- Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
-- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
-- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

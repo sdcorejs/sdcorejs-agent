@@ -1,20 +1,18 @@
----
-name: angular-portal-init-module
-description: Use when creating a new feature module inside an existing portal (configuration, routes, guards, interceptor, optional permission/upload configs). Triggers - "tạo module X", "create module", "thêm module", "add feature module", "init module". Bilingual (VI/EN).
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
----
+> **Reference for the `angular-portal-write-code` orchestrator.** Loaded on demand when the
+> confirmed plan includes creating a new feature module. Not a standalone skill — the
+> orchestrator reads this file when its dispatch table routes a step here.
 
-# Angular Skill: Feature Module Configuration
+# Init Module — Feature Module Configuration
 
-## 1. Skill Name
+## 1. Reference Name
 **Feature Module Configuration Setup**
 
 ## 2. Description
 Generates the complete feature module configuration including route setup, module-level interceptors, guards, and configuration providers following sdcorejs patterns. This is the foundation that ties all entities together.
 
-In a brand-new portal repo, this skill is the first generation step whenever the target module does not exist yet.
+In a brand-new portal repo, this is the first generation step whenever the target module does not exist yet.
 
-Default mode is standalone-first, but this skill can generate hybrid-compatible structure when the target application still uses NgModule with standalone components.
+Default mode is standalone-first, but this reference can generate hybrid-compatible structure when the target application still uses NgModule with standalone components.
 
 ### Required vs Optional
 
@@ -39,7 +37,7 @@ If unsure, skip both and generate minimal module first.
 ## 3. Rules
 
 ### MUST DO ✅
-- Apply this skill before entity CRUD when the module does not exist
+- Apply this reference before entity CRUD when the module does not exist
 - Generate `[module].module.ts` as the primary public API (exposes `useClass()` + `useValue()` statics)
 - Put ALL module-scoped providers (`SD_API_CONFIGURATION`, `SD_UPLOAD_FILE_CONFIGURATION`, custom interceptors, etc.) on `@NgModule({ providers: [...] })` — NOT on the route
 - Create `routes.ts` at lib root with guards + `loadChildren` only (no `providers` array)
@@ -67,7 +65,7 @@ If unsure, skip both and generate minimal module first.
   - fallback: `npm run test -- --watch=false`
   - include pass/fail summary and failing spec names
 - Keep output token-efficient:
-  - load this skill file only after request intake confirms module init is needed
+  - load this reference file only after request intake confirms module init is needed
   - reuse existing templates and avoid regenerating unchanged boilerplate explanations
 
 ### MUST NOT ❌
@@ -163,17 +161,4 @@ Expected agent decision:
 
 ## Post-init — refresh the project summary
 
-After a new module is scaffolded, run `orchestration/auto-summary` so `.sdcorejs/summary.md` reflects the new module (it patches the changed sections — module inventory, routes, conventions — rather than regenerating from scratch). Keeps the canonical brief in sync so later `07-write-code` runs see the module exists.
-
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
-
-**Response style (terse mode active for this skill — reduces token usage):**
-
-While executing this skill:
-
-- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
-- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
-- Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
-- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
-- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.
+After a new module is scaffolded, run `orchestration/auto-summary` so `.sdcorejs/summary.md` reflects the new module (it patches the changed sections — module inventory, routes, conventions — rather than regenerating from scratch). Keeps the canonical brief in sync so later write-code runs see the module exists.

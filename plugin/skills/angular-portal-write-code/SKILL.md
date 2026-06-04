@@ -1,6 +1,6 @@
 ---
 name: angular-portal-write-code
-description: Use when the user has confirmed the plan via 06-review-plan (which was authored by 05-plan) and is ready to generate Angular-portal code. Orchestrator skill - dispatches sub-skills 10-init-portal, 11-init-module, 12-init-entity, 20-screen-list, 21-screen-detail (handles CREATE / UPDATE / DETAIL states + form refinement), 31-actions (workflow / bulk / custom side-effects) based on the confirmed scope. After completion, mandatory hand-off chain - 40-e2e-test → sdcorejs-review-code → orchestration/repair-loop → orchestration/comment-code (ASK gate: skip / simple / medium / full — applied inline) → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Triggers - "generate code", "viết code", "sinh code đi", "go ahead", "proceed with implementation". Bilingual (VI/EN).
+description: Use when the user is ready to generate Angular-portal code — either after 06-review-plan approved a plan, OR as the single entry point for any direct Angular-portal code-generation request. This one orchestrator absorbs what used to be six separate sub-skills; it reads the confirmed scope and loads the matching on-demand reference pack under `_refs/angular-portal/write-code/`. Capabilities & trigger phrases — init-portal (new portal repo - "khởi tạo portal", "init portal", "tạo dự án portal mới", "create portal-X"); init-module (new feature module - "tạo module X", "create module", "thêm module", "add feature module"); init-entity (new entity full CRUD = model/service/routes/list/detail - "thêm entity X vào module Y", "add entity", "tạo CRUD cho X", "create CRUD", "generate entity"); screen-list (list/table page - "màn list", "trang danh sách", "table view", "refine list page", "thêm cột vào table"); screen-detail (detail.component.ts CREATE/UPDATE/DETAIL + reactive-form refinement - "tạo màn detail", "màn create", "màn update", "trang chi tiết", "edit form", "thêm validator", "form validation", "form không hoạt động", "custom validator", "async validator"); actions (workflow / bulk / custom side-effect buttons - "thêm action button", "approve flow", "workflow action", "bulk approve", "custom action", "gửi duyệt", "phê duyệt", "từ chối", "xuất excel", "đồng bộ lại"). Also fires on generic generate triggers - "generate code", "viết code", "sinh code đi", "go ahead", "proceed with implementation". After completion, mandatory hand-off chain - 40-e2e-test → sdcorejs-review-code → orchestration/repair-loop → orchestration/comment-code (ASK gate: skip / simple / medium / full — applied inline) → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -8,35 +8,42 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 ## Purpose
 
-Transform an approved plan + EntitySchema into complete CRUD entity code:
+Single entry point for generating Angular-portal code. Transforms an approved plan + the user's confirmed scope into complete CRUD entity code:
 - Model (DTO, SaveReq, validators)
 - Service (mock-first CRUD via centralized seed data file)
 - Routes (lazy-loaded)
 - Components (List, Detail)
+- Workflow / bulk / custom action buttons
 
-This skill is an orchestrator: it does NOT itself generate every file — it dispatches the right sub-skill for each numbered step in the approved plan.
+This skill is an **orchestrator**: it does NOT inline the full generation rules for every file type. It picks the right **reference pack** for each scope item and reads it on demand. The detailed rules + code-template links for each concern live in `_refs/angular-portal/write-code/*.md` (formerly the 10/11/12/20/21/31 sub-skills — consolidated here so the track exposes one skill instead of seven).
 
 ## Dispatch table
 
-| Scope item in the approved plan | Sub-skill to invoke |
+For each scope item in the confirmed plan (or the direct request), READ the matching reference pack and follow it:
+
+| Scope item | Reference pack to read |
 |---|---|
-| New portal (no existing project yet) | `10-init-portal` (run FIRST before any module work) |
-| New module (`src/libs/<module>/`) | `11-init-module` |
-| New entity with full CRUD (model + service + routes + list + detail) | `12-init-entity` |
-| List page only (entity already exists) | `20-screen-list` |
-| Detail component — any state (CREATE / UPDATE / DETAIL) or form refinement (validators, FormArray, async validators) | `21-screen-detail` |
-| Action buttons — workflow transitions, bulk operations, custom side-effects (export, re-sync, etc.) | `31-actions` |
+| New portal (no existing project yet) | [`_refs/angular-portal/write-code/init-portal.md`](_refs/angular-portal/write-code/init-portal.md) (run FIRST before any module work) |
+| New module (`src/libs/<module>/`) | [`_refs/angular-portal/write-code/init-module.md`](_refs/angular-portal/write-code/init-module.md) |
+| New entity with full CRUD (model + service + routes + list + detail) | [`_refs/angular-portal/write-code/init-entity.md`](_refs/angular-portal/write-code/init-entity.md) |
+| List page only (entity already exists) | [`_refs/angular-portal/write-code/screen-list.md`](_refs/angular-portal/write-code/screen-list.md) |
+| Detail component — any state (CREATE / UPDATE / DETAIL) or form refinement (validators, FormArray, async validators) | [`_refs/angular-portal/write-code/screen-detail.md`](_refs/angular-portal/write-code/screen-detail.md) |
+| Action buttons — workflow transitions, bulk operations, custom side-effects (export, re-sync, etc.) | [`_refs/angular-portal/write-code/actions.md`](_refs/angular-portal/write-code/actions.md) |
+
+Read ON DEMAND only — load the one reference for the step you are executing, not all of them. Each reference further links to the literal code templates under `_refs/angular-portal/templates/`.
 
 ### Step 0 — Pre-flight: ensure project summary
 
-Before dispatching ANY sub-skill, run `orchestration/auto-summary`. If `<target>/.sdcorejs/summary.md` is missing, it MUST be generated first (auto-summary delegates the scan to `sdcorejs-code-map` and distills the brief) — this is the gate that stops generation from hallucinating paths / duplicating shared abstractions. If the summary exists, auto-summary reads it (and refreshes on drift) so dispatch slots into the real architecture. Exception: when this run is itself a brand-new `10-init-portal`, there is no project to summarize yet — auto-summary runs in WRITE mode at the END of init instead (see the init sub-skills).
+Before dispatching ANY reference, run `orchestration/auto-summary`. If `<target>/.sdcorejs/summary.md` is missing, it MUST be generated first (auto-summary delegates the scan to `sdcorejs-code-map` and distills the brief) — this is the gate that stops generation from hallucinating paths / duplicating shared abstractions. If the summary exists, auto-summary reads it (and refreshes on drift) so dispatch slots into the real architecture. Exception: when this run is itself a brand-new init-portal, there is no project to summarize yet — auto-summary runs in WRITE mode at the END of init instead (see `init-portal.md` Post-init).
 
-Execution order: portal → module → entity → screens → actions. If the plan touches multiple items, run them in this order; do not parallelize. After all sub-skills finish, hand off in sequence:
+### Execution order + hand-off
+
+Execution order: portal → module → entity → screens → actions. If the plan touches multiple items, run them in this order; do not parallelize. After all referenced steps finish, hand off in sequence:
 
 1. `40-e2e-test` (skills/testing/e2e/angular-portal.md) — happy-path tests for what was generated
 2. `sdcorejs-review-code` (skills/review/code.md; auto-detects Angular → loads `_refs/angular-portal/review-code.md`) — convention check; outputs color-coded tables (🔴 Critical / 🟡 Medium / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
 3. `orchestration/repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
-4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full); applies the chosen level inline. Cross-track baseline + per-track addenda live inside `orchestration/comment-code` itself (no separate `51-write-comments` skill — was consolidated)
+4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full); applies the chosen level inline. Cross-track baseline + per-track addenda live inside `orchestration/comment-code` itself
 5. `orchestration/verify-before-done` — BLOCK "done" until acceptance criteria from the spec are ✅ verified or ⚠️ explicitly deferred
 6. `orchestration/auto-docs` — session summary written to `<target>/.sdcorejs/docs/angular-portal/`
 7. `orchestration/auto-task-tracker` — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
@@ -46,34 +53,37 @@ Each tail-call is mandatory (per CLAUDE.md). Do NOT skip `verify-before-done` �
 
 ## When to Use
 
-When user requests a new entity in a module:
-- "Generate product CRUD in sample module"
-- "Create employee entity with CRUD pages"
-- "Add order entity with fields: code, customerName, totalAmount, status"
+When user requests a new entity in a module, or any of the dispatch-table scope items:
+- "Generate product CRUD in sample module" → init-entity
+- "Khởi tạo portal-shop với dev/qc/uat/prod" → init-portal
+- "Tạo module catalog" → init-module
+- "Tạo màn list cho user" → screen-list
+- "Thêm validator cho form product" → screen-detail
+- "Thêm nút phê duyệt cho đơn hàng" → actions
 
 ## Input Resolution
 
-Before generating, clarify with user:
+Before generating an entity, clarify with user:
 
 1. **Module**: Which module does this entity belong to? (module)
-   - If missing: Ask which existing module, or propose creating new module first
+   - If missing: Ask which existing module, or propose creating new module first (init-module)
 
 2. **Entity Name**: What's the entity name? (entity, entityPascal)
    - Examples: product, employee, purchase-order, sales-invoice
-   
+
 3. **Display Label**: What label should appear in UI? (entityLabel, entityLabelPlural)
    - Examples: "Sản phẩm", "Nhân viên", "Đơn mua hàng"
-   
+
 4. **Fields**: What fields should this entity have?
   - Ask user to describe fields OR infer a semantic schema when fields are omitted
-   - For each field: name, type (string/number/date/select/etc), required?, label
+  - For each field: name, type (string/number/date/select/etc), required?, label
   - When inferring, derive concrete domain fields from the entity meaning and current portal conventions
   - For Vietnamese portals, all generated labels must use proper diacritics
-   
+
 5. **UI Preferences**:
   - Detail layout: auto-select side-drawer or full-page from inferred complexity, unless user overrides
-   - Has search? filter? delete? excel? (defaults: yes/yes/yes/no)
-   - Permissions: use default naming pattern or custom? (default: {{ MODULE }}_{{ ENTITY }}_CREATE, etc.)
+  - Has search? filter? delete? excel? (defaults: yes/yes/yes/no)
+  - Permissions: use default naming pattern or custom? (default: {{ MODULE }}_{{ ENTITY }}_CREATE, etc.)
 
 ### Semantic Inference Fallback
 
@@ -100,7 +110,7 @@ Inference rules:
 
 ### TDD Gate — mandatory before each code-generating step
 
-Before writing any production file in Steps 2, 3, 5, and 6, invoke `sdcorejs-tdd`:
+Before writing any production file (model / service / list / detail), invoke `sdcorejs-tdd`:
 
 1. Write the failing `.spec.ts` for that chunk first → run test → confirm RED
 2. Generate the production file with minimal passing code → run test → confirm GREEN
@@ -110,120 +120,30 @@ Applies to: model (validators / type contracts), service (CRUD method contracts)
 
 Skip for: `mock-data` seed rows (pure data, no testable logic) and `routes.ts` (Angular config, no business behaviour).
 
----
+### Step 1: Build EntitySchema (shared input for every reference)
 
-### Step 1: Build EntitySchema
-
-From user input or semantic inference, construct `EntitySchema` with all field metadata. The schema is the single input every later step consumes.
+From user input or semantic inference, construct `EntitySchema` with all field metadata. The schema is the single input every reference pack consumes — init-entity, screen-list, and screen-detail all read these names + field flags (`visibleInList`, `visibleInDetail`, `type`, `required`, permission codes).
 
 For two worked examples (user-supplied Product fields + inferred Promotion schema), see [`_refs/angular-portal/templates/orchestrator-step-examples.md#step-1--build-entityschema`](_refs/angular-portal/templates/orchestrator-step-examples.md#step-1--build-entityschema).
 
-### Step 2: Generate Model (product.model.ts)
+### Step 2: Generate per the dispatched reference
 
-From EntitySchema, generate:
-- `{{ entityPascal }}SaveReq` interface (all fields except id, timestamps)
-- `{{ entityPascal }}DTO` type (SaveReq + BaseEntity)
-- `{{ entityPascal }}_ROLES` constant (if any select options with static values)
-- Validation config (if needed)
-- Ensure `SaveReq` contains only writable business fields inferred for create/update
-- Ensure `DTO` also carries read-only display/meta fields when the domain suggests status/audit/derived values
+Once the EntitySchema exists, generate each file by following the reference pack the dispatch table routed you to. The per-file rules, decision heuristics, and code-template links all live in the reference — do NOT re-derive them here. Map:
 
-**Template Usage:**
-- Take field definitions
-- For each field:
-  - Add JSDoc comment explaining UI control (sd-input, sd-date, sd-select, etc.)
-  - Mark as optional (?) if not required
-  - Include validation hints in comments (maxlength, min/max)
-- Prefer concrete domain names over generic placeholders; for Vietnamese portals, labels/comments must preserve diacritics
+| File(s) | Reference + worked-code template |
+|---|---|
+| `<entity>.model.ts` (SaveReq / DTO / constants) | `init-entity.md` → [`orchestrator-step-examples.md#step-2--generate-model`](_refs/angular-portal/templates/orchestrator-step-examples.md#step-2--generate-model-productmodelts) |
+| `<entity>.mock-data.ts` + `<entity>.service.ts` (mock-first CRUD, 20–40 domain-realistic rows) | `init-entity.md` → [`orchestrator-step-examples.md#step-3--generate-mock-data--service`](_refs/angular-portal/templates/orchestrator-step-examples.md#step-3--generate-mock-data--service) |
+| `<entity>.routes.ts` (lazy-loaded, `data.permission`, no providers) | `init-entity.md` → [`orchestrator-step-examples.md#step-4--generate-routes`](_refs/angular-portal/templates/orchestrator-step-examples.md#step-4--generate-routes-productroutests) |
+| `pages/list/list.component.ts` | `screen-list.md` (+ `_refs/angular-portal/templates/screen-list-component.md`) |
+| `pages/detail/detail.component.ts` (CREATE / UPDATE / DETAIL + form) | `screen-detail.md` (+ `screen-detail-component.md`, `reactive-form-templates.md`) |
+| Action buttons (workflow / bulk / custom) | `actions.md` |
 
-**Output (product.model.ts):** see [`_refs/angular-portal/templates/orchestrator-step-examples.md#step-2--generate-model-productmodelts`](_refs/angular-portal/templates/orchestrator-step-examples.md#step-2--generate-model-productmodelts).
-
-### Step 3: Generate Mock Data + Service (product.mock-data.ts + product.service.ts)
-
-Pattern: create one centralized mock data file per entity, then wire service to localStorage-backed mock CRUD store.
-
-**This step is mandatory after semantic schema inference.** Once `SaveReq` and `DTO` are determined (from user input or semantic inference), always generate the mock data file immediately so the list page renders with real-looking data on first load.
-
-**Template Usage:**
-- Create `{{ entityKebab }}.mock-data.ts` with **20–40 seed rows**
-- Rows must use domain-realistic values derived from the inferred field schema, not generic placeholders like `"Name 1"`, `"Code 01"`
-  - string/code fields: use realistic short codes or abbreviations matching the domain (e.g. `"SP001"`, `"KM-2024-01"`)
-  - name/title fields: use plausible business names matching the entity type (e.g. `"Áo thun basic"`, `"Khuyến mãi hè 2025"`)
-  - select/enum fields: distribute values across the enum options (not all the same value)
-  - date fields: spread across a realistic recent range (last 6–12 months)
-  - number/decimal fields: use plausible numeric ranges (price, stock, discount amount, etc.)
-  - boolean/status: mix true/false or active/inactive realistically
-- Import `MockCrudStore` + seed data in service
-- Expose all CRUD methods (`paging/search/all/detail/create/update/remove`) from store
-- Only switch to `BaseService` API integration after backend contract is explicit
-- Ensure `MockCrudStore` can reseed when existing localStorage value is missing, empty (`[]`), or corrupted JSON
-
-**Output (product.service.ts + promotion.mock-data.ts):** see [`_refs/angular-portal/templates/orchestrator-step-examples.md#step-3--generate-mock-data--service`](_refs/angular-portal/templates/orchestrator-step-examples.md#step-3--generate-mock-data--service).
-
-**Mock data generation rules:**
-- Produce 20–40 rows total
-- Distribute select/enum fields across all available values (do not use one value for all rows)
-- Use a plausible date range spread across the past 12 months
-- Use realistic numeric ranges that match the domain (percentage 1–50%, fixed amount 10k–500k, stock 0–1000, etc.)
-- Use Vietnamese business names when the portal language is Vietnamese
-- Assign `id: uuidv4()` to every row so MockCrudStore can address each record
-- Spread `isActivated` roughly 70% true / 30% false unless domain logic says otherwise
-
-### Step 4: Generate Routes (routes.ts)
-
-Pattern: Lazy-load components. No providers on the route — the entity service is `@Injectable({ providedIn: 'root' })`, the lib-scoped tokens are wired by `<Lib>Module.useValue({...})` at root.
-
-**Template Usage:**
-- Declare routes: '' (list), 'create', 'detail/:id', 'update/:id'
-- Import ListComponent, DetailComponent
-- Lazy-load components (COMPONENT_TYPE)
-- NO `providers: [...]` array (see `11-init-module.md` rationale)
-
-**Output (routes.ts):** see [`_refs/angular-portal/templates/orchestrator-step-examples.md#step-4--generate-routes-productroutests`](_refs/angular-portal/templates/orchestrator-step-examples.md#step-4--generate-routes-productroutests).
-
-### Step 5: Generate List Component
-
-**Template Usage:**
-- Use list-component-template.md
-- Substitute placeholders: {{ module }}, {{ entity }}, {{ entityPascal }}, {{ entityLabel }}, etc.
-- Generate columns array from visibleInList fields
-- Ensure the chosen columns form a useful business summary instead of a generic placeholder table
-- Keep Vietnamese column labels and action text fully accented when the portal language is Vietnamese
-- Generate action buttons (edit, detail, delete)
-- Generate toggle isActivated if field exists
-
-**Output (pages/list/list.component.ts):**
-- Full CRUD list with SdTable
-- Pagination via service.paging()
-- Delete action with confirmation
-- Create button
-- Edit/Detail buttons
-- Toggle isActivated switch
-
-### Step 6: Generate Detail Component
-
-**Template Usage:**
-- Use detail-component-template.md
-- Substitute placeholders: {{ module }}, {{ entity }}, {{ entityPascal }}, {{ entityLabel }}, etc.
-- Generate form controls from visibleInDetail fields
-- Generate form validation rules
-- Handle CREATE/UPDATE/DETAIL state transitions
-- Render appropriate form fields (SdInput, SdSelect, SdDate, etc.) based on field type
-- Group inferred fields into sensible business sections when the domain requires more than one section
-- Choose side-drawer only when the inferred form is compact enough to remain readable without heavy scrolling
-- Add fallback for stale IDs in DETAIL/UPDATE routes:
-  - Catch `detail(id)` errors (`Entity not found`)
-  - Notify user with warning
-  - Navigate back to list route (`../../`) with replace-tab state
-
-**Output (pages/detail/detail.component.ts):**
-- Full CRUD form
-- State management (CREATE/UPDATE/DETAIL)
-- Form validation
-- Data loading for detail/update
-- Save/Back/Edit actions
+For a full new entity, read `init-entity.md` end-to-end (it covers model → service → routes → list → detail in one pass). For a single-file refinement on an existing entity, read just the screen-list / screen-detail / actions reference.
 
 ## Code Generation Rules
+
+These cross-cutting rules apply regardless of which reference is dispatched.
 
 ### 1. File Naming & Paths
 
@@ -269,7 +189,7 @@ Apply to:
 - Use `Validators.maxLength(n)` for string length
 - Use `Validators.min(n)`, `Validators.max(n)` for numbers
 - Use `Validators.pattern(regex)` for patterns
-- Custom validators for complex rules
+- Custom validators for complex rules (see `screen-detail.md` form refinement)
 
 ### 5. Error Handling
 
@@ -286,76 +206,32 @@ Apply to:
 - Document special cases (e.g., bulk updates)
 - Keep comments concise and up-to-date
 
-## File Structure Output
-
-```
-product/ 
-├── services/
-│   ├── product.model.ts
-│   │   - ProductSaveReq interface
-│   │   - ProductDTO type
-│   │   - PRODUCT_ROLES constant (if applicable)
-│   │
-│   ├── product.mock-data.ts
-│   │   - PRODUCT_SEED_DATA with 20–40 domain-realistic rows
-│   │   - centralized seed source for mock CRUD
-│   │
-│   ├── product.service.ts
-│   │   - class ProductService (mock-first)
-│   │   - #store = MockCrudStore with DTO, SaveReq
-│   │   - paging, search, all, detail, create, update, remove methods
-│   │
-│   └── index.ts
-│       - export * from './product.model'
-│       - export * from './product.service'
-│
-├── pages/
-│   ├── list/
-│   │   └── list.component.ts
-│   │       - @SdTabComponent decorator
-│   │       - SdTable with columns from schema
-│   │       - paging, delete, create actions
-│   │       - toggle isActivated (if field exists)
-│   │
-│   └── detail/
-│       └── detail.component.ts
-│           - @SdTabComponent with conditional name/color
-│           - FormGroup with controls from schema
-│           - CREATE/UPDATE/DETAIL state management
-│           - Data loading for detail/update
-│           - Save/back/edit navigation
-│
-└── routes.ts
-    - Routes with path, providers, children
-    - Lazy-load ListComponent and DetailComponent
-```
-
 ## Validation Checklist
 
 Before returning generated code:
 
-✅ Each production file (model / service / list / detail) has a corresponding `.spec.ts` written RED before the file was created  
-✅ All imports are correct (no circular dependencies)  
-✅ All fields from EntitySchema are included  
-✅ Form validation matches field requirements  
-✅ `{{ entityKebab }}.mock-data.ts` exists with 20–40 domain-realistic seed rows  
-✅ Seed rows use realistic domain values derived from inferred field schema, not generic placeholders  
-✅ Service methods are wired to mock store by default  
-✅ Mock store reseeds if persisted dataset is empty or corrupted  
-✅ Component decorators (@SdTabComponent) are present  
-✅ State management (CREATE/UPDATE/DETAIL) works correctly  
-✅ DETAIL route handles stale entity IDs by recovering to list instead of rendering blank fields  
-✅ Routes are lazy-loaded  
-✅ Column visibility matches schema  
-✅ Error handling is comprehensive  
-✅ TypeScript strict mode compliance  
-✅ No hardcoded values (use constants from schema)  
-✅ Naming conventions consistent throughout  
-✅ Comments explain complex logic  
+✅ Each production file (model / service / list / detail) has a corresponding `.spec.ts` written RED before the file was created
+✅ All imports are correct (no circular dependencies)
+✅ All fields from EntitySchema are included
+✅ Form validation matches field requirements
+✅ `{{ entityKebab }}.mock-data.ts` exists with 20–40 domain-realistic seed rows
+✅ Seed rows use realistic domain values derived from inferred field schema, not generic placeholders
+✅ Service methods are wired to mock store by default
+✅ Mock store reseeds if persisted dataset is empty or corrupted
+✅ Component decorators (@SdTabComponent) are present
+✅ State management (CREATE/UPDATE/DETAIL) works correctly
+✅ DETAIL route handles stale entity IDs by recovering to list instead of rendering blank fields
+✅ Routes are lazy-loaded
+✅ Column visibility matches schema
+✅ Error handling is comprehensive
+✅ TypeScript strict mode compliance
+✅ No hardcoded values (use constants from schema)
+✅ Naming conventions consistent throughout
+✅ Comments explain complex logic
 
 ## Example: Complete Employee Entity Generation
 
-A worked end-to-end example (user request → orchestrator steps 1-6 → final file tree) lives in [`_refs/angular-portal/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity`](_refs/angular-portal/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity). Read it when you want to see how the dispatch table cashes out on a real request.
+A worked end-to-end example (user request → EntitySchema → final file tree, following `init-entity.md`) lives in [`_refs/angular-portal/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity`](_refs/angular-portal/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity). Read it when you want to see how the dispatch table cashes out on a real request.
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
 

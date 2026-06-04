@@ -11,11 +11,11 @@ Before generating a new module / entity / screen, find what already exists. AI g
 
 ## When invoked
 
-Triggering is description-based: there is no orchestration hook that runs this skill automatically. When a code-writing skill (`07-write-code`, `10-init-*`, `11-init-module`) is about to generate into an existing repo, the agent is responsible for invoking this skill first — treat that as a strong default, not an enforced gate. Skipping it is the single biggest cause of hallucinated paths and duplicated abstractions, so only skip when the repo's layout is already established in the current session.
+Triggering is description-based: there is no orchestration hook that runs this skill automatically. When a code-writing skill (`07-write-code` — the `angular-portal-write-code` orchestrator and its init-portal / init-module reference packs, or another track's init step) is about to generate into an existing repo, the agent is responsible for invoking this skill first — treat that as a strong default, not an enforced gate. Skipping it is the single biggest cause of hallucinated paths and duplicated abstractions, so only skip when the repo's layout is already established in the current session.
 
 ### Invoke before generation (strongly recommended)
 - About to invoke `07-write-code` for a new module / entity / screen
-- About to invoke any `10-init-*` or `11-init-module` skill
+- About to run the `angular-portal-write-code` init-portal / init-module packs (or another track's init step)
 - User starts a major feature and the agent has no prior map of this repo
 
 ### Invoke on explicit request

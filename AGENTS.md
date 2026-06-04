@@ -16,7 +16,7 @@ _refs/                            reference data (no frontmatter, load on demand
 
 skills/
 ├── tracks/                       stack-specific code-writing skills
-│   ├── angular-portal/   ✅  8 track skills — 00-onboarding, 07-write-code orchestrator, 10/11/12-init-*, 20-screen-list, 21-screen-detail (CREATE/UPDATE/DETAIL states + form refinement), 31-actions (workflow / bulk / custom side-effects)
+│   ├── angular-portal/   ✅  2 track skills — 00-onboarding + 07-write-code orchestrator; orchestrator loads 6 on-demand reference packs from `_refs/angular-portal/write-code/` (init-portal, init-module, init-entity, screen-list, screen-detail (CREATE/UPDATE/DETAIL states + form refinement), actions (workflow / bulk / custom side-effects))
 │   ├── nestjs/           🟡  scaffold (00-onboarding + 07-write-code plan-walker); 10/11/12 sub-skills planned
 │   └── nextjs/
 │       └── build-website/  ✅  13 track skills — 00-onboarding, 07-write-code orchestrator, 08-audit-existing-site, 10-init-site, 11-theme, 12-pages-and-blocks, 13-seo, 14-og-preview, 15-i18n, 16-caching, 17-responsive, 18-contact-form, 19-content-quality
@@ -85,8 +85,8 @@ Request
 
 **Design phase is cross-track** (`skills/shared/sdlc/`). Each skill detects the target track from the project and loads `_refs/sdlc/<track>.md` for track-specific patterns (industry table for nextjs, layout matrix for angular-portal, persistence/transaction matrix for nestjs).
 
-For the angular-portal track, sub-skills under `07-write-code`:
-`10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail` (handles CREATE / UPDATE / DETAIL states + reactive-form refinement), `31-actions` (workflow transitions, bulk operations, custom side-effects).
+For the angular-portal track, `07-write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular-portal/write-code/` (no frontmatter, not dispatchable skills):
+`init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (handles CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow transitions, bulk operations, custom side-effects).
 
 ## Mandatory rules
 
@@ -154,7 +154,8 @@ Cross-track skills — apply to angular-portal, nestjs, nextjs alike. Dispatch i
 - `_refs/angular-portal/core-version.md` — pinned `@sdcorejs/angular` version
 - `_refs/angular-portal/sdcorejs-angular-catalog.md` — Core UI components inventory
 - `_refs/angular-portal/entity-field-types.md` — field type → form control mapping
-- `_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for 12-init-entity
+- `_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for the init-entity reference pack
+- `_refs/angular-portal/write-code/{init-portal,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `angular-portal-write-code`
 
 ## Anti-patterns
 

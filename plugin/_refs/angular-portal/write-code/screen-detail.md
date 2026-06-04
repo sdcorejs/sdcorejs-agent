@@ -1,10 +1,9 @@
----
-name: angular-portal-screen-detail
-description: Use when generating or refining `pages/detail/detail.component.ts` — the single component that handles all three states (CREATE `/create`, UPDATE `/update/:id`, DETAIL `/detail/:id`) plus its reactive-form refinement. Covers the shared shell (imports, FormGroup, route dispatcher, entity loader, header buttons, navigation), per-state overlays (defaults / file uploads / submit / navigation / permission gates), and form-level concerns (validators, async validators, FormArray, cross-field rules, signal-first state). Triggers - "tạo màn detail", "màn create", "màn update", "trang chi tiết", "edit form", "new record screen", "view record", "tạo bản ghi mới", "sửa bản ghi", "thêm validator", "form validation", "form không hoạt động", "custom validator", "async validator". Bilingual (VI/EN).
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
----
+> **Reference for the `angular-portal-write-code` orchestrator.** Loaded on demand when the
+> confirmed plan generates or refines `pages/detail/detail.component.ts` (CREATE / UPDATE /
+> DETAIL states + reactive-form refinement). Not a standalone skill — the orchestrator reads
+> this file when its dispatch table routes a step here.
 
-# 21 — Screen: detail.component.ts (CREATE / UPDATE / DETAIL + form refinement)
+# Screen: detail.component.ts (CREATE / UPDATE / DETAIL + form refinement)
 
 ## Purpose
 
@@ -14,25 +13,25 @@ Implement and refine an entity's `pages/detail/detail.component.ts` — one comp
 - `/update/:id` → UPDATE state (prefilled, editable)
 - `/detail/:id` → DETAIL state (prefilled, read-only)
 
-The same file also owns the form definition, so this skill is also where you add validators, custom validators, conditional fields, async validators, and cross-field rules. Workflow actions (approve / reject / bulk operations / custom side-effects) are layered on top by [`31-actions.md`](./31-actions.md).
+The same file also owns the form definition, so this reference is also where you add validators, custom validators, conditional fields, async validators, and cross-field rules. Workflow actions (approve / reject / bulk operations / custom side-effects) are layered on top by [`./actions.md`](./actions.md).
 
 ## When to use
 
-- Generating the detail component for a fresh entity (typically after [`12-init-entity.md`](./12-init-entity.md))
+- Generating the detail component for a fresh entity (typically after [`./init-entity.md`](./init-entity.md))
 - Refining any state: form not disabled in DETAIL, missing Edit button, broken stale-id recovery, defaults wrong on CREATE, file uploads firing after save, navigation target wrong, etc.
 - Adding or tightening validators: required / maxLength / patterns / `SdValidators.notBlank` / async unique checks / `FormArray` for repeating sub-records / per-field error messages
 - User asks: "tạo màn detail", "trang chi tiết", "màn create", "màn update", "form không hoạt động", "thêm validator", "custom validator", "async validator"
 
 Defer to:
-- [`20-screen-list.md`](./20-screen-list.md) when the request is about the list page (different file)
-- [`31-actions.md`](./31-actions.md) when the request is about action buttons (workflow / bulk / custom side-effects)
-- [`12-init-entity.md`](./12-init-entity.md) when the entity model/service/routes don't exist yet
+- [`./screen-list.md`](./screen-list.md) when the request is about the list page (different file)
+- [`./actions.md`](./actions.md) when the request is about action buttons (workflow / bulk / custom side-effects)
+- [`./init-entity.md`](./init-entity.md) when the entity model/service/routes don't exist yet
 
 ## Shared shell — code templates
 
 File path: `src/libs/<module>/<entity>/pages/detail/detail.component.ts`
 
-All literal code lives in [`_refs/angular-portal/templates/screen-detail-component.md`](_refs/angular-portal/templates/screen-detail-component.md), sectioned by state. Skill body owns the rules; the ref owns the code:
+All literal code lives in [`_refs/angular-portal/templates/screen-detail-component.md`](_refs/angular-portal/templates/screen-detail-component.md), sectioned by state. This reference owns the rules; the templates ref owns the code:
 
 | Need | Section in templates ref |
 |---|---|
@@ -142,7 +141,7 @@ Save button uses `*sdPermission="'<MODULE>_C_<ENTITY>_CREATE'; sdPermissionKey: 
 
 ### Workflow integration
 
-If entity has workflow (see [`31-actions.md`](./31-actions.md)), CREATE may show two submit variants:
+If entity has workflow (see [`./actions.md`](./actions.md)), CREATE may show two submit variants:
 
 - `Lưu` → calls `service.create(...)`
 - `Lưu & Gửi duyệt` → calls `service.create(...)` then `service.submit(id)`
@@ -281,16 +280,16 @@ If referenced only once: invoke directly. Goal — reduce getter invocations dur
 - Calling `service.detail(id)` in CREATE — there is no id yet
 - Duplicating the FormGroup across separate files — it lives ONCE in the shared shell ref
 - Hardcoding the Edit button without a permission directive
-- Mixing approve / reject / bulk buttons into the shell — those belong in [`31-actions.md`](./31-actions.md), gated by workflow state inside DETAIL
+- Mixing approve / reject / bulk buttons into the shell — those belong in [`./actions.md`](./actions.md), gated by workflow state inside DETAIL
 - Adding typed validators speculatively before business rules are confirmed (over-constraint on first pass)
 - Calling `formControlName` with Core UI form components (they self-register via `[form]+name`; `formControlName` silently fails)
 
 ---
 
-## Related skills
+## Related references
 
-- [`20-screen-list.md`](./20-screen-list.md) — list page (separate file: `list.component.ts`)
-- [`31-actions.md`](./31-actions.md) — action buttons (workflow / bulk / custom side-effects) layered on top
-- [`12-init-entity.md`](./12-init-entity.md) — when model / service / routes don't exist yet
+- [`./screen-list.md`](./screen-list.md) — list page (separate file: `list.component.ts`)
+- [`./actions.md`](./actions.md) — action buttons (workflow / bulk / custom side-effects) layered on top
+- [`./init-entity.md`](./init-entity.md) — when model / service / routes don't exist yet
 - [`_refs/angular-portal/templates/screen-detail-component.md`](_refs/angular-portal/templates/screen-detail-component.md) — code templates for the shared shell + per-state branches
 - [`_refs/angular-portal/templates/reactive-form-templates.md`](_refs/angular-portal/templates/reactive-form-templates.md) — code templates for form refinement

@@ -12,7 +12,7 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (8 track-specific skills: onboarding, write-code orchestrator, init-portal/module/entity, screen-list, screen-detail (covers CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design-phase + spec/plan/review skills moved to cross-track `skills/shared/sdlc/`. Cross-cutting code-review (single track-aware skill `sdcorejs-review-code` at `skills/review/code.md`) + e2e-test (`skills/testing/e2e/angular-portal.md`). Cross-track comment-code (`orchestration/comment-code`) absorbs the previous per-track `51-write-comments`. |
+| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (design-phase cross-track skills + 2 angular skills: `angular-portal-onboarding` and the `angular-portal-write-code` orchestrator. The orchestrator dispatches 6 on-demand reference packs under `_refs/angular-portal/write-code/`: init-portal, init-module, init-entity, screen-list, screen-detail (covers CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design-phase + spec/plan/review skills moved to cross-track `skills/shared/sdlc/`. Cross-cutting code-review (single track-aware skill `sdcorejs-review-code` at `skills/review/code.md`) + e2e-test (`skills/testing/e2e/angular-portal.md`). Cross-track comment-code (`orchestration/comment-code`) absorbs the previous per-track `51-write-comments`. |
 | NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (`00-onboarding` + `07-write-code` plan-walking orchestrator). Sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) 🚧 planned. Design phase fully usable via shared/sdlc/; review + testing skills already in place — code review via the single track-aware `sdcorejs-review-code` (`review/code.md`), plus `review/{security,performance}/nestjs.md`, `testing/*/nestjs.md`. |
 | Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (13 track-specific skills: onboarding, write-code orchestrator, audit-existing-site, 10-init-site, 11-theme, 12-pages-and-blocks, 13-seo, 14-og-preview, 15-i18n, 16-caching, 17-responsive, 18-contact-form, 19-content-quality). Design-phase moved to cross-track `skills/shared/sdlc/`. |
 
@@ -50,7 +50,7 @@ The source of truth remains `skills/<track>/*.md`. `.claude/skills/` is generate
 
 ## Workflow per track
 
-Every track shares the same workflow shape. **Design phase is cross-track** (`skills/shared/sdlc/`); **code-writing phase is track-specific** (`skills/tracks/<track>/07-write-code.md` + its sub-skills).
+Every track shares the same workflow shape. **Design phase is cross-track** (`skills/shared/sdlc/`); **code-writing phase is track-specific** (`skills/tracks/<track>/07-write-code.md`; for angular-portal the orchestrator loads on-demand reference packs under `_refs/angular-portal/write-code/`).
 
 ```
 Request
@@ -79,7 +79,7 @@ shared/sdlc/06-review-plan (sdcorejs-review-plan)
 orchestration/auto-plans   ← MANDATORY on approval — snapshot to <target>/.sdcorejs/plans/<track>/
   ↓
 <track>-write-code (07-write-code, track-specific orchestrator)
-  ← angular-portal:        angular-portal-write-code     → dispatches 10-init-portal | 11-init-module | 12-init-entity | 20-screen-list | 21-screen-detail (CREATE / UPDATE / DETAIL states + form refinement) | 31-actions (workflow / bulk / custom side-effects)
+  ← angular-portal:        angular-portal-write-code     → loads on-demand reference packs from `_refs/angular-portal/write-code/`: init-portal | init-module | init-entity | screen-list | screen-detail (CREATE / UPDATE / DETAIL states + form refinement) | actions (workflow / bulk / custom side-effects)
   ← nextjs (build-website): nextjs-build-website-write-code → dispatches 10-init-site | 11-theme | 12-pages-and-blocks | 13-seo | 14-og-preview | 15-i18n | 16-caching | 17-responsive | 18-contact-form | 19-content-quality
   ← nestjs:                nestjs-write-code              → SCAFFOLD (plan-walking until 10/11/12 sub-skills ship)
   └─ when feature has 3+ independent units, dispatches via
@@ -190,7 +190,8 @@ Loaded by every track at the start of every feature. Each detects the track at r
 - `_refs/angular-portal/core-version.md` — pinned `@sdcorejs/angular` version
 - `_refs/angular-portal/sdcorejs-angular-catalog.md` — Core UI components inventory
 - `_refs/angular-portal/entity-field-types.md` — field type → form control mapping
-- `_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md` — code templates extracted from `12-init-entity.md` (split 2026-05-20 to keep SKILL.md under 500 lines)
+- `_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md` — code templates extracted from the init-entity reference pack (split 2026-05-20 to keep the pack under 500 lines)
+- `_refs/angular-portal/write-code/{init-portal,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `angular-portal-write-code` (no frontmatter, not dispatchable skills)
 
 ## Anti-patterns
 

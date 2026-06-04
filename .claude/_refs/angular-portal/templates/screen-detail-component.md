@@ -1,6 +1,6 @@
 # Screen — Detail Component (Shared Shell + State Branches)
 
-The skill [`21-screen-detail.md`](../../21-screen-detail.md) owns all three states (CREATE / UPDATE / DETAIL) plus form refinement, because they all write to the **same file**: `src/libs/<module>/<entity>/pages/detail/detail.component.ts`. This ref consolidates the literal code so the developer sees the whole component in one place, with state-specific overlays grouped together.
+The screen-detail reference pack [`screen-detail.md`](../write-code/screen-detail.md) (loaded on demand by the `angular-portal-write-code` orchestrator) owns all three states (CREATE / UPDATE / DETAIL) plus form refinement, because they all write to the **same file**: `src/libs/<module>/<entity>/pages/detail/detail.component.ts`. This ref consolidates the literal code so the developer sees the whole component in one place, with state-specific overlays grouped together.
 
 Sections to consult based on what you're generating / refining:
 - Shared shell (imports, FormGroup, ngOnInit dispatcher, loader, header buttons, nav helpers, tab name, form-field rendering): [`#shared-shell`](#shared-shell)
@@ -243,7 +243,7 @@ Group fields by section if the schema declares them; otherwise wrap in one `<sd-
 
 ## DETAIL state
 
-Read-only branch reached via `/detail/:id`. Owned by [`21-screen-detail.md`](../../21-screen-detail.md).
+Read-only branch reached via `/detail/:id`. Owned by [`screen-detail.md`](../write-code/screen-detail.md).
 
 After `loadEntityData(id)` resolves, the form is disabled (`this.form.disable()` happens inside the shared loader when `state() === 'DETAIL'`). Every form control still uses `[viewed]="true"` (or `[disabled]="true"` for `sd-switch`) so values display read-only. No submit button; header shows only Back + Edit.
 
@@ -261,7 +261,7 @@ Stale-id recovery is implemented inside the shared loader — see [`#shared-enti
 
 ## CREATE state
 
-Empty-form branch reached via `/create`. Rules in [`21-screen-detail.md` § CREATE state rules](../../21-screen-detail.md).
+Empty-form branch reached via `/create`. Rules in [`screen-detail.md` § CREATE state rules](../write-code/screen-detail.md).
 
 ### State detection (CREATE branch of the dispatcher)
 
@@ -317,7 +317,7 @@ Key points:
 
 ## UPDATE state
 
-Prefilled-editable-form branch reached via `/update/:id`. Rules in [`21-screen-detail.md` § UPDATE state rules](../../21-screen-detail.md).
+Prefilled-editable-form branch reached via `/update/:id`. Rules in [`screen-detail.md` § UPDATE state rules](../write-code/screen-detail.md).
 
 ### State detection (UPDATE branch of the dispatcher)
 

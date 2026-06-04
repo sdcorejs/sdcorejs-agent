@@ -49,7 +49,7 @@ orchestration/auto-docs    ← MANDATORY: summary to target project's .sdcorejs/
 orchestration/memories     ← when learning durable knowledge: target project's .sdcorejs/memories/<track>/
 ```
 
-Sub-skills under `07-write-code` (Angular Portal): `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `31-actions` (workflow / bulk / custom side-effects).
+For Angular Portal, `07-write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular-portal/write-code/` (no frontmatter, not dispatchable skills): `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow / bulk / custom side-effects).
 
 ## Mandatory rules (every track)
 
@@ -71,7 +71,7 @@ Install via the Claude Code plugin marketplace. The repo ships its own single-pl
 /plugin install sdcorejs-agent@sdcorejs
 ```
 
-After install, all 76 skills (cross-track SDLC + angular-portal / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
+After install, all 68 skills (cross-track SDLC + angular-portal / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
 
 ### Option 2 — git submodule (works for Claude Code + Copilot + Codex)
 
@@ -128,7 +128,7 @@ sdcorejs-agent/
 │   └── sdlc/                              # cross-track design-phase patterns ({angular-portal,nestjs,nextjs}.md)
 ├── skills/                                # source of truth — flat .md per skill
 │   ├── tracks/
-│   │   ├── angular-portal/                # ✅ 8 skills
+│   │   ├── angular-portal/                # ✅ 2 skills (onboarding + write-code orchestrator; 6 reference packs in _refs/angular-portal/write-code/)
 │   │   ├── nestjs/                        # 🟡 scaffold
 │   │   └── nextjs/build-website/          # ✅ 13 skills
 │   ├── shared/{sdlc,conventions,workflow}/

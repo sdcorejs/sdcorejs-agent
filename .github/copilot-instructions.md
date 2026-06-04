@@ -12,7 +12,7 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem. When you (GitHu
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (8 track skills: onboarding, write-code orchestrator, 10/11/12-init-*, 20-screen-list, 21-screen-detail (CREATE / UPDATE / DETAIL states + form refinement), 31-actions (workflow / bulk / custom side-effects)). Design phase + spec/plan moved to cross-track `skills/shared/sdlc/`. Cross-track `orchestration/comment-code` absorbs the previous per-track `51-write-comments`. |
+| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (design-phase cross-track skills + 2 angular skills: onboarding + the `angular-portal-write-code` orchestrator, which dispatches 6 on-demand reference packs under `_refs/angular-portal/write-code/`: init-portal, init-module, init-entity, screen-list, screen-detail (CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design phase + spec/plan moved to cross-track `skills/shared/sdlc/`. Cross-track `orchestration/comment-code` absorbs the previous per-track `51-write-comments`. |
 | NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (00-onboarding + 07-write-code plan-walker). Sub-skills 10/11/12 planned. Design phase usable via shared/sdlc/; review + testing already in place. |
 | Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (13 track skills: onboarding, write-code orchestrator, audit-existing-site, 10-init-site … 19-content-quality). Design phase moved to cross-track shared/sdlc/. |
 
@@ -69,8 +69,8 @@ Request
 
 Each cross-track design skill detects the target track at runtime and loads `skills/shared/sdlc/_refs/<track>.md` for track-specific patterns.
 
-Sub-skills under `07-write-code` (angular-portal track):
-`10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `31-actions` (workflow / bulk / custom side-effects).
+For the angular-portal track, `07-write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular-portal/write-code/` (no frontmatter, not dispatchable skills):
+`init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow / bulk / custom side-effects).
 
 ## Mandatory rules (apply to every track)
 
@@ -142,7 +142,8 @@ Cross-track skills — apply to all tracks. Dispatch by `description`; directory
 - `skills/tracks/angular-portal/_refs/core-version.md` — pinned `@sdcorejs/angular` version
 - `skills/tracks/angular-portal/_refs/sdcorejs-angular-catalog.md` — Core UI components inventory
 - `skills/tracks/angular-portal/_refs/entity-field-types.md` — field type → form control mapping
-- `skills/tracks/angular-portal/_refs/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for 12-init-entity
+- `skills/tracks/angular-portal/_refs/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for the init-entity reference pack
+- `_refs/angular-portal/write-code/{init-portal,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `angular-portal-write-code`
 
 ## Anti-patterns
 

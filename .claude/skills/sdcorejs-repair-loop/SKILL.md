@@ -106,7 +106,7 @@ Report:
 For each, show the user a compact diff preview:
 ```
 [Important] src/libs/catalog/features/product/services/product.service.ts:42
-  Reason: Service should be `providedIn: 'root'`, not route-scoped (see 11-init-module.md)
+  Reason: Service should be `providedIn: 'root'`, not route-scoped (see _refs/angular-portal/write-code/init-module.md)
   Proposed:
     - @Injectable()
     + @Injectable({ providedIn: 'root' })
