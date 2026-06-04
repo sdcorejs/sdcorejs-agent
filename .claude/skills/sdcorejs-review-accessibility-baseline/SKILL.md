@@ -202,7 +202,7 @@ Target: Lighthouse a11y ≥ 95, axe finding count = 0 Critical, ≤ 3 Serious.
 ### MUST NOT
 - Claim ✅ when only Lighthouse passed — that catches ~30% of issues
 - Skip the manual section because "automation looks good"
-- Reformat code while doing the audit — separate from `review/code/<stack>.md`
+- Reformat code while doing the audit — separate from `sdcorejs-review-code`
 - Generic findings like "improve a11y" — every finding cites a rule + location
 
 ## Anti-patterns

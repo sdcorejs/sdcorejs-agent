@@ -24,7 +24,7 @@ Welcome the developer inside a NestJS project. This track is in **scaffold statu
 - `sdcorejs-review-spec` (cross-track) — user approval gate + `orchestration/auto-specs`
 - `sdcorejs-plan` (cross-track) — numbered plan
 - `sdcorejs-review-plan` (cross-track) — user approval gate + `orchestration/auto-plans`
-- `skills/review/code/nestjs.md` — convention review (`sdcorejs-review-code-nestjs`)
+- `sdcorejs-review-code` — convention review (auto-detects NestJS)
 - `skills/review/performance/nestjs.md` — performance audit
 - `skills/review/security/nestjs.md` — security audit
 - `skills/testing/unit/nestjs.md` — unit tests with mocked dependencies
@@ -63,7 +63,7 @@ For each numbered task in the approved plan:
 
 Then mandatory tail-call chain:
   1. `skills/testing/e2e/nestjs.md` — write happy-path e2e
-  2. `skills/review/code/nestjs.md` — convention review
+  2. `sdcorejs-review-code` — convention review
   3. `orchestration/repair-loop` — apply review findings
   4. `orchestration/comment-code` — ASK gate
   5. `orchestration/verify-before-done` — acceptance criteria gate
@@ -87,7 +87,7 @@ Track này hiện đang ở trạng thái **scaffold**:
 Bạn muốn bắt đầu từ đâu?
 - **"Brainstorm"** nếu chưa rõ hướng đi (mình sẽ chạy `sdcorejs-brainstorm`)
 - **"Tạo module/entity X"** nếu đã biết — mình chạy `sdcorejs-clarify-requirements`
-- **"Review code"** nếu muốn audit code hiện có — mình chạy `skills/review/code/nestjs.md`
+- **"Review code"** nếu muốn audit code hiện có — mình chạy `sdcorejs-review-code`
 - **"Tiếp tục công việc"** nếu đang dở — mình chạy `sdcorejs-recovery`
 ```
 

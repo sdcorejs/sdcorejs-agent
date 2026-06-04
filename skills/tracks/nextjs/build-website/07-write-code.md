@@ -1,6 +1,6 @@
 ---
 name: nextjs-build-website-write-code
-description: Use AFTER `06-review-plan` (or the cross-track equivalent) has approved a plan and the user is ready to generate code for a Next.js landing site. Orchestrator skill — dispatches sub-skills `10-init-site`, `11-theme`, `12-pages-and-blocks`, `13-seo`, `14-og-preview`, `15-i18n`, `16-caching`, `17-responsive`, `18-contact-form`, `19-content-quality` based on the confirmed scope. After completion, mandatory hand-off chain: `40-e2e-test` (when written) → `50-review-code` → `orchestration/repair-loop` → `orchestration/comment-code` → `orchestration/verify-before-done` → `orchestration/auto-docs` → `orchestration/auto-task-tracker`. Triggers - "generate code", "viết code", "sinh code", "go ahead", "proceed with implementation". Bilingual (VI/EN).
+description: Use AFTER `06-review-plan` (or the cross-track equivalent) has approved a plan and the user is ready to generate code for a Next.js landing site. Orchestrator skill — dispatches sub-skills `10-init-site`, `11-theme`, `12-pages-and-blocks`, `13-seo`, `14-og-preview`, `15-i18n`, `16-caching`, `17-responsive`, `18-contact-form`, `19-content-quality` based on the confirmed scope. After completion, mandatory hand-off chain: `40-e2e-test` (when written) → `sdcorejs-review-code` → `orchestration/repair-loop` → `orchestration/comment-code` → `orchestration/verify-before-done` → `orchestration/auto-docs` → `orchestration/auto-task-tracker`. Triggers - "generate code", "viết code", "sinh code", "go ahead", "proceed with implementation". Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Bash
 ---
 
@@ -84,7 +84,7 @@ Run the standard tail-call chain (cross-track mandatory):
 ```
 40-e2e-test          ← happy-path tests for each generated page
    ↓
-50-review-code       ← convention check; outputs Critical / Important / Minor findings
+sdcorejs-review-code       ← convention check; outputs Critical / Important / Minor findings
    ↓
 orchestration/repair-loop     ← apply findings, iterate to clean
    ↓

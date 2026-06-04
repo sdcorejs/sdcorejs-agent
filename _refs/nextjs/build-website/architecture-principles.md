@@ -1,6 +1,6 @@
 # Next.js Landing Site — Architecture Principles
 
-Source of truth for **WHY** SDCoreJS landing sites look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, `11-theme`, `12-pages-and-blocks`, `13-seo`, `15-i18n`, and `sdcorejs-review-code-nextjs`.
+Source of truth for **WHY** SDCoreJS landing sites look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, `11-theme`, `12-pages-and-blocks`, `13-seo`, `15-i18n`, and `sdcorejs-review-code`.
 
 If a generated file contradicts a principle here, that file is wrong. If a principle here contradicts a real-world need, **the principle is wrong** — surface it as feedback.
 
@@ -58,7 +58,7 @@ export default function ContactForm() {
 
 **Why**: server components don't ship JS to the client. A 200-line server component costs 0 bytes to the user. A 200-line client component costs ~10 KB (gzipped, including React runtime). Default to server.
 
-**Reviewer**: `sdcorejs-review-code-nextjs` flags `"use client"` without justification as **Important**.
+**Reviewer**: `sdcorejs-review-code` flags `"use client"` without justification as **Medium**.
 
 ---
 
@@ -95,7 +95,7 @@ export default async function HomePage({ params: { locale } }) {
 - Future CMS swap (Sanity / Contentful) replaces ONLY the loader, components stay
 - Content-quality script (`npm run check:content`) can audit word counts per page
 
-**Enforce**: `sdcorejs-review-code-nextjs` flags hardcoded Vietnamese / English strings in components as **Important**.
+**Enforce**: `sdcorejs-review-code` flags hardcoded Vietnamese / English strings in components as **Medium**.
 
 ---
 
@@ -347,7 +347,7 @@ This skill set generates Next.js landing sites. The principles above govern the 
 
 When a principle changes, propagate to:
 - The skill that generates it (`10-init-site`, `11-theme`, `13-seo`, …)
-- The reviewer (`sdcorejs-review-code-nextjs`)
+- The reviewer (`sdcorejs-review-code`)
 - The auto-docs template if dimension changes
 
 ---

@@ -164,7 +164,7 @@ export const config = {
 }
 ```
 
-ALWAYS keep keys symmetric across locales. If a key exists in VI, it MUST exist in EN (and vice versa). Missing-key warnings are a Critical finding in `50-review-code`.
+ALWAYS keep keys symmetric across locales. If a key exists in VI, it MUST exist in EN (and vice versa). Missing-key warnings are a Critical finding in `sdcorejs-review-code`.
 
 **Parity check is enforced at build time** by `scripts/check-i18n-parity.ts` (installed by `19-content-quality`). It diffs the key sets of `vi.json` ↔ `en.json` and the file sets of `content/vi/` ↔ `content/en/`, then fails `npm run build` if they diverge. Run manually with `npm run check:i18n`. See `19-content-quality` Part 1 for the script and the broader bilingual quality rules (no machine translation, per-locale keyword research, etc.).
 

@@ -1,18 +1,16 @@
----
-name: sdcorejs-review-code-nestjs
-description: Use to review NestJS backend code against the be-masterdata conventions — Zod schemas in shared package, @HasPermission + AuthGuard order, manual QueryRunner transactions, BaseEntity/BaseRepository/BaseService usage, bilingual error messages, no business logic in controllers, repository encapsulation of TypeORM. Outputs Critical/Important/Minor with file:line. Triggers - "review code nestjs", "audit backend", "check Zod usage", "review controller", "rà soát BE code", or invocation after a NestJS feature completes. Bilingual (VI/EN).
-allowed-tools: Read, Glob, Grep
----
+# Review-Code Knowledge — NestJS
 
-# Review — Code (NestJS)
+> Track-specific knowledge loaded on demand by the `sdcorejs-review-code` skill
+> when the project architecture is detected as a NestJS backend (`nest-cli.json`
+> + `@nestjs/*` deps). Not a dispatchable skill — has no frontmatter.
+> The **output format** (color-coded tables) is owned by the parent skill; this
+> file only supplies *what to check*.
 
-## Purpose
-Per-file code review for a NestJS backend following the `be-masterdata` baseline. Different from `review/architecture` (structural), `review/security/nestjs` (auth/injection), `review/performance/nestjs` (queries). This skill checks adherence to NestJS + be-masterdata conventions.
-
-## When invoked
-- After a NestJS feature merges
-- User says "review code BE", "audit backend", "check controller"
-- Before a PR merges to main
+## What this covers
+Per-file code review for a NestJS backend following the `be-masterdata` baseline.
+Different from `review/architecture` (structural), `review/security/nestjs`
+(auth/injection), `review/performance/nestjs` (queries). This file checks
+adherence to NestJS + be-masterdata conventions.
 
 ## Conventions checked
 
@@ -32,7 +30,7 @@ grep -rnE "from\s+['\"].*\.controller['\"]" src/**/*.service.ts 2>/dev/null
 grep -rnE "from\s+['\"]typeorm['\"]" src/ | grep -v "\.repository\.ts" | grep -v "\.entity\.ts" | grep -v "data-source"
 ```
 
-Severity: Critical per violation.
+Severity: 🔴 Critical per violation.
 
 ### 2. Zod schemas live in `base/shared/<domain>/`
 
@@ -45,7 +43,7 @@ grep -rnE "z\.object\(\{" src/ 2>/dev/null | head -10
 # Should be 0 matches; all schemas come from `@/shared/<domain>/...`
 ```
 
-Severity: Important — drift means BE + FE can diverge silently.
+Severity: 🟡 Medium — drift means BE + FE can diverge silently.
 
 ### 3. `@HasPermission` decorator on every endpoint that mutates state
 
@@ -58,7 +56,7 @@ grep -rnB2 -E "@(Post|Put|Delete|Patch)\(" src/**/*.controller.ts | grep -B2 "@(
 # For each, the method above should have @HasPermission
 ```
 
-Severity: Critical per missing decorator on write endpoint.
+Severity: 🔴 Critical per missing decorator on write endpoint.
 
 ### 4. Controller methods are thin (≤ 5 lines)
 
@@ -76,7 +74,7 @@ awk '
 ' src/**/*.controller.ts 2>/dev/null
 ```
 
-Severity: Important per controller method > 20 lines.
+Severity: 🟡 Medium per controller method > 20 lines.
 
 ### 5. Manual transactions via `QueryRunner` for multi-write operations
 
@@ -90,7 +88,7 @@ grep -rnE "repository\.(save|update|delete)" src/**/*.service.ts | head
 # For each service file: if it has 2+ writes, manually verify QueryRunner is present
 ```
 
-Severity: Critical per multi-write service method without transaction.
+Severity: 🔴 Critical per multi-write service method without transaction.
 
 ### 6. `BaseEntity` / `BaseRepository` / `BaseService` from `base/core-be/`
 
@@ -113,7 +111,7 @@ grep -rl "@Injectable" src/**/*.repository.ts | while read f; do
 done
 ```
 
-Severity: Important — drift from base = duplicate audit logic, inconsistent soft-delete.
+Severity: 🟡 Medium — drift from base = duplicate audit logic, inconsistent soft-delete.
 
 ### 7. Bilingual error messages
 
@@ -126,7 +124,7 @@ grep -rnE "throw new (HttpException|BadRequestException|NotFoundException|Confli
 # Each should pass a bilingual message, not a plain string
 ```
 
-Severity: Critical for external-facing errors (FE displays them); Important for internal-only errors.
+Severity: 🔴 Critical for external-facing errors (FE displays them); 🟡 Medium for internal-only errors.
 
 ### 8. `optionalString` / `requiredString` helpers from `base/shared/`
 
@@ -138,7 +136,7 @@ grep -rnE "z\.string\(\)\.min\(1," src/ src/shared/ # ad-hoc requiredString
 # Should be 0; use requiredString() helper from base/shared/
 ```
 
-Severity: Minor (consistency win).
+Severity: 🔵 Minor (consistency win).
 
 ### 9. `ZodValidationGuard` order — AuthGuard FIRST, then ZodValidationGuard
 
@@ -148,7 +146,7 @@ grep -rnE "@UseGuards" src/**/*.controller.ts | head
 # Order should be: @UseGuards(AuthGuard, ZodValidationGuard(...)) — AuthGuard first
 ```
 
-Severity: Critical — if Zod runs before auth, unauthenticated users get validation hints; possible info leak.
+Severity: 🔴 Critical — if Zod runs before auth, unauthenticated users get validation hints; possible info leak.
 
 ### 10. `PartialInput<T>` for update DTOs (not bespoke partial schemas)
 
@@ -158,7 +156,7 @@ grep -rnE "UpdateReq\s*=\s*z\." src/shared/ src/ | head
 # Should use the helper that auto-makes Create fields optional
 ```
 
-Severity: Minor.
+Severity: 🔵 Minor.
 
 ### 11. Endpoint returns DTO, not entity
 
@@ -170,7 +168,7 @@ grep -rnE "return\s+(this|service|repo)\." src/**/*.controller.ts | head
 # Each should map to DTO before return
 ```
 
-Severity: Important per leak.
+Severity: 🟡 Medium per leak.
 
 ### 12. Database migrations checked in
 
@@ -181,7 +179,7 @@ ls src/migrations/ 2>/dev/null | wc -l
 # Compare against the count of @Entity files — if entities grow but migrations don't, you have drift
 ```
 
-Severity: Critical — schema drift between dev (synchronize) and prod (migrations) breaks deployments.
+Severity: 🔴 Critical — schema drift between dev (synchronize) and prod (migrations) breaks deployments.
 
 ### 13. `.env.example` matches `process.env` reads
 
@@ -195,7 +193,7 @@ grep -oE "^\w+" .env.example 2>/dev/null | sort -u > /tmp/env-declared.txt
 diff /tmp/env-uses.txt /tmp/env-declared.txt
 ```
 
-Severity: Important — missing entries fail in CI / on fresh clone.
+Severity: 🟡 Medium — missing entries fail in CI / on fresh clone.
 
 ### 14. Logging via structured logger, not `console.log`
 
@@ -203,50 +201,20 @@ Severity: Important — missing entries fail in CI / on fresh clone.
 grep -rnE "console\.(log|error|warn)" src/ | head
 ```
 
-Severity: Important — `console.log` in prod hits stdout but lacks request context / structured fields.
+Severity: 🟡 Medium — `console.log` in prod hits stdout but lacks request context / structured fields.
 
-## Output
+## Severity mapping for this track
+- **🔴 Critical** — layer violations, missing `@HasPermission` on writes, untransactional multi-writes, guard order, schema/migration drift, external bilingual-error gaps.
+- **🟡 Medium** — Zod-in-feature drift, fat controllers, base-class drift, entity leaks, env/logging gaps.
+- **🔵 Minor** — helper-reuse consistency (`requiredString`, `PartialInput`).
+- **🟢 Strengths (mirror)** — clean layering, correct QueryRunner transactions, DTO mapping worth replicating.
 
-Same format as `review/code/nextjs.md`:
+## Scope rules
+- Stop at code review — structural concerns go to `review/architecture`.
+- Do NOT duplicate `review/security/nestjs` findings (auth/injection belong there).
+- Flag for manual review where a probe can't be precise (e.g. multi-write detection).
 
-```markdown
-# Code Review (NestJS) — <feature> — <date>
-
-## Strengths
-...
-
-## Findings by severity
-### Critical
-| # | File:line | Convention | From | Fix |
-...
-
-### Important
-...
-
-### Minor
-...
-
-## Next action
-- Critical → `orchestration/repair-loop`
-- Important → user decides
-- Minor → batch
-```
-
-## Rules
-
-### MUST DO
-- Run all 14 probes automated; raw counts before narrative
-- Cite the be-masterdata convention each finding violates
-- File:line for every finding
-- Acknowledge strengths
-- Stop at code review — structural concerns go to `review/architecture`
-
-### MUST NOT
-- Flag ESLint concerns as Critical
-- Review code outside the diff being audited
-- Duplicate `review/security/nestjs` findings (auth/injection belong there)
-
-## Anti-patterns
+## Anti-patterns to flag
 - **Service that imports `Request` from express** — service must not know about HTTP; pass user via parameter or use a request-scoped provider
 - **Try-catch around every line in a service method** — bubble up; let global exception filter handle conversion
 - **`@Injectable() { providedIn: 'root' }`** — that's Angular syntax; NestJS uses module providers
@@ -259,16 +227,3 @@ Same format as `review/code/nextjs.md`:
 - Performance audit: `review/performance/nestjs`
 - Repair loop: `orchestration/repair-loop`
 - Conventions referenced: be-masterdata baseline + `base/core-be/` + `base/shared/`
-
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
-
-**Response style (terse mode active for this skill — reduces token usage):**
-
-While executing this skill:
-
-- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
-- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
-- Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
-- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
-- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

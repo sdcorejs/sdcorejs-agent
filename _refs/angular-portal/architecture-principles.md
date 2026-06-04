@@ -1,6 +1,6 @@
 # Angular Portal — Architecture Principles
 
-Source of truth for **WHY** SDCoreJS Angular portals look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, `sdcorejs-clarify-requirements`, `11-init-module`, `12-init-entity`, and `sdcorejs-review-code-angular-portal`.
+Source of truth for **WHY** SDCoreJS Angular portals look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, `sdcorejs-clarify-requirements`, `11-init-module`, `12-init-entity`, and `sdcorejs-review-code`.
 
 If a generated file contradicts a principle here, that file is wrong. If a principle here contradicts a real-world need, **the principle is wrong** — surface it as feedback, don't silently break it.
 
@@ -64,7 +64,7 @@ If `module-a` needs data from `module-b`, the contract goes through `@sdcorejs/a
 
 **Why**: cross-module imports = the death spiral. Module A imports Module B's component → B starts shipping in A's lazy chunk → A's bundle bloats → A can't be code-split → CI build time doubles → no one notices until production. Plus: refactoring B breaks A silently.
 
-**Enforce by**: `eslint-plugin-boundaries` rules (config in target project), and `sdcorejs-review-code-angular-portal` flags violations as **Critical**.
+**Enforce by**: `eslint-plugin-boundaries` rules (config in target project), and `sdcorejs-review-code` flags violations as **Critical**.
 
 ---
 
@@ -117,7 +117,7 @@ export class ProductListComponent {
 constructor(private router: Router, private svc: ProductService) {}
 ```
 
-**Why**: `inject()` works in functional contexts (guards, interceptors, route resolvers), removes constructor noise, and pairs with `#private` fields for true encapsulation. `sdcorejs-review-code-angular-portal` flags `constructor(private … )` as Critical.
+**Why**: `inject()` works in functional contexts (guards, interceptors, route resolvers), removes constructor noise, and pairs with `#private` fields for true encapsulation. `sdcorejs-review-code` flags `constructor(private … )` as Critical.
 
 ---
 
@@ -236,7 +236,7 @@ Order of preference when picking a UI primitive:
 
 **Why**: Core UI ships consistent a11y, theming, RTL support, and behavior. Custom UI re-litigates these per-component, badly. The flagged exception forces the conversation: "should Core UI grow this primitive?"
 
-See `_refs/angular-portal/sd-angular-core-catalog.md` for the full inventory.
+See `_refs/angular-portal/sdcorejs-angular-catalog.md` for the full inventory.
 
 ---
 
@@ -259,7 +259,7 @@ This skill set generates Angular portals. The principles above govern the **gene
 
 When a principle here changes, propagate to:
 - The skill that generates it (e.g. `11-init-module.md`, `12-init-entity.md`)
-- The reviewer that enforces it (`sdcorejs-review-code-angular-portal.md`)
+- The reviewer that enforces it (`sdcorejs-review-code.md`)
 - The auto-docs template if it touches the dimension being changed
 
 ---
@@ -279,7 +279,7 @@ When a principle here changes, propagate to:
 ## Related references
 
 - `_refs/angular-portal/core-version.md` — pinned `@sdcorejs/angular` version
-- `_refs/angular-portal/sd-angular-core-catalog.md` — Core UI components inventory
+- `_refs/angular-portal/sdcorejs-angular-catalog.md` — Core UI components inventory
 - `_refs/angular-portal/entity-field-types.md` — field-type → form-control mapping
 - `_refs/angular-portal/templates/entity-skeleton.md` — canonical code templates these principles produce
 - `_refs/angular-portal/templates/example-product.md` — worked example end-to-end

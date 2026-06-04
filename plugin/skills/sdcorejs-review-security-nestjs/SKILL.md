@@ -235,7 +235,7 @@ Severity: Critical if cookie auth without CSRF.
 
 ## Cross-references
 - Cross-track baseline: `review/security/shared.md`
-- Code review: `review/code/nestjs` (some overlap on `@HasPermission`)
+- Code review: `sdcorejs-review-code` (some overlap on `@HasPermission`)
 - Performance: `review/performance/nestjs` (rate limit overlap)
 - Verification: `orchestration/verify-before-done`
 

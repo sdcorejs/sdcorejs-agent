@@ -172,4 +172,4 @@ If layout is `side-drawer`, omit `pages/detail/` and add `components/detail-side
 - `*.detail.component.spec.ts` — form validation + CREATE/UPDATE/DETAIL state switching
 
 ### Final-step expectations
-The last numbered step should reference the mandatory tail-call chain (40-e2e-test → 50-review-code → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories). The reviewer of the plan checks that this chain is implicit, not omitted.
+The last numbered step should reference the mandatory tail-call chain (40-e2e-test → sdcorejs-review-code → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories). The reviewer of the plan checks that this chain is implicit, not omitted.

@@ -59,7 +59,7 @@ tracks/angular-portal/07-write-code  (angular-portal-write-code)
 testing/e2e/angular-portal       (sdcorejs-testing-e2e-angular-portal)
   ← happy-path E2E for what was just built
   ↓
-review/code/angular-portal       (sdcorejs-review-code-angular-portal)
+review/code.md                   (sdcorejs-review-code)
   ← convention check; Critical / Important / Minor findings
   ↓
 orchestration/repair-loop        ← apply findings + iterate until Critical+Important resolved
@@ -82,7 +82,7 @@ You don't need to memorize skill names. Just describe what you want — the agen
 | "Khởi tạo portal-shop với dev/qc/uat/prod" | `10-init-portal` |
 | "Thêm entity product, fields code/name/price" | `sdcorejs-clarify-requirements` (cross-track) → `12-init-entity` |
 | "Tạo màn list cho user" | `20-screen-list` |
-| "Review module catalog" | `sdcorejs-review-code-angular-portal` |
+| "Review module catalog" | `sdcorejs-review-code` |
 | "Test cho entity product" | `sdcorejs-testing-e2e-angular-portal` |
 | "Brainstorm cho module sales" | `sdcorejs-brainstorm` (cross-track) |
 | "Viết spec cho module catalog" | `sdcorejs-write-spec` (cross-track) |
@@ -100,7 +100,7 @@ You don't need to memorize skill names. Just describe what you want — the agen
 The agent only reads these when relevant — don't load upfront:
 - [`_refs/angular-portal/architecture-principles.md`](_refs/angular-portal/architecture-principles.md) — **the WHY**: 16 principles governing what generated code looks like (feature-first, signal-first, no cross-module imports, OnPush default, 4 canonical layouts, mock-first, …). Load when explaining a decision, reviewing a deviation, or onboarding a new contributor.
 - [`_refs/angular-portal/core-version.md`](_refs/angular-portal/core-version.md) — pinned `@sdcorejs/angular` version
-- [`_refs/angular-portal/sd-angular-core-catalog.md`](_refs/angular-portal/sd-angular-core-catalog.md) — Core UI components and patterns
+- [`_refs/angular-portal/sdcorejs-angular-catalog.md`](_refs/angular-portal/sdcorejs-angular-catalog.md) — Core UI components and patterns
 - [`_refs/angular-portal/entity-field-types.md`](_refs/angular-portal/entity-field-types.md) — field type → form control mapping
 - [`_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md`](_refs/angular-portal/templates/) — canonical code templates emitted by `12-init-entity`
 

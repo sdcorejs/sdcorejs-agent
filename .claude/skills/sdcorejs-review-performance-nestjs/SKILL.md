@@ -249,7 +249,7 @@ Severity: Minor if not handled but no large-body endpoint exists.
 
 ## Cross-references
 - Budget thresholds: `review/performance/budget.md`
-- Code review (correctness): `review/code/nestjs`
+- Code review (correctness): `sdcorejs-review-code`
 - Architecture (structural perf): `review/architecture`
 - Repair loop: `orchestration/repair-loop`
 - Verification: `orchestration/verify-before-done`

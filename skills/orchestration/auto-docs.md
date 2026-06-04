@@ -17,7 +17,7 @@ This skill is shared across SDCoreJS tracks (`angular-portal`, `nestjs`, `nextjs
 The agent MUST run this skill (write mode) at the end of every code-writing skill invocation, without prompting. For the angular-portal track that means:
 - `07-write-code` (and the sub-skills it dispatches: `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `31-actions`)
 - `40-e2e-test`
-- `50-review-code` (write a "review session" doc summarizing findings, even though no code changed)
+- `sdcorejs-review-code` (write a "review session" doc summarizing findings, even though no code changed)
 - `orchestration/comment-code` when the chosen level is not `skip`
 
 For nestjs and nextjs tracks, the equivalent code-writing skills under each track folder trigger this skill the same way.

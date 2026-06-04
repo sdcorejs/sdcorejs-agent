@@ -80,7 +80,7 @@ skills/_shared/memories.md                        -> sdcorejs-memories
   - lines 124, 125: `../core/README.md`, `../agents/README.md` (sibling folders that do not exist in this repo)
 - `skills/angular-portal/README.md`
   - lines 13, 32, 63, 94, 127, 415, 416, 417, 418: links to `angular-request-intake-skill.md`, `angular-portal-project-init-skill.md`, `angular-entity-crud-skill.md`, `angular-module-configuration-skill.md`, `angular-workflow-actions-skill.md`, `angular-reactive-form-skill.md`
-  - lines 209, 210: `core-version.md`, `sd-angular-core-catalog.md` (these now live in `_refs/`, so should be `_refs/core-version.md` and `_refs/sd-angular-core-catalog.md`)
+  - lines 209, 210: `core-version.md`, `sdcorejs-angular-catalog.md` (these now live in `_refs/`, so should be `_refs/core-version.md` and `_refs/sdcorejs-angular-catalog.md`)
   - line 431: `../ANGULAR-SKILLS-INDEX.md` (does not exist)
   - lines 433, 434: `../../core/README.md`, `../../README.md` (former is missing)
 

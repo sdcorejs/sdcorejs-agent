@@ -218,6 +218,6 @@ Same format as `review/accessibility/baseline.md` — Critical / Important / Min
 
 ## Cross-references
 - Cross-track baseline: `review/accessibility/baseline.md`
-- Core UI a11y catalog: `_refs/angular-portal/sd-angular-core-catalog.md`
+- Core UI a11y catalog: `_refs/angular-portal/sdcorejs-angular-catalog.md`
 - Verification: `orchestration/verify-before-done`
 - Repair loop: `orchestration/repair-loop`

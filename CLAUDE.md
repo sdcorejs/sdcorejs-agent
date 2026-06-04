@@ -12,8 +12,8 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (8 track-specific skills: onboarding, write-code orchestrator, init-portal/module/entity, screen-list, screen-detail (covers CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design-phase + spec/plan/review skills moved to cross-track `skills/shared/sdlc/`. Cross-cutting code-review + e2e-test live in `skills/review/code/angular-portal.md` and `skills/testing/e2e/angular-portal.md`. Cross-track comment-code (`orchestration/comment-code`) absorbs the previous per-track `51-write-comments`. |
-| NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (`00-onboarding` + `07-write-code` plan-walking orchestrator). Sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) 🚧 planned. Design phase fully usable via shared/sdlc/; review + testing skills already in place under `review/code/nestjs.md`, `review/{security,performance}/nestjs.md`, `testing/*/nestjs.md`. |
+| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (8 track-specific skills: onboarding, write-code orchestrator, init-portal/module/entity, screen-list, screen-detail (covers CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design-phase + spec/plan/review skills moved to cross-track `skills/shared/sdlc/`. Cross-cutting code-review (single track-aware skill `sdcorejs-review-code` at `skills/review/code.md`) + e2e-test (`skills/testing/e2e/angular-portal.md`). Cross-track comment-code (`orchestration/comment-code`) absorbs the previous per-track `51-write-comments`. |
+| NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (`00-onboarding` + `07-write-code` plan-walking orchestrator). Sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) 🚧 planned. Design phase fully usable via shared/sdlc/; review + testing skills already in place — code review via the single track-aware `sdcorejs-review-code` (`review/code.md`), plus `review/{security,performance}/nestjs.md`, `testing/*/nestjs.md`. |
 | Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (13 track-specific skills: onboarding, write-code orchestrator, audit-existing-site, 10-init-site, 11-theme, 12-pages-and-blocks, 13-seo, 14-og-preview, 15-i18n, 16-caching, 17-responsive, 18-contact-form, 19-content-quality). Design-phase moved to cross-track `skills/shared/sdlc/`. |
 
 Cross-cutting concerns live outside `tracks/`:
@@ -21,7 +21,7 @@ Cross-cutting concerns live outside `tracks/`:
 - `skills/orchestration/` — 14 SDLC plumbing skills (parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, using-worktrees, using-skills)
 - `skills/shared/conventions/` — Conventional Commits, changelog, dep-update
 - `skills/shared/workflow/` — env-setup, debug, pr-create, code-map
-- `skills/review/` — code review (per-track), security audit, performance, architecture, accessibility (filled per track where applicable)
+- `skills/review/` — code review (single track-aware skill `sdcorejs-review-code` at `review/code.md`; per-track knowledge in `_refs/<track>/review-code.md`), security audit, performance, architecture, accessibility (filled per track where applicable)
 - `skills/testing/` — e2e, integration, unit (per-track, with cross-track principles in `philosophy.md`)
 
 Each track exposes its capabilities as **skills** — markdown files with Anthropic-style YAML frontmatter (`name`, `description`, `allowed-tools`).
@@ -88,8 +88,8 @@ orchestration/auto-plans   ← MANDATORY on approval — snapshot to <target>/.s
 testing/e2e/<track>.md (sdcorejs-testing-e2e-*)
   ← happy-path tests for what was generated
   ↓
-review/code/<track>.md (sdcorejs-review-code-*)
-  ← convention check; outputs Critical / Important / Minor findings
+review/code.md (sdcorejs-review-code — auto-detects track from dir architecture)
+  ← convention check; outputs color-coded tables (🔴 Critical / 🟡 Medium / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff
   ↓
 orchestration/repair-loop
   ← apply review findings + iterate until Critical+Important resolved
@@ -159,7 +159,7 @@ Loaded by every track at the start of every feature. Each detects the track at r
 | `sdcorejs-auto-plans` | runs IMMEDIATELY after `sdcorejs-review-plan` approval — snapshots to `.sdcorejs/plans/<track>/` so future `sdcorejs-plan` can mirror style | ✅ on approval |
 | `sdcorejs-auto-task-tracker` | runs IMMEDIATELY after auto-docs — ticks `[x]` done, appends new tasks to `.sdcorejs/tasks/<track>.md` | ✅ |
 | `sdcorejs-memories` | "ghi nhớ", durable knowledge — write to target `.sdcorejs/memories/<track>/` | ✅ on trigger |
-| `sdcorejs-repair-loop` | runs after `review/code/<track>.md` outputs findings — categorize / auto-apply / iterate until Critical+Important resolved | ✅ on findings |
+| `sdcorejs-repair-loop` | runs after `sdcorejs-review-code` outputs findings — categorize / auto-apply / iterate until Critical+Important resolved | ✅ on findings |
 | `sdcorejs-comment-code` | ASK gate at the comment phase — skip / simple / medium / full; outcome optional but ASK is mandatory | ✅ ASK |
 | `sdcorejs-parallel-dispatch` | about to fan out 3+ independent tasks — decision gate (should I split?) |  |
 | `sdcorejs-subagent-driven-dev` | after parallel-dispatch says YES — execution discipline: decompose, brief, dispatch, merge |  |
@@ -188,7 +188,7 @@ Loaded by every track at the start of every feature. Each detects the track at r
   - **nextjs/build-website** (15 principles): App Router default, server components default, content-as-data, i18n localized pathnames, SEO non-negotiable, 30-min ISR default, real contact form, mobile-first, …
   - **nestjs** (14 principles, scaffold): bounded-context modules, BaseEntity/Repo/Service mandatory, guard order AuthGuard→Zod→HasPermission, Zod in shared package, thin controllers, explicit QueryRunner transactions, bilingual error messages, …
 - `_refs/angular-portal/core-version.md` — pinned `@sdcorejs/angular` version
-- `_refs/angular-portal/sd-angular-core-catalog.md` — Core UI components inventory
+- `_refs/angular-portal/sdcorejs-angular-catalog.md` — Core UI components inventory
 - `_refs/angular-portal/entity-field-types.md` — field type → form control mapping
 - `_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md` — code templates extracted from `12-init-entity.md` (split 2026-05-20 to keep SKILL.md under 500 lines)
 
@@ -199,7 +199,7 @@ Loaded by every track at the start of every feature. Each detects the track at r
 - ❌ Don't write `.sdcorejs/docs/`, `.sdcorejs/specs/`, `.sdcorejs/plans/`, or `.sdcorejs/memories/` content in this `sdcorejs-agent` repo. Auto-docs / auto-specs / auto-plans / memories always target the user's working project.
 - ❌ Don't load all skill bodies at session start. Just read frontmatter for dispatch; full body only when picking a skill.
 - ❌ Don't bypass git hooks (`--no-verify`) or `.gitignore`d files when committing.
-- ❌ Don't generate code that imports `@sdcorejs/angular` features not in the catalog (`_refs/angular-portal/sd-angular-core-catalog.md`) without first checking that file.
+- ❌ Don't generate code that imports `@sdcorejs/angular` features not in the catalog (`_refs/angular-portal/sdcorejs-angular-catalog.md`) without first checking that file.
 
 ## See also
 

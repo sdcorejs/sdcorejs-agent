@@ -226,6 +226,6 @@ OWASP A02.
 ## Cross-references
 - Cross-track baseline: `review/security/shared.md`
 - Contact form generation: `tracks/nextjs/build-website/18-contact-form`
-- Code review: `review/code/nextjs` (overlap on Server Component / Client Component boundaries)
+- Code review: `sdcorejs-review-code` (overlap on Server Component / Client Component boundaries)
 - Performance: `review/performance/nextjs`
 - Verification: `orchestration/verify-before-done`

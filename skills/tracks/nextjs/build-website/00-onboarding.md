@@ -43,7 +43,7 @@ Request: "tạo landing page cho X"         │   Request: "audit site này", "i
    18-contact-form   — REAL form: API route + email service + validation
    19-content-quality — bilingual parity check + min word counts + prose typography + on-page SEO + Article schema
   ↓
-40-e2e-test (generic) → 50-review-code (generic) → orchestration/repair-loop
+40-e2e-test (generic) → sdcorejs-review-code (generic) → orchestration/repair-loop
   ↓
 orchestration/comment-code (ASK gate) → orchestration/verify-before-done (acceptance gate)
   ↓
@@ -99,7 +99,7 @@ These come from `skills/orchestration/`, `skills/shared/`, `skills/review/`, `sk
 - **`sdcorejs-auto-task-tracker`** — living TODO per track
 - **`sdcorejs-memories`** — durable knowledge
 - **`sdcorejs-verify-before-done`** — acceptance gate before "done"
-- **`sdcorejs-repair-loop`** — after `50-review-code` findings
+- **`sdcorejs-repair-loop`** — after `sdcorejs-review-code` findings
 - **`sdcorejs-comment-code`** — ASK gate at comment phase
 - **`sdcorejs-commit`** — Conventional Commits
 - **`sdcorejs-debug`** — when something breaks

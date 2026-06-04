@@ -29,7 +29,7 @@ skills/
 ├── orchestration/        SDLC plumbing (12 files): parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code
 │
 ├── review/
-│   ├── code/             per-track code review (angular-portal.md, nestjs.md, nextjs.md)
+│   ├── code.md           single track-aware code review (sdcorejs-review-code); per-track knowledge in _refs/<track>/review-code.md (nextjs: _refs/nextjs/build-website/review-code.md)
 │   ├── security/         shared.md (cross-track baseline) + per-track narrow checks (nestjs.md)
 │   ├── architecture.md   cross-track architecture review
 │   ├── performance/      budget.md (cross-track) + per-track (angular-portal, nestjs, nextjs)
@@ -77,7 +77,7 @@ Request
        angular-portal:        angular-portal-write-code
        nextjs (build-website): nextjs-build-website-write-code
        nestjs:                 nestjs-write-code (SCAFFOLD — plan-walker until sub-skills ship)
-  → testing/e2e/<track>.md → review/code/<track>.md → orchestration/repair-loop (if findings)
+  → testing/e2e/<track>.md → review/code.md (sdcorejs-review-code, auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (MANDATORY acceptance gate) → orchestration/branch-ready (branch-hygiene sweep)
   → orchestration/auto-docs (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) → orchestration/memories (when durable knowledge surfaces)
@@ -134,7 +134,7 @@ Cross-track skills — apply to angular-portal, nestjs, nextjs alike. Dispatch i
 | `sdcorejs-auto-plans` | IMMEDIATELY after `sdcorejs-review-plan` approval | ✅ on approval |
 | `sdcorejs-auto-task-tracker` | IMMEDIATELY after auto-docs | ✅ |
 | `sdcorejs-memories` | "ghi nhớ", durable knowledge | ✅ on trigger |
-| `sdcorejs-repair-loop` | after `review/code/<track>.md` outputs findings | ✅ on findings |
+| `sdcorejs-repair-loop` | after `sdcorejs-review-code` outputs findings | ✅ on findings |
 | `sdcorejs-comment-code` | ASK gate at comment phase — skip/simple/medium/full | ✅ ASK |
 | `sdcorejs-code-map` | new feature / reuse check — read-only architecture scan |  |
 | `sdcorejs-parallel-dispatch` | fan-out 3+ independent tasks — decision gate |  |
@@ -152,7 +152,7 @@ Cross-track skills — apply to angular-portal, nestjs, nextjs alike. Dispatch i
 
 - `_refs/sdlc/{angular-portal,nextjs,nestjs}.md` — track-specific design-phase patterns
 - `_refs/angular-portal/core-version.md` — pinned `@sdcorejs/angular` version
-- `_refs/angular-portal/sd-angular-core-catalog.md` — Core UI components inventory
+- `_refs/angular-portal/sdcorejs-angular-catalog.md` — Core UI components inventory
 - `_refs/angular-portal/entity-field-types.md` — field type → form control mapping
 - `_refs/angular-portal/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for 12-init-entity
 

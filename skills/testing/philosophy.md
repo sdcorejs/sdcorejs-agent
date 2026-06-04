@@ -12,7 +12,7 @@ Stack-specific testing skills (Cypress / Playwright / Jest / supertest / testcon
 ## When invoked
 - A stack-specific test skill is about to dispatch and the agent wants principle context first
 - User asks "what should I test", "test pyramid", "viết test cho cái gì", "tôi có nên test private method"
-- During `50-review-code` when the question is "are these the right tests" not "are these tests well-written"
+- During `sdcorejs-review-code` when the question is "are these the right tests" not "are these tests well-written"
 
 ## The test pyramid
 

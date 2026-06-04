@@ -1,6 +1,6 @@
 ---
 name: angular-portal-write-code
-description: Use when the user has confirmed the plan via 06-review-plan (which was authored by 05-plan) and is ready to generate Angular-portal code. Orchestrator skill - dispatches sub-skills 10-init-portal, 11-init-module, 12-init-entity, 20-screen-list, 21-screen-detail (handles CREATE / UPDATE / DETAIL states + form refinement), 31-actions (workflow / bulk / custom side-effects) based on the confirmed scope. After completion, mandatory hand-off chain - 40-e2e-test → 50-review-code → orchestration/repair-loop → orchestration/comment-code (ASK gate: skip / simple / medium / full — applied inline) → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Triggers - "generate code", "viết code", "sinh code đi", "go ahead", "proceed with implementation". Bilingual (VI/EN).
+description: Use when the user has confirmed the plan via 06-review-plan (which was authored by 05-plan) and is ready to generate Angular-portal code. Orchestrator skill - dispatches sub-skills 10-init-portal, 11-init-module, 12-init-entity, 20-screen-list, 21-screen-detail (handles CREATE / UPDATE / DETAIL states + form refinement), 31-actions (workflow / bulk / custom side-effects) based on the confirmed scope. After completion, mandatory hand-off chain - 40-e2e-test → sdcorejs-review-code → orchestration/repair-loop → orchestration/comment-code (ASK gate: skip / simple / medium / full — applied inline) → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Triggers - "generate code", "viết code", "sinh code đi", "go ahead", "proceed with implementation". Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -34,7 +34,7 @@ Before dispatching ANY sub-skill, run `orchestration/auto-summary`. If `<target>
 Execution order: portal → module → entity → screens → actions. If the plan touches multiple items, run them in this order; do not parallelize. After all sub-skills finish, hand off in sequence:
 
 1. `40-e2e-test` (skills/testing/e2e/angular-portal.md) — happy-path tests for what was generated
-2. `50-review-code` (skills/review/code/angular-portal.md) — convention check; outputs Critical / Important / Minor findings
+2. `sdcorejs-review-code` (skills/review/code.md; auto-detects Angular → loads `_refs/angular-portal/review-code.md`) — convention check; outputs color-coded tables (🔴 Critical / 🟡 Medium / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
 3. `orchestration/repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
 4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full); applies the chosen level inline. Cross-track baseline + per-track addenda live inside `orchestration/comment-code` itself (no separate `51-write-comments` skill — was consolidated)
 5. `orchestration/verify-before-done` — BLOCK "done" until acceptance criteria from the spec are ✅ verified or ⚠️ explicitly deferred

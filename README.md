@@ -42,7 +42,7 @@ Request
 06-review-plan             ← user reviews + approves plan
 07-write-code              ← orchestrator that dispatches sub-skills (10-31)
 40-e2e-test                ← write E2E tests for what was built
-50-review-code             ← self-review against conventions
+sdcorejs-review-code       ← self-review against conventions (auto-detects track; color-coded tables)
 orchestration/comment-code ← MANDATORY ASK gate: skip / simple / medium / full (all applied inline)
   ↓
 orchestration/auto-docs    ← MANDATORY: summary to target project's .sdcorejs/docs/<track>/

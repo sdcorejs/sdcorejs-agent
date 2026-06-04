@@ -1,19 +1,15 @@
----
-name: sdcorejs-review-code-angular-portal
-description: Use to review generated or modified Angular-portal code against the SDCoreJS Core UI conventions (standalone-first, Core UI components, mock-first services, side-drawer vs page detail patterns, route-state CRUD, audit columns). Outputs a structured Strengths / Issues report sorted Critical → Important → Minor with file:line refs — or, for a full audit, a 13-category scored deep-review (Score/Findings/Risks/Recommendations, weighted by Performance · Maintainability · Scalability · Enterprise readiness). Triggers - "review code angular", "audit module angular", "rà soát code angular portal", "check Core UI conventions", "scored review", "đánh giá / chấm điểm code angular", "enterprise readiness", or invocation after `angular-portal-write-code` completes. Bilingual (VI/EN).
-allowed-tools: Read, Glob, Grep
----
+# Review-Code Knowledge — Angular Portal
 
-# 50 — Review Code
+> Track-specific knowledge loaded on demand by the `sdcorejs-review-code` skill
+> when the project architecture is detected as an Angular portal (`angular.json`
+> + `@sdcorejs/angular`). Not a dispatchable skill — has no frontmatter.
+> The **output format** (color-coded tables) is owned by the parent skill; this
+> file only supplies *what to check*. The scored deep-review mode (below) is an
+> Angular-specific alternate output.
 
-## Purpose
-Audit generated or modified Angular portal code against SDCoreJS conventions. Surfaces violations the human reviewer should fix. Read-only — does not modify code.
-
-## When to use
-- After `07-write-code` finishes a sizeable batch
-- Before merging a feature branch
-- User says "review module X", "check code", "audit module sales", "rà soát module catalog"
-- After `40-e2e-test` to cross-check that test coverage matches code surface
+## What this covers
+Audit generated or modified Angular portal code against SDCoreJS Core UI
+conventions. Read-only — surfaces violations the human reviewer should fix.
 
 ## Review checklist
 
@@ -30,17 +26,7 @@ For every file under review, check the following.
 - Uses `@sdcorejs/angular/components`, `@sdcorejs/angular/forms`, `@sdcorejs/angular/modules` instead of hand-rolled equivalents
 - If a custom skeleton exists, it is marked with `// CUSTOM_UI: <reason>` and the generation summary mentioned it
 - Imports come from path-specific subpaths (e.g. `@sdcorejs/angular/components/section`), not the barrel `from 'sd-angular'`
-
-### New Core UI components (use the built-in, don't re-implement)
-Flag a hand-rolled equivalent when one of these fits — and check the key conventions:
-- `sd-query-bar` — list filter bar. Check `[mode]` (`popover` | `inline`), single `(apply)`/`(queryChange)` wiring (not per-chip apply), `SdQueryField.type` (NOT old `kind`). Prefer over a custom filter row.
-- `sd-query-builder` — nested AND/OR rule builder (advanced search). Don't confuse with `sd-query-bar`.
-- `sd-operator` — operator picker; two-way `[(model)]` of `Operator`, `operators` input. Don't hand-roll a mat-menu of operators.
-- `sd-splitter` + `sd-splitter-panel` — resizable panes. Check `panelId` set when `storageKey` / `collapse|expand|toggle(target)` used; at least one `unit="flex"` panel.
-- `sd-stepper` — multi-step wizard indicator. Use instead of a custom step header.
-- `sd-inform` — page banner/alert. Presentational; color via boolean shortcut or `color`; `closable` for self-dismiss. Not for toasts (use `SdNotifyService`).
-- `sd-form-generic` (`sd-form-builder` / `sd-form-render`) — schema-driven dynamic forms. Requires `SD_FORM_GENERIC_CONFIGURATION` provided (NOT the old `SD_WORKFLOW_CONFIGURATION`); import from `@sdcorejs/angular/components/form-generic`.
-- `sd-input-color` — color form control. Use instead of a raw `<input type="color">`.
+- **Don't re-implement what Core UI already ships.** When a hand-rolled widget duplicates a Core UI component (filter bar, operator picker, splitter, stepper, banner, dynamic form, color input, …), flag it and point the dev to the built-in. The authoritative component inventory + each component's per-component conventions and required configuration tokens live in `_refs/angular-portal/sdcorejs-angular-catalog.md` — consult it rather than hard-coding a component list here (drift-proof: the catalog is the single source of truth and stays current with the pinned `@sdcorejs/angular` version).
 
 ### Naming
 - Files: `<entity-kebab>.model.ts`, `<entity-kebab>.service.ts`, `<entity-kebab>.routes.ts`, `<entity-kebab>.mock-data.ts`
@@ -57,7 +43,7 @@ Flag a hand-rolled equivalent when one of these fits — and check the key conve
 - Form uses `FormGroup` with explicit validators; submit gates on `form.invalid → markAllAsTouched`
 
 ### autoId (E2E selectors + inspector) — WARN when missing
-Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-autoid` so E2E specs and the `sd-autoid-inspector` overlay can grab the element. Missing `autoId` = the element is invisible to the inspector and E2E by stable selector. Warn (Important, not Critical) so the dev backfills it.
+Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-autoid` so E2E specs and the `sd-autoid-inspector` overlay can grab the element. Missing `autoId` = the element is invisible to the inspector and E2E by stable selector. Warn (Medium, not Critical) so the dev backfills it.
 - Every interactive Core UI element has an `autoId`: form controls (`sd-input`, `sd-select`, `sd-date`, `sd-checkbox`, `sd-switch`, `sd-radio`, …), `sd-button`, `sd-table` (+ row command buttons), `sd-query-bar`, `sd-modal` / `sd-side-drawer`, tabs, action toolbars.
 - `autoId` values are stable + meaningful (e.g. `product-name`, `product-save`, `product-list`), kebab-case, unique within the page — not random or duplicated.
 - Composite components that need per-item ids (e.g. `sd-anchor-item` `key`, table row actions) have the id wired so the emitted `data-autoId` resolves per item.
@@ -101,37 +87,22 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 - Duplicate permission checks (route guard + in-component `canViewList`)
 - Method calls in template bindings (re-runs every CD cycle)
 - Missing `autoId` on interactive Core UI elements (breaks E2E + `sd-autoid-inspector`) — WARN, dev backfills
-- Hand-rolled UI where a new Core UI component fits (custom filter row vs `sd-query-bar`, raw color input vs `sd-input-color`, custom resizable panes vs `sd-splitter`)
-- `sd-form-render` without `SD_FORM_GENERIC_CONFIGURATION` provided (runtime throw), or still referencing the old `SD_WORKFLOW_CONFIGURATION`
+- Hand-rolled UI where a Core UI component fits — check the candidate against `_refs/angular-portal/sdcorejs-angular-catalog.md`
+- A Core UI component used without its required configuration token provided (runtime throw) — the catalog lists each component's setup requirements
 
-## Output format
-
-```markdown
-# Code Review — <module>/<entity>
-
-## Strengths
-- <one-line wins, max 5>
-
-## Issues — Critical
-1. **<file>:<line>** — <one-line problem>
-   <one-paragraph why it matters; suggested fix>
-
-## Issues — Important
-2. **<file>:<line>** — ...
-
-## Issues — Minor
-3. **<file>:<line>** — ...
-
-## Verification commands run
+## Verification commands (run, include exit codes in the report)
 - `npm run build-dev` → exit 0 / failed
-- `npm run test -- --watch=false --include=...` → 47 passed, 0 failed
-```
+- `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts` → N passed, 0 failed
 
-Sort: Critical first (security, broken behavior, data loss), Important second (convention violation that will cause maintenance pain), Minor last (style, doc).
+## Severity mapping for this track
+- **🔴 Critical** — security, broken behavior, data loss, runtime throw (e.g. a Core UI component missing its required config token — see catalog), Zod/permission gaps, hardcoded API URLs.
+- **🟡 Medium** — convention violation that causes maintenance pain (constructor DI, missing `autoId`, method calls in template bindings, hand-rolled UI where Core UI fits).
+- **🔵 Minor** — style, doc, naming nits that don't change behavior.
+- **🟢 Strengths (mirror)** — correct 3-state pattern, clean signal usage, proper Core UI adoption worth replicating elsewhere.
 
-## Scored deep-review mode (enterprise audit)
+## Scored deep-review mode (enterprise audit) — Angular-specific alternate output
 
-Use this mode for a full module/branch audit, or when the user asks for a "scored review", "đánh giá", "chấm điểm", or an enterprise-readiness assessment. The quick Strengths/Issues format above stays the default for small diffs.
+Use this mode for a full module/branch audit, or when the user asks for a "scored review", "đánh giá", "chấm điểm", or an enterprise-readiness assessment. The color-table format from the parent skill stays the default for small diffs.
 
 **Priority lens (weight findings in this order):** Performance → Maintainability → Scalability → Enterprise readiness. A finding that hurts a higher-priority axis outranks one that only affects a lower axis. **Do NOT score formatting/style** unless it measurably hurts maintainability (then say how).
 
@@ -185,40 +156,3 @@ Score each of these 13 categories. For every category output **Score (1–10)**,
 ```
 
 Overall score = weighted by the priority lens (Performance/Maintainability heaviest), not a flat average — state the weighting if it changes the headline number.
-
-## Rules
-
-### MUST DO
-- Read every file under review; do not skim
-- Cite `file:line` for every issue
-- Sort by severity, not by file order
-- Run `npm run build-dev` and the relevant test command and include exit codes in the report
-- Match user's language (VI/EN) for headings and explanations
-- Distinguish "this is a bug" from "this is a style preference"
-
-### MUST NOT
-- Edit files (read-only review)
-- Mark style preferences as Critical
-- Skip running the build/test verification commands
-- Output a review without `file:line` references (un-actionable)
-- Repeat the same issue 5 times for 5 files — group them ("Same `inject()` violation in 5 files: ...")
-- Invent issues that aren't in the code
-
-## Anti-patterns
-- "Looks good!" — provide concrete observations
-- Critical issues without explanation of impact
-- Reviewing without running the build (might miss compile errors)
-- Issues without suggested fixes
-
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
-
-**Response style (terse mode active for this skill — reduces token usage):**
-
-While executing this skill:
-
-- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
-- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
-- Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
-- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
-- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

@@ -20,7 +20,7 @@ This skill enforces the floor: minimum lengths, prose discipline, parity check, 
 - Automatic step in `07-write-code` after `12-pages-and-blocks` + `13-seo` (so we have pages and metadata to audit)
 - User says "rà soát nội dung", "bài viết quá ngắn", "câu chữ chưa rõ", "review content quality"
 - After adding new pages or articles — before launch
-- Anytime `50-review-code` flags "Critical: thin content"
+- Anytime `sdcorejs-review-code` flags "Critical: thin content"
 
 ## Prerequisites
 - Pages exist (`12-pages-and-blocks` done)
@@ -85,7 +85,7 @@ Create `scripts/check-i18n-parity.ts` — compares `vi.json` ↔ `en.json` keys 
 | FAQ page | 500 (across all answers) | Each Q&A should be 50-150 words |
 | Contact | 150 | Address + hours + map + form intro is enough |
 
-Below the floor → `50-review-code` flags as **Critical: thin content**.
+Below the floor → `sdcorejs-review-code` flags as **Critical: thin content**.
 
 ### Rule 2.2 — Sentence and paragraph discipline
 
@@ -349,7 +349,7 @@ Add these as acceptance criteria for any landing-site spec:
 - Tailwind Typography plugin install: this skill (Part 3)
 - Article JSON-LD builder: extends `13-seo`'s `structured-data.ts`
 - Per-locale strings: `15-i18n` + `12-pages-and-blocks`
-- Heading hierarchy reviewed by: `50-review-code` (accessibility section)
+- Heading hierarchy reviewed by: `sdcorejs-review-code` (accessibility section)
 - Min word count enforced by: `orchestration/verify-before-done`
 - Image alt rules: `17-responsive` (presence) + this skill (quality)
 - Reading-experience width: `17-responsive` uses `max-w-prose` from this skill

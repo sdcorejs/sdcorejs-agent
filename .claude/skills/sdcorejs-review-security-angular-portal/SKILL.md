@@ -208,9 +208,9 @@ OWASP A01.
 
 ## Cross-references
 - Cross-track baseline: `review/security/shared.md`
-- Code review: `review/code/angular-portal` (overlap on guard + permission conventions)
+- Code review: `sdcorejs-review-code` (overlap on guard + permission conventions)
 - Performance: `review/performance/angular-portal`
-- Core UI catalog: `_refs/angular-portal/sd-angular-core-catalog.md`
+- Core UI catalog: `_refs/angular-portal/sdcorejs-angular-catalog.md`
 - Verification: `orchestration/verify-before-done`
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->

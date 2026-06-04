@@ -42,7 +42,7 @@ Request
   → 05-plan       → 06-review-plan      (approval gate)
                   → orchestration/auto-plans  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
   → 07-write-code (sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
-  → 40-e2e-test → 50-review-code → orchestration/repair-loop (if findings)
+  → 40-e2e-test → sdcorejs-review-code (auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (mandatory ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (mandatory acceptance gate)
   → orchestration/auto-docs (mandatory) → orchestration/auto-task-tracker (mandatory) + orchestration/memories (when durable knowledge surfaces)
@@ -80,7 +80,7 @@ The skill files are the primary source. Load on demand:
 - `skills/tracks/angular-portal/11-init-module.md` — module setup
 - `skills/tracks/angular-portal/12-init-entity.md` — entity CRUD generation (slim; templates in `_refs/templates/`)
 - `skills/tracks/angular-portal/_refs/templates/entity-{skeleton,tests,example-product}.md` — code templates loaded on demand by 12-init-entity
-- `skills/tracks/angular-portal/_refs/sd-angular-core-catalog.md` — components inventory (load when picking a Core UI component)
+- `skills/tracks/angular-portal/_refs/sdcorejs-angular-catalog.md` — components inventory (load when picking a Core UI component)
 - `skills/orchestration/auto-docs.md` — session summary writer (mandatory tail-call)
 - `skills/orchestration/auto-specs.md` — approved-spec snapshot writer (MANDATORY tail-call after 04-review-spec approval)
 - `skills/orchestration/auto-plans.md` — approved-plan snapshot writer (MANDATORY tail-call after 06-review-plan approval)
@@ -97,7 +97,7 @@ The skill files are the primary source. Load on demand:
 - `skills/shared/conventions/dep-update.md` — safe dependency upgrade workflow
 - `skills/orchestration/parallel-dispatch.md` — when/how to fan out to parallel subagents
 - `skills/orchestration/subagent-driven-dev.md` — execution discipline AFTER parallel-dispatch decides YES
-- `skills/orchestration/repair-loop.md` — apply 50-review-code findings + iterate until clean
+- `skills/orchestration/repair-loop.md` — apply sdcorejs-review-code findings + iterate until clean
 - `skills/orchestration/comment-code.md` — mandatory ASK gate (skip/simple/medium/full) before any comment work
 - `skills/orchestration/verify-before-done.md` — MANDATORY acceptance-criteria gate before claiming "done"
 
