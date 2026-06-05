@@ -68,7 +68,7 @@ npm run build  2>&1 | tail -20  > /tmp/audit-build.log
 npm run lint   2>&1 | tail -20  > /tmp/audit-lint.log
 npx tsc --noEmit 2>&1 | tail -20 > /tmp/audit-tsc.log
 
-# Bilingual + content scripts (from 19-content-quality) — only run if defined
+# Bilingual + content scripts (from the content-quality pack) — only run if defined
 node -e "const p=require('./package.json').scripts??{}; process.exit(p['check:i18n']?0:1)" \
   && npm run check:i18n 2>&1 > /tmp/audit-i18n.log \
   || echo "MISSING:check:i18n" > /tmp/audit-i18n.log
@@ -90,39 +90,39 @@ Each check maps to one sub-skill from the build-website pack. The findings table
 
 | # | Check | Probe |
 |---|---|---|
-| A1 | **`10-init-site`** Folder structure has `src/app/[locale]/`, `src/i18n/`, `src/content/<locale>/` | `Glob` those paths |
-| A2 | **`11-theme`** Tokens defined in `tailwind.config.ts` (extend.colors.brand, fontFamily) | `Grep` `theme.extend.colors` |
-| A3 | **`11-theme`** Vietnamese subset loaded via `next/font` | `Grep` `subsets:\s*\[.*vietnamese` |
-| B1 | **`12-pages-and-blocks`** Section components exist in `src/components/sections/` | `Glob src/components/sections/*.tsx` |
-| B2 | **`12-pages-and-blocks`** No hardcoded Vietnamese in components (all strings via props/t()) | `Grep '[àáâ-ỹ]' src/components/sections/*.tsx` — should return 0 |
-| B3 | **`12-pages-and-blocks`** Content externalized to `src/content/<locale>/` | `Glob src/content/*/*` non-empty |
-| C1 | **`13-seo`** `generateMetadata` per page | `Grep 'generateMetadata\|export const metadata' src/app/**/*.tsx` per page |
-| C2 | **`13-seo`** `app/sitemap.ts` exists | `Glob src/app/sitemap.{ts,tsx}` |
-| C3 | **`13-seo`** `app/robots.ts` exists | `Glob src/app/robots.{ts,tsx}` |
-| C4 | **`13-seo`** Favicon variants — `icon.svg`, `apple-icon.png`, `manifest.ts` | Glob |
-| C5 | **`13-seo`** Organization JSON-LD on home | `Grep 'application/ld+json' src/app/[locale]/page.tsx` |
-| D1 | **`14-og-preview`** Static OG fallback at `public/og-default.png` | File exists |
-| D2 | **`14-og-preview`** Dynamic OG via `opengraph-image.tsx` for at least home | Glob |
-| E1 | **`15-i18n`** `src/middleware.ts` uses `createMiddleware` | Grep |
-| E2 | **`15-i18n`** `routing.ts` with `pathnames` (localized URLs) | Grep `pathnames:` |
-| E3 | **`15-i18n`** Both `vi.json` + `en.json` exist | Glob |
-| E4 | **`15-i18n`** Keys symmetric (handled by `check:i18n` in Step 2) | from /tmp/audit-i18n.log |
-| F1 | **`16-caching`** `"use cache"` + `cacheLife` on pages | `Grep '"use cache"' src/app/**/*.tsx` |
-| F2 | **`16-caching`** On-demand revalidation route exists if content can change | `Glob src/app/api/revalidate/route.ts` |
-| G1 | **`17-responsive`** Tailwind mobile-first; no `lg:hidden md:hidden` blocking mobile nav | `Grep -r 'md:hidden\|lg:hidden' src/components/layout/` — sanity check |
-| G2 | **`17-responsive`** `next/image` everywhere; no raw `<img>` | `Grep '<img ' src/` — should be 0 |
-| G3 | **`17-responsive`** `sizes` prop on responsive images | `Grep -A2 'Image' src/components/sections/*.tsx \| grep -c sizes` |
-| H1 | **`18-contact-form`** Real API route at `src/app/api/contact/` | Glob |
-| H2 | **`18-contact-form`** Email service wired (Resend / SendGrid) — not `setTimeout` stub | `Grep 'setTimeout' src/components/sections/contact-form.tsx` — should be 0; `Grep 'resend\|sendgrid' src/app/api/contact/route.ts` — should be 1+ |
-| H3 | **`18-contact-form`** Rate limit applied | `Grep 'rateLimit\|RATE_LIMIT' src/app/api/contact/` |
-| I1 | **`19-content-quality`** `@tailwindcss/typography` installed | `Grep '@tailwindcss/typography' package.json` |
-| I2 | **`19-content-quality`** `check:i18n` script (handled in Step 2) | from log |
-| I3 | **`19-content-quality`** `check:content` script (handled in Step 2) | from log |
-| I4 | **`19-content-quality`** Article JSON-LD builder for article pages | `Grep 'articleJsonLd\|"@type":\s*"Article"' src/lib/structured-data.ts` |
-| I5 | **`19-content-quality`** Min word counts respected on key pages | from /tmp/audit-content.log |
-| I6 | **`19-content-quality`** Heading hierarchy — exactly 1 `<h1>` per page | `Grep -c '<h1' src/app/**/*.tsx` per file = 1 |
+| A1 | **init-site** Folder structure has `src/app/[locale]/`, `src/i18n/`, `src/content/<locale>/` | `Glob` those paths |
+| A2 | **theme** Tokens defined in `tailwind.config.ts` (extend.colors.brand, fontFamily) | `Grep` `theme.extend.colors` |
+| A3 | **theme** Vietnamese subset loaded via `next/font` | `Grep` `subsets:\s*\[.*vietnamese` |
+| B1 | **pages-and-blocks** Section components exist in `src/components/sections/` | `Glob src/components/sections/*.tsx` |
+| B2 | **pages-and-blocks** No hardcoded Vietnamese in components (all strings via props/t()) | `Grep '[àáâ-ỹ]' src/components/sections/*.tsx` — should return 0 |
+| B3 | **pages-and-blocks** Content externalized to `src/content/<locale>/` | `Glob src/content/*/*` non-empty |
+| C1 | **seo** `generateMetadata` per page | `Grep 'generateMetadata\|export const metadata' src/app/**/*.tsx` per page |
+| C2 | **seo** `app/sitemap.ts` exists | `Glob src/app/sitemap.{ts,tsx}` |
+| C3 | **seo** `app/robots.ts` exists | `Glob src/app/robots.{ts,tsx}` |
+| C4 | **seo** Favicon variants — `icon.svg`, `apple-icon.png`, `manifest.ts` | Glob |
+| C5 | **seo** Organization JSON-LD on home | `Grep 'application/ld+json' src/app/[locale]/page.tsx` |
+| D1 | **og-preview** Static OG fallback at `public/og-default.png` | File exists |
+| D2 | **og-preview** Dynamic OG via `opengraph-image.tsx` for at least home | Glob |
+| E1 | **i18n** `src/middleware.ts` uses `createMiddleware` | Grep |
+| E2 | **i18n** `routing.ts` with `pathnames` (localized URLs) | Grep `pathnames:` |
+| E3 | **i18n** Both `vi.json` + `en.json` exist | Glob |
+| E4 | **i18n** Keys symmetric (handled by `check:i18n` in Step 2) | from /tmp/audit-i18n.log |
+| F1 | **caching** `"use cache"` + `cacheLife` on pages | `Grep '"use cache"' src/app/**/*.tsx` |
+| F2 | **caching** On-demand revalidation route exists if content can change | `Glob src/app/api/revalidate/route.ts` |
+| G1 | **responsive** Tailwind mobile-first; no `lg:hidden md:hidden` blocking mobile nav | `Grep -r 'md:hidden\|lg:hidden' src/components/layout/` — sanity check |
+| G2 | **responsive** `next/image` everywhere; no raw `<img>` | `Grep '<img ' src/` — should be 0 |
+| G3 | **responsive** `sizes` prop on responsive images | `Grep -A2 'Image' src/components/sections/*.tsx \| grep -c sizes` |
+| H1 | **contact-form** Real API route at `src/app/api/contact/` | Glob |
+| H2 | **contact-form** Email service wired (Resend / SendGrid) — not `setTimeout` stub | `Grep 'setTimeout' src/components/sections/contact-form.tsx` — should be 0; `Grep 'resend\|sendgrid' src/app/api/contact/route.ts` — should be 1+ |
+| H3 | **contact-form** Rate limit applied | `Grep 'rateLimit\|RATE_LIMIT' src/app/api/contact/` |
+| I1 | **content-quality** `@tailwindcss/typography` installed | `Grep '@tailwindcss/typography' package.json` |
+| I2 | **content-quality** `check:i18n` script (handled in Step 2) | from log |
+| I3 | **content-quality** `check:content` script (handled in Step 2) | from log |
+| I4 | **content-quality** Article JSON-LD builder for article pages | `Grep 'articleJsonLd\|"@type":\s*"Article"' src/lib/structured-data.ts` |
+| I5 | **content-quality** Min word counts respected on key pages | from /tmp/audit-content.log |
+| I6 | **content-quality** Heading hierarchy — exactly 1 `<h1>` per page | `Grep -c '<h1' src/app/**/*.tsx` per file = 1 |
 
-Sub-skill that fixes each finding is named in the "Check" column — drives the gap report's "Next action" cell automatically.
+The reference pack that fixes each finding is named in the "Check" column — drives the gap report's "Fix via" cell automatically. All packs are dispatched through the `nextjs-build-website-write-code` orchestrator.
 
 ### Step 4 — Produce the gap report
 
@@ -149,25 +149,25 @@ Sub-skill that fixes each finding is named in the "Check" column — drives the 
 ### Findings by severity
 
 #### Critical (blocks launch / hurts ranking now)
-| # | Finding | Sub-skill to invoke | Effort |
+| # | Finding | Fix via | Effort |
 |---|---|---|---|
-| C-1 | Contact form uses `setTimeout` stub — no email actually sent (H2) | `18-contact-form` | M |
-| C-2 | No `app/sitemap.ts` — search engines can't discover pages (C2) | `13-seo` | S |
-| C-3 | check:content fails: home.vi.ts has 180 words (min 400) — Google thin-content threshold (I5) | `19-content-quality` | M |
+| C-1 | Contact form uses `setTimeout` stub — no email actually sent (H2) | `write-code → contact-form` | M |
+| C-2 | No `app/sitemap.ts` — search engines can't discover pages (C2) | `write-code → seo` | S |
+| C-3 | check:content fails: home.vi.ts has 180 words (min 400) — Google thin-content threshold (I5) | `write-code → content-quality` | M |
 
 #### Important (degrades UX or SEO meaningfully)
-| # | Finding | Sub-skill | Effort |
+| # | Finding | Fix via | Effort |
 |---|---|---|---|
-| I-1 | `<img>` tags in 4 components instead of `next/image` — no AVIF/WebP, no LCP optimization (G2) | `17-responsive` | M |
-| I-2 | No Article JSON-LD on blog pages — rich snippets disabled (I4) | `19-content-quality` | S |
-| I-3 | EN message file missing 14 keys present in VI — i18n parity broken (E4) | `15-i18n` | S |
+| I-1 | `<img>` tags in 4 components instead of `next/image` — no AVIF/WebP, no LCP optimization (G2) | `write-code → responsive` | M |
+| I-2 | No Article JSON-LD on blog pages — rich snippets disabled (I4) | `write-code → content-quality` | S |
+| I-3 | EN message file missing 14 keys present in VI — i18n parity broken (E4) | `write-code → i18n` | S |
 
 #### Minor (polish; ship-blocking only if all above resolved)
-| # | Finding | Sub-skill | Effort |
+| # | Finding | Fix via | Effort |
 |---|---|---|---|
-| M-1 | No dynamic OG image — every share uses the same default (D2) | `14-og-preview` | M |
-| M-2 | No `opengraph-image.tsx` per route segment (D2) | `14-og-preview` | S |
-| M-3 | Favicon set incomplete — missing apple-icon.png (C4) | `13-seo` | S |
+| M-1 | No dynamic OG image — every share uses the same default (D2) | `write-code → og-preview` | M |
+| M-2 | No `opengraph-image.tsx` per route segment (D2) | `write-code → og-preview` | S |
+| M-3 | Favicon set incomplete — missing apple-icon.png (C4) | `write-code → seo` | S |
 
 ### Quality bar coverage
 <X> / 30 checks passing.
@@ -227,7 +227,7 @@ Pass these context fields to `02-clarify-requirements` so it knows to skip what'
 - Confirm Next.js project before running any probe
 - Run every automated check that the project supports; surface missing scripts as Important findings
 - Sort findings by Severity (Critical → Important → Minor) and then by ease (small effort first within same severity for quick wins)
-- Map each finding to the EXACT sub-skill that fixes it — don't make the user search
+- Map each finding to the EXACT reference pack that fixes it (dispatched via `nextjs-build-website-write-code`) — don't make the user search
 - Acknowledge strengths — "what this site does well" prevents the report feeling adversarial
 - Save the audit report via `auto-docs` for traceability
 - Hand off to `02-clarify-requirements` with the audit context — do NOT skip the SDLC
@@ -236,7 +236,7 @@ Pass these context fields to `02-clarify-requirements` so it knows to skip what'
 - Modify any file in the target repo
 - Auto-dispatch sub-skills to fix findings — that bypasses spec/plan/review gates
 - Run audit on a non-Next.js repo (fail fast with a clear message)
-- Treat missing scripts (`check:i18n`, `check:content`) as failures when the project never installed them — they're "Important: install 19-content-quality" findings, not Criticals
+- Treat missing scripts (`check:i18n`, `check:content`) as failures when the project never installed them — they're "Important: run the content-quality pack via `nextjs-build-website-write-code`" findings, not Criticals
 - Repeat clarify questions whose answer is already in the audit (waste of user time)
 - Hide findings to make the report look better — every probed gap goes in
 - Continue past the user's "defer" choice — read-only ends there
@@ -256,7 +256,7 @@ Pass these context fields to `02-clarify-requirements` so it knows to skip what'
 - `03-write-spec` → `04-review-spec` → `05-plan` → `06-review-plan` → `07-write-code` — standard downstream flow
 - `shared/workflow/code-map` — even more general read-only architecture scan (cross-track); this skill is NextJS-specific and quality-focused
 - `orchestration/recovery` — picks up here if a user resumes mid-sprint
-- Each finding's "Sub-skill to invoke" column points to `10-init-site` through `19-content-quality`
+- Each finding's "Fix via" column points to the relevant reference pack (init-site through content-quality), all dispatched through the `nextjs-build-website-write-code` orchestrator (`_refs/nextjs/build-website/write-code/`)
 - `orchestration/auto-docs` — persists the audit report for future sessions
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->

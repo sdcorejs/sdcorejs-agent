@@ -48,7 +48,7 @@ For each criterion, derive a **verification mode**:
 | "API returns 403 for unauthorized" | Integration test or `curl -H` with bad token |
 | "All Vietnamese labels render with diacritics" | `grep -E '[àáâãèéêìíòóôõùúýăđĩũơưạ-ỹ]'` in rendered output or template files |
 | "List filter by status returns only matching rows" | E2E with filter applied + count check |
-| **(NextJS)** "VI/EN message keys symmetric; content files mirrored" | `npm run check:i18n` (from `nextjs-build-website-content-quality`) — exit 0 |
+| **(NextJS)** "VI/EN message keys symmetric; content files mirrored" | `npm run check:i18n` (from the `nextjs-build-website-write-code` orchestrator, content-quality pack) — exit 0 |
 | **(NextJS)** "Every page meets min word count for its type" | `npm run check:content` — exit 0 |
 | **(NextJS)** "Lighthouse SEO score ≥ 95 on home + 1 detail" | `npx lighthouse <url> --only-categories=seo --output=json` — parse `categories.seo.score` |
 | **(NextJS)** "Article pages emit Article JSON-LD with author + dates" | `curl <article-url> \| grep -o '"@type":"Article"'` + manual paste to Google Rich Results Test |
@@ -75,7 +75,7 @@ Any failure here → block immediately. The lower-level checks must pass before 
 
 Detect by reading `package.json` `scripts` — only run scripts that are actually defined. Missing scripts are not failures; they signal the project hasn't installed that quality gate yet (and the agent should flag it for the user if the track expects it).
 
-**NextJS landing sites** (`nextjs-build-website-content-quality` installs these):
+**NextJS landing sites** (the `nextjs-build-website-write-code` orchestrator's content-quality pack installs these):
 
 ```bash
 # Bilingual parity — fails if vi.json/en.json keys diverge OR content/vi/*.ts ↔ content/en/*.ts file sets diverge
@@ -87,7 +87,7 @@ npm run check:content 2>/dev/null && echo "✅ content length" || echo "❌ cont
 
 If `check:i18n` or `check:content` is missing AND the spec mentions bilingual support OR long-form content, surface this as a Critical finding:
 
-> "Spec mentions VI/EN parity / long-form articles but `package.json` has no `check:i18n` / `check:content` script. Invoke `nextjs-build-website-content-quality` to install before claiming done."
+> "Spec mentions VI/EN parity / long-form articles but `package.json` has no `check:i18n` / `check:content` script. Invoke the `nextjs-build-website-write-code` orchestrator (content-quality pack) to install before claiming done."
 
 **Lighthouse SEO (NextJS, when a URL is reachable)**:
 
@@ -205,7 +205,7 @@ No spec found (small bug fix, no .sdcorejs/docs/<track>/*-spec.md)
 - Run build + lint + full test before per-criterion checks
 - Run a smoke command for the stack — don't trust unit tests alone
 - Run stack-specific quality scripts if `package.json` defines them (`check:i18n`, `check:content`, `lighthouse`) — count failures as Critical, count missing-when-relevant as Important
-- For NextJS sites with bilingual or long-form scope: REQUIRE `check:i18n` + `check:content` to be installed (via `nextjs-build-website-content-quality`) and passing before claiming done
+- For NextJS sites with bilingual or long-form scope: REQUIRE `check:i18n` + `check:content` to be installed (via the `nextjs-build-website-write-code` orchestrator's content-quality pack) and passing before claiming done
 - Surface partial failures explicitly; never round up to ✅
 - Block "done" until user confirms defer or all green
 
@@ -234,4 +234,4 @@ No spec found (small bug fix, no .sdcorejs/docs/<track>/*-spec.md)
 - `orchestration/auto-task-tracker` — open criteria flow into the living TODO until resolved
 - `03-write-spec.md` (track-specific) — defines the Acceptance Criteria section format this skill reads
 - `40-e2e-test.md` (track-specific) — many acceptance criteria are best verified via E2E; cross-reference for the right framework
-- `nextjs-build-website-content-quality` (`19-content-quality`) — installs `check:i18n` + `check:content` scripts that this skill invokes; defines the bilingual parity + minimum content length contracts
+- `nextjs-build-website-write-code` (content-quality pack, `_refs/nextjs/build-website/write-code/content-quality.md`) — installs `check:i18n` + `check:content` scripts that this skill invokes; defines the bilingual parity + minimum content length contracts

@@ -162,6 +162,6 @@ For each budget, define an acceptance criterion in the feature spec:
 
 ## Cross-references
 - Stack-specific perf checks: `review/performance/<stack>.md`
-- Caching strategy that often resolves perf findings: track-specific (e.g. `tracks/nextjs/build-website/16-caching.md`)
+- Caching strategy that often resolves perf findings: track-specific (e.g. `_refs/nextjs/build-website/write-code/caching.md`)
 - Acceptance verification: `orchestration/verify-before-done` runs the budget verifiers as automatable criteria
 - Architecture review for structural perf issues (god-function, N+1): `review/architecture`

@@ -171,7 +171,7 @@ WCAG SC 2.1.1 Keyboard, 4.1.2 Name Role Value.
 
 ### NJ-11: Touch targets via `min-h-11 min-w-11` (≥ 44px)
 
-(From `tracks/nextjs/build-website/17-responsive.md` — re-check here for review surface.)
+(From `_refs/nextjs/build-website/write-code/responsive.md` — re-check here for review surface.)
 
 ```bash
 # Anti-pattern: small icon buttons without min-h/min-w
@@ -271,8 +271,8 @@ Severity: Minor — visual difference only, but EN screen reader announcing "ng�
 
 ## Cross-references
 - Cross-track baseline: `review/accessibility/baseline.md`
-- Touch targets: `tracks/nextjs/build-website/17-responsive.md`
-- Heading + alt rules: `tracks/nextjs/build-website/19-content-quality.md`
+- Touch targets: `_refs/nextjs/build-website/write-code/responsive.md`
+- Heading + alt rules: `_refs/nextjs/build-website/write-code/content-quality.md`
 - Verification: `orchestration/verify-before-done` runs probes as criteria
 - Repair loop: `orchestration/repair-loop`
 

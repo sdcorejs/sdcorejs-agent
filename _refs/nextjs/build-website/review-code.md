@@ -11,9 +11,9 @@ Per-file code review for a Next.js landing-site project. Different from
 `review/architecture` (structural) and `review/performance/nextjs` (numbers).
 This file checks line-level adherence to Next.js + build-website conventions.
 
-## Conventions checked (mapped to sub-skill that defined them)
+## Conventions checked (mapped to the write-code reference pack that defined them)
 
-### 1. Server vs Client component boundary (from `12-pages-and-blocks`)
+### 1. Server vs Client component boundary (from the `pages-and-blocks` pack)
 
 Default is server component. Add `"use client"` ONLY when interactive (state, effects, browser APIs).
 
@@ -38,7 +38,7 @@ Severity:
 - 🔴 Critical: missing `"use client"` on file using hooks → build error
 - 🟡 Medium: unnecessary `"use client"` bloats bundle (Server Component would suffice)
 
-### 2. `next/image` everywhere (from `17-responsive`)
+### 2. `next/image` everywhere (from the `responsive` pack)
 
 Raw `<img>` skips AVIF/WebP + sizes + LCP optimization.
 
@@ -49,7 +49,7 @@ grep -rn "<img " src/ public/ 2>/dev/null
 
 Severity: 🔴 Critical for every `<img>` in `src/components/`, `src/app/`. Marketing `<img>` in raw HTML email templates exempt.
 
-### 3. `generateMetadata` on every page (from `13-seo`)
+### 3. `generateMetadata` on every page (from the `seo` pack)
 
 Every `page.tsx` under `src/app/[locale]/` exports `generateMetadata` (async) OR `export const metadata` (static).
 
@@ -64,7 +64,7 @@ done
 
 Severity: 🟡 Medium per page. 🔴 Critical if it's a top-level marketing page.
 
-### 4. i18n typed `Link` from `@/i18n/routing` (from `15-i18n`)
+### 4. i18n typed `Link` from `@/i18n/routing` (from the `i18n` pack)
 
 Internal navigation MUST use typed `Link` (re-exported from `@/i18n/routing`), NOT `next/link` directly — otherwise locale prefix is lost.
 
@@ -78,7 +78,7 @@ grep -rnE "from\s+['\"]next/link['\"]" src/ \
 
 Severity: 🔴 Critical per occurrence — produces broken URLs.
 
-### 5. No hardcoded strings in section components (from `12-pages-and-blocks`)
+### 5. No hardcoded strings in section components (from the `pages-and-blocks` pack)
 
 Vietnamese/English literals belong in `src/content/<locale>/` or `src/i18n/messages/<locale>.json`. Components receive strings as props.
 
@@ -92,7 +92,7 @@ Severity:
 - 🔴 Critical: hardcoded VI/EN in production component
 - Acceptable: comments + aria-label IF they're already in i18n keys
 
-### 6. `"use cache"` + `cacheLife` on every page (from `16-caching`)
+### 6. `"use cache"` + `cacheLife` on every page (from the `caching` pack)
 
 Each `src/app/[locale]/**/page.tsx` should declare a cache strategy explicitly (default 30 min ISR per the build-website pack).
 
@@ -107,7 +107,7 @@ done
 
 Severity: 🟡 Medium — uncached pages hit server on every request → slow + costly.
 
-### 7. `setRequestLocale(locale)` in every `[locale]/page.tsx` (from `15-i18n`)
+### 7. `setRequestLocale(locale)` in every `[locale]/page.tsx` (from the `i18n` pack)
 
 Required when using async server components with static rendering.
 
@@ -133,7 +133,7 @@ grep -rn "dangerouslySetInnerHTML" src/ | grep -vE "ld\+json|JSON\.stringify"
 
 Severity: 🔴 Critical (XSS risk).
 
-### 9. Form validation via zod (from `18-contact-form`)
+### 9. Form validation via zod (from the `contact-form` pack)
 
 Forms validate via shared zod schema (client + server). No bespoke regex validation that diverges between client and server.
 
@@ -149,7 +149,7 @@ done
 
 Severity: 🟡 Medium if the form has > 3 fields; 🔵 Minor for newsletter signup (single field).
 
-### 10. `next/font` with Vietnamese subset (from `11-theme`)
+### 10. `next/font` with Vietnamese subset (from the `theme` pack)
 
 Vietnamese diacritics need explicit subset; default Latin subset produces tofu (□).
 
@@ -161,7 +161,7 @@ grep -rnE "next/font|google\(.*\{" src/ | head -5
 
 Severity: 🔴 Critical if site is VI-primary and the subset is missing.
 
-### 11. API routes have rate limit + zod validation (from `18-contact-form`)
+### 11. API routes have rate limit + zod validation (from the `contact-form` pack)
 
 `src/app/api/**/route.ts` POST handlers must:
 - Validate body via zod
@@ -245,4 +245,4 @@ Severity: 🔴 Critical — server-only modules in client bundle leak secrets / 
 - Accessibility review: `review/accessibility/nextjs`
 - Security audit (cross-cutting): `review/security/shared`
 - Repair loop: `orchestration/repair-loop`
-- Source conventions: `tracks/nextjs/build-website/10-init-site.md` through `19-content-quality.md`
+- Source conventions: `_refs/nextjs/build-website/write-code/{init-site,theme,pages-and-blocks,seo,og-preview,i18n,caching,responsive,contact-form,content-quality}.md`

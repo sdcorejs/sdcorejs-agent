@@ -117,7 +117,7 @@ grep -nE "display:\s*['\"]swap['\"]" src/app/layout.tsx
 
 ### Probe 5 — ISR / cache strategy
 
-Each page should declare `"use cache"` + `cacheLife({ revalidate: 1800 })` (default from `16-caching`).
+Each page should declare `"use cache"` + `cacheLife({ revalidate: 1800 })` (default from the `caching` pack).
 
 ```bash
 find src/app -name 'page.tsx' | while read f; do
@@ -219,7 +219,7 @@ npx --yes autocannon -d 30 -c 10 "$URL/vi" --renderStatusCodes --no-progress 2>&
 
 ## Cross-references
 - Budget definition: `review/performance/budget.md`
-- Caching strategy: `tracks/nextjs/build-website/16-caching.md`
-- Image optimization: `tracks/nextjs/build-website/17-responsive.md`
+- Caching strategy: `_refs/nextjs/build-website/write-code/caching.md`
+- Image optimization: `_refs/nextjs/build-website/write-code/responsive.md`
 - Repair loop: `orchestration/repair-loop`
 - Verification gate: `orchestration/verify-before-done` runs these probes as criteria

@@ -1,6 +1,6 @@
 # Next.js Landing Site — Architecture Principles
 
-Source of truth for **WHY** SDCoreJS landing sites look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, `11-theme`, `12-pages-and-blocks`, `13-seo`, `15-i18n`, and `sdcorejs-review-code`.
+Source of truth for **WHY** SDCoreJS landing sites look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, the `nextjs-build-website-write-code` orchestrator (theme / pages-and-blocks / seo / i18n packs), and `sdcorejs-review-code`.
 
 If a generated file contradicts a principle here, that file is wrong. If a principle here contradicts a real-world need, **the principle is wrong** — surface it as feedback.
 
@@ -346,7 +346,7 @@ Self-hosted (Docker): full SSR + ISR available; more ops work.
 This skill set generates Next.js landing sites. The principles above govern the **generated code**, not this `sdcorejs-agent` repo. When a developer asks "why does the generated site do X", the answer comes from this file — not from the skill body that emitted X.
 
 When a principle changes, propagate to:
-- The skill that generates it (`10-init-site`, `11-theme`, `13-seo`, …)
+- The reference pack that generates it (`_refs/nextjs/build-website/write-code/{init-site,theme,seo}.md`, …)
 - The reviewer (`sdcorejs-review-code`)
 - The auto-docs template if dimension changes
 
@@ -369,6 +369,6 @@ When a principle changes, propagate to:
 
 - `_refs/sdlc/nextjs.md` — design-phase patterns (industry table, blocking checklist, plan phase grouping)
 - `skills/tracks/nextjs/build-website/00-onboarding.md` — entry point
-- `skills/tracks/nextjs/build-website/13-seo.md` — SEO baseline implementation
-- `skills/tracks/nextjs/build-website/16-caching.md` — caching strategy
-- `skills/tracks/nextjs/build-website/19-content-quality.md` — long-form authoring rules
+- `_refs/nextjs/build-website/write-code/seo.md` — SEO baseline implementation
+- `_refs/nextjs/build-website/write-code/caching.md` — caching strategy
+- `_refs/nextjs/build-website/write-code/content-quality.md` — long-form authoring rules

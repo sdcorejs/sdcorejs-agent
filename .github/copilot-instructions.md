@@ -14,7 +14,7 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem. When you (GitHu
 | --- | --- | --- |
 | Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (design-phase cross-track skills + 2 angular skills: onboarding + the `angular-portal-write-code` orchestrator, which dispatches 6 on-demand reference packs under `_refs/angular-portal/write-code/`: init-portal, init-module, init-entity, screen-list, screen-detail (CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design phase + spec/plan moved to cross-track `skills/shared/sdlc/`. Cross-track `orchestration/comment-code` absorbs the previous per-track `51-write-comments`. |
 | NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (00-onboarding + 07-write-code plan-walker). Sub-skills 10/11/12 planned. Design phase usable via shared/sdlc/; review + testing already in place. |
-| Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (13 track skills: onboarding, write-code orchestrator, audit-existing-site, 10-init-site … 19-content-quality). Design phase moved to cross-track shared/sdlc/. |
+| Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (3 track skills: onboarding, write-code orchestrator, audit-existing-site; the orchestrator dispatches 10 on-demand reference packs under `_refs/nextjs/build-website/write-code/`: init-site … content-quality). Design phase moved to cross-track shared/sdlc/. |
 
 Cross-cutting skills live in:
 - `skills/shared/sdlc/` — **6 cross-track design-phase skills** (brainstorm, clarify-requirements, write-spec, review-spec, plan, review-plan) + `_refs/{angular-portal,nextjs,nestjs}.md`

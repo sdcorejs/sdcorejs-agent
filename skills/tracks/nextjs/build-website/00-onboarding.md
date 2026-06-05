@@ -31,17 +31,20 @@ Request: "tạo landing page cho X"         │   Request: "audit site này", "i
 03-write-spec  → 04-review-spec    (use shared SDLC — same as other tracks)
 05-plan        → 06-review-plan
   ↓
-07-write-code              ← orchestrator, dispatches build sub-skills below
-   10-init-site      — Next.js project bootstrap (greenfield only)
-   11-theme          — industry-driven palette + typography + design tokens
-   12-pages-and-blocks — page set + reusable section library + content externalization
-   13-seo            — generateMetadata factory + JSON-LD + sitemap + robots (technical SEO)
-   14-og-preview     — static + dynamic OG image; verify Zalo/Messenger preview
-   15-i18n           — next-intl + /vi /en URL strategy
-   16-caching        — SSG / ISR / SSR strategy; default ISR 30 min
-   17-responsive     — mobile-first breakpoints + image + font policy
-   18-contact-form   — REAL form: API route + email service + validation
-   19-content-quality — bilingual parity check + min word counts + prose typography + on-page SEO + Article schema
+07-write-code              ← single orchestrator; reads confirmed scope, loads on-demand
+                             reference packs under _refs/nextjs/build-website/write-code/:
+   init-site         — Next.js project bootstrap (greenfield only)
+   theme             — industry-driven palette + typography + design tokens
+   pages-and-blocks  — page set + reusable section library + content externalization
+   seo               — generateMetadata factory + JSON-LD + sitemap + robots (technical SEO)
+   og-preview        — static + dynamic OG image; verify Zalo/Messenger preview
+   i18n              — next-intl + /vi /en URL strategy
+   caching           — SSG / ISR / SSR strategy; default ISR 30 min
+   responsive        — mobile-first breakpoints + image + font policy
+   contact-form      — REAL form: API route + email service + validation
+   content-quality   — bilingual parity check + min word counts + prose typography + on-page SEO + Article schema
+  (these 10 were standalone sub-skills before — now consolidated so the track
+   exposes 3 skills: onboarding + write-code + audit-existing-site)
   ↓
 40-e2e-test (generic) → sdcorejs-review-code (generic) → orchestration/repair-loop
   ↓
@@ -58,18 +61,18 @@ orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/me
 | "audit site", "review website đã có", "improve existing site", "site này thiếu gì" (brownfield) | `08-audit-existing-site` |
 | Scope already clear | `02-clarify-requirements` |
 | Already clarified, want plan | `05-plan` (track-specific) |
-| Init the project | `10-init-site` |
-| Pick colors / typography | `11-theme` |
-| Add a page or section | `12-pages-and-blocks` |
-| "SEO không tốt", "meta tags" | `13-seo` |
-| "OG image preview hỏng trên Zalo" | `14-og-preview` |
-| "Thêm tiếng Anh" | `15-i18n` |
-| "Cache lâu quá / ngắn quá" | `16-caching` |
-| "Responsive bị vỡ trên mobile" | `17-responsive` |
-| "Contact form chưa gửi email" | `18-contact-form` |
-| "Bài viết quá ngắn", "câu chữ không rõ", "rà soát nội dung", "thin content" | `19-content-quality` |
-| "Song ngữ không khớp", "VI/EN parity", "i18n missing key" | `19-content-quality` (parity check) |
-| "Bài viết / blog", "long-form article", "tối ưu SEO trang sản phẩm" | `19-content-quality` |
+| Init the project | `nextjs-build-website-write-code` (→ init-site pack) |
+| Pick colors / typography | `nextjs-build-website-write-code` (→ theme pack) |
+| Add a page or section | `nextjs-build-website-write-code` (→ pages-and-blocks pack) |
+| "SEO không tốt", "meta tags" | `nextjs-build-website-write-code` (→ seo pack) |
+| "OG image preview hỏng trên Zalo" | `nextjs-build-website-write-code` (→ og-preview pack) |
+| "Thêm tiếng Anh" | `nextjs-build-website-write-code` (→ i18n pack) |
+| "Cache lâu quá / ngắn quá" | `nextjs-build-website-write-code` (→ caching pack) |
+| "Responsive bị vỡ trên mobile" | `nextjs-build-website-write-code` (→ responsive pack) |
+| "Contact form chưa gửi email" | `nextjs-build-website-write-code` (→ contact-form pack) |
+| "Bài viết quá ngắn", "câu chữ không rõ", "rà soát nội dung", "thin content" | `nextjs-build-website-write-code` (→ content-quality pack) |
+| "Song ngữ không khớp", "VI/EN parity", "i18n missing key" | `nextjs-build-website-write-code` (→ content-quality pack, parity check) |
+| "Bài viết / blog", "long-form article", "tối ưu SEO trang sản phẩm" | `nextjs-build-website-write-code` (→ content-quality pack) |
 
 ## What's included by default
 
@@ -87,7 +90,7 @@ A production-quality landing site needs more than a hero section and a contact f
 | Caching | ISR 30 min default via `"use cache"` + decision tree + on-demand revalidation | Fast pages without stale content after edits |
 | Responsive | Mobile-first Tailwind, touch targets ≥ 44px, `next/image sizes` policy | Most landing-site traffic is mobile; broken mobile = lost leads |
 | Content quality | Min word counts per page type, sentence/paragraph discipline, prose typography, bilingual parity check (`npm run check:i18n`) | Google's thin-content algorithm penalizes <300-word pages; machine-translated EN ranks worse than VI-only |
-| On-page SEO | Heading hierarchy, internal linking, descriptive alt text, Article JSON-LD with author + dates | Technical SEO (`13-seo`) gets you indexed; on-page SEO is what makes you rank |
+| On-page SEO | Heading hierarchy, internal linking, descriptive alt text, Article JSON-LD with author + dates | Technical SEO (seo pack) gets you indexed; on-page SEO is what makes you rank |
 | Analytics | Optional (GA4 / Plausible) gated by clarify question | Surfaced as a choice, not a hidden default |
 
 ## Cross-track shared skills you'll use
@@ -113,7 +116,7 @@ Two cases:
 1. **Greenfield** — user says "tạo landing page cho [X]" with no other context AND `package.json` is absent → invoke `01-brainstorm` immediately.
 2. **Brownfield** — user is inside a repo that has `package.json` with `next` dependency AND says "audit / review / improve" → invoke `08-audit-existing-site` immediately.
 
-Do NOT generate code or jump to `10-init-site` before brainstorm/audit + clarify have run. This is hard-enforced by `02-clarify-requirements`'s gating questions and the audit's read-only contract.
+Do NOT generate code or jump to `nextjs-build-website-write-code` before brainstorm/audit + clarify have run. This is hard-enforced by `02-clarify-requirements`'s gating questions and the audit's read-only contract.
 
 ## See also
 

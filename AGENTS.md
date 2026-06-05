@@ -19,7 +19,7 @@ skills/
 │   ├── angular-portal/   ✅  2 track skills — 00-onboarding + 07-write-code orchestrator; orchestrator loads 6 on-demand reference packs from `_refs/angular-portal/write-code/` (init-portal, init-module, init-entity, screen-list, screen-detail (CREATE/UPDATE/DETAIL states + form refinement), actions (workflow / bulk / custom side-effects))
 │   ├── nestjs/           🟡  scaffold (00-onboarding + 07-write-code plan-walker); 10/11/12 sub-skills planned
 │   └── nextjs/
-│       └── build-website/  ✅  13 track skills — 00-onboarding, 07-write-code orchestrator, 08-audit-existing-site, 10-init-site, 11-theme, 12-pages-and-blocks, 13-seo, 14-og-preview, 15-i18n, 16-caching, 17-responsive, 18-contact-form, 19-content-quality
+│       └── build-website/  ✅  3 track skills — 00-onboarding, 07-write-code orchestrator, 08-audit-existing-site (orchestrator dispatches 10 reference packs in _refs/nextjs/build-website/write-code/: init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality)
 │
 ├── shared/
 │   ├── sdlc/             ✅  6 cross-track design-phase skills (01-brainstorm, 02-clarify-requirements, 03-write-spec, 04-review-spec, 05-plan, 06-review-plan); patterns live in `_refs/sdlc/{angular-portal,nextjs,nestjs}.md`

@@ -120,7 +120,7 @@ OWASP A10 SSRF.
 
 ### NX-9: Contact form — spam + rate limit + validation
 
-Landing-site contact forms (track `build-website`, skill `18-contact-form`) are the main abuse surface.
+Landing-site contact forms (track `build-website`, `contact-form` pack) are the main abuse surface.
 
 ```bash
 # Find the contact action/handler + its protections
@@ -225,7 +225,7 @@ OWASP A02.
 
 ## Cross-references
 - Cross-track baseline: `review/security/shared.md`
-- Contact form generation: `tracks/nextjs/build-website/18-contact-form`
+- Contact form generation: `_refs/nextjs/build-website/write-code/contact-form.md`
 - Code review: `sdcorejs-review-code` (overlap on Server Component / Client Component boundaries)
 - Performance: `review/performance/nextjs`
 - Verification: `orchestration/verify-before-done`

@@ -1,6 +1,6 @@
 # Contact Form — Reference Blocks
 
-Extracted from `skills/tracks/nextjs/build-website/18-contact-form.md` to keep that skill under the 500-line ideal. Load this file when generating the contact form. Paths are repo-root-relative.
+Extracted from the `contact-form` write-code pack (`_refs/nextjs/build-website/write-code/contact-form.md`) to keep that pack under the 500-line ideal. Load this file when generating the contact form. Paths are repo-root-relative.
 
 ## i18n messages (Step 2)
 

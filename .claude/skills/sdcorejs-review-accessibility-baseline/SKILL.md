@@ -222,7 +222,7 @@ Target: Lighthouse a11y ≥ 95, axe finding count = 0 Critical, ≤ 3 Serious.
 
 ## Cross-references
 - Stack-specific a11y checks: `review/accessibility/<stack>.md` (Angular CDK a11y, Next.js semantics, etc.)
-- Touch targets enforced in responsive: `tracks/nextjs/build-website/17-responsive.md`
+- Touch targets enforced in responsive: `_refs/nextjs/build-website/write-code/responsive.md`
 - Architecture-level a11y (e.g. global skip-link, lang attribute): `review/architecture`
 - Acceptance verification: `orchestration/verify-before-done` runs the automated probes as criteria
 
