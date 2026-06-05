@@ -1,0 +1,22 @@
+[
+  { "query": "dự án này là gì vậy, tóm tắt nhanh kiến trúc với stack giúp mình", "should_trigger": true },
+  { "query": "cho mình cái overview project trước khi bắt đầu làm gì", "should_trigger": true },
+  { "query": "project summary của repo portal này đi", "should_trigger": true },
+  { "query": "mình mới mở dự án này, nó gồm những module nào, dùng công nghệ gì", "should_trigger": true },
+  { "query": "what is this project, give me the high-level picture and the reuse cheatsheet", "should_trigger": true },
+  { "query": "tóm tắt dự án để mình biết có component nào reuse được không", "should_trigger": true },
+  { "query": "explain the overall architecture of this codebase before we start", "should_trigger": true },
+  { "query": "repo này domain gì, ai dùng, có những bounded context nào", "should_trigger": true },
+  { "query": "tóm tắt lại những gì mình vừa làm trong session này", "should_trigger": false },
+  { "query": "tiếp tục chỗ hôm qua đang làm dở, where were we", "should_trigger": false },
+  { "query": "scan toàn bộ codebase rồi liệt kê hết file với dependency cho mình", "should_trigger": false },
+  { "query": "review kiến trúc module order xem có circular dependency không", "should_trigger": false },
+  { "query": "ghi nhớ là dự án này dùng Kong làm API gateway", "should_trigger": false },
+  { "query": "commit mấy thay đổi vừa rồi giúp mình", "should_trigger": false },
+  { "query": "viết changelog cho release sắp tới", "should_trigger": false },
+  { "query": "agent này làm được những gì, list skills ra", "should_trigger": false },
+  { "query": "thêm entity Product vào module catalog, tạo CRUD", "should_trigger": false },
+  { "query": "tạo doc tổng kết phiên làm việc hôm nay vào .sdcorejs/docs", "should_trigger": false },
+  { "query": "rà soát code module vừa generate xong", "should_trigger": false },
+  { "query": "map giúp mình kiến trúc thư mục libs/ chi tiết từng file", "should_trigger": false }
+]
