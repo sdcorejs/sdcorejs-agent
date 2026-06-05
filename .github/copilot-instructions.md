@@ -17,11 +17,11 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem. When you (GitHu
 | Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (3 track skills: onboarding, write-code orchestrator, audit-existing-site; the orchestrator dispatches 10 on-demand reference packs under `_refs/nextjs/build-website/write-code/`: init-site … content-quality). Design phase moved to cross-track shared/sdlc/. |
 
 Cross-cutting skills live in:
-- `skills/shared/sdlc/` — **6 cross-track design-phase skills** (brainstorm, clarify-requirements, write-spec, review-spec, plan, review-plan) + `_refs/{angular-portal,nextjs,nestjs}.md`
-- `skills/orchestration/` — SDLC plumbing (12 files: parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code)
+- `skills/shared/sdlc/` — **6 cross-track design-phase skills** (brainstorm, clarify-requirements, write-spec, review-spec, write-plan, review-plan) + `_refs/{angular-portal,nextjs,nestjs}.md`
+- `skills/orchestration/` — SDLC plumbing (16 files: parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills)
 - `skills/shared/conventions/` + `shared/workflow/` — commits, changelog, dep-update, debug, env-setup, pr-create, code-map
 - `skills/review/` — code review (single track-aware skill `sdcorejs-review-code`; per-track knowledge in `_refs/<track>/review-code.md`), security (cross-track + nestjs), performance (cross-track + per-track), architecture, accessibility
-- `skills/testing/` — philosophy (cross-track) + e2e/integration/unit per-track
+- `skills/testing/` — philosophy + tdd (cross-track) + e2e/integration/unit per-track
 
 Dispatch is by skill `name:` frontmatter, not path.
 

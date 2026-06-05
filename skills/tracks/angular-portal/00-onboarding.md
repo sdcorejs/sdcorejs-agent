@@ -72,6 +72,8 @@ orchestration/comment-code       ← MANDATORY ASK gate: skip / simple / medium 
   ↓
 orchestration/verify-before-done ← MANDATORY acceptance-criteria gate; blocks "done" until ✅ / deferred
   ↓
+orchestration/branch-ready ← MANDATORY branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test)
+  ↓
 orchestration/auto-docs ← MANDATORY summary to <target>/.sdcorejs/docs/angular-portal/
 orchestration/auto-task-tracker  ← MANDATORY; tick `[x]` done + append new in .sdcorejs/tasks/angular-portal.md
 orchestration/memories           ← durable knowledge (when surfaced) to .sdcorejs/memories/angular-portal/

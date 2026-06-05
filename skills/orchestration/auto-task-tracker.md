@@ -21,7 +21,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob
 ### Write mode — at end of every code-writing task (after auto-docs runs)
 The agent MUST run this skill (write mode) immediately after `sdcorejs-auto-docs` finishes writing the session summary. This runs for every code-writing skill invocation:
 - `07-write-code` (the `angular-portal-write-code` orchestrator and the reference packs it loads: `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail`, `actions`)
-- `40-e2e-test`, `sdcorejs-review-code`, `orchestration/comment-code` (level ≠ skip)
+- `sdcorejs-testing-e2e-<track>`, `sdcorejs-review-code`, `orchestration/comment-code` (level ≠ skip)
 
 Read the auto-docs file the previous step just wrote. From it:
 - Match "What was changed" items against existing open `[ ]` tasks → tick them `[x]` with timestamp

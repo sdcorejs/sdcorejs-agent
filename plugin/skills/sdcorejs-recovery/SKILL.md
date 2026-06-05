@@ -92,7 +92,7 @@ DO NOT proactively start the next step. The user reads the summary, decides, and
 ### No docs found
 ```
 Không có .sdcorejs/docs/<track>/ trong project này. Đây là lần đầu? Bạn muốn:
-- Onboard từ đầu (mình invoke `00-onboarding`)
+- Onboard từ đầu (mình invoke `<track>-onboarding`)
 - Skip, bắt đầu task mới luôn
 ```
 
@@ -133,7 +133,7 @@ Memory says X, latest doc implies not-X. Surface both, ask user which is current
 - Auto-resuming work without confirmation — user may have changed priorities
 - Skipping git state because docs were found — git is the ground truth for code
 - Treating memory frontmatter as authoritative without checking the body when it matters
-- Recovery for fresh sessions where there's nothing to recover (use `00-onboarding` instead)
+- Recovery for fresh sessions where there's nothing to recover (use `<track>-onboarding` instead)
 
 ## Cross-track usage
 The skill applies identically to angular-portal, nestjs, nextjs. The only differences are detection in step 1 and the `<track>` segment in step 2 paths.

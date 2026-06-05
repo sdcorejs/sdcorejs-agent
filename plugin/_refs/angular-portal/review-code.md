@@ -43,7 +43,7 @@ For every file under review, check the following.
 - Form uses `FormGroup` with explicit validators; submit gates on `form.invalid → markAllAsTouched`
 
 ### autoId (E2E selectors + inspector) — WARN when missing
-Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-autoid` so E2E specs and the `sd-autoid-inspector` overlay can grab the element. Missing `autoId` = the element is invisible to the inspector and E2E by stable selector. Warn (Medium, not Critical) so the dev backfills it.
+Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-autoid` so E2E specs and the `sd-autoid-inspector` overlay can grab the element. Missing `autoId` = the element is invisible to the inspector and E2E by stable selector. Warn (Important, not Critical) so the dev backfills it.
 - Every interactive Core UI element has an `autoId`: form controls (`sd-input`, `sd-select`, `sd-date`, `sd-checkbox`, `sd-switch`, `sd-radio`, …), `sd-button`, `sd-table` (+ row command buttons), `sd-query-bar`, `sd-modal` / `sd-side-drawer`, tabs, action toolbars.
 - `autoId` values are stable + meaningful (e.g. `product-name`, `product-save`, `product-list`), kebab-case, unique within the page — not random or duplicated.
 - Composite components that need per-item ids (e.g. `sd-anchor-item` `key`, table row actions) have the id wired so the emitted `data-autoId` resolves per item.
@@ -96,7 +96,7 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 
 ## Severity mapping for this track
 - **🔴 Critical** — security, broken behavior, data loss, runtime throw (e.g. a Core UI component missing its required config token — see catalog), Zod/permission gaps, hardcoded API URLs.
-- **🟡 Medium** — convention violation that causes maintenance pain (constructor DI, missing `autoId`, method calls in template bindings, hand-rolled UI where Core UI fits).
+- **🟡 Important** — convention violation that causes maintenance pain (constructor DI, missing `autoId`, method calls in template bindings, hand-rolled UI where Core UI fits).
 - **🔵 Minor** — style, doc, naming nits that don't change behavior.
 - **🟢 Strengths (mirror)** — correct 3-state pattern, clean signal usage, proper Core UI adoption worth replicating elsewhere.
 

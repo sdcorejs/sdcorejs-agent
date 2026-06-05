@@ -150,9 +150,10 @@ Until the `nestjs-write-code` orchestrator ships, the last plan step should call
 3. `orchestration/repair-loop` — apply review findings
 4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full)
 5. `orchestration/verify-before-done` — acceptance criteria gate
-6. `orchestration/auto-docs` — session summary to `.sdcorejs/docs/nestjs/`
-7. `orchestration/auto-task-tracker` — tick / append tasks
-8. `orchestration/memories` — durable knowledge if applicable
+6. `orchestration/branch-ready` — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) before docs
+7. `orchestration/auto-docs` — session summary to `.sdcorejs/docs/nestjs/`
+8. `orchestration/auto-task-tracker` — tick / append tasks
+9. `orchestration/memories` — durable knowledge if applicable
 
 Once the orchestrator ships, the plan can simply reference `nestjs-write-code` and the tail-call chain is owned there.
 

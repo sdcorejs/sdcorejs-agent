@@ -43,7 +43,7 @@ grep -rnE "z\.object\(\{" src/ 2>/dev/null | head -10
 # Should be 0 matches; all schemas come from `@/shared/<domain>/...`
 ```
 
-Severity: 🟡 Medium — drift means BE + FE can diverge silently.
+Severity: 🟡 Important — drift means BE + FE can diverge silently.
 
 ### 3. `@HasPermission` decorator on every endpoint that mutates state
 
@@ -74,7 +74,7 @@ awk '
 ' src/**/*.controller.ts 2>/dev/null
 ```
 
-Severity: 🟡 Medium per controller method > 20 lines.
+Severity: 🟡 Important per controller method > 20 lines.
 
 ### 5. Manual transactions via `QueryRunner` for multi-write operations
 
@@ -111,7 +111,7 @@ grep -rl "@Injectable" src/**/*.repository.ts | while read f; do
 done
 ```
 
-Severity: 🟡 Medium — drift from base = duplicate audit logic, inconsistent soft-delete.
+Severity: 🟡 Important — drift from base = duplicate audit logic, inconsistent soft-delete.
 
 ### 7. Bilingual error messages
 
@@ -124,7 +124,7 @@ grep -rnE "throw new (HttpException|BadRequestException|NotFoundException|Confli
 # Each should pass a bilingual message, not a plain string
 ```
 
-Severity: 🔴 Critical for external-facing errors (FE displays them); 🟡 Medium for internal-only errors.
+Severity: 🔴 Critical for external-facing errors (FE displays them); 🟡 Important for internal-only errors.
 
 ### 8. `optionalString` / `requiredString` helpers from `base/shared/`
 
@@ -168,7 +168,7 @@ grep -rnE "return\s+(this|service|repo)\." src/**/*.controller.ts | head
 # Each should map to DTO before return
 ```
 
-Severity: 🟡 Medium per leak.
+Severity: 🟡 Important per leak.
 
 ### 12. Database migrations checked in
 
@@ -193,7 +193,7 @@ grep -oE "^\w+" .env.example 2>/dev/null | sort -u > /tmp/env-declared.txt
 diff /tmp/env-uses.txt /tmp/env-declared.txt
 ```
 
-Severity: 🟡 Medium — missing entries fail in CI / on fresh clone.
+Severity: 🟡 Important — missing entries fail in CI / on fresh clone.
 
 ### 14. Logging via structured logger, not `console.log`
 
@@ -201,11 +201,11 @@ Severity: 🟡 Medium — missing entries fail in CI / on fresh clone.
 grep -rnE "console\.(log|error|warn)" src/ | head
 ```
 
-Severity: 🟡 Medium — `console.log` in prod hits stdout but lacks request context / structured fields.
+Severity: 🟡 Important — `console.log` in prod hits stdout but lacks request context / structured fields.
 
 ## Severity mapping for this track
 - **🔴 Critical** — layer violations, missing `@HasPermission` on writes, untransactional multi-writes, guard order, schema/migration drift, external bilingual-error gaps.
-- **🟡 Medium** — Zod-in-feature drift, fat controllers, base-class drift, entity leaks, env/logging gaps.
+- **🟡 Important** — Zod-in-feature drift, fat controllers, base-class drift, entity leaks, env/logging gaps.
 - **🔵 Minor** — helper-reuse consistency (`requiredString`, `PartialInput`).
 - **🟢 Strengths (mirror)** — clean layering, correct QueryRunner transactions, DTO mapping worth replicating.
 

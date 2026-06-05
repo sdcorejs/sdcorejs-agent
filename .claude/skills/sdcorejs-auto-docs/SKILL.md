@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-docs
-description: MANDATORY skill that runs automatically at the end of EVERY code-writing task across all SDCoreJS tracks (angular-portal, nestjs, nextjs). Writes a session summary as a new markdown file in the target project under `.sdcorejs/docs/<track>/` so the next session can recall prior context. Also runs in READ-ONLY mode at session start to refresh memory. Triggers - end of any code-writing skill invocation (write-code orchestrator, init-X, screen-X, e2e-test, review-code, write-comments) AND start of a new session inside a target project. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill that runs automatically at the end of EVERY code-writing task across all SDCoreJS tracks (angular-portal, nestjs, nextjs). Writes a session summary as a new markdown file in the target project under `.sdcorejs/docs/<track>/` so the next session can recall prior context. Also runs in READ-ONLY mode at session start to refresh memory. Triggers - end of any code-writing skill invocation (write-code orchestrator, init-X, screen-X, e2e-test, review-code, comment-code) AND start of a new session inside a target project. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Bash, Glob
 ---
 
@@ -16,7 +16,7 @@ This skill is shared across SDCoreJS tracks (`angular-portal`, `nestjs`, `nextjs
 ### Auto-trigger at end of code-writing skills
 The agent MUST run this skill (write mode) at the end of every code-writing skill invocation, without prompting. For the angular-portal track that means:
 - `07-write-code` (the `angular-portal-write-code` orchestrator, plus the on-demand reference packs it loads: `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail`, `actions`)
-- `40-e2e-test`
+- `sdcorejs-testing-e2e-<track>`
 - `sdcorejs-review-code` (write a "review session" doc summarizing findings, even though no code changed)
 - `orchestration/comment-code` when the chosen level is not `skip`
 
@@ -86,7 +86,7 @@ The `<kebab-topic>` is a 3-6 word slug derived from what was actually done. Exam
 ## Next suggested action
 - Run `npm run test -- --watch=false --include=src/libs/catalog/features/product/**/*.spec.ts`
 - Open `http://localhost:4200/catalog/product` to verify list renders
-- Optional: invoke `40-e2e-test` to add happy-path E2E coverage
+- Optional: invoke `sdcorejs-testing-e2e-<track>` to add happy-path E2E coverage
 
 ## Skill provenance
 Skills invoked this session: `02-clarify-requirements` → `05-write-plan` → `07-write-code` (init-entity pack)

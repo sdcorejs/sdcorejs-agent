@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review-code
-description: Single entry point for per-file code review across every SDCoreJS track. Auto-detects the stack from the project's directory architecture (Angular portal · NestJS · Next.js), loads the matching convention knowledge from `_refs/<track>/review-code.md`, and reviews against it; if the stack is out of scope it falls back to general code-quality standards. Outputs color-coded severity tables — 🔴 Critical / 🟡 Medium / 🔵 Minor with **Fix** + **Tradeoff** columns, plus a 🟢 Strengths (mirror) table of patterns worth replicating. Angular projects can also request the 13-category scored deep-review. Read-only — never edits code. Triggers - "review code", "review code angular/nestjs/nextjs", "audit module", "audit backend", "rà soát code", "rà soát site này", "check conventions", "scored review", "đánh giá / chấm điểm code", "enterprise readiness", or automatic invocation after any `<track>-write-code` completes. Bilingual (VI/EN).
+description: Single entry point for per-file code review across every SDCoreJS track. Auto-detects the stack from the project's directory architecture (Angular portal · NestJS · Next.js), loads the matching convention knowledge from `_refs/<track>/review-code.md`, and reviews against it; if the stack is out of scope it falls back to general code-quality standards. Outputs color-coded severity tables — 🔴 Critical / 🟡 Important / 🔵 Minor with **Fix** + **Tradeoff** columns, plus a 🟢 Strengths (mirror) table of patterns worth replicating. Angular projects can also request the 13-category scored deep-review. Read-only — never edits code. Triggers - "review code", "review code angular/nestjs/nextjs", "audit module", "audit backend", "rà soát code", "rà soát site này", "check conventions", "scored review", "đánh giá / chấm điểm code", "enterprise readiness", or automatic invocation after any `<track>-write-code` completes. Bilingual (VI/EN).
 allowed-tools: Read, Glob, Grep, Bash
 ---
 
@@ -71,7 +71,7 @@ When no SDCoreJS track is detected, review against language-agnostic standards:
 
 General severity bands:
 - **🔴 Critical** — security hole, data loss, broken behavior, build/runtime break.
-- **🟡 Medium** — maintainability debt that will bite (duplication, missing error handling, unclear contracts).
+- **🟡 Important** — maintainability debt that will bite (duplication, missing error handling, unclear contracts).
 - **🔵 Minor** — style, naming, doc nits that don't change behavior.
 - **🟢 Strengths (mirror)** — well-factored code worth replicating elsewhere.
 
@@ -95,7 +95,7 @@ or risk of applying the fix (write `none` when the fix is strictly better).
 |---|---|---|---|
 | product.service.ts:42 | Hardcoded API URL | Move to `environment.apiUrl` | none |
 
-## 🟡 Medium
+## 🟡 Important
 | File:line | Issue | Fix | Tradeoff |
 |---|---|---|---|
 | list.component.ts:88 | Missing `autoId` on 4 controls | Add `autoId` so E2E + inspector can target | none |
@@ -112,7 +112,7 @@ or risk of applying the fix (write `none` when the fix is strictly better).
 
 ## Next action
 - 🔴 Critical → `orchestration/repair-loop`
-- 🟡 Medium → user decides per finding
+- 🟡 Important → user decides per finding
 - 🔵 Minor → batch
 ```
 

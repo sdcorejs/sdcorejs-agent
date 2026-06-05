@@ -198,10 +198,10 @@ Done. Hand off to sdcorejs-commit.
 Findings:
   [Critical] @Injectable() → @Injectable({ providedIn: 'root' }) (5 services)  -- auto
   [Important] split ProductService into ProductCommandService + ProductQueryService  -- user-decision
-  [Minor] missing JSDoc on 12 methods  -- auto (run sdcorejs-write-comments)
+  [Minor] missing JSDoc on 12 methods  -- auto (run sdcorejs-comment-code)
 
 Pass 1:
-  Auto: applied 5 + ran write-comments → JSDoc added
+  Auto: applied 5 + ran comment-code → JSDoc added
   Skip: user-decision finding deferred
   Re-review: 0 Critical, 1 Important deferred, 0 Minor
 Reported to user:

@@ -1,6 +1,6 @@
 ---
 name: angular-portal-write-code
-description: Use when the user is ready to generate Angular-portal code — either after 06-review-plan approved a plan, OR as the single entry point for any direct Angular-portal code-generation request. This one orchestrator absorbs what used to be six separate sub-skills; it reads the confirmed scope and loads the matching on-demand reference pack under `_refs/angular-portal/write-code/`. Capabilities & trigger phrases — init-portal (new portal repo - "khởi tạo portal", "init portal", "tạo dự án portal mới", "create portal-X"); init-module (new feature module - "tạo module X", "create module", "thêm module", "add feature module"); init-entity (new entity full CRUD = model/service/routes/list/detail - "thêm entity X vào module Y", "add entity", "tạo CRUD cho X", "create CRUD", "generate entity"); screen-list (list/table page - "màn list", "trang danh sách", "table view", "refine list page", "thêm cột vào table"); screen-detail (detail.component.ts CREATE/UPDATE/DETAIL + reactive-form refinement - "tạo màn detail", "màn create", "màn update", "trang chi tiết", "edit form", "thêm validator", "form validation", "form không hoạt động", "custom validator", "async validator"); actions (workflow / bulk / custom side-effect buttons - "thêm action button", "approve flow", "workflow action", "bulk approve", "custom action", "gửi duyệt", "phê duyệt", "từ chối", "xuất excel", "đồng bộ lại"). Also fires on generic generate triggers - "generate code", "viết code", "sinh code đi", "go ahead", "proceed with implementation". After completion, mandatory hand-off chain - 40-e2e-test → sdcorejs-review-code → orchestration/repair-loop → orchestration/comment-code (ASK gate: skip / simple / medium / full — applied inline) → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Bilingual (VI/EN).
+description: Generate Angular-portal code — after 06-review-plan approves, OR as the single entry point for any direct Angular-portal code-gen request. Loads the matching on-demand pack under `_refs/angular-portal/write-code/` (per-pack trigger catalog is in the body): init-portal, init-module, init-entity (full CRUD), screen-list, screen-detail (CREATE/UPDATE/DETAIL + reactive-form/validators), actions (workflow / bulk / custom buttons). Triggers - "khởi tạo portal", "tạo module X", "thêm entity / tạo CRUD", "màn list / thêm cột", "tạo màn detail / form validation / custom validator", "thêm action button / approve / bulk approve / xuất excel", and generic "generate code", "viết code", "sinh code đi", "go ahead". After completion runs the mandatory tail chain (e2e → review-code → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories). Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -40,14 +40,15 @@ Before dispatching ANY reference, run `orchestration/auto-summary`. If `<target>
 
 Execution order: portal → module → entity → screens → actions. If the plan touches multiple items, run them in this order; do not parallelize. After all referenced steps finish, hand off in sequence:
 
-1. `40-e2e-test` (skills/testing/e2e/angular-portal.md) — happy-path tests for what was generated
-2. `sdcorejs-review-code` (skills/review/code.md; auto-detects Angular → loads `_refs/angular-portal/review-code.md`) — convention check; outputs color-coded tables (🔴 Critical / 🟡 Medium / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
+1. `sdcorejs-testing-e2e-angular-portal` (skills/testing/e2e/angular-portal.md) — happy-path tests for what was generated
+2. `sdcorejs-review-code` (skills/review/code.md; auto-detects Angular → loads `_refs/angular-portal/review-code.md`) — convention check; outputs color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
 3. `orchestration/repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
 4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full); applies the chosen level inline. Cross-track baseline + per-track addenda live inside `orchestration/comment-code` itself
 5. `orchestration/verify-before-done` — BLOCK "done" until acceptance criteria from the spec are ✅ verified or ⚠️ explicitly deferred
-6. `orchestration/auto-docs` — session summary written to `<target>/.sdcorejs/docs/angular-portal/`
-7. `orchestration/auto-task-tracker` — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
-8. `orchestration/memories` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
+6. `orchestration/branch-ready` — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
+7. `orchestration/auto-docs` — session summary written to `<target>/.sdcorejs/docs/angular-portal/`
+8. `orchestration/auto-task-tracker` — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
+9. `orchestration/memories` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 
 Each tail-call is mandatory (per CLAUDE.md). Do NOT skip `verify-before-done` — that's how acceptance criteria silently slip. Do NOT skip the `orchestration/comment-code` ASK gate (the gate IS the value; auto-defaulting defeats the design).
 

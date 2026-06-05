@@ -18,11 +18,11 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 
 Cross-cutting concerns live outside `tracks/`:
 - `skills/shared/sdlc/` — **6 cross-track design-phase skills** (`sdcorejs-brainstorm`, `sdcorejs-clarify-requirements`, `sdcorejs-write-spec`, `sdcorejs-review-spec`, `sdcorejs-write-plan`, `sdcorejs-review-plan`) plus `_refs/{angular-portal,nestjs,nextjs}.md` for track-specific patterns. Replaces the duplicated per-track design files.
-- `skills/orchestration/` — 14 SDLC plumbing skills (parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, using-worktrees, using-skills)
+- `skills/orchestration/` — 16 SDLC plumbing skills (parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills)
 - `skills/shared/conventions/` — Conventional Commits, changelog, dep-update
 - `skills/shared/workflow/` — env-setup, debug, pr-create, code-map
 - `skills/review/` — code review (single track-aware skill `sdcorejs-review-code` at `review/code.md`; per-track knowledge in `_refs/<track>/review-code.md`), security audit, performance, architecture, accessibility (filled per track where applicable)
-- `skills/testing/` — e2e, integration, unit (per-track, with cross-track principles in `philosophy.md`)
+- `skills/testing/` — tdd (cross-track RED→GREEN→refactor discipline), e2e, integration, unit (per-track, with cross-track principles in `philosophy.md`)
 
 Each track exposes its capabilities as **skills** — markdown files with Anthropic-style YAML frontmatter (`name`, `description`, `allowed-tools`).
 
@@ -89,7 +89,7 @@ testing/e2e/<track>.md (sdcorejs-testing-e2e-*)
   ← happy-path tests for what was generated
   ↓
 review/code.md (sdcorejs-review-code — auto-detects track from dir architecture)
-  ← convention check; outputs color-coded tables (🔴 Critical / 🟡 Medium / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff
+  ← convention check; outputs color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff
   ↓
 orchestration/repair-loop
   ← apply review findings + iterate until Critical+Important resolved

@@ -1,6 +1,6 @@
 ---
 name: nextjs-build-website-write-code
-description: Use when the user is ready to generate code for a Next.js landing site — either after 06-review-plan approved a plan, OR as the single entry point for any direct build-website code-generation request. This one orchestrator absorbs what used to be ten separate sub-skills; it reads the confirmed scope and loads the matching on-demand reference pack under `_refs/nextjs/build-website/write-code/`. Capabilities & trigger phrases — init-site (bootstrap new site - "init site", "tạo project Next.js", "bootstrap website", "khởi tạo website"); theme (palette/typography/design tokens - "pick theme", "chọn theme", "set up colors / fonts", "design system"); pages-and-blocks (compose pages from section blocks - "add a page", "thêm trang", "tạo section", "compose home page"); seo (generateMetadata + JSON-LD + sitemap + robots + favicon - "set up SEO", "metadata", "structured data", "sitemap", "robots", "favicon"); og-preview (OG / Twitter card images - "OG image", "Zalo preview hỏng", "Facebook share không hiện ảnh", "Twitter card", "social preview"); i18n (next-intl bilingual VI/EN - "add English", "thêm tiếng Anh", "setup i18n", "đa ngôn ngữ", "language switcher"); caching (30-min ISR default + revalidation - "set up caching", "cấu hình cache", "cache lâu/ngắn quá", "ISR settings", "revalidate"); responsive (mobile-first audit - "responsive bị vỡ", "mobile broken", "responsive audit", "fix mobile layout", "touch target"); contact-form (real working form + email + rate limit - "contact form", "biểu mẫu liên hệ", "form không gửi email", "fix fake form"); content-quality (bilingual parity + word counts + prose + Article schema + on-page SEO - "review content", "rà soát nội dung", "bài viết quá ngắn", "câu chữ chưa rõ", "set up content rules", "thin content"). Also fires on generic generate triggers - "generate code", "viết code", "sinh code đi", "go ahead", "proceed with implementation". For auditing an EXISTING site (read-only gap report) use `nextjs-build-website-audit-existing-site` instead — that is a separate entry point, not part of this orchestrator. After completion, mandatory hand-off chain - 40-e2e-test (when written) → sdcorejs-review-code → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Bilingual (VI/EN).
+description: Generate code for a Next.js landing site — after 06-review-plan approves, OR as the single entry point for any direct build-website code-gen request. Loads the matching on-demand pack under `_refs/nextjs/build-website/write-code/` (per-pack trigger catalog is in the body): init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. Triggers - "bootstrap website", "chọn theme", "add a page / tạo section", "set up SEO / sitemap", "OG image / social preview hỏng", "thêm tiếng Anh / i18n", "caching / ISR", "responsive bị vỡ / mobile broken", "contact form / form không gửi email", "review content / bài viết quá ngắn", plus generic "generate code", "viết code", "go ahead". To audit an EXISTING site use `nextjs-build-website-audit-existing-site` instead. After completion runs the mandatory tail chain (e2e → review-code → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories). Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Bash
 ---
 
@@ -83,7 +83,7 @@ Steps 1–4 are sequential (each depends on the previous). Steps 5–8 can be pa
 Run the standard tail-call chain (cross-track mandatory):
 
 ```
-40-e2e-test          ← happy-path tests for each generated page
+sdcorejs-testing-e2e-nextjs  ← happy-path tests for each generated page
    ↓
 sdcorejs-review-code       ← convention check; outputs Critical / Important / Minor findings
    ↓
@@ -92,6 +92,8 @@ orchestration/repair-loop     ← apply findings, iterate to clean
 orchestration/comment-code ← ASK gate (skip / simple / medium / full); applies chosen level
    ↓
 orchestration/verify-before-done ← BLOCK "done" until acceptance criteria from spec are ✅
+   ↓
+orchestration/branch-ready ← branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test)
    ↓
 orchestration/auto-docs    ← session summary to .sdcorejs/docs/nextjs/
 orchestration/auto-task-tracker ← tick done, append new

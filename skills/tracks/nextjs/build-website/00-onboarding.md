@@ -46,11 +46,11 @@ Request: "tạo landing page cho X"         │   Request: "audit site này", "i
   (these 10 were standalone sub-skills before — now consolidated so the track
    exposes 3 skills: onboarding + write-code + audit-existing-site)
   ↓
-40-e2e-test (generic) → sdcorejs-review-code (generic) → orchestration/repair-loop
+sdcorejs-testing-e2e-nextjs (generic) → sdcorejs-review-code (generic) → orchestration/repair-loop
   ↓
 orchestration/comment-code (ASK gate) → orchestration/verify-before-done (acceptance gate)
   ↓
-orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories
+orchestration/branch-ready → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories
 ```
 
 ## When to invoke each skill directly

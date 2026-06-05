@@ -26,7 +26,7 @@ skills/
 │   ├── conventions/      Conventional Commits, changelog, dep-update
 │   └── workflow/         env-setup, debug, pr-create, code-map
 │
-├── orchestration/        SDLC plumbing (12 files): parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code
+├── orchestration/        SDLC plumbing (16 files): parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills
 │
 ├── review/
 │   ├── code.md           single track-aware code review (sdcorejs-review-code); per-track knowledge in _refs/<track>/review-code.md (nextjs: _refs/nextjs/build-website/review-code.md)
@@ -37,6 +37,7 @@ skills/
 │
 └── testing/
     ├── philosophy.md     cross-track principles
+    ├── tdd.md            cross-track RED→GREEN→refactor discipline
     ├── e2e/              per-track (angular-portal, nestjs, nextjs)
     ├── integration/      per-track (angular-portal, nestjs)
     └── unit/             per-track (angular-portal, nestjs)

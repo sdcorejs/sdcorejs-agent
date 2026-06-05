@@ -36,7 +36,7 @@ done
 
 Severity:
 - 🔴 Critical: missing `"use client"` on file using hooks → build error
-- 🟡 Medium: unnecessary `"use client"` bloats bundle (Server Component would suffice)
+- 🟡 Important: unnecessary `"use client"` bloats bundle (Server Component would suffice)
 
 ### 2. `next/image` everywhere (from the `responsive` pack)
 
@@ -62,7 +62,7 @@ find src/app -name 'page.tsx' | while read f; do
 done
 ```
 
-Severity: 🟡 Medium per page. 🔴 Critical if it's a top-level marketing page.
+Severity: 🟡 Important per page. 🔴 Critical if it's a top-level marketing page.
 
 ### 4. i18n typed `Link` from `@/i18n/routing` (from the `i18n` pack)
 
@@ -105,7 +105,7 @@ find src/app -name 'page.tsx' | while read f; do
 done
 ```
 
-Severity: 🟡 Medium — uncached pages hit server on every request → slow + costly.
+Severity: 🟡 Important — uncached pages hit server on every request → slow + costly.
 
 ### 7. `setRequestLocale(locale)` in every `[locale]/page.tsx` (from the `i18n` pack)
 
@@ -147,7 +147,7 @@ find src/components -name 'contact*.tsx' -o -name '*-form.tsx' | while read f; d
 done
 ```
 
-Severity: 🟡 Medium if the form has > 3 fields; 🔵 Minor for newsletter signup (single field).
+Severity: 🟡 Important if the form has > 3 fields; 🔵 Minor for newsletter signup (single field).
 
 ### 10. `next/font` with Vietnamese subset (from the `theme` pack)
 
@@ -203,7 +203,7 @@ Probe:
 grep -nE "metadataBase" src/app/layout.tsx src/lib/seo.ts
 ```
 
-Severity: 🟡 Medium.
+Severity: 🟡 Important.
 
 ### 14. Bundle hygiene — no client import of server-only modules
 
@@ -223,7 +223,7 @@ Severity: 🔴 Critical — server-only modules in client bundle leak secrets / 
 
 ## Severity mapping for this track
 - **🔴 Critical** — build-breaking (`use client` gap, missing `setRequestLocale`), broken URLs (direct `next/link`), XSS (`dangerouslySetInnerHTML`), hydration mismatches, server-only leaks into client, hardcoded VI/EN in prod, unguarded public POST.
-- **🟡 Medium** — missing metadata/cache/`metadataBase`, unnecessary `"use client"`, multi-field form without zod.
+- **🟡 Important** — missing metadata/cache/`metadataBase`, unnecessary `"use client"`, multi-field form without zod.
 - **🔵 Minor** — single-field form without zod, style nits.
 - **🟢 Strengths (mirror)** — correct server/client split, typed i18n Link usage, clean cache strategy worth replicating.
 
