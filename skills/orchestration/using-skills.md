@@ -24,6 +24,8 @@ You have the **sdcorejs SDLC skill pack** — an orchestrated software-developme
 Design phase is cross-track; the code-writing phase is track-specific.
 
 ```
+Session start / first substantive request
+ → sdcorejs-auto-summary          (ensure <project>/.sdcorejs/summary.md exists; GENERATE if missing — never code blind)
 Request
  → sdcorejs-brainstorm            (open-ended idea; skip if scope is clear)
  → sdcorejs-clarify-requirements  (blocking — confirm minimum-required inputs)
@@ -42,6 +44,7 @@ For isolation before generation or parallel work, run `sdcorejs-using-worktrees`
 
 ## Non-negotiables
 
+- **Project brief first.** Before any code-writing or other substantive work in a target project, ensure `<project>/.sdcorejs/summary.md` exists; if missing, run `sdcorejs-auto-summary` (GENERATE) — it scans via `sdcorejs-code-map` and distills a 1-page brief so generation never hallucinates paths or duplicates shared code. This applies whichever skill you're about to run, not only `<track>-write-code`. Detect the track even in a monorepo — the config (`angular.json` / `nest-cli.json` / `next.config.*`) may live under `apps/*` or `packages/*`, not the repo root. A pure informational question may be answered first.
 - **Clarify before code.** Do NOT generate code until the track's minimum-required answers are confirmed (Angular: module + entity + fields + layout; NestJS: module + entity + persistence + transactions; Next.js: domain + contact + hosting + caching). Invoke `sdcorejs-clarify-requirements` first.
 - **Approval gates.** `sdcorejs-review-spec` and `sdcorejs-review-plan` require explicit user approval before the next skill runs. **Silence is not approval.**
 - **Bilingual.** Vietnamese request → Vietnamese output (full diacritics for labels/messages). English → English. Permission codes and route paths stay English in both.

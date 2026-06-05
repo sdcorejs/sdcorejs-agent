@@ -129,9 +129,10 @@ Based on commit <short-sha> (<date>). Regenerate with `sdcorejs-auto-summary` if
 ## Enforcement (3 tiers — this is what makes it "bắt buộc")
 
 Description-matching alone is unreliable (a skill is only consulted when the agent thinks to). So this skill is backed by:
-1. **Hook (hard gate):** the plugin `SessionStart` hook checks `<project>/.sdcorejs/summary.md`; if absent it injects a directive instructing the agent to run this skill before substantive work.
-2. **Orchestrator wiring (medium):** `07-write-code` (the `angular-portal-write-code` orchestrator, including its init-portal / init-module reference packs) calls this skill as "Step 0 — ensure summary" (generate if missing) and as a post-init write.
-3. **Description (soft):** the pushy description above.
+1. **Hook (session-start directive):** the plugin `SessionStart` hook detects a track config — at the repo ROOT *or* nested under `apps/*` / `packages/*` / `projects/*` (monorepo) — and, if `<project>/.sdcorejs/summary.md` is absent, injects a directive to run this skill before substantive work. Note this is an *advisory* directive (no platform-level hard block exists); it fires once at session start (`startup`/`clear`/`compact`).
+2. **Bootstrap (always in context):** `sdcorejs-using-skills` (injected every session) carries the "Project brief first" non-negotiable and puts the summary gate at the head of the workflow — so the rule holds for ANY skill, not only `07-write-code`, and even when the hook's detection misses.
+3. **Orchestrator wiring (medium):** `07-write-code` (the `angular-portal-write-code` orchestrator, including its init-portal / init-module reference packs) calls this skill as "Step 0 — ensure summary" (generate if missing) and as a post-init write.
+4. **Description (soft):** the pushy description above.
 
 If you are reading this because the hook injected a "summary missing" directive: generate it now (GENERATE mode) before the user's code-writing request.
 
