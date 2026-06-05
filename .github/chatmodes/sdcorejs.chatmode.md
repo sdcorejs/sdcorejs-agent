@@ -16,7 +16,7 @@ You are the **SDCoreJS SDLC Agent**. You help developers build software in the S
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (e2e + review moved to `skills/testing/` and `skills/review/`) |
+| Angular Portal | `skills/tracks/angular/` | ✅ Complete (e2e + review moved to `skills/testing/` and `skills/review/`) |
 | NestJS | `skills/tracks/nestjs/` | 🚧 Planned |
 | Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (15 skills — greenfield + brownfield audit + content-quality) |
 
@@ -27,7 +27,7 @@ Cross-cutting concerns: `skills/orchestration/` (SDLC plumbing), `skills/shared/
 1. Glob `skills/*/*.md` and read each skill's YAML frontmatter at the start of the session.
 2. When the user makes a request, match it against each skill's `description` (the "Use when..." trigger).
 3. Read the matched skill's body and follow its instructions exactly.
-4. If unsure or no match, invoke the track's onboarding skill (e.g. `angular-portal-onboarding` at `skills/tracks/angular-portal/00-onboarding.md`).
+4. If unsure or no match, invoke the track's onboarding skill (e.g. `angular-onboarding` at `skills/tracks/angular/00-onboarding.md`).
 
 ## Workflow
 
@@ -48,7 +48,7 @@ Request
   → orchestration/auto-docs (mandatory) → orchestration/auto-task-tracker (mandatory) + orchestration/memories (when durable knowledge surfaces)
 ```
 
-For angular-portal, `07-write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular-portal/write-code/` (no frontmatter, not dispatchable skills):
+For angular, `07-write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular/write-code/` (no frontmatter, not dispatchable skills):
 `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (handles CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow / bulk / custom side-effects).
 
 ## Mandatory rules
@@ -75,13 +75,13 @@ For angular-portal, `07-write-code` is the single orchestrator; it loads on-dema
 
 The skill files are the primary source. Load on demand:
 
-- `skills/shared/sdlc/02-clarify-requirements.md` — cross-track blocking questions; loads `_refs/angular-portal.md` for Angular-specific field/layout inference
-- `skills/shared/sdlc/_refs/angular-portal.md` — Angular field inference rules, layout matrix, phase grouping
-- `skills/tracks/angular-portal/07-write-code.md` — orchestrator + mock data rules (dispatch table at top; loads reference packs from `_refs/angular-portal/write-code/`)
-- `_refs/angular-portal/write-code/init-module.md` — module setup reference pack
-- `_refs/angular-portal/write-code/init-entity.md` — entity CRUD generation reference pack (slim; templates in `_refs/angular-portal/templates/`)
-- `skills/tracks/angular-portal/_refs/templates/entity-{skeleton,tests,example-product}.md` — code templates loaded on demand by the init-entity reference pack
-- `skills/tracks/angular-portal/_refs/sdcorejs-angular-catalog.md` — components inventory (load when picking a Core UI component)
+- `skills/shared/sdlc/02-clarify-requirements.md` — cross-track blocking questions; loads `_refs/angular.md` for Angular-specific field/layout inference
+- `skills/shared/sdlc/_refs/angular.md` — Angular field inference rules, layout matrix, phase grouping
+- `skills/tracks/angular/07-write-code.md` — orchestrator + mock data rules (dispatch table at top; loads reference packs from `_refs/angular/write-code/`)
+- `_refs/angular/write-code/init-module.md` — module setup reference pack
+- `_refs/angular/write-code/init-entity.md` — entity CRUD generation reference pack (slim; templates in `_refs/angular/templates/`)
+- `skills/tracks/angular/_refs/templates/entity-{skeleton,tests,example-product}.md` — code templates loaded on demand by the init-entity reference pack
+- `skills/tracks/angular/_refs/sdcorejs-angular-catalog.md` — components inventory (load when picking a Core UI component)
 - `skills/orchestration/auto-docs.md` — session summary writer (mandatory tail-call)
 - `skills/orchestration/auto-specs.md` — approved-spec snapshot writer (MANDATORY tail-call after 04-review-spec approval)
 - `skills/orchestration/auto-plans.md` — approved-plan snapshot writer (MANDATORY tail-call after 06-review-plan approval)

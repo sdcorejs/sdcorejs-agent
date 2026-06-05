@@ -18,7 +18,7 @@ Run tests in **this repo** (`sdcorejs-agent`) first for smoke testing, then in a
 
 Prompt: `what skills do you have`
 
-Expected: Agent lists ~21 skills grouped by workflow (00→52), or invokes `angular-portal-onboarding` skill which renders the workflow diagram + skill list.
+Expected: Agent lists ~21 skills grouped by workflow (00→52), or invokes `angular-onboarding` skill which renders the workflow diagram + skill list.
 
 Pass criteria:
 - Mentions at least 5 skills by name
@@ -30,7 +30,7 @@ Pass criteria:
 
 Prompt: `agent này làm được gì`
 
-Expected: Agent invokes `angular-portal-onboarding` and replies in Vietnamese.
+Expected: Agent invokes `angular-onboarding` and replies in Vietnamese.
 
 Pass criteria:
 - Reply is in Vietnamese with full diacritics
@@ -41,7 +41,7 @@ Pass criteria:
 
 Prompt: `tôi đang phân vân giữa side-drawer và full-page detail cho entity user, nên dùng cái nào?`
 
-Expected: Agent invokes `sdcorejs-brainstorm` (cross-track; detects angular-portal and loads `_refs/angular-portal.md`), presents 2-3 approaches with tradeoffs, recommends one. Does NOT directly write code.
+Expected: Agent invokes `sdcorejs-brainstorm` (cross-track; detects angular and loads `_refs/angular.md`), presents 2-3 approaches with tradeoffs, recommends one. Does NOT directly write code.
 
 Pass criteria:
 - Mentions multiple approaches (side-drawer vs full-page)
@@ -53,7 +53,7 @@ Pass criteria:
 
 Prompt: `thêm entity product`
 
-Expected: Agent invokes `sdcorejs-clarify-requirements` (cross-track; loads `_refs/angular-portal.md`) because module / fields / scope are unspecified. Asks blocking questions.
+Expected: Agent invokes `sdcorejs-clarify-requirements` (cross-track; loads `_refs/angular.md`) because module / fields / scope are unspecified. Asks blocking questions.
 
 Pass criteria:
 - Does NOT generate code
@@ -64,7 +64,7 @@ Pass criteria:
 
 Prompt: `khởi tạo portal-shop với env dev/qc/uat/prod`
 
-Expected: Agent invokes the `angular-portal-write-code` orchestrator (which loads the `init-portal` reference pack from `_refs/angular-portal/write-code/`). May still clarify some details but should NOT ask "what is portal-shop" or "which framework".
+Expected: Agent invokes the `angular-write-code` orchestrator (which loads the `init-portal` reference pack from `_refs/angular/write-code/`). May still clarify some details but should NOT ask "what is portal-shop" or "which framework".
 
 Pass criteria:
 - Recognizes "portal-shop" as portal name
@@ -76,7 +76,7 @@ Pass criteria:
 
 Setup: walk through test 5 until plan is ready, then ask `proceed with implementation`.
 
-Expected: Agent invokes `sdcorejs-review-plan` (cross-track) before `angular-portal-write-code`. Agent should NOT generate code without your explicit "OK".
+Expected: Agent invokes `sdcorejs-review-plan` (cross-track) before `angular-write-code`. Agent should NOT generate code without your explicit "OK".
 
 Pass criteria:
 - Plan shown and approval requested
@@ -106,11 +106,11 @@ cp -r <this-repo>/skills ./skills-sdcorejs
 
 Prompt: ask the agent to add an entity (any). Let it complete.
 
-Expected: A new file appears at `<target-project>/.sdcorejs/docs/angular-portal/<timestamp>-<topic>.md`. Open and inspect it.
+Expected: A new file appears at `<target-project>/.sdcorejs/docs/angular/<timestamp>-<topic>.md`. Open and inspect it.
 
 Pass criteria:
 - File is in target project, NOT in this `sdcorejs-agent` repo
-- Path uses `.sdcorejs/docs/angular-portal/` (note leading dot)
+- Path uses `.sdcorejs/docs/angular/` (note leading dot)
 - Filename uses `YYYY-MM-DD-HH-mm-<topic>.md`
 - Contents include: what was requested, what changed (file list), decisions, next steps
 
@@ -121,7 +121,7 @@ Prompt: `ghi nhớ rằng team mình luôn dùng kebab-case cho route, không ba
 Expected: Agent invokes `sdcorejs-memories` and writes a memory file.
 
 Pass criteria:
-- File appears at `<target-project>/.sdcorejs/memories/angular-portal/<slug>.md` (or shared root if track-agnostic)
+- File appears at `<target-project>/.sdcorejs/memories/angular/<slug>.md` (or shared root if track-agnostic)
 - Frontmatter has `name`, `description`, `type: feedback` (corrections + preferences), body has `**Why:**` and `**How to apply:**` lines
 - If running in Claude Code: also appears at `~/.claude/projects/<encoded-cwd>/memory/<slug>.md`
 
@@ -129,7 +129,7 @@ Pass criteria:
 
 Close the AI tool. Reopen it in the same target project.
 
-Expected: Agent should read latest `.sdcorejs/docs/angular-portal/*.md` entries silently before answering anything. Test by asking `what was I working on?` — agent should reference the topics from the latest doc.
+Expected: Agent should read latest `.sdcorejs/docs/angular/*.md` entries silently before answering anything. Test by asking `what was I working on?` — agent should reference the topics from the latest doc.
 
 Pass criteria:
 - Agent references prior work without you mentioning it
@@ -142,8 +142,8 @@ Pass criteria:
 | Agent doesn't dispatch any skill, just answers generically | Entry-point file (CLAUDE.md / etc.) not found in cwd | Verify `CLAUDE.md` is at target project root |
 | Agent dispatches wrong skill | Description triggers don't match user's phrasing | Edit the skill's `description` frontmatter to add the missing trigger keywords |
 | Auto-docs writes to `sdcorejs-agent` instead of target | Agent confused about cwd | Add explicit reminder in `_shared/auto-docs.md` to use `git rev-parse --show-toplevel` to find target root |
-| `formControlName` keeps getting generated | Agent reading stale memory or example | Verify `_refs/angular-portal/write-code/screen-detail.md` + `_refs/templates/screen-detail-component.md` + `_refs/templates/reactive-form-templates.md` all use `[form]+name=` pattern, not `formControlName=` |
-| Skills not visible to Claude Code | `.claude/skills/` not mirrored | Run `bash .claude/sync-skills.sh` (or manually `cp skills/angular-portal/<N>-<name>.md .claude/skills/angular-portal-<name>/SKILL.md`) |
+| `formControlName` keeps getting generated | Agent reading stale memory or example | Verify `_refs/angular/write-code/screen-detail.md` + `_refs/templates/screen-detail-component.md` + `_refs/templates/reactive-form-templates.md` all use `[form]+name=` pattern, not `formControlName=` |
+| Skills not visible to Claude Code | `.claude/skills/` not mirrored | Run `bash .claude/sync-skills.sh` (or manually `cp skills/angular/<N>-<name>.md .claude/skills/angular-<name>/SKILL.md`) |
 | Approval gate skipped | Skill body of `04-review-spec` / `06-review-plan` not blocking | Verify their `description` mentions "approval required" and body says "Wait for explicit user approval" |
 
 ## When to update tests
