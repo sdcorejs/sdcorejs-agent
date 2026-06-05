@@ -21,7 +21,7 @@ Code review (`sdcorejs-review-code`) catches line-level mistakes; architecture r
 
 Every SDCoreJS stack has a layered architecture:
 
-| Layer | angular-portal | nestjs | nextjs |
+| Layer | angular | nestjs | nextjs |
 |---|---|---|---|
 | **UI / Presentation** | components, pages | controllers | app/, components/ |
 | **Application / Workflow** | services that orchestrate | services (workflow), use-cases | route handlers, server actions |

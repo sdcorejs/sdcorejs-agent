@@ -275,9 +275,9 @@ Refactor = same behaviour, cleaner code. New behaviour = new failing test first.
 
 ## Cross-references
 - `sdcorejs-testing-philosophy` — test pyramid, mock vs real, AAA structure, naming rules
-- `sdcorejs-testing-unit-angular-portal` — full Angular unit test patterns
+- `sdcorejs-testing-unit-angular` — full Angular unit test patterns
 - `sdcorejs-testing-unit-nestjs` — full NestJS unit test patterns
-- `sdcorejs-testing-integration-angular-portal` — Angular integration tests
+- `sdcorejs-testing-integration-angular` — Angular integration tests
 - `sdcorejs-testing-integration-nestjs` — NestJS integration with real DB (testcontainers)
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->

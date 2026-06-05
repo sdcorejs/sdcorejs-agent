@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-docs
-description: MANDATORY skill that runs automatically at the end of EVERY code-writing task across all SDCoreJS tracks (angular-portal, nestjs, nextjs). Writes a session summary as a new markdown file in the target project under `.sdcorejs/docs/<track>/` so the next session can recall prior context. Also runs in READ-ONLY mode at session start to refresh memory. Triggers - end of any code-writing skill invocation (write-code orchestrator, init-X, screen-X, e2e-test, review-code, comment-code) AND start of a new session inside a target project. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill that runs automatically at the end of EVERY code-writing task across all SDCoreJS tracks (angular, nestjs, nextjs). Writes a session summary as a new markdown file in the target project under `.sdcorejs/docs/<track>/` so the next session can recall prior context. Also runs in READ-ONLY mode at session start to refresh memory. Triggers - end of any code-writing skill invocation (write-code orchestrator, init-X, screen-X, e2e-test, review-code, comment-code) AND start of a new session inside a target project. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Bash, Glob
 ---
 
@@ -9,13 +9,13 @@ allowed-tools: Read, Write, Bash, Glob
 ## Purpose
 Mandatory + automatic. Gives the next session a memory of what was done, what was decided, and what's still open. Without this, every new session starts blind.
 
-This skill is shared across SDCoreJS tracks (`angular-portal`, `nestjs`, `nextjs`). The agent substitutes the `<track>` placeholder below with the active track name when resolving paths.
+This skill is shared across SDCoreJS tracks (`angular`, `nestjs`, `nextjs`). The agent substitutes the `<track>` placeholder below with the active track name when resolving paths.
 
 ## When invoked
 
 ### Auto-trigger at end of code-writing skills
-The agent MUST run this skill (write mode) at the end of every code-writing skill invocation, without prompting. For the angular-portal track that means:
-- `07-write-code` (the `angular-portal-write-code` orchestrator, plus the on-demand reference packs it loads: `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail`, `actions`)
+The agent MUST run this skill (write mode) at the end of every code-writing skill invocation, without prompting. For the angular track that means:
+- `07-write-code` (the `angular-write-code` orchestrator, plus the on-demand reference packs it loads: `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail`, `actions`)
 - `sdcorejs-testing-e2e-<track>`
 - `sdcorejs-review-code` (write a "review session" doc summarizing findings, even though no code changed)
 - `orchestration/comment-code` when the chosen level is not `skip`
@@ -40,8 +40,8 @@ This read-only step does NOT write a new doc.
 # Resolve target project root (NOT the sdcorejs-agent repo!)
 TARGET_ROOT=$(git rev-parse --show-toplevel)
 
-# Pick the active <track>: angular-portal | nestjs | nextjs
-TRACK=angular-portal
+# Pick the active <track>: angular | nestjs | nextjs
+TRACK=angular
 
 # Ensure folder exists (note the leading dot in .sdcorejs/)
 mkdir -p "$TARGET_ROOT/.sdcorejs/docs/$TRACK"
@@ -81,7 +81,7 @@ The `<kebab-topic>` is a 3-6 word slug derived from what was actually done. Exam
 
 ## Open questions / follow-ups
 - Backend API host not yet provided — service is mock-first; switch to BaseService when API contract lands
-- No workflow yet; if approval flow is needed later, invoke `angular-portal-write-code` (actions pack)
+- No workflow yet; if approval flow is needed later, invoke `angular-write-code` (actions pack)
 
 ## Next suggested action
 - Run `npm run test -- --watch=false --include=src/libs/catalog/features/product/**/*.spec.ts`
@@ -116,8 +116,8 @@ Skills invoked this session: `02-clarify-requirements` → `05-write-plan` → `
 
 ## Cross-track usage
 
-This skill applies to `angular-portal`, `nestjs`, and `nextjs` tracks. The only difference is the `<track>` segment in the output path:
-- Angular: `.sdcorejs/docs/angular-portal/`
+This skill applies to `angular`, `nestjs`, and `nextjs` tracks. The only difference is the `<track>` segment in the output path:
+- Angular: `.sdcorejs/docs/angular/`
 - NestJS: `.sdcorejs/docs/nestjs/`
 - NextJS: `.sdcorejs/docs/nextjs/`
 
@@ -132,4 +132,4 @@ When the agent works inside a multi-track repo, write to the track folder matchi
 - Skipping session-start read because "user didn't ask for it" — this is mandatory automatic behavior
 - Dumping full file contents into the doc — keep it scannable (file path + 1-line intent)
 - Forgetting to set `<track>` correctly in multi-track repos
-- Hardcoding `angular-portal` when the active track is actually nestjs/nextjs
+- Hardcoding `angular` when the active track is actually nestjs/nextjs

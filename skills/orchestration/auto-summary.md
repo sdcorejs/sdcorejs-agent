@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-summary
-description: MANDATORY project-brief skill. Owns the single canonical `.sdcorejs/summary.md` — an evergreen "what this project IS" snapshot (domain, stack, architecture map, conventions, reuse cheatsheet). Use BEFORE any substantive work in a target project: if missing it MUST be generated first (delegate the scan to `sdcorejs-code-map`, then distill); if present it is read at session start to load project context cheaply. Also runs in WRITE mode right after a new project/module is initialized, and refreshes when the recorded git HEAD has drifted. Distinct from `sdcorejs-auto-docs` (per-session deltas) — this is the one stable project overview. Triggers - session start in a target project, about to run `07-write-code`, user asks "tóm tắt dự án", "project summary", "dự án này là gì", "overview", "what is this project". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY project-brief skill. Owns the single canonical `.sdcorejs/summary.md` — an evergreen "what this project IS" snapshot (domain, stack, architecture map, conventions, reuse cheatsheet). Use BEFORE any substantive work in a target project: if missing it MUST be generated first (delegate the scan to `sdcorejs-code-map`, then distill); if present it is read at session start to load project context cheaply. Also runs in WRITE mode right after a new project/module is initialized, and refreshes when the recorded git HEAD has drifted. Distinct from `sdcorejs-auto-docs` (per-session deltas) — this is the one stable project overview. Triggers - session start in a target project, about to run `07-write-code`, user asks "tóm tắt dự án", "project summary", "dự án này là gì", "overview", "what is this project". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Bash, Glob, Grep
 ---
 
@@ -18,7 +18,7 @@ This is the project's *identity card*. It is deliberately different from the res
 | `.sdcorejs/plans/`, `/specs/` | approved plans/specs | corpus over time |
 | memories | durable cross-session facts | scattered notes |
 
-This skill is shared across SDCoreJS tracks (`angular-portal`, `nestjs`, `nextjs`). Substitute the active `<track>` when resolving paths.
+This skill is shared across SDCoreJS tracks (`angular`, `nestjs`, `nextjs`). Substitute the active `<track>` when resolving paths.
 
 ## Relationship to `sdcorejs-code-map` (important — do NOT duplicate)
 
@@ -37,10 +37,10 @@ At the start of any session inside a target project:
 3. If it does NOT exist → tell the user it's missing and that you'll generate it before substantive work (GENERATE mode). For a pure question that needs no project context, you may answer first, but generate before any code-writing.
 
 ### 2. Before generation / on missing file (GENERATE mode = the gate)
-When about to run `07-write-code` (the `angular-portal-write-code` orchestrator, including its init-portal / init-module reference packs — or the equivalent init step in another track) AND `summary.md` is absent → generate it first. This is the "bắt buộc" gate.
+When about to run `07-write-code` (the `angular-write-code` orchestrator, including its init-portal / init-module reference packs — or the equivalent init step in another track) AND `summary.md` is absent → generate it first. This is the "bắt buộc" gate.
 
 ### 3. Post-init (WRITE mode)
-Right after the `angular-portal-write-code` orchestrator (init-portal / init-module packs) finishes scaffolding a brand-new project/module, generate (or update) `summary.md` — a fresh repo has none yet.
+Right after the `angular-write-code` orchestrator (init-portal / init-module packs) finishes scaffolding a brand-new project/module, generate (or update) `summary.md` — a fresh repo has none yet.
 
 ### 4. On drift (REFRESH mode)
 If `summary.md` exists but the freshness check says it's stale → regenerate (or patch the changed sections).
@@ -66,7 +66,7 @@ Never silently trust a stale summary — say which commit it's based on so the u
 
 ## Workflow (GENERATE / REFRESH)
 
-1. Resolve `ROOT=$(git rev-parse --show-toplevel)` and the active `<track>` (angular.json → angular-portal, nest-cli.json → nestjs, next.config.* → nextjs; monorepo → one section per stack in the same file).
+1. Resolve `ROOT=$(git rev-parse --show-toplevel)` and the active `<track>` (angular.json → angular, nest-cli.json → nestjs, next.config.* → nextjs; monorepo → one section per stack in the same file).
 2. **Invoke `sdcorejs-code-map`** to scan ROOT. Take its module/shared/base/routes/permission inventory + detected conventions.
 3. Pull "open context": `git -C "$ROOT" log --oneline -15`, current branch, and the latest 1–2 `.sdcorejs/docs/<track>/*.md` if present (recent work).
 4. **Distill** into the template — compress, don't copy code-map verbatim. The summary is a 1-page brief, not the full map.
@@ -86,7 +86,7 @@ mkdir -p "$ROOT/.sdcorejs"
 generated_at: <ISO timestamp>
 git_head: <full sha at generation time>
 branch: <branch>
-tracks: [angular-portal]            # one or more for monorepo
+tracks: [angular]            # one or more for monorepo
 generator: sdcorejs-auto-summary
 ---
 
@@ -96,7 +96,7 @@ generator: sdcorejs-auto-summary
 <1–3 sentences: domain, who uses it, what it does. No filler.>
 
 ## Stack & track
-- Track: <angular-portal | nestjs | nextjs> (+ framework versions)
+- Track: <angular | nestjs | nextjs> (+ framework versions)
 - Baseline / key deps: <@sdcorejs/angular x.y, @core/@shared aliases, etc.>
 - Build / test commands: <the real ones>
 
@@ -131,7 +131,7 @@ Based on commit <short-sha> (<date>). Regenerate with `sdcorejs-auto-summary` if
 Description-matching alone is unreliable (a skill is only consulted when the agent thinks to). So this skill is backed by:
 1. **Hook (session-start directive):** the plugin `SessionStart` hook detects a track config — at the repo ROOT *or* nested under `apps/*` / `packages/*` / `projects/*` (monorepo) — and, if `<project>/.sdcorejs/summary.md` is absent, injects a directive to run this skill before substantive work. Note this is an *advisory* directive (no platform-level hard block exists); it fires once at session start (`startup`/`clear`/`compact`).
 2. **Bootstrap (always in context):** `sdcorejs-using-skills` (injected every session) carries the "Project brief first" non-negotiable and puts the summary gate at the head of the workflow — so the rule holds for ANY skill, not only `07-write-code`, and even when the hook's detection misses.
-3. **Orchestrator wiring (medium):** `07-write-code` (the `angular-portal-write-code` orchestrator, including its init-portal / init-module reference packs) calls this skill as "Step 0 — ensure summary" (generate if missing) and as a post-init write.
+3. **Orchestrator wiring (medium):** `07-write-code` (the `angular-write-code` orchestrator, including its init-portal / init-module reference packs) calls this skill as "Step 0 — ensure summary" (generate if missing) and as a post-init write.
 4. **Description (soft):** the pushy description above.
 
 If you are reading this because the hook injected a "summary missing" directive: generate it now (GENERATE mode) before the user's code-writing request.

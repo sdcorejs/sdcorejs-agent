@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-subagent-driven-dev
-description: Use when `07-write-code` (or its NestJS/NextJS equivalents) is about to execute a feature with 3+ independent sub-tasks — multiple entities under one module, batch screen generation, multi-stack work, large reference-doc batches. Different from `sdcorejs-parallel-dispatch` which decides WHETHER to parallelize; this skill governs HOW to execute the delegation — decompose, brief, dispatch, per-unit two-stage review (spec-compliance then code-quality), merge results, surface partial failures. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use when `07-write-code` (or its NestJS/NextJS equivalents) is about to execute a feature with 3+ independent sub-tasks — multiple entities under one module, batch screen generation, multi-stack work, large reference-doc batches. Different from `sdcorejs-parallel-dispatch` which decides WHETHER to parallelize; this skill governs HOW to execute the delegation — decompose, brief, dispatch, per-unit two-stage review (spec-compliance then code-quality), merge results, surface partial failures. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Agent, Bash
 ---
 
@@ -43,7 +43,7 @@ TASK: <verb + concrete target + scope, one sentence>
 
 CONTEXT (everything the subagent needs):
 - Stack / track / lib path (e.g. `src/libs/catalog/features/product/`)
-- Relevant skill body to follow (e.g. "Follow the `angular-portal-write-code` init-entity pack at `_refs/angular-portal/write-code/init-entity.md` exactly")
+- Relevant skill body to follow (e.g. "Follow the `angular-write-code` init-entity pack at `_refs/angular/write-code/init-entity.md` exactly")
 - Field schema (paste it; don't reference "the spec")
 - Conventions already decided (mock-first vs api, layout pattern, permissions)
 - Surrounding files that already exist (so they don't duplicate)
@@ -224,4 +224,4 @@ Category needs Product to exist first. Sequential. Don't parallelize.
 - `review/code.md` (`sdcorejs-review-code`) — Stage B per-unit code-quality review (Step 5)
 - `orchestration/repair-loop.md` — closes the fix loop on per-unit review findings (source: `review-code`)
 - `orchestration/verify-before-done.md` — final verification gate after merging units
-- `07-write-code.md` (angular-portal) — orchestrator that triggers this skill when the dispatch table has 3+ rows
+- `07-write-code.md` (angular) — orchestrator that triggers this skill when the dispatch table has 3+ rows

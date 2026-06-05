@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-pr-create
-description: Use when the user asks to create a pull request, says "tạo PR", "mở PR", "open pull request", "gh pr create", or when a feature branch is ready to ship. Generates PR title + body from commits and diff since the base branch, pushes if needed, opens the PR via `gh` CLI. Applies to angular-portal, nestjs, nextjs and the sdcorejs-agent repo itself. Bilingual (VI/EN).
+description: Use when the user asks to create a pull request, says "tạo PR", "mở PR", "open pull request", "gh pr create", or when a feature branch is ready to ship. Generates PR title + body from commits and diff since the base branch, pushes if needed, opens the PR via `gh` CLI. Applies to angular, nestjs, nextjs and the sdcorejs-agent repo itself. Bilingual (VI/EN).
 allowed-tools: Bash, Read
 ---
 
@@ -109,7 +109,7 @@ Print the PR URL so the user can open it.
 ## Examples
 
 ### Small feature PR (VI)
-Title: `feat(angular-portal): broaden 31-actions scope beyond workflow`
+Title: `feat(angular): broaden 31-actions scope beyond workflow`
 
 Body:
 ```markdown
@@ -118,25 +118,25 @@ Body:
 - Update the dispatch table in `07-write-code` + all cross-refs in tests + onboarding.
 
 ## Changes
-- `_refs/angular-portal/write-code/actions.md`: renamed + broadened body
-- `skills/tracks/angular-portal/07-write-code.md`: dispatch table + description
-- `skills/tracks/angular-portal/00-onboarding.md`: workflow strip
+- `_refs/angular/write-code/actions.md`: renamed + broadened body
+- `skills/tracks/angular/07-write-code.md`: dispatch table + description
+- `skills/tracks/angular/00-onboarding.md`: workflow strip
 - `.claude/skills/`, `plugin/skills/`: mirror regenerated via sync-skills.sh
 
 ## Test plan
-- [ ] Open Claude Code in a target project, type "thêm nút xuất Excel" → `angular-portal-write-code` (actions pack) dispatches
+- [ ] Open Claude Code in a target project, type "thêm nút xuất Excel" → `angular-write-code` (actions pack) dispatches
 - [ ] Type "thêm approve flow" → same skill dispatches
 - [ ] `bash .claude/sync-skills.sh --check` passes
 ```
 
 ### Bugfix PR (EN)
-Title: `fix(angular-portal): correct formControlName usage in form examples`
+Title: `fix(angular): correct formControlName usage in form examples`
 
 Body:
 ```markdown
 ## Summary
 - No `@sdcorejs/angular` form component implements ControlValueAccessor.
-- Replaced `formControlName=` usages with `[form]+name=` pattern across `_refs/angular-portal/write-code/screen-detail.md` + the form templates in `_refs/angular-portal/templates/screen-detail-component.md` and `_refs/angular-portal/templates/reactive-form-templates.md`.
+- Replaced `formControlName=` usages with `[form]+name=` pattern across `_refs/angular/write-code/screen-detail.md` + the form templates in `_refs/angular/templates/screen-detail-component.md` and `_refs/angular/templates/reactive-form-templates.md`.
 
 ## Test plan
 - [ ] Generate a new entity from a clean target project and verify the rendered form binds correctly

@@ -288,7 +288,7 @@ Target: full e2e suite < 5 min on a typical landing site.
 
 ## Cross-references
 - Cross-track principles: `testing/philosophy.md`
-- E2E for other stacks: `testing/e2e/angular-portal.md`
+- E2E for other stacks: `testing/e2e/angular.md`
 - Verification gate: `orchestration/verify-before-done` (e2e is one of the criteria types)
 - Stack build skills: `tracks/nextjs/build-website/07-write-code.md` (orchestrator that dispatches this)
 

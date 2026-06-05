@@ -12,12 +12,12 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem. When you (GitHu
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (design-phase cross-track skills + 2 angular skills: onboarding + the `angular-portal-write-code` orchestrator, which dispatches 6 on-demand reference packs under `_refs/angular-portal/write-code/`: init-portal, init-module, init-entity, screen-list, screen-detail (CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design phase + spec/plan moved to cross-track `skills/shared/sdlc/`. Cross-track `orchestration/comment-code` absorbs the previous per-track `51-write-comments`. |
+| Angular Portal | `skills/tracks/angular/` | ✅ Complete (design-phase cross-track skills + 2 angular skills: onboarding + the `angular-write-code` orchestrator, which dispatches 6 on-demand reference packs under `_refs/angular/write-code/`: init-portal, init-module, init-entity, screen-list, screen-detail (CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design phase + spec/plan moved to cross-track `skills/shared/sdlc/`. Cross-track `orchestration/comment-code` absorbs the previous per-track `51-write-comments`. |
 | NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (00-onboarding + 07-write-code plan-walker). Sub-skills 10/11/12 planned. Design phase usable via shared/sdlc/; review + testing already in place. |
 | Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (3 track skills: onboarding, write-code orchestrator, audit-existing-site; the orchestrator dispatches 10 on-demand reference packs under `_refs/nextjs/build-website/write-code/`: init-site … content-quality). Design phase moved to cross-track shared/sdlc/. |
 
 Cross-cutting skills live in:
-- `skills/shared/sdlc/` — **6 cross-track design-phase skills** (brainstorm, clarify-requirements, write-spec, review-spec, write-plan, review-plan) + `_refs/{angular-portal,nextjs,nestjs}.md`
+- `skills/shared/sdlc/` — **6 cross-track design-phase skills** (brainstorm, clarify-requirements, write-spec, review-spec, write-plan, review-plan) + `_refs/{angular,nextjs,nestjs}.md`
 - `skills/orchestration/` — SDLC plumbing (16 files: parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills)
 - `skills/shared/conventions/` + `shared/workflow/` — commits, changelog, dep-update, debug, env-setup, pr-create, code-map
 - `skills/review/` — code review (single track-aware skill `sdcorejs-review-code`; per-track knowledge in `_refs/<track>/review-code.md`), security (cross-track + nestjs), performance (cross-track + per-track), architecture, accessibility
@@ -43,7 +43,7 @@ allowed-tools: Read, Write, Edit, ...
 2. **When the user makes a request**, match it against each skill's `description` (the "Use when..." trigger). Pick the highest-confidence match.
 3. **Read that skill's body** and follow its instructions exactly.
 4. **If multiple skills tie**, pick the lowest-numbered one in the workflow (clarify before plan, plan before write-code, etc).
-5. **If no skill matches**, ask a clarifying question or invoke `<track>-onboarding` (e.g. `angular-portal-onboarding`).
+5. **If no skill matches**, ask a clarifying question or invoke `<track>-onboarding` (e.g. `angular-onboarding`).
 
 ## Workflow per track
 
@@ -58,7 +58,7 @@ Request
   → shared/sdlc/05-write-plan       → shared/sdlc/06-review-plan  (approval gate)
                               → orchestration/auto-plans  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
   → <track>-write-code (track-specific orchestrator; dispatches sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
-       angular-portal:         angular-portal-write-code
+       angular:         angular-write-code
        nextjs (build-website): nextjs-build-website-write-code
        nestjs:                 nestjs-write-code (SCAFFOLD)
   → testing/e2e/<track>.md → review/code.md (sdcorejs-review-code, auto-detects track) → orchestration/repair-loop (if findings)
@@ -69,7 +69,7 @@ Request
 
 Each cross-track design skill detects the target track at runtime and loads `skills/shared/sdlc/_refs/<track>.md` for track-specific patterns.
 
-For the angular-portal track, `07-write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular-portal/write-code/` (no frontmatter, not dispatchable skills):
+For the angular track, `07-write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular/write-code/` (no frontmatter, not dispatchable skills):
 `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow / bulk / custom side-effects).
 
 ## Mandatory rules (apply to every track)
@@ -140,12 +140,12 @@ Cross-track skills — apply to all tracks. Dispatch by `description`; directory
 
 ## Reference docs (load on demand only)
 
-- `skills/shared/sdlc/_refs/{angular-portal,nextjs,nestjs}.md` — track-specific design-phase patterns
-- `skills/tracks/angular-portal/_refs/core-version.md` — pinned `@sdcorejs/angular` version
-- `skills/tracks/angular-portal/_refs/sdcorejs-angular-catalog.md` — Core UI components inventory
-- `skills/tracks/angular-portal/_refs/entity-field-types.md` — field type → form control mapping
-- `skills/tracks/angular-portal/_refs/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for the init-entity reference pack
-- `_refs/angular-portal/write-code/{init-portal,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `angular-portal-write-code`
+- `skills/shared/sdlc/_refs/{angular,nextjs,nestjs}.md` — track-specific design-phase patterns
+- `skills/tracks/angular/_refs/core-version.md` — pinned `@sdcorejs/angular` version
+- `skills/tracks/angular/_refs/sdcorejs-angular-catalog.md` — Core UI components inventory
+- `skills/tracks/angular/_refs/entity-field-types.md` — field type → form control mapping
+- `skills/tracks/angular/_refs/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for the init-entity reference pack
+- `_refs/angular/write-code/{init-portal,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `angular-write-code`
 
 ## Anti-patterns
 

@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review-spec
-description: Use AFTER `sdcorejs-write-spec` writes a spec file. Presents the spec to the user with a request for review and approval; iterates on feedback until the user approves. Acts as the user-approval gate before `sdcorejs-write-plan` starts; on approval, fires `orchestration/auto-specs` to persist the approved snapshot. Triggers - automatic after `sdcorejs-write-spec`; or user says "review spec", "approve spec", "let's check the spec", "rà soát spec", "duyệt spec". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-write-spec` writes a spec file. Presents the spec to the user with a request for review and approval; iterates on feedback until the user approves. Acts as the user-approval gate before `sdcorejs-write-plan` starts; on approval, fires `orchestration/auto-specs` to persist the approved snapshot. Triggers - automatic after `sdcorejs-write-spec`; or user says "review spec", "approve spec", "let's check the spec", "rà soát spec", "duyệt spec". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Edit, Glob
 ---
 
@@ -9,7 +9,7 @@ allowed-tools: Read, Edit, Glob
 ## Purpose
 Hold the user-approval gate between spec authoring (`sdcorejs-write-spec`) and planning (`sdcorejs-write-plan`). Without explicit approval, the agent cannot proceed. Design ambiguity caught here is 10× cheaper than ambiguity caught during code generation.
 
-This skill is fully track-agnostic — the spec template, file paths, and tail-calls are the same across angular-portal / nestjs / nextjs.
+This skill is fully track-agnostic — the spec template, file paths, and tail-calls are the same across angular / nestjs / nextjs.
 
 ## When to use
 - Automatically right after `sdcorejs-write-spec` writes a spec file

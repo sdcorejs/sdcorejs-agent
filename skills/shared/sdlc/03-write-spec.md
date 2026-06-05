@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-write-spec
-description: Use AFTER `sdcorejs-clarify-requirements` has captured every blocking input for the detected track, BEFORE `sdcorejs-write-plan`. Authors a spec document at `<target-project>/.sdcorejs/docs/<track>/<timestamp>-<topic>-spec.md` covering Problem & Goals, Non-goals, Architecture, File structure, Acceptance criteria, Risks, Out-of-scope. Track-specific section emphasis loaded from `_refs/sdlc/<track>.md` (e.g. angular file-paths, nestjs persistence + transactions, nextjs SEO + caching). Triggers - "viết spec", "write spec", "draft spec", "tài liệu thiết kế", "design doc", "soạn spec cho ...". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-clarify-requirements` has captured every blocking input for the detected track, BEFORE `sdcorejs-write-plan`. Authors a spec document at `<target-project>/.sdcorejs/docs/<track>/<timestamp>-<topic>-spec.md` covering Problem & Goals, Non-goals, Architecture, File structure, Acceptance criteria, Risks, Out-of-scope. Track-specific section emphasis loaded from `_refs/sdlc/<track>.md` (e.g. angular file-paths, nestjs persistence + transactions, nextjs SEO + caching). Triggers - "viết spec", "write spec", "draft spec", "tài liệu thiết kế", "design doc", "soạn spec cho ...". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Glob, Grep, Bash
 ---
 

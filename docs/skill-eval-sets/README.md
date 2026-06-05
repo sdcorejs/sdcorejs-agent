@@ -7,7 +7,7 @@ should-NOT-trigger (queries that share keywords but belong to a sibling skill).
 
 | File | Skill | Coverage |
 | --- | --- | --- |
-| `angular-portal-write-code-trigger-eval.json` | `angular-portal-write-code` | CRUD / module / entity / screen / actions vs. design-phase, review, nestjs, nextjs |
+| `angular-write-code-trigger-eval.json` | `angular-write-code` | CRUD / module / entity / screen / actions vs. design-phase, review, nestjs, nextjs |
 | `nextjs-build-website-write-code-trigger-eval.json` | `nextjs-build-website-write-code` | init / seo / og / i18n / caching / responsive / contact-form vs. audit-existing-site, review, angular |
 | `sdcorejs-auto-summary-trigger-eval.json` | `sdcorejs-auto-summary` | project overview vs. auto-docs (session deltas), recovery, code-map |
 

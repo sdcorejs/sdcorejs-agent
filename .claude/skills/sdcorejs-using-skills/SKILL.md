@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-using-skills
-description: Bootstrap that teaches how to find and dispatch sdcorejs skills — INJECTED AT SESSION START so dispatch discipline holds even when the repo's CLAUDE.md is absent (e.g. installed as a plugin in a foreign project). Establishes the clarify → spec → plan → write-code → review → ship flow, the user-approval gates, and the rule that a relevant skill MUST be invoked before responding. Triggers - session start, "what can you do", "skills nào dùng được", or any request that matches an sdcorejs skill. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Bootstrap that teaches how to find and dispatch sdcorejs skills — INJECTED AT SESSION START so dispatch discipline holds even when the repo's CLAUDE.md is absent (e.g. installed as a plugin in a foreign project). Establishes the clarify → spec → plan → write-code → review → ship flow, the user-approval gates, and the rule that a relevant skill MUST be invoked before responding. Triggers - session start, "what can you do", "skills nào dùng được", or any request that matches an sdcorejs skill. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Glob
 ---
 
@@ -17,7 +17,7 @@ You have the **sdcorejs SDLC skill pack** — an orchestrated software-developme
 1. Match the request against each skill's `description` (the "Use when…" trigger).
 2. Pick the highest-confidence match. If several tie, pick the earliest in the workflow (clarify before plan, plan before write-code).
 3. Invoke it via the `Skill` tool, announce it to the user ("Using `<skill>` to `<purpose>`"), then follow its body exactly.
-4. If nothing matches, ask a clarifying question or invoke the track's onboarding skill (`angular-portal-onboarding`, `nestjs-onboarding`, `nextjs-build-website-onboarding`).
+4. If nothing matches, ask a clarifying question or invoke the track's onboarding skill (`angular-onboarding`, `nestjs-onboarding`, `nextjs-build-website-onboarding`).
 
 ## The workflow (every track shares this shape)
 
@@ -33,7 +33,7 @@ Request
  → sdcorejs-review-spec           (★ user-approval gate)
  → sdcorejs-write-plan
  → sdcorejs-review-plan           (★ user-approval gate)
- → <track>-write-code             (angular-portal | nestjs | nextjs-build-website)
+ → <track>-write-code             (angular | nestjs | nextjs-build-website)
  → testing/e2e → review/code → sdcorejs-repair-loop
  → sdcorejs-comment-code (ASK gate)
  → sdcorejs-verify-before-done → sdcorejs-branch-ready

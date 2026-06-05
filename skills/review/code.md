@@ -12,7 +12,7 @@ of whichever SDCoreJS track the project belongs to. **Read-only** — surfaces
 violations the human reviewer should fix; never edits code (auto-fix is
 `orchestration/repair-loop`'s job).
 
-This skill replaces the previous per-track `sdcorejs-review-code-{angular-portal,nestjs,nextjs}`
+This skill replaces the previous per-track `sdcorejs-review-code-{angular,nestjs,nextjs}`
 skills. The track-specific *knowledge* now lives as reference docs loaded on
 demand; the dispatch surface and output format are unified here.
 
@@ -28,7 +28,7 @@ Inspect the project root and the files under review. Pick the highest-confidence
 
 | Track | Signals |
 |---|---|
-| **angular-portal** | `angular.json`; `@sdcorejs/angular` in `package.json`; `src/libs/<module>/`; `*.component.ts`, `*.routes.ts` |
+| **angular** | `angular.json`; `@sdcorejs/angular` in `package.json`; `src/libs/<module>/`; `*.component.ts`, `*.routes.ts` |
 | **nestjs** | `nest-cli.json`; `@nestjs/*` deps; `*.controller.ts` / `*.service.ts` / `*.entity.ts`; `base/core-be/` |
 | **nextjs** | `next.config.*`; `next` dep; `src/app/[locale]/`; `page.tsx`, `layout.tsx` |
 | **(none match)** | → **general mode** (baseline standards below) |
@@ -38,7 +38,7 @@ stack, scope the review to that stack. State the detected track in the report he
 
 ## Step 1 — Load the matching knowledge
 
-- **angular-portal** → read `_refs/angular-portal/review-code.md`
+- **angular** → read `_refs/angular/review-code.md`
 - **nestjs** → read `_refs/nestjs/review-code.md`
 - **nextjs** → read `_refs/nextjs/build-website/review-code.md`
 - **none** → skip the load; use the **General baseline** below
@@ -87,7 +87,7 @@ or risk of applying the fix (write `none` when the fix is strictly better).
 
 ## Scope
 - Files reviewed: <N>
-- Track detected: <angular-portal | nestjs | nextjs | general>
+- Track detected: <angular | nestjs | nextjs | general>
 - Verification: `<build cmd>` → exit 0/failed · `<test cmd>` → N passed, 0 failed
 
 ## 🔴 Critical
@@ -123,7 +123,7 @@ or risk of applying the fix (write `none` when the fix is strictly better).
 For a full module/branch audit or when the user asks for a "scored review",
 "đánh giá", "chấm điểm", or enterprise-readiness assessment on an **Angular**
 project, use the 13-category scored format defined in
-`_refs/angular-portal/review-code.md` instead of the quick tables.
+`_refs/angular/review-code.md` instead of the quick tables.
 
 ## Rules
 
@@ -152,7 +152,7 @@ project, use the 13-category scored format defined in
 ## Cross-references
 - Track knowledge: `_refs/<track>/review-code.md` (nextjs: `_refs/nextjs/build-website/review-code.md`)
 - Architecture review: `review/architecture`
-- Security audit: `review/security/{angular-portal,nestjs,nextjs,shared}`
+- Security audit: `review/security/{angular,nestjs,nextjs,shared}`
 - Performance review: `review/performance/<track>`
 - Accessibility review: `review/accessibility/<track>`
 - Repair loop: `orchestration/repair-loop`

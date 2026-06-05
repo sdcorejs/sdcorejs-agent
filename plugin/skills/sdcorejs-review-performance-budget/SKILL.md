@@ -6,10 +6,10 @@ allowed-tools: Read, Bash
 
 # Review — Performance Budget (Cross-Track)
 
-**Extended by:** `review/performance/angular-portal.md`, `review/performance/nextjs.md`, `review/performance/nestjs.md` — each inherits these budgets and adds stack-specific probes. Where a stack legitimately needs a different number, the exception is stated once in **Per-track exceptions** below; per-track skills must reference that override rather than silently diverging.
+**Extended by:** `review/performance/angular.md`, `review/performance/nextjs.md`, `review/performance/nestjs.md` — each inherits these budgets and adds stack-specific probes. Where a stack legitimately needs a different number, the exception is stated once in **Per-track exceptions** below; per-track skills must reference that override rather than silently diverging.
 
 ## Purpose
-"Slow" is subjective until you set numbers. This skill ships the numbers + the commands to measure them. Stack-specific performance skills (`review/performance/angular-portal.md`, `nextjs.md`, `nestjs.md`) reference these budgets and add probes that match the stack's bottlenecks.
+"Slow" is subjective until you set numbers. This skill ships the numbers + the commands to measure them. Stack-specific performance skills (`review/performance/angular.md`, `nextjs.md`, `nestjs.md`) reference these budgets and add probes that match the stack's bottlenecks.
 
 A budget that no one checks is just a wish. Pair every threshold with a verifier command + a hook (CI, `verify-before-done`, or release checklist).
 

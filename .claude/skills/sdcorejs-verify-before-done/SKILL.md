@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-verify-before-done
-description: MANDATORY skill that runs BEFORE the agent claims a code-writing task is "done" / commits / hands off to `sdcorejs-auto-docs`. Loads the spec's Acceptance Criteria, identifies a verification command for each, runs all automatable ones, and presents a manual checklist for the rest. Blocks the "done" claim until every criterion is ✅ verified or ⚠️ explicitly acknowledged as deferred. Triggers - automatic before auto-docs at end of any code-writing skill; user says "verify", "kiểm tra acceptance", "check acceptance criteria". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill that runs BEFORE the agent claims a code-writing task is "done" / commits / hands off to `sdcorejs-auto-docs`. Loads the spec's Acceptance Criteria, identifies a verification command for each, runs all automatable ones, and presents a manual checklist for the rest. Blocks the "done" claim until every criterion is ✅ verified or ⚠️ explicitly acknowledged as deferred. Triggers - automatic before auto-docs at end of any code-writing skill; user says "verify", "kiểm tra acceptance", "check acceptance criteria". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Bash, Glob, Grep
 ---
 
@@ -12,7 +12,7 @@ allowed-tools: Read, Bash, Glob, Grep
 > **Scope.** This gate is the feature-end *enforcement point* of the always-on evidence-before-claims rule (CLAUDE.md rule 10). That rule governs EVERY interim success claim during the task too — "tests pass", "build is green", "fixed" each need fresh command output in the same turn they're claimed. This skill is where the rule is checked exhaustively, criterion-by-criterion, before "done".
 
 ## When invoked
-- **MANDATORY** automatic invocation BEFORE `sdcorejs-branch-ready` → `sdcorejs-auto-docs` at the end of every code-writing skill (`07-write-code` — the `angular-portal-write-code` orchestrator and the reference packs it loads, including `actions` — and `sdcorejs-testing-e2e-<track>`)
+- **MANDATORY** automatic invocation BEFORE `sdcorejs-branch-ready` → `sdcorejs-auto-docs` at the end of every code-writing skill (`07-write-code` — the `angular-write-code` orchestrator and the reference packs it loads, including `actions` — and `sdcorejs-testing-e2e-<track>`)
 - Before `sdcorejs-commit` for a feature commit (not for chore/docs commits)
 - Before `sdcorejs-pr-create`
 - User says "verify", "kiểm tra acceptance", "check acceptance criteria", "đã xong chưa"
@@ -27,7 +27,7 @@ Do NOT invoke for:
 ### 1. Find the relevant spec
 ```bash
 TARGET_ROOT=$(git rev-parse --show-toplevel)
-TRACK=angular-portal   # detected from stack
+TRACK=angular   # detected from stack
 
 # Most recent spec doc (by filename timestamp)
 ls -1t "$TARGET_ROOT/.sdcorejs/docs/$TRACK"/*-spec.md 2>/dev/null | head -1

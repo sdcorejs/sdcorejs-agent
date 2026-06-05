@@ -1,12 +1,12 @@
 ---
 name: sdcorejs-review-security-shared
-description: Use when the user asks for a cross-track security audit, says "review bảo mật", "security check", "audit security", "kiểm tra bảo mật", or before a release / major refactor. Runs a cross-track security checklist (auth, authorization, injection, secrets, transport, dependencies, error handling) tailored to angular-portal, nestjs, and nextjs conventions. Stack-specific deepens via `review/security/<stack>.md`. Outputs a structured Critical / Important / Minor report with file:line refs. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use when the user asks for a cross-track security audit, says "review bảo mật", "security check", "audit security", "kiểm tra bảo mật", or before a release / major refactor. Runs a cross-track security checklist (auth, authorization, injection, secrets, transport, dependencies, error handling) tailored to angular, nestjs, and nextjs conventions. Stack-specific deepens via `review/security/<stack>.md`. Outputs a structured Critical / Important / Minor report with file:line refs. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Security Review — Cross-Track Checklist
 
-**Extended by:** `review/security/angular-portal.md`, `review/security/nestjs.md`, `review/security/nextjs.md` — each runs this baseline first, then adds stack-specific numbered checks. Run the matching stack file(s) after this one.
+**Extended by:** `review/security/angular.md`, `review/security/nestjs.md`, `review/security/nextjs.md` — each runs this baseline first, then adds stack-specific numbered checks. Run the matching stack file(s) after this one.
 
 ## Purpose
 Catch common security mistakes BEFORE they ship. Not a substitute for pentest or SAST — this is the engineer-level sanity check that you'd want a reviewer to do, formalized.
@@ -119,7 +119,7 @@ Produce a structured report:
 ## Security Review — <repo> @ <branch> — <date>
 
 ### Scope
-- Stacks reviewed: <angular-portal | nestjs | nextjs>
+- Stacks reviewed: <angular | nestjs | nextjs>
 - Commit range: <base>...<head> (N commits)
 - Files touched: M
 

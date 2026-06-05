@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-using-worktrees
-description: Use to set up an ISOLATED workspace before write-code or parallel dispatch — detects existing isolation, prefers a native worktree tool, falls back to `git worktree`, then runs per-stack setup + a clean baseline. Protects the user's current branch from in-progress generation and lets `sdcorejs-subagent-driven-dev` fan out agents that don't trample each other. Triggers - "tạo worktree", "worktree", "isolate workspace", "làm trên nhánh riêng", "không đụng nhánh hiện tại", "chạy song song nhiều feature", or automatic before `<track>-write-code` when work needs isolation. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use to set up an ISOLATED workspace before write-code or parallel dispatch — detects existing isolation, prefers a native worktree tool, falls back to `git worktree`, then runs per-stack setup + a clean baseline. Protects the user's current branch from in-progress generation and lets `sdcorejs-subagent-driven-dev` fan out agents that don't trample each other. Triggers - "tạo worktree", "worktree", "isolate workspace", "làm trên nhánh riêng", "không đụng nhánh hiện tại", "chạy song song nhiều feature", or automatic before `<track>-write-code` when work needs isolation. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Bash, Glob
 ---
 
@@ -92,7 +92,7 @@ Run the stack-appropriate baseline so later failures are attributable to your ch
 
 | Stack | Baseline command |
 |---|---|
-| angular-portal | `npm run build-dev` (or `npm run test -- --watch=false` if a quick suite exists) |
+| angular | `npm run build-dev` (or `npm run test -- --watch=false` if a quick suite exists) |
 | nestjs | `npm run build` then `npm run test` |
 | nextjs | `npm run build` (or `npm run lint` for a faster signal) |
 

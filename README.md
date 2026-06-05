@@ -22,7 +22,7 @@ The system ships as **dispatchable skills** — markdown with YAML frontmatter �
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular Portal | `skills/angular-portal/` | ✅ Complete (21 skills + 58 reference docs for Core UI) |
+| Angular Portal | `skills/angular/` | ✅ Complete (21 skills + 58 reference docs for Core UI) |
 | NestJS | `skills/nestjs/` | 🚧 Planned |
 | Next.js | `skills/nextjs/` | 🚧 Planned |
 
@@ -49,7 +49,7 @@ orchestration/auto-docs    ← MANDATORY: summary to target project's .sdcorejs/
 orchestration/memories     ← when learning durable knowledge: target project's .sdcorejs/memories/<track>/
 ```
 
-For Angular Portal, `07-write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular-portal/write-code/` (no frontmatter, not dispatchable skills): `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow / bulk / custom side-effects).
+For Angular Portal, `07-write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular/write-code/` (no frontmatter, not dispatchable skills): `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow / bulk / custom side-effects).
 
 ## Mandatory rules (every track)
 
@@ -72,7 +72,7 @@ Install via the Claude Code plugin marketplace. The repo ships its own single-pl
 /plugin install sdcorejs-agent@sdcorejs
 ```
 
-After install, all 58 skills (cross-track SDLC + angular-portal / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
+After install, all 58 skills (cross-track SDLC + angular / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
 
 ### Option 2 — git submodule (works for Claude Code + Copilot + Codex)
 
@@ -123,13 +123,13 @@ sdcorejs-agent/
 │   ├── skills/<name>/SKILL.md             # project-local Claude Code mirror (auto-synced)
 │   └── _refs/<track>/...                  # auto-synced from top-level _refs/
 ├── _refs/                                 # source of truth — reference data per track (one tree, mirrored once)
-│   ├── angular-portal/                    # core-version, catalog, entity-field-types, templates/, sdcorejs-angular/...
+│   ├── angular/                    # core-version, catalog, entity-field-types, templates/, sdcorejs-angular/...
 │   ├── nestjs/                            # architecture-principles
 │   ├── nextjs/build-website/              # architecture-principles
-│   └── sdlc/                              # cross-track design-phase patterns ({angular-portal,nestjs,nextjs}.md)
+│   └── sdlc/                              # cross-track design-phase patterns ({angular,nestjs,nextjs}.md)
 ├── skills/                                # source of truth — flat .md per skill
 │   ├── tracks/
-│   │   ├── angular-portal/                # ✅ 2 skills (onboarding + write-code orchestrator; 6 reference packs in _refs/angular-portal/write-code/)
+│   │   ├── angular/                # ✅ 2 skills (onboarding + write-code orchestrator; 6 reference packs in _refs/angular/write-code/)
 │   │   ├── nestjs/                        # 🟡 scaffold
 │   │   └── nextjs/build-website/          # ✅ 13 skills
 │   ├── shared/{sdlc,conventions,workflow}/

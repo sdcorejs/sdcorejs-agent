@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review-plan
-description: Use AFTER `sdcorejs-write-plan` writes a step-by-step plan. Presents the plan to the user for review BEFORE code is generated. Acts as the user-approval gate before `<track>-write-code` runs; on approval, fires `orchestration/auto-plans` to persist the snapshot and dispatches the track's write-code orchestrator. Triggers - automatic after `sdcorejs-write-plan`; or user says "review plan", "check the plan", "rà soát plan", "duyệt plan", "approve plan". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-write-plan` writes a step-by-step plan. Presents the plan to the user for review BEFORE code is generated. Acts as the user-approval gate before `<track>-write-code` runs; on approval, fires `orchestration/auto-plans` to persist the snapshot and dispatches the track's write-code orchestrator. Triggers - automatic after `sdcorejs-write-plan`; or user says "review plan", "check the plan", "rà soát plan", "duyệt plan", "approve plan". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Edit, Glob
 ---
 
@@ -65,7 +65,7 @@ Bạn duyệt plan này chứ?
 #### Approve ("OK", "duyệt", "approve", "go ahead", "tiến hành", "generate")
 1. IMMEDIATELY invoke `orchestration/auto-plans` (write mode) to persist the approved plan snapshot to `<target>/.sdcorejs/plans/<TRACK>/<YYYY-MM-DD-HH-mm>-<topic>.md`
 2. Dispatch the right track's write-code orchestrator with the approved plan as input:
-   - `angular-portal` → `angular-portal-write-code`
+   - `angular` → `angular-write-code`
    - `nextjs` → `nextjs-build-website-write-code`
    - `nestjs` → `nestjs-write-code` (when available; until then ASK user)
 

@@ -7,7 +7,7 @@ allowed-tools: Read
 # Testing — Principles (Cross-Track)
 
 ## Purpose
-Stack-specific testing skills (Cypress / Playwright / Jest / supertest / testcontainers) cover **how** to write tests. This skill covers **why and what** — the principles that apply equally to angular-portal, nestjs, nextjs. Read this once; the stack-specific skills will reference it.
+Stack-specific testing skills (Cypress / Playwright / Jest / supertest / testcontainers) cover **how** to write tests. This skill covers **why and what** — the principles that apply equally to angular, nestjs, nextjs. Read this once; the stack-specific skills will reference it.
 
 ## When invoked
 - A stack-specific test skill is about to dispatch and the agent wants principle context first

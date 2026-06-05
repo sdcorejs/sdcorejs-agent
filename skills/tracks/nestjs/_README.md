@@ -12,7 +12,7 @@ This directory holds the NestJS-specific code-writing skills. As of the cross-tr
 | `20-controller.md` | Refine controller endpoints (guards, permissions, OpenAPI) | 🚧 Planned |
 | `21-service.md` | Service-layer business logic + transactions | 🚧 Planned |
 | `22-repository.md` | Custom repository queries | 🚧 Planned |
-| `31-actions.md` | Approval / publish state machines + custom side-effects (export, re-sync, etc.) — mirrors the broadened scope used by angular-portal | 🚧 Planned |
+| `31-actions.md` | Approval / publish state machines + custom side-effects (export, re-sync, etc.) — mirrors the broadened scope used by angular | 🚧 Planned |
 
 The cross-track design phase (`skills/shared/sdlc/01-brainstorm.md` → `06-review-plan.md`) covers everything from intent → approved plan. The review/test skills (`sdcorejs-review-code`, `skills/testing/*/nestjs.md`) cover post-generation quality. The gap is the per-task code-writing automation.
 

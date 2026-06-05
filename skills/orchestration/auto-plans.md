@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-plans
-description: MANDATORY skill that runs AUTOMATICALLY right after `06-review-plan` receives explicit user approval. Persists the approved plan into the target project under `.sdcorejs/plans/<track>/YYYY-MM-DD-HH-mm-<topic>.md` so future sessions build a corpus of user-approved plans and learn the user's preferred granularity, phasing, and verification style. Also runs in READ-ONLY mode at session start to load the latest 3 approved plans as style references for `05-write-plan`. Triggers - immediately after `06-review-plan` returns an explicit affirmative ("OK", "duyệt", "approve"), AND at session start in a target project. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill that runs AUTOMATICALLY right after `06-review-plan` receives explicit user approval. Persists the approved plan into the target project under `.sdcorejs/plans/<track>/YYYY-MM-DD-HH-mm-<topic>.md` so future sessions build a corpus of user-approved plans and learn the user's preferred granularity, phasing, and verification style. Also runs in READ-ONLY mode at session start to load the latest 3 approved plans as style references for `05-write-plan`. Triggers - immediately after `06-review-plan` returns an explicit affirmative ("OK", "duyệt", "approve"), AND at session start in a target project. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Bash, Glob
 ---
 
@@ -15,7 +15,7 @@ allowed-tools: Read, Write, Bash, Glob
 
 Without this corpus, `05-write-plan` produces a generic structure every time and the user has to re-correct the same phasing / granularity choices.
 
-Shared across SDCoreJS tracks (`angular-portal`, `nestjs`, `nextjs`). Substitute `<track>` with the active track.
+Shared across SDCoreJS tracks (`angular`, `nestjs`, `nextjs`). Substitute `<track>` with the active track.
 
 ## When invoked
 
@@ -41,8 +41,8 @@ At session start in a target project, the agent MUST:
 # Resolve target project root (NOT the sdcorejs-agent repo!)
 TARGET_ROOT=$(git rev-parse --show-toplevel)
 
-# Pick the active <track>: angular-portal | nestjs | nextjs
-TRACK=angular-portal
+# Pick the active <track>: angular | nestjs | nextjs
+TRACK=angular
 
 # Ensure folder exists (note the leading dot in .sdcorejs/)
 mkdir -p "$TARGET_ROOT/.sdcorejs/plans/$TRACK"
@@ -61,7 +61,7 @@ name: <kebab-topic>
 description: <one-line hook so future sessions can decide whether to load this plan as a style reference>
 approvedAt: 2026-05-17T10:05+07:00
 approvedBy: <user identifier from git config user.email or session context>
-track: angular-portal
+track: angular
 module: catalog
 entity: product
 sourceSpecPath: .sdcorejs/specs/<track>/2026-05-17-09-30-add-product-entity.md   # the approved spec this plan implements
@@ -134,7 +134,7 @@ When `05-write-plan` is about to author a new plan, after reading the approved s
 
 | Track | Output folder |
 |---|---|
-| Angular Portal | `.sdcorejs/plans/angular-portal/` |
+| Angular Portal | `.sdcorejs/plans/angular/` |
 | NestJS | `.sdcorejs/plans/nestjs/` |
 | Next.js | `.sdcorejs/plans/nextjs/` |
 

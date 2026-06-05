@@ -6,7 +6,7 @@ allowed-tools: Read, Bash
 
 # Review — Accessibility Baseline (Cross-Track)
 
-**Extended by:** `review/accessibility/angular-portal.md`, `review/accessibility/nextjs.md` — each runs this baseline first, then adds per-framework probes. Run the matching stack file(s) after this one.
+**Extended by:** `review/accessibility/angular.md`, `review/accessibility/nextjs.md` — each runs this baseline first, then adds per-framework probes. Run the matching stack file(s) after this one.
 
 ## Purpose
 WCAG 2.1 AA is the legal floor in most jurisdictions (Vietnam's MIC Circular 18/2014, EU EN 301 549, US Section 508, etc.). This skill is the cross-track checklist + tooling reference. Stack-specific skills add framework-specific probes (e.g. Angular CDK's `cdkTrapFocus`, Next.js's automatic anchor focus management).

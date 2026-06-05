@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-ship
-description: End-to-end ship orchestrator. Chains verify-before-done → branch-ready → [changelog if release mode] → commit → push → pr-create into a single entry point. Triggers - "ship", "ship branch này", "đẩy lên", "tạo PR", "release", "xong rồi ship đi", "ready to merge". Applies to angular-portal, nestjs, nextjs and the sdcorejs-agent repo. Bilingual (VI/EN).
+description: End-to-end ship orchestrator. Chains verify-before-done → branch-ready → [changelog if release mode] → commit → push → pr-create into a single entry point. Triggers - "ship", "ship branch này", "đẩy lên", "tạo PR", "release", "xong rồi ship đi", "ready to merge". Applies to angular, nestjs, nextjs and the sdcorejs-agent repo. Bilingual (VI/EN).
 allowed-tools: Bash, Read
 ---
 

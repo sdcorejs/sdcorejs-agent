@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-changelog
-description: Use when the user asks to generate a CHANGELOG entry, says "viết changelog", "tạo changelog", "update CHANGELOG", "what changed since vX.Y.Z", or is preparing a release, or auto-invoked by sdcorejs-ship on release path. Reads commit history since the last tag, groups commits by Conventional Commits type, suggests a semver bump, and writes a `Keep a Changelog`-formatted entry under `## [Unreleased]` or `## [X.Y.Z]`. Applies to angular-portal, nestjs, nextjs and the sdcorejs-agent repo itself. Bilingual (VI/EN).
+description: Use when the user asks to generate a CHANGELOG entry, says "viết changelog", "tạo changelog", "update CHANGELOG", "what changed since vX.Y.Z", or is preparing a release, or auto-invoked by sdcorejs-ship on release path. Reads commit history since the last tag, groups commits by Conventional Commits type, suggests a semver bump, and writes a `Keep a Changelog`-formatted entry under `## [Unreleased]` or `## [X.Y.Z]`. Applies to angular, nestjs, nextjs and the sdcorejs-agent repo itself. Bilingual (VI/EN).
 allowed-tools: Bash, Read, Edit, Write
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-repair-loop
-description: Use after sdcorejs-review-code (source: review-code) OR sdcorejs-verify-before-done (source: verify-before-done) produces findings. Caller MUST pass source context so the re-verify step runs the correct tool. First VERIFIES each finding is genuine, then fixes systematically, re-runs per-source verification, iterates until Critical + Important are resolved or deferred. Triggers - "fix các finding", "apply review findings", "sửa các lỗi review", "fix critical issues", or auto-invoked after sdcorejs-review-code or verify-before-done outputs findings. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use after sdcorejs-review-code (source: review-code) OR sdcorejs-verify-before-done (source: verify-before-done) produces findings. Caller MUST pass source context so the re-verify step runs the correct tool. First VERIFIES each finding is genuine, then fixes systematically, re-runs per-source verification, iterates until Critical + Important are resolved or deferred. Triggers - "fix các finding", "apply review findings", "sửa các lỗi review", "fix critical issues", or auto-invoked after sdcorejs-review-code or verify-before-done outputs findings. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Edit, Write, Bash, Grep
 ---
 
@@ -106,7 +106,7 @@ Report:
 For each, show the user a compact diff preview:
 ```
 [Important] src/libs/catalog/features/product/services/product.service.ts:42
-  Reason: Service should be `providedIn: 'root'`, not route-scoped (see _refs/angular-portal/write-code/init-module.md)
+  Reason: Service should be `providedIn: 'root'`, not route-scoped (see _refs/angular/write-code/init-module.md)
   Proposed:
     - @Injectable()
     + @Injectable({ providedIn: 'root' })

@@ -1,6 +1,6 @@
 {
   "name": "sdcorejs-agent",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "An orchestrated SDLC for AI coding agents — Angular Portal, NestJS, and Next.js stacks with explicit approval gates between every phase. Works in Claude Code, GitHub Copilot, and Codex.",
   "license": "MIT",
   "private": true,

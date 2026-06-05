@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-recovery
-description: Use when the user says "tiếp tục", "tiếp tục công việc", "resume", "continue where we left off", "what was I doing", "where did we stop", or opens a session after a break and needs to rebuild context. Reads the latest auto-docs + memories + git state + task tracker and produces a one-screen handoff summary. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use when the user says "tiếp tục", "tiếp tục công việc", "resume", "continue where we left off", "what was I doing", "where did we stop", or opens a session after a break and needs to rebuild context. Reads the latest auto-docs + memories + git state + task tracker and produces a one-screen handoff summary. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Bash, Glob
 ---
 
@@ -28,7 +28,7 @@ git rev-parse --show-toplevel                    # target project root
 git rev-parse --abbrev-ref HEAD                  # current branch
 ```
 Detect track:
-- If `angular.json` exists at root → angular-portal
+- If `angular.json` exists at root → angular
 - If `nest-cli.json` exists → nestjs
 - If `next.config.js` / `next.config.ts` exists → nextjs
 - If `skills/<track>/` is the repo (sdcorejs-agent itself) → skip target-project reads, use repo state only
@@ -136,7 +136,7 @@ Memory says X, latest doc implies not-X. Surface both, ask user which is current
 - Recovery for fresh sessions where there's nothing to recover (use `<track>-onboarding` instead)
 
 ## Cross-track usage
-The skill applies identically to angular-portal, nestjs, nextjs. The only differences are detection in step 1 and the `<track>` segment in step 2 paths.
+The skill applies identically to angular, nestjs, nextjs. The only differences are detection in step 1 and the `<track>` segment in step 2 paths.
 
 For multi-track repos, prompt:
 "Repo có cả <track-a> và <track-b>. Bạn muốn recovery cho track nào, hay cả hai?"

@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-comment-code
-description: Mandatory ASK gate at the comment phase of every code-writing workflow. Always asks the user which comment level to apply — `skip` / `simple` / `medium` / `full` — before any comments are written. Outcome is optional: `skip` produces no comments; the other 3 levels apply progressively richer JSDoc + inline rules. Runs after `sdcorejs-review-code` / `orchestration/repair-loop` and BEFORE `orchestration/verify-before-done`. Triggers - automatic at the comment phase of any code-writing skill; or user says "add comments", "viết comment", "thêm comment", "comment lại code". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Mandatory ASK gate at the comment phase of every code-writing workflow. Always asks the user which comment level to apply — `skip` / `simple` / `medium` / `full` — before any comments are written. Outcome is optional: `skip` produces no comments; the other 3 levels apply progressively richer JSDoc + inline rules. Runs after `sdcorejs-review-code` / `orchestration/repair-loop` and BEFORE `orchestration/verify-before-done`. Triggers - automatic at the comment phase of any code-writing skill; or user says "add comments", "viết comment", "thêm comment", "comment lại code". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Edit, Write
 ---
 
@@ -172,7 +172,7 @@ it('rejects update when id is missing', () => {
 
 The cross-track rules above are authoritative. Each track adds a small framework-specific layer — apply both at level=full.
 
-**angular-portal:**
+**angular:**
 - JSDoc on `signal()` / `computed()` / `inject()` patterns — note non-obvious dependency choices and signal write/read scopes
 - Comment Core UI lifecycle hook ordering when it differs from default (e.g. why `ngAfterViewInit` instead of `ngOnInit`); note `OnPush` triggers when relying on signal/input identity
 - Signal template-invocation rule: when a signal is read **2+ times** in a template, leave a `// why: ...` comment on the `computed()` or `@let` that caches it, explaining the perf rationale

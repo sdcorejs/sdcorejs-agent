@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-parallel-dispatch
-description: Decision gate that runs BEFORE `sdcorejs-subagent-driven-dev`. Use when the agent is about to execute work that could plausibly be split across parallel subagents — multiple independent entities, multi-file scans, batch screen generation, multi-stack audits. Decides WHETHER to parallelize via independence + blast-radius + reviewability + budget checks. Outputs a verdict: SEQUENTIAL or PARALLEL-CANDIDATE; when PARALLEL, hands off to `sdcorejs-subagent-driven-dev` which owns the briefing + dispatch + merge mechanics. Triggers - "chạy song song", "dispatch parallel", "split into subagents", "fan out", "làm song song", "in parallel", or automatic invocation by 07-write-code (and other orchestrators) when ≥3 independent units are detected. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Decision gate that runs BEFORE `sdcorejs-subagent-driven-dev`. Use when the agent is about to execute work that could plausibly be split across parallel subagents — multiple independent entities, multi-file scans, batch screen generation, multi-stack audits. Decides WHETHER to parallelize via independence + blast-radius + reviewability + budget checks. Outputs a verdict: SEQUENTIAL or PARALLEL-CANDIDATE; when PARALLEL, hands off to `sdcorejs-subagent-driven-dev` which owns the briefing + dispatch + merge mechanics. Triggers - "chạy song song", "dispatch parallel", "split into subagents", "fan out", "làm song song", "in parallel", or automatic invocation by 07-write-code (and other orchestrators) when ≥3 independent units are detected. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read
 ---
 
@@ -154,7 +154,7 @@ If subagent A succeeded but B failed, present the partial result and the failure
 - **The 12-way fan-out**: user gets 12 reports nobody can review
 - **Implicit ordering**: results return in arbitrary order; reviewer assumes order matters; bugs happen
 
-## Example: angular-portal screen generation
+## Example: angular screen generation
 
 User says "tạo CRUD cho entity Product với 4 màn (list, detail, create, update)".
 
@@ -175,7 +175,7 @@ Wrong dispatch:
 User says "write reference docs for all 23 Core UI components". 
 
 This IS parallel-friendly:
-- Each component → independent file at `_refs/angular-portal/sdcorejs-angular/components/sd-<name>.md`
+- Each component → independent file at `_refs/angular/sdcorejs-angular/components/sd-<name>.md`
 - No shared state
 - Same template, different content
 
