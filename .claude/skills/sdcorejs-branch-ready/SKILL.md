@@ -153,7 +153,7 @@ Emit ⚪ Info suggestions based on thresholds (never block — advisory only):
 | Condition | Suggestion |
 |---|---|
 | `$CHANGED_COUNT > 8` AND `$MODULE_COUNT > 2` (both conditions simultaneously) | ⚪ Nhiều modules bị ảnh hưởng — consider `sdcorejs-review-architecture` before merging |
-| `$SECURITY_FILES > 0` | ⚪ Auth/security files trong diff — consider `sdcorejs-review-security-shared` (+ `sdcorejs-review-security-nestjs` for NestJS) |
+| `$SECURITY_FILES > 0` | ⚪ Auth/security files trong diff — consider `sdcorejs-review-security` |
 | Angular track AND `$COMPONENT_COUNT > 3` | ⚪ Nhiều Angular components — consider `sdcorejs-review-performance-angular` |
 | Angular track AND `$NEW_SCREENS > 0` | ⚪ Screens mới — consider `sdcorejs-review-accessibility-angular` |
 

@@ -20,7 +20,7 @@ Cross-cutting skills live in:
 - `skills/shared/sdlc/` — **6 cross-track design-phase skills** (brainstorm, clarify-requirements, write-spec, review-spec, write-plan, review-plan) + `_refs/{angular,nextjs,nestjs}.md`
 - `skills/orchestration/` — SDLC plumbing (16 files: parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills)
 - `skills/shared/conventions/` + `shared/workflow/` — commits, changelog, dep-update, debug, env-setup, pr-create, code-map
-- `skills/review/` — code review (single track-aware skill `sdcorejs-review-code`; per-track knowledge in `_refs/<track>/review-code.md`), security (cross-track + nestjs), performance (cross-track + per-track), architecture, accessibility
+- `skills/review/` — code review (single track-aware skill `sdcorejs-review-code`; per-track knowledge in `_refs/<track>/review-code.md`), security (single track-aware `sdcorejs-review-security`; knowledge in `_refs/<track>/review-security.md`), performance (cross-track + per-track), architecture, accessibility
 - `skills/testing/` — philosophy + tdd (cross-track) + e2e/integration/unit per-track
 
 Dispatch is by skill `name:` frontmatter, not path.
@@ -135,7 +135,7 @@ Cross-track skills — apply to all tracks. Dispatch by `description`; directory
 | `sdcorejs-recovery` | "tiếp tục", "resume" |  |
 | `sdcorejs-env-setup` | "thiết lập môi trường", "setup dev" |  |
 | `sdcorejs-changelog` | "viết changelog", release |  |
-| `sdcorejs-review-security-shared` | cross-track security checklist (extended by `review/security/<stack>.md`) |  |
+| `sdcorejs-review-security` | cross-track security checklist — track-aware (detects stack, deepens via `_refs/<track>/review-security.md`) |  |
 | `sdcorejs-dep-update` | "cập nhật dependency", audit fix |  |
 
 ## Reference docs (load on demand only)

@@ -243,6 +243,6 @@ Severity: 🔴 Critical — server-only modules in client bundle leak secrets / 
 - Architecture review (modules, layering): `review/architecture`
 - Performance review: `review/performance/nextjs`
 - Accessibility review: `review/accessibility/nextjs`
-- Security audit (cross-cutting): `review/security/shared`
+- Security audit (cross-cutting): `sdcorejs-review-security`
 - Repair loop: `orchestration/repair-loop`
 - Source conventions: `_refs/nextjs/build-website/write-code/{init-site,theme,pages-and-blocks,seo,og-preview,i18n,caching,responsive,contact-form,content-quality}.md`

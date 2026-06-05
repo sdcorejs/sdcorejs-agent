@@ -141,7 +141,7 @@ project, use the 13-category scored format defined in
 - Output a finding without a `file:line` reference.
 - Repeat the same issue once per file — group them.
 - Invent issues that aren't in the code.
-- Duplicate `review/architecture` / `review/security/<track>` findings (they own those axes).
+- Duplicate `review/architecture` / `sdcorejs-review-security` findings (they own those axes).
 
 ## Anti-patterns
 - "Looks good!" — give concrete observations and at least one 🟢 Strength.
@@ -152,7 +152,7 @@ project, use the 13-category scored format defined in
 ## Cross-references
 - Track knowledge: `_refs/<track>/review-code.md` (nextjs: `_refs/nextjs/build-website/review-code.md`)
 - Architecture review: `review/architecture`
-- Security audit: `review/security/{angular,nestjs,nextjs,shared}`
+- Security audit: `sdcorejs-review-security`
 - Performance review: `review/performance/<track>`
 - Accessibility review: `review/accessibility/<track>`
 - Repair loop: `orchestration/repair-loop`

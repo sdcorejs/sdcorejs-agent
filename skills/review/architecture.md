@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review-architecture
-description: Cross-track architecture review checklist. Audits a feature or module for layering violations, abstraction leaks, circular dependencies, premature optimisation, missing seams, and architectural drift from the project's conventions. Different from `sdcorejs-review-code` (per-file code review) — this is module/feature-level. Different from `review/security/shared.md` (auth/injection) — this is structural. Outputs a Critical/Important/Minor report. Triggers - "review kiến trúc", "architecture audit", "code structure check", "module này organize đúng chưa", "có circular dependency không", "abstraction leak", "should this be a separate module", or before a major feature merges. Bilingual (VI/EN).
+description: Cross-track architecture review checklist. Audits a feature or module for layering violations, abstraction leaks, circular dependencies, premature optimisation, missing seams, and architectural drift from the project's conventions. Different from `sdcorejs-review-code` (per-file code review) — this is module/feature-level. Different from `sdcorejs-review-security` (auth/injection) — this is structural. Outputs a Critical/Important/Minor report. Triggers - "review kiến trúc", "architecture audit", "code structure check", "module này organize đúng chưa", "có circular dependency không", "abstraction leak", "should this be a separate module", or before a major feature merges. Bilingual (VI/EN).
 allowed-tools: Read, Glob, Grep, Bash
 ---
 
@@ -215,6 +215,6 @@ Are tests in the right place + at the right layer (per `testing/philosophy.md`)?
 ## Cross-references
 - Per-stack code review: `sdcorejs-review-code`
 - Performance audit: `review/performance/<stack>.md` + `review/performance/budget.md`
-- Security audit: `review/security/shared.md` + `review/security/<stack>.md`
+- Security audit: `sdcorejs-review-security`
 - Accessibility audit: `review/accessibility/<stack>.md` + `review/accessibility/baseline.md`
 - Repair loop: `orchestration/repair-loop` after findings

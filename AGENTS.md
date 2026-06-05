@@ -30,7 +30,7 @@ skills/
 │
 ├── review/
 │   ├── code.md           single track-aware code review (sdcorejs-review-code); per-track knowledge in _refs/<track>/review-code.md (nextjs: _refs/nextjs/build-website/review-code.md)
-│   ├── security/         shared.md (cross-track baseline) + per-track narrow checks (nestjs.md)
+│   ├── security/         security.md — single track-aware skill (sdcorejs-review-security); knowledge in _refs/<track>/review-security.md
 │   ├── architecture.md   cross-track architecture review
 │   ├── performance/      budget.md (cross-track) + per-track (angular, nestjs, nextjs)
 │   └── accessibility/    baseline.md (cross-track) + per-track (angular, nextjs)
@@ -148,7 +148,7 @@ Cross-track skills — apply to angular, nestjs, nextjs alike. Dispatch is by sk
 | `sdcorejs-recovery` | "tiếp tục", "resume" — handoff from docs + memories + git state |  |
 | `sdcorejs-env-setup` | "thiết lập môi trường", "setup dev" — per-stack bootstrap |  |
 | `sdcorejs-changelog` | "viết changelog", release — Keep a Changelog + semver bump |  |
-| `sdcorejs-review-security-shared` | cross-track security checklist (deepened by `review/security/<stack>.md`) |  |
+| `sdcorejs-review-security` | cross-track security checklist — track-aware (detects stack, deepens via `_refs/<track>/review-security.md`) |  |
 | `sdcorejs-dep-update` | "cập nhật dependency", audit fix — safe upgrade workflow |  |
 
 ## Reference docs (load on demand)
