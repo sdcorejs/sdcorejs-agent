@@ -8,7 +8,7 @@
 
 ## What this covers
 Per-file code review for a Next.js landing-site project. Different from
-`review/architecture` (structural) and `review/performance/nextjs` (numbers).
+`review/architecture` (structural) and `sdcorejs-review-performance` (numbers).
 This file checks line-level adherence to Next.js + build-website conventions.
 
 ## Conventions checked (mapped to the write-code reference pack that defined them)
@@ -241,8 +241,8 @@ Severity: 🔴 Critical — server-only modules in client bundle leak secrets / 
 
 ## Cross-references
 - Architecture review (modules, layering): `review/architecture`
-- Performance review: `review/performance/nextjs`
-- Accessibility review: `review/accessibility/nextjs`
+- Performance review: `sdcorejs-review-performance`
+- Accessibility review: `sdcorejs-review-accessibility`
 - Security audit (cross-cutting): `sdcorejs-review-security`
 - Repair loop: `orchestration/repair-loop`
 - Source conventions: `_refs/nextjs/build-website/write-code/{init-site,theme,pages-and-blocks,seo,og-preview,i18n,caching,responsive,contact-form,content-quality}.md`

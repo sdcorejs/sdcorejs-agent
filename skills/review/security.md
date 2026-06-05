@@ -117,5 +117,5 @@ Match the user's language (VI/EN). Cite `file:line` + OWASP category for every f
 - Cross-track checklist: `_refs/shared/review-security.md`
 - Track probes: `_refs/<track>/review-security.md` (nextjs: `_refs/nextjs/build-website/review-security.md`)
 - Code review (guard/permission overlap): `sdcorejs-review-code`
-- Architecture: `sdcorejs-review-architecture` · Performance: `review/performance/<track>`
+- Architecture: `sdcorejs-review-architecture` · Performance: `sdcorejs-review-performance`
 - Verification: `orchestration/verify-before-done`

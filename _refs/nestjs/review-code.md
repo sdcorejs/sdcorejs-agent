@@ -9,7 +9,7 @@
 ## What this covers
 Per-file code review for a NestJS backend following the `be-masterdata` baseline.
 Different from `review/architecture` (structural), `sdcorejs-review-security`
-(auth/injection), `review/performance/nestjs` (queries). This file checks
+(auth/injection), `sdcorejs-review-performance` (queries). This file checks
 adherence to NestJS + be-masterdata conventions.
 
 ## Conventions checked
@@ -224,6 +224,6 @@ Severity: 🟡 Important — `console.log` in prod hits stdout but lacks request
 ## Cross-references
 - Architecture review: `review/architecture`
 - Security audit: `sdcorejs-review-security`
-- Performance audit: `review/performance/nestjs`
+- Performance audit: `sdcorejs-review-performance`
 - Repair loop: `orchestration/repair-loop`
 - Conventions referenced: be-masterdata baseline + `base/core-be/` + `base/shared/`

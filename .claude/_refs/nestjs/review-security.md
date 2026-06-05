@@ -117,4 +117,4 @@ If the API uses cookie-based sessions (not Bearer tokens), CSRF protection is re
 - JWT in localStorage — prefer httpOnly cookie
 
 ## Cross-references
-- Code review (`@HasPermission` overlap): `sdcorejs-review-code` · Performance (rate-limit overlap): `review/performance/nestjs`
+- Code review (`@HasPermission` overlap): `sdcorejs-review-code` · Performance (rate-limit overlap): `sdcorejs-review-performance`

@@ -214,9 +214,9 @@ Are tests in the right place + at the right layer (per `testing/philosophy.md`)?
 
 ## Cross-references
 - Per-stack code review: `sdcorejs-review-code`
-- Performance audit: `review/performance/<stack>.md` + `review/performance/budget.md`
+- Performance audit: `sdcorejs-review-performance`
 - Security audit: `sdcorejs-review-security`
-- Accessibility audit: `review/accessibility/<stack>.md` + `review/accessibility/baseline.md`
+- Accessibility audit: `sdcorejs-review-accessibility`
 - Repair loop: `orchestration/repair-loop` after findings
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->

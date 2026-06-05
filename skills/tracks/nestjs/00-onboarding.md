@@ -25,7 +25,7 @@ Welcome the developer inside a NestJS project. This track is in **scaffold statu
 - `sdcorejs-write-plan` (cross-track) — numbered plan
 - `sdcorejs-review-plan` (cross-track) — user approval gate + `orchestration/auto-plans`
 - `sdcorejs-review-code` — convention review (auto-detects NestJS)
-- `skills/review/performance/nestjs.md` — performance audit
+- `sdcorejs-review-performance` — performance audit
 - `sdcorejs-review-security` — security audit
 - `skills/testing/unit/nestjs.md` — unit tests with mocked dependencies
 - `skills/testing/integration/nestjs.md` — pg-mem + real DI

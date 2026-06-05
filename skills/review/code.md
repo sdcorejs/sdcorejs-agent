@@ -153,6 +153,6 @@ project, use the 13-category scored format defined in
 - Track knowledge: `_refs/<track>/review-code.md` (nextjs: `_refs/nextjs/build-website/review-code.md`)
 - Architecture review: `review/architecture`
 - Security audit: `sdcorejs-review-security`
-- Performance review: `review/performance/<track>`
-- Accessibility review: `review/accessibility/<track>`
+- Performance review: `sdcorejs-review-performance`
+- Accessibility review: `sdcorejs-review-accessibility`
 - Repair loop: `orchestration/repair-loop`
