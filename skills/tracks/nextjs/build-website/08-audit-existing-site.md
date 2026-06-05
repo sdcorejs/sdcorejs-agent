@@ -9,7 +9,7 @@ allowed-tools: Read, Bash, Glob, Grep
 ## Purpose
 `01-brainstorm` assumes greenfield (we choose industry, tier, theme from nothing). **This skill is the opposite entry**: a Next.js repo already exists, and the user wants to know what's missing or weak so they can prioritise improvements.
 
-The audit measures the existing repo against the same 14-point quality bar that this skill pack would produce from scratch, then surfaces the gaps as a structured report that maps each finding to the specific sub-skill that fixes it. The user picks priorities; the standard SDLC (02-clarify → 03-spec → 04-review → 05-plan → 06-review → 07-write-code) executes them.
+The audit measures the existing repo against the same 14-point quality bar that this skill pack would produce from scratch, then surfaces the gaps as a structured report that maps each finding to the specific sub-skill that fixes it. The user picks priorities; the standard SDLC (02-clarify → 03-spec → 04-review → 05-write-plan → 06-review → 07-write-code) executes them.
 
 This skill is **read-only**. It never modifies code, never auto-applies fixes. Approval gates downstream are sacred.
 
@@ -253,7 +253,7 @@ Pass these context fields to `02-clarify-requirements` so it knows to skip what'
 ## Cross-references
 - `01-brainstorm` — parallel entry (greenfield); this skill is the brownfield analogue
 - `02-clarify-requirements` — receives the audit context as input
-- `03-write-spec` → `04-review-spec` → `05-plan` → `06-review-plan` → `07-write-code` — standard downstream flow
+- `03-write-spec` → `04-review-spec` → `05-write-plan` → `06-review-plan` → `07-write-code` — standard downstream flow
 - `shared/workflow/code-map` — even more general read-only architecture scan (cross-track); this skill is NextJS-specific and quality-focused
 - `orchestration/recovery` — picks up here if a user resumes mid-sprint
 - Each finding's "Fix via" column points to the relevant reference pack (init-site through content-quality), all dispatched through the `nextjs-build-website-write-code` orchestrator (`_refs/nextjs/build-website/write-code/`)

@@ -1,19 +1,19 @@
 ---
 name: sdcorejs-write-spec
-description: Use AFTER `sdcorejs-clarify-requirements` has captured every blocking input for the detected track, BEFORE `sdcorejs-plan`. Authors a spec document at `<target-project>/.sdcorejs/docs/<track>/<timestamp>-<topic>-spec.md` covering Problem & Goals, Non-goals, Architecture, File structure, Acceptance criteria, Risks, Out-of-scope. Track-specific section emphasis loaded from `_refs/sdlc/<track>.md` (e.g. angular file-paths, nestjs persistence + transactions, nextjs SEO + caching). Triggers - "viết spec", "write spec", "draft spec", "tài liệu thiết kế", "design doc", "soạn spec cho ...". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-clarify-requirements` has captured every blocking input for the detected track, BEFORE `sdcorejs-write-plan`. Authors a spec document at `<target-project>/.sdcorejs/docs/<track>/<timestamp>-<topic>-spec.md` covering Problem & Goals, Non-goals, Architecture, File structure, Acceptance criteria, Risks, Out-of-scope. Track-specific section emphasis loaded from `_refs/sdlc/<track>.md` (e.g. angular file-paths, nestjs persistence + transactions, nextjs SEO + caching). Triggers - "viết spec", "write spec", "draft spec", "tài liệu thiết kế", "design doc", "soạn spec cho ...". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Glob, Grep, Bash
 ---
 
 # 03 — Write Spec (Cross-Track)
 
 ## Purpose
-Turn a confirmed scope into a written spec that survives sessions. The spec is the durable design artifact: `sdcorejs-plan` translates it into tasks, `<track>-write-code` implements those tasks, and any later session can re-read the spec to understand WHY the system looks the way it does.
+Turn a confirmed scope into a written spec that survives sessions. The spec is the durable design artifact: `sdcorejs-write-plan` translates it into tasks, `<track>-write-code` implements those tasks, and any later session can re-read the spec to understand WHY the system looks the way it does.
 
 A spec is **design-level** (what + why). A plan is **task-level** (which file, in what order). Do not mix them.
 
 ## When to use
 - After `sdcorejs-clarify-requirements` has confirmed every minimum-required answer for the track
-- BEFORE invoking `sdcorejs-plan` — the plan reads the approved spec as input
+- BEFORE invoking `sdcorejs-write-plan` — the plan reads the approved spec as input
 - When the user says "viết spec", "draft spec", "tài liệu thiết kế trước khi code", "design doc"
 
 If scope is not yet confirmed, route back to `sdcorejs-clarify-requirements`.
@@ -100,7 +100,7 @@ Scale each section to the complexity:
 Write to `$FILE` via `Write` tool. Use the template, fill every section (even if short), reflect the language the user is working in.
 
 ### Step 6 — Hand off to `sdcorejs-review-spec`
-Do NOT proceed to `sdcorejs-plan` until `sdcorejs-review-spec` confirms user approval.
+Do NOT proceed to `sdcorejs-write-plan` until `sdcorejs-review-spec` confirms user approval.
 
 ## Rules
 
@@ -115,7 +115,7 @@ Do NOT proceed to `sdcorejs-plan` until `sdcorejs-review-spec` confirms user app
 - Hand off to `sdcorejs-review-spec` after writing — do not auto-approve
 
 ### MUST NOT
-- Include implementation steps (which file in which order) — those belong in `sdcorejs-plan`
+- Include implementation steps (which file in which order) — those belong in `sdcorejs-write-plan`
 - Skip the non-goals section
 - Write spec without user-confirmed scope (route back to `sdcorejs-clarify-requirements`)
 - Write the spec inside this `sdcorejs-agent` repo
@@ -133,7 +133,7 @@ Do NOT proceed to `sdcorejs-plan` until `sdcorejs-review-spec` confirms user app
 - `sdcorejs-brainstorm` — produces the direction this spec captures
 - `sdcorejs-clarify-requirements` — confirms the inputs this spec relies on
 - `sdcorejs-review-spec` — runs immediately after, gates on user approval
-- `sdcorejs-plan` — reads the approved spec and produces the file-by-file plan
+- `sdcorejs-write-plan` — reads the approved spec and produces the file-by-file plan
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
 

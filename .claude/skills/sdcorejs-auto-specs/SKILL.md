@@ -19,7 +19,7 @@ Shared across SDCoreJS tracks (`angular-portal`, `nestjs`, `nextjs`). Substitute
 ## When invoked
 
 ### Auto-trigger right after `04-review-spec` approval
-The agent MUST run this skill (write mode) IMMEDIATELY after `04-review-spec` receives explicit user approval, BEFORE handing off to `05-plan`. The handoff to `05-plan` waits for this skill to finish.
+The agent MUST run this skill (write mode) IMMEDIATELY after `04-review-spec` receives explicit user approval, BEFORE handing off to `05-write-plan`. The handoff to `05-write-plan` waits for this skill to finish.
 
 Approval signals that count: "OK", "duyệt", "approve", "go", "tiếp tục", "looks good", "đồng ý".
 Approval signals that DO NOT count: silence, "thanks", "got it", "noted" — those do not fire this skill.
@@ -68,7 +68,7 @@ sourceSpecPath: .sdcorejs/docs/<track>/2026-05-17-09-20-add-product-entity-spec.
 
 # <Title> — Approved Spec
 
-> Snapshot of the spec the user approved at the `04-review-spec` gate. The body below is the exact contract `05-plan` consumed. Do not edit by hand — re-author via `03-write-spec` + `04-review-spec` if the contract changes.
+> Snapshot of the spec the user approved at the `04-review-spec` gate. The body below is the exact contract `05-write-plan` consumed. Do not edit by hand — re-author via `03-write-spec` + `04-review-spec` if the contract changes.
 
 ## Goals
 <verbatim from the approved spec>
@@ -147,7 +147,7 @@ In multi-track repos, write to the track folder matching the work being specifie
 | Path | `.sdcorejs/docs/<track>/` | `.sdcorejs/specs/<track>/` | `.sdcorejs/plans/<track>/` |
 | Filename | `YYYY-MM-DD-HH-mm-<topic>.md` | `YYYY-MM-DD-HH-mm-<topic>.md` | `YYYY-MM-DD-HH-mm-<topic>.md` |
 | Lifetime | Per session | Permanent corpus | Permanent corpus |
-| Consumed by | Session-start ritual | `03-write-spec` style mirror | `05-plan` style mirror |
+| Consumed by | Session-start ritual | `03-write-spec` style mirror | `05-write-plan` style mirror |
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
 

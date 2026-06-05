@@ -107,7 +107,7 @@ Defaults by track:
 - **nestjs**: TDD as default for services + validators + transactions; post-hoc for thin controllers + DTOs
 - **nextjs**: post-hoc for pages/blocks/SEO/i18n (mostly declarative); TDD for contact-form API route + content-quality scripts
 
-If user picks TDD, `sdcorejs-plan` will:
+If user picks TDD, `sdcorejs-write-plan` will:
 1. Slot a `40a-e2e-skeleton` task BEFORE each `07-write-code` sub-task that has user-visible behavior
 2. Slot a `41-tests-fill` task AFTER `07-write-code` to fill bodies based on the actual implementation
 3. Each acceptance criterion in the spec maps to a failing test in `40a-e2e-skeleton`

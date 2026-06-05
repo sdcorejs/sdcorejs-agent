@@ -14,7 +14,7 @@ Execute the approved NestJS plan task-by-task. This skill is the temporary bridg
 - The user has said "OK", "duyệt", "go ahead", or equivalent
 - `orchestration/auto-plans` has snapshotted the approved plan
 
-If no approved plan exists, route back to `sdcorejs-plan` / `sdcorejs-review-plan`.
+If no approved plan exists, route back to `sdcorejs-write-plan` / `sdcorejs-review-plan`.
 
 ## Process
 

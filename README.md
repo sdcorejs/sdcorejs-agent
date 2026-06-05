@@ -38,7 +38,7 @@ Request
 02-clarify-requirements    ← hard-confirm scope (blocking questions)
 03-write-spec              ← author a spec document
 04-review-spec             ← user reviews + approves spec
-05-plan                    ← step-by-step plan
+05-write-plan                    ← step-by-step plan
 06-review-plan             ← user reviews + approves plan
 07-write-code              ← orchestrator that dispatches sub-skills (10-31)
 40-e2e-test                ← write E2E tests for what was built
@@ -59,6 +59,7 @@ For Angular Portal, `07-write-code` is the single orchestrator; it loads on-dema
 4. **Clarify-before-code** — agent refuses to generate code without module ownership / entity name / key fields.
 5. **Core UI first** (Angular Portal) — use `@sdcorejs/angular` components; otherwise skeleton + `alert('TODO: ...')` stubs.
 6. **Test after generation** — run framework tests and report.
+7. **Evidence before claims** — the agent never says something passes / builds / is fixed / is done without running the verifying command in the same turn and reading its output. Applies to its own work and any subagent's report.
 
 ## Quick start in a target project
 

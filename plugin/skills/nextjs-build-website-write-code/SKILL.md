@@ -16,8 +16,8 @@ Single entry point for generating Next.js landing-site code. This skill is the d
 - After `orchestration/recovery` and user explicitly resumes work
 
 Do NOT invoke if:
-- No plan exists or plan is unapproved → go back to `05-plan` / `06-review-plan`
-- Scope changed since plan was approved → re-plan with `05-plan`
+- No plan exists or plan is unapproved → go back to `05-write-plan` / `06-review-plan`
+- Scope changed since plan was approved → re-plan with `05-write-plan`
 - The user wants to AUDIT an existing site (not generate) → `nextjs-build-website-audit-existing-site`
 
 ## Step 0 — Pre-flight: ensure project summary
@@ -128,7 +128,7 @@ Each tail-call is mandatory (per the cross-track rules in CLAUDE.md / AGENTS.md 
 - Bypassing the tail-call chain because "it's a small change" — small changes compound into untracked drift
 
 ## Cross-references
-- Inputs: approved plan from `05-plan` / `06-review-plan` + brainstorm + clarify outputs
+- Inputs: approved plan from `05-write-plan` / `06-review-plan` + brainstorm + clarify outputs
 - Reference packs: `_refs/nextjs/build-website/write-code/{init-site,theme,pages-and-blocks,seo,og-preview,i18n,caching,responsive,contact-form,content-quality}.md`
 - Audit an existing site (separate entry, read-only): `nextjs-build-website-audit-existing-site`
 - Tail-call chain: see CLAUDE.md workflow chart

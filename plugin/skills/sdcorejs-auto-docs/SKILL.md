@@ -89,7 +89,7 @@ The `<kebab-topic>` is a 3-6 word slug derived from what was actually done. Exam
 - Optional: invoke `40-e2e-test` to add happy-path E2E coverage
 
 ## Skill provenance
-Skills invoked this session: `02-clarify-requirements` → `05-plan` → `07-write-code` (init-entity pack)
+Skills invoked this session: `02-clarify-requirements` → `05-write-plan` → `07-write-code` (init-entity pack)
 ```
 
 ## Rules

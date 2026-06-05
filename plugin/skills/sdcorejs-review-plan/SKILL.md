@@ -1,18 +1,18 @@
 ---
 name: sdcorejs-review-plan
-description: Use AFTER `sdcorejs-plan` writes a step-by-step plan. Presents the plan to the user for review BEFORE code is generated. Acts as the user-approval gate before `<track>-write-code` runs; on approval, fires `orchestration/auto-plans` to persist the snapshot and dispatches the track's write-code orchestrator. Triggers - automatic after `sdcorejs-plan`; or user says "review plan", "check the plan", "rà soát plan", "duyệt plan", "approve plan". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-write-plan` writes a step-by-step plan. Presents the plan to the user for review BEFORE code is generated. Acts as the user-approval gate before `<track>-write-code` runs; on approval, fires `orchestration/auto-plans` to persist the snapshot and dispatches the track's write-code orchestrator. Triggers - automatic after `sdcorejs-write-plan`; or user says "review plan", "check the plan", "rà soát plan", "duyệt plan", "approve plan". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Edit, Glob
 ---
 
 # 06 — Review Plan (Cross-Track)
 
 ## Purpose
-Hold the user-approval gate between planning (`sdcorejs-plan`) and code generation (`<track>-write-code`). The plan is the contract: once approved, the write-code orchestrator executes exactly what it says, no more, no less.
+Hold the user-approval gate between planning (`sdcorejs-write-plan`) and code generation (`<track>-write-code`). The plan is the contract: once approved, the write-code orchestrator executes exactly what it says, no more, no less.
 
 Catching missing steps or wrong file paths here is far cheaper than catching them mid-generation. This skill is fully track-agnostic — only the dispatched write-code orchestrator differs.
 
 ## When to use
-- Automatically right after `sdcorejs-plan` writes a plan
+- Automatically right after `sdcorejs-write-plan` writes a plan
 - When the user says "review plan", "check the plan", "rà soát plan", "duyệt plan", "approve plan", "let's verify the plan"
 
 ## Process
@@ -20,7 +20,7 @@ Catching missing steps or wrong file paths here is far cheaper than catching the
 > **STOP — approval gate.** This skill BLOCKS code generation. After presenting the plan summary (step 3), you MUST wait for an explicit affirmative ("OK", "duyệt", "approve") before invoking `orchestration/auto-plans` or dispatching `<track>-write-code`. Silence or absence of objection is NOT approval. Never start a write-code task — not even step 1 — while the plan is still under review.
 
 ### 1. Re-read the plan
-Either re-read from the in-chat response (if `sdcorejs-plan` rendered it inline) or from the plan file if one was written. Re-read it as if you've never seen it.
+Either re-read from the in-chat response (if `sdcorejs-write-plan` rendered it inline) or from the plan file if one was written. Re-read it as if you've never seen it.
 
 ### 2. Self-review (before showing to user)
 Run the checklist below silently. If ANY item fails, edit the plan to fix it BEFORE presenting.
@@ -38,7 +38,7 @@ Run the checklist below silently. If ANY item fails, edit the plan to fix it BEF
 - [ ] Track-specific final-step references look correct (see `_refs/sdlc/<TRACK>.md`)
 
 ### 3. Render summary to user
-Present a CONCISE phase + verification summary, not the full numbered list (user already saw that in `sdcorejs-plan`).
+Present a CONCISE phase + verification summary, not the full numbered list (user already saw that in `sdcorejs-write-plan`).
 
 ```
 Plan ready: <N> tasks across <M> phases.
@@ -72,7 +72,7 @@ Bạn duyệt plan này chứ?
 #### Request changes ("đổi step N", "sửa", "amend", "change")
 1. Edit the plan
 2. Re-run self-review
-3. Re-present (loop max 3 rounds; if still not approved, suggest going back to `sdcorejs-plan` or `sdcorejs-review-spec`)
+3. Re-present (loop max 3 rounds; if still not approved, suggest going back to `sdcorejs-write-plan` or `sdcorejs-review-spec`)
 4. DO NOT invoke `orchestration/auto-plans` — only an approved plan gets snapshotted
 
 #### Abort ("hủy", "dừng", "cancel", "stop")
@@ -106,7 +106,7 @@ Bạn duyệt plan này chứ?
 
 ## Related skills
 - `_refs/sdlc/<TRACK>.md` — track-specific phase + verification conventions
-- `sdcorejs-plan` — runs immediately before
+- `sdcorejs-write-plan` — runs immediately before
 - `orchestration/auto-plans` — MANDATORY tail-call on approval
 - `<track>-write-code` — runs after auto-plans
 - `sdcorejs-review-spec` — sibling gate one stage earlier

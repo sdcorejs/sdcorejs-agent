@@ -29,7 +29,7 @@ Request
  → sdcorejs-clarify-requirements  (blocking — confirm minimum-required inputs)
  → sdcorejs-write-spec
  → sdcorejs-review-spec           (★ user-approval gate)
- → sdcorejs-plan
+ → sdcorejs-write-plan
  → sdcorejs-review-plan           (★ user-approval gate)
  → <track>-write-code             (angular-portal | nestjs | nextjs-build-website)
  → testing/e2e → review/code → sdcorejs-repair-loop

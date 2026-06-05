@@ -9,6 +9,8 @@ allowed-tools: Read, Bash, Glob, Grep
 ## Purpose
 "Tests pass" ≠ "feature done". A test suite covers the cases someone thought to write; acceptance criteria are what the user signed off on. This skill closes the gap — it makes the agent prove, criterion by criterion, that what was built matches what was specified.
 
+> **Scope.** This gate is the feature-end *enforcement point* of the always-on evidence-before-claims rule (CLAUDE.md rule 10). That rule governs EVERY interim success claim during the task too — "tests pass", "build is green", "fixed" each need fresh command output in the same turn they're claimed. This skill is where the rule is checked exhaustively, criterion-by-criterion, before "done".
+
 ## When invoked
 - **MANDATORY** automatic invocation BEFORE `sdcorejs-auto-docs` at the end of every code-writing skill (`07-write-code` — the `angular-portal-write-code` orchestrator and the reference packs it loads, including `actions` — and `40-e2e-test`)
 - Before `sdcorejs-commit` for a feature commit (not for chore/docs commits)

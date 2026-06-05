@@ -40,7 +40,7 @@ shared/sdlc/04-review-spec       (sdcorejs-review-spec) — APPROVAL GATE
   ↓
 orchestration/auto-specs         ← MANDATORY on approval; snapshot to .sdcorejs/specs/angular-portal/
   ↓
-shared/sdlc/05-plan              (sdcorejs-plan)
+shared/sdlc/05-write-plan              (sdcorejs-write-plan)
   ← numbered file-by-file plan
   ↓
 shared/sdlc/06-review-plan       (sdcorejs-review-plan) — APPROVAL GATE

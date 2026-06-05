@@ -30,7 +30,7 @@ After `07-write-code` (or any sub-skill) has produced a feature, write E2E tests
    - **Auth + env** — login user/role, environment (QC/UAT/…) + how URLs/creds are provided (e.g. `Variables/ENV_QC.yaml`).
    - **Test data** — inline vs data-driven (Excel `DataTest/Excel`), and any prep/cleanup.
    - **Reuse** — which Page already has keyword resources (`UI_<Page>` / High / Verification) or page objects to extend rather than recreate.
-3. **Plan** (`sdcorejs-plan` → `sdcorejs-review-plan`) — list the test cases + a keyword/page-object inventory (NEW vs REUSE) for approval. Generation waits for explicit OK.
+3. **Plan** (`sdcorejs-write-plan` → `sdcorejs-review-plan`) — list the test cases + a keyword/page-object inventory (NEW vs REUSE) for approval. Generation waits for explicit OK.
 4. **Generate** — only now write code, per the detected framework's conventions (Robot → load `_refs/angular-portal/e2e-robot-conventions.md`). Map each inspector autoid → a Low-level action; compose High-level flows; add Verification/assertions from the clarified expected results; build the suite. Reuse existing keywords; create only what's missing.
 5. **Verify** — run the suite (or dry-run if no env), report per §"Run + verify".
 

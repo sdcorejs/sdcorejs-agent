@@ -22,7 +22,7 @@ skills/
 │       └── build-website/  ✅  3 track skills — 00-onboarding, 07-write-code orchestrator, 08-audit-existing-site (orchestrator dispatches 10 reference packs in _refs/nextjs/build-website/write-code/: init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality)
 │
 ├── shared/
-│   ├── sdlc/             ✅  6 cross-track design-phase skills (01-brainstorm, 02-clarify-requirements, 03-write-spec, 04-review-spec, 05-plan, 06-review-plan); patterns live in `_refs/sdlc/{angular-portal,nextjs,nestjs}.md`
+│   ├── sdlc/             ✅  6 cross-track design-phase skills (01-brainstorm, 02-clarify-requirements, 03-write-spec, 04-review-spec, 05-write-plan, 06-review-plan); patterns live in `_refs/sdlc/{angular-portal,nextjs,nestjs}.md`
 │   ├── conventions/      Conventional Commits, changelog, dep-update
 │   └── workflow/         env-setup, debug, pr-create, code-map
 │
@@ -71,7 +71,7 @@ Request
   → shared/sdlc/02-clarify-requirements   (sdcorejs-clarify-requirements)
   → shared/sdlc/03-write-spec → shared/sdlc/04-review-spec   (approval gate)
                               → orchestration/auto-specs  (MANDATORY on approval — snapshot to .sdcorejs/specs/<track>/)
-  → shared/sdlc/05-plan       → shared/sdlc/06-review-plan  (approval gate)
+  → shared/sdlc/05-write-plan       → shared/sdlc/06-review-plan  (approval gate)
                               → orchestration/auto-plans  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
   → <track>-write-code (track-specific orchestrator; dispatches sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
        angular-portal:        angular-portal-write-code
@@ -94,11 +94,11 @@ To avoid drift, the source of truth for these rules is `CLAUDE.md`. Summary:
 
 1. **Auto-docs is mandatory** — at the end of every code-writing skill invocation, the track-agnostic `skills/orchestration/auto-docs.md` writes a summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (note the leading dot). Never to this `sdcorejs-agent` repo.
 
-2. **Auto-specs / auto-plans are mandatory** — immediately after `sdcorejs-review-spec` approval, `skills/orchestration/auto-specs.md` writes the approved spec to `<target>/.sdcorejs/specs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. Immediately after `sdcorejs-review-plan` approval, `skills/orchestration/auto-plans.md` writes the approved plan to `<target>/.sdcorejs/plans/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. These corpuses let future `sdcorejs-write-spec` / `sdcorejs-plan` mirror the user's confirmed style.
+2. **Auto-specs / auto-plans are mandatory** — immediately after `sdcorejs-review-spec` approval, `skills/orchestration/auto-specs.md` writes the approved spec to `<target>/.sdcorejs/specs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. Immediately after `sdcorejs-review-plan` approval, `skills/orchestration/auto-plans.md` writes the approved plan to `<target>/.sdcorejs/plans/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. These corpuses let future `sdcorejs-write-spec` / `sdcorejs-write-plan` mirror the user's confirmed style.
 
 3. **Memories** — durable cross-session knowledge lives under the target project's `.sdcorejs/memories/<track>/`, managed by `skills/orchestration/memories.md`.
 
-4. **Session-start ritual** — read the target project's `.sdcorejs/docs/<track>/*.md` (latest 3) and `.sdcorejs/memories/<track>/*.md` (frontmatter) before answering. Also glob `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` (frontmatter only) so the next `sdcorejs-write-spec` / `sdcorejs-plan` can mirror style.
+4. **Session-start ritual** — read the target project's `.sdcorejs/docs/<track>/*.md` (latest 3) and `.sdcorejs/memories/<track>/*.md` (frontmatter) before answering. Also glob `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` (frontmatter only) so the next `sdcorejs-write-spec` / `sdcorejs-write-plan` can mirror style.
 
 5. **Bilingual** — match user's language. Vietnamese request → Vietnamese output (full diacritics). Permission codes and route paths stay English.
 
@@ -109,6 +109,8 @@ To avoid drift, the source of truth for these rules is `CLAUDE.md`. Summary:
 8. **Core UI first** — use `@sdcorejs/angular` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.
 
 9. **Test after generation** — `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts` and report summary.
+
+10. **Evidence before claims (always-on)** — never claim something passes / builds / is fixed / is done without running the verifying command in the current turn and reading its output. Applies to every success claim (interim or final, your own or a subagent's), not only at the `sdcorejs-verify-before-done` gate. A subagent's "✅ done" is a claim to verify (read the diff / re-run the check), not a fact. Inspired by `superpowers:verification-before-completion`.
 
 ## Cross-track skills (`skills/shared/sdlc/`, `skills/orchestration/`, `skills/shared/`, `skills/review/`, `skills/testing/`)
 
@@ -121,7 +123,7 @@ Cross-track skills — apply to angular-portal, nestjs, nextjs alike. Dispatch i
 | `sdcorejs-clarify-requirements` | request for concrete artifacts | ✅ |
 | `sdcorejs-write-spec` | after clarify confirms | ✅ |
 | `sdcorejs-review-spec` | after write-spec | ✅ |
-| `sdcorejs-plan` | after review-spec approves | ✅ |
+| `sdcorejs-write-plan` | after review-spec approves | ✅ |
 | `sdcorejs-review-plan` | after plan | ✅ |
 
 ### Orchestration + utility

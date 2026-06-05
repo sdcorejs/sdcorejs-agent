@@ -39,7 +39,7 @@ Request
   → 02-clarify-requirements
   → 03-write-spec → 04-review-spec      (approval gate)
                   → orchestration/auto-specs  (MANDATORY on approval — snapshot to .sdcorejs/specs/<track>/)
-  → 05-plan       → 06-review-plan      (approval gate)
+  → 05-write-plan       → 06-review-plan      (approval gate)
                   → orchestration/auto-plans  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
   → 07-write-code (sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
   → 40-e2e-test → sdcorejs-review-code (auto-detects track) → orchestration/repair-loop (if findings)
@@ -54,7 +54,7 @@ For angular-portal, `07-write-code` is the single orchestrator; it loads on-dema
 ## Mandatory rules
 
 1. **Auto-docs** at the end of every code-writing task — `skills/orchestration/auto-docs.md` writes a summary to the **target project's** `.sdcorejs/docs/<track>/<timestamp>-<topic>.md` (leading dot required). Never to this `sdcorejs-agent` repo.
-2. **Auto-specs / auto-plans** — immediately after `04-review-spec` approval, `skills/orchestration/auto-specs.md` snapshots the approved spec to `<target>/.sdcorejs/specs/<track>/`. Immediately after `06-review-plan` approval, `skills/orchestration/auto-plans.md` snapshots the approved plan to `<target>/.sdcorejs/plans/<track>/`. Future `03-write-spec` / `05-plan` mirror this corpus.
+2. **Auto-specs / auto-plans** — immediately after `04-review-spec` approval, `skills/orchestration/auto-specs.md` snapshots the approved spec to `<target>/.sdcorejs/specs/<track>/`. Immediately after `06-review-plan` approval, `skills/orchestration/auto-plans.md` snapshots the approved plan to `<target>/.sdcorejs/plans/<track>/`. Future `03-write-spec` / `05-write-plan` mirror this corpus.
 3. **Memories** — `skills/orchestration/memories.md` writes durable cross-session facts to the target project's `.sdcorejs/memories/<track>/`.
 4. **Session-start ritual** — read the target project's `.sdcorejs/docs/<track>/*.md` (latest 3), `.sdcorejs/memories/<track>/*.md` (frontmatter), plus `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` (frontmatter only) before answering.
 5. **Bilingual** — Vietnamese request → Vietnamese output (full diacritics for labels/messages). Permission codes + route paths stay English.
@@ -62,6 +62,7 @@ For angular-portal, `07-write-code` is the single orchestrator; it loads on-dema
 7. **Approval gates** — `04-review-spec` and `06-review-plan` require explicit user approval before the next skill runs. Approval immediately fires the corresponding auto-specs / auto-plans tail-call (rule 2).
 8. **Core UI first** — use `@sdcorejs/angular` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.
 9. **Test after generation** — `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts`.
+10. **Evidence before claims (always-on)** — never claim something passes / builds / is fixed / is done without running the verifying command in the current turn and reading its output. Applies to every success claim (interim or final, your own or a subagent's), not only at the `06`/verify-before-done gate. A subagent's "✅ done" is a claim to verify, not a fact.
 
 ## Default behavior
 

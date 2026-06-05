@@ -29,7 +29,7 @@ Request: "tạo landing page cho X"         │   Request: "audit site này", "i
 02-clarify-requirements    ← greenfield: 11 blockers; brownfield: skip what audit answered
   ↓
 03-write-spec  → 04-review-spec    (use shared SDLC — same as other tracks)
-05-plan        → 06-review-plan
+05-write-plan        → 06-review-plan
   ↓
 07-write-code              ← single orchestrator; reads confirmed scope, loads on-demand
                              reference packs under _refs/nextjs/build-website/write-code/:
@@ -60,7 +60,7 @@ orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/me
 | "tạo landing page", "build website", "new site" (greenfield) | `01-brainstorm` |
 | "audit site", "review website đã có", "improve existing site", "site này thiếu gì" (brownfield) | `08-audit-existing-site` |
 | Scope already clear | `02-clarify-requirements` |
-| Already clarified, want plan | `05-plan` (track-specific) |
+| Already clarified, want plan | `05-write-plan` (track-specific) |
 | Init the project | `nextjs-build-website-write-code` (→ init-site pack) |
 | Pick colors / typography | `nextjs-build-website-write-code` (→ theme pack) |
 | Add a page or section | `nextjs-build-website-write-code` (→ pages-and-blocks pack) |

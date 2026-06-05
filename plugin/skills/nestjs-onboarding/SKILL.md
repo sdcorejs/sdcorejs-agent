@@ -22,7 +22,7 @@ Welcome the developer inside a NestJS project. This track is in **scaffold statu
 - `sdcorejs-clarify-requirements` (cross-track) — block on minimum-required answers
 - `sdcorejs-write-spec` (cross-track) — author spec at `.sdcorejs/docs/nestjs/`
 - `sdcorejs-review-spec` (cross-track) — user approval gate + `orchestration/auto-specs`
-- `sdcorejs-plan` (cross-track) — numbered plan
+- `sdcorejs-write-plan` (cross-track) — numbered plan
 - `sdcorejs-review-plan` (cross-track) — user approval gate + `orchestration/auto-plans`
 - `sdcorejs-review-code` — convention review (auto-detects NestJS)
 - `skills/review/performance/nestjs.md` — performance audit

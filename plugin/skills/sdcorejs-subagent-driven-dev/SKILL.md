@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-subagent-driven-dev
-description: Use when `07-write-code` (or its NestJS/NextJS equivalents) is about to execute a feature with 3+ independent sub-tasks — multiple entities under one module, batch screen generation, multi-stack work, large reference-doc batches. Different from `sdcorejs-parallel-dispatch` which decides WHETHER to parallelize; this skill governs HOW to execute the delegation — decompose, brief, dispatch, merge results, surface partial failures. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use when `07-write-code` (or its NestJS/NextJS equivalents) is about to execute a feature with 3+ independent sub-tasks — multiple entities under one module, batch screen generation, multi-stack work, large reference-doc batches. Different from `sdcorejs-parallel-dispatch` which decides WHETHER to parallelize; this skill governs HOW to execute the delegation — decompose, brief, dispatch, per-unit two-stage review (spec-compliance then code-quality), merge results, surface partial failures. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Agent, Bash
 ---
 
@@ -57,9 +57,9 @@ DELIVERABLE (return shape):
 - Bilingual: VI labels with full diacritics; permission codes English
 
 REPORT BACK (single message):
-- Files changed (CREATE/EDIT, with paths)
+- Files changed (CREATE/EDIT, with paths) + `git diff --stat` (or commit SHA) so the parent can verify independently
 - Decisions taken inside the unit
-- Verification result (pass/fail summary)
+- Verification result — paste the ACTUAL command + its output (test counts, exit code), NOT a "should pass" summary
 - Blockers, if any (so parent can intervene)
 - Any new info worth surfacing to the user
 ```
@@ -92,7 +92,26 @@ Each subagent returns one of:
 
 Parent agent MUST surface ⚠️/❌/🟡 honestly. Do NOT silently re-run a failed subagent or swallow its error.
 
-### 5. Merge / synthesize
+### 5. Per-unit two-stage review (gate each returned unit BEFORE merge)
+
+A unit reporting "✅ done" is a claim, not proof. Before accepting any unit, run TWO review stages against its ACTUAL output — read the files / `git diff`, never trust the success word. Borrowed from `superpowers:subagent-driven-development`: spec-compliance first, code-quality second.
+
+Run this per unit, as each returns — do NOT barrier-wait for all units. Unit A can be in Stage B while unit B is still implementing.
+
+**Stage A — Spec compliance** (does it match the brief — no more, no less?)
+- Re-read the unit's briefing (TASK + DELIVERABLE + out-of-scope).
+- Read the reported files (`git diff --stat`, then open the key ones). Confirm the verification output the subagent pasted is real (right command, exit 0, expected counts).
+- Check: every briefed deliverable present? Nothing extra invented (unrequested flags / files / endpoints)? Scope boundaries respected?
+- If gaps → re-dispatch the SAME unit's implementer with the specific gap list. Do NOT hand-fix (context pollution). Re-review after.
+
+**Stage B — Code quality** (only AFTER Stage A is ✅)
+- Invoke `sdcorejs-review-code` scoped to the unit's files (auto-detects track + checks conventions).
+- Feed findings through `orchestration/repair-loop` (source: `review-code`) until Critical + Important are resolved or user-deferred.
+- Never start Stage B before Stage A passes — polishing style on code that solves the wrong problem is wasted work.
+
+A unit is marked ✅ and eligible for merge only after BOTH stages pass. A unit whose fix loop is still open stays ⚠️ — it does not merge.
+
+### 6. Merge / synthesize
 
 Before reporting to user:
 - **Conflict scan** — did any two units edit the same file by accident? (Should be impossible by step 1, but verify.)
@@ -102,8 +121,8 @@ Before reporting to user:
 
 Produce ONE consolidated summary, not N reports concatenated.
 
-### 6. Run global verification
-After all units return, run the cross-cutting verifications that no single subagent could:
+### 7. Run global verification
+After all units return AND each has passed its per-unit review, run the cross-cutting verifications that no single subagent could:
 - `npm run build` — does the whole project still compile?
 - `npm run lint` — picks up convention drift across files
 - `npm run test -- --watch=false` — full suite, not just per-unit
@@ -111,7 +130,7 @@ After all units return, run the cross-cutting verifications that no single subag
 
 If global verification fails after per-unit verification passed, the failure is at the *seams* between units — investigate which units touched files that now collide.
 
-### 7. Hand off control
+### 8. Hand off control
 Parent agent reports to user:
 
 ```markdown
@@ -171,6 +190,9 @@ Category needs Product to exist first. Sequential. Don't parallelize.
 - Self-contained briefing per subagent (no shared context dependency)
 - Single message with N Agent calls in parallel
 - Cap concurrent at 5; split into waves otherwise
+- Gate each returned unit through spec-compliance review THEN code-quality review BEFORE merging it
+- Verify a unit from its actual file diff / verification output — never trust the subagent's "done" word
+- Re-dispatch the implementer to fix review findings; don't hand-fix (avoids context pollution)
 - Synthesize before reporting to user
 - Surface ⚠️ / ❌ / 🟡 honestly
 - Run global build/lint/test after all units return
@@ -180,6 +202,9 @@ Category needs Product to exist first. Sequential. Don't parallelize.
 - Reuse the same brief for N units with no per-unit context
 - Silently retry a failed subagent
 - Hide partial failures under successful ones
+- Accept a unit as done on its success report without reading the diff
+- Start a unit's code-quality review (Stage B) before its spec-compliance (Stage A) passes
+- Merge a unit whose review fix-loop is still open
 - Edit the same file from two units (race condition)
 - Dispatch >5 concurrent without a checkpoint
 - Skip global verification because per-unit verifications passed
@@ -191,10 +216,13 @@ Category needs Product to exist first. Sequential. Don't parallelize.
 - **Race-to-conflict**: two subagents both editing `package.json` or `app.routes.ts`
 - **Heroic merge**: parent agent tries to reconcile N divergent implementations after the fact (cheaper to re-dispatch with tighter scope)
 - **Speculative parallelism**: dispatching 2 subagents to try competing approaches; usually one careful brainstorm is cheaper
+- **Trusting the success word**: subagent reports "✅ 8/8 tests pass" → parent merges without reading the diff. The subagent may have stubbed, skipped, or weakened the tests. Read the diff + verification output before accepting the unit.
 
 ## Cross-references
 - `orchestration/using-worktrees.md` — give each dispatched unit an isolated workspace so parallel agents don't trample each other — invoke BEFORE fan-out
 - `orchestration/parallel-dispatch.md` — decision gate (should I split?) — invoke this BEFORE this skill
+- `review/code.md` (`sdcorejs-review-code`) — Stage B per-unit code-quality review (Step 5)
+- `orchestration/repair-loop.md` — closes the fix loop on per-unit review findings (source: `review-code`)
 - `orchestration/verify-before-done.md` — final verification gate after merging units
 - `07-write-code.md` (angular-portal) — orchestrator that triggers this skill when the dispatch table has 3+ rows
 
