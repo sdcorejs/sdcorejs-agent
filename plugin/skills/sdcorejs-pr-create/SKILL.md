@@ -115,12 +115,12 @@ Body:
 ```markdown
 ## Summary
 - Rename `31-workflow-actions` → `31-actions`. Broaden the description to cover bulk operations + custom side-effects (export, re-sync, recompute) — workflow is just one shape of action.
-- Update the dispatch table in `07-write-code` + all cross-refs in tests + onboarding.
+- Update the dispatch table in `07-write-code` + all cross-refs in tests + the `sdcorejs-using-skills` bootstrap.
 
 ## Changes
 - `_refs/angular/write-code/actions.md`: renamed + broadened body
 - `skills/tracks/angular/07-write-code.md`: dispatch table + description
-- `skills/tracks/angular/00-onboarding.md`: workflow strip
+- `skills/orchestration/using-skills.md`: workflow strip
 - `.claude/skills/`, `plugin/skills/`: mirror regenerated via sync-skills.sh
 
 ## Test plan

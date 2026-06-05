@@ -370,7 +370,7 @@ These get resolved when NestJS track moves from scaffold to complete.
 ## Related references
 
 - `_refs/sdlc/nestjs.md` — design-phase patterns + persistence options
-- `skills/tracks/nestjs/00-onboarding.md` — entry point
+- `sdcorejs-using-skills` — onboarding / entry point
 - `skills/tracks/nestjs/07-write-code.md` — current plan-walker orchestrator
 - `skills/tracks/nestjs/_README.md` — track status
 - `sdcorejs-review-code` — convention enforcement (the reviewer)

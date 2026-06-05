@@ -4,7 +4,7 @@ This directory holds the NestJS-specific code-writing skills. As of the cross-tr
 
 | File | Purpose | Status |
 |---|---|---|
-| `00-onboarding.md` | Entry point for NestJS projects | ✅ Ready |
+| onboarding | Now via `sdcorejs-using-skills` bootstrap (cross-track) | ✅ |
 | `07-write-code.md` | Plan-walking orchestrator (manual, until sub-skills land) | ✅ Ready (scaffold) |
 | `10-init-project.md` | Bootstrap repo from be-masterdata baseline | 🚧 Planned |
 | `11-init-module.md` | Scaffold `src/modules/<module>/` | 🚧 Planned |

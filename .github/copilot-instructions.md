@@ -12,9 +12,9 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem. When you (GitHu
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular Portal | `skills/tracks/angular/` | ✅ Complete (design-phase cross-track skills + 2 angular skills: onboarding + the `angular-write-code` orchestrator, which dispatches 6 on-demand reference packs under `_refs/angular/write-code/`: init-portal, init-module, init-entity, screen-list, screen-detail (CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design phase + spec/plan moved to cross-track `skills/shared/sdlc/`. Cross-track `orchestration/comment-code` absorbs the previous per-track `51-write-comments`. |
-| NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (00-onboarding + 07-write-code plan-walker). Sub-skills 10/11/12 planned. Design phase usable via shared/sdlc/; review + testing already in place. |
-| Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (3 track skills: onboarding, write-code orchestrator, audit-existing-site; the orchestrator dispatches 10 on-demand reference packs under `_refs/nextjs/build-website/write-code/`: init-site … content-quality). Design phase moved to cross-track shared/sdlc/. |
+| Angular Portal | `skills/tracks/angular/` | ✅ Complete (design-phase cross-track skills + 1 angular skill: the `angular-write-code` orchestrator (onboarding via `sdcorejs-using-skills`), which dispatches 6 on-demand reference packs under `_refs/angular/write-code/`: init-portal, init-module, init-entity, screen-list, screen-detail (CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design phase + spec/plan moved to cross-track `skills/shared/sdlc/`. Cross-track `orchestration/comment-code` absorbs the previous per-track `51-write-comments`. |
+| NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (07-write-code plan-walker; onboarding via `sdcorejs-using-skills`). Sub-skills 10/11/12 planned. Design phase usable via shared/sdlc/; review + testing already in place. |
+| Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (2 track skills: write-code orchestrator, audit-existing-site (onboarding via `sdcorejs-using-skills`); the orchestrator dispatches 10 on-demand reference packs under `_refs/nextjs/build-website/write-code/`: init-site … content-quality). Design phase moved to cross-track shared/sdlc/. |
 
 Cross-cutting skills live in:
 - `skills/shared/sdlc/` — **6 cross-track design-phase skills** (brainstorm, clarify-requirements, write-spec, review-spec, write-plan, review-plan) + `_refs/{angular,nextjs,nestjs}.md`
@@ -43,7 +43,7 @@ allowed-tools: Read, Write, Edit, ...
 2. **When the user makes a request**, match it against each skill's `description` (the "Use when..." trigger). Pick the highest-confidence match.
 3. **Read that skill's body** and follow its instructions exactly.
 4. **If multiple skills tie**, pick the lowest-numbered one in the workflow (clarify before plan, plan before write-code, etc).
-5. **If no skill matches**, ask a clarifying question or invoke `<track>-onboarding` (e.g. `angular-onboarding`).
+5. **If no skill matches**, ask a clarifying question or invoke `sdcorejs-using-skills` (the bootstrap, which now serves onboarding).
 
 ## Workflow per track
 

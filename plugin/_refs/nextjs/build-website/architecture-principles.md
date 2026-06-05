@@ -368,7 +368,7 @@ When a principle changes, propagate to:
 ## Related references
 
 - `_refs/sdlc/nextjs.md` — design-phase patterns (industry table, blocking checklist, plan phase grouping)
-- `skills/tracks/nextjs/build-website/00-onboarding.md` — entry point
+- `sdcorejs-using-skills` — onboarding / entry point
 - `_refs/nextjs/build-website/write-code/seo.md` — SEO baseline implementation
 - `_refs/nextjs/build-website/write-code/caching.md` — caching strategy
 - `_refs/nextjs/build-website/write-code/content-quality.md` — long-form authoring rules

@@ -34,7 +34,7 @@ Single source of truth. Every consumer uses placeholders, substituted at generat
 | `tracks/angular/10-init-portal.md` | Uses `<CORE_UI_PACKAGE_NAME>` + `<CORE_VERSION>` in `package.json` template, tree diagram, checklist, verification, commit example. Agent reads this file and substitutes at generation time. | ❌ No edit needed — placeholders resolve dynamically |
 | `_refs/angular/sdcorejs-angular/**/*.md` | "Library version" metadata = the version the catalog was GENERATED FROM (snapshot, currently `@sdcorejs/angular@20.0.1`). Separate concern from the pin. | ❌ No, unless catalog is regenerated from a different source version |
 
-`shared/conventions/dep-update.md`, `shared/workflow/env-setup.md`, `tracks/angular/00-onboarding.md` reference this file by PATH only — no literal version/name, no update.
+`shared/conventions/dep-update.md`, `shared/workflow/env-setup.md` reference this file by PATH only — no literal version/name, no update.
 
 ## How the placeholders work
 

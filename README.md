@@ -22,9 +22,9 @@ The system ships as **dispatchable skills** — markdown with YAML frontmatter �
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular | `skills/tracks/angular/` | ✅ Complete (`angular-onboarding` + `angular-write-code` orchestrator; Core UI reference docs in `_refs/angular/`) |
+| Angular | `skills/tracks/angular/` | ✅ Complete (`angular-write-code` orchestrator; onboarding via `sdcorejs-using-skills`; Core UI docs in `_refs/angular/`) |
 | NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (onboarding + plan-walking `nestjs-write-code`; design + review + testing usable) |
-| Next.js | `skills/tracks/nextjs/build-website/` | ✅ Complete (`nextjs-build-website-*`: onboarding, write-code orchestrator, audit-existing-site) |
+| Next.js | `skills/tracks/nextjs/build-website/` | ✅ Complete (`nextjs-build-website-write-code` orchestrator + audit-existing-site; onboarding via `sdcorejs-using-skills`) |
 
 ## Workflow (per track)
 
@@ -33,7 +33,7 @@ Every track follows the same SDLC pipeline. Numbering reflects the order.
 ```
 Request
   ↓
-00-onboarding              ← orient the developer
+sdcorejs-using-skills      ← onboarding / orient (bootstrap; skip if oriented)
 01-brainstorm              ← explore requirements open-ended
 02-clarify-requirements    ← hard-confirm scope (blocking questions)
 03-write-spec              ← author a spec document
@@ -72,7 +72,7 @@ Install via the Claude Code plugin marketplace. The repo ships its own single-pl
 /plugin install sdcorejs-agent@sdcorejs
 ```
 
-After install, all 43 skills (cross-track SDLC + angular / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
+After install, all 40 skills (cross-track SDLC + angular / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
 
 ### Option 2 — git submodule (works for Claude Code + Copilot + Codex)
 
@@ -129,7 +129,7 @@ sdcorejs-agent/
 │   └── sdlc/                              # cross-track design-phase patterns ({angular,nestjs,nextjs}.md)
 ├── skills/                                # source of truth — flat .md per skill
 │   ├── tracks/
-│   │   ├── angular/                # ✅ 2 skills (onboarding + write-code orchestrator; 6 reference packs in _refs/angular/write-code/)
+│   │   ├── angular/                # ✅ 1 skill (write-code orchestrator; 6 reference packs in _refs/angular/write-code/)
 │   │   ├── nestjs/                        # 🟡 scaffold
 │   │   └── nextjs/build-website/          # ✅ 13 skills
 │   ├── shared/{sdlc,conventions,workflow}/

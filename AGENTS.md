@@ -16,10 +16,10 @@ _refs/                            reference data (no frontmatter, load on demand
 
 skills/
 ├── tracks/                       stack-specific code-writing skills
-│   ├── angular/   ✅  2 track skills — 00-onboarding + 07-write-code orchestrator; orchestrator loads 6 on-demand reference packs from `_refs/angular/write-code/` (init-portal, init-module, init-entity, screen-list, screen-detail (CREATE/UPDATE/DETAIL states + form refinement), actions (workflow / bulk / custom side-effects))
-│   ├── nestjs/           🟡  scaffold (00-onboarding + 07-write-code plan-walker); 10/11/12 sub-skills planned
+│   ├── angular/   ✅  1 track skill — 07-write-code orchestrator (onboarding via sdcorejs-using-skills); orchestrator loads 6 on-demand reference packs from `_refs/angular/write-code/` (init-portal, init-module, init-entity, screen-list, screen-detail (CREATE/UPDATE/DETAIL states + form refinement), actions (workflow / bulk / custom side-effects))
+│   ├── nestjs/           🟡  scaffold (07-write-code plan-walker; onboarding via sdcorejs-using-skills); 10/11/12 sub-skills planned
 │   └── nextjs/
-│       └── build-website/  ✅  3 track skills — 00-onboarding, 07-write-code orchestrator, 08-audit-existing-site (orchestrator dispatches 10 reference packs in _refs/nextjs/build-website/write-code/: init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality)
+│       └── build-website/  ✅  2 track skills — 07-write-code orchestrator, 08-audit-existing-site (orchestrator dispatches 10 reference packs in _refs/nextjs/build-website/write-code/: init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality)
 │
 ├── shared/
 │   ├── sdlc/             ✅  6 cross-track design-phase skills (01-brainstorm, 02-clarify-requirements, 03-write-spec, 04-review-spec, 05-write-plan, 06-review-plan); patterns live in `_refs/sdlc/{angular,nextjs,nestjs}.md`
@@ -30,10 +30,10 @@ skills/
 │
 ├── review/
 │   ├── code.md           single track-aware code review (sdcorejs-review-code); per-track knowledge in _refs/<track>/review-code.md (nextjs: _refs/nextjs/build-website/review-code.md)
-│   ├── security/         security.md — single track-aware skill (sdcorejs-review-security); knowledge in _refs/<track>/review-security.md
+│   ├── security.md       single track-aware (sdcorejs-review-security); knowledge in _refs/<track>/review-security.md
 │   ├── architecture.md   cross-track architecture review
-│   ├── performance/      budget.md (cross-track) + per-track (angular, nestjs, nextjs)
-│   └── accessibility/    baseline.md (cross-track) + per-track (angular, nextjs)
+│   ├── performance.md   single track-aware (sdcorejs-review-performance); knowledge in _refs/<track>/review-performance.md
+│   └── accessibility.md single track-aware (sdcorejs-review-accessibility); knowledge in _refs/<track>/review-accessibility.md
 │
 └── testing/
     ├── test.md           single track+level-aware test skill (sdcorejs-test); knowledge in _refs/<track>/test-<level>.md + _refs/shared/testing-philosophy.md
@@ -57,7 +57,7 @@ allowed-tools: Read, Write, Edit, ...
 3. When the user makes a request, match it against each skill's `description` (the "Use when..." trigger). Pick the highest-confidence match.
 4. Read that skill's body and follow its rules exactly.
 5. If multiple skills tie, pick the lowest-numbered one in the workflow (clarify before plan, plan before write-code, etc).
-6. If no skill matches, ask a clarifying question or invoke `<track>-onboarding`.
+6. If no skill matches, ask a clarifying question or invoke `sdcorejs-using-skills`.
 
 ## Workflow per track
 
