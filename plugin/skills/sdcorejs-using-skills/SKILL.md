@@ -16,7 +16,7 @@ You have the **sdcorejs SDLC skill pack** — an orchestrated software-developme
 
 1. Match the request against each skill's `description` (the "Use when…" trigger).
 2. Pick the highest-confidence match. If several tie, pick the earliest in the workflow (clarify before plan, plan before write-code).
-3. Invoke it via the `Skill` tool and follow its body exactly.
+3. Invoke it via the `Skill` tool, announce it to the user ("Using `<skill>` to `<purpose>`"), then follow its body exactly.
 4. If nothing matches, ask a clarifying question or invoke the track's onboarding skill (`angular-portal-onboarding`, `nestjs-onboarding`, `nextjs-build-website-onboarding`).
 
 ## The workflow (every track shares this shape)

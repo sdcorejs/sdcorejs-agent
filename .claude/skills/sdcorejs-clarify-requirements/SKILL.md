@@ -108,9 +108,9 @@ Defaults by track:
 - **nextjs**: post-hoc for pages/blocks/SEO/i18n (mostly declarative); TDD for contact-form API route + content-quality scripts
 
 If user picks TDD, `sdcorejs-write-plan` will:
-1. Slot a `40a-e2e-skeleton` task BEFORE each `07-write-code` sub-task that has user-visible behavior
-2. Slot a `41-tests-fill` task AFTER `07-write-code` to fill bodies based on the actual implementation
-3. Each acceptance criterion in the spec maps to a failing test in `40a-e2e-skeleton`
+1. Add a **test-bones phase** BEFORE the code tasks — a failing test/skeleton for each unit with user-visible behavior
+2. Add a **tests-fill phase** AFTER the code tasks — complete the test bodies against the actual implementation
+3. Each acceptance criterion in the spec maps to a failing test in the test-bones phase
 
 If user picks post-hoc, the current ordering stands: `07-write-code` first, then `testing/e2e/<track>.md` after.
 
