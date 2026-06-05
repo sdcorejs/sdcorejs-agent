@@ -59,7 +59,7 @@ tracks/angular/07-write-code  (angular-write-code)
   (these 6 were standalone sub-skills before — now consolidated so the track
    exposes ONE skill instead of seven)
   ↓
-testing/e2e/angular       (sdcorejs-testing-e2e-angular)
+sdcorejs-test       (sdcorejs-test)
   ← happy-path E2E for what was just built
   ↓
 review/code.md                   (sdcorejs-review-code)
@@ -88,7 +88,7 @@ You don't need to memorize skill names. Just describe what you want — the agen
 | "Thêm entity product, fields code/name/price" | `sdcorejs-clarify-requirements` (cross-track) → `angular-write-code` (→ init-entity pack) |
 | "Tạo màn list cho user" | `angular-write-code` (→ screen-list pack) |
 | "Review module catalog" | `sdcorejs-review-code` |
-| "Test cho entity product" | `sdcorejs-testing-e2e-angular` |
+| "Test cho entity product" | `sdcorejs-test` |
 | "Brainstorm cho module sales" | `sdcorejs-brainstorm` (cross-track) |
 | "Viết spec cho module catalog" | `sdcorejs-write-spec` (cross-track) |
 

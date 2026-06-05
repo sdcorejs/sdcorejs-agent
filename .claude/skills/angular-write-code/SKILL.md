@@ -40,7 +40,7 @@ Before dispatching ANY reference, run `orchestration/auto-summary`. If `<target>
 
 Execution order: portal → module → entity → screens → actions. If the plan touches multiple items, run them in this order; do not parallelize. After all referenced steps finish, hand off in sequence:
 
-1. `sdcorejs-testing-e2e-angular` (skills/testing/e2e/angular.md) — happy-path tests for what was generated
+1. `sdcorejs-test` (sdcorejs-test) — happy-path tests for what was generated
 2. `sdcorejs-review-code` (skills/review/code.md; auto-detects Angular → loads `_refs/angular/review-code.md`) — convention check; outputs color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
 3. `orchestration/repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
 4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full); applies the chosen level inline. Cross-track baseline + per-track addenda live inside `orchestration/comment-code` itself

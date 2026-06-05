@@ -12,7 +12,7 @@ allowed-tools: Read, Bash, Glob, Grep
 > **Scope.** This gate is the feature-end *enforcement point* of the always-on evidence-before-claims rule (CLAUDE.md rule 10). That rule governs EVERY interim success claim during the task too — "tests pass", "build is green", "fixed" each need fresh command output in the same turn they're claimed. This skill is where the rule is checked exhaustively, criterion-by-criterion, before "done".
 
 ## When invoked
-- **MANDATORY** automatic invocation BEFORE `sdcorejs-branch-ready` → `sdcorejs-auto-docs` at the end of every code-writing skill (`07-write-code` — the `angular-write-code` orchestrator and the reference packs it loads, including `actions` — and `sdcorejs-testing-e2e-<track>`)
+- **MANDATORY** automatic invocation BEFORE `sdcorejs-branch-ready` → `sdcorejs-auto-docs` at the end of every code-writing skill (`07-write-code` — the `angular-write-code` orchestrator and the reference packs it loads, including `actions` — and `sdcorejs-test`)
 - Before `sdcorejs-commit` for a feature commit (not for chore/docs commits)
 - Before `sdcorejs-pr-create`
 - User says "verify", "kiểm tra acceptance", "check acceptance criteria", "đã xong chưa"
@@ -237,7 +237,7 @@ No spec found (small bug fix, no .sdcorejs/docs/<track>/*-spec.md)
 - `orchestration/repair-loop` — invoked when this skill finds failed criteria
 - `orchestration/auto-task-tracker` — open criteria flow into the living TODO until resolved
 - `sdcorejs-write-spec` (cross-track, `shared/sdlc/03-write-spec.md`) — defines the Acceptance Criteria section format this skill reads
-- `sdcorejs-testing-e2e-<track>` — many acceptance criteria are best verified via E2E; cross-reference for the right framework
+- `sdcorejs-test` — many acceptance criteria are best verified via E2E; cross-reference for the right framework
 - `nextjs-build-website-write-code` (content-quality pack, `_refs/nextjs/build-website/write-code/content-quality.md`) — installs `check:i18n` + `check:content` scripts that this skill invokes; defines the bilingual parity + minimum content length contracts
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->

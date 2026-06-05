@@ -46,7 +46,7 @@ Request: "tạo landing page cho X"         │   Request: "audit site này", "i
   (these 10 were standalone sub-skills before — now consolidated so the track
    exposes 3 skills: onboarding + write-code + audit-existing-site)
   ↓
-sdcorejs-testing-e2e-nextjs (generic) → sdcorejs-review-code (generic) → orchestration/repair-loop
+sdcorejs-test (generic) → sdcorejs-review-code (generic) → orchestration/repair-loop
   ↓
 orchestration/comment-code (ASK gate) → orchestration/verify-before-done (acceptance gate)
   ↓

@@ -83,7 +83,7 @@ Steps 1–4 are sequential (each depends on the previous). Steps 5–8 can be pa
 Run the standard tail-call chain (cross-track mandatory):
 
 ```
-sdcorejs-testing-e2e-nextjs  ← happy-path tests for each generated page
+sdcorejs-test  ← happy-path tests for each generated page
    ↓
 sdcorejs-review-code       ← convention check; outputs Critical / Important / Minor findings
    ↓

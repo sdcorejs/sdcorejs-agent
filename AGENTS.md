@@ -36,11 +36,8 @@ skills/
 │   └── accessibility/    baseline.md (cross-track) + per-track (angular, nextjs)
 │
 └── testing/
-    ├── philosophy.md     cross-track principles
-    ├── tdd.md            cross-track RED→GREEN→refactor discipline
-    ├── e2e/              per-track (angular, nestjs, nextjs)
-    ├── integration/      per-track (angular, nestjs)
-    └── unit/             per-track (angular, nestjs)
+    ├── test.md           single track+level-aware test skill (sdcorejs-test); knowledge in _refs/<track>/test-<level>.md + _refs/shared/testing-philosophy.md
+    └── tdd.md            cross-track RED→GREEN→refactor discipline
 ```
 
 Each skill file has Anthropic-style frontmatter:
@@ -78,7 +75,7 @@ Request
        angular:        angular-write-code
        nextjs (build-website): nextjs-build-website-write-code
        nestjs:                 nestjs-write-code (SCAFFOLD — plan-walker until sub-skills ship)
-  → testing/e2e/<track>.md → review/code.md (sdcorejs-review-code, auto-detects track) → orchestration/repair-loop (if findings)
+  → sdcorejs-test → review/code.md (sdcorejs-review-code, auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (MANDATORY acceptance gate) → orchestration/branch-ready (branch-hygiene sweep)
   → orchestration/auto-docs (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) → orchestration/memories (when durable knowledge surfaces)

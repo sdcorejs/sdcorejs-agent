@@ -128,9 +128,9 @@ Capture:
 5. **Controller**: REST endpoints with `@UseGuards(AuthGuard, ZodValidationGuard)` + `@HasPermission()`
 6. **DTO + mapper**: response DTOs + entity↔DTO mapping
 7. **Tests** (matching coverage level):
-   - unit: service logic with mocked repository (`testing/unit/nestjs.md`)
-   - integration: real DI + pg-mem (`testing/integration/nestjs.md`)
-   - e2e: real HTTP + real PG via testcontainers (`testing/e2e/nestjs.md`)
+   - unit: service logic with mocked repository (`sdcorejs-test`)
+   - integration: real DI + pg-mem (`sdcorejs-test`)
+   - e2e: real HTTP + real PG via testcontainers (`sdcorejs-test`)
 
 ### Verification commands
 ```bash
@@ -145,7 +145,7 @@ npm run lint
 
 ### Final-step expectations
 Until the `nestjs-write-code` orchestrator ships, the last plan step should call out the manual tail-call sequence:
-1. `skills/testing/e2e/nestjs.md` — write e2e tests for happy path
+1. `sdcorejs-test` — write e2e tests for happy path
 2. `sdcorejs-review-code` — convention review
 3. `orchestration/repair-loop` — apply review findings
 4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full)

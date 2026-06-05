@@ -27,9 +27,9 @@ Welcome the developer inside a NestJS project. This track is in **scaffold statu
 - `sdcorejs-review-code` — convention review (auto-detects NestJS)
 - `sdcorejs-review-performance` — performance audit
 - `sdcorejs-review-security` — security audit
-- `skills/testing/unit/nestjs.md` — unit tests with mocked dependencies
-- `skills/testing/integration/nestjs.md` — pg-mem + real DI
-- `skills/testing/e2e/nestjs.md` — supertest + testcontainers Postgres
+- `sdcorejs-test` — unit tests with mocked dependencies
+- `sdcorejs-test` — pg-mem + real DI
+- `sdcorejs-test` — supertest + testcontainers Postgres
 - `orchestration/auto-summary` — canonical `.sdcorejs/summary.md` project brief; generated (via `code-map`) before code-writing if missing, read at session start
 - All cross-track orchestration (`auto-docs`, `repair-loop`, `verify-before-done`, etc.)
 
@@ -62,7 +62,7 @@ For each numbered task in the approved plan:
   4. Run `npm run test` after each module's tests phase
 
 Then mandatory tail-call chain:
-  1. `skills/testing/e2e/nestjs.md` — write happy-path e2e
+  1. `sdcorejs-test` — write happy-path e2e
   2. `sdcorejs-review-code` — convention review
   3. `orchestration/repair-loop` — apply review findings
   4. `orchestration/comment-code` — ASK gate

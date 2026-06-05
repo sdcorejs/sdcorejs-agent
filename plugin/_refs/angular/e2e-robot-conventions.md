@@ -1,6 +1,6 @@
 # E2E — Robot Framework conventions (NSP automation baseline)
 
-Reference for generating Angular-portal E2E tests in **Robot Framework**, the stack the QC/Automation team uses (`nsp-automation-test`). Loaded on demand by `testing/e2e/angular.md` when the target project is a Robot Framework suite. For Cypress/Playwright, the skill body covers it directly.
+Reference for generating Angular-portal E2E tests in **Robot Framework**, the stack the QC/Automation team uses (`nsp-automation-test`). Loaded on demand by `sdcorejs-test` when the target project is a Robot Framework suite. For Cypress/Playwright, the skill body covers it directly.
 
 This pairs with the `sd-autoid-inspector` export: the inspector emits `[data-autoid="…"]` selectors that map 1:1 to the locators below — so an exported JSON/POM is the selector source of truth for the generated keywords.
 

@@ -140,7 +140,7 @@ Probe: grep for the convention name vs the count of files in scope; ratio < 80% 
 
 ### 9. Test architecture
 
-Are tests in the right place + at the right layer (per `testing/philosophy.md`)?
+Are tests in the right place + at the right layer (per `_refs/shared/testing-philosophy.md`)?
 - Unit tests covering integration concerns (mocked DB testing SQL) → Important
 - E2E tests for pure-logic edge cases that should be unit tests → Important
 - No e2e for the feature's main user flow → Critical

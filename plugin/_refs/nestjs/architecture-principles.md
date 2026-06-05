@@ -263,7 +263,7 @@ Hard delete (`DELETE FROM`) ONLY when there's a compliance requirement (GDPR rig
 | Integration | `Test.createTestingModule` + real DI + pg-mem | Service → repository → DB round-trip; module wiring | <500ms each |
 | E2E | `supertest` + real PG via testcontainers | Full HTTP request → response cycle, AuthGuard + ZodValidationGuard real | 1-5s each |
 
-Per `testing/philosophy.md`: pyramid ratio is roughly 70 unit / 20 integration / 10 e2e.
+Per `_refs/shared/testing-philosophy.md`: pyramid ratio is roughly 70 unit / 20 integration / 10 e2e.
 
 Mock at the layer being tested:
 - Unit service test → mock repository

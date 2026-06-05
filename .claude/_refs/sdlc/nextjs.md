@@ -174,7 +174,7 @@ Each phase below maps to a write-code reference pack the `nextjs-build-website-w
 8. **Caching**: `caching` pack (per-route ISR window + on-demand revalidation)
 9. **Responsive**: `responsive` pack (mobile-first audit, breakpoints, touch targets)
 10. **Content quality**: `content-quality` pack (word counts, headings, TOC, Article JSON-LD, parity check)
-11. **Tests** (if user opted in): e2e via Playwright (`testing/e2e/nextjs.md`)
+11. **Tests** (if user opted in): e2e via Playwright (`sdcorejs-test`)
 
 ### Verification commands
 ```bash
@@ -189,7 +189,7 @@ npx lhci autorun --preset=mobile  # or `lighthouse http://localhost:3000/<route>
 ```
 
 ### Final-step expectations
-Last numbered step references the tail-call chain (sdcorejs-testing-e2e-nextjs → sdcorejs-review-code → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/branch-ready → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories). The reviewer checks the chain is implicit, not omitted.
+Last numbered step references the tail-call chain (sdcorejs-test → sdcorejs-review-code → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/branch-ready → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories). The reviewer checks the chain is implicit, not omitted.
 
 ### Existing-site improvement variant
 If the user is improving an EXISTING site (came via `08-audit-existing-site`), phases are gap-driven, not greenfield. The plan should be one phase per audit finding, ordered Critical → Important → Minor.

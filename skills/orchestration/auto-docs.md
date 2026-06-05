@@ -16,7 +16,7 @@ This skill is shared across SDCoreJS tracks (`angular`, `nestjs`, `nextjs`). The
 ### Auto-trigger at end of code-writing skills
 The agent MUST run this skill (write mode) at the end of every code-writing skill invocation, without prompting. For the angular track that means:
 - `07-write-code` (the `angular-write-code` orchestrator, plus the on-demand reference packs it loads: `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail`, `actions`)
-- `sdcorejs-testing-e2e-<track>`
+- `sdcorejs-test`
 - `sdcorejs-review-code` (write a "review session" doc summarizing findings, even though no code changed)
 - `orchestration/comment-code` when the chosen level is not `skip`
 
@@ -86,7 +86,7 @@ The `<kebab-topic>` is a 3-6 word slug derived from what was actually done. Exam
 ## Next suggested action
 - Run `npm run test -- --watch=false --include=src/libs/catalog/features/product/**/*.spec.ts`
 - Open `http://localhost:4200/catalog/product` to verify list renders
-- Optional: invoke `sdcorejs-testing-e2e-<track>` to add happy-path E2E coverage
+- Optional: invoke `sdcorejs-test` to add happy-path E2E coverage
 
 ## Skill provenance
 Skills invoked this session: `02-clarify-requirements` → `05-write-plan` → `07-write-code` (init-entity pack)
