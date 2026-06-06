@@ -94,7 +94,7 @@ For the angular track, `write-code` is the single orchestrator; it loads on-dema
 
 10. **Evidence before claims (always-on).** Never state that something passes, builds, is fixed, or is done without having run the verifying command in the current turn and read its output. This applies to EVERY success claim — interim or final, your own work or a subagent's — not only at the `sdcorejs-verify-before-done` gate. Treat a subagent's "✅ done" as a claim to verify, never as fact. "Should pass" / "looks correct" / a previously-green run are not evidence. Inspired by `superpowers:verification-before-completion`.
 
-11. **Persona-aware output.** Read the target project's `.sdcorejs/persona.md` (default `tech` if absent) and load `_refs/shared/persona.md` before producing user-facing output. `non-tech` = plain language (no unexplained jargon), forced infra defaults (Angular + NestJS modular-monolith + Keycloak + Postgres on docker-compose), always finish with a run guide, both approval gates kept but plainly worded (soft gates). `tech` = unchanged baseline. Orthogonal to the bilingual rule. Managed by `sdcorejs-persona`.
+11. **Persona-aware output.** Read the target project's `.sdcorejs/persona.md` (default `tech` if absent) and load `_refs/shared/persona.md` before producing user-facing output. `non-tech` = no unexplained jargon, hidden mechanics, forced infra defaults (Angular + NestJS modular-monolith + Keycloak + Postgres on docker-compose), always finish with a run guide, both approval gates kept but plainly worded (soft gates), requirement questions about features + UI not architecture. `tech` = unchanged baseline. Orthogonal to the bilingual rule. Managed by `sdcorejs-persona`.
 
 ## Copilot-specific notes
 
