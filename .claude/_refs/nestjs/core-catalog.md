@@ -6,6 +6,13 @@ Source policy:
 - Knowledge is copied into `sdcorejs-agent` and consumed from this repository only.
 - Do not require runtime references to external repositories.
 
+> **Neutral core vs app templates.** Everything in this catalog is the NEUTRAL
+> `@sdcorejs/nestjs` API — profile-independent. App-level shapes (tenancy strategy,
+> page-permission matrix, `base/shared` kernel, internal-secret module) are NOT core; the
+> write-code packs emit them only under the `enterprise` profile. The `simple` profile uses
+> the core directly (`WithAudit`, core `AuthGuard`, a `string[]`-returning permission strategy).
+> See `_refs/nestjs/write-code/init-project.md` "Profile (read FIRST)".
+
 ## Package & imports
 
 - **Package:** `@sdcorejs/nestjs` v0.1.6 (preview, npm). Node ≥18.18. Single package (not a monorepo).
