@@ -47,12 +47,24 @@ Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) BEFORE generating — 
 
 Before generating, confirm:
 
+0. **Profile** (required) — `simple` (default) | `enterprise`. Read from `.sdcorejs/summary.md`.
 1. **Project name** (required) — e.g. `acme-api`, `hr-backend`. Used as `package.json` `name`. Placeholder below: `<app-name>`.
 2. **Module schemas** (required) — the list of per-module Postgres schemas to pre-create (e.g. `admin`, `masterdata`, `crm`). At minimum the first domain module's schema. Placeholder: the `MODULE_SCHEMAS` array. (`init-module` adds more later.)
-3. **Multi-tenant?** (optional, default yes) — if single-tenant, the tenancy strategy still ships but `getCurrentScope()` can return `{}` (no scope filter). See catalog "Defaults when a strategy is omitted".
+3. **Multi-tenant?** (optional, default yes) — if single-tenant, the tenancy strategy still ships but `getCurrentScope()` can return `{}` (no scope filter). See catalog "Defaults when a strategy is omitted". (Enterprise only — simple profile is always single-tenant.)
 4. **Keycloak issuer URL** (optional for scaffold — env-driven; can be left blank in `.env` until `sdcorejs-auth` wires it).
 
 > **Port** is fixed at `3000` (env-overridable via `PORT`). Do not ask.
+
+---
+
+## Profile (read FIRST)
+
+Read `profile` from `<target>/.sdcorejs/summary.md` (set at clarify; default `simple`).
+Templates below split into **Profile: simple** (single-tenant, flat permissions, no
+`base/shared`, no internal-secret, lib `WithAudit`) and **Profile: enterprise** (the
+full multi-tenant + department-scoped + page-permission-matrix + `@shared` monorepo +
+internal-secret shape). Emit ONLY the chosen profile's templates. `enterprise` output is
+unchanged from prior versions of this pack.
 
 ---
 
@@ -63,6 +75,28 @@ Before generating, confirm:
 ### Step 1 — `package.json`
 
 *Grounded on the ref app `enterprise-platform/package.json`.* Scripts and deps trimmed to a generic fresh app (domain extras like keycloak-admin, exceljs, schedule removed — re-add per module need).
+
+The `package.json` body (scripts, dependencies, devDependencies) is identical for both profiles. Only the `jest.moduleNameMapper` block differs:
+
+**Profile: simple** — use a single src alias (no `@shared`/`@app` path aliases):
+
+```json
+"moduleNameMapper": {
+  "^src/(.*)$": "<rootDir>/$1"
+}
+```
+
+**Profile: enterprise** — keep the full alias set:
+
+```json
+"moduleNameMapper": {
+  "^@shared$": "<rootDir>/../base/shared",
+  "^@shared/(.*)$": "<rootDir>/../base/shared/$1",
+  "^@app/(.*)$": "<rootDir>/$1"
+}
+```
+
+The full `package.json` template (enterprise shape shown — swap `moduleNameMapper` per profile above):
 
 ```json
 {
@@ -159,6 +193,28 @@ Also emit `nest-cli.json` (ground: ref app):
 
 *Grounded on the ref app `tsconfig.json`.* NestJS 11 settings + path aliases.
 
+The compiler options (`module`, `target`, `decorators`, etc.) are identical for both profiles. Only the `paths` block differs:
+
+**Profile: simple** — single src alias only (no `@shared`/`@app`):
+
+```json
+"paths": {
+  "src/*": ["./src/*"]
+}
+```
+
+**Profile: enterprise** — keep the full alias set (unchanged):
+
+```json
+"paths": {
+  "@shared": ["./base/shared"],
+  "@shared/*": ["./base/shared/*"],
+  "@app/*": ["./src/*"]
+}
+```
+
+The full `tsconfig.json` template (enterprise shape shown — swap `paths` per profile above):
+
 ```json
 {
   "compilerOptions": {
@@ -189,7 +245,7 @@ Also emit `nest-cli.json` (ground: ref app):
 }
 ```
 
-> `@shared` → `./base/shared` (re-exportable kernel models — Step 7); `@app/*` → `./src/*` (app code). `emitDecoratorMetadata` + `experimentalDecorators` are mandatory for TypeORM + Nest decorators.
+> **Profile: enterprise:** `@shared` → `./base/shared` (re-exportable kernel models — Step 7); `@app/*` → `./src/*` (app code). `emitDecoratorMetadata` + `experimentalDecorators` are mandatory for TypeORM + Nest decorators.
 
 ### Step 3 — `src/main.ts`
 
@@ -277,6 +333,49 @@ export type AppConfiguration = ReturnType<typeof CONFIGURATION>;
 ### Step 5 — `src/app.module.ts`
 
 *Grounded on the ref app `src/app.module.ts`.* The ref app wires the kernel via the **individual sub-path modules** (`ContextModule.forRoot`, `TenancyModule.forRoot`, `PermissionModule.forRoot`, `JwtModule.forRoot`, …). For a fresh scaffold prefer the **consolidated `SdCoreModule.forRoot`** (catalog "Bootstrap (SdCoreModule)") — one call configures context + tenancy + audit + permission + jwt + i18n. (Drop down to the individual modules only when you need a feature `SdCoreModule` does not expose, e.g. the ref app's `ActionHistoryModule` / `FileStorageModule` / custom JWT `imports`.)
+
+**Profile: simple**
+
+```ts
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { RouterModule } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { SdCoreModule } from '@sdcorejs/nestjs';
+
+import { CONFIGURATION, AppConfiguration } from './app.configuration';
+import { RolePermissionStrategy } from './common/role-permission.strategy';
+import { JwtStrategy } from './common/jwt.strategy';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({ load: [CONFIGURATION], cache: true, isGlobal: true }),
+    SdCoreModule.forRoot({
+      context: { headers: { userId: 'x-user-id', lang: ['accept-language', 'x-language'] } },
+      permission: { strategy: RolePermissionStrategy },
+      jwt: { jwks: { allowedIssuers: [CONFIGURATION().keycloak.issuer] }, strategy: JwtStrategy },
+      i18n: { fallbackLanguage: 'vi' },
+    }),
+    TypeOrmModule.forRootAsync({
+      useFactory: (config: ConfigService) => {
+        const database = config.get<AppConfiguration['database']>('database')!;
+        return {
+          type: 'postgres', host: database.host, port: database.port,
+          database: database.database, username: database.username, password: database.password,
+          schema: 'core', autoLoadEntities: true, synchronize: database.synchronize,
+        };
+      },
+      inject: [ConfigService],
+    }),
+    RouterModule.register([]),
+  ],
+})
+export class AppModule {}
+```
+
+> Controllers use the core `AuthGuard` from `@sdcorejs/nestjs/permission` directly (no custom `AdminAuthGuard`).
+
+**Profile: enterprise**
 
 ```ts
 import { Module } from '@nestjs/common';
@@ -369,6 +468,93 @@ export class AppModule {}
 > `RouterModule.register([])` ships **empty** — `init-module` appends `{ path: '<module>', module: <Module>Module }` per module so every controller serves under its module prefix (e.g. `/<module>/...`). `autoLoadEntities: true` means new entities register automatically once their module imports `TypeOrmModule.forFeature([...])`.
 
 ### Step 6 — `src/common/`
+
+The app-specific glue: base entity, strategies, context facade, auth guard, and internal-secret provider. *All grounded on the ref app `src/common/**`.*
+
+**Profile: simple**
+
+Emit ONLY these files. NO `sd-context.ts` facade, NO `tenancy/`, NO `app-audit.strategy.ts`, NO `admin-*` files, NO `internal-secret/`, NO `src/core/modules/jwt/`.
+
+**`src/common/base-entity.ts`**
+
+```ts
+import { BaseEntity as CoreBaseEntity, WithAudit } from '@sdcorejs/nestjs/orm';
+/** App base entity: lib audit/timestamps + uuid id. Domain entities extend this. */
+export abstract class BaseEntity extends WithAudit(CoreBaseEntity) {}
+```
+
+**`src/common/errors.ts`** — profile-independent helper (identical to enterprise):
+
+```ts
+import { BadRequestException } from '@nestjs/common';
+import { apiError } from '@sdcorejs/nestjs/orm';
+
+/**
+ * Throw a code-based 400 error. `code` is an i18n key (e.g. `crm.task.name.required`); the lib
+ * `I18nExceptionFilter` recognizes the `apiError(code, message, data?)` envelope, localizes the
+ * `message` via the registered resolver using the request language, and returns the `{ error }`
+ * envelope carrying both `code` and the resolved `message`. `data` supplies `{var}` placeholders.
+ * Typed `: never` so TS narrows control flow after a guard. The default message is `code` so the
+ * response stays meaningful even with no i18n layer wired.
+ */
+export function badRequest(code: string, data?: Record<string, unknown>): never {
+  throw new BadRequestException(apiError(code, code, data));
+}
+```
+
+**`src/common/dto.ts`**
+
+```ts
+/** Base DTO every entity DTO extends (simple profile). Matches the BaseService DTO contract. */
+export interface Dto {
+  id: string;
+  editable?: boolean;
+  deletable?: boolean;
+  restorable?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+```
+
+**`src/common/role-permission.strategy.ts`**
+
+```ts
+import { Injectable } from '@nestjs/common';
+import type { IPermissionStrategy } from '@sdcorejs/nestjs/permission';
+import { ContextService } from '@sdcorejs/nestjs/context';
+
+/**
+ * Simple profile: permission codes ARE the Keycloak realm roles mapped on the JWT
+ * (JwtStrategy.validate → req.user.roles). Flat `string[]`; no page-permission matrix.
+ */
+@Injectable()
+export class RolePermissionStrategy implements IPermissionStrategy {
+  constructor(private readonly ctx: ContextService) {}
+  async load(): Promise<string[]> {
+    const user = this.ctx.get('user') as { roles?: string[] } | undefined;
+    return user?.roles ?? [];
+  }
+}
+```
+
+**`src/common/jwt.strategy.ts`**
+
+```ts
+import { Injectable } from '@nestjs/common';
+import { type JwtPayload, KeycloakJwtStrategy } from '@sdcorejs/nestjs/jwt';
+
+/** Simple profile: map only sub + realm roles. No tenant/department claims. */
+@Injectable()
+export class JwtStrategy extends KeycloakJwtStrategy {
+  async validate(payload: JwtPayload) {
+    return { id: payload.sub, email: (payload as any).email, roles: (payload as any).realm_access?.roles ?? [] };
+  }
+}
+```
+
+---
+
+**Profile: enterprise**
 
 The app-specific glue: base entity, the three strategies (tenancy / audit / permission), the static context facade, the auth guard, and the internal-secret provider. *All grounded on the ref app `src/common/**`.*
 
@@ -641,6 +827,14 @@ export * from './internal-secret.module';
 
 ### Step 7 — `src/core/modules/jwt/` + `base/shared/` skeleton
 
+**Profile: simple**
+
+Skipped — no `base/shared/` kernel. DTOs live in `src/modules/<module>/dto/` (see init-entity). The JWT strategy lives at `src/common/jwt.strategy.ts` (Step 6), not `src/core/modules/jwt/`.
+
+---
+
+**Profile: enterprise**
+
 **`src/core/modules/jwt/jwt.strategy.ts`** — `extends KeycloakJwtStrategy`; `validate(payload)` maps Keycloak claims → the app user (*ground: ref app `src/core/modules/jwt/jwt.strategy.ts`*). The ref app fetches a full account from an in-process admin service; a fresh scaffold maps claims directly until an admin module exists.
 
 ```ts
@@ -747,6 +941,34 @@ Result: dev developers rely on `synchronize=true` for fast iteration; prod boots
 
 *Grounded on the ref app `.env.example`* (domain blocks stripped). Mirror context header names from Step 5.
 
+**Profile: simple**
+
+```bash
+# ===== App =====
+PORT=3000
+ENVIRONMENT=dev
+
+# ===== Database (1 Postgres, schema-per-module) =====
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=<app-name>
+DB_USER=postgres
+DB_PASSWORD=postgres
+# dev: true (auto-create tables; ensureSchemas() creates schemas). prod: false + run migrations.
+DB_SYNCHRONIZE=true
+
+# ===== Keycloak (JWT verification via JWKS) =====
+KEYCLOAK_URL=http://localhost:8080
+KEYCLOAK_REALM=dev
+# Issuer the lib JWT strategy validates tokens against (JWKS at ${issuer}/protocol/openid-connect/certs).
+KEYCLOAK_ISSUER=http://localhost:8080/realms/dev
+
+# ===== Request-context header names (must match ContextModule headers in app.module.ts) =====
+# x-user-id — default is wired in code; override only if your gateway renames it.
+```
+
+**Profile: enterprise**
+
 ```bash
 # ===== App =====
 PORT=3000
@@ -784,6 +1006,30 @@ KEYCLOAK_ISSUER=http://localhost:8080/realms/dev
 ---
 
 ## Expected scaffold structure
+
+**Profile: simple**
+
+```
+<app-name>/
+├── package.json                 # @sdcorejs/nestjs (npm <CORE_VERSION>, tgz fallback) + scripts incl. migration:run
+├── tsconfig.json                # src/* alias only (no @shared/@app)
+├── nest-cli.json
+├── .env.example
+└── src/
+    ├── main.ts                  # ensureSchemas() + bootstrap()
+    ├── app.module.ts            # SdCoreModule.forRoot (simple) + TypeOrmModule.forRootAsync + RouterModule.register([])
+    ├── app.configuration.ts     # env config factory
+    ├── data-source.ts           # TypeORM CLI DataSource (migrations)
+    ├── migrations/.gitkeep      # empty → migration:run is a no-op exit 0
+    └── common/
+        ├── base-entity.ts
+        ├── errors.ts
+        ├── dto.ts
+        ├── role-permission.strategy.ts
+        └── jwt.strategy.ts
+```
+
+**Profile: enterprise**
 
 ```
 <app-name>/
@@ -823,7 +1069,9 @@ KEYCLOAK_ISSUER=http://localhost:8080/realms/dev
 - `npm run build` (nest build) — TypeScript typecheck passes.
 - `npm run start:dev` boots: `ensureSchemas()` creates the schemas, the DataSource connects, the app listens on `:3000`. (Needs a reachable Postgres + the env from `.env`.)
 - `npm run migration:run` exits 0 against the empty `src/migrations/` (proves the Plan 2 Docker CMD chain is safe).
-- `src/common/errors.ts` exports `badRequest(code, data?)` (the domain-error helper `actions.md` depends on); `src/common/context/index.ts` barrels `./sd-context` (so `from 'src/common/context'` resolves) and `SdContext` exposes a `fullName` getter (used by `actions.md` Excel export).
+- `src/common/errors.ts` exports `badRequest(code, data?)` (the domain-error helper `actions.md` depends on).
+- **enterprise only:** `src/common/context/index.ts` barrels `./sd-context` (so `from 'src/common/context'` resolves) and `SdContext` exposes a `fullName` getter (used by `actions.md` Excel export).
+- **simple:** `rg` finds no `tenantCode`/`departmentCode`/`InternalGuard`/`base/shared` in the emitted output.
 - No `.claude` / `.git` / domain-specific files leaked into the target.
 
 ---
