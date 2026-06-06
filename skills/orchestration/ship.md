@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-ship
-description: End-to-end ship orchestrator. Chains verify-before-done → branch-ready → [changelog if release mode] → commit → push → pr-create into a single entry point. Triggers - "ship", "ship branch này", "đẩy lên", "tạo PR", "release", "xong rồi ship đi", "ready to merge". Applies to angular, nestjs, nextjs and the sdcorejs-agent repo. Bilingual (VI/EN).
+description: End-to-end ship orchestrator. Chains verify-before-done → branch-ready → [changelog if release mode] → commit → push → pr-create into a single entry point. Triggers - "ship", "ship branch này", "đẩy lên", "release", "xong rồi ship đi", "ready to merge". Applies to angular, nestjs, nextjs and the sdcorejs-agent repo. Bilingual (VI/EN).
 allowed-tools: Bash, Read
 ---
 
@@ -13,8 +13,10 @@ chains them so the user says one thing and the full gate sequence runs.
 
 ## When invoked
 - "ship", "ship branch này", "ship đi", "đẩy lên"
-- "tạo PR", "mở PR", "ready to merge", "xong rồi ship đi"
+- "ready to merge", "xong rồi ship đi"
 - "release", "tag and release"
+
+> `"tạo PR"` / `"mở PR"` (PR-only, no full ship sequence) → `sdcorejs-pr-create`, which owns that phrase.
 
 Do NOT invoke if:
 - Work is mid-feature (incomplete) — use sub-skills directly
