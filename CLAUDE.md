@@ -112,6 +112,8 @@ orchestration/auto-task-tracker   ← MANDATORY (immediately after auto-docs) �
 orchestration/memories            ← durable knowledge (when applicable) to <target>/.sdcorejs/memories/<track>/
 ```
 
+After `branch-ready`, an **OPTIONAL packaging branch** may run `sdcorejs-dockerize → sdcorejs-auth → sdcorejs-run-guide` to deliver a runnable Docker stack (the non-tech default). See "Infra / packaging" below.
+
 ## Mandatory rules (apply to every track)
 
 1. **Auto-docs is mandatory.** At the end of every code-writing skill invocation, run the track-agnostic `auto-docs` skill at `skills/orchestration/auto-docs.md`. This writes a session summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (note the leading dot in `.sdcorejs/`). Do NOT write the doc to this `sdcorejs-agent` repo.
@@ -184,6 +186,16 @@ Loaded by every track at the start of every feature. Each detects the track at r
 | `sdcorejs-changelog` | "viết changelog", release prep — Keep a Changelog entry from commits, semver bump |  |
 | `sdcorejs-review` | "review bảo mật", before release — cross-track security checklist — track-aware (detects stack, deepens via `_refs/<track>/review-security.md`) |  |
 | `sdcorejs-dep-update` | "cập nhật dependency", `npm audit fix` — safe upgrade workflow (audit → branch → group → test) |  |
+
+### Infra / packaging (`skills/infra/`)
+
+Emit a one-command runnable Docker stack into a target project's **deploy root** (never this repo). Templates live in `_refs/infra/`. Non-tech is the default consumer; composes with the angular + nestjs tracks.
+
+| Skill | Trigger | Emits |
+| --- | --- | --- |
+| `sdcorejs-dockerize` | "dockerize", "đóng gói docker", "chạy bằng docker" | Dockerfiles + `docker-compose.yml` (FE + BE + Keycloak + Postgres), `.env`, nginx |
+| `sdcorejs-auth` | "thêm đăng nhập", "cấu hình keycloak", "xác thực" | Keycloak realm import + FE `provideSdKeycloak` + BE token-validation wiring |
+| `sdcorejs-run-guide` | "hướng dẫn chạy", "cách chạy", "start guide" | plain-language `START.md` (install Docker → one command → URL → demo login) |
 
 ## Reference docs (load on demand only — do not preload)
 

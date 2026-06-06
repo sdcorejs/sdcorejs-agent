@@ -94,6 +94,31 @@ Pass criteria:
 - Re-prompting in the same project does NOT re-ask (reads the stored flag silently)
 - With `persona: non-tech`, later output avoids unexplained jargon, asks about features + screens (never modules/entities/architecture)
 
+### Test 8 — Infra packaging
+
+Prompt: `đóng gói app này để chạy bằng docker`
+
+Expected: Agent dispatches `sdcorejs-dockerize`.
+
+Pass criteria:
+- Proposes/writes a deploy root containing `docker-compose.yml` with 4 services (postgres / keycloak / backend / frontend)
+- Output lands in the TARGET project's deploy root, NOT in this `sdcorejs-agent` repo
+
+Prompt: `thêm đăng nhập keycloak cho app`
+
+Expected: Agent dispatches `sdcorejs-auth`.
+
+Pass criteria:
+- Wires `provideSdKeycloak` on the FE + Keycloak env on the BE
+- Reports the demo login `demo` / `demo`
+
+Prompt: `viết hướng dẫn chạy cho người không rành kỹ thuật`
+
+Expected: Agent dispatches `sdcorejs-run-guide`.
+
+Pass criteria:
+- Emits a jargon-free `START.md`: install Docker → `docker compose up` → http://localhost:4200 → demo / demo
+
 ## E2E tests (in a real target portal project)
 
 ### Setup

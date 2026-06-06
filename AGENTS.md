@@ -77,6 +77,8 @@ Request
   → orchestration/auto-docs (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) → orchestration/memories (when durable knowledge surfaces)
 ```
 
+After `branch-ready`, an **OPTIONAL packaging branch** may run `sdcorejs-dockerize → sdcorejs-auth → sdcorejs-run-guide` to deliver a runnable Docker stack (the non-tech default). See "Infra / packaging" below.
+
 **Design phase is cross-track** (`skills/shared/sdlc/`). Each skill detects the target track from the project and loads `_refs/sdlc/<track>.md` for track-specific patterns (industry table for nextjs, layout matrix for angular, persistence/transaction matrix for nestjs).
 
 For the angular track, `write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular/write-code/` (no frontmatter, not dispatchable skills):
@@ -146,6 +148,16 @@ Cross-track skills — apply to angular, nestjs, nextjs alike. Dispatch is by sk
 | `sdcorejs-changelog` | "viết changelog", release — Keep a Changelog + semver bump |  |
 | `sdcorejs-review` | cross-track security checklist — track-aware (detects stack, deepens via `_refs/<track>/review-security.md`) |  |
 | `sdcorejs-dep-update` | "cập nhật dependency", audit fix — safe upgrade workflow |  |
+
+### Infra / packaging (`skills/infra/`)
+
+Emit a one-command runnable Docker stack into a target project's **deploy root** (never this repo). Templates live in `_refs/infra/`. Non-tech is the default consumer; composes with the angular + nestjs tracks.
+
+| Skill | Trigger | Emits |
+| --- | --- | --- |
+| `sdcorejs-dockerize` | "dockerize", "đóng gói docker", "chạy bằng docker" | Dockerfiles + `docker-compose.yml` (FE + BE + Keycloak + Postgres), `.env`, nginx |
+| `sdcorejs-auth` | "thêm đăng nhập", "cấu hình keycloak", "xác thực" | Keycloak realm import + FE `provideSdKeycloak` + BE token-validation wiring |
+| `sdcorejs-run-guide` | "hướng dẫn chạy", "cách chạy", "start guide" | plain-language `START.md` (install Docker → one command → URL → demo login) |
 
 ## Reference docs (load on demand)
 

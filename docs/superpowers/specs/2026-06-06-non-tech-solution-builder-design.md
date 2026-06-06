@@ -210,7 +210,7 @@ tracks + update references (CLAUDE.md, AGENTS.md, copilot-instructions) + regene
 1. **Persona layer** — `sdcorejs-persona` + `_refs/shared/persona.md` + CLAUDE.md rule. Small;
    unlocks plain-language everywhere. No dependency. — ✅ shipped (Plan 1: persona layer + `07-` rename cleanup).
 2. **Infra group** — `dockerize` → `auth` → `run-guide`. Composes with existing
-   angular output; can be exercised against an existing Angular app + scaffold BE. — Plan 2.
+   angular output; can be exercised against an existing Angular app + scaffold BE. — ✅ shipped (Plan 2).
 3. **nestjs build-out** — new `_refs/nestjs/write-code/` packs (mirror angular). Largest chunk. — Plan 3.
 4. **solution-builder** — ties 1+2+3 together for the non-tech one-door flow. — Plan 4.
 
