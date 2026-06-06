@@ -63,3 +63,4 @@ layout) internally and confirms them as plain outcomes — the user is never ask
 or choose a layout in technical terms.
 
 Bilingual rule is orthogonal and still applies: VI request → VI output; EN → EN.
+Skill SOURCE is authored in English (global publication); runtime trigger-matching + responses follow the user's language. This is orthogonal to the tech/non-tech persona.
