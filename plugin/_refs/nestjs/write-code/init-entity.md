@@ -32,6 +32,16 @@ Then confirm only the blocking inputs (entity name + its fields). For a technica
 
 ---
 
+## Profile (read FIRST)
+
+Read `profile` from `<target>/.sdcorejs/summary.md` (default `simple`). The entity (Step 1),
+DTO (Step 3), and service `mapDTO` (Step 4) differ by profile; the repository (Step 2),
+controller (Step 6), module wiring (Step 7), and permission codes (Step 8) are
+profile-independent. Emit ONLY the chosen profile's templates. `enterprise` output is
+unchanged from prior versions.
+
+---
+
 ## Source of truth — core package
 
 Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) for the canonical export inventory + import sub-paths BEFORE generating. Every import in the templates below MUST match a sub-path the catalog documents (`@sdcorejs/nestjs`, `/orm`, `/permission`, `/validation`). Do not invent imports. The building blocks come from the catalog's "ORM building blocks" section:
@@ -63,6 +73,8 @@ Before generating, confirm:
 ## Generation steps
 
 ### Step 1 — Entity (`src/modules/<module>/entities/<entity>.entity.ts`)
+
+**Profile: enterprise**
 
 The TypeORM entity. Sets the per-module Postgres schema, declares the tenancy columns with `@Scoped`, the typed business columns, optional relations, and the `@SearchableFields` matcher. *(Ground: ref app `src/modules/crm/entities/task.entity.ts` — `@Entity({ schema: 'crm', name: 'task', orderBy: { createdAt: 'DESC' } })`, `@Index(['departmentCode'])`, `@Unique(['departmentCode', 'code'])`, `@Scoped()` on `tenantCode` / `departmentCode`, the typed `@Column`s, the `@ManyToOne` + `@JoinColumn` relation to `TaskStatus` / `TaskType`.)*
 
@@ -134,9 +146,48 @@ export class <Entity> extends BaseEntity {
 }
 ```
 
-> **Why the LOCAL base, not the lib base.** `init-project` emits `src/common/base-entity.ts`. For a fresh app it may simply re-export the lib `WithAudit(BaseEntity)`; for an app migrating a live schema it hand-declares the legacy audit columns (the ref app does this — `modifiedAt` not `updatedAt`, plus `deletor` / `creator`). Either way, entities ALWAYS extend `src/common/base-entity`, never `@sdcorejs/nestjs/orm`'s `BaseEntity` directly, so audit/timestamps stay uniform across the app. *(Ground: ref app `src/common/base-entity.ts` header comment + every `crm/entities/*.entity.ts` importing `BaseEntity` from `src/common/base-entity`.)*
+> **Why the LOCAL base, not the lib base (enterprise-only).** `init-project` emits `src/common/base-entity.ts`. In the enterprise profile this local base hand-declares the legacy audit columns the live schema uses (`modifiedAt` not `updatedAt`, plus `deletor` / `creator`). The lib `BaseRepository`/`BaseService`/`BaseController` are column-name-agnostic, so they operate on this base unchanged. This "extend the LOCAL base, NOT the lib base" rationale is **enterprise-only** — it exists because enterprise apps migrate a legacy schema. *(Ground: ref app `src/common/base-entity.ts` header comment + every `crm/entities/*.entity.ts` importing `BaseEntity` from `src/common/base-entity`.)*
 
-> **`@Scoped()` (alias of `@TenantScoped()`)** marks the columns the tenancy strategy auto-fills on write and filters on read (catalog "Decorators" + "Tenancy & audit"). The ref app scopes by `tenantCode` + `departmentCode`. For a single-tenant app the strategy's `getCurrentScope()` returns `{}` and these columns are not filtered — keep the columns anyway for forward-compat. `@SearchableFields` declares which columns `BaseRepository.search(keyword)` matches; drop `activeColumn` if the entity has no active flag.
+> **`@Scoped()` (alias of `@TenantScoped()`)** marks the columns the tenancy strategy auto-fills on write and filters on read (catalog "Decorators" + "Tenancy & audit"). The ref app scopes by `tenantCode` + `departmentCode`. `@SearchableFields` declares which columns `BaseRepository.search(keyword)` matches; drop `activeColumn` if the entity has no active flag.
+
+---
+
+**Profile: simple**
+
+The TypeORM entity for a single-tenant app. No tenancy columns (`tenantCode`/`departmentCode`), no `@Scoped`, no `@Index`/`@Unique(['departmentCode', ...])`. `src/common/base-entity` in the simple profile re-exports the lib `WithAudit(BaseEntity)` — audit columns are `createdAt`/`updatedAt`/`deletedAt`/`createdBy`/`modifiedBy` (no legacy `modifiedAt` contradiction).
+
+```ts
+import { SearchableFields } from '@sdcorejs/nestjs/orm';
+import { BaseEntity } from 'src/common/base-entity';
+import { Column, Entity } from 'typeorm';
+
+/**
+ * <Entity> — lives in the `<module>` Postgres schema. Extends the app BaseEntity
+ * (src/common/base-entity), which in the simple profile re-exports the lib
+ * WithAudit(BaseEntity): createdAt / updatedAt / deletedAt + createdBy / modifiedBy.
+ * No tenancy columns (single-tenant).
+ */
+@Entity({ schema: '<module>', name: '<table>', orderBy: { createdAt: 'DESC' } })
+@SearchableFields({ exact: ['code'], contain: ['name'], activeColumn: 'isActive' })
+export class <Entity> extends BaseEntity {
+  @Column({ type: 'varchar', length: 64, nullable: true })
+  code: string;
+
+  @Column({ type: 'varchar', length: 1024 })
+  name: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  description: string;
+
+  @Column({ default: true })
+  isActive: boolean;
+  // business columns from Input #3 here; same-module @ManyToOne relations as in the enterprise template
+}
+```
+
+> No `@Scoped` tenancy columns, no `@Index`/`@Unique(['departmentCode', ...])`. Audit columns come from the lib `WithAudit` (so `updatedAt`/`modifiedBy`, NOT the enterprise legacy `modifiedAt`) — no base-class contradiction. The "extend the LOCAL base, NOT the lib base" rationale in the enterprise block is enterprise-only (it exists because enterprise migrates a legacy schema); in the simple profile `src/common/base-entity` simply re-exports the lib base.
+
+---
 
 **Append the barrel line** to `src/modules/<module>/entities/index.ts` (idempotent — skip if present):
 
@@ -173,7 +224,9 @@ export class <Entity>Repository extends BaseRepository<<Entity>> implements I<En
 export * from './<entity>.repository';
 ```
 
-### Step 3 — DTO (`base/shared/<module>/<entity>.model.ts`, aliased `@shared`)
+### Step 3 — DTO
+
+**Profile: enterprise** (`base/shared/<module>/<entity>.model.ts`, aliased `@shared`)
 
 The DTO is the read shape the service returns and the FE consumes. It lives in the shared kernel (`@shared`, `init-project` Step 7) so the Angular portal imports the SAME type. Extends the `Dto` base (`id` + the `editable` / `deletable` / `restorable` capability flags + audit fields). *(Ground: ref app `base/shared/crm/task.model.ts` — `export type TaskDTO = Dto<TaskDTO> & Required<TaskSaveReq> & { … }`; and `base/shared/entity/dto.model.ts` — the `Dto` base with `editable?` / `deletable?` / `restorable?`.)*
 
@@ -215,7 +268,30 @@ export * from './<entity>.model';
 
 > If `base/shared/<module>/` does not yet exist (this is the first entity in a freshly-`init-module`-d module), create the folder + an `index.ts` containing only `export * from './<entity>.model';`. Subsequent entities append their line. The `Dto` base + `@shared/entity` come from `init-project` Step 7.
 
+---
+
+**Profile: simple** (`src/modules/<module>/dto/<entity>.dto.ts`)
+
+In the simple profile the DTO lives inside the module itself (no `base/shared/` kernel, no `@shared` alias). It imports the `Dto` base from `src/common/dto.ts` (emitted by `init-project` Step 6 for the simple profile). No `tenantCode`/`departmentCode` fields.
+
+```ts
+import { Dto } from 'src/common/dto';
+
+/** <Entity> read DTO — returned by <Entity>Service.mapDTO, consumed by the portal. */
+export interface <Entity>DTO extends Dto {
+  // id, editable?, deletable?, restorable?, createdAt?, updatedAt? — from Dto
+  code: string;
+  name: string;
+  description?: string;
+  isActive: boolean;
+}
+```
+
+> Simple profile has no `base/shared/<module>/` folder and no `base/shared/<module>/index.ts` barrel. The DTO is imported from `src/modules/<module>/dto` (no `@shared` alias needed). The controller (Step 6) and service (Step 4) import from this path instead of `@shared/<module>`.
+
 ### Step 4 — Service (`src/modules/<module>/services/<entity>.service.ts`)
+
+**Profile: enterprise**
 
 The service maps entities → DTOs and exposes the I-token. Extends `BaseService` (which mirrors the repo's read/write and runs each result through the abstract `mapDTO`). The permission gates use the `SdContext` facade (`init-project` Step 6) — `hasPermission('<module>_<entity>', '<action>')` joins to the flat code `<module>_<entity>:<action>` the permission strategy loads. *(Ground: ref app `src/modules/crm/services/task.service.ts` lines 16-38 (interface + Symbol + class + constructor `@Inject(ITaskRepository)`) and lines 506-577 (`mapDTO` with `hasPermission('crm_task', 'delete')` gating `deletable`).)*
 
@@ -267,6 +343,50 @@ export class <Entity>Service extends BaseService<<Entity>, <Entity>DTO> implemen
 
 > **`mapDTO` is the single abstract method `BaseService` requires.** Return `undefined` for a null entity (the ref app does — the base maps arrays/pages element-wise). Gate `deletable` / `restorable` (and any `editable`) on `SdContext.hasPermission('<module>_<entity>', '<action>')` so the portal's row actions reflect the caller's permissions. Add entity-specific service methods (e.g. `createDTO` / a domain action) to the interface + class as the feature needs them; the base already provides `create` / `update` / `paging` / `detail` / `delete` / `softDelete` / `restore`.
 
+---
+
+**Profile: simple**
+
+Same `BaseService` extension, but injects the lib `ContextService` directly (no `SdContext` facade — simple apps do not scaffold `src/common/context/sd-context.ts`). DTO is imported from `src/modules/<module>/dto` (no `@shared` alias). No tenancy fields in the returned object.
+
+```ts
+import { Inject, Injectable } from '@nestjs/common';
+import { BaseService, IBaseService } from '@sdcorejs/nestjs/orm';
+import { ContextService } from '@sdcorejs/nestjs/context';
+import { <Entity>DTO } from 'src/modules/<module>/dto/<entity>.dto';
+import { <Entity> } from 'src/modules/<module>/entities';
+import { I<Entity>Repository } from 'src/modules/<module>/repositories';
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface I<Entity>Service extends IBaseService<<Entity>, <Entity>DTO> {}
+export const I<Entity>Service = Symbol('I<Entity>Service');
+
+@Injectable()
+export class <Entity>Service extends BaseService<<Entity>, <Entity>DTO> implements I<Entity>Service {
+  constructor(
+    @Inject(I<Entity>Repository) repository: I<Entity>Repository,
+    private readonly ctx: ContextService,
+  ) {
+    super(repository);
+  }
+
+  mapDTO = (entity: <Entity> | undefined | null): <Entity>DTO | undefined | null => {
+    if (!entity) return undefined;
+    const { id, code, name, description, isActive, createdAt } = entity;
+    return {
+      id, code, name, description, isActive, createdAt,
+      editable: this.ctx.hasPermission('<module>_<entity>:update'),
+      deletable: this.ctx.hasPermission('<module>_<entity>:delete'),
+      restorable: this.ctx.hasPermission('<module>_<entity>:delete'),
+    };
+  };
+}
+```
+
+> The lib `ContextService` (from `@sdcorejs/nestjs/context`) exposes `hasPermission(code)` taking the full flat code `<module>_<entity>:<action>` — no two-arg split form. There is no `SdContext` facade in the simple profile. `ContextService` must be added to the module's `providers` array (or imported via a shared module) for DI to resolve. The catalog confirms this export path.
+
+---
+
 **Append the barrel line** to `src/modules/<module>/services/index.ts`:
 
 ```ts
@@ -302,6 +422,8 @@ import { HasPermission } from '@sdcorejs/nestjs/permission';
 import { ZodValidationGuard } from '@sdcorejs/nestjs/validation';
 import { AdminAuthGuard } from 'src/common/admin-auth.guard';
 import { Body, Controller, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
+// enterprise: import { <Entity>DTO } from '@shared/<module>';
+// simple:     import { <Entity>DTO } from 'src/modules/<module>/dto/<entity>.dto';
 import { <Entity>DTO } from '@shared/<module>';
 import { <Entity> } from 'src/modules/<module>/entities';
 import { <Entity>CreateSchema, <Entity>UpdateSchema } from 'src/modules/<module>/schemas/<module>.schema';
@@ -414,13 +536,15 @@ export class <Module>Module {}
 
 ## Expected files (after init-entity for one `<entity>`)
 
+**Profile: enterprise**
+
 ```
 src/modules/<module>/
-├── entities/<entity>.entity.ts            # @Entity({ schema, name, orderBy }) extends local BaseEntity
+├── entities/<entity>.entity.ts            # @Entity({ schema, name, orderBy }) + @Scoped tenancy cols
 ├── entities/index.ts                      # + export * from './<entity>.entity'
 ├── repositories/<entity>.repository.ts    # I<Entity>Repository token + <Entity>Repository class
 ├── repositories/index.ts                  # + export * from './<entity>.repository'
-├── services/<entity>.service.ts           # I<Entity>Service token + <Entity>Service (mapDTO)
+├── services/<entity>.service.ts           # I<Entity>Service token + <Entity>Service (SdContext mapDTO)
 ├── services/index.ts                      # + export * from './<entity>.service'
 ├── controllers/<entity>.controller.ts     # <Entity>Controller extends BaseController + create/update
 ├── controllers/index.ts                   # + export * from './<entity>.controller'
@@ -432,18 +556,42 @@ base/shared/<module>/
 └── index.ts                               # + export * from './<entity>.model'  (created if first entity)
 ```
 
+**Profile: simple**
+
+```
+src/modules/<module>/
+├── entities/<entity>.entity.ts            # @Entity({ schema, name, orderBy }) — no @Scoped tenancy cols
+├── entities/index.ts                      # + export * from './<entity>.entity'
+├── repositories/<entity>.repository.ts    # I<Entity>Repository token + <Entity>Repository class
+├── repositories/index.ts                  # + export * from './<entity>.repository'
+├── services/<entity>.service.ts           # I<Entity>Service token + <Entity>Service (ContextService mapDTO)
+├── services/index.ts                      # + export * from './<entity>.service'
+├── dto/<entity>.dto.ts                    # <Entity>DTO extends Dto (from src/common/dto)
+├── controllers/<entity>.controller.ts     # <Entity>Controller extends BaseController + create/update
+├── controllers/index.ts                   # + export * from './<entity>.controller'
+├── schemas/<module>.schema.ts             # + <Entity>CreateSchema / <Entity>UpdateSchema
+└── <module>.module.ts                     # + forFeature/controllers/providers/exports entries
+
+# No base/shared/<module>/ folder in simple profile
+```
+
 ---
 
 ## Verification checklist
 
-- `entities/<entity>.entity.ts` exists, `@Entity({ schema: '<module>', name: '<table>' })`, extends `src/common/base-entity`, `@Scoped()` on tenancy columns, `@SearchableFields(...)`.
-- `repositories/<entity>.repository.ts` exports `I<Entity>Repository` (interface + Symbol) + `<Entity>Repository extends BaseRepository<<Entity>>`.
-- `base/shared/<module>/<entity>.model.ts` exports `<Entity>DTO extends Dto<...>` with `deletable?` / `restorable?`.
+- `entities/<entity>.entity.ts` exists, `@Entity({ schema: '<module>', name: '<table>' })`, extends `src/common/base-entity`, `@SearchableFields(...)`.
+  - **Enterprise only:** `@Scoped()` on `tenantCode` / `departmentCode` columns, `@Index(['departmentCode'])`, `@Unique(['departmentCode', 'code'])`.
+  - **Simple only:** no tenancy columns, no `@Scoped`, no `@Index`/`@Unique` on tenancy fields. Audit columns are `updatedAt`/`modifiedBy` (lib `WithAudit`) — no `modifiedAt`.
+- `repositories/<entity>.repository.ts` exports `I<Entity>Repository` (interface + Symbol) + `<Entity>Repository extends BaseRepository<<Entity>>`. (profile-independent)
+- **Enterprise only:** `base/shared/<module>/<entity>.model.ts` exports `<Entity>DTO extends Dto<...>` with `deletable?` / `restorable?`; barrel at `base/shared/<module>/index.ts`.
+- **Simple only:** `src/modules/<module>/dto/<entity>.dto.ts` exports `<Entity>DTO extends Dto` (from `src/common/dto`); no `base/shared/<module>/` folder.
 - `services/<entity>.service.ts` exports `I<Entity>Service` (interface + Symbol) + `<Entity>Service extends BaseService<...>` with permission-gated `mapDTO`.
-- `schemas/<module>.schema.ts` has `<Entity>CreateSchema` + `<Entity>UpdateSchema = <Entity>CreateSchema.partial()` with i18n error codes.
-- `controllers/<entity>.controller.ts` exports `<Entity>Controller extends BaseController<...>` with `@HasPermission` + `ZodValidationGuard` on create/update under `@UseGuards(AdminAuthGuard)`.
-- All four barrels (`entities` / `repositories` / `services` / `controllers`) + `base/shared/<module>/index.ts` re-export the new files.
-- `<module>.module.ts` registers `<Entity>` (forFeature), `<Entity>Controller` (controllers), both provider bindings, and `I<Entity>Service` (exports) — exactly once each.
+  - **Enterprise:** `mapDTO` uses `SdContext.hasPermission('<module>_<entity>', '<action>')` and includes `tenantCode`/`departmentCode` in the returned DTO.
+  - **Simple:** `mapDTO` injects `ContextService` and uses `this.ctx.hasPermission('<module>_<entity>:<action>')`; no tenancy fields in the returned DTO.
+- `schemas/<module>.schema.ts` has `<Entity>CreateSchema` + `<Entity>UpdateSchema = <Entity>CreateSchema.partial()` with i18n error codes. (profile-independent)
+- `controllers/<entity>.controller.ts` exports `<Entity>Controller extends BaseController<...>` with `@HasPermission` + `ZodValidationGuard` on create/update under `@UseGuards(AdminAuthGuard)`. (profile-independent structure; DTO import path differs — enterprise: `@shared/<module>`, simple: `src/modules/<module>/dto`)
+- All four barrels (`entities` / `repositories` / `services` / `controllers`) re-export the new files. Enterprise also has `base/shared/<module>/index.ts`.
+- `<module>.module.ts` registers `<Entity>` (forFeature), `<Entity>Controller` (controllers), both provider bindings, and `I<Entity>Service` (exports) — exactly once each. (profile-independent)
 - `npm run build` typechecks the new stack.
 - Re-running `init-entity` for the same `<entity>` makes NO duplicate edits (idempotent).
 
