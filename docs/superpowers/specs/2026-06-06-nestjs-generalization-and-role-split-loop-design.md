@@ -1,7 +1,7 @@
 # Design — NestJS generalization (profile tier) + role-split feature loop
 
 **Date:** 2026-06-06
-**Status:** Approved (brainstorm) — pending written-spec review, then plan.
+**Status:** Delivered — Phases 1–3 shipped on `feat/non-tech-solution-builder` (doc-drift + profile tier + role-split loop). Live `docker compose up` validation of generated `simple`/`enterprise` output remains a deferred target-project E2E.
 **Author:** brainstorming session (Opus 4.8).
 
 ## TL;DR
