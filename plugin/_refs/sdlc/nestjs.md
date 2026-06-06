@@ -2,9 +2,9 @@
 
 This file is loaded by `skills/shared/sdlc/0[1-6]-*.md` when the detected track is `nestjs`.
 
-**Status:** Track-specific orchestrator (`write-code` for NestJS) is planned, not yet shipped. Cross-track SDLC skills work today — they will dispatch to the future `nestjs-write-code` orchestrator once it lands. Until then, after `sdcorejs-review-plan` approves a plan, dispatch is a manual sub-skill walk through `sdcorejs-review` + `skills/testing/*/nestjs.md`.
+**Status:** Track-specific orchestrator (`nestjs-write-code`) is shipped — after `sdcorejs-review-plan` approves a plan, it dispatches the on-demand packs under `_refs/nestjs/write-code/` (`init-project` / `init-module` / `init-entity` / `actions`). This ref covers the **design phase** (brainstorm / clarify / spec / plan); the code-generation rules + templates live in those packs.
 
-This ref captures the conventions from the `be-masterdata` baseline.
+**Canonical core:** SDCoreJS NestJS backends are modular monoliths built on the **`@sdcorejs/nestjs`** core package (sub-path imports: `@sdcorejs/nestjs`, `/orm`, `/permission`, `/validation`, `/jwt`, `/context`, `/tenancy`, `/audit`, `/i18n`, …). The authoritative export inventory is [`_refs/nestjs/core-catalog.md`](../nestjs/core-catalog.md); the architecture WHY is [`_refs/nestjs/architecture-principles.md`](../nestjs/architecture-principles.md). Historical note: earlier drafts referenced a `be-masterdata` baseline; the canonical reference app today consumes `@sdcorejs/nestjs` and the conventions below are grounded on it.
 
 ---
 
@@ -40,16 +40,16 @@ This ref captures the conventions from the `be-masterdata` baseline.
 4. **Persistence**: TypeORM + Postgres (default) | raw SQL | external proxy | none (read-only)
 5. **Transaction style**: queryRunner manual (default) | `@Transaction` | saga/outbox
 6. **API style**: REST (default) | GraphQL (if used) | gRPC (if used)
-7. **Permission scope**: per-endpoint `@HasPermission()` codes
+7. **Permission scope**: per-endpoint `@HasPermission()` codes — canonical format **`<module>_<entity>:<action>`** (e.g. `crm_task:create`)
 8. **Test coverage**: `minimal` | `standard` (default) | `full`
 
 ### Useful-optional (defaults safe)
 - Audit columns (default: `createdAt`, `updatedAt`, `createdBy`, `updatedBy` from BaseEntity)
 - Soft-delete (default: yes via BaseEntity `deletedAt`)
 - Pagination (default: cursor + page-size, `Pagination` helper from shared package)
-- Validation: Zod schemas in shared package (mandatory — no class-validator)
-- Migration strategy: TypeORM migration files in `src/migrations/`
-- Bilingual error messages (mandatory for VI projects — return `{ vi: '...', en: '...' }`)
+- Validation: Zod schemas (mandatory — no class-validator)
+- Persistence: **schema-per-module Postgres** (one database, one schema per bounded-context module; the connection default schema is `core` for the lib's shared tables). `synchronize` in **dev** (TypeORM auto-creates tables; `ensureSchemas()` pre-creates the schemas), **migrations in prod** (`DB_SYNCHRONIZE=false`). Migration files in `src/migrations/`. **Plan 2 reconciliation:** `_refs/infra/backend.Dockerfile`'s start command runs `npm run typeorm migration:run` before `start:prod`, so `init-project` ships a `migration:run` script + an empty `src/migrations/` (a `migration:run` with zero migrations is a clean no-op exit 0, keeping the Docker chain safe) — see `_refs/nestjs/write-code/init-project.md` Step 8.
+- Bilingual error messages (mandatory for VI projects — served via the i18n catalog `{ code, message }`)
 
 ### Question grouping (3-4 per turn)
 
@@ -78,7 +78,7 @@ This ref captures the conventions from the `be-masterdata` baseline.
 | **Persistence** | TypeORM + Postgres |
 | **Transactions** | queryRunner manual |
 | **API style** | REST |
-| **Permissions** | <MODULE>:<ENTITY>:{LIST,CREATE,UPDATE,DELETE} |
+| **Permissions** | `<module>_<entity>:{list,create,update,delete}` (e.g. `crm_task:create`) |
 | **Audit + soft-delete** | yes |
 | **Tests** | <minimal | standard | full> |
 
@@ -89,12 +89,13 @@ This ref captures the conventions from the `be-masterdata` baseline.
 
 ## Spec
 
-### Path conventions (be-masterdata baseline)
+### Path conventions (`@sdcorejs/nestjs` reference app)
 - Module folder: `src/modules/<module>/`
 - Sub-folders: `entities/`, `repositories/`, `services/`, `controllers/`, `dto/`, `schemas/` (Zod), `mappers/`
-- Shared package (cross-module Zod schemas + base classes): `libs/shared/`
+- Shared kernel (re-exports + base DTO, aliased `@shared`): `base/shared/`
 - Migrations: `src/migrations/<timestamp>-<topic>.ts`
 - Tests: alongside source, `.spec.ts` + `.e2e-spec.ts` suffixes; integration tests under `test/integration/`
+- Generation rules + templates per concern: `_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md`
 
 ### Architecture section emphasis
 Capture:
@@ -109,7 +110,7 @@ Capture:
 ### Acceptance criteria examples
 - [ ] `GET /<entity>` returns paginated list with audit fields exposed
 - [ ] `POST /<entity>` validates via `ZodValidationGuard`, returns 400 with `{ vi, en }` on invalid payload
-- [ ] `POST /<entity>` requires permission `<MODULE>:<ENTITY>:CREATE`, returns 403 otherwise
+- [ ] `POST /<entity>` requires permission `<module>_<entity>:create` (e.g. `crm_task:create`), returns 403 otherwise
 - [ ] Multi-table updates roll back atomically if any row fails (QueryRunner test)
 - [ ] Soft-delete sets `deletedAt`; subsequent GET excludes the row
 - [ ] All endpoints return JSON in the standard `{ data, error }` envelope
@@ -159,8 +160,10 @@ Once the orchestrator ships, the plan can simply reference `nestjs-write-code` a
 
 ---
 
-## Open questions for this track (track is "planned")
-- Where do shared validators live exactly — `libs/shared/schemas/` or `libs/shared/zod/`? (need confirmation from be-masterdata project layout)
-- Default cursor-pagination shape (offset+limit vs id-cursor) — confirm before any plan locks it in
-- Permission code naming convention (uppercase enum vs strings) — confirm from existing modules
-- Should the `nestjs-write-code` orchestrator dispatch sub-skills `10-init-project`, `11-init-module`, `12-init-entity`, `20-controller`, `21-service`, `22-repository`, or a flatter layout — open design call
+## Resolved (track shipped)
+- **Shared kernel location:** `base/shared/` (aliased `@shared`), re-exporting the lib response/paging surface + a base DTO. Per-module Zod schemas live in `src/modules/<module>/schemas/`. See `_refs/nestjs/write-code/init-project.md` Step 7.
+- **Permission code convention:** flat `<module>_<entity>:<action>` (e.g. `crm_task:create`) — see `_refs/nestjs/architecture-principles.md` §11.
+- **Orchestrator layout:** `nestjs-write-code` dispatches four on-demand packs (`init-project` / `init-module` / `init-entity` / `actions`), not the old 10/11/12/20/21/22 sub-skills.
+
+## Open questions for this track
+- Default cursor-pagination shape (offset+limit vs id-cursor) — confirm per project before a plan locks it in.

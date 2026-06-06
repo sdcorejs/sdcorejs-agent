@@ -2,9 +2,9 @@
 
 Source of truth for **WHY** SDCoreJS NestJS backends look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, `sdcorejs-clarify-requirements`, `nestjs-write-code`, and `sdcorejs-review`.
 
-**Status**: NestJS track is **scaffold** — the code-writing sub-skills (`10-init-project`, `11-init-module`, `12-init-entity`) are planned but not yet implemented. Until they ship, the principles below govern manual generation via `nestjs-write-code` plan-walker.
+**Status**: NestJS track is **shipped** — `nestjs-write-code` dispatches four on-demand generation packs under `_refs/nestjs/write-code/` (`init-project` / `init-module` / `init-entity` / `actions`). The principles below govern the code those packs generate.
 
-These principles are distilled from the `be-masterdata` baseline project (the reference repo SDCoreJS NestJS conventions come from).
+**Canonical core:** SDCoreJS NestJS backends are built on the **`@sdcorejs/nestjs`** core package — sub-path imports (`@sdcorejs/nestjs`, `/orm`, `/permission`, `/validation`, `/jwt`, `/context`, `/tenancy`, `/audit`, `/i18n`, …) supply `WithAudit(BaseEntity)`, `BaseRepository` / `BaseService` / `BaseController`, `AuthGuard` + `@HasPermission`, `ZodValidationGuard`, and `SdCoreModule.forRoot`. The authoritative export inventory is [`_refs/nestjs/core-catalog.md`](./core-catalog.md). These principles are grounded on the `@sdcorejs/nestjs` reference app (earlier drafts referenced a `be-masterdata` baseline — kept for historical context only; the canonical core is `@sdcorejs/nestjs`).
 
 ---
 
@@ -73,11 +73,11 @@ export class ProductService extends BaseService<ProductEntity> {
 @UseGuards(AuthGuard, ZodValidationGuard)
 export class ProductController {
   @Post()
-  @HasPermission('CRM_PRODUCT_CREATE')
+  @HasPermission('crm_product:create')
   create(@Body() body: ProductSaveReq) { … }
 
   @Get()
-  @HasPermission('CRM_PRODUCT_LIST')
+  @HasPermission('crm_product:list')
   list(@Query() query: ProductListQuery) { … }
 }
 ```
@@ -141,7 +141,7 @@ async approve(@Param('id') id: string) {
 
 // ✅ right: controller dispatches
 @Post(':id/approve')
-@HasPermission('CRM_PRODUCT_APPROVE')
+@HasPermission('crm_product:approve')
 approve(@Param('id') id: string) {
   return this.service.approve(id);
 }
@@ -199,7 +199,7 @@ throw new BadRequestException({
 });
 ```
 
-Validation guard, exception filter, and global error handler all serialize errors in this shape. Frontend picks the appropriate language at render time.
+Validation guard, exception filter, and global error handler all serialize errors bilingually. With `@sdcorejs/nestjs` the canonical mechanism is the **i18n catalog**: throw a stable `code` via `apiError(code, message, data?)` and configure `SdCoreModule.forRoot({ i18n: { fallbackLanguage: 'vi', catalogs } })`; the lib resolves the `code` against the catalog and serializes a `{ code, message }` envelope in the request language (`x-lang` / `accept-language`). Frontend picks the appropriate language at render time. (The inline `{ vi, en }` payload above is the equivalent shape for cases where you bypass the catalog and ship both languages directly.)
 
 **Why bilingual**:
 - VI users see VI; debugging engineers see EN
@@ -210,7 +210,13 @@ Validation guard, exception filter, and global error handler all serialize error
 
 ---
 
-## 8. Migrations match every entity change
+## 8. Persistence: schema-per-module Postgres; `synchronize` in dev, migrations in prod
+
+**Persistence model:** ONE Postgres database, **one schema per bounded-context module** (`schema-per-module`). The TypeORM connection's default schema is `core` (the lib's shared tables); each domain `@Entity` sets its own `{ schema: '<module>' }`. TypeORM creates tables but never the schema, so `main.ts` `ensureSchemas()` pre-creates every module schema (idempotent `CREATE SCHEMA IF NOT EXISTS`) before the DataSource initializes.
+
+**Dev vs prod:** dev runs `DB_SYNCHRONIZE=true` (TypeORM auto-creates/updates tables for fast iteration); **prod runs `synchronize` OFF** and evolves the schema through migrations only.
+
+**Plan 2 Dockerfile reconciliation:** `_refs/infra/backend.Dockerfile`'s start command runs `npm run typeorm migration:run && npm run start:prod`. So `init-project` ships a `migration:run` script + an **empty `src/migrations/`** — `migration:run` against zero migration files is a clean no-op (exit 0), so the Docker `&&` chain proceeds to `start:prod` even on a brand-new app. See `_refs/nestjs/write-code/init-project.md` Step 8.
 
 Every entity change (new field, new index, new constraint, new entity) gets a migration:
 
@@ -274,19 +280,17 @@ Mock at the layer being tested:
 
 ---
 
-## 11. Permission codes: Module → Entity → Action, UPPERCASE
+## 11. Permission codes: flat `<module>_<entity>:<action>`
 
 ```ts
-@HasPermission('CRM_PRODUCT_LIST')       // module: CRM, entity: PRODUCT, action: LIST
-@HasPermission('SALES_ORDER_APPROVE')    // module: SALES, entity: ORDER, action: APPROVE
+@HasPermission('crm_task:create')        // module: crm, entity: task, action: create
+@HasPermission('crm_task:list')          // list
+@HasPermission('sales_order:approve')    // module: sales, entity: order, action: approve
 ```
 
-Acceptable variants (pick ONE per project, stay consistent):
-- `<MODULE>_<ENTITY>_<ACTION>` — scaffold default
-- `<MODULE>_C_<ENTITY>_<ACTION>` — common variant from existing portals
-- `<MODULE>_<ENTITY>:<ACTION>` — colon-separator variant
+**Canonical convention** (the `@sdcorejs/nestjs` reference app uses this): flat `<module>_<entity>:<action>` — the `<module>_<entity>` part is the model, the `<action>` is the verb, joined by a single colon. The lib permission strategy flattens a `{ [model]: { [action]: boolean } }` matrix into exactly these codes (one `"<model>:<action>"` string per granted cell; see `init-project.md` `AppPermissionStrategy`), and `AuthGuard` / `SdContext.hasPermission(model, action)` check by membership.
 
-**Detection**: when applying to an existing project, grep existing permission codes; follow the established convention. Never mix two variants in the same project.
+Non-canonical (legacy / other portals) — do NOT use for new code, but you may encounter them: `<MODULE>_<ENTITY>_<ACTION>` (underscore-separated, uppercase), `<MODULE>_C_<ENTITY>_<ACTION>`. **Detection**: when applying to an existing project, grep the existing codes and follow whatever is already established; never mix conventions in one project.
 
 ---
 
@@ -337,20 +341,21 @@ Global response interceptor wraps every successful response in `{ data, error: n
 This skill set generates NestJS backends. The principles above govern the **generated code**, not this `sdcorejs-agent` repo. When a developer asks "why does the generated service do X", the answer comes from this file.
 
 When a principle changes, propagate to:
-- The skill that generates it (`nestjs-write-code` today; future `12-init-entity` etc.)
+- The generation packs that emit it (`_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md`) + the core catalog (`_refs/nestjs/core-catalog.md`)
 - The reviewer (`sdcorejs-review`)
 - The migration / test templates
 
 ---
 
-## Open questions (still pending — see `_refs/sdlc/nestjs.md`)
+## Resolved (track shipped — see `_refs/sdlc/nestjs.md`)
 
-- Exact path for shared package (`libs/shared/schemas/` vs `libs/shared/zod/`) — confirm from be-masterdata
-- Cursor pagination shape (single field vs composite) — confirm from existing modules
-- Permission code separator convention per existing portals
-- `nestjs-write-code` orchestrator sub-skill layout (10/11/12/20/21/22 vs flatter)
+- **Shared kernel path:** `base/shared/` (aliased `@shared`); per-module Zod schemas under `src/modules/<module>/schemas/`.
+- **Permission code convention:** flat `<module>_<entity>:<action>` (§11) — canonical; non-canonical underscore-uppercase variants are legacy-only.
+- **Orchestrator layout:** `nestjs-write-code` dispatches four packs (`init-project` / `init-module` / `init-entity` / `actions`), not the old 10/11/12/20/21/22 sub-skills.
 
-These get resolved when NestJS track moves from scaffold to complete.
+## Open questions
+
+- Cursor pagination shape (single field vs composite) — confirm per project before a plan locks it in.
 
 ---
 
@@ -369,9 +374,11 @@ These get resolved when NestJS track moves from scaffold to complete.
 
 ## Related references
 
+- `_refs/nestjs/core-catalog.md` — `@sdcorejs/nestjs` core API inventory (the canonical export surface)
+- `_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md` — the generation packs
 - `_refs/sdlc/nestjs.md` — design-phase patterns + persistence options
 - `sdcorejs-using-skills` — onboarding / entry point
-- `skills/tracks/nestjs/write-code.md` — current plan-walker orchestrator
+- `skills/tracks/nestjs/write-code.md` — the `nestjs-write-code` orchestrator that dispatches the packs
 - `skills/tracks/nestjs/_README.md` — track status
 - `sdcorejs-review` — convention enforcement (the reviewer)
 - `skills/testing/{unit,integration,e2e}/nestjs.md` — testing patterns per layer

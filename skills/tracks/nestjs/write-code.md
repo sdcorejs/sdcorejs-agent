@@ -1,113 +1,109 @@
 ---
 name: nestjs-write-code
-description: Use AFTER `sdcorejs-review-plan` has approved a NestJS plan, when the user is ready to generate backend code. SCAFFOLD STATUS — the dedicated sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) are planned but not yet implemented. Until they ship, this orchestrator walks the approved plan task-by-task manually using Read/Write/Edit and the conventions from `_refs/sdlc/nestjs.md` (be-masterdata baseline). After completion, mandatory hand-off chain - sdcorejs-test → sdcorejs-review → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Triggers - "generate nestjs code", "viết code backend", "sinh code nestjs", "go ahead" (after a nestjs plan was approved), "proceed with backend implementation". Bilingual (VI/EN).
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+description: Generate NestJS modular-monolith backend code on the @sdcorejs/nestjs core — after sdcorejs-review-plan approves, OR as the single entry point for any direct backend code-gen request. Loads the matching on-demand pack under _refs/nestjs/write-code/ (per-pack trigger catalog in the body): init-project (scaffold app), init-module (bounded-context module), init-entity (full CRUD stack: entity/repository/service/controller/schema/DTO), actions (custom / non-CRUD endpoints — domain methods, cross-module, workflow, bulk, export). Triggers - "scaffold nestjs / init backend", "add module", "add entity / create CRUD", "add endpoint / custom action / workflow / bulk / export", plus generic "generate backend code", "write backend", "go ahead" (after a nestjs plan was approved). NOT for spec/plan, code review, or angular/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories). Applies to nestjs. Bilingual (runtime: respond in the user's language).
+allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
-# 07 — Write Code (NestJS Orchestrator — Scaffold)
+# 07 — Write Code (NestJS Orchestrator)
 
 ## Purpose
-Execute the approved NestJS plan task-by-task. This skill is the temporary bridge until the dedicated sub-skills (`10-init-project`, `11-init-module`, `12-init-entity`, etc.) are implemented. It does NOT generate code itself in batch — it walks each numbered plan task, applies the change, runs the right verification, and only then moves to the next task.
+
+Single entry point for generating NestJS **modular-monolith** backend code on the `@sdcorejs/nestjs` core. Transforms an approved plan + the user's confirmed scope into runnable backend code:
+- App scaffold (one NestJS app, one Postgres, schema-per-module, `SdCoreModule.forRoot` kernel)
+- Bounded-context modules (`src/modules/<module>/`)
+- Full CRUD entity stacks (entity / repository / service / controller / Zod schema / DTO)
+- Custom / non-CRUD endpoints (domain methods, cross-module access, workflow transitions, bulk operations, Excel export)
+
+This skill is an **orchestrator**: it does NOT inline the full generation rules for every concern. It picks the right **reference pack** for each scope item and reads it on demand. The detailed rules + code templates for each concern live in `_refs/nestjs/write-code/*.md`.
+
+## Step 0 — Persona
+
+Read `<target>/.sdcorejs/persona.md` (project-local persona, if present) and `_refs/shared/persona.md` to detect technical vs non-technical framing. For a **non-technical** persona, open each pack in plain language before generating (each pack carries its own "Persona Step 0" narration). For a **technical** persona, skip the narration and generate directly. Either way, respond in the user's language at runtime.
+
+## Step 0.1 — Pre-flight: ensure project summary
+
+Before dispatching ANY reference, run `orchestration/auto-summary`. If `<target>/.sdcorejs/summary.md` is missing it MUST be generated first (auto-summary delegates the scan to `sdcorejs-code-map` and distills the brief) — this is the gate that keeps generation from inventing module / base-class paths or duplicating shared abstractions. If it exists, auto-summary reads it (refreshing on drift) so dispatch slots into the real layout. Exception: when this run is itself a brand-new `init-project`, there is no project to summarize yet — auto-summary runs in WRITE mode at the END of init instead (see `init-project.md` Step 10).
+
+## Reference — read the core catalog FIRST
+
+Before generating any backend code, read [`_refs/nestjs/core-catalog.md`](_refs/nestjs/core-catalog.md). It is the authoritative inventory of the `@sdcorejs/nestjs` core package — the import sub-paths (`@sdcorejs/nestjs`, `/orm`, `/permission`, `/validation`, `/jwt`, `/context`, `/tenancy`, `/audit`, `/i18n`, …), the building blocks (`BaseEntity` + `WithAudit` / `WithTimestamps` mixins, `BaseRepository`, `BaseService`, `BaseController`, `AuthGuard`, `@HasPermission`, `ZodValidationGuard`, `SdCoreModule.forRoot`, `ApiResponse` / `apiError`), and the version pin. **Every import in the packs MUST match a sub-path the catalog documents — do not invent imports.** The architecture WHY behind these choices lives in [`_refs/nestjs/architecture-principles.md`](_refs/nestjs/architecture-principles.md).
+
+## Per-pack trigger catalog (dispatch table)
+
+For each scope item in the confirmed plan (or the direct request), match it to a pack, READ that pack under `_refs/nestjs/write-code/`, and follow it. Load ON DEMAND only — read the one pack for the step you are executing, not all four.
+
+| Request / scope item | Pack to read |
+|---|---|
+| Scaffold a fresh backend — "khởi tạo backend / init backend", "bootstrap a modular-monolith API on @sdcorejs/nestjs", "set up the NestJS project skeleton" (no existing project yet) | [`_refs/nestjs/write-code/init-project.md`](_refs/nestjs/write-code/init-project.md) (run FIRST before any module/entity work) |
+| Add a bounded-context module — "tạo module X / add a domain module", "scaffold the crm / masterdata / billing module", "set up a new module before adding entities" | [`_refs/nestjs/write-code/init-module.md`](_refs/nestjs/write-code/init-module.md) |
+| Add a full CRUD entity — "thêm entity X / tạo CRUD cho X", "scaffold the task / customer / invoice entity with full CRUD", "add an entity + repository, service, controller, validation" (entity / repository / service / controller / schema / DTO) | [`_refs/nestjs/write-code/init-entity.md`](_refs/nestjs/write-code/init-entity.md) |
+| Custom / non-CRUD endpoints — "thêm action / nút approve / chuyển trạng thái" (workflow), "màn của tôi / việc của team" (caller-scoped), "xuất Excel / export báo cáo", "import / bulk create / xóa nhiều", any domain method or cross-module access on top of an existing entity stack | [`_refs/nestjs/write-code/actions.md`](_refs/nestjs/write-code/actions.md) |
+
+Each pack further links the literal code templates / snippets it renders. For a brand-new backend, the natural sequence is **init-project → init-module → init-entity → actions**.
+
+## Execution order + subagent fan-out
+
+Execution order: **project → module → entity → actions**. If the plan touches multiple items, run them in this order. Most backend work shares DB / module state, so the default is sequential — do NOT parallelize entity stacks that touch the same module wiring.
+
+**Subagent-driven fan-out (when 3+ independent units):** if the plan adds 3 or more *independent* units that do NOT share mutable state — e.g. several entities in DIFFERENT modules, or several self-contained custom actions with no shared files — dispatch them via `orchestration/parallel-dispatch` / `sdcorejs-subagent-driven-dev` so each unit is generated + reviewed in its own subagent. Units that append to the same `<module>.module.ts` barrels or the same `MODULE_SCHEMAS` / `RouterModule.register` arrays are NOT independent — keep those sequential.
+
+## TDD gate — mandatory before each code-generating step
+
+Before writing any production file (entity / repository / service / controller), invoke `sdcorejs-tdd`:
+1. Write the failing test first (unit test for service logic / business rules; e2e spec for controller endpoints — HTTP verb + expected status + response shape) → run → confirm RED.
+2. Generate the production file with minimal passing code → run → confirm GREEN.
+3. Refactor if needed → run → confirm still GREEN.
+
+Skip only for pure config (`nest-cli.json`, `tsconfig.json`, `.env.example`) and the `RouterModule.register` / `MODULE_SCHEMAS` registrations (framework wiring, no business behaviour).
+
+## Mandatory tail chain
+
+After all referenced steps finish, hand off in this exact order. Each tail-call is mandatory (per CLAUDE.md).
+
+1. `sdcorejs-test` — happy-path tests for what was generated (unit + integration via real DI + pg-mem; e2e via `supertest` against a real test PG where the layer warrants it)
+2. `sdcorejs-review` (auto-detects NestJS → loads `_refs/nestjs/review-code.md`) — convention review; outputs color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
+3. `orchestration/repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
+4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full); applies the chosen level inline
+5. `orchestration/verify-before-done` — BLOCK "done" until every acceptance criterion in the spec is ✅ verified or ⚠️ explicitly deferred
+6. `orchestration/branch-ready` — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
+7. `orchestration/auto-docs` — session summary written to `<target>/.sdcorejs/docs/nestjs/`
+8. `orchestration/auto-task-tracker` — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
+9. `orchestration/memories` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
+
+Do NOT skip `verify-before-done` — that's how acceptance criteria silently slip. Do NOT skip the `orchestration/comment-code` ASK gate (the gate IS the value; auto-defaulting defeats the design).
 
 ## When to use
-- After `sdcorejs-review-plan` has confirmed approval of a NestJS plan
-- The user has said "OK", "duyệt", "go ahead", or equivalent
-- `orchestration/auto-plans` has snapshotted the approved plan
 
-If no approved plan exists, route back to `sdcorejs-write-plan` / `sdcorejs-review-plan`.
+- After `sdcorejs-review-plan` confirmed approval of a NestJS plan (user said "OK", "duyệt", "go ahead", or equivalent, and `orchestration/auto-plans` has snapshotted it).
+- OR as the single entry point for any direct backend code-gen request matching the dispatch table above.
 
-## Process
+If no approved plan exists and the request is non-trivial, route back to `sdcorejs-write-plan` / `sdcorejs-review-plan` first. NOT for spec/plan authoring, code review, or angular/nextjs code (those are separate skills).
 
-### Step 0 — Pre-flight: ensure project summary
-Before loading the plan, run `orchestration/auto-summary`. If `<target>/.sdcorejs/summary.md` is missing it MUST be generated first (auto-summary delegates the scan to `sdcorejs-code-map` and distills the brief) — this is the gate that keeps generation from inventing module/base-class paths or duplicating shared abstractions. If it exists, auto-summary reads it (refreshing on drift) so the plan walk slots into the real layout. Exception: a brand-new project init has nothing to summarize yet — auto-summary then runs in WRITE mode after the scaffold is created.
+## Critical write-target rule
 
-### Step 1 — Load the approved plan
-Read the plan file under `.sdcorejs/plans/nestjs/<timestamp>-<topic>.md` (just snapshotted by `orchestration/auto-plans`).
-
-### Step 2 — Load baseline conventions
-Read `_refs/sdlc/nestjs.md` for:
-- Path conventions (`src/modules/<module>/<sub-folder>/`)
-- Required base classes (`BaseEntity`, `BaseRepository`, `BaseService`)
-- Guard order (`AuthGuard` → `ZodValidationGuard` → `@HasPermission()`)
-- Bilingual error message contract `{ vi, en }`
-- Transaction style (QueryRunner manual)
-
-If the target project has a `CLAUDE.md` / `AGENTS.md`, read it for project-specific overrides.
-
-### Step 3 — Walk plan tasks one-by-one
-For each numbered task in the plan, in order:
-
-1. Mark the task as `in_progress` via `TodoWrite` so the user sees what's happening
-2. Read all files the task references (existing entities, base classes, sibling modules)
-3. **Invoke `sdcorejs-tdd`** — before writing any production code, write the failing test:
-   - Unit test for service logic (business rules, validation, edge cases)
-   - e2e spec for controller endpoints (HTTP verb + expected status + response shape)
-   - Verify RED before touching production files
-4. Apply the change:
-   - CREATE → `Write` tool, using conventions from `_refs/sdlc/nestjs.md`
-   - EDIT → `Read` then `Edit` tool
-5. Verify GREEN — re-run the test(s) from step 3; confirm they pass before moving on
-6. If the task closes a phase boundary in the plan (e.g. "end of module bootstrap"), run the verification command listed in the plan's Verification section
-7. Mark task `completed` and move to next
-
-### Step 4 — Apply mandatory baseline patterns
-
-For every code-generating task, enforce:
-
-- **Entities** extend `BaseEntity` (gives `id`, `createdAt`, `updatedAt`, `createdBy`, `updatedBy`, `deletedAt`)
-- **Repositories** extend `BaseRepository<Entity>` from the shared package
-- **Services** extend `BaseService<Entity>`; business logic lives here, NOT in the controller
-- **Controllers** stay thin; guard order is `@UseGuards(AuthGuard, ZodValidationGuard)` THEN `@HasPermission('MODULE:ENTITY:ACTION')` per write endpoint
-- **DTOs** are dedicated classes — entities are never serialized directly to HTTP
-- **Zod schemas** live in `libs/shared/schemas/` (or the project's shared package path); used by both `ZodValidationGuard` AND OpenAPI generation
-- **Error messages** return `{ vi: 'thông báo', en: 'message' }`; never single-language
-- **Transactions** open a `QueryRunner` explicitly when ≥2 tables are written atomically
-- **Migrations** in `src/migrations/<timestamp>-<topic>.ts`; both `up()` and `down()` complete, tested
-
-### Step 5 — After all plan tasks complete
-
-Hand off the mandatory tail-call chain in this order:
-
-1. **`sdcorejs-test`** — write happy-path e2e tests via `supertest` against a real test PG via testcontainers (or `pg-mem` if simpler)
-2. **`sdcorejs-review`** (auto-detects NestJS → loads `_refs/nestjs/review-code.md`) — convention review; outputs color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
-3. **`orchestration/repair-loop`** — apply findings, iterate until Critical+Important resolved (or user defers)
-4. **`orchestration/comment-code`** — ASK gate (skip / simple / medium / full). When `nestjs-write-comments` sub-skill ships, level=full delegates there; until then, the chosen level is applied inline by `orchestration/comment-code` itself
-5. **`orchestration/verify-before-done`** — BLOCK "done" until every acceptance criterion in the spec is ✅ verified or ⚠️ explicitly deferred
-6. **`orchestration/branch-ready`** — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
-7. **`orchestration/auto-docs`** — session summary at `<target>/.sdcorejs/docs/nestjs/`
-8. **`orchestration/auto-task-tracker`** — tick `[x]` completed plan tasks, append new tasks from the doc's "Next suggested action" / "Open questions"
-9. **`orchestration/memories`** — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
-
-Each tail-call is mandatory. Do NOT skip `verify-before-done` — that's how acceptance criteria silently slip.
+**All generated files are written to the TARGET backend project**, NEVER into this agent repo (`sdcorejs-agent`). The packs are the source of truth — render them into the user's chosen project directory.
 
 ## Rules
 
 ### MUST DO
-- Walk plan tasks in the order they're numbered — do not parallelize unless `orchestration/parallel-dispatch` approves (rare for backend work because most tasks share the DB / module state)
-- Track every task via `TodoWrite` (in_progress / completed)
-- Enforce baseline patterns from `_refs/sdlc/nestjs.md` on every generated file
-- Run plan's verification command at every phase boundary, not just at the end
-- Match the user's language (VI/EN) — for VI, all error messages, log messages, and code comments use proper diacritics
-- Run the full tail-call chain after the last plan task
+- Read `_refs/nestjs/core-catalog.md` before generating; every import must match a documented sub-path.
+- Dispatch the matching pack on demand; follow it instead of re-deriving rules here.
+- Enforce the architecture principles (`_refs/nestjs/architecture-principles.md`) on every generated file: `WithAudit(BaseEntity)` base, `BaseRepository` / `BaseService` / `BaseController` inheritance, guard order `@UseGuards(AuthGuard, ZodValidationGuard(schema))` + per-route `@HasPermission`, Zod-not-class-validator, explicit `QueryRunner` for multi-table writes, soft-delete by default, bilingual error envelope via the i18n catalog.
+- Match the user's language at runtime (VI/EN); for VI, all error messages, log messages, and comments use proper diacritics.
+- Run the full tail chain after the last step.
 
 ### MUST NOT
-- Generate code outside the approved plan (no surprise utility files, no "while I'm at it")
-- Skip the guard order — `AuthGuard` ALWAYS before `ZodValidationGuard` so unauth requests don't burn validator time
-- Inline class-validator decorators — Zod is the validation contract in this baseline
-- Return single-language error messages — always `{ vi, en }`
-- Skip `verify-before-done` — even when tests pass, acceptance criteria are a separate check
-- Pretend the planned sub-skills exist — they're planned; this orchestrator is the bridge until they ship
+- Generate code outside the approved plan (no surprise utility files).
+- Invent imports the core catalog does not document.
+- Inline `class-validator` decorators — Zod is the validation contract.
+- Return single-language error messages — go through the i18n catalog (`{ code, message }`).
+- Skip the guard order (`AuthGuard` before `ZodValidationGuard`).
+- Skip `verify-before-done` — even when tests pass, acceptance criteria are a separate check.
 
-## Anti-patterns
-- Generating an entity without a migration to match (orphan TypeORM model)
-- Adding `@HasPermission()` on the controller class instead of per-endpoint (too coarse, breaks GET endpoints)
-- Wrapping every method in `@Transaction()` — most reads don't need it; mark only multi-write methods
-- Soft-deleted rows leaking into list endpoints — repository must filter `deletedAt IS NULL`
-- Mock-only tests for endpoints with auth — at minimum, integration test must wire `AuthGuard`
-
-## Related skills
-- `_refs/sdlc/nestjs.md` — baseline conventions this skill enforces
+## Related references
+- `_refs/nestjs/core-catalog.md` — `@sdcorejs/nestjs` core API inventory (read FIRST)
+- `_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md` — the on-demand packs
+- `_refs/nestjs/architecture-principles.md` — the WHY behind the conventions
+- `_refs/sdlc/nestjs.md` — design-phase (brainstorm/clarify/spec/plan) patterns
 - `sdcorejs-review-plan` — runs before; the approved plan is the input
-- `orchestration/auto-plans` — has already snapshotted the plan to `.sdcorejs/plans/nestjs/`
-- Tail-call chain — see Step 5 above
-- (Planned) `nestjs-init-project`, `nestjs-init-module`, `nestjs-init-entity` — will replace the manual walk once implemented
+- Tail chain — see "Mandatory tail chain" above
