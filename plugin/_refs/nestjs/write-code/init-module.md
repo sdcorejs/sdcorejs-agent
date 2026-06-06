@@ -37,12 +37,24 @@ Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) for the canonical expo
 
 ---
 
+## Profile (read FIRST)
+
+Read `profile` from `<target>/.sdcorejs/summary.md` (set at clarify; default `simple`).
+Most of this pack is profile-INDEPENDENT (schema-per-module, route prefix, barrels,
+the Symbol-I-token DI pattern, RouterModule + MODULE_SCHEMAS registration). The only
+profile-divergent point is the DTO/contract location (Step 5 below). `enterprise` output
+is unchanged from prior versions.
+
+---
+
 ## Input resolution
 
 Before generating, confirm:
 
 1. **Module name** (required) — a lowercase kebab/single word that names the bounded context and doubles as the Postgres schema name and the route prefix. Placeholder below: `<module>` (e.g. `crm`, `masterdata`, `billing`). The PascalCase form is `<Module>` (e.g. `crm` → `Crm`).
 2. **Cross-module dependencies** (optional) — other modules this one imports to consume their exported service I-tokens via DI (e.g. `crm` imports `AdminModule` for `IUserService`). Empty for a leaf module. (*Ground: ref app `crm.module.ts` imports `AdminModule` + `MasterdataModule`.*)
+
+> Note: `simple`-profile modules are usually **leaf** (no cross-module imports). The cross-module DI-port pattern below applies to BOTH profiles, but only when a dependency genuinely exists — omit the `imports:` cross-module block for a standalone module.
 
 > Naming derivation used throughout: `<module>` = `crm`, `<Module>` = `Crm`, schema = `crm`, route prefix = `crm`, class = `CrmModule`, file = `crm.module.ts`. Keep all five consistent.
 
@@ -236,6 +248,7 @@ const MODULE_SCHEMAS = ['core', '<module>'];   // ← add '<module>' (skip if al
 - **Barrel discipline.** Code OUTSIDE a folder imports from the folder barrel (`from 'src/modules/<module>/repositories'`), never from a deep file path. `init-entity` keeps each barrel's `export *` list current in the same change that adds the file.
 - **Cross-module DI = exported service I-tokens only.** A module exports the service `Symbol` tokens (NOT repositories, NOT concrete classes) other modules need. The consumer imports the producing module and `@Inject(IFooService)` the token. *(Ground: ref app `crm.module.ts` `exports: [ITaskService, IDealService, …]` and `task.service.ts` constructor `@Inject(IUserService)` / `@Inject(ITeamService)` from imported `AdminModule` / `MasterdataModule`.)*
 - **App base entity.** Entities extend the app's `BaseEntity` (`src/common/base-entity.ts` from `init-project`, which wraps the lib `WithAudit(BaseEntity)`), not the lib base directly — so audit/timestamps are uniform.
+- **DTO / contract location (profile-divergent).** `simple` → entity DTOs live in `src/modules/<module>/dto/<entity>.dto.ts` (no `base/shared`; `init-entity` emits them). `enterprise` → DTOs live in the `@shared` kernel at `base/shared/<module>/` so the Angular portal imports the same type. Everything else in this pack is identical across profiles.
 
 ---
 
