@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-recovery
-description: Use when the user says "tiếp tục", "tiếp tục công việc", "resume", "continue where we left off", "what was I doing", "where did we stop", or opens a session after a break and needs to rebuild context. Reads the latest auto-docs + memories + git state + task tracker and produces a one-screen handoff summary. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use when the user says "tiếp tục", "tiếp tục công việc", "resume", "continue where we left off", "what was I doing", "where did we stop", or opens a session after a break and needs to rebuild context. Reads the latest auto-docs + memories + git state + task tracker and produces a one-screen handoff summary. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Bash, Glob
 ---
 
@@ -28,7 +28,7 @@ git rev-parse --show-toplevel                    # target project root
 git rev-parse --abbrev-ref HEAD                  # current branch
 ```
 Detect track:
-- If `angular.json` exists at root → angular-portal
+- If `angular.json` exists at root → angular
 - If `nest-cli.json` exists → nestjs
 - If `next.config.js` / `next.config.ts` exists → nextjs
 - If `skills/<track>/` is the repo (sdcorejs-agent itself) → skip target-project reads, use repo state only
@@ -92,7 +92,7 @@ DO NOT proactively start the next step. The user reads the summary, decides, and
 ### No docs found
 ```
 Không có .sdcorejs/docs/<track>/ trong project này. Đây là lần đầu? Bạn muốn:
-- Onboard từ đầu (mình invoke `00-onboarding`)
+- Onboard từ đầu (mình invoke `sdcorejs-using-skills`)
 - Skip, bắt đầu task mới luôn
 ```
 
@@ -133,10 +133,10 @@ Memory says X, latest doc implies not-X. Surface both, ask user which is current
 - Auto-resuming work without confirmation — user may have changed priorities
 - Skipping git state because docs were found — git is the ground truth for code
 - Treating memory frontmatter as authoritative without checking the body when it matters
-- Recovery for fresh sessions where there's nothing to recover (use `00-onboarding` instead)
+- Recovery for fresh sessions where there's nothing to recover (use `sdcorejs-using-skills` instead)
 
 ## Cross-track usage
-The skill applies identically to angular-portal, nestjs, nextjs. The only differences are detection in step 1 and the `<track>` segment in step 2 paths.
+The skill applies identically to angular, nestjs, nextjs. The only differences are detection in step 1 and the `<track>` segment in step 2 paths.
 
 For multi-track repos, prompt:
 "Repo có cả <track-a> và <track-b>. Bạn muốn recovery cho track nào, hay cả hai?"

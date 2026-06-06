@@ -1,13 +1,13 @@
 ---
 name: sdcorejs-review-architecture
-description: Cross-track architecture review checklist. Audits a feature or module for layering violations, abstraction leaks, circular dependencies, premature optimisation, missing seams, and architectural drift from the project's conventions. Different from `review/code/<stack>.md` (per-file code review) — this is module/feature-level. Different from `review/security/shared.md` (auth/injection) — this is structural. Outputs a Critical/Important/Minor report. Triggers - "review kiến trúc", "architecture audit", "code structure check", "module này organize đúng chưa", "có circular dependency không", "abstraction leak", "should this be a separate module", or before a major feature merges. Bilingual (VI/EN).
+description: Cross-track architecture review checklist. Audits a feature or module for layering violations, abstraction leaks, circular dependencies, premature optimisation, missing seams, and architectural drift from the project's conventions. Different from `sdcorejs-review` (per-file / per-dimension review: code, security, performance, accessibility) — this is module/feature-level & structural, not line-level. Outputs a Critical/Important/Minor report. Triggers - "review kiến trúc", "architecture audit", "code structure check", "module này organize đúng chưa", "có circular dependency không", "abstraction leak", "should this be a separate module", or before a major feature merges. Bilingual (VI/EN).
 allowed-tools: Read, Glob, Grep, Bash
 ---
 
 # Review — Architecture (Cross-Track)
 
 ## Purpose
-Code review (`review/code/<stack>.md`) catches line-level mistakes; architecture review catches structural ones — the kind that don't break a single file but accumulate into a swamp over 6 months. Run this before major features merge, after a refactor lands, or when a new contributor's code feels "off" but the per-file review is clean.
+Code review (`sdcorejs-review`) catches line-level mistakes; architecture review catches structural ones — the kind that don't break a single file but accumulate into a swamp over 6 months. Run this before major features merge, after a refactor lands, or when a new contributor's code feels "off" but the per-file review is clean.
 
 ## When invoked
 - Before merging a feature that adds new modules or moves existing ones
@@ -21,7 +21,7 @@ Code review (`review/code/<stack>.md`) catches line-level mistakes; architecture
 
 Every SDCoreJS stack has a layered architecture:
 
-| Layer | angular-portal | nestjs | nextjs |
+| Layer | angular | nestjs | nextjs |
 |---|---|---|---|
 | **UI / Presentation** | components, pages | controllers | app/, components/ |
 | **Application / Workflow** | services that orchestrate | services (workflow), use-cases | route handlers, server actions |
@@ -140,7 +140,7 @@ Probe: grep for the convention name vs the count of files in scope; ratio < 80% 
 
 ### 9. Test architecture
 
-Are tests in the right place + at the right layer (per `testing/philosophy.md`)?
+Are tests in the right place + at the right layer (per `_refs/shared/testing-philosophy.md`)?
 - Unit tests covering integration concerns (mocked DB testing SQL) → Important
 - E2E tests for pure-logic edge cases that should be unit tests → Important
 - No e2e for the feature's main user flow → Critical
@@ -196,7 +196,7 @@ Are tests in the right place + at the right layer (per `testing/philosophy.md`)?
 - Cite file:line for every finding
 - Map each finding to a SEVERITY level (Critical / Important / Minor) with explicit criteria
 - Recommend a fix path: invoke `orchestration/repair-loop` for Critical, defer with reason for Important, batch Minor
-- Stop at architecture; don't dive into per-line review (that's `review/code/<stack>.md`)
+- Stop at architecture; don't dive into per-line review (that's `sdcorejs-review`)
 
 ### MUST NOT
 - Flag every deviation as Critical — inflation makes the report ignorable
@@ -213,8 +213,5 @@ Are tests in the right place + at the right layer (per `testing/philosophy.md`)?
 - **Reviewing your own code** — agent fine; if it's the same dev who wrote it, get a peer eye too
 
 ## Cross-references
-- Per-stack code review: `review/code/<stack>.md`
-- Performance audit: `review/performance/<stack>.md` + `review/performance/budget.md`
-- Security audit: `review/security/shared.md` + `review/security/<stack>.md`
-- Accessibility audit: `review/accessibility/<stack>.md` + `review/accessibility/baseline.md`
+- Code / security / performance / accessibility review: `sdcorejs-review` (track + dimension aware)
 - Repair loop: `orchestration/repair-loop` after findings

@@ -163,17 +163,18 @@ Capture:
 ## Plan
 
 ### Phase grouping
-1. **Init** (only if new site): `10-init-site` (create-next-app + standard deps + folder scaffold)
-2. **Theme**: `11-theme` (palette + typography + tokens)
-3. **i18n**: `15-i18n` (next-intl middleware, message JSON, language switcher, localized pathnames)
-4. **Pages & blocks**: `12-pages-and-blocks` (compose section blocks, externalize content)
-5. **SEO baseline**: `13-seo` (generateMetadata factory, JSON-LD, sitemap, robots, manifest, favicons)
-6. **OG preview**: `14-og-preview` (static fallback + dynamic `opengraph-image.tsx` per route)
-7. **Contact form**: `18-contact-form` (zod + react-hook-form + API route + Resend + rate limit)
-8. **Caching**: `16-caching` (per-route ISR window + on-demand revalidation)
-9. **Responsive**: `17-responsive` (mobile-first audit, breakpoints, touch targets)
-10. **Content quality**: `19-content-quality` (word counts, headings, TOC, Article JSON-LD, parity check)
-11. **Tests** (if user opted in): e2e via Playwright (`testing/e2e/nextjs.md`)
+Each phase below maps to a write-code reference pack the `nextjs-write-code` orchestrator dispatches (under `_refs/nextjs/build-website/write-code/`).
+1. **Init** (only if new site): `init-site` pack (create-next-app + standard deps + folder scaffold)
+2. **Theme**: `theme` pack (palette + typography + tokens)
+3. **i18n**: `i18n` pack (next-intl middleware, message JSON, language switcher, localized pathnames)
+4. **Pages & blocks**: `pages-and-blocks` pack (compose section blocks, externalize content)
+5. **SEO baseline**: `seo` pack (generateMetadata factory, JSON-LD, sitemap, robots, manifest, favicons)
+6. **OG preview**: `og-preview` pack (static fallback + dynamic `opengraph-image.tsx` per route)
+7. **Contact form**: `contact-form` pack (zod + react-hook-form + API route + Resend + rate limit)
+8. **Caching**: `caching` pack (per-route ISR window + on-demand revalidation)
+9. **Responsive**: `responsive` pack (mobile-first audit, breakpoints, touch targets)
+10. **Content quality**: `content-quality` pack (word counts, headings, TOC, Article JSON-LD, parity check)
+11. **Tests** (if user opted in): e2e via Playwright (`sdcorejs-test`)
 
 ### Verification commands
 ```bash
@@ -188,7 +189,7 @@ npx lhci autorun --preset=mobile  # or `lighthouse http://localhost:3000/<route>
 ```
 
 ### Final-step expectations
-Last numbered step references the tail-call chain (40-e2e-test → 50-review-code → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories). The reviewer checks the chain is implicit, not omitted.
+Last numbered step references the tail-call chain (sdcorejs-test → sdcorejs-review → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/branch-ready → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories). The reviewer checks the chain is implicit, not omitted.
 
 ### Existing-site improvement variant
 If the user is improving an EXISTING site (came via `08-audit-existing-site`), phases are gap-driven, not greenfield. The plan should be one phase per audit finding, ordered Critical → Important → Minor.

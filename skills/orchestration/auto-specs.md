@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-specs
-description: MANDATORY skill that runs AUTOMATICALLY right after `04-review-spec` receives explicit user approval. Persists the approved spec into the target project under `.sdcorejs/specs/<track>/YYYY-MM-DD-HH-mm-<topic>.md` so future sessions build a corpus of user-approved specs and learn the user's preferred structure, depth, and conventions. Also runs in READ-ONLY mode at session start to load the latest 3 approved specs as style references for `03-write-spec`. Triggers - immediately after `04-review-spec` returns an explicit affirmative ("OK", "duyệt", "approve"), AND at session start in a target project. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill that runs AUTOMATICALLY right after `04-review-spec` receives explicit user approval. Persists the approved spec into the target project under `.sdcorejs/specs/<track>/YYYY-MM-DD-HH-mm-<topic>.md` so future sessions build a corpus of user-approved specs and learn the user's preferred structure, depth, and conventions. Also runs in READ-ONLY mode at session start to load the latest 3 approved specs as style references for `03-write-spec`. Triggers - immediately after `04-review-spec` returns an explicit affirmative ("OK", "duyệt", "approve"), AND at session start in a target project. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Bash, Glob
 ---
 
@@ -14,12 +14,12 @@ allowed-tools: Read, Write, Bash, Glob
 
 Without this corpus, `03-write-spec` regenerates a generic spec every time and the user has to re-correct the same style choices.
 
-Shared across SDCoreJS tracks (`angular-portal`, `nestjs`, `nextjs`). Substitute `<track>` with the active track.
+Shared across SDCoreJS tracks (`angular`, `nestjs`, `nextjs`). Substitute `<track>` with the active track.
 
 ## When invoked
 
 ### Auto-trigger right after `04-review-spec` approval
-The agent MUST run this skill (write mode) IMMEDIATELY after `04-review-spec` receives explicit user approval, BEFORE handing off to `05-plan`. The handoff to `05-plan` waits for this skill to finish.
+The agent MUST run this skill (write mode) IMMEDIATELY after `04-review-spec` receives explicit user approval, BEFORE handing off to `05-write-plan`. The handoff to `05-write-plan` waits for this skill to finish.
 
 Approval signals that count: "OK", "duyệt", "approve", "go", "tiếp tục", "looks good", "đồng ý".
 Approval signals that DO NOT count: silence, "thanks", "got it", "noted" — those do not fire this skill.
@@ -40,8 +40,8 @@ At session start in a target project, the agent MUST:
 # Resolve target project root (NOT the sdcorejs-agent repo!)
 TARGET_ROOT=$(git rev-parse --show-toplevel)
 
-# Pick the active <track>: angular-portal | nestjs | nextjs
-TRACK=angular-portal
+# Pick the active <track>: angular | nestjs | nextjs
+TRACK=angular
 
 # Ensure folder exists (note the leading dot in .sdcorejs/)
 mkdir -p "$TARGET_ROOT/.sdcorejs/specs/$TRACK"
@@ -60,7 +60,7 @@ name: <kebab-topic>
 description: <one-line hook so future sessions can decide whether to load this spec as a style reference>
 approvedAt: 2026-05-17T09:30+07:00
 approvedBy: <user identifier from git config user.email or session context>
-track: angular-portal
+track: angular
 module: catalog            # optional — empty for cross-cutting work
 entity: product            # optional
 sourceSpecPath: .sdcorejs/docs/<track>/2026-05-17-09-20-add-product-entity-spec.md   # path to the draft auto-docs entry, if any
@@ -68,7 +68,7 @@ sourceSpecPath: .sdcorejs/docs/<track>/2026-05-17-09-20-add-product-entity-spec.
 
 # <Title> — Approved Spec
 
-> Snapshot of the spec the user approved at the `04-review-spec` gate. The body below is the exact contract `05-plan` consumed. Do not edit by hand — re-author via `03-write-spec` + `04-review-spec` if the contract changes.
+> Snapshot of the spec the user approved at the `04-review-spec` gate. The body below is the exact contract `05-write-plan` consumed. Do not edit by hand — re-author via `03-write-spec` + `04-review-spec` if the contract changes.
 
 ## Goals
 <verbatim from the approved spec>
@@ -125,7 +125,7 @@ When `03-write-spec` is about to author a new spec, after reading the active pro
 
 | Track | Output folder |
 |---|---|
-| Angular Portal | `.sdcorejs/specs/angular-portal/` |
+| Angular Portal | `.sdcorejs/specs/angular/` |
 | NestJS | `.sdcorejs/specs/nestjs/` |
 | Next.js | `.sdcorejs/specs/nextjs/` |
 
@@ -147,4 +147,4 @@ In multi-track repos, write to the track folder matching the work being specifie
 | Path | `.sdcorejs/docs/<track>/` | `.sdcorejs/specs/<track>/` | `.sdcorejs/plans/<track>/` |
 | Filename | `YYYY-MM-DD-HH-mm-<topic>.md` | `YYYY-MM-DD-HH-mm-<topic>.md` | `YYYY-MM-DD-HH-mm-<topic>.md` |
 | Lifetime | Per session | Permanent corpus | Permanent corpus |
-| Consumed by | Session-start ritual | `03-write-spec` style mirror | `05-plan` style mirror |
+| Consumed by | Session-start ritual | `03-write-spec` style mirror | `05-write-plan` style mirror |

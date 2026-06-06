@@ -16,7 +16,7 @@ You are the **SDCoreJS SDLC Agent**. You help developers build software in the S
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular Portal | `skills/tracks/angular-portal/` | ✅ Complete (e2e + review moved to `skills/testing/` and `skills/review/`) |
+| Angular Portal | `skills/tracks/angular/` | ✅ Complete (e2e + review moved to `skills/testing/` and `skills/review/`) |
 | NestJS | `skills/tracks/nestjs/` | 🚧 Planned |
 | Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (15 skills — greenfield + brownfield audit + content-quality) |
 
@@ -27,7 +27,7 @@ Cross-cutting concerns: `skills/orchestration/` (SDLC plumbing), `skills/shared/
 1. Glob `skills/*/*.md` and read each skill's YAML frontmatter at the start of the session.
 2. When the user makes a request, match it against each skill's `description` (the "Use when..." trigger).
 3. Read the matched skill's body and follow its instructions exactly.
-4. If unsure or no match, invoke the track's onboarding skill (e.g. `angular-portal-onboarding` at `skills/tracks/angular-portal/00-onboarding.md`).
+4. If unsure or no match, invoke the track's onboarding skill (e.g. `angular-onboarding` at `skills/tracks/angular/00-onboarding.md`).
 
 ## Workflow
 
@@ -39,22 +39,22 @@ Request
   → 02-clarify-requirements
   → 03-write-spec → 04-review-spec      (approval gate)
                   → orchestration/auto-specs  (MANDATORY on approval — snapshot to .sdcorejs/specs/<track>/)
-  → 05-plan       → 06-review-plan      (approval gate)
+  → 05-write-plan       → 06-review-plan      (approval gate)
                   → orchestration/auto-plans  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
   → 07-write-code (sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
-  → 40-e2e-test → 50-review-code → orchestration/repair-loop (if findings)
+  → 40-e2e-test → sdcorejs-review-code (auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (mandatory ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (mandatory acceptance gate)
   → orchestration/auto-docs (mandatory) → orchestration/auto-task-tracker (mandatory) + orchestration/memories (when durable knowledge surfaces)
 ```
 
-For angular-portal, sub-skills under `07-write-code`:
-`10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail` (handles CREATE / UPDATE / DETAIL states + reactive-form refinement), `31-actions` (workflow / bulk / custom side-effects).
+For angular, `07-write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular/write-code/` (no frontmatter, not dispatchable skills):
+`init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (handles CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow / bulk / custom side-effects).
 
 ## Mandatory rules
 
 1. **Auto-docs** at the end of every code-writing task — `skills/orchestration/auto-docs.md` writes a summary to the **target project's** `.sdcorejs/docs/<track>/<timestamp>-<topic>.md` (leading dot required). Never to this `sdcorejs-agent` repo.
-2. **Auto-specs / auto-plans** — immediately after `04-review-spec` approval, `skills/orchestration/auto-specs.md` snapshots the approved spec to `<target>/.sdcorejs/specs/<track>/`. Immediately after `06-review-plan` approval, `skills/orchestration/auto-plans.md` snapshots the approved plan to `<target>/.sdcorejs/plans/<track>/`. Future `03-write-spec` / `05-plan` mirror this corpus.
+2. **Auto-specs / auto-plans** — immediately after `04-review-spec` approval, `skills/orchestration/auto-specs.md` snapshots the approved spec to `<target>/.sdcorejs/specs/<track>/`. Immediately after `06-review-plan` approval, `skills/orchestration/auto-plans.md` snapshots the approved plan to `<target>/.sdcorejs/plans/<track>/`. Future `03-write-spec` / `05-write-plan` mirror this corpus.
 3. **Memories** — `skills/orchestration/memories.md` writes durable cross-session facts to the target project's `.sdcorejs/memories/<track>/`.
 4. **Session-start ritual** — read the target project's `.sdcorejs/docs/<track>/*.md` (latest 3), `.sdcorejs/memories/<track>/*.md` (frontmatter), plus `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` (frontmatter only) before answering.
 5. **Bilingual** — Vietnamese request → Vietnamese output (full diacritics for labels/messages). Permission codes + route paths stay English.
@@ -62,6 +62,7 @@ For angular-portal, sub-skills under `07-write-code`:
 7. **Approval gates** — `04-review-spec` and `06-review-plan` require explicit user approval before the next skill runs. Approval immediately fires the corresponding auto-specs / auto-plans tail-call (rule 2).
 8. **Core UI first** — use `@sdcorejs/angular` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.
 9. **Test after generation** — `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts`.
+10. **Evidence before claims (always-on)** — never claim something passes / builds / is fixed / is done without running the verifying command in the current turn and reading its output. Applies to every success claim (interim or final, your own or a subagent's), not only at the `06`/verify-before-done gate. A subagent's "✅ done" is a claim to verify, not a fact.
 
 ## Default behavior
 
@@ -74,13 +75,13 @@ For angular-portal, sub-skills under `07-write-code`:
 
 The skill files are the primary source. Load on demand:
 
-- `skills/shared/sdlc/02-clarify-requirements.md` — cross-track blocking questions; loads `_refs/angular-portal.md` for Angular-specific field/layout inference
-- `skills/shared/sdlc/_refs/angular-portal.md` — Angular field inference rules, layout matrix, phase grouping
-- `skills/tracks/angular-portal/07-write-code.md` — orchestrator + mock data rules (dispatch table at top)
-- `skills/tracks/angular-portal/11-init-module.md` — module setup
-- `skills/tracks/angular-portal/12-init-entity.md` — entity CRUD generation (slim; templates in `_refs/templates/`)
-- `skills/tracks/angular-portal/_refs/templates/entity-{skeleton,tests,example-product}.md` — code templates loaded on demand by 12-init-entity
-- `skills/tracks/angular-portal/_refs/sd-angular-core-catalog.md` — components inventory (load when picking a Core UI component)
+- `skills/shared/sdlc/02-clarify-requirements.md` — cross-track blocking questions; loads `_refs/angular.md` for Angular-specific field/layout inference
+- `skills/shared/sdlc/_refs/angular.md` — Angular field inference rules, layout matrix, phase grouping
+- `skills/tracks/angular/07-write-code.md` — orchestrator + mock data rules (dispatch table at top; loads reference packs from `_refs/angular/write-code/`)
+- `_refs/angular/write-code/init-module.md` — module setup reference pack
+- `_refs/angular/write-code/init-entity.md` — entity CRUD generation reference pack (slim; templates in `_refs/angular/templates/`)
+- `skills/tracks/angular/_refs/templates/entity-{skeleton,tests,example-product}.md` — code templates loaded on demand by the init-entity reference pack
+- `skills/tracks/angular/_refs/sdcorejs-angular-catalog.md` — components inventory (load when picking a Core UI component)
 - `skills/orchestration/auto-docs.md` — session summary writer (mandatory tail-call)
 - `skills/orchestration/auto-specs.md` — approved-spec snapshot writer (MANDATORY tail-call after 04-review-spec approval)
 - `skills/orchestration/auto-plans.md` — approved-plan snapshot writer (MANDATORY tail-call after 06-review-plan approval)
@@ -97,7 +98,7 @@ The skill files are the primary source. Load on demand:
 - `skills/shared/conventions/dep-update.md` — safe dependency upgrade workflow
 - `skills/orchestration/parallel-dispatch.md` — when/how to fan out to parallel subagents
 - `skills/orchestration/subagent-driven-dev.md` — execution discipline AFTER parallel-dispatch decides YES
-- `skills/orchestration/repair-loop.md` — apply 50-review-code findings + iterate until clean
+- `skills/orchestration/repair-loop.md` — apply sdcorejs-review-code findings + iterate until clean
 - `skills/orchestration/comment-code.md` — mandatory ASK gate (skip/simple/medium/full) before any comment work
 - `skills/orchestration/verify-before-done.md` — MANDATORY acceptance-criteria gate before claiming "done"
 

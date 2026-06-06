@@ -1,6 +1,6 @@
 # NestJS Backend — Architecture Principles
 
-Source of truth for **WHY** SDCoreJS NestJS backends look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, `sdcorejs-clarify-requirements`, `nestjs-write-code`, and `sdcorejs-review-code-nestjs`.
+Source of truth for **WHY** SDCoreJS NestJS backends look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, `sdcorejs-clarify-requirements`, `nestjs-write-code`, and `sdcorejs-review`.
 
 **Status**: NestJS track is **scaffold** — the code-writing sub-skills (`10-init-project`, `11-init-module`, `12-init-entity`) are planned but not yet implemented. Until they ship, the principles below govern manual generation via `nestjs-write-code` plan-walker.
 
@@ -89,7 +89,7 @@ Order matters:
 
 **Anti-pattern**: `@UseGuards(ZodValidationGuard, AuthGuard)` — wrong order, you validate before knowing if the user is logged in. Tiny cost difference but the principle matters: **auth is a precondition for everything else**.
 
-**Reviewer**: `sdcorejs-review-code-nestjs` flags wrong guard order as **Critical**.
+**Reviewer**: `sdcorejs-review` flags wrong guard order as **Critical**.
 
 ---
 
@@ -263,7 +263,7 @@ Hard delete (`DELETE FROM`) ONLY when there's a compliance requirement (GDPR rig
 | Integration | `Test.createTestingModule` + real DI + pg-mem | Service → repository → DB round-trip; module wiring | <500ms each |
 | E2E | `supertest` + real PG via testcontainers | Full HTTP request → response cycle, AuthGuard + ZodValidationGuard real | 1-5s each |
 
-Per `testing/philosophy.md`: pyramid ratio is roughly 70 unit / 20 integration / 10 e2e.
+Per `_refs/shared/testing-philosophy.md`: pyramid ratio is roughly 70 unit / 20 integration / 10 e2e.
 
 Mock at the layer being tested:
 - Unit service test → mock repository
@@ -338,7 +338,7 @@ This skill set generates NestJS backends. The principles above govern the **gene
 
 When a principle changes, propagate to:
 - The skill that generates it (`nestjs-write-code` today; future `12-init-entity` etc.)
-- The reviewer (`sdcorejs-review-code-nestjs`)
+- The reviewer (`sdcorejs-review`)
 - The migration / test templates
 
 ---
@@ -370,8 +370,8 @@ These get resolved when NestJS track moves from scaffold to complete.
 ## Related references
 
 - `_refs/sdlc/nestjs.md` — design-phase patterns + persistence options
-- `skills/tracks/nestjs/00-onboarding.md` — entry point
+- `sdcorejs-using-skills` — onboarding / entry point
 - `skills/tracks/nestjs/07-write-code.md` — current plan-walker orchestrator
 - `skills/tracks/nestjs/_README.md` — track status
-- `skills/review/code/nestjs.md` — convention enforcement (the reviewer)
+- `sdcorejs-review` — convention enforcement (the reviewer)
 - `skills/testing/{unit,integration,e2e}/nestjs.md` — testing patterns per layer

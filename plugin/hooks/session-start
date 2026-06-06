@@ -28,14 +28,20 @@ bootstrap_escaped=$(escape_for_json "$bootstrap_content")
 session_context="<EXTREMELY_IMPORTANT>\nYou have the sdcorejs SDLC skill pack.\n\n**Below is the full content of your 'sdcorejs-using-skills' bootstrap — how to find and dispatch sdcorejs skills. For all other skills, use the 'Skill' tool:**\n\n${bootstrap_escaped}\n</EXTREMELY_IMPORTANT>"
 
 # --- auto-summary gate: require .sdcorejs/summary.md before substantive work ---
-# Fires ONLY in a recognizable target project (angular/nest/next) that lacks the
-# canonical brief. Never fires on the agent repo (no root angular.json/nest-cli/next.config).
+# Fires in a recognizable target project (angular/nest/next) that lacks the canonical
+# brief — detecting the track config at the repo ROOT *or* nested under a monorepo
+# subdir (apps/*, packages/*, projects/*), since many real projects aren't root-level.
+# Never fires on the agent repo (no track config anywhere in the shallow scan).
 # All logic stays inside if-conditions so it cannot trip `set -e` and drop the bootstrap.
 project_root="${CLAUDE_PROJECT_DIR:-$PWD}"
+track_found=""
 if [ -f "${project_root}/angular.json" ] || [ -f "${project_root}/nest-cli.json" ] || ls "${project_root}"/next.config.* >/dev/null 2>&1; then
-  if [ ! -f "${project_root}/.sdcorejs/summary.md" ]; then
-    session_context="${session_context}\n\n<EXTREMELY_IMPORTANT>\nNo .sdcorejs/summary.md exists in this project. Before any substantive or code-writing work, you MUST run the 'sdcorejs-auto-summary' skill (GENERATE mode) to create the canonical project brief — it delegates the scan to 'sdcorejs-code-map' and distills a one-page overview (domain, stack, architecture, reuse cheatsheet). A pure informational question may be answered first, but generate the summary before writing or modifying code.\n</EXTREMELY_IMPORTANT>"
-  fi
+  track_found="root"
+elif [ -n "$(find "${project_root}" -maxdepth 3 \( -name node_modules -o -name .git -o -name dist -o -name .next \) -prune -o \( -name angular.json -o -name nest-cli.json -o -name 'next.config.*' \) -print 2>/dev/null | head -n1)" ]; then
+  track_found="nested"
+fi
+if [ -n "$track_found" ] && [ ! -f "${project_root}/.sdcorejs/summary.md" ]; then
+  session_context="${session_context}\n\n<EXTREMELY_IMPORTANT>\nNo .sdcorejs/summary.md exists in this project (track config detected: ${track_found}). Before any substantive or code-writing work, you MUST run the 'sdcorejs-auto-summary' skill (GENERATE mode) to create the canonical project brief — it delegates the scan to 'sdcorejs-code-map' and distills a one-page overview (domain, stack, architecture, reuse cheatsheet). A pure informational question may be answered first, but generate the summary before writing or modifying code.\n</EXTREMELY_IMPORTANT>"
 fi
 
 # Emit only the field the current platform consumes.

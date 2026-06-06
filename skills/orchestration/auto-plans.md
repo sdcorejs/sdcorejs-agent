@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-plans
-description: MANDATORY skill that runs AUTOMATICALLY right after `06-review-plan` receives explicit user approval. Persists the approved plan into the target project under `.sdcorejs/plans/<track>/YYYY-MM-DD-HH-mm-<topic>.md` so future sessions build a corpus of user-approved plans and learn the user's preferred granularity, phasing, and verification style. Also runs in READ-ONLY mode at session start to load the latest 3 approved plans as style references for `05-plan`. Triggers - immediately after `06-review-plan` returns an explicit affirmative ("OK", "duyệt", "approve"), AND at session start in a target project. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill that runs AUTOMATICALLY right after `06-review-plan` receives explicit user approval. Persists the approved plan into the target project under `.sdcorejs/plans/<track>/YYYY-MM-DD-HH-mm-<topic>.md` so future sessions build a corpus of user-approved plans and learn the user's preferred granularity, phasing, and verification style. Also runs in READ-ONLY mode at session start to load the latest 3 approved plans as style references for `05-write-plan`. Triggers - immediately after `06-review-plan` returns an explicit affirmative ("OK", "duyệt", "approve"), AND at session start in a target project. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Bash, Glob
 ---
 
@@ -13,9 +13,9 @@ allowed-tools: Read, Write, Bash, Glob
 - Match verification rigor (one final test run vs. test-per-phase)
 - Detect when a new plan diverges from precedent that the user already accepted
 
-Without this corpus, `05-plan` produces a generic structure every time and the user has to re-correct the same phasing / granularity choices.
+Without this corpus, `05-write-plan` produces a generic structure every time and the user has to re-correct the same phasing / granularity choices.
 
-Shared across SDCoreJS tracks (`angular-portal`, `nestjs`, `nextjs`). Substitute `<track>` with the active track.
+Shared across SDCoreJS tracks (`angular`, `nestjs`, `nextjs`). Substitute `<track>` with the active track.
 
 ## When invoked
 
@@ -32,7 +32,7 @@ At session start in a target project, the agent MUST:
 1. Resolve `TARGET_ROOT = git rev-parse --show-toplevel` from user CWD
 2. Glob `<TARGET_ROOT>/.sdcorejs/plans/<track>/*.md` for the active track
 3. Read the latest 3 files — frontmatter + phase headers only, not full task lists
-4. Load full body on demand when `05-plan` is about to author a new plan — use the latest entries as style reference
+4. Load full body on demand when `05-write-plan` is about to author a new plan — use the latest entries as style reference
 5. Do NOT write a new file in read mode
 
 ## Output path
@@ -41,8 +41,8 @@ At session start in a target project, the agent MUST:
 # Resolve target project root (NOT the sdcorejs-agent repo!)
 TARGET_ROOT=$(git rev-parse --show-toplevel)
 
-# Pick the active <track>: angular-portal | nestjs | nextjs
-TRACK=angular-portal
+# Pick the active <track>: angular | nestjs | nextjs
+TRACK=angular
 
 # Ensure folder exists (note the leading dot in .sdcorejs/)
 mkdir -p "$TARGET_ROOT/.sdcorejs/plans/$TRACK"
@@ -61,7 +61,7 @@ name: <kebab-topic>
 description: <one-line hook so future sessions can decide whether to load this plan as a style reference>
 approvedAt: 2026-05-17T10:05+07:00
 approvedBy: <user identifier from git config user.email or session context>
-track: angular-portal
+track: angular
 module: catalog
 entity: product
 sourceSpecPath: .sdcorejs/specs/<track>/2026-05-17-09-30-add-product-entity.md   # the approved spec this plan implements
@@ -71,7 +71,7 @@ phaseCount: 4
 
 # <Title> — Approved Plan
 
-> Snapshot of the plan the user approved at the `06-review-plan` gate. The body below is the exact contract `07-write-code` executed. Do not edit by hand — re-author via `05-plan` + `06-review-plan` if the contract changes.
+> Snapshot of the plan the user approved at the `06-review-plan` gate. The body below is the exact contract `07-write-code` executed. Do not edit by hand — re-author via `05-write-plan` + `06-review-plan` if the contract changes.
 
 ## Phases
 - Phase 1 (module bootstrap): tasks 1-6
@@ -94,14 +94,14 @@ phaseCount: 4
 - <what the user changed during 06-review-plan iterations — captures the user's STYLE, e.g. "Asked to split task 7 into 7a/7b because mock-data and DTO shouldn't share a commit", "Pushed verification to per-phase instead of one final run", "Requested explicit anchor v2 task instead of folding it into screen-detail">
 
 ## Skill provenance
-05-plan → 06-review-plan (approved on attempt <N> / 3)
+05-write-plan → 06-review-plan (approved on attempt <N> / 3)
 ```
 
 The "Decisions captured during review" section is the highest-value field — it is the **delta between the agent's first draft and the plan the user actually approved**, which is the strongest planning-style signal we can persist.
 
-## How `05-plan` consumes this corpus
+## How `05-write-plan` consumes this corpus
 
-When `05-plan` is about to author a new plan, after reading the approved spec:
+When `05-write-plan` is about to author a new plan, after reading the approved spec:
 1. Glob `<TARGET_ROOT>/.sdcorejs/plans/<track>/*.md`
 2. Read the latest 3 by filename
 3. Mirror:
@@ -121,7 +121,7 @@ When `05-plan` is about to author a new plan, after reading the approved spec:
 - Always create a NEW file — never overwrite an existing approved plan
 - Link to the paired approved spec via `sourceSpecPath` in frontmatter — the spec / plan pair is what makes the corpus most useful
 - Capture the "Decisions captured during review" section honestly — that's the durable style signal
-- At session start, glob + frontmatter-only read of the latest 3 entries; load bodies only when `05-plan` runs
+- At session start, glob + frontmatter-only read of the latest 3 entries; load bodies only when `05-write-plan` runs
 
 ### MUST NOT
 - Write the file before `06-review-plan` approval — partial-approval data poisons the corpus
@@ -134,7 +134,7 @@ When `05-plan` is about to author a new plan, after reading the approved spec:
 
 | Track | Output folder |
 |---|---|
-| Angular Portal | `.sdcorejs/plans/angular-portal/` |
+| Angular Portal | `.sdcorejs/plans/angular/` |
 | NestJS | `.sdcorejs/plans/nestjs/` |
 | Next.js | `.sdcorejs/plans/nextjs/` |
 
@@ -145,7 +145,7 @@ In multi-track repos, write to the track folder matching the work being planned.
 - Treating `06-review-plan` silence as approval and writing anyway — corrupts the corpus with un-approved drafts
 - Skipping the "Decisions captured during review" section — without it, the corpus is just a duplicate of the draft plan
 - Updating an existing file when the plan changes mid-implementation — instead, the deltas belong in `auto-docs`; the plan snapshot stays immutable
-- Reading the corpus eagerly at session start (full bodies) — frontmatter only at start, bodies on demand when `05-plan` runs
+- Reading the corpus eagerly at session start (full bodies) — frontmatter only at start, bodies on demand when `05-write-plan` runs
 - Omitting `sourceSpecPath` — breaks the spec/plan pairing that future sessions rely on
 
 ## Pairing with auto-docs, auto-specs and memories
@@ -156,4 +156,4 @@ In multi-track repos, write to the track folder matching the work being planned.
 | Triggered by | End of code-writing skill | `04-review-spec` approval | `06-review-plan` approval | "ghi nhớ" / detected durable fact |
 | Path | `.sdcorejs/docs/<track>/` | `.sdcorejs/specs/<track>/` | `.sdcorejs/plans/<track>/` | `.sdcorejs/memories/<track>/` |
 | Lifetime | Per session | Permanent corpus | Permanent corpus | Permanent, updatable |
-| Consumed by | Session-start ritual (latest 3) | `03-write-spec` style mirror | `05-plan` style mirror | Authoritative context at session start |
+| Consumed by | Session-start ritual (latest 3) | `03-write-spec` style mirror | `05-write-plan` style mirror | Authoritative context at session start |

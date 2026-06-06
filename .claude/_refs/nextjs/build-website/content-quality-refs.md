@@ -1,6 +1,6 @@
 # Content Quality — Reference Blocks
 
-Extracted from `skills/tracks/nextjs/build-website/19-content-quality.md` to keep that skill under the 500-line ideal. Load this file when generating the parity/length scripts or the article presentation components. Paths are repo-root-relative.
+Extracted from the `content-quality` write-code pack (`_refs/nextjs/build-website/write-code/content-quality.md`) to keep that pack under the 500-line ideal. Load this file when generating the parity/length scripts or the article presentation components. Paths are repo-root-relative.
 
 ## `scripts/check-i18n-parity.ts` (bilingual parity)
 

@@ -2,7 +2,7 @@
 
 This file is loaded by `skills/shared/sdlc/0[1-6]-*.md` when the detected track is `nestjs`.
 
-**Status:** Track-specific orchestrator (`07-write-code` for NestJS) is planned, not yet shipped. Cross-track SDLC skills work today — they will dispatch to the future `nestjs-write-code` orchestrator once it lands. Until then, after `sdcorejs-review-plan` approves a plan, dispatch is a manual sub-skill walk through `skills/review/code/nestjs.md` + `skills/testing/*/nestjs.md`.
+**Status:** Track-specific orchestrator (`07-write-code` for NestJS) is planned, not yet shipped. Cross-track SDLC skills work today — they will dispatch to the future `nestjs-write-code` orchestrator once it lands. Until then, after `sdcorejs-review-plan` approves a plan, dispatch is a manual sub-skill walk through `sdcorejs-review` + `skills/testing/*/nestjs.md`.
 
 This ref captures the conventions from the `be-masterdata` baseline.
 
@@ -128,9 +128,9 @@ Capture:
 5. **Controller**: REST endpoints with `@UseGuards(AuthGuard, ZodValidationGuard)` + `@HasPermission()`
 6. **DTO + mapper**: response DTOs + entity↔DTO mapping
 7. **Tests** (matching coverage level):
-   - unit: service logic with mocked repository (`testing/unit/nestjs.md`)
-   - integration: real DI + pg-mem (`testing/integration/nestjs.md`)
-   - e2e: real HTTP + real PG via testcontainers (`testing/e2e/nestjs.md`)
+   - unit: service logic with mocked repository (`sdcorejs-test`)
+   - integration: real DI + pg-mem (`sdcorejs-test`)
+   - e2e: real HTTP + real PG via testcontainers (`sdcorejs-test`)
 
 ### Verification commands
 ```bash
@@ -145,14 +145,15 @@ npm run lint
 
 ### Final-step expectations
 Until the `nestjs-write-code` orchestrator ships, the last plan step should call out the manual tail-call sequence:
-1. `skills/testing/e2e/nestjs.md` — write e2e tests for happy path
-2. `skills/review/code/nestjs.md` — convention review
+1. `sdcorejs-test` — write e2e tests for happy path
+2. `sdcorejs-review` — convention review
 3. `orchestration/repair-loop` — apply review findings
 4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full)
 5. `orchestration/verify-before-done` — acceptance criteria gate
-6. `orchestration/auto-docs` — session summary to `.sdcorejs/docs/nestjs/`
-7. `orchestration/auto-task-tracker` — tick / append tasks
-8. `orchestration/memories` — durable knowledge if applicable
+6. `orchestration/branch-ready` — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) before docs
+7. `orchestration/auto-docs` — session summary to `.sdcorejs/docs/nestjs/`
+8. `orchestration/auto-task-tracker` — tick / append tasks
+9. `orchestration/memories` — durable knowledge if applicable
 
 Once the orchestrator ships, the plan can simply reference `nestjs-write-code` and the tail-call chain is owned there.
 

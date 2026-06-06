@@ -16,9 +16,11 @@ pre-commit:
   parallel: true
   commands:
     sync-skills:
-      # Trigger only when source skills changed.
-      glob: "skills/**/*.md"
-      run: bash .claude/sync-skills.sh && git add .claude/skills plugin/skills
+      # Trigger when source skills OR reference data changed (both are mirrored).
+      glob:
+        - "skills/**/*.md"
+        - "_refs/**"
+      run: bash .claude/sync-skills.sh && git add .claude/skills plugin/skills .claude/_refs plugin/_refs
     check-mirror:
       # Always verify both mirrors are consistent (catches the case where
       # someone hand-edits .claude/skills/ or plugin/skills/ without touching skills/).
@@ -28,15 +30,16 @@ pre-commit:
       run: bash .claude/sync-skills.sh --check
     no-hardcoded-core-version:
       # Single source of truth for Core UI package name + version is
-      # skills/tracks/angular-portal/_refs/core-version.md. Inside the three
-      # init skills (10-init-portal, 11-init-module, 12-init-entity), every
+      # _refs/angular/core-version.md. Inside the three init reference
+      # packs (init-portal, init-module, init-entity — formerly the 10/11/12
+      # sub-skills, now consolidated into angular-write-code), every
       # reference must use placeholders <CORE_VERSION> + <CORE_UI_PACKAGE_NAME>
-      # (substituted by the agent at generation time). Hardcoded literal
-      # a literal version or Core UI package name in imports means drift.
+      # (substituted by the agent at generation time). A literal version or
+      # Core UI package name in imports means drift.
       glob:
-        - "skills/tracks/angular-portal/10-init-portal.md"
-        - "skills/tracks/angular-portal/11-init-module.md"
-        - "skills/tracks/angular-portal/12-init-entity.md"
+        - "_refs/angular/write-code/init-portal.md"
+        - "_refs/angular/write-code/init-module.md"
+        - "_refs/angular/write-code/init-entity.md"
       run: bash .claude/check-core-version-placeholder.sh {staged_files}
     skill-frontmatter:
       # Every .md under skills/ must have YAML frontmatter (name +
@@ -54,7 +57,7 @@ check:
       # Checks BOTH .claude/skills/ and plugin/skills/ against the source.
       run: bash .claude/sync-skills.sh --check
     core-version-placeholder:
-      run: bash .claude/check-core-version-placeholder.sh skills/tracks/angular-portal/10-init-portal.md skills/tracks/angular-portal/11-init-module.md skills/tracks/angular-portal/12-init-entity.md
+      run: bash .claude/check-core-version-placeholder.sh _refs/angular/write-code/init-portal.md _refs/angular/write-code/init-module.md _refs/angular/write-code/init-entity.md
     skill-frontmatter:
       # Check ALL skill .md files in one shot (find handles the exclusions inside the script).
       run: bash -c 'find skills -name "*.md" -type f -print0 | xargs -0 bash .claude/check-skill-frontmatter.sh'

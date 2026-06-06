@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-clarify-requirements
-description: Use AFTER `sdcorejs-brainstorm` has settled direction (or skip brainstorm if scope was already clear), BEFORE `sdcorejs-write-spec`. Hard-confirms the blocking inputs for the detected track — angular-portal (module / entity / fields / layout / workflow), nestjs (module / entity / persistence / transactions), nextjs (domain / contact / hosting / languages / OG / caching). Each unanswered blocker prevents the spec stage. Triggers - "tạo CRUD cho ...", "thêm entity", "create screen", "build module", "set up backend module", "tạo landing page với ...", or any request missing concrete inputs for the track. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-brainstorm` has settled direction (or skip brainstorm if scope was already clear), BEFORE `sdcorejs-write-spec`. Hard-confirms the blocking inputs for the detected track — angular (module / entity / fields / layout / workflow), nestjs (module / entity / persistence / transactions), nextjs (domain / contact / hosting / languages / OG / caching). Each unanswered blocker prevents the spec stage. Triggers - "tạo CRUD cho ...", "thêm entity", "create screen", "build module", "set up backend module", "tạo landing page với ...", or any request missing concrete inputs for the track. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Glob, Grep, Bash
 ---
 
@@ -28,12 +28,12 @@ Same detection as `sdcorejs-brainstorm` Step 0:
 TARGET_ROOT=$(git rev-parse --show-toplevel)
 cd "$TARGET_ROOT"
 
-if   [ -f angular.json ];                                                      then TRACK=angular-portal
+if   [ -f angular.json ];                                                      then TRACK=angular
 elif [ -f nest-cli.json ];                                                     then TRACK=nestjs
 elif [ -f next.config.js ] || [ -f next.config.ts ] || [ -f next.config.mjs ]; then TRACK=nextjs
 elif grep -q '"@nestjs/core"'  package.json 2>/dev/null;                       then TRACK=nestjs
 elif grep -q '"next"'          package.json 2>/dev/null;                       then TRACK=nextjs
-elif grep -q '"@angular/core"' package.json 2>/dev/null;                       then TRACK=angular-portal
+elif grep -q '"@angular/core"' package.json 2>/dev/null;                       then TRACK=angular
 else TRACK=ASK_USER
 fi
 ```
@@ -52,7 +52,7 @@ Run this check BEFORE asking the first blocking question. If the request matches
 - The user signals uncertainty: "không chắc", "đang phân vân", "explore options", "tôi đang nghĩ tới"
 - More than one realistic interpretation of the request exists, and picking blindly would lock in the wrong choice for hours of code
 - For nextjs: industry / target audience / page-set is not yet declared
-- For angular-portal / nestjs: it's unclear whether this needs a new module or fits an existing one
+- For angular / nestjs: it's unclear whether this needs a new module or fits an existing one
 
 If ANY signal fires, say (in user's language):
 
@@ -103,16 +103,16 @@ In addition to "test coverage level" (minimal / standard / full), ask ONE more q
 This answer goes into the spec (Architecture section) and the plan (test phase ordering — TDD shifts test bones BEFORE code tasks; post-hoc keeps the current ordering).
 
 Defaults by track:
-- **angular-portal**: post-hoc for screens/forms, TDD for custom validators + mappers + services
+- **angular**: post-hoc for screens/forms, TDD for custom validators + mappers + services
 - **nestjs**: TDD as default for services + validators + transactions; post-hoc for thin controllers + DTOs
 - **nextjs**: post-hoc for pages/blocks/SEO/i18n (mostly declarative); TDD for contact-form API route + content-quality scripts
 
-If user picks TDD, `sdcorejs-plan` will:
-1. Slot a `40a-e2e-skeleton` task BEFORE each `07-write-code` sub-task that has user-visible behavior
-2. Slot a `41-tests-fill` task AFTER `07-write-code` to fill bodies based on the actual implementation
-3. Each acceptance criterion in the spec maps to a failing test in `40a-e2e-skeleton`
+If user picks TDD, `sdcorejs-write-plan` will:
+1. Add a **test-bones phase** BEFORE the code tasks — a failing test/skeleton for each unit with user-visible behavior
+2. Add a **tests-fill phase** AFTER the code tasks — complete the test bodies against the actual implementation
+3. Each acceptance criterion in the spec maps to a failing test in the test-bones phase
 
-If user picks post-hoc, the current ordering stands: `07-write-code` first, then `testing/e2e/<track>.md` after.
+If user picks post-hoc, the current ordering stands: `07-write-code` first, then `sdcorejs-test` after.
 
 ### Step 4 — Surface defaults clearly
 For each optional answer, propose the default explicitly so the user can accept fast:
@@ -156,7 +156,7 @@ Track-level answers that will repeat across features (domain, hosting, brand col
 - Combine unrelated questions into one mega-question
 - Accept "thôi cứ làm đại" — push back: name the minimum subset that's still required ("Cần ít nhất X và Y trước; phần khác lấy default được")
 - Defer answers that change the architecture (persistence, domain, layout) — those must be locked before the spec stage
-- Mix angular-portal blockers into a nextjs session, or vice versa — load the right `_refs/sdlc/<TRACK>.md`
+- Mix angular blockers into a nextjs session, or vice versa — load the right `_refs/sdlc/<TRACK>.md`
 
 ## Anti-patterns
 - Skipping production domain (nextjs) → sitemap + OG URLs ship with `localhost:3000`

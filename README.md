@@ -22,9 +22,9 @@ The system ships as **dispatchable skills** — markdown with YAML frontmatter �
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular Portal | `skills/angular-portal/` | ✅ Complete (21 skills + 58 reference docs for Core UI) |
-| NestJS | `skills/nestjs/` | 🚧 Planned |
-| Next.js | `skills/nextjs/` | 🚧 Planned |
+| Angular | `skills/tracks/angular/` | ✅ Complete (`angular-write-code` orchestrator; onboarding via `sdcorejs-using-skills`; Core UI docs in `_refs/angular/`) |
+| NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (onboarding + plan-walking `nestjs-write-code`; design + review + testing usable) |
+| Next.js | `skills/tracks/nextjs/` | ✅ Complete (`nextjs-write-code` orchestrator; EXISTING-site audit → `sdcorejs-review`; onboarding via `sdcorejs-using-skills`) |
 
 ## Workflow (per track)
 
@@ -33,23 +33,23 @@ Every track follows the same SDLC pipeline. Numbering reflects the order.
 ```
 Request
   ↓
-00-onboarding              ← orient the developer
+sdcorejs-using-skills      ← onboarding / orient (bootstrap; skip if oriented)
 01-brainstorm              ← explore requirements open-ended
 02-clarify-requirements    ← hard-confirm scope (blocking questions)
 03-write-spec              ← author a spec document
 04-review-spec             ← user reviews + approves spec
-05-plan                    ← step-by-step plan
+05-write-plan                    ← step-by-step plan
 06-review-plan             ← user reviews + approves plan
 07-write-code              ← orchestrator that dispatches sub-skills (10-31)
 40-e2e-test                ← write E2E tests for what was built
-50-review-code             ← self-review against conventions
+sdcorejs-review       ← self-review against conventions (auto-detects track; color-coded tables)
 orchestration/comment-code ← MANDATORY ASK gate: skip / simple / medium / full (all applied inline)
   ↓
 orchestration/auto-docs    ← MANDATORY: summary to target project's .sdcorejs/docs/<track>/
 orchestration/memories     ← when learning durable knowledge: target project's .sdcorejs/memories/<track>/
 ```
 
-Sub-skills under `07-write-code` (Angular Portal): `10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `31-actions` (workflow / bulk / custom side-effects).
+For Angular Portal, `07-write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular/write-code/` (no frontmatter, not dispatchable skills): `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow / bulk / custom side-effects).
 
 ## Mandatory rules (every track)
 
@@ -59,6 +59,7 @@ Sub-skills under `07-write-code` (Angular Portal): `10-init-portal`, `11-init-mo
 4. **Clarify-before-code** — agent refuses to generate code without module ownership / entity name / key fields.
 5. **Core UI first** (Angular Portal) — use `@sdcorejs/angular` components; otherwise skeleton + `alert('TODO: ...')` stubs.
 6. **Test after generation** — run framework tests and report.
+7. **Evidence before claims** — the agent never says something passes / builds / is fixed / is done without running the verifying command in the same turn and reading its output. Applies to its own work and any subagent's report.
 
 ## Quick start in a target project
 
@@ -71,7 +72,7 @@ Install via the Claude Code plugin marketplace. The repo ships its own single-pl
 /plugin install sdcorejs-agent@sdcorejs
 ```
 
-After install, all 76 skills (cross-track SDLC + angular-portal / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
+After install, all 36 skills (cross-track SDLC + angular / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
 
 ### Option 2 — git submodule (works for Claude Code + Copilot + Codex)
 
@@ -122,18 +123,18 @@ sdcorejs-agent/
 │   ├── skills/<name>/SKILL.md             # project-local Claude Code mirror (auto-synced)
 │   └── _refs/<track>/...                  # auto-synced from top-level _refs/
 ├── _refs/                                 # source of truth — reference data per track (one tree, mirrored once)
-│   ├── angular-portal/                    # core-version, catalog, entity-field-types, templates/, sdcorejs-angular/...
+│   ├── angular/                    # core-version, catalog, entity-field-types, templates/, sdcorejs-angular/...
 │   ├── nestjs/                            # architecture-principles
 │   ├── nextjs/build-website/              # architecture-principles
-│   └── sdlc/                              # cross-track design-phase patterns ({angular-portal,nestjs,nextjs}.md)
+│   └── sdlc/                              # cross-track design-phase patterns ({angular,nestjs,nextjs}.md)
 ├── skills/                                # source of truth — flat .md per skill
 │   ├── tracks/
-│   │   ├── angular-portal/                # ✅ 8 skills
+│   │   ├── angular/                # ✅ 1 skill (write-code orchestrator; 6 reference packs in _refs/angular/write-code/)
 │   │   ├── nestjs/                        # 🟡 scaffold
 │   │   └── nextjs/build-website/          # ✅ 13 skills
 │   ├── shared/{sdlc,conventions,workflow}/
 │   ├── orchestration/                     # SDLC plumbing (13 skills)
-│   ├── review/{architecture,code,security,performance,accessibility}/
+│   ├── review/ (review.md=sdcorejs-review + architecture.md=sdcorejs-review-architecture)
 │   └── testing/{philosophy,tdd,e2e,integration,unit}/
 └── images/
 ```

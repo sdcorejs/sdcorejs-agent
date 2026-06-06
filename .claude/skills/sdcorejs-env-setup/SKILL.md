@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-env-setup
-description: Use when the user is setting up a new clone, says "thiết lập môi trường", "setup dev", "first run", "cannot run", "nproject mới clone", or hits env-related errors (missing .env, port conflict, postgres connection refused, wrong node version). Provides per-stack bootstrap checklist (Angular / NestJS / NextJS) plus shared prerequisites. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use when the user is setting up a new clone, says "thiết lập môi trường", "setup dev", "first run", "cannot run", "nproject mới clone", or hits env-related errors (missing .env, port conflict, postgres connection refused, wrong node version). Provides per-stack bootstrap checklist (Angular / NestJS / NextJS) plus shared prerequisites. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Bash, Glob, Write
 ---
 
@@ -20,7 +20,7 @@ Get a fresh clone running locally with one focused checklist instead of trial-an
 ```bash
 ls package.json angular.json nest-cli.json next.config.* 2>/dev/null
 ```
-- `angular.json` present → **angular-portal track**
+- `angular.json` present → **angular track**
 - `nest-cli.json` present → **nestjs track**
 - `next.config.js` / `next.config.ts` / `next.config.mjs` → **nextjs track**
 - Mixed (monorepo) → ask which app/lib to set up first
@@ -76,7 +76,7 @@ Verification:
 Common Angular failures:
 - `NG6100` / module-not-found → run install again, may have been interrupted
 - `Port 4200 is already in use` → `<pm> start -- --port 4201` or kill the holder
-- White screen + console error about `inject()` outside context → version mismatch between Angular and `@sdcorejs/angular`; check `_refs/angular-portal/core-version.md`
+- White screen + console error about `inject()` outside context → version mismatch between Angular and `@sdcorejs/angular`; check `_refs/angular/core-version.md`
 
 #### NestJS
 ```bash

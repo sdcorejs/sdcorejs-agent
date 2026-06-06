@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-verify-before-done
-description: MANDATORY skill that runs BEFORE the agent claims a code-writing task is "done" / commits / hands off to `sdcorejs-auto-docs`. Loads the spec's Acceptance Criteria, identifies a verification command for each, runs all automatable ones, and presents a manual checklist for the rest. Blocks the "done" claim until every criterion is ✅ verified or ⚠️ explicitly acknowledged as deferred. Triggers - automatic before auto-docs at end of any code-writing skill; user says "verify", "kiểm tra acceptance", "check acceptance criteria". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill that runs BEFORE the agent claims a code-writing task is "done" / commits / hands off to `sdcorejs-auto-docs`. Loads the spec's Acceptance Criteria, identifies a verification command for each, runs all automatable ones, and presents a manual checklist for the rest. Blocks the "done" claim until every criterion is ✅ verified or ⚠️ explicitly acknowledged as deferred. Triggers - automatic before auto-docs at end of any code-writing skill; user says "verify", "kiểm tra acceptance", "check acceptance criteria". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Bash, Glob, Grep
 ---
 
@@ -9,8 +9,10 @@ allowed-tools: Read, Bash, Glob, Grep
 ## Purpose
 "Tests pass" ≠ "feature done". A test suite covers the cases someone thought to write; acceptance criteria are what the user signed off on. This skill closes the gap — it makes the agent prove, criterion by criterion, that what was built matches what was specified.
 
+> **Scope.** This gate is the feature-end *enforcement point* of the always-on evidence-before-claims rule (CLAUDE.md rule 10). That rule governs EVERY interim success claim during the task too — "tests pass", "build is green", "fixed" each need fresh command output in the same turn they're claimed. This skill is where the rule is checked exhaustively, criterion-by-criterion, before "done".
+
 ## When invoked
-- **MANDATORY** automatic invocation BEFORE `sdcorejs-auto-docs` at the end of every code-writing skill (`07-write-code` and all its sub-skills, `40-e2e-test`, `31-actions`)
+- **MANDATORY** automatic invocation BEFORE `sdcorejs-branch-ready` → `sdcorejs-auto-docs` at the end of every code-writing skill (`07-write-code` — the `angular-write-code` orchestrator and the reference packs it loads, including `actions` — and `sdcorejs-test`)
 - Before `sdcorejs-commit` for a feature commit (not for chore/docs commits)
 - Before `sdcorejs-pr-create`
 - User says "verify", "kiểm tra acceptance", "check acceptance criteria", "đã xong chưa"
@@ -25,7 +27,7 @@ Do NOT invoke for:
 ### 1. Find the relevant spec
 ```bash
 TARGET_ROOT=$(git rev-parse --show-toplevel)
-TRACK=angular-portal   # detected from stack
+TRACK=angular   # detected from stack
 
 # Most recent spec doc (by filename timestamp)
 ls -1t "$TARGET_ROOT/.sdcorejs/docs/$TRACK"/*-spec.md 2>/dev/null | head -1
@@ -48,7 +50,7 @@ For each criterion, derive a **verification mode**:
 | "API returns 403 for unauthorized" | Integration test or `curl -H` with bad token |
 | "All Vietnamese labels render with diacritics" | `grep -E '[àáâãèéêìíòóôõùúýăđĩũơưạ-ỹ]'` in rendered output or template files |
 | "List filter by status returns only matching rows" | E2E with filter applied + count check |
-| **(NextJS)** "VI/EN message keys symmetric; content files mirrored" | `npm run check:i18n` (from `nextjs-build-website-content-quality`) — exit 0 |
+| **(NextJS)** "VI/EN message keys symmetric; content files mirrored" | `npm run check:i18n` (from the `nextjs-write-code` orchestrator, content-quality pack) — exit 0 |
 | **(NextJS)** "Every page meets min word count for its type" | `npm run check:content` — exit 0 |
 | **(NextJS)** "Lighthouse SEO score ≥ 95 on home + 1 detail" | `npx lighthouse <url> --only-categories=seo --output=json` — parse `categories.seo.score` |
 | **(NextJS)** "Article pages emit Article JSON-LD with author + dates" | `curl <article-url> \| grep -o '"@type":"Article"'` + manual paste to Google Rich Results Test |
@@ -75,7 +77,7 @@ Any failure here → block immediately. The lower-level checks must pass before 
 
 Detect by reading `package.json` `scripts` — only run scripts that are actually defined. Missing scripts are not failures; they signal the project hasn't installed that quality gate yet (and the agent should flag it for the user if the track expects it).
 
-**NextJS landing sites** (`nextjs-build-website-content-quality` installs these):
+**NextJS landing sites** (the `nextjs-write-code` orchestrator's content-quality pack installs these):
 
 ```bash
 # Bilingual parity — fails if vi.json/en.json keys diverge OR content/vi/*.ts ↔ content/en/*.ts file sets diverge
@@ -87,7 +89,7 @@ npm run check:content 2>/dev/null && echo "✅ content length" || echo "❌ cont
 
 If `check:i18n` or `check:content` is missing AND the spec mentions bilingual support OR long-form content, surface this as a Critical finding:
 
-> "Spec mentions VI/EN parity / long-form articles but `package.json` has no `check:i18n` / `check:content` script. Invoke `nextjs-build-website-content-quality` to install before claiming done."
+> "Spec mentions VI/EN parity / long-form articles but `package.json` has no `check:i18n` / `check:content` script. Invoke the `nextjs-write-code` orchestrator (content-quality pack) to install before claiming done."
 
 **Lighthouse SEO (NextJS, when a URL is reachable)**:
 
@@ -161,10 +163,10 @@ The agent MUST NOT claim "done", invoke `sdcorejs-auto-docs` with a complete sta
 The user's defer/won't-fix acknowledgment goes into the auto-docs entry under "Open questions / follow-ups" so the next session knows what's outstanding.
 
 ### 6. Hand off
-After the report + user direction:
-- If ALL ✅ + no manual deferred → invoke `sdcorejs-auto-docs` with "Status: done", then `sdcorejs-commit`
+After the report + user direction (the branch-hygiene gate `sdcorejs-branch-ready` runs between this skill and auto-docs — never skip it):
+- If ALL ✅ + no manual deferred → invoke `sdcorejs-branch-ready` (hygiene sweep + merge/PR options), then `sdcorejs-auto-docs` with "Status: done"
 - If partial → invoke `sdcorejs-repair-loop` with the failed criteria as the findings list
-- If user defers → invoke `sdcorejs-auto-docs` with "Status: partial — see Open questions", do NOT auto-commit
+- If user defers → invoke `sdcorejs-branch-ready`, then `sdcorejs-auto-docs` with "Status: partial — see Open questions", do NOT auto-commit
 
 ## Examples
 
@@ -173,6 +175,7 @@ After the report + user direction:
 6 criteria → 6 ✅
 build/lint/test: ✅
 Verdict: 🟢 DONE
+→ branch-ready (hygiene sweep)
 → auto-docs (status: done)
 → commit prep
 ```
@@ -205,7 +208,7 @@ No spec found (small bug fix, no .sdcorejs/docs/<track>/*-spec.md)
 - Run build + lint + full test before per-criterion checks
 - Run a smoke command for the stack — don't trust unit tests alone
 - Run stack-specific quality scripts if `package.json` defines them (`check:i18n`, `check:content`, `lighthouse`) — count failures as Critical, count missing-when-relevant as Important
-- For NextJS sites with bilingual or long-form scope: REQUIRE `check:i18n` + `check:content` to be installed (via `nextjs-build-website-content-quality`) and passing before claiming done
+- For NextJS sites with bilingual or long-form scope: REQUIRE `check:i18n` + `check:content` to be installed (via the `nextjs-write-code` orchestrator's content-quality pack) and passing before claiming done
 - Surface partial failures explicitly; never round up to ✅
 - Block "done" until user confirms defer or all green
 
@@ -229,9 +232,10 @@ No spec found (small bug fix, no .sdcorejs/docs/<track>/*-spec.md)
 - **CI substitution**: trusting a green PR check as proof — CI runs an older commit OR didn't run the right subset
 
 ## Cross-references
-- `orchestration/auto-docs` — runs AFTER this skill; this skill blocks auto-docs from claiming "done" prematurely
+- `sdcorejs-branch-ready` — runs immediately AFTER this skill (branch-hygiene sweep) and BEFORE auto-docs; mandatory, never skipped
+- `orchestration/auto-docs` — runs after branch-ready; this skill blocks auto-docs from claiming "done" prematurely
 - `orchestration/repair-loop` — invoked when this skill finds failed criteria
 - `orchestration/auto-task-tracker` — open criteria flow into the living TODO until resolved
-- `03-write-spec.md` (track-specific) — defines the Acceptance Criteria section format this skill reads
-- `40-e2e-test.md` (track-specific) — many acceptance criteria are best verified via E2E; cross-reference for the right framework
-- `nextjs-build-website-content-quality` (`19-content-quality`) — installs `check:i18n` + `check:content` scripts that this skill invokes; defines the bilingual parity + minimum content length contracts
+- `sdcorejs-write-spec` (cross-track, `shared/sdlc/03-write-spec.md`) — defines the Acceptance Criteria section format this skill reads
+- `sdcorejs-test` — many acceptance criteria are best verified via E2E; cross-reference for the right framework
+- `nextjs-write-code` (content-quality pack, `_refs/nextjs/build-website/write-code/content-quality.md`) — installs `check:i18n` + `check:content` scripts that this skill invokes; defines the bilingual parity + minimum content length contracts

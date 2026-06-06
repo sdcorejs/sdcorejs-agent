@@ -1,15 +1,15 @@
 ---
 name: sdcorejs-review-spec
-description: Use AFTER `sdcorejs-write-spec` writes a spec file. Presents the spec to the user with a request for review and approval; iterates on feedback until the user approves. Acts as the user-approval gate before `sdcorejs-plan` starts; on approval, fires `orchestration/auto-specs` to persist the approved snapshot. Triggers - automatic after `sdcorejs-write-spec`; or user says "review spec", "approve spec", "let's check the spec", "rà soát spec", "duyệt spec". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-write-spec` writes a spec file. Presents the spec to the user with a request for review and approval; iterates on feedback until the user approves. Acts as the user-approval gate before `sdcorejs-write-plan` starts; on approval, fires `orchestration/auto-specs` to persist the approved snapshot. Triggers - automatic after `sdcorejs-write-spec`; or user says "review spec", "approve spec", "let's check the spec", "rà soát spec", "duyệt spec". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Edit, Glob
 ---
 
 # 04 — Review Spec (Cross-Track)
 
 ## Purpose
-Hold the user-approval gate between spec authoring (`sdcorejs-write-spec`) and planning (`sdcorejs-plan`). Without explicit approval, the agent cannot proceed. Design ambiguity caught here is 10× cheaper than ambiguity caught during code generation.
+Hold the user-approval gate between spec authoring (`sdcorejs-write-spec`) and planning (`sdcorejs-write-plan`). Without explicit approval, the agent cannot proceed. Design ambiguity caught here is 10× cheaper than ambiguity caught during code generation.
 
-This skill is fully track-agnostic — the spec template, file paths, and tail-calls are the same across angular-portal / nestjs / nextjs.
+This skill is fully track-agnostic — the spec template, file paths, and tail-calls are the same across angular / nestjs / nextjs.
 
 ## When to use
 - Automatically right after `sdcorejs-write-spec` writes a spec file
@@ -17,7 +17,7 @@ This skill is fully track-agnostic — the spec template, file paths, and tail-c
 
 ## Process
 
-> **STOP — approval gate.** This skill exists to BLOCK the workflow. After presenting the spec summary (step 3), you MUST wait for an explicit affirmative ("OK", "duyệt", "approve") before invoking `orchestration/auto-specs` or `sdcorejs-plan`. Silence, "thanks", or a follow-up question is NOT approval. Do not proceed on your own judgment that the spec "looks fine".
+> **STOP — approval gate.** This skill exists to BLOCK the workflow. After presenting the spec summary (step 3), you MUST wait for an explicit affirmative ("OK", "duyệt", "approve") before invoking `orchestration/auto-specs` or `sdcorejs-write-plan`. Silence, "thanks", or a follow-up question is NOT approval. Do not proceed on your own judgment that the spec "looks fine".
 
 ### 1. Re-read the spec
 Open the file just written under `<target-project>/.sdcorejs/docs/<TRACK>/*-spec.md`. Re-read it as if you've never seen it.
@@ -53,7 +53,7 @@ Summary:
 - Risks flagged: <list>
 
 Bạn duyệt spec này chứ?
-  - "OK" → tiếp tục sang `sdcorejs-plan`
+  - "OK" → tiếp tục sang `sdcorejs-write-plan`
   - "đổi <X>" → mình sẽ sửa và trình lại
   - "hủy" → dừng, không sinh plan
 ```
@@ -63,7 +63,7 @@ Bạn duyệt spec này chứ?
 #### Approve ("OK", "duyệt", "approve", "go", "tiếp tục")
 1. Mark the spec approved (the user's confirmation in chat is the audit trail)
 2. IMMEDIATELY invoke `orchestration/auto-specs` (write mode) to persist the approved spec snapshot to `<target>/.sdcorejs/specs/<TRACK>/<YYYY-MM-DD-HH-mm>-<topic>.md`
-3. Only then invoke `sdcorejs-plan` with the spec file path as input
+3. Only then invoke `sdcorejs-write-plan` with the spec file path as input
 
 #### Request changes ("đổi", "sửa", "change", "amend")
 1. Edit the spec file in-place via `Edit` tool
@@ -84,12 +84,12 @@ Bạn duyệt spec này chứ?
 - Fix any failing checklist item via `Edit` on the spec file, then re-check
 - Show a concise summary, not the full spec text
 - Wait for an explicit affirmative — "looks good", "OK", "duyệt"
-- Pass the approved spec file path to `sdcorejs-plan` when handing off
+- Pass the approved spec file path to `sdcorejs-write-plan` when handing off
 - Match the user's language
 
 ### MUST NOT
 - Auto-approve. "User wrote 'thanks'" is NOT approval.
-- Proceed to `sdcorejs-plan` without an explicit affirmative
+- Proceed to `sdcorejs-write-plan` without an explicit affirmative
 - Rewrite the spec without confirming the user's intent on each change
 - Loop endlessly on revisions — cap at 3 rounds, then suggest re-brainstorming
 
@@ -98,10 +98,10 @@ Bạn duyệt spec này chứ?
 - Showing the full spec text instead of a summary — defeats the review purpose
 - Editing the spec without re-running the self-review checklist after the edit
 - Skipping the gate "because the spec looks fine" — that's the agent's bias, not user confirmation
-- Carrying a half-approved spec into `sdcorejs-plan` — partial approval becomes full ambiguity downstream
+- Carrying a half-approved spec into `sdcorejs-write-plan` — partial approval becomes full ambiguity downstream
 
 ## Related skills
 - `sdcorejs-write-spec` — runs immediately before; produces the spec file
 - `orchestration/auto-specs` — MANDATORY tail-call on approval; persists the approved spec snapshot
-- `sdcorejs-plan` — runs after auto-specs; consumes the approved spec
+- `sdcorejs-write-plan` — runs after auto-specs; consumes the approved spec
 - `orchestration/memories` — capture durable lessons learned during review

@@ -1,7 +1,7 @@
 {
   "name": "sdcorejs-agent",
   "description": "Orchestrated AI-assisted SDLC for Angular Portal, NestJS, and Next.js. Turns Claude Code, GitHub Copilot, and Codex into accountable engineers on your stack — clarify → spec → plan → write code → review → ship, with user-approval gates between each phase and a documented audit trail. Skills are auto-synced from `../skills/` source tree; bilingual VI/EN triggers throughout.",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "author": {
     "name": "SDCoreJS",
     "url": "https://github.com/sdcorejs"
@@ -13,7 +13,6 @@
     "sdcorejs",
     "sdlc",
     "angular",
-    "angular-portal",
     "nestjs",
     "nextjs",
     "skills",

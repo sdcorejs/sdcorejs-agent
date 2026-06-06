@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-brainstorm
-description: Use when the user has an OPEN-ENDED idea or wants to explore solutions BEFORE scope is fixed — across angular-portal, nestjs, or nextjs. Detects the target track from the project, loads track-specific patterns from `_refs/sdlc/<track>.md`, and proposes 2-3 viable approaches with tradeoffs + a recommendation. Different from `sdcorejs-clarify-requirements` which hard-confirms AFTER direction is chosen. Triggers - "brainstorm", "tôi đang nghĩ về", "khám phá ý tưởng", "explore options", "what should I build for", "ý tưởng cho ...", "should I use X or Y", "không chắc làm thế nào", "compare approaches", "tạo website cho ...", "landing page cho ngành ...", "ý tưởng module backend". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: Use when the user has an OPEN-ENDED idea or wants to explore solutions BEFORE scope is fixed — across angular, nestjs, or nextjs. Detects the target track from the project, loads track-specific patterns from `_refs/sdlc/<track>.md`, and proposes 2-3 viable approaches with tradeoffs + a recommendation. Different from `sdcorejs-clarify-requirements` which hard-confirms AFTER direction is chosen. Triggers - "brainstorm", "tôi đang nghĩ về", "khám phá ý tưởng", "explore options", "what should I build for", "ý tưởng cho ...", "should I use X or Y", "không chắc làm thế nào", "compare approaches", "tạo website cho ...", "landing page cho ngành ...", "ý tưởng module backend". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Glob, Grep, Bash, WebFetch
 ---
 
@@ -33,21 +33,21 @@ The brainstorm rubric differs by track. Detect from the **target project root** 
 TARGET_ROOT=$(git rev-parse --show-toplevel)
 cd "$TARGET_ROOT"
 
-if   [ -f angular.json ];                                                      then TRACK=angular-portal
+if   [ -f angular.json ];                                                      then TRACK=angular
 elif [ -f nest-cli.json ];                                                     then TRACK=nestjs
 elif [ -f next.config.js ] || [ -f next.config.ts ] || [ -f next.config.mjs ]; then TRACK=nextjs
 elif grep -q '"@nestjs/core"'  package.json 2>/dev/null;                       then TRACK=nestjs
 elif grep -q '"next"'          package.json 2>/dev/null;                       then TRACK=nextjs
-elif grep -q '"@angular/core"' package.json 2>/dev/null;                       then TRACK=angular-portal
+elif grep -q '"@angular/core"' package.json 2>/dev/null;                       then TRACK=angular
 else TRACK=ASK_USER
 fi
 ```
 
-If detection fails, ask: "Project này thuộc track nào — angular-portal / nestjs / nextjs?". Do not proceed without a track — the brainstorm patterns are different.
+If detection fails, ask: "Project này thuộc track nào — angular / nestjs / nextjs?". Do not proceed without a track — the brainstorm patterns are different.
 
 ### Step 1 — Load track-specific patterns
 Read `_refs/sdlc/<TRACK>.md` (the brainstorm section). Each track has its own approach palette:
-- **angular-portal**: side-drawer vs page detail; UnifiedCompact / UnifiedSplit / AdaptiveSplitDetail; workflow vs no-workflow
+- **angular**: side-drawer vs page detail; UnifiedCompact / UnifiedSplit / AdaptiveSplitDetail; workflow vs no-workflow
 - **nestjs**: persistence (TypeORM / pg-mem / external); transaction style; workflow / saga / event
 - **nextjs**: industry profile (xây dựng / F&B / y tế / …); tier (Lean / Standard / Full); page set; OG strategy
 
@@ -64,14 +64,14 @@ Skip step 2 only if the project is brand new (no prior docs, no source folders).
 Before proposing, disambiguate the goal. Do NOT batch — one question per turn so the user can think.
 
 Examples per track:
-- **angular-portal**: "Mục tiêu là tốc độ nhập liệu (drawer) hay xử lý workflow phức tạp (page detail)?"
+- **angular**: "Mục tiêu là tốc độ nhập liệu (drawer) hay xử lý workflow phức tạp (page detail)?"
 - **nestjs**: "Bạn cần audit log + transaction strict, hay write-first eventual consistency?"
 - **nextjs**: "Industry là gì — F&B / y tế / xây dựng / …?"
 
 Stop asking once the answer would constrain the approach choice.
 
 ### Step 4 — Propose 2-3 approaches with tradeoffs
-Use the format from `_refs/sdlc/<TRACK>.md` (industry-tier table for nextjs, approach matrix for angular-portal/nestjs). Each approach has:
+Use the format from `_refs/sdlc/<TRACK>.md` (industry-tier table for nextjs, approach matrix for angular/nestjs). Each approach has:
 - Name (3-5 words)
 - One-line summary
 - Pros (2-3 bullets)
@@ -103,7 +103,7 @@ If the brainstorm surfaces a durable preference (e.g. "user always picks Adaptiv
 - ❌ Don't batch clarifying questions — one per turn
 - ❌ Don't recommend without a reason — "I recommend X" with no rationale teaches nothing
 - ❌ Don't skip reading prior auto-docs / memories — those are why the agent beats a blank slate
-- ❌ Don't show angular-portal patterns to a nextjs project — load the right `_refs/sdlc/<TRACK>.md`
+- ❌ Don't show angular patterns to a nextjs project — load the right `_refs/sdlc/<TRACK>.md`
 
 ## Related skills
 - `_refs/sdlc/<TRACK>.md` — track-specific patterns this skill loads in Step 1

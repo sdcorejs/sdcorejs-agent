@@ -3,6 +3,8 @@
 > ⚠️ **STALE SNAPSHOT** — This report was generated 2026-05-16 against the pre-cross-track-refactor skill layout. Several rounds of consolidation have happened since:
 > - 2026-05-20 (`071aa18`): per-track design skills moved into `skills/shared/sdlc/*`
 > - 2026-05-22: angular-portal UI skills consolidated 13 → 8 (`22-screen-create`, `23-screen-update`, `30-reactive-form` merged into `21-screen-detail`; `31-workflow-actions` → `31-actions`; `51-write-comments` absorbed into `orchestration/comment-code`; `52-faq` dropped)
+> - later: angular-portal consolidated 8 → 2 — the six sub-skills (`10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `31-actions`) were merged into the single `angular-portal-write-code` orchestrator and now live as on-demand reference packs (no frontmatter, not dispatchable) under `_refs/angular-portal/write-code/`. The track now exposes only `angular-portal-onboarding` + `angular-portal-write-code`; the native mirror dropped from 74 to 68 active skills
+> - later: nextjs build-website consolidated 13 → 3 — the ten generation sub-skills (`10-init-site`, `11-theme`, `12-pages-and-blocks`, `13-seo`, `14-og-preview`, `15-i18n`, `16-caching`, `17-responsive`, `18-contact-form`, `19-content-quality`) were merged into the single `nextjs-build-website-write-code` orchestrator and now live as on-demand reference packs under `_refs/nextjs/build-website/write-code/`. The track still exposes `nextjs-build-website-onboarding` + `nextjs-build-website-write-code` + `nextjs-build-website-audit-existing-site` (audit = separate read-only entry); the native mirror dropped from 68 to 58 active skills
 >
 > Current structure: see `CLAUDE.md` for the live layout. The skill-name mapping below is preserved as historical record only.
 
@@ -80,7 +82,7 @@ skills/_shared/memories.md                        -> sdcorejs-memories
   - lines 124, 125: `../core/README.md`, `../agents/README.md` (sibling folders that do not exist in this repo)
 - `skills/angular-portal/README.md`
   - lines 13, 32, 63, 94, 127, 415, 416, 417, 418: links to `angular-request-intake-skill.md`, `angular-portal-project-init-skill.md`, `angular-entity-crud-skill.md`, `angular-module-configuration-skill.md`, `angular-workflow-actions-skill.md`, `angular-reactive-form-skill.md`
-  - lines 209, 210: `core-version.md`, `sd-angular-core-catalog.md` (these now live in `_refs/`, so should be `_refs/core-version.md` and `_refs/sd-angular-core-catalog.md`)
+  - lines 209, 210: `core-version.md`, `sdcorejs-angular-catalog.md` (these now live in `_refs/`, so should be `_refs/core-version.md` and `_refs/sdcorejs-angular-catalog.md`)
   - line 431: `../ANGULAR-SKILLS-INDEX.md` (does not exist)
   - lines 433, 434: `../../core/README.md`, `../../README.md` (former is missing)
 

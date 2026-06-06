@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-memories
-description: MANDATORY skill for durable cross-session knowledge across SDCoreJS tracks. Different from `auto-docs` — auto-docs captures one-session summaries, memories captures facts that should persist (project conventions, stakeholder constraints, recurring anti-patterns, external references). READ mode runs at session start (load relevant memories as authoritative context). WRITE mode runs when the user says "ghi nhớ", "remember this", "lưu vào memory", OR when the agent detects a user correction, a recurring constraint, or a non-obvious project decision. Triggers - "ghi nhớ", "remember this", "lưu memory", "save this for later", "lần sau nhớ", "from now on", "đừng quên". Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill for durable cross-session knowledge across SDCoreJS tracks. Different from `auto-docs` — auto-docs captures one-session summaries, memories captures facts that should persist (project conventions, stakeholder constraints, recurring anti-patterns, external references). READ mode runs at session start (load relevant memories as authoritative context). WRITE mode runs when the user says "ghi nhớ", "remember this", "lưu vào memory", OR when the agent detects a user correction, a recurring constraint, or a non-obvious project decision. Triggers - "ghi nhớ", "remember this", "lưu memory", "save this for later", "lần sau nhớ", "from now on", "đừng quên". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob
 ---
 
@@ -9,7 +9,7 @@ allowed-tools: Read, Write, Edit, Glob
 ## Purpose
 Auto-docs is per-session; memories are durable. When something the user tells the agent will still matter three sessions from now — a convention, a stakeholder constraint, a domain fact, a recurring anti-pattern — write it as a memory so future sessions read it as authoritative context.
 
-Shared across SDCoreJS tracks (`angular-portal`, `nestjs`, `nextjs`). Substitute `<track>` with the active track name.
+Shared across SDCoreJS tracks (`angular`, `nestjs`, `nextjs`). Substitute `<track>` with the active track name.
 
 ## When invoked
 
@@ -43,7 +43,7 @@ Mirror the agent-author's auto-memory categories. Pick exactly one type per memo
 
 ```bash
 TARGET_ROOT=$(git rev-parse --show-toplevel)
-TRACK=angular-portal   # or nestjs | nextjs
+TRACK=angular   # or nestjs | nextjs
 
 mkdir -p "$TARGET_ROOT/.sdcorejs/memories/$TRACK"
 FILE="$TARGET_ROOT/.sdcorejs/memories/$TRACK/<short-kebab-slug>.md"
@@ -62,7 +62,7 @@ Slug rule: 2-5 kebab words capturing the durable topic. Examples:
 name: <kebab-slug>
 description: One-line hook used by future sessions to decide whether to load this body. Use "When deciding ...", "When the user asks about ...".
 type: feedback              # user | feedback | project | reference
-track: angular-portal       # optional; omit if memory is track-agnostic
+track: angular       # optional; omit if memory is track-agnostic
 ---
 
 # <Title>
@@ -81,7 +81,7 @@ The `**Why:**` and `**How to apply:**` lines are MANDATORY for types `feedback` 
 After writing a memory, append one line to `<TARGET_ROOT>/.sdcorejs/memories/MEMORY.md` (create the file if missing):
 
 ```markdown
-- [Prefer anchor v2 for long forms](angular-portal/prefer-anchor-v2-for-long-forms.md) — when detail page has >6 fields, use anchor v2 not side-drawer
+- [Prefer anchor v2 for long forms](angular/prefer-anchor-v2-for-long-forms.md) — when detail page has >6 fields, use anchor v2 not side-drawer
 ```
 
 Format: `- [Title](<track>/file.md) — short hook`. One line per memory, grouped by track if helpful.

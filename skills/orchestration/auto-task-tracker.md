@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-task-tracker
-description: MANDATORY skill. Maintains a living TODO file per track. READ mode at session start to know current priorities. WRITE/EDIT mode at the end of every code-writing task (runs immediately after `sdcorejs-auto-docs`) to tick off `[x]` completed tasks and append new tasks parsed from auto-docs' "Next suggested action" or "Open questions" sections. Pairs with `sdcorejs-auto-docs` (one-session summary) and `sdcorejs-memories` (durable knowledge). Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill. Maintains a living TODO file per track. READ mode at session start to know current priorities. WRITE/EDIT mode at the end of every code-writing task (runs immediately after `sdcorejs-auto-docs`) to tick off `[x]` completed tasks and append new tasks parsed from auto-docs' "Next suggested action" or "Open questions" sections. Pairs with `sdcorejs-auto-docs` (one-session summary) and `sdcorejs-memories` (durable knowledge). Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
@@ -20,8 +20,8 @@ allowed-tools: Read, Write, Edit, Bash, Glob
 
 ### Write mode — at end of every code-writing task (after auto-docs runs)
 The agent MUST run this skill (write mode) immediately after `sdcorejs-auto-docs` finishes writing the session summary. This runs for every code-writing skill invocation:
-- `07-write-code` and all its sub-skills (`10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `31-actions`)
-- `40-e2e-test`, `50-review-code`, `orchestration/comment-code` (level ≠ skip)
+- `07-write-code` (the `angular-write-code` orchestrator and the reference packs it loads: `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail`, `actions`)
+- `sdcorejs-test`, `sdcorejs-review`, `orchestration/comment-code` (level ≠ skip)
 
 Read the auto-docs file the previous step just wrote. From it:
 - Match "What was changed" items against existing open `[ ]` tasks → tick them `[x]` with timestamp
@@ -34,7 +34,7 @@ If `auto-docs` was skipped (no code-writing happened) → skip this skill too.
 
 ```bash
 TARGET_ROOT=$(git rev-parse --show-toplevel)
-TRACK=angular-portal            # or nestjs / nextjs
+TRACK=angular            # or nestjs / nextjs
 mkdir -p "$TARGET_ROOT/.sdcorejs/tasks"
 FILE="$TARGET_ROOT/.sdcorejs/tasks/$TRACK.md"
 ```
@@ -161,7 +161,7 @@ Don't quote the whole file unless the user asks.
 
 ## Cross-track usage
 For multi-track repos, one file per track:
-- `.sdcorejs/tasks/angular-portal.md`
+- `.sdcorejs/tasks/angular.md`
 - `.sdcorejs/tasks/nestjs.md`
 - `.sdcorejs/tasks/nextjs.md`
 

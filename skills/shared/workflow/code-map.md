@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-code-map
-description: READ-ONLY skill for architecture discovery. Use when starting a new major feature, when the user asks to "dùng lại shared component", "use existing shared components", "reuse what we have", or when generating code that should slot into existing modules. Scans the target project's structure to find existing modules, shared UI components, base DTOs/services, route registry, and permission codes — BEFORE writing code. Prevents hallucinated paths and duplicated abstractions. Applies to angular-portal, nestjs, nextjs. Bilingual (VI/EN).
+description: READ-ONLY skill for architecture discovery. Use when starting a new major feature, when the user asks to "dùng lại shared component", "use existing shared components", "reuse what we have", or when generating code that should slot into existing modules. Scans the target project's structure to find existing modules, shared UI components, base DTOs/services, route registry, and permission codes — BEFORE writing code. Prevents hallucinated paths and duplicated abstractions. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Bash, Glob, Read
 ---
 
@@ -11,11 +11,11 @@ Before generating a new module / entity / screen, find what already exists. AI g
 
 ## When invoked
 
-Triggering is description-based: there is no orchestration hook that runs this skill automatically. When a code-writing skill (`07-write-code`, `10-init-*`, `11-init-module`) is about to generate into an existing repo, the agent is responsible for invoking this skill first — treat that as a strong default, not an enforced gate. Skipping it is the single biggest cause of hallucinated paths and duplicated abstractions, so only skip when the repo's layout is already established in the current session.
+Triggering is description-based: there is no orchestration hook that runs this skill automatically. When a code-writing skill (`07-write-code` — the `angular-write-code` orchestrator and its init-portal / init-module reference packs, or another track's init step) is about to generate into an existing repo, the agent is responsible for invoking this skill first — treat that as a strong default, not an enforced gate. Skipping it is the single biggest cause of hallucinated paths and duplicated abstractions, so only skip when the repo's layout is already established in the current session.
 
 ### Invoke before generation (strongly recommended)
 - About to invoke `07-write-code` for a new module / entity / screen
-- About to invoke any `10-init-*` or `11-init-module` skill
+- About to run the `angular-write-code` init-portal / init-module packs (or another track's init step)
 - User starts a major feature and the agent has no prior map of this repo
 
 ### Invoke on explicit request
@@ -27,7 +27,7 @@ This skill is READ-ONLY. It NEVER edits files.
 
 ## Scope detection
 Use the same detection logic as `sdcorejs-env-setup`:
-- `angular.json` → angular-portal
+- `angular.json` → angular
 - `nest-cli.json` → nestjs
 - `next.config.*` → nextjs
 
@@ -190,7 +190,7 @@ If the caller is the user directly asking for the map → just present the repor
 
 ### Angular Portal
 - Module roots vary: `src/libs/` (portal template), `projects/<project>/src/libs/` (Nx), and `projects/<lib>/{components,forms}/` for **publishable component libraries** where each component is its own entry-point folder (e.g. `@sdcorejs/angular`). Detect from `angular.json` `projects` first; don't assume `src/libs`.
-- Watch for `@sdcorejs/angular` imports — the project's UI baseline. Cross-reference `_refs/angular-portal/sd-angular-core-catalog.md` when listing components in use.
+- Watch for `@sdcorejs/angular` imports — the project's UI baseline. Cross-reference `_refs/angular/sdcorejs-angular-catalog.md` when listing components in use.
 
 ### NestJS
 - This stack typically uses custom validators, NOT `class-validator` — flag if you see both in use (one is dead code)

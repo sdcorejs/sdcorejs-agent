@@ -18,10 +18,10 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem:
      → sdcorejs-clarify-requirements
      → sdcorejs-write-spec → sdcorejs-review-spec      (approval gate)
                            → orchestration/auto-specs   (MANDATORY)
-     → sdcorejs-plan       → sdcorejs-review-plan       (approval gate)
+     → sdcorejs-write-plan       → sdcorejs-review-plan       (approval gate)
                            → orchestration/auto-plans   (MANDATORY)
      → <track>-write-code  (orchestrator dispatches sub-skills)
-     → testing/e2e/<track> → review/code/<track> → orchestration/repair-loop
+     → testing/e2e/<track> → sdcorejs-review-code (auto-detects track) → orchestration/repair-loop
      → orchestration/comment-code  (ASK gate)
      → orchestration/verify-before-done (MANDATORY)
      → orchestration/branch-ready  (branch-hygiene sweep)

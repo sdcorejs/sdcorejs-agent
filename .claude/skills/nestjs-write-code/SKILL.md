@@ -1,6 +1,6 @@
 ---
 name: nestjs-write-code
-description: Use AFTER `sdcorejs-review-plan` has approved a NestJS plan, when the user is ready to generate backend code. SCAFFOLD STATUS — the dedicated sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) are planned but not yet implemented. Until they ship, this orchestrator walks the approved plan task-by-task manually using Read/Write/Edit and the conventions from `_refs/sdlc/nestjs.md` (be-masterdata baseline). After completion, mandatory hand-off chain - skills/testing/e2e/nestjs.md → skills/review/code/nestjs.md → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Triggers - "generate nestjs code", "viết code backend", "sinh code nestjs", "go ahead" (after a nestjs plan was approved), "proceed with backend implementation". Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-review-plan` has approved a NestJS plan, when the user is ready to generate backend code. SCAFFOLD STATUS — the dedicated sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) are planned but not yet implemented. Until they ship, this orchestrator walks the approved plan task-by-task manually using Read/Write/Edit and the conventions from `_refs/sdlc/nestjs.md` (be-masterdata baseline). After completion, mandatory hand-off chain - sdcorejs-test → sdcorejs-review → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Triggers - "generate nestjs code", "viết code backend", "sinh code nestjs", "go ahead" (after a nestjs plan was approved), "proceed with backend implementation". Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -14,7 +14,7 @@ Execute the approved NestJS plan task-by-task. This skill is the temporary bridg
 - The user has said "OK", "duyệt", "go ahead", or equivalent
 - `orchestration/auto-plans` has snapshotted the approved plan
 
-If no approved plan exists, route back to `sdcorejs-plan` / `sdcorejs-review-plan`.
+If no approved plan exists, route back to `sdcorejs-write-plan` / `sdcorejs-review-plan`.
 
 ## Process
 
@@ -68,14 +68,15 @@ For every code-generating task, enforce:
 
 Hand off the mandatory tail-call chain in this order:
 
-1. **`skills/testing/e2e/nestjs.md`** — write happy-path e2e tests via `supertest` against a real test PG via testcontainers (or `pg-mem` if simpler)
-2. **`skills/review/code/nestjs.md`** — convention review; outputs Critical / Important / Minor findings
+1. **`sdcorejs-test`** — write happy-path e2e tests via `supertest` against a real test PG via testcontainers (or `pg-mem` if simpler)
+2. **`sdcorejs-review`** (auto-detects NestJS → loads `_refs/nestjs/review-code.md`) — convention review; outputs color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
 3. **`orchestration/repair-loop`** — apply findings, iterate until Critical+Important resolved (or user defers)
 4. **`orchestration/comment-code`** — ASK gate (skip / simple / medium / full). When `nestjs-write-comments` sub-skill ships, level=full delegates there; until then, the chosen level is applied inline by `orchestration/comment-code` itself
 5. **`orchestration/verify-before-done`** — BLOCK "done" until every acceptance criterion in the spec is ✅ verified or ⚠️ explicitly deferred
-6. **`orchestration/auto-docs`** — session summary at `<target>/.sdcorejs/docs/nestjs/`
-7. **`orchestration/auto-task-tracker`** — tick `[x]` completed plan tasks, append new tasks from the doc's "Next suggested action" / "Open questions"
-8. **`orchestration/memories`** — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
+6. **`orchestration/branch-ready`** — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
+7. **`orchestration/auto-docs`** — session summary at `<target>/.sdcorejs/docs/nestjs/`
+8. **`orchestration/auto-task-tracker`** — tick `[x]` completed plan tasks, append new tasks from the doc's "Next suggested action" / "Open questions"
+9. **`orchestration/memories`** — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 
 Each tail-call is mandatory. Do NOT skip `verify-before-done` — that's how acceptance criteria silently slip.
 

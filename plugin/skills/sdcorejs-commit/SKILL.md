@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-commit
-description: Use when the user asks to create a git commit, says "commit", "tạo commit", "ghi nhận thay đổi", or ends a code-writing task that should be committed. Generates a Conventional Commits message with auto-detected scope from staged paths, plus git-awareness checks (current branch, modified files, no force-push on main). Applies to angular-portal, nestjs, nextjs and the sdcorejs-agent repo itself. Bilingual (VI/EN).
+description: Use when the user asks to create a git commit, says "commit", "tạo commit", "ghi nhận thay đổi", or ends a code-writing task that should be committed. Generates a Conventional Commits message with auto-detected scope from staged paths, plus git-awareness checks (current branch, modified files, no force-push on main). Applies to angular, nestjs, nextjs and the sdcorejs-agent repo itself. Bilingual (VI/EN).
 allowed-tools: Bash, Read
 ---
 
@@ -28,7 +28,7 @@ Do NOT invoke if the user has not explicitly approved a commit OR if the changes
 - **Branch is `main` / `master` / `release/*`** → ask user to confirm or branch off
 - **No staged files AND no unstaged changes** → nothing to commit, abort silently
 - **Possible secrets in diff** — grep staged diff for `password\s*=`, `token\s*=`, `SECRET`, `private_key`, `BEGIN RSA`, `.env` content → warn before staging
-- **Mixed concerns** — staged files touch >2 unrelated areas (e.g. `skills/tracks/angular-portal/` + `skills/nestjs/` + `.github/workflows/`) → suggest splitting
+- **Mixed concerns** — staged files touch >2 unrelated areas (e.g. `skills/tracks/angular/` + `skills/nestjs/` + `.github/workflows/`) → suggest splitting
 - **Generated files dirty** — `.claude/skills/**` differs from `bash .claude/sync-skills.sh` output → run sync + restage
 
 ### 3. Stage (only if user asked you to stage)
@@ -57,11 +57,11 @@ Format: `<type>(<scope>): <subject>`
 | `revert` | reverts a previous commit |
 
 **Scope detection** — derive from the most common top-level segment of staged paths:
-- All paths under `skills/tracks/angular-portal/` → scope `angular-portal`
+- All paths under `skills/tracks/angular/` → scope `angular`
 - All under `skills/orchestration/` → scope `orchestration`
 - All under `skills/shared/` → scope `shared`
 - All under `skills/review/` or `skills/testing/` → scope `review` or `testing`
-- All under `_refs/angular-portal/sdcorejs-angular/` → scope `refs`
+- All under `_refs/angular/sdcorejs-angular/` → scope `refs`
 - All under `.github/` → scope `github`
 - All under `.claude/` → scope `claude`
 - All under `src/libs/<module>/` (target Angular project) → scope `<module>`
@@ -88,7 +88,7 @@ Format: `<type>(<scope>): <subject>`
 Use a heredoc to preserve formatting:
 ```bash
 git commit -m "$(cat <<'EOF'
-feat(angular-portal): add 5 shared workflow skills
+feat(angular): add 5 shared workflow skills
 
 - commit, pr-create, debug, recovery, env-setup
 - enforces sync-skills via lefthook pre-commit
@@ -108,7 +108,7 @@ If pre-commit hook fails: investigate root cause, fix it, restage, create a NEW 
 
 ### Single-concern feature
 ```
-feat(angular-portal): add 11-init-module skill
+feat(angular): add 11-init-module skill
 
 Establishes module ownership conventions (route prefix, permission
 namespace, sidebar entry) so 12-init-entity can reuse them without
@@ -117,7 +117,7 @@ re-asking.
 
 ### Bug fix with reference
 ```
-fix(angular-portal): correct form binding pattern in 21-screen-detail
+fix(angular): correct form binding pattern in 21-screen-detail
 
 Replaced 9 `formControlName=` occurrences with `[form]+name=` — no
 @sdcorejs/angular form component implements ControlValueAccessor.
