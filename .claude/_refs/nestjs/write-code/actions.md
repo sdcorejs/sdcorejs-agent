@@ -49,15 +49,28 @@ Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) BEFORE generating. Eve
 
 App-local helpers (emitted by `init-project`, not the lib):
 
-- `SdContext` (`src/common/context`) — static facade: `userId`, `departmentCode`, `tenantCode`, `fullName`, `lang`, `hasPermission('<model>', '<action>')`. *(Ground: ref app `src/common/context/sd-context.ts`.)*
+- `SdContext` (`src/common/context`) — static facade: `userId`, `departmentCode`, `tenantCode`, `fullName`, `lang`, `hasPermission('<model>', '<action>')`. *(Ground: ref app `src/common/context/sd-context.ts`.)* (`enterprise` profile; in `simple` use the lib `ContextService` directly — `@Inject(ContextService)`)
 - `badRequest(code, data?)` (`src/common/errors`) — throws a code-based 400 the i18n exception filter localizes. *(Ground: ref app `src/common/errors.ts`.)*
-- `AdminAuthGuard` (`src/common/admin-auth.guard`) — class-level guard that authenticates + loads permission codes into context.
+- `AdminAuthGuard` (`src/common/admin-auth.guard`) — class-level guard that authenticates + loads permission codes into context. (`enterprise`; `simple` uses the core `AuthGuard`)
 
 This pack is grounded throughout in the ref app's rich `crm` task feature:
 
 - `src/modules/crm/services/task.service.ts` — `mine` / `team` / `createDTO` / `updateDTO` / `transition` / `exportReportSummary`, cross-module `@Inject(IUserService)` / `@Inject(ITeamService)` / `@Inject(IEmployeeService)`, `SdContext`, `badRequest`, permission-gated `mapDTO`.
 - `src/modules/crm/controllers/task.controller.ts` — custom routes `@Post('mine')` / `@Post('team')` / `@Get('export-report-summary')` / `@Put(':id/transition')`.
 - `src/modules/crm/services/reference-data.service.ts` + `src/modules/masterdata/services/employee.service.ts` — the `QueryRunner` connect/startTransaction/commit/rollback/release pattern and bulk import.
+
+---
+
+## Profile (read FIRST)
+
+Read `profile` from `<target>/.sdcorejs/summary.md` (default `simple`). The action PATTERNS
+below (caller-scoped listing, transition, bulk, Excel export, transactions, domain errors,
+permission-gated flags) are profile-INDEPENDENT. Two things differ:
+- **Context access:** `enterprise` uses the `SdContext` static facade; `simple` injects the lib
+  `ContextService` (`@Inject(ContextService)` from `@sdcorejs/nestjs/context`) — `ctx.userId`,
+  `ctx.get('user')`, `ctx.hasPermission('<module>_<entity>:<action>')`. There is no `SdContext` in simple.
+- **Guard:** `enterprise` uses `AdminAuthGuard`; `simple` uses the core `AuthGuard` (`@sdcorejs/nestjs/permission`).
+- **Department-scoped variants** (e.g. a `team` listing scoped by `departmentCode`) are `[enterprise]`-only.
 
 ---
 
@@ -77,7 +90,9 @@ Before generating, confirm:
 
 ## 1. Custom service methods (extend `I<Entity>Service` + the impl)
 
-A domain method is declared on the **interface** AND implemented on the **class** — the interface is the DI port other modules + the controller depend on. Add the new signatures to `I<Entity>Service` (which `extends IBaseService<<Entity>, <Entity>DTO>`), then implement them on `<Entity>Service`. Read request context (the caller's identity / scope / permissions) through the `SdContext` facade — never inject `ContextService` directly. *(Ground: ref app `task.service.ts` lines 16-23 (interface) + `mine` lines 68-89 + `team` lines 91-129 — caller-scoped paging using `SdContext.userId`, raw `andWheres` SQL, the cross-module `employeeService`.)*
+A domain method is declared on the **interface** AND implemented on the **class** — the interface is the DI port other modules + the controller depend on. Add the new signatures to `I<Entity>Service` (which `extends IBaseService<<Entity>, <Entity>DTO>`), then implement them on `<Entity>Service`. Read request context (the caller's identity / scope / permissions) through the `SdContext` facade — never inject `ContextService` directly. *(Ground: ref app `task.service.ts` lines 16-23 (interface) + `mine` lines 68-89 + `team` lines 91-129 — caller-scoped paging using `SdContext.userId`, raw `andWheres` SQL, the cross-module `employeeService`. Note: the `team` method, line 91-129, scopes results by `departmentCode` — `[enterprise]` only.)*
+
+> Simple profile: replace `SdContext.userId` with the injected lib `ContextService` — `this.ctx.userId`. Inject `@Inject(ContextService)` (from `@sdcorejs/nestjs/context`) in the service constructor. No `SdContext` facade exists in simple.
 
 ```ts
 import { Inject, Injectable } from '@nestjs/common';
@@ -92,6 +107,8 @@ import { I<Entity>Repository } from 'src/modules/<module>/repositories';
 export interface I<Entity>Service extends IBaseService<<Entity>, <Entity>DTO> {
   // Caller-scoped listing: only rows owned by / assigned to the current user.
   mine: (req: PagingReq<<Entity>>) => Promise<PagingRes<<Entity>DTO>>;
+  // [enterprise] — department-scoped listing (scoped by SdContext.departmentCode); omit in the simple profile (single-tenant, no departmentCode).
+  // team: (req: PagingReq<<Entity>>) => Promise<PagingRes<<Entity>DTO>>;
   // A status transition (see §6 — Workflow). Returns the updated entity.
   transition: (id: string, req: <Entity>TransitionReq) => Promise<<Entity>>;
 }
@@ -300,6 +317,8 @@ Build an `exceljs` `Workbook`, write it to a buffer, and have the controller str
 
 **Service method:**
 
+> Simple profile: replace `SdContext.fullName` with `this.ctx.get('user')?.fullName` (or the equivalent user field from the injected `ContextService`). Also remove the `departmentCode` scope from the `where` clause — no `departmentCode` in single-tenant; filter by other available fields if needed. Inject `@Inject(ContextService)` (from `@sdcorejs/nestjs/context`) in the service constructor. No `SdContext` facade exists in simple.
+
 ```ts
 import { Workbook, Worksheet, Buffer as ExcelBuffer } from 'exceljs';
 import { Between } from 'typeorm';
@@ -316,7 +335,7 @@ exportReport = async (fromDate: string, toDate: string) => {
   }
   // why: dùng raw repository.find cho read-side aggregation (base paging không hợp report)
   const rows = await this.repository.repository.find({
-    where: { departmentCode, createdAt: Between(new Date(fromDate), new Date(toDate)) },
+    where: { departmentCode, createdAt: Between(new Date(fromDate), new Date(toDate)) },  // [enterprise] — departmentCode scope; omit in simple (single-tenant)
     order: { createdAt: 'DESC' },
   });
 
@@ -452,7 +471,9 @@ if (!team.isActive) {
 
 ## 8. Permission-gated DTO fields
 
-Extend the entity's `mapDTO` to compute capability flags — `editable` / `deletable` / `restorable` / `transitionable` — from `SdContext.hasPermission('<module>_<entity>', '<action>')` (optionally OR'd with ownership / role checks). The portal reads these flags to show/hide row actions, so a user only sees buttons they can actually use, and the matching write route re-checks server-side. *(Ground: ref app `task.service.ts` `mapDTO` lines 506-577 — `transitionable: hasPermission('crm_task', 'update') || isTeamLeader || assigneeId === userId`, `editable: ... || assigneeId === createdBy`, `deletable: !isFinished && (hasPermission('crm_task', 'delete') || ...)`.)*
+Extend the entity's `mapDTO` to compute capability flags — `editable` / `deletable` / `restorable` / `transitionable` — from `SdContext.hasPermission('<module>_<entity>', '<action>')` (optionally OR'd with ownership / role checks). The portal reads these flags to show/hide row actions, so a user only sees buttons they can actually use, and the matching write route re-checks server-side. *(Ground: ref app `task.service.ts` `mapDTO` lines 506-577 — `transitionable: hasPermission('crm_task', 'update') || isTeamLeader || assigneeId === userId`, `editable: ... || assigneeId === createdBy`, `deletable: !isFinished && (hasPermission('crm_task', 'delete') || ...)`. Note: the `isTeamLeader` check in the ground ref is an `[enterprise]`-only role — depends on `departmentCode` scoping; omit in the simple profile.)*
+
+> Simple profile: replace `SdContext.hasPermission(...)` with `this.ctx.hasPermission('<module>_<entity>:<action>')` from the injected lib `ContextService`. Inject `@Inject(ContextService)` (from `@sdcorejs/nestjs/context`) in the service constructor. No `SdContext` facade exists in simple.
 
 ```ts
 mapDTO = (entity: <Entity> | undefined | null): <Entity>DTO | undefined | null => {
