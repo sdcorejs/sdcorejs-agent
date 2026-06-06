@@ -42,7 +42,7 @@ Request
   → 05-write-plan       → 06-review-plan      (approval gate)
                   → orchestration/auto-plans  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
   → 07-write-code (sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
-  → 40-e2e-test → sdcorejs-review-code (auto-detects track) → orchestration/repair-loop (if findings)
+  → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (mandatory ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (mandatory acceptance gate)
   → orchestration/auto-docs (mandatory) → orchestration/auto-task-tracker (mandatory) + orchestration/memories (when durable knowledge surfaces)
@@ -98,7 +98,7 @@ The skill files are the primary source. Load on demand:
 - `skills/shared/conventions/dep-update.md` — safe dependency upgrade workflow
 - `skills/orchestration/parallel-dispatch.md` — when/how to fan out to parallel subagents
 - `skills/orchestration/subagent-driven-dev.md` — execution discipline AFTER parallel-dispatch decides YES
-- `skills/orchestration/repair-loop.md` — apply sdcorejs-review-code findings + iterate until clean
+- `skills/orchestration/repair-loop.md` — apply sdcorejs-review findings + iterate until clean
 - `skills/orchestration/comment-code.md` — mandatory ASK gate (skip/simple/medium/full) before any comment work
 - `skills/orchestration/verify-before-done.md` — MANDATORY acceptance-criteria gate before claiming "done"
 

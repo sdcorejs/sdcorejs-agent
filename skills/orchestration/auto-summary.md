@@ -126,7 +126,7 @@ generator: sdcorejs-auto-summary
 Based on commit <short-sha> (<date>). Regenerate with `sdcorejs-auto-summary` if HEAD has drifted significantly.
 ```
 
-## Enforcement (3 tiers — this is what makes it "bắt buộc")
+## Enforcement (4 tiers — this is what makes it "bắt buộc")
 
 Description-matching alone is unreliable (a skill is only consulted when the agent thinks to). So this skill is backed by:
 1. **Hook (session-start directive):** the plugin `SessionStart` hook detects a track config — at the repo ROOT *or* nested under `apps/*` / `packages/*` / `projects/*` (monorepo) — and, if `<project>/.sdcorejs/summary.md` is absent, injects a directive to run this skill before substantive work. Note this is an *advisory* directive (no platform-level hard block exists); it fires once at session start (`startup`/`clear`/`compact`).
