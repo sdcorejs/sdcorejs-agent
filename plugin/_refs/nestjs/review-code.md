@@ -7,10 +7,12 @@
 > file only supplies *what to check*.
 
 ## What this covers
-Per-file code review for a NestJS backend following the `be-masterdata` baseline.
-Different from `review/architecture` (structural), `sdcorejs-review`
-(auth/injection), `sdcorejs-review` (queries). This file checks
-adherence to NestJS + be-masterdata conventions.
+Per-file code review for a NestJS backend on the `@sdcorejs/nestjs` core.
+Different from `sdcorejs-review-architecture` (structural). This file checks
+adherence to the conventions the `nestjs-write-code` packs actually generate
+(`_refs/nestjs/write-code/*`) at whichever **profile** the project uses
+(`simple` | `enterprise`; see `init-project.md`). Probes that only apply to one
+profile are marked `[enterprise]`.
 
 ## Conventions checked
 
@@ -32,15 +34,15 @@ grep -rnE "from\s+['\"]typeorm['\"]" src/ | grep -v "\.repository\.ts" | grep -v
 
 Severity: 🔴 Critical per violation.
 
-### 2. Zod schemas live in `base/shared/<domain>/`
+### 2. Zod schemas live in `src/modules/<module>/schemas/<module>.schema.ts`
 
-Schemas are shared with frontend, so they live in `base/shared/<domain>/`, not in `src/<module>/`.
+Schemas belong in the dedicated `schemas/` folder within each module, not inline in service or controller files. The shared `@shared` location is `[enterprise]`-only (cross-module contracts).
 
 Probe:
 ```bash
-# Look for inline Zod schemas in service / controller files
-grep -rnE "z\.object\(\{" src/ 2>/dev/null | head -10
-# Should be 0 matches; all schemas come from `@/shared/<domain>/...`
+# Inline Zod schemas in service / controller files = drift (schemas belong in schemas/<module>.schema.ts)
+rg -n "z\.object\(\{" src/modules --glob '!**/schemas/**' 2>/dev/null | head
+# Expected: 0 — all create/update schemas live in src/modules/<module>/schemas/
 ```
 
 Severity: 🟡 Important — drift means BE + FE can diverge silently.
@@ -90,15 +92,15 @@ grep -rnE "repository\.(save|update|delete)" src/**/*.service.ts | head
 
 Severity: 🔴 Critical per multi-write service method without transaction.
 
-### 6. `BaseEntity` / `BaseRepository` / `BaseService` from `base/core-be/`
+### 6. `BaseEntity` / `BaseRepository` / `BaseService` from `@sdcorejs/nestjs/orm`
 
-Use the base classes — they ship the audit columns (createdAt, updatedAt, createdBy, updatedBy), the soft-delete pattern, and the bilingual error helpers.
+Use the base classes — they ship the audit columns (createdAt, updatedAt, createdBy, updatedBy), the soft-delete pattern, and the error helpers. The entity base is `WithAudit(BaseEntity)` (simple profile) or the local `src/common/base-entity.ts` (`[enterprise]`).
 
 Probe:
 ```bash
-# Entity files NOT extending BaseEntity
+# Entity files NOT extending BaseEntity or WithAudit
 grep -rl "@Entity" src/**/*.entity.ts | while read f; do
-  if ! grep -qE "extends\s+BaseEntity" "$f"; then
+  if ! grep -qE "extends\s+(BaseEntity|WithAudit)" "$f"; then
     echo "NOT-EXTENDING-BASE: $f"
   fi
 done
@@ -113,15 +115,15 @@ done
 
 Severity: 🟡 Important — drift from base = duplicate audit logic, inconsistent soft-delete.
 
-### 7. Bilingual error messages
+### 7. Domain errors via `badRequest(code, data?)` — not raw exception strings
 
-Errors thrown to the user must be bilingual `{ vi, en }` via `bilingualMsg(vi, en)`.
+Domain errors go through `badRequest(code, data?)` (from `src/common/errors`) wrapping `apiError(code, message, data?)`, localized by the i18n catalog. Throwing a raw string message bypasses the i18n envelope and exposes non-localized text to the FE.
 
 Probe:
 ```bash
-# Throw statements with plain string message
-grep -rnE "throw new (HttpException|BadRequestException|NotFoundException|ConflictException)" src/ | head
-# Each should pass a bilingual message, not a plain string
+# Throws that bypass the i18n envelope (raw string message, not a code)
+rg -n "throw new (BadRequestException|NotFoundException|ConflictException)\(['\"]" src/ | head
+# Expected: 0 — domain errors use badRequest('<module>.<entity>.<rule>', data?)
 ```
 
 Severity: 🔴 Critical for external-facing errors (FE displays them); 🟡 Important for internal-only errors.
@@ -226,4 +228,4 @@ Severity: 🟡 Important — `console.log` in prod hits stdout but lacks request
 - Security audit: `sdcorejs-review`
 - Performance audit: `sdcorejs-review`
 - Repair loop: `orchestration/repair-loop`
-- Conventions referenced: be-masterdata baseline + `base/core-be/` + `base/shared/`
+- Conventions referenced: `@sdcorejs/nestjs` core (`_refs/nestjs/core-catalog.md`) + the write-code packs + `architecture-principles.md`
