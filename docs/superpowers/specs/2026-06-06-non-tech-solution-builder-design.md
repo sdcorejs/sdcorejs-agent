@@ -1,7 +1,7 @@
 # Design — Non-tech enablement: persona layer + infra group + `sdcorejs-solution-builder`
 
 **Date:** 2026-06-06
-**Status:** Draft (awaiting user review)
+**Status:** Delivered — Phases 1–4 shipped (persona+rename, infra, nestjs packs, solution-builder).
 **Repo affected:** `sdcorejs-agent` (the SDLC skill pack itself)
 
 ## Problem & Goals
@@ -212,7 +212,7 @@ tracks + update references (CLAUDE.md, AGENTS.md, copilot-instructions) + regene
 2. **Infra group** — `dockerize` → `auth` → `run-guide`. Composes with existing
    angular output; can be exercised against an existing Angular app + scaffold BE. — ✅ shipped (Plan 2).
 3. **nestjs build-out** — new `_refs/nestjs/write-code/` packs (mirror angular). Largest chunk. — ✅ shipped (Plan 3).
-4. **solution-builder** — ties 1+2+3 together for the non-tech one-door flow. — Plan 4.
+4. **solution-builder** — ties 1+2+3 together for the non-tech one-door flow. — ✅ shipped (Plan 4).
 
 Phases 1 and 2 are independent and could run in parallel. Phase 4 needs 1+2+3.
 

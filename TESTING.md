@@ -148,6 +148,19 @@ Pass criteria:
 - Adds a custom route guarded by `@HasPermission`
 - Adds a service method for the action (with an explicit `QueryRunner` transaction if it writes to multiple tables)
 
+### Test 10 — Solution builder (one door, non-tech)
+
+Setup: a target project (empty or with `.sdcorejs/persona.md` = non-tech). Prompt: `tôi muốn một phần mềm quản lý kho đơn giản`
+
+Expected: Agent invokes `sdcorejs-solution-builder` and runs the one-door chain.
+
+Pass criteria:
+- Asks ONLY feature + screen questions (never module/entity/table/architecture)
+- Keeps BOTH approval gates, plainly worded (spec + plan); silence ≠ approval
+- After approval: builds backend (nestjs-write-code) + frontend (angular-write-code) + dockerize + auth (Keycloak) + run-guide
+- Ends by telling the user, in plain language: `docker compose up` → open http://localhost:4200 → log in with demo / demo
+- Everything written to the TARGET project, NOT the agent repo
+
 ## E2E tests (in a real target portal project)
 
 ### Setup
