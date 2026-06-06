@@ -1,6 +1,6 @@
 # Review-Performance Knowledge — Cross-Track Baseline (Budget)
 
-> Cross-track performance budget loaded on demand by the `sdcorejs-review-performance`
+> Cross-track performance budget loaded on demand by the `sdcorejs-review`
 > skill for every audit, before the stack-specific probes in `_refs/<track>/review-performance.md`.
 > Not a dispatchable skill — has no frontmatter. The **output format** (color-coded
 > report) is owned by the parent skill; this file only supplies *what to measure* +

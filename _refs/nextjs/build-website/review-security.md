@@ -1,6 +1,6 @@
 # Review-Security Knowledge — Next.js (build-website)
 
-> Track-specific probes loaded on demand by `sdcorejs-review-security` when the
+> Track-specific probes loaded on demand by `sdcorejs-review` when the
 > project is a Next.js site (`next.config.*` + `next` dep), AFTER the cross-track
 > baseline in `_refs/shared/review-security.md`. Not a dispatchable skill — no
 > frontmatter. Output format owned by the parent skill.
@@ -99,4 +99,4 @@ Only `.env.example` (placeholders) is committed. **Critical** if a real `.env*` 
 
 ## Cross-references
 - Contact-form generation: `_refs/nextjs/build-website/write-code/contact-form.md`
-- Code review (server/client boundary overlap): `sdcorejs-review-code`
+- Code review (server/client boundary overlap): `sdcorejs-review`

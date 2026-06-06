@@ -216,7 +216,7 @@ Open `localhost:3000` and inspect:
 - Use Tailwind's full color palette directly (`text-orange-500` not `text-brand`)
 - Add dark mode in this skill — it's a separate decision
 - Change palette per page — site-wide consistency is the point
-- Skip the contrast check — accessibility findings will surface in `sdcorejs-review-code` anyway
+- Skip the contrast check — accessibility findings will surface in `sdcorejs-review` anyway
 
 ## Anti-patterns
 - **Tailwind class soup**: `bg-orange-500 hover:bg-orange-600 text-white border border-orange-700` repeated in 8 components. Solution: extract `<Button variant="primary">` to `components/ui/button.tsx`.
@@ -228,4 +228,4 @@ Open `localhost:3000` and inspect:
 ## Cross-references
 - Inputs: industry from `01-brainstorm`, brand color from `02-clarify-requirements`
 - Used by: every component in `components/sections/` and `components/ui/`
-- Affects: `pages-and-blocks.md` (components consume these tokens), `responsive.md` (font scaling), `sdcorejs-review-code` (contrast audit)
+- Affects: `pages-and-blocks.md` (components consume these tokens), `responsive.md` (font scaling), `sdcorejs-review` (contrast audit)

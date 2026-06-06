@@ -1,6 +1,6 @@
 # Review-Performance Knowledge — NestJS
 
-> Track-specific probes loaded on demand by `sdcorejs-review-performance` when the
+> Track-specific probes loaded on demand by `sdcorejs-review` when the
 > project is a NestJS backend (`nest-cli.json` + `@nestjs/*`), AFTER the cross-track
 > budget in `_refs/shared/review-performance.md`. Not a dispatchable skill — no
 > frontmatter. Output format owned by the parent skill. All numeric budget thresholds
@@ -206,5 +206,5 @@ Severity: **Minor** if not handled but no large-body endpoint exists.
 
 ## Cross-references
 - Budget thresholds: `_refs/shared/review-performance.md`
-- Code review (correctness): `sdcorejs-review-code` · Architecture (structural perf): `sdcorejs-review-architecture`
+- Code review (correctness): `sdcorejs-review` · Architecture (structural perf): `sdcorejs-review-architecture`
 - Repair loop: `orchestration/repair-loop` · Verification: `orchestration/verify-before-done`

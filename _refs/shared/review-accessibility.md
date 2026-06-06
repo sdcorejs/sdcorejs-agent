@@ -1,7 +1,7 @@
 # Review-Accessibility Knowledge — Cross-Track Baseline
 
 > Cross-track WCAG 2.1 AA checklist + tooling loaded on demand by the
-> `sdcorejs-review-accessibility` skill for every audit, before the stack-specific
+> `sdcorejs-review` skill for every audit, before the stack-specific
 > probes in `_refs/<track>/review-accessibility.md`. Not a dispatchable skill —
 > has no frontmatter. The **output format** (color-coded report) is owned by the
 > parent skill; this file only supplies *what to check*.

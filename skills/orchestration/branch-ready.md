@@ -153,9 +153,9 @@ Emit ⚪ Info suggestions based on thresholds (never block — advisory only):
 | Condition | Suggestion |
 |---|---|
 | `$CHANGED_COUNT > 8` AND `$MODULE_COUNT > 2` (both conditions simultaneously) | ⚪ Nhiều modules bị ảnh hưởng — consider `sdcorejs-review-architecture` before merging |
-| `$SECURITY_FILES > 0` | ⚪ Auth/security files trong diff — consider `sdcorejs-review-security` |
-| Angular track AND `$COMPONENT_COUNT > 3` | ⚪ Nhiều Angular components — consider `sdcorejs-review-performance` |
-| Angular track AND `$NEW_SCREENS > 0` | ⚪ Screens mới — consider `sdcorejs-review-accessibility` |
+| `$SECURITY_FILES > 0` | ⚪ Auth/security files trong diff — consider `sdcorejs-review` |
+| Angular track AND `$COMPONENT_COUNT > 3` | ⚪ Nhiều Angular components — consider `sdcorejs-review` |
+| Angular track AND `$NEW_SCREENS > 0` | ⚪ Screens mới — consider `sdcorejs-review` |
 
 If no condition matches: omit this section from the output entirely (don't print "no suggestions").
 
@@ -163,7 +163,7 @@ Example output when conditions match:
 ```
 ### ⚪ Info — Review suggestions
 - [architecture] 12 files across 4 modules → consider `sdcorejs-review-architecture`
-- [accessibility] 2 new screen components → consider `sdcorejs-review-accessibility`
+- [accessibility] 2 new screen components → consider `sdcorejs-review`
 ```
 
 ## Output format

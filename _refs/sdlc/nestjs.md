@@ -2,7 +2,7 @@
 
 This file is loaded by `skills/shared/sdlc/0[1-6]-*.md` when the detected track is `nestjs`.
 
-**Status:** Track-specific orchestrator (`07-write-code` for NestJS) is planned, not yet shipped. Cross-track SDLC skills work today — they will dispatch to the future `nestjs-write-code` orchestrator once it lands. Until then, after `sdcorejs-review-plan` approves a plan, dispatch is a manual sub-skill walk through `sdcorejs-review-code` + `skills/testing/*/nestjs.md`.
+**Status:** Track-specific orchestrator (`07-write-code` for NestJS) is planned, not yet shipped. Cross-track SDLC skills work today — they will dispatch to the future `nestjs-write-code` orchestrator once it lands. Until then, after `sdcorejs-review-plan` approves a plan, dispatch is a manual sub-skill walk through `sdcorejs-review` + `skills/testing/*/nestjs.md`.
 
 This ref captures the conventions from the `be-masterdata` baseline.
 
@@ -146,7 +146,7 @@ npm run lint
 ### Final-step expectations
 Until the `nestjs-write-code` orchestrator ships, the last plan step should call out the manual tail-call sequence:
 1. `sdcorejs-test` — write e2e tests for happy path
-2. `sdcorejs-review-code` — convention review
+2. `sdcorejs-review` — convention review
 3. `orchestration/repair-loop` — apply review findings
 4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full)
 5. `orchestration/verify-before-done` — acceptance criteria gate

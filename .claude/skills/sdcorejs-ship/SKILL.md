@@ -19,7 +19,7 @@ chains them so the user says one thing and the full gate sequence runs.
 Do NOT invoke if:
 - Work is mid-feature (incomplete) — use sub-skills directly
 - User wants commit-only without PR — invoke `sdcorejs-commit` directly
-- User wants a review first — invoke `sdcorejs-review-code` first
+- User wants a review first — invoke `sdcorejs-review` first
 
 ## Workflow
 

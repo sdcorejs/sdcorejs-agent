@@ -1,6 +1,6 @@
 # Review-Security Knowledge — Angular Portal
 
-> Track-specific probes loaded on demand by `sdcorejs-review-security` when the
+> Track-specific probes loaded on demand by `sdcorejs-review` when the
 > project is an Angular portal (`angular.json` + `@sdcorejs/angular`), AFTER the
 > cross-track baseline in `_refs/shared/review-security.md`. Not a dispatchable
 > skill — no frontmatter. Output format owned by the parent skill.
@@ -91,4 +91,4 @@ A `returnUrl` from query params passed to `navigateByUrl` must be a validated sa
 - Shipping prod source maps publicly — keep them internal-only
 
 ## Cross-references
-- Code review (guard/permission overlap): `sdcorejs-review-code` · Core UI catalog: `_refs/angular/sdcorejs-angular-catalog.md`
+- Code review (guard/permission overlap): `sdcorejs-review` · Core UI catalog: `_refs/angular/sdcorejs-angular-catalog.md`

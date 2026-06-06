@@ -1,6 +1,6 @@
 # Review-Security Knowledge — NestJS
 
-> Track-specific probes loaded on demand by `sdcorejs-review-security` when the
+> Track-specific probes loaded on demand by `sdcorejs-review` when the
 > project is a NestJS backend (`nest-cli.json` + `@nestjs/*`), AFTER the cross-track
 > baseline in `_refs/shared/review-security.md`. Not a dispatchable skill — no
 > frontmatter. Output format owned by the parent skill.
@@ -117,4 +117,4 @@ If the API uses cookie-based sessions (not Bearer tokens), CSRF protection is re
 - JWT in localStorage — prefer httpOnly cookie
 
 ## Cross-references
-- Code review (`@HasPermission` overlap): `sdcorejs-review-code` · Performance (rate-limit overlap): `sdcorejs-review-performance`
+- Code review + performance (overlap): `sdcorejs-review`

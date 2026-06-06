@@ -1,6 +1,6 @@
 # Review-Code Knowledge — Angular Portal
 
-> Track-specific knowledge loaded on demand by the `sdcorejs-review-code` skill
+> Track-specific knowledge loaded on demand by the `sdcorejs-review` skill
 > when the project architecture is detected as an Angular portal (`angular.json`
 > + `@sdcorejs/angular`). Not a dispatchable skill — has no frontmatter.
 > The **output format** (color-coded tables) is owned by the parent skill; this

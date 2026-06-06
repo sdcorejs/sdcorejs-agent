@@ -1,6 +1,6 @@
 ---
 name: nestjs-write-code
-description: Use AFTER `sdcorejs-review-plan` has approved a NestJS plan, when the user is ready to generate backend code. SCAFFOLD STATUS — the dedicated sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) are planned but not yet implemented. Until they ship, this orchestrator walks the approved plan task-by-task manually using Read/Write/Edit and the conventions from `_refs/sdlc/nestjs.md` (be-masterdata baseline). After completion, mandatory hand-off chain - sdcorejs-test → sdcorejs-review-code → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Triggers - "generate nestjs code", "viết code backend", "sinh code nestjs", "go ahead" (after a nestjs plan was approved), "proceed with backend implementation". Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-review-plan` has approved a NestJS plan, when the user is ready to generate backend code. SCAFFOLD STATUS — the dedicated sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) are planned but not yet implemented. Until they ship, this orchestrator walks the approved plan task-by-task manually using Read/Write/Edit and the conventions from `_refs/sdlc/nestjs.md` (be-masterdata baseline). After completion, mandatory hand-off chain - sdcorejs-test → sdcorejs-review → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories (when applicable). Triggers - "generate nestjs code", "viết code backend", "sinh code nestjs", "go ahead" (after a nestjs plan was approved), "proceed with backend implementation". Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -69,7 +69,7 @@ For every code-generating task, enforce:
 Hand off the mandatory tail-call chain in this order:
 
 1. **`sdcorejs-test`** — write happy-path e2e tests via `supertest` against a real test PG via testcontainers (or `pg-mem` if simpler)
-2. **`sdcorejs-review-code`** (auto-detects NestJS → loads `_refs/nestjs/review-code.md`) — convention review; outputs color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
+2. **`sdcorejs-review`** (auto-detects NestJS → loads `_refs/nestjs/review-code.md`) — convention review; outputs color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
 3. **`orchestration/repair-loop`** — apply findings, iterate until Critical+Important resolved (or user defers)
 4. **`orchestration/comment-code`** — ASK gate (skip / simple / medium / full). When `nestjs-write-comments` sub-skill ships, level=full delegates there; until then, the chosen level is applied inline by `orchestration/comment-code` itself
 5. **`orchestration/verify-before-done`** — BLOCK "done" until every acceptance criterion in the spec is ✅ verified or ⚠️ explicitly deferred

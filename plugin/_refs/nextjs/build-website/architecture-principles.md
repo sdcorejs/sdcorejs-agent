@@ -1,6 +1,6 @@
 # Next.js Landing Site — Architecture Principles
 
-Source of truth for **WHY** SDCoreJS landing sites look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, the `nextjs-build-website-write-code` orchestrator (theme / pages-and-blocks / seo / i18n packs), and `sdcorejs-review-code`.
+Source of truth for **WHY** SDCoreJS landing sites look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, the `nextjs-build-website-write-code` orchestrator (theme / pages-and-blocks / seo / i18n packs), and `sdcorejs-review`.
 
 If a generated file contradicts a principle here, that file is wrong. If a principle here contradicts a real-world need, **the principle is wrong** — surface it as feedback.
 
@@ -58,7 +58,7 @@ export default function ContactForm() {
 
 **Why**: server components don't ship JS to the client. A 200-line server component costs 0 bytes to the user. A 200-line client component costs ~10 KB (gzipped, including React runtime). Default to server.
 
-**Reviewer**: `sdcorejs-review-code` flags `"use client"` without justification as **Medium**.
+**Reviewer**: `sdcorejs-review` flags `"use client"` without justification as **Medium**.
 
 ---
 
@@ -95,7 +95,7 @@ export default async function HomePage({ params: { locale } }) {
 - Future CMS swap (Sanity / Contentful) replaces ONLY the loader, components stay
 - Content-quality script (`npm run check:content`) can audit word counts per page
 
-**Enforce**: `sdcorejs-review-code` flags hardcoded Vietnamese / English strings in components as **Medium**.
+**Enforce**: `sdcorejs-review` flags hardcoded Vietnamese / English strings in components as **Medium**.
 
 ---
 
@@ -347,7 +347,7 @@ This skill set generates Next.js landing sites. The principles above govern the 
 
 When a principle changes, propagate to:
 - The reference pack that generates it (`_refs/nextjs/build-website/write-code/{init-site,theme,seo}.md`, …)
-- The reviewer (`sdcorejs-review-code`)
+- The reviewer (`sdcorejs-review`)
 - The auto-docs template if dimension changes
 
 ---

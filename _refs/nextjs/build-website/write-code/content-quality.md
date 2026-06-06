@@ -18,7 +18,7 @@ This skill enforces the floor: minimum lengths, prose discipline, parity check, 
 - Automatic step in the `nextjs-build-website-write-code` orchestrator after `pages-and-blocks.md` + `seo.md` (so we have pages and metadata to audit)
 - User says "rà soát nội dung", "bài viết quá ngắn", "câu chữ chưa rõ", "review content quality"
 - After adding new pages or articles — before launch
-- Anytime `sdcorejs-review-code` flags "Critical: thin content"
+- Anytime `sdcorejs-review` flags "Critical: thin content"
 
 ## Prerequisites
 - Pages exist (`pages-and-blocks.md` done)
@@ -83,7 +83,7 @@ Create `scripts/check-i18n-parity.ts` — compares `vi.json` ↔ `en.json` keys 
 | FAQ page | 500 (across all answers) | Each Q&A should be 50-150 words |
 | Contact | 150 | Address + hours + map + form intro is enough |
 
-Below the floor → `sdcorejs-review-code` flags as **Critical: thin content**.
+Below the floor → `sdcorejs-review` flags as **Critical: thin content**.
 
 ### Rule 2.2 — Sentence and paragraph discipline
 
@@ -347,7 +347,7 @@ Add these as acceptance criteria for any landing-site spec:
 - Tailwind Typography plugin install: this skill (Part 3)
 - Article JSON-LD builder: extends `seo.md`'s `structured-data.ts`
 - Per-locale strings: `i18n.md` + `pages-and-blocks.md`
-- Heading hierarchy reviewed by: `sdcorejs-review-code` (accessibility section)
+- Heading hierarchy reviewed by: `sdcorejs-review` (accessibility section)
 - Min word count enforced by: `orchestration/verify-before-done`
 - Image alt rules: `responsive.md` (presence) + this skill (quality)
 - Reading-experience width: `responsive.md` uses `max-w-prose` from this skill

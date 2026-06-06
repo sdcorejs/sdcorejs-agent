@@ -1,6 +1,6 @@
 # Review-Accessibility Knowledge — Next.js (build-website)
 
-> Track-specific probes loaded on demand by `sdcorejs-review-accessibility` when
+> Track-specific probes loaded on demand by `sdcorejs-review` when
 > the project is a Next.js landing site (`next.config.*` + `src/app/[locale]/`),
 > AFTER the cross-track baseline in `_refs/shared/review-accessibility.md`. Not a
 > dispatchable skill — no frontmatter. Output format owned by the parent skill.

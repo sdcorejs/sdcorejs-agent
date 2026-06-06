@@ -1,6 +1,6 @@
 # Review-Security Knowledge — Cross-Track Baseline
 
-> Cross-track checklist loaded on demand by the `sdcorejs-review-security` skill
+> Cross-track checklist loaded on demand by the `sdcorejs-review` skill
 > for every audit, before the stack-specific probes in `_refs/<track>/review-security.md`.
 > Not a dispatchable skill — has no frontmatter. The **output format** (color-coded
 > report) is owned by the parent skill; this file only supplies *what to check*.

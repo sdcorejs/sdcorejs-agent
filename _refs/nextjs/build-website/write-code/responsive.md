@@ -270,5 +270,5 @@ Run for every new page / major section:
 ## Cross-references
 - Image strategy: `pages-and-blocks.md` (section components use `next/image` with `sizes`)
 - Container tokens: `theme.md` (`maxWidth.container`)
-- Touch targets: also reviewed in `sdcorejs-review-code` accessibility section
+- Touch targets: also reviewed in `sdcorejs-review` accessibility section
 - Performance: `orchestration/verify-before-done` includes Lighthouse mobile score as acceptance criterion (target ≥ 90)

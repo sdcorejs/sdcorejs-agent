@@ -42,7 +42,7 @@ sdcorejs-using-skills      ← onboarding / orient (bootstrap; skip if oriented)
 06-review-plan             ← user reviews + approves plan
 07-write-code              ← orchestrator that dispatches sub-skills (10-31)
 40-e2e-test                ← write E2E tests for what was built
-sdcorejs-review-code       ← self-review against conventions (auto-detects track; color-coded tables)
+sdcorejs-review       ← self-review against conventions (auto-detects track; color-coded tables)
 orchestration/comment-code ← MANDATORY ASK gate: skip / simple / medium / full (all applied inline)
   ↓
 orchestration/auto-docs    ← MANDATORY: summary to target project's .sdcorejs/docs/<track>/
@@ -72,7 +72,7 @@ Install via the Claude Code plugin marketplace. The repo ships its own single-pl
 /plugin install sdcorejs-agent@sdcorejs
 ```
 
-After install, all 40 skills (cross-track SDLC + angular / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
+After install, all 37 skills (cross-track SDLC + angular / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
 
 ### Option 2 — git submodule (works for Claude Code + Copilot + Codex)
 
@@ -134,7 +134,7 @@ sdcorejs-agent/
 │   │   └── nextjs/build-website/          # ✅ 13 skills
 │   ├── shared/{sdlc,conventions,workflow}/
 │   ├── orchestration/                     # SDLC plumbing (13 skills)
-│   ├── review/{architecture,code,security,performance,accessibility}/
+│   ├── review/ (review.md=sdcorejs-review + architecture.md=sdcorejs-review-architecture)
 │   └── testing/{philosophy,tdd,e2e,integration,unit}/
 └── images/
 ```

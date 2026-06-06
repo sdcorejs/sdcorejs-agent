@@ -1,6 +1,6 @@
 # Review-Code Knowledge — Next.js (build-website)
 
-> Track-specific knowledge loaded on demand by the `sdcorejs-review-code` skill
+> Track-specific knowledge loaded on demand by the `sdcorejs-review` skill
 > when the project architecture is detected as a Next.js site (`next.config.*` +
 > `next` dep + `src/app/[locale]`). Not a dispatchable skill — has no frontmatter.
 > The **output format** (color-coded tables) is owned by the parent skill; this
@@ -8,7 +8,7 @@
 
 ## What this covers
 Per-file code review for a Next.js landing-site project. Different from
-`review/architecture` (structural) and `sdcorejs-review-performance` (numbers).
+`review/architecture` (structural) and `sdcorejs-review` (numbers).
 This file checks line-level adherence to Next.js + build-website conventions.
 
 ## Conventions checked (mapped to the write-code reference pack that defined them)
@@ -241,8 +241,8 @@ Severity: 🔴 Critical — server-only modules in client bundle leak secrets / 
 
 ## Cross-references
 - Architecture review (modules, layering): `review/architecture`
-- Performance review: `sdcorejs-review-performance`
-- Accessibility review: `sdcorejs-review-accessibility`
-- Security audit (cross-cutting): `sdcorejs-review-security`
+- Performance review: `sdcorejs-review`
+- Accessibility review: `sdcorejs-review`
+- Security audit (cross-cutting): `sdcorejs-review`
 - Repair loop: `orchestration/repair-loop`
 - Source conventions: `_refs/nextjs/build-website/write-code/{init-site,theme,pages-and-blocks,seo,og-preview,i18n,caching,responsive,contact-form,content-quality}.md`

@@ -85,7 +85,7 @@ Run the standard tail-call chain (cross-track mandatory):
 ```
 sdcorejs-test  ← happy-path tests for each generated page
    ↓
-sdcorejs-review-code       ← convention check; outputs Critical / Important / Minor findings
+sdcorejs-review       ← convention check; outputs Critical / Important / Minor findings
    ↓
 orchestration/repair-loop     ← apply findings, iterate to clean
    ↓

@@ -105,7 +105,7 @@ Run this per unit, as each returns — do NOT barrier-wait for all units. Unit A
 - If gaps → re-dispatch the SAME unit's implementer with the specific gap list. Do NOT hand-fix (context pollution). Re-review after.
 
 **Stage B — Code quality** (only AFTER Stage A is ✅)
-- Invoke `sdcorejs-review-code` scoped to the unit's files (auto-detects track + checks conventions).
+- Invoke `sdcorejs-review` scoped to the unit's files (auto-detects track + checks conventions).
 - Feed findings through `orchestration/repair-loop` (source: `review-code`) until Critical + Important are resolved or user-deferred.
 - Never start Stage B before Stage A passes — polishing style on code that solves the wrong problem is wasted work.
 
@@ -221,7 +221,7 @@ Category needs Product to exist first. Sequential. Don't parallelize.
 ## Cross-references
 - `orchestration/using-worktrees.md` — give each dispatched unit an isolated workspace so parallel agents don't trample each other — invoke BEFORE fan-out
 - `orchestration/parallel-dispatch.md` — decision gate (should I split?) — invoke this BEFORE this skill
-- `review/code.md` (`sdcorejs-review-code`) — Stage B per-unit code-quality review (Step 5)
+- `sdcorejs-review` — Stage B per-unit code-quality review (Step 5)
 - `orchestration/repair-loop.md` — closes the fix loop on per-unit review findings (source: `review-code`)
 - `orchestration/verify-before-done.md` — final verification gate after merging units
 - `07-write-code.md` (angular) — orchestrator that triggers this skill when the dispatch table has 3+ rows

@@ -1,6 +1,6 @@
 # Review-Performance Knowledge — Next.js (build-website)
 
-> Track-specific probes loaded on demand by `sdcorejs-review-performance` when the
+> Track-specific probes loaded on demand by `sdcorejs-review` when the
 > project is a Next.js site (`next.config.*` + `next` dep), AFTER the cross-track
 > budget in `_refs/shared/review-performance.md`. Not a dispatchable skill — no
 > frontmatter. Output format owned by the parent skill. All numeric budget thresholds

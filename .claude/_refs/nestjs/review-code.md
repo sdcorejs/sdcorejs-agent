@@ -1,6 +1,6 @@
 # Review-Code Knowledge — NestJS
 
-> Track-specific knowledge loaded on demand by the `sdcorejs-review-code` skill
+> Track-specific knowledge loaded on demand by the `sdcorejs-review` skill
 > when the project architecture is detected as a NestJS backend (`nest-cli.json`
 > + `@nestjs/*` deps). Not a dispatchable skill — has no frontmatter.
 > The **output format** (color-coded tables) is owned by the parent skill; this
@@ -8,8 +8,8 @@
 
 ## What this covers
 Per-file code review for a NestJS backend following the `be-masterdata` baseline.
-Different from `review/architecture` (structural), `sdcorejs-review-security`
-(auth/injection), `sdcorejs-review-performance` (queries). This file checks
+Different from `review/architecture` (structural), `sdcorejs-review`
+(auth/injection), `sdcorejs-review` (queries). This file checks
 adherence to NestJS + be-masterdata conventions.
 
 ## Conventions checked
@@ -211,7 +211,7 @@ Severity: 🟡 Important — `console.log` in prod hits stdout but lacks request
 
 ## Scope rules
 - Stop at code review — structural concerns go to `review/architecture`.
-- Do NOT duplicate `sdcorejs-review-security` findings (auth/injection belong there).
+- Do NOT duplicate `sdcorejs-review` findings (auth/injection belong there).
 - Flag for manual review where a probe can't be precise (e.g. multi-write detection).
 
 ## Anti-patterns to flag
@@ -223,7 +223,7 @@ Severity: 🟡 Important — `console.log` in prod hits stdout but lacks request
 
 ## Cross-references
 - Architecture review: `review/architecture`
-- Security audit: `sdcorejs-review-security`
-- Performance audit: `sdcorejs-review-performance`
+- Security audit: `sdcorejs-review`
+- Performance audit: `sdcorejs-review`
 - Repair loop: `orchestration/repair-loop`
 - Conventions referenced: be-masterdata baseline + `base/core-be/` + `base/shared/`

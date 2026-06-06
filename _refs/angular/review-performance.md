@@ -1,6 +1,6 @@
 # Review-Performance Knowledge — Angular Portal
 
-> Track-specific probes loaded on demand by `sdcorejs-review-performance` when the
+> Track-specific probes loaded on demand by `sdcorejs-review` when the
 > project is an Angular portal (`angular.json` + `@sdcorejs/angular`), AFTER the
 > cross-track budget in `_refs/shared/review-performance.md`. Not a dispatchable
 > skill — no frontmatter. Output format owned by the parent skill. All numeric
@@ -169,5 +169,5 @@ Severity: depends on findings — **Critical** if 200+ ms tasks block UI; **Impo
 ## Cross-references
 - Budget thresholds: `_refs/shared/review-performance.md`
 - Core UI patterns that affect perf: `_refs/angular/sdcorejs-angular-catalog.md`
-- Code review (correctness overlap): `sdcorejs-review-code` · Repair loop: `orchestration/repair-loop`
+- Code review (correctness overlap): `sdcorejs-review` · Repair loop: `orchestration/repair-loop`
 - Verification: `orchestration/verify-before-done` runs probes as criteria

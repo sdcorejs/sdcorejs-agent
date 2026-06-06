@@ -20,7 +20,7 @@ Cross-cutting skills live in:
 - `skills/shared/sdlc/` — **6 cross-track design-phase skills** (brainstorm, clarify-requirements, write-spec, review-spec, write-plan, review-plan) + `_refs/{angular,nextjs,nestjs}.md`
 - `skills/orchestration/` — SDLC plumbing (16 files: parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills)
 - `skills/shared/conventions/` + `shared/workflow/` — commits, changelog, dep-update, debug, env-setup, pr-create, code-map
-- `skills/review/` — code review (single track-aware skill `sdcorejs-review-code`; per-track knowledge in `_refs/<track>/review-code.md`), security (single track-aware `sdcorejs-review-security`; knowledge in `_refs/<track>/review-security.md`), performance (cross-track + per-track), architecture, accessibility
+- `skills/review/` — `sdcorejs-review` (one track-aware skill, dimensions: code / security / performance / accessibility) + `sdcorejs-review-architecture` (module-level)
 - `skills/testing/` — `sdcorejs-tdd` (RED-first) + `sdcorejs-test` (track+level-aware: unit/integration/e2e); principles in `_refs/shared/testing-philosophy.md`
 
 Dispatch is by skill `name:` frontmatter, not path.
@@ -61,7 +61,7 @@ Request
        angular:         angular-write-code
        nextjs (build-website): nextjs-build-website-write-code
        nestjs:                 nestjs-write-code (SCAFFOLD)
-  → sdcorejs-test → review/code.md (sdcorejs-review-code, auto-detects track) → orchestration/repair-loop (if findings)
+  → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (MANDATORY acceptance gate) → orchestration/branch-ready (branch-hygiene sweep)
   → orchestration/auto-docs (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) + orchestration/memories (durable knowledge)
@@ -124,7 +124,7 @@ Cross-track skills — apply to all tracks. Dispatch by `description`; directory
 | `sdcorejs-auto-plans` | IMMEDIATELY after `sdcorejs-review-plan` approval | ✅ on approval |
 | `sdcorejs-auto-task-tracker` | IMMEDIATELY after auto-docs | ✅ |
 | `sdcorejs-memories` | "ghi nhớ", durable knowledge | ✅ on trigger |
-| `sdcorejs-repair-loop` | after `sdcorejs-review-code` outputs findings | ✅ on findings |
+| `sdcorejs-repair-loop` | after `sdcorejs-review` outputs findings | ✅ on findings |
 | `sdcorejs-comment-code` | ASK gate at comment phase — skip/simple/medium/full | ✅ ASK |
 | `sdcorejs-code-map` | new feature / reuse check — read-only architecture scan |  |
 | `sdcorejs-parallel-dispatch` | fan-out 3+ independent tasks — decision gate |  |
@@ -135,7 +135,7 @@ Cross-track skills — apply to all tracks. Dispatch by `description`; directory
 | `sdcorejs-recovery` | "tiếp tục", "resume" |  |
 | `sdcorejs-env-setup` | "thiết lập môi trường", "setup dev" |  |
 | `sdcorejs-changelog` | "viết changelog", release |  |
-| `sdcorejs-review-security` | cross-track security checklist — track-aware (detects stack, deepens via `_refs/<track>/review-security.md`) |  |
+| `sdcorejs-review` | cross-track security checklist — track-aware (detects stack, deepens via `_refs/<track>/review-security.md`) |  |
 | `sdcorejs-dep-update` | "cập nhật dependency", audit fix |  |
 
 ## Reference docs (load on demand only)

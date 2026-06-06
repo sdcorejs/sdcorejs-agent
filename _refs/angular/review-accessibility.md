@@ -1,6 +1,6 @@
 # Review-Accessibility Knowledge — Angular Portal
 
-> Track-specific probes loaded on demand by `sdcorejs-review-accessibility` when
+> Track-specific probes loaded on demand by `sdcorejs-review` when
 > the project is an Angular portal (`angular.json` + `@sdcorejs/angular`), AFTER
 > the cross-track baseline in `_refs/shared/review-accessibility.md`. Not a
 > dispatchable skill — no frontmatter. Output format owned by the parent skill.
@@ -204,5 +204,5 @@ Severity: **Important**. WCAG SC 4.1.2 Name, Role, Value.
 
 ## Cross-references
 - Cross-track baseline: `_refs/shared/review-accessibility.md`
-- Code review (semantics overlap): `sdcorejs-review-code` · Core UI a11y catalog: `_refs/angular/sdcorejs-angular-catalog.md`
+- Code review (semantics overlap): `sdcorejs-review` · Core UI a11y catalog: `_refs/angular/sdcorejs-angular-catalog.md`
 - Verification: `orchestration/verify-before-done` · Repair loop: `orchestration/repair-loop`
