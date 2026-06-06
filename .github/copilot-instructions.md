@@ -14,7 +14,7 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem. When you (GitHu
 | --- | --- | --- |
 | Angular Portal | `skills/tracks/angular/` | ✅ Complete (design-phase cross-track skills + 1 angular skill: the `angular-write-code` orchestrator (onboarding via `sdcorejs-using-skills`), which dispatches 6 on-demand reference packs under `_refs/angular/write-code/`: init-portal, init-module, init-entity, screen-list, screen-detail (CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design phase + spec/plan moved to cross-track `skills/shared/sdlc/`. Cross-track `orchestration/comment-code` absorbs the previous per-track `51-write-comments`. |
 | NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (07-write-code plan-walker; onboarding via `sdcorejs-using-skills`). Sub-skills 10/11/12 planned. Design phase usable via shared/sdlc/; review + testing already in place. |
-| Next.js | `skills/tracks/nextjs/build-website/` | ✅ `build-website/` pack complete (2 track skills: write-code orchestrator, audit-existing-site (onboarding via `sdcorejs-using-skills`); the orchestrator dispatches 10 on-demand reference packs under `_refs/nextjs/build-website/write-code/`: init-site … content-quality). Design phase moved to cross-track shared/sdlc/. |
+| Next.js | `skills/tracks/nextjs/` | ✅ `build-website/` pack complete (1 track skill: `nextjs-write-code` orchestrator (onboarding via `sdcorejs-using-skills`); the orchestrator dispatches 10 on-demand reference packs under `_refs/nextjs/build-website/write-code/`: init-site … content-quality). EXISTING-site audit folded into `sdcorejs-review` (nextjs site-audit mode). Design phase moved to cross-track shared/sdlc/. |
 
 Cross-cutting skills live in:
 - `skills/shared/sdlc/` — **6 cross-track design-phase skills** (brainstorm, clarify-requirements, write-spec, review-spec, write-plan, review-plan) + `_refs/{angular,nextjs,nestjs}.md`
@@ -59,7 +59,7 @@ Request
                               → orchestration/auto-plans  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
   → <track>-write-code (track-specific orchestrator; dispatches sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
        angular:         angular-write-code
-       nextjs (build-website): nextjs-build-website-write-code
+       nextjs (build-website): nextjs-write-code
        nestjs:                 nestjs-write-code (SCAFFOLD)
   → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)

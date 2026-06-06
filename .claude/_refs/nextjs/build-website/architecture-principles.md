@@ -1,6 +1,6 @@
 # Next.js Landing Site — Architecture Principles
 
-Source of truth for **WHY** SDCoreJS landing sites look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, the `nextjs-build-website-write-code` orchestrator (theme / pages-and-blocks / seo / i18n packs), and `sdcorejs-review`.
+Source of truth for **WHY** SDCoreJS landing sites look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, the `nextjs-write-code` orchestrator (theme / pages-and-blocks / seo / i18n packs), and `sdcorejs-review`.
 
 If a generated file contradicts a principle here, that file is wrong. If a principle here contradicts a real-world need, **the principle is wrong** — surface it as feedback.
 

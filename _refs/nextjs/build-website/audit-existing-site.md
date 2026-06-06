@@ -1,10 +1,8 @@
----
-name: nextjs-build-website-audit-existing-site
-description: Use when the user has an EXISTING Next.js landing site (clone, take-over, or self-built earlier) and wants to improve it — NOT a greenfield brainstorm. Parallel entry point to `01-brainstorm`. Scans the repo, runs automated quality probes (`npm run check:i18n`, `npm run check:content`, Lighthouse SEO, build, lint), inspects code for the 14-point build-website quality bar (theme tokens, content externalization, i18n parity, SEO baseline, OG, caching, responsive, contact form integrity, prose typography, on-page SEO), produces a structured Critical/Important/Minor gap report with the sub-skill to invoke for each finding, then brainstorms top improvement priorities with the user and hands off to `02-clarify-requirements` carrying the audit context. Read-only — does NOT modify code. Triggers - "audit site này", "review website đã có", "improve existing site", "site này thiếu gì", "clone về rồi muốn cải tiến", "kiểm tra chất lượng site". Bilingual (VI/EN).
-allowed-tools: Read, Bash, Glob, Grep
----
-
 # Build Website — Audit Existing Site
+
+> Loaded on demand by `sdcorejs-review` when auditing an EXISTING Next.js site
+> (full-site quality-bar audit mode). Not a dispatchable skill — no frontmatter.
+> Read-only; the parent skill owns dispatch.
 
 ## Purpose
 `01-brainstorm` assumes greenfield (we choose industry, tier, theme from nothing). **This skill is the opposite entry**: a Next.js repo already exists, and the user wants to know what's missing or weak so they can prioritise improvements.
@@ -122,7 +120,7 @@ Each check maps to one sub-skill from the build-website pack. The findings table
 | I5 | **content-quality** Min word counts respected on key pages | from /tmp/audit-content.log |
 | I6 | **content-quality** Heading hierarchy — exactly 1 `<h1>` per page | `Grep -c '<h1' src/app/**/*.tsx` per file = 1 |
 
-The reference pack that fixes each finding is named in the "Check" column — drives the gap report's "Fix via" cell automatically. All packs are dispatched through the `nextjs-build-website-write-code` orchestrator.
+The reference pack that fixes each finding is named in the "Check" column — drives the gap report's "Fix via" cell automatically. All packs are dispatched through the `nextjs-write-code` orchestrator.
 
 ### Step 4 — Produce the gap report
 
@@ -227,7 +225,7 @@ Pass these context fields to `02-clarify-requirements` so it knows to skip what'
 - Confirm Next.js project before running any probe
 - Run every automated check that the project supports; surface missing scripts as Important findings
 - Sort findings by Severity (Critical → Important → Minor) and then by ease (small effort first within same severity for quick wins)
-- Map each finding to the EXACT reference pack that fixes it (dispatched via `nextjs-build-website-write-code`) — don't make the user search
+- Map each finding to the EXACT reference pack that fixes it (dispatched via `nextjs-write-code`) — don't make the user search
 - Acknowledge strengths — "what this site does well" prevents the report feeling adversarial
 - Save the audit report via `auto-docs` for traceability
 - Hand off to `02-clarify-requirements` with the audit context — do NOT skip the SDLC
@@ -236,7 +234,7 @@ Pass these context fields to `02-clarify-requirements` so it knows to skip what'
 - Modify any file in the target repo
 - Auto-dispatch sub-skills to fix findings — that bypasses spec/plan/review gates
 - Run audit on a non-Next.js repo (fail fast with a clear message)
-- Treat missing scripts (`check:i18n`, `check:content`) as failures when the project never installed them — they're "Important: run the content-quality pack via `nextjs-build-website-write-code`" findings, not Criticals
+- Treat missing scripts (`check:i18n`, `check:content`) as failures when the project never installed them — they're "Important: run the content-quality pack via `nextjs-write-code`" findings, not Criticals
 - Repeat clarify questions whose answer is already in the audit (waste of user time)
 - Hide findings to make the report look better — every probed gap goes in
 - Continue past the user's "defer" choice — read-only ends there
@@ -256,18 +254,5 @@ Pass these context fields to `02-clarify-requirements` so it knows to skip what'
 - `03-write-spec` → `04-review-spec` → `05-write-plan` → `06-review-plan` → `07-write-code` — standard downstream flow
 - `shared/workflow/code-map` — even more general read-only architecture scan (cross-track); this skill is NextJS-specific and quality-focused
 - `orchestration/recovery` — picks up here if a user resumes mid-sprint
-- Each finding's "Fix via" column points to the relevant reference pack (init-site through content-quality), all dispatched through the `nextjs-build-website-write-code` orchestrator (`_refs/nextjs/build-website/write-code/`)
+- Each finding's "Fix via" column points to the relevant reference pack (init-site through content-quality), all dispatched through the `nextjs-write-code` orchestrator (`_refs/nextjs/build-website/write-code/`)
 - `orchestration/auto-docs` — persists the audit report for future sessions
-
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
-
-**Response style (terse mode active for this skill — reduces token usage):**
-
-While executing this skill:
-
-- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
-- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
-- Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
-- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
-- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

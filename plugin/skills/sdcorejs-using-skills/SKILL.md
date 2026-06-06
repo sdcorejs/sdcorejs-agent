@@ -17,7 +17,7 @@ You have the **sdcorejs SDLC skill pack** — an orchestrated software-developme
 1. Match the request against each skill's `description` (the "Use when…" trigger).
 2. Pick the highest-confidence match. If several tie, pick the earliest in the workflow (clarify before plan, plan before write-code).
 3. Invoke it via the `Skill` tool, announce it to the user ("Using `<skill>` to `<purpose>`"), then follow its body exactly.
-4. If nothing matches (or the user asks "what can you do / how do I start / agent này làm được gì"), answer from **What this pack does** below, then route to the first step — `sdcorejs-brainstorm` (open-ended) or `sdcorejs-clarify-requirements` (scope clear); for an existing Next.js site to improve, `nextjs-build-website-audit-existing-site`.
+4. If nothing matches (or the user asks "what can you do / how do I start / agent này làm được gì"), answer from **What this pack does** below, then route to the first step — `sdcorejs-brainstorm` (open-ended) or `sdcorejs-clarify-requirements` (scope clear); for an existing Next.js site to improve, `sdcorejs-review`.
 
 ## What this pack does (per track + first step)
 
@@ -25,7 +25,7 @@ Use this to answer "what can you do / how do I start / agent này làm được 
 
 - **Angular** (`angular.json` + `@sdcorejs/angular`) — backoffice portals on Core UI: full CRUD modules/entities, list + detail (CREATE/UPDATE/DETAIL) screens, workflow/bulk/custom actions, via the `angular-write-code` orchestrator (loads packs in `_refs/angular/write-code/`). WHY-rules: `_refs/angular/architecture-principles.md`. First step: `sdcorejs-clarify-requirements` (or `sdcorejs-brainstorm` if open-ended).
 - **NestJS** (`nest-cli.json` + `@nestjs/*`) — modular Postgres APIs. **Scaffold status**: design phase + `sdcorejs-review-*` + `sdcorejs-test` work today; `nestjs-write-code` is a plan-walking bridge until its sub-skills ship. WHY-rules: `_refs/nestjs/architecture-principles.md`. First step: `sdcorejs-clarify-requirements` / `sdcorejs-brainstorm`.
-- **Next.js** (`next.config.*` + `next`) — production landing sites (SSR/ISR, bilingual VI/EN, SEO, OG, real contact form) via `nextjs-build-website-write-code` (packs in `_refs/nextjs/build-website/write-code/`). WHY-rules: `_refs/nextjs/build-website/architecture-principles.md`. First step: **greenfield** → `sdcorejs-brainstorm`; **existing site to improve** → `nextjs-build-website-audit-existing-site`.
+- **Next.js** (`next.config.*` + `next`) — production landing sites (SSR/ISR, bilingual VI/EN, SEO, OG, real contact form) via `nextjs-write-code` (packs in `_refs/nextjs/build-website/write-code/`). WHY-rules: `_refs/nextjs/build-website/architecture-principles.md`. First step: **greenfield** → `sdcorejs-brainstorm`; **existing site to improve** → `sdcorejs-review`.
 
 Always end with ONE concrete next step ("Tell me X to proceed"). Don't generate code from here — defer to the track's write-code orchestrator after clarify/plan.
 

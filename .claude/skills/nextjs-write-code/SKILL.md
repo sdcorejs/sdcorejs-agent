@@ -1,6 +1,6 @@
 ---
-name: nextjs-build-website-write-code
-description: Generate code for a Next.js landing site — after 06-review-plan approves, OR as the single entry point for any direct build-website code-gen request. Loads the matching on-demand pack under `_refs/nextjs/build-website/write-code/` (per-pack trigger catalog is in the body): init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. Triggers - "bootstrap website", "chọn theme", "add a page / tạo section", "set up SEO / sitemap", "OG image / social preview hỏng", "thêm tiếng Anh / i18n", "caching / ISR", "responsive bị vỡ / mobile broken", "contact form / form không gửi email", "review content / bài viết quá ngắn", plus generic "generate code", "viết code", "go ahead". To audit an EXISTING site use `nextjs-build-website-audit-existing-site` instead. After completion runs the mandatory tail chain (e2e → review-code → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories). Bilingual (VI/EN).
+name: nextjs-write-code
+description: Generate code for a Next.js landing site — after 06-review-plan approves, OR as the single entry point for any direct build-website code-gen request. Loads the matching on-demand pack under `_refs/nextjs/build-website/write-code/` (per-pack trigger catalog is in the body): init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. Triggers - "bootstrap website", "chọn theme", "add a page / tạo section", "set up SEO / sitemap", "OG image / social preview hỏng", "thêm tiếng Anh / i18n", "caching / ISR", "responsive bị vỡ / mobile broken", "contact form / form không gửi email", "review content / bài viết quá ngắn", plus generic "generate code", "viết code", "go ahead". To audit an EXISTING site use `sdcorejs-review` instead. After completion runs the mandatory tail chain (e2e → review-code → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories). Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Bash
 ---
 
@@ -18,7 +18,7 @@ Single entry point for generating Next.js landing-site code. This skill is the d
 Do NOT invoke if:
 - No plan exists or plan is unapproved → go back to `05-write-plan` / `06-review-plan`
 - Scope changed since plan was approved → re-plan with `05-write-plan`
-- The user wants to AUDIT an existing site (not generate) → `nextjs-build-website-audit-existing-site`
+- The user wants to AUDIT an existing site (not generate) → `sdcorejs-review`
 
 ## Step 0 — Pre-flight: ensure project summary
 
@@ -132,7 +132,7 @@ Each tail-call is mandatory (per the cross-track rules in CLAUDE.md / AGENTS.md 
 ## Cross-references
 - Inputs: approved plan from `05-write-plan` / `06-review-plan` + brainstorm + clarify outputs
 - Reference packs: `_refs/nextjs/build-website/write-code/{init-site,theme,pages-and-blocks,seo,og-preview,i18n,caching,responsive,contact-form,content-quality}.md`
-- Audit an existing site (separate entry, read-only): `nextjs-build-website-audit-existing-site`
+- Audit an existing site (separate entry, read-only): `sdcorejs-review`
 - Tail-call chain: see CLAUDE.md workflow chart
 - Parallel execution: `orchestration/parallel-dispatch` + `orchestration/subagent-driven-dev`
 

@@ -1,4 +1,4 @@
-> **Reference for the `nextjs-build-website-write-code` orchestrator.** Loaded on demand when the
+> **Reference for the `nextjs-write-code` orchestrator.** Loaded on demand when the
 > confirmed plan routes a step here. Not a standalone skill — the orchestrator reads this file via
 > its dispatch table. Sibling reference packs live in the same dir; track-level refs under `_refs/nextjs/build-website/`.
 
@@ -15,7 +15,7 @@ A landing site that ships with 50-word "Lorem ipsum about us" sections + auto-tr
 This skill enforces the floor: minimum lengths, prose discipline, parity check, on-page SEO.
 
 ## When invoked
-- Automatic step in the `nextjs-build-website-write-code` orchestrator after `pages-and-blocks.md` + `seo.md` (so we have pages and metadata to audit)
+- Automatic step in the `nextjs-write-code` orchestrator after `pages-and-blocks.md` + `seo.md` (so we have pages and metadata to audit)
 - User says "rà soát nội dung", "bài viết quá ngắn", "câu chữ chưa rõ", "review content quality"
 - After adding new pages or articles — before launch
 - Anytime `sdcorejs-review` flags "Critical: thin content"

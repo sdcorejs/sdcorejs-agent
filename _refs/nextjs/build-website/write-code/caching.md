@@ -1,4 +1,4 @@
-> **Reference for the `nextjs-build-website-write-code` orchestrator.** Loaded on demand when the
+> **Reference for the `nextjs-write-code` orchestrator.** Loaded on demand when the
 > confirmed plan routes a step here. Not a standalone skill — the orchestrator reads this file via
 > its dispatch table. Sibling reference packs live in the same dir; track-level refs under `_refs/nextjs/build-website/`.
 
@@ -8,7 +8,7 @@
 A landing site that re-renders every request hits origin too hard; one that's pure SSG is a pain to update. The right default is **ISR with a 30-minute revalidation window** — content updates appear within 30 min without rebuilding, CDN serves cached responses for the rest. This skill applies that default uniformly and gives the user one knob to tune.
 
 ## When invoked
-- Automatic step of the `nextjs-build-website-write-code` orchestrator after pages are generated
+- Automatic step of the `nextjs-write-code` orchestrator after pages are generated
 - User says "set up caching", "cấu hình cache", "cache lâu quá / ngắn quá", "fix ISR", "revalidate"
 - After CMS integration (need on-demand revalidation)
 

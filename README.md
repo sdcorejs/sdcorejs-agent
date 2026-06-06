@@ -24,7 +24,7 @@ The system ships as **dispatchable skills** — markdown with YAML frontmatter �
 | --- | --- | --- |
 | Angular | `skills/tracks/angular/` | ✅ Complete (`angular-write-code` orchestrator; onboarding via `sdcorejs-using-skills`; Core UI docs in `_refs/angular/`) |
 | NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (onboarding + plan-walking `nestjs-write-code`; design + review + testing usable) |
-| Next.js | `skills/tracks/nextjs/build-website/` | ✅ Complete (`nextjs-build-website-write-code` orchestrator + audit-existing-site; onboarding via `sdcorejs-using-skills`) |
+| Next.js | `skills/tracks/nextjs/` | ✅ Complete (`nextjs-write-code` orchestrator; EXISTING-site audit → `sdcorejs-review`; onboarding via `sdcorejs-using-skills`) |
 
 ## Workflow (per track)
 
@@ -72,7 +72,7 @@ Install via the Claude Code plugin marketplace. The repo ships its own single-pl
 /plugin install sdcorejs-agent@sdcorejs
 ```
 
-After install, all 37 skills (cross-track SDLC + angular / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
+After install, all 36 skills (cross-track SDLC + angular / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
 
 ### Option 2 — git submodule (works for Claude Code + Copilot + Codex)
 

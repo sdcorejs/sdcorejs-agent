@@ -1,4 +1,4 @@
-> **Reference for the `nextjs-build-website-write-code` orchestrator.** Loaded on demand when the
+> **Reference for the `nextjs-write-code` orchestrator.** Loaded on demand when the
 > confirmed plan routes a step here. Not a standalone skill — the orchestrator reads this file via
 > its dispatch table. Sibling reference packs live in the same dir; track-level refs under `_refs/nextjs/build-website/`.
 

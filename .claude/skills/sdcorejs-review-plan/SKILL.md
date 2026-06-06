@@ -66,7 +66,7 @@ Bạn duyệt plan này chứ?
 1. IMMEDIATELY invoke `orchestration/auto-plans` (write mode) to persist the approved plan snapshot to `<target>/.sdcorejs/plans/<TRACK>/<YYYY-MM-DD-HH-mm>-<topic>.md`
 2. Dispatch the right track's write-code orchestrator with the approved plan as input:
    - `angular` → `angular-write-code`
-   - `nextjs` → `nextjs-build-website-write-code`
+   - `nextjs` → `nextjs-write-code`
    - `nestjs` → `nestjs-write-code` (when available; until then ASK user)
 
 #### Request changes ("đổi step N", "sửa", "amend", "change")

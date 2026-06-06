@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review
-description: Single entry point for reviewing/auditing code across every SDCoreJS track — dimension-aware: code conventions (default), security, performance, accessibility. Auto-detects the stack (Angular · NestJS · Next.js) + the dimension from intent, loads `_refs/<track>/review-<dimension>.md` (+ `_refs/shared/` baselines), emits a 🔴 Critical / 🟡 Important / 🔵 Minor report with file:line + Fix. "đánh giá toàn diện / full audit" runs all dimensions; Angular code can request the 13-category scored review. Read-only. For module-level structure (layering, circular deps) use `sdcorejs-review-architecture`. Triggers - "review code / rà soát code", "audit module/backend", "review bảo mật / security", "review hiệu năng / performance / lighthouse / N+1", "review accessibility / a11y / WCAG", "scored review / chấm điểm", "đánh giá toàn diện", or auto after `<track>-write-code`. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Single entry point for reviewing/auditing code across every SDCoreJS track — dimension-aware: code conventions (default), security, performance, accessibility. Auto-detects the stack (Angular · NestJS · Next.js) + the dimension from intent, loads `_refs/<track>/review-<dimension>.md` (+ `_refs/shared/` baselines), emits a 🔴 Critical / 🟡 Important / 🔵 Minor report with file:line + Fix. "đánh giá toàn diện / full audit" runs all dimensions; Angular code can request the 13-category scored review. Read-only. For module-level structure (layering, circular deps) use `sdcorejs-review-architecture`. Triggers - "review code / rà soát code", "audit module/backend", "review bảo mật / security", "review hiệu năng / performance / lighthouse", "review accessibility / a11y / WCAG", "audit existing site / site này thiếu gì (nextjs)", "scored review / chấm điểm", "đánh giá toàn diện", or auto after `<track>-write-code`. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Glob, Grep, Bash
 ---
 
@@ -40,6 +40,7 @@ dispatch surface + output format are unified here. **Module-level structure revi
 | **performance** | "review hiệu năng", "performance", "lighthouse", "N+1", "bundle size", "slow query" |
 | **accessibility** | "review accessibility", "a11y", "WCAG", "aria", "keyboard nav", "contrast" (angular/nextjs only — nestjs has no UI) |
 | **ALL** | "đánh giá toàn diện / full audit / enterprise readiness" → run code + security + performance + (a11y if UI) |
+| **site-audit** (nextjs only) | EXISTING whole-site audit — "audit site", "improve existing site", "site này thiếu gì", "clone về rồi muốn cải tiến": run the 30-point build-website quality bar, read-only gap report, then hand to `sdcorejs-clarify-requirements` |
 
 State the detected track + dimension(s) in the report header.
 
@@ -47,6 +48,7 @@ State the detected track + dimension(s) in the report header.
 For each selected dimension:
 - **code** → `_refs/<track>/review-code.md` (nextjs: `_refs/nextjs/build-website/review-code.md`)
 - **security** → `_refs/shared/review-security.md` + `_refs/<track>/review-security.md` (nextjs under `build-website/`)
+- **site-audit** (nextjs existing site) → `_refs/nextjs/build-website/audit-existing-site.md` — its full procedure (build/lint/i18n/content probes + Lighthouse + the 30-check A1…I6 bar + gap-report template + handoff to `sdcorejs-clarify-requirements`). Read-only; never auto-fixes.
 - **performance** → `_refs/shared/review-performance.md` + `_refs/<track>/review-performance.md`
 - **accessibility** → `_refs/shared/review-accessibility.md` + `_refs/<track>/review-accessibility.md`
 

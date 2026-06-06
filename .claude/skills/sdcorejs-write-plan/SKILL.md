@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-write-plan
-description: Use AFTER `sdcorejs-review-spec` has approved the spec, BEFORE the track-specific write-code orchestrator runs (`angular-write-code` / `nextjs-build-website-write-code` / future `nestjs-write-code`). Writes a numbered file-by-file plan to the chat (and optionally to a plan file under `.sdcorejs/plans/<track>/`) for the user to review and confirm. No code is written here. Hands off to `sdcorejs-review-plan` for user approval, which then snapshots via `orchestration/auto-plans` and dispatches `<track>-write-code`. Triggers - "lên kế hoạch", "plan", "show me steps before coding", "kế hoạch trước khi code", "draft a plan". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-review-spec` has approved the spec, BEFORE the track-specific write-code orchestrator runs (`angular-write-code` / `nextjs-write-code` / future `nestjs-write-code`). Writes a numbered file-by-file plan to the chat (and optionally to a plan file under `.sdcorejs/plans/<track>/`) for the user to review and confirm. No code is written here. Hands off to `sdcorejs-review-plan` for user approval, which then snapshots via `orchestration/auto-plans` and dispatches `<track>-write-code`. Triggers - "lên kế hoạch", "plan", "show me steps before coding", "kế hoạch trước khi code", "draft a plan". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Glob, Grep, Bash
 ---
 

@@ -1,4 +1,4 @@
-> **Reference for the `nextjs-build-website-write-code` orchestrator.** Loaded on demand when the
+> **Reference for the `nextjs-write-code` orchestrator.** Loaded on demand when the
 > confirmed plan routes a step here. Not a standalone skill — the orchestrator reads this file via
 > its dispatch table. Sibling reference packs live in the same dir; track-level refs under `_refs/nextjs/build-website/`.
 
@@ -8,7 +8,7 @@
 Most "responsive bugs" are not bugs — they're missing breakpoint variants, raw fixed widths, or images served at the wrong size. This skill establishes the mobile-first conventions, the image `sizes` policy, and the patterns that ship without the typical breakpoints-broken-at-768px problem.
 
 ## When invoked
-- Automatic step in the `nextjs-build-website-write-code` orchestrator after pages exist (audit pass)
+- Automatic step in the `nextjs-write-code` orchestrator after pages exist (audit pass)
 - User says "responsive vỡ", "mobile broken", "tablet không đúng", "responsive audit"
 - Adding new sections or pages — verify before committing
 

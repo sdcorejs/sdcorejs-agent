@@ -18,8 +18,7 @@ skills/
 ├── tracks/                       stack-specific code-writing skills
 │   ├── angular/   ✅  1 track skill — 07-write-code orchestrator (onboarding via sdcorejs-using-skills); orchestrator loads 6 on-demand reference packs from `_refs/angular/write-code/` (init-portal, init-module, init-entity, screen-list, screen-detail (CREATE/UPDATE/DETAIL states + form refinement), actions (workflow / bulk / custom side-effects))
 │   ├── nestjs/           🟡  scaffold (07-write-code plan-walker; onboarding via sdcorejs-using-skills); 10/11/12 sub-skills planned
-│   └── nextjs/
-│       └── build-website/  ✅  2 track skills — 07-write-code orchestrator, 08-audit-existing-site (orchestrator dispatches 10 reference packs in _refs/nextjs/build-website/write-code/: init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality)
+│   └── nextjs/   ✅  1 track skill — 07-write-code (nextjs-write-code) orchestrator (onboarding via sdcorejs-using-skills); dispatches 10 reference packs in _refs/nextjs/build-website/write-code/: init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. EXISTING-site audit folded into sdcorejs-review (site-audit mode)
 │
 ├── shared/
 │   ├── sdlc/             ✅  6 cross-track design-phase skills (01-brainstorm, 02-clarify-requirements, 03-write-spec, 04-review-spec, 05-write-plan, 06-review-plan); patterns live in `_refs/sdlc/{angular,nextjs,nestjs}.md`
@@ -70,7 +69,7 @@ Request
                               → orchestration/auto-plans  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
   → <track>-write-code (track-specific orchestrator; dispatches sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
        angular:        angular-write-code
-       nextjs (build-website): nextjs-build-website-write-code
+       nextjs (build-website): nextjs-write-code
        nestjs:                 nestjs-write-code (SCAFFOLD — plan-walker until sub-skills ship)
   → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
