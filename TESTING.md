@@ -82,6 +82,18 @@ Pass criteria:
 - Plan shown and approval requested
 - Code is NOT generated until explicit "OK"/"approved"/"proceed"
 
+### Test 7 — Persona ask-once
+
+Setup: a target project with NO `.sdcorejs/persona.md`. Prompt: `giúp mình làm phần mềm quản lý kho`
+
+Expected: Agent invokes `sdcorejs-persona` and asks the technical-vs-plain question BEFORE doing other work, then writes `.sdcorejs/persona.md`.
+
+Pass criteria:
+- Asks the 2-option persona question once, in the request's language
+- After the choice, a `.sdcorejs/persona.md` file exists with `persona: tech|non-tech` frontmatter
+- Re-prompting in the same project does NOT re-ask (reads the stored flag silently)
+- With `persona: non-tech`, later output avoids unexplained jargon, asks about features + screens (never modules/entities/architecture)
+
 ## E2E tests (in a real target portal project)
 
 ### Setup
