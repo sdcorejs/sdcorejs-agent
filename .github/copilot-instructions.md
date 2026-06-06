@@ -13,7 +13,7 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem. When you (GitHu
 | Track | Path | Status |
 | --- | --- | --- |
 | Angular Portal | `skills/tracks/angular/` | ✅ Complete (design-phase cross-track skills + 1 angular skill: the `angular-write-code` orchestrator (onboarding via `sdcorejs-using-skills`), which dispatches 6 on-demand reference packs under `_refs/angular/write-code/`: init-portal, init-module, init-entity, screen-list, screen-detail (CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design phase + spec/plan moved to cross-track `skills/shared/sdlc/`. Cross-track `orchestration/comment-code` absorbs the previous per-track `51-write-comments`. |
-| NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (write-code plan-walker; onboarding via `sdcorejs-using-skills`). Sub-skills 10/11/12 planned. Design phase usable via shared/sdlc/; review + testing already in place. |
+| NestJS | `skills/tracks/nestjs/` | ✅ Complete — the `nestjs-write-code` orchestrator (onboarding via `sdcorejs-using-skills`) dispatches on-demand reference packs under `_refs/nestjs/write-code/`: init-project, init-module, init-entity (full CRUD stack), actions (custom / non-CRUD endpoints). Core: `@sdcorejs/nestjs` (`_refs/nestjs/core-catalog.md`). Design phase usable via shared/sdlc/; review + testing already in place. |
 | Next.js | `skills/tracks/nextjs/` | ✅ `build-website/` pack complete (1 track skill: `nextjs-write-code` orchestrator (onboarding via `sdcorejs-using-skills`); the orchestrator dispatches 10 on-demand reference packs under `_refs/nextjs/build-website/write-code/`: init-site … content-quality). EXISTING-site audit folded into `sdcorejs-review` (nextjs site-audit mode). Design phase moved to cross-track shared/sdlc/. |
 
 Cross-cutting skills live in:
@@ -60,7 +60,7 @@ Request
   → <track>-write-code (track-specific orchestrator; dispatches sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
        angular:         angular-write-code
        nextjs (build-website): nextjs-write-code
-       nestjs:                 nestjs-write-code (SCAFFOLD)
+       nestjs:                 nestjs-write-code (loads _refs/nestjs/write-code/ packs: init-project | init-module | init-entity | actions)
   → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (MANDATORY acceptance gate) → orchestration/branch-ready (branch-hygiene sweep)
@@ -161,6 +161,8 @@ Emit a one-command runnable Docker stack into a target project's **deploy root**
 - `skills/tracks/angular/_refs/entity-field-types.md` — field type → form control mapping
 - `skills/tracks/angular/_refs/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for the init-entity reference pack
 - `_refs/angular/write-code/{init-portal,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `angular-write-code`
+- `_refs/nestjs/core-catalog.md` — `@sdcorejs/nestjs` core inventory
+- `_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md` — on-demand reference packs loaded by `nestjs-write-code`
 
 ## Anti-patterns
 

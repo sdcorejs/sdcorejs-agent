@@ -17,7 +17,7 @@ _refs/                            reference data (no frontmatter, load on demand
 skills/
 ├── tracks/                       stack-specific code-writing skills
 │   ├── angular/   ✅  1 track skill — write-code orchestrator (onboarding via sdcorejs-using-skills); orchestrator loads 6 on-demand reference packs from `_refs/angular/write-code/` (init-portal, init-module, init-entity, screen-list, screen-detail (CREATE/UPDATE/DETAIL states + form refinement), actions (workflow / bulk / custom side-effects))
-│   ├── nestjs/           🟡  scaffold (write-code plan-walker; onboarding via sdcorejs-using-skills); 10/11/12 sub-skills planned
+│   ├── nestjs/   ✅  1 track skill — write-code orchestrator (nestjs-write-code; onboarding via sdcorejs-using-skills); dispatches on-demand reference packs in _refs/nestjs/write-code/: init-project, init-module, init-entity (full CRUD stack), actions (custom / non-CRUD endpoints). Core: @sdcorejs/nestjs (_refs/nestjs/core-catalog.md)
 │   └── nextjs/   ✅  1 track skill — write-code (nextjs-write-code) orchestrator (onboarding via sdcorejs-using-skills); dispatches 10 reference packs in _refs/nextjs/build-website/write-code/: init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. EXISTING-site audit folded into sdcorejs-review (site-audit mode)
 │
 ├── shared/
@@ -70,7 +70,7 @@ Request
   → <track>-write-code (track-specific orchestrator; dispatches sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
        angular:        angular-write-code
        nextjs (build-website): nextjs-write-code
-       nestjs:                 nestjs-write-code (SCAFFOLD — plan-walker until sub-skills ship)
+       nestjs:                 nestjs-write-code (loads _refs/nestjs/write-code/ packs: init-project | init-module | init-entity | actions)
   → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (MANDATORY acceptance gate) → orchestration/branch-ready (branch-hygiene sweep)
@@ -167,6 +167,8 @@ Emit a one-command runnable Docker stack into a target project's **deploy root**
 - `_refs/angular/entity-field-types.md` — field type → form control mapping
 - `_refs/angular/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for the init-entity reference pack
 - `_refs/angular/write-code/{init-portal,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `angular-write-code`
+- `_refs/nestjs/core-catalog.md` — `@sdcorejs/nestjs` core inventory
+- `_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md` — on-demand reference packs loaded by `nestjs-write-code`
 
 ## Anti-patterns
 

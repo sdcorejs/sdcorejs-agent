@@ -13,7 +13,7 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 | Track | Path | Status |
 | --- | --- | --- |
 | Angular Portal | `skills/tracks/angular/` | ✅ Complete (design-phase cross-track skills + 1 angular skill: the `angular-write-code` orchestrator (onboarding via `sdcorejs-using-skills`). The orchestrator dispatches 6 on-demand reference packs under `_refs/angular/write-code/`: init-portal, init-module, init-entity, screen-list, screen-detail (covers CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design-phase + spec/plan/review skills moved to cross-track `skills/shared/sdlc/`. Cross-cutting code-review (single track-aware skill `sdcorejs-review` at `skills/review/review.md`) + e2e-test (`sdcorejs-test`). Cross-track comment-code (`orchestration/comment-code`) absorbs the previous per-track `51-write-comments`. |
-| NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (`write-code` plan-walking orchestrator; onboarding via `sdcorejs-using-skills`). Sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) 🚧 planned. Design phase fully usable via shared/sdlc/; review + testing skills already in place — code review / security / performance via the single track-aware `sdcorejs-review`, plus `sdcorejs-test`. |
+| NestJS | `skills/tracks/nestjs/` | ✅ Complete — the `nestjs-write-code` orchestrator (onboarding via `sdcorejs-using-skills`) dispatches on-demand reference packs under `_refs/nestjs/write-code/`: init-project (scaffold app), init-module (bounded-context module), init-entity (full CRUD stack: entity/repository/service/controller/Zod schema/DTO), actions (custom / non-CRUD endpoints — domain methods, cross-module, workflow, bulk, export). Core: `@sdcorejs/nestjs` (inventory in `_refs/nestjs/core-catalog.md`). Design phase usable via shared/sdlc/; review + testing already in place — code / security / performance via the single track-aware `sdcorejs-review`, plus `sdcorejs-test`. |
 | Next.js | `skills/tracks/nextjs/` | ✅ `build-website/` pack complete. 1 track skill: the `nextjs-write-code` orchestrator (onboarding via `sdcorejs-using-skills`). The orchestrator dispatches 10 on-demand reference packs under `_refs/nextjs/build-website/write-code/`: init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality (consolidated from the former 10-19 sub-skills). EXISTING-site audit folded into the cross-track `sdcorejs-review` (nextjs site-audit mode; knowledge in `_refs/nextjs/build-website/audit-existing-site.md`). Design-phase moved to cross-track `skills/shared/sdlc/`. |
 
 Cross-cutting concerns live outside `tracks/`:
@@ -81,7 +81,7 @@ orchestration/auto-plans   ← MANDATORY on approval — snapshot to <target>/.s
 <track>-write-code (write-code, track-specific orchestrator)
   ← angular:        angular-write-code     → loads on-demand reference packs from `_refs/angular/write-code/`: init-portal | init-module | init-entity | screen-list | screen-detail (CREATE / UPDATE / DETAIL states + form refinement) | actions (workflow / bulk / custom side-effects)
   ← nextjs (build-website): nextjs-write-code → loads on-demand reference packs from `_refs/nextjs/build-website/write-code/`: init-site | theme | pages-and-blocks | seo | og-preview | i18n | caching | responsive | contact-form | content-quality
-  ← nestjs:                nestjs-write-code              → SCAFFOLD (plan-walking until 10/11/12 sub-skills ship)
+  ← nestjs:                nestjs-write-code → loads on-demand reference packs from `_refs/nestjs/write-code/`: init-project | init-module | init-entity (full CRUD stack) | actions (custom / non-CRUD endpoints — domain methods, cross-module, workflow, bulk, export)
   └─ when feature has 3+ independent units, dispatches via
      orchestration/subagent-driven-dev (after orchestration/parallel-dispatch decision)
   ↓
@@ -203,12 +203,14 @@ Emit a one-command runnable Docker stack into a target project's **deploy root**
 - `_refs/<track>/architecture-principles.md` — WHY-principles per track governing generated code. Load when explaining decisions, reviewing deviations, or onboarding contributors:
   - **angular** (16 principles): feature-first, signal-first, no cross-module imports, 4 canonical layouts, mock-first, OnPush default, …
   - **nextjs/build-website** (15 principles): App Router default, server components default, content-as-data, i18n localized pathnames, SEO non-negotiable, 30-min ISR default, real contact form, mobile-first, …
-  - **nestjs** (14 principles, scaffold): bounded-context modules, BaseEntity/Repo/Service mandatory, guard order AuthGuard→Zod→HasPermission, Zod in shared package, thin controllers, explicit QueryRunner transactions, bilingual error messages, …
+  - **nestjs** (14 principles): bounded-context modules, BaseEntity/Repo/Service mandatory, guard order AuthGuard→Zod→HasPermission, Zod in shared package, thin controllers, explicit QueryRunner transactions, bilingual error messages, …
 - `_refs/angular/core-version.md` — pinned `@sdcorejs/angular` version
 - `_refs/angular/sdcorejs-angular-catalog.md` — Core UI components inventory
 - `_refs/angular/entity-field-types.md` — field type → form control mapping
 - `_refs/angular/templates/entity-{skeleton,tests,example-product}.md` — code templates extracted from the init-entity reference pack (split 2026-05-20 to keep the pack under 500 lines)
 - `_refs/angular/write-code/{init-portal,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `angular-write-code` (no frontmatter, not dispatchable skills)
+- `_refs/nestjs/core-catalog.md` — `@sdcorejs/nestjs` core inventory (BaseEntity/Repository/Service/Controller, guards, decorators)
+- `_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md` — on-demand reference packs loaded by `nestjs-write-code` (no frontmatter, not dispatchable skills)
 
 ## Anti-patterns
 

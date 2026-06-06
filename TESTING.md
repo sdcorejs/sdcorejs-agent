@@ -119,6 +119,35 @@ Expected: Agent dispatches `sdcorejs-run-guide`.
 Pass criteria:
 - Emits a jargon-free `START.md`: install Docker → `docker compose up` → http://localhost:4200 → demo / demo
 
+### Test 9 — NestJS write-code
+
+Prompt: `scaffold a nestjs backend`
+
+Expected: Agent dispatches `nestjs-write-code` (init-project pack).
+
+Pass criteria:
+- Proposes the app skeleton INTO THE TARGET project (not this `sdcorejs-agent` repo): `package.json` depending on `@sdcorejs/nestjs`, `app.module.ts` with `SdCoreModule.forRoot`, schema-per-module Postgres config, `main.ts` calling `ensureSchemas`
+- One NestJS app + one Postgres (modular monolith), not a microservice fan-out
+
+Prompt: `add a products module with a product entity`
+
+Expected: Agent dispatches `nestjs-write-code` (init-module + init-entity packs).
+
+Pass criteria:
+- Emits an entity extending the local base-entity, decorated `@Scoped` + `@Entity({ schema })`
+- Emits a repository extending `BaseRepository` with a Symbol injection token
+- Emits a service extending `BaseService` and using `mapDTO`
+- Emits a controller extending `BaseController` with `AdminAuthGuard` + `@HasPermission('products_product:create')` + `ZodValidationGuard`
+- Emits a Zod schema (`*CreateSchema` plus `.partial()` for update)
+
+Prompt: `add a bulk-approve endpoint to products`
+
+Expected: Agent dispatches `nestjs-write-code` (actions pack).
+
+Pass criteria:
+- Adds a custom route guarded by `@HasPermission`
+- Adds a service method for the action (with an explicit `QueryRunner` transaction if it writes to multiple tables)
+
 ## E2E tests (in a real target portal project)
 
 ### Setup
