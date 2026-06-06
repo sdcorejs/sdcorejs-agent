@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-parallel-dispatch
-description: Decision gate that runs BEFORE `sdcorejs-subagent-driven-dev`. Use when the agent is about to execute work that could plausibly be split across parallel subagents — multiple independent entities, multi-file scans, batch screen generation, multi-stack audits. Decides WHETHER to parallelize via independence + blast-radius + reviewability + budget checks. Outputs a verdict: SEQUENTIAL or PARALLEL-CANDIDATE; when PARALLEL, hands off to `sdcorejs-subagent-driven-dev` which owns the briefing + dispatch + merge mechanics. Triggers - "chạy song song", "dispatch parallel", "split into subagents", "fan out", "làm song song", "in parallel", or automatic invocation by write-code (and other orchestrators) when ≥3 independent units are detected. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Decision gate that runs BEFORE `sdcorejs-subagent-driven-dev`. Use when the agent is about to execute work that could plausibly be split across parallel subagents — multiple independent entities, multi-file scans, batch screen generation, multi-stack audits. Decides WHETHER to parallelize via independence + blast-radius + reviewability + budget checks. Outputs a verdict: SEQUENTIAL, PARALLEL-CANDIDATE (→ subagent-driven-dev Mode A), or ROLE-SPLIT (one feature across backend+frontend → Mode B); when PARALLEL, hands off to `sdcorejs-subagent-driven-dev` which owns the briefing + dispatch + merge mechanics. Triggers - "chạy song song", "dispatch parallel", "split into subagents", "fan out", "làm song song", "in parallel", or automatic invocation by write-code (and other orchestrators) when ≥3 independent units are detected. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read
 ---
 
@@ -43,9 +43,20 @@ Is review tractable?
 Within budget?
   ├─ >5 subagents at once → SPLIT INTO BATCHES (rate limit + reviewer load)
   ├─ ≤5 → DISPATCH IN PARALLEL
+
+Is it ONE feature spanning backend + frontend (not N same-kind units)?
+  ├─ Yes → ROLE-SPLIT → hand to subagent-driven-dev Mode B (contract-freeze + BE‖FE‖QC loop)
+  └─ No  → the same-kind-units path above → PARALLEL-CANDIDATE → Mode A
 ```
 
 ## When parallel is correct
+
+### When ROLE-SPLIT (not same-kind fan-out)
+A feature that needs BOTH a backend change AND a frontend change is NOT N independent
+same-kind units — the FE depends on the BE's contract. Do NOT treat it as Mode A. Instead the
+**contract-freeze barrier** (Phase 0 of subagent-driven-dev Mode B) defines + freezes the shared
+contract first; only THEN do backend / frontend / QC become file-disjoint and runnable in parallel.
+Verdict: `ROLE-SPLIT` → `subagent-driven-dev` Mode B.
 
 ✅ **Good fits**
 - "Generate list + detail + create + update screens for entity X" — 4 independent file groups, same template, no shared state
@@ -186,7 +197,7 @@ Correct dispatch:
 
 ## Cross-references
 - `orchestration/using-worktrees.md` — once the verdict is PARALLEL-CANDIDATE, give each unit an isolated workspace before dispatch
-- `orchestration/subagent-driven-dev.md` — runs NEXT when the verdict is PARALLEL-CANDIDATE; owns the briefing template, dispatch mechanics, partial-failure handling, and merge/verification steps. This skill stops at the decision; subagent-driven-dev executes it.
+- `orchestration/subagent-driven-dev.md` — runs NEXT for BOTH verdicts: `PARALLEL-CANDIDATE` → Mode A; `ROLE-SPLIT` → Mode B (role-split feature loop). Owns the briefing template, dispatch mechanics, partial-failure handling, and merge/verification steps. This skill stops at the decision; subagent-driven-dev executes it.
 - `orchestration/verify-before-done.md` — final acceptance gate after subagent-driven-dev's merge step.
 - `write-code.md` (each track) — orchestrator that invokes this skill when its dispatch table has 3+ rows.
 
