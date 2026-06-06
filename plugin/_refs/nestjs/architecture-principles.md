@@ -371,7 +371,7 @@ These get resolved when NestJS track moves from scaffold to complete.
 
 - `_refs/sdlc/nestjs.md` — design-phase patterns + persistence options
 - `sdcorejs-using-skills` — onboarding / entry point
-- `skills/tracks/nestjs/07-write-code.md` — current plan-walker orchestrator
+- `skills/tracks/nestjs/write-code.md` — current plan-walker orchestrator
 - `skills/tracks/nestjs/_README.md` — track status
 - `sdcorejs-review` — convention enforcement (the reviewer)
 - `skills/testing/{unit,integration,e2e}/nestjs.md` — testing patterns per layer

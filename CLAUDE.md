@@ -13,7 +13,7 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 | Track | Path | Status |
 | --- | --- | --- |
 | Angular Portal | `skills/tracks/angular/` | ✅ Complete (design-phase cross-track skills + 1 angular skill: the `angular-write-code` orchestrator (onboarding via `sdcorejs-using-skills`). The orchestrator dispatches 6 on-demand reference packs under `_refs/angular/write-code/`: init-portal, init-module, init-entity, screen-list, screen-detail (covers CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design-phase + spec/plan/review skills moved to cross-track `skills/shared/sdlc/`. Cross-cutting code-review (single track-aware skill `sdcorejs-review` at `skills/review/review.md`) + e2e-test (`sdcorejs-test`). Cross-track comment-code (`orchestration/comment-code`) absorbs the previous per-track `51-write-comments`. |
-| NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (`07-write-code` plan-walking orchestrator; onboarding via `sdcorejs-using-skills`). Sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) 🚧 planned. Design phase fully usable via shared/sdlc/; review + testing skills already in place — code review / security / performance via the single track-aware `sdcorejs-review`, plus `sdcorejs-test`. |
+| NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (`write-code` plan-walking orchestrator; onboarding via `sdcorejs-using-skills`). Sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) 🚧 planned. Design phase fully usable via shared/sdlc/; review + testing skills already in place — code review / security / performance via the single track-aware `sdcorejs-review`, plus `sdcorejs-test`. |
 | Next.js | `skills/tracks/nextjs/` | ✅ `build-website/` pack complete. 1 track skill: the `nextjs-write-code` orchestrator (onboarding via `sdcorejs-using-skills`). The orchestrator dispatches 10 on-demand reference packs under `_refs/nextjs/build-website/write-code/`: init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality (consolidated from the former 10-19 sub-skills). EXISTING-site audit folded into the cross-track `sdcorejs-review` (nextjs site-audit mode; knowledge in `_refs/nextjs/build-website/audit-existing-site.md`). Design-phase moved to cross-track `skills/shared/sdlc/`. |
 
 Cross-cutting concerns live outside `tracks/`:
@@ -50,7 +50,7 @@ The source of truth remains `skills/<track>/*.md`. `.claude/skills/` is generate
 
 ## Workflow per track
 
-Every track shares the same workflow shape. **Design phase is cross-track** (`skills/shared/sdlc/`); **code-writing phase is track-specific** (`skills/tracks/<track>/07-write-code.md`; for angular the orchestrator loads on-demand reference packs under `_refs/angular/write-code/`).
+Every track shares the same workflow shape. **Design phase is cross-track** (`skills/shared/sdlc/`); **code-writing phase is track-specific** (`skills/tracks/<track>/write-code.md`; for angular the orchestrator loads on-demand reference packs under `_refs/angular/write-code/`).
 
 ```
 Request
@@ -78,7 +78,7 @@ shared/sdlc/06-review-plan (sdcorejs-review-plan)
   ↓
 orchestration/auto-plans   ← MANDATORY on approval — snapshot to <target>/.sdcorejs/plans/<track>/
   ↓
-<track>-write-code (07-write-code, track-specific orchestrator)
+<track>-write-code (write-code, track-specific orchestrator)
   ← angular:        angular-write-code     → loads on-demand reference packs from `_refs/angular/write-code/`: init-portal | init-module | init-entity | screen-list | screen-detail (CREATE / UPDATE / DETAIL states + form refinement) | actions (workflow / bulk / custom side-effects)
   ← nextjs (build-website): nextjs-write-code → loads on-demand reference packs from `_refs/nextjs/build-website/write-code/`: init-site | theme | pages-and-blocks | seo | og-preview | i18n | caching | responsive | contact-form | content-quality
   ← nestjs:                nestjs-write-code              → SCAFFOLD (plan-walking until 10/11/12 sub-skills ship)

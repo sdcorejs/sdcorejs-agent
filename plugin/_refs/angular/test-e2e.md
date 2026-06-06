@@ -6,7 +6,7 @@
 > Mode-A / Mode-B procedure the orchestrator's Step 2 points to.
 
 ## Purpose
-After `07-write-code` (or any sub-skill) has produced a feature, write E2E tests that exercise the happy path of that feature in a real browser. Catches integration bugs unit tests miss (routing, guards, form submission, table reload).
+After `write-code` (or any sub-skill) has produced a feature, write E2E tests that exercise the happy path of that feature in a real browser. Catches integration bugs unit tests miss (routing, guards, form submission, table reload).
 
 ## Generation modes
 

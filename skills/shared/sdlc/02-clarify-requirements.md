@@ -112,7 +112,7 @@ If user picks TDD, `sdcorejs-write-plan` will:
 2. Add a **tests-fill phase** AFTER the code tasks — complete the test bodies against the actual implementation
 3. Each acceptance criterion in the spec maps to a failing test in the test-bones phase
 
-If user picks post-hoc, the current ordering stands: `07-write-code` first, then `sdcorejs-test` after.
+If user picks post-hoc, the current ordering stands: `write-code` first, then `sdcorejs-test` after.
 
 ### Step 4 — Surface defaults clearly
 For each optional answer, propose the default explicitly so the user can accept fast:

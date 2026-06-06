@@ -2,7 +2,7 @@
 
 This file is loaded by `skills/shared/sdlc/0[1-6]-*.md` when the detected track is `nestjs`.
 
-**Status:** Track-specific orchestrator (`07-write-code` for NestJS) is planned, not yet shipped. Cross-track SDLC skills work today — they will dispatch to the future `nestjs-write-code` orchestrator once it lands. Until then, after `sdcorejs-review-plan` approves a plan, dispatch is a manual sub-skill walk through `sdcorejs-review` + `skills/testing/*/nestjs.md`.
+**Status:** Track-specific orchestrator (`write-code` for NestJS) is planned, not yet shipped. Cross-track SDLC skills work today — they will dispatch to the future `nestjs-write-code` orchestrator once it lands. Until then, after `sdcorejs-review-plan` approves a plan, dispatch is a manual sub-skill walk through `sdcorejs-review` + `skills/testing/*/nestjs.md`.
 
 This ref captures the conventions from the `be-masterdata` baseline.
 

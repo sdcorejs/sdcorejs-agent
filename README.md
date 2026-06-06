@@ -40,7 +40,7 @@ sdcorejs-using-skills      ← onboarding / orient (bootstrap; skip if oriented)
 04-review-spec             ← user reviews + approves spec
 05-write-plan                    ← step-by-step plan
 06-review-plan             ← user reviews + approves plan
-07-write-code              ← orchestrator that dispatches sub-skills (10-31)
+write-code              ← orchestrator that dispatches sub-skills (10-31)
 40-e2e-test                ← write E2E tests for what was built
 sdcorejs-review       ← self-review against conventions (auto-detects track; color-coded tables)
 orchestration/comment-code ← MANDATORY ASK gate: skip / simple / medium / full (all applied inline)
@@ -49,7 +49,7 @@ orchestration/auto-docs    ← MANDATORY: summary to target project's .sdcorejs/
 orchestration/memories     ← when learning durable knowledge: target project's .sdcorejs/memories/<track>/
 ```
 
-For Angular Portal, `07-write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular/write-code/` (no frontmatter, not dispatchable skills): `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow / bulk / custom side-effects).
+For Angular Portal, `write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular/write-code/` (no frontmatter, not dispatchable skills): `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow / bulk / custom side-effects).
 
 ## Mandatory rules (every track)
 

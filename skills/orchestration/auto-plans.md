@@ -20,7 +20,7 @@ Shared across SDCoreJS tracks (`angular`, `nestjs`, `nextjs`). Substitute `<trac
 ## When invoked
 
 ### Auto-trigger right after `06-review-plan` approval
-The agent MUST run this skill (write mode) IMMEDIATELY after `06-review-plan` receives explicit user approval, BEFORE handing off to `07-write-code`. The handoff to `07-write-code` waits for this skill to finish.
+The agent MUST run this skill (write mode) IMMEDIATELY after `06-review-plan` receives explicit user approval, BEFORE handing off to `write-code`. The handoff to `write-code` waits for this skill to finish.
 
 Approval signals that count: "OK", "duyệt", "approve", "go ahead", "tiến hành", "generate", "looks good", "đồng ý".
 Approval signals that DO NOT count: silence, "thanks", "got it", "noted".
@@ -71,7 +71,7 @@ phaseCount: 4
 
 # <Title> — Approved Plan
 
-> Snapshot of the plan the user approved at the `06-review-plan` gate. The body below is the exact contract `07-write-code` executed. Do not edit by hand — re-author via `05-write-plan` + `06-review-plan` if the contract changes.
+> Snapshot of the plan the user approved at the `06-review-plan` gate. The body below is the exact contract `write-code` executed. Do not edit by hand — re-author via `05-write-plan` + `06-review-plan` if the contract changes.
 
 ## Phases
 - Phase 1 (module bootstrap): tasks 1-6
@@ -128,7 +128,7 @@ When `05-write-plan` is about to author a new plan, after reading the approved s
 - Write to `sdcorejs-agent/.sdcorejs/plans/` — auto-plans lives in the target project only
 - Overwrite an earlier approved plan — they are immutable historical decisions
 - Translate the plan body — match the language the user used during the review
-- Re-derive the plan from `07-write-code` output after the fact — the snapshot must be what the user approved, not what was eventually executed (deltas are tracked in `auto-docs` instead)
+- Re-derive the plan from `write-code` output after the fact — the snapshot must be what the user approved, not what was eventually executed (deltas are tracked in `auto-docs` instead)
 
 ## Cross-track usage
 

@@ -29,7 +29,7 @@ script reads them with the platform default encoding otherwise.
 
 The loop evaluates the current description, then proposes improvements, keeping the
 best by **held-out test** score. Take `best_description` from the JSON output and
-paste it into the skill's **source** file (`skills/tracks/.../07-write-code.md` etc.,
+paste it into the skill's **source** file (`skills/tracks/.../write-code.md` etc.,
 NOT `.claude/skills/` — that mirror is generated), then `bash .claude/sync-skills.sh`.
 
 ## ⚠️ Platform note

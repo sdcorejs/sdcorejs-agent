@@ -12,7 +12,7 @@ allowed-tools: Read, Bash, Glob, Grep
 > **Scope.** This gate is the feature-end *enforcement point* of the always-on evidence-before-claims rule (CLAUDE.md rule 10). That rule governs EVERY interim success claim during the task too — "tests pass", "build is green", "fixed" each need fresh command output in the same turn they're claimed. This skill is where the rule is checked exhaustively, criterion-by-criterion, before "done".
 
 ## When invoked
-- **MANDATORY** automatic invocation BEFORE `sdcorejs-branch-ready` → `sdcorejs-auto-docs` at the end of every code-writing skill (`07-write-code` — the `angular-write-code` orchestrator and the reference packs it loads, including `actions` — and `sdcorejs-test`)
+- **MANDATORY** automatic invocation BEFORE `sdcorejs-branch-ready` → `sdcorejs-auto-docs` at the end of every code-writing skill (`write-code` — the `angular-write-code` orchestrator and the reference packs it loads, including `actions` — and `sdcorejs-test`)
 - Before `sdcorejs-commit` for a feature commit (not for chore/docs commits)
 - Before `sdcorejs-pr-create`
 - User says "verify", "kiểm tra acceptance", "check acceptance criteria", "đã xong chưa"

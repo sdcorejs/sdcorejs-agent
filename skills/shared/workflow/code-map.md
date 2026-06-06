@@ -11,10 +11,10 @@ Before generating a new module / entity / screen, find what already exists. AI g
 
 ## When invoked
 
-Triggering is description-based: there is no orchestration hook that runs this skill automatically. When a code-writing skill (`07-write-code` — the `angular-write-code` orchestrator and its init-portal / init-module reference packs, or another track's init step) is about to generate into an existing repo, the agent is responsible for invoking this skill first — treat that as a strong default, not an enforced gate. Skipping it is the single biggest cause of hallucinated paths and duplicated abstractions, so only skip when the repo's layout is already established in the current session.
+Triggering is description-based: there is no orchestration hook that runs this skill automatically. When a code-writing skill (`write-code` — the `angular-write-code` orchestrator and its init-portal / init-module reference packs, or another track's init step) is about to generate into an existing repo, the agent is responsible for invoking this skill first — treat that as a strong default, not an enforced gate. Skipping it is the single biggest cause of hallucinated paths and duplicated abstractions, so only skip when the repo's layout is already established in the current session.
 
 ### Invoke before generation (strongly recommended)
-- About to invoke `07-write-code` for a new module / entity / screen
+- About to invoke `write-code` for a new module / entity / screen
 - About to run the `angular-write-code` init-portal / init-module packs (or another track's init step)
 - User starts a major feature and the agent has no prior map of this repo
 
@@ -182,7 +182,7 @@ Based on the planned work (<insert from caller's context>):
 ```
 
 ### 5. Hand off
-After the report, return control. The caller (usually `07-write-code` or a planning skill) uses the map to slot generation into existing structure.
+After the report, return control. The caller (usually `write-code` or a planning skill) uses the map to slot generation into existing structure.
 
 If the caller is the user directly asking for the map → just present the report and stop.
 

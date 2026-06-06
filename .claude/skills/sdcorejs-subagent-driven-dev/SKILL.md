@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-subagent-driven-dev
-description: Use when `07-write-code` (or its NestJS/NextJS equivalents) is about to execute a feature with 3+ independent sub-tasks — multiple entities under one module, batch screen generation, multi-stack work, large reference-doc batches. Different from `sdcorejs-parallel-dispatch` which decides WHETHER to parallelize; this skill governs HOW to execute the delegation — decompose, brief, dispatch, per-unit two-stage review (spec-compliance then code-quality), merge results, surface partial failures. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Use when `write-code` (or its NestJS/NextJS equivalents) is about to execute a feature with 3+ independent sub-tasks — multiple entities under one module, batch screen generation, multi-stack work, large reference-doc batches. Different from `sdcorejs-parallel-dispatch` which decides WHETHER to parallelize; this skill governs HOW to execute the delegation — decompose, brief, dispatch, per-unit two-stage review (spec-compliance then code-quality), merge results, surface partial failures. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Agent, Bash
 ---
 
@@ -11,7 +11,7 @@ allowed-tools: Read, Agent, Bash
 
 ## When invoked
 - After `06-review-plan` approved a plan with 3+ independent units (multiple entities, multiple modules, multiple stacks)
-- During `07-write-code` when the orchestrator detects the dispatch list is parallelizable
+- During `write-code` when the orchestrator detects the dispatch list is parallelizable
 - Reference doc batches (e.g. "write docs for these 12 components")
 - User says "delegate", "subagent", "fan out", "split up", "làm song song"
 
@@ -224,7 +224,7 @@ Category needs Product to exist first. Sequential. Don't parallelize.
 - `sdcorejs-review` — Stage B per-unit code-quality review (Step 5)
 - `orchestration/repair-loop.md` — closes the fix loop on per-unit review findings (source: `review-code`)
 - `orchestration/verify-before-done.md` — final verification gate after merging units
-- `07-write-code.md` (angular) — orchestrator that triggers this skill when the dispatch table has 3+ rows
+- `write-code.md` (angular) — orchestrator that triggers this skill when the dispatch table has 3+ rows
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
 
