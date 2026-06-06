@@ -47,19 +47,17 @@ Drive these steps in order. For the non-tech user, narrate only the plain-langua
 
 3. **Plan the build + check again** *(`sdcorejs-write-plan` → `sdcorejs-review-plan` = **GATE 2**)* — Lay out the build steps and confirm again, in plain words ("Here's how I'll build it — good to go?"). Same rule: explicit approval only, silence is not consent. On approval, the approved plan is snapshotted automatically (`orchestration/auto-plans`).
 
-4. **Build the engine room (backend)** *(`nestjs-write-code`)* — Generate the backend: scaffold the project (init-project), then each bounded-context module (init-module), then the full CRUD stack per entity (init-entity), then any custom / workflow / bulk behavior (actions). To the user this is just "building the part that stores and processes your data".
+4. **Build the engine room + the screens together** *(`subagent-driven-dev` Mode B — role-split feature loop)* — Instead of building the backend and the screens one after another, build them at the same time: first lock down exactly how the data and screens talk to each other (the contract), then a backend builder, a screen builder, and a quality-checker all work in parallel, and the result is checked against what you approved and refined until it matches. To the user this is just "building the part that stores your data and the screens you'll use, together, and checking them against what you asked for." *(Maintainer note: this runs the contract-freeze barrier → backend (`nestjs-write-code`, simple profile) ‖ frontend (`angular-write-code`) ‖ QC, looped via `sdcorejs-verify-before-done` against the spec's Acceptance Criteria, cap 3 iterations. The older sequential path — `nestjs-write-code` then `angular-write-code` — remains a valid fallback for a single-track feature or if Mode B escalates.)*
 
-5. **Build the screens (frontend)** *(`angular-write-code`)* — Generate the Angular UI for the confirmed screens (list, detail/forms, actions). **Angular is the default frontend for non-tech** — the user is not asked to pick a framework.
+5. **Package it to run with one command** *(`sdcorejs-dockerize`)* — Wrap frontend + backend + database into a single runnable stack so the whole app starts with one command. To the user: "packaging it so you can run it on your machine without installing anything."
 
-6. **Package it to run with one command** *(`sdcorejs-dockerize`)* — Wrap frontend + backend + database into a single runnable stack so the whole app starts with one command. To the user: "packaging it so you can run it on your machine without installing anything."
+6. **Add login** *(`sdcorejs-auth`)* — Wire authentication (Keycloak) into the frontend and backend so the app has a real login screen and demo credentials.
 
-7. **Add login** *(`sdcorejs-auth`)* — Wire authentication (Keycloak) into the frontend and backend so the app has a real login screen and demo credentials.
+7. **Write the start guide** *(`sdcorejs-run-guide`)* — Emit `START.md` — a plain, numbered guide that takes the user from a fresh machine to a running app.
 
-8. **Write the start guide** *(`sdcorejs-run-guide`)* — Emit `START.md` — a plain, numbered guide that takes the user from a fresh machine to a running app.
+8. **Final check** *(`sdcorejs-verify-before-done`)* — Verify the result against what was agreed at the gates. To the user: "checking everything works the way you asked."
 
-9. **Final check** *(`sdcorejs-verify-before-done`)* — Verify the result against what was agreed at the gates. To the user: "checking everything works the way you asked."
-
-10. **Tell the user how to run it** — Close in plain language: "Open a terminal in this folder, type `docker compose up`, wait a moment, then open http://localhost:4200 in your browser and log in with **demo / demo**." Point them at `START.md` for the full guide and for how to stop or reset it.
+9. **Tell the user how to run it** — Close in plain language: "Open a terminal in this folder, type `docker compose up`, wait a moment, then open http://localhost:4200 in your browser and log in with **demo / demo**." Point them at `START.md` for the full guide and for how to stop or reset it.
 
 ## Composes, does not reimplement
 
