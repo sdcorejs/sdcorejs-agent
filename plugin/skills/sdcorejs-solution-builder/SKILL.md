@@ -35,13 +35,13 @@ Non-tech means, for every later step:
 - **Plain language** — no unexplained jargon; explain what a step does and how to react, in the user's own words.
 - **Hide the mechanics** — never narrate skill names or pipeline internals to the user ("now running repair-loop" is forbidden). Report progress as outcomes ("the screens are built and checked"). Skill names in this document stay in parentheticals **for maintainers only**.
 - **Feature + UI framing** — talk about what the software does and what the user will see; never about modules, entities, tables, or APIs.
-- **Forced infra defaults** — the generated software is always: **Angular** frontend, **NestJS** modular-monolith backend, **Keycloak** auth, **Postgres**, packaged as **docker-compose** (one `docker compose up`). The user is not asked to choose any of these.
+- **Forced infra defaults** — the generated software is always: **Angular** frontend, **NestJS** modular-monolith backend, **Keycloak** auth, **Postgres**, packaged as **docker-compose** (one `docker compose up`); the generated backend uses the **`simple`** NestJS profile (single-tenant, role-based login) — the user is never asked about multi-tenancy, permission matrices, or architecture. The user is not asked to choose any of these.
 
 ## The chain
 
 Drive these steps in order. For the non-tech user, narrate only the plain-language sentence — the skill named in each parenthetical is for maintainers.
 
-1. **Understand what you want** *(`sdcorejs-clarify-requirements`)* — Ask the user ONLY about (a) what the software should do and (b) what they will see on screen — per persona rule 7, never about architecture, modules, entities, fields, or storage. From those answers, **derive the modules / entities / fields / data model internally**, then confirm them back as plain outcomes — e.g. "I'll store products with name, code, quantity, and price — correct?" The user reacts to a concrete proposal; they never design it.
+1. **Understand what you want** *(`sdcorejs-clarify-requirements`)* — Ask the user ONLY about (a) what the software should do and (b) what they will see on screen — per persona rule 7, never about architecture, modules, entities, fields, or storage. From those answers, **derive the modules / entities / fields / data model internally**, then confirm them back as plain outcomes — e.g. "I'll store products with name, code, quantity, and price — correct?" The user reacts to a concrete proposal; they never design it. *(Maintainer note: the NestJS **profile** is forced to `simple` for this non-tech door — never surfaced. A developer who needs `enterprise` drives the granular `sdcorejs-clarify-requirements` flow instead.)*
 
 2. **Write it down + check with you** *(`sdcorejs-write-spec` → `sdcorejs-review-spec` = **GATE 1**)* — Capture the agreed features and screens as a spec, then read it back plainly: "Does this match what you wanted?" **Silence is NOT approval** — wait for an explicit yes; iterate on any "no". On approval, the approved spec is snapshotted automatically (`orchestration/auto-specs`).
 

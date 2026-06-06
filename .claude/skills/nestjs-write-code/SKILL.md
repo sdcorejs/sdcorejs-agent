@@ -24,6 +24,8 @@ Read `<target>/.sdcorejs/persona.md` (project-local persona, if present) and `_r
 
 Before dispatching ANY reference, run `orchestration/auto-summary`. If `<target>/.sdcorejs/summary.md` is missing it MUST be generated first (auto-summary delegates the scan to `sdcorejs-code-map` and distills the brief) — this is the gate that keeps generation from inventing module / base-class paths or duplicating shared abstractions. If it exists, auto-summary reads it (refreshing on drift) so dispatch slots into the real layout. Exception: when this run is itself a brand-new `init-project`, there is no project to summarize yet — auto-summary runs in WRITE mode at the END of init instead (see `init-project.md` Step 10).
 
+After ensuring the summary exists, READ the **`profile`** field from `<target>/.sdcorejs/summary.md` (default `simple` if absent). Pass the resolved profile into EVERY dispatched pack (`init-project` / `init-module` / `init-entity` / `actions`) — each pack emits only that profile's templates (see each pack's 'Profile (read FIRST)' section).
+
 ## Reference — read the core catalog FIRST
 
 Before generating any backend code, read [`_refs/nestjs/core-catalog.md`](_refs/nestjs/core-catalog.md). It is the authoritative inventory of the `@sdcorejs/nestjs` core package — the import sub-paths (`@sdcorejs/nestjs`, `/orm`, `/permission`, `/validation`, `/jwt`, `/context`, `/tenancy`, `/audit`, `/i18n`, …), the building blocks (`BaseEntity` + `WithAudit` / `WithTimestamps` mixins, `BaseRepository`, `BaseService`, `BaseController`, `AuthGuard`, `@HasPermission`, `ZodValidationGuard`, `SdCoreModule.forRoot`, `ApiResponse` / `apiError`), and the version pin. **Every import in the packs MUST match a sub-path the catalog documents — do not invent imports.** The architecture WHY behind these choices lives in [`_refs/nestjs/architecture-principles.md`](_refs/nestjs/architecture-principles.md).
@@ -89,6 +91,7 @@ If no approved plan exists and the request is non-trivial, route back to `sdcore
 - Read `_refs/nestjs/core-catalog.md` before generating; every import must match a documented sub-path.
 - Dispatch the matching pack on demand; follow it instead of re-deriving rules here.
 - Enforce the architecture principles (`_refs/nestjs/architecture-principles.md`) on every generated file: `WithAudit(BaseEntity)` base, `BaseRepository` / `BaseService` / `BaseController` inheritance, guard order `@UseGuards(AuthGuard, ZodValidationGuard(schema))` + per-route `@HasPermission`, Zod-not-class-validator, explicit `QueryRunner` for multi-table writes, soft-delete by default, bilingual error envelope via the i18n catalog.
+- Resolve the `profile` (`simple` default | `enterprise`) once from `.sdcorejs/summary.md` and emit it CONSISTENTLY across every pack in the project — never mix profiles within one backend.
 - Match the user's language at runtime (VI/EN); for VI, all error messages, log messages, and comments use proper diacritics.
 - Run the full tail chain after the last step.
 
