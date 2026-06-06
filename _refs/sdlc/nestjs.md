@@ -42,6 +42,9 @@ This file is loaded by `skills/shared/sdlc/0[1-6]-*.md` when the detected track 
 6. **API style**: REST (default) | GraphQL (if used) | gRPC (if used)
 7. **Permission scope**: per-endpoint `@HasPermission()` codes — canonical format **`<module>_<entity>:<action>`** (e.g. `crm_task:create`)
 8. **Test coverage**: `minimal` | `standard` (default) | `full`
+9. **Profile** — `simple` (default) | `enterprise`.
+   - `simple`: single-tenant, flat Keycloak-role permissions, DTOs in `src/modules/<module>/dto/`, lib `WithAudit(BaseEntity)`, core `AuthGuard`. The non-tech default.
+   - `enterprise`: multi-tenant (`tenantCode` + `departmentCode` scoping), page-permission matrix, `@shared` monorepo kernel, `AdminAuthGuard`, internal-secret module, `MASTER`/`TENANT_ADMIN` scopes. Pick when the app is genuinely multi-tenant / multi-service.
 
 ### Useful-optional (defaults safe)
 - Audit columns (default: `createdAt`, `updatedAt`, `createdBy`, `updatedBy` from BaseEntity)
@@ -57,6 +60,7 @@ This file is loaded by `skills/shared/sdlc/0[1-6]-*.md` when the detected track 
 1. Module name + entity name + display label
 2. Persistence (default TypeORM + Postgres — OK?)
 3. Audit + soft-delete (defaults yes — OK?)
+4. Profile (simple default | enterprise — only ask a technical user; non-tech defaults to simple).
 
 **Block B — Boundaries**
 4. Transaction style (default queryRunner manual)
@@ -80,6 +84,7 @@ This file is loaded by `skills/shared/sdlc/0[1-6]-*.md` when the detected track 
 | **API style** | REST |
 | **Permissions** | `<module>_<entity>:{list,create,update,delete}` (e.g. `crm_task:create`) |
 | **Audit + soft-delete** | yes |
+| **Profile** | <simple | enterprise> |
 | **Tests** | <minimal | standard | full> |
 
 → Tiếp theo: `sdcorejs-write-spec` để mình draft spec.

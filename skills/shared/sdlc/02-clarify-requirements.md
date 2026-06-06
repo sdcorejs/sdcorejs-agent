@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Bash
 # 02 — Clarify Requirements (Cross-Track)
 
 ## Purpose
-A spec has hard dependencies on details brainstorm doesn't cover. Angular needs module + entity + fields + layout; NestJS needs persistence + transactions + workflow; Next.js needs production domain + contact email + hosting. This skill blocks the spec stage until every required answer is on the table.
+A spec has hard dependencies on details brainstorm doesn't cover. Angular needs module + entity + fields + layout; NestJS needs persistence + transactions + workflow + profile (`simple` default | `enterprise`); Next.js needs production domain + contact email + hosting. This skill blocks the spec stage until every required answer is on the table.
 
 `sdcorejs-brainstorm` is open-ended exploration (2-3 options + recommendation). This skill is the gating checklist — different ergonomics.
 
@@ -157,12 +157,14 @@ Track-level answers that will repeat across features (domain, hosting, brand col
 - Accept "thôi cứ làm đại" — push back: name the minimum subset that's still required ("Cần ít nhất X và Y trước; phần khác lấy default được")
 - Defer answers that change the architecture (persistence, domain, layout) — those must be locked before the spec stage
 - Mix angular blockers into a nextjs session, or vice versa — load the right `_refs/sdlc/<TRACK>.md`
+- Ask a `non-tech` persona about `profile` (nestjs) — default `simple` silently; only surface `enterprise` to a technical user or when the user explicitly states multi-tenancy / multiple services
 
 ## Anti-patterns
 - Skipping production domain (nextjs) → sitemap + OG URLs ship with `localhost:3000`
 - Skipping contact email (nextjs) → form ships fake (`setTimeout`), defeats the point
 - Skipping module ownership (angular/nestjs) → CRUD code generated in the wrong namespace, refactored later at 3x cost
 - Skipping persistence + transaction style (nestjs) → service layer mixed with TypeORM, hard to swap or test
+- Skipping profile (nestjs) → generated backend over-fits the enterprise shape (multi-tenant guards, `@shared` kernel, `AdminAuthGuard`) when the project is a simple single-tenant app; or under-fits by missing multi-tenant scaffolding when it's needed. For a `non-tech` persona, do NOT ask — default `simple` silently (persona rule: never expose architecture to non-tech users); still confirm the derived data model in plain terms. Offer `enterprise` only to a technical user, or when the user explicitly states multi-tenancy / multiple services.
 - Default-everything without confirmation → wrong palette / wrong layout / wrong workflow / wrong endpoints
 - Bundling 10+ questions in one wall of text → user gives up; ask in blocks
 
