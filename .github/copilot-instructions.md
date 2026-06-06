@@ -80,7 +80,7 @@ For the angular track, `07-write-code` is the single orchestrator; it loads on-d
 
 3. **Memories.** Durable cross-session knowledge lives under the target project's `.sdcorejs/memories/<track>/`, managed by `skills/orchestration/memories.md`. Write when the user says "ghi nhớ"/"remember this" or when a recurring correction is detected.
 
-4. **Session-start ritual.** When opening a target project, glob the target's `.sdcorejs/docs/<track>/*.md` (latest 3) and `.sdcorejs/memories/<track>/*.md` (frontmatter), and silently load that as context before answering. Also glob `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` (frontmatter only) so the next `sdcorejs-write-spec` / `sdcorejs-write-plan` can mirror style.
+4. **Session-start ritual.** When opening a target project, glob the target's `.sdcorejs/docs/<track>/*.md` (latest 3) and `.sdcorejs/memories/<track>/*.md` (frontmatter), and silently load that as context before answering. Also glob `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` (frontmatter only) so the next `sdcorejs-write-spec` / `sdcorejs-write-plan` can mirror style. Also glob `.sdcorejs/persona.md`; if absent on the first substantive request, invoke `sdcorejs-persona` to set it. Once set, load `_refs/shared/persona.md` and adapt all user-facing output to the stored persona.
 
 5. **Bilingual.** Vietnamese request → Vietnamese output (full diacritics for labels/messages). English → English. Permission codes and route paths stay English in both.
 
@@ -93,6 +93,8 @@ For the angular track, `07-write-code` is the single orchestrator; it loads on-d
 9. **Test after generation.** Run `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts` and report summary + failing spec names.
 
 10. **Evidence before claims (always-on).** Never state that something passes, builds, is fixed, or is done without having run the verifying command in the current turn and read its output. This applies to EVERY success claim — interim or final, your own work or a subagent's — not only at the `sdcorejs-verify-before-done` gate. Treat a subagent's "✅ done" as a claim to verify, never as fact. "Should pass" / "looks correct" / a previously-green run are not evidence. Inspired by `superpowers:verification-before-completion`.
+
+11. **Persona-aware output.** Read the target project's `.sdcorejs/persona.md` (default `tech` if absent) and load `_refs/shared/persona.md` before producing user-facing output. `non-tech` = plain language (no unexplained jargon), forced infra defaults (Angular + NestJS modular-monolith + Keycloak + Postgres on docker-compose), always finish with a run guide, both approval gates kept but plainly worded (soft gates). `tech` = unchanged baseline. Orthogonal to the bilingual rule. Managed by `sdcorejs-persona`.
 
 ## Copilot-specific notes
 
@@ -126,6 +128,7 @@ Cross-track skills — apply to all tracks. Dispatch by `description`; directory
 | `sdcorejs-memories` | "ghi nhớ", durable knowledge | ✅ on trigger |
 | `sdcorejs-repair-loop` | after `sdcorejs-review` outputs findings | ✅ on findings |
 | `sdcorejs-comment-code` | ASK gate at comment phase — skip/simple/medium/full | ✅ ASK |
+| `sdcorejs-persona` | first request in a target project with no `.sdcorejs/persona.md`; "giải thích dễ hiểu", "set persona" — ask-once tech/non-tech, store flag, load `_refs/shared/persona.md` | auto on first entry |
 | `sdcorejs-code-map` | new feature / reuse check — read-only architecture scan |  |
 | `sdcorejs-parallel-dispatch` | fan-out 3+ independent tasks — decision gate |  |
 | `sdcorejs-subagent-driven-dev` | after parallel-dispatch=YES |  |
