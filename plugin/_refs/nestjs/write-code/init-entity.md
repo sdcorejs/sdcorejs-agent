@@ -36,9 +36,11 @@ Then confirm only the blocking inputs (entity name + its fields). For a technica
 
 Read `profile` from `<target>/.sdcorejs/summary.md` (default `simple`). The entity (Step 1),
 DTO (Step 3), and service `mapDTO` (Step 4) differ by profile; the repository (Step 2),
-controller (Step 6), module wiring (Step 7), and permission codes (Step 8) are
-profile-independent. Emit ONLY the chosen profile's templates. `enterprise` output is
-unchanged from prior versions.
+module wiring (Step 7), and permission codes (Step 8) are profile-independent. The
+controller (Step 6) shares its route shape across profiles but differs in the **auth guard**
+(`AdminAuthGuard` enterprise / core `AuthGuard` simple) and the **DTO import path** — see
+Step 6. Emit ONLY the chosen profile's templates. `enterprise` output is unchanged from
+prior versions.
 
 ---
 
@@ -414,7 +416,9 @@ export const <Entity>UpdateSchema = <Entity>CreateSchema.partial();
 
 ### Step 6 — Controller (`src/modules/<module>/controllers/<entity>.controller.ts`)
 
-The controller extends `BaseController` (which auto-mounts `POST /search`, `POST /paging`, `GET /all`, `GET /:id`, `DELETE /:id`, all wrapped in `ApiResponse`), and adds only the two write routes with per-route `@HasPermission` + `ZodValidationGuard`. The class-level `@UseGuards(AdminAuthGuard)` authenticates every route + loads permission codes into context. *(Ground: ref app `src/modules/crm/controllers/task.controller.ts` — `@Controller('task') @UseGuards(AdminAuthGuard) extends BaseController<Task, TaskDTO>`, `@Post() @HasPermission('crm_task:create') @UseGuards(ZodValidationGuard(TaskCreateSchema))`, `@Put(':id') @UseGuards(ZodValidationGuard(TaskUpdateSchema))`.)*
+The controller extends `BaseController` (which auto-mounts `POST /search`, `POST /paging`, `GET /all`, `GET /:id`, `DELETE /:id`, all wrapped in `ApiResponse`), and adds only the two write routes with per-route `@HasPermission` + `ZodValidationGuard`. The class-level `@UseGuards(...)` authenticates every route + loads permission codes into context — the guard used differs by profile. *(Ground: ref app `src/modules/crm/controllers/task.controller.ts` — `@Controller('task') @UseGuards(AdminAuthGuard) extends BaseController<Task, TaskDTO>`, `@Post() @HasPermission('crm_task:create') @UseGuards(ZodValidationGuard(TaskCreateSchema))`, `@Put(':id') @UseGuards(ZodValidationGuard(TaskUpdateSchema))`.)*
+
+**Profile: enterprise**
 
 ```ts
 import { BaseController, ApiResponse } from '@sdcorejs/nestjs/orm';
@@ -422,8 +426,6 @@ import { HasPermission } from '@sdcorejs/nestjs/permission';
 import { ZodValidationGuard } from '@sdcorejs/nestjs/validation';
 import { AdminAuthGuard } from 'src/common/admin-auth.guard';
 import { Body, Controller, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
-// enterprise: import { <Entity>DTO } from '@shared/<module>';
-// simple:     import { <Entity>DTO } from 'src/modules/<module>/dto/<entity>.dto';
 import { <Entity>DTO } from '@shared/<module>';
 import { <Entity> } from 'src/modules/<module>/entities';
 import { <Entity>CreateSchema, <Entity>UpdateSchema } from 'src/modules/<module>/schemas/<module>.schema';
@@ -436,6 +438,51 @@ import { I<Entity>Service } from 'src/modules/<module>/services';
  */
 @Controller('<entity>')
 @UseGuards(AdminAuthGuard)
+export class <Entity>Controller extends BaseController<<Entity>, <Entity>DTO> {
+  constructor(@Inject(I<Entity>Service) private readonly service: I<Entity>Service) {
+    super(service);
+  }
+
+  @Post()
+  @HasPermission('<module>_<entity>:create')
+  @UseGuards(ZodValidationGuard(<Entity>CreateSchema))
+  async create(@Body() req: <Entity>DTO) {
+    return ApiResponse.ok(await this.service.create(req));
+  }
+
+  @Put(':id')
+  @HasPermission('<module>_<entity>:update')
+  @UseGuards(ZodValidationGuard(<Entity>UpdateSchema))
+  async update(@Param('id') id: string, @Body() req: <Entity>DTO) {
+    return ApiResponse.ok(await this.service.update(id, req));
+  }
+}
+```
+
+---
+
+**Profile: simple**
+
+Uses the core `AuthGuard` (`@sdcorejs/nestjs/permission`) directly — the simple profile does NOT scaffold `AdminAuthGuard`. The `AuthGuard` loads codes via the `RolePermissionStrategy` (realm roles).
+
+```ts
+import { BaseController, ApiResponse } from '@sdcorejs/nestjs/orm';
+import { AuthGuard, HasPermission } from '@sdcorejs/nestjs/permission';
+import { ZodValidationGuard } from '@sdcorejs/nestjs/validation';
+import { Body, Controller, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { <Entity>DTO } from 'src/modules/<module>/dto/<entity>.dto';
+import { <Entity> } from 'src/modules/<module>/entities';
+import { <Entity>CreateSchema, <Entity>UpdateSchema } from 'src/modules/<module>/schemas/<module>.schema';
+import { I<Entity>Service } from 'src/modules/<module>/services';
+
+/**
+ * <Entity> CRUD. Inherits POST /search, POST /paging, GET /all, GET /:id, DELETE /:id from
+ * BaseController. Class-level core AuthGuard authenticates + loads permission codes (the
+ * RolePermissionStrategy maps Keycloak realm roles → codes). create/update add per-route
+ * @HasPermission + ZodValidationGuard.
+ */
+@Controller('<entity>')
+@UseGuards(AuthGuard)
 export class <Entity>Controller extends BaseController<<Entity>, <Entity>DTO> {
   constructor(@Inject(I<Entity>Service) private readonly service: I<Entity>Service) {
     super(service);
@@ -589,7 +636,7 @@ src/modules/<module>/
   - **Enterprise:** `mapDTO` uses `SdContext.hasPermission('<module>_<entity>', '<action>')` and includes `tenantCode`/`departmentCode` in the returned DTO.
   - **Simple:** `mapDTO` injects `ContextService` and uses `this.ctx.hasPermission('<module>_<entity>:<action>')`; no tenancy fields in the returned DTO.
 - `schemas/<module>.schema.ts` has `<Entity>CreateSchema` + `<Entity>UpdateSchema = <Entity>CreateSchema.partial()` with i18n error codes. (profile-independent)
-- `controllers/<entity>.controller.ts` exports `<Entity>Controller extends BaseController<...>` with `@HasPermission` + `ZodValidationGuard` on create/update under `@UseGuards(AdminAuthGuard)`. (profile-independent structure; DTO import path differs — enterprise: `@shared/<module>`, simple: `src/modules/<module>/dto`)
+- `controllers/<entity>.controller.ts` exports `<Entity>Controller extends BaseController<...>` with `@HasPermission` + `ZodValidationGuard` on create/update. **Enterprise:** under `@UseGuards(AdminAuthGuard)`, DTO imported from `@shared/<module>`. **Simple:** under `@UseGuards(AuthGuard)` (core, from `@sdcorejs/nestjs/permission`), DTO imported from `src/modules/<module>/dto/<entity>.dto`.
 - All four barrels (`entities` / `repositories` / `services` / `controllers`) re-export the new files. Enterprise also has `base/shared/<module>/index.ts`.
 - `<module>.module.ts` registers `<Entity>` (forFeature), `<Entity>Controller` (controllers), both provider bindings, and `I<Entity>Service` (exports) — exactly once each. (profile-independent)
 - `npm run build` typechecks the new stack.
