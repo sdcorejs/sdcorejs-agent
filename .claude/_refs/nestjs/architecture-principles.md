@@ -40,7 +40,7 @@ src/
 export class ProductEntity extends BaseEntity {
   @Column() code: string;
   @Column() name: string;
-  // BaseEntity provides: id, createdAt, updatedAt, createdBy, updatedBy, deletedAt
+  // WithAudit(BaseEntity) provides: id, createdAt, updatedAt, deletedAt, createdBy, modifiedBy, creator, modifier
 }
 
 // repositories/product.repository.ts
@@ -57,7 +57,7 @@ export class ProductService extends BaseService<ProductEntity> {
 ```
 
 **Why**:
-- Audit columns are everywhere (no entity ever forgets `createdBy`)
+- Audit columns are everywhere (no entity ever forgets `createdBy` / `modifiedBy`)
 - Soft-delete (`deletedAt IS NULL` filter) is automatic
 - Pagination + sorting + filtering helpers come for free from `BaseRepository`
 - Testing fixtures (test-container PG + seed) work uniformly
@@ -93,14 +93,16 @@ Order matters:
 
 ---
 
-## 4. Zod schemas live in the shared package, used twice
+## 4. Zod schemas live in the module's `schemas/` folder
+
+**Canonical location** (default / `simple` profile):
 
 ```
-libs/shared/schemas/product.schema.ts
+src/modules/<module>/schemas/<module>.schema.ts
 ```
 
 ```ts
-// libs/shared/schemas/product.schema.ts
+// src/modules/catalog/schemas/catalog.schema.ts
 import { z } from 'zod';
 
 export const productSaveReqSchema = z.object({
@@ -116,12 +118,13 @@ Used by:
 1. **`ZodValidationGuard`** at controller boundary — invalid requests get `400` with `{ vi, en }` message
 2. **OpenAPI generator** — schema descriptions feed Swagger UI / contract tests
 
+**`enterprise` profile only**: when a schema must be shared across multiple modules OR consumed by the frontend, move it to `base/shared/` (aliased `@shared`). This is NOT the default — don't reach for `@shared` unless you have a concrete cross-module consumer.
+
 **Anti-patterns**:
 - Using `class-validator` decorators on a DTO class — fragmented validation logic, runtime + compile-time disagree, OpenAPI schema diverges from validation rules
-- Defining the schema inside the module (`src/modules/<x>/schemas/`) — can't share across modules
-- Defining the schema inside the controller file — can't reuse for integration tests
+- Defining the schema inline in the controller or service file — can't reuse for integration tests
 
-**Why**: ONE source of truth for "what's a valid Product payload". Validation, OpenAPI doc, integration tests, frontend type generation all read the same Zod object.
+**Why**: ONE source of truth for "what's a valid Product payload". Validation, OpenAPI doc, integration tests, and (in enterprise profile) frontend type generation all read the same Zod object. Zod is the SDCoreJS standard — no `class-validator`.
 
 ---
 
@@ -320,19 +323,28 @@ The shared `Pagination<T>` response shape:
 
 ## 13. Standard response envelope
 
-```ts
-// Success
-{ data: <payload>, error: null }
+Use the `@sdcorejs/nestjs` response helpers — do NOT hand-roll `{ data, error: null }` literals:
 
-// Error
-{ data: null, error: { code: 'PRODUCT_NOT_FOUND', vi: '…', en: '…' } }
+```ts
+import { ApiResponse, apiError } from '@sdcorejs/nestjs';
+
+// Success — controller / service returns:
+return ApiResponse.ok(data);
+
+// Error (domain error thrown from service):
+throw apiError('PRODUCT_NOT_FOUND', 'Product not found', { id });
+
+// Error (inline, less common):
+return ApiResponse.error('PRODUCT_NOT_FOUND', 'Product not found', optionalData);
 ```
 
-Global response interceptor wraps every successful response in `{ data, error: null }`. Exception filter wraps every thrown error in `{ data: null, error: ... }`.
+`SdCoreModule.forRoot` installs the global response interceptor and exception filter that serialize these into a uniform wire shape. The exact wire envelope is owned by `@sdcorejs/nestjs` — the frontend always gets ONE shape to parse regardless of endpoint.
 
-**Why**: frontend has ONE shape to parse. `try { res.data } catch { res.error }` is uniform across all endpoints.
+**Why**: frontend has ONE shape to parse. A single interceptor/filter pair means error serialization is consistent across all endpoints — no per-controller try/catch plumbing.
 
-**Anti-pattern**: returning the raw entity directly (`return product`) — frontend writes per-endpoint parsing logic; refactor cost explodes when error handling needs to be added later.
+**Anti-patterns**:
+- Returning the raw entity directly (`return product`) — frontend writes per-endpoint parsing logic; refactor cost explodes when error handling needs to be added later.
+- Hand-rolling `{ data: <payload>, error: null }` / `{ data: null, error: {...} }` literals in controller code — bypasses the lib's interceptor and produces a shape that diverges when `@sdcorejs/nestjs` evolves.
 
 ---
 

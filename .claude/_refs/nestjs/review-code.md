@@ -94,7 +94,7 @@ Severity: 🔴 Critical per multi-write service method without transaction.
 
 ### 6. `BaseEntity` / `BaseRepository` / `BaseService` from `@sdcorejs/nestjs/orm`
 
-Use the base classes — they ship the audit columns (createdAt, updatedAt, createdBy, updatedBy), the soft-delete pattern, and the error helpers. The entity base is `WithAudit(BaseEntity)` (simple profile) or the local `src/common/base-entity.ts` (`[enterprise]`).
+Use the base classes — they ship the audit columns (createdAt, updatedAt, createdBy, modifiedBy), the soft-delete pattern, and the error helpers. The entity base is `WithAudit(BaseEntity)` (simple profile) or the local `src/common/base-entity.ts` (`[enterprise]`).
 
 Probe:
 ```bash
