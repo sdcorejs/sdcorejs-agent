@@ -182,7 +182,7 @@ Keycloak provider — i.e. they wire an existing framework, they don't build the
 `sdcorejs-solution-builder` depends on these for the BE half.
 
 *(Related cleanup — convention drift: the track skills still live at
-`skills/tracks/<track>/write-code.md`. Since each track now has exactly one write-code skill,
+`skills/tracks/<track>/07-write-code.md`. Since each track now has exactly one write-code skill,
 the `07-` prefix is meaningless. Rename to `skills/tracks/<track>/write-code.md` across all three
 tracks + update references (CLAUDE.md, AGENTS.md, copilot-instructions) + regenerate the
 `.claude/skills/` mirror. New skill files added by this design carry no numeric prefix.)*
@@ -197,7 +197,7 @@ tracks + update references (CLAUDE.md, AGENTS.md, copilot-instructions) + regene
 - `_refs/nestjs/write-code/{init-project,init-module,init-entity,controller,service,repository}.md`
   — new on-demand reference packs loaded by the single `nestjs-write-code` skill (mirrors
   `_refs/angular/write-code/`)
-- `skills/tracks/{angular,nestjs,nextjs}/write-code.md` → rename to `write-code.md` (drop the
+- `skills/tracks/{angular,nestjs,nextjs}/07-write-code.md` → rename to `write-code.md` (drop the
   now-meaningless numeric prefix; one write-code skill per track)
 - `_refs/shared/persona.md` (new behavior contract)
 - `_refs/infra/` — compose/Dockerfile/realm-JSON templates loaded by the infra skills
