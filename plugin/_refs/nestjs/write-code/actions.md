@@ -85,13 +85,13 @@ import { BaseService, IBaseService } from '@sdcorejs/nestjs/orm';
 import { SdContext } from 'src/common/context';
 import { badRequest } from 'src/common/errors';
 import { <Entity>DTO } from '@shared/<module>';
-import { SdPagingReq, SdPagingRes } from '@shared/core';
+import { PagingReq, PagingRes } from '@shared/core';
 import { <Entity> } from 'src/modules/<module>/entities';
 import { I<Entity>Repository } from 'src/modules/<module>/repositories';
 
 export interface I<Entity>Service extends IBaseService<<Entity>, <Entity>DTO> {
   // Caller-scoped listing: only rows owned by / assigned to the current user.
-  mine: (req: SdPagingReq<<Entity>>) => Promise<SdPagingRes<<Entity>DTO>>;
+  mine: (req: PagingReq<<Entity>>) => Promise<PagingRes<<Entity>DTO>>;
   // A status transition (see §6 — Workflow). Returns the updated entity.
   transition: (id: string, req: <Entity>TransitionReq) => Promise<<Entity>>;
 }
@@ -109,7 +109,7 @@ export class <Entity>Service extends BaseService<<Entity>, <Entity>DTO> implemen
    * authenticated request (ALS store). The base `paging` accepts a second arg of extra
    * raw `andWheres` (parameterized) that AND with the standard filters. `e` aliases the row.
    */
-  mine = async (req: SdPagingReq<<Entity>>): Promise<SdPagingRes<<Entity>DTO>> => {
+  mine = async (req: PagingReq<<Entity>>): Promise<PagingRes<<Entity>DTO>> => {
     const { userId } = SdContext;
     const { items, total } = await this.paging(req, {
       andWheres: [
@@ -194,7 +194,7 @@ import { ZodValidationGuard } from '@sdcorejs/nestjs/validation';
 import { AdminAuthGuard } from 'src/common/admin-auth.guard';
 import { Body, Controller, Get, Inject, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiResponse as SharedApiResponse, SdPagingReq } from '@shared/core';
+import { ApiResponse as SharedApiResponse, PagingReq } from '@shared/core';
 import { <Entity>DTO, <Entity>TransitionReq } from '@shared/<module>';
 import { <Entity> } from 'src/modules/<module>/entities';
 import { <Entity>TransitionSchema } from 'src/modules/<module>/schemas/<module>.schema';
@@ -210,7 +210,7 @@ export class <Entity>Controller extends BaseController<<Entity>, <Entity>DTO> {
   // ----- caller-scoped listing (body = paging request) -----
   @Post('mine')
   @HasPermission('<module>_<entity>:view_mine')
-  async mine(@Body() req: SdPagingReq<<Entity>>) {
+  async mine(@Body() req: PagingReq<<Entity>>) {
     return ApiResponse.ok(await this.service.mine(req));
   }
 

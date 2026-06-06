@@ -384,6 +384,25 @@ export abstract class BaseEntity extends WithAudit(CoreBaseEntity) {}
 
 > If you are migrating an existing database whose audit columns differ from the lib's, follow the ref-app pattern instead: a hand-written `BaseEntity extends TypeOrmBaseEntity` declaring the exact legacy columns (`modifiedAt`, `deletor`, …). The lib's `BaseRepository`/`BaseService`/`BaseController` are column-name-agnostic, so they operate on either base unchanged. Document the choice.
 
+**`src/common/errors.ts`** — the app-local domain-error helper. `badRequest(code, data?)` throws a code-based 400 wrapping the lib `apiError(code, message, data?)` envelope; the lib `I18nExceptionFilter` recognizes the envelope and localizes `message` from `code` (bilingual) using the request language, with `data` supplying `{var}` placeholders. The default message is set to `code` so the response stays meaningful even with no i18n layer. This is what `actions.md` depends on for domain validation. *(Ground: ref app `src/common/errors.ts`.)*
+
+```ts
+import { BadRequestException } from '@nestjs/common';
+import { apiError } from '@sdcorejs/nestjs/orm';
+
+/**
+ * Throw a code-based 400 error. `code` is an i18n key (e.g. `crm.task.name.required`); the lib
+ * `I18nExceptionFilter` recognizes the `apiError(code, message, data?)` envelope, localizes the
+ * `message` via the registered resolver using the request language, and returns the `{ error }`
+ * envelope carrying both `code` and the resolved `message`. `data` supplies `{var}` placeholders.
+ * Typed `: never` so TS narrows control flow after a guard. The default message is `code` so the
+ * response stays meaningful even with no i18n layer wired.
+ */
+export function badRequest(code: string, data?: Record<string, unknown>): never {
+  throw new BadRequestException(apiError(code, code, data));
+}
+```
+
 **`src/common/tenancy/app-tenancy.strategy.ts`** — `implements ITenancyStrategy` (catalog tenancy section). Keys MUST match the entity column names the lib filters on (`@Scoped`/`@TenantScoped` columns).
 
 ```ts
@@ -492,6 +511,11 @@ export class SdContext {
   static get departmentCode(): string | undefined {
     return custom('departmentCode');
   }
+  // why: full display name of the current actor — user claim first (JwtStrategy.validate), then the
+  //      `fullName` custom header (ContextModule customHeaders → store.custom). Used e.g. by Excel export.
+  static get fullName(): string | undefined {
+    return (_ctx?.get('user') as any)?.fullName || custom('fullName');
+  }
   static get internalSecret(): string | undefined {
     return custom('internalSecret');
   }
@@ -513,6 +537,13 @@ export class SdContext {
     return (_ctx?.permissions ?? []).includes(`${model}:${action}`);
   }
 }
+```
+
+**`src/common/context/index.ts`** — barrel so consumers import from the folder (`from 'src/common/context'`) rather than the file. `actions.md` imports `SdContext` from `src/common/context`.
+
+```ts
+// src/common/context/index.ts
+export * from './sd-context';
 ```
 
 **`src/common/admin-auth.guard.ts`** — wraps the passport JWT guard + lib permission primitives. Differs from the bare lib `AuthGuard` in that it loads permission codes into context on **every** authenticated request (so `SdContext.hasPermission` works inside services/`mapDTO` on undecorated routes too).
@@ -642,7 +673,7 @@ export class JwtStrategy extends KeycloakJwtStrategy {
 ```ts
 // base/shared/core/index.ts — re-export the lib response + paging surface under a stable alias.
 export { ApiResponse, apiError } from '@sdcorejs/nestjs';
-export type { PagingReq, Filter, Order } from '@sdcorejs/utils';
+export type { PagingReq, PagingRes, Filter, Order } from '@sdcorejs/utils';
 ```
 
 ```ts
@@ -773,11 +804,12 @@ KEYCLOAK_ISSUER=http://localhost:8080/realms/dev
     ├── migrations/.gitkeep      # empty → migration:run is a no-op exit 0
     ├── common/
     │   ├── base-entity.ts
+    │   ├── errors.ts
     │   ├── admin-auth.guard.ts
     │   ├── admin-permission.strategy.ts
     │   ├── app-audit.strategy.ts
     │   ├── tenancy/app-tenancy.strategy.ts
-    │   ├── context/sd-context.ts
+    │   ├── context/{sd-context.ts,index.ts}
     │   └── internal-secret/{env-internal-secret.provider.ts,internal-secret.module.ts,index.ts}
     └── core/
         └── modules/jwt/jwt.strategy.ts
@@ -791,6 +823,7 @@ KEYCLOAK_ISSUER=http://localhost:8080/realms/dev
 - `npm run build` (nest build) — TypeScript typecheck passes.
 - `npm run start:dev` boots: `ensureSchemas()` creates the schemas, the DataSource connects, the app listens on `:3000`. (Needs a reachable Postgres + the env from `.env`.)
 - `npm run migration:run` exits 0 against the empty `src/migrations/` (proves the Plan 2 Docker CMD chain is safe).
+- `src/common/errors.ts` exports `badRequest(code, data?)` (the domain-error helper `actions.md` depends on); `src/common/context/index.ts` barrels `./sd-context` (so `from 'src/common/context'` resolves) and `SdContext` exposes a `fullName` getter (used by `actions.md` Excel export).
 - No `.claude` / `.git` / domain-specific files leaked into the target.
 
 ---

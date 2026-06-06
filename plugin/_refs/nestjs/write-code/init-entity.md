@@ -330,7 +330,7 @@ export class <Entity>Controller extends BaseController<<Entity>, <Entity>DTO> {
   @HasPermission('<module>_<entity>:update')
   @UseGuards(ZodValidationGuard(<Entity>UpdateSchema))
   async update(@Param('id') id: string, @Body() req: <Entity>DTO) {
-    return ApiResponse.ok(await this.service.update({ ...req, id }));
+    return ApiResponse.ok(await this.service.update(id, req));
   }
 }
 ```
