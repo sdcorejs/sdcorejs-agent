@@ -37,15 +37,16 @@ For each scope item in the confirmed plan (or the direct request), match it to a
 | Request / scope item | Pack to read |
 |---|---|
 | Scaffold a fresh backend — "khởi tạo backend / init backend", "bootstrap a modular-monolith API on @sdcorejs/nestjs", "set up the NestJS project skeleton" (no existing project yet) | [`_refs/nestjs/write-code/init-project.md`](_refs/nestjs/write-code/init-project.md) (run FIRST before any module/entity work) |
+| Always — the admin module (authn/authz authority): users/roles/permissions [+tenant/department enterprise] | [`_refs/nestjs/write-code/init-admin.md`](_refs/nestjs/write-code/init-admin.md) (ALWAYS run, right after init-project) |
 | Add a bounded-context module — "tạo module X / add a domain module", "scaffold the crm / masterdata / billing module", "set up a new module before adding entities" | [`_refs/nestjs/write-code/init-module.md`](_refs/nestjs/write-code/init-module.md) |
 | Add a full CRUD entity — "thêm entity X / tạo CRUD cho X", "scaffold the task / customer / invoice entity with full CRUD", "add an entity + repository, service, controller, validation" (entity / repository / service / controller / schema / DTO) | [`_refs/nestjs/write-code/init-entity.md`](_refs/nestjs/write-code/init-entity.md) |
 | Custom / non-CRUD endpoints — "thêm action / nút approve / chuyển trạng thái" (workflow), "màn của tôi / việc của team" (caller-scoped), "xuất Excel / export báo cáo", "import / bulk create / xóa nhiều", any domain method or cross-module access on top of an existing entity stack | [`_refs/nestjs/write-code/actions.md`](_refs/nestjs/write-code/actions.md) |
 
-Each pack further links the literal code templates / snippets it renders. For a brand-new backend, the natural sequence is **init-project → init-module → init-entity → actions**.
+Each pack further links the literal code templates / snippets it renders. For a brand-new backend, the natural sequence is **init-project → admin → init-module → init-entity → actions**.
 
 ## Execution order + subagent fan-out
 
-Execution order: **project → module → entity → actions**. If the plan touches multiple items, run them in this order. Most backend work shares DB / module state, so the default is sequential — do NOT parallelize entity stacks that touch the same module wiring.
+Execution order: **project → admin → module → entity → actions**. `init-admin` ALWAYS runs right after `init-project` and BEFORE any `init-module` / `init-entity` — it owns the project's `IPermissionStrategy` + user-lookup `JwtStrategy`, so domain modules' `@HasPermission` resolve against it. If the plan touches multiple items, run them in this order. Most backend work shares DB / module state, so the default is sequential — do NOT parallelize entity stacks that touch the same module wiring.
 
 **Subagent-driven fan-out (when 3+ independent units):** if the plan adds 3 or more *independent* units that do NOT share mutable state — e.g. several entities in DIFFERENT modules, or several self-contained custom actions with no shared files — dispatch them via `orchestration/parallel-dispatch` / `sdcorejs-subagent-driven-dev` so each unit is generated + reviewed in its own subagent. Units that append to the same `<module>.module.ts` barrels or the same `MODULE_SCHEMAS` / `RouterModule.register` arrays are NOT independent — keep those sequential.
 
@@ -88,6 +89,7 @@ If no approved plan exists and the request is non-trivial, route back to `sdcore
 ## Rules
 
 ### MUST DO
+- Every generated backend includes the `admin` module (`init-admin`) — the authn/authz authority. Run it right after `init-project`, before domain modules. Account ops proxy the Keycloak Admin API; permissions are app-DB role→code (NOT realm roles).
 - Read `_refs/nestjs/core-catalog.md` before generating; every import must match a documented sub-path.
 - Dispatch the matching pack on demand; follow it instead of re-deriving rules here.
 - Enforce the architecture principles (`_refs/nestjs/architecture-principles.md`) on every generated file: `WithAudit(BaseEntity)` base, `BaseRepository` / `BaseService` / `BaseController` inheritance, guard order `@UseGuards(AuthGuard, ZodValidationGuard(schema))` + per-route `@HasPermission`, Zod-not-class-validator, explicit `QueryRunner` for multi-table writes, soft-delete by default, bilingual error envelope via the i18n catalog.
@@ -105,7 +107,7 @@ If no approved plan exists and the request is non-trivial, route back to `sdcore
 
 ## Related references
 - `_refs/nestjs/core-catalog.md` — `@sdcorejs/nestjs` core API inventory (read FIRST)
-- `_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md` — the on-demand packs
+- `_refs/nestjs/write-code/{init-project,init-admin,init-module,init-entity,actions}.md` — the on-demand packs
 - `_refs/nestjs/architecture-principles.md` — the WHY behind the conventions
 - `_refs/sdlc/nestjs.md` — design-phase (brainstorm/clarify/spec/plan) patterns
 - `sdcorejs-review-plan` — runs before; the approved plan is the input
