@@ -247,7 +247,7 @@ Freeze it: role agents must NOT mutate the contract mid-iteration. Embed it VERB
 three briefs.
 
 ### B.2 Phase 1 — Parallel role fan-out (ONE message, 3 Agent calls)
-Three self-contained briefs (use the parallel-dispatch briefing template), file-disjoint:
+Three self-contained briefs (use the parallel-dispatch briefing template), file-disjoint. Paths below are **topology-relative** (see B.1): for the single-deploy-root default they nest under `backend/` and `frontend/` respectively (e.g. `backend/src/modules/<module>/**`, `frontend/src/libs/<module>/**`).
 - BE  → `nestjs-write-code` packs at the chosen profile; writes `src/modules/<module>/**`; owns BE unit tests.
 - FE  → `angular-write-code` packs; writes `src/libs/<module>/**`; consumes the contract; owns FE component tests.
 - QC  → from the frozen contract + spec acceptance criteria: writes the acceptance checklist +
