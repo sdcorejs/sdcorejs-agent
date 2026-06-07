@@ -16,7 +16,7 @@ The realm template at `_refs/infra/keycloak/realm-export.json` seeds a ready-to-
 
 - **Realm:** `app`
 - **Client:** `app-spa` — a **public** OpenID-Connect client (PKCE / standard flow; no client secret). Redirect + web-origins locked to `http://localhost:4200`.
-- **Realm roles:** `user` and `admin`.
+- **Realm roles:** `user` and `admin`. For a **simple-profile** backend, `sdcorejs-auth` ALSO seeds one realm role per app permission code (`<module>_<entity>:<action>`) and assigns them to `demo` — because in the simple profile the realm roles ARE the permission codes (see the skill's Step 1.5). For an **enterprise-profile** backend the codes come from a page-permission matrix instead, and the realm keeps just `user`/`admin`.
 - **Demo user:** username **`demo`**, password **`demo`** (non-temporary), assigned the `user` role. Use it to log in immediately after `docker compose up`.
 
 **How and when it is imported.** The `keycloak` compose service runs `start-dev --import-realm`, which reads any realm JSON mounted under `/opt/keycloak/data/import/`. Keycloak persists realm state in its own `keycloak` database (a separate DB on the same Postgres server, per the compose comments). Because of this:
@@ -143,3 +143,15 @@ To support a different provider (Auth0, AuthOM, a hosted OIDC, etc.):
 2. The `sdcorejs-auth` skill body **stays the same** — it just loads the new ref instead of (or in addition to) this one.
 
 No skill edits are required to onboard a new provider — only a new knowledge ref.
+
+---
+
+## 7. Permission model by profile
+
+- **simple** — realm roles == permission codes. `JwtStrategy.validate` maps `realm_access.roles`
+  → `user.roles`; `RolePermissionStrategy.load()` returns them; `@HasPermission('<module>_<entity>:<action>')`
+  matches by membership; the FE `loadPermissions` reads the same `realmAccess.roles`. `sdcorejs-auth`
+  Step 1.5 seeds the codes-as-roles into the realm import and grants them to `demo`. Without this the
+  demo user (only the `user` role) is denied every guarded write.
+- **enterprise** — permission codes come from a `{ [model]: { [action]: boolean } }` matrix resolved by
+  `AppPermissionStrategy` (admin module / DB), independent of realm roles. The realm keeps `user`/`admin`.

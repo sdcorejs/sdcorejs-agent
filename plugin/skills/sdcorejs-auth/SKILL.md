@@ -27,6 +27,7 @@ Provider-agnostic by design: the skill body describes *how* to wire auth; the pr
 1. **Load `_refs/infra/auth-keycloak.md`** — this is the **source of truth** for everything below (realm contents, FE/BE wiring, the two-URL gotcha, single-origin `/api`). Read it before writing anything; do not work from memory.
 2. **Read persona.** Read the target project's `.sdcorejs/persona.md` (`persona:` field). Absent → `tech`. Then load `_refs/shared/persona.md` and apply the matching contract.
 3. If `non-tech`: call this step **"đăng nhập"** (or "login"). Explain in plain words — "mình sẽ bật tính năng đăng nhập cho ứng dụng, để chạy lên là có màn đăng nhập và tài khoản dùng thử". **Hide the JWT/OIDC mechanics** — no "Bearer token", "JWKS", "issuer", "PKCE", "interceptor", "guard" in the user-facing narration. Report progress as outcomes ("đã bật đăng nhập xong"). If `tech`: use the exact terms freely.
+4. Detect the backend **profile** — read `profile` from `<target>/.sdcorejs/summary.md` (default `simple`). The permission wiring differs by profile (Step 1.5).
 
 ## Step 1 — realm import present
 
@@ -34,7 +35,37 @@ The realm template seeds a ready-to-use realm (realm `app`, public client `app-s
 
 1. Confirm **`<deploy-root>/infra/keycloak/realm-export.json`** exists in the deploy root (it is emitted by `sdcorejs-dockerize` and mounted into the Keycloak container at `/opt/keycloak/data/import/`).
 2. If it is **missing**, copy it from `_refs/infra/keycloak/realm-export.json` into `<deploy-root>/infra/keycloak/realm-export.json` (Read the template, Write to the target).
-3. Do NOT edit the realm contents here. The realm is seeded only on first boot and survives restarts (it lives in the `keycloak` Postgres DB, not the container filesystem) — see `_refs/infra/auth-keycloak.md` §1.
+3. Do NOT edit the realm contents here, **except** for one permitted pre-first-boot change: if the backend uses the **simple profile**, augment the realm import with the app's permission codes as realm roles assigned to `demo` (see Step 1.5). Beyond that, realm contents are not modified here — the realm is seeded only on first boot and survives restarts (it lives in the `keycloak` Postgres DB, not the container filesystem) — see `_refs/infra/auth-keycloak.md` §1.
+
+## Step 1.5 — Permission model (by profile)
+
+How a logged-in user's permissions reach `@HasPermission` differs by backend profile.
+
+**simple profile (non-tech default) — realm roles ARE the permission codes.**
+The backend's `RolePermissionStrategy.load()` returns the user's Keycloak realm roles, and
+`@HasPermission('<module>_<entity>:<action>')` checks membership; the FE
+`SD_PERMISSION_CONFIGURATION.loadPermissions` likewise reads `realmAccess.roles`. So the realm
+MUST define a realm role for every permission code the generated backend uses, or every write 403s.
+
+Reconcile before first boot (the realm seeds only once — see §1):
+1. Collect the codes: grep the generated backend for `@HasPermission('...')`
+   (e.g. `rg -o "@HasPermission\('([^']+)'\)" -r '$1' backend/src --no-filename | sort -u`).
+   These are `<module>_<entity>:<action>` strings (e.g. `school_student:create`).
+2. In the deploy-root realm import (`<deploy-root>/infra/keycloak/realm-export.json`), add each
+   code as a **realm role** (name = the code verbatim), and assign ALL of them to the `demo` user
+   so the demo account can exercise every action.
+3. (Optional, to demo a read-only role) seed a second user `teacher`/`teacher` granted only the
+   read-style codes (`:view` / `:list` / `:view_*`), leaving writes to `demo`.
+
+> Keycloak realm role names accept the `:` character, so a role literally named `school_student:create`
+> is valid. If a target Keycloak rejects `:` in a role name, fall back to roles WITHOUT the colon
+> (e.g. `school_student_create`) and have `RolePermissionStrategy` normalize `_`→`:` on load — document
+> whichever you pick in the project.
+
+**enterprise profile — page-permission matrix (unchanged).**
+Permissions come from `AppPermissionStrategy` reading a `{ [model]: { [action]: boolean } }` matrix
+(seeded by the admin module / DB), NOT from realm roles. Leave the realm roles as the template's
+`user` + `admin` and wire the matrix per the admin module. Do NOT seed codes-as-roles for enterprise.
 
 ## Step 2 — Frontend (Angular)
 
@@ -122,8 +153,8 @@ There is exactly **one** Keycloak server, reached by **two different hostnames**
 
 After wiring, tell the user the **demo login**:
 
-- **tech:** "Auth is wired. Log in with the seeded demo user — **`demo` / `demo`** (username / password). Keycloak admin console at `http://localhost:8080` (admin creds from `.env`)."
-- **non-tech:** in plain words — "đã bật đăng nhập xong. Khi chạy ứng dụng lên, bạn đăng nhập thử bằng tài khoản **demo / demo** (tên đăng nhập là `demo`, mật khẩu là `demo`) là vào được." Do not mention realms, JWKS, issuers, or interceptors.
+- **tech:** "Auth is wired. Log in with the seeded demo user — **`demo` / `demo`** (username / password) — this account has all permission codes assigned so every action in the app is accessible. If the read-only `teacher`/`teacher` account was seeded (Step 1.5), it can only view, not write. Keycloak admin console at `http://localhost:8080` (admin creds from `.env`)."
+- **non-tech:** in plain words — "đã bật đăng nhập xong. Khi chạy ứng dụng lên, bạn đăng nhập thử bằng tài khoản **demo / demo** (tên đăng nhập là `demo`, mật khẩu là `demo`) là vào được — tài khoản này có thể dùng đầy đủ tính năng. Nếu có tạo thêm tài khoản **teacher / teacher** thì tài khoản đó chỉ xem được, không chỉnh sửa được." Do not mention realms, JWKS, issuers, or interceptors.
 
 If this skill ran as part of the Docker build flow, hand off to **`sdcorejs-run-guide`** so the demo login also lands in `START.md`.
 
