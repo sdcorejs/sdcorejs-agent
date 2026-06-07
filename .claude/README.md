@@ -65,6 +65,6 @@ bash .claude/sync-skills.sh --clean
 
 ## Why not edit `.claude/skills/` directly?
 
-- Concern-based layout (`skills/tracks/<stack>/` + `skills/orchestration/` + `skills/shared/` + `skills/review/` + `skills/testing/`) gives clear workflow ordering via numeric prefixes (`00-onboarding.md`, `07-write-code.md`) — the flat `.claude/skills/<name>/SKILL.md` layout doesn't.
+- Concern-based layout (`skills/tracks/<stack>/` + `skills/orchestration/` + `skills/shared/` + `skills/review/` + `skills/testing/`) gives clear workflow ordering via numeric prefixes (`00-onboarding.md`, `write-code.md`) — the flat `.claude/skills/<name>/SKILL.md` layout doesn't.
 - GitHub Copilot and Codex read `skills/<track>/*.md` directly — Claude Code is the only tool needing the mirror.
 - Single source = single review surface in PRs.

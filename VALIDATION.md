@@ -21,7 +21,7 @@
 | 3. Cross-references resolve | FAIL | Pre-existing stale READMEs (`skills/README.md`, `skills/angular-portal/README.md`) reference legacy filenames that no longer exist; no broken links in skill bodies, entry files, or `_refs/` |
 | 4. `.claude/skills/` mirror in sync | PASS | 23 / 23 files in sync (byte-identical via `diff -q`) |
 | 5. Path conventions migrated | PASS | Zero stale uses of `.docs/sdcorejs` or `.memories/sdcorejs` outside explicit "legacy" migration notes inside auto-docs/write-spec skills; no occurrences of singular `auto-doc.md` |
-| 6. Entry-point workflow numbering | PASS | `CLAUDE.md`, `AGENTS.md`, `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md` all reference the new `01-brainstorm`..`07-write-code` chain; zero matches for the old `01-clarify-requirements`/`02-plan`/`03-write-code` numbering |
+| 6. Entry-point workflow numbering | PASS | `CLAUDE.md`, `AGENTS.md`, `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md` all reference the new `01-brainstorm`..`write-code` chain; zero matches for the old `01-clarify-requirements`/`02-plan`/`03-write-code` numbering |
 | 7. Reference catalog (69 docs) | PASS | `skills/angular-portal/_refs/sdcorejs-angular` contains exactly 69 `.md` files |
 | 8. Skill counts | PASS | 21 source skills under `skills/angular-portal/` (excluding README) + 2 shared under `skills/_shared/` + 23 mirror under `.claude/skills/` |
 
@@ -49,7 +49,7 @@ skills/angular-portal/03-write-spec.md            -> angular-portal-write-spec
 skills/angular-portal/04-review-spec.md           -> angular-portal-review-spec
 skills/angular-portal/05-plan.md                  -> angular-portal-plan
 skills/angular-portal/06-review-plan.md           -> angular-portal-review-plan
-skills/angular-portal/07-write-code.md            -> angular-portal-write-code
+skills/angular-portal/write-code.md            -> angular-portal-write-code
 skills/angular-portal/10-init-portal.md           -> angular-portal-init-portal
 skills/angular-portal/11-init-module.md           -> angular-portal-init-module
 skills/angular-portal/12-init-entity.md           -> angular-portal-init-entity

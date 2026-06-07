@@ -1,6 +1,6 @@
 ---
 name: angular-write-code
-description: Generate Angular-portal code — after 06-review-plan approves, OR as the single entry point for any direct Angular-portal code-gen request. Loads the matching on-demand pack under `_refs/angular/write-code/` (per-pack trigger catalog is in the body): init-portal, init-module, init-entity (full CRUD), screen-list, screen-detail (CREATE/UPDATE/DETAIL + reactive-form/validators), actions (workflow / bulk / custom buttons). Triggers - "khởi tạo portal", "tạo module X", "thêm entity / tạo CRUD", "màn list / thêm cột", "tạo màn detail / form validation / custom validator", "thêm action button / approve / bulk approve / xuất excel", and generic "generate code", "viết code", "sinh code đi", "go ahead". NOT for spec/plan, code review, or nestjs/nextjs code (separate skills). After completion runs the mandatory tail chain (e2e → review-code → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories). Bilingual (VI/EN).
+description: Generate Angular-portal code — after 06-review-plan approves, OR as the single entry point for any direct Angular-portal code-gen request. Loads the matching on-demand pack under `_refs/angular/write-code/` (per-pack trigger catalog is in the body): init-portal, init-module, init-entity (full CRUD), screen-list, screen-detail (CREATE/UPDATE/DETAIL + reactive-form/validators), actions (workflow / bulk / custom buttons). Triggers - "khởi tạo portal", "tạo module X", "thêm entity / tạo CRUD", "màn list / thêm cột", "tạo màn detail / form validation / custom validator", "thêm action button / approve / bulk approve / xuất excel", and generic "generate code", "viết code", "sinh code đi", "go ahead". NOT for spec/plan, code review, or nestjs/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories). Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -24,6 +24,7 @@ For each scope item in the confirmed plan (or the direct request), READ the matc
 | Scope item | Reference pack to read |
 |---|---|
 | New portal (no existing project yet) | [`_refs/angular/write-code/init-portal.md`](_refs/angular/write-code/init-portal.md) (run FIRST before any module work) |
+| Always — admin screens (account/role/permission [+tenant/department enterprise]) | [`_refs/angular/write-code/admin-screens.md`](_refs/angular/write-code/admin-screens.md) (ALWAYS run, after init-portal) |
 | New module (`src/libs/<module>/`) | [`_refs/angular/write-code/init-module.md`](_refs/angular/write-code/init-module.md) |
 | New entity with full CRUD (model + service + routes + list + detail) | [`_refs/angular/write-code/init-entity.md`](_refs/angular/write-code/init-entity.md) |
 | List page only (entity already exists) | [`_refs/angular/write-code/screen-list.md`](_refs/angular/write-code/screen-list.md) |
@@ -38,7 +39,7 @@ Before dispatching ANY reference, run `orchestration/auto-summary`. If `<target>
 
 ### Execution order + hand-off
 
-Execution order: portal → module → entity → screens → actions. If the plan touches multiple items, run them in this order; do not parallelize. After all referenced steps finish, hand off in sequence:
+Execution order: portal → admin-screens → module → entity → screens → actions. `admin-screens` ALWAYS runs after `init-portal` and before any domain module work. If the plan touches multiple items, run them in this order; do not parallelize. After all referenced steps finish, hand off in sequence:
 
 1. `sdcorejs-test` (sdcorejs-test) — happy-path tests for what was generated
 2. `sdcorejs-review` (skills/review/review.md; auto-detects Angular → loads `_refs/angular/review-code.md`) — convention check; outputs color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
@@ -206,6 +207,18 @@ Apply to:
 - Comment complex logic (e.g., form state transitions)
 - Document special cases (e.g., bulk updates)
 - Keep comments concise and up-to-date
+
+## Rules
+
+### MUST DO
+- Every generated portal includes the admin screens (`admin-screens`) so end users administer accounts/roles in-app — never the Keycloak console. Run `admin-screens` right after `init-portal`, before any domain module work.
+- Read `_refs/angular/sdcorejs-angular-catalog.md` before generating; use `@sdcorejs/angular` components when one fits.
+- Enforce the execution order (portal → admin-screens → module → entity → screens → actions) and do not skip or reorder steps.
+- Run the full tail chain after the last step.
+
+### MUST NOT
+- Generate portal code that requires end users to open the Keycloak console to manage accounts or roles.
+- Skip the `admin-screens` pack even when the user's request focuses on a domain entity — the admin layer is always present.
 
 ## Validation Checklist
 

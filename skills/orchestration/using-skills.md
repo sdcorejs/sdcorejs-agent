@@ -44,7 +44,7 @@ Request
  → sdcorejs-write-plan
  → sdcorejs-review-plan           (★ user-approval gate)
  → <track>-write-code             (angular | nestjs | nextjs-build-website)
- → testing/e2e → review/code → sdcorejs-repair-loop
+ → sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop
  → sdcorejs-comment-code (ASK gate)
  → sdcorejs-verify-before-done → sdcorejs-branch-ready
  → auto-docs → auto-task-tracker → memories

@@ -13,12 +13,12 @@ When you (Claude Code) start a session — whether in this repo or in a target p
 | Track | Path | Status |
 | --- | --- | --- |
 | Angular Portal | `skills/tracks/angular/` | ✅ Complete (design-phase cross-track skills + 1 angular skill: the `angular-write-code` orchestrator (onboarding via `sdcorejs-using-skills`). The orchestrator dispatches 6 on-demand reference packs under `_refs/angular/write-code/`: init-portal, init-module, init-entity, screen-list, screen-detail (covers CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design-phase + spec/plan/review skills moved to cross-track `skills/shared/sdlc/`. Cross-cutting code-review (single track-aware skill `sdcorejs-review` at `skills/review/review.md`) + e2e-test (`sdcorejs-test`). Cross-track comment-code (`orchestration/comment-code`) absorbs the previous per-track `51-write-comments`. |
-| NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (`07-write-code` plan-walking orchestrator; onboarding via `sdcorejs-using-skills`). Sub-skills (10-init-project, 11-init-module, 12-init-entity, 20-controller, 21-service, 22-repository) 🚧 planned. Design phase fully usable via shared/sdlc/; review + testing skills already in place — code review / security / performance via the single track-aware `sdcorejs-review`, plus `sdcorejs-test`. |
+| NestJS | `skills/tracks/nestjs/` | ✅ Complete — the `nestjs-write-code` orchestrator (onboarding via `sdcorejs-using-skills`) dispatches on-demand reference packs under `_refs/nestjs/write-code/`: init-project (scaffold app), init-module (bounded-context module), init-entity (full CRUD stack: entity/repository/service/controller/Zod schema/DTO), actions (custom / non-CRUD endpoints — domain methods, cross-module, workflow, bulk, export). Core: `@sdcorejs/nestjs` (inventory in `_refs/nestjs/core-catalog.md`). Codegen is **profile-aware** — `simple` (default; single-tenant, flat Keycloak-role permissions, DTOs in `src/modules/<module>/dto/`, lib `WithAudit` + core `AuthGuard`, no `base/shared`/internal-secret) vs `enterprise` (multi-tenant + department scoping, page-permission matrix, `@shared` monorepo, `AdminAuthGuard`, internal-secret); the profile is set at clarify and recorded in `.sdcorejs/summary.md`. Design phase usable via shared/sdlc/; review + testing already in place — code / security / performance via the single track-aware `sdcorejs-review`, plus `sdcorejs-test`. |
 | Next.js | `skills/tracks/nextjs/` | ✅ `build-website/` pack complete. 1 track skill: the `nextjs-write-code` orchestrator (onboarding via `sdcorejs-using-skills`). The orchestrator dispatches 10 on-demand reference packs under `_refs/nextjs/build-website/write-code/`: init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality (consolidated from the former 10-19 sub-skills). EXISTING-site audit folded into the cross-track `sdcorejs-review` (nextjs site-audit mode; knowledge in `_refs/nextjs/build-website/audit-existing-site.md`). Design-phase moved to cross-track `skills/shared/sdlc/`. |
 
 Cross-cutting concerns live outside `tracks/`:
 - `skills/shared/sdlc/` — **6 cross-track design-phase skills** (`sdcorejs-brainstorm`, `sdcorejs-clarify-requirements`, `sdcorejs-write-spec`, `sdcorejs-review-spec`, `sdcorejs-write-plan`, `sdcorejs-review-plan`) plus `_refs/{angular,nestjs,nextjs}.md` for track-specific patterns. Replaces the duplicated per-track design files.
-- `skills/orchestration/` — 16 SDLC plumbing skills (parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills)
+- `skills/orchestration/` — 18 SDLC plumbing skills (parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills, persona, solution-builder)
 - `skills/shared/conventions/` — Conventional Commits, changelog, dep-update
 - `skills/shared/workflow/` — env-setup, debug, pr-create, code-map
 - `skills/review/` — `sdcorejs-review` (one track-aware skill, dimensions: code / security / performance / accessibility; knowledge in `_refs/<track>/review-<dim>.md` + `_refs/shared/`) + `sdcorejs-review-architecture` (module-level structure)
@@ -50,7 +50,7 @@ The source of truth remains `skills/<track>/*.md`. `.claude/skills/` is generate
 
 ## Workflow per track
 
-Every track shares the same workflow shape. **Design phase is cross-track** (`skills/shared/sdlc/`); **code-writing phase is track-specific** (`skills/tracks/<track>/07-write-code.md`; for angular the orchestrator loads on-demand reference packs under `_refs/angular/write-code/`).
+Every track shares the same workflow shape. **Design phase is cross-track** (`skills/shared/sdlc/`); **code-writing phase is track-specific** (`skills/tracks/<track>/write-code.md`; for angular the orchestrator loads on-demand reference packs under `_refs/angular/write-code/`).
 
 ```
 Request
@@ -78,10 +78,10 @@ shared/sdlc/06-review-plan (sdcorejs-review-plan)
   ↓
 orchestration/auto-plans   ← MANDATORY on approval — snapshot to <target>/.sdcorejs/plans/<track>/
   ↓
-<track>-write-code (07-write-code, track-specific orchestrator)
+<track>-write-code (write-code, track-specific orchestrator)
   ← angular:        angular-write-code     → loads on-demand reference packs from `_refs/angular/write-code/`: init-portal | init-module | init-entity | screen-list | screen-detail (CREATE / UPDATE / DETAIL states + form refinement) | actions (workflow / bulk / custom side-effects)
   ← nextjs (build-website): nextjs-write-code → loads on-demand reference packs from `_refs/nextjs/build-website/write-code/`: init-site | theme | pages-and-blocks | seo | og-preview | i18n | caching | responsive | contact-form | content-quality
-  ← nestjs:                nestjs-write-code              → SCAFFOLD (plan-walking until 10/11/12 sub-skills ship)
+  ← nestjs:                nestjs-write-code → loads on-demand reference packs from `_refs/nestjs/write-code/`: init-project | init-module | init-entity (full CRUD stack) | actions (custom / non-CRUD endpoints — domain methods, cross-module, workflow, bulk, export)
   └─ when feature has 3+ independent units, dispatches via
      orchestration/subagent-driven-dev (after orchestration/parallel-dispatch decision)
   ↓
@@ -112,6 +112,10 @@ orchestration/auto-task-tracker   ← MANDATORY (immediately after auto-docs) �
 orchestration/memories            ← durable knowledge (when applicable) to <target>/.sdcorejs/memories/<track>/
 ```
 
+After `branch-ready`, an **OPTIONAL packaging branch** may run `sdcorejs-dockerize → sdcorejs-auth → sdcorejs-run-guide` to deliver a runnable Docker stack (the non-tech default). See "Infra / packaging" below.
+
+**Non-tech one-door:** `sdcorejs-solution-builder` chains persona → clarify (feature+UI) → spec/plan (gates) → nestjs-write-code → angular-write-code → dockerize → auth → run-guide → verify.
+
 ## Mandatory rules (apply to every track)
 
 1. **Auto-docs is mandatory.** At the end of every code-writing skill invocation, run the track-agnostic `auto-docs` skill at `skills/orchestration/auto-docs.md`. This writes a session summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (note the leading dot in `.sdcorejs/`). Do NOT write the doc to this `sdcorejs-agent` repo.
@@ -120,9 +124,9 @@ orchestration/memories            ← durable knowledge (when applicable) to <ta
 
 3. **Memories.** Durable cross-session knowledge lives under the target project's `.sdcorejs/memories/<track>/`, managed by `skills/orchestration/memories.md`. Read frontmatter at session start; write durable facts when the user says "ghi nhớ"/"remember this" or when a recurring correction is detected.
 
-4. **Session-start ritual.** When opening a target project, glob the target's `.sdcorejs/docs/<track>/*.md`, read the latest 3 entries, and silently load that as context before answering. Also glob `.sdcorejs/memories/<track>/*.md` frontmatter for durable facts. Additionally, glob `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` (frontmatter only) so the next `03-write-spec` / `05-write-plan` invocation can mirror the user's confirmed style.
+4. **Session-start ritual.** When opening a target project, glob the target's `.sdcorejs/docs/<track>/*.md`, read the latest 3 entries, and silently load that as context before answering. Also glob `.sdcorejs/memories/<track>/*.md` frontmatter for durable facts. Additionally, glob `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` (frontmatter only) so the next `03-write-spec` / `05-write-plan` invocation can mirror the user's confirmed style. Also glob `.sdcorejs/persona.md`; if absent on the first substantive request, invoke `sdcorejs-persona` to set it. Once set, load `_refs/shared/persona.md` and adapt all user-facing output to the stored persona.
 
-5. **Bilingual.** Vietnamese request → Vietnamese output (full diacritics for labels/messages). English → English. Permission codes and route paths stay English in both.
+5. **Skills go global — English source, runtime-localized I/O.** Author every skill's `name`, `description`, body, notes, and inline comments in **English** (skills are published for a global audience). At runtime, detect the user's language from their message and BOTH match triggers and respond in that language — Vietnamese request → Vietnamese reply (full diacritics for labels/messages); English → English. Permission codes and route paths stay English in both. (Generated artifacts in a target project: follow the user's language for prose, English for identifiers.)
 
 6. **Clarify-before-code.** Do NOT generate code if track-specific minimum-required answers are unconfirmed (Angular: module + entity + fields + layout; NestJS: module + entity + persistence + transactions; Next.js: domain + contact + hosting + caching). Invoke `sdcorejs-clarify-requirements` first (or `sdcorejs-brainstorm` if scope is open-ended).
 
@@ -133,6 +137,8 @@ orchestration/memories            ← durable knowledge (when applicable) to <ta
 9. **Test after generation.** Run `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts` (Angular) and report summary + failing spec names.
 
 10. **Evidence before claims (always-on).** Never state that something passes, builds, is fixed, or is done without having run the verifying command in the current turn and read its output. This applies to EVERY success claim — interim or final, your own work or a subagent's — not only at the `sdcorejs-verify-before-done` gate. Treat a subagent's "✅ done" as a claim to verify (read the diff / re-run the check), never as fact. "Should pass", "looks correct", or a previously-green run are not evidence. Inspired by `superpowers:verification-before-completion`.
+
+11. **Persona-aware output.** Read the target project's `.sdcorejs/persona.md` (default `tech` if absent) and load `_refs/shared/persona.md` before producing user-facing output. `non-tech` = no unexplained jargon, hidden mechanics, forced infra defaults (Angular + NestJS modular-monolith + Keycloak + Postgres on docker-compose), always finish with a run guide, both approval gates kept but plainly worded. `tech` = unchanged baseline. Orthogonal to the bilingual rule. Managed by `sdcorejs-persona`.
 
 ## Cross-track skills (`skills/shared/sdlc/`, `skills/orchestration/`, `skills/shared/`, `skills/review/`, `skills/testing/`)
 
@@ -164,9 +170,11 @@ Loaded by every track at the start of every feature. Each detects the track at r
 | `sdcorejs-repair-loop` | runs after `sdcorejs-review` outputs findings — categorize / auto-apply / iterate until Critical+Important resolved | ✅ on findings |
 | `sdcorejs-comment-code` | ASK gate at the comment phase — skip / simple / medium / full; outcome optional but ASK is mandatory | ✅ ASK |
 | `sdcorejs-parallel-dispatch` | about to fan out 3+ independent tasks — decision gate (should I split?) |  |
-| `sdcorejs-subagent-driven-dev` | after parallel-dispatch says YES — execution discipline: decompose, brief, dispatch, merge |  |
+| `sdcorejs-subagent-driven-dev` | after parallel-dispatch says YES — execution discipline: decompose, brief, dispatch, merge. **Two modes:** A = independent same-kind units (entities/screens/docs); B = role-split feature loop (backend‖frontend‖QC on one feature via a contract-freeze barrier, looped against acceptance criteria). `parallel-dispatch` routes `PARALLEL-CANDIDATE`→A, `ROLE-SPLIT`→B |  |
 | `sdcorejs-using-worktrees` | before `<track>-write-code` or parallel fan-out when work needs isolation — detect/create isolated workspace + clean baseline |  |
+| `sdcorejs-persona` | first request in a target project with no `.sdcorejs/persona.md`; "giải thích dễ hiểu", "set persona" — ask-once tech/non-tech, store flag, load `_refs/shared/persona.md` | auto on first entry |
 | `sdcorejs-using-skills` | session-start bootstrap (plugin context) — portable dispatch protocol so skills fire even without this CLAUDE.md present | auto (SessionStart hook) |
+| `sdcorejs-solution-builder` | "build me an app / a system; the non-tech one-door full-app flow" — chains persona → clarify → spec/plan (2 gates) → nestjs-write-code → angular-write-code → dockerize → auth → run-guide → verify |  |
 
 ### Workflow utilities
 
@@ -182,18 +190,30 @@ Loaded by every track at the start of every feature. Each detects the track at r
 | `sdcorejs-review` | "review bảo mật", before release — cross-track security checklist — track-aware (detects stack, deepens via `_refs/<track>/review-security.md`) |  |
 | `sdcorejs-dep-update` | "cập nhật dependency", `npm audit fix` — safe upgrade workflow (audit → branch → group → test) |  |
 
+### Infra / packaging (`skills/infra/`)
+
+Emit a one-command runnable Docker stack into a target project's **deploy root** (never this repo). Templates live in `_refs/infra/`. Non-tech is the default consumer; composes with the angular + nestjs tracks.
+
+| Skill | Trigger | Emits |
+| --- | --- | --- |
+| `sdcorejs-dockerize` | "dockerize", "đóng gói docker", "chạy bằng docker" | Dockerfiles + `docker-compose.yml` (FE + BE + Keycloak + Postgres), `.env`, nginx |
+| `sdcorejs-auth` | "thêm đăng nhập", "cấu hình keycloak", "xác thực" | Keycloak realm import + FE `provideSdKeycloak` + BE token-validation wiring |
+| `sdcorejs-run-guide` | "hướng dẫn chạy", "cách chạy", "start guide" | plain-language `START.md` (install Docker → one command → URL → demo login) |
+
 ## Reference docs (load on demand only — do not preload)
 
 - `_refs/sdlc/{angular,nextjs,nestjs}.md` — cross-track design-phase patterns per track (loaded by `sdcorejs-brainstorm` / `sdcorejs-clarify-requirements` / `sdcorejs-write-spec` / `sdcorejs-write-plan` at Step 0-1)
 - `_refs/<track>/architecture-principles.md` — WHY-principles per track governing generated code. Load when explaining decisions, reviewing deviations, or onboarding contributors:
   - **angular** (16 principles): feature-first, signal-first, no cross-module imports, 4 canonical layouts, mock-first, OnPush default, …
   - **nextjs/build-website** (15 principles): App Router default, server components default, content-as-data, i18n localized pathnames, SEO non-negotiable, 30-min ISR default, real contact form, mobile-first, …
-  - **nestjs** (14 principles, scaffold): bounded-context modules, BaseEntity/Repo/Service mandatory, guard order AuthGuard→Zod→HasPermission, Zod in shared package, thin controllers, explicit QueryRunner transactions, bilingual error messages, …
+  - **nestjs** (14 principles): bounded-context modules, BaseEntity/Repo/Service mandatory, guard order AuthGuard→Zod→HasPermission, Zod in shared package, thin controllers, explicit QueryRunner transactions, bilingual error messages, …
 - `_refs/angular/core-version.md` — pinned `@sdcorejs/angular` version
 - `_refs/angular/sdcorejs-angular-catalog.md` — Core UI components inventory
 - `_refs/angular/entity-field-types.md` — field type → form control mapping
 - `_refs/angular/templates/entity-{skeleton,tests,example-product}.md` — code templates extracted from the init-entity reference pack (split 2026-05-20 to keep the pack under 500 lines)
 - `_refs/angular/write-code/{init-portal,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `angular-write-code` (no frontmatter, not dispatchable skills)
+- `_refs/nestjs/core-catalog.md` — `@sdcorejs/nestjs` core inventory (BaseEntity/Repository/Service/Controller, guards, decorators)
+- `_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md` — on-demand reference packs loaded by `nestjs-write-code` (no frontmatter, not dispatchable skills)
 
 ## Anti-patterns
 

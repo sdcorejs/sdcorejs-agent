@@ -106,7 +106,7 @@ Plan này có phù hợp không?
 After writing the plan, hand off to `sdcorejs-review-plan`. On user approval there:
 1. `orchestration/auto-plans` snapshots the approved plan to `.sdcorejs/plans/<TRACK>/`
 2. The track's write-code orchestrator is invoked with the approved plan as input
-3. After generation, the full tail-call chain runs (e2e-test → review-code → repair-loop → comment-code → verify-before-done → auto-docs → auto-task-tracker → memories)
+3. After generation, the full tail-call chain runs (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories)
 
 ## Anti-patterns
 - Bullet lists without numbers (user can't reference "step 7")

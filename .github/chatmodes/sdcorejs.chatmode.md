@@ -41,14 +41,14 @@ Request
                   → orchestration/auto-specs  (MANDATORY on approval — snapshot to .sdcorejs/specs/<track>/)
   → 05-write-plan       → 06-review-plan      (approval gate)
                   → orchestration/auto-plans  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
-  → 07-write-code (sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
-  → 40-e2e-test → sdcorejs-review-code (auto-detects track) → orchestration/repair-loop (if findings)
+  → write-code (sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
+  → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (mandatory ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (mandatory acceptance gate)
   → orchestration/auto-docs (mandatory) → orchestration/auto-task-tracker (mandatory) + orchestration/memories (when durable knowledge surfaces)
 ```
 
-For angular, `07-write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular/write-code/` (no frontmatter, not dispatchable skills):
+For angular, `write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular/write-code/` (no frontmatter, not dispatchable skills):
 `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (handles CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow / bulk / custom side-effects).
 
 ## Mandatory rules
@@ -77,7 +77,7 @@ The skill files are the primary source. Load on demand:
 
 - `skills/shared/sdlc/02-clarify-requirements.md` — cross-track blocking questions; loads `_refs/angular.md` for Angular-specific field/layout inference
 - `skills/shared/sdlc/_refs/angular.md` — Angular field inference rules, layout matrix, phase grouping
-- `skills/tracks/angular/07-write-code.md` — orchestrator + mock data rules (dispatch table at top; loads reference packs from `_refs/angular/write-code/`)
+- `skills/tracks/angular/write-code.md` — orchestrator + mock data rules (dispatch table at top; loads reference packs from `_refs/angular/write-code/`)
 - `_refs/angular/write-code/init-module.md` — module setup reference pack
 - `_refs/angular/write-code/init-entity.md` — entity CRUD generation reference pack (slim; templates in `_refs/angular/templates/`)
 - `skills/tracks/angular/_refs/templates/entity-{skeleton,tests,example-product}.md` — code templates loaded on demand by the init-entity reference pack
@@ -98,7 +98,7 @@ The skill files are the primary source. Load on demand:
 - `skills/shared/conventions/dep-update.md` — safe dependency upgrade workflow
 - `skills/orchestration/parallel-dispatch.md` — when/how to fan out to parallel subagents
 - `skills/orchestration/subagent-driven-dev.md` — execution discipline AFTER parallel-dispatch decides YES
-- `skills/orchestration/repair-loop.md` — apply sdcorejs-review-code findings + iterate until clean
+- `skills/orchestration/repair-loop.md` — apply sdcorejs-review findings + iterate until clean
 - `skills/orchestration/comment-code.md` — mandatory ASK gate (skip/simple/medium/full) before any comment work
 - `skills/orchestration/verify-before-done.md` — MANDATORY acceptance-criteria gate before claiming "done"
 
