@@ -236,13 +236,13 @@ One feature crossing backend + frontend, after `06-review-plan` approved the pla
 Not for single-track work (use the track's write-code directly) and not for N same-kind
 units (Mode A).
 
+**Inputs (from the caller).** The invoking orchestrator passes `profile` (`simple`|`enterprise`) and `topology` (single deploy-root | mono-repo | two-repo) EXPLICITLY. Read `.sdcorejs/summary.md` only as a fallback when present; on a first build it does not exist yet (auto-summary writes it at the end of init-project), so the caller-passed values are authoritative. `solution-builder` (non-tech) always passes `profile=simple` + `topology=single deploy-root`.
+
 ### B.1 Phase 0 — Contract freeze (sequential barrier)
 Derive + write the shared contract from the approved plan + spec, SHAPED BY THE PROFILE
-(`simple|enterprise`, from `.sdcorejs/summary.md`):
+(`simple|enterprise`, from the caller — see B.0):
 - DTO / types, endpoint list (verb + path + req/res), permission codes `<module>_<entity>:<action>`.
-- Location by topology (asked at clarify): two-repo → a shared types package the FE consumes;
-  mono-repo → `base/shared/<module>/*.model.ts` (enterprise) or `src/modules/<module>/dto` mirrored
-  to the FE (simple).
+- Location by topology (from the caller — see B.0): **single deploy-root** (non-tech default) → BE authors the DTOs in `backend/src/modules/<module>/dto/*.dto.ts`; the FE **mirrors** them as matching TS interfaces under `frontend/src/libs/<module>/models/` (the frozen contract doc lists the shapes both sides implement). **two-repo** → a shared types package the FE consumes. **mono-repo** → `base/shared/<module>/*.model.ts` (enterprise) or `src/modules/<module>/dto` mirrored to the FE (simple).
 Freeze it: role agents must NOT mutate the contract mid-iteration. Embed it VERBATIM in all
 three briefs.
 
