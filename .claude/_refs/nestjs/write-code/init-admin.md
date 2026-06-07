@@ -663,4 +663,307 @@ export class AdminModule {}
 
 ---
 
-<!-- Keycloak Admin proxy + seed appended by the next task -->
+---
+
+### Step 8 — Keycloak Admin proxy
+
+Generate `src/modules/admin/services/keycloak-admin.service.ts`. This service is an **app
+dependency** — install the package explicitly:
+
+```bash
+npm i @keycloak/keycloak-admin-client
+```
+
+`KeycloakAdminService` is NOT part of `@sdcorejs/nestjs`. It proxies the Keycloak Admin REST API
+so all account lifecycle operations happen in-app; end users never open the Keycloak console.
+Simple profile: one realm, resolved from env. (Enterprise override: per-tenant realm resolution
+replaces `#client`.)
+
+```ts
+import { Injectable } from '@nestjs/common';
+import KcAdminClient from '@keycloak/keycloak-admin-client';
+
+/** Proxies the Keycloak Admin REST API so account lifecycle happens in-app (end users never open
+ *  the Keycloak console). simple profile: one realm from env. enterprise overrides per-tenant. */
+@Injectable()
+export class KeycloakAdminService {
+  #client = async () => {
+    const kc = new KcAdminClient({ baseUrl: process.env.KEYCLOAK_URL, realmName: process.env.KEYCLOAK_REALM });
+    await kc.auth({
+      grantType: 'client_credentials',
+      clientId: process.env.KEYCLOAK_ADMIN_CLIENT_ID!,
+      clientSecret: process.env.KEYCLOAK_ADMIN_CLIENT_SECRET!,
+    });
+    return kc;
+  };
+
+  createUser = async (u: { username: string; email?: string; fullName?: string; password: string }) => {
+    const kc = await this.#client();
+    const created = await kc.users.create({ username: u.username, email: u.email, firstName: u.fullName, enabled: true });
+    await kc.users.resetPassword({ id: created.id, credential: { type: 'password', value: u.password, temporary: false } });
+    return created.id;   // keycloakUserId
+  };
+  resetPassword = async (keycloakUserId: string, password: string) => {
+    const kc = await this.#client();
+    await kc.users.resetPassword({ id: keycloakUserId, credential: { type: 'password', value: password, temporary: false } });
+  };
+  setEnabled = async (keycloakUserId: string, enabled: boolean) => {
+    const kc = await this.#client();
+    await kc.users.update({ id: keycloakUserId }, { enabled });
+  };
+  deleteUser = async (keycloakUserId: string) => {
+    const kc = await this.#client();
+    await kc.users.del({ id: keycloakUserId });
+  };
+  findUser = async (keycloakUserId: string) => {
+    const kc = await this.#client();
+    return kc.users.findOne({ id: keycloakUserId });
+  };
+  findByUsername = async (username: string) => {
+    const kc = await this.#client();
+    const found = await kc.users.find({ username, exact: true });
+    return found?.[0];
+  };
+}
+```
+
+#### How `user.service` uses `KeycloakAdminService`
+
+- **`createDTO`** — call `keycloakAdmin.createUser(...)` first (gets `keycloakUserId`), then
+  insert the DB row. Keycloak is the source of truth for credentials; the DB row carries only
+  authorization attributes.
+- **`updateDTO`** — update the DB row first; if `email` or `fullName` changed also call
+  `kc.users.update(keycloakUserId, { email, firstName })` to keep the Keycloak profile in sync.
+- **`resetPassword`** — call `keycloakAdmin.resetPassword(user.keycloakUserId, password)`; no DB
+  write needed (credentials live in Keycloak only).
+- **`setEnabled`** — call `keycloakAdmin.setEnabled(user.keycloakUserId, enabled)` first, then
+  update `user.isActive` in the DB so the JWT strategy's `isActive` check stays consistent.
+- **`remove`** — call `keycloakAdmin.deleteUser(user.keycloakUserId)` first, then soft-delete
+  (or hard-delete) the DB row.
+- **`internalDetail` fallback** — when `findOne({ keycloakUserId })` returns `undefined` (first
+  login, no DB row yet), call `keycloakAdmin.findUser(sub)`. If Keycloak returns a profile,
+  insert a DB row `{ keycloakUserId: sub, username, email, roleCodes: [], isActive: true }` so
+  the user self-heals on first login. Then resolve permissions as usual and return the DTO. This
+  eliminates the need for a manual "pre-provision" step for users created directly in Keycloak.
+
+#### Module wiring for `KeycloakAdminService`
+
+Add `KeycloakAdminService` to `admin.module.ts` `providers` AND `exports` so `UserService` can
+inject it:
+
+```ts
+// admin.module.ts — add to providers + exports
+import { KeycloakAdminService } from './services/keycloak-admin.service';
+
+providers: [
+  // ... existing repo + service bindings ...
+  KeycloakAdminService,
+],
+exports: [IPermissionService, IRoleService, IUserService, KeycloakAdminService],
+```
+
+`UserService` injects it as a concrete class (not via I-token) because `KeycloakAdminService` is
+an infrastructure adapter with no test-double requirement at the unit level:
+
+```ts
+// user.service.ts constructor
+constructor(
+  @Inject(IUserRepository) repository: IUserRepository,
+  @Inject(IRoleService) private readonly roleService: IRoleService,
+  private readonly keycloakAdmin: KeycloakAdminService,
+) { super(repository); }
+```
+
+Also update the `services/index.ts` barrel to re-export `KeycloakAdminService`:
+
+```ts
+// src/modules/admin/services/index.ts
+export * from './keycloak-admin.service';
+export * from './permission.service';
+export * from './role.service';
+export * from './user.service';
+```
+
+---
+
+### Step 9 — Seed (idempotent, on boot)
+
+Generate `src/modules/admin/admin.seed.ts`. The seed runs from `src/main.ts` right after
+`ensureSchemas()` and before `app.listen()` — making it the first thing that runs on every
+restart, which guarantees the permission registry, the default role, and the demo account are
+always in a consistent state.
+
+```ts
+// src/main.ts (after ensureSchemas(), before app.listen)
+await seedAdmin(app);   // idempotent; steps 1-2 DB-only, step 3 retries until Keycloak is up
+```
+
+#### Three idempotent seed steps
+
+**Step 1 — Permission registry (DB-only)**
+
+At generation time the `nestjs-write-code` orchestrator collects every `@HasPermission('<code>')`
+emitted across ALL domain modules AND the admin module itself, then writes a `PERMISSION_REGISTRY`
+constant. Collection command (run after all modules are generated):
+
+```bash
+rg -o "@HasPermission\('([^']+)'\)" -r '$1' src --no-filename | sort -u
+```
+
+The orchestrator writes the result as:
+
+```ts
+// src/modules/admin/permission-registry.ts  (generated — do NOT hand-edit)
+export const PERMISSION_REGISTRY = [
+  { code: 'admin_permission:view',      label: 'View permissions',     model: 'admin_permission', action: 'view' },
+  { code: 'admin_role:create',          label: 'Create roles',         model: 'admin_role',       action: 'create' },
+  // ... all codes from every domain module + admin module ...
+] as const;
+```
+
+The seed upserts each entry into the `permission` table keyed on `code` (insert if absent, skip
+if present — no duplicates). Re-running on restart is a no-op for existing codes. The registry
+MUST include the 11 admin-module codes listed in Step 6 in addition to every domain-module code.
+
+**Step 2 — Default `admin` role (DB-only)**
+
+Upsert a role row `{ code: 'admin', name: 'Administrator', permissions: <all codes>,
+isActive: true }`. This role is the superuser role; it receives every permission code in the
+registry. Idempotent: if the role already exists, update its `permissions` array so new codes
+added by future modules are automatically included.
+
+**Step 3 — Demo grant (needs Keycloak; retried until reachable)**
+
+Resolve the Keycloak `demo` user id via `keycloakAdmin.findByUsername('demo')`. Then upsert an
+app `user` row `{ keycloakUserId, username: 'demo', roleCodes: ['admin'], isActive: true }`.
+
+On `docker compose up` the backend races Keycloak startup. Wrap this step in a **retry-with-backoff**
+loop (up to ~10 tries, 3 s apart) so the backend does not crash-exit when Keycloak is not yet
+reachable. Every other attempt logs a warning. Idempotent: re-running on restart calls
+find-or-update by username, not insert-always.
+
+#### `admin.seed.ts` sketch
+
+```ts
+// src/modules/admin/admin.seed.ts
+import { INestApplication } from '@nestjs/common';
+import { PERMISSION_REGISTRY } from './permission-registry';
+import { IPermissionService } from './services/permission.service';
+import { IRoleService } from './services/role.service';
+import { IUserService } from './services/user.service';
+
+async function retry<T>(fn: () => Promise<T>, opts: { tries: number; delayMs: number }): Promise<T> {
+  let lastErr: unknown;
+  for (let i = 0; i < opts.tries; i++) {
+    try { return await fn(); } catch (e) {
+      lastErr = e;
+      console.warn(`[seed] step 3 attempt ${i + 1}/${opts.tries} failed — retrying in ${opts.delayMs}ms`);
+      await new Promise((r) => setTimeout(r, opts.delayMs));
+    }
+  }
+  throw lastErr;
+}
+
+export async function seedAdmin(app: INestApplication) {
+  const perms = app.get(IPermissionService);
+  const roles = app.get(IRoleService);
+  const users = app.get(IUserService);
+
+  await perms.upsertRegistry(PERMISSION_REGISTRY);                          // step 1 (DB-only)
+  await roles.upsertAdminRole(PERMISSION_REGISTRY.map((p) => p.code));      // step 2 (DB-only)
+  await retry(() => users.grantDemoAdmin(), { tries: 10, delayMs: 3000 });  // step 3 (needs Keycloak)
+}
+```
+
+> `upsertRegistry`, `upsertAdminRole`, and `grantDemoAdmin` are seed-specific methods added to
+> the corresponding service interfaces. They use TypeORM `upsert` (or `findOne`+`save`) keyed on
+> `code`/`username` so repeated calls are safe. `grantDemoAdmin` internally calls
+> `keycloakAdmin.findByUsername('demo')` and then upserts the `user` row.
+
+---
+
+### Step 10 — `package.json` + `.env` additions
+
+#### `package.json`
+
+Add the Keycloak Admin Client to project dependencies:
+
+```json
+{
+  "dependencies": {
+    "@keycloak/keycloak-admin-client": "^24.0.0"
+  }
+}
+```
+
+Pin to the `^24.x` range (the latest stable at time of writing). Run `npm install` after the
+package is added.
+
+#### `.env.example` additions
+
+```dotenv
+# Keycloak Admin service-account client (confidential client seeded by sdcorejs-auth).
+# Grant this client the "realm-management" → "manage-users" role in the Keycloak console.
+KEYCLOAK_ADMIN_CLIENT_ID=admin-cli
+KEYCLOAK_ADMIN_CLIENT_SECRET=change-me
+```
+
+> `KEYCLOAK_ADMIN_CLIENT_ID` / `KEYCLOAK_ADMIN_CLIENT_SECRET` are the credentials of a
+> **confidential service-account client** in Keycloak. `sdcorejs-auth` provisions this client
+> automatically (realm import). Never use the master `admin` credentials here — use a
+> least-privilege service account scoped to the project realm.
+
+---
+
+### Step 11 — Verification checklist + Expected files
+
+#### Expected admin-module files
+
+```
+src/
+  common/
+    jwt.strategy.ts                         # Step 3
+    app-permission.strategy.ts              # Step 4
+  modules/admin/
+    entities/
+      permission.entity.ts                  # Step 1
+      role.entity.ts                        # Step 1
+      user.entity.ts                        # Step 1
+      index.ts
+    repositories/
+      permission.repository.ts              # Step 2
+      role.repository.ts                    # Step 2
+      user.repository.ts                    # Step 2
+      index.ts
+    dto/
+      permission.dto.ts                     # Step 5
+      role.dto.ts                           # Step 5
+      user.dto.ts                           # Step 5
+      index.ts
+    schemas/
+      admin.schema.ts                       # Step 6
+    services/
+      keycloak-admin.service.ts             # Step 8
+      permission.service.ts                 # Step 5
+      role.service.ts                       # Step 5
+      user.service.ts                       # Step 5
+      index.ts
+    controllers/
+      permission.controller.ts              # Step 6
+      role.controller.ts                    # Step 6
+      user.controller.ts                    # Step 6
+      index.ts
+    permission-registry.ts                  # Step 9 (generated by orchestrator)
+    admin.seed.ts                           # Step 9
+    admin.module.ts                         # Step 7 + Step 8 update
+```
+
+#### Verification checklist
+
+| Check | Command / assertion |
+|---|---|
+| TypeScript build clean | `npm run build` — zero type errors |
+| Seed is idempotent | Run `npm run start` twice; second start must not throw or duplicate rows |
+| Permission table is read-only via HTTP | `POST /admin/permission` → 404 (no route); `DELETE /admin/permission/:id` → 404 |
+| Demo user gets `admin` role | After seed, call `GET /admin/user?username=demo` — `roleCodes` includes `'admin'` |
+| Keycloak race handled | Start backend before Keycloak; step 3 retries appear in logs; seed completes when Keycloak becomes ready |
