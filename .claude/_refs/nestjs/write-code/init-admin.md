@@ -967,3 +967,354 @@ src/
 | Permission table is read-only via HTTP | `POST /admin/permission` → 404 (no route); `DELETE /admin/permission/:id` → 404 |
 | Demo user gets `admin` role | After seed, call `GET /admin/user?username=demo` — `roleCodes` includes `'admin'` |
 | Keycloak race handled | Start backend before Keycloak; step 3 retries appear in logs; seed completes when Keycloak becomes ready |
+
+---
+
+## Enterprise extension (profile: enterprise)
+
+> **[enterprise]** — Everything in this section applies ONLY when `profile = enterprise`. The simple
+> profile is untouched. Enterprise adds multi-tenancy: each `Tenant` maps to its own Keycloak realm;
+> `Role` and `User` records are scoped to a `tenantCode` + `departmentCode` pair.
+
+---
+
+### E1 — Additional entities (schema `admin`)
+
+#### `tenant.entity.ts`
+
+```ts
+import { BaseEntity } from 'src/common/base-entity';
+import { Column, Entity, Unique } from 'typeorm';
+
+/**
+ * [enterprise] Tenant — one row per customer organisation.
+ * `realm` + `clientId` + `clientSecret` are the coordinates of the
+ * per-tenant Keycloak realm that `KeycloakAdminService` uses when
+ * proxying account operations for that tenant.
+ * `clientSecret` MUST be encrypted at rest (AES-256-GCM via the
+ * project's EncryptionService) — never store plaintext.
+ */
+@Entity({ schema: 'admin', name: 'tenant' })
+@Unique(['code'])
+@Unique(['realm'])
+export class Tenant extends BaseEntity {
+  @Column({ type: 'varchar', length: 64 }) code: string;
+  @Column({ type: 'varchar', length: 256 }) name: string;
+  @Column({ type: 'varchar', length: 128 }) realm: string;        // per-tenant Keycloak realm name
+  @Column({ type: 'varchar', length: 128 }) clientId: string;     // per-tenant admin client id
+  @Column({ type: 'varchar' /* encrypted at rest */ }) clientSecret: string;
+  @Column({ default: true }) isActive: boolean;
+}
+```
+
+#### `department.entity.ts`
+
+```ts
+import { BaseEntity } from 'src/common/base-entity';
+import { Scoped } from '@sdcorejs/nestjs/orm';
+import { Column, Entity, Unique } from 'typeorm';
+
+/**
+ * [enterprise] Department — belongs to a tenant; supports a single level of parent/child
+ * hierarchy via `parentCode`. A null `parentCode` = root department.
+ * The composite unique key `(tenantCode, code)` allows the same department code
+ * to exist across different tenants without collisions.
+ */
+@Entity({ schema: 'admin', name: 'department' })
+@Unique(['tenantCode', 'code'])
+export class Department extends BaseEntity {
+  @Scoped() @Column({ type: 'varchar', length: 64 }) tenantCode: string;
+  @Column({ type: 'varchar', length: 64 }) code: string;
+  @Column({ type: 'varchar', length: 256 }) name: string;
+  @Column({ type: 'varchar', length: 64, nullable: true }) parentCode: string;
+}
+```
+
+#### `entities/index.ts` — enterprise additions
+
+```ts
+// Append to the existing barrel
+export * from './tenant.entity';
+export * from './department.entity';
+```
+
+---
+
+### E2 — 2-level `@Scoped` on `role` + `user`
+
+**[enterprise]** adds two `@Scoped` columns to `role.entity.ts` and `user.entity.ts`. Import
+`Scoped` from `@sdcorejs/nestjs/orm`. The **simple profile omits these columns entirely**.
+
+```ts
+// role.entity.ts — enterprise additions (append to existing @Column declarations)
+import { Scoped } from '@sdcorejs/nestjs/orm';
+
+// Inside the Role class body:
+@Scoped() @Column({ type: 'varchar', length: 64, nullable: true }) tenantCode: string;
+@Scoped() @Column({ type: 'varchar', length: 64, nullable: true }) departmentCode: string;
+```
+
+```ts
+// user.entity.ts — enterprise additions (append to existing @Column declarations)
+import { Scoped } from '@sdcorejs/nestjs/orm';
+
+// Inside the User class body:
+@Scoped() @Column({ type: 'varchar', length: 64, nullable: true }) tenantCode: string;
+@Scoped() @Column({ type: 'varchar', length: 64, nullable: true }) departmentCode: string;
+```
+
+> `nullable: true` is required because the seed upserts the global `admin` role and `demo` user
+> before any tenant exists. When `tenantCode` is `null`, the record is treated as cross-tenant
+> (global). The permission strategy unions all roles whose `tenantCode` matches the caller's
+> context OR is `null` (global).
+
+---
+
+### E3 — Per-tenant Keycloak proxy
+
+**[enterprise]** replaces the single-realm `#client()` in `KeycloakAdminService` with a
+`#getClientForTenant(tenantCode)` variant that resolves `realm` / `clientId` / `clientSecret`
+from the `Tenant` row. Inject `ITenantService` to look up the row.
+
+```ts
+// keycloak-admin.service.ts — enterprise override of #client()
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ContextService } from '@sdcorejs/nestjs/context';
+import KcAdminClient from '@keycloak/keycloak-admin-client';
+import { ITenantService } from 'src/modules/admin/services';
+
+@Injectable()
+export class KeycloakAdminService {
+  constructor(
+    @Inject(ITenantService) private readonly tenants: ITenantService,
+    private readonly ctx: ContextService,
+  ) {}
+
+  /**
+   * [enterprise] Resolve a Keycloak admin client scoped to the given tenant.
+   * Falls back to env-realm when `tenantCode` is null/undefined (global/simple path).
+   */
+  #getClientForTenant = async (tenantCode?: string): Promise<KcAdminClient> => {
+    if (!tenantCode) {
+      // simple fallback — same as the original #client()
+      const kc = new KcAdminClient({ baseUrl: process.env.KEYCLOAK_URL, realmName: process.env.KEYCLOAK_REALM });
+      await kc.auth({
+        grantType: 'client_credentials',
+        clientId: process.env.KEYCLOAK_ADMIN_CLIENT_ID!,
+        clientSecret: process.env.KEYCLOAK_ADMIN_CLIENT_SECRET!,
+      });
+      return kc;
+    }
+    const tenant = await this.tenants.detail(tenantCode);   // throws NotFoundException if missing
+    if (!tenant || !tenant.isActive) throw new NotFoundException(`Tenant not found: ${tenantCode}`);
+    const kc = new KcAdminClient({ baseUrl: process.env.KEYCLOAK_URL, realmName: tenant.realm });
+    await kc.auth({
+      grantType: 'client_credentials',
+      clientId: tenant.clientId,
+      clientSecret: tenant.clientSecret,   // decrypted by TenantService before returning DTO
+    });
+    return kc;
+  };
+
+  /** [enterprise] Resolve tenantCode from request context (set by JwtStrategy); then delegate. */
+  #client = async () => {
+    const user = this.ctx.get('user') as { tenantCode?: string } | undefined;
+    return this.#getClientForTenant(user?.tenantCode);
+  };
+
+  // All existing methods (createUser, resetPassword, setEnabled, deleteUser, findUser, findByUsername)
+  // remain unchanged — they call `this.#client()` which now routes per-tenant automatically.
+
+  /**
+   * [enterprise] Create a new Keycloak realm for a tenant + configure the admin client.
+   * Called by TenantService.createDTO after persisting the Tenant row.
+   * Requires the `app-admin` client to hold `manage-realm` on top of `manage-users` / `view-users`.
+   */
+  createTenantRealm = async (realm: string, clientId: string, clientSecret: string): Promise<void> => {
+    // Use the global admin client (no tenantCode) to create the realm
+    const kc = await this.#getClientForTenant();
+    await kc.realms.create({ realm, enabled: true });
+    await kc.clients.create({
+      realm,
+      clientId,
+      secret: clientSecret,
+      serviceAccountsEnabled: true,
+      directAccessGrantsEnabled: false,
+    });
+    // Grant manage-users + view-users service-account roles on the new realm
+    const sa = await kc.clients.getServiceAccountUser({ realm, id: clientId });
+    const realmMgmt = (await kc.clients.find({ realm, clientId: 'realm-management' }))[0];
+    const roles = await kc.clients.listRoles({ realm, id: realmMgmt.id! });
+    const toGrant = roles.filter(r => ['manage-users', 'view-users'].includes(r.name!));
+    await kc.users.addClientRoleMappings({ realm, id: sa.id!, clientUniqueId: realmMgmt.id!, roles: toGrant });
+  };
+}
+```
+
+> **`app-admin` client permissions** — the confidential service-account client (set in
+> `KEYCLOAK_ADMIN_CLIENT_ID`) MUST hold `manage-realm` in addition to `manage-users` and
+> `view-users` on the master realm so it can call `POST /admin/realms` to create per-tenant
+> realms. Grant `manage-realm` in the Keycloak console under
+> `master realm → Clients → app-admin → Service Account Roles → realm-management → manage-realm`.
+
+---
+
+### E4 — Repositories + Services + DTOs for Tenant + Department
+
+Follow the same Symbol I-token DI pattern as `user.repository.ts` / `user.service.ts` in Steps 2
+and 5. Substitute class names:
+
+| Layer | Tenant | Department |
+|---|---|---|
+| Repository | `TenantRepository` / `ITenantRepository` | `DepartmentRepository` / `IDepartmentRepository` |
+| Service | `TenantService` / `ITenantService` | `DepartmentService` / `IDepartmentService` |
+| DTO | `TenantDTO` | `DepartmentDTO` |
+
+```ts
+// tenant.dto.ts — [enterprise]
+import { Dto } from 'src/common/dto';
+export interface TenantDTO extends Dto {
+  code: string;
+  name: string;
+  realm: string;
+  clientId: string;
+  clientSecret?: string;   // write-only: never returned on GET responses (omit in mapDTO)
+  isActive: boolean;
+}
+```
+
+```ts
+// department.dto.ts — [enterprise]
+import { Dto } from 'src/common/dto';
+export interface DepartmentDTO extends Dto {
+  tenantCode: string;
+  code: string;
+  name: string;
+  parentCode: string | null;
+}
+```
+
+> `TenantService.mapDTO` MUST omit `clientSecret` from GET responses — set the field to
+> `undefined` (or exclude it) before returning. The field is accepted on CREATE/UPDATE (written to
+> DB encrypted) but never sent back to the client.
+
+---
+
+### E5 — Permission codes (enterprise additions)
+
+Add the following codes to `PERMISSION_REGISTRY` and seed them alongside the 11 existing admin codes:
+
+| Code | Enforced on |
+|---|---|
+| `admin_tenant:view` | `TenantController` — paging / detail / all |
+| `admin_tenant:create` | `TenantController POST /` |
+| `admin_tenant:update` | `TenantController PUT /:id` |
+| `admin_tenant:delete` | `TenantController DELETE /:id` |
+| `admin_department:view` | `DepartmentController` — paging / detail / all |
+| `admin_department:create` | `DepartmentController POST /` |
+| `admin_department:update` | `DepartmentController PUT /:id` |
+| `admin_department:delete` | `DepartmentController DELETE /:id` |
+
+> Total admin codes for enterprise profile: **19** (11 simple + 8 enterprise). The seed step
+> collects all `@HasPermission` codes via `rg` (Step 9 — seed) and upserts the full set
+> idempotently. No manual registry edit needed beyond adding the `@HasPermission` decorators to
+> the two new controllers.
+
+---
+
+### E6 — Controllers (enterprise)
+
+**`TenantController`** (`src/modules/admin/controllers/tenant.controller.ts`) — [enterprise]
+
+Full CRUD. Schema: `TenantCreateSchema` / `TenantUpdateSchema` (follow `admin.schema.ts` pattern).
+All routes gated `admin_tenant:{create,update,delete,view}`.
+
+```ts
+// Zod schema additions in admin.schema.ts — [enterprise]
+export const TenantCreateSchema = z.object({
+  code:         reqStr('admin.tenant.code.required'),
+  name:         reqStr('admin.tenant.name.required'),
+  realm:        reqStr('admin.tenant.realm.required'),
+  clientId:     reqStr('admin.tenant.clientId.required'),
+  clientSecret: reqStr('admin.tenant.clientSecret.required'),
+  isActive:     z.boolean().optional(),
+});
+export const TenantUpdateSchema = TenantCreateSchema.partial();
+
+export const DepartmentCreateSchema = z.object({
+  tenantCode:  reqStr('admin.department.tenantCode.required'),
+  code:        reqStr('admin.department.code.required'),
+  name:        reqStr('admin.department.name.required'),
+  parentCode:  z.string().trim().optional().nullable(),
+});
+export const DepartmentUpdateSchema = DepartmentCreateSchema.partial();
+```
+
+**`DepartmentController`** (`src/modules/admin/controllers/department.controller.ts`) — [enterprise]
+
+Full CRUD. All routes gated `admin_department:{create,update,delete,view}`.
+
+---
+
+### E7 — Module wiring (enterprise additions)
+
+Add to `admin.module.ts` `TypeOrmModule.forFeature`, `providers`, and `exports`:
+
+```ts
+// admin.module.ts — [enterprise] additions
+import { Tenant, Department } from './entities';
+import { ITenantRepository, TenantRepository } from './repositories';
+import { IDepartmentRepository, DepartmentRepository } from './repositories';
+import { ITenantService, TenantService } from './services';
+import { IDepartmentService, DepartmentService } from './services';
+import { TenantController, DepartmentController } from './controllers';
+
+// In @Module:
+TypeOrmModule.forFeature([Permission, Role, User, Tenant, Department]),
+controllers: [..., TenantController, DepartmentController],
+providers: [
+  ...,
+  { provide: ITenantRepository,     useClass: TenantRepository },
+  { provide: IDepartmentRepository, useClass: DepartmentRepository },
+  { provide: ITenantService,        useClass: TenantService },
+  { provide: IDepartmentService,    useClass: DepartmentService },
+],
+exports: [..., ITenantService, IDepartmentService],
+```
+
+Also add to `RouterModule.register` so new controllers are reachable under `/admin/tenant` and
+`/admin/department`.
+
+---
+
+### E8 — `app-admin` client role requirements (enterprise)
+
+Update `.env.example` with a note:
+
+```dotenv
+# [enterprise] app-admin client needs manage-realm in addition to manage-users + view-users.
+# Grant in: master realm → Clients → app-admin → Service Account Roles → realm-management → manage-realm
+```
+
+---
+
+### E9 — Expected additional files (enterprise)
+
+```
+src/modules/admin/
+  entities/
+    tenant.entity.ts                     # E1
+    department.entity.ts                 # E1
+  repositories/
+    tenant.repository.ts                 # E4
+    department.repository.ts             # E4
+  dto/
+    tenant.dto.ts                        # E4
+    department.dto.ts                    # E4
+  services/
+    tenant.service.ts                    # E4
+    department.service.ts                # E4
+  controllers/
+    tenant.controller.ts                 # E6
+    department.controller.ts             # E6
+```

@@ -509,3 +509,367 @@ src/libs/admin/
 - Showing all row actions unconditionally — each action MUST be gated by its matching `*sdPermission` directive.
 - Building the permission-assign grid from hard-coded strings — always derive `models` + `actions` from the live `GET /api/admin/permission` response so new permissions added BE-side appear automatically.
 - Skipping `data.permission` on any route — the route guard relies on it to block unauthorized navigation.
+
+---
+
+## Enterprise extension (profile: enterprise)
+
+> **[enterprise]** — Everything in this section applies ONLY when `profile = enterprise`. The simple
+> profile screens are untouched. Enterprise adds Tenant + Department management screens, and extends
+> the Account + Role create/edit drawers with tenant + department selectors.
+
+---
+
+### BE contract — enterprise additions
+
+| DTO | Fields |
+|---|---|
+| `TenantDTO` | `id`, `code`, `name`, `realm`, `clientId` (`clientSecret` write-only — never returned) |
+| `DepartmentDTO` | `id`, `tenantCode`, `code`, `name`, `parentCode` (nullable) |
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET/POST/PUT/DELETE` | `/api/admin/tenant` | Tenant CRUD |
+| `GET/POST/PUT/DELETE` | `/api/admin/department` | Department CRUD |
+
+Permission codes (enterprise):
+
+| Resource | Codes |
+|---|---|
+| Tenant | `admin_tenant:view`, `admin_tenant:create`, `admin_tenant:update`, `admin_tenant:delete` |
+| Department | `admin_department:view`, `admin_department:create`, `admin_department:update`, `admin_department:delete` |
+
+---
+
+### Screen 4 — Tenant Management (`features/tenant/`) [enterprise]
+
+#### Files
+
+```
+src/libs/admin/features/tenant/
+  tenant.list.component.ts
+  tenant.list.component.html
+  pages/detail/
+    detail.component.ts        # create + edit drawer
+    detail.component.html
+  tenant-api.service.ts
+```
+
+#### List: `SdTable<TenantDTO>`
+
+Use the `screen-list.md` server-side paging pattern. Columns:
+
+| Column key | Label | Notes |
+|---|---|---|
+| `code` | Mã tenant | `type: 'text'` |
+| `name` | Tên tenant | `type: 'text'` |
+| `realm` | Keycloak realm | `type: 'text'` |
+| `clientId` | Client ID | `type: 'text'` |
+| `isActive` | Trạng thái | Boolean badge (Đang hoạt động / Đã khoá) |
+
+> `clientSecret` is **never displayed** in any column or detail view — it is write-only.
+
+Row actions (each gated by `SdPermissionDirective`):
+
+| Action | Permission code | Behavior |
+|---|---|---|
+| Sửa | `admin_tenant:update` | Opens edit drawer |
+| Xoá | `admin_tenant:delete` | Confirm dialog → `DELETE /api/admin/tenant/:id` → reload |
+
+Toolbar: **Tạo tenant** gated `admin_tenant:create`.
+Gate the entire list with `*sdPermission="'admin_tenant:view'"`.
+
+#### Create/Edit drawer — `detail.component.ts`
+
+Use the `screen-detail.md` CREATE / UPDATE state pattern. Reactive form controls:
+
+| Control | Label | Notes |
+|---|---|---|
+| `code` | Mã tenant | Required; disabled in UPDATE (immutable) |
+| `name` | Tên tenant | Required |
+| `realm` | Keycloak realm | Required; disabled in UPDATE (realm cannot be renamed) |
+| `clientId` | Client ID | Required; disabled in UPDATE |
+| `clientSecret` | Client Secret | Required in CREATE; write-only password field in UPDATE (placeholder `••••••••`); if left blank on UPDATE the BE skips re-encrypting |
+| `isActive` | Kích hoạt | Boolean switch |
+
+> Never pre-fill `clientSecret` on the edit form — the BE never returns this field. Render it as
+> `type="password"` and add helper text: "Để trống để giữ nguyên secret hiện tại" (UPDATE state).
+
+- CREATE: `POST /api/admin/tenant`
+- UPDATE: `PUT /api/admin/tenant/:id` (omit `clientSecret` from payload when blank)
+
+#### `tenant-api.service.ts`
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class TenantApiService {
+  private readonly http = inject(HttpClient);
+  private readonly base = '/api/admin/tenant';
+
+  paging(req: PagingRequest): Observable<PagingResponse<TenantDTO>> {
+    return this.http.get<PagingResponse<TenantDTO>>(this.base, { params: req as any });
+  }
+  detail(id: string): Observable<TenantDTO> {
+    return this.http.get<TenantDTO>(`${this.base}/${id}`);
+  }
+  create(payload: TenantSaveReq): Observable<TenantDTO> {
+    return this.http.post<TenantDTO>(this.base, payload);
+  }
+  update(id: string, payload: Partial<TenantSaveReq>): Observable<TenantDTO> {
+    return this.http.put<TenantDTO>(`${this.base}/${id}`, payload);
+  }
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`);
+  }
+}
+```
+
+---
+
+### Screen 5 — Department Management (`features/department/`) [enterprise]
+
+#### Files
+
+```
+src/libs/admin/features/department/
+  department.tree.component.ts
+  department.tree.component.html
+  pages/detail/
+    detail.component.ts        # create + edit drawer
+    detail.component.html
+  department-api.service.ts
+```
+
+#### Tree view: parent/child on `parentCode`
+
+Use a tree layout (Angular CDK `<cdk-tree>` or the Core UI `SdTree` component if available).
+Each node displays `code` + `name`. Root nodes have `parentCode === null`.
+
+> If `SdTree` is not in the Core UI catalog, fall back to a flat `SdTable` with an indented
+> `name` column that prefixes child rows with `└─ `. Mark the fallback with
+> `alert('TODO: replace flat table with SdTree when available')`.
+
+Tree-building logic sketch:
+
+```typescript
+readonly allDepts = signal<DepartmentDTO[]>([]);
+readonly roots = computed(() => this.allDepts().filter(d => !d.parentCode));
+childrenOf(parentCode: string): DepartmentDTO[] {
+  return this.allDepts().filter(d => d.parentCode === parentCode);
+}
+```
+
+Load via `GET /api/admin/department?tenantCode=<selected>` — add a **tenant selector** at the top
+of the page (dropdown loaded from `GET /api/admin/tenant`) to filter by tenant.
+
+Row / node actions:
+
+| Action | Permission code | Behavior |
+|---|---|---|
+| Thêm con | `admin_department:create` | Opens create drawer pre-filled `parentCode` |
+| Sửa | `admin_department:update` | Opens edit drawer |
+| Xoá | `admin_department:delete` | Confirm + `DELETE /api/admin/department/:id` |
+
+Toolbar: **Tạo phòng ban gốc** gated `admin_department:create`.
+Gate the entire screen with `*sdPermission="'admin_department:view'"`.
+
+#### Create/Edit drawer — `detail.component.ts`
+
+| Control | Label | Notes |
+|---|---|---|
+| `tenantCode` | Tenant | Required; select loaded from `GET /api/admin/tenant`; disabled in UPDATE |
+| `code` | Mã phòng ban | Required; disabled in UPDATE |
+| `name` | Tên phòng ban | Required |
+| `parentCode` | Phòng ban cha | Optional; select filtered to same `tenantCode`; null = root |
+
+- CREATE: `POST /api/admin/department`
+- UPDATE: `PUT /api/admin/department/:id`
+
+#### `department-api.service.ts`
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class DepartmentApiService {
+  private readonly http = inject(HttpClient);
+  private readonly base = '/api/admin/department';
+
+  paging(req: PagingRequest): Observable<PagingResponse<DepartmentDTO>> {
+    return this.http.get<PagingResponse<DepartmentDTO>>(this.base, { params: req as any });
+  }
+  detail(id: string): Observable<DepartmentDTO> {
+    return this.http.get<DepartmentDTO>(`${this.base}/${id}`);
+  }
+  create(payload: DepartmentSaveReq): Observable<DepartmentDTO> {
+    return this.http.post<DepartmentDTO>(this.base, payload);
+  }
+  update(id: string, payload: Partial<DepartmentSaveReq>): Observable<DepartmentDTO> {
+    return this.http.put<DepartmentDTO>(`${this.base}/${id}`, payload);
+  }
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`);
+  }
+}
+```
+
+---
+
+### Enterprise extensions to Account + Role drawers [enterprise]
+
+**[enterprise]** adds **tenant** and **department** selectors to both the Account
+(`features/account/pages/detail/`) and Role (`features/role/pages/detail/`) create/edit drawers.
+These controls are bound to the `@Scoped` fields added to `user` and `role` in the BE.
+
+#### Account create/edit drawer — additional controls
+
+```typescript
+// detail.component.ts — [enterprise] additions to the reactive form
+// Load tenant list once on init; department list is filtered reactively on tenantCode change.
+readonly tenants = signal<TenantDTO[]>([]);
+readonly departments = signal<DepartmentDTO[]>([]);
+
+async ngOnInit() {
+  // existing init logic ...
+  const [tenantList] = await Promise.all([
+    firstValueFrom(this.tenantApi.paging({ page: 1, size: 200 })),
+    // existing calls ...
+  ]);
+  this.tenants.set(tenantList.data);
+}
+
+/** Re-load departments when tenant selector changes. */
+async onTenantChange(tenantCode: string | null) {
+  if (!tenantCode) { this.departments.set([]); return; }
+  const res = await firstValueFrom(this.deptApi.paging({ tenantCode, page: 1, size: 500 }));
+  this.departments.set(res.data);
+  this.form.patchValue({ departmentCode: null });   // reset stale selection
+}
+```
+
+| Control | Label | Notes |
+|---|---|---|
+| `tenantCode` | Tenant | Optional select (null = global); options from `GET /api/admin/tenant` |
+| `departmentCode` | Phòng ban | Optional select; options filtered by selected `tenantCode` |
+
+#### Role create/edit drawer — additional controls
+
+Same pattern: add `tenantCode` + `departmentCode` selectors. These scope the role to a specific
+tenant/department pair. `tenantCode = null` = global role (same as simple profile behaviour).
+
+| Control | Label | Notes |
+|---|---|---|
+| `tenantCode` | Tenant | Optional select; null = global role |
+| `departmentCode` | Phòng ban | Optional select; filtered by `tenantCode` |
+
+---
+
+### Routes — enterprise additions
+
+Append to `admin.routes.ts`:
+
+```typescript
+// [enterprise] tenant routes
+{
+  path: 'tenant',
+  data: { permission: 'admin_tenant:view', permissionKey: 'admin' },
+  loadComponent: () =>
+    import('./features/tenant/tenant.list.component').then(m => m.TenantListComponent),
+},
+{
+  path: 'tenant/create',
+  data: { permission: 'admin_tenant:create', permissionKey: 'admin' },
+  loadComponent: () =>
+    import('./features/tenant/pages/detail/detail.component').then(m => m.DetailComponent),
+},
+{
+  path: 'tenant/update/:id',
+  data: { permission: 'admin_tenant:update', permissionKey: 'admin' },
+  loadComponent: () =>
+    import('./features/tenant/pages/detail/detail.component').then(m => m.DetailComponent),
+},
+// [enterprise] department routes
+{
+  path: 'department',
+  data: { permission: 'admin_department:view', permissionKey: 'admin' },
+  loadComponent: () =>
+    import('./features/department/department.tree.component').then(m => m.DepartmentTreeComponent),
+},
+{
+  path: 'department/create',
+  data: { permission: 'admin_department:create', permissionKey: 'admin' },
+  loadComponent: () =>
+    import('./features/department/pages/detail/detail.component').then(m => m.DetailComponent),
+},
+{
+  path: 'department/update/:id',
+  data: { permission: 'admin_department:update', permissionKey: 'admin' },
+  loadComponent: () =>
+    import('./features/department/pages/detail/detail.component').then(m => m.DetailComponent),
+},
+```
+
+---
+
+### Sidebar "Quản trị" — enterprise additions
+
+Append two items to the existing "Quản trị" group (after "Quyền"):
+
+```typescript
+// [enterprise] additions to the sidebar menu group
+{
+  label: 'Tenant',
+  route: '/admin/tenant',
+  permission: 'admin_tenant:view',
+},
+{
+  label: 'Phòng ban',
+  route: '/admin/department',
+  permission: 'admin_department:view',
+},
+```
+
+Gate each item with `*sdPermission="'admin_tenant:view'"` / `*sdPermission="'admin_department:view'"`.
+
+---
+
+### Expected additional file tree (enterprise)
+
+```
+src/libs/admin/
+  features/
+    tenant/
+      tenant.list.component.ts
+      tenant.list.component.html
+      tenant-api.service.ts
+      pages/
+        detail/
+          detail.component.ts
+          detail.component.html
+    department/
+      department.tree.component.ts
+      department.tree.component.html
+      department-api.service.ts
+      pages/
+        detail/
+          detail.component.ts
+          detail.component.html
+```
+
+---
+
+### Verification checklist (enterprise)
+
+- [ ] `clientSecret` never appears in GET responses or pre-filled form fields — network tab confirms.
+- [ ] Tenant selector in Account/Role drawers updates the Department options reactively when changed.
+- [ ] Department tree correctly shows root nodes + child nodes; a department with `parentCode` renders indented.
+- [ ] Tenant + Department sidebar items are hidden for users lacking `admin_tenant:view` / `admin_department:view`.
+- [ ] Navigating to `/admin/tenant` without `admin_tenant:view` redirects (route guard blocks).
+- [ ] Creating a role with `tenantCode` set scopes it correctly; global roles (`tenantCode = null`) remain accessible cross-tenant.
+
+---
+
+### Anti-patterns (enterprise)
+
+- Displaying or pre-filling `clientSecret` in any GET or DETAIL view — it is write-only.
+- Building the department dropdown without filtering by `tenantCode` — departments from other tenants must never appear in the selector.
+- Hard-coding tenant codes in permission checks — always resolve from the live `GET /api/admin/tenant` response.
+- Allowing `departmentCode` to be set without first setting `tenantCode` — the combination must always be consistent.
