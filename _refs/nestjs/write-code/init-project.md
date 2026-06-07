@@ -344,16 +344,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SdCoreModule } from '@sdcorejs/nestjs';
 
 import { CONFIGURATION, AppConfiguration } from './app.configuration';
-import { RolePermissionStrategy } from './common/role-permission.strategy';
-import { JwtStrategy } from './common/jwt.strategy';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ load: [CONFIGURATION], cache: true, isGlobal: true }),
     SdCoreModule.forRoot({
       context: { headers: { userId: 'x-user-id', lang: ['accept-language', 'x-language'] } },
-      permission: { strategy: RolePermissionStrategy },
-      jwt: { jwks: { allowedIssuers: [CONFIGURATION().keycloak.issuer] }, strategy: JwtStrategy },
       i18n: { fallbackLanguage: 'vi' },
     }),
     TypeOrmModule.forRootAsync({
@@ -373,7 +369,7 @@ import { JwtStrategy } from './common/jwt.strategy';
 export class AppModule {}
 ```
 
-> Controllers use the core `AuthGuard` from `@sdcorejs/nestjs/permission` directly (no custom `AdminAuthGuard`).
+> The `permission` strategy + the JWT wiring are added by `init-admin` (it registers `AppPermissionStrategy` and a separate `JwtModule.forRoot(..., { strategy: JwtStrategy, imports: [AdminModule] })`). The simple `SdCoreModule.forRoot` here wires only `context` + `i18n`.
 
 **Profile: enterprise**
 
@@ -516,41 +512,7 @@ export interface Dto {
 }
 ```
 
-**`src/common/role-permission.strategy.ts`**
-
-```ts
-import { Injectable } from '@nestjs/common';
-import type { IPermissionStrategy } from '@sdcorejs/nestjs/permission';
-import { ContextService } from '@sdcorejs/nestjs/context';
-
-/**
- * Simple profile: permission codes ARE the Keycloak realm roles mapped on the JWT
- * (JwtStrategy.validate → req.user.roles). Flat `string[]`; no page-permission matrix.
- */
-@Injectable()
-export class RolePermissionStrategy implements IPermissionStrategy {
-  constructor(private readonly ctx: ContextService) {}
-  async load(): Promise<string[]> {
-    const user = this.ctx.get('user') as { roles?: string[] } | undefined;
-    return user?.roles ?? [];
-  }
-}
-```
-
-**`src/common/jwt.strategy.ts`**
-
-```ts
-import { Injectable } from '@nestjs/common';
-import { type JwtPayload, KeycloakJwtStrategy } from '@sdcorejs/nestjs/jwt';
-
-/** Simple profile: map only sub + realm roles. No tenant/department claims. */
-@Injectable()
-export class JwtStrategy extends KeycloakJwtStrategy {
-  async validate(payload: JwtPayload) {
-    return { id: payload.sub, email: (payload as any).email, roles: (payload as any).realm_access?.roles ?? [] };
-  }
-}
-```
+> **Permission + JWT strategy are emitted by `init-admin`, not here.** The always-on admin module (`_refs/nestjs/write-code/init-admin.md`, run right after `init-project`) emits `AppPermissionStrategy` (app-DB role→permission codes) + the user-lookup `JwtStrategy` (resolves the app user from the token `sub`). `init-project` therefore emits NO permission/JWT strategy in the simple profile.
 
 ---
 
@@ -1017,16 +979,15 @@ KEYCLOAK_ISSUER=http://localhost:8080/realms/dev
 ├── .env.example
 └── src/
     ├── main.ts                  # ensureSchemas() + bootstrap()
-    ├── app.module.ts            # SdCoreModule.forRoot (simple) + TypeOrmModule.forRootAsync + RouterModule.register([])
+    ├── app.module.ts            # SdCoreModule.forRoot (context + i18n only) + TypeOrmModule.forRootAsync + RouterModule.register([])
     ├── app.configuration.ts     # env config factory
     ├── data-source.ts           # TypeORM CLI DataSource (migrations)
     ├── migrations/.gitkeep      # empty → migration:run is a no-op exit 0
     └── common/
         ├── base-entity.ts
         ├── errors.ts
-        ├── dto.ts
-        ├── role-permission.strategy.ts
-        └── jwt.strategy.ts
+        └── dto.ts
+                                 # permission/JWT strategies supplied by init-admin (AppPermissionStrategy + JwtStrategy)
 ```
 
 **Profile: enterprise**
@@ -1072,6 +1033,7 @@ KEYCLOAK_ISSUER=http://localhost:8080/realms/dev
 - `src/common/errors.ts` exports `badRequest(code, data?)` (the domain-error helper `actions.md` depends on).
 - **enterprise only:** `src/common/context/index.ts` barrels `./sd-context` (so `from 'src/common/context'` resolves) and `SdContext` exposes a `fullName` getter (used by `actions.md` Excel export).
 - **simple:** `rg` finds no `tenantCode`/`departmentCode`/`InternalGuard`/`base/shared` in the emitted output.
+- **simple:** `src/common/` contains ONLY `base-entity.ts`, `errors.ts`, `dto.ts` — NO `role-permission.strategy.ts`, NO `jwt.strategy.ts`; those are supplied by the always-on `init-admin` module run immediately after `init-project`.
 - No `.claude` / `.git` / domain-specific files leaked into the target.
 
 ---

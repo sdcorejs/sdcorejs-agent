@@ -11,7 +11,10 @@ Source policy:
 > page-permission matrix, `base/shared` kernel, internal-secret module) are NOT core; the
 > write-code packs emit them only under the `enterprise` profile. The `simple` profile uses
 > the core directly (`WithAudit`, core `AuthGuard`, a `string[]`-returning permission strategy).
-> See `_refs/nestjs/write-code/init-project.md` "Profile (read FIRST)".
+> See `_refs/nestjs/write-code/init-project.md` "Profile (read FIRST)". The generated **admin
+> module** (`init-admin`) owns `IPermissionStrategy` (app-DB role→codes) + the user-lookup
+> `JwtStrategy`; the lib ships only the neutral `IPermissionStrategy` interface +
+> the `KeycloakJwtStrategy` base.
 
 ## Package & imports
 
