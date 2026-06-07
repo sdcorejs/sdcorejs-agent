@@ -428,11 +428,17 @@ export const UserCreateSchema = z.object({
   isActive: z.boolean().optional(),
 });
 export const UserUpdateSchema = UserCreateSchema.partial();
+
+// ----- user reset-password -----
+export const UserResetPasswordSchema = z.object({
+  password: reqStr('admin.user.password.required').min(8, 'admin.user.password.minLength'),
+});
 ```
 
 > `Permission` records are seeded — no create/update schema needed. `email` uses
 > `z.string().email(...)` for format validation. All error values follow the
-> `<module>.<entity>.<field>.<rule>` i18n namespace.
+> `<module>.<entity>.<field>.<rule>` i18n namespace. `UserResetPasswordSchema` enforces a minimum
+> length of 8; adjust the `min` value to match the project's password policy.
 
 #### Controllers
 
@@ -519,7 +525,7 @@ import { ZodValidationGuard } from '@sdcorejs/nestjs/validation';
 import { Body, Controller, Delete, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { UserDTO } from 'src/modules/admin/dto';
 import { User } from 'src/modules/admin/entities';
-import { UserCreateSchema, UserUpdateSchema } from 'src/modules/admin/schemas/admin.schema';
+import { UserCreateSchema, UserUpdateSchema, UserResetPasswordSchema } from 'src/modules/admin/schemas/admin.schema';
 import { IUserService } from 'src/modules/admin/services';
 
 @Controller('user')
@@ -547,9 +553,10 @@ export class UserController extends BaseController<User, UserDTO> {
   @HasPermission('admin_user:delete')
   override async delete(@Param('id') id: string) { return super.delete(id); }
 
-  /** Reset Keycloak password (delegates to keycloak-admin.service — implemented in next task). */
+  /** Reset Keycloak password — body `{ password: string }` validated by UserResetPasswordSchema. */
   @Post(':id/reset-password')
   @HasPermission('admin_user:reset_password')
+  @UseGuards(ZodValidationGuard(UserResetPasswordSchema))
   async resetPassword(@Param('id') id: string, @Body() req: { password: string }) {
     await this.service.resetPassword(id, req.password);
     return ApiResponse.ok(null);
@@ -879,6 +886,48 @@ export async function seedAdmin(app: INestApplication) {
 > the corresponding service interfaces. They use TypeORM `upsert` (or `findOne`+`save`) keyed on
 > `code`/`username` so repeated calls are safe. `grantDemoAdmin` internally calls
 > `keycloakAdmin.findByUsername('demo')` and then upserts the `user` row.
+
+#### Seed method templates
+
+Add these methods to the respective service classes and declare them on the matching `I*Service`
+interfaces (alongside the existing methods listed in Step 5).
+
+```ts
+// permission.service.ts — idempotent registry upsert (DB-only)
+upsertRegistry = async (entries: { code: string; label: string; model: string; action: string }[]) => {
+  for (const e of entries) {
+    const existing = await this.repository.repository.findOne({ where: { code: e.code } });
+    if (existing) await this.repository.repository.update({ code: e.code }, { label: e.label, model: e.model, action: e.action });
+    else await this.repository.repository.insert(e);
+  }
+};
+```
+
+```ts
+// role.service.ts — ensure the 'admin' role holds every code (DB-only)
+upsertAdminRole = async (allCodes: string[]) => {
+  const existing = await this.repository.repository.findOne({ where: { code: 'admin' } });
+  if (existing) await this.repository.repository.update({ code: 'admin' }, { permissions: allCodes });
+  else await this.repository.repository.insert({ code: 'admin', name: 'Administrator', permissions: allCodes, isActive: true });
+};
+```
+
+```ts
+// user.service.ts — grant the Keycloak `demo` user the admin role (needs Keycloak; called under retry)
+grantDemoAdmin = async () => {
+  const kcUser = await this.keycloakAdmin.findByUsername('demo');   // throws/empty until Keycloak is up → retry wrapper handles it
+  if (!kcUser?.id) throw new Error('Keycloak demo user not found yet');
+  const existing = await this.repository.repository.findOne({ where: { keycloakUserId: kcUser.id } });
+  if (existing) await this.repository.repository.update({ id: existing.id }, { roleCodes: ['admin'], isActive: true });
+  else await this.repository.repository.insert({ keycloakUserId: kcUser.id, username: 'demo', roleCodes: ['admin'], isActive: true });
+};
+```
+
+Add to `IPermissionService`: `upsertRegistry(entries: { code: string; label: string; model: string; action: string }[]): Promise<void>`
+
+Add to `IRoleService`: `upsertAdminRole(allCodes: string[]): Promise<void>`
+
+Add to `IUserService`: `grantDemoAdmin(): Promise<void>`
 
 ---
 

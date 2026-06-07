@@ -39,7 +39,7 @@ Base endpoints follow `BaseController` paging/detail + writes:
 | `POST` | `/api/admin/user` | Create user |
 | `PUT` | `/api/admin/user/:id` | Update user |
 | `DELETE` | `/api/admin/user/:id` | Delete user |
-| `POST` | `/api/admin/user/:id/reset-password` | Reset password (custom) |
+| `POST` | `/api/admin/user/:id/reset-password` | Reset password — body `{ password: string }` (custom) |
 | `PUT` | `/api/admin/user/:id/enabled` | Toggle enabled (custom) |
 | `POST` | `/api/admin/user/:id/roles` | Assign roles (custom) |
 | `GET/POST/PUT/DELETE` | `/api/admin/role` | Role CRUD |
@@ -85,7 +85,7 @@ Row actions (each gated by `SdPermissionDirective`):
 
 | Action | Permission code | Behavior |
 |---|---|---|
-| Đặt lại mật khẩu | `admin_user:reset_password` | Confirm dialog → `POST /api/admin/user/:id/reset-password` |
+| Đặt lại mật khẩu | `admin_user:reset_password` | Password-prompt dialog → `POST /api/admin/user/:id/reset-password` body `{ password: string }` |
 | Bật / Tắt | `admin_user:update` | Toggle without confirm → `PUT /api/admin/user/:id/enabled` → reload row |
 | Xoá | `admin_user:delete` | Confirm dialog → `DELETE /api/admin/user/:id` → reload table |
 
@@ -120,9 +120,15 @@ export class AccountListComponent implements OnInit {
   }
 
   async onResetPassword(user: UserDTO) {
-    const ok = await this.confirm.show({ title: 'Đặt lại mật khẩu?', content: `Tài khoản: ${user.username}` });
-    if (!ok) return;
-    await this.loading.run(() => this.api.resetPassword(user.id));
+    // Prompt for the new password before calling the API.
+    // `SdConfirmService.prompt` opens a small dialog with a required input field.
+    const password = await this.confirm.prompt({
+      title: 'Đặt lại mật khẩu',
+      content: `Tài khoản: ${user.username}`,
+      field: { label: 'Mật khẩu mới', type: 'password', required: true, minLength: 8 },
+    });
+    if (!password) return;  // user cancelled or left empty
+    await this.loading.run(() => this.api.resetPassword(user.id, password));
     this.notify.success('Đã đặt lại mật khẩu');
   }
 
@@ -190,8 +196,8 @@ export class AccountApiService {
   }
 
   // Custom routes
-  resetPassword(id: string): Observable<void> {
-    return this.http.post<void>(`${this.base}/${id}/reset-password`, {});
+  resetPassword(id: string, password: string): Observable<void> {
+    return this.http.post<void>(`${this.base}/${id}/reset-password`, { password });
   }
 
   setEnabled(id: string, enabled: boolean): Observable<UserDTO> {
