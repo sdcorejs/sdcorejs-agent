@@ -1,7 +1,7 @@
 # Design — Always-on Admin Module (authn/authz authority for generated apps)
 
 **Date:** 2026-06-07
-**Status:** Approved (brainstorm) — pending written-spec review, then plan.
+**Status:** Delivered — admin module shipped on `feat/non-tech-solution-builder` (init-admin BE pack + admin-screens FE pack, simple+enterprise; auth/realm reconciled; orchestrators always-run; init-project simple-profile revised). Live `docker compose up` validation remains a deferred target-project E2E.
 **Branch:** builds on `feat/non-tech-solution-builder` (continues the profile-tier + role-split-loop work).
 **Author:** brainstorming session (Opus 4.8), grounded on the `enterprise-platform` reference (`src/modules/admin/*`) + sibling `enterprise-portal` admin screens.
 
