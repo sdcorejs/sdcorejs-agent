@@ -37,35 +37,24 @@ The realm template seeds a ready-to-use realm (realm `app`, public client `app-s
 2. If it is **missing**, copy it from `_refs/infra/keycloak/realm-export.json` into `<deploy-root>/infra/keycloak/realm-export.json` (Read the template, Write to the target).
 3. Do NOT edit the realm contents here, **except** for one permitted pre-first-boot change: if the backend uses the **simple profile**, augment the realm import with the app's permission codes as realm roles assigned to `demo` (see Step 1.5). Beyond that, realm contents are not modified here — the realm is seeded only on first boot and survives restarts (it lives in the `keycloak` Postgres DB, not the container filesystem) — see `_refs/infra/auth-keycloak.md` §1.
 
-## Step 1.5 — Permission model (by profile)
+## Step 1.5 — Permission model (admin module owns it)
 
-How a logged-in user's permissions reach `@HasPermission` differs by backend profile.
+In **both** profiles (simple and enterprise), permission codes come from the generated **admin module** — they are seeded into the app DB at boot by the admin module's `init-admin` seed, and resolved at login via `JwtStrategy` → `internalDetail` → `loadPermissions`. Keycloak realm roles are **NOT** the permission source.
 
-**simple profile (non-tech default) — realm roles ARE the permission codes.**
-The backend's `RolePermissionStrategy.load()` returns the user's Keycloak realm roles, and
-`@HasPermission('<module>_<entity>:<action>')` checks membership; the FE
-`SD_PERMISSION_CONFIGURATION.loadPermissions` likewise reads `realmAccess.roles`. So the realm
-MUST define a realm role for every permission code the generated backend uses, or every write 403s.
+- The `demo` user is granted the seeded `admin` role inside the **app DB** (by the admin module's boot seed) — **not via Keycloak realm roles**. This gives `demo` full access to every permission code without any realm-role engineering.
+- Realm roles (`user` and `admin`) remain in the import only as coarse-grained login markers. Fine-grained authorization is entirely the admin module's responsibility.
 
-Reconcile before first boot (the realm seeds only once — see §1):
-1. Collect the codes: grep the generated backend for `@HasPermission('...')`
-   (e.g. `rg -o "@HasPermission\('([^']+)'\)" -r '$1' backend/src --no-filename | sort -u`).
-   These are `<module>_<entity>:<action>` strings (e.g. `school_student:create`).
-2. In the deploy-root realm import (`<deploy-root>/infra/keycloak/realm-export.json`), add each
-   code as a **realm role** (name = the code verbatim), and assign ALL of them to the `demo` user
-   so the demo account can exercise every action.
-3. (Optional, to demo a read-only role) seed a second user `teacher`/`teacher` granted only the
-   read-style codes (`:view` / `:list` / `:view_*`), leaving writes to `demo`.
+**What auth.md's job is here (both profiles):**
 
-> Keycloak realm role names accept the `:` character, so a role literally named `school_student:create`
-> is valid. If a target Keycloak rejects `:` in a role name, fall back to roles WITHOUT the colon
-> (e.g. `school_student_create`) and have `RolePermissionStrategy` normalize `_`→`:` on load — document
-> whichever you pick in the project.
+1. Confirm the confidential **`app-admin`** service-account client is present in the realm import at `<deploy-root>/infra/keycloak/realm-export.json`. This client (already in the template) grants the backend admin module the Keycloak Admin API access it needs (`manage-users` + `view-users` on `realm-management`).
+2. Ensure the two env vars below are set in the backend compose env / `.env` so the admin module can call the Keycloak Admin API (added to Step 3 table):
 
-**enterprise profile — page-permission matrix (unchanged).**
-Permissions come from `AppPermissionStrategy` reading a `{ [model]: { [action]: boolean } }` matrix
-(seeded by the admin module / DB), NOT from realm roles. Leave the realm roles as the template's
-`user` + `admin` and wire the matrix per the admin module. Do NOT seed codes-as-roles for enterprise.
+   | Env var | Example value | Meaning |
+   |---|---|---|
+   | `KEYCLOAK_ADMIN_CLIENT_ID` | `app-admin` | service-account client for the Admin API |
+   | `KEYCLOAK_ADMIN_CLIENT_SECRET` | *(from `.env`)* | client secret for `app-admin` — override the placeholder in `.env` before first boot |
+
+Keep everything else as-is: the two-URL gotcha, the `demo`/`demo` login, and the FE/BE wiring steps.
 
 ## Step 2 — Frontend (Angular)
 
@@ -118,13 +107,15 @@ Write or patch **`frontend/src/app/app.config.ts`** to register the Keycloak pro
 
 The backend's `AuthGuard` validates the incoming `Bearer` token against the same realm. **This step CONFIGURES the existing provider/guard — it does NOT implement validation** (the JWKS fetch, signature check, and guard wiring already exist in the NestJS baseline; do not hand-roll token parsing).
 
-1. Set/confirm the three BE env vars (in the compose `backend` service env and/or `.env`):
+1. Set/confirm the BE env vars (in the compose `backend` service env and/or `.env`):
 
    | Env var | Value in the local stack | Meaning |
    |---|---|---|
    | `KEYCLOAK_URL` | `http://keycloak:8080` | **in-container** Keycloak origin — used to fetch the realm JWKS and validate tokens |
    | `KEYCLOAK_REALM` | `app` | realm to validate against |
    | `KEYCLOAK_CLIENT_ID` | `app-spa` | expected client / audience |
+   | `KEYCLOAK_ADMIN_CLIENT_ID` | `app-admin` | service-account client used by the admin module to call the Keycloak Admin API |
+   | `KEYCLOAK_ADMIN_CLIENT_SECRET` | *(from `.env`)* | client secret for `app-admin` — override the placeholder before first boot |
 
    - **`KEYCLOAK_URL` is the in-container origin `http://keycloak:8080`** — inside the Docker network services reach each other by service name, not `localhost`. (This is the opposite of the FE `url` in Step 2 — see Step 4.)
 

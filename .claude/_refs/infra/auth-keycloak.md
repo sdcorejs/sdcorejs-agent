@@ -15,9 +15,10 @@ Read alongside:
 The realm template at `_refs/infra/keycloak/realm-export.json` seeds a ready-to-use realm so the stack works on first boot with zero manual Keycloak setup:
 
 - **Realm:** `app`
-- **Client:** `app-spa` — a **public** OpenID-Connect client (PKCE / standard flow; no client secret). Redirect + web-origins locked to `http://localhost:4200`.
-- **Realm roles:** `user` and `admin`. For a **simple-profile** backend, `sdcorejs-auth` ALSO seeds one realm role per app permission code (`<module>_<entity>:<action>`) and assigns them to `demo` — because in the simple profile the realm roles ARE the permission codes (see the skill's Step 1.5). For an **enterprise-profile** backend the codes come from a page-permission matrix instead, and the realm keeps just `user`/`admin`.
-- **Demo user:** username **`demo`**, password **`demo`** (non-temporary), assigned the `user` role. Use it to log in immediately after `docker compose up`.
+- **Client: `app-spa`** — a **public** OpenID-Connect client (PKCE / standard flow; no client secret). Redirect + web-origins locked to `http://localhost:4200`.
+- **Client: `app-admin`** — a **confidential** service-account client (`publicClient: false`, `serviceAccountsEnabled: true`, standard/direct-access flows disabled). Used by the backend admin module to call the Keycloak Admin API. Its service account is granted `manage-users` + `view-users` on `realm-management`. Override the placeholder secret in `.env` before first boot.
+- **Realm roles:** `user` and `admin` (coarse-grained login markers only). Fine-grained authorization — permission codes such as `<module>_<entity>:<action>` — is the **admin module's** responsibility (app-DB role→permission codes resolved at login via `JwtStrategy`→`internalDetail`→`loadPermissions`). Realm roles are NOT the permission source in either profile.
+- **Demo user:** username **`demo`**, password **`demo`** (non-temporary), assigned the `user` realm role. The `demo` user is granted the `admin` role inside the **app DB** by the admin module's boot seed (`init-admin`) — not via Keycloak realm roles. Use it to log in immediately after `docker compose up`.
 
 **How and when it is imported.** The `keycloak` compose service runs `start-dev --import-realm`, which reads any realm JSON mounted under `/opt/keycloak/data/import/`. Keycloak persists realm state in its own `keycloak` database (a separate DB on the same Postgres server, per the compose comments). Because of this:
 
@@ -148,10 +149,10 @@ No skill edits are required to onboard a new provider — only a new knowledge r
 
 ## 7. Permission model by profile
 
-- **simple** — realm roles == permission codes. `JwtStrategy.validate` maps `realm_access.roles`
-  → `user.roles`; `RolePermissionStrategy.load()` returns them; `@HasPermission('<module>_<entity>:<action>')`
-  matches by membership; the FE `loadPermissions` reads the same `realmAccess.roles`. `sdcorejs-auth`
-  Step 1.5 seeds the codes-as-roles into the realm import and grants them to `demo`. Without this the
-  demo user (only the `user` role) is denied every guarded write.
-- **enterprise** — permission codes come from a `{ [model]: { [action]: boolean } }` matrix resolved by
-  `AppPermissionStrategy` (admin module / DB), independent of realm roles. The realm keeps `user`/`admin`.
+In **both** profiles, permission codes (`<module>_<entity>:<action>`) come from the generated **admin module**, not from Keycloak realm roles.
+
+- `JwtStrategy.validate` calls `internalDetail` → `loadPermissions`, which reads the app-DB role→permission mapping seeded by the admin module's `init-admin` boot seed.
+- `@HasPermission('<module>_<entity>:<action>')` and the FE `SD_PERMISSION_CONFIGURATION.loadPermissions` consume these app-DB-sourced codes.
+- The `demo` user is granted the `admin` role in the **app DB** by the boot seed — it is NOT assigned permission codes as Keycloak realm roles.
+- Keycloak realm roles (`user` and `admin`) remain in the realm as coarse-grained login markers only — they are not read by `RolePermissionStrategy` or `AppPermissionStrategy` for authorization.
+- The backend admin module calls the Keycloak Admin API (user search, account management) using the confidential `app-admin` service-account client (`KEYCLOAK_ADMIN_CLIENT_ID` / `KEYCLOAK_ADMIN_CLIENT_SECRET` — see §3 and `sdcorejs-auth` Step 1.5).

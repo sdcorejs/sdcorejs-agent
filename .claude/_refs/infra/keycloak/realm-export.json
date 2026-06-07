@@ -25,6 +25,17 @@
       "attributes": {
         "post.logout.redirect.uris": "http://localhost:4200/*"
       }
+    },
+    {
+      "clientId": "app-admin",
+      "enabled": true,
+      "publicClient": false,
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "protocol": "openid-connect",
+      "secret": "app-admin-secret-change-me"
     }
   ],
   "users": [
@@ -39,6 +50,16 @@
         { "type": "password", "value": "demo", "temporary": false }
       ],
       "realmRoles": ["user"]
+    },
+    {
+      "username": "service-account-app-admin",
+      "enabled": true,
+      "email": "service-account-app-admin@placeholder",
+      "emailVerified": true,
+      "serviceAccountClientId": "app-admin",
+      "clientRoles": {
+        "realm-management": ["manage-users", "view-users"]
+      }
     }
   ]
 }
