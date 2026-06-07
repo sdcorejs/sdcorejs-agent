@@ -1,7 +1,15 @@
 # Design — NestJS generalization (profile tier) + role-split feature loop
 
 **Date:** 2026-06-06
-**Status:** Delivered — Phases 1–3 shipped on `feat/non-tech-solution-builder` (doc-drift + profile tier + role-split loop). Live `docker compose up` validation of generated `simple`/`enterprise` output remains a deferred target-project E2E.
+**Status:** Delivered — Phases 1–3 shipped on `feat/non-tech-solution-builder` (doc-drift + profile tier + role-split loop), plus post-delivery hardening G1–G3 (below). Live `docker compose up` validation of generated `simple`/`enterprise` output remains a deferred target-project E2E.
+
+### Post-delivery hardening (from a `solution-builder` dry-run, "quản lý học sinh")
+
+A dogfood dry-run of `sdcorejs-solution-builder` exercised the new simple-profile + Mode B path end-to-end (contract-freeze → BE‖FE‖QC → acceptance loop converged in 2 iters) and surfaced 3 integration seams the per-task reviews missed (seams between skills, not within a file). All fixed:
+
+- **G1 (🔴) — topology undefined on the non-tech door.** Mode B B.1 keyed the contract location off a topology "asked at clarify", but `solution-builder`'s clarify never asks architecture (persona rule 7). Fix: `solution-builder` now forces a **single deploy-root** topology and passes `topology` + `profile=simple` EXPLICITLY into Mode B; B.0 documents caller-passed inputs; B.1 covers the single-deploy-root case (FE mirrors BE DTOs). (commit `1c4b15a`)
+- **G2 (🟡) — profile implicit on first build.** `nestjs-write-code` reads `profile` from `.sdcorejs/summary.md`, which doesn't exist until the END of init-project. Fix: the orchestrator passes `profile` explicitly into the Mode B contract-freeze/BE brief; summary.md is a fallback only. (commit `1c4b15a`)
+- **G3 (🟡) — simple-profile permission codes ≠ Keycloak realm roles.** The seeded demo realm has only `user`/`admin`, but simple `@HasPermission('<module>_<entity>:<action>')` checks membership against the user's realm roles → every write 403s. Fix: `sdcorejs-auth` Step 1.5 + `auth-keycloak.md` §7 — for the simple profile, seed the app's permission codes AS realm roles (assigned to `demo`) before first boot; enterprise keeps the page-permission matrix. (commit `09c4f86`)
 **Author:** brainstorming session (Opus 4.8).
 
 ## TL;DR
