@@ -108,6 +108,8 @@ orchestration/branch-ready
   ← inspired by superpowers:finishing-a-development-branch
   ↓
 orchestration/auto-docs  ← MANDATORY session summary to <target>/.sdcorejs/docs/<track>/
+  ↓
+sdcorejs-write-user-guide (Mode 1) ← MANDATORY per-module — update <target>/.sdcorejs/user-guide/<module>.md (features / routes / permissions / data + Coverage-vs-requirements); aggregate rebuilds at ship
 orchestration/auto-task-tracker   ← MANDATORY (immediately after auto-docs) — tick done + append new in <target>/.sdcorejs/tasks/<track>.md
 orchestration/memories            ← durable knowledge (when applicable) to <target>/.sdcorejs/memories/<track>/
 ```
@@ -118,7 +120,7 @@ After `branch-ready`, an **OPTIONAL packaging branch** may run `sdcorejs-dockeri
 
 ## Mandatory rules (apply to every track)
 
-1. **Auto-docs is mandatory.** At the end of every code-writing skill invocation, run the track-agnostic `auto-docs` skill at `skills/orchestration/auto-docs.md`. This writes a session summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (note the leading dot in `.sdcorejs/`). Do NOT write the doc to this `sdcorejs-agent` repo.
+1. **Auto-docs is mandatory.** At the end of every code-writing skill invocation, run the track-agnostic `auto-docs` skill at `skills/orchestration/auto-docs.md`. This writes a session summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (note the leading dot in `.sdcorejs/`). Do NOT write the doc to this `sdcorejs-agent` repo. Immediately after auto-docs, run `sdcorejs-write-user-guide` (Mode 1) to update the touched module's per-module user guide at `<target>/.sdcorejs/user-guide/<module>.md`; the aggregate `sdcorejs-user-guide.md` + DOCX rebuild at ship.
 
 2. **Auto-specs / auto-plans are mandatory.** Immediately after `sdcorejs-review-spec` (cross-track) returns explicit user approval, run `skills/orchestration/auto-specs.md` to persist the approved spec snapshot to `<target>/.sdcorejs/specs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. Immediately after `sdcorejs-review-plan` returns explicit user approval, run `skills/orchestration/auto-plans.md` to persist the approved plan snapshot to `<target>/.sdcorejs/plans/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. The next step (`sdcorejs-write-plan` / `<track>-write-code`) waits for these writes to finish. The corpus lets future `sdcorejs-write-spec` / `sdcorejs-write-plan` invocations mirror the user's preferred structure and depth.
 
@@ -165,6 +167,7 @@ Loaded by every track at the start of every feature. Each detects the track at r
 | `sdcorejs-auto-docs` | end of every code-writing task — session summary | ✅ |
 | `sdcorejs-auto-specs` | runs IMMEDIATELY after `sdcorejs-review-spec` approval — snapshots to `.sdcorejs/specs/<track>/` so future `sdcorejs-write-spec` can mirror style | ✅ on approval |
 | `sdcorejs-auto-plans` | runs IMMEDIATELY after `sdcorejs-review-plan` approval — snapshots to `.sdcorejs/plans/<track>/` so future `sdcorejs-write-plan` can mirror style | ✅ on approval |
+| `sdcorejs-write-user-guide` | end of write-code (per-module guide, Mode 1) / ship (aggregate rebuild) / "viết user guide" / "đọc toàn dự án viết user guide" — updates `.sdcorejs/user-guide/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements) | ✅ per-module on write-code |
 | `sdcorejs-auto-task-tracker` | runs IMMEDIATELY after auto-docs — ticks `[x]` done, appends new tasks to `.sdcorejs/tasks/<track>.md` | ✅ |
 | `sdcorejs-memories` | "ghi nhớ", durable knowledge — write to target `.sdcorejs/memories/<track>/` | ✅ on trigger |
 | `sdcorejs-repair-loop` | runs after `sdcorejs-review` outputs findings — categorize / auto-apply / iterate until Critical+Important resolved | ✅ on findings |

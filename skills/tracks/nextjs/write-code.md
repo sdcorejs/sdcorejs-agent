@@ -1,6 +1,6 @@
 ---
 name: nextjs-write-code
-description: Generate code for a Next.js landing site — after 06-review-plan approves, OR as the single entry point for any direct build-website code-gen request. Loads the matching on-demand pack under `_refs/nextjs/build-website/write-code/` (per-pack trigger catalog is in the body): init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. Triggers - "bootstrap website", "chọn theme", "add a page / tạo section", "set up SEO / sitemap", "OG image / social preview hỏng", "thêm tiếng Anh / i18n", "caching / ISR", "responsive bị vỡ / mobile broken", "contact form / form không gửi email", "review content / bài viết quá ngắn", plus generic "generate code", "viết code", "go ahead". To audit an EXISTING site use `sdcorejs-review` instead. After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories). Bilingual (VI/EN).
+description: Generate code for a Next.js landing site — after 06-review-plan approves, OR as the single entry point for any direct build-website code-gen request. Loads the matching on-demand pack under `_refs/nextjs/build-website/write-code/` (per-pack trigger catalog is in the body): init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. Triggers - "bootstrap website", "chọn theme", "add a page / tạo section", "set up SEO / sitemap", "OG image / social preview hỏng", "thêm tiếng Anh / i18n", "caching / ISR", "responsive bị vỡ / mobile broken", "contact form / form không gửi email", "review content / bài viết quá ngắn", plus generic "generate code", "viết code", "go ahead". To audit an EXISTING site use `sdcorejs-review` instead. After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Bash
 ---
 
@@ -96,6 +96,9 @@ orchestration/verify-before-done ← BLOCK "done" until acceptance criteria from
 orchestration/branch-ready ← branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test)
    ↓
 orchestration/auto-docs    ← session summary to .sdcorejs/docs/nextjs/
+   ↓
+sdcorejs-write-user-guide (Mode 1) ← update touched module's .sdcorejs/user-guide/<module>.md (features / routes / permissions / data + Coverage-vs-requirements); per-module incremental, aggregate rebuilds at ship
+   ↓
 orchestration/auto-task-tracker ← tick done, append new
 orchestration/memories     ← durable knowledge (when applicable)
 ```

@@ -1,6 +1,6 @@
 ---
 name: nestjs-write-code
-description: Generate NestJS modular-monolith backend code on the @sdcorejs/nestjs core — after sdcorejs-review-plan approves, OR as the single entry point for any direct backend code-gen request. Loads the matching on-demand pack under _refs/nestjs/write-code/ (per-pack trigger catalog in the body): init-project (scaffold app), init-module (bounded-context module), init-entity (full CRUD stack: entity/repository/service/controller/schema/DTO), actions (custom / non-CRUD endpoints — domain methods, cross-module, workflow, bulk, export). Triggers - "scaffold nestjs / init backend", "add module", "add entity / create CRUD", "add endpoint / custom action / workflow / bulk / export", plus generic "generate backend code", "write backend", "go ahead" (after a nestjs plan was approved). NOT for spec/plan, code review, or angular/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories). Applies to nestjs. Bilingual (runtime: respond in the user's language).
+description: Generate NestJS modular-monolith backend code on the @sdcorejs/nestjs core — after sdcorejs-review-plan approves, OR as the single entry point for any direct backend code-gen request. Loads the matching on-demand pack under _refs/nestjs/write-code/ (per-pack trigger catalog in the body): init-project (scaffold app), init-module (bounded-context module), init-entity (full CRUD stack: entity/repository/service/controller/schema/DTO), actions (custom / non-CRUD endpoints — domain methods, cross-module, workflow, bulk, export). Triggers - "scaffold nestjs / init backend", "add module", "add entity / create CRUD", "add endpoint / custom action / workflow / bulk / export", plus generic "generate backend code", "write backend", "go ahead" (after a nestjs plan was approved). NOT for spec/plan, code review, or angular/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Applies to nestjs. Bilingual (runtime: respond in the user's language).
 allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
@@ -70,8 +70,9 @@ After all referenced steps finish, hand off in this exact order. Each tail-call 
 5. `orchestration/verify-before-done` — BLOCK "done" until every acceptance criterion in the spec is ✅ verified or ⚠️ explicitly deferred
 6. `orchestration/branch-ready` — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
 7. `orchestration/auto-docs` — session summary written to `<target>/.sdcorejs/docs/nestjs/`
-8. `orchestration/auto-task-tracker` — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
-9. `orchestration/memories` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
+8. `sdcorejs-write-user-guide` (Mode 1) — update the touched module's `.sdcorejs/user-guide/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds at ship.
+9. `orchestration/auto-task-tracker` — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
+10. `orchestration/memories` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 
 Do NOT skip `verify-before-done` — that's how acceptance criteria silently slip. Do NOT skip the `orchestration/comment-code` ASK gate (the gate IS the value; auto-defaulting defeats the design).
 

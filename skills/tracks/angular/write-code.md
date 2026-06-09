@@ -1,6 +1,6 @@
 ---
 name: angular-write-code
-description: Generate Angular-portal code — after 06-review-plan approves, OR as the single entry point for any direct Angular-portal code-gen request. Loads the matching on-demand pack under `_refs/angular/write-code/` (per-pack trigger catalog is in the body): init-portal, init-module, init-entity (full CRUD), screen-list, screen-detail (CREATE/UPDATE/DETAIL + reactive-form/validators), actions (workflow / bulk / custom buttons). Triggers - "khởi tạo portal", "tạo module X", "thêm entity / tạo CRUD", "màn list / thêm cột", "tạo màn detail / form validation / custom validator", "thêm action button / approve / bulk approve / xuất excel", and generic "generate code", "viết code", "sinh code đi", "go ahead". NOT for spec/plan, code review, or nestjs/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories). Bilingual (VI/EN).
+description: Generate Angular-portal code — after 06-review-plan approves, OR as the single entry point for any direct Angular-portal code-gen request. Loads the matching on-demand pack under `_refs/angular/write-code/` (per-pack trigger catalog is in the body): init-portal, init-module, init-entity (full CRUD), screen-list, screen-detail (CREATE/UPDATE/DETAIL + reactive-form/validators), actions (workflow / bulk / custom buttons). Triggers - "khởi tạo portal", "tạo module X", "thêm entity / tạo CRUD", "màn list / thêm cột", "tạo màn detail / form validation / custom validator", "thêm action button / approve / bulk approve / xuất excel", and generic "generate code", "viết code", "sinh code đi", "go ahead". NOT for spec/plan, code review, or nestjs/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -48,8 +48,9 @@ Execution order: portal → admin-screens → module → entity → screens → 
 5. `orchestration/verify-before-done` — BLOCK "done" until acceptance criteria from the spec are ✅ verified or ⚠️ explicitly deferred
 6. `orchestration/branch-ready` — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
 7. `orchestration/auto-docs` — session summary written to `<target>/.sdcorejs/docs/angular/`
-8. `orchestration/auto-task-tracker` — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
-9. `orchestration/memories` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
+8. `sdcorejs-write-user-guide` (Mode 1) — update the touched module's `.sdcorejs/user-guide/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds at ship.
+9. `orchestration/auto-task-tracker` — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
+10. `orchestration/memories` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 
 Each tail-call is mandatory (per CLAUDE.md). Do NOT skip `verify-before-done` — that's how acceptance criteria silently slip. Do NOT skip the `orchestration/comment-code` ASK gate (the gate IS the value; auto-defaulting defeats the design).
 
