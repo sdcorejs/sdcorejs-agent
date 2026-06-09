@@ -8,7 +8,7 @@
 
 ## Purpose / when to use
 
-Generate the **complete CRUD stack for one entity** inside a module that already exists (scaffolded by [`init-module`](./init-module.md)): the TypeORM **entity**, its **repository** (Symbol I-token + concrete class), its **DTO** (in the `@shared` kernel), its **service** (permission-gated `mapDTO`), its **Zod schemas** (create + update), its **controller** (`@HasPermission` + `ZodValidationGuard`), and the **module wiring** that registers all four building blocks. Paging / detail / soft-delete / restore routes are **inherited** from `BaseController` — this pack only writes the entity-specific surface plus the two write routes (`create` / `update`).
+Generate the **complete CRUD stack for one entity** inside a module that already exists (scaffolded by [`init-module`](./init-module.md)): the TypeORM **entity**, its **repository** (Symbol I-token + concrete class), its **DTO** (in the `@shared` kernel), its **service** (permission-gated `mapDTO`), its **Zod schemas** (create + update), its **controller** (`@HasPermission` + `ZodValidationGuard`), and the **module wiring** that registers all four building blocks. Search / paging / detail / delete routes are **inherited** from `BaseController`; `all`, soft-delete, restore, and paging-deleted remain service methods and need explicit subclass routes when exposed.
 
 Run order: **`init-project` → `init-module` → `init-entity`**. Run `init-entity` once per entity; re-run it to add a second entity into the same module (each run appends to the same barrels + `<module>.module.ts` arrays). Use when the plan asks to:
 
@@ -46,13 +46,13 @@ prior versions.
 
 ## Source of truth — core package
 
-Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) for the canonical export inventory + import sub-paths BEFORE generating. Every import in the templates below MUST match a sub-path the catalog documents (`@sdcorejs/nestjs`, `/orm`, `/permission`, `/validation`). Do not invent imports. The building blocks come from the catalog's "ORM building blocks" section:
+Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) for the canonical export inventory + import sub-paths BEFORE generating. Every import in the templates below MUST match a sub-path the catalog documents (`@sdcorejs/nestjs`, `/core`, `/auth`, `/validation`). Do not invent imports. The building blocks come from the catalog's "ORM building blocks" section:
 
-- `BaseEntity` (extended via the **app's local** `src/common/base-entity.ts`, NOT the lib base — see Step 1), `@Scoped` / `@SearchableFields` decorators (`/orm`).
-- `BaseRepository<T>` + `IBaseRepository<T>` (`/orm`).
-- `BaseService<T, TDto>` + `IBaseService<T, TDto>` + the abstract `mapDTO` contract (`/orm`).
-- `BaseController<T, TDto>` (auto-mounts `POST /search`, `POST /paging`, `GET /all`, `GET /:id`, `DELETE /:id`) + `ApiResponse` (`/orm`, re-exported at root).
-- `@HasPermission` + `AuthGuard` (`/permission`); `ZodValidationGuard` (`/validation`).
+- `BaseEntity` (extended via the **app's local** `src/common/base-entity.ts`, NOT the lib base — see Step 1), `@Scoped` / `@SearchableFields` decorators (`/core`).
+- `BaseRepository<T>` + `IBaseRepository<T>` (`/core`).
+- `BaseService<T, TDto>` + `IBaseService<T, TDto>` + the abstract `mapDTO` contract (`/core`).
+- `BaseController<T, TDto>` (auto-mounts `POST /search`, `POST /paging`, `GET /:id`, `DELETE /:id`) + `ApiResponse` (`/core`, re-exported at root). `GET /all`, soft-delete, restore, and paging-deleted are service methods only until a subclass route exposes them.
+- `@HasPermission` + `AuthGuard` (`/auth`); `ZodValidationGuard` (`/validation`).
 
 The Symbol-I-token DI pattern (`export interface I… extends I…` + `export const I… = Symbol('I…')` + `export class … implements I…`) is the same one `init-module`'s provider-binding section documents — `init-entity` is what actually emits one per entity.
 
@@ -81,7 +81,7 @@ Before generating, confirm:
 The TypeORM entity. Sets the per-module Postgres schema, declares the tenancy columns with `@Scoped`, the typed business columns, optional relations, and the `@SearchableFields` matcher. *(Ground: ref app `src/modules/crm/entities/task.entity.ts` — `@Entity({ schema: 'crm', name: 'task', orderBy: { createdAt: 'DESC' } })`, `@Index(['departmentCode'])`, `@Unique(['departmentCode', 'code'])`, `@Scoped()` on `tenantCode` / `departmentCode`, the typed `@Column`s, the `@ManyToOne` + `@JoinColumn` relation to `TaskStatus` / `TaskType`.)*
 
 ```ts
-import { Scoped, SearchableFields } from '@sdcorejs/nestjs/orm';
+import { Scoped, SearchableFields } from '@sdcorejs/nestjs/core';
 import { BaseEntity } from 'src/common/base-entity';
 import { Column, Entity, Index, JoinColumn, ManyToOne, Unique } from 'typeorm';
 // import { <Parent> } from './<parent>.entity';   // relation target in the SAME module (optional)
@@ -89,7 +89,7 @@ import { Column, Entity, Index, JoinColumn, ManyToOne, Unique } from 'typeorm';
 
 /**
  * <Entity> — lives in the `<module>` Postgres schema. Extends the app's LOCAL BaseEntity
- * (src/common/base-entity), NOT the lib `@sdcorejs/nestjs/orm` BaseEntity: the local base
+ * (src/common/base-entity), NOT the lib `@sdcorejs/nestjs/core` BaseEntity: the local base
  * declares the exact audit columns the live schema uses (createdAt / modifiedAt / deletedAt +
  * createdBy / modifier / deletor). The lib BaseRepository/BaseService/BaseController are
  * column-name-agnostic, so they operate on this base unchanged.
@@ -159,7 +159,7 @@ export class <Entity> extends BaseEntity {
 The TypeORM entity for a single-tenant app. No tenancy columns (`tenantCode`/`departmentCode`), no `@Scoped`, no `@Index`/`@Unique(['departmentCode', ...])`. `src/common/base-entity` in the simple profile re-exports the lib `WithAudit(BaseEntity)` — audit columns are `createdAt`/`updatedAt`/`deletedAt`/`createdBy`/`modifiedBy` (no legacy `modifiedAt` contradiction).
 
 ```ts
-import { SearchableFields } from '@sdcorejs/nestjs/orm';
+import { SearchableFields } from '@sdcorejs/nestjs/core';
 import { BaseEntity } from 'src/common/base-entity';
 import { Column, Entity } from 'typeorm';
 
@@ -202,7 +202,7 @@ export * from './<entity>.entity';
 The Symbol-I-token DI pattern from the catalog: an interface, a same-named `Symbol` const (declaration merging), and the concrete class extending `BaseRepository`. `{ logHistory: true }` records write history (catalog `BaseRepository` options). *(Ground: ref app `src/modules/crm/repositories/task.repository.ts` lines 1-14.)*
 
 ```ts
-import { BaseRepository, IBaseRepository } from '@sdcorejs/nestjs/orm';
+import { BaseRepository, IBaseRepository } from '@sdcorejs/nestjs/core';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { <Entity> } from 'src/modules/<module>/entities';
 import { DataSource } from 'typeorm';
@@ -299,8 +299,8 @@ The service maps entities → DTOs and exposes the I-token. Extends `BaseService
 
 ```ts
 import { Inject, Injectable } from '@nestjs/common';
-import { BaseService, IBaseService } from '@sdcorejs/nestjs/orm';
-import { SdContext } from 'src/common/context/sd-context';
+import { BaseService, IBaseService } from '@sdcorejs/nestjs/core';
+import { SdContext } from 'src/common/core/sd-context';
 import { <Entity>DTO } from '@shared/<module>';
 import { <Entity> } from 'src/modules/<module>/entities';
 import { I<Entity>Repository } from 'src/modules/<module>/repositories';
@@ -349,12 +349,12 @@ export class <Entity>Service extends BaseService<<Entity>, <Entity>DTO> implemen
 
 **Profile: simple**
 
-Same `BaseService` extension, but injects the lib `ContextService` directly (no `SdContext` facade — simple apps do not scaffold `src/common/context/sd-context.ts`). DTO is imported from `src/modules/<module>/dto` (no `@shared` alias). No tenancy fields in the returned object.
+Same `BaseService` extension, but injects the lib `ContextService` directly (no `SdContext` facade — simple apps do not scaffold `src/common/core/sd-context.ts`). DTO is imported from `src/modules/<module>/dto` (no `@shared` alias). No tenancy fields in the returned object.
 
 ```ts
 import { Inject, Injectable } from '@nestjs/common';
-import { BaseService, IBaseService } from '@sdcorejs/nestjs/orm';
-import { ContextService } from '@sdcorejs/nestjs/context';
+import { BaseService, IBaseService } from '@sdcorejs/nestjs/core';
+import { ContextService } from '@sdcorejs/nestjs/core';
 import { <Entity>DTO } from 'src/modules/<module>/dto/<entity>.dto';
 import { <Entity> } from 'src/modules/<module>/entities';
 import { I<Entity>Repository } from 'src/modules/<module>/repositories';
@@ -385,7 +385,7 @@ export class <Entity>Service extends BaseService<<Entity>, <Entity>DTO> implemen
 }
 ```
 
-> The lib `ContextService` (from `@sdcorejs/nestjs/context`) exposes `hasPermission(code)` taking the full flat code `<module>_<entity>:<action>` — no two-arg split form. There is no `SdContext` facade in the simple profile. `ContextService` must be added to the module's `providers` array (or imported via a shared module) for DI to resolve. The catalog confirms this export path.
+> The lib `ContextService` (from `@sdcorejs/nestjs/core`) exposes `hasPermission(code)` taking the full flat code `<module>_<entity>:<action>` — no two-arg split form. There is no `SdContext` facade in the simple profile. `ContextService` must be added to the module's `providers` array (or imported via a shared module) for DI to resolve. The catalog confirms this export path.
 
 ---
 
@@ -416,13 +416,13 @@ export const <Entity>UpdateSchema = <Entity>CreateSchema.partial();
 
 ### Step 6 — Controller (`src/modules/<module>/controllers/<entity>.controller.ts`)
 
-The controller extends `BaseController` (which auto-mounts `POST /search`, `POST /paging`, `GET /all`, `GET /:id`, `DELETE /:id`, all wrapped in `ApiResponse`), and adds only the two write routes with per-route `@HasPermission` + `ZodValidationGuard`. The class-level `@UseGuards(...)` authenticates every route + loads permission codes into context — the guard used differs by profile. *(Ground: ref app `src/modules/crm/controllers/task.controller.ts` — `@Controller('task') @UseGuards(AdminAuthGuard) extends BaseController<Task, TaskDTO>`, `@Post() @HasPermission('crm_task:create') @UseGuards(ZodValidationGuard(TaskCreateSchema))`, `@Put(':id') @UseGuards(ZodValidationGuard(TaskUpdateSchema))`.)*
+The controller extends `BaseController` (which auto-mounts `POST /search`, `POST /paging`, `GET /:id`, `DELETE /:id`, all wrapped in `ApiResponse`), and adds only the two write routes with per-route `@HasPermission` + `ZodValidationGuard`. The class-level `@UseGuards(...)` authenticates every route + loads permission codes into context — the guard used differs by profile. *(Ground: ref app `src/modules/crm/controllers/task.controller.ts` — `@Controller('task') @UseGuards(AdminAuthGuard) extends BaseController<Task, TaskDTO>`, `@Post() @HasPermission('crm_task:create') @UseGuards(ZodValidationGuard(TaskCreateSchema))`, `@Put(':id') @UseGuards(ZodValidationGuard(TaskUpdateSchema))`.)*
 
 **Profile: enterprise**
 
 ```ts
-import { BaseController, ApiResponse } from '@sdcorejs/nestjs/orm';
-import { HasPermission } from '@sdcorejs/nestjs/permission';
+import { BaseController, ApiResponse } from '@sdcorejs/nestjs/core';
+import { HasPermission } from '@sdcorejs/nestjs/auth';
 import { ZodValidationGuard } from '@sdcorejs/nestjs/validation';
 import { AdminAuthGuard } from 'src/common/admin-auth.guard';
 import { Body, Controller, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
@@ -432,7 +432,7 @@ import { <Entity>CreateSchema, <Entity>UpdateSchema } from 'src/modules/<module>
 import { I<Entity>Service } from 'src/modules/<module>/services';
 
 /**
- * <Entity> CRUD. Inherits POST /search, POST /paging, GET /all, GET /:id, DELETE /:id from
+ * <Entity> CRUD. Inherits POST /search, POST /paging, GET /:id, DELETE /:id from
  * BaseController. Class-level AdminAuthGuard authenticates + loads permission codes into context.
  * create/update add per-route @HasPermission + ZodValidationGuard.
  */
@@ -463,11 +463,11 @@ export class <Entity>Controller extends BaseController<<Entity>, <Entity>DTO> {
 
 **Profile: simple**
 
-Uses the core `AuthGuard` (`@sdcorejs/nestjs/permission`) directly — the simple profile does NOT scaffold `AdminAuthGuard`. The `AuthGuard` loads codes via the `RolePermissionStrategy` (realm roles).
+Uses the core `AuthGuard` (`@sdcorejs/nestjs/auth`) directly — the simple profile does NOT scaffold `AdminAuthGuard`. The `AuthGuard` loads codes via the `RolePermissionStrategy` (realm roles).
 
 ```ts
-import { BaseController, ApiResponse } from '@sdcorejs/nestjs/orm';
-import { AuthGuard, HasPermission } from '@sdcorejs/nestjs/permission';
+import { BaseController, ApiResponse } from '@sdcorejs/nestjs/core';
+import { AuthGuard, HasPermission } from '@sdcorejs/nestjs/auth';
 import { ZodValidationGuard } from '@sdcorejs/nestjs/validation';
 import { Body, Controller, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { <Entity>DTO } from 'src/modules/<module>/dto/<entity>.dto';
@@ -476,7 +476,7 @@ import { <Entity>CreateSchema, <Entity>UpdateSchema } from 'src/modules/<module>
 import { I<Entity>Service } from 'src/modules/<module>/services';
 
 /**
- * <Entity> CRUD. Inherits POST /search, POST /paging, GET /all, GET /:id, DELETE /:id from
+ * <Entity> CRUD. Inherits POST /search, POST /paging, GET /:id, DELETE /:id from
  * BaseController. Class-level core AuthGuard authenticates + loads permission codes (the
  * RolePermissionStrategy maps Keycloak realm roles → codes). create/update add per-route
  * @HasPermission + ZodValidationGuard.
@@ -636,7 +636,7 @@ src/modules/<module>/
   - **Enterprise:** `mapDTO` uses `SdContext.hasPermission('<module>_<entity>', '<action>')` and includes `tenantCode`/`departmentCode` in the returned DTO.
   - **Simple:** `mapDTO` injects `ContextService` and uses `this.ctx.hasPermission('<module>_<entity>:<action>')`; no tenancy fields in the returned DTO.
 - `schemas/<module>.schema.ts` has `<Entity>CreateSchema` + `<Entity>UpdateSchema = <Entity>CreateSchema.partial()` with i18n error codes. (profile-independent)
-- `controllers/<entity>.controller.ts` exports `<Entity>Controller extends BaseController<...>` with `@HasPermission` + `ZodValidationGuard` on create/update. **Enterprise:** under `@UseGuards(AdminAuthGuard)`, DTO imported from `@shared/<module>`. **Simple:** under `@UseGuards(AuthGuard)` (core, from `@sdcorejs/nestjs/permission`), DTO imported from `src/modules/<module>/dto/<entity>.dto`.
+- `controllers/<entity>.controller.ts` exports `<Entity>Controller extends BaseController<...>` with `@HasPermission` + `ZodValidationGuard` on create/update. **Enterprise:** under `@UseGuards(AdminAuthGuard)`, DTO imported from `@shared/<module>`. **Simple:** under `@UseGuards(AuthGuard)` (core, from `@sdcorejs/nestjs/auth`), DTO imported from `src/modules/<module>/dto/<entity>.dto`.
 - All four barrels (`entities` / `repositories` / `services` / `controllers`) re-export the new files. Enterprise also has `base/shared/<module>/index.ts`.
 - `<module>.module.ts` registers `<Entity>` (forFeature), `<Entity>Controller` (controllers), both provider bindings, and `I<Entity>Service` (exports) — exactly once each. (profile-independent)
 - `npm run build` typechecks the new stack.

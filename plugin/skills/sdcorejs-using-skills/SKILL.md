@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-using-skills
-description: Bootstrap that teaches how to find and dispatch sdcorejs skills AND serves as the onboarding entry point (it replaces the former per-track `*-onboarding` skills) — INJECTED AT SESSION START so dispatch discipline holds even when the repo's CLAUDE.md is absent (e.g. installed as a plugin in a foreign project). Establishes the clarify → spec → plan → write-code → review → ship flow, the user-approval gates, the per-track first step, and the rule that a relevant skill MUST be invoked before responding. Triggers - session start, "what can you do", "agent này làm được gì", "how do I start", "list skills", "help", "skills nào dùng được", "tạo landing page", or any request that matches an sdcorejs skill. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Bootstrap that teaches how to find and dispatch sdcorejs skills AND serves as the onboarding entry point (it replaces the former per-track `*-onboarding` skills) — INJECTED AT SESSION START so dispatch discipline holds even when the repo's CLAUDE.md is absent (e.g. installed as a plugin in a foreign project). Establishes the clarify → spec → plan → write-code → review → ship flow, the user-approval gates, the per-track first step, and the rule that a relevant skill MUST be invoked before responding. Triggers - session start, "what can you do", "what can this agent do", "how do I start", "list skills", "help", "which skills are available", "create landing page", or any request that matches an sdcorejs skill. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Glob
 ---
 
@@ -17,15 +17,15 @@ You have the **sdcorejs SDLC skill pack** — an orchestrated software-developme
 1. Match the request against each skill's `description` (the "Use when…" trigger).
 2. Pick the highest-confidence match. If several tie, pick the earliest in the workflow (clarify before plan, plan before write-code).
 3. Invoke it via the `Skill` tool, announce it to the user ("Using `<skill>` to `<purpose>`"), then follow its body exactly.
-4. If nothing matches (or the user asks "what can you do / how do I start / agent này làm được gì"), answer from **What this pack does** below, then route to the first step — `sdcorejs-brainstorm` (open-ended) or `sdcorejs-clarify-requirements` (scope clear); for an existing Next.js site to improve, `sdcorejs-review`.
+4. If nothing matches (or the user asks "what can you do / how do I start / what can this agent do"), answer from **What this pack does** below, then route to the first step — `sdcorejs-brainstorm` (open-ended) or `sdcorejs-clarify-requirements` (scope clear); for an existing Next.js site to improve, `sdcorejs-review`.
 
 ## What this pack does (per track + first step)
 
-Use this to answer "what can you do / how do I start / agent này làm được gì", then route to the first step. Keep the reply short; match the user's language.
+Use this to answer "what can you do / how do I start / what can this agent do", then route to the first step. Keep the reply short; match the user's language.
 
 - **Angular** (`angular.json` + `@sdcorejs/angular`) — backoffice portals on Core UI: full CRUD modules/entities, list + detail (CREATE/UPDATE/DETAIL) screens, workflow/bulk/custom actions, via the `angular-write-code` orchestrator (loads packs in `_refs/angular/write-code/`). WHY-rules: `_refs/angular/architecture-principles.md`. First step: `sdcorejs-clarify-requirements` (or `sdcorejs-brainstorm` if open-ended).
 - **NestJS** (`nest-cli.json` + `@nestjs/*`) — modular Postgres APIs. **Scaffold status**: design phase + `sdcorejs-review-*` + `sdcorejs-test` work today; `nestjs-write-code` is a plan-walking bridge until its sub-skills ship. WHY-rules: `_refs/nestjs/architecture-principles.md`. First step: `sdcorejs-clarify-requirements` / `sdcorejs-brainstorm`.
-- **Next.js** (`next.config.*` + `next`) — production landing sites (SSR/ISR, bilingual VI/EN, SEO, OG, real contact form) via `nextjs-write-code` (packs in `_refs/nextjs/build-website/write-code/`). WHY-rules: `_refs/nextjs/build-website/architecture-principles.md`. First step: **greenfield** → `sdcorejs-brainstorm`; **existing site to improve** → `sdcorejs-review`.
+- **Next.js** (`next.config.*` + `next`) — production landing sites (SSR/ISR, localization-ready content, SEO, OG, real contact form) via `nextjs-write-code` (packs in `_refs/nextjs/build-website/write-code/`). WHY-rules: `_refs/nextjs/build-website/architecture-principles.md`. First step: **greenfield** → `sdcorejs-brainstorm`; **existing site to improve** → `sdcorejs-review`.
 
 Always end with ONE concrete next step ("Tell me X to proceed"). Don't generate code from here — defer to the track's write-code orchestrator after clarify/plan.
 
@@ -47,7 +47,7 @@ Request
  → sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop
  → sdcorejs-comment-code (ASK gate)
  → sdcorejs-verify-before-done → sdcorejs-branch-ready
- → auto-docs → auto-task-tracker → memories
+ → auto-docs → write-user-guide (Mode 1: per-module guide) → auto-task-tracker → memories
 ```
 
 For isolation before generation or parallel work, run `sdcorejs-using-worktrees` first.
@@ -57,7 +57,7 @@ For isolation before generation or parallel work, run `sdcorejs-using-worktrees`
 - **Project brief first.** Before any code-writing or other substantive work in a target project, ensure `<project>/.sdcorejs/summary.md` exists; if missing, run `sdcorejs-auto-summary` (GENERATE) — it scans via `sdcorejs-code-map` and distills a 1-page brief so generation never hallucinates paths or duplicates shared code. This applies whichever skill you're about to run, not only `<track>-write-code`. Detect the track even in a monorepo — the config (`angular.json` / `nest-cli.json` / `next.config.*`) may live under `apps/*` or `packages/*`, not the repo root. A pure informational question may be answered first.
 - **Clarify before code.** Do NOT generate code until the track's minimum-required answers are confirmed (Angular: module + entity + fields + layout; NestJS: module + entity + persistence + transactions; Next.js: domain + contact + hosting + caching). Invoke `sdcorejs-clarify-requirements` first.
 - **Approval gates.** `sdcorejs-review-spec` and `sdcorejs-review-plan` require explicit user approval before the next skill runs. **Silence is not approval.**
-- **Bilingual.** Vietnamese request → Vietnamese output (full diacritics for labels/messages). English → English. Permission codes and route paths stay English in both.
+- **Runtime-localized.** Detect the user's language, respond in that language, and preserve locale-specific marks in generated labels/messages. Permission codes and route paths stay English.
 - **Core UI first (Angular).** Prefer `@sdcorejs/angular` components when one fits; otherwise scaffold a skeleton + `alert('TODO: …')` stub and flag it.
 - **Don't author new skills without explicit user approval.**
 

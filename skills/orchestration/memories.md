@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-memories
-description: MANDATORY skill for durable cross-session knowledge across SDCoreJS tracks. Different from `auto-docs` — auto-docs captures one-session summaries, memories captures facts that should persist (project conventions, stakeholder constraints, recurring anti-patterns, external references). READ mode runs at session start (load relevant memories as authoritative context). WRITE mode runs when the user says "ghi nhớ", "remember this", "lưu vào memory", OR when the agent detects a user correction, a recurring constraint, or a non-obvious project decision. Triggers - "ghi nhớ", "remember this", "lưu memory", "save this for later", "lần sau nhớ", "from now on", "đừng quên". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill for durable cross-session knowledge across SDCoreJS tracks. Different from `auto-docs` — auto-docs captures one-session summaries, memories captures facts that should persist (project conventions, stakeholder constraints, recurring anti-patterns, external references). READ mode runs at session start (load relevant memories as authoritative context). WRITE mode runs when the user says "remember this", "save to memory", OR when the agent detects a user correction, a recurring constraint, or a non-obvious project decision. Triggers - "remember this", "save memory", "save this for later", "remember next time", "from now on", "do not forget", or localized equivalents. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob
 ---
 
@@ -25,7 +25,7 @@ Also read the track-agnostic index `<TARGET_ROOT>/.sdcorejs/memories/MEMORY.md` 
 
 ### WRITE mode (explicit or detected)
 Write a memory when ANY of these is true:
-- User explicitly says: "ghi nhớ", "remember this", "lưu vào memory", "save this", "từ giờ", "from now on", "đừng quên"
+- User explicitly says: "remember this", "save to memory", "save this", "from now on", "do not forget", or localized equivalents
 - The agent detects (a) the user CORRECTING the agent with a reason that will recur, (b) the user mentioning a constraint that applies beyond this session, (c) a non-obvious project-specific decision worth recalling
 
 Before writing, the agent MUST check whether an existing memory covers the same topic — if so, update it instead of creating a duplicate.
@@ -98,7 +98,7 @@ Format: `- [Title](<track>/file.md) — short hook`. One line per memory, groupe
 - Check for existing memory on the same topic BEFORE writing a new one — update beats duplicate
 - Include `**Why:**` and `**How to apply:**` for `feedback` and `project` types
 - Use the lightest type that fits — prefer `reference` over `project` if it's just a pointer
-- Match the user's language for the body (VI request → VI body); keep frontmatter keys English
+- Match the user's language for the body (match the session language); keep frontmatter keys English
 - Append to `.sdcorejs/memories/MEMORY.md` index after every WRITE
 - Resolve `TARGET_ROOT` via git — never write to `sdcorejs-agent`
 
@@ -124,7 +124,7 @@ Format: `- [Title](<track>/file.md) — short hook`. One line per memory, groupe
 | Lifetime | One session | Many sessions |
 | Path | `.sdcorejs/docs/<track>/` | `.sdcorejs/memories/<track>/` |
 | Filename | `YYYY-MM-DD-HH-mm-<topic>.md` | `<topic-slug>.md` (no timestamp) |
-| Write trigger | End of code-writing skill | User says "ghi nhớ" / agent detects durable fact |
+| Write trigger | End of code-writing skill | User says "remember this" / agent detects durable fact |
 | Read at session start | Last 3 by timestamp | All frontmatter, bodies on demand |
 | Updates over time | Never (append-only history) | Yes — update beats duplicate |
 

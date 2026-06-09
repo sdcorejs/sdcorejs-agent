@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-parallel-dispatch
-description: Decision gate that runs BEFORE `sdcorejs-subagent-driven-dev`. Use when the agent is about to execute work that could plausibly be split across parallel subagents — multiple independent entities, multi-file scans, batch screen generation, multi-stack audits. Decides WHETHER to parallelize via independence + blast-radius + reviewability + budget checks. Outputs a verdict: SEQUENTIAL, PARALLEL-CANDIDATE (→ subagent-driven-dev Mode A), or ROLE-SPLIT (one feature across backend+frontend → Mode B); when PARALLEL, hands off to `sdcorejs-subagent-driven-dev` which owns the briefing + dispatch + merge mechanics. Triggers - "chạy song song", "dispatch parallel", "split into subagents", "fan out", "làm song song", "in parallel", or automatic invocation by write-code (and other orchestrators) when ≥3 independent units are detected. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Decision gate that runs BEFORE `sdcorejs-subagent-driven-dev`. Use when the agent is about to execute work that could plausibly be split across parallel subagents — multiple independent entities, multi-file scans, batch screen generation, multi-stack audits. Decides WHETHER to parallelize via independence + blast-radius + reviewability + budget checks. Outputs a verdict: SEQUENTIAL, PARALLEL-CANDIDATE (→ subagent-driven-dev Mode A), or ROLE-SPLIT (one feature across backend+frontend → Mode B); when PARALLEL, hands off to `sdcorejs-subagent-driven-dev` which owns the briefing + dispatch + merge mechanics. Triggers - "run in parallel", "dispatch parallel", "split into subagents", "fan out", "run in parallel", "in parallel", or automatic invocation by write-code (and other orchestrators) when ≥3 independent units are detected. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read
 ---
 
@@ -13,7 +13,7 @@ Parallel subagents make multi-target work much faster. They also burn tokens, fa
 - About to run 3+ similar tasks (generate screens for 5 entities, write specs for 4 modules, audit 3 stacks)
 - A research question has multiple independent sub-questions
 - A code-writing plan has steps that don't share state
-- The user says "làm song song", "in parallel", "do these in parallel"
+- The user says "run in parallel", "in parallel", "do these in parallel"
 
 Do NOT invoke for:
 - One task (no parallelism possible)
@@ -167,7 +167,7 @@ If subagent A succeeded but B failed, present the partial result and the failure
 
 ## Example: angular screen generation
 
-User says "tạo CRUD cho entity Product với 4 màn (list, detail, create, update)".
+User says "create CRUD for Product with four screens (list, detail, create, update)".
 
 This LOOKS like 4 parallel tasks. But examine:
 - All 4 share the same `Product` DTO + service + module — there's shared state

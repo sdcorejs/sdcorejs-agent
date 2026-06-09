@@ -37,9 +37,9 @@ Templates use two placeholders wherever the core package appears:
 | Placeholder | Resolved from `_refs/nestjs/core-catalog.md` |
 |---|---|
 | `<CORE_PACKAGE_NAME>` | package name — `@sdcorejs/nestjs` |
-| `<CORE_VERSION>` | version pin — see catalog "Version pin" (`^0.1.6` today) |
+| `<CORE_VERSION>` | version pin — see catalog "Version pin" (`^1.0.0` today) |
 
-Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) BEFORE generating — it is the authoritative export inventory + import sub-paths. **Every import in the templates below MUST match a sub-path that catalog documents** (`@sdcorejs/nestjs`, `/orm`, `/permission`, `/validation`, `/jwt`, `/context`, `/tenancy`, `/audit`, `/i18n`, …). Do not invent imports.
+Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) BEFORE generating — it is the authoritative export inventory + import sub-paths. **Every import in the templates below MUST match a sub-path that catalog documents** (`@sdcorejs/nestjs`, `/core`, `/auth`, `/services`, `/validation`, `/queue`, `/i18n`, `/features`). Do not invent imports.
 
 ---
 
@@ -173,7 +173,7 @@ The full `package.json` template (enterprise shape shown — swap `moduleNameMap
 }
 ```
 
-> **Dependency note — `@sdcorejs/nestjs` source.** Prefer the published npm dependency `"@sdcorejs/nestjs": "<CORE_VERSION>"` (i.e. `^0.1.6`). The reference app currently **vendors a tgz** (`"@sdcorejs/nestjs": "file:vendor/sdcorejs-nestjs-0.1.6.tgz"`) because the package was not yet on a registry the app could reach. Resolution: **use the npm dep once published**; fall back to the vendored tgz only if the registry copy is unavailable — to do so, drop the `.tgz` under `vendor/` and change the dependency line to `"file:vendor/sdcorejs-nestjs-<CORE_VERSION>.tgz"`. Keep `@sdcorejs/utils` from npm regardless.
+> **Dependency note — `@sdcorejs/nestjs` source.** Use the published npm dependency `"@sdcorejs/nestjs": "<CORE_VERSION>"` (currently `^1.0.0`) for fresh scaffolds. Only use a vendored `.tgz` when the target environment explicitly requires offline/private-registry installation; if so, drop the package under `vendor/` and change the dependency line to `"file:vendor/sdcorejs-nestjs-<CORE_VERSION>.tgz"`. Keep `@sdcorejs/utils` from npm unless the target has the same offline constraint.
 
 Also emit `nest-cli.json` (ground: ref app):
 
@@ -332,7 +332,7 @@ export type AppConfiguration = ReturnType<typeof CONFIGURATION>;
 
 ### Step 5 — `src/app.module.ts`
 
-*Grounded on the ref app `src/app.module.ts`.* The ref app wires the kernel via the **individual sub-path modules** (`ContextModule.forRoot`, `TenancyModule.forRoot`, `PermissionModule.forRoot`, `JwtModule.forRoot`, …). For a fresh scaffold prefer the **consolidated `SdCoreModule.forRoot`** (catalog "Bootstrap (SdCoreModule)") — one call configures context + tenancy + audit + permission + jwt + i18n. (Drop down to the individual modules only when you need a feature `SdCoreModule` does not expose, e.g. the ref app's `ActionHistoryModule` / `FileStorageModule` / custom JWT `imports`.)
+*Grounded on the ref app `src/app.module.ts`.* The ref app wires most kernel concerns through the consolidated `SdCoreModule.forRoot`: context, cache, i18n, permission, internal secret, tenancy, uploaded files, action history, and job scheduler. It registers JWT separately only because the custom strategy imports `AdminModule`. For a fresh scaffold, prefer `SdCoreModule.forRoot` for the kernel and use a separate `JwtModule.forRoot(..., { strategy, imports: [AdminModule] })` only when that strategy needs app-module providers.
 
 **Profile: simple**
 
@@ -379,17 +379,16 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RouterModule } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ContextService } from '@sdcorejs/nestjs/context';
+import { ContextService } from '@sdcorejs/nestjs/core';
 import { SdCoreModule } from '@sdcorejs/nestjs';
 
 import { CONFIGURATION, AppConfiguration } from './app.configuration';
 import { AdminAuthGuard } from './common/admin-auth.guard';
 import { AppAuditStrategy } from './common/app-audit.strategy';
 import { AppPermissionStrategy } from './common/admin-permission.strategy';
-import { AppTenancyStrategy } from './common/tenancy/app-tenancy.strategy';
-import { bindSdContext } from './common/context/sd-context';
+import { AppTenancyStrategy } from './common/core/app-tenancy.strategy';
+import { bindSdContext } from './common/core/sd-context';
 import { InternalSecretModule } from './common/internal-secret';
-import { JwtStrategy } from './core/modules/jwt/jwt.strategy';
 
 @Module({
   imports: [
@@ -399,7 +398,8 @@ import { JwtStrategy } from './core/modules/jwt/jwt.strategy';
     //      so the lib InternalGuard can guard @UseGuards(InternalGuard) routes. ----
     InternalSecretModule,
 
-    // ---- Shared kernel from @sdcorejs/nestjs (one call wires context+tenancy+audit+permission+jwt+i18n) ----
+    // ---- Shared kernel from @sdcorejs/nestjs (one call wires context+tenancy+audit+permission+i18n).
+    //      JWT is added by init-admin via JwtModule.forRoot(..., { strategy, imports }). ----
     SdCoreModule.forRoot({
       context: {
         headers: {
@@ -415,8 +415,6 @@ import { JwtStrategy } from './core/modules/jwt/jwt.strategy';
       tenancy: { strategy: AppTenancyStrategy },
       audit: { strategy: AppAuditStrategy },
       permission: { strategy: AppPermissionStrategy },
-      // Keycloak JWKS multi-issuer verification; a custom strategy subclass adds claim → app-user mapping.
-      jwt: { jwks: { allowedIssuers: [CONFIGURATION().keycloak.issuer] }, strategy: JwtStrategy },
       i18n: { fallbackLanguage: 'vi' },
     }),
 
@@ -469,12 +467,12 @@ The app-specific glue: base entity, strategies, context facade, auth guard, and 
 
 **Profile: simple**
 
-Emit ONLY these files. NO `sd-context.ts` facade, NO `tenancy/`, NO `app-audit.strategy.ts`, NO `admin-*` files, NO `internal-secret/`, NO `src/core/modules/jwt/`.
+Emit ONLY these files. NO `sd-context.ts` facade, NO `tenancy/`, NO `app-audit.strategy.ts`, NO `admin-*` files, NO `internal-secret/`, NO `src/core/modules/auth/`.
 
 **`src/common/base-entity.ts`**
 
 ```ts
-import { BaseEntity as CoreBaseEntity, WithAudit } from '@sdcorejs/nestjs/orm';
+import { BaseEntity as CoreBaseEntity, WithAudit } from '@sdcorejs/nestjs/core';
 /** App base entity: lib audit/timestamps + uuid id. Domain entities extend this. */
 export abstract class BaseEntity extends WithAudit(CoreBaseEntity) {}
 ```
@@ -483,7 +481,7 @@ export abstract class BaseEntity extends WithAudit(CoreBaseEntity) {}
 
 ```ts
 import { BadRequestException } from '@nestjs/common';
-import { apiError } from '@sdcorejs/nestjs/orm';
+import { apiError } from '@sdcorejs/nestjs/core';
 
 /**
  * Throw a code-based 400 error. `code` is an i18n key (e.g. `crm.task.name.required`); the lib
@@ -524,7 +522,7 @@ The app-specific glue: base entity, the three strategies (tenancy / audit / perm
 
 ```ts
 // Fresh app — reuse the lib audit mixin (createdAt/updatedAt/deletedAt + createdBy/modifiedBy + creator/modifier).
-import { BaseEntity as CoreBaseEntity, WithAudit } from '@sdcorejs/nestjs/orm';
+import { BaseEntity as CoreBaseEntity, WithAudit } from '@sdcorejs/nestjs/core';
 
 /** App base entity: lib audit/timestamps + uuid id. Domain entities extend this. */
 export abstract class BaseEntity extends WithAudit(CoreBaseEntity) {}
@@ -536,7 +534,7 @@ export abstract class BaseEntity extends WithAudit(CoreBaseEntity) {}
 
 ```ts
 import { BadRequestException } from '@nestjs/common';
-import { apiError } from '@sdcorejs/nestjs/orm';
+import { apiError } from '@sdcorejs/nestjs/core';
 
 /**
  * Throw a code-based 400 error. `code` is an i18n key (e.g. `crm.task.name.required`); the lib
@@ -551,12 +549,12 @@ export function badRequest(code: string, data?: Record<string, unknown>): never 
 }
 ```
 
-**`src/common/tenancy/app-tenancy.strategy.ts`** — `implements ITenancyStrategy` (catalog tenancy section). Keys MUST match the entity column names the lib filters on (`@Scoped`/`@TenantScoped` columns).
+**`src/common/core/app-tenancy.strategy.ts`** — `implements ITenancyStrategy` (catalog tenancy section). Keys MUST match the entity column names the lib filters on (`@Scoped`/`@TenantScoped` columns).
 
 ```ts
 import { Injectable } from '@nestjs/common';
-import type { ITenancyStrategy } from '@sdcorejs/nestjs/tenancy';
-import { SdContext } from '@app/common/context/sd-context';
+import type { ITenancyStrategy } from '@sdcorejs/nestjs/core';
+import { SdContext } from '@app/common/core/sd-context';
 
 /**
  * Visibility policy: master realm + internal-secret calls see everything (bypass). Tenant admins see
@@ -580,8 +578,8 @@ export class AppTenancyStrategy implements ITenancyStrategy {
 
 ```ts
 import { Injectable } from '@nestjs/common';
-import type { IAuditStrategy } from '@sdcorejs/nestjs/audit';
-import { SdContext } from '@app/common/context/sd-context';
+import type { IAuditStrategy } from '@sdcorejs/nestjs/core';
+import { SdContext } from '@app/common/core/sd-context';
 
 /** Fills audit actor columns from request context on each write. */
 @Injectable()
@@ -602,8 +600,8 @@ export class AppAuditStrategy implements IAuditStrategy {
 
 ```ts
 import { Injectable } from '@nestjs/common';
-import type { IPermissionStrategy } from '@sdcorejs/nestjs/permission';
-import { SdContext } from '@app/common/context/sd-context';
+import type { IPermissionStrategy } from '@sdcorejs/nestjs/auth';
+import { SdContext } from '@app/common/core/sd-context';
 
 /**
  * Bridges a page-permission matrix into the lib's flat permission-code model. Each granted cell
@@ -630,15 +628,15 @@ export class AppPermissionStrategy implements IPermissionStrategy {
 }
 ```
 
-**`src/common/context/sd-context.ts`** — static facade over the lib `ContextService` (AsyncLocalStorage) so domain code reads context without injecting the service everywhere. Bound once at bootstrap (Step 5 `SD_CONTEXT_BINDING`).
+**`src/common/core/sd-context.ts`** — static facade over the lib `ContextService` (AsyncLocalStorage) so domain code reads context without injecting the service everywhere. Bound once at bootstrap (Step 5 `SD_CONTEXT_BINDING`).
 
 ```ts
-import type { ContextService } from '@sdcorejs/nestjs/context';
+import type { ContextService } from '@sdcorejs/nestjs/core';
 
 /**
  * `SdContext` — static facade over the lib `ContextService`. Framework fields (userId, lang, permissions)
  * come from the ALS store; domain fields (tenantCode, departmentCode, internalSecret) arrive via the
- * ContextModule `customHeaders` → `store.custom`. The lib singleton is bound once at bootstrap via
+ * SdCoreModule context `customHeaders` → `store.custom`. The lib singleton is bound once at bootstrap via
  * {@link bindSdContext}. Permissions are flat `"<model>:<action>"` codes set by the permission strategy.
  */
 let _ctx: ContextService | undefined;
@@ -660,7 +658,7 @@ export class SdContext {
     return custom('departmentCode');
   }
   // why: full display name of the current actor — user claim first (JwtStrategy.validate), then the
-  //      `fullName` custom header (ContextModule customHeaders → store.custom). Used e.g. by Excel export.
+  //      `fullName` custom header (SdCoreModule context customHeaders → store.custom). Used e.g. by Excel export.
   static get fullName(): string | undefined {
     return (_ctx?.get('user') as any)?.fullName || custom('fullName');
   }
@@ -687,10 +685,10 @@ export class SdContext {
 }
 ```
 
-**`src/common/context/index.ts`** — barrel so consumers import from the folder (`from 'src/common/context'`) rather than the file. `actions.md` imports `SdContext` from `src/common/context`.
+**`src/common/core/index.ts`** — barrel so consumers import from the folder (`from 'src/common/core'`) rather than the file. `actions.md` imports `SdContext` from `src/common/core`.
 
 ```ts
-// src/common/context/index.ts
+// src/common/core/index.ts
 export * from './sd-context';
 ```
 
@@ -700,9 +698,9 @@ export * from './sd-context';
 import { type ExecutionContext, ForbiddenException, Inject, Injectable, Optional } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard as PassportAuthGuard } from '@nestjs/passport';
-import { ContextService } from '@sdcorejs/nestjs/context';
-import { apiError } from '@sdcorejs/nestjs/orm';
-import { type IPermissionStrategy, PERMISSION_METADATA_KEY, PERMISSION_STRATEGY } from '@sdcorejs/nestjs/permission';
+import { ContextService } from '@sdcorejs/nestjs/core';
+import { apiError } from '@sdcorejs/nestjs/core';
+import { type IPermissionStrategy, PERMISSION_METADATA_KEY, PERMISSION_STRATEGY } from '@sdcorejs/nestjs/auth';
 
 interface RequestWithPermissions {
   permissions?: string[];
@@ -754,7 +752,7 @@ export class AdminAuthGuard extends PassportAuthGuard('jwt') {
 ```ts
 // env-internal-secret.provider.ts
 import { Injectable } from '@nestjs/common';
-import type { IInternalSecretProvider } from '@sdcorejs/nestjs/permission';
+import type { IInternalSecretProvider } from '@sdcorejs/nestjs/auth';
 
 /** Supplies the secret InternalGuard compares against the inbound `x-internal-secret` header (env INTERNAL_SECRET_KEY).
  *  Unset → '' which can never match a present header, so internal routes stay closed until configured. */
@@ -769,7 +767,7 @@ export class EnvInternalSecretProvider implements IInternalSecretProvider {
 ```ts
 // internal-secret.module.ts
 import { Global, Module } from '@nestjs/common';
-import { INTERNAL_SECRET_PROVIDER } from '@sdcorejs/nestjs/permission';
+import { INTERNAL_SECRET_PROVIDER } from '@sdcorejs/nestjs/auth';
 import { EnvInternalSecretProvider } from './env-internal-secret.provider';
 
 /** @Global() so the INTERNAL_SECRET_PROVIDER binding is visible to the lib InternalGuard. */
@@ -787,21 +785,21 @@ export * from './env-internal-secret.provider';
 export * from './internal-secret.module';
 ```
 
-### Step 7 — `src/core/modules/jwt/` + `base/shared/` skeleton
+### Step 7 — `src/core/modules/auth/` + `base/shared/` skeleton
 
 **Profile: simple**
 
-Skipped — no `base/shared/` kernel. DTOs live in `src/modules/<module>/dto/` (see init-entity). The JWT strategy lives at `src/common/jwt.strategy.ts` (Step 6), not `src/core/modules/jwt/`.
+Skipped — no `base/shared/` kernel. DTOs live in `src/modules/<module>/dto/` (see init-entity). The JWT strategy lives at `src/common/auth.strategy.ts` (Step 6), not `src/core/modules/auth/`.
 
 ---
 
 **Profile: enterprise**
 
-**`src/core/modules/jwt/jwt.strategy.ts`** — `extends KeycloakJwtStrategy`; `validate(payload)` maps Keycloak claims → the app user (*ground: ref app `src/core/modules/jwt/jwt.strategy.ts`*). The ref app fetches a full account from an in-process admin service; a fresh scaffold maps claims directly until an admin module exists.
+**`src/core/modules/auth/auth.strategy.ts`** — `extends KeycloakJwtStrategy`; `validate(payload)` maps Keycloak claims → the app user (*ground: ref app `src/core/modules/auth/auth.strategy.ts`*). The ref app fetches a full account from an in-process admin service; a fresh scaffold maps claims directly until an admin module exists.
 
 ```ts
-import { Injectable } from '@nestjs/common';
-import { type JwtPayload, KeycloakJwtStrategy } from '@sdcorejs/nestjs/jwt';
+import { Inject, Injectable } from '@nestjs/common';
+import { JWT_CONFIG, type JwtConfig, type JwtPayload, KeycloakJwtStrategy } from '@sdcorejs/nestjs/auth';
 
 /**
  * Passport `jwt` strategy — subclasses the lib KeycloakJwtStrategy (multi-realm JWKS, per-issuer key, RS256)
@@ -809,6 +807,10 @@ import { type JwtPayload, KeycloakJwtStrategy } from '@sdcorejs/nestjs/jwt';
  */
 @Injectable()
 export class JwtStrategy extends KeycloakJwtStrategy {
+  constructor(@Inject(JWT_CONFIG) cfg: JwtConfig) {
+    super(cfg);
+  }
+
   async validate(payload: JwtPayload) {
     return {
       id: payload.sub,
@@ -822,7 +824,7 @@ export class JwtStrategy extends KeycloakJwtStrategy {
 }
 ```
 
-> The JWT strategy is registered via `SdCoreModule.forRoot({ jwt: { jwks: { allowedIssuers: [...] }, strategy: JwtStrategy } })` (Step 5). If you instead need the strategy to inject other providers (e.g. an admin `IUserService`), drop `SdCoreModule`'s `jwt` key and wire the lib `JwtModule.forRoot({ jwks: {} }, { strategy: JwtStrategy, imports: [AdminModule] })` separately, exactly as the ref app's `SdJwtModule` does.
+> Register this custom strategy with `JwtModule.forRoot({ jwks: { allowedIssuers: [...] } }, { strategy: JwtStrategy })` from `@sdcorejs/nestjs/auth`. `SdCoreModule.forRoot({ jwt })` is only the convenience path for the lib default strategy and does not accept a custom `strategy` option in v1.0.0. If the strategy injects app providers (e.g. `IUserService`), pass those modules via `imports: [AdminModule]`, exactly as the ref app's `SdJwtModule` does.
 
 **`base/shared/` skeleton** (aliased `@shared`, Step 2) — a tiny shared kernel re-exporting the lib's response/paging types and a DTO base, so domain code imports stable `@shared` paths regardless of where the lib defines them. *Ground: ref app `base/shared/{core,entity}`.*
 
@@ -925,7 +927,7 @@ KEYCLOAK_REALM=dev
 # Issuer the lib JWT strategy validates tokens against (JWKS at ${issuer}/protocol/openid-connect/certs).
 KEYCLOAK_ISSUER=http://localhost:8080/realms/dev
 
-# ===== Request-context header names (must match ContextModule headers in app.module.ts) =====
+# ===== Request-context header names (must match SdCoreModule context headers in app.module.ts) =====
 # x-user-id — default is wired in code; override only if your gateway renames it.
 ```
 
@@ -955,7 +957,7 @@ KEYCLOAK_REALM=dev
 # Issuer the lib JWT strategy validates tokens against (JWKS at ${issuer}/protocol/openid-connect/certs).
 KEYCLOAK_ISSUER=http://localhost:8080/realms/dev
 
-# ===== Request-context header names (must match ContextModule customHeaders in app.module.ts) =====
+# ===== Request-context header names (must match SdCoreModule context customHeaders in app.module.ts) =====
 # x-user-id, x-tenant-code, x-department-code, x-internal-secret — defaults are wired in code; override only if your gateway renames them.
 ```
 
@@ -1019,7 +1021,7 @@ KEYCLOAK_ISSUER=http://localhost:8080/realms/dev
     │   ├── context/{sd-context.ts,index.ts}
     │   └── internal-secret/{env-internal-secret.provider.ts,internal-secret.module.ts,index.ts}
     └── core/
-        └── modules/jwt/jwt.strategy.ts
+        └── modules/auth/auth.strategy.ts
 ```
 
 ---
@@ -1031,7 +1033,7 @@ KEYCLOAK_ISSUER=http://localhost:8080/realms/dev
 - `npm run start:dev` boots: `ensureSchemas()` creates the schemas, the DataSource connects, the app listens on `:3000`. (Needs a reachable Postgres + the env from `.env`.)
 - `npm run migration:run` exits 0 against the empty `src/migrations/` (proves the Plan 2 Docker CMD chain is safe).
 - `src/common/errors.ts` exports `badRequest(code, data?)` (the domain-error helper `actions.md` depends on).
-- **enterprise only:** `src/common/context/index.ts` barrels `./sd-context` (so `from 'src/common/context'` resolves) and `SdContext` exposes a `fullName` getter (used by `actions.md` Excel export).
+- **enterprise only:** `src/common/core/index.ts` barrels `./sd-context` (so `from 'src/common/core'` resolves) and `SdContext` exposes a `fullName` getter (used by `actions.md` Excel export).
 - **simple:** `rg` finds no `tenantCode`/`departmentCode`/`InternalGuard`/`base/shared` in the emitted output.
 - **simple:** `src/common/` contains ONLY `base-entity.ts`, `errors.ts`, `dto.ts` — NO `role-permission.strategy.ts`, NO `jwt.strategy.ts`; those are supplied by the always-on `init-admin` module run immediately after `init-project`.
 - No `.claude` / `.git` / domain-specific files leaked into the target.

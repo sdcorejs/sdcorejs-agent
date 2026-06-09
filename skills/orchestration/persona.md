@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-persona
-description: Ask-once persona gate. On first entry to a target project, asks whether the user wants technical (developer) or plain (PO/QC) explanations, then stores the choice in `.sdcorejs/persona.md` so every later skill adapts wording + defaults without re-asking. Read at session start. Re-run to change persona. Loads the behavior contract from `_refs/shared/persona.md`. Triggers - first substantive interaction in a target project when `.sdcorejs/persona.md` is absent; user says "đổi cách giải thích", "tôi không rành kỹ thuật", "giải thích dễ hiểu", "set persona", "switch to non-tech", "explain simply". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Ask-once persona gate. On first entry to a target project, asks whether the user wants technical (developer) or plain (PO/QC) explanations, then stores the choice in `.sdcorejs/persona.md` so every later skill adapts wording + defaults without re-asking. Read at session start. Re-run to change persona. Loads the behavior contract from `_refs/shared/persona.md`. Triggers - first substantive interaction in a target project when `.sdcorejs/persona.md` is absent; user asks to change explanation style, requests simpler explanations, says they are not technical, says "set persona", "switch to non-tech", or localized equivalents. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Write, Glob
 ---
 
@@ -15,8 +15,8 @@ behavior each persona implies lives in `_refs/shared/persona.md` (single source 
 ## When invoked
 - **Auto** at the first substantive request in a target project when `.sdcorejs/persona.md`
   does not exist yet (check before answering).
-- **Explicit** when the user wants to change it: "đổi cách giải thích", "giải thích dễ hiểu hơn",
-  "tôi không rành kỹ thuật", "set persona", "switch to (non-)technical", "explain simply".
+- **Explicit** when the user wants to change it: requests simpler explanations, says they are not technical,
+  asks to change explanation style, "set persona", "switch to (non-)technical", "explain simply", or localized equivalents.
 
 Do NOT invoke:
 - In this `sdcorejs-agent` authoring repo (no `.sdcorejs/` target). Persona applies to generated
@@ -32,17 +32,8 @@ Do NOT invoke:
 
 ## The ASK (match the session language)
 
-**Vietnamese:**
-```
-Trước khi bắt đầu — bạn muốn mình trình bày theo cách nào?
+Use this English source prompt, translated at runtime to the user's session language:
 
-  (1) Kỹ thuật   — dùng thuật ngữ lập trình, chi tiết từng bước (hợp với dev)
-  (2) Dễ hiểu    — tránh thuật ngữ, giải thích bằng lời thường, mình lo phần kỹ thuật (hợp với PO/QC)
-
-Mình sẽ nhớ lựa chọn này cho dự án, lần sau không hỏi lại.
-```
-
-**English:**
 ```
 Before we start — how should I explain things?
 
@@ -52,7 +43,7 @@ Before we start — how should I explain things?
 I'll remember this for the project and won't ask again.
 ```
 
-Wait for the choice. `(1)`/"kỹ thuật"/"technical"/"dev" → `tech`. `(2)`/"dễ hiểu"/"plain"/"non-tech" → `non-tech`.
+Wait for the choice. `(1)` / "technical" / "dev" / localized equivalents → `tech`. `(2)` / "plain" / "non-tech" / localized equivalents → `non-tech`.
 If the user says "you decide", default to `tech` and say which default was used.
 
 ## Store the choice
@@ -74,7 +65,7 @@ Use the real current date for `set:`. Create `.sdcorejs/` if missing.
 1. Load `_refs/shared/persona.md`.
 2. Confirm in one line, in the chosen persona's voice:
    - tech: "Persona: technical. Proceeding."
-   - non-tech: "Đã nhớ — mình sẽ giải thích dễ hiểu nhất có thể."
+   - non-tech: "Got it — I will explain things as plainly as possible." Translate at runtime.
 3. Hand back to whatever the user originally asked for, now under the active persona.
 
 ## Notes

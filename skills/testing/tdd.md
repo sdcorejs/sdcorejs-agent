@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-tdd
-description: Use BEFORE writing any implementation code within a write-code task. Enforces Red-Green-Refactor per track — knows Angular TestBed, NestJS Jest, Next.js Jest so you don't re-derive boilerplate each time. Which chunks go TDD vs post-hoc is decided at clarify (`02-clarify-requirements` Step 3.5); but once a chunk is under TDD the failing-test-first Iron Law is absolute — never skip the RED step. Self-contained; no external skill dependency. Triggers: "dùng TDD", "viết test trước", "TDD", "red-green-refactor", auto-invoked by write-code orchestrators. Bilingual (VI/EN).
+description: Use BEFORE writing any implementation code within a write-code task. Enforces Red-Green-Refactor per track — knows Angular TestBed, NestJS Jest, Next.js Jest so you don't re-derive boilerplate each time. Which chunks go TDD vs post-hoc is decided at clarify (`02-clarify-requirements` Step 3.5); but once a chunk is under TDD the failing-test-first Iron Law is absolute — never skip the RED step. Self-contained; no external skill dependency. Triggers: "use TDD", "write tests first", "TDD", "red-green-refactor", auto-invoked by write-code orchestrators. Runtime-localized.
 allowed-tools: Read, Edit, Write, Bash
 ---
 
@@ -27,7 +27,7 @@ Before implementing each such chunk (service / component / function / handler / 
 4. Write next failing test
 
 ### Manual trigger
-"dùng TDD", "viết test trước", "test first", "TDD", "red-green-refactor cho cái này"
+"use TDD", "write tests first", "test first", "TDD", "red-green-refactor for this change"
 
 ### NOT invoked for
 - Template-only changes (pure HTML / SCSS, zero logic)

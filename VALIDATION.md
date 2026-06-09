@@ -1,116 +1,175 @@
 # Validation Report
 
-> ⚠️ **STALE SNAPSHOT** — This report was generated 2026-05-16 against the pre-cross-track-refactor skill layout. Several rounds of consolidation have happened since:
-> - 2026-05-20 (`071aa18`): per-track design skills moved into `skills/shared/sdlc/*`
-> - 2026-05-22: angular-portal UI skills consolidated 13 → 8 (`22-screen-create`, `23-screen-update`, `30-reactive-form` merged into `21-screen-detail`; `31-workflow-actions` → `31-actions`; `51-write-comments` absorbed into `orchestration/comment-code`; `52-faq` dropped)
-> - later: angular-portal consolidated 8 → 2 — the six sub-skills (`10-init-portal`, `11-init-module`, `12-init-entity`, `20-screen-list`, `21-screen-detail`, `31-actions`) were merged into the single `angular-portal-write-code` orchestrator and now live as on-demand reference packs (no frontmatter, not dispatchable) under `_refs/angular-portal/write-code/`. The track now exposes only `angular-portal-onboarding` + `angular-portal-write-code`; the native mirror dropped from 74 to 68 active skills
-> - later: nextjs build-website consolidated 13 → 3 — the ten generation sub-skills (`10-init-site`, `11-theme`, `12-pages-and-blocks`, `13-seo`, `14-og-preview`, `15-i18n`, `16-caching`, `17-responsive`, `18-contact-form`, `19-content-quality`) were merged into the single `nextjs-build-website-write-code` orchestrator and now live as on-demand reference packs under `_refs/nextjs/build-website/write-code/`. The track still exposes `nextjs-build-website-onboarding` + `nextjs-build-website-write-code` + `nextjs-build-website-audit-existing-site` (audit = separate read-only entry); the native mirror dropped from 68 to 58 active skills
->
-> Current structure: see `CLAUDE.md` for the live layout. The skill-name mapping below is preserved as historical record only.
+Current validation snapshot for the SDCoreJS SDLC Agent repository.
 
-**Date**: 2026-05-16
-**Repo HEAD**: `0c570f6` (pre-Phase-4 commit)
-**Phase**: 4 of 4 (final)
+Date: 2026-06-09
+Repo HEAD observed before this doc update: `8cdbfc0`
 
-## Summary
+## Current Layout
 
-| Check | Result | Notes |
-| --- | --- | --- |
-| 1. Frontmatter valid | PASS | 46 files checked (23 source + 23 mirror); all have `name`, `description`, valid `---` fences, kebab-case names, descriptions ≥10 chars |
-| 2. Names unique | PASS | 23 distinct names across source; mirror names are a 1:1 superset (23/23 match a source) |
-| 3. Cross-references resolve | FAIL | Pre-existing stale READMEs (`skills/README.md`, `skills/angular-portal/README.md`) reference legacy filenames that no longer exist; no broken links in skill bodies, entry files, or `_refs/` |
-| 4. `.claude/skills/` mirror in sync | PASS | 23 / 23 files in sync (byte-identical via `diff -q`) |
-| 5. Path conventions migrated | PASS | Zero stale uses of `.docs/sdcorejs` or `.memories/sdcorejs` outside explicit "legacy" migration notes inside auto-docs/write-spec skills; no occurrences of singular `auto-doc.md` |
-| 6. Entry-point workflow numbering | PASS | `CLAUDE.md`, `AGENTS.md`, `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md` all reference the new `01-brainstorm`..`write-code` chain; zero matches for the old `01-clarify-requirements`/`02-plan`/`03-write-code` numbering |
-| 7. Reference catalog (69 docs) | PASS | `skills/angular-portal/_refs/sdcorejs-angular` contains exactly 69 `.md` files |
-| 8. Skill counts | PASS | 21 source skills under `skills/angular-portal/` (excluding README) + 2 shared under `skills/_shared/` + 23 mirror under `.claude/skills/` |
+The live source of truth is:
 
-**Overall: 7 / 8 PASS, 1 FAIL (pre-existing stale READMEs not addressed by Phase A/B refactor).**
+- `skills/**/*.md` - 42 dispatchable source skills. Exclude `_README.md` and any file without `name:` frontmatter.
+- `_refs/**` - 147 reference markdown files loaded on demand by skills.
+- `.claude/skills/<name>/SKILL.md` - Claude Code mirror, generated from `skills/**/*.md`.
+- `plugin/skills/<name>/SKILL.md` - Claude Code plugin mirror, generated from `skills/**/*.md`.
+- `.claude/_refs/**` and `plugin/_refs/**` - generated reference mirrors.
+
+`skills/*/*.md` is no longer sufficient. It finds only 26 of 42 source skills and misses nested skills under `skills/shared/*` and `skills/tracks/*`.
 
 ## Inventory
 
-Counts captured at HEAD `0c570f6` via `find` / `glob`:
+| Bucket | Count | Notes |
+| --- | ---: | --- |
+| Source skills | 42 | `skills/**/*.md`, excluding `skills/tracks/nestjs/_README.md` |
+| Claude Code mirror skills | 42 | `.claude/skills/*/SKILL.md` |
+| Plugin mirror skills | 42 | `plugin/skills/*/SKILL.md` |
+| Reference docs | 147 | `_refs/**/*.md` |
+| Orchestration skills | 19 | Includes `write-user-guide` |
+| Track write-code skills | 3 | `angular-write-code`, `nestjs-write-code`, `nextjs-write-code` |
 
-| Bucket | Count | Path |
+Reference doc counts by top-level bucket:
+
+| Bucket | Count |
+| --- | ---: |
+| `_refs/angular` | 105 |
+| `_refs/infra` | 1 |
+| `_refs/nestjs` | 13 |
+| `_refs/nextjs` | 19 |
+| `_refs/sdlc` | 3 |
+| `_refs/shared` | 6 |
+
+## Validation Checklist
+
+| Check | Current result | Evidence / command |
 | --- | --- | --- |
-| Source angular-portal skills | 21 | `skills/angular-portal/[0-9]*.md` |
-| Source shared skills | 2 | `skills/_shared/*.md` (`auto-docs.md`, `memories.md`) |
-| Claude Code mirror skills | 23 | `.claude/skills/*/SKILL.md` |
-| Core UI reference docs | 69 | `skills/angular-portal/_refs/sdcorejs-angular/**/*.md` |
-| Entry-point files | 4 | `CLAUDE.md`, `AGENTS.md`, `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md` |
+| Source skill count | PASS | `Get-ChildItem -Recurse -File skills -Filter *.md | ? Name -ne '_README.md'` -> 42 |
+| Mirror counts | PASS | `.claude/skills` -> 42, `plugin/skills` -> 42 |
+| Frontmatter uniqueness | PASS | No duplicate `name:` fields found in source skills |
+| Frontmatter naming | PASS | All source skill names are kebab-case and have `description:` |
+| Dispatch glob | PASS | Entry points use `skills/**/*.md`; old shallow glob is treated as invalid |
+| `_refs` packaging | PASS | `package.json.files` includes `_refs`; README install docs copy/symlink `_refs` |
+| Admin packs documented | PASS | `admin-screens` and `init-admin` appear in source frontmatter and entrypoint summaries |
+| Tail chain documented | PASS | Entry points include `auto-docs -> write-user-guide -> auto-task-tracker` |
+| Official bash check on this Windows host | FAIL / environment | `npm.cmd run check:skills` requires `bash` on PATH |
+| PowerShell check wrapper | FAIL / script bug | `npm.cmd run check:skills:ps` currently reports `Unknown flag: -` |
 
-### Source skill list (21 + 2)
+The remaining failures are validation-command issues, not skill inventory drift. `powershell -ExecutionPolicy Bypass -File .claude/sync-skills.ps1` runs sync mode successfully, but check mode currently passes the flag incorrectly.
 
+## Source Skill List
+
+### Track Skills
+
+| Path | Skill |
+| --- | --- |
+| `skills/tracks/angular/write-code.md` | `angular-write-code` |
+| `skills/tracks/nestjs/write-code.md` | `nestjs-write-code` |
+| `skills/tracks/nextjs/write-code.md` | `nextjs-write-code` |
+
+### Design Phase
+
+| Path | Skill |
+| --- | --- |
+| `skills/shared/sdlc/01-brainstorm.md` | `sdcorejs-brainstorm` |
+| `skills/shared/sdlc/02-clarify-requirements.md` | `sdcorejs-clarify-requirements` |
+| `skills/shared/sdlc/03-write-spec.md` | `sdcorejs-write-spec` |
+| `skills/shared/sdlc/04-review-spec.md` | `sdcorejs-review-spec` |
+| `skills/shared/sdlc/05-write-plan.md` | `sdcorejs-write-plan` |
+| `skills/shared/sdlc/06-review-plan.md` | `sdcorejs-review-plan` |
+
+### Orchestration
+
+| Path | Skill |
+| --- | --- |
+| `skills/orchestration/auto-docs.md` | `sdcorejs-auto-docs` |
+| `skills/orchestration/auto-plans.md` | `sdcorejs-auto-plans` |
+| `skills/orchestration/auto-specs.md` | `sdcorejs-auto-specs` |
+| `skills/orchestration/auto-summary.md` | `sdcorejs-auto-summary` |
+| `skills/orchestration/auto-task-tracker.md` | `sdcorejs-auto-task-tracker` |
+| `skills/orchestration/branch-ready.md` | `sdcorejs-branch-ready` |
+| `skills/orchestration/comment-code.md` | `sdcorejs-comment-code` |
+| `skills/orchestration/memories.md` | `sdcorejs-memories` |
+| `skills/orchestration/parallel-dispatch.md` | `sdcorejs-parallel-dispatch` |
+| `skills/orchestration/persona.md` | `sdcorejs-persona` |
+| `skills/orchestration/recovery.md` | `sdcorejs-recovery` |
+| `skills/orchestration/repair-loop.md` | `sdcorejs-repair-loop` |
+| `skills/orchestration/ship.md` | `sdcorejs-ship` |
+| `skills/orchestration/solution-builder.md` | `sdcorejs-solution-builder` |
+| `skills/orchestration/subagent-driven-dev.md` | `sdcorejs-subagent-driven-dev` |
+| `skills/orchestration/using-skills.md` | `sdcorejs-using-skills` |
+| `skills/orchestration/using-worktrees.md` | `sdcorejs-using-worktrees` |
+| `skills/orchestration/verify-before-done.md` | `sdcorejs-verify-before-done` |
+| `skills/orchestration/write-user-guide.md` | `sdcorejs-write-user-guide` |
+
+### Review, Testing, Infra, Workflow
+
+| Path | Skill |
+| --- | --- |
+| `skills/review/review.md` | `sdcorejs-review` |
+| `skills/review/architecture.md` | `sdcorejs-review-architecture` |
+| `skills/testing/test.md` | `sdcorejs-test` |
+| `skills/testing/tdd.md` | `sdcorejs-tdd` |
+| `skills/infra/auth.md` | `sdcorejs-auth` |
+| `skills/infra/dockerize.md` | `sdcorejs-dockerize` |
+| `skills/infra/run-guide.md` | `sdcorejs-run-guide` |
+| `skills/shared/conventions/changelog.md` | `sdcorejs-changelog` |
+| `skills/shared/conventions/commit.md` | `sdcorejs-commit` |
+| `skills/shared/conventions/dep-update.md` | `sdcorejs-dep-update` |
+| `skills/shared/workflow/code-map.md` | `sdcorejs-code-map` |
+| `skills/shared/workflow/debug.md` | `sdcorejs-debug` |
+| `skills/shared/workflow/env-setup.md` | `sdcorejs-env-setup` |
+| `skills/shared/workflow/pr-create.md` | `sdcorejs-pr-create` |
+
+## Revalidation Commands
+
+PowerShell inventory checks:
+
+```powershell
+$src = Get-ChildItem -Recurse -File -Path skills -Filter *.md |
+  Where-Object { $_.Name -ne '_README.md' }
+$claude = Get-ChildItem -Recurse -File -Path .claude\skills -Filter SKILL.md
+$plugin = Get-ChildItem -Recurse -File -Path plugin\skills -Filter SKILL.md
+$refs = Get-ChildItem -Recurse -File -Path _refs -Filter *.md
+[PSCustomObject]@{
+  SourceSkills = $src.Count
+  ClaudeMirror = $claude.Count
+  PluginMirror = $plugin.Count
+  RefDocs = $refs.Count
+}
 ```
-skills/angular-portal/00-onboarding.md            -> angular-portal-onboarding
-skills/angular-portal/01-brainstorm.md            -> angular-portal-brainstorm
-skills/angular-portal/02-clarify-requirements.md  -> angular-portal-clarify-requirements
-skills/angular-portal/03-write-spec.md            -> angular-portal-write-spec
-skills/angular-portal/04-review-spec.md           -> angular-portal-review-spec
-skills/angular-portal/05-plan.md                  -> angular-portal-plan
-skills/angular-portal/06-review-plan.md           -> angular-portal-review-plan
-skills/angular-portal/write-code.md            -> angular-portal-write-code
-skills/angular-portal/10-init-portal.md           -> angular-portal-init-portal
-skills/angular-portal/11-init-module.md           -> angular-portal-init-module
-skills/angular-portal/12-init-entity.md           -> angular-portal-init-entity
-skills/angular-portal/20-screen-list.md           -> angular-portal-screen-list
-skills/angular-portal/21-screen-detail.md         -> angular-portal-screen-detail
-skills/angular-portal/22-screen-create.md         -> angular-portal-screen-create
-skills/angular-portal/23-screen-update.md         -> angular-portal-screen-update
-skills/angular-portal/30-reactive-form.md         -> angular-portal-reactive-form
-skills/angular-portal/31-workflow-actions.md      -> angular-portal-workflow-actions
-skills/angular-portal/40-e2e-test.md              -> angular-portal-e2e-test
-skills/angular-portal/50-review-code.md           -> angular-portal-review-code
-skills/angular-portal/51-write-comments.md        -> angular-portal-write-comments
-skills/angular-portal/52-faq.md                   -> angular-portal-faq
-skills/_shared/auto-docs.md                       -> sdcorejs-auto-docs
-skills/_shared/memories.md                        -> sdcorejs-memories
+
+Frontmatter sanity:
+
+```powershell
+$items = Get-ChildItem -Recurse -File -Path skills -Filter *.md |
+  Where-Object { $_.Name -ne '_README.md' } |
+  ForEach-Object {
+    $lines = Get-Content $_.FullName -TotalCount 20
+    $name = ($lines | Where-Object { $_ -match '^name:' } | Select-Object -First 1) -replace '^name:\s*',''
+    $desc = ($lines | Where-Object { $_ -match '^description:' } | Select-Object -First 1) -replace '^description:\s*',''
+    [PSCustomObject]@{ Path=$_.FullName; Name=$name; HasDescription=($desc.Length -gt 0); Kebab=($name -match '^[a-z0-9-]+$') }
+  }
+$items | Group-Object Name | Where-Object Count -gt 1
+$items | Where-Object { -not $_.Kebab -or -not $_.HasDescription }
 ```
 
-## Issues found
+Entrypoint drift checks:
 
-### Check 3 — Stale cross-references in pre-Phase-A READMEs
+```powershell
+rg -n "skills/\*/\*.md|skills-sdcorejs|_refs-sdcorejs|skills/shared/sdlc/_refs|skills/tracks/angular/_refs|angular-onboarding|00-onboarding|18 files" CLAUDE.md AGENTS.md README.md .github
+rg -n "admin-screens|init-admin|write-user-guide|skills/\*\*/\*.md" CLAUDE.md AGENTS.md README.md .github skills/tracks
+```
 
-`skills/README.md` and `skills/angular-portal/README.md` were never updated to reflect the Phase A/B rename and still link to legacy filenames that no longer exist:
-
-- `skills/README.md`
-  - line 13: `angular-portal/angular-request-intake-skill.md`
-  - line 14: `angular-portal/angular-entity-crud-skill.md`
-  - line 15: `angular-portal/angular-module-configuration-skill.md`
-  - line 16: `angular-portal/angular-reactive-form-skill.md`
-  - line 20: `angular-portal/INDEX.md`
-  - lines 124, 125: `../core/README.md`, `../agents/README.md` (sibling folders that do not exist in this repo)
-- `skills/angular-portal/README.md`
-  - lines 13, 32, 63, 94, 127, 415, 416, 417, 418: links to `angular-request-intake-skill.md`, `angular-portal-project-init-skill.md`, `angular-entity-crud-skill.md`, `angular-module-configuration-skill.md`, `angular-workflow-actions-skill.md`, `angular-reactive-form-skill.md`
-  - lines 209, 210: `core-version.md`, `sdcorejs-angular-catalog.md` (these now live in `_refs/`, so should be `_refs/core-version.md` and `_refs/sdcorejs-angular-catalog.md`)
-  - line 431: `../ANGULAR-SKILLS-INDEX.md` (does not exist)
-  - lines 433, 434: `../../core/README.md`, `../../README.md` (former is missing)
-
-**Severity**: low — these READMEs are not part of the skill dispatch flow and not referenced by `CLAUDE.md` / `AGENTS.md`. The runtime agent uses the numbered skills directly. However, they should be replaced or deleted in a follow-up to avoid confusing humans browsing the repo.
-
-**Recommended follow-up**: regenerate both READMEs to match the new 00-52 + `_shared/` layout, or delete them entirely (the per-skill frontmatter `description` already self-documents).
-
-### Check 5 — Intentional legacy-path mentions
-
-Six occurrences of `.docs/sdcorejs` appear in:
-
-- `skills/_shared/auto-docs.md` (lines 110, 128)
-- `.claude/skills/sdcorejs-auto-docs/SKILL.md` (lines 110, 128) — mirror copy
-- `skills/angular-portal/03-write-spec.md` (line 123)
-- `.claude/skills/angular-portal-write-spec/SKILL.md` (line 123) — mirror copy
-
-All are inside warnings of the form `Write to docs/sdcorejs/ or .docs/sdcorejs/ (legacy paths) — canonical is .sdcorejs/docs/`. They are intentional migration guidance, **not** stale path uses. Treated as PASS.
-
-## Re-validate after changes
+Official mirror checks:
 
 ```bash
-# After editing skills or entry points, re-run by reviewing VALIDATION.md and re-grepping.
-# Update this file by hand or re-run a future validation script.
-
-# Quick checks:
-#   - Mirror sync:        for f in .claude/skills/*/SKILL.md; do diff -q "$f" skills/.../<src>; done
-#   - Frontmatter:        head -10 skills/**/*.md | grep -E '^name:|^description:'
-#   - Path conventions:   git grep -nE '\.docs/sdcorejs|\.memories/sdcorejs'
-#   - Old numbering:      git grep -nE '01-clarify-requirements|02-plan|03-write-code' CLAUDE.md AGENTS.md .github/
-#   - Catalog count:      find skills/angular-portal/_refs/sdcorejs-angular -name '*.md' | wc -l   # expect 69
+npm run check:skills
 ```
+
+On Windows without `bash` on `PATH`, use:
+
+```powershell
+npm run check:skills:ps
+```
+
+Known current issue: `check:skills:ps` still fails in check mode until `.claude/sync-skills.ps1` flag forwarding is fixed.

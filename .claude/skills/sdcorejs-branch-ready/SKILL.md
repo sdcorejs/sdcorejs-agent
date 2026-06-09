@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-branch-ready
-description: Use AFTER `orchestration/verify-before-done` confirms acceptance criteria pass, BEFORE handing off to `sdcorejs-commit` / `sdcorejs-pr-create`. Inspired by `superpowers:finishing-a-development-branch`. Runs a branch-hygiene sweep — uncommitted noise, debug logs, focused tests (`.only`/`.skip`), commented-out code blocks, hardcoded secrets, large/binary surprises, and a final lint+test+build pass. Outputs a Ready / Blockers report. Does NOT modify code; surfaces issues and lets the user decide. Triggers - automatic in the tail-call chain after `verify-before-done`; or user says "branch xong chưa", "ready to ship", "kiểm tra branch", "check before commit", "final gate". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `orchestration/verify-before-done` confirms acceptance criteria pass, BEFORE handing off to `sdcorejs-commit` / `sdcorejs-pr-create`. Inspired by `superpowers:finishing-a-development-branch`. Runs a branch-hygiene sweep — uncommitted noise, debug logs, focused tests (`.only`/`.skip`), commented-out code blocks, hardcoded secrets, large/binary surprises, and a final lint+test+build pass. Outputs a Ready / Blockers report. Does NOT modify code; surfaces issues and lets the user decide. Triggers - automatic in the tail-call chain after `verify-before-done`; or user says "is this branch ready", "ready to ship", "check branch", "check before commit", "final gate". Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Bash, Read, Grep, Glob
 ---
 
@@ -13,7 +13,7 @@ It does NOT modify code. It surfaces issues so the user decides — fix in place
 
 ## When invoked
 - **Automatic**: in the SDLC tail-call chain, right after `orchestration/verify-before-done` returns ✅ and before `sdcorejs-commit`; also invoked as Step 3 by `sdcorejs-ship`
-- **Manual**: user says "branch xong chưa", "ready to ship", "kiểm tra branch", "check before commit", "final gate", "branch hygiene"
+- **Manual**: user says "is this branch ready", "ready to ship", "check branch", "check before commit", "final gate", "branch hygiene"
 
 Do NOT invoke for:
 - Mid-work checks (the noise is intentional then; this is a SHIP-time gate)
@@ -152,10 +152,10 @@ Emit ⚪ Info suggestions based on thresholds (never block — advisory only):
 
 | Condition | Suggestion |
 |---|---|
-| `$CHANGED_COUNT > 8` AND `$MODULE_COUNT > 2` (both conditions simultaneously) | ⚪ Nhiều modules bị ảnh hưởng — consider `sdcorejs-review-architecture` before merging |
+| `$CHANGED_COUNT > 8` AND `$MODULE_COUNT > 2` (both conditions simultaneously) | ⚪ Many modules affected — consider `sdcorejs-review-architecture` before merging |
 | `$SECURITY_FILES > 0` | ⚪ Auth/security files trong diff — consider `sdcorejs-review` |
-| Angular track AND `$COMPONENT_COUNT > 3` | ⚪ Nhiều Angular components — consider `sdcorejs-review` |
-| Angular track AND `$NEW_SCREENS > 0` | ⚪ Screens mới — consider `sdcorejs-review` |
+| Angular track AND `$COMPONENT_COUNT > 3` | ⚪ Many Angular components — consider `sdcorejs-review` |
+| Angular track AND `$NEW_SCREENS > 0` | ⚪ New screens — consider `sdcorejs-review` |
 
 If no condition matches: omit this section from the output entirely (don't print "no suggestions").
 
@@ -201,7 +201,7 @@ OR
 
 OR
 
-**🟡 READY WITH WARNINGS** — blockers clear but N warnings; user acknowledged via "tôi biết, ship đi" or similar.
+**🟡 READY WITH WARNINGS** — blockers clear but N warnings; user acknowledged via "I know, ship anyway" or similar.
   → Hand off to `sdcorejs-commit`.
 ```
 
@@ -231,7 +231,7 @@ If `git worktree list` shows multiple worktrees on the same branch, surface as I
 ### MUST NOT
 - Modify files. This is a READ-ONLY gate.
 - Run destructive git commands (rebase, reset, clean — even if "obviously" what the user wants)
-- Bypass a Blocker on user request without an explicit acknowledgement message ("tôi biết, ship đi" / "I know, ship anyway")
+- Bypass a Blocker on user request without an explicit acknowledgement message ("I know, ship anyway" / "I know, ship anyway")
 - Run `npm install` to silence "module not found" — that's an env-setup issue, surface it instead
 - Run `git fetch --tags` or other heavy network ops in remote checks — `git fetch --quiet` is enough
 
@@ -240,7 +240,7 @@ If `git worktree list` shows multiple worktrees on the same branch, surface as I
 - Gate that blocks on every Minor lint warning — noisy; only block on test/build failures and on critical content (secrets, conflict markers)
 - Running this BEFORE `verify-before-done` — wrong order; acceptance comes first
 - Modifying files to "fix" warnings before reporting — the user should decide
-- Bypassing all blockers silently when the user says "commit luôn" — explicit acknowledgement required
+- Bypassing all blockers silently when the user says "commit anyway" — explicit acknowledgement required
 
 ## Cross-references
 - `orchestration/verify-before-done` — runs before; acceptance-criteria gate

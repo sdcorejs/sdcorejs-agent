@@ -1,29 +1,24 @@
 ---
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-const skills = [
-  { code: "00", name: "onboarding", note: "Entry — orient + dispatch" },
-  { code: "07", name: "write-code", note: "Orchestrator", primary: true },
-  { code: "10", name: "init-portal", note: "Bootstrap portal + logo" },
-  { code: "11", name: "init-module", note: "Feature module" },
-  { code: "12", name: "init-entity", note: "Full CRUD entity", primary: true },
-  { code: "20", name: "screen-list", note: "SdTable + paging" },
-  {
-    code: "21",
-    name: "screen-detail",
-    note: "CREATE / UPDATE / DETAIL + form",
-    primary: true,
-  },
-  { code: "31", name: "actions", note: "Workflow / bulk / custom" },
+
+const packs = [
+  ["init-portal", "Bootstrap a portal with environments and Core UI defaults"],
+  ["admin-screens", "Always-on account, role, and permission screens"],
+  ["init-module", "Create feature module boundaries and route wiring"],
+  ["init-entity", "Generate full CRUD model, service, routes, and tests"],
+  ["screen-list", "Build table screens with filters, paging, and actions"],
+  ["screen-detail", "Build CREATE / UPDATE / DETAIL form states"],
+  ["actions", "Add workflow, bulk, export, and side-effect buttons"],
 ];
 
-const sdlcFlow = [
-  ["01", "brainstorm"],
-  ["02", "clarify"],
-  ["03", "write-spec"],
-  ["04", "review-spec"],
-  ["05", "plan"],
-  ["06", "review-plan"],
-  ["07", "write-code"],
+const flow = [
+  "brainstorm",
+  "clarify",
+  "spec",
+  "review-spec",
+  "plan",
+  "review-plan",
+  "write-code",
 ];
 ---
 
@@ -33,122 +28,80 @@ const sdlcFlow = [
       <span class="eyebrow"
         ><span class="bullet" aria-hidden="true"></span>Track focus</span
       >
-      <h2>Angular Portal — generate full CRUD in one prompt</h2>
+      <h2>Angular Portal - full CRUD with Core UI first</h2>
       <p class="lead">
-        Built on <a
+        The Angular track is now a single write-code orchestrator backed by
+        focused reference packs. It prefers <a
           href="https://www.npmjs.com/package/@sdcorejs/angular"
           target="_blank"
-          rel="noopener"><code>@sdcorejs/angular</code></a> (on npm — v20.0.1,
-        Angular 19 / 20 / 21). After the SDLC design phase approves a plan,
-        <code>angular-write-code</code> dispatches the right sub-skill
-        per task. Every code-writing step gates through TDD, review,
-        repair-loop, comment-ask, verify-before-done.
+          rel="noopener"><code>@sdcorejs/angular</code></a
+        > components, keeps generated labels runtime-localized, and runs through
+        the shared SDLC gates before code lands.
       </p>
     </div>
 
-    <!-- SDLC flow strip -->
     <div class="flow reveal delay-1" aria-label="SDLC workflow">
       {
-        sdlcFlow.map(([code, name], i) => (
+        flow.map((name, i) => (
           <Fragment>
-            <div class="flow-step">
-              <span class="flow-code">{code}</span>
-              <span class="flow-name">{name}</span>
-            </div>
-            {i < sdlcFlow.length - 1 && (
-              <span class="flow-arrow" aria-hidden="true">
-                →
-              </span>
-            )}
+            <span class="flow-step">{name}</span>
+            {i < flow.length - 1 && <span class="flow-arrow" aria-hidden="true">-></span>}
           </Fragment>
         ))
       }
     </div>
 
-    <!-- Two-column: skill grid + code preview -->
     <div class="cols">
-      <div class="col-skills reveal delay-2">
-        <h3>Skills shipped in this track</h3>
-        <div class="skill-grid">
+      <div class="pack-list reveal delay-2">
+        <h3>Reference packs loaded on demand</h3>
+        <div class="grid">
           {
-            skills.map((s) => (
-              <div class={`skill-tag ${s.primary ? "primary" : ""}`}>
-                <span class="skill-code">{s.code}</span>
-                <span class="skill-name">{s.name}</span>
-                <span class="skill-note">{s.note}</span>
+            packs.map(([name, note]) => (
+              <div class="pack">
+                <code>{name}</code>
+                <p>{note}</p>
               </div>
             ))
           }
         </div>
       </div>
 
-      <div class="col-code reveal delay-3">
-        <h3>What you get</h3>
-        <div class="code-window">
-          <div class="code-chrome" aria-hidden="true">
-            <span class="dot red"></span>
-            <span class="dot yellow"></span>
-            <span class="dot green"></span>
-            <span class="path">src/libs/catalog/features/product/</span>
-          </div>
-          <pre class="code-body"><code><span class="tok-c">// Generated from one prompt:</span>
-<span class="tok-c">// "Thêm entity product cho module catalog với code, name, price"</span>
+      <div class="code-card reveal delay-3">
+        <h3>Generated shape</h3>
+        <pre><code>src/libs/catalog/features/product/
+  services/
+    product.model.ts
+    product.service.ts
+    product.mock-data.ts
+  pages/
+    list/list.component.ts
+    detail/detail.component.ts
+  routes.ts
 
-product/
-├── services/
-│   ├── product.model.ts         <span class="tok-c">// DTO + SaveReq + validators</span>
-│   ├── product.mock-data.ts     <span class="tok-c">// 20 seed rows (Vietnamese)</span>
-│   ├── product.service.ts       <span class="tok-c">// MockCrudStore-backed CRUD</span>
-│   └── index.ts
-├── pages/
-│   ├── list/list.component.ts   <span class="tok-c">// SdTable + paging + audit cols</span>
-│   └── detail/detail.component.ts <span class="tok-c">// CREATE / UPDATE / DETAIL</span>
-└── routes.ts                    <span class="tok-c">// Lazy-loaded + permissions</span>
-
-<span class="tok-c">// + matching .spec.ts at your chosen coverage level</span>
-<span class="tok-c">// + npm run test ↓ all green before handing off</span></code></pre>
-        </div>
+tail chain:
+  test -> review -> repair -> comments
+  -> verify -> branch-ready -> docs
+  -> user-guide -> task tracker</code></pre>
       </div>
     </div>
 
-    <!-- Feature pills -->
-    <div class="feats reveal delay-4">
-      {
-        [
-          "Bilingual VI / EN triggers",
-          "Standalone Angular 19+ first",
-          "Mock-first services, no backend required",
-          "TDD gate before every file",
-          "@HasPermission directive wiring",
-          "OnPush + signal-first state",
-          "Side-drawer vs full-page decision",
-          "69 Core UI component refs included",
-        ].map((f) => (
-          <span class="feat-pill">
-            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                fill="none"
-                stroke="currentColor"
-                stroke-width="3"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M5 12l5 5L20 7"
-              />
-            </svg>
-            {f}
-          </span>
-        ))
-      }
-    </div>
-
-    <!-- CTA → dedicated track page -->
     <div class="track-cta reveal delay-4">
       <div>
-        <strong>New:</strong> E2E from the autoID Inspector + usage samples for Claude
-        Code, Copilot &amp; Codex.
+        Need the Angular-specific details? The dedicated track page keeps the
+        autoId and E2E inspector guidance.
       </div>
       <a class="cta-link" href={`${base}/angular`}>
-        Explore the full Angular Portal track →
+        Explore Angular Portal
+        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M5 12h14M13 5l7 7-7 7"
+          />
+        </svg>
       </a>
     </div>
   </div>
@@ -164,7 +117,7 @@ product/
 
   .head {
     max-width: 760px;
-    margin-bottom: 48px;
+    margin-bottom: 42px;
   }
 
   .head code {
@@ -188,8 +141,8 @@ product/
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
-    margin-bottom: 56px;
-    padding: 20px 16px;
+    margin-bottom: 40px;
+    padding: 18px;
     background: var(--c-bg);
     border: 1px solid var(--c-border);
     border-radius: var(--radius-md);
@@ -197,233 +150,115 @@ product/
   }
 
   .flow-step {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
+    padding: 8px 12px;
     background: var(--c-bg-soft);
     border-radius: 999px;
     font-size: 0.88rem;
-    transition:
-      background 220ms var(--ease),
-      transform 200ms var(--ease-spring);
-  }
-
-  .flow-step:hover {
-    background: var(--c-blue-100);
-    transform: translateY(-2px);
-  }
-
-  .flow-code {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: var(--c-orange-600);
-  }
-
-  .flow-name {
-    color: var(--c-text);
-    font-weight: 500;
+    font-weight: 600;
   }
 
   .flow-arrow {
     color: var(--c-text-muted);
-    font-weight: 700;
-    user-select: none;
   }
 
-  /* Two-column */
   .cols {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+    gap: 24px;
     align-items: start;
-    margin-bottom: 56px;
   }
 
-  @media (max-width: 920px) {
+  @media (max-width: 880px) {
     .cols {
       grid-template-columns: 1fr;
     }
   }
 
-  .col-skills h3,
-  .col-code h3 {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--c-text-muted);
-    font-weight: 600;
-    margin-bottom: 16px;
-  }
-
-  /* Skill grid */
-  .skill-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-
-  .skill-tag {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
+  .pack-list,
+  .code-card {
+    padding: 24px;
     background: var(--c-bg);
-    border: 1px solid var(--c-border);
-    border-radius: 10px;
-    font-size: 0.92rem;
-    transition:
-      background 200ms var(--ease),
-      border-color 200ms var(--ease),
-      transform 220ms var(--ease-spring);
-  }
-
-  .skill-tag:hover {
-    border-color: var(--c-blue-500);
-    transform: translateX(4px);
-  }
-
-  .skill-tag.primary {
-    background: var(--c-blue-100);
-    border-color: rgba(33, 150, 243, 0.3);
-  }
-
-  .skill-code {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: var(--c-orange-600);
-  }
-
-  .skill-name {
-    font-weight: 600;
-    color: var(--c-text);
-  }
-
-  .skill-note {
-    color: var(--c-text-muted);
-    font-size: 0.85rem;
-  }
-
-  @media (max-width: 480px) {
-    .skill-note {
-      display: none;
-    }
-  }
-
-  /* Code window */
-  .code-window {
-    background: #0d1b2e;
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    box-shadow: var(--shadow-glow);
-    color: #e7ecf2;
-  }
-
-  .code-chrome {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 14px;
-    background: #11253c;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  }
-
-  .code-chrome .dot {
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-  }
-  .dot.red {
-    background: #ff5f56;
-  }
-  .dot.yellow {
-    background: #ffbd2e;
-  }
-  .dot.green {
-    background: #27c93f;
-  }
-
-  .code-chrome .path {
-    margin-left: 10px;
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    color: rgba(231, 236, 242, 0.65);
-  }
-
-  .code-body {
-    margin: 0;
-    padding: 20px;
-    font-size: 0.82rem;
-    line-height: 1.65;
-    overflow-x: auto;
-    color: #e7ecf2;
-  }
-
-  .tok-c {
-    color: #7c8aa3;
-  }
-
-  /* Feature pills */
-  .feats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .feat-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    background: var(--c-bg);
-    border: 1px solid var(--c-border);
-    border-radius: 999px;
-    font-size: 0.88rem;
-    color: var(--c-text);
-    transition:
-      background 200ms var(--ease),
-      transform 220ms var(--ease-spring);
-  }
-
-  .feat-pill:hover {
-    background: var(--c-blue-100);
-    transform: translateY(-2px);
-  }
-
-  .feat-pill svg {
-    color: var(--c-blue-600);
-  }
-
-  .track-cta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-top: 28px;
-    padding: 18px 22px;
-    background: #fff;
     border: 1px solid var(--c-border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
   }
-  .track-cta strong {
-    color: var(--c-orange-600);
+
+  .pack-list h3,
+  .code-card h3 {
+    margin: 0 0 16px;
   }
-  .cta-link {
-    flex-shrink: 0;
-    font-weight: 600;
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+
+  .pack {
+    padding: 14px;
+    background: var(--c-bg-soft);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm);
+  }
+
+  .pack code {
     color: var(--c-blue-600);
-    padding: 9px 16px;
-    border-radius: 999px;
-    background: var(--c-blue-100);
-    transition: background 160ms var(--ease), color 160ms var(--ease);
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 6px;
+    padding: 2px 6px;
+    font-size: 0.84rem;
   }
-  .cta-link:hover {
-    background: var(--c-blue-600);
-    color: #fff;
+
+  .pack p {
+    margin: 8px 0 0;
+    color: var(--c-text-soft);
+    font-size: 0.9rem;
+  }
+
+  .code-card pre {
+    margin: 0;
+    padding: 16px;
+    background: #0d1b2e;
+    color: #e7ecf2;
+    border-radius: 12px;
+    overflow-x: auto;
+  }
+
+  .code-card code {
+    color: inherit;
+    background: none;
+    padding: 0;
+    font-size: 0.84rem;
+    line-height: 1.55;
+  }
+
+  .track-cta {
+    margin-top: 24px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--c-bg);
+    border: 1px dashed var(--c-border-strong);
+    border-radius: var(--radius-md);
+    color: var(--c-text-soft);
+  }
+
+  @media (max-width: 720px) {
+    .track-cta {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  .cta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--c-blue-600);
+    font-weight: 700;
+    white-space: nowrap;
   }
 </style>

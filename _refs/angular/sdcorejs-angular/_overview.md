@@ -17,8 +17,9 @@ Concise index of every component, form, service, module, directive, pipe, handle
 | i18n | 1 | `i18n/` |
 | Utilities — Extensions (overview) | 1 (covers 7 files) | `utilities/extensions.md` |
 | Utilities — Models (overview) | 1 (covers 12 files) | `utilities/models.md` |
+| Assets & SCSS | 1 | `assets/STYLE-GUIDE.md` |
 | Configurations | 1 | `configurations/` |
-| **Total** | **77 files** | (incl. this overview) |
+| **Total** | **78 files** | (incl. this overview) |
 
 ## Components (29)
 
@@ -156,6 +157,7 @@ Feature bundles (services + directives + components + guards) — opt-in via `im
 
 - [Utilities — Extensions](utilities/extensions.md) — Pure-function namespaces: `ArrayUtilities`, `StringUtilities`, `NumberUtilities`, `DateUtilities`, `SdUtilities`, plus color converters and `detectIncognito`. Overview covers 7 source files.
 - [Utilities — Models](utilities/models.md) — Type-only contracts: `SdColor`, `SdSize`, `SdFilter`, `SdOrder`, `SdPagingReq/Res`, `SdNestedKeyOf`, `SdOperators`, `SdPatternCommons`, `SdMaybeAsync`, etc. Overview covers 12 source files.
+- [Assets & SCSS Style Guide](assets/STYLE-GUIDE.md) — Public utility-class and design-token reference for AI-generated templates, including the 4px spacing-scale rule for `m-*`, `p-*`, and `gap-*`.
 - [`SD_CORE_CONFIGURATION`](configurations/sd-core.configuration.md) — Root DI token + `ISdCoreConfiguration` interface: per-domain `licenseKey` and global `format.number` style.
 
 ## How to use this catalog

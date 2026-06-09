@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review
-description: Single entry point for reviewing/auditing code across every SDCoreJS track — dimension-aware: code conventions (default), security, performance, accessibility. Auto-detects the stack (Angular · NestJS · Next.js) + the dimension from intent, loads `_refs/<track>/review-<dimension>.md` (+ `_refs/shared/` baselines), emits a 🔴 Critical / 🟡 Important / 🔵 Minor report with file:line + Fix. "đánh giá toàn diện / full audit" runs all dimensions; Angular code can request the 13-category scored review. Read-only. For module-level structure (layering, circular deps) use `sdcorejs-review-architecture`. Triggers - "review code / rà soát code", "audit module/backend", "review bảo mật / security", "review hiệu năng / performance / lighthouse", "review accessibility / a11y / WCAG", "audit existing site / site này thiếu gì (nextjs)", "scored review / chấm điểm", "đánh giá toàn diện", or auto after `<track>-write-code`. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Single entry point for reviewing/auditing code across every SDCoreJS track — dimension-aware: code conventions (default), security, performance, accessibility. Auto-detects the stack (Angular · NestJS · Next.js) + the dimension from intent, loads `_refs/<track>/review-<dimension>.md` (+ `_refs/shared/` baselines), emits a 🔴 Critical / 🟡 Important / 🔵 Minor report with file:line + Fix. "comprehensive audit / full audit" runs all dimensions; Angular code can request the 13-category scored review. Read-only. For module-level structure (layering, circular deps) use `sdcorejs-review-architecture`. Triggers - "review code", "audit module/backend", "security review / security", "performance review / performance / lighthouse", "review accessibility / a11y / WCAG", "audit existing site / what is missing on this site (nextjs)", "scored review", "comprehensive audit", or auto after `<track>-write-code`. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Glob, Grep, Bash
 ---
 
@@ -20,7 +20,7 @@ dispatch surface + output format are unified here. **Module-level structure revi
 ## When to use
 - After `<track>-write-code` finishes a batch (automatic, via the tail-call chain → code dimension)
 - Before merging a feature branch
-- User says "review code / rà soát", "review bảo mật", "review hiệu năng", "review a11y", "đánh giá toàn diện", "scored review"
+- User says "review code / review", "security review", "performance review", "review a11y", "comprehensive audit", "scored review"
 
 ## Step 0 — Detect the track + the dimension
 
@@ -35,12 +35,12 @@ dispatch surface + output format are unified here. **Module-level structure revi
 **Dimension** (from intent — default `code`):
 | Dimension | Use when |
 |---|---|
-| **code** (default) | "review code", "rà soát", "audit module", per-file conventions; the tail-chain default after write-code |
-| **security** | "review bảo mật", "security audit", "SQL injection", "secrets", "CSP", "route guards" |
-| **performance** | "review hiệu năng", "performance", "lighthouse", "N+1", "bundle size", "slow query" |
+| **code** (default) | "review code", "review", "audit module", per-file conventions; the tail-chain default after write-code |
+| **security** | "security review", "security audit", "SQL injection", "secrets", "CSP", "route guards" |
+| **performance** | "performance review", "performance", "lighthouse", "N+1", "bundle size", "slow query" |
 | **accessibility** | "review accessibility", "a11y", "WCAG", "aria", "keyboard nav", "contrast" (angular/nextjs only — nestjs has no UI) |
-| **ALL** | "đánh giá toàn diện / full audit / enterprise readiness" → run code + security + performance + (a11y if UI) |
-| **site-audit** (nextjs only) | EXISTING whole-site audit — "audit site", "improve existing site", "site này thiếu gì", "clone về rồi muốn cải tiến": run the 30-point build-website quality bar, read-only gap report, then hand to `sdcorejs-clarify-requirements` |
+| **ALL** | "comprehensive audit / full audit / enterprise readiness" → run code + security + performance + (a11y if UI) |
+| **site-audit** (nextjs only) | EXISTING whole-site audit — "audit site", "improve existing site", "what is missing on this site", "cloned site to improve": run the 30-point build-website quality bar, read-only gap report, then hand to `sdcorejs-clarify-requirements` |
 
 State the detected track + dimension(s) in the report header.
 
@@ -62,7 +62,7 @@ Each ref supplies *what to check* (checklist + probes + severity + OWASP/WCAG/bu
 
 ## Output format (ALL tracks + dimensions)
 
-Match the user's language (VI/EN). Cite `file:line` for every finding (+ OWASP for security, WCAG for a11y, breached budget for performance). `Tradeoff` = cost/risk of the fix (`none` when strictly better).
+Match the user's language at runtime. Cite `file:line` for every finding (+ OWASP for security, WCAG for a11y, breached budget for performance). `Tradeoff` = cost/risk of the fix (`none` when strictly better).
 
 ```markdown
 # Review — <module/feature> — <track> — <dimension(s)> — <date>
@@ -96,7 +96,7 @@ Match the user's language (VI/EN). Cite `file:line` for every finding (+ OWASP f
 - security/performance/accessibility refs may carry their own Passed-checklist / manual-audit lists — include them under the relevant dimension section.
 
 ### Scored deep-review mode (Angular code dimension)
-For a full module/branch audit or "scored review / đánh giá / chấm điểm / enterprise readiness" on an **Angular** project, use the 13-category scored format defined in `_refs/angular/review-code.md` instead of the quick tables.
+For a full module/branch audit or "scored review / enterprise readiness" on an **Angular** project, use the 13-category scored format defined in `_refs/angular/review-code.md` instead of the quick tables.
 
 ## Rules
 

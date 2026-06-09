@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-dep-update
-description: Use when the user asks to update / upgrade dependencies, says "cập nhật dependency", "update package", "bump version", "npm outdated", "audit fix", or after a security advisory. Runs a safe upgrade workflow — audit → classify (patch/minor/major) → branch → upgrade one logical group at a time → lockfile diff → tests → smoke run. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Use when the user asks to update / upgrade dependencies, says "update dependencies", "update package", "bump version", "npm outdated", "audit fix", or after a security advisory. Runs a safe upgrade workflow — audit → classify (patch/minor/major) → branch → upgrade one logical group at a time → lockfile diff → tests → smoke run. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Bash, Read, Edit
 ---
 
@@ -10,7 +10,7 @@ allowed-tools: Bash, Read, Edit
 "Update everything to latest" is how lockfile sludge and Sunday-night production incidents happen. This skill enforces incremental, testable, reversible upgrades.
 
 ## When invoked
-- "cập nhật dependency", "update package", "bump <pkg>", "npm outdated"
+- "update dependencies", "update package", "bump <pkg>", "npm outdated"
 - Security advisory / `npm audit` flagging a Critical/High
 - Renovate / Dependabot PR review
 - Before a release, to refresh deps

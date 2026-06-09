@@ -5,7 +5,7 @@
 > baseline in `_refs/shared/review-security.md`. Not a dispatchable skill — no
 > frontmatter. Output format owned by the parent skill.
 
-Most BE issues: (a) endpoint missing auth/permission, (b) raw SQL with user input, (c) over-permissive CORS, (d) secrets in code/logs. The BE is the authorization boundary — enforce, don't assume.
+Most BE issues: (a) endpoint missing auth/auth, (b) raw SQL with user input, (c) over-permissive CORS, (d) secrets in code/logs. The BE is the authorization boundary — enforce, don't assume.
 
 ## NS-1: Every write endpoint has `@HasPermission`
 ```bash

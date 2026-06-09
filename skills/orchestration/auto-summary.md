@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-summary
-description: MANDATORY project-brief skill. Owns the single canonical `.sdcorejs/summary.md` — an evergreen "what this project IS" snapshot (domain, stack, architecture map, conventions, reuse cheatsheet). Use BEFORE any substantive work in a target project: if missing it MUST be generated first (delegate the scan to `sdcorejs-code-map`, then distill); if present it is read at session start to load project context cheaply. Also runs in WRITE mode right after a new project/module is initialized, and refreshes when the recorded git HEAD has drifted. Distinct from `sdcorejs-auto-docs` (per-session deltas) — this is the one stable project overview. Triggers - session start in a target project, about to run `write-code`, user asks "tóm tắt dự án", "project summary", "dự án này là gì", "overview", "what is this project". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY project-brief skill. Owns the single canonical `.sdcorejs/summary.md` — an evergreen "what this project IS" snapshot (domain, stack, architecture map, conventions, reuse cheatsheet). Use BEFORE any substantive work in a target project: if missing it MUST be generated first (delegate the scan to `sdcorejs-code-map`, then distill); if present it is read at session start to load project context cheaply. Also runs in WRITE mode right after a new project/module is initialized, and refreshes when the recorded git HEAD has drifted. Distinct from `sdcorejs-auto-docs` (per-session deltas) — this is the one stable project overview. Triggers - session start in a target project, about to run `write-code`, user asks "project summary", "project summary", "what is this project", "overview", "what is this project". Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Write, Bash, Glob, Grep
 ---
 
@@ -33,11 +33,11 @@ Triggering is description-based, but this skill is wired to run at three hard po
 ### 1. Session-start (READ mode)
 At the start of any session inside a target project:
 1. Resolve target root: `git rev-parse --show-toplevel` from the user's CWD (NOT the sdcorejs-agent repo).
-2. If `<root>/.sdcorejs/summary.md` exists → read it, run the freshness check (below), summarize to yourself before answering. Acknowledge briefly: "Đã đọc .sdcorejs/summary.md (dựa trên commit <short-sha>). …" (or EN).
+2. If `<root>/.sdcorejs/summary.md` exists → read it, run the freshness check (below), summarize to yourself before answering. Acknowledge briefly: "Read .sdcorejs/summary.md (based on commit <short-sha>). ..." (or EN).
 3. If it does NOT exist → tell the user it's missing and that you'll generate it before substantive work (GENERATE mode). For a pure question that needs no project context, you may answer first, but generate before any code-writing.
 
 ### 2. Before generation / on missing file (GENERATE mode = the gate)
-When about to run `write-code` (the `angular-write-code` orchestrator, including its init-portal / init-module reference packs — or the equivalent init step in another track) AND `summary.md` is absent → generate it first. This is the "bắt buộc" gate.
+When about to run `write-code` (the `angular-write-code` orchestrator, including its init-portal / init-module reference packs — or the equivalent init step in another track) AND `summary.md` is absent → generate it first. This is the "mandatory" gate.
 
 ### 3. Post-init (WRITE mode)
 Right after the `angular-write-code` orchestrator (init-portal / init-module packs) finishes scaffolding a brand-new project/module, generate (or update) `summary.md` — a fresh repo has none yet.
@@ -46,7 +46,7 @@ Right after the `angular-write-code` orchestrator (init-portal / init-module pac
 If `summary.md` exists but the freshness check says it's stale → regenerate (or patch the changed sections).
 
 ### On explicit request
-- "tóm tắt dự án", "project summary", "overview", "dự án này là gì", "what is this project"
+- "project summary", "overview", "what is this project", or localized equivalents
 
 ## Freshness check
 
@@ -126,7 +126,7 @@ generator: sdcorejs-auto-summary
 Based on commit <short-sha> (<date>). Regenerate with `sdcorejs-auto-summary` if HEAD has drifted significantly.
 ```
 
-## Enforcement (4 tiers — this is what makes it "bắt buộc")
+## Enforcement (4 tiers — this is what makes it "mandatory")
 
 Description-matching alone is unreliable (a skill is only consulted when the agent thinks to). So this skill is backed by:
 1. **Hook (session-start directive):** the plugin `SessionStart` hook detects a track config — at the repo ROOT *or* nested under `apps/*` / `packages/*` / `projects/*` (monorepo) — and, if `<project>/.sdcorejs/summary.md` is absent, injects a directive to run this skill before substantive work. Note this is an *advisory* directive (no platform-level hard block exists); it fires once at session start (`startup`/`clear`/`compact`).

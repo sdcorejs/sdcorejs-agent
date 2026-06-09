@@ -1,234 +1,468 @@
 # Testing the SDCoreJS SDLC Agent
 
-> Manual tests to run in fresh AI coding tool sessions. Validates that skills dispatch correctly per stated triggers.
+Manual and repository-level tests for the current 42-skill SDCoreJS Agent layout.
+
+The agent is documentation-driven: there is no runtime server or compiler. Testing focuses on dispatch metadata, mirror sync, reference availability, and fresh-session behavior in Claude Code, Copilot, Codex, and Cursor.
 
 ## Prerequisites
 
-A fresh session in one of:
+Use a fresh session in one of:
 
-- **Claude Code** (primary target — reads `CLAUDE.md` + native `.claude/skills/`)
-- **GitHub Copilot** in VS Code (reads `.github/copilot-instructions.md` + chatmode)
-- **Codex / Cursor / OpenAI Agents SDK** (reads `AGENTS.md`)
+- Claude Code: reads `CLAUDE.md` and native `.claude/skills/<name>/SKILL.md`.
+- GitHub Copilot: reads `.github/copilot-instructions.md` and `.github/chatmodes/sdcorejs.chatmode.md`.
+- Codex / Cursor / OpenAI Agents SDK: reads `AGENTS.md`.
 
-Run tests in **this repo** (`sdcorejs-agent`) first for smoke testing, then in a real target portal project for E2E.
+For target-project tests, install both `skills/` and `_refs/`. Skills open `_refs/**` at runtime.
 
-## Smoke tests (in this repo)
-
-### Test 1 — Skill listing
-
-Prompt: `what skills do you have`
-
-Expected: Agent lists ~21 skills grouped by workflow (00→52), or invokes `angular-onboarding` skill which renders the workflow diagram + skill list.
-
-Pass criteria:
-- Mentions at least 5 skills by name
-- Mentions the workflow stages (clarify → spec → plan → code)
-- Mentions both `.sdcorejs/docs/` and `.sdcorejs/memories/` paths
-- Output language matches request (EN here)
-
-### Test 2 — Vietnamese onboarding
-
-Prompt: `agent này làm được gì`
-
-Expected: Agent invokes `angular-onboarding` and replies in Vietnamese.
-
-Pass criteria:
-- Reply is in Vietnamese with full diacritics
-- Lists workflow stages in VN ("làm rõ yêu cầu", "lên kế hoạch", "viết code")
-- Suggests a concrete next step ("Hãy mô tả X để bắt đầu")
-
-### Test 3 — Direct skill dispatch (open-ended)
-
-Prompt: `tôi đang phân vân giữa side-drawer và full-page detail cho entity user, nên dùng cái nào?`
-
-Expected: Agent invokes `sdcorejs-brainstorm` (cross-track; detects angular and loads `_refs/angular.md`), presents 2-3 approaches with tradeoffs, recommends one. Does NOT directly write code.
-
-Pass criteria:
-- Mentions multiple approaches (side-drawer vs full-page)
-- Lists pros/cons of each
-- Recommends one with reasoning
-- Asks for confirmation before proceeding
-
-### Test 4 — Clarify-before-code blocking
-
-Prompt: `thêm entity product`
-
-Expected: Agent invokes `sdcorejs-clarify-requirements` (cross-track; loads `_refs/angular.md`) because module / fields / scope are unspecified. Asks blocking questions.
-
-Pass criteria:
-- Does NOT generate code
-- Asks about: module ownership, key fields, screen scope (list / detail / create / update)
-- Bilingual: VN trigger → VN questions
-
-### Test 5 — Portal init dispatch
-
-Prompt: `khởi tạo portal-shop với env dev/qc/uat/prod`
-
-Expected: Agent invokes the `angular-write-code` orchestrator (which loads the `init-portal` reference pack from `_refs/angular/write-code/`). May still clarify some details but should NOT ask "what is portal-shop" or "which framework".
-
-Pass criteria:
-- Recognizes "portal-shop" as portal name
-- Recognizes the 4 envs
-- References Core UI / `@sdcorejs/angular` baseline template
-- Proposes a plan or directly invokes init steps
-
-### Test 6 — Approval gate
-
-Setup: walk through test 5 until plan is ready, then ask `proceed with implementation`.
-
-Expected: Agent invokes `sdcorejs-review-plan` (cross-track) before `angular-write-code`. Agent should NOT generate code without your explicit "OK".
-
-Pass criteria:
-- Plan shown and approval requested
-- Code is NOT generated until explicit "OK"/"approved"/"proceed"
-
-### Test 7 — Persona ask-once
-
-Setup: a target project with NO `.sdcorejs/persona.md`. Prompt: `giúp mình làm phần mềm quản lý kho`
-
-Expected: Agent invokes `sdcorejs-persona` and asks the technical-vs-plain question BEFORE doing other work, then writes `.sdcorejs/persona.md`.
-
-Pass criteria:
-- Asks the 2-option persona question once, in the request's language
-- After the choice, a `.sdcorejs/persona.md` file exists with `persona: tech|non-tech` frontmatter
-- Re-prompting in the same project does NOT re-ask (reads the stored flag silently)
-- With `persona: non-tech`, later output avoids unexplained jargon, asks about features + screens (never modules/entities/architecture)
-
-### Test 8 — Infra packaging
-
-Prompt: `đóng gói app này để chạy bằng docker`
-
-Expected: Agent dispatches `sdcorejs-dockerize`.
-
-Pass criteria:
-- Proposes/writes a deploy root containing `docker-compose.yml` with 4 services (postgres / keycloak / backend / frontend)
-- Output lands in the TARGET project's deploy root, NOT in this `sdcorejs-agent` repo
-
-Prompt: `thêm đăng nhập keycloak cho app`
-
-Expected: Agent dispatches `sdcorejs-auth`.
-
-Pass criteria:
-- Wires `provideSdKeycloak` on the FE + Keycloak env on the BE
-- Reports the demo login `demo` / `demo`
-
-Prompt: `viết hướng dẫn chạy cho người không rành kỹ thuật`
-
-Expected: Agent dispatches `sdcorejs-run-guide`.
-
-Pass criteria:
-- Emits a jargon-free `START.md`: install Docker → `docker compose up` → http://localhost:4200 → demo / demo
-
-### Test 9 — NestJS write-code
-
-Prompt: `scaffold a nestjs backend`
-
-Expected: Agent dispatches `nestjs-write-code` (init-project pack).
-
-Pass criteria:
-- Proposes the app skeleton INTO THE TARGET project (not this `sdcorejs-agent` repo): `package.json` depending on `@sdcorejs/nestjs`, `app.module.ts` with `SdCoreModule.forRoot`, schema-per-module Postgres config, `main.ts` calling `ensureSchemas`
-- One NestJS app + one Postgres (modular monolith), not a microservice fan-out
-
-Prompt: `add a products module with a product entity`
-
-Expected: Agent dispatches `nestjs-write-code` (init-module + init-entity packs).
-
-Pass criteria:
-- Emits an entity extending the local base-entity, decorated `@Scoped` + `@Entity({ schema })`
-- Emits a repository extending `BaseRepository` with a Symbol injection token
-- Emits a service extending `BaseService` and using `mapDTO`
-- Emits a controller extending `BaseController` with `AdminAuthGuard` + `@HasPermission('products_product:create')` + `ZodValidationGuard`
-- Emits a Zod schema (`*CreateSchema` plus `.partial()` for update)
-
-Prompt: `add a bulk-approve endpoint to products`
-
-Expected: Agent dispatches `nestjs-write-code` (actions pack).
-
-Pass criteria:
-- Adds a custom route guarded by `@HasPermission`
-- Adds a service method for the action (with an explicit `QueryRunner` transaction if it writes to multiple tables)
-
-### Test 10 — Solution builder (one door, non-tech)
-
-Setup: a target project (empty or with `.sdcorejs/persona.md` = non-tech). Prompt: `tôi muốn một phần mềm quản lý kho đơn giản`
-
-Expected: Agent invokes `sdcorejs-solution-builder` and runs the one-door chain.
-
-Pass criteria:
-- Asks ONLY feature + screen questions (never module/entity/table/architecture)
-- Keeps BOTH approval gates, plainly worded (spec + plan); silence ≠ approval
-- After approval: builds backend (nestjs-write-code) + frontend (angular-write-code) + dockerize + auth (Keycloak) + run-guide
-- Ends by telling the user, in plain language: `docker compose up` → open http://localhost:4200 → log in with demo / demo
-- Everything written to the TARGET project, NOT the agent repo
-
-## E2E tests (in a real target portal project)
-
-### Setup
-
-Clone a target Angular portal project (one that uses `@sdcorejs/angular`). Then:
+Recommended submodule install:
 
 ```bash
-cd <target-portal-project>
-
-# Option A: git submodule (recommended)
+cd <target-project>
 git submodule add <this-repo-url> .sdcorejs-agent
 ln -s .sdcorejs-agent/CLAUDE.md CLAUDE.md
 ln -s .sdcorejs-agent/AGENTS.md AGENTS.md
-cp -r .sdcorejs-agent/.claude .
-
-# Option B: direct copy
-cp -r <this-repo>/{CLAUDE.md,AGENTS.md,.claude} ./
-cp -r <this-repo>/skills ./skills-sdcorejs
+ln -s .sdcorejs-agent/skills skills
+ln -s .sdcorejs-agent/_refs _refs
 ```
 
-### Test E2E-1 — Auto-docs writes to correct path
+Direct copy:
 
-Prompt: ask the agent to add an entity (any). Let it complete.
+```bash
+cp -r <this-repo>/{CLAUDE.md,AGENTS.md,skills,_refs} ./
+```
 
-Expected: A new file appears at `<target-project>/.sdcorejs/docs/angular/<timestamp>-<topic>.md`. Open and inspect it.
+Claude plugin install uses `plugin/skills/**` and `plugin/_refs/**`.
+
+## Repository Checks
+
+Run these in `sdcorejs-agent`.
+
+## Automated E2E Harness
+
+The repository now includes a deterministic Node test harness under `test/e2e/`.
+It does not call an LLM and does not invoke real agent tools in the default path.
+
+Run all automated E2E phases:
+
+```bash
+npm run test:e2e
+```
+
+Run one phase:
+
+```bash
+npm run test:e2e:phase1
+npm run test:e2e:phase2
+npm run test:e2e:phase3
+npm run test:e2e:phase4
+```
+
+### Phase 1: Deterministic Skill-Pack Runner
+
+Command:
+
+```bash
+npm run test:e2e:phase1
+```
+
+Coverage:
+
+- Loads source skills from `skills/**/*.md`.
+- Loads `.claude/skills/*/SKILL.md` and `plugin/skills/*/SKILL.md`.
+- Verifies source/mirror counts and reference-doc availability.
+- Runs prompt evals from `test/e2e/fixtures/prompt-evals.json` through a deterministic dispatcher.
+
+### Phase 2: Codex + Claude Code CLI Adapters
+
+Command:
+
+```bash
+npm run test:e2e:phase2
+```
+
+Coverage:
+
+- Uses fake `codex` and `claude` executables on `PATH` to verify adapter behavior without calling real CLIs.
+- Exposes a prompt-smoke contract that can be reused when real CLIs are available.
+
+### Phase 3: Copilot/Cursor Compatibility Smoke
+
+Command:
+
+```bash
+npm run test:e2e:phase3
+```
+
+Coverage:
+
+- Loads entrypoint profiles for Codex, Cursor, Claude Code, and Copilot.
+- Verifies entrypoints advertise runtime-localized behavior.
+- Reuses the prompt-eval fixture across every entrypoint profile.
+
+### Phase 4: Full Target-App Golden Test
+
+Command:
+
+```bash
+npm run test:e2e:phase4
+```
+
+Default behavior is an explicit skip contract because this phase requires Docker,
+Playwright, supertest, and a generated target app. To run the real golden app path,
+enable it from a prepared environment with:
+
+```bash
+SDCOREJS_E2E_FULL=1 npm run test:e2e:phase4
+```
+
+The golden plan validates this order:
+
+1. Generate a target app.
+2. Install target-app npm dependencies.
+3. Install the Playwright Chromium browser.
+4. Run `docker compose up`.
+5. Run API checks with supertest.
+6. Run UI checks with Playwright.
+7. Run `docker compose down -v`.
+
+### Inventory
+
+Expected:
+
+- Source skills: 42
+- `.claude/skills`: 42
+- `plugin/skills`: 42
+- `_refs/**/*.md`: 147
+
+PowerShell:
+
+```powershell
+$src = Get-ChildItem -Recurse -File -Path skills -Filter *.md |
+  Where-Object { $_.Name -ne '_README.md' }
+$claude = Get-ChildItem -Recurse -File -Path .claude\skills -Filter SKILL.md
+$plugin = Get-ChildItem -Recurse -File -Path plugin\skills -Filter SKILL.md
+$refs = Get-ChildItem -Recurse -File -Path _refs -Filter *.md
+[PSCustomObject]@{
+  SourceSkills = $src.Count
+  ClaudeMirror = $claude.Count
+  PluginMirror = $plugin.Count
+  RefDocs = $refs.Count
+}
+```
+
+### Frontmatter
+
+Expected:
+
+- Every source skill has `name:` and `description:`.
+- Every `name:` is kebab-case.
+- No duplicate `name:` values.
+
+PowerShell:
+
+```powershell
+$items = Get-ChildItem -Recurse -File -Path skills -Filter *.md |
+  Where-Object { $_.Name -ne '_README.md' } |
+  ForEach-Object {
+    $lines = Get-Content $_.FullName -TotalCount 20
+    $name = ($lines | Where-Object { $_ -match '^name:' } | Select-Object -First 1) -replace '^name:\s*',''
+    $desc = ($lines | Where-Object { $_ -match '^description:' } | Select-Object -First 1) -replace '^description:\s*',''
+    [PSCustomObject]@{ Path=$_.FullName; Name=$name; HasDescription=($desc.Length -gt 0); Kebab=($name -match '^[a-z0-9-]+$') }
+  }
+$items | Group-Object Name | Where-Object Count -gt 1
+$items | Where-Object { -not $_.Kebab -or -not $_.HasDescription }
+```
+
+### Entrypoint Drift
+
+Expected:
+
+- No entrypoint uses `skills/*/*.md`.
+- Entrypoints mention `skills/**/*.md`.
+- README install docs use real `skills` and `_refs` names, not aliases.
+- Copilot docs reference top-level `_refs/**`, not old `skills/.../_refs/**`.
+- Workflows include `write-user-guide` after `auto-docs`.
+- Angular summaries mention 7 packs including `admin-screens`.
+- NestJS summaries mention 5 packs including `init-admin`.
+- Orchestration count is 19.
+
+```powershell
+rg -n "skills/\*/\*.md|skills-sdcorejs|_refs-sdcorejs|skills/shared/sdlc/_refs|skills/tracks/angular/_refs|angular-onboarding|00-onboarding|18 files" CLAUDE.md AGENTS.md README.md .github
+rg -n "skills/\*\*/\*.md|admin-screens|init-admin|write-user-guide|19 files" CLAUDE.md AGENTS.md README.md .github skills/tracks
+```
+
+### Mirror Sync
+
+Linux, macOS, Git Bash, or WSL:
+
+```bash
+npm run check:skills
+```
+
+Windows PowerShell:
+
+```powershell
+npm run check:skills:ps
+```
+
+Known current issue: `check:skills:ps` fails in check mode with `Unknown flag: -` until `.claude/sync-skills.ps1` flag forwarding is fixed. Sync mode works:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .claude\sync-skills.ps1
+```
+
+## Smoke Tests in Fresh AI Sessions
+
+Run these from this repo first, then repeat in a real Angular/NestJS/Next.js target project.
+
+### 1. Skill Listing
+
+Prompt:
+
+```text
+what skills do you have?
+```
+
+Expected:
+
+- Agent invokes or follows `sdcorejs-using-skills`.
+- Mentions cross-track workflow: brainstorm -> clarify -> spec -> plan -> write-code -> test/review -> ship.
+- Mentions Angular, NestJS, Next.js track write-code skills.
+- Mentions `.sdcorejs/docs/`, `.sdcorejs/specs/`, `.sdcorejs/plans/`, and `.sdcorejs/memories/`.
+
+### 2. Vietnamese Onboarding
+
+Prompt:
+
+```text
+agent nay lam duoc gi?
+```
+
+Expected:
+
+- Reply language follows the user.
+- Explains the SDLC flow.
+- Offers a concrete next step.
+- Does not claim there are old `angular-onboarding` or numbered track onboarding skills.
+
+### 3. Brainstorm Dispatch
+
+Prompt:
+
+```text
+toi dang phan van giua side-drawer va full-page detail cho entity user, nen dung cai nao?
+```
+
+Expected:
+
+- Dispatches `sdcorejs-brainstorm`.
+- Presents 2-3 approaches with tradeoffs and a recommendation.
+- Does not write code.
+
+### 4. Clarify-Before-Code
+
+Prompt:
+
+```text
+them entity product
+```
+
+Expected:
+
+- Dispatches `sdcorejs-clarify-requirements`.
+- Asks blocking questions for track/module/entity/fields/scope.
+- Does not generate files.
+
+### 5. Angular Write-Code Dispatch
+
+Prompt:
+
+```text
+khoi tao portal-shop voi env dev/qc/uat/prod
+```
+
+Expected:
+
+- Dispatches `angular-write-code`.
+- Recognizes `init-portal` and the always-on `admin-screens` pack.
+- Uses `_refs/angular/write-code/init-portal.md` and `_refs/angular/write-code/admin-screens.md` on demand.
+- Writes only to the target project, not `sdcorejs-agent`.
+
+### 6. NestJS Write-Code Dispatch
+
+Prompt:
+
+```text
+scaffold a nestjs backend
+```
+
+Expected:
+
+- Dispatches `nestjs-write-code`.
+- Uses `init-project` and always-on `init-admin`.
+- Mentions one NestJS app plus one Postgres as the modular-monolith default.
+- Uses `@sdcorejs/nestjs` imports documented in `_refs/nestjs/core-catalog.md`.
+
+Prompt:
+
+```text
+add a products module with a product entity
+```
+
+Expected:
+
+- Dispatches `nestjs-write-code`.
+- Uses `init-module` and `init-entity`.
+- Requires auth/permission wiring via the admin module.
+- Uses Zod validation, not `class-validator`.
+
+### 7. Next.js Write-Code Dispatch
+
+Prompt:
+
+```text
+build a bilingual landing site with SEO, contact form, and OG preview
+```
+
+Expected:
+
+- Dispatches `nextjs-write-code`.
+- Loads only needed packs from `_refs/nextjs/build-website/write-code/`.
+- Covers i18n, SEO, contact-form, and og-preview.
+
+### 8. Approval Gates
+
+Setup: get to a drafted spec or plan.
+
+Prompt:
+
+```text
+go ahead
+```
+
+Expected:
+
+- If spec is not approved, routes through `sdcorejs-review-spec`.
+- If plan is not approved, routes through `sdcorejs-review-plan`.
+- Approval must be explicit before write-code starts.
+- On approval, `auto-specs` or `auto-plans` snapshots to the target project's `.sdcorejs/` tree.
+
+### 9. Persona Ask-Once
+
+Setup: target project has no `.sdcorejs/persona.md`.
+
+Prompt:
+
+```text
+help me build a simple inventory management app
+```
+
+Expected:
+
+- Dispatches `sdcorejs-persona` before substantive work.
+- Writes `.sdcorejs/persona.md`.
+- Later sessions read it silently and adapt tone/defaults.
+
+### 10. Tail Chain
+
+Setup: complete a small write-code task in a target project.
+
+Expected tail sequence:
+
+1. `sdcorejs-test`
+2. `sdcorejs-review`
+3. `sdcorejs-repair-loop` if findings exist
+4. `sdcorejs-comment-code` ask gate
+5. `sdcorejs-verify-before-done`
+6. `sdcorejs-branch-ready`
+7. `sdcorejs-auto-docs`
+8. `sdcorejs-write-user-guide`
+9. `sdcorejs-auto-task-tracker`
+10. `sdcorejs-memories` only when durable knowledge surfaced
 
 Pass criteria:
-- File is in target project, NOT in this `sdcorejs-agent` repo
-- Path uses `.sdcorejs/docs/angular/` (note leading dot)
-- Filename uses `YYYY-MM-DD-HH-mm-<topic>.md`
-- Contents include: what was requested, what changed (file list), decisions, next steps
 
-### Test E2E-2 — Memories on durable knowledge
+- No "done" claim before verification.
+- Auto-docs writes to `<target>/.sdcorejs/docs/<track>/`.
+- User guide updates `<target>/.sdcorejs/user-guide/<module>.md`.
+- Task tracker updates `<target>/.sdcorejs/tasks/<track>.md`.
+- Nothing is written into `sdcorejs-agent/.sdcorejs/`.
 
-Prompt: `ghi nhớ rằng team mình luôn dùng kebab-case cho route, không bao giờ dùng camelCase`
+## Target Project E2E Tests
 
-Expected: Agent invokes `sdcorejs-memories` and writes a memory file.
+Run these in a real target project that has installed `skills/` and `_refs/`.
 
-Pass criteria:
-- File appears at `<target-project>/.sdcorejs/memories/angular/<slug>.md` (or shared root if track-agnostic)
-- Frontmatter has `name`, `description`, `type: feedback` (corrections + preferences), body has `**Why:**` and `**How to apply:**` lines
-- If running in Claude Code: also appears at `~/.claude/projects/<encoded-cwd>/memory/<slug>.md`
+### E2E-1: Auto-Docs Path
 
-### Test E2E-3 — Session-start ritual
-
-Close the AI tool. Reopen it in the same target project.
-
-Expected: Agent should read latest `.sdcorejs/docs/angular/*.md` entries silently before answering anything. Test by asking `what was I working on?` — agent should reference the topics from the latest doc.
+Prompt: ask the agent to add a small feature and let it complete.
 
 Pass criteria:
-- Agent references prior work without you mentioning it
-- Citations should match actual content of latest docs
 
-## Triage — common issues
+- New file appears under `<target>/.sdcorejs/docs/<track>/`.
+- File name uses `YYYY-MM-DD-HH-mm-<topic>.md`.
+- Contents include request, changed files, decisions, verification, and next steps.
+- No doc is written under this `sdcorejs-agent` repo.
+
+### E2E-2: Approved Spec and Plan Snapshots
+
+Prompt: walk through clarify -> spec -> review-spec approval -> plan -> review-plan approval.
+
+Pass criteria:
+
+- Approved spec snapshot appears under `<target>/.sdcorejs/specs/<track>/`.
+- Approved plan snapshot appears under `<target>/.sdcorejs/plans/<track>/`.
+- The files are written only after explicit approval.
+
+### E2E-3: Memories
+
+Prompt:
+
+```text
+remember that this project always uses kebab-case route paths
+```
+
+Pass criteria:
+
+- Memory appears under `<target>/.sdcorejs/memories/<track>/` or a shared memory bucket.
+- Memory frontmatter is present.
+- Later session can apply the rule without being reminded.
+
+### E2E-4: Session Recovery
+
+Close the AI tool. Reopen in the same target project.
+
+Prompt:
+
+```text
+what was I working on?
+```
+
+Pass criteria:
+
+- Agent references latest `.sdcorejs/docs/<track>/` entries.
+- Agent incorporates relevant memories.
+- Agent does not invent work not present in docs/memories.
+
+## Triage
 
 | Symptom | Likely cause | Fix |
 | --- | --- | --- |
-| Agent doesn't dispatch any skill, just answers generically | Entry-point file (CLAUDE.md / etc.) not found in cwd | Verify `CLAUDE.md` is at target project root |
-| Agent dispatches wrong skill | Description triggers don't match user's phrasing | Edit the skill's `description` frontmatter to add the missing trigger keywords |
-| Auto-docs writes to `sdcorejs-agent` instead of target | Agent confused about cwd | Add explicit reminder in `_shared/auto-docs.md` to use `git rev-parse --show-toplevel` to find target root |
-| `formControlName` keeps getting generated | Agent reading stale memory or example | Verify `_refs/angular/write-code/screen-detail.md` + `_refs/templates/screen-detail-component.md` + `_refs/templates/reactive-form-templates.md` all use `[form]+name=` pattern, not `formControlName=` |
-| Skills not visible to Claude Code | `.claude/skills/` not mirrored | Run `bash .claude/sync-skills.sh` (or manually `cp skills/angular/<N>-<name>.md .claude/skills/angular-<name>/SKILL.md`) |
-| Approval gate skipped | Skill body of `04-review-spec` / `06-review-plan` not blocking | Verify their `description` mentions "approval required" and body says "Wait for explicit user approval" |
+| Agent answers generically | Entrypoint missing or not read | Ensure `CLAUDE.md`, `AGENTS.md`, or Copilot instructions are at target root |
+| Skill list misses track write-code skills | Shallow glob still used | Replace `skills/*/*.md` with `skills/**/*.md` |
+| Skill opens a missing reference | `_refs/` not installed or wrong name | Install/symlink top-level `_refs` |
+| Claude mirror is stale | Sync was not run after editing `skills/` | Run `npm run sync:skills` from Git Bash/WSL or fix/run the PowerShell wrapper |
+| `npm run check:skills` fails on Windows | No `bash` on PATH | Use Git Bash/WSL, or use/fix `check:skills:ps` |
+| Approval gate skipped | Review-spec/review-plan not invoked | Recheck `sdcorejs-review-spec` and `sdcorejs-review-plan` descriptions and body instructions |
+| Auto-docs writes to agent repo | Target root detection failed | Re-run with explicit target project root and verify `.sdcorejs/docs/<track>/` |
 
-## When to update tests
+## When to Update This File
 
 Update `TESTING.md` whenever:
-- A new skill is added (add a smoke test prompt for its triggers)
-- A skill's `description` changes (add the new trigger keywords as a smoke test)
-- Auto-docs / memories path conventions change (update E2E tests)
-- A new tool is supported (Cursor, Aider, etc. — add to prerequisites)
+
+- A skill is added, removed, or renamed.
+- A skill `description:` changes enough to affect dispatch.
+- Reference pack paths change.
+- Install instructions change.
+- The mandatory tail chain changes.
+- A new tool surface is supported.
+- Mirror sync scripts or platform-specific validation commands change.

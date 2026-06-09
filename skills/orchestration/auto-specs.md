@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-specs
-description: MANDATORY skill that runs AUTOMATICALLY right after `04-review-spec` receives explicit user approval. Persists the approved spec into the target project under `.sdcorejs/specs/<track>/YYYY-MM-DD-HH-mm-<topic>.md` so future sessions build a corpus of user-approved specs and learn the user's preferred structure, depth, and conventions. Also runs in READ-ONLY mode at session start to load the latest 3 approved specs as style references for `03-write-spec`. Triggers - immediately after `04-review-spec` returns an explicit affirmative ("OK", "duyệt", "approve"), AND at session start in a target project. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill that runs AUTOMATICALLY right after `04-review-spec` receives explicit user approval. Persists the approved spec into the target project under `.sdcorejs/specs/<track>/YYYY-MM-DD-HH-mm-<topic>.md` so future sessions build a corpus of user-approved specs and learn the user's preferred structure, depth, and conventions. Also runs in READ-ONLY mode at session start to load the latest 3 approved specs as style references for `03-write-spec`. Triggers - immediately after `04-review-spec` returns an explicit affirmative ("OK", "approve", "go", "looks good"), AND at session start in a target project. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Write, Bash, Glob
 ---
 
@@ -21,10 +21,10 @@ Shared across SDCoreJS tracks (`angular`, `nestjs`, `nextjs`). Substitute `<trac
 ### Auto-trigger right after `04-review-spec` approval
 The agent MUST run this skill (write mode) IMMEDIATELY after `04-review-spec` receives explicit user approval, BEFORE handing off to `05-write-plan`. The handoff to `05-write-plan` waits for this skill to finish.
 
-Approval signals that count: "OK", "duyệt", "approve", "go", "tiếp tục", "looks good", "đồng ý".
+Approval signals that count: "OK", "approve", "go", "resume", "looks good", or localized equivalents.
 Approval signals that DO NOT count: silence, "thanks", "got it", "noted" — those do not fire this skill.
 
-If the user aborts ("hủy", "stop", "cancel") or requests changes ("đổi", "sửa"), DO NOT write — the spec is not yet a decision contract.
+If the user aborts ("cancel", "stop", "cancel") or requests changes ("change", "change"), DO NOT write — the spec is not yet a decision contract.
 
 ### Session-start ritual (read-only mode)
 At session start in a target project, the agent MUST:

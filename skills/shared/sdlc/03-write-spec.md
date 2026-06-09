@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-write-spec
-description: Use AFTER `sdcorejs-clarify-requirements` has captured every blocking input for the detected track, BEFORE `sdcorejs-write-plan`. Authors a spec document at `<target-project>/.sdcorejs/docs/<track>/<timestamp>-<topic>-spec.md` covering Problem & Goals, Non-goals, Architecture, File structure, Acceptance criteria, Risks, Out-of-scope. Track-specific section emphasis loaded from `_refs/sdlc/<track>.md` (e.g. angular file-paths, nestjs persistence + transactions, nextjs SEO + caching). Triggers - "viết spec", "write spec", "draft spec", "tài liệu thiết kế", "design doc", "soạn spec cho ...". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-clarify-requirements` has captured every blocking input for the detected track, BEFORE `sdcorejs-write-plan`. Authors a spec document at `<target-project>/.sdcorejs/docs/<track>/<timestamp>-<topic>-spec.md` covering Problem & Goals, Non-goals, Architecture, File structure, Acceptance criteria, Risks, Out-of-scope. Track-specific section emphasis loaded from `_refs/sdlc/<track>.md` (e.g. angular file-paths, nestjs persistence + transactions, nextjs SEO + caching). Triggers - "write spec", "draft spec", "design document", "design doc", or localized equivalents. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Write, Glob, Grep, Bash
 ---
 
@@ -14,7 +14,7 @@ A spec is **design-level** (what + why). A plan is **task-level** (which file, i
 ## When to use
 - After `sdcorejs-clarify-requirements` has confirmed every minimum-required answer for the track
 - BEFORE invoking `sdcorejs-write-plan` — the plan reads the approved spec as input
-- When the user says "viết spec", "draft spec", "tài liệu thiết kế trước khi code", "design doc"
+- When the user says "write spec", "draft spec", "design document before coding", "design doc", or localized equivalents
 
 If scope is not yet confirmed, route back to `sdcorejs-clarify-requirements`.
 
@@ -109,7 +109,7 @@ Do NOT proceed to `sdcorejs-write-plan` until `sdcorejs-review-spec` confirms us
 - Include all template sections — even if short, the header forces the question
 - Include at least one non-goal (prevents scope creep)
 - Include at least one acceptance criterion per user-visible behavior
-- Match the user's language (VI request → VI spec with proper diacritics; EN → EN)
+- Match the user's language (match the session language and preserve locale-specific marks)
 - Reference prior memories or auto-docs entries when they shape a decision
 - Mirror the structure and depth of the latest 3 approved specs in `.sdcorejs/specs/<TRACK>/`
 - Hand off to `sdcorejs-review-spec` after writing — do not auto-approve

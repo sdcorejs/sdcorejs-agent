@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-changelog
-description: Use when the user asks to generate a CHANGELOG entry, says "viết changelog", "tạo changelog", "update CHANGELOG", "what changed since vX.Y.Z", or is preparing a release, or auto-invoked by sdcorejs-ship on release path. Reads commit history since the last tag, groups commits by Conventional Commits type, suggests a semver bump, and writes a `Keep a Changelog`-formatted entry under `## [Unreleased]` or `## [X.Y.Z]`. Applies to angular, nestjs, nextjs and the sdcorejs-agent repo itself. Bilingual (VI/EN).
+description: Use when the user asks to generate a CHANGELOG entry, says "write changelog", "update CHANGELOG", "what changed since vX.Y.Z", or localized equivalents, or is preparing a release, or auto-invoked by sdcorejs-ship on release path. Reads commit history since the last tag, groups commits by Conventional Commits type, suggests a semver bump, and writes a `Keep a Changelog`-formatted entry under `## [Unreleased]` or `## [X.Y.Z]`. Applies to angular, nestjs, nextjs and the sdcorejs-agent repo itself. Runtime-localized.
 allowed-tools: Bash, Read, Edit, Write
 ---
 
@@ -10,7 +10,7 @@ allowed-tools: Bash, Read, Edit, Write
 Produce a release-ready CHANGELOG entry without manual scrubbing of `git log`. Convert commit-typed history into a user-facing summary grouped by audience-meaningful sections (Added / Changed / Fixed / …) and propose the right semver bump.
 
 ## When invoked
-- "viết changelog", "tạo changelog", "update CHANGELOG"
+- "write changelog", "update CHANGELOG", or localized equivalents
 - "what changed since vX.Y.Z" / "release notes"
 - Before a tag / release / publish
 - Auto-invoked by `sdcorejs-ship` when release mode is detected (Step 4 of ship chain)
@@ -101,7 +101,7 @@ Rules for the entry body:
 - Reference PR number `(#NN)` if available; commit SHA short form otherwise
 - Group `BREAKING CHANGE` items at the TOP of their section with `⚠️` marker
 - Skip empty sections (no "N/A" filler)
-- Match the changelog's existing language (VI / EN) if the file already has entries; otherwise match the dominant commit-message language
+- Match the changelog's existing language if the file already has entries; otherwise match the dominant commit-message language
 
 ### 6. Insert / update CHANGELOG.md
 
@@ -134,13 +134,13 @@ Include in the chat reply (not the file):
 
 ## Examples
 
-### Patch release (VI)
+### Patch release (localized)
 ```markdown
 ## [1.2.3] - 2026-05-16
 
 ### Fixed
-- Sửa lỗi binding form trong `21-screen-detail`: 9 instance `formControlName` được thay bằng `[form]+name=` (#142)
-- Sửa stale link tới `_refs/sd-angular-core/` (#143)
+- fix form binding issue in `21-screen-detail`: 9 `formControlName` instances were replaced with `[form]+name=` (#142)
+- fix stale link to `_refs/sd-angular-core/` (#143)
 ```
 
 ### Minor with breaking (EN)

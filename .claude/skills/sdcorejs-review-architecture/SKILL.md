@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review-architecture
-description: Cross-track architecture review checklist. Audits a feature or module for layering violations, abstraction leaks, circular dependencies, premature optimisation, missing seams, and architectural drift from the project's conventions. Different from `sdcorejs-review` (per-file / per-dimension review: code, security, performance, accessibility) — this is module/feature-level & structural, not line-level. Outputs a Critical/Important/Minor report. Triggers - "review kiến trúc", "architecture audit", "code structure check", "module này organize đúng chưa", "có circular dependency không", "abstraction leak", "should this be a separate module", or before a major feature merges. Bilingual (VI/EN).
+description: Cross-track architecture review checklist. Audits a feature or module for layering violations, abstraction leaks, circular dependencies, premature optimisation, missing seams, and architectural drift from the project's conventions. Different from `sdcorejs-review` (per-file / per-dimension review: code, security, performance, accessibility) — this is module/feature-level & structural, not line-level. Outputs a Critical/Important/Minor report. Triggers - "architecture review", "architecture audit", "code structure check", "is this module organized correctly", "does this have circular dependency", "abstraction leak", "should this be a separate module", or before a major feature merges. Runtime-localized.
 allowed-tools: Read, Glob, Grep, Bash
 ---
 
@@ -12,7 +12,7 @@ Code review (`sdcorejs-review`) catches line-level mistakes; architecture review
 ## When invoked
 - Before merging a feature that adds new modules or moves existing ones
 - After 3+ similar features ship and you suspect duplication / wrong abstraction
-- User says "review kiến trúc", "audit module", "organize đúng chưa"
+- User says "architecture review", "audit module", "is organized correctly"
 - Periodically — quarterly health check on the codebase
 
 ## What this skill checks (cross-track)

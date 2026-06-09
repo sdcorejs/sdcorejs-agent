@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-docs
-description: MANDATORY skill that runs automatically at the end of EVERY code-writing task across all SDCoreJS tracks (angular, nestjs, nextjs). Writes a session summary as a new markdown file in the target project under `.sdcorejs/docs/<track>/` so the next session can recall prior context. Also runs in READ-ONLY mode at session start to refresh memory. Triggers - end of any code-writing skill invocation (write-code orchestrator, init-X, screen-X, e2e-test, review-code, comment-code) AND start of a new session inside a target project. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill that runs automatically at the end of EVERY code-writing task across all SDCoreJS tracks (angular, nestjs, nextjs). Writes a session summary as a new markdown file in the target project under `.sdcorejs/docs/<track>/` so the next session can recall prior context. Also runs in READ-ONLY mode at session start to refresh memory. Triggers - end of any code-writing skill invocation (write-code orchestrator, init-X, screen-X, e2e-test, review-code, comment-code) AND start of a new session inside a target project. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Write, Bash, Glob
 ---
 
@@ -30,7 +30,7 @@ At the START of any new session in a target project, the agent MUST:
 2. Glob `<target-root>/.sdcorejs/docs/<track>/*.md` for the relevant track
 3. Read the latest 3 files (sorted by filename — timestamp prefix sorts naturally)
 4. Summarize them to itself before answering the user's first question
-5. Acknowledge briefly: "Đã đọc 3 doc gần nhất từ .sdcorejs/docs/<track>/. Bạn muốn ..." (or EN equivalent)
+5. Acknowledge briefly: "Read the latest 3 docs from .sdcorejs/docs/<track>/. What would you like next?" (or EN equivalent)
 
 This read-only step does NOT write a new doc.
 
@@ -76,7 +76,7 @@ The `<kebab-topic>` is a 3-6 word slug derived from what was actually done. Exam
 ## Decisions made
 - Layout: chose UnifiedCompact (form is 6 fields, no workflow blocks)
 - Test coverage level: standard (per user response)
-- Bilingual: Vietnamese labels with full diacritics (per portal language)
+- Runtime-localized labels with locale-specific marks preserved
 - Permission codes: `CATALOG_C_PRODUCT_LIST/DETAIL/CREATE/UPDATE/DELETE`
 
 ## Open questions / follow-ups
@@ -110,7 +110,7 @@ Skills invoked this session: `02-clarify-requirements` → `05-write-plan` → `
 - Write to `docs/sdcorejs/` or `.docs/sdcorejs/` (legacy paths) — the canonical location is `.sdcorejs/docs/`
 - Overwrite an existing doc — collisions are impossible if the timestamp includes minutes; if collision still happens (rapid-fire), append `-2`, `-3` suffix
 - Write empty / template-only docs — if nothing was done, skip
-- Write docs in a language different from the user's session language (VI request → VI doc; EN request → EN doc; mixed → match the dominant language)
+- Write docs in a language different from the user's session language; for mixed-language sessions, match the dominant language
 - Skip the session-start read step — that's how memory works
 - Leak secrets, tokens, or full file contents into the doc (file paths + summaries only)
 

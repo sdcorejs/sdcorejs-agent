@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-plans
-description: MANDATORY skill that runs AUTOMATICALLY right after `06-review-plan` receives explicit user approval. Persists the approved plan into the target project under `.sdcorejs/plans/<track>/YYYY-MM-DD-HH-mm-<topic>.md` so future sessions build a corpus of user-approved plans and learn the user's preferred granularity, phasing, and verification style. Also runs in READ-ONLY mode at session start to load the latest 3 approved plans as style references for `05-write-plan`. Triggers - immediately after `06-review-plan` returns an explicit affirmative ("OK", "duyệt", "approve"), AND at session start in a target project. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill that runs AUTOMATICALLY right after `06-review-plan` receives explicit user approval. Persists the approved plan into the target project under `.sdcorejs/plans/<track>/YYYY-MM-DD-HH-mm-<topic>.md` so future sessions build a corpus of user-approved plans and learn the user's preferred granularity, phasing, and verification style. Also runs in READ-ONLY mode at session start to load the latest 3 approved plans as style references for `05-write-plan`. Triggers - immediately after `06-review-plan` returns an explicit affirmative ("OK", "approve", "go ahead", "proceed"), AND at session start in a target project. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Write, Bash, Glob
 ---
 
@@ -22,10 +22,10 @@ Shared across SDCoreJS tracks (`angular`, `nestjs`, `nextjs`). Substitute `<trac
 ### Auto-trigger right after `06-review-plan` approval
 The agent MUST run this skill (write mode) IMMEDIATELY after `06-review-plan` receives explicit user approval, BEFORE handing off to `write-code`. The handoff to `write-code` waits for this skill to finish.
 
-Approval signals that count: "OK", "duyệt", "approve", "go ahead", "tiến hành", "generate", "looks good", "đồng ý".
+Approval signals that count: "OK", "approve", "go ahead", "proceed", "generate", "looks good", or localized equivalents.
 Approval signals that DO NOT count: silence, "thanks", "got it", "noted".
 
-If the user aborts ("hủy", "stop", "cancel") or requests changes ("đổi step N", "sửa"), DO NOT write — the plan is not yet a decision contract.
+If the user aborts ("cancel", "stop", "cancel") or requests changes ("change step N", "change"), DO NOT write — the plan is not yet a decision contract.
 
 ### Session-start ritual (read-only mode)
 At session start in a target project, the agent MUST:
@@ -153,7 +153,7 @@ In multi-track repos, write to the track folder matching the work being planned.
 | Concern | auto-docs | auto-specs | auto-plans | memories |
 |---|---|---|---|---|
 | Captures | Per-session summary | User-approved spec contract | User-approved plan contract | Durable cross-session knowledge |
-| Triggered by | End of code-writing skill | `04-review-spec` approval | `06-review-plan` approval | "ghi nhớ" / detected durable fact |
+| Triggered by | End of code-writing skill | `04-review-spec` approval | `06-review-plan` approval | "remember this" / detected durable fact |
 | Path | `.sdcorejs/docs/<track>/` | `.sdcorejs/specs/<track>/` | `.sdcorejs/plans/<track>/` | `.sdcorejs/memories/<track>/` |
 | Lifetime | Per session | Permanent corpus | Permanent corpus | Permanent, updatable |
 | Consumed by | Session-start ritual (latest 3) | `03-write-spec` style mirror | `05-write-plan` style mirror | Authoritative context at session start |

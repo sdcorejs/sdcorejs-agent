@@ -16,8 +16,8 @@ _refs/                            reference data (no frontmatter, load on demand
 
 skills/
 ├── tracks/                       stack-specific code-writing skills
-│   ├── angular/   ✅  1 track skill — write-code orchestrator (onboarding via sdcorejs-using-skills); orchestrator loads 6 on-demand reference packs from `_refs/angular/write-code/` (init-portal, init-module, init-entity, screen-list, screen-detail (CREATE/UPDATE/DETAIL states + form refinement), actions (workflow / bulk / custom side-effects))
-│   ├── nestjs/   ✅  1 track skill — write-code orchestrator (nestjs-write-code; onboarding via sdcorejs-using-skills); dispatches on-demand reference packs in _refs/nestjs/write-code/: init-project, init-module, init-entity (full CRUD stack), actions (custom / non-CRUD endpoints). Core: @sdcorejs/nestjs (_refs/nestjs/core-catalog.md)
+│   ├── angular/   ✅  1 track skill — write-code orchestrator (onboarding via sdcorejs-using-skills); orchestrator loads 7 on-demand reference packs from `_refs/angular/write-code/` (init-portal, admin-screens (always-on: account/role/permission), init-module, init-entity, screen-list, screen-detail (CREATE/UPDATE/DETAIL states + form refinement), actions (workflow / bulk / custom side-effects))
+│   ├── nestjs/   ✅  1 track skill — write-code orchestrator (nestjs-write-code; onboarding via sdcorejs-using-skills); dispatches on-demand reference packs in _refs/nestjs/write-code/: init-project, init-admin (always-on: users/roles/permissions), init-module, init-entity (full CRUD stack), actions (custom / non-CRUD endpoints). Core: @sdcorejs/nestjs (_refs/nestjs/core-catalog.md)
 │   └── nextjs/   ✅  1 track skill — write-code (nextjs-write-code) orchestrator (onboarding via sdcorejs-using-skills); dispatches 10 reference packs in _refs/nextjs/build-website/write-code/: init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. EXISTING-site audit folded into sdcorejs-review (site-audit mode)
 │
 ├── shared/
@@ -25,7 +25,7 @@ skills/
 │   ├── conventions/      Conventional Commits, changelog, dep-update
 │   └── workflow/         env-setup, debug, pr-create, code-map
 │
-├── orchestration/        SDLC plumbing (18 files): parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills, persona, solution-builder
+├── orchestration/        SDLC plumbing (19 files): parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills, persona, solution-builder, write-user-guide
 │
 ├── review/
 │   ├── review.md         one track-aware skill (sdcorejs-review) — dimensions: code / security / performance / accessibility; knowledge in _refs/<track>/review-<dim>.md + _refs/shared/
@@ -48,7 +48,7 @@ allowed-tools: Read, Write, Edit, ...
 
 ## Skill dispatch protocol
 
-1. Glob `skills/*/*.md` at session start.
+1. Glob `skills/**/*.md` at session start (exclude `_refs/**`; skills are identified by `name:` frontmatter).
 2. Read each file's frontmatter only (cheap — body load happens later).
 3. When the user makes a request, match it against each skill's `description` (the "Use when..." trigger). Pick the highest-confidence match.
 4. Read that skill's body and follow its rules exactly.
@@ -74,12 +74,12 @@ Request
   → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (MANDATORY acceptance gate) → orchestration/branch-ready (branch-hygiene sweep)
-  → orchestration/auto-docs (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) → orchestration/memories (when durable knowledge surfaces)
+  → orchestration/auto-docs (MANDATORY) → orchestration/write-user-guide (Mode 1: per-module guide) → orchestration/auto-task-tracker (MANDATORY) → orchestration/memories (when durable knowledge surfaces)
 ```
 
 After `branch-ready`, an **OPTIONAL packaging branch** may run `sdcorejs-dockerize → sdcorejs-auth → sdcorejs-run-guide` to deliver a runnable Docker stack (the non-tech default). See "Infra / packaging" below.
 
-**Non-tech one-door:** `sdcorejs-solution-builder` chains persona → clarify (feature+UI) → spec/plan (gates) → nestjs-write-code → angular-write-code → dockerize → auth → run-guide → verify.
+**Non-tech one-door:** `sdcorejs-solution-builder` chains persona → clarify (feature+UI) → spec/plan (gates) → build backend+frontend → dockerize → auth → run-guide → stack verify → branch-ready → auto-docs → write-user-guide → auto-task-tracker.
 
 **Design phase is cross-track** (`skills/shared/sdlc/`). Each skill detects the target track from the project and loads `_refs/sdlc/<track>.md` for track-specific patterns (industry table for nextjs, layout matrix for angular, persistence/transaction matrix for nestjs).
 
@@ -90,7 +90,7 @@ For the angular track, `write-code` is the single orchestrator; it loads on-dema
 
 To avoid drift, the source of truth for these rules is `CLAUDE.md`. Summary:
 
-1. **Auto-docs is mandatory** — at the end of every code-writing skill invocation, the track-agnostic `skills/orchestration/auto-docs.md` writes a summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (note the leading dot). Never to this `sdcorejs-agent` repo.
+1. **Auto-docs is mandatory** — at the end of every code-writing skill invocation, the track-agnostic `skills/orchestration/auto-docs.md` writes a summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (note the leading dot). Never to this `sdcorejs-agent` repo. Immediately after auto-docs, run `sdcorejs-write-user-guide` (Mode 1) for the touched module before `auto-task-tracker`.
 
 2. **Auto-specs / auto-plans are mandatory** — immediately after `sdcorejs-review-spec` approval, `skills/orchestration/auto-specs.md` writes the approved spec to `<target>/.sdcorejs/specs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. Immediately after `sdcorejs-review-plan` approval, `skills/orchestration/auto-plans.md` writes the approved plan to `<target>/.sdcorejs/plans/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. These corpuses let future `sdcorejs-write-spec` / `sdcorejs-write-plan` mirror the user's confirmed style.
 
@@ -98,7 +98,7 @@ To avoid drift, the source of truth for these rules is `CLAUDE.md`. Summary:
 
 4. **Session-start ritual** — read the target project's `.sdcorejs/docs/<track>/*.md` (latest 3) and `.sdcorejs/memories/<track>/*.md` (frontmatter) before answering. Also glob `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` (frontmatter only) so the next `sdcorejs-write-spec` / `sdcorejs-write-plan` can mirror style. Also glob `.sdcorejs/persona.md`; if absent on the first substantive request, invoke `sdcorejs-persona` to set it. Once set, load `_refs/shared/persona.md` and adapt all user-facing output to the stored persona.
 
-5. **Skills go global — English source, runtime-localized I/O.** Author every skill's `name`, `description`, body, notes, and inline comments in **English** (skills are published for a global audience). At runtime, detect the user's language from their message and BOTH match triggers and respond in that language — Vietnamese request → Vietnamese reply (full diacritics for labels/messages); English → English. Permission codes and route paths stay English in both. (Generated artifacts in a target project: follow the user's language for prose, English for identifiers.)
+5. **Skills go global — English source, runtime-localized I/O.** Author every skill's `name`, `description`, body, notes, and inline comments in **English** (skills are published for a global audience). At runtime, detect the user's language from their message and BOTH match triggers and respond in that language. Preserve the user's locale-specific marks in generated labels/messages; keep permission codes and route paths in English. (Generated artifacts in a target project: follow the user's language for prose, English for identifiers.)
 
 6. **Clarify-before-code** — do not generate code if track-specific minimum-required answers are unconfirmed. Run `sdcorejs-clarify-requirements` first (or `sdcorejs-brainstorm` for open-ended ideas).
 
@@ -134,23 +134,23 @@ Cross-track skills — apply to angular, nestjs, nextjs alike. Dispatch is by sk
 | `sdcorejs-auto-docs` | end of every code-writing task — session summary | ✅ |
 | `sdcorejs-auto-specs` | IMMEDIATELY after `sdcorejs-review-spec` approval | ✅ on approval |
 | `sdcorejs-auto-plans` | IMMEDIATELY after `sdcorejs-review-plan` approval | ✅ on approval |
-| `sdcorejs-auto-task-tracker` | IMMEDIATELY after auto-docs | ✅ |
-| `sdcorejs-memories` | "ghi nhớ", durable knowledge | ✅ on trigger |
+| `sdcorejs-auto-task-tracker` | after auto-docs + write-user-guide | ✅ |
+| `sdcorejs-memories` | "remember this", durable knowledge | ✅ on trigger |
 | `sdcorejs-repair-loop` | after `sdcorejs-review` outputs findings | ✅ on findings |
 | `sdcorejs-comment-code` | ASK gate at comment phase — skip/simple/medium/full | ✅ ASK |
-| `sdcorejs-persona` | first request in a target project with no `.sdcorejs/persona.md`; "giải thích dễ hiểu", "set persona" — ask-once tech/non-tech, store flag, load `_refs/shared/persona.md` | auto on first entry |
-| `sdcorejs-solution-builder` | "build me an app / a system; the non-tech one-door full-app flow" — chains persona → clarify → spec/plan (2 gates) → nestjs-write-code → angular-write-code → dockerize → auth → run-guide → verify |  |
+| `sdcorejs-persona` | first request in a target project with no `.sdcorejs/persona.md`; "explain simply", "set persona" — ask-once tech/non-tech, store flag, load `_refs/shared/persona.md` | auto on first entry |
+| `sdcorejs-solution-builder` | "build me an app / a system; the non-tech one-door full-app flow" — chains persona → clarify → spec/plan (2 gates) → build backend+frontend → dockerize → auth → run-guide → stack verify → final docs/task tail |  |
 | `sdcorejs-code-map` | new feature / reuse check — read-only architecture scan |  |
 | `sdcorejs-parallel-dispatch` | fan-out 3+ independent tasks — decision gate |  |
 | `sdcorejs-subagent-driven-dev` | after parallel-dispatch=YES — execution: decompose + brief + dispatch + merge |  |
-| `sdcorejs-commit` | "commit", "tạo commit" — Conventional Commits + scope + git safety |  |
-| `sdcorejs-pr-create` | "tạo PR", "open PR" — PR body from commits + diff |  |
+| `sdcorejs-commit` | "commit", "commit changes" — Conventional Commits + scope + git safety |  |
+| `sdcorejs-pr-create` | "create PR", "open PR" — PR body from commits + diff |  |
 | `sdcorejs-debug` | non-trivial bug needing systematic debugging |  |
-| `sdcorejs-recovery` | "tiếp tục", "resume" — handoff from docs + memories + git state |  |
-| `sdcorejs-env-setup` | "thiết lập môi trường", "setup dev" — per-stack bootstrap |  |
-| `sdcorejs-changelog` | "viết changelog", release — Keep a Changelog + semver bump |  |
+| `sdcorejs-recovery` | "resume", "resume" — handoff from docs + memories + git state |  |
+| `sdcorejs-env-setup` | "set up the environment", "setup dev" — per-stack bootstrap |  |
+| `sdcorejs-changelog` | "write changelog", release — Keep a Changelog + semver bump |  |
 | `sdcorejs-review` | cross-track security checklist — track-aware (detects stack, deepens via `_refs/<track>/review-security.md`) |  |
-| `sdcorejs-dep-update` | "cập nhật dependency", audit fix — safe upgrade workflow |  |
+| `sdcorejs-dep-update` | "update dependencies", audit fix — safe upgrade workflow |  |
 
 ### Infra / packaging (`skills/infra/`)
 
@@ -158,9 +158,9 @@ Emit a one-command runnable Docker stack into a target project's **deploy root**
 
 | Skill | Trigger | Emits |
 | --- | --- | --- |
-| `sdcorejs-dockerize` | "dockerize", "đóng gói docker", "chạy bằng docker" | Dockerfiles + `docker-compose.yml` (FE + BE + Keycloak + Postgres), `.env`, nginx |
-| `sdcorejs-auth` | "thêm đăng nhập", "cấu hình keycloak", "xác thực" | Keycloak realm import + FE `provideSdKeycloak` + BE token-validation wiring |
-| `sdcorejs-run-guide` | "hướng dẫn chạy", "cách chạy", "start guide" | plain-language `START.md` (install Docker → one command → URL → demo login) |
+| `sdcorejs-dockerize` | "dockerize", "package with Docker", "run with Docker" | Dockerfiles + `docker-compose.yml` (FE + BE + Keycloak + Postgres), `.env`, nginx |
+| `sdcorejs-auth` | "add login", "configure Keycloak", "authentication" | Keycloak realm import + FE `provideSdKeycloak` + BE token-validation wiring |
+| `sdcorejs-run-guide` | "run guide", "how to run", "start guide" | plain-language `START.md` (install Docker → one command → URL → demo login) |
 
 ## Reference docs (load on demand)
 

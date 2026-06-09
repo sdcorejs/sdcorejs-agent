@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auth
-description: Configure authentication for an SDCoreJS stack. Provider-agnostic; the only provider today is Keycloak (knowledge in `_refs/infra/auth-keycloak.md`). Ensures the realm import is present, wires the Angular FE via `provideSdKeycloak` + `silent-renew.html`, and points the NestJS BE token-validation at the Keycloak service. Use after `sdcorejs-dockerize`. Triggers - "thêm đăng nhập", "cấu hình keycloak", "auth", "login", "xác thực", "wire keycloak", "set up authentication", "đăng nhập keycloak". Applies to angular, nestjs. Bilingual (VI/EN).
+description: Configure authentication for an SDCoreJS stack. Provider-agnostic; the only provider today is Keycloak (knowledge in `_refs/infra/auth-keycloak.md`). Ensures the realm import is present, wires the Angular FE via `provideSdKeycloak` + `silent-renew.html`, and points the NestJS BE token-validation at the Keycloak service. Use after `sdcorejs-dockerize`. Triggers - "add login", "configure Keycloak", "auth", "login", "authentication", "wire keycloak", "set up authentication", "Keycloak login", or localized equivalents. Applies to angular, nestjs. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob
 ---
 
@@ -15,7 +15,7 @@ Provider-agnostic by design: the skill body describes *how* to wire auth; the pr
 ## When invoked / NOT
 
 **Invoked when:**
-- The user asks any trigger above ("thêm đăng nhập", "cấu hình keycloak", "auth", "login", "xác thực", "wire keycloak", "set up authentication", "đăng nhập keycloak").
+- The user asks any trigger above ("add login", "configure Keycloak", "auth", "login", "authentication", "wire keycloak", "set up authentication", "Keycloak login").
 - As the **auth step** of the Docker build flow — `sdcorejs-dockerize` hands off here to wire Keycloak into the FE + BE before `sdcorejs-run-guide`.
 
 **NOT for:**
@@ -26,7 +26,7 @@ Provider-agnostic by design: the skill body describes *how* to wire auth; the pr
 
 1. **Load `_refs/infra/auth-keycloak.md`** — this is the **source of truth** for everything below (realm contents, FE/BE wiring, the two-URL gotcha, single-origin `/api`). Read it before writing anything; do not work from memory.
 2. **Read persona.** Read the target project's `.sdcorejs/persona.md` (`persona:` field). Absent → `tech`. Then load `_refs/shared/persona.md` and apply the matching contract.
-3. If `non-tech`: call this step **"đăng nhập"** (or "login"). Explain in plain words — "mình sẽ bật tính năng đăng nhập cho ứng dụng, để chạy lên là có màn đăng nhập và tài khoản dùng thử". **Hide the JWT/OIDC mechanics** — no "Bearer token", "JWKS", "issuer", "PKCE", "interceptor", "guard" in the user-facing narration. Report progress as outcomes ("đã bật đăng nhập xong"). If `tech`: use the exact terms freely.
+3. If `non-tech`: call this step **"login"**. Explain in plain words — "I will turn on login for the app, so it opens with a login screen and a demo account." **Hide the JWT/OIDC mechanics** — no "Bearer token", "JWKS", "issuer", "PKCE", "interceptor", "guard" in the user-facing narration. Report progress as outcomes ("login is ready"). Translate user-facing narration at runtime. If `tech`: use the exact terms freely.
 4. Detect the backend **profile** — read `profile` from `<target>/.sdcorejs/summary.md` (default `simple`). The permission wiring differs by profile (Step 1.5).
 
 ## Step 1 — realm import present
@@ -145,7 +145,7 @@ There is exactly **one** Keycloak server, reached by **two different hostnames**
 After wiring, tell the user the **demo login**:
 
 - **tech:** "Auth is wired. Log in with the seeded demo user — **`demo` / `demo`** (username / password) — this account has all permission codes assigned so every action in the app is accessible. If the read-only `teacher`/`teacher` account was seeded (Step 1.5), it can only view, not write. Keycloak admin console at `http://localhost:8080` (admin creds from `.env`)."
-- **non-tech:** in plain words — "đã bật đăng nhập xong. Khi chạy ứng dụng lên, bạn đăng nhập thử bằng tài khoản **demo / demo** (tên đăng nhập là `demo`, mật khẩu là `demo`) là vào được — tài khoản này có thể dùng đầy đủ tính năng. Nếu có tạo thêm tài khoản **teacher / teacher** thì tài khoản đó chỉ xem được, không chỉnh sửa được." Do not mention realms, JWKS, issuers, or interceptors.
+- **non-tech:** in plain words — "Login is ready. When the app starts, log in with **demo / demo** (`demo` as the username, `demo` as the password). That demo account can use the full feature set. If a **teacher / teacher** account exists, it is read-only." Translate at runtime. Do not mention realms, JWKS, issuers, or interceptors.
 
 If this skill ran as part of the Docker build flow, hand off to **`sdcorejs-run-guide`** so the demo login also lands in `START.md`.
 

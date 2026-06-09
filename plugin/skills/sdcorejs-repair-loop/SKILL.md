@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-repair-loop
-description: Use after sdcorejs-review (source: review-code) OR sdcorejs-verify-before-done (source: verify-before-done) produces findings. Caller MUST pass source context so the re-verify step runs the correct tool. First VERIFIES each finding is genuine, then fixes systematically, re-runs per-source verification, iterates until Critical + Important are resolved or deferred. Triggers - "fix các finding", "apply review findings", "sửa các lỗi review", "fix critical issues", or auto-invoked after sdcorejs-review or verify-before-done outputs findings. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Use after sdcorejs-review (source: review-code) OR sdcorejs-verify-before-done (source: verify-before-done) produces findings. Caller MUST pass source context so the re-verify step runs the correct tool. First VERIFIES each finding is genuine, then fixes systematically, re-runs per-source verification, iterates until Critical + Important are resolved or deferred. Triggers - "fix findings", "apply review findings", "fix review issues", "fix critical issues", or localized equivalents, or auto-invoked after sdcorejs-review or verify-before-done outputs findings. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Edit, Write, Bash, Grep
 ---
 
@@ -11,7 +11,7 @@ A review finding without a fix loop is just a complaint. This skill turns a Crit
 
 ## When invoked
 - After `sdcorejs-review` writes findings (auto-invoked)
-- User says "fix các finding", "apply review findings", "sửa các lỗi review", "fix critical issues"
+- User says "fix findings", "apply review findings", "fix review issues", "fix critical issues", or localized equivalents
 - A linter / typecheck / test reports findings that match the same shape
 - After a `superpowers:receiving-code-review` cycle, when the parent agent decides to act on feedback
 
@@ -112,7 +112,7 @@ For each, show the user a compact diff preview:
     + @Injectable({ providedIn: 'root' })
 ```
 
-Group them, then ask: "Áp dụng tất cả? Hay từng cái?". Default to "tất cả" if they're all in the same category and skill-rule-driven.
+Group them, then ask: "Apply all, or one by one?". Default to "all" if they're all in the same category and skill-rule-driven.
 
 ### 4. Defer user-decision tier
 List them with their file:line and the question. Do NOT touch the code. User answers, then this skill re-runs with the answer applied as a new "confirm-then-apply" finding.
@@ -148,14 +148,14 @@ If after 3 passes there are still Critical/Important findings:
 - Two findings are mutually exclusive (fix A introduces B) → user must pick
 
 Frame it as:
-> "Đã loop 3 lần, còn 2 findings không hội tụ:
-> - X (vẫn xuất hiện sau fix Y)
-> - Z (đã thay 3 cách, vẫn fail lint)
+> "Looped 3 times; 2 findings still do not converge:
+> - X (still appears after fix Y)
+> - Z (tried 3 approaches and lint still fails)
 >
-> Bạn muốn:
-> (a) defer 2 findings này → ship as-is
-> (b) thay đổi approach cho fix Y
-> (c) revert toàn bộ batch, thử lại từ đầu"
+> Choose next step:
+> (a) defer 2 these findings → ship as-is
+> (b) thay change approach cho fix Y
+> (c) revert the whole batch and retry from scratch"
 
 ### 8. Final commit prep
 Once converged, hand off to `sdcorejs-commit`. Commit message shape by source:
@@ -205,7 +205,7 @@ Pass 1:
   Skip: user-decision finding deferred
   Re-review: 0 Critical, 1 Important deferred, 0 Minor
 Reported to user:
-  "Đã fix 17 findings. Còn 1 Important (split ProductService) — bạn quyết hướng nào?"
+  "Fixed 17 findings. 1 Important finding remains (split ProductService) - which direction do you want?"
 ```
 
 ### Convergence failure
@@ -214,7 +214,7 @@ Pass 1: fix [Important] X → introduces [Critical] Y
 Pass 2: fix [Critical] Y → reintroduces [Important] X (different angle)
 Pass 3: same loop
 
-Escalate: "X và Y mutually exclusive — bạn pick approach nào?"
+Escalate: "X and Y mutually exclusive — which approach do you choose?"
 ```
 
 ## Rules

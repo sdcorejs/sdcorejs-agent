@@ -10,13 +10,13 @@ const steps = [
     n: "02",
     title: "Install the plugin",
     cmd: "/plugin install sdcorejs-agent@sdcorejs",
-    note: "All 71 skills become dispatchable in your next session.",
+    note: "All 42 skills become dispatchable in your next session.",
   },
   {
     n: "03",
     title: "Try a prompt",
-    cmd: "tạo CRUD entity product cho module catalog",
-    note: "Bilingual triggers (VI / EN). Clarify → spec → plan → write code.",
+    cmd: "create Product CRUD in the catalog module",
+    note: "Runtime-localized triggers. Clarify -> spec -> plan -> write code.",
   },
 ];
 ---
@@ -30,7 +30,7 @@ const steps = [
       <h2>Install in Claude Code</h2>
       <p class="lead">
         The skill pack is distributed as a Claude Code plugin. No npm install,
-        no compiler — once added, all skills dispatch automatically from each
+        no compiler - once added, all skills dispatch automatically from each
         skill's <code>description</code> trigger.
       </p>
     </div>
@@ -108,8 +108,6 @@ const steps = [
 </section>
 
 <script is:inline>
-  // Copy-to-clipboard buttons. Inline so it works on the static site
-  // without bundling. Falls back to a textarea trick on older browsers.
   document.addEventListener("click", (e) => {
     const target = e.target;
     if (!(target instanceof Element)) return;

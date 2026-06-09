@@ -14,7 +14,7 @@ The system ships as **dispatchable skills** — markdown with YAML frontmatter �
 
 ## How it works
 
-1. You clone or attach this repo's `skills/` and entry-point files (`CLAUDE.md`, `AGENTS.md`, `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md`) to your target project.
+1. You clone or attach this repo's `skills/` and `_refs/` together with the entry-point files (`CLAUDE.md`, `AGENTS.md`, `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md`) to your target project. Both `skills/` and `_refs/` are required — skills reference `_refs/**` at runtime.
 2. The AI tool reads the entry-point at session start.
 3. When you ask the tool to do something ("tạo entity product", "review module catalog"), it matches your request against each skill's `description` and follows the matched skill's instructions exactly.
 
@@ -81,13 +81,14 @@ cd <your-portal-project>
 git submodule add <repo-url> .sdcorejs-agent
 ln -s .sdcorejs-agent/CLAUDE.md CLAUDE.md
 ln -s .sdcorejs-agent/AGENTS.md AGENTS.md
-ln -s .sdcorejs-agent/skills skills-sdcorejs
+ln -s .sdcorejs-agent/skills skills     # must be named 'skills' so glob skills/**/*.md resolves
+ln -s .sdcorejs-agent/_refs _refs       # must be named '_refs' so _refs/... references resolve
 ```
 
 ### Option 3 — copy entry points + skills
 
 ```bash
-cp -r <agent-repo>/{CLAUDE.md,AGENTS.md,skills} ./
+cp -r <agent-repo>/{CLAUDE.md,AGENTS.md,skills,_refs} ./
 ```
 
 Then open the project in Claude Code / Copilot / Codex and start describing what you want.
@@ -129,17 +130,19 @@ sdcorejs-agent/
 │   └── sdlc/                              # cross-track design-phase patterns ({angular,nestjs,nextjs}.md)
 ├── skills/                                # source of truth — flat .md per skill
 │   ├── tracks/
-│   │   ├── angular/                # ✅ 1 skill (write-code orchestrator; 6 reference packs in _refs/angular/write-code/)
-│   │   ├── nestjs/                        # 🟡 scaffold
-│   │   └── nextjs/build-website/          # ✅ 13 skills
+│   │   ├── angular/                # ✅ 1 skill (write-code orchestrator; 7 reference packs in _refs/angular/write-code/)
+│   │   ├── nestjs/                        # ✅ 1 skill (write-code orchestrator; 5 reference packs in _refs/nestjs/write-code/)
+│   │   └── nextjs/                        # ✅ 1 skill (write-code orchestrator; 10 reference packs in _refs/nextjs/build-website/write-code/)
 │   ├── shared/{sdlc,conventions,workflow}/
-│   ├── orchestration/                     # SDLC plumbing (13 skills)
+│   ├── orchestration/                     # SDLC plumbing (19 skills)
 │   ├── review/ (review.md=sdcorejs-review + architecture.md=sdcorejs-review-architecture)
 │   └── testing/{philosophy,tdd,e2e,integration,unit}/
 └── images/
 ```
 
 The two synced mirrors (`plugin/skills/` for plugin distribution + `.claude/skills/` for project-local Claude Code) are regenerated from `skills/` by `.claude/sync-skills.sh`, enforced via the lefthook pre-commit hook. Edit only the `skills/` source — never the mirrors directly.
+
+> **Windows note:** `npm run sync:skills` and `npm run check:skills` call `bash .claude/sync-skills.sh`. On Windows you must run these from **Git Bash** (or WSL) — PowerShell does not have `bash` on `PATH` by default.
 
 ## Not a multi-agent framework
 

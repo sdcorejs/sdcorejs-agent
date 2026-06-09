@@ -33,7 +33,7 @@ Then confirm only the blocking input (the module name). For a technical persona,
 
 ## Source of truth — core package
 
-Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) for the canonical export inventory + import sub-paths BEFORE generating. Every import in the templates below MUST match a sub-path the catalog documents (`@sdcorejs/nestjs`, `/orm`, `/permission`, `/validation`, …). Do not invent imports. The provider-binding pattern (Symbol I-token → concrete class) and the `BaseRepository` / `BaseService` / `BaseController` building blocks come from the catalog's "ORM building blocks" section.
+Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) for the canonical export inventory + import sub-paths BEFORE generating. Every import in the templates below MUST match a sub-path the catalog documents (`@sdcorejs/nestjs`, `/core`, `/auth`, `/validation`, …). Do not invent imports. The provider-binding pattern (Symbol I-token → concrete class) and the `BaseRepository` / `BaseService` / `BaseController` building blocks come from the catalog's "ORM building blocks" section.
 
 ---
 

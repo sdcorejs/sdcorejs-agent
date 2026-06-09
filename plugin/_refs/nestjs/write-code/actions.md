@@ -41,15 +41,15 @@ Then confirm only the blocking inputs (which action, who may use it, what it doe
 
 Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) BEFORE generating. Every import below MUST match a sub-path the catalog documents. The pieces this pack relies on (catalog "ORM building blocks"):
 
-- `BaseService<T, TDto>` (`/orm`) — write methods `create(entity, qr?)`, `update(entity, qr?)`, `import(entities, qr?)`, `delete(ids)`, `softDelete(ids)`, `restore(ids)`; read methods `paging(req, args?)`, `detail(id)`; the `repository` accessor (reach the underlying `BaseRepository` and its raw TypeORM `repository` / `queryRunner`). Every write method takes an **optional `qr?: QueryRunner`** so the same method participates in an explicit transaction.
-- `BaseRepository<T>` (`/orm`) — `queryRunner` accessor (a fresh, un-connected `QueryRunner` from the data source), `repository` accessor (the raw TypeORM `Repository<T>` for ad-hoc `find` / `findOne` / `findOneByOrFail`), and the same `qr?`-accepting write methods.
-- `@HasPermission(code)` / `@HasAnyPermission(...codes)` (`/permission`) — per-route gates.
+- `BaseService<T, TDto>` (`/core`) — write methods `create(entity, qr?)`, `update(id, entity, qr?)`, `delete(id)`, `softDelete(id)`, `restore(id)`; read methods `paging(req, args?)`, `detail(id)`, `all(filters?, args?)`. `BaseService.import(entities)` has no `QueryRunner` argument in v1.0.0; use the underlying `BaseRepository.import(entities, qr?)` when a bulk insert must participate in an explicit transaction. The protected `repository` accessor reaches the underlying `BaseRepository` and its raw TypeORM `repository` / `queryRunner`.
+- `BaseRepository<T>` (`/core`) — `queryRunner` accessor (a fresh, un-connected `QueryRunner` from the data source), `repository` accessor (the raw TypeORM `Repository<T>` for ad-hoc `find` / `findOne` / `findOneByOrFail`), and the same `qr?`-accepting write methods.
+- `@HasPermission(code)` / `@HasAnyPermission(...codes)` (`/auth`) — per-route gates.
 - `ZodValidationGuard(schema, source?)` (`/validation`) — boundary validation for routes with a body.
-- `ApiResponse.ok(data)` (`/orm`, re-exported at root) — success envelope.
+- `ApiResponse.ok(data)` (`/core`, re-exported at root) — success envelope.
 
 App-local helpers (emitted by `init-project`, not the lib):
 
-- `SdContext` (`src/common/context`) — static facade: `userId`, `departmentCode`, `tenantCode`, `fullName`, `lang`, `hasPermission('<model>', '<action>')`. *(Ground: ref app `src/common/context/sd-context.ts`.)* (`enterprise` profile; in `simple` use the lib `ContextService` directly — `@Inject(ContextService)`)
+- `SdContext` (`src/common/core`) — static facade: `userId`, `departmentCode`, `tenantCode`, `fullName`, `lang`, `hasPermission('<model>', '<action>')`. *(Ground: ref app `src/common/core/sd-context.ts`.)* (`enterprise` profile; in `simple` use the lib `ContextService` directly — `@Inject(ContextService)`)
 - `badRequest(code, data?)` (`src/common/errors`) — throws a code-based 400 the i18n exception filter localizes. *(Ground: ref app `src/common/errors.ts`.)*
 - `AdminAuthGuard` (`src/common/admin-auth.guard`) — class-level guard that authenticates + loads permission codes into context. (`enterprise`; `simple` uses the core `AuthGuard`)
 
@@ -67,9 +67,9 @@ Read `profile` from `<target>/.sdcorejs/summary.md` (default `simple`). The acti
 below (caller-scoped listing, transition, bulk, Excel export, transactions, domain errors,
 permission-gated flags) are profile-INDEPENDENT. Two things differ:
 - **Context access:** `enterprise` uses the `SdContext` static facade; `simple` injects the lib
-  `ContextService` (`@Inject(ContextService)` from `@sdcorejs/nestjs/context`) — `ctx.userId`,
+  `ContextService` (`@Inject(ContextService)` from `@sdcorejs/nestjs/core`) — `ctx.userId`,
   `ctx.get('user')`, `ctx.hasPermission('<module>_<entity>:<action>')`. There is no `SdContext` in simple.
-- **Guard:** `enterprise` uses `AdminAuthGuard`; `simple` uses the core `AuthGuard` (`@sdcorejs/nestjs/permission`).
+- **Guard:** `enterprise` uses `AdminAuthGuard`; `simple` uses the core `AuthGuard` (`@sdcorejs/nestjs/auth`).
 - **Department-scoped variants** (e.g. a `team` listing scoped by `departmentCode`) are `[enterprise]`-only.
 
 ---
@@ -92,12 +92,12 @@ Before generating, confirm:
 
 A domain method is declared on the **interface** AND implemented on the **class** — the interface is the DI port other modules + the controller depend on. Add the new signatures to `I<Entity>Service` (which `extends IBaseService<<Entity>, <Entity>DTO>`), then implement them on `<Entity>Service`. Read request context (the caller's identity / scope / permissions) through the `SdContext` facade — never inject `ContextService` directly. *(Ground: ref app `task.service.ts` lines 16-23 (interface) + `mine` lines 68-89 + `team` lines 91-129 — caller-scoped paging using `SdContext.userId`, raw `andWheres` SQL, the cross-module `employeeService`. Note: the `team` method, line 91-129, scopes results by `departmentCode` — `[enterprise]` only.)*
 
-> Simple profile: replace `SdContext.userId` with the injected lib `ContextService` — `this.ctx.userId`. Inject `@Inject(ContextService)` (from `@sdcorejs/nestjs/context`) in the service constructor. No `SdContext` facade exists in simple.
+> Simple profile: replace `SdContext.userId` with the injected lib `ContextService` — `this.ctx.userId`. Inject `@Inject(ContextService)` (from `@sdcorejs/nestjs/core`) in the service constructor. No `SdContext` facade exists in simple.
 
 ```ts
 import { Inject, Injectable } from '@nestjs/common';
-import { BaseService, IBaseService } from '@sdcorejs/nestjs/orm';
-import { SdContext } from 'src/common/context';
+import { BaseService, IBaseService } from '@sdcorejs/nestjs/core';
+import { SdContext } from 'src/common/core';
 import { badRequest } from 'src/common/errors';
 import { <Entity>DTO } from '@shared/<module>';
 import { PagingReq, PagingRes } from '@shared/core';
@@ -205,8 +205,8 @@ export class <Module>Module {}
 Add the new routes to the existing `<Entity>Controller` (it already `extends BaseController` + carries class-level `@UseGuards(AdminAuthGuard)`). Each custom route: a per-route `@HasPermission('<module>_<entity>:<action>')`, plus `@UseGuards(ZodValidationGuard(<Schema>))` when it has a body, returning `ApiResponse.ok(...)`. *(Ground: ref app `task.controller.ts` — `@Post('mine')` line 20-24, `@Put(':id/transition')` line 53-56, `@Get('export-report-summary')` line 39-45.)*
 
 ```ts
-import { BaseController, ApiResponse } from '@sdcorejs/nestjs/orm';
-import { HasPermission } from '@sdcorejs/nestjs/permission';
+import { BaseController, ApiResponse } from '@sdcorejs/nestjs/core';
+import { HasPermission } from '@sdcorejs/nestjs/auth';
 import { ZodValidationGuard } from '@sdcorejs/nestjs/validation';
 import { AdminAuthGuard } from 'src/common/admin-auth.guard';
 import { Body, Controller, Get, Inject, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
@@ -317,7 +317,7 @@ Build an `exceljs` `Workbook`, write it to a buffer, and have the controller str
 
 **Service method:**
 
-> Simple profile: replace `SdContext.fullName` with `this.ctx.get('user')?.fullName` (or the equivalent user field from the injected `ContextService`). Also remove the `departmentCode` scope from the `where` clause — no `departmentCode` in single-tenant; filter by other available fields if needed. Inject `@Inject(ContextService)` (from `@sdcorejs/nestjs/context`) in the service constructor. No `SdContext` facade exists in simple.
+> Simple profile: replace `SdContext.fullName` with `this.ctx.get('user')?.fullName` (or the equivalent user field from the injected `ContextService`). Also remove the `departmentCode` scope from the `where` clause — no `departmentCode` in single-tenant; filter by other available fields if needed. Inject `@Inject(ContextService)` (from `@sdcorejs/nestjs/core`) in the service constructor. No `SdContext` facade exists in simple.
 
 ```ts
 import { Workbook, Worksheet, Buffer as ExcelBuffer } from 'exceljs';
@@ -473,7 +473,7 @@ if (!team.isActive) {
 
 Extend the entity's `mapDTO` to compute capability flags — `editable` / `deletable` / `restorable` / `transitionable` — from `SdContext.hasPermission('<module>_<entity>', '<action>')` (optionally OR'd with ownership / role checks). The portal reads these flags to show/hide row actions, so a user only sees buttons they can actually use, and the matching write route re-checks server-side. *(Ground: ref app `task.service.ts` `mapDTO` lines 506-577 — `transitionable: hasPermission('crm_task', 'update') || isTeamLeader || assigneeId === userId`, `editable: ... || assigneeId === createdBy`, `deletable: !isFinished && (hasPermission('crm_task', 'delete') || ...)`. Note: the `isTeamLeader` check in the ground ref is an `[enterprise]`-only role — depends on `departmentCode` scoping; omit in the simple profile.)*
 
-> Simple profile: replace `SdContext.hasPermission(...)` with `this.ctx.hasPermission('<module>_<entity>:<action>')` from the injected lib `ContextService`. Inject `@Inject(ContextService)` (from `@sdcorejs/nestjs/context`) in the service constructor. No `SdContext` facade exists in simple.
+> Simple profile: replace `SdContext.hasPermission(...)` with `this.ctx.hasPermission('<module>_<entity>:<action>')` from the injected lib `ContextService`. Inject `@Inject(ContextService)` (from `@sdcorejs/nestjs/core`) in the service constructor. No `SdContext` facade exists in simple.
 
 ```ts
 mapDTO = (entity: <Entity> | undefined | null): <Entity>DTO | undefined | null => {

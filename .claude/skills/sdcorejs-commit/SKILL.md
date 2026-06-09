@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-commit
-description: Use when the user asks to create a git commit, says "commit", "tạo commit", "ghi nhận thay đổi", or ends a code-writing task that should be committed. Generates a Conventional Commits message with auto-detected scope from staged paths, plus git-awareness checks (current branch, modified files, no force-push on main). Applies to angular, nestjs, nextjs and the sdcorejs-agent repo itself. Bilingual (VI/EN).
+description: Use when the user asks to create a git commit, says "commit", "commit changes", "save changes", or localized equivalents, or ends a code-writing task that should be committed. Generates a Conventional Commits message with auto-detected scope from staged paths, plus git-awareness checks (current branch, modified files, no force-push on main). Applies to angular, nestjs, nextjs and the sdcorejs-agent repo itself. Runtime-localized.
 allowed-tools: Bash, Read
 ---
 
@@ -10,7 +10,7 @@ allowed-tools: Bash, Read
 Produce a clean, machine-parseable commit message that future tooling (changelog, semver bump, release notes) can consume. Catch unsafe states (main branch, mixed unrelated changes, secrets) before the commit lands.
 
 ## When invoked
-- User says "commit", "tạo commit", "ghi nhận", "save changes"
+- User says "commit", "commit changes", "save changes", or localized equivalents
 - End of a code-writing skill when the change set is cohesive and the user has not asked to defer
 - After fixing a review finding
 
@@ -148,7 +148,7 @@ must be updated. Mirror script will fail until paths are corrected.
 - Heredoc for multi-line bodies
 - Stage explicit paths
 - Detect scope from staged paths automatically
-- Match dominant language of the change (VI changes in docs → VI body; otherwise EN)
+- Match dominant language of the change (documentation changes may use the project/session language; otherwise use English)
 - Co-Authored-By footer when AI generated the commit
 
 ### MUST NOT

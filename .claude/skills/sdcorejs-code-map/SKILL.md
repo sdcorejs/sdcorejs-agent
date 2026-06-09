@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-code-map
-description: READ-ONLY skill for architecture discovery. Use when starting a new major feature, when the user asks to "dùng lại shared component", "use existing shared components", "reuse what we have", or when generating code that should slot into existing modules. Scans the target project's structure to find existing modules, shared UI components, base DTOs/services, route registry, and permission codes — BEFORE writing code. Prevents hallucinated paths and duplicated abstractions. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: READ-ONLY skill for architecture discovery. Use when starting a new major feature, when the user asks to "reuse shared components", "use existing shared components", "reuse what we have", or when generating code that should slot into existing modules. Scans the target project's structure to find existing modules, shared UI components, base DTOs/services, route registry, and permission codes — BEFORE writing code. Prevents hallucinated paths and duplicated abstractions. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Bash, Glob, Read
 ---
 
@@ -19,7 +19,7 @@ Triggering is description-based: there is no orchestration hook that runs this s
 - User starts a major feature and the agent has no prior map of this repo
 
 ### Invoke on explicit request
-- User asks "dùng lại shared component nào", "use existing", "reuse"
+- User asks "which shared component can be reused", "use existing", "reuse", or localized equivalents
 - "show me the structure", "code map", "what modules exist"
 - Architecture review / audit
 
@@ -134,8 +134,8 @@ Output to the chat (not a file, unless user asks):
 ### Module / lib inventory
 | Module | Path | Purpose | Entities |
 |---|---|---|---|
-| catalog | `src/libs/catalog` | sản phẩm + danh mục | Product, Category |
-| order | `src/libs/order` | đơn hàng | Order, OrderItem |
+| catalog | `src/libs/catalog` | Product + category | Product, Category |
+| order | `src/libs/order` | Orders | Order, OrderItem |
 | shared | `src/libs/shared` | utilities | — |
 
 ### Shared UI / utilities

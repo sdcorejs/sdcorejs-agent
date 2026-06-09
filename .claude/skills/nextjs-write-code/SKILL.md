@@ -1,6 +1,6 @@
 ---
 name: nextjs-write-code
-description: Generate code for a Next.js landing site — after 06-review-plan approves, OR as the single entry point for any direct build-website code-gen request. Loads the matching on-demand pack under `_refs/nextjs/build-website/write-code/` (per-pack trigger catalog is in the body): init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. Triggers - "bootstrap website", "chọn theme", "add a page / tạo section", "set up SEO / sitemap", "OG image / social preview hỏng", "thêm tiếng Anh / i18n", "caching / ISR", "responsive bị vỡ / mobile broken", "contact form / form không gửi email", "review content / bài viết quá ngắn", plus generic "generate code", "viết code", "go ahead". To audit an EXISTING site use `sdcorejs-review` instead. After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories). Bilingual (VI/EN).
+description: Generate code for a Next.js landing site — after 06-review-plan approves, OR as the single entry point for any direct build-website code-gen request. Loads the matching on-demand pack under `_refs/nextjs/build-website/write-code/` (per-pack trigger catalog is in the body): init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. Triggers - "bootstrap website", "choose theme", "add a page / add section", "set up SEO / sitemap", "OG image / social preview broken", "add language / i18n", "caching / ISR", "responsive broken / mobile broken", "contact form / form does not send email", "review content / thin content", plus generic "generate code", "go ahead", or localized equivalents. To audit an EXISTING site use `sdcorejs-review` instead. After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Bash
 ---
 
@@ -11,7 +11,7 @@ Single entry point for generating Next.js landing-site code. This skill is the d
 
 ## When invoked
 - After `06-review-plan` (or cross-track plan-review) is approved
-- User says "generate code", "viết code", "sinh code đi", "go ahead", "OK proceed"
+- User says "generate code", "go ahead", "OK proceed", or localized equivalents
 - A direct build-website request matching any capability in the dispatch table below
 - After `orchestration/recovery` and user explicitly resumes work
 
@@ -33,14 +33,14 @@ Read the approved plan (or the direct request). Match the work items to the refe
 | "Start a new site from scratch" | the full sequence below | Full build |
 | "Init project only" | [`_refs/nextjs/build-website/write-code/init-site.md`](_refs/nextjs/build-website/write-code/init-site.md) | Bootstrap |
 | "Pick / change theme" | [`_refs/nextjs/build-website/write-code/theme.md`](_refs/nextjs/build-website/write-code/theme.md) | Tokens |
-| "Add a page" / "thêm trang X" / "thêm block hero / testimonials" | [`_refs/nextjs/build-website/write-code/pages-and-blocks.md`](_refs/nextjs/build-website/write-code/pages-and-blocks.md) | Composition |
+| "Add a page" / "add page X" / "add hero / testimonials block" / localized equivalents | [`_refs/nextjs/build-website/write-code/pages-and-blocks.md`](_refs/nextjs/build-website/write-code/pages-and-blocks.md) | Composition |
 | "Set up SEO" / "fix meta tags" | [`_refs/nextjs/build-website/write-code/seo.md`](_refs/nextjs/build-website/write-code/seo.md) | SEO |
-| "OG preview hỏng" / "Zalo không hiện ảnh" | [`_refs/nextjs/build-website/write-code/og-preview.md`](_refs/nextjs/build-website/write-code/og-preview.md) | OG |
-| "Thêm tiếng Anh" / "add EN" | [`_refs/nextjs/build-website/write-code/i18n.md`](_refs/nextjs/build-website/write-code/i18n.md) | i18n |
-| "Cache lâu/ngắn quá", "ISR settings" | [`_refs/nextjs/build-website/write-code/caching.md`](_refs/nextjs/build-website/write-code/caching.md) | Cache |
-| "Responsive vỡ mobile" | [`_refs/nextjs/build-website/write-code/responsive.md`](_refs/nextjs/build-website/write-code/responsive.md) | Responsive |
-| "Contact form chưa gửi email" / "real form" | [`_refs/nextjs/build-website/write-code/contact-form.md`](_refs/nextjs/build-website/write-code/contact-form.md) | Form |
-| "Bài viết quá ngắn" / "rà soát nội dung" / "VI/EN parity" / "Article schema" / "thin content" | [`_refs/nextjs/build-website/write-code/content-quality.md`](_refs/nextjs/build-website/write-code/content-quality.md) | Content |
+| "OG preview broken" / "social preview image missing" | [`_refs/nextjs/build-website/write-code/og-preview.md`](_refs/nextjs/build-website/write-code/og-preview.md) | OG |
+| "Add English" / "add EN" | [`_refs/nextjs/build-website/write-code/i18n.md`](_refs/nextjs/build-website/write-code/i18n.md) | i18n |
+| "Cache duration is too long/short", "ISR settings" | [`_refs/nextjs/build-website/write-code/caching.md`](_refs/nextjs/build-website/write-code/caching.md) | Cache |
+| "Responsive layout broken on mobile" | [`_refs/nextjs/build-website/write-code/responsive.md`](_refs/nextjs/build-website/write-code/responsive.md) | Responsive |
+| "Contact form does not send email" / "real form" | [`_refs/nextjs/build-website/write-code/contact-form.md`](_refs/nextjs/build-website/write-code/contact-form.md) | Form |
+| "Thin content" / "review content" / "language parity" / "Article schema" / localized equivalents | [`_refs/nextjs/build-website/write-code/content-quality.md`](_refs/nextjs/build-website/write-code/content-quality.md) | Content |
 
 Read ON DEMAND only — load the one pack for the step you are executing. Each pack further links to track-level reference data under `_refs/nextjs/build-website/`.
 
@@ -67,7 +67,7 @@ For a new site, read and apply the packs in this order:
                             Output: mobile-pass on all pages
 9. contact-form.md       ← Real API route + email service + validation + rate limit
                             Output: working form, test email sent
-10. content-quality.md   ← Bilingual parity check + min word counts + prose typography + Article schema + on-page SEO
+10. content-quality.md   ← language parity check + min word counts + prose typography + Article schema + on-page SEO
                             Output: `npm run check:i18n` + `npm run check:content` pass; Tailwind Typography wired; long-form copy meets thresholds
 ```
 
@@ -96,6 +96,9 @@ orchestration/verify-before-done ← BLOCK "done" until acceptance criteria from
 orchestration/branch-ready ← branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test)
    ↓
 orchestration/auto-docs    ← session summary to .sdcorejs/docs/nextjs/
+   ↓
+sdcorejs-write-user-guide (Mode 1) ← update touched module's .sdcorejs/user-guide/<module>.md (features / routes / permissions / data + Coverage-vs-requirements); per-module incremental, aggregate rebuilds at ship
+   ↓
 orchestration/auto-task-tracker ← tick done, append new
 orchestration/memories     ← durable knowledge (when applicable)
 ```
@@ -115,7 +118,7 @@ Each tail-call is mandatory (per the cross-track rules in CLAUDE.md / AGENTS.md 
 
 ### MUST NOT
 - Generate code from memory when a pack covers the concern — read the pack
-- Skip `i18n.md` even for VI-only sites (structure must be ready for EN)
+- Skip `i18n.md` even for single-language sites (structure must be ready for another locale later)
 - Skip `contact-form.md` and ship a fake `setTimeout` form — leads will silently disappear
 - Skip `verify-before-done` because tests passed — acceptance criteria are independent
 - Apply packs out of order (e.g. pages before theme)
