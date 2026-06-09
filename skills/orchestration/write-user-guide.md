@@ -289,4 +289,80 @@ When triggered manually (e.g. "xuất user guide docx"): emit the export command
 
 ---
 
-<!-- Mode 3 (legacy) appended by the next task -->
+## Mode 3 — Legacy reverse-engineer
+
+### 1. Trigger
+
+**Manual only.** Fire this mode when the user says:
+- "đọc toàn dự án viết user guide"
+- "viết user guide cho dự án cũ"
+- "reverse-engineer user guide"
+- or any equivalent request to produce guides for an existing/legacy project where no spec, plan, or write-code session output exists.
+
+### 2. Harvest the whole project via `sdcorejs-code-map`
+
+Delegate ALL discovery to `sdcorejs-code-map` (read-only architecture-discovery skill). Do NOT re-implement route/permission globbing here.
+
+```
+Invoke: sdcorejs-code-map
+Purpose: full project inventory — modules/libs, routes + controllers, permission codes,
+         screens, shared components, base classes, path conventions
+Output:  module list + per-module facts used as the harvest basis for step 3
+```
+
+After `sdcorejs-code-map` completes, supplement its output with targeted probes (same probes as Mode 1) for any module where route or permission data is still missing:
+
+**Angular — routes & permissions (supplement):**
+```bash
+rg -n "data:\s*\{[^}]*permission" <fe>/src/libs/<module>
+rg -n "sdPermission" <fe>/src/libs/<module>
+rg -n "path:" <fe>/src/libs/<module>/routes.ts
+```
+
+**NestJS — routes & permissions (supplement):**
+```bash
+rg -n "RouterModule\|path:" <be>/src/app.module.ts <be>/src/modules/<module>/<module>.module.ts
+rg -n "@HasPermission\('([^']+)'\)" <be>/src/modules/<module>
+```
+
+**Entity fields & Zod schema (supplement):**
+```bash
+rg -n "@Column" <be>/src/modules/<module>/entities/
+Glob: <be>/src/modules/<module>/schemas/<module>.schema.ts
+```
+
+**Screen types (Angular, supplement):**
+```bash
+Glob: <fe>/src/libs/<module>/features/<entity>/pages/*/
+rg -n "openWorkflow\|openBulk\|openCustomAction\|SdActionButton" <fe>/src/libs/<module>
+```
+
+### 3. Render per-module guides
+
+For **each module** discovered by `sdcorejs-code-map`, render `<target>/.sdcorejs/user-guide/<module>.md` from the per-module template in `_refs/shared/user-guide-template.md`, best-effort from the harvested facts.
+
+Fill frontmatter and all 7 body sections exactly as in Mode 1, Step 3, using only data found in the harvest — **do NOT invent** routes, permissions, or field names not present in the code. Where a value could not be resolved, write `"unknown — fill manually"` rather than fabricating.
+
+**FLAG unresolved modules explicitly.** For every module where routes and/or permission codes could NOT be resolved from the harvest, add a prominent notice at the top of that module's guide:
+
+```markdown
+> ⚠️ **Harvest incomplete** — routes and/or permission codes could not be resolved for this
+> module (the project may not follow SDCoreJS conventions). The sections below are best-effort;
+> a developer should verify and fill in the missing details manually.
+```
+
+Do not silently omit such modules — include them with the flag so the gap is visible.
+
+### 4. Run Mode 2 — Aggregate build
+
+After all per-module guides are written, immediately run **Mode 2** to assemble `<target>/sdcorejs-user-guide.md` from the full set of per-module guides. Follow all Mode 2 steps (assemble, frontmatter, coverage summary, pandoc export offer).
+
+### 5. Coverage section — "reverse-engineered" note
+
+Because Mode 3 targets legacy projects, there is typically no approved spec or PRD. In the `## Coverage vs yêu cầu` section of each module guide, apply the **Mode 4 "No spec or PRD"** path (see Mode 4 §6) and add this note at the top of the table:
+
+```markdown
+> Reverse-engineered — no spec/PRD. Coverage is best-effort from code harvest.
+```
+
+**Exception:** if `<target>/.sdcorejs/prd/<feature>.md` exists for a given module, load that PRD and apply the full **Mode 4** comparison (map each criterion, render status ✅ / ⚠️ / ❌, update frontmatter `coverage` counts). In that case omit the "no spec/PRD" note and use the standard PRD-coverage table instead.
