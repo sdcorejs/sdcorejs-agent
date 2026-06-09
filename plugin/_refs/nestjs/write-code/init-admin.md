@@ -13,8 +13,8 @@ project `IPermissionStrategy` and the user-lookup `JwtStrategy`. Run order:
 ## Source of truth — core package
 Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) BEFORE generating. Every import MUST match a
 documented sub-path. Building blocks: `BaseEntity`/`WithAudit` (via `src/common/base-entity`),
-`BaseRepository`/`BaseService`/`BaseController` (`/orm`), `IPermissionStrategy` (`/permission`),
-`KeycloakJwtStrategy` (`/jwt`), `ContextService` (`/context`).
+`BaseRepository`/`BaseService`/`BaseController` (`/core`), `IPermissionStrategy` (`/auth`),
+`KeycloakJwtStrategy` (`/auth`), `ContextService` (`/core`).
 
 ## Profile (read FIRST)
 Read `profile` from the caller (default `simple`). **simple** = `permission` / `role` / `user`
@@ -137,7 +137,7 @@ class name and entity reference.
 #### `user.repository.ts` (full example)
 
 ```ts
-import { BaseRepository, IBaseRepository } from '@sdcorejs/nestjs/orm';
+import { BaseRepository, IBaseRepository } from '@sdcorejs/nestjs/core';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { User } from 'src/modules/admin/entities';
 import { DataSource } from 'typeorm';
@@ -186,7 +186,7 @@ export * from './user.repository';
 
 ### Step 3 — User-lookup JwtStrategy
 
-Generate `src/common/jwt.strategy.ts`. This strategy **cannot** be wired via
+Generate `src/common/auth.strategy.ts`. This strategy **cannot** be wired via
 `SdCoreModule.forRoot({ jwt: ... })` because it injects `IUserService` from the `AdminModule`
 — doing so would create a circular dependency at bootstrap. Instead, the lib `JwtModule.forRoot`
 is registered separately in `app.module.ts` (see Step 7), and the `SdCoreModule` `jwt` key is
@@ -195,12 +195,18 @@ note in `init-project` Step 7 about replacing the default JWT strategy.
 
 ```ts
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { type JwtPayload, KeycloakJwtStrategy } from '@sdcorejs/nestjs/jwt';
+import { JWT_CONFIG, type JwtConfig, type JwtPayload, KeycloakJwtStrategy } from '@sdcorejs/nestjs/auth';
 import { IUserService } from 'src/modules/admin/services';
 
 @Injectable()
 export class JwtStrategy extends KeycloakJwtStrategy {
-  constructor(@Inject(IUserService) private readonly users: IUserService) { super(); }
+  constructor(
+    @Inject(JWT_CONFIG) cfg: JwtConfig,
+    @Inject(IUserService) private readonly users: IUserService,
+  ) {
+    super(cfg);
+  }
+
   async validate(payload: JwtPayload) {
     const user = await this.users.internalDetail(payload.sub);   // lookup by keycloakUserId (fallback-sync)
     if (!user || !user.isActive) throw new UnauthorizedException();
@@ -209,7 +215,7 @@ export class JwtStrategy extends KeycloakJwtStrategy {
 }
 ```
 
-> `KeycloakJwtStrategy` (from `@sdcorejs/nestjs/jwt`) handles JWKS verification and expiry. The
+> `KeycloakJwtStrategy` (from `@sdcorejs/nestjs/auth`) handles JWKS verification and expiry. The
 > only thing the app-level subclass adds is the user-lookup: `internalDetail` finds the DB row by
 > `keycloakUserId` (the JWT `sub` claim) and resolves the flat permission list. The resolved user
 > object is stored in the request context and later read by `AppPermissionStrategy` (Step 4).
@@ -227,8 +233,8 @@ app-DB permission list resolved during `JwtStrategy.validate`.
 
 ```ts
 import { Injectable } from '@nestjs/common';
-import type { IPermissionStrategy } from '@sdcorejs/nestjs/permission';
-import { ContextService } from '@sdcorejs/nestjs/context';
+import type { IPermissionStrategy } from '@sdcorejs/nestjs/auth';
+import { ContextService } from '@sdcorejs/nestjs/core';
 
 /** Permissions were resolved onto the user at JwtStrategy.validate (internalDetail →
  *  roleService.loadPermissions). This strategy returns that flat code list. */
@@ -242,7 +248,7 @@ export class AppPermissionStrategy implements IPermissionStrategy {
 }
 ```
 
-> `ContextService` (from `@sdcorejs/nestjs/context`) stores the resolved user set by
+> `ContextService` (from `@sdcorejs/nestjs/core`) stores the resolved user set by
 > `JwtStrategy.validate` onto the request context. `AppPermissionStrategy.load()` reads it back —
 > no DB round-trip needed on every permission check because `internalDetail` already resolved the
 > flat code list. Register this strategy via `SdCoreModule.forRoot({ permission: { strategy:
@@ -301,7 +307,7 @@ export interface UserDTO extends Dto {
 #### Barrel `src/modules/admin/dto/index.ts`
 
 ```ts
-export * from './permission.dto';
+export * from './auth.dto';
 export * from './role.dto';
 export * from './user.dto';
 ```
@@ -388,7 +394,7 @@ export * from './user.service';
 | Code | Enforced on |
 |---|---|
 | `admin_permission:view` | `PermissionController` — all read routes |
-| `admin_role:view` | `RoleController` — paging / detail / all |
+| `admin_role:view` | `RoleController` — paging / detail (+ explicit all route if exposed) |
 | `admin_role:create` | `RoleController POST /` |
 | `admin_role:update` | `RoleController PUT /:id` |
 | `admin_role:delete` | `RoleController DELETE /:id` |
@@ -443,13 +449,13 @@ export const UserResetPasswordSchema = z.object({
 #### Controllers
 
 **`PermissionController`** (`src/modules/admin/controllers/permission.controller.ts`) — READ
-ONLY. Inherits paging / detail / all from `BaseController`; NO create / update / delete routes.
-Gate all inherited routes with `@HasPermission('admin_permission:view')` by overriding them.
+ONLY. Inherits paging / detail / delete from `BaseController`; expose `all` only if the role editor needs an unpaged permission list. Do not add create / update routes.
+Gate inherited read routes with `@HasPermission('admin_permission:view')` by overriding them. If delete must be unavailable, override it to throw `NotFoundException` or omit `BaseController` and write only the read routes.
 Use `@UseGuards(AuthGuard)` at class level.
 
 ```ts
-import { BaseController, ApiResponse } from '@sdcorejs/nestjs/orm';
-import { AuthGuard, HasPermission } from '@sdcorejs/nestjs/permission';
+import { BaseController, ApiResponse } from '@sdcorejs/nestjs/core';
+import { AuthGuard, HasPermission } from '@sdcorejs/nestjs/auth';
 import { Controller, Inject, Post, Get, Body, Param, UseGuards } from '@nestjs/common';
 import { PermissionDTO } from 'src/modules/admin/dto';
 import { Permission } from 'src/modules/admin/entities';
@@ -480,8 +486,8 @@ export class PermissionController extends BaseController<Permission, PermissionD
 **`RoleController`** (`src/modules/admin/controllers/role.controller.ts`) — full CRUD.
 
 ```ts
-import { BaseController, ApiResponse } from '@sdcorejs/nestjs/orm';
-import { AuthGuard, HasPermission } from '@sdcorejs/nestjs/permission';
+import { BaseController, ApiResponse } from '@sdcorejs/nestjs/core';
+import { AuthGuard, HasPermission } from '@sdcorejs/nestjs/auth';
 import { ZodValidationGuard } from '@sdcorejs/nestjs/validation';
 import { Body, Controller, Delete, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { RoleDTO } from 'src/modules/admin/dto';
@@ -519,8 +525,8 @@ export class RoleController extends BaseController<Role, RoleDTO> {
 **`UserController`** (`src/modules/admin/controllers/user.controller.ts`) — CRUD + custom routes.
 
 ```ts
-import { BaseController, ApiResponse } from '@sdcorejs/nestjs/orm';
-import { AuthGuard, HasPermission } from '@sdcorejs/nestjs/permission';
+import { BaseController, ApiResponse } from '@sdcorejs/nestjs/core';
+import { AuthGuard, HasPermission } from '@sdcorejs/nestjs/auth';
 import { ZodValidationGuard } from '@sdcorejs/nestjs/validation';
 import { Body, Controller, Delete, Inject, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { UserDTO } from 'src/modules/admin/dto';
@@ -645,13 +651,19 @@ export class AdminModule {}
 2. **DROP the `SdCoreModule` `jwt` key; add `JwtModule.forRoot` separately** — place after
    `SdCoreModule.forRoot` in the `imports` array:
    ```ts
+   const acceptsKeycloakRealmIssuer = (iss: string): boolean => {
+     const base = (process.env.KEYCLOAK_URL || '').replace(/\/+$/, '');
+     return !!base && iss.startsWith(`${base}/realms/`);
+   };
+
    JwtModule.forRoot(
-     { jwks: { allowedIssuers: [CONFIGURATION().keycloak.issuer] } },
+     { jwks: { issuerValidator: acceptsKeycloakRealmIssuer } },
      { strategy: JwtStrategy, imports: [AdminModule] },
    ),
    ```
-   Import `JwtModule` from `@sdcorejs/nestjs/jwt`. `CONFIGURATION()` is the typed config factory
-   from `init-project` Step 3. The second argument's `imports: [AdminModule]` tells `JwtModule`
+   Import `JwtModule` from `@sdcorejs/nestjs/auth`. The helper mirrors the ref app's dynamic
+   multi-realm Keycloak policy: any `${KEYCLOAK_URL}/realms/<realm>` issuer is accepted, while
+   JWKS is pinned to the configured host. The second argument's `imports: [AdminModule]` tells `JwtModule`
    to pull `AdminModule` into its DI scope so `IUserService` resolves inside `JwtStrategy`.
 
 3. **Add `AdminModule` + `RouterModule` prefix** to `imports`:
@@ -659,7 +671,7 @@ export class AdminModule {}
    AdminModule,
    RouterModule.register([{ path: 'admin', module: AdminModule }]),
    ```
-   All admin controllers are now reachable under `/admin/permission`, `/admin/role`, `/admin/user`.
+   All admin controllers are now reachable under `/admin/auth`, `/admin/role`, `/admin/user`.
 
 > **Why `JwtModule.forRoot` is separate from `SdCoreModule`.** `SdCoreModule.forRoot({ jwt })` is
 > a convenience that wires a stateless `KeycloakJwtStrategy` with no extra DI deps. The moment the
@@ -1013,7 +1025,7 @@ src/
 |---|---|
 | TypeScript build clean | `npm run build` — zero type errors |
 | Seed is idempotent | Run `npm run start` twice; second start must not throw or duplicate rows |
-| Permission table is read-only via HTTP | `POST /admin/permission` → 404 (no route); `DELETE /admin/permission/:id` → 404 |
+| Permission table is read-only via HTTP | `POST /admin/permission` → 404 (no route); `DELETE /admin/permission/:id` → 404 or 405 |
 | Demo user gets `admin` role | After seed, call `GET /admin/user?username=demo` — `roleCodes` includes `'admin'` |
 | Keycloak race handled | Start backend before Keycloak; step 3 retries appear in logs; seed completes when Keycloak becomes ready |
 
@@ -1060,7 +1072,7 @@ export class Tenant extends BaseEntity {
 
 ```ts
 import { BaseEntity } from 'src/common/base-entity';
-import { Scoped } from '@sdcorejs/nestjs/orm';
+import { Scoped } from '@sdcorejs/nestjs/core';
 import { Column, Entity, Unique } from 'typeorm';
 
 /**
@@ -1092,11 +1104,11 @@ export * from './department.entity';
 ### E2 — 2-level `@Scoped` on `role` + `user`
 
 **[enterprise]** adds two `@Scoped` columns to `role.entity.ts` and `user.entity.ts`. Import
-`Scoped` from `@sdcorejs/nestjs/orm`. The **simple profile omits these columns entirely**.
+`Scoped` from `@sdcorejs/nestjs/core`. The **simple profile omits these columns entirely**.
 
 ```ts
 // role.entity.ts — enterprise additions (append to existing @Column declarations)
-import { Scoped } from '@sdcorejs/nestjs/orm';
+import { Scoped } from '@sdcorejs/nestjs/core';
 
 // Inside the Role class body:
 @Scoped() @Column({ type: 'varchar', length: 64, nullable: true }) tenantCode: string;
@@ -1105,7 +1117,7 @@ import { Scoped } from '@sdcorejs/nestjs/orm';
 
 ```ts
 // user.entity.ts — enterprise additions (append to existing @Column declarations)
-import { Scoped } from '@sdcorejs/nestjs/orm';
+import { Scoped } from '@sdcorejs/nestjs/core';
 
 // Inside the User class body:
 @Scoped() @Column({ type: 'varchar', length: 64, nullable: true }) tenantCode: string;
@@ -1128,7 +1140,7 @@ from the `Tenant` row. Inject `ITenantService` to look up the row.
 ```ts
 // keycloak-admin.service.ts — enterprise override of #client()
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { ContextService } from '@sdcorejs/nestjs/context';
+import { ContextService } from '@sdcorejs/nestjs/core';
 import KcAdminClient from '@keycloak/keycloak-admin-client';
 import { ITenantService } from 'src/modules/admin/services';
 

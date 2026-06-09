@@ -202,7 +202,7 @@ beforeEach(async () => {
 ```typescript
 import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { PermissionGuard } from './permission.guard';
+import { PermissionGuard } from './auth.guard';
 
 describe('PermissionGuard', () => {
   let guard: PermissionGuard;

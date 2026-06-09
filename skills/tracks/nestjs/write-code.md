@@ -28,7 +28,7 @@ After ensuring the summary exists, READ the **`profile`** field from `<target>/.
 
 ## Reference — read the core catalog FIRST
 
-Before generating any backend code, read [`_refs/nestjs/core-catalog.md`](_refs/nestjs/core-catalog.md). It is the authoritative inventory of the `@sdcorejs/nestjs` core package — the import sub-paths (`@sdcorejs/nestjs`, `/orm`, `/permission`, `/validation`, `/jwt`, `/context`, `/tenancy`, `/audit`, `/i18n`, …), the building blocks (`BaseEntity` + `WithAudit` / `WithTimestamps` mixins, `BaseRepository`, `BaseService`, `BaseController`, `AuthGuard`, `@HasPermission`, `ZodValidationGuard`, `SdCoreModule.forRoot`, `ApiResponse` / `apiError`), and the version pin. **Every import in the packs MUST match a sub-path the catalog documents — do not invent imports.** The architecture WHY behind these choices lives in [`_refs/nestjs/architecture-principles.md`](_refs/nestjs/architecture-principles.md).
+Before generating any backend code, read [`_refs/nestjs/core-catalog.md`](_refs/nestjs/core-catalog.md). It is the authoritative inventory of the `@sdcorejs/nestjs` core package — the import sub-paths (`@sdcorejs/nestjs`, `/core`, `/auth`, `/services`, `/validation`, `/queue`, `/i18n`, `/features`), the building blocks (`BaseEntity` + `WithAudit` / `WithTimestamps` mixins, `BaseRepository`, `BaseService`, `BaseController`, `AuthGuard`, `@HasPermission`, `ZodValidationGuard`, `SdCoreModule.forRoot`, `ApiResponse` / `apiError`), and the version pin. **Every import in the packs MUST match a sub-path the catalog documents — do not invent imports.** The architecture WHY behind these choices lives in [`_refs/nestjs/architecture-principles.md`](_refs/nestjs/architecture-principles.md).
 
 ## Per-pack trigger catalog (dispatch table)
 

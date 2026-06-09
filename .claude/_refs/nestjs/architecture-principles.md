@@ -4,7 +4,7 @@ Source of truth for **WHY** SDCoreJS NestJS backends look the way they do. Loade
 
 **Status**: NestJS track is **shipped** — `nestjs-write-code` dispatches four on-demand generation packs under `_refs/nestjs/write-code/` (`init-project` / `init-module` / `init-entity` / `actions`). The principles below govern the code those packs generate.
 
-**Canonical core:** SDCoreJS NestJS backends are built on the **`@sdcorejs/nestjs`** core package — sub-path imports (`@sdcorejs/nestjs`, `/orm`, `/permission`, `/validation`, `/jwt`, `/context`, `/tenancy`, `/audit`, `/i18n`, …) supply `WithAudit(BaseEntity)`, `BaseRepository` / `BaseService` / `BaseController`, `AuthGuard` + `@HasPermission`, `ZodValidationGuard`, and `SdCoreModule.forRoot`. The authoritative export inventory is [`_refs/nestjs/core-catalog.md`](./core-catalog.md). These principles are grounded on the `@sdcorejs/nestjs` reference app; the canonical core is `@sdcorejs/nestjs` (see `_refs/nestjs/core-catalog.md`).
+**Canonical core:** SDCoreJS NestJS backends are built on the **`@sdcorejs/nestjs`** core package — sub-path imports (`@sdcorejs/nestjs`, `/core`, `/auth`, `/validation`, `/auth`, `/core`, `/core`, `/core`, `/i18n`, …) supply `WithAudit(BaseEntity)`, `BaseRepository` / `BaseService` / `BaseController`, `AuthGuard` + `@HasPermission`, `ZodValidationGuard`, and `SdCoreModule.forRoot`. The authoritative export inventory is [`_refs/nestjs/core-catalog.md`](./core-catalog.md). These principles are grounded on the `@sdcorejs/nestjs` reference app; the canonical core is `@sdcorejs/nestjs` (see `_refs/nestjs/core-catalog.md`).
 
 ---
 

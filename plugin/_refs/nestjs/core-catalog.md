@@ -1,204 +1,203 @@
-# SDCoreJS NestJS Core Catalog Snapshot
+﻿# SDCoreJS NestJS Core Catalog Snapshot
 
-Internal knowledge snapshot of the `@sdcorejs/nestjs` core package, consumed by the NestJS write-code packs. Skimmable inventory — import sub-path + a minimal snippet per building block. Single source of truth: when the core package changes, update this file.
+Internal knowledge snapshot of `@sdcorejs/nestjs`, consumed by the NestJS write-code packs. Keep this file aligned with the published package, not with old generated app templates.
 
 Source policy:
 - Knowledge is copied into `sdcorejs-agent` and consumed from this repository only.
 - Do not require runtime references to external repositories.
 
-> **Neutral core vs app templates.** Everything in this catalog is the NEUTRAL
-> `@sdcorejs/nestjs` API — profile-independent. App-level shapes (tenancy strategy,
-> page-permission matrix, `base/shared` kernel, internal-secret module) are NOT core; the
-> write-code packs emit them only under the `enterprise` profile. The `simple` profile uses
-> the core directly (`WithAudit`, core `AuthGuard`, a `string[]`-returning permission strategy).
-> See `_refs/nestjs/write-code/init-project.md` "Profile (read FIRST)". The generated **admin
-> module** (`init-admin`) owns `IPermissionStrategy` (app-DB role→codes) + the user-lookup
-> `JwtStrategy`; the lib ships only the neutral `IPermissionStrategy` interface +
-> the `KeycloakJwtStrategy` base.
+> **Neutral core vs app templates.** Everything in this catalog is the neutral `@sdcorejs/nestjs` API. App-level shapes such as page-permission matrices, `SdContext` facades, legacy base entities, and custom auth guards belong to target apps and the write-code packs, not to the core package.
 
-## Package & imports
+## Package & Imports
 
-- **Package:** `@sdcorejs/nestjs` v0.1.6 (preview, npm). Node ≥18.18. Single package (not a monorepo).
-- **Peer deps (required):** `@nestjs/{common,core,passport} ^11`, `typeorm ^0.3.20`, `reflect-metadata ^0.2`, `rxjs ^7.8`, `@sdcorejs/utils ^1.1` (provides `Filter`, `PagingReq`, `Order`).
-- **Optional peers:** `zod ^4` (validation), `jwks-rsa ^3` + `jsonwebtoken ^9` (Keycloak JWKS), `ioredis ^5` (cache), `@nestjs/typeorm ^11`, `@nestjs/bullmq ^11` + `bullmq ^5` (queue), `aws-sdk ^2` (file-storage).
-- **Sub-path exports:** root `@sdcorejs/nestjs` (re-exports + `SdCoreModule`), `/orm`, `/permission`, `/validation`, `/jwt`, `/context`, `/tenancy`, `/audit`, `/cache`, `/http`, `/i18n`, `/queue`, `/action-history`, `/file-storage`, `/job-scheduler`.
-- Root re-exports the common surface (`ContextService`, `ApiResponse`, `apiError`, `HasPermission`, `InternalGuard`, `ZodValidationGuard`, DI tokens, strategy interfaces) for ergonomic single-import; sub-paths remain canonical for the full surface.
+- **Package:** `@sdcorejs/nestjs` v1.0.0 (stable, npm). Node >=18.18.
+- **Peer deps:** `@nestjs/common ^11`, `@nestjs/core ^11`.
+- **Bundled deps:** `@nestjs/passport`, `@nestjs/typeorm`, `@nestjs/bullmq`, `@nestjs/schedule`, `@nestjs/platform-express`, `typeorm`, `reflect-metadata`, `rxjs`, `@sdcorejs/utils`, `axios`, `bullmq`, `passport`, `passport-jwt`.
+- **Optional deps:** `zod ^4`, `jwks-rsa`, `jsonwebtoken`, `ioredis`, `aws-sdk`.
+- **Sub-path exports:** root `@sdcorejs/nestjs`, `/core`, `/auth`, `/services`, `/validation`, `/queue`, `/i18n`, `/features`.
+- **Do not use old preview sub-paths:** `/orm`, `/permission`, `/jwt`, `/context`, `/tenancy`, `/audit`, `/cache`, `/http`, `/file-storage`, `/action-history`, `/job-scheduler`.
 
 ```ts
-import { SdCoreModule, ApiResponse, HasPermission } from '@sdcorejs/nestjs';
-import { BaseEntity, BaseRepository, BaseService, BaseController } from '@sdcorejs/nestjs/orm';
+import { SdCoreModule } from '@sdcorejs/nestjs';
+import { BaseRepository, BaseService, BaseController, ApiResponse } from '@sdcorejs/nestjs/core';
+import { AuthGuard, HasPermission, JwtModule, KeycloakJwtStrategy } from '@sdcorejs/nestjs/auth';
+import { ZodValidationGuard, parseZod } from '@sdcorejs/nestjs/validation';
 ```
 
-## ORM building blocks — `@sdcorejs/nestjs/orm`
+Root re-exports the common surface for ergonomic imports, but the packs should prefer the canonical sub-paths above.
 
-**`BaseEntity`** — abstract; provides only a uuid `id`.
+## Core Building Blocks - `@sdcorejs/nestjs/core`
+
+**`BaseEntity`** is minimal: uuid `id` only. Use `WithTimestamps(BaseEntity)` for `createdAt`, `updatedAt`, `deletedAt`; use `WithAudit(BaseEntity)` for timestamps plus `createdBy`, `modifiedBy`, `creator`, `modifier`.
 
 ```ts
-import { BaseEntity, WithTimestamps, WithAudit } from '@sdcorejs/nestjs/orm';
+import { BaseEntity, WithAudit } from '@sdcorejs/nestjs/core';
 import { Entity, Column } from 'typeorm';
 
 @Entity('product')
 export class Product extends WithAudit(BaseEntity) {
-  @Column() name!: string;
+  @Column()
+  name!: string;
 }
 ```
 
-**Mixins** (compose onto `BaseEntity`):
-- `WithTimestamps(BaseEntity)` → adds `createdAt` (`update:false`), `updatedAt`, `deletedAt`.
-- `WithAudit(BaseEntity)` → extends timestamps + `createdBy` / `modifiedBy` + `creator` / `modifier` (`UserSnapshot`).
+Enterprise migrations may keep a local `src/common/base-entity.ts` when the live schema uses legacy column names such as `modifiedAt`. That is an app-template decision; `BaseRepository`, `BaseService`, and `BaseController` are column-name agnostic enough to operate on that local base.
 
-**`BaseRepository<T>`** — `constructor(target, dataSource, options?)`. Reads auto-apply `WHERE deletedAt IS NULL`.
+**`BaseRepository<T>`** is constructed with `constructor(target, dataSource, options?)`.
 
 ```ts
-import { BaseRepository } from '@sdcorejs/nestjs/orm';
+import { BaseRepository } from '@sdcorejs/nestjs/core';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 export class ProductRepository extends BaseRepository<Product> {
-  constructor(dataSource: DataSource) {
-    super(Product, dataSource, { logHistory: true }); // { logHistory?, tenancyStrategy?, auditStrategy?, contextService?, historyRecorder? }
+  constructor(@InjectDataSource() dataSource: DataSource) {
+    super(Product, dataSource, { logHistory: true });
   }
 }
 ```
-- Read: `paging(req)`, `pagingDeleted(req)`, `all(filters?)`, `search(keyword, filters?)`, `detail(id)`.
-- Write: `create(entity, qr?)`, `update(entity, qr?)`, `import(entities, qr?)`, `delete(ids)`, `softDelete(ids)`, `restore(ids)`.
-- Accessors: `queryRunner`, `repository`, `getRepository(qr?)`.
-- Interface: `IBaseRepository<T>`.
 
-**`BaseService<T, TDto>`** — `constructor(repository)`, abstract `mapDTO(entity): TDto`. Mirrors repo read/write, maps results via `mapDTO`. DTO shape: `{ id, deletable?, restorable? }`. Interface: `IBaseService<T, TDto>`.
+- Read: `paging(req, args?)`, `pagingDeleted(req, args?)`, `all(filters?, args?)`, `search(keyword, filters?)`, `detail(id, args?)`.
+- Write: `create(entity, qr?)`, `update(entity, qr?)`, `import(entities, qr?)`, `delete(idOrIds, qr?)`, `softDelete(idOrIds, qr?)`, `restore(idOrIds, qr?)`.
+- Accessors: `queryRunner`, `repository`, `target`, `getRepository(qr?)`.
+- Types: `IBaseRepository<T>`, `BaseRepositoryArgs<T>`.
+
+**`BaseService<T, TDto>`** mirrors repository reads/writes and maps results through `mapDTO(entity)`.
 
 ```ts
-import { BaseService } from '@sdcorejs/nestjs/orm';
+import { BaseService, type IBaseService } from '@sdcorejs/nestjs/core';
 
-export class ProductService extends BaseService<Product, ProductDto> {
-  constructor(repo: ProductRepository) { super(repo); }
-  mapDTO(e: Product): ProductDto { return { id: e.id, name: e.name }; }
+export interface IProductService extends IBaseService<Product, ProductDto> {}
+export const IProductService = Symbol('IProductService');
+
+export class ProductService extends BaseService<Product, ProductDto> implements IProductService {
+  constructor(repo: ProductRepository) {
+    super(repo);
+  }
+
+  mapDTO(entity: Product | undefined | null): ProductDto | undefined | null {
+    return entity ? { id: entity.id, name: entity.name } : entity;
+  }
 }
 ```
 
-**`BaseController<T, TDto>`** — `constructor(baseService)`; auto-mounts `POST /search`, `POST /paging`, `GET /all`, `GET /:id`, `DELETE /:id`; wraps results in `ApiResponse`.
+DTOs must satisfy `{ id: string; deletable?: boolean; restorable?: boolean }`. `BaseService.create` and `BaseService.update` accept an optional `QueryRunner`; `BaseService.import` does not expose a `QueryRunner`, so use `BaseRepository.import(..., qr)` directly for transactional imports.
+
+**`BaseController<T, TDto>`** exposes the generic read/delete surface:
+
+- `POST /search`
+- `POST /paging`
+- `GET /:id`
+- `DELETE /:id`
+
+`GET /all`, soft-delete, restore, and paging-deleted are available on `BaseService`, but are not exposed by the generic controller. Add explicit subclass routes when an entity really needs them.
 
 ```ts
-import { BaseController } from '@sdcorejs/nestjs/orm';
+import { BaseController } from '@sdcorejs/nestjs/core';
 import { Controller } from '@nestjs/common';
 
 @Controller('products')
 export class ProductController extends BaseController<Product, ProductDto> {
-  constructor(service: ProductService) { super(service); }
+  constructor(service: ProductService) {
+    super(service);
+  }
 }
 ```
 
-## Decorators — `@sdcorejs/nestjs/orm`
+## Decorators - `@sdcorejs/nestjs/core`
 
-- `@TenantScoped()` / `@Scoped()` (alias) — mark the tenancy column on an entity.
-- `@SearchableFields({ exact: [], contain: [], activeColumn? })` — declare which columns `search()` matches.
-- `@Schema({ name, description })` / `@SchemaProp({ label, required, unique })` — describe entity / property metadata.
+- `@Scoped()` marks the property names that tenancy filters and write auto-fill use.
+- `@SearchableFields({ exact, contain, activeColumn })` declares columns used by `search(keyword)`.
+- `@Schema()` and `@SchemaProp()` provide schema metadata returned by `BaseService.schema()`.
 
 ```ts
-import { Scoped, SearchableFields, Schema, SchemaProp } from '@sdcorejs/nestjs/orm';
+import { Scoped, SearchableFields, Schema, SchemaProp } from '@sdcorejs/nestjs/core';
 
-@Schema({ name: 'Product', description: 'Catalog item' })
+@Schema({ name: 'Product' })
 @SearchableFields({ exact: ['code'], contain: ['name'], activeColumn: 'isActive' })
 export class Product extends WithAudit(BaseEntity) {
-  @Scoped() @Column() tenantId!: string;
-  @SchemaProp({ label: 'Name', required: true, unique: true }) @Column() name!: string;
+  @Scoped()
+  @Column()
+  tenantCode!: string;
+
+  @SchemaProp({ label: 'Name', required: true })
+  @Column()
+  name!: string;
 }
 ```
 
-## Auth & permission — `@sdcorejs/nestjs/permission`
+## Auth, Permission, JWT - `@sdcorejs/nestjs/auth`
 
-- `AuthGuard` — extends passport JWT; validates the JWT, loads codes via `IPermissionStrategy.load(ctx)`, then enforces `@HasPermission`.
-- `@HasPermission(code)` / `@HasAnyPermission(...codes)` — per-route permission requirements.
-- `InternalGuard` — service-to-service auth via `x-internal-secret` header + `INTERNAL_SECRET_PROVIDER`.
-- `IPermissionStrategy { load(ctx): Promise<string[]>; check?(codes, required): boolean }`.
+- `AuthGuard` extends `PassportAuthGuard('jwt')`, validates the token, loads permission codes via `IPermissionStrategy.load()`, and enforces `@HasPermission` / `@HasAnyPermission`.
+- `InternalGuard` validates service-to-service calls through the configured internal secret provider.
+- `JwtModule.forRoot(config, options?)` registers `JwtStrategy`, `KeycloakJwtStrategy`, or a custom strategy.
+- `KeycloakJwtStrategy` verifies RS256 tokens through issuer JWKS and should be subclassed when the app needs to enrich `req.user`.
+- JWKS config must declare an issuer policy: `allowedIssuers`, `allowedIssuerHosts`, or `issuerValidator`.
 
 ```ts
-import { AuthGuard, HasPermission } from '@sdcorejs/nestjs/permission';
-import { ZodValidationGuard } from '@sdcorejs/nestjs/validation';
-import { UseGuards, Post, Body } from '@nestjs/common';
+import { AuthGuard, HasPermission, JwtModule, KeycloakJwtStrategy } from '@sdcorejs/nestjs/auth';
 
-@UseGuards(AuthGuard, ZodValidationGuard(productSchema))
-@HasPermission('product:create')
+JwtModule.forRoot(
+  { jwks: { allowedIssuerHosts: ['https://keycloak.example'] } },
+  { strategy: AppJwtStrategy, imports: [AdminModule] },
+);
+
+@UseGuards(AuthGuard)
+@HasPermission('crm_task:create')
 @Post()
-create(@Body() dto: ProductDto) { /* ... */ }
+create(@Body() dto: TaskCreateReq) {
+  // ...
+}
 ```
-- **Guard order:** `@UseGuards(AuthGuard, ZodValidationGuard(schema))` + `@HasPermission` per route.
 
-## Validation — `@sdcorejs/nestjs/validation`
+Permission codes are flat strings such as `<module>_<entity>:<action>`.
 
-- `ZodValidationGuard(schema | { body?, query?, params? }, source? = 'body')` — coerces + replaces input; throws 400 `{ code: 'core.validation.failed', message, data: { issues } }`. Zod v4 only.
-- Presets:
-  - `zPaging` — `{ pageNumber: coerce int ≥0 default 0, pageSize: coerce int 1..1000 default 10 }`.
-  - `zUuid(msg?)` — uuid string.
-  - `zBool` — coerced boolean.
+## Validation - `@sdcorejs/nestjs/validation`
+
+- `ZodValidationGuard(schema | { body?, query?, params? }, source = 'body')` validates and replaces the selected request input.
+- `parseZod(schema, value)` is useful for custom controller bodies when a guard is not ergonomic.
+- Presets: `zPaging`, `zUuid(message?)`, `zBool`, `zPageNumber`, `zPageSize`.
 
 ```ts
 import { ZodValidationGuard, zPaging, zUuid } from '@sdcorejs/nestjs/validation';
 import { z } from 'zod';
 
-const findSchema = { query: zPaging, params: z.object({ id: zUuid() }) };
+const findSchema = {
+  query: zPaging,
+  params: z.object({ id: zUuid() }),
+};
 
 @UseGuards(ZodValidationGuard(findSchema))
-@Get(':id') find() { /* validated query + params */ }
-```
-
-## JWT & Keycloak — `@sdcorejs/nestjs/jwt`
-
-- `JwtModule.forRoot(config, options?)`:
-  - `config = { secret }` → symmetric `JwtStrategy`.
-  - `config = { jwks: { allowedIssuers: string[] } }` → `KeycloakJwtStrategy` (JWKS at `${iss}/protocol/openid-connect/certs`).
-  - `options.strategy` → a custom strategy subclass.
-- Custom strategy maps claims → app user.
-- Tokens / types: `JWT_CONFIG`, `JwtConfig`, `JwtPayload`.
-
-```ts
-import { JwtModule, KeycloakJwtStrategy } from '@sdcorejs/nestjs/jwt';
-
-class AppJwtStrategy extends KeycloakJwtStrategy {
-  validate(payload: JwtPayload) { return { id: payload.sub, roles: payload.realm_access?.roles }; }
-}
-
-JwtModule.forRoot({ jwks: { allowedIssuers: ['https://kc/realms/app'] } }, { strategy: AppJwtStrategy });
-```
-
-## Context — `@sdcorejs/nestjs/context`
-
-- `ContextService` (AsyncLocalStorage) — `get/set(key)`; getters `userId` / `tenant` / `lang` / `user` / `permissions`; `hasPermission(code)`.
-- `RequestContext` interface — extend via TS declaration-merging.
-- `ContextMiddleware` — auto-wired by `ContextModule.forRoot({ headers: { tenant, userId, lang, customHeaders } })`.
-
-```ts
-import { ContextModule, ContextService } from '@sdcorejs/nestjs/context';
-
-ContextModule.forRoot({ headers: { tenant: 'x-tenant-id', userId: 'x-user-id', lang: 'x-lang' } });
-
-// inside a service:
-constructor(private ctx: ContextService) {}
-get tenant() { return this.ctx.tenant; }
-```
-
-## Tenancy & audit strategies — `@sdcorejs/nestjs/tenancy` + `@sdcorejs/nestjs/audit`
-
-- `ITenancyStrategy { getCurrentScope(ctx): Record<string, unknown>; shouldBypass(ctx): boolean }`.
-- `IAuditStrategy { onCreate/onUpdate/onSoftDelete(entity, ctx) }`.
-- `BaseRepository` injects scope filters on reads + auto-fills `@Scoped` columns on writes (unless `shouldBypass`); calls audit hooks on write.
-
-```ts
-import { ITenancyStrategy } from '@sdcorejs/nestjs/tenancy';
-import { IAuditStrategy } from '@sdcorejs/nestjs/audit';
-
-class TenancyStrategy implements ITenancyStrategy {
-  getCurrentScope(ctx) { return { tenantId: ctx.tenant }; }
-  shouldBypass(ctx) { return ctx.user?.isSuperAdmin === true; }
-}
-class AuditStrategy implements IAuditStrategy {
-  onCreate(entity, ctx) { entity.createdBy = ctx.userId; }
-  onUpdate(entity, ctx) { entity.modifiedBy = ctx.userId; }
-  onSoftDelete(entity, ctx) { /* ... */ }
+@Get(':id')
+find() {
+  // validated query + params
 }
 ```
 
-## Bootstrap (SdCoreModule) — root `@sdcorejs/nestjs`
+## Context, Tenancy, Audit - `@sdcorejs/nestjs/core`
 
-`SdCoreModule.forRoot({ context?, tenancy?, audit?, permission?, cache?, http?, jwt?, i18n?, providers? })` — omitted keys = no-op / default.
+- `ContextService` uses AsyncLocalStorage and exposes `get/set`, `userId`, `tenant`, `lang`, `user`, `permissions`, and `hasPermission(code)`.
+- `ContextMiddleware` is wired by `SdCoreModule.forRoot({ context })`.
+- `ITenancyStrategy` can be supplied as a class, or tenancy can use inline callbacks `{ resolve, bypass }`.
+- `IAuditStrategy` fills audit fields for entities produced by `WithAudit`.
+
+```ts
+import { ContextService, type ITenancyStrategy, type RequestContext } from '@sdcorejs/nestjs/core';
+
+export class AppTenancyStrategy implements ITenancyStrategy {
+  getCurrentScope(ctx: RequestContext) {
+    return { tenantCode: ctx.custom?.tenantCode };
+  }
+
+  shouldBypass(ctx: RequestContext) {
+    return ctx.custom?.isInternalCall === true;
+  }
+}
+```
+
+## Bootstrap - Root `@sdcorejs/nestjs`
+
+`SdCoreModule.forRoot` composes the cross-cutting modules. Omitted keys use defaults or are disabled. Opt-in keys include `jwt`, `i18n`, `uploadedFile`, `actionHistory`, `jobScheduler`, and `queue`.
 
 ```ts
 import { SdCoreModule } from '@sdcorejs/nestjs';
@@ -206,47 +205,76 @@ import { SdCoreModule } from '@sdcorejs/nestjs';
 @Module({
   imports: [
     SdCoreModule.forRoot({
-      context: { headers: { tenant: 'x-tenant-id', userId: 'x-user-id', lang: 'x-lang' } },
-      tenancy: { strategy: TenancyStrategy },
-      audit: { strategy: AuditStrategy },
-      permission: { strategy: PermissionStrategy },
-      jwt: { jwks: { allowedIssuers: ['https://kc/realms/app'] } },
-      i18n: { fallbackLanguage: 'vi', catalogs },
+      context: {
+        headers: {
+          userId: 'x-user-id',
+          lang: ['accept-language', 'x-language'],
+          customHeaders: {
+            tenantCode: 'x-tenant-code',
+            departmentCode: 'x-department-code',
+          },
+        },
+      },
+      cache: {},
+      i18n: { fallbackLanguage: 'vi', supportedLanguages: ['vi', 'en'], catalogs },
+      permission: { strategy: AppPermissionStrategy },
+      internalSecret: { envVar: 'INTERNAL_SECRET_KEY' },
+      tenancy: {
+        bypass: (ctx) => ctx.custom?.isMaster === true,
+        resolve: (ctx) => ({ tenantCode: ctx.custom?.tenantCode }),
+      },
+      uploadedFile: { folder: 'enterprise' },
+      actionHistory: { resolveActor: (ctx) => ({ userId: ctx.userId }) },
+      jobScheduler: {},
     }),
   ],
 })
 export class AppModule {}
 ```
 
-**DI tokens:** `CONTEXT_HEADERS_CONFIG`, `TENANCY_STRATEGY`, `AUDIT_STRATEGY`, `PERMISSION_STRATEGY`, `INTERNAL_SECRET_PROVIDER`, `INTERNAL_CONTEXT_ENRICHER`.
+When a custom JWT strategy needs providers from `AdminModule`, do not use the `jwt` convenience key. Register `JwtModule.forRoot(..., { strategy, imports: [AdminModule] })` from `@sdcorejs/nestjs/auth` as a separate import, matching the enterprise reference app.
 
-**i18n:** `{ fallbackLanguage: 'vi', catalogs }` → bilingual error envelope `{ code, message }`.
+## Services - `@sdcorejs/nestjs/services`
 
-## Response & errors — `@sdcorejs/nestjs/orm` (re-exported at root)
-
-- `ApiResponse.ok(data)` — success envelope.
-- `ApiResponse.noContent()` — empty success.
-- `ApiResponse.error(code, message, data?)` — error envelope.
-- `apiError(code, message, data?)` → `{ code, message, data? }`.
+- `CacheService`, `CacheModule`, `CacheInterceptor`, `@Cached`, `RequestCacheMiddleware`.
+- `HttpService`, `HttpClientModule`.
 
 ```ts
-import { ApiResponse, apiError } from '@sdcorejs/nestjs';
+import { Cached, CacheService } from '@sdcorejs/nestjs/services';
+```
+
+## Features - `@sdcorejs/nestjs/features`
+
+- Uploaded files: `UploadedFile`, `UploadedFileService`, `UploadedFileController`, `IUploadedFileStorage`, `UploadedFileModule`, `LocalUploadedFileStorage`, `AwsUploadedFileStorage`.
+- Action history: `ActionHistory`, `ActionHistoryService`, `ActionHistoryController`.
+- Job scheduler: `JobScheduler`, `JobSchedulerService`, `JobSchedulerType`, `JobSchedulerStatus`.
+
+The drop-in controllers are not auto-registered; add them to an app module's `controllers` array so they inherit that module's route prefix.
+
+## Response & Errors - `@sdcorejs/nestjs/core`
+
+- `ApiResponse.ok(data)` creates a success envelope.
+- `ApiResponse.noContent()` creates an empty success envelope.
+- `ApiResponse.error(code, message, data?)` creates an error envelope.
+- `apiError(code, message, data?)` creates the error body used inside Nest exceptions.
+
+```ts
+import { ApiResponse, apiError } from '@sdcorejs/nestjs/core';
 
 return ApiResponse.ok(dto);
 return ApiResponse.noContent();
 throw new BadRequestException(apiError('product.duplicate', 'Name already exists'));
 ```
 
-## Defaults when a strategy is omitted
+## Defaults
 
-- **No `tenancy.strategy`** → reads/writes apply NO scope filter (single-tenant behavior); `@Scoped` columns are not auto-filled.
-- **No `audit.strategy`** → audit hooks are no-ops; `WithAudit` columns must be set manually.
-- **No `permission.strategy`** → `AuthGuard` validates the JWT only; `@HasPermission` has no codes to check against (treat as deny / configure a strategy).
-- **No `context`** → `ContextService` getters resolve from no middleware-populated store (must be wired for tenancy/audit/i18n to read request data).
-- **No `jwt`** → no JWT strategy registered; `AuthGuard` cannot validate tokens.
-- **No `i18n`** → error envelope uses the raw `code` / `message` with no catalog translation.
-- Soft-delete (`deletedAt IS NULL`) on reads is always on — independent of any strategy.
+- No tenancy strategy or callbacks: no scope filter and no scoped-column auto-fill.
+- No audit strategy: audit hooks are no-ops.
+- No permission strategy: routes with `@HasPermission` deny by default.
+- No context config: request context is not populated from headers.
+- No JWT config or separate `JwtModule`: `AuthGuard` cannot validate tokens.
+- No i18n config: error envelopes keep raw `code` / `message`.
 
-## Version pin
+## Version Pin
 
-Version pin: `@sdcorejs/nestjs@^0.1.x` — update this catalog when core changes (single source of truth for the write-code packs).
+Version pin: `@sdcorejs/nestjs@^1.0.0`. Update this catalog whenever a new public API version changes exports, constructor signatures, or default behavior.
