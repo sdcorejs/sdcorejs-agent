@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-task-tracker
-description: MANDATORY skill. Maintains a living TODO file per track. READ mode at session start to know current priorities. WRITE/EDIT mode at the end of every code-writing task (runs immediately after `sdcorejs-auto-docs`) to tick off `[x]` completed tasks and append new tasks parsed from auto-docs' "Next suggested action" or "Open questions" sections. Pairs with `sdcorejs-auto-docs` (one-session summary) and `sdcorejs-memories` (durable knowledge). Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill. Maintains a living TODO file per track. READ mode at session start to know current priorities. WRITE/EDIT mode at the end of every code-writing task (runs after `sdcorejs-auto-docs` and `sdcorejs-write-user-guide`) to tick off `[x]` completed tasks and append new tasks parsed from auto-docs' "Next suggested action", "Open questions", or the generated user guide's coverage gaps. Pairs with `sdcorejs-auto-docs` (one-session summary), `sdcorejs-write-user-guide` (user-facing coverage), and `sdcorejs-memories` (durable knowledge). Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 

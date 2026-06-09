@@ -110,13 +110,13 @@ orchestration/branch-ready
 orchestration/auto-docs  ← MANDATORY session summary to <target>/.sdcorejs/docs/<track>/
   ↓
 sdcorejs-write-user-guide (Mode 1) ← MANDATORY per-module — update <target>/.sdcorejs/user-guide/<module>.md (features / routes / permissions / data + Coverage-vs-requirements); aggregate rebuilds at ship
-orchestration/auto-task-tracker   ← MANDATORY (immediately after auto-docs) — tick done + append new in <target>/.sdcorejs/tasks/<track>.md
+orchestration/auto-task-tracker   ← MANDATORY (after write-user-guide) — tick done + append new in <target>/.sdcorejs/tasks/<track>.md
 orchestration/memories            ← durable knowledge (when applicable) to <target>/.sdcorejs/memories/<track>/
 ```
 
 After `branch-ready`, an **OPTIONAL packaging branch** may run `sdcorejs-dockerize → sdcorejs-auth → sdcorejs-run-guide` to deliver a runnable Docker stack (the non-tech default). See "Infra / packaging" below.
 
-**Non-tech one-door:** `sdcorejs-solution-builder` chains persona → clarify (feature+UI) → spec/plan (gates) → nestjs-write-code → angular-write-code → dockerize → auth → run-guide → verify.
+**Non-tech one-door:** `sdcorejs-solution-builder` chains persona → clarify (feature+UI) → spec/plan (gates) → build backend+frontend → dockerize → auth → run-guide → stack verify → branch-ready → auto-docs → write-user-guide → auto-task-tracker.
 
 ## Mandatory rules (apply to every track)
 
@@ -168,7 +168,7 @@ Loaded by every track at the start of every feature. Each detects the track at r
 | `sdcorejs-auto-specs` | runs IMMEDIATELY after `sdcorejs-review-spec` approval — snapshots to `.sdcorejs/specs/<track>/` so future `sdcorejs-write-spec` can mirror style | ✅ on approval |
 | `sdcorejs-auto-plans` | runs IMMEDIATELY after `sdcorejs-review-plan` approval — snapshots to `.sdcorejs/plans/<track>/` so future `sdcorejs-write-plan` can mirror style | ✅ on approval |
 | `sdcorejs-write-user-guide` | end of write-code (per-module guide, Mode 1) / ship (aggregate rebuild) / "viết user guide" / "đọc toàn dự án viết user guide" — updates `.sdcorejs/user-guide/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements) | ✅ per-module on write-code |
-| `sdcorejs-auto-task-tracker` | runs IMMEDIATELY after auto-docs — ticks `[x]` done, appends new tasks to `.sdcorejs/tasks/<track>.md` | ✅ |
+| `sdcorejs-auto-task-tracker` | runs after auto-docs + write-user-guide — ticks `[x]` done, appends new tasks to `.sdcorejs/tasks/<track>.md` | ✅ |
 | `sdcorejs-memories` | "ghi nhớ", durable knowledge — write to target `.sdcorejs/memories/<track>/` | ✅ on trigger |
 | `sdcorejs-repair-loop` | runs after `sdcorejs-review` outputs findings — categorize / auto-apply / iterate until Critical+Important resolved | ✅ on findings |
 | `sdcorejs-comment-code` | ASK gate at the comment phase — skip / simple / medium / full; outcome optional but ASK is mandatory | ✅ ASK |
@@ -177,7 +177,7 @@ Loaded by every track at the start of every feature. Each detects the track at r
 | `sdcorejs-using-worktrees` | before `<track>-write-code` or parallel fan-out when work needs isolation — detect/create isolated workspace + clean baseline |  |
 | `sdcorejs-persona` | first request in a target project with no `.sdcorejs/persona.md`; "giải thích dễ hiểu", "set persona" — ask-once tech/non-tech, store flag, load `_refs/shared/persona.md` | auto on first entry |
 | `sdcorejs-using-skills` | session-start bootstrap (plugin context) — portable dispatch protocol so skills fire even without this CLAUDE.md present | auto (SessionStart hook) |
-| `sdcorejs-solution-builder` | "build me an app / a system; the non-tech one-door full-app flow" — chains persona → clarify → spec/plan (2 gates) → nestjs-write-code → angular-write-code → dockerize → auth → run-guide → verify |  |
+| `sdcorejs-solution-builder` | "build me an app / a system; the non-tech one-door full-app flow" — chains persona → clarify → spec/plan (2 gates) → build backend+frontend → dockerize → auth → run-guide → stack verify → final docs/task tail |  |
 
 ### Workflow utilities
 
