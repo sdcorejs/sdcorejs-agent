@@ -5,238 +5,129 @@ import Footer from "../components/Footer.astro";
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-const skills = [
-  { code: "00", name: "onboarding", note: "Orient + dispatch the right skill" },
-  { code: "07", name: "write-code", note: "Orchestrator — runs sub-skills per task", primary: true },
-  { code: "10", name: "init-portal", note: "Bootstrap a new portal (@sdcorejs/angular)" },
-  { code: "11", name: "init-module", note: "Feature module + config + guards" },
-  { code: "12", name: "init-entity", note: "Full CRUD entity (model/service/routes/pages)", primary: true },
-  { code: "20", name: "screen-list", note: "SdTable + server paging + filters" },
-  { code: "21", name: "screen-detail", note: "CREATE / UPDATE / DETAIL + reactive form", primary: true },
-  { code: "31", name: "actions", note: "Workflow / bulk / custom side-effects" },
-  { code: "40", name: "e2e-test", note: "E2E from the autoID Inspector — see below", highlight: true },
-  { code: "50", name: "review-code", note: "Track-aware sdcorejs-review-code — Core UI conventions + scored 13-category audit; color-coded tables (🔴/🟡/🔵/🟢)" },
-];
-
-const sdlc = [
-  ["01", "brainstorm"],
-  ["02", "clarify"],
-  ["03", "spec"],
-  ["04", "review-spec"],
-  ["05", "plan"],
-  ["06", "review-plan"],
-  ["07", "write-code"],
+const packs = [
+  ["init-portal", "Portal shell, environments, Core UI setup"],
+  ["admin-screens", "Account, role, and permission management"],
+  ["init-module", "Feature module boundary and route registration"],
+  ["init-entity", "Full CRUD stack and focused tests"],
+  ["screen-list", "Table, filters, paging, bulk actions"],
+  ["screen-detail", "CREATE / UPDATE / DETAIL states and form refinement"],
+  ["actions", "Workflow, export, custom side effects"],
 ];
 
 const platforms = [
   {
-    id: "claude",
     name: "Claude Code",
     tag: "Plugin",
-    steps: [
-      "Add the marketplace + install the plugin (one time).",
-      "Skills auto-dispatch from their trigger phrases — just describe the task.",
-    ],
-    code: `/plugin marketplace add sdcorejs/sdcorejs-agent
-/plugin install sdcorejs-agent@sdcorejs`,
-    prompt:
-      'viết e2e test cho màn Quản lý căn hộ\n(dán kèm bản export MD-POM từ sd-autoid-inspector)',
+    code: "/plugin marketplace add sdcorejs/sdcorejs-agent\n/plugin install sdcorejs-agent@sdcorejs",
+    prompt: "create Product CRUD in the catalog module",
   },
   {
-    id: "copilot",
+    name: "Codex / Cursor",
+    tag: "AGENTS.md",
+    code: "codex\n# AGENTS.md is picked up automatically",
+    prompt: "add an approval action to the order detail screen",
+  },
+  {
     name: "GitHub Copilot",
     tag: "Chat mode",
-    steps: [
-      "Repo ships .github/copilot-instructions.md + the SDCoreJS chat mode.",
-      "Pick the “SDCoreJS SDLC” chat mode, or run a prompt file, then ask.",
-    ],
-    code: `# in Copilot Chat
-@workspace /sdcorejs-angular
-# or select the "SDCoreJS SDLC" chat mode`,
-    prompt:
-      'add e2e for the Unit list screen using this autoID inspector export …',
-  },
-  {
-    id: "codex",
-    name: "Codex / AGENTS.md",
-    tag: "AGENTS.md",
-    steps: [
-      "Codex (and Cursor / OpenAI Agents SDK) read AGENTS.md at the repo root.",
-      "Run in the repo or a target project; it dispatches skills by name.",
-    ],
-    code: `codex
-# AGENTS.md is picked up automatically;
-# skills dispatch by their name: frontmatter`,
-    prompt:
-      'generate Robot Framework e2e for màn chi tiết căn hộ from the inspector JSON',
+    code: "# Select the SDCoreJS SDLC chat mode\n@workspace",
+    prompt: "write Playwright E2E for the Product list screen",
   },
 ];
 ---
 
 <Layout
-  title="Angular Portal — SDCoreJS SDLC Agent"
-  description="The Angular Portal track: generate full-CRUD backoffice portals on @sdcorejs/angular through a gated SDLC, then turn the sd-autoid-inspector export into real E2E tests (Robot Framework / Playwright / Cypress)."
+  title="Angular Portal - SDCoreJS SDLC Agent"
+  description="The Angular Portal track: generate Core UI first backoffice portals through clarify, spec, plan, write-code, review, and E2E verification."
 >
   <Nav />
   <main id="top">
-    <!-- Track header -->
-    <section class="ap-hero">
+    <section class="track-hero">
       <div class="container">
-        <a class="back reveal" href={`${base}/#tracks`}>← All tracks</a>
+        <a class="back reveal" href={`${base}/#tracks`}>Back to tracks</a>
         <span class="eyebrow reveal"
-          ><span class="bullet" aria-hidden="true"></span>Track · ✅ Complete</span
+          ><span class="bullet" aria-hidden="true"></span>Angular Portal</span
         >
-        <h1 class="reveal">Angular Portal</h1>
+        <h1 class="reveal">Core UI first portal generation</h1>
         <p class="lead reveal">
-          Generate full-CRUD backoffice portals on
-          <a
-            href="https://www.npmjs.com/package/@sdcorejs/angular"
-            target="_blank"
-            rel="noopener"><code>@sdcorejs/angular</code></a
+          The Angular track turns confirmed requirements into backoffice modules,
+          list/detail screens, workflow actions, tests, review findings, and
+          user-guide updates. It is a single orchestrator that loads reference
+          packs on demand instead of flooding the model with every rule up front.
+        </p>
+      </div>
+    </section>
+
+    <section class="packs">
+      <div class="container">
+        <h2 class="reveal">Reference packs</h2>
+        <div class="pack-grid">
+          {
+            packs.map(([name, note], i) => (
+              <article class={`pack reveal delay-${(i % 4) + 1}`}>
+                <code>{name}</code>
+                <p>{note}</p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="inspector" id="e2e">
+      <div class="container">
+        <div class="head reveal">
+          <span class="eyebrow"
+            ><span class="bullet" aria-hidden="true"></span>E2E inspector loop</span
           >
-          (v20.0.1 — Angular 19 / 20 / 21) through a gated SDLC: clarify → spec →
-          plan → write-code → review → ship. This track will keep expanding —
-          newest addition: E2E from the autoID Inspector.
-        </p>
-        <div class="flow reveal" aria-label="SDLC workflow">
-          {
-            sdlc.map(([code, name], i) => (
-              <Fragment>
-                <span class="flow-step">
-                  <b>{code}</b>
-                  {name}
-                </span>
-                {i < sdlc.length - 1 && <span class="flow-arrow" aria-hidden="true">→</span>}
-              </Fragment>
-            ))
-          }
+          <h2>Selectors are input, not intent</h2>
+          <p class="lead">
+            The `sd-autoid-inspector` export helps the agent find stable
+            selectors, but the E2E skill still gates on flows, assertions, test
+            data, auth, and environment. That keeps generated tests useful
+            instead of producing a selector dump.
+          </p>
+        </div>
+
+        <div class="loop">
+          <article class="step reveal delay-1">
+            <b>1. Review</b>
+            <p>Review flags missing `autoId` on interactive Core UI elements.</p>
+          </article>
+          <article class="step reveal delay-2">
+            <b>2. Export</b>
+            <p>The inspector exports selectors, XPath, control type, and runtime state.</p>
+          </article>
+          <article class="step reveal delay-3">
+            <b>3. Gate</b>
+            <p>Brainstorm, clarify, and plan lock the actual cases before tests are written.</p>
+          </article>
+          <article class="step reveal delay-4">
+            <b>4. Verify</b>
+            <p>Playwright, Cypress, or Robot Framework specs run before handoff.</p>
+          </article>
         </div>
       </div>
     </section>
 
-    <!-- Skill list -->
-    <section class="ap-skills">
+    <section class="platforms">
       <div class="container">
-        <h2 class="reveal">Skills in this track</h2>
-        <div class="grid">
+        <h2 class="reveal">Use it from the agent you already have</h2>
+        <div class="platform-grid">
           {
-            skills.map((s, i) => (
-              <div
-                class={`skill reveal delay-${(i % 3) + 1}${s.primary ? " is-primary" : ""}${s.highlight ? " is-highlight" : ""}`}
-              >
-                <span class="code">{s.code}</span>
-                <div>
-                  <h3>{s.name}{s.highlight && <span class="new">new</span>}</h3>
-                  <p>{s.note}</p>
+            platforms.map((item, i) => (
+              <article class={`platform reveal delay-${i + 1}`}>
+                <div class="platform-head">
+                  <h3>{item.name}</h3>
+                  <span>{item.tag}</span>
                 </div>
-              </div>
+                <pre><code>{item.code}</code></pre>
+                <p><b>Prompt:</b> {item.prompt}</p>
+              </article>
             ))
           }
         </div>
-      </div>
-    </section>
-
-    <!-- E2E highlight -->
-    <section id="e2e" class="ap-e2e">
-      <div class="container">
-        <span class="eyebrow reveal"
-          ><span class="bullet" aria-hidden="true"></span>Featured</span
-        >
-        <h2 class="reveal">E2E from the autoID Inspector — real tests, not selector dumps</h2>
-        <p class="lead reveal">
-          A closed loop between Core UI, the review skill, and the QC automation
-          stack. The <code>sd-autoid-inspector</code> dev tool scans a page for
-          <code>[data-autoid]</code> selectors; the E2E skill turns that export into
-          layered tests — but only after a gate captures the test <em>intent</em>.
-        </p>
-
-        <div class="loop reveal">
-          <div class="loop-step">
-            <b>1 · Review warns</b>
-            <p>The code-review skill flags interactive elements missing <code>autoId</code> so devs backfill them.</p>
-          </div>
-          <span class="loop-arrow" aria-hidden="true">→</span>
-          <div class="loop-step">
-            <b>2 · Inspector exports</b>
-            <p>MD-POM (with page URL) / JSON / CSV — selectors, <code>xpath</code>, and runtime <code>state</code> (required, pattern, maxlength…).</p>
-          </div>
-          <span class="loop-arrow" aria-hidden="true">→</span>
-          <div class="loop-step">
-            <b>3 · Gated generation</b>
-            <p>brainstorm → clarify → plan → generate → verify. Selectors ≠ intent, so flows + assertions come from the gate.</p>
-          </div>
-        </div>
-
-        <div class="cols">
-          <div class="col reveal">
-            <h3>Two modes</h3>
-            <ul>
-              <li><b>A — fast happy-path</b> right after code generation.</li>
-              <li>
-                <b>B — gated</b> when you paste an inspector export or say “test
-                theo file đang code”. Mandatory brainstorm → clarify-requirements
-                → plan before any test is written.
-              </li>
-            </ul>
-          </div>
-          <div class="col reveal delay-1">
-            <h3>Frameworks</h3>
-            <ul>
-              <li>
-                <b>Robot Framework</b> — the QC baseline: Browser library,
-                <code>[data-autoid]</code> locators, 3-layer keywords (UI →
-                High → Verification).
-              </li>
-              <li><b>Playwright</b> / <b>Cypress</b> — auto-detected from the project.</li>
-            </ul>
-          </div>
-          <div class="col reveal delay-2">
-            <h3>Inspector gives / Gate adds</h3>
-            <ul>
-              <li><b>Export:</b> selectors, xpath, type, state, table scope.</li>
-              <li><b>Gate:</b> flows, expected results, test data, auth/env, navigation, overlay elements (options/toasts/dialogs).</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Usage samples -->
-    <section id="usage" class="ap-usage">
-      <div class="container">
-        <h2 class="reveal">How to use it — Claude Code, Copilot, Codex</h2>
-        <p class="lead reveal">
-          One skill pack, three agents. Each reads its own entry file; skills
-          dispatch from their <code>name</code> trigger — describe the task in
-          plain VI/EN.
-        </p>
-        <div class="grid3">
-          {
-            platforms.map((p, i) => (
-              <div class={`use reveal delay-${i + 1}`}>
-                <div class="use-head">
-                  <h3>{p.name}</h3>
-                  <span class="pill">{p.tag}</span>
-                </div>
-                <ol>
-                  {p.steps.map((st) => (
-                    <li>{st}</li>
-                  ))}
-                </ol>
-                <pre><code>{p.code}</code></pre>
-                <div class="prompt">
-                  <span class="prompt-label">Sample prompt</span>
-                  <code>{p.prompt}</code>
-                </div>
-              </div>
-            ))
-          }
-        </div>
-        <p class="foot reveal">
-          Full conventions:
-          <code>_refs/angular/e2e-robot-conventions.md</code> ·
-          component catalog: <code>_refs/angular/sdcorejs-angular/</code>.
-        </p>
       </div>
     </section>
   </main>
@@ -248,239 +139,132 @@ const platforms = [
     width: min(var(--container), 100% - 40px);
     margin-inline: auto;
   }
-  h1 {
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    line-height: 1.08;
-    margin: 12px 0 0;
-    letter-spacing: -0.02em;
-  }
-  h2 {
-    font-size: clamp(1.5rem, 3vw, 2.1rem);
-    letter-spacing: -0.01em;
-    margin: 0 0 8px;
-  }
-  .lead {
-    color: var(--c-text-soft);
-    font-size: 1.06rem;
-    max-width: 70ch;
-  }
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--c-blue-600);
-  }
-  .bullet {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--c-blue-500), var(--c-orange-500));
-  }
-  code {
-    font-family: var(--font-mono);
-    font-size: 0.88em;
-    background: var(--c-bg-muted);
-    padding: 1px 6px;
-    border-radius: 6px;
-  }
-  a:hover code {
-    color: var(--c-blue-600);
+
+  .track-hero {
+    padding: clamp(40px, 8vw, 84px) 0 36px;
+    background: linear-gradient(180deg, var(--c-blue-100), transparent 78%);
   }
 
-  /* Hero */
-  .ap-hero {
-    padding: clamp(28px, 6vw, 64px) 0 8px;
-    background: linear-gradient(180deg, var(--c-blue-100) 0%, transparent 70%);
-  }
   .back {
     display: inline-block;
     margin-bottom: 14px;
     color: var(--c-text-soft);
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 600;
   }
-  .back:hover { color: var(--c-blue-600); }
-  .flow {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px;
-    margin-top: 22px;
-  }
-  .flow-step {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 6px 12px;
-    background: #fff;
-    border: 1px solid var(--c-border);
-    border-radius: 999px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    box-shadow: var(--shadow-sm);
-  }
-  .flow-step b {
-    color: var(--c-blue-600);
-    font-variant-numeric: tabular-nums;
-  }
-  .flow-arrow { color: var(--c-muted); }
 
-  /* Skills */
-  .ap-skills { padding: clamp(32px, 6vw, 56px) 0; }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 14px;
-    margin-top: 18px;
+  .back:hover {
+    color: var(--c-blue-600);
   }
-  .skill {
-    display: flex;
-    gap: 14px;
-    padding: 16px 18px;
-    background: #fff;
+
+  h1 {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    line-height: 1.08;
+    margin: 12px 0 0;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  .bullet {
+    width: 6px;
+    height: 6px;
+    background: var(--c-orange-500);
+    border-radius: 999px;
+  }
+
+  .packs,
+  .platforms {
+    background: var(--c-bg);
+  }
+
+  .pack-grid,
+  .platform-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
+
+  .pack,
+  .platform,
+  .step {
+    padding: 22px;
+    background: var(--c-bg);
     border: 1px solid var(--c-border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
-    transition: transform 180ms var(--ease), box-shadow 180ms var(--ease);
-  }
-  .skill:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-  .skill .code {
-    font-family: var(--font-mono);
-    font-weight: 700;
-    color: var(--c-text-muted);
-    font-size: 0.95rem;
-  }
-  .skill h3 { margin: 0; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
-  .skill p { margin: 3px 0 0; color: var(--c-text-soft); font-size: 0.9rem; }
-  .skill.is-primary { border-color: var(--c-blue-500); }
-  .skill.is-highlight {
-    border-color: var(--c-orange-500);
-    background: linear-gradient(180deg, var(--c-orange-100) 0%, #fff 60%);
-  }
-  .new {
-    font-size: 0.62rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: 700;
-    color: #fff;
-    background: var(--c-orange-600);
-    padding: 2px 7px;
-    border-radius: 999px;
   }
 
-  /* E2E highlight */
-  .ap-e2e {
-    padding: clamp(32px, 6vw, 60px) 0;
+  .pack code {
+    color: var(--c-blue-600);
+    background: var(--c-blue-100);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-weight: 700;
+  }
+
+  .pack p,
+  .step p,
+  .platform p {
+    margin: 10px 0 0;
+    color: var(--c-text-soft);
+  }
+
+  .inspector {
     background: var(--c-bg-soft);
     border-block: 1px solid var(--c-border);
   }
-  .loop {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: stretch;
-    gap: 10px;
-    margin: 24px 0 8px;
-  }
-  .loop-step {
-    flex: 1 1 220px;
-    padding: 16px;
-    background: #fff;
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-  }
-  .loop-step b { color: var(--c-blue-600); }
-  .loop-step p { margin: 6px 0 0; font-size: 0.9rem; color: var(--c-text-soft); }
-  .loop-arrow {
-    align-self: center;
-    color: var(--c-muted);
-    font-size: 1.3rem;
-  }
-  .cols {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 18px;
-    margin-top: 26px;
-  }
-  .col h3 { margin: 0 0 8px; font-size: 1.05rem; }
-  .col ul { margin: 0; padding-left: 18px; }
-  .col li { margin: 6px 0; color: var(--c-text-soft); font-size: 0.92rem; }
 
-  /* Usage */
-  .ap-usage { padding: clamp(32px, 6vw, 60px) 0; }
-  .grid3 {
+  .head {
+    max-width: 780px;
+    margin-bottom: 28px;
+  }
+
+  .loop {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 16px;
-    margin-top: 20px;
   }
-  .use {
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    background: #fff;
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-  }
-  .use-head { display: flex; align-items: center; justify-content: space-between; }
-  .use-head h3 { margin: 0; font-size: 1.1rem; }
-  .pill {
-    font-size: 0.7rem;
-    font-weight: 600;
+
+  .step b {
     color: var(--c-blue-600);
-    background: var(--c-blue-100);
+  }
+
+  .platform-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .platform-head h3 {
+    margin: 0;
+  }
+
+  .platform-head span {
     padding: 3px 9px;
     border-radius: 999px;
+    background: var(--c-orange-100);
+    color: var(--c-orange-600);
+    font-size: 0.75rem;
+    font-weight: 700;
   }
-  .use ol { margin: 12px 0; padding-left: 18px; }
-  .use li { margin: 5px 0; color: var(--c-text-soft); font-size: 0.9rem; }
-  .use pre {
-    margin: 0 0 12px;
-    padding: 12px 14px;
-    background: var(--c-text);
-    color: #e6edf6;
-    border-radius: var(--radius-sm);
+
+  .platform pre {
+    margin: 0;
+    padding: 14px;
+    background: #0d1b2e;
+    color: #e7ecf2;
+    border-radius: 10px;
     overflow-x: auto;
   }
-  .use pre code {
-    background: none;
-    padding: 0;
-    color: inherit;
-    font-size: 0.82rem;
-    line-height: 1.55;
-    white-space: pre;
-  }
-  .prompt {
-    margin-top: auto;
-    padding: 12px 14px;
-    background: var(--c-bg-soft);
-    border: 1px dashed var(--c-border-strong);
-    border-radius: var(--radius-sm);
-  }
-  .prompt-label {
-    display: block;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--c-text-muted);
-    margin-bottom: 5px;
-  }
-  .prompt code {
-    background: none;
-    padding: 0;
-    color: var(--c-text);
-    font-size: 0.85rem;
-    white-space: pre-wrap;
-  }
-  .foot { margin-top: 22px; color: var(--c-text-muted); font-size: 0.86rem; }
 
-  .delay-1 { transition-delay: 70ms; }
-  .delay-2 { transition-delay: 140ms; }
-  .delay-3 { transition-delay: 210ms; }
+  .platform code {
+    color: inherit;
+    background: none;
+    padding: 0;
+    font-size: 0.84rem;
+  }
 </style>

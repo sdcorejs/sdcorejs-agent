@@ -7,12 +7,12 @@ const tracks = [
     statusLabel: "Available",
     tagline: "Backoffice portals with @sdcorejs/angular",
     description:
-      "8 skills covering full CRUD: init portal (with default logo), init module, init entity, list, detail (CREATE / UPDATE / DETAIL + reactive form), actions (workflow / bulk / custom). Plus 69 Core UI component references.",
+      "One Angular write-code orchestrator loads focused packs on demand: init portal, admin screens, module/entity CRUD, list/detail screens, and workflow or export actions.",
     bullets: [
-      "Module → Entity → Screens orchestrator",
+      "Module -> Entity -> Screens orchestrator",
       "Side-drawer vs full-page layout decision",
-      "MockCrudStore + seed data for offline dev",
-      "TDD-first generation gates",
+      "Core UI first, with stable autoId guidance",
+      "Runtime-localized labels and docs",
     ],
     accent: "blue",
     href: "#angular",
@@ -20,16 +20,16 @@ const tracks = [
   {
     id: "nestjs",
     name: "NestJS",
-    status: "soon",
-    statusLabel: "Coming Soon",
-    tagline: "Modular APIs with Postgres + DTOs",
+    status: "ready",
+    statusLabel: "Available",
+    tagline: "Modular APIs on @sdcorejs/nestjs",
     description:
-      "Backend skill pack for transactional services — controller / service / repository scaffolding, validation pipes, permission decorators, migrations, integration tests against real PG.",
+      "NestJS write-code now targets @sdcorejs/nestjs v1.0.0 patterns: init project, always-on admin, bounded modules, CRUD entity stacks, and custom actions.",
     bullets: [
-      "Module + entity + DTO + Zod schema",
-      "Transaction strategy decision gate",
-      "@HasPermission decorator wiring",
-      "Pg-mem / testcontainers integration tests",
+      "Simple vs enterprise profile-aware generation",
+      "BaseEntity, BaseRepository, BaseService, BaseController",
+      "Zod schemas + permission decorators",
+      "Admin users, roles, and permissions always on",
     ],
     accent: "orange",
   },
@@ -38,13 +38,13 @@ const tracks = [
     name: "Next.js Public Sites",
     status: "ready",
     statusLabel: "Available",
-    tagline: "Marketing sites with bilingual content + SEO",
+    tagline: "Public sites with localization-ready SEO",
     description:
-      "13-skill build-website pack — onboarding, brainstorm-driven scaffold, theme tokens, page composition, full SEO baseline, Open Graph, i18n (next-intl), ISR caching, responsive, real working contact form, content quality gate, audit-existing-site.",
+      "Next.js write-code dispatches 10 reference packs for site setup, theme, pages and blocks, SEO, OG previews, i18n, caching, responsive checks, contact forms, and content quality.",
     bullets: [
-      "VI / EN parity, no hardcoded strings",
+      "Language parity, no hardcoded strings",
       "30-min ISR + on-demand revalidate",
-      "Resend-backed contact form (real, not stubbed)",
+      "Real contact form, not a stub",
       "Content-quality + on-page SEO checker",
     ],
     accent: "purple",
@@ -60,8 +60,8 @@ const tracks = [
       >
       <h2>Pick the track your project needs</h2>
       <p class="lead">
-        Each track is an opinionated skill set: clarify → spec → plan → write
-        code → review → ship. Cross-track design phase is shared; per-track
+        Each track is an opinionated skill set: clarify -> spec -> plan -> write
+        code -> review -> ship. Cross-track design phase is shared; per-track
         generation, review, and tests are specialized.
       </p>
     </div>
@@ -69,9 +69,7 @@ const tracks = [
     <div class="grid">
       {
         tracks.map((t, i) => (
-          <article
-            class={`card accent-${t.accent} status-${t.status} reveal delay-${i + 1}`}
-          >
+          <article class={`card accent-${t.accent} status-${t.status} reveal delay-${i + 1}`}>
             <header>
               <span class={`status-pill ${t.status}`}>
                 <span class="pill-dot" aria-hidden="true" />
@@ -104,12 +102,7 @@ const tracks = [
             {t.href ? (
               <a class="cta" href={t.href}>
                 Explore the track
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
+                <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
                   <path
                     fill="none"
                     stroke="currentColor"
@@ -121,8 +114,8 @@ const tracks = [
                 </svg>
               </a>
             ) : (
-              <div class="cta cta-disabled" aria-disabled="true">
-                Stay tuned
+              <div class="cta cta-static" aria-disabled="true">
+                Ready in the pack
               </div>
             )}
           </article>
@@ -184,12 +177,7 @@ const tracks = [
     position: absolute;
     inset: 0 0 auto 0;
     height: 3px;
-    background: linear-gradient(
-      90deg,
-      var(--accent-fg),
-      var(--accent-fg) 60%,
-      transparent
-    );
+    background: linear-gradient(90deg, var(--accent-fg), var(--accent-fg) 60%, transparent);
     opacity: 0;
     transition: opacity 260ms var(--ease);
   }
@@ -213,23 +201,6 @@ const tracks = [
     --accent-fg: #7c3aed;
   }
 
-  /* Coming-soon visual treatment */
-  .card.status-soon {
-    background:
-      linear-gradient(180deg, var(--c-bg-soft), var(--c-bg) 40%),
-      var(--c-bg);
-  }
-
-  .card.status-soon h3,
-  .card.status-soon .tagline,
-  .card.status-soon .desc {
-    color: var(--c-text-muted);
-  }
-
-  .card.status-soon .bullets {
-    color: var(--c-text-muted);
-  }
-
   .status-pill {
     display: inline-flex;
     align-items: center;
@@ -245,19 +216,11 @@ const tracks = [
     align-self: flex-start;
   }
 
-  .status-pill.soon {
-    background: var(--c-bg-muted);
-    color: var(--c-text-muted);
-  }
-
   .pill-dot {
     width: 6px;
     height: 6px;
     border-radius: 999px;
     background: currentColor;
-  }
-
-  .card.status-ready .pill-dot {
     animation: glow 1.8s ease-in-out infinite;
   }
 
@@ -324,9 +287,7 @@ const tracks = [
     transform: translateX(3px);
   }
 
-  .cta-disabled {
-    background: var(--c-bg-muted);
-    color: var(--c-text-muted);
+  .cta-static {
     cursor: default;
     pointer-events: none;
   }

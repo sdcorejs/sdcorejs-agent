@@ -1,0 +1,186 @@
+---
+const phases = [
+  {
+    phase: "Phase 1",
+    title: "Deterministic skill-pack runner",
+    body:
+      "Loads source skills, Claude/plugin mirrors, and reference docs; then runs prompt evals without calling an LLM or external agent tool.",
+    command: "npm run test:e2e:phase1",
+  },
+  {
+    phase: "Phase 2",
+    title: "Codex + Claude CLI adapters",
+    body:
+      "Exercises adapter contracts with fake CLI executables, so CI can validate wiring without spending model calls.",
+    command: "npm run test:e2e:phase2",
+  },
+  {
+    phase: "Phase 3",
+    title: "Copilot and Cursor compatibility smoke",
+    body:
+      "Checks entrypoints for Codex, Cursor, Claude Code, and Copilot, then reuses the same prompt-eval fixture across profiles.",
+    command: "npm run test:e2e:phase3",
+  },
+  {
+    phase: "Phase 4",
+    title: "Target-app golden test",
+    body:
+      "Generates a tiny Dockerized app fixture and can run Docker, supertest, and Playwright when SDCOREJS_E2E_FULL=1 is enabled.",
+    command: "npm run test:e2e:phase4",
+  },
+];
+---
+
+<section id="quality" class="quality">
+  <div class="container">
+    <div class="head reveal">
+      <span class="eyebrow"
+        ><span class="bullet" aria-hidden="true"></span>Evidence before claims</span
+      >
+      <h2>Automated E2E checks for the agent itself</h2>
+      <p class="lead">
+        The repo now ships a Node-based E2E harness for the skill pack. The
+        default path is deterministic and cheap; the full golden target-app path
+        is explicit opt-in when Docker and browsers are available.
+      </p>
+    </div>
+
+    <div class="phase-grid">
+      {
+        phases.map((item, i) => (
+          <article class={`phase reveal delay-${i + 1}`}>
+            <span class="phase-tag">{item.phase}</span>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+            <code>{item.command}</code>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="full-mode reveal delay-4">
+      <div>
+        <h3>Full Phase 4 command</h3>
+        <p>
+          Run this only on a machine with Docker Desktop healthy, npm network
+          access, and Playwright browser installation available.
+        </p>
+      </div>
+      <pre><code>$env:SDCOREJS_E2E_FULL='1'
+npm run test:e2e:phase4
+Remove-Item Env:\SDCOREJS_E2E_FULL</code></pre>
+    </div>
+  </div>
+</section>
+
+<style>
+  .quality {
+    background: var(--c-bg-soft);
+    border-block: 1px solid var(--c-border);
+  }
+
+  .head {
+    max-width: 760px;
+    margin-bottom: 44px;
+  }
+
+  .bullet {
+    width: 6px;
+    height: 6px;
+    background: var(--c-blue-500);
+    border-radius: 999px;
+  }
+
+  .phase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
+
+  .phase {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 22px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .phase-tag {
+    align-self: flex-start;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: var(--c-blue-100);
+    color: var(--c-blue-600);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .phase h3 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .phase p {
+    margin: 0;
+    color: var(--c-text-soft);
+    font-size: 0.92rem;
+  }
+
+  .phase code {
+    margin-top: auto;
+    display: block;
+    padding: 10px 12px;
+    background: #0d1b2e;
+    color: #e7ecf2;
+    border-radius: 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .full-mode {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(280px, 1fr);
+    gap: 20px;
+    align-items: center;
+    padding: 24px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-md);
+  }
+
+  .full-mode h3 {
+    margin: 0 0 6px;
+  }
+
+  .full-mode p {
+    margin: 0;
+    color: var(--c-text-soft);
+  }
+
+  .full-mode pre {
+    margin: 0;
+    padding: 14px;
+    background: #0d1b2e;
+    color: #e7ecf2;
+    border-radius: 10px;
+    overflow-x: auto;
+  }
+
+  .full-mode code {
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+
+  @media (max-width: 760px) {
+    .full-mode {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

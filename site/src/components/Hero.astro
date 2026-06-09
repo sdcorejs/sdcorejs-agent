@@ -7,7 +7,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     <div class="hero-text">
       <span class="eyebrow reveal">
         <span class="dot"></span>
-        v0.0.1 • AI-assisted SDLC
+        v0.5.0 - runtime-localized SDLC
       </span>
 
       <h1 class="reveal delay-1">
@@ -16,17 +16,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       </h1>
 
       <p class="lead reveal delay-2">
-        SDCoreJS turns Claude Code, GitHub Copilot, and Codex into accountable
-        engineers on your stack. Requests flow through clarify → spec → plan →
-        write code → review → ship, with user-approval gates between each
-        phase and a documented audit trail. Three tracks — Angular Portal,
-        NestJS, Next.js — each with stack-specific conventions, generators,
-        reviews, and tests.
+        SDCoreJS turns Claude Code, GitHub Copilot, Codex, and Cursor into
+        accountable engineers on your stack. Requests flow through clarify ->
+        spec -> plan -> write code -> review -> ship, with user-approval gates
+        between each phase and a documented audit trail. The skill source is
+        authored in English and responds in the user's language at runtime.
       </p>
 
       <div class="actions reveal delay-3">
         <a class="btn btn-primary" href="#install">
-          <span>Install plugin</span>
+          <span>Install skill pack</span>
           <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
             <path
               fill="none"
@@ -38,12 +37,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
             ></path>
           </svg>
         </a>
-        <a class="btn btn-ghost" href="#angular">See Angular Portal</a>
+        <a class="btn btn-ghost" href="#quality">See E2E harness</a>
       </div>
 
       <div class="meta reveal delay-4">
         <div>
-          <strong>71</strong>
+          <strong>42</strong>
           <span>skills</span>
         </div>
         <div>
@@ -51,8 +50,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
           <span>tracks</span>
         </div>
         <div>
-          <strong>69</strong>
-          <span>Core UI refs</span>
+          <strong>147</strong>
+          <span>reference docs</span>
         </div>
       </div>
     </div>
@@ -72,16 +71,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     padding-block: clamp(80px, 12vw, 140px) clamp(60px, 10vw, 120px);
     overflow: hidden;
     background:
-      radial-gradient(
-        1100px 600px at 8% -10%,
-        var(--c-blue-100),
-        transparent 60%
-      ),
-      radial-gradient(
-        900px 500px at 100% 0%,
-        var(--c-orange-100),
-        transparent 55%
-      ),
+      radial-gradient(1100px 600px at 8% -10%, var(--c-blue-100), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, var(--c-orange-100), transparent 55%),
       var(--c-bg);
   }
 
@@ -93,16 +84,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       linear-gradient(rgba(13, 39, 72, 0.06) 1px, transparent 1px),
       linear-gradient(90deg, rgba(13, 39, 72, 0.06) 1px, transparent 1px);
     background-size: 32px 32px;
-    mask-image: radial-gradient(
-      ellipse 70% 60% at 50% 30%,
-      black 30%,
-      transparent 75%
-    );
-    -webkit-mask-image: radial-gradient(
-      ellipse 70% 60% at 50% 30%,
-      black 30%,
-      transparent 75%
-    );
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 30%, transparent 75%);
     pointer-events: none;
     opacity: 0.6;
   }
@@ -204,13 +187,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
   .glow {
     position: absolute;
-    inset: 8% 8% 8% 8%;
+    inset: 8%;
     border-radius: 50%;
-    background: radial-gradient(
-      circle,
-      rgba(33, 150, 243, 0.35),
-      transparent 65%
-    );
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.35), transparent 65%);
     filter: blur(40px);
     animation: glow 4s ease-in-out infinite;
     z-index: 0;

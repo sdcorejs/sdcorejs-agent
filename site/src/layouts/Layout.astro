@@ -7,20 +7,17 @@ interface Props {
 }
 
 const {
-  title = "SDCoreJS — An orchestrated SDLC for AI coding agents",
-  description = "SDCoreJS turns Claude Code, GitHub Copilot, and Codex into accountable engineers on your Angular, NestJS, and Next.js stack. Clarify → spec → plan → write code → review → ship, with user-approval gates between each phase and a documented audit trail.",
+  title = "SDCoreJS Agent - Runtime-localized SDLC for AI coding agents",
+  description = "SDCoreJS turns Claude Code, GitHub Copilot, Codex, and Cursor into accountable engineers for Angular, NestJS, and Next.js projects. It now ships global English-source skills plus deterministic E2E checks for the agent itself.",
 } = Astro.props;
 
-// Astro automatically prepends `import.meta.env.BASE_URL` for `~/` paths,
-// but for direct asset URLs we resolve it explicitly so absolute paths
-// keep working both at the GitHub Pages base path and at the dev root.
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const ogImage = `${base}/icon.png`;
 const canonical = `${Astro.site ?? ""}${base}/`.replace(/\/+$/, "/");
 ---
 
 <!doctype html>
-<html lang="vi">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -32,11 +29,9 @@ const canonical = `${Astro.site ?? ""}${base}/`.replace(/\/+$/, "/");
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
 
-    <!-- Branding -->
     <link rel="icon" type="image/png" href={`${base}/icon.png`} />
     <link rel="apple-touch-icon" href={`${base}/apple-touch-icon.png`} />
 
-    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -47,7 +42,6 @@ const canonical = `${Astro.site ?? ""}${base}/`.replace(/\/+$/, "/");
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <!-- Preload primary brand asset to avoid hero flash -->
     <link
       rel="preload"
       as="image"
@@ -58,8 +52,6 @@ const canonical = `${Astro.site ?? ""}${base}/`.replace(/\/+$/, "/");
   <body>
     <slot />
 
-    <!-- Scroll-reveal via IntersectionObserver. Pure-JS, no framework.
-         Honors prefers-reduced-motion via the CSS rules in global.css. -->
     <script is:inline>
       (() => {
         const items = document.querySelectorAll(".reveal");
