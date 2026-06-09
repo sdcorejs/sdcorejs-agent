@@ -14,7 +14,7 @@ The system ships as **dispatchable skills** — markdown with YAML frontmatter �
 
 ## How it works
 
-1. You clone or attach this repo's `skills/` and entry-point files (`CLAUDE.md`, `AGENTS.md`, `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md`) to your target project.
+1. You clone or attach this repo's `skills/` and `_refs/` together with the entry-point files (`CLAUDE.md`, `AGENTS.md`, `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md`) to your target project. Both `skills/` and `_refs/` are required — skills reference `_refs/**` at runtime.
 2. The AI tool reads the entry-point at session start.
 3. When you ask the tool to do something ("tạo entity product", "review module catalog"), it matches your request against each skill's `description` and follows the matched skill's instructions exactly.
 
@@ -82,12 +82,13 @@ git submodule add <repo-url> .sdcorejs-agent
 ln -s .sdcorejs-agent/CLAUDE.md CLAUDE.md
 ln -s .sdcorejs-agent/AGENTS.md AGENTS.md
 ln -s .sdcorejs-agent/skills skills-sdcorejs
+ln -s .sdcorejs-agent/_refs _refs-sdcorejs  # required — skills reference _refs at runtime
 ```
 
 ### Option 3 — copy entry points + skills
 
 ```bash
-cp -r <agent-repo>/{CLAUDE.md,AGENTS.md,skills} ./
+cp -r <agent-repo>/{CLAUDE.md,AGENTS.md,skills,_refs} ./
 ```
 
 Then open the project in Claude Code / Copilot / Codex and start describing what you want.
@@ -140,6 +141,8 @@ sdcorejs-agent/
 ```
 
 The two synced mirrors (`plugin/skills/` for plugin distribution + `.claude/skills/` for project-local Claude Code) are regenerated from `skills/` by `.claude/sync-skills.sh`, enforced via the lefthook pre-commit hook. Edit only the `skills/` source — never the mirrors directly.
+
+> **Windows note:** `npm run sync:skills` and `npm run check:skills` call `bash .claude/sync-skills.sh`. On Windows you must run these from **Git Bash** (or WSL) — PowerShell does not have `bash` on `PATH` by default.
 
 ## Not a multi-agent framework
 

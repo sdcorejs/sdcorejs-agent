@@ -25,7 +25,7 @@ skills/
 │   ├── conventions/      Conventional Commits, changelog, dep-update
 │   └── workflow/         env-setup, debug, pr-create, code-map
 │
-├── orchestration/        SDLC plumbing (18 files): parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills, persona, solution-builder
+├── orchestration/        SDLC plumbing (19 files): parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills, persona, solution-builder, write-user-guide
 │
 ├── review/
 │   ├── review.md         one track-aware skill (sdcorejs-review) — dimensions: code / security / performance / accessibility; knowledge in _refs/<track>/review-<dim>.md + _refs/shared/
@@ -48,7 +48,7 @@ allowed-tools: Read, Write, Edit, ...
 
 ## Skill dispatch protocol
 
-1. Glob `skills/*/*.md` at session start.
+1. Glob `skills/**/*.md` at session start (exclude `_refs/**`; skills are identified by `name:` frontmatter).
 2. Read each file's frontmatter only (cheap — body load happens later).
 3. When the user makes a request, match it against each skill's `description` (the "Use when..." trigger). Pick the highest-confidence match.
 4. Read that skill's body and follow its rules exactly.
@@ -74,7 +74,7 @@ Request
   → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (MANDATORY acceptance gate) → orchestration/branch-ready (branch-hygiene sweep)
-  → orchestration/auto-docs (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) → orchestration/memories (when durable knowledge surfaces)
+  → orchestration/auto-docs (MANDATORY) → orchestration/write-user-guide (Mode 1: per-module guide) → orchestration/auto-task-tracker (MANDATORY) → orchestration/memories (when durable knowledge surfaces)
 ```
 
 After `branch-ready`, an **OPTIONAL packaging branch** may run `sdcorejs-dockerize → sdcorejs-auth → sdcorejs-run-guide` to deliver a runnable Docker stack (the non-tech default). See "Infra / packaging" below.

@@ -6,6 +6,7 @@
   "private": true,
   "type": "module",
   "files": [
+    "_refs",
     "skills",
     "CLAUDE.md",
     "AGENTS.md",

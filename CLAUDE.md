@@ -42,7 +42,7 @@ The source of truth remains `skills/<track>/*.md`. `.claude/skills/` is generate
 
 ## Skill dispatch protocol
 
-1. **At session start**, glob `skills/*/*.md` and read each skill's YAML frontmatter only (cheap — body load happens later).
+1. **At session start**, glob `skills/**/*.md` (exclude `_refs/**`; skills are identified by `name:` frontmatter) and read each skill's YAML frontmatter only (cheap — body load happens later).
 2. **When the user makes a request**, match it against each skill's `description` (the "Use when..." trigger). Pick the highest-confidence match.
 3. **Read that skill's body** and follow its instructions exactly.
 4. **If multiple skills tie**, pick the lowest-numbered one in the workflow (clarify before plan, plan before write-code, etc).
