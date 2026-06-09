@@ -45,7 +45,7 @@ Request
   → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (mandatory ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (mandatory acceptance gate)
-  → orchestration/auto-docs (mandatory) → orchestration/auto-task-tracker (mandatory) + orchestration/memories (when durable knowledge surfaces)
+  → orchestration/auto-docs (mandatory) → orchestration/write-user-guide (Mode 1: per-module guide) → orchestration/auto-task-tracker (mandatory) + orchestration/memories (when durable knowledge surfaces)
 ```
 
 For angular, `write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular/write-code/` (no frontmatter, not dispatchable skills):
@@ -94,7 +94,7 @@ The skill files are the primary source. Load on demand:
 - `skills/orchestration/auto-task-tracker.md` — MANDATORY post-auto-docs TODO maintenance
 - `skills/shared/workflow/code-map.md` — pre-generation architecture discovery (read-only)
 - `skills/shared/conventions/changelog.md` — Keep a Changelog entry + semver bump from commits
-- `skills/review/security/shared.md` — cross-track security audit checklist
+- `skills/review/review.md` — `sdcorejs-review` (track-aware: code / security / performance / accessibility)
 - `skills/shared/conventions/dep-update.md` — safe dependency upgrade workflow
 - `skills/orchestration/parallel-dispatch.md` — when/how to fan out to parallel subagents
 - `skills/orchestration/subagent-driven-dev.md` — execution discipline AFTER parallel-dispatch decides YES

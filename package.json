@@ -30,6 +30,8 @@
   "scripts": {
     "sync:skills": "bash .claude/sync-skills.sh",
     "check:skills": "bash .claude/sync-skills.sh --check",
+    "sync:skills:ps": "powershell -ExecutionPolicy Bypass -File .claude/sync-skills.ps1",
+    "check:skills:ps": "powershell -ExecutionPolicy Bypass -File .claude/sync-skills.ps1 -check",
     "prepare": "lefthook install || true"
   },
   "devDependencies": {

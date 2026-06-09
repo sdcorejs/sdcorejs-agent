@@ -16,8 +16,8 @@ _refs/                            reference data (no frontmatter, load on demand
 
 skills/
 ├── tracks/                       stack-specific code-writing skills
-│   ├── angular/   ✅  1 track skill — write-code orchestrator (onboarding via sdcorejs-using-skills); orchestrator loads 6 on-demand reference packs from `_refs/angular/write-code/` (init-portal, init-module, init-entity, screen-list, screen-detail (CREATE/UPDATE/DETAIL states + form refinement), actions (workflow / bulk / custom side-effects))
-│   ├── nestjs/   ✅  1 track skill — write-code orchestrator (nestjs-write-code; onboarding via sdcorejs-using-skills); dispatches on-demand reference packs in _refs/nestjs/write-code/: init-project, init-module, init-entity (full CRUD stack), actions (custom / non-CRUD endpoints). Core: @sdcorejs/nestjs (_refs/nestjs/core-catalog.md)
+│   ├── angular/   ✅  1 track skill — write-code orchestrator (onboarding via sdcorejs-using-skills); orchestrator loads 7 on-demand reference packs from `_refs/angular/write-code/` (init-portal, admin-screens (always-on: account/role/permission), init-module, init-entity, screen-list, screen-detail (CREATE/UPDATE/DETAIL states + form refinement), actions (workflow / bulk / custom side-effects))
+│   ├── nestjs/   ✅  1 track skill — write-code orchestrator (nestjs-write-code; onboarding via sdcorejs-using-skills); dispatches on-demand reference packs in _refs/nestjs/write-code/: init-project, init-admin (always-on: users/roles/permissions), init-module, init-entity (full CRUD stack), actions (custom / non-CRUD endpoints). Core: @sdcorejs/nestjs (_refs/nestjs/core-catalog.md)
 │   └── nextjs/   ✅  1 track skill — write-code (nextjs-write-code) orchestrator (onboarding via sdcorejs-using-skills); dispatches 10 reference packs in _refs/nextjs/build-website/write-code/: init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. EXISTING-site audit folded into sdcorejs-review (site-audit mode)
 │
 ├── shared/

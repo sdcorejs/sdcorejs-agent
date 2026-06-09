@@ -12,13 +12,13 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem. When you (GitHu
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular Portal | `skills/tracks/angular/` | ✅ Complete (design-phase cross-track skills + 1 angular skill: the `angular-write-code` orchestrator (onboarding via `sdcorejs-using-skills`), which dispatches 6 on-demand reference packs under `_refs/angular/write-code/`: init-portal, init-module, init-entity, screen-list, screen-detail (CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design phase + spec/plan moved to cross-track `skills/shared/sdlc/`. Cross-track `orchestration/comment-code` absorbs the previous per-track `51-write-comments`. |
-| NestJS | `skills/tracks/nestjs/` | ✅ Complete — the `nestjs-write-code` orchestrator (onboarding via `sdcorejs-using-skills`) dispatches on-demand reference packs under `_refs/nestjs/write-code/`: init-project, init-module, init-entity (full CRUD stack), actions (custom / non-CRUD endpoints). Core: `@sdcorejs/nestjs` (`_refs/nestjs/core-catalog.md`). Design phase usable via shared/sdlc/; review + testing already in place. |
+| Angular Portal | `skills/tracks/angular/` | ✅ Complete (design-phase cross-track skills + 1 angular skill: the `angular-write-code` orchestrator (onboarding via `sdcorejs-using-skills`), which dispatches 7 on-demand reference packs under `_refs/angular/write-code/`: init-portal, admin-screens (always-on: account/role/permission), init-module, init-entity, screen-list, screen-detail (CREATE / UPDATE / DETAIL states + form refinement), actions (workflow / bulk / custom side-effects)). Design phase + spec/plan moved to cross-track `skills/shared/sdlc/`. Cross-track `orchestration/comment-code` absorbs the previous per-track `51-write-comments`. |
+| NestJS | `skills/tracks/nestjs/` | ✅ Complete — the `nestjs-write-code` orchestrator (onboarding via `sdcorejs-using-skills`) dispatches on-demand reference packs under `_refs/nestjs/write-code/`: init-project, init-admin (always-on: users/roles/permissions), init-module, init-entity (full CRUD stack), actions (custom / non-CRUD endpoints). Core: `@sdcorejs/nestjs` (`_refs/nestjs/core-catalog.md`). Design phase usable via shared/sdlc/; review + testing already in place. |
 | Next.js | `skills/tracks/nextjs/` | ✅ `build-website/` pack complete (1 track skill: `nextjs-write-code` orchestrator (onboarding via `sdcorejs-using-skills`); the orchestrator dispatches 10 on-demand reference packs under `_refs/nextjs/build-website/write-code/`: init-site … content-quality). EXISTING-site audit folded into `sdcorejs-review` (nextjs site-audit mode). Design phase moved to cross-track shared/sdlc/. |
 
 Cross-cutting skills live in:
 - `skills/shared/sdlc/` — **6 cross-track design-phase skills** (brainstorm, clarify-requirements, write-spec, review-spec, write-plan, review-plan) + `_refs/{angular,nextjs,nestjs}.md`
-- `skills/orchestration/` — SDLC plumbing (18 files: parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills, persona, solution-builder)
+- `skills/orchestration/` — SDLC plumbing (19 files: parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills, persona, solution-builder, write-user-guide)
 - `skills/shared/conventions/` + `shared/workflow/` — commits, changelog, dep-update, debug, env-setup, pr-create, code-map
 - `skills/review/` — `sdcorejs-review` (one track-aware skill, dimensions: code / security / performance / accessibility) + `sdcorejs-review-architecture` (module-level)
 - `skills/testing/` — `sdcorejs-tdd` (RED-first) + `sdcorejs-test` (track+level-aware: unit/integration/e2e); principles in `_refs/shared/testing-philosophy.md`
@@ -39,7 +39,7 @@ allowed-tools: Read, Write, Edit, ...
 
 ## Skill dispatch protocol
 
-1. **At session start**, glob `skills/*/*.md` and read each skill's frontmatter (cheap — body load happens later).
+1. **At session start**, glob `skills/**/*.md` (exclude `_refs/**`; skills have `name:` frontmatter) and read each skill's frontmatter (cheap — body load happens later).
 2. **When the user makes a request**, match it against each skill's `description` (the "Use when..." trigger). Pick the highest-confidence match.
 3. **Read that skill's body** and follow its instructions exactly.
 4. **If multiple skills tie**, pick the lowest-numbered one in the workflow (clarify before plan, plan before write-code, etc).
@@ -64,14 +64,14 @@ Request
   → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (MANDATORY acceptance gate) → orchestration/branch-ready (branch-hygiene sweep)
-  → orchestration/auto-docs (MANDATORY) → orchestration/auto-task-tracker (MANDATORY) + orchestration/memories (durable knowledge)
+  → orchestration/auto-docs (MANDATORY) → orchestration/write-user-guide (Mode 1: per-module guide) → orchestration/auto-task-tracker (MANDATORY) + orchestration/memories (durable knowledge)
 ```
 
 After `branch-ready`, an **OPTIONAL packaging branch** may run `sdcorejs-dockerize → sdcorejs-auth → sdcorejs-run-guide` to deliver a runnable Docker stack (the non-tech default). See "Infra / packaging" below.
 
 **Non-tech one-door:** `sdcorejs-solution-builder` chains persona → clarify (feature+UI) → spec/plan (gates) → nestjs-write-code → angular-write-code → dockerize → auth → run-guide → verify.
 
-Each cross-track design skill detects the target track at runtime and loads `skills/shared/sdlc/_refs/<track>.md` for track-specific patterns.
+Each cross-track design skill detects the target track at runtime and loads `_refs/sdlc/<track>.md` for track-specific patterns.
 
 For the angular track, `write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular/write-code/` (no frontmatter, not dispatchable skills):
 `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow / bulk / custom side-effects).
@@ -158,14 +158,14 @@ Emit a one-command runnable Docker stack into a target project's **deploy root**
 
 ## Reference docs (load on demand only)
 
-- `skills/shared/sdlc/_refs/{angular,nextjs,nestjs}.md` — track-specific design-phase patterns
-- `skills/tracks/angular/_refs/core-version.md` — pinned `@sdcorejs/angular` version
-- `skills/tracks/angular/_refs/sdcorejs-angular-catalog.md` — Core UI components inventory
-- `skills/tracks/angular/_refs/entity-field-types.md` — field type → form control mapping
-- `skills/tracks/angular/_refs/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for the init-entity reference pack
-- `_refs/angular/write-code/{init-portal,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `angular-write-code`
+- `_refs/sdlc/{angular,nextjs,nestjs}.md` — track-specific design-phase patterns
+- `_refs/angular/core-version.md` — pinned `@sdcorejs/angular` version
+- `_refs/angular/sdcorejs-angular-catalog.md` — Core UI components inventory
+- `_refs/angular/entity-field-types.md` — field type → form control mapping
+- `_refs/angular/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for the init-entity reference pack
+- `_refs/angular/write-code/{init-portal,admin-screens,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `angular-write-code`
 - `_refs/nestjs/core-catalog.md` — `@sdcorejs/nestjs` core inventory
-- `_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md` — on-demand reference packs loaded by `nestjs-write-code`
+- `_refs/nestjs/write-code/{init-project,init-admin,init-module,init-entity,actions}.md` — on-demand reference packs loaded by `nestjs-write-code`
 
 ## Anti-patterns
 

@@ -81,8 +81,8 @@ cd <your-portal-project>
 git submodule add <repo-url> .sdcorejs-agent
 ln -s .sdcorejs-agent/CLAUDE.md CLAUDE.md
 ln -s .sdcorejs-agent/AGENTS.md AGENTS.md
-ln -s .sdcorejs-agent/skills skills-sdcorejs
-ln -s .sdcorejs-agent/_refs _refs-sdcorejs  # required — skills reference _refs at runtime
+ln -s .sdcorejs-agent/skills skills     # must be named 'skills' so glob skills/**/*.md resolves
+ln -s .sdcorejs-agent/_refs _refs       # must be named '_refs' so _refs/... references resolve
 ```
 
 ### Option 3 — copy entry points + skills
@@ -130,11 +130,11 @@ sdcorejs-agent/
 │   └── sdlc/                              # cross-track design-phase patterns ({angular,nestjs,nextjs}.md)
 ├── skills/                                # source of truth — flat .md per skill
 │   ├── tracks/
-│   │   ├── angular/                # ✅ 1 skill (write-code orchestrator; 6 reference packs in _refs/angular/write-code/)
-│   │   ├── nestjs/                        # 🟡 scaffold
-│   │   └── nextjs/build-website/          # ✅ 13 skills
+│   │   ├── angular/                # ✅ 1 skill (write-code orchestrator; 7 reference packs in _refs/angular/write-code/)
+│   │   ├── nestjs/                        # ✅ 1 skill (write-code orchestrator; 5 reference packs in _refs/nestjs/write-code/)
+│   │   └── nextjs/                        # ✅ 1 skill (write-code orchestrator; 10 reference packs in _refs/nextjs/build-website/write-code/)
 │   ├── shared/{sdlc,conventions,workflow}/
-│   ├── orchestration/                     # SDLC plumbing (13 skills)
+│   ├── orchestration/                     # SDLC plumbing (19 skills)
 │   ├── review/ (review.md=sdcorejs-review + architecture.md=sdcorejs-review-architecture)
 │   └── testing/{philosophy,tdd,e2e,integration,unit}/
 └── images/
