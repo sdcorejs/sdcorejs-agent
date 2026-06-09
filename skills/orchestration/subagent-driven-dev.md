@@ -276,7 +276,7 @@ ESCALATE to the user with the convergence-failure framing. Each iteration re-run
 failed slices, never all three.
 
 ### B.6 Tail chain
-On DONE: comment-code (ASK) → branch-ready → auto-docs → auto-task-tracker → memories.
+On DONE: comment-code (ASK) → branch-ready → auto-docs → write-user-guide (Mode 1: per-module guide) → auto-task-tracker → memories.
 (`verify-before-done` already ran as the gate.)
 
 ### B.7 Dry-run walkthrough (contract-drift example)

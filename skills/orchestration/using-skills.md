@@ -47,7 +47,7 @@ Request
  → sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop
  → sdcorejs-comment-code (ASK gate)
  → sdcorejs-verify-before-done → sdcorejs-branch-ready
- → auto-docs → auto-task-tracker → memories
+ → auto-docs → write-user-guide (Mode 1: per-module guide) → auto-task-tracker → memories
 ```
 
 For isolation before generation or parallel work, run `sdcorejs-using-worktrees` first.

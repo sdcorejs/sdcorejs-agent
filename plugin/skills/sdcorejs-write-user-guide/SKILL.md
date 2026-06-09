@@ -56,8 +56,9 @@ rg -n "data:\s*\{[^}]*permission" <fe>/src/libs/<module>
 # sdPermission directive usages
 rg -n "sdPermission" <fe>/src/libs/<module>
 
-# Route declarations
-rg -n "path:" <fe>/src/libs/<module>/routes.ts
+# Route declarations (covers flat routes.ts + nested *.routes.ts / *.routing.ts)
+Glob: <fe>/src/libs/<module>/**/{routes.ts,*.routes.ts,*.routing.ts}
+rg -rn "path:" <fe>/src/libs/<module>/
 ```
 
 **NestJS — routes & permissions:**
@@ -141,10 +142,13 @@ Map every requirement from the approved spec / PRD to either ✅ documented & im
 ### 1. Load the spec
 
 ```bash
-# Latest spec for this track/feature
-Glob: <target>/.sdcorejs/docs/<track>/*-spec.md
-Glob: <target>/.sdcorejs/specs/<track>/*-spec.md
-# Read the most recent match; extract "## Acceptance criteria" section
+# Prefer spec scoped to this module (filename contains module slug)
+Glob: <target>/.sdcorejs/docs/<track>/*-<module>*-spec.md
+Glob: <target>/.sdcorejs/specs/<track>/*-<module>*-spec.md
+# If no module-scoped match: read the latest auto-docs file for this session
+# (<target>/.sdcorejs/docs/<track>/<latest>-auto-docs.md) and resolve its spec_refs field.
+# Last fallback: most-recent *-spec.md in the track docs dir regardless of module.
+# Extract "## Acceptance criteria" section from the resolved spec file.
 ```
 
 ### 2. Load the PRD (optional)
@@ -204,7 +208,7 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
 ### MUST DO
 - Render from `_refs/shared/user-guide-template.md` — do NOT hard-code the template inline.
 - **Idempotent overwrite** — `<target>/.sdcorejs/user-guide/<module>.md` is a generated artifact; overwrite it unconditionally, never append.
-- Write to the **TARGET project** (resolve `TARGET_ROOT=$(git rev-parse --show-toplevel)` from the user's CWD; never write into the `sdcorejs-agent` repo).
+- Write to the **TARGET project** (resolve `TARGET_ROOT=$(git rev-parse --show-toplevel)` from the user's CWD; never write into the `sdcorejs-agent` repo). **Guard:** if `TARGET_ROOT` basename matches `sdcorejs-agent`, or the directory contains no `src/`, `frontend/`, or `package.json` at its root (no evidence of an app project), **abort and ask** the user to provide the target project path explicitly — do not write user guides into the agent repo.
 - **Bilingual VI/EN** — section headings in Vietnamese (as in the template); field names, permission codes, and route paths in English; prose in the user's session language.
 - Always emit **image placeholders + the capture checklist** (`## Ảnh minh hoạ`), even when no real images exist yet.
 - Record `git_head` and `generated_at` in every frontmatter block so drift is detectable.
@@ -232,9 +236,21 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
 
 Also triggered **manually**: "gom user guide", "xuất user guide docx/pdf", "build user guide", or any explicit request to produce the aggregate or export to DOCX/PDF.
 
-### 2. Assemble the aggregate
+### 2. Refresh stale guides before assembling
 
-Glob all per-module guides:
+Each per-module guide records `git_head` in its YAML frontmatter. Before assembling, compare every guide's `git_head` to the **current** HEAD of the target repo:
+
+```bash
+CURRENT_HEAD=$(git -C <target> rev-parse HEAD)
+```
+
+For each `.sdcorejs/user-guide/*.md` whose `git_head` value ≠ `CURRENT_HEAD`: re-run **Mode 1** for that module now to bring it current. Modules whose `git_head == CURRENT_HEAD` are up to date — skip them.
+
+This step prevents the aggregate from silently embedding stale module guides written before the latest commits.
+
+### 3. Assemble the aggregate
+
+Glob all per-module guides (after step 2 has refreshed any stale ones):
 
 ```bash
 Glob: <target>/.sdcorejs/user-guide/*.md
@@ -261,7 +277,7 @@ Update the aggregate frontmatter `coverage` block with the summed totals.
 
 **Idempotent:** overwrite `<target>/sdcorejs-user-guide.md` unconditionally — never append to an existing file.
 
-### 3. Export to DOCX / PDF
+### 4. Export to DOCX / PDF
 
 After writing the aggregate, emit the pandoc commands from `_refs/shared/user-guide-template.md`:
 
@@ -316,7 +332,8 @@ After `sdcorejs-code-map` completes, supplement its output with targeted probes 
 ```bash
 rg -n "data:\s*\{[^}]*permission" <fe>/src/libs/<module>
 rg -n "sdPermission" <fe>/src/libs/<module>
-rg -n "path:" <fe>/src/libs/<module>/routes.ts
+Glob: <fe>/src/libs/<module>/**/{routes.ts,*.routes.ts,*.routing.ts}
+rg -rn "path:" <fe>/src/libs/<module>/
 ```
 
 **NestJS — routes & permissions (supplement):**
