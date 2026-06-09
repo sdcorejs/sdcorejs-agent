@@ -68,7 +68,18 @@ Invoke `sdcorejs-branch-ready`.
 - 🟡 READY WITH WARNINGS (user acknowledged) → continue
 - 🔴 BLOCKED → STOP until blockers resolved
 
-### Step 4 — [Release mode only] Changelog
+### Step 4 — Rebuild the user guide aggregate
+
+Invoke **`sdcorejs-write-user-guide` Mode 2** — regenerate `sdcorejs-user-guide.md` from all
+per-module guides under `.sdcorejs/user-guide/` and offer the pandoc DOCX export.
+
+- **Large-feature / Release ships**: always rebuild the aggregate.
+- **Ask before exporting DOCX**: "Bạn có muốn xuất DOCX ngay bây giờ không? (y / n)"
+- Per-module guides were already updated incrementally in each write-code tail chain
+  (Mode 1 auto after `auto-docs`); this step only rebuilds the root aggregate.
+- If `.sdcorejs/user-guide/` is empty (no module guides exist yet): skip silently, note in summary.
+
+### Step 5 — [Release mode only] Changelog
 
 Invoke `sdcorejs-changelog`.
 
@@ -78,7 +89,7 @@ After generating the entry, ask:
 
 Wait for confirmation before writing. If user declines → skip, note in summary.
 
-### Step 5 — Commit (if tree is dirty)
+### Step 6 — Commit (if tree is dirty)
 
 ```bash
 git status --porcelain
@@ -87,7 +98,7 @@ git status --porcelain
 If non-empty: invoke `sdcorejs-commit`.
 If tree is already clean: skip silently.
 
-### Step 6 — Push
+### Step 7 — Push
 
 ```bash
 # First push (branch not yet on remote):
@@ -100,17 +111,18 @@ git push
 - If rejected (non-fast-forward): "Remote có commits mới hơn. Rebase trước:
   `git pull --rebase` rồi chạy lại ship."
 
-### Step 7 — PR
+### Step 8 — PR
 
 Invoke `sdcorejs-pr-create`.
 
-### Step 8 — Summary
+### Step 9 — Summary
 
 ```
 ## Ship complete — `<branch>`
 
 - verify-before-done : ✅ N criteria / ⚠️ N deferred
 - branch-ready       : ✅ / ⚠️ N warnings acknowledged
+- user guide         : ✅ rebuilt / — (no module guides) / ⚠️ skipped
 - changelog          : ✅ vX.Y.Z / — (feature PR mode)
 - commit             : ✅ <hash> / — (tree was clean)
 - push               : ✅
@@ -126,7 +138,7 @@ affected gate line with `⚠️ shipped with known issues:`:
 
 ### MUST DO
 - Run all gates in order — never skip `verify-before-done` or `branch-ready`
-- Detect ship mode before step 4
+- Detect ship mode before step 5
 - Hard-stop on protected branches and zero-commits-ahead
 - Surface each gate's result to the user before proceeding
 - Ask before writing to CHANGELOG.md
@@ -147,9 +159,10 @@ affected gate line with `⚠️ shipped with known issues:`:
 ## Cross-references
 - `sdcorejs-verify-before-done` — Step 2 (acceptance criteria gate)
 - `sdcorejs-branch-ready` — Step 3 (hygiene gate)
-- `sdcorejs-changelog` — Step 4 (release mode only)
-- `sdcorejs-commit` — Step 5
-- `sdcorejs-pr-create` — Step 7
+- `sdcorejs-write-user-guide` — Step 4 (user guide aggregate rebuild + optional DOCX export)
+- `sdcorejs-changelog` — Step 5 (release mode only)
+- `sdcorejs-commit` — Step 6
+- `sdcorejs-pr-create` — Step 8
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
 

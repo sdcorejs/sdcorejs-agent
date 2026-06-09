@@ -224,4 +224,69 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
 - `sdcorejs-auto-summary` — canonical project brief (read as context before writing guides)
 - `sdcorejs-ship` — triggers Mode 2 (aggregate build) as part of the ship checklist
 
-<!-- Mode 2 (aggregate) + Mode 3 (legacy) appended by later tasks -->
+## Mode 2 — Aggregate build + export
+
+### 1. Trigger
+
+**Automatic** when `sdcorejs-ship` runs (large-feature or release mode).
+
+Also triggered **manually**: "gom user guide", "xuất user guide docx/pdf", "build user guide", or any explicit request to produce the aggregate or export to DOCX/PDF.
+
+### 2. Assemble the aggregate
+
+Glob all per-module guides:
+
+```bash
+Glob: <target>/.sdcorejs/user-guide/*.md
+# Read each file; extract YAML frontmatter (module, title, coverage) + body (strip frontmatter block)
+```
+
+Build `<target>/sdcorejs-user-guide.md` from the **aggregate template** in `_refs/shared/user-guide-template.md`:
+
+1. **YAML frontmatter** — set `title` (project name from `sdcorejs-auto-summary` / ask user if absent), `generated_at` (ISO 8601 now), `git_head` (`git rev-parse HEAD`), `modules` (sorted list of all `module` slugs found), `coverage` (summed from step 4 below).
+2. **`## Mục lục`** — numbered list linking to each `## <Module>` section anchor.
+3. **`## Tổng quan hệ thống`** — 1–2 sentences: what the system does, who it is for (read from `.sdcorejs/summary.md` if it exists; otherwise write best-effort from module titles).
+4. **One `## <Module>` section per file** — insert each module's body content verbatim after stripping the YAML frontmatter block (the `---…---` header). Preserve all headings (shift level if needed so they sit below the `##` module heading).
+5. **`## Tổng hợp Coverage vs yêu cầu`** — global summary table; sum each module's `coverage` frontmatter counts:
+
+```markdown
+## Tổng hợp Coverage vs yêu cầu
+| Module | Đủ ✅ | Một phần ⚠️ | Thiếu ❌ |
+|---|---|---|---|
+| <module1> | <met> | <partial> | <missing> |
+| **Tổng** | <sum_met> | <sum_partial> | <sum_missing> |
+```
+
+Update the aggregate frontmatter `coverage` block with the summed totals.
+
+**Idempotent:** overwrite `<target>/sdcorejs-user-guide.md` unconditionally — never append to an existing file.
+
+### 3. Export to DOCX / PDF
+
+After writing the aggregate, emit the pandoc commands from `_refs/shared/user-guide-template.md`:
+
+```bash
+# DOCX (preferred — supports embedded scaffold images):
+pandoc <target>/sdcorejs-user-guide.md \
+  -o <target>/sdcorejs-user-guide.docx \
+  --resource-path=<target>/.sdcorejs/user-guide
+
+# PDF (alternative):
+pandoc <target>/sdcorejs-user-guide.md \
+  -o <target>/sdcorejs-user-guide.pdf \
+  --resource-path=<target>/.sdcorejs/user-guide
+```
+
+**The skill does NOT run pandoc or the target app.** It emits the commands above and reports the capture checklist — the developer runs pandoc locally after placing real screenshots.
+
+Instruct the user:
+> "Đặt ảnh thực tế vào `<target>/.sdcorejs/user-guide/images/` (xem checklist trong từng module guide), rồi chạy lệnh pandoc ở trên để xuất DOCX/PDF."
+
+When invoked from `sdcorejs-ship`: **always rebuild** the aggregate. **Ask before emitting the pandoc export command** (large-feature ships may not need DOCX every time):
+> "Bạn có muốn xuất DOCX ngay bây giờ không? (y / n)"
+
+When triggered manually (e.g. "xuất user guide docx"): emit the export command immediately without asking.
+
+---
+
+<!-- Mode 3 (legacy) appended by the next task -->
