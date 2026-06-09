@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-pr-create
-description: Use when the user asks to create a pull request, says "tạo PR", "mở PR", "open pull request", "gh pr create", or when a feature branch is ready to ship. Generates PR title + body from commits and diff since the base branch, pushes if needed, opens the PR via `gh` CLI. Applies to angular, nestjs, nextjs and the sdcorejs-agent repo itself. Bilingual (VI/EN).
+description: Use when the user asks to create a pull request, says "create PR", "open PR", "open pull request", "gh pr create", or when a feature branch is ready to ship. Generates PR title + body from commits and diff since the base branch, pushes if needed, opens the PR via `gh` CLI. Applies to angular, nestjs, nextjs and the sdcorejs-agent repo itself. Runtime-localized.
 allowed-tools: Bash, Read
 ---
 
@@ -10,7 +10,7 @@ allowed-tools: Bash, Read
 Produce a PR description that a reviewer can grok in 30 seconds without opening every file. Capture WHY the change exists, what to test, and what's intentionally out of scope.
 
 ## When invoked
-- User says "tạo PR", "mở PR", "create PR", "open pull request", "gh pr create"
+- User says "create PR", "open PR", "create PR", "open pull request", "gh pr create"
 - After a feature branch is ready (commits pushed, no work pending)
 
 Do NOT invoke if:
@@ -39,7 +39,7 @@ git diff <base>...HEAD                                 # full diff for body auth
 Note: `..` for log (commit list), `...` for diff (merge-base diff). The triple-dot for diff matches GitHub's PR view.
 
 ### 3. Detect language
-- VI if VN diacritics dominate commit messages OR target project's primary language is VI
+- Use the dominant language of commit messages or the target project's primary language
 - EN otherwise
 
 ### 4. Compose title
@@ -108,7 +108,7 @@ Print the PR URL so the user can open it.
 
 ## Examples
 
-### Small feature PR (VI)
+### Small feature PR (localized)
 Title: `feat(angular): broaden 31-actions scope beyond workflow`
 
 Body:
@@ -124,8 +124,8 @@ Body:
 - `.claude/skills/`, `plugin/skills/`: mirror regenerated via sync-skills.sh
 
 ## Test plan
-- [ ] Open Claude Code in a target project, type "thêm nút xuất Excel" → `angular-write-code` (actions pack) dispatches
-- [ ] Type "thêm approve flow" → same skill dispatches
+- [ ] Open Claude Code in a target project, type "add Excel export button" → `angular-write-code` (actions pack) dispatches
+- [ ] Type "add approval flow" → same skill dispatches
 - [ ] `bash .claude/sync-skills.sh --check` passes
 ```
 

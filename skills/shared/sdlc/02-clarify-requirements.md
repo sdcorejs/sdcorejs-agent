@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-clarify-requirements
-description: Use AFTER `sdcorejs-brainstorm` has settled direction (or skip brainstorm if scope was already clear), BEFORE `sdcorejs-write-spec`. Hard-confirms the blocking inputs for the detected track — angular (module / entity / fields / layout / workflow), nestjs (module / entity / persistence / transactions), nextjs (domain / contact / hosting / languages / OG / caching). Each unanswered blocker prevents the spec stage. Triggers - "tạo CRUD cho ...", "thêm entity", "create screen", "build module", "set up backend module", "tạo landing page với ...", or any request missing concrete inputs for the track. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-brainstorm` has settled direction (or skip brainstorm if scope was already clear), BEFORE `sdcorejs-write-spec`. Hard-confirms the blocking inputs for the detected track — angular (module / entity / fields / layout / workflow), nestjs (module / entity / persistence / transactions), nextjs (domain / contact / hosting / languages / OG / caching). Each unanswered blocker prevents the spec stage. Triggers - "create CRUD for ...", "add an entity", "create screen", "build module", "set up backend module", "create a landing page with ...", or any request missing concrete inputs for the track. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Glob, Grep, Bash
 ---
 
@@ -13,7 +13,7 @@ A spec has hard dependencies on details brainstorm doesn't cover. Angular needs 
 
 ## When to use
 - Automatically after `sdcorejs-brainstorm` picks a direction
-- When the user asks for concrete artifacts ("tạo CRUD product", "build user module", "make me a clinic landing site") and blockers are unanswered
+- When the user asks for concrete artifacts ("create Product CRUD", "build user module", "make me a clinic landing site", or localized equivalents) and blockers are unanswered
 - Restart point when requirements changed for an existing project (rebrand, language addition, persistence swap)
 
 Skip if:
@@ -38,7 +38,7 @@ else TRACK=ASK_USER
 fi
 ```
 
-If detection fails, ask: "Project này thuộc track nào?" Do not proceed without a track.
+If detection fails, ask: "Which track is this project: angular, nestjs, or nextjs?" Translate at runtime. Do not proceed without a track.
 
 ### Step 0.5 — Vagueness gate: ROUTE TO `sdcorejs-brainstorm` if scope is too open
 
@@ -47,26 +47,28 @@ Clarify is a **hard-confirm** step — it asks blocking yes/no questions about c
 Run this check BEFORE asking the first blocking question. If the request matches ≥1 of these signals, route to `sdcorejs-brainstorm` first:
 
 **Vagueness signals**:
-- The request describes a goal, not a feature ("muốn tracking promotions", "cần website cho công ty mình") — no concrete entity / page / module yet
+- The request describes a goal, not a feature ("track promotions", "create a company website") — no concrete entity / page / module yet
 - The user explicitly compares: "X hay Y", "side-drawer vs page", "REST vs gRPC", "Sanity vs Strapi"
-- The user signals uncertainty: "không chắc", "đang phân vân", "explore options", "tôi đang nghĩ tới"
+- The user signals uncertainty: "not sure", "still deciding", "explore options", "I am thinking about..."
 - More than one realistic interpretation of the request exists, and picking blindly would lock in the wrong choice for hours of code
 - For nextjs: industry / target audience / page-set is not yet declared
 - For angular / nestjs: it's unclear whether this needs a new module or fits an existing one
 
 If ANY signal fires, say (in user's language):
 
-> "Yêu cầu của bạn có vẻ chưa cố định hướng đi — mình invoke `sdcorejs-brainstorm` để khám phá 2-3 cách tiếp cận và chọn 1 trước khi vào clarify chi tiết. OK?"
+> "Your request does not look fully settled yet, so I will invoke `sdcorejs-brainstorm` to compare 2-3 approaches and choose one before detailed clarification. OK?"
+
+Translate this message at runtime.
 
 Then invoke `sdcorejs-brainstorm`. After brainstorm settles a direction, control returns here.
 
 **Why this matters** (borrowed from `superpowers:brainstorming` philosophy):
 - Clarifying details before agreeing on direction = sunk-cost trap. User answers "use UnifiedSplit layout" then realises 30 min later they wanted side-drawer all along — clarify answers thrown away.
 - Brainstorm is cheap. 5 minutes of "here are 3 approaches, pick one with reasoning" saves hours of mis-targeted code.
-- If scope is genuinely clear (user said `tạo CRUD product trong module sales với fields code/name/price`), brainstorm IS overkill — proceed straight to Step 1.
+- If scope is genuinely clear (user said `create Product CRUD in the sales module with fields code/name/price`), brainstorm IS overkill — proceed straight to Step 1.
 
 This rule does NOT trigger if:
-- The user explicitly says "skip brainstorm" / "bỏ qua brainstorm" / "go straight to clarify"
+- The user explicitly says "skip brainstorm", "go straight to clarify", or a localized equivalent
 - The work is a known recipe with no decisions to explore (init portal, add screen to existing entity with known fields)
 
 ### Step 1 — Load the track-specific blocker checklist
@@ -77,7 +79,7 @@ Read `_refs/sdlc/<TRACK>.md` (the **Clarify** section). Each track defines:
 
 ### Step 2 — Detect language
 Detect the user's session language from their messages:
-- Vietnamese phrases → respond in Vietnamese with proper diacritics
+- Non-English phrases → respond in the user's language and preserve locale-specific marks
 - English → respond in English
 
 Keep the response language consistent throughout the clarify session.
@@ -126,14 +128,18 @@ If the user says "you decide", pick the default WITH explanation. Never silently
 ### Step 5 — Infer-and-confirm where safe
 If the user names an entity but skips fields, **infer a first-pass field set** from the entity semantics + track conventions (see `_refs/sdlc/<TRACK>.md`), then present it for confirmation:
 
-> "Product → suy luận fields: code, name, category, price, status, description, image, createdAt. OK hay sửa?"
+> "Product → inferred fields: code, name, category, price, status, description, image, createdAt. OK or change?"
+
+Translate this message at runtime.
 
 Inferring beats blank-questioning when there's a strong semantic match. Confirm before locking in.
 
 ### Step 6 — Produce the confirmed summary
 Once all blockers are answered, emit a concise summary table in user's language. Use the layout from `_refs/sdlc/<TRACK>.md` (each track has its own summary template). End with:
 
-> → Tiếp theo: `sdcorejs-write-spec` để mình draft spec; bạn duyệt rồi qua plan và viết code.
+> → Next: `sdcorejs-write-spec` drafts the spec; after your approval, we move to the plan and code generation.
+
+Translate this message at runtime.
 
 ### Step 7 — Save durable answers as memory candidates
 Track-level answers that will repeat across features (domain, hosting, brand colors for nextjs; baseline persistence + audit conventions for nestjs; portal language + Core UI version for angular) are good memory candidates. Suggest invoking `orchestration/memories` to persist them.
@@ -145,7 +151,7 @@ Track-level answers that will repeat across features (domain, hosting, brand col
 - ASK in groups of 3-4 per turn — never dump the full checklist as one wall of text
 - Convert relative dates to absolute (today is the date in `# currentDate`; "next week" → that date + 7d)
 - Detect the user's session language and stick with it
-- For Vietnamese sessions, all generated labels / suggestions must use full diacritics
+- For localized sessions, all generated labels / suggestions must preserve locale-specific marks
 - Infer fields/pages from semantics when safe — but always present for confirmation
 - End with the confirmed summary table from `_refs/sdlc/<TRACK>.md`
 - Suggest `orchestration/memories` for project-level answers that will repeat
@@ -154,7 +160,7 @@ Track-level answers that will repeat across features (domain, hosting, brand col
 - Generate code or commit files at this stage
 - Re-ask questions the user already answered — read the conversation
 - Combine unrelated questions into one mega-question
-- Accept "thôi cứ làm đại" — push back: name the minimum subset that's still required ("Cần ít nhất X và Y trước; phần khác lấy default được")
+- Accept "just do it" without required inputs — push back: name the minimum subset that's still required ("I need at least X and Y first; the rest can use defaults"). Translate at runtime.
 - Defer answers that change the architecture (persistence, domain, layout) — those must be locked before the spec stage
 - Mix angular blockers into a nextjs session, or vice versa — load the right `_refs/sdlc/<TRACK>.md`
 - Ask a `non-tech` persona about `profile` (nestjs) — default `simple` silently; only surface `enterprise` to a technical user or when the user explicitly states multi-tenancy / multiple services

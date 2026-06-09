@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-using-worktrees
-description: Use to set up an ISOLATED workspace before write-code or parallel dispatch — detects existing isolation, prefers a native worktree tool, falls back to `git worktree`, then runs per-stack setup + a clean baseline. Protects the user's current branch from in-progress generation and lets `sdcorejs-subagent-driven-dev` fan out agents that don't trample each other. Triggers - "tạo worktree", "worktree", "isolate workspace", "làm trên nhánh riêng", "không đụng nhánh hiện tại", "chạy song song nhiều feature", or automatic before `<track>-write-code` when work needs isolation. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Use to set up an ISOLATED workspace before write-code or parallel dispatch — detects existing isolation, prefers a native worktree tool, falls back to `git worktree`, then runs per-stack setup + a clean baseline. Protects the user's current branch from in-progress generation and lets `sdcorejs-subagent-driven-dev` fan out agents that don't trample each other. Triggers - "create worktree", "worktree", "isolate workspace", "work on a separate branch", "do not touch the current branch", "run multiple features in parallel", or automatic before `<track>-write-code` when work needs isolation. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Bash, Glob
 ---
 
@@ -16,7 +16,7 @@ Generation should not happen on top of the user's live branch. An isolated works
 ## When to use
 - Before `<track>-write-code` when the user wants the current branch protected
 - Before `sdcorejs-parallel-dispatch` / `sdcorejs-subagent-driven-dev` fan-out (each unit needs its own directory)
-- User says "worktree", "làm trên nhánh riêng", "đừng đụng nhánh hiện tại", "chạy song song"
+- User says "worktree", "work on a separate branch", "do not touch the current branch", "run in parallel"
 
 If the user explicitly wants to work in place, honor that and skip to Step 3.
 
@@ -40,7 +40,7 @@ git rev-parse --show-superproject-working-tree 2>/dev/null
   - On a branch → "Already isolated at `<path>` on branch `<name>`."
   - Detached HEAD → "Already isolated at `<path>` (detached HEAD, externally managed). Branch creation needed at finish time."
 - **`GIT_DIR == GIT_COMMON` (or in a submodule):** normal checkout. If the user hasn't already stated a worktree preference, ask consent:
-  > "Tạo worktree riêng để cô lập công việc không? Nó bảo vệ nhánh hiện tại khỏi thay đổi. / Set up an isolated worktree? It protects your current branch."
+  > "Set up an isolated worktree? It protects your current branch." Translate at runtime.
 
   Honor any declared preference without re-asking. If declined, work in place → Step 3.
 

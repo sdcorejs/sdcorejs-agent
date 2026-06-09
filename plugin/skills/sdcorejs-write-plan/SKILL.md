@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-write-plan
-description: Use AFTER `sdcorejs-review-spec` has approved the spec, BEFORE the track-specific write-code orchestrator runs (`angular-write-code` / `nextjs-write-code` / future `nestjs-write-code`). Writes a numbered file-by-file plan to the chat (and optionally to a plan file under `.sdcorejs/plans/<track>/`) for the user to review and confirm. No code is written here. Hands off to `sdcorejs-review-plan` for user approval, which then snapshots via `orchestration/auto-plans` and dispatches `<track>-write-code`. Triggers - "lên kế hoạch", "plan", "show me steps before coding", "kế hoạch trước khi code", "draft a plan". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-review-spec` has approved the spec, BEFORE the track-specific write-code orchestrator runs (`angular-write-code` / `nextjs-write-code` / future `nestjs-write-code`). Writes a numbered file-by-file plan to the chat (and optionally to a plan file under `.sdcorejs/plans/<track>/`) for the user to review and confirm. No code is written here. Hands off to `sdcorejs-review-plan` for user approval, which then snapshots via `orchestration/auto-plans` and dispatches `<track>-write-code`. Triggers - "write a plan", "plan", "show me steps before coding", "plan before coding", "draft a plan". Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Glob, Grep, Bash
 ---
 
@@ -14,7 +14,7 @@ A spec answers "what + why". A plan answers "which file, in what order".
 ## When to use
 - After `sdcorejs-review-spec` has confirmed approval of a spec file
 - BEFORE invoking any `<track>-write-code` orchestrator
-- When the user explicitly says "plan first", "lên kế hoạch", "draft a plan", "kế hoạch trước khi code"
+- When the user explicitly says "plan first", "write a plan", "draft a plan", "plan before coding"
 
 If the spec is missing items, route back to `sdcorejs-clarify-requirements` or `sdcorejs-write-spec` instead.
 
@@ -73,10 +73,10 @@ N+1. CREATE  <path>  — <1-line intent>
 - Manual smoke route (track-specific)
 
 ## Confirm
-Plan này có phù hợp không?
+Does this plan look right?
 - "OK, generate" → invoke `sdcorejs-review-plan` (which then dispatches the track's write-code)
-- "Đổi step <N>" → revise this plan
-- "Quay lại clarify" → invoke `sdcorejs-clarify-requirements`
+- "change step <N>" → revise this plan
+- "Go back to clarify" → invoke `sdcorejs-clarify-requirements`
 ```
 
 ### Step 6 — Hand off to `sdcorejs-review-plan`
@@ -91,7 +91,7 @@ Plan này có phù hợp không?
 - Include verification steps with exact commands
 - Each acceptance criterion from the spec must map to ≥1 plan task
 - End with an explicit confirm / amend / revert prompt
-- Match the user's language (VI/EN)
+- Match the user's language at runtime
 - Surface path conflicts found in Step 3 — do NOT silently overwrite
 
 ### MUST NOT

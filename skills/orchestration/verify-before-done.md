@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-verify-before-done
-description: MANDATORY skill that runs BEFORE the agent claims a code-writing task is "done" / commits / hands off to `sdcorejs-auto-docs`. Loads the spec's Acceptance Criteria, identifies a verification command for each, runs all automatable ones, and presents a manual checklist for the rest. Blocks the "done" claim until every criterion is ✅ verified or ⚠️ explicitly acknowledged as deferred. Triggers - automatic before auto-docs at end of any code-writing skill; user says "verify", "kiểm tra acceptance", "check acceptance criteria". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill that runs BEFORE the agent claims a code-writing task is "done" / commits / hands off to `sdcorejs-auto-docs`. Loads the spec's Acceptance Criteria, identifies a verification command for each, runs all automatable ones, and presents a manual checklist for the rest. Blocks the "done" claim until every criterion is ✅ verified or ⚠️ explicitly acknowledged as deferred. Triggers - automatic before auto-docs at end of any code-writing skill; user says "verify", "verify acceptance", "check acceptance criteria". Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Bash, Glob, Grep
 ---
 
@@ -15,7 +15,7 @@ allowed-tools: Read, Bash, Glob, Grep
 - **MANDATORY** automatic invocation BEFORE `sdcorejs-branch-ready` → `sdcorejs-auto-docs` at the end of every code-writing skill (`write-code` — the `angular-write-code` orchestrator and the reference packs it loads, including `actions` — and `sdcorejs-test`)
 - Before `sdcorejs-commit` for a feature commit (not for chore/docs commits)
 - Before `sdcorejs-pr-create`
-- User says "verify", "kiểm tra acceptance", "check acceptance criteria", "đã xong chưa"
+- User says "verify", "verify acceptance", "check acceptance criteria", "is this done?"
 
 Do NOT invoke for:
 - Chore / docs-only / dep-bump tasks (no acceptance criteria to verify)
@@ -35,10 +35,10 @@ ls -1t "$TARGET_ROOT/.sdcorejs/docs/$TRACK"/*-spec.md 2>/dev/null | head -1
 If multiple specs are recent, ask the user which one is in scope.
 
 If no spec exists → skip with a warning:
-> "Không có spec trong .sdcorejs/docs/<track>/. Bỏ qua acceptance verification — chỉ verify bằng tests + lint. Bạn confirm 'done' bằng tay nha."
+> "No spec found in .sdcorejs/docs/<track>/. Skipping acceptance verification; verifying only tests + lint. Ask the user to manually confirm done."
 
 ### 2. Extract the Acceptance Criteria section
-Look for `## Acceptance criteria` (English) or `## Tiêu chí chấp nhận` (Vietnamese). Each criterion is typically a `- [ ]` bullet.
+Look for `## Acceptance criteria` or its localized equivalent. Each criterion is typically a `- [ ]` bullet.
 
 For each criterion, derive a **verification mode**:
 
@@ -48,9 +48,9 @@ For each criterion, derive a **verification mode**:
 | "Validation: field X required if Y == Z" | Unit test on form spec |
 | "Update preserves audit fields" | Unit test asserting `createdAt` unchanged across update |
 | "API returns 403 for unauthorized" | Integration test or `curl -H` with bad token |
-| "All Vietnamese labels render with diacritics" | `grep -E '[àáâãèéêìíòóôõùúýăđĩũơưạ-ỹ]'` in rendered output or template files |
+| "Localized labels render with the expected Unicode marks" | Use a locale-specific Unicode/diacritic check in rendered output or template files |
 | "List filter by status returns only matching rows" | E2E with filter applied + count check |
-| **(NextJS)** "VI/EN message keys symmetric; content files mirrored" | `npm run check:i18n` (from the `nextjs-write-code` orchestrator, content-quality pack) — exit 0 |
+| **(NextJS)** "Localized message keys symmetric; content files mirrored" | `npm run check:i18n` (from the `nextjs-write-code` orchestrator, content-quality pack) — exit 0 |
 | **(NextJS)** "Every page meets min word count for its type" | `npm run check:content` — exit 0 |
 | **(NextJS)** "Lighthouse SEO score ≥ 95 on home + 1 detail" | `npx lighthouse <url> --only-categories=seo --output=json` — parse `categories.seo.score` |
 | **(NextJS)** "Article pages emit Article JSON-LD with author + dates" | `curl <article-url> \| grep -o '"@type":"Article"'` + manual paste to Google Rich Results Test |
@@ -80,16 +80,16 @@ Detect by reading `package.json` `scripts` — only run scripts that are actuall
 **NextJS landing sites** (the `nextjs-write-code` orchestrator's content-quality pack installs these):
 
 ```bash
-# Bilingual parity — fails if vi.json/en.json keys diverge OR content/vi/*.ts ↔ content/en/*.ts file sets diverge
+# Language parity — fails if vi.json/en.json keys diverge OR content/vi/*.ts ↔ content/en/*.ts file sets diverge
 npm run check:i18n 2>/dev/null && echo "✅ i18n parity" || echo "❌ i18n parity (or script missing)"
 
 # Minimum content length per page type — fails if any registered content file is below threshold
 npm run check:content 2>/dev/null && echo "✅ content length" || echo "❌ content length (or script missing)"
 ```
 
-If `check:i18n` or `check:content` is missing AND the spec mentions bilingual support OR long-form content, surface this as a Critical finding:
+If `check:i18n` or `check:content` is missing AND the spec mentions multi-language support OR long-form content, surface this as a Critical finding:
 
-> "Spec mentions VI/EN parity / long-form articles but `package.json` has no `check:i18n` / `check:content` script. Invoke the `nextjs-write-code` orchestrator (content-quality pack) to install before claiming done."
+> "Spec mentions language parity / long-form articles but `package.json` has no `check:i18n` / `check:content` script. Invoke the `nextjs-write-code` orchestrator (content-quality pack) to install before claiming done."
 
 **Lighthouse SEO (NextJS, when a URL is reachable)**:
 
@@ -135,7 +135,7 @@ Single table, sorted by status:
 | 2 | Create validates: code required, discountValue 0-100 if type=PERCENT | Unit (form spec) | ✅ 4/4 tests |
 | 3 | Update preserves audit fields; createdAt unchanged | Unit | ❌ FAIL — createdAt is being overwritten on update |
 | 4 | List filter by status returns only matching rows | E2E | ⏭ skipped (no E2E framework configured) |
-| 5 | All Vietnamese labels render with full diacritics | grep in templates | ⚠️ 2 labels missing diacritics: `Cap nhat` (line 42), `Xoa` (line 78) |
+| 5 | All localized labels render with full diacritics | grep in templates | ⚠️ 2 labels missing diacritics: `Cap nhat` (line 42), `Xoa` (line 78) |
 | 6 | Smooth transition between list and detail | MANUAL | ⏸ awaiting human check |
 
 ### Build / lint / typecheck
@@ -238,4 +238,4 @@ No spec found (small bug fix, no .sdcorejs/docs/<track>/*-spec.md)
 - `orchestration/auto-task-tracker` — open criteria flow into the living TODO until resolved
 - `sdcorejs-write-spec` (cross-track, `shared/sdlc/03-write-spec.md`) — defines the Acceptance Criteria section format this skill reads
 - `sdcorejs-test` — many acceptance criteria are best verified via E2E; cross-reference for the right framework
-- `nextjs-write-code` (content-quality pack, `_refs/nextjs/build-website/write-code/content-quality.md`) — installs `check:i18n` + `check:content` scripts that this skill invokes; defines the bilingual parity + minimum content length contracts
+- `nextjs-write-code` (content-quality pack, `_refs/nextjs/build-website/write-code/content-quality.md`) — installs `check:i18n` + `check:content` scripts that this skill invokes; defines the Language parity + minimum content length contracts

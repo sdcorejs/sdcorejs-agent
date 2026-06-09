@@ -1,6 +1,6 @@
 ---
 name: angular-write-code
-description: Generate Angular-portal code — after 06-review-plan approves, OR as the single entry point for any direct Angular-portal code-gen request. Loads the matching on-demand pack under `_refs/angular/write-code/` (per-pack trigger catalog is in the body): init-portal, admin-screens (always-on: account/role/permission management), init-module, init-entity (full CRUD), screen-list, screen-detail (CREATE/UPDATE/DETAIL + reactive-form/validators), actions (workflow / bulk / custom buttons). Triggers - "khởi tạo portal", "tạo module X", "thêm entity / tạo CRUD", "màn list / thêm cột", "tạo màn detail / form validation / custom validator", "thêm action button / approve / bulk approve / xuất excel", and generic "generate code", "viết code", "sinh code đi", "go ahead". NOT for spec/plan, code review, or nestjs/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Bilingual (VI/EN).
+description: Generate Angular-portal code — after 06-review-plan approves, OR as the single entry point for any direct Angular-portal code-gen request. Loads the matching on-demand pack under `_refs/angular/write-code/` (per-pack trigger catalog is in the body): init-portal, admin-screens (always-on: account/role/permission management), init-module, init-entity (full CRUD), screen-list, screen-detail (CREATE/UPDATE/DETAIL + reactive-form/validators), actions (workflow / bulk / custom buttons). Triggers - "initialize portal", "create module X", "add entity / create CRUD", "list screen / add column", "detail screen / form validation / custom validator", "add action button / approve / bulk approve / export Excel", generic "generate code", "go ahead", or localized equivalents. NOT for spec/plan, code review, or nestjs/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -58,11 +58,11 @@ Each tail-call is mandatory (per CLAUDE.md). Do NOT skip `verify-before-done` �
 
 When user requests a new entity in a module, or any of the dispatch-table scope items:
 - "Generate product CRUD in sample module" → init-entity
-- "Khởi tạo portal-shop với dev/qc/uat/prod" → init-portal
-- "Tạo module catalog" → init-module
-- "Tạo màn list cho user" → screen-list
-- "Thêm validator cho form product" → screen-detail
-- "Thêm nút phê duyệt cho đơn hàng" → actions
+- "Initialize portal-shop with dev/qc/uat/prod" → init-portal
+- "Create catalog module" → init-module
+- "Create user list screen" → screen-list
+- "Add validator to product form" → screen-detail
+- "Add an approval button for orders" → actions
 
 ## Input Resolution
 
@@ -75,13 +75,13 @@ Before generating an entity, clarify with user:
    - Examples: product, employee, purchase-order, sales-invoice
 
 3. **Display Label**: What label should appear in UI? (entityLabel, entityLabelPlural)
-   - Examples: "Sản phẩm", "Nhân viên", "Đơn mua hàng"
+   - Examples: "Product", "Employee", "Purchase Order"
 
 4. **Fields**: What fields should this entity have?
   - Ask user to describe fields OR infer a semantic schema when fields are omitted
   - For each field: name, type (string/number/date/select/etc), required?, label
   - When inferring, derive concrete domain fields from the entity meaning and current portal conventions
-  - For Vietnamese portals, all generated labels must use proper diacritics
+  - For localized portals, all generated labels must use proper diacritics
 
 5. **UI Preferences**:
   - Detail layout: auto-select side-drawer or full-page from inferred complexity, unless user overrides
@@ -93,7 +93,7 @@ Before generating an entity, clarify with user:
 If the user gives only the entity name or only a very vague description, do not stop at a generic skeleton. Build a first-pass `EntitySchema` from the entity semantics.
 
 Use this inference order:
-1. Entity noun meaning in Vietnamese/English
+1. Entity noun meaning in localized/English
 2. Existing portal conventions already confirmed in this repository
 3. Common business fields for that entity class
 4. Safe defaults for status/audit/search fields

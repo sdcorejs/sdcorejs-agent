@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auto-task-tracker
-description: MANDATORY skill. Maintains a living TODO file per track. READ mode at session start to know current priorities. WRITE/EDIT mode at the end of every code-writing task (runs after `sdcorejs-auto-docs` and `sdcorejs-write-user-guide`) to tick off `[x]` completed tasks and append new tasks parsed from auto-docs' "Next suggested action", "Open questions", or the generated user guide's coverage gaps. Pairs with `sdcorejs-auto-docs` (one-session summary), `sdcorejs-write-user-guide` (user-facing coverage), and `sdcorejs-memories` (durable knowledge). Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: MANDATORY skill. Maintains a living TODO file per track. READ mode at session start to know current priorities. WRITE/EDIT mode at the end of every code-writing task (runs after `sdcorejs-auto-docs` and `sdcorejs-write-user-guide`) to tick off `[x]` completed tasks and append new tasks parsed from auto-docs' "Next suggested action", "Open questions", or the generated user guide's coverage gaps. Pairs with `sdcorejs-auto-docs` (one-session summary), `sdcorejs-write-user-guide` (user-facing coverage), and `sdcorejs-memories` (durable knowledge). Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
@@ -50,12 +50,12 @@ One file per track per project. Never write to `sdcorejs-agent` repo.
 > Format: `[ ]` open / `[x] (YYYY-MM-DD)` completed / `[!]` blocked.
 
 ## Now (in-flight or top priority)
-- [ ] Hoàn thiện màn detail cho entity Product (validation + lookup combobox)
-- [ ] Bổ sung permission code CATALOG_C_PRODUCT_BULK_DELETE
+- [ ] Finish the Product detail screen (validation + lookup combobox)
+- [ ] Add permission code CATALOG_C_PRODUCT_BULK_DELETE
 
 ## Next (queued, ordered)
-- [ ] Tạo entity Category (parent của Product)
-- [ ] Wire workflow approval cho Product (gửi duyệt → phê duyệt)
+- [ ] Create Category entity (parent of Product)
+- [ ] Wire Product workflow approval (submit for approval → approve)
 - [ ] Move shared validators ra `libs/shared/validators`
 
 ## Later (someday / maybe)
@@ -63,7 +63,7 @@ One file per track per project. Never write to `sdcorejs-agent` repo.
 - [ ] E2E coverage cho bulk action
 
 ## Blocked
-- [!] Khởi tạo NestJS module — đang chờ sample code từ team
+- [!] Initialize NestJS module - waiting for sample code from the team
 
 ## Done (last 7 days)
 - [x] (2026-05-16) Refactor `21-screen-detail` form binding sang `[form]+name=`
@@ -108,7 +108,7 @@ For each "Next suggested action":
 
 For each "Open question / follow-up":
 - If phrased as a blocker → "Blocked" section with `[!]`
-- If phrased as a question → "Next" section as `[ ] <Câu hỏi: ...>`
+- If phrased as a question → "Next" section as `[ ] <Question: ...>`
 - Else "Next"
 
 ### 4. Promote / demote
@@ -128,7 +128,7 @@ Use Edit (preferred) over Write to preserve hand-edits the user made between ses
 
 ### 8. Report to user
 One line:
-> "TODO cập nhật: ✅ 2 done, ➕ 1 mới (Next), ⚠️ 0 stale."
+> "TODO updated: 2 done, 1 new Next item, 0 stale."
 
 Don't dump the full file.
 

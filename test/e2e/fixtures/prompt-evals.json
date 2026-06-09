@@ -1,0 +1,32 @@
+[
+  {
+    "id": "nestjs-init",
+    "prompt": "scaffold a nestjs backend",
+    "expectedSkill": "nestjs-write-code",
+    "phase": 1
+  },
+  {
+    "id": "angular-action-localized",
+    "prompt": "them nut approve cho don hang",
+    "expectedSkill": "angular-write-code",
+    "phase": 1
+  },
+  {
+    "id": "open-ended-localized",
+    "prompt": "toi dang phan van giua drawer va full page detail",
+    "expectedSkill": "sdcorejs-brainstorm",
+    "phase": 1
+  },
+  {
+    "id": "user-guide",
+    "prompt": "write user guide for module Product",
+    "expectedSkill": "sdcorejs-write-user-guide",
+    "phase": 3
+  },
+  {
+    "id": "commit",
+    "prompt": "commit changes",
+    "expectedSkill": "sdcorejs-commit",
+    "phase": 3
+  }
+]

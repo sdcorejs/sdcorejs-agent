@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review-plan
-description: Use AFTER `sdcorejs-write-plan` writes a step-by-step plan. Presents the plan to the user for review BEFORE code is generated. Acts as the user-approval gate before `<track>-write-code` runs; on approval, fires `orchestration/auto-plans` to persist the snapshot and dispatches the track's write-code orchestrator. Triggers - automatic after `sdcorejs-write-plan`; or user says "review plan", "check the plan", "rà soát plan", "duyệt plan", "approve plan". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-write-plan` writes a step-by-step plan. Presents the plan to the user for review BEFORE code is generated. Acts as the user-approval gate before `<track>-write-code` runs; on approval, fires `orchestration/auto-plans` to persist the snapshot and dispatches the track's write-code orchestrator. Triggers - automatic after `sdcorejs-write-plan`; or user says "review plan", "check the plan", "review the plan", "approve the plan", "approve plan". Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Edit, Glob
 ---
 
@@ -13,11 +13,11 @@ Catching missing steps or wrong file paths here is far cheaper than catching the
 
 ## When to use
 - Automatically right after `sdcorejs-write-plan` writes a plan
-- When the user says "review plan", "check the plan", "rà soát plan", "duyệt plan", "approve plan", "let's verify the plan"
+- When the user says "review plan", "check the plan", "review the plan", "approve the plan", "approve plan", "let's verify the plan"
 
 ## Process
 
-> **STOP — approval gate.** This skill BLOCKS code generation. After presenting the plan summary (step 3), you MUST wait for an explicit affirmative ("OK", "duyệt", "approve") before invoking `orchestration/auto-plans` or dispatching `<track>-write-code`. Silence or absence of objection is NOT approval. Never start a write-code task — not even step 1 — while the plan is still under review.
+> **STOP — approval gate.** This skill BLOCKS code generation. After presenting the plan summary (step 3), you MUST wait for an explicit affirmative ("OK", "approve", "go ahead", "proceed", or localized equivalents) before invoking `orchestration/auto-plans` or dispatching `<track>-write-code`. Silence or absence of objection is NOT approval. Never start a write-code task — not even step 1 — while the plan is still under review.
 
 ### 1. Re-read the plan
 Either re-read from the in-chat response (if `sdcorejs-write-plan` rendered it inline) or from the plan file if one was written. Re-read it as if you've never seen it.
@@ -54,28 +54,30 @@ Verification:
 - <track-specific command 2>
 - Manual: <track-specific smoke route>
 
-Bạn duyệt plan này chứ?
-  - "OK" → mình sẽ chạy `<track>-write-code` theo đúng plan
-  - "đổi step <N>" → mình sẽ sửa và trình lại
-  - "hủy" → dừng, không sinh code
+Do you approve this plan?
+  - "OK" → I will run `<track>-write-code` according to the plan
+  - "change step <N>" → I will update it and present it again
+  - "cancel" → stop without generating code
+
+Translate this prompt at runtime.
 ```
 
 ### 4. Handle response
 
-#### Approve ("OK", "duyệt", "approve", "go ahead", "tiến hành", "generate")
+#### Approve ("OK", "approve", "go ahead", "proceed", "generate", or localized equivalents)
 1. IMMEDIATELY invoke `orchestration/auto-plans` (write mode) to persist the approved plan snapshot to `<target>/.sdcorejs/plans/<TRACK>/<YYYY-MM-DD-HH-mm>-<topic>.md`
 2. Dispatch the right track's write-code orchestrator with the approved plan as input:
    - `angular` → `angular-write-code`
    - `nextjs` → `nextjs-write-code`
    - `nestjs` → `nestjs-write-code` (when available; until then ASK user)
 
-#### Request changes ("đổi step N", "sửa", "amend", "change")
+#### Request changes ("change step N", "change", "amend", "change")
 1. Edit the plan
 2. Re-run self-review
 3. Re-present (loop max 3 rounds; if still not approved, suggest going back to `sdcorejs-write-plan` or `sdcorejs-review-spec`)
 4. DO NOT invoke `orchestration/auto-plans` — only an approved plan gets snapshotted
 
-#### Abort ("hủy", "dừng", "cancel", "stop")
+#### Abort ("cancel", "stop", or localized equivalents)
 1. Stop the workflow
 2. DO NOT invoke `orchestration/auto-plans`
 3. Optionally invoke `orchestration/memories` if the abort surfaced a durable lesson ("user prefers smaller batches; plan was too big")
@@ -93,7 +95,7 @@ Bạn duyệt plan này chứ?
 ### MUST NOT
 - Skip review on "simple" tasks. Even a 3-step plan deserves the gate — the time cost is seconds, the benefit is consistent rigor.
 - Proceed to `<track>-write-code` without explicit user approval
-- Let the write-code orchestrator start before the user says "OK", "duyệt", or equivalent
+- Let the write-code orchestrator start before the user says "OK", "approve", or equivalent
 - Modify the plan after handing off — if late changes are needed, abort and re-plan
 - Treat the absence of objection as approval
 

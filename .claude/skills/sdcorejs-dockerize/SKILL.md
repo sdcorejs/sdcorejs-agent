@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-dockerize
-description: Generate a one-command runnable Docker stack for an SDCoreJS project — emits Dockerfiles + docker-compose.yml (Angular FE + NestJS BE + Keycloak + Postgres) into a deploy root so `docker compose up` boots everything. Postgres on a named volume; nginx serves the SPA and reverse-proxies /api to the backend (single origin). Templates from `_refs/infra/`. Use before `sdcorejs-auth` + `sdcorejs-run-guide`. Triggers - "dockerize", "đóng gói docker", "docker compose", "chạy bằng docker", "tạo Dockerfile", "build trên docker", "đóng gói để chạy", "containerize". Applies to angular, nestjs. Bilingual (VI/EN).
+description: Generate a one-command runnable Docker stack for an SDCoreJS project — emits Dockerfiles + docker-compose.yml (Angular FE + NestJS BE + Keycloak + Postgres) into a deploy root so `docker compose up` boots everything. Postgres on a named volume; nginx serves the SPA and reverse-proxies /api to the backend (single origin). Templates from `_refs/infra/`. Use before `sdcorejs-auth` + `sdcorejs-run-guide`. Triggers - "dockerize", "package with Docker", "docker compose", "run with Docker", "create Dockerfile", "containerize", or localized equivalents. Applies to angular, nestjs. Runtime-localized.
 allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
@@ -13,7 +13,7 @@ Turn an SDCoreJS frontend + backend into a single `docker compose up`. This skil
 ## When invoked / NOT
 
 **Invoked when:**
-- The user asks any trigger above ("dockerize", "đóng gói docker", "chạy bằng docker", "containerize", "docker compose", "tạo Dockerfile", "build trên docker", "đóng gói để chạy").
+- The user asks any trigger above ("dockerize", "package with Docker", "run with Docker", "containerize", "docker compose", "create Dockerfile", or localized equivalents).
 - As a step in the non-tech build flow — once an FE + BE exist, the stack is packaged so the user can run it with one command.
 
 **NOT for:**
@@ -45,7 +45,7 @@ FE and BE are **separate repos placed side by side** under the deploy root as `f
 
 1. Read the target project's `.sdcorejs/persona.md` (`persona:` field). Absent → `tech`.
 2. Load `_refs/shared/persona.md` and apply the matching contract.
-3. If `non-tech`: explain in plain language — "mình sẽ đóng gói lại để bạn chỉ cần gõ 1 lệnh là chạy được toàn bộ ứng dụng trên máy bạn". Do NOT dump Docker jargon (no "multi-stage build", "reverse proxy", "named volume" in the user-facing narration). Report progress as outcomes ("đã đóng gói xong, giờ chạy được bằng 1 lệnh"). If `tech`: use exact terms freely.
+3. If `non-tech`: explain in plain language — "I will package the app so you can run the whole thing with one command on your machine." Do NOT dump Docker jargon (no "multi-stage build", "reverse proxy", "named volume" in the user-facing narration). Report progress as outcomes ("the one-command package is ready"). Translate user-facing narration at runtime. If `tech`: use exact terms freely.
 
 ## Step 1 — locate & derive
 

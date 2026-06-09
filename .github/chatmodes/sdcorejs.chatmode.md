@@ -57,7 +57,7 @@ For angular, `write-code` is the single orchestrator; it loads on-demand referen
 2. **Auto-specs / auto-plans** — immediately after `04-review-spec` approval, `skills/orchestration/auto-specs.md` snapshots the approved spec to `<target>/.sdcorejs/specs/<track>/`. Immediately after `06-review-plan` approval, `skills/orchestration/auto-plans.md` snapshots the approved plan to `<target>/.sdcorejs/plans/<track>/`. Future `03-write-spec` / `05-write-plan` mirror this corpus.
 3. **Memories** — `skills/orchestration/memories.md` writes durable cross-session facts to the target project's `.sdcorejs/memories/<track>/`.
 4. **Session-start ritual** — read the target project's `.sdcorejs/docs/<track>/*.md` (latest 3), `.sdcorejs/memories/<track>/*.md` (frontmatter), plus `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` (frontmatter only) before answering.
-5. **Bilingual** — Vietnamese request → Vietnamese output (full diacritics for labels/messages). Permission codes + route paths stay English.
+5. **Runtime-localized** — detect the user's language, respond in that language, and preserve locale-specific marks in generated labels/messages. Permission codes + route paths stay English.
 6. **Clarify-before-code** — invoke `02-clarify-requirements` if module/entity/fields unspecified (or `01-brainstorm` for open-ended ideas).
 7. **Approval gates** — `04-review-spec` and `06-review-plan` require explicit user approval before the next skill runs. Approval immediately fires the corresponding auto-specs / auto-plans tail-call (rule 2).
 8. **Core UI first** — use `@sdcorejs/angular` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.

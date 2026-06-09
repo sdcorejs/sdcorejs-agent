@@ -37,6 +37,94 @@ Claude plugin install uses `plugin/skills/**` and `plugin/_refs/**`.
 
 Run these in `sdcorejs-agent`.
 
+## Automated E2E Harness
+
+The repository now includes a deterministic Node test harness under `test/e2e/`.
+It does not call an LLM and does not invoke real agent tools in the default path.
+
+Run all automated E2E phases:
+
+```bash
+npm run test:e2e
+```
+
+Run one phase:
+
+```bash
+npm run test:e2e:phase1
+npm run test:e2e:phase2
+npm run test:e2e:phase3
+npm run test:e2e:phase4
+```
+
+### Phase 1: Deterministic Skill-Pack Runner
+
+Command:
+
+```bash
+npm run test:e2e:phase1
+```
+
+Coverage:
+
+- Loads source skills from `skills/**/*.md`.
+- Loads `.claude/skills/*/SKILL.md` and `plugin/skills/*/SKILL.md`.
+- Verifies source/mirror counts and reference-doc availability.
+- Runs prompt evals from `test/e2e/fixtures/prompt-evals.json` through a deterministic dispatcher.
+
+### Phase 2: Codex + Claude Code CLI Adapters
+
+Command:
+
+```bash
+npm run test:e2e:phase2
+```
+
+Coverage:
+
+- Uses fake `codex` and `claude` executables on `PATH` to verify adapter behavior without calling real CLIs.
+- Exposes a prompt-smoke contract that can be reused when real CLIs are available.
+
+### Phase 3: Copilot/Cursor Compatibility Smoke
+
+Command:
+
+```bash
+npm run test:e2e:phase3
+```
+
+Coverage:
+
+- Loads entrypoint profiles for Codex, Cursor, Claude Code, and Copilot.
+- Verifies entrypoints advertise runtime-localized behavior.
+- Reuses the prompt-eval fixture across every entrypoint profile.
+
+### Phase 4: Full Target-App Golden Test
+
+Command:
+
+```bash
+npm run test:e2e:phase4
+```
+
+Default behavior is an explicit skip contract because this phase requires Docker,
+Playwright, supertest, and a generated target app. To run the real golden app path,
+enable it from a prepared environment with:
+
+```bash
+SDCOREJS_E2E_FULL=1 npm run test:e2e:phase4
+```
+
+The golden plan validates this order:
+
+1. Generate a target app.
+2. Install target-app npm dependencies.
+3. Install the Playwright Chromium browser.
+4. Run `docker compose up`.
+5. Run API checks with supertest.
+6. Run UI checks with Playwright.
+7. Run `docker compose down -v`.
+
 ### Inventory
 
 Expected:

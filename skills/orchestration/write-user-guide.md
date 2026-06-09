@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-write-user-guide
-description: Generate + maintain evergreen end-user feature guides for generated SDCoreJS apps. Per-module `.sdcorejs/user-guide/<module>.md` (features / tasks / routes / permissions / data + a Coverage-vs-requirements table) and a root aggregate `sdcorejs-user-guide.md` exportable to DOCX/PDF via pandoc (scaffold images = placeholders + a capture checklist). Four modes - per-module incremental (auto in the write-code tail chain, right after auto-docs), aggregate build (on ship / large feature / manual), legacy reverse-engineer (read an existing project via `sdcorejs-code-map`), PRD-coverage compare (spec acceptance criteria + optional external `.sdcorejs/prd/<feature>.md`). Distinct from `sdcorejs-auto-docs` (session deltas) and `sdcorejs-auto-summary` (project brief). Triggers - end of any write-code task (per-module update), "viết user guide", "tài liệu người dùng", "user manual", "gom user guide", "xuất user guide docx/pdf", "so PRD / đáp ứng yêu cầu chưa", ship of a large feature, "đọc toàn dự án viết user guide". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Generate + maintain evergreen end-user feature guides for generated SDCoreJS apps. Per-module `.sdcorejs/user-guide/<module>.md` (features / tasks / routes / permissions / data + a Coverage-vs-requirements table) and a root aggregate `sdcorejs-user-guide.md` exportable to DOCX/PDF via pandoc (scaffold images = placeholders + a capture checklist). Four modes - per-module incremental (auto in the write-code tail chain, right after auto-docs), aggregate build (on ship / large feature / manual), legacy reverse-engineer (read an existing project via `sdcorejs-code-map`), PRD-coverage compare (spec acceptance criteria + optional external `.sdcorejs/prd/<feature>.md`). Distinct from `sdcorejs-auto-docs` (session deltas) and `sdcorejs-auto-summary` (project brief). Triggers - end of any write-code task (per-module update), "write user guide", "user documentation", "user manual", "build aggregate user guide", "export user guide docx/pdf", "compare against PRD / requirement coverage", ship of a large feature, "read the whole project and write the user guide". Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
@@ -23,10 +23,10 @@ Templates live in `_refs/shared/user-guide-template.md`. Per-module guides go to
 
 | # | Mode | When | Trigger |
 |---|---|---|---|
-| 1 | **Per-module incremental** | write-code tail chain (auto), or manual for one module | end of write-code / `auto-docs`; "viết user guide cho module X" |
-| 2 | **Aggregate build** | ship a large feature, export to DOCX/PDF, manual | "gom user guide", "xuất user guide docx/pdf", `sdcorejs-ship` |
-| 3 | **Legacy reverse-engineer** | existing project, no spec, read-first | "đọc toàn dự án viết user guide", "viết user guide từ code cũ" |
-| 4 | **PRD-coverage compare** | runs inside Mode 1 & 2 automatically | "so PRD / đáp ứng yêu cầu chưa"; always fires when a spec or PRD exists |
+| 1 | **Per-module incremental** | write-code tail chain (auto), or manual for one module | end of write-code / `auto-docs`; "write user guide for module X" |
+| 2 | **Aggregate build** | ship a large feature, export to DOCX/PDF, manual | "build aggregate user guide", "export user guide docx/pdf", `sdcorejs-ship` |
+| 3 | **Legacy reverse-engineer** | existing project, no spec, read-first | "read the whole project and write the user guide", "write user guide from legacy code" |
+| 4 | **PRD-coverage compare** | runs inside Mode 1 & 2 automatically | "compare against PRD / requirement coverage"; always fires when a spec or PRD exists |
 
 ## Not
 
@@ -42,7 +42,7 @@ Templates live in `_refs/shared/user-guide-template.md`. Per-module guides go to
 
 **Automatic** at the end of any write-code task (tail chain: `auto-docs` → **`write-user-guide` Mode 1**), for every module touched this session.
 
-Also triggered **manually**: "viết user guide cho module X", "cập nhật user guide", "user guide module <name>".
+Also triggered **manually**: "write user guide for module X", "update user guide", "user guide module <name>", or localized equivalents.
 
 ### 2. Harvest the touched module
 
@@ -100,7 +100,7 @@ Write `<target>/.sdcorejs/user-guide/<module>.md` from the per-module template i
 
 Fill the YAML frontmatter:
 - `module` — module slug
-- `title` — human-readable feature name (Vietnamese preferred; English fallback)
+- `title` — human-readable feature name (session language preferred; English fallback)
 - `tracks` — e.g. `[angular, nestjs]`
 - `generated_at` — ISO 8601 timestamp
 - `git_head` — `git rev-parse HEAD` of the target repo
@@ -113,23 +113,23 @@ Fill the YAML frontmatter:
 - `coverage` — filled by Mode 4 below; initialize to `{ total: 0, met: 0, partial: 0, missing: 0 }`
 
 Fill the 7 body sections using the harvested data:
-1. **Tổng quan** — plain-language description of what the module does for the user.
-2. **Màn hình & tác vụ** — one subsection per detected screen, with user tasks, required permission, and main fields/buttons. Include the `![<screen>](images/<module>-<screen>.png)` placeholder.
-3. **Bảng quyền** — table of all permission codes with their action and typical role.
-4. **Tham chiếu dữ liệu** — table of entity fields (name / type / required / constraints) from the `@Column` / Zod harvest.
-5. **Hành động đặc biệt** — workflow transitions, bulk actions, custom side-effects (omit section if none found).
-6. **Coverage vs yêu cầu** — filled by Mode 4 (see below).
-7. **Ảnh minh hoạ — checklist chụp** — `- [ ] images/<module>-<screen>.png` for every detected screen.
+1. **Overview** — plain-language description of what the module does for the user.
+2. **Screens and tasks** — one subsection per detected screen, with user tasks, required permission, and main fields/buttons. Include the `![<screen>](images/<module>-<screen>.png)` placeholder.
+3. **Permission table** — table of all permission codes with their action and typical role.
+4. **Data reference** — table of entity fields (name / type / required / constraints) from the `@Column` / Zod harvest.
+5. **Special actions** — workflow transitions, bulk actions, custom side-effects (omit section if none found).
+6. **Coverage vs requirements** — filled by Mode 4 (see below).
+7. **Illustration images — capture checklist** — `- [ ] images/<module>-<screen>.png` for every detected screen.
 
 **Idempotent:** this file is a generated artifact — overwrite it unconditionally. Do not append to an existing file.
 
 ### 4. Run Mode 4 — Coverage (always)
 
-After rendering the 7 sections, immediately run **Mode 4** to fill the `## Coverage vs yêu cầu` table and update the `coverage` frontmatter counts. See Mode 4 below.
+After rendering the 7 sections, immediately run **Mode 4** to fill the `## Coverage vs requirements` table and update the `coverage` frontmatter counts. See Mode 4 below.
 
 ### 5. Emit image placeholders
 
-Always include the `## Ảnh minh hoạ` capture checklist even if no screens are detected (list what *should* exist). The agent does NOT run the app or capture screenshots — the checklist tells the developer which images to capture and where to place them (`<target>/.sdcorejs/user-guide/images/`).
+Always include the `## Illustration images` capture checklist even if no screens are detected (list what *should* exist). The agent does NOT run the app or capture screenshots — the checklist tells the developer which images to capture and where to place them (`<target>/.sdcorejs/user-guide/images/`).
 
 ---
 
@@ -137,7 +137,7 @@ Always include the `## Ảnh minh hoạ` capture checklist even if no screens ar
 
 ### Purpose
 
-Map every requirement from the approved spec / PRD to either ✅ documented & implemented, ⚠️ partial, or ❌ missing. Fills the guide's `## Coverage vs yêu cầu` table and the `coverage` frontmatter block.
+Map every requirement from the approved spec / PRD to either ✅ documented & implemented, ⚠️ partial, or ❌ missing. Fills the guide's `## Coverage vs requirements` table and the `coverage` frontmatter block.
 
 ### 1. Load the spec
 
@@ -164,19 +164,19 @@ If both spec and PRD exist, merge their criteria (deduplicate by intent).
 ### 3. Map each requirement
 
 For every criterion, determine its status by checking the guide's populated sections:
-- **✅ đủ** — the guide's `## Màn hình & tác vụ`, `## Bảng quyền`, or `## Tham chiếu dữ liệu` explicitly covers it AND the harvest found the corresponding code artefact (route / permission / field / action).
-- **⚠️ một phần** — the criterion is partially described or the implementation evidence is incomplete (e.g. field exists but no validation documented, or screen exists but permission guard missing).
-- **❌ thiếu** — no evidence in code or guide; include a short gap note.
+- **✅ met** — the guide's `## Screens and tasks`, `## Permission table`, or `## Data reference` explicitly covers it AND the harvest found the corresponding code artefact (route / permission / field / action).
+- **⚠️ partial** — the criterion is partially described or the implementation evidence is incomplete (e.g. field exists but no validation documented, or screen exists but permission guard missing).
+- **❌ missing** — no evidence in code or guide; include a short gap note.
 
 ### 4. Render the coverage table
 
 ```markdown
-## Coverage vs yêu cầu
-| # | Yêu cầu (spec/PRD) | Trạng thái | Tài liệu ở mục |
+## Coverage vs requirements
+| # | Requirement (spec/PRD) | Status | Documented in section |
 |---|---|---|---|
-| 1 | <criterion text> | ✅ đủ | Màn hình & tác vụ |
-| 2 | <criterion text> | ⚠️ một phần | <gap note> |
-| 3 | <criterion text> | ❌ thiếu | — |
+| 1 | <criterion text> | ✅ met | Screens and tasks |
+| 2 | <criterion text> | ⚠️ partial | <gap note> |
+| 3 | <criterion text> | ❌ missing | — |
 ```
 
 ### 5. Update frontmatter counts
@@ -193,12 +193,12 @@ coverage:
 
 If no spec or PRD file is found (legacy project or early-stage feature), write:
 ```markdown
-## Coverage vs yêu cầu
-> Không có spec/PRD — bảng coverage được điền best-effort từ code.
+## Coverage vs requirements
+> No spec/PRD was found, so the coverage table is filled best-effort from code.
 
-| # | Tính năng phát hiện từ code | Trạng thái | Ghi chú |
+| # | Feature detected from code | Status | Note |
 |---|---|---|---|
-| 1 | <harvested route / permission / screen> | ✅ đủ | từ code |
+| 1 | <harvested route / permission / screen> | ✅ met | from code |
 ```
 
 ---
@@ -209,8 +209,8 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
 - Render from `_refs/shared/user-guide-template.md` — do NOT hard-code the template inline.
 - **Idempotent overwrite** — `<target>/.sdcorejs/user-guide/<module>.md` is a generated artifact; overwrite it unconditionally, never append.
 - Write to the **TARGET project** (resolve `TARGET_ROOT=$(git rev-parse --show-toplevel)` from the user's CWD; never write into the `sdcorejs-agent` repo). **Guard:** if `TARGET_ROOT` basename matches `sdcorejs-agent`, or the directory contains no `src/`, `frontend/`, or `package.json` at its root (no evidence of an app project), **abort and ask** the user to provide the target project path explicitly — do not write user guides into the agent repo.
-- **Bilingual VI/EN** — section headings in Vietnamese (as in the template); field names, permission codes, and route paths in English; prose in the user's session language.
-- Always emit **image placeholders + the capture checklist** (`## Ảnh minh hoạ`), even when no real images exist yet.
+- **Runtime-localized** — section headings and prose use the user's session language; field names, permission codes, and route paths stay English.
+- Always emit **image placeholders + the capture checklist** (`## Illustration images`), even when no real images exist yet.
 - Record `git_head` and `generated_at` in every frontmatter block so drift is detectable.
 
 ### MUST NOT
@@ -234,7 +234,7 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
 
 **Automatic** when `sdcorejs-ship` runs (large-feature or release mode).
 
-Also triggered **manually**: "gom user guide", "xuất user guide docx/pdf", "build user guide", or any explicit request to produce the aggregate or export to DOCX/PDF.
+Also triggered **manually**: "build aggregate user guide", "export user guide docx/pdf", "build user guide", or any explicit request to produce the aggregate or export to DOCX/PDF.
 
 ### 2. Refresh stale guides before assembling
 
@@ -260,17 +260,17 @@ Glob: <target>/.sdcorejs/user-guide/*.md
 Build `<target>/sdcorejs-user-guide.md` from the **aggregate template** in `_refs/shared/user-guide-template.md`:
 
 1. **YAML frontmatter** — set `title` (project name from `sdcorejs-auto-summary` / ask user if absent), `generated_at` (ISO 8601 now), `git_head` (`git rev-parse HEAD`), `modules` (sorted list of all `module` slugs found), `coverage` (summed from step 4 below).
-2. **`## Mục lục`** — numbered list linking to each `## <Module>` section anchor.
-3. **`## Tổng quan hệ thống`** — 1–2 sentences: what the system does, who it is for (read from `.sdcorejs/summary.md` if it exists; otherwise write best-effort from module titles).
+2. **`## Table of contents`** — numbered list linking to each `## <Module>` section anchor.
+3. **`## System Overview`** — 1-2 sentences: what the system does, who it is for (read from `.sdcorejs/summary.md` if it exists; otherwise write best-effort from module titles).
 4. **One `## <Module>` section per file** — insert each module's body content verbatim after stripping the YAML frontmatter block (the `---…---` header). Preserve all headings (shift level if needed so they sit below the `##` module heading).
-5. **`## Tổng hợp Coverage vs yêu cầu`** — global summary table; sum each module's `coverage` frontmatter counts:
+5. **`## Coverage vs requirements summary`** — global summary table; sum each module's `coverage` frontmatter counts:
 
 ```markdown
-## Tổng hợp Coverage vs yêu cầu
-| Module | Đủ ✅ | Một phần ⚠️ | Thiếu ❌ |
+## Coverage vs requirements summary
+| Module | met ✅ | partial ⚠️ | missing ❌ |
 |---|---|---|---|
 | <module1> | <met> | <partial> | <missing> |
-| **Tổng** | <sum_met> | <sum_partial> | <sum_missing> |
+| **Total** | <sum_met> | <sum_partial> | <sum_missing> |
 ```
 
 Update the aggregate frontmatter `coverage` block with the summed totals.
@@ -296,12 +296,12 @@ pandoc <target>/sdcorejs-user-guide.md \
 **The skill does NOT run pandoc or the target app.** It emits the commands above and reports the capture checklist — the developer runs pandoc locally after placing real screenshots.
 
 Instruct the user:
-> "Đặt ảnh thực tế vào `<target>/.sdcorejs/user-guide/images/` (xem checklist trong từng module guide), rồi chạy lệnh pandoc ở trên để xuất DOCX/PDF."
+> "Place real screenshots in `<target>/.sdcorejs/user-guide/images/` (see the checklist in each module guide), then run the pandoc command above to export DOCX/PDF."
 
 When invoked from `sdcorejs-ship`: **always rebuild** the aggregate. **Ask before emitting the pandoc export command** (large-feature ships may not need DOCX every time):
-> "Bạn có muốn xuất DOCX ngay bây giờ không? (y / n)"
+> "Do you want to export DOCX now? (y / n)"
 
-When triggered manually (e.g. "xuất user guide docx"): emit the export command immediately without asking.
+When triggered manually (e.g. "export user guide docx" or localized equivalents): emit the export command immediately without asking.
 
 ---
 
@@ -310,8 +310,8 @@ When triggered manually (e.g. "xuất user guide docx"): emit the export command
 ### 1. Trigger
 
 **Manual only.** Fire this mode when the user says:
-- "đọc toàn dự án viết user guide"
-- "viết user guide cho dự án cũ"
+- "read the whole project and write the user guide"
+- "write user guide for a legacy project"
 - "reverse-engineer user guide"
 - or any equivalent request to produce guides for an existing/legacy project where no spec, plan, or write-code session output exists.
 
@@ -376,7 +376,7 @@ After all per-module guides are written, immediately run **Mode 2** to assemble 
 
 ### 5. Coverage section — "reverse-engineered" note
 
-Because Mode 3 targets legacy projects, there is typically no approved spec or PRD. In the `## Coverage vs yêu cầu` section of each module guide, apply the **Mode 4 "No spec or PRD"** path (see Mode 4 §6) and add this note at the top of the table:
+Because Mode 3 targets legacy projects, there is typically no approved spec or PRD. In the `## Coverage vs requirements` section of each module guide, apply the **Mode 4 "No spec or PRD"** path (see Mode 4 §6) and add this note at the top of the table:
 
 ```markdown
 > Reverse-engineered — no spec/PRD. Coverage is best-effort from code harvest.

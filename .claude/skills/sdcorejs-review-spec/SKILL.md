@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review-spec
-description: Use AFTER `sdcorejs-write-spec` writes a spec file. Presents the spec to the user with a request for review and approval; iterates on feedback until the user approves. Acts as the user-approval gate before `sdcorejs-write-plan` starts; on approval, fires `orchestration/auto-specs` to persist the approved snapshot. Triggers - automatic after `sdcorejs-write-spec`; or user says "review spec", "approve spec", "let's check the spec", "rà soát spec", "duyệt spec". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Use AFTER `sdcorejs-write-spec` writes a spec file. Presents the spec to the user with a request for review and approval; iterates on feedback until the user approves. Acts as the user-approval gate before `sdcorejs-write-plan` starts; on approval, fires `orchestration/auto-specs` to persist the approved snapshot. Triggers - automatic after `sdcorejs-write-spec`; or user says "review spec", "approve spec", "let's check the spec", "review the spec", "approve the spec". Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Edit, Glob
 ---
 
@@ -13,11 +13,11 @@ This skill is fully track-agnostic — the spec template, file paths, and tail-c
 
 ## When to use
 - Automatically right after `sdcorejs-write-spec` writes a spec file
-- When the user says "review spec", "let's check the spec", "rà soát spec", "duyệt spec", "approve spec"
+- When the user says "review spec", "let's check the spec", "review the spec", "approve the spec", "approve spec"
 
 ## Process
 
-> **STOP — approval gate.** This skill exists to BLOCK the workflow. After presenting the spec summary (step 3), you MUST wait for an explicit affirmative ("OK", "duyệt", "approve") before invoking `orchestration/auto-specs` or `sdcorejs-write-plan`. Silence, "thanks", or a follow-up question is NOT approval. Do not proceed on your own judgment that the spec "looks fine".
+> **STOP — approval gate.** This skill exists to BLOCK the workflow. After presenting the spec summary (step 3), you MUST wait for an explicit affirmative ("OK", "approve", "go", "looks good", or localized equivalents) before invoking `orchestration/auto-specs` or `sdcorejs-write-plan`. Silence, "thanks", or a follow-up question is NOT approval. Do not proceed on your own judgment that the spec "looks fine".
 
 ### 1. Re-read the spec
 Open the file just written under `<target-project>/.sdcorejs/docs/<TRACK>/*-spec.md`. Re-read it as if you've never seen it.
@@ -34,7 +34,7 @@ Run the checklist below silently. If ANY item fails, edit the spec to fix it BEF
 - [ ] Scope-fit: if the spec is >2 pages, suggest splitting into 2+ smaller specs
 - [ ] No ambiguous pronouns or vague verbs ("handle", "support", "manage" without object)
 - [ ] All file paths match the track conventions (see `_refs/sdlc/<TRACK>.md`)
-- [ ] Language consistency: VI spec uses full diacritics; EN spec is grammatical
+- [ ] Language consistency: localized specs preserve locale-specific marks; English specs are grammatical
 - [ ] References to prior memories / auto-docs are concrete (path or topic), not handwaved
 
 ### 3. Render summary to user
@@ -52,26 +52,28 @@ Summary:
 - Non-goals called out: <list>
 - Risks flagged: <list>
 
-Bạn duyệt spec này chứ?
-  - "OK" → tiếp tục sang `sdcorejs-write-plan`
-  - "đổi <X>" → mình sẽ sửa và trình lại
-  - "hủy" → dừng, không sinh plan
+Do you approve this spec?
+  - "OK" → continue to `sdcorejs-write-plan`
+  - "change <X>" → I will update it and present it again
+  - "cancel" → stop without generating a plan
+
+Translate this prompt at runtime.
 ```
 
 ### 4. Handle response
 
-#### Approve ("OK", "duyệt", "approve", "go", "tiếp tục")
+#### Approve ("OK", "approve", "go", "resume", or localized equivalents)
 1. Mark the spec approved (the user's confirmation in chat is the audit trail)
 2. IMMEDIATELY invoke `orchestration/auto-specs` (write mode) to persist the approved spec snapshot to `<target>/.sdcorejs/specs/<TRACK>/<YYYY-MM-DD-HH-mm>-<topic>.md`
 3. Only then invoke `sdcorejs-write-plan` with the spec file path as input
 
-#### Request changes ("đổi", "sửa", "change", "amend")
+#### Request changes ("change", "change", "change", "amend")
 1. Edit the spec file in-place via `Edit` tool
 2. Re-run the self-review checklist
 3. Re-present (loop max 3 rounds — if still not approved, suggest re-brainstorming or rewriting the spec)
 4. DO NOT invoke `orchestration/auto-specs` — only an approved spec gets snapshotted
 
-#### Abort ("hủy", "dừng", "cancel", "stop")
+#### Abort ("cancel", "stop", or localized equivalents)
 1. Leave the spec file in place (it's a useful artifact even if not pursued)
 2. Stop the workflow
 3. DO NOT invoke `orchestration/auto-specs`
@@ -83,7 +85,7 @@ Bạn duyệt spec này chứ?
 - Run the self-review checklist BEFORE showing the spec to the user
 - Fix any failing checklist item via `Edit` on the spec file, then re-check
 - Show a concise summary, not the full spec text
-- Wait for an explicit affirmative — "looks good", "OK", "duyệt"
+- Wait for an explicit affirmative — "looks good", "OK", "approve"
 - Pass the approved spec file path to `sdcorejs-write-plan` when handing off
 - Match the user's language
 

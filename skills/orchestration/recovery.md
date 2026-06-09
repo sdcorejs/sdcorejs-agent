@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-recovery
-description: Use when the user says "tiếp tục", "tiếp tục công việc", "resume", "continue where we left off", "what was I doing", "where did we stop", or opens a session after a break and needs to rebuild context. Reads the latest auto-docs + memories + git state + task tracker and produces a one-screen handoff summary. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Use when the user says "resume", "continue where we left off", "what was I doing", "where did we stop", or localized equivalents, or opens a session after a break and needs to rebuild context. Reads the latest auto-docs + memories + git state + task tracker and produces a one-screen handoff summary. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Bash, Glob
 ---
 
@@ -10,7 +10,7 @@ allowed-tools: Read, Bash, Glob
 The hardest part of returning to work after hours or days away is rebuilding context. This skill produces a compact handoff: what was done last, what's still open, what's likely next. The agent reads — the user decides.
 
 ## When invoked
-- "tiếp tục", "tiếp tục công việc", "resume", "where were we", "what was I doing"
+- "resume", "continue where we left off", "where were we", "what was I doing", or localized equivalents
 - Opening a session in a target project after a gap (>1 day since last commit OR >latest doc is >1 day old)
 - After a context reset / compaction
 - Explicit: "recovery skill"
@@ -61,28 +61,28 @@ git diff --stat HEAD~1 2>/dev/null
 Use this layout:
 
 ```markdown
-## Đã đọc context (3 doc + N memories)
+## Context read (3 docs + N memories)
 
-### Lần làm việc gần nhất — <timestamp from latest doc>
-**Đã làm:** <1-2 sentence synthesis from "What was changed">
-**Còn mở:** <bullets from "Open questions" if any>
-**Suggest tiếp:** <verbatim "Next suggested action" or synthesized>
+### Last work session — <timestamp from latest doc>
+**Done:** <1-2 sentence synthesis from "What was changed">
+**Still open:** <bullets from "Open questions" if any>
+**Suggested next:** <verbatim "Next suggested action" or synthesized>
 
-### Bối cảnh thêm
+### Additional context
 - Branch: `<branch>` (<N commits ahead of main, M files changed locally>)
-- Memory hiện có: <comma-separated memory names>
+- Existing memories: <comma-separated memory names>
 - Living TODO (<file>): N unchecked / M total — top 3:
   - [ ] ...
   - [ ] ...
   - [ ] ...
 
-### Bạn muốn gì tiếp theo?
-- Tiếp tục từ "<suggest tiếp>" ?
-- Mở task mới?
-- Xem chi tiết một doc cụ thể? (gõ filename)
+### What would you like to do next?
+- Continue from "<suggested next>"?
+- Start a new task?
+- Inspect a specific doc? (type the filename)
 ```
 
-(EN equivalent if user's session language is English.)
+Translate this layout to the user's session language at runtime while preserving file paths, branch names, and code identifiers.
 
 ### 5. Wait for direction
 DO NOT proactively start the next step. The user reads the summary, decides, and gives the go-ahead. Recovery is a *briefing*, not an instruction.
@@ -91,20 +91,22 @@ DO NOT proactively start the next step. The user reads the summary, decides, and
 
 ### No docs found
 ```
-Không có .sdcorejs/docs/<track>/ trong project này. Đây là lần đầu? Bạn muốn:
-- Onboard từ đầu (mình invoke `sdcorejs-using-skills`)
-- Skip, bắt đầu task mới luôn
+No `.sdcorejs/docs/<track>/` docs were found in this project. Is this the first session? Choose the next step:
+- Onboard from scratch by invoking `sdcorejs-using-skills`
+- Skip recovery and start a new task
 ```
 
+Translate at runtime.
+
 ### Docs exist but >30 days old
-Surface the gap explicitly: "Doc gần nhất là 2026-04-01, cách 45 ngày — có thể đã outdate. Cần verify gì trước khi tiếp?"
+Surface the gap explicitly: "The latest doc is 2026-04-01, 45 days old, so it may be outdated. What should we verify before continuing?" Translate at runtime.
 
 ### Git state inconsistent with docs
 Doc says "completed entity Product" but `git log` doesn't show the commit. Flag it:
-"Doc nói entity Product đã xong nhưng git log không có commit liên quan. Code đã commit lên branch khác? Hoặc revert?"
+"The doc says Product was completed, but `git log` does not show a related commit. Was the code committed on another branch, or reverted?" Translate at runtime.
 
 ### Branch is `main`/`master`
-Warn: "Đang đứng trên `main` — chưa branch ra. Tạo feature branch trước khi tiếp?"
+Warn: "You are on `main` and no feature branch is active. Create a feature branch before continuing?" Translate at runtime.
 
 ### Memory + doc conflict
 Memory says X, latest doc implies not-X. Surface both, ask user which is current.
@@ -139,4 +141,4 @@ Memory says X, latest doc implies not-X. Surface both, ask user which is current
 The skill applies identically to angular, nestjs, nextjs. The only differences are detection in step 1 and the `<track>` segment in step 2 paths.
 
 For multi-track repos, prompt:
-"Repo có cả <track-a> và <track-b>. Bạn muốn recovery cho track nào, hay cả hai?"
+"This repo appears to contain both <track-a> and <track-b>. Which track should recovery use, or should it cover both?" Translate at runtime.

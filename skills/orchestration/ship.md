@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-ship
-description: End-to-end ship orchestrator. Chains verify-before-done → branch-ready → [changelog if release mode] → commit → push → pr-create into a single entry point. Triggers - "ship", "ship branch này", "đẩy lên", "release", "xong rồi ship đi", "ready to merge". Applies to angular, nestjs, nextjs and the sdcorejs-agent repo. Bilingual (VI/EN).
+description: End-to-end ship orchestrator. Chains verify-before-done → branch-ready → [changelog if release mode] → commit → push → pr-create into a single entry point. Triggers - "ship", "ship this branch", "push it", "release", "done, ship it", "ready to merge". Applies to angular, nestjs, nextjs and the sdcorejs-agent repo. Runtime-localized.
 allowed-tools: Bash, Read
 ---
 
@@ -12,11 +12,11 @@ skills for independent use. For the common "I'm done, ship it" case this orchest
 chains them so the user says one thing and the full gate sequence runs.
 
 ## When invoked
-- "ship", "ship branch này", "ship đi", "đẩy lên"
-- "ready to merge", "xong rồi ship đi"
+- "ship", "ship this branch", "ship it", "push it"
+- "ready to merge", "done, ship it"
 - "release", "tag and release"
 
-> `"tạo PR"` / `"mở PR"` (PR-only, no full ship sequence) → `sdcorejs-pr-create`, which owns that phrase.
+> `"create PR"` / `"open PR"` (PR-only, no full ship sequence) → `sdcorejs-pr-create`, which owns that phrase.
 
 Do NOT invoke if:
 - Work is mid-feature (incomplete) — use sub-skills directly
@@ -37,16 +37,16 @@ git log "$MAIN"..HEAD --oneline 2>/dev/null | wc -l
 
 **Hard stops:**
 - Branch is `main` / `master` / `release/*` →
-  "Đang ở protected branch. Tạo feature branch trước rồi ship."
+  "Protected branch detected. Create a feature branch before shipping."
 - Zero commits ahead of main →
-  "Không có commit nào để ship."
+  "No commits to ship."
 - Uncommitted changes remain →
-  "Còn thay đổi chưa commit. (a) commit vào branch trước khi ship, hay (b) stash?"
+  "There are uncommitted changes. (a) Commit them to the branch before shipping, or (b) stash them?"
 
 ### Step 1 — Detect ship mode
 
 Auto-detect from user phrasing; otherwise ask:
-> "Ship mode: (a) Feature PR — mở PR, không tag; (b) Release — tạo CHANGELOG + tag?"
+> "Ship mode: (a) Feature PR — open a PR, no tag; (b) Release — create CHANGELOG + tag?"
 
 - User said "release" / "tag" / "version bump" → **Release mode**
 - Otherwise → **Feature PR mode**
@@ -58,7 +58,7 @@ Invoke `sdcorejs-verify-before-done`.
 - 🟢 DONE → continue
 - 🟡 criteria deferred by user → continue (deferred list noted in summary)
 - 🔴 unresolved blockers → STOP until user resolves or says
-  "ship với issues đã biết"
+  "ship with known issues"
 
 ### Step 3 — Run `sdcorejs-branch-ready`
 
@@ -74,7 +74,7 @@ Invoke **`sdcorejs-write-user-guide` Mode 2** — regenerate `sdcorejs-user-guid
 per-module guides under `.sdcorejs/user-guide/` and offer the pandoc DOCX export.
 
 - **Large-feature / Release ships**: always rebuild the aggregate.
-- **Ask before exporting DOCX**: "Bạn có muốn xuất DOCX ngay bây giờ không? (y / n)"
+- **Ask before exporting DOCX**: "Do you want to export DOCX now? (y / n)"
 - Per-module guides were already updated incrementally in each write-code tail chain
   (Mode 1 auto after `auto-docs`); this step only rebuilds the root aggregate.
 - If `.sdcorejs/user-guide/` is empty (no module guides exist yet): skip silently, note in summary.
@@ -84,8 +84,8 @@ per-module guides under `.sdcorejs/user-guide/` and offer the pandoc DOCX export
 Invoke `sdcorejs-changelog`.
 
 After generating the entry, ask:
-> "CHANGELOG drafted. Semver bump: PATCH / MINOR / MAJOR — confirm trước khi ghi vào
-> file không?"
+> "CHANGELOG drafted. Semver bump: PATCH / MINOR / MAJOR - confirm before writing to
+> the file?"
 
 Wait for confirmation before writing. If user declines → skip, note in summary.
 
@@ -108,8 +108,8 @@ git push -u origin HEAD
 git push
 ```
 - NEVER force-push to a shared branch
-- If rejected (non-fast-forward): "Remote có commits mới hơn. Rebase trước:
-  `git pull --rebase` rồi chạy lại ship."
+- If rejected (non-fast-forward): "Remote has newer commits. Rebase first:
+  `git pull --rebase`, then run ship again."
 
 ### Step 8 — PR
 
@@ -129,7 +129,7 @@ Invoke `sdcorejs-pr-create`.
 - PR                 : <url>
 ```
 
-If the user overrides a 🔴 stop ("ship với issues đã biết"), prefix the
+If the user overrides a 🔴 stop ("ship with known issues"), prefix the
 affected gate line with `⚠️ shipped with known issues:`:
 
   - verify-before-done : ⚠️ shipped with known issues (N unresolved criteria)

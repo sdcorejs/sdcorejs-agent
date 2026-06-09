@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-comment-code
-description: Mandatory ASK gate at the comment phase of every code-writing workflow. Always asks the user which comment level to apply — `skip` / `simple` / `medium` / `full` — before any comments are written. Outcome is optional: `skip` produces no comments; the other 3 levels apply progressively richer JSDoc + inline rules. Runs after `sdcorejs-review` / `orchestration/repair-loop` and BEFORE `orchestration/verify-before-done`. Triggers - automatic at the comment phase of any code-writing skill; or user says "add comments", "viết comment", "thêm comment", "comment lại code". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Mandatory ASK gate at the comment phase of every code-writing workflow. Always asks the user which comment level to apply — `skip` / `simple` / `medium` / `full` — before any comments are written. Outcome is optional: `skip` produces no comments; the other 3 levels apply progressively richer JSDoc + inline rules. Runs after `sdcorejs-review` / `orchestration/repair-loop` and BEFORE `orchestration/verify-before-done`. Triggers - automatic at the comment phase of any code-writing skill; or user says "add comments", "comment the code", "comment level", or localized equivalents. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Edit, Write
 ---
 
@@ -13,7 +13,7 @@ allowed-tools: Read, Edit, Write
 - **Auto-invoked** at the comment phase of every code-writing workflow:
   - After `sdcorejs-review` and `orchestration/repair-loop` (if findings existed)
   - BEFORE `orchestration/verify-before-done`
-- User explicitly: "add comments", "viết comment", "thêm comment", "comment lại code", "comment level"
+- User explicitly: "add comments", "comment the code", "comment level", or localized equivalents
 
 Do NOT invoke for:
 - Tasks with no code generation (planning, brainstorming, review-only)
@@ -24,19 +24,19 @@ Do NOT invoke for:
 
 Present 4 options to the user. Match the session language.
 
-**Vietnamese variant:**
+**Localized source prompt:**
 ```
-Bạn muốn comment cho code vừa generate ở mức nào?
+Which comment level do you want for the generated code?
 
-  (1) skip    — Không thêm comment nào
-  (2) simple  — JSDoc 1 dòng cho public methods; // why chỉ ở chỗ thật sự khó hiểu
-  (3) medium  — JSDoc cho public + private phức tạp; // why ở logic non-obvious + magic numbers + workarounds
-  (4) full    — JSDoc đầy đủ + class header + WHY-X.md doc cho module lớn
+  (1) skip    — add no comments
+  (2) simple  — One-line JSDoc for public methods; // why only for genuinely hard-to-read code
+  (3) medium  — JSDoc for public and complex private members; // why on non-obvious logic, magic numbers, and workarounds
+  (4) full    — Full JSDoc + class header + WHY-X.md for large modules
 
-Mặc định gợi ý: simple (giữ file gọn, chỉ comment chỗ cần thật sự).
+Suggested default: simple (keeps files compact and comments only where useful).
 ```
 
-**English variant:**
+**Compact English fallback:**
 ```
 Comment level for the code just generated?
 
@@ -55,7 +55,7 @@ Wait for the user's pick. Do not proceed without a choice. If user says "anythin
 The ruleset applies to TypeScript (Angular / NestJS / NextJS — all 3 tracks share the same JSDoc-based comment conventions). Stack-specific extras at the end of each level.
 
 ### Level: `skip`
-No action. The agent reports "Bỏ qua comment theo lựa chọn của bạn." and hands off to `verify-before-done`.
+No action. The agent reports "Skipping comments per your choice." and hands off to `verify-before-done`.
 
 If existing code has comments (e.g. from prior generation), leave them alone — don't strip.
 
@@ -220,7 +220,7 @@ The cross-track rules above are authoritative. Each track adds a small framework
 ### MUST DO
 - Comments explain **WHY**, never WHAT — good names and types already say what
 - Comments stay synced with code; if a refactor invalidates a comment, delete or update it (never leave a stale comment)
-- Bilingual: VI session → VI comments (full diacritics); EN session → EN. Keep imports/symbols English regardless.
+- Runtime-localized: comments follow the session language with locale-specific marks preserved. Keep imports/symbols English regardless.
 - Comments respect file's existing convention; don't mix styles within the same file
 - After applying, run `npm run lint` — comment-format rules may catch issues
 
@@ -266,7 +266,7 @@ async save(req: ProductSaveReq): Promise<ProductDTO> {
 
 ### Skip level
 The method ships as-is, no comments added. The agent reports:
-> "Bỏ qua comment theo lựa chọn của bạn. Hand off `orchestration/verify-before-done`."
+> "Skipping comments per your choice. Hand off `orchestration/verify-before-done`."
 
 ## Cross-references
 - `orchestration/auto-docs` — runs after this skill; the chosen level + count goes into the session summary

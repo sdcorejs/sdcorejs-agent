@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-test
-description: Single entry point for writing and running tests across every SDCoreJS track. Auto-detects the stack (Angular · NestJS · Next.js) AND the test level (unit · integration · e2e) from intent, loads the cross-track principles from `_refs/shared/testing-philosophy.md`, then the stack+level patterns from `_refs/<track>/test-<level>.md`, writes the tests, runs them, and reports pass/fail + failing names. Default right after a `<track>-write-code` orchestrator = happy-path e2e. Special e2e Mode B is a GATED workflow (brainstorm → clarify → plan → generate → verify) triggered when an `sd-autoid-inspector` JSON/POM export is pasted. Keeps `sdcorejs-tdd` (RED-first discipline) separate. Triggers - "viết test", "write/add tests", "unit test", "integration test", "e2e", "test luồng …", "what should I test", "test pyramid", "Cypress/Playwright/Robot Framework", "e2e từ autoid inspector", "JSON inspector", or automatic after a write-code orchestrator. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Single entry point for writing and running tests across every SDCoreJS track. Auto-detects the stack (Angular · NestJS · Next.js) AND the test level (unit · integration · e2e) from intent, loads the cross-track principles from `_refs/shared/testing-philosophy.md`, then the stack+level patterns from `_refs/<track>/test-<level>.md`, writes the tests, runs them, and reports pass/fail + failing names. Default right after a `<track>-write-code` orchestrator = happy-path e2e. Special e2e Mode B is a GATED workflow (brainstorm → clarify → plan → generate → verify) triggered when an `sd-autoid-inspector` JSON/POM export is pasted. Keeps `sdcorejs-tdd` (RED-first discipline) separate. Triggers - "write tests", "write/add tests", "unit test", "integration test", "e2e", "test a flow", "what should I test", "test pyramid", "Cypress/Playwright/Robot Framework", "e2e from autoid inspector", "JSON inspector", or automatic after a write-code orchestrator. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -15,7 +15,7 @@ RED-first discipline stays in its own skill — `sdcorejs-tdd`.
 
 ## When to use
 - Right after a `<track>-write-code` orchestrator finishes → happy-path e2e (Mode A)
-- User asks "viết test / add tests / unit test / integration test / e2e cho …"
+- User asks "write tests / add tests / unit test / integration test / e2e for ..."
 - User asks "what should I test", "test pyramid", "mock vs real DB" → principles
 - User pastes an `sd-autoid-inspector` JSON/POM export → **e2e Mode B (gated)**
 
@@ -27,9 +27,9 @@ RED-first discipline stays in its own skill — `sdcorejs-tdd`.
 **Level** (from intent):
 | Level | Use when |
 |---|---|
-| **unit** | pure logic / validators / mappers / pipes / guards; "unit test", "test hàm/validator" — many, fast, no I/O |
+| **unit** | pure logic / validators / mappers / pipes / guards; "unit test", "function/validator test" — many, fast, no I/O |
 | **integration** | real DB / router / DI, mocked externals; "integration test", "test API + DB", "supertest", "pg-mem" |
-| **e2e** | full user flow (browser / supertest); "e2e", "test luồng", after write-code, or an inspector export |
+| **e2e** | full user flow (browser / supertest); "e2e", "flow test", after write-code, or an inspector export |
 
 State the detected track + level in the report header.
 
@@ -48,7 +48,7 @@ State the detected track + level in the report header.
 
 ### e2e modes
 - **Mode A (default, after code-gen):** intent is known from the session → detect framework (Cypress / Playwright / Robot Framework — Robot loads `_refs/angular/e2e-robot-conventions.md`), write happy-path specs, run, report.
-- **Mode B (GATED — inspector export / "test theo màn đang code"):** an inspector export is a selector inventory, NOT intent. Do NOT generate straight from it. Run the gate first: `sdcorejs-brainstorm` (which flows/cases) → `sdcorejs-clarify-requirements` (framework, selectors+coverage, cases with expected results, auth/env, data, reuse) → `sdcorejs-write-plan`/`sdcorejs-review-plan` (case + keyword/page-object inventory, NEW vs REUSE) → generate → verify. Full procedure: `_refs/angular/test-e2e.md`.
+- **Mode B (GATED — inspector export / "test the screen being built"):** an inspector export is a selector inventory, NOT intent. Do NOT generate straight from it. Run the gate first: `sdcorejs-brainstorm` (which flows/cases) → `sdcorejs-clarify-requirements` (framework, selectors+coverage, cases with expected results, auth/env, data, reuse) → `sdcorejs-write-plan`/`sdcorejs-review-plan` (case + keyword/page-object inventory, NEW vs REUSE) → generate → verify. Full procedure: `_refs/angular/test-e2e.md`.
 
 ## Rules
 

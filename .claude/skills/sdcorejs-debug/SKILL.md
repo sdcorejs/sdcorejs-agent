@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-debug
-description: Use when the user reports a non-trivial bug and asks for diagnosis — "debug giúp mình", "trace this bug", "tại sao chỗ này sai", "systematic debugging", "fix this bug" (with a multi-line repro), or any failure that resists a one-line fix and needs reproduce → isolate → hypothesize → test → root-cause. Skip for trivial one-liners (typo, missing import, obvious null) and for cosmetic "lỗi nhỏ" asks — those don't need the discipline. Triggers - "debug giúp mình", "trace bug", "tại sao ... sai/không chạy", "root-cause", "systematic debugging", "không hiểu sao lại lỗi", or any bug whose first-glance fix isn't obvious. Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Use when the user reports a non-trivial bug and asks for diagnosis — "help me debug", "trace this bug", "why is this wrong", "systematic debugging", "fix this bug" (with a multi-line repro), or any failure that resists a one-line fix and needs reproduce → isolate → hypothesize → test → root-cause. Skip for trivial one-liners (typo, missing import, obvious null) and for cosmetic "small bug" asks — those don't need the discipline. Triggers - "help me debug", "trace bug", "why is this wrong/not running", "root-cause", "systematic debugging", localized equivalents, or any bug whose first-glance fix isn't obvious. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Bash, Grep, Glob, Edit
 ---
 
@@ -10,9 +10,9 @@ allowed-tools: Read, Bash, Grep, Glob, Edit
 Debugging is search through a hypothesis space. The fastest path is the most disciplined one: reliable repro → minimal isolation → falsifiable hypothesis → root cause. Random fixes feel productive and waste hours.
 
 ## When invoked
-- "không hoạt động", "lỗi", "bị lỗi", "fix bug", "broken", "doesn't work", "error", "throws"
+- "not working", "bug", "fix bug", "broken", "doesn't work", "error", "throws", or localized equivalents
 - Stack trace, console error, failing test, unexpected output
-- "tại sao X lại Y" (why is X behaving as Y)
+- "why is X behaving as Y", or localized equivalents
 
 Do NOT invoke for:
 - Feature requests phrased as "should also handle X" — that's `02-clarify-requirements`
@@ -126,7 +126,7 @@ Tell the user and ask for help when:
 - The bug surfaces in code you cannot read (closed-source dependency)
 - The fix would require a breaking change to a shared contract
 
-Frame it as: "Đã thử X, Y, Z. Bằng chứng đến giờ: …. Hypothesis còn lại: A vs B. Bạn có info gì để loại trừ?"
+Frame it as: "I tried X, Y, Z. Evidence so far: .... Remaining hypotheses: A vs B. Do you have any information that rules one out?" Translate at runtime.
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
 

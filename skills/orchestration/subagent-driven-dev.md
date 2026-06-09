@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-subagent-driven-dev
-description: Use when `write-code` (or its NestJS/NextJS equivalents) is about to execute a feature with 3+ independent sub-tasks — multiple entities under one module, batch screen generation, multi-stack work, large reference-doc batches. Different from `sdcorejs-parallel-dispatch` which decides WHETHER to parallelize; this skill governs HOW to execute the delegation — decompose, brief, dispatch, per-unit two-stage review (spec-compliance then code-quality), merge results, surface partial failures. Applies to angular, nestjs, nextjs. Bilingual (VI/EN). Two modes: A = independent same-kind units (existing); B = role-split feature loop (backend‖frontend‖QC on one feature, contract-freeze barrier + acceptance loop). parallel-dispatch routes between them.
+description: Use when `write-code` (or its NestJS/NextJS equivalents) is about to execute a feature with 3+ independent sub-tasks — multiple entities under one module, batch screen generation, multi-stack work, large reference-doc batches. Different from `sdcorejs-parallel-dispatch` which decides WHETHER to parallelize; this skill governs HOW to execute the delegation — decompose, brief, dispatch, per-unit two-stage review (spec-compliance then code-quality), merge results, surface partial failures. Applies to angular, nestjs, nextjs. Runtime-localized. Two modes: A = independent same-kind units (existing); B = role-split feature loop (backend‖frontend‖QC on one feature, contract-freeze barrier + acceptance loop). parallel-dispatch routes between them.
 allowed-tools: Read, Agent, Bash
 ---
 
@@ -13,7 +13,7 @@ allowed-tools: Read, Agent, Bash
 - After `06-review-plan` approved a plan with 3+ independent units (multiple entities, multiple modules, multiple stacks)
 - During `write-code` when the orchestrator detects the dispatch list is parallelizable
 - Reference doc batches (e.g. "write docs for these 12 components")
-- User says "delegate", "subagent", "fan out", "split up", "làm song song"
+- User says "delegate", "subagent", "fan out", "split up", "run in parallel"
 
 Do NOT invoke for:
 - Single unit of work (no delegation)
@@ -65,7 +65,7 @@ DELIVERABLE (return shape):
 - Verification command to run before claiming success (e.g.
   `npm run test -- --include=src/libs/catalog/features/product/**/*.spec.ts`)
 - What NOT to do (out of scope)
-- Bilingual: VI labels with full diacritics; permission codes English
+- Runtime-localized labels; permission codes English
 
 REPORT BACK (single message):
 - Files changed (CREATE/EDIT, with paths) + `git diff --stat` (or commit SHA) so the parent can verify independently
@@ -145,22 +145,22 @@ If global verification fails after per-unit verification passed, the failure is 
 Parent agent reports to user:
 
 ```markdown
-## Đã thực hiện N units song song
+## Completed N units in parallel
 
 | Unit | Status | Files | Verification |
 |---|---|---|---|
 | product CRUD | ✅ | 8 created | tests 24/24 |
 | category CRUD | ⚠️ | 8 created | 22/24 (2 skipped, mock data) |
-| shared filter | ❌ | 0 | blocked: cần API contract |
+| shared filter | ❌ | 0 | blocked: needs API contract |
 
 ### Global checks
 - build: ✅
 - lint: ✅
 - test full: 46/48 (2 skipped per category unit)
 
-### Cần bạn quyết
-- category unit's 2 skipped tests — bổ sung mock hay chờ contract?
-- shared filter blocked — đợi API hay làm mock variant trước?
+### Needs your decision
+- category unit's 2 skipped tests — add mocks or wait for the contract?
+- shared filter blocked — wait for the API or build a mock variant first?
 ```
 
 Wait for direction. Don't auto-retry blocked units.

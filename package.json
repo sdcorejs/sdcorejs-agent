@@ -28,6 +28,12 @@
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
   "scripts": {
+    "test": "npm run test:e2e",
+    "test:e2e": "node --test test/e2e/*.test.mjs",
+    "test:e2e:phase1": "node --test test/e2e/skill-pack-runner.test.mjs",
+    "test:e2e:phase2": "node --test test/e2e/cli-adapters.test.mjs",
+    "test:e2e:phase3": "node --test test/e2e/entrypoint-smoke.test.mjs",
+    "test:e2e:phase4": "node --test test/e2e/golden-target-app.test.mjs",
     "sync:skills": "bash .claude/sync-skills.sh",
     "check:skills": "bash .claude/sync-skills.sh --check",
     "sync:skills:ps": "powershell -ExecutionPolicy Bypass -File .claude/sync-skills.ps1",
