@@ -11,7 +11,9 @@ test('phase 3: Codex, Claude Code, Copilot, and Cursor entrypoints advertise run
   for (const [name, profile] of Object.entries(profiles)) {
     assert.ok(profile.entrypoints.length > 0, `${name} has entrypoints`);
     assert.match(profile.text, /Runtime-localized|runtime-localized/i);
-    assert.doesNotMatch(profile.text, /Bilingual|VI\/EN|Vietnamese/);
+    // Catch stale bilingual BRANDING only. Bare "Vietnamese" legitimately appears in the
+    // Mojibake-guard rule (about preserving VN diacritics), so it must not trip this.
+    assert.doesNotMatch(profile.text, /Bilingual|VI\/EN/);
   }
 });
 

@@ -168,7 +168,7 @@ Emit a one-command runnable Docker stack into a target project's **deploy root**
 
 - `_refs/sdlc/{angular,nextjs,nestjs}.md` — track-specific design-phase patterns
 - `_refs/angular/core-version.md` — pinned `@sdcorejs/angular` version
-- `_refs/angular/sdcorejs-angular-catalog.md` — Core UI components inventory
+- Core UI components inventory — fetched on-demand via `node _refs/angular/core-docs-fetch.mjs --list` (docs not committed; one component's API via `--print sd-<name>`)
 - `_refs/angular/entity-field-types.md` — field type → form control mapping
 - `_refs/angular/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for the init-entity reference pack
 - `_refs/angular/write-code/{init-portal,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `angular-write-code`

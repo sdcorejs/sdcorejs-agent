@@ -212,8 +212,8 @@ Emit a one-command runnable Docker stack into a target project's **deploy root**
   - **angular** (16 principles): feature-first, signal-first, no cross-module imports, 4 canonical layouts, mock-first, OnPush default, …
   - **nextjs/build-website** (15 principles): App Router default, server components default, content-as-data, i18n localized pathnames, SEO non-negotiable, 30-min ISR default, real contact form, mobile-first, …
   - **nestjs** (14 principles): bounded-context modules, BaseEntity/Repo/Service mandatory, guard order AuthGuard→Zod→HasPermission, Zod in shared package, thin controllers, explicit QueryRunner transactions, bilingual error messages, …
-- `_refs/angular/core-version.md` — pinned `@sdcorejs/angular` version
-- `_refs/angular/sdcorejs-angular-catalog.md` — Core UI components inventory
+- `_refs/angular/core-version.md` — pinned `@sdcorejs/angular` version (npm install pin for init-portal)
+- `_refs/angular/core-docs-fetch.mjs` — **on-demand Core UI doc fetcher** (the component docs are NOT committed). `node _refs/angular/core-docs-fetch.mjs --list` prints the inventory; `node _refs/angular/core-docs-fetch.mjs <id>` pulls one component's full API. Raw fetch (not summarized) from the published docs site, version-matched to the target's installed package (`@sdcorejs/angular` or legacy `@sd-angular/core`), mojibake-guarded, cached at `~/.cache/sdcorejs/core-docs/<version>/`.
 - `_refs/angular/entity-field-types.md` — field type → form control mapping
 - `_refs/angular/templates/entity-{skeleton,tests,example-product}.md` — code templates extracted from the init-entity reference pack (split 2026-05-20 to keep the pack under 500 lines)
 - `_refs/angular/write-code/{init-portal,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `angular-write-code` (no frontmatter, not dispatchable skills)
@@ -227,7 +227,7 @@ Emit a one-command runnable Docker stack into a target project's **deploy root**
 - ❌ Don't write `.sdcorejs/docs/`, `.sdcorejs/specs/`, `.sdcorejs/plans/`, or `.sdcorejs/memories/` content in this `sdcorejs-agent` repo. Auto-docs / auto-specs / auto-plans / memories always target the user's working project.
 - ❌ Don't load all skill bodies at session start. Just read frontmatter for dispatch; full body only when picking a skill.
 - ❌ Don't bypass git hooks (`--no-verify`) or `.gitignore`d files when committing.
-- ❌ Don't generate code that imports `@sdcorejs/angular` features not in the catalog (`_refs/angular/sdcorejs-angular-catalog.md`) without first checking that file.
+- ❌ Don't generate code that imports `@sdcorejs/angular` features without first checking they exist — run `node _refs/angular/core-docs-fetch.mjs --list` (and fetch the component doc) on-demand; the Core UI docs are pulled at generation time, not committed.
 
 ## See also
 

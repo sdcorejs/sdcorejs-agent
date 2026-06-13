@@ -91,4 +91,4 @@ A `returnUrl` from query params passed to `navigateByUrl` must be a validated sa
 - Shipping prod source maps publicly — keep them internal-only
 
 ## Cross-references
-- Code review (guard/permission overlap): `sdcorejs-review` · Core UI catalog: `_refs/angular/sdcorejs-angular-catalog.md`
+- Code review (guard/permission overlap): `sdcorejs-review` · Core UI inventory (on-demand, not committed): `node _refs/angular/core-docs-fetch.mjs --list`

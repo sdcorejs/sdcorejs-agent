@@ -213,7 +213,7 @@ Apply to:
 
 ### MUST DO
 - Every generated portal includes the admin screens (`admin-screens`) so end users administer accounts/roles in-app — never the Keycloak console. Run `admin-screens` right after `init-portal`, before any domain module work.
-- Read `_refs/angular/sdcorejs-angular-catalog.md` before generating; use `@sdcorejs/angular` components when one fits.
+- Discover Core UI on-demand before generating (docs are NOT committed — pulled fresh from the published site, version-matched, cached): run `node _refs/angular/core-docs-fetch.mjs --list` to see the component inventory, then `node _refs/angular/core-docs-fetch.mjs <id>` (e.g. `sd-button`, or `--print <id>` for inline content) to read a component's full API BEFORE using it. Prefer a Core UI component when one fits; if none does, scaffold a skeleton + `alert('TODO: ...')` and flag it. Version auto-detects from the target project's installed `@sdcorejs/angular` (or legacy `@sd-angular/core`); the fetcher mojibake-guards upstream + falls back to cache offline. If no network AND no cache, fall back to generic Angular Material and flag it.
 - Enforce the execution order (portal → admin-screens → module → entity → screens → actions) and do not skip or reorder steps.
 - Run the full tail chain after the last step.
 

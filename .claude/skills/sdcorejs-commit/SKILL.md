@@ -61,7 +61,7 @@ Format: `<type>(<scope>): <subject>`
 - All under `skills/orchestration/` → scope `orchestration`
 - All under `skills/shared/` → scope `shared`
 - All under `skills/review/` or `skills/testing/` → scope `review` or `testing`
-- All under `_refs/angular/sdcorejs-angular/` → scope `refs`
+- All under `_refs/angular/` → scope `refs`
 - All under `.github/` → scope `github`
 - All under `.claude/` → scope `claude`
 - All under `src/libs/<module>/` (target Angular project) → scope `<module>`

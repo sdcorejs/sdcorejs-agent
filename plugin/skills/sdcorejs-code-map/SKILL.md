@@ -190,7 +190,7 @@ If the caller is the user directly asking for the map → just present the repor
 
 ### Angular Portal
 - Module roots vary: `src/libs/` (portal template), `projects/<project>/src/libs/` (Nx), and `projects/<lib>/{components,forms}/` for **publishable component libraries** where each component is its own entry-point folder (e.g. `@sdcorejs/angular`). Detect from `angular.json` `projects` first; don't assume `src/libs`.
-- Watch for `@sdcorejs/angular` imports — the project's UI baseline. Cross-reference `_refs/angular/sdcorejs-angular-catalog.md` when listing components in use.
+- Watch for `@sdcorejs/angular` imports — the project's UI baseline. Cross-reference the on-demand inventory (`node _refs/angular/core-docs-fetch.mjs --list`; docs not committed) when listing components in use.
 
 ### NestJS
 - This stack typically uses custom validators, NOT `class-validator` — flag if you see both in use (one is dead code)

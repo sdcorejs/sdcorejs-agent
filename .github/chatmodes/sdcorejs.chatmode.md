@@ -81,7 +81,7 @@ The skill files are the primary source. Load on demand:
 - `_refs/angular/write-code/init-module.md` — module setup reference pack
 - `_refs/angular/write-code/init-entity.md` — entity CRUD generation reference pack (slim; templates in `_refs/angular/templates/`)
 - `_refs/angular/templates/entity-{skeleton,tests,example-product}.md` — code templates loaded on demand by the init-entity reference pack
-- `_refs/angular/sdcorejs-angular-catalog.md` — components inventory (load when picking a Core UI component)
+- Core UI components inventory — fetched on-demand via `node _refs/angular/core-docs-fetch.mjs --list` (docs not committed); one component's API via `--print sd-<name>` (run when picking a Core UI component)
 - `skills/orchestration/auto-docs.md` — session summary writer (mandatory tail-call)
 - `skills/orchestration/auto-specs.md` — approved-spec snapshot writer (MANDATORY tail-call after 04-review-spec approval)
 - `skills/orchestration/auto-plans.md` — approved-plan snapshot writer (MANDATORY tail-call after 06-review-plan approval)
