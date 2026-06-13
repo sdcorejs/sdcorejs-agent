@@ -1,5 +1,5 @@
 ---
-name: angular-write-code
+name: sdcorejs-angular
 description: Generate Angular-portal code — after 06-review-plan approves, OR as the single entry point for any direct Angular-portal code-gen request. Loads the matching on-demand pack under `_refs/angular/write-code/` (per-pack trigger catalog is in the body): init-portal, admin-screens (always-on: account/role/permission management), init-module, init-entity (full CRUD), screen-list, screen-detail (CREATE/UPDATE/DETAIL + reactive-form/validators), actions (workflow / bulk / custom buttons). Triggers - "initialize portal", "create module X", "add entity / create CRUD", "list screen / add column", "detail screen / form validation / custom validator", "add action button / approve / bulk approve / export Excel", generic "generate code", "go ahead", or localized equivalents. NOT for spec/plan, code review, or nestjs/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
@@ -247,16 +247,3 @@ Before returning generated code:
 ## Example: Complete Employee Entity Generation
 
 A worked end-to-end example (user request → EntitySchema → final file tree, following `init-entity.md`) lives in [`_refs/angular/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity`](_refs/angular/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity). Read it when you want to see how the dispatch table cashes out on a real request.
-
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
-
-**Response style (terse mode active for this skill — reduces token usage):**
-
-While executing this skill:
-
-- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
-- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
-- Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
-- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
-- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

@@ -9,7 +9,7 @@
 ## What this covers
 Per-file code review for a NestJS backend on the `@sdcorejs/nestjs` core.
 Different from `sdcorejs-review-architecture` (structural). This file checks
-adherence to the conventions the `nestjs-write-code` packs actually generate
+adherence to the conventions the `sdcorejs-nestjs` packs actually generate
 (`_refs/nestjs/write-code/*`) at whichever **profile** the project uses
 (`simple` | `enterprise`; see `init-project.md`). Probes that only apply to one
 profile are marked `[enterprise]`.

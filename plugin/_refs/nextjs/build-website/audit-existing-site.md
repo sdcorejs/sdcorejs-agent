@@ -120,7 +120,7 @@ Each check maps to one sub-skill from the build-website pack. The findings table
 | I5 | **content-quality** Min word counts respected on key pages | from /tmp/audit-content.log |
 | I6 | **content-quality** Heading hierarchy — exactly 1 `<h1>` per page | `Grep -c '<h1' src/app/**/*.tsx` per file = 1 |
 
-The reference pack that fixes each finding is named in the "Check" column — drives the gap report's "Fix via" cell automatically. All packs are dispatched through the `nextjs-write-code` orchestrator.
+The reference pack that fixes each finding is named in the "Check" column — drives the gap report's "Fix via" cell automatically. All packs are dispatched through the `sdcorejs-nextjs` orchestrator.
 
 ### Step 4 — Produce the gap report
 
@@ -225,7 +225,7 @@ Pass these context fields to `02-clarify-requirements` so it knows to skip what'
 - Confirm Next.js project before running any probe
 - Run every automated check that the project supports; surface missing scripts as Important findings
 - Sort findings by Severity (Critical → Important → Minor) and then by ease (small effort first within same severity for quick wins)
-- Map each finding to the EXACT reference pack that fixes it (dispatched via `nextjs-write-code`) — don't make the user search
+- Map each finding to the EXACT reference pack that fixes it (dispatched via `sdcorejs-nextjs`) — don't make the user search
 - Acknowledge strengths — "what this site does well" prevents the report feeling adversarial
 - Save the audit report via `auto-docs` for traceability
 - Hand off to `02-clarify-requirements` with the audit context — do NOT skip the SDLC
@@ -234,7 +234,7 @@ Pass these context fields to `02-clarify-requirements` so it knows to skip what'
 - Modify any file in the target repo
 - Auto-dispatch sub-skills to fix findings — that bypasses spec/plan/review gates
 - Run audit on a non-Next.js repo (fail fast with a clear message)
-- Treat missing scripts (`check:i18n`, `check:content`) as failures when the project never installed them — they're "Important: run the content-quality pack via `nextjs-write-code`" findings, not Criticals
+- Treat missing scripts (`check:i18n`, `check:content`) as failures when the project never installed them — they're "Important: run the content-quality pack via `sdcorejs-nextjs`" findings, not Criticals
 - Repeat clarify questions whose answer is already in the audit (waste of user time)
 - Hide findings to make the report look better — every probed gap goes in
 - Continue past the user's "defer" choice — read-only ends there
@@ -254,5 +254,5 @@ Pass these context fields to `02-clarify-requirements` so it knows to skip what'
 - `03-write-spec` → `04-review-spec` → `05-write-plan` → `06-review-plan` → `write-code` — standard downstream flow
 - `shared/workflow/code-map` — even more general read-only architecture scan (cross-track); this skill is NextJS-specific and quality-focused
 - `orchestration/recovery` — picks up here if a user resumes mid-sprint
-- Each finding's "Fix via" column points to the relevant reference pack (init-site through content-quality), all dispatched through the `nextjs-write-code` orchestrator (`_refs/nextjs/build-website/write-code/`)
+- Each finding's "Fix via" column points to the relevant reference pack (init-site through content-quality), all dispatched through the `sdcorejs-nextjs` orchestrator (`_refs/nextjs/build-website/write-code/`)
 - `orchestration/auto-docs` — persists the audit report for future sessions

@@ -17,15 +17,15 @@ _refs/                            reference data (no frontmatter, load on demand
 skills/
 ├── tracks/                       stack-specific code-writing skills
 │   ├── angular/   ✅  1 track skill — write-code orchestrator (onboarding via sdcorejs-using-skills); orchestrator loads 7 on-demand reference packs from `_refs/angular/write-code/` (init-portal, admin-screens (always-on: account/role/permission), init-module, init-entity, screen-list, screen-detail (CREATE/UPDATE/DETAIL states + form refinement), actions (workflow / bulk / custom side-effects))
-│   ├── nestjs/   ✅  1 track skill — write-code orchestrator (nestjs-write-code; onboarding via sdcorejs-using-skills); dispatches on-demand reference packs in _refs/nestjs/write-code/: init-project, init-admin (always-on: users/roles/permissions), init-module, init-entity (full CRUD stack), actions (custom / non-CRUD endpoints). Core: @sdcorejs/nestjs (_refs/nestjs/core-catalog.md)
-│   └── nextjs/   ✅  1 track skill — write-code (nextjs-write-code) orchestrator (onboarding via sdcorejs-using-skills); dispatches 10 reference packs in _refs/nextjs/build-website/write-code/: init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. EXISTING-site audit folded into sdcorejs-review (site-audit mode)
+│   ├── nestjs/   ✅  1 track skill — write-code orchestrator (sdcorejs-nestjs; onboarding via sdcorejs-using-skills); dispatches on-demand reference packs in _refs/nestjs/write-code/: init-project, init-admin (always-on: users/roles/permissions), init-module, init-entity (full CRUD stack), actions (custom / non-CRUD endpoints). Core: @sdcorejs/nestjs (_refs/nestjs/core-catalog.md)
+│   └── nextjs/   ✅  1 track skill — write-code (sdcorejs-nextjs) orchestrator (onboarding via sdcorejs-using-skills); dispatches 10 reference packs in _refs/nextjs/build-website/write-code/: init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. EXISTING-site audit folded into sdcorejs-review (site-audit mode)
 │
 ├── shared/
 │   ├── sdlc/             ✅  6 cross-track design-phase skills (01-brainstorm, 02-clarify-requirements, 03-write-spec, 04-review-spec, 05-write-plan, 06-review-plan); patterns live in `_refs/sdlc/{angular,nextjs,nestjs}.md`
-│   ├── conventions/      Conventional Commits, changelog, dep-update
-│   └── workflow/         env-setup, debug, pr-create, code-map
+│   ├── conventions/      Conventional Commits, changelog
+│   └── workflow/         env-setup, debug, pr-create, code-map, dep-update
 │
-├── orchestration/        SDLC plumbing (19 files): parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-specs, auto-plans, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills, persona, solution-builder, write-user-guide
+├── orchestration/        SDLC plumbing (18 files): parallel-dispatch, subagent-driven-dev, repair-loop, auto-docs, auto-summary, recovery, auto-snapshot, memories, auto-task-tracker, verify-before-done, branch-ready, comment-code, ship, using-worktrees, using-skills, persona, solution-builder, write-user-guide
 │
 ├── review/
 │   ├── review.md         one track-aware skill (sdcorejs-review) — dimensions: code / security / performance / accessibility; knowledge in _refs/<track>/review-<dim>.md + _refs/shared/
@@ -64,13 +64,13 @@ Request
   → shared/sdlc/01-brainstorm   (sdcorejs-brainstorm, optional when scope is open-ended)
   → shared/sdlc/02-clarify-requirements   (sdcorejs-clarify-requirements)
   → shared/sdlc/03-write-spec → shared/sdlc/04-review-spec   (approval gate)
-                              → orchestration/auto-specs  (MANDATORY on approval — snapshot to .sdcorejs/specs/<track>/)
+                              → orchestration/auto-snapshot (SPEC mode)  (MANDATORY on approval — snapshot to .sdcorejs/specs/<track>/)
   → shared/sdlc/05-write-plan       → shared/sdlc/06-review-plan  (approval gate)
-                              → orchestration/auto-plans  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
+                              → orchestration/auto-snapshot (PLAN mode)  (MANDATORY on approval — snapshot to .sdcorejs/plans/<track>/)
   → <track>-write-code (track-specific orchestrator; dispatches sub-skills; uses orchestration/subagent-driven-dev when fan-out ≥3)
-       angular:        angular-write-code
-       nextjs (build-website): nextjs-write-code
-       nestjs:                 nestjs-write-code (loads _refs/nestjs/write-code/ packs: init-project | init-module | init-entity | actions)
+       angular:        sdcorejs-angular
+       nextjs (build-website): sdcorejs-nextjs
+       nestjs:                 sdcorejs-nestjs (loads _refs/nestjs/write-code/ packs: init-project | init-module | init-entity | actions)
   → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop (if findings)
   → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (MANDATORY acceptance gate) → orchestration/branch-ready (branch-hygiene sweep)
@@ -92,7 +92,7 @@ To avoid drift, the source of truth for these rules is `CLAUDE.md`. Summary:
 
 1. **Auto-docs is mandatory** — at the end of every code-writing skill invocation, the track-agnostic `skills/orchestration/auto-docs.md` writes a summary to the **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md` (note the leading dot). Never to this `sdcorejs-agent` repo. Immediately after auto-docs, run `sdcorejs-write-user-guide` (Mode 1) for the touched module before `auto-task-tracker`.
 
-2. **Auto-specs / auto-plans are mandatory** — immediately after `sdcorejs-review-spec` approval, `skills/orchestration/auto-specs.md` writes the approved spec to `<target>/.sdcorejs/specs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. Immediately after `sdcorejs-review-plan` approval, `skills/orchestration/auto-plans.md` writes the approved plan to `<target>/.sdcorejs/plans/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. These corpuses let future `sdcorejs-write-spec` / `sdcorejs-write-plan` mirror the user's confirmed style.
+2. **Auto-snapshot is mandatory (two invocation points)** — the single skill `skills/orchestration/auto-snapshot.md` runs in two modes. Immediately after `sdcorejs-review-spec` approval, run it in **SPEC mode** to write the approved spec to `<target>/.sdcorejs/specs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. Immediately after `sdcorejs-review-plan` approval, run it in **PLAN mode** to write the approved plan to `<target>/.sdcorejs/plans/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. These corpuses let future `sdcorejs-write-spec` / `sdcorejs-write-plan` mirror the user's confirmed style.
 
 3. **Memories** — durable cross-session knowledge lives under the target project's `.sdcorejs/memories/<track>/`, managed by `skills/orchestration/memories.md`.
 
@@ -104,7 +104,7 @@ To avoid drift, the source of truth for these rules is `CLAUDE.md`. Summary:
 
 7. **Clarify-before-code** — do not generate code if track-specific minimum-required answers are unconfirmed. Run `sdcorejs-clarify-requirements` first (or `sdcorejs-brainstorm` for open-ended ideas).
 
-8. **Approval gates** — `sdcorejs-review-spec` and `sdcorejs-review-plan` require explicit user approval before the next skill runs. Approval immediately fires the corresponding auto-specs / auto-plans tail-call (rule 2).
+8. **Approval gates** — `sdcorejs-review-spec` and `sdcorejs-review-plan` require explicit user approval before the next skill runs. Approval immediately fires the corresponding `sdcorejs-auto-snapshot` tail-call — SPEC mode after review-spec, PLAN mode after review-plan (rule 2).
 
 9. **Core UI first** — use `@sdcorejs/angular` components when one fits; otherwise skeleton + `alert('TODO: ...')` stubs.
 
@@ -134,8 +134,7 @@ Cross-track skills — apply to angular, nestjs, nextjs alike. Dispatch is by sk
 | `sdcorejs-verify-before-done` | runs BEFORE auto-docs — verifies acceptance criteria; blocks "done" | ✅ |
 | `sdcorejs-branch-ready` | branch-hygiene sweep AFTER verify-before-done (debug logs, secrets, focused tests, lint+build+test). Inspired by `superpowers:finishing-a-development-branch` | ✅ |
 | `sdcorejs-auto-docs` | end of every code-writing task — session summary | ✅ |
-| `sdcorejs-auto-specs` | IMMEDIATELY after `sdcorejs-review-spec` approval | ✅ on approval |
-| `sdcorejs-auto-plans` | IMMEDIATELY after `sdcorejs-review-plan` approval | ✅ on approval |
+| `sdcorejs-auto-snapshot` | two modes: SPEC mode IMMEDIATELY after `sdcorejs-review-spec` approval (→ specs/); PLAN mode IMMEDIATELY after `sdcorejs-review-plan` approval (→ plans/) | ✅ on approval |
 | `sdcorejs-auto-task-tracker` | after auto-docs + write-user-guide | ✅ |
 | `sdcorejs-memories` | "remember this", durable knowledge | ✅ on trigger |
 | `sdcorejs-repair-loop` | after `sdcorejs-review` outputs findings | ✅ on findings |
@@ -171,15 +170,15 @@ Emit a one-command runnable Docker stack into a target project's **deploy root**
 - Core UI components inventory — fetched on-demand via `node _refs/angular/core-docs-fetch.mjs --list` (docs not committed; one component's API via `--print sd-<name>`)
 - `_refs/angular/entity-field-types.md` — field type → form control mapping
 - `_refs/angular/templates/entity-{skeleton,tests,example-product}.md` — extracted code templates for the init-entity reference pack
-- `_refs/angular/write-code/{init-portal,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `angular-write-code`
+- `_refs/angular/write-code/{init-portal,init-module,init-entity,screen-list,screen-detail,actions}.md` — on-demand reference packs loaded by `sdcorejs-angular`
 - `_refs/nestjs/core-catalog.md` — `@sdcorejs/nestjs` core inventory
-- `_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md` — on-demand reference packs loaded by `nestjs-write-code`
+- `_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md` — on-demand reference packs loaded by `sdcorejs-nestjs`
 
 ## Anti-patterns
 
 - Don't author new skills without explicit user approval.
 - Don't skip clarify-before-code even when scope seems obvious.
-- Don't write `.sdcorejs/docs/`, `.sdcorejs/specs/`, `.sdcorejs/plans/`, or `.sdcorejs/memories/` content in this `sdcorejs-agent` repo. Auto-docs / auto-specs / auto-plans / memories target the user's working project.
+- Don't write `.sdcorejs/docs/`, `.sdcorejs/specs/`, `.sdcorejs/plans/`, or `.sdcorejs/memories/` content in this `sdcorejs-agent` repo. Auto-docs / auto-snapshot / memories target the user's working project.
 - Don't load all skill bodies at session start — frontmatter only for dispatch.
 
 ## See also

@@ -17,9 +17,9 @@ This repository is an **SDLC agent** for the SDCoreJS ecosystem:
      → sdcorejs-brainstorm        (optional, if scope is open-ended)
      → sdcorejs-clarify-requirements
      → sdcorejs-write-spec → sdcorejs-review-spec      (approval gate)
-                           → orchestration/auto-specs   (MANDATORY)
+                           → orchestration/auto-snapshot (SPEC mode)   (MANDATORY)
      → sdcorejs-write-plan       → sdcorejs-review-plan       (approval gate)
-                           → orchestration/auto-plans   (MANDATORY)
+                           → orchestration/auto-snapshot (PLAN mode)   (MANDATORY)
      → <track>-write-code  (orchestrator dispatches sub-skills)
      → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop
      → orchestration/comment-code  (ASK gate)

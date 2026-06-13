@@ -6,9 +6,9 @@ import { loadSkillPack, runPromptEval } from './support/skill-pack-runner.mjs';
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
 
-  assert.equal(pack.sourceSkills.length, 42);
-  assert.equal(pack.claudeMirrorSkills.length, 42);
-  assert.equal(pack.pluginMirrorSkills.length, 42);
+  assert.equal(pack.sourceSkills.length, 41);
+  assert.equal(pack.claudeMirrorSkills.length, 41);
+  assert.equal(pack.pluginMirrorSkills.length, 41);
   // Core UI per-component docs are fetched on-demand (not committed), so this count
   // dropped from ~150 to ~69. Floor still catches accidental mass-deletion of refs.
   assert.ok(pack.referenceDocs.length >= 60, `referenceDocs=${pack.referenceDocs.length}`);
@@ -23,8 +23,8 @@ test('phase 1: deterministic prompt eval dispatches expected skills', async () =
   assert.deepEqual(
     results.map((result) => [result.id, result.actualSkill, result.pass]),
     [
-      ['nestjs-init', 'nestjs-write-code', true],
-      ['angular-action-localized', 'angular-write-code', true],
+      ['nestjs-init', 'sdcorejs-nestjs', true],
+      ['angular-action-localized', 'sdcorejs-angular', true],
       ['open-ended-localized', 'sdcorejs-brainstorm', true]
     ]
   );

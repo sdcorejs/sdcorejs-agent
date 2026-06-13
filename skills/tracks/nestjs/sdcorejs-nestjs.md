@@ -1,5 +1,5 @@
 ---
-name: nestjs-write-code
+name: sdcorejs-nestjs
 description: Generate NestJS modular-monolith backend code on the @sdcorejs/nestjs core — after sdcorejs-review-plan approves, OR as the single entry point for any direct backend code-gen request. Loads the matching on-demand pack under _refs/nestjs/write-code/ (per-pack trigger catalog in the body): init-project (scaffold app), init-admin (always-on admin module: users/roles/permissions [+tenant/department enterprise]), init-module (bounded-context module), init-entity (full CRUD stack: entity/repository/service/controller/schema/DTO), actions (custom / non-CRUD endpoints — domain methods, cross-module, workflow, bulk, export). Triggers - "scaffold nestjs / init backend", "add module", "add entity / create CRUD", "add endpoint / custom action / workflow / bulk / export", plus generic "generate backend code", "write backend", "go ahead" (after a nestjs plan was approved). NOT for spec/plan, code review, or angular/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Applies to nestjs. Runtime-localized.
 allowed-tools: Read, Write, Edit, Bash, Glob
 ---
@@ -78,7 +78,7 @@ Do NOT skip `verify-before-done` — that's how acceptance criteria silently sli
 
 ## When to use
 
-- After `sdcorejs-review-plan` confirmed approval of a NestJS plan (user said "OK", "approve", "go ahead", or equivalent, and `orchestration/auto-plans` has snapshotted it).
+- After `sdcorejs-review-plan` confirmed approval of a NestJS plan (user said "OK", "approve", "go ahead", or equivalent, and `orchestration/auto-snapshot` in PLAN mode has snapshotted it).
 - OR as the single entry point for any direct backend code-gen request matching the dispatch table above.
 
 If no approved plan exists and the request is non-trivial, route back to `sdcorejs-write-plan` / `sdcorejs-review-plan` first. NOT for spec/plan authoring, code review, or angular/nextjs code (those are separate skills).
@@ -113,16 +113,3 @@ If no approved plan exists and the request is non-trivial, route back to `sdcore
 - `_refs/sdlc/nestjs.md` — design-phase (brainstorm/clarify/spec/plan) patterns
 - `sdcorejs-review-plan` — runs before; the approved plan is the input
 - Tail chain — see "Mandatory tail chain" above
-
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
-
-**Response style (terse mode active for this skill — reduces token usage):**
-
-While executing this skill:
-
-- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
-- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
-- Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
-- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
-- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

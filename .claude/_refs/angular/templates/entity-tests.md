@@ -1,6 +1,6 @@
-# Entity Test Templates — init-entity (angular-write-code)
+# Entity Test Templates — init-entity (sdcorejs-angular)
 
-Spec.ts templates for the init-entity reference pack ([`init-entity.md`](../write-code/init-entity.md), loaded on demand by the `angular-write-code` orchestrator), organized by test coverage level. The pack picks which set to emit based on the user's confirmed coverage (`minimal` / `standard` / `full`).
+Spec.ts templates for the init-entity reference pack ([`init-entity.md`](../write-code/init-entity.md), loaded on demand by the `sdcorejs-angular` orchestrator), organized by test coverage level. The pack picks which set to emit based on the user's confirmed coverage (`minimal` / `standard` / `full`).
 
 ## Contents
 - Request for Test Coverage (clarify prompt)

@@ -2,7 +2,7 @@
 
 This file is loaded by `skills/shared/sdlc/0[1-6]-*.md` when the detected track is `nestjs`.
 
-**Status:** Track-specific orchestrator (`nestjs-write-code`) is shipped — after `sdcorejs-review-plan` approves a plan, it dispatches the on-demand packs under `_refs/nestjs/write-code/` (`init-project` / `init-module` / `init-entity` / `actions`). This ref covers the **design phase** (brainstorm / clarify / spec / plan); the code-generation rules + templates live in those packs.
+**Status:** Track-specific orchestrator (`sdcorejs-nestjs`) is shipped — after `sdcorejs-review-plan` approves a plan, it dispatches the on-demand packs under `_refs/nestjs/write-code/` (`init-project` / `init-module` / `init-entity` / `actions`). This ref covers the **design phase** (brainstorm / clarify / spec / plan); the code-generation rules + templates live in those packs.
 
 **Canonical core:** SDCoreJS NestJS backends are modular monoliths built on the **`@sdcorejs/nestjs`** core package (sub-path imports: `@sdcorejs/nestjs`, `/orm`, `/permission`, `/validation`, `/jwt`, `/context`, `/tenancy`, `/audit`, `/i18n`, …). The authoritative export inventory is [`_refs/nestjs/core-catalog.md`](../nestjs/core-catalog.md); the architecture WHY is [`_refs/nestjs/architecture-principles.md`](../nestjs/architecture-principles.md). Historical note: earlier drafts referenced a `be-masterdata` baseline; the canonical reference app today consumes `@sdcorejs/nestjs` and the conventions below are grounded on it.
 
@@ -150,7 +150,7 @@ npm run lint
 ```
 
 ### Final-step expectations
-Until the `nestjs-write-code` orchestrator ships, the last plan step should call out the manual tail-call sequence:
+Until the `sdcorejs-nestjs` orchestrator ships, the last plan step should call out the manual tail-call sequence:
 1. `sdcorejs-test` — write e2e tests for happy path
 2. `sdcorejs-review` — convention review
 3. `orchestration/repair-loop` — apply review findings
@@ -161,14 +161,14 @@ Until the `nestjs-write-code` orchestrator ships, the last plan step should call
 8. `orchestration/auto-task-tracker` — tick / append tasks
 9. `orchestration/memories` — durable knowledge if applicable
 
-Once the orchestrator ships, the plan can simply reference `nestjs-write-code` and the tail-call chain is owned there.
+Once the orchestrator ships, the plan can simply reference `sdcorejs-nestjs` and the tail-call chain is owned there.
 
 ---
 
 ## Resolved (track shipped)
 - **Shared kernel location:** `base/shared/` (aliased `@shared`), re-exporting the lib response/paging surface + a base DTO. Per-module Zod schemas live in `src/modules/<module>/schemas/`. See `_refs/nestjs/write-code/init-project.md` Step 7.
 - **Permission code convention:** flat `<module>_<entity>:<action>` (e.g. `crm_task:create`) — see `_refs/nestjs/architecture-principles.md` §11.
-- **Orchestrator layout:** `nestjs-write-code` dispatches four on-demand packs (`init-project` / `init-module` / `init-entity` / `actions`), not the old 10/11/12/20/21/22 sub-skills.
+- **Orchestrator layout:** `sdcorejs-nestjs` dispatches four on-demand packs (`init-project` / `init-module` / `init-entity` / `actions`), not the old 10/11/12/20/21/22 sub-skills.
 
 ## Open questions for this track
 - Default cursor-pagination shape (offset+limit vs id-cursor) — confirm per project before a plan locks it in.

@@ -269,5 +269,5 @@ Coverage target: ≥ 80% line on `services/` + `validators/` + `mappers/` + `pip
 - Principles: `_refs/shared/testing-philosophy.md`
 - Integration tests: `_refs/angular/test-integration.md`
 - E2E tests: `_refs/angular/test-e2e.md`
-- Build skill producing testable code: the `angular-write-code` orchestrator — `_refs/angular/write-code/screen-detail.md` for validators / form refinement, `_refs/angular/write-code/init-entity.md` for services
+- Build skill producing testable code: the `sdcorejs-angular` orchestrator — `_refs/angular/write-code/screen-detail.md` for validators / form refinement, `_refs/angular/write-code/init-entity.md` for services
 - Verification: `orchestration/verify-before-done`

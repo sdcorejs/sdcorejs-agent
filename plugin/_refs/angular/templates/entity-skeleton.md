@@ -1,6 +1,6 @@
-# Entity Skeleton Templates — init-entity (angular-write-code)
+# Entity Skeleton Templates — init-entity (sdcorejs-angular)
 
-This file holds the canonical Angular code templates the init-entity reference pack ([`init-entity.md`](../write-code/init-entity.md), loaded on demand by the `angular-write-code` orchestrator) generates. The pack picks which template to use based on the chosen layout variant; the actual code lives here so the pack stays concise.
+This file holds the canonical Angular code templates the init-entity reference pack ([`init-entity.md`](../write-code/init-entity.md), loaded on demand by the `sdcorejs-angular` orchestrator) generates. The pack picks which template to use based on the chosen layout variant; the actual code lives here so the pack stays concise.
 
 ## Contents
 - Preconditions

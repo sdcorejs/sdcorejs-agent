@@ -283,7 +283,7 @@ khoi tao portal-shop voi env dev/qc/uat/prod
 
 Expected:
 
-- Dispatches `angular-write-code`.
+- Dispatches `sdcorejs-angular`.
 - Recognizes `init-portal` and the always-on `admin-screens` pack.
 - Uses `_refs/angular/write-code/init-portal.md` and `_refs/angular/write-code/admin-screens.md` on demand.
 - Writes only to the target project, not `sdcorejs-agent`.
@@ -298,7 +298,7 @@ scaffold a nestjs backend
 
 Expected:
 
-- Dispatches `nestjs-write-code`.
+- Dispatches `sdcorejs-nestjs`.
 - Uses `init-project` and always-on `init-admin`.
 - Mentions one NestJS app plus one Postgres as the modular-monolith default.
 - Uses `@sdcorejs/nestjs` imports documented in `_refs/nestjs/core-catalog.md`.
@@ -311,7 +311,7 @@ add a products module with a product entity
 
 Expected:
 
-- Dispatches `nestjs-write-code`.
+- Dispatches `sdcorejs-nestjs`.
 - Uses `init-module` and `init-entity`.
 - Requires auth/permission wiring via the admin module.
 - Uses Zod validation, not `class-validator`.
@@ -326,7 +326,7 @@ build a bilingual landing site with SEO, contact form, and OG preview
 
 Expected:
 
-- Dispatches `nextjs-write-code`.
+- Dispatches `sdcorejs-nextjs`.
 - Loads only needed packs from `_refs/nextjs/build-website/write-code/`.
 - Covers i18n, SEO, contact-form, and og-preview.
 
@@ -345,7 +345,7 @@ Expected:
 - If spec is not approved, routes through `sdcorejs-review-spec`.
 - If plan is not approved, routes through `sdcorejs-review-plan`.
 - Approval must be explicit before write-code starts.
-- On approval, `auto-specs` or `auto-plans` snapshots to the target project's `.sdcorejs/` tree.
+- On approval, `auto-snapshot` snapshots to the target project's `.sdcorejs/` tree — SPEC mode after `sdcorejs-review-spec` (→ `.sdcorejs/specs/`), PLAN mode after `sdcorejs-review-plan` (→ `.sdcorejs/plans/`).
 
 ### 9. Persona Ask-Once
 

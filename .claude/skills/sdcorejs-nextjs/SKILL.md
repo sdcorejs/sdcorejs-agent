@@ -1,5 +1,5 @@
 ---
-name: nextjs-write-code
+name: sdcorejs-nextjs
 description: Generate code for a Next.js landing site — after 06-review-plan approves, OR as the single entry point for any direct build-website code-gen request. Loads the matching on-demand pack under `_refs/nextjs/build-website/write-code/` (per-pack trigger catalog is in the body): init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. Triggers - "bootstrap website", "choose theme", "add a page / add section", "set up SEO / sitemap", "OG image / social preview broken", "add language / i18n", "caching / ISR", "responsive broken / mobile broken", "contact form / form does not send email", "review content / thin content", plus generic "generate code", "go ahead", or localized equivalents. To audit an EXISTING site use `sdcorejs-review` instead. After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Bash
 ---

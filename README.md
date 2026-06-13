@@ -22,9 +22,9 @@ The system ships as **dispatchable skills** — markdown with YAML frontmatter �
 
 | Track | Path | Status |
 | --- | --- | --- |
-| Angular | `skills/tracks/angular/` | ✅ Complete (`angular-write-code` orchestrator; onboarding via `sdcorejs-using-skills`; Core UI docs in `_refs/angular/`) |
-| NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (onboarding + plan-walking `nestjs-write-code`; design + review + testing usable) |
-| Next.js | `skills/tracks/nextjs/` | ✅ Complete (`nextjs-write-code` orchestrator; EXISTING-site audit → `sdcorejs-review`; onboarding via `sdcorejs-using-skills`) |
+| Angular | `skills/tracks/angular/` | ✅ Complete (`sdcorejs-angular` orchestrator; onboarding via `sdcorejs-using-skills`; Core UI docs in `_refs/angular/`) |
+| NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (onboarding + plan-walking `sdcorejs-nestjs`; design + review + testing usable) |
+| Next.js | `skills/tracks/nextjs/` | ✅ Complete (`sdcorejs-nextjs` orchestrator; EXISTING-site audit → `sdcorejs-review`; onboarding via `sdcorejs-using-skills`) |
 
 ## Workflow (per track)
 

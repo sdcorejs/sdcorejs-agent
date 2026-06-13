@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review-spec
-description: Use AFTER `sdcorejs-write-spec` writes a spec file. Presents the spec to the user with a request for review and approval; iterates on feedback until the user approves. Acts as the user-approval gate before `sdcorejs-write-plan` starts; on approval, fires `orchestration/auto-specs` to persist the approved snapshot. Triggers - automatic after `sdcorejs-write-spec`; or user says "review spec", "approve spec", "let's check the spec", "review the spec", "approve the spec". Applies to angular, nestjs, nextjs. Runtime-localized.
+description: Use AFTER `sdcorejs-write-spec` writes a spec file. Presents the spec to the user with a request for review and approval; iterates on feedback until the user approves. Acts as the user-approval gate before `sdcorejs-write-plan` starts; on approval, fires `orchestration/auto-snapshot` (SPEC mode) to persist the approved snapshot. Triggers - automatic after `sdcorejs-write-spec`; or user says "review spec", "approve spec", "let's check the spec", "review the spec", "approve the spec". Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Edit, Glob
 ---
 
@@ -17,7 +17,7 @@ This skill is fully track-agnostic — the spec template, file paths, and tail-c
 
 ## Process
 
-> **STOP — approval gate.** This skill exists to BLOCK the workflow. After presenting the spec summary (step 3), you MUST wait for an explicit affirmative ("OK", "approve", "go", "looks good", or localized equivalents) before invoking `orchestration/auto-specs` or `sdcorejs-write-plan`. Silence, "thanks", or a follow-up question is NOT approval. Do not proceed on your own judgment that the spec "looks fine".
+> **STOP — approval gate.** This skill exists to BLOCK the workflow. After presenting the spec summary (step 3), you MUST wait for an explicit affirmative ("OK", "approve", "go", "looks good", or localized equivalents) before invoking `orchestration/auto-snapshot` (SPEC mode) or `sdcorejs-write-plan`. Silence, "thanks", or a follow-up question is NOT approval. Do not proceed on your own judgment that the spec "looks fine".
 
 ### 1. Re-read the spec
 Open the file just written under `<target-project>/.sdcorejs/docs/<TRACK>/*-spec.md`. Re-read it as if you've never seen it.
@@ -64,19 +64,19 @@ Translate this prompt at runtime.
 
 #### Approve ("OK", "approve", "go", "resume", or localized equivalents)
 1. Mark the spec approved (the user's confirmation in chat is the audit trail)
-2. IMMEDIATELY invoke `orchestration/auto-specs` (write mode) to persist the approved spec snapshot to `<target>/.sdcorejs/specs/<TRACK>/<YYYY-MM-DD-HH-mm>-<topic>.md`
+2. IMMEDIATELY invoke `orchestration/auto-snapshot` in SPEC mode (write mode) to persist the approved spec snapshot to `<target>/.sdcorejs/specs/<TRACK>/<YYYY-MM-DD-HH-mm>-<topic>.md`
 3. Only then invoke `sdcorejs-write-plan` with the spec file path as input
 
 #### Request changes ("change", "change", "change", "amend")
 1. Edit the spec file in-place via `Edit` tool
 2. Re-run the self-review checklist
 3. Re-present (loop max 3 rounds — if still not approved, suggest re-brainstorming or rewriting the spec)
-4. DO NOT invoke `orchestration/auto-specs` — only an approved spec gets snapshotted
+4. DO NOT invoke `orchestration/auto-snapshot` — only an approved spec gets snapshotted
 
 #### Abort ("cancel", "stop", or localized equivalents)
 1. Leave the spec file in place (it's a useful artifact even if not pursued)
 2. Stop the workflow
-3. DO NOT invoke `orchestration/auto-specs`
+3. DO NOT invoke `orchestration/auto-snapshot`
 4. Optionally invoke `orchestration/memories` to capture WHY the user aborted, if there's a durable lesson
 
 ## Rules
@@ -104,8 +104,8 @@ Translate this prompt at runtime.
 
 ## Related skills
 - `sdcorejs-write-spec` — runs immediately before; produces the spec file
-- `orchestration/auto-specs` — MANDATORY tail-call on approval; persists the approved spec snapshot
-- `sdcorejs-write-plan` — runs after auto-specs; consumes the approved spec
+- `orchestration/auto-snapshot` (SPEC mode) — MANDATORY tail-call on approval; persists the approved spec snapshot
+- `sdcorejs-write-plan` — runs after auto-snapshot; consumes the approved spec
 - `orchestration/memories` — capture durable lessons learned during review
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->

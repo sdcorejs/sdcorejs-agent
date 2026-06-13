@@ -1,5 +1,5 @@
 ---
-name: angular-write-code
+name: sdcorejs-angular
 description: Generate Angular-portal code — after 06-review-plan approves, OR as the single entry point for any direct Angular-portal code-gen request. Loads the matching on-demand pack under `_refs/angular/write-code/` (per-pack trigger catalog is in the body): init-portal, admin-screens (always-on: account/role/permission management), init-module, init-entity (full CRUD), screen-list, screen-detail (CREATE/UPDATE/DETAIL + reactive-form/validators), actions (workflow / bulk / custom buttons). Triggers - "initialize portal", "create module X", "add entity / create CRUD", "list screen / add column", "detail screen / form validation / custom validator", "add action button / approve / bulk approve / export Excel", generic "generate code", "go ahead", or localized equivalents. NOT for spec/plan, code review, or nestjs/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---

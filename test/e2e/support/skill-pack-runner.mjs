@@ -43,9 +43,9 @@ const LOCALIZED_ALIASES = new Map([
 
 const SKILL_HINTS = [
   { skill: 'sdcorejs-brainstorm', words: ['brainstorm', 'unsure', 'deciding', 'between', 'compare', 'should'] },
-  { skill: 'angular-write-code', words: ['angular', 'portal', 'screen', 'button', 'approve', 'approval', 'bulk', 'export', 'action', 'drawer'] },
-  { skill: 'nestjs-write-code', words: ['nestjs', 'backend', 'module', 'entity', 'crud', 'endpoint', 'scaffold'] },
-  { skill: 'nextjs-write-code', words: ['nextjs', 'website', 'landing', 'seo', 'sitemap', 'og', 'contact'] },
+  { skill: 'sdcorejs-angular', words: ['angular', 'portal', 'screen', 'button', 'approve', 'approval', 'bulk', 'export', 'action', 'drawer'] },
+  { skill: 'sdcorejs-nestjs', words: ['nestjs', 'backend', 'module', 'entity', 'crud', 'endpoint', 'scaffold'] },
+  { skill: 'sdcorejs-nextjs', words: ['nextjs', 'website', 'landing', 'seo', 'sitemap', 'og', 'contact'] },
   { skill: 'sdcorejs-write-user-guide', words: ['user', 'guide', 'documentation', 'manual'] },
   { skill: 'sdcorejs-commit', words: ['commit', 'changes', 'save'] }
 ];

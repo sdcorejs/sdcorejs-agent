@@ -1,8 +1,8 @@
 # NestJS Backend — Architecture Principles
 
-Source of truth for **WHY** SDCoreJS NestJS backends look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, `sdcorejs-clarify-requirements`, `nestjs-write-code`, and `sdcorejs-review`.
+Source of truth for **WHY** SDCoreJS NestJS backends look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, `sdcorejs-clarify-requirements`, `sdcorejs-nestjs`, and `sdcorejs-review`.
 
-**Status**: NestJS track is **shipped** — `nestjs-write-code` dispatches four on-demand generation packs under `_refs/nestjs/write-code/` (`init-project` / `init-module` / `init-entity` / `actions`). The principles below govern the code those packs generate.
+**Status**: NestJS track is **shipped** — `sdcorejs-nestjs` dispatches four on-demand generation packs under `_refs/nestjs/write-code/` (`init-project` / `init-module` / `init-entity` / `actions`). The principles below govern the code those packs generate.
 
 **Canonical core:** SDCoreJS NestJS backends are built on the **`@sdcorejs/nestjs`** core package — sub-path imports (`@sdcorejs/nestjs`, `/core`, `/auth`, `/validation`, `/auth`, `/core`, `/core`, `/core`, `/i18n`, …) supply `WithAudit(BaseEntity)`, `BaseRepository` / `BaseService` / `BaseController`, `AuthGuard` + `@HasPermission`, `ZodValidationGuard`, and `SdCoreModule.forRoot`. The authoritative export inventory is [`_refs/nestjs/core-catalog.md`](./core-catalog.md). These principles are grounded on the `@sdcorejs/nestjs` reference app; the canonical core is `@sdcorejs/nestjs` (see `_refs/nestjs/core-catalog.md`).
 
@@ -363,7 +363,7 @@ When a principle changes, propagate to:
 
 - **Shared kernel path:** `base/shared/` (aliased `@shared`); per-module Zod schemas under `src/modules/<module>/schemas/`.
 - **Permission code convention:** flat `<module>_<entity>:<action>` (§11) — canonical; non-canonical underscore-uppercase variants are legacy-only.
-- **Orchestrator layout:** `nestjs-write-code` dispatches four packs (`init-project` / `init-module` / `init-entity` / `actions`), not the old 10/11/12/20/21/22 sub-skills.
+- **Orchestrator layout:** `sdcorejs-nestjs` dispatches four packs (`init-project` / `init-module` / `init-entity` / `actions`), not the old 10/11/12/20/21/22 sub-skills.
 
 ## Open questions
 
@@ -390,7 +390,7 @@ When a principle changes, propagate to:
 - `_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md` — the generation packs
 - `_refs/sdlc/nestjs.md` — design-phase patterns + persistence options
 - `sdcorejs-using-skills` — onboarding / entry point
-- `skills/tracks/nestjs/write-code.md` — the `nestjs-write-code` orchestrator that dispatches the packs
+- `skills/tracks/nestjs/sdcorejs-nestjs.md` — the `sdcorejs-nestjs` orchestrator that dispatches the packs
 - `skills/tracks/nestjs/_README.md` — track status
 - `sdcorejs-review` — convention enforcement (the reviewer)
 - `skills/testing/{unit,integration,e2e}/nestjs.md` — testing patterns per layer

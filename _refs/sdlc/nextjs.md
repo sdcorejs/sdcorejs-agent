@@ -163,7 +163,7 @@ Capture:
 ## Plan
 
 ### Phase grouping
-Each phase below maps to a write-code reference pack the `nextjs-write-code` orchestrator dispatches (under `_refs/nextjs/build-website/write-code/`).
+Each phase below maps to a write-code reference pack the `sdcorejs-nextjs` orchestrator dispatches (under `_refs/nextjs/build-website/write-code/`).
 1. **Init** (only if new site): `init-site` pack (create-next-app + standard deps + folder scaffold)
 2. **Theme**: `theme` pack (palette + typography + tokens)
 3. **i18n**: `i18n` pack (next-intl middleware, message JSON, language switcher, localized pathnames)

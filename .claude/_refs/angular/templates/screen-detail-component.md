@@ -1,6 +1,6 @@
 # Screen — Detail Component (Shared Shell + State Branches)
 
-The screen-detail reference pack [`screen-detail.md`](../write-code/screen-detail.md) (loaded on demand by the `angular-write-code` orchestrator) owns all three states (CREATE / UPDATE / DETAIL) plus form refinement, because they all write to the **same file**: `src/libs/<module>/<entity>/pages/detail/detail.component.ts`. This ref consolidates the literal code so the developer sees the whole component in one place, with state-specific overlays grouped together.
+The screen-detail reference pack [`screen-detail.md`](../write-code/screen-detail.md) (loaded on demand by the `sdcorejs-angular` orchestrator) owns all three states (CREATE / UPDATE / DETAIL) plus form refinement, because they all write to the **same file**: `src/libs/<module>/<entity>/pages/detail/detail.component.ts`. This ref consolidates the literal code so the developer sees the whole component in one place, with state-specific overlays grouped together.
 
 Sections to consult based on what you're generating / refining:
 - Shared shell (imports, FormGroup, ngOnInit dispatcher, loader, header buttons, nav helpers, tab name, form-field rendering): [`#shared-shell`](#shared-shell)

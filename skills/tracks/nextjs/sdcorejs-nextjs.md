@@ -1,5 +1,5 @@
 ---
-name: nextjs-write-code
+name: sdcorejs-nextjs
 description: Generate code for a Next.js landing site — after 06-review-plan approves, OR as the single entry point for any direct build-website code-gen request. Loads the matching on-demand pack under `_refs/nextjs/build-website/write-code/` (per-pack trigger catalog is in the body): init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. Triggers - "bootstrap website", "choose theme", "add a page / add section", "set up SEO / sitemap", "OG image / social preview broken", "add language / i18n", "caching / ISR", "responsive broken / mobile broken", "contact form / form does not send email", "review content / thin content", plus generic "generate code", "go ahead", or localized equivalents. To audit an EXISTING site use `sdcorejs-review` instead. After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Bash
 ---
@@ -138,16 +138,3 @@ Each tail-call is mandatory (per the cross-track rules in CLAUDE.md / AGENTS.md 
 - Audit an existing site (separate entry, read-only): `sdcorejs-review`
 - Tail-call chain: see CLAUDE.md workflow chart
 - Parallel execution: `orchestration/parallel-dispatch` + `orchestration/subagent-driven-dev`
-
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
-
-**Response style (terse mode active for this skill — reduces token usage):**
-
-While executing this skill:
-
-- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
-- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
-- Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
-- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
-- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.
