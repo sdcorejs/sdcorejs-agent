@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-write-plan
-description: Use AFTER `sdcorejs-review-spec` has approved the spec, BEFORE the track-specific write-code orchestrator runs (`angular-write-code` / `nextjs-write-code` / future `nestjs-write-code`). Writes a numbered file-by-file plan to the chat (and optionally to a plan file under `.sdcorejs/plans/<track>/`) for the user to review and confirm. No code is written here. Hands off to `sdcorejs-review-plan` for user approval, which then snapshots via `orchestration/auto-plans` and dispatches `<track>-write-code`. Triggers - "write a plan", "plan", "show me steps before coding", "plan before coding", "draft a plan". Applies to angular, nestjs, nextjs. Runtime-localized.
+description: Use AFTER `sdcorejs-review-spec` has approved the spec, BEFORE the track-specific write-code orchestrator runs (`sdcorejs-angular` / `sdcorejs-nextjs` / future `sdcorejs-nestjs`). Writes a numbered file-by-file plan to the chat (and optionally to a plan file under `.sdcorejs/plans/<track>/`) for the user to review and confirm. No code is written here. Hands off to `sdcorejs-review-plan` for user approval, which then snapshots via `orchestration/auto-snapshot` (PLAN mode) and dispatches `<track>-write-code`. Triggers - "write a plan", "plan", "show me steps before coding", "plan before coding", "draft a plan". Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Glob, Grep, Bash
 ---
 
@@ -104,7 +104,7 @@ Does this plan look right?
 
 ## Hand-off
 After writing the plan, hand off to `sdcorejs-review-plan`. On user approval there:
-1. `orchestration/auto-plans` snapshots the approved plan to `.sdcorejs/plans/<TRACK>/`
+1. `orchestration/auto-snapshot` (PLAN mode) snapshots the approved plan to `.sdcorejs/plans/<TRACK>/`
 2. The track's write-code orchestrator is invoked with the approved plan as input
 3. After generation, the full tail-call chain runs (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories)
 
@@ -120,7 +120,7 @@ After writing the plan, hand off to `sdcorejs-review-plan`. On user approval the
 - `_refs/sdlc/<TRACK>.md` — track-specific phase grouping + verification commands
 - `sdcorejs-review-spec` — runs before this (approves the spec)
 - `sdcorejs-review-plan` — runs after this (gates on user approval)
-- `orchestration/auto-plans` — MANDATORY tail-call on review-plan approval
+- `orchestration/auto-snapshot` (PLAN mode) — MANDATORY tail-call on review-plan approval
 - `<track>-write-code` — executes the approved plan
 
 <!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->

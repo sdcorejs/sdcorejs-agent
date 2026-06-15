@@ -2,13 +2,13 @@
   {
     "id": "nestjs-init",
     "prompt": "scaffold a nestjs backend",
-    "expectedSkill": "nestjs-write-code",
+    "expectedSkill": "sdcorejs-nestjs",
     "phase": 1
   },
   {
     "id": "angular-action-localized",
     "prompt": "them nut approve cho don hang",
-    "expectedSkill": "angular-write-code",
+    "expectedSkill": "sdcorejs-angular",
     "phase": 1
   },
   {

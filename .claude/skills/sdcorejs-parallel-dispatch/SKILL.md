@@ -186,7 +186,7 @@ Wrong dispatch:
 User says "write reference docs for all 23 Core UI components". 
 
 This IS parallel-friendly:
-- Each component → independent file at `_refs/angular/sdcorejs-angular/components/sd-<name>.md`
+- Each component → independent reference file (per-component Core UI docs are now fetched on-demand via `node _refs/angular/core-docs-fetch.mjs --print sd-<name>`, not committed)
 - No shared state
 - Same template, different content
 

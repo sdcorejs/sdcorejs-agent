@@ -119,12 +119,12 @@ Body:
 
 ## Changes
 - `_refs/angular/write-code/actions.md`: renamed + broadened body
-- `skills/tracks/angular/write-code.md`: dispatch table + description
+- `skills/tracks/angular/sdcorejs-angular.md`: dispatch table + description
 - `skills/orchestration/using-skills.md`: workflow strip
 - `.claude/skills/`, `plugin/skills/`: mirror regenerated via sync-skills.sh
 
 ## Test plan
-- [ ] Open Claude Code in a target project, type "add Excel export button" → `angular-write-code` (actions pack) dispatches
+- [ ] Open Claude Code in a target project, type "add Excel export button" → `sdcorejs-angular` (actions pack) dispatches
 - [ ] Type "add approval flow" → same skill dispatches
 - [ ] `bash .claude/sync-skills.sh --check` passes
 ```

@@ -101,7 +101,7 @@ Write or patch **`frontend/src/app/app.config.ts`** to register the Keycloak pro
    </html>
    ```
 
-3. **Façades (optional but recommended).** To light up the layout user-menu + permission checks, wire `SD_AUTH_CONFIGURATION` (user info + signout) and `SD_PERMISSION_CONFIGURATION` (`loadPermissions` from `kc.keycloak.realmAccess?.roles`, `getToken`, `onForbiden`) from `SdKeycloakService`. The exact provider factories are in `_refs/angular/sdcorejs-angular/modules/sd-keycloak.md`.
+3. **Façades (optional but recommended).** To light up the layout user-menu + permission checks, wire `SD_AUTH_CONFIGURATION` (user info + signout) and `SD_PERMISSION_CONFIGURATION` (`loadPermissions` from `kc.keycloak.realmAccess?.roles`, `getToken`, `onForbiden`) from `SdKeycloakService`. The exact provider factories are in the on-demand FE module doc (`node _refs/angular/core-docs-fetch.mjs --print sd-keycloak`; docs not committed).
 
 ## Step 3 — Backend (NestJS)
 

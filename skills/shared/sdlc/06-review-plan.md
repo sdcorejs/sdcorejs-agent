@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review-plan
-description: Use AFTER `sdcorejs-write-plan` writes a step-by-step plan. Presents the plan to the user for review BEFORE code is generated. Acts as the user-approval gate before `<track>-write-code` runs; on approval, fires `orchestration/auto-plans` to persist the snapshot and dispatches the track's write-code orchestrator. Triggers - automatic after `sdcorejs-write-plan`; or user says "review plan", "check the plan", "review the plan", "approve the plan", "approve plan". Applies to angular, nestjs, nextjs. Runtime-localized.
+description: Use AFTER `sdcorejs-write-plan` writes a step-by-step plan. Presents the plan to the user for review BEFORE code is generated. Acts as the user-approval gate before `<track>-write-code` runs; on approval, fires `orchestration/auto-snapshot` (PLAN mode) to persist the snapshot and dispatches the track's write-code orchestrator. Triggers - automatic after `sdcorejs-write-plan`; or user says "review plan", "check the plan", "review the plan", "approve the plan", "approve plan". Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Edit, Glob
 ---
 
@@ -17,7 +17,7 @@ Catching missing steps or wrong file paths here is far cheaper than catching the
 
 ## Process
 
-> **STOP — approval gate.** This skill BLOCKS code generation. After presenting the plan summary (step 3), you MUST wait for an explicit affirmative ("OK", "approve", "go ahead", "proceed", or localized equivalents) before invoking `orchestration/auto-plans` or dispatching `<track>-write-code`. Silence or absence of objection is NOT approval. Never start a write-code task — not even step 1 — while the plan is still under review.
+> **STOP — approval gate.** This skill BLOCKS code generation. After presenting the plan summary (step 3), you MUST wait for an explicit affirmative ("OK", "approve", "go ahead", "proceed", or localized equivalents) before invoking `orchestration/auto-snapshot` (PLAN mode) or dispatching `<track>-write-code`. Silence or absence of objection is NOT approval. Never start a write-code task — not even step 1 — while the plan is still under review.
 
 ### 1. Re-read the plan
 Either re-read from the in-chat response (if `sdcorejs-write-plan` rendered it inline) or from the plan file if one was written. Re-read it as if you've never seen it.
@@ -65,21 +65,21 @@ Translate this prompt at runtime.
 ### 4. Handle response
 
 #### Approve ("OK", "approve", "go ahead", "proceed", "generate", or localized equivalents)
-1. IMMEDIATELY invoke `orchestration/auto-plans` (write mode) to persist the approved plan snapshot to `<target>/.sdcorejs/plans/<TRACK>/<YYYY-MM-DD-HH-mm>-<topic>.md`
+1. IMMEDIATELY invoke `orchestration/auto-snapshot` in PLAN mode (write mode) to persist the approved plan snapshot to `<target>/.sdcorejs/plans/<TRACK>/<YYYY-MM-DD-HH-mm>-<topic>.md`
 2. Dispatch the right track's write-code orchestrator with the approved plan as input:
-   - `angular` → `angular-write-code`
-   - `nextjs` → `nextjs-write-code`
-   - `nestjs` → `nestjs-write-code` (when available; until then ASK user)
+   - `angular` → `sdcorejs-angular`
+   - `nextjs` → `sdcorejs-nextjs`
+   - `nestjs` → `sdcorejs-nestjs` (when available; until then ASK user)
 
 #### Request changes ("change step N", "change", "amend", "change")
 1. Edit the plan
 2. Re-run self-review
 3. Re-present (loop max 3 rounds; if still not approved, suggest going back to `sdcorejs-write-plan` or `sdcorejs-review-spec`)
-4. DO NOT invoke `orchestration/auto-plans` — only an approved plan gets snapshotted
+4. DO NOT invoke `orchestration/auto-snapshot` — only an approved plan gets snapshotted
 
 #### Abort ("cancel", "stop", or localized equivalents)
 1. Stop the workflow
-2. DO NOT invoke `orchestration/auto-plans`
+2. DO NOT invoke `orchestration/auto-snapshot`
 3. Optionally invoke `orchestration/memories` if the abort surfaced a durable lesson ("user prefers smaller batches; plan was too big")
 
 ## Rules
@@ -109,7 +109,7 @@ Translate this prompt at runtime.
 ## Related skills
 - `_refs/sdlc/<TRACK>.md` — track-specific phase + verification conventions
 - `sdcorejs-write-plan` — runs immediately before
-- `orchestration/auto-plans` — MANDATORY tail-call on approval
-- `<track>-write-code` — runs after auto-plans
+- `orchestration/auto-snapshot` (PLAN mode) — MANDATORY tail-call on approval
+- `<track>-write-code` — runs after auto-snapshot
 - `sdcorejs-review-spec` — sibling gate one stage earlier
 - `orchestration/memories` — capture durable lessons learned during review

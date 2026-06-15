@@ -18,7 +18,7 @@ Turn an SDCoreJS frontend + backend into a single `docker compose up`. This skil
 
 **NOT for:**
 - The user only wants a Dockerfile for a single, non-SDCoreJS service (no Angular FE + NestJS BE pairing) — write a plain Dockerfile, do not pull in this whole stack.
-- No FE or BE exists yet — build them first (`angular-write-code` / `nestjs-write-code`), then dockerize. Tell the user what's missing rather than emitting a stack that can't build.
+- No FE or BE exists yet — build them first (`sdcorejs-angular` / `sdcorejs-nestjs`), then dockerize. Tell the user what's missing rather than emitting a stack that can't build.
 
 ## Deploy-root layout this skill produces
 

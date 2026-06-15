@@ -1,6 +1,6 @@
 # Write-Code Orchestrator — Step Examples
 
-Walkthrough examples referenced from [`write-code.md`](../../write-code.md) (the `angular-write-code` orchestrator). The skill body owns the dispatch table, TDD gate, input resolution, semantic inference rules, and the file/naming conventions; these examples show what the on-demand reference packs it loads (`init-entity`, `screen-list`, etc.) ultimately produce. Use them when you want to picture the end shape, or when explaining the flow to someone reading the orchestrator for the first time.
+Walkthrough examples referenced from [`write-code.md`](../../write-code.md) (the `sdcorejs-angular` orchestrator). The skill body owns the dispatch table, TDD gate, input resolution, semantic inference rules, and the file/naming conventions; these examples show what the on-demand reference packs it loads (`init-entity`, `screen-list`, etc.) ultimately produce. Use them when you want to picture the end shape, or when explaining the flow to someone reading the orchestrator for the first time.
 
 For the canonical entity-skeleton + tests + product example actually used by the init-entity pack, see the sibling refs [`entity-skeleton.md`](./entity-skeleton.md), [`entity-tests.md`](./entity-tests.md), and [`example-product.md`](./example-product.md).
 

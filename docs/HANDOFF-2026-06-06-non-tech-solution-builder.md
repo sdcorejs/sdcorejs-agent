@@ -49,13 +49,13 @@ The design doc is `docs/superpowers/specs/2026-06-06-non-tech-solution-builder-d
 
 ### Phase 3 — NestJS build-out (Plan 3)
 - `_refs/nestjs/core-catalog.md` — inventory of the `@sdcorejs/nestjs` (v0.1.6) core: sub-path exports (`/orm`, `/permission`, `/validation`, `/jwt`, `/context`, `/tenancy`, `/audit`), `BaseEntity`+`WithAudit`/`BaseRepository`/`BaseService`/`BaseController`, `SdCoreModule.forRoot`, `AuthGuard`+`@HasPermission`+`ZodValidationGuard`, `JwtModule` (Keycloak JWKS).
-- `_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md` — codegen packs, loaded on demand by the single `nestjs-write-code` skill.
-- `skills/tracks/nestjs/write-code.md` — upgraded scaffold plan-walker → pack-dispatching orchestrator (mirrors `angular-write-code`). NestJS track flipped to ✅ Complete in the entry files.
+- `_refs/nestjs/write-code/{init-project,init-module,init-entity,actions}.md` — codegen packs, loaded on demand by the single `sdcorejs-nestjs` skill.
+- `skills/tracks/nestjs/write-code.md` — upgraded scaffold plan-walker → pack-dispatching orchestrator (mirrors `sdcorejs-angular`). NestJS track flipped to ✅ Complete in the entry files.
 - Reconciled `_refs/sdlc/nestjs.md` + `_refs/nestjs/architecture-principles.md`: canonical core `@sdcorejs/nestjs`; permission codes flat `<module>_<entity>:<action>` (e.g. `crm_task:create`); schema-per-module Postgres; `synchronize` in dev / migrations in prod (init-project ships a safe no-op `migration:run` + empty `src/migrations/` so the Plan 2 Dockerfile CMD never fails).
 - Grounded in real repos: core `Documents/sdcorejs/sdcorejs-nestjs`; reference modular monolith `Documents/local-solution/enterprise-platform/enterprise-platform`.
 
 ### Phase 4 — Solution builder (Plan 4)
-- `skills/orchestration/solution-builder.md` (`sdcorejs-solution-builder`) — the non-tech one-door orchestrator. **Composes** existing skills (no new generation logic): persona → clarify(feature+UI) → write-spec/review-spec (**GATE 1**) → write-plan/review-plan (**GATE 2**) → `nestjs-write-code` → `angular-write-code` → `sdcorejs-dockerize` → `sdcorejs-auth` → `sdcorejs-run-guide` → `verify-before-done` → "here's how to run it". Both gates kept, plainly worded ("Does this match what you wanted?"); silence ≠ approval.
+- `skills/orchestration/solution-builder.md` (`sdcorejs-solution-builder`) — the non-tech one-door orchestrator. **Composes** existing skills (no new generation logic): persona → clarify(feature+UI) → write-spec/review-spec (**GATE 1**) → write-plan/review-plan (**GATE 2**) → `sdcorejs-nestjs` → `sdcorejs-angular` → `sdcorejs-dockerize` → `sdcorejs-auth` → `sdcorejs-run-guide` → `verify-before-done` → "here's how to run it". Both gates kept, plainly worded ("Does this match what you wanted?"); silence ≠ approval.
 
 ### Cross-cutting convention (recorded in entry files + persona ref)
 - **Skills go global → English source.** Author skill `name`/`description`/body/notes/comments in English. At runtime, detect the user's language and both trigger-match and respond in it. (CLAUDE.md/AGENTS.md/copilot rule 5.) **All NEW content from Phase 3 onward is English; the ~40 pre-existing VI-laden descriptions are NOT yet retrofitted — see Deferred.**
@@ -108,7 +108,7 @@ The design doc is `docs/superpowers/specs/2026-06-06-non-tech-solution-builder-d
 ## Key file index
 
 - Design: `docs/superpowers/specs/2026-06-06-non-tech-solution-builder-design.md`
-- Plans: `docs/superpowers/plans/2026-06-06-{persona-layer-and-write-code-rename, infra-group-dockerize-auth-runguide, nestjs-write-code-packs, solution-builder-orchestrator}.md`
+- Plans: `docs/superpowers/plans/2026-06-06-{persona-layer-and-write-code-rename, infra-group-dockerize-auth-runguide, sdcorejs-nestjs-packs, solution-builder-orchestrator}.md`
 - New skills: `skills/orchestration/{persona,solution-builder}.md`, `skills/infra/{dockerize,auth,run-guide}.md`
 - New refs: `_refs/shared/persona.md`, `_refs/infra/*`, `_refs/nestjs/core-catalog.md`, `_refs/nestjs/write-code/*`
 - Upgraded: `skills/tracks/nestjs/write-code.md`

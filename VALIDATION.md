@@ -26,7 +26,7 @@ The live source of truth is:
 | Plugin mirror skills | 42 | `plugin/skills/*/SKILL.md` |
 | Reference docs | 147 | `_refs/**/*.md` |
 | Orchestration skills | 19 | Includes `write-user-guide` |
-| Track write-code skills | 3 | `angular-write-code`, `nestjs-write-code`, `nextjs-write-code` |
+| Track write-code skills | 3 | `sdcorejs-angular`, `sdcorejs-nestjs`, `sdcorejs-nextjs` |
 
 Reference doc counts by top-level bucket:
 
@@ -62,9 +62,9 @@ The remaining failures are validation-command issues, not skill inventory drift.
 
 | Path | Skill |
 | --- | --- |
-| `skills/tracks/angular/write-code.md` | `angular-write-code` |
-| `skills/tracks/nestjs/write-code.md` | `nestjs-write-code` |
-| `skills/tracks/nextjs/write-code.md` | `nextjs-write-code` |
+| `skills/tracks/angular/sdcorejs-angular.md` | `sdcorejs-angular` |
+| `skills/tracks/nestjs/sdcorejs-nestjs.md` | `sdcorejs-nestjs` |
+| `skills/tracks/nextjs/sdcorejs-nextjs.md` | `sdcorejs-nextjs` |
 
 ### Design Phase
 
@@ -82,8 +82,7 @@ The remaining failures are validation-command issues, not skill inventory drift.
 | Path | Skill |
 | --- | --- |
 | `skills/orchestration/auto-docs.md` | `sdcorejs-auto-docs` |
-| `skills/orchestration/auto-plans.md` | `sdcorejs-auto-plans` |
-| `skills/orchestration/auto-specs.md` | `sdcorejs-auto-specs` |
+| `skills/orchestration/auto-snapshot.md` | `sdcorejs-auto-snapshot` |
 | `skills/orchestration/auto-summary.md` | `sdcorejs-auto-summary` |
 | `skills/orchestration/auto-task-tracker.md` | `sdcorejs-auto-task-tracker` |
 | `skills/orchestration/branch-ready.md` | `sdcorejs-branch-ready` |
@@ -114,7 +113,7 @@ The remaining failures are validation-command issues, not skill inventory drift.
 | `skills/infra/run-guide.md` | `sdcorejs-run-guide` |
 | `skills/shared/conventions/changelog.md` | `sdcorejs-changelog` |
 | `skills/shared/conventions/commit.md` | `sdcorejs-commit` |
-| `skills/shared/conventions/dep-update.md` | `sdcorejs-dep-update` |
+| `skills/shared/workflow/dep-update.md` | `sdcorejs-dep-update` |
 | `skills/shared/workflow/code-map.md` | `sdcorejs-code-map` |
 | `skills/shared/workflow/debug.md` | `sdcorejs-debug` |
 | `skills/shared/workflow/env-setup.md` | `sdcorejs-env-setup` |

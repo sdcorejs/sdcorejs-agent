@@ -1,4 +1,4 @@
-> **Reference for the `nextjs-write-code` orchestrator.** Loaded on demand when the
+> **Reference for the `sdcorejs-nextjs` orchestrator.** Loaded on demand when the
 > confirmed plan routes a step here. Not a standalone skill — the orchestrator reads this file via
 > its dispatch table. Sibling reference packs live in the same dir; track-level refs under `_refs/nextjs/build-website/`.
 
@@ -8,7 +8,7 @@
 Stand up a Next.js 16 landing-site skeleton that every later sub-skill (theme, pages, SEO, i18n, …) expects. After this skill runs, `npm run dev` succeeds, the root route renders an empty hero, and the folder structure is in place for content + components + i18n.
 
 ## When invoked
-- First step of a "Full build" dispatch in the `nextjs-write-code` orchestrator
+- First step of a "Full build" dispatch in the `sdcorejs-nextjs` orchestrator
 - User says "init site", "tạo project Next.js", "khởi tạo website", "bootstrap"
 - Brand-new directory or empty project root
 
@@ -288,7 +288,7 @@ If any of these fail, halt and surface — do NOT proceed to next sub-skill with
 
 ### 6. Write the project summary
 
-Once the bootstrap is green, run `orchestration/auto-summary` in WRITE mode to create `.sdcorejs/summary.md` (domain, stack, app-router + content + i18n layout, conventions, current git HEAD). The next session and the `nextjs-write-code` orchestrator's Step 0 pre-flight read this instead of re-scanning. A fresh site has none until this step runs.
+Once the bootstrap is green, run `orchestration/auto-summary` in WRITE mode to create `.sdcorejs/summary.md` (domain, stack, app-router + content + i18n layout, conventions, current git HEAD). The next session and the `sdcorejs-nextjs` orchestrator's Step 0 pre-flight read this instead of re-scanning. A fresh site has none until this step runs.
 
 ## Rules
 

@@ -1,4 +1,4 @@
-> **Reference for the `nestjs-write-code` orchestrator.** Loaded on demand when the
+> **Reference for the `sdcorejs-nestjs` orchestrator.** Loaded on demand when the
 > confirmed plan adds a new bounded-context module to an existing `@sdcorejs/nestjs` app.
 > Not a standalone skill — the orchestrator reads this file when its dispatch table routes
 > a step here.

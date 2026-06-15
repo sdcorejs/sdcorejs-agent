@@ -1,6 +1,6 @@
 # Worked Example — `product` entity
 
-Reference output from a complete init-entity run (the `angular-write-code` orchestrator with the [`init-entity.md`](../write-code/init-entity.md) pack) against `product`. Use this to verify the shape and conventions of the generated bundle; do NOT copy-paste — let the orchestrator emit the parameterized templates from `entity-skeleton.md`.
+Reference output from a complete init-entity run (the `sdcorejs-angular` orchestrator with the [`init-entity.md`](../write-code/init-entity.md) pack) against `product`. Use this to verify the shape and conventions of the generated bundle; do NOT copy-paste — let the orchestrator emit the parameterized templates from `entity-skeleton.md`.
 
 ## Contents
 - `libs/sample/features/product/services/product.model.ts`

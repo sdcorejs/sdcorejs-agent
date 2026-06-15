@@ -236,7 +236,7 @@ Order of preference when picking a UI primitive:
 
 **Why**: Core UI ships consistent a11y, theming, RTL support, and behavior. Custom UI re-litigates these per-component, badly. The flagged exception forces the conversation: "should Core UI grow this primitive?"
 
-See `_refs/angular/sdcorejs-angular-catalog.md` for the full inventory.
+Run `node _refs/angular/core-docs-fetch.mjs --list` for the full inventory (on-demand; docs not committed).
 
 ---
 
@@ -279,7 +279,7 @@ When a principle here changes, propagate to:
 ## Related references
 
 - `_refs/angular/core-version.md` — pinned `@sdcorejs/angular` version
-- `_refs/angular/sdcorejs-angular-catalog.md` — Core UI components inventory
+- Core UI components inventory — `node _refs/angular/core-docs-fetch.mjs --list` (on-demand; docs not committed)
 - `_refs/angular/entity-field-types.md` — field-type → form-control mapping
 - `_refs/angular/templates/entity-skeleton.md` — canonical code templates these principles produce
 - `_refs/angular/templates/example-product.md` — worked example end-to-end

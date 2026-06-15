@@ -1,4 +1,4 @@
-> **Reference for the `nextjs-write-code` orchestrator.** Loaded on demand when the
+> **Reference for the `sdcorejs-nextjs` orchestrator.** Loaded on demand when the
 > confirmed plan routes a step here. Not a standalone skill — the orchestrator reads this file via
 > its dispatch table. Sibling reference packs live in the same dir; track-level refs under `_refs/nextjs/build-website/`.
 
@@ -8,7 +8,7 @@
 A landing site without a working contact form is incomplete — leads vanish. A common starter-project anti-pattern is shipping a `setTimeout(1000)` stub that only simulates submit (UI shows "sent" but nothing actually goes anywhere). This skill ships a real form: zod validation, POST to API route, Resend email delivery, rate limit, bilingual UX, and accessibility.
 
 ## When invoked
-- Automatic last step of "Full build" in the `nextjs-write-code` orchestrator
+- Automatic last step of "Full build" in the `sdcorejs-nextjs` orchestrator
 - User says "contact form", "biểu mẫu liên hệ", "form chưa gửi email", "fix fake form"
 - Adding a new form (newsletter signup uses a similar pattern)
 

@@ -26,7 +26,7 @@ For every file under review, check the following.
 - Uses `@sdcorejs/angular/components`, `@sdcorejs/angular/forms`, `@sdcorejs/angular/modules` instead of hand-rolled equivalents
 - If a custom skeleton exists, it is marked with `// CUSTOM_UI: <reason>` and the generation summary mentioned it
 - Imports come from path-specific subpaths (e.g. `@sdcorejs/angular/components/section`), not the barrel `from 'sd-angular'`
-- **Don't re-implement what Core UI already ships.** When a hand-rolled widget duplicates a Core UI component (filter bar, operator picker, splitter, stepper, banner, dynamic form, color input, …), flag it and point the dev to the built-in. The authoritative component inventory + each component's per-component conventions and required configuration tokens live in `_refs/angular/sdcorejs-angular-catalog.md` — consult it rather than hard-coding a component list here (drift-proof: the catalog is the single source of truth and stays current with the pinned `@sdcorejs/angular` version).
+- **Don't re-implement what Core UI already ships.** When a hand-rolled widget duplicates a Core UI component (filter bar, operator picker, splitter, stepper, banner, dynamic form, color input, …), flag it and point the dev to the built-in. The authoritative component inventory is fetched on-demand (not committed) via `node _refs/angular/core-docs-fetch.mjs --list`; each component's per-component conventions and required configuration tokens via `node _refs/angular/core-docs-fetch.mjs --print sd-<name>` — consult it rather than hard-coding a component list here (drift-proof: the fetcher is version-matched to the pinned `@sdcorejs/angular` and stays current).
 
 ### Naming
 - Files: `<entity-kebab>.model.ts`, `<entity-kebab>.service.ts`, `<entity-kebab>.routes.ts`, `<entity-kebab>.mock-data.ts`
@@ -87,8 +87,8 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 - Duplicate permission checks (route guard + in-component `canViewList`)
 - Method calls in template bindings (re-runs every CD cycle)
 - Missing `autoId` on interactive Core UI elements (breaks E2E + `sd-autoid-inspector`) — WARN, dev backfills
-- Hand-rolled UI where a Core UI component fits — check the candidate against `_refs/angular/sdcorejs-angular-catalog.md`
-- A Core UI component used without its required configuration token provided (runtime throw) — the catalog lists each component's setup requirements
+- Hand-rolled UI where a Core UI component fits — check the candidate against the on-demand inventory (`node _refs/angular/core-docs-fetch.mjs --list`)
+- A Core UI component used without its required configuration token provided (runtime throw) — `node _refs/angular/core-docs-fetch.mjs --print sd-<name>` lists each component's setup requirements
 
 ## Verification commands (run, include exit codes in the report)
 - `npm run build-dev` → exit 0 / failed

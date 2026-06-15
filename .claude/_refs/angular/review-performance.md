@@ -168,6 +168,6 @@ Severity: depends on findings — **Critical** if 200+ ms tasks block UI; **Impo
 
 ## Cross-references
 - Budget thresholds: `_refs/shared/review-performance.md`
-- Core UI patterns that affect perf: `_refs/angular/sdcorejs-angular-catalog.md`
+- Core UI patterns that affect perf: fetch on-demand (not committed) via `node _refs/angular/core-docs-fetch.mjs --list` (or `--print sd-<name>` for one component)
 - Code review (correctness overlap): `sdcorejs-review` · Repair loop: `orchestration/repair-loop`
 - Verification: `orchestration/verify-before-done` runs probes as criteria

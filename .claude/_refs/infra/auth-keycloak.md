@@ -5,7 +5,7 @@ This is the provider-specific knowledge the `sdcorejs-auth` skill loads when wir
 Read alongside:
 - `_refs/infra/docker-compose.yml` — how the four services wire together.
 - `_refs/infra/keycloak/realm-export.json` — the realm template that is imported.
-- `_refs/angular/sdcorejs-angular/modules/sd-keycloak.md` — full public API of the FE module (façades, interceptor, behavior notes).
+- `node _refs/angular/core-docs-fetch.mjs --print sd-keycloak` — full public API of the FE module (façades, interceptor, behavior notes), fetched on-demand (docs not committed).
 - `_refs/nestjs/architecture-principles.md` — guard order and the auth-as-precondition rule.
 
 ---
@@ -75,7 +75,7 @@ export const appConfig: ApplicationConfig = {
 
 If this file is missing, the silent check fails and `init` can resolve `false` unexpectedly.
 
-**Façades (optional but recommended).** To light up the layout user-menu and permission checks, wire `SD_AUTH_CONFIGURATION` (user info + signout) and `SD_PERMISSION_CONFIGURATION` (`loadPermissions` from `kc.keycloak.realmAccess?.roles`, `getToken`, `onForbiden`) from `SdKeycloakService`. The exact provider factories are documented in `_refs/angular/sdcorejs-angular/modules/sd-keycloak.md`.
+**Façades (optional but recommended).** To light up the layout user-menu and permission checks, wire `SD_AUTH_CONFIGURATION` (user info + signout) and `SD_PERMISSION_CONFIGURATION` (`loadPermissions` from `kc.keycloak.realmAccess?.roles`, `getToken`, `onForbiden`) from `SdKeycloakService`. The exact provider factories are documented in the on-demand FE module doc (`node _refs/angular/core-docs-fetch.mjs --print sd-keycloak`).
 
 ---
 

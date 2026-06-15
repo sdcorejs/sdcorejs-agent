@@ -1,4 +1,4 @@
-> **Reference for the `nestjs-write-code` orchestrator.** Loaded on demand and ALWAYS run
+> **Reference for the `sdcorejs-nestjs` orchestrator.** Loaded on demand and ALWAYS run
 > right after `init-project`, BEFORE any domain `init-module`/`init-entity`. Not a standalone
 > skill. Generates the `admin` module — the project's authn/authz authority.
 
@@ -821,7 +821,7 @@ await seedAdmin(app);   // idempotent; steps 1-2 DB-only, step 3 retries until K
 
 **Step 1 — Permission registry (DB-only)**
 
-At generation time the `nestjs-write-code` orchestrator collects every `@HasPermission('<code>')`
+At generation time the `sdcorejs-nestjs` orchestrator collects every `@HasPermission('<code>')`
 emitted across ALL domain modules AND the admin module itself, then writes a `PERMISSION_REGISTRY`
 constant. Collection command (run after all modules are generated):
 

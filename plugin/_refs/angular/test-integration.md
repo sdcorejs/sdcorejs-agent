@@ -270,5 +270,5 @@ Target per module: ≥ 70% line coverage on `pages/` + `services/`.
 - Principles: `_refs/shared/testing-philosophy.md`
 - Unit tests: `_refs/angular/test-unit.md`
 - E2E tests: `_refs/angular/test-e2e.md`
-- Build skill that produces testable code: the `angular-write-code` orchestrator (reference packs `_refs/angular/write-code/init-portal.md` → `actions.md`)
+- Build skill that produces testable code: the `sdcorejs-angular` orchestrator (reference packs `_refs/angular/write-code/init-portal.md` → `actions.md`)
 - Verification gate: `orchestration/verify-before-done`

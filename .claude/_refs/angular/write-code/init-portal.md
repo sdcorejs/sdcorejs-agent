@@ -1,4 +1,4 @@
-> **Reference for the `angular-write-code` orchestrator.** Loaded on demand when the
+> **Reference for the `sdcorejs-angular` orchestrator.** Loaded on demand when the
 > confirmed plan includes initializing a brand-new portal repo. Not a standalone skill — the
 > orchestrator reads this file when its dispatch table routes a step here.
 

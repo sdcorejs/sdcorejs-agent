@@ -54,7 +54,7 @@ TASK: <verb + concrete target + scope, one sentence>
 
 CONTEXT (everything the subagent needs):
 - Stack / track / lib path (e.g. `src/libs/catalog/features/product/`)
-- Relevant skill body to follow (e.g. "Follow the `angular-write-code` init-entity pack at `_refs/angular/write-code/init-entity.md` exactly")
+- Relevant skill body to follow (e.g. "Follow the `sdcorejs-angular` init-entity pack at `_refs/angular/write-code/init-entity.md` exactly")
 - Field schema (paste it; don't reference "the spec")
 - Conventions already decided (mock-first vs api, layout pattern, permissions)
 - Surrounding files that already exist (so they don't duplicate)
@@ -248,8 +248,8 @@ three briefs.
 
 ### B.2 Phase 1 — Parallel role fan-out (ONE message, 3 Agent calls)
 Three self-contained briefs (use the parallel-dispatch briefing template), file-disjoint. Paths below are **topology-relative** (see B.1): for the single-deploy-root default they nest under `backend/` and `frontend/` respectively (e.g. `backend/src/modules/<module>/**`, `frontend/src/libs/<module>/**`).
-- BE  → `nestjs-write-code` packs at the chosen profile; writes `src/modules/<module>/**`; owns BE unit tests.
-- FE  → `angular-write-code` packs; writes `src/libs/<module>/**`; consumes the contract; owns FE component tests.
+- BE  → `sdcorejs-nestjs` packs at the chosen profile; writes `src/modules/<module>/**`; owns BE unit tests.
+- FE  → `sdcorejs-angular` packs; writes `src/libs/<module>/**`; consumes the contract; owns FE component tests.
 - QC  → from the frozen contract + spec acceptance criteria: writes the acceptance checklist +
         RED contract/E2E tests + the verification harness; touches ONLY `*.e2e-spec.ts` / `*.spec.ts` / harness.
 Isolation: two-repo → separate trees, no worktree. mono-repo → worktrees per role OR strict disjoint

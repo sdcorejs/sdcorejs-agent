@@ -1,4 +1,4 @@
-> **Reference for the `nestjs-write-code` orchestrator.** Loaded on demand when the
+> **Reference for the `sdcorejs-nestjs` orchestrator.** Loaded on demand when the
 > confirmed plan adds custom (non-CRUD) endpoints or domain behavior on top of an
 > entity stack that `init-entity` already scaffolded. Not a standalone skill — the
 > orchestrator reads this file when its dispatch table routes a step here. This is the

@@ -1,4 +1,4 @@
-> **Reference for the `angular-write-code` orchestrator.** Loaded on demand and ALWAYS run after
+> **Reference for the `sdcorejs-angular` orchestrator.** Loaded on demand and ALWAYS run after
 > `init-portal`. Not a standalone skill. Generates the admin-module SCREENS (the FE for the BE
 > `init-admin` pack) so end users administer accounts/roles/permissions in-app — never the Keycloak console.
 

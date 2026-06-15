@@ -1,4 +1,4 @@
-> **Reference for the `angular-write-code` orchestrator.** Loaded on demand when the
+> **Reference for the `sdcorejs-angular` orchestrator.** Loaded on demand when the
 > confirmed plan generates or refines `pages/detail/detail.component.ts` (CREATE / UPDATE /
 > DETAIL states + reactive-form refinement). Not a standalone skill — the orchestrator reads
 > this file when its dispatch table routes a step here.

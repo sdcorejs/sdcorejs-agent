@@ -1,4 +1,4 @@
-> **Reference for the `nestjs-write-code` orchestrator.** Loaded on demand when the
+> **Reference for the `sdcorejs-nestjs` orchestrator.** Loaded on demand when the
 > confirmed plan includes scaffolding a brand-new NestJS backend repo. Not a standalone
 > skill — the orchestrator reads this file when its dispatch table routes a step here.
 
