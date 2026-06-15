@@ -55,7 +55,7 @@ generation time via `_refs/angular/core-docs-fetch.mjs`. The npm *pin* (`current
 which Angular major `init-portal` installs) is a **separate concern** from the docs version.
 
 - **Fetch:** `node _refs/angular/core-docs-fetch.mjs --list` (inventory) / `node _refs/angular/core-docs-fetch.mjs <id>` (one component's full API) → raw fetch (NOT summarized) from `https://sdcorejs.github.io/sdcorejs-angular/docs/<version>/`.
-- **Version match:** auto-detected from the target project's installed `@sdcorejs/angular` (or legacy `@sd-angular/core`) major → latest published patch of that major; `--version X` overrides; falls back to `latest`. (The API is byte-identical across majors 19/20/21, so an exact patch match is not required.)
+- **Version match:** auto-detected from the target project's installed `@sdcorejs/angular` (or legacy `@sd-angular/core`) version. `--version X` is resolved the SAME way as the installed version — exact published patch → newest published patch of that major → `latest`. So a literal npm pin like `20.0.1` (which the docs registry may not publish as a docs build) maps to the newest published `20.x` docs instead of 404-ing. (The API is byte-identical across majors 19/20/21, so an exact patch match is not required.)
 - **Cache:** `~/.cache/sdcorejs/core-docs/<version>/` — pulled once, reused, and used as the offline fallback. Never committed.
 - **Mojibake guard (rule 6):** the fetcher refuses (exit 3) any upstream doc that is double-encoded (UTF-8-as-CP1252). The fix is upstream (the doc generator / published site), not here.
 - **Offline:** no network + no cache → the fetcher exits non-zero and the skill falls back to generic Angular Material + `alert('TODO')`, flagged.

@@ -9,7 +9,7 @@ This repo is an SDLC agent for the SDCoreJS stack: Angular portal (Core UI), Nes
 
 ```
 _refs/                            reference data (no frontmatter, load on demand) — single top-level tree, sync'd once per mirror
-├── angular/                core-version, catalog, entity-field-types, templates/, sdcorejs-angular/...
+├── angular/                core-version, core-docs-fetch.mjs (on-demand Core UI docs, not committed), entity-field-types, architecture-principles, review-*, test-*, templates/, write-code/
 ├── nestjs/                        architecture-principles
 ├── nextjs/build-website/          architecture-principles
 └── sdlc/                          cross-track design-phase patterns (angular.md, nestjs.md, nextjs.md)

@@ -22,7 +22,7 @@
 // with a clear message so the skill degrades (generic Material fallback + alert('TODO')).
 
 import { get as httpsGet } from 'node:https';
-import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, dirname } from 'node:path';
 
@@ -69,11 +69,12 @@ function httpText(url) {
   });
 }
 
-// Fetch a versioned resource; cache it; on network failure fall back to cache.
-async function getCached(version, rel) {
-  const dest = join(CACHE_ROOT, version, rel);
+// Fetch `${SITE}/<rel>`; cache at `${CACHE_ROOT}/<rel>`; on network failure fall back to cache.
+// `rel` is the full path under the docs site (e.g. `versions.json`, `21.0.7/index.json`).
+async function getCached(rel) {
+  const dest = join(CACHE_ROOT, rel);
   try {
-    const text = await httpText(`${SITE}/${version}/${rel}`);
+    const text = await httpText(`${SITE}/${rel}`);
     mkdirSync(dirname(dest), { recursive: true });
     writeFileSync(dest, text, 'utf8');
     return text;
@@ -110,15 +111,51 @@ function detectInstalledVersion(dir) {
   return null;
 }
 
+// Version dirs already present in the cache (each with an index.json), newest first.
+// The offline fallback when the registry itself can't be loaded (e.g. cache was seeded by an
+// older script that never persisted versions.json).
+function listCachedVersions() {
+  try {
+    return readdirSync(CACHE_ROOT, { withFileTypes: true })
+      .filter(e => e.isDirectory() && /^\d+\.\d+\.\d+/.test(e.name))
+      .map(e => e.name)
+      .filter(v => existsSync(join(CACHE_ROOT, v, 'index.json')))
+      .sort(cmpDesc);
+  } catch { return []; }
+}
+
 async function resolveVersion() {
-  if (version) return version;
-  const registry = JSON.parse(await httpText(`${SITE}/versions.json`));
+  // Load the published registry — cached, so version resolution survives offline use.
+  let registry;
+  try {
+    registry = JSON.parse(await getCached('versions.json'));
+  } catch (err) {
+    // No network AND no cached registry. Resolve against version dirs already in the cache
+    // (e.g. seeded by an older script that never persisted versions.json) so --list still works.
+    const cached = listCachedVersions();
+    if (version) {
+      if (cached.includes(version)) return version;
+      const major = version.split('.')[0];
+      const sameMajor = cached.filter(v => v.split('.')[0] === major);
+      if (sameMajor.length) return sameMajor[0];
+      return version; // nothing cached for it — trust the literal; getCached will fail clearly
+    }
+    if (cached.length) {
+      process.stderr.write(`[core-docs-fetch] offline; no cached registry → newest cached version ${cached[0]}\n`);
+      return cached[0];
+    }
+    throw err;
+  }
   const all = registry.versions.map(v => v.version);
-  const installed = detectInstalledVersion(cwd);
-  if (installed) {
-    const major = installed.split('.')[0];
-    const exact = all.find(v => v === installed);
+  // Target the explicit --version if given, else the project's installed Core UI version.
+  // Both are resolved the SAME way: exact published patch → latest same-major → latest.
+  // (The docs registry publishes only some patches, so a literal pin like 20.0.1 may not
+  // exist as a docs build even though it's a valid npm pin — same-major fallback bridges that.)
+  const want = version || detectInstalledVersion(cwd);
+  if (want) {
+    const exact = all.find(v => v === want);
     if (exact) return exact;
+    const major = want.split('.')[0];
     const sameMajor = all.filter(v => v.split('.')[0] === major).sort(cmpDesc);
     if (sameMajor.length) return sameMajor[0];
   }
@@ -140,7 +177,7 @@ function resolveDoc(index, token) {
 
 async function main() {
   const v = await resolveVersion();
-  const index = JSON.parse(await getCached(v, 'index.json'));
+  const index = JSON.parse(await getCached(`${v}/index.json`));
 
   if (doList || !comp) {
     process.stdout.write(`# @sdcorejs/angular Core UI — ${index.count} docs (v${v})\n`);
@@ -161,7 +198,7 @@ async function main() {
     process.stderr.write(`[core-docs-fetch] no Core UI doc matches "${comp}" in v${v}. Run --list.\n`);
     process.exit(2);
   }
-  const md = await getCached(v, doc.path);
+  const md = await getCached(`${v}/${doc.path}`);
   if (MOJIBAKE.test(md)) {
     process.stderr.write(`[core-docs-fetch] MOJIBAKE in upstream ${doc.path} (v${v}); fix at source. Not using it.\n`);
     process.exit(3);

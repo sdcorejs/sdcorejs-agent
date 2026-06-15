@@ -23,7 +23,7 @@ The system ships as **dispatchable skills** — markdown with YAML frontmatter �
 | Track | Path | Status |
 | --- | --- | --- |
 | Angular | `skills/tracks/angular/` | ✅ Complete (`sdcorejs-angular` orchestrator; onboarding via `sdcorejs-using-skills`; Core UI docs in `_refs/angular/`) |
-| NestJS | `skills/tracks/nestjs/` | 🟡 Scaffold (onboarding + plan-walking `sdcorejs-nestjs`; design + review + testing usable) |
+| NestJS | `skills/tracks/nestjs/` | ✅ Complete (`sdcorejs-nestjs` orchestrator dispatching `_refs/nestjs/write-code/` packs: init-project, init-admin, init-module, init-entity, actions; onboarding via `sdcorejs-using-skills`) |
 | Next.js | `skills/tracks/nextjs/` | ✅ Complete (`sdcorejs-nextjs` orchestrator; EXISTING-site audit → `sdcorejs-review`; onboarding via `sdcorejs-using-skills`) |
 
 ## Workflow (per track)
@@ -124,7 +124,7 @@ sdcorejs-agent/
 │   ├── skills/<name>/SKILL.md             # project-local Claude Code mirror (auto-synced)
 │   └── _refs/<track>/...                  # auto-synced from top-level _refs/
 ├── _refs/                                 # source of truth — reference data per track (one tree, mirrored once)
-│   ├── angular/                    # core-version, catalog, entity-field-types, templates/, sdcorejs-angular/...
+│   ├── angular/                    # core-version, core-docs-fetch.mjs (on-demand Core UI docs, not committed), entity-field-types, architecture-principles, review-*, test-*, templates/, write-code/
 │   ├── nestjs/                            # architecture-principles
 │   ├── nextjs/build-website/              # architecture-principles
 │   └── sdlc/                              # cross-track design-phase patterns ({angular,nestjs,nextjs}.md)
