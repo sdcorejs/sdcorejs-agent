@@ -85,7 +85,12 @@ orchestration/auto-snapshot (PLAN mode)   ← MANDATORY on approval — snapshot
   └─ when feature has 3+ independent units, dispatches via
      orchestration/subagent-driven-dev (after orchestration/parallel-dispatch decision)
   ↓
-sdcorejs-test
+FINISH GATE (_refs/shared/finish-gate.md)  ← MANDATORY + UNCONDITIONAL (standalone trigger OR full flow)
+  ← one consolidated ASK: tests (default ON, RED-first/standard — opt-out ok) · comments (skip/simple/medium/full) ·
+    user-guide (default ON) · review (default ON); always-on plumbing listed so the user knows it runs
+  ← so a standalone "add entity" still surfaces tests/comments/user-guide — never silently skipped
+  ↓ (tail steps below run honoring the gate's answers)
+sdcorejs-test  (if tests not skipped)
   ← happy-path tests for what was generated
   ↓
 sdcorejs-review (auto-detects track from dir architecture)
@@ -95,7 +100,7 @@ orchestration/repair-loop
   ← apply review findings + iterate until Critical+Important resolved
   ↓
 orchestration/comment-code
-  ← MANDATORY ASK gate: skip / simple / medium / full
+  ← applies the comment level the FINISH GATE captured (skip / simple / medium / full) — no second ASK
   ← all levels applied inline by orchestration/comment-code (cross-track baseline +
     per-track addenda live inside that skill; previous `51-write-comments`
     was consolidated)
@@ -144,6 +149,8 @@ After `branch-ready`, an **OPTIONAL packaging branch** may run `sdcorejs-dockeri
 
 12. **Persona-aware output.** Read the target project's `.sdcorejs/persona.md` (default `tech` if absent) and load `_refs/shared/persona.md` before producing user-facing output. `non-tech` = no unexplained jargon, hidden mechanics, forced infra defaults (Angular + NestJS modular-monolith + Keycloak + Postgres on docker-compose), always finish with a run guide, both approval gates kept but plainly worded. `tech` = unchanged baseline. Orthogonal to the bilingual rule. Managed by `sdcorejs-persona`.
 
+13. **Finish gate is mandatory and unconditional.** After EVERY track code-gen — whether reached through the full SDLC flow OR triggered as a standalone single skill (e.g. "add entity", "create module X", "add a page") — the track write-code orchestrator (`sdcorejs-angular` / `sdcorejs-nestjs` / `sdcorejs-nextjs`) MUST present the consolidated **FINISH GATE** (`_refs/shared/finish-gate.md`) before running any tail step. The gate surfaces the finishing steps — **tests** (default ON, RED-first, `standard`; user may opt out / change level), **comments** (required pick: skip/simple/medium/full — this IS the `comment-code` ASK, folded in, not asked twice), **user guide** (default ON), **review** (default ON) — with always-on plumbing (verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories) listed so the user knows it runs. NEVER end silently after code-gen, and NEVER skip the gate because the request was a one-liner. The whole point is that the user always KNOWS these steps exist. Tail steps then run honoring the gate's answers.
+
 ## Cross-track skills (`skills/shared/sdlc/`, `skills/orchestration/`, `skills/shared/`, `skills/review/`, `skills/testing/`)
 
 Cross-track skills that apply to angular, nestjs, nextjs alike. Match against their `description` like any other skill. Dispatch is by skill `name:` frontmatter, not path — directory is for organization only.
@@ -172,7 +179,7 @@ Loaded by every track at the start of every feature. Each detects the track at r
 | `sdcorejs-auto-task-tracker` | runs after auto-docs + write-user-guide — ticks `[x]` done, appends new tasks to `.sdcorejs/tasks/<track>.md` | ✅ |
 | `sdcorejs-memories` | "remember this", durable knowledge — write to target `.sdcorejs/memories/<track>/` | ✅ on trigger |
 | `sdcorejs-repair-loop` | runs after `sdcorejs-review` outputs findings — categorize / auto-apply / iterate until Critical+Important resolved | ✅ on findings |
-| `sdcorejs-comment-code` | ASK gate at the comment phase — skip / simple / medium / full; outcome optional but ASK is mandatory | ✅ ASK |
+| `sdcorejs-comment-code` | applies the comment level chosen in the FINISH GATE (skip / simple / medium / full) — no second ASK; asks directly only when invoked standalone outside a code-gen flow | ✅ (via gate) |
 | `sdcorejs-parallel-dispatch` | about to fan out 3+ independent tasks — decision gate (should I split?) |  |
 | `sdcorejs-subagent-driven-dev` | after parallel-dispatch says YES — execution discipline: decompose, brief, dispatch, merge. **Two modes:** A = independent same-kind units (entities/screens/docs); B = role-split feature loop (backend‖frontend‖QC on one feature via a contract-freeze barrier, looped against acceptance criteria). `parallel-dispatch` routes `PARALLEL-CANDIDATE`→A, `ROLE-SPLIT`→B |  |
 | `sdcorejs-using-worktrees` | before `<track>-write-code` or parallel fan-out when work needs isolation — detect/create isolated workspace + clean baseline |  |

@@ -37,9 +37,9 @@ When the user wants 2-3 options for a CRUD/workflow feature, present from this m
 3. **Display label** (VI: full diacritics, e.g. "Đơn mua hàng")
 4. **Detail layout** — one of: `side-drawer`, `UnifiedCompact`, `UnifiedSplit`, `AdaptiveSplitDetail` (or "let me infer from field count + workflow")
 5. **Workflow** — yes / no; if yes, list transitions
-6. **Test coverage** — `minimal` | `standard` (default) | `full`
 
 ### Useful-optional (defaults safe)
+- Test coverage + approach (default: `standard` + `TDD` RED-first — tests are ALWAYS written, never gated behind a question; ask ONLY to override to `minimal`/`full` or `post-hoc`)
 - Key list columns (auto-infer ≥3 from entity semantics if user skips)
 - Key detail fields grouped by section (auto-infer if user skips)
 - Validation rules (auto-infer required-vs-optional, range bounds for numerics)
@@ -52,7 +52,6 @@ When the user wants 2-3 options for a CRUD/workflow feature, present from this m
 **Block A — Identity**
 1. Module name (existing or new?)
 2. Entity name + display label
-3. Test coverage level
 
 **Block B — Layout & workflow**
 4. Detail layout (default UnifiedCompact)
@@ -124,16 +123,18 @@ Capture:
 
 ## Plan
 
-### Phase grouping — `post-hoc` coverage (default)
+> **Default coverage approach = `TDD` RED-first** (the orchestrator TDD gate enforces it; tests are always written, never gated behind a question). Use the **TDD phase grouping** below by default. The `post-hoc` grouping is the OVERRIDE — use it only when the user explicitly asked for post-hoc ordering.
+
+### Phase grouping — `post-hoc` coverage (OVERRIDE — only when the user explicitly chooses post-hoc)
 1. **Module bootstrap** (only if new module): configuration, api configuration, guard, module, routes, register in app.routes + main.ts
 2. **Entity model + service + mock**: model.ts, mock-data.ts, service.ts (MockCrudStore), index.ts
 3. **Entity routes + components**: `<entity>.routes.ts`, `pages/list/list.component.ts`, `pages/detail/detail.component.ts`
 4. **Form refinement (if non-trivial)**: custom validators, FormArray, cross-field rules — handled inside `21-screen-detail`
 5. **Actions (if any)**: workflow transitions, bulk operations, custom side-effects via `31-actions`
-6. **Tests** (matching coverage level): `.routes.spec.ts`, `.list.component.spec.ts`, `.detail.component.spec.ts`
+6. **Tests** (at `standard` coverage by default): `.routes.spec.ts`, `.list.component.spec.ts`, `.detail.component.spec.ts`
 
-### Phase grouping — `TDD` coverage (when chosen in clarify)
-TDD shifts test bones earlier. The mechanical "Module bootstrap" + "Entity model" phases don't change, but business-logic phases (form, workflow, route guards) get a test-first phase pair:
+### Phase grouping — `TDD` RED-first coverage (DEFAULT)
+TDD is the default ordering: test bones come earlier. The mechanical "Module bootstrap" + "Entity model" phases don't change, but business-logic phases (form, workflow, route guards) get a test-first phase pair:
 
 1. **Module bootstrap** — same as post-hoc
 2. **Entity model + service + mock** — same as post-hoc (these are scaffold; TDD adds little here)

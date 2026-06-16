@@ -268,7 +268,7 @@ If referenced only once: invoke directly. Goal — reduce getter invocations dur
 - [ ] Validators applied per field criticality (don't over-constrain on first pass)
 - [ ] Per-field error display where business rules need surfaced messages
 - [ ] Signal-first state for UI flags; `computed()` for derived; `@let` or `computed()` for 2+ template references
-- [ ] Companion `.spec.ts` at chosen coverage level (minimal / standard / full)
+- [ ] Companion `.spec.ts` written RED-first at `standard` coverage by default (minimal/full only on explicit request)
 
 ---
 

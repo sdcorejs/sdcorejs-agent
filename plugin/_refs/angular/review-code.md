@@ -62,10 +62,10 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 - File uploads happen BEFORE save call
 
 ### Tests
-- `*.spec.ts` exists alongside every component/service/routes file
+- `*.spec.ts` exists alongside every component/service/routes file — a missing spec is a 🔴 defect, not a style nit
 - Tests are runnable, not placeholders (no `// TODO`)
 - `inject()` deps are mocked
-- Spec coverage matches the level the user picked (minimal / standard / full)
+- Spec coverage is `standard` by default (or the level the user explicitly chose); specs written RED-first
 - `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts` exit code 0
 
 ### Bilingual
@@ -119,7 +119,7 @@ Score each of these 13 categories. For every category output **Score (1–10)**,
 7. **Template quality** — native control flow (`@if/@for/@let`, no `*ngIf/*ngFor`), `track` keys, `async` pipe over manual subscribe, no heavy expressions/logic in template, signals referenced 2+ times extracted.
 8. **Forms implementation** — typed reactive forms (`FormGroup<...>`), explicit validators + async validators where needed, cross-field rules, submit gating (`invalid → markAllAsTouched`), no template-driven for complex forms, error surfacing.
 9. **API layer design** — typed DTOs (`SaveReq`/`DTO`), `SdApiService` (no raw `HttpClient` ad-hoc), URLs from environment (no hardcode), error/retry/caching strategy, logic in services not components, mock-first parity.
-10. **Testing strategy** — coverage matches picked level (minimal/standard/full), runnable (no `// TODO`), deps mocked, meaningful assertions (not just "created"), integration where behavior matters, spec alongside each file.
+10. **Testing strategy** — spec exists alongside each file (missing = 🔴), coverage `standard` by default (or explicit override), written RED-first, runnable (no `// TODO`), deps mocked, meaningful assertions (not just "created"), integration where behavior matters.
 11. **Accessibility** — semantic HTML (`<nav>/<main>/<section>`), `aria-label`/`title` on icon buttons, `role="toolbar"`, keyboard + focus management, AND `autoId` on interactive elements (E2E + `sd-autoid-inspector` selectors).
 12. **Security** — XSS (`bypassSecurityTrust*` / `[innerHTML]` audited), token storage (httpOnly cookie vs localStorage), permission gating (route guard + directive, not duplicated logic), no secrets / prod source maps / leaked dev API URLs, interceptor order.
 13. **Angular 20 readiness** — standalone + signals-first, native control flow, `inject()` (no constructor DI), no `NgModule`/deprecated APIs, zoneless-compatible, `@defer` for heavy/below-fold blocks, modern lifecycle (`afterNextRender`), `@sdcorejs/angular@20.0.1` aligned.

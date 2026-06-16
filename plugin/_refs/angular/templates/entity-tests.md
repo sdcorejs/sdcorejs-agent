@@ -1,9 +1,9 @@
 # Entity Test Templates — init-entity (sdcorejs-angular)
 
-Spec.ts templates for the init-entity reference pack ([`init-entity.md`](../write-code/init-entity.md), loaded on demand by the `sdcorejs-angular` orchestrator), organized by test coverage level. The pack picks which set to emit based on the user's confirmed coverage (`minimal` / `standard` / `full`).
+Spec.ts templates for the init-entity reference pack ([`init-entity.md`](../write-code/init-entity.md), loaded on demand by the `sdcorejs-angular` orchestrator), organized by test coverage level. The pack emits the `standard` set by DEFAULT (no question asked, written RED-first); emit `minimal` / `full` only when the user explicitly requested that level.
 
 ## Contents
-- Request for Test Coverage (clarify prompt)
+- Test Coverage — default `standard`, no clarify prompt (override only on explicit request)
 - `list.component.spec.ts` — standard coverage
 - `detail.component.spec.ts` — standard coverage
 - `[module]-[entity].routes.spec.ts` — Permission Validation
@@ -13,14 +13,13 @@ Spec.ts templates for the init-entity reference pack ([`init-entity.md`](../writ
 
 ## 5. Spec Templates (Functional Testing)
 
-### Request for Test Coverage
-**Before generating spec files, ask developer:**
+### Test Coverage — default `standard`, no question
 
-> "Bạn muốn cấp độ test coverage nào cho module này?"
-> 
-> - **minimal**: chỉ `should create` (nhanh nhất, phù hợp prototype/v1)
-> - **standard**: + permission route tests + basic data/sort tests (được khuyến nghị)
-> - **full**: + tất cả unit + integration tests cho save flow, state transitions, edge cases
+**Do NOT ask which coverage level before writing specs.** Emit the `standard` set by default (the recommended baseline) and write it RED-first. Switch levels only if the user EXPLICITLY requested one:
+
+> - **minimal**: only `should create` (fastest — prototype/v1; only on explicit request)
+> - **standard** (DEFAULT): + permission route tests + data/sort tests + detail save-flow/state — emit this unless told otherwise
+> - **full**: + all unit + integration tests for save flow, state transitions, edge cases (only on explicit request)
 
 ---
 

@@ -80,34 +80,41 @@ Steps 1–4 are sequential (each depends on the previous). Steps 5–8 can be pa
 
 ## After all dispatched packs complete
 
-Run the standard tail-call chain (cross-track mandatory):
+### MANDATORY FINISH GATE (always — standalone trigger OR full SDLC flow)
+
+**STOP and present the consolidated finish gate from [`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md) before running ANY tail step.** UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add a page", "add a section") — NOT only inside the spec→plan flow. The gate surfaces tests / comments / user-guide / review with defaults so the user always knows these steps exist and can opt out. "Small change" is not a reason to skip the gate.
+
+Then run the tail-call chain, honoring the gate's answers (skip = omit that step; everything not skipped runs):
 
 ```
-sdcorejs-test  ← happy-path tests for each generated page
+FINISH GATE (always, unconditional) ← surfaces the choices below
    ↓
-sdcorejs-review       ← convention check; outputs Critical / Important / Minor findings
+sdcorejs-test  (if Tests not skipped)  ← happy-path tests for each generated page
    ↓
-orchestration/repair-loop     ← apply findings, iterate to clean
+sdcorejs-review (if Review not skipped) ← convention check; Critical / Important / Minor findings
    ↓
-orchestration/comment-code ← ASK gate (skip / simple / medium / full); applies chosen level
+orchestration/repair-loop (if Review not skipped) ← apply findings, iterate to clean
    ↓
-orchestration/verify-before-done ← BLOCK "done" until acceptance criteria from spec are ✅
+orchestration/comment-code ← apply the level the FINISH GATE captured (no second ASK)
    ↓
-orchestration/branch-ready ← branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test)
+orchestration/verify-before-done (always) ← BLOCK "done" until acceptance criteria from spec are ✅
    ↓
-orchestration/auto-docs    ← session summary to .sdcorejs/docs/nextjs/
+orchestration/branch-ready (always) ← branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test)
    ↓
-sdcorejs-write-user-guide (Mode 1) ← update touched module's .sdcorejs/user-guide/<module>.md (features / routes / permissions / data + Coverage-vs-requirements); per-module incremental, aggregate rebuilds at ship
+orchestration/auto-docs (always)   ← session summary to .sdcorejs/docs/nextjs/
    ↓
-orchestration/auto-task-tracker ← tick done, append new
+sdcorejs-write-user-guide (Mode 1, if User guide not skipped) ← update touched module's .sdcorejs/user-guide/<module>.md (features / routes / permissions / data + Coverage-vs-requirements); per-module incremental, aggregate rebuilds at ship
+   ↓
+orchestration/auto-task-tracker (always) ← tick done, append new
 orchestration/memories     ← durable knowledge (when applicable)
 ```
 
-Each tail-call is mandatory (per the cross-track rules in CLAUDE.md / AGENTS.md / copilot-instructions.md). Do NOT skip `verify-before-done` — that's how acceptance criteria slip.
+The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLAUDE.md / AGENTS.md / copilot-instructions.md). The always-on plumbing steps run regardless of gate answers. Do NOT skip `verify-before-done` — that's how acceptance criteria slip.
 
 ## Rules
 
 ### MUST DO
+- Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / comments / user-guide / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
 - Read the approved plan BEFORE dispatching — never invent scope
 - Dispatch in the order listed (theme/i18n/content BEFORE pages BEFORE seo)
 - Pass the brainstorm + clarify outputs to each pack as context

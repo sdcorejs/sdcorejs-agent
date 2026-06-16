@@ -124,7 +124,28 @@ function listCachedVersions() {
   } catch { return []; }
 }
 
-async function resolveVersion() {
+// Order published versions best-first for a wanted version (the nearest-version policy):
+// exact → newest patch of the SAME major → nearest OTHER major (by major distance, then newest
+// patch). Falls back to newest-overall ordering when nothing is wanted. The caller tries each in
+// turn and uses the first whose docs actually download, so an unfetchable version is skipped.
+function orderCandidates(all, want) {
+  const sorted = [...all].sort(cmpDesc); // newest first overall
+  if (!want) return sorted;
+  const wantMajor = Number(want.split('.')[0]);
+  const exact = sorted.filter(v => v === want);
+  const sameMajor = sorted.filter(v => v !== want && Number(v.split('.')[0]) === wantMajor); // newest patch first
+  const otherMajor = sorted
+    .filter(v => Number(v.split('.')[0]) !== wantMajor)
+    .sort((a, b) => {
+      const da = Math.abs(Number(a.split('.')[0]) - wantMajor);
+      const db = Math.abs(Number(b.split('.')[0]) - wantMajor);
+      return da - db || cmpDesc(a, b); // nearest major, then newest patch within it
+    });
+  return [...exact, ...sameMajor, ...otherMajor];
+}
+
+// Resolve an ORDERED list of candidate versions (best first) to try.
+async function resolveVersionCandidates() {
   // Load the published registry — cached, so version resolution survives offline use.
   let registry;
   try {
@@ -133,33 +154,22 @@ async function resolveVersion() {
     // No network AND no cached registry. Resolve against version dirs already in the cache
     // (e.g. seeded by an older script that never persisted versions.json) so --list still works.
     const cached = listCachedVersions();
-    if (version) {
-      if (cached.includes(version)) return version;
-      const major = version.split('.')[0];
-      const sameMajor = cached.filter(v => v.split('.')[0] === major);
-      if (sameMajor.length) return sameMajor[0];
-      return version; // nothing cached for it — trust the literal; getCached will fail clearly
+    if (!cached.length) {
+      if (version) return [version]; // trust the literal; getCached will fail clearly
+      throw err;
     }
-    if (cached.length) {
-      process.stderr.write(`[core-docs-fetch] offline; no cached registry → newest cached version ${cached[0]}\n`);
-      return cached[0];
-    }
-    throw err;
+    process.stderr.write(`[core-docs-fetch] offline; no cached registry → ordering cached versions\n`);
+    return orderCandidates(cached, version || detectInstalledVersion(cwd));
   }
   const all = registry.versions.map(v => v.version);
   // Target the explicit --version if given, else the project's installed Core UI version.
-  // Both are resolved the SAME way: exact published patch → latest same-major → latest.
-  // (The docs registry publishes only some patches, so a literal pin like 20.0.1 may not
-  // exist as a docs build even though it's a valid npm pin — same-major fallback bridges that.)
+  // Resolution: exact published patch → newest patch of SAME major → nearest OTHER major → latest.
+  // (The docs registry publishes only some patches, so a literal pin like 20.0.1 may not exist as a
+  // docs build even though it's a valid npm pin — the nearest-version policy bridges that.)
   const want = version || detectInstalledVersion(cwd);
-  if (want) {
-    const exact = all.find(v => v === want);
-    if (exact) return exact;
-    const major = want.split('.')[0];
-    const sameMajor = all.filter(v => v.split('.')[0] === major).sort(cmpDesc);
-    if (sameMajor.length) return sameMajor[0];
-  }
-  return registry.latest || all.sort(cmpDesc)[0];
+  const ordered = orderCandidates(all, want);
+  if (registry.latest && !ordered.includes(registry.latest)) ordered.push(registry.latest);
+  return ordered.length ? ordered : all.sort(cmpDesc);
 }
 
 // Match a user-supplied component token against the index entries.
@@ -176,8 +186,21 @@ function resolveDoc(index, token) {
 }
 
 async function main() {
-  const v = await resolveVersion();
-  const index = JSON.parse(await getCached(`${v}/index.json`));
+  // Try candidate versions best-first; use the first whose index.json actually downloads.
+  // This is the nearest-version fallback: a pinned version with no published/fetchable docs
+  // falls through to the nearest one that can be pulled.
+  const candidates = await resolveVersionCandidates();
+  let v, index;
+  for (const cand of candidates) {
+    try {
+      index = JSON.parse(await getCached(`${cand}/index.json`));
+      v = cand;
+      break;
+    } catch (err) {
+      process.stderr.write(`[core-docs-fetch] docs v${cand} unavailable (${err.message}); trying nearest…\n`);
+    }
+  }
+  if (!index) throw new Error(`no fetchable docs version among: ${candidates.join(', ')}`);
 
   if (doList || !comp) {
     process.stdout.write(`# @sdcorejs/angular Core UI — ${index.count} docs (v${v})\n`);
