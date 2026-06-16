@@ -58,3 +58,4 @@ Pick the column pattern by field `type` from the schema. For boolean fields rend
 - [ ] Toggle `isActivated` template wired when the schema has that field
 - [ ] Navigation via `Router.navigate(['create' | 'update', id | 'detail', id], { relativeTo })`
 - [ ] Loading / notify / confirm services injected via `inject()` (not constructor)
+- [ ] Styled utility-first per [`../styling.md`](../styling.md) — Core UI utility classes (`d-flex`, `gap-16`, `justify-content-between`, `w-full`) on the template, no bespoke flex/spacing CSS; Tailwind only if the consumer ships it; component `.scss` near-empty

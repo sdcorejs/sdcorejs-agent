@@ -112,20 +112,21 @@ Fill the YAML frontmatter:
 - `prd_refs` — path(s) to `<target>/.sdcorejs/prd/<feature>.md` if they exist (leave `[]` if absent)
 - `coverage` — filled by Mode 4 below; initialize to `{ total: 0, met: 0, partial: 0, missing: 0 }`
 
-Fill the 7 body sections using the harvested data:
+Fill the body sections using the harvested data:
 1. **Overview** — plain-language description of what the module does for the user.
 2. **Screens and tasks** — one subsection per detected screen, with user tasks, required permission, and main fields/buttons. Include the `![<screen>](images/<module>-<screen>.png)` placeholder.
 3. **Permission table** — table of all permission codes with their action and typical role.
 4. **Data reference** — table of entity fields (name / type / required / constraints) from the `@Column` / Zod harvest.
 5. **Special actions** — workflow transitions, bulk actions, custom side-effects (omit section if none found).
-6. **Coverage vs requirements** — filled by Mode 4 (see below).
-7. **Illustration images — capture checklist** — `- [ ] images/<module>-<screen>.png` for every detected screen.
+6. **Core UI components used** (**angular only**) — table of every `@sdcorejs/angular` component/service/directive the module actually imports/uses, each with a one-line feature-specific purpose (the same table the orchestrator showed the user after generating). Harvest from the templates/components (`sd-*` tags, `inject(Sd*Service)`, `*sd*` directives). Omit this section for nestjs/nextjs.
+7. **Coverage vs requirements** — filled by Mode 4 (see below).
+8. **Illustration images — capture checklist** — `- [ ] images/<module>-<screen>.png` for every detected screen.
 
 **Idempotent:** this file is a generated artifact — overwrite it unconditionally. Do not append to an existing file.
 
 ### 4. Run Mode 4 — Coverage (always)
 
-After rendering the 7 sections, immediately run **Mode 4** to fill the `## Coverage vs requirements` table and update the `coverage` frontmatter counts. See Mode 4 below.
+After rendering the body sections, immediately run **Mode 4** to fill the `## Coverage vs requirements` table and update the `coverage` frontmatter counts. See Mode 4 below.
 
 ### 5. Emit image placeholders
 
@@ -358,7 +359,7 @@ rg -n "openWorkflow\|openBulk\|openCustomAction\|SdActionButton" <fe>/src/libs/<
 
 For **each module** discovered by `sdcorejs-code-map`, render `<target>/.sdcorejs/user-guide/<module>.md` from the per-module template in `_refs/shared/user-guide-template.md`, best-effort from the harvested facts.
 
-Fill frontmatter and all 7 body sections exactly as in Mode 1, Step 3, using only data found in the harvest — **do NOT invent** routes, permissions, or field names not present in the code. Where a value could not be resolved, write `"unknown — fill manually"` rather than fabricating.
+Fill frontmatter and all body sections exactly as in Mode 1, Step 3 (including the angular-only Core UI components table), using only data found in the harvest — **do NOT invent** routes, permissions, field names, or Core UI components not present in the code. Where a value could not be resolved, write `"unknown — fill manually"` rather than fabricating.
 
 **FLAG unresolved modules explicitly.** For every module where routes and/or permission codes could NOT be resolved from the harvest, add a prominent notice at the top of that module's guide:
 

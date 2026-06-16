@@ -269,6 +269,7 @@ If referenced only once: invoke directly. Goal — reduce getter invocations dur
 - [ ] Per-field error display where business rules need surfaced messages
 - [ ] Signal-first state for UI flags; `computed()` for derived; `@let` or `computed()` for 2+ template references
 - [ ] Companion `.spec.ts` written RED-first at `standard` coverage by default (minimal/full only on explicit request)
+- [ ] Styled utility-first per [`../styling.md`](../styling.md) — layout/spacing via Core UI utilities (`d-flex flex-column gap-16`, `row`/`col-*`, `grid-container`, section spacing `p-16`/`mb-24`), no hand-rolled flex/spacing CSS; Tailwind only if the consumer ships it; spacing px-based 0–200 (multiples of 4); custom `.scss` only when no utility fits (`var(--sd-*)` + `// why:`)
 
 ---
 

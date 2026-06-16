@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-nestjs
 description: Generate NestJS modular-monolith backend code on the @sdcorejs/nestjs core — after sdcorejs-review-plan approves, OR as the single entry point for any direct backend code-gen request. Loads the matching on-demand pack under _refs/nestjs/write-code/ (per-pack trigger catalog in the body): init-project (scaffold app), init-admin (always-on admin module: users/roles/permissions [+tenant/department enterprise]), init-module (bounded-context module), init-entity (full CRUD stack: entity/repository/service/controller/schema/DTO), actions (custom / non-CRUD endpoints — domain methods, cross-module, workflow, bulk, export). Triggers - "scaffold nestjs / init backend", "add module", "add entity / create CRUD", "add endpoint / custom action / workflow / bulk / export", plus generic "generate backend code", "write backend", "go ahead" (after a nestjs plan was approved). NOT for spec/plan, code review, or angular/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Applies to nestjs. Runtime-localized.
-allowed-tools: Read, Write, Edit, Bash, Glob
+allowed-tools: Read, Write, Edit, Bash, Glob, TodoWrite
 ---
 
 # 07 — Write Code (NestJS Orchestrator)
@@ -94,6 +94,7 @@ If no approved plan exists and the request is non-trivial, route back to `sdcore
 ## Rules
 
 ### MUST DO
+- Show a live progress checklist with **TodoWrite** from the START of generation — one checkbox item per planned unit (each entity / module / endpoint / pack step) PLUS the finishing steps (tests, review, comments, user-guide). Keep exactly one item `in_progress`; flip it to `completed` the moment that unit is done and start the next. Update after EACH task, never batch at the end — this is how the user tracks progress. Create it before writing the first file.
 - Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / comments / user-guide / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
 - Every generated backend includes the `admin` module (`init-admin`) — the authn/authz authority. Run it right after `init-project`, before domain modules. Account ops proxy the Keycloak Admin API; permissions are app-DB role→code (NOT realm roles).
 - Read `_refs/nestjs/core-catalog.md` before generating; every import must match a documented sub-path.

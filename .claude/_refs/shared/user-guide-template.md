@@ -52,6 +52,14 @@ coverage: { total: 0, met: 0, partial: 0, missing: 0 }
 ## Hành động đặc biệt
 <workflow / chuyển trạng thái / bulk / xuất Excel — nếu có; bỏ mục này nếu không.>
 
+## Thành phần Core UI đã dùng
+<Angular only — bảng các component/service/directive `@sdcorejs/angular` mà module này thực sự dùng, mỗi dòng một vai trò cụ thể. Bỏ mục này cho track không phải angular. Đây là cùng bảng đã hiển thị cho người dùng sau khi sinh code.>
+| Core UI | Vai trò trong chức năng này |
+|---|---|
+| `SdTable` | Hiển thị danh sách <entity> kèm phân trang, lọc, sắp xếp |
+| `SdNotifyService` | Thông báo thành công / lỗi |
+| `SdSection` | Gom nhóm trường trong màn chi tiết |
+
 ## Coverage vs yêu cầu
 | # | Yêu cầu (spec/PRD) | Trạng thái | Tài liệu ở mục |
 |---|---|---|---|

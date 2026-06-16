@@ -68,6 +68,13 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 - Spec coverage is `standard` by default (or the level the user explicitly chose); specs written RED-first
 - `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts` exit code 0
 
+### Styling (utility-first)
+- Layout / spacing / color / typography use Core UI utility classes (or the consumer's Tailwind), not bespoke CSS — see `_refs/angular/styling.md`
+- 🟡 flag a component `.scss` that hand-rolls `display:flex` / `gap` / `padding` / color a utility class already provides (`d-flex`, `gap-16`, `p-16`, `text-primary`) — the "too many unnecessary CSS classes" smell
+- Spacing/sizing utilities are px-based 0–200, multiples of 4 (`mb-16` not `mb-3`); flag off-scale or out-of-range values
+- No Bootstrap class names (`btn`, `card`, `form-control`, `modal`) and no Tailwind syntax when the consumer has no Tailwind
+- Any custom `.scss` is token-based (`var(--sd-*)`) and carries a `// why:`
+
 ### Bilingual
 - Vietnamese portal: labels, button titles, notify messages use VI with full diacritics
 - English portal: same in EN
@@ -116,7 +123,7 @@ Score each of these 13 categories. For every category output **Score (1–10)**,
 4. **RxJS usage** — teardown (`takeUntilDestroyed` / `async` pipe, no manual leak-prone `subscribe`), no nested `subscribe`, correct operators (switch/merge/concat/exhaust), error handling, no over-RxJS where a signal fits.
 5. **Signal adoption** — `signal/computed/effect` used correctly, `effect` not used as `computed`, no redundant `BehaviorSubject` where a signal fits, `toSignal`/`toObservable` at boundaries, no signal writes inside `computed`.
 6. **Change detection strategy** — `OnPush` everywhere, no method calls in bindings, `@for` `track`, zoneless-readiness (no `setTimeout`/manual `markForCheck` hacks), minimal CD surface.
-7. **Template quality** — native control flow (`@if/@for/@let`, no `*ngIf/*ngFor`), `track` keys, `async` pipe over manual subscribe, no heavy expressions/logic in template, signals referenced 2+ times extracted.
+7. **Template quality & styling** — native control flow (`@if/@for/@let`, no `*ngIf/*ngFor`), `track` keys, `async` pipe over manual subscribe, no heavy expressions/logic in template, signals referenced 2+ times extracted. Styling is utility-first (Core UI STYLE-GUIDE classes or consumer Tailwind); component `.scss` near-empty; bespoke CSS that duplicates a shipped utility (flex/spacing/color/typography) is a finding; spacing px-based 0–200.
 8. **Forms implementation** — typed reactive forms (`FormGroup<...>`), explicit validators + async validators where needed, cross-field rules, submit gating (`invalid → markAllAsTouched`), no template-driven for complex forms, error surfacing.
 9. **API layer design** — typed DTOs (`SaveReq`/`DTO`), `SdApiService` (no raw `HttpClient` ad-hoc), URLs from environment (no hardcode), error/retry/caching strategy, logic in services not components, mock-first parity.
 10. **Testing strategy** — spec exists alongside each file (missing = 🔴), coverage `standard` by default (or explicit override), written RED-first, runnable (no `// TODO`), deps mocked, meaningful assertions (not just "created"), integration where behavior matters.

@@ -253,7 +253,15 @@ Test coverage defaults to `standard` and the approach defaults to `TDD` (RED-fir
 
 ---
 
-## 16. The portal is not the agent
+## 16. Utility-first styling — reuse the shipped system, don't hand-roll CSS
+
+Core UI (`@sdcorejs/angular`) ships a complete SCSS utility system (`assets/scss/sd-core.scss`): flex, grid, spacing, sizing, color, typography, border, elevation. Generated templates style with those classes (`d-flex gap-16`, `col-md-6`, `text-primary`, `T14M`, `rounded-8`, `mat-elevation-z2`); component `.scss` stays near-empty. If the consumer app ships Tailwind, its utilities are equally valid — match the system the existing components already use.
+
+**Why**: a utility class is themed, reviewed, and consistent across the whole portal; a bespoke `display:flex; gap:16px` rule in one component drifts from the design system, bloats files, and trains readers to skim past CSS. Custom `.scss` is reserved for genuine one-offs (computed gradient, off-scale size, animation) — token-based and commented with a `// why:`. The class list is ALWAYS fetched on demand (`node _refs/angular/core-docs-fetch.mjs --print assets/STYLE-GUIDE`) and never committed/hardcoded — a stored copy drifts from the published library; the operational rules (not the class list) live in `_refs/angular/styling.md`.
+
+Gotcha that causes real bugs: Core UI spacing/sizing is **absolute px, integer 0–200** (`mb-16` = 16px), not Bootstrap multipliers — use multiples of 4, never off-scale values.
+
+## 17. The portal is not the agent
 
 This skill set generates Angular portals. The principles above govern the **generated code**, not this `sdcorejs-agent` repo. When a developer asks "why does the generated module have X", the answer comes from this file — not from the skill body that emitted X.
 

@@ -151,6 +151,8 @@ After `branch-ready`, an **OPTIONAL packaging branch** may run `sdcorejs-dockeri
 
 13. **Finish gate is mandatory and unconditional.** After EVERY track code-gen — whether reached through the full SDLC flow OR triggered as a standalone single skill (e.g. "add entity", "create module X", "add a page") — the track write-code orchestrator (`sdcorejs-angular` / `sdcorejs-nestjs` / `sdcorejs-nextjs`) MUST present the consolidated **FINISH GATE** (`_refs/shared/finish-gate.md`) before running any tail step. The gate surfaces the finishing steps — **tests** (default ON, RED-first, `standard`; user may opt out / change level), **comments** (required pick: skip/simple/medium/full — this IS the `comment-code` ASK, folded in, not asked twice), **user guide** (default ON), **review** (default ON) — with always-on plumbing (verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories) listed so the user knows it runs. NEVER end silently after code-gen, and NEVER skip the gate because the request was a one-liner. The whole point is that the user always KNOWS these steps exist. Tail steps then run honoring the gate's answers.
 
+14. **Progress visibility via TodoWrite (mandatory during write-code).** At the START of any code-writing run (every track), create a `TodoWrite` checklist — one checkbox item per planned unit (each file / screen / entity / module / page / pack step) PLUS the finishing steps (tests, review, comments, user-guide). Keep exactly ONE item `in_progress`; mark it `completed` the moment that unit is done and flip the next to `in_progress`. Update after EACH task — never batch-complete at the end. This gives the user a live, checkbox progress view of code generation. `TodoWrite` must be in the orchestrator's `allowed-tools`.
+
 ## Cross-track skills (`skills/shared/sdlc/`, `skills/orchestration/`, `skills/shared/`, `skills/review/`, `skills/testing/`)
 
 Cross-track skills that apply to angular, nestjs, nextjs alike. Match against their `description` like any other skill. Dispatch is by skill `name:` frontmatter, not path — directory is for organization only.
@@ -215,7 +217,7 @@ Emit a one-command runnable Docker stack into a target project's **deploy root**
 
 - `_refs/sdlc/{angular,nextjs,nestjs}.md` — cross-track design-phase patterns per track (loaded by `sdcorejs-brainstorm` / `sdcorejs-clarify-requirements` / `sdcorejs-write-spec` / `sdcorejs-write-plan` at Step 0-1)
 - `_refs/<track>/architecture-principles.md` — WHY-principles per track governing generated code. Load when explaining decisions, reviewing deviations, or onboarding contributors:
-  - **angular** (16 principles): feature-first, signal-first, no cross-module imports, 4 canonical layouts, mock-first, OnPush default, …
+  - **angular** (17 principles): feature-first, signal-first, no cross-module imports, 4 canonical layouts, mock-first, OnPush default, utility-first styling, …
   - **nextjs/build-website** (15 principles): App Router default, server components default, content-as-data, i18n localized pathnames, SEO non-negotiable, 30-min ISR default, real contact form, mobile-first, …
   - **nestjs** (14 principles): bounded-context modules, BaseEntity/Repo/Service mandatory, guard order AuthGuard→Zod→HasPermission, Zod in shared package, thin controllers, explicit QueryRunner transactions, bilingual error messages, …
 - `_refs/angular/core-version.md` — pinned `@sdcorejs/angular` version (npm install pin for init-portal)

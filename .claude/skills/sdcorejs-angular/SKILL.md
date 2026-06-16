@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-angular
 description: Generate Angular-portal code — after 06-review-plan approves, OR as the single entry point for any direct Angular-portal code-gen request. Loads the matching on-demand pack under `_refs/angular/write-code/` (per-pack trigger catalog is in the body): init-portal, admin-screens (always-on: account/role/permission management), init-module, init-entity (full CRUD), screen-list, screen-detail (CREATE/UPDATE/DETAIL + reactive-form/validators), actions (workflow / bulk / custom buttons). Triggers - "initialize portal", "create module X", "add entity / create CRUD", "list screen / add column", "detail screen / form validation / custom validator", "add action button / approve / bulk approve / export Excel", generic "generate code", "go ahead", or localized equivalents. NOT for spec/plan, code review, or nestjs/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Runtime-localized.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, TodoWrite
 ---
 
 # 07 — Write Code (Orchestrator)
@@ -40,6 +40,23 @@ Before dispatching ANY reference, run `orchestration/auto-summary`. If `<target>
 ### Execution order + hand-off
 
 Execution order: portal → admin-screens → module → entity → screens → actions. `admin-screens` ALWAYS runs after `init-portal` and before any domain module work. If the plan touches multiple items, run them in this order; do not parallelize. After all referenced steps finish, hand off as follows:
+
+#### MANDATORY: Core UI usage summary (show the user right after generating)
+
+Right after the code is written and BEFORE the finish gate, emit a short table of every `@sdcorejs/angular` Core UI piece the feature actually uses — component, service, or directive — each with a one-line purpose **tied to this feature**, in the user's language. This gives the user (especially non-tech) a plain-language overview of the building blocks. Build the rows from what you ACTUALLY imported/used — never list a component you didn't use, never describe it generically.
+
+```
+🧩 Core UI dùng trong <tên chức năng>:
+
+| Core UI | Vai trò trong chức năng này |
+|---|---|
+| `SdTable` | Hiển thị danh sách <entity> kèm phân trang, lọc, sắp xếp |
+| `SdNotifyService` | Thông báo thành công / lỗi khi lưu, xoá |
+| `SdSection` | Gom nhóm các trường trong màn hình chi tiết |
+| `sd-button` | Nút Lưu / Huỷ / hành động |
+```
+
+Keep each purpose one line, concrete to the feature (not "a table component"). Persona-aware: plain wording for non-tech. The same table is persisted into the module's user guide at the write-user-guide step.
 
 #### MANDATORY FINISH GATE (always — standalone trigger OR full SDLC flow)
 
@@ -220,15 +237,19 @@ Apply to:
 ## Rules
 
 ### MUST DO
+- Show a live progress checklist with **TodoWrite** from the START of generation — one checkbox item per planned unit (each file / screen / entity / pack step) PLUS the finishing steps (tests, review, comments, user-guide). Keep exactly one item `in_progress`; flip it to `completed` the moment that unit is done and start the next. Update after EACH task, never batch at the end — this is how the user tracks progress. Create it before writing the first file.
+- After generating UI, show the **Core UI usage summary** table (every `@sdcorejs/angular` component/service/directive actually used + a one-line, feature-specific purpose, in the user's language) so the user sees the building blocks at a glance. List only what was used. Persist the same table into the module user guide at write-user-guide.
 - Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / comments / user-guide / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
 - Tests are mandatory and written RED-first at `standard` coverage by default (see the TDD Gate). They are surfaced (default ON) in the finish gate so the user can opt out or change level — but never silently skipped. NEVER ask a separate "which coverage level?" question outside the gate.
 - Every generated portal includes the admin screens (`admin-screens`) so end users administer accounts/roles in-app — never the Keycloak console. Run `admin-screens` right after `init-portal`, before any domain module work.
 - Detect the installed Core UI package FIRST — a project is a Core UI portal if `package.json` depends on EITHER `@sdcorejs/angular` (new default) OR `@sd-angular/core` (legacy alias — same code, same version, actively co-deployed). Treat both as equal: NEVER skip doc discovery just because the project uses the legacy name, and generate imports with whichever prefix the project installed.
-- Discover Core UI on-demand before generating (docs are NOT committed — pulled fresh from the published site, version-matched, cached): run `node _refs/angular/core-docs-fetch.mjs --list` to see the component inventory, then `node _refs/angular/core-docs-fetch.mjs <id>` (e.g. `sd-button`, or `--print <id>` for inline content) to read a component's full API BEFORE using it. The fetcher auto-detects the version from EITHER package name (add `--cwd <target-project>` when you run it from outside the project dir, so detection reads the consumer's `package.json` and not the agent's). Prefer a Core UI component when one fits; if none does, scaffold a skeleton + `alert('TODO: ...')` and flag it. It mojibake-guards upstream + falls back to cache offline. If no network AND no cache, fall back to generic Angular Material and flag it.
+- Discover Core UI on-demand before generating (docs are NOT committed — pulled fresh from the published site, version-matched, cached): run `node _refs/angular/core-docs-fetch.mjs --list` to see the component inventory, then `node _refs/angular/core-docs-fetch.mjs <id>` (e.g. `sd-button`, or `--print <id>` for inline content) to read a component's full API BEFORE using it. Before writing any template styling, ALWAYS fetch the Core UI style guide first — `node _refs/angular/core-docs-fetch.mjs --print assets/STYLE-GUIDE` — the single authoritative list of shipped utility classes. It is NOT committed (a stored copy would drift); the fetcher caches it if already pulled (version-matched), so "fetch if not present" is automatic — just run it. Never rely on hardcoded/memorized class names. The fetcher auto-detects the version from EITHER package name (add `--cwd <target-project>` when you run it from outside the project dir, so detection reads the consumer's `package.json` and not the agent's). Prefer a Core UI component when one fits; if none does, scaffold a skeleton + `alert('TODO: ...')` and flag it. It mojibake-guards upstream + falls back to cache offline. If no network AND no cache, fall back to generic Angular Material and flag it.
+- Style utility-first — see [`_refs/angular/styling.md`](../../../_refs/angular/styling.md). Lean on the Core UI utility classes from the STYLE-GUIDE (`d-flex`, `flex-1`, `justify-content-between`, `gap-16`, `m-*`/`p-*`, `w-full`, `rounded-8`, `text-primary`, `T14M`, `row`/`col-*`, `grid-container`/`grid-cols-*`, `mat-elevation-z*`) for layout / spacing / sizing / color / typography. If the consumer app ships Tailwind (`tailwind.config.*` or a `tailwindcss` dependency), use Tailwind utilities too, matching whatever the existing components use. Core UI spacing/sizing utilities are **px-based, integer 0–200** (`mb-16` = 16px — NOT a Bootstrap multiplier); use multiples of 4. Write custom component `.scss` ONLY when no utility fits, keep it token-based (`var(--sd-*)`), and flag each rule with a one-line `// why:`.
 - Enforce the execution order (portal → admin-screens → module → entity → screens → actions) and do not skip or reorder steps.
 - Run the full tail chain after the last step.
 
 ### MUST NOT
+- Hand-write CSS for flex / spacing / alignment / color / typography that a STYLE-GUIDE utility class already covers, or fill a component `.scss` with rules that duplicate shipped utilities — this is the "too many unnecessary CSS classes" anti-pattern. Put the utilities on the template; keep the `.scss` near-empty. Never use Bootstrap class names (`btn`, `card`, `form-control`, `modal` — they don't exist) or Tailwind syntax when the consumer has no Tailwind.
 - Skip test generation, defer it to "later", or block spec writing behind a coverage-level question — specs are a required deliverable, written RED-first at `standard` by default.
 - Generate portal code that requires end users to open the Keycloak console to manage accounts or roles.
 - Skip the `admin-screens` pack even when the user's request focuses on a domain entity — the admin layer is always present.
