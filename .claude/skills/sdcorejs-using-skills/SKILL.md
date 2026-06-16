@@ -44,8 +44,9 @@ Request
  → sdcorejs-write-plan
  → sdcorejs-review-plan           (★ user-approval gate)
  → <track>-write-code             (angular | nestjs | nextjs-build-website)
- → sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop
- → sdcorejs-comment-code (ASK gate)
+ → FINISH GATE (_refs/shared/finish-gate.md)  ★ MANDATORY + UNCONDITIONAL — one ASK surfacing tests/comments/user-guide/review (fires for standalone triggers too)
+ → sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop   (honoring gate answers)
+ → sdcorejs-comment-code (applies the gate's comment level — no second ASK)
  → sdcorejs-verify-before-done → sdcorejs-branch-ready
  → auto-docs → write-user-guide (Mode 1: per-module guide) → auto-task-tracker → memories
 ```
@@ -57,6 +58,7 @@ For isolation before generation or parallel work, run `sdcorejs-using-worktrees`
 - **Project brief first.** Before any code-writing or other substantive work in a target project, ensure `<project>/.sdcorejs/summary.md` exists; if missing, run `sdcorejs-auto-summary` (GENERATE) — it scans via `sdcorejs-code-map` and distills a 1-page brief so generation never hallucinates paths or duplicates shared code. This applies whichever skill you're about to run, not only `<track>-write-code`. Detect the track even in a monorepo — the config (`angular.json` / `nest-cli.json` / `next.config.*`) may live under `apps/*` or `packages/*`, not the repo root. A pure informational question may be answered first.
 - **Clarify before code.** Do NOT generate code until the track's minimum-required answers are confirmed (Angular: module + entity + fields + layout; NestJS: module + entity + persistence + transactions; Next.js: domain + contact + hosting + caching). Invoke `sdcorejs-clarify-requirements` first.
 - **Approval gates.** `sdcorejs-review-spec` and `sdcorejs-review-plan` require explicit user approval before the next skill runs. **Silence is not approval.**
+- **Finish gate (mandatory + unconditional).** After EVERY track code-gen — standalone single-skill trigger ("add entity", "add a page") OR the full SDLC flow — present the consolidated FINISH GATE (`_refs/shared/finish-gate.md`) before any tail step. It surfaces tests (default ON, opt-out), comments (skip/simple/medium/full), user-guide (default ON), review (default ON), and lists the always-on plumbing. NEVER end silently after generating code; the user must always SEE these finishing steps. A one-line request is not an excuse to skip it.
 - **Runtime-localized.** Detect the user's language, respond in that language, and preserve locale-specific marks in generated labels/messages. Permission codes and route paths stay English.
 - **Core UI first (Angular).** Prefer `@sdcorejs/angular` components when one fits; otherwise scaffold a skeleton + `alert('TODO: …')` stub and flag it.
 - **Don't author new skills without explicit user approval.**

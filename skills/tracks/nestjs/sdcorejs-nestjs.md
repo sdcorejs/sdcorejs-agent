@@ -61,20 +61,24 @@ Skip only for pure config (`nest-cli.json`, `tsconfig.json`, `.env.example`) and
 
 ## Mandatory tail chain
 
-After all referenced steps finish, hand off in this exact order. Each tail-call is mandatory (per CLAUDE.md).
+### MANDATORY FINISH GATE (always — standalone trigger OR full SDLC flow)
 
-1. `sdcorejs-test` — happy-path tests for what was generated (unit + integration via real DI + pg-mem; e2e via `supertest` against a real test PG where the layer warrants it)
-2. `sdcorejs-review` (auto-detects NestJS → loads `_refs/nestjs/review-code.md`) — convention review; outputs color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
-3. `orchestration/repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
-4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full); applies the chosen level inline
-5. `orchestration/verify-before-done` — BLOCK "done" until every acceptance criterion in the spec is ✅ verified or ⚠️ explicitly deferred
-6. `orchestration/branch-ready` — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
-7. `orchestration/auto-docs` — session summary written to `<target>/.sdcorejs/docs/nestjs/`
-8. `sdcorejs-write-user-guide` (Mode 1) — update the touched module's `.sdcorejs/user-guide/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds at ship.
-9. `orchestration/auto-task-tracker` — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
+**STOP and present the consolidated finish gate from [`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md) before running ANY tail step.** UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add entity", "add endpoint") — NOT only inside the spec→plan flow. The gate surfaces tests / comments / user-guide / review with defaults so the user always knows these steps exist and can opt out. "Small change" is not a reason to skip the gate.
+
+Then hand off in this exact order, honoring the gate's answers (skip = omit that step; everything not skipped runs):
+
+1. *(if Tests not skipped)* `sdcorejs-test` — happy-path tests for what was generated (unit + integration via real DI + pg-mem; e2e via `supertest` against a real test PG where the layer warrants it)
+2. *(if Review not skipped)* `sdcorejs-review` (auto-detects NestJS → loads `_refs/nestjs/review-code.md`) — convention review; color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
+3. *(if Review not skipped)* `orchestration/repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
+4. `orchestration/comment-code` — apply the comment level the FINISH GATE captured (skip / simple / medium / full). Do NOT ASK again — the gate already asked.
+5. `orchestration/verify-before-done` *(always)* — BLOCK "done" until every acceptance criterion in the spec is ✅ verified or ⚠️ explicitly deferred
+6. `orchestration/branch-ready` *(always)* — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
+7. `orchestration/auto-docs` *(always)* — session summary written to `<target>/.sdcorejs/docs/nestjs/`
+8. *(if User guide not skipped)* `sdcorejs-write-user-guide` (Mode 1) — update the touched module's `.sdcorejs/user-guide/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds at ship.
+9. `orchestration/auto-task-tracker` *(always)* — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
 10. `orchestration/memories` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 
-Do NOT skip `verify-before-done` — that's how acceptance criteria silently slip. Do NOT skip the `orchestration/comment-code` ASK gate (the gate IS the value; auto-defaulting defeats the design).
+The FINISH GATE is mandatory and unconditional. The always-on plumbing steps (verify-before-done, branch-ready, auto-docs, auto-task-tracker, memories) run regardless of gate answers. Do NOT skip `verify-before-done` — that's how acceptance criteria silently slip.
 
 ## When to use
 
@@ -90,6 +94,7 @@ If no approved plan exists and the request is non-trivial, route back to `sdcore
 ## Rules
 
 ### MUST DO
+- Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / comments / user-guide / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
 - Every generated backend includes the `admin` module (`init-admin`) — the authn/authz authority. Run it right after `init-project`, before domain modules. Account ops proxy the Keycloak Admin API; permissions are app-DB role→code (NOT realm roles).
 - Read `_refs/nestjs/core-catalog.md` before generating; every import must match a documented sub-path.
 - Dispatch the matching pack on demand; follow it instead of re-deriving rules here.

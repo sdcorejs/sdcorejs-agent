@@ -39,20 +39,26 @@ Before dispatching ANY reference, run `orchestration/auto-summary`. If `<target>
 
 ### Execution order + hand-off
 
-Execution order: portal → admin-screens → module → entity → screens → actions. `admin-screens` ALWAYS runs after `init-portal` and before any domain module work. If the plan touches multiple items, run them in this order; do not parallelize. After all referenced steps finish, hand off in sequence:
+Execution order: portal → admin-screens → module → entity → screens → actions. `admin-screens` ALWAYS runs after `init-portal` and before any domain module work. If the plan touches multiple items, run them in this order; do not parallelize. After all referenced steps finish, hand off as follows:
 
-1. `sdcorejs-test` (sdcorejs-test) — RUN the `.spec.ts` files already written RED-first during the TDD gate and report pass/fail + failing names; add happy-path e2e only when a dev server/browser is available (else report the exact local command). Unit specs are NOT optional — if any testable file still lacks one, write it here before proceeding.
-2. `sdcorejs-review` (skills/review/review.md; auto-detects Angular → loads `_refs/angular/review-code.md`) — convention check; outputs color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
-3. `orchestration/repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
-4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full); applies the chosen level inline. Cross-track baseline + per-track addenda live inside `orchestration/comment-code` itself
-5. `orchestration/verify-before-done` — BLOCK "done" until acceptance criteria from the spec are ✅ verified or ⚠️ explicitly deferred
-6. `orchestration/branch-ready` — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
-7. `orchestration/auto-docs` — session summary written to `<target>/.sdcorejs/docs/angular/`
-8. `sdcorejs-write-user-guide` (Mode 1) — update the touched module's `.sdcorejs/user-guide/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds at ship.
-9. `orchestration/auto-task-tracker` — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
+#### MANDATORY FINISH GATE (always — standalone trigger OR full SDLC flow)
+
+**STOP and present the consolidated finish gate from [`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md) before running ANY tail step.** This is UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add entity", "create module X") — NOT only inside the spec→plan flow. The gate surfaces tests / comments / user-guide / review with defaults so the user always knows these steps exist and can opt out. "Small change" is not a reason to skip the gate. Read the ref for the exact prompt + rules.
+
+Then run the tail in this order, honoring the gate's answers (skip = omit that step; everything not skipped runs):
+
+1. *(if Tests not skipped)* `sdcorejs-test` (sdcorejs-test) — RUN the `.spec.ts` files already written RED-first during the TDD gate and report pass/fail + failing names; add happy-path e2e only when a dev server/browser is available (else report the exact local command). Unit specs are NOT optional unless the user chose `skip` in the gate — if any testable file still lacks one, write it here.
+2. *(if Review not skipped)* `sdcorejs-review` (skills/review/review.md; auto-detects Angular → loads `_refs/angular/review-code.md`) — convention check; color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
+3. *(if Review not skipped)* `orchestration/repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
+4. `orchestration/comment-code` — apply the comment level the FINISH GATE captured (skip / simple / medium / full). Do NOT ASK again — the gate already asked. Cross-track baseline + per-track addenda live inside `orchestration/comment-code` itself
+5. `orchestration/verify-before-done` *(always)* — BLOCK "done" until acceptance criteria from the spec are ✅ verified or ⚠️ explicitly deferred
+6. `orchestration/branch-ready` *(always)* — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
+7. `orchestration/auto-docs` *(always)* — session summary written to `<target>/.sdcorejs/docs/angular/`
+8. *(if User guide not skipped)* `sdcorejs-write-user-guide` (Mode 1) — update the touched module's `.sdcorejs/user-guide/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds at ship.
+9. `orchestration/auto-task-tracker` *(always)* — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
 10. `orchestration/memories` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 
-Each tail-call is mandatory (per CLAUDE.md). Do NOT skip `verify-before-done` — that's how acceptance criteria silently slip. Do NOT skip the `orchestration/comment-code` ASK gate (the gate IS the value; auto-defaulting defeats the design).
+The FINISH GATE itself is mandatory and unconditional. The always-on plumbing steps (verify-before-done, branch-ready, auto-docs, auto-task-tracker, memories) run regardless of gate answers. Do NOT skip `verify-before-done` — that's how acceptance criteria silently slip.
 
 ## When to Use
 
@@ -214,7 +220,8 @@ Apply to:
 ## Rules
 
 ### MUST DO
-- Tests are mandatory and ungated: write a runnable `.spec.ts` RED-first for every model/service/list/detail at `standard` coverage by default (see the TDD Gate). NEVER ask "which coverage level?" before writing them, and NEVER skip or defer them — only honor an explicit override to `minimal`/`full`.
+- Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / comments / user-guide / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
+- Tests are mandatory and written RED-first at `standard` coverage by default (see the TDD Gate). They are surfaced (default ON) in the finish gate so the user can opt out or change level — but never silently skipped. NEVER ask a separate "which coverage level?" question outside the gate.
 - Every generated portal includes the admin screens (`admin-screens`) so end users administer accounts/roles in-app — never the Keycloak console. Run `admin-screens` right after `init-portal`, before any domain module work.
 - Detect the installed Core UI package FIRST — a project is a Core UI portal if `package.json` depends on EITHER `@sdcorejs/angular` (new default) OR `@sd-angular/core` (legacy alias — same code, same version, actively co-deployed). Treat both as equal: NEVER skip doc discovery just because the project uses the legacy name, and generate imports with whichever prefix the project installed.
 - Discover Core UI on-demand before generating (docs are NOT committed — pulled fresh from the published site, version-matched, cached): run `node _refs/angular/core-docs-fetch.mjs --list` to see the component inventory, then `node _refs/angular/core-docs-fetch.mjs <id>` (e.g. `sd-button`, or `--print <id>` for inline content) to read a component's full API BEFORE using it. The fetcher auto-detects the version from EITHER package name (add `--cwd <target-project>` when you run it from outside the project dir, so detection reads the consumer's `package.json` and not the agent's). Prefer a Core UI component when one fits; if none does, scaffold a skeleton + `alert('TODO: ...')` and flag it. It mojibake-guards upstream + falls back to cache offline. If no network AND no cache, fall back to generic Angular Material and flag it.

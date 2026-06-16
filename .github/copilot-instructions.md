@@ -61,8 +61,9 @@ Request
        angular:         sdcorejs-angular
        nextjs (build-website): sdcorejs-nextjs
        nestjs:                 sdcorejs-nestjs (loads _refs/nestjs/write-code/ packs: init-project | init-module | init-entity | actions)
-  → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop (if findings)
-  → orchestration/comment-code (MANDATORY ASK: skip/simple/medium/full — all levels applied inline; cross-track baseline + per-track addenda inside the skill)
+  → FINISH GATE (_refs/shared/finish-gate.md) — MANDATORY + UNCONDITIONAL: one ASK surfacing tests (default ON, opt-out) / comments (skip/simple/medium/full) / user-guide (default ON) / review (default ON). Fires for standalone triggers too — never end silently after code-gen
+  → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop (if findings)   [honoring gate answers]
+  → orchestration/comment-code (applies the gate's comment level — no second ASK; all levels applied inline; cross-track baseline + per-track addenda inside the skill)
   → orchestration/verify-before-done (MANDATORY acceptance gate) → orchestration/branch-ready (branch-hygiene sweep)
   → orchestration/auto-docs (MANDATORY) → orchestration/write-user-guide (Mode 1: per-module guide) → orchestration/auto-task-tracker (MANDATORY) + orchestration/memories (durable knowledge)
 ```
@@ -100,6 +101,8 @@ For the angular track, `write-code` is the single orchestrator; it loads on-dema
 
 11. **Persona-aware output.** Read the target project's `.sdcorejs/persona.md` (default `tech` if absent) and load `_refs/shared/persona.md` before producing user-facing output. `non-tech` = no unexplained jargon, hidden mechanics, forced infra defaults (Angular + NestJS modular-monolith + Keycloak + Postgres on docker-compose), always finish with a run guide, both approval gates kept but plainly worded (soft gates), requirement questions about features + UI not architecture. `tech` = unchanged baseline. Orthogonal to the bilingual rule. Managed by `sdcorejs-persona`.
 
+12. **Finish gate is mandatory and unconditional.** After EVERY track code-gen — full SDLC flow OR standalone single-skill trigger ("add entity", "create module X", "add a page") — the track write-code orchestrator MUST present the consolidated **FINISH GATE** (`_refs/shared/finish-gate.md`) before any tail step. One ASK surfaces tests (default ON, RED-first/`standard`, opt-out ok), comments (skip/simple/medium/full — this IS the `comment-code` ASK, folded in, not asked twice), user-guide (default ON), review (default ON); always-on plumbing (verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories) is listed so the user knows it runs. NEVER end silently after code-gen; NEVER skip the gate for a one-liner. The point: the user always KNOWS these steps exist.
+
 ## Copilot-specific notes
 
 - The chat mode `.github/chatmodes/sdcorejs.chatmode.md` provides a focused experience for SDCoreJS work. Activate it when working on SDCoreJS-stack projects.
@@ -130,7 +133,7 @@ Cross-track skills — apply to all tracks. Dispatch by `description`; directory
 | `sdcorejs-auto-task-tracker` | after auto-docs + write-user-guide | ✅ |
 | `sdcorejs-memories` | "remember this", durable knowledge | ✅ on trigger |
 | `sdcorejs-repair-loop` | after `sdcorejs-review` outputs findings | ✅ on findings |
-| `sdcorejs-comment-code` | ASK gate at comment phase — skip/simple/medium/full | ✅ ASK |
+| `sdcorejs-comment-code` | applies the FINISH GATE's comment level (skip/simple/medium/full) — no second ASK; standalone invoke asks directly | ✅ (via gate) |
 | `sdcorejs-persona` | first request in a target project with no `.sdcorejs/persona.md`; "explain simply", "set persona" — ask-once tech/non-tech, store flag, load `_refs/shared/persona.md` | auto on first entry |
 | `sdcorejs-solution-builder` | "build me an app / a system; the non-tech one-door full-app flow" — chains persona → clarify → spec/plan (2 gates) → build backend+frontend → dockerize → auth → run-guide → stack verify → final docs/task tail |  |
 | `sdcorejs-code-map` | new feature / reuse check — read-only architecture scan |  |

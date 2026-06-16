@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-comment-code
-description: Mandatory ASK gate at the comment phase of every code-writing workflow. Always asks the user which comment level to apply — `skip` / `simple` / `medium` / `full` — before any comments are written. Outcome is optional: `skip` produces no comments; the other 3 levels apply progressively richer JSDoc + inline rules. Runs after `sdcorejs-review` / `orchestration/repair-loop` and BEFORE `orchestration/verify-before-done`. Triggers - automatic at the comment phase of any code-writing skill; or user says "add comments", "comment the code", "comment level", or localized equivalents. Applies to angular, nestjs, nextjs. Runtime-localized.
+description: Applies code comments at the level chosen in the consolidated FINISH GATE (`_refs/shared/finish-gate.md`) — `skip` / `simple` / `medium` / `full`. In a track write-code flow the gate already asked, so this skill applies the captured level WITHOUT re-asking; when invoked directly (outside a code-gen flow) it asks the level itself. Outcome is optional: `skip` produces no comments; the other 3 levels apply progressively richer JSDoc + inline rules. Runs after `sdcorejs-review` / `orchestration/repair-loop` and BEFORE `orchestration/verify-before-done`. Triggers - automatic at the comment phase of any code-writing skill; or user says "add comments", "comment the code", "comment level", or localized equivalents. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Edit, Write
 ---
 
@@ -15,14 +15,16 @@ allowed-tools: Read, Edit, Write
   - BEFORE `orchestration/verify-before-done`
 - User explicitly: "add comments", "comment the code", "comment level", or localized equivalents
 
+> **Comment level now comes from the consolidated FINISH GATE** ([`_refs/shared/finish-gate.md`](../../_refs/shared/finish-gate.md)). When a track write-code orchestrator (angular / nestjs / nextjs) runs, the gate already asked the user to pick `skip` / `simple` / `medium` / `full` along with tests + user-guide. In that case this skill APPLIES the captured level and does **NOT** ask again (asking twice is the bug, not the fix). Only run the standalone ASK below when this skill is invoked directly without a gate choice (e.g. the user says "add comments" outside a code-gen flow).
+
 Do NOT invoke for:
 - Tasks with no code generation (planning, brainstorming, review-only)
 - Tasks that already explicitly declined comments earlier in the same session — honor the prior choice unless user re-opens the question
 - Bug fix that's a 1-line patch in already-commented code (use existing style)
 
-## The ASK (always — never skip this step)
+## The ASK (only when no FINISH GATE choice exists — e.g. invoked directly)
 
-Present 4 options to the user. Match the session language.
+If the FINISH GATE already captured a comment level this code-gen, skip straight to applying it. Otherwise present 4 options to the user. Match the session language.
 
 **Localized source prompt:**
 ```
