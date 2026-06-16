@@ -34,7 +34,7 @@ Required before applying this skill:
 - module exists, or the agent has already created it
 - entity name is known
 - minimum display fields are known: code, name, status or equivalent
-- clarify test coverage level with developer before generating spec files
+- default test coverage = `standard` (write specs RED-first, no question; override to minimal/full only on explicit request)
 
 If permission is key-based:
 - permissionKey is known (or explicitly use default key = undefined)

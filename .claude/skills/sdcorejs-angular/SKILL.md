@@ -41,7 +41,7 @@ Before dispatching ANY reference, run `orchestration/auto-summary`. If `<target>
 
 Execution order: portal → admin-screens → module → entity → screens → actions. `admin-screens` ALWAYS runs after `init-portal` and before any domain module work. If the plan touches multiple items, run them in this order; do not parallelize. After all referenced steps finish, hand off in sequence:
 
-1. `sdcorejs-test` (sdcorejs-test) — happy-path tests for what was generated
+1. `sdcorejs-test` (sdcorejs-test) — RUN the `.spec.ts` files already written RED-first during the TDD gate and report pass/fail + failing names; add happy-path e2e only when a dev server/browser is available (else report the exact local command). Unit specs are NOT optional — if any testable file still lacks one, write it here before proceeding.
 2. `sdcorejs-review` (skills/review/review.md; auto-detects Angular → loads `_refs/angular/review-code.md`) — convention check; outputs color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
 3. `orchestration/repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
 4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full); applies the chosen level inline. Cross-track baseline + per-track addenda live inside `orchestration/comment-code` itself
@@ -111,7 +111,9 @@ Inference rules:
 
 ## Generation Process
 
-### TDD Gate — mandatory before each code-generating step
+### TDD Gate — mandatory before each code-generating step (NEVER skipped, NEVER gated behind a question)
+
+Tests are a REQUIRED deliverable of this skill, not an optional add-on. Every code-gen run MUST leave a runnable `.spec.ts` next to every testable production file. Do NOT ask the user whether to write tests, and do NOT ask which coverage level first — default to **`standard`** coverage and proceed. Only switch to `minimal` / `full` if the user EXPLICITLY requested a different level (e.g. in clarify-requirements). A missing spec is a generation defect, not a style choice. RED-first is the DEFAULT ordering (not post-hoc).
 
 Before writing any production file (model / service / list / detail), invoke `sdcorejs-tdd`:
 
@@ -119,9 +121,9 @@ Before writing any production file (model / service / list / detail), invoke `sd
 2. Generate the production file with minimal passing code → run test → confirm GREEN
 3. Refactor if needed → run test → confirm still GREEN
 
-Applies to: model (validators / type contracts), service (CRUD method contracts), list component (rendering + actions), detail component (form + state transitions).
+Applies to: model (validators / type contracts), service (CRUD method contracts), list component (rendering + actions), detail component (form + state transitions). Default `standard` coverage = `should create` + route-permission + list data/sort + detail save-flow/state, per `_refs/angular/templates/entity-tests.md`.
 
-Skip for: `mock-data` seed rows (pure data, no testable logic) and `routes.ts` (Angular config, no business behaviour).
+Skip RED-first for: `mock-data` seed rows (pure data, no testable logic) and `routes.ts` (Angular config — but its `*.routes.spec.ts` permission-validation spec IS still written).
 
 ### Step 1: Build EntitySchema (shared input for every reference)
 
@@ -212,12 +214,15 @@ Apply to:
 ## Rules
 
 ### MUST DO
+- Tests are mandatory and ungated: write a runnable `.spec.ts` RED-first for every model/service/list/detail at `standard` coverage by default (see the TDD Gate). NEVER ask "which coverage level?" before writing them, and NEVER skip or defer them — only honor an explicit override to `minimal`/`full`.
 - Every generated portal includes the admin screens (`admin-screens`) so end users administer accounts/roles in-app — never the Keycloak console. Run `admin-screens` right after `init-portal`, before any domain module work.
-- Discover Core UI on-demand before generating (docs are NOT committed — pulled fresh from the published site, version-matched, cached): run `node _refs/angular/core-docs-fetch.mjs --list` to see the component inventory, then `node _refs/angular/core-docs-fetch.mjs <id>` (e.g. `sd-button`, or `--print <id>` for inline content) to read a component's full API BEFORE using it. Prefer a Core UI component when one fits; if none does, scaffold a skeleton + `alert('TODO: ...')` and flag it. Version auto-detects from the target project's installed `@sdcorejs/angular` (or legacy `@sd-angular/core`); the fetcher mojibake-guards upstream + falls back to cache offline. If no network AND no cache, fall back to generic Angular Material and flag it.
+- Detect the installed Core UI package FIRST — a project is a Core UI portal if `package.json` depends on EITHER `@sdcorejs/angular` (new default) OR `@sd-angular/core` (legacy alias — same code, same version, actively co-deployed). Treat both as equal: NEVER skip doc discovery just because the project uses the legacy name, and generate imports with whichever prefix the project installed.
+- Discover Core UI on-demand before generating (docs are NOT committed — pulled fresh from the published site, version-matched, cached): run `node _refs/angular/core-docs-fetch.mjs --list` to see the component inventory, then `node _refs/angular/core-docs-fetch.mjs <id>` (e.g. `sd-button`, or `--print <id>` for inline content) to read a component's full API BEFORE using it. The fetcher auto-detects the version from EITHER package name (add `--cwd <target-project>` when you run it from outside the project dir, so detection reads the consumer's `package.json` and not the agent's). Prefer a Core UI component when one fits; if none does, scaffold a skeleton + `alert('TODO: ...')` and flag it. It mojibake-guards upstream + falls back to cache offline. If no network AND no cache, fall back to generic Angular Material and flag it.
 - Enforce the execution order (portal → admin-screens → module → entity → screens → actions) and do not skip or reorder steps.
 - Run the full tail chain after the last step.
 
 ### MUST NOT
+- Skip test generation, defer it to "later", or block spec writing behind a coverage-level question — specs are a required deliverable, written RED-first at `standard` by default.
 - Generate portal code that requires end users to open the Keycloak console to manage accounts or roles.
 - Skip the `admin-screens` pack even when the user's request focuses on a domain entity — the admin layer is always present.
 

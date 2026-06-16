@@ -249,7 +249,7 @@ No central `__tests__/` directory; no parallel `tests/` tree.
 
 **Why**: when you delete a feature folder, the tests die with it (correct). When you rename a service, your IDE renames the spec next to it (correct). When a reviewer reads a service, the spec is one tab over (correct).
 
-Test coverage levels (`minimal` / `standard` / `full`) confirmed in `sdcorejs-clarify-requirements`. Coverage approach (`post-hoc` vs `TDD`) also confirmed there — TDD shifts test bones BEFORE business logic implementation.
+Test coverage defaults to `standard` and the approach defaults to `TDD` (RED-first) — specs are a mandatory deliverable, written before their production file, never gated behind a question. `sdcorejs-clarify-requirements` only records an OVERRIDE (`minimal`/`full`, or `post-hoc` ordering) when the user explicitly asks; absent that, the agent proceeds with standard + RED-first.
 
 ---
 

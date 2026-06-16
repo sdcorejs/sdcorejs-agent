@@ -180,11 +180,10 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
     it('should create', () => { expect(component).toBeTruthy(); });
   });
   ```
-- **BEFORE generating spec files, ask developer** which test coverage level they desire:
-  - `minimal`: only `should create` test (fastest)
-  - `standard`: + permission validation + data visibility + sort/navigation tests (recommended)
-  - `full`: + all unit tests from Section 5 (comprehensive coverage)
-  - Then use the appropriate template from Section 5 to generate spec files
+- **Generate spec files at `standard` coverage by DEFAULT — do NOT block on a question.** Tests are mandatory; never skip them and never ask "which coverage level?" before writing. Write the spec RED-first (before its production file) per the orchestrator TDD gate. Coverage levels (use the matching template set from Section 5):
+  - `standard` (DEFAULT): `should create` + permission validation + data visibility + sort/navigation + detail save-flow/state tests — emit this unless the user explicitly overrode it
+  - `minimal`: only `should create` test (fastest) — only on explicit user request
+  - `full`: + all unit tests from Section 5 (comprehensive coverage) — only on explicit user request
 - Make generated spec files runnable out-of-the-box (not placeholder-only):
   - Provide minimal dependency mocks for `inject()` dependencies (`Router`, `ActivatedRoute`, services)
   - Isolate template with `TestBed.overrideComponent(..., { set: { template: '<div>...</div>' } })` when Core UI dependencies are heavy
@@ -249,7 +248,7 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
    - [ ] Verify module guard reads `data.permission` automatically (no manual implementation needed)
 
 9. **Spec File Generation**
-   - [ ] Verify developer was asked about test coverage level (minimal/standard/full) BEFORE spec files were created
+   - [ ] Verify specs were generated at `standard` coverage by default (minimal/full only on explicit request) — never skipped, never blocked on a coverage-level question
    - [ ] Check generated spec files are NOT placeholders; each test is fully defined and runnable
    - [ ] Confirm mocks are provided for all `inject()` dependencies (Router, ActivatedRoute, services, SdNotifyService, SdLoadingService)
    - [ ] Verify TestBed.overrideComponent isolates templates to avoid heavy UI library dependency errors
@@ -303,7 +302,7 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
 - Omit the 4 audit columns from primary list pages unless an explicit skip condition applies
 - Hard-code audit field names without inspecting the DTO definition
 - Overuse signal invocations in template without considering the 2+ times rule (apply `computed()` or `@let` when signal is referenced 2+ times)
-- Create spec files without first asking developer which test coverage level they prefer (minimal/standard/full)
+- Skip spec files, defer them, or block spec generation behind a coverage-level question — default to `standard` and write them RED-first without asking
 - Generate placeholder specs with `// TODO add tests` or similar; all specs must be runnable and pass on first `ng test`
 - Render long multi-section page forms without anchor navigation when `sd-anchor` is already available
 - Use editable inputs in DETAIL read-only summary sections when `AdaptiveSplitDetail` layout is selected
@@ -332,7 +331,7 @@ All `.ts` code templates this reference emits live in template files — this fi
   - `index.ts` (barrel export)
 
 - **Spec.ts templates** — `_refs/angular/templates/entity-tests.md`
-  - "Request for Test Coverage" clarify prompt
+  - Default coverage note (`standard` unless the user explicitly overrode it — no clarify prompt)
   - `list.component.spec.ts` and `detail.component.spec.ts` at Standard coverage
   - `[module]-[entity].routes.spec.ts` permission validation tests
 
@@ -373,7 +372,7 @@ Agent must ask:
 
 
 ## 5. Spec Templates (Functional Testing)
-Detailed spec.ts code is in `_refs/angular/templates/entity-tests.md`. The clarify flow for choosing coverage level is at `_refs/angular/templates/entity-tests.md#request-for-test-coverage`.
+Detailed spec.ts code is in `_refs/angular/templates/entity-tests.md`. Default coverage is `standard` (no clarify needed — write RED-first without asking); override to `minimal`/`full` only on explicit user request.
 
 ## 6. Example Output
 Worked Product entity (full code samples for model + service + list + detail) lives at `_refs/angular/templates/example-product.md`. Treat it as a sanity reference, not a paste source.

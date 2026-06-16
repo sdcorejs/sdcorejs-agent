@@ -2,27 +2,32 @@
 
 Use this file as the only place to update the Core UI package name and version for angular skills.
 
-- packageName: `@sdcorejs/angular`
-- currentVersion: `20.0.1`
-- lastUpdated: `2026-06-01`
+- packageName: `@sdcorejs/angular`  (new default — what `init-portal` installs)
+- packageNameLegacy: `@sd-angular/core`  (co-published alias — same code, same version line; ACTIVE, not deprecated)
+- currentVersion: `20.0.7`
+- lastUpdated: `2026-06-16`
 - policy: npm registry version only (do not use local tgz `file:sd-angular-core-*.tgz`)
+- Core-UI detection (BOTH names count): a project is an SDCoreJS Core UI portal if `package.json` depends on EITHER `@sdcorejs/angular` OR `@sd-angular/core`. The two are published from the same source at the same version, and the docs site serves both — so ALWAYS fetch docs version-matched (the fetcher already detects either name), and NEVER skip the doc-fetch just because a project uses the legacy name. Generate imports with whichever prefix the project actually installed.
 
-## Package migration — `@sd-angular/core` → `@sdcorejs/angular` (DONE)
+## Two co-published names — `@sdcorejs/angular` (new) + `@sd-angular/core` (legacy alias)
 
-The Core UI library was republished under the ecosystem-aligned name **`@sdcorejs/angular`**. The two packages share identical API surface (same components, entry points, selectors) — only the npm name + the version line differ.
+The Core UI library is published under TWO npm names **at the same time, at the same version**: the ecosystem-aligned **`@sdcorejs/angular`** (new default) and **`@sd-angular/core`** (legacy alias — still actively co-deployed, NOT deprecated, NOT a one-way migration). They share an identical API surface (same components, entry points, selectors) — only the npm name differs. A consumer may legitimately be on either name today and stay there.
 
-- **New projects (default):** init with **`@sdcorejs/angular@20.0.1`** (paired with the Angular 20.3 baseline template). This is what `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` now resolve to.
-- **Legacy projects:** keep importing from **`@sd-angular/core`**. Do NOT force-migrate an existing project's imports — the package alias is a project-level decision. When working in a legacy repo, detect its installed Core UI package and import from whatever it uses.
-- **Version map:** published on npm as [`@sdcorejs/angular`](https://www.npmjs.com/package/@sdcorejs/angular) — `19.0.1` / `20.0.1` / `21.0.1` are equivalent builds of the same Core UI code, one per Angular major (19 / 20 / 21). The agent's init baseline is Angular 20.3 → pin `20.0.1`. Bump to `21.0.1` only when the starter template moves to Angular 21.
+Because both names are equal and co-versioned, the angular track treats EITHER as a valid Core UI marker:
 
-> The on-demand Core UI docs (fetched via `node _refs/angular/core-docs-fetch.mjs --list` / `--print sd-<name>`; not committed) document the surface using the **new** package name (`@sdcorejs/angular/...`). For a legacy project, swap the prefix back to `@sd-angular/core/...` — entry-point sub-paths are identical.
+- **New projects (default):** init with **`@sdcorejs/angular@20.0.7`** (paired with the Angular 20.3 baseline template). This is what `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` resolve to.
+- **Legacy / existing projects:** keep importing from **`@sd-angular/core`**. Do NOT force-migrate an existing project's imports — the package name is a project-level decision. Detect the installed name and import from whatever the project uses.
+- **Docs work for BOTH:** the published docs site (and the on-demand fetcher) serves the same docs regardless of which name the consumer installed. `node _refs/angular/core-docs-fetch.mjs` auto-detects the version from EITHER `@sdcorejs/angular` or `@sd-angular/core`, so a `@sd-angular/core` consumer gets the same version-matched docs — **never skip the fetch for a legacy project.**
+- **Version map:** published on npm as [`@sdcorejs/angular`](https://www.npmjs.com/package/@sdcorejs/angular) (and `@sd-angular/core`) — `19.0.x` / `20.0.x` / `21.0.x` are equivalent builds of the same Core UI code, one line per Angular major (19 / 20 / 21). The agent's init baseline is Angular 20.3 → pin `20.0.7`. Bump to `21.0.7` only when the starter template moves to Angular 21.
+
+> The fetched Core UI docs (via `node _refs/angular/core-docs-fetch.mjs --list` / `--print sd-<name>`; not committed) document the surface using the **new** package name (`@sdcorejs/angular/...`). Entry-point sub-paths are identical across both names — for a project on `@sd-angular/core`, generate imports with the `@sd-angular/core/...` prefix (swap only the leading package name).
 
 ## Placeholders used in skill templates
 
 | Placeholder | Resolves to (current) | Replaces when bumped |
 |---|---|---|
 | `<CORE_UI_PACKAGE_NAME>` | `@sdcorejs/angular` | `packageName` field above |
-| `<CORE_VERSION>` | `20.0.1` | `currentVersion` field above |
+| `<CORE_VERSION>` | `20.0.7` | `currentVersion` field above |
 
 ## Where these placeholders are referenced
 
@@ -55,7 +60,7 @@ generation time via `_refs/angular/core-docs-fetch.mjs`. The npm *pin* (`current
 which Angular major `init-portal` installs) is a **separate concern** from the docs version.
 
 - **Fetch:** `node _refs/angular/core-docs-fetch.mjs --list` (inventory) / `node _refs/angular/core-docs-fetch.mjs <id>` (one component's full API) → raw fetch (NOT summarized) from `https://sdcorejs.github.io/sdcorejs-angular/docs/<version>/`.
-- **Version match:** auto-detected from the target project's installed `@sdcorejs/angular` (or legacy `@sd-angular/core`) version. `--version X` is resolved the SAME way as the installed version — exact published patch → newest published patch of that major → `latest`. So a literal npm pin like `20.0.1` (which the docs registry may not publish as a docs build) maps to the newest published `20.x` docs instead of 404-ing. (The API is byte-identical across majors 19/20/21, so an exact patch match is not required.)
+- **Version match (with nearest-version fallback):** auto-detected from the target project's installed `@sdcorejs/angular` (or legacy `@sd-angular/core`) version. `--version X` is resolved the SAME way as the installed version. Resolution order: **exact published patch → newest published patch of the SAME major → nearest other major (by major distance, then newest patch) → `latest`**. The fetcher then tries each candidate's `index.json` in that order and uses the first that actually downloads — so a version whose docs can't be pulled falls through to the nearest one that can. Example: a literal npm pin like `20.0.1` (which the docs registry doesn't publish as a docs build) maps to the newest published `20.0.x`; an unpublished major like `18.x` maps to the nearest published major (`19.0.x`). (The API is byte-identical across majors 19/20/21, so an exact patch match is not required.)
 - **Cache:** `~/.cache/sdcorejs/core-docs/<version>/` — pulled once, reused, and used as the offline fallback. Never committed.
 - **Mojibake guard (rule 6):** the fetcher refuses (exit 3) any upstream doc that is double-encoded (UTF-8-as-CP1252). The fix is upstream (the doc generator / published site), not here.
 - **Offline:** no network + no cache → the fetcher exits non-zero and the skill falls back to generic Angular Material + `alert('TODO')`, flagged.
