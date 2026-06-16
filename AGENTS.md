@@ -117,6 +117,8 @@ To avoid drift, the source of truth for these rules is `CLAUDE.md`. Summary:
 
 13. **Finish gate is mandatory and unconditional.** After EVERY track code-gen — full SDLC flow OR standalone single-skill trigger ("add entity", "create module X", "add a page") — the track write-code orchestrator MUST present the consolidated **FINISH GATE** (`_refs/shared/finish-gate.md`) before any tail step. One ASK surfaces tests (default ON, RED-first/`standard`, opt-out ok), comments (skip/simple/medium/full — this IS the `comment-code` ASK, folded in, not asked twice), user-guide (default ON), review (default ON); always-on plumbing (verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories) is listed so the user knows it runs. NEVER end silently after code-gen; NEVER skip the gate for a one-liner. The point: the user always KNOWS these steps exist.
 
+14. **Progress visibility via TodoWrite (mandatory during write-code).** At the START of any code-writing run (every track), create a `TodoWrite` checklist — one item per planned unit (file / screen / entity / module / page / pack step) plus the finishing steps. Keep one item `in_progress`; mark `completed` the moment each unit is done and start the next. Update after EACH task, never batch at the end — gives the user a live checkbox progress view. `TodoWrite` is in each orchestrator's `allowed-tools`.
+
 ## Cross-track skills (`skills/shared/sdlc/`, `skills/orchestration/`, `skills/shared/`, `skills/review/`, `skills/testing/`)
 
 Cross-track skills — apply to angular, nestjs, nextjs alike. Dispatch is by skill `name:` frontmatter; the directory layout above is for organization only.

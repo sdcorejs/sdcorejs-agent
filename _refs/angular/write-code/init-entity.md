@@ -72,6 +72,7 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
 - Use `SdTable` with server-side pagination (`type: 'server'`)
 - Prioritize Core UI components first for all generated screens/forms/tables/actions
 - If a required UI piece has no Core UI equivalent, explicitly mark it as custom and warn developer in generation summary
+- Style utility-first per [`_refs/angular/styling.md`](../styling.md): put Core UI utility classes (`d-flex`, `gap-16`, `col-md-6`, `text-primary`, `T14M`, `rounded-8`) on templates; keep component `.scss` near-empty. Use Tailwind instead only if the consumer app ships it. Spacing/sizing is px-based 0–200 (multiples of 4). Custom `.scss` only when no utility fits — token-based (`var(--sd-*)`), with a `// why:`. Fetch the full class list on demand: `node _refs/angular/core-docs-fetch.mjs --print assets/STYLE-GUIDE`.
 - Do not modify global CSS/SCSS during entity generation (`src/styles.scss` and shared global theme files are out of scope)
 - Add `data: { permission: '<CODE>' }` to every route entry using the standard permission code format; the module guard reads this to block unauthorized navigation automatically
 - When module uses keyed permission configuration, add `data.permissionKey` on each route and keep it consistent inside the same module flow
