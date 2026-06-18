@@ -1,7 +1,7 @@
 # Testing Knowledge — Principles (Cross-Track)
 
 > Cross-track testing principles loaded on demand by the `sdcorejs-test` skill
-> (and referenced by `sdcorejs-tdd`). Not a dispatchable skill — no frontmatter.
+> (and referenced by `sdcorejs-test (tdd mode)`). Not a dispatchable skill — no frontmatter.
 > Covers **why / what** (pyramid, mock-vs-real, when-to-write, AAA, naming,
 > behaviour-vs-implementation, what-not-to-test); the stack+level refs under
 > `_refs/<track>/test-<level>.md` cover the **how** (frameworks, fixtures, runners).
@@ -42,7 +42,7 @@ If your pyramid is inverted (heavy E2E, no unit): domain logic is buried in fram
 **Rule**: Mock things you don't own; integrate things you do. If integration tests mock your own DB, they prove nothing — a migration's SQL error won't surface until production.
 
 ## When to write tests
-1. **Before (TDD)** — failing test first; best for bug fixes (reproduce first), pure logic with clear contracts, refactors proving behaviour unchanged. See `sdcorejs-tdd`.
+1. **Before (TDD)** — failing test first; best for bug fixes (reproduce first), pure logic with clear contracts, refactors proving behaviour unchanged. See `sdcorejs-test (tdd mode)`.
 2. **During (test-as-you-build)** — same session as impl, right after each chunk; best for new features where the contract emerges, UI components.
 3. **After (test the diff)** — scoped to the diff; acceptable for spike→prod promotion and generated code (the test is the contract for future edits). Anti-pattern: writing tests only after a bug ships — the bug should drive Test #1.
 
@@ -107,5 +107,5 @@ Tests that hurt expose design problems — fix the SUT, don't suppress the pain.
 
 ## Cross-references
 - Stack+level HOW: `_refs/<track>/test-<level>.md`
-- RED-first discipline: `sdcorejs-tdd`
-- Verification: `orchestration/verify-before-done` ensures the right tests ran before "done"
+- RED-first discipline: `sdcorejs-test (tdd mode)` plus `_refs/shared/tdd.md`
+- Verification: `sdcorejs-ship (verify-before-done mode)` ensures the right tests ran before "done"

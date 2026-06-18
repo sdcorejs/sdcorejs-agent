@@ -39,7 +39,7 @@ Single source of truth. Every consumer uses placeholders, substituted at generat
 | `tracks/angular/10-init-portal.md` | Uses `<CORE_UI_PACKAGE_NAME>` + `<CORE_VERSION>` in `package.json` template, tree diagram, checklist, verification, commit example. Agent reads this file and substitutes at generation time. | ❌ No edit needed — placeholders resolve dynamically |
 | `_refs/angular/core-docs-fetch.mjs` | Per-component Core UI docs are NOT committed — pulled on-demand from the published site, version-matched to the target's installed package, cached. Separate concern from the npm pin. | ❌ Nothing to update — docs are fetched fresh at generation time (see "Catalog docs are fetched on-demand" below) |
 
-`shared/workflow/dep-update.md`, `shared/workflow/env-setup.md` reference this file by PATH only — no literal version/name, no update.
+`shared/workflow/ship.md` dependency-update mode and `shared/workflow/explore.md` env-setup mode reference this file by PATH only — no literal version/name, no update.
 
 ## How the placeholders work
 

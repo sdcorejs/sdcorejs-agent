@@ -150,7 +150,7 @@ For each budget, define an acceptance criterion in the feature spec:
 - Zero N+1 queries in product list endpoint
 ```
 
-`orchestration/verify-before-done` then auto-runs each verifier and blocks "done" if any budget fails.
+`sdcorejs-ship (verify-before-done mode)` then auto-runs each verifier and blocks "done" if any budget fails.
 
 ## Anti-patterns
 - **Budget set after the fact** — defines what current code already does as "the target"; useless for catching regressions
@@ -164,5 +164,5 @@ For each budget, define an acceptance criterion in the feature spec:
 ## Cross-references
 - Stack-specific perf probes: `_refs/<track>/review-performance.md`
 - Caching strategy that often resolves perf findings: track-specific (e.g. `_refs/nextjs/build-website/write-code/caching.md`)
-- Acceptance verification: `orchestration/verify-before-done` runs the budget verifiers as automatable criteria
-- Architecture review for structural perf issues (god-function, N+1): `sdcorejs-review-architecture`
+- Acceptance verification: `sdcorejs-ship (verify-before-done mode)` runs the budget verifiers as automatable criteria
+- Architecture review for structural perf issues (god-function, N+1): `sdcorejs-review` with the `architecture` dimension

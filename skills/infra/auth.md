@@ -6,6 +6,15 @@ allowed-tools: Read, Write, Edit, Glob
 
 # Auth — Wire Keycloak (existing providers)
 
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+
 ## Purpose
 
 Configure authentication for an SDCoreJS stack — **configure, don't build**. The login provider, token validation, and guards already exist; this skill points them at the bundled Keycloak service and confirms the realm import is in place. The frontend uses `@sdcorejs/angular/modules/keycloak` (`provideSdKeycloak` + `SdKeycloakInterceptor`) to authenticate and attach a `Bearer` token to every `/api` call; the NestJS backend's `AuthGuard` validates that token against the same realm. This skill writes a small amount of FE config + BE env, never hand-rolls login flows, PKCE, or token parsing.

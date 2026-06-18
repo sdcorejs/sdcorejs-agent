@@ -1,7 +1,7 @@
 # Persona — behavior contract (tech / non-tech)
 
 > Loaded on demand by any skill before producing user-facing output. The active persona
-> is read from the **target project's** `.sdcorejs/persona.md` (managed by `sdcorejs-persona`).
+> is read from the **target project's** `.sdcorejs/persona.md` (managed by `sdcorejs-explore (persona mode)`).
 > If that file is absent, default to `tech`. This file is reference data — no frontmatter.
 
 ## Why personas exist
@@ -34,7 +34,7 @@ The skill pack serves two audiences with the same pipeline:
 6. **Principles still enforced, silently.** TDD / security / architecture / clean-code / comment
    skills still run. Report their results in plain language ("đã viết kiểm thử tự động và chạy
    đạt"), not as skill names or jargon.
-7. **Clarify by feature + interface, NEVER architecture.** Non-tech users do not know modules,
+7. **Confirm by feature + interface, NEVER architecture.** Non-tech users do not know modules,
    entities, tables, relationships, persistence, transactions, or APIs — so never ask about them.
    Requirement questions focus on exactly two things:
    - **(a) What the software should do** — in the user's own domain words ("quản lý kho: nhập
@@ -56,7 +56,7 @@ At the top of any user-facing output:
 2. If `tech`: proceed as today.
 3. If `non-tech`: apply the seven rules above for the rest of the interaction.
 
-**Specifically for `sdcorejs-clarify-requirements` under `non-tech`:** replace the track's
+**Specifically for `sdcorejs-brainstorming` under `non-tech`:** replace the track's
 architecture/entity/persistence/transaction questions with feature + UI questions per rule 7. The
 agent maps the user's feature answers onto the track's required inputs (module, entity, fields,
 layout) internally and confirms them as plain outcomes — the user is never asked to name a module

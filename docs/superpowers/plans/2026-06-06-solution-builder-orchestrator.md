@@ -59,7 +59,7 @@ sdcorejs-persona (set/read; non-tech is the default consumer)
       - BE first (`nestjs-write-code`: init-project → modules/entities → actions), then FE (`angular-write-code`), then `dockerize` → `auth` → `run-guide`.
       - End with `sdcorejs-verify-before-done` then a plain "here is how to start your app" pointing at `START.md` + the demo login (`demo`/`demo`).
     - **## Composes, does not reimplement** — explicitly: this skill only sequences other skills; if a sub-step needs detail, read that sub-skill. Each generation step still writes to the TARGET project, never this agent repo.
-    - **## Resumability** — the chain is long; if interrupted, `sdcorejs-recovery` + the `.sdcorejs/` docs let it resume mid-chain. Note the gates are natural pause points.
+    - **## Resumability** — the chain is long; if interrupted, `sdcorejs-explore (recovery mode)` + the `.sdcorejs/` docs let it resume mid-chain. Note the gates are natural pause points.
     - **## Tech users** — may invoke it, but the granular skills give finer control; this is optimized for the non-tech one-door experience.
 
 - [ ] **Step 2: Frontmatter + sync gate.**

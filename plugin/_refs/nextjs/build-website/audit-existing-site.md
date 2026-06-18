@@ -5,9 +5,9 @@
 > Read-only; the parent skill owns dispatch.
 
 ## Purpose
-`01-brainstorm` assumes greenfield (we choose industry, tier, theme from nothing). **This skill is the opposite entry**: a Next.js repo already exists, and the user wants to know what's missing or weak so they can prioritise improvements.
+`01-brainstorming` assumes greenfield (we choose industry, tier, theme from nothing). **This skill is the opposite entry**: a Next.js repo already exists, and the user wants to know what's missing or weak so they can prioritise improvements.
 
-The audit measures the existing repo against the same 14-point quality bar that this skill pack would produce from scratch, then surfaces the gaps as a structured report that maps each finding to the specific sub-skill that fixes it. The user picks priorities; the standard SDLC (02-clarify → 03-spec → 04-review → 05-write-plan → 06-review → write-code) executes them.
+The audit measures the existing repo against the same 14-point quality bar that this skill pack would produce from scratch, then surfaces the gaps as a structured report that maps each finding to the specific sub-skill that fixes it. The user picks priorities; the standard SDLC (`01-brainstorming` → `02-spec` → `03-plan` → `sdcorejs-execute-plan` → track executor) executes them.
 
 This skill is **read-only**. It never modifies code, never auto-applies fixes. Approval gates downstream are sacred.
 
@@ -18,7 +18,7 @@ This skill is **read-only**. It never modifies code, never auto-applies fixes. A
 - Before a marketing push / launch — last-pass check
 
 Do NOT invoke when:
-- The repo is empty / has no `package.json` → fall back to `01-brainstorm` (greenfield)
+- The repo is empty / has no `package.json` → fall back to `01-brainstorming` (greenfield)
 - The user only wants to fix ONE specific thing (e.g. "fix contact form") → invoke that sub-skill directly, no audit needed
 - The repo is not Next.js → out of scope
 
@@ -175,7 +175,7 @@ Build-website pack would ship at 28+/30.
 - <2-3 bullets of strengths — important to acknowledge, not all-negative>
 
 ### Recommended next step
-Pick 1-3 Critical findings to address in the next sprint. Mở `02-clarify-requirements` để xác định scope + acceptance criteria, sau đó `03-write-spec` → review → plan → implement.
+Pick 1-3 Critical findings to address in the next sprint. Mở `01-brainstorming` để xác định scope + acceptance criteria, sau đó `02-spec` approval → `03-plan` approval → `sdcorejs-execute-plan`.
 ```
 
 ### Step 5 — Brainstorm improvement priority with the user
@@ -188,26 +188,26 @@ After showing the report, ask:
 > - **C**: Tập trung 1 trục cụ thể (ví dụ "chỉ SEO" hoặc "chỉ contact form + i18n")
 > - **D**: Defer report — không hành động bây giờ, lưu lại làm reference
 
-If user picks A/B/C → hand off to `02-clarify-requirements` with:
+If user picks A/B/C → hand off to `01-brainstorming` with:
 - The selected findings as the implicit scope
 - The audit report saved to `<target>/.sdcorejs/docs/nextjs/<timestamp>-audit.md` (for traceability)
 - Locale of the site, current tier estimate, industry
 
-If D → save report only, do NOT continue. The next session can pick up via `orchestration/recovery`.
+If D → save report only, do NOT continue. The next session can pick up via `sdcorejs-explore (recovery mode)`.
 
 ### Step 6 — Save audit artifact (auto-docs writes this)
 
-The audit report goes through `orchestration/auto-docs` as a special doc type:
+The audit report goes through `_refs/orchestration/tail/auto-docs.md` as a special doc type:
 
 ```
 <target>/.sdcorejs/docs/nextjs/<YYYY-MM-DD-HH-mm>-audit-<site-slug>.md
 ```
 
-Future sessions that invoke `orchestration/recovery` will read this and know the gap baseline. If audit is re-run after fixes ship, the new report can diff against the old one.
+Future sessions that invoke `sdcorejs-explore (recovery mode)` will read this and know the gap baseline. If audit is re-run after fixes ship, the new report can diff against the old one.
 
-## Output: handoff payload to `02-clarify-requirements`
+## Output: handoff payload to `01-brainstorming`
 
-The clarify skill normally asks 11 blockers from scratch. When invoked AFTER an audit, it should:
+The brainstorming skill normally asks 11 blockers from scratch. When invoked AFTER an audit, it should:
 1. **Skip** clarification of facts already discovered in the audit (industry, current pages, locales, hosting if `vercel.json` / `package.json` shows it)
 2. **Ask** the improve-specific blockers:
    - Which findings are in scope for this sprint? (numbered list from the report)
@@ -216,7 +216,7 @@ The clarify skill normally asks 11 blockers from scratch. When invoked AFTER an 
    - Locale parity — if EN currently lags, fix to parity or ship VI-only-cleaned?
    - Bridge mode for breaking changes (e.g. URL slug change from `/about` to `/ve-chung-toi`) — redirects required?
 
-Pass these context fields to `02-clarify-requirements` so it knows to skip what's already answered.
+Pass these context fields to `01-brainstorming` so it knows to skip what's already answered.
 
 ## Rules
 
@@ -228,14 +228,14 @@ Pass these context fields to `02-clarify-requirements` so it knows to skip what'
 - Map each finding to the EXACT reference pack that fixes it (dispatched via `sdcorejs-nextjs`) — don't make the user search
 - Acknowledge strengths — "what this site does well" prevents the report feeling adversarial
 - Save the audit report via `auto-docs` for traceability
-- Hand off to `02-clarify-requirements` with the audit context — do NOT skip the SDLC
+- Hand off to `01-brainstorming` with the audit context — do NOT skip the SDLC
 
 ### MUST NOT
 - Modify any file in the target repo
 - Auto-dispatch sub-skills to fix findings — that bypasses spec/plan/review gates
 - Run audit on a non-Next.js repo (fail fast with a clear message)
 - Treat missing scripts (`check:i18n`, `check:content`) as failures when the project never installed them — they're "Important: run the content-quality pack via `sdcorejs-nextjs`" findings, not Criticals
-- Repeat clarify questions whose answer is already in the audit (waste of user time)
+- Repeat brainstorming questions whose answer is already in the audit (waste of user time)
 - Hide findings to make the report look better — every probed gap goes in
 - Continue past the user's "defer" choice — read-only ends there
 
@@ -246,13 +246,12 @@ Pass these context fields to `02-clarify-requirements` so it knows to skip what'
 - **Auto-running Lighthouse against `localhost` while the dev server isn't booted** — produces fake-zero scores; ask for a URL instead
 - **Skipping the "what this site does well" section** — biases the user toward over-correction
 - **Re-running audit each time the user fixes one thing** — invoke targeted re-check via Step 2 + Step 3 only for the affected sub-skill area; full re-audit once at end of sprint
-- **Treating audit findings as a contract** — they are recommendations; the user can defer / disagree / re-prioritise. Final scope is set in `02-clarify` + spec, not here.
+- **Treating audit findings as a contract** — they are recommendations; the user can defer / disagree / re-prioritise. Final scope is set in `01-brainstorming` + `02-spec`, not here.
 
 ## Cross-references
-- `01-brainstorm` — parallel entry (greenfield); this skill is the brownfield analogue
-- `02-clarify-requirements` — receives the audit context as input
-- `03-write-spec` → `04-review-spec` → `05-write-plan` → `06-review-plan` → `write-code` — standard downstream flow
-- `shared/workflow/code-map` — even more general read-only architecture scan (cross-track); this skill is NextJS-specific and quality-focused
-- `orchestration/recovery` — picks up here if a user resumes mid-sprint
+- `01-brainstorming` — parallel entry (greenfield); this skill is the brownfield analogue and receives the audit context as input
+- `02-spec` → `03-plan` → `sdcorejs-execute-plan` → track executor — standard downstream flow
+- `shared/workflow/explore` — even more general read-only architecture scan (cross-track); this skill is NextJS-specific and quality-focused
+- `sdcorejs-explore (recovery mode)` — picks up here if a user resumes mid-sprint
 - Each finding's "Fix via" column points to the relevant reference pack (init-site through content-quality), all dispatched through the `sdcorejs-nextjs` orchestrator (`_refs/nextjs/build-website/write-code/`)
-- `orchestration/auto-docs` — persists the audit report for future sessions
+- `_refs/orchestration/tail/auto-docs.md` — persists the audit report for future sessions

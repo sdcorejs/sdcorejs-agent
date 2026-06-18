@@ -6,6 +6,15 @@ allowed-tools: Read, Write, Edit, Glob
 
 # Auth — Wire Keycloak (existing providers)
 
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+
 ## Purpose
 
 Configure authentication for an SDCoreJS stack — **configure, don't build**. The login provider, token validation, and guards already exist; this skill points them at the bundled Keycloak service and confirms the realm import is in place. The frontend uses `@sdcorejs/angular/modules/keycloak` (`provideSdKeycloak` + `SdKeycloakInterceptor`) to authenticate and attach a `Bearer` token to every `/api` call; the NestJS backend's `AuthGuard` validates that token against the same realm. This skill writes a small amount of FE config + BE env, never hand-rolls login flows, PKCE, or token parsing.
@@ -155,15 +164,15 @@ If this skill ran as part of the Docker build flow, hand off to **`sdcorejs-run-
 - **Configure, don't build.** The FE module + interceptor and the BE guard + validation already exist. This skill only sets config (FE provider, BE env) and confirms the realm import + guard order. Do not implement login flows, PKCE, JWKS fetching, or token parsing.
 - **Patch, don't clobber** existing FE config — merge into the existing `provideHttpClient` / providers rather than replacing them. Re-running the skill on an already-wired project must be safe.
 
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
+<!-- response-style: auto-injected by sync-skills; do not edit mirror by hand -->
 
-**Response style (terse mode active for this skill — reduces token usage):**
+**Response style (terse mode active for this skill - reduces token usage):**
 
 While executing this skill:
 
 - Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
 - Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
 - Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal - no caveman inside generated artifacts.**
 - Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
 - If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

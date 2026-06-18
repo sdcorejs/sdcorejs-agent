@@ -52,7 +52,7 @@ Before generating, clarify with user:
 2. **Environments** (optional, defaults: `dev`, `qc`, `uat`, `prod`)
 3. **Application Title** (optional, default: `Portal`)
 4. **Sample Entity Names** (optional, defaults: `order`, `customer` — Order uses `<customer-select>` so the sample also demos the base-select / entity-select pattern)
-5. **Additional Modules** (optional) — answer: "Use plop or the init-module reference (`./init-module.md`) after generation"
+5. **Additional Modules** (optional) — answer: "Use the init-module reference (`./init-module.md`) after generation"
 
 > **Port** is fixed at `4200` (Angular default). Do not ask.
 
@@ -102,8 +102,7 @@ portal-new/
 │               ├── order/         # AdaptiveSplitDetail — Order form uses <customer-select>
 │               └── customer/      # UnifiedCompact full-page detail
 ├── .prettierrc.json
-├── .vscode/
-└── plopfile.js                    # Optional generators
+└── .vscode/
 ```
 
 ### Step 2: Dependency Management
@@ -169,6 +168,7 @@ Report pass/fail summary and failing spec names. If E2E missing, report blocker.
 - Do not place `SD_PERMISSION_CONFIGURATION` / `SD_UPLOAD_FILE_CONFIGURATION` in module or route providers with `multi: true` and expect root services to consume them
 - Do not enable permission checks by default (`disabled = true`) when permission backend/data source is not ready
 - Do not mix two permission-code conventions in the same project
+- Do not generate external scaffold-generator files, package scripts, or dependencies. This skill renders files directly from refs/templates.
 
 ---
 
@@ -203,7 +203,6 @@ Ask the developer:
 ├── tsconfig.app.json
 ├── tsconfig.spec.json
 ├── eslint.config.js
-├── plopfile.js
 ├── public/
 │   ├── silent-renew.html
 │   └── logo.png                    # copied from _refs/angular/assets/logo.png; replace per project
@@ -328,7 +327,7 @@ After generation:
 
 ## Post-init — write the project summary
 
-A freshly scaffolded portal has no `.sdcorejs/summary.md` yet. After the validation checklist passes, run `orchestration/auto-summary` in WRITE mode to create it (domain, stack, the generated module/lib layout, reuse cheatsheet, conventions, current git HEAD). This is what the next session and the write-code orchestrator's Step 0 pre-flight will read instead of re-scanning blind. Skipping it means the very next code-writing run pays a full re-discovery.
+A freshly scaffolded portal has no `.sdcorejs/summary.md` yet. After the validation checklist passes, run `sdcorejs-explore (summary mode)` in WRITE mode to create it (domain, stack, the generated module/lib layout, reuse cheatsheet, conventions, current git HEAD). This is what the next session and the write-code orchestrator's Step 0 pre-flight will read instead of re-scanning blind. Skipping it means the very next code-writing run pays a full re-discovery.
 
 ---
 
@@ -348,7 +347,7 @@ Tao src/libs/sample va seed 2 entity order, customer (Order su dung customer-sel
 Render every file from _refs/angular/templates/init-portal-templates.md as source.
 Copy _refs/angular/assets/logo.png to public/logo.png and wire sidebar.logoUrl.
 Create project portal-starter-moi.
-Keep app shell, core configuration, environments, and plop generator files.
+Keep app shell, core configuration, environments, and generated sample files.
 Generate src/libs/sample scaffold with:
   - components/base-select (generic dropdown)
   - components/customer-select (per-entity dropdown)

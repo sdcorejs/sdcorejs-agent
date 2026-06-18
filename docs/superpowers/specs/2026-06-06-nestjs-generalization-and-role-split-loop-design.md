@@ -69,7 +69,7 @@ Root cause: **no complexity tier.** One shape exists — enterprise-platform's. 
 
 ### A.1 The profile
 
-Introduce a project-level **`profile`** with two values, chosen once at clarify and recorded in the target's **`.sdcorejs/summary.md`** (the canonical project brief owned by `sdcorejs-auto-summary`, which the `nestjs-write-code` pre-flight already reads — so the packs pick it up with no new storage mechanism):
+Introduce a project-level **`profile`** with two values, chosen once at clarify and recorded in the target's **`.sdcorejs/summary.md`** (the canonical project brief owned by `sdcorejs-explore`, which the `nestjs-write-code` pre-flight already reads — so the packs pick it up with no new storage mechanism):
 
 | Aspect | `simple` (new default for non-tech) | `enterprise` (current behavior) |
 |---|---|---|

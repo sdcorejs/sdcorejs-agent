@@ -1,14 +1,23 @@
 ---
 name: sdcorejs-angular
-description: Generate Angular-portal code — after 06-review-plan approves, OR as the single entry point for any direct Angular-portal code-gen request. Loads the matching on-demand pack under `_refs/angular/write-code/` (per-pack trigger catalog is in the body): init-portal, admin-screens (always-on: account/role/permission management), init-module, init-entity (full CRUD), screen-list, screen-detail (CREATE/UPDATE/DETAIL + reactive-form/validators), actions (workflow / bulk / custom buttons). Triggers - "initialize portal", "create module X", "add entity / create CRUD", "list screen / add column", "detail screen / form validation / custom validator", "add action button / approve / bulk approve / export Excel", generic "generate code", "go ahead", or localized equivalents. NOT for spec/plan, code review, or nestjs/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Runtime-localized.
+description: Generate Angular-portal code after `sdcorejs-execute-plan` dispatches an approved Angular plan, OR as the single entry point for direct Angular-portal code-gen requests whose requirements are already confirmed. Loads the matching on-demand pack under `_refs/angular/write-code/` (per-pack trigger catalog is in the body): init-portal, admin-screens (always-on: account/role/permission management), init-module, init-entity (full CRUD), screen-list, screen-detail (CREATE/UPDATE/DETAIL + reactive-form/validators), actions (workflow / bulk / custom buttons). Triggers - "initialize portal", "create module X", "add entity / create CRUD", "list screen / add column", "detail screen / form validation / custom validator", "add action button / approve / bulk approve / export Excel", generic "generate code", "go ahead", or localized equivalents. NOT for spec/plan, code review, nestjs/nextjs/test/product-only work, or unresolved requirements. After completion runs the mandatory tail chain (sdcorejs-test -> sdcorejs-review -> repair-loop -> sdcorejs-comment-code -> sdcorejs-product when user-visible feature traceability is needed -> sdcorejs-ship (verify-before-done mode) -> sdcorejs-ship (branch-ready mode) -> auto-docs tail ref -> write-user-guide -> auto-task-tracker tail ref -> memories). Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, TodoWrite
 ---
 
 # 07 — Write Code (Orchestrator)
 
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+
 ## Purpose
 
-Single entry point for generating Angular-portal code. Transforms an approved plan + the user's confirmed scope into complete CRUD entity code:
+Single entry point for generating Angular-portal code. Transforms an approved plan from `sdcorejs-execute-plan` plus the user's confirmed scope into complete CRUD entity code:
 - Model (DTO, SaveReq, validators)
 - Service (mock-first CRUD via centralized seed data file)
 - Routes (lazy-loaded)
@@ -19,7 +28,7 @@ This skill is an **orchestrator**: it does NOT inline the full generation rules 
 
 ## Dispatch table
 
-For each scope item in the confirmed plan (or the direct request), READ the matching reference pack and follow it:
+For each scope item in the approved plan (or a direct request whose requirements are already confirmed), READ the matching reference pack and follow it:
 
 | Scope item | Reference pack to read |
 |---|---|
@@ -35,7 +44,7 @@ Read ON DEMAND only — load the one reference for the step you are executing, n
 
 ### Step 0 — Pre-flight: ensure project summary
 
-Before dispatching ANY reference, run `orchestration/auto-summary`. If `<target>/.sdcorejs/summary.md` is missing, it MUST be generated first (auto-summary delegates the scan to `sdcorejs-code-map` and distills the brief) — this is the gate that stops generation from hallucinating paths / duplicating shared abstractions. If the summary exists, auto-summary reads it (and refreshes on drift) so dispatch slots into the real architecture. Exception: when this run is itself a brand-new init-portal, there is no project to summarize yet — auto-summary runs in WRITE mode at the END of init instead (see `init-portal.md` Post-init).
+Before dispatching ANY reference, run `sdcorejs-explore (summary mode)`. If `<target>/.sdcorejs/summary.md` is missing, it MUST be generated first (`sdcorejs-explore` scans the code map and distills the brief) — this is the gate that stops generation from hallucinating paths / duplicating shared abstractions. If the summary exists, `sdcorejs-explore` reads it and refreshes on drift so dispatch slots into the real architecture. Exception: when this run is itself a brand-new init-portal, there is no project to summarize yet — run summary mode at the END of init instead (see `init-portal.md` Post-init).
 
 ### Execution order + hand-off
 
@@ -65,17 +74,18 @@ Keep each purpose one line, concrete to the feature (not "a table component"). P
 Then run the tail in this order, honoring the gate's answers (skip = omit that step; everything not skipped runs):
 
 1. *(if Tests not skipped)* `sdcorejs-test` (sdcorejs-test) — RUN the `.spec.ts` files already written RED-first during the TDD gate and report pass/fail + failing names; add happy-path e2e only when a dev server/browser is available (else report the exact local command). Unit specs are NOT optional unless the user chose `skip` in the gate — if any testable file still lacks one, write it here.
-2. *(if Review not skipped)* `sdcorejs-review` (skills/review/review.md; auto-detects Angular → loads `_refs/angular/review-code.md`) — convention check; color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
-3. *(if Review not skipped)* `orchestration/repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
-4. `orchestration/comment-code` — apply the comment level the FINISH GATE captured (skip / simple / medium / full). Do NOT ASK again — the gate already asked. Cross-track baseline + per-track addenda live inside `orchestration/comment-code` itself
-5. `orchestration/verify-before-done` *(always)* — BLOCK "done" until acceptance criteria from the spec are ✅ verified or ⚠️ explicitly deferred
-6. `orchestration/branch-ready` *(always)* — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
-7. `orchestration/auto-docs` *(always)* — session summary written to `<target>/.sdcorejs/docs/angular/`
-8. *(if User guide not skipped)* `sdcorejs-write-user-guide` (Mode 1) — update the touched module's `.sdcorejs/user-guide/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds at ship.
-9. `orchestration/auto-task-tracker` *(always)* — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
-10. `orchestration/memories` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
+2. *(if Review not skipped)* `sdcorejs-review` (skills/shared/workflow/review.md; auto-detects Angular → loads `_refs/angular/review-code.md`) — convention check; color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
+3. *(if Review not skipped)* `sdcorejs-repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
+4. `sdcorejs-comment-code` — apply the comment level the FINISH GATE captured (skip / simple / medium / full). Do NOT ASK again — the gate already asked. Cross-track baseline + per-track addenda live in `_refs/orchestration/tail/comment-code.md`
+5. `sdcorejs-product` *(when user-visible feature traceability is needed)* - seed/update `.sdcorejs/docs/product/` with requirement, implementation, and test mapping
+6. `sdcorejs-ship (verify-before-done mode)` *(always)* — BLOCK "done" until acceptance criteria from the spec are ✅ verified or ⚠️ explicitly deferred
+7. `sdcorejs-ship (branch-ready mode)` *(always)* — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
+8. `_refs/orchestration/tail/auto-docs.md` *(always)* — session summary written to `<target>/.sdcorejs/docs/angular/`
+9. *(if User guide not skipped)* `sdcorejs-write-user-guide` (Mode 1) — update the touched module's `.sdcorejs/user-guide/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds at ship.
+10. `_refs/orchestration/tail/auto-task-tracker.md` *(always)* — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
+11. `sdcorejs-explore (memories mode)` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 
-The FINISH GATE itself is mandatory and unconditional. The always-on plumbing steps (verify-before-done, branch-ready, auto-docs, auto-task-tracker, memories) run regardless of gate answers. Do NOT skip `verify-before-done` — that's how acceptance criteria silently slip.
+The FINISH GATE itself is mandatory and unconditional. The always-on plumbing steps (`sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, auto-docs tail ref, auto-task-tracker tail ref, memories) run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)` — that's how acceptance criteria silently slip.
 
 ## When to Use
 
@@ -136,9 +146,9 @@ Inference rules:
 
 ### TDD Gate — mandatory before each code-generating step (NEVER skipped, NEVER gated behind a question)
 
-Tests are a REQUIRED deliverable of this skill, not an optional add-on. Every code-gen run MUST leave a runnable `.spec.ts` next to every testable production file. Do NOT ask the user whether to write tests, and do NOT ask which coverage level first — default to **`standard`** coverage and proceed. Only switch to `minimal` / `full` if the user EXPLICITLY requested a different level (e.g. in clarify-requirements). A missing spec is a generation defect, not a style choice. RED-first is the DEFAULT ordering (not post-hoc).
+Tests are a REQUIRED deliverable of this skill, not an optional add-on. Every code-gen run MUST leave a runnable `.spec.ts` next to every testable production file. Do NOT ask the user whether to write tests, and do NOT ask which coverage level first — default to **`standard`** coverage and proceed. Only switch to `minimal` / `full` if the user EXPLICITLY requested a different level (e.g. in `sdcorejs-brainstorming`). A missing spec is a generation defect, not a style choice. RED-first is the DEFAULT ordering (not post-hoc).
 
-Before writing any production file (model / service / list / detail), invoke `sdcorejs-tdd`:
+Before writing any production file (model / service / list / detail), invoke `sdcorejs-test (tdd mode)`:
 
 1. Write the failing `.spec.ts` for that chunk first → run test → confirm RED
 2. Generate the production file with minimal passing code → run test → confirm GREEN
@@ -150,7 +160,9 @@ Skip RED-first for: `mock-data` seed rows (pure data, no testable logic) and `ro
 
 ### Step 1: Build EntitySchema (shared input for every reference)
 
-From user input or semantic inference, construct `EntitySchema` with all field metadata. The schema is the single input every reference pack consumes — init-entity, screen-list, and screen-detail all read these names + field flags (`visibleInList`, `visibleInDetail`, `type`, `required`, permission codes).
+From user input, product docs, design handoff, or semantic inference, construct `EntitySchema` with all field metadata. The schema is the single input every reference pack consumes — init-entity, screen-list, and screen-detail all read these names + field flags (`visibleInList`, `visibleInDetail`, `type`, `required`, permission codes).
+
+If a matching `design/specs/` or `design/wireframes/` handoff exists, read it before generating UI. Follow its screen/state/copy contract unless it conflicts with approved product criteria; if it conflicts, stop and surface the mismatch instead of silently choosing one.
 
 For two worked examples (user-supplied Product fields + inferred Promotion schema), see [`_refs/angular/templates/orchestrator-step-examples.md#step-1--build-entityschema`](_refs/angular/templates/orchestrator-step-examples.md#step-1--build-entityschema).
 
@@ -281,15 +293,15 @@ Before returning generated code:
 
 A worked end-to-end example (user request → EntitySchema → final file tree, following `init-entity.md`) lives in [`_refs/angular/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity`](_refs/angular/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity). Read it when you want to see how the dispatch table cashes out on a real request.
 
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
+<!-- response-style: auto-injected by sync-skills; do not edit mirror by hand -->
 
-**Response style (terse mode active for this skill — reduces token usage):**
+**Response style (terse mode active for this skill - reduces token usage):**
 
 While executing this skill:
 
 - Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
 - Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
 - Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal - no caveman inside generated artifacts.**
 - Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
 - If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

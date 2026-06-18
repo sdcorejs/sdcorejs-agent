@@ -1,10 +1,19 @@
 ---
 name: sdcorejs-write-user-guide
-description: Generate + maintain evergreen end-user feature guides for generated SDCoreJS apps. Per-module `.sdcorejs/user-guide/<module>.md` (features / tasks / routes / permissions / data + a Coverage-vs-requirements table) and a root aggregate `sdcorejs-user-guide.md` exportable to DOCX/PDF via pandoc (scaffold images = placeholders + a capture checklist). Four modes - per-module incremental (auto in the write-code tail chain, right after auto-docs), aggregate build (on ship / large feature / manual), legacy reverse-engineer (read an existing project via `sdcorejs-code-map`), PRD-coverage compare (spec acceptance criteria + optional external `.sdcorejs/prd/<feature>.md`). Distinct from `sdcorejs-auto-docs` (session deltas) and `sdcorejs-auto-summary` (project brief). Triggers - end of any write-code task (per-module update), "write user guide", "user documentation", "user manual", "build aggregate user guide", "export user guide docx/pdf", "compare against PRD / requirement coverage", ship of a large feature, "read the whole project and write the user guide". Applies to angular, nestjs, nextjs. Runtime-localized.
+description: Generate + maintain evergreen end-user feature guides for generated SDCoreJS apps. Per-module `.sdcorejs/user-guide/<module>.md` (features / tasks / routes / permissions / data + a Coverage-vs-requirements table) and a root aggregate `sdcorejs-user-guide.md` exportable to DOCX/PDF via pandoc (scaffold images = placeholders + a capture checklist). Four modes - per-module incremental (auto in the write-code tail chain, right after auto-docs), aggregate build (on ship / large feature / manual), legacy reverse-engineer (read an existing project via `sdcorejs-explore`), PRD-coverage compare (spec acceptance criteria + optional external `.sdcorejs/prd/<feature>.md`). Distinct from `_refs/orchestration/tail/auto-docs.md` (session deltas) and `sdcorejs-explore` (project brief). Triggers - end of any write-code task (per-module update), "write user guide", "user documentation", "user manual", "build aggregate user guide", "export user guide docx/pdf", "compare against PRD / requirement coverage", ship of a large feature, "read the whole project and write the user guide". Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # Write User Guide
+
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
 
 ## Purpose
 
@@ -15,7 +24,7 @@ Generate and maintain **evergreen end-user feature references** for generated SD
 | **`.sdcorejs/user-guide/<module>.md`** (this skill) | "How do I USE this feature?" | idempotent overwrite per module, keyed to git HEAD |
 | **`sdcorejs-user-guide.md`** (aggregate, Mode 2) | "The full system — one doc to export" | rebuilt from per-module guides on demand |
 | `.sdcorejs/docs/<track>/*.md` (`auto-docs`) | "What was DONE this session" | many timestamped session deltas |
-| `.sdcorejs/summary.md` (`auto-summary`) | "What IS this project" | one canonical project brief |
+| `.sdcorejs/summary.md` (`sdcorejs-explore`) | "What IS this project" | one canonical project brief |
 
 Templates live in `_refs/shared/user-guide-template.md`. Per-module guides go to `<target>/.sdcorejs/user-guide/<module>.md`; the aggregate goes to `<target>/sdcorejs-user-guide.md`. Both are generated artifacts and are idempotently overwritten.
 
@@ -30,8 +39,8 @@ Templates live in `_refs/shared/user-guide-template.md`. Per-module guides go to
 
 ## Not
 
-- Do NOT duplicate `sdcorejs-auto-docs` (session deltas — timestamped, one file per session) or `sdcorejs-auto-summary` (project brief — one canonical file). READ `.sdcorejs/summary.md` as context before writing user guides; it provides the module list, stack, and architecture map.
-- Mode 3 (Legacy) MUST delegate discovery to `sdcorejs-code-map` — do NOT re-implement route/permission globbing here.
+- Do NOT duplicate `_refs/orchestration/tail/auto-docs.md` (session deltas — timestamped, one file per session) or `sdcorejs-explore` (project brief — one canonical file). READ `.sdcorejs/summary.md` as context before writing user guides; it provides the module list, stack, and architecture map.
+- Mode 3 (Legacy) MUST delegate discovery to `sdcorejs-explore` — do NOT re-implement route/permission globbing here.
 - All artifacts write to the **TARGET project**, never to the `sdcorejs-agent` repo.
 
 ---
@@ -215,8 +224,8 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
 - Record `git_head` and `generated_at` in every frontmatter block so drift is detectable.
 
 ### MUST NOT
-- Duplicate `sdcorejs-auto-docs` (session deltas) — the user guide is a timeless end-user reference, not a session changelog.
-- Duplicate `sdcorejs-auto-summary` (project brief) — READ `summary.md` as context, never replace it.
+- Duplicate `_refs/orchestration/tail/auto-docs.md` (session deltas) — the user guide is a timeless end-user reference, not a session changelog.
+- Duplicate `sdcorejs-explore` (project brief) — READ `summary.md` as context, never replace it.
 - **Capture screenshots or run the target app** — the agent is read-only with respect to runtime; image entries are always placeholders.
 - Write any artifact into the `sdcorejs-agent` repo (the agent repo holds skills, not project content).
 - Invent routes, permissions, or field names not found in the harvest — prefer "unknown — fill manually" over fabrication.
@@ -224,9 +233,9 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
 ## Related
 
 - `_refs/shared/user-guide-template.md` — per-module + aggregate templates + pandoc export command
-- `sdcorejs-code-map` — discovery engine used by Mode 3 (legacy reverse-engineer)
-- `sdcorejs-auto-docs` — session-delta skill (distinct from this skill's evergreen guides)
-- `sdcorejs-auto-summary` — canonical project brief (read as context before writing guides)
+- `sdcorejs-explore` — discovery engine used by Mode 3 (legacy reverse-engineer)
+- `_refs/orchestration/tail/auto-docs.md` — session-delta tail reference (distinct from this skill's evergreen guides)
+- `sdcorejs-explore` — canonical project brief (read as context before writing guides)
 - `sdcorejs-ship` — triggers Mode 2 (aggregate build) as part of the ship checklist
 
 ## Mode 2 — Aggregate build + export
@@ -260,7 +269,7 @@ Glob: <target>/.sdcorejs/user-guide/*.md
 
 Build `<target>/sdcorejs-user-guide.md` from the **aggregate template** in `_refs/shared/user-guide-template.md`:
 
-1. **YAML frontmatter** — set `title` (project name from `sdcorejs-auto-summary` / ask user if absent), `generated_at` (ISO 8601 now), `git_head` (`git rev-parse HEAD`), `modules` (sorted list of all `module` slugs found), `coverage` (summed from step 4 below).
+1. **YAML frontmatter** — set `title` (project name from `sdcorejs-explore` / ask user if absent), `generated_at` (ISO 8601 now), `git_head` (`git rev-parse HEAD`), `modules` (sorted list of all `module` slugs found), `coverage` (summed from step 4 below).
 2. **`## Table of contents`** — numbered list linking to each `## <Module>` section anchor.
 3. **`## System Overview`** — 1-2 sentences: what the system does, who it is for (read from `.sdcorejs/summary.md` if it exists; otherwise write best-effort from module titles).
 4. **One `## <Module>` section per file** — insert each module's body content verbatim after stripping the YAML frontmatter block (the `---…---` header). Preserve all headings (shift level if needed so they sit below the `##` module heading).
@@ -316,18 +325,18 @@ When triggered manually (e.g. "export user guide docx" or localized equivalents)
 - "reverse-engineer user guide"
 - or any equivalent request to produce guides for an existing/legacy project where no spec, plan, or write-code session output exists.
 
-### 2. Harvest the whole project via `sdcorejs-code-map`
+### 2. Harvest the whole project via `sdcorejs-explore`
 
-Delegate ALL discovery to `sdcorejs-code-map` (read-only architecture-discovery skill). Do NOT re-implement route/permission globbing here.
+Delegate ALL discovery to `sdcorejs-explore` (read-only architecture-discovery skill). Do NOT re-implement route/permission globbing here.
 
 ```
-Invoke: sdcorejs-code-map
+Invoke: sdcorejs-explore
 Purpose: full project inventory — modules/libs, routes + controllers, permission codes,
          screens, shared components, base classes, path conventions
 Output:  module list + per-module facts used as the harvest basis for step 3
 ```
 
-After `sdcorejs-code-map` completes, supplement its output with targeted probes (same probes as Mode 1) for any module where route or permission data is still missing:
+After `sdcorejs-explore` completes, supplement its output with targeted probes (same probes as Mode 1) for any module where route or permission data is still missing:
 
 **Angular — routes & permissions (supplement):**
 ```bash
@@ -357,7 +366,7 @@ rg -n "openWorkflow\|openBulk\|openCustomAction\|SdActionButton" <fe>/src/libs/<
 
 ### 3. Render per-module guides
 
-For **each module** discovered by `sdcorejs-code-map`, render `<target>/.sdcorejs/user-guide/<module>.md` from the per-module template in `_refs/shared/user-guide-template.md`, best-effort from the harvested facts.
+For **each module** discovered by `sdcorejs-explore`, render `<target>/.sdcorejs/user-guide/<module>.md` from the per-module template in `_refs/shared/user-guide-template.md`, best-effort from the harvested facts.
 
 Fill frontmatter and all body sections exactly as in Mode 1, Step 3 (including the angular-only Core UI components table), using only data found in the harvest — **do NOT invent** routes, permissions, field names, or Core UI components not present in the code. Where a value could not be resolved, write `"unknown — fill manually"` rather than fabricating.
 

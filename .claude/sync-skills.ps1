@@ -1,27 +1,31 @@
-# Windows PowerShell wrapper for .claude/sync-skills.sh
-# Locates bash.exe (Git for Windows / WSL) and delegates to the bash script.
-# Usage: powershell -ExecutionPolicy Bypass -File .claude\sync-skills.ps1 [-check]
-param([switch]$check)
+# Windows PowerShell wrapper for scripts/sync-skills.mjs.
+# Usage:
+#   powershell -ExecutionPolicy Bypass -File .claude\sync-skills.ps1
+#   powershell -ExecutionPolicy Bypass -File .claude\sync-skills.ps1 -check
+#   powershell -ExecutionPolicy Bypass -File .claude\sync-skills.ps1 -clean
+param(
+    [switch]$check,
+    [switch]$clean
+)
 
-$script_args = if ($check) { @("--check") } else { @() }
-
-$bash = $null
-foreach ($candidate in @(
-    (Get-Command bash -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -ErrorAction SilentlyContinue),
-    "C:\Program Files\Git\bin\bash.exe",
-    "C:\Program Files\Git\usr\bin\bash.exe"
-)) {
-    if ($candidate -and (Test-Path $candidate -ErrorAction SilentlyContinue)) {
-        $bash = $candidate
-        break
-    }
+if ($check -and $clean) {
+    Write-Error "Use only one mode: -check or -clean."
+    exit 2
 }
 
-if (-not $bash) {
-    Write-Error "bash not found. Install Git for Windows (https://git-scm.com/downloads) then re-run from a normal shell."
-    Write-Host "Alternatively: open Git Bash and run:  bash .claude/sync-skills.sh $($script_args -join ' ')"
+$scriptArgs = @()
+if ($check) { $scriptArgs += "--check" }
+if ($clean) { $scriptArgs += "--clean" }
+
+$node = Get-Command node -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -ErrorAction SilentlyContinue
+if (-not $node) {
+    Write-Error "node not found. Install Node.js 18+ and re-run."
     exit 1
 }
 
-& $bash ".claude/sync-skills.sh" @script_args
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$repoRoot = Resolve-Path (Join-Path $scriptDir "..")
+$syncScript = Join-Path $repoRoot "scripts\sync-skills.mjs"
+
+& $node $syncScript @scriptArgs
 exit $LASTEXITCODE

@@ -60,9 +60,9 @@ _refs/nextjs/review-security.md          # dangerouslySetInnerHTML, server-only 
 
 - `sdcorejs-review-performance` (budget + 3 tracks → 1; budget → `_refs/shared/review-performance.md`).
 - `sdcorejs-review-accessibility` (baseline + angular + nextjs → 1; baseline → `_refs/shared/`).
-- `sdcorejs-test` (e2e + integration + unit, per track → **one track-aware testing skill**; `philosophy.md` → `_refs/shared/testing-philosophy.md`; **keep `sdcorejs-tdd` separate** — it's a distinct RED-first discipline, not a test-writer).
+- `sdcorejs-test` (e2e + integration + unit, per track → **one track-aware testing skill**; `philosophy.md` → `_refs/shared/testing-philosophy.md`; RED-first discipline lives as `sdcorejs-test (tdd mode)` backed by `_refs/shared/tdd.md`).
 
-**Net:** review 13 → 5 (code, architecture, security, performance, accessibility) ; testing 8 → 2 (`sdcorejs-test` + `sdcorejs-tdd`). Combined **21 → 7**. Whole pack ≈ **58 → ~44** (more if onboarding folds — below).
+**Net:** review 13 → 5 (code, architecture, security, performance, accessibility) ; testing 8 → 1 (`sdcorejs-test` with `tdd mode`). Combined **21 → 6**. Whole pack keeps shrinking as infrastructure-only skills fold into workflow skills.
 
 Stretch (optional, looser triggering): merge security+performance+accessibility into one `sdcorejs-review-quality` → review 13 → 3. Offered as a lever, not the default.
 

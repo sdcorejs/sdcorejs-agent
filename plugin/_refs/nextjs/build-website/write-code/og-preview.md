@@ -22,7 +22,7 @@ A share link without a preview image looks broken on Zalo and Messenger (Vietnam
 | `src/app/twitter-image.tsx` | Optional Twitter-specific variant (usually same as OG) |
 | `src/lib/og.ts` | Shared OG renderer helpers (font loader, brand colors) |
 
-OG image strategy is set in `02-clarify-requirements`:
+OG image strategy is set in `01-brainstorming`:
 - **Static fallback only** (Lean tier): 1 image at `public/og-default.png`, every page uses it via `buildMetadata` in `seo.md`
 - **Dynamic per-page** (Standard / Full): each route has its own `opengraph-image.tsx` rendered at build/request time
 

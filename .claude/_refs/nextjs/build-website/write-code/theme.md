@@ -13,8 +13,8 @@ A landing site that ships without a deliberate design system ends up with Tailwi
 - After a logo change → re-pick palette from logo
 
 ## Prerequisites
-- Industry + tier from `01-brainstorm`
-- Logo + brand color answer from `02-clarify-requirements` (if user provided)
+- Industry + tier from `01-brainstorming`
+- Logo + brand color answer from `01-brainstorming` (if user provided)
 
 ## Workflow
 
@@ -36,7 +36,7 @@ Match industry vibe (from brainstorm) to the table below. Each row is a starting
 | **Tech / SaaS** | `#7c3aed` (violet-600) or `#0891b2` | gradient or neon `#22d3ee` | dark mode + neutral | Modern, energetic |
 | **Phi lợi nhuận** | `#15803d` (green-700) or `#dc2626` (red-600) | warm gold or sky | warm neutrals | Human, mission-driven |
 
-If user provided a brand color in clarify, **derive the palette from that**:
+If user provided a brand color during brainstorming, **derive the palette from that**:
 1. Set provided color as `--color-brand`
 2. Pick complementary accent (HSL hue ±150° from primary)
 3. Pick neutral family (warm or cool based on primary's temperature)
@@ -226,6 +226,6 @@ Open `localhost:3000` and inspect:
 - **Body font weight 300 (Light)**: poor readability for VI diacritics, accessibility issue
 
 ## Cross-references
-- Inputs: industry from `01-brainstorm`, brand color from `02-clarify-requirements`
+- Inputs: industry from `01-brainstorming`, brand color from `01-brainstorming`
 - Used by: every component in `components/sections/` and `components/ui/`
 - Affects: `pages-and-blocks.md` (components consume these tokens), `responsive.md` (font scaling), `sdcorejs-review` (contrast audit)

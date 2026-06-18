@@ -9,13 +9,21 @@ allowed-tools: Read, Bash, Grep, Glob, Edit
 ## Purpose
 Debugging is search through a hypothesis space. The fastest path is the most disciplined one: reliable repro → minimal isolation → falsifiable hypothesis → root cause. Random fixes feel productive and waste hours.
 
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+
 ## When invoked
 - "not working", "bug", "fix bug", "broken", "doesn't work", "error", "throws", or localized equivalents
 - Stack trace, console error, failing test, unexpected output
 - "why is X behaving as Y", or localized equivalents
 
 Do NOT invoke for:
-- Feature requests phrased as "should also handle X" — that's `02-clarify-requirements`
+- Feature requests phrased as "should also handle X" — that's `sdcorejs-brainstorming`
 - Performance tuning without a specific anomaly — that's perf work, different discipline
 
 ## Workflow
@@ -68,7 +76,7 @@ When you have a fix in mind, ask: "If I revert this fix in 6 months, will the sa
 - Run the repro → bug gone
 - Run the test suite — make sure you didn't break adjacent code
 - Add a regression test for the bug if one doesn't exist
-- Commit with `fix(scope):` + body explaining the root cause (use the `sdcorejs-commit` skill)
+- Commit with `fix(scope):` + body explaining the root cause (use the `sdcorejs-git (commit mode)` skill)
 
 ## Stack-specific guides
 

@@ -205,4 +205,4 @@ Severity: **Important**. WCAG SC 4.1.2 Name, Role, Value.
 ## Cross-references
 - Cross-track baseline: `_refs/shared/review-accessibility.md`
 - Code review (semantics overlap): `sdcorejs-review` · Core UI inventory (on-demand, not committed): `node _refs/angular/core-docs-fetch.mjs --list`
-- Verification: `orchestration/verify-before-done` · Repair loop: `orchestration/repair-loop`
+- Verification: `sdcorejs-ship (verify-before-done mode)` · Repair loop: `sdcorejs-repair-loop`

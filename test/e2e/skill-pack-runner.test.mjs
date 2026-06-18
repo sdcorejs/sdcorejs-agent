@@ -6,12 +6,14 @@ import { loadSkillPack, runPromptEval } from './support/skill-pack-runner.mjs';
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
 
-  assert.equal(pack.sourceSkills.length, 41);
-  assert.equal(pack.claudeMirrorSkills.length, 41);
-  assert.equal(pack.pluginMirrorSkills.length, 41);
+  assert.equal(pack.sourceSkills.length, 24);
+  assert.equal(pack.claudeMirrorSkills.length, 24);
+  assert.equal(pack.pluginMirrorSkills.length, 24);
+  assert.equal(pack.codexMirrorSkills.length, 24);
   // Core UI per-component docs are fetched on-demand (not committed), so this count
   // dropped from ~150 to ~69. Floor still catches accidental mass-deletion of refs.
   assert.ok(pack.referenceDocs.length >= 60, `referenceDocs=${pack.referenceDocs.length}`);
+  assert.equal(pack.codexReferenceDocs.length, pack.referenceDocs.length);
   assert.equal(pack.diagnostics.length, 0);
 });
 
@@ -25,7 +27,10 @@ test('phase 1: deterministic prompt eval dispatches expected skills', async () =
     [
       ['nestjs-init', 'sdcorejs-nestjs', true],
       ['angular-action-localized', 'sdcorejs-angular', true],
-      ['open-ended-localized', 'sdcorejs-brainstorm', true]
+      ['open-ended-localized', 'sdcorejs-brainstorming', true],
+      ['product-traceability-localized', 'sdcorejs-product', true],
+      ['solution-builder-classroom-localized', 'sdcorejs-solution-builder', true],
+      ['design-from-user-stories-localized', 'sdcorejs-design', true]
     ]
   );
 });

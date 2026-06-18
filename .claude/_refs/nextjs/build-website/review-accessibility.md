@@ -211,4 +211,4 @@ Severity: **Minor** — visual difference only, but an EN screen reader announci
 - Cross-track baseline: `_refs/shared/review-accessibility.md`
 - Touch targets: `_refs/nextjs/build-website/write-code/responsive.md`
 - Heading + alt rules: `_refs/nextjs/build-website/write-code/content-quality.md`
-- Verification: `orchestration/verify-before-done` runs probes as criteria · Repair loop: `orchestration/repair-loop`
+- Verification: `sdcorejs-ship (verify-before-done mode)` runs probes as criteria · Repair loop: `sdcorejs-repair-loop`

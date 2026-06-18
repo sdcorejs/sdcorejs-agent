@@ -12,7 +12,7 @@ Adapt to the user's language (full diacritics for VI). Defaults are pre-selected
 
 > **Code generated for `<scope>`. Finishing steps — defaults in brackets. Say "proceed" to accept all, or tell me what to change:**
 > 1. **Tests** — [✅ write now, RED-first, `standard` coverage]. Options: `skip` · `minimal` · `standard` · `full`.
-> 2. **Comments** — [pick one]: `skip` · `simple` · `medium` · `full`. *(This is the `orchestration/comment-code` choice — there is no separate prompt later.)*
+> 2. **Comments** — [pick one]: `skip` · `simple` · `medium` · `full`. *(This is the `sdcorejs-comment-code` choice — there is no separate prompt later; rules live in `_refs/orchestration/tail/comment-code.md`.)*
 > 3. **User guide** — [✅ update the module guide (`.sdcorejs/user-guide/<module>.md`)]. Option: `skip`.
 > 4. **Review** — [✅ run convention review + repair loop]. Option: `skip`.
 >
@@ -24,17 +24,17 @@ Adapt to the user's language (full diacritics for VI). Defaults are pre-selected
 - **Comments are a required pick** (the existing comment-code ASK, folded in). `skip` is a valid pick, but the user must see the choice. Do NOT also run a second comment-code ASK afterwards.
 - **User guide + Review default ON**; the user may `skip` either.
 - After the user answers (or says "proceed"), execute the tail steps honoring the choices, in the orchestrator's defined order. A skipped step is omitted; everything not skipped runs.
-- **Plumbing always runs** (verify-before-done → branch-ready → auto-docs → auto-task-tracker → memories). These are not opt-out, but the gate lists them so the user is aware they happen.
+- **Plumbing always runs** (`sdcorejs-ship (verify-before-done mode)` → `sdcorejs-ship (branch-ready mode)` → auto-docs tail ref → auto-task-tracker tail ref → memories). These are not opt-out, but the gate lists them so the user is aware they happen.
 - Localize the prompt; keep identifiers, permission codes, and route paths in English in both languages.
 - If the user already gave explicit instructions this turn (e.g. "add entity X with full tests and medium comments"), pre-fill the gate from those answers and present it for a quick confirm rather than re-asking blindly.
 
 ## Order of execution after the gate
 1. (if tests not skipped) `sdcorejs-test` — run the RED-first specs written during the TDD gate + add happy-path; report pass/fail
-2. (if review not skipped) `sdcorejs-review` → `orchestration/repair-loop`
-3. `orchestration/comment-code` — apply the level the gate captured (no second ASK)
-4. `orchestration/verify-before-done` *(always)*
-5. `orchestration/branch-ready` *(always)*
-6. `orchestration/auto-docs` *(always)*
+2. (if review not skipped) `sdcorejs-review` → `sdcorejs-repair-loop`
+3. `sdcorejs-comment-code` — apply the level the gate captured (no second ASK; load `_refs/orchestration/tail/comment-code.md`)
+4. `sdcorejs-ship (verify-before-done mode)` *(always)*
+5. `sdcorejs-ship (branch-ready mode)` *(always)*
+6. `_refs/orchestration/tail/auto-docs.md` *(always)*
 7. (if user guide not skipped) `sdcorejs-write-user-guide` (Mode 1)
-8. `orchestration/auto-task-tracker` *(always)*
-9. `orchestration/memories` *(when durable knowledge surfaced)*
+8. `_refs/orchestration/tail/auto-task-tracker.md` *(always)*
+9. `sdcorejs-explore (memories mode)` *(when durable knowledge surfaced)*

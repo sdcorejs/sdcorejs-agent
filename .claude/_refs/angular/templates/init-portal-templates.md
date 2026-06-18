@@ -28,9 +28,7 @@ Code templates referenced from the init-portal reference pack [`init-portal.md`]
     "build-dev": "ng build --configuration=dev",
     "build-qc": "ng build --configuration=qc",
     "build-uat": "ng build --configuration=uat",
-    "build-prod": "ng build --configuration=prod",
-    "plop:module": "npx plop module",
-    "plop:entity": "npx plop entity"
+    "build-prod": "ng build --configuration=prod"
   },
   "dependencies": {
     "<CORE_UI_PACKAGE_NAME>": "<CORE_VERSION>",
@@ -50,7 +48,6 @@ Code templates referenced from the init-portal reference pack [`init-portal.md`]
     "@angular/cli": "^20.3.18",
     "@angular/compiler-cli": "^20.3.18",
     "prettier": "latest",
-    "plop": "4.0.1",
     "typescript": "~5.6.0"
   }
 }

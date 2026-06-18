@@ -1,0 +1,339 @@
+---
+const groups = [
+  {
+    title: "Popular entry points",
+    label: "Most used",
+    intro:
+      "Start here when the user asks for a feature, a track-specific artifact, or a complete app.",
+    skills: [
+      {
+        name: "sdcorejs-solution-builder",
+        role: "One-door full-stack app builder for PO/QC users.",
+        use: "Use when someone describes software in domain terms: build me a classroom management app.",
+      },
+      {
+        name: "sdcorejs-angular",
+        role: "Angular portal code generator.",
+        use: "Use for modules, CRUD screens, list/detail pages, and workflow actions.",
+      },
+      {
+        name: "sdcorejs-nestjs",
+        role: "NestJS backend code generator.",
+        use: "Use for backend projects, modules, entities, CRUD APIs, and custom endpoints.",
+      },
+      {
+        name: "sdcorejs-nextjs",
+        role: "Next.js public-site generator.",
+        use: "Use for landing sites, pages, SEO, OG previews, i18n, caching, and contact forms.",
+      },
+      {
+        name: "sdcorejs-product",
+        role: "Product documentation and traceability track.",
+        use: "Use for PRDs, user stories, acceptance criteria, UAT, and requirement coverage.",
+      },
+      {
+        name: "sdcorejs-design",
+        role: "UI/UX design and frontend handoff track.",
+        use: "Use for screen flows, wireframes, mockups, PNG previews, and design from user stories.",
+      },
+      {
+        name: "sdcorejs-test",
+        role: "First-class test executor.",
+        use: "Use for unit, integration, e2e, UAT, or autoId-inspector driven test generation.",
+      },
+    ],
+  },
+  {
+    title: "Core SDLC flow",
+    label: "Approval gates",
+    intro:
+      "These skills keep large work from jumping straight into code. They are common in feature work, even when the user does not name them.",
+    skills: [
+      {
+        name: "sdcorejs-brainstorming",
+        role: "Explore options and confirm blocking requirements.",
+        use: "Use when scope is open-ended or minimum inputs are missing.",
+      },
+      {
+        name: "sdcorejs-spec",
+        role: "Write, review, approve, and persist the feature spec.",
+        use: "Use after requirements are confirmed, before implementation planning.",
+      },
+      {
+        name: "sdcorejs-plan",
+        role: "Write, review, approve, and persist the implementation plan.",
+        use: "Use after the spec is approved, before generation.",
+      },
+      {
+        name: "sdcorejs-execute-plan",
+        role: "Dispatch an approved plan to the right track or harness.",
+        use: "Use when the plan is approved and the user is ready to run it; always asks sequential vs parallel.",
+      },
+    ],
+  },
+  {
+    title: "Daily support skills",
+    label: "Common helpers",
+    intro:
+      "These are direct helper skills for project discovery, Git artifacts, review, debugging, and final delivery gates.",
+    skills: [
+      {
+        name: "sdcorejs-explore",
+        role: "Understand codebase, map architecture, trace flows, persona, recovery context, and durable memories.",
+        use: "Use for project summaries, code maps, flow tracing, setup discovery, persona setup, recovery, and remembering durable project facts.",
+      },
+      {
+        name: "sdcorejs-git",
+        role: "Commit, PR, changelog, and release-note artifacts.",
+        use: "Use after readiness is clear, or when the user asks only for Git artifacts.",
+      },
+      {
+        name: "sdcorejs-review",
+        role: "Read-only critique and artifact evaluation.",
+        use: "Use for code, architecture, security, performance, accessibility, or artifact reviews.",
+      },
+      {
+        name: "sdcorejs-debug",
+        role: "Systematic bug diagnosis and root-cause search.",
+        use: "Use for concrete bugs with repros, traces, failing tests, or unclear causes.",
+      },
+      {
+        name: "sdcorejs-ship",
+        role: "Final gate, dependency-update delivery, and ready-to-merge/release checks.",
+        use: "Use for acceptance verification, branch readiness, dependency updates, ship, push, release, or tag requests.",
+      },
+    ],
+  },
+  {
+    title: "Finish and release skills",
+    label: "Less common, important",
+    intro:
+      "These are easy to misunderstand because they often run near the end. They protect quality, branch hygiene, and release handoff.",
+    skills: [
+      {
+        name: "sdcorejs-repair-loop",
+        role: "Fix verified findings from review or acceptance gates.",
+        use: "Use when review or ship verify-before-done mode reports Critical or Important issues.",
+      },
+      {
+        name: "sdcorejs-comment-code",
+        role: "Apply the selected finish-gate comment level.",
+        use: "Use after review/repair or directly when the user asks to add code comments.",
+      },
+      {
+        name: "sdcorejs-write-user-guide",
+        role: "Generate evergreen user-facing feature guides.",
+        use: "Use after generated features, large ship handoffs, or when comparing docs to requirements.",
+      },
+    ],
+  },
+  {
+    title: "Packaging skills",
+    label: "Specialized",
+    intro:
+      "Use these when a generated app must be runnable by a non-technical user from one folder.",
+    skills: [
+      {
+        name: "sdcorejs-dockerize",
+        role: "Generate a docker-compose stack.",
+        use: "Use for Angular + NestJS delivery with frontend, backend, Keycloak, and Postgres.",
+      },
+      {
+        name: "sdcorejs-auth",
+        role: "Wire authentication through Keycloak.",
+        use: "Use after dockerize when login, realm import, frontend auth, and backend token validation are needed.",
+      },
+      {
+        name: "sdcorejs-run-guide",
+        role: "Write a plain-language START.md.",
+        use: "Use after dockerize and auth so non-technical users can run the app with one command.",
+      },
+    ],
+  },
+  {
+    title: "Context, parallelism, and workspace skills",
+    label: "Power-user / mostly automatic",
+    intro:
+      "These skills keep long-running work resumable and safe. Some are invoked directly, but many run as supporting infrastructure.",
+    skills: [
+      {
+        name: "sdcorejs-using-skills",
+        role: "Onboarding and dispatch guide.",
+        use: "Use when no skill clearly matches, or when a user asks what the agent can do.",
+      },
+      {
+        name: "sdcorejs-parallel-dispatch",
+        role: "Parallel execution safety gate.",
+        use: "Use after execute-plan asks sequential vs parallel and the user chooses parallel.",
+      },
+    ],
+  },
+];
+---
+
+<section id="skills" class="catalog">
+  <div class="container">
+    <div class="head reveal">
+      <span class="eyebrow"
+        ><span class="bullet" aria-hidden="true"></span>Skill catalog</span
+      >
+      <h2>Know which skill to call, and which ones run behind the scenes</h2>
+      <p class="lead">
+        The pack has 24 dispatchable skills. The first groups are the ones most
+        people invoke directly. The later groups are specialized guards,
+        packaging steps, or context helpers that often run as part of a larger
+        flow.
+      </p>
+    </div>
+
+    <div class="group-list">
+      {
+        groups.map((group, groupIndex) => (
+          <article class={`group reveal delay-${(groupIndex % 4) + 1}`}>
+            <header class="group-head">
+              <div>
+                <span class="group-label">{group.label}</span>
+                <h3>{group.title}</h3>
+              </div>
+              <p>{group.intro}</p>
+            </header>
+
+            <div class="skill-grid">
+              {group.skills.map((skill) => (
+                <div class="skill">
+                  <code>{skill.name}</code>
+                  <p class="role">{skill.role}</p>
+                  <p class="use">
+                    <b>Use when:</b> {skill.use}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .catalog {
+    background: var(--c-bg-soft);
+    border-block: 1px solid var(--c-border);
+  }
+
+  .head {
+    max-width: 820px;
+    margin-bottom: 42px;
+  }
+
+  .bullet {
+    width: 6px;
+    height: 6px;
+    background: var(--c-blue-500);
+    border-radius: 999px;
+  }
+
+  .group-list {
+    display: grid;
+    gap: 22px;
+  }
+
+  .group {
+    padding: 24px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .group-head {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.5fr) minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+    margin-bottom: 18px;
+  }
+
+  .group-label {
+    display: inline-flex;
+    width: fit-content;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: var(--c-orange-100);
+    color: var(--c-orange-600);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .group h3 {
+    margin: 10px 0 0;
+    font-size: 1.24rem;
+  }
+
+  .group-head p {
+    margin: 0;
+    color: var(--c-text-soft);
+  }
+
+  .skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+  }
+
+  .skill {
+    min-height: 168px;
+    padding: 16px;
+    background: var(--c-bg-soft);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm);
+  }
+
+  .skill code {
+    display: inline-block;
+    max-width: 100%;
+    padding: 3px 7px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 6px;
+    color: var(--c-blue-600);
+    font-size: 0.82rem;
+    overflow-wrap: anywhere;
+  }
+
+  .role {
+    margin: 10px 0 8px;
+    color: var(--c-text);
+    font-weight: 650;
+    line-height: 1.35;
+  }
+
+  .use {
+    margin: 0;
+    color: var(--c-text-soft);
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .use b {
+    color: var(--c-text);
+  }
+
+  @media (max-width: 760px) {
+    .group {
+      padding: 18px;
+    }
+
+    .group-head {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .skill {
+      min-height: 0;
+    }
+  }
+</style>

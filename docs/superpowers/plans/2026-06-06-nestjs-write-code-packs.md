@@ -117,7 +117,7 @@ MSG
   - `.env.example` — `PORT`, `DB_*`, `DB_SYNCHRONIZE`, `KEYCLOAK_URL`/`KEYCLOAK_ISSUER`/`KEYCLOAK_REALM`, `INTERNAL_SECRET_KEY`, context header names.
   - **Migrations note:** the reference app uses `DB_SYNCHRONIZE=true` in dev (no migrations). For prod, document a TypeORM datasource (`src/data-source.ts`) + `npm run migration:run` script. **Reconcile with Plan 2:** the `backend.Dockerfile` CMD runs `npm run typeorm migration:run && npm run start:prod` — init-project MUST therefore add a `migration:run` script (no-op safe when synchronize handles schema) OR the pack instructs adjusting the Dockerfile CMD to honor `DB_SYNCHRONIZE`. State the resolution explicitly.
   - **Schema-per-module Postgres** explanation (one DB, N schemas; `main.ts` pre-creates them).
-  - Run `sdcorejs-auto-summary` (WRITE) after init, per the angular init-portal pattern.
+  - Run `sdcorejs-explore` (WRITE) after init, per the angular init-portal pattern.
 
 - [ ] **Step 2: Sanity-lint the embedded snippets** — TS fenced blocks parse as TS-ish (no obvious syntax breakage); imports use the real sub-paths from the catalog. (No compiler in the agent repo — this is a content-correctness review against `_refs/nestjs/core-catalog.md`.)
 

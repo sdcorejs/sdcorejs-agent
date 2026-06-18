@@ -133,7 +133,7 @@ Validates → `form.markAllAsTouched()` on invalid → loading + notify → `ser
 
 ### Navigation after success
 
-Default: navigate up (`['..']`) → list page. Alternative (opt-in when user explicitly asks): `['../detail', created.id]`. Document the choice in `orchestration/auto-docs`.
+Default: navigate up (`['..']`) → list page. Alternative (opt-in when user explicitly asks): `['../detail', created.id]`. Document the choice via `_refs/orchestration/tail/auto-docs.md`.
 
 ### Permission gate
 

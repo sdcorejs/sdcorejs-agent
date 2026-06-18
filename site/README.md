@@ -24,11 +24,12 @@ sites under `<owner>.github.io/<repo>/`. The CI workflow overrides via
 ## Sections
 
 1. **Hero** - current pack stats, runtime-localized positioning, and install CTA.
-2. **Tracks** - Angular Portal, NestJS, and Next.js track summaries.
-3. **Angular Portal** - track focus, on-demand reference packs, generated shape.
-4. **Quality Gates** - E2E harness phases, including full Phase 4 opt-in command.
-5. **Install** - 3-step plugin install with copy-to-clipboard buttons.
-6. **Footer** - links + license.
+2. **Tracks** - Angular, NestJS, Next.js, Product, Design, and Test track summaries.
+3. **Skill Catalog** - grouped skill reference with common entry points, less-common guards, packaging, context, and release skills.
+4. **Angular Portal** - track focus, on-demand reference packs, generated shape.
+5. **Quality Gates** - E2E harness phases, including full Phase 4 opt-in command.
+6. **Install** - 3-step plugin install with copy-to-clipboard buttons.
+7. **Footer** - links + license.
 
 Each component lives in `src/components/<Name>.astro` with scoped styles. Reveals
 use the `.reveal` class; the `IntersectionObserver` in `src/layouts/Layout.astro`
@@ -36,8 +37,8 @@ adds `.is-visible` when an element enters the viewport.
 
 ## Current facts reflected by the site
 
-- 42 dispatchable skills.
-- 147 reference documents.
+- 24 dispatchable skills.
+- 78 markdown reference documents.
 - English source skills with runtime-localized output.
 - E2E harness phases:
   - Phase 1: deterministic skill-pack runner.

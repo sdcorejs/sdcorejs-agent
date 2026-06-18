@@ -3,7 +3,7 @@
 **Date:** 2026-06-09
 **Status:** Approved (brainstorm) — pending written-spec review, then plan.
 **Branch:** `feat/sdcorejs-write-user-guide` (off `main` @ `f9b3416`).
-**Author:** brainstorming session (Opus 4.8), grounded on a scout of the existing doc skills (`auto-docs`, `auto-summary`, `code-map`, `ship`) + the write-code tail chains + the angular/nestjs write-code packs.
+**Author:** brainstorming session (Opus 4.8), grounded on a scout of the existing doc skills (`auto-docs`, `summary mode`, `code-map mode`, `ship`) + the write-code tail chains + the angular/nestjs write-code packs.
 
 ## TL;DR
 
@@ -11,7 +11,7 @@ A new dispatchable skill `sdcorejs-write-user-guide` that produces an **evergree
 
 ## Problem & motivation
 
-Generated apps have no end-user documentation. The existing doc skills don't fill this: `auto-docs` = per-session deltas, `auto-summary` = a 1-page project brief, `code-map` = a read-only architecture scan. None is a stable, end-user-facing "what the software does + how to use each feature + does it meet the requirements" reference. This skill adds that, and makes it (a) machine-readable so an AI can answer user questions and (b) traceable to the PRD/acceptance criteria.
+Generated apps have no end-user documentation. The existing doc skills don't fill this: `auto-docs` = per-session deltas, `summary mode` = a 1-page project brief, `code-map mode` = a read-only architecture scan. None is a stable, end-user-facing "what the software does + how to use each feature + does it meet the requirements" reference. This skill adds that, and makes it (a) machine-readable so an AI can answer user questions and (b) traceable to the PRD/acceptance criteria.
 
 ## Decisions (brainstorm)
 
@@ -25,8 +25,8 @@ Generated apps have no end-user documentation. The existing doc skills don't fil
 ## Non-overlap with existing skills
 
 - `sdcorejs-auto-docs` — "what changed this session" (dated delta files). Untouched.
-- `sdcorejs-auto-summary` — "what the project IS" (`.sdcorejs/summary.md`, 1 page). Read as pre-context.
-- `sdcorejs-code-map` — architecture discovery (modules/routes/permissions/shared). **Reused** by the legacy mode's harvest.
+- `sdcorejs-explore` — "what the project IS" (`.sdcorejs/summary.md`, 1 page). Read as pre-context.
+- `sdcorejs-explore` — architecture discovery (modules/routes/permissions/shared). **Reused** by the legacy mode's harvest.
 - `sdcorejs-write-user-guide` (new) — "what the software DOES for end users + does it meet requirements" (evergreen, per-feature/module).
 
 ---
@@ -71,7 +71,7 @@ Body sections (fixed order):
 
 1. **Per-module incremental** *(automatic, every write-code — small or large)* — update ONLY the touched module's `.sdcorejs/user-guide/<module>.md` (re-harvest that module + re-map coverage). Cheap; keeps guides current without rebuilding everything. Runs in the tail chain **right after `auto-docs`** (the doc-writing cluster: `auto-docs` → `write-user-guide` → `auto-task-tracker` → `memories`), so it sits after the `branch-ready` hygiene sweep alongside the other doc steps.
 2. **Aggregate build** *(ship / large feature / manual)* — assemble `<root>/sdcorejs-user-guide.md` from all per-module guides + a global coverage summary; optionally run the pandoc DOCX export. 
-3. **Legacy reverse-engineer** *(manual: "đọc toàn dự án viết user guide")* — invoke `sdcorejs-code-map` to harvest modules/routes/permissions/screens from an existing (possibly hand-written) project, then synthesize all per-module guides + the aggregate from the code. No spec required; the coverage section notes "reverse-engineered — no spec/PRD" (or compares to a PRD if one is dropped in).
+3. **Legacy reverse-engineer** *(manual: "đọc toàn dự án viết user guide")* — invoke `sdcorejs-explore` to harvest modules/routes/permissions/screens from an existing (possibly hand-written) project, then synthesize all per-module guides + the aggregate from the code. No spec required; the coverage section notes "reverse-engineered — no spec/PRD" (or compares to a PRD if one is dropped in).
 4. **PRD compare** *(runs inside modes 1 & 2)* — default source = the feature spec's acceptance criteria; if `.sdcorejs/prd/<feature>.md` exists, also map each PRD requirement → ✅/⚠️/❌. Output is the §2.6 Coverage table + the aggregate's global coverage summary.
 
 ## §4 — Wiring (the edits)
@@ -90,9 +90,9 @@ Body sections (fixed order):
 - [ ] Per-module guide path is `.sdcorejs/user-guide/<module>.md`; aggregate is `<root>/sdcorejs-user-guide.md`.
 - [ ] Mode 1 (incremental) is wired into all three write-code tail chains right after `auto-docs`; documented as updating ONLY the touched module.
 - [ ] Mode 2 (aggregate + pandoc) is wired into `ship` after `branch-ready`.
-- [ ] Mode 3 (legacy) invokes `code-map` for harvest and produces guides from existing code without a spec.
+- [ ] Mode 3 (legacy) invokes `code-map mode` for harvest and produces guides from existing code without a spec.
 - [ ] Coverage section maps spec acceptance criteria (+ external `.sdcorejs/prd/<feature>.md` if present) → ✅/⚠️/❌.
-- [ ] No duplication of `auto-docs`/`auto-summary`/`code-map`; CLAUDE.md + workflow diagram updated.
+- [ ] No duplication of `auto-docs`/`summary mode`/`code-map mode`; CLAUDE.md + workflow diagram updated.
 - [ ] `bash .claude/sync-skills.sh --check` + `npx lefthook run check` green.
 
 ## Risks & mitigations
@@ -115,7 +115,7 @@ Body sections (fixed order):
 1. **Template ref** — `_refs/shared/user-guide-template.md` (per-module + aggregate templates, pandoc command, image checklist).
 2. **Skill core + mode 1** — `write-user-guide.md` with the harvest + per-module incremental generation + the coverage mapping.
 3. **Mode 2 (aggregate + export)** — aggregate assembly + pandoc command emission + ship hook.
-4. **Mode 3 (legacy)** — code-map harvest → synthesize guides for an existing project.
+4. **Mode 3 (legacy)** — code-map mode harvest → synthesize guides for an existing project.
 5. **Wiring** — tail-chain inserts (3 tracks) + ship + CLAUDE.md + workflow diagram + final gate.
 
 Each phase is independently committable + mirror-synced; phases 1–2 deliver a working per-module guide generator before the aggregate/legacy/wiring layers.

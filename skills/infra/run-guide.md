@@ -6,6 +6,15 @@ allowed-tools: Read, Write
 
 # Run Guide — Zero to Running for Non-Tech
 
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+
 ## Purpose
 
 Emit a single plain-language `START.md` into the target deploy root that takes a **non-technical** user from a fresh machine to a running app: install Docker Desktop, run **one** command, open the right URL, log in with the demo account, and recover from the handful of problems they're likely to hit. No jargon, numbered steps, describes what they will SEE on screen. This is the **final step** of the Docker build flow — it runs after `sdcorejs-dockerize` has emitted the compose stack and `sdcorejs-auth` has wired the login, so by now `docker compose up` already boots everything (Angular FE at `http://localhost:4200`, Keycloak admin at `http://localhost:8080`, Postgres internal on a volume).

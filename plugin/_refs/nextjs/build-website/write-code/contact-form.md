@@ -13,7 +13,7 @@ A landing site without a working contact form is incomplete — leads vanish. A 
 - Adding a new form (newsletter signup uses a similar pattern)
 
 Prerequisites:
-- Contact email destination from `sdcorejs-clarify-requirements` (`CONTACT_TO_EMAIL`)
+- Contact email destination from `sdcorejs-brainstorming` (`CONTACT_TO_EMAIL`)
 - Resend account + API key (default email service) OR SendGrid alternative
 - i18n messages exist (form labels, errors via `i18n.md`)
 
@@ -440,4 +440,4 @@ if (slackWebhook) {
 - Theme tokens (button color, success/danger): `theme.md`
 - Section composition: `pages-and-blocks.md` (`<ContactForm />` rendered inside contact page or as section)
 - Caching: API route is `force-dynamic` (not cached)
-- Verification: `orchestration/verify-before-done` includes "send-test-email succeeds end-to-end" as acceptance criterion
+- Verification: `sdcorejs-ship (verify-before-done mode)` includes "send-test-email succeeds end-to-end" as acceptance criterion

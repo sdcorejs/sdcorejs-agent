@@ -1,0 +1,287 @@
+---
+name: sdcorejs-product
+description: Product-track executor for PO-facing feature documentation and traceability. Use when the user asks for product docs, PO docs, PRDs, user stories, acceptance criteria, feature ledger, requirement review, traceability matrix, UAT checklist, or to check whether requirement, implementation, and tests are consistent and complete. Also use alongside code-generation features to seed/update human-readable `product/` docs and `.sdcorejs/docs/product/` ledgers so future sessions can recover business intent and coverage gaps. Does not generate app code. Applies to product, angular, nestjs, nextjs, test, and generic harness work. Runtime-localized.
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+---
+
+# Product Track
+
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+
+## Purpose
+Maintain PO-facing feature docs and the traceability ledger for every meaningful feature. Human-readable docs explain what the product should do. The `.sdcorejs` ledger records why the feature exists, what was agreed, what was implemented, how it was tested, and what still does not line up.
+
+This skill does not write application code. It writes two documentation layers in the target project:
+
+```text
+<target-project>/product/                 # human-readable PO/QC docs
+<target-project>/.sdcorejs/docs/product/  # agent traceability ledger
+```
+
+## When to Use
+
+Use this skill in three modes.
+
+| Mode | Trigger | Output |
+|---|---|---|
+| Seed | after spec approval, or user asks for product/PO doc | PRD + user stories + acceptance criteria + UAT checklist + ledger |
+| Update | after plan approval or implementation changes | product docs plus implementation/test mapping updated |
+| Audit | before done/commit/PR, or user asks if scope is complete | gap report across requirement, implementation, tests |
+
+If the request is only app code generation, do not replace the app executor. Run this skill alongside it for traceability.
+
+## Inputs
+
+Load what exists, in this order:
+
+1. Approved product or app spec from `.sdcorejs/specs/<track>/`.
+2. Approved plan from `.sdcorejs/plans/<track>/`.
+3. Existing PO docs under `product/` for the same feature.
+4. Existing design handoff under `design/` for the same feature.
+5. Current session summary from `.sdcorejs/docs/<track>/`.
+6. Relevant git diff or changed file list.
+7. Test output supplied by `sdcorejs-test` or verification commands.
+8. Existing product ledger under `.sdcorejs/docs/product/` for the same feature.
+
+If a required input is missing, write the known facts and mark the missing item as a gap instead of inventing it.
+
+## Output Path
+
+For a new feature, create or update the human-readable docs:
+
+```text
+<target-project>/product/prds/<kebab-feature>.md
+<target-project>/product/user-stories/<kebab-feature>.md
+<target-project>/product/acceptance-criteria/<kebab-feature>.md
+<target-project>/product/uat-checklists/<kebab-feature>.md
+<target-project>/product/decisions/<kebab-feature>.md
+```
+
+Also create or update the agent traceability ledger:
+
+```text
+<target-project>/.sdcorejs/docs/product/<YYYY-MM-DD-HH-mm>-<kebab-feature>.md
+```
+
+For updates, prefer editing the existing product docs and ledger for that feature. If the old ledger is ambiguous, create a new dated ledger and link the older files in "Related docs".
+
+## Human-Readable Doc Templates
+
+### PRD
+
+```markdown
+# PRD - <Feature Title>
+
+## Problem
+<The user/business problem.>
+
+## Goal
+<Outcome the software should create.>
+
+## Users
+- <role> - <need>
+
+## Scope
+- <included capability>
+
+## Out Of Scope
+- <explicit non-goal>
+
+## Success Criteria
+- <observable result>
+```
+
+### User Stories
+
+```markdown
+# User Stories - <Feature Title>
+
+| ID | As a | I want to | So that | Priority | Acceptance Criteria |
+|---|---|---|---|---|---|
+| US1 | <role> | <action> | <benefit> | Must | AC1, AC2 |
+```
+
+### Acceptance Criteria
+
+```markdown
+# Acceptance Criteria - <Feature Title>
+
+| ID | User Story | Criterion | Verification | Status |
+|---|---|---|---|---|
+| AC1 | US1 | <observable behavior> | unit / integration / e2e / UAT | agreed |
+```
+
+### UAT Checklist
+
+```markdown
+# UAT Checklist - <Feature Title>
+
+| Scenario | Steps | Expected Result | Owner | Status |
+|---|---|---|---|---|
+| <scenario> | <manual steps> | <visible result> | PO / QC | pending |
+```
+
+### Decisions
+
+```markdown
+# Decisions - <Feature Title>
+
+| Date | Decision | Reason | Impact |
+|---|---|---|---|
+| <date> | <decision> | <why> | <affected tracks> |
+```
+
+## Ledger Template
+
+```markdown
+---
+feature: <kebab-feature>
+status: draft | planned | implemented | verified | partial
+tracks: [angular, nestjs, nextjs, test, generic]
+sourceSpecPath: <relative path or unknown>
+sourcePlanPath: <relative path or unknown>
+prdPath: product/prds/<kebab-feature>.md
+userStoriesPath: product/user-stories/<kebab-feature>.md
+acceptanceCriteriaPath: product/acceptance-criteria/<kebab-feature>.md
+uatChecklistPath: product/uat-checklists/<kebab-feature>.md
+updatedAt: <ISO-8601 timestamp>
+---
+
+# Product Feature Ledger - <Title>
+
+## Business Goal
+<Why this matters and who benefits.>
+
+## Users And Scenarios
+- <user role> can <goal> so that <outcome>.
+
+## Requirement Contract
+| ID | Requirement / Acceptance Criterion | Priority | Source | Status |
+|---|---|---|---|---|
+| AC1 | <criterion> | Must | spec/user | agreed |
+
+## Implementation Map
+| AC | Backend | Frontend | Other | Status |
+|---|---|---|---|---|
+| AC1 | <file/path or n/a> | <file/path or n/a> | <config/doc or n/a> | missing / partial / done |
+
+## Test Map
+| AC | Unit | Integration | E2E / UAT | Evidence | Status |
+|---|---|---|---|---|
+| AC1 | <spec file or n/a> | <spec file or n/a> | <flow/check or n/a> | <command/result> | missing / partial / done |
+
+## UAT Checklist
+| Scenario | Steps | Expected Result | Owner | Status |
+|---|---|---|---|---|
+| <business scenario> | <manual steps or link to test> | <observable result> | PO / QC | pending / pass / fail / deferred |
+
+## Gap Review
+- Requirement gaps:
+- Implementation gaps:
+- Test gaps:
+- Ambiguities:
+
+## Decisions
+- <decision and reason>
+
+## Open Questions
+- <question or "None">
+
+## Related Docs
+- PRD: product/prds/<kebab-feature>.md
+- User stories: product/user-stories/<kebab-feature>.md
+- Acceptance criteria: product/acceptance-criteria/<kebab-feature>.md
+- UAT checklist: product/uat-checklists/<kebab-feature>.md
+- Decisions: product/decisions/<kebab-feature>.md
+- Spec: <path>
+- Plan: <path>
+- Session docs: <path>
+```
+
+## Audit Rules
+
+For each acceptance criterion:
+
+1. It must map to at least one implementation artifact or a deliberate "not implemented" decision.
+2. It must map to at least one verification artifact: unit, integration, e2e, UAT, or explicit manual check.
+3. If implementation exists with no requirement, mark it as scope creep.
+4. If test exists with no requirement, mark it as orphan coverage.
+5. If requirement exists with no implementation or test, mark it as a blocker before "done" unless the user explicitly defers it.
+
+Status vocabulary:
+
+- `done`: requirement, implementation, and test evidence all align.
+- `partial`: one side is present but incomplete.
+- `missing`: no matching artifact.
+- `deferred`: user explicitly postponed it.
+- `n/a`: not applicable and explained.
+
+## Report Format
+
+When auditing, report briefly:
+
+```markdown
+Product traceability - <feature>
+
+| AC | Requirement | Implementation | Test | Status |
+|---|---|---|---|---|
+| AC1 | agreed | done | done | done |
+| AC2 | agreed | partial | missing | blocker |
+
+Verdict: done | partial | blocked
+Ledger: `.sdcorejs/docs/product/<file>.md`
+Product docs: `product/prds/<file>.md`, `product/user-stories/<file>.md`, `product/acceptance-criteria/<file>.md`
+
+Next actions:
+- <only real gaps>
+```
+
+## Rules
+
+### Must Do
+
+- Write product docs to the target project, never to the `sdcorejs-agent` repo unless it is the explicit target.
+- Keep `product/` docs and `.sdcorejs/docs/product/` ledger in sync for the same feature.
+- Preserve the user's language for prose.
+- Keep identifiers, route paths, permission codes, and env keys in English.
+- Link PRDs, user stories, specs, plans, changed files, and test outputs by path instead of pasting full file contents.
+- Treat requirement/implementation/test mismatch as a product gap, not just a testing gap.
+- Mark inferred requirements as "inferred - needs confirmation" unless already approved.
+
+### Must Not
+
+- Generate app code.
+- Invent acceptance criteria to make a trace look complete.
+- Claim a feature is covered without current evidence.
+- Hide deferred or missing tests.
+- Overwrite an unrelated product ledger.
+- Update `.sdcorejs/docs/product/` without updating the matching `product/` docs when the user-facing requirement changed.
+
+## Cross-references
+
+- `sdcorejs-brainstorming` - confirms requirements.
+- `sdcorejs-spec` - source of approved acceptance criteria.
+- `sdcorejs-plan` - source of planned implementation and verification.
+- `sdcorejs-design` - maps product stories and acceptance criteria to screens, wireframes, PNG previews, and FE handoff.
+- `sdcorejs-test` - source of test evidence.
+- `sdcorejs-ship (verify-before-done mode)` - final acceptance gate; product gaps should be resolved or deferred before done.
+
+<!-- response-style: auto-injected by sync-skills; do not edit mirror by hand -->
+
+**Response style (terse mode active for this skill - reduces token usage):**
+
+While executing this skill:
+
+- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
+- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
+- Pattern: `[thing] [action] [reason]. [next step].`
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal - no caveman inside generated artifacts.**
+- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
+- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.
