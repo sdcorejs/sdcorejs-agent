@@ -1,6 +1,6 @@
 ---
-updated_at: 2026-06-18T17:36:00+07:00
-status: blocked
+updated_at: 2026-06-18T17:49:00+07:00
+status: complete
 track: generic
 active_skill: none
 branch: feat/angular-utility-first-styling
@@ -9,19 +9,19 @@ branch: feat/angular-utility-first-styling
 # Current Session Checkpoint
 
 ## User Request
-Commit va push doc site slide deck, tao PR, gui link/title/description.
+Sua lai doc site slide deck: no-scroll, chi bam Next/Back, title nho hon, nhieu slide phu hon, them cai dat/test Claude-Codex va prompt Angular Portal/Core UI.
 
 ## Tasks
-- [x] Chay pre-flight, build lai doc site, kiem tra diff/secrets
-- [x] Stage dung files va tao commit slide deck
-- [x] Push branch hien tai len remote
-- [ ] Tao hoac cap nhat PR bang gh
-- [x] Gui link tao PR, title, description, verification
+- [x] Nam yeu cau va doc context/site hien tai
+- [x] Thiet ke lai deck theo kieu no-scroll, chi dieu huong slide
+- [x] Bo sung slide phu: cai dat, test Claude/Codex, prompt Angular Portal/Core UI
+- [x] Verify build va kiem tra trai nghiem bang browser/screenshot
+- [x] Bao lai ket qua, rui ro con lai
 
 ## Current State
-- Last completed: Commit `63064d4 docs(site): rebuild docs as presentation deck` was pushed to origin.
+- Last completed: Build, static assertions, Chrome DOM check, and screenshot smoke passed.
 - In progress: None.
-- Blocked/skipped: PR creation is blocked because `gh` is not authenticated. Public GitHub API returned no open PR for this branch.
+- Blocked/skipped: None.
 
 ## Artifacts Touched
 - EDIT .sdcorejs/tasks/current-session.md - checkpoint for doc site rebuild
@@ -36,15 +36,18 @@ Commit va push doc site slide deck, tao PR, gui link/title/description.
 - EDIT site/src/components/Nav.astro - point navigation to slide anchors
 - EDIT site/src/components/Footer.astro - point footer to slide anchors
 - EDIT site/README.md - document slide deck structure
+- EDIT site/src/pages/index.astro - rewrite deck as no-scroll presenter slides with install/test/prompt content
+- EDIT site/src/components/Nav.astro - remove stale slide anchors
+- EDIT site/src/components/Footer.astro - remove stale slide anchors
+- EDIT site/src/layouts/Layout.astro - update default metadata
+- EDIT site/README.md - document no-scroll 18-slide deck
 
 ## Verification
-- PASS npm run check:skills
-- PASS npm run test:e2e (12/12)
-- PASS npm run build (site)
-- PASS git diff --check (CRLF warnings only; exit 0)
-- PASS secret scan over non-doc/site text diff
-- PASS local dev server HTTP 200 at http://127.0.0.1:4322/sdcorejs-agent/
-- FAIL gh auth status - not logged in
+- PASS `cd site && npm run build`
+- PASS static deck assertions: 18 slides, no stale anchors, scroll lock, Back/Next, Claude/Codex, Angular Core UI prompt, conflict behavior
+- PASS `git diff --check` (CRLF warnings only; exit 0)
+- PASS Chrome headless screenshot for first slide
+- PASS Chrome CDP DOM check: scrollHeight equals viewport, Next moves 1/18 -> 2/18, scrollY stays 0, no slide overflow at 1440x900
 
 ## Resume From Here
-Run `gh auth login`, then create the PR from `feat/angular-utility-first-styling` into `main`.
+Review the updated deck at http://127.0.0.1:4322/sdcorejs-agent/.

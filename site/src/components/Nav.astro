@@ -8,10 +8,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   </a>
 
   <nav class="links" aria-label="Section navigation">
-    <a href={`${base}/#slide-3`}>Luồng 5 nhịp</a>
-    <a href={`${base}/#slide-5`}>Dispatch</a>
-    <a href={`${base}/#slide-6`}>Finish chain</a>
-    <a href={`${base}/#slide-7`}>Memory</a>
+    <a href={`${base}/`}>Presenter deck</a>
     <a href={`${base}/angular`}>Angular Portal</a>
     <a
       class="github"
@@ -101,7 +98,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   }
 
   @media (max-width: 860px) {
-    .links a:not(.github):not([href$="#slide-3"]) {
+    .links a:not(.github):not([href$="/"]) {
       display: none;
     }
   }

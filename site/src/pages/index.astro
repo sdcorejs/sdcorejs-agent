@@ -1,28 +1,27 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Nav from "../components/Nav.astro";
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-const stageSlides = [
-  ["01", "Khám phá", "sdcorejs-explore + brainstorming", "flow-discovery.svg"],
-  ["02", "Đặc tả", "spec + plan approval gates", "flow-spec.svg"],
-  ["03", "Dispatch", "execute-plan + track routing", "flow-dispatch.svg"],
-  ["04", "Hoàn thiện", "test + review + ship gates", "flow-finish.svg"],
-  ["05", "Ghi nhớ", "docs + tasks + memories", "flow-handoff.svg"],
+const flowSteps = [
+  ["01", "Khám phá", "Hiểu bối cảnh, tài liệu, ảnh, code, log, ràng buộc."],
+  ["02", "Đặc tả", "Viết spec và acceptance criteria để người dùng duyệt."],
+  ["03", "Kế hoạch", "Chốt file-by-file plan trước khi sinh code."],
+  ["04", "Dispatch", "Chọn track executor hoặc parallel-dispatch khi an toàn."],
+  ["05", "Kết thúc", "Test, review, repair, verify, docs, tasks, memories."],
 ];
 
 const tracks = [
-  ["Product", "PRD, stories, AC, UAT, traceability", "product"],
-  ["Design", "Flow, wireframe, mockup, FE handoff", "design"],
-  ["Angular", "Portal, module, CRUD, screen, action", "angular"],
-  ["NestJS", "Module, entity, API, business logic", "nestjs"],
-  ["Next.js", "Landing page, SEO, i18n, caching", "nextjs"],
-  ["Test", "Unit, integration, e2e, UAT evidence", "test"],
-  ["Generic", "Scripts, docs, config, fallback harness", "generic"],
+  ["Product", "PRD, user stories, AC, UAT, traceability"],
+  ["Design", "Flow, wireframe, mockup, FE handoff"],
+  ["Angular", "Portal, module, CRUD, screen, Core UI action"],
+  ["NestJS", "Module, entity, API, business logic"],
+  ["Next.js", "Landing page, SEO, i18n, caching"],
+  ["Test", "Unit, integration, e2e, UAT evidence"],
+  ["Generic", "Script, docs, config, unsupported-stack fallback"],
 ];
 
-const finishTail = [
+const tailSteps = [
   "sdcorejs-test",
   "sdcorejs-review",
   "repair-loop",
@@ -32,834 +31,1160 @@ const finishTail = [
   "branch-ready",
   "auto-docs",
   "write-user-guide",
-  "auto-task-tracker",
+  "task tracker",
   "memories",
   "handoff",
 ];
 
-const contextSteps = [
-  ["project-context.md", "Preflight chung: đọc đúng context trước khi làm."],
-  [".sdcorejs/summary.md", "Project brief sinh bởi explore summary mode."],
-  ["docs / specs / plans", "Lịch sử gần nhất và snapshot đã duyệt."],
-  ["tasks / memories / persona", "Resume, quyết định dài hạn, giọng giải thích."],
+const contextInputs = [
+  ["Ảnh / wireframe", "Màn hình mẫu, trạng thái form, flow duyệt, lỗi UX cần tránh."],
+  ["PRD / nghiệp vụ", "Mục tiêu, actor, rule, priority, non-goals, acceptance criteria."],
+  ["API docs", "Endpoint, payload, enum, error shape, permission, pagination, filter."],
+  ["Code hiện có", "Module, route, service, component, shared Core UI pattern đang dùng."],
+  ["Log / bug / test", "Evidence hiện tại để agent không đoán mò nguyên nhân."],
+  ["Ràng buộc", "Style, i18n, auth, deploy, deadline, thứ không được thay đổi."],
+];
+
+const claudeSteps = [
+  ["1", "Cài plugin", "/plugin marketplace add sdcorejs/sdcorejs-agent\n/plugin install sdcorejs-agent@sdcorejs"],
+  ["2", "Mở project", "cd <target-project>\nclaude"],
+  ["3", "Kiểm tra dispatch", "help\nlist skills\ncreate Product CRUD in catalog module"],
+];
+
+const codexSteps = [
+  ["1", "Đưa repo vào workspace", "git clone https://github.com/sdcorejs/sdcorejs-agent.git\n# hoặc copy AGENTS.md + skills/_refs theo setup nội bộ"],
+  ["2", "Mở target project", "cd <target-project>\ncodex"],
+  ["3", "Kiểm tra skill flow", "Tôi muốn thêm màn hình quản lý hợp đồng.\nHãy dùng SDCoreJS flow: explore -> spec -> plan."],
+];
+
+const localChecks = [
+  ["Skill mirror", "npm run check:skills"],
+  ["Invariant e2e", "npm run test:e2e"],
+  ["Doc site", "cd site && npm run build"],
+  ["Manual smoke", "Mở deck, bấm Next/Back, kiểm tra chữ không tràn."],
+];
+
+const promptLines = [
+  "Tôi muốn thêm màn hình Quản lý hợp đồng cho Angular Portal dùng @sdcorejs/angular Core UI.",
+  "",
+  "Context tôi gửi kèm:",
+  "- Ảnh wireframe list/detail/create/update và flow approve/reject.",
+  "- PRD nghiệp vụ hợp đồng, actor, rule, acceptance criteria.",
+  "- API docs: GET/POST/PATCH /contracts, enum status, error shape, permission.",
+  "- Module hiện có: src/app/features/contracts, route, shared service, autoId convention.",
+  "",
+  "Yêu cầu:",
+  "1. Dùng sdcorejs-explore để đọc context và chỉ ra chỗ thiếu/mâu thuẫn.",
+  "2. Nếu đủ context, viết spec để tôi duyệt.",
+  "3. Sau khi tôi approve spec, viết plan file-by-file.",
+  "4. Chỉ sinh code sau khi tôi approve plan và chọn sequential/parallel.",
+  "5. Sau code phải chạy finish gate: test, review, repair, verify, docs, tasks, memories.",
+];
+
+const conflictExamples = [
+  ["PRD nói required, API nói optional", "Agent phải hỏi nguồn nào là chuẩn trước khi viết spec."],
+  ["Ảnh có nút Approve, permission matrix thiếu code", "Agent phải hỏi permission code hoặc đề xuất naming để duyệt."],
+  ["API filter dùng status[], UI mock chỉ có một status", "Agent phải hỏi single-select hay multi-select."],
+  ["Core UI pattern chưa rõ", "Agent phải scan code-map hoặc hỏi component chuẩn đang dùng."],
 ];
 ---
 
 <Layout
   lang="vi"
-  title="SDCoreJS Agent - Slide deck luồng skill"
-  description="Slide deck giới thiệu SDCoreJS Agent: context, approval gates, dispatch tracks, finish tail chain và memory handoff."
+  title="SDCoreJS Agent - Presenter deck"
+  description="Deck trình bày SDCoreJS Agent: skill-driven SDLC, cài đặt Claude/Codex, test pack, và prompt mẫu cho Angular Portal Core UI."
 >
-  <Nav />
-  <main class="deck" id="slides" aria-label="SDCoreJS Agent presentation deck">
-    <section class="slide title-slide" id="slide-1" aria-label="Slide 1">
-      <div class="slide-inner title-grid">
-        <div class="title-copy reveal">
-          <p class="kicker">SDCoreJS Agent</p>
-          <h1>Luồng phát triển phần mềm bằng skill</h1>
-          <p class="subtitle">
-            Một skill pack biến AI coding agent thành quy trình SDLC có context,
-            approval gate, evidence, handoff và memory.
+  <div class="deck-app" data-deck>
+    <header class="deck-header" aria-label="Deck header">
+      <a class="brand" href={`${base}/`} aria-label="SDCoreJS Agent">
+        <img src={`${base}/logo-text.png`} alt="SDCoreJS" />
+      </a>
+      <div class="deck-meta">
+        <span data-section>SDCoreJS Agent</span>
+        <b data-counter>1 / 18</b>
+      </div>
+    </header>
+
+    <main class="slide-stage" aria-live="polite">
+      <section class="deck-slide cover is-active" data-section-name="Mở đầu">
+        <div class="slide-copy">
+          <p class="kicker">Presenter deck</p>
+          <h1>SDCoreJS Agent</h1>
+          <h2>Luồng phát triển phần mềm bằng skill</h2>
+          <p>
+            Một bộ kỹ năng biến AI coding agent thành quy trình SDLC có context,
+            approval gate, verification, tài liệu, task tracker và memory handoff.
           </p>
-          <div class="hero-chips" aria-label="Các điểm chính">
+          <div class="metric-row">
             <span>24 skills</span>
             <span>7 tracks</span>
             <span>2 approval gates</span>
-            <span>12/12 e2e smoke</span>
+            <span>12 e2e checks</span>
           </div>
         </div>
-        <div class="title-visual reveal delay-2">
-          <img src={`${base}/logo-text.png`} alt="SDCoreJS" />
-          <div class="promise-card">
-            <b>Promise</b>
-            <p>Không chỉ sinh code. Agent phải hiểu context, hỏi đúng lúc, verify, rồi ghi lại tri thức.</p>
-          </div>
+        <div class="hero-panel" aria-hidden="true">
+          <div class="orbit one"></div>
+          <div class="orbit two"></div>
+          <div class="orbit three"></div>
+          <b>Context</b>
+          <span>Spec</span>
+          <span>Plan</span>
+          <span>Dispatch</span>
+          <span>Evidence</span>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="slide problem-slide" id="slide-2" aria-label="Slide 2">
-      <div class="slide-inner">
-        <div class="slide-heading reveal">
-          <p class="kicker">Tại sao cần skill-driven SDLC?</p>
-          <h2>Vấn đề không phải chỉ là viết code nhanh hơn</h2>
+      <section class="deck-slide" data-section-name="Vấn đề">
+        <div class="slide-copy narrow">
+          <p class="kicker">Vấn đề cần giải</p>
+          <h2>AI viết code nhanh, nhưng dễ thiếu quy trình</h2>
+          <p>
+            Nếu chỉ prompt trực tiếp vào code, agent có thể bỏ sót nghiệp vụ,
+            quên context cũ, tự quyết khi tài liệu mâu thuẫn, hoặc claim xong
+            khi chưa có evidence.
+          </p>
         </div>
-        <div class="problem-grid">
-          <article class="problem-card reveal delay-1">
-            <span>01</span>
-            <h3>Context bị rơi</h3>
-            <p>Agent dễ quên quyết định cũ, cấu trúc project, persona, task đang dở.</p>
+        <div class="three-up">
+          <article>
+            <b>Context rơi</b>
+            <p>Ảnh, PRD, API docs, convention và task cũ không được nối lại.</p>
           </article>
-          <article class="problem-card reveal delay-2">
-            <span>02</span>
-            <h3>Scope nhảy thẳng vào code</h3>
-            <p>Thiếu spec/plan approval nên code ra nhanh nhưng lệch nhu cầu.</p>
+          <article>
+            <b>Scope trượt</b>
+            <p>Không có spec/plan approval nên sinh code đúng cú pháp nhưng sai ý.</p>
           </article>
-          <article class="problem-card reveal delay-3">
-            <span>03</span>
-            <h3>Claim xong thiếu evidence</h3>
-            <p>Không có test, review, acceptance verification hoặc branch hygiene rõ ràng.</p>
+          <article>
+            <b>Thiếu evidence</b>
+            <p>Không có test, review, verify acceptance, branch-ready và handoff.</p>
           </article>
         </div>
-        <aside class="answer-band reveal delay-4">
-          <b>SDCoreJS Agent trả lời bằng workflow:</b>
-          <span>context first</span>
-          <span>approval gates</span>
-          <span>track dispatch</span>
-          <span>finish tail chain</span>
-          <span>memory handoff</span>
-        </aside>
-      </div>
-    </section>
+      </section>
 
-    <section class="slide flow-slide" id="slide-3" aria-label="Slide 3">
-      <div class="slide-inner">
-        <div class="slide-heading reveal">
-          <p class="kicker">Mental model</p>
-          <h2>Toàn bộ luồng nằm trong 5 nhịp</h2>
+      <section class="deck-slide" data-section-name="Input context">
+        <div class="slide-copy">
+          <p class="kicker">Cách dùng đúng</p>
+          <h2>Prompt tốt là một gói context, không phải một câu lệnh</h2>
+          <p>
+            Người dùng có thể chèn ảnh, PRD, API docs, log, issue, diff, hoặc
+            file liên quan. Agent phải đọc, đối chiếu, rồi hỏi lại khi thiếu
+            hoặc có mâu thuẫn.
+          </p>
         </div>
-        <div class="stage-row">
-          {stageSlides.map(([no, title, text, image], index) => (
-            <article class={`stage-tile reveal delay-${(index % 4) + 1}`}>
-              <span>{no}</span>
-              <img src={`${base}/${image}`} alt="" loading={index < 2 ? "eager" : "lazy"} />
-              <h3>{title}</h3>
+        <div class="context-grid">
+          {contextInputs.map(([title, text]) => (
+            <article>
+              <b>{title}</b>
               <p>{text}</p>
             </article>
           ))}
         </div>
-        <div class="speaker-note reveal delay-4">
-          <b>Thông điệp khi present:</b>
-          <p>Đây là một pipeline có kiểm soát, không phải danh sách prompt rời rạc.</p>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="slide gate-slide" id="slide-4" aria-label="Slide 4">
-      <div class="slide-inner split">
-        <div class="slide-heading reveal">
-          <p class="kicker">Approval gates</p>
-          <h2>Spec và plan là hợp đồng trước khi execute</h2>
-          <p>
-            Agent chỉ chuyển sang bước tiếp theo khi người dùng approve rõ ràng.
-            Silence không phải approval.
-          </p>
+      <section class="deck-slide" data-section-name="Flow tổng quan">
+        <div class="slide-copy">
+          <p class="kicker">Mental model</p>
+          <h2>Toàn bộ SDLC đi qua 5 nhịp chính</h2>
         </div>
-        <div class="gate-lanes reveal delay-2">
-          <article>
+        <div class="flow-row">
+          {flowSteps.map(([no, title, text]) => (
+            <article>
+              <span>{no}</span>
+              <b>{title}</b>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
+        <div class="image-strip" aria-hidden="true">
+          <img src={`${base}/flow-discovery.svg`} alt="" />
+          <img src={`${base}/flow-spec.svg`} alt="" />
+          <img src={`${base}/flow-dispatch.svg`} alt="" />
+          <img src={`${base}/flow-finish.svg`} alt="" />
+          <img src={`${base}/flow-handoff.svg`} alt="" />
+        </div>
+      </section>
+
+      <section class="deck-slide" data-section-name="Explore">
+        <div class="split">
+          <div class="slide-copy">
+            <p class="kicker">Slide phụ 1</p>
+            <h2>Explore: đọc trước khi trả lời</h2>
+            <p>
+              `project-context.md` là recipe đọc context. `.sdcorejs/summary.md`
+              là project brief sinh trong target project. Explore cũng đọc docs,
+              memories, specs/plans, task tracker và persona khi có.
+            </p>
+          </div>
+          <div class="stack-list">
+            <article><b>Đầu vào</b><span>Request, file đang mở, ảnh, tài liệu, git state.</span></article>
+            <article><b>Agent làm</b><span>Map project, detect track, tìm blockers.</span></article>
+            <article><b>Kết quả</b><span>Scope hiểu đúng, câu hỏi rõ, không nhảy vào code sớm.</span></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="deck-slide" data-section-name="Spec gate">
+        <div class="split reverse">
+          <div class="gate-card">
             <span>Gate 1</span>
-            <h3>sdcorejs-spec</h3>
-            <p>Problem, goals, non-goals, architecture, acceptance criteria, risk.</p>
-          </article>
-          <div class="lane-arrow">to</div>
-          <article>
-            <span>Gate 2</span>
-            <h3>sdcorejs-plan</h3>
-            <p>Numbered task/file plan, dependency, verification shape.</p>
-          </article>
-          <div class="lane-arrow">to</div>
-          <article>
-            <span>Execute</span>
-            <h3>sdcorejs-execute-plan</h3>
-            <p>Detect track, ask sequential/parallel, dispatch safely.</p>
-          </article>
+            <b>sdcorejs-spec</b>
+            <p>Problem, goals, non-goals, architecture, file structure, acceptance criteria, risk.</p>
+          </div>
+          <div class="slide-copy">
+            <p class="kicker">Slide phụ 2</p>
+            <h2>Spec là hợp đồng nghiệp vụ</h2>
+            <p>
+              Agent tự review spec, gửi người dùng duyệt, rồi mới snapshot spec
+              đã approve. Im lặng không được tính là approve.
+            </p>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="slide dispatch-slide" id="slide-5" aria-label="Slide 5">
-      <div class="slide-inner">
-        <div class="slide-heading reveal">
+      <section class="deck-slide" data-section-name="Plan gate">
+        <div class="split">
+          <div class="slide-copy">
+            <p class="kicker">Slide phụ 3</p>
+            <h2>Plan khóa cách làm trước khi sinh code</h2>
+            <p>
+              Plan là danh sách bước theo file, dependency, risk và verification.
+              Sau plan approval, execute-plan luôn hỏi chạy sequential hay parallel.
+            </p>
+          </div>
+          <div class="mode-grid">
+            <article>
+              <b>Sequential</b>
+              <p>Chạy từng track theo thứ tự để giảm rủi ro khi scope liên quan chặt.</p>
+            </article>
+            <article>
+              <b>Parallel</b>
+              <p>Chỉ fan-out khi `sdcorejs-parallel-dispatch` đánh giá an toàn.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="deck-slide" data-section-name="Dispatch">
+        <div class="slide-copy">
           <p class="kicker">Track dispatch</p>
           <h2>Mỗi loại việc có executor riêng</h2>
         </div>
-        <div class="dispatch-layout">
-          <div class="mode-panel reveal">
-            <h3>Execution mode choice</h3>
-            <div class="mode-cards">
-              <article>
-                <b>Sequential</b>
-                <p>Chạy từng track theo kế hoạch.</p>
-              </article>
-              <article>
-                <b>Parallel</b>
-                <p>Role split khi công việc độc lập và an toàn.</p>
-              </article>
-            </div>
-          </div>
-          <div class="track-grid reveal delay-2">
-            {tracks.map(([name, desc, tone]) => (
-              <article class={`track-card ${tone}`}>
-                <span>{name.slice(0, 1)}</span>
-                <div>
-                  <h3>{name}</h3>
-                  <p>{desc}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+        <div class="track-grid">
+          {tracks.map(([title, text]) => (
+            <article>
+              <span>{title.slice(0, 1)}</span>
+              <b>{title}</b>
+              <p>{text}</p>
+            </article>
+          ))}
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="slide finish-slide" id="slide-6" aria-label="Slide 6">
-      <div class="slide-inner">
-        <div class="slide-heading reveal">
-          <p class="kicker">Finish discipline</p>
-          <h2>Không nói xong nếu chưa có evidence</h2>
-          <p>Finish tail chain là phần bắt buộc sau code generation, gồm chất lượng, acceptance, branch hygiene và docs.</p>
+      <section class="deck-slide" data-section-name="Finish gate">
+        <div class="slide-copy">
+          <p class="kicker">Finish gate</p>
+          <h2>Không nói “xong” nếu chưa có evidence</h2>
+          <p>
+            Sau code generation, tail chain bắt buộc chạy để kiểm thử, review,
+            sửa lỗi, verify acceptance và ghi lại tri thức.
+          </p>
         </div>
-        <div class="tail-timeline reveal delay-2">
-          {finishTail.map((item, index) => (
+        <div class="tail-grid">
+          {tailSteps.map((item, index) => (
             <article>
               <span>{index + 1}</span>
               <b>{item}</b>
             </article>
           ))}
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="slide context-slide" id="slide-7" aria-label="Slide 7">
-      <div class="slide-inner split">
-        <div class="slide-heading reveal">
-          <p class="kicker">Memory and context</p>
-          <h2>Phiên sau không bắt đầu từ số không</h2>
-          <p>
-            `project-context.md` là recipe đọc context. `.sdcorejs/summary.md` là project brief
-            được sinh cho từng target project.
-          </p>
+      <section class="deck-slide" data-section-name="Memory">
+        <div class="split">
+          <div class="slide-copy">
+            <p class="kicker">Handoff</p>
+            <h2>Phiên sau không bắt đầu từ số không</h2>
+            <p>
+              Auto-docs ghi tóm tắt phiên. Task tracker giữ TODO sống. Memories
+              lưu constraint, decision, pattern và correction dài hạn.
+            </p>
+          </div>
+          <div class="memory-lanes">
+            <article><b>auto-docs</b><span>.sdcorejs/docs/&lt;track&gt;/</span></article>
+            <article><b>task tracker</b><span>.sdcorejs/tasks/current-session.md</span></article>
+            <article><b>memories</b><span>.sdcorejs/memories/&lt;track&gt;/</span></article>
+            <article><b>persona</b><span>.sdcorejs/persona.md</span></article>
+          </div>
         </div>
-        <div class="context-grid reveal delay-2">
-          {contextSteps.map(([name, text], index) => (
+      </section>
+
+      <section class="deck-slide" data-section-name="Claude install">
+        <div class="slide-copy">
+          <p class="kicker">Cài đặt</p>
+          <h2>Cài và thử trên Claude Code</h2>
+        </div>
+        <div class="command-grid">
+          {claudeSteps.map(([no, title, code]) => (
             <article>
-              <span>{index + 1}</span>
-              <h3>{name}</h3>
-              <p>{text}</p>
+              <span>{no}</span>
+              <b>{title}</b>
+              <pre><code>{code}</code></pre>
             </article>
           ))}
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="slide closing-slide" id="slide-8" aria-label="Slide 8">
-      <div class="slide-inner closing-grid">
-        <div class="slide-heading reveal">
-          <p class="kicker">Positioning</p>
-          <h2>Hiện tại cover verified local delivery</h2>
+      <section class="deck-slide" data-section-name="Codex install">
+        <div class="slide-copy">
+          <p class="kicker">Cài đặt</p>
+          <h2>Dùng trong Codex, Cursor, Copilot-compatible tools</h2>
           <p>
-            Skill pack tập trung vào spec, plan, code, docs, test, review, Docker compose,
-            auth, handoff và recovery memory.
+            Các tool đọc `AGENTS.md` sẽ nhận workflow, rule, reference loading
+            và session-start discipline của skill pack.
           </p>
         </div>
-        <div class="boundary-card reveal delay-2">
-          <h3>Production SDLC cần approval riêng</h3>
-          <p>
-            CI/CD, IaC, environment promotion, observability, incident response,
-            migration rollout, compliance gates và release governance là scope lớn hơn.
-          </p>
-          <b>Quy tắc: brainstorm -> spec -> plan trước khi tạo skill/ref mới.</b>
+        <div class="command-grid">
+          {codexSteps.map(([no, title, code]) => (
+            <article>
+              <span>{no}</span>
+              <b>{title}</b>
+              <pre><code>{code}</code></pre>
+            </article>
+          ))}
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
 
-  <nav class="slide-dots" aria-label="Slide navigation">
-    {Array.from({ length: 8 }, (_, i) => (
-      <a href={`#slide-${i + 1}`} aria-label={`Go to slide ${i + 1}`}>{i + 1}</a>
-    ))}
-  </nav>
+      <section class="deck-slide" data-section-name="Test pack">
+        <div class="slide-copy">
+          <p class="kicker">Kiểm thử skill pack</p>
+          <h2>Test ở repo agent trước khi đưa vào project thật</h2>
+        </div>
+        <div class="check-grid">
+          {localChecks.map(([title, command]) => (
+            <article>
+              <b>{title}</b>
+              <code>{command}</code>
+            </article>
+          ))}
+        </div>
+      </section>
 
-  <div class="deck-controls" aria-label="Slide controls">
-    <button type="button" data-prev aria-label="Previous slide">&lt;</button>
-    <span data-current>1 / 8</span>
-    <button type="button" data-next aria-label="Next slide">&gt;</button>
+      <section class="deck-slide" data-section-name="Angular setup">
+        <div class="slide-copy">
+          <p class="kicker">Áp dụng thực tế</p>
+          <h2>Vận dụng vào Angular Portal dùng Core UI</h2>
+          <p>
+            Mục tiêu không phải “generate component” đơn lẻ. Mục tiêu là agent
+            hiểu module, route, permission, API, Core UI convention, autoId,
+            test flow và tài liệu bàn giao.
+          </p>
+        </div>
+        <div class="context-grid compact">
+          <article><b>Code-map</b><p>Module, routes, service, DTO, shared UI pattern.</p></article>
+          <article><b>Core UI first</b><p>Dùng component `@sdcorejs/angular` trước khi tự dựng UI.</p></article>
+          <article><b>autoId</b><p>Selector ổn định cho review và e2e inspector.</p></article>
+          <article><b>Permission</b><p>VIEW, CREATE, UPDATE, APPROVE, EXPORT theo matrix.</p></article>
+          <article><b>Tests</b><p>Unit/integration/e2e theo acceptance criteria.</p></article>
+          <article><b>Docs</b><p>User guide, auto-docs, task tracker, memories.</p></article>
+        </div>
+      </section>
+
+      <section class="deck-slide" data-section-name="Prompt mẫu">
+        <div class="slide-copy">
+          <p class="kicker">Prompt mẫu</p>
+          <h2>Prompt nên đóng gói đủ context và yêu cầu hỏi lại</h2>
+        </div>
+        <pre class="prompt-block"><code>{promptLines.join("\n")}</code></pre>
+      </section>
+
+      <section class="deck-slide" data-section-name="Khi thiếu context">
+        <div class="slide-copy">
+          <p class="kicker">Safety behavior</p>
+          <h2>Khi thiếu hoặc mâu thuẫn, agent phải hỏi lại</h2>
+        </div>
+        <div class="conflict-grid">
+          {conflictExamples.map(([problem, response]) => (
+            <article>
+              <b>{problem}</b>
+              <p>{response}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="deck-slide" data-section-name="Demo script">
+        <div class="slide-copy">
+          <p class="kicker">Cách demo</p>
+          <h2>Một luồng present gọn trong 10 phút</h2>
+        </div>
+        <div class="demo-steps">
+          <article><span>1</span><b>Show problem</b><p>Vì sao prompt-only không đủ.</p></article>
+          <article><span>2</span><b>Show SDLC flow</b><p>Explore, spec, plan, dispatch, finish.</p></article>
+          <article><span>3</span><b>Show install/test</b><p>Claude, Codex, local invariant checks.</p></article>
+          <article><span>4</span><b>Show Angular prompt</b><p>Ảnh + PRD + API docs + code context.</p></article>
+          <article><span>5</span><b>Show safety</b><p>Agent hỏi lại khi context thiếu hoặc mâu thuẫn.</p></article>
+        </div>
+      </section>
+
+      <section class="deck-slide closing" data-section-name="Kết luận">
+        <div class="slide-copy narrow">
+          <p class="kicker">Kết luận</p>
+          <h2>Skill pack biến AI thành teammate có quy trình</h2>
+          <p>
+            Không chỉ sinh code: agent phải hiểu context, xin approval đúng chỗ,
+            thực thi theo track, kiểm chứng bằng evidence, rồi để lại tri thức
+            cho phiên sau.
+          </p>
+        </div>
+        <div class="closing-band">
+          <b>SDCoreJS Agent</b>
+          <span>Context -> Spec -> Plan -> Execute -> Verify -> Remember</span>
+        </div>
+      </section>
+    </main>
+
+    <footer class="deck-controls" aria-label="Slide controls">
+      <button type="button" class="nav-button" data-prev>Back</button>
+      <div class="progress" aria-hidden="true"><span data-progress></span></div>
+      <button type="button" class="nav-button primary" data-next>Next</button>
+    </footer>
   </div>
 
   <script is:inline>
     (() => {
-      const slides = Array.from(document.querySelectorAll(".slide"));
-      const current = document.querySelector("[data-current]");
-      const dots = Array.from(document.querySelectorAll(".slide-dots a"));
+      const deck = document.querySelector("[data-deck]");
+      if (!deck) return;
+
+      const slides = Array.from(deck.querySelectorAll(".deck-slide"));
+      const counter = deck.querySelector("[data-counter]");
+      const section = deck.querySelector("[data-section]");
+      const progress = deck.querySelector("[data-progress]");
+      const prev = deck.querySelector("[data-prev]");
+      const next = deck.querySelector("[data-next]");
       let index = 0;
 
-      const clamp = (value) => Math.max(0, Math.min(slides.length - 1, value));
-      const update = (next, scroll = true) => {
-        index = clamp(next);
-        const slide = slides[index];
-        if (scroll) slide.scrollIntoView({ behavior: "smooth", block: "start" });
-        if (current) current.textContent = `${index + 1} / ${slides.length}`;
-        dots.forEach((dot, i) => dot.toggleAttribute("aria-current", i === index));
+      const render = () => {
+        slides.forEach((slide, i) => {
+          const active = i === index;
+          slide.classList.toggle("is-active", active);
+          slide.setAttribute("aria-hidden", active ? "false" : "true");
+        });
+
+        if (counter) counter.textContent = `${index + 1} / ${slides.length}`;
+        if (section) section.textContent = slides[index]?.dataset.sectionName || "SDCoreJS Agent";
+        if (progress) progress.style.inlineSize = `${((index + 1) / slides.length) * 100}%`;
+        if (prev) prev.toggleAttribute("disabled", index === 0);
+        if (next) next.textContent = index === slides.length - 1 ? "Restart" : "Next";
       };
 
-      document.querySelector("[data-prev]")?.addEventListener("click", () => update(index - 1));
-      document.querySelector("[data-next]")?.addEventListener("click", () => update(index + 1));
-      document.addEventListener("keydown", (event) => {
-        if (event.key === "ArrowRight" || event.key === "PageDown") update(index + 1);
-        if (event.key === "ArrowLeft" || event.key === "PageUp") update(index - 1);
+      prev?.addEventListener("click", () => {
+        index = Math.max(0, index - 1);
+        render();
       });
 
-      const io = new IntersectionObserver(
-        (entries) => {
-          const visible = entries
-            .filter((entry) => entry.isIntersecting)
-            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-          if (!visible) return;
-          const next = slides.indexOf(visible.target);
-          if (next >= 0) update(next, false);
-        },
-        { threshold: [0.55, 0.75] }
-      );
-      slides.forEach((slide) => io.observe(slide));
-      update(0, false);
+      next?.addEventListener("click", () => {
+        index = index === slides.length - 1 ? 0 : index + 1;
+        render();
+      });
+
+      const blockScroll = (event) => event.preventDefault();
+      window.addEventListener("wheel", blockScroll, { passive: false });
+      window.addEventListener("touchmove", blockScroll, { passive: false });
+
+      render();
     })();
   </script>
 </Layout>
 
 <style>
-  .deck {
-    background: #f6f9fd;
-    color: #10233f;
-    scroll-snap-type: y proximity;
+  :global(html),
+  :global(body) {
+    block-size: 100%;
+    overflow: hidden;
   }
 
-  .slide {
-    min-height: calc(100vh - 64px);
-    padding: clamp(28px, 5vw, 58px) 0;
+  :global(body) {
+    background: #f5f8fc;
+  }
+
+  .deck-app {
+    --deck-ink: #0d2748;
+    --deck-soft: #52637a;
+    --deck-line: #d8e2ef;
+    --deck-blue: #1976d2;
+    --deck-green: #16875c;
+    --deck-orange: #f97316;
+    --deck-violet: #6254d9;
+    block-size: 100dvh;
     display: grid;
-    align-items: center;
-    scroll-snap-align: start;
-    border-bottom: 1px solid #dce7f5;
-  }
-
-  .slide-inner {
-    width: min(1440px, 100% - 48px);
-    margin-inline: auto;
-  }
-
-  .kicker {
-    margin: 0 0 14px;
-    color: #f97316;
-    font-size: 0.82rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 800;
-  }
-
-  .slide h1,
-  .slide h2 {
-    max-width: 1040px;
-    margin: 0;
-    color: #06183a;
-    line-height: 1.05;
-  }
-
-  .slide h1 {
-    font-size: clamp(3rem, 7vw, 6.4rem);
-  }
-
-  .slide h2 {
-    font-size: clamp(2.4rem, 5vw, 4.8rem);
-  }
-
-  .subtitle,
-  .slide-heading > p:not(.kicker) {
-    max-width: 840px;
-    margin: 22px 0 0;
-    color: #44546d;
-    font-size: clamp(1.08rem, 1.3vw, 1.45rem);
-    line-height: 1.55;
-  }
-
-  .title-grid,
-  .closing-grid,
-  .split {
-    display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
-    gap: clamp(32px, 5vw, 72px);
-    align-items: center;
-  }
-
-  .title-slide {
+    grid-template-rows: 58px minmax(0, 1fr) 68px;
+    color: var(--deck-ink);
     background:
-      linear-gradient(180deg, #eef6ff, #ffffff 80%),
-      repeating-linear-gradient(90deg, rgba(15, 79, 191, 0.07) 0 1px, transparent 1px 92px);
+      linear-gradient(90deg, rgba(25, 118, 210, 0.08) 0 1px, transparent 1px 80px),
+      linear-gradient(180deg, rgba(25, 118, 210, 0.06) 0 1px, transparent 1px 80px),
+      #f5f8fc;
   }
 
-  .hero-chips {
+  .deck-header,
+  .deck-controls {
     display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 34px;
-  }
-
-  .hero-chips span {
-    padding: 10px 14px;
-    border: 1px solid #bed4f2;
-    border-radius: 8px;
-    background: #fff;
-    color: #0f4fbf;
-    font-weight: 800;
-  }
-
-  .title-visual {
-    padding: 28px;
-    border: 1px solid #bdd2f0;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.88);
-    box-shadow: 0 24px 70px -48px rgba(16, 51, 103, 0.58);
-  }
-
-  .title-visual img {
-    width: min(100%, 440px);
-    height: auto;
-  }
-
-  .promise-card,
-  .speaker-note,
-  .answer-band,
-  .boundary-card {
-    margin-top: 24px;
-    padding: 22px;
-    border-radius: 8px;
-    background: #0f4fbf;
-    color: #fff;
-  }
-
-  .promise-card p,
-  .speaker-note p,
-  .boundary-card p {
-    margin: 10px 0 0;
-    color: rgba(255, 255, 255, 0.84);
-  }
-
-  .problem-slide,
-  .finish-slide {
-    background: #ffffff;
-  }
-
-  .problem-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    margin-top: 42px;
-  }
-
-  .problem-card,
-  .stage-tile,
-  .gate-lanes article,
-  .mode-panel,
-  .track-card,
-  .context-grid article {
-    border: 1px solid #d7e4f5;
-    border-radius: 8px;
-    background: #fff;
-    box-shadow: 0 18px 52px -44px rgba(16, 51, 103, 0.5);
-  }
-
-  .problem-card {
-    min-height: 250px;
-    padding: 28px;
-  }
-
-  .problem-card span,
-  .stage-tile span,
-  .context-grid span {
-    display: inline-grid;
-    place-items: center;
-    width: 42px;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: #0f4fbf;
-    color: #fff;
-    font-weight: 900;
-  }
-
-  .problem-card h3,
-  .stage-tile h3,
-  .track-card h3,
-  .context-grid h3 {
-    margin: 18px 0 10px;
-    font-size: 1.35rem;
-  }
-
-  .problem-card p,
-  .stage-tile p,
-  .track-card p,
-  .context-grid p,
-  .mode-cards p,
-  .gate-lanes p {
-    margin: 0;
-    color: #44546d;
-  }
-
-  .answer-band {
-    display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 12px;
-    background: #10233f;
+    justify-content: space-between;
+    gap: 20px;
+    padding-inline: clamp(18px, 3vw, 40px);
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--deck-line);
+    border-style: solid;
+    backdrop-filter: blur(12px);
   }
 
-  .answer-band span {
-    padding: 8px 10px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.12);
+  .deck-header {
+    border-width: 0 0 1px;
+  }
+
+  .deck-controls {
+    border-width: 1px 0 0;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    min-inline-size: 0;
+  }
+
+  .brand img {
+    block-size: 30px;
+    inline-size: auto;
+  }
+
+  .deck-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-inline-size: 0;
+    color: var(--deck-soft);
+    font-size: 0.9rem;
     font-weight: 700;
   }
 
-  .flow-slide {
-    background: #f8fbff;
+  .deck-meta span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .stage-row {
+  .deck-meta b {
+    color: var(--deck-blue);
+  }
+
+  .slide-stage {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .deck-slide {
+    position: absolute;
+    inset: 0;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    margin-top: 38px;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    gap: clamp(18px, 2.6vh, 30px);
+    padding: clamp(22px, 4vw, 56px);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(24px);
+    transition:
+      opacity 260ms var(--ease),
+      transform 260ms var(--ease);
   }
 
-  .stage-tile {
-    min-height: 360px;
-    padding: 20px;
+  .deck-slide.is-active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
   }
 
-  .stage-tile img {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: contain;
-    margin-top: 18px;
-    border: 1px solid #dce7f5;
-    border-radius: 8px;
-    background: #fafdff;
+  .cover,
+  .closing {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.72fr);
+    align-items: center;
   }
 
-  .speaker-note {
-    background: #16875c;
+  .slide-copy {
+    max-inline-size: 920px;
   }
 
-  .gate-slide {
-    background: #f7fcf9;
+  .slide-copy.narrow {
+    max-inline-size: 780px;
   }
 
-  .gate-lanes {
-    display: grid;
-    gap: 18px;
-  }
-
-  .gate-lanes article {
-    padding: 24px;
-    min-height: 156px;
-  }
-
-  .gate-lanes span {
-    color: #16875c;
+  .kicker {
+    margin: 0 0 10px;
+    color: var(--deck-orange);
+    font-size: clamp(0.72rem, 1vw, 0.86rem);
     font-weight: 900;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    font-size: 0.78rem;
   }
 
-  .gate-lanes h3 {
-    margin: 8px 0 8px;
-    font-size: 1.42rem;
+  .deck-slide h1,
+  .deck-slide h2 {
+    margin: 0;
+    color: #071d3e;
+    letter-spacing: 0;
   }
 
-  .lane-arrow {
-    color: #16875c;
-    font-weight: 900;
-    text-align: center;
+  .deck-slide h1 {
+    font-size: clamp(2.25rem, 4.8vw, 4.45rem);
+    line-height: 0.98;
   }
 
-  .dispatch-slide {
-    background: #f6f3ff;
+  .deck-slide h2 {
+    font-size: clamp(1.42rem, 2.7vw, 2.55rem);
+    line-height: 1.08;
   }
 
-  .dispatch-layout {
-    display: grid;
-    grid-template-columns: 400px 1fr;
-    gap: 24px;
-    margin-top: 38px;
-    align-items: start;
+  .cover h2 {
+    margin-top: 12px;
+    color: var(--deck-blue);
   }
 
-  .mode-panel {
-    padding: 24px;
-    position: sticky;
-    top: 92px;
+  .slide-copy p {
+    max-inline-size: 760px;
+    margin: 16px 0 0;
+    color: var(--deck-soft);
+    font-size: clamp(0.98rem, 1.28vw, 1.25rem);
+    line-height: 1.52;
   }
 
-  .mode-panel h3 {
-    margin: 0 0 18px;
-    font-size: 1.35rem;
+  .metric-row,
+  .image-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
   }
 
-  .mode-cards {
-    display: grid;
-    gap: 12px;
-  }
-
-  .mode-cards article {
-    padding: 18px;
-    border: 1px solid #d8cffd;
+  .metric-row span {
+    padding: 8px 12px;
+    border: 1px solid #bdd4f1;
     border-radius: 8px;
-    background: #fbfaff;
+    background: #fff;
+    color: var(--deck-blue);
+    font-weight: 850;
   }
 
-  .mode-cards b {
-    display: block;
-    color: #5b43c9;
-    margin-bottom: 8px;
+  .hero-panel {
+    position: relative;
+    min-block-size: min(58vh, 460px);
+    border: 1px solid #bed4f1;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 30px 70px -52px rgba(13, 39, 72, 0.72);
+    overflow: hidden;
+  }
+
+  .hero-panel b,
+  .hero-panel span {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    border: 1px solid #d8e2ef;
+    border-radius: 8px;
+    background: #fff;
+    font-weight: 900;
+    box-shadow: 0 16px 42px -32px rgba(13, 39, 72, 0.55);
+  }
+
+  .hero-panel b {
+    inset: 50% auto auto 50%;
+    inline-size: 132px;
+    block-size: 74px;
+    transform: translate(-50%, -50%);
+    color: var(--deck-blue);
+    font-size: 1.2rem;
+  }
+
+  .hero-panel span {
+    inline-size: 112px;
+    block-size: 54px;
+    color: var(--deck-ink);
+  }
+
+  .hero-panel span:nth-of-type(1) { inset: 12% auto auto 10%; }
+  .hero-panel span:nth-of-type(2) { inset: 12% 10% auto auto; }
+  .hero-panel span:nth-of-type(3) { inset: auto auto 12% 10%; }
+  .hero-panel span:nth-of-type(4) { inset: auto 10% 12% auto; }
+
+  .orbit {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    border: 1px dashed rgba(25, 118, 210, 0.35);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .orbit.one { inline-size: 74%; aspect-ratio: 1; }
+  .orbit.two { inline-size: 56%; aspect-ratio: 1; }
+  .orbit.three { inline-size: 38%; aspect-ratio: 1; }
+
+  .three-up,
+  .context-grid,
+  .track-grid,
+  .tail-grid,
+  .command-grid,
+  .check-grid,
+  .conflict-grid,
+  .demo-steps {
+    display: grid;
+    gap: clamp(12px, 1.5vw, 18px);
+  }
+
+  .three-up {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .context-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .context-grid.compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .track-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .tail-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .command-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .check-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .conflict-grid,
+  .demo-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  article,
+  .gate-card,
+  .closing-band,
+  .prompt-block {
+    border: 1px solid var(--deck-line);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 20px 60px -48px rgba(13, 39, 72, 0.55);
+  }
+
+  article {
+    min-block-size: 118px;
+    padding: clamp(14px, 1.8vw, 22px);
+  }
+
+  article b {
+    display: block;
+    color: var(--deck-ink);
+    font-size: clamp(0.98rem, 1.15vw, 1.2rem);
+    line-height: 1.22;
+  }
+
+  article p,
+  article span {
+    display: block;
+    margin: 8px 0 0;
+    color: var(--deck-soft);
+    font-size: clamp(0.82rem, 1vw, 0.98rem);
+    line-height: 1.42;
+  }
+
+  .flow-row {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .flow-row article {
+    min-block-size: 152px;
+  }
+
+  .flow-row span,
+  .tail-grid span,
+  .command-grid span,
+  .demo-steps span {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 32px;
+    aspect-ratio: 1;
+    margin: 0 0 10px;
+    border-radius: 50%;
+    background: var(--deck-blue);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 900;
+  }
+
+  .image-strip {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    margin-top: 0;
+  }
+
+  .image-strip img {
+    inline-size: 100%;
+    aspect-ratio: 5 / 2.8;
+    object-fit: contain;
+    padding: 12px;
+    border: 1px solid var(--deck-line);
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.8fr);
+    gap: clamp(24px, 4vw, 56px);
+    align-items: center;
+  }
+
+  .split.reverse {
+    grid-template-columns: minmax(320px, 0.72fr) minmax(0, 1fr);
+  }
+
+  .stack-list,
+  .memory-lanes {
+    display: grid;
+    gap: 14px;
+  }
+
+  .stack-list article,
+  .memory-lanes article {
+    min-block-size: 94px;
+  }
+
+  .gate-card {
+    padding: clamp(24px, 4vw, 42px);
+    background: #f7fcf9;
+  }
+
+  .gate-card span {
+    color: var(--deck-green);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .gate-card b {
+    display: block;
+    margin: 14px 0;
+    color: var(--deck-green);
+    font-size: clamp(1.6rem, 3vw, 2.5rem);
+  }
+
+  .gate-card p {
+    margin: 0;
+    color: var(--deck-soft);
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .mode-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
   }
 
-  .track-card {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    min-height: 118px;
-    padding: 18px;
+  .mode-grid article:first-child {
+    border-color: #bdd4f1;
   }
 
-  .track-card span {
-    display: grid;
-    place-items: center;
-    width: 46px;
-    aspect-ratio: 1;
-    border-radius: 8px;
-    color: #fff;
-    background: #64748b;
-    font-weight: 900;
+  .mode-grid article:last-child {
+    border-color: #d4cdf8;
   }
 
-  .track-card h3 {
-    margin: 0 0 4px;
+  .track-grid article {
+    min-block-size: 128px;
   }
 
-  .product span {
-    background: #635bff;
-  }
-  .design span {
-    background: #7c3aed;
-  }
-  .angular span {
-    background: #cf1322;
-  }
-  .nestjs span {
-    background: #1f8a58;
-  }
-  .nextjs span {
-    background: #1455d9;
-  }
-  .test span {
-    background: #f97316;
-  }
-
-  .tail-timeline {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 12px;
-    margin-top: 38px;
-  }
-
-  .tail-timeline article {
-    min-height: 128px;
-    padding: 16px;
-    border: 1px solid #f3d2b7;
-    border-radius: 8px;
-    background: #fff8f2;
-  }
-
-  .tail-timeline span {
+  .track-grid span {
     display: inline-grid;
     place-items: center;
-    width: 34px;
+    inline-size: 34px;
     aspect-ratio: 1;
-    border-radius: 50%;
-    color: #fff;
-    background: #f97316;
-    font-weight: 900;
-    margin-bottom: 12px;
-  }
-
-  .tail-timeline b {
-    display: block;
-    color: #10233f;
-    line-height: 1.25;
-  }
-
-  .context-slide {
-    background: #eef6ff;
-  }
-
-  .context-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-
-  .context-grid article {
-    min-height: 210px;
-    padding: 22px;
-  }
-
-  .closing-slide {
-    background: #fff;
-  }
-
-  .boundary-card {
-    margin: 0;
-    background: #10233f;
-  }
-
-  .boundary-card h3 {
-    margin: 0 0 14px;
-    font-size: 2rem;
-    color: #fff;
-  }
-
-  .boundary-card b {
-    display: block;
-    margin-top: 20px;
-    color: #fff;
-  }
-
-  .slide-dots {
-    position: fixed;
-    z-index: 60;
-    right: 18px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: grid;
-    gap: 8px;
-  }
-
-  .slide-dots a {
-    display: grid;
-    place-items: center;
-    width: 30px;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    border: 1px solid #bcd2f0;
-    background: rgba(255, 255, 255, 0.9);
-    color: #0f4fbf;
-    font-size: 0.78rem;
-    font-weight: 900;
-  }
-
-  .slide-dots a[aria-current] {
-    background: #0f4fbf;
-    color: #fff;
-  }
-
-  .deck-controls {
-    position: fixed;
-    z-index: 60;
-    left: 50%;
-    bottom: 18px;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px;
-    border: 1px solid #c5d8f2;
+    margin: 0 0 10px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow: 0 18px 52px -34px rgba(16, 51, 103, 0.55);
-  }
-
-  .deck-controls button {
-    display: grid;
-    place-items: center;
-    width: 36px;
-    aspect-ratio: 1;
-    border-radius: 6px;
-    background: #eef6ff;
-    color: #0f4fbf;
+    background: var(--deck-violet);
+    color: #fff;
     font-weight: 900;
   }
 
-  .deck-controls span {
-    min-width: 54px;
-    text-align: center;
-    color: #3f5068;
-    font-size: 0.84rem;
-    font-weight: 800;
+  .tail-grid article {
+    min-block-size: 92px;
+    padding: 14px;
+    background: #fff8f2;
+    border-color: #f3d2b7;
   }
 
-  @media (max-width: 1180px) {
-    .title-grid,
-    .closing-grid,
+  .tail-grid b {
+    font-size: 0.94rem;
+  }
+
+  .tail-grid span {
+    inline-size: 28px;
+    background: var(--deck-orange);
+  }
+
+  .command-grid article {
+    min-block-size: 230px;
+  }
+
+  pre,
+  code {
+    font-family: var(--font-mono);
+  }
+
+  pre {
+    margin: 12px 0 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: #e7edf7;
+    background: #0b1d35;
+    border-radius: 8px;
+  }
+
+  .command-grid pre {
+    padding: 14px;
+    font-size: clamp(0.72rem, 0.9vw, 0.88rem);
+    line-height: 1.45;
+  }
+
+  .check-grid article {
+    min-block-size: 120px;
+  }
+
+  .check-grid code {
+    display: block;
+    margin-top: 12px;
+    padding: 10px 12px;
+    color: #0b1d35;
+    background: #eef6ff;
+    border-radius: 8px;
+    font-size: clamp(0.78rem, 1vw, 0.92rem);
+  }
+
+  .prompt-block {
+    margin: 0;
+    padding: clamp(18px, 2.2vw, 26px);
+    font-size: clamp(0.68rem, 0.9vw, 0.88rem);
+    line-height: 1.44;
+    max-inline-size: 1120px;
+    background: #0b1d35;
+  }
+
+  .closing-band {
+    align-self: center;
+    padding: clamp(24px, 4vw, 42px);
+    background: #0d2748;
+    color: #fff;
+  }
+
+  .closing-band b {
+    display: block;
+    font-size: clamp(1.8rem, 3.4vw, 3.2rem);
+    line-height: 1;
+  }
+
+  .closing-band span {
+    display: block;
+    margin-top: 18px;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 700;
+  }
+
+  .nav-button {
+    min-inline-size: 96px;
+    padding: 10px 18px;
+    border: 1px solid var(--deck-line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--deck-ink);
+    font-weight: 850;
+  }
+
+  .nav-button.primary {
+    background: var(--deck-blue);
+    color: #fff;
+    border-color: var(--deck-blue);
+  }
+
+  .nav-button:disabled {
+    cursor: default;
+    opacity: 0.45;
+  }
+
+  .progress {
+    flex: 1;
+    block-size: 8px;
+    border-radius: 999px;
+    background: #dfe8f5;
+    overflow: hidden;
+  }
+
+  .progress span {
+    display: block;
+    block-size: 100%;
+    inline-size: 0;
+    background: linear-gradient(90deg, var(--deck-blue), var(--deck-orange));
+    border-radius: inherit;
+    transition: inline-size 240ms var(--ease);
+  }
+
+  @media (max-width: 1100px) {
+    .cover,
+    .closing,
     .split,
-    .dispatch-layout {
+    .split.reverse {
       grid-template-columns: 1fr;
     }
 
-    .stage-row {
-      grid-template-columns: repeat(5, minmax(240px, 1fr));
-      overflow-x: auto;
-      padding-bottom: 10px;
-    }
-
-    .mode-panel {
-      position: static;
-    }
-
-    .tail-timeline {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  @media (max-width: 760px) {
-    .slide {
-      min-height: auto;
-      padding: 54px 0;
-    }
-
-    .slide-inner {
-      width: min(100% - 26px, 1440px);
-    }
-
-    .problem-grid,
-    .track-grid,
-    .context-grid,
-    .tail-timeline {
-      grid-template-columns: 1fr;
-    }
-
-    .stage-row {
-      grid-template-columns: 1fr;
-      overflow: visible;
-    }
-
-    .slide-dots {
+    .hero-panel {
       display: none;
     }
 
-    .deck-controls {
-      right: 12px;
-      left: auto;
-      transform: none;
+    .three-up,
+    .context-grid,
+    .context-grid.compact,
+    .flow-row,
+    .track-grid,
+    .tail-grid,
+    .command-grid,
+    .check-grid,
+    .conflict-grid,
+    .demo-steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .image-strip {
+      display: none;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .deck-app {
+      grid-template-rows: 54px minmax(0, 1fr) 62px;
+    }
+
+    .deck-slide {
+      padding: 18px;
+      gap: 14px;
+    }
+
+    .brand img {
+      block-size: 24px;
+    }
+
+    .deck-meta span {
+      max-inline-size: 110px;
+    }
+
+    .three-up,
+    .context-grid,
+    .context-grid.compact,
+    .flow-row,
+    .track-grid,
+    .tail-grid,
+    .command-grid,
+    .check-grid,
+    .conflict-grid,
+    .demo-steps,
+    .mode-grid {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    article {
+      min-block-size: auto;
+      padding: 12px;
+    }
+
+    .tail-grid article {
+      min-block-size: auto;
+    }
+
+    .command-grid article {
+      min-block-size: auto;
+    }
+
+    .prompt-block {
+      font-size: 0.58rem;
+      line-height: 1.35;
+      padding: 12px;
+    }
+
+    .nav-button {
+      min-inline-size: 76px;
+      padding-inline: 12px;
+    }
+  }
+
+  @media (max-height: 720px) and (min-width: 900px) {
+    .deck-slide {
+      padding-block: 22px;
+      gap: 16px;
+    }
+
+    .deck-slide h1 {
+      font-size: clamp(2rem, 3.9vw, 3.8rem);
+    }
+
+    .deck-slide h2 {
+      font-size: clamp(1.34rem, 2.25vw, 2.15rem);
+    }
+
+    article {
+      min-block-size: 92px;
+      padding: 14px;
+    }
+
+    .command-grid article {
+      min-block-size: 190px;
     }
   }
 
   @media print {
-    .nav,
-    .slide-dots,
-    .deck-controls {
-      display: none !important;
+    :global(html),
+    :global(body) {
+      overflow: visible;
+      block-size: auto;
     }
 
-    .deck {
+    .deck-app {
+      display: block;
+      block-size: auto;
       background: #fff;
     }
 
-    .slide {
-      min-height: 100vh;
+    .deck-header,
+    .deck-controls {
+      display: none;
+    }
+
+    .slide-stage {
+      overflow: visible;
+    }
+
+    .deck-slide {
+      position: relative;
+      inset: auto;
+      min-block-size: 100vh;
+      opacity: 1;
+      transform: none;
       page-break-after: always;
       break-after: page;
     }
