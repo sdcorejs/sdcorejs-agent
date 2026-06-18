@@ -4,6 +4,18 @@
 
 # Init Admin — Authn/Authz Module (`@sdcorejs/nestjs`)
 
+## Contents
+
+- Purpose / when to use
+- Source of truth - core package
+- Profile (read FIRST)
+- Generation steps
+- Permission, role, and user entities
+- Service and controller surface
+- Module wiring and seeding
+- Enterprise extension
+- Verification and handoff
+
 ## Purpose / when to use
 Generate the always-on `admin` module: app-DB authorization (role + permission, flat
 `<module>_<entity>:<action>` codes) + Keycloak Admin API proxy for account lifecycle. Owns the

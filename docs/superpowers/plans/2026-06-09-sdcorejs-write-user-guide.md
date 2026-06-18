@@ -181,15 +181,15 @@ Create the file with this frontmatter (single-line description):
 ```
 ---
 name: sdcorejs-write-user-guide
-description: Generate + maintain evergreen end-user feature guides for generated SDCoreJS apps. Per-module `.sdcorejs/user-guide/<module>.md` (features / tasks / routes / permissions / data + a Coverage-vs-requirements table) and a root aggregate `sdcorejs-user-guide.md` exportable to DOCX/PDF via pandoc (scaffold images = placeholders + a capture checklist). Four modes - per-module incremental (auto in the write-code tail chain, right after auto-docs), aggregate build (on ship / large feature / manual), legacy reverse-engineer (read an existing project via `sdcorejs-code-map`), PRD-coverage compare (spec acceptance criteria + optional external `.sdcorejs/prd/<feature>.md`). Distinct from `sdcorejs-auto-docs` (session deltas) and `sdcorejs-auto-summary` (project brief). Triggers - end of any write-code task (per-module update), "viết user guide", "tài liệu người dùng", "user manual", "gom user guide", "xuất user guide docx/pdf", "so PRD / đáp ứng yêu cầu chưa", ship of a large feature, "đọc toàn dự án viết user guide". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
+description: Generate + maintain evergreen end-user feature guides for generated SDCoreJS apps. Per-module `.sdcorejs/user-guide/<module>.md` (features / tasks / routes / permissions / data + a Coverage-vs-requirements table) and a root aggregate `sdcorejs-user-guide.md` exportable to DOCX/PDF via pandoc (scaffold images = placeholders + a capture checklist). Four modes - per-module incremental (auto in the write-code tail chain, right after auto-docs), aggregate build (on ship / large feature / manual), legacy reverse-engineer (read an existing project via `sdcorejs-explore`), PRD-coverage compare (spec acceptance criteria + optional external `.sdcorejs/prd/<feature>.md`). Distinct from `sdcorejs-auto-docs` (session deltas) and `sdcorejs-explore` (project brief). Triggers - end of any write-code task (per-module update), "viết user guide", "tài liệu người dùng", "user manual", "gom user guide", "xuất user guide docx/pdf", "so PRD / đáp ứng yêu cầu chưa", ship of a large feature, "đọc toàn dự án viết user guide". Applies to angular, nestjs, nextjs. Bilingual (VI/EN).
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 ```
-Then a `# Write User Guide` title + `## Purpose` (evergreen end-user feature reference; distinct from auto-docs/auto-summary; templates in `_refs/shared/user-guide-template.md`).
+Then a `# Write User Guide` title + `## Purpose` (evergreen end-user feature reference; distinct from auto-docs/summary mode; templates in `_refs/shared/user-guide-template.md`).
 
 - [ ] **Step 2: Modes overview + non-overlap**
 
-Add `## Modes` (table: 1 per-module incremental / 2 aggregate build / 3 legacy reverse-engineer / 4 PRD-coverage [runs inside 1+2]) and a `## Not` note: do NOT duplicate `auto-docs` (session deltas) or `auto-summary` (project brief); read `summary.md` as context; reuse `code-map` for harvest (mode 3).
+Add `## Modes` (table: 1 per-module incremental / 2 aggregate build / 3 legacy reverse-engineer / 4 PRD-coverage [runs inside 1+2]) and a `## Not` note: do NOT duplicate `auto-docs` (session deltas) or `summary mode` (project brief); read `summary.md` as context; reuse `code-map mode` for harvest (mode 3).
 
 - [ ] **Step 3: Mode 1 — per-module incremental**
 
@@ -208,7 +208,7 @@ Add `## Mode 1 — Per-module incremental (write-code tail)`. Document:
 
 Add `## Mode 4 — Coverage vs requirements`. Document: load the feature's spec (`<target>/.sdcorejs/docs|specs/<track>/*-spec.md`) `## Acceptance criteria`; if `<target>/.sdcorejs/prd/<feature>.md` exists, also load it. Map each requirement → ✅ documented & implemented / ⚠️ partial / ❌ missing, into the guide's `## Coverage vs yêu cầu` table + the frontmatter `coverage` counts. If no spec/PRD (e.g. legacy), note "không có spec/PRD — best-effort từ code".
 
-- [ ] **Step 5: Rules + related refs** — MUST DO (templates from the ref; idempotent overwrite; bilingual; never run the target app); MUST NOT (duplicate auto-docs/auto-summary; capture screenshots; write to the agent repo). Related: `_refs/shared/user-guide-template.md`, `sdcorejs-code-map`, `sdcorejs-auto-docs`, `sdcorejs-auto-summary`, `sdcorejs-ship`.
+- [ ] **Step 5: Rules + related refs** — MUST DO (templates from the ref; idempotent overwrite; bilingual; never run the target app); MUST NOT (duplicate auto-docs/summary mode; capture screenshots; write to the agent repo). Related: `_refs/shared/user-guide-template.md`, `sdcorejs-explore`, `sdcorejs-auto-docs`, `sdcorejs-explore`, `sdcorejs-ship`.
 
 - [ ] **Step 6: Verify**
 
@@ -277,24 +277,24 @@ git commit -m "feat(skills): user-guide aggregate build + pandoc export + ship h
 
 Append `## Mode 3 — Legacy reverse-engineer`. Document:
 1. **Trigger:** manual ("đọc toàn dự án viết user guide", "viết user guide cho dự án cũ").
-2. Invoke `sdcorejs-code-map` to harvest the WHOLE project — modules, routes, permission codes, screens, shared components (code-map already surfaces these). 
-3. For each discovered module, render `.sdcorejs/user-guide/<module>.md` from the per-module template using the harvested facts (no write-code pack output to read — derive from the existing code that code-map mapped + targeted `rg` for routes/permissions).
+2. Invoke `sdcorejs-explore` to harvest the WHOLE project — modules, routes, permission codes, screens, shared components (code-map mode already surfaces these).
+3. For each discovered module, render `.sdcorejs/user-guide/<module>.md` from the per-module template using the harvested facts (no write-code pack output to read — derive from the existing code that code-map mode mapped + targeted `rg` for routes/permissions).
 4. Then run Mode 2 (aggregate). Coverage section notes "reverse-engineered — no spec/PRD" unless a `.sdcorejs/prd/<feature>.md` is supplied.
 5. Note: legacy projects may not follow SDCoreJS conventions exactly — harvest is best-effort; flag modules where routes/permissions couldn't be resolved.
 
 - [ ] **Step 2: Verify**
 
 ```bash
-rg -n "Mode 3 — Legacy|sdcorejs-code-map|reverse-engineer" skills/orchestration/write-user-guide.md
+rg -n "Mode 3 — Legacy|sdcorejs-explore|reverse-engineer" skills/orchestration/write-user-guide.md
 ```
-Expected: Mode 3 present + invokes code-map.
+Expected: Mode 3 present + invokes code-map mode.
 
 - [ ] **Step 3: Sync + commit**
 
 ```bash
 bash .claude/sync-skills.sh
 git add skills/orchestration/write-user-guide.md .claude/skills plugin/skills
-git commit -m "feat(skills): user-guide legacy reverse-engineer mode via code-map (P4)"
+git commit -m "feat(skills): user-guide legacy reverse-engineer mode via code-map mode (P4)"
 ```
 
 ---
@@ -348,9 +348,9 @@ git commit -m "feat(skills): wire write-user-guide into write-code tail chains +
 | per-module path `.sdcorejs/user-guide/<module>.md`; aggregate root | T1, T2, T3 |
 | mode 1 wired into 3 tail chains right after auto-docs, touched-module only | T5 Step 1 (+ T2 mode 1) |
 | mode 2 wired into ship after branch-ready | T3 Step 2 |
-| mode 3 legacy via code-map, no spec needed | T4 |
+| mode 3 legacy via code-map mode, no spec needed | T4 |
 | coverage maps spec acceptance criteria + optional external PRD → ✅/⚠️/❌ | T2 Step 4 (mode 4) |
-| no duplication of auto-docs/auto-summary/code-map; CLAUDE.md + diagram updated | T2 Step 2 (Not note), T5 Step 2 |
+| no duplication of auto-docs/summary mode/code-map mode; CLAUDE.md + diagram updated | T2 Step 2 (Not note), T5 Step 2 |
 | sync --check + lefthook green | every commit; T5 Step 4 |
 
 All spec acceptance criteria map to ≥1 task. No gaps.

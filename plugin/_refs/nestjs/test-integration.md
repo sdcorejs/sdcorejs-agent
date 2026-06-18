@@ -269,4 +269,4 @@ Coverage target: ≥ 80% line on `services/` + `repositories/` + `guards/`.
 - Principles: `_refs/shared/testing-philosophy.md`
 - E2E (with HTTP): `_refs/nestjs/test-e2e.md`
 - Unit (mocked repos, no DB): `_refs/nestjs/test-unit.md`
-- Verification: `orchestration/verify-before-done`
+- Verification: `sdcorejs-ship (verify-before-done mode)`

@@ -1,0 +1,203 @@
+---
+name: sdcorejs-plan
+description: Plan authoring and approval gate. Use after approved spec, or when the user asks to write/review/approve/change an implementation plan. Produces numbered file/task plan, self-reviews, waits for explicit approval, then persists approved snapshot under .sdcorejs/plans/<track>/ before execute-plan. Applies across tracks. Runtime-localized.
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+---
+
+# 03 - Plan
+
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+
+## Purpose
+Translate an approved spec into an executable contract, hold the user approval gate, and persist the approved plan corpus inside the same skill.
+
+The plan is the exact contract that `sdcorejs-execute-plan` runs.
+
+## Preconditions
+- A spec has explicit user approval.
+- `sdcorejs-spec` has written the approved spec snapshot.
+- The plan must reference the approved spec path or include the approved spec content in context.
+
+If the spec is missing or unapproved, route to `sdcorejs-spec`.
+
+## Process
+
+### 1. Load inputs
+Read:
+
+- Approved spec.
+- Relevant `_refs/sdlc/<track>.md` for angular / nestjs / nextjs.
+- `_refs/shared/testing-philosophy.md` and target stack test ref for test-track plans.
+- Existing `.sdcorejs/docs/product/` ledgers for product-track plans.
+- Latest 1-3 approved plans under `.sdcorejs/plans/<track>/` to mirror the user's preferred granularity.
+
+### 2. Check paths
+Before drafting:
+
+- Confirm every CREATE path does not already exist.
+- Confirm every EDIT path does exist.
+- Surface conflicts instead of silently overwriting.
+- For generic harness plans, mark unknown paths as `VERIFY THEN EDIT` instead of pretending they are known.
+
+### 3. Draft the plan
+Use numbered steps grouped by phase:
+
+```markdown
+## Scope
+<2-4 lines from the approved spec>
+
+## Execution context
+- Track: <angular|nestjs|nextjs|test|product|generic>
+- Coverage approach: <post-hoc|TDD>
+- Parallel candidates: <yes/no + why>
+
+## Tasks
+
+### Phase 1 - <phase name>
+1. CREATE <path> - <intent>
+2. EDIT <path> - <intent>
+
+### Phase 2 - Tests / verification
+3. CREATE <path> - <intent>
+
+## Acceptance mapping
+- AC1 -> tasks 1, 3
+- AC2 -> tasks 2, 3
+
+## Verification
+- `<command>`
+- Manual: <smoke check>
+```
+
+For test-track plans, steps can be test cases, fixtures, page objects, harness scripts, and runner commands. For product-track plans, steps can be ledger creation, story/AC refinement, implementation map update, test map update, UAT checklist, and traceability audit. For generic harness plans, every task must name the tool/action and verification evidence.
+
+### 4. Self-review before showing the user
+Fix the plan before presenting if any checklist item fails:
+
+- No placeholders.
+- Every task has a number, action marker, target path or command, and one-line intent.
+- Acceptance criteria map to at least one task.
+- Verification section has exact commands or explicit manual checks.
+- Path conflicts are surfaced.
+- Test coverage matches the spec's coverage approach.
+- Parallel candidates are identified, but not executed.
+
+### 5. Present the approval gate
+Show a concise summary:
+
+```text
+Plan ready: <N> tasks across <M> phases.
+
+Phases:
+- Phase 1: tasks 1-K
+- Phase 2: tasks K+1...
+
+Verification:
+- <command>
+- Manual: <check>
+
+Do you approve this plan?
+- "OK" -> snapshot the plan and move to execute-plan
+- "change step <N>" -> update it and show it again
+- "cancel" -> stop
+```
+
+Translate at runtime.
+
+### 6. Handle user response
+
+Approve:
+
+1. Write an immutable approved-plan snapshot under:
+
+```text
+<target-project>/.sdcorejs/plans/<track>/<YYYY-MM-DD-HH-mm>-<kebab-topic>.md
+```
+
+2. Include frontmatter:
+
+```yaml
+---
+name: <kebab-topic>
+description: <one-line future-loading hook>
+approvedAt: <ISO-8601 timestamp with timezone>
+approvedBy: <git user.email or session user when known>
+track: <angular|nestjs|nextjs|test|product|generic>
+sourceSpecPath: .sdcorejs/specs/<track>/<timestamp>-<topic>.md
+taskCount: <N>
+phaseCount: <M>
+---
+```
+
+3. Body format:
+
+```markdown
+# <Title> - Approved Plan
+
+> Snapshot of what the user approved at the `sdcorejs-plan` gate. Do not edit by hand; re-author through `sdcorejs-plan` if the contract changes.
+
+## Approved contract
+<verbatim approved plan content>
+
+## Decisions captured during review
+- <what changed during review, or `(approved as drafted)`>
+
+## Skill provenance
+sdcorejs-plan (approved on attempt <N> / 3)
+```
+
+4. Only after the approved snapshot succeeds, hand off to `sdcorejs-execute-plan` with the approved plan snapshot path.
+
+Change request:
+
+1. Edit the plan.
+2. Re-run self-review.
+3. Re-present the summary.
+4. Cap at 3 revision rounds, then suggest returning to `sdcorejs-spec`.
+
+Abort:
+
+1. Stop the workflow.
+2. Do not write an approved snapshot.
+
+## Rules
+
+### Must do
+- Keep code generation out of this skill.
+- Wait for explicit plan approval.
+- Snapshot the approved plan before execution.
+- Create a new approved snapshot every time; snapshots are immutable history.
+- Capture review decisions honestly; never leave the section blank.
+- Pass the approved plan as the exact execution contract to `sdcorejs-execute-plan`.
+- Include verification commands.
+
+### Must not
+- Dispatch a track orchestrator directly from this skill.
+- Modify the plan after handing off without returning to the approval gate.
+- Treat silence as approval.
+- Hide a path conflict.
+- Overwrite an old approved snapshot.
+
+## Cross-references
+- `sdcorejs-spec` - approved spec input
+- `sdcorejs-execute-plan` - runs the approved plan
+
+<!-- response-style: auto-injected by sync-skills; do not edit mirror by hand -->
+
+**Response style (terse mode active for this skill - reduces token usage):**
+
+While executing this skill:
+
+- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
+- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
+- Pattern: `[thing] [action] [reason]. [next step].`
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal - no caveman inside generated artifacts.**
+- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
+- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

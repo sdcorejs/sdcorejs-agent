@@ -1,10 +1,10 @@
 # Next.js Landing Site — SDLC Reference
 
-This file is loaded by `skills/shared/sdlc/0[1-6]-*.md` when the detected track is `nextjs`. Currently scoped to the `build-website` pack — when other Next.js skill packs land (e.g. app dashboards), add their variants here under sub-headings.
+This file is loaded by `skills/shared/sdlc/0[1-3]-*.md` when the detected track is `nextjs`. Currently scoped to the `build-website` pack — when other Next.js skill packs land (e.g. app dashboards), add their variants here under sub-headings.
 
 ---
 
-## Brainstorm
+## Brainstorming: exploration
 
 ### Industry-aware proposal pattern
 Most landing-site requests start vague ("công ty mình muốn có website"). The brainstorm forces an industry pick FIRST, then maps to a profile, then proposes 3 tiers.
@@ -67,7 +67,7 @@ For "Khác" → synthesize a profile from the description, present explicitly, a
 
 ---
 
-## Clarify
+## Brainstorming: required confirmations
 
 ### Minimum-required (blocking)
 Ask in groups of 3-4. Each must have an answer before the spec stage.
@@ -119,7 +119,7 @@ Ask in groups of 3-4. Each must have an answer before the spec stage.
 | **OG** | <static | dynamic per page> |
 | **Blog** | <yes (N bài/tuần) | no> |
 
-→ Tiếp theo: `sdcorejs-write-spec` để mình draft spec.
+→ Tiếp theo: `sdcorejs-spec` để mình draft spec + xin xác nhận trong cùng gate.
 ```
 
 ---
@@ -189,7 +189,7 @@ npx lhci autorun --preset=mobile  # or `lighthouse http://localhost:3000/<route>
 ```
 
 ### Final-step expectations
-Last numbered step references the tail-call chain (sdcorejs-test → sdcorejs-review → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/branch-ready → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories). The reviewer checks the chain is implicit, not omitted.
+Last numbered step references the tail-call chain (sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop → sdcorejs-comment-code → sdcorejs-ship (verify-before-done mode) → sdcorejs-ship (branch-ready mode) → _refs/orchestration/tail/auto-docs.md → _refs/orchestration/tail/auto-task-tracker.md → sdcorejs-explore (memories mode)). The reviewer checks the chain is implicit, not omitted.
 
 ### Existing-site improvement variant
 If the user is improving an EXISTING site (came via `08-audit-existing-site`), phases are gap-driven, not greenfield. The plan should be one phase per audit finding, ordered Critical → Important → Minor.

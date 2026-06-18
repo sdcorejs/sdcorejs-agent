@@ -113,7 +113,7 @@ revalidatePath('/admin/messages'); // or relevant path
 | **Self-hosted (Node server, Docker)** | ✅ Full | ✅ Full | Works; you handle the disk persistence layer |
 | **Static export** (`output: 'export'`) | ❌ Not supported | ❌ Not supported | Equivalent to SSG only — incompatible with ISR; do NOT use for sites needing content updates |
 
-If user picked Cloudflare in `sdcorejs-clarify-requirements` → confirm 30-min ISR is acceptable (it is for most landing sites) OR fall back to longer windows + on-demand only.
+If user picked Cloudflare in `sdcorejs-brainstorming` → confirm 30-min ISR is acceptable (it is for most landing sites) OR fall back to longer windows + on-demand only.
 
 ## Caching what NOT to cache
 
@@ -200,6 +200,6 @@ npm run start
 Confirm the change in conversation, apply via Edit, re-build, verify.
 
 ## Cross-references
-- Inputs: hosting + caching answers from `sdcorejs-clarify-requirements`
-- Outputs to: `orchestration/verify-before-done` (caching-rendering-mode is verifiable acceptance criterion)
+- Inputs: hosting + caching answers from `sdcorejs-brainstorming`
+- Outputs to: `sdcorejs-ship (verify-before-done mode)` (caching-rendering-mode is verifiable acceptance criterion)
 - Related: `seo.md` (sitemap may itself be cached), `contact-form.md` (revalidate after submit), `i18n.md` (cache per locale, automatic with App Router)

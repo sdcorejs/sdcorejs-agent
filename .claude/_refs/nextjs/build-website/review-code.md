@@ -8,7 +8,7 @@
 
 ## What this covers
 Per-file code review for a Next.js landing-site project. Different from
-`review/architecture` (structural) and `sdcorejs-review` (numbers).
+the `architecture` dimension of `sdcorejs-review` (structural) and performance review (numbers).
 This file checks line-level adherence to Next.js + build-website conventions.
 
 ## Conventions checked (mapped to the write-code reference pack that defined them)
@@ -229,9 +229,9 @@ Severity: 🔴 Critical — server-only modules in client bundle leak secrets / 
 
 ## Scope rules
 - Focus on the changed files (`git diff`); reviewing the whole site every time is noise.
-- Do NOT auto-fix — that's `orchestration/repair-loop`'s job.
+- Do NOT auto-fix — that's `sdcorejs-repair-loop`'s job.
 - Do NOT run when there are no Next.js files in the diff (out of scope).
-- Do NOT duplicate `review/architecture` findings (module boundaries belong there).
+- Do NOT duplicate `sdcorejs-review` architecture-dimension findings (module boundaries belong there).
 - Cite the build-website sub-skill that defines each convention.
 
 ## Anti-patterns to flag
@@ -240,9 +240,9 @@ Severity: 🔴 Critical — server-only modules in client bundle leak secrets / 
 - **Linting concerns flagged as Critical** — ESLint handles those; code review focuses on conventions ESLint doesn't enforce.
 
 ## Cross-references
-- Architecture review (modules, layering): `review/architecture`
+- Architecture review (modules, layering): `sdcorejs-review` with the `architecture` dimension
 - Performance review: `sdcorejs-review`
 - Accessibility review: `sdcorejs-review`
 - Security audit (cross-cutting): `sdcorejs-review`
-- Repair loop: `orchestration/repair-loop`
+- Repair loop: `sdcorejs-repair-loop`
 - Source conventions: `_refs/nextjs/build-website/write-code/{init-site,theme,pages-and-blocks,seo,og-preview,i18n,caching,responsive,contact-form,content-quality}.md`

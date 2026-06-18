@@ -1,7 +1,7 @@
 {
   "name": "sdcorejs-agent",
   "version": "0.5.0",
-  "description": "An orchestrated SDLC for AI coding agents — Angular Portal, NestJS, and Next.js stacks with explicit approval gates between every phase. Works in Claude Code, GitHub Copilot, and Codex.",
+  "description": "An orchestrated SDLC for AI coding agents - Angular Portal, NestJS, and Next.js stacks with explicit approval gates between every phase. Works in Claude Code, GitHub Copilot, and Codex.",
   "license": "MIT",
   "private": true,
   "type": "module",
@@ -34,10 +34,12 @@
     "test:e2e:phase2": "node --test test/e2e/cli-adapters.test.mjs",
     "test:e2e:phase3": "node --test test/e2e/entrypoint-smoke.test.mjs",
     "test:e2e:phase4": "node --test test/e2e/golden-target-app.test.mjs",
-    "sync:skills": "bash .claude/sync-skills.sh",
-    "check:skills": "bash .claude/sync-skills.sh --check",
+    "sync:skills": "node scripts/sync-skills.mjs",
+    "check:skills": "node scripts/sync-skills.mjs --check",
+    "clean:skills": "node scripts/sync-skills.mjs --clean",
     "sync:skills:ps": "powershell -ExecutionPolicy Bypass -File .claude/sync-skills.ps1",
     "check:skills:ps": "powershell -ExecutionPolicy Bypass -File .claude/sync-skills.ps1 -check",
+    "clean:skills:ps": "powershell -ExecutionPolicy Bypass -File .claude/sync-skills.ps1 -clean",
     "prepare": "lefthook install || true"
   },
   "devDependencies": {

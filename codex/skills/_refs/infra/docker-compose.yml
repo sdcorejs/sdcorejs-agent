@@ -1,0 +1,121 @@
+# ============================================================================
+# Full local stack — run everything with one command:  docker compose up
+# ----------------------------------------------------------------------------
+# This file wires up four services so a non-technical user can launch the
+# whole app on their own machine. You only ever open TWO things in a browser:
+#
+#   • http://localhost:4200  → the app itself (the "frontend")
+#   • http://localhost:8080  → the Keycloak admin console (manage logins)
+#
+# What each service does, in plain language:
+#
+#   postgres  — the database. Stores all the app's data. It is NOT reachable
+#               from your browser or your machine directly (no open port) —
+#               only the other services talk to it. Data survives restarts
+#               because it lives in a named disk volume ("pgdata").
+#
+#   keycloak  — the login / identity server. Handles sign-in and issues the
+#               security tokens the backend trusts. It keeps its own data in a
+#               SEPARATE database ("keycloak") on the SAME postgres server.
+#
+#   backend   — the application server (NestJS, internal port 3000). Talks to
+#               postgres for data and to keycloak to validate logins. It has
+#               NO open port of its own — the frontend forwards "/api" to it.
+#
+#   frontend  — the website you actually use (Angular served by nginx). It
+#               shows the app AND quietly forwards "/api" calls to the backend,
+#               so everything looks like it comes from one address (:4200).
+#
+# Settings (passwords, ports, names) come from the ".env" file next to this
+# file — copy ".env.example" to ".env" and adjust if you like.
+# ============================================================================
+
+services:
+  # --- Database (internal only — no port exposed to your machine) ---
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - "pgdata:/var/lib/postgresql/data"
+      # On first start (empty data dir) Postgres runs any *.sh here once —
+      # we use it to create Keycloak's separate database.
+      - "./infra/postgres-init:/docker-entrypoint-initdb.d:ro"
+    healthcheck:
+      # $${...} → Compose passes a literal "$" through so the shell INSIDE the
+      # container expands POSTGRES_USER, not Compose on the host.
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # --- Login / identity server (admin console on :8080) ---
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${KC_DB_NAME:-keycloak}
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KC_HEALTH_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+    volumes:
+      - "./infra/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${KEYCLOAK_PORT}:8080"
+    healthcheck:
+      # Keycloak 26 serves health on the MANAGEMENT port 9000 (not 8080).
+      # The image is distroless — no curl/wget — so we open a raw TCP socket
+      # via the shell's /dev/tcp, send a minimal HTTP request, and look for
+      # "200 OK" in the response from /health/ready.
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000; echo -e 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3; grep -q '200 OK' <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  # --- Application server (NestJS :3000 — internal only, reached via /api) ---
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../infra/backend.Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      PORT: 3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    # if the backend has no /health route, remove this healthcheck and the frontend depends_on condition
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # --- The website you actually open (Angular + nginx, serves SPA + proxies /api) ---
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../infra/frontend.Dockerfile
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "${FRONTEND_PORT}:80"
+
+volumes:
+  pgdata: {}

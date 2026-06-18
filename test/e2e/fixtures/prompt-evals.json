@@ -14,7 +14,25 @@
   {
     "id": "open-ended-localized",
     "prompt": "toi dang phan van giua drawer va full page detail",
-    "expectedSkill": "sdcorejs-brainstorm",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 1
+  },
+  {
+    "id": "product-traceability-localized",
+    "prompt": "viet product doc va kiem tra requirement implement test co day du khong",
+    "expectedSkill": "sdcorejs-product",
+    "phase": 1
+  },
+  {
+    "id": "solution-builder-classroom-localized",
+    "prompt": "xay dung phan mem quan ly lop hoc",
+    "expectedSkill": "sdcorejs-solution-builder",
+    "phase": 1
+  },
+  {
+    "id": "design-from-user-stories-localized",
+    "prompt": "thiet ke man hinh quan ly lop hoc va gen png theo user stories",
+    "expectedSkill": "sdcorejs-design",
     "phase": 1
   },
   {
@@ -26,7 +44,25 @@
   {
     "id": "commit",
     "prompt": "commit changes",
-    "expectedSkill": "sdcorejs-commit",
+    "expectedSkill": "sdcorejs-git",
+    "phase": 3
+  },
+  {
+    "id": "explore-codebase",
+    "prompt": "map architecture and trace product flow",
+    "expectedSkill": "sdcorejs-explore",
+    "phase": 3
+  },
+  {
+    "id": "ship-final-gate",
+    "prompt": "verify acceptance and ship this branch",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
+  },
+  {
+    "id": "dependency-update",
+    "prompt": "update dependencies and prepare PR",
+    "expectedSkill": "sdcorejs-ship",
     "phase": 3
   }
 ]

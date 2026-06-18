@@ -4,11 +4,13 @@ import "../styles/global.css";
 interface Props {
   title?: string;
   description?: string;
+  lang?: string;
 }
 
 const {
-  title = "SDCoreJS Agent - Runtime-localized SDLC for AI coding agents",
-  description = "SDCoreJS turns Claude Code, GitHub Copilot, Codex, and Cursor into accountable engineers for Angular, NestJS, and Next.js projects. It now ships global English-source skills plus deterministic E2E checks for the agent itself.",
+  title = "SDCoreJS Agent - Presenter deck",
+  description = "Slide deck trình bày SDCoreJS Agent: skill-driven SDLC, Claude/Codex setup, test flow, Angular Portal Core UI prompts, finish gate và memory handoff.",
+  lang = "vi",
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -17,7 +19,7 @@ const canonical = `${Astro.site ?? ""}${base}/`.replace(/\/+$/, "/");
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

@@ -26,6 +26,14 @@ const STOP_WORDS = new Set([
 
 const LOCALIZED_ALIASES = new Map([
   ['them', ['add', 'create']],
+  ['xay', ['build', 'create']],
+  ['dung', ['build', 'create']],
+  ['thiet', ['design', 'wireframe', 'mockup']],
+  ['ke', ['design', 'wireframe', 'mockup']],
+  ['man', ['screen', 'ui']],
+  ['hinh', ['screen', 'ui']],
+  ['giao', ['ui', 'interface']],
+  ['dien', ['ui', 'interface']],
   ['nut', ['button', 'action']],
   ['don', ['order']],
   ['hang', ['order']],
@@ -38,38 +46,64 @@ const LOCALIZED_ALIASES = new Map([
   ['detail', ['detail']],
   ['approve', ['approve', 'approval', 'workflow']],
   ['scaffold', ['scaffold', 'bootstrap', 'init']],
-  ['backend', ['backend', 'nestjs']]
+  ['backend', ['backend', 'nestjs']],
+  ['viet', ['write', 'documentation']],
+  ['mem', ['software', 'app', 'system']],
+  ['quan', ['manage', 'management']],
+  ['ly', ['manage', 'management']],
+  ['lop', ['class', 'classroom']],
+  ['hoc', ['school', 'classroom']],
+  ['png', ['png', 'preview', 'mockup']],
+  ['wireframe', ['wireframe', 'design']],
+  ['mockup', ['mockup', 'design']],
+  ['kiem', ['check', 'review']],
+  ['tra', ['check', 'review']],
+  ['yeu', ['requirement']],
+  ['cau', ['requirement']],
+  ['day', ['complete']],
+  ['du', ['complete']]
 ]);
 
 const SKILL_HINTS = [
-  { skill: 'sdcorejs-brainstorm', words: ['brainstorm', 'unsure', 'deciding', 'between', 'compare', 'should'] },
+  { skill: 'sdcorejs-brainstorming', words: ['brainstorm', 'brainstorming', 'requirements', 'clarify', 'unsure', 'deciding', 'between', 'compare', 'should'] },
   { skill: 'sdcorejs-angular', words: ['angular', 'portal', 'screen', 'button', 'approve', 'approval', 'bulk', 'export', 'action', 'drawer'] },
   { skill: 'sdcorejs-nestjs', words: ['nestjs', 'backend', 'module', 'entity', 'crud', 'endpoint', 'scaffold'] },
   { skill: 'sdcorejs-nextjs', words: ['nextjs', 'website', 'landing', 'seo', 'sitemap', 'og', 'contact'] },
+  { skill: 'sdcorejs-solution-builder', words: ['build', 'create', 'software', 'app', 'system', 'manage', 'management', 'whole', 'classroom', 'school'] },
+  { skill: 'sdcorejs-product', words: ['product', 'po', 'story', 'stories', 'acceptance', 'criteria', 'requirement', 'requirements', 'traceability', 'uat', 'ledger', 'gap', 'implementation', 'implement', 'complete'] },
+  { skill: 'sdcorejs-design', words: ['design', 'ui', 'ux', 'screen', 'wireframe', 'mockup', 'png', 'preview', 'handoff', 'flow', 'flows', 'story', 'stories'] },
   { skill: 'sdcorejs-write-user-guide', words: ['user', 'guide', 'documentation', 'manual'] },
-  { skill: 'sdcorejs-commit', words: ['commit', 'changes', 'save'] }
+  { skill: 'sdcorejs-explore', words: ['explore', 'summary', 'overview', 'map', 'architecture', 'trace', 'flow', 'setup', 'env', 'environment', 'resume', 'recover'] },
+  { skill: 'sdcorejs-ship', words: ['verify', 'acceptance', 'criteria', 'final', 'gate', 'branch', 'ready', 'ship', 'push', 'release', 'tag', 'merge', 'dependency', 'dependencies', 'package', 'outdated', 'audit', 'bump'] },
+  { skill: 'sdcorejs-git', words: ['commit', 'changes', 'save', 'worktree', 'pr', 'pull', 'request', 'changelog', 'notes'] }
 ];
 
 export async function loadSkillPack(rootUrlOrPath) {
   const root = toPath(rootUrlOrPath);
-  const [sourceSkills, claudeMirrorSkills, pluginMirrorSkills, referenceDocs] = await Promise.all([
+  const [sourceSkills, claudeMirrorSkills, pluginMirrorSkills, codexMirrorSkills, referenceDocs, codexReferenceDocs] = await Promise.all([
     readSourceSkills(path.join(root, 'skills')),
     readMirrorSkills(path.join(root, '.claude', 'skills')),
     readMirrorSkills(path.join(root, 'plugin', 'skills')),
-    listMarkdownFiles(path.join(root, '_refs'))
+    readMirrorSkills(path.join(root, 'codex', 'skills')),
+    listMarkdownFiles(path.join(root, '_refs')),
+    listMarkdownFiles(path.join(root, 'codex', 'skills', '_refs'))
   ]);
 
   const diagnostics = [];
   diagnostics.push(...diagnoseSkills(sourceSkills, 'source'));
   diagnostics.push(...diagnoseMirror(sourceSkills, claudeMirrorSkills, '.claude/skills'));
   diagnostics.push(...diagnoseMirror(sourceSkills, pluginMirrorSkills, 'plugin/skills'));
+  diagnostics.push(...diagnoseMirror(sourceSkills, codexMirrorSkills, 'codex/skills'));
+  diagnostics.push(...diagnoseCodexMirror(codexMirrorSkills));
 
   return {
     root,
     sourceSkills,
     claudeMirrorSkills,
     pluginMirrorSkills,
+    codexMirrorSkills,
     referenceDocs,
+    codexReferenceDocs,
     diagnostics
   };
 }
@@ -120,6 +154,7 @@ async function readSkillFile(file) {
     path: file,
     name: frontmatter.name ?? '',
     description: frontmatter.description ?? '',
+    frontmatterKeys: frontmatter.__keys ?? [],
     text
   };
 }
@@ -135,7 +170,11 @@ function parseFrontmatter(text) {
   const result = {};
   for (const line of block.split(/\r?\n/)) {
     const match = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (match) result[match[1]] = match[2].trim();
+    if (match) {
+      result[match[1]] = match[2].trim();
+      result.__keys ??= [];
+      result.__keys.push(match[1]);
+    }
   }
   return result;
 }
@@ -174,6 +213,16 @@ function diagnoseMirror(sourceSkills, mirrorSkills, label) {
   }
   for (const name of mirrorNames) {
     if (!sourceNames.has(name)) diagnostics.push(`${label}: extra ${name}`);
+  }
+  return diagnostics;
+}
+
+function diagnoseCodexMirror(skills) {
+  const diagnostics = [];
+  for (const skill of skills) {
+    const extraKeys = skill.frontmatterKeys.filter((key) => !['name', 'description'].includes(key));
+    if (extraKeys.length > 0) diagnostics.push(`codex/skills:${skill.path}: unsupported frontmatter keys ${extraKeys.join(',')}`);
+    if (/(^|[^./])_refs\//.test(skill.text)) diagnostics.push(`codex/skills:${skill.path}: unresolved repo-root _refs path`);
   }
   return diagnostics;
 }

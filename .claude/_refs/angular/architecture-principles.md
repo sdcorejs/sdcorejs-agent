@@ -1,6 +1,6 @@
 # Angular Portal — Architecture Principles
 
-Source of truth for **WHY** SDCoreJS Angular portals look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, `sdcorejs-clarify-requirements`, `11-init-module`, `12-init-entity`, and `sdcorejs-review`.
+Source of truth for **WHY** SDCoreJS Angular portals look the way they do. Loaded on demand by `sdcorejs-brainstorming`, `sdcorejs-spec`, `11-init-module`, `12-init-entity`, and `sdcorejs-review`.
 
 If a generated file contradicts a principle here, that file is wrong. If a principle here contradicts a real-world need, **the principle is wrong** — surface it as feedback, don't silently break it.
 
@@ -217,7 +217,7 @@ Future bilingual support (VI + EN): keep labels in i18n JSON, default to VI, str
 
 New code → **standalone components** with `imports: [...]` on each.
 
-Hybrid NgModule + standalone (legacy portal migration): supported but flagged. `sdcorejs-clarify-requirements` asks "architecture mode: standalone-first or hybrid?" when generation could go either way.
+Hybrid NgModule + standalone (legacy portal migration): supported but flagged. `sdcorejs-brainstorming` asks "architecture mode: standalone-first or hybrid?" when generation could go either way.
 
 **Why**: Angular's direction is standalone. NgModules add a layer of indirection (declarations / exports / imports) that's purely ceremonial when you have standalone.
 
@@ -249,7 +249,7 @@ No central `__tests__/` directory; no parallel `tests/` tree.
 
 **Why**: when you delete a feature folder, the tests die with it (correct). When you rename a service, your IDE renames the spec next to it (correct). When a reviewer reads a service, the spec is one tab over (correct).
 
-Test coverage defaults to `standard` and the approach defaults to `TDD` (RED-first) — specs are a mandatory deliverable, written before their production file, never gated behind a question. `sdcorejs-clarify-requirements` only records an OVERRIDE (`minimal`/`full`, or `post-hoc` ordering) when the user explicitly asks; absent that, the agent proceeds with standard + RED-first.
+Test coverage defaults to `standard` and the approach defaults to `TDD` (RED-first) — specs are a mandatory deliverable, written before their production file, never gated behind a question. `sdcorejs-brainstorming` only records an OVERRIDE (`minimal`/`full`, or `post-hoc` ordering) when the user explicitly asks; absent that, the agent proceeds with standard + RED-first.
 
 ---
 
@@ -291,4 +291,4 @@ When a principle here changes, propagate to:
 - `_refs/angular/entity-field-types.md` — field-type → form-control mapping
 - `_refs/angular/templates/entity-skeleton.md` — canonical code templates these principles produce
 - `_refs/angular/templates/example-product.md` — worked example end-to-end
-- `skills/orchestration/comment-code.md` — when/how to document WHY these principles applied in a specific decision
+- `sdcorejs-comment-code` + `_refs/orchestration/tail/comment-code.md` — when/how to document WHY these principles applied in a specific decision

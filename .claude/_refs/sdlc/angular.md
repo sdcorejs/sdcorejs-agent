@@ -1,10 +1,10 @@
 # Angular Portal — SDLC Reference
 
-This file is loaded by `skills/shared/sdlc/0[1-6]-*.md` when the detected track is `angular`. It collects only the track-specific bits the cross-track skills need; do NOT duplicate the cross-track workflow here.
+This file is loaded by `skills/shared/sdlc/0[1-3]-*.md` when the detected track is `angular`. It collects only the track-specific bits the cross-track skills need; do NOT duplicate the cross-track workflow here.
 
 ---
 
-## Brainstorm
+## Brainstorming: exploration
 
 ### Approach palette
 When the user wants 2-3 options for a CRUD/workflow feature, present from this matrix:
@@ -21,7 +21,7 @@ When the user wants 2-3 options for a CRUD/workflow feature, present from this m
 - Single-step submit-approve → add `31-actions` to plan
 - Multi-step (draft → review → approve → publish) → spec must list each transition + permission
 
-### Clarifying questions to seed
+### Questions to seed
 - "Mục tiêu là tốc độ nhập liệu (drawer) hay xử lý workflow phức tạp (page detail)?"
 - "Có workflow approval không? Single-step hay multi-step?"
 - "Số field UI ước lượng (cho thấy phù hợp drawer hay page)?"
@@ -29,7 +29,7 @@ When the user wants 2-3 options for a CRUD/workflow feature, present from this m
 
 ---
 
-## Clarify
+## Brainstorming: required confirmations
 
 ### Minimum-required (blocking)
 1. **Module name** — which existing module, or "create new module" with name
@@ -88,7 +88,7 @@ For VI portals, all labels use full diacritics.
 | **Fields** | <N> SaveReq + <M> read-only DTO fields |
 | **Tests** | <minimal | standard | full> |
 
-→ Tiếp theo: `sdcorejs-write-spec` để mình draft spec.
+→ Tiếp theo: `sdcorejs-spec` để mình draft spec + xin xác nhận trong cùng gate.
 ```
 
 ---
@@ -173,4 +173,4 @@ If layout is `side-drawer`, omit `pages/detail/` and add `components/detail-side
 - `*.detail.component.spec.ts` — form validation + CREATE/UPDATE/DETAIL state switching
 
 ### Final-step expectations
-The last numbered step should reference the mandatory tail-call chain (sdcorejs-test → sdcorejs-review → orchestration/repair-loop → orchestration/comment-code → orchestration/verify-before-done → orchestration/branch-ready → orchestration/auto-docs → orchestration/auto-task-tracker → orchestration/memories). The reviewer of the plan checks that this chain is implicit, not omitted.
+The last numbered step should reference the mandatory tail-call chain (sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop → sdcorejs-comment-code → sdcorejs-ship (verify-before-done mode) → sdcorejs-ship (branch-ready mode) → _refs/orchestration/tail/auto-docs.md → _refs/orchestration/tail/auto-task-tracker.md → sdcorejs-explore (memories mode)). The reviewer of the plan checks that this chain is implicit, not omitted.

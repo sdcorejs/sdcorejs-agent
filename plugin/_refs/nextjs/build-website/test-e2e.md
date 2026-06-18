@@ -283,5 +283,5 @@ Target: full e2e suite < 5 min on a typical landing site.
 ## Cross-references
 - Cross-track principles: `_refs/shared/testing-philosophy.md`
 - E2E for other stacks: `_refs/angular/test-e2e.md`, `_refs/nestjs/test-e2e.md`
-- Verification gate: `orchestration/verify-before-done` (e2e is one of the criteria types)
+- Verification gate: `sdcorejs-ship (verify-before-done mode)` (e2e is one of the criteria types)
 - Stack build skills: `sdcorejs-nextjs` (orchestrator that hands off here via `sdcorejs-test`)

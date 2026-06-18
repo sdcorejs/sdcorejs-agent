@@ -1,10 +1,19 @@
 ---
 name: sdcorejs-dockerize
-description: Generate a one-command runnable Docker stack for an SDCoreJS project — emits Dockerfiles + docker-compose.yml (Angular FE + NestJS BE + Keycloak + Postgres) into a deploy root so `docker compose up` boots everything. Postgres on a named volume; nginx serves the SPA and reverse-proxies /api to the backend (single origin). Templates from `_refs/infra/`. Use before `sdcorejs-auth` + `sdcorejs-run-guide`. Triggers - "dockerize", "package with Docker", "docker compose", "run with Docker", "create Dockerfile", "containerize", or localized equivalents. Applies to angular, nestjs. Runtime-localized.
+description: Generate a one-command Docker stack for Angular FE + NestJS BE + Keycloak + Postgres. Use for dockerize/containerize/Dockerfile/docker compose/run with Docker requests before auth/run-guide. Emits deploy-root Dockerfiles, compose, nginx SPA + /api proxy, and Postgres volume using _refs/infra templates. Applies to angular, nestjs. Runtime-localized.
 allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
 # Dockerize — One-Command Runnable Stack
+
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
 
 ## Purpose
 
@@ -27,10 +36,12 @@ Turn an SDCoreJS frontend + backend into a single `docker compose up`. This skil
   docker-compose.yml          # prod (built images) — `docker compose up`
   docker-compose.dev.yml      # dev override (bind-mounts + hot reload)
   .env                        # copied from .env.example (never overwritten)
+  product/?                   # optional solution-builder PO docs
+  design/?                    # optional solution-builder FE handoff artifacts
   backend/                    # NestJS build context (separate repo, placed here)
-    frontend-nginx.conf?      # NOTE: nginx conf goes into frontend/, see Step 2
   frontend/                   # Angular build context (separate repo, placed here)
-    frontend-nginx.conf       # ← copied here (frontend.Dockerfile COPYs it from its context)
+    frontend-nginx.conf       # copied here because frontend.Dockerfile COPYs it from this context
+  test/?                      # optional solution-builder cross-stack tests/reports
   infra/
     backend.Dockerfile
     frontend.Dockerfile
@@ -39,7 +50,7 @@ Turn an SDCoreJS frontend + backend into a single `docker compose up`. This skil
     keycloak/realm-export.json
 ```
 
-FE and BE are **separate repos placed side by side** under the deploy root as `frontend/` and `backend/`. This skill does not move or clone them — it expects them already present (or asks where they are).
+FE and BE are **separate repos placed side by side** under the deploy root as `frontend/` and `backend/`. In a `sdcorejs-solution-builder` root, the same deploy root may also contain `product/`, `design/`, and `test/`; those are documentation/design/test artifacts and are not Docker build contexts. This skill does not move or clone apps — it expects them already present (or asks where they are).
 
 ## Step 0 — persona
 
@@ -49,7 +60,7 @@ FE and BE are **separate repos placed side by side** under the deploy root as `f
 
 ## Step 1 — locate & derive
 
-1. **Find the deploy root.** Look for a directory holding both `backend/` and `frontend/`. Common spots: a `deploy/` dir, or the parent dir of the FE/BE repos. If ambiguous or none found, **ask** the user for the deploy root path (default offer: create `deploy/` beside the repos, or use the parent dir that already contains `frontend/` + `backend/`). Do not guess silently.
+1. **Find the deploy root.** Look for a directory holding both `backend/` and `frontend/` (optionally also `product/`, `design/`, and `test/` in solution-builder output). Common spots: a `deploy/` dir, or the parent dir of the FE/BE repos. If ambiguous or none found, **ask** the user for the deploy root path (default offer: create `deploy/` beside the repos, or use the parent dir that already contains `frontend/` + `backend/`). Do not guess silently.
 2. **Derive Angular dist name → `PROJECT_DIST`.** Read `frontend/angular.json`; the build output project name is the folder under `dist/` (i.e. the project key under `projects.<name>` whose `architect.build.options.outputPath` ends in that name). Use it as `PROJECT_DIST`.
 3. **Derive the Angular build script → `BUILD_CMD`.** Default `build-prod`. Read `frontend/package.json` `scripts` — if `build-prod` is absent, prefer a prod-config build script that exists (`build:prod`, or `build` with a `production` configuration). Record the actual script name as `BUILD_CMD`.
 4. **Derive the BE migration script.** Read `backend/package.json` `scripts` for the TypeORM migration runner; default `typeorm migration:run` (matches `backend.Dockerfile`'s `CMD`). If the project uses a different script name, note it for the `backend.Dockerfile` `CMD` substitution in Step 2.
@@ -113,15 +124,15 @@ After files are emitted, hand off in order:
 - This skill **WRITES to the TARGET project's deploy root**, NEVER to this agent repo. The `_refs/infra/*` files are read-only source templates — read them, never edit them here.
 - All emitted paths are under `<deploy-root>/`. Confirm the deploy root before writing anything.
 
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
+<!-- response-style: auto-injected by sync-skills; do not edit mirror by hand -->
 
-**Response style (terse mode active for this skill — reduces token usage):**
+**Response style (terse mode active for this skill - reduces token usage):**
 
 While executing this skill:
 
 - Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
 - Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
 - Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal - no caveman inside generated artifacts.**
 - Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
 - If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

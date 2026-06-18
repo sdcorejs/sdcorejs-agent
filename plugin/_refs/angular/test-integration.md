@@ -271,4 +271,4 @@ Target per module: ≥ 70% line coverage on `pages/` + `services/`.
 - Unit tests: `_refs/angular/test-unit.md`
 - E2E tests: `_refs/angular/test-e2e.md`
 - Build skill that produces testable code: the `sdcorejs-angular` orchestrator (reference packs `_refs/angular/write-code/init-portal.md` → `actions.md`)
-- Verification gate: `orchestration/verify-before-done`
+- Verification gate: `sdcorejs-ship (verify-before-done mode)`

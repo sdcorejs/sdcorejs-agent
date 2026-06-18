@@ -12,13 +12,12 @@ const packs = [
 ];
 
 const flow = [
-  "brainstorm",
-  "clarify",
+  "brainstorming",
   "spec",
-  "review-spec",
   "plan",
-  "review-plan",
-  "write-code",
+  "execute-plan",
+  "angular",
+  "finish gates",
 ];
 ---
 
@@ -36,7 +35,7 @@ const flow = [
           target="_blank"
           rel="noopener"><code>@sdcorejs/angular</code></a
         > components, keeps generated labels runtime-localized, and runs through
-        the shared SDLC gates before code lands.
+        the shared SDLC gates and finish checks before code is handed off.
       </p>
     </div>
 
@@ -80,7 +79,7 @@ const flow = [
 
 tail chain:
   test -> review -> repair -> comments
-  -> verify -> branch-ready -> docs
+  -> verify -> sdcorejs-ship(branch-ready) -> docs
   -> user-guide -> task tracker</code></pre>
       </div>
     </div>

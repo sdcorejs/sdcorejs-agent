@@ -5,7 +5,7 @@ import { runPromptEval } from './skill-pack-runner.mjs';
 
 const PROFILE_FILES = {
   codex: ['AGENTS.md'],
-  cursor: ['AGENTS.md'],
+  cursor: ['AGENTS.md', '.cursor/rules/sdcorejs-agent.mdc'],
   'claude-code': ['CLAUDE.md'],
   copilot: ['.github/copilot-instructions.md', '.github/chatmodes/sdcorejs.chatmode.md']
 };

@@ -253,4 +253,4 @@ Target: full e2e suite < 5 min for a medium-sized NestJS API (50-100 endpoints).
 - Integration: `_refs/nestjs/test-integration.md` (lighter weight)
 - Unit: `_refs/nestjs/test-unit.md`
 - Convention referenced: bilingual error messages from `base/shared/` (TBD when nestjs track is built)
-- Verification: `orchestration/verify-before-done`
+- Verification: `sdcorejs-ship (verify-before-done mode)`

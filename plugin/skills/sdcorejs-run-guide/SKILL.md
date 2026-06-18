@@ -6,6 +6,15 @@ allowed-tools: Read, Write
 
 # Run Guide — Zero to Running for Non-Tech
 
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+
 ## Purpose
 
 Emit a single plain-language `START.md` into the target deploy root that takes a **non-technical** user from a fresh machine to a running app: install Docker Desktop, run **one** command, open the right URL, log in with the demo account, and recover from the handful of problems they're likely to hit. No jargon, numbered steps, describes what they will SEE on screen. This is the **final step** of the Docker build flow — it runs after `sdcorejs-dockerize` has emitted the compose stack and `sdcorejs-auth` has wired the login, so by now `docker compose up` already boots everything (Angular FE at `http://localhost:4200`, Keycloak admin at `http://localhost:8080`, Postgres internal on a volume).
@@ -131,15 +140,15 @@ After writing the file, tell the user in plain language that the guide is ready 
 - **Idempotent:** overwriting / refreshing an existing `START.md` is fine — re-running the skill simply rewrites the latest guide. There is no user data in `START.md` to preserve (unlike `.env`), so a plain overwrite is safe.
 - Keep the file plain-language regardless of persona. The audience for `START.md` is whoever ends up running the app, who may not be the person who built it.
 
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
+<!-- response-style: auto-injected by sync-skills; do not edit mirror by hand -->
 
-**Response style (terse mode active for this skill — reduces token usage):**
+**Response style (terse mode active for this skill - reduces token usage):**
 
 While executing this skill:
 
 - Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
 - Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
 - Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal - no caveman inside generated artifacts.**
 - Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
 - If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

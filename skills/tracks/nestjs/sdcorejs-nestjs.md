@@ -1,10 +1,19 @@
 ---
 name: sdcorejs-nestjs
-description: Generate NestJS modular-monolith backend code on the @sdcorejs/nestjs core — after sdcorejs-review-plan approves, OR as the single entry point for any direct backend code-gen request. Loads the matching on-demand pack under _refs/nestjs/write-code/ (per-pack trigger catalog in the body): init-project (scaffold app), init-admin (always-on admin module: users/roles/permissions [+tenant/department enterprise]), init-module (bounded-context module), init-entity (full CRUD stack: entity/repository/service/controller/schema/DTO), actions (custom / non-CRUD endpoints — domain methods, cross-module, workflow, bulk, export). Triggers - "scaffold nestjs / init backend", "add module", "add entity / create CRUD", "add endpoint / custom action / workflow / bulk / export", plus generic "generate backend code", "write backend", "go ahead" (after a nestjs plan was approved). NOT for spec/plan, code review, or angular/nextjs code (separate skills). After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Applies to nestjs. Runtime-localized.
+description: NestJS code executor for approved/direct backend work with confirmed requirements. Use after execute-plan or for scaffold project/admin/module/entity CRUD, custom endpoints, actions, workflows, bulk, or export work. Loads _refs/nestjs/write-code/ packs; not for spec/plan/review/unresolved requests. Runs mandatory finish tail. Applies to nestjs. Runtime-localized.
 allowed-tools: Read, Write, Edit, Bash, Glob, TodoWrite
 ---
 
 # 07 — Write Code (NestJS Orchestrator)
+
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
 
 ## Purpose
 
@@ -22,7 +31,7 @@ Read `<target>/.sdcorejs/persona.md` (project-local persona, if present) and `_r
 
 ## Step 0.1 — Pre-flight: ensure project summary
 
-Before dispatching ANY reference, run `orchestration/auto-summary`. If `<target>/.sdcorejs/summary.md` is missing it MUST be generated first (auto-summary delegates the scan to `sdcorejs-code-map` and distills the brief) — this is the gate that keeps generation from inventing module / base-class paths or duplicating shared abstractions. If it exists, auto-summary reads it (refreshing on drift) so dispatch slots into the real layout. Exception: when this run is itself a brand-new `init-project`, there is no project to summarize yet — auto-summary runs in WRITE mode at the END of init instead (see `init-project.md` Step 10).
+Before dispatching ANY reference, run `sdcorejs-explore (summary mode)`. If `<target>/.sdcorejs/summary.md` is missing it MUST be generated first (`sdcorejs-explore` scans the code map and distills the brief) — this is the gate that keeps generation from inventing module / base-class paths or duplicating shared abstractions. If it exists, `sdcorejs-explore` reads it and refreshes on drift so dispatch slots into the real layout. Exception: when this run is itself a brand-new `init-project`, there is no project to summarize yet — run summary mode at the END of init instead (see `init-project.md` Step 10).
 
 After ensuring the summary exists, READ the **`profile`** field from `<target>/.sdcorejs/summary.md` (default `simple` if absent). Pass the resolved profile into EVERY dispatched pack (`init-project` / `init-module` / `init-entity` / `actions`) — each pack emits only that profile's templates (see each pack's 'Profile (read FIRST)' section).
 
@@ -48,11 +57,11 @@ Each pack further links the literal code templates / snippets it renders. For a 
 
 Execution order: **project → admin → module → entity → actions**. `init-admin` ALWAYS runs right after `init-project` and BEFORE any `init-module` / `init-entity` — it owns the project's `IPermissionStrategy` + user-lookup `JwtStrategy`, so domain modules' `@HasPermission` resolve against it. If the plan touches multiple items, run them in this order. Most backend work shares DB / module state, so the default is sequential — do NOT parallelize entity stacks that touch the same module wiring.
 
-**Subagent-driven fan-out (when 3+ independent units):** if the plan adds 3 or more *independent* units that do NOT share mutable state — e.g. several entities in DIFFERENT modules, or several self-contained custom actions with no shared files — dispatch them via `orchestration/parallel-dispatch` / `sdcorejs-subagent-driven-dev` so each unit is generated + reviewed in its own subagent. Units that append to the same `<module>.module.ts` barrels or the same `MODULE_SCHEMAS` / `RouterModule.register` arrays are NOT independent — keep those sequential.
+**Parallel fan-out (when 3+ independent units):** if the plan adds 3 or more *independent* units that do NOT share mutable state — e.g. several entities in DIFFERENT modules, or several self-contained custom actions with no shared files — dispatch them via `sdcorejs-parallel-dispatch` so each unit is generated + reviewed in its own subagent. Units that append to the same `<module>.module.ts` barrels or the same `MODULE_SCHEMAS` / `RouterModule.register` arrays are NOT independent — keep those sequential.
 
 ## TDD gate — mandatory before each code-generating step
 
-Before writing any production file (entity / repository / service / controller), invoke `sdcorejs-tdd`:
+Before writing any production file (entity / repository / service / controller), invoke `sdcorejs-test (tdd mode)`:
 1. Write the failing test first (unit test for service logic / business rules; e2e spec for controller endpoints — HTTP verb + expected status + response shape) → run → confirm RED.
 2. Generate the production file with minimal passing code → run → confirm GREEN.
 3. Refactor if needed → run → confirm still GREEN.
@@ -69,23 +78,24 @@ Then hand off in this exact order, honoring the gate's answers (skip = omit that
 
 1. *(if Tests not skipped)* `sdcorejs-test` — happy-path tests for what was generated (unit + integration via real DI + pg-mem; e2e via `supertest` against a real test PG where the layer warrants it)
 2. *(if Review not skipped)* `sdcorejs-review` (auto-detects NestJS → loads `_refs/nestjs/review-code.md`) — convention review; color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
-3. *(if Review not skipped)* `orchestration/repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
-4. `orchestration/comment-code` — apply the comment level the FINISH GATE captured (skip / simple / medium / full). Do NOT ASK again — the gate already asked.
-5. `orchestration/verify-before-done` *(always)* — BLOCK "done" until every acceptance criterion in the spec is ✅ verified or ⚠️ explicitly deferred
-6. `orchestration/branch-ready` *(always)* — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
-7. `orchestration/auto-docs` *(always)* — session summary written to `<target>/.sdcorejs/docs/nestjs/`
-8. *(if User guide not skipped)* `sdcorejs-write-user-guide` (Mode 1) — update the touched module's `.sdcorejs/user-guide/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds at ship.
-9. `orchestration/auto-task-tracker` *(always)* — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
-10. `orchestration/memories` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
+3. *(if Review not skipped)* `sdcorejs-repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
+4. `sdcorejs-comment-code` — apply the comment level the FINISH GATE captured (skip / simple / medium / full). Do NOT ASK again — the gate already asked. Rules live in `_refs/orchestration/tail/comment-code.md`.
+5. `sdcorejs-product` *(when user-visible feature traceability is needed)* - seed/update `.sdcorejs/docs/product/` with requirement, implementation, and test mapping
+6. `sdcorejs-ship (verify-before-done mode)` *(always)* — BLOCK "done" until every acceptance criterion in the spec is ✅ verified or ⚠️ explicitly deferred
+7. `sdcorejs-ship (branch-ready mode)` *(always)* — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
+8. `_refs/orchestration/tail/auto-docs.md` *(always)* — session summary written to `<target>/.sdcorejs/docs/nestjs/`
+9. *(if User guide not skipped)* `sdcorejs-write-user-guide` (Mode 1) — update the touched module's `.sdcorejs/user-guide/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds at ship.
+10. `_refs/orchestration/tail/auto-task-tracker.md` *(always)* — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
+11. `sdcorejs-explore (memories mode)` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 
-The FINISH GATE is mandatory and unconditional. The always-on plumbing steps (verify-before-done, branch-ready, auto-docs, auto-task-tracker, memories) run regardless of gate answers. Do NOT skip `verify-before-done` — that's how acceptance criteria silently slip.
+The FINISH GATE is mandatory and unconditional. The always-on plumbing steps (`sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, auto-docs tail ref, auto-task-tracker tail ref, memories) run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)` — that's how acceptance criteria silently slip.
 
 ## When to use
 
-- After `sdcorejs-review-plan` confirmed approval of a NestJS plan (user said "OK", "approve", "go ahead", or equivalent, and `orchestration/auto-snapshot` in PLAN mode has snapshotted it).
+- After `sdcorejs-execute-plan` dispatches an approved NestJS plan (user said "OK", "approve", "go ahead", or equivalent at `sdcorejs-plan`, `sdcorejs-plan` has written the approved plan snapshot, and the user answered the sequential/parallel question).
 - OR as the single entry point for any direct backend code-gen request matching the dispatch table above.
 
-If no approved plan exists and the request is non-trivial, route back to `sdcorejs-write-plan` / `sdcorejs-review-plan` first. NOT for spec/plan authoring, code review, or angular/nextjs code (those are separate skills).
+If no approved plan exists and the request is non-trivial, route back to `sdcorejs-brainstorming` / `sdcorejs-spec` / `sdcorejs-plan` first. NOT for spec/plan authoring, code review, or angular/nextjs/test work (those are separate skills).
 
 ## Critical write-target rule
 
@@ -110,12 +120,12 @@ If no approved plan exists and the request is non-trivial, route back to `sdcore
 - Inline `class-validator` decorators — Zod is the validation contract.
 - Return single-language error messages — go through the i18n catalog (`{ code, message }`).
 - Skip the guard order (`AuthGuard` before `ZodValidationGuard`).
-- Skip `verify-before-done` — even when tests pass, acceptance criteria are a separate check.
+- Skip `sdcorejs-ship (verify-before-done mode)` — even when tests pass, acceptance criteria are a separate check.
 
 ## Related references
 - `_refs/nestjs/core-catalog.md` — `@sdcorejs/nestjs` core API inventory (read FIRST)
 - `_refs/nestjs/write-code/{init-project,init-admin,init-module,init-entity,actions}.md` — the on-demand packs
 - `_refs/nestjs/architecture-principles.md` — the WHY behind the conventions
-- `_refs/sdlc/nestjs.md` — design-phase (brainstorm/clarify/spec/plan) patterns
-- `sdcorejs-review-plan` — runs before; the approved plan is the input
+- `_refs/sdlc/nestjs.md` — design-phase (brainstorming/spec/plan) patterns
+- `sdcorejs-execute-plan` — runs before; the approved plan is the input
 - Tail chain — see "Mandatory tail chain" above

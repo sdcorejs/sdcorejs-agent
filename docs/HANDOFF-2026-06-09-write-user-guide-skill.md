@@ -28,7 +28,7 @@
 867833a feat(refs): add user-guide-template (per-module + aggregate + pandoc) (P1)
 c362764 feat(skills): add sdcorejs-write-user-guide skill — mode 1 per-module + coverage (P2)
 4faadaf feat(skills): user-guide aggregate build + pandoc export + ship hook (P3)
-65f13cf feat(skills): user-guide legacy reverse-engineer mode via code-map (P4)
+65f13cf feat(skills): user-guide legacy reverse-engineer mode via code-map mode (P4)
 edc0b33 feat(skills): wire write-user-guide into write-code tail chains + ship + CLAUDE.md (P5)
 ```
 
@@ -44,16 +44,16 @@ edc0b33 feat(skills): wire write-user-guide into write-code tail chains + ship +
 
 Design doc: `docs/superpowers/specs/2026-06-09-sdcorejs-write-user-guide-design.md` (Status: Delivered). Plan: `docs/superpowers/plans/2026-06-09-sdcorejs-write-user-guide.md`.
 
-An **evergreen end-user feature reference** for generated SDCoreJS apps — distinct from `auto-docs` (session deltas) and `auto-summary` (project brief).
+An **evergreen end-user feature reference** for generated SDCoreJS apps — distinct from `auto-docs` (session deltas) and `summary mode` (project brief).
 
 - **Artifacts:** per-module `<target>/.sdcorejs/user-guide/<module>.md`; aggregate `<target>/sdcorejs-user-guide.md` (project root). Markdown canonical; DOCX/PDF via `pandoc`; scaffold images = `![…](images/…)` placeholders + a capture checklist (the agent never runs the target app).
-- **4 modes:** (1) per-module incremental — auto in the write-code tail chain, right after `auto-docs`, updates only the touched module; (2) aggregate build — on ship / large feature / manual, assembles the root guide + emits the pandoc command; (3) legacy reverse-engineer — reads a whole existing project via `sdcorejs-code-map`; (4) PRD-coverage — maps the spec's `## Acceptance criteria` (+ optional external `.sdcorejs/prd/<feature>.md`) → ✅/⚠️/❌ in a "Coverage vs yêu cầu" table.
+- **4 modes:** (1) per-module incremental — auto in the write-code tail chain, right after `auto-docs`, updates only the touched module; (2) aggregate build — on ship / large feature / manual, assembles the root guide + emits the pandoc command; (3) legacy reverse-engineer — reads a whole existing project via `sdcorejs-explore`; (4) PRD-coverage — maps the spec's `## Acceptance criteria` (+ optional external `.sdcorejs/prd/<feature>.md`) → ✅/⚠️/❌ in a "Coverage vs yêu cầu" table.
 
 ### What was built (5 phases / tasks)
 - **P1** `_refs/shared/user-guide-template.md` — per-module template (frontmatter + 7 sections: Tổng quan / Màn hình & tác vụ / Bảng quyền / Tham chiếu dữ liệu / Hành động đặc biệt / Coverage vs yêu cầu / Ảnh minh hoạ), aggregate template, pandoc command, image checklist.
 - **P2** `skills/orchestration/write-user-guide.md` — the skill: frontmatter + Mode 1 (per-module harvest + render) + Mode 4 (coverage).
 - **P3** Mode 2 (aggregate + pandoc) in the skill + a `ship.md` step (after `branch-ready`, before `commit`).
-- **P4** Mode 3 (legacy reverse-engineer via `code-map`).
+- **P4** Mode 3 (legacy reverse-engineer via `code-map mode`).
 - **P5** wiring — `sdcorejs-write-user-guide` inserted in all 3 write-code tail chains right after `auto-docs`; CLAUDE.md skill table + workflow diagram + mandatory-rule note.
 
 ### Tail chain now (all 3 tracks)
@@ -64,7 +64,7 @@ An **evergreen end-user feature reference** for generated SDCoreJS apps — dist
 ## Quality / review
 
 - Built subagent-driven (fresh subagent per task + controller review of each committed diff).
-- **Final holistic review verdict: SHIP** — no Critical / Important. Confirmed: tail-chain insert correct in all 3 tracks (after auto-docs, once, no reorder); `## Not` overlap-guard present (distinct artifact paths vs auto-docs/auto-summary); template↔skill section names + paths + pandoc command consistent; ship hook placement correct; all acceptance criteria met; sync gate green (4/4 mirror trees, 42 source files).
+- **Final holistic review verdict: SHIP** — no Critical / Important. Confirmed: tail-chain insert correct in all 3 tracks (after auto-docs, once, no reorder); `## Not` overlap-guard present (distinct artifact paths vs auto-docs/summary mode); template↔skill section names + paths + pandoc command consistent; ship hook placement correct; all acceptance criteria met; sync gate green (4/4 mirror trees, 42 source files).
 - "Tests" = the repo's real gates (`bash .claude/sync-skills.sh --check`, `npx lefthook run check`, `rg` assertions). Live `pandoc` export of a real target project's guide is a target-project E2E, out of scope to land the branch.
 
 ---
@@ -94,7 +94,7 @@ An **evergreen end-user feature reference** for generated SDCoreJS apps — dist
 ## Deferred follow-ups (optional)
 
 1. **🔵 cosmetic nit (from the final review):** in `_refs/shared/user-guide-template.md` the per-module template's `spec_refs:` frontmatter EXAMPLE shows only `.sdcorejs/docs/<track>/…-spec.md`, while the skill's Mode 4 correctly globs BOTH `.sdcorejs/docs/<track>/` AND `.sdcorejs/specs/<track>/`. One-line clarification in the template comment would remove the inconsistency. Non-blocking (the skill behaves correctly).
-2. **Skill-trigger eval:** add an eval set for `sdcorejs-write-user-guide` (`docs/skill-eval-sets/` holds the existing eval JSONs) to confirm its description triggers on "viết user guide" / "đọc toàn dự án viết user guide" without cannibalizing `auto-docs`/`auto-summary` triggers.
+2. **Skill-trigger eval:** add an eval set for `sdcorejs-write-user-guide` (`docs/skill-eval-sets/` holds the existing eval JSONs) to confirm its description triggers on "viết user guide" / "đọc toàn dự án viết user guide" without cannibalizing `auto-docs`/`summary mode` triggers.
 3. **Live E2E:** run the skill end-to-end in a real target project (per-module → aggregate → `pandoc` DOCX) and confirm the export + image-placeholder flow actually produces a usable DOCX — the only validation the agent repo can't do itself.
 
 ---

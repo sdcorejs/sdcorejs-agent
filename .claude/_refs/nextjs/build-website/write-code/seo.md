@@ -13,7 +13,7 @@ SEO on Next.js App Router is mostly automatic IF you wire 4 pieces correctly: pe
 - After domain change → re-run to update absolute URLs
 
 Prerequisites:
-- Production domain confirmed in `02-clarify-requirements` (saved to `NEXT_PUBLIC_SITE_URL`)
+- Production domain confirmed in `01-brainstorming` (saved to `NEXT_PUBLIC_SITE_URL`)
 - Site name + tagline in `src/config/company.ts`
 - Pages exist (sitemap reads from them)
 
@@ -380,4 +380,4 @@ This skill installs **technical SEO**: metadata factory, JSON-LD builders, sitem
 - i18n alternates: `i18n.md` (`pathnames` config drives per-locale URLs in sitemap + alternates)
 - Caching: sitemap & robots are auto-cached by Next.js; revalidate on content change
 - On-page SEO + Article schema: `content-quality.md` (heading hierarchy, content length, Article JSON-LD with author + dates)
-- Verification: `orchestration/verify-before-done` includes a "sitemap.xml renders + has all routes" criterion
+- Verification: `sdcorejs-ship (verify-before-done mode)` includes a "sitemap.xml renders + has all routes" criterion

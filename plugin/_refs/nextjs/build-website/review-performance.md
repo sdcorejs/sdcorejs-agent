@@ -176,4 +176,4 @@ npx --yes autocannon -d 30 -c 10 "$URL/vi" --renderStatusCodes --no-progress 2>&
 ## Cross-references
 - Budget definition: `_refs/shared/review-performance.md`
 - Caching strategy: `_refs/nextjs/build-website/write-code/caching.md` · Image optimization: `_refs/nextjs/build-website/write-code/responsive.md`
-- Repair loop: `orchestration/repair-loop` · Verification gate: `orchestration/verify-before-done` runs these probes as criteria
+- Repair loop: `sdcorejs-repair-loop` · Verification gate: `sdcorejs-ship (verify-before-done mode)` runs these probes as criteria

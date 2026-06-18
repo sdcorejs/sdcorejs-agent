@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
-# Enforce: _refs/angular-portal/write-code/{init-portal,init-module,init-entity}.md
+# Enforce: _refs/angular/write-code/{init-portal,init-module,init-entity}.md
 # must use the <CORE_VERSION> and <CORE_UI_PACKAGE_NAME> placeholders — never a
 # hardcoded version or Core UI package name in import paths.
 #
-# (These were the 10-init-portal / 11-init-module / 12-init-entity sub-skills
-#  before they were consolidated into the angular-portal-write-code orchestrator;
-#  the bodies now live as on-demand reference packs under _refs/.)
+# These bodies live as on-demand reference packs under _refs/ and are dispatched
+# by the sdcorejs-angular orchestrator.
 #
-# Source of truth: _refs/angular-portal/core-version.md.
+# Source of truth: _refs/angular/core-version.md.
 # The agent reads `packageName` + `currentVersion` from there and substitutes
 # <CORE_UI_PACKAGE_NAME> / <CORE_VERSION> at generation time.
 #
@@ -28,9 +27,9 @@ VERSION_PATTERN='[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+'
 PKG_PATTERN="(from|import)[[:space:]]+['\"]@(sdcorejs/angular|sd-angular/core)"
 
 TARGETS=(
-  "_refs/angular-portal/write-code/init-portal.md"
-  "_refs/angular-portal/write-code/init-module.md"
-  "_refs/angular-portal/write-code/init-entity.md"
+  "_refs/angular/write-code/init-portal.md"
+  "_refs/angular/write-code/init-module.md"
+  "_refs/angular/write-code/init-entity.md"
 )
 
 # If lefthook passes no args (e.g. nothing matched the glob), nothing to do.
@@ -61,7 +60,7 @@ for file in "$@"; do
     cat /tmp/core-drift.log >&2
     echo "" >&2
     echo "  Replace literal versions with <CORE_VERSION>." >&2
-    echo "  Source of truth: _refs/angular-portal/core-version.md" >&2
+    echo "  Source of truth: _refs/angular/core-version.md" >&2
     failed=1
   fi
 
@@ -72,7 +71,7 @@ for file in "$@"; do
     cat /tmp/core-drift.log >&2
     echo "" >&2
     echo "  Replace the Core UI package name in import statements with <CORE_UI_PACKAGE_NAME>." >&2
-    echo "  Source of truth: _refs/angular-portal/core-version.md (packageName field)" >&2
+    echo "  Source of truth: _refs/angular/core-version.md (packageName field)" >&2
     failed=1
   fi
 done

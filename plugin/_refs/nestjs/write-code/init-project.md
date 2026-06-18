@@ -4,6 +4,18 @@
 
 # Init Project — NestJS Modular-Monolith Scaffold (`@sdcorejs/nestjs`)
 
+## Contents
+
+- Purpose / when to use
+- Critical write-target rule
+- Persona Step 0
+- Source of truth - core package
+- Input resolution and profile
+- Project structure and package setup
+- Core module, auth, validation, and i18n wiring
+- Database, schemas, migrations, and Docker readiness
+- Verification and post-init summary
+
 ## Purpose / when to use
 
 Scaffold a **fresh modular-monolith backend** that consumes `@sdcorejs/nestjs`: one NestJS app, one Postgres database, **schema-per-module**, request-context + tenancy + audit + permission + JWT wired through `SdCoreModule.forRoot`. This is the FIRST backend codegen step — run it **before** `init-module` and `init-entity`.
@@ -964,7 +976,7 @@ KEYCLOAK_ISSUER=http://localhost:8080/realms/dev
 ### Step 10 — after init
 
 1. **Install + smoke-build:** `npm install` then `npm run build` (typecheck gate). If the npm `@sdcorejs/nestjs` is not yet published, fall back to the vendored tgz (Step 1 dependency note).
-2. **Write the project brief:** run `orchestration/auto-summary` (a.k.a. `sdcorejs-auto-summary`) in **WRITE** mode to create `.sdcorejs/summary.md` (domain, stack, generated kernel layout, schema-per-module convention, reuse cheatsheet, current git HEAD) — same pattern as the angular `init-portal` tail. The next session and `init-module`'s pre-flight read this instead of re-scanning blind.
+2. **Write the project brief:** run `sdcorejs-explore (summary mode)` (a.k.a. `sdcorejs-explore`) in **WRITE** mode to create `.sdcorejs/summary.md` (domain, stack, generated kernel layout, schema-per-module convention, reuse cheatsheet, current git HEAD) — same pattern as the angular `init-portal` tail. The next session and `init-module`'s pre-flight read this instead of re-scanning blind.
 3. **Hand off to `init-module`** to scaffold the first domain module (it appends to `MODULE_SCHEMAS` in `main.ts` + a `RouterModule.register` entry in `app.module.ts` + a new schema), then `init-entity` for the first full CRUD.
 
 ---

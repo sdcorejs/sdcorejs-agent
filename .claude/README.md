@@ -1,70 +1,61 @@
-# `.claude/` — Claude Code native integration
+# `.claude/` - Claude Code Native Integration
 
-This folder mirrors the source-of-truth skills (`skills/tracks/angular-portal/*.md` and `skills/orchestration/ + skills/shared/ + skills/review/ + skills/testing/*.md`) into Claude Code's native `.claude/skills/<name>/SKILL.md` format.
+This folder mirrors the source-of-truth skills (`skills/**/*.md`) into Claude Code's native `.claude/skills/<name>/SKILL.md` format.
 
-The mirror lets Claude Code dispatch skills automatically via its built-in skill-discovery mechanism, in addition to reading the high-level `CLAUDE.md` at the repo root.
+The mirror lets Claude Code dispatch skills automatically via built-in skill discovery, in addition to reading the high-level `CLAUDE.md` at the repo root.
 
 ## Layout
 
-```
+```text
 .claude/
-├── README.md              ← this file
-├── skills/                ← native mirror (auto-generated, do NOT hand-edit)
-│   ├── angular-portal-onboarding/SKILL.md
-│   ├── sdcorejs-commit/SKILL.md
-│   └── … (one folder per skill, named after `name:` frontmatter)
-├── settings.json          ← gitignored, local user settings
-└── sync-skills.sh         ← regenerate / check the mirror
+├── README.md              <- this file
+├── skills/                <- native mirror, generated
+│   ├── sdcorejs-angular/SKILL.md
+│   ├── sdcorejs-dev-workflow/SKILL.md
+│   └── ...
+├── _refs/                 <- shared reference mirror
+├── settings.json          <- gitignored local settings
+├── sync-skills.sh         <- Git Bash wrapper
+└── sync-skills.ps1        <- PowerShell wrapper
 ```
 
-## ⚠️ Source of truth is `skills/<track>/*.md`
+## Source Of Truth
 
-Edit skills under `skills/tracks/<stack>/`, `skills/orchestration/`, `skills/shared/`, `skills/review/`, `skills/testing/`.
-NEVER hand-edit `.claude/skills/<name>/SKILL.md` — it is overwritten on every sync.
+Edit only:
 
-## Three ways the mirror stays in sync
+- `skills/**/*.md`
+- `_refs/**`
+- `AGENTS.md` for Cursor rule content
 
-### 1. Automatic on commit (recommended)
+Do not hand-edit `.claude/skills/<name>/SKILL.md`; it is overwritten by sync.
 
-`lefthook.yml` ships a pre-commit hook that regenerates and stages the mirror whenever you commit a change under `skills/`. Install once:
+## Sync
+
+`scripts/sync-skills.mjs` is the cross-platform implementation. It generates:
+
+- `.claude/skills/` and `.claude/_refs/` for Claude Code direct attach
+- `plugin/skills/` and `plugin/_refs/` for Claude Code plugin install
+- `codex/skills/` plus `codex/skills/_refs/` for Codex native skills
+- `.cursor/rules/sdcorejs-agent.mdc` for Cursor
+
+Commands:
 
 ```bash
-npm install                 # installs lefthook devDep
-npx lefthook install        # writes .git/hooks/pre-commit
+npm run sync:skills
+npm run check:skills
+npm run clean:skills
 ```
 
-After that, you never have to remember to run the sync script — it runs for you.
+PowerShell wrappers are also available:
 
-### 2. Manual
-
-```bash
-npm run sync:skills           # or: bash .claude/sync-skills.sh
+```powershell
+npm run sync:skills:ps
+npm run check:skills:ps
+npm run clean:skills:ps
 ```
 
-### 3. CI / pre-merge check
+## Why Mirror?
 
-```bash
-npm run check:skills          # or: bash .claude/sync-skills.sh --check
-```
-
-Exits non-zero if the mirror is out of sync. Wire this into CI to catch PRs that edited `skills/` without regenerating the mirror.
-
-## Cleaning up
-
-If a source skill was deleted and the mirror still has a stale folder:
-
-```bash
-bash .claude/sync-skills.sh --clean
-```
-
-## Why mirror instead of symlink?
-
-- Symlinks unreliable on Windows
-- Per-skill `SKILL.md` ≈ 3–10 KB; whole mirror ≈ 200 KB — negligible
-- Mirror is read by Claude Code at session start; cached after
-
-## Why not edit `.claude/skills/` directly?
-
-- Concern-based layout (`skills/tracks/<stack>/` + `skills/orchestration/` + `skills/shared/` + `skills/review/` + `skills/testing/`) gives clear workflow ordering via numeric prefixes (`00-onboarding.md`, `write-code.md`) — the flat `.claude/skills/<name>/SKILL.md` layout doesn't.
-- GitHub Copilot and Codex read `skills/<track>/*.md` directly — Claude Code is the only tool needing the mirror.
-- Single source = single review surface in PRs.
+- Symlinks are unreliable on Windows.
+- Claude, Codex, Cursor, and Copilot need different entrypoint or metadata shapes.
+- A generated mirror gives each runtime the layout it expects while keeping one source review surface.

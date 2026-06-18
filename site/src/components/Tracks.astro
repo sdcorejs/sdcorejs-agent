@@ -49,6 +49,54 @@ const tracks = [
     ],
     accent: "purple",
   },
+  {
+    id: "product",
+    name: "Product",
+    status: "ready",
+    statusLabel: "Available",
+    tagline: "PRDs, user stories, AC, UAT, and traceability",
+    description:
+      "Product-track work records the human-readable truth: what the feature means, which stories exist, how requirements map to implementation, and where test evidence lives.",
+    bullets: [
+      "PRDs and user stories under product/",
+      "Acceptance criteria and UAT checklists",
+      "Requirement -> implementation -> test ledger",
+      "Useful for PO/QC review before and after build",
+    ],
+    accent: "green",
+  },
+  {
+    id: "design",
+    name: "Design",
+    status: "ready",
+    statusLabel: "Available",
+    tagline: "FE handoff from product user stories",
+    description:
+      "Design-track work turns user stories into screen flows, design specs, editable wireframes, and optional PNG previews for frontend implementation.",
+    bullets: [
+      "Story-to-screen mapping",
+      "Wireframes and flow docs under design/",
+      "PNG previews as exports, not source of truth",
+      "Frontend reads this before generating UI",
+    ],
+    accent: "teal",
+  },
+  {
+    id: "test",
+    name: "Test",
+    status: "ready",
+    statusLabel: "Available",
+    tagline: "Unit, integration, e2e, and UAT execution",
+    description:
+      "Test-track work writes and runs tests across Angular, NestJS, and Next.js. It can start from a plan, product stories, design handoff, or an autoId inspector export.",
+    bullets: [
+      "Stack + level auto-detection",
+      "Unit, integration, e2e, and UAT",
+      "Reads product and design docs for coverage",
+      "Uses sdcorejs-test tdd mode for RED-first chunks",
+    ],
+    accent: "slate",
+  },
 ];
 ---
 
@@ -56,13 +104,13 @@ const tracks = [
   <div class="container">
     <div class="head reveal">
       <span class="eyebrow"
-        ><span class="bullet" aria-hidden="true"></span>One pack, three stacks</span
+        ><span class="bullet" aria-hidden="true"></span>One pack, six tracks</span
       >
       <h2>Pick the track your project needs</h2>
       <p class="lead">
-        Each track is an opinionated skill set: clarify -> spec -> plan -> write
-        code -> review -> ship. Cross-track design phase is shared; per-track
-        generation, review, and tests are specialized.
+        Tracks are the skills that create primary artifacts. The stack tracks
+        write code; product, design, and test keep requirements, screen
+        references, and verification evidence aligned.
       </p>
     </div>
 
@@ -199,6 +247,21 @@ const tracks = [
   .card.accent-purple {
     --accent-bg: #efe9fc;
     --accent-fg: #7c3aed;
+  }
+
+  .card.accent-green {
+    --accent-bg: #dcfce7;
+    --accent-fg: #15803d;
+  }
+
+  .card.accent-teal {
+    --accent-bg: #ccfbf1;
+    --accent-fg: #0f766e;
+  }
+
+  .card.accent-slate {
+    --accent-bg: #e2e8f0;
+    --accent-fg: #475569;
   }
 
   .status-pill {

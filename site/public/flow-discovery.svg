@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img" aria-labelledby="title">
+  <title id="title">Discovery flow illustration</title>
+  <rect width="320" height="220" rx="18" fill="#eef6ff"/>
+  <rect x="38" y="42" width="118" height="132" rx="12" fill="#fff" stroke="#9fc8ff" stroke-width="2"/>
+  <rect x="164" y="42" width="118" height="132" rx="12" fill="#fff" stroke="#9fc8ff" stroke-width="2"/>
+  <circle cx="78" cy="86" r="28" fill="#0f66d4"/>
+  <path d="M68 86a10 10 0 1 0 20 0 10 10 0 0 0-20 0Zm18 18 15 15" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+  <path d="M188 82h70M188 106h56M188 130h66" stroke="#0f66d4" stroke-width="9" stroke-linecap="round"/>
+  <path d="M96 178v18h128v-18" fill="none" stroke="#6ea8f7" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 8"/>
+  <circle cx="96" cy="196" r="5" fill="#0f66d4"/>
+  <circle cx="224" cy="196" r="5" fill="#0f66d4"/>
+</svg>

@@ -36,7 +36,7 @@
 The design doc is `docs/superpowers/specs/2026-06-06-non-tech-solution-builder-design.md` (Status: Delivered — Phases 1–4 shipped). Each phase has an approved plan under `docs/superpowers/plans/2026-06-06-*.md`. Read those for full detail.
 
 ### Phase 1 — Persona layer (Plan 1)
-- `skills/orchestration/persona.md` (`sdcorejs-persona`) — ask-once tech/non-tech, stores `<target>/.sdcorejs/persona.md`, idempotent.
+- `sdcorejs-explore (persona mode)` - ask-once tech/non-tech, stores `<target>/.sdcorejs/persona.md`, idempotent.
 - `_refs/shared/persona.md` — behavior contract. **Rule 7:** non-tech requirement questions focus on **features + screens, never architecture** (the agent derives modules/entities itself).
 - Wired into CLAUDE.md / AGENTS.md / `.github/copilot-instructions.md` (session-start ritual + rule 11 + skill table).
 - Cleanup: renamed `skills/tracks/{angular,nestjs,nextjs}/07-write-code.md` → `write-code.md` (the `07-` prefix was meaningless with one write-code skill per track). Mirror dirs key off `name:` frontmatter, so the rename left mirrors byte-identical.

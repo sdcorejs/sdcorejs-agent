@@ -1,10 +1,19 @@
 ---
 name: sdcorejs-auth
-description: Configure authentication for an SDCoreJS stack. Provider-agnostic; the only provider today is Keycloak (knowledge in `_refs/infra/auth-keycloak.md`). Ensures the realm import is present, wires the Angular FE via `provideSdKeycloak` + `silent-renew.html`, and points the NestJS BE token-validation at the Keycloak service. Use after `sdcorejs-dockerize`. Triggers - "add login", "configure Keycloak", "auth", "login", "authentication", "wire keycloak", "set up authentication", "Keycloak login", or localized equivalents. Applies to angular, nestjs. Runtime-localized.
+description: Configure Keycloak auth for an SDCoreJS Angular + NestJS stack after dockerize. Use for login/authentication/Keycloak requests. Ensures realm import, Angular provideSdKeycloak + silent-renew.html, and backend token validation against Keycloak service. Applies to angular, nestjs. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob
 ---
 
 # Auth — Wire Keycloak (existing providers)
+
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
 
 ## Purpose
 
@@ -155,15 +164,15 @@ If this skill ran as part of the Docker build flow, hand off to **`sdcorejs-run-
 - **Configure, don't build.** The FE module + interceptor and the BE guard + validation already exist. This skill only sets config (FE provider, BE env) and confirms the realm import + guard order. Do not implement login flows, PKCE, JWKS fetching, or token parsing.
 - **Patch, don't clobber** existing FE config — merge into the existing `provideHttpClient` / providers rather than replacing them. Re-running the skill on an already-wired project must be safe.
 
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
+<!-- response-style: auto-injected by sync-skills; do not edit mirror by hand -->
 
-**Response style (terse mode active for this skill — reduces token usage):**
+**Response style (terse mode active for this skill - reduces token usage):**
 
 While executing this skill:
 
 - Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
 - Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
 - Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal - no caveman inside generated artifacts.**
 - Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
 - If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

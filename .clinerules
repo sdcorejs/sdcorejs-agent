@@ -1,49 +1,34 @@
-# SDCoreJS SDLC Agent — Cline Rules
+# SDCoreJS SDLC Agent
 
-> Cline IDE entry point. Mirrors `AGENTS.md` and `CLAUDE.md`.
+Use `skills/**/*.md` frontmatter for dispatch. Runtime-localized output is required.
 
-This repository is an **SDLC agent** for the SDCoreJS ecosystem:
-- **Backoffice portals** in Angular with `@sdcorejs/angular` (Core UI)
-- **Backend** in NestJS + Postgres
-- **Public sites** in Next.js (SSR)
+Workflow:
 
-## How to use this skill set
+```text
+sdcorejs-brainstorming
+-> sdcorejs-spec (approval gate + approved spec snapshot)
+-> sdcorejs-plan (approval gate + approved plan snapshot)
+-> sdcorejs-execute-plan
+   always ask sequential vs parallel
+-> executor: sdcorejs-angular | sdcorejs-nestjs | sdcorejs-nextjs | sdcorejs-product | sdcorejs-design | sdcorejs-test | generic harness
+-> finish gate and tail chain
+```
 
-1. **Dispatch by skill description.** Skills live under `skills/<track>/*.md` with YAML frontmatter (`name`, `description`, `allowed-tools`). Match user requests against each skill's `description` and follow the matched skill's body exactly.
+Rules:
 
-2. **Workflow** (per track):
-   ```
-   Request
-     → sdcorejs-brainstorm        (optional, if scope is open-ended)
-     → sdcorejs-clarify-requirements
-     → sdcorejs-write-spec → sdcorejs-review-spec      (approval gate)
-                           → orchestration/auto-snapshot (SPEC mode)   (MANDATORY)
-     → sdcorejs-write-plan       → sdcorejs-review-plan       (approval gate)
-                           → orchestration/auto-snapshot (PLAN mode)   (MANDATORY)
-     → <track>-write-code  (orchestrator dispatches sub-skills)
-     → sdcorejs-test → sdcorejs-review (auto-detects track) → orchestration/repair-loop
-     → orchestration/comment-code  (ASK gate)
-     → orchestration/verify-before-done (MANDATORY)
-     → orchestration/branch-ready  (branch-hygiene sweep)
-     → orchestration/auto-docs + auto-task-tracker + memories (MANDATORY)
-   ```
-
-3. **Source-of-truth files** (read on demand, do NOT preload all):
-   - `CLAUDE.md` / `AGENTS.md` — same content; either works as agent config
-   - `skills/tracks/<track>/_refs/architecture-principles.md` — WHY-rules per track
-   - `skills/shared/sdlc/_refs/<track>.md` — design-phase patterns per track
-
-4. **Bilingual**: Vietnamese request → Vietnamese output (full diacritics for labels/messages). English → English. Permission codes + route paths stay English.
-
-5. **Auto-docs / memories live in the TARGET project**, never in this `sdcorejs-agent` repo:
-   - `<target>/.sdcorejs/docs/<track>/` — per-session summaries
-   - `<target>/.sdcorejs/memories/<track>/` — durable cross-session knowledge
-   - `<target>/.sdcorejs/specs/<track>/` — approved spec snapshots
-   - `<target>/.sdcorejs/plans/<track>/` — approved plan snapshots
-   - `<target>/.sdcorejs/tasks/<track>.md` — living TODO
-
-## See also
-
-- `AGENTS.md` — primary entry point (Codex / Cursor / generic AGENTS.md-aware tools)
-- `CLAUDE.md` — Claude Code entry point
-- `.github/copilot-instructions.md` — GitHub Copilot entry point
+- For any non-trivial execution task, use `_refs/shared/tasklist.md`.
+- Create the `Tasks` section before work starts and update it as work progresses.
+- For long or interruptible work, mirror visible `Tasks` progress to `.sdcorejs/tasks/current-session.md`.
+- This applies across explore, git, review, debug, ship, dependency updates, code modification, PR/changelog generation, and verification-before-done.
+- Do not say "done", "ready", or "safe to ship" unless verification is complete or skipped verification is explicitly disclosed.
+- Requirements before code.
+- Apply `_refs/shared/project-context.md` before non-trivial skill execution.
+- Explicit approval required for spec and plan.
+- Approved plans execute through `sdcorejs-execute-plan`.
+- Parallel work requires `sdcorejs-parallel-dispatch`.
+- Product/PO docs and traceability use `sdcorejs-product`.
+- UI/UX design, wireframes, PNG previews, and FE handoff use `sdcorejs-design`.
+- Test-only plans use `sdcorejs-test`.
+- Explore codebase context with `sdcorejs-explore`; verify and ship through `sdcorejs-ship`; commit, PR, changelog, and release notes through `sdcorejs-git`.
+- Preserve the user's language and locale marks.
+- Verify before claiming pass/fixed/done.

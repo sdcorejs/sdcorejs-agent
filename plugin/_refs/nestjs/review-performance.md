@@ -206,5 +206,5 @@ Severity: **Minor** if not handled but no large-body endpoint exists.
 
 ## Cross-references
 - Budget thresholds: `_refs/shared/review-performance.md`
-- Code review (correctness): `sdcorejs-review` · Architecture (structural perf): `sdcorejs-review-architecture`
-- Repair loop: `orchestration/repair-loop` · Verification: `orchestration/verify-before-done`
+- Code review (correctness): `sdcorejs-review` · Architecture (structural perf): `sdcorejs-review` with the `architecture` dimension
+- Repair loop: `sdcorejs-repair-loop` · Verification: `sdcorejs-ship (verify-before-done mode)`

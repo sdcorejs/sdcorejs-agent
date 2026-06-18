@@ -1,6 +1,6 @@
 # NestJS Backend — Architecture Principles
 
-Source of truth for **WHY** SDCoreJS NestJS backends look the way they do. Loaded on demand by `sdcorejs-brainstorm`, `sdcorejs-write-spec`, `sdcorejs-clarify-requirements`, `sdcorejs-nestjs`, and `sdcorejs-review`.
+Source of truth for **WHY** SDCoreJS NestJS backends look the way they do. Loaded on demand by `sdcorejs-brainstorming`, `sdcorejs-spec`, `sdcorejs-nestjs`, and `sdcorejs-review`.
 
 **Status**: NestJS track is **shipped** — `sdcorejs-nestjs` dispatches four on-demand generation packs under `_refs/nestjs/write-code/` (`init-project` / `init-module` / `init-entity` / `actions`). The principles below govern the code those packs generate.
 

@@ -1,215 +1,269 @@
 ---
 name: sdcorejs-parallel-dispatch
-description: Decision gate that runs BEFORE `sdcorejs-subagent-driven-dev`. Use when the agent is about to execute work that could plausibly be split across parallel subagents — multiple independent entities, multi-file scans, batch screen generation, multi-stack audits. Decides WHETHER to parallelize via independence + blast-radius + reviewability + budget checks. Outputs a verdict: SEQUENTIAL, PARALLEL-CANDIDATE (→ subagent-driven-dev Mode A), or ROLE-SPLIT (one feature across backend+frontend → Mode B); when PARALLEL, hands off to `sdcorejs-subagent-driven-dev` which owns the briefing + dispatch + merge mechanics. Triggers - "run in parallel", "dispatch parallel", "split into subagents", "fan out", "run in parallel", "in parallel", or automatic invocation by write-code (and other orchestrators) when ≥3 independent units are detected. Applies to angular, nestjs, nextjs. Runtime-localized.
-allowed-tools: Read
+description: Parallel execution gate and subagent fan-out discipline. Use after execute-plan asks sequential vs parallel and user chooses parallel, or when user asks to split/run in parallel. Classifies sequential, parallel-candidate, or role-split work; decomposes, dispatches, reviews, merges, and runs global verification. Applies to all tracks and generic work. Runtime-localized.
+allowed-tools: Read, Glob, Grep, Bash, Agent
 ---
 
-# Parallel Dispatch — When to Split, How to Brief
+# Parallel Dispatch
+
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
 
 ## Purpose
-Parallel subagents make multi-target work much faster. They also burn tokens, fan out errors, and produce reviewer fatigue when used wrong. This skill is the decision gate + briefing template.
+Own the whole parallel path in one skill:
 
-## When invoked
-- About to run 3+ similar tasks (generate screens for 5 entities, write specs for 4 modules, audit 3 stacks)
-- A research question has multiple independent sub-questions
-- A code-writing plan has steps that don't share state
-- The user says "run in parallel", "in parallel", "do these in parallel"
+1. Decide whether parallel work is safe.
+2. Choose Mode A (independent units) or Mode B (role-split feature loop).
+3. Brief and dispatch subagents.
+4. Review, merge, verify, and report.
 
-Do NOT invoke for:
-- One task (no parallelism possible)
-- Two tasks (overhead usually not worth it; just chain them)
-- Sequential dependencies (write-spec → review-spec → plan — these have hard gates)
+`sdcorejs-execute-plan` still asks the user whether they want sequential or parallel execution. This skill starts only after the user chooses parallel, or when they explicitly ask for parallel execution.
 
-## Decision tree
+## Preconditions
 
-```
-About to do work? 
-  ├─ One target → SEQUENTIAL (skip this skill)
-  ├─ 2 targets → usually SEQUENTIAL (parallel overhead > savings)
-  ├─ 3+ targets → continue ↓
-  
-Are the targets independent?
-  ├─ Share state / file / DB row → SEQUENTIAL (race conditions, conflicting edits)
-  ├─ Each reads independently, writes to different paths → PARALLEL CANDIDATE ↓
-  
-Is the blast radius bounded?
-  ├─ Failure of one breaks the others → SEQUENTIAL (debug one at a time)
-  ├─ Failure of one is isolated → PARALLEL CANDIDATE ↓
-  
-Is review tractable?
-  ├─ User must approve each output before next → SEQUENTIAL (approval gate)
-  ├─ User reviews the bundle at the end → PARALLEL ↓
+- An approved plan snapshot exists, or the request is a read-only batch task that does not need a plan.
+- The user has chosen parallel, or explicitly requested parallel execution.
+- The parent agent has enough context to write self-contained subagent briefs.
 
-Within budget?
-  ├─ >5 subagents at once → SPLIT INTO BATCHES (rate limit + reviewer load)
-  ├─ ≤5 → DISPATCH IN PARALLEL
+If the work is unapproved code generation, return to `sdcorejs-plan`.
 
-Is it ONE feature spanning backend + frontend (not N same-kind units)?
-  ├─ Yes → ROLE-SPLIT → hand to subagent-driven-dev Mode B (contract-freeze + BE‖FE‖QC loop)
-  └─ No  → the same-kind-units path above → PARALLEL-CANDIDATE → Mode A
-```
+## Step 0 - Context preflight
 
-## When parallel is correct
+Before deciding the parallel verdict or writing subagent briefs, run
+`sdcorejs-explore (summary mode)` through `_refs/shared/project-context.md`.
 
-### When ROLE-SPLIT (not same-kind fan-out)
-A feature that needs BOTH a backend change AND a frontend change is NOT N independent
-same-kind units — the FE depends on the BE's contract. Do NOT treat it as Mode A. Instead the
-**contract-freeze barrier** (Phase 0 of subagent-driven-dev Mode B) defines + freezes the shared
-contract first; only THEN do backend / frontend / QC become file-disjoint and runnable in parallel.
-Verdict: `ROLE-SPLIT` → `subagent-driven-dev` Mode B.
+- For an existing target project, ensure `<target>/.sdcorejs/summary.md` exists
+  or is refreshed so units are split using the real module map, shared files,
+  route/API boundaries, test layout, product/design artifacts, and current
+  memory/task context.
+- If the plan creates a brand-new solution root, use the frozen approved plan as
+  the contract and require each role executor to run summary mode after its first
+  scaffold lands.
+- Do not fan out until the parent has enough current context to write
+  self-contained briefs. If context is stale or contradictory, demote to
+  sequential or return to `sdcorejs-plan`.
 
-✅ **Good fits**
-- "Generate list + detail + create + update screens for entity X" — 4 independent file groups, same template, no shared state
-- "Audit security for the 3 stacks in this monorepo" — 3 read-only scans, distinct file trees
-- "Write reference docs for each Core UI component (23 files)" — independent reads + writes
-- "Run lint + test + typecheck before commit" — 3 read-only commands on disjoint outputs
-- "Research how X is implemented across these 5 repos" — independent fetches
+## Decision
 
-❌ **Bad fits**
-- "Brainstorm → write spec → review → plan" — sequential gates
-- "Refactor file A, then refactor file B that imports A" — write order matters
-- "Fix bug, then fix the test that proves the fix" — sequential
-- "Generate one entity, then base the next entity's fields on the first" — shared state
-- "Review the PR" (single deliverable, even if you read many files)
+Return one verdict before dispatching:
 
-## Briefing template
+| Verdict | Use when | Action |
+|---|---|---|
+| `SEQUENTIAL` | shared files/state, hard ordering, user approval between steps, <=2 tiny tasks | stop and explain why parallel is unsafe |
+| `PARALLEL-CANDIDATE` | 3+ independent same-kind units with disjoint paths | run Mode A |
+| `ROLE-SPLIT` | one approved feature spans product + design + backend + frontend + test/QC | run Mode B |
 
-Every parallel subagent must receive a self-contained prompt. They don't see the parent's conversation; assume zero context.
+Checks:
 
-```
-TASK: <verb + target + scope, one sentence>
+- Independence: no two units write the same file or depend on each other's output.
+- Blast radius: one failure does not corrupt the other units.
+- Reviewability: <=5 concurrent subagents, or explicit waves.
+- Budget: subagent overhead is worth it.
+- Verification: every unit has a command or concrete review check.
 
-CONTEXT (what they need to know):
-- Repo / stack / track
-- Relevant file paths and what's in them (don't make them re-discover)
-- Conventions to follow (link to the right skill or _refs doc)
-- What's already done (so they don't redo it)
+Do not parallelize brainstorming, spec, plan, approval gates, shared-contract drafting, or one-task work.
 
-DELIVERABLE (return shape):
-- Specific format: "Return a markdown table of <X>" / "Edit <file> and confirm"
-- What NOT to do (out of scope)
-- Length cap if appropriate ("under 200 words")
+## Mode A - Independent Units
+
+Use for multiple entities, screens, docs, audits, or test batches with the same shape and disjoint paths.
+
+### 1. Decompose
+
+Each unit must have:
+
+- target path(s)
+- exact scope
+- inputs from the approved plan/spec
+- verification command or manual check
+- out-of-scope boundaries
+
+If any unit needs another unit's output, demote that dependency to sequential setup.
+
+### 2. Prepare isolation
+
+Before code-writing fan-out, invoke `sdcorejs-git (workspace mode)` or
+read `_refs/orchestration/workspace-isolation.md` directly so each subagent has a
+safe workspace or strictly disjoint target directory.
+
+Read-only scans can share the same workspace.
+
+### 3. Write self-contained briefs
+
+Each subagent starts with no conversation history. Brief explicitly:
+
+```text
+TASK: <verb + target + scope>
+
+CONTEXT:
+- repo root and stack
+- approved plan/spec slice
+- relevant files and refs to follow
+- existing conventions
+- frozen inputs; do not invent scope
+
+DELIVERABLE:
+- files/paths or report format
+- verification command/check
+- out of scope
 
 REPORT BACK:
-- What they did (files changed, decisions made)
-- What blocked them (so the parent can intervene)
-- Any new info worth surfacing
+- files changed or findings
+- decisions made
+- command output with exit code
+- blockers or partial failures
 ```
 
-### Briefing anti-patterns
-- "Help with the angular project" — no scope
-- "Follow our conventions" — they don't know what those are; cite the file
-- "Use parallel subagents to do X" — recursion: don't tell a subagent to spawn more
-- Same prompt to every subagent — they'll each waste time figuring out which slice is theirs
-- Open-ended deliverable — they'll over-produce
+Never tell a subagent to spawn more subagents.
 
-## Coordination patterns
+### 4. Dispatch
 
-### Fan-out / fan-in
-Parent dispatches N subagents → each returns a structured slice → parent merges and reviews. Use when slices are uniform (e.g. one component per subagent).
+Use one message with multiple `Agent` calls so work runs concurrently. Cap at 5 concurrent units. For larger batches, run waves and review each wave before the next.
 
-### Map-reduce
-Subagents produce intermediate results → a single "reducer" subagent (or the parent) synthesizes. Use when slices are heterogeneous (e.g. one stack-specific audit per subagent → unified report).
+### 5. Review each returned unit
 
-### Speculative parallel
-Two subagents try competing approaches; the parent picks the better result. Use rarely — usually a single brainstorm with 2-3 options is cheaper than running both.
+A subagent's "done" is a claim, not proof.
 
-### Pipeline (don't use parallel for this)
-A → B → C. This is sequential by definition. Parallel pipelines need careful checkpointing and usually aren't worth it for skill-driven work.
+Stage A - spec compliance:
 
-## Budgeting
+- Re-read the unit brief.
+- Read the returned diff/files or report.
+- Confirm the unit did exactly its slice and no extra scope.
+- Confirm the reported command output is the right command and current enough to trust.
 
-| Concurrent subagents | Use case | Caveat |
-|---|---|---|
-| 2 | Rare — usually just serialize | Almost never worth the overhead |
-| 3–5 | **Sweet spot** for independent tasks | Standard |
-| 6–8 | Large batch scans (per-file analysis on a folder) | Watch rate limits; consider splitting into 2 waves |
-| 9+ | Almost never | Reviewer can't grok 9 outputs; split into batches with intermediate checkpoints |
+Stage B - code quality:
 
-If a batch hits the rate limit:
-- Wait or split into 2 waves
-- Don't retry the same prompts (you'll burn quota); diagnose what subset failed
+- Run `sdcorejs-review` scoped to the unit's files when code changed.
+- Feed findings through `sdcorejs-repair-loop` until Critical/Important findings are fixed or explicitly deferred.
 
-## Reviewing parallel output
+Do not merge a unit until both stages pass.
 
-The parent agent receives N results. Before reporting to the user:
-1. Verify each result actually addresses its slice
-2. Check for redundancy / contradiction between slices
-3. Surface failures explicitly (don't hide a failed subagent under successful ones)
-4. Synthesize — don't just concatenate N reports
+### 6. Fan-in and global verification
 
-If subagent A succeeded but B failed, present the partial result and the failure honestly. Don't re-run B silently and pretend everything was fine.
+Before reporting:
+
+- conflict-scan shared files
+- remove duplicate helpers or divergent patterns
+- synthesize results into one summary
+- run global verification that no single unit could prove, such as build/lint/full test/smoke
+
+If a unit fails, surface it honestly. Do not hide partial failures under successful units.
+
+## Mode B - Role-Split Feature Loop
+
+Use for one feature that crosses product + design + backend + frontend + test/QC and needs traceability. Roles are coupled through a frozen contract, so do not use Mode A.
+
+### B.0 Contract freeze
+
+Sequentially freeze the shared contract from the approved spec/plan:
+
+- DTO/type shapes
+- endpoint list
+- permission codes
+- validation rules
+- frontend route/screen contract
+- acceptance criteria
+- product doc paths when present (`product/prds/`, `product/user-stories/`, `product/acceptance-criteria/`, `product/uat-checklists/`)
+- design asset paths when present (`design/specs/`, `design/flows/`, `design/wireframes/`, `design/exports/png/`)
+- test asset paths when present (`test/e2e/`, `test/test-cases/`, `test/fixtures/`, `test/reports/`)
+
+The contract may be written as a small markdown artifact under the target project's `.sdcorejs/` area or embedded verbatim in all briefs. Role agents must not mutate it silently.
+
+### B.1 Role fan-out
+
+Dispatch up to five role agents:
+
+- Product/PO: follows `sdcorejs-product`, owns `product/` docs plus `.sdcorejs/docs/product/` ledger updates and gap mapping.
+- Design: follows `sdcorejs-design`, owns `design/` FE handoff artifacts plus `.sdcorejs/docs/design/` traceability.
+- Backend: follows `sdcorejs-nestjs`, owns `backend/` files and backend unit/integration tests.
+- Frontend: follows `sdcorejs-angular` or `sdcorejs-nextjs`, owns `frontend/` UI files and frontend unit/component tests.
+- QC/Test: follows `sdcorejs-test`, owns `test/` cross-stack e2e/UAT tests, fixtures, reports, and checklist evidence.
+
+Each role brief includes the frozen contract verbatim and disjoint writable paths.
+
+### B.2 Fan-in review
+
+For each role, run Mode A Stage A and Stage B. Verify nobody changed the frozen contract without routing that change back through the parent.
+
+### B.3 Integration loop
+
+Run `sdcorejs-ship (verify-before-done mode)` against the approved acceptance
+criteria, plus build/lint/test/smoke commands from the plan.
+
+If verification fails:
+
+- route backend bugs to Backend
+- route missing/unclear screen behavior to Design
+- route UI bugs to Frontend
+- route missing/incorrect assertions to QC
+- route contract drift to the parent, update the frozen contract, then re-brief affected roles
+
+Hard cap: 3 iterations. If no criteria are resolved for 2 consecutive iterations, stop and ask the user for direction.
+
+## Reporting
+
+Report one synthesized result:
+
+```markdown
+Parallel execution: <PARALLEL-CANDIDATE|ROLE-SPLIT>
+
+| Unit/Role | Status | Files/Output | Verification |
+|---|---|---|---|
+| <name> | pass/warn/blocked | <paths> | <command/result> |
+
+Global checks:
+- <command>: <result>
+
+Needs decision:
+- <only unresolved blockers>
+```
+
+Keep status localized to the user's language.
 
 ## Rules
 
-### MUST DO
-- Verify independence + blast-radius bound BEFORE dispatching
-- Self-contained briefing per subagent
-- ≤5 concurrent unless you've split deliberately
-- Synthesize results before reporting to user
-- Surface partial failures explicitly
+### Must do
 
-### MUST NOT
-- Parallelize sequential work to "save time" — it costs more in coordination
-- Send the same prompt to N subagents and expect them to coordinate among themselves
-- Tell a subagent to spawn its own subagents (recursion)
-- Hide a subagent failure under successful results
-- Dispatch >5 without a checkpoint
-- Use parallel when the user wants an interactive workflow (each step needs their input)
+- Decide `SEQUENTIAL`, `PARALLEL-CANDIDATE`, or `ROLE-SPLIT` before dispatch.
+- Keep the approved plan as the execution contract.
+- Use self-contained briefs.
+- Cap at 5 concurrent subagents or split into waves.
+- Verify each subagent result from actual diff/output.
+- Surface partial failures.
+- Run global verification before claiming success.
 
-## Anti-patterns
-- **Parallel theater**: dispatching 5 subagents to read 5 files when one parent could read all 5 in a Glob+Read sequence
-- **Premature parallelism**: splitting "design + implement" — design must finish first
-- **Lost context**: dispatch with "do X like we discussed" — they didn't, brief explicitly
-- **Race-to-conflict**: two subagents both editing `package.json`
-- **The 12-way fan-out**: user gets 12 reports nobody can review
-- **Implicit ordering**: results return in arbitrary order; reviewer assumes order matters; bugs happen
+### Must not
 
-## Example: angular screen generation
-
-User says "create CRUD for Product with four screens (list, detail, create, update)".
-
-This LOOKS like 4 parallel tasks. But examine:
-- All 4 share the same `Product` DTO + service + module — there's shared state
-- Detail/Create/Update share a component shell (the `screen-detail` pack owns it, the others extend)
-- List is independent
-
-Correct dispatch:
-- Generate DTO + service + module first (single agent, sequential)
-- THEN parallel: list-screen + detail-shell-with-3-states (the shell handles detail/create/update via state)
-
-Wrong dispatch:
-- 4 parallel subagents each generating their own DTO copy → divergent fields, conflicting commits
-
-## Example: reference docs
-
-User says "write reference docs for all 23 Core UI components". 
-
-This IS parallel-friendly:
-- Each component → independent reference file (per-component Core UI docs are now fetched on-demand via `node _refs/angular/core-docs-fetch.mjs --print sd-<name>`, not committed)
-- No shared state
-- Same template, different content
-
-Correct dispatch:
-- Split 23 → 5 batches of 4-5 components each
-- Each batch is one subagent that handles its 4-5 components sequentially internally
-- Avoids the 23-way fan-out, fits the budget
+- Parallelize shared-file edits.
+- Parallelize approval gates or dependent steps.
+- Reuse vague briefs such as "follow our conventions".
+- Let subagents coordinate with each other.
+- Let subagents spawn subagents.
+- Accept success claims without reading evidence.
+- Merge a unit with unresolved Critical/Important review findings.
 
 ## Cross-references
-- `orchestration/using-worktrees.md` — once the verdict is PARALLEL-CANDIDATE, give each unit an isolated workspace before dispatch
-- `orchestration/subagent-driven-dev.md` — runs NEXT for BOTH verdicts: `PARALLEL-CANDIDATE` → Mode A; `ROLE-SPLIT` → Mode B (role-split feature loop). Owns the briefing template, dispatch mechanics, partial-failure handling, and merge/verification steps. This skill stops at the decision; subagent-driven-dev executes it.
-- `orchestration/verify-before-done.md` — final acceptance gate after subagent-driven-dev's merge step.
-- `write-code.md` (each track) — orchestrator that invokes this skill when its dispatch table has 3+ rows.
 
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
+- `sdcorejs-execute-plan` - asks sequential vs parallel and invokes this skill for parallel mode.
+- `sdcorejs-git (workspace mode)` and `_refs/orchestration/workspace-isolation.md` - isolate write-heavy fan-out.
+- `sdcorejs-review` - code-quality review per unit/role.
+- `sdcorejs-repair-loop` - resolves review findings.
+- `sdcorejs-ship (verify-before-done mode)` and `_refs/orchestration/tail/verify-before-done.md` - final acceptance gate.
 
-**Response style (terse mode active for this skill — reduces token usage):**
+<!-- response-style: auto-injected by sync-skills; do not edit mirror by hand -->
+
+**Response style (terse mode active for this skill - reduces token usage):**
 
 While executing this skill:
 
 - Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
 - Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
 - Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal - no caveman inside generated artifacts.**
 - Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
 - If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

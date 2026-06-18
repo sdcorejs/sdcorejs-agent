@@ -16,7 +16,7 @@ Do NOT invoke if:
 - An existing Next.js project is present (delegate to relevant sub-skill instead — `theme.md` / `pages-and-blocks.md`)
 - User is in an Angular / NestJS context (wrong track)
 
-## Prerequisites (from `02-clarify-requirements`)
+## Prerequisites (from `01-brainstorming`)
 - Site name + tagline
 - Production domain
 - Languages (VI default; EN ready)
@@ -60,7 +60,7 @@ Why each:
 | `clsx`, `tailwind-merge` | Conditional class composition for components |
 | `prettier-plugin-tailwindcss` | Auto-sorts Tailwind classes in formatter |
 
-If user picked Cloudflare hosting in clarify → also: `npm install -D @cloudflare/next-on-pages`.
+If user picked Cloudflare hosting during brainstorming → also: `npm install -D @cloudflare/next-on-pages`.
 If user picked GA4 → also: `npm install @next/third-parties`.
 If user picked Plausible → no extra dep (use plain script tag).
 
@@ -112,7 +112,7 @@ If user picked Plausible → no extra dep (use plain script tag).
 │   └── middleware.ts                   ← next-intl middleware — i18n.md
 ├── public/
 │   ├── images/                         ← user-uploaded images
-│   ├── logo.svg                        ← from clarify (placeholder if not provided)
+│   ├── logo.svg                        ← from brainstorming (placeholder if not provided)
 │   ├── og-default.png                  ← 1200×630 fallback
 │   ├── favicon.ico
 │   └── robots-static.txt               ← placeholder; app/robots.ts wins
@@ -184,11 +184,11 @@ const config: Config = {
 export default config;
 ```
 
-**`src/config/company.ts`** (filled from clarify answers):
+**`src/config/company.ts`** (filled from brainstorming answers):
 ```typescript
 export const company = {
   name: process.env.NEXT_PUBLIC_COMPANY_NAME ?? 'Acme',
-  tagline: 'Tagline từ clarify',
+  tagline: 'Tagline từ brainstorming',
   domain: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://example.com',
   phone: '+84 ...',
   email: 'contact@example.com',
@@ -288,7 +288,7 @@ If any of these fail, halt and surface — do NOT proceed to next sub-skill with
 
 ### 6. Write the project summary
 
-Once the bootstrap is green, run `orchestration/auto-summary` in WRITE mode to create `.sdcorejs/summary.md` (domain, stack, app-router + content + i18n layout, conventions, current git HEAD). The next session and the `sdcorejs-nextjs` orchestrator's Step 0 pre-flight read this instead of re-scanning. A fresh site has none until this step runs.
+Once the bootstrap is green, run `sdcorejs-explore (summary mode)` in WRITE mode to create `.sdcorejs/summary.md` (domain, stack, app-router + content + i18n layout, conventions, current git HEAD). The next session and the `sdcorejs-nextjs` orchestrator's Step 0 pre-flight read this instead of re-scanning. A fresh site has none until this step runs.
 
 ## Rules
 
@@ -316,6 +316,6 @@ Once the bootstrap is green, run `orchestration/auto-summary` in WRITE mode to c
 - Installing UI libraries (MUI, Chakra) "just in case" — we use custom components + lucide icons
 
 ## Cross-references
-- Inputs: clarify answers (domain, contact email, languages, brand)
+- Inputs: brainstorming answers (domain, contact email, languages, brand)
 - Next: `theme.md` (palette + typography tokens), then `i18n.md` (next-intl middleware + messages), then `pages-and-blocks.md`
 - `shared/workflow/env-setup` covers post-clone environment if a teammate joins later

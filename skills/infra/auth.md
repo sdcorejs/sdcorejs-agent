@@ -1,10 +1,19 @@
 ---
 name: sdcorejs-auth
-description: Configure authentication for an SDCoreJS stack. Provider-agnostic; the only provider today is Keycloak (knowledge in `_refs/infra/auth-keycloak.md`). Ensures the realm import is present, wires the Angular FE via `provideSdKeycloak` + `silent-renew.html`, and points the NestJS BE token-validation at the Keycloak service. Use after `sdcorejs-dockerize`. Triggers - "add login", "configure Keycloak", "auth", "login", "authentication", "wire keycloak", "set up authentication", "Keycloak login", or localized equivalents. Applies to angular, nestjs. Runtime-localized.
+description: Configure Keycloak auth for an SDCoreJS Angular + NestJS stack after dockerize. Use for login/authentication/Keycloak requests. Ensures realm import, Angular provideSdKeycloak + silent-renew.html, and backend token validation against Keycloak service. Applies to angular, nestjs. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob
 ---
 
 # Auth — Wire Keycloak (existing providers)
+
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
 
 ## Purpose
 

@@ -1,28 +1,37 @@
 ---
 name: sdcorejs-nextjs
-description: Generate code for a Next.js landing site — after 06-review-plan approves, OR as the single entry point for any direct build-website code-gen request. Loads the matching on-demand pack under `_refs/nextjs/build-website/write-code/` (per-pack trigger catalog is in the body): init-site, theme, pages-and-blocks, seo, og-preview, i18n, caching, responsive, contact-form, content-quality. Triggers - "bootstrap website", "choose theme", "add a page / add section", "set up SEO / sitemap", "OG image / social preview broken", "add language / i18n", "caching / ISR", "responsive broken / mobile broken", "contact form / form does not send email", "review content / thin content", plus generic "generate code", "go ahead", or localized equivalents. To audit an EXISTING site use `sdcorejs-review` instead. After completion runs the mandatory tail chain (sdcorejs-test → sdcorejs-review → repair-loop → comment-code → verify-before-done → branch-ready → auto-docs → write-user-guide → auto-task-tracker → memories). Runtime-localized.
+description: Next.js website code executor for approved/direct site builds with confirmed requirements. Use for bootstrap, theme, pages/sections, SEO/OG, i18n, caching/ISR, responsive fixes, contact form, or content quality. Loads _refs/nextjs/build-website/write-code/ packs; use sdcorejs-review for existing-site audits. Runs mandatory finish tail. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Bash, TodoWrite
 ---
 
 # Build Website — Write Code Orchestrator
 
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+
 ## Purpose
 Single entry point for generating Next.js landing-site code. This skill is the dispatch layer between the approved plan (or a direct request) and the focused REFERENCE PACKS that hold the per-concern generation rules. It does NOT inline those rules — it reads the right pack on demand. The ten packs under `_refs/nextjs/build-website/write-code/` were standalone sub-skills before they were consolidated here so the track exposes one orchestrator instead of eleven.
 
 ## When invoked
-- After `06-review-plan` (or cross-track plan-review) is approved
+- After `sdcorejs-execute-plan` dispatches an approved Next.js plan
 - User says "generate code", "go ahead", "OK proceed", or localized equivalents
 - A direct build-website request matching any capability in the dispatch table below
-- After `orchestration/recovery` and user explicitly resumes work
+- After `sdcorejs-explore (recovery mode)` and user explicitly resumes work
 
 Do NOT invoke if:
-- No plan exists or plan is unapproved → go back to `05-write-plan` / `06-review-plan`
-- Scope changed since plan was approved → re-plan with `05-write-plan`
+- No plan exists or plan is unapproved -> go back to `sdcorejs-brainstorming` / `sdcorejs-spec` / `sdcorejs-plan`
+- Scope changed since plan was approved -> re-plan with `sdcorejs-plan`
 - The user wants to AUDIT an existing site (not generate) → `sdcorejs-review`
 
 ## Step 0 — Pre-flight: ensure project summary
 
-Before reading the plan or dispatching, run `orchestration/auto-summary`. For an EXISTING site (taking over / extending), if `<target>/.sdcorejs/summary.md` is missing it MUST be generated first (auto-summary delegates the scan to `sdcorejs-code-map` and distills the brief) so generation slots into the real app-router / component / content structure instead of guessing. For a brand-new site (`init-site` in scope), there is nothing to summarize yet — auto-summary runs in WRITE mode AFTER init scaffolds the project.
+Before reading the plan or dispatching, run `sdcorejs-explore (summary mode)`. For an EXISTING site (taking over / extending), if `<target>/.sdcorejs/summary.md` is missing it MUST be generated first (`sdcorejs-explore` scans the code map and distills the brief) so generation slots into the real app-router / component / content structure instead of guessing. For a brand-new site (`init-site` in scope), there is nothing to summarize yet — run summary mode AFTER init scaffolds the project.
 
 ## Dispatch table
 
@@ -71,7 +80,7 @@ For a new site, read and apply the packs in this order:
                             Output: `npm run check:i18n` + `npm run check:content` pass; Tailwind Typography wired; long-form copy meets thresholds
 ```
 
-When `sdcorejs-parallel-dispatch` decision tree green-lights parallelism (3+ independent units, no shared file edits), the orchestrator MAY use `sdcorejs-subagent-driven-dev` to fan out — typically:
+When `sdcorejs-parallel-dispatch` green-lights parallelism (3+ independent units, no shared file edits), the orchestrator MAY let it fan out — typically:
 - Section components (hero, features, testimonials, …) can be generated in parallel
 - SEO + OG + sitemap can run in parallel after pages exist
 - i18n message extraction can fan out across content/<page>.json files
@@ -93,23 +102,25 @@ sdcorejs-test  (if Tests not skipped)  ← happy-path tests for each generated p
    ↓
 sdcorejs-review (if Review not skipped) ← convention check; Critical / Important / Minor findings
    ↓
-orchestration/repair-loop (if Review not skipped) ← apply findings, iterate to clean
+sdcorejs-repair-loop (if Review not skipped) ← apply findings, iterate to clean
    ↓
-orchestration/comment-code ← apply the level the FINISH GATE captured (no second ASK)
+sdcorejs-comment-code ← apply the level the FINISH GATE captured (no second ASK; rules in _refs/orchestration/tail/comment-code.md)
    ↓
-orchestration/verify-before-done (always) ← BLOCK "done" until acceptance criteria from spec are ✅
+sdcorejs-product (when user-visible feature traceability is needed) ← update .sdcorejs/docs/product/ ledger
    ↓
-orchestration/branch-ready (always) ← branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test)
+sdcorejs-ship verify-before-done mode (always) ← BLOCK "done" until acceptance criteria from spec are ✅
    ↓
-orchestration/auto-docs (always)   ← session summary to .sdcorejs/docs/nextjs/
+sdcorejs-ship (branch-ready mode) (always) ← branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test)
+   ↓
+_refs/orchestration/tail/auto-docs.md (always)   ← session summary to .sdcorejs/docs/nextjs/
    ↓
 sdcorejs-write-user-guide (Mode 1, if User guide not skipped) ← update touched module's .sdcorejs/user-guide/<module>.md (features / routes / permissions / data + Coverage-vs-requirements); per-module incremental, aggregate rebuilds at ship
    ↓
-orchestration/auto-task-tracker (always) ← tick done, append new
-orchestration/memories     ← durable knowledge (when applicable)
+_refs/orchestration/tail/auto-task-tracker.md (always) ← tick done, append new
+sdcorejs-explore (memories mode)     ← durable knowledge (when applicable)
 ```
 
-The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLAUDE.md / AGENTS.md / copilot-instructions.md). The always-on plumbing steps run regardless of gate answers. Do NOT skip `verify-before-done` — that's how acceptance criteria slip.
+The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLAUDE.md / AGENTS.md / copilot-instructions.md). The always-on plumbing steps run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)` — that's how acceptance criteria slip.
 
 ## Rules
 
@@ -118,20 +129,20 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / comments / user-guide / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
 - Read the approved plan BEFORE dispatching — never invent scope
 - Dispatch in the order listed (theme/i18n/content BEFORE pages BEFORE seo)
-- Pass the brainstorm + clarify outputs to each pack as context
+- Pass the `sdcorejs-brainstorming` requirement contract to each pack as context
 - Use parallel dispatch only when `parallel-dispatch` decision tree allows
 - Run the tail-call chain in full — no shortcuts
 - Report progress after each pack is applied (1 line per pack)
-- Invoke `sdcorejs-tdd` for any pack that writes testable logic (custom hooks, server actions, API route handlers, form validation in `contact-form.md`, utility functions) — write failing tests first, then implement
+- Invoke `sdcorejs-test (tdd mode)` for any pack that writes testable logic (custom hooks, server actions, API route handlers, form validation in `contact-form.md`, utility functions) — write failing tests first, then implement
 
 ### MUST NOT
 - Generate code from memory when a pack covers the concern — read the pack
 - Skip `i18n.md` even for single-language sites (structure must be ready for another locale later)
 - Skip `contact-form.md` and ship a fake `setTimeout` form — leads will silently disappear
-- Skip `verify-before-done` because tests passed — acceptance criteria are independent
+- Skip `sdcorejs-ship (verify-before-done mode)` because tests passed — acceptance criteria are independent
 - Apply packs out of order (e.g. pages before theme)
-- Mark "done" before `verify-before-done` returns green
-- Skip `sdcorejs-tdd` for packs that write logic — config files and content may bypass; custom code must not
+- Mark "done" before `sdcorejs-ship (verify-before-done mode)` returns green
+- Skip `sdcorejs-test (tdd mode)` for packs that write logic — config files and content may bypass; custom code must not
 
 ## Anti-patterns
 - Generating ALL pages first, THEN applying theme/i18n — leads to massive refactor when content gets externalized
@@ -141,21 +152,21 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Bypassing the tail-call chain because "it's a small change" — small changes compound into untracked drift
 
 ## Cross-references
-- Inputs: approved plan from `05-write-plan` / `06-review-plan` + brainstorm + clarify outputs
+- Inputs: approved plan from `sdcorejs-plan` / `sdcorejs-execute-plan` + `sdcorejs-brainstorming` outputs
 - Reference packs: `_refs/nextjs/build-website/write-code/{init-site,theme,pages-and-blocks,seo,og-preview,i18n,caching,responsive,contact-form,content-quality}.md`
 - Audit an existing site (separate entry, read-only): `sdcorejs-review`
 - Tail-call chain: see CLAUDE.md workflow chart
-- Parallel execution: `orchestration/parallel-dispatch` + `orchestration/subagent-driven-dev`
+- Parallel execution: `sdcorejs-parallel-dispatch`
 
-<!-- response-style: auto-injected by sync-skills.sh; do not edit mirror by hand -->
+<!-- response-style: auto-injected by sync-skills; do not edit mirror by hand -->
 
-**Response style (terse mode active for this skill — reduces token usage):**
+**Response style (terse mode active for this skill - reduces token usage):**
 
 While executing this skill:
 
 - Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
 - Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
 - Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal — no caveman inside generated artifacts.**
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal - no caveman inside generated artifacts.**
 - Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
 - If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

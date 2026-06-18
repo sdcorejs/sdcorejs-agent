@@ -67,7 +67,7 @@ VI "vật liệu xây dựng" and EN "construction materials" are not the same s
 
 ### Parity check script
 
-Create `scripts/check-i18n-parity.ts` — compares `vi.json` ↔ `en.json` keys and the `content/vi` ↔ `content/en` file sets, exits 1 on divergence. The full script + the `package.json` `prebuild` wiring live in `_refs/nextjs/build-website/content-quality-refs.md` ("check-i18n-parity.ts"). Once wired into `prebuild`, `npm run build` fails fast on drift, and `orchestration/verify-before-done` enforces it automatically.
+Create `scripts/check-i18n-parity.ts` — compares `vi.json` ↔ `en.json` keys and the `content/vi` ↔ `content/en` file sets, exits 1 on divergence. The full script + the `package.json` `prebuild` wiring live in `_refs/nextjs/build-website/content-quality-refs.md` ("check-i18n-parity.ts"). Once wired into `prebuild`, `npm run build` fails fast on drift, and `sdcorejs-ship (verify-before-done mode)` enforces it automatically.
 
 ## Part 2 — Long-form content rules
 
@@ -183,7 +183,7 @@ Three components ship for long-form reading; full code in `_refs/nextjs/build-we
 
 ## Part 4 — On-page SEO checklist
 
-Every page must satisfy this checklist before launch. `orchestration/verify-before-done` includes it as acceptance criterion.
+Every page must satisfy this checklist before launch. `sdcorejs-ship (verify-before-done mode)` includes it as acceptance criterion.
 
 ### 4.1 — Title and meta description
 
@@ -330,7 +330,7 @@ When user asks "viết bài về X" / "add article about X":
 - **EN copy that translates Vietnamese idioms literally** — "đặt khách hàng làm trung tâm" becomes "place customer at center" instead of "customer-first".
 - **Forcing 1500 words on a 600-word topic** — Google penalizes padding too. Right-size the content to the question.
 
-## Verification (hooks into `orchestration/verify-before-done`)
+## Verification (hooks into `sdcorejs-ship (verify-before-done mode)`)
 
 Add these as acceptance criteria for any landing-site spec:
 
@@ -348,6 +348,6 @@ Add these as acceptance criteria for any landing-site spec:
 - Article JSON-LD builder: extends `seo.md`'s `structured-data.ts`
 - Per-locale strings: `i18n.md` + `pages-and-blocks.md`
 - Heading hierarchy reviewed by: `sdcorejs-review` (accessibility section)
-- Min word count enforced by: `orchestration/verify-before-done`
+- Min word count enforced by: `sdcorejs-ship (verify-before-done mode)`
 - Image alt rules: `responsive.md` (presence) + this skill (quality)
 - Reading-experience width: `responsive.md` uses `max-w-prose` from this skill

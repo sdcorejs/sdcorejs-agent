@@ -1,8 +1,8 @@
 # NestJS Backend — SDLC Reference
 
-This file is loaded by `skills/shared/sdlc/0[1-6]-*.md` when the detected track is `nestjs`.
+This file is loaded by `skills/shared/sdlc/0[1-3]-*.md` when the detected track is `nestjs`.
 
-**Status:** Track-specific orchestrator (`sdcorejs-nestjs`) is shipped — after `sdcorejs-review-plan` approves a plan, it dispatches the on-demand packs under `_refs/nestjs/write-code/` (`init-project` / `init-module` / `init-entity` / `actions`). This ref covers the **design phase** (brainstorm / clarify / spec / plan); the code-generation rules + templates live in those packs.
+**Status:** Track-specific orchestrator (`sdcorejs-nestjs`) is shipped — after `sdcorejs-plan` approves a plan, it dispatches the on-demand packs under `_refs/nestjs/write-code/` (`init-project` / `init-module` / `init-entity` / `actions`). This ref covers the **design phase** (brainstorming / spec / plan / execute-plan); the code-generation rules + templates live in those packs.
 
 **Canonical core:** SDCoreJS NestJS backends are modular monoliths built on the **`@sdcorejs/nestjs`** core package (sub-path imports: `@sdcorejs/nestjs`, `/orm`, `/permission`, `/validation`, `/jwt`, `/context`, `/tenancy`, `/audit`, `/i18n`, …). The authoritative export inventory is [`_refs/nestjs/core-catalog.md`](../nestjs/core-catalog.md); the architecture WHY is [`_refs/nestjs/architecture-principles.md`](../nestjs/architecture-principles.md). Historical note: earlier drafts referenced a `be-masterdata` baseline; the canonical reference app today consumes `@sdcorejs/nestjs` and the conventions below are grounded on it.
 
@@ -23,7 +23,7 @@ This file is loaded by `skills/shared/sdlc/0[1-6]-*.md` when the detected track 
 - **TypeORM `@Transaction` decorator** — terser for single-method transactions
 - **Saga / outbox pattern** — for event-driven flows that must guarantee write + publish
 
-### Clarifying questions to seed
+### Questions to seed
 - "Persistence default TypeORM + Postgres — OK hay cần raw SQL / external API proxy?"
 - "Bạn cần audit log (created_by/updated_by) + soft-delete trong toàn bộ entity?"
 - "Có workflow approval / publish không, hay write-and-go?"
@@ -31,7 +31,7 @@ This file is loaded by `skills/shared/sdlc/0[1-6]-*.md` when the detected track 
 
 ---
 
-## Clarify
+## Brainstorming: required confirmations
 
 ### Minimum-required (blocking)
 1. **Module name** (existing or new) — folder under `src/modules/<module>/`
@@ -87,7 +87,7 @@ This file is loaded by `skills/shared/sdlc/0[1-6]-*.md` when the detected track 
 | **Profile** | <simple | enterprise> |
 | **Tests** | <minimal | standard | full> |
 
-→ Tiếp theo: `sdcorejs-write-spec` để mình draft spec.
+→ Tiếp theo: `sdcorejs-spec` để mình draft spec + xin xác nhận trong cùng gate.
 ```
 
 ---
@@ -153,13 +153,13 @@ npm run lint
 Until the `sdcorejs-nestjs` orchestrator ships, the last plan step should call out the manual tail-call sequence:
 1. `sdcorejs-test` — write e2e tests for happy path
 2. `sdcorejs-review` — convention review
-3. `orchestration/repair-loop` — apply review findings
-4. `orchestration/comment-code` — ASK gate (skip / simple / medium / full)
-5. `orchestration/verify-before-done` — acceptance criteria gate
-6. `orchestration/branch-ready` — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) before docs
-7. `orchestration/auto-docs` — session summary to `.sdcorejs/docs/nestjs/`
-8. `orchestration/auto-task-tracker` — tick / append tasks
-9. `orchestration/memories` — durable knowledge if applicable
+3. `sdcorejs-repair-loop` — apply review findings
+4. `sdcorejs-comment-code` — apply the finish-gate comment level using `_refs/orchestration/tail/comment-code.md`
+5. `sdcorejs-ship (verify-before-done mode)` — acceptance criteria gate
+6. `sdcorejs-ship (branch-ready mode)` — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) before docs
+7. `_refs/orchestration/tail/auto-docs.md` — session summary to `.sdcorejs/docs/nestjs/`
+8. `_refs/orchestration/tail/auto-task-tracker.md` — tick / append tasks
+9. `sdcorejs-explore (memories mode)` — durable knowledge if applicable
 
 Once the orchestrator ships, the plan can simply reference `sdcorejs-nestjs` and the tail-call chain is owned there.
 

@@ -14,8 +14,8 @@ After `write-code` (or any sub-skill) has produced a feature, write E2E tests th
 
 **Mode B — inspector-JSON / code-driven (GATED).** Trigger: the user supplies an `sd-autoid-inspector` export (JSON/POM) OR says "viết test theo file đang code / theo màn này". An inspector export is a **selector inventory, not test intent** — generating straight from it produces a useless selector dump. So DO NOT write tests immediately. Run the SDLC gate first:
 
-1. **Brainstorm** (`sdcorejs-brainstorm`) — explore WHAT to cover with the user: which flows matter, risk areas, positive vs negative vs navigation, in/out of scope. Output 2–3 coverage options + a recommendation. No code yet.
-2. **Clarify requirements** (`sdcorejs-clarify-requirements`) — hard-confirm the blockers; each unanswered one stops generation:
+1. **Brainstorming exploration** (`sdcorejs-brainstorming`) — explore WHAT to cover with the user: which flows matter, risk areas, positive vs negative vs navigation, in/out of scope. Output 2–3 coverage options + a recommendation. No code yet.
+2. **Brainstorming confirmations** (`sdcorejs-brainstorming`) — hard-confirm the blockers; each unanswered one stops generation:
    - **Framework + repo** — Robot Framework / Playwright / Cypress? Path to the existing suite (e.g. `nsp-automation-test`)?
    - **Feature / page under test** + route/URL, and the JIRA/Qmetry key for the suite name.
    - **Selectors** — the inspector export (paste or file path). **Prefer the MD-POM export** — the raw JSON has only the elements array (no page URL/title); MD-POM/md-table carry `meta.pageUrl`. If only JSON is given, ask for the route/URL explicitly. Confirm autoid coverage; list elements with no autoid so the dev backfills (review skill autoId section). Note: dropdown options / toasts / dialogs (CDK overlay) aren't in the scan — capture them here.
@@ -23,11 +23,11 @@ After `write-code` (or any sub-skill) has produced a feature, write E2E tests th
    - **Auth + env** — login user/role, environment (QC/UAT/…) + how URLs/creds are provided (e.g. `Variables/ENV_QC.yaml`).
    - **Test data** — inline vs data-driven (Excel `DataTest/Excel`), and any prep/cleanup.
    - **Reuse** — which Page already has keyword resources (`UI_<Page>` / High / Verification) or page objects to extend rather than recreate.
-3. **Plan** (`sdcorejs-write-plan` → `sdcorejs-review-plan`) — list the test cases + a keyword/page-object inventory (NEW vs REUSE) for approval. Generation waits for explicit OK.
+3. **Plan** (`sdcorejs-plan` → `sdcorejs-plan`) — list the test cases + a keyword/page-object inventory (NEW vs REUSE) for approval. Generation waits for explicit OK.
 4. **Generate** — only now write code, per the detected framework's conventions (Robot → load `_refs/angular/e2e-robot-conventions.md`). Map each inspector autoid → a Low-level action; compose High-level flows; add Verification/assertions from the clarified expected results; build the suite. Reuse existing keywords; create only what's missing.
 5. **Verify** — run the suite (or dry-run if no env), report per §"Run + verify".
 
-The gate is mandatory for Mode B: skipping brainstorm/clarify is the top cause of ineffective generated E2E (selectors with no assertions, wrong flows, duplicated keywords).
+The gate is mandatory for Mode B: skipping brainstorming confirmations is the top cause of ineffective generated E2E (selectors with no assertions, wrong flows, duplicated keywords).
 
 ## Detect the test framework
 
@@ -123,7 +123,7 @@ Report:
 - Mocking API calls in E2E (defeats the purpose; only mock the auth/permission layer if the dev environment requires it)
 - Marking a failing test as `.skip` to make CI green
 - Introducing a second framework when one is already configured
-- **Mode B: generating tests straight from an inspector JSON without the brainstorm → clarify → plan gate** — produces selector dumps with no real assertions/flows
+- **Mode B: generating tests straight from an inspector JSON without the brainstorming → plan gate** — produces selector dumps with no real assertions/flows
 - Emitting raw `Browser.*` / `page.*` calls inline in a Robot suite instead of Low/High/Verification keywords
 - Re-creating keywords/page objects that already exist for the page (reuse + extend; never duplicate `OPEN BROWSER`, login, networkidle)
 - Hardcoding environment URLs/creds in a suite instead of `Variables/ENV_<env>.yaml`

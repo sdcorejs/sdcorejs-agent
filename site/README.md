@@ -1,9 +1,9 @@
-# Showcase site - SDCoreJS Agent
+# Doc site - SDCoreJS Agent
 
-The marketing / showcase site for the SDCoreJS skill pack, hosted on GitHub Pages.
+The presenter-deck documentation site for the SDCoreJS skill pack, hosted on GitHub Pages.
 
-- Tech: [Astro](https://astro.build/) static, vanilla CSS, IntersectionObserver scroll reveals. No UI framework, no Tailwind, no JS framework.
-- Theme: light only. Palette derived from the brand logo (blue + orange on white).
+- Tech: [Astro](https://astro.build/) static, vanilla CSS, no UI framework, no Tailwind, no JS framework.
+- Theme: light only. Palette derived from the brand logo, with per-track accent colors.
 - Output: pure HTML/CSS/JS in `dist/`, deployed by `.github/workflows/deploy-site.yml`.
 
 ## Local development
@@ -23,33 +23,48 @@ sites under `<owner>.github.io/<repo>/`. The CI workflow overrides via
 
 ## Sections
 
-1. **Hero** - current pack stats, runtime-localized positioning, and install CTA.
-2. **Tracks** - Angular Portal, NestJS, and Next.js track summaries.
-3. **Angular Portal** - track focus, on-demand reference packs, generated shape.
-4. **Quality Gates** - E2E harness phases, including full Phase 4 opt-in command.
-5. **Install** - 3-step plugin install with copy-to-clipboard buttons.
-6. **Footer** - links + license.
+The home page is a no-scroll presentation deck. It advances with Back/Next
+buttons instead of vertical page scrolling, so each screen can be used directly
+in a stakeholder presentation.
 
-Each component lives in `src/components/<Name>.astro` with scoped styles. Reveals
-use the `.reveal` class; the `IntersectionObserver` in `src/layouts/Layout.astro`
-adds `.is-visible` when an element enters the viewport.
+1. **Opening** - promise, pack stats, and audience framing.
+2. **Problem** - why prompt-only coding is not enough.
+3. **Input context** - images, PRD, API docs, code, logs, and constraints.
+4. **5-step SDLC** - discovery, spec, plan, dispatch, finish.
+5. **Explore** - project-context, summary, docs, memories, tasks, persona.
+6. **Spec gate** - explicit approval before planning.
+7. **Plan gate** - file-by-file plan and sequential/parallel choice.
+8. **Track dispatch** - product, design, angular, nestjs, nextjs, test, generic.
+9. **Finish gate** - ordered mandatory tail from tests/review to docs/tasks/memories.
+10. **Memory handoff** - auto-docs, task tracker, memories, persona.
+11. **Claude setup** - install and smoke prompts.
+12. **Codex setup** - AGENTS.md-compatible usage and smoke prompts.
+13. **Skill pack tests** - local verification commands.
+14. **Angular Portal usage** - Core UI, code-map, autoId, permissions, tests, docs.
+15. **Short prompt examples** - simple real prompts plus the rule that the agent auto-loads context and asks when context is missing or contradictory.
+16. **Safety behavior** - agent asks when context is missing or contradictory.
+17. **Demo script** - a short presenter flow.
+18. **Closing** - context -> spec -> plan -> execute -> verify -> remember.
+
+The home page is intentionally page-local in `src/pages/index.astro` because it
+is a presentation deck. Shared shell pieces remain in `src/components/`.
+The deck locks body scrolling on the home page and uses local button state for
+slide navigation.
 
 ## Current facts reflected by the site
 
-- 42 dispatchable skills.
-- 147 reference documents.
-- English source skills with runtime-localized output.
-- E2E harness phases:
-  - Phase 1: deterministic skill-pack runner.
-  - Phase 2: Codex + Claude CLI adapter smoke.
-  - Phase 3: Copilot/Cursor entrypoint and prompt eval smoke.
-  - Phase 4: generated target-app golden test with Docker, supertest, and Playwright when `SDCOREJS_E2E_FULL=1`.
+- 24 dispatchable skills.
+- 7 executor tracks: product, design, angular, nestjs, nextjs, test, generic.
+- 2 explicit approval gates: spec and plan.
+- 12 deterministic E2E smoke checks.
+- Current scope boundary: verified local delivery is covered; production SDLC expansion needs explicit approval/spec/plan.
 
 ## Branding assets
 
 `public/icon.png` and `public/logo-text.png` are copies of the originals in the
-repo's `images/` directory. When the brand changes, update both locations or sync
-via a small copy script.
+repo's `images/` directory. The `public/flow-*.svg` files are small diagram
+assets used by the SDLC flow board. `public/skill-flow-summary.png` is the
+large summary workflow image used on the final presenter slide.
 
 ## A note on caching
 

@@ -1,152 +1,127 @@
 # SDCoreJS
 
-> An orchestrated SDLC for AI coding agents. Works in Claude Code, GitHub Copilot, and Codex.
+An orchestrated SDLC skill pack for AI coding agents. Works in Claude Code, GitHub Copilot, Codex, and Cursor.
 
-SDCoreJS turns Claude Code, GitHub Copilot, and Codex into accountable engineers on your stack. Requests flow through **clarify → spec → plan → write code → review → ship**, with user-approval gates between each phase and a documented audit trail.
+Requests flow through:
 
-Three first-class tracks, each with stack-specific conventions, generators, reviews, and tests:
+```text
+brainstorming -> spec -> plan -> execute-plan -> track executor -> finish gates -> ship -> git
+```
 
-- **Angular Portal** — backoffice portals built on [`@sdcorejs/angular`](https://www.npmjs.com/package/@sdcorejs/angular) (Core UI, Angular 19 / 20 / 21)
-- **NestJS** — modular APIs with Postgres + DTOs + permissions
-- **Next.js** — public sites with bilingual content, SEO, ISR caching
-
-The system ships as **dispatchable skills** — markdown with YAML frontmatter — that AI coding tools match against intent and execute in order. No runtime, no CLI, no compiler; just the workflow layer your AI coding tool was missing.
-
-## How it works
-
-1. You clone or attach this repo's `skills/` and `_refs/` together with the entry-point files (`CLAUDE.md`, `AGENTS.md`, `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md`) to your target project. Both `skills/` and `_refs/` are required — skills reference `_refs/**` at runtime.
-2. The AI tool reads the entry-point at session start.
-3. When you ask the tool to do something ("tạo entity product", "review module catalog"), it matches your request against each skill's `description` and follows the matched skill's instructions exactly.
+The pack is documentation-driven: markdown skills plus `_refs/` knowledge. There is no runtime server.
 
 ## Tracks
 
-| Track | Path | Status |
-| --- | --- | --- |
-| Angular | `skills/tracks/angular/` | ✅ Complete (`sdcorejs-angular` orchestrator; onboarding via `sdcorejs-using-skills`; Core UI docs in `_refs/angular/`) |
-| NestJS | `skills/tracks/nestjs/` | ✅ Complete (`sdcorejs-nestjs` orchestrator dispatching `_refs/nestjs/write-code/` packs: init-project, init-admin, init-module, init-entity, actions; onboarding via `sdcorejs-using-skills`) |
-| Next.js | `skills/tracks/nextjs/` | ✅ Complete (`sdcorejs-nextjs` orchestrator; EXISTING-site audit → `sdcorejs-review`; onboarding via `sdcorejs-using-skills`) |
+| Track | Executor |
+|---|---|
+| Angular Portal | `sdcorejs-angular` |
+| NestJS | `sdcorejs-nestjs` |
+| Next.js | `sdcorejs-nextjs` |
+| Product | `sdcorejs-product` |
+| Design | `sdcorejs-design` |
+| Test | `sdcorejs-test` |
+| Generic harness | `sdcorejs-execute-plan` fallback |
 
-## Workflow (per track)
+## Workflow
 
-Every track follows the same SDLC pipeline. Numbering reflects the order.
-
-```
+```text
 Request
-  ↓
-sdcorejs-using-skills      ← onboarding / orient (bootstrap; skip if oriented)
-01-brainstorm              ← explore requirements open-ended
-02-clarify-requirements    ← hard-confirm scope (blocking questions)
-03-write-spec              ← author a spec document
-04-review-spec             ← user reviews + approves spec
-05-write-plan                    ← step-by-step plan
-06-review-plan             ← user reviews + approves plan
-write-code              ← orchestrator that dispatches sub-skills (10-31)
-40-e2e-test                ← write E2E tests for what was built
-sdcorejs-review       ← self-review against conventions (auto-detects track; color-coded tables)
-orchestration/comment-code ← MANDATORY ASK gate: skip / simple / medium / full (all applied inline)
-  ↓
-orchestration/auto-docs    ← MANDATORY: summary to target project's .sdcorejs/docs/<track>/
-orchestration/memories     ← when learning durable knowledge: target project's .sdcorejs/memories/<track>/
+  -> sdcorejs-brainstorming
+       Explore if needed, then confirm blockers.
+  -> sdcorejs-spec
+       Write spec, ask for approval, and persist approved spec.
+  -> sdcorejs-plan
+       Write numbered plan, ask for approval, and persist approved plan.
+  -> sdcorejs-execute-plan
+       Detect track and always ask sequential vs parallel.
+  -> executor
+       angular | nestjs | nextjs | product | design | test | generic harness
+  -> finish gate and tail chain
 ```
 
-For Angular Portal, `write-code` is the single orchestrator; it loads on-demand reference packs from `_refs/angular/write-code/` (no frontmatter, not dispatchable skills): `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail` (CREATE / UPDATE / DETAIL states + reactive-form refinement), `actions` (workflow / bulk / custom side-effects).
+The two approval gates and approved snapshot writes live inside `sdcorejs-spec` and `sdcorejs-plan`. `sdcorejs-execute-plan` owns track detection, product-track routing, design-track routing, test-track routing, generic harness fallback, and the sequential/parallel question.
 
-## Mandatory rules (every track)
+## Quick Start
 
-1. **Auto-docs** at the end of every code-writing task → writes to your **target project's** `.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<topic>.md`. Read at session start to recall prior work.
-2. **Memories** when the agent learns durable knowledge (a convention, a stakeholder constraint, an anti-pattern) → writes to **target project's** `.sdcorejs/memories/<track>/<topic>.md`. Indexed at session start.
-3. **Bilingual** — Vietnamese request → Vietnamese output (full diacritics). English → English. Permission codes + route paths stay English.
-4. **Clarify-before-code** — agent refuses to generate code without module ownership / entity name / key fields.
-5. **Core UI first** (Angular Portal) — use `@sdcorejs/angular` components; otherwise skeleton + `alert('TODO: ...')` stubs.
-6. **Test after generation** — run framework tests and report.
-7. **Evidence before claims** — the agent never says something passes / builds / is fixed / is done without running the verifying command in the same turn and reading its output. Applies to its own work and any subagent's report.
+### Claude Code Plugin
 
-## Quick start in a target project
-
-### Option 1 — Claude Code plugin (recommended for Claude Code users)
-
-Install via the Claude Code plugin marketplace. The repo ships its own single-plugin marketplace at `.claude-plugin/marketplace.json`, so you only need to add the repo as a marketplace and install the plugin:
-
-```
+```text
 /plugin marketplace add sdcorejs/sdcorejs-agent
 /plugin install sdcorejs-agent@sdcorejs
 ```
 
-After install, all 36 skills (cross-track SDLC + angular / nestjs / nextjs tracks + orchestration + review + testing) are dispatched automatically by Claude Code based on each skill's `description` trigger.
+### Codex Native Skills
 
-### Option 2 — git submodule (works for Claude Code + Copilot + Codex)
+```powershell
+npm run sync:skills
+$dest = if ($env:CODEX_HOME) { Join-Path $env:CODEX_HOME "skills" } else { Join-Path $HOME ".codex\skills" }
+New-Item -ItemType Directory -Force $dest | Out-Null
+Copy-Item .\codex\skills\* $dest -Recurse -Force
+```
+
+Restart Codex after copying. Keep `codex/skills/_refs` with the skills.
+
+### Attached Repo / Submodule
 
 ```bash
-cd <your-portal-project>
+cd <your-project>
 git submodule add <repo-url> .sdcorejs-agent
 ln -s .sdcorejs-agent/CLAUDE.md CLAUDE.md
 ln -s .sdcorejs-agent/AGENTS.md AGENTS.md
-ln -s .sdcorejs-agent/skills skills     # must be named 'skills' so glob skills/**/*.md resolves
-ln -s .sdcorejs-agent/_refs _refs       # must be named '_refs' so _refs/... references resolve
+ln -s .sdcorejs-agent/skills skills
+ln -s .sdcorejs-agent/_refs _refs
 ```
 
-### Option 3 — copy entry points + skills
+## Tool Support
+
+| Tool | Reads |
+|---|---|
+| Claude Code plugin | `plugin/skills/**`, `plugin/_refs/**` |
+| Claude Code direct | `CLAUDE.md`, `.claude/skills/**` |
+| Codex attached repo | `AGENTS.md` |
+| Codex native | `codex/skills/**` |
+| Cursor | `AGENTS.md`, generated `.cursor/rules/sdcorejs-agent.mdc` |
+| GitHub Copilot | `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md` |
+
+## Repo Layout
+
+```text
+skills/                 source skills, 24 dispatchable skill files
+_refs/                  source reference docs
+.claude/skills/         generated Claude mirror
+plugin/skills/          generated Claude plugin mirror
+codex/skills/           generated Codex-native mirror
+.cursor/rules/          generated Cursor rule
+scripts/sync-skills.mjs cross-platform mirror generator
+```
+
+Run after editing source skills, refs, or `AGENTS.md`:
 
 ```bash
-cp -r <agent-repo>/{CLAUDE.md,AGENTS.md,skills,_refs} ./
+npm run sync:skills
+npm run check:skills
 ```
 
-Then open the project in Claude Code / Copilot / Codex and start describing what you want.
+## Mandatory Behavior
 
-## Tool support priority
-
-1. **Claude Code** — primary target. Two paths:
-   - Plugin marketplace (`/plugin marketplace add sdcorejs/sdcorejs-agent`) — recommended; reads `plugin/skills/<name>/SKILL.md`
-   - Direct repo attach — reads `CLAUDE.md` + `.claude/skills/<name>/SKILL.md`
-2. **GitHub Copilot** — reads `.github/copilot-instructions.md` + `.github/chatmodes/sdcorejs.chatmode.md`
-3. **Codex / Cursor / OpenAI Agents SDK** — reads `AGENTS.md`
-
-All paths follow the same `skills/**/*.md` source of truth (kept in sync by `.claude/sync-skills.sh` — both Claude Code mirrors are auto-regenerated on every commit that touches `skills/`). The entry-point files differ only in framing.
-
-## Repo layout
-
-```
-sdcorejs-agent/
-├── CLAUDE.md                              # Claude Code entry (direct-attach mode)
-├── AGENTS.md                              # Codex/Cursor entry
-├── README.md                              # this file
-├── LICENSE
-├── .github/
-│   ├── copilot-instructions.md            # GitHub Copilot entry
-│   └── chatmodes/sdcorejs.chatmode.md     # Copilot chat mode
-├── .claude-plugin/
-│   └── marketplace.json                   # single-plugin marketplace manifest
-├── plugin/                                # Claude Code plugin distribution
-│   ├── .claude-plugin/plugin.json         # plugin manifest (name/version/author)
-│   ├── skills/<name>/SKILL.md             # auto-synced from skills/ source
-│   └── _refs/<track>/...                  # auto-synced from top-level _refs/
-├── .claude/
-│   ├── skills/<name>/SKILL.md             # project-local Claude Code mirror (auto-synced)
-│   └── _refs/<track>/...                  # auto-synced from top-level _refs/
-├── _refs/                                 # source of truth — reference data per track (one tree, mirrored once)
-│   ├── angular/                    # core-version, core-docs-fetch.mjs (on-demand Core UI docs, not committed), entity-field-types, architecture-principles, review-*, test-*, templates/, write-code/
-│   ├── nestjs/                            # architecture-principles
-│   ├── nextjs/build-website/              # architecture-principles
-│   └── sdlc/                              # cross-track design-phase patterns ({angular,nestjs,nextjs}.md)
-├── skills/                                # source of truth — flat .md per skill
-│   ├── tracks/
-│   │   ├── angular/                # ✅ 1 skill (write-code orchestrator; 7 reference packs in _refs/angular/write-code/)
-│   │   ├── nestjs/                        # ✅ 1 skill (write-code orchestrator; 5 reference packs in _refs/nestjs/write-code/)
-│   │   └── nextjs/                        # ✅ 1 skill (write-code orchestrator; 10 reference packs in _refs/nextjs/build-website/write-code/)
-│   ├── shared/{sdlc,conventions,workflow}/
-│   ├── orchestration/                     # SDLC plumbing (19 skills)
-│   ├── review/ (review.md=sdcorejs-review + architecture.md=sdcorejs-review-architecture)
-│   └── testing/{philosophy,tdd,e2e,integration,unit}/
-└── images/
-```
-
-The two synced mirrors (`plugin/skills/` for plugin distribution + `.claude/skills/` for project-local Claude Code) are regenerated from `skills/` by `.claude/sync-skills.sh`, enforced via the lefthook pre-commit hook. Edit only the `skills/` source — never the mirrors directly.
-
-> **Windows note:** `npm run sync:skills` and `npm run check:skills` call `bash .claude/sync-skills.sh`. On Windows you must run these from **Git Bash** (or WSL) — PowerShell does not have `bash` on `PATH` by default.
-
-## Not a multi-agent framework
-
-This is not LangChain / AutoGPT / DeepAgents. There is no runtime, no orchestration code, no LLM calls. It is a curated set of markdown files that AI coding tools read and follow. The "agent" lives inside Claude Code / Copilot / Codex — this repo just gives it knowledge of the SDCoreJS stack.
+- Runtime-localized output: respond in the user's language and preserve locale-specific marks.
+- Non-trivial skills apply `_refs/shared/project-context.md` before executing so direct triggers load summaries, resume checkpoints, specs/plans, tasks, and relevant memories.
+- Non-trivial execution tasks use `_refs/shared/tasklist.md`: create a visible `Tasks` section before work starts, update it as work progresses, and disclose skipped verification, blockers, and risks.
+- Long or interruptible tasks mirror that progress to `.sdcorejs/tasks/current-session.md` so another context window or AI can resume.
+- Requirements before code: use `sdcorejs-brainstorming` until blockers are confirmed.
+- Explicit approval required for spec and plan.
+- Approved plans execute through `sdcorejs-execute-plan`.
+- `sdcorejs-execute-plan` always asks sequential vs parallel.
+- Product/PO docs, user stories, acceptance criteria, UAT, and traceability use the `sdcorejs-product` track.
+- UI/UX design, FE handoff specs, wireframes, and PNG previews use the `sdcorejs-design` track.
+- Solution-builder roots use `product/`, `design/`, `backend/`, `frontend/`, `test/`, and `.sdcorejs/`; human product docs live in `product/`, design handoff lives in `design/`, while logs/ledgers/evidence stay in `.sdcorejs/`.
+- Test-only plans use the `sdcorejs-test` track.
+- Codebase understanding, summaries, flow tracing, and local setup discovery use `sdcorejs-explore`.
+- Final gate, acceptance verification, branch readiness, dependency-update delivery, ready-to-merge, and release readiness use `sdcorejs-ship`.
+- Commit, PR, changelog, release notes, and Git artifact creation use `sdcorejs-git`.
+- Unknown stacks can still run through the generic harness fallback.
+- Every code-generation run presents the finish gate before tail steps.
+- Never claim pass, built, fixed, or done without current verification output.
 
 ## License
 

@@ -8,7 +8,7 @@
 
 ## What this covers
 Per-file code review for a NestJS backend on the `@sdcorejs/nestjs` core.
-Different from `sdcorejs-review-architecture` (structural). This file checks
+Different from the `architecture` dimension of `sdcorejs-review` (structural). This file checks
 adherence to the conventions the `sdcorejs-nestjs` packs actually generate
 (`_refs/nestjs/write-code/*`) at whichever **profile** the project uses
 (`simple` | `enterprise`; see `init-project.md`). Probes that only apply to one
@@ -212,7 +212,7 @@ Severity: 🟡 Important — `console.log` in prod hits stdout but lacks request
 - **🟢 Strengths (mirror)** — clean layering, correct QueryRunner transactions, DTO mapping worth replicating.
 
 ## Scope rules
-- Stop at code review — structural concerns go to `review/architecture`.
+- Stop at code review — structural concerns go to `sdcorejs-review` with the `architecture` dimension.
 - Do NOT duplicate `sdcorejs-review` findings (auth/injection belong there).
 - Flag for manual review where a probe can't be precise (e.g. multi-write detection).
 
@@ -224,8 +224,8 @@ Severity: 🟡 Important — `console.log` in prod hits stdout but lacks request
 - **Returning HTTP status codes via `res.status(...)`** — break NestJS exception flow; throw `HttpException` instead
 
 ## Cross-references
-- Architecture review: `review/architecture`
+- Architecture review: `sdcorejs-review` with the `architecture` dimension
 - Security audit: `sdcorejs-review`
 - Performance audit: `sdcorejs-review`
-- Repair loop: `orchestration/repair-loop`
+- Repair loop: `sdcorejs-repair-loop`
 - Conventions referenced: `@sdcorejs/nestjs` core (`_refs/nestjs/core-catalog.md`) + the write-code packs + `architecture-principles.md`

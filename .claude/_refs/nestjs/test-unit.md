@@ -266,4 +266,4 @@ Coverage target: ≥ 80% line on services + validators + mappers.
 - Integration (real DB): `_refs/nestjs/test-integration.md`
 - E2E (real HTTP + DB): `_refs/nestjs/test-e2e.md`
 - Convention referenced: bilingual error messages from `base/shared/`
-- Verification: `orchestration/verify-before-done`
+- Verification: `sdcorejs-ship (verify-before-done mode)`
