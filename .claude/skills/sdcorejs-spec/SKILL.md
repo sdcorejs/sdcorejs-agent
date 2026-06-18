@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-spec
-description: Unified spec authoring, spec approval gate, and approved-spec persistence. Use after `sdcorejs-brainstorming` has confirmed minimum requirements, or when the user asks to write, draft, review, approve, or change a spec/design document. Writes a draft spec under `<target-project>/.sdcorejs/docs/<track>/<timestamp>-<topic>-spec.md`, self-reviews it, presents a concise summary, waits for explicit user approval, then writes the approved spec snapshot itself under `<target-project>/.sdcorejs/specs/<track>/` before handing off to `sdcorejs-plan`. Applies to angular, nestjs, nextjs, test, product, and generic harness work. Runtime-localized.
+description: Spec authoring and approval gate. Use after brainstorming confirms requirements, or when the user asks to write/review/approve/change a spec or design doc. Writes draft spec under .sdcorejs/docs/<track>/, self-reviews, waits for explicit approval, then persists approved snapshot under .sdcorejs/specs/<track>/ before plan. Applies across tracks. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 

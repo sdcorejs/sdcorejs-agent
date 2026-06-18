@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-solution-builder
-description: One-door orchestrator that turns a plain feature idea into a verified, runnable full-stack app for non-technical users (PO/QC). Composes the existing skills end to end - set persona, brainstorming (features + screens, never architecture), spec approval gate, plan approval gate, execute-plan, product docs, design handoff, backend/frontend/test build, traceability ledger, dockerize, auth (Keycloak), run-guide, stack verification, final docs/task tail - then tells the user how to run it. Creates a single solution root with `product/`, `design/`, `backend/`, `frontend/`, `test/`, and `.sdcorejs/`. Does NOT reimplement any step; it delegates. Triggers - "build me an app / a system", "I want software that does X", "make a tool to manage Y", "build the whole thing", "vibe code an app", and the non-tech entry when someone describes software in domain terms without technical detail. NOT for a single isolated change (use the specific skill). Applies to angular + nestjs + design + product + test (full stack). Runtime-localized; non-tech is the default audience.
+description: One-door orchestrator for non-technical PO/QC users who ask to build a whole runnable app or system. Delegates existing skills end-to-end: persona, brainstorming, spec/plan approvals, product/design, backend/frontend/test build, dockerize, auth, run guide, verification, docs/tasks. Creates one solution root; not for isolated changes. Runtime-localized.
 allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
@@ -22,6 +22,10 @@ One conversation, one running app. The user describes - in plain words - the sof
 For a non-tech owner the promise is: *describe what you want -> the pack builds it, packages it, verifies the startup path, and tells you the one command to run it.* Everything technical happens behind the scenes; the user only reacts to plain-language checkpoints and, at the end, runs the app.
 
 This skill is a conductor. It **composes** the existing skills in order - it does not reimplement any of them. Each step delegates to the skill that owns that work.
+
+## Production SDLC boundary
+
+This skill delivers a verified, locally runnable solution root and supporting evidence. It does **not** create production-SDLC surfaces such as CI/CD pipelines, IaC, environment promotion, observability, incident response, SRE runbooks, migration rollout, compliance gates, or release governance. Do not add new skills or refs for those areas from this flow unless the user explicitly approves that scope expansion and the normal brainstorming -> spec -> plan gates capture it.
 
 ## When invoked / NOT
 

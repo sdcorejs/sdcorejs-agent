@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review
-description: Single entry point for reviewing/auditing code across every SDCoreJS track. Dimension-aware: code conventions (default), architecture, security, performance, accessibility. Auto-detects the stack (Angular, NestJS, Next.js) and the dimension from intent, loads `_refs/<track>/review-<dimension>.md` plus `_refs/shared/` baselines, and emits a Critical / Important / Minor report with file:line and Fix. "comprehensive audit / full audit" runs all applicable dimensions; Angular code can request the 13-category scored review. Read-only. Triggers - "review code", "audit module/backend", "architecture review", "architecture audit", "code structure check", "circular dependency", "abstraction leak", "security review / security", "performance review / performance / lighthouse", "review accessibility / a11y / WCAG", "audit existing site / what is missing on this site (nextjs)", "scored review", "comprehensive audit", or auto after a track executor. Applies to angular, nestjs, nextjs. Runtime-localized.
+description: Read-only review/audit skill across SDCoreJS tracks. Use for code, architecture, security, performance, accessibility, existing-site audits, scored/full audits, or auto review after an executor. Detects stack/dimension, loads matching review refs, and reports Critical/Important/Minor with file:line and fix. Applies to angular, nestjs, nextjs. Runtime-localized.
 allowed-tools: Read, Glob, Grep, Bash
 ---
 

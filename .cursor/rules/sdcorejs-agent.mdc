@@ -93,6 +93,12 @@ Request
 | test | `sdcorejs-test` | First-class track for unit/integration/e2e/UAT plans; solution-root cross-stack tests live in `test/` |
 | generic | `sdcorejs-execute-plan` harness | Executes approved plans for unsupported stacks or non-track work |
 
+## Production SDLC Scope Decision
+
+Current approved scope is a verified, locally runnable SDLC skill pack: product/design/test evidence, Angular/NestJS/Next.js code generation, Docker compose packaging, Keycloak auth, run guides, branch hygiene, PR/changelog support, and recovery memory.
+
+Do **not** add new production-SDLC skills or refs for CI/CD pipelines, IaC, staging/production promotion, observability, incident response, SRE runbooks, migration rollout, compliance gates, or release governance until the user explicitly approves that expansion. If requested, start with `sdcorejs-brainstorming` and an approved spec/plan before authoring new skill/ref surfaces.
+
 ## Mandatory Execution Discipline
 
 For any non-trivial execution task, the agent MUST use `_refs/shared/tasklist.md`.
@@ -115,6 +121,7 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 8. Auto-docs and task tracking write to the target project, not to this agent repo.
 9. Mojibake is a blocking defect in prompts, docs, skills, comments, and user-facing strings.
 10. Do not author new skills without explicit user approval.
+11. Do not expand into production SDLC skill/ref coverage without the explicit approval described in **Production SDLC Scope Decision**.
 
 ## Session-Start Ritual
 

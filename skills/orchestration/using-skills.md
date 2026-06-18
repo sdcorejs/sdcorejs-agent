@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-using-skills
-description: Bootstrap that teaches how to find and dispatch sdcorejs skills and serves as the onboarding entry point. Injected at session start so dispatch discipline works in Claude, Codex, Cursor, Copilot, and plugin contexts. Establishes the brainstorming -> spec -> plan -> execute-plan -> finish flow, the two user-approval gates inside spec and plan, track selection including the product, design, and test tracks, the generic harness fallback, and the rule that a relevant skill must be invoked before responding. Triggers - session start, "what can you do", "what can this agent do", "how do I start", "list skills", "help", "which skills are available", "create landing page", or any request that matches an sdcorejs skill. Applies to angular, nestjs, nextjs, product, design, test, and generic harness work. Runtime-localized.
+description: Session bootstrap and dispatch guide for sdcorejs skills. Use at session start, onboarding/help/list-skill requests, or any request matching an sdcorejs skill. Establishes brainstorming -> spec -> plan -> execute-plan -> finish flow, approval gates, track selection, generic fallback, and invoke-relevant-skill-first discipline. Runtime-localized.
 allowed-tools: Read, Glob
 ---
 

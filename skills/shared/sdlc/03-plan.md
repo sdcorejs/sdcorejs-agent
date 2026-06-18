@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-plan
-description: Unified plan authoring, plan approval gate, and approved-plan persistence. Use after `sdcorejs-spec` approval and approved-spec snapshot writing, or when the user asks to write, draft, review, approve, or change an implementation plan. Produces a numbered file-by-file or task-by-task plan, self-reviews it, presents a concise summary, waits for explicit user approval, then writes the approved plan snapshot itself under `<target-project>/.sdcorejs/plans/<track>/` before handing off to `sdcorejs-execute-plan`. Applies to angular, nestjs, nextjs, test, product, and generic harness work. Runtime-localized.
+description: Plan authoring and approval gate. Use after approved spec, or when the user asks to write/review/approve/change an implementation plan. Produces numbered file/task plan, self-reviews, waits for explicit approval, then persists approved snapshot under .sdcorejs/plans/<track>/ before execute-plan. Applies across tracks. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 

@@ -69,6 +69,26 @@ test('phase 1: long references expose a top-of-file contents map', async () => {
   }
 });
 
+test('phase 1: skill metadata stays concise and production scope stays explicit', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const maxDescriptionChars = 520;
+
+  for (const skill of pack.sourceSkills) {
+    assert.ok(
+      skill.description.length <= maxDescriptionChars,
+      `${skill.name} description has ${skill.description.length} chars`
+    );
+  }
+
+  const agents = await readFile(new URL('../../AGENTS.md', import.meta.url), 'utf8');
+  assert.match(agents, /## Production SDLC Scope Decision/);
+  assert.match(agents, /Do \*\*not\*\* add new production-SDLC skills or refs/);
+
+  const solutionBuilder = await readFile(new URL('../../skills/orchestration/solution-builder.md', import.meta.url), 'utf8');
+  assert.match(solutionBuilder, /## Production SDLC boundary/);
+  assert.match(solutionBuilder, /does \*\*not\*\* create production-SDLC surfaces/);
+});
+
 test('phase 1: deterministic prompt eval dispatches expected skills', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
   const promptEvals = await loadPromptEvals();

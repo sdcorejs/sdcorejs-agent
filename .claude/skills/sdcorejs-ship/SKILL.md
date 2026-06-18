@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-ship
-description: Final delivery and dependency-update gate skill. Use when the user asks to verify before done, run final gate, check acceptance criteria, check ready-to-merge, check branch readiness, ship, push, release, tag, prepare a release, update dependencies, update package, bump package version, run npm outdated, audit dependency changes, fix npm/pnpm/yarn audit findings, or confirm requirement/implementation/test consistency before handoff. Owns verify-before-done, branch-ready, ship, and dependency-update modes, then delegates commit/PR/changelog/release-note artifacts to `sdcorejs-git`. Applies to angular, nestjs, nextjs, product/design/test work, and the sdcorejs-agent repo itself. Runtime-localized.
+description: Final delivery and dependency-update gate. Use for verify-before-done, branch readiness, ready-to-merge, ship/push/release/tag, update dependencies, update package, bump package, npm outdated, audit fix, or consistency checks before handoff. Owns verify-before-done, branch-ready, ship, and dep-update modes; delegates git artifacts to sdcorejs-git. Applies to all tracks and this repo. Runtime-localized.
 allowed-tools: Bash, Read, Grep, Glob, Write, Edit
 ---
 

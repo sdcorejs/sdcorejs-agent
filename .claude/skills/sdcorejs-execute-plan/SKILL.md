@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-execute-plan
-description: Execute an approved plan snapshot. Use immediately after `sdcorejs-plan` approval, or when the user asks to execute, run, generate from, or continue an approved plan. Detects whether the plan should dispatch to angular (`sdcorejs-angular`), nestjs (`sdcorejs-nestjs`), nextjs (`sdcorejs-nextjs`), product (`sdcorejs-product`), design (`sdcorejs-design`), test (`sdcorejs-test`), or the generic harness fallback when no track matches. Always asks the user whether to run sequentially or in parallel before executing, uses `sdcorejs-git (workspace mode)` when isolation is requested/needed, then invokes `sdcorejs-parallel-dispatch` when parallel execution is approved. Runtime-localized.
+description: Execute an approved plan snapshot. Use after sdcorejs-plan approval or when the user asks to execute, run, generate from, or continue an approved plan. Detects angular/nestjs/nextjs/product/design/test/generic executor, asks sequential vs parallel, handles isolation when needed, and invokes parallel-dispatch when approved. Runtime-localized.
 allowed-tools: Read, Edit, Glob, Grep, Bash, Agent, TodoWrite
 ---
 
