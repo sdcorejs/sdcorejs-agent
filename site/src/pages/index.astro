@@ -434,11 +434,17 @@ const conflictExamples = [
             thực thi theo track, kiểm chứng bằng evidence, rồi để lại tri thức
             cho phiên sau.
           </p>
+          <div class="closing-band">
+            <b>SDCoreJS Agent</b>
+            <span>Context -> Spec -> Plan -> Execute -> Verify -> Remember</span>
+          </div>
         </div>
-        <div class="closing-band">
-          <b>SDCoreJS Agent</b>
-          <span>Context -> Spec -> Plan -> Execute -> Verify -> Remember</span>
-        </div>
+        <figure class="summary-map">
+          <img
+            src={`${base}/skill-flow-summary.png`}
+            alt="Sơ đồ tổng quan luồng phát triển phần mềm bằng skill của SDCoreJS Agent"
+          />
+        </figure>
       </section>
     </main>
 
@@ -989,6 +995,7 @@ const conflictExamples = [
 
   .closing-band {
     align-self: center;
+    margin-top: 24px;
     padding: clamp(24px, 4vw, 42px);
     background: #0d2748;
     color: #fff;
@@ -1005,6 +1012,28 @@ const conflictExamples = [
     margin-top: 18px;
     color: rgba(255, 255, 255, 0.75);
     font-weight: 700;
+  }
+
+  .closing {
+    grid-template-columns: minmax(300px, 0.56fr) minmax(0, 1.44fr);
+    gap: clamp(22px, 4vw, 52px);
+  }
+
+  .summary-map {
+    margin: 0;
+    align-self: center;
+    padding: clamp(8px, 1vw, 14px);
+    border: 1px solid #bed4f1;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 30px 70px -52px rgba(13, 39, 72, 0.72);
+  }
+
+  .summary-map img {
+    inline-size: 100%;
+    max-block-size: min(66vh, 560px);
+    object-fit: contain;
+    border-radius: 6px;
   }
 
   .nav-button {

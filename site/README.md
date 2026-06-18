@@ -63,7 +63,8 @@ slide navigation.
 
 `public/icon.png` and `public/logo-text.png` are copies of the originals in the
 repo's `images/` directory. The `public/flow-*.svg` files are small diagram
-assets used by the SDLC flow board.
+assets used by the SDLC flow board. `public/skill-flow-summary.png` is the
+large summary workflow image used on the final presenter slide.
 
 ## A note on caching
 

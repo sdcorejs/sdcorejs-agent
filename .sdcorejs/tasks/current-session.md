@@ -1,5 +1,5 @@
 ---
-updated_at: 2026-06-18T17:49:00+07:00
+updated_at: 2026-06-18T17:53:00+07:00
 status: complete
 track: generic
 active_skill: none
@@ -9,17 +9,17 @@ branch: feat/angular-utility-first-styling
 # Current Session Checkpoint
 
 ## User Request
-Sua lai doc site slide deck: no-scroll, chi bam Next/Back, title nho hon, nhieu slide phu hon, them cai dat/test Claude-Codex va prompt Angular Portal/Core UI.
+Dua anh summary workflow vao slide cuoi cua doc site presentation deck.
 
 ## Tasks
-- [x] Nam yeu cau va doc context/site hien tai
-- [x] Thiet ke lai deck theo kieu no-scroll, chi dieu huong slide
-- [x] Bo sung slide phu: cai dat, test Claude/Codex, prompt Angular Portal/Core UI
-- [x] Verify build va kiem tra trai nghiem bang browser/screenshot
-- [x] Bao lai ket qua, rui ro con lai
+- [x] Xac nhan anh nguon va slide summary hien tai
+- [x] Copy anh vao `site/public` va gan vao slide cuoi
+- [x] Verify build, no-scroll/overflow va screenshot slide cuoi
+- [x] Commit/push thay doi len branch hien tai
+- [x] Bao lai ket qua ngan gon
 
 ## Current State
-- Last completed: Build, static assertions, Chrome DOM check, and screenshot smoke passed.
+- Last completed: Added summary image to closing slide and verified build/browser behavior.
 - In progress: None.
 - Blocked/skipped: None.
 
@@ -41,13 +41,15 @@ Sua lai doc site slide deck: no-scroll, chi bam Next/Back, title nho hon, nhieu 
 - EDIT site/src/components/Footer.astro - remove stale slide anchors
 - EDIT site/src/layouts/Layout.astro - update default metadata
 - EDIT site/README.md - document no-scroll 18-slide deck
+- ADD site/public/skill-flow-summary.png - summary workflow image for final slide
+- EDIT site/src/pages/index.astro - place summary image in closing slide
+- EDIT site/README.md - document summary image asset
 
 ## Verification
 - PASS `cd site && npm run build`
-- PASS static deck assertions: 18 slides, no stale anchors, scroll lock, Back/Next, Claude/Codex, Angular Core UI prompt, conflict behavior
+- PASS static deck assertions: 18 slides, summary image asset/source/dist references, closing figure, no stale anchors
 - PASS `git diff --check` (CRLF warnings only; exit 0)
-- PASS Chrome headless screenshot for first slide
-- PASS Chrome CDP DOM check: scrollHeight equals viewport, Next moves 1/18 -> 2/18, scrollY stays 0, no slide overflow at 1440x900
+- PASS Chrome CDP final-slide check: 18/18, image loaded, scrollHeight equals viewport, scrollY 0, no overflow at 1440x900
 
 ## Resume From Here
-Review the updated deck at http://127.0.0.1:4322/sdcorejs-agent/.
+Review the final summary slide at http://127.0.0.1:4322/sdcorejs-agent/.
