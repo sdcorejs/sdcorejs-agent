@@ -8,6 +8,17 @@
 
 # Actions — Custom Endpoints & Domain Behavior (`@sdcorejs/nestjs`)
 
+## Contents
+
+- Purpose / when to use
+- Critical write-target rule
+- Persona Step 0
+- Source of truth - core package
+- Action patterns and endpoint shapes
+- Permission-gated DTO fields
+- Bulk, import, export, workflow, and transaction rules
+- Tests, verification, and handoff
+
 ## Purpose / when to use
 
 `init-entity` gives one entity its full CRUD surface (`paging` / `detail` / `create` / `update` / `delete` inherited or written). **Most real features need more** — a "my tasks" listing, a status transition, a bulk import, an Excel report, a multi-write operation that must be atomic. This pack adds those **on top of an existing entity stack**, extending the same four building blocks (`I<Entity>Service` interface + impl, `<Entity>Controller`, `<Entity>Repository`, the module wiring) without re-scaffolding them.

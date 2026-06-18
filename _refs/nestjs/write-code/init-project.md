@@ -4,6 +4,18 @@
 
 # Init Project — NestJS Modular-Monolith Scaffold (`@sdcorejs/nestjs`)
 
+## Contents
+
+- Purpose / when to use
+- Critical write-target rule
+- Persona Step 0
+- Source of truth - core package
+- Input resolution and profile
+- Project structure and package setup
+- Core module, auth, validation, and i18n wiring
+- Database, schemas, migrations, and Docker readiness
+- Verification and post-init summary
+
 ## Purpose / when to use
 
 Scaffold a **fresh modular-monolith backend** that consumes `@sdcorejs/nestjs`: one NestJS app, one Postgres database, **schema-per-module**, request-context + tenancy + audit + permission + JWT wired through `SdCoreModule.forRoot`. This is the FIRST backend codegen step — run it **before** `init-module` and `init-entity`.

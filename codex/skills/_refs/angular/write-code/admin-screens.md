@@ -4,6 +4,17 @@
 
 # Admin Screens — Account / Role / Permission (Angular)
 
+## Contents
+
+- Purpose / when to use
+- Source of truth - Core UI + sibling packs
+- Profile (read FIRST)
+- BE contract (API + DTOs)
+- Angular output structure
+- Account, role, and permission screens
+- Enterprise extension
+- Verification and handoff
+
 ## Purpose / when to use
 
 Generate `src/libs/admin/` feature screens that pair with the BE admin module (`_refs/nestjs/write-code/init-admin.md`):

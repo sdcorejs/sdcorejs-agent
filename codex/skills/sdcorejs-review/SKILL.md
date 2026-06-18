@@ -74,6 +74,28 @@ mapping. The output format below is owned by this skill.
 3. Map each finding to severity using the ref's criteria. Group repeated violations.
 4. Emit the unified report. For multi-dimension (`ALL`), one report with a section per dimension.
 
+## Post-review tail
+
+When `sdcorejs-review` is called from a code-generation finish gate, return the
+report to the caller. The caller owns `sdcorejs-repair-loop`, acceptance
+verification, branch-ready, auto-docs, task tracker, and memories.
+
+When `sdcorejs-review` is invoked directly by the user:
+
+1. Stay read-only; do not apply fixes from this skill.
+2. If the review produced findings, warnings, or probe results, run
+   `../_refs/orchestration/tail/auto-docs.md` as a review-session summary under the
+   detected track folder. Use status `reviewed`, not `done`.
+3. Run `../_refs/orchestration/tail/auto-task-tracker.md` immediately after
+   auto-docs so Critical/Important findings become visible follow-up tasks.
+4. If durable review knowledge surfaced, such as a recurring project convention
+   or stakeholder rule, run `sdcorejs-explore (memories mode)`.
+5. Offer `sdcorejs-repair-loop` as the next action for Critical findings and for
+   Important findings the user wants fixed now.
+
+If the direct review found no issues and wrote no summary-worthy evidence, skip
+auto-docs and state the residual test/probe gaps.
+
 ## Output format (all tracks and dimensions)
 
 Match the user's language at runtime. Cite `file:line` for every finding. Add OWASP for security, WCAG for accessibility, breached budget for performance, and violated boundary/principle for architecture. `Tradeoff` is the cost/risk of the fix (`none` when strictly better).
@@ -123,6 +145,7 @@ For a full module/branch audit or "scored review / enterprise readiness" on an *
 - Run the ref's probes / build / test and include exit codes.
 - Sort by severity; group repeated violations; always include the Strengths table.
 - Match the user's language; distinguish a real bug from a style preference.
+- For direct reviews with findings or probe evidence, run the Post-review tail so review sessions are recoverable.
 
 ### MUST NOT
 - Edit files.
@@ -143,3 +166,5 @@ For a full module/branch audit or "scored review / enterprise readiness" on an *
 - Shared baselines: `../_refs/shared/review-{architecture,security,performance,accessibility}.md`
 - Repair loop: `sdcorejs-repair-loop`
 - Verification: `sdcorejs-ship (verify-before-done mode)`
+- `../_refs/orchestration/tail/auto-docs.md` - direct review-session summaries
+- `../_refs/orchestration/tail/auto-task-tracker.md` - living follow-up tasks from review findings

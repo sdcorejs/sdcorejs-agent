@@ -36,22 +36,22 @@ Single source of truth. Every consumer uses placeholders, substituted at generat
 | File | How it references the package | Update on bump? |
 |---|---|---|
 | `_refs/angular/core-version.md` | THIS file — `packageName` + `currentVersion` fields | ✅ Yes — the single edit |
-| `tracks/angular/10-init-portal.md` | Uses `<CORE_UI_PACKAGE_NAME>` + `<CORE_VERSION>` in `package.json` template, tree diagram, checklist, verification, commit example. Agent reads this file and substitutes at generation time. | ❌ No edit needed — placeholders resolve dynamically |
+| `_refs/angular/write-code/init-portal.md` | Uses `<CORE_UI_PACKAGE_NAME>` + `<CORE_VERSION>` in `package.json` template, tree diagram, checklist, verification, commit example. Agent reads this file and substitutes at generation time. | ❌ No edit needed — placeholders resolve dynamically |
 | `_refs/angular/core-docs-fetch.mjs` | Per-component Core UI docs are NOT committed — pulled on-demand from the published site, version-matched to the target's installed package, cached. Separate concern from the npm pin. | ❌ Nothing to update — docs are fetched fresh at generation time (see "Catalog docs are fetched on-demand" below) |
 
 `shared/workflow/ship.md` dependency-update mode and `shared/workflow/explore.md` env-setup mode reference this file by PATH only — no literal version/name, no update.
 
 ## How the placeholders work
 
-In `10-init-portal.md`, every `<CORE_UI_PACKAGE_NAME>` and `<CORE_VERSION>` is a token the agent must replace BEFORE writing output:
+In `_refs/angular/write-code/init-portal.md`, every `<CORE_UI_PACKAGE_NAME>` and `<CORE_VERSION>` is a token the agent must replace BEFORE writing output:
 
 1. Agent reads `packageName` + `currentVersion` from this file
 2. Agent generates the target project's files, substituting the tokens with those values
-3. The skill file `10-init-portal.md` itself is NOT mutated — the placeholders stay for the next generation
+3. The reference file `_refs/angular/write-code/init-portal.md` itself is NOT mutated — the placeholders stay for the next generation
 
 > **Import statements** in TypeScript examples inside skill templates / catalog docs show the new default package (`from '@sdcorejs/angular/...'`). When generating into a LEGACY project that uses `@sd-angular/core`, the agent rewrites the prefix during generation to match the project's installed package. Treat literal imports inside examples as "new-project default for reading", not as a hard source of truth.
 
-This is documented in the "Source of truth — Core UI package" section at the top of `10-init-portal.md`.
+This is documented in the "Source of truth — Core UI package" section at the top of `_refs/angular/write-code/init-portal.md`.
 
 ## Catalog docs are fetched on-demand (not committed)
 
@@ -77,7 +77,7 @@ which Angular major `init-portal` installs) is a **separate concern** from the d
 Init skill must use placeholders, not a hardcoded package/version. This grep flags a regression:
 
 ```bash
-grep -nE "@sd(corejs/angular|-angular/core)@[0-9]" skills/tracks/angular/10-init-portal.md
+grep -nE "@sd(corejs/angular|-angular/core)@[0-9]" _refs/angular/write-code/init-portal.md
 # Should match 0 lines. Any match is a regression — replace with <CORE_UI_PACKAGE_NAME>@<CORE_VERSION>.
 ```
 

@@ -1,6 +1,6 @@
 ---
-updated_at: 2026-06-18T16:11:02+07:00
-status: complete
+updated_at: 2026-06-18T16:39:05+07:00
+status: in_progress
 track: generic
 active_skill: skill-creator
 branch: feat/angular-utility-first-styling
@@ -9,37 +9,43 @@ branch: feat/angular-utility-first-styling
 # Current Session Checkpoint
 
 ## User Request
-Fold TDD into `sdcorejs-test` so RED-first remains enforced without a standalone manual-trigger skill.
+Commit cac sua doi audit skill va soan prompt render luong bo skill.
 
 ## Tasks
-- [x] Inspect `sdcorejs-tdd` and references
-- [x] Move RED-first discipline into non-dispatchable reference
-- [x] Make `sdcorejs-test` own `tdd mode`
-- [x] Remove standalone TDD skill and update docs/counts
-- [x] Sync mirrors and validate
-- [x] Prepare final response with outcome and verification
+- [x] Pre-flight commit safety checks
+- [x] Stage dung cac file thay doi cua lan sua nay
+- [ ] Tao commit Conventional Commit
+- [ ] Verify commit va trang thai working tree
+- [ ] Soan prompt render luong skill cho ChatGPT
 
 ## Current State
-- Last completed: Sync and validation passed after folding TDD into `sdcorejs-test`.
-- In progress: none
-- Blocked/skipped: none
+- Last completed: Staged 48 modified paths explicitly.
+- In progress: Creating Conventional Commit.
+- Blocked/skipped: none.
 
 ## Artifacts Touched
-- MOVE skills/shared/practices/tdd.md -> _refs/shared/tdd.md - non-dispatchable RED-first reference
-- EDIT skills/tracks/test/sdcorejs-test.md - TDD mode added
-- EDIT track orchestrators/docs/site/tests - references moved to sdcorejs-test tdd mode and counts set to 24
-- SYNC .claude/ / plugin/ / codex/ / .cursor - mirrors regenerated and stale TDD skill removed
+- EDIT .sdcorejs/tasks/current-session.md - checkpoint for this fix session
+- EDIT _refs/angular/core-version.md - remove stale 10-init-portal reference
+- EDIT skills/infra/dockerize.md - correct frontend-nginx.conf deploy-root layout
+- EDIT skills/orchestration/solution-builder.md - fix resume step number
+- EDIT skills/tracks/test/sdcorejs-test.md - add direct invocation tail
+- EDIT skills/shared/workflow/review.md - add direct review tail
+- EDIT skills/shared/workflow/debug.md - remove forced commit wording
+- EDIT _refs/angular/write-code/admin-screens.md - add contents map
+- EDIT _refs/nestjs/write-code/*.md - add contents maps to long refs
+- EDIT test/e2e/skill-pack-runner.test.mjs - add workflow invariant tests
+- EDIT .claude/check-core-version-placeholder.sh - update Angular core placeholder paths
+- EDIT lefthook.yml - refresh hook comments after Angular ref rename
+- SYNC .claude/, plugin/, codex/, .cursor/ - regenerate mirrors via npm run sync:skills
 
 ## Verification
-- npm run clean:skills - pass; removed 3 stale mirror entries
-- npm run sync:skills - pass; mirrored 24 skills
-- npm run check:skills - pass
-- npm run check:skills:ps - pass
-- npm run test:e2e - pass 9/9
-- npm run build (site) - pass
-- git diff --check - no whitespace errors; Windows line-ending warnings only
-- stale-name/count scan - clean for current source/mirrors
-- mojibake scan - clean
+- PASS npm run sync:skills
+- PASS npm run check:skills
+- PASS npm run test:e2e (11/11)
+- PASS npm run check:skills:ps
+- PASS git diff --check
+- PASS stale-reference scan for 10-init-portal, _refs/angular-portal, stale Step 8 text, and misplaced frontend-nginx.conf layout; only expected test assertion remains.
+- PASS equivalent Angular placeholder regex checks for version literals and old package imports.
 
 ## Resume From Here
-No active work remains for this request.
+Create Conventional Commit, verify it landed, then provide prompt.

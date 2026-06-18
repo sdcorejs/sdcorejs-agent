@@ -120,6 +120,32 @@ For `tdd` mode, also read `../_refs/shared/tdd.md` and follow its RED-GREEN-REFA
 
 If failures reveal a real product bug, route to `sdcorejs-debug`. Do not skip or weaken tests to get green output.
 
+## Direct invocation tail
+
+Use this section only when `sdcorejs-test` was invoked directly or as the executor
+for a test-only approved plan. When a code-generation orchestrator called this
+skill from its finish gate, return the test report to that orchestrator; the
+caller owns the rest of the tail chain.
+
+After direct test work:
+
+1. If this skill wrote or edited test files, fixtures, page objects, UAT cases, or
+   reports, run the verification commands from Step 2 and capture the real output.
+2. Run `sdcorejs-ship (verify-before-done mode)` when a spec, product ledger, or
+   approved test plan contains acceptance criteria. If no criteria exist, report
+   that acceptance verification was skipped and list the test commands that did
+   run.
+3. Run `../_refs/orchestration/tail/auto-docs.md` with `TRACK=test` so the session
+   summary lands in `<target>/.sdcorejs/docs/test/`.
+4. Run `../_refs/orchestration/tail/auto-task-tracker.md` immediately after
+   auto-docs to tick completed test tasks and add follow-ups from the test report.
+5. Run `sdcorejs-explore (memories mode)` only when durable testing knowledge
+   surfaced, such as a recurring fixture convention, runner limitation, or
+   stakeholder testing preference.
+
+If this skill only answered a read-only testing question and wrote no artifacts,
+skip auto-docs and task tracker; update the visible task/checkpoint state only.
+
 ## TDD mode
 
 Use this mode inside write-code tasks and when the user asks for test-first work.
@@ -171,6 +197,7 @@ Mode B - inspector export / selector inventory:
 - Link e2e/UAT tests to product user story and acceptance criterion IDs when product docs exist.
 - Keep test data deterministic.
 - In `tdd` mode, verify RED before writing production code and verify GREEN after implementation.
+- For direct write/edit test work, run the Direct invocation tail so auto-docs and the living task tracker stay current.
 
 ### Must not
 - Mark failing tests `.skip` / `xit` to force green CI.
@@ -186,6 +213,8 @@ Mode B - inspector export / selector inventory:
 - `sdcorejs-brainstorming` - confirms test intent when cases are unclear
 - `sdcorejs-product` - source of product user stories, acceptance criteria, and UAT checklist
 - `sdcorejs-design` - source of screen flows and visual states for e2e/UAT coverage
+- `../_refs/orchestration/tail/auto-docs.md` - direct test session summaries under `.sdcorejs/docs/test/`
+- `../_refs/orchestration/tail/auto-task-tracker.md` - living test TODO updates after auto-docs
 - `../_refs/shared/tdd.md` - failing-test-first discipline inside write-code tasks
 - `../_refs/shared/testing-philosophy.md`
 - `../_refs/<track>/test-<level>.md`

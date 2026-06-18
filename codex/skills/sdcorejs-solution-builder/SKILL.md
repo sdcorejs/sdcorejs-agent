@@ -148,7 +148,7 @@ The chain is long, so it is built to survive interruption.
 
 - If a session is interrupted mid-chain, resume with `sdcorejs-explore (recovery mode)` plus the target project's `.sdcorejs/` docs, `product/` docs, and `design/` handoff (the persisted persona, specs, plans, session summaries, PRDs, user stories, UAT checklists, design specs/wireframes, user guide, and task tracker) - together they reconstruct where the build stopped and what's left.
 - The **two approval gates** (GATE 1 spec, GATE 2 plan) are natural pause points - a build commonly stops there waiting on the user and resumes cleanly once they answer.
-- If interruption happens after packaging but before stack verification, treat the package as unverified until the stack smoke in Step 8 runs in the resumed session.
+- If interruption happens after packaging but before stack verification, treat the package as unverified until the stack smoke in Step 10 runs in the resumed session.
 
 ## Tech users
 

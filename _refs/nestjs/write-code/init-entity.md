@@ -6,6 +6,17 @@
 
 # Init Entity — Full CRUD Stack for One Entity (`@sdcorejs/nestjs`)
 
+## Contents
+
+- Purpose / when to use
+- Critical write-target rule
+- Persona Step 0
+- Profile (read FIRST)
+- Entity, repository, DTO, service, controller, and schema generation
+- Module wiring and permission codes
+- Testing and verification
+- Handoff to frontend/actions/test tracks
+
 ## Purpose / when to use
 
 Generate the **complete CRUD stack for one entity** inside a module that already exists (scaffolded by [`init-module`](./init-module.md)): the TypeORM **entity**, its **repository** (Symbol I-token + concrete class), its **DTO** (in the `@shared` kernel), its **service** (permission-gated `mapDTO`), its **Zod schemas** (create + update), its **controller** (`@HasPermission` + `ZodValidationGuard`), and the **module wiring** that registers all four building blocks. Search / paging / detail / delete routes are **inherited** from `BaseController`; `all`, soft-delete, restore, and paging-deleted remain service methods and need explicit subclass routes when exposed.

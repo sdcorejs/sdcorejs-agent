@@ -76,7 +76,7 @@ When you have a fix in mind, ask: "If I revert this fix in 6 months, will the sa
 - Run the repro → bug gone
 - Run the test suite — make sure you didn't break adjacent code
 - Add a regression test for the bug if one doesn't exist
-- Commit with `fix(scope):` + body explaining the root cause (use the `sdcorejs-git (commit mode)` skill)
+- When the user wants the fix saved, hand off to `sdcorejs-git (commit mode)` with a suggested `fix(scope):` message and a body explaining the root cause.
 
 ## Stack-specific guides
 
@@ -107,7 +107,7 @@ When you have a fix in mind, ask: "If I revert this fix in 6 months, will the sa
 - Form falsifiable hypotheses
 - Find the root cause, not the symptom
 - Add a regression test if one doesn't exist
-- Commit with `fix(scope):` + body explaining the cause
+- Hand off to `sdcorejs-git (commit mode)` for a commit only after verification passes and the user wants the change saved.
 
 ### MUST NOT
 - Add `try/catch` to silence an error you don't understand

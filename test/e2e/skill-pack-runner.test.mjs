@@ -17,6 +17,58 @@ test('phase 1: deterministic runner loads source skills, mirrors, and refs witho
   assert.equal(pack.diagnostics.length, 0);
 });
 
+test('phase 1: mandatory workflow invariants are encoded in source skills and refs', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
+
+  for (const name of ['sdcorejs-angular', 'sdcorejs-nestjs', 'sdcorejs-nextjs']) {
+    const text = sourceByName.get(name);
+    assert.ok(text, `${name} exists`);
+    assert.match(text, /_refs\/shared\/finish-gate\.md/, `${name} presents the finish gate`);
+    assert.match(text, /sdcorejs-ship \(verify-before-done mode\)/, `${name} runs acceptance verification`);
+    assert.match(text, /sdcorejs-ship \(branch-ready mode\)/, `${name} runs branch-ready`);
+    assert.match(text, /_refs\/orchestration\/tail\/auto-docs\.md/, `${name} writes auto-docs`);
+    assert.match(text, /_refs\/orchestration\/tail\/auto-task-tracker\.md/, `${name} updates task tracker`);
+    assert.match(text, /memories mode/, `${name} hands off durable memories when needed`);
+  }
+
+  const testSkill = sourceByName.get('sdcorejs-test');
+  assert.match(testSkill, /## Direct invocation tail/);
+  assert.match(testSkill, /TRACK=test/);
+  assert.match(testSkill, /_refs\/orchestration\/tail\/auto-docs\.md/);
+  assert.match(testSkill, /_refs\/orchestration\/tail\/auto-task-tracker\.md/);
+
+  const reviewSkill = sourceByName.get('sdcorejs-review');
+  assert.match(reviewSkill, /## Post-review tail/);
+  assert.match(reviewSkill, /status `reviewed`/);
+  assert.match(reviewSkill, /_refs\/orchestration\/tail\/auto-docs\.md/);
+  assert.match(reviewSkill, /_refs\/orchestration\/tail\/auto-task-tracker\.md/);
+
+  const coreVersion = await readFile(new URL('../../_refs/angular/core-version.md', import.meta.url), 'utf8');
+  assert.doesNotMatch(coreVersion, /10-init-portal/);
+  assert.match(coreVersion, /_refs\/angular\/write-code\/init-portal\.md/);
+
+  const dockerize = await readFile(new URL('../../skills/infra/dockerize.md', import.meta.url), 'utf8');
+  assert.match(dockerize, /frontend\/[^\n]*\r?\n\s+frontend-nginx\.conf/);
+  assert.doesNotMatch(dockerize, /test\/\?[^\n]*\r?\n\s+frontend-nginx\.conf/);
+});
+
+test('phase 1: long references expose a top-of-file contents map', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+
+  for (const file of pack.referenceDocs) {
+    const text = await readFile(file, 'utf8');
+    const lineCount = text.split(/\r?\n/).length;
+    if (lineCount < 500) continue;
+
+    assert.match(
+      text.slice(0, 2000),
+      /contents|table of contents/i,
+      `${file} has ${lineCount} lines and needs a top-of-file contents map`
+    );
+  }
+});
+
 test('phase 1: deterministic prompt eval dispatches expected skills', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
   const promptEvals = await loadPromptEvals();

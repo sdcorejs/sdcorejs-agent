@@ -7,7 +7,7 @@
 # - Both mirrors (.claude/skills/ for project-local + plugin/skills/ for the
 #   Claude Code plugin distribution) stay in sync with skills/<track>/*.md
 # - any commit that edits skills/<track>/*.md regenerates both mirrors and stages them
-# - no hardcoded Core UI package/version in 10-init-portal.md (must use <CORE_UI_PACKAGE_NAME>/<CORE_VERSION> placeholders)
+# - no hardcoded Core UI package/version in Angular init refs (must use <CORE_UI_PACKAGE_NAME>/<CORE_VERSION> placeholders)
 # - every .md under skills/ (except _refs/, shared/templates/, shared/specs/) has YAML frontmatter
 #
 # If lefthook is missing, fall back to the manual command in .claude/README.md.
@@ -31,9 +31,8 @@ pre-commit:
     no-hardcoded-core-version:
       # Single source of truth for Core UI package name + version is
       # _refs/angular/core-version.md. Inside the three init reference
-      # packs (init-portal, init-module, init-entity — formerly the 10/11/12
-      # sub-skills, now consolidated into sdcorejs-angular), every
-      # reference must use placeholders <CORE_VERSION> + <CORE_UI_PACKAGE_NAME>
+      # packs (init-portal, init-module, init-entity), every reference must use
+      # placeholders <CORE_VERSION> + <CORE_UI_PACKAGE_NAME>
       # (substituted by the agent at generation time). A literal version or
       # Core UI package name in imports means drift.
       glob:

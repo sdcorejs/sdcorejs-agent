@@ -43,10 +43,9 @@ Turn an SDCoreJS frontend + backend into a single `docker compose up`. This skil
   product/?                   # optional solution-builder PO docs
   design/?                    # optional solution-builder FE handoff artifacts
   backend/                    # NestJS build context (separate repo, placed here)
-    frontend-nginx.conf?      # NOTE: nginx conf goes into frontend/, see Step 2
   frontend/                   # Angular build context (separate repo, placed here)
+    frontend-nginx.conf       # copied here because frontend.Dockerfile COPYs it from this context
   test/?                      # optional solution-builder cross-stack tests/reports
-    frontend-nginx.conf       # ← copied here (frontend.Dockerfile COPYs it from its context)
   infra/
     backend.Dockerfile
     frontend.Dockerfile
