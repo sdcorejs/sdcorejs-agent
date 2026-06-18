@@ -41,7 +41,7 @@ in a stakeholder presentation.
 12. **Codex setup** - AGENTS.md-compatible usage and smoke prompts.
 13. **Skill pack tests** - local verification commands.
 14. **Angular Portal usage** - Core UI, code-map, autoId, permissions, tests, docs.
-15. **Prompt template** - how to send images, PRD, API docs, and conflicts.
+15. **Short prompt examples** - simple real prompts plus the rule that the agent auto-loads context and asks when context is missing or contradictory.
 16. **Safety behavior** - agent asks when context is missing or contradictory.
 17. **Demo script** - a short presenter flow.
 18. **Closing** - context -> spec -> plan -> execute -> verify -> remember.

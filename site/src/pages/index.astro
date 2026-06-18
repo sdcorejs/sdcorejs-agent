@@ -64,21 +64,19 @@ const localChecks = [
   ["Manual smoke", "Mở deck, bấm Next/Back, kiểm tra chữ không tràn."],
 ];
 
-const promptLines = [
-  "Tôi muốn thêm màn hình Quản lý hợp đồng cho Angular Portal dùng @sdcorejs/angular Core UI.",
-  "",
-  "Context tôi gửi kèm:",
-  "- Ảnh wireframe list/detail/create/update và flow approve/reject.",
-  "- PRD nghiệp vụ hợp đồng, actor, rule, acceptance criteria.",
-  "- API docs: GET/POST/PATCH /contracts, enum status, error shape, permission.",
-  "- Module hiện có: src/app/features/contracts, route, shared service, autoId convention.",
-  "",
-  "Yêu cầu:",
-  "1. Dùng sdcorejs-explore để đọc context và chỉ ra chỗ thiếu/mâu thuẫn.",
-  "2. Nếu đủ context, viết spec để tôi duyệt.",
-  "3. Sau khi tôi approve spec, viết plan file-by-file.",
-  "4. Chỉ sinh code sau khi tôi approve plan và chọn sequential/parallel.",
-  "5. Sau code phải chạy finish gate: test, review, repair, verify, docs, tasks, memories.",
+const promptExamples = [
+  ["Fix nhỏ", "Loại bỏ uuid, dùng generateUuid"],
+  ["Module mới", "Add document-ai module"],
+  [
+    "Angular Portal + attachments",
+    "Implement màn hình danh sách nội dung đợt thanh toán dựa vào design và PRD, API docs như sau, gắn quyền đầy đủ nhưng comment lại vì chưa khai báo vào file phân quyền",
+  ],
+];
+
+const promptPrinciples = [
+  ["Người dùng", "Chỉ cần nói intent ngắn gọn và đính kèm ảnh, PRD, API docs, file hoặc log khi có."],
+  ["Agent", "Tự trigger sdcorejs-explore / project-context preflight để nạp IDE context, repo context, docs, memories và task tracker."],
+  ["Safety", "Nếu context thiếu hoặc mâu thuẫn, agent phải hỏi lại trước khi spec/plan/code."],
 ];
 
 const conflictExamples = [
@@ -163,10 +161,11 @@ const conflictExamples = [
       <section class="deck-slide" data-section-name="Input context">
         <div class="slide-copy">
           <p class="kicker">Cách dùng đúng</p>
-          <h2>Prompt tốt là một gói context, không phải một câu lệnh</h2>
+          <h2>Prompt có thể ngắn, context đến từ IDE và attachment</h2>
           <p>
-            Người dùng có thể chèn ảnh, PRD, API docs, log, issue, diff, hoặc
-            file liên quan. Agent phải đọc, đối chiếu, rồi hỏi lại khi thiếu
+            Người dùng nói mục tiêu chính và đính kèm ảnh, PRD, API docs, log,
+            issue, diff hoặc file liên quan. Khi request match skill,
+            `sdcorejs-explore` tự nạp context cần thiết rồi hỏi lại nếu thiếu
             hoặc có mâu thuẫn.
           </p>
         </div>
@@ -391,9 +390,31 @@ const conflictExamples = [
       <section class="deck-slide" data-section-name="Prompt mẫu">
         <div class="slide-copy">
           <p class="kicker">Prompt mẫu</p>
-          <h2>Prompt nên đóng gói đủ context và yêu cầu hỏi lại</h2>
+          <h2>Prompt nên đơn giản như cách mình làm thật</h2>
+          <p>
+            Không cần nhắc agent chạy explore/spec/plan trong mỗi prompt.
+            Skill dispatcher và `sdcorejs-explore` phải tự làm phần nạp context
+            khi bắt đầu thực thi.
+          </p>
         </div>
-        <pre class="prompt-block"><code>{promptLines.join("\n")}</code></pre>
+        <div class="prompt-layout">
+          <div class="prompt-examples">
+            {promptExamples.map(([label, text]) => (
+              <article>
+                <span>{label}</span>
+                <b>{text}</b>
+              </article>
+            ))}
+          </div>
+          <div class="prompt-principles">
+            {promptPrinciples.map(([label, text]) => (
+              <article>
+                <span>{label}</span>
+                <p>{text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
       </section>
 
       <section class="deck-slide" data-section-name="Khi thiếu context">
@@ -420,7 +441,7 @@ const conflictExamples = [
           <article><span>1</span><b>Show problem</b><p>Vì sao prompt-only không đủ.</p></article>
           <article><span>2</span><b>Show SDLC flow</b><p>Explore, spec, plan, dispatch, finish.</p></article>
           <article><span>3</span><b>Show install/test</b><p>Claude, Codex, local invariant checks.</p></article>
-          <article><span>4</span><b>Show Angular prompt</b><p>Ảnh + PRD + API docs + code context.</p></article>
+          <article><span>4</span><b>Show Angular prompt</b><p>Prompt ngắn + ảnh/PRD/API docs đính kèm.</p></article>
           <article><span>5</span><b>Show safety</b><p>Agent hỏi lại khi context thiếu hoặc mâu thuẫn.</p></article>
         </div>
       </section>
@@ -780,8 +801,7 @@ const conflictExamples = [
 
   article,
   .gate-card,
-  .closing-band,
-  .prompt-block {
+  .closing-band {
     border: 1px solid var(--deck-line);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.95);
@@ -984,13 +1004,48 @@ const conflictExamples = [
     font-size: clamp(0.78rem, 1vw, 0.92rem);
   }
 
-  .prompt-block {
-    margin: 0;
-    padding: clamp(18px, 2.2vw, 26px);
-    font-size: clamp(0.68rem, 0.9vw, 0.88rem);
-    line-height: 1.44;
-    max-inline-size: 1120px;
+  .prompt-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+    gap: clamp(14px, 2vw, 22px);
+    align-items: start;
+  }
+
+  .prompt-examples,
+  .prompt-principles {
+    display: grid;
+    gap: 14px;
+  }
+
+  .prompt-examples article {
+    min-block-size: 108px;
     background: #0b1d35;
+    border-color: #24456e;
+  }
+
+  .prompt-examples article span,
+  .prompt-principles article span {
+    margin: 0 0 8px;
+    color: var(--deck-orange);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .prompt-examples article b {
+    color: #f3f7ff;
+    font-size: clamp(0.92rem, 1.08vw, 1.12rem);
+    line-height: 1.42;
+  }
+
+  .prompt-principles article {
+    min-block-size: 108px;
+    background: #f8fbff;
+  }
+
+  .prompt-principles article p {
+    margin: 0;
   }
 
   .closing-band {
@@ -1078,7 +1133,8 @@ const conflictExamples = [
     .cover,
     .closing,
     .split,
-    .split.reverse {
+    .split.reverse,
+    .prompt-layout {
       grid-template-columns: 1fr;
     }
 
@@ -1132,6 +1188,7 @@ const conflictExamples = [
     .check-grid,
     .conflict-grid,
     .demo-steps,
+    .prompt-layout,
     .mode-grid {
       grid-template-columns: 1fr;
       gap: 8px;
@@ -1148,12 +1205,6 @@ const conflictExamples = [
 
     .command-grid article {
       min-block-size: auto;
-    }
-
-    .prompt-block {
-      font-size: 0.58rem;
-      line-height: 1.35;
-      padding: 12px;
     }
 
     .nav-button {

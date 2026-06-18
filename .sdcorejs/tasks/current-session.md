@@ -1,5 +1,5 @@
 ---
-updated_at: 2026-06-18T17:53:00+07:00
+updated_at: 2026-06-18T18:00:00+07:00
 status: complete
 track: generic
 active_skill: none
@@ -9,17 +9,17 @@ branch: feat/angular-utility-first-styling
 # Current Session Checkpoint
 
 ## User Request
-Dua anh summary workflow vao slide cuoi cua doc site presentation deck.
+Rut gon slide prompt mau: prompt nen ngan, sdcorejs-explore tu trigger de nap context khi thuc thi.
 
 ## Tasks
-- [x] Xac nhan anh nguon va slide summary hien tai
-- [x] Copy anh vao `site/public` va gan vao slide cuoi
-- [x] Verify build, no-scroll/overflow va screenshot slide cuoi
-- [x] Commit/push thay doi len branch hien tai
-- [x] Bao lai ket qua ngan gon
+- [x] Xac nhan yeu cau va vung slide can sua
+- [x] Rut gon prompt mau, lam ro `sdcorejs-explore` tu nap context
+- [x] Verify build/no-scroll/slide prompt
+- [x] Commit/push len branch hien tai
+- [x] Bao lai ket qua
 
 ## Current State
-- Last completed: Added summary image to closing slide and verified build/browser behavior.
+- Last completed: Rewrote prompt slide, verified build/static/browser behavior, and prepared commit/push.
 - In progress: None.
 - Blocked/skipped: None.
 
@@ -44,12 +44,14 @@ Dua anh summary workflow vao slide cuoi cua doc site presentation deck.
 - ADD site/public/skill-flow-summary.png - summary workflow image for final slide
 - EDIT site/src/pages/index.astro - place summary image in closing slide
 - EDIT site/README.md - document summary image asset
+- EDIT site/src/pages/index.astro - simplify prompt examples and clarify auto explore/context loading
+- EDIT site/README.md - update deck section wording for short prompt examples
 
 ## Verification
 - PASS `cd site && npm run build`
-- PASS static deck assertions: 18 slides, summary image asset/source/dist references, closing figure, no stale anchors
+- PASS static prompt assertions: short prompts, auto explore principle, old long workflow prompt removed
 - PASS `git diff --check` (CRLF warnings only; exit 0)
-- PASS Chrome CDP final-slide check: 18/18, image loaded, scrollHeight equals viewport, scrollY 0, no overflow at 1440x900
+- PASS Chrome CDP prompt-slide check: 15/18, no scroll, no overflow, short prompts and sdcorejs-explore text present
 
 ## Resume From Here
-Review the final summary slide at http://127.0.0.1:4322/sdcorejs-agent/.
+Review slide 15 at http://127.0.0.1:4322/sdcorejs-agent/.
