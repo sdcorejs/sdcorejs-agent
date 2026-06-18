@@ -1,6 +1,6 @@
 ---
-updated_at: 2026-06-18T17:31:00+07:00
-status: in_progress
+updated_at: 2026-06-18T17:36:00+07:00
+status: blocked
 track: generic
 active_skill: none
 branch: feat/angular-utility-first-styling
@@ -14,14 +14,14 @@ Commit va push doc site slide deck, tao PR, gui link/title/description.
 ## Tasks
 - [x] Chay pre-flight, build lai doc site, kiem tra diff/secrets
 - [x] Stage dung files va tao commit slide deck
-- [ ] Push branch hien tai len remote
+- [x] Push branch hien tai len remote
 - [ ] Tao hoac cap nhat PR bang gh
-- [ ] Gui link PR, title, description, verification
+- [x] Gui link tao PR, title, description, verification
 
 ## Current State
-- Last completed: Commit `27ec6f5 docs(site): rebuild docs as presentation deck` created; current verification passed.
-- In progress: Push branch and create PR.
-- Blocked/skipped: `gh` is not authenticated, so PR creation may require `gh auth login` after push.
+- Last completed: Commit `63064d4 docs(site): rebuild docs as presentation deck` was pushed to origin.
+- In progress: None.
+- Blocked/skipped: PR creation is blocked because `gh` is not authenticated. Public GitHub API returned no open PR for this branch.
 
 ## Artifacts Touched
 - EDIT .sdcorejs/tasks/current-session.md - checkpoint for doc site rebuild
@@ -47,4 +47,4 @@ Commit va push doc site slide deck, tao PR, gui link/title/description.
 - FAIL gh auth status - not logged in
 
 ## Resume From Here
-Amend checkpoint into latest commit, push; create PR if gh auth becomes available.
+Run `gh auth login`, then create the PR from `feat/angular-utility-first-styling` into `main`.
