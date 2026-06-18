@@ -33,7 +33,22 @@ Before executing this skill:
 - Before merging a feature branch
 - User says "review code", "security review", "performance review", "review a11y", "architecture review", "comprehensive audit", or "scored review"
 
-## Step 0 - Detect the track and dimension
+## Step 0 - Context preflight
+
+Before detecting track/dimension or reading files under review, run
+`sdcorejs-explore (summary mode)` through `../_refs/shared/project-context.md`.
+
+- For an existing target project, read or refresh
+  `<target>/.sdcorejs/summary.md` so review scope, module boundaries, route
+  conventions, stack profile, and prior decisions are available before findings
+  are classified.
+- Keep the review itself read-only toward source code. If summary creation is
+  blocked by tool mode or user policy, continue with targeted reads and report
+  that summary refresh was skipped.
+- Current diffs, failing tests, explicit review scope, and user corrections
+  override stored summary context.
+
+## Step 1 - Detect the track and dimension
 
 **Track** (directory signals):
 | Track | Signals |
@@ -56,7 +71,7 @@ Before executing this skill:
 
 State the detected track and dimension(s) in the report header.
 
-## Step 1 - Load the matching knowledge
+## Step 2 - Load the matching knowledge
 For each selected dimension:
 - **code** -> `../_refs/<track>/review-code.md` (nextjs: `../_refs/nextjs/build-website/review-code.md`)
 - **architecture** -> `../_refs/shared/review-architecture.md`
@@ -68,7 +83,7 @@ For each selected dimension:
 Each ref supplies what to check: checklist, probes, severity criteria, and standards
 mapping. The output format below is owned by this skill.
 
-## Step 2 - Review
+## Step 3 - Review
 1. Read every file under review. Do not skim.
 2. Run the dimension's probes; surface raw counts and exit codes before narrative.
 3. Map each finding to severity using the ref's criteria. Group repeated violations.

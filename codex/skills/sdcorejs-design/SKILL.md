@@ -24,6 +24,20 @@ Create FE handoff artifacts from product intent. The output should let Angular/N
 
 PNG generation is feasible, but a PNG alone is not a reliable source of truth. For exact FE implementation, always pair PNG previews with editable design artifacts and a written handoff spec.
 
+## Step 0 - Context preflight
+
+Before mapping stories to screens, run `sdcorejs-explore (summary mode)` through
+`../_refs/shared/project-context.md`.
+
+- For an existing app/site, ensure `<target>/.sdcorejs/summary.md` exists or is
+  refreshed so the design uses the real route structure, modules, component
+  conventions, permissions, and target stack.
+- For greenfield design before any app scaffold exists, continue from product
+  docs and approved specs/plans, but mark UI component choices as `candidate`
+  until the frontend/backend summary exists.
+- If the summary conflicts with product stories, acceptance criteria, or current
+  user attachments, surface the conflict instead of silently choosing one source.
+
 ## Inputs
 
 Load what exists, in this order:

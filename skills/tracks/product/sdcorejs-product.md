@@ -37,6 +37,20 @@ Use this skill in three modes.
 
 If the request is only app code generation, do not replace the app executor. Run this skill alongside it for traceability.
 
+## Step 0 - Context preflight
+
+Before reading product docs or writing ledgers, run `sdcorejs-explore (summary
+mode)` through `_refs/shared/project-context.md`.
+
+- For an existing target project, ensure `<target>/.sdcorejs/summary.md` exists
+  or is refreshed so product traceability can map requirements to the real
+  modules, routes, APIs, screens, tests, and docs.
+- For an early product-only phase where no app root exists yet, do not invent
+  architecture. Continue from the approved spec/product inputs and mark
+  implementation paths as `unknown` until the first scaffold creates a summary.
+- If stored summary context conflicts with the current approved spec, plan, diff,
+  test output, or user correction, prefer current evidence and record the gap.
+
 ## Inputs
 
 Load what exists, in this order:

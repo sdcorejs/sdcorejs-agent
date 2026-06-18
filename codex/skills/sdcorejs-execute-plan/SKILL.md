@@ -35,6 +35,21 @@ It owns three decisions:
 
 If the plan is missing or unapproved, route back to `sdcorejs-plan`.
 
+## Step 0 - Context preflight
+
+Before loading the plan or dispatching any executor, run `sdcorejs-explore
+(summary mode)` through `../_refs/shared/project-context.md`.
+
+- If the target root already exists and `<target>/.sdcorejs/summary.md` is
+  missing, generate it first so track detection uses the real project map.
+- If the summary exists, read it and refresh on drift before choosing the
+  executor.
+- If the approved plan creates a brand-new target root that does not exist yet,
+  record this exception and require the owning executor to run
+  `sdcorejs-explore (summary mode)` immediately after the first scaffold lands.
+- Treat the approved plan and current evidence as stronger than stored context
+  when they conflict.
+
 ## Process
 
 ### 1. Load the approved plan

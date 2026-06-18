@@ -37,6 +37,22 @@ Own the whole parallel path in one skill:
 
 If the work is unapproved code generation, return to `sdcorejs-plan`.
 
+## Step 0 - Context preflight
+
+Before deciding the parallel verdict or writing subagent briefs, run
+`sdcorejs-explore (summary mode)` through `../_refs/shared/project-context.md`.
+
+- For an existing target project, ensure `<target>/.sdcorejs/summary.md` exists
+  or is refreshed so units are split using the real module map, shared files,
+  route/API boundaries, test layout, product/design artifacts, and current
+  memory/task context.
+- If the plan creates a brand-new solution root, use the frozen approved plan as
+  the contract and require each role executor to run summary mode after its first
+  scaffold lands.
+- Do not fan out until the parent has enough current context to write
+  self-contained briefs. If context is stale or contradictory, demote to
+  sequential or return to `sdcorejs-plan`.
+
 ## Decision
 
 Return one verdict before dispatching:

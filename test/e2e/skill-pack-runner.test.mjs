@@ -44,6 +44,23 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(reviewSkill, /_refs\/orchestration\/tail\/auto-docs\.md/);
   assert.match(reviewSkill, /_refs\/orchestration\/tail\/auto-task-tracker\.md/);
 
+  for (const name of [
+    'sdcorejs-execute-plan',
+    'sdcorejs-angular',
+    'sdcorejs-nestjs',
+    'sdcorejs-nextjs',
+    'sdcorejs-product',
+    'sdcorejs-design',
+    'sdcorejs-test',
+    'sdcorejs-review',
+    'sdcorejs-parallel-dispatch'
+  ]) {
+    const text = sourceByName.get(name);
+    assert.ok(text, `${name} exists`);
+    assert.match(text, /project-context\.md/, `${name} loads project-context before execution`);
+    assert.match(text, /sdcorejs-explore\s+\(summary\s+mode\)/, `${name} runs summary-mode context preflight`);
+  }
+
   const coreVersion = await readFile(new URL('../../_refs/angular/core-version.md', import.meta.url), 'utf8');
   assert.doesNotMatch(coreVersion, /10-init-portal/);
   assert.match(coreVersion, /_refs\/angular\/write-code\/init-portal\.md/);

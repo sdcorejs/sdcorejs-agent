@@ -65,7 +65,22 @@ Read `product/user-stories/`, `product/acceptance-criteria/`, and matching `desi
 - A track write-code orchestrator reaches a TDD gate before writing production code.
 - The user pastes an `sd-autoid-inspector` JSON/POM export.
 
-## Step 0 - Detect mode, target stack, and level
+## Step 0 - Context preflight
+
+Before detecting mode/stack/level or writing tests, run `sdcorejs-explore
+(summary mode)` through `_refs/shared/project-context.md`.
+
+- For an existing target project, ensure `<target>/.sdcorejs/summary.md` exists
+  or is refreshed so tests use the real stack, runner, routes, modules, fixtures,
+  page objects, auth shape, and product/design artifacts.
+- For a test-only plan in a not-yet-scaffolded solution root, read the approved
+  spec/plan plus `product/` and `design/` artifacts, then mark runner commands
+  as pending until the relevant backend/frontend scaffold exists.
+- In `tdd` mode called by a write-code orchestrator, use the caller's already
+  loaded summary when it is current; refresh only when paths or stack signals
+  have drifted.
+
+## Step 1 - Detect mode, target stack, and level
 
 Mode signals:
 
@@ -91,7 +106,7 @@ Level signals:
 
 State the detected mode, stack, and level in the report header.
 
-## Step 1 - Load knowledge
+## Step 2 - Load knowledge
 Always read `_refs/shared/testing-philosophy.md`.
 
 Then read the matching stack+level ref:
@@ -104,7 +119,7 @@ For Robot Framework, also read `_refs/angular/e2e-robot-conventions.md`.
 
 For `tdd` mode, also read `_refs/shared/tdd.md` and follow its RED-GREEN-REFACTOR loop exactly. The Iron Law from that reference is absolute: no production code for the selected chunk before a failing test has been written and verified RED for the right reason.
 
-## Step 2 - Write, run, report
+## Step 3 - Write, run, report
 
 1. Read the feature/files under test.
 2. If product docs exist, read the relevant PRD, user stories, acceptance criteria, and UAT checklist.
@@ -126,7 +141,7 @@ caller owns the rest of the tail chain.
 After direct test work:
 
 1. If this skill wrote or edited test files, fixtures, page objects, UAT cases, or
-   reports, run the verification commands from Step 2 and capture the real output.
+   reports, run the verification commands from Step 3 and capture the real output.
 2. Run `sdcorejs-ship (verify-before-done mode)` when a spec, product ledger, or
    approved test plan contains acceptance criteria. If no criteria exist, report
    that acceptance verification was skipped and list the test commands that did
