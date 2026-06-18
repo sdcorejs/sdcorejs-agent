@@ -1,41 +1,50 @@
 ---
-updated_at: 2026-06-18T17:36:00+07:00
-status: complete
+updated_at: 2026-06-18T17:31:00+07:00
+status: in_progress
 track: generic
-active_skill: sdcorejs-commit
+active_skill: none
 branch: feat/angular-utility-first-styling
 ---
 
 # Current Session Checkpoint
 
 ## User Request
-Commit neu co thay doi, merge code tu main ve branch hien tai, fix conflict va uu tien code branch hien tai khi conflict.
+Commit va push doc site slide deck, tao PR, gui link/title/description.
 
 ## Tasks
-- [x] Xac nhan working tree/branch va commit phan dang co neu co
-- [x] Fetch main moi nhat
-- [x] Merge main vao branch hien tai, uu tien branch hien tai khi conflict
-- [x] Resolve conflict/sync mirrors neu can
-- [x] Verify trang thai sau merge va bao ket qua
+- [x] Chay pre-flight, build lai doc site, kiem tra diff/secrets
+- [x] Stage dung files va tao commit slide deck
+- [ ] Push branch hien tai len remote
+- [ ] Tao hoac cap nhat PR bang gh
+- [ ] Gui link PR, title, description, verification
 
 ## Current State
-- Last completed: Merged origin/main into feat/angular-utility-first-styling with -X ours; no unresolved conflicts remained.
-- In progress: none.
-- Blocked/skipped: No source changes needed a pre-merge commit because the working tree was clean.
+- Last completed: Commit `27ec6f5 docs(site): rebuild docs as presentation deck` created; current verification passed.
+- In progress: Push branch and create PR.
+- Blocked/skipped: `gh` is not authenticated, so PR creation may require `gh auth login` after push.
 
 ## Artifacts Touched
-- EDIT .sdcorejs/tasks/current-session.md - checkpoint for main merge session
-- MERGE origin/main - merge commit 943441a, preferring current branch code on content conflicts with -X ours
+- EDIT .sdcorejs/tasks/current-session.md - checkpoint for doc site rebuild
+- EDIT site/src/pages/index.astro - rebuild doc site home as SDLC flow board
+- EDIT site/src/layouts/Layout.astro - support Vietnamese lang/title metadata
+- EDIT site/src/components/Nav.astro - update navigation to flow anchors
+- EDIT site/src/components/Footer.astro - update footer links for new doc sections
+- EDIT site/src/styles/global.css - tighten card radius and heading spacing
+- ADD site/public/flow-*.svg - five small visual assets for flow sections
+- EDIT site/README.md - update site documentation for the new infographic structure
+- EDIT site/src/pages/index.astro - convert infographic into presentation slide deck
+- EDIT site/src/components/Nav.astro - point navigation to slide anchors
+- EDIT site/src/components/Footer.astro - point footer to slide anchors
+- EDIT site/README.md - document slide deck structure
 
 ## Verification
-- git status --short - clean before checkpoint edit
-- git fetch origin main - PASS
-- git merge origin/main -X ours --no-edit - PASS, merge commit 943441a
-- npm run check:skills - PASS
-- npm run test:e2e - PASS (12/12)
-- npm run check:skills:ps - PASS
-- git diff --check - PASS
-- git status --short - clean before final checkpoint edit
+- PASS npm run check:skills
+- PASS npm run test:e2e (12/12)
+- PASS npm run build (site)
+- PASS git diff --check (CRLF warnings only; exit 0)
+- PASS secret scan over non-doc/site text diff
+- PASS local dev server HTTP 200 at http://127.0.0.1:4322/sdcorejs-agent/
+- FAIL gh auth status - not logged in
 
 ## Resume From Here
-No active merge work remains. Commit this final checkpoint and continue from the merged branch.
+Amend checkpoint into latest commit, push; create PR if gh auth becomes available.

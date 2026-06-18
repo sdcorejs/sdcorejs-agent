@@ -8,11 +8,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   </a>
 
   <nav class="links" aria-label="Section navigation">
-    <a href={`${base}/#tracks`}>Tracks</a>
-    <a href={`${base}/#skills`}>Skills</a>
+    <a href={`${base}/#slide-3`}>Luồng 5 nhịp</a>
+    <a href={`${base}/#slide-5`}>Dispatch</a>
+    <a href={`${base}/#slide-6`}>Finish chain</a>
+    <a href={`${base}/#slide-7`}>Memory</a>
     <a href={`${base}/angular`}>Angular Portal</a>
-    <a href={`${base}/#quality`}>E2E</a>
-    <a href={`${base}/#install`}>Install</a>
     <a
       class="github"
       href="https://github.com/sdcorejs/sdcorejs-agent"
@@ -100,8 +100,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     border-color: var(--c-text);
   }
 
-  @media (max-width: 720px) {
-    .links a:not(.github):not([href$="#skills"]) {
+  @media (max-width: 860px) {
+    .links a:not(.github):not([href$="#slide-3"]) {
       display: none;
     }
   }

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img" aria-labelledby="title">
+  <title id="title">Handoff and memory illustration</title>
+  <rect width="320" height="220" rx="18" fill="#eef4ff"/>
+  <rect x="52" y="50" width="88" height="120" rx="12" fill="#fff" stroke="#b8cdf5" stroke-width="2"/>
+  <path d="M76 82h40M76 106h36M76 130h44" stroke="#0c4a9a" stroke-width="7" stroke-linecap="round"/>
+  <rect x="170" y="42" width="98" height="136" rx="16" fill="#0c4a9a"/>
+  <path d="M192 78h54M192 104h40M192 130h48" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+  <path d="M140 110h30" stroke="#0c4a9a" stroke-width="6" stroke-linecap="round"/>
+  <path d="m164 96 16 14-16 14" fill="none" stroke="#0c4a9a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="254" cy="162" r="18" fill="#fff"/>
+  <path d="m244 162 8 8 16-20" fill="none" stroke="#0c4a9a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
