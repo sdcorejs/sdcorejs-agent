@@ -3,7 +3,7 @@
 > Track-specific knowledge loaded on demand by the `sdcorejs-review` skill
 > when the project architecture is detected as a NestJS backend (`nest-cli.json`
 > + `@nestjs/*` deps). Not a dispatchable skill — has no frontmatter.
-> The **output format** (color-coded tables) is owned by the parent skill; this
+> The **output format** is owned by the parent skill; this
 > file only supplies *what to check*.
 
 ## What this covers
@@ -15,6 +15,150 @@ adherence to the conventions the `sdcorejs-nestjs` packs actually generate
 profile are marked `[enterprise]`.
 
 ## Conventions checked
+
+### 0. Mandatory NestJS / PostgreSQL / TypeORM / Zod checklist
+Run these checks in addition to the SDCoreJS NestJS conventions below. Report results through the parent skill's Angular/NestJS code-review table mode with `STT`, `Severity`, `Nhóm`, `File/Dòng`, `Vấn đề`, `Rủi ro`, `Đề xuất fix`, and `Gate`.
+
+#### Review judgement guardrails
+- Do not review mechanically. Do not flag an issue only because the code does not use a newer pattern/convention when the project has not adopted it.
+- Distinguish real defects from project conventions, intentional technical debt, unfinished migrations, and personal preference.
+- Require concrete evidence for every issue: file, line, code fragment, repeated pattern, failing probe, or clear project convention.
+- If evidence is incomplete, use `INFO` or `RECOMMENDED`; do not inflate severity.
+
+#### NestJS architecture & module boundaries
+- Check modules follow business boundaries and do not concentrate too much logic in one module/service/controller.
+- Controllers should handle HTTP concerns only: request/response, status code, guards, validation pipe, and basic input/output mapping.
+- Keep business logic in services/use cases/domain layer; keep repository/data-access logic out of controllers.
+- Flag circular dependencies and avoid `forwardRef()` unless there is a clear reason or refactor path.
+- Provider scope must be intentional: avoid request-scoped providers unless needed, and avoid injecting heavy services into request scope.
+- Module imports/exports should be explicit; do not export internal providers unnecessarily.
+
+#### Naming & file structure
+- Files should use kebab-case and role suffixes such as `*.controller.ts`, `*.service.ts`, `*.module.ts`, `*.repository.ts`, `*.entity.ts`, `*.schema.ts`, `*.dto.ts`, and `*.spec.ts`.
+- Entity class names should be singular because one entity represents one record/domain object: `UserEntity`, `OrderEntity`, `PaymentTransactionEntity`.
+- Entity filenames should be singular when project convention allows: `user.entity.ts`, `order.entity.ts`, `payment-transaction.entity.ts`.
+- Database table names may be plural or follow project DB convention, for example `@Entity('users')` with `UserEntity`.
+- Do not flag plural naming if the project clearly uses a different convention; use `INFO` or `RECOMMENDED` when naming causes confusion.
+
+#### Controller, route & API contract
+- Check route paths, methods, params, and query names are consistent and do not conflict, such as `/:id` before `/search`.
+- Check HTTP status code semantics: `201` create, `200` query/update, `204` delete without body, `400` validation, `401` unauthenticated, `403` unauthorized, `404` not found, `409` conflict.
+- Response shape should match project convention.
+- Do not expose TypeORM entities directly when they contain sensitive fields or large relations; map to DTO/response models.
+- Pagination/filter/sort contracts should be explicit.
+- Parse and validate query params; do not use raw strings for number/boolean/date semantics.
+
+#### DTO, Zod validation & data boundary
+- Validate request body/query/params with Zod or the project's validation mechanism; TypeScript types/interfaces alone do not validate runtime input.
+- Zod schemas must cover types, required/optional fields, min/max, enum, format, nested object/array constraints, and transforms/coercion when needed.
+- Flag `z.any()`, `z.unknown()`, and broad `.passthrough()` without a reasoned comment or documented contract.
+- Prefer `.strict()` or an explicit unknown-field policy when the API contract requires it.
+- Check `.optional()`, `.nullable()`, and `.nullish()` match business meaning.
+- For `z.coerce.number()`, validate `NaN`, range, and integer constraints when relevant. Date strings need format/timezone validation when important. Boolean query params must parse `"false"` correctly.
+- Prefer `z.infer<typeof schema>` where it avoids duplicate schema/type drift.
+- Validation errors should be clear without leaking sensitive internal details.
+
+#### TypeORM entity design
+- Entity class/file naming should be singular unless project convention says otherwise.
+- Entity nullable/default settings must match migrations and business rules; do not use `nullable: true` for required business fields.
+- Sensitive fields such as password/token/secret must not be returned in responses.
+- Handle `select: false` fields intentionally when needed, such as password hashes.
+- PostgreSQL `numeric`/`decimal` values often return strings; do not assume `number` without conversion policy.
+- Timestamp strategy should be consistent (`createdAt`, `updatedAt`, `deletedAt`, timezone, `timestamptz` when required).
+- Soft delete behavior must be explicit for query/include/restore/delete paths.
+- Relations should avoid unbounded eager loading; flag `eager: true` and broad `cascade: true` without a strong reason.
+- Indexes, unique constraints, and enum columns must match query patterns, business rules, and migrations.
+
+#### TypeORM query & repository usage
+- Raw SQL and QueryBuilder must use parameter binding; never interpolate client input into SQL.
+- List endpoints must have pagination and max limits.
+- Sort/filter fields must be validated or whitelisted before reaching `ORDER BY` or dynamic predicates.
+- Avoid unbounded `find`/`findOne` patterns that can scan large tables or return the wrong row.
+- Check N+1 relation loading; use joins, batching, or optimized queries when needed.
+- Select only required fields and avoid loading large unused relations.
+- Multi-write business operations need transactions. Inside a transaction, use the transactional manager/repository, not the outer repository.
+- Check locks/concurrency/idempotency for balance, inventory, quota, payment, booking, and retry-prone endpoints.
+
+#### PostgreSQL schema, migration & data integrity
+- Every schema change must have a corresponding migration; do not rely on `synchronize: true` in production.
+- Migrations need meaningful `up`/`down`, data-loss awareness, and a backfill strategy for adding non-null columns to populated tables.
+- Use DB constraints for important invariants: unique, foreign key, check, and not null.
+- Do not enforce race-prone uniqueness/business rules only in application code.
+- Check indexes for common filter/join/order columns; avoid unnecessary indexes that slow writes.
+- Partial unique indexes for soft delete must use the correct predicate.
+- Choose data types intentionally: UUID vs serial/bigint, numeric for money, jsonb only when queryable JSON is needed, text/varchar length by business rule.
+- Do not store sensitive data in plain text. Date/timezone handling must avoid off-by-one range bugs.
+
+#### Error handling & exception mapping
+- Do not throw generic errors that expose stack traces or internal details.
+- Map common DB/domain errors to correct HTTP exceptions, for example unique violation `23505` -> `409`, foreign key `23503` -> `400` or `409`, not found -> `404`, validation -> `400`.
+- Do not swallow errors with empty catch blocks.
+- Do not log sensitive details in errors.
+- Error response shape should match project convention. Global exception filters must preserve useful context.
+
+#### Authentication, authorization & security
+- Endpoints that need auth must have guards; never rely only on frontend checks.
+- Authorization must check resource ownership/role/permission; do not trust `userId`/`tenantId` from body/query when it should come from auth context.
+- Admin/internal endpoints must not be exposed without guards.
+- Do not log tokens, passwords, secrets, or PII. Passwords must be hashed with an appropriate algorithm.
+- Secrets/config must come from environment/config service, not hardcoded values.
+- Check CORS, rate limit, helmet/security headers when relevant.
+- Check injection risks: SQL injection, command injection, path traversal, SSRF.
+- File uploads need mime/type/size/extension validation and project-specific scanning policy where required.
+
+#### Configuration & environment
+- Validate config at bootstrap.
+- Avoid scattered `process.env.X` reads when the project has ConfigService/schema.
+- Environment variables need safe defaults or fail-fast behavior.
+- Do not let dev/test config leak into production.
+- DB pool size, timeout, retry, logging level, and feature flag fallback should match environment needs.
+
+#### Logging, observability & audit
+- Logs should include useful context such as requestId/correlationId/userId where appropriate.
+- Do not log sensitive payloads.
+- Avoid `console.log` in production code when the project has a structured logger.
+- Important failures need appropriate severity.
+- Sensitive actions such as permission changes, payment, delete, export data, login/security events need audit logs when the project requires them.
+- Metrics/tracing should follow project standards when present.
+
+#### Performance & scalability
+- List endpoints need pagination and max page size.
+- Avoid unbounded relation/tree loads.
+- Avoid per-item DB/API calls when batching is possible.
+- Check index usage for filters/sorts on large tables.
+- Cache must have TTL/invalidation and correct user/tenant scope.
+- File/export/import flows should stream large data instead of loading everything into memory.
+- External calls need timeout/retry policies.
+
+#### Multi-tenancy / ownership
+- Tenant/user-scoped data queries must filter by `tenantId`, `organizationId`, owner, or equivalent boundary.
+- Do not trust tenant/user IDs from the client when auth context owns them.
+- Check tenant-scoped uniqueness/indexes.
+- Users must not read/update/delete resources from another tenant. Background jobs, exports, and reports must preserve tenant boundaries.
+
+#### Background jobs, scheduler & async processing
+- Jobs should be idempotent when retries are possible.
+- Queues need retry/backoff/dead-letter strategy where supported.
+- Jobs must not swallow errors.
+- Avoid parallel job execution races without locks.
+- Schedulers must avoid duplicate execution across multiple instances unless distributed locking exists.
+- Batch jobs need limits, checkpoints, timeouts, and logging.
+
+#### Tests
+- Unit tests should cover important service business logic.
+- Controller/e2e tests should cover validation/auth/error mapping for important endpoints.
+- Repository/query tests should cover complex queries.
+- Transaction/concurrency/idempotency tests are needed for sensitive business flows.
+- Zod validation tests should cover valid payloads, missing required fields, invalid enum/type/range, and unknown-field behavior when strict mode is used.
+- Do not over-mock so much that tests miss contract errors.
+- DB tests need clear setup/teardown and should not depend on stale state. Important migrations should be verified.
+
+#### Code quality & maintainability
+- Avoid `any` and `as any` without a reasoned comment.
+- Remove dead code, unused providers, and unused DTO/schema files.
+- Service methods should not be overly long or carry multiple responsibilities.
+- Avoid duplicating business rules across layers; centralize in domain/service/schema where appropriate.
+- Comments should explain why, not restate what the code does.
 
 ### 1. Layering — controller → service → repository → entity
 
@@ -205,11 +349,31 @@ grep -rnE "console\.(log|error|warn)" src/ | head
 
 Severity: 🟡 Important — `console.log` in prod hits stdout but lacks request context / structured fields.
 
-## Severity mapping for this track
-- **🔴 Critical** — layer violations, missing `@HasPermission` on writes, untransactional multi-writes, guard order, schema/migration drift, external bilingual-error gaps.
-- **🟡 Important** — Zod-in-feature drift, fat controllers, base-class drift, entity leaks, env/logging gaps.
-- **🔵 Minor** — helper-reuse consistency (`requiredString`, `PartialInput`).
-- **🟢 Strengths (mirror)** — clean layering, correct QueryRunner transactions, DTO mapping worth replicating.
+## Severity and gate mapping for this track
+- **🔴 Critical** + `BLOCKER` — SQL injection, auth bypass, tenant data leak, exposed secrets/PII, data loss, money/data corruption, runtime crash in core flows, missing write authorization, unsafe guard order, or severe schema/migration drift.
+- **🟠 High** + `BLOCKER`/`REQUIRED` — missing transaction for important multi-write operations, race condition in payment/inventory/quota/booking, admin endpoint without guard, serious data-integrity risk, unbounded query on critical endpoint, or unsafe TypeORM cascade/eager behavior with high mutation/load risk.
+- **🟡 Medium** + `REQUIRED`/`RECOMMENDED` — missing request-boundary validation, missing important DB constraint, missing pagination/max limit, sort/filter not whitelisted, unreasoned `z.any()`/`z.unknown()`, entity leak, env/config/logging gap, or maintainability risk with clear evidence.
+- **🟢 Low** + `RECOMMENDED`/`OPTIONAL` — naming/style/format/readability issues, missing `down` in low-risk migration, excess provider exports, helper-reuse consistency (`requiredString`, `PartialInput`), or convention drift without immediate behavioral risk.
+- **🔵 Info / Kudos** + `INFO` — useful note, project-specific convention, or positive implementation detail.
+- **🟢 Pass / Compliant** / **✅ Checked** + `PASS` — reviewed criterion passed.
+- **✨/🌟 Excellent** + `INFO` — notably robust security, transaction, query, validation, or migration design worth mirroring.
+
+## Positive rows to include when applicable
+- Clear module boundaries and thin controllers.
+- Zod validation covers runtime input boundary and edge cases.
+- TypeORM queries use parameter binding and whitelist sort/filter inputs.
+- Multi-write business flows use transactions with the transactional manager.
+- PostgreSQL migrations include safe `up/down`, constraints, indexes, and backfill.
+- Auth/authorization checks include ownership/tenant boundaries.
+- Tests cover happy path, error path, validation, and critical transaction/query behavior.
+
+## Post-review assistance
+- For small fixes, include a concrete patch idea or snippet in the `Đề xuất fix` cell.
+- For medium/large fixes, recommend a spec/plan before editing and include scope, affected files, risks, tests to run, and rollback strategy.
+- For large cross-module/backend changes, do not approve the gate without lint/test/build evidence plus side-effect review for migration, transaction, authorization, and dependency impact.
+- Prefer small, behavior-preserving changes.
+- If context is insufficient, use `INFO` or `RECOMMENDED` and state what must be checked next.
+- Prioritize security, authorization, validation boundary, transaction, data integrity, and DB constraints before style/convention.
 
 ## Scope rules
 - Stop at code review — structural concerns go to `sdcorejs-review` with the `architecture` dimension.

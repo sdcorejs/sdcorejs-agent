@@ -1,46 +1,48 @@
 ---
-updated_at: 2026-06-18T18:42:00+07:00
-status: completed
+updated_at: 2026-06-20T23:48:16+07:00
+status: complete
 track: generic
-active_skill: none
-branch: feat/angular-utility-first-styling
+active_skill: skill-creator, sdcorejs-ship, sdcorejs-git
+branch: chore/review-checklists
 ---
 
 # Current Session Checkpoint
 
 ## User Request
-Sua cac execution skills de explicit trigger sdcorejs-explore/project-context context preflight truoc khi thuc thi.
+Review cac thay doi skill/ref hien tai bang skill-creator, neu OK thi tao dung 1 commit va push theo policy an toan.
 
 ## Tasks
-- [x] Doc task protocol, project-context va checkpoint hien tai
-- [x] Them explicit context preflight vao execution skills con thieu
-- [x] Them invariant test de giu rule nay khong bi regress
-- [x] Sync mirrors va chay verification
-- [x] Commit/push len branch hien tai va bao ket qua
+- [x] Nap skill/rules va trang thai repo hien tai
+- [x] Review diff skill/ref de tim finding chan commit
+- [x] Chay verification va branch hygiene
+- [x] Neu OK, tao dung 1 commit va push theo policy an toan
+- [x] Tom tat ket qua, commit/push hoac blocker
 
 ## Current State
-- Last completed: Committed and pushed the execution context preflight fix.
+- Last completed: Review found no blocking skill findings; verification and hygiene probes passed. Switched from protected `main` to `chore/review-checklists` for a one-commit push.
 - In progress: None.
-- Blocked/skipped: None.
+- Blocked/skipped: None yet.
 
 ## Artifacts Touched
-- EDIT skills/shared/sdlc/04-execute-plan.md - explicit context preflight
-- EDIT skills/tracks/product/sdcorejs-product.md - explicit context preflight
-- EDIT skills/tracks/design/sdcorejs-design.md - explicit context preflight
-- EDIT skills/tracks/test/sdcorejs-test.md - explicit context preflight
-- EDIT skills/shared/workflow/review.md - explicit context preflight
-- EDIT skills/orchestration/parallel-dispatch.md - explicit context preflight
-- EDIT .claude/skills/* - synced generated skill mirrors
-- EDIT codex/skills/* - synced generated skill mirrors
-- EDIT plugin/skills/* - synced generated skill mirrors
-- EDIT test/e2e/skill-pack-runner.test.mjs - invariant coverage for execution context preflight
-- EDIT .sdcorejs/tasks/current-session.md - checkpoint for this execution-skill audit
+- EDIT .sdcorejs/tasks/current-session.md - checkpoint for review/commit/push request
+- EDIT skills/shared/workflow/review.md - Angular/NestJS table-mode review output contract
+- EDIT _refs/angular/review-code.md - Angular checklist additions and severity/gate mapping
+- EDIT _refs/nestjs/review-code.md - NestJS/PostgreSQL/TypeORM/Zod checklist and severity/gate mapping
+- EDIT skills/tracks/angular/sdcorejs-angular.md - Angular finish-tail repair loop uses Gate values
+- EDIT skills/tracks/nestjs/sdcorejs-nestjs.md - NestJS finish-tail repair loop uses Gate values
+- EDIT skills/orchestration/repair-loop.md - blocking finding semantics support Gate values
+- EDIT _refs/orchestration/tail/repair-loop.md - repair-loop reference supports Angular/NestJS table mode
+- EDIT skills/orchestration/parallel-dispatch.md - merge gate supports Angular/NestJS Gate values
+- EDIT .claude/*, codex/skills/*, plugin/* - synced generated mirrors
 
 ## Verification
 - PASS npm run sync:skills
 - PASS npm run check:skills
-- PASS npm run test:e2e
+- PASS npm run test
 - PASS git diff --check
+- PASS Unicode/mojibake probe on changed source refs/skills and checkpoint
+- PASS targeted hygiene probes: no conflict markers, no focused tests or debug statements, no env/key credential files; console-output matches are instructional review text only
+- PASS remote check: local HEAD is 0 commits behind origin/HEAD before branching
 
 ## Resume From Here
-No active work remains for this checkpoint.
+No active work remains in this checkpoint. The final chat response carries the resulting commit hash and push target.

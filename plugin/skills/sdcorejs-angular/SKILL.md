@@ -74,8 +74,8 @@ Keep each purpose one line, concrete to the feature (not "a table component"). P
 Then run the tail in this order, honoring the gate's answers (skip = omit that step; everything not skipped runs):
 
 1. *(if Tests not skipped)* `sdcorejs-test` (sdcorejs-test) — RUN the `.spec.ts` files already written RED-first during the TDD gate and report pass/fail + failing names; add happy-path e2e only when a dev server/browser is available (else report the exact local command). Unit specs are NOT optional unless the user chose `skip` in the gate — if any testable file still lacks one, write it here.
-2. *(if Review not skipped)* `sdcorejs-review` (skills/shared/workflow/review.md; auto-detects Angular → loads `_refs/angular/review-code.md`) — convention check; color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
-3. *(if Review not skipped)* `sdcorejs-repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
+2. *(if Review not skipped)* `sdcorejs-review` (skills/shared/workflow/review.md; auto-detects Angular → loads `_refs/angular/review-code.md`) — convention check; actionable Angular code-review table with severity, group, file/line, risk, fix, and gate
+3. *(if Review not skipped)* `sdcorejs-repair-loop` — apply findings, iterate until `BLOCKER`/`REQUIRED` findings are fixed or explicitly deferred
 4. `sdcorejs-comment-code` — apply the comment level the FINISH GATE captured (skip / simple / medium / full). Do NOT ASK again — the gate already asked. Cross-track baseline + per-track addenda live in `_refs/orchestration/tail/comment-code.md`
 5. `sdcorejs-product` *(when user-visible feature traceability is needed)* - seed/update `.sdcorejs/docs/product/` with requirement, implementation, and test mapping
 6. `sdcorejs-ship (verify-before-done mode)` *(always)* — BLOCK "done" until acceptance criteria from the spec are ✅ verified or ⚠️ explicitly deferred
