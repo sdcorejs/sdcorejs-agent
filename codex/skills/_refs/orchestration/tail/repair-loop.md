@@ -3,7 +3,7 @@
 Reference body for `sdcorejs-repair-loop`. Load this file only after the skill triggers.
 
 ## Purpose
-A review finding without a fix loop is just a complaint. This skill turns a Critical/Important/Minor list into a closed-loop fix→re-verify→fix cycle until the code is shippable.
+A review finding without a fix loop is just a complaint. This skill turns review findings into a closed-loop fix→re-verify→fix cycle until the code is shippable. It supports the default Critical/Important/Minor format and Angular/NestJS code-review table formats with `Gate` values.
 
 ## When invoked
 - After `sdcorejs-review` writes findings (auto-invoked)
@@ -17,7 +17,9 @@ Do NOT invoke for:
 - Refactoring requests (different workflow)
 
 ## Inputs
-- A list of findings, each with: `severity` (Critical / Important / Minor), `file:line`, `what`, `why`, `suggested fix`
+- A list of findings in either supported shape:
+  - Default review format: `severity` (Critical / Important / Minor), `file:line`, `what`, `why`, `suggested fix`
+  - Angular/NestJS code-review table format: `Severity`, `Gate` (`BLOCKER` / `REQUIRED` / `RECOMMENDED` / `OPTIONAL` / `PASS` / `INFO`), `File/Dòng`, `Vấn đề`, `Rủi ro`, `Đề xuất fix`
 - Source can be: chat message, doc file in `.sdcorejs/docs/<track>/`, or stdout from a linter / test runner
 - **source** (required): origin of the findings — determines which re-verify command runs in Step 5
 
@@ -133,12 +135,12 @@ Look for:
 
 ### 6. Iterate
 Loop steps 2–5 until:
-- 0 Critical AND 0 Important remain
-- All remaining are Minor that the user has acknowledged as defer/won't-fix
+- 0 unresolved blocking findings remain. Blocking means `Critical`/`Important` in the default format, or `BLOCKER`/`REQUIRED` in Angular/NestJS code-review table mode. A blocking finding counts as resolved only when it is fixed, verified stale/mis-scoped/redundant, or explicitly deferred by the user.
+- All remaining findings are non-blocking (`Minor`, `RECOMMENDED`, `OPTIONAL`, `INFO`, or `PASS`) that the user has acknowledged as defer/won't-fix when action is still possible.
 - OR: 3 iterations and the loop hasn't converged → ESCALATE to user
 
 ### 7. Convergence escalation
-If after 3 passes there are still Critical/Important findings:
+If after 3 passes there are still blocking findings:
 - One of the "fixes" is introducing a regression that the next pass catches → systematic issue, ask user
 - The finding is mis-categorized (auto-tier when it's actually user-decision) → re-categorize
 - Two findings are mutually exclusive (fix A introduces B) → user must pick
@@ -200,6 +202,7 @@ Pass 1:
   Auto: applied 5 + ran sdcorejs-comment-code → JSDoc added
   Skip: user-decision finding deferred
   Re-review: 0 Critical, 1 Important deferred, 0 Minor
+  Table-mode equivalent: 0 BLOCKER, 1 REQUIRED explicitly deferred, 0 blocking unresolved
 Reported to user:
   "Fixed 17 findings. 1 Important finding remains (split ProductService) - which direction do you want?"
 ```

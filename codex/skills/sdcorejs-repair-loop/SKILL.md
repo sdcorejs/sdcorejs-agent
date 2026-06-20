@@ -27,7 +27,7 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
 3. Verify each finding is genuine before changing code.
 4. Categorize findings into auto-apply, confirm-then-apply, or user-decision tiers.
 5. Apply only the allowed tier for the current pass, then re-run the verification command required by the source.
-6. Iterate until Critical and Important findings are fixed, explicitly deferred, or the reference's convergence cap is reached.
+6. Iterate until blocking findings are fixed, explicitly deferred, or the reference's convergence cap is reached. Blocking means `Critical`/`Important` in the default review format, or `BLOCKER`/`REQUIRED` in Angular/NestJS code-review table mode.
 
 ## Handoff
 - After convergence, hand off to `sdcorejs-ship (verify-before-done mode)` for acceptance verification.

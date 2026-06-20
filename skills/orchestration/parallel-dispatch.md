@@ -139,7 +139,7 @@ Stage A - spec compliance:
 Stage B - code quality:
 
 - Run `sdcorejs-review` scoped to the unit's files when code changed.
-- Feed findings through `sdcorejs-repair-loop` until Critical/Important findings are fixed or explicitly deferred.
+- Feed findings through `sdcorejs-repair-loop` until blocking findings are fixed or explicitly deferred. Blocking means `Critical`/`Important` in the default review format, or `BLOCKER`/`REQUIRED` in Angular/NestJS code-review table mode.
 
 Do not merge a unit until both stages pass.
 
@@ -245,7 +245,7 @@ Keep status localized to the user's language.
 - Let subagents coordinate with each other.
 - Let subagents spawn subagents.
 - Accept success claims without reading evidence.
-- Merge a unit with unresolved Critical/Important review findings.
+- Merge a unit with unresolved blocking review findings (`Critical`/`Important`, or Angular/NestJS `BLOCKER`/`REQUIRED`).
 
 ## Cross-references
 

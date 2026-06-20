@@ -77,8 +77,8 @@ Skip only for pure config (`nest-cli.json`, `tsconfig.json`, `.env.example`) and
 Then hand off in this exact order, honoring the gate's answers (skip = omit that step; everything not skipped runs):
 
 1. *(if Tests not skipped)* `sdcorejs-test` — happy-path tests for what was generated (unit + integration via real DI + pg-mem; e2e via `supertest` against a real test PG where the layer warrants it)
-2. *(if Review not skipped)* `sdcorejs-review` (auto-detects NestJS → loads `_refs/nestjs/review-code.md`) — convention review; color-coded tables (🔴 Critical / 🟡 Important / 🔵 Minor + 🟢 Strengths) with Fix + Tradeoff columns
-3. *(if Review not skipped)* `sdcorejs-repair-loop` — apply findings, iterate until Critical+Important resolved (or user defers)
+2. *(if Review not skipped)* `sdcorejs-review` (auto-detects NestJS → loads `_refs/nestjs/review-code.md`) — NestJS/PostgreSQL/TypeORM/Zod code-review table with severity, group, file/line, risk, fix, and gate
+3. *(if Review not skipped)* `sdcorejs-repair-loop` — apply findings, iterate until `BLOCKER`/`REQUIRED` findings are fixed or explicitly deferred
 4. `sdcorejs-comment-code` — apply the comment level the FINISH GATE captured (skip / simple / medium / full). Do NOT ASK again — the gate already asked. Rules live in `_refs/orchestration/tail/comment-code.md`.
 5. `sdcorejs-product` *(when user-visible feature traceability is needed)* - seed/update `.sdcorejs/docs/product/` with requirement, implementation, and test mapping
 6. `sdcorejs-ship (verify-before-done mode)` *(always)* — BLOCK "done" until every acceptance criterion in the spec is ✅ verified or ⚠️ explicitly deferred
