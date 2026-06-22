@@ -1,6 +1,6 @@
 ---
-updated_at: 2026-06-22T23:13:04+07:00
-status: in_progress
+updated_at: 2026-06-22T23:15:04+07:00
+status: complete
 track: git
 active_skill: sdcorejs-git, verification-before-completion
 branch: chore/frontend-skill-review-rules
@@ -14,14 +14,14 @@ Tạo branch, commit, push các thay đổi skill/review rule đã verify, rồi
 ## Tasks
 - [x] Kiểm tra worktree, remote và GitHub CLI
 - [x] Tạo branch mới từ `main`
-- [ ] Stage/commit các thay đổi đã verify
-- [ ] Push branch lên `origin`
-- [ ] Tạo PR hoặc báo blocker xác thực rõ ràng
+- [x] Stage/commit các thay đổi đã verify
+- [x] Push branch lên `origin`
+- [x] Tạo PR hoặc báo blocker xác thực rõ ràng
 
 ## Current State
-- Last completed: Created branch `chore/frontend-skill-review-rules`.
-- In progress: Staging explicit changed paths and committing.
-- Blocked/skipped: `gh auth status` reports GitHub CLI is not logged in; PR creation may require user auth.
+- Last completed: Pushed branch `chore/frontend-skill-review-rules` to `origin`.
+- In progress: None.
+- Blocked/skipped: `gh pr create` is blocked because GitHub CLI is not logged in and no `GH_TOKEN` is available. Use https://github.com/sdcorejs/sdcorejs-agent/pull/new/chore/frontend-skill-review-rules to create the PR.
 
 ## Artifacts Touched
 - EDIT .sdcorejs/tasks/current-session.md - checkpoint for this request
@@ -38,6 +38,8 @@ Tạo branch, commit, push các thay đổi skill/review rule đã verify, rồi
 - EDIT _refs/nextjs/build-website/write-code/pages-and-blocks.md - content loader to section prop boundary
 - EDIT .claude/*, codex/skills/*, plugin/* - synced mirrors from source refs/skills
 - GIT branch chore/frontend-skill-review-rules - branch created for commit/PR
+- GIT commit 2637e45 - docs: enforce frontend skill review standards
+- GIT push origin/chore/frontend-skill-review-rules - pushed branch
 
 ## Verification
 - PASS npm run sync:skills
@@ -46,7 +48,10 @@ Tạo branch, commit, push các thay đổi skill/review rule đã verify, rồi
 - PASS git diff --check (only LF/CRLF warning for `.cursor/rules/sdcorejs-agent.mdc`)
 - PASS targeted presence probe for Service/API/ViewModel boundary wording across source and mirrors
 - PASS forbidden wording probe: no raw-API equality wording found
-- PENDING post-branch verification before push/PR
+- PASS post-commit npm run check:skills
+- PASS post-commit npm run test (12/12 node --test e2e)
+- PASS post-commit git diff --check HEAD
+- BLOCKED gh pr create - GitHub CLI auth missing
 
 ## Resume From Here
-Stage explicit paths, commit, run fresh verification, push branch, then create PR or provide compare URL if `gh` auth blocks PR creation.
+Run `gh auth login` or set `GH_TOKEN`, then create PR from `chore/frontend-skill-review-rules` to `main`; or open the GitHub compare link above.
