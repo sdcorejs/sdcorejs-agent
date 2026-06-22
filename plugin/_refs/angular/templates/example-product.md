@@ -202,7 +202,7 @@ export class ListComponent implements OnInit {
 
 ### File: `libs/sample/features/product/pages/detail/detail.component.ts`
 ```typescript
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import {
   SdButton,
@@ -273,7 +273,7 @@ import { ProductService } from '../services/product.service';
         <sd-section>
           <sd-input
             label="Mã"
-            [model]="entity().code"
+            [model]="entity.code"
             (modelChange)="onEntityFieldChange('code', $event)"
             [form]="form"
             required
@@ -283,7 +283,7 @@ import { ProductService } from '../services/product.service';
 
           <sd-input
             label="Tên"
-            [model]="entity().name"
+            [model]="entity.name"
             (modelChange)="onEntityFieldChange('name', $event)"
             [form]="form"
             required
@@ -293,7 +293,7 @@ import { ProductService } from '../services/product.service';
 
           <sd-textarea
             label="Mô tả"
-            [model]="entity().description"
+            [model]="entity.description"
             (modelChange)="onEntityFieldChange('description', $event)"
             [form]="form"
             maxlength="1000"
@@ -302,7 +302,7 @@ import { ProductService } from '../services/product.service';
 
           <sd-input-number
             label="Giá"
-            [model]="entity().price"
+            [model]="entity.price"
             (modelChange)="onEntityFieldChange('price', $event)"
             [form]="form"
             required
@@ -311,7 +311,7 @@ import { ProductService } from '../services/product.service';
 
           <sd-input-number
             label="Tồn kho"
-            [model]="entity().stock"
+            [model]="entity.stock"
             (modelChange)="onEntityFieldChange('stock', $event)"
             [form]="form"
             required
@@ -320,7 +320,7 @@ import { ProductService } from '../services/product.service';
 
           <sd-select
             label="Danh mục"
-            [model]="entity().category"
+            [model]="entity.category"
             (modelChange)="onEntityFieldChange('category', $event)"
             [form]="form"
             required
@@ -332,7 +332,7 @@ import { ProductService } from '../services/product.service';
 
           <sd-switch
             label="Hoạt động"
-            [model]="entity().isActivated"
+            [model]="entity.isActivated"
             (modelChange)="onEntityFieldChange('isActivated', $event)"
             [form]="form"
             [viewed]="isDetail()">
@@ -353,7 +353,7 @@ import { ProductService } from '../services/product.service';
 export class DetailComponent implements OnInit {
   form = new FormGroup({});
   readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
-  readonly entity = signal<Partial<ProductSaveReq>>({});
+  entity: Partial<ProductSaveReq & { id?: string }> = {};
   readonly pageTitle = computed(() => {
     if (this.state() === 'CREATE') return 'Tạo sản phẩm';
     return this.state() === 'DETAIL' ? 'Chi tiết sản phẩm' : 'Cập nhật sản phẩm';
@@ -366,6 +366,7 @@ export class DetailComponent implements OnInit {
   readonly #activatedRoute = inject(ActivatedRoute);
   readonly #router = inject(Router);
   readonly #productService = inject(ProductService);
+  readonly #cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     const url = this.#router.url;
@@ -383,7 +384,7 @@ export class DetailComponent implements OnInit {
   }
 
   onEntityFieldChange<K extends keyof ProductSaveReq>(key: K, value: ProductSaveReq[K]): void {
-    this.entity.update(prev => ({ ...prev, [key]: value }));
+    this.entity = { ...this.entity, [key]: value };
   }
 
   async onSave(): Promise<void> {
@@ -396,18 +397,19 @@ export class DetailComponent implements OnInit {
       const fileIds = await Promise.all(
         this.uploadFiles.getUploadedFileInfos().map((f: any) => f.upload())
       );
-      this.entity.update(prev => ({ ...prev, fileIds: fileIds.filter(Boolean) }));
+      this.entity = { ...this.entity, fileIds: fileIds.filter(Boolean) };
     }
 
     try {
-      const currentEntity = this.entity();
+      const { id, ...payload } = this.entity;
 
-      if (currentEntity.id) {
-        await this.#productService.update(currentEntity.id, currentEntity);
+      if (id) {
+        await this.#productService.update(id, payload as ProductSaveReq);
       } else {
-        const newEntity = await this.#productService.create(currentEntity);
-        this.entity.set(newEntity);
+        const newEntity = await this.#productService.create(payload as ProductSaveReq);
+        this.entity = newEntity;
         this.state.set('UPDATE');
+        this.#cdr.markForCheck();
       }
       this.#router.navigate(['..'], { relativeTo: this.#activatedRoute });
     } catch (error) {
@@ -416,7 +418,7 @@ export class DetailComponent implements OnInit {
   }
 
   async onDelete(): Promise<void> {
-    const currentEntity = this.entity();
+    const currentEntity = this.entity;
 
     if (confirm('Bạn có chắc muốn xóa?') && currentEntity.id) {
       try {
@@ -434,7 +436,8 @@ export class DetailComponent implements OnInit {
 
   async #detail(id: string): Promise<void> {
     try {
-      this.entity.set(await this.#productService.detail(id));
+      this.entity = await this.#productService.detail(id);
+      this.#cdr.markForCheck();
     } catch (error) {
       console.error(error);
     }

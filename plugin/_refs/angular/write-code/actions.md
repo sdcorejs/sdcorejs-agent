@@ -105,7 +105,7 @@ The literal HTML / TypeScript snippets for action wiring live in this reference 
 <div class="d-flex align-items-center" style="gap: 8px" headerRight>
   <sd-button title="Bỏ qua" (click)="onBack()" color="primary"></sd-button>
 
-  @if (state() === 'DETAIL' && entity()?.id) {
+  @if (state() === 'DETAIL' && entity.id) {
     @if (approvable()) {
       <sd-button
         *sdPermission="'<MODULE>_C_<ENTITY>_APPROVE'; sdPermissionKey: '<module>'"
@@ -174,10 +174,10 @@ onApprove = () => {
       noTitle: 'Quay lại',
       noButtonColor: 'primary',
     })
-    .then(note => this.#service.approve(this.entity()!.id, note))
+    .then(note => this.#service.approve(this.entity.id, note))
     .then(() => {
       this.#notifyService.success('Phê duyệt thành công');
-      return this.loadEntityData(this.entity()!.id);
+      return this.loadEntityData(this.entity.id);
     });
 };
 
@@ -189,10 +189,10 @@ onReject = () => {
       noTitle: 'Quay lại',
       noButtonColor: 'primary',
     })
-    .then(note => this.#service.reject(this.entity()!.id, note))
+    .then(note => this.#service.reject(this.entity.id, note))
     .then(() => {
       this.#notifyService.success('Từ chối thành công');
-      return this.loadEntityData(this.entity()!.id);
+      return this.loadEntityData(this.entity.id);
     });
 };
 
@@ -207,7 +207,7 @@ onSaveAndSubmit = async () => {
     this.#loadingService.show();
     const payload = this.form.getRawValue();
     const saved = this.state() === 'UPDATE'
-      ? await this.#service.update(this.entity()!.id, payload)
+      ? await this.#service.update(this.entity.id, payload)
       : await this.#service.create(payload);
     await this.#service.submit(saved.id);
     this.#notifyService.success('Lưu và gửi duyệt thành công');
@@ -235,8 +235,8 @@ onBulkSubmit = (rows: EntityDTO[]) => {
 onExport = async () => {
   this.#loadingService.show();
   try {
-    const blob = await this.#service.exportExcel(this.entity()!.id);
-    saveAs(blob, `${this.entity()!.code}.xlsx`);
+    const blob = await this.#service.exportExcel(this.entity.id);
+    saveAs(blob, `${this.entity.code}.xlsx`);
   } finally {
     this.#loadingService.hide();
   }

@@ -158,15 +158,17 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
   ```
 - Set `changeDetection: ChangeDetectionStrategy.OnPush` on every generated or modified component; import `ChangeDetectionStrategy` from `@angular/core`
   - If component state is updated asynchronously after initialization (i.e., there is an `await` before a state assignment), inject `ChangeDetectorRef` and call `this.#cdr.markForCheck()` after the assignment; or migrate that state to a `signal()`
-- Use **signal-first state style** for generated components:
-  - Use `signal()` for mutable UI state (`loading`, `state`, `entity`, `tableOption`, selected ids, dialog flags)
+- Use **signal-first UI state style** for generated components:
+  - Use `signal()` for mutable UI state (`loading`, `state`, `tableOption`, selected ids, dialog flags)
+  - Keep editable entity/form models as plain objects/ViewModels when using Core UI `[model]` / `[(model)]` binding; do not wrap entity objects in `signal()`
+  - Under `ChangeDetectionStrategy.OnPush`, inject `ChangeDetectorRef` and call `markForCheck()` after async assignment to a plain object/ViewModel
   - Use `computed()` for derived state (`isDetail`, button visibility, header title)
   - Use `effect()` only for side effects (reload, sync route params), not as a replacement for `computed()`
   - Keep `FormGroup` as-is, but surrounding UI/view state should be signals
   - Example:
     ```typescript
     readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
-    readonly entity = signal<Partial<ProductSaveReq>>({});
+    entity: Partial<ProductSaveReq & { id?: string }> = {};
     readonly isDetail = computed(() => this.state() === 'DETAIL');
     ```
 - Follow this import order in every component/service file:
@@ -184,7 +186,8 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
   - Goal: reduce unnecessary signal getter invocations during change detection cycles
 - Template call rule:
   - Event handlers are fine: `(click)="onSave()"`, `(modelChange)="onFieldChange('name', $event)"`.
-  - Signal reads are fine: `state()`, `saving()`, `entity()`; use `@let` when repeated.
+  - Signal reads are fine: `state()`, `saving()`; use `@let` when repeated.
+  - Plain object/ViewModel reads are fine for editable Core UI models: `[model]="entity.name"`, `[(model)]="entity.code"`.
 - Display/derived bindings must NOT call component methods/getters: avoid `{{ formatName(row) }}`, `[title]="buildTitle()"`, `[disabled]="isSaveDisabled()"`, `@if (canEdit())`, `[class.error]="hasError('code')"`.
 - Replace them with `computed()` values, prebuilt maps (`fieldErrors()`), pure pipes, or table/view-model fields.
 - If table/tree/form UI needs fields such as `checked`, `selected`, `disabled`, `expanded`, `children`, `label`, `displayName`, `color`, or `icon`, generate a local ViewModel mapper (`DTO -> VM`) unless the Service DTO explicitly derives and guarantees those fields.
@@ -222,7 +225,8 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
 **When applying this reference to generate a new entity module, developers MUST verify these points before committing:**
 
 1. **Signal Invocation Syntax**
-   - [ ] Check all signals are invoked with `()` in templates: `state()`, `entity()`, `form()`, `saving()`
+   - [ ] Check all UI-state signals are invoked with `()` in templates: `state()`, `saving()`
+   - [ ] Check editable entity/form models are plain object/ViewModel bindings: `entity.name`, `entity.code` (do not invoke entity as a signal)
    - [ ] Verify no double invocations like `state()()` exist
    - [ ] Confirm `@let` declarations are used for signals referenced 2+ times
    - [ ] Verify single-use signals invoke directly without `@let` wrapper
@@ -235,7 +239,7 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
 3. **Change Detection & Performance**
    - [ ] Verify `changeDetection: ChangeDetectionStrategy.OnPush` on list and detail components
    - [ ] Check that `ChangeDetectionStrategy` is imported from `@angular/core`
-   - [ ] If async state updates exist before signal assignment, verify `ChangeDetectorRef.markForCheck()` is called OR state is a `signal()`
+   - [ ] If async assignments update a plain object/ViewModel under `OnPush`, verify `ChangeDetectorRef.markForCheck()` is called after the assignment
    - [ ] Verify no template interpolation/property/class/condition binding calls a component method/getter for displayed or derived values
 
 4. **Component Field Scope**

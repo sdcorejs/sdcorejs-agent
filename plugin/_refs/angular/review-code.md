@@ -108,7 +108,7 @@ Run these checks in addition to the SDCoreJS portal checks below. Report results
 #### Template performance
 - Check component method/getter calls in template interpolation, property bindings, class/style bindings, and structural conditions, especially calls that format labels, compute permissions/visibility, allocate, filter/sort/map arrays, read services, or depend on mutable state.
 - Treat template-called component methods/getters for displayed or derived values as a review finding even when they look cheap; Angular can re-run them every change-detection cycle and they hide dependencies from OnPush/signal reasoning.
-- Allowed calls: event handlers (`(click)="onSave()"`), Angular signal reads (`state()`, `saving()`, `entity()`), and pure pipes. Repeated signal reads should use `@let` or `computed()`.
+- Allowed calls: event handlers (`(click)="onSave()"`), Angular signal reads for UI state (`state()`, `saving()`), and pure pipes. Repeated signal reads should use `@let` or `computed()`.
 - Check complex template expressions; move business logic to `computed`, pure pipes, selectors, precomputed maps, or a view model.
 - For list rendering, verify `@for` has a stable `track`, or `*ngFor` has `trackBy` when the list can grow, reorder, or update frequently.
 - Flag large business rules in templates as maintainability/performance risk; prefer precomputed view state.
@@ -141,6 +141,8 @@ Run these checks in addition to the SDCoreJS portal checks below. Report results
 - Missing `OnPush` is `Medium` + `REQUIRED` by default; use `High` + `BLOCKER` for list/detail components, large forms/tables, high-frequency dashboards, or components already showing change-detection/performance bugs.
 - Verify `ChangeDetectionStrategy` is imported from `@angular/core` and the component decorator declares `changeDetection: ChangeDetectionStrategy.OnPush`.
 - If signals are used, check whether manual subscriptions or mutable state can be reduced safely.
+- Editable entity/form model objects bound through Core UI `[model]` / `[(model)]` must stay as plain objects/ViewModels, not `signal<Partial<...>>`; flag `entity()`, `drawerEntity()`, or `readonly entity = signal(...)` in those bindings as `Medium` + `REQUIRED`.
+- Under `OnPush`, if a plain object/ViewModel is assigned after an `await`/promise callback, verify `ChangeDetectorRef.markForCheck()` is called after the assignment unless another signal or observable binding drives the refresh.
 - Do not waive `OnPush` for new sdcorejs-angular output merely because older project files lack it; review generated/modified code against the current standard.
 
 #### Forms
@@ -242,6 +244,7 @@ Run these checks in addition to the SDCoreJS portal checks below. Report results
 - All injections via `inject()` function, not constructor params
 - Private fields use `#` prefix (`readonly #service = inject(...)`)
 - Mutable UI state uses `signal()`, derived state uses `computed()`, side effects use `effect()`
+- Editable entity/form models bound with Core UI `model` inputs are plain objects/ViewModels, not signals
 - Signals referenced 2+ times in template are extracted via `@let` or `computed()`
 - Template display/visibility/disabled/class/title bindings read signals/computed/pure pipes/view models, not component methods/getters
 - Form uses `FormGroup` with explicit validators; submit gates on `form.invalid → markAllAsTouched`
@@ -328,6 +331,7 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 - Modern Angular APIs are used consistently with project convention.
 - Components declare `ChangeDetectionStrategy.OnPush`.
 - Templates avoid method/getter calls for displayed/derived bindings and use `computed()`, signals, pure pipes, or view models instead.
+- Editable entity/form model objects stay as plain ViewModels when bound through Core UI model inputs.
 - Observable/timer/listener/resource cleanup is handled with `takeUntilDestroyed`, `AsyncPipe`, `toSignal`, or explicit cleanup.
 - Styles are component-scoped where appropriate, global styles have clear app-wide purpose, and custom CSS does not duplicate available utilities.
 
@@ -351,7 +355,7 @@ Score each of these 13 categories. For every category output **Score (1–10)**,
 2. **Component design** — single responsibility, smart/dumb split, `input()/model()/output()` surface, content projection vs prop drilling, component size, standalone.
 3. **Dependency injection** — `inject()` fn, `providedIn` scope correctness, no service-locator abuse, injection tokens for config, no circular deps, no logic-heavy constructors.
 4. **RxJS usage** — teardown (`takeUntilDestroyed` / `async` pipe, no manual leak-prone `subscribe`), no nested `subscribe`, correct operators (switch/merge/concat/exhaust), error handling, no over-RxJS where a signal fits.
-5. **Signal adoption** — `signal/computed/effect` used correctly, `effect` not used as `computed`, no redundant `BehaviorSubject` where a signal fits, `toSignal`/`toObservable` at boundaries, no signal writes inside `computed`.
+5. **Signal adoption** — `signal/computed/effect` used correctly, `effect` not used as `computed`, no redundant `BehaviorSubject` where a signal fits, editable entity/form model objects are not wrapped in signals for Core UI model binding, `toSignal`/`toObservable` at boundaries, no signal writes inside `computed`.
 6. **Change detection strategy** — `OnPush` everywhere, no method calls in bindings, `@for` `track`, zoneless-readiness (no `setTimeout`/manual `markForCheck` hacks), minimal CD surface.
 7. **Template quality & styling** — native control flow (`@if/@for/@let`, no `*ngIf/*ngFor`), `track` keys, `async` pipe over manual subscribe, no heavy expressions/logic in template, signals referenced 2+ times extracted. Styling is utility-first (Core UI STYLE-GUIDE classes or consumer Tailwind); component `.scss` near-empty; bespoke CSS that duplicates a shipped utility (flex/spacing/color/typography) is a finding; spacing px-based 0–200.
 8. **Forms implementation** — typed reactive forms (`FormGroup<...>`), explicit validators + async validators where needed, cross-field rules, submit gating (`invalid → markAllAsTouched`), no template-driven for complex forms, error surfacing.

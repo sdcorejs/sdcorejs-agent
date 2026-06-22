@@ -198,17 +198,19 @@ Start lightweight, tighten later:
 
 ### Signal-first UI state
 
-The `FormGroup` itself stays imperative, but everything around it should be signal-driven:
+The `FormGroup` itself stays imperative. Use signals for UI state, and keep editable entity/form models as plain objects/ViewModels when using Core UI `[model]` / `[(model)]` binding:
 
-- `state`, `entity`, `loading`, `saving` → `signal()`
+- `state`, `loading`, `saving` -> `signal()`
+- `entity: Partial<ProductSaveReq & { id?: string }>` -> plain object/ViewModel
 - `isDetail`, `canSubmit`, `pageTitle`, `pageTabColor` → `computed()`
 - `effect()` only for side effects (route param sync, reload), never as a replacement for `computed()`
 - The component decorator must include `changeDetection: ChangeDetectionStrategy.OnPush`; import `ChangeDetectionStrategy` from `@angular/core`.
+- Under `OnPush`, inject `ChangeDetectorRef` and call `markForCheck()` after async assignment to a plain object/ViewModel.
 - Template bindings for displayed/derived values must read signals/computed values, pure pipes, or view-model fields. Do not call component methods/getters in interpolation, property/class bindings, or `@if`/`@for` conditions.
 
 ```typescript
 readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
-readonly entity = signal<Partial<ProductSaveReq>>({});
+entity: Partial<ProductSaveReq & { id?: string }> = {};
 readonly pageTitle = computed(() =>
   this.state() === 'CREATE' ? 'Tạo mới' : 'Chi tiết'
 );
@@ -229,7 +231,7 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - Lightweight `new FormGroup({})` allowed by default; add typed validators only when business rules are stable
 - `ChangeDetectionStrategy.OnPush` declared on the detail component
 - Required field validation enforced at save (`form.invalid` → `markAllAsTouched()` → notify; do not let invalid submits through)
-- Use `[form]="form"` + `[(model)]="entity.field"` as the default binding pattern (Core UI form components self-register via `[form]+name`; do NOT use `formControlName` — they do not implement `ControlValueAccessor`)
+- Use `[form]="form"` + `[(model)]="entity.field"` as the default binding pattern, where `entity` is a plain object/ViewModel (Core UI form components self-register via `[form]+name`; do NOT use `formControlName` — they do not implement `ControlValueAccessor`)
 - Use Vietnamese labels / messages / notify for VI portals (full diacritics); permission codes + route paths stay English
 - Use grid `row row-sm` for form sections (compact spacing)
 - Generate runnable `.spec.ts` per state branch, mocking `inject()` deps (`Router`, `ActivatedRoute`, services, notify, loading)
@@ -243,7 +245,7 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - Over-design validators at CREATE stage when business rules are still in flux
 - Allow form submission while invalid
 - Duplicate validation logic across save / submit / approve handlers — funnel through one gate
-- Store mutable form-screen UI state in plain mutable fields/getters instead of signals
+- Wrap editable entity/form model objects in `signal()` when binding with Core UI `[model]` / `[(model)]`
 - Call component methods/getters from template bindings to compute displayed values, field errors, permissions, titles, colors, disabled states, or visibility
 - Overuse signal invocations in template without considering the 2+ times rule
 - Calling `service.detail(id)` in CREATE — there is no id yet
@@ -251,7 +253,7 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - Show approve / reject / edit buttons in CREATE
 - Upload files AFTER `service.create(...)` / `service.update(...)` — orphans blobs on failure
 - Forget to call `form.enable()` after `patchValue` in UPDATE (form stays disabled if shell defaulted to disable)
-- Reuse the same submit handler with `if (this.entity().id) update else create` BUT forget to set `state` properly — keep state-aware branching explicit
+- Reuse the same submit handler with `if (this.entity.id) update else create` BUT forget to set `state` properly — keep state-aware branching explicit
 - Hardcode the success navigation target without checking user preference
 - Forget `data.permission` on any of `/create`, `/update/:id`, `/detail/:id`
 

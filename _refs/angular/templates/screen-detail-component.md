@@ -39,6 +39,7 @@ type ViewState = 'CREATE' | 'UPDATE' | 'DETAIL';
 ```
 
 Stored as a signal: `state = signal<ViewState>('DETAIL')`.
+Editable entity/form models are plain objects/ViewModels, not signals: `entity: Partial<EntitySaveReq & { id?: string }> = {}`.
 
 Generated detail components must set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component`.
 Derived flags such as `isDetail`, `canSave`, titles, and tab color must be `computed()`, not getters or template-called methods.
@@ -46,7 +47,7 @@ Derived flags such as `isDetail`, `canSave`, titles, and tab color must be `comp
 ### Imports
 
 ```typescript
-import { ChangeDetectionStrategy, Component, OnInit, computed, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, signal, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SdPageComponent, SdPermissionDirective } from '@sdcorejs/angular/modules';
@@ -58,6 +59,13 @@ import {
 import { SdLoadingService, SdNotifyService } from '@sdcorejs/angular/services';
 import { {{ entityPascal }}DTO, {{ entityPascal }}SaveReq } from '../../services/{{ entityKebab }}.model';
 import { {{ entityPascal }}Service } from '../../services/{{ entityKebab }}.service';
+```
+
+When the shell stores loaded entity data outside a signal, inject `ChangeDetectorRef`:
+
+```typescript
+entity: Partial<{{ entityPascal }}SaveReq & { id?: string }> = {};
+readonly #cdr = inject(ChangeDetectorRef);
 ```
 
 ### FormGroup definition
@@ -118,7 +126,7 @@ private async loadEntityData(id: string): Promise<void> {
   try {
     this.#loading.show();
     const dto = await this.#service.detail(id);
-    this.entity.set(dto);
+    this.entity = dto;
     this.form.patchValue(dto, { emitEvent: false });
     this.form.markAsPristine();
     const displayName = dto.name ?? dto.code ?? id;
@@ -130,6 +138,7 @@ private async loadEntityData(id: string): Promise<void> {
     } else {
       this.form.enable();
     }
+    this.#cdr.markForCheck();
   } catch (err) {
     this.#notify.warning('Không tìm thấy bản ghi, quay về danh sách');
     this.#router.navigate(['../../'], { relativeTo: this.#route, replaceUrl: true });
@@ -174,7 +183,7 @@ onBack(): void {
 
 onEdit(): void {
   // DETAIL → UPDATE transition
-  this.#router.navigate(['../../update', this.entity()!.id], { relativeTo: this.#route });
+  this.#router.navigate(['../../update', this.entity.id], { relativeTo: this.#route });
 }
 ```
 
@@ -261,7 +270,7 @@ Edit transition (already in [`#navigation-helpers`](#navigation-helpers)):
 
 ```typescript
 onEdit(): void {
-  this.#router.navigate(['../../update', this.entity()!.id], { relativeTo: this.#route });
+  this.#router.navigate(['../../update', this.entity.id], { relativeTo: this.#route });
 }
 ```
 
@@ -350,11 +359,12 @@ private async loadEntityData(id: string): Promise<void> {
   try {
     this.#loading.show();
     const dto = await this.#service.detail(id);
-    this.entity.set(dto);
+    this.entity = dto;
     this.form.patchValue(dto);
     this.form.markAsPristine();
     this.pageTitle.set(`Cập nhật: ${dto.name ?? dto.code ?? id}`);
     this.form.enable();   // UPDATE keeps form editable (DETAIL would .disable())
+    this.#cdr.markForCheck();
   } catch (err) {
     this.#notify.warning('Không tìm thấy bản ghi, quay về danh sách');
     this.#router.navigate(['../../'], { relativeTo: this.#route, replaceUrl: true });
@@ -382,7 +392,7 @@ async onSave(): Promise<void> {
       await Promise.all(this.uploadFiles().map(f => f.upload()));
     }
     const payload = this.form.getRawValue() as EntitySaveReq;
-    const id = this.entity()!.id;
+    const id = this.entity.id;
     await this.#service.update(id, payload);
     this.#notify.success('Cập nhật thành công');
     // Navigate back to list (default) OR to detail of the same record (opt-in)

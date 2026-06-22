@@ -312,8 +312,8 @@ async ngOnInit() {
   ]);
   this.allPermissions.set(perms);
   // Seed selectedCodes from loaded role
-  if (this.entity().permissions) {
-    this.selectedCodes.set(new Set(this.entity().permissions));
+  if (this.entity.permissions) {
+    this.selectedCodes.set(new Set(this.entity.permissions));
   }
 }
 ```
