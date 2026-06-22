@@ -29,6 +29,14 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
 - Seed rows must use domain-realistic values derived from the inferred field schema; never use generic placeholders like `"Name 1"`, `"Code 01"`, or repeated identical values across all rows
 - Ensure mock store reseeds automatically when stored JSON is missing, empty array, or corrupted JSON
 - If backend API contract is provided explicitly, service may switch to `BaseService`-based API integration
+- Treat Service public models as the Service-Component contract, not as a forced exact copy of the raw backend API:
+  - `SaveReq` / `CreateReq` / `UpdateReq` describe what the Service accepts and sends after mapping.
+  - `DTO` / `ListRes` / `DetailRes` describe what the Service returns or guarantees to components.
+  - Raw backend-only fields live in internal API types near the Service/mapper (for example `<Entity>ApiRes`) and are mapped before reaching components.
+  - Every field exposed by a Service model must be accepted, processed, returned, or derived by that Service/mapper.
+- When deriving fields for UI convenience (for example `displayName`, `label`, `color`, `icon`), decide ownership explicitly:
+  - Service-owned derived fields belong in the Service DTO and are populated by the mapper.
+  - Screen-only fields belong in a component-local ViewModel such as `<Entity>RowVM`, `<Entity>TreeNodeVM`, or `<Entity>DetailVM`.
 - Parse and normalize input artifacts when available:
   - PRD text sections
   - screenshot or attribute image hints
@@ -49,6 +57,7 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
   - When generating against a real project, FIRST inspect existing services in that project (e.g. `BaseService.register('v1/booking')` in `portal-agency`, or `register('api/v2/customer')` elsewhere). Match the project's convention exactly. Do NOT impose `v1/` or any prefix the project doesn't already use.
 - Create separate files: `model.ts`, `service.ts` for each entity
 - Define `<Entity>SaveReq` (POST/PUT payload) + `<Entity>DTO = Required<<Entity>SaveReq> & BaseEntity` (used for BOTH list and detail responses — scaffold default). Do NOT generate a separate `<Entity>Detail` in scaffold.
+- The scaffold default `DTO = Required<SaveReq> & BaseEntity` is a starter contract only. If the real Service maps a different raw API shape, replace or extend it with an explicit Service DTO plus mapper; do not pretend fields exist just because the raw API or UI wants them.
 - `<Entity>SaveReq` can be split into more specific request types when business needs differ:
   - `<Entity>CreateReq` — POST /create payload (e.g. excludes `id`)
   - `<Entity>UpdateReq` — PUT /:id payload (e.g. allows partial fields, excludes immutable fields)
@@ -80,7 +89,7 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
 - When routes have `data.permission` guard, do NOT add extra `canViewList` / `canCreate` manual checks inside list/detail components
 - For filters rendered outside table columns, define them in `tableOption.filter.externalFilters` instead of custom controls above table
 - Mark blocking external filters as `required: true` and rely on table filter validation instead of rendering guidance text like "Vui lòng chọn ..."
-- Do not bind template conditions to function calls/getters that execute logic each change detection cycle; compute once (or update explicitly) and bind to plain property/signal
+- Do not bind template interpolation/properties/classes/conditions to component methods or getters that compute displayed or derived values each change-detection cycle. Compute once with `computed()`, `signal()`, a pure pipe, or an explicit view model and bind to that.
 - Keep naming concise and domain-focused (`projects` over `projectOptions`)
 - Use `externalFilters[].option.items` as a function when list data is only needed by filter UI; avoid storing extra component state if not reused
 - Keep variable scope minimal:
@@ -147,7 +156,7 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
   readonly #router = inject(Router);
   readonly #myService = inject(MyService);
   ```
-- Set `changeDetection: ChangeDetectionStrategy.OnPush` on every list and detail component; import `ChangeDetectionStrategy` from `@angular/core`
+- Set `changeDetection: ChangeDetectionStrategy.OnPush` on every generated or modified component; import `ChangeDetectionStrategy` from `@angular/core`
   - If component state is updated asynchronously after initialization (i.e., there is an `await` before a state assignment), inject `ChangeDetectorRef` and call `this.#cdr.markForCheck()` after the assignment; or migrate that state to a `signal()`
 - Use **signal-first state style** for generated components:
   - Use `signal()` for mutable UI state (`loading`, `state`, `entity`, `tableOption`, selected ids, dialog flags)
@@ -173,6 +182,12 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
     - OR use `@let` syntax (where supported): `@let _varName = signal();` then use `_varName` throughout
   - If a signal is used **only once**: invoke it directly at the point of use, no caching needed
   - Goal: reduce unnecessary signal getter invocations during change detection cycles
+- Template call rule:
+  - Event handlers are fine: `(click)="onSave()"`, `(modelChange)="onFieldChange('name', $event)"`.
+  - Signal reads are fine: `state()`, `saving()`, `entity()`; use `@let` when repeated.
+- Display/derived bindings must NOT call component methods/getters: avoid `{{ formatName(row) }}`, `[title]="buildTitle()"`, `[disabled]="isSaveDisabled()"`, `@if (canEdit())`, `[class.error]="hasError('code')"`.
+- Replace them with `computed()` values, prebuilt maps (`fieldErrors()`), pure pipes, or table/view-model fields.
+- If table/tree/form UI needs fields such as `checked`, `selected`, `disabled`, `expanded`, `children`, `label`, `displayName`, `color`, or `icon`, generate a local ViewModel mapper (`DTO -> VM`) unless the Service DTO explicitly derives and guarantees those fields.
 - Ensure interactive elements exposed to users have accessible text: use `title` or `aria-label` on buttons/actions so screen readers can describe them; use semantic HTML where possible (`<nav>`, `<main>`, `role="toolbar"`)
 - Generate a companion `*.spec.ts` skeleton alongside every new list and detail component; use Arrange-Act-Assert pattern; the skeleton must at minimum assert the component creates successfully:
 - Generate companion `*.spec.ts` files alongside service/routes/list/detail with runnable tests; use Arrange-Act-Assert pattern; specs must include at minimum component/service/route creation and one behavior assertion each:
@@ -221,6 +236,7 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
    - [ ] Verify `changeDetection: ChangeDetectionStrategy.OnPush` on list and detail components
    - [ ] Check that `ChangeDetectionStrategy` is imported from `@angular/core`
    - [ ] If async state updates exist before signal assignment, verify `ChangeDetectorRef.markForCheck()` is called OR state is a `signal()`
+   - [ ] Verify no template interpolation/property/class/condition binding calls a component method/getter for displayed or derived values
 
 4. **Component Field Scope**
    - [ ] Verify all non-exported fields use `#private` prefix
@@ -290,7 +306,7 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
 - Keep external filter toolbar visible when there is only one external-filter row and no toolbar actions are needed
 - Hard-code external filter layout values without applying the auto-calculation rule above
 - Expose extra component fields/getters when a local variable or `#privateField` is sufficient
-- Use template-bound method calls for permission checks or similar boolean guards
+- Use template-bound method/getter calls for displayed/derived values, permission checks, boolean guards, titles, disabled states, classes, colors, labels, or field errors
 - Omit `data.permission` from route definitions
 - Do not omit `data.permissionKey` when the module is designed to use keyed permission configuration
 - Do not omit `sd-upload-file [key]` when the module is designed to use keyed upload-file configuration
@@ -309,6 +325,8 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
 - Use editable inputs in DETAIL read-only summary sections when `AdaptiveSplitDetail` layout is selected
 - Leave DETAIL page in broken state when `detail(id)` fails (`Entity not found`) without user feedback or recovery navigation
 - Ignore provided cURL contract or PRD image when they define API fields or UI sections
+- Add UI-only fields (`checked`, `selected`, `disabled`, `expanded`, `children`, `label`, `displayName`, etc.) directly to `<Entity>SaveReq` or `<Entity>DTO` when the Service does not accept/return/derive them
+- Force Service models to mirror raw backend request/response fields 1:1 when the Service layer intentionally maps, normalizes, or hides that raw API shape
 
 
 ## 4. Templates and code samples
@@ -381,8 +399,10 @@ Worked Product entity (full code samples for model + service + list + detail) li
 ## Implementation Checklist
 
 - [ ] Create model file with SaveReq interface and DTO type
+- [ ] Classify every ambiguous field as raw API, Service input/output, Component ViewModel, or UI state before adding it to a type
 - [ ] Create `services/[entity].mock-data.ts` with 20–40 domain-realistic seed rows immediately after SaveReq/DTO are finalized
 - [ ] Create service with mock-first CRUD (`localStorage`) by default; use BaseService/API mode only when backend contract is explicit
+- [ ] Add mapper/internal API types when raw backend shape differs from the Service contract
 - [ ] Create list component with @SdTabComponent decorator
 - [ ] Create detail component with 3-state machine
 - [ ] Define route configuration with lazy loading

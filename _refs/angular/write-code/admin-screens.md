@@ -25,6 +25,9 @@ account management, role management, and a read-only permission list. Routed und
 Reuse the list + detail patterns from `screen-list.md` (SdTable, server-side paging) and `screen-detail.md`
 (create/edit drawer + reactive form). Core UI: `SdTable`, `SdButton`, `SdFormsModule`, `SdConfirmService`,
 `SdNotifyService`, and `SdPermissionDirective` (`*sdPermission="'<code>'"`) to hide actions the user can't perform.
+All generated admin components must use `changeDetection: ChangeDetectionStrategy.OnPush`, signal/computed state, and precomputed view models for template display/visibility/disabled bindings. Do not call component methods/getters from admin templates except event handlers.
+
+Admin screens that build permission trees, department trees, role matrices, or selectable rows must keep UI-only fields (`checked`, `selected`, `expanded`, `children`, `disabled`, display labels) in component-local ViewModels/computed signals. Do not add those fields to Service DTOs unless the Service mapper explicitly derives and guarantees them.
 
 ## Profile (read FIRST)
 
@@ -278,14 +281,21 @@ readonly actions = computed(() => [...new Set(this.allPermissions().map(p => p.a
 
 // Set<string> of currently selected permission codes (two-way bound to form control)
 readonly selectedCodes = signal<Set<string>>(new Set());
-
-permissionFor(model: string, action: string): PermissionDTO | undefined {
-  return this.allPermissions().find(p => p.model === model && p.action === action);
-}
-
-isChecked(code: string): boolean {
-  return this.selectedCodes().has(code);
-}
+readonly permissionGrid = computed(() => {
+  const selected = this.selectedCodes();
+  const byKey = new Map(this.allPermissions().map(p => [`${p.model}:${p.action}`, p]));
+  return this.models().map(model => ({
+    model,
+    cells: this.actions().map(action => {
+      const permission = byKey.get(`${model}:${action}`);
+      return {
+        action,
+        permission,
+        checked: permission ? selected.has(permission.code) : false,
+      };
+    }),
+  }));
+});
 
 togglePermission(code: string, checked: boolean): void {
   const next = new Set(this.selectedCodes());
@@ -312,6 +322,7 @@ HTML template sketch for the grid (inline inside the drawer form):
 
 ```html
 <table class="permission-grid">
+  @let _permissionGrid = permissionGrid();
   <thead>
     <tr>
       <th>Module / Thực thể</th>
@@ -319,15 +330,14 @@ HTML template sketch for the grid (inline inside the drawer form):
     </tr>
   </thead>
   <tbody>
-    @for (model of models(); track model) {
+    @for (row of _permissionGrid; track row.model) {
       <tr>
-        <td>{{ model }}</td>
-        @for (action of actions(); track action) {
+        <td>{{ row.model }}</td>
+        @for (cell of row.cells; track cell.action) {
           <td>
-            @let perm = permissionFor(model, action);
-            @if (perm) {
+            @if (cell.permission; as perm) {
               <input type="checkbox"
-                     [checked]="isChecked(perm.code)"
+                     [checked]="cell.checked"
                      (change)="togglePermission(perm.code, $any($event.target).checked)"
                      *sdPermission="'admin_role:update'" />
             }
@@ -671,9 +681,14 @@ Tree-building logic sketch:
 ```typescript
 readonly allDepts = signal<DepartmentDTO[]>([]);
 readonly roots = computed(() => this.allDepts().filter(d => !d.parentCode));
-childrenOf(parentCode: string): DepartmentDTO[] {
-  return this.allDepts().filter(d => d.parentCode === parentCode);
-}
+readonly childrenByParent = computed(() => {
+  const groups = new Map<string, DepartmentDTO[]>();
+  for (const dept of this.allDepts()) {
+    if (!dept.parentCode) continue;
+    groups.set(dept.parentCode, [...(groups.get(dept.parentCode) ?? []), dept]);
+  }
+  return groups;
+});
 ```
 
 Load via `GET /api/admin/department?tenantCode=<selected>` — add a **tenant selector** at the top

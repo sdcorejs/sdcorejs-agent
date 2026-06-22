@@ -33,6 +33,8 @@ export interface ProductSaveReq {
   fileIds?: string[];
 }
 
+// Scaffold default Service output contract. If the raw backend API differs,
+// ProductService owns the mapper and keeps raw API types internal.
 export type ProductDTO = Required<ProductSaveReq> & BaseEntity;
 ```
 
@@ -53,6 +55,9 @@ export class ProductService extends BaseService {
   create = this.#api.create;
   update = this.#api.update;
   remove = this.#api.remove;
+
+  // UI-only fields such as checked/selected/displayName belong in component
+  // ViewModels unless this Service explicitly derives and guarantees them.
 }
 ```
 
@@ -438,4 +443,3 @@ export class DetailComponent implements OnInit {
 ```
 
 ---
-

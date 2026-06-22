@@ -56,6 +56,12 @@ export type ContactPayload = z.infer<typeof contactSchema>;
 
 Error codes (`name_short`, `email_invalid`, …) map to i18n message keys — never embed user-facing strings in the schema.
 
+Contract boundary:
+- `ContactPayload` is the validated public input contract shared by the client form, API route, and email helper.
+- Provider responses such as Resend API results are raw upstream/provider contracts and must stay inside `src/lib/email.ts` or the API route.
+- Client-only fields (`status`, `errors`, `rateLimitMinutes`, `isSubmitting`, `displayName`, etc.) are component state/ViewModel fields and must not be added to `ContactPayload`.
+- If the API route returns extra fields (`code`, `minutes`, `errors`), define a response type for that route and keep it separate from the submit payload.
+
 ### Step 2 — i18n messages
 
 Add the `contact.form.*` keys (labels, status messages, per-field error strings) to `src/i18n/messages/vi.json` and mirror in `en.json`. The full bilingual message block lives in `_refs/nextjs/build-website/contact-form-refs.md` ("i18n messages") — copy it from there. Error keys map 1:1 to the zod error codes from Step 1.
@@ -399,6 +405,7 @@ if (slackWebhook) {
 ### MUST DO
 - Share zod schema between client + server
 - Validate on BOTH client (UX) and server (security)
+- Keep submit payload, API route response, email provider response, and client UI state as separate typed contracts
 - Rate-limit by IP (5 / 15 min default, tune if abuse seen)
 - Use Resend (or SendGrid) — never SMTP from edge runtime
 - Reply-to set to user's email (so team can reply directly)
@@ -416,6 +423,7 @@ if (slackWebhook) {
 - Send email synchronously without try/catch — Resend failures shouldn't 500 silently
 - Expose API key in client component
 - Skip rate limit "we'll add it later" — bots find every form
+- Add client UI state fields (`status`, `errors`, `checked`, `selected`, `displayName`, etc.) to `ContactPayload`
 
 ## Anti-patterns
 - **Validating only on submit** — let users fix one field at a time; consider on-blur validation for better UX

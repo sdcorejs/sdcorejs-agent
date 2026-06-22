@@ -268,8 +268,9 @@ export const [ENTITY_UPPER]_STATUSES = [
   { value: 'INACTIVE', display: 'Không hoạt động' },
 ];
 
-// Save request — used for BOTH create + update payloads.
-// In scaffold mode, single SaveReq covers both POST and PUT.
+// Save request — public Service input contract used for BOTH create + update.
+// In scaffold mode, single SaveReq covers both POST and PUT. If the raw API
+// differs, the Service maps SaveReq to an internal API payload before sending.
 export interface [Entity]SaveReq {
   code?: string;
   name?: string;
@@ -279,10 +280,17 @@ export interface [Entity]SaveReq {
   fileIds?: string[];
 }
 
-// DTO — used for BOTH list rows and detail response.
-// Required<SaveReq> means every editable field is non-optional in response,
-// & BaseEntity adds audit fields (id, createdAt, createdBy, updatedAt, updatedBy).
+// DTO — public Service output contract used for BOTH list rows and detail response.
+// Required<SaveReq> is only the scaffold default: every editable field is
+// non-optional in the Service response, and BaseEntity adds audit fields
+// (id, createdAt, createdBy, updatedAt, updatedBy). When a real backend returns
+// a different raw shape, define an internal [Entity]ApiRes in the Service and
+// map it into this DTO before exposing it to components.
 export type [Entity]DTO = Required<[Entity]SaveReq> & BaseEntity;
+
+// Do not add screen-only fields such as checked, selected, expanded, children,
+// disabled, label, or displayName here unless the Service mapper derives and
+// guarantees them. Prefer a component-local [Entity]RowVM / TreeNodeVM instead.
 
 // ──────────────────────────────────────────────────────────────────
 // Optional — only when business needs diverge from the default
@@ -320,6 +328,11 @@ export class [Entity]Service extends BaseService {
 
   // Optional: Custom API methods
   // async customAction(id: string) { return this.#api.baseUrl; }
+
+  // If the backend API does not match [Entity]DTO / [Entity]SaveReq exactly,
+  // keep raw API types private to this file and map at the Service boundary:
+  // type [Entity]ApiRes = { api_id: string; api_name: string; ... };
+  // private mapFromApi(raw: [Entity]ApiRes): [Entity]DTO { ... }
 }
 ```
 
@@ -1269,4 +1282,3 @@ export class DetailComponent implements OnInit {
   };
 }
 ```
-

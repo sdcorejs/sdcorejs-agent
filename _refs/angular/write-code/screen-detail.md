@@ -42,7 +42,7 @@ All literal code lives in [`_refs/angular/templates/screen-detail-component.md`]
 | Shared `loadEntityData(id)` with stale-id recovery (used by DETAIL + UPDATE) | [`#shared-entity-loader-with-stale-id-recovery`](_refs/angular/templates/screen-detail-component.md#shared-entity-loader-with-stale-id-recovery) |
 | `headerRight` template (Back always; Edit on DETAIL; Save on CREATE/UPDATE) | [`#header-buttons-template`](_refs/angular/templates/screen-detail-component.md#header-buttons-template) |
 | `onBack()` + `onEdit()` navigation helpers | [`#navigation-helpers`](_refs/angular/templates/screen-detail-component.md#navigation-helpers) |
-| `pageTabName` / `pageTabColor` per state | [`#conditional-tab-name--color`](_refs/angular/templates/screen-detail-component.md#conditional-tab-name--color) |
+| `pageTabName` / `pageTabColor` computed values per state | [`#conditional-tab-name--color`](_refs/angular/templates/screen-detail-component.md#conditional-tab-name--color) |
 | Per-field rendering snippets (`sd-input`, `sd-select`, `sd-date`, `sd-upload-file`, `sd-editor`, etc.) | [`#form-field-rendering-template`](_refs/angular/templates/screen-detail-component.md#form-field-rendering-template) |
 | **CREATE-specific:** state detection + `applyDefaults()` + `onSave()` | [`#create-state`](_refs/angular/templates/screen-detail-component.md#create-state) |
 | **UPDATE-specific:** state detection + optional loader override + `onSave()` | [`#update-state`](_refs/angular/templates/screen-detail-component.md#update-state) |
@@ -203,6 +203,8 @@ The `FormGroup` itself stays imperative, but everything around it should be sign
 - `state`, `entity`, `loading`, `saving` → `signal()`
 - `isDetail`, `canSubmit`, `pageTitle`, `pageTabColor` → `computed()`
 - `effect()` only for side effects (route param sync, reload), never as a replacement for `computed()`
+- The component decorator must include `changeDetection: ChangeDetectionStrategy.OnPush`; import `ChangeDetectionStrategy` from `@angular/core`.
+- Template bindings for displayed/derived values must read signals/computed values, pure pipes, or view-model fields. Do not call component methods/getters in interpolation, property/class bindings, or `@if`/`@for` conditions.
 
 ```typescript
 readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
@@ -220,9 +222,12 @@ If a signal is referenced **2 or more times** in the template:
 
 If referenced only once: invoke directly. Goal — reduce getter invocations during change-detection cycles.
 
+This rule is about signal reads only. Do not replace method/getter calls with repeated template calls; replace them with `computed()`, `signal()`, pure pipes, or prebuilt maps such as `fieldErrorMessages()`.
+
 ### MUST DO ✅
 
 - Lightweight `new FormGroup({})` allowed by default; add typed validators only when business rules are stable
+- `ChangeDetectionStrategy.OnPush` declared on the detail component
 - Required field validation enforced at save (`form.invalid` → `markAllAsTouched()` → notify; do not let invalid submits through)
 - Use `[form]="form"` + `[(model)]="entity.field"` as the default binding pattern (Core UI form components self-register via `[form]+name`; do NOT use `formControlName` — they do not implement `ControlValueAccessor`)
 - Use Vietnamese labels / messages / notify for VI portals (full diacritics); permission codes + route paths stay English
@@ -239,6 +244,7 @@ If referenced only once: invoke directly. Goal — reduce getter invocations dur
 - Allow form submission while invalid
 - Duplicate validation logic across save / submit / approve handlers — funnel through one gate
 - Store mutable form-screen UI state in plain mutable fields/getters instead of signals
+- Call component methods/getters from template bindings to compute displayed values, field errors, permissions, titles, colors, disabled states, or visibility
 - Overuse signal invocations in template without considering the 2+ times rule
 - Calling `service.detail(id)` in CREATE — there is no id yet
 - Use `[viewed]="true"` on form fields in CREATE state
@@ -268,6 +274,8 @@ If referenced only once: invoke directly. Goal — reduce getter invocations dur
 - [ ] Validators applied per field criticality (don't over-constrain on first pass)
 - [ ] Per-field error display where business rules need surfaced messages
 - [ ] Signal-first state for UI flags; `computed()` for derived; `@let` or `computed()` for 2+ template references
+- [ ] No template method/getter calls for displayed/derived values; use signals/computed/pure pipes/view-model fields
+- [ ] `ChangeDetectionStrategy.OnPush` imported and declared
 - [ ] Companion `.spec.ts` written RED-first at `standard` coverage by default (minimal/full only on explicit request)
 - [ ] Styled utility-first per [`../styling.md`](../styling.md) — layout/spacing via Core UI utilities (`d-flex flex-column gap-16`, `row`/`col-*`, `grid-container`, section spacing `p-16`/`mb-24`), no hand-rolled flex/spacing CSS; Tailwind only if the consumer ships it; spacing px-based 0–200 (multiples of 4); custom `.scss` only when no utility fits (`var(--sd-*)` + `// why:`)
 

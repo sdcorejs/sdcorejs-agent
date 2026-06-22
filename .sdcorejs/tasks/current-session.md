@@ -1,48 +1,52 @@
 ---
-updated_at: 2026-06-20T23:48:16+07:00
-status: complete
-track: generic
-active_skill: skill-creator, sdcorejs-ship, sdcorejs-git
-branch: chore/review-checklists
+updated_at: 2026-06-22T23:13:04+07:00
+status: in_progress
+track: git
+active_skill: sdcorejs-git, verification-before-completion
+branch: chore/frontend-skill-review-rules
 ---
 
 # Current Session Checkpoint
 
 ## User Request
-Review cac thay doi skill/ref hien tai bang skill-creator, neu OK thi tao dung 1 commit va push theo policy an toan.
+Tạo branch, commit, push các thay đổi skill/review rule đã verify, rồi tạo PR hoặc báo blocker xác thực nếu không thể tạo PR.
 
 ## Tasks
-- [x] Nap skill/rules va trang thai repo hien tai
-- [x] Review diff skill/ref de tim finding chan commit
-- [x] Chay verification va branch hygiene
-- [x] Neu OK, tao dung 1 commit va push theo policy an toan
-- [x] Tom tat ket qua, commit/push hoac blocker
+- [x] Kiểm tra worktree, remote và GitHub CLI
+- [x] Tạo branch mới từ `main`
+- [ ] Stage/commit các thay đổi đã verify
+- [ ] Push branch lên `origin`
+- [ ] Tạo PR hoặc báo blocker xác thực rõ ràng
 
 ## Current State
-- Last completed: Review found no blocking skill findings; verification and hygiene probes passed. Switched from protected `main` to `chore/review-checklists` for a one-commit push.
-- In progress: None.
-- Blocked/skipped: None yet.
+- Last completed: Created branch `chore/frontend-skill-review-rules`.
+- In progress: Staging explicit changed paths and committing.
+- Blocked/skipped: `gh auth status` reports GitHub CLI is not logged in; PR creation may require user auth.
 
 ## Artifacts Touched
-- EDIT .sdcorejs/tasks/current-session.md - checkpoint for review/commit/push request
-- EDIT skills/shared/workflow/review.md - Angular/NestJS table-mode review output contract
-- EDIT _refs/angular/review-code.md - Angular checklist additions and severity/gate mapping
-- EDIT _refs/nestjs/review-code.md - NestJS/PostgreSQL/TypeORM/Zod checklist and severity/gate mapping
-- EDIT skills/tracks/angular/sdcorejs-angular.md - Angular finish-tail repair loop uses Gate values
-- EDIT skills/tracks/nestjs/sdcorejs-nestjs.md - NestJS finish-tail repair loop uses Gate values
-- EDIT skills/orchestration/repair-loop.md - blocking finding semantics support Gate values
-- EDIT _refs/orchestration/tail/repair-loop.md - repair-loop reference supports Angular/NestJS table mode
-- EDIT skills/orchestration/parallel-dispatch.md - merge gate supports Angular/NestJS Gate values
-- EDIT .claude/*, codex/skills/*, plugin/* - synced generated mirrors
+- EDIT .sdcorejs/tasks/current-session.md - checkpoint for this request
+- EDIT skills/tracks/angular/sdcorejs-angular.md - Service contract/API/ViewModel rules for Angular generation
+- EDIT _refs/angular/write-code/init-entity.md - field ownership and mapper rules for entity generation
+- EDIT _refs/angular/templates/entity-skeleton.md - model/service template boundary guidance
+- EDIT _refs/angular/templates/orchestrator-step-examples.md - scaffold DTO wording corrected
+- EDIT _refs/angular/templates/example-product.md - example DTO/service boundary guidance
+- EDIT _refs/angular/write-code/admin-screens.md - UI-only admin tree/matrix fields stay in ViewModels
+- EDIT _refs/angular/review-code.md - review checklist/severity/positive rows for Service contract boundary
+- EDIT skills/tracks/nextjs/sdcorejs-nextjs.md - Next.js data contract/ViewModel rules
+- EDIT _refs/nextjs/build-website/review-code.md - review checklist for route/action/fetcher contracts
+- EDIT _refs/nextjs/build-website/write-code/contact-form.md - payload/response/provider/UI-state contract split
+- EDIT _refs/nextjs/build-website/write-code/pages-and-blocks.md - content loader to section prop boundary
+- EDIT .claude/*, codex/skills/*, plugin/* - synced mirrors from source refs/skills
+- GIT branch chore/frontend-skill-review-rules - branch created for commit/PR
 
 ## Verification
 - PASS npm run sync:skills
 - PASS npm run check:skills
-- PASS npm run test
-- PASS git diff --check
-- PASS Unicode/mojibake probe on changed source refs/skills and checkpoint
-- PASS targeted hygiene probes: no conflict markers, no focused tests or debug statements, no env/key credential files; console-output matches are instructional review text only
-- PASS remote check: local HEAD is 0 commits behind origin/HEAD before branching
+- PASS npm run test (12/12 node --test e2e)
+- PASS git diff --check (only LF/CRLF warning for `.cursor/rules/sdcorejs-agent.mdc`)
+- PASS targeted presence probe for Service/API/ViewModel boundary wording across source and mirrors
+- PASS forbidden wording probe: no raw-API equality wording found
+- PENDING post-branch verification before push/PR
 
 ## Resume From Here
-No active work remains in this checkpoint. The final chat response carries the resulting commit hash and push target.
+Stage explicit paths, commit, run fresh verification, push branch, then create PR or provide compare URL if `gh` auth blocks PR creation.
