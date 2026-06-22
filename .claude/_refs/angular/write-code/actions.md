@@ -54,7 +54,7 @@ The decisive question for placement: **does the action operate on the current re
   - Single-record action that requires the full record context → **detail header**
   - Action that runs against N selected rows → **list `selector.actions`**
   - Quick per-row action without leaving the list → **row action column**
-- Show actions **conditionally on state** (`CREATE` / `UPDATE` / `DETAIL`) + business flags (`approvable`, `editable`, `exportable`, `status === 'PENDING'`, etc.)
+- Show actions **conditionally on state** (`CREATE` / `UPDATE` / `DETAIL`) + business flags (`approvable`, `editable`, `exportable`, `status === 'PENDING'`, etc.). Business flags used in template must be `computed()` signals or precomputed view-model fields, not component methods/getters.
 - Use the project's confirmation service for destructive or sensitive actions (`approve` / `reject` / `delete` / `bulk-*`)
 - For workflow transitions that need a reason, use the **confirm-with-input** variant — operator types a note before submitting
 - After a successful transition: notify success → reload the list / re-load the detail (so workflow status updates in UI)
@@ -70,6 +70,7 @@ The decisive question for placement: **does the action operate on the current re
 - Trigger workflow transitions WITHOUT confirmation for high-impact actions
 - Mix bulk actions into detail-only context (or vice-versa)
 - Hard-code action visibility without considering state AND permission AND business flags
+- Implement action visibility as template-called methods/getters such as `@if (canApprove())`; use `computed()` signals like `approvable()` or a precomputed view model instead
 - Call workflow methods that mutate without first reading current status (race conditions when another tab transitioned the record)
 - Skip permission directive on action buttons even when the route guard covers the page (defense in depth)
 - Forget to reload the list / detail after the transition — user sees stale data
@@ -104,7 +105,7 @@ The literal HTML / TypeScript snippets for action wiring live in this reference 
 <div class="d-flex align-items-center" style="gap: 8px" headerRight>
   <sd-button title="Bỏ qua" (click)="onBack()" color="primary"></sd-button>
 
-  @if (state() === 'DETAIL' && entity()?.id) {
+  @if (state() === 'DETAIL' && entity.id) {
     @if (approvable()) {
       <sd-button
         *sdPermission="'<MODULE>_C_<ENTITY>_APPROVE'; sdPermissionKey: '<module>'"
@@ -173,10 +174,10 @@ onApprove = () => {
       noTitle: 'Quay lại',
       noButtonColor: 'primary',
     })
-    .then(note => this.#service.approve(this.entity()!.id, note))
+    .then(note => this.#service.approve(this.entity.id, note))
     .then(() => {
       this.#notifyService.success('Phê duyệt thành công');
-      return this.loadEntityData(this.entity()!.id);
+      return this.loadEntityData(this.entity.id);
     });
 };
 
@@ -188,10 +189,10 @@ onReject = () => {
       noTitle: 'Quay lại',
       noButtonColor: 'primary',
     })
-    .then(note => this.#service.reject(this.entity()!.id, note))
+    .then(note => this.#service.reject(this.entity.id, note))
     .then(() => {
       this.#notifyService.success('Từ chối thành công');
-      return this.loadEntityData(this.entity()!.id);
+      return this.loadEntityData(this.entity.id);
     });
 };
 
@@ -206,7 +207,7 @@ onSaveAndSubmit = async () => {
     this.#loadingService.show();
     const payload = this.form.getRawValue();
     const saved = this.state() === 'UPDATE'
-      ? await this.#service.update(this.entity()!.id, payload)
+      ? await this.#service.update(this.entity.id, payload)
       : await this.#service.create(payload);
     await this.#service.submit(saved.id);
     this.#notifyService.success('Lưu và gửi duyệt thành công');
@@ -234,8 +235,8 @@ onBulkSubmit = (rows: EntityDTO[]) => {
 onExport = async () => {
   this.#loadingService.show();
   try {
-    const blob = await this.#service.exportExcel(this.entity()!.id);
-    saveAs(blob, `${this.entity()!.code}.xlsx`);
+    const blob = await this.#service.exportExcel(this.entity.id);
+    saveAs(blob, `${this.entity.code}.xlsx`);
   } finally {
     this.#loadingService.hide();
   }
@@ -260,7 +261,7 @@ onExport = async () => {
 
 - Surfacing approve / reject in CREATE / UPDATE (state mismatch → confusing UX + bad data)
 - Skipping the permission directive because "the route guard handles it" (defense in depth + UX: hide the button user can't use)
-- Hard-coding action visibility independent of business state (`@if (true)` instead of `@if (approvable())`)
+- Hard-coding action visibility independent of business state (`@if (true)` instead of a computed `approvable()`)
 - Workflow transitions without reload — user sees stale status until manual refresh
 - Bulk action without row count in confirm prompt
 - Single action button doing both "save" AND "submit" without going through the validation gate

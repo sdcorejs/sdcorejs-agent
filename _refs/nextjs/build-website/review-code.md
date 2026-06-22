@@ -179,7 +179,23 @@ done
 
 Severity: 🔴 Critical for any public POST endpoint.
 
-### 12. Hydration-safe rendering
+### 12. Server/API contract vs Component ViewModel boundary
+
+Route handlers, server actions, fetchers, and service helpers expose a public contract to pages/components. That contract does not need to mirror the raw upstream API or provider response 1:1 when a server-side mapper intentionally transforms it.
+
+Review checks:
+- Every public route/action/fetcher output field is returned or guaranteed by the mapper/service.
+- Every public input field is validated, accepted, or intentionally ignored with a documented reason.
+- Raw upstream types stay behind the server boundary (`CmsPostRaw`, `CrmLeadApiRes`, provider response types) and are mapped before reaching React components.
+- Components do not mutate server DTOs with UI-only fields such as `checked`, `selected`, `expanded`, `children`, `disabled`, `label`, `displayName`, `color`, or `icon`.
+- UI-only fields live in local component state/ViewModels unless the server mapper derives and documents them as part of the public contract.
+- Findings name the layer for ambiguous fields: `Upstream API field`, `Route/action/fetcher output field`, `Component ViewModel field`, or `UI state field`.
+
+Severity:
+- 🟡 Important when false contracts or UI-only fields create maintainability/type-safety risk.
+- 🔴 Critical when the mismatch breaks a form submit, sends an invalid payload, hides required upstream data, or leaks provider-only fields to the client.
+
+### 13. Hydration-safe rendering
 
 Common hydration bugs:
 - `Date.now()` / `Math.random()` / `new Date()` in server render → different on client
@@ -194,7 +210,7 @@ grep -rnE "typeof window" src/app/ src/components/sections/
 
 Severity: 🔴 Critical per occurrence (causes React 18 hydration error).
 
-### 13. `metadataBase` set on root layout
+### 14. `metadataBase` set on root layout
 
 Without `metadataBase`, OG / canonical URLs are relative and break social previews.
 
@@ -205,7 +221,7 @@ grep -nE "metadataBase" src/app/layout.tsx src/lib/seo.ts
 
 Severity: 🟡 Important.
 
-### 14. Bundle hygiene — no client import of server-only modules
+### 15. Bundle hygiene — no client import of server-only modules
 
 Server-only deps (`fs`, `path`, `@aws-sdk`, anything in `lib/server-only/`) MUST NOT be imported from client components.
 
@@ -223,7 +239,7 @@ Severity: 🔴 Critical — server-only modules in client bundle leak secrets / 
 
 ## Severity mapping for this track
 - **🔴 Critical** — build-breaking (`use client` gap, missing `setRequestLocale`), broken URLs (direct `next/link`), XSS (`dangerouslySetInnerHTML`), hydration mismatches, server-only leaks into client, hardcoded VI/EN in prod, unguarded public POST.
-- **🟡 Important** — missing metadata/cache/`metadataBase`, unnecessary `"use client"`, multi-field form without zod.
+- **🟡 Important** — missing metadata/cache/`metadataBase`, unnecessary `"use client"`, multi-field form without zod, false route/action/fetcher model fields, or UI-only state added to server DTOs.
 - **🔵 Minor** — single-field form without zod, style nits.
 - **🟢 Strengths (mirror)** — correct server/client split, typed i18n Link usage, clean cache strategy worth replicating.
 
@@ -238,6 +254,7 @@ Severity: 🔴 Critical — server-only modules in client bundle leak secrets / 
 - **Review every file** — focus on the changed files; whole-site review every time is noise.
 - **"Add more tests" as a finding** — that belongs in `testing/` skill output, not code review.
 - **Linting concerns flagged as Critical** — ESLint handles those; code review focuses on conventions ESLint doesn't enforce.
+- **DTO as client scratch object** — server data models should not be mutated with UI-only fields; use a local ViewModel or mapper-owned derived field.
 
 ## Cross-references
 - Architecture review (modules, layering): `sdcorejs-review` with the `architecture` dimension
