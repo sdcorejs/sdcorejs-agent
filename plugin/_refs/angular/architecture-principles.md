@@ -68,6 +68,30 @@ If `module-a` needs data from `module-b`, the contract goes through `@sdcorejs/a
 
 ---
 
+## 3a. Codebase-first entity reuse
+
+Before generating any model, DTO, interface, type, service, store, repository, or
+API client, scan the target codebase for the primary entity and every related
+entity. External artifacts describe the new contract; existing code decides
+what to reuse, extend, or create.
+
+Rules:
+- Reuse an existing related model/service/type when one exists.
+- Extend existing contracts minimally and compatibly when a new field or method
+  is required.
+- Create a new contract only after searching common file and symbol variants.
+- Model relation ids as `<entity>Id` when the API only returns an id.
+- Reuse summary/minimal relation types for partial nested payloads.
+- Do not inline a full related entity object inside another model when that
+  related entity already has its own contract.
+- Do not create duplicate services such as `OrderCustomerService` when
+  `CustomerService` owns customer API logic.
+
+See `_refs/angular/write-code/reuse-existing-entities.md` for the operational
+preflight used by `sdcorejs-angular`.
+
+---
+
 ## 4. UI components are dumb; services own logic
 
 Component responsibilities:
@@ -289,6 +313,7 @@ When a principle here changes, propagate to:
 - `_refs/angular/core-version.md` — pinned `@sdcorejs/angular` version
 - Core UI components inventory — `node _refs/angular/core-docs-fetch.mjs --list` (on-demand; docs not committed)
 - `_refs/angular/entity-field-types.md` — field-type → form-control mapping
+- `_refs/angular/write-code/reuse-existing-entities.md` — codebase-first model/service/entity reuse preflight
 - `_refs/angular/templates/entity-skeleton.md` — canonical code templates these principles produce
 - `_refs/angular/templates/example-product.md` — worked example end-to-end
 - `sdcorejs-comment-code` + `_refs/orchestration/tail/comment-code.md` — when/how to document WHY these principles applied in a specific decision

@@ -22,6 +22,7 @@ Resolve before generating:
 - Visible columns: every field with `visibleInList: true`
 - Permission codes: `permissionCreate` / `permissionUpdate` / `permissionDelete` (Module → Entity → Action order)
 - Audit columns presence (4 columns by default for primary list pages — see `./init-entity.md` MUST DO §audit-columns)
+- Related entity reuse decisions for select/filter/display fields, from `./reuse-existing-entities.md`
 
 If any of the above is missing, ask the developer rather than guess.
 
@@ -44,6 +45,8 @@ Pick the column pattern by field `type` from the schema. For boolean fields rend
 - Action column always includes Edit + Detail. Add Delete when the user has bulk delete; the bulk-delete handler in `selector.actions` covers row-level delete via "select then delete".
 - Bind the Create button with `*sdPermission`; do not duplicate the route-level permission guard inside the component.
 - Use `@SdTabComponent` so the list opens as a named tab when the host shell uses the tab router pattern.
+- When a column/filter/select references another entity, read `./reuse-existing-entities.md`, reuse the existing related model/summary type and service, and avoid creating duplicate API logic for that related entity.
+- Before adding local formatting, filtering, search, paging, query-param, or copy/download helper code, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` (`DateUtilities`, `NumberUtilities`, `ArrayUtilities`, `FilterUtilities`, `Utilities`, `BrowserUtilities`) when applicable.
 
 ## AI generation checklist
 
@@ -59,3 +62,5 @@ Pick the column pattern by field `type` from the schema. For boolean fields rend
 - [ ] Navigation via `Router.navigate(['create' | 'update', id | 'detail', id], { relativeTo })`
 - [ ] Loading / notify / confirm services injected via `inject()` (not constructor)
 - [ ] Styled utility-first per [`../styling.md`](../styling.md) — Core UI utility classes (`d-flex`, `gap-16`, `justify-content-between`, `w-full`) on the template, no bespoke flex/spacing CSS; Tailwind only if the consumer ships it; component `.scss` near-empty
+- [ ] Related entity fields reuse existing model/summary/service contracts or document why a new contract is required
+- [ ] `@sdcorejs/utils` checked before local list formatter/filter/search/paging/copy/download helpers are written

@@ -13,6 +13,7 @@ Source policy:
 - **Package:** `@sdcorejs/nestjs` v1.0.0 (stable, npm). Node >=18.18.
 - **Peer deps:** `@nestjs/common ^11`, `@nestjs/core ^11`.
 - **Bundled deps:** `@nestjs/passport`, `@nestjs/typeorm`, `@nestjs/bullmq`, `@nestjs/schedule`, `@nestjs/platform-express`, `typeorm`, `reflect-metadata`, `rxjs`, `@sdcorejs/utils`, `axios`, `bullmq`, `passport`, `passport-jwt`.
+- **Utility dependency rule:** generated apps that import `@sdcorejs/utils` directly MUST list it as a direct dependency. Do not rely on it only because `@sdcorejs/nestjs` bundles it.
 - **Optional deps:** `zod ^4`, `jwks-rsa`, `jsonwebtoken`, `ioredis`, `aws-sdk`.
 - **Sub-path exports:** root `@sdcorejs/nestjs`, `/core`, `/auth`, `/services`, `/validation`, `/queue`, `/i18n`, `/features`.
 - **Do not use old preview sub-paths:** `/orm`, `/permission`, `/jwt`, `/context`, `/tenancy`, `/audit`, `/cache`, `/http`, `/file-storage`, `/action-history`, `/job-scheduler`.
@@ -25,6 +26,23 @@ import { ZodValidationGuard, parseZod } from '@sdcorejs/nestjs/validation';
 ```
 
 Root re-exports the common surface for ergonomic imports, but the packs should prefer the canonical sub-paths above.
+
+## Shared Utilities - `@sdcorejs/utils`
+
+Read `_refs/shared/sdcorejs-utils.md` before writing helper/formatter/normalizer/paging/filter utility code. Prefer public subpaths:
+
+```ts
+import {
+  DateUtilities,
+  NumberUtilities,
+  StringUtilities,
+  ValidationUtilities,
+} from '@sdcorejs/utils/fns';
+import type { PagingReq, PagingRes, Filter } from '@sdcorejs/utils/models';
+import { OPERATORS, VALIDATION_PATTERNS } from '@sdcorejs/utils/constants';
+```
+
+Never import `BrowserUtilities` in NestJS code, and never deep-import from `@sdcorejs/utils/dist/*`.
 
 ## Core Building Blocks - `@sdcorejs/nestjs/core`
 

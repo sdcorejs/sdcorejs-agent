@@ -57,7 +57,7 @@ prior versions.
 
 ## Source of truth — core package
 
-Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) for the canonical export inventory + import sub-paths BEFORE generating. Every import in the templates below MUST match a sub-path the catalog documents (`@sdcorejs/nestjs`, `/core`, `/auth`, `/validation`). Do not invent imports. The building blocks come from the catalog's "ORM building blocks" section:
+Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) for the canonical export inventory + import sub-paths BEFORE generating. Every import in the templates below MUST match a sub-path the catalog documents (`@sdcorejs/nestjs`, `/core`, `/auth`, `/validation`). Do not invent imports. Before writing helper/formatter/normalizer/paging/filter/query utility code, also read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior. The building blocks come from the catalog's "ORM building blocks" section:
 
 - `BaseEntity` (extended via the **app's local** `src/common/base-entity.ts`, NOT the lib base — see Step 1), `@Scoped` / `@SearchableFields` decorators (`/core`).
 - `BaseRepository<T>` + `IBaseRepository<T>` (`/core`).

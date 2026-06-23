@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-angular
-description: Angular portal code executor for approved/direct frontend work with confirmed requirements. Use for init portal, admin screens, modules, CRUD entities, list/detail screens, forms/validators, actions, approval/bulk/export buttons, or generic generate-code/go-ahead requests. Loads _refs/angular/write-code/ packs and runs mandatory finish tail. Runtime-localized.
+description: Angular portal code executor for approved/direct frontend work with confirmed requirements. Use for init portal, admin screens, modules, CRUD entities, list/detail screens, forms/validators, actions, approval/bulk/export buttons, reuse of existing related models/services/entities, reuse of @sdcorejs/utils utilities, or generic generate-code/go-ahead requests. Loads _refs/angular/write-code/ packs and runs mandatory finish tail. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, TodoWrite
 ---
 
@@ -36,6 +36,7 @@ For each scope item in the approved plan (or a direct request whose requirements
 | Always — admin screens (account/role/permission [+tenant/department enterprise]) | [`_refs/angular/write-code/admin-screens.md`](_refs/angular/write-code/admin-screens.md) (ALWAYS run, after init-portal) |
 | New module (`src/libs/<module>/`) | [`_refs/angular/write-code/init-module.md`](_refs/angular/write-code/init-module.md) |
 | New entity with full CRUD (model + service + routes + list + detail) | [`_refs/angular/write-code/init-entity.md`](_refs/angular/write-code/init-entity.md) |
+| Entity/model/service reuse preflight before generating or extending entity contracts | [`_refs/angular/write-code/reuse-existing-entities.md`](_refs/angular/write-code/reuse-existing-entities.md) |
 | List page only (entity already exists) | [`_refs/angular/write-code/screen-list.md`](_refs/angular/write-code/screen-list.md) |
 | Detail component — any state (CREATE / UPDATE / DETAIL) or form refinement (validators, FormArray, async validators) | [`_refs/angular/write-code/screen-detail.md`](_refs/angular/write-code/screen-detail.md) |
 | Action buttons — workflow transitions, bulk operations, custom side-effects (export, re-sync, etc.) | [`_refs/angular/write-code/actions.md`](_refs/angular/write-code/actions.md) |
@@ -45,6 +46,10 @@ Read ON DEMAND only — load the one reference for the step you are executing, n
 ### Step 0 — Pre-flight: ensure project summary
 
 Before dispatching ANY reference, run `sdcorejs-explore (summary mode)`. If `<target>/.sdcorejs/summary.md` is missing, it MUST be generated first (`sdcorejs-explore` scans the code map and distills the brief) — this is the gate that stops generation from hallucinating paths / duplicating shared abstractions. If the summary exists, `sdcorejs-explore` reads it and refreshes on drift so dispatch slots into the real architecture. Exception: when this run is itself a brand-new init-portal, there is no project to summarize yet — run summary mode at the END of init instead (see `init-portal.md` Post-init).
+
+Before generating or extending any model, interface, type, service, store, repository, or API client, also run the entity reuse preflight in `_refs/angular/write-code/reuse-existing-entities.md`. This is mandatory for API docs, PRDs, Figma/image/screenshot input, business descriptions, schemas, and any feature with related entities. The codebase is the source of truth for reuse decisions; the external artifact is only the new contract.
+
+Before writing any helper, formatter, validator, mapper, pipe utility, paging/filter helper, random-id helper, query-param helper, upload/download helper, or clipboard/browser helper, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior. The package must be a direct target-project dependency before generated code imports it; do not rely on Core UI's transitive dependencies.
 
 ### Execution order + hand-off
 
@@ -164,6 +169,10 @@ From user input, product docs, design handoff, or semantic inference, construct 
 
 If a matching `design/specs/` or `design/wireframes/` handoff exists, read it before generating UI. Follow its screen/state/copy contract unless it conflicts with approved product criteria; if it conflicts, stop and surface the mismatch instead of silently choosing one.
 
+Before finalizing `EntitySchema`, identify the primary entity and every related entity, scan existing model/interface/type/dto/service/api/repository/store files, and record one decision per entity: `reuse`, `extend`, or `create new`. Relationship fields must point to existing imported types or minimal summary types when those contracts exist; use `<entity>Id` when the API only returns an id. Do not inline a related entity object or create a duplicate model/service after an existing contract is found.
+
+Before outputting code, present a short reuse summary: existing model/service found, imports to reuse, files to extend, files to create, and why duplicate contracts are not being created.
+
 For two worked examples (user-supplied Product fields + inferred Promotion schema), see [`_refs/angular/templates/orchestrator-step-examples.md#step-1--build-entityschema`](_refs/angular/templates/orchestrator-step-examples.md#step-1--build-entityschema).
 
 ### Step 2: Generate per the dispatched reference
@@ -216,6 +225,15 @@ Apply to:
 - Component selector: `{{ entityKebab }}-list`, `{{ entityKebab }}-detail`
 - Route paths: `/{{ entity }}`, `/{{ entity }}/create`
 
+### 2a. Existing entity/service reuse
+
+- Search the target codebase for related entity contracts before creating new model/service/type files.
+- Import and reuse existing related entity models, DTOs, summary types, options, and services.
+- Extend an existing model/service minimally when it lacks the field/method required by the new feature.
+- Preserve compatibility: prefer optional additions, do not rename existing fields without checking usages, and do not change a contract used by another feature without evidence.
+- Create a new model/service only after the reuse search confirms no suitable existing contract and the folder/naming convention is clear.
+- Never inline a full related entity object inside another model when a related entity type already exists.
+
 ### 3. TypeScript Strict Mode
 
 - Use non-null assertions (!) only when 100% certain
@@ -250,6 +268,8 @@ Apply to:
 
 ### MUST DO
 - Show a live progress checklist with **TodoWrite** from the START of generation — one checkbox item per planned unit (each file / screen / entity / pack step) PLUS the finishing steps (tests, review, comments, user-guide). Keep exactly one item `in_progress`; flip it to `completed` the moment that unit is done and start the next. Update after EACH task, never batch at the end — this is how the user tracks progress. Create it before writing the first file.
+- Run the entity reuse preflight before generating model/service/entity code; identify primary + related entities, scan existing model/interface/type/dto/service/api/repository/store files, and decide reuse/extend/create new before writing code.
+- Run the `@sdcorejs/utils` reuse preflight before writing helper/formatter/validator/mapper/pipe utility code; report which utilities were reused and why any custom helper remains necessary.
 - After generating UI, show the **Core UI usage summary** table (every `@sdcorejs/angular` component/service/directive actually used + a one-line, feature-specific purpose, in the user's language) so the user sees the building blocks at a glance. List only what was used. Persist the same table into the module user guide at write-user-guide.
 - Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / comments / user-guide / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
 - Tests are mandatory and written RED-first at `standard` coverage by default (see the TDD Gate). They are surfaced (default ON) in the finish gate so the user can opt out or change level — but never silently skipped. NEVER ask a separate "which coverage level?" question outside the gate.
@@ -265,6 +285,9 @@ Apply to:
 - Skip test generation, defer it to "later", or block spec writing behind a coverage-level question — specs are a required deliverable, written RED-first at `standard` by default.
 - Generate portal code that requires end users to open the Keycloak console to manage accounts or roles.
 - Skip the `admin-screens` pack even when the user's request focuses on a domain entity — the admin layer is always present.
+- Create duplicate model/service/type/store/repository/API-client files for a related entity that already has a usable contract in the project.
+- Inline a full related entity object inside another model when an imported related model or summary type exists.
+- Recreate helper behavior already covered by `@sdcorejs/utils` (`DateUtilities`, `NumberUtilities`, `StringUtilities`, `ValidationUtilities`, `ArrayUtilities`, `FilterUtilities`, `Utilities`, `ObjectUtilities`, `ColorUtilities`, `BrowserUtilities`) or deep-import from `@sdcorejs/utils/dist/*`.
 
 ## Validation Checklist
 
@@ -273,6 +296,10 @@ Before returning generated code:
 ✅ Each production file (model / service / list / detail) has a corresponding `.spec.ts` written RED before the file was created
 ✅ All imports are correct (no circular dependencies)
 ✅ All fields from EntitySchema are included
+✅ Existing related models/services were scanned and reused or minimally extended before any new contract was created
+✅ `@sdcorejs/utils` was checked before writing helper/formatter/validator/mapper/pipe utility code
+✅ No duplicate model/service/type exists for the same domain entity
+✅ Relationship fields use imported existing types or `<entity>Id` instead of unnecessary inline object shapes
 ✅ Form validation matches field requirements
 ✅ `{{ entityKebab }}.mock-data.ts` exists with 20–40 domain-realistic seed rows
 ✅ Seed rows use realistic domain values derived from inferred field schema, not generic placeholders

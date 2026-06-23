@@ -46,6 +46,14 @@ interface FieldConfig {
   selectApiEndpoint?: string;      // '/api/departments' → return { data: [...], total: 0 }
   selectApiValueField?: string;    // 'id' (default)
   selectApiLabelField?: string;    // 'name' (default)
+
+  // Relationship metadata. Fill these after `_refs/angular/write-code/reuse-existing-entities.md`
+  // scans the codebase and decides reuse / extend / create new.
+  relationEntity?: string;         // 'customer'
+  relationType?: 'id' | 'summary' | 'object';
+  relationModel?: string;          // 'Customer', 'CustomerSummary', 'CustomerOption'
+  relationService?: string;        // 'CustomerService'
+  relationImportPath?: string;     // existing import path to reuse
   
   // Validation messages
   errorMessage?: string;
@@ -95,8 +103,28 @@ interface EntitySchema {
   hasDelete?: boolean;             // default: true
   hasExcel?: boolean;              // default: false
   hasBulkUpdate?: boolean;         // default: false (toggle isActivated, etc.)
+
+  // Entity reuse preflight result
+  relatedEntities?: Array<{
+    entity: string;                // 'customer'
+    decision: 'reuse' | 'extend' | 'create new';
+    model?: string;                // existing or new model/type name
+    service?: string;              // existing or new service name
+    importPath?: string;           // where reused contract is imported from
+    notes?: string;                // why this decision is safe
+  }>;
 }
 ```
+
+## Relationship Field Rules
+
+Before finalizing relationship fields, read `_refs/angular/write-code/reuse-existing-entities.md`.
+
+- API returns only a relation id → use a field such as `customerId` and set `relationType: 'id'`.
+- API returns a full nested object → reuse the existing model if it matches and set `relationType: 'object'`.
+- API returns partial related data → reuse an existing summary/option/basic type when available and set `relationType: 'summary'`.
+- If no summary type exists, create the summary type near the related entity model, not inline inside the primary entity model.
+- Do not create a duplicate model/service for a related entity that already has a suitable contract.
 
 ## Example: Employee Schema
 

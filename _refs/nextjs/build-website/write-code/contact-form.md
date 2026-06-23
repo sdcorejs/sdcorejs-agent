@@ -32,6 +32,8 @@ Prerequisites:
 
 ### Step 1 — Zod schema (shared client + server)
 
+Before adding custom validation helpers, string helpers, regex constants, phone/email helpers, query-param helpers, or normalization utilities, read `_refs/shared/sdcorejs-utils.md`. Keep zod as the runtime request contract, but reuse `@sdcorejs/utils` constants/helpers such as `ValidationUtilities` and `VALIDATION_PATTERNS` when they fit. Custom helpers such as HTML escaping are allowed only when the package does not provide the required behavior.
+
 ```typescript
 // src/lib/contact-schema.ts
 import { z } from 'zod';
@@ -398,6 +400,7 @@ if (slackWebhook) {
 
 ### MUST DO
 - Share zod schema between client + server
+- Reuse `@sdcorejs/utils` for covered string/format/normalization/query/browser helpers before adding local helper code
 - Validate on BOTH client (UX) and server (security)
 - Rate-limit by IP (5 / 15 min default, tune if abuse seen)
 - Use Resend (or SendGrid) — never SMTP from edge runtime
@@ -416,6 +419,7 @@ if (slackWebhook) {
 - Send email synchronously without try/catch — Resend failures shouldn't 500 silently
 - Expose API key in client component
 - Skip rate limit "we'll add it later" — bots find every form
+- Recreate helper behavior already covered by `@sdcorejs/utils` or import browser-only utilities from the API route
 
 ## Anti-patterns
 - **Validating only on submit** — let users fix one field at a time; consider on-blur validation for better UX

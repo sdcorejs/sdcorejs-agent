@@ -32,6 +32,7 @@ Code templates referenced from the init-portal reference pack [`init-portal.md`]
   },
   "dependencies": {
     "<CORE_UI_PACKAGE_NAME>": "<CORE_VERSION>",
+    "@sdcorejs/utils": "^1.1.4",
     "@angular/animations": "^20.3.18",
     "@angular/common": "^20.3.18",
     "@angular/compiler": "^20.3.18",

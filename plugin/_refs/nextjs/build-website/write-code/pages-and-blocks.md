@@ -202,6 +202,7 @@ Process:
 - Apply `"use cache"` + `cacheLife()` per page (from `caching.md`)
 - Wire `generateMetadata` per page (from `seo.md`)
 - Add new pages to sitemap + locale routing
+- Before adding date/number/string/array/filter/query/random/browser helper code in page, section, or content mapper files, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior
 
 ### MUST NOT
 - Hardcode Vietnamese (or English) strings inside section components
@@ -211,6 +212,7 @@ Process:
 - Use `dangerouslySetInnerHTML` for content (XSS risk; if rich text needed, use a markdown renderer with sanitizer)
 - Add a section to one page only — if it's used once, it's not a section (just inline in the page)
 - Compose pages with >7 sections — that's information overload; split or trim
+- Recreate helper behavior already covered by `@sdcorejs/utils`, or import `BrowserUtilities` from server components
 
 ## Anti-patterns
 - **Hardcoded products array inside ProductsSection.tsx** — common starter-project mistake. Solution: move to `content/<locale>/products.ts`.

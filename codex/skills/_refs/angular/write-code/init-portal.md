@@ -79,7 +79,7 @@ Before generating, clarify with user:
 
 ```
 portal-new/
-├── package.json                   # <CORE_UI_PACKAGE_NAME>: <CORE_VERSION> (npm)
+├── package.json                   # <CORE_UI_PACKAGE_NAME>: <CORE_VERSION> (npm) + @sdcorejs/utils
 ├── tsconfig.json                  # baseUrl + @sample paths
 ├── angular.json                   # build/serve configs
 ├── src/
@@ -107,7 +107,7 @@ portal-new/
 
 ### Step 2: Dependency Management
 
-Run `npm install`. See `package.json` template below — pins `<CORE_UI_PACKAGE_NAME>@<CORE_VERSION>`.
+Run `npm install`. See `package.json` template below — pins `<CORE_UI_PACKAGE_NAME>@<CORE_VERSION>` and includes `@sdcorejs/utils` as a direct dependency for shared helpers.
 
 ### Step 3: Build Verification
 
@@ -168,7 +168,7 @@ Report pass/fail summary and failing spec names. If E2E missing, report blocker.
 - Do not place `SD_PERMISSION_CONFIGURATION` / `SD_UPLOAD_FILE_CONFIGURATION` in module or route providers with `multi: true` and expect root services to consume them
 - Do not enable permission checks by default (`disabled = true`) when permission backend/data source is not ready
 - Do not mix two permission-code conventions in the same project
-- Do not generate external scaffold-generator files, package scripts, or dependencies. This skill renders files directly from refs/templates.
+- Do not generate external scaffold-generator files, package scripts, or dependencies beyond the standard template dependencies. This skill renders files directly from refs/templates.
 
 ---
 
@@ -305,6 +305,7 @@ After generation:
 - [ ] `_refs/angular/templates/init-portal-templates.md` read and every listed section rendered into the target project (no external baseline copy used)
 - [ ] `public/logo.png` copied from `_refs/angular/assets/logo.png`; `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
 - [ ] `package.json` pins `<CORE_UI_PACKAGE_NAME>@<CORE_VERSION>` (npm, not tgz)
+- [ ] `package.json` includes `@sdcorejs/utils` as a direct dependency
 - [ ] `tsconfig.json` has `"baseUrl": "./"` + `"@sample": ["./src/libs/sample"]` + `"@sample/*": ["./src/libs/sample/*"]`
 - [ ] `app.routes.ts` lazy-loads sample lib + Core UI layout
 - [ ] `SampleModule.useValue({ host: environment.sampleBackendUrl })` wired at root in `main.ts` (no route-level providers)

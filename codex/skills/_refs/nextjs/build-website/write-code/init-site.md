@@ -46,6 +46,7 @@ Notes:
 ```bash
 cd <site-slug>
 npm install next-intl @vercel/og lucide-react resend zod clsx tailwind-merge
+npm install @sdcorejs/utils
 npm install -D @types/node prettier prettier-plugin-tailwindcss eslint eslint-config-next
 ```
 
@@ -58,6 +59,7 @@ Why each:
 | `resend` | Default email service for `contact-form.md` (swap to SendGrid if user picks) |
 | `zod` | Form validation (client + API route in `contact-form.md`) |
 | `clsx`, `tailwind-merge` | Conditional class composition for components |
+| `@sdcorejs/utils` | Shared pure helpers, models, constants; see `_refs/shared/sdcorejs-utils.md` |
 | `prettier-plugin-tailwindcss` | Auto-sorts Tailwind classes in formatter |
 
 If user picked Cloudflare hosting during brainstorming → also: `npm install -D @cloudflare/next-on-pages`.
@@ -108,7 +110,7 @@ If user picked Plausible → no extra dep (use plain script tag).
 │   │   ├── seo.ts                      ← generateMetadata factory — seo.md
 │   │   ├── og.ts                       ← dynamic OG helpers — og-preview.md
 │   │   ├── email.ts                    ← Resend wrapper — contact-form.md
-│   │   └── utils.ts                    ← cn(), formatters
+│   │   └── utils.ts                    ← cn(), project glue only; shared helpers come from @sdcorejs/utils
 │   └── middleware.ts                   ← next-intl middleware — i18n.md
 ├── public/
 │   ├── images/                         ← user-uploaded images
@@ -299,6 +301,7 @@ Once the bootstrap is green, run `sdcorejs-explore (summary mode)` in WRITE mode
 - Create all folders listed above, even if empty (other sub-skills assume them)
 - Write `.env.example` committed; `.env.local` gitignored
 - Run typecheck + dev-server smoke test before claiming "init done"
+- Keep generic helpers out of `src/lib/utils.ts` when `@sdcorejs/utils` already covers the behavior
 
 ### MUST NOT
 - Generate page content yet — that's `pages-and-blocks.md` after theme + i18n exist
@@ -307,6 +310,7 @@ Once the bootstrap is green, run `sdcorejs-explore (summary mode)` in WRITE mode
 - Commit `.env.local` or any file with real secrets
 - Use Pages Router patterns (`pages/`, `getServerSideProps`, `_app.tsx`, `_document.tsx`)
 - Skip the smoke test to "save time"
+- Recreate Date/Number/String/Validation/Array/Filter/Object/Color/Browser utilities in `src/lib/utils.ts`
 
 ## Anti-patterns
 - Putting page logic in `src/app/page.tsx` instead of `src/app/[locale]/page.tsx` — breaks i18n

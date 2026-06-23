@@ -194,7 +194,26 @@ grep -rnE "typeof window" src/app/ src/components/sections/
 
 Severity: 🔴 Critical per occurrence (causes React 18 hydration error).
 
-### 13. `metadataBase` set on root layout
+### 13. Shared utility reuse with `@sdcorejs/utils`
+
+Generic helpers should come from `@sdcorejs/utils` or a thin project wrapper, not be recreated in `src/lib/utils.ts`, route handlers, hooks, or components.
+
+Probe:
+```bash
+rg -n "(formatDate|formatNumber|toCurrency|isValidEmail|isEmail|isPhone|isUrl|copyToClipboard|randomId|generateUuid|parseQuery|arraySearch|dateDiff|deepMerge|stableStringify)" src/lib src/app src/components 2>/dev/null
+rg -n "from ['\"]@sdcorejs/utils/dist" src/ 2>/dev/null
+rg -n "BrowserUtilities" src/app src/lib 2>/dev/null
+```
+
+Review rules:
+- If generated code imports `@sdcorejs/utils`, verify `package.json` has a direct dependency.
+- Flag duplicate Date/Number/String/Validation/Array/Filter/Object/Color/Browser helpers when `@sdcorejs/utils` covers the behavior.
+- Keep `next-intl` `useFormatter()`/`getFormatter()` for locale-bound UI output. Do not replace correct locale formatting with generic utilities.
+- `BrowserUtilities` is only valid in client files with `'use client'`; it is forbidden in route handlers, metadata, sitemap, server components, and other server-only code.
+
+Severity: 🟡 Important for duplicate business-visible date/number/filter behavior or server import of browser utilities; 🔵 Minor for small local wrappers with a clear reason.
+
+### 14. `metadataBase` set on root layout
 
 Without `metadataBase`, OG / canonical URLs are relative and break social previews.
 
@@ -205,7 +224,7 @@ grep -nE "metadataBase" src/app/layout.tsx src/lib/seo.ts
 
 Severity: 🟡 Important.
 
-### 14. Bundle hygiene — no client import of server-only modules
+### 15. Bundle hygiene — no client import of server-only modules
 
 Server-only deps (`fs`, `path`, `@aws-sdk`, anything in `lib/server-only/`) MUST NOT be imported from client components.
 
