@@ -19,7 +19,7 @@ Placeholders used throughout: `{{ module }}`, `{{ entity }}` (kebab), `{{ entity
 ## Full `list.component.ts` template
 
 ```typescript
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { SdPageComponent } from '@sdcorejs/angular/modules';
 import { BaseService } from '@{{ module }}/services';
@@ -32,6 +32,7 @@ import { {{ entityPascal }}Service } from '../../services/{{ entityKebab }}.serv
 
 @Component({
   selector: '{{ entityKebab }}-list',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     SdButton,
     SdTable,

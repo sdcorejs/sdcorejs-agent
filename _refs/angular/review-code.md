@@ -93,6 +93,16 @@ Run these checks in addition to the SDCoreJS portal checks below. Report results
 - Recommend mapping non-camel DTO fields to camelCase view models at the boundary when it improves UI maintainability.
 - Flag inconsistent, vague, or misleading names as `Low`, or `Medium` when they obscure business rules or data flow.
 
+#### Service contract vs raw API vs ViewModel boundary
+- Treat Service input/output models as the public contract between Service and Component. Do not require `SaveReq`, `CreateReq`, `UpdateReq`, `DTO`, `ListRes`, or `DetailRes` to match the raw backend API 1:1 when a Service/mapper intentionally transforms the payload.
+- Check every public Service model field has a real owner: accepted/processed by a Service method, returned by the Service, guaranteed by a mapper, or explicitly documented as derived.
+- If the raw backend response/request differs from the Service contract, expect internal raw API types near the Service/mapper and a typed mapper into the public DTO/Req shape.
+- Flag public Service model fields that are never accepted, returned, mapped, derived, or tested. These create false contracts for Components and stale UI assumptions.
+- Components must not mutate or extend Service DTOs with UI-only fields such as `label`, `displayName`, `checked`, `selected`, `disabled`, `expanded`, `children`, `color`, or `icon`.
+- If UI needs additional fields, require either a Service-owned derived DTO field with mapper/tests, or a component-local ViewModel (`RowVM`, `TreeNodeVM`, `DetailVM`) created from the DTO.
+- In findings, name the layer for ambiguous fields: `BE API field`, `Service input/output field`, `Component ViewModel field`, or `UI state field`.
+- Severity: default `Medium` + `REQUIRED`; use `High` + `BLOCKER` when a false Service contract can break save/load, hide required backend data, corrupt payloads, or produce stale/incorrect UI state.
+
 #### Modern Angular APIs
 - Prefer modern Angular APIs when the project has adopted that convention: `input()` over `@Input()`, `output()` over `@Output()`, `model()` for appropriate two-way bindings, `viewChild()` / `viewChildren()` over decorators, `inject()` over constructor DI, and `signal` / `computed` / `effect` for suitable local reactive state.
 - Do not flag old APIs when the project has not migrated, or when the file intentionally follows an older local convention.
@@ -114,10 +124,13 @@ Run these checks in addition to the SDCoreJS portal checks below. Report results
 - Keep recommendations small and behavior-preserving unless the risk clearly requires larger refactoring.
 
 #### Template performance
-- Check expensive function calls in templates, especially calls that allocate, filter/sort/map large arrays, call services, or depend on mutable state.
-- Check complex template expressions; move business logic to `computed`, pure pipes, selectors, or a view model.
+- Check component method/getter calls in template interpolation, property bindings, class/style bindings, and structural conditions, especially calls that format labels, compute permissions/visibility, allocate, filter/sort/map arrays, read services, or depend on mutable state.
+- Treat template-called component methods/getters for displayed or derived values as a review finding even when they look cheap; Angular can re-run them every change-detection cycle and they hide dependencies from OnPush/signal reasoning.
+- Allowed calls: event handlers (`(click)="onSave()"`), Angular signal reads for UI state (`state()`, `saving()`), and pure pipes. Repeated signal reads should use `@let` or `computed()`.
+- Check complex template expressions; move business logic to `computed`, pure pipes, selectors, precomputed maps, or a view model.
 - For list rendering, verify `@for` has a stable `track`, or `*ngFor` has `trackBy` when the list can grow, reorder, or update frequently.
 - Flag large business rules in templates as maintainability/performance risk; prefer precomputed view state.
+- Severity: default `Medium` + `REQUIRED`; use `High` + `BLOCKER` when the call runs inside a large/repeated list, performs allocation/filter/sort/service access, or can cause visible lag/stale data.
 
 #### Style scope & global styles
 - Check additions to global/shared stylesheets such as `styles.scss`, `theme.scss`, `global.scss`, or other shared/global styles.
@@ -142,9 +155,13 @@ Run these checks in addition to the SDCoreJS portal checks below. Report results
 - Flag components that depend on unclear global styles or untraceable external overrides.
 
 #### Change detection
-- For components with many bindings or large lists, consider `ChangeDetectionStrategy.OnPush` when it matches project convention.
+- Require `ChangeDetectionStrategy.OnPush` on every generated or modified Angular component unless the file is explicitly following a documented legacy project exception.
+- Missing `OnPush` is `Medium` + `REQUIRED` by default; use `High` + `BLOCKER` for list/detail components, large forms/tables, high-frequency dashboards, or components already showing change-detection/performance bugs.
+- Verify `ChangeDetectionStrategy` is imported from `@angular/core` and the component decorator declares `changeDetection: ChangeDetectionStrategy.OnPush`.
 - If signals are used, check whether manual subscriptions or mutable state can be reduced safely.
-- Do not treat missing `OnPush` as a severe issue when the project has not made it mandatory; default to `Low`/`Medium` based on measured or plausible impact.
+- Editable entity/form model objects bound through Core UI `[model]` / `[(model)]` must stay as plain objects/ViewModels, not `signal<Partial<...>>`; flag `entity()`, `drawerEntity()`, or `readonly entity = signal(...)` in those bindings as `Medium` + `REQUIRED`.
+- Under `OnPush`, if a plain object/ViewModel is assigned after an `await`/promise callback, verify `ChangeDetectorRef.markForCheck()` is called after the assignment unless another signal or observable binding drives the refresh.
+- Do not waive `OnPush` for new sdcorejs-angular output merely because older project files lack it; review generated/modified code against the current standard.
 
 #### Forms
 - Check validation rules, error messages, disabled/loading/submitting states, and prevention of double submit.
@@ -223,6 +240,11 @@ Run these checks in addition to the SDCoreJS portal checks below. Report results
 - Standalone-first unless the project is hybrid; no mixing without reason
 - Interceptor wiring: HTTP interceptors registered via `HTTP_INTERCEPTORS` multi-provider (or `withInterceptors`) in the right ORDER — `SdUnauthorizedInterceptor` (401 → signout) and `SdNoInternetInterceptor` (offline / 503) imported from `@sdcorejs/angular/interceptors`, not hand-rolled. Auth/refresh interceptor before the error-surfacing ones.
 
+### API/service model boundary
+- Service `Req`/`Res`/`DTO`/`Model` types describe the Service contract consumed by components, not necessarily the raw backend API contract.
+- Raw API-only fields should be isolated in internal types/mappers. Component code should consume Service DTOs or local ViewModels, not raw API payloads.
+- UI state fields (`checked`, `selected`, `expanded`, `children`, `disabled`, etc.) should not be added to Service DTOs unless the Service derives and guarantees them.
+
 ### Core UI usage
 - Uses `@sdcorejs/angular/components`, `@sdcorejs/angular/forms`, `@sdcorejs/angular/modules` instead of hand-rolled equivalents
 - If a custom skeleton exists, it is marked with `// CUSTOM_UI: <reason>` and the generation summary mentioned it
@@ -236,11 +258,13 @@ Run these checks in addition to the SDCoreJS portal checks below. Report results
 - Permission codes: `<MODULE>_C_<ENTITY>_<ACTION>` strict format
 
 ### Components
-- `changeDetection: ChangeDetectionStrategy.OnPush` on every list and detail component
+- `changeDetection: ChangeDetectionStrategy.OnPush` on every generated or modified component
 - All injections via `inject()` function, not constructor params
 - Private fields use `#` prefix (`readonly #service = inject(...)`)
 - Mutable UI state uses `signal()`, derived state uses `computed()`, side effects use `effect()`
+- Editable entity/form models bound with Core UI `model` inputs are plain objects/ViewModels, not signals
 - Signals referenced 2+ times in template are extracted via `@let` or `computed()`
+- Template display/visibility/disabled/class/title bindings read signals/computed/pure pipes/view models, not component methods/getters
 - Form uses `FormGroup` with explicit validators; submit gates on `form.invalid → markAllAsTouched`
 
 ### autoId (E2E selectors + inspector) — WARN when missing
@@ -296,8 +320,9 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 - Duplicate model/service/type contracts for a related entity that already exists
 - Inline full related entity objects in another model when a reusable related model/summary type exists
 - Logic in components instead of services
+- Service DTOs used as UI scratch objects, or false DTO fields that the Service never accepts/returns/maps
 - Duplicate permission checks (route guard + in-component `canViewList`)
-- Method calls in template bindings (re-runs every CD cycle)
+- Method/getter calls in template bindings for displayed/derived values (re-runs every CD cycle); event handlers and signal reads are allowed
 - Missing `autoId` on interactive Core UI elements (breaks E2E + `sd-autoid-inspector`) — WARN, dev backfills
 - Hand-rolled UI where a Core UI component fits — check the candidate against the on-demand inventory (`node _refs/angular/core-docs-fetch.mjs --list`)
 - A Core UI component used without its required configuration token provided (runtime throw) — `node _refs/angular/core-docs-fetch.mjs --print sd-<name>` lists each component's setup requirements
@@ -309,7 +334,7 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 ## Severity and gate mapping for this track
 - **🔴 Critical** + `BLOCKER` — security, broken behavior, data loss, serious data leak, runtime throw (e.g. a Core UI component missing its required config token — see catalog), Zod/permission gaps, hardcoded API URLs, or leak/crash risk that can freeze/corrupt the system.
 - **🟠 High** + `BLOCKER`/`REQUIRED` — core business flow breakage, likely runtime error, serious performance problem, data-integrity risk, duplicate domain model/service contracts that can fork API/business behavior, uncleaned subscription/resource leak in an important screen/service, unsafe `any`/cast in critical data-contract logic, global style leakage that causes severe multi-screen UI breakage, or an oversized component with proven state/side-effect bugs that block release.
-- **🟡 Medium** + `REQUIRED`/`RECOMMENDED` — actionable issue that can affect maintainability, UX, build/lint warnings, type safety, testability, E2E reliability, or future change risk; examples include unreasoned `any`, `as any`, missing standalone cleanup, missing important `autoId`, method calls in template bindings, constructor DI when the project requires `inject()`, hand-rolled UI where Core UI fits, one-component styles added globally, undocumented `::ng-deep` / `ViewEncapsulation.None`, or components that are too broad to test/maintain safely.
+- **🟡 Medium** + `REQUIRED`/`RECOMMENDED` — actionable issue that can affect maintainability, UX, build/lint warnings, type safety, testability, E2E reliability, or future change risk; examples include unreasoned `any`, `as any`, missing standalone cleanup, missing important `autoId`, missing `ChangeDetectionStrategy.OnPush`, method/getter calls in template bindings for displayed/derived values, Service DTO fields that are not accepted/returned/mapped, UI-only fields added to Service DTOs, duplicate utility/domain helper behavior, constructor DI when the project requires `inject()`, hand-rolled UI where Core UI fits, one-component styles added globally, undocumented `::ng-deep` / `ViewEncapsulation.None`, or components that are too broad to test/maintain safely.
 - **🟢 Low** + `RECOMMENDED`/`OPTIONAL` — naming, format, style, readability, comment, clean-code, minor `autoId`, custom SCSS that duplicates a utility in a small/local way, or convention inconsistencies that do not change behavior.
 - **🔵 Info / Kudos** + `INFO` — useful positive note or praise.
 - **🟢 Pass / Compliant** / **✅ Checked** + `PASS` — reviewed criterion passed.
@@ -322,7 +347,11 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 - Core UI `autoId` values are stable, meaningful, and complete.
 - Component members have correct visibility and no unused state/methods.
 - Component responsibilities are cohesive, or split with clear contracts where complexity justifies it.
+- Service models expose a truthful Service-Component contract, with raw API mapping isolated and UI-only state kept in ViewModels/signals.
 - Modern Angular APIs are used consistently with project convention.
+- Components declare `ChangeDetectionStrategy.OnPush`.
+- Templates avoid method/getter calls for displayed/derived bindings and use `computed()`, signals, pure pipes, or view models instead.
+- Editable entity/form model objects stay as plain ViewModels when bound through Core UI model inputs.
 - Observable/timer/listener/resource cleanup is handled with `takeUntilDestroyed`, `AsyncPipe`, `toSignal`, or explicit cleanup.
 - Styles are component-scoped where appropriate, global styles have clear app-wide purpose, and custom CSS does not duplicate available utilities.
 
@@ -346,11 +375,11 @@ Score each of these 13 categories. For every category output **Score (1–10)**,
 2. **Component design** — single responsibility, smart/dumb split, `input()/model()/output()` surface, content projection vs prop drilling, component size, standalone.
 3. **Dependency injection** — `inject()` fn, `providedIn` scope correctness, no service-locator abuse, injection tokens for config, no circular deps, no logic-heavy constructors.
 4. **RxJS usage** — teardown (`takeUntilDestroyed` / `async` pipe, no manual leak-prone `subscribe`), no nested `subscribe`, correct operators (switch/merge/concat/exhaust), error handling, no over-RxJS where a signal fits.
-5. **Signal adoption** — `signal/computed/effect` used correctly, `effect` not used as `computed`, no redundant `BehaviorSubject` where a signal fits, `toSignal`/`toObservable` at boundaries, no signal writes inside `computed`.
+5. **Signal adoption** — `signal/computed/effect` used correctly, `effect` not used as `computed`, no redundant `BehaviorSubject` where a signal fits, editable entity/form model objects are not wrapped in signals for Core UI model binding, `toSignal`/`toObservable` at boundaries, no signal writes inside `computed`.
 6. **Change detection strategy** — `OnPush` everywhere, no method calls in bindings, `@for` `track`, zoneless-readiness (no `setTimeout`/manual `markForCheck` hacks), minimal CD surface.
 7. **Template quality & styling** — native control flow (`@if/@for/@let`, no `*ngIf/*ngFor`), `track` keys, `async` pipe over manual subscribe, no heavy expressions/logic in template, signals referenced 2+ times extracted. Styling is utility-first (Core UI STYLE-GUIDE classes or consumer Tailwind); component `.scss` near-empty; bespoke CSS that duplicates a shipped utility (flex/spacing/color/typography) is a finding; spacing px-based 0–200.
 8. **Forms implementation** — typed reactive forms (`FormGroup<...>`), explicit validators + async validators where needed, cross-field rules, submit gating (`invalid → markAllAsTouched`), no template-driven for complex forms, error surfacing.
-9. **API layer design** — typed DTOs (`SaveReq`/`DTO`), `SdApiService` (no raw `HttpClient` ad-hoc), URLs from environment (no hardcode), error/retry/caching strategy, logic in services not components, mock-first parity, codebase-first reuse of existing domain model/service/entity contracts.
+9. **API layer design** — typed Service contracts (`SaveReq`/`DTO`/`ListRes`/`DetailRes`), clear raw API mapping when backend shape differs, no false DTO fields, UI-only state kept in ViewModels/signals, `SdApiService` (no raw `HttpClient` ad-hoc), URLs from environment (no hardcode), error/retry/caching strategy, logic in services not components, mock-first parity, codebase-first reuse of existing domain model/service/entity contracts.
 10. **Testing strategy** — spec exists alongside each file (missing = 🔴), coverage `standard` by default (or explicit override), written RED-first, runnable (no `// TODO`), deps mocked, meaningful assertions (not just "created"), integration where behavior matters.
 11. **Accessibility** — semantic HTML (`<nav>/<main>/<section>`), `aria-label`/`title` on icon buttons, `role="toolbar"`, keyboard + focus management, AND `autoId` on interactive elements (E2E + `sd-autoid-inspector` selectors).
 12. **Security** — XSS (`bypassSecurityTrust*` / `[innerHTML]` audited), token storage (httpOnly cookie vs localStorage), permission gating (route guard + directive, not duplicated logic), no secrets / prod source maps / leaked dev API URLs, interceptor order.

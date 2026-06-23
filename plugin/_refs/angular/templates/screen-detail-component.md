@@ -39,11 +39,15 @@ type ViewState = 'CREATE' | 'UPDATE' | 'DETAIL';
 ```
 
 Stored as a signal: `state = signal<ViewState>('DETAIL')`.
+Editable entity/form models are plain objects/ViewModels, not signals: `entity: Partial<EntitySaveReq & { id?: string }> = {}`.
+
+Generated detail components must set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component`.
+Derived flags such as `isDetail`, `canSave`, titles, and tab color must be `computed()`, not getters or template-called methods.
 
 ### Imports
 
 ```typescript
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, signal, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SdPageComponent, SdPermissionDirective } from '@sdcorejs/angular/modules';
@@ -55,6 +59,13 @@ import {
 import { SdLoadingService, SdNotifyService } from '@sdcorejs/angular/services';
 import { {{ entityPascal }}DTO, {{ entityPascal }}SaveReq } from '../../services/{{ entityKebab }}.model';
 import { {{ entityPascal }}Service } from '../../services/{{ entityKebab }}.service';
+```
+
+When the shell stores loaded entity data outside a signal, inject `ChangeDetectorRef`:
+
+```typescript
+entity: Partial<{{ entityPascal }}SaveReq & { id?: string }> = {};
+readonly #cdr = inject(ChangeDetectorRef);
 ```
 
 ### FormGroup definition
@@ -115,7 +126,7 @@ private async loadEntityData(id: string): Promise<void> {
   try {
     this.#loading.show();
     const dto = await this.#service.detail(id);
-    this.entity.set(dto);
+    this.entity = dto;
     this.form.patchValue(dto, { emitEvent: false });
     this.form.markAsPristine();
     const displayName = dto.name ?? dto.code ?? id;
@@ -127,6 +138,7 @@ private async loadEntityData(id: string): Promise<void> {
     } else {
       this.form.enable();
     }
+    this.#cdr.markForCheck();
   } catch (err) {
     this.#notify.warning('Không tìm thấy bản ghi, quay về danh sách');
     this.#router.navigate(['../../'], { relativeTo: this.#route, replaceUrl: true });
@@ -138,20 +150,21 @@ private async loadEntityData(id: string): Promise<void> {
 
 ### Header buttons (template)
 
-The `headerRight` block in the `sd-page` template branches on `state()`. Always include Back. Show Edit (DETAIL only) or Save (CREATE/UPDATE only) conditionally.
+The `headerRight` block in the `sd-page` template branches on `state()`. Always include Back. Show Edit (DETAIL only) or Save (CREATE/UPDATE only) conditionally. Because `state()` is read more than once, cache it with `@let`.
 
 ```html
 <div class="d-flex align-items-center gap-8" headerRight>
+  @let _state = state();
   <sd-button title="Quay lại" type="outline" prefixIcon="arrow-left" size="sm" (click)="onBack()"></sd-button>
 
-  @if (state() === 'DETAIL') {
+  @if (_state === 'DETAIL') {
     <sd-button
       *sdPermission="'<MODULE>_C_<ENTITY>_UPDATE'; sdPermissionKey: '<module>'"
       title="Chỉnh sửa" type="fill" prefixIcon="edit" size="sm" color="primary"
       (click)="onEdit()"
     ></sd-button>
   }
-  @if (state() === 'CREATE' || state() === 'UPDATE') {
+  @if (_state === 'CREATE' || _state === 'UPDATE') {
     <sd-button
       title="Lưu" type="fill" prefixIcon="save" size="sm" color="primary"
       (click)="onSave()"
@@ -170,7 +183,7 @@ onBack(): void {
 
 onEdit(): void {
   // DETAIL → UPDATE transition
-  this.#router.navigate(['../../update', this.entity()!.id], { relativeTo: this.#route });
+  this.#router.navigate(['../../update', this.entity.id], { relativeTo: this.#route });
 }
 ```
 
@@ -181,60 +194,66 @@ onEdit(): void {
 Used by `@SdTabComponent` to brand the tab differently per state:
 
 ```typescript
-get pageTabName(): string {
+readonly pageTabName = computed(() => {
   switch (this.state()) {
     case 'CREATE': return `Tạo mới ${ENTITY_LABEL}`;
     case 'UPDATE': return `Chỉnh sửa ${ENTITY_LABEL}`;
     case 'DETAIL': return `${ENTITY_LABEL} — Chi tiết`;
   }
-}
-get pageTabColor(): string {
+});
+
+readonly pageTabColor = computed(() => {
   switch (this.state()) {
     case 'CREATE': return 'success';
     case 'UPDATE': return 'warning';
     case 'DETAIL': return 'primary';
   }
-}
+});
 ```
 
 ### Form field rendering (template)
 
-For each schema field, render one control. The `[viewed]` / `[readonly]` flag binds to `state() === 'DETAIL'` so the same template serves all three states.
+For each schema field, render one control. The `[viewed]` / `[readonly]` flag binds to a computed `isDetail()` so the same template serves all three states without repeated inline conditions.
+
+```typescript
+readonly isDetail = computed(() => this.state() === 'DETAIL');
+```
 
 ```html
 <!-- IMPORTANT: @sdcorejs/angular form components do NOT implement ControlValueAccessor.
      Bind the parent FormGroup via [form]="form" and the control name via name="...".
      Each component self-registers into form via addControl(...) on init. -->
+@let _isDetail = isDetail();
 
 <!-- String -->
-<sd-input [form]="form" name="code" label="Mã" [viewed]="state() === 'DETAIL'" [required]="true" maxLength="16"></sd-input>
+<sd-input [form]="form" name="code" label="Mã" [viewed]="_isDetail" [required]="true" maxLength="16"></sd-input>
 
 <!-- Number -->
-<sd-input-number [form]="form" name="salary" label="Lương" [viewed]="state() === 'DETAIL'" [min]="0" [decimals]="2"></sd-input-number>
+<sd-input-number [form]="form" name="salary" label="Lương" [viewed]="_isDetail" [min]="0" [decimals]="2"></sd-input-number>
 
 <!-- Date -->
-<sd-date [form]="form" name="birthday" label="Ngày sinh" [viewed]="state() === 'DETAIL'"></sd-date>
+<sd-date [form]="form" name="birthday" label="Ngày sinh" [viewed]="_isDetail"></sd-date>
 
 <!-- Select (static) -->
-<sd-select [form]="form" name="role" label="Chức vụ" [viewed]="state() === 'DETAIL'"
+<sd-select [form]="form" name="role" label="Chức vụ" [viewed]="_isDetail"
   [items]="EMPLOYEE_ROLES" valueField="value" labelField="display"></sd-select>
 
 <!-- Select (dynamic) -->
-<sd-select [form]="form" name="departmentId" label="Phòng ban" [viewed]="state() === 'DETAIL'"
+<sd-select [form]="form" name="departmentId" label="Phòng ban" [viewed]="_isDetail"
   apiEndpoint="/api/departments" valueField="id" labelField="name"></sd-select>
 
 <!-- Boolean -->
-<sd-switch [form]="form" name="isActivated" label="Kích hoạt" [disabled]="state() === 'DETAIL'"></sd-switch>
+<sd-switch [form]="form" name="isActivated" label="Kích hoạt" [disabled]="_isDetail"></sd-switch>
 
 <!-- Textarea -->
-<sd-textarea [form]="form" name="note" label="Ghi chú" [viewed]="state() === 'DETAIL'" rows="5"></sd-textarea>
+<sd-textarea [form]="form" name="note" label="Ghi chú" [viewed]="_isDetail" rows="5"></sd-textarea>
 
 <!-- File upload -->
-<sd-upload-file [form]="form" name="image" label="Hình ảnh" [viewed]="state() === 'DETAIL'"
+<sd-upload-file [form]="form" name="image" label="Hình ảnh" [viewed]="_isDetail"
   [multiple]="false" acceptTypes=".jpg,.png,.gif"></sd-upload-file>
 
 <!-- Rich text -->
-<sd-editor [form]="form" name="description" label="Mô tả" [viewed]="state() === 'DETAIL'"></sd-editor>
+<sd-editor [form]="form" name="description" label="Mô tả" [viewed]="_isDetail"></sd-editor>
 ```
 
 Group fields by section if the schema declares them; otherwise wrap in one `<sd-section title="Thông tin chung">`.
@@ -251,7 +270,7 @@ Edit transition (already in [`#navigation-helpers`](#navigation-helpers)):
 
 ```typescript
 onEdit(): void {
-  this.#router.navigate(['../../update', this.entity()!.id], { relativeTo: this.#route });
+  this.#router.navigate(['../../update', this.entity.id], { relativeTo: this.#route });
 }
 ```
 
@@ -340,11 +359,12 @@ private async loadEntityData(id: string): Promise<void> {
   try {
     this.#loading.show();
     const dto = await this.#service.detail(id);
-    this.entity.set(dto);
+    this.entity = dto;
     this.form.patchValue(dto);
     this.form.markAsPristine();
     this.pageTitle.set(`Cập nhật: ${dto.name ?? dto.code ?? id}`);
     this.form.enable();   // UPDATE keeps form editable (DETAIL would .disable())
+    this.#cdr.markForCheck();
   } catch (err) {
     this.#notify.warning('Không tìm thấy bản ghi, quay về danh sách');
     this.#router.navigate(['../../'], { relativeTo: this.#route, replaceUrl: true });
@@ -372,7 +392,7 @@ async onSave(): Promise<void> {
       await Promise.all(this.uploadFiles().map(f => f.upload()));
     }
     const payload = this.form.getRawValue() as EntitySaveReq;
-    const id = this.entity()!.id;
+    const id = this.entity.id;
     await this.#service.update(id, payload);
     this.#notify.success('Cập nhật thành công');
     // Navigate back to list (default) OR to detail of the same record (opt-in)

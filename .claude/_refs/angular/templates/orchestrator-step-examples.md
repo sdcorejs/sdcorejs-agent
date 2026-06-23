@@ -109,7 +109,7 @@ const PROMOTION_SCHEMA: EntitySchema = {
 From the `EntitySchema`, generate:
 
 - `<EntityPascal>SaveReq` interface (writable business fields)
-- `<EntityPascal>DTO` type (`SaveReq` + `BaseEntity`)
+- `<EntityPascal>DTO` type (public Service output contract; scaffold default can be `SaveReq` + `BaseEntity`)
 - `<ENTITY>_ROLES` constant when there are static select options
 - JSDoc comments above each field explaining the UI control + validation hints
 - For Vietnamese portals, labels/comments preserve full diacritics
@@ -132,12 +132,16 @@ export interface ProductSaveReq {
   description?: string;
 }
 
+// Scaffold default Service output contract. If the raw API differs, keep an
+// internal ProductApiRes in ProductService and map it into ProductDTO.
 export type ProductDTO = Required<ProductSaveReq> & BaseEntity;
 ```
 
 ## Step 3 — Generate Mock Data + Service
 
 Pattern: one centralized mock data file per entity + a service wired to a localStorage-backed `MockCrudStore`. This step is mandatory after semantic schema inference — the list page should render with real-looking data on first load.
+
+Service model rule: `ProductSaveReq` and `ProductDTO` are what `ProductService` accepts/returns to components. They do not have to match a raw backend response 1:1 when the Service owns a mapper. Do not add UI-only fields such as `checked`, `selected`, `expanded`, `children`, `label`, or `displayName` to these models unless the Service derives and guarantees them.
 
 ### product.service.ts
 

@@ -1,41 +1,47 @@
 ---
-updated_at: 2026-06-23T16:18:00+07:00
+updated_at: 2026-06-23T15:47:06.5628621+07:00
 status: complete
 track: multi
-active_skill: skill-creator, sdcorejs-ship, sdcorejs-git
+active_skill: sdcorejs-git
 branch: chore/review-checklists
 ---
 
 # Current Session Checkpoint
 
 ## User Request
-Fix all pre-main review findings, commit all changes, and push the branch.
+Pull latest main into the review branch, resolve merge conflicts, verify, commit, and push the updated branch.
 
 ## Tasks
-- [x] Doc cac skill ap dung va preflight du an
-- [x] Fix toan bo findings trong source refs/skills
-- [x] Sync mirrors va kiem tra staged/untracked coverage
-- [x] Chay verification/branch-ready checks
-- [x] Commit toan bo thay doi bang Conventional Commit
-- [x] Push branch len remote
-- [x] Bao ket qua kem commit/branch
+- [x] Doc quy tac sdcorejs-git va task protocol
+- [x] Kiem tra trang thai branch truoc khi merge
+- [x] Merge origin/main va xac dinh file conflict
+- [x] Resolve conflict, sync mirror neu can
+- [x] Verify, commit merge va push branch
+- [x] Bao ket qua cuoi cung kem commit/branch
 
 ## Current State
-- Last completed: verification and branch hygiene checks passed; all intended files staged for commit/push.
+- Last completed: merge conflicts resolved and verification passed.
 - In progress: none.
 - Blocked/skipped: none.
 
 ## Artifacts Touched
-- EDIT .sdcorejs/tasks/current-session.md - checkpoint for pre-main review
+- EDIT .sdcorejs/tasks/current-session.md - checkpoint for main merge/conflict resolution
+- EDIT _refs/angular/review-code.md - merged branch reuse guidance with main review standards
+- EDIT _refs/angular/write-code/screen-list.md - merged reuse guidance with OnPush/template guidance
+- EDIT _refs/nestjs/review-code.md - kept shared utility reuse review section
+- EDIT _refs/nextjs/build-website/review-code.md - kept shared utility reuse review section
+- EDIT _refs/nextjs/build-website/write-code/contact-form.md - kept both utility and payload-boundary anti-patterns
+- EDIT skills/tracks/nextjs/sdcorejs-nextjs.md - kept both utility preflight and payload-boundary rules
 
 ## Verification
+- git status --porcelain - pass before merge
+- git merge origin/main - conflicts found and under resolution
 - npm run sync:skills - pass
 - npm run check:skills - pass
 - npm run test - pass (12 node e2e tests)
-- git diff --check - pass
 - git diff --cached --check - pass
-- changed-file mojibake probe - pass
-- branch hygiene staged checks - pass (debug/focused-test/secrets/conflict-marker checks clear; console.log matches are documentation-only review text)
+- git diff --check - pass
+- staged conflict-marker check - pass
 
 ## Resume From Here
-Committed and pushed from branch chore/review-checklists; see final response for commit hash and remote.
+Merge commit and push are complete; see final response for commit hash and remote branch.

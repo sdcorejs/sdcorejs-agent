@@ -81,7 +81,7 @@ export class SdValidators {
 Default starting point: `[form]="form"` + `[(model)]="entity.field"` binding, validation gated at save time. No FormBuilder, no per-field validators in TypeScript — let the template attributes (`required`, `maxlength`, `min`) drive validation.
 
 ```typescript
-import { Component, OnInit, inject, viewChildren } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal, viewChildren } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {
   SdButton,
@@ -95,10 +95,11 @@ import {
 import { SdFormsModule } from '@sdcorejs/angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { [Entity]Service } from '../services/[entity].service';
-import { [Entity]DTO } from '../services/[entity].model';
+import { [Entity]SaveReq } from '../services/[entity].model';
 
 @Component({
   selector: '[entity]-detail',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     SdFormsModule,
     SdButton,
@@ -175,7 +176,7 @@ export class DetailComponent implements OnInit {
   form = new FormGroup({});
   readonly saving = signal(false);
   readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
-  readonly entity = signal<Partial<[Entity]DTO>>({});
+  entity: Partial<[Entity]SaveReq & { id?: string }> = {};
 
   typeOptions = [
     { value: 'A', display: 'Loại A' },
@@ -185,6 +186,7 @@ export class DetailComponent implements OnInit {
   readonly #activatedRoute = inject(ActivatedRoute);
   readonly #router = inject(Router);
   readonly #service = inject([Entity]Service);
+  readonly #cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     const id = this.#activatedRoute.snapshot.paramMap.get('id');
@@ -198,7 +200,8 @@ export class DetailComponent implements OnInit {
 
   async #loadEntity(id: string): Promise<void> {
     try {
-      this.entity.set(await this.#service.detail(id));
+      this.entity = await this.#service.detail(id);
+      this.#cdr.markForCheck();
     } catch (error) {
       console.error(error);
     }
@@ -216,11 +219,11 @@ export class DetailComponent implements OnInit {
         await Promise.all(this.uploadFiles().map(file => file.upload()));
       }
 
-      const currentEntity = this.entity();
-      if (currentEntity.id) {
-        await this.#service.update(currentEntity.id, currentEntity as [Entity]DTO);
+      const { id, ...payload } = this.entity;
+      if (id) {
+        await this.#service.update(id, payload as [Entity]SaveReq);
       } else {
-        await this.#service.create(currentEntity as [Entity]DTO);
+        await this.#service.create(payload as [Entity]SaveReq);
       }
       this.#router.navigate(['..'], { relativeTo: this.#activatedRoute });
     } catch (error) {
@@ -241,13 +244,14 @@ export class DetailComponent implements OnInit {
 Use this shape only when the screen has repeating sub-records (line items, attachments-with-metadata, multi-row config). For flat forms, the lightweight template above is preferred.
 
 ```typescript
-import { Component, OnInit, FormBuilder, Validators, computed, inject, signal } from '@angular/core';
-import { FormGroup, FormArray, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SdInput, SdButton } from 'sd-angular';
 
 @Component({
   selector: '[entity]-detail-advanced',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, SdInput, SdButton],
   template: `
     <!-- NOTE: @sdcorejs/angular form components self-register via [form]+name="..."
@@ -307,6 +311,7 @@ import { SdInput, SdButton } from 'sd-angular';
 })
 export class DetailAdvancedComponent implements OnInit {
   form!: FormGroup;
+  items!: FormArray;
 
   readonly #formBuilder = inject(FormBuilder);
 
@@ -315,11 +320,13 @@ export class DetailAdvancedComponent implements OnInit {
   }
 
   #initializeForm(): void {
+    this.items = this.#formBuilder.array([
+      this.#createItemFormGroup(),
+    ]);
+
     this.form = this.#formBuilder.group({
       name: ['', [Validators.required]],
-      items: this.#formBuilder.array([
-        this.#createItemFormGroup(),
-      ]),
+      items: this.items,
     });
   }
 
@@ -328,10 +335,6 @@ export class DetailAdvancedComponent implements OnInit {
       itemName: ['', [Validators.required]],
       quantity: [1, [Validators.required, Validators.min(1)]],
     });
-  }
-
-  get items(): FormArray {
-    return this.form.get('items') as FormArray;
   }
 
   addItem(): void {
@@ -382,8 +385,8 @@ export class ProductValidators {
 ### `libs/sample/features/product/pages/detail/detail.component.ts`
 
 ```typescript
-import { Component, OnInit, FormBuilder, Validators, inject } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   SdButton,
   SdInput,
@@ -399,9 +402,12 @@ import { ProductService } from '../../services/product.service';
 import { ProductDTO, ProductSaveReq, PRODUCT_CATEGORIES } from '../../services/product.model';
 import { ProductValidators } from '../../validators/product-validators';
 
+type ProductFieldName = 'code' | 'name' | 'price' | 'category' | 'description';
+
 @Component({
   selector: 'product-detail',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     SdButton,
@@ -415,6 +421,7 @@ import { ProductValidators } from '../../validators/product-validators';
   ],
   template: `
     <sd-page [title]="pageTitle()">
+      @let _fieldErrors = fieldErrorMessages();
       <div class="d-flex gap-8" headerRight>
         @if (state() === 'UPDATE') {
           <sd-button
@@ -454,8 +461,8 @@ import { ProductValidators } from '../../validators/product-validators';
               required
               maxlength="32"
               [viewed]="state() === 'DETAIL'">
-              @if (getFieldError('code'); as error) {
-                <span class="text-error">{{ getErrorMessage('code', error) }}</span>
+              @if (_fieldErrors.code; as message) {
+                <span class="text-error">{{ message }}</span>
               }
             </sd-input>
 
@@ -466,8 +473,8 @@ import { ProductValidators } from '../../validators/product-validators';
               required
               maxlength="255"
               [viewed]="state() === 'DETAIL'">
-              @if (getFieldError('name'); as error) {
-                <span class="text-error">{{ getErrorMessage('name', error) }}</span>
+              @if (_fieldErrors.name; as message) {
+                <span class="text-error">{{ message }}</span>
               }
             </sd-input>
 
@@ -487,8 +494,8 @@ import { ProductValidators } from '../../validators/product-validators';
               [min]="0"
               [step]="0.01"
               [viewed]="state() === 'DETAIL'">
-              @if (getFieldError('price'); as error) {
-                <span class="text-error">{{ getErrorMessage('price', error) }}</span>
+              @if (_fieldErrors.price; as message) {
+                <span class="text-error">{{ message }}</span>
               }
             </sd-input-number>
 
@@ -501,8 +508,8 @@ import { ProductValidators } from '../../validators/product-validators';
               valueField="value"
               displayField="display"
               [viewed]="state() === 'DETAIL'">
-              @if (getFieldError('category'); as error) {
-                <span class="text-error">{{ getErrorMessage('category', error) }}</span>
+              @if (_fieldErrors.category; as message) {
+                <span class="text-error">{{ message }}</span>
               }
             </sd-select>
 
@@ -521,10 +528,17 @@ import { ProductValidators } from '../../validators/product-validators';
 export class DetailComponent implements OnInit {
   form!: FormGroup;
   readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
-  readonly entity = signal<Partial<ProductSaveReq>>({});
+  entity: Partial<ProductSaveReq & { id?: string }> = {};
   readonly pageTitle = computed(() => {
     if (this.state() === 'CREATE') return 'Tạo sản phẩm';
     return this.state() === 'DETAIL' ? 'Chi tiết sản phẩm' : 'Cập nhật sản phẩm';
+  });
+  readonly fieldErrorMessages = signal<Record<ProductFieldName, string | null>>({
+    code: null,
+    name: null,
+    price: null,
+    category: null,
+    description: null,
   });
   readonly PRODUCT_CATEGORIES = PRODUCT_CATEGORIES;
 
@@ -532,6 +546,7 @@ export class DetailComponent implements OnInit {
   readonly #activatedRoute = inject(ActivatedRoute);
   readonly #router = inject(Router);
   readonly #productService = inject(ProductService);
+  readonly #cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.#initializeForm();
@@ -563,9 +578,10 @@ export class DetailComponent implements OnInit {
   async #loadEntity(id: string): Promise<void> {
     try {
       const entity = await this.#productService.detail(id);
-      this.entity.set(entity);
+      this.entity = entity;
       this.form.patchValue(entity);
       this.form.markAsPristine();
+      this.#cdr.markForCheck();
     } catch (error) {
       console.error(error);
     }
@@ -574,16 +590,18 @@ export class DetailComponent implements OnInit {
   async onSave(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.#refreshFieldErrorMessages();
       return;
     }
 
     const formValue = this.form.value;
     try {
-      const currentEntity = this.entity();
-      if (currentEntity.id) {
-        await this.#productService.update(currentEntity.id, formValue);
+      const { id } = this.entity;
+      if (id) {
+        await this.#productService.update(id, formValue);
       } else {
-        this.entity.set(await this.#productService.create(formValue));
+        this.entity = await this.#productService.create(formValue);
+        this.#cdr.markForCheck();
       }
       this.#router.navigate(['..'], { relativeTo: this.#activatedRoute });
     } catch (error) {
@@ -592,7 +610,7 @@ export class DetailComponent implements OnInit {
   }
 
   async onDelete(): Promise<void> {
-    const currentEntity = this.entity();
+    const currentEntity = this.entity;
     if (confirm('Are you sure?') && currentEntity.id) {
       try {
         await this.#productService.remove(currentEntity.id);
@@ -607,15 +625,20 @@ export class DetailComponent implements OnInit {
     this.#router.navigate(['..'], { relativeTo: this.#activatedRoute });
   }
 
-  getFieldError(fieldName: string): string | null {
-    const field = this.form.get(fieldName);
-    if (field?.touched && field?.errors) {
-      return Object.keys(field.errors)[0];
-    }
-    return null;
+  #refreshFieldErrorMessages(): void {
+    this.fieldErrorMessages.set({
+      code: this.#messageFor('code'),
+      name: this.#messageFor('name'),
+      price: this.#messageFor('price'),
+      category: this.#messageFor('category'),
+      description: this.#messageFor('description'),
+    });
   }
 
-  getErrorMessage(fieldName: string, errorType: string): string {
+  #messageFor(fieldName: ProductFieldName): string | null {
+    const field = this.form.get(fieldName);
+    if (!field?.touched || !field.errors) return null;
+    const errorType = Object.keys(field.errors)[0];
     const messages: Record<string, Record<string, string>> = {
       code: {
         required: 'Code is required',

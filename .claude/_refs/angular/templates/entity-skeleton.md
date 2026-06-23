@@ -272,8 +272,9 @@ export const [ENTITY_UPPER]_STATUSES = [
   { value: 'INACTIVE', display: 'Không hoạt động' },
 ];
 
-// Save request — used for BOTH create + update payloads.
-// In scaffold mode, single SaveReq covers both POST and PUT.
+// Save request — public Service input contract used for BOTH create + update.
+// In scaffold mode, single SaveReq covers both POST and PUT. If the raw API
+// differs, the Service maps SaveReq to an internal API payload before sending.
 export interface [Entity]SaveReq {
   code?: string;
   name?: string;
@@ -283,10 +284,17 @@ export interface [Entity]SaveReq {
   fileIds?: string[];
 }
 
-// DTO — used for BOTH list rows and detail response.
-// Required<SaveReq> means every editable field is non-optional in response,
-// & BaseEntity adds audit fields (id, createdAt, createdBy, updatedAt, updatedBy).
+// DTO — public Service output contract used for BOTH list rows and detail response.
+// Required<SaveReq> is only the scaffold default: every editable field is
+// non-optional in the Service response, and BaseEntity adds audit fields
+// (id, createdAt, createdBy, updatedAt, updatedBy). When a real backend returns
+// a different raw shape, define an internal [Entity]ApiRes in the Service and
+// map it into this DTO before exposing it to components.
 export type [Entity]DTO = Required<[Entity]SaveReq> & BaseEntity;
+
+// Do not add screen-only fields such as checked, selected, expanded, children,
+// disabled, label, or displayName here unless the Service mapper derives and
+// guarantees them. Prefer a component-local [Entity]RowVM / TreeNodeVM instead.
 
 // ──────────────────────────────────────────────────────────────────
 // Optional — only when business needs diverge from the default
@@ -324,6 +332,11 @@ export class [Entity]Service extends BaseService {
 
   // Optional: Custom API methods
   // async customAction(id: string) { return this.#api.baseUrl; }
+
+  // If the backend API does not match [Entity]DTO / [Entity]SaveReq exactly,
+  // keep raw API types private to this file and map at the Service boundary:
+  // type [Entity]ApiRes = { api_id: string; api_name: string; ... };
+  // private mapFromApi(raw: [Entity]ApiRes): [Entity]DTO { ... }
 }
 ```
 
@@ -505,14 +518,14 @@ STEP 2: Generate spec file from template
 
 STEP 3: Test state transitions and save flow
 - Test CREATE/UPDATE/DETAIL state initialization based on route URL and params
-- Test entity field updates via signal update() method
+- Test entity field updates via plain object assignment
 - Test form invalid gate on save
 - Test create vs update service calls based on entity.id presence
 - Test notification and navigation after save
 
 STEP 4: Ensure spec is runnable
 - No placeholder comments
-- All signal invocations tested via component.state(), component.entity()
+- All signal invocations tested via component.state(); entity model assertions read component.entity as a plain object
 - All expects defined
 - Can run: npx ng test --watch=false --include="...spec.ts"
 ```
@@ -720,14 +733,14 @@ import { [Entity]Service } from '../../services/[entity].service';
             <!-- Add form fields here with [viewed]="_drawerState === 'DETAIL'" -->
             <div class="col-12">
               <sd-input label="Mã"
-                [model]="drawerEntity().code"
+                [model]="drawerEntity.code"
                 (modelChange)="onDrawerFieldChange('code', $event)"
                 [form]="drawerForm" required
                 [viewed]="_drawerState === 'DETAIL'"></sd-input>
             </div>
             <div class="col-12">
               <sd-input label="Tên"
-                [model]="drawerEntity().name"
+                [model]="drawerEntity.name"
                 (modelChange)="onDrawerFieldChange('name', $event)"
                 [form]="drawerForm" required
                 [viewed]="_drawerState === 'DETAIL'"></sd-input>
@@ -762,7 +775,7 @@ export class ListComponent implements OnInit {
   readonly tableOption = signal<SdTableOption<[Entity]DTO> | null>(null);
   drawerForm = new FormGroup({});
   readonly drawerSaving = signal(false);
-  readonly drawerEntity = signal<Partial<[Entity]SaveReq & { id?: string }>>({});
+  drawerEntity: Partial<[Entity]SaveReq & { id?: string }> = {};
   readonly drawerState = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
   readonly drawerTitle = computed(() => {
     const s = this.drawerState();
@@ -805,33 +818,33 @@ export class ListComponent implements OnInit {
 
   onOpenCreate = () => {
     this.drawerState.set('CREATE');
-    this.drawerEntity.set({});
+    this.drawerEntity = {};
     this.drawerForm.reset();
     this.#drawer().open();
   };
 
   #onOpenDetail = (row: [Entity]DTO) => {
     this.drawerState.set('DETAIL');
-    this.drawerEntity.set({ ...row });
+    this.drawerEntity = { ...row };
     this.#drawer().open();
   };
 
   onDrawerEdit = () => { this.drawerState.set('UPDATE'); };
 
   onDrawerFieldChange<K extends keyof [Entity]SaveReq>(key: K, value: [Entity]SaveReq[K]): void {
-    this.drawerEntity.update(prev => ({ ...prev, [key]: value }));
+    this.drawerEntity = { ...this.drawerEntity, [key]: value };
   }
 
   onDrawerSave = async () => {
     if (this.drawerForm.invalid) { this.drawerForm.markAllAsTouched(); return; }
     this.drawerSaving.set(true);
     try {
-      const current = this.drawerEntity();
-      if (current.id) {
-        await this.#[entity]Service.update(current.id, current);
+      const { id, ...payload } = this.drawerEntity;
+      if (id) {
+        await this.#[entity]Service.update(id, payload as [Entity]SaveReq);
         this.#notifyService.success('Cập nhật [entity label] thành công');
       } else {
-        await this.#[entity]Service.create(current);
+        await this.#[entity]Service.create(payload as [Entity]SaveReq);
         this.#notifyService.success('Tạo mới [entity label] thành công');
       }
       this.#drawer().close();
@@ -871,7 +884,7 @@ export const [entity]Routes: Routes = [
 
 ### detail.component.ts
 ```typescript
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import {
   SdButton,
@@ -942,7 +955,7 @@ import { [Entity]Service } from '../services/[entity].service';
         <sd-section>
           <sd-input
             label="Mã"
-            [model]="entity().code"
+            [model]="entity.code"
             (modelChange)="onEntityFieldChange('code', $event)"
             [form]="form"
             required
@@ -952,7 +965,7 @@ import { [Entity]Service } from '../services/[entity].service';
 
           <sd-input
             label="Tên"
-            [model]="entity().name"
+            [model]="entity.name"
             (modelChange)="onEntityFieldChange('name', $event)"
             [form]="form"
             required
@@ -962,7 +975,7 @@ import { [Entity]Service } from '../services/[entity].service';
 
           <sd-textarea
             label="Mô tả"
-            [model]="entity().description"
+            [model]="entity.description"
             (modelChange)="onEntityFieldChange('description', $event)"
             [form]="form"
             maxlength="1000"
@@ -971,7 +984,7 @@ import { [Entity]Service } from '../services/[entity].service';
 
           <sd-switch
             label="Hoạt động"
-            [model]="entity().isActivated"
+            [model]="entity.isActivated"
             (modelChange)="onEntityFieldChange('isActivated', $event)"
             [form]="form"
             [viewed]="isDetail()">
@@ -993,7 +1006,7 @@ import { [Entity]Service } from '../services/[entity].service';
 export class DetailComponent implements OnInit {
   form = new FormGroup({});
   readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
-  readonly entity = signal<Partial<[Entity]SaveReq>>({});
+  entity: Partial<[Entity]SaveReq & { id?: string }> = {};
   readonly pageTitle = computed(() => {
     if (this.state() === 'CREATE') return 'Tạo [Entity Display Name]';
     return this.state() === 'DETAIL' ? 'Chi tiết [Entity Display Name]' : 'Cập nhật [Entity Display Name]';
@@ -1006,6 +1019,7 @@ export class DetailComponent implements OnInit {
   readonly #router = inject(Router);
   readonly #confirmService = inject(SdConfirmService);
   readonly #[entity]Service = inject([Entity]Service);
+  readonly #cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     const url = this.#router.url;
@@ -1023,7 +1037,7 @@ export class DetailComponent implements OnInit {
   }
 
   onEntityFieldChange<K extends keyof [Entity]SaveReq>(key: K, value: [Entity]SaveReq[K]): void {
-    this.entity.update(prev => ({ ...prev, [key]: value }));
+    this.entity = { ...this.entity, [key]: value };
   }
 
   async onSave(): Promise<void> {
@@ -1037,18 +1051,19 @@ export class DetailComponent implements OnInit {
       const fileIds = await Promise.all(
         this.uploadFiles.getUploadedFileInfos().map((f: any) => f.upload())
       );
-      this.entity.update(prev => ({ ...prev, fileIds: fileIds.filter(Boolean) }));
+      this.entity = { ...this.entity, fileIds: fileIds.filter(Boolean) };
     }
 
     try {
-      const currentEntity = this.entity();
+      const { id, ...payload } = this.entity;
 
-      if (currentEntity.id) {
-        await this.#[entity]Service.update(currentEntity.id, currentEntity);
+      if (id) {
+        await this.#[entity]Service.update(id, payload as [Entity]SaveReq);
       } else {
-        const newEntity = await this.#[entity]Service.create(currentEntity);
-        this.entity.set(newEntity);
+        const newEntity = await this.#[entity]Service.create(payload as [Entity]SaveReq);
+        this.entity = newEntity;
         this.state.set('UPDATE');
+        this.#cdr.markForCheck();
       }
 
       this.#router.navigate(['..'], { relativeTo: this.#activatedRoute });
@@ -1058,7 +1073,7 @@ export class DetailComponent implements OnInit {
   }
 
   async onDelete(): Promise<void> {
-    const currentEntity = this.entity();
+    const currentEntity = this.entity;
     if (!currentEntity.id) return;
 
     try {
@@ -1082,7 +1097,8 @@ export class DetailComponent implements OnInit {
 
   async #detail(id: string): Promise<void> {
     try {
-      this.entity.set(await this.#[entity]Service.detail(id));
+      this.entity = await this.#[entity]Service.detail(id);
+      this.#cdr.markForCheck();
     } catch (error) {
       console.error(error);
     }
@@ -1129,7 +1145,7 @@ export * from './services/[entity].model';
 //           while CREATE/UPDATE use editable form controls.
 // Reference: core/templates/angular-starter/src/libs/sample/features/department/pages/detail/detail.component.ts
 
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -1139,7 +1155,7 @@ import { SdInput, SdSelect, SdTextarea } from '<CORE_UI_PACKAGE_NAME>/forms';
 import { SdPageComponent } from '<CORE_UI_PACKAGE_NAME>/modules';
 import { SdLoadingService, SdNotifyService } from '<CORE_UI_PACKAGE_NAME>/services';
 
-import { [Entity]DTO, [Entity]SaveReq } from '../../services/[entity].model';
+import { [Entity]SaveReq } from '../../services/[entity].model';
 import { [Entity]Service } from '../../services/[entity].service';
 
 @Component({
@@ -1148,7 +1164,6 @@ import { [Entity]Service } from '../../services/[entity].service';
   imports: [SdInput, SdSelect, SdTextarea, SdButton, SdSection, SdSectionItem, SdPageComponent],
   template: `
     @let _state = state();
-    @let _entity = entity();
     <sd-page [title]="title()">
       <div class="d-flex align-items-center" style="gap: 8px" headerRight>
         <sd-button title="Quay lại" prefixIcon="replay" (click)="onBack()"></sd-button>
@@ -1163,8 +1178,8 @@ import { [Entity]Service } from '../../services/[entity].service';
         @if (_state === 'DETAIL') {
           <!-- AdaptiveSplitDetail: read-only label-value layout -->
           <sd-section title="Thông tin chung" collapsable>
-            <sd-section-item label="Mã" labelWidth="120px">{{ _entity.code }}</sd-section-item>
-            <sd-section-item label="Tên" labelWidth="120px">{{ _entity.name }}</sd-section-item>
+            <sd-section-item label="Mã" labelWidth="120px">{{ entity.code }}</sd-section-item>
+            <sd-section-item label="Tên" labelWidth="120px">{{ entity.name }}</sd-section-item>
             <!-- Add more sd-section-item for each read-only field -->
           </sd-section>
         } @else {
@@ -1173,13 +1188,13 @@ import { [Entity]Service } from '../../services/[entity].service';
             <div class="row row-sm mx-0">
               <div class="col-6">
                 <sd-input label="Mã"
-                  [model]="_entity.code"
+                  [model]="entity.code"
                   (modelChange)="onFieldChange('code', $event)"
                   [form]="form" required maxlength="32"></sd-input>
               </div>
               <div class="col-6">
                 <sd-input label="Tên"
-                  [model]="_entity.name"
+                  [model]="entity.name"
                   (modelChange)="onFieldChange('name', $event)"
                   [form]="form" required></sd-input>
               </div>
@@ -1210,10 +1225,11 @@ export class DetailComponent implements OnInit {
   readonly #notifyService = inject(SdNotifyService);
   readonly #loadingService = inject(SdLoadingService);
   readonly #[entity]Service = inject([Entity]Service);
+  readonly #cdr = inject(ChangeDetectorRef);
 
   form = new FormGroup({});
   readonly saving = signal(false);
-  readonly entity = signal<Partial<[Entity]DTO>>({});
+  entity: Partial<[Entity]SaveReq & { id?: string }> = {};
   readonly id = signal<string>('');
   readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
   readonly title = computed(() => {
@@ -1236,13 +1252,16 @@ export class DetailComponent implements OnInit {
   }
 
   onFieldChange<K extends keyof [Entity]SaveReq>(key: K, value: [Entity]SaveReq[K]): void {
-    this.entity.update(prev => ({ ...prev, [key]: value }));
+    this.entity = { ...this.entity, [key]: value };
   }
 
   #loadDetail = (id: string) => {
     this.#loadingService.start();
     this.#[entity]Service.detail(id)
-      .then(e => this.entity.set(e))
+      .then(e => {
+        this.entity = e;
+        this.#cdr.markForCheck();
+      })
       .finally(() => this.#loadingService.stop());
   };
 
@@ -1259,13 +1278,13 @@ export class DetailComponent implements OnInit {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.saving.set(true);
     try {
-      const current = this.entity();
-      if (current.id) {
-        await this.#[entity]Service.update(current.id, current);
+      const { id, ...payload } = this.entity;
+      if (id) {
+        await this.#[entity]Service.update(id, payload as [Entity]SaveReq);
         this.#notifyService.success('Cập nhật [entity label] thành công');
         this.#loadDetail(this.id());
       } else {
-        const created = await this.#[entity]Service.create(current);
+        const created = await this.#[entity]Service.create(payload as [Entity]SaveReq);
         this.#notifyService.success('Tạo mới [entity label] thành công');
         this.#router.navigate(['../detail', created.id], { relativeTo: this.#route, state: { replaceTab: true } });
       }

@@ -128,6 +128,15 @@ sdcorejs-explore (memories mode)     ← durable knowledge (when applicable)
 
 The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLAUDE.md / AGENTS.md / copilot-instructions.md). The always-on plumbing steps run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)` — that's how acceptance criteria slip.
 
+## Data Contract & View Model Rules
+
+- Treat server action/API route/fetcher/service input/output types as the public contract consumed by pages and components, not as a required 1:1 copy of the raw upstream API or third-party service response.
+- A server-side mapper may normalize, derive, add, rename, or omit fields. Every public model field exposed to React components must be accepted, processed, returned, or guaranteed by that route/action/fetcher/mapper.
+- Keep raw upstream payload types internal to the server boundary (for example `CrmLeadApiRes`, `CmsPostRaw`, `ContactProviderRes`) and map them into public page/component data types.
+- Client components must not mutate server DTOs with UI-only fields such as `checked`, `selected`, `expanded`, `children`, `disabled`, `label`, `displayName`, `color`, or `icon`.
+- If UI needs extra fields, either derive them in the server mapper as part of the public contract, or define a local component ViewModel/state type and map DTO -> VM.
+- During generation and review, label ambiguous fields by layer: `Upstream API field`, `Route/action/fetcher output field`, `Component ViewModel field`, or `UI state field`.
+
 ## Rules
 
 ### MUST DO
@@ -141,6 +150,7 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Report progress after each pack is applied (1 line per pack)
 - Invoke `sdcorejs-test (tdd mode)` for any pack that writes testable logic (custom hooks, server actions, API route handlers, form validation in `contact-form.md`, utility functions) — write failing tests first, then implement
 - Run the `@sdcorejs/utils` reuse preflight before adding helper logic in `src/lib`, API routes, hooks, forms, content mappers, or client components; report reused utilities and justify any custom helper.
+- Keep raw API/provider payloads behind typed server mappers; expose truthful page/component data contracts only.
 
 ### MUST NOT
 - Generate code from memory when a pack covers the concern — read the pack
@@ -151,6 +161,7 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Mark "done" before `sdcorejs-ship (verify-before-done mode)` returns green
 - Skip `sdcorejs-test (tdd mode)` for packs that write logic — config files and content may bypass; custom code must not
 - Recreate helper behavior already covered by `@sdcorejs/utils`, deep-import from `@sdcorejs/utils/dist/*`, or import `BrowserUtilities` from server components, route handlers, metadata, sitemap, or other server-only code
+- Add UI-only fields to server DTOs or upstream payload types unless the mapper explicitly derives and guarantees them.
 
 ## Anti-patterns
 - Generating ALL pages first, THEN applying theme/i18n — leads to massive refactor when content gets externalized
@@ -158,6 +169,7 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Treating `contact-form.md` as optional — a landing site without a working form is incomplete
 - Re-implementing OG image per page manually instead of using `@vercel/og` factory from `og-preview.md`
 - Bypassing the tail-call chain because "it's a small change" — small changes compound into untracked drift
+- Treating third-party/CMS/API response types as mutable client ViewModels.
 
 ## Cross-references
 - Inputs: approved plan from `sdcorejs-plan` / `sdcorejs-execute-plan` + `sdcorejs-brainstorming` outputs

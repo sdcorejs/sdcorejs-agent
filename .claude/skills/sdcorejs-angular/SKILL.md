@@ -241,7 +241,23 @@ Apply to:
 - Inject services with `readonly #service = inject(...)`
 - Use `@ViewChild` with proper typing
 
-### 4. Form Validation
+### 4. Change Detection & Template Binding Discipline
+
+- Every generated component uses `changeDetection: ChangeDetectionStrategy.OnPush`; import `ChangeDetectionStrategy` from `@angular/core`.
+- UI state is signal-first: use `signal()` for mutable state and `computed()` for derived display values, permissions, titles, disabled states, counts, labels, colors, and visibility flags.
+- Do not call component methods or getters from interpolation, property bindings, class/style bindings, or structural conditions to compute displayed/derived values. Precompute them in `computed()`, a signal, a pure pipe, or a typed view model.
+- Allowed template calls are event handlers such as `(click)="onSave()"`, Angular signal reads such as `state()`, and pure-pipe transforms. If a signal is read 2+ times, use `@let` or a `computed()`.
+
+### 5. Service Contract, API Mapping & View Models
+
+- Treat Service input/output models (`SaveReq`, `CreateReq`, `UpdateReq`, `DTO`, `ListRes`, `DetailRes`) as the public contract between Service and Component, not as a required 1:1 copy of the raw backend API contract.
+- A Service may map, normalize, derive, add, rename, or omit fields at the boundary, but every public Service model field must be accepted, processed, returned, or guaranteed by that Service/mapper.
+- When the raw backend shape differs, define internal raw API types near the Service/mapper (for example `ProductApiRes`) and map them into the public Service DTO before exposing data to components.
+- Components must not mutate or extend Service DTOs with UI-only fields such as `label`, `displayName`, `checked`, `selected`, `disabled`, `expanded`, `children`, `color`, or `icon`.
+- If UI needs extra fields, either the Service mapper owns and documents them as part of the Service contract, or the Component defines a local `ViewModel`/`RowVM`/`TreeNodeVM` and maps `DTO -> VM`.
+- During generation and review, label ambiguous fields by layer: `BE API field`, `Service input/output field`, `Component ViewModel field`, or `UI state field`.
+
+### 6. Form Validation
 
 - Use `Validators.required` for required fields
 - Use `Validators.maxLength(n)` for string length
@@ -249,7 +265,7 @@ Apply to:
 - Use `Validators.pattern(regex)` for patterns
 - Custom validators for complex rules (see `screen-detail.md` form refinement)
 
-### 5. Error Handling
+### 7. Error Handling
 
 - Wrap service calls in try-catch
 - Call `SdLoadingService.show()/hide()` around async operations
@@ -257,7 +273,7 @@ Apply to:
 - Handle cancel/back cases gracefully
 - Revert form state if save fails
 
-### 6. Comments & Documentation
+### 8. Comments & Documentation
 
 - Add JSDoc for public methods
 - Comment complex logic (e.g., form state transitions)
@@ -278,6 +294,9 @@ Apply to:
 - Discover Core UI on-demand before generating (docs are NOT committed — pulled fresh from the published site, version-matched, cached): run `node _refs/angular/core-docs-fetch.mjs --list` to see the component inventory, then `node _refs/angular/core-docs-fetch.mjs <id>` (e.g. `sd-button`, or `--print <id>` for inline content) to read a component's full API BEFORE using it. Before writing any template styling, ALWAYS fetch the Core UI style guide first — `node _refs/angular/core-docs-fetch.mjs --print assets/STYLE-GUIDE` — the single authoritative list of shipped utility classes. It is NOT committed (a stored copy would drift); the fetcher caches it if already pulled (version-matched), so "fetch if not present" is automatic — just run it. Never rely on hardcoded/memorized class names. The fetcher auto-detects the version from EITHER package name (add `--cwd <target-project>` when you run it from outside the project dir, so detection reads the consumer's `package.json` and not the agent's). Prefer a Core UI component when one fits; if none does, scaffold a skeleton + `alert('TODO: ...')` and flag it. It mojibake-guards upstream + falls back to cache offline. If no network AND no cache, fall back to generic Angular Material and flag it.
 - Style utility-first — see [`_refs/angular/styling.md`](../../../_refs/angular/styling.md). Lean on the Core UI utility classes from the STYLE-GUIDE (`d-flex`, `flex-1`, `justify-content-between`, `gap-16`, `m-*`/`p-*`, `w-full`, `rounded-8`, `text-primary`, `T14M`, `row`/`col-*`, `grid-container`/`grid-cols-*`, `mat-elevation-z*`) for layout / spacing / sizing / color / typography. If the consumer app ships Tailwind (`tailwind.config.*` or a `tailwindcss` dependency), use Tailwind utilities too, matching whatever the existing components use. Core UI spacing/sizing utilities are **px-based, integer 0–200** (`mb-16` = 16px — NOT a Bootstrap multiplier); use multiples of 4. Write custom component `.scss` ONLY when no utility fits, keep it token-based (`var(--sd-*)`), and flag each rule with a one-line `// why:`.
 - Enforce the execution order (portal → admin-screens → module → entity → screens → actions) and do not skip or reorder steps.
+- Generate every component with `changeDetection: ChangeDetectionStrategy.OnPush`; treat a missing OnPush decorator entry or missing import as a generation defect to fix before review.
+- Precompute all values displayed or bound in templates with `signal()`, `computed()`, pure pipes, or view-model fields. Do not bind to component methods/getters for display, visibility, title/color, disabled/loading, permission, or list-derived values.
+- Keep Service models as Service-owned contracts. Do not force them to equal the raw backend API when the Service maps the payload, and do not add UI-only fields to `SaveReq`/`DTO` unless the Service actually accepts/returns/derives those fields.
 - Run the full tail chain after the last step.
 
 ### MUST NOT
@@ -289,11 +308,19 @@ Apply to:
 - Inline a full related entity object inside another model when an imported related model or summary type exists.
 - Recreate helper behavior already covered by `@sdcorejs/utils` (`DateUtilities`, `NumberUtilities`, `StringUtilities`, `ValidationUtilities`, `ArrayUtilities`, `FilterUtilities`, `Utilities`, `ObjectUtilities`, `ColorUtilities`, `BrowserUtilities`) or deep-import from `@sdcorejs/utils/dist/*`.
 
+- Omit `ChangeDetectionStrategy.OnPush` from generated components.
+- Call component methods/getters from HTML to compute displayed/bound values, including `{{ getLabel(...) }}`, `[title]="buildTitle()"`, `[disabled]="isDisabled()"`, `@if (canEdit())`, or `[class.foo]="hasFoo()"`. Use `computed()`/signals/pure pipes/view models instead. Event handlers remain valid.
+- Treat Service DTOs as scratch objects for UI-only state (`checked`, `selected`, `expanded`, `children`, `displayName`, etc.). Use a component-local ViewModel or a documented Service mapper output instead.
+
 ## Validation Checklist
 
 Before returning generated code:
 
 ✅ Each production file (model / service / list / detail) has a corresponding `.spec.ts` written RED before the file was created
+✅ Every generated component imports and declares `changeDetection: ChangeDetectionStrategy.OnPush`
+✅ Templates bind only precomputed state (`signal`, `computed`, pure pipe, view model); no method/getter calls for displayed/derived values
+✅ Service public models match the Service/mapper contract, with raw API-only fields isolated behind mapper/internal types
+✅ UI-only fields live in component ViewModels/signals unless the Service explicitly derives and guarantees them
 ✅ All imports are correct (no circular dependencies)
 ✅ All fields from EntitySchema are included
 ✅ Existing related models/services were scanned and reused or minimally extended before any new contract was created

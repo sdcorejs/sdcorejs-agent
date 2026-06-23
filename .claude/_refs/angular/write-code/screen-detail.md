@@ -45,7 +45,7 @@ All literal code lives in [`_refs/angular/templates/screen-detail-component.md`]
 | Shared `loadEntityData(id)` with stale-id recovery (used by DETAIL + UPDATE) | [`#shared-entity-loader-with-stale-id-recovery`](_refs/angular/templates/screen-detail-component.md#shared-entity-loader-with-stale-id-recovery) |
 | `headerRight` template (Back always; Edit on DETAIL; Save on CREATE/UPDATE) | [`#header-buttons-template`](_refs/angular/templates/screen-detail-component.md#header-buttons-template) |
 | `onBack()` + `onEdit()` navigation helpers | [`#navigation-helpers`](_refs/angular/templates/screen-detail-component.md#navigation-helpers) |
-| `pageTabName` / `pageTabColor` per state | [`#conditional-tab-name--color`](_refs/angular/templates/screen-detail-component.md#conditional-tab-name--color) |
+| `pageTabName` / `pageTabColor` computed values per state | [`#conditional-tab-name--color`](_refs/angular/templates/screen-detail-component.md#conditional-tab-name--color) |
 | Per-field rendering snippets (`sd-input`, `sd-select`, `sd-date`, `sd-upload-file`, `sd-editor`, etc.) | [`#form-field-rendering-template`](_refs/angular/templates/screen-detail-component.md#form-field-rendering-template) |
 | **CREATE-specific:** state detection + `applyDefaults()` + `onSave()` | [`#create-state`](_refs/angular/templates/screen-detail-component.md#create-state) |
 | **UPDATE-specific:** state detection + optional loader override + `onSave()` | [`#update-state`](_refs/angular/templates/screen-detail-component.md#update-state) |
@@ -201,15 +201,19 @@ Start lightweight, tighten later:
 
 ### Signal-first UI state
 
-The `FormGroup` itself stays imperative, but everything around it should be signal-driven:
+The `FormGroup` itself stays imperative. Use signals for UI state, and keep editable entity/form models as plain objects/ViewModels when using Core UI `[model]` / `[(model)]` binding:
 
-- `state`, `entity`, `loading`, `saving` → `signal()`
+- `state`, `loading`, `saving` -> `signal()`
+- `entity: Partial<ProductSaveReq & { id?: string }>` -> plain object/ViewModel
 - `isDetail`, `canSubmit`, `pageTitle`, `pageTabColor` → `computed()`
 - `effect()` only for side effects (route param sync, reload), never as a replacement for `computed()`
+- The component decorator must include `changeDetection: ChangeDetectionStrategy.OnPush`; import `ChangeDetectionStrategy` from `@angular/core`.
+- Under `OnPush`, inject `ChangeDetectorRef` and call `markForCheck()` after async assignment to a plain object/ViewModel.
+- Template bindings for displayed/derived values must read signals/computed values, pure pipes, or view-model fields. Do not call component methods/getters in interpolation, property/class bindings, or `@if`/`@for` conditions.
 
 ```typescript
 readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
-readonly entity = signal<Partial<ProductSaveReq>>({});
+entity: Partial<ProductSaveReq & { id?: string }> = {};
 readonly pageTitle = computed(() =>
   this.state() === 'CREATE' ? 'Tạo mới' : 'Chi tiết'
 );
@@ -223,11 +227,14 @@ If a signal is referenced **2 or more times** in the template:
 
 If referenced only once: invoke directly. Goal — reduce getter invocations during change-detection cycles.
 
+This rule is about signal reads only. Do not replace method/getter calls with repeated template calls; replace them with `computed()`, `signal()`, pure pipes, or prebuilt maps such as `fieldErrorMessages()`.
+
 ### MUST DO ✅
 
 - Lightweight `new FormGroup({})` allowed by default; add typed validators only when business rules are stable
+- `ChangeDetectionStrategy.OnPush` declared on the detail component
 - Required field validation enforced at save (`form.invalid` → `markAllAsTouched()` → notify; do not let invalid submits through)
-- Use `[form]="form"` + `[(model)]="entity.field"` as the default binding pattern (Core UI form components self-register via `[form]+name`; do NOT use `formControlName` — they do not implement `ControlValueAccessor`)
+- Use `[form]="form"` + `[(model)]="entity.field"` as the default binding pattern, where `entity` is a plain object/ViewModel (Core UI form components self-register via `[form]+name`; do NOT use `formControlName` — they do not implement `ControlValueAccessor`)
 - Use Vietnamese labels / messages / notify for VI portals (full diacritics); permission codes + route paths stay English
 - Use grid `row row-sm` for form sections (compact spacing)
 - For relation fields, read `./reuse-existing-entities.md`; reuse existing related model/summary types and services, use `<entity>Id` when the API only returns an id, and do not inline the related entity shape when a contract exists
@@ -242,14 +249,15 @@ If referenced only once: invoke directly. Goal — reduce getter invocations dur
 - Over-design validators at CREATE stage when business rules are still in flux
 - Allow form submission while invalid
 - Duplicate validation logic across save / submit / approve handlers — funnel through one gate
-- Store mutable form-screen UI state in plain mutable fields/getters instead of signals
+- Wrap editable entity/form model objects in `signal()` when binding with Core UI `[model]` / `[(model)]`
+- Call component methods/getters from template bindings to compute displayed values, field errors, permissions, titles, colors, disabled states, or visibility
 - Overuse signal invocations in template without considering the 2+ times rule
 - Calling `service.detail(id)` in CREATE — there is no id yet
 - Use `[viewed]="true"` on form fields in CREATE state
 - Show approve / reject / edit buttons in CREATE
 - Upload files AFTER `service.create(...)` / `service.update(...)` — orphans blobs on failure
 - Forget to call `form.enable()` after `patchValue` in UPDATE (form stays disabled if shell defaulted to disable)
-- Reuse the same submit handler with `if (this.entity().id) update else create` BUT forget to set `state` properly — keep state-aware branching explicit
+- Reuse the same submit handler with `if (this.entity.id) update else create` BUT forget to set `state` properly — keep state-aware branching explicit
 - Hardcode the success navigation target without checking user preference
 - Forget `data.permission` on any of `/create`, `/update/:id`, `/detail/:id`
 
@@ -273,6 +281,8 @@ If referenced only once: invoke directly. Goal — reduce getter invocations dur
 - [ ] Related entity controls import/reuse existing model/summary/service contracts or document why a new contract is required
 - [ ] Per-field error display where business rules need surfaced messages
 - [ ] Signal-first state for UI flags; `computed()` for derived; `@let` or `computed()` for 2+ template references
+- [ ] No template method/getter calls for displayed/derived values; use signals/computed/pure pipes/view-model fields
+- [ ] `ChangeDetectionStrategy.OnPush` imported and declared
 - [ ] Companion `.spec.ts` written RED-first at `standard` coverage by default (minimal/full only on explicit request)
 - [ ] Styled utility-first per [`../styling.md`](../styling.md) — layout/spacing via Core UI utilities (`d-flex flex-column gap-16`, `row`/`col-*`, `grid-container`, section spacing `p-16`/`mb-24`), no hand-rolled flex/spacing CSS; Tailwind only if the consumer ships it; spacing px-based 0–200 (multiples of 4); custom `.scss` only when no utility fits (`var(--sd-*)` + `// why:`)
 

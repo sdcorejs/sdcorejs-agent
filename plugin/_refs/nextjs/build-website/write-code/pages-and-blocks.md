@@ -24,6 +24,11 @@ Prerequisites:
 
 This is the #1 rule that separates a production-grade landing site from a throwaway. Without it, adding i18n or wiring a CMS later requires a full component rewrite.
 
+Content contract boundary:
+- Content loaders/getters map locale JSON, CMS data, or upstream API payloads into section prop types before rendering.
+- Section props are the public component contract; they do not have to match raw CMS/API fields 1:1.
+- UI-only fields such as `selected`, `expanded`, `checked`, `disabled`, `children`, `label`, or `displayName` stay in local component ViewModels/state unless the content getter derives and documents them as part of the section prop contract.
+
 ## Section library — what's in `src/components/sections/`
 
 | Section | File | Use case | Props |
@@ -196,6 +201,7 @@ Process:
 ### MUST DO
 - Compose pages from sections — no monolithic page.tsx
 - Externalize ALL strings to content files; sections receive props
+- Map raw CMS/API/content shapes into typed section props at the content loader boundary
 - Use tokens from `theme.md` for color / spacing — never raw hex/Tailwind colors
 - `next/image` for every image, with `alt` + `sizes` (mandatory)
 - Server component by default; `"use client"` only when interactivity demands
@@ -207,6 +213,7 @@ Process:
 ### MUST NOT
 - Hardcode Vietnamese (or English) strings inside section components
 - Inline data arrays inside section components (move to `content/<locale>/`)
+- Mutate section prop data with UI-only state; create a local ViewModel/state shape instead
 - Skip `alt` on images
 - Use `<img>` over `next/image`
 - Use `dangerouslySetInnerHTML` for content (XSS risk; if rich text needed, use a markdown renderer with sanitizer)
