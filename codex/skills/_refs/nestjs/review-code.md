@@ -160,6 +160,14 @@ Run these checks in addition to the SDCoreJS NestJS conventions below. Report re
 - Avoid duplicating business rules across layers; centralize in domain/service/schema where appropriate.
 - Comments should explain why, not restate what the code does.
 
+#### Shared utility reuse
+- Check whether generated code imports `@sdcorejs/utils`; if yes, verify `package.json` lists it as a direct dependency instead of relying on `@sdcorejs/nestjs` transitive dependencies.
+- Flag duplicate helpers that recreate `DateUtilities`, `NumberUtilities`, `StringUtilities`, `ValidationUtilities`, `ArrayUtilities`, `FilterUtilities`, `Utilities`, `ObjectUtilities`, `ColorUtilities`, shared models, or shared constants from `@sdcorejs/utils`.
+- Pay special attention to report/export formatting, paging/filter/query helpers, random/UUID helpers, date normalization, money/rounding logic, and schema regex constants.
+- `BrowserUtilities` must never appear in NestJS code.
+- Keep Zod schemas as the runtime boundary. Utilities can support normalization/constants, but do not replace request validation.
+- Classify duplicated utility behavior as `Medium`; use `High` when date/number/money/filter duplication can fork API results, reports, or persisted values.
+
 ### 1. Layering — controller → service → repository → entity
 
 Controllers must NOT touch the repository directly. Services must NOT call other controllers. Repositories are the ONLY place TypeORM imports live in feature code.

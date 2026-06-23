@@ -46,6 +46,24 @@ Run these checks in addition to the SDCoreJS portal checks below. Report results
 - Recommend type guards, schema validation, explicit interfaces, optional chaining, null checks, control-flow narrowing, or refactoring the source type instead of casting.
 - Classify risky casts as `Medium`, or `High` when they can cause likely runtime/data-integrity failure.
 
+#### Domain model/service reuse
+- For generated or changed model/service/entity code, identify the primary entity and related entities visible in API payloads, DTOs, forms, selects, filters, and service calls.
+- Search reviewed scope and nearby project conventions for existing model/interface/type/dto/service/api/repository/store contracts before accepting newly created ones.
+- Flag duplicate or near-duplicate contracts such as `Customer`, `CustomerModel`, `CustomerDto`, `ICustomer`, `CustomerResponse`, `CustomerOption`, `CustomerService`, or `CustomerApiService` created under another feature when a suitable contract already exists.
+- Flag inline related entity object shapes inside another model when an imported related model/summary/option type exists or should live near the related entity.
+- For relation ids, verify the model uses `<entity>Id` instead of inventing a full object unless the API returns or the UI hydrates that object.
+- For partial nested relation payloads, prefer existing `<Entity>Summary`, `<Entity>Option`, or `<Entity>BasicInfo` types; if missing, recommend adding a summary type near the related entity model rather than inlining it.
+- For related entity data calls, verify the existing related service is reused or minimally extended instead of creating action-specific duplicate services.
+- Classify duplicate domain contracts as `High` when they can fork API/business behavior or corrupt data mapping, otherwise `Medium`; classify a missing reuse preflight summary as `Low`/`Medium` based on risk.
+
+#### Shared utility reuse
+- Check whether the target project depends on `@sdcorejs/utils` directly or through a project wrapper. If generated code imports the package directly, verify `package.json` lists it as a direct dependency.
+- Flag duplicate helpers that recreate `DateUtilities`, `NumberUtilities`, `StringUtilities`, `ValidationUtilities`, `ArrayUtilities`, `FilterUtilities`, `Utilities`, `ObjectUtilities`, `ColorUtilities`, or `BrowserUtilities` behavior.
+- Pay special attention to Angular pipes, validators, mappers, list filters, export/download helpers, random-id helpers, query-param helpers, and clipboard/upload/download code.
+- `BrowserUtilities` must only run in browser-side Angular code; any SSR/server tooling usage needs a guard or alternate implementation.
+- Accept a custom helper only when it adds domain-specific behavior not covered by the package and has focused tests around that behavior.
+- Classify duplicated utility behavior as `Medium`; use `High` when duplicate date/number/money/filter behavior can fork business results or user-visible formatting.
+
 #### Core UI `autoId`
 - When Core UI components/elements are used, verify every interactive/testable element that requires `autoId` receives one.
 - Check `autoId` is meaningful, stable, traceable, kebab-case, and reflects domain/screen/action/element, for example `user-profile-save-button`, `order-filter-status-select`, `payment-method-card-input`.
@@ -299,6 +317,8 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 - Mutable plain class fields where `signal()` would be correct
 - `effect()` used as `computed()`
 - Hardcoded API URLs
+- Duplicate model/service/type contracts for a related entity that already exists
+- Inline full related entity objects in another model when a reusable related model/summary type exists
 - Logic in components instead of services
 - Service DTOs used as UI scratch objects, or false DTO fields that the Service never accepts/returns/maps
 - Duplicate permission checks (route guard + in-component `canViewList`)
@@ -313,8 +333,8 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 
 ## Severity and gate mapping for this track
 - **🔴 Critical** + `BLOCKER` — security, broken behavior, data loss, serious data leak, runtime throw (e.g. a Core UI component missing its required config token — see catalog), Zod/permission gaps, hardcoded API URLs, or leak/crash risk that can freeze/corrupt the system.
-- **🟠 High** + `BLOCKER`/`REQUIRED` — core business flow breakage, likely runtime error, serious performance problem, data-integrity risk, uncleaned subscription/resource leak in an important screen/service, unsafe `any`/cast in critical data-contract logic, global style leakage that causes severe multi-screen UI breakage, or an oversized component with proven state/side-effect bugs that block release.
-- **🟡 Medium** + `REQUIRED`/`RECOMMENDED` — actionable issue that can affect maintainability, UX, build/lint warnings, type safety, testability, E2E reliability, or future change risk; examples include unreasoned `any`, `as any`, missing standalone cleanup, missing important `autoId`, missing `ChangeDetectionStrategy.OnPush`, method/getter calls in template bindings for displayed/derived values, Service DTO fields that are not accepted/returned/mapped, UI-only fields added to Service DTOs, constructor DI when the project requires `inject()`, hand-rolled UI where Core UI fits, one-component styles added globally, undocumented `::ng-deep` / `ViewEncapsulation.None`, or components that are too broad to test/maintain safely.
+- **🟠 High** + `BLOCKER`/`REQUIRED` — core business flow breakage, likely runtime error, serious performance problem, data-integrity risk, duplicate domain model/service contracts that can fork API/business behavior, uncleaned subscription/resource leak in an important screen/service, unsafe `any`/cast in critical data-contract logic, global style leakage that causes severe multi-screen UI breakage, or an oversized component with proven state/side-effect bugs that block release.
+- **🟡 Medium** + `REQUIRED`/`RECOMMENDED` — actionable issue that can affect maintainability, UX, build/lint warnings, type safety, testability, E2E reliability, or future change risk; examples include unreasoned `any`, `as any`, missing standalone cleanup, missing important `autoId`, missing `ChangeDetectionStrategy.OnPush`, method/getter calls in template bindings for displayed/derived values, Service DTO fields that are not accepted/returned/mapped, UI-only fields added to Service DTOs, duplicate utility/domain helper behavior, constructor DI when the project requires `inject()`, hand-rolled UI where Core UI fits, one-component styles added globally, undocumented `::ng-deep` / `ViewEncapsulation.None`, or components that are too broad to test/maintain safely.
 - **🟢 Low** + `RECOMMENDED`/`OPTIONAL` — naming, format, style, readability, comment, clean-code, minor `autoId`, custom SCSS that duplicates a utility in a small/local way, or convention inconsistencies that do not change behavior.
 - **🔵 Info / Kudos** + `INFO` — useful positive note or praise.
 - **🟢 Pass / Compliant** / **✅ Checked** + `PASS` — reviewed criterion passed.
@@ -359,7 +379,7 @@ Score each of these 13 categories. For every category output **Score (1–10)**,
 6. **Change detection strategy** — `OnPush` everywhere, no method calls in bindings, `@for` `track`, zoneless-readiness (no `setTimeout`/manual `markForCheck` hacks), minimal CD surface.
 7. **Template quality & styling** — native control flow (`@if/@for/@let`, no `*ngIf/*ngFor`), `track` keys, `async` pipe over manual subscribe, no heavy expressions/logic in template, signals referenced 2+ times extracted. Styling is utility-first (Core UI STYLE-GUIDE classes or consumer Tailwind); component `.scss` near-empty; bespoke CSS that duplicates a shipped utility (flex/spacing/color/typography) is a finding; spacing px-based 0–200.
 8. **Forms implementation** — typed reactive forms (`FormGroup<...>`), explicit validators + async validators where needed, cross-field rules, submit gating (`invalid → markAllAsTouched`), no template-driven for complex forms, error surfacing.
-9. **API layer design** — typed Service contracts (`SaveReq`/`DTO`/`ListRes`/`DetailRes`), clear raw API mapping when backend shape differs, no false DTO fields, UI-only state kept in ViewModels/signals, `SdApiService` (no raw `HttpClient` ad-hoc), URLs from environment (no hardcode), error/retry/caching strategy, logic in services not components, mock-first parity.
+9. **API layer design** — typed Service contracts (`SaveReq`/`DTO`/`ListRes`/`DetailRes`), clear raw API mapping when backend shape differs, no false DTO fields, UI-only state kept in ViewModels/signals, `SdApiService` (no raw `HttpClient` ad-hoc), URLs from environment (no hardcode), error/retry/caching strategy, logic in services not components, mock-first parity, codebase-first reuse of existing domain model/service/entity contracts.
 10. **Testing strategy** — spec exists alongside each file (missing = 🔴), coverage `standard` by default (or explicit override), written RED-first, runnable (no `// TODO`), deps mocked, meaningful assertions (not just "created"), integration where behavior matters.
 11. **Accessibility** — semantic HTML (`<nav>/<main>/<section>`), `aria-label`/`title` on icon buttons, `role="toolbar"`, keyboard + focus management, AND `autoId` on interactive elements (E2E + `sd-autoid-inspector` selectors).
 12. **Security** — XSS (`bypassSecurityTrust*` / `[innerHTML]` audited), token storage (httpOnly cookie vs localStorage), permission gating (route guard + directive, not duplicated logic), no secrets / prod source maps / leaked dev API URLs, interceptor order.

@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-nextjs
-description: Next.js website code executor for approved/direct site builds with confirmed requirements. Use for bootstrap, theme, pages/sections, SEO/OG, i18n, caching/ISR, responsive fixes, contact form, or content quality. Loads _refs/nextjs/build-website/write-code/ packs; use sdcorejs-review for existing-site audits. Runs mandatory finish tail. Runtime-localized.
+description: Next.js website code executor for approved/direct site builds with confirmed requirements. Use for bootstrap, theme, pages/sections, SEO/OG, i18n, caching/ISR, responsive fixes, contact form, content quality, or reuse of @sdcorejs/utils utilities. Loads _refs/nextjs/build-website/write-code/ packs; use sdcorejs-review for existing-site audits. Runs mandatory finish tail. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Bash, TodoWrite
 ---
 
@@ -32,6 +32,8 @@ Do NOT invoke if:
 ## Step 0 — Pre-flight: ensure project summary
 
 Before reading the plan or dispatching, run `sdcorejs-explore (summary mode)`. For an EXISTING site (taking over / extending), if `<target>/.sdcorejs/summary.md` is missing it MUST be generated first (`sdcorejs-explore` scans the code map and distills the brief) so generation slots into the real app-router / component / content structure instead of guessing. For a brand-new site (`init-site` in scope), there is nothing to summarize yet — run summary mode AFTER init scaffolds the project.
+
+Before writing any helper, formatter, validator, mapper, paging/filter helper, random-id helper, query-param helper, upload/download helper, clipboard/browser helper, API-route utility, hook utility, or `src/lib/utils.ts` addition, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior. Keep `next-intl` for locale-bound UI formatting; use `@sdcorejs/utils` for shared pure helper behavior. The package must be a direct target-project dependency before generated code imports it.
 
 ## Dispatch table
 
@@ -143,6 +145,7 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Run the tail-call chain in full — no shortcuts
 - Report progress after each pack is applied (1 line per pack)
 - Invoke `sdcorejs-test (tdd mode)` for any pack that writes testable logic (custom hooks, server actions, API route handlers, form validation in `contact-form.md`, utility functions) — write failing tests first, then implement
+- Run the `@sdcorejs/utils` reuse preflight before adding helper logic in `src/lib`, API routes, hooks, forms, content mappers, or client components; report reused utilities and justify any custom helper.
 - Keep raw API/provider payloads behind typed server mappers; expose truthful page/component data contracts only.
 
 ### MUST NOT
@@ -153,6 +156,7 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Apply packs out of order (e.g. pages before theme)
 - Mark "done" before `sdcorejs-ship (verify-before-done mode)` returns green
 - Skip `sdcorejs-test (tdd mode)` for packs that write logic — config files and content may bypass; custom code must not
+- Recreate helper behavior already covered by `@sdcorejs/utils`, deep-import from `@sdcorejs/utils/dist/*`, or import `BrowserUtilities` from server components, route handlers, metadata, sitemap, or other server-only code
 - Add UI-only fields to server DTOs or upstream payload types unless the mapper explicitly derives and guarantees them.
 
 ## Anti-patterns

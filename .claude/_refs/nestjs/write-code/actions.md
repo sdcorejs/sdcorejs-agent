@@ -64,6 +64,11 @@ App-local helpers (emitted by `init-project`, not the lib):
 - `badRequest(code, data?)` (`src/common/errors`) — throws a code-based 400 the i18n exception filter localizes. *(Ground: ref app `src/common/errors.ts`.)*
 - `AdminAuthGuard` (`src/common/admin-auth.guard`) — class-level guard that authenticates + loads permission codes into context. (`enterprise`; `simple` uses the core `AuthGuard`)
 
+Shared utility helpers:
+
+- Before adding formatter, normalizer, paging/filter helper, random-id helper, query-param helper, or export/report utility code, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior.
+- `BrowserUtilities` is browser-only and MUST NOT be imported in NestJS code.
+
 This pack is grounded throughout in the ref app's rich `crm` task feature:
 
 - `src/modules/crm/services/task.service.ts` — `mine` / `team` / `createDTO` / `updateDTO` / `transition` / `exportReportSummary`, cross-module `@Inject(IUserService)` / `@Inject(ITeamService)` / `@Inject(IEmployeeService)`, `SdContext`, `badRequest`, permission-gated `mapDTO`.

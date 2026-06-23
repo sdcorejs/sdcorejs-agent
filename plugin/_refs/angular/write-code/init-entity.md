@@ -18,11 +18,19 @@ This reference assumes the target feature module is already known. If the reques
 
 For common entity forms with around 5-6 fields, prefer a side-drawer detail UI before using a full page detail.
 
+Before generating or extending any model, interface, type, service, store, repository, or API client, read `./reuse-existing-entities.md` and complete its reuse preflight.
+
+Before writing formatter, validator, mapper, pipe helper, mock-data helper, paging/filter helper, random-id helper, query-param helper, upload/download helper, or clipboard/browser helper code, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior. Do not create local Date/Number/String/Validation/Array/Filter/Object/Color/Browser utility functions unless the shared package does not cover the required behavior.
+
 ## 3. Rules
 
 ### MUST DO ✅
 - Confirm target module before generating entity files
 - Generate the feature module first if it does not exist (see `./init-module.md`)
+- Identify the primary entity and every related entity from API docs, PRDs, Figma/image/screenshot input, business descriptions, cURL payloads, or schemas before creating files
+- Before creating model/interface/type/dto/service/store/repository/API-client files, scan the target codebase for existing contracts and symbols using the variants listed in `./reuse-existing-entities.md`
+- Decide `reuse`, `extend`, or `create new` for each entity and present a short pre-code summary of found contracts, imports to reuse, existing files to extend, truly new files to create, and why duplicates are not created
+- Check `@sdcorejs/utils` before adding utility/helper functions; reuse `DateUtilities`, `NumberUtilities`, `StringUtilities`, `ValidationUtilities`, `ArrayUtilities`, `FilterUtilities`, `Utilities`, `ObjectUtilities`, `ColorUtilities`, `BrowserUtilities`, models, and constants when applicable
 - Generate entity service with runnable mock CRUD by default (`localStorage`) when backend API contract is not provided yet
 - Generate `services/[entity].mock-data.ts` as the single centralized seed source for each entity (target: **20–40 rows**)
 - Generate mock data immediately after `SaveReq` and `DTO` are finalized (whether from user input or semantic inference); do not wait until after list/detail components are built
@@ -110,6 +118,8 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
   - Updated timestamp (e.g. `updatedAt`, `modifiedAt`, `lastModifiedDate`) → `type: 'datetime'`, `width: '180px'`
   - Updated by (e.g. `updatedBy`, `modifiedBy`, `lastModifiedBy`) → `type: 'string'`, `minWidth: '180px'`
 - Always check the actual DTO/BaseEntity field names — do NOT assume `createdAt`; field names vary per backend framework (Spring, .NET, Django, Laravel all differ)
+- For related entity fields, reuse an existing imported model/summary/option type when available; use `<entity>Id` when the API only returns an id; do not inline the full related object if that entity already has its own contract
+- When a related entity's data is needed, reuse the existing related service; add the smallest compatible method to that service if needed instead of creating a duplicate service
 - Skip audit columns when:
   - The table is embedded inside a detail/form page (sub-table, child entity list)
   - The entity is a simple lookup/enum table (code + name only, no meaningful timeline)
@@ -295,6 +305,10 @@ For common entity forms with around 5-6 fields, prefer a side-drawer detail UI b
 
 ### MUST NOT ❌
 - Guess the module silently when module ownership is ambiguous
+- Create a duplicate model, interface, DTO, type, service, store, repository, or API client for a domain entity that already has a suitable contract in the project
+- Inline a full related entity shape inside the primary model when an imported related model or summary type exists
+- Create near-duplicate names such as `OrderCustomerService` when `CustomerService` already owns the matching customer API logic
+- Rename or reshape existing model/service fields without checking usages and preserving backward compatibility
 - Do not force a full standalone migration when developer requests hybrid NgModule + standalone compatibility mode
 - Use ad-hoc permission code naming that breaks Module → Entity → Action order, or mix two conventions within the same project
 - Hard-code API URLs (use configuration tokens)
@@ -402,6 +416,12 @@ Worked Product entity (full code samples for model + service + list + detail) li
 
 ## Implementation Checklist
 
+- [ ] Read `./reuse-existing-entities.md` and complete the reuse preflight
+- [ ] Identify primary and related entities
+- [ ] Scan existing model/interface/type/dto files and symbols
+- [ ] Scan existing service/api/repository/store files and symbols
+- [ ] Record reuse/extend/create-new decision for each entity
+- [ ] Reuse imported related entity types/services or minimally extend existing files before creating new contracts
 - [ ] Create model file with SaveReq interface and DTO type
 - [ ] Classify every ambiguous field as raw API, Service input/output, Component ViewModel, or UI state before adding it to a type
 - [ ] Create `services/[entity].mock-data.ts` with 20–40 domain-realistic seed rows immediately after SaveReq/DTO are finalized

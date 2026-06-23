@@ -20,12 +20,15 @@ The same file also owns the form definition, so this reference is also where you
 - Generating the detail component for a fresh entity (typically after [`./init-entity.md`](./init-entity.md))
 - Refining any state: form not disabled in DETAIL, missing Edit button, broken stale-id recovery, defaults wrong on CREATE, file uploads firing after save, navigation target wrong, etc.
 - Adding or tightening validators: required / maxLength / patterns / `SdValidators.notBlank` / async unique checks / `FormArray` for repeating sub-records / per-field error messages
+- Adding controls that reference another entity, such as customer/product/address selects, hydrated detail summaries, or relation ids
 - User asks: "tạo màn detail", "trang chi tiết", "màn create", "màn update", "form không hoạt động", "thêm validator", "custom validator", "async validator"
 
 Defer to:
 - [`./screen-list.md`](./screen-list.md) when the request is about the list page (different file)
 - [`./actions.md`](./actions.md) when the request is about action buttons (workflow / bulk / custom side-effects)
 - [`./init-entity.md`](./init-entity.md) when the entity model/service/routes don't exist yet
+
+Before adding custom validators, date/number formatters, normalizers, query-param helpers, upload/download helpers, clipboard helpers, or other form utilities, read `_refs/shared/sdcorejs-utils.md`. Reuse `@sdcorejs/utils` where it covers the behavior, while keeping Angular `Validators`/`SdValidators` for Angular form-specific contracts.
 
 ## Shared shell — code templates
 
@@ -234,6 +237,7 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - Use `[form]="form"` + `[(model)]="entity.field"` as the default binding pattern, where `entity` is a plain object/ViewModel (Core UI form components self-register via `[form]+name`; do NOT use `formControlName` — they do not implement `ControlValueAccessor`)
 - Use Vietnamese labels / messages / notify for VI portals (full diacritics); permission codes + route paths stay English
 - Use grid `row row-sm` for form sections (compact spacing)
+- For relation fields, read `./reuse-existing-entities.md`; reuse existing related model/summary types and services, use `<entity>Id` when the API only returns an id, and do not inline the related entity shape when a contract exists
 - Generate runnable `.spec.ts` per state branch, mocking `inject()` deps (`Router`, `ActivatedRoute`, services, notify, loading)
 - Run tests immediately after generation; report pass/fail
 
@@ -274,6 +278,7 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - [ ] Routes registered with correct `data.permission` per state (`_VIEW` / `_CREATE` / `_UPDATE`)
 - [ ] Save button gated by matching `*sdPermission`
 - [ ] Validators applied per field criticality (don't over-constrain on first pass)
+- [ ] Related entity controls import/reuse existing model/summary/service contracts or document why a new contract is required
 - [ ] Per-field error display where business rules need surfaced messages
 - [ ] Signal-first state for UI flags; `computed()` for derived; `@let` or `computed()` for 2+ template references
 - [ ] No template method/getter calls for displayed/derived values; use signals/computed/pure pipes/view-model fields
@@ -294,6 +299,7 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - Mixing approve / reject / bulk buttons into the shell — those belong in [`./actions.md`](./actions.md), gated by workflow state inside DETAIL
 - Adding typed validators speculatively before business rules are confirmed (over-constraint on first pass)
 - Calling `formControlName` with Core UI form components (they self-register via `[form]+name`; `formControlName` silently fails)
+- Inlining a related entity object in the detail form model when an imported relation type or id field should be used
 
 ---
 
@@ -302,5 +308,6 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - [`./screen-list.md`](./screen-list.md) — list page (separate file: `list.component.ts`)
 - [`./actions.md`](./actions.md) — action buttons (workflow / bulk / custom side-effects) layered on top
 - [`./init-entity.md`](./init-entity.md) — when model / service / routes don't exist yet
+- [`./reuse-existing-entities.md`](./reuse-existing-entities.md) — relation model/service reuse before generating fields or service calls
 - [`_refs/angular/templates/screen-detail-component.md`](_refs/angular/templates/screen-detail-component.md) — code templates for the shared shell + per-state branches
 - [`_refs/angular/templates/reactive-form-templates.md`](_refs/angular/templates/reactive-form-templates.md) — code templates for form refinement

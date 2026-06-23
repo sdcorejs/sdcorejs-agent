@@ -34,6 +34,8 @@ Required before applying this skill:
 - module exists, or the agent has already created it
 - entity name is known
 - minimum display fields are known: code, name, status or equivalent
+- `_refs/angular/write-code/reuse-existing-entities.md` preflight is complete for the primary entity and every related entity
+- reuse/extend/create-new decisions are recorded for related models/services before writing DTOs or service calls
 - default test coverage = `standard` (write specs RED-first, no question; override to minimal/full only on explicit request)
 
 If permission is key-based:
@@ -259,6 +261,8 @@ libs/[module]/
 ```
 
 ### [entity].model.ts
+Before filling this template, import and reuse existing related entity types from the codebase. Do not inline a full related entity object when a related model/summary/option type already exists. Use `<entity>Id` when the API returns only a relation id.
+
 ```typescript
 import { BaseEntity } from '@[module]/services';
 

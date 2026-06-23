@@ -63,6 +63,8 @@ The decisive question for placement: **does the action operate on the current re
 - For Vietnamese portals: full diacritics on button titles + confirm prompts; permission codes stay English
 - For combined save + transition ("Lưu & Gửi duyệt"): route through the **same validation gate** as plain save (`form.invalid` → `markAllAsTouched()` → notify), then call `service.create/update` first, then `service.submit/...` on the returned id
 - For bulk actions: confirm with row count in the message (`"Phê duyệt 3 bản ghi?"`), call `bulkXxx(ids)` in one round-trip, then reload the table
+- Before adding action methods that call or hydrate a related entity, read `./reuse-existing-entities.md` and reuse the existing related service/model contract instead of creating duplicate action-specific services
+- Before adding action/export helpers for date/number formatting, random ids, query params, filtering, download, upload, clipboard, or browser checks, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when applicable
 
 ### MUST NOT ❌
 
@@ -74,6 +76,7 @@ The decisive question for placement: **does the action operate on the current re
 - Call workflow methods that mutate without first reading current status (race conditions when another tab transitioned the record)
 - Skip permission directive on action buttons even when the route guard covers the page (defense in depth)
 - Forget to reload the list / detail after the transition — user sees stale data
+- Recreate helper behavior already covered by `@sdcorejs/utils` or deep-import from `@sdcorejs/utils/dist/*`
 
 ## Action patterns — by category
 
@@ -251,6 +254,7 @@ onExport = async () => {
 - [ ] Confirm dialog for destructive or sensitive actions
 - [ ] Workflow transition that needs a note → confirm-with-input
 - [ ] Service method exists (create one if missing — single-record + bulk where applicable)
+- [ ] Existing related entity services/models are reused or minimally extended before any new service/model is created
 - [ ] Notify on success + reload list / detail
 - [ ] `*sdPermission` directive on the button (defense in depth even if route guard exists)
 - [ ] For "Save and Submit": routes through validation gate before either call; rollback on partial failure documented
@@ -267,9 +271,11 @@ onExport = async () => {
 - Single action button doing both "save" AND "submit" without going through the validation gate
 - Long-running side-effect without disabling the button — multiple clicks fire duplicate calls
 - Trying to combine ALL actions into one menu — separate by scope, group only when truly the same scope
+- Creating action-specific duplicate services for related entities instead of reusing the related entity's existing service
 
 ## Related references
 
 - [`./screen-detail.md`](./screen-detail.md) — the detail component the action buttons attach to
 - [`./screen-list.md`](./screen-list.md) — the list component for `selector.actions` + row action column
 - [`./init-entity.md`](./init-entity.md) — when service methods (`approve`, `reject`, `bulkSubmit`, `exportExcel`) don't exist yet
+- [`./reuse-existing-entities.md`](./reuse-existing-entities.md) — relation model/service reuse before creating service calls

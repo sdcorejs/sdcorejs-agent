@@ -138,7 +138,7 @@ The full `package.json` template (enterprise shape shown — swap `moduleNameMap
     "@nestjs/platform-express": "^11.0.0",
     "@nestjs/typeorm": "^11.0.0",
     "@sdcorejs/nestjs": "<CORE_VERSION>",
-    "@sdcorejs/utils": "^1.1.2",
+    "@sdcorejs/utils": "^1.1.4",
     "dotenv": "^16.4.5",
     "jsonwebtoken": "^9.0.3",
     "jwks-rsa": "^3.2.0",
@@ -185,7 +185,7 @@ The full `package.json` template (enterprise shape shown — swap `moduleNameMap
 }
 ```
 
-> **Dependency note — `@sdcorejs/nestjs` source.** Use the published npm dependency `"@sdcorejs/nestjs": "<CORE_VERSION>"` (currently `^1.0.0`) for fresh scaffolds. Only use a vendored `.tgz` when the target environment explicitly requires offline/private-registry installation; if so, drop the package under `vendor/` and change the dependency line to `"file:vendor/sdcorejs-nestjs-<CORE_VERSION>.tgz"`. Keep `@sdcorejs/utils` from npm unless the target has the same offline constraint.
+> **Dependency note — `@sdcorejs/nestjs` source.** Use the published npm dependency `"@sdcorejs/nestjs": "<CORE_VERSION>"` (currently `^1.0.0`) for fresh scaffolds. Only use a vendored `.tgz` when the target environment explicitly requires offline/private-registry installation; if so, drop the package under `vendor/` and change the dependency line to `"file:vendor/sdcorejs-nestjs-<CORE_VERSION>.tgz"`. Keep `@sdcorejs/utils` as a direct npm dependency unless the target has the same offline constraint; do not rely on the transitive copy bundled by `@sdcorejs/nestjs`.
 
 Also emit `nest-cli.json` (ground: ref app):
 
