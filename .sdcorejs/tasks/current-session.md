@@ -1,6 +1,6 @@
 ---
-updated_at: 2026-07-01T16:12:00+07:00
-status: in_progress
+updated_at: 2026-07-01T16:20:00+07:00
+status: blocked
 track: generic
 active_skill: sdcorejs-documentation
 branch: feature/sdcorejs-documentation-skill
@@ -14,14 +14,14 @@ Commit and push the current documentation-skill branch, then create a pull reque
 ## Tasks
 - [x] Inspect current branch, remote, and changed files.
 - [x] Run branch verification before commit.
-- [ ] Create one Conventional Commit for the branch changes.
-- [ ] Push the branch.
+- [x] Create one Conventional Commit for the branch changes.
+- [x] Push the branch.
 - [ ] Create a pull request and report the URL.
 
 ## Current State
-- Last completed: ran skill sync check, e2e tests, diff check, and staged hygiene scans.
-- In progress: creating the commit.
-- Blocked/skipped: none.
+- Last completed: committed and pushed `feature/sdcorejs-documentation-skill`.
+- In progress: none.
+- Blocked/skipped: PR creation is blocked because GitHub CLI is not authenticated and no GitHub token is available in the environment.
 
 ## Artifacts Touched
 - EDIT .sdcorejs/tasks/current-session.md - git/PR checkpoint.
@@ -34,6 +34,8 @@ Commit and push the current documentation-skill branch, then create a pull reque
 - `npm test` - pass; 14 tests passed.
 - `git diff --check` and `git diff --cached --check` - pass.
 - staged hygiene scans - pass with expected documentation-reference warnings for literal debug/focused-test examples and one intentional PDF binary artifact.
+- `git push -u origin HEAD` - pass.
+- `gh auth status` - fail; not logged in.
 
 ## Resume From Here
-Create the commit, push the branch, and create PR.
+Create the PR after GitHub CLI authentication is available, or use the GitHub compare URL returned by push.
