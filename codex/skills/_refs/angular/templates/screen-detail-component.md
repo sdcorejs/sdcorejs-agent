@@ -22,6 +22,7 @@ Placeholders: `{{ entityPascal }}`, `{{ entityKebab }}`, `ENTITY_LABEL` (VI disp
   - [Navigation helpers](#navigation-helpers)
   - [Conditional tab name & color](#conditional-tab-name--color)
   - [Form field rendering (template)](#form-field-rendering-template)
+  - [Editable child collection rendering (template)](#editable-child-collection-rendering-template)
 - [DETAIL state](#detail-state)
 - [CREATE state](#create-state)
 - [UPDATE state](#update-state)
@@ -59,6 +60,12 @@ import {
 import { SdLoadingService, SdNotifyService } from '@sdcorejs/angular/services';
 import { {{ entityPascal }}DTO, {{ entityPascal }}SaveReq } from '../../services/{{ entityKebab }}.model';
 import { {{ entityPascal }}Service } from '../../services/{{ entityKebab }}.service';
+```
+
+When a detail screen has a child collection/table, add the table imports only after the Core UI docs confirm this project's table API:
+
+```typescript
+import { SdTable, SdTableCellDefDirective, type SdTableOption } from '@sdcorejs/angular/components/table';
 ```
 
 When the shell stores loaded entity data outside a signal, inject `ChangeDetectorRef`:
@@ -257,6 +264,188 @@ readonly isDetail = computed(() => this.state() === 'DETAIL');
 ```
 
 Group fields by section if the schema declares them; otherwise wrap in one `<sd-section title="Thông tin chung">`.
+
+### Editable child collection rendering (template)
+
+Use this when the detail screen has line items or another repeated child collection. The parent `FormGroup` owns the child `FormArray`; the view must not keep a second mutable list for the same rows.
+
+#### Inline table shape for read-only or light inline editing
+
+Use `sd-table` only when the fetched Core UI table docs and an existing local usage confirm projected cells are supported for this version. For heavy spreadsheet-like editing, use the row-editor fallback below.
+
+```typescript
+type LineItemRow = {
+  rowKey: string;
+  formGroup: FormGroup;
+  index: number;
+  productId?: string;
+  quantity?: number;
+  unitPrice?: number;
+  action?: string;
+};
+
+readonly lineItemsRevision = signal(0);
+readonly lineItemRows = computed<LineItemRow[]>(() => {
+  this.lineItemsRevision();
+  return this.lineItems.controls.map((control, index) => ({
+    rowKey: control.get('id')?.value ?? control.get('tempId')?.value ?? String(index),
+    formGroup: control as FormGroup,
+    index,
+    productId: control.get('productId')?.value,
+    quantity: control.get('quantity')?.value,
+    unitPrice: control.get('unitPrice')?.value,
+  }));
+});
+
+private refreshLineItemsRows(): void {
+  this.lineItemsRevision.update(value => value + 1);
+}
+
+lineItemsTableOption: SdTableOption<LineItemRow> = {
+  key: '{{ entityKebab }}-line-items',
+  type: 'local',
+  paginate: { hidden: true },
+  filter: { hideInlineFilter: true, hideExternalFilterToolbar: true },
+  items: () => this.lineItemRows(),
+  columns: [
+    { field: 'index', type: 'number', title: '#', width: '56px' },
+    { field: 'productId', type: 'string', title: 'San pham', cell: {} },
+    { field: 'quantity', type: 'number', title: 'So luong', width: '140px', cell: {} },
+    { field: 'unitPrice', type: 'number', title: 'Don gia', width: '160px', cell: {} },
+    { field: 'action', type: 'string', title: '', width: '80px', cell: {} },
+  ],
+};
+```
+
+```html
+<sd-section noPaddingBody>
+  <div class="d-flex align-items-center justify-content-between gap-12 p-16">
+    <div class="d-flex flex-column gap-4">
+      <span class="T16B">Chi tiet dong</span>
+      <span class="T12R text-black500">{{ lineItems.length }} dong</span>
+    </div>
+
+    @if (!isDetail()) {
+      <sd-button title="Them dong" type="outline" prefixIcon="add" size="sm" (click)="addLineItem()"></sd-button>
+    }
+  </div>
+
+  @if (lineItems.length) {
+    <sd-table [option]="lineItemsTableOption" autoId="{{ entityKebab }}_line_items">
+      <ng-template sdTableCellDef="productId" let-item="item">
+        <sd-select
+          [form]="item.formGroup"
+          name="productId"
+          label="San pham"
+          size="sm"
+          hideInlineError
+          [viewed]="isDetail()"
+          [items]="productOptions"
+          valueField="id"
+          displayField="name"
+        ></sd-select>
+      </ng-template>
+
+      <ng-template sdTableCellDef="quantity" let-item="item">
+        <sd-input-number
+          [form]="item.formGroup"
+          name="quantity"
+          label="So luong"
+          size="sm"
+          hideInlineError
+          [viewed]="isDetail()"
+          [min]="1"
+        ></sd-input-number>
+      </ng-template>
+
+      <ng-template sdTableCellDef="unitPrice" let-item="item">
+        <sd-input-number
+          [form]="item.formGroup"
+          name="unitPrice"
+          label="Don gia"
+          size="sm"
+          hideInlineError
+          [viewed]="isDetail()"
+          [min]="0"
+        ></sd-input-number>
+      </ng-template>
+
+      <ng-template sdTableCellDef="action" let-item="item">
+        @if (!isDetail()) {
+          <sd-button
+            title="Xoa"
+            type="icon"
+            color="error"
+            prefixIcon="delete"
+            size="sm"
+            (click)="removeLineItem(item.index)"
+          ></sd-button>
+        }
+      </ng-template>
+    </sd-table>
+  } @else {
+    <div class="d-flex flex-column align-items-center justify-content-center gap-12 p-24">
+      <span class="T14R text-black500">Chua co dong nao</span>
+      @if (!isDetail()) {
+        <sd-button title="Them dong dau tien" type="outline" prefixIcon="add" size="sm" (click)="addLineItem()"></sd-button>
+      }
+    </div>
+  }
+</sd-section>
+```
+
+Table-cell form controls must use `size="sm"` and `hideInlineError` so row height stays stable. Surface row errors in a compact summary below the table when needed, not as tall inline text inside every cell.
+
+After `addLineItem()` / `removeLineItem()`, call `refreshLineItemsRows()` and reload the table if the local table instance does not pick up the new `items()` result automatically. Form value edits inside cells do not require rebuilding rows because the controls are bound through each row `FormGroup`.
+
+#### Sectioned row-editor fallback
+
+Use this fallback when the Core UI table cannot safely host editable controls or the row has more than 3-4 editable fields.
+
+```html
+<sd-section noPaddingBody>
+  <div class="d-flex align-items-center justify-content-between gap-12 p-16">
+    <div class="d-flex flex-column gap-4">
+      <span class="T16B">Chi tiet dong</span>
+      <span class="T12R text-black500">{{ lineItems.length }} dong</span>
+    </div>
+
+    @if (!isDetail()) {
+      <sd-button title="Them dong" type="outline" prefixIcon="add" size="sm" (click)="addLineItem()"></sd-button>
+    }
+  </div>
+
+  <div class="d-flex flex-column gap-12 px-16 pb-16">
+    @for (itemGroup of lineItems.controls; track rowKey(itemGroup); let i = $index) {
+      <div class="row row-sm align-items-start">
+        <div class="col-12 col-md-5">
+          <sd-select [form]="itemGroup" name="productId" label="San pham" [viewed]="isDetail()" required></sd-select>
+        </div>
+        <div class="col-6 col-md-2">
+          <sd-input-number [form]="itemGroup" name="quantity" label="So luong" [viewed]="isDetail()" [min]="1" required></sd-input-number>
+        </div>
+        <div class="col-6 col-md-3">
+          <sd-input-number [form]="itemGroup" name="unitPrice" label="Don gia" [viewed]="isDetail()" [min]="0"></sd-input-number>
+        </div>
+        <div class="col-12 col-md-2 d-flex justify-content-end gap-8 pt-24">
+          @if (!isDetail()) {
+            <sd-button title="Xoa" type="icon" color="error" prefixIcon="delete" size="sm" (click)="removeLineItem(i)"></sd-button>
+          }
+        </div>
+      </div>
+    } @empty {
+      <div class="d-flex flex-column align-items-center justify-content-center gap-12 p-24">
+        <span class="T14R text-black500">Chua co dong nao</span>
+        @if (!isDetail()) {
+          <sd-button title="Them dong dau tien" type="outline" prefixIcon="add" size="sm" (click)="addLineItem()"></sd-button>
+        }
+      </div>
+    }
+  </div>
+</sd-section>
+```
+
+Do not wrap each row in a nested card unless the existing screen already uses that exact pattern. The fallback is still a structured form layout with predictable spacing.
 
 ---
 
