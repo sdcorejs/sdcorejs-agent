@@ -2,11 +2,11 @@
 
 Current validation snapshot for the SDCoreJS SDLC Agent repository.
 
-Date: 2026-06-18
+Date: 2026-06-30
 
 ## Current Layout
 
-- `skills/**/*.md` - 24 dispatchable source skills.
+- `skills/**/*.md` - 23 dispatchable source skills.
 - `_refs/**` - reference data loaded on demand.
 - `.claude/skills/<name>/SKILL.md` - generated Claude Code mirror.
 - `plugin/skills/<name>/SKILL.md` - generated Claude plugin mirror.
@@ -18,10 +18,10 @@ Date: 2026-06-18
 
 | Bucket | Count |
 |---|---:|
-| Source skills | 24 |
-| Claude Code mirror skills | 24 |
-| Plugin mirror skills | 24 |
-| Codex mirror skills | 24 |
+| Source skills | 23 |
+| Claude Code mirror skills | 23 |
+| Plugin mirror skills | 23 |
+| Codex mirror skills | 23 |
 
 ## Workflow Inventory
 
@@ -35,15 +35,16 @@ Date: 2026-06-18
 | Product executor | `sdcorejs-product` |
 | Design executor | `sdcorejs-design` |
 | Test executor | `sdcorejs-test` |
+| Documentation executor | `sdcorejs-documentation` |
 | Parallel | `sdcorejs-parallel-dispatch` |
-| Finish | `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-write-user-guide`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)` when durable knowledge surfaced |
+| Finish | `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)` when durable knowledge surfaced |
 
 ## Validation Checklist
 
 | Check | Expected |
 |---|---|
-| Source skill count | 24 |
-| Mirror counts | 24 in `.claude`, `plugin`, and `codex` |
+| Source skill count | 23 |
+| Mirror counts | 23 in `.claude`, `plugin`, and `codex` |
 | Frontmatter | Unique kebab-case `name`, non-empty `description` |
 | Codex mirror | `name` + `description` only, refs rewritten to `../_refs/...` |
 | Cursor rule | In sync with `AGENTS.md` |

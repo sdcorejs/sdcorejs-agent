@@ -63,7 +63,7 @@ Landing sites with long navs benefit from a skip-link.
 
 ```bash
 # Look for skip-link patterns
-grep -rnE "skip[\\-_]?to[\\-_]?(content|main)|skipToMain" src/components/layout/
+grep -rnE "<localized text>" src/components/layout/
 # Or: a hidden-until-focus anchor that jumps to <main>
 ```
 
@@ -106,7 +106,7 @@ Severity: **Critical** per dialog if focus management missing. WCAG SC 2.4.3 Foc
 
 ```bash
 # Suspicious alt values
-grep -rnE "alt=['\"]?(image|photo|picture|img|logo)['\"]?\b" src/
+grep -rnE "alt=['<localized text>'\"<localized text>" src/
 # Empty alt is OK for decorative; should have alt="" not no alt at all
 ```
 
@@ -177,7 +177,7 @@ grep -rnE "(toLocaleDateString|toLocaleString|toString\(\))\(\)" src/
 # Better: use next-intl useFormatter() / getFormatter()
 ```
 
-Severity: **Minor** — visual difference only, but an EN screen reader announcing "ngày 15 tháng 5" is jarring.
+Severity: **Minor** — visual difference only, but an EN screen reader announcing "<localized text>" is jarring.
 
 ## Manual checklist (cannot automate)
 

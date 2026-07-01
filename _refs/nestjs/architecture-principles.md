@@ -197,12 +197,12 @@ async createWithItems(req: PurchaseOrderSaveReq) {
 ```ts
 throw new BadRequestException({
   code: 'PRODUCT_CODE_DUPLICATE',
-  vi: 'Mã sản phẩm đã tồn tại',
+  vi: '<localized text>',
   en: 'Product code already exists',
 });
 ```
 
-Validation guard, exception filter, and global error handler all serialize errors bilingually. With `@sdcorejs/nestjs` the canonical mechanism is the **i18n catalog**: throw a stable `code` via `apiError(code, message, data?)` and configure `SdCoreModule.forRoot({ i18n: { fallbackLanguage: 'vi', catalogs } })`; the lib resolves the `code` against the catalog and serializes a `{ code, message }` envelope in the request language (`x-lang` / `accept-language`). Frontend picks the appropriate language at render time. (The inline `{ vi, en }` payload above is the equivalent shape for cases where you bypass the catalog and ship both languages directly.)
+Validation guard, exception filter, and global error handler all serialize errors bilingually. With `@sdcorejs/nestjs` the canonical mechanism is the **i18n catalog**: throw a stable `code` via `<localized text>` and configure `SdCoreModule.forRoot({ i18n: { fallbackLanguage: 'vi', catalogs } })`; the lib resolves the `code` against the catalog and serializes a `{ code, message }` envelope in the request language (`x-lang` / `accept-language`). Frontend picks the appropriate language at render time. (The inline `{ vi, en }` payload above is the equivalent shape for cases where you bypass the catalog and ship both languages directly.)
 
 **Why bilingual**:
 - VI users see VI; debugging engineers see EN
@@ -315,7 +315,7 @@ The shared `Pagination<T>` response shape:
 }
 ```
 
-`total` provided only for offset pagination (cursor pagination doesn't compute total — it's expensive).
+`total` provided only for offset pagination (cursor pagination doesn'<localized text>'s expensive).
 
 **Why both**: offset is intuitive ("page 5 of 23") and fine for small admin tables. Cursor is the only viable pagination for tables that grow unboundedly (sales transactions, audit logs).
 
@@ -376,7 +376,7 @@ When a principle changes, propagate to:
 - ❌ "Skip `BaseEntity` for this one" — audit columns are a baseline cost
 - ❌ "Validate with `class-validator` because we're used to it" — Zod is the SDCoreJS standard; one source of truth
 - ❌ "Wrap every method in transactions for safety" — lock contention + latency cost; transactions for genuinely multi-table writes only
-- ❌ "Single-language error messages, translate later" — never happens, ends up with `{ message: 'Mã đã tồn tại' }` in EN-only logs forever
+- ❌ "Single-language error messages, translate later" — never happens, ends up with `<localized text>` in EN-only logs forever
 - ❌ "`synchronize: true` in production" — eats data
 - ❌ "Hard delete by default" — soft-delete first; hard-delete is a compliance method, not a default
 - ❌ "Mock the DB in e2e" — defeats the purpose; if e2e is slow, fix architecture not tests

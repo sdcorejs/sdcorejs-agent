@@ -1,17 +1,18 @@
-# Comment Code Tail Reference — Comment Level Rulesets
+# Comment Code Reference - Comment Level Rulesets
 
-Internal ruleset reference loaded by `sdcorejs-comment-code`. This file is not a dispatchable skill.
+Internal reference loaded by `sdcorejs-documentation` in `comment-code` mode.
+This file is not a dispatchable skill.
 
 ## Purpose
-"Should I add comments?" is a decision, not a default. Auto-adding full JSDoc to everything bloats files and trains the team to skim past noise. Skipping comments entirely loses non-obvious context the next reader will need. The finish gate or `sdcorejs-comment-code` makes the decision conscious, then this reference supplies the ruleset for the selected level.
+"<localized text>" is a decision, not a default. Auto-adding full JSDoc to everything bloats files and trains the team to skim past noise. Skipping comments entirely loses non-obvious context the next reader will need. The finish gate or `sdcorejs-documentation (comment-code mode)` makes the decision conscious, then this reference supplies the ruleset for the selected level.
 
 ## How this reference is used
-- Loaded by `sdcorejs-comment-code` at the comment phase of every code-writing workflow:
+- Loaded by `sdcorejs-documentation (comment-code mode)` at the comment phase of every code-writing workflow:
   - After `sdcorejs-review` and `sdcorejs-repair-loop` (if findings existed)
   - BEFORE `sdcorejs-ship (verify-before-done mode)`
 - User explicitly: "add comments", "comment the code", "comment level", or localized equivalents
 
-> **Comment level now comes from the consolidated FINISH GATE** ([`_refs/shared/finish-gate.md`](../../_refs/shared/finish-gate.md)). When a track write-code orchestrator (angular / nestjs / nextjs) runs, the gate already asked the user to pick `skip` / `simple` / `medium` / `full` along with tests + user-guide. In that case `sdcorejs-comment-code` applies the captured level and does **NOT** ask again (asking twice is the bug, not the fix). Only run the standalone ASK when `sdcorejs-comment-code` is invoked directly without a gate choice (e.g. the user says "add comments" outside a code-gen flow).
+> **Comment level now comes from the documentation gate** ([`_refs/documentation/gate.md`](gate.md)), which is surfaced by the consolidated FINISH GATE ([`_refs/shared/finish-gate.md`](../shared/finish-gate.md)). When a track write-code orchestrator (angular / nestjs / nextjs) or direct `sdcorejs-test` run captures `comment_code`, this mode applies that level and does **NOT** ask again. Only run the standalone ASK when the documentation skill is invoked directly without a gate choice (for example, the user says "add comments" outside a code-gen flow).
 
 Do NOT invoke for:
 - Tasks with no code generation (planning, brainstorming, review-only)
@@ -32,6 +33,8 @@ Which comment level do you want for the generated code?
   (4) full    — Full JSDoc + class header + WHY-X.md for large modules
 
 Suggested default: simple (keeps files compact and comments only where useful).
+
+Reply with `1`, `2`, `3`, or `4`.
 ```
 
 **Compact English fallback:**
@@ -44,6 +47,8 @@ Comment level for the code just generated?
   (4) full    — Full JSDoc + class headers + WHY-X.md companion for major modules
 
 Default suggestion: simple (keep files lean, comment only where it pays off).
+
+Reply with `1`, `2`, `3`, or `4`.
 ```
 
 Wait for the user's pick. Do not proceed without a choice. If user says "anything" / "you decide", default to **simple** and tell them which default was used.
@@ -190,7 +195,9 @@ The cross-track rules above are authoritative. Each track adds a small framework
 1. Read the file(s) the user asked about (or every file generated in the current session)
 2. Identify public APIs (exported functions, classes, methods) → add full JSDoc with `@param` / `@returns` / `@throws`
 3. Identify non-obvious logic → add `// why:` lines
-4. Identify cross-file design decisions spanning 3+ files → propose `WHY-X.md` brief and ask the user to confirm before writing it
+4. Identify cross-file design decisions spanning 3+ files -> propose `WHY-X.md`
+   brief and ask the user to confirm before writing it with
+   `1. Write WHY-X.md (yes)` / `2. Skip WHY-X.md (no)`.
 5. Apply the track-specific addendum from the matching sub-section above
 6. Diff what changed — show the user the comment additions only, not the full file
 
@@ -267,13 +274,13 @@ The method ships as-is, no comments added. The agent reports:
 > "Skipping comments per your choice. Hand off `sdcorejs-ship (verify-before-done mode)`."
 
 ## Cross-references
-- `_refs/orchestration/tail/auto-docs.md` — runs after `sdcorejs-comment-code`; the chosen level + count goes into the session summary
-- `sdcorejs-ship (verify-before-done mode)` — runs after this skill; comment count is NOT an acceptance criterion (commenting is a styling concern, not feature correctness)
+- `_refs/orchestration/tail/auto-docs.md` — runs after `sdcorejs-documentation (comment-code mode)`; the chosen level + count goes into the session summary
+- `sdcorejs-ship (verify-before-done mode)` — runs after this mode; comment count is NOT an acceptance criterion (commenting is a styling concern, not feature correctness)
 - `sdcorejs-repair-loop` — if review surfaces missing-comment findings AND the user picked `skip`, those findings are auto-deferred (the user's choice overrides)
 
 ## Anti-patterns
 - **Asking once and never again** — every code-writing session asks; preference doesn't persist by default
 - **Defaulting to `full` because it "looks thorough"** — overcommented files train readers to skim
-- **Skipping the ASK** because the agent thinks it knows what the user wants — the whole point of this skill is to surface the choice
+- **Skipping the ASK** because the agent thinks it knows what the user wants — the whole point of this mode is to surface the choice
 - **Applying different levels to different files in the same session** — pick once per session for consistency
 - **Translating comments mid-file** when stack/language switches — keep file's existing language unless user asks

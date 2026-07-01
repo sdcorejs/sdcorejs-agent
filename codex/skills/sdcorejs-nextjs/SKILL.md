@@ -18,6 +18,7 @@ Before executing this skill:
 2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
 3. Read and apply `../_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 Single entry point for generating Next.js landing-site code. This skill is the dispatch layer between the approved plan (or a direct request) and the focused REFERENCE PACKS that hold the per-concern generation rules. It does NOT inline those rules — it reads the right pack on demand. The ten packs under `../_refs/nextjs/build-website/write-code/` were standalone sub-skills before they were consolidated here so the track exposes one orchestrator instead of eleven.
@@ -101,6 +102,16 @@ Steps 1–4 are sequential (each depends on the previous). Steps 5–8 can be pa
 
 Then run the tail-call chain, honoring the gate's answers (skip = omit that step; everything not skipped runs):
 
+Documentation supplement: before documentation tail steps, run
+`sdcorejs-documentation (documentation-gate mode)` and read
+`../_refs/documentation/gate.md`. This gate asks or loads saved project
+preferences from `<target>/.sdcorejs/documentation/preferences.md` for
+`comment_code`, `user_guide`, and `technical_doc`. Use those effective choices
+for the comment-code, technical-doc, and user-guide steps below. If
+`technical_doc=write`, or `technical_doc=auto` and the gate criteria are met,
+run `sdcorejs-documentation (write-technical-doc mode)` after comment-code and
+before `sdcorejs-ship (verify-before-done mode)`.
+
 ```
 FINISH GATE (always, unconditional) ← surfaces the choices below
    ↓
@@ -110,7 +121,7 @@ sdcorejs-review (if Review not skipped) ← convention check; Critical / Importa
    ↓
 sdcorejs-repair-loop (if Review not skipped) ← apply findings, iterate to clean
    ↓
-sdcorejs-comment-code ← apply the level the FINISH GATE captured (no second ASK; rules in ../_refs/orchestration/tail/comment-code.md)
+sdcorejs-documentation (comment-code mode) ← apply the level the FINISH GATE captured (no second ASK; rules in ../_refs/documentation/comment-code.md)
    ↓
 sdcorejs-product (when user-visible feature traceability is needed) ← update .sdcorejs/docs/product/ ledger
    ↓
@@ -120,7 +131,7 @@ sdcorejs-ship (branch-ready mode) (always) ← branch-hygiene sweep (debug logs,
    ↓
 ../_refs/orchestration/tail/auto-docs.md (always)   ← session summary to .sdcorejs/docs/nextjs/
    ↓
-sdcorejs-write-user-guide (Mode 1, if User guide not skipped) ← update touched module's .sdcorejs/user-guide/<module>.md (features / routes / permissions / data + Coverage-vs-requirements); per-module incremental, aggregate rebuilds at ship
+sdcorejs-documentation (write-user-guide mode, if User guide not skipped) ← update touched module's .sdcorejs/documentation/user-guides/<module>.md (features / routes / permissions / data + Coverage-vs-requirements); per-module incremental, aggregate rebuilds under .sdcorejs/documentation/ at ship
    ↓
 ../_refs/orchestration/tail/auto-task-tracker.md (always) ← tick done, append new
 sdcorejs-explore (memories mode)     ← durable knowledge (when applicable)
@@ -151,6 +162,10 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Invoke `sdcorejs-test (tdd mode)` for any pack that writes testable logic (custom hooks, server actions, API route handlers, form validation in `contact-form.md`, utility functions) — write failing tests first, then implement
 - Run the `@sdcorejs/utils` reuse preflight before adding helper logic in `src/lib`, API routes, hooks, forms, content mappers, or client components; report reused utilities and justify any custom helper.
 - Keep raw API/provider payloads behind typed server mappers; expose truthful page/component data contracts only.
+
+### Documentation Gate Rule
+
+- Inside the mandatory finish gate, run `../_refs/documentation/gate.md`. It encourages documentation by default, can save `.sdcorejs/documentation/preferences.md` in the target project, and owns comment-code / user-guide / technical-doc choices for future direct runs.
 
 ### MUST NOT
 - Generate code from memory when a pack covers the concern — read the pack

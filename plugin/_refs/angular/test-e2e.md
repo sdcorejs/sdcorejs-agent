@@ -12,7 +12,7 @@ After `write-code` (or any sub-skill) has produced a feature, write E2E tests th
 
 **Mode A — fast happy-path** (default, after code generation): the feature + its intent are already known from this session. Detect framework → write the happy-path specs in §"What to test" → run → report. No gate needed.
 
-**Mode B — inspector-JSON / code-driven (GATED).** Trigger: the user supplies an `sd-autoid-inspector` export (JSON/POM) OR says "viết test theo file đang code / theo màn này". An inspector export is a **selector inventory, not test intent** — generating straight from it produces a useless selector dump. So DO NOT write tests immediately. Run the SDLC gate first:
+**Mode B — inspector-JSON / code-driven (GATED).** Trigger: the user supplies an `sd-autoid-inspector` export (JSON/POM) OR says "<localized text>". An inspector export is a **selector inventory, not test intent** — generating straight from it produces a useless selector dump. So DO NOT write tests immediately. Run the SDLC gate first:
 
 1. **Brainstorming exploration** (`sdcorejs-brainstorming`) — explore WHAT to cover with the user: which flows matter, risk areas, positive vs negative vs navigation, in/out of scope. Output 2–3 coverage options + a recommendation. No code yet.
 2. **Brainstorming confirmations** (`sdcorejs-brainstorming`) — hard-confirm the blockers; each unanswered one stops generation:
@@ -24,7 +24,7 @@ After `write-code` (or any sub-skill) has produced a feature, write E2E tests th
    - **Test data** — inline vs data-driven (Excel `DataTest/Excel`), and any prep/cleanup.
    - **Reuse** — which Page already has keyword resources (`UI_<Page>` / High / Verification) or page objects to extend rather than recreate.
 3. **Plan** (`sdcorejs-plan` → `sdcorejs-plan`) — list the test cases + a keyword/page-object inventory (NEW vs REUSE) for approval. Generation waits for explicit OK.
-4. **Generate** — only now write code, per the detected framework's conventions (Robot → load `_refs/angular/e2e-robot-conventions.md`). Map each inspector autoid → a Low-level action; compose High-level flows; add Verification/assertions from the clarified expected results; build the suite. Reuse existing keywords; create only what's missing.
+4. **Generate** — only now write code, per the detected framework'<localized text>'s missing.
 5. **Verify** — run the suite (or dry-run if no env), report per §"Run + verify".
 
 The gate is mandatory for Mode B: skipping brainstorming confirmations is the top cause of ineffective generated E2E (selectors with no assertions, wrong flows, duplicated keywords).
@@ -52,7 +52,7 @@ For a CRUD entity, write at minimum these specs:
 - Click row "Edit" action → expect URL becomes `/<module>/<entity>/update/:id`
 
 ### `<entity>-create.e2e.spec.ts`
-- Click "Tạo mới" / "Create" button → expect URL becomes `/<module>/<entity>/create`
+- Click "<localized text>" / "Create" button → expect URL becomes `/<module>/<entity>/create`
 - Submit empty form → expect required-field error styling on at least one field
 - Fill all required fields → click Save → expect success notify + navigation back to list
 - Verify the new record appears in the list (search by code/name)
@@ -80,7 +80,7 @@ If the entity has workflow or other action buttons (the actions pack of `sdcorej
 ### Robot Framework
 - Suite: `Projects/<Project>/Tests/<JIRA-KEY> [Role] <Title>.robot`
 - Keywords split across `KeywordLibraries/<Project>/{LowLevelKeywords/UI_<Page>, HighLevelKeywords/HighLevelKeywords_<Page>, VerificationKeywords/VerificationKeywords_<Page>}.resource`; suite imports `<Project>General.resource`.
-- Locators = `[data-autoid="…"]` from the inspector. Full conventions + the JSON→keyword mapping: `_refs/angular/e2e-robot-conventions.md`.
+- Locators = `<localized text>` from the inspector. Full conventions + the JSON→keyword mapping: `_refs/angular/e2e-robot-conventions.md`.
 
 Always check existing tests in the project first — match their folder layout, fixture/keyword style, and helper imports rather than imposing a new convention.
 

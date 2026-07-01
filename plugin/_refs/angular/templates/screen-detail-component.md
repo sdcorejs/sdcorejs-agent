@@ -40,7 +40,7 @@ type ViewState = 'CREATE' | 'UPDATE' | 'DETAIL';
 ```
 
 Stored as a signal: `state = signal<ViewState>('DETAIL')`.
-Editable entity/form models are plain objects/ViewModels, not signals: `entity: Partial<EntitySaveReq & { id?: string }> = {}`.
+Editable entity/form models are plain objects/ViewModels, not signals: `<localized text>`.
 
 Generated detail components must set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component`.
 Derived flags such as `isDetail`, `canSave`, titles, and tab color must be `computed()`, not getters or template-called methods.
@@ -109,7 +109,7 @@ ngOnInit() {
     this.state.set('CREATE');
     this.applyDefaults();
     this.form.enable();
-    this.pageTitle.set(`Tạo mới ${ENTITY_LABEL}`);
+    this.pageTitle.set(`<localized text>`);
     return;
   }
   if (segment === 'update') {
@@ -138,7 +138,7 @@ private async loadEntityData(id: string): Promise<void> {
     this.form.markAsPristine();
     const displayName = dto.name ?? dto.code ?? id;
     this.pageTitle.set(
-      this.state() === 'DETAIL' ? `${ENTITY_LABEL}: ${displayName}` : `Cập nhật: ${displayName}`,
+      this.state() === 'DETAIL' ? `${ENTITY_LABEL}: ${displayName}` : `<localized text>`,
     );
     if (this.state() === 'DETAIL') {
       this.form.disable();
@@ -147,7 +147,7 @@ private async loadEntityData(id: string): Promise<void> {
     }
     this.#cdr.markForCheck();
   } catch (err) {
-    this.#notify.warning('Không tìm thấy bản ghi, quay về danh sách');
+    this.#notify.warning('<localized text>');
     this.#router.navigate(['../../'], { relativeTo: this.#route, replaceUrl: true });
   } finally {
     this.#loading.hide();
@@ -162,18 +162,18 @@ The `headerRight` block in the `sd-page` template branches on `state()`. Always 
 ```html
 <div class="d-flex align-items-center gap-8" headerRight>
   @let _state = state();
-  <sd-button title="Quay lại" type="outline" prefixIcon="arrow-left" size="sm" (click)="onBack()"></sd-button>
+  <sd-button title="<localized text>" type="outline" prefixIcon="arrow-left" size="sm" (click)="onBack()"></sd-button>
 
   @if (_state === 'DETAIL') {
     <sd-button
       *sdPermission="'<MODULE>_C_<ENTITY>_UPDATE'; sdPermissionKey: '<module>'"
-      title="Chỉnh sửa" type="fill" prefixIcon="edit" size="sm" color="primary"
+      title="<localized text>" type="fill" prefixIcon="edit" size="sm" color="primary"
       (click)="onEdit()"
     ></sd-button>
   }
   @if (_state === 'CREATE' || _state === 'UPDATE') {
     <sd-button
-      title="Lưu" type="fill" prefixIcon="save" size="sm" color="primary"
+      title="<localized text>" type="fill" prefixIcon="save" size="sm" color="primary"
       (click)="onSave()"
       [disabled]="!form.valid || saving()"
     ></sd-button>
@@ -203,9 +203,9 @@ Used by `@SdTabComponent` to brand the tab differently per state:
 ```typescript
 readonly pageTabName = computed(() => {
   switch (this.state()) {
-    case 'CREATE': return `Tạo mới ${ENTITY_LABEL}`;
-    case 'UPDATE': return `Chỉnh sửa ${ENTITY_LABEL}`;
-    case 'DETAIL': return `${ENTITY_LABEL} — Chi tiết`;
+    case 'CREATE': return `<localized text>`;
+    case 'UPDATE': return `<localized text>`;
+    case 'DETAIL': return `<localized text>`;
   }
 });
 
@@ -233,37 +233,37 @@ readonly isDetail = computed(() => this.state() === 'DETAIL');
 @let _isDetail = isDetail();
 
 <!-- String -->
-<sd-input [form]="form" name="code" label="Mã" [viewed]="_isDetail" [required]="true" maxLength="16"></sd-input>
+<sd-input [form]="form" name="code" label="<localized text>" [viewed]="_isDetail" [required]="true" maxLength="16"></sd-input>
 
 <!-- Number -->
-<sd-input-number [form]="form" name="salary" label="Lương" [viewed]="_isDetail" [min]="0" [decimals]="2"></sd-input-number>
+<sd-input-number [form]="form" name="salary" label="<localized text>" [viewed]="_isDetail" [min]="0" [decimals]="2"></sd-input-number>
 
 <!-- Date -->
-<sd-date [form]="form" name="birthday" label="Ngày sinh" [viewed]="_isDetail"></sd-date>
+<sd-date [form]="form" name="birthday" label="<localized text>" [viewed]="_isDetail"></sd-date>
 
 <!-- Select (static) -->
-<sd-select [form]="form" name="role" label="Chức vụ" [viewed]="_isDetail"
+<sd-select [form]="form" name="role" label="<localized text>" [viewed]="_isDetail"
   [items]="EMPLOYEE_ROLES" valueField="value" labelField="display"></sd-select>
 
 <!-- Select (dynamic) -->
-<sd-select [form]="form" name="departmentId" label="Phòng ban" [viewed]="_isDetail"
+<sd-select [form]="form" name="departmentId" label="<localized text>" [viewed]="_isDetail"
   apiEndpoint="/api/departments" valueField="id" labelField="name"></sd-select>
 
 <!-- Boolean -->
-<sd-switch [form]="form" name="isActivated" label="Kích hoạt" [disabled]="_isDetail"></sd-switch>
+<sd-switch [form]="form" name="isActivated" label="<localized text>" [disabled]="_isDetail"></sd-switch>
 
 <!-- Textarea -->
-<sd-textarea [form]="form" name="note" label="Ghi chú" [viewed]="_isDetail" rows="5"></sd-textarea>
+<sd-textarea [form]="form" name="note" label="<localized text>" [viewed]="_isDetail" rows="5"></sd-textarea>
 
 <!-- File upload -->
-<sd-upload-file [form]="form" name="image" label="Hình ảnh" [viewed]="_isDetail"
+<sd-upload-file [form]="form" name="image" label="<localized text>" [viewed]="_isDetail"
   [multiple]="false" acceptTypes=".jpg,.png,.gif"></sd-upload-file>
 
 <!-- Rich text -->
-<sd-editor [form]="form" name="description" label="Mô tả" [viewed]="_isDetail"></sd-editor>
+<sd-editor [form]="form" name="description" label="<localized text>" [viewed]="_isDetail"></sd-editor>
 ```
 
-Group fields by section if the schema declares them; otherwise wrap in one `<sd-section title="Thông tin chung">`.
+Group fields by section if the schema declares them; otherwise wrap in one `<localized text>`.
 
 ### Editable child collection rendering (template)
 
@@ -288,7 +288,7 @@ readonly lineItemsRevision = signal(0);
 readonly lineItemRows = computed<LineItemRow[]>(() => {
   this.lineItemsRevision();
   return this.lineItems.controls.map((control, index) => ({
-    rowKey: control.get('id')?.value ?? control.get('tempId')?.value ?? String(index),
+    rowKey: control.get('id'<localized text>'tempId')?.value ?? String(index),
     formGroup: control as FormGroup,
     index,
     productId: control.get('productId')?.value,
@@ -479,7 +479,7 @@ The shared [`ngOnInit dispatcher`](#route-resolution-ngoninit-dispatcher) alread
 if (!id) {
   this.state.set('CREATE');
   this.form.enable();
-  this.pageTitle.set(`Tạo mới ${ENTITY_LABEL}`); // VI portal
+  this.pageTitle.set(`<localized text>`); // VI portal
   this.applyDefaults();   // see below
   return;
 }
@@ -493,7 +493,7 @@ if (!id) {
 async onSave(): Promise<void> {
   if (this.form.invalid) {
     this.form.markAllAsTouched();
-    this.#notify.error('Vui lòng kiểm tra các trường bắt buộc');
+    this.#notify.error('<localized text>');
     return;
   }
   this.saving.set(true);
@@ -504,11 +504,11 @@ async onSave(): Promise<void> {
     }
     const payload = this.form.getRawValue() as EntitySaveReq;
     const created = await this.#service.create(payload);
-    this.#notify.success('Tạo mới thành công');
+    this.#notify.success('<localized text>');
     // Navigate back to list (default) OR to detail of the new record (opt-in)
     this.#router.navigate(['..'], { relativeTo: this.#route });
   } catch (err) {
-    this.#notify.error('Tạo mới thất bại');
+    this.#notify.error('<localized text>');
   } finally {
     this.saving.set(false);
     this.#loading.hide();
@@ -551,11 +551,11 @@ private async loadEntityData(id: string): Promise<void> {
     this.entity = dto;
     this.form.patchValue(dto);
     this.form.markAsPristine();
-    this.pageTitle.set(`Cập nhật: ${dto.name ?? dto.code ?? id}`);
+    this.pageTitle.set(`<localized text>`);
     this.form.enable();   // UPDATE keeps form editable (DETAIL would .disable())
     this.#cdr.markForCheck();
   } catch (err) {
-    this.#notify.warning('Không tìm thấy bản ghi, quay về danh sách');
+    this.#notify.warning('<localized text>');
     this.#router.navigate(['../../'], { relativeTo: this.#route, replaceUrl: true });
   } finally {
     this.#loading.hide();
@@ -571,7 +571,7 @@ Prefer the shared loader unless the project really needs distinct UPDATE-vs-DETA
 async onSave(): Promise<void> {
   if (this.form.invalid) {
     this.form.markAllAsTouched();
-    this.#notify.error('Vui lòng kiểm tra các trường bắt buộc');
+    this.#notify.error('<localized text>');
     return;
   }
   this.saving.set(true);
@@ -583,11 +583,11 @@ async onSave(): Promise<void> {
     const payload = this.form.getRawValue() as EntitySaveReq;
     const id = this.entity.id;
     await this.#service.update(id, payload);
-    this.#notify.success('Cập nhật thành công');
+    this.#notify.success('<localized text>');
     // Navigate back to list (default) OR to detail of the same record (opt-in)
     this.#router.navigate(['..'], { relativeTo: this.#route });
   } catch (err) {
-    this.#notify.error('Cập nhật thất bại');
+    this.#notify.error('<localized text>');
   } finally {
     this.saving.set(false);
     this.#loading.hide();

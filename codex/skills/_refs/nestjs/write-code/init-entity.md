@@ -23,7 +23,7 @@ Generate the **complete CRUD stack for one entity** inside a module that already
 
 Run order: **`init-project` → `init-module` → `init-entity`**. Run `init-entity` once per entity; re-run it to add a second entity into the same module (each run appends to the same barrels + `<module>.module.ts` arrays). Use when the plan asks to:
 
-- "Thêm entity X" / "tạo CRUD cho X" / "add a record type to the `crm` module"
+- "<localized text>" / "<localized text>" / "add a record type to the `crm` module"
 - "Scaffold the `task` / `customer` / `invoice` entity with full CRUD"
 - "Add an entity + its repository, service, controller, validation"
 
@@ -37,7 +37,7 @@ Run order: **`init-project` → `init-module` → `init-entity`**. Run `init-ent
 
 If the persona is **non-technical**, open with plain language before generating, e.g.:
 
-> "I'll add a new record type — `<entity>` — to your `<module>` area: where it's stored, the rules for filling it in, and the endpoints to list, view, create, edit, and delete it. After this, the screen builder can show it in the portal."
+> "<localized text>"
 
 Then confirm only the blocking inputs (entity name + its fields). For a technical persona, skip the narration.
 
@@ -65,7 +65,7 @@ Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) for the canonical expo
 - `BaseController<T, TDto>` (auto-mounts `POST /search`, `POST /paging`, `GET /:id`, `DELETE /:id`) + `ApiResponse` (`/core`, re-exported at root). `GET /all`, soft-delete, restore, and paging-deleted are service methods only until a subclass route exposes them.
 - `@HasPermission` + `AuthGuard` (`/auth`); `ZodValidationGuard` (`/validation`).
 
-The Symbol-I-token DI pattern (`export interface I… extends I…` + `export const I… = Symbol('I…')` + `export class … implements I…`) is the same one `init-module`'s provider-binding section documents — `init-entity` is what actually emits one per entity.
+The Symbol-I-token DI pattern (`<localized text>` + `<localized text>` + `<localized text>`) is the same one `init-module`'s provider-binding section documents — `init-entity` is what actually emits one per entity.
 
 ---
 
@@ -241,7 +241,7 @@ export * from './<entity>.repository';
 
 **Profile: enterprise** (`base/shared/<module>/<entity>.model.ts`, aliased `@shared`)
 
-The DTO is the read shape the service returns and the FE consumes. It lives in the shared kernel (`@shared`, `init-project` Step 7) so the Angular portal imports the SAME type. Extends the `Dto` base (`id` + the `editable` / `deletable` / `restorable` capability flags + audit fields). *(Ground: ref app `base/shared/crm/task.model.ts` — `export type TaskDTO = Dto<TaskDTO> & Required<TaskSaveReq> & { … }`; and `base/shared/entity/dto.model.ts` — the `Dto` base with `editable?` / `deletable?` / `restorable?`.)*
+The DTO is the read shape the service returns and the FE consumes. It lives in the shared kernel (`@shared`, `init-project` Step 7) so the Angular portal imports the SAME type. Extends the `Dto` base (`id` + the `editable` / `deletable` / `restorable` capability flags + audit fields). *(Ground: ref app `base/shared/crm/task.model.ts` — `<localized text>`; and `base/shared/entity/dto.model.ts` — the `Dto` base with `<localized text>` / `<localized text>` / `<localized text>`.)*
 
 ```ts
 import { Dto } from '@shared/entity';
@@ -306,7 +306,7 @@ export interface <Entity>DTO extends Dto {
 
 **Profile: enterprise**
 
-The service maps entities → DTOs and exposes the I-token. Extends `BaseService` (which mirrors the repo's read/write and runs each result through the abstract `mapDTO`). The permission gates use the `SdContext` facade (`init-project` Step 6) — `hasPermission('<module>_<entity>', '<action>')` joins to the flat code `<module>_<entity>:<action>` the permission strategy loads. *(Ground: ref app `src/modules/crm/services/task.service.ts` lines 16-38 (interface + Symbol + class + constructor `@Inject(ITaskRepository)`) and lines 506-577 (`mapDTO` with `hasPermission('crm_task', 'delete')` gating `deletable`).)*
+The service maps entities → DTOs and exposes the I-token. Extends `BaseService` (which mirrors the repo'<localized text>'<module>_<entity>', '<action>')` joins to the flat code `<module>_<entity>:<action>` the permission strategy loads. *(Ground: ref app `src/modules/crm/services/task.service.ts` lines 16-38 (interface + Symbol + class + constructor `@Inject(ITaskRepository)`) and lines 506-577 (`mapDTO` with `hasPermission('crm_task', 'delete')` gating `deletable`).)*
 
 ```ts
 import { Inject, Injectable } from '@nestjs/common';
@@ -408,7 +408,7 @@ export * from './<entity>.service';
 
 ### Step 5 — Zod schemas (append to `src/modules/<module>/schemas/<module>.schema.ts`)
 
-`init-module` created `schemas/<module>.schema.ts` with the `reqStr` helper. Append a Create/Update pair per entity. The create schema enforces required fields; the update schema is `.partial()` (every field optional, but any present field must still satisfy its rule). Error messages are i18n CODES the validation guard surfaces and the app's exception filter localizes. *(Ground: ref app `src/modules/crm/schemas/crm.schema.ts` — `reqStr` helper + `TaskStatusCreateSchema` (with `z.enum(TaskStatusCategory, { error: '…' })`) + `TaskCreateSchema` + `TaskUpdateSchema = TaskCreateSchema.partial()`.)*
+`init-module` created `schemas/<module>.schema.ts` with the `reqStr` helper. Append a Create/Update pair per entity. The create schema enforces required fields; the update schema is `.partial()` (every field optional, but any present field must still satisfy its rule). Error messages are i18n CODES the validation guard surfaces and the app'<localized text>'…' })`) + `TaskCreateSchema` + `TaskUpdateSchema = TaskCreateSchema.partial()`.)*
 
 ```ts
 // ----- <entity> ----- (append below the reqStr helper / existing schemas)
@@ -535,14 +535,14 @@ export * from './<entity>.controller';
 
 Register the entity's four building blocks in the existing `@Module`. **All four edits MUST be idempotent** — skip any entry already present (re-running `init-entity` for the same `<entity>` makes no duplicate edits). *(Ground: ref app `src/modules/crm/crm.module.ts` — `TypeOrmModule.forFeature([…, Task])`, `controllers: […, TaskController]`, `providers: [{ provide: ITaskRepository, useClass: TaskRepository }, { provide: ITaskService, useClass: TaskService }]`, `exports: […, ITaskService]`.)*
 
-1. **Imports** — add `<Entity>` to `TypeOrmModule.forFeature([...])` (so the repository can resolve the TypeORM repo). Update the `import { … } from './entities';` line.
-2. **Controllers** — add `<Entity>Controller` to `controllers: [...]`. Update `import { … } from './controllers';`.
+1. **Imports** — add `<Entity>` to `TypeOrmModule.forFeature([...])` (so the repository can resolve the TypeORM repo). Update the `<localized text>` line.
+2. **Controllers** — add `<Entity>Controller` to `controllers: [...]`. Update `<localized text>`.
 3. **Providers** — add BOTH bindings to `providers: [...]`:
    ```ts
    { provide: I<Entity>Repository, useClass: <Entity>Repository },
    { provide: I<Entity>Service, useClass: <Entity>Service },
    ```
-   Update `import { … } from './repositories';` (add `I<Entity>Repository`, `<Entity>Repository`) and `import { … } from './services';` (add `I<Entity>Service`, `<Entity>Service`).
+   Update `<localized text>` (add `I<Entity>Repository`, `<Entity>Repository`) and `<localized text>` (add `I<Entity>Service`, `<Entity>Service`).
 4. **Exports** — add `I<Entity>Service` to `exports: [...]` so other modules can `@Inject` it as a DI port (the repository + concrete class are NEVER exported — only the service token).
 
 After the edits the module reads (entity-relevant lines shown):
@@ -641,7 +641,7 @@ src/modules/<module>/
   - **Enterprise only:** `@Scoped()` on `tenantCode` / `departmentCode` columns, `@Index(['departmentCode'])`, `@Unique(['departmentCode', 'code'])`.
   - **Simple only:** no tenancy columns, no `@Scoped`, no `@Index`/`@Unique` on tenancy fields. Audit columns are `updatedAt`/`modifiedBy` (lib `WithAudit`) — no `modifiedAt`.
 - `repositories/<entity>.repository.ts` exports `I<Entity>Repository` (interface + Symbol) + `<Entity>Repository extends BaseRepository<<Entity>>`. (profile-independent)
-- **Enterprise only:** `base/shared/<module>/<entity>.model.ts` exports `<Entity>DTO extends Dto<...>` with `deletable?` / `restorable?`; barrel at `base/shared/<module>/index.ts`.
+- **Enterprise only:** `base/shared/<module>/<entity>.model.ts` exports `<Entity>DTO extends Dto<...>` with `<localized text>` / `<localized text>`; barrel at `base/shared/<module>/index.ts`.
 - **Simple only:** `src/modules/<module>/dto/<entity>.dto.ts` exports `<Entity>DTO extends Dto` (from `src/common/dto`); no `base/shared/<module>/` folder.
 - `services/<entity>.service.ts` exports `I<Entity>Service` (interface + Symbol) + `<Entity>Service extends BaseService<...>` with permission-gated `mapDTO`.
   - **Enterprise:** `mapDTO` uses `SdContext.hasPermission('<module>_<entity>', '<action>')` and includes `tenantCode`/`departmentCode` in the returned DTO.
@@ -658,9 +658,9 @@ src/modules/<module>/
 ## Example input
 
 ```text
-Thêm entity `task` vào module `crm` (CRUD đầy đủ).
+Add entity `task` to module `crm` (full CRUD).
 Fields: code (string, optional), name (string, required), description (string, optional),
 priority (enum LOW/MEDIUM/HIGH, default MEDIUM), dueDate (timestamptz, optional),
-statusId (uuid, FK → TaskStatus cùng module), isActive (boolean, default true).
+statusId (uuid, FK -> TaskStatus in the same module), isActive (boolean, default true).
 Search: exact ['code'], contain ['name'], activeColumn 'isActive'.
 ```

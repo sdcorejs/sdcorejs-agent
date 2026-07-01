@@ -9,7 +9,7 @@ A landing site without a working contact form is incomplete — leads vanish. A 
 
 ## When invoked
 - Automatic last step of "Full build" in the `sdcorejs-nextjs` orchestrator
-- User says "contact form", "biểu mẫu liên hệ", "form chưa gửi email", "fix fake form"
+- User says "contact form", "<localized text>", "<localized text>", "fix fake form"
 - Adding a new form (newsletter signup uses a similar pattern)
 
 Prerequisites:
@@ -86,8 +86,8 @@ export async function sendContactEmail(payload: ContactPayload, locale: string) 
 
   const isVi = locale === 'vi';
   const subject = isVi
-    ? `Liên hệ mới từ ${payload.name} — ${company.name}`
-    : `New contact from ${payload.name} — ${company.name}`;
+    ? `<localized text>`
+    : `<localized text>`;
 
   const html = renderEmailHtml(payload, locale);
   const text = renderEmailText(payload, locale);
@@ -109,10 +109,10 @@ export async function sendContactEmail(payload: ContactPayload, locale: string) 
 function renderEmailHtml(p: ContactPayload, locale: string): string {
   const isVi = locale === 'vi';
   const labels = isVi
-    ? { name: 'Họ tên', email: 'Email', phone: 'Điện thoại', company: 'Công ty', message: 'Nội dung' }
+    ? { name: '<localized text>', email: 'Email', phone: '<localized text>', company: '<localized text>', message: '<localized text>' }
     : { name: 'Name', email: 'Email', phone: 'Phone', company: 'Company', message: 'Message' };
   return `
-    <h2>${isVi ? 'Yêu cầu liên hệ mới' : 'New contact request'}</h2>
+    <h2>${isVi ? '<localized text>' : 'New contact request'}</h2>
     <table cellpadding="6" style="border-collapse:collapse;border:1px solid #e5e7eb;">
       <tr><td><b>${labels.name}</b></td><td>${escapeHtml(p.name)}</td></tr>
       <tr><td><b>${labels.email}</b></td><td>${escapeHtml(p.email)}</td></tr>
@@ -126,14 +126,14 @@ function renderEmailHtml(p: ContactPayload, locale: string): string {
 function renderEmailText(p: ContactPayload, locale: string): string {
   const isVi = locale === 'vi';
   return [
-    isVi ? `Yêu cầu liên hệ mới — ${company.name}` : `New contact — ${company.name}`,
+    isVi ? `<localized text>` : `<localized text>`,
     '',
-    `${isVi ? 'Họ tên' : 'Name'}: ${p.name}`,
+    `<localized text>`,
     `Email: ${p.email}`,
-    p.phone && `${isVi ? 'Điện thoại' : 'Phone'}: ${p.phone}`,
-    p.company && `${isVi ? 'Công ty' : 'Company'}: ${p.company}`,
+    p.phone && `<localized text>`,
+    p.company && `<localized text>`,
     '',
-    `${isVi ? 'Nội dung' : 'Message'}:`,
+    `<localized text>`,
     p.message,
   ].filter(Boolean).join('\n');
 }
@@ -166,7 +166,7 @@ export const runtime = 'nodejs';  // Resend SDK needs Node runtime (not edge)
 export async function POST(req: NextRequest) {
   // Identify caller — prefer X-Forwarded-For (set by Vercel / most proxies)
   const ip =
-    req.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
+    req.headers.get('x-forwarded-for'<localized text>',')[0].trim() ??
     req.headers.get('x-real-ip') ??
     'unknown';
 
@@ -201,7 +201,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  const locale = req.headers.get('x-locale') ?? 'vi';
+  const locale = req.headers.get('x-locale'<localized text>'vi';
 
   try {
     await sendContactEmail(parsed.data, locale);
@@ -317,7 +317,7 @@ export function ContactForm() {
         disabled={status === 'submitting'}
         className="min-h-11 bg-brand text-white px-6 rounded-md font-semibold disabled:opacity-60"
       >
-        {status === 'submitting' ? t('submitting') : t('submit')}
+        {status === 'submitting'<localized text>'submitting') : t('submit')}
       </button>
     </form>
   );
@@ -396,7 +396,7 @@ if (slackWebhook) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      text: `📩 New contact: *${payload.name}* (${payload.email})\n${payload.message}`,
+      text: `<localized text>`,
     }),
   }).catch(err => console.warn('[contact] Slack notify failed:', err));
 }

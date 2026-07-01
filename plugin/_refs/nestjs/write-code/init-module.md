@@ -11,7 +11,7 @@ Add a **single domain (bounded-context) module** to a backend that was already s
 
 Run order: **`init-project` → `init-module` → `init-entity`**. Use when the plan asks to:
 
-- "Tạo module X" / "thêm bounded context" / "add a domain module"
+- "<localized text>" / "<localized text>" / "add a domain module"
 - "Scaffold the `crm` / `masterdata` / `billing` module"
 - "Set up a new module before adding entities"
 
@@ -25,7 +25,7 @@ Run order: **`init-project` → `init-module` → `init-entity`**. Use when the 
 
 If the persona is **non-technical**, open with plain language before generating, e.g.:
 
-> "I'll create a new self-contained area of your backend for `<module>` — its own data space and its own folders for the pieces we'll add next. After this we'll add the first record type (entity) inside it."
+> "<localized text>"
 
 Then confirm only the blocking input (the module name). For a technical persona, skip the narration.
 
@@ -118,7 +118,7 @@ Each of the four subfolders gets a **barrel `index.ts`** that re-exports every f
 > export class FooRepository extends BaseRepository<Foo> implements IFooRepository { /* ... */ }
 > ```
 >
-> *(Ground: ref app `crm/repositories/task.repository.ts` lines 7-14 and `crm/services/task.service.ts` lines 16-38 — `export interface I…` + `export const I… = Symbol('I…')` + `export class … implements I…`.)*
+> *(Ground: ref app `crm/repositories/task.repository.ts` lines 7-14 and `crm/services/task.service.ts` lines 16-38 — `<localized text>` + `<localized text>` + `<localized text>`.)*
 
 ### Step 2 — `<module>.module.ts`
 
@@ -246,7 +246,7 @@ const MODULE_SCHEMAS = ['core', '<module>'];   // ← add '<module>' (skip if al
 - **Postgres schema-per-module.** Every entity `init-entity` adds sets `@Entity({ schema: '<module>', name: '<table>' })` (*ground: ref app `crm/entities/task-status.entity.ts` line 6-12 — `@Entity({ schema: 'crm', name: 'task-status' })`*). The schema name = the module name = the `MODULE_SCHEMAS` entry (Step 4b) = the route prefix (Step 4a). No cross-schema foreign keys — cross-module data access goes through exported service I-tokens, not SQL joins.
 - **Permission-code namespace `<module>_<entity>:<action>`.** Route guards use `@HasPermission('<module>_<entity>:<action>')` and services check `SdContext.hasPermission('<module>_<entity>', '<action>')` (the facade joins them to `<module>_<entity>:<action>`). The model segment is `<module>_<entity>` (underscore-joined), the action is one of `create` / `update` / `delete` / `view` (extend per feature). *(Ground: ref app `crm/services/task.service.ts` lines 572-575 — `hasPermission('crm_task', 'update')`, `hasPermission('crm_task', 'delete')`.)*
 - **Barrel discipline.** Code OUTSIDE a folder imports from the folder barrel (`from 'src/modules/<module>/repositories'`), never from a deep file path. `init-entity` keeps each barrel's `export *` list current in the same change that adds the file.
-- **Cross-module DI = exported service I-tokens only.** A module exports the service `Symbol` tokens (NOT repositories, NOT concrete classes) other modules need. The consumer imports the producing module and `@Inject(IFooService)` the token. *(Ground: ref app `crm.module.ts` `exports: [ITaskService, IDealService, …]` and `task.service.ts` constructor `@Inject(IUserService)` / `@Inject(ITeamService)` from imported `AdminModule` / `MasterdataModule`.)*
+- **Cross-module DI = exported service I-tokens only.** A module exports the service `Symbol` tokens (NOT repositories, NOT concrete classes) other modules need. The consumer imports the producing module and `@Inject(IFooService)` the token. *(Ground: ref app `crm.module.ts` `<localized text>` and `task.service.ts` constructor `@Inject(IUserService)` / `@Inject(ITeamService)` from imported `AdminModule` / `MasterdataModule`.)*
 - **App base entity.** Entities extend the app's `BaseEntity` (`src/common/base-entity.ts` from `init-project`, which wraps the lib `WithAudit(BaseEntity)`), not the lib base directly — so audit/timestamps are uniform.
 - **DTO / contract location (profile-divergent).** `simple` → entity DTOs live in `src/modules/<module>/dto/<entity>.dto.ts` (no `base/shared`; `init-entity` emits them). `enterprise` → DTOs live in the `@shared` kernel at `base/shared/<module>/` so the Angular portal imports the same type. Everything else in this pack is identical across profiles.
 
@@ -285,6 +285,6 @@ src/main.ts                     # + '<module>' in MODULE_SCHEMAS
 ## Example input
 
 ```text
-Thêm module `crm` vào backend hiện tại. Schema riêng `crm`, route prefix `/crm`.
-Module này phụ thuộc AdminModule (IUserService) và MasterdataModule (IEmployeeService, ITeamService).
+Add module `crm` to the current backend. Use its own `crm` schema and `/crm` route prefix.
+This module depends on AdminModule (IUserService) and MasterdataModule (IEmployeeService, ITeamService).
 ```

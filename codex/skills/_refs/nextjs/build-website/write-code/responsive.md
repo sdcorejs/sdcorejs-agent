@@ -9,12 +9,12 @@ Most "responsive bugs" are not bugs — they're missing breakpoint variants, raw
 
 ## When invoked
 - Automatic step in the `sdcorejs-nextjs` orchestrator after pages exist (audit pass)
-- User says "responsive vỡ", "mobile broken", "tablet không đúng", "responsive audit"
+- User says "<localized text>", "mobile broken", "<localized text>", "responsive audit"
 - Adding new sections or pages — verify before committing
 
 ## Breakpoint conventions
 
-Tailwind's defaults are good — don't redefine. Use as-is:
+Tailwind'<localized text>'t redefine. Use as-is:
 
 | Prefix | Min width | Typical device |
 |---|---|---|
@@ -59,7 +59,7 @@ Why not just `container`: Tailwind's `container` utility scales to specific widt
 // Hero image (full width on every breakpoint)
 <Image
   src="/images/hero.jpg"
-  alt="Kho vật liệu xây dựng — toàn cảnh"
+  alt="<localized text>"
   fill
   priority             // above-the-fold — load eagerly
   sizes="100vw"
@@ -79,7 +79,7 @@ Why not just `container`: Tailwind's `container` utility scales to specific widt
 // Avatar / testimonial portrait (fixed small)
 <Image
   src="/images/avatar.jpg"
-  alt="Nguyễn Văn A"
+  alt="<localized text>"
   width={64}
   height={64}
   className="size-16 rounded-full object-cover"
@@ -105,7 +105,7 @@ h2 { font-size: clamp(1.5rem, 3vw, 2.5rem); }
 h3 { font-size: clamp(1.25rem, 2vw, 1.75rem); }
 ```
 
-Body text stays at `16px` (Tailwind's `text-base`) — don't shrink for mobile (a11y issue + reduces conversion).
+Body text stays at `16px` (Tailwind'<localized text>'t shrink for mobile (a11y issue + reduces conversion).
 
 ## Touch targets — minimum 44×44 px
 
@@ -148,7 +148,7 @@ For closely-stacked elements (footer links, table rows), increase `py-` and `gap
     <button
       type="button"
       onClick={() => setOpen(true)}
-      aria-label="Mở menu"
+      aria-label="<localized text>"
       className="md:hidden size-11 grid place-items-center"
     >
       <Menu />

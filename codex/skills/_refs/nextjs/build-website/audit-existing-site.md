@@ -12,7 +12,7 @@ The audit measures the existing repo against the same 14-point quality bar that 
 This skill is **read-only**. It never modifies code, never auto-applies fixes. Approval gates downstream are sacred.
 
 ## When invoked
-- User opens the agent inside an existing Next.js repo and says: "audit", "review site này", "improve site đã có", "thiếu gì", "kiểm tra chất lượng"
+- User opens the agent inside an existing Next.js repo and says: "audit", "<localized text>", "<localized text>", "<localized text>", "<localized text>"
 - User pulls/clones a take-over project and asks for a starting assessment
 - After a major dependency upgrade — confirm nothing regressed against the quality bar
 - Before a marketing push / launch — last-pass check
@@ -28,11 +28,11 @@ Do NOT invoke when:
 TARGET_ROOT=$(git rev-parse --show-toplevel)
 
 # Confirm it is a Next.js project
-test -f "$TARGET_ROOT/package.json" || { echo "No package.json — not a code repo"; exit 1; }
+test -f "$TARGET_ROOT/package.json" || { echo "<localized text>"; exit 1; }
 grep -q '"next"' "$TARGET_ROOT/package.json" || { echo "Not a Next.js project"; exit 1; }
 
 # Capture key facts
-NEXT_VERSION=$(node -p "require('$TARGET_ROOT/package.json').dependencies?.next ?? 'unknown'")
+NEXT_VERSION=$(node -p "require('$TARGET_ROOT/package.json'<localized text>'unknown'")
 APP_ROUTER=$([ -d "$TARGET_ROOT/src/app" ] || [ -d "$TARGET_ROOT/app" ] && echo "yes" || echo "no")
 TAILWIND=$(grep -q '"tailwindcss"' "$TARGET_ROOT/package.json" && echo "yes" || echo "no")
 ```
@@ -67,16 +67,18 @@ npm run lint   2>&1 | tail -20  > /tmp/audit-lint.log
 npx tsc --noEmit 2>&1 | tail -20 > /tmp/audit-tsc.log
 
 # Bilingual + content scripts (from the content-quality pack) — only run if defined
-node -e "const p=require('./package.json').scripts??{}; process.exit(p['check:i18n']?0:1)" \
+node -e "<localized text>" \
   && npm run check:i18n 2>&1 > /tmp/audit-i18n.log \
   || echo "MISSING:check:i18n" > /tmp/audit-i18n.log
 
-node -e "const p=require('./package.json').scripts??{}; process.exit(p['check:content']?0:1)" \
+node -e "<localized text>" \
   && npm run check:content 2>&1 > /tmp/audit-content.log \
   || echo "MISSING:check:content" > /tmp/audit-content.log
 
 # Lighthouse — only if dev server can boot OR a staging URL is available
-# Ask user: "Có URL staging cho audit không? (skip nếu không có)"
+# Ask user with `_refs/shared/user-choice-prompt.md`:
+# 1. Provide staging URL (url) - run Lighthouse against that URL.
+# 2. Skip Lighthouse (skip) - continue audit without Lighthouse.
 # If yes:
 npx --yes lighthouse "$URL" --only-categories=seo,performance,accessibility --quiet \
   --chrome-flags="--headless" --output=json --output-path=/tmp/audit-lh.json
@@ -92,7 +94,7 @@ Each check maps to one sub-skill from the build-website pack. The findings table
 | A2 | **theme** Tokens defined in `tailwind.config.ts` (extend.colors.brand, fontFamily) | `Grep` `theme.extend.colors` |
 | A3 | **theme** Vietnamese subset loaded via `next/font` | `Grep` `subsets:\s*\[.*vietnamese` |
 | B1 | **pages-and-blocks** Section components exist in `src/components/sections/` | `Glob src/components/sections/*.tsx` |
-| B2 | **pages-and-blocks** No hardcoded Vietnamese in components (all strings via props/t()) | `Grep '[àáâ-ỹ]' src/components/sections/*.tsx` — should return 0 |
+| B2 | **pages-and-blocks** No hardcoded Vietnamese in components (all strings via props/t()) | `<localized text>` — should return 0 |
 | B3 | **pages-and-blocks** Content externalized to `src/content/<locale>/` | `Glob src/content/*/*` non-empty |
 | C1 | **seo** `generateMetadata` per page | `Grep 'generateMetadata\|export const metadata' src/app/**/*.tsx` per page |
 | C2 | **seo** `app/sitemap.ts` exists | `Glob src/app/sitemap.{ts,tsx}` |
@@ -131,7 +133,7 @@ The reference pack that fixes each finding is named in the "Check" column — dr
 - Next.js: <version>, App Router: yes/no
 - Tailwind: yes/no (v3/v4)
 - next-intl: yes/no
-- Detected industry: <from content / config, or "unknown — ask user">
+- Detected industry: <from content / config, or "<localized text>">
 - Tier (estimated): Lean / Standard / Full
 
 ### Automated probes
@@ -149,23 +151,23 @@ The reference pack that fixes each finding is named in the "Check" column — dr
 #### Critical (blocks launch / hurts ranking now)
 | # | Finding | Fix via | Effort |
 |---|---|---|---|
-| C-1 | Contact form uses `setTimeout` stub — no email actually sent (H2) | `write-code → contact-form` | M |
+| C-1 | Contact form uses `setTimeout` stub — no email actually sent (H2) | `<localized text>` | M |
 | C-2 | No `app/sitemap.ts` — search engines can't discover pages (C2) | `write-code → seo` | S |
-| C-3 | check:content fails: home.vi.ts has 180 words (min 400) — Google thin-content threshold (I5) | `write-code → content-quality` | M |
+| C-3 | check:content fails: home.vi.ts has 180 words (min 400) — Google thin-content threshold (I5) | `<localized text>` | M |
 
 #### Important (degrades UX or SEO meaningfully)
 | # | Finding | Fix via | Effort |
 |---|---|---|---|
-| I-1 | `<img>` tags in 4 components instead of `next/image` — no AVIF/WebP, no LCP optimization (G2) | `write-code → responsive` | M |
-| I-2 | No Article JSON-LD on blog pages — rich snippets disabled (I4) | `write-code → content-quality` | S |
-| I-3 | EN message file missing 14 keys present in VI — i18n parity broken (E4) | `write-code → i18n` | S |
+| I-1 | `<img>` tags in 4 components instead of `next/image` — no AVIF/WebP, no LCP optimization (G2) | `<localized text>` | M |
+| I-2 | No Article JSON-LD on blog pages — rich snippets disabled (I4) | `<localized text>` | S |
+| I-3 | EN message file missing 14 keys present in VI — i18n parity broken (E4) | `<localized text>` | S |
 
 #### Minor (polish; ship-blocking only if all above resolved)
 | # | Finding | Fix via | Effort |
 |---|---|---|---|
-| M-1 | No dynamic OG image — every share uses the same default (D2) | `write-code → og-preview` | M |
-| M-2 | No `opengraph-image.tsx` per route segment (D2) | `write-code → og-preview` | S |
-| M-3 | Favicon set incomplete — missing apple-icon.png (C4) | `write-code → seo` | S |
+| M-1 | No dynamic OG image — every share uses the same default (D2) | `<localized text>` | M |
+| M-2 | No `opengraph-image.tsx` per route segment (D2) | `<localized text>` | S |
+| M-3 | Favicon set incomplete — missing apple-icon.png (C4) | `<localized text>` | S |
 
 ### Quality bar coverage
 <X> / 30 checks passing.
@@ -175,20 +177,23 @@ Build-website pack would ship at 28+/30.
 - <2-3 bullets of strengths — important to acknowledge, not all-negative>
 
 ### Recommended next step
-Pick 1-3 Critical findings to address in the next sprint. Mở `01-brainstorming` để xác định scope + acceptance criteria, sau đó `02-spec` approval → `03-plan` approval → `sdcorejs-execute-plan`.
+Pick 1-3 Critical findings to address in the next sprint. Open `01-brainstorming` to define scope + acceptance criteria, then `02-spec` approval -> `03-plan` approval -> `sdcorejs-execute-plan`.
 ```
 
 ### Step 5 — Brainstorm improvement priority with the user
 
-After showing the report, ask:
+After showing the report, ask with `_refs/shared/user-choice-prompt.md`:
 
-> Báo cáo cho thấy **<N>** finding (Critical: X, Important: Y, Minor: Z). Bạn muốn:
-> - **A**: Xử lý toàn bộ Critical trong 1 sprint (recommended nếu site đang chạy production)
-> - **B**: Pick 2-3 finding quan trọng nhất theo ý bạn — mình chạy lần lượt
-> - **C**: Tập trung 1 trục cụ thể (ví dụ "chỉ SEO" hoặc "chỉ contact form + i18n")
-> - **D**: Defer report — không hành động bây giờ, lưu lại làm reference
+> The report found **<N>** findings (Critical: X, Important: Y, Minor: Z). What do you want to do?
+>
+> 1. Critical sprint - fix all Critical findings in one sprint. [Recommended if the site is already in production]
+> 2. Pick top findings - you choose the 2-3 most important findings and I handle them one by one.
+> 3. Focus area - focus on one area, for example "performance" or "accessibility".
+> 4. Defer report - do nothing now and keep the report as reference.
+>
+> Reply with `1`, `2`, `3`, or `4`.
 
-If user picks A/B/C → hand off to `01-brainstorming` with:
+If user picks 1/2/3 → hand off to `01-brainstorming` with:
 - The selected findings as the implicit scope
 - The audit report saved to `<target>/.sdcorejs/docs/nextjs/<timestamp>-audit.md` (for traceability)
 - Locale of the site, current tier estimate, industry

@@ -26,7 +26,7 @@ Run all in parallel where possible (read-only commands), then aggregate. Each ch
 ```bash
 git status --porcelain
 ```
-- If non-empty → list each file with status (`M`, `??`, `D`). Blocker unless every file is intentionally untracked (e.g. `.env.local`, build artifacts).
+- If non-empty → list each file with status (`M`, `<localized text>`, `D`). Blocker unless every file is intentionally untracked (e.g. `.env.local`, build artifacts).
 
 ### 2. Debug logs and focused tests 🔴
 On STAGED + UNCOMMITTED files only (not the whole repo — too noisy):
@@ -93,7 +93,7 @@ If the project doesn't have `lint` / `test` scripts, skip silently (don't fail j
 MAIN=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||' || echo main)
 git log --oneline "$MAIN"..HEAD 2>/dev/null | wc -l
 ```
-- 0 commits ahead → Warning ("Branch hasn't diverged from $MAIN — nothing to ship")
+- 0 commits ahead → Warning ("<localized text>")
 - >20 commits ahead → Warning ("Large branch. Consider splitting into multiple PRs.")
 
 Also:
@@ -101,7 +101,7 @@ Also:
 git fetch --quiet
 git rev-list --count HEAD..origin/HEAD 2>/dev/null
 ```
-- If remote has commits the local branch doesn't → Info ("Remote is N commits ahead — rebase first?")
+- If remote has commits the local branch doesn't → Info ("<localized text>")
 
 ### 8. Conflicts and rebase markers 🔴
 ```bash
@@ -114,7 +114,7 @@ For tracks with auto-docs:
 ```bash
 ls .sdcorejs/docs/<track>/*.md 2>/dev/null | head -3
 ```
-If the feature is non-trivial (>2 file changes) but no fresh doc exists for it → Warning ("Auto-docs did not run after the latest task — load `_refs/orchestration/tail/auto-docs.md` from the executor tail.").
+If the feature is non-trivial (>2 file changes) but no fresh doc exists for it → Warning ("<localized text>").
 
 This is a soft check — not all branches need a doc. But it's a useful nudge.
 

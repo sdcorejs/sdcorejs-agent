@@ -135,7 +135,7 @@ Severity:
 
 ```bash
 # Direct third-party scripts in app
-grep -rnE "<script\s+(async\s+)?src=\"https?://" src/ 2>/dev/null
+grep -rnE "<localized text>"https?://" src/ 2>/dev/null
 
 # Analytics tags (GTM, GA4, Plausible) — should use `next/script` with strategy="afterInteractive"
 grep -rnE "from\s+['\"]next/script['\"]" src/

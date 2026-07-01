@@ -41,9 +41,9 @@ CMS/MDX/user content must pass a sanitizer (e.g. `isomorphic-dompurify`). **Crit
 
 ## NX-6: Open redirect from query params
 ```bash
-grep -rnE "redirect\(.*searchParams|redirect\(.*req(uest)?\.(nextUrl|url)" app/ src/ 2>/dev/null
+grep -rnE "<localized text>" app/ src/ 2>/dev/null
 ```
-Redirect target from `?next=` / `?returnUrl=` must be allowlisted / same-origin relative. **Critical** per unbounded redirect. OWASP A01.
+Redirect target from `<localized text>` / `<localized text>` must be allowlisted / same-origin relative. **Critical** per unbounded redirect. OWASP A01.
 
 ## NX-7: Middleware matcher includes protected paths
 ```bash
@@ -59,7 +59,7 @@ Wildcard `hostname: '**'` turns the optimizer into an open proxy (SSRF / bandwid
 
 ## NX-9: Contact form — spam + rate limit + validation
 ```bash
-grep -rnE "honeypot|rate.?limit|recaptcha|turnstile|hcaptcha" app/ src/ lib/ 2>/dev/null
+grep -rnE "<localized text>" app/ src/ lib/ 2>/dev/null
 ```
 Each submission path needs server-side Zod validation, a per-IP rate limit, and a bot deterrent; email content escaped before templating. **Critical** if no rate limit (mail-bomb / cost abuse); **Important** if no bot deterrent. OWASP A04.
 
@@ -86,14 +86,14 @@ Only `.env.example` (placeholders) is committed. **Critical** if a real `.env*` 
 ## Manual audit (cannot automate)
 - [ ] Server Action called directly (bypassing the form) is rejected
 - [ ] View-source of a built page contains no secret values
-- [ ] Open-redirect attempt (`?next=https://evil.com`) is blocked
+- [ ] Open-redirect attempt (`<localized text>`) is blocked
 - [ ] Contact form survives a burst without sending N mails
 - [ ] CSP blocks an injected inline script in the browser console
 
 ## Anti-patterns
 - Trusting `NEXT_PUBLIC_` for "low-sensitivity" keys — if it's in the bundle, it's public
 - CSP with `'unsafe-inline' 'unsafe-eval'` everywhere — that's no CSP; scope nonces/hashes
-- Open redirect "for UX" (`?returnUrl=`) — allowlist or force same-origin relative
+- Open redirect "for UX" (`<localized text>`) — allowlist or force same-origin relative
 - Wildcard image `remotePatterns: [{ hostname: '**' }]` — open proxy
 - Contact form with client-only validation — server-side Zod + rate limit are mandatory
 

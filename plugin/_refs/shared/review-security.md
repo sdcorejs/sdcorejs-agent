@@ -37,7 +37,7 @@ For a monorepo, run all applicable blocks and scope each finding to its stack.
 - No raw HTML from user input (Angular `[innerHTML]`, NextJS `dangerouslySetInnerHTML`)
 
 ### D. Injection
-- **SQL** (TypeORM/Prisma): parameterized queries / query builder; flag `query(\`… ${var}\`)` concatenation
+- **SQL** (TypeORM/Prisma): parameterized queries / query builder; flag `<localized text>` concatenation
 - **NoSQL**: same for MongoDB / Redis pipelines
 - **Command**: grep `child_process.exec(` / `execSync(` → use `execFile` with array args, not shell
 - **Path traversal**: user-supplied paths normalized + bounded (no `..`)

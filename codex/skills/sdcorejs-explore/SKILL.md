@@ -34,6 +34,7 @@ Before executing this skill:
 2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
 3. Read and apply `../_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Mode Selection
 
@@ -50,6 +51,7 @@ Before executing this skill:
 If the user asks to judge quality or find defects, use `sdcorejs-review`.
 If they report a concrete failing behavior, use `sdcorejs-debug`.
 If they ask to verify done or ship, use `sdcorejs-ship`.
+If they ask to write, rewrite, improve, structure, convert, standardize, or summarize an existing doc/artifact, use `sdcorejs-documentation`.
 If they ask to change explanation style, use `persona` mode inside this skill.
 If they ask to save durable context, use `memories` mode inside this skill.
 
@@ -159,6 +161,52 @@ unless tracing a specific flow.
 ```
 
 Every recommendation must cite an actual file path found in the repo.
+
+### Documentation harvest add-on
+
+When the caller is `sdcorejs-documentation (write-user-guide Mode 3)` or the
+request says "read the whole project and write the user guide", include a
+`### Documentation harvest` section in the code-map output. This remains
+read-only: collect facts for documentation to render later; do not write user
+guides from explore.
+
+Harvest these facts per module when present:
+
+- module slug and source root
+- routes/controllers and route paths
+- permission codes and guard/directive evidence
+- entities, DTOs, schemas, and visible fields
+- Angular screen types: list, detail, create, update, custom actions
+- Core UI components/services/directives actually imported or used
+- unresolved gaps that documentation should mark as `unknown - fill manually`
+
+Use targeted probes from discovered roots:
+
+```bash
+# Angular routes and permissions
+rg -n "data:\s*\{[^}]*permission|sdPermission|path:" <fe>/src/libs/<module>
+Glob: <fe>/src/libs/<module>/**/{routes.ts,*.routes.ts,*.routing.ts}
+
+# NestJS routes and permissions
+rg -n "RouterModule\|path:|@HasPermission\('([^']+)'\)" <be>/src/app.module.ts <be>/src/modules/<module>
+
+# Entities and schemas
+rg -n "@Column|export class .*DTO|export interface .*DTO" <be>/src/modules/<module> <fe>/src/libs/<module>
+Glob: <be>/src/modules/<module>/schemas/*.schema.ts
+
+# Angular screens and Core UI usage
+Glob: <fe>/src/libs/<module>/features/**/pages/*/
+rg -n "openWorkflow|openBulk|openCustomAction|SdActionButton|@sdcorejs/angular|@sd-angular/core|sd-" <fe>/src/libs/<module>
+```
+
+Output shape:
+
+```markdown
+### Documentation harvest
+| Module | Routes/controllers | Permissions | Entities/fields | Screens/actions | Core UI | Gaps |
+|---|---|---|---|---|---|---|
+| <module> | <path refs> | <codes + file refs> | <entities + field refs> | <screen refs> | <imports/tags> | <missing evidence> |
+```
 
 ## Mode: trace-flow
 

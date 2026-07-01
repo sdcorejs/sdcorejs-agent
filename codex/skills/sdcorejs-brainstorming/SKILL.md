@@ -18,6 +18,7 @@ Before executing this skill:
 2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
 3. Read and apply `../_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 Turn a request into a confirmed requirement contract. This skill now owns both jobs that used to be split:
@@ -45,7 +46,10 @@ else TRACK=generic
 fi
 ```
 
-If multiple app roots exist, ask the user which root to target. If no known stack is detected, keep `TRACK=generic`; `sdcorejs-execute-plan` can still run the approved plan through the harness fallback.
+If multiple app roots exist, ask the user which root to target with a numbered
+list and short aliases from `../_refs/shared/user-choice-prompt.md`. If no known
+stack is detected, keep `TRACK=generic`; `sdcorejs-execute-plan` can still run
+the approved plan through the harness fallback.
 
 ### 1. Load context cheaply
 Read only what changes the questions:
@@ -73,14 +77,16 @@ Use confirm mode when the user already gave concrete artifacts and the remaining
 When in explore mode:
 
 1. Ask at most one targeted question if the answer changes the option set.
-2. Present 2-3 approaches with tradeoffs.
+2. Present 2-3 approaches with stable numeric selectors (`1/2/3`) and tradeoffs.
 3. Recommend one approach with a short reason tied to the user's goal.
-4. Ask for direction confirmation.
+4. Ask for direction confirmation and state that the user can reply with the selector, alias, or "you decide".
 
 Do not continue to blocker confirmation until the direction is selected or the user explicitly says "you decide".
 
 ### 4. Confirm blockers
-Ask grouped blocking questions, 3-4 related questions per turn. Reuse answers already present in the conversation or artifacts.
+Ask grouped blocking questions, 3-4 related questions per turn. Reuse answers
+already present in the conversation or artifacts. When a blocker has known
+alternatives, label them with short selectors so the user can reply quickly.
 
 Minimum blockers by context:
 

@@ -25,12 +25,12 @@
 
 Run order: **`init-project` → `init-module` → `init-entity` → `actions`** (this pack). Run it whenever the plan asks to:
 
-- "Thêm action / nút approve / chuyển trạng thái" — a workflow/state transition (`@Put(':id/transition')`).
-- "Màn của tôi / việc của team" — caller-scoped listings (`mine` / `team`).
-- "Xuất Excel / export báo cáo" — an `exceljs` workbook download.
-- "Import / bulk create / xóa nhiều" — bulk write via `repo.import(...)` / `softDelete(ids)`.
-- "Tạo + cập nhật nhiều bảng trong 1 lần" — an atomic multi-write threaded through a `QueryRunner`.
-- "Chỉ leader mới sửa được" — permission-/ownership-gated capability flags in `mapDTO`.
+- "<localized text>" — a workflow/state transition (`@Put(':id/transition')`).
+- "<localized text>" — caller-scoped listings (`mine` / `team`).
+- "<localized text>" — an `exceljs` workbook download.
+- "<localized text>" — bulk write via `repo.import(...)` / `softDelete(ids)`.
+- "<localized text>" — an atomic multi-write threaded through a `QueryRunner`.
+- "<localized text>" — permission-/ownership-gated capability flags in `mapDTO`.
 
 **Output:** new methods on the entity's service + new routes on its controller, wired with `@HasPermission` + (where a body exists) `ZodValidationGuard`, returning `ApiResponse.ok(...)`. After this step `npm run build` typechecks the new surface and the routes resolve under `/<module>/<entity>/...`.
 
@@ -42,7 +42,7 @@ Run order: **`init-project` → `init-module` → `init-entity` → `actions`** 
 
 If the persona is **non-technical**, open with plain language before generating, e.g.:
 
-> "I'll add the actions you described to `<entity>` — for example a button to change its status, a 'my items' list, and an Excel export. These build on the create/edit/list screens we already set up; I'll also make sure only the right people can use each action."
+> "<localized text>"
 
 Then confirm only the blocking inputs (which action, who may use it, what it does to the data). For a technical persona, skip the narration.
 
@@ -52,16 +52,16 @@ Then confirm only the blocking inputs (which action, who may use it, what it doe
 
 Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) BEFORE generating. Every import below MUST match a sub-path the catalog documents. The pieces this pack relies on (catalog "ORM building blocks"):
 
-- `BaseService<T, TDto>` (`/core`) — write methods `create(entity, qr?)`, `update(id, entity, qr?)`, `delete(id)`, `softDelete(id)`, `restore(id)`; read methods `paging(req, args?)`, `detail(id)`, `all(filters?, args?)`. `BaseService.import(entities)` has no `QueryRunner` argument in v1.0.0; use the underlying `BaseRepository.import(entities, qr?)` when a bulk insert must participate in an explicit transaction. The protected `repository` accessor reaches the underlying `BaseRepository` and its raw TypeORM `repository` / `queryRunner`.
-- `BaseRepository<T>` (`/core`) — `queryRunner` accessor (a fresh, un-connected `QueryRunner` from the data source), `repository` accessor (the raw TypeORM `Repository<T>` for ad-hoc `find` / `findOne` / `findOneByOrFail`), and the same `qr?`-accepting write methods.
+- `BaseService<T, TDto>` (`/core`) — write methods `<localized text>`, `<localized text>`, `delete(id)`, `softDelete(id)`, `restore(id)`; read methods `<localized text>`, `detail(id)`, `<localized text>`. `BaseService.import(entities)` has no `QueryRunner` argument in v1.0.0; use the underlying `<localized text>` when a bulk insert must participate in an explicit transaction. The protected `repository` accessor reaches the underlying `BaseRepository` and its raw TypeORM `repository` / `queryRunner`.
+- `BaseRepository<T>` (`/core`) — `queryRunner` accessor (a fresh, un-connected `QueryRunner` from the data source), `repository` accessor (the raw TypeORM `Repository<T>` for ad-hoc `find` / `findOne` / `findOneByOrFail`), and the same `<localized text>`-accepting write methods.
 - `@HasPermission(code)` / `@HasAnyPermission(...codes)` (`/auth`) — per-route gates.
-- `ZodValidationGuard(schema, source?)` (`/validation`) — boundary validation for routes with a body.
+- `<localized text>` (`/validation`) — boundary validation for routes with a body.
 - `ApiResponse.ok(data)` (`/core`, re-exported at root) — success envelope.
 
 App-local helpers (emitted by `init-project`, not the lib):
 
 - `SdContext` (`src/common/core`) — static facade: `userId`, `departmentCode`, `tenantCode`, `fullName`, `lang`, `hasPermission('<model>', '<action>')`. *(Ground: ref app `src/common/core/sd-context.ts`.)* (`enterprise` profile; in `simple` use the lib `ContextService` directly — `@Inject(ContextService)`)
-- `badRequest(code, data?)` (`src/common/errors`) — throws a code-based 400 the i18n exception filter localizes. *(Ground: ref app `src/common/errors.ts`.)*
+- `<localized text>` (`src/common/errors`) — throws a code-based 400 the i18n exception filter localizes. *(Ground: ref app `src/common/errors.ts`.)*
 - `AdminAuthGuard` (`src/common/admin-auth.guard`) — class-level guard that authenticates + loads permission codes into context. (`enterprise`; `simple` uses the core `AuthGuard`)
 
 Shared utility helpers:
@@ -259,7 +259,7 @@ export class <Entity>Controller extends BaseController<<Entity>, <Entity>DTO> {
 }
 ```
 
-> **Custom permission actions extend the flat `<module>_<entity>:<action>` namespace.** `init-entity` emitted `create` / `update` / `delete`; this pack adds `view_mine`, `view_team`, `transition`, `export_report_summary`, `import`, etc. Register every new code in the permission matrix (the admin module's `AppPermissionStrategy.load()` source) — until granted, the route denies with 403. `@HasPermission('<module>_<entity>:view_mine')` (colon form on the route) and `SdContext.hasPermission('<module>_<entity>', 'view_mine')` (split form in the service) refer to the SAME code.
+> **Custom permission actions extend the flat `<module>_<entity>:<action>` namespace.** `init-entity` emitted `create` / `update` / `delete`; this pack adds `view_mine`, `view_team`, `transition`, `export_report_summary`, `import`, etc. Register every new code in the permission matrix (the admin module'<localized text>'<module>_<entity>:view_mine')` (colon form on the route) and `SdContext.hasPermission('<module>_<entity>', 'view_mine')` (split form in the service) refer to the SAME code.
 
 > **Route ordering caveat.** A literal segment route (`@Post('mine')`, `@Get('export-report-summary')`) MUST be declared so it does not get shadowed by a param route (`@Get(':id')` from `BaseController`). NestJS matches in declaration order within a controller, but inherited base routes register first — give literal custom routes a distinct prefix segment (`mine`, `team`, `export-report-summary`, `:id/transition`) so they never collide with the base `:id`. The ref app's custom routes all use distinct segments for exactly this reason.
 
@@ -267,7 +267,7 @@ export class <Entity>Controller extends BaseController<<Entity>, <Entity>DTO> {
 
 ## 4. Bulk operations
 
-Bulk write goes through `repo.import(entities, qr?)` (multi-row insert/upsert) for **create**, and `softDelete(ids)` / `delete(ids)` / `restore(ids)` for **bulk lifecycle**. For bulk that also touches OTHER tables atomically, thread a `QueryRunner` (§5). *(Ground: ref app `employee.service.ts` bulk-import loop lines 130-191 — `this.repository.queryRunner` + per-item `createDTO(item, queryRunner)` + `teamEmployeeRepository.create(..., queryRunner)`, collecting per-row `validations`.)*
+Bulk write goes through `<localized text>` (multi-row insert/upsert) for **create**, and `softDelete(ids)` / `delete(ids)` / `restore(ids)` for **bulk lifecycle**. For bulk that also touches OTHER tables atomically, thread a `QueryRunner` (§5). *(Ground: ref app `employee.service.ts` bulk-import loop lines 130-191 — `this.repository.queryRunner` + per-item `createDTO(item, queryRunner)` + `teamEmployeeRepository.create(..., queryRunner)`, collecting per-row `validations`.)*
 
 **Service method** — a bulk endpoint that imports many rows, collecting per-row failures rather than aborting the whole batch:
 
@@ -282,7 +282,7 @@ bulkImport = async (rows: <Entity>SaveReq[]) => {
   const successItems: <Entity>[] = [];
   const validations: { idx: number; item: <Entity>SaveReq; errorMessage: string }[] = [];
   for (const [idx, item] of rows.entries()) {
-    // why: mỗi dòng 1 transaction riêng — 1 dòng lỗi không làm rollback cả lô (mirror employee import)
+    // why: each row has its own transaction; one invalid row does not roll back the whole import.
     const qr = this.repository.queryRunner;
     await qr.connect();
     await qr.startTransaction();
@@ -311,7 +311,7 @@ bulkSoftDelete = async (ids: string[]) => {
 };
 ```
 
-> **`import` vs the per-row loop.** `repo.import(entities, qr?)` is the fast path for a homogeneous, pre-validated batch (single multi-row statement). The per-row loop (above) is for imports where each row needs cross-module validation / cross-table writes and you want **partial success** with a per-row error report — that's the ref app's employee-import shape. Pick `import` for "insert N clean rows"; pick the loop when each row is its own small transaction.
+> **`import` vs the per-row loop.** `<localized text>` is the fast path for a homogeneous, pre-validated batch (single multi-row statement). The per-row loop (above) is for imports where each row needs cross-module validation / cross-table writes and you want **partial success** with a per-row error report — that's the ref app's employee-import shape. Pick `import` for "insert N clean rows"; pick the loop when each row is its own small transaction.
 
 **Controller route:**
 
@@ -333,7 +333,7 @@ Build an `exceljs` `Workbook`, write it to a buffer, and have the controller str
 
 **Service method:**
 
-> Simple profile: replace `SdContext.fullName` with `this.ctx.get('user')?.fullName` (or the equivalent user field from the injected `ContextService`). Also remove the `departmentCode` scope from the `where` clause — no `departmentCode` in single-tenant; filter by other available fields if needed. Inject `@Inject(ContextService)` (from `@sdcorejs/nestjs/core`) in the service constructor. No `SdContext` facade exists in simple.
+> Simple profile: replace `SdContext.fullName` with `<localized text>` (or the equivalent user field from the injected `ContextService`). Also remove the `departmentCode` scope from the `where` clause — no `departmentCode` in single-tenant; filter by other available fields if needed. Inject `@Inject(ContextService)` (from `@sdcorejs/nestjs/core`) in the service constructor. No `SdContext` facade exists in simple.
 
 ```ts
 import { Workbook, Worksheet, Buffer as ExcelBuffer } from 'exceljs';
@@ -349,7 +349,7 @@ exportReport = async (fromDate: string, toDate: string) => {
   if (!fromDate || !toDate) {
     badRequest('<module>.common.date-range.required');
   }
-  // why: dùng raw repository.find cho read-side aggregation (base paging không hợp report)
+  // why: use raw repository.find for read-side aggregation; base paging does not fit this report.
   const rows = await this.repository.repository.find({
     where: { departmentCode, createdAt: Between(new Date(fromDate), new Date(toDate)) },  // [enterprise] — departmentCode scope; omit in simple (single-tenant)
     order: { createdAt: 'DESC' },
@@ -418,14 +418,14 @@ import { <Entity>StatusCategory, <Entity>TransitionReq } from '@shared/<module>'
 
 transition = async (id: string, req: <Entity>TransitionReq) => {
   const dto = await this.detail(id);
-  // why: cờ transitionable đã được tính trong mapDTO theo quyền + ownership (§8)
+  // why: the transitionable flag is computed in mapDTO from permission + ownership rules.
   if (!dto?.transitionable) {
     throw new ForbiddenException();
   }
   if (!req?.toStatusId) {
     badRequest('<module>.<entity>.transition.required');
   }
-  // why: chỉ cho phép chuyển sang trạng thái nằm trong danh sách hợp lệ của trạng thái hiện tại
+  // why: allow only transitions that are valid for the current status.
   const allowed = dto.availableTransitions?.some((t) => t.toStatusId === req.toStatusId);
   if (!allowed) {
     badRequest('<module>.<entity>.transition.invalid');
@@ -462,13 +462,13 @@ export const <Entity>TransitionSchema = z.object({
 });
 ```
 
-> The "allowed next states" list (`dto.availableTransitions`) is whatever your domain models it as — the ref app derives it from a workflow definition attached to the task type and filters by `fromStatusId === statusId` in `mapDTO`. For a simpler entity, hard-code the legal transition map (e.g. `TODO → IN_PROGRESS → COMPLETED`, `* → CANCELLED`) and check membership. The invariant is the same: **never persist a status the current state does not permit** — guard it with `badRequest` so the failure is a localized 400, not a silent bad write.
+> The "allowed next states" list (`dto.availableTransitions`) is whatever your domain models it as — the ref app derives it from a workflow definition attached to the task type and filters by `fromStatusId === statusId` in `mapDTO`. For a simpler entity, hard-code the legal transition map (e.g. `<localized text>`, `<localized text>`) and check membership. The invariant is the same: **never persist a status the current state does not permit** — guard it with `badRequest` so the failure is a localized 400, not a silent bad write.
 
 ---
 
 ## 7. Domain errors
 
-Reject invalid domain state with `badRequest('<i18n-code>', params?)` from `src/common/errors` — it throws a `BadRequestException` wrapping the lib `apiError(code, message, data?)` envelope. The i18n exception filter recognizes the envelope and localizes `message` from the `code` (bilingual VI/EN) using the request language; `data` supplies `{var}` placeholders in the message. *(Ground: ref app `src/common/errors.ts` + every `badRequest('crm.…')` call in `task.service.ts`, e.g. `badRequest('crm.common.assignee.not-found', { assigneeId })`.)*
+Reject invalid domain state with `<localized text>` call in `task.service.ts`, e.g. `badRequest('crm.common.assignee.not-found', { assigneeId })`.)*
 
 ```ts
 import { badRequest } from 'src/common/errors';
@@ -487,7 +487,7 @@ if (!team.isActive) {
 
 ## 8. Permission-gated DTO fields
 
-Extend the entity's `mapDTO` to compute capability flags — `editable` / `deletable` / `restorable` / `transitionable` — from `SdContext.hasPermission('<module>_<entity>', '<action>')` (optionally OR'd with ownership / role checks). The portal reads these flags to show/hide row actions, so a user only sees buttons they can actually use, and the matching write route re-checks server-side. *(Ground: ref app `task.service.ts` `mapDTO` lines 506-577 — `transitionable: hasPermission('crm_task', 'update') || isTeamLeader || assigneeId === userId`, `editable: ... || assigneeId === createdBy`, `deletable: !isFinished && (hasPermission('crm_task', 'delete') || ...)`. Note: the `isTeamLeader` check in the ground ref is an `[enterprise]`-only role — depends on `departmentCode` scoping; omit in the simple profile.)*
+Extend the entity'<localized text>'<module>_<entity>', '<action>')` (optionally OR'd with ownership / role checks). The portal reads these flags to show/hide row actions, so a user only sees buttons they can actually use, and the matching write route re-checks server-side. *(Ground: ref app `task.service.ts` `mapDTO` lines 506-577 — `transitionable: hasPermission('crm_task', 'update') || isTeamLeader || assigneeId === userId`, `editable: ... || assigneeId === createdBy`, `deletable: !isFinished && (hasPermission('crm_task', 'delete') || ...)`. Note: the `isTeamLeader` check in the ground ref is an `[enterprise]`-only role — depends on `departmentCode` scoping; omit in the simple profile.)*
 
 > Simple profile: replace `SdContext.hasPermission(...)` with `this.ctx.hasPermission('<module>_<entity>:<action>')` from the injected lib `ContextService`. Inject `@Inject(ContextService)` (from `@sdcorejs/nestjs/core`) in the service constructor. No `SdContext` facade exists in simple.
 
@@ -508,10 +508,10 @@ mapDTO = (entity: <Entity> | undefined | null): <Entity>DTO | undefined | null =
     statusCategory,
     isFinished,
     createdAt,
-    // why: cờ năng lực — quyền HOẶC ownership; FE ẩn/hiện nút, route ghi vẫn check lại
+    // why: capability flags use permission OR ownership; FE shows/hides buttons, write routes re-check.
     editable: hasPermission('<module>_<entity>', 'update') || assigneeId === userId || assigneeId === createdBy,
     transitionable: hasPermission('<module>_<entity>', 'transition') || assigneeId === userId,
-    // chỉ cho xóa khi chưa kết thúc
+    // allow deletion only before the workflow is finished.
     deletable: !isFinished && (hasPermission('<module>_<entity>', 'delete') || assigneeId === createdBy),
     restorable: hasPermission('<module>_<entity>', 'delete'),
   };
@@ -524,7 +524,7 @@ mapDTO = (entity: <Entity> | undefined | null): <Entity>DTO | undefined | null =
 
 ## 9. Explicit transactions
 
-When one operation writes to **multiple rows/tables and they must all succeed or all roll back**, thread a single `QueryRunner` through each write so they share one DB transaction. Every `BaseService` / `BaseRepository` write method takes a trailing optional `qr?: QueryRunner`. Get a fresh runner from the repository accessor (`this.repository.queryRunner`), then `connect` → `startTransaction` → writes → `commitTransaction`, with `rollbackTransaction` in `catch` and `release` in `finally`. *(Ground: ref app `reference-data.service.ts` lines 97-115 (the canonical connect/start/commit/rollback/release shape, passing `queryRunner` to each `this.repository.update(..., queryRunner)`) + `employee.service.ts` lines 130-189 (the same threaded through `createDTO(item, queryRunner)` + `teamEmployeeRepository.create(..., queryRunner)` + `this.update(..., queryRunner)`).)*
+When one operation writes to **multiple rows/tables and they must all succeed or all roll back**, thread a single `QueryRunner` through each write so they share one DB transaction. Every `BaseService` / `BaseRepository` write method takes a trailing optional `<localized text>`. Get a fresh runner from the repository accessor (`this.repository.queryRunner`), then `connect` → `startTransaction` → writes → `commitTransaction`, with `rollbackTransaction` in `catch` and `release` in `finally`. *(Ground: ref app `reference-data.service.ts` lines 97-115 (the canonical connect/start/commit/rollback/release shape, passing `queryRunner` to each `this.repository.update(..., queryRunner)`) + `employee.service.ts` lines 130-189 (the same threaded through `createDTO(item, queryRunner)` + `teamEmployeeRepository.create(..., queryRunner)` + `this.update(..., queryRunner)`).)*
 
 ```ts
 import { QueryRunner } from 'typeorm';
@@ -534,7 +534,7 @@ import { QueryRunner } from 'typeorm';
  * If any write throws, the whole unit rolls back. The qr is threaded into every write.
  */
 reorderAll = async (ids: string[]) => {
-  // why: 1 QueryRunner cho cả lô — tất cả update chung 1 transaction, lỗi 1 cái rollback hết
+  // why: one QueryRunner for the whole batch; all updates share one transaction, any error rolls back all.
   const queryRunner = this.repository.queryRunner;   // fresh, un-connected runner from the data source
   await queryRunner.connect();
   await queryRunner.startTransaction();
@@ -553,7 +553,7 @@ reorderAll = async (ids: string[]) => {
 };
 ```
 
-When the cross-table writes go through **another module's service**, that service's write method must also accept `qr?` and you pass the same runner (the ref app's employee import passes one `queryRunner` into `createDTO`, `teamEmployeeRepository.create`, AND `userService.internalCreate`-derived updates so the user/employee/team-membership rows commit together):
+When the cross-table writes go through **another module's service**, that service'<localized text>'s employee import passes one `queryRunner` into `createDTO`, `teamEmployeeRepository.create`, AND `userService.internalCreate`-derived updates so the user/employee/team-membership rows commit together):
 
 ```ts
 const qr = this.repository.queryRunner;
@@ -603,8 +603,8 @@ No new files are usually created — this pack **edits the existing entity stack
 - Literal route segments (`mine`, `team`, `export-...`, `:id/transition`) don't collide with the inherited base `:id`.
 - Excel: service returns `{ buffer, fileName }`; controller uses `@Res()`, sets `Content-Disposition`, `response.send(buffer)`; `exceljs` is in `package.json`.
 - Workflow: `transition` loads the DTO, gates on the capability flag (403 via `ForbiddenException`), validates the target is allowed (`badRequest` otherwise), persists status + side-effects via `this.update`.
-- Transactions: every multi-write uses ONE `QueryRunner` with `connect → startTransaction → … → commit`, `rollback` in `catch`, `release` in `finally`; `qr` threaded into every write call; single writes use no runner.
-- Domain errors use `badRequest('<module>.<entity>.<...>', params?)`; codes registered in the i18n catalog.
+- Transactions: every multi-write uses ONE `QueryRunner` with `<localized text>`, `rollback` in `catch`, `release` in `finally`; `qr` threaded into every write call; single writes use no runner.
+- Domain errors use `<localized text>`; codes registered in the i18n catalog.
 - `mapDTO` capability flags (`editable` / `deletable` / `transitionable` / `restorable`) are computed from `SdContext.hasPermission(...)` (± ownership) AND re-enforced at the write boundary.
 - New permission codes (`view_mine`, `transition`, `import`, `export_report_summary`, …) registered in the permission matrix.
 - `npm run build` (nest build) typechecks the extended stack.
@@ -614,10 +614,10 @@ No new files are usually created — this pack **edits the existing entity stack
 ## Example input
 
 ```text
-Thêm action cho entity `task` (module `crm`):
-- "Việc của tôi" → POST /crm/task/mine (perm crm_task:view_mine), paging scope theo người tạo/assignee.
-- Chuyển trạng thái → PUT /crm/task/:id/transition (perm crm_task:transition), chỉ leader/assignee, chặn chuyển trạng thái không hợp lệ.
-- Xuất Excel báo cáo → GET /crm/task/export-report-summary (perm crm_task:export_report_summary).
-- mapDTO: editable/transitionable/deletable theo quyền + ownership.
+Add actions for entity `task` (module `crm`):
+- "My tasks" -> POST /crm/task/mine (perm crm_task:view_mine), paging scoped by creator/assignee.
+- Transition status -> PUT /crm/task/:id/transition (perm crm_task:transition), only leader/assignee, block invalid transitions.
+- Export Excel report -> GET /crm/task/export-report-summary (perm crm_task:export_report_summary).
+- mapDTO: editable/transitionable/deletable by permission + ownership.
 Cross-module: IUserService (AdminModule), IEmployeeService/ITeamService (MasterdataModule).
 ```

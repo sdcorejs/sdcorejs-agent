@@ -13,13 +13,13 @@ A review finding without a fix loop is just a complaint. This skill turns review
 
 Do NOT invoke for:
 - Single unrelated bug (use `sdcorejs-debug`)
-- Findings that haven't been read by the user (let them triage first — Important might be a "won't fix")
+- Findings that haven'<localized text>'t fix")
 - Refactoring requests (different workflow)
 
 ## Inputs
 - A list of findings in either supported shape:
   - Default review format: `severity` (Critical / Important / Minor), `file:line`, `what`, `why`, `suggested fix`
-  - Angular/NestJS code-review table format: `Severity`, `Gate` (`BLOCKER` / `REQUIRED` / `RECOMMENDED` / `OPTIONAL` / `PASS` / `INFO`), `File/Dòng`, `Vấn đề`, `Rủi ro`, `Đề xuất fix`
+  - Angular/NestJS code-review table format: `Severity`, `Gate` (`BLOCKER` / `REQUIRED` / `RECOMMENDED` / `OPTIONAL` / `PASS` / `INFO`), `<localized text>`, `<localized text>`, `<localized text>`, `<localized text>`
 - Source can be: chat message, doc file in `.sdcorejs/docs/<track>/`, or stdout from a linter / test runner
 - **source** (required): origin of the findings — determines which re-verify command runs in Step 5
 
@@ -97,7 +97,7 @@ After batch:
 - Run the relevant test slice — the one that should now PASS the finding
 
 Report:
-> "Auto-applied N fixes (Critical: X, Important: Y, Minor: Z). Lint ✓, typecheck ✓, tests M/M ✓."
+> "<localized text>"
 
 ### 3. Surface confirm-tier with proposed diffs
 
@@ -110,7 +110,7 @@ For each, show the user a compact diff preview:
     + @Injectable({ providedIn: 'root' })
 ```
 
-Group them, then ask: "Apply all, or one by one?". Default to "all" if they're all in the same category and skill-rule-driven.
+Group them, then ask: "<localized text>". Default to "all" if they're all in the same category and skill-rule-driven.
 
 ### 4. Defer user-decision tier
 List them with their file:line and the question. Do NOT touch the code. User answers, then this skill re-runs with the answer applied as a new "confirm-then-apply" finding.
@@ -125,7 +125,7 @@ invocation source:
 | `review-code` | Re-invoke `sdcorejs-review` with the same file scope as the original review |
 | `verify-before-done` | Re-invoke `sdcorejs-ship (verify-before-done mode)` (full suite — the skill re-checks all criteria; previously-passing criteria will still pass, so the run is safe and complete) |
 | `linter` | `npm run lint && tsc --noEmit` (or the project's typecheck equivalent) |
-| `manual` | No automated re-verify. Report: "Applied N fixes — please verify manually." and pause for the user |
+| `manual` | No automated re-verify. Report: "<localized text>" and pause for the user |
 
 Look for:
 - **Resolved findings** — same file:line no longer flagged → tick off
@@ -151,9 +151,11 @@ Frame it as:
 > - Z (tried 3 approaches and lint still fails)
 >
 > Choose next step:
-> (a) defer 2 these findings → ship as-is
-> (b) thay change approach cho fix Y
-> (c) revert the whole batch and retry from scratch"
+> 1. Defer (defer) - keep these findings open and ship only if you explicitly accept the risk.
+> 2. Change approach (change) - pick a different fix direction for the stuck finding.
+> 3. Revert batch (revert) - undo the attempted batch and retry from scratch.
+>
+> Reply with `1`, `2`, or `3`."
 
 ### 8. Final commit prep
 Once converged, hand off to `sdcorejs-git (commit mode)`. Commit message shape by source:
@@ -196,15 +198,15 @@ Done. Hand off to sdcorejs-git (commit mode).
 Findings:
   [Critical] @Injectable() → @Injectable({ providedIn: 'root' }) (5 services)  -- auto
   [Important] split ProductService into ProductCommandService + ProductQueryService  -- user-decision
-  [Minor] missing JSDoc on 12 methods  -- auto (run sdcorejs-comment-code)
+  [Minor] missing JSDoc on 12 methods  -- auto (run sdcorejs-documentation comment-code mode)
 
 Pass 1:
-  Auto: applied 5 + ran sdcorejs-comment-code → JSDoc added
+  Auto: applied 5 + ran sdcorejs-documentation (comment-code mode) → JSDoc added
   Skip: user-decision finding deferred
   Re-review: 0 Critical, 1 Important deferred, 0 Minor
   Table-mode equivalent: 0 BLOCKER, 1 REQUIRED explicitly deferred, 0 blocking unresolved
 Reported to user:
-  "Fixed 17 findings. 1 Important finding remains (split ProductService) - which direction do you want?"
+  "<localized text>"
 ```
 
 ### Convergence failure
@@ -213,7 +215,7 @@ Pass 1: fix [Important] X → introduces [Critical] Y
 Pass 2: fix [Critical] Y → reintroduces [Important] X (different angle)
 Pass 3: same loop
 
-Escalate: "X and Y mutually exclusive — which approach do you choose?"
+Escalate: "<localized text>"
 ```
 
 ## Rules

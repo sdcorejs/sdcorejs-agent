@@ -66,14 +66,14 @@ const LOCALIZED_ALIASES = new Map([
 
 const SKILL_HINTS = [
   { skill: 'sdcorejs-brainstorming', words: ['brainstorm', 'brainstorming', 'requirements', 'clarify', 'unsure', 'deciding', 'between', 'compare', 'should'] },
-  { skill: 'sdcorejs-angular', words: ['angular', 'portal', 'screen', 'button', 'approve', 'approval', 'bulk', 'export', 'action', 'drawer'] },
+  { skill: 'sdcorejs-angular', words: ['angular', 'portal', 'screen', 'screens', 'list', 'detail', 'form', 'button', 'approve', 'approval', 'bulk', 'export', 'action', 'drawer'] },
   { skill: 'sdcorejs-nestjs', words: ['nestjs', 'backend', 'module', 'entity', 'crud', 'endpoint', 'scaffold'] },
   { skill: 'sdcorejs-nextjs', words: ['nextjs', 'website', 'landing', 'seo', 'sitemap', 'og', 'contact'] },
   { skill: 'sdcorejs-solution-builder', words: ['build', 'create', 'software', 'app', 'system', 'manage', 'management', 'whole', 'classroom', 'school'] },
   { skill: 'sdcorejs-product', words: ['product', 'po', 'story', 'stories', 'acceptance', 'criteria', 'requirement', 'requirements', 'traceability', 'uat', 'ledger', 'gap', 'implementation', 'implement', 'complete'] },
   { skill: 'sdcorejs-design', words: ['design', 'ui', 'ux', 'screen', 'wireframe', 'mockup', 'png', 'preview', 'handoff', 'flow', 'flows', 'story', 'stories'] },
-  { skill: 'sdcorejs-write-user-guide', words: ['user', 'guide', 'documentation', 'manual'] },
-  { skill: 'sdcorejs-explore', words: ['explore', 'summary', 'overview', 'map', 'architecture', 'trace', 'flow', 'setup', 'env', 'environment', 'resume', 'recover'] },
+  { skill: 'sdcorejs-documentation', words: ['documentation', 'docs', 'doc', 'comment', 'comments', 'jsdoc', 'guide', 'user-guide', 'end-user', 'manual', 'technical', 'taskid', 'ticket', 'issue', 'record', 'save', 'convert', 'standardize', 'rewrite', 'improve', 'structure'] },
+  { skill: 'sdcorejs-explore', words: ['explore', 'summary', 'overview', 'project', 'codebase', 'repo', 'system', 'map', 'architecture', 'trace', 'flow', 'setup', 'env', 'environment', 'resume', 'recover'] },
   { skill: 'sdcorejs-ship', words: ['verify', 'acceptance', 'criteria', 'final', 'gate', 'branch', 'ready', 'ship', 'push', 'release', 'tag', 'merge', 'dependency', 'dependencies', 'package', 'outdated', 'audit', 'bump'] },
   { skill: 'sdcorejs-git', words: ['commit', 'changes', 'save', 'worktree', 'pr', 'pull', 'request', 'changelog', 'notes'] }
 ];

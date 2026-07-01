@@ -61,7 +61,7 @@ export class Product extends WithAudit(BaseEntity) {
 
 Enterprise migrations may keep a local `src/common/base-entity.ts` when the live schema uses legacy column names such as `modifiedAt`. That is an app-template decision; `BaseRepository`, `BaseService`, and `BaseController` are column-name agnostic enough to operate on that local base.
 
-**`BaseRepository<T>`** is constructed with `constructor(target, dataSource, options?)`.
+**`BaseRepository<T>`** is constructed with `<localized text>`.
 
 ```ts
 import { BaseRepository } from '@sdcorejs/nestjs/core';
@@ -75,9 +75,9 @@ export class ProductRepository extends BaseRepository<Product> {
 }
 ```
 
-- Read: `paging(req, args?)`, `pagingDeleted(req, args?)`, `all(filters?, args?)`, `search(keyword, filters?)`, `detail(id, args?)`.
-- Write: `create(entity, qr?)`, `update(entity, qr?)`, `import(entities, qr?)`, `delete(idOrIds, qr?)`, `softDelete(idOrIds, qr?)`, `restore(idOrIds, qr?)`.
-- Accessors: `queryRunner`, `repository`, `target`, `getRepository(qr?)`.
+- Read: `<localized text>`, `<localized text>`, `<localized text>`, `<localized text>`, `<localized text>`.
+- Write: `<localized text>`, `<localized text>`, `<localized text>`, `<localized text>`, `<localized text>`, `<localized text>`.
+- Accessors: `queryRunner`, `repository`, `target`, `<localized text>`.
 - Types: `IBaseRepository<T>`, `BaseRepositoryArgs<T>`.
 
 **`BaseService<T, TDto>`** mirrors repository reads/writes and maps results through `mapDTO(entity)`.
@@ -99,7 +99,7 @@ export class ProductService extends BaseService<Product, ProductDto> implements 
 }
 ```
 
-DTOs must satisfy `{ id: string; deletable?: boolean; restorable?: boolean }`. `BaseService.create` and `BaseService.update` accept an optional `QueryRunner`; `BaseService.import` does not expose a `QueryRunner`, so use `BaseRepository.import(..., qr)` directly for transactional imports.
+DTOs must satisfy `<localized text>`. `BaseService.create` and `BaseService.update` accept an optional `QueryRunner`; `BaseService.import` does not expose a `QueryRunner`, so use `BaseRepository.import(..., qr)` directly for transactional imports.
 
 **`BaseController<T, TDto>`** exposes the generic read/delete surface:
 
@@ -148,7 +148,7 @@ export class Product extends WithAudit(BaseEntity) {
 
 - `AuthGuard` extends `PassportAuthGuard('jwt')`, validates the token, loads permission codes via `IPermissionStrategy.load()`, and enforces `@HasPermission` / `@HasAnyPermission`.
 - `InternalGuard` validates service-to-service calls through the configured internal secret provider.
-- `JwtModule.forRoot(config, options?)` registers `JwtStrategy`, `KeycloakJwtStrategy`, or a custom strategy.
+- `<localized text>` registers `JwtStrategy`, `KeycloakJwtStrategy`, or a custom strategy.
 - `KeycloakJwtStrategy` verifies RS256 tokens through issuer JWKS and should be subclassed when the app needs to enrich `req.user`.
 - JWKS config must declare an issuer policy: `allowedIssuers`, `allowedIssuerHosts`, or `issuerValidator`.
 
@@ -172,9 +172,9 @@ Permission codes are flat strings such as `<module>_<entity>:<action>`.
 
 ## Validation - `@sdcorejs/nestjs/validation`
 
-- `ZodValidationGuard(schema | { body?, query?, params? }, source = 'body')` validates and replaces the selected request input.
+- `<localized text>` validates and replaces the selected request input.
 - `parseZod(schema, value)` is useful for custom controller bodies when a guard is not ergonomic.
-- Presets: `zPaging`, `zUuid(message?)`, `zBool`, `zPageNumber`, `zPageSize`.
+- Presets: `zPaging`, `<localized text>`, `zBool`, `zPageNumber`, `zPageSize`.
 
 ```ts
 import { ZodValidationGuard, zPaging, zUuid } from '@sdcorejs/nestjs/validation';
@@ -273,8 +273,8 @@ The drop-in controllers are not auto-registered; add them to an app module's `co
 
 - `ApiResponse.ok(data)` creates a success envelope.
 - `ApiResponse.noContent()` creates an empty success envelope.
-- `ApiResponse.error(code, message, data?)` creates an error envelope.
-- `apiError(code, message, data?)` creates the error body used inside Nest exceptions.
+- `<localized text>` creates an error envelope.
+- `<localized text>` creates the error body used inside Nest exceptions.
 
 ```ts
 import { ApiResponse, apiError } from '@sdcorejs/nestjs/core';

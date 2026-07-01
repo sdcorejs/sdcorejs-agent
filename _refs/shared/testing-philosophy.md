@@ -39,7 +39,7 @@ If your pyramid is inverted (heavy E2E, no unit): domain logic is buried in fram
 | Auth / session | stubbed user | real auth flow with test creds | real auth flow with test creds |
 | Filesystem / time / random | controlled (fake timers, fs-mock) | controlled | tolerated drift |
 
-**Rule**: Mock things you don't own; integrate things you do. If integration tests mock your own DB, they prove nothing — a migration's SQL error won't surface until production.
+**Rule**: Mock things you don'<localized text>'s SQL error won't surface until production.
 
 ## When to write tests
 1. **Before (TDD)** — failing test first; best for bug fixes (reproduce first), pure logic with clear contracts, refactors proving behaviour unchanged. See `sdcorejs-test (tdd mode)`.
@@ -69,7 +69,7 @@ Name the BEHAVIOUR verified, not the method called.
 |---|---|
 | `it('should work')` | `it('returns 403 when user lacks permission')` |
 | `it('calls service.update')` | `it('updates the record and preserves createdAt')` |
-| `describe('UserService.update')` | `describe('UserService — when caller is not owner')` |
+| `describe('UserService.update')` | `<localized text>` |
 
 A reader of test output should know what failed without opening the test body.
 

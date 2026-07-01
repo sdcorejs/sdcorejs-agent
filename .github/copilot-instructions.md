@@ -52,13 +52,14 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - `sdcorejs-execute-plan` always asks sequential vs parallel before execution.
 - Product docs, user stories, acceptance criteria, UAT, and traceability use `sdcorejs-product`.
 - UI/UX design, screen flows, wireframes, PNG previews, and FE handoff use `sdcorejs-design`.
-- Explore codebase context with `sdcorejs-explore`; verify and ship through `sdcorejs-ship`; commit, PR, changelog, and release notes through `sdcorejs-git`.
+- Explore codebase context with `sdcorejs-explore`; write comments, user guides, and technical docs through `sdcorejs-documentation`; verify and ship through `sdcorejs-ship`; commit, PR, changelog, and release notes through `sdcorejs-git`.
 - Parallel execution requires `sdcorejs-parallel-dispatch`.
 - Every code-generation run presents the finish gate before tail steps.
 - Never claim pass, built, fixed, or done without current verification output.
 - Write `.sdcorejs/*` artifacts to the target project only.
 - For long or interruptible work, mirror visible `Tasks` progress to `.sdcorejs/tasks/current-session.md`.
 - Preserve the user's language and locale marks; keep identifiers and routes in English.
+- Before asking the user to choose, approve, answer yes/no, or select a mode, apply `_refs/shared/user-choice-prompt.md`; ask one decision at a time and number every option as `1/2/3/...`.
 - Treat mojibake as a blocking defect.
 
 ## References
@@ -70,7 +71,9 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - Testing: `_refs/shared/testing-philosophy.md`
 - Project context: `_refs/shared/project-context.md`
 - Tasks protocol: `_refs/shared/tasklist.md`
+- Choice prompts: `_refs/shared/user-choice-prompt.md`
 - Finish gate: `_refs/shared/finish-gate.md`
+- Documentation: `_refs/documentation/*`
 
 ## Source Of Truth
 

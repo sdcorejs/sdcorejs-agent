@@ -60,11 +60,11 @@ const issues = [
 ];
 
 if (issues.length === 0) {
-  console.log('✓ Bilingual parity check passed.');
+  console.log('<localized text>');
   process.exit(0);
 }
 
-console.error(`✗ ${issues.length} parity issue(s) found:\n`);
+console.error(`<localized text>`);
 for (const i of issues) {
   console.error(`  [${i.file}] missing in ${i.missingIn}: ${i.key}`);
 }
@@ -127,10 +127,10 @@ for (const locale of ['vi', 'en']) {
     const literals = extractStringLiterals(readFileSync(join(dir, file), 'utf8'));
     const total = literals.reduce((sum, lit) => sum + countWords(lit), 0);
     if (total < min) {
-      console.error(`✗ ${locale}/${file}: ${total} words (min ${min}) — THIN CONTENT`);
+      console.error(`<localized text>`);
       failed++;
     } else {
-      console.log(`✓ ${locale}/${file}: ${total} words`);
+      console.log(`<localized text>`);
     }
   }
 }
@@ -238,7 +238,7 @@ interface ArticleBodyProps {
   lead: string;
   body: React.ReactNode;     // pre-rendered MDX or React tree with proper h2/h3 hierarchy
   toc?: { id: string; text: string; level: 2 | 3 }[];
-  tocTitle: string;          // localized "Nội dung" / "Contents"
+  tocTitle: string;          // localized "<localized text>" / "Contents"
   author?: { name: string; role?: string; avatar?: string };
   publishedAt?: Date;
   updatedAt?: Date;
@@ -254,14 +254,14 @@ export function ArticleBody({
           <h1 className="text-4xl font-bold mb-4">{title}</h1>
           {(author || publishedAt) && (
             <div className="flex items-center gap-3 text-sm text-neutral-500 mb-8">
-              {author && <span>{author.name}{author.role && ` · ${author.role}`}</span>}
+              {author && <span>{author.name}{author.role && `<localized text>`}</span>}
               {publishedAt && (
                 <time dateTime={publishedAt.toISOString()}>
                   {publishedAt.toLocaleDateString()}
                 </time>
               )}
               {updatedAt && updatedAt.getTime() !== publishedAt?.getTime() && (
-                <span>· Cập nhật {updatedAt.toLocaleDateString()}</span>
+                <span>Updated {updatedAt.toLocaleDateString()}</span>
               )}
             </div>
           )}
@@ -310,7 +310,7 @@ export function articleJsonLd(input: {
       logo: { '@type': 'ImageObject', url: absoluteUrl('/logo.png') },
     },
     mainEntityOfPage: { '@type': 'WebPage', '@id': input.url },
-    inLanguage: input.locale === 'en' ? 'en-US' : 'vi-VN',
+    inLanguage: input.locale === 'en'<localized text>'en-US' : 'vi-VN',
   };
 }
 ```

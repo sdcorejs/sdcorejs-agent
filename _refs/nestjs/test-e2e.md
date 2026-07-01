@@ -110,7 +110,7 @@ describe('Product (e2e)', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({
           code: 'P001',
-          name: 'Sản phẩm A',
+          name: '<localized text>',
           unitPrice: 100000,
         })
         .expect(201);
@@ -118,7 +118,7 @@ describe('Product (e2e)', () => {
       expect(res.body).toMatchObject({
         id: expect.any(String),
         code: 'P001',
-        name: 'Sản phẩm A',
+        name: '<localized text>',
       });
     });
 
@@ -135,7 +135,7 @@ describe('Product (e2e)', () => {
           expect.objectContaining({
             path: ['name'],
             message: expect.objectContaining({
-              vi: expect.stringContaining('bắt buộc'),
+              vi: expect.stringContaining('<localized text>'),
               en: expect.stringContaining('required'),
             }),
           }),

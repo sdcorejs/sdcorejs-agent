@@ -206,7 +206,7 @@ describe('[Entity]Routes (permission guards)', () => {
     expect(missingPermission).toEqual([]);
   });
 
-  it('should use a consistent Module → Entity → Action naming format across all routes', () => {
+  it('<localized text>', () => {
     // Accepts any of: <MODULE>_<ENTITY>_<ACTION> | <MODULE>_C_<ENTITY>_<ACTION> | <MODULE>_<ENTITY>:<ACTION>
     // Adjust the project's chosen pattern below; the suite verifies all routes use the SAME shape.
     const permissionPattern = /^[A-Z]+(?:_C)?_[A-Z]+[_:][A-Z]+$/;

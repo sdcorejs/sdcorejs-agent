@@ -2,7 +2,7 @@
 
 ## Field Type Definitions
 
-Hệ thống định nghĩa field dùng để tự động sinh CRUD components.
+The system defines fields used to generate CRUD components automatically.
 
 ### Field Type Enum
 
@@ -12,10 +12,10 @@ type FieldType =
   | 'number'          // sd-input-number
   | 'decimal'         // sd-input-number with decimals
   | 'boolean'         // sd-switch
-  | 'date'            // sd-date (ngày: YYYY-MM-DD)
-  | 'datetime'        // sd-datetime (ngày giờ)
-  | 'select'          // sd-select (enum hoặc API)
-  | 'textarea'        // sd-textarea (nhiều dòng)
+  | 'date'            // sd-date (date: YYYY-MM-DD)
+  | 'datetime'        // sd-datetime (date and time)
+  | 'select'          // sd-select (enum or API)
+  | 'textarea'        // sd-textarea (multi-line)
   | 'file'            // sd-upload-file (single file)
   | 'files'           // sd-upload-file (multiple files)
   | 'rich-text'       // sd-editor (HTML editor)
@@ -27,16 +27,16 @@ type FieldType =
 interface FieldConfig {
   name: string;                    // 'code', 'name', 'salary'
   type: FieldType;                 // 'string' | 'number' | 'date'...
-  label: string;                   // 'Mã sản phẩm', 'Tên nhân viên'
+  label: string;                   // '<localized text>', '<localized text>'
   required?: boolean;              // default: false
   maxLength?: number;              // for string
   min?: number;                    // for number
   max?: number;                    // for number
   decimals?: number;               // for decimal
   pattern?: string;                // regex validation
-  readonly?: boolean;              // không edit
-  visibleInList?: boolean;         // hiển thị ở list (default: true)
-  visibleInDetail?: boolean;       // hiển thị ở detail form (default: true)
+  readonly?: boolean;              // not editable
+  visibleInList?: boolean;         // visible in list (default: true)
+  visibleInDetail?: boolean;       // visible in detail form (default: true)
   
   // Cho select type
   selectOptions?: Array<{
@@ -64,7 +64,7 @@ interface FieldConfig {
   columnFormatFn?: string;         // function name: 'formatCurrency', etc.
   
   // Grouping in form
-  section?: string;                // 'Thông tin cơ bản', 'Thông tin chi tiết'
+  section?: string;                // '<localized text>', '<localized text>'
 }
 ```
 
@@ -78,8 +78,8 @@ interface EntitySchema {
   // Entity-level
   entity: string;                  // 'employee', 'product', 'contract'
   entityPascal: string;            // 'Employee', 'Product'
-  entityLabel: string;             // 'Nhân viên', 'Sản phẩm'
-  entityLabelPlural: string;       // 'Các nhân viên', 'Sản phẩm'
+  entityLabel: string;             // '<localized text>', '<localized text>'
+  entityLabelPlural: string;       // '<localized text>', '<localized text>'
   
   // API Endpoint
   apiEndpoint: string;             // 'employee', 'product' (POST /module/entity/paging, etc.)
@@ -133,15 +133,15 @@ const EMPLOYEE_SCHEMA: EntitySchema = {
   module: 'sample',
   entity: 'employee',
   entityPascal: 'Employee',
-  entityLabel: 'Nhân viên',
-  entityLabelPlural: 'Các nhân viên',
+  entityLabel: '<localized text>',
+  entityLabelPlural: '<localized text>',
   apiEndpoint: 'employee',
   
   fields: [
     {
       name: 'code',
       type: 'string',
-      label: 'Mã nhân viên',
+      label: '<localized text>',
       required: true,
       maxLength: 16,
       visibleInList: true,
@@ -150,7 +150,7 @@ const EMPLOYEE_SCHEMA: EntitySchema = {
     {
       name: 'name',
       type: 'string',
-      label: 'Tên nhân viên',
+      label: '<localized text>',
       required: true,
       maxLength: 255,
       visibleInList: true,
@@ -159,24 +159,24 @@ const EMPLOYEE_SCHEMA: EntitySchema = {
     {
       name: 'birthday',
       type: 'date',
-      label: 'Ngày sinh',
+      label: '<localized text>',
       visibleInList: true,
       columnFormat: 'date'
     },
     {
       name: 'role',
       type: 'select',
-      label: 'Chức vụ',
+      label: '<localized text>',
       selectOptions: [
-        { value: 'EMPLOYEE', display: 'Nhân viên' },
-        { value: 'MANAGER', display: 'Quản lý' }
+        { value: 'EMPLOYEE', display: '<localized text>' },
+        { value: 'MANAGER', display: '<localized text>' }
       ],
       visibleInList: true
     },
     {
       name: 'salary',
       type: 'decimal',
-      label: 'Lương',
+      label: '<localized text>',
       min: 0,
       decimals: 2,
       columnFormat: 'currency'
@@ -184,13 +184,13 @@ const EMPLOYEE_SCHEMA: EntitySchema = {
     {
       name: 'isActivated',
       type: 'boolean',
-      label: 'Kích hoạt',
+      label: '<localized text>',
       visibleInList: true
     },
     {
       name: 'note',
       type: 'textarea',
-      label: 'Ghi chú'
+      label: '<localized text>'
     }
   ],
   
@@ -209,27 +209,27 @@ const PRODUCT_SCHEMA: EntitySchema = {
   module: 'sample',
   entity: 'product',
   entityPascal: 'Product',
-  entityLabel: 'Sản phẩm',
+  entityLabel: '<localized text>',
   apiEndpoint: 'product',
   
   fields: [
     {
       name: 'code',
       type: 'string',
-      label: 'Mã sản phẩm',
+      label: '<localized text>',
       required: true,
       maxLength: 32
     },
     {
       name: 'name',
       type: 'string',
-      label: 'Tên sản phẩm',
+      label: '<localized text>',
       required: true
     },
     {
       name: 'categoryId',
       type: 'select',
-      label: 'Loại sản phẩm',
+      label: '<localized text>',
       selectApiEndpoint: '/api/categories',
       selectApiValueField: 'id',
       selectApiLabelField: 'name'
@@ -237,7 +237,7 @@ const PRODUCT_SCHEMA: EntitySchema = {
     {
       name: 'price',
       type: 'decimal',
-      label: 'Giá bán',
+      label: '<localized text>',
       min: 0,
       decimals: 2,
       columnFormat: 'currency'
@@ -245,18 +245,18 @@ const PRODUCT_SCHEMA: EntitySchema = {
     {
       name: 'stock',
       type: 'number',
-      label: 'Tồn kho',
+      label: '<localized text>',
       min: 0
     },
     {
       name: 'description',
       type: 'textarea',
-      label: 'Mô tả'
+      label: '<localized text>'
     },
     {
       name: 'image',
       type: 'file',
-      label: 'Hình ảnh'
+      label: '<localized text>'
     }
   ],
   

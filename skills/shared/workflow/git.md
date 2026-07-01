@@ -23,6 +23,7 @@ Before executing this skill:
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
 3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Mode Selection
 
@@ -47,6 +48,12 @@ git remote -v
 ```
 
 Never force-push. Never commit secrets. Never stage unrelated work.
+
+Documentation preferences are project artifacts. When a commit/PR includes work
+that used or changed saved documentation settings, include
+`.sdcorejs/documentation/**` with the same feature change unless the user
+explicitly asks for a separate commit. Do not treat these files as disposable
+session state.
 
 ## Mode: workspace
 
@@ -80,6 +87,7 @@ git log -5 --oneline
    - diff may contain secrets (`password=`, `token=`, `.env`, private key markers)
    - generated mirrors are stale; run sync/check first
    - feature readiness has not passed through `sdcorejs-ship` in this turn or been explicitly deferred
+   - `.sdcorejs/documentation/**` changed but is not included in the requested commit scope for the feature that used it
 3. Stage only explicit paths when the user asked you to stage. Never `git add .`
    or `git add -A`.
 4. Compose Conventional Commits:
@@ -125,7 +133,9 @@ git diff <base>...HEAD
    - title: Conventional-Commit style when possible, <=70 chars
    - body: Summary, Changes, Test plan, optional Out of scope, optional Refs
 7. Push the branch if needed with `git push -u origin HEAD`.
-8. If a PR already exists, ask before editing or creating another.
+8. If a PR already exists, ask before editing or creating another using
+   `_refs/shared/user-choice-prompt.md`: `1. Edit existing PR` /
+   `2. Create separate PR` / `3. Stop`.
 9. Create the PR with a heredoc body and return the URL.
 
 ## Mode: changelog

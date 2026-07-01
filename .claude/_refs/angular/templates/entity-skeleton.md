@@ -47,14 +47,14 @@ If permission is key-based:
 // Variant A: UnifiedCompact
 // CREATE/UPDATE/DETAIL share same no-split layout
 <sd-page>
-  <sd-section title="Thông tin chung"> ...form/read-only blocks... </sd-section>
+  <sd-section title="<localized text>"> ...form/read-only blocks... </sd-section>
 </sd-page>
 
 // Variant B: UnifiedSplit
 // CREATE/UPDATE/DETAIL share same split layout (left title, right form)
 <sd-page>
   <div class="c-item align-items-start">
-    <div class="c-item__label">Thông tin đợt mở bán</div>
+    <div class="c-item__label"><localized section label></div>
     <div class="c-item__content"> ...fields... </div>
   </div>
 </sd-page>
@@ -65,20 +65,20 @@ If permission is key-based:
 <sd-page>
   @if (state === 'DETAIL') {
     <div class="row row-sm mx-0">
-      <sd-section class="col-4" title="Thông tin chung" noPaddingBody collapsable>
-        <sd-section-item label="Mã" labelWidth="136px"><div>{{ entity.code }}</div></sd-section-item>
+      <sd-section class="col-4" title="<localized text>" noPaddingBody collapsable>
+        <sd-section-item label="<localized text>" labelWidth="136px"><div>{{ entity.code }}</div></sd-section-item>
       </sd-section>
-      <sd-section class="col-12 mt-16" title="Rổ hàng" collapsable>
+      <sd-section class="col-12 mt-16" title="<localized text>" collapsable>
         <sd-table [option]="tableOption"></sd-table>
       </sd-section>
     </div>
   } @else {
     <sd-anchor ellipsis>
-      <sd-anchor-item title="Thông tin chung">
-        <sd-section title="Thông tin chung" noPaddingBody collapsable> ...editable fields... </sd-section>
+      <sd-anchor-item title="<localized text>">
+        <sd-section title="<localized text>" noPaddingBody collapsable> ...editable fields... </sd-section>
       </sd-anchor-item>
-      <sd-anchor-item title="Rổ hàng">
-        <sd-section title="Rổ hàng" collapsable> ...table/actions... </sd-section>
+      <sd-anchor-item title="<localized text>">
+        <sd-section title="<localized text>" collapsable> ...table/actions... </sd-section>
       </sd-anchor-item>
     </sd-anchor>
   }
@@ -148,26 +148,32 @@ export const [entity]Routes: Routes = [
   mat-flat-button
   color="primary"
 >
-  Thêm mới
+  <localized create label>
 </button>
 
 <!-- Default key (undefined) -->
 <button *sdPermission="'[MODULE]_[ENTITY]_EXPORT'" mat-stroked-button>
-  Xuất dữ liệu
+  <localized export label>
 </button>
 ```
 
 ### Test Coverage Selection
 ```text
-Ask developer before proceeding:
-"Bạn muốn cấp độ test coverage nào cho module này?"
+Default to `standard` coverage and RED-first generation unless the user already
+asked for another level. If an explicit override is needed, ask with
+`_refs/shared/user-choice-prompt.md`:
 
-Options:
-- minimal   : only 'should create' test (fastest, demo/prototype)
-- standard  : + permission route tests + data visibility/sort tests (recommended)
-- full      : + all unit/integration tests for state, save flow, edge cases
+```text
+Test coverage override?
 
-Based on response, generate spec templates from Section 5 accordingly.
+1. Minimal (minimal) - only `should create` test; fastest for demos/prototypes.
+2. Standard (standard) - permission route tests plus data visibility/sort tests. [Recommended]
+3. Full (full) - all unit/integration tests for state, save flow, and edge cases.
+
+Reply with `1`, `2`, or `3`.
+```
+
+Based on the chosen or default level, generate spec templates from Section 5 accordingly.
 ```
 
 ### Detail UI Mode Selection
@@ -239,7 +245,7 @@ libs/[module]/
   └── index.ts
 ```
 
-> **Where does `[entity]-select` live?** Always at MODULE level (`libs/[module]/components/[entity]-select/`), NEVER inside `features/[entity]/components/`. The whole point of the entity-select is reuse across entity forms — e.g. `order` form uses `<customer-select>` and `<project-select>`. If `[entity]-select` lived inside its own feature folder, every importer would need a deep relative path and the lib boundary becomes ambiguous.
+> **Where does `[entity]-select`<localized text>`libs/[module]/components/[entity]-select/`), NEVER inside `features/[entity]/components/`. The whole point of the entity-select is reuse across entity forms — e.g. `order` form uses `<customer-select>` and `<project-select>`. If `[entity]-select` lived inside its own feature folder, every importer would need a deep relative path and the lib boundary becomes ambiguous.
 
 ### Full-page Project Structure (UnifiedCompact / AdaptiveSplitDetail)
 ```
@@ -268,8 +274,8 @@ import { BaseEntity } from '@[module]/services';
 
 // Constants for enum-like values
 export const [ENTITY_UPPER]_STATUSES = [
-  { value: 'ACTIVE', display: 'Hoạt động' },
-  { value: 'INACTIVE', display: 'Không hoạt động' },
+  { value: 'ACTIVE', display: '<localized text>' },
+  { value: 'INACTIVE', display: '<localized text>' },
 ];
 
 // Save request — public Service input contract used for BOTH create + update.
@@ -475,7 +481,7 @@ export class [Entity]SelectComponent {
 Generation process:
 
 STEP 1: Ask developer
-"Bạn muốn cấp độ test coverage nào?"
+"<localized text>"
 - minimal  → generate only "should create" test
 - standard → generate full template from Section 5 (6 tests)
 - full     → generate Section 5 template + extended edge cases
@@ -501,7 +507,7 @@ STEP 3: Ensure spec is runnable
 Generation process:
 
 STEP 1: Ask developer (if not already asked for list.component.spec.ts)
-"Bạn muốn cấp độ test coverage nào?"
+"<localized text>"
 - minimal  → generate only "should create" test
 - standard → generate full template from Section 5 (11 tests)
 - full     → generate Section 5 template + extended state/save edge cases
@@ -566,8 +572,8 @@ import { [Entity]Service } from '../services/[entity].service';
       <div class="d-flex align-items-center" role="toolbar" headerRight>
         <sd-button
           *sdPermission="'[MODULE]_[ENTITY]_CREATE'"
-          title="Tạo mới"
-          aria-label="Tạo mới"
+          title="<localized text>"
+          aria-label="<localized text>"
           type="fill"
           prefixIcon="add"
           (click)="onCreate()">
@@ -619,7 +625,7 @@ export class ListComponent implements OnInit {
           // `projectId / 'P001 - Sample Project'` shape is placeholder data.
           {
             field: 'projectId',
-            title: 'Dự án',
+            title: '<localized text>',
             type: 'values',
             defaultShowing: true,
             required: true,
@@ -634,32 +640,32 @@ export class ListComponent implements OnInit {
       items: async (_, pagingRequest) => this.#[entity]Service.paging(pagingRequest),
       columns: [
         {
-          title: 'Mã',
+          title: '<localized text>',
           field: 'code',
           type: 'string',
           width: '150px',
           click: (_value, row) => this.#onDetail(row.id),
         },
         {
-          title: 'Tên',
+          title: '<localized text>',
           field: 'name',
           type: 'string',
           width: '300px',
         },
         {
-          title: 'Trạng thái',
+          title: '<localized text>',
           field: 'isActivated',
           type: 'boolean',
-          option: { displayOnTrue: 'Hoạt động', displayOnFalse: 'Khóa' },
+          option: { displayOnTrue: '<localized text>', displayOnFalse: '<localized text>' },
           width: '150px',
         },
         // Audit columns — mandatory on every primary list page. Check the
         // actual DTO/BaseEntity field names (Spring uses `createdDate`, .NET
         // `CreatedDate`, Django `created_at`, etc.) and adjust if needed.
-        { title: 'Ngày tạo', field: 'createdAt', type: 'datetime', width: '180px' },
-        { title: 'Người tạo', field: 'createdBy', type: 'string', minWidth: '180px' },
-        { title: 'Ngày cập nhật', field: 'updatedAt', type: 'datetime', width: '180px' },
-        { title: 'Người cập nhật', field: 'updatedBy', type: 'string', minWidth: '180px' },
+        { title: '<localized text>', field: 'createdAt', type: 'datetime', width: '180px' },
+        { title: '<localized text>', field: 'createdBy', type: 'string', minWidth: '180px' },
+        { title: '<localized text>', field: 'updatedAt', type: 'datetime', width: '180px' },
+        { title: '<localized text>', field: 'updatedBy', type: 'string', minWidth: '180px' },
       ],
     });
   }
@@ -669,7 +675,7 @@ export class ListComponent implements OnInit {
   }
 
   async onChangeIsActivated(item: [Entity]DTO): Promise<void> {
-    // All [Entity]SaveReq fields are optional (`?`), so a partial payload is type-safe.
+    // All [Entity]SaveReq fields are optional (`<localized text>`), so a partial payload is type-safe.
     await this.#[entity]Service.update(item.id, { isActivated: item.isActivated });
     this.table.reload();
   }
@@ -708,7 +714,7 @@ import { [Entity]Service } from '../../services/[entity].service';
       <div class="d-flex align-items-center" role="toolbar" headerRight>
         <sd-button
           *sdPermission="'[MODULE]_[ENTITY]_CREATE'; sdPermissionKey: '[module]'"
-          title="Tạo mới" type="fill" prefixIcon="add" color="primary"
+          title="<localized text>" type="fill" prefixIcon="add" color="primary"
           (click)="onOpenCreate()">
         </sd-button>
       </div>
@@ -728,18 +734,18 @@ import { [Entity]Service } from '../../services/[entity].service';
     @let _drawerState = drawerState();
     <sd-side-drawer #drawer [title]="drawerTitle()" width="480px">
       <div class="p-16">
-        <sd-section title="Thông tin chung" noPaddingBody>
+        <sd-section title="<localized text>" noPaddingBody>
           <div class="row row-sm mx-0 pt-8">
             <!-- Add form fields here with [viewed]="_drawerState === 'DETAIL'" -->
             <div class="col-12">
-              <sd-input label="Mã"
+              <sd-input label="<localized text>"
                 [model]="drawerEntity.code"
                 (modelChange)="onDrawerFieldChange('code', $event)"
                 [form]="drawerForm" required
                 [viewed]="_drawerState === 'DETAIL'"></sd-input>
             </div>
             <div class="col-12">
-              <sd-input label="Tên"
+              <sd-input label="<localized text>"
                 [model]="drawerEntity.name"
                 (modelChange)="onDrawerFieldChange('name', $event)"
                 [form]="drawerForm" required
@@ -751,11 +757,11 @@ import { [Entity]Service } from '../../services/[entity].service';
         <div class="d-flex justify-content-end gap-8 mt-16">
           @if (_drawerState === 'DETAIL') {
             <sd-button *sdPermission="'[MODULE]_[ENTITY]_UPDATE'; sdPermissionKey: '[module]'"
-              title="Cập nhật" type="fill" prefixIcon="edit" color="primary"
+              title="<localized text>" type="fill" prefixIcon="edit" color="primary"
               (click)="onDrawerEdit()"></sd-button>
           } @else {
-            <sd-button title="Hủy" (click)="drawer.close()"></sd-button>
-            <sd-button title="Lưu" type="fill" prefixIcon="save" color="primary"
+            <sd-button title="<localized text>" (click)="drawer.close()"></sd-button>
+            <sd-button title="<localized text>" type="fill" prefixIcon="save" color="primary"
               [loading]="drawerSaving()" (click)="onDrawerSave()"></sd-button>
           }
         </div>
@@ -779,9 +785,9 @@ export class ListComponent implements OnInit {
   readonly drawerState = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
   readonly drawerTitle = computed(() => {
     const s = this.drawerState();
-    if (s === 'CREATE') return 'Tạo mới [entity label]';
-    if (s === 'UPDATE') return 'Cập nhật [entity label]';
-    return 'Chi tiết [entity label]';
+    if (s === 'CREATE') return '<localized text>';
+    if (s === 'UPDATE') return '<localized text>';
+    return '<localized text>';
   });
 
   ngOnInit(): void {
@@ -794,24 +800,24 @@ export class ListComponent implements OnInit {
       selector: {
         actions: [{
           icon: 'delete',
-          title: 'Xóa',
+          title: '<localized text>',
           click: rows => {
-            this.#confirmService.confirm(`Xóa ${rows.length} dữ liệu đã chọn`).then(() => {
+            this.#confirmService.confirm(`<localized text>`).then(() => {
               this.#onRemove(rows.map(e => e.id));
             });
           },
         }],
       },
       columns: [
-        { title: 'Mã', field: 'code', type: 'string', width: '150px', click: (_v, row) => this.#onOpenDetail(row) },
-        { title: 'Tên', field: 'name', type: 'string', minWidth: '250px' },
-        { title: 'Trạng thái', field: 'isActivated', type: 'boolean',
-          option: { displayOnTrue: 'Hoạt động', displayOnFalse: 'Khóa' }, width: '130px' },
+        { title: '<localized text>', field: 'code', type: 'string', width: '150px', click: (_v, row) => this.#onOpenDetail(row) },
+        { title: '<localized text>', field: 'name', type: 'string', minWidth: '250px' },
+        { title: '<localized text>', field: 'isActivated', type: 'boolean',
+          option: { displayOnTrue: '<localized text>', displayOnFalse: '<localized text>' }, width: '130px' },
         // Audit columns
-        { title: 'Ngày tạo', field: 'createdAt', type: 'datetime', width: '180px' },
-        { title: 'Người tạo', field: 'createdBy', type: 'string', minWidth: '150px' },
-        { title: 'Ngày cập nhật', field: 'updatedAt', type: 'datetime', width: '180px' },
-        { title: 'Người cập nhật', field: 'updatedBy', type: 'string', minWidth: '150px' },
+        { title: '<localized text>', field: 'createdAt', type: 'datetime', width: '180px' },
+        { title: '<localized text>', field: 'createdBy', type: 'string', minWidth: '150px' },
+        { title: '<localized text>', field: 'updatedAt', type: 'datetime', width: '180px' },
+        { title: '<localized text>', field: 'updatedBy', type: 'string', minWidth: '150px' },
       ],
     });
   }
@@ -842,10 +848,10 @@ export class ListComponent implements OnInit {
       const { id, ...payload } = this.drawerEntity;
       if (id) {
         await this.#[entity]Service.update(id, payload as [Entity]SaveReq);
-        this.#notifyService.success('Cập nhật [entity label] thành công');
+        this.#notifyService.success('<localized text>');
       } else {
         await this.#[entity]Service.create(payload as [Entity]SaveReq);
-        this.#notifyService.success('Tạo mới [entity label] thành công');
+        this.#notifyService.success('<localized text>');
       }
       this.#drawer().close();
       this.table.reload();
@@ -855,7 +861,7 @@ export class ListComponent implements OnInit {
   #onRemove = (ids: string[]) => {
     this.#loadingService.start();
     this.#[entity]Service.remove(ids)
-      .then(() => { this.#notifyService.success('Xóa [entity label] thành công'); this.table.reload(); })
+      .then(() => { this.#notifyService.success('<localized text>'); this.table.reload(); })
       .finally(() => this.#loadingService.stop());
   };
 
@@ -930,21 +936,21 @@ import { [Entity]Service } from '../services/[entity].service';
         @if (state() === 'CREATE' || state() === 'UPDATE') {
           <sd-button
             *sdPermission="'[MODULE]_[ENTITY]_DELETE'"
-            title="Xóa"
+            title="<localized text>"
             type="fill"
             color="error"
             prefixIcon="delete"
             (click)="onDelete()">
           </sd-button>
           <sd-button
-            title="Lưu"
+            title="<localized text>"
             type="fill"
             prefixIcon="save"
             (click)="onSave()">
           </sd-button>
         }
         <sd-button
-          title="Quay lại"
+          title="<localized text>"
           type="outline"
           prefixIcon="arrow_back"
           (click)="onBack()">
@@ -954,7 +960,7 @@ import { [Entity]Service } from '../services/[entity].service';
       <div class="p-8">
         <sd-section>
           <sd-input
-            label="Mã"
+            label="<localized text>"
             [model]="entity.code"
             (modelChange)="onEntityFieldChange('code', $event)"
             [form]="form"
@@ -964,7 +970,7 @@ import { [Entity]Service } from '../services/[entity].service';
           </sd-input>
 
           <sd-input
-            label="Tên"
+            label="<localized text>"
             [model]="entity.name"
             (modelChange)="onEntityFieldChange('name', $event)"
             [form]="form"
@@ -974,7 +980,7 @@ import { [Entity]Service } from '../services/[entity].service';
           </sd-input>
 
           <sd-textarea
-            label="Mô tả"
+            label="<localized text>"
             [model]="entity.description"
             (modelChange)="onEntityFieldChange('description', $event)"
             [form]="form"
@@ -983,7 +989,7 @@ import { [Entity]Service } from '../services/[entity].service';
           </sd-textarea>
 
           <sd-switch
-            label="Hoạt động"
+            label="<localized text>"
             [model]="entity.isActivated"
             (modelChange)="onEntityFieldChange('isActivated', $event)"
             [form]="form"
@@ -992,7 +998,7 @@ import { [Entity]Service } from '../services/[entity].service';
 
           @if (!isDetail()) {
             <sd-upload-file
-              label="Tải lên tệp"
+              label="<localized text>"
               #uploadFiles
               multiple
               [viewed]="isDetail()">
@@ -1008,8 +1014,8 @@ export class DetailComponent implements OnInit {
   readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
   entity: Partial<[Entity]SaveReq & { id?: string }> = {};
   readonly pageTitle = computed(() => {
-    if (this.state() === 'CREATE') return 'Tạo [Entity Display Name]';
-    return this.state() === 'DETAIL' ? 'Chi tiết [Entity Display Name]' : 'Cập nhật [Entity Display Name]';
+    if (this.state() === 'CREATE') return '<localized text>';
+    return this.state() === 'DETAIL'<localized text>'<localized text>' : '<localized text>';
   });
   readonly isDetail = computed(() => this.state() === 'DETAIL');
 
@@ -1077,7 +1083,7 @@ export class DetailComponent implements OnInit {
     if (!currentEntity.id) return;
 
     try {
-      await this.#confirmService.confirm('Bạn có chắc muốn xóa?');
+      await this.#confirmService.confirm('<localized text>');
     } catch {
       // User cancelled — SdConfirmService rejects on cancel.
       return;
@@ -1166,34 +1172,34 @@ import { [Entity]Service } from '../../services/[entity].service';
     @let _state = state();
     <sd-page [title]="title()">
       <div class="d-flex align-items-center" style="gap: 8px" headerRight>
-        <sd-button title="Quay lại" prefixIcon="replay" (click)="onBack()"></sd-button>
+        <sd-button title="<localized text>" prefixIcon="replay" (click)="onBack()"></sd-button>
         @if (_state === 'DETAIL') {
-          <sd-button title="Cập nhật" type="fill" prefixIcon="edit" color="primary" (click)="onUpdate()"></sd-button>
+          <sd-button title="<localized text>" type="fill" prefixIcon="edit" color="primary" (click)="onUpdate()"></sd-button>
         } @else {
-          <sd-button title="Lưu" type="fill" prefixIcon="save" color="primary" (click)="onSave()" [loading]="saving()"></sd-button>
+          <sd-button title="<localized text>" type="fill" prefixIcon="save" color="primary" (click)="onSave()" [loading]="saving()"></sd-button>
         }
       </div>
 
       <div class="h-full p-8">
         @if (_state === 'DETAIL') {
           <!-- AdaptiveSplitDetail: read-only label-value layout -->
-          <sd-section title="Thông tin chung" collapsable>
-            <sd-section-item label="Mã" labelWidth="120px">{{ entity.code }}</sd-section-item>
-            <sd-section-item label="Tên" labelWidth="120px">{{ entity.name }}</sd-section-item>
+          <sd-section title="<localized text>" collapsable>
+            <sd-section-item label="<localized text>" labelWidth="120px">{{ entity.code }}</sd-section-item>
+            <sd-section-item label="<localized text>" labelWidth="120px">{{ entity.name }}</sd-section-item>
             <!-- Add more sd-section-item for each read-only field -->
           </sd-section>
         } @else {
           <!-- CREATE / UPDATE: editable form -->
-          <sd-section title="Thông tin chung">
+          <sd-section title="<localized text>">
             <div class="row row-sm mx-0">
               <div class="col-6">
-                <sd-input label="Mã"
+                <sd-input label="<localized text>"
                   [model]="entity.code"
                   (modelChange)="onFieldChange('code', $event)"
                   [form]="form" required maxlength="32"></sd-input>
               </div>
               <div class="col-6">
-                <sd-input label="Tên"
+                <sd-input label="<localized text>"
                   [model]="entity.name"
                   (modelChange)="onFieldChange('name', $event)"
                   [form]="form" required></sd-input>
@@ -1209,9 +1215,9 @@ import { [Entity]Service } from '../../services/[entity].service';
 @SdTabComponent({
   component: DetailComponent,
   name: args => {
-    if (args?.url?.includes('update')) return 'Cập nhật [entity label]';
-    if (args?.url?.includes('detail')) return 'Chi tiết [entity label]';
-    return 'Tạo mới [entity label]';
+    if (args?.url?.includes('update')) return '<localized text>';
+    if (args?.url?.includes('detail')) return '<localized text>';
+    return '<localized text>';
   },
   color: args => {
     if (args?.url?.includes('update')) return 'warning';
@@ -1234,13 +1240,13 @@ export class DetailComponent implements OnInit {
   readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
   readonly title = computed(() => {
     const s = this.state();
-    if (s === 'CREATE') return 'Tạo mới [entity label]';
-    if (s === 'UPDATE') return 'Cập nhật [entity label]';
-    return 'Chi tiết [entity label]';
+    if (s === 'CREATE') return '<localized text>';
+    if (s === 'UPDATE') return '<localized text>';
+    return '<localized text>';
   });
 
   ngOnInit() {
-    const paramId = this.#route.snapshot.params?.['id'] ?? '';
+    const paramId = this.#route.snapshot.params?.['id'<localized text>'';
     this.id.set(paramId);
 
     const url = this.#router.url;
@@ -1266,7 +1272,7 @@ export class DetailComponent implements OnInit {
   };
 
   onBack = () => {
-    const path = this.state() === 'CREATE' ? ['../'] : ['../../'];
+    const path = this.state() === 'CREATE'<localized text>'../'] : ['../../'];
     this.#router.navigate(path, { relativeTo: this.#route, state: { replaceTab: true } });
   };
 
@@ -1281,11 +1287,11 @@ export class DetailComponent implements OnInit {
       const { id, ...payload } = this.entity;
       if (id) {
         await this.#[entity]Service.update(id, payload as [Entity]SaveReq);
-        this.#notifyService.success('Cập nhật [entity label] thành công');
+        this.#notifyService.success('<localized text>');
         this.#loadDetail(this.id());
       } else {
         const created = await this.#[entity]Service.create(payload as [Entity]SaveReq);
-        this.#notifyService.success('Tạo mới [entity label] thành công');
+        this.#notifyService.success('<localized text>');
         this.#router.navigate(['../detail', created.id], { relativeTo: this.#route, state: { replaceTab: true } });
       }
     } finally { this.saving.set(false); }

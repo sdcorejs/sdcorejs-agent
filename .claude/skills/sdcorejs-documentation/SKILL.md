@@ -1,0 +1,145 @@
+---
+name: sdcorejs-documentation
+description: Documentation executor and gate for saved doc preferences, code comments, end-user guides, technical docs, task requirement records, and operations on existing docs/artifacts. Use for documentation gate, TASKID requirement docs, add/comment code, user guides/manuals, technical/API/architecture docs, and documentation rewrite/improve/structure/summarize/convert/standardize. Do not use for project summary/code-map/trace-flow/env setup/recovery, full product PRDs/stories/AC/UAT, or design handoff. Runtime-localized.
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+---
+
+# Documentation
+
+## Shared Protocols
+
+Before executing this skill:
+1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
+2. Read and apply `_refs/shared/persona.md` if a project persona exists.
+3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+
+## Purpose
+
+Expose one documentation skill while keeping detailed documentation behaviors in
+refs. This skill chooses the mode, loads the matching `_refs/documentation/*`
+reference, then executes it.
+
+Long-term documentation verbs owned here:
+
+- write
+- rewrite
+- improve
+- structure
+- summarize existing docs/artifacts
+- convert
+- standardize
+
+## Mode Selection
+
+| Mode | Trigger examples | Reference |
+|---|---|---|
+| `documentation-gate` | finish-gate documentation choice, saved documentation preferences, `.sdcorejs/documentation/preferences.md` | `_refs/documentation/gate.md` |
+| `comment-code` | "add comments", "comment code", finish-gate comment level, JSDoc, `// why` | `_refs/documentation/comment-code.md` |
+| `write-user-guide` | user guide, user manual, module guide, aggregate guide, DOCX/PDF export, legacy reverse-engineer guide | `_refs/documentation/write-user-guide.md` |
+| `write-technical-doc` | technical docs, API docs, architecture notes, module reference, integration guide, setup/implementation guide | `_refs/documentation/write-technical-doc.md` |
+| `write-requirement` | `TASKID`, task id, ticket id, "record requirement", "save requirement" | `_refs/documentation/write-requirement.md` |
+| `document-operation` | rewrite, improve, structure, summarize, convert, or standardize existing docs/artifacts | `_refs/documentation/write-technical-doc.md` |
+
+## Routing Rules
+
+- Use `sdcorejs-product` for PRDs, user stories, acceptance criteria, UAT, product decisions, and requirement traceability.
+- Use `sdcorejs-design` for UI/UX design, screen flows, wireframes, PNG previews, and FE handoff specs.
+- Use `sdcorejs-test` for test plans, test evidence, UAT execution evidence, and test implementation.
+- Use `sdcorejs-explore` for project summary, code-map, trace-flow, env-setup, recovery, persona, and memories. If the user asks to summarize the project/codebase/repo/system, route to explore summary mode unless they explicitly name an existing doc to summarize.
+- Use this skill for general documentation, user-facing guides, code comments, technical docs, and lightweight task requirement records under `.sdcorejs/documentation/requirements/`.
+- Use `sdcorejs-product` instead when the user asks for full PRD/user story/acceptance criteria/UAT/traceability work rather than a task-level requirement record.
+
+## Workflow
+
+1. Resolve the target project root and active track from the request and current repo signals.
+2. Select one mode from the table above. If two modes match, prefer the explicit user wording; in finish tails, prefer the tail mode passed by the orchestrator.
+3. Read the matching reference completely before writing.
+4. Execute only the selected reference. Do not load every documentation reference up front.
+5. Keep generated prose runtime-localized; keep identifiers, env keys, permission codes, route paths, filenames, and symbols in English.
+6. Preserve UTF-8 and locale marks. Mojibake in documentation, prompts, comments, or user-facing strings is a blocking defect.
+7. Verify with the smallest relevant command or check available in the target project, and report skipped verification explicitly.
+
+## Tail Modes
+
+### Documentation Gate Tail
+
+When called by `sdcorejs-angular`, `sdcorejs-nestjs`, `sdcorejs-nextjs`, or
+direct `sdcorejs-test` after code/test writing:
+
+1. Load `_refs/documentation/gate.md`.
+2. Read or ask for the effective documentation choices.
+3. Save preferences to `<target>/.sdcorejs/documentation/preferences.md` when
+   the user accepts saving.
+4. Pass the captured choices to the documentation tail modes below.
+
+### Comment Code Tail
+
+When called after the finish gate:
+
+1. Use the `comment_code` level captured by `_refs/documentation/gate.md`.
+2. Do not ask again.
+3. If the level is `skip`, make no edits and report that comments were skipped.
+4. Otherwise load `_refs/documentation/comment-code.md` and apply the matching level.
+
+### Technical Doc Tail
+
+When called after the documentation gate:
+
+1. Load `_refs/documentation/write-technical-doc.md`.
+2. If `technical_doc=skip`, make no edits and report that technical docs were skipped.
+3. If `technical_doc=write`, write/update the requested technical doc from evidence.
+4. If `technical_doc=auto`, write only when the gate's auto criteria are met; otherwise report the skip reason.
+
+### Requirement Record Tail
+
+When called after the documentation gate or direct requirement request:
+
+1. Load `_refs/documentation/write-requirement.md`.
+2. If the user provided a `TASKID`, write or update `<target>/.sdcorejs/documentation/requirements/<TASKID>.md`.
+3. If no `TASKID` exists but the user wants a requirement record, ask for `TASKID` before writing.
+4. If the user declines requirement recording, skip and report it.
+
+### User Guide Tail
+
+When called after `auto-docs` in a write-code flow:
+
+1. Load `_refs/documentation/write-user-guide.md`.
+2. Run Mode 1 for every touched module when `user_guide=update`.
+3. Never write user-guide artifacts into the `sdcorejs-agent` authoring repo unless that repo is explicitly the target for documentation testing.
+
+## Direct Documentation Requests
+
+For direct write/rewrite/improve/structure/summarize/convert/standardize requests on docs or source artifacts:
+
+1. Identify the source docs or code artifacts from the user's request, current diff, or project context.
+2. If the request is really project discovery ("summarize this project", "map the repo", "trace this flow", "setup dev"), route to `sdcorejs-explore`.
+3. If the request includes `TASKID` or asks to record a requirement, load `_refs/documentation/write-requirement.md` and write/update the requirement record. Stop there unless the user also explicitly asked for technical docs.
+4. If the target artifact is ambiguous and no existing convention is discoverable, ask for the destination path.
+5. Load `_refs/documentation/write-technical-doc.md`.
+6. Preserve source meaning; do not invent requirements, APIs, constraints, or acceptance criteria.
+
+## Cross-References
+
+- `_refs/documentation/gate.md` - shared documentation ask, saved preferences, and technical-doc auto criteria
+- `_refs/documentation/comment-code.md` - code comment levels and rulesets
+- `_refs/documentation/write-user-guide.md` - end-user guide generation and aggregate/export flow
+- `_refs/documentation/write-technical-doc.md` - technical docs and document operations
+- `_refs/documentation/write-requirement.md` - task-level requirement record under `.sdcorejs/documentation/requirements/<TASKID>.md`
+- `_refs/shared/finish-gate.md` - surfaces the documentation gate inside code-generation flows
+- `_refs/orchestration/tail/auto-docs.md` - session-delta documentation, distinct from evergreen documentation
+- `sdcorejs-explore` - project discovery, summaries, code maps, flow traces, env setup, and documentation harvests
+
+<!-- response-style: auto-injected by sync-skills; do not edit mirror by hand -->
+
+**Response style (terse mode active for this skill - reduces token usage):**
+
+While executing this skill:
+
+- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
+- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
+- Pattern: `[thing] [action] [reason]. [next step].`
+- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal - no caveman inside generated artifacts.**
+- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
+- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

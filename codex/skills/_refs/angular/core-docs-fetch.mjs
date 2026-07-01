@@ -30,7 +30,28 @@ const SITE = 'https://sdcorejs.github.io/sdcorejs-angular/docs';
 const CACHE_ROOT = join(homedir(), '.cache', 'sdcorejs', 'core-docs');
 
 // UTF-8-as-CP1252 mojibake signatures (never valid in clean VN/EN docs).
-const MOJIBAKE = /á»|áº|Æ°|Ä‘|Ã¢|Ã©|Ã­|Ã³|Ãº|Ã«|Ã¨|Ã´|Ã£|â€“|â€œ|â€™|â€¦|ï¿½/;
+// Stored as escapes so this reusable script stays ASCII and locale-neutral.
+const MOJIBAKE_PATTERNS = [
+  '\u00e1\u00bb',
+  '\u00e1\u00ba',
+  '\u00c6\u00b0',
+  '\u00c4\u2018',
+  '\u00c3\u00a2',
+  '\u00c3\u00a9',
+  '\u00c3\u00ad',
+  '\u00c3\u00b3',
+  '\u00c3\u00ba',
+  '\u00c3\u00ab',
+  '\u00c3\u00a8',
+  '\u00c3\u00b4',
+  '\u00c3\u00a3',
+  '\u00e2\u20ac\u201c',
+  '\u00e2\u20ac\u0153',
+  '\u00e2\u20ac\u2122',
+  '\u00e2\u20ac\u00a6',
+  '\u00ef\u00bf\u00bd',
+];
+const MOJIBAKE = new RegExp(MOJIBAKE_PATTERNS.join('|'));
 
 // ── args ───────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
@@ -158,7 +179,7 @@ async function resolveVersionCandidates() {
       if (version) return [version]; // trust the literal; getCached will fail clearly
       throw err;
     }
-    process.stderr.write(`[core-docs-fetch] offline; no cached registry → ordering cached versions\n`);
+    process.stderr.write(`<localized text>`);
     return orderCandidates(cached, version || detectInstalledVersion(cwd));
   }
   const all = registry.versions.map(v => v.version);
@@ -197,13 +218,13 @@ async function main() {
       v = cand;
       break;
     } catch (err) {
-      process.stderr.write(`[core-docs-fetch] docs v${cand} unavailable (${err.message}); trying nearest…\n`);
+      process.stderr.write(`<localized text>`);
     }
   }
   if (!index) throw new Error(`no fetchable docs version among: ${candidates.join(', ')}`);
 
   if (doList || !comp) {
-    process.stdout.write(`# @sdcorejs/angular Core UI — ${index.count} docs (v${v})\n`);
+    process.stdout.write(`<localized text>`);
     const byCat = {};
     for (const d of index.docs) (byCat[d.category] ||= []).push(d);
     for (const cat of Object.keys(byCat).sort()) {
@@ -235,6 +256,6 @@ async function main() {
 
 main().catch(err => {
   process.stderr.write(`[core-docs-fetch] failed: ${err.message}\n`);
-  process.stderr.write('[core-docs-fetch] offline + no cache → skill should fall back to generic Material + alert("TODO").\n');
+  process.stderr.write('<localized text>');
   process.exit(1);
 });

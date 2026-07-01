@@ -2,7 +2,7 @@
 
 Code templates referenced from the init-portal reference pack [`init-portal.md`](../write-code/init-portal.md) (loaded on demand by the `sdcorejs-angular` orchestrator). The pack owns the decision logic, rules, and verification flow; this file holds the literal file content to write into the starter.
 
-`<CORE_UI_PACKAGE_NAME>` and `<CORE_VERSION>` placeholders are resolved from [`../core-version.md`](../core-version.md) **before** writing any file (see skill body §"Source of truth — Core UI package").
+`<CORE_UI_PACKAGE_NAME>` and `<CORE_VERSION>` placeholders are resolved from [`../core-version.md`](../core-version.md) **before** writing any file (see skill body §"<localized text>").
 
 ## Table of contents
 - [package.json](#packagejson)
@@ -239,7 +239,7 @@ export class LayoutConfiguration implements ISdLayoutConfiguration {
   userInfo = () => {
     const u = this.auth?.getAuthInfo?.() ?? {};
     return {
-      fullName: `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim() || u.username,
+      fullName: `<localized text>`.trim() || u.username,
       email: u.email,
       username: u.username,
     };

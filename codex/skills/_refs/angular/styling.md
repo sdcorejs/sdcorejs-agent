@@ -18,7 +18,7 @@ The fetcher pulls it once and caches it (version-matched to the consumer's insta
 Either way the rule is the same: **utility-first, minimal custom CSS.**
 
 ## 3. What the system covers (look up exact classes in the fetched guide)
-The fetched STYLE-GUIDE groups utilities by concern, so for almost any need a class already exists — look it up there instead of writing CSS. The concerns: **flex** (direction / wrap / grow-shrink / align / justify), **layout** (12-col `row`/`col` + responsive `col-{sm,md,lg,xl}`, CSS `grid-container`/`grid-cols`/`col-span`), **spacing** (margin / padding / gap), **sizing** (width / height / min / max + `w-full`/`w-fit`), **color** (text / bg / border `--sd-*` tokens), **typography** (size tokens / weight / align / wrap / ellipsis), **border + radius**, **display / position / overflow / visibility**, **elevation** (`mat-elevation-z0–z8`), **cursor / vertical-align**. Do NOT keep a copy of the class list here — fetch it (§1); a stored cheatsheet drifts.
+The fetched STYLE-GUIDE groups utilities by concern, so for almost any need a class already exists — look it up there instead of writing CSS. The concerns: **flex** (direction / wrap / grow-shrink / align / justify), **layout** (12-col `row`/`col` + responsive `col-{sm,md,lg,xl}`, CSS `grid-container`/`grid-cols`/`col-span`), **spacing** (margin / padding / gap), **sizing** (width / height / min / max + `w-full`/`w-fit`), **color** (text / bg / border `--sd-*` tokens), **typography** (size tokens / weight / align / wrap / ellipsis), **border + radius**, **display / position / overflow / visibility**, **elevation** (`<localized text>`), **cursor / vertical-align**. Do NOT keep a copy of the class list here — fetch it (§1); a stored cheatsheet drifts.
 
 ### Spacing gotcha (a stable behavioral rule, not a class list)
 Core UI spacing/sizing utilities (`m-*` / `p-*` / `gap-*` / `w-*` / `h-*` / `fs-*` / `rounded-*`) are **absolute px, integer 0–200** — NOT Bootstrap multipliers. `mb-16` = 16px (Bootstrap's `mb-3` would be 3px here, almost certainly a bug). Use **multiples of 4**; an off-scale (`m-3`, `p-5`) or out-of-range (>200) value silently produces no class. Confirm exact ranges in the fetched guide.
@@ -55,7 +55,7 @@ Generated UI must declare spacing intentionally. Missing `gap-*`, `p-*`, `m-*`, 
 
 ## 5. When custom CSS IS justified
 Only when no utility fits (a true one-off: a specific `clip-path`, a computed gradient, a `w-250` above the 0–200 range, a component-specific animation). Then:
-- Keep it in the component's own `.scss` (never edit global `src/styles.scss` from an entity/screen pack — that's out of scope).
+- Keep it in the component'<localized text>'s out of scope).
 - Add a one-line `// why:` comment so the reviewer knows it's deliberate, not laziness.
 - Reuse Core UI tokens inside it: `var(--sd-primary)`, `var(--sd-black200)` — don't hardcode hex.
 - Theme/color overrides + `mat.all-component-themes` belong in `styles.scss` via `sd.theme(...)`, not in components (STYLE-GUIDE §14).

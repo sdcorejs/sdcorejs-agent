@@ -12,7 +12,7 @@ From an `EntitySchema`, generate a full CRUD list component with `SdTable`, serv
 
 - Generating a fresh entity's list page (typically after `./init-entity.md`)
 - Refining an existing list — adding external filters, score cards, audit columns, custom actions
-- User asks "tạo màn list cho ...", "thêm cột vào table", "trang danh sách", "refine list page"
+- User asks "<localized text>", "<localized text>", "<localized text>", "refine list page"
 
 ## Inputs the reference needs
 

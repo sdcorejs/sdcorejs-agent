@@ -16,7 +16,7 @@ This skill enforces the floor: minimum lengths, prose discipline, parity check, 
 
 ## When invoked
 - Automatic step in the `sdcorejs-nextjs` orchestrator after `pages-and-blocks.md` + `seo.md` (so we have pages and metadata to audit)
-- User says "rà soát nội dung", "bài viết quá ngắn", "câu chữ chưa rõ", "review content quality"
+- User says "<localized text>", "<localized text>", "<localized text>", "review content quality"
 - After adding new pages or articles — before launch
 - Anytime `sdcorejs-review` flags "Critical: thin content"
 
@@ -49,8 +49,8 @@ Every VI key must have an EN counterpart, and vice versa. Every field in `conten
 ### Rule 1.2 — No machine translation for production
 
 Google's algorithm detects machine-translated text since 2018 (per their public guidance). Symptoms it picks up:
-- Literal word order ("Chúng tôi cung cấp chất lượng cao" → "We provide high quality" — grammatical but stilted)
-- Wrong idioms ("dịch vụ chu đáo" → "thoughtful service" instead of "attentive service")
+- Literal word order ("<localized text>" → "We provide high quality" — grammatical but stilted)
+- Wrong idioms ("<localized text>" → "thoughtful service" instead of "attentive service")
 - Articles + plurals wrong (VI has no articles; auto-translate drops or doubles "a/the/an")
 - Tense inconsistency
 
@@ -60,7 +60,7 @@ For VI: same rule applies to EN→VI. Vietnamese has tones and diacritics that a
 
 ### Rule 1.3 — Keyword research per locale
 
-VI "vật liệu xây dựng" and EN "construction materials" are not the same search query. They have different volumes, different competition, and different intent (B2B vs B2C splits differ by market). For each locale:
+VI "<localized text>" and EN "construction materials" are not the same search query. They have different volumes, different competition, and different intent (B2B vs B2C splits differ by market). For each locale:
 1. List 5-10 keywords with real search volume in THAT language (use Google Trends, Keyword Planner)
 2. Use them in title, h1, first paragraph, image alt — for THAT locale
 3. Don't translate keywords — research them
@@ -89,9 +89,9 @@ Below the floor → `sdcorejs-review` flags as **Critical: thin content**.
 
 - **Sentence length**: average 15-20 words; max 30. Long sentences break readability and translation accuracy.
 - **Paragraph length**: 2-4 sentences (40-80 words). Mobile-first — long paragraphs become walls of text on phone.
-- **Active voice over passive**: "Chúng tôi giao hàng trong 24 giờ" not "Hàng được giao trong 24 giờ". "We deliver in 24 hours" not "Delivery is provided within 24 hours".
-- **Concrete over abstract**: "1000 m² kho hàng tại Bình Dương" not "kho hàng rộng rãi". Numbers and place names beat adjectives.
-- **No filler**: cắt "trong việc / để có thể / nhằm mục đích" — tốn từ, không tăng nghĩa.
+- **Active voice over passive**: "<localized text>" not "<localized text>". "We deliver in 24 hours" not "Delivery is provided within 24 hours".
+- **Concrete over abstract**: "<localized text>" not "<localized text>". Numbers and place names beat adjectives.
+- **No filler**: cut phrases like "best-in-class solution" when they add no meaning.
 
 ### Rule 2.3 — Article structure (the F-pattern)
 
@@ -107,7 +107,7 @@ H2: <Section 2>
   …
 H2: <Section 3>
   …
-H2: Kết luận / Call to action
+H2: Conclusion / Call to action
   → Internal link to product/contact page
 ```
 
@@ -177,7 +177,7 @@ Tailwind Typography's defaults are tuned for English. Vietnamese needs adjustmen
 
 Three components ship for long-form reading; full code in `_refs/nextjs/build-website/content-quality-refs.md` ("Presentation components"):
 
-- **`src/components/ui/prose.tsx`** — wraps content in `prose prose-neutral max-w-prose mx-auto` (Tailwind's ≈65ch optimal line-length; wider lines lose the reader's eye between rows). Accepts a `size` prop.
+- **`src/components/ui/prose.tsx`** — wraps content in `prose prose-neutral max-w-prose mx-auto` (Tailwind'<localized text>'s eye between rows). Accepts a `size` prop.
 - **`src/components/ui/toc.tsx`** — sticky desktop Table of Contents with an `IntersectionObserver` active-section highlight. Render only for articles ≥ 4 `<h2>` blocks. Extract TOC items server-side; for MDX use `rehype-slug` + `rehype-autolink-headings`.
 - **`src/components/sections/article-body.tsx`** — composes `Prose` + `TableOfContents` + author byline + published/updated dates into the article layout.
 
@@ -218,8 +218,8 @@ if (process.env.NODE_ENV === 'development') {
 ### 4.4 — Image alt text quality
 
 `alt` is mandatory (`pages-and-blocks.md` enforces) but presence ≠ quality. Rules:
-- Describe the image's CONTENT, not its filename ("Kho vật liệu xây dựng tại Bình Dương" not "warehouse.jpg")
-- Include keyword where it's truthful — don't stuff
+- Describe the image's CONTENT, not its filename ("construction materials warehouse in the main service area" not "warehouse.jpg")
+- Include a keyword when it fits naturally; do not stuff keywords.
 - Decorative images get empty `alt=""` (already covered in `responsive.md`)
 - Hero images get the page's primary keyword in alt
 
@@ -240,7 +240,7 @@ openGraph: {
     publishedTime: publishedAt?.toISOString(),
     modifiedTime: updatedAt?.toISOString(),
     authors: [authorUrl ?? authorName],
-    section: category,        // e.g. "Tin tức ngành"
+    section: category,        // e.g. "<localized text>"
     tags: keywords,
   },
 }
@@ -257,7 +257,7 @@ openGraph: {
 
 ## Part 5 — Article authoring workflow
 
-When user asks "viết bài về X" / "add article about X":
+When user asks "<localized text>" / "add article about X":
 
 1. **Confirm scope**:
    - Locale(s)? VI only / VI + EN
@@ -326,8 +326,8 @@ When user asks "viết bài về X" / "add article about X":
 - **Article published, never updated** — set `dateModified` whenever the content changes substantively; Google weights freshness.
 - **TOC with 2 items** — useless overhead; only render TOC if ≥ 4 H2 sections.
 - **Diacritics broken in alt text or meta description** — symptoms of file encoding issues (UTF-16 BOM, CP1252 mis-decode). Confirm files are UTF-8.
-- **No author byline on articles** — E-E-A-T (Experience, Expertise, Authoritativeness, Trust) suffers; even "Đội ngũ Biên tập" is better than nothing.
-- **EN copy that translates Vietnamese idioms literally** — "đặt khách hàng làm trung tâm" becomes "place customer at center" instead of "customer-first".
+- **No author byline on articles** — E-E-A-T (Experience, Expertise, Authoritativeness, Trust) suffers; even "<localized text>" is better than nothing.
+- **EN copy that translates Vietnamese idioms literally** — "<localized text>" becomes "place customer at center" instead of "customer-first".
 - **Forcing 1500 words on a 600-word topic** — Google penalizes padding too. Right-size the content to the question.
 
 ## Verification (hooks into `sdcorejs-ship (verify-before-done mode)`)

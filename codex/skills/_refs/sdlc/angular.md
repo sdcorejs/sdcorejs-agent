@@ -22,10 +22,10 @@ When the user wants 2-3 options for a CRUD/workflow feature, present from this m
 - Multi-step (draft → review → approve → publish) → spec must list each transition + permission
 
 ### Questions to seed
-- "Mục tiêu là tốc độ nhập liệu (drawer) hay xử lý workflow phức tạp (page detail)?"
-- "Có workflow approval không? Single-step hay multi-step?"
-- "Số field UI ước lượng (cho thấy phù hợp drawer hay page)?"
-- "User là backoffice operator được train, hay user mới lần đầu dùng?"
+- "<localized text>"
+- "<localized text>"
+- "<localized text>"
+- "<localized text>"
 
 ---
 
@@ -34,7 +34,7 @@ When the user wants 2-3 options for a CRUD/workflow feature, present from this m
 ### Minimum-required (blocking)
 1. **Module name** — which existing module, or "create new module" with name
 2. **Entity name** (camelCase identifier, e.g. `product`, `purchaseOrder`)
-3. **Display label** (VI: full diacritics, e.g. "Đơn mua hàng")
+3. **Display label** (VI: full diacritics, e.g. "<localized text>")
 4. **Detail layout** — one of: `side-drawer`, `UnifiedCompact`, `UnifiedSplit`, `AdaptiveSplitDetail` (or "let me infer from field count + workflow")
 5. **Workflow** — yes / no; if yes, list transitions
 
@@ -77,18 +77,18 @@ For VI portals, all labels use full diacritics.
 
 ### Summary template
 ```
-## Đã chốt — sẵn sàng spec
+## Confirmed - ready for spec
 
 | | |
 |---|---|
 | **Module** | <module> (existing | new) |
-| **Entity** | <entityCamel> — "<Display Label VI>" |
+| **Entity** | <entityCamel> - "<Localized display label>" |
 | **Layout** | <UnifiedCompact | UnifiedSplit | AdaptiveSplitDetail | side-drawer> |
 | **Workflow** | <none | submit-approve-reject | …> |
 | **Fields** | <N> SaveReq + <M> read-only DTO fields |
 | **Tests** | <minimal | standard | full> |
 
-→ Tiếp theo: `sdcorejs-spec` để mình draft spec + xin xác nhận trong cùng gate.
+Next: run `sdcorejs-spec` to draft the spec and ask for confirmation in the same gate.
 ```
 
 ---
@@ -161,7 +161,7 @@ npm run build-dev                                                               
 npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts
 # Manual smoke
 # Open http://localhost:4200/<module>/<entity> — verify list renders 20+ seed rows
-# Click "Tạo mới" → fill form → save → expect record appears in list
+# Click "<localized text>" → fill form → save → expect record appears in list
 ```
 
 ### Side-drawer variant
@@ -173,4 +173,11 @@ If layout is `side-drawer`, omit `pages/detail/` and add `components/detail-side
 - `*.detail.component.spec.ts` — form validation + CREATE/UPDATE/DETAIL state switching
 
 ### Final-step expectations
-The last numbered step should reference the mandatory tail-call chain (sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop → sdcorejs-comment-code → sdcorejs-ship (verify-before-done mode) → sdcorejs-ship (branch-ready mode) → _refs/orchestration/tail/auto-docs.md → _refs/orchestration/tail/auto-task-tracker.md → sdcorejs-explore (memories mode)). The reviewer of the plan checks that this chain is implicit, not omitted.
+Documentation gate supplement: the finish gate loads `_refs/documentation/gate.md`
+before documentation tail steps. It may save
+`.sdcorejs/documentation/preferences.md`, captures `comment_code`,
+`user_guide`, and `technical_doc`, and can insert
+`sdcorejs-documentation (write-technical-doc mode)` before verify-before-done
+when `technical_doc=write` or `technical_doc=auto` criteria are met.
+
+The last numbered step should reference the mandatory tail-call chain (sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop → sdcorejs-documentation (comment-code mode) → sdcorejs-ship (verify-before-done mode) → sdcorejs-ship (branch-ready mode) → _refs/orchestration/tail/auto-docs.md → sdcorejs-documentation (write-user-guide mode) → _refs/orchestration/tail/auto-task-tracker.md → sdcorejs-explore (memories mode)). The reviewer of the plan checks that this chain is implicit, not omitted.

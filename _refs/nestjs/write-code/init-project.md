@@ -22,7 +22,7 @@ Scaffold a **fresh modular-monolith backend** that consumes `@sdcorejs/nestjs`: 
 
 Use when the plan asks to:
 
-- "Khởi tạo backend / tạo dự án NestJS mới" / "scaffold a new backend"
+- "<localized text>" / "scaffold a new backend"
 - "Bootstrap a modular-monolith API on `@sdcorejs/nestjs`"
 - "Set up the NestJS project skeleton" (before any module/entity)
 
@@ -311,7 +311,7 @@ async function bootstrap() {
 bootstrap();
 ```
 
-> Why a one-off `pg` client (not the Nest DataSource): TypeORM's `synchronize` and migrations both assume the target schema already exists — neither issues `CREATE SCHEMA`. `ensureSchemas()` runs before the app's DataSource initializes so the very first boot succeeds. Tighten `origin: '*'` to your portal origins for production.
+> Why a one-off `pg` client (not the Nest DataSource): TypeORM'<localized text>'s DataSource initializes so the very first boot succeeds. Tighten `origin: '*'` to your portal origins for production.
 
 ### Step 4 — `src/app.configuration.ts`
 
@@ -497,7 +497,7 @@ import { apiError } from '@sdcorejs/nestjs/core';
 
 /**
  * Throw a code-based 400 error. `code` is an i18n key (e.g. `crm.task.name.required`); the lib
- * `I18nExceptionFilter` recognizes the `apiError(code, message, data?)` envelope, localizes the
+ * `I18nExceptionFilter` recognizes the `<localized text>` envelope, localizes the
  * `message` via the registered resolver using the request language, and returns the `{ error }`
  * envelope carrying both `code` and the resolved `message`. `data` supplies `{var}` placeholders.
  * Typed `: never` so TS narrows control flow after a guard. The default message is `code` so the
@@ -540,9 +540,9 @@ import { BaseEntity as CoreBaseEntity, WithAudit } from '@sdcorejs/nestjs/core';
 export abstract class BaseEntity extends WithAudit(CoreBaseEntity) {}
 ```
 
-> If you are migrating an existing database whose audit columns differ from the lib's, follow the ref-app pattern instead: a hand-written `BaseEntity extends TypeOrmBaseEntity` declaring the exact legacy columns (`modifiedAt`, `deletor`, …). The lib's `BaseRepository`/`BaseService`/`BaseController` are column-name-agnostic, so they operate on either base unchanged. Document the choice.
+> If you are migrating an existing database whose audit columns differ from the lib'<localized text>'s `BaseRepository`/`BaseService`/`BaseController` are column-name-agnostic, so they operate on either base unchanged. Document the choice.
 
-**`src/common/errors.ts`** — the app-local domain-error helper. `badRequest(code, data?)` throws a code-based 400 wrapping the lib `apiError(code, message, data?)` envelope; the lib `I18nExceptionFilter` recognizes the envelope and localizes `message` from `code` (bilingual) using the request language, with `data` supplying `{var}` placeholders. The default message is set to `code` so the response stays meaningful even with no i18n layer. This is what `actions.md` depends on for domain validation. *(Ground: ref app `src/common/errors.ts`.)*
+**`src/common/errors.ts`** — the app-local domain-error helper. `<localized text>` throws a code-based 400 wrapping the lib `<localized text>` envelope; the lib `I18nExceptionFilter` recognizes the envelope and localizes `message` from `code` (bilingual) using the request language, with `data` supplying `{var}` placeholders. The default message is set to `code` so the response stays meaningful even with no i18n layer. This is what `actions.md` depends on for domain validation. *(Ground: ref app `src/common/errors.ts`.)*
 
 ```ts
 import { BadRequestException } from '@nestjs/common';
@@ -550,7 +550,7 @@ import { apiError } from '@sdcorejs/nestjs/core';
 
 /**
  * Throw a code-based 400 error. `code` is an i18n key (e.g. `crm.task.name.required`); the lib
- * `I18nExceptionFilter` recognizes the `apiError(code, message, data?)` envelope, localizes the
+ * `I18nExceptionFilter` recognizes the `<localized text>` envelope, localizes the
  * `message` via the registered resolver using the request language, and returns the `{ error }`
  * envelope carrying both `code` and the resolved `message`. `data` supplies `{var}` placeholders.
  * Typed `: never` so TS narrows control flow after a guard. The default message is `code` so the
@@ -672,24 +672,24 @@ export class SdContext {
   // why: full display name of the current actor — user claim first (JwtStrategy.validate), then the
   //      `fullName` custom header (SdCoreModule context customHeaders → store.custom). Used e.g. by Excel export.
   static get fullName(): string | undefined {
-    return (_ctx?.get('user') as any)?.fullName || custom('fullName');
+    return (_ctx?.get('user'<localized text>'fullName');
   }
   static get internalSecret(): string | undefined {
     return custom('internalSecret');
   }
   static get lang(): 'en' | 'vi' {
-    const raw = _ctx?.get('lang') ?? 'vi';
-    return raw.toLowerCase().startsWith('en') ? 'en' : 'vi';
+    const raw = _ctx?.get('lang'<localized text>'vi';
+    return raw.toLowerCase().startsWith('en'<localized text>'en' : 'vi';
   }
   static get permissions(): string[] {
     return _ctx?.permissions ?? [];
   }
   // App scope flags — derive from your user claims (see JwtStrategy.validate, Step 7).
   static get isMaster(): boolean {
-    return (_ctx?.get('user') as any)?.scope === 'MASTER';
+    return (_ctx?.get('user'<localized text>'MASTER';
   }
   static get isTenantAdmin(): boolean {
-    return (_ctx?.get('user') as any)?.scope === 'TENANT_ADMIN';
+    return (_ctx?.get('user'<localized text>'TENANT_ADMIN';
   }
   static hasPermission(model: string, action: string): boolean {
     return (_ctx?.permissions ?? []).includes(`${model}:${action}`);
@@ -1044,7 +1044,7 @@ KEYCLOAK_ISSUER=http://localhost:8080/realms/dev
 - `npm run build` (nest build) — TypeScript typecheck passes.
 - `npm run start:dev` boots: `ensureSchemas()` creates the schemas, the DataSource connects, the app listens on `:3000`. (Needs a reachable Postgres + the env from `.env`.)
 - `npm run migration:run` exits 0 against the empty `src/migrations/` (proves the Plan 2 Docker CMD chain is safe).
-- `src/common/errors.ts` exports `badRequest(code, data?)` (the domain-error helper `actions.md` depends on).
+- `src/common/errors.ts` exports `<localized text>` (the domain-error helper `actions.md` depends on).
 - **enterprise only:** `src/common/core/index.ts` barrels `./sd-context` (so `from 'src/common/core'` resolves) and `SdContext` exposes a `fullName` getter (used by `actions.md` Excel export).
 - **simple:** `rg` finds no `tenantCode`/`departmentCode`/`InternalGuard`/`base/shared` in the emitted output.
 - **simple:** `src/common/` contains ONLY `base-entity.ts`, `errors.ts`, `dto.ts` — NO `role-permission.strategy.ts`, NO `jwt.strategy.ts`; those are supplied by the always-on `init-admin` module run immediately after `init-project`.
@@ -1055,6 +1055,6 @@ KEYCLOAK_ISSUER=http://localhost:8080/realms/dev
 ## Example input
 
 ```text
-Khởi tạo backend mới `acme-api` trên @sdcorejs/nestjs. Một Postgres, schema-per-module,
-schema đầu tiên là `crm`. Multi-tenant. Keycloak issuer cấu hình qua .env sau.
+Initialize a new backend `acme-api` on @sdcorejs/nestjs. Use one Postgres database with schema-per-module,
+first schema `crm`. Multi-tenant. Configure the Keycloak issuer through .env later.
 ```

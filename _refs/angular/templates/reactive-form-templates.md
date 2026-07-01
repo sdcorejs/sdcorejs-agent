@@ -112,11 +112,11 @@ import { [Entity]SaveReq } from '../services/[entity].model';
     SdUploadFile,
   ],
   template: `
-    <sd-section title="Thông tin chung" noPaddingBody>
+    <sd-section title="<localized text>" noPaddingBody>
       <div class="row row-sm mx-0">
         <div class="col-4">
           <sd-input
-            label="Mã"
+            label="<localized text>"
             [(model)]="entity.code"
             [form]="form"
             required
@@ -126,7 +126,7 @@ import { [Entity]SaveReq } from '../services/[entity].model';
 
         <div class="col-4">
           <sd-input
-            label="Tên"
+            label="<localized text>"
             [(model)]="entity.name"
             [form]="form"
             required
@@ -136,7 +136,7 @@ import { [Entity]SaveReq } from '../services/[entity].model';
 
         <div class="col-4">
           <sd-input-number
-            label="Giá"
+            label="<localized text>"
             [(model)]="entity.price"
             [form]="form"
             required>
@@ -145,7 +145,7 @@ import { [Entity]SaveReq } from '../services/[entity].model';
 
         <div class="col-4">
           <sd-select
-            label="Loại"
+            label="<localized text>"
             [(model)]="entity.type"
             [form]="form"
             required
@@ -156,18 +156,18 @@ import { [Entity]SaveReq } from '../services/[entity].model';
         </div>
 
         <div class="col-4">
-          <sd-datetime label="Ngày hiệu lực" [(model)]="entity.effectiveAt" [form]="form" required></sd-datetime>
+          <sd-datetime label="<localized text>" [(model)]="entity.effectiveAt" [form]="form" required></sd-datetime>
         </div>
 
         <div class="col-8">
-          <sd-upload-file label="Tệp đính kèm" [(model)]="entity.fileIds" [form]="form"></sd-upload-file>
+          <sd-upload-file label="<localized text>" [(model)]="entity.fileIds" [form]="form"></sd-upload-file>
         </div>
       </div>
     </sd-section>
 
     <div class="d-flex align-items-center" style="gap: 8px">
-      <sd-button title="Bỏ qua" (click)="onCancel()"></sd-button>
-      <sd-button title="Lưu" type="fill" (click)="onSave()" [loading]="saving()"></sd-button>
+      <sd-button title="<localized text>" (click)="onCancel()"></sd-button>
+      <sd-button title="<localized text>" type="fill" (click)="onSave()" [loading]="saving()"></sd-button>
     </div>
   `,
 })
@@ -180,8 +180,8 @@ export class DetailComponent implements OnInit {
   entity: Partial<[Entity]SaveReq & { id?: string }> = {};
 
   typeOptions = [
-    { value: 'A', display: 'Loại A' },
-    { value: 'B', display: 'Loại B' },
+    { value: 'A', display: '<localized text>' },
+    { value: 'B', display: '<localized text>' },
   ];
 
   readonly #activatedRoute = inject(ActivatedRoute);
@@ -352,7 +352,7 @@ export class DetailAdvancedComponent implements OnInit {
 
   rowKey(itemGroup: unknown): string {
     const group = itemGroup as FormGroup;
-    return group.get('id')?.value ?? group.get('tempId')?.value ?? String(this.items.controls.indexOf(group));
+    return group.get('id'<localized text>'tempId')?.value ?? String(this.items.controls.indexOf(group));
   }
 
   async onSave(): Promise<void> {
@@ -441,7 +441,7 @@ removeLineItem(index: number): void {
 
 rowKey(group: unknown): string {
   const formGroup = group as FormGroup;
-  return formGroup.get('id')?.value ?? formGroup.get('tempId')?.value ?? String(this.lineItems.controls.indexOf(formGroup));
+  return formGroup.get('id'<localized text>'tempId')?.value ?? String(this.lineItems.controls.indexOf(formGroup));
 }
 
 #buildPayload(): ParentSaveReq {
@@ -639,8 +639,8 @@ export class DetailComponent implements OnInit {
   readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
   entity: Partial<ProductSaveReq & { id?: string }> = {};
   readonly pageTitle = computed(() => {
-    if (this.state() === 'CREATE') return 'Tạo sản phẩm';
-    return this.state() === 'DETAIL' ? 'Chi tiết sản phẩm' : 'Cập nhật sản phẩm';
+    if (this.state() === 'CREATE') return '<localized text>';
+    return this.state() === 'DETAIL'<localized text>'<localized text>' : '<localized text>';
   });
   readonly fieldErrorMessages = signal<Record<ProductFieldName, string | null>>({
     code: null,
@@ -720,7 +720,7 @@ export class DetailComponent implements OnInit {
 
   async onDelete(): Promise<void> {
     const currentEntity = this.entity;
-    if (confirm('Are you sure?') && currentEntity.id) {
+    if (confirm('<localized text>') && currentEntity.id) {
       try {
         await this.#productService.remove(currentEntity.id);
         this.#router.navigate(['..'], { relativeTo: this.#activatedRoute });

@@ -14,6 +14,7 @@ Before executing this skill:
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
 3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 
@@ -59,15 +60,15 @@ Execution order: portal → admin-screens → module → entity → screens → 
 
 Right after the code is written and BEFORE the finish gate, emit a short table of every `@sdcorejs/angular` Core UI piece the feature actually uses — component, service, or directive — each with a one-line purpose **tied to this feature**, in the user's language. This gives the user (especially non-tech) a plain-language overview of the building blocks. Build the rows from what you ACTUALLY imported/used — never list a component you didn't use, never describe it generically.
 
-```
-🧩 Core UI dùng trong <tên chức năng>:
+```text
+Core UI used in <feature name>:
 
-| Core UI | Vai trò trong chức năng này |
+| Core UI | Role in this feature |
 |---|---|
-| `SdTable` | Hiển thị danh sách <entity> kèm phân trang, lọc, sắp xếp |
-| `SdNotifyService` | Thông báo thành công / lỗi khi lưu, xoá |
-| `SdSection` | Gom nhóm các trường trong màn hình chi tiết |
-| `sd-button` | Nút Lưu / Huỷ / hành động |
+| `SdTable` | Shows the <entity> list with pagination, filtering, and sorting |
+| `SdNotifyService` | Shows success/error feedback when saving or deleting |
+| `SdSection` | Groups fields on the detail screen |
+| `sd-button` | Renders save, cancel, and action buttons |
 ```
 
 Keep each purpose one line, concrete to the feature (not "a table component"). Persona-aware: plain wording for non-tech. The same table is persisted into the module's user guide at the write-user-guide step.
@@ -76,17 +77,28 @@ Keep each purpose one line, concrete to the feature (not "a table component"). P
 
 **STOP and present the consolidated finish gate from [`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md) before running ANY tail step.** This is UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add entity", "create module X") — NOT only inside the spec→plan flow. The gate surfaces tests / comments / user-guide / review with defaults so the user always knows these steps exist and can opt out. "Small change" is not a reason to skip the gate. Read the ref for the exact prompt + rules.
 
-Then run the tail in this order, honoring the gate's answers (skip = omit that step; everything not skipped runs):
+Then run the tail in this order, honoring the gate's answers (skip = omit
+that step; everything not skipped runs):
+
+Documentation supplement: before documentation tail steps, run
+`sdcorejs-documentation (documentation-gate mode)` and read
+`_refs/documentation/gate.md`. This gate asks or loads saved project
+preferences from `<target>/.sdcorejs/documentation/preferences.md` for
+`comment_code`, `user_guide`, and `technical_doc`. Use those effective choices
+for the comment-code, technical-doc, and user-guide steps below. If
+`technical_doc=write`, or `technical_doc=auto` and the gate criteria are met,
+run `sdcorejs-documentation (write-technical-doc mode)` after comment-code and
+before `sdcorejs-ship (verify-before-done mode)`.
 
 1. *(if Tests not skipped)* `sdcorejs-test` (sdcorejs-test) — RUN the `.spec.ts` files already written RED-first during the TDD gate and report pass/fail + failing names; add happy-path e2e only when a dev server/browser is available (else report the exact local command). Unit specs are NOT optional unless the user chose `skip` in the gate — if any testable file still lacks one, write it here.
 2. *(if Review not skipped)* `sdcorejs-review` (skills/shared/workflow/review.md; auto-detects Angular → loads `_refs/angular/review-code.md`) — convention check; actionable Angular code-review table with severity, group, file/line, risk, fix, and gate
 3. *(if Review not skipped)* `sdcorejs-repair-loop` — apply findings, iterate until `BLOCKER`/`REQUIRED` findings are fixed or explicitly deferred
-4. `sdcorejs-comment-code` — apply the comment level the FINISH GATE captured (skip / simple / medium / full). Do NOT ASK again — the gate already asked. Cross-track baseline + per-track addenda live in `_refs/orchestration/tail/comment-code.md`
+4. `sdcorejs-documentation (comment-code mode)` — apply the comment level the FINISH GATE captured (skip / simple / medium / full). Do NOT ASK again — the gate already asked. Cross-track baseline + per-track addenda live in `_refs/documentation/comment-code.md`
 5. `sdcorejs-product` *(when user-visible feature traceability is needed)* - seed/update `.sdcorejs/docs/product/` with requirement, implementation, and test mapping
 6. `sdcorejs-ship (verify-before-done mode)` *(always)* — BLOCK "done" until acceptance criteria from the spec are ✅ verified or ⚠️ explicitly deferred
 7. `sdcorejs-ship (branch-ready mode)` *(always)* — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
 8. `_refs/orchestration/tail/auto-docs.md` *(always)* — session summary written to `<target>/.sdcorejs/docs/angular/`
-9. *(if User guide not skipped)* `sdcorejs-write-user-guide` (Mode 1) — update the touched module's `.sdcorejs/user-guide/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds at ship.
+9. *(if User guide not skipped)* `sdcorejs-documentation (write-user-guide mode)` — update the touched module's `.sdcorejs/documentation/user-guides/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds under `.sdcorejs/documentation/` at ship.
 10. `_refs/orchestration/tail/auto-task-tracker.md` *(always)* — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
 11. `sdcorejs-explore (memories mode)` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 
@@ -122,9 +134,11 @@ Before generating an entity, clarify with user:
   - For localized portals, all generated labels must use proper diacritics
 
 5. **UI Preferences**:
-  - Detail layout: auto-select side-drawer or full-page from inferred complexity, unless user overrides
-  - Has search? filter? delete? excel? (defaults: yes/yes/yes/no)
-  - Permissions: use default naming pattern or custom? (default: {{ MODULE }}_{{ ENTITY }}_CREATE, etc.)
+   - Detail layout: auto-select side-drawer or full-page from inferred complexity, unless user overrides
+   - Has search? filter? delete? excel? (defaults: yes/yes/yes/no). If asking,
+     ask each toggle sequentially with `_refs/shared/user-choice-prompt.md`
+     using `1. Yes` / `2. No`.
+   - Permissions: use default naming pattern or custom? (default: {{ MODULE }}_{{ ENTITY }}_CREATE, etc.)
 
 ### Semantic Inference Fallback
 
@@ -299,6 +313,10 @@ Apply to:
 - Precompute all values displayed or bound in templates with `signal()`, `computed()`, pure pipes, or view-model fields. Do not bind to component methods/getters for display, visibility, title/color, disabled/loading, permission, or list-derived values.
 - Keep Service models as Service-owned contracts. Do not force them to equal the raw backend API when the Service maps the payload, and do not add UI-only fields to `SaveReq`/`DTO` unless the Service actually accepts/returns/derives those fields.
 - Run the full tail chain after the last step.
+
+### Documentation Gate Rule
+
+- Inside the mandatory finish gate, run `_refs/documentation/gate.md`. It encourages documentation by default, can save `.sdcorejs/documentation/preferences.md` in the target project, and owns comment-code / user-guide / technical-doc choices for future direct runs.
 
 ### MUST NOT
 - Hand-write CSS for flex / spacing / alignment / color / typography that a STYLE-GUIDE utility class already covers, or fill a component `.scss` with rules that duplicate shipped utilities — this is the "too many unnecessary CSS classes" anti-pattern. Put the utilities on the template; keep the `.scss` near-empty. Never use Bootstrap class names (`btn`, `card`, `form-control`, `modal` — they don't exist) or Tailwind syntax when the consumer has no Tailwind.

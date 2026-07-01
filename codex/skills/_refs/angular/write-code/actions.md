@@ -12,13 +12,13 @@ Define how to wire action buttons and side-effects on detail and list screens. "
 - Workflow transitions: `submit`, `approve`, `reject`, `withdraw`, `publish`, `archive`
 - Bulk operations on selected rows: bulk-approve, bulk-delete, bulk-export
 - Custom side-effects: re-sync from upstream, recompute totals, send notification, mark-as-read, regenerate token, export to Excel, duplicate record
-- Combined save + transition: "Lưu & Gửi duyệt" — save first, then call workflow method
+- Combined save + transition: "<localized text>" — save first, then call workflow method
 
 Workflow actions are just one shape of action — the placement / confirm / permission / reload rules apply to all of them.
 
 ## When to use
 
-- User asks "thêm action button", "custom action", "approve flow", "workflow", "bulk approve", "export excel", "gửi duyệt", "phê duyệt", "từ chối", "xuất excel", "đồng bộ lại"
+- User asks "<localized text>", "custom action", "approve flow", "workflow", "bulk approve", "export excel", "<localized text>", "<localized text>", "<localized text>", "<localized text>", "<localized text>"
 - After [`./screen-detail.md`](./screen-detail.md) or [`./screen-list.md`](./screen-list.md) generated the base screen and you need to add side-effects on top
 - When a single button needs to combine validation + save + workflow transition (the "save and submit" pattern)
 
@@ -59,10 +59,10 @@ The decisive question for placement: **does the action operate on the current re
 - For workflow transitions that need a reason, use the **confirm-with-input** variant — operator types a note before submitting
 - After a successful transition: notify success → reload the list / re-load the detail (so workflow status updates in UI)
 - Gate every action with `*sdPermission` matching the project's chosen permission code shape
-- Keep button titles **task-oriented and domain-consistent** ("Phê duyệt" not "OK"; "Xuất Excel" not "Action")
+- Keep button titles **task-oriented and domain-consistent** ("<localized text>" not "OK"; "<localized text>" not "Action")
 - For Vietnamese portals: full diacritics on button titles + confirm prompts; permission codes stay English
-- For combined save + transition ("Lưu & Gửi duyệt"): route through the **same validation gate** as plain save (`form.invalid` → `markAllAsTouched()` → notify), then call `service.create/update` first, then `service.submit/...` on the returned id
-- For bulk actions: confirm with row count in the message (`"Phê duyệt 3 bản ghi?"`), call `bulkXxx(ids)` in one round-trip, then reload the table
+- For combined save + transition ("<localized text>"): route through the **same validation gate** as plain save (`form.invalid` → `markAllAsTouched()` → notify), then call `service.create/update` first, then `service.submit/...` on the returned id
+- For bulk actions: confirm with row count in the message (`"<localized text>"`), call `bulkXxx(ids)` in one round-trip, then reload the table
 - Before adding action methods that call or hydrate a related entity, read `./reuse-existing-entities.md` and reuse the existing related service/model contract instead of creating duplicate action-specific services
 - Before adding action/export helpers for date/number formatting, random ids, query params, filtering, download, upload, clipboard, or browser checks, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when applicable
 
@@ -96,7 +96,7 @@ The decisive question for placement: **does the action operate on the current re
 
 - Always confirm. For DELETE: highlight in confirmation that the action is irreversible
 - Single-record delete on detail is rare — usually deletion happens from the list (bulk-delete on selected rows)
-- For irreversible bulk: show the count + sample of what will be affected (`"Xóa 3 bản ghi: PRD-001, PRD-002, PRD-003?"`)
+- For irreversible bulk: show the count + sample of what will be affected (`"<localized text>"`)
 
 ## Code templates
 
@@ -106,32 +106,32 @@ The literal HTML / TypeScript snippets for action wiring live in this reference 
 
 ```html
 <div class="d-flex align-items-center" style="gap: 8px" headerRight>
-  <sd-button title="Bỏ qua" (click)="onBack()" color="primary"></sd-button>
+  <sd-button title="<localized text>" (click)="onBack()" color="primary"></sd-button>
 
   @if (state() === 'DETAIL' && entity.id) {
     @if (approvable()) {
       <sd-button
         *sdPermission="'<MODULE>_C_<ENTITY>_APPROVE'; sdPermissionKey: '<module>'"
-        title="Từ chối" type="light" prefixIcon="thumb_down" color="primary"
+        title="<localized text>" type="light" prefixIcon="thumb_down" color="primary"
         (click)="onReject()"></sd-button>
       <sd-button
         *sdPermission="'<MODULE>_C_<ENTITY>_APPROVE'; sdPermissionKey: '<module>'"
-        title="Phê duyệt" type="light" prefixIcon="thumb_up" color="primary"
+        title="<localized text>" type="light" prefixIcon="thumb_up" color="primary"
         (click)="onApprove()"></sd-button>
     }
     @if (editable()) {
       <sd-button
         *sdPermission="'<MODULE>_C_<ENTITY>_UPDATE'; sdPermissionKey: '<module>'"
-        title="Chỉnh sửa" type="fill" prefixIcon="edit" color="primary"
+        title="<localized text>" type="fill" prefixIcon="edit" color="primary"
         (click)="onEdit()"></sd-button>
     }
   } @else if (state() === 'CREATE' || (state() === 'UPDATE' && editable())) {
     <sd-button
-      title="Lưu" type="fill" prefixIcon="save" color="primary"
+      title="<localized text>" type="fill" prefixIcon="save" color="primary"
       (click)="onSave()" [loading]="saving()"></sd-button>
     <sd-button
       *sdPermission="'<MODULE>_C_<ENTITY>_SUBMIT'; sdPermissionKey: '<module>'"
-      title="Lưu & Gửi duyệt" type="fill" prefixIcon="send" color="primary"
+      title="<localized text>" type="fill" prefixIcon="send" color="primary"
       (click)="onSaveAndSubmit()" [loading]="saving()"></sd-button>
   }
 </div>
@@ -144,22 +144,22 @@ selector: {
   actions: [
     {
       icon: 'send',
-      title: 'Gửi duyệt',
+      title: '<localized text>',
       action: rows => this.onBulkSubmit(rows),
     },
     {
       icon: 'thumb_up',
-      title: 'Phê duyệt',
+      title: '<localized text>',
       action: rows => this.onBulkApprove(rows),
     },
     {
       icon: 'thumb_down',
-      title: 'Từ chối',
+      title: '<localized text>',
       action: rows => this.onBulkReject(rows),
     },
     {
       icon: 'download',
-      title: 'Xuất Excel',
+      title: '<localized text>',
       action: rows => this.onBulkExport(rows),
     },
   ],
@@ -171,30 +171,30 @@ selector: {
 ```typescript
 onApprove = () => {
   this.#confirmService
-    .withInput('Bạn có chắc chắn muốn phê duyệt?', {
-      title: 'Xác nhận phê duyệt',
-      yesTitle: 'Xác nhận',
-      noTitle: 'Quay lại',
+    .withInput('<localized text>', {
+      title: '<localized text>',
+      yesTitle: '<localized text>',
+      noTitle: '<localized text>',
       noButtonColor: 'primary',
     })
     .then(note => this.#service.approve(this.entity.id, note))
     .then(() => {
-      this.#notifyService.success('Phê duyệt thành công');
+      this.#notifyService.success('<localized text>');
       return this.loadEntityData(this.entity.id);
     });
 };
 
 onReject = () => {
   this.#confirmService
-    .withInput('Bạn có chắc chắn muốn từ chối?', {
-      title: 'Xác nhận từ chối',
-      yesTitle: 'Xác nhận',
-      noTitle: 'Quay lại',
+    .withInput('<localized text>', {
+      title: '<localized text>',
+      yesTitle: '<localized text>',
+      noTitle: '<localized text>',
       noButtonColor: 'primary',
     })
     .then(note => this.#service.reject(this.entity.id, note))
     .then(() => {
-      this.#notifyService.success('Từ chối thành công');
+      this.#notifyService.success('<localized text>');
       return this.loadEntityData(this.entity.id);
     });
 };
@@ -202,7 +202,7 @@ onReject = () => {
 onSaveAndSubmit = async () => {
   if (this.form.invalid) {
     this.form.markAllAsTouched();
-    this.#notifyService.error('Vui lòng kiểm tra các trường bắt buộc');
+    this.#notifyService.error('<localized text>');
     return;
   }
   this.saving.set(true);
@@ -213,10 +213,10 @@ onSaveAndSubmit = async () => {
       ? await this.#service.update(this.entity.id, payload)
       : await this.#service.create(payload);
     await this.#service.submit(saved.id);
-    this.#notifyService.success('Lưu và gửi duyệt thành công');
+    this.#notifyService.success('<localized text>');
     this.#router.navigate(['..'], { relativeTo: this.#route });
   } catch (err) {
-    this.#notifyService.error('Lưu hoặc gửi duyệt thất bại');
+    this.#notifyService.error('<localized text>');
   } finally {
     this.saving.set(false);
     this.#loadingService.hide();
@@ -226,10 +226,10 @@ onSaveAndSubmit = async () => {
 onBulkSubmit = (rows: EntityDTO[]) => {
   const ids = rows.map(r => r.id);
   this.#confirmService
-    .confirm(`Gửi duyệt ${ids.length} bản ghi?`)
+    .confirm(`<localized text>`)
     .then(() => this.#service.bulkSubmit(ids))
     .then(() => {
-      this.#notifyService.success('Gửi duyệt thành công');
+      this.#notifyService.success('<localized text>');
       this.table.reload();
     });
 };

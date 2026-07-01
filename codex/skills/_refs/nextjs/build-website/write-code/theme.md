@@ -9,7 +9,7 @@ A landing site that ships without a deliberate design system ends up with Tailwi
 
 ## When invoked
 - Automatic after `init-site.md` in a "Full build" dispatch
-- User says "pick theme", "set up colors", "chọn theme", "set up design system", "rebrand"
+- User says "pick theme", "set up colors", "<localized text>", "set up design system", "rebrand"
 - After a logo change → re-pick palette from logo
 
 ## Prerequisites
@@ -24,17 +24,17 @@ Match industry vibe (from brainstorm) to the table below. Each row is a starting
 
 | Industry | Primary | Accent | Neutrals | Vibe |
 |---|---|---|---|---|
-| **Xây dựng / Vật liệu** | `#ea580c` (orange-600) | `#1e293b` (slate-800) | warm grays (`stone-*`) | Industrial, trust, scale |
+| **Construction / Materials** | `#ea580c` (orange-600) | `#1e293b` (slate-800) | warm grays (`stone-*`) | Industrial, trust, scale |
 | **F&B (restaurant)** | `#a16207` (yellow-700) or terracotta `#b45309` | `#166534` (green-800) | cream `#fef3c7`, charcoal | Warm, appetizing |
 | **F&B (cafe)** | `#7c2d12` (orange-900) or olive | cream + gold accent | warm grays | Cozy, artisan |
-| **Y tế / Phòng khám** | `#0284c7` (sky-600) or sage `#65a30d` | `#0f172a` (slate-900) | cool grays | Clean, trustworthy |
-| **Giáo dục** | `#2563eb` (blue-600) | `#facc15` (yellow-400) | neutral grays | Inviting, aspirational |
-| **Bất động sản** | `#1e3a8a` (blue-900) or charcoal | `#d97706` (gold) | warm grays | Premium, aspirational |
-| **Tư vấn / B2B** | `#0f172a` (slate-900) | `#0ea5e9` (sky-500) | neutral grays | Professional, confident |
-| **Du lịch** | `#0891b2` (cyan-600) or sand `#fde68a` | `#ea580c` (sunset) | sky/sand neutrals | Inspirational, scenic |
+| **Healthcare / Clinic** | `#0284c7` (sky-600) or sage `#65a30d` | `#0f172a` (slate-900) | cool grays | Clean, trustworthy |
+| **Education** | `#2563eb` (blue-600) | `#facc15` (yellow-400) | neutral grays | Inviting, aspirational |
+| **Real estate** | `#1e3a8a` (blue-900) or charcoal | `#d97706` (gold) | warm grays | Premium, aspirational |
+| **Consulting / B2B** | `#0f172a` (slate-900) | `#0ea5e9` (sky-500) | neutral grays | Professional, confident |
+| **Travel** | `#0891b2` (cyan-600) or sand `#fde68a` | `#ea580c` (sunset) | sky/sand neutrals | Inspirational, scenic |
 | **Retail catalog** | Brand-led (read logo) | brand-led | brand-led | Match brand identity |
 | **Tech / SaaS** | `#7c3aed` (violet-600) or `#0891b2` | gradient or neon `#22d3ee` | dark mode + neutral | Modern, energetic |
-| **Phi lợi nhuận** | `#15803d` (green-700) or `#dc2626` (red-600) | warm gold or sky | warm neutrals | Human, mission-driven |
+| **Nonprofit** | `#15803d` (green-700) or `#dc2626` (red-600) | warm gold or sky | warm neutrals | Human, mission-driven |
 
 If user provided a brand color during brainstorming, **derive the palette from that**:
 1. Set provided color as `--color-brand`
@@ -48,10 +48,10 @@ Match industry + locale (VI default uses `Be Vietnam Pro` baseline). Pair: headi
 
 | Industry | Heading | Body | Why |
 |---|---|---|---|
-| **Xây dựng / B2B / Tư vấn** | `Be Vietnam Pro` 700 | `Be Vietnam Pro` 400/500 | Same family, weight contrast; locked-down feel |
+| **Construction / B2B / Consulting** | `Be Vietnam Pro` 700 | `Be Vietnam Pro` 400/500 | Same family, weight contrast; locked-down feel |
 | **F&B / artisan retail** | `Playfair Display` or `Cormorant Garamond` | `Be Vietnam Pro` | Serif heading adds warmth/character |
-| **Y tế / Giáo dục** | `Be Vietnam Pro` 600 | `Be Vietnam Pro` 400 | Neutral, readable |
-| **BĐS / Luxury** | `Cormorant Garamond` or `Libre Caslon` | `Be Vietnam Pro` | Editorial serif |
+| **Healthcare / Education** | `Be Vietnam Pro` 600 | `Be Vietnam Pro` 400 | Neutral, readable |
+| **Real estate / Luxury** | `Cormorant Garamond` or `Libre Caslon` | `Be Vietnam Pro` | Editorial serif |
 | **Tech / SaaS** | `Inter` 700 or `Geist` | `Inter` 400 | Modern sans |
 | **NGO / Tourism** | `Merriweather` or `Lora` | `Be Vietnam Pro` | Friendly serif |
 

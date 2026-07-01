@@ -21,7 +21,7 @@ The same file also owns the form definition, so this reference is also where you
 - Refining any state: form not disabled in DETAIL, missing Edit button, broken stale-id recovery, defaults wrong on CREATE, file uploads firing after save, navigation target wrong, etc.
 - Adding or tightening validators: required / maxLength / patterns / `SdValidators.notBlank` / async unique checks / `FormArray` for repeating sub-records / per-field error messages
 - Adding controls that reference another entity, such as customer/product/address selects, hydrated detail summaries, or relation ids
-- User asks: "tạo màn detail", "trang chi tiết", "màn create", "màn update", "form không hoạt động", "thêm validator", "custom validator", "async validator"
+- User asks: "<localized text>", "<localized text>", "<localized text>", "<localized text>", "<localized text>", "<localized text>", "custom validator", "async validator"
 
 Defer to:
 - [`./screen-list.md`](./screen-list.md) when the request is about the list page (different file)
@@ -246,8 +246,8 @@ Save button uses `*sdPermission="'<MODULE>_C_<ENTITY>_CREATE'; sdPermissionKey: 
 
 If entity has workflow (see [`./actions.md`](./actions.md)), CREATE may show two submit variants:
 
-- `Lưu` → calls `service.create(...)`
-- `Lưu & Gửi duyệt` → calls `service.create(...)` then `service.submit(id)`
+- `<localized text>` → calls `service.create(...)`
+- `<localized text>` → calls `service.create(...)` then `service.submit(id)`
 
 Both go through the same validation gate.
 
@@ -297,14 +297,14 @@ Start lightweight, tighten later:
 
 1. **First pass:** `new FormGroup({})` + template attributes (`required`, `maxlength`, `min`, `max`). Validate at save boundary via `form.invalid` + `form.markAllAsTouched()`.
 2. **Second pass (when business rules stabilize):** add typed validators per field via `FormBuilder.group({...})`; surface per-field error messages.
-3. **Workflow-enabled screens:** route `Lưu`, `Lưu & Gửi duyệt`, etc. through ONE validation gate. Keep approve/reject independent from field validation (they operate on existing data).
+3. **Workflow-enabled screens:** route `<localized text>`, `<localized text>`, etc. through ONE validation gate. Keep approve/reject independent from field validation (they operate on existing data).
 
 ### Signal-first UI state
 
 The `FormGroup` itself stays imperative. Use signals for UI state, and keep editable entity/form models as plain objects/ViewModels when using Core UI `[model]` / `[(model)]` binding:
 
 - `state`, `loading`, `saving` -> `signal()`
-- `entity: Partial<ProductSaveReq & { id?: string }>` -> plain object/ViewModel
+- `<localized text>` -> plain object/ViewModel
 - `isDetail`, `canSubmit`, `pageTitle`, `pageTabColor` → `computed()`
 - `effect()` only for side effects (route param sync, reload), never as a replacement for `computed()`
 - The component decorator must include `changeDetection: ChangeDetectionStrategy.OnPush`; import `ChangeDetectionStrategy` from `@angular/core`.
@@ -315,7 +315,7 @@ The `FormGroup` itself stays imperative. Use signals for UI state, and keep edit
 readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
 entity: Partial<ProductSaveReq & { id?: string }> = {};
 readonly pageTitle = computed(() =>
-  this.state() === 'CREATE' ? 'Tạo mới' : 'Chi tiết'
+  this.state() === 'CREATE'<localized text>'<localized text>' : '<localized text>'
 );
 ```
 

@@ -9,7 +9,7 @@ Stand up a Next.js 16 landing-site skeleton that every later sub-skill (theme, p
 
 ## When invoked
 - First step of a "Full build" dispatch in the `sdcorejs-nextjs` orchestrator
-- User says "init site", "tạo project Next.js", "khởi tạo website", "bootstrap"
+- User says "init site", "<localized text>", "<localized text>", "bootstrap"
 - Brand-new directory or empty project root
 
 Do NOT invoke if:
@@ -190,11 +190,11 @@ export default config;
 ```typescript
 export const company = {
   name: process.env.NEXT_PUBLIC_COMPANY_NAME ?? 'Acme',
-  tagline: 'Tagline từ brainstorming',
+  tagline: '<localized text>',
   domain: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://example.com',
   phone: '+84 ...',
   email: 'contact@example.com',
-  address: 'Số ...',
+  address: '<localized text>',
   social: {
     facebook: '',
     zalo: '',

@@ -41,8 +41,8 @@ afterEach(() => {
 });
 
 // In tests, assert query count:
-it('list endpoint: ≤ 3 queries (paged list)', async () => {
-  await request(app).get('/api/product?page=1').expect(200);
+it('<localized text>', async () => {
+  await request(app).get('<localized text>').expect(200);
   expect(queryCount).toBeLessThanOrEqual(3);
 });
 ```
@@ -65,7 +65,7 @@ ORDER BY tablename;
 grep -rnE "@Index" src/**/*.entity.ts | head
 ```
 
-For each `WHERE foo = ?` in a hot query path, verify `foo` is indexed. Common omissions:
+For each `<localized text>` in a hot query path, verify `foo` is indexed. Common omissions:
 - Foreign-key columns without explicit index (TypeORM creates FK constraint but not always index)
 - `status` / `type` enum columns used in filtering
 - `createdAt` / `updatedAt` for sorting
@@ -119,7 +119,7 @@ grep -nE "(pool|maxConnections|extra)" src/config/database.config.ts ormconfig.t
 ```
 
 Targets:
-- `max: 10–25` for medium API (each PG connection ~ 10 MB memory)
+- `<localized text>` for medium API (each PG connection ~ 10 MB memory)
 - `idleTimeoutMillis: 30000`
 - `connectionTimeoutMillis: 5000`
 

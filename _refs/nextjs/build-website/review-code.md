@@ -85,7 +85,7 @@ Vietnamese/English literals belong in `src/content/<locale>/` or `src/i18n/messa
 Probe:
 ```bash
 # Vietnamese diacritics in section component files
-grep -rnE "[àáâãèéêìíòóôõùúýăđĩũơưạ-ỹÀ-Ỹ]" src/components/sections/
+grep -rnE "<localized text>" src/components/sections/
 ```
 
 Severity:
@@ -249,7 +249,7 @@ Probe:
 # For each 'use client' file, follow imports and check
 grep -l "'use client'" src/components/ -r | while read f; do
   for forbidden in 'from .node:fs.' 'from .fs.' '@aws-sdk' 'lib/server-only'; do
-    grep -lE "$forbidden" "$f" 2>/dev/null && echo "BAD-CLIENT-IMPORT: $f → $forbidden"
+    grep -lE "$forbidden" "$f" 2>/dev/null && echo "<localized text>"
   done
 done
 ```

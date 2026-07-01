@@ -96,7 +96,7 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
 - When module uses keyed upload-file configuration, set `[key]` on `sd-upload-file` to match module upload configuration key
 - When routes have `data.permission` guard, do NOT add extra `canViewList` / `canCreate` manual checks inside list/detail components
 - For filters rendered outside table columns, define them in `tableOption.filter.externalFilters` instead of custom controls above table
-- Mark blocking external filters as `required: true` and rely on table filter validation instead of rendering guidance text like "Vui lòng chọn ..."
+- Mark blocking external filters as `required: true` and rely on table filter validation instead of rendering guidance text like "<localized text>"
 - Do not bind template interpolation/properties/classes/conditions to component methods or getters that compute displayed or derived values each change-detection cycle. Compute once with `computed()`, `signal()`, a pure pipe, or an explicit view model and bind to that.
 - Keep naming concise and domain-focused (`projects` over `projectOptions`)
 - Use `externalFilters[].option.items` as a function when list data is only needed by filter UI; avoid storing extra component state if not reused
@@ -131,7 +131,7 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
   - complex multi-section workflows -> full page
 - For full-page detail with many fields/sections, combine section grouping with `sd-anchor` for fast scroll navigation
   - Use `sd-anchor ellipsis` as wrapper
-  - Use one `sd-anchor-item` per business section (for example: "Thông tin chung", "Rổ hàng", "Hồ sơ")
+  - Use one `sd-anchor-item` per business section (for example: "<localized text>", "<localized text>", "<localized text>")
   - Keep each anchor item body inside `sd-section` so navigation and section collapse can work together
 - Support 3 page-layout variants for CREATE/UPDATE/DETAIL, and choose based on context:
   - `UnifiedCompact`: CREATE/UPDATE/DETAIL share one unified layout, no split title/form columns
@@ -141,7 +141,7 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
 - Regardless of DETAIL rendering style (`sd-section-item` or viewed controls), code/name must always render in DETAIL state
 - In DETAIL load flow, when entity ID is stale/not found, show a warning and navigate back to list instead of leaving empty placeholders
 - When the request does not clearly define expected detail layout, ask one clarification question before final generation:
-  - "Bạn muốn giữ layout mặc định hay đổi sang UnifiedCompact / UnifiedSplit / AdaptiveSplitDetail?"
+  - "<localized text>"
 - Reserve extension points for workflow actions in both list and detail (wired by `./actions.md`)
 - Entity pages must use 2-component structure for full-page pattern:
   - `pages/list/list.component.ts`
@@ -209,7 +209,7 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
     it('should create', () => { expect(component).toBeTruthy(); });
   });
   ```
-- **Generate spec files at `standard` coverage by DEFAULT — do NOT block on a question.** Tests are mandatory; never skip them and never ask "which coverage level?" before writing. Write the spec RED-first (before its production file) per the orchestrator TDD gate. Coverage levels (use the matching template set from Section 5):
+- **Generate spec files at `standard` coverage by DEFAULT — do NOT block on a question.** Tests are mandatory; never skip them and never ask "<localized text>" before writing. Write the spec RED-first (before its production file) per the orchestrator TDD gate. Coverage levels (use the matching template set from Section 5):
   - `standard` (DEFAULT): `should create` + permission validation + data visibility + sort/navigation + detail save-flow/state tests — emit this unless the user explicitly overrode it
   - `minimal`: only `should create` test (fastest) — only on explicit user request
   - `full`: + all unit tests from Section 5 (comprehensive coverage) — only on explicit user request
@@ -404,7 +404,7 @@ side-drawer
 User input: "Create Product CRUD screens with product code and product name"
 
 Agent must ask:
-"Product thuộc module nào? Nếu chưa có module, tôi sẽ tạo module mới trước."
+"<localized text>"
 ```
 
 

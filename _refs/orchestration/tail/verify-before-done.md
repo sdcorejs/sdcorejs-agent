@@ -11,7 +11,7 @@ Reference body for `sdcorejs-ship (verify-before-done mode)`. Load this file onl
 - **MANDATORY** automatic invocation BEFORE `sdcorejs-ship (branch-ready mode)` → `_refs/orchestration/tail/auto-docs.md` at the end of every code-writing skill (`write-code` — the `sdcorejs-angular` orchestrator and the reference packs it loads, including `actions` — and `sdcorejs-test`)
 - Before `sdcorejs-git (commit mode)` for a feature commit (not for chore/docs commits)
 - Before `sdcorejs-git (PR mode)`
-- User says "verify", "verify acceptance", "check acceptance criteria", "is this done?"
+- User says "verify", "verify acceptance", "check acceptance criteria", "<localized text>"
 
 Do NOT invoke for:
 - Chore / docs-only / dep-bump tasks (no acceptance criteria to verify)
@@ -28,7 +28,9 @@ TRACK=angular   # detected from stack
 # Most recent spec doc (by filename timestamp)
 ls -1t "$TARGET_ROOT/.sdcorejs/docs/$TRACK"/*-spec.md 2>/dev/null | head -1
 ```
-If multiple specs are recent, ask the user which one is in scope.
+If multiple specs are recent, ask the user which one is in scope using
+`_refs/shared/user-choice-prompt.md`: show a numbered list with relative paths
+and accept the number.
 
 If no spec exists → skip with a warning:
 > "No spec found in .sdcorejs/docs/<track>/. Skipping acceptance verification; verifying only tests + lint. Ask the user to manually confirm done."
@@ -48,7 +50,7 @@ For each criterion, derive a **verification mode**:
 
 | Criterion shape | Verification mode |
 |---|---|
-| "User can navigate to `/X` and see ≥N rows" | E2E test OR `curl` to the route + grep for marker |
+| "<localized text>" | E2E test OR `curl` to the route + grep for marker |
 | "Validation: field X required if Y == Z" | Unit test on form spec |
 | "Update preserves audit fields" | Unit test asserting `createdAt` unchanged across update |
 | "API returns 403 for unauthorized" | Integration test or `curl -H` with bad token |
@@ -56,7 +58,7 @@ For each criterion, derive a **verification mode**:
 | "List filter by status returns only matching rows" | E2E with filter applied + count check |
 | **(NextJS)** "Localized message keys symmetric; content files mirrored" | `npm run check:i18n` (from the `sdcorejs-nextjs` orchestrator, content-quality pack) — exit 0 |
 | **(NextJS)** "Every page meets min word count for its type" | `npm run check:content` — exit 0 |
-| **(NextJS)** "Lighthouse SEO score ≥ 95 on home + 1 detail" | `npx lighthouse <url> --only-categories=seo --output=json` — parse `categories.seo.score` |
+| **(NextJS)** "<localized text>" | `npx lighthouse <url> --only-categories=seo --output=json` — parse `categories.seo.score` |
 | **(NextJS)** "Article pages emit Article JSON-LD with author + dates" | `curl <article-url> \| grep -o '"@type":"Article"'` + manual paste to Google Rich Results Test |
 | **(NextJS)** "Title 50-60 chars; description 150-160 chars per page" | Build the page in dev → check console for `[SEO] Title too long/short` warnings from `buildMetadata` |
 | **(NextJS)** "Heading hierarchy: 1 h1, no skipped levels" | `npx pa11y <url>` or `axe-core` heading-order rule |
@@ -85,10 +87,10 @@ Detect by reading `package.json` `scripts` — only run scripts that are actuall
 
 ```bash
 # Language parity — fails if vi.json/en.json keys diverge OR content/vi/*.ts ↔ content/en/*.ts file sets diverge
-npm run check:i18n 2>/dev/null && echo "✅ i18n parity" || echo "❌ i18n parity (or script missing)"
+npm run check:i18n 2>/dev/null && echo "<localized text>" || echo "<localized text>"
 
 # Minimum content length per page type — fails if any registered content file is below threshold
-npm run check:content 2>/dev/null && echo "✅ content length" || echo "❌ content length (or script missing)"
+npm run check:content 2>/dev/null && echo "<localized text>" || echo "<localized text>"
 ```
 
 If `check:i18n` or `check:content` is missing AND the spec mentions multi-language support OR long-form content, surface this as a Critical finding:
@@ -101,7 +103,7 @@ If `check:i18n` or `check:content` is missing AND the spec mentions multi-langua
 # Run against the dev server (or staging URL if available)
 SITE_URL=http://localhost:3000
 npx --yes lighthouse "$SITE_URL" --only-categories=seo --quiet --chrome-flags="--headless" --output=json --output-path=.lighthouse-seo.json
-node -e "const s=require('./.lighthouse-seo.json').categories.seo.score; console.log(s>=0.95?'✅':'❌', 'Lighthouse SEO:', Math.round(s*100))"
+node -e "<localized text>"
 ```
 
 Skip if no URL is reachable (e.g. pure offline build); flag as MANUAL deferred.
@@ -175,7 +177,7 @@ The user's defer/won't-fix acknowledgment goes into the auto-docs entry under "O
 After the report + user direction (the branch-hygiene gate `sdcorejs-ship (branch-ready mode)` runs between this skill and auto-docs — never skip it):
 - If ALL ✅ + no manual deferred → invoke `sdcorejs-ship (branch-ready mode)` (hygiene sweep + merge/PR options), then run `_refs/orchestration/tail/auto-docs.md` with "Status: done"
 - If partial → invoke `sdcorejs-repair-loop` with the failed criteria as the findings list
-- If user defers → invoke `sdcorejs-ship (branch-ready mode)`, then run `_refs/orchestration/tail/auto-docs.md` with "Status: partial — see Open questions", do NOT auto-commit
+- If user defers → invoke `sdcorejs-ship (branch-ready mode)`, then run `_refs/orchestration/tail/auto-docs.md` with "<localized text>", do NOT auto-commit
 
 ## Examples
 
@@ -226,7 +228,7 @@ No spec found (small bug fix, no .sdcorejs/docs/<track>/*-spec.md)
 - Claim a manual criterion ✅ on behalf of the user
 - Auto-defer a criterion because verification is hard
 - Skip the smoke run because "build is green"
-- Mark `⏭ skipped` without telling the user
+- Mark `<localized text>` without telling the user
 - Invent acceptance criteria that aren't in the spec
 - Allow `_refs/orchestration/tail/auto-docs.md` to write "status: done" while criteria fail
 - Use a passing CI run as a substitute for actually executing the verification commands

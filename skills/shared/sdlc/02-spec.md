@@ -14,6 +14,7 @@ Before executing this skill:
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
 3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 Turn the confirmed requirement contract into a durable spec, hold the user approval gate, and persist the approved spec corpus inside the same skill.
@@ -106,9 +107,13 @@ Summary:
 - Risks: <short list>
 
 Do you approve this spec?
-- "OK" -> snapshot the spec and draft the plan
-- "change <X>" -> update the spec and show it again
-- "cancel" -> stop
+
+Options:
+1. Approve - snapshot the spec and draft the plan.
+2. Change - tell me what to update, then I will revise the spec.
+3. Cancel - stop here.
+
+Reply with `1`, `2`, or `3`. If you choose `2`, describe the change.
 ```
 
 Translate the prompt at runtime.

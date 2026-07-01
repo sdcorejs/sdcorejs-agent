@@ -83,7 +83,7 @@ import { test, expect } from '@playwright/test';
 const locales = ['vi', 'en'] as const;
 
 for (const locale of locales) {
-  test.describe(`home page — ${locale}`, () => {
+  test.describe(`<localized text>`, () => {
     test('renders hero + nav + footer on SSR', async ({ page, request }) => {
       // Arrange — SSR check via raw HTML before hydration
       const res = await request.get(`/${locale}`);
@@ -91,7 +91,7 @@ for (const locale of locales) {
       expect(res.status()).toBe(200);
 
       // Assert: server-rendered content present (not blank shell)
-      const heroText = locale === 'vi' ? 'Đối tác tin cậy' : 'Trusted partner';
+      const heroText = locale === 'vi'<localized text>'<localized text>' : 'Trusted partner';
       expect(html).toContain(heroText);
       expect(html).toContain('<nav');
       expect(html).toContain('<footer');
@@ -106,7 +106,7 @@ for (const locale of locales) {
 
     test('locale switcher changes URL prefix', async ({ page }) => {
       await page.goto(`/${locale}`);
-      const other = locale === 'vi' ? 'en' : 'vi';
+      const other = locale === 'vi'<localized text>'en' : 'vi';
       await page.click(`button[aria-label*="${other.toUpperCase()}"]`);
       await expect(page).toHaveURL(new RegExp(`^.+/${other}(/|$)`));
     });
@@ -125,10 +125,10 @@ test.describe('contact form', () => {
   test('submits successfully and shows confirmation', async ({ page }) => {
     await page.goto('/vi/lien-he');
 
-    await page.fill('input[name="name"]', 'Nguyễn Văn A');
+    await page.fill('input[name="name"]', '<localized text>');
     await page.fill('input[name="email"]', 'test@example.com');
     await page.fill('input[name="phone"]', '0901234567');
-    await page.fill('textarea[name="message"]', 'Cần báo giá xi măng PCB30, số lượng 5 tấn.');
+    await page.fill('textarea[name="message"]', '<localized text>');
 
     // Intercept the API call to avoid real email send in CI
     const submitPromise = page.waitForResponse(
@@ -138,7 +138,7 @@ test.describe('contact form', () => {
     await submitPromise;
 
     // Assert: success UI shown
-    await expect(page.locator('[role="status"]').filter({ hasText: /thành công|success/i }))
+    await expect(page.locator('[role="status"]').filter({ hasText: /success|sent|submitted/i }))
       .toBeVisible({ timeout: 5000 });
   });
 
@@ -170,7 +170,7 @@ test.describe('contact form', () => {
 ```typescript
 import { test, expect } from '@playwright/test';
 
-test('sitemap.xml lists all routes × locales', async ({ request }) => {
+test('<localized text>', async ({ request }) => {
   const res = await request.get('/sitemap.xml');
   expect(res.status()).toBe(200);
   const xml = await res.text();
@@ -269,7 +269,7 @@ Target: full e2e suite < 5 min on a typical landing site.
 - Hit production endpoints from CI tests (real emails, real DB writes)
 - Test in `dev` mode only — hides SSR bugs
 - Skip the rate-limit test on contact form (it's the gating security check)
-- Hardcode VI/EN labels in test strings without locale context — use `locale === 'vi' ? 'Đối tác' : 'Partner'`
+- Hardcode VI/EN labels in test strings without locale context — use `<localized text>`
 
 ## Anti-patterns
 

@@ -16,7 +16,7 @@ conventions. Read-only — surfaces violations the human reviewer should fix.
 For every file under review, check the following.
 
 ### Mandatory Angular code-review checklist
-Run these checks in addition to the SDCoreJS portal checks below. Report results through the parent skill's Angular/NestJS code-review table mode with `STT`, `Severity`, `Nhóm`, `File/Dòng`, `Vấn đề`, `Rủi ro`, `Đề xuất fix`, and `Gate`.
+Run these checks in addition to the SDCoreJS portal checks below. Report results through the parent skill's Angular/NestJS code-review table mode with `#`, `Severity`, `Group`, `File/Line`, `Issue`, `Risk`, `Suggested fix`, and `Gate`.
 
 #### Naming & file structure
 - Check file names follow Angular/project convention: `a-b-c.<type>.<ext>`.
@@ -249,7 +249,7 @@ Run these checks in addition to the SDCoreJS portal checks below. Report results
 - Uses `@sdcorejs/angular/components`, `@sdcorejs/angular/forms`, `@sdcorejs/angular/modules` instead of hand-rolled equivalents
 - If a custom skeleton exists, it is marked with `// CUSTOM_UI: <reason>` and the generation summary mentioned it
 - Imports come from path-specific subpaths (e.g. `@sdcorejs/angular/components/section`), not the barrel `from 'sd-angular'`
-- **Don't re-implement what Core UI already ships.** When a hand-rolled widget duplicates a Core UI component (filter bar, operator picker, splitter, stepper, banner, dynamic form, color input, …), flag it and point the dev to the built-in. The authoritative component inventory is fetched on-demand (not committed) via `node _refs/angular/core-docs-fetch.mjs --list`; each component's per-component conventions and required configuration tokens via `node _refs/angular/core-docs-fetch.mjs --print sd-<name>` — consult it rather than hard-coding a component list here (drift-proof: the fetcher is version-matched to the pinned `@sdcorejs/angular` and stays current).
+- **Don'<localized text>'s per-component conventions and required configuration tokens via `node _refs/angular/core-docs-fetch.mjs --print sd-<name>` — consult it rather than hard-coding a component list here (drift-proof: the fetcher is version-matched to the pinned `@sdcorejs/angular` and stays current).
 
 ### Naming
 - Files: `<entity-kebab>.model.ts`, `<entity-kebab>.service.ts`, `<entity-kebab>.routes.ts`, `<entity-kebab>.mock-data.ts`
@@ -265,7 +265,7 @@ Run these checks in addition to the SDCoreJS portal checks below. Report results
 - Editable entity/form models bound with Core UI `model` inputs are plain objects/ViewModels, not signals
 - Signals referenced 2+ times in template are extracted via `@let` or `computed()`
 - Template display/visibility/disabled/class/title bindings read signals/computed/pure pipes/view models, not component methods/getters
-- Form uses `FormGroup` with explicit validators; submit gates on `form.invalid → markAllAsTouched`
+- Form uses `FormGroup` with explicit validators; submit gates on `<localized text>`
 
 ### autoId (E2E selectors + inspector) — WARN when missing
 Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-autoid` so E2E specs and the `sd-autoid-inspector` overlay can grab the element. Missing `autoId` = the element is invisible to the inspector and E2E by stable selector. Warn (Important, not Critical) so the dev backfills it.
@@ -356,14 +356,14 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 - Styles are component-scoped where appropriate, global styles have clear app-wide purpose, and custom CSS does not duplicate available utilities.
 
 ## Post-review assistance
-- For small fixes, include a concrete patch idea or snippet in the `Đề xuất fix` cell.
+- For small fixes, include a concrete patch idea or snippet in the `<localized text>` cell.
 - For medium/large fixes, recommend a spec/plan before editing and include scope, affected files, risks, tests to run, and rollback strategy when relevant.
 - Prefer small, behavior-preserving changes.
 - If evidence is insufficient, use `INFO` or `RECOMMENDED` and say what must be inspected next.
 
 ## Scored deep-review mode (enterprise audit) — Angular-specific alternate output
 
-Use this mode for a full module/branch audit, or when the user asks for a "scored review", "đánh giá", "chấm điểm", or an enterprise-readiness assessment. The color-table format from the parent skill stays the default for small diffs.
+Use this mode for a full module/branch audit, or when the user asks for a "scored review", "<localized text>", "<localized text>", or an enterprise-readiness assessment. The color-table format from the parent skill stays the default for small diffs.
 
 **Priority lens (weight findings in this order):** Performance → Maintainability → Scalability → Enterprise readiness. A finding that hurts a higher-priority axis outranks one that only affects a lower axis. **Do NOT score formatting/style** unless it measurably hurts maintainability (then say how).
 
@@ -378,7 +378,7 @@ Score each of these 13 categories. For every category output **Score (1–10)**,
 5. **Signal adoption** — `signal/computed/effect` used correctly, `effect` not used as `computed`, no redundant `BehaviorSubject` where a signal fits, editable entity/form model objects are not wrapped in signals for Core UI model binding, `toSignal`/`toObservable` at boundaries, no signal writes inside `computed`.
 6. **Change detection strategy** — `OnPush` everywhere, no method calls in bindings, `@for` `track`, zoneless-readiness (no `setTimeout`/manual `markForCheck` hacks), minimal CD surface.
 7. **Template quality & styling** — native control flow (`@if/@for/@let`, no `*ngIf/*ngFor`), `track` keys, `async` pipe over manual subscribe, no heavy expressions/logic in template, signals referenced 2+ times extracted. Styling is utility-first (Core UI STYLE-GUIDE classes or consumer Tailwind); component `.scss` near-empty; bespoke CSS that duplicates a shipped utility (flex/spacing/color/typography) is a finding; spacing px-based 0–200.
-8. **Forms implementation** — typed reactive forms (`FormGroup<...>`), explicit validators + async validators where needed, cross-field rules, submit gating (`invalid → markAllAsTouched`), no template-driven for complex forms, error surfacing.
+8. **Forms implementation** — typed reactive forms (`FormGroup<...>`), explicit validators + async validators where needed, cross-field rules, submit gating (`<localized text>`), no template-driven for complex forms, error surfacing.
 9. **API layer design** — typed Service contracts (`SaveReq`/`DTO`/`ListRes`/`DetailRes`), clear raw API mapping when backend shape differs, no false DTO fields, UI-only state kept in ViewModels/signals, `SdApiService` (no raw `HttpClient` ad-hoc), URLs from environment (no hardcode), error/retry/caching strategy, logic in services not components, mock-first parity, codebase-first reuse of existing domain model/service/entity contracts.
 10. **Testing strategy** — spec exists alongside each file (missing = 🔴), coverage `standard` by default (or explicit override), written RED-first, runnable (no `// TODO`), deps mocked, meaningful assertions (not just "created"), integration where behavior matters.
 11. **Accessibility** — semantic HTML (`<nav>/<main>/<section>`), `aria-label`/`title` on icon buttons, `role="toolbar"`, keyboard + focus management, AND `autoId` on interactive elements (E2E + `sd-autoid-inspector` selectors).

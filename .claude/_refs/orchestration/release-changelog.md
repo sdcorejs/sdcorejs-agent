@@ -19,8 +19,9 @@ git describe --tags --abbrev=0 2>/dev/null
 grep -m1 '^## \[' CHANGELOG.md 2>/dev/null
 ```
 
-If there is no tag or changelog header, ask for a baseline: commit SHA, date, or
-"from the beginning".
+If there is no tag or changelog header, ask for a baseline with
+`_refs/shared/user-choice-prompt.md`: `1. Commit SHA`, `2. Date`, or
+`3. From the beginning`.
 
 2. Pull the commit range:
 
@@ -80,7 +81,8 @@ verbatim. Include PR numbers when available; otherwise use short SHAs.
 
 - If `## [Unreleased]` exists, move relevant content into the new versioned
   section and reset `Unreleased`.
-- If no `CHANGELOG.md` exists, ask before creating one.
+- If no `CHANGELOG.md` exists, ask before creating one using
+  `1. Create CHANGELOG.md` / `2. Stop`.
 - Insert newest release above older releases.
 - Preserve hand-edited content.
 

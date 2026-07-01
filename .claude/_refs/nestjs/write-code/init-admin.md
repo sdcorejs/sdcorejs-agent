@@ -20,7 +20,7 @@
 Generate the always-on `admin` module: app-DB authorization (role + permission, flat
 `<module>_<entity>:<action>` codes) + Keycloak Admin API proxy for account lifecycle. Owns the
 project `IPermissionStrategy` and the user-lookup `JwtStrategy`. Run order:
-`init-project → init-admin → init-module → init-entity → actions`.
+`<localized text>`.
 
 ## Source of truth — core package
 Read [`_refs/nestjs/core-catalog.md`](../core-catalog.md) BEFORE generating. Every import MUST match a
@@ -120,7 +120,7 @@ export class User extends BaseEntity {
 ```
 
 > No `password` column — Keycloak owns all credentials. `roleCodes` mirrors the user's assigned
-> `Role.code` values; the permission strategy joins `User.roleCodes → Role.permissions` to build
+> `Role.code` values; the permission strategy joins `<localized text>` to build
 > the effective permission set. `keycloakUserId` is the stable join key between Keycloak and
 > this table (the JWT `sub` claim).
 
@@ -888,7 +888,7 @@ async function retry<T>(fn: () => Promise<T>, opts: { tries: number; delayMs: nu
   for (let i = 0; i < opts.tries; i++) {
     try { return await fn(); } catch (e) {
       lastErr = e;
-      console.warn(`[seed] step 3 attempt ${i + 1}/${opts.tries} failed — retrying in ${opts.delayMs}ms`);
+      console.warn(`<localized text>`);
       await new Promise((r) => setTimeout(r, opts.delayMs));
     }
   }
@@ -1038,7 +1038,7 @@ src/
 | TypeScript build clean | `npm run build` — zero type errors |
 | Seed is idempotent | Run `npm run start` twice; second start must not throw or duplicate rows |
 | Permission table is read-only via HTTP | `POST /admin/permission` → 404 (no route); `DELETE /admin/permission/:id` → 404 or 405 |
-| Demo user gets `admin` role | After seed, call `GET /admin/user?username=demo` — `roleCodes` includes `'admin'` |
+| Demo user gets `admin` role | After seed, call `<localized text>` — `roleCodes` includes `'admin'` |
 | Keycloak race handled | Start backend before Keycloak; step 3 retries appear in logs; seed completes when Keycloak becomes ready |
 
 ---
@@ -1228,7 +1228,7 @@ export class KeycloakAdminService {
 > `KEYCLOAK_ADMIN_CLIENT_ID`) MUST hold `manage-realm` in addition to `manage-users` and
 > `view-users` on the master realm so it can call `POST /admin/realms` to create per-tenant
 > realms. Grant `manage-realm` in the Keycloak console under
-> `master realm → Clients → app-admin → Service Account Roles → realm-management → manage-realm`.
+> `<localized text>`.
 
 ---
 
