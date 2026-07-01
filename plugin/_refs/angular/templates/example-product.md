@@ -17,9 +17,9 @@ Reference output from a complete init-entity run (the `sdcorejs-angular` orchest
 import { BaseEntity } from '@sample/services';
 
 export const PRODUCT_CATEGORIES = [
-  { value: 'ELECTRONICS', display: 'Điện tử' },
-  { value: 'CLOTHING', display: 'Quần áo' },
-  { value: 'FOOD', display: 'Thực phẩm' },
+  { value: 'ELECTRONICS', display: '<localized text>' },
+  { value: 'CLOTHING', display: '<localized text>' },
+  { value: 'FOOD', display: '<localized text>' },
 ];
 
 export interface ProductSaveReq {
@@ -93,12 +93,12 @@ import { ProductService } from '../services/product.service';
     SdSwitch,
   ],
   template: `
-    <sd-page title="Sản phẩm">
+    <sd-page title="<localized text>">
       <div class="d-flex align-items-center" role="toolbar" headerRight>
         <sd-button
           *sdPermission="'SAMPLE_PRODUCT_CREATE'"
-          title="Tạo mới"
-          aria-label="Tạo mới"
+          title="<localized text>"
+          aria-label="<localized text>"
           type="fill"
           prefixIcon="add"
           (click)="onCreate()">
@@ -119,7 +119,7 @@ import { ProductService } from '../services/product.service';
 })
 @SdTabComponent({
   component: ListComponent,
-  name: 'Sản phẩm',
+  name: '<localized text>',
   color: 'primary',
 })
 export class ListComponent implements OnInit {
@@ -139,32 +139,32 @@ export class ListComponent implements OnInit {
       items: async (_, pagingRequest) => this.#productService.paging(pagingRequest),
       columns: [
         {
-          title: 'Mã',
+          title: '<localized text>',
           field: 'code',
           type: 'string',
           width: '120px',
           click: (_value, row) => this.#onDetail(row.id),
         },
         {
-          title: 'Tên',
+          title: '<localized text>',
           field: 'name',
           type: 'string',
           width: '250px',
         },
         {
-          title: 'Giá',
+          title: '<localized text>',
           field: 'price',
           type: 'number',
           width: '120px',
         },
         {
-          title: 'Tồn kho',
+          title: '<localized text>',
           field: 'stock',
           type: 'number',
           width: '120px',
         },
         {
-          title: 'Danh mục',
+          title: '<localized text>',
           field: 'category',
           type: 'values',
           option: {
@@ -175,10 +175,10 @@ export class ListComponent implements OnInit {
           width: '150px',
         },
         {
-          title: 'Trạng thái',
+          title: '<localized text>',
           field: 'isActivated',
           type: 'boolean',
-          option: { displayOnTrue: 'Hoạt động', displayOnFalse: 'Khóa' },
+          option: { displayOnTrue: '<localized text>', displayOnFalse: '<localized text>' },
           width: '120px',
         },
       ],
@@ -243,8 +243,8 @@ import { ProductService } from '../services/product.service';
         @if (state() === 'UPDATE') {
           <sd-button
             *sdPermission="'SAMPLE_PRODUCT_DELETE'"
-            title="Xóa"
-            aria-label="Xóa"
+            title="<localized text>"
+            aria-label="<localized text>"
             type="fill"
             color="error"
             prefixIcon="delete"
@@ -253,16 +253,16 @@ import { ProductService } from '../services/product.service';
         }
         @if (state() === 'CREATE' || state() === 'UPDATE') {
           <sd-button
-            title="Lưu"
-            aria-label="Lưu"
+            title="<localized text>"
+            aria-label="<localized text>"
             type="fill"
             prefixIcon="save"
             (click)="onSave()">
           </sd-button>
         }
         <sd-button
-          title="Quay lại"
-          aria-label="Quay lại"
+          title="<localized text>"
+          aria-label="<localized text>"
           type="outline"
           prefixIcon="arrow_back"
           (click)="onBack()">
@@ -272,7 +272,7 @@ import { ProductService } from '../services/product.service';
       <div class="p-8">
         <sd-section>
           <sd-input
-            label="Mã"
+            label="<localized text>"
             [model]="entity.code"
             (modelChange)="onEntityFieldChange('code', $event)"
             [form]="form"
@@ -282,7 +282,7 @@ import { ProductService } from '../services/product.service';
           </sd-input>
 
           <sd-input
-            label="Tên"
+            label="<localized text>"
             [model]="entity.name"
             (modelChange)="onEntityFieldChange('name', $event)"
             [form]="form"
@@ -292,7 +292,7 @@ import { ProductService } from '../services/product.service';
           </sd-input>
 
           <sd-textarea
-            label="Mô tả"
+            label="<localized text>"
             [model]="entity.description"
             (modelChange)="onEntityFieldChange('description', $event)"
             [form]="form"
@@ -301,7 +301,7 @@ import { ProductService } from '../services/product.service';
           </sd-textarea>
 
           <sd-input-number
-            label="Giá"
+            label="<localized text>"
             [model]="entity.price"
             (modelChange)="onEntityFieldChange('price', $event)"
             [form]="form"
@@ -310,7 +310,7 @@ import { ProductService } from '../services/product.service';
           </sd-input-number>
 
           <sd-input-number
-            label="Tồn kho"
+            label="<localized text>"
             [model]="entity.stock"
             (modelChange)="onEntityFieldChange('stock', $event)"
             [form]="form"
@@ -319,7 +319,7 @@ import { ProductService } from '../services/product.service';
           </sd-input-number>
 
           <sd-select
-            label="Danh mục"
+            label="<localized text>"
             [model]="entity.category"
             (modelChange)="onEntityFieldChange('category', $event)"
             [form]="form"
@@ -331,7 +331,7 @@ import { ProductService } from '../services/product.service';
           </sd-select>
 
           <sd-switch
-            label="Hoạt động"
+            label="<localized text>"
             [model]="entity.isActivated"
             (modelChange)="onEntityFieldChange('isActivated', $event)"
             [form]="form"
@@ -340,7 +340,7 @@ import { ProductService } from '../services/product.service';
 
           @if (!isDetail()) {
             <sd-upload-file
-              label="Hình ảnh sản phẩm"
+              label="<localized text>"
               #uploadFiles
               multiple>
             </sd-upload-file>
@@ -355,8 +355,8 @@ export class DetailComponent implements OnInit {
   readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
   entity: Partial<ProductSaveReq & { id?: string }> = {};
   readonly pageTitle = computed(() => {
-    if (this.state() === 'CREATE') return 'Tạo sản phẩm';
-    return this.state() === 'DETAIL' ? 'Chi tiết sản phẩm' : 'Cập nhật sản phẩm';
+    if (this.state() === 'CREATE') return '<localized text>';
+    return this.state() === 'DETAIL'<localized text>'<localized text>' : '<localized text>';
   });
   readonly isDetail = computed(() => this.state() === 'DETAIL');
   readonly PRODUCT_CATEGORIES = PRODUCT_CATEGORIES;
@@ -420,7 +420,7 @@ export class DetailComponent implements OnInit {
   async onDelete(): Promise<void> {
     const currentEntity = this.entity;
 
-    if (confirm('Bạn có chắc muốn xóa?') && currentEntity.id) {
+    if (confirm('<localized text>') && currentEntity.id) {
       try {
         await this.#productService.remove(currentEntity.id);
         this.#router.navigate(['..'], { relativeTo: this.#activatedRoute });

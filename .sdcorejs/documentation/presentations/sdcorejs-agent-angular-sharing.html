@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>sdcorejs-agent Angular Sharing</title>
+  <style>
+    @page { size: A4; margin: 12mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #17202a;
+      background: #eef2f7;
+      line-height: 1.5;
+    }
+    .deck { max-width: 1120px; margin: 0 auto; padding: 24px; }
+    .cover, .slide {
+      position: relative;
+      overflow: hidden;
+      min-height: 780px;
+      margin: 0 0 24px;
+      padding: 42px 46px;
+      background: #ffffff;
+      border: 1px solid #d8e0ea;
+      border-radius: 8px;
+      box-shadow: 0 16px 42px rgba(18, 31, 53, 0.08);
+      page-break-after: always;
+    }
+    .cover {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background:
+        linear-gradient(135deg, rgba(32, 94, 147, 0.12), transparent 34%),
+        linear-gradient(315deg, rgba(35, 132, 118, 0.12), transparent 38%),
+        #ffffff;
+    }
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      padding: 6px 10px;
+      border: 1px solid #b7c7d8;
+      border-radius: 999px;
+      color: #28506f;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 860px;
+      margin: 28px 0 18px;
+      font-size: 54px;
+      line-height: 1.05;
+      letter-spacing: 0;
+      color: #10253a;
+    }
+    h2 {
+      margin: 12px 0 18px;
+      font-size: 34px;
+      line-height: 1.12;
+      letter-spacing: 0;
+      color: #10253a;
+    }
+    h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      color: #1f4d6b;
+    }
+    p { margin: 0 0 12px; }
+    ul { margin: 8px 0 0 20px; padding: 0; }
+    li { margin: 4px 0; }
+    .subtitle {
+      max-width: 820px;
+      font-size: 22px;
+      color: #43566d;
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 36px;
+    }
+    .meta div, .box {
+      border: 1px solid #d8e0ea;
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .label {
+      display: block;
+      margin-bottom: 3px;
+      color: #68788b;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .badge {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e8f3f1;
+      color: #1f5f58;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .time { color: #697a8d; font-size: 13px; font-weight: 700; }
+    .objective {
+      margin: 0 0 18px;
+      padding: 14px 16px;
+      border-left: 4px solid #2a7b6f;
+      background: #f6fbfa;
+      color: #284456;
+      font-size: 16px;
+    }
+    .cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .prompt {
+      border: 1px solid #c9d6e2;
+      background: #f7f9fc;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .prompt-title {
+      padding: 10px 14px;
+      background: #dfeaf4;
+      color: #1d4664;
+      font-weight: 800;
+    }
+    .prompt-body {
+      padding: 14px;
+      white-space: pre-wrap;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: #213346;
+    }
+    .speaker {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border: 1px solid #d8e0ea;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    .speaker-title {
+      margin-bottom: 8px;
+      color: #8a4c17;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .note {
+      margin-top: 12px;
+      color: #5a697a;
+      font-size: 13px;
+    }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 18px 0;
+    }
+    .flow div {
+      min-height: 72px;
+      padding: 12px;
+      border: 1px solid #d8e0ea;
+      border-radius: 8px;
+      background: #fbfcfe;
+      font-weight: 700;
+      color: #24394f;
+    }
+    .talk { font-size: 16px; color: #24394f; }
+    .talk strong { color: #10253a; }
+    .appendix { min-height: auto; }
+    @media print {
+      body { background: #ffffff; }
+      .deck { padding: 0; max-width: none; }
+      .cover, .slide { margin: 0; box-shadow: none; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <section class="cover">
+      <div>
+        <span class="eyebrow">Mini sharing</span>
+        <h1>sdcorejs-agent for Angular Portal Delivery</h1>
+        <p class="subtitle">Một kịch bản trình bày có phần showcase ở đầu, đi từ output thực tế đến cách skill sdcorejs-angular vận hành trong workflow FE.</p>
+      </div>
+      <div class="meta">
+        <div><span class="label">Audience</span>FE, PO, QC, Tech Lead</div>
+        <div><span class="label">Focus</span>sdcorejs-angular</div>
+        <div><span class="label">Date</span>2026-07-01</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 1</span><span class="time">1 phút</span></div>
+      <h2>Mở đầu bằng showcase: từ prompt đến màn hình Portal</h2>
+      <p class="objective">Mục tiêu: tạo hứng thú ngay bằng ảnh màn hình đã sinh ra từ skill, trước khi giải thích cơ chế phía sau.</p>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a polished presentation hero image for a software engineering sharing session.
+Composition: a wide 16:9 collage of 4 realistic enterprise Angular portal screens generated by an AI skill: a dense data table screen, a detail form screen, a workflow approval screen, and a dashboard-like admin screen. Put the screens on a clean white workspace with subtle shadows, not floating in space.
+Must include: small labels "List", "Detail", "Workflow", "QC-ready"; a central caption "From PRD + Design + API Docs to Portal UI"; a tiny sdcorejs-agent node connecting the artifacts to the screens.
+Style: modern enterprise SaaS, sharp UI, readable but fictional text, neutral blue/teal accents, no purple gradient, no cartoon characters.
+Avoid: random code rain, robots, abstract orbs, Vietnamese text, tiny unreadable paragraphs, dark cyberpunk style.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">Mình muốn mở đầu bằng output trước. Đây là các màn hình Portal được tạo ra từ cùng một cách làm: đưa context như PRD, design, API docs và codebase hiện tại vào skill, sau đó để sdcorejs-agent đi qua các bước phân tích, implement, review và chuẩn bị handoff. Điểm mình muốn mọi người nhìn thấy trước là: đây không phải demo prompt đơn lẻ, mà là một workflow có kiểm soát để tạo feature có thể tiếp tục review, test và bàn giao.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 2</span><span class="time">2 phút</span></div>
+      <h2>Showcase nhanh các màn hình đã sinh ra</h2>
+      <p class="objective">Mục tiêu: tạo bằng chứng trực quan. Bạn có thể thay ảnh prompt bằng screenshot thật từ case đã triển khai.</p>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a 16:9 showcase board for an internal engineering presentation.
+Composition: 6 screenshot placeholders arranged in a clean 3x2 grid. Each screenshot is a different Angular enterprise portal feature: customer list with filters, order detail form, approval queue, user role management, file import result, and report export history.
+Must include: each screenshot should have a realistic app header, sidebar, filters, buttons, form controls, and data tables; use fictional English labels only; add a small footer tag on each card: "Generated with sdcorejs-angular".
+Style: professional, dense but readable enterprise UI, white background, 8px card radius, subtle borders, realistic spacing.
+Avoid: marketing landing pages, oversized hero sections, mobile-only mockups, colorful illustration style, Vietnamese text.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">Phần showcase này nên đi rất nhanh. Mình không giải thích kỹ từng màn hình ngay, chỉ cho mọi người thấy độ rộng của use case: list, detail, approval, role, import, export. Ý chính là skill không chỉ sinh HTML cho đẹp mắt, mà bám vào pattern Portal: filter, table, form, action, permission, API integration và trạng thái xử lý.</p>
+      </div>
+      <p class="note">Gợi ý trình bày: dùng screenshot thật nếu có; prompt này dùng để tạo ảnh minh họa khi chưa muốn lộ dữ liệu nội bộ.</p>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 3</span><span class="time">2 phút</span></div>
+      <h2>Ví dụ 1: List screen chuẩn Portal</h2>
+      <p class="objective">Mục tiêu: chỉ ra skill hiểu cấu trúc màn danh sách chứ không chỉ dựng layout.</p>
+      <div class="cols">
+        <div class="box">
+          <h3>Điểm cần nhấn</h3>
+          <ul>
+            <li>Bộ lọc, table, pagination, empty/loading/error states.</li>
+            <li>Action theo permission và trạng thái record.</li>
+            <li>Reuse component/convention của dự án.</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h3>Thông điệp</h3>
+          <p>Skill giúp giảm sai lệch giữa các feature Portal vì cùng dùng một bộ rule và reference.</p>
+        </div>
+      </div>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Generate a realistic Angular admin portal list screen mockup for a slide.
+Screen content: "Merchant Management" page with sidebar navigation, top breadcrumb, search box, status dropdown, date range filter, advanced filter toggle, primary button "Create", secondary button "Export", data table with 8 rows, row status badges, row action menu, pagination, and a small loading skeleton preview in one corner.
+Annotation overlay: add 5 numbered callouts pointing to "Filters", "Permission-aware actions", "Reusable table", "Pagination", "State handling".
+Style: enterprise portal, compact information density, white canvas, restrained blue/teal accents, readable fictional English text.
+Avoid: decorative illustrations, fake charts unrelated to the list, Vietnamese labels, overly rounded cards.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">Với màn list, thứ tốn thời gian không chỉ là table. Nó là tổ hợp của filter, query param, API contract, trạng thái loading/error/empty, permission và action theo nghiệp vụ. sdcorejs-angular được thiết kế để nhớ các pattern này và ưu tiên convention có sẵn trong project.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 4</span><span class="time">2 phút</span></div>
+      <h2>Ví dụ 2: Detail/Create/Edit form</h2>
+      <p class="objective">Mục tiêu: cho thấy skill xử lý form, validation, mode và mapping dữ liệu.</p>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a 16:9 infographic showing an Angular portal detail form generated by sdcorejs-angular.
+Main screen: "Create Merchant" form with grouped sections: Basic Information, Contact, Settlement, Configuration. Include text inputs, select dropdowns, checkbox toggles, date picker, validation messages, Save/Cancel buttons, and a right-side summary panel.
+Overlay: show three mode tabs "Create", "Edit", "View" with small arrows explaining field editability and button visibility.
+Must include: validation callouts for required fields, API payload mapping callout, and permission callout for Save action.
+Style: realistic enterprise form UI, clean white background, compact labels, no marketing hero.
+Avoid: Vietnamese text, fake mobile app, colorful mascot, huge empty whitespace.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">Màn form thường phát sinh lỗi ở mode create/edit/view, validation, mapping request/response và điều kiện enable action. Khi skill có reference rõ, nó có thể tạo form theo hướng dễ review: field nào đến từ API, field nào required, action nào cần permission, trạng thái submit ra sao.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 5</span><span class="time">2 phút</span></div>
+      <h2>Ví dụ 3: Workflow action và phối hợp QC</h2>
+      <p class="objective">Mục tiêu: nối phần code generation với kiểm thử và bàn giao.</p>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a 16:9 enterprise workflow screen mockup for a Portal feature.
+Screen content: "Approval Queue" with a table of pending requests, status chips, SLA column, Approve/Reject/Request Info row actions, a confirmation modal open on top, and an audit timeline panel on the right.
+Add a bottom strip named "QC Handoff" with checklist items: happy path, reject path, permission denied, API error, audit log.
+Style: realistic Angular admin UI, readable English labels, structured and professional, no heavy gradients.
+Avoid: cartoon people, Vietnamese text, unrelated analytics charts, decorative background blobs.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">Với workflow, code và QC gần như phải đi cùng nhau. Một action không chỉ là button; nó cần confirm, error handling, audit log, permission, test case và hướng dẫn QC biết nên kiểm gì. Đây là lý do phần finish gate của agent luôn kéo theo test, review, repair và documentation.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 6</span><span class="time">1 phút</span></div>
+      <h2>Từ output quay lại câu hỏi chính</h2>
+      <p class="objective">Mục tiêu: chuyển từ showcase sang kiến trúc skill.</p>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a simple transition slide image.
+Composition: left side shows three inputs as document cards: PRD, Design, API Docs. Center shows a structured pipeline labeled "sdcorejs-agent". Right side shows outputs: Portal Screens, Tests, Review Fixes, User Guide, PR-ready Branch.
+Use arrows and small icons, but keep the image clean and presentation-friendly.
+Style: professional engineering diagram, white background, blue/teal/gray palette, readable English labels.
+Avoid: excessive details, Vietnamese text, robots, dark mode.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">Sau khi nhìn output, câu hỏi quan trọng là: làm sao để tạo ra output ổn định, không phụ thuộc quá nhiều vào một prompt may mắn? Phần sau mình sẽ đi vào sdcorejs-agent như một skill pack, và zoom sâu vào sdcorejs-angular.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 7</span><span class="time">2 phút</span></div>
+      <h2>sdcorejs-agent là gì?</h2>
+      <p class="objective">Mục tiêu: định nghĩa tổng quan trước khi đi vào Angular.</p>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a 16:9 architecture infographic explaining "sdcorejs-agent".
+Composition: central hub named "sdcorejs-agent" connected to skill modules: Brainstorming, Spec, Plan, Execute Plan, Angular, NestJS, Next.js, Test, Review, Repair Loop, Documentation, Ship, Git.
+Left side inputs: PRD, Design, API Docs, Existing Codebase, Project Conventions.
+Right side outputs: Implemented Feature, Tests, Review Findings Fixed, User Guide, Technical Docs, Branch/PR Artifacts.
+Add a small caption: "A reusable SDLC skill pack, not a single prompt."
+Style: clean technical architecture diagram, white background, thin lines, blue/teal/gray palette, readable English text.
+Avoid: Vietnamese text, mascot/robot, chaotic graph, dark sci-fi styling.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">sdcorejs-agent là một skill pack cho SDLC, không phải một prompt duy nhất. Nó chia workflow thành các skill nhỏ: brainstorming để làm rõ yêu cầu, spec và plan để tạo gate, executor như Angular/NestJS/Next.js để implement, rồi test, review, repair, documentation, ship và git để chuẩn bị delivery.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 8</span><span class="time">2 phút</span></div>
+      <h2>Vì sao Portal cần skill riêng?</h2>
+      <p class="objective">Mục tiêu: giải thích vấn đề thực tế khiến prompt generic chưa đủ.</p>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a before/after infographic for enterprise Portal development.
+Left side "Generic AI Prompt": scattered sticky notes labeled PRD, API, UI, Permission, Tests; inconsistent screens; warning icons for missing states, wrong components, convention drift.
+Right side "sdcorejs-agent Skill Workflow": ordered steps Context -> Requirement -> Spec -> Plan -> Implement -> Test -> Review -> Docs -> Ship; consistent portal screens and checkmarks.
+Style: professional comparison diagram, balanced layout, white background, subtle red/orange risk accents on the left and blue/teal success accents on the right.
+Avoid: Vietnamese text, exaggerated cartoons, black background, too many tiny words.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">Portal feature thường có nhiều ràng buộc lặp lại: component chuẩn, permission, API, form validation, empty/loading/error states, QC case. Nếu dùng prompt generic, output có thể đẹp nhưng lệch convention. Skill riêng giúp đóng gói những rule lặp lại đó thành workflow có thể dùng lại.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 9</span><span class="time">3 phút</span></div>
+      <h2>Workflow FE thực tế</h2>
+      <p class="objective">Mục tiêu: đưa người nghe qua luồng sử dụng từ context đến delivery.</p>
+      <div class="flow">
+        <div>1. Prepare Context</div>
+        <div>2. Analyze Requirement</div>
+        <div>3. Spec + Plan Gates</div>
+        <div>4. Execute Angular</div>
+        <div>5. Test</div>
+        <div>6. Review + Repair</div>
+        <div>7. Documentation</div>
+        <div>8. Ship + Git</div>
+      </div>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a horizontal 16:9 workflow timeline for frontend Portal delivery using sdcorejs-agent.
+Steps: Prepare Context, Analyze Requirement, Spec Approval, Plan Approval, sdcorejs-angular Implementation, Tests, Review + Repair, Documentation, QC Handoff, Ship + Git.
+Add small artifacts under each step: .sdcorejs summary, requirement notes, spec file, plan file, code changes, test evidence, findings, user guide/technical docs, checklist, PR branch.
+Style: clean engineering process diagram, timeline with numbered circles 1-10, white background, compact but readable labels.
+Avoid: Vietnamese text, generic agile board stock art, decorative people, over-saturated colors.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">Luồng mình dùng trong thực tế bắt đầu bằng context: dự án đang có gì, convention ra sao, feature liên quan ở đâu. Sau đó agent giúp làm rõ requirement, tạo spec và plan để mình approve. Khi chạy sdcorejs-angular, nó implement theo reference đã chọn. Cuối luồng là test, review, repair, documentation và chuẩn bị branch/PR.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 10</span><span class="time">3 phút</span></div>
+      <h2>Trọng tâm: năng lực sdcorejs-angular</h2>
+      <p class="objective">Mục tiêu: liệt kê năng lực chính của skill Angular theo ngôn ngữ dễ hiểu.</p>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a capability map infographic for "sdcorejs-angular".
+Center: sdcorejs-angular.
+Around it, show capability nodes: Init Portal, Module Setup, CRUD Entity, List Screen, Detail Form, Validators, Workflow Actions, Permissions, API Integration, Core UI Reuse, Responsive Layout, Tests, Documentation Handoff.
+Add a small note: "Loads Angular write-code references and follows project conventions."
+Style: clean technical mind map, 16:9, white background, thin connector lines, blue/teal/gray palette, readable English labels.
+Avoid: Vietnamese text, cartoon robot, purple gradient, complex code blocks.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">sdcorejs-angular là executor cho các task FE đã đủ rõ: tạo module, CRUD, màn list/detail, form, validator, action, permission, integration với service và những phần Portal lặp lại. Skill này không thay mình quyết định nghiệp vụ; nó giúp biến requirement đã rõ thành code theo pattern của dự án.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 11</span><span class="time">3 phút</span></div>
+      <h2>sdcorejs-angular hoạt động như thế nào?</h2>
+      <p class="objective">Mục tiêu: giải thích cơ chế vận hành ở mức đủ kỹ thuật cho FE team.</p>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a layered process diagram explaining how sdcorejs-angular works.
+Layers from top to bottom:
+1. User Request and confirmed requirement.
+2. Project context: current codebase, existing components, routes, services, models, styling rules.
+3. Reference loading: Angular write-code packs for list, detail, form, styling, actions.
+4. Implementation: components, templates, services, models, tests.
+5. Finish gate: test, review, repair loop, documentation, ship readiness.
+Use arrows downward and feedback arrows from Review/Repair back to Implementation.
+Style: precise engineering diagram, clean white background, readable labels, no decorative artwork.
+Avoid: Vietnamese text, black terminal screenshot, too many icons, unreadable micro text.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">Cách hoạt động có thể hiểu theo 5 lớp. Đầu tiên là requirement đã rõ. Tiếp theo là context của project: route, component, service, model, style. Sau đó skill chỉ load reference liên quan, ví dụ list hoặc detail form. Nó implement vào codebase thật, rồi chạy finish gate gồm test, review, repair, docs và ship readiness.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 12</span><span class="time">3 phút</span></div>
+      <h2>Case triển khai: từ PRD + Design + API Docs đến Portal Feature</h2>
+      <p class="objective">Mục tiêu: kể một case end-to-end mà không cần lộ dữ liệu nội bộ.</p>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a 16:9 case-study pipeline illustration.
+Left column "Inputs": PRD document, Figma-like design frame, API documentation, existing Portal codebase.
+Middle column "sdcorejs-agent workflow": Brainstorming, Spec, Plan, sdcorejs-angular, Test, Review, Repair, Documentation.
+Right column "Outputs": implemented list screen, implemented detail form, passing test evidence, review fixes, user guide, technical notes, QC checklist, PR-ready branch.
+Add subtle connecting arrows from each input to the workflow and from workflow to outputs.
+Style: business-friendly engineering diagram, professional, white background, readable English labels.
+Avoid: Vietnamese text, brand logos, confidential-looking data, dark sci-fi theme.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">Một case điển hình bắt đầu từ PRD, design và API docs. Thay vì paste tất cả vào một prompt lớn, mình cho agent đi qua workflow: làm rõ yêu cầu, ghi spec, lập plan, implement Angular, test, review, repair và tạo tài liệu handoff. Điểm quan trọng là mỗi bước đều để lại artifact để team có thể review lại.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 13</span><span class="time">2 phút</span></div>
+      <h2>Phối hợp QC và documentation</h2>
+      <p class="objective">Mục tiêu: cho thấy documentation là một phần của delivery, không phải phần phụ sau cùng.</p>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a 16:9 QC handoff diagram for a generated Portal feature.
+Center: a Portal feature screen.
+Around it, connect five artifacts: Requirement Record, User Guide, Technical Docs, Test Evidence, Review Notes.
+Show target folders as small file path labels:
+<target>/.sdcorejs/documentation/requirements/TASKID.md
+<target>/.sdcorejs/documentation/user-guides/
+<target>/.sdcorejs/documentation/technical-docs/
+<target>/.sdcorejs/documentation/
+Add a QC checklist panel with items: verify acceptance criteria, verify edge cases, verify permissions, verify API errors.
+Style: clean documentation and QA handoff infographic, readable English labels, neutral colors.
+Avoid: Vietnamese text, huge paragraphs, cartoon QA characters, confidential data.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">Documentation ở đây không chỉ là user guide. Với task có TASKID, agent có thể ghi requirement record; technical docs đi vào technical-docs; user guide đi vào user-guides; phần tổng hợp nằm ở documentation. Điều này giúp QC và reviewer hiểu feature được build theo yêu cầu nào, test gì rồi, còn rủi ro gì.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 14</span><span class="time">2 phút</span></div>
+      <h2>Lesson learned: prompt tốt chưa đủ, cần skill tốt</h2>
+      <p class="objective">Mục tiêu: chốt triết lý thiết kế skill.</p>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a 16:9 comparison graphic titled "Prompt vs Skill".
+Left side "One big prompt": a long prompt document feeding directly into code, with risk labels: missing context, inconsistent convention, hard to repeat, weak verification.
+Right side "Reusable skill workflow": small connected blocks: triggers, context loading, references, gates, executor, finish gate, evidence. Add checkmarks for repeatable, reviewable, convention-aware, verification-first.
+Style: clean presentation diagram, high contrast but professional, white background, blue/teal/gray palette with small amber risk accents.
+Avoid: Vietnamese text, memes, robot imagery, cluttered text.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">Bài học lớn nhất của mình là prompt tốt giúp bắt đầu nhanh, nhưng skill tốt mới giúp lặp lại được. Skill cần trigger rõ, biết load context nào, biết hỏi gate nào, biết dùng reference nào, và biết tự kiểm lại output trước khi nói là xong.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 15</span><span class="time">2 phút</span></div>
+      <h2>Giá trị kỳ vọng</h2>
+      <p class="objective">Mục tiêu: tổng hợp lợi ích theo hướng business + engineering.</p>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a 16:9 value proposition slide for sdcorejs-agent.
+Three columns:
+1. Speed up development: faster first draft, reusable patterns, less boilerplate.
+2. Reduce mistakes: project conventions, permission checks, state handling, review loop.
+3. Improve delivery quality: tests, documentation, QC handoff, PR readiness.
+Use concise icon-like symbols, not cartoon characters. Include a small footer: "Context -> Implementation -> Evidence".
+Style: professional internal tech sharing, white background, readable typography, blue/teal/gray accents.
+Avoid: Vietnamese text, exaggerated marketing slogans, stock photo people, dark background.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">Giá trị mình kỳ vọng không chỉ là code nhanh hơn. Nó là giảm lỗi lặp lại, giữ convention ổn định, giúp reviewer dễ đọc diff hơn, và giúp QC có artifact để kiểm thử. Khi workflow có evidence, việc dùng AI trong delivery trở nên kiểm soát được hơn.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="topline"><span class="badge">Slide 16</span><span class="time">1 phút</span></div>
+      <h2>Kết luận</h2>
+      <p class="objective">Mục tiêu: kết thúc gọn, nhấn vào workflow thay vì tool.</p>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh cho ChatGPT</div>
+        <div class="prompt-body">Create a closing slide image for a software delivery sharing.
+Composition: a neat delivery package on a desk labeled "Portal Feature Delivery" with five visible documents or cards: Code, Tests, Review, Documentation, QC Checklist, plus a small branch/PR icon.
+Add a subtitle inside the image: "AI-assisted, evidence-driven, team-reviewable."
+Style: premium but restrained engineering presentation, white background, crisp shadows, blue/teal/gray palette.
+Avoid: Vietnamese text, robots, confetti, dark cyberpunk, overly playful illustration.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Bản nói</div>
+        <p class="talk">Thông điệp cuối cùng của buổi sharing là: sdcorejs-agent không thay thế quy trình delivery của team, mà làm quy trình đó rõ hơn và nhanh hơn. Với sdcorejs-angular, mình muốn biến những pattern Portal lặp lại thành skill có thể tái sử dụng, có kiểm chứng và có artifact để bàn giao.</p>
+      </div>
+    </section>
+
+    <section class="slide appendix">
+      <div class="topline"><span class="badge">Appendix</span><span class="time">Dùng khi cần một ảnh tổng hợp</span></div>
+      <h2>Prompt tổng hợp cho infographic toàn bộ workflow</h2>
+      <div class="prompt">
+        <div class="prompt-title">Prompt ảnh tổng hợp cho ChatGPT</div>
+        <div class="prompt-body">Create a detailed 16:9 infographic explaining how sdcorejs-angular works inside sdcorejs-agent for enterprise Portal feature delivery.
+Audience: frontend engineers, product owners, QC, and tech leads.
+Layout: left-to-right workflow with three main zones.
+Zone 1 - Inputs: PRD, design mockups, API docs, existing Angular portal codebase, project conventions.
+Zone 2 - sdcorejs-agent workflow: Brainstorming clarifies requirements, Spec captures approved behavior, Plan breaks work into numbered steps, Execute Plan chooses sequential or parallel, sdcorejs-angular implements Angular screens, sdcorejs-test verifies, sdcorejs-review audits, repair-loop fixes findings, sdcorejs-documentation writes requirement/user-guide/technical-doc artifacts, sdcorejs-ship verifies readiness, sdcorejs-git prepares branch/PR artifacts.
+Zone 3 - Outputs: list screen, detail form, workflow action screen, tests, review evidence, user guide, technical docs, QC checklist, PR-ready branch.
+Show sdcorejs-git and sdcorejs-ship as supporting skills near the final readiness area, not as the main executor.
+Visual style: clean enterprise software architecture diagram, white background, readable English labels, compact information density, subtle blue/teal/gray palette, thin arrows, small icons for documents/code/tests/review/git.
+Important constraints: no Vietnamese text inside the image, no robot mascot, no dark cyberpunk theme, no decorative gradient blobs, no confidential data, no unreadable tiny paragraphs.
+Output should feel like a polished slide for an internal engineering presentation.</div>
+      </div>
+      <div class="speaker">
+        <div class="speaker-title">Cách dùng</div>
+        <p class="talk">Prompt này dùng khi bạn muốn một ảnh tổng hợp thay cho nhiều ảnh nhỏ. Nếu ChatGPT tạo quá nhiều chữ, hãy yêu cầu nó giữ lại đúng các nhãn chính và chuyển phần mô tả dài thành icon hoặc callout ngắn.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

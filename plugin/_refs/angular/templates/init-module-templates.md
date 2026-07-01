@@ -71,7 +71,7 @@ export class ApiConfiguration implements ISdApiConfiguration {
       afterRemote: (res: HttpResponse<any> | HttpErrorResponse) => {
         if (res instanceof HttpErrorResponse) {
           if (res.status !== 200 && res.status !== 204) {
-            const errorMessage = res.error?.meta?.message || 'Đã có lỗi xảy ra';
+            const errorMessage = res.error?.meta?.message || '<localized text>';
             this.#notifyService.error(errorMessage);
           }
         }

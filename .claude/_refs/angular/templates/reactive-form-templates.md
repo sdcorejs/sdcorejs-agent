@@ -7,6 +7,7 @@ Code templates referenced from the screen-detail reference pack [`screen-detail.
 - [form-validator.ts — shared `SdValidators` class](#form-validatorts--shared-sdvalidators-class)
 - [detail.component.ts — lightweight model-binding first](#detailcomponentts--lightweight-model-binding-first)
 - [detail-advanced.component.ts — with `FormArray` (dynamic fields)](#detail-advancedcomponentts--with-formarray-dynamic-fields)
+- [Editable line-item FormArray contract](#editable-line-item-formarray-contract)
 - [Worked example: Product entity](#worked-example-product-entity)
   - [product-validators.ts](#libssampleffeaturesproductvalidatorsproduct-validatorsts)
   - [product detail component with field-level errors](#libssampleffeaturesproductpagesdetaildetailcomponentts)
@@ -111,11 +112,11 @@ import { [Entity]SaveReq } from '../services/[entity].model';
     SdUploadFile,
   ],
   template: `
-    <sd-section title="Thông tin chung" noPaddingBody>
+    <sd-section title="<localized text>" noPaddingBody>
       <div class="row row-sm mx-0">
         <div class="col-4">
           <sd-input
-            label="Mã"
+            label="<localized text>"
             [(model)]="entity.code"
             [form]="form"
             required
@@ -125,7 +126,7 @@ import { [Entity]SaveReq } from '../services/[entity].model';
 
         <div class="col-4">
           <sd-input
-            label="Tên"
+            label="<localized text>"
             [(model)]="entity.name"
             [form]="form"
             required
@@ -135,7 +136,7 @@ import { [Entity]SaveReq } from '../services/[entity].model';
 
         <div class="col-4">
           <sd-input-number
-            label="Giá"
+            label="<localized text>"
             [(model)]="entity.price"
             [form]="form"
             required>
@@ -144,7 +145,7 @@ import { [Entity]SaveReq } from '../services/[entity].model';
 
         <div class="col-4">
           <sd-select
-            label="Loại"
+            label="<localized text>"
             [(model)]="entity.type"
             [form]="form"
             required
@@ -155,18 +156,18 @@ import { [Entity]SaveReq } from '../services/[entity].model';
         </div>
 
         <div class="col-4">
-          <sd-datetime label="Ngày hiệu lực" [(model)]="entity.effectiveAt" [form]="form" required></sd-datetime>
+          <sd-datetime label="<localized text>" [(model)]="entity.effectiveAt" [form]="form" required></sd-datetime>
         </div>
 
         <div class="col-8">
-          <sd-upload-file label="Tệp đính kèm" [(model)]="entity.fileIds" [form]="form"></sd-upload-file>
+          <sd-upload-file label="<localized text>" [(model)]="entity.fileIds" [form]="form"></sd-upload-file>
         </div>
       </div>
     </sd-section>
 
     <div class="d-flex align-items-center" style="gap: 8px">
-      <sd-button title="Bỏ qua" (click)="onCancel()"></sd-button>
-      <sd-button title="Lưu" type="fill" (click)="onSave()" [loading]="saving()"></sd-button>
+      <sd-button title="<localized text>" (click)="onCancel()"></sd-button>
+      <sd-button title="<localized text>" type="fill" (click)="onSave()" [loading]="saving()"></sd-button>
     </div>
   `,
 })
@@ -179,8 +180,8 @@ export class DetailComponent implements OnInit {
   entity: Partial<[Entity]SaveReq & { id?: string }> = {};
 
   typeOptions = [
-    { value: 'A', display: 'Loại A' },
-    { value: 'B', display: 'Loại B' },
+    { value: 'A', display: '<localized text>' },
+    { value: 'B', display: '<localized text>' },
   ];
 
   readonly #activatedRoute = inject(ActivatedRoute);
@@ -244,74 +245,77 @@ export class DetailComponent implements OnInit {
 Use this shape only when the screen has repeating sub-records (line items, attachments-with-metadata, multi-row config). For flat forms, the lightweight template above is preferred.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SdInput, SdButton } from 'sd-angular';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { SdButton, SdSection } from '@sdcorejs/angular/components';
+import { SdInput, SdInputNumber } from '@sdcorejs/angular/forms';
 
 @Component({
   selector: '[entity]-detail-advanced',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, SdInput, SdButton],
+  imports: [SdButton, SdSection, SdInput, SdInputNumber],
   template: `
     <!-- NOTE: @sdcorejs/angular form components self-register via [form]+name="..."
-         (they do NOT implement ControlValueAccessor — formControlName won't bind).
+         (they do NOT implement ControlValueAccessor - formControlName won't bind).
          For FormArray/FormGroup nesting, pass the nested FormGroup instance to [form]. -->
-    <form [formGroup]="form">
-      <sd-input
-        label="Entity Name"
-        [form]="form"
-        name="name"
-        required>
-      </sd-input>
-
-      <!-- Dynamic form array for items -->
-      @for (let itemGroup of items.controls; let i = $index) {
-        <div class="item-group">
-          <sd-input
-            label="Item Name"
-            [form]="itemGroup"
-            name="itemName"
-            required>
-          </sd-input>
-
-          <sd-input
-            label="Quantity"
-            [form]="itemGroup"
-            name="quantity"
-            type="number"
-            required>
-          </sd-input>
-
-          <sd-button
-            title="Remove"
-            (click)="removeItem(i)"
-            type="outline"
-            color="error">
-          </sd-button>
+    <div class="d-flex flex-column gap-16">
+      <sd-section title="Thong tin chung" noPaddingBody>
+        <div class="row row-sm mx-0">
+          <div class="col-12 col-md-6">
+            <sd-input label="Ten" [form]="form" name="name" [viewed]="isDetail()" required></sd-input>
+          </div>
         </div>
-      }
+      </sd-section>
 
-      <sd-button
-        title="Add Item"
-        (click)="addItem()"
-        type="outline">
-      </sd-button>
+      <sd-section noPaddingBody>
+        <div class="d-flex align-items-center justify-content-between gap-12 p-16">
+          <div class="d-flex flex-column gap-4">
+            <span class="T16B">Danh sach dong</span>
+            <span class="T12R text-black500">{{ items.length }} dong</span>
+          </div>
 
-      <div class="form-actions">
-        <sd-button
-          title="Save"
-          [disabled]="form.invalid"
-          (click)="onSave()"
-          type="fill">
-        </sd-button>
+          @if (!isDetail()) {
+            <sd-button title="Them dong" type="outline" prefixIcon="add" size="sm" (click)="addItem()"></sd-button>
+          }
+        </div>
+
+        <div class="d-flex flex-column gap-12 px-16 pb-16">
+          @for (itemGroup of items.controls; track rowKey(itemGroup); let i = $index) {
+            <div class="row row-sm align-items-start">
+              <div class="col-12 col-md-6">
+                <sd-input label="Ten dong" [form]="itemGroup" name="itemName" [viewed]="isDetail()" required></sd-input>
+              </div>
+              <div class="col-8 col-md-4">
+                <sd-input-number label="So luong" [form]="itemGroup" name="quantity" [viewed]="isDetail()" [min]="1" required></sd-input-number>
+              </div>
+              <div class="col-4 col-md-2 d-flex justify-content-end gap-8 pt-24">
+                @if (!isDetail()) {
+                  <sd-button title="Xoa" type="icon" color="error" prefixIcon="delete" size="sm" (click)="removeItem(i)"></sd-button>
+                }
+              </div>
+            </div>
+          } @empty {
+            <div class="d-flex flex-column align-items-center justify-content-center gap-12 p-24">
+              <span class="T14R text-black500">Chua co dong nao</span>
+              @if (!isDetail()) {
+                <sd-button title="Them dong dau tien" type="outline" prefixIcon="add" size="sm" (click)="addItem()"></sd-button>
+              }
+            </div>
+          }
+        </div>
+      </sd-section>
+
+      <div class="d-flex align-items-center justify-content-end gap-8">
+        <sd-button title="Luu" type="fill" prefixIcon="save" [disabled]="form.invalid" (click)="onSave()"></sd-button>
       </div>
-    </form>
+    </div>
   `,
 })
 export class DetailAdvancedComponent implements OnInit {
   form!: FormGroup;
   items!: FormArray;
+  readonly isDetail = computed(() => false);
 
   readonly #formBuilder = inject(FormBuilder);
 
@@ -332,6 +336,7 @@ export class DetailAdvancedComponent implements OnInit {
 
   #createItemFormGroup(): FormGroup {
     return this.#formBuilder.group({
+      tempId: [crypto.randomUUID()],
       itemName: ['', [Validators.required]],
       quantity: [1, [Validators.required, Validators.min(1)]],
     });
@@ -345,15 +350,119 @@ export class DetailAdvancedComponent implements OnInit {
     this.items.removeAt(index);
   }
 
+  rowKey(itemGroup: unknown): string {
+    const group = itemGroup as FormGroup;
+    return group.get('id'<localized text>'tempId')?.value ?? String(this.items.controls.indexOf(group));
+  }
+
   async onSave(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    console.log(this.form.value);
+    const payload = this.#normalizePayload();
+    console.log(payload);
+  }
+
+  #normalizePayload(): Record<string, unknown> {
+    const raw = this.form.getRawValue();
+    return {
+      ...raw,
+      items: raw.items.map(({ tempId, ...item }: Record<string, unknown>) => item),
+    };
   }
 }
 ```
+
+## Editable line-item FormArray contract
+
+Use this contract for detail tables with add/remove/edit rows. It is intentionally explicit so generated UI has one source of truth and predictable save behavior.
+
+```typescript
+interface LineItemSaveReq {
+  id?: string;
+  productId: string;
+  quantity: number;
+  unitPrice?: number;
+  note?: string;
+  _deleted?: boolean;
+}
+
+interface ParentSaveReq {
+  name: string;
+  items: LineItemSaveReq[];
+}
+
+form = this.#fb.group({
+  name: ['', [Validators.required]],
+  items: this.#fb.array<FormGroup>([]),
+});
+
+get lineItems(): FormArray<FormGroup> {
+  return this.form.get('items') as FormArray<FormGroup>;
+}
+
+#createLineItemGroup(item?: Partial<LineItemSaveReq>): FormGroup {
+  return this.#fb.group({
+    id: [item?.id ?? null],
+    tempId: [crypto.randomUUID()],
+    productId: [item?.productId ?? null, [Validators.required]],
+    quantity: [item?.quantity ?? 1, [Validators.required, Validators.min(1)]],
+    unitPrice: [item?.unitPrice ?? null, [Validators.min(0)]],
+    note: [item?.note ?? null],
+    _deleted: [item?._deleted ?? false],
+  });
+}
+
+setLineItems(items: LineItemSaveReq[]): void {
+  this.lineItems.clear();
+  for (const item of items) {
+    this.lineItems.push(this.#createLineItemGroup(item));
+  }
+}
+
+addLineItem(): void {
+  this.lineItems.push(this.#createLineItemGroup());
+  this.form.markAsDirty();
+}
+
+removeLineItem(index: number): void {
+  const group = this.lineItems.at(index) as FormGroup;
+  const persistedId = group.get('id')?.value;
+
+  if (persistedId) {
+    group.patchValue({ _deleted: true });
+  } else {
+    this.lineItems.removeAt(index);
+  }
+
+  this.form.markAsDirty();
+}
+
+rowKey(group: unknown): string {
+  const formGroup = group as FormGroup;
+  return formGroup.get('id'<localized text>'tempId')?.value ?? String(this.lineItems.controls.indexOf(formGroup));
+}
+
+#buildPayload(): ParentSaveReq {
+  const raw = this.form.getRawValue();
+  return {
+    ...raw,
+    items: raw.items
+      .filter((item: LineItemSaveReq) => item.id || !item._deleted)
+      .map(({ tempId, ...item }: LineItemSaveReq & { tempId?: string }) => item),
+  };
+}
+```
+
+Rules:
+
+- The `FormArray` is the source of truth for the child rows. Do not maintain `itemsForDisplay` unless it is a read-only `computed()` derived from the form.
+- Persisted rows keep their `id`; new rows use `tempId` only for `track`.
+- Remove unsaved rows physically; mark persisted rows as `_deleted` only when the backend expects delete markers.
+- Use `getRawValue()` so disabled fields required by the API are not dropped.
+- Strip UI-only fields (`tempId`, `_expanded`, `_editing`) before save.
+- On invalid save, call `form.markAllAsTouched()` once and stop. Do not save parent data while child rows are invalid.
 
 ## Worked example: Product entity
 
@@ -530,8 +639,8 @@ export class DetailComponent implements OnInit {
   readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
   entity: Partial<ProductSaveReq & { id?: string }> = {};
   readonly pageTitle = computed(() => {
-    if (this.state() === 'CREATE') return 'Tạo sản phẩm';
-    return this.state() === 'DETAIL' ? 'Chi tiết sản phẩm' : 'Cập nhật sản phẩm';
+    if (this.state() === 'CREATE') return '<localized text>';
+    return this.state() === 'DETAIL'<localized text>'<localized text>' : '<localized text>';
   });
   readonly fieldErrorMessages = signal<Record<ProductFieldName, string | null>>({
     code: null,
@@ -611,7 +720,7 @@ export class DetailComponent implements OnInit {
 
   async onDelete(): Promise<void> {
     const currentEntity = this.entity;
-    if (confirm('Are you sure?') && currentEntity.id) {
+    if (confirm('<localized text>') && currentEntity.id) {
       try {
         await this.#productService.remove(currentEntity.id);
         this.#router.navigate(['..'], { relativeTo: this.#activatedRoute });

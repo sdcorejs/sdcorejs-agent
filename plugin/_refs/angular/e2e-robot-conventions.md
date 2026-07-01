@@ -2,7 +2,7 @@
 
 Reference for generating Angular-portal E2E tests in **Robot Framework**, the stack the QC/Automation team uses (`nsp-automation-test`). Loaded on demand by `sdcorejs-test` when the target project is a Robot Framework suite. For Cypress/Playwright, the skill body covers it directly.
 
-This pairs with the `sd-autoid-inspector` export: the inspector emits `[data-autoid="…"]` selectors that map 1:1 to the locators below — so an exported JSON/POM is the selector source of truth for the generated keywords.
+This pairs with the `sd-autoid-inspector` export: the inspector emits `<localized text>` selectors that map 1:1 to the locators below — so an exported JSON/POM is the selector source of truth for the generated keywords.
 
 ## Stack
 
@@ -66,12 +66,12 @@ Generate one Low keyword per element, grouped into the `UI_<Page>.resource` for 
 | Inspector `tag` / component | Low keyword template | Browser action |
 | --- | --- | --- |
 | `sd-input`, `sd-input-number`, `sd-textarea` | `Enter <Field> on <Page> Page` `[Arguments] ${value}` | `Browser.Fill Text [data-autoid="<autoid>"] ${value}` |
-| `sd-select`, `sd-autocomplete` | `Click <Field> on <Page> Page` + High `Select <Field> …` | `Browser.Click [data-autoid="<autoid>"]` then `Browser.Click role=option[name="${value}"]` |
+| `sd-select`, `sd-autocomplete` | `Click <Field> on <Page> Page` + High `<localized text>` | `Browser.Click [data-autoid="<autoid>"]` then `Browser.Click role=option[name="${value}"]` |
 | `sd-checkbox`, `sd-switch` | `Toggle <Field> on <Page> Page` | `Browser.Check` / `Browser.Click [data-autoid=...]` |
 | `sd-radio` | `Select <Field> on <Page> Page` | `Browser.Click [data-autoid=...]` per option |
 | `sd-date`, `sd-datetime`, `sd-date-range` | `Pick <Field> on <Page> Page` | `Browser.Click [data-autoid=...]` + calendar pick |
 | `sd-button` | `Click Button <Name> on <Page> Page` | `Browser.Click [data-autoid="<autoid>"]` |
-| table row action (edit/view) | High `Select … Row` + Verification | xpath row + `[data-autoid]` action cell |
+| table row action (edit/view) | High `<localized text>` + Verification | xpath row + `[data-autoid]` action cell |
 
 `<Field>`/`<Name>` comes from the inspector `name` column (humanize); `<Page>` from the feature/route under test. Multi-value selects loop with `Split String` + `FOR`.
 
@@ -79,7 +79,7 @@ Generate one Low keyword per element, grouped into the `UI_<Page>.resource` for 
 
 ```robotframework
 *** Settings ***
-Documentation     Mô tả: <feature> — <scope>
+Documentation     Description: <feature> - <scope>
 ...               Trang: <url>
 ...               Author: <name / AI Assistant>
 ...               <Qmetry / JIRA link>

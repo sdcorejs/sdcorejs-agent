@@ -47,7 +47,7 @@ import { {{ entityPascal }}Service } from '../../services/{{ entityKebab }}.serv
       <div class="d-flex align-items-center" headerRight>
         <sd-button
           *sdPermission="'{{ permissionCreate }}'"
-          title="Tạo mới"
+          title="<localized text>"
           type="fill"
           prefixIcon="add"
           size="sm"
@@ -121,16 +121,16 @@ export class ListComponent implements OnInit {
         actions: [
           {
             icon: 'delete',
-            title: '删除',
+            title: '<localized text>',
             action: async (items: {{ entityPascal }}DTO[]) => {
               if (items.length === 0) {
-                this.#notifyService.error('请选择数据');
+                this.#notifyService.error('<localized text>');
                 return;
               }
 
               const confirmed = await this.#confirmService.alert({
-                title: '确认删除',
-                body: `确认删除选中的 ${items.length} 项吗？`,
+                title: '<localized text>',
+                body: `<localized text>`,
                 type: 'warning'
               });
 
@@ -141,10 +141,10 @@ export class ListComponent implements OnInit {
                 const ids = items.map(x => x.id);
                 await this.#{{ entityCamel }}Service.remove(ids);
 
-                this.#notifyService.success('删除成功');
+                this.#notifyService.success('<localized text>');
                 this.table?.reload();
               } catch (error) {
-                this.#notifyService.error('删除失败');
+                this.#notifyService.error('<localized text>');
               } finally {
                 this.#loadingService.hide();
               }
@@ -157,7 +157,7 @@ export class ListComponent implements OnInit {
       columns: [
         {{ columnsConfig }}
         {
-          header: '操作',
+          header: '<localized text>',
           key: 'action',
           type: 'action',
           width: '100px',
@@ -165,13 +165,13 @@ export class ListComponent implements OnInit {
             {
               type: 'icon',
               icon: 'edit',
-              title: '编辑',
+              title: '<localized text>',
               action: (item: {{ entityPascal }}DTO) => this.onEdit(item)
             },
             {
               type: 'icon',
               icon: 'detail',
-              title: '详情',
+              title: '<localized text>',
               action: (item: {{ entityPascal }}DTO) => this.onDetail(item)
             }
           ]
@@ -202,9 +202,9 @@ export class ListComponent implements OnInit {
     try {
       this.#loadingService.show();
       await this.#{{ entityCamel }}Service.update(item.id, { isActivated: item.isActivated });
-      this.#notifyService.success('更新成功');
+      this.#notifyService.success('<localized text>');
     } catch (error) {
-      this.#notifyService.error('更新失败');
+      this.#notifyService.error('<localized text>');
       item.isActivated = !item.isActivated; // revert
     } finally {
       this.#loadingService.hide();
@@ -221,7 +221,7 @@ Substitute `{{ columnsConfig }}` in the template above with one entry per field 
 
 ```typescript
 {
-  header: 'Mã sản phẩm',
+  header: '<localized text>',
   key: 'code',
   type: 'text',
   width: '120px'
@@ -232,7 +232,7 @@ Substitute `{{ columnsConfig }}` in the template above with one entry per field 
 
 ```typescript
 {
-  header: 'Ngày sinh',
+  header: '<localized text>',
   key: 'birthday',
   type: 'date',
   format: 'yyyy-MM-dd'
@@ -243,7 +243,7 @@ Substitute `{{ columnsConfig }}` in the template above with one entry per field 
 
 ```typescript
 {
-  header: 'Lương',
+  header: '<localized text>',
   key: 'salary',
   type: 'number',
   format: 'currency'
@@ -254,7 +254,7 @@ Substitute `{{ columnsConfig }}` in the template above with one entry per field 
 
 ```typescript
 {
-  header: 'Chức vụ',
+  header: '<localized text>',
   key: 'role',
   type: 'select',
   selectOptions: EMPLOYEE_ROLES
@@ -265,7 +265,7 @@ Substitute `{{ columnsConfig }}` in the template above with one entry per field 
 
 ```typescript
 {
-  header: 'Kích hoạt',
+  header: '<localized text>',
   key: 'isActivated',
   type: 'boolean',
   cellTemplate: 'isActivated' // => use custom ng-template inside <sd-table>

@@ -7,62 +7,62 @@ This file is loaded by `skills/shared/sdlc/0[1-3]-*.md` when the detected track 
 ## Brainstorming: exploration
 
 ### Industry-aware proposal pattern
-Most landing-site requests start vague ("công ty mình muốn có website"). The brainstorm forces an industry pick FIRST, then maps to a profile, then proposes 3 tiers.
+Most landing-site requests start vague ("<localized text>"). The brainstorm forces an industry pick FIRST, then maps to a profile, then proposes 3 tiers.
 
 #### Step A — Detect industry (BLOCKING)
 Ask, in user's language:
 
-> Bạn xây website cho ngành nghề gì? Một số ví dụ:
-> - **Xây dựng / Vật liệu**: công ty xây dựng, đại lý xi măng/sắt thép, nội thất, thiết bị
-> - **F&B**: nhà hàng, café, beerclub, chuỗi đồ uống
-> - **Y tế / Chăm sóc sức khoẻ**: phòng khám, nha khoa, thẩm mỹ viện, spa
-> - **Giáo dục**: trung tâm tiếng Anh, trường mầm non, khoá học online
-> - **Bất động sản**: môi giới, dự án căn hộ, cho thuê
-> - **Doanh nghiệp / Tư vấn**: B2B service, agency, công ty luật, kiểm toán
-> - **Du lịch / Lưu trú**: tour, homestay, khách sạn
-> - **Bán lẻ catalog** (không giỏ hàng): showroom thời trang, đồ thủ công
-> - **Tech / SaaS**: phần mềm, ứng dụng, công cụ
-> - **Phi lợi nhuận / Tổ chức**: NGO, cộng đồng, sự kiện
-> - Khác — vui lòng mô tả
+> Which industry is this website for? Examples:
+> - **Construction / Materials**: construction company, cement/steel distributor, interiors, equipment
+> - **F&B**: restaurant, cafe, bar, beverage chain
+> - **Healthcare / Wellness**: clinic, dental practice, beauty clinic, spa
+> - **Education**: language center, preschool, online course
+> - **Real estate**: brokerage, apartment project, rental
+> - **Business / Consulting**: B2B service, agency, law firm, audit firm
+> - **Travel / Hospitality**: tours, homestay, hotel
+> - **Retail catalog** (no cart): fashion showroom, handmade goods
+> - **Tech / SaaS**: software, app, tool
+> - **Nonprofit / Organization**: NGO, community, event
+> - Other - please describe
 
 #### Step B — Pull industry profile
 
 | Industry | Vibe | Must-have pages | Key utilities | Image style |
 |---|---|---|---|---|
-| **Xây dựng / Vật liệu** | Trust, scale, dependable. Earth tones / industrial blues + accent orange | Home / Sản phẩm (catalog) / Về chúng tôi / Năng lực / Liên hệ | Catalog filter, số liệu, certificate logos, Maps embed, hotline sticky | Wide-angle warehouse + close-up product, no people focus |
-| **F&B** | Appetite, atmosphere. Warm palette (terracotta, cream, deep green); generous serif | Home / Menu / Câu chuyện / Đặt bàn / Liên hệ + Maps | Menu sections, reservation form, gallery, opening hours, Instagram | Food overhead + 45°, interior atmosphere, candid people |
-| **Y tế / Chăm sóc** | Clean, trustworthy. White + medical blue or sage green; sans-serif neutral | Home / Dịch vụ / Đội ngũ / Bảng giá / Đặt lịch / Tin tức / Liên hệ | Appointment booking, credentials wall, before-after gallery, FAQ | Professional staff portraits, clean facility, NO stock clichés |
-| **Giáo dục** | Inviting, aspirational. Blue + warm accent; rounded sans | Home / Khoá học / Phương pháp / Học viên / Tuyển sinh / Blog / Liên hệ | Course catalog, enrollment CTA, testimonials, schedule, brochure | Students + teachers, classroom, learning artifacts |
-| **Bất động sản** | Aspirational, premium. Deep navy / charcoal + gold; serif accent | Home / Dự án / Tìm nhà / Tin tức / Đội ngũ / Liên hệ | Property filter, detail (gallery + spec + floorplan + map), agent card | Property exterior + interior, twilight, no people |
-| **Doanh nghiệp / Tư vấn** | Professional, confident. Navy + accent; clean sans | Home / Dịch vụ / Case studies / Đội ngũ / Bài viết / Liên hệ | Case study cards, team profiles, whitepaper, lead form, client logos | Team in action, abstract bg, no stock |
-| **Du lịch / Lưu trú** | Inspirational, scenic. Sky blue / sand + accent | Home / Tour-Phòng / Trải nghiệm / Đánh giá / Đặt / Blog | Tour cards, booking form, reviews carousel, itinerary, gallery | Destination, atmospheric, food + activities |
-| **Bán lẻ catalog** | Brand-led | Home / Bộ sưu tập / Sản phẩm / Câu chuyện / Cửa hàng / Liên hệ | Grid + filter, lookbook, store locator, Instagram | Studio + lifestyle |
-| **Tech / SaaS** | Modern, energetic. Dark mode + neon, or light + gradient | Home / Tính năng / Pricing / Customers / Docs / Đăng ký | Feature comparison, pricing tiers, demo CTA, integrations | Product screenshots, isometric, customer logos |
-| **Phi lợi nhuận** | Human, warm. Mission palette; readable serif/sans mix | Home / Sứ mệnh / Chương trình / Tin tức / Quyên góp / Tham gia / Liên hệ | Donation widget, volunteer signup, impact metrics, story cards | Real beneficiaries (consent), action shots |
+| **Construction / Materials** | Trust, scale, dependable. Earth tones / industrial blues + accent orange | Home / Products (catalog) / About / Capabilities / Contact | Catalog filter, metrics, certificate logos, Maps embed, sticky hotline | Wide-angle warehouse + close-up product, no people focus |
+| **F&B** | Appetite, atmosphere. Warm palette (terracotta, cream, deep green); generous serif | Home / Menu / Story / Reservation / Contact + Maps | Menu sections, reservation form, gallery, opening hours, Instagram | Food overhead + 45°, interior atmosphere, candid people |
+| **Healthcare / Wellness** | Clean, trustworthy. White + medical blue or sage green; sans-serif neutral | Home / Services / Team / Pricing / Appointment / News / Contact | Appointment booking, credentials wall, before-after gallery, FAQ | Professional staff portraits, clean facility, NO stock cliches |
+| **Education** | Inviting, aspirational. Blue + warm accent; rounded sans | Home / Courses / Method / Learners / Enrollment / Blog / Contact | Course catalog, enrollment CTA, testimonials, schedule, brochure | Students + teachers, classroom, learning artifacts |
+| **Real estate** | Aspirational, premium. Deep navy / charcoal + gold; serif accent | Home / Projects / Find a home / News / Team / Contact | Property filter, detail (gallery + spec + floorplan + map), agent card | Property exterior + interior, twilight, no people |
+| **Business / Consulting** | Professional, confident. Navy + accent; clean sans | Home / Services / Case studies / Team / Insights / Contact | Case study cards, team profiles, whitepaper, lead form, client logos | Team in action, abstract bg, no stock |
+| **Travel / Hospitality** | Inspirational, scenic. Sky blue / sand + accent | Home / Tours-Rooms / Experiences / Reviews / Booking / Blog | Tour cards, booking form, reviews carousel, itinerary, gallery | Destination, atmospheric, food + activities |
+| **Retail catalog** | Brand-led | Home / Collections / Products / Story / Stores / Contact | Grid + filter, lookbook, store locator, Instagram | Studio + lifestyle |
+| **Tech / SaaS** | Modern, energetic. Dark mode + neon, or light + gradient | Home / Features / Pricing / Customers / Docs / Sign up | Feature comparison, pricing tiers, demo CTA, integrations | Product screenshots, isometric, customer logos |
+| **Nonprofit** | Human, warm. Mission palette; readable serif/sans mix | Home / Mission / Programs / News / Donate / Join / Contact | Donation widget, volunteer signup, impact metrics, story cards | Real beneficiaries (consent), action shots |
 
-For "Khác" → synthesize a profile from the description, present explicitly, ask user to validate.
+For "<localized text>" → synthesize a profile from the description, present explicitly, ask user to validate.
 
 #### Step C — Propose 3 tiers
 
 ```markdown
-### A) LEAN (~1 tuần dev)
-- Pages: 3-4 trang core
+### A) LEAN (~1 dev week)
+- Pages: 3-4 core pages
 - Skip: blog, dynamic OG per page, dark mode, analytics dashboard
 - Hosting: Vercel free tier
-- Phù hợp nếu: cần online sớm, content tự cập nhật, ngân sách hạn chế
-- Tradeoff: cập nhật content phải code lại; SEO ổn nhưng không phong phú
+- Best when: launch speed matters, content rarely changes, budget is limited
+- Tradeoff: content updates require code changes; SEO is solid but not rich
 
-### B) STANDARD (~2-3 tuần dev)  ← RECOMMENDED nếu chưa rõ ngân sách
-- Pages: 3-4 trang core + blog hoặc gallery + ~2 trang phụ
-- Bao gồm: full SEO (sitemap/JSON-LD/dynamic OG per page), bilingual VI/EN, real contact form, ISR 30 min, analytics nhẹ
+### B) STANDARD (~2-3 dev weeks) - RECOMMENDED when budget is unclear
+- Pages: 3-4 core pages + blog or gallery + ~2 supporting pages
+- Includes: full SEO (sitemap/JSON-LD/dynamic OG per page), bilingual support when requested, real contact form, 30-min ISR, light analytics
 - Hosting: Vercel Hobby / Pro
-- Phù hợp nếu: muốn site chuyên nghiệp, có thể mở rộng
+- Best when: the site should feel professional and remain extensible
 
-### C) FULL (~4-6 tuần dev)
-- Pages: full set + blog với CMS (Sanity / Contentful / Strapi)
-- Bao gồm: tất cả Standard + headless CMS + auth admin + image CDN + A/B test optional
+### C) FULL (~4-6 dev weeks)
+- Pages: full set + blog with CMS (Sanity / Contentful / Strapi)
+- Includes: everything in Standard + headless CMS + admin auth + image CDN + optional A/B testing
 - Hosting: Vercel Pro / dedicated
-- Phù hợp nếu: team marketing tự cập nhật content, traffic dự kiến lớn
+- Best when: marketing will update content independently or traffic is expected to grow
 ```
 
 ---
@@ -73,12 +73,12 @@ For "Khác" → synthesize a profile from the description, present explicitly, a
 Ask in groups of 3-4. Each must have an answer before the spec stage.
 
 **Block 1 — Identity**
-1. **Site name + tagline (1 dòng)** — used in `<title>`, OG, hero, JSON-LD
+1. **Site name + tagline (one line)** — used in `<title>`, OG, hero, JSON-LD
 2. **Production domain** — used in sitemap, robots, OG absolute URLs, canonical. If undecided, accept `https://example.com` placeholder + FLAG for updating before launch.
 3. **Logo + brand assets** — logo file (SVG > PNG), brand colors (HEX or "auto-pick from logo"), brand fonts (default `Be Vietnam Pro` / Inter / custom)
 
 **Block 2 — Content & language**
-4. **Languages** — VI only / VI+EN / khác. Default VI at launch, structure ready for EN later.
+4. **Languages** — single language / bilingual / other. Default to the user's language at launch, structure ready for another locale later.
 5. **Content source** — user provides text+images / agent generates placeholder (lorem-ipsum-VI) / CMS (FULL tier only)
 
 **Block 3 — Contact & integrations**
@@ -102,24 +102,24 @@ Ask in groups of 3-4. Each must have an answer before the spec stage.
 
 ### Summary template
 ```markdown
-## Đã chốt — sẵn sàng spec
+## Confirmed - ready for spec
 
 | | |
 |---|---|
-| **Ngành** | <Industry> |
+| **Industry** | <Industry> |
 | **Tier** | <Lean | Standard | Full> |
-| **Tên + tagline** | "<Site name — tagline>" |
+| **Name + tagline** | "<localized text>" |
 | **Domain** | <https://...> |
-| **Languages** | <VI only | VI+EN> |
+| **Languages** | <single language | bilingual> |
 | **Logo + brand** | <files + palette + fonts> |
 | **Contact email** | <email> (reply-to: <yes | no>) |
 | **Analytics** | <none | GA4 (id: G-...) | Plausible | …> |
 | **Hosting** | <Vercel | Cloudflare | self-hosted> |
 | **Caching** | ISR <30 min | …> |
 | **OG** | <static | dynamic per page> |
-| **Blog** | <yes (N bài/tuần) | no> |
+| **Blog** | <yes (N posts/week) | no> |
 
-→ Tiếp theo: `sdcorejs-spec` để mình draft spec + xin xác nhận trong cùng gate.
+Next: run `sdcorejs-spec` to draft the spec and ask for confirmation in the same gate.
 ```
 
 ---
@@ -189,7 +189,14 @@ npx lhci autorun --preset=mobile  # or `lighthouse http://localhost:3000/<route>
 ```
 
 ### Final-step expectations
-Last numbered step references the tail-call chain (sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop → sdcorejs-comment-code → sdcorejs-ship (verify-before-done mode) → sdcorejs-ship (branch-ready mode) → _refs/orchestration/tail/auto-docs.md → _refs/orchestration/tail/auto-task-tracker.md → sdcorejs-explore (memories mode)). The reviewer checks the chain is implicit, not omitted.
+Documentation gate supplement: the finish gate loads `_refs/documentation/gate.md`
+before documentation tail steps. It may save
+`.sdcorejs/documentation/preferences.md`, captures `comment_code`,
+`user_guide`, and `technical_doc`, and can insert
+`sdcorejs-documentation (write-technical-doc mode)` before verify-before-done
+when `technical_doc=write` or `technical_doc=auto` criteria are met.
+
+Last numbered step references the tail-call chain (sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop → sdcorejs-documentation (comment-code mode) → sdcorejs-ship (verify-before-done mode) → sdcorejs-ship (branch-ready mode) → _refs/orchestration/tail/auto-docs.md → sdcorejs-documentation (write-user-guide mode) → _refs/orchestration/tail/auto-task-tracker.md → sdcorejs-explore (memories mode)). The reviewer checks the chain is implicit, not omitted.
 
 ### Existing-site improvement variant
 If the user is improving an EXISTING site (came via `08-audit-existing-site`), phases are gap-driven, not greenfield. The plan should be one phase per audit finding, ordered Critical → Important → Minor.

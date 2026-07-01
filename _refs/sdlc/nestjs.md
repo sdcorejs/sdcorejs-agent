@@ -24,10 +24,10 @@ This file is loaded by `skills/shared/sdlc/0[1-3]-*.md` when the detected track 
 - **Saga / outbox pattern** — for event-driven flows that must guarantee write + publish
 
 ### Questions to seed
-- "Persistence default TypeORM + Postgres — OK hay cần raw SQL / external API proxy?"
-- "Bạn cần audit log (created_by/updated_by) + soft-delete trong toàn bộ entity?"
-- "Có workflow approval / publish không, hay write-and-go?"
-- "Permission model: per-endpoint via `@HasPermission()` hay role-based scope?"
+- "<localized text>"
+- "<localized text>"
+- "<localized text>"
+- "<localized text>"
 
 ---
 
@@ -73,12 +73,12 @@ This file is loaded by `skills/shared/sdlc/0[1-3]-*.md` when the detected track 
 
 ### Summary template
 ```
-## Đã chốt — sẵn sàng spec
+## Confirmed - ready for spec
 
 | | |
 |---|---|
 | **Module** | <module> (existing | new) |
-| **Entity** | <entityCamel> — "<Display Label VI>" |
+| **Entity** | <entityCamel> - "<Localized display label>" |
 | **Persistence** | TypeORM + Postgres |
 | **Transactions** | queryRunner manual |
 | **API style** | REST |
@@ -87,7 +87,7 @@ This file is loaded by `skills/shared/sdlc/0[1-3]-*.md` when the detected track 
 | **Profile** | <simple | enterprise> |
 | **Tests** | <minimal | standard | full> |
 
-→ Tiếp theo: `sdcorejs-spec` để mình draft spec + xin xác nhận trong cùng gate.
+Next: run `sdcorejs-spec` to draft the spec and ask for confirmation in the same gate.
 ```
 
 ---
@@ -150,11 +150,18 @@ npm run lint
 ```
 
 ### Final-step expectations
+Documentation gate supplement: the finish gate loads `_refs/documentation/gate.md`
+before documentation tail steps. It may save
+`.sdcorejs/documentation/preferences.md`, captures `comment_code`,
+`user_guide`, and `technical_doc`, and can insert
+`sdcorejs-documentation (write-technical-doc mode)` before verify-before-done
+when `technical_doc=write` or `technical_doc=auto` criteria are met.
+
 Until the `sdcorejs-nestjs` orchestrator ships, the last plan step should call out the manual tail-call sequence:
 1. `sdcorejs-test` — write e2e tests for happy path
 2. `sdcorejs-review` — convention review
 3. `sdcorejs-repair-loop` — apply review findings
-4. `sdcorejs-comment-code` — apply the finish-gate comment level using `_refs/orchestration/tail/comment-code.md`
+4. `sdcorejs-documentation (comment-code mode)` — apply the finish-gate comment level using `_refs/documentation/comment-code.md`
 5. `sdcorejs-ship (verify-before-done mode)` — acceptance criteria gate
 6. `sdcorejs-ship (branch-ready mode)` — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) before docs
 7. `_refs/orchestration/tail/auto-docs.md` — session summary to `.sdcorejs/docs/nestjs/`

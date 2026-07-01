@@ -58,7 +58,7 @@ export const appConfig: ApplicationConfig = {
 ```
 
 - `SdKeycloakInterceptor` attaches `Bearer <token>` to every request whose URL contains a `secureRoutes` substring. With the single-origin nginx setup, `['/api']` is enough (see §5).
-- `SdKeycloakTenantConfig` is `{ url, realm, clientId, secureRoutes? }`. `url` MUST be the **browser-reachable** Keycloak origin (see §4).
+- `SdKeycloakTenantConfig` is `<localized text>`. `url` MUST be the **browser-reachable** Keycloak origin (see §4).
 
 **Required file — `public/silent-renew.html`.** `keycloak-js` does its silent SSO check by loading this page in a hidden iframe (`silentCheckSsoRedirectUri = ${origin}/silent-renew.html`). It only needs to hand the auth response back to the parent window. A minimal file is enough:
 
@@ -75,7 +75,7 @@ export const appConfig: ApplicationConfig = {
 
 If this file is missing, the silent check fails and `init` can resolve `false` unexpectedly.
 
-**Façades (optional but recommended).** To light up the layout user-menu and permission checks, wire `SD_AUTH_CONFIGURATION` (user info + signout) and `SD_PERMISSION_CONFIGURATION` (`loadPermissions` from `kc.keycloak.realmAccess?.roles`, `getToken`, `onForbiden`) from `SdKeycloakService`. The exact provider factories are documented in the on-demand FE module doc (`node _refs/angular/core-docs-fetch.mjs --print sd-keycloak`).
+**Façades (optional but recommended).** To light up the layout user-menu and permission checks, wire `SD_AUTH_CONFIGURATION` (user info + signout) and `SD_PERMISSION_CONFIGURATION` (`loadPermissions` from `<localized text>`, `getToken`, `onForbiden`) from `SdKeycloakService`. The exact provider factories are documented in the on-demand FE module doc (`node _refs/angular/core-docs-fetch.mjs --print sd-keycloak`).
 
 ---
 
@@ -122,7 +122,7 @@ The rule of thumb: **FE `url` = browser origin, BE `KEYCLOAK_URL` = in-container
 
 ## 5. Why nginx proxies `/api`
 
-The frontend nginx (`_refs/infra/frontend-nginx.conf`) serves the SPA at `http://localhost:4200` AND reverse-proxies `location /api/ → http://backend:3000/`. The backend has **no published port of its own** — it is reachable only through this proxy.
+The frontend nginx (`_refs/infra/frontend-nginx.conf`) serves the SPA at `http://localhost:4200` AND reverse-proxies `<localized text>`. The backend has **no published port of its own** — it is reachable only through this proxy.
 
 This gives the app a **single origin**: the SPA and the API both live under `http://localhost:4200`. Consequences:
 

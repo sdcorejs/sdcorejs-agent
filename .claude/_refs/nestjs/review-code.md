@@ -17,7 +17,7 @@ profile are marked `[enterprise]`.
 ## Conventions checked
 
 ### 0. Mandatory NestJS / PostgreSQL / TypeORM / Zod checklist
-Run these checks in addition to the SDCoreJS NestJS conventions below. Report results through the parent skill's Angular/NestJS code-review table mode with `STT`, `Severity`, `Nhóm`, `File/Dòng`, `Vấn đề`, `Rủi ro`, `Đề xuất fix`, and `Gate`.
+Run these checks in addition to the SDCoreJS NestJS conventions below. Report results through the parent skill's Angular/NestJS code-review table mode with `#`, `Severity`, `Group`, `File/Line`, `Issue`, `Risk`, `Suggested fix`, and `Gate`.
 
 #### Review judgement guardrails
 - Do not review mechanically. Do not flag an issue only because the code does not use a newer pattern/convention when the project has not adopted it.
@@ -267,9 +267,9 @@ done
 
 Severity: 🟡 Important — drift from base = duplicate audit logic, inconsistent soft-delete.
 
-### 7. Domain errors via `badRequest(code, data?)` — not raw exception strings
+### 7. Domain errors via `<localized text>` — not raw exception strings
 
-Domain errors go through `badRequest(code, data?)` (from `src/common/errors`) wrapping `apiError(code, message, data?)`, localized by the i18n catalog. Throwing a raw string message bypasses the i18n envelope and exposes non-localized text to the FE.
+Domain errors go through `<localized text>` (from `src/common/errors`) wrapping `<localized text>`, localized by the i18n catalog. Throwing a raw string message bypasses the i18n envelope and exposes non-localized text to the FE.
 
 Probe:
 ```bash
@@ -376,7 +376,7 @@ Severity: 🟡 Important — `console.log` in prod hits stdout but lacks request
 - Tests cover happy path, error path, validation, and critical transaction/query behavior.
 
 ## Post-review assistance
-- For small fixes, include a concrete patch idea or snippet in the `Đề xuất fix` cell.
+- For small fixes, include a concrete patch idea or snippet in the `<localized text>` cell.
 - For medium/large fixes, recommend a spec/plan before editing and include scope, affected files, risks, tests to run, and rollback strategy.
 - For large cross-module/backend changes, do not approve the gate without lint/test/build evidence plus side-effect review for migration, transaction, authorization, and dependency impact.
 - Prefer small, behavior-preserving changes.

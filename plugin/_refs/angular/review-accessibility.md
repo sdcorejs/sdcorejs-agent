@@ -109,7 +109,7 @@ When the user navigates between routes (via menu, breadcrumb, button), focus sho
 grep -rnE "activate|RouterOutlet|router\.events" src/app/app.component.ts src/libs/shared/
 ```
 
-In Angular, you typically subscribe to `router.events` filtering on `NavigationEnd` then `document.querySelector('main h1')?.focus()`.
+In Angular, you typically subscribe to `router.events` filtering on `NavigationEnd` then `<localized text>`.
 
 Severity: **Important**. WCAG SC 2.4.3 Focus Order.
 

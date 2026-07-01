@@ -38,7 +38,7 @@ If `_refs/angular/core-version.md` is missing or malformed, STOP and ask the use
 
 ## When to Use
 
-- "Tạo portal mới cho dự án HR"
+- "<localized text>"
 - "Gen new sales portal starter"
 - "Create angular with CRUD module"
 
@@ -62,7 +62,7 @@ Before generating, clarify with user:
 
 ### Step 1: Render Starter From Templates
 
-**Source:** [`_refs/angular/templates/init-portal-templates.md`](_refs/angular/templates/init-portal-templates.md) + the structure tree in §4 ("Expected Starter Structure"). Every file listed in the tree maps to a section in the templates ref; render each one with `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` already substituted (see §"Source of truth — Core UI package" at the top).
+**Source:** [`_refs/angular/templates/init-portal-templates.md`](_refs/angular/templates/init-portal-templates.md) + the structure tree in §4 ("Expected Starter Structure"). Every file listed in the tree maps to a section in the templates ref; render each one with `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` already substituted (see §"<localized text>" at the top).
 
 **Brand asset (logo):**
 - Copy [`_refs/angular/assets/logo.png`](_refs/angular/assets/logo.png) into the generated portal at `public/logo.png`.
@@ -188,10 +188,10 @@ Required before applying this reference:
 ### Clarification Questions
 ```text
 Ask the developer:
-1. Tên project portal mới là gì? (vd: portal-ops)
-2. Cần các môi trường nào? Mặc định: dev, qc, uat, prod
-3. Tiêu đề portal/sidebar mặc định là gì?
-4. Giữ 2 entity mẫu mặc định (`order`, `customer`) hay đổi tên?
+1. What is the new portal project name? (example: portal-ops)
+2. Which environments are needed? Default: dev, qc, uat, prod
+3. What default portal/sidebar title should be used?
+4. Keep the two default sample entities (`order`, `customer`) or rename them?
 ```
 
 ### Expected Starter Structure
@@ -280,7 +280,7 @@ All file-content templates referenced by the Generation Steps above live in [`_r
 | `public/logo.png` | copy raw bytes from [`_refs/angular/assets/logo.png`](_refs/angular/assets/logo.png) (no substitution) |
 | `src/libs/sample/routes.ts` | [`#sampleroutests`](_refs/angular/templates/init-portal-templates.md#sampleroutests) |
 
-Resolve `<CORE_UI_PACKAGE_NAME>` and `<CORE_VERSION>` from `_refs/angular/core-version.md` **before** materializing any of these files (see §"Source of truth — Core UI package" at the top of this reference).
+Resolve `<CORE_UI_PACKAGE_NAME>` and `<CORE_VERSION>` from `_refs/angular/core-version.md` **before** materializing any of these files (see §"<localized text>" at the top of this reference).
 
 ### Verification Steps
 ```text

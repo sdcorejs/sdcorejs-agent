@@ -62,7 +62,7 @@ Module A **MUST NOT** import from Module B directly. Both modules import from:
 
 If `module-a` needs data from `module-b`, the contract goes through `@sdcorejs/angular` (a base `<Entity>Service` extension) OR through a shared service registered at app root.
 
-**Why**: cross-module imports = the death spiral. Module A imports Module B's component → B starts shipping in A's lazy chunk → A's bundle bloats → A can't be code-split → CI build time doubles → no one notices until production. Plus: refactoring B breaks A silently.
+**Why**: cross-module imports = the death spiral. Module A imports Module B'<localized text>'s lazy chunk → A'<localized text>'t be code-split → CI build time doubles → no one notices until production. Plus: refactoring B breaks A silently.
 
 **Enforce by**: `eslint-plugin-boundaries` rules (config in target project), and `sdcorejs-review` flags violations as **Critical**.
 
@@ -141,7 +141,7 @@ export class ProductListComponent {
 constructor(private router: Router, private svc: ProductService) {}
 ```
 
-**Why**: `inject()` works in functional contexts (guards, interceptors, route resolvers), removes constructor noise, and pairs with `#private` fields for true encapsulation. `sdcorejs-review` flags `constructor(private … )` as Critical.
+**Why**: `inject()` works in functional contexts (guards, interceptors, route resolvers), removes constructor noise, and pairs with `#private` fields for true encapsulation. `sdcorejs-review` flags `<localized text>` as Critical.
 
 ---
 
@@ -169,7 +169,7 @@ export class ProductService extends MockCrudStore<ProductDTO, ProductSaveReq> {
 - Default: `MockCrudStore` via `localStorage`, seeded with 20-40 domain-realistic rows
 - Switch to `BaseService.register('<entity>')` only when backend API contract is provided
 
-**Why**: frontend can ship + iterate without a backend. Mock rows must be **domain-realistic** (`"Bột mì Đại Phong 5kg"` not `"Name 1"`) — bad seed data hides UX issues (column too narrow for real names, sort key collisions).
+**Why**: frontend can ship + iterate without a backend. Mock rows must be **domain-realistic** (`<localized text>` not `"Name 1"`) — bad seed data hides UX issues (column too narrow for real names, sort key collisions).
 
 ---
 
@@ -184,7 +184,7 @@ export class ProductService extends MockCrudStore<ProductDTO, ProductSaveReq> {
 
 **Why constrain to 4**: layout consistency across modules is more important than perfect per-screen UX. A user opening a new screen recognizes the pattern in 2 seconds. Custom layouts = retraining cost per screen.
 
-If a screen genuinely doesn't fit, mark it `// CUSTOM_LAYOUT: <reason>` in the component header and flag for design review — don't silently invent a 5th variant.
+If a screen genuinely doesn'<localized text>'t silently invent a 5th variant.
 
 ---
 
@@ -202,7 +202,7 @@ The **module-level guard** reads `data.permission` and blocks navigation. Compon
 
 **Component-level permission** only for in-screen buttons:
 ```html
-<sd-button *sdHasPermission="'CRM_PRODUCT_APPROVE'">Phê duyệt</sd-button>
+<sd-button *sdHasPermission="'CRM_PRODUCT_APPROVE'"><localized label></sd-button>
 ```
 
 Code naming: `<MODULE>_<ENTITY>_<ACTION>` UPPERCASE. Module → Entity → Action order, never the reverse. Project may use `<MODULE>_C_<ENTITY>_<ACTION>` if `_C_` is the established convention — **detect from existing code, don't impose**.
@@ -228,7 +228,7 @@ Field names vary per backend framework (`createdAt` vs `CreatedDate` vs `created
 ## 12. Bilingual: VI is first-class, English is structural
 
 Vietnamese portal (default for SDCoreJS):
-- Labels, headers, button text, validation messages → **VI with full diacritics** (`"Phê duyệt"` not `"Phe duyet"`)
+- Labels, headers, button text, validation messages → **VI with full diacritics** (`<localized text>` not `"Phe duyet"`)
 - Permission codes, route paths, file names, code identifiers → **English** always
 
 Future bilingual support (VI + EN): keep labels in i18n JSON, default to VI, structure-ready for `next-intl`-style switching. Do NOT machine-translate.
@@ -241,7 +241,7 @@ Future bilingual support (VI + EN): keep labels in i18n JSON, default to VI, str
 
 New code → **standalone components** with `imports: [...]` on each.
 
-Hybrid NgModule + standalone (legacy portal migration): supported but flagged. `sdcorejs-brainstorming` asks "architecture mode: standalone-first or hybrid?" when generation could go either way.
+Hybrid NgModule + standalone (legacy portal migration): supported but flagged. `sdcorejs-brainstorming` asks "<localized text>" when generation could go either way.
 
 **Why**: Angular's direction is standalone. NgModules add a layer of indirection (declarations / exports / imports) that's purely ceremonial when you have standalone.
 
@@ -258,7 +258,7 @@ Order of preference when picking a UI primitive:
    ```
    Render placeholder block, wire actions to `alert('TODO: <EventName>')`, and surface in generation summary.
 
-**Why**: Core UI ships consistent a11y, theming, RTL support, and behavior. Custom UI re-litigates these per-component, badly. The flagged exception forces the conversation: "should Core UI grow this primitive?"
+**Why**: Core UI ships consistent a11y, theming, RTL support, and behavior. Custom UI re-litigates these per-component, badly. The flagged exception forces the conversation: "<localized text>"
 
 Run `node _refs/angular/core-docs-fetch.mjs --list` for the full inventory (on-demand; docs not committed).
 
@@ -303,7 +303,7 @@ When a principle here changes, propagate to:
 - ❌ "Skip OnPush for this one component" — once one component opts out, the change-detection cost cascades unpredictably
 - ❌ "Use a BehaviorSubject because the team knows RxJS" — signal is the new default; RxJS knowledge transfers, signal-knowledge doesn't yet, fix the gap, not the architecture
 - ❌ "Hardcode permission check in component" — route guard owns access; component owns action-button visibility (different concerns)
-- ❌ "Mock data: `Name 1`, `Name 2`, …" — bad mock data hides real UX bugs; spend the 10 minutes to write domain-realistic rows
+- ❌ "<localized text>" — bad mock data hides real UX bugs; spend the 10 minutes to write domain-realistic rows
 - ❌ "Skip audit columns on this list because we're in a hurry" — they cost 4 lines of code and save hours of debugging
 
 ---
@@ -316,4 +316,4 @@ When a principle here changes, propagate to:
 - `_refs/angular/write-code/reuse-existing-entities.md` — codebase-first model/service/entity reuse preflight
 - `_refs/angular/templates/entity-skeleton.md` — canonical code templates these principles produce
 - `_refs/angular/templates/example-product.md` — worked example end-to-end
-- `sdcorejs-comment-code` + `_refs/orchestration/tail/comment-code.md` — when/how to document WHY these principles applied in a specific decision
+- `sdcorejs-documentation (comment-code mode)` + `_refs/documentation/comment-code.md` — when/how to document WHY these principles applied in a specific decision

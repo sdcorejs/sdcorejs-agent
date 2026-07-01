@@ -9,7 +9,7 @@ A landing site that re-renders every request hits origin too hard; one that's pu
 
 ## When invoked
 - Automatic step of the `sdcorejs-nextjs` orchestrator after pages are generated
-- User says "set up caching", "cấu hình cache", "cache lâu quá / ngắn quá", "fix ISR", "revalidate"
+- User says "set up caching", "<localized text>", "<localized text>", "fix ISR", "revalidate"
 - After CMS integration (need on-demand revalidation)
 
 ## The 30-minute default
@@ -157,7 +157,7 @@ npm run build
 # ● (SSG)       prerendered with revalidate
 ```
 
-For a landing site with 30-min ISR, expect every page.tsx to show `●` with the revalidate interval listed.
+For a landing site with 30-min ISR, expect every page.tsx to show `<localized text>` with the revalidate interval listed.
 
 Smoke test:
 ```bash
@@ -188,14 +188,14 @@ npm run start
 ## Anti-patterns
 - "Cache for 24 hours, just call revalidate after every edit" — works but requires CMS webhook setup before going live; for sites without CMS, 30-min default is simpler
 - Setting different intervals per page based on gut feeling — without measurement, you're just adding complexity
-- Forgetting to flush ISR cache after a major content rewrite — manually call `/api/revalidate?path=/` once after deploy
+- Forgetting to flush ISR cache after a major content rewrite — manually call `<localized text>` once after deploy
 - Treating ISR like SSG — you still need on-demand revalidation for time-sensitive updates
 - Caching the contact form's response (a redirect to a thank-you page) — the redirect is fine to cache, but the POST endpoint must not be
 
 ## When user asks to change the default
-- "5 phút thì tươi mới hơn?" → yes, but expect ~6x more origin hits. Often unnecessary for marketing content.
-- "Lâu hơn được không?" → yes, up to 1-24 hour for stable content. Just ensure on-demand revalidation is wired so urgent fixes don't wait.
-- "Tắt cache đi" → equivalent to SSR; perf will drop; ask why before applying. Usually the real need is on-demand revalidation, not no-cache.
+- "<localized text>" → yes, but expect ~6x more origin hits. Often unnecessary for marketing content.
+- "<localized text>" → yes, up to 1-24 hour for stable content. Just ensure on-demand revalidation is wired so urgent fixes don't wait.
+- "<localized text>" → equivalent to SSR; perf will drop; ask why before applying. Usually the real need is on-demand revalidation, not no-cache.
 
 Confirm the change in conversation, apply via Edit, re-build, verify.
 

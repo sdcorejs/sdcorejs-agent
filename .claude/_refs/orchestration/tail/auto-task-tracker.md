@@ -3,7 +3,7 @@
 ## Purpose
 Internal tail reference. Load this file from a dispatchable executor after auto-docs and user-guide work. This file is not a dispatchable skill.
 
-`auto-docs` captures what just happened. `memories` captures durable facts. Neither answers "what should I do next?". This reference maintains a single, ordered, always-current TODO list per track so the next session knows where to pick up — without re-reading every doc.
+`auto-docs` captures what just happened. `memories` captures durable facts. Neither answers "<localized text>". This reference maintains a single, ordered, always-current TODO list per track so the next session knows where to pick up — without re-reading every doc.
 
 ## When invoked
 
@@ -11,13 +11,13 @@ Internal tail reference. Load this file from a dispatchable executor after auto-
 1. Resolve target root: `git rev-parse --show-toplevel`
 2. Detect track
 3. Read `<target-root>/.sdcorejs/tasks/<track>.md` if it exists
-4. Surface to user: "X tasks open. Top 3: …"
+4. Surface to user: "<localized text>"
 5. If file does not exist → silent skip (don't create empty file)
 
 ### Write mode — at end of every code-writing task (after auto-docs runs)
 The agent MUST run this reference (write mode) immediately after `_refs/orchestration/tail/auto-docs.md` finishes writing the session summary. This runs for every code-writing skill invocation:
 - `write-code` (the `sdcorejs-angular` orchestrator and the reference packs it loads: `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail`, `actions`)
-- `sdcorejs-test`, `sdcorejs-review`, `sdcorejs-comment-code` (level ≠ skip)
+- `sdcorejs-test`, `sdcorejs-review`, `sdcorejs-documentation (comment-code mode)` (level != skip)
 
 Read the auto-docs file the previous step just wrote. From it:
 - Match "What was changed" items against existing open `[ ]` tasks → tick them `[x]` with timestamp
@@ -134,7 +134,7 @@ After `auto-docs` session-start ritual:
 1. Glob `.sdcorejs/tasks/<track>.md`
 2. If exists, read it
 3. Count items per section
-4. Surface: "📋 TODO: 2 Now / 5 Next / 1 Blocked / 3 Stale. Top 3 Now: …"
+4. Surface: "<localized text>"
 
 Don't quote the whole file unless the user asks.
 

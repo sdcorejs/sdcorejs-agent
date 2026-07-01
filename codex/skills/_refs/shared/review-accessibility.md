@@ -31,7 +31,7 @@ POUR principle it violates — helps the user prioritise.
 - Decorative image → `alt=""` (NOT missing)
 - Logo → `alt="Brand Name"` (NOT `alt="logo"`)
 
-Probe: `grep -rE '<img(?!.*\balt=)' src/`
+Probe: `grep -rE '<localized text>' src/`
 
 ### 2. Form fields have associated labels (P, U) — WCAG SC 1.3.1, 3.3.2
 - `<label htmlFor="email">Email</label> <input id="email" />` — explicit

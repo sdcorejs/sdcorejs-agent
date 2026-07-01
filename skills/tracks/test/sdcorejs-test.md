@@ -14,6 +14,7 @@ Before executing this skill:
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
 3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 Write and run unit, integration, e2e, and UAT-oriented tests across Angular, NestJS, React, and Next.js. This track skill is also the executor for approved test-only plans from `sdcorejs-execute-plan`.
@@ -221,6 +222,18 @@ caller owns the rest of the tail chain.
 
 After direct test work:
 
+Documentation gate: if this skill wrote or edited test files, fixtures, page
+objects, UAT cases, or reports, run
+`sdcorejs-documentation (documentation-gate mode)` after verification and before
+the ship/auto-docs tail. Read `_refs/documentation/gate.md`; it asks or loads
+saved project preferences from
+`<target>/.sdcorejs/documentation/preferences.md` for test comments,
+user-guide/QA-guide updates, and technical docs. Use those choices to run:
+
+- `sdcorejs-documentation (comment-code mode)` when `comment_code` is not `skip`.
+- `sdcorejs-documentation (write-technical-doc mode)` when `technical_doc=write`, or when `technical_doc=auto` and reusable fixtures, page objects, harness conventions, public API contracts, or non-obvious test architecture changed.
+- `sdcorejs-documentation (write-user-guide mode)` when `user_guide=update` and the test work documents user-visible flows.
+
 1. If this skill wrote or edited test files, fixtures, page objects, UAT cases, or
    reports, run the verification commands from Step 3 and capture the real output.
 2. Run `sdcorejs-ship (verify-before-done mode)` when a spec, product ledger, or
@@ -290,6 +303,7 @@ Mode B - inspector export / selector inventory:
 - Keep test data deterministic.
 - In `tdd` mode, verify RED before writing production code and verify GREEN after implementation.
 - For direct write/edit test work, run the Direct invocation tail so auto-docs and the living task tracker stay current.
+- For direct write/edit test work, present the documentation gate from `_refs/documentation/gate.md` unless saved preferences in `.sdcorejs/documentation/preferences.md` apply; prefer useful documentation by default.
 
 ### Must not
 - Mark failing tests `.skip` / `xit` to force green CI.

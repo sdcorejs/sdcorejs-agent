@@ -1,32 +1,20 @@
----
-name: sdcorejs-write-user-guide
-description: Generate and maintain evergreen end-user guides for SDCoreJS apps. Use in write-code tail or for user docs/manuals, aggregate guide, DOCX/PDF export, legacy reverse-engineer, or PRD/spec coverage compare. Writes per-module .sdcorejs/user-guide/<module>.md and root sdcorejs-user-guide.md. Applies to angular, nestjs, nextjs. Runtime-localized.
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep
----
+# Write User Guide Reference
 
-# Write User Guide
-
-
-## Shared Protocols
-
-Before executing this skill:
-1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
-2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
-4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+Internal reference loaded by `sdcorejs-documentation` in `write-user-guide`
+mode. This file is not a dispatchable skill.
 
 ## Purpose
 
-Generate and maintain **evergreen end-user feature references** for generated SDCoreJS apps. Unlike other `.sdcorejs/` artifacts, this skill produces documentation for *end users* (or QA / PMs), not for the next AI session.
+Generate and maintain **evergreen end-user feature references** for generated SDCoreJS apps. Unlike other `.sdcorejs/` artifacts, this reference produces documentation for *end users* (or QA / PMs), not for the next AI session.
 
 | Artifact | Question answered | Lifecycle |
 |---|---|---|
-| **`.sdcorejs/user-guide/<module>.md`** (this skill) | "How do I USE this feature?" | idempotent overwrite per module, keyed to git HEAD |
-| **`sdcorejs-user-guide.md`** (aggregate, Mode 2) | "The full system — one doc to export" | rebuilt from per-module guides on demand |
+| **`.sdcorejs/documentation/user-guides/<module>.md`** (this reference) | "<localized text>" | idempotent overwrite per module, keyed to git HEAD |
+| **`.sdcorejs/documentation/sdcorejs-user-guide.md`** (aggregate, Mode 2) | "<localized text>" | rebuilt from per-module guides on demand |
 | `.sdcorejs/docs/<track>/*.md` (`auto-docs`) | "What was DONE this session" | many timestamped session deltas |
 | `.sdcorejs/summary.md` (`sdcorejs-explore`) | "What IS this project" | one canonical project brief |
 
-Templates live in `_refs/shared/user-guide-template.md`. Per-module guides go to `<target>/.sdcorejs/user-guide/<module>.md`; the aggregate goes to `<target>/sdcorejs-user-guide.md`. Both are generated artifacts and are idempotently overwritten.
+Templates live in `_refs/shared/user-guide-template.md`. Per-module guides go to `<target>/.sdcorejs/documentation/user-guides/<module>.md`; the aggregate goes to `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md`. Both are generated artifacts and are idempotently overwritten.
 
 ## Modes
 
@@ -105,7 +93,7 @@ rg -n "openWorkflow\|openBulk\|openCustomAction\|SdActionButton" <fe>/src/libs/<
 
 ### 3. Render the per-module guide
 
-Write `<target>/.sdcorejs/user-guide/<module>.md` from the per-module template in `_refs/shared/user-guide-template.md`.
+Write `<target>/.sdcorejs/documentation/user-guides/<module>.md` from the per-module template in `_refs/shared/user-guide-template.md`.
 
 Fill the YAML frontmatter:
 - `module` — module slug
@@ -139,7 +127,7 @@ After rendering the body sections, immediately run **Mode 4** to fill the `## Co
 
 ### 5. Emit image placeholders
 
-Always include the `## Illustration images` capture checklist even if no screens are detected (list what *should* exist). The agent does NOT run the app or capture screenshots — the checklist tells the developer which images to capture and where to place them (`<target>/.sdcorejs/user-guide/images/`).
+Always include the `## Illustration images` capture checklist even if no screens are detected (list what *should* exist). The agent does NOT run the app or capture screenshots — the checklist tells the developer which images to capture and where to place them (`<target>/.sdcorejs/documentation/user-guides/images/`).
 
 ---
 
@@ -169,7 +157,14 @@ Glob: <target>/.sdcorejs/prd/<feature>.md
 Read: extract requirement list / acceptance criteria
 ```
 
-If both spec and PRD exist, merge their criteria (deduplicate by intent).
+Also load matching task-level requirement records when present:
+
+```bash
+Glob: <target>/.sdcorejs/documentation/requirements/*.md
+# Prefer files whose id/title/source refs match the module, TASKID, branch, or current session.
+```
+
+If spec, PRD, and requirement records exist, merge their criteria (deduplicate by intent).
 
 ### 3. Map each requirement
 
@@ -217,7 +212,7 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
 
 ### MUST DO
 - Render from `_refs/shared/user-guide-template.md` — do NOT hard-code the template inline.
-- **Idempotent overwrite** — `<target>/.sdcorejs/user-guide/<module>.md` is a generated artifact; overwrite it unconditionally, never append.
+- **Idempotent overwrite** — `<target>/.sdcorejs/documentation/user-guides/<module>.md` is a generated artifact; overwrite it unconditionally, never append.
 - Write to the **TARGET project** (resolve `TARGET_ROOT=$(git rev-parse --show-toplevel)` from the user's CWD; never write into the `sdcorejs-agent` repo). **Guard:** if `TARGET_ROOT` basename matches `sdcorejs-agent`, or the directory contains no `src/`, `frontend/`, or `package.json` at its root (no evidence of an app project), **abort and ask** the user to provide the target project path explicitly — do not write user guides into the agent repo.
 - **Runtime-localized** — section headings and prose use the user's session language; field names, permission codes, and route paths stay English.
 - Always emit **image placeholders + the capture checklist** (`## Illustration images`), even when no real images exist yet.
@@ -228,13 +223,13 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
 - Duplicate `sdcorejs-explore` (project brief) — READ `summary.md` as context, never replace it.
 - **Capture screenshots or run the target app** — the agent is read-only with respect to runtime; image entries are always placeholders.
 - Write any artifact into the `sdcorejs-agent` repo (the agent repo holds skills, not project content).
-- Invent routes, permissions, or field names not found in the harvest — prefer "unknown — fill manually" over fabrication.
+- Invent routes, permissions, or field names not found in the harvest — prefer "<localized text>" over fabrication.
 
 ## Related
 
 - `_refs/shared/user-guide-template.md` — per-module + aggregate templates + pandoc export command
 - `sdcorejs-explore` — discovery engine used by Mode 3 (legacy reverse-engineer)
-- `_refs/orchestration/tail/auto-docs.md` — session-delta tail reference (distinct from this skill's evergreen guides)
+- `_refs/orchestration/tail/auto-docs.md` — session-delta tail reference (distinct from the evergreen guides in this reference)
 - `sdcorejs-explore` — canonical project brief (read as context before writing guides)
 - `sdcorejs-ship` — triggers Mode 2 (aggregate build) as part of the ship checklist
 
@@ -254,7 +249,7 @@ Each per-module guide records `git_head` in its YAML frontmatter. Before assembl
 CURRENT_HEAD=$(git -C <target> rev-parse HEAD)
 ```
 
-For each `.sdcorejs/user-guide/*.md` whose `git_head` value ≠ `CURRENT_HEAD`: re-run **Mode 1** for that module now to bring it current. Modules whose `git_head == CURRENT_HEAD` are up to date — skip them.
+For each `.sdcorejs/documentation/user-guides/*.md` whose `git_head` value ≠ `CURRENT_HEAD`: re-run **Mode 1** for that module now to bring it current. Modules whose `git_head == CURRENT_HEAD` are up to date — skip them.
 
 This step prevents the aggregate from silently embedding stale module guides written before the latest commits.
 
@@ -263,11 +258,11 @@ This step prevents the aggregate from silently embedding stale module guides wri
 Glob all per-module guides (after step 2 has refreshed any stale ones):
 
 ```bash
-Glob: <target>/.sdcorejs/user-guide/*.md
+Glob: <target>/.sdcorejs/documentation/user-guides/*.md
 # Read each file; extract YAML frontmatter (module, title, coverage) + body (strip frontmatter block)
 ```
 
-Build `<target>/sdcorejs-user-guide.md` from the **aggregate template** in `_refs/shared/user-guide-template.md`:
+Build `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md` from the **aggregate template** in `_refs/shared/user-guide-template.md`:
 
 1. **YAML frontmatter** — set `title` (project name from `sdcorejs-explore` / ask user if absent), `generated_at` (ISO 8601 now), `git_head` (`git rev-parse HEAD`), `modules` (sorted list of all `module` slugs found), `coverage` (summed from step 4 below).
 2. **`## Table of contents`** — numbered list linking to each `## <Module>` section anchor.
@@ -285,7 +280,7 @@ Build `<target>/sdcorejs-user-guide.md` from the **aggregate template** in `_ref
 
 Update the aggregate frontmatter `coverage` block with the summed totals.
 
-**Idempotent:** overwrite `<target>/sdcorejs-user-guide.md` unconditionally — never append to an existing file.
+**Idempotent:** overwrite `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md` unconditionally — never append to an existing file.
 
 ### 4. Export to DOCX / PDF
 
@@ -293,23 +288,23 @@ After writing the aggregate, emit the pandoc commands from `_refs/shared/user-gu
 
 ```bash
 # DOCX (preferred — supports embedded scaffold images):
-pandoc <target>/sdcorejs-user-guide.md \
-  -o <target>/sdcorejs-user-guide.docx \
-  --resource-path=<target>/.sdcorejs/user-guide
+pandoc <target>/.sdcorejs/documentation/sdcorejs-user-guide.md \
+  -o <target>/.sdcorejs/documentation/sdcorejs-user-guide.docx \
+  --resource-path=<target>/.sdcorejs/documentation/user-guides
 
 # PDF (alternative):
-pandoc <target>/sdcorejs-user-guide.md \
-  -o <target>/sdcorejs-user-guide.pdf \
-  --resource-path=<target>/.sdcorejs/user-guide
+pandoc <target>/.sdcorejs/documentation/sdcorejs-user-guide.md \
+  -o <target>/.sdcorejs/documentation/sdcorejs-user-guide.pdf \
+  --resource-path=<target>/.sdcorejs/documentation/user-guides
 ```
 
 **The skill does NOT run pandoc or the target app.** It emits the commands above and reports the capture checklist — the developer runs pandoc locally after placing real screenshots.
 
 Instruct the user:
-> "Place real screenshots in `<target>/.sdcorejs/user-guide/images/` (see the checklist in each module guide), then run the pandoc command above to export DOCX/PDF."
+> "Place real screenshots in `<target>/.sdcorejs/documentation/user-guides/images/` (see the checklist in each module guide), then run the pandoc command above to export DOCX/PDF."
 
 When invoked from `sdcorejs-ship`: **always rebuild** the aggregate. **Ask before emitting the pandoc export command** (large-feature ships may not need DOCX every time):
-> "Do you want to export DOCX now? (y / n)"
+> "<localized text>"
 
 When triggered manually (e.g. "export user guide docx" or localized equivalents): emit the export command immediately without asking.
 
@@ -327,48 +322,27 @@ When triggered manually (e.g. "export user guide docx" or localized equivalents)
 
 ### 2. Harvest the whole project via `sdcorejs-explore`
 
-Delegate ALL discovery to `sdcorejs-explore` (read-only architecture-discovery skill). Do NOT re-implement route/permission globbing here.
+Delegate ALL discovery to `sdcorejs-explore` (read-only architecture-discovery skill). Do NOT re-implement route/permission/entity/screen globbing here.
 
 ```
 Invoke: sdcorejs-explore
+Mode:    code-map with the Documentation harvest add-on
 Purpose: full project inventory — modules/libs, routes + controllers, permission codes,
          screens, shared components, base classes, path conventions
 Output:  module list + per-module facts used as the harvest basis for step 3
 ```
 
-After `sdcorejs-explore` completes, supplement its output with targeted probes (same probes as Mode 1) for any module where route or permission data is still missing:
-
-**Angular — routes & permissions (supplement):**
-```bash
-rg -n "data:\s*\{[^}]*permission" <fe>/src/libs/<module>
-rg -n "sdPermission" <fe>/src/libs/<module>
-Glob: <fe>/src/libs/<module>/**/{routes.ts,*.routes.ts,*.routing.ts}
-rg -rn "path:" <fe>/src/libs/<module>/
-```
-
-**NestJS — routes & permissions (supplement):**
-```bash
-rg -n "RouterModule\|path:" <be>/src/app.module.ts <be>/src/modules/<module>/<module>.module.ts
-rg -n "@HasPermission\('([^']+)'\)" <be>/src/modules/<module>
-```
-
-**Entity fields & Zod schema (supplement):**
-```bash
-rg -n "@Column" <be>/src/modules/<module>/entities/
-Glob: <be>/src/modules/<module>/schemas/<module>.schema.ts
-```
-
-**Screen types (Angular, supplement):**
-```bash
-Glob: <fe>/src/libs/<module>/features/<entity>/pages/*/
-rg -n "openWorkflow\|openBulk\|openCustomAction\|SdActionButton" <fe>/src/libs/<module>
-```
+If the `sdcorejs-explore` output lacks a `Documentation harvest` section, rerun
+`sdcorejs-explore (code-map mode)` and explicitly request the documentation
+harvest add-on. If a module still has unresolved route, permission, entity, or
+screen data after that harvest, keep the module and mark missing values as
+`unknown - fill manually`; do not probe from this reference.
 
 ### 3. Render per-module guides
 
-For **each module** discovered by `sdcorejs-explore`, render `<target>/.sdcorejs/user-guide/<module>.md` from the per-module template in `_refs/shared/user-guide-template.md`, best-effort from the harvested facts.
+For **each module** discovered by `sdcorejs-explore`, render `<target>/.sdcorejs/documentation/user-guides/<module>.md` from the per-module template in `_refs/shared/user-guide-template.md`, best-effort from the harvested facts.
 
-Fill frontmatter and all body sections exactly as in Mode 1, Step 3 (including the angular-only Core UI components table), using only data found in the harvest — **do NOT invent** routes, permissions, field names, or Core UI components not present in the code. Where a value could not be resolved, write `"unknown — fill manually"` rather than fabricating.
+Fill frontmatter and all body sections exactly as in Mode 1, Step 3 (including the angular-only Core UI components table), using only data found in the harvest — **do NOT invent** routes, permissions, field names, or Core UI components not present in the code. Where a value could not be resolved, write `<localized text>` rather than fabricating.
 
 **FLAG unresolved modules explicitly.** For every module where routes and/or permission codes could NOT be resolved from the harvest, add a prominent notice at the top of that module's guide:
 
@@ -382,7 +356,7 @@ Do not silently omit such modules — include them with the flag so the gap is v
 
 ### 4. Run Mode 2 — Aggregate build
 
-After all per-module guides are written, immediately run **Mode 2** to assemble `<target>/sdcorejs-user-guide.md` from the full set of per-module guides. Follow all Mode 2 steps (assemble, frontmatter, coverage summary, pandoc export offer).
+After all per-module guides are written, immediately run **Mode 2** to assemble `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md` from the full set of per-module guides. Follow all Mode 2 steps (assemble, frontmatter, coverage summary, pandoc export offer).
 
 ### 5. Coverage section — "reverse-engineered" note
 

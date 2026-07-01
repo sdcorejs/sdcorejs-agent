@@ -9,7 +9,7 @@ A landing site is composition: same 8-10 reusable section types arranged differe
 
 ## When invoked
 - Automatic after `theme.md` + `i18n.md` in a "Full build" dispatch
-- User says "add a page", "thêm trang", "tạo section hero", "compose home page"
+- User says "add a page", "<localized text>", "<localized text>", "compose home page"
 - Refactoring an existing page to use the section library
 
 Prerequisites:
@@ -38,14 +38,14 @@ Content contract boundary:
 | Features | `features.tsx` | 3-6 feature cards | `title`, `items: { icon, title, description }[]` |
 | BentoGrid | `bento-grid.tsx` | Asymmetric feature highlight (Standard+) | `items: { span, content }[]` |
 | Testimonials | `testimonials.tsx` | Social proof carousel | `quotes: { author, role, quote, avatar }[]` |
-| LogoCloud | `logo-cloud.tsx` | Client / partner / cert logos | `logos: { name, src, href? }[]` |
+| LogoCloud | `logo-cloud.tsx` | Client / partner / cert logos | `<localized text>` |
 | Stats | `stats.tsx` | Metric callout (10+ years, 1000+ projects) | `items: { value, label }[]` |
 | Pricing | `pricing.tsx` | Tiered pricing table | `tiers: { name, price, features, cta }[]` |
 | FAQ | `faq.tsx` | Accordion Q&A | `items: { question, answer }[]` |
-| Gallery | `gallery.tsx` | Image grid / lightbox | `images: { src, alt, caption? }[]` |
+| Gallery | `gallery.tsx` | Image grid / lightbox | `<localized text>` |
 | ContactCTA | `contact-cta.tsx` | Mid-page CTA strip | `title`, `subtitle`, `cta` |
-| ContactForm | `contact-form.tsx` | Inline form (uses `contact-form.md`) | `(none — form owns its strings via i18n)` |
-| Map | `map.tsx` | Google Maps embed | `address`, `lat`, `lng`, `zoom?` |
+| ContactForm | `contact-form.tsx` | Inline form (uses `contact-form.md`) | `<localized text>` |
+| Map | `map.tsx` | Google Maps embed | `address`, `lat`, `lng`, `<localized text>` |
 | Newsletter | `newsletter.tsx` | Email capture | `title`, `placeholder`, `cta` |
 | BlogList | `blog-list.tsx` | (Standard+ with blog) | `posts: { title, excerpt, slug, date, cover }[]` |
 
@@ -180,7 +180,7 @@ export function Features({ title, items, className }: FeaturesProps) {
 
 Rules for section components:
 1. Server component by default. Client only when needed.
-2. Accept `className?: string` for layout overrides at the page level.
+2. Accept `<localized text>` for layout overrides at the page level.
 3. Use tokens (`bg-brand`, `text-neutral-600`, `py-section`) — never raw colors.
 4. ARIA labels in English where required (`aria-hidden`, `role`); user-facing labels via props.
 5. Image rendering uses `next/image` with explicit `sizes` (see `responsive.md`).

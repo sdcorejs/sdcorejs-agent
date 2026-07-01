@@ -14,6 +14,7 @@ Before executing this skill:
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
 3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 Run the approved plan as the execution contract. This skill is the handoff between planning and doing.
@@ -80,11 +81,14 @@ Before any code/test generation, ask the user:
 
 ```text
 Execution mode?
-- Sequential: safer, easier to review, best for shared files or dependent steps.
-- Parallel: faster when tasks are independent; I will use the parallel-dispatch gate first.
 
 Recommendation: <sequential|parallel> because <reason>.
-Choose sequential or parallel.
+
+Options:
+1. Sequential - safer, easier to review, best for shared files or dependent steps. [Recommended when applicable]
+2. Parallel - faster when tasks are independent; I will use the parallel-dispatch gate first. [Recommended when applicable]
+
+Reply with `1` or `2`.
 ```
 
 Translate at runtime. Do not execute until the user answers. If the user says "you decide", choose the recommendation and state it.
@@ -94,7 +98,9 @@ Invoke `sdcorejs-parallel-dispatch`. It owns both the safety verdict and the saf
 
 - If verdict is `PARALLEL-CANDIDATE`, it runs independent-unit fan-out.
 - If verdict is `ROLE-SPLIT`, it runs the product/design/backend/frontend/test-QC role-split loop.
-- If verdict is `SEQUENTIAL`, explain why parallel is unsafe and ask whether to continue sequentially.
+- If verdict is `SEQUENTIAL`, explain why parallel is unsafe and ask whether to
+  continue sequentially with `1. Continue sequentially (yes)` /
+  `2. Stop and revise plan (no)`.
 
 ### 5. If sequential is chosen
 If the user requested isolation, or the plan is risky enough that isolation is

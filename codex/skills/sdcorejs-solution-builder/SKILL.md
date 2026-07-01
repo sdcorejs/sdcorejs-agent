@@ -18,6 +18,7 @@ Before executing this skill:
 2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
 3. Read and apply `../_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 
@@ -136,7 +137,7 @@ Drive these steps in order. For the non-tech user, narrate only the plain-langua
 
    If Docker is unavailable, a port is occupied, or the smoke cannot be automated, say exactly what was not verified and do **not** claim the packaged stack is runnable. Give the user the next concrete command from `START.md`.
 
-11. **Record the whole build** - After packaging/auth/run-guide/stack verification, run the final tail for the solution-builder invocation: `sdcorejs-ship (branch-ready mode)` -> `../_refs/orchestration/tail/auto-docs.md` -> `sdcorejs-write-user-guide` (Mode 1 for touched modules; Mode 2 aggregate if this is a whole-app delivery) -> `../_refs/orchestration/tail/auto-task-tracker.md` -> `sdcorejs-explore (memories mode)` when durable knowledge surfaced. This second tail captures infra/auth/run-guide changes too; do not rely only on Mode B's build-phase tail.
+11. **Record the whole build** - After packaging/auth/run-guide/stack verification, run the final tail for the solution-builder invocation: `sdcorejs-ship (branch-ready mode)` -> `../_refs/orchestration/tail/auto-docs.md` -> `sdcorejs-documentation (write-user-guide mode)` (Mode 1 for touched modules under `.sdcorejs/documentation/user-guides/`; Mode 2 aggregate under `.sdcorejs/documentation/` if this is a whole-app delivery) -> `../_refs/orchestration/tail/auto-task-tracker.md` -> `sdcorejs-explore (memories mode)` when durable knowledge surfaced. This second tail captures infra/auth/run-guide changes too; do not rely only on Mode B's build-phase tail.
 
 12. **Tell the user how to run it** - Close in plain language only after the relevant checks above have actually run. If verified, say: "Open a terminal in this folder, type `docker compose up`, wait a moment, then open http://localhost:4200 in your browser and log in with **demo / demo**." Point them at `START.md` for the full guide and for how to stop or reset it.
 

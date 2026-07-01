@@ -53,7 +53,7 @@ describe('VnCurrencyPipe', () => {
   });
 
   it('formats integer as VND', () => {
-    expect(pipe.transform(1500000)).toBe('1.500.000 ₫');
+    expect(pipe.transform(1500000)).toBe('<localized text>');
   });
 
   it('returns empty string for null', () => {
@@ -61,7 +61,7 @@ describe('VnCurrencyPipe', () => {
   });
 
   it('rounds to 0 decimals', () => {
-    expect(pipe.transform(1500.75)).toBe('1.501 ₫');
+    expect(pipe.transform(1500.75)).toBe('<localized text>');
   });
 });
 ```
@@ -109,7 +109,7 @@ describe('ProductService', () => {
       http.post.mockReturnValue(throwError(() => ({ status: 500 })));
 
       await expect(service.search({})).rejects.toMatchObject({
-        message: expect.stringContaining('Hệ thống'),
+        message: expect.stringContaining('<localized text>'),
       });
     });
   });
@@ -128,15 +128,15 @@ describe('mapProductToTableRow', () => {
     const input = {
       id: '123',
       code: 'P001',
-      name: 'Sản phẩm A',
+      name: '<localized text>',
       unitPrice: 100000,
       createdAt: '2026-05-17T10:00:00Z',
     };
 
     expect(mapProductToTableRow(input)).toEqual({
       id: '123',
-      displayName: 'P001 — Sản phẩm A',
-      formattedPrice: '100.000 ₫',
+      displayName: '<localized text>',
+      formattedPrice: '<localized text>',
       createdAtFormatted: '17/05/2026',
     });
   });
@@ -259,7 +259,7 @@ Coverage target: ≥ 80% line on `services/` + `validators/` + `mappers/` + `pip
 ## Anti-patterns
 
 - **Snapshot-testing template output for unit tests** — too coarse + brittle; assert on specific facts
-- **`describe('ServiceX', () => { it('works', …) })`** — neither name describes what's verified
+- **`<localized text>`** — neither name describes what's verified
 - **Mocking the function under test** — meaningless
 - **Big setup + tiny assertion** — invert; if setup dominates, you're testing wrong layer (use integration)
 - **`expect(...).toEqual(realObject)` with 20 fields** — too brittle; assert key fields with `toMatchObject`

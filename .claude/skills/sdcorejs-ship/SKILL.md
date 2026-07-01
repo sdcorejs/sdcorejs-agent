@@ -23,6 +23,7 @@ Before executing this skill:
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
 3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Mode Selection
 
@@ -84,8 +85,8 @@ Use for "done, ship it", "push it", "ready to merge", or release requests.
    - otherwise feature PR mode
 3. Run `verify-before-done`.
 4. Run `branch-ready`.
-5. Rebuild aggregate user guide with `sdcorejs-write-user-guide` Mode 2 when module guides exist.
-6. Release mode only: invoke `sdcorejs-git (changelog mode)` for changelog/release notes; ask before writing a versioned entry.
+5. Rebuild aggregate user guide with `sdcorejs-documentation (write-user-guide mode)` in Mode 2 when `.sdcorejs/documentation/user-guides/*.md` module guides exist.
+6. Release mode only: invoke `sdcorejs-git (changelog mode)` for changelog/release notes; ask before writing a versioned entry using `1. Write release entry` / `2. Skip release entry`.
 7. If the tree is dirty after docs/changelog, invoke `sdcorejs-git (commit mode)`.
 8. Push through `sdcorejs-git` only after verification and hygiene are clear.
 9. Invoke `sdcorejs-git (PR mode)` for feature PR delivery.
@@ -129,6 +130,10 @@ Stop and ask before changing anything when:
 - the repo has no verification scripts and the user has not accepted a manual plan
 - the requested update is a major framework migration; route through `sdcorejs-spec`
   and `sdcorejs-plan` first
+
+Use `_refs/shared/user-choice-prompt.md` for these dependency-update safety
+decisions, with `1. Continue with this change` and `2. Stop` plus
+any safer alternative as option `3`.
 
 ### 3. Classify update risk
 

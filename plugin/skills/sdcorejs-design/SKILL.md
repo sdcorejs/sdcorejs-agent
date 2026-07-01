@@ -14,6 +14,7 @@ Before executing this skill:
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
 3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 Create FE handoff artifacts from product intent. The output should let Angular/Next.js executors implement screens without guessing layout, states, copy, interactions, or responsive behavior.
@@ -148,7 +149,10 @@ Preferred PNG pipeline:
 3. Verify the file exists and is non-empty.
 4. Link the PNG from the design spec and `.sdcorejs/docs/design/` ledger.
 
-Use project tooling if available. If Playwright or another browser renderer is already installed, use it. If no renderer is available, ask before adding dependencies; otherwise leave the editable HTML/SVG and mark PNG export as pending.
+Use project tooling if available. If Playwright or another browser renderer is
+already installed, use it. If no renderer is available, apply
+`_refs/shared/user-choice-prompt.md` before adding dependencies:
+`1. Add renderer dependency` / `2. Leave PNG export pending`.
 
 If an image-generation tool is available and the user explicitly wants high-fidelity visual concepts, it can create concept PNGs. Treat those as mood/reference only. Do not rely on AI-raster text for exact labels, tables, or form fields; exact UI text belongs in the design spec and editable wireframe source.
 

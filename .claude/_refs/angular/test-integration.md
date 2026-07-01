@@ -33,7 +33,7 @@ import { ProductListComponent } from './list.component';
 import { ProductService } from '../../services/product.service';
 import { SD_API_CONFIGURATION } from '@sdcorejs/angular';
 
-describe('ProductListComponent — integration', () => {
+describe('<localized text>', () => {
   let component: ProductListComponent;
   let fixture: ComponentFixture<ProductListComponent>;
   let httpMock: HttpTestingController;
@@ -74,8 +74,8 @@ describe('ProductListComponent — integration', () => {
     // Act: respond
     req.flush({
       data: [
-        { id: '1', code: 'P001', name: 'Sản phẩm A' },
-        { id: '2', code: 'P002', name: 'Sản phẩm B' },
+        { id: '1', code: 'P001', name: '<localized text>' },
+        { id: '2', code: 'P002', name: '<localized text>' },
       ],
       total: 2,
     });
@@ -93,7 +93,7 @@ describe('ProductListComponent — integration', () => {
 ### Step 2 — Router + form submit flow
 
 ```typescript
-describe('ProductCreateComponent — submit flow', () => {
+describe('<localized text>', () => {
   let harness: RouterTestingHarness;
   let httpMock: HttpTestingController;
 
@@ -118,7 +118,7 @@ describe('ProductCreateComponent — submit flow', () => {
     const component = await harness.navigateByUrl('/catalog/product/create', ProductCreateComponent);
     component.form.patchValue({
       code: 'P003',
-      name: 'Sản phẩm mới',
+      name: '<localized text>',
       unitPrice: 100000,
     });
 
@@ -202,7 +202,7 @@ This lets you assert the interceptor adds the right headers AND the guard logic 
 ### Step 5 — Test workflow actions (approve / reject)
 
 ```typescript
-describe('PromotionDetailComponent — workflow actions', () => {
+describe('<localized text>', () => {
   it('approve action calls API and refreshes detail', async () => {
     // Arrange — load detail
     fixture.detectChanges();
@@ -225,7 +225,7 @@ describe('PromotionDetailComponent — workflow actions', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Đã duyệt');
+    expect(fixture.nativeElement.textContent).toContain('<localized text>');
     // Approve button gone
     expect(fixture.nativeElement.querySelector('button[data-action="approve"]')).toBeNull();
   });

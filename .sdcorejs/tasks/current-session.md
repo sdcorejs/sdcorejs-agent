@@ -1,47 +1,41 @@
 ---
-updated_at: 2026-06-23T15:47:06.5628621+07:00
-status: complete
-track: multi
-active_skill: sdcorejs-git
-branch: chore/review-checklists
+updated_at: 2026-07-01T16:20:00+07:00
+status: blocked
+track: generic
+active_skill: sdcorejs-documentation
+branch: feature/sdcorejs-documentation-skill
 ---
 
 # Current Session Checkpoint
 
 ## User Request
-Pull latest main into the review branch, resolve merge conflicts, verify, commit, and push the updated branch.
+Commit and push the current documentation-skill branch, then create a pull request.
 
 ## Tasks
-- [x] Doc quy tac sdcorejs-git va task protocol
-- [x] Kiem tra trang thai branch truoc khi merge
-- [x] Merge origin/main va xac dinh file conflict
-- [x] Resolve conflict, sync mirror neu can
-- [x] Verify, commit merge va push branch
-- [x] Bao ket qua cuoi cung kem commit/branch
+- [x] Inspect current branch, remote, and changed files.
+- [x] Run branch verification before commit.
+- [x] Create one Conventional Commit for the branch changes.
+- [x] Push the branch.
+- [ ] Create a pull request and report the URL.
 
 ## Current State
-- Last completed: merge conflicts resolved and verification passed.
+- Last completed: committed and pushed `feature/sdcorejs-documentation-skill`.
 - In progress: none.
-- Blocked/skipped: none.
+- Blocked/skipped: PR creation is blocked because GitHub CLI is not authenticated and no GitHub token is available in the environment.
 
 ## Artifacts Touched
-- EDIT .sdcorejs/tasks/current-session.md - checkpoint for main merge/conflict resolution
-- EDIT _refs/angular/review-code.md - merged branch reuse guidance with main review standards
-- EDIT _refs/angular/write-code/screen-list.md - merged reuse guidance with OnPush/template guidance
-- EDIT _refs/nestjs/review-code.md - kept shared utility reuse review section
-- EDIT _refs/nextjs/build-website/review-code.md - kept shared utility reuse review section
-- EDIT _refs/nextjs/build-website/write-code/contact-form.md - kept both utility and payload-boundary anti-patterns
-- EDIT skills/tracks/nextjs/sdcorejs-nextjs.md - kept both utility preflight and payload-boundary rules
+- EDIT .sdcorejs/tasks/current-session.md - git/PR checkpoint.
+- Multiple skill-pack source and generated mirror files - documentation skill consolidation branch.
+- ADD .sdcorejs/documentation/presentations/sdcorejs-agent-angular-sharing.html - improved presentation source.
+- ADD .sdcorejs/documentation/presentations/sdcorejs-agent-angular-sharing.pdf - improved presentation PDF.
 
 ## Verification
-- git status --porcelain - pass before merge
-- git merge origin/main - conflicts found and under resolution
-- npm run sync:skills - pass
-- npm run check:skills - pass
-- npm run test - pass (12 node e2e tests)
-- git diff --cached --check - pass
-- git diff --check - pass
-- staged conflict-marker check - pass
+- `npm run check:skills` - pass.
+- `npm test` - pass; 14 tests passed.
+- `git diff --check` and `git diff --cached --check` - pass.
+- staged hygiene scans - pass with expected documentation-reference warnings for literal debug/focused-test examples and one intentional PDF binary artifact.
+- `git push -u origin HEAD` - pass.
+- `gh auth status` - fail; not logged in.
 
 ## Resume From Here
-Merge commit and push are complete; see final response for commit hash and remote branch.
+Create the PR after GitHub CLI authentication is available, or use the GitHub compare URL returned by push.

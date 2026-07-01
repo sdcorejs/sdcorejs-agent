@@ -108,7 +108,7 @@ const groups = [
     title: "Finish and release skills",
     label: "Less common, important",
     intro:
-      "These are easy to misunderstand because they often run near the end. They protect quality, branch hygiene, and release handoff.",
+      "These are easy to misunderstand because they often run near the end. They protect quality, documentation, branch hygiene, and release handoff.",
     skills: [
       {
         name: "sdcorejs-repair-loop",
@@ -116,14 +116,9 @@ const groups = [
         use: "Use when review or ship verify-before-done mode reports Critical or Important issues.",
       },
       {
-        name: "sdcorejs-comment-code",
-        role: "Apply the selected finish-gate comment level.",
-        use: "Use after review/repair or directly when the user asks to add code comments.",
-      },
-      {
-        name: "sdcorejs-write-user-guide",
-        role: "Generate evergreen user-facing feature guides.",
-        use: "Use after generated features, large ship handoffs, or when comparing docs to requirements.",
+        name: "sdcorejs-documentation",
+        role: "Unified documentation executor.",
+        use: "Use for code comments, user guides, technical docs, and documentation write/rewrite/improve/structure/summarize/convert/standardize requests.",
       },
     ],
   },
@@ -179,7 +174,7 @@ const groups = [
       >
       <h2>Know which skill to call, and which ones run behind the scenes</h2>
       <p class="lead">
-        The pack has 24 dispatchable skills. The first groups are the ones most
+        The pack has 23 dispatchable skills. The first groups are the ones most
         people invoke directly. The later groups are specialized guards,
         packaging steps, or context helpers that often run as part of a larger
         flow.

@@ -1,16 +1,19 @@
-# User-Guide Templates (for `sdcorejs-write-user-guide`)
+# User-Guide Templates (for `sdcorejs-documentation (write-user-guide mode)`)
 
-Templates the `sdcorejs-write-user-guide` skill renders. Per-module guides live at
-`<target>/.sdcorejs/user-guide/<module>.md`; the aggregate at `<target>/sdcorejs-user-guide.md`.
+Templates the documentation skill renders in `write-user-guide` mode. Per-module guides live at
+`<target>/.sdcorejs/documentation/user-guides/<module>.md`; the aggregate lives at
+`<target>/.sdcorejs/documentation/sdcorejs-user-guide.md`.
 Markdown is canonical; DOCX/PDF is produced by the pandoc command at the bottom. Images are
-placeholders the target project fills (the agent does NOT run the app / capture screenshots).
+placeholders the target project fills. The agent does not run the app or capture screenshots.
 
-## Per-module template (.sdcorejs/user-guide/<module>.md)
+Write generated prose in the user's runtime language. Keep this reusable template English-only.
+
+## Per-Module Template (.sdcorejs/documentation/user-guides/<module>.md)
 
 ```markdown
 ---
 module: <module>
-title: <Tên tính năng>
+title: <Feature title>
 tracks: [angular, nestjs]
 generated_at: <ISO8601>
 git_head: <sha>
@@ -25,87 +28,94 @@ prd_refs: []
 coverage: { total: 0, met: 0, partial: 0, missing: 0 }
 ---
 
-# <Tên tính năng> — Hướng dẫn người dùng
+# <Feature title> - User Guide
 
-## Tổng quan
-<Mô tả module làm gì cho người dùng, ngôn ngữ phổ thông.>
+## Overview
+<Describe what this module lets the user do, in plain language.>
 
-## Màn hình & tác vụ
-### <Tên màn> — `/<module>/<entity>`
-- **Người dùng làm gì:** <mô tả tác vụ>
-- **Ai dùng được:** quyền `<module>_<entity>:<action>`
-- **Trường/nút chính:** <liệt kê>
-![<Tên màn>](images/<module>-<screen>.png)
+## Screens And Tasks
+### <Screen title> - `/<module>/<entity>`
+- **What the user does:** <task description>
+- **Who can use it:** permission `<module>_<entity>:<action>`
+- **Main fields/buttons:** <list>
+![<Screen title>](images/<module>-<screen>.png)
 
-## Bảng quyền
-| Mã quyền | Tác vụ | Ai/Vai trò |
+## Permission Table
+| Permission code | Task | Who / Role |
 |---|---|---|
-| `<module>_<entity>:view` | Xem danh sách/chi tiết | <role> |
-| `<module>_<entity>:create` | Tạo mới | <role> |
+| `<module>_<entity>:view` | View list/detail | <role> |
+| `<module>_<entity>:create` | Create record | <role> |
 
-## Tham chiếu dữ liệu
-| Trường | Kiểu | Bắt buộc | Ràng buộc |
+## Data Reference
+| Field | Type | Required | Constraint |
 |---|---|---|---|
-| code | string | có | duy nhất |
-| name | string | có | <=255 |
+| code | string | yes | unique |
+| name | string | yes | <=255 |
 
-## Hành động đặc biệt
-<workflow / chuyển trạng thái / bulk / xuất Excel — nếu có; bỏ mục này nếu không.>
+## Special Actions
+<Workflow / state transition / bulk action / export action. Remove this section when none applies.>
 
-## Thành phần Core UI đã dùng
-<Angular only — bảng các component/service/directive `@sdcorejs/angular` mà module này thực sự dùng, mỗi dòng một vai trò cụ thể. Bỏ mục này cho track không phải angular. Đây là cùng bảng đã hiển thị cho người dùng sau khi sinh code.>
-| Core UI | Vai trò trong chức năng này |
+## Core UI Components Used
+<Angular only: list the `@sdcorejs/angular` components/services/directives this module actually uses, with one concrete role per row. Remove this section for non-Angular tracks. This is the same table shown to the user after code generation.>
+| Core UI | Role in this feature |
 |---|---|
-| `SdTable` | Hiển thị danh sách <entity> kèm phân trang, lọc, sắp xếp |
-| `SdNotifyService` | Thông báo thành công / lỗi |
-| `SdSection` | Gom nhóm trường trong màn chi tiết |
+| `SdTable` | Shows the <entity> list with pagination, filtering, and sorting |
+| `SdNotifyService` | Shows success and error feedback |
+| `SdSection` | Groups fields on the detail screen |
 
-## Coverage vs yêu cầu
-| # | Yêu cầu (spec/PRD) | Trạng thái | Tài liệu ở mục |
+## Coverage vs Requirements
+| # | Requirement (spec/PRD) | Status | Documented in section |
 |---|---|---|---|
-| 1 | <acceptance criterion> | ✅ đủ | Màn hình & tác vụ |
-| 2 | <criterion> | ⚠️ một phần | <gap> |
-| 3 | <criterion> | ❌ thiếu | — |
+| 1 | <acceptance criterion> | met | Screens And Tasks |
+| 2 | <criterion> | partial | <gap> |
+| 3 | <criterion> | missing | - |
 
-## Ảnh minh hoạ — checklist chụp
-- [ ] `images/<module>-list.png` — màn danh sách
-- [ ] `images/<module>-detail.png` — màn chi tiết
+## Illustration Image Checklist
+- [ ] `images/<module>-list.png` - list screen
+- [ ] `images/<module>-detail.png` - detail screen
 ```
 
-## Aggregate template (<root>/sdcorejs-user-guide.md)
+## Aggregate Template (.sdcorejs/documentation/sdcorejs-user-guide.md)
 
 ```markdown
 ---
-title: <Tên dự án> — Hướng dẫn sử dụng
+title: <Project name> - User Guide
 generated_at: <ISO8601>
 git_head: <sha>
 modules: [<module1>, <module2>]
 coverage: { total: 0, met: 0, partial: 0, missing: 0 }
 ---
 
-# <Tên dự án> — Hướng dẫn sử dụng
+# <Project name> - User Guide
 
-## Mục lục
+## Table Of Contents
 1. [<Module 1>](#module-1)
 
-## Tổng quan hệ thống
-<1-2 đoạn: hệ thống làm gì, dành cho ai.>
+## System Overview
+<One or two paragraphs: what the system does and who it serves.>
 
 ## <Module 1>
-<chèn nội dung .sdcorejs/user-guide/<module1>.md, bỏ phần frontmatter>
+<Insert .sdcorejs/documentation/user-guides/<module1>.md content without frontmatter>
 
-## Tổng hợp Coverage vs yêu cầu
-| Module | Đủ ✅ | Một phần ⚠️ | Thiếu ❌ |
-|---|---|---|---|
+## Coverage vs Requirements Summary
+| Module | Met | Partial | Missing |
+|---|---:|---:|---:|
 | <module1> | 5 | 1 | 0 |
 ```
 
-## Xuất DOCX/PDF (pandoc)
+## DOCX/PDF Export (pandoc)
 
-DOCX (ưu tiên — chèn được ảnh scaffold):
-  pandoc <target>/sdcorejs-user-guide.md -o <target>/sdcorejs-user-guide.docx --resource-path=<target>/.sdcorejs/user-guide
+DOCX:
+
+```bash
+pandoc <target>/.sdcorejs/documentation/sdcorejs-user-guide.md -o <target>/.sdcorejs/documentation/sdcorejs-user-guide.docx --resource-path=<target>/.sdcorejs/documentation/user-guides
+```
+
 PDF:
-  pandoc <target>/sdcorejs-user-guide.md -o <target>/sdcorejs-user-guide.pdf --resource-path=<target>/.sdcorejs/user-guide
 
-- Ảnh là placeholder `images/<module>-<screen>.png`; đặt ảnh vào `<target>/.sdcorejs/user-guide/images/` rồi chạy pandoc.
-- Agent KHÔNG chạy app/chụp ảnh — checklist chụp ở mỗi guide nói rõ cần chụp màn nào.
+```bash
+pandoc <target>/.sdcorejs/documentation/sdcorejs-user-guide.md -o <target>/.sdcorejs/documentation/sdcorejs-user-guide.pdf --resource-path=<target>/.sdcorejs/documentation/user-guides
+```
+
+- Images are placeholder paths such as `images/<module>-<screen>.png`; place real images under `<target>/.sdcorejs/documentation/user-guides/images/` before running pandoc.
+- The agent does not run the app or capture screenshots. Each module guide's checklist states which screens should be captured.

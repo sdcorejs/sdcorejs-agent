@@ -14,6 +14,7 @@ Before executing this skill:
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
 3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Rule
 When a request matches a skill, invoke that skill before responding. Skills decide how to explore, plan, build, verify, and ship.
@@ -68,6 +69,7 @@ Request
 - Apply `_refs/shared/project-context.md` before any non-trivial skill execution so direct-triggered skills load summaries, checkpoints, specs/plans, tasks, and relevant memories.
 - Use `sdcorejs-execute-plan` after plan approval; it owns track detection, product-track routing, design-track routing, test-track routing, generic harness fallback, and the parallel/sequential question.
 - Present the finish gate after every code-generation run.
+- Before any choice, approval gate, yes/no question, or mode selection, apply `_refs/shared/user-choice-prompt.md` so the user can answer with a number.
 - Run verification before claiming pass, fixed, built, or done.
 - For long or interruptible work, mirror visible `Tasks` progress to `.sdcorejs/tasks/current-session.md`.
 - Match the user's language at runtime; keep identifiers and route paths in English.
@@ -78,6 +80,8 @@ Request
 - Concrete feature request: `sdcorejs-brainstorming` in confirm mode.
 - Product docs, user stories, acceptance criteria, UAT, or requirement/implementation/test consistency: `sdcorejs-product`.
 - Design docs, wireframes, mockups, PNG previews, screen flows, or FE handoff from user stories: `sdcorejs-design`.
+- Code comments, user guides, technical docs, or documentation rewrite/improve/structure/summarize/convert/standardize work: `sdcorejs-documentation`.
+- Project summary, code-map, trace-flow, env setup, recovery, persona, or memories: `sdcorejs-explore`.
 - Existing site audit: `sdcorejs-review`.
 - Test request: `sdcorejs-test` for direct test work, or `sdcorejs-brainstorming` first if cases/assertions are not confirmed.
 - Approved plan: `sdcorejs-execute-plan`.
@@ -90,4 +94,5 @@ Request
 - `sdcorejs-product`
 - `sdcorejs-design`
 - `sdcorejs-test`
+- `sdcorejs-documentation`
 - `sdcorejs-parallel-dispatch`

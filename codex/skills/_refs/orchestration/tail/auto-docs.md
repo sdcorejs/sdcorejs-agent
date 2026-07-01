@@ -16,7 +16,7 @@ The agent MUST run this reference (write mode) at the end of every code-writing 
 - `write-code` (the `sdcorejs-angular` orchestrator, plus the on-demand reference packs it loads: `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail`, `actions`)
 - `sdcorejs-test`
 - `sdcorejs-review` (write a "review session" doc summarizing findings, even though no code changed)
-- `sdcorejs-comment-code` when the chosen level is not `skip`
+- `sdcorejs-documentation (comment-code mode)` when the chosen level is not `skip`
 
 For nestjs, nextjs, and test tracks, the equivalent writing skills trigger this skill the same way.
 
@@ -30,7 +30,7 @@ At the START of any new session in a target project, the agent MUST:
 2. Glob `<target-root>/.sdcorejs/docs/<track>/*.md` for the relevant track
 3. Read the latest 3 files (sorted by filename — timestamp prefix sorts naturally)
 4. Summarize them to itself before answering the user's first question
-5. Acknowledge briefly: "Read the latest 3 docs from .sdcorejs/docs/<track>/. What would you like next?" (or EN equivalent)
+5. Acknowledge briefly: "<localized text>" (or EN equivalent)
 
 This read-only step does NOT write a new doc.
 
@@ -129,7 +129,9 @@ This skill applies to `angular`, `nestjs`, `nextjs`, and `test` tracks. The only
 
 The product track writes PO-facing ledgers under `.sdcorejs/docs/product/` through `sdcorejs-product`. Use auto-docs for session summaries; use product ledgers for feature traceability.
 
-When the agent works inside a multi-track repo, write to the track folder matching the work performed. If unsure, ask the user before writing.
+When the agent works inside a multi-track repo, write to the track folder
+matching the work performed. If unsure, ask the user before writing using
+`_refs/shared/user-choice-prompt.md` with numbered candidate tracks and aliases.
 
 ## Anti-patterns
 - Writing the doc to the agent repo (`sdcorejs-agent/.sdcorejs/...`) instead of the target project

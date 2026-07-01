@@ -12,6 +12,16 @@ This repo provides Runtime-localized SDLC skills for:
 - A first-class test track
 - A generic execution harness for unsupported stacks or non-track plans
 
+## Skill Source Language
+
+Author this skill pack in English only. `skills/**`, `_refs/**`, prompts,
+templates, examples, generated mirrors, and validation fixtures must not embed
+Vietnamese prose or Vietnamese-only sample UI text. Runtime localization belongs
+to the consuming project/session: instructions may say to translate or localize
+output at runtime, but the reusable skill source itself stays English and
+locale-neutral. Use placeholders such as `<localized label>` instead of concrete
+Vietnamese labels.
+
 ## Dispatch
 
 At session start, glob `skills/**/*.md`, excluding `_refs/**`, and read frontmatter only. Match user requests against each skill `description`. Read the selected skill body before acting.
@@ -53,12 +63,12 @@ Tail chain after code generation:
 sdcorejs-test
 -> sdcorejs-review
 -> sdcorejs-repair-loop when findings exist
--> sdcorejs-comment-code
+-> sdcorejs-documentation (comment-code mode)
 -> sdcorejs-product when user-visible feature traceability is needed
 -> sdcorejs-ship (verify-before-done mode)
 -> sdcorejs-ship (branch-ready mode)
 -> _refs/orchestration/tail/auto-docs.md
--> sdcorejs-write-user-guide
+-> sdcorejs-documentation (write-user-guide mode)
 -> _refs/orchestration/tail/auto-task-tracker.md
 -> sdcorejs-explore (memories mode) when durable knowledge surfaced
 ```
@@ -75,6 +85,7 @@ sdcorejs-test
 | product | `sdcorejs-product` | `product/` PRDs/user stories/AC/UAT docs plus `.sdcorejs/docs/product/` traceability ledgers |
 | design | `sdcorejs-design` | `design/` flows/specs/wireframes/PNG exports plus `.sdcorejs/docs/design/` traceability |
 | test | `sdcorejs-test` | `_refs/shared/testing-philosophy.md`, `_refs/<track>/test-*.md`; `test/` for solution-root e2e/UAT |
+| documentation | `sdcorejs-documentation` | `_refs/documentation/*` |
 | generic | `sdcorejs-execute-plan` | approved plan + project scripts |
 
 The product track is first-class. Feature docs, user stories, acceptance criteria, UAT, and traceability audits are not routed through the generic harness.
@@ -107,13 +118,16 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 8. **Mojibake guard.** Treat encoding corruption as blocking in docs, skills, prompts, comments, and user-facing strings.
 9. **Target project writes.** Auto-docs, snapshots, memories, user guides, and task trackers write to the target project, never this agent repo unless this repo is the explicit target.
 10. **Core UI first.** Angular generation prefers documented `@sdcorejs/angular` components.
-11. **Do not author new skills without explicit user approval.**
+11. **Choice prompts.** Before asking the user to choose, approve, answer yes/no, or select a mode, apply `_refs/shared/user-choice-prompt.md`; ask one decision at a time and number every option as `1/2/3/...`.
+12. **Skill source language.** Keep reusable skill/ref source in English only; translate generated output at runtime based on the consumer's language.
+13. **Do not author new skills without explicit user approval.**
 
 ## Session Context
 
 At the start of a target-project session, load:
 
 - `_refs/shared/project-context.md` for the current request
+- `_refs/shared/user-choice-prompt.md` before choices, approval gates, yes/no prompts, or mode selections
 - Latest 3 `.sdcorejs/docs/<track>/*.md`
 - `.sdcorejs/memories/<track>/*.md` frontmatter
 - `.sdcorejs/specs/<track>/*.md` frontmatter
@@ -128,8 +142,8 @@ At the start of a target-project session, load:
 | SDLC | `sdcorejs-brainstorming`, `sdcorejs-spec`, `sdcorejs-plan` |
 | Execution | `sdcorejs-execute-plan`, track executors, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` |
 | Parallel | `sdcorejs-parallel-dispatch`; workspace isolation lives in `sdcorejs-git (workspace mode)` |
-| Finish | `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-write-user-guide`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)` |
-| Utilities | `sdcorejs-explore`, `sdcorejs-git`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship` |
+| Finish | `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)` |
+| Utilities | `sdcorejs-explore`, `sdcorejs-git`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, `sdcorejs-documentation` |
 
 ## Mirrors
 

@@ -10,23 +10,23 @@ Add to `src/i18n/messages/vi.json` (mirror in `en.json`):
 {
   "contact": {
     "form": {
-      "name": "Họ và tên",
+      "name": "<localized text>",
       "email": "Email",
-      "phone": "Số điện thoại (không bắt buộc)",
-      "company": "Công ty (không bắt buộc)",
-      "message": "Nội dung cần tư vấn",
-      "submit": "Gửi yêu cầu",
-      "submitting": "Đang gửi...",
-      "success": "Cảm ơn bạn! Chúng tôi sẽ phản hồi trong vòng 24 giờ.",
-      "error": "Có lỗi xảy ra. Vui lòng thử lại hoặc gọi {phone}.",
-      "rateLimited": "Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau {minutes} phút.",
+      "phone": "<localized text>",
+      "company": "<localized text>",
+      "message": "<localized text>",
+      "submit": "<localized text>",
+      "submitting": "<localized text>",
+      "success": "<localized text>",
+      "error": "<localized text>",
+      "rateLimited": "<localized text>",
       "errors": {
-        "name_short": "Họ tên phải có ít nhất 2 ký tự",
-        "name_long": "Họ tên không quá 100 ký tự",
-        "email_invalid": "Email không hợp lệ",
-        "phone_invalid": "Số điện thoại không hợp lệ",
-        "message_short": "Nội dung phải có ít nhất 10 ký tự",
-        "message_long": "Nội dung không quá 2000 ký tự"
+        "name_short": "<localized text>",
+        "name_long": "<localized text>",
+        "email_invalid": "<localized text>",
+        "phone_invalid": "<localized text>",
+        "message_short": "<localized text>",
+        "message_long": "<localized text>"
       }
     }
   }

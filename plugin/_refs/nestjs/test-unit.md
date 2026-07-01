@@ -22,18 +22,18 @@ describe('mapEntityToDto', () => {
     const entity = {
       id: '123',
       code: 'P001',
-      name: 'Sản phẩm A',
+      name: '<localized text>',
       unitPrice: 100000,
       createdAt: new Date('2026-05-17T10:00:00Z'),
-      category: { id: 'c1', name: 'Xi măng' },
+      category: { id: 'c1', name: '<localized text>' },
     } as any;
 
     expect(mapEntityToDto(entity)).toEqual({
       id: '123',
       code: 'P001',
-      name: 'Sản phẩm A',
+      name: '<localized text>',
       unitPrice: 100000,
-      categoryName: 'Xi măng',
+      categoryName: '<localized text>',
       createdAt: '2026-05-17T10:00:00.000Z',
     });
   });
@@ -56,7 +56,7 @@ describe('ProductCreateSchema', () => {
     [{ code: 'P001', name: '', unitPrice: 100 }, false], // name required
     [{ code: 'P001', name: 'A', unitPrice: -1 }, false], // price >= 0
     [{ code: 'P001', name: 'A', unitPrice: 'abc' }, false], // type mismatch
-  ])('validates %o → %s', (input, expectedOk) => {
+  ])('<localized text>', (input, expectedOk) => {
     const result = ProductCreateSchema.safeParse(input);
     expect(result.success).toBe(expectedOk);
   });
@@ -67,7 +67,7 @@ describe('ProductCreateSchema', () => {
     if (!r.success) {
       const codeError = r.error.issues.find((i) => i.path[0] === 'code');
       expect(codeError?.message).toMatchObject({
-        vi: expect.stringContaining('bắt buộc'),
+        vi: expect.stringContaining('<localized text>'),
         en: expect.stringContaining('required'),
       });
     }
@@ -84,7 +84,7 @@ import { ProductRepository } from './product.repository';
 import { DataSource, QueryRunner } from 'typeorm';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 
-describe('ProductService — unit', () => {
+describe('<localized text>', () => {
   let service: ProductService;
   let repo: jest.Mocked<ProductRepository>;
   let queryRunner: jest.Mocked<QueryRunner>;
@@ -143,7 +143,7 @@ describe('ProductService — unit', () => {
     });
   });
 
-  describe('bulkUpdatePrice — transaction', () => {
+  describe('<localized text>', () => {
     it('commits when all updates succeed', async () => {
       const repoTx = { update: jest.fn(), findOneBy: jest.fn() };
       (queryRunner.manager.getRepository as jest.Mock).mockReturnValue(repoTx);
@@ -259,7 +259,7 @@ Coverage target: ≥ 80% line on services + validators + mappers.
 - **Single-`it` test of a 6-step method** — break into one `it` per behaviour
 - **`expect(repo.save).toHaveBeenCalledWith(theExactEntityObject)`** — brittle; use `expect.objectContaining`
 - **Controller test that touches the DB** — bypass controller; test service directly OR upgrade to integration test
-- **Testing zod's behaviour with safeParse on every shape** — zod's own tests cover that; test YOUR schema's rules
+- **Testing zod'<localized text>'s own tests cover that; test YOUR schema's rules
 
 ## Cross-references
 - Principles: `_refs/shared/testing-philosophy.md`

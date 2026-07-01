@@ -89,27 +89,27 @@ Use the `screen-list.md` server-side paging pattern. Columns:
 
 | Column key | Label | Notes |
 |---|---|---|
-| `username` | Tên đăng nhập | `type: 'text'` |
+| `username` | Username | `type: 'text'` |
 | `email` | Email | `type: 'text'` |
-| `fullName` | Họ tên | `type: 'text'` |
-| `roleCodes` | Vai trò | Custom cell — join `roleCodes` with `,` |
-| `isActive` | Trạng thái | Boolean badge (Đang hoạt động / Đã khoá) |
+| `fullName` | Full name | `type: 'text'` |
+| `roleCodes` | Roles | Custom cell — join `roleCodes` with `,` |
+| `isActive` | Status | Boolean badge (Active / Locked) |
 
 Row actions (each gated by `SdPermissionDirective`):
 
 | Action | Permission code | Behavior |
 |---|---|---|
-| Đặt lại mật khẩu | `admin_user:reset_password` | Password-prompt dialog → `POST /api/admin/user/:id/reset-password` body `{ password: string }` |
-| Bật / Tắt | `admin_user:update` | Toggle without confirm → `PUT /api/admin/user/:id/enabled` → reload row |
-| Xoá | `admin_user:delete` | Confirm dialog → `DELETE /api/admin/user/:id` → reload table |
+| Reset password | `admin_user:reset_password` | Password-prompt dialog → `POST /api/admin/user/:id/reset-password` body `{ password: string }` |
+| Enable / Disable | `admin_user:update` | Toggle without confirm → `PUT /api/admin/user/:id/enabled` → reload row |
+| Delete | `admin_user:delete` | Confirm dialog → `DELETE /api/admin/user/:id` → reload table |
 
-Toolbar: **Tạo tài khoản** button gated `admin_user:create` opens the create drawer.
+Toolbar: **Create account** button gated `admin_user:create` opens the create drawer.
 Edit icon per row gated `admin_user:update` opens the edit drawer.
 
 ### Skeleton — `account.list.component.ts`
 
 ```typescript
-@SdTabComponent({ name: 'Tài khoản' })
+@SdTabComponent({ name: '<localized text>' })
 @Component({ selector: 'app-account-list', ... })
 export class AccountListComponent implements OnInit {
   private readonly api = inject(AccountApiService);
@@ -122,11 +122,11 @@ export class AccountListComponent implements OnInit {
   ngOnInit() {
     this.tableOption = {
       columns: [
-        { key: 'username', title: 'Tên đăng nhập', type: 'text' },
+        { key: 'username', title: '<localized text>', type: 'text' },
         { key: 'email',    title: 'Email',          type: 'text' },
-        { key: 'fullName', title: 'Họ tên',          type: 'text' },
-        { key: 'roleCodes', title: 'Vai trò',        type: 'custom' }, // template: join roleCodes
-        { key: 'isActive', title: 'Trạng thái',      type: 'custom' }, // template: badge
+        { key: 'fullName', title: '<localized text>',          type: 'text' },
+        { key: 'roleCodes', title: '<localized text>',        type: 'custom' }, // template: join roleCodes
+        { key: 'isActive', title: '<localized text>',      type: 'custom' }, // template: badge
       ],
       items: async (filter) => this.api.paging(convertTableFilter(filter)),
       // row actions wired via selector.actions + row action column
@@ -137,26 +137,26 @@ export class AccountListComponent implements OnInit {
     // Prompt for the new password before calling the API.
     // `SdConfirmService.prompt` opens a small dialog with a required input field.
     const password = await this.confirm.prompt({
-      title: 'Đặt lại mật khẩu',
-      content: `Tài khoản: ${user.username}`,
-      field: { label: 'Mật khẩu mới', type: 'password', required: true, minLength: 8 },
+      title: '<localized text>',
+      content: `<localized text>`,
+      field: { label: '<localized text>', type: 'password', required: true, minLength: 8 },
     });
     if (!password) return;  // user cancelled or left empty
     await this.loading.run(() => this.api.resetPassword(user.id, password));
-    this.notify.success('Đã đặt lại mật khẩu');
+    this.notify.success('<localized text>');
   }
 
   async onToggleEnabled(user: UserDTO) {
     await this.loading.run(() => this.api.setEnabled(user.id, !user.isActive));
-    this.notify.success(user.isActive ? 'Đã khoá tài khoản' : 'Đã mở khoá tài khoản');
+    this.notify.success(user.isActive ? '<localized text>' : '<localized text>');
     this.tableOption.reload?.();
   }
 
   async onDelete(user: UserDTO) {
-    const ok = await this.confirm.show({ title: 'Xoá tài khoản?', content: user.username });
+    const ok = await this.confirm.show({ title: '<localized text>', content: user.username });
     if (!ok) return;
     await this.loading.run(() => this.api.delete(user.id));
-    this.notify.success('Đã xoá tài khoản');
+    this.notify.success('<localized text>');
     this.tableOption.reload?.();
   }
 }
@@ -170,10 +170,10 @@ Use the `screen-detail.md` CREATE / UPDATE state pattern (no DETAIL-view state n
 
 | Control | Label | Notes |
 |---|---|---|
-| `username` | Tên đăng nhập | Required; disabled in UPDATE (immutable) |
+| `username` | Username | Required; disabled in UPDATE (immutable) |
 | `email` | Email | Required; `SdValidators.email` |
-| `fullName` | Họ tên | Required |
-| `roleCodes` | Vai trò | Multi-select; options loaded from `GET /api/admin/role` on init |
+| `fullName` | Full name | Required |
+| `roleCodes` | Roles | Multi-select; options loaded from `GET /api/admin/role` on init |
 
 - CREATE: `POST /api/admin/user` then reload table.
 - UPDATE: `PUT /api/admin/user/:id` then reload table. The `roleCodes` update calls `POST /api/admin/user/:id/roles` **instead of** the generic update when only roles changed — or combine into one unified save depending on BE contract.
@@ -246,13 +246,13 @@ Use the `screen-list.md` server-side paging pattern. Columns:
 
 | Column key | Label | Notes |
 |---|---|---|
-| `code` | Mã vai trò | `type: 'text'` |
-| `name` | Tên vai trò | `type: 'text'` |
-| `permissions` | Số quyền | Custom cell — `permissions.length` |
-| `isActive` | Trạng thái | Boolean badge |
+| `code` | Role code | `type: 'text'` |
+| `name` | Role name | `type: 'text'` |
+| `permissions` | Permission count | Custom cell — `permissions.length` |
+| `isActive` | Status | Boolean badge |
 
 Row actions: Edit (gated `admin_role:update`), Delete (gated `admin_role:delete`, confirm + `DELETE /api/admin/role/:id`).
-Toolbar: **Tạo vai trò** gated `admin_role:create`.
+Toolbar: **Create role** gated `admin_role:create`.
 
 ### Create/Edit drawer — `detail.component.ts` + permission-assign grid
 
@@ -260,10 +260,10 @@ The drawer form contains:
 
 | Control | Label | Notes |
 |---|---|---|
-| `code` | Mã vai trò | Required; disabled in UPDATE |
-| `name` | Tên vai trò | Required |
-| `isActive` | Kích hoạt | Boolean switch |
-| `permissions` | Phân quyền | Managed by the permission-assign grid below (not a plain `sd-input`) |
+| `code` | Role code | Required; disabled in UPDATE |
+| `name` | Role name | Required |
+| `isActive` | Active | Boolean switch |
+| `permissions` | Permissions | Managed by the permission-assign grid below (not a plain `sd-input`) |
 
 **Permission-assign grid** — a checkbox matrix loaded from `GET /api/admin/permission`:
 
@@ -325,7 +325,7 @@ HTML template sketch for the grid (inline inside the drawer form):
   @let _permissionGrid = permissionGrid();
   <thead>
     <tr>
-      <th>Module / Thực thể</th>
+      <th>Module / Entity</th>
       @for (action of actions(); track action) { <th>{{ action }}</th> }
     </tr>
   </thead>
@@ -372,10 +372,10 @@ Columns grouped by `model` (use `groupBy` option if `SdTable` supports it; other
 
 | Column key | Label | Notes |
 |---|---|---|
-| `model` | Module / Thực thể | `type: 'text'` |
-| `code` | Mã quyền | `type: 'text'` |
-| `label` | Nhãn | `type: 'text'` |
-| `action` | Hành động | `type: 'text'` |
+| `model` | Module / Entity | `type: 'text'` |
+| `code` | Permission code | `type: 'text'` |
+| `label` | Label | `type: 'text'` |
+| `action` | Action | `type: 'text'` |
 
 **No create / edit / delete buttons, no row actions.** The toolbar has only a search/filter input (optional).
 
@@ -454,27 +454,27 @@ Register in the app shell (follow `init-portal.md` convention):
 }
 ```
 
-### Sidebar menu group "Quản trị"
+### Sidebar menu group "<localized text>"
 
 Add a menu group to the portal's sidebar config (see `init-portal.md` for the menu registration pattern). Each item gated by the matching `:view` permission via `SdPermissionDirective` (or the layout's permission-aware menu config):
 
 ```typescript
 {
-  group: 'Quản trị',
+  group: '<localized text>',
   icon: 'shield',         // use project icon set
   items: [
     {
-      label: 'Tài khoản',
+      label: '<localized text>',
       route: '/admin/account',
       permission: 'admin_user:view',    // layout hides item when user lacks this code
     },
     {
-      label: 'Vai trò',
+      label: '<localized text>',
       route: '/admin/role',
       permission: 'admin_role:view',
     },
     {
-      label: 'Quyền',
+      label: '<localized text>',
       route: '/admin/permission',
       permission: 'admin_permission:view',
     },
@@ -519,12 +519,12 @@ src/libs/admin/
 ## Verification checklist
 
 - [ ] **Build typechecks** — `ng build` (or `tsc --noEmit`) passes with no errors for the `admin` library.
-- [ ] **Permission gating** — log in as a user WITHOUT `admin_user:reset_password`; confirm the "Đặt lại mật khẩu" row action is hidden. Repeat for each `admin_*` code.
+- [ ] **Permission gating** — log in as a user WITHOUT `admin_user:reset_password`; confirm the "<localized text>" row action is hidden. Repeat for each `admin_*` code.
 - [ ] **Reset-password calls the custom route** — network tab shows `POST /api/admin/user/:id/reset-password`, NOT the generic update endpoint.
 - [ ] **Permission-assign grid** — opening a role's edit drawer shows a checkbox matrix; checking/unchecking cells updates the `permissions` array sent on save.
 - [ ] **Permission screen is read-only** — no create/edit/delete controls render, regardless of user role.
 - [ ] **Routes protected** — navigating to `/admin/account` without `admin_user:view` redirects (route guard blocks access).
-- [ ] **Sidebar items hidden** — menu items under "Quản trị" do not appear for users lacking the corresponding `:view` permission.
+- [ ] **Sidebar items hidden** — menu items under "<localized text>" do not appear for users lacking the corresponding `:view` permission.
 
 ---
 
@@ -588,11 +588,11 @@ Use the `screen-list.md` server-side paging pattern. Columns:
 
 | Column key | Label | Notes |
 |---|---|---|
-| `code` | Mã tenant | `type: 'text'` |
-| `name` | Tên tenant | `type: 'text'` |
+| `code` | Tenant code | `type: 'text'` |
+| `name` | Tenant name | `type: 'text'` |
 | `realm` | Keycloak realm | `type: 'text'` |
 | `clientId` | Client ID | `type: 'text'` |
-| `isActive` | Trạng thái | Boolean badge (Đang hoạt động / Đã khoá) |
+| `isActive` | Status | Boolean badge (Active / Locked) |
 
 > `clientSecret` is **never displayed** in any column or detail view — it is write-only.
 
@@ -600,10 +600,10 @@ Row actions (each gated by `SdPermissionDirective`):
 
 | Action | Permission code | Behavior |
 |---|---|---|
-| Sửa | `admin_tenant:update` | Opens edit drawer |
-| Xoá | `admin_tenant:delete` | Confirm dialog → `DELETE /api/admin/tenant/:id` → reload |
+| Edit | `admin_tenant:update` | Opens edit drawer |
+| Delete | `admin_tenant:delete` | Confirm dialog → `DELETE /api/admin/tenant/:id` → reload |
 
-Toolbar: **Tạo tenant** gated `admin_tenant:create`.
+Toolbar: **Create tenant** gated `admin_tenant:create`.
 Gate the entire list with `*sdPermission="'admin_tenant:view'"`.
 
 #### Create/Edit drawer — `detail.component.ts`
@@ -612,15 +612,15 @@ Use the `screen-detail.md` CREATE / UPDATE state pattern. Reactive form controls
 
 | Control | Label | Notes |
 |---|---|---|
-| `code` | Mã tenant | Required; disabled in UPDATE (immutable) |
-| `name` | Tên tenant | Required |
+| `code` | Tenant code | Required; disabled in UPDATE (immutable) |
+| `name` | Tenant name | Required |
 | `realm` | Keycloak realm | Required; disabled in UPDATE (realm cannot be renamed) |
 | `clientId` | Client ID | Required; disabled in UPDATE |
-| `clientSecret` | Client Secret | Required in CREATE; write-only password field in UPDATE (placeholder `••••••••`); if left blank on UPDATE the BE skips re-encrypting |
-| `isActive` | Kích hoạt | Boolean switch |
+| `clientSecret` | Client Secret | Required in CREATE; write-only password field in UPDATE (placeholder `<localized text>`); if left blank on UPDATE the BE skips re-encrypting |
+| `isActive` | Active | Boolean switch |
 
 > Never pre-fill `clientSecret` on the edit form — the BE never returns this field. Render it as
-> `type="password"` and add helper text: "Để trống để giữ nguyên secret hiện tại" (UPDATE state).
+> `type="password"` and add helper text: "<localized text>" (UPDATE state).
 
 - CREATE: `POST /api/admin/tenant`
 - UPDATE: `PUT /api/admin/tenant/:id` (omit `clientSecret` from payload when blank)
@@ -673,7 +673,7 @@ Use a tree layout (Angular CDK `<cdk-tree>` or the Core UI `SdTree` component if
 Each node displays `code` + `name`. Root nodes have `parentCode === null`.
 
 > If `SdTree` is not in the Core UI catalog, fall back to a flat `SdTable` with an indented
-> `name` column that prefixes child rows with `└─ `. Mark the fallback with
+> `name` column that prefixes child rows with `<localized text>`. Mark the fallback with
 > `alert('TODO: replace flat table with SdTree when available')`.
 
 Tree-building logic sketch:
@@ -691,18 +691,18 @@ readonly childrenByParent = computed(() => {
 });
 ```
 
-Load via `GET /api/admin/department?tenantCode=<selected>` — add a **tenant selector** at the top
+Load via `<localized text>` — add a **tenant selector** at the top
 of the page (dropdown loaded from `GET /api/admin/tenant`) to filter by tenant.
 
 Row / node actions:
 
 | Action | Permission code | Behavior |
 |---|---|---|
-| Thêm con | `admin_department:create` | Opens create drawer pre-filled `parentCode` |
-| Sửa | `admin_department:update` | Opens edit drawer |
-| Xoá | `admin_department:delete` | Confirm + `DELETE /api/admin/department/:id` |
+| Add child | `admin_department:create` | Opens create drawer pre-filled `parentCode` |
+| Edit | `admin_department:update` | Opens edit drawer |
+| Delete | `admin_department:delete` | Confirm + `DELETE /api/admin/department/:id` |
 
-Toolbar: **Tạo phòng ban gốc** gated `admin_department:create`.
+Toolbar: **Create root department** gated `admin_department:create`.
 Gate the entire screen with `*sdPermission="'admin_department:view'"`.
 
 #### Create/Edit drawer — `detail.component.ts`
@@ -710,9 +710,9 @@ Gate the entire screen with `*sdPermission="'admin_department:view'"`.
 | Control | Label | Notes |
 |---|---|---|
 | `tenantCode` | Tenant | Required; select loaded from `GET /api/admin/tenant`; disabled in UPDATE |
-| `code` | Mã phòng ban | Required; disabled in UPDATE |
-| `name` | Tên phòng ban | Required |
-| `parentCode` | Phòng ban cha | Optional; select filtered to same `tenantCode`; null = root |
+| `code` | Department code | Required; disabled in UPDATE |
+| `name` | Department name | Required |
+| `parentCode` | Parent department | Optional; select filtered to same `tenantCode`; null = root |
 
 - CREATE: `POST /api/admin/department`
 - UPDATE: `PUT /api/admin/department/:id`
@@ -780,7 +780,7 @@ async onTenantChange(tenantCode: string | null) {
 | Control | Label | Notes |
 |---|---|---|
 | `tenantCode` | Tenant | Optional select (null = global); options from `GET /api/admin/tenant` |
-| `departmentCode` | Phòng ban | Optional select; options filtered by selected `tenantCode` |
+| `departmentCode` | Department | Optional select; options filtered by selected `tenantCode` |
 
 #### Role create/edit drawer — additional controls
 
@@ -790,7 +790,7 @@ tenant/department pair. `tenantCode = null` = global role (same as simple profil
 | Control | Label | Notes |
 |---|---|---|
 | `tenantCode` | Tenant | Optional select; null = global role |
-| `departmentCode` | Phòng ban | Optional select; filtered by `tenantCode` |
+| `departmentCode` | Department | Optional select; filtered by `tenantCode` |
 
 ---
 
@@ -841,9 +841,9 @@ Append to `admin.routes.ts`:
 
 ---
 
-### Sidebar "Quản trị" — enterprise additions
+### Sidebar "<localized text>" — enterprise additions
 
-Append two items to the existing "Quản trị" group (after "Quyền"):
+Append two items to the existing "<localized text>" group (after "<localized text>"):
 
 ```typescript
 // [enterprise] additions to the sidebar menu group
@@ -853,7 +853,7 @@ Append two items to the existing "Quản trị" group (after "Quyền"):
   permission: 'admin_tenant:view',
 },
 {
-  label: 'Phòng ban',
+  label: '<localized text>',
   route: '/admin/department',
   permission: 'admin_department:view',
 },

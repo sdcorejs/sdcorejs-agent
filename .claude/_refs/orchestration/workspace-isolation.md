@@ -33,6 +33,8 @@ git branch --show-current
 2. If `git-dir` differs from `git-common-dir` and this is not a submodule, treat
    the checkout as already isolated. Do not create a nested worktree.
 3. Ask consent before creating a worktree unless the user already requested one.
+   Use `_refs/shared/user-choice-prompt.md` and present:
+   `1. Create worktree` / `2. Work in current checkout`.
 4. Prefer a native harness worktree feature when available. Use manual
    `git worktree` only when no native tool is available.
 5. For `git worktree` fallback:

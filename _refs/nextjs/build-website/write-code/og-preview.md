@@ -9,7 +9,7 @@ A share link without a preview image looks broken on Zalo and Messenger (Vietnam
 
 ## When invoked
 - Automatic after `seo.md` in a "Full build"
-- User says "OG image", "Zalo không hiện ảnh", "Facebook share lỗi", "Twitter card", "social preview"
+- User says "OG image", "<localized text>", "<localized text>", "Twitter card", "social preview"
 - After a homepage hero / branding update → re-generate OG
 
 ## What ships
@@ -55,7 +55,7 @@ import { company } from '@/config/company';
 import { theme } from '@/config/theme';
 
 export const runtime = 'edge';
-export const alt = `${company.name} — ${company.tagline}`;
+export const alt = `<localized text>`;
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -94,7 +94,7 @@ export default async function OpengraphImage() {
 }
 ```
 
-**Per-page OG** — e.g. `src/app/[locale]/san-pham/opengraph-image.tsx` can use the same template with different copy ("Sản phẩm chất lượng cao", category-specific title).
+**Per-page OG** — e.g. `src/app/[locale]/san-pham/opengraph-image.tsx` can use the same template with different copy ("<localized text>", category-specific title).
 
 For dynamic content (e.g. product detail page `/san-pham/[slug]`):
 ```typescript
@@ -121,7 +121,7 @@ export default async function OpengraphImage({ params }: { params: { slug: strin
 
 ### Step 3 — Custom fonts in OG
 
-`@vercel/og` doesn't pick up `next/font` automatically. For non-system fonts (e.g. Vietnamese diacritics on serif font), load font ArrayBuffer:
+`@vercel/og` doesn't pick up `next/font` automatically. For non-system fonts or extended Latin diacritics on a serif font, load font ArrayBuffer:
 
 ```typescript
 // src/lib/og.ts
@@ -148,7 +148,7 @@ export default async function OpengraphImage() {
 }
 ```
 
-For **English / Latin-only** content you can skip font loading and let `@vercel/og` use its built-in default — less branded but fine. For **Vietnamese content, do NOT rely on a system "Arial" fallback**: `@vercel/og` runs in an isolated server environment with no access to OS fonts, and its bundled default does not cover the full Vietnamese diacritic set — affected glyphs (ữ, ặ, ẩ, ợ, …) render as boxes. Load a diacritic-capable font binary (Step 3) whenever the OG title may contain Vietnamese.
+For **English / Latin-only** content you can skip font loading and let `@vercel/og` use its built-in default - less branded but fine. For content with extended Latin diacritics, do NOT rely on a system "Arial" fallback: `@vercel/og` runs in an isolated server environment with no access to OS fonts, and its bundled default may not cover every glyph. Load a diacritic-capable font binary (Step 3) whenever the OG title may contain those glyphs.
 
 ### Step 4 — Twitter card
 
@@ -181,7 +181,7 @@ Zalo follows the Open Graph spec. After deploy:
 3. Confirm image + title + description
 
 **Zalo quirks:**
-- Caches aggressively per URL — append a `?v=2` query string to force re-fetch during testing
+- Caches aggressively per URL — append a `<localized text>` query string to force re-fetch during testing
 - Image must be absolute URL (https://...) — Zalo doesn't resolve relative URLs
 - Image must be publicly accessible (not behind auth or gated)
 - HTTPS required (HTTP URLs sometimes get no preview)
@@ -197,9 +197,9 @@ Both follow OG spec. Test by sharing the URL in a chat.
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | Preview missing entirely | Relative URL in `og:image` | Use `absoluteUrl()` helper |
-| Old image still showing | Platform cache | Use the platform's debugger to refresh, OR append `?v=N` |
+| Old image still showing | Platform cache | Use the platform's debugger to refresh, OR append `<localized text>` |
 | Image upscaled / pixelated | Wrong dimensions | Stick to 1200×630 |
-| Vietnamese chars as boxes | Missing diacritic-capable font | Load font binary (Step 3) |
+| Extended Latin chars as boxes | Missing diacritic-capable font | Load font binary (Step 3) |
 | Image renders locally but 500s in prod | `runtime: 'edge'` mismatch with hosting | Cloudflare requires edge; Vercel works with either; remove `runtime` line to fall back to Node runtime |
 | Different image on Twitter | Twitter pulls `twitter:image` if set | Confirm `seo.md`'s `buildMetadata` includes Twitter card |
 | OG image is HTML page instead of PNG | `opengraph-image.tsx` exported wrong type | Must export default function returning `ImageResponse`, plus `size` + `contentType` exports |
@@ -218,7 +218,7 @@ If too slow on cold: simplify the OG JSX (fewer gradients, no remote image fetch
 - Ship at least a static fallback `public/og-default.png` (1200×630, ≤200 KB)
 - Use absolute URLs in `og:image` (`absoluteUrl()` helper from `seo.md`)
 - Set `og:image:width` (1200) and `og:image:height` (630) explicitly (Next.js metadata does this when you pass `width`/`height`)
-- For Vietnamese content in dynamic OG: load a diacritic-capable font
+- For dynamic OG content with extended Latin diacritics: load a diacritic-capable font
 - Verify on at least Facebook + Zalo before claiming done
 - Cache OG images appropriately (Vercel + 30-min ISR handles this automatically)
 
@@ -239,9 +239,9 @@ If too slow on cold: simplify the OG JSX (fewer gradients, no remote image fetch
 - Tiny text in OG (< 24px) — unreadable in thumbnails on mobile
 - Forgetting to update `og-default.png` after rebrand — old logo stays in social caches for weeks
 
-## Quick reference — Vietnamese platform priority
+## Quick reference - localized platform priority
 
-For a Vietnamese landing site, the priority order for preview testing is usually:
+For a localized landing site, prioritize the preview platforms most used by that locale. In Vietnam, the order is usually:
 1. **Zalo** (most chat sharing happens here)
 2. **Messenger / Facebook** (high traffic share source)
 3. **Twitter/X** (lower priority unless B2B)

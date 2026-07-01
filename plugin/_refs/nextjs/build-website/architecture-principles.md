@@ -138,7 +138,7 @@ Every public route MUST emit:
 
 `app/sitemap.ts` and `app/robots.ts` are required. `app/manifest.ts` + `icon.svg` + `apple-icon.png` for favicon coverage.
 
-**Why**: Vietnamese landing-site projects ship → 2 weeks pass → owner asks "tại sao Google không thấy". The investment of 30 minutes during generation saves a frantic Lighthouse audit later.
+**Why**: Vietnamese landing-site projects ship → 2 weeks pass → owner asks "<localized text>". The investment of 30 minutes during generation saves a frantic Lighthouse audit later.
 
 **Reviewer**: missing `generateMetadata` on a public route = **Critical**.
 
@@ -217,7 +217,7 @@ export async function POST(req: Request) {
     from: 'noreply@yourdomain.vn',
     to: process.env.CONTACT_DEST_EMAIL!.split(','),
     replyTo: email,
-    subject: `[Liên hệ] ${name}`,
+    subject: `<localized text>`,
     text: message,
   });
   return Response.json({ ok: true });
@@ -237,7 +237,7 @@ import Image from 'next/image';
 
 <Image
   src="/hero.jpg"
-  alt="Xưởng sản xuất Xi măng Đại Phong, 30,000 m² tại Bình Dương"
+  alt="<localized text>"
   width={1920}
   height={1080}
   priority                                            // above-the-fold

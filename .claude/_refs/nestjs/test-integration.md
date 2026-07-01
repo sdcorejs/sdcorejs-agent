@@ -64,7 +64,7 @@ import { Category } from '../category/category.entity';
 import { createTestDataSource } from '../../test/setup-integration';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 
-describe('ProductService — integration', () => {
+describe('<localized text>', () => {
   let ds: DataSource;
   let service: ProductService;
 
@@ -83,8 +83,8 @@ describe('ProductService — integration', () => {
 
     // Seed reference data
     await ds.getRepository(Category).save([
-      { id: 'c1', code: 'CEMENT', name: 'Xi măng' },
-      { id: 'c2', code: 'STEEL', name: 'Sắt thép' },
+      { id: 'c1', code: 'CEMENT', name: '<localized text>' },
+      { id: 'c2', code: 'STEEL', name: '<localized text>' },
     ]);
   });
 
@@ -96,7 +96,7 @@ describe('ProductService — integration', () => {
     it('persists product with category', async () => {
       const result = await service.create({
         code: 'P001',
-        name: 'Sản phẩm A',
+        name: '<localized text>',
         categoryId: 'c1',
         unitPrice: 100000,
       });
@@ -128,14 +128,14 @@ describe('ProductService — integration', () => {
   describe('search', () => {
     beforeEach(async () => {
       await ds.getRepository(Product).save([
-        { code: 'P010', name: 'Xi măng PCB30', categoryId: 'c1', unitPrice: 100000 },
-        { code: 'P011', name: 'Xi măng PCB40', categoryId: 'c1', unitPrice: 110000 },
-        { code: 'P020', name: 'Sắt phi 10', categoryId: 'c2', unitPrice: 50000 },
+        { code: 'P010', name: '<localized text>', categoryId: 'c1', unitPrice: 100000 },
+        { code: 'P011', name: '<localized text>', categoryId: 'c1', unitPrice: 110000 },
+        { code: 'P020', name: '<localized text>', categoryId: 'c2', unitPrice: 50000 },
       ]);
     });
 
     it('returns paged results filtered by keyword', async () => {
-      const result = await service.search({ keyword: 'xi măng', page: 1, pageSize: 10 });
+      const result = await service.search({ keyword: '<localized text>', page: 1, pageSize: 10 });
       expect(result.total).toBe(2);
       expect(result.data.every((p) => p.name.toLowerCase().includes('xi'))).toBe(true);
     });

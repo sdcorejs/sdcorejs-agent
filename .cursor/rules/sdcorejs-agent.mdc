@@ -22,6 +22,16 @@ This repo is an SDLC skill pack for:
 
 All user-facing behavior is Runtime-localized: detect the user's language, respond in that language, and preserve locale-specific marks. Keep identifiers, permission codes, env keys, and route paths in English.
 
+## Skill Source Language
+
+Author this skill pack in English only. `skills/**`, `_refs/**`, prompts,
+templates, examples, generated mirrors, and validation fixtures must not embed
+Vietnamese prose or Vietnamese-only sample UI text. Runtime localization belongs
+to the consuming project/session: instructions may say to translate or localize
+output at runtime, but the reusable skill source itself stays English and
+locale-neutral. Use placeholders such as `<localized label>` instead of concrete
+Vietnamese labels.
+
 ## Skill Layout
 
 ```text
@@ -33,7 +43,7 @@ skills/
     04-execute-plan.md   -> sdcorejs-execute-plan
   orchestration/
     parallel-dispatch.md -> sdcorejs-parallel-dispatch
-    write-user-guide.md, repair-loop.md, ...
+    documentation.md, repair-loop.md, ...
   tracks/
     angular/sdcorejs-angular.md
     nestjs/sdcorejs-nestjs.md
@@ -46,7 +56,7 @@ skills/
   shared/workflow/ship.md -> sdcorejs-ship
   shared/workflow/git.md -> sdcorejs-git
 _refs/
-  angular/, nestjs/, nextjs/, sdlc/, shared/, infra/, orchestration/
+  angular/, nestjs/, nextjs/, sdlc/, shared/, infra/, orchestration/, documentation/
   shared/tdd.md -> loaded by sdcorejs-test (tdd mode)
 ```
 
@@ -73,10 +83,10 @@ Request
        test:    sdcorejs-test
        generic: execute-plan harness fallback
   -> finish gate and tail chain
-       sdcorejs-test -> sdcorejs-review -> repair-loop -> sdcorejs-comment-code
+       sdcorejs-test -> sdcorejs-review -> repair-loop -> sdcorejs-documentation (comment-code mode)
        -> sdcorejs-product when user-visible feature traceability is needed
        -> sdcorejs-ship (verify-before-done mode) -> sdcorejs-ship (branch-ready mode) -> _refs/orchestration/tail/auto-docs.md
-       -> write-user-guide -> _refs/orchestration/tail/auto-task-tracker.md -> sdcorejs-explore (memories mode) when relevant
+       -> sdcorejs-documentation (write-user-guide mode) -> _refs/orchestration/tail/auto-task-tracker.md -> sdcorejs-explore (memories mode) when relevant
 ```
 
 `sdcorejs-execute-plan` always asks the user whether to run sequentially or in parallel before execution. If the user chooses parallel, it must run `sdcorejs-parallel-dispatch`, which owns both the safety verdict and safe fan-out / role-split execution.
@@ -120,8 +130,10 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 7. Evidence before claims: never say pass, fixed, built, or done without current verification output.
 8. Auto-docs and task tracking write to the target project, not to this agent repo.
 9. Mojibake is a blocking defect in prompts, docs, skills, comments, and user-facing strings.
-10. Do not author new skills without explicit user approval.
-11. Do not expand into production SDLC skill/ref coverage without the explicit approval described in **Production SDLC Scope Decision**.
+10. User choice prompts must not rely on clickable options; apply `_refs/shared/user-choice-prompt.md`, ask one decision at a time, and provide numbered choices such as `1/2/3`.
+11. Skill-pack source language is English only; keep runtime-localized behavior by translating generated output to the user's language during execution, not by hardcoding Vietnamese in reusable skills or refs.
+12. Do not author new skills without explicit user approval.
+13. Do not expand into production SDLC skill/ref coverage without the explicit approval described in **Production SDLC Scope Decision**.
 
 ## Session-Start Ritual
 
@@ -141,6 +153,7 @@ Load references on demand:
 - `_refs/shared/project-context.md` before non-trivial skill execution.
 - `_refs/sdlc/{angular,nestjs,nextjs}.md` during brainstorming/spec/plan.
 - `_refs/shared/tasklist.md` for non-trivial execution tasks.
+- `_refs/shared/user-choice-prompt.md` before any user-facing choice, approval gate, yes/no question, or mode selection.
 - `_refs/shared/testing-philosophy.md` for test-track work.
 - `_refs/angular/core-docs-fetch.mjs` before using Core UI components.
 - `_refs/<track>/review-*.md` during review.

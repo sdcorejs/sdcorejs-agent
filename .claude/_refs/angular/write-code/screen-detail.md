@@ -21,7 +21,7 @@ The same file also owns the form definition, so this reference is also where you
 - Refining any state: form not disabled in DETAIL, missing Edit button, broken stale-id recovery, defaults wrong on CREATE, file uploads firing after save, navigation target wrong, etc.
 - Adding or tightening validators: required / maxLength / patterns / `SdValidators.notBlank` / async unique checks / `FormArray` for repeating sub-records / per-field error messages
 - Adding controls that reference another entity, such as customer/product/address selects, hydrated detail summaries, or relation ids
-- User asks: "tạo màn detail", "trang chi tiết", "màn create", "màn update", "form không hoạt động", "thêm validator", "custom validator", "async validator"
+- User asks: "<localized text>", "<localized text>", "<localized text>", "<localized text>", "<localized text>", "<localized text>", "custom validator", "async validator"
 
 Defer to:
 - [`./screen-list.md`](./screen-list.md) when the request is about the list page (different file)
@@ -29,6 +29,35 @@ Defer to:
 - [`./init-entity.md`](./init-entity.md) when the entity model/service/routes don't exist yet
 
 Before adding custom validators, date/number formatters, normalizers, query-param helpers, upload/download helpers, clipboard helpers, or other form utilities, read `_refs/shared/sdcorejs-utils.md`. Reuse `@sdcorejs/utils` where it covers the behavior, while keeping Angular `Validators`/`SdValidators` for Angular form-specific contracts.
+
+## Core UI component selection gate
+
+Before writing or changing the template, run the Core UI discovery step from the main Angular skill:
+
+1. `node _refs/angular/core-docs-fetch.mjs --list`
+2. `node _refs/angular/core-docs-fetch.mjs --print assets/STYLE-GUIDE`
+3. Read the exact component docs for every UI need on this screen before generating markup. For a detail screen this normally means page/section, button, form controls, table/grid, modal/drawer when used, permission directive, loading/notify services, and icon support.
+
+The generator must pick an existing Core UI component first. A custom `div`/`table`/CSS implementation is allowed only after the inventory check proves there is no suitable Core UI component, and the final response must explicitly flag the fallback.
+
+| UI need | Default Core UI choice | Do not generate instead |
+|---|---|---|
+| Page shell, title, header actions | `SdPageComponent`, `SdTabComponent`, `headerRight` template | Free-form page header divs, hardcoded sticky bars |
+| Business section | `SdSection` with utility spacing | Nested card-like wrappers, anonymous bordered panels |
+| Text / number / date / boolean / textarea / upload / editor fields | `sd-input`, `sd-input-number`, `sd-date`/`sd-datetime`, `sd-switch`, `sd-textarea`, `sd-upload-file`, `sd-editor` | Native inputs, Material form fields, custom field CSS |
+| Select / relation picker | `sd-select` with existing related model/service contracts | Inline relation objects, ad hoc dropdown markup |
+| Primary/secondary/destructive actions | `sd-button` with icon/title/type/color/permission | Raw `<button>` or Material buttons mixed into Core UI screens |
+| Multi-row child data with add/remove/edit rows | Core UI table/grid component if available; otherwise the sectioned FormArray row-editor fallback in this ref | Hand-written `<table>`, repeated card stacks, or unmanaged arrays |
+| Empty/loading/error affordance | Existing Core UI empty/loading/notify patterns when available | Silent blank areas with no spacing or action |
+
+If the Core UI docs show multiple candidates, choose the component whose API directly models the domain behavior:
+
+- List-like, many rows, sortable/scan-heavy data -> table/grid component.
+- Small repeated data set that must be edited inline -> table/grid with cell templates if supported.
+- Repeated data set where each row has many fields or mobile density matters -> sectioned FormArray row-editor fallback.
+- One-off confirmation or secondary edit flow -> modal/drawer only when the project already uses that Core UI component or the docs prove it exists.
+
+Never "self-draw" a component because the exact syntax is not remembered. Fetch the docs, mirror an existing local usage with `rg`, then generate.
 
 ## Shared shell — code templates
 
@@ -47,6 +76,7 @@ All literal code lives in [`_refs/angular/templates/screen-detail-component.md`]
 | `onBack()` + `onEdit()` navigation helpers | [`#navigation-helpers`](_refs/angular/templates/screen-detail-component.md#navigation-helpers) |
 | `pageTabName` / `pageTabColor` computed values per state | [`#conditional-tab-name--color`](_refs/angular/templates/screen-detail-component.md#conditional-tab-name--color) |
 | Per-field rendering snippets (`sd-input`, `sd-select`, `sd-date`, `sd-upload-file`, `sd-editor`, etc.) | [`#form-field-rendering-template`](_refs/angular/templates/screen-detail-component.md#form-field-rendering-template) |
+| Editable child collections / line items in detail | [`#editable-child-collection-rendering-template`](_refs/angular/templates/screen-detail-component.md#editable-child-collection-rendering-template) |
 | **CREATE-specific:** state detection + `applyDefaults()` + `onSave()` | [`#create-state`](_refs/angular/templates/screen-detail-component.md#create-state) |
 | **UPDATE-specific:** state detection + optional loader override + `onSave()` | [`#update-state`](_refs/angular/templates/screen-detail-component.md#update-state) |
 
@@ -57,9 +87,79 @@ For form-level refinement (validators, FormArray, error messages), use [`_refs/a
 | Shared `SdValidators` class (`notBlank` / `phoneNumber` / `email` / `url` / async `uniqueValue`) | [`#form-validatorts--shared-sdvalidators-class`](_refs/angular/templates/reactive-form-templates.md#form-validatorts--shared-sdvalidators-class) |
 | Lightweight `[(model)]` + `[form]` binding (default starting point) | [`#detailcomponentts--lightweight-model-binding-first`](_refs/angular/templates/reactive-form-templates.md#detailcomponentts--lightweight-model-binding-first) |
 | Advanced shape with `FormArray` for repeating sub-records | [`#detail-advancedcomponentts--with-formarray-dynamic-fields`](_refs/angular/templates/reactive-form-templates.md#detail-advancedcomponentts--with-formarray-dynamic-fields) |
+| Editable line-item `FormArray` contract for detail tables | [`#editable-line-item-formarray-contract`](_refs/angular/templates/reactive-form-templates.md#editable-line-item-formarray-contract) |
 | Worked example with typed validators + per-field error messages | [`#worked-example-product-entity`](_refs/angular/templates/reactive-form-templates.md#worked-example-product-entity) |
 
 ---
+
+## Detail child collections and editable rows
+
+Treat child arrays in a detail screen as first-class form/UI work, not as a decorative block. This section applies when the entity has line items, order details, variants, attachments with metadata, approval steps, contacts, addresses, price tiers, schedules, or any repeated sub-record that can be added, removed, or edited from the detail page.
+
+### Detection triggers
+
+Use this pattern when any of these are true:
+
+- The request says "table in detail", "many rows", "add row", "remove row", "edit row", "line items", "chi tiet don", "dong con", "nhieu dong", "them/xoa/sua tren dong".
+- The schema has an array field (`items`, `details`, `children`, `lines`, `attachments`, `variants`, `prices`, `contacts`, `addresses`, etc.).
+- The same child fields repeat more than once in the UI.
+- Users need row-level actions, row-level validation, totals, or a row count summary.
+
+### Default UI decision
+
+1. Fetch Core UI docs for the table/grid component and examples.
+2. If the Core UI table/grid supports cell templates or projected cell content, render the child collection as an editable table.
+3. If the table/grid only supports read-only rows, use it for DETAIL state and use the sectioned `FormArray` row-editor fallback for CREATE/UPDATE.
+4. If no Core UI table/grid is available, use the sectioned `FormArray` row-editor fallback, flag the fallback, and keep all layout via utilities.
+
+Do not hand-write an HTML `<table>` unless the Core UI inventory has no table/grid candidate and an existing local screen already uses native tables for the same design system.
+
+### State behavior
+
+- CREATE/UPDATE: rows are editable, add/remove buttons are enabled, field controls bind to each row `FormGroup`.
+- DETAIL: rows are read-only; hide add/remove actions and set child controls to viewed/disabled. Keep the same visual density so users can compare detail vs update without layout jump.
+- Deleting an unsaved row removes it from the `FormArray`. Deleting a persisted row follows the API contract: either mark `_deleted: true` in payload or call the child delete endpoint, whichever existing services already use.
+- Use one validation gate for parent + rows: `form.invalid` -> `form.markAllAsTouched()` -> notify -> stop. Do not save parent data while child rows are invalid.
+
+### Editable table contract
+
+When table/grid cell templates are supported:
+
+- Source of truth is the parent `FormGroup` with a child `FormArray`; do not keep a second mutable array for the same rows.
+- Each row maps to one child `FormGroup`.
+- Each editable column maps to a Core UI form control (`sd-input`, `sd-input-number`, `sd-select`, `sd-date`/`sd-datetime`, `sd-switch`, etc.) with `[form]="rowGroup"` and `name="<field>"`.
+- Row action column uses `sd-button` icon/compact style for remove/restore actions. Gate destructive actions by state and permission when relevant.
+- Header action uses `sd-button` ("Them dong", "Them san pham", etc.) in the section/table toolbar, not a floating custom button.
+- Show empty state inside the section/table body with a clear add action in CREATE/UPDATE and read-only message in DETAIL.
+- Keep row identities stable with `track rowId`/`track $index` only when there is no stable id; prefer `id`, `tempId`, or a generated client key.
+
+### Fallback sectioned row-editor contract
+
+Use this when a Core UI table cannot host controls safely or the row has many fields:
+
+- Wrap the collection in one `sd-section` with a toolbar row: title/count on the left, add action on the right.
+- Render each row as a compact utility-grid block, not as nested cards. Use `row row-sm` or `grid-container` with `gap-12`/`gap-16`.
+- Keep each row action in a fixed-width trailing area so add/remove buttons do not shift field columns.
+- For 5+ rows, avoid tall card stacks. Prefer table/grid if possible; otherwise make each row compact and scan-friendly.
+- Surface row-level validation near the row and field-level validation near the field when business rules require messages.
+
+### Save payload
+
+Normalize child rows before save:
+
+- Use `this.form.getRawValue()` so disabled read-only fields required by the API are not accidentally dropped.
+- Remove UI-only keys (`tempId`, `_expanded`, `_editing`) before calling `service.create(...)` / `service.update(...)`.
+- Preserve existing child ids on UPDATE so the backend can distinguish update vs create.
+- Include delete markers only if the backend contract expects them.
+
+### Anti-patterns for child rows
+
+- Repeated plain `div` rows with native `<input>` while the rest of the page uses Core UI forms.
+- Maintaining `items: Child[]` and `FormArray` separately without a clear mapper.
+- Add/remove mutating a display array but not the submitted form value.
+- One large textarea containing JSON/list data instead of row controls.
+- Missing toolbar spacing, missing empty state, or action buttons glued to table edges.
+- Reusing list-page `SdTable` pagination/filter UX for a small editable child set when inline editing is the actual task.
 
 ## DETAIL state rules
 
@@ -146,8 +246,8 @@ Save button uses `*sdPermission="'<MODULE>_C_<ENTITY>_CREATE'; sdPermissionKey: 
 
 If entity has workflow (see [`./actions.md`](./actions.md)), CREATE may show two submit variants:
 
-- `Lưu` → calls `service.create(...)`
-- `Lưu & Gửi duyệt` → calls `service.create(...)` then `service.submit(id)`
+- `<localized text>` → calls `service.create(...)`
+- `<localized text>` → calls `service.create(...)` then `service.submit(id)`
 
 Both go through the same validation gate.
 
@@ -197,14 +297,14 @@ Start lightweight, tighten later:
 
 1. **First pass:** `new FormGroup({})` + template attributes (`required`, `maxlength`, `min`, `max`). Validate at save boundary via `form.invalid` + `form.markAllAsTouched()`.
 2. **Second pass (when business rules stabilize):** add typed validators per field via `FormBuilder.group({...})`; surface per-field error messages.
-3. **Workflow-enabled screens:** route `Lưu`, `Lưu & Gửi duyệt`, etc. through ONE validation gate. Keep approve/reject independent from field validation (they operate on existing data).
+3. **Workflow-enabled screens:** route `<localized text>`, `<localized text>`, etc. through ONE validation gate. Keep approve/reject independent from field validation (they operate on existing data).
 
 ### Signal-first UI state
 
 The `FormGroup` itself stays imperative. Use signals for UI state, and keep editable entity/form models as plain objects/ViewModels when using Core UI `[model]` / `[(model)]` binding:
 
 - `state`, `loading`, `saving` -> `signal()`
-- `entity: Partial<ProductSaveReq & { id?: string }>` -> plain object/ViewModel
+- `<localized text>` -> plain object/ViewModel
 - `isDetail`, `canSubmit`, `pageTitle`, `pageTabColor` → `computed()`
 - `effect()` only for side effects (route param sync, reload), never as a replacement for `computed()`
 - The component decorator must include `changeDetection: ChangeDetectionStrategy.OnPush`; import `ChangeDetectionStrategy` from `@angular/core`.
@@ -215,7 +315,7 @@ The `FormGroup` itself stays imperative. Use signals for UI state, and keep edit
 readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
 entity: Partial<ProductSaveReq & { id?: string }> = {};
 readonly pageTitle = computed(() =>
-  this.state() === 'CREATE' ? 'Tạo mới' : 'Chi tiết'
+  this.state() === 'CREATE'<localized text>'<localized text>' : '<localized text>'
 );
 ```
 
@@ -231,10 +331,12 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 
 ### MUST DO ✅
 
+- Run Core UI component discovery before generating markup; pick Core UI page/section/form/button/table components before any custom HTML/CSS.
 - Lightweight `new FormGroup({})` allowed by default; add typed validators only when business rules are stable
 - `ChangeDetectionStrategy.OnPush` declared on the detail component
 - Required field validation enforced at save (`form.invalid` → `markAllAsTouched()` → notify; do not let invalid submits through)
 - Use `[form]="form"` + `[(model)]="entity.field"` as the default binding pattern, where `entity` is a plain object/ViewModel (Core UI form components self-register via `[form]+name`; do NOT use `formControlName` — they do not implement `ControlValueAccessor`)
+- For child arrays / line items, use the editable child collection pattern above: parent `FormGroup` + child `FormArray` + Core UI table/grid or sectioned row-editor fallback.
 - Use Vietnamese labels / messages / notify for VI portals (full diacritics); permission codes + route paths stay English
 - Use grid `row row-sm` for form sections (compact spacing)
 - For relation fields, read `./reuse-existing-entities.md`; reuse existing related model/summary types and services, use `<entity>Id` when the API only returns an id, and do not inline the related entity shape when a contract exists
@@ -243,6 +345,8 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 
 ### MUST NOT ❌
 
+- Self-draw page sections, forms, tables, or action bars when a Core UI component exists.
+- Use native `<input>`, native `<select>`, Material form fields, raw `<button>`, or hand-written `<table>` inside a Core UI detail page unless the fallback is documented.
 - Skip form validation before submission (silent broken saves)
 - Hard-code error messages (use i18n constants per project convention)
 - Add form logic to components when business-level (delegate to service or shared validator)
@@ -260,14 +364,19 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - Reuse the same submit handler with `if (this.entity.id) update else create` BUT forget to set `state` properly — keep state-aware branching explicit
 - Hardcode the success navigation target without checking user preference
 - Forget `data.permission` on any of `/create`, `/update/:id`, `/detail/:id`
+- Add/remove child rows in a display-only array while the submitted `FormArray` stays unchanged.
+- Render editable child rows as unstructured card stacks without table/grid/fallback reasoning.
 
 ---
 
 ## AI generation checklist (full component)
 
+- [ ] Core UI inventory + STYLE-GUIDE fetched before template generation; component docs read for page/section/form/button/table needs
 - [ ] Component file at `pages/detail/detail.component.ts` with imports from the shared shell ref
 - [ ] `state` signal initialized to `'DETAIL'` (overridden by `ngOnInit` dispatcher)
 - [ ] `initForm()` builds FormGroup from schema (one control per `visibleInDetail` field with declared validators)
+- [ ] Any child array / line-item field is represented in the parent form as a `FormArray`, not a disconnected display array
+- [ ] Editable child rows use Core UI table/grid when supported, or the documented sectioned row-editor fallback when not supported
 - [ ] `ngOnInit` resolves route → one of CREATE / UPDATE / DETAIL, dispatches accordingly
 - [ ] `loadEntityData(id)` shared by DETAIL + UPDATE, with stale-id recovery
 - [ ] CREATE branch: `applyDefaults()` patches domain defaults (isActivated:true, status, parentId)
@@ -280,6 +389,8 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - [ ] Validators applied per field criticality (don't over-constrain on first pass)
 - [ ] Related entity controls import/reuse existing model/summary/service contracts or document why a new contract is required
 - [ ] Per-field error display where business rules need surfaced messages
+- [ ] Row-level add/remove/edit actions are state-aware, permission-aware when needed, and hidden/disabled in DETAIL
+- [ ] Empty state exists for child rows; CREATE/UPDATE empty state includes an add action
 - [ ] Signal-first state for UI flags; `computed()` for derived; `@let` or `computed()` for 2+ template references
 - [ ] No template method/getter calls for displayed/derived values; use signals/computed/pure pipes/view-model fields
 - [ ] `ChangeDetectionStrategy.OnPush` imported and declared
@@ -290,6 +401,7 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 
 ## Anti-patterns
 
+- Skipping Core UI discovery and generating custom form/table/action markup from memory
 - Treating DETAIL as "just disable the form" without also branding page title + tab color differently
 - Forgetting `replaceUrl: true` on stale-id recovery (back button re-enters the broken URL)
 - Showing the Save button in DETAIL (only Back + Edit belong there)
@@ -300,6 +412,8 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - Adding typed validators speculatively before business rules are confirmed (over-constraint on first pass)
 - Calling `formControlName` with Core UI form components (they self-register via `[form]+name`; `formControlName` silently fails)
 - Inlining a related entity object in the detail form model when an imported relation type or id field should be used
+- Rendering detail child rows as hand-written `<table>`/`div` markup while Core UI table/grid or sectioned FormArray row-editor would fit
+- Building add/remove row UI without spacing, empty state, validation, stable row keys, or payload normalization
 
 ---
 

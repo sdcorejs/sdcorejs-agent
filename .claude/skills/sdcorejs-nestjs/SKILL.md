@@ -14,6 +14,7 @@ Before executing this skill:
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
 3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 
@@ -76,17 +77,28 @@ Skip only for pure config (`nest-cli.json`, `tsconfig.json`, `.env.example`) and
 
 **STOP and present the consolidated finish gate from [`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md) before running ANY tail step.** UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add entity", "add endpoint") — NOT only inside the spec→plan flow. The gate surfaces tests / comments / user-guide / review with defaults so the user always knows these steps exist and can opt out. "Small change" is not a reason to skip the gate.
 
-Then hand off in this exact order, honoring the gate's answers (skip = omit that step; everything not skipped runs):
+Then hand off in this exact order, honoring the gate's answers (skip = omit
+that step; everything not skipped runs):
+
+Documentation supplement: before documentation tail steps, run
+`sdcorejs-documentation (documentation-gate mode)` and read
+`_refs/documentation/gate.md`. This gate asks or loads saved project
+preferences from `<target>/.sdcorejs/documentation/preferences.md` for
+`comment_code`, `user_guide`, and `technical_doc`. Use those effective choices
+for the comment-code, technical-doc, and user-guide steps below. If
+`technical_doc=write`, or `technical_doc=auto` and the gate criteria are met,
+run `sdcorejs-documentation (write-technical-doc mode)` after comment-code and
+before `sdcorejs-ship (verify-before-done mode)`.
 
 1. *(if Tests not skipped)* `sdcorejs-test` — happy-path tests for what was generated (unit + integration via real DI + pg-mem; e2e via `supertest` against a real test PG where the layer warrants it)
 2. *(if Review not skipped)* `sdcorejs-review` (auto-detects NestJS → loads `_refs/nestjs/review-code.md`) — NestJS/PostgreSQL/TypeORM/Zod code-review table with severity, group, file/line, risk, fix, and gate
 3. *(if Review not skipped)* `sdcorejs-repair-loop` — apply findings, iterate until `BLOCKER`/`REQUIRED` findings are fixed or explicitly deferred
-4. `sdcorejs-comment-code` — apply the comment level the FINISH GATE captured (skip / simple / medium / full). Do NOT ASK again — the gate already asked. Rules live in `_refs/orchestration/tail/comment-code.md`.
+4. `sdcorejs-documentation (comment-code mode)` — apply the comment level the FINISH GATE captured (skip / simple / medium / full). Do NOT ASK again — the gate already asked. Rules live in `_refs/documentation/comment-code.md`.
 5. `sdcorejs-product` *(when user-visible feature traceability is needed)* - seed/update `.sdcorejs/docs/product/` with requirement, implementation, and test mapping
 6. `sdcorejs-ship (verify-before-done mode)` *(always)* — BLOCK "done" until every acceptance criterion in the spec is ✅ verified or ⚠️ explicitly deferred
 7. `sdcorejs-ship (branch-ready mode)` *(always)* — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
 8. `_refs/orchestration/tail/auto-docs.md` *(always)* — session summary written to `<target>/.sdcorejs/docs/nestjs/`
-9. *(if User guide not skipped)* `sdcorejs-write-user-guide` (Mode 1) — update the touched module's `.sdcorejs/user-guide/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds at ship.
+9. *(if User guide not skipped)* `sdcorejs-documentation (write-user-guide mode)` — update the touched module's `.sdcorejs/documentation/user-guides/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds under `.sdcorejs/documentation/` at ship.
 10. `_refs/orchestration/tail/auto-task-tracker.md` *(always)* — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
 11. `sdcorejs-explore (memories mode)` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 
@@ -116,6 +128,10 @@ If no approved plan exists and the request is non-trivial, route back to `sdcore
 - Match the user's language at runtime; all error messages, log messages, and comments preserve locale-specific marks.
 - Run the `@sdcorejs/utils` reuse preflight before writing helper/formatter/normalizer/mapper/paging/filter utility code; report reused utilities and justify any custom helper.
 - Run the full tail chain after the last step.
+
+### Documentation Gate Rule
+
+- Inside the mandatory finish gate, run `_refs/documentation/gate.md`. It encourages documentation by default, can save `.sdcorejs/documentation/preferences.md` in the target project, and owns comment-code / user-guide / technical-doc choices for future direct runs.
 
 ### MUST NOT
 - Generate code outside the approved plan (no surprise utility files).

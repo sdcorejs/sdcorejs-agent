@@ -9,7 +9,7 @@ SEO on Next.js App Router is mostly automatic IF you wire 4 pieces correctly: pe
 
 ## When invoked
 - Automatic after `pages-and-blocks.md` in a "Full build"
-- User says "fix SEO", "metadata thiếu", "structured data", "sitemap", "robots", "favicon"
+- User says "fix SEO", "<localized text>", "structured data", "sitemap", "robots", "favicon"
 - After domain change → re-run to update absolute URLs
 
 Prerequisites:
@@ -42,14 +42,14 @@ export const seo = {
   defaultTitle: company.name,
   titleTemplate: `%s | ${company.name}`,
   defaultDescription: company.tagline,
-  defaultKeywords: ['vật liệu xây dựng', 'xi măng', 'sắt thép', /* industry-specific */],
+  defaultKeywords: ['<localized text>', '<localized text>', '<localized text>', /* industry-specific */],
   twitterHandle: '', // @company if any
   facebookAppId: '', // if any
 } as const;
 
 export function absoluteUrl(path: string = ''): string {
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
-  return `${base}${path.startsWith('/') ? path : `/${path}`}`;
+  return `<localized text>`/${path}`}`;
 }
 ```
 
@@ -95,8 +95,8 @@ export function buildMetadata(input: PageMetaInput = {}): Metadata {
     alternates: {
       canonical: url,
       languages: {
-        'vi-VN': absoluteUrl(`/vi${path === '/' ? '' : path}`),
-        'en-US': absoluteUrl(`/en${path === '/' ? '' : path}`),
+        'vi-VN': absoluteUrl(`/vi${path === '/'<localized text>'' : path}`),
+        'en-US': absoluteUrl(`/en${path === '/'<localized text>'' : path}`),
       },
     },
     openGraph: {
@@ -104,7 +104,7 @@ export function buildMetadata(input: PageMetaInput = {}): Metadata {
       url,
       title: fullTitle,
       description,
-      locale: locale === 'en' ? 'en_US' : 'vi_VN',
+      locale: locale === 'en'<localized text>'en_US' : 'vi_VN',
       siteName: company.name,
       images: [{ url: ogImage, width: 1200, height: 630, alt: fullTitle }],
     },
@@ -122,7 +122,7 @@ export function buildMetadata(input: PageMetaInput = {}): Metadata {
 }
 
 // Per-page usage:
-// export const metadata = buildMetadata({ title: 'Sản phẩm', path: '/san-pham' });
+// export const metadata = buildMetadata({ title: '<localized text>', path: '/san-pham' });
 // OR async:
 // export async function generateMetadata({ params }): Promise<Metadata> {
 //   return buildMetadata({ title: '...', locale: params.locale });
@@ -241,13 +241,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
   return STATIC_ROUTES.flatMap(({ path, priority, changeFrequency }) =>
     LOCALES.map((locale) => ({
-      url: absoluteUrl(`/${locale}${path === '/' ? '' : path}`),
+      url: absoluteUrl(`/${locale}${path === '/'<localized text>'' : path}`),
       lastModified: now,
       changeFrequency,
       priority,
       alternates: {
         languages: Object.fromEntries(
-          LOCALES.map((l) => [l, absoluteUrl(`/${l}${path === '/' ? '' : path}`)]),
+          LOCALES.map((l) => [l, absoluteUrl(`/${l}${path === '/'<localized text>'' : path}`)]),
         ),
       },
     })),
@@ -315,7 +315,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export async function generateMetadata({ params: { locale } }) {
   return buildMetadata({
-    title: locale === 'en' ? 'Products' : 'Sản phẩm',
+    title: locale === 'en'<localized text>'Products' : '<localized text>',
     description: '...',
     path: '/san-pham',
     locale,

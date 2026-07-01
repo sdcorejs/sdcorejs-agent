@@ -28,11 +28,11 @@ When the user supplies fields:
 ```
 Module: sample
 Entity: product
-Label: Sản phẩm
+Label: Product
 Fields:
   - code (string, required, max 32)
   - name (string, required, max 255)
-  - categoryId (select, label: Loại sản phẩm, api: /api/categories)
+  - categoryId (select, label: Product type, api: /api/categories)
   - price (decimal, required, min 0)
   - stock (number, required, min 0)
   - description (textarea)
@@ -45,17 +45,17 @@ const PRODUCT_SCHEMA: EntitySchema = {
   module: 'sample',
   entity: 'product',
   entityPascal: 'Product',
-  entityLabel: 'Sản phẩm',
-  entityLabelPlural: 'Sản phẩm',
+  entityLabel: '<localized text>',
+  entityLabelPlural: '<localized text>',
   apiEndpoint: 'product',
 
   fields: [
-    { name: 'code', type: 'string', label: 'Mã sản phẩm', required: true, maxLength: 32, visibleInList: true },
-    { name: 'name', type: 'string', label: 'Tên sản phẩm', required: true, maxLength: 255, visibleInList: true },
-    { name: 'categoryId', type: 'select', label: 'Loại sản phẩm', selectApiEndpoint: '/api/categories', selectApiValueField: 'id', selectApiLabelField: 'name' },
-    { name: 'price', type: 'decimal', label: 'Giá bán', required: true, min: 0, decimals: 2, visibleInList: true, columnFormat: 'currency' },
-    { name: 'stock', type: 'number', label: 'Tồn kho', required: true, min: 0, visibleInList: true },
-    { name: 'description', type: 'textarea', label: 'Mô tả' }
+    { name: 'code', type: 'string', label: '<localized text>', required: true, maxLength: 32, visibleInList: true },
+    { name: 'name', type: 'string', label: '<localized text>', required: true, maxLength: 255, visibleInList: true },
+    { name: 'categoryId', type: 'select', label: '<localized text>', selectApiEndpoint: '/api/categories', selectApiValueField: 'id', selectApiLabelField: 'name' },
+    { name: 'price', type: 'decimal', label: '<localized text>', required: true, min: 0, decimals: 2, visibleInList: true, columnFormat: 'currency' },
+    { name: 'stock', type: 'number', label: '<localized text>', required: true, min: 0, visibleInList: true },
+    { name: 'description', type: 'textarea', label: '<localized text>' }
   ],
 
   detailLayout: 'full-page',
@@ -71,7 +71,7 @@ const PRODUCT_SCHEMA: EntitySchema = {
 When the user only names the entity:
 
 ```text
-Request: "Thêm entity khuyến mãi cho module sales"
+Request: "<localized text>"
 ```
 
 The orchestrator applies the Semantic Inference Fallback (see skill body §"Semantic Inference Fallback") and produces a first-pass `EntitySchema`:
@@ -81,19 +81,19 @@ const PROMOTION_SCHEMA: EntitySchema = {
   module: 'sales',
   entity: 'promotion',
   entityPascal: 'Promotion',
-  entityLabel: 'Khuyến mãi',
-  entityLabelPlural: 'Khuyến mãi',
+  entityLabel: '<localized text>',
+  entityLabelPlural: '<localized text>',
   apiEndpoint: 'promotion',
 
   fields: [
-    { name: 'code', type: 'string', label: 'Mã khuyến mãi', required: true, maxLength: 32, visibleInList: true },
-    { name: 'name', type: 'string', label: 'Tên khuyến mãi', required: true, maxLength: 255, visibleInList: true },
-    { name: 'type', type: 'select', label: 'Loại khuyến mãi', required: true, visibleInList: true },
-    { name: 'discountValue', type: 'decimal', label: 'Giá trị giảm', required: true, min: 0, visibleInList: true },
-    { name: 'startDate', type: 'date', label: 'Ngày bắt đầu', required: true, visibleInList: true },
-    { name: 'endDate', type: 'date', label: 'Ngày kết thúc', required: true, visibleInList: true },
-    { name: 'status', type: 'select', label: 'Trạng thái', required: true, visibleInList: true },
-    { name: 'description', type: 'textarea', label: 'Mô tả' }
+    { name: 'code', type: 'string', label: '<localized text>', required: true, maxLength: 32, visibleInList: true },
+    { name: 'name', type: 'string', label: '<localized text>', required: true, maxLength: 255, visibleInList: true },
+    { name: 'type', type: 'select', label: '<localized text>', required: true, visibleInList: true },
+    { name: 'discountValue', type: 'decimal', label: '<localized text>', required: true, min: 0, visibleInList: true },
+    { name: 'startDate', type: 'date', label: '<localized text>', required: true, visibleInList: true },
+    { name: 'endDate', type: 'date', label: '<localized text>', required: true, visibleInList: true },
+    { name: 'status', type: 'select', label: '<localized text>', required: true, visibleInList: true },
+    { name: 'description', type: 'textarea', label: '<localized text>' }
   ],
 
   detailLayout: 'full-page',
@@ -194,24 +194,24 @@ import { PromotionDTO } from './promotion.model';
 
 export const PROMOTION_SEED_DATA: PromotionDTO[] = [
   {
-    id: uuidv4(), code: 'KM-2024-01', name: 'Khuyến mãi hè 2024',
+    id: uuidv4(), code: 'KM-2024-01', name: '<localized text>',
     type: 'PERCENT', discountValue: 15,
     startDate: '2024-06-01', endDate: '2024-08-31',
-    status: 'INACTIVE', description: 'Giảm 15% toàn bộ sản phẩm mùa hè',
+    status: 'INACTIVE', description: '<localized text>',
     isActivated: false, createdAt: '2024-05-20T08:00:00Z', updatedAt: '2024-05-20T08:00:00Z',
   },
   {
-    id: uuidv4(), code: 'KM-2024-02', name: 'Ưu đãi cuối năm 2024',
+    id: uuidv4(), code: 'KM-2024-02', name: '<localized text>',
     type: 'FIXED', discountValue: 50000,
     startDate: '2024-12-01', endDate: '2024-12-31',
-    status: 'INACTIVE', description: 'Giảm 50.000đ cho đơn từ 500.000đ',
+    status: 'INACTIVE', description: '<localized text>',
     isActivated: false, createdAt: '2024-11-10T09:00:00Z', updatedAt: '2024-11-10T09:00:00Z',
   },
   {
     id: uuidv4(), code: 'KM-2025-01', name: 'Flash sale 1/1/2025',
     type: 'PERCENT', discountValue: 20,
     startDate: '2025-01-01', endDate: '2025-01-01',
-    status: 'INACTIVE', description: 'Flash sale mừng năm mới',
+    status: 'INACTIVE', description: '<localized text>',
     isActivated: false, createdAt: '2024-12-20T10:00:00Z', updatedAt: '2024-12-20T10:00:00Z',
   },
   // ... continue to 20–40 rows, distributed evenly across type/status
@@ -261,7 +261,7 @@ For the list and detail component bodies (`SdTable`, audit columns, action butto
 
 1. Confirm module `sample` exists
 2. Entity name: `employee`
-3. Label: `Nhân viên`
+3. Label: `<localized text>`
 4. Fields confirmed with types/validation
 5. Generate `EMPLOYEE_SCHEMA` (Step 1)
 6. Generate `employee.model.ts` (Step 2)

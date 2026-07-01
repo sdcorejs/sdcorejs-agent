@@ -38,7 +38,25 @@
   {
     "id": "user-guide",
     "prompt": "write user guide for module Product",
-    "expectedSkill": "sdcorejs-write-user-guide",
+    "expectedSkill": "sdcorejs-documentation",
+    "phase": 3
+  },
+  {
+    "id": "summarize-project",
+    "prompt": "summarize this project",
+    "expectedSkill": "sdcorejs-explore",
+    "phase": 3
+  },
+  {
+    "id": "summarize-doc",
+    "prompt": "summarize this technical doc",
+    "expectedSkill": "sdcorejs-documentation",
+    "phase": 3
+  },
+  {
+    "id": "record-requirement-taskid",
+    "prompt": "record requirement TASK-001",
+    "expectedSkill": "sdcorejs-documentation",
     "phase": 3
   },
   {
