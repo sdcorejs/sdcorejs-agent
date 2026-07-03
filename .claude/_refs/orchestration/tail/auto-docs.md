@@ -16,7 +16,7 @@ The agent MUST run this reference (write mode) at the end of every code-writing 
 - `write-code` (the `sdcorejs-angular` orchestrator, plus the on-demand reference packs it loads: `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail`, `actions`)
 - `sdcorejs-test`
 - `sdcorejs-review` (write a "review session" doc summarizing findings, even though no code changed)
-- `sdcorejs-documentation (comment-code mode)` when the chosen level is not `skip`
+- `sdcorejs-documentation (code-documentation mode)` automatically after source-code changes
 
 For nestjs, nextjs, and test tracks, the equivalent writing skills trigger this skill the same way.
 

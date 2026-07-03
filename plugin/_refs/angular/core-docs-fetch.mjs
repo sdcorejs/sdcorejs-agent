@@ -25,6 +25,7 @@ import { get as httpsGet } from 'node:https';
 import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, dirname } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const SITE = 'https://sdcorejs.github.io/sdcorejs-angular/docs';
 const CACHE_ROOT = join(homedir(), '.cache', 'sdcorejs', 'core-docs');
@@ -90,6 +91,76 @@ function httpText(url) {
   });
 }
 
+function readJson(file) {
+  try { return JSON.parse(readFileSync(file, 'utf8')); } catch { return null; }
+}
+
+function versionFromRange(range) {
+  if (!range || typeof range !== 'string') return null;
+  const exact = range.match(/(\d+\.\d+\.\d+)/);
+  if (exact) return exact[1];
+  const major = range.match(/(\d+)/);
+  return major ? `${major[1]}.0.0` : null;
+}
+
+function versionFromPackageJson(file) {
+  const j = readJson(file);
+  if (!j) return null;
+  const deps = { ...j.dependencies, ...j.devDependencies, ...j.peerDependencies, ...j.optionalDependencies };
+  return versionFromRange(deps['@sdcorejs/angular'] || deps['@sd-angular/core']);
+}
+
+function walkPackageJsons(root, depth = 4, acc = []) {
+  if (depth < 0) return acc;
+  let entries;
+  try { entries = readdirSync(root, { withFileTypes: true }); } catch { return acc; }
+  for (const entry of entries) {
+    const full = join(root, entry.name);
+    if (entry.isFile() && entry.name === 'package.json') {
+      acc.push(full);
+      continue;
+    }
+    if (!entry.isDirectory()) continue;
+    if (['node_modules', '.git', 'dist', 'coverage', '.angular', '.cache'].includes(entry.name)) continue;
+    walkPackageJsons(full, depth - 1, acc);
+  }
+  return acc;
+}
+
+function versionFromPackageJsons(root) {
+  const rootPkg = join(root, 'package.json');
+  const direct = versionFromPackageJson(rootPkg);
+  if (direct) return direct;
+  for (const pkg of walkPackageJsons(root)) {
+    const found = versionFromPackageJson(pkg);
+    if (found) return found;
+  }
+  return null;
+}
+
+function versionFromPackageLock(root) {
+  const lock = readJson(join(root, 'package-lock.json'));
+  if (!lock) return null;
+  for (const pkg of ['@sdcorejs/angular', '@sd-angular/core']) {
+    const entry = lock.packages?.[`node_modules/${pkg}`] || lock.dependencies?.[pkg];
+    if (entry?.version) return entry.version;
+  }
+  return null;
+}
+
+function versionFromTextLock(root) {
+  for (const file of ['pnpm-lock.yaml', 'yarn.lock']) {
+    const path = join(root, file);
+    if (!existsSync(path)) continue;
+    const text = readFileSync(path, 'utf8');
+    const direct = text.match(/(?:@sdcorejs\/angular|@sd-angular\/core)[^\n\d]*(\d+\.\d+\.\d+)/);
+    if (direct) return direct[1];
+    const quoted = text.match(/(?:@sdcorejs\/angular|@sd-angular\/core)[^@\n]*@(?:npm:)?(\d+\.\d+\.\d+)/);
+    if (quoted) return quoted[1];
+  }
+  return null;
+}
+
 // Fetch `${SITE}/<rel>`; cache at `${CACHE_ROOT}/<rel>`; on network failure fall back to cache.
 // `rel` is the full path under the docs site (e.g. `versions.json`, `21.0.7/index.json`).
 async function getCached(rel) {
@@ -109,27 +180,14 @@ async function getCached(rel) {
 }
 
 // Read the installed Core UI version from the target project (either package name).
-function detectInstalledVersion(dir) {
+export function detectInstalledVersion(dir) {
   for (const pkg of ['@sdcorejs/angular', '@sd-angular/core']) {
     const p = join(dir, 'node_modules', pkg, 'package.json');
     if (existsSync(p)) {
       try { return JSON.parse(readFileSync(p, 'utf8')).version; } catch { /* ignore */ }
     }
   }
-  // fall back to a declared dependency range (strip ^ ~ etc.)
-  const root = join(dir, 'package.json');
-  if (existsSync(root)) {
-    try {
-      const j = JSON.parse(readFileSync(root, 'utf8'));
-      const deps = { ...j.dependencies, ...j.devDependencies };
-      const range = deps['@sdcorejs/angular'] || deps['@sd-angular/core'];
-      const m = range && range.match(/(\d+\.\d+\.\d+)/);
-      if (m) return m[1];
-      const major = range && range.match(/(\d+)/);
-      if (major) return `${major[1]}.0.0`;
-    } catch { /* ignore */ }
-  }
-  return null;
+  return versionFromPackageLock(dir) || versionFromTextLock(dir) || versionFromPackageJsons(dir);
 }
 
 // Version dirs already present in the cache (each with an index.json), newest first.
@@ -179,7 +237,7 @@ async function resolveVersionCandidates() {
       if (version) return [version]; // trust the literal; getCached will fail clearly
       throw err;
     }
-    process.stderr.write(`<localized text>`);
+    process.stderr.write('[core-docs-fetch] no remote registry; using cached docs versions.\n');
     return orderCandidates(cached, version || detectInstalledVersion(cwd));
   }
   const all = registry.versions.map(v => v.version);
@@ -218,13 +276,14 @@ async function main() {
       v = cand;
       break;
     } catch (err) {
-      process.stderr.write(`<localized text>`);
+      process.stderr.write(`[core-docs-fetch] skipping docs version ${cand}: ${err.message}\n`);
     }
   }
   if (!index) throw new Error(`no fetchable docs version among: ${candidates.join(', ')}`);
 
   if (doList || !comp) {
-    process.stdout.write(`<localized text>`);
+    process.stdout.write(`# Core UI docs version: ${v}\n`);
+    process.stdout.write(`# Index: ${SITE}/${v}/index.json\n`);
     const byCat = {};
     for (const d of index.docs) (byCat[d.category] ||= []).push(d);
     for (const cat of Object.keys(byCat).sort()) {
@@ -254,8 +313,10 @@ async function main() {
   }
 }
 
-main().catch(err => {
-  process.stderr.write(`[core-docs-fetch] failed: ${err.message}\n`);
-  process.stderr.write('<localized text>');
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch(err => {
+    process.stderr.write(`[core-docs-fetch] failed: ${err.message}\n`);
+    process.stderr.write('Run from the target Angular project or pass --cwd <target-project>. If remote docs are unavailable, seed the cache or use local project evidence.\n');
+    process.exit(1);
+  });
+}

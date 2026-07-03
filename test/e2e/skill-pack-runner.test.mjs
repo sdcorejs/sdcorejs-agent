@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import { dispatchPrompt, loadSkillPack, runPromptEval } from './support/skill-pack-runner.mjs';
 
@@ -27,6 +29,7 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
     assert.match(text, /_refs\/shared\/finish-gate\.md/, `${name} presents the finish gate`);
     assert.match(text, /_refs\/documentation\/gate\.md/, `${name} runs documentation gate`);
     assert.match(text, /\.sdcorejs\/documentation\/preferences\.md/, `${name} supports saved documentation preferences`);
+    assert.match(text, /finishing steps \(tests, review, code-documentation, technical-doc, user-guide\)/, `${name} progress checklist includes technical-doc`);
     assert.match(text, /sdcorejs-ship \(verify-before-done mode\)/, `${name} runs acceptance verification`);
     assert.match(text, /sdcorejs-ship \(branch-ready mode\)/, `${name} runs branch-ready`);
     assert.match(text, /_refs\/orchestration\/tail\/auto-docs\.md/, `${name} writes auto-docs`);
@@ -34,10 +37,31 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
     assert.match(text, /memories mode/, `${name} hands off durable memories when needed`);
   }
 
+  const angularSkill = sourceByName.get('sdcorejs-angular');
+  assert.match(angularSkill, /_refs\/angular\/write-code\/input-analysis\.md/);
+  assert.match(angularSkill, /SDCoreJS Core reuse analysis/);
+  assert.match(angularSkill, /mandatory UI check/);
+  assert.match(angularSkill, /Core reuse summary/);
+
+  const angularInputAnalysis = await readFile(new URL('../../_refs/angular/write-code/input-analysis.md', import.meta.url), 'utf8');
+  assert.match(angularInputAnalysis, /versions\.json/);
+  assert.match(angularInputAnalysis, /UI decomposition/);
+  assert.match(angularInputAnalysis, /Requirement mapping/);
+  assert.match(angularInputAnalysis, /Image \+ PRD mapping/);
+  assert.match(angularInputAnalysis, /Post-Implementation UI Check/);
+  assert.match(angularInputAnalysis, /Do not claim visual\/browser verification unless it actually happened/);
+
+  const coreDocsFetch = await readFile(new URL('../../_refs/angular/core-docs-fetch.mjs', import.meta.url), 'utf8');
+  assert.match(coreDocsFetch, /package-lock\.json/);
+  assert.match(coreDocsFetch, /pnpm-lock\.yaml/);
+  assert.match(coreDocsFetch, /yarn\.lock/);
+
   const testSkill = sourceByName.get('sdcorejs-test');
   assert.match(testSkill, /## Direct invocation tail/);
   assert.match(testSkill, /_refs\/documentation\/gate\.md/);
   assert.match(testSkill, /\.sdcorejs\/documentation\/preferences\.md/);
+  assert.match(testSkill, /There is no separate `qa_guide` output/);
+  assert.doesNotMatch(testSkill, /QA-guide/);
   assert.match(testSkill, /TRACK=test/);
   assert.match(testSkill, /_refs\/orchestration\/tail\/auto-docs\.md/);
   assert.match(testSkill, /_refs\/orchestration\/tail\/auto-task-tracker\.md/);
@@ -86,15 +110,45 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
 
   const finishGate = await readFile(new URL('../../_refs/shared/finish-gate.md', import.meta.url), 'utf8');
   assert.match(finishGate, /Finish step 1\/3: tests/);
-  assert.match(finishGate, /Finish step 2\/3: documentation/);
-  assert.match(finishGate, /comment_code: skip[\s\S]*user_guide: skip[\s\S]*technical_doc: skip[\s\S]*requirement_record: skip/);
-  assert.match(finishGate, /\(if `comment_code` is not `skip`\) `sdcorejs-documentation \(comment-code mode\)`/);
-  assert.doesNotMatch(finishGate, /\n3\. `sdcorejs-documentation \(comment-code mode\)`/);
+  assert.match(finishGate, /Documentation approval gate/);
+  assert.match(finishGate, /single combined gate/);
+  assert.match(finishGate, /Skip new user\/technical docs/);
+  assert.match(finishGate, /user_guide: skip[\s\S]*technical_doc: skip[\s\S]*requirement_record: skip/);
+  assert.match(finishGate, /`sdcorejs-documentation \(code-documentation mode\)` - automatic/);
+  assert.doesNotMatch(finishGate, /code_documentation: skip/);
   assert.doesNotMatch(finishGate, /Codes:/);
   const documentationGate = await readFile(new URL('../../_refs/documentation/gate.md', import.meta.url), 'utf8');
-  assert.match(documentationGate, /Documentation step 1\/5: code comments/);
-  assert.match(documentationGate, /Documentation step 5\/5: save these choices/);
+  assert.match(documentationGate, /User\/Technical Documentation Approval Gate/);
+  assert.match(documentationGate, /This gate does \*\*not\*\* control `code-documentation`/);
+  assert.match(documentationGate, /user_guide: create \| update \| skip/);
+  assert.match(documentationGate, /technical_doc: create \| update \| skip/);
+  assert.doesNotMatch(documentationGate, /create_or_update/);
+  assert.doesNotMatch(documentationGate, /code_documentation: skip/);
   assert.doesNotMatch(documentationGate, /Codes:/);
+});
+
+test('phase 1: Core docs fetcher prefers installed lockfile version over package range', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'sdcorejs-core-docs-'));
+  await writeFile(
+    join(root, 'package.json'),
+    JSON.stringify({ dependencies: { '@sdcorejs/angular': '^20' } }),
+    'utf8'
+  );
+  await writeFile(
+    join(root, 'package-lock.json'),
+    JSON.stringify({
+      packages: {
+        'node_modules/@sdcorejs/angular': {
+          version: '20.0.7'
+        }
+      }
+    }),
+    'utf8'
+  );
+
+  const { detectInstalledVersion } = await import('../../_refs/angular/core-docs-fetch.mjs');
+
+  assert.equal(detectInstalledVersion(root), '20.0.7');
 });
 
 test('phase 1: long references expose a top-of-file contents map', async () => {

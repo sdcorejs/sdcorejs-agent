@@ -42,6 +42,12 @@
     "phase": 3
   },
   {
+    "id": "docstring-api",
+    "prompt": "add docstrings and TSDoc for exported API classes",
+    "expectedSkill": "sdcorejs-documentation",
+    "phase": 3
+  },
+  {
     "id": "summarize-project",
     "prompt": "summarize this project",
     "expectedSkill": "sdcorejs-explore",

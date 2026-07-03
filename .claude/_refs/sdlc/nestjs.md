@@ -150,23 +150,26 @@ npm run lint
 ```
 
 ### Final-step expectations
-Documentation gate supplement: the finish gate loads `_refs/documentation/gate.md`
-before documentation tail steps. It may save
-`.sdcorejs/documentation/preferences.md`, captures `comment_code`,
-`user_guide`, and `technical_doc`, and can insert
-`sdcorejs-documentation (write-technical-doc mode)` before verify-before-done
-when `technical_doc=write` or `technical_doc=auto` criteria are met.
+Documentation gate supplement: immediately after the finish gate's test
+decision, load `_refs/documentation/gate.md`. It may save
+`.sdcorejs/documentation/preferences.md`, captures `user_guide` and
+`technical_doc` creation/update approval, and must ask before creating missing
+corresponding user-guide or technical-doc files for a new feature.
+`code-documentation` runs automatically for touched source files and is not
+controlled by this gate.
 
 Until the `sdcorejs-nestjs` orchestrator ships, the last plan step should call out the manual tail-call sequence:
 1. `sdcorejs-test` — write e2e tests for happy path
 2. `sdcorejs-review` — convention review
 3. `sdcorejs-repair-loop` — apply review findings
-4. `sdcorejs-documentation (comment-code mode)` — apply the finish-gate comment level using `_refs/documentation/comment-code.md`
-5. `sdcorejs-ship (verify-before-done mode)` — acceptance criteria gate
-6. `sdcorejs-ship (branch-ready mode)` — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) before docs
-7. `_refs/orchestration/tail/auto-docs.md` — session summary to `.sdcorejs/docs/nestjs/`
-8. `_refs/orchestration/tail/auto-task-tracker.md` — tick / append tasks
-9. `sdcorejs-explore (memories mode)` — durable knowledge if applicable
+4. `sdcorejs-documentation (code-documentation mode)` — automatically apply source-code documentation using `_refs/documentation/code-documentation.md`
+5. `sdcorejs-documentation (write-technical-doc mode)` — if approved by the documentation gate
+6. `sdcorejs-ship (verify-before-done mode)` — acceptance criteria gate
+7. `sdcorejs-ship (branch-ready mode)` — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) before docs
+8. `_refs/orchestration/tail/auto-docs.md` — session summary to `.sdcorejs/docs/nestjs/`
+9. `sdcorejs-documentation (write-user-guide mode)` — if approved by the documentation gate
+10. `_refs/orchestration/tail/auto-task-tracker.md` — tick / append tasks
+11. `sdcorejs-explore (memories mode)` — durable knowledge if applicable
 
 Once the orchestrator ships, the plan can simply reference `sdcorejs-nestjs` and the tail-call chain is owned there.
 

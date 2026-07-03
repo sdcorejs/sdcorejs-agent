@@ -189,14 +189,15 @@ npx lhci autorun --preset=mobile  # or `lighthouse http://localhost:3000/<route>
 ```
 
 ### Final-step expectations
-Documentation gate supplement: the finish gate loads `_refs/documentation/gate.md`
-before documentation tail steps. It may save
-`.sdcorejs/documentation/preferences.md`, captures `comment_code`,
-`user_guide`, and `technical_doc`, and can insert
-`sdcorejs-documentation (write-technical-doc mode)` before verify-before-done
-when `technical_doc=write` or `technical_doc=auto` criteria are met.
+Documentation gate supplement: immediately after the finish gate's test
+decision, load `_refs/documentation/gate.md`. It may save
+`.sdcorejs/documentation/preferences.md`, captures `user_guide` and
+`technical_doc` creation/update approval, and must ask before creating missing
+corresponding user-guide or technical-doc files for a new feature.
+`code-documentation` runs automatically for touched source files and is not
+controlled by this gate.
 
-Last numbered step references the tail-call chain (sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop → sdcorejs-documentation (comment-code mode) → sdcorejs-ship (verify-before-done mode) → sdcorejs-ship (branch-ready mode) → _refs/orchestration/tail/auto-docs.md → sdcorejs-documentation (write-user-guide mode) → _refs/orchestration/tail/auto-task-tracker.md → sdcorejs-explore (memories mode)). The reviewer checks the chain is implicit, not omitted.
+Last numbered step references the tail-call chain (sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop → sdcorejs-documentation (code-documentation mode, automatic) → sdcorejs-documentation (write-technical-doc mode, if approved) → sdcorejs-ship (verify-before-done mode) → sdcorejs-ship (branch-ready mode) → _refs/orchestration/tail/auto-docs.md → sdcorejs-documentation (write-user-guide mode, if approved) → _refs/orchestration/tail/auto-task-tracker.md → sdcorejs-explore (memories mode)). The reviewer checks the chain is implicit, not omitted.
 
 ### Existing-site improvement variant
 If the user is improving an EXISTING site (came via `08-audit-existing-site`), phases are gap-driven, not greenfield. The plan should be one phase per audit finding, ordered Critical → Important → Minor.

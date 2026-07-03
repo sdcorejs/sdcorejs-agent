@@ -12,7 +12,7 @@
 ## 2. Description
 Generates a complete entity management module following sdcorejs architecture patterns. Creates service layer, models/interfaces, and page components (list and detail) with full CRUD operations, reactive forms, and data tables.
 
-This reference can synthesize UI structure from PRD text, screenshot/attribute images, and sample cURL payloads, then map those into CREATE/UPDATE/DETAIL rendering strategies.
+This reference can synthesize UI structure from PRD text, screenshot/attribute images, and sample cURL payloads, then map those into CREATE/UPDATE/DETAIL rendering strategies. When those artifacts are present, first complete `./input-analysis.md` so Core UI reuse, local project reuse, image decomposition, and requirement mapping are explicit before files are created.
 
 This reference assumes the target feature module is already known. If the request does not specify a module, the agent must resolve that first using the request intake flow.
 
@@ -27,6 +27,7 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
 ### MUST DO ✅
 - Confirm target module before generating entity files
 - Generate the feature module first if it does not exist (see `./init-module.md`)
+- For PRD, user story, acceptance criteria, screenshot, wireframe, Figma, mockup, or mixed visual/text input, read `./input-analysis.md` before deriving UI structure or creating components
 - Identify the primary entity and every related entity from API docs, PRDs, Figma/image/screenshot input, business descriptions, cURL payloads, or schemas before creating files
 - Before creating model/interface/type/dto/service/store/repository/API-client files, scan the target codebase for existing contracts and symbols using the variants listed in `./reuse-existing-entities.md`
 - Decide `reuse`, `extend`, or `create new` for each entity and present a short pre-code summary of found contracts, imports to reuse, existing files to extend, truly new files to create, and why duplicates are not created

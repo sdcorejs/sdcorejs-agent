@@ -98,19 +98,18 @@ Steps 1–4 are sequential (each depends on the previous). Steps 5–8 can be pa
 
 ### MANDATORY FINISH GATE (always — standalone trigger OR full SDLC flow)
 
-**STOP and present the consolidated finish gate from [`../_refs/shared/finish-gate.md`](../_refs/shared/finish-gate.md) before running ANY tail step.** UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add a page", "add a section") — NOT only inside the spec→plan flow. The gate surfaces tests / comments / user-guide / review with defaults so the user always knows these steps exist and can opt out. "Small change" is not a reason to skip the gate.
+**STOP and present the consolidated finish gate from [`../_refs/shared/finish-gate.md`](../_refs/shared/finish-gate.md) before running ANY tail step.** UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add a page", "add a section") — NOT only inside the spec→plan flow. The gate surfaces tests / user-guide / technical-doc / review choices with defaults so the user always knows these steps exist and can opt out of new user/technical docs. "Small change" is not a reason to skip the gate.
 
 Then run the tail-call chain, honoring the gate's answers (skip = omit that step; everything not skipped runs):
 
-Documentation supplement: before documentation tail steps, run
+Documentation supplement: immediately after the Finish Gate test decision, run
 `sdcorejs-documentation (documentation-gate mode)` and read
 `../_refs/documentation/gate.md`. This gate asks or loads saved project
 preferences from `<target>/.sdcorejs/documentation/preferences.md` for
-`comment_code`, `user_guide`, and `technical_doc`. Use those effective choices
-for the comment-code, technical-doc, and user-guide steps below. If
-`technical_doc=write`, or `technical_doc=auto` and the gate criteria are met,
-run `sdcorejs-documentation (write-technical-doc mode)` after comment-code and
-before `sdcorejs-ship (verify-before-done mode)`.
+`user-guide` and `technical-doc` only. It must ask before
+creating a missing corresponding user-guide or technical-doc for a new feature.
+`code-documentation` is automatic for touched source files and is not controlled
+by this approval gate.
 
 ```
 FINISH GATE (always, unconditional) ← surfaces the choices below
@@ -121,9 +120,11 @@ sdcorejs-review (if Review not skipped) ← convention check; Critical / Importa
    ↓
 sdcorejs-repair-loop (if Review not skipped) ← apply findings, iterate to clean
    ↓
-sdcorejs-documentation (comment-code mode) ← apply the level the FINISH GATE captured (no second ASK; rules in ../_refs/documentation/comment-code.md)
+sdcorejs-documentation (code-documentation mode) ← automatic source-code documentation for touched source files; no approval ASK; rules in ../_refs/documentation/code-documentation.md
    ↓
 sdcorejs-product (when user-visible feature traceability is needed) ← update .sdcorejs/docs/product/ ledger
+   ↓
+sdcorejs-documentation (write-technical-doc mode, if Technical doc approved) ← create/update the approved technical doc from source evidence
    ↓
 sdcorejs-ship verify-before-done mode (always) ← BLOCK "done" until acceptance criteria from spec are ✅
    ↓
@@ -131,7 +132,7 @@ sdcorejs-ship (branch-ready mode) (always) ← branch-hygiene sweep (debug logs,
    ↓
 ../_refs/orchestration/tail/auto-docs.md (always)   ← session summary to .sdcorejs/docs/nextjs/
    ↓
-sdcorejs-documentation (write-user-guide mode, if User guide not skipped) ← update touched module's .sdcorejs/documentation/user-guides/<module>.md (features / routes / permissions / data + Coverage-vs-requirements); per-module incremental, aggregate rebuilds under .sdcorejs/documentation/ at ship
+sdcorejs-documentation (write-user-guide mode, if User guide approved) ← create/update touched module's .sdcorejs/documentation/user-guides/<module>.md only when approved by the documentation gate or explicitly requested
    ↓
 ../_refs/orchestration/tail/auto-task-tracker.md (always) ← tick done, append new
 sdcorejs-explore (memories mode)     ← durable knowledge (when applicable)
@@ -151,8 +152,8 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 ## Rules
 
 ### MUST DO
-- Show a live progress checklist with **TodoWrite** from the START of generation — one checkbox item per planned unit (each page / block / pack step) PLUS the finishing steps (tests, review, comments, user-guide). Keep exactly one item `in_progress`; flip it to `completed` the moment that unit is done and start the next. Update after EACH task, never batch at the end — this is how the user tracks progress. Create it before writing the first file.
-- Present the **MANDATORY FINISH GATE** ([`../_refs/shared/finish-gate.md`](../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / comments / user-guide / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
+- Show a live progress checklist with **TodoWrite** from the START of generation — one checkbox item per planned unit (each page / block / pack step) PLUS the finishing steps (tests, review, code-documentation, technical-doc, user-guide). Keep exactly one item `in_progress`; flip it to `completed` the moment that unit is done and start the next. Update after EACH task, never batch at the end — this is how the user tracks progress. Create it before writing the first file.
+- Present the **MANDATORY FINISH GATE** ([`../_refs/shared/finish-gate.md`](../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / user-guide / technical-doc / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
 - Read the approved plan BEFORE dispatching — never invent scope
 - Dispatch in the order listed (theme/i18n/content BEFORE pages BEFORE seo)
 - Pass the `sdcorejs-brainstorming` requirement contract to each pack as context
@@ -165,7 +166,7 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 
 ### Documentation Gate Rule
 
-- Inside the mandatory finish gate, run `../_refs/documentation/gate.md`. It encourages documentation by default, can save `.sdcorejs/documentation/preferences.md` in the target project, and owns comment-code / user-guide / technical-doc choices for future direct runs.
+- Inside the mandatory finish gate, run `../_refs/documentation/gate.md` immediately after the test decision. It owns user-guide / technical-doc creation or update approval. `code-documentation` is automatic and is not controlled by this gate.
 
 ### MUST NOT
 - Generate code from memory when a pack covers the concern — read the pack

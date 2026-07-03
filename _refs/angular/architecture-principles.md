@@ -316,4 +316,4 @@ When a principle here changes, propagate to:
 - `_refs/angular/write-code/reuse-existing-entities.md` — codebase-first model/service/entity reuse preflight
 - `_refs/angular/templates/entity-skeleton.md` — canonical code templates these principles produce
 - `_refs/angular/templates/example-product.md` — worked example end-to-end
-- `sdcorejs-documentation (comment-code mode)` + `_refs/documentation/comment-code.md` — when/how to document WHY these principles applied in a specific decision
+- `sdcorejs-documentation (code-documentation mode)` + `_refs/documentation/code-documentation.md` — when/how to document public contracts and WHY these principles applied in a specific decision

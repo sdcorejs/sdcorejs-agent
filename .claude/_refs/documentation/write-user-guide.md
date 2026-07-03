@@ -41,6 +41,16 @@ Templates live in `_refs/shared/user-guide-template.md`. Per-module guides go to
 
 Also triggered **manually**: "write user guide for module X", "update user guide", "user guide module <name>", or localized equivalents.
 
+For write-code tails, this automatic trigger is gated by
+`_refs/documentation/gate.md`:
+
+- If the corresponding per-module guide is missing for a new feature, create it
+  only when the gate returned `user_guide=create` or the current request
+  explicitly asked for a user guide.
+- If the guide already exists, update it only when the gate returned
+  `user_guide=update`, saved preferences authorize updates, or the current
+  request explicitly asked for an update.
+
 ### 2. Harvest the touched module
 
 Identify the `<module>` name from the write-code context (module root dir, session notes). Then probe the target project for routes, permissions, entity fields, and screen types.
@@ -119,7 +129,9 @@ Fill the body sections using the harvested data:
 7. **Coverage vs requirements** — filled by Mode 4 (see below).
 8. **Illustration images — capture checklist** — `- [ ] images/<module>-<screen>.png` for every detected screen.
 
-**Idempotent:** this file is a generated artifact — overwrite it unconditionally. Do not append to an existing file.
+**Idempotent after approval:** this file is a generated artifact — after the
+gate has approved creation/update, overwrite it. Do not append to an existing
+file.
 
 ### 4. Run Mode 4 — Coverage (always)
 
@@ -212,7 +224,8 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
 
 ### MUST DO
 - Render from `_refs/shared/user-guide-template.md` — do NOT hard-code the template inline.
-- **Idempotent overwrite** — `<target>/.sdcorejs/documentation/user-guides/<module>.md` is a generated artifact; overwrite it unconditionally, never append.
+- **Creation approval required** — when `<target>/.sdcorejs/documentation/user-guides/<module>.md` does not exist for a new feature, create it only after `_refs/documentation/gate.md` returns `user_guide=create` or the current request explicitly asks for it.
+- **Idempotent overwrite after approval** — once creation/update is approved, `<target>/.sdcorejs/documentation/user-guides/<module>.md` is a generated artifact; overwrite it, never append.
 - Write to the **TARGET project** (resolve `TARGET_ROOT=$(git rev-parse --show-toplevel)` from the user's CWD; never write into the `sdcorejs-agent` repo). **Guard:** if `TARGET_ROOT` basename matches `sdcorejs-agent`, or the directory contains no `src/`, `frontend/`, or `package.json` at its root (no evidence of an app project), **abort and ask** the user to provide the target project path explicitly — do not write user guides into the agent repo.
 - **Runtime-localized** — section headings and prose use the user's session language; field names, permission codes, and route paths stay English.
 - Always emit **image placeholders + the capture checklist** (`## Illustration images`), even when no real images exist yet.

@@ -79,32 +79,32 @@ Skip only for pure config (`nest-cli.json`, `tsconfig.json`, `.env.example`) and
 
 ### MANDATORY FINISH GATE (always — standalone trigger OR full SDLC flow)
 
-**STOP and present the consolidated finish gate from [`../_refs/shared/finish-gate.md`](../_refs/shared/finish-gate.md) before running ANY tail step.** UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add entity", "add endpoint") — NOT only inside the spec→plan flow. The gate surfaces tests / comments / user-guide / review with defaults so the user always knows these steps exist and can opt out. "Small change" is not a reason to skip the gate.
+**STOP and present the consolidated finish gate from [`../_refs/shared/finish-gate.md`](../_refs/shared/finish-gate.md) before running ANY tail step.** UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add entity", "add endpoint") — NOT only inside the spec→plan flow. The gate surfaces tests / user-guide / technical-doc / review choices with defaults so the user always knows these steps exist and can opt out of new user/technical docs. "Small change" is not a reason to skip the gate.
 
 Then hand off in this exact order, honoring the gate's answers (skip = omit
 that step; everything not skipped runs):
 
-Documentation supplement: before documentation tail steps, run
+Documentation supplement: immediately after the Finish Gate test decision, run
 `sdcorejs-documentation (documentation-gate mode)` and read
 `../_refs/documentation/gate.md`. This gate asks or loads saved project
 preferences from `<target>/.sdcorejs/documentation/preferences.md` for
-`comment_code`, `user_guide`, and `technical_doc`. Use those effective choices
-for the comment-code, technical-doc, and user-guide steps below. If
-`technical_doc=write`, or `technical_doc=auto` and the gate criteria are met,
-run `sdcorejs-documentation (write-technical-doc mode)` after comment-code and
-before `sdcorejs-ship (verify-before-done mode)`.
+`user-guide` and `technical-doc` only. It must ask before
+creating a missing corresponding user-guide or technical-doc for a new feature.
+`code-documentation` is automatic for touched source files and is not controlled
+by this approval gate.
 
 1. *(if Tests not skipped)* `sdcorejs-test` — happy-path tests for what was generated (unit + integration via real DI + pg-mem; e2e via `supertest` against a real test PG where the layer warrants it)
 2. *(if Review not skipped)* `sdcorejs-review` (auto-detects NestJS → loads `../_refs/nestjs/review-code.md`) — NestJS/PostgreSQL/TypeORM/Zod code-review table with severity, group, file/line, risk, fix, and gate
 3. *(if Review not skipped)* `sdcorejs-repair-loop` — apply findings, iterate until `BLOCKER`/`REQUIRED` findings are fixed or explicitly deferred
-4. `sdcorejs-documentation (comment-code mode)` — apply the comment level the FINISH GATE captured (skip / simple / medium / full). Do NOT ASK again — the gate already asked. Rules live in `../_refs/documentation/comment-code.md`.
+4. `sdcorejs-documentation (code-documentation mode)` — automatically apply concise source-code documentation rules to touched source files. Do NOT ASK for approval. Rules live in `../_refs/documentation/code-documentation.md`.
 5. `sdcorejs-product` *(when user-visible feature traceability is needed)* - seed/update `.sdcorejs/docs/product/` with requirement, implementation, and test mapping
-6. `sdcorejs-ship (verify-before-done mode)` *(always)* — BLOCK "done" until every acceptance criterion in the spec is ✅ verified or ⚠️ explicitly deferred
-7. `sdcorejs-ship (branch-ready mode)` *(always)* — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
-8. `../_refs/orchestration/tail/auto-docs.md` *(always)* — session summary written to `<target>/.sdcorejs/docs/nestjs/`
-9. *(if User guide not skipped)* `sdcorejs-documentation (write-user-guide mode)` — update the touched module's `.sdcorejs/documentation/user-guides/<module>.md` (features / routes / permissions / data + Coverage-vs-requirements). Per-module incremental; the aggregate rebuilds under `.sdcorejs/documentation/` at ship.
-10. `../_refs/orchestration/tail/auto-task-tracker.md` *(always)* — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
-11. `sdcorejs-explore (memories mode)` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
+6. *(if Technical doc approved)* `sdcorejs-documentation (write-technical-doc mode)` — create/update the approved technical doc from source evidence.
+7. `sdcorejs-ship (verify-before-done mode)` *(always)* — BLOCK "done" until every acceptance criterion in the spec is ✅ verified or ⚠️ explicitly deferred
+8. `sdcorejs-ship (branch-ready mode)` *(always)* — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
+9. `../_refs/orchestration/tail/auto-docs.md` *(always)* — session summary written to `<target>/.sdcorejs/docs/nestjs/`
+10. *(if User guide approved)* `sdcorejs-documentation (write-user-guide mode)` — create/update the touched module's `.sdcorejs/documentation/user-guides/<module>.md` only when approved by the documentation gate or explicitly requested. Per-module incremental; the aggregate rebuilds under `.sdcorejs/documentation/` at ship.
+11. `../_refs/orchestration/tail/auto-task-tracker.md` *(always)* — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
+12. `sdcorejs-explore (memories mode)` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 
 The FINISH GATE is mandatory and unconditional. The always-on plumbing steps (`sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, auto-docs tail ref, auto-task-tracker tail ref, memories) run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)` — that's how acceptance criteria silently slip.
 
@@ -122,8 +122,8 @@ If no approved plan exists and the request is non-trivial, route back to `sdcore
 ## Rules
 
 ### MUST DO
-- Show a live progress checklist with **TodoWrite** from the START of generation — one checkbox item per planned unit (each entity / module / endpoint / pack step) PLUS the finishing steps (tests, review, comments, user-guide). Keep exactly one item `in_progress`; flip it to `completed` the moment that unit is done and start the next. Update after EACH task, never batch at the end — this is how the user tracks progress. Create it before writing the first file.
-- Present the **MANDATORY FINISH GATE** ([`../_refs/shared/finish-gate.md`](../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / comments / user-guide / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
+- Show a live progress checklist with **TodoWrite** from the START of generation — one checkbox item per planned unit (each entity / module / endpoint / pack step) PLUS the finishing steps (tests, review, code-documentation, technical-doc, user-guide). Keep exactly one item `in_progress`; flip it to `completed` the moment that unit is done and start the next. Update after EACH task, never batch at the end — this is how the user tracks progress. Create it before writing the first file.
+- Present the **MANDATORY FINISH GATE** ([`../_refs/shared/finish-gate.md`](../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / user-guide / technical-doc / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
 - Every generated backend includes the `admin` module (`init-admin`) — the authn/authz authority. Run it right after `init-project`, before domain modules. Account ops proxy the Keycloak Admin API; permissions are app-DB role→code (NOT realm roles).
 - Read `../_refs/nestjs/core-catalog.md` before generating; every import must match a documented sub-path.
 - Dispatch the matching pack on demand; follow it instead of re-deriving rules here.
@@ -135,7 +135,7 @@ If no approved plan exists and the request is non-trivial, route back to `sdcore
 
 ### Documentation Gate Rule
 
-- Inside the mandatory finish gate, run `../_refs/documentation/gate.md`. It encourages documentation by default, can save `.sdcorejs/documentation/preferences.md` in the target project, and owns comment-code / user-guide / technical-doc choices for future direct runs.
+- Inside the mandatory finish gate, run `../_refs/documentation/gate.md` immediately after the test decision. It owns user-guide / technical-doc creation or update approval. `code-documentation` is automatic and is not controlled by this gate.
 
 ### MUST NOT
 - Generate code outside the approved plan (no surprise utility files).
