@@ -198,10 +198,10 @@ Done. Hand off to sdcorejs-git (commit mode).
 Findings:
   [Critical] @Injectable() → @Injectable({ providedIn: 'root' }) (5 services)  -- auto
   [Important] split ProductService into ProductCommandService + ProductQueryService  -- user-decision
-  [Minor] missing JSDoc on 12 methods  -- auto (run sdcorejs-documentation comment-code mode)
+  [Minor] missing public-contract JSDoc on 12 methods  -- auto (run sdcorejs-documentation code-documentation mode)
 
 Pass 1:
-  Auto: applied 5 + ran sdcorejs-documentation (comment-code mode) → JSDoc added
+  Auto: applied 5 + ran sdcorejs-documentation (code-documentation mode) -> JSDoc added
   Skip: user-decision finding deferred
   Re-review: 0 Critical, 1 Important deferred, 0 Minor
   Table-mode equivalent: 0 BLOCKER, 1 REQUIRED explicitly deferred, 0 blocking unresolved

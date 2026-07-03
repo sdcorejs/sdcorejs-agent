@@ -10,6 +10,7 @@ Generate and maintain **evergreen end-user feature references** for generated SD
 | Artifact | Question answered | Lifecycle |
 |---|---|---|
 | **`.sdcorejs/documentation/user-guides/<module>.md`** (this reference) | "<localized text>" | idempotent overwrite per module, keyed to git HEAD |
+| **`.sdcorejs/documentation/user-guides/capture-screenshots.playwright.mjs`** | "How are the guide screenshots captured?" | idempotent overwrite, one script beside the per-module guides |
 | **`.sdcorejs/documentation/sdcorejs-user-guide.md`** (aggregate, Mode 2) | "<localized text>" | rebuilt from per-module guides on demand |
 | `.sdcorejs/docs/<track>/*.md` (`auto-docs`) | "What was DONE this session" | many timestamped session deltas |
 | `.sdcorejs/summary.md` (`sdcorejs-explore`) | "What IS this project" | one canonical project brief |
@@ -40,6 +41,16 @@ Templates live in `_refs/shared/user-guide-template.md`. Per-module guides go to
 **Automatic** at the end of any write-code task (tail chain: `auto-docs` → **`write-user-guide` Mode 1**), for every module touched this session.
 
 Also triggered **manually**: "write user guide for module X", "update user guide", "user guide module <name>", or localized equivalents.
+
+For write-code tails, this automatic trigger is gated by
+`_refs/documentation/gate.md`:
+
+- If the corresponding per-module guide is missing for a new feature, create it
+  only when the gate returned `user_guide=create` or the current request
+  explicitly asked for a user guide.
+- If the guide already exists, update it only when the gate returned
+  `user_guide=update`, saved preferences authorize updates, or the current
+  request explicitly asked for an update.
 
 ### 2. Harvest the touched module
 
@@ -111,23 +122,117 @@ Fill the YAML frontmatter:
 
 Fill the body sections using the harvested data:
 1. **Overview** — plain-language description of what the module does for the user.
-2. **Screens and tasks** — one subsection per detected screen, with user tasks, required permission, and main fields/buttons. Include the `![<screen>](images/<module>-<screen>.png)` placeholder.
+2. **Screens and tasks** — one subsection per detected screen, with user tasks, required permission, and main fields/buttons. Include `![<screen>](images/<module>-<screen>.png)` only when that file already exists or the screenshot was successfully captured during this run; otherwise omit the image markdown and rely on the screenshot checklist.
 3. **Permission table** — table of all permission codes with their action and typical role.
 4. **Data reference** — table of entity fields (name / type / required / constraints) from the `@Column` / Zod harvest.
 5. **Special actions** — workflow transitions, bulk actions, custom side-effects (omit section if none found).
 6. **Core UI components used** (**angular only**) — table of every `@sdcorejs/angular` component/service/directive the module actually imports/uses, each with a one-line feature-specific purpose (the same table the orchestrator showed the user after generating). Harvest from the templates/components (`sd-*` tags, `inject(Sd*Service)`, `*sd*` directives). Omit this section for nestjs/nextjs.
 7. **Coverage vs requirements** — filled by Mode 4 (see below).
-8. **Illustration images — capture checklist** — `- [ ] images/<module>-<screen>.png` for every detected screen.
+8. **Illustration images — capture checklist** — `- [ ] images/<module>-<screen>.png` for every detected screen, plus the command to run the Playwright capture script.
 
-**Idempotent:** this file is a generated artifact — overwrite it unconditionally. Do not append to an existing file.
+**Idempotent after approval:** this file is a generated artifact — after the
+gate has approved creation/update, overwrite it. Do not append to an existing
+file.
 
 ### 4. Run Mode 4 — Coverage (always)
 
 After rendering the body sections, immediately run **Mode 4** to fill the `## Coverage vs requirements` table and update the `coverage` frontmatter counts. See Mode 4 below.
 
-### 5. Emit image placeholders
+### 5. Write screenshot capture support
 
-Always include the `## Illustration images` capture checklist even if no screens are detected (list what *should* exist). The agent does NOT run the app or capture screenshots — the checklist tells the developer which images to capture and where to place them (`<target>/.sdcorejs/documentation/user-guides/images/`).
+Always create or update the screenshot support beside the per-module guides:
+
+```text
+<target>/.sdcorejs/documentation/user-guides/
+  <module>.md
+  capture-screenshots.playwright.mjs
+  images/
+```
+
+The script is a target-project artifact written by `write-user-guide` mode. It
+captures the guide screenshots into `images/<module>-<screen>.png` and must be
+kept idempotent when the user guide is regenerated.
+
+Script requirements:
+
+- Use Playwright (`playwright` package or the target project's existing
+  Playwright setup). Do not add or change target project dependencies unless the
+  user explicitly asked for dependency changes.
+- Read the base URL from `SDCOREJS_DOCS_BASE_URL`, then `--base-url`, then a
+  framework-appropriate default such as `http://localhost:4200`.
+- Create `<target>/.sdcorejs/documentation/user-guides/images/` before writing
+  screenshots.
+- Use harvested routes and screen names to create a `screenshots` array. Each
+  entry must include `module`, `title`, `route`, `file`, `selector`, and
+  optional `steps` for opening drawers, dialogs, tabs, or workflow panels.
+- Prefer accessible interactions in generated steps, such as
+  `page.getByRole('button', { name: /<label>/i }).click()`, when labels are
+  visible from source evidence. If the action cannot be inferred, leave a clear
+  `TODO` in the script and keep the checklist item unchecked.
+- Capture a stable viewport such as `1440x1000`, wait for network idle when
+  supported, and screenshot the smallest meaningful container (`mat-drawer`,
+  `[role="dialog"]`, a page root, or a feature selector) instead of the whole
+  browser when a focused selector is known.
+- Fail with a clear message when the app is not running, a route is missing, or
+  a selector cannot be found. Do not silently create blank screenshots.
+- Print one line per screenshot written so the user can see which checklist
+  items are now satisfied.
+
+Generated script shape:
+
+```js
+import { mkdir } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { chromium } from 'playwright';
+
+const guideDir = dirname(fileURLToPath(import.meta.url));
+const imageDir = join(guideDir, 'images');
+const baseUrl = process.env.SDCOREJS_DOCS_BASE_URL || readArg('--base-url') || 'http://localhost:4200';
+
+const screenshots = [
+  {
+    module: '<module>',
+    title: '<screen title>',
+    route: '/<route>',
+    file: 'images/<module>-<screen>.png',
+    selector: '<page-or-dialog-selector>',
+    steps: [
+      // async page => page.getByRole('button', { name: /<visible label>/i }).click(),
+    ],
+  },
+];
+
+function readArg(name) {
+  const index = process.argv.indexOf(name);
+  return index >= 0 ? process.argv[index + 1] : undefined;
+}
+
+await mkdir(imageDir, { recursive: true });
+const browser = await chromium.launch();
+try {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  for (const item of screenshots) {
+    await page.goto(new URL(item.route, baseUrl).href, { waitUntil: 'networkidle' });
+    for (const step of item.steps ?? []) await step(page);
+    await page.locator(item.selector).first().screenshot({ path: join(guideDir, item.file) });
+    console.log(`captured ${item.file}`);
+  }
+} finally {
+  await browser.close();
+}
+```
+
+Always include the `## Illustration images` capture checklist even if no
+screens are detected. For each missing screenshot, include the command:
+
+```bash
+SDCOREJS_DOCS_BASE_URL=http://localhost:4200 node .sdcorejs/documentation/user-guides/capture-screenshots.playwright.mjs
+```
+
+Do not emit a markdown image link for an image file that does not exist yet; a
+missing linked image is a broken user guide. After the script has run and the
+image exists, include the markdown image link in the relevant screen section.
 
 ---
 
@@ -212,16 +317,19 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
 
 ### MUST DO
 - Render from `_refs/shared/user-guide-template.md` — do NOT hard-code the template inline.
-- **Idempotent overwrite** — `<target>/.sdcorejs/documentation/user-guides/<module>.md` is a generated artifact; overwrite it unconditionally, never append.
+- **Creation approval required** — when `<target>/.sdcorejs/documentation/user-guides/<module>.md` does not exist for a new feature, create it only after `_refs/documentation/gate.md` returns `user_guide=create` or the current request explicitly asks for it.
+- **Idempotent overwrite after approval** — once creation/update is approved, `<target>/.sdcorejs/documentation/user-guides/<module>.md` is a generated artifact; overwrite it, never append.
 - Write to the **TARGET project** (resolve `TARGET_ROOT=$(git rev-parse --show-toplevel)` from the user's CWD; never write into the `sdcorejs-agent` repo). **Guard:** if `TARGET_ROOT` basename matches `sdcorejs-agent`, or the directory contains no `src/`, `frontend/`, or `package.json` at its root (no evidence of an app project), **abort and ask** the user to provide the target project path explicitly — do not write user guides into the agent repo.
 - **Runtime-localized** — section headings and prose use the user's session language; field names, permission codes, and route paths stay English.
-- Always emit **image placeholders + the capture checklist** (`## Illustration images`), even when no real images exist yet.
+- Always create/update `capture-screenshots.playwright.mjs` beside the per-module guides and emit the capture checklist (`## Illustration images`), even when no real images exist yet.
+- Never emit markdown image links for missing files. Use checklist entries and the capture command until `images/<module>-<screen>.png` exists.
 - Record `git_head` and `generated_at` in every frontmatter block so drift is detectable.
 
 ### MUST NOT
 - Duplicate `_refs/orchestration/tail/auto-docs.md` (session deltas) — the user guide is a timeless end-user reference, not a session changelog.
 - Duplicate `sdcorejs-explore` (project brief) — READ `summary.md` as context, never replace it.
-- **Capture screenshots or run the target app** — the agent is read-only with respect to runtime; image entries are always placeholders.
+- Claim screenshots were captured unless the Playwright script actually ran and the target image files exist.
+- Start or modify the target app runtime unless the user explicitly asked for that. The screenshot script expects the app to be running at `SDCOREJS_DOCS_BASE_URL` or `--base-url`.
 - Write any artifact into the `sdcorejs-agent` repo (the agent repo holds skills, not project content).
 - Invent routes, permissions, or field names not found in the harvest — prefer "<localized text>" over fabrication.
 
@@ -298,10 +406,10 @@ pandoc <target>/.sdcorejs/documentation/sdcorejs-user-guide.md \
   --resource-path=<target>/.sdcorejs/documentation/user-guides
 ```
 
-**The skill does NOT run pandoc or the target app.** It emits the commands above and reports the capture checklist — the developer runs pandoc locally after placing real screenshots.
+**The skill does NOT run pandoc or start the target app unless explicitly asked.** It emits the commands above and writes the Playwright capture script beside the module guides so the developer can capture screenshots before exporting.
 
 Instruct the user:
-> "Place real screenshots in `<target>/.sdcorejs/documentation/user-guides/images/` (see the checklist in each module guide), then run the pandoc command above to export DOCX/PDF."
+> "Run `<target>/.sdcorejs/documentation/user-guides/capture-screenshots.playwright.mjs` with `SDCOREJS_DOCS_BASE_URL` pointing at the running app, then run the pandoc command above to export DOCX/PDF with embedded images."
 
 When invoked from `sdcorejs-ship`: **always rebuild** the aggregate. **Ask before emitting the pandoc export command** (large-feature ships may not need DOCX every time):
 > "<localized text>"

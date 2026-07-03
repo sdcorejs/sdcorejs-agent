@@ -9,7 +9,7 @@ knows these finishing steps exist and can choose; the steps are never silently
 skipped, and never silently auto-run without the user seeing them.
 
 Why this gate exists: standalone skill triggers used to stop right after
-code-gen, so tests, documentation, review, and shipping checks silently never
+code-gen, so tests, user/technical documentation, review, and shipping checks silently never
 happened. The gate makes the whole finishing chain visible at one decision
 point, every time.
 
@@ -22,9 +22,10 @@ to skip the gate.
 
 ## Prompt Sequence
 
-Adapt every prompt to the user's language. Ask these questions sequentially and
-wait for each answer before asking the next one. Do not ask for a combined
-multi-setting answer.
+Adapt every prompt to the user's language. Ask the finish decisions
+sequentially and wait for each answer before asking the next one. The
+user/technical documentation decision is a single combined gate because both
+artifacts share the same new-file approval boundary.
 
 ### Step 1 - Tests
 
@@ -39,29 +40,38 @@ Code generated for <scope>. Finish step 1/3: tests.
 Reply with `1`, `2`, `3`, or `4`.
 ```
 
-### Step 2 - Documentation
+### Step 2 - User/Technical Documentation
 
-If saved documentation preferences exist with `ask_each_time: false`, report the
-saved choices and skip this question unless the current request overrides them.
-Otherwise ask:
+`code-documentation` is not part of this approval gate. Track skills apply
+source-code documentation automatically when they create or modify source code.
+
+Immediately after Step 1, inspect whether this run implemented a new feature and
+whether corresponding `user-guide` and `technical-doc` files already exist. If a
+new feature has no corresponding docs, ask:
 
 ```text
-Finish step 2/3: documentation.
+Documentation approval gate:
+This appears to be a new feature and I did not find an existing corresponding `user-guide` or `technical-doc`.
 
-1. Ask documentation questions now - comments, user guide, technical doc, requirement record, and saved preference. [Recommended]
-2. Skip optional documentation for this run.
+Should I create documentation for this feature?
 
-Reply with `1` or `2`.
+Options:
+1. Create/update `user-guide` - task-oriented documentation for end users, admins, support staff, or operators.
+2. Create/update `technical-doc` - developer/operator-facing documentation for architecture, API, integration, deployment, troubleshooting, configuration, or security.
+3. Create both - create/update both `user-guide` and `technical-doc`. [Recommended for user-visible features with developer-facing behavior]
+4. Skip new user/technical docs for this change - no new user-guide or technical-doc file will be created.
+
+Reply with `1`, `2`, `3`, or `4`.
 ```
 
-When the user chooses `1`, run `_refs/documentation/gate.md`, which asks its own
-questions sequentially.
+When corresponding docs already exist, use the same gate wording but replace the
+second sentence with the paths found and treat the selected options as updates.
+Saved preferences may prefill the recommended option for updates, but they must
+not silently create a missing `user-guide` or `technical-doc` for a new feature.
 
-When the user chooses `2`, do not run `_refs/documentation/gate.md`. Set the
-effective documentation choices explicitly:
+When the user chooses `4`, set the effective documentation choices explicitly:
 
 ```yaml
-comment_code: skip
 user_guide: skip
 technical_doc: skip
 requirement_record: skip
@@ -90,17 +100,19 @@ and durable memories.
 - Tests default ON (RED-first, `standard`). The user may opt out (`skip`) or
   change the level. If the user says nothing about tests, write them; silence
   means accept the default, never skip.
-- Documentation default ON. Read `_refs/documentation/gate.md` before asking.
+- Code documentation is automatic for Angular/NestJS/Next.js source-code
+  changes. It is not optional in this gate and does not require approval.
+- User/technical documentation default is visible choice. Read
+  `_refs/documentation/gate.md` before asking.
   If `<target>/.sdcorejs/documentation/preferences.md` exists with
-  `ask_each_time: false`, apply it and do not ask again unless the current
-  request overrides it.
-- The documentation gate captures `comment_code`, `user_guide`,
-  `technical_doc`, and whether to save the preference. `skip` is valid for each
-  documentation artifact, but the user must see the choice unless a saved
-  preference applies.
-- If the user chooses "Skip optional documentation" at Finish step 2, treat
-  every documentation artifact as skipped for this run. Do not call
-  documentation tail modes with undefined choices.
+  `ask_each_time: false`, it may apply to updates of existing docs, but it must
+  not silently authorize new doc file creation for a new feature.
+- The documentation gate captures `user_guide`, `technical_doc`, and whether a
+  missing corresponding doc file may be created. `skip` is valid for user-guide
+  and technical-doc, but skipping does not skip automatic code-documentation.
+- If the user chooses "Skip new user/technical docs" at Finish step 2, do not
+  create new user-guide or technical-doc files for this run. Existing docs may
+  still be updated only when the current request explicitly asked for that.
 - Review default ON; the user may `skip` it.
 - Execute the tail steps honoring the sequential answers, in the orchestrator's
   defined order. A skipped step is omitted; everything not skipped runs.
@@ -111,7 +123,7 @@ and durable memories.
 - Localize the prompt; keep identifiers, permission codes, and route paths in
   English in every language.
 - If the user already gave explicit instructions this turn (for example "add
-  entity X with full tests and medium comments"), pre-fill the gate from those
+  entity X with full tests and create the user guide"), pre-fill the gate from those
   answers and present it for a quick confirm rather than re-asking blindly.
 
 ## Order of execution after the gate
@@ -119,13 +131,14 @@ and durable memories.
 1. (if tests not skipped) `sdcorejs-test` - run the RED-first specs written
    during the TDD gate and add happy-path coverage; report pass/fail.
 2. (if review not skipped) `sdcorejs-review` -> `sdcorejs-repair-loop`.
-3. (if `comment_code` is not `skip`) `sdcorejs-documentation (comment-code mode)` -
-   apply the level captured by `_refs/documentation/gate.md`; do not ask again.
-4. (if `technical_doc=write`, or if `technical_doc=auto` and the auto criteria
-   are met) `sdcorejs-documentation (write-technical-doc mode)`.
+3. `sdcorejs-documentation (code-documentation mode)` - automatic for touched
+   source files; use concise maintainability-focused rules and do not ask.
+4. (if `technical_doc=create` or `technical_doc=update`)
+   `sdcorejs-documentation (write-technical-doc mode)`.
 5. `sdcorejs-ship (verify-before-done mode)` (always).
 6. `sdcorejs-ship (branch-ready mode)` (always).
 7. `_refs/orchestration/tail/auto-docs.md` (always).
-8. (if `user_guide=update`) `sdcorejs-documentation (write-user-guide mode)`.
+8. (if `user_guide=create` or `user_guide=update`)
+   `sdcorejs-documentation (write-user-guide mode)`.
 9. `_refs/orchestration/tail/auto-task-tracker.md` (always).
 10. `sdcorejs-explore (memories mode)` when durable knowledge surfaced.

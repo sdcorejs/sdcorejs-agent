@@ -7,9 +7,10 @@
 ## Purpose
 
 Generate Angular code that integrates with the existing codebase first. API docs,
-PRDs, screenshots, Figma/image notes, and business descriptions describe the new
-contract; the codebase decides which model/service/entity already exists, where
-code belongs, and what must be reused or minimally extended.
+mock API contracts, PRDs, screenshots, Figma/image notes, and business
+descriptions describe the new contract; the codebase decides which
+model/service/entity already exists, where code belongs, and what must be reused
+or minimally extended.
 
 ## When to load
 
@@ -19,7 +20,7 @@ Load this reference before:
   repositories, API clients, or services.
 - Adding fields that reference another domain entity.
 - Adding select/filter/detail hydration for a related entity.
-- Parsing an API/PRD/image/schema that mentions related entities.
+- Parsing an API/mock API/PRD/image/schema that mentions related entities.
 
 ## Discovery workflow
 

@@ -3,14 +3,15 @@
 Templates the documentation skill renders in `write-user-guide` mode. Per-module guides live at
 `<target>/.sdcorejs/documentation/user-guides/<module>.md`; the aggregate lives at
 `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md`.
-Markdown is canonical; DOCX/PDF is produced by the pandoc command at the bottom. Images are
-placeholders the target project fills. The agent does not run the app or capture screenshots.
+Markdown is canonical; DOCX/PDF is produced by the pandoc command at the bottom. Screenshots are
+captured by `<target>/.sdcorejs/documentation/user-guides/capture-screenshots.playwright.mjs`
+when the target app is running.
 
 Write generated prose in the user's runtime language. Keep this reusable template English-only.
 
 ## Per-Module Template (.sdcorejs/documentation/user-guides/<module>.md)
 
-```markdown
+````markdown
 ---
 module: <module>
 title: <Feature title>
@@ -38,7 +39,7 @@ coverage: { total: 0, met: 0, partial: 0, missing: 0 }
 - **What the user does:** <task description>
 - **Who can use it:** permission `<module>_<entity>:<action>`
 - **Main fields/buttons:** <list>
-![<Screen title>](images/<module>-<screen>.png)
+<If `images/<module>-<screen>.png` exists, render `![<Screen title>](images/<module>-<screen>.png)`. Otherwise omit the image link and keep the checklist entry below.>
 
 ## Permission Table
 | Permission code | Task | Who / Role |
@@ -73,11 +74,17 @@ coverage: { total: 0, met: 0, partial: 0, missing: 0 }
 ## Illustration Image Checklist
 - [ ] `images/<module>-list.png` - list screen
 - [ ] `images/<module>-detail.png` - detail screen
+
+Capture command:
+
+```bash
+SDCOREJS_DOCS_BASE_URL=http://localhost:4200 node .sdcorejs/documentation/user-guides/capture-screenshots.playwright.mjs
 ```
+````
 
 ## Aggregate Template (.sdcorejs/documentation/sdcorejs-user-guide.md)
 
-```markdown
+````markdown
 ---
 title: <Project name> - User Guide
 generated_at: <ISO8601>
@@ -101,7 +108,7 @@ coverage: { total: 0, met: 0, partial: 0, missing: 0 }
 | Module | Met | Partial | Missing |
 |---|---:|---:|---:|
 | <module1> | 5 | 1 | 0 |
-```
+````
 
 ## DOCX/PDF Export (pandoc)
 
@@ -117,5 +124,5 @@ PDF:
 pandoc <target>/.sdcorejs/documentation/sdcorejs-user-guide.md -o <target>/.sdcorejs/documentation/sdcorejs-user-guide.pdf --resource-path=<target>/.sdcorejs/documentation/user-guides
 ```
 
-- Images are placeholder paths such as `images/<module>-<screen>.png`; place real images under `<target>/.sdcorejs/documentation/user-guides/images/` before running pandoc.
-- The agent does not run the app or capture screenshots. Each module guide's checklist states which screens should be captured.
+- Run `<target>/.sdcorejs/documentation/user-guides/capture-screenshots.playwright.mjs` before export so image links point at real files under `<target>/.sdcorejs/documentation/user-guides/images/`.
+- Do not include missing image links in module guides; keep checklist entries until screenshots exist.

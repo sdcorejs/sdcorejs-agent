@@ -17,7 +17,7 @@ Internal tail reference. Load this file from a dispatchable executor after auto-
 ### Write mode — at end of every code-writing task (after auto-docs runs)
 The agent MUST run this reference (write mode) immediately after `_refs/orchestration/tail/auto-docs.md` finishes writing the session summary. This runs for every code-writing skill invocation:
 - `write-code` (the `sdcorejs-angular` orchestrator and the reference packs it loads: `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail`, `actions`)
-- `sdcorejs-test`, `sdcorejs-review`, `sdcorejs-documentation (comment-code mode)` (level != skip)
+- `sdcorejs-test`, `sdcorejs-review`, `sdcorejs-documentation (code-documentation mode)` when source code changed
 
 Read the auto-docs file the previous step just wrote. From it:
 - Match "What was changed" items against existing open `[ ]` tasks → tick them `[x]` with timestamp

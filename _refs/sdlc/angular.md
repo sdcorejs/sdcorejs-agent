@@ -125,6 +125,12 @@ Capture:
 
 > **Default coverage approach = `TDD` RED-first** (the orchestrator TDD gate enforces it; tests are always written, never gated behind a question). Use the **TDD phase grouping** below by default. The `post-hoc` grouping is the OVERRIDE — use it only when the user explicitly asked for post-hoc ordering.
 
+For image, screenshot, Figma, PRD, user story, acceptance-criteria, or mixed
+visual/text input, include an early implementation step that loads
+`_refs/angular/write-code/input-analysis.md` and produces Core UI reuse
+analysis plus the matching UI decomposition, requirement mapping, or image+PRD
+mapping before code is written.
+
 ### Phase grouping — `post-hoc` coverage (OVERRIDE — only when the user explicitly chooses post-hoc)
 1. **Module bootstrap** (only if new module): configuration, api configuration, guard, module, routes, register in app.routes + main.ts
 2. **Entity model + service + mock**: model.ts, mock-data.ts, service.ts (MockCrudStore), index.ts
@@ -173,11 +179,12 @@ If layout is `side-drawer`, omit `pages/detail/` and add `components/detail-side
 - `*.detail.component.spec.ts` — form validation + CREATE/UPDATE/DETAIL state switching
 
 ### Final-step expectations
-Documentation gate supplement: the finish gate loads `_refs/documentation/gate.md`
-before documentation tail steps. It may save
-`.sdcorejs/documentation/preferences.md`, captures `comment_code`,
-`user_guide`, and `technical_doc`, and can insert
-`sdcorejs-documentation (write-technical-doc mode)` before verify-before-done
-when `technical_doc=write` or `technical_doc=auto` criteria are met.
+Documentation gate supplement: immediately after the finish gate's test
+decision, load `_refs/documentation/gate.md`. It may save
+`.sdcorejs/documentation/preferences.md`, captures `user_guide` and
+`technical_doc` creation/update approval, and must ask before creating missing
+corresponding user-guide or technical-doc files for a new feature.
+`code-documentation` runs automatically for touched source files and is not
+controlled by this gate.
 
-The last numbered step should reference the mandatory tail-call chain (sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop → sdcorejs-documentation (comment-code mode) → sdcorejs-ship (verify-before-done mode) → sdcorejs-ship (branch-ready mode) → _refs/orchestration/tail/auto-docs.md → sdcorejs-documentation (write-user-guide mode) → _refs/orchestration/tail/auto-task-tracker.md → sdcorejs-explore (memories mode)). The reviewer of the plan checks that this chain is implicit, not omitted.
+The last numbered step should reference the mandatory tail-call chain (sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop → sdcorejs-documentation (code-documentation mode, automatic) → Angular UI check when UI-affecting → sdcorejs-documentation (write-technical-doc mode, if approved) → sdcorejs-ship (verify-before-done mode) → sdcorejs-ship (branch-ready mode) → _refs/orchestration/tail/auto-docs.md → sdcorejs-documentation (write-user-guide mode, if approved) → _refs/orchestration/tail/auto-task-tracker.md → sdcorejs-explore (memories mode)). The reviewer of the plan checks that this chain is implicit, not omitted.

@@ -226,13 +226,16 @@ Documentation gate: if this skill wrote or edited test files, fixtures, page
 objects, UAT cases, or reports, run
 `sdcorejs-documentation (documentation-gate mode)` after verification and before
 the ship/auto-docs tail. Read `_refs/documentation/gate.md`; it asks or loads
-saved project preferences from
-`<target>/.sdcorejs/documentation/preferences.md` for test comments,
-user-guide/QA-guide updates, and technical docs. Use those choices to run:
+saved project preferences from `<target>/.sdcorejs/documentation/preferences.md`
+for user-guide updates, including QA-facing flow guidance, and technical docs.
+There is no separate `qa_guide` output; use `user_guide` for QA-facing user
+documentation.
+Source-code documentation for touched test code is automatic and is not
+controlled by this gate. Use those choices to run:
 
-- `sdcorejs-documentation (comment-code mode)` when `comment_code` is not `skip`.
-- `sdcorejs-documentation (write-technical-doc mode)` when `technical_doc=write`, or when `technical_doc=auto` and reusable fixtures, page objects, harness conventions, public API contracts, or non-obvious test architecture changed.
-- `sdcorejs-documentation (write-user-guide mode)` when `user_guide=update` and the test work documents user-visible flows.
+- `sdcorejs-documentation (code-documentation mode)` automatically for touched test source, fixtures, or page objects when useful.
+- `sdcorejs-documentation (write-technical-doc mode)` when `technical_doc=create` or `technical_doc=update`.
+- `sdcorejs-documentation (write-user-guide mode)` when `user_guide=create` or `user_guide=update` and the test work documents user-visible flows.
 
 1. If this skill wrote or edited test files, fixtures, page objects, UAT cases, or
    reports, run the verification commands from Step 3 and capture the real output.
@@ -303,7 +306,7 @@ Mode B - inspector export / selector inventory:
 - Keep test data deterministic.
 - In `tdd` mode, verify RED before writing production code and verify GREEN after implementation.
 - For direct write/edit test work, run the Direct invocation tail so auto-docs and the living task tracker stay current.
-- For direct write/edit test work, present the documentation gate from `_refs/documentation/gate.md` unless saved preferences in `.sdcorejs/documentation/preferences.md` apply; prefer useful documentation by default.
+- For direct write/edit test work, present the documentation gate from `_refs/documentation/gate.md` for user-guide and technical-doc decisions; apply useful code-documentation automatically for touched test source.
 
 ### Must not
 - Mark failing tests `.skip` / `xit` to force green CI.

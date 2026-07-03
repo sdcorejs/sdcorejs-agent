@@ -12,6 +12,12 @@
     "phase": 1
   },
   {
+    "id": "angular-prd-mock-api-prototype",
+    "prompt": "generate Angular portal screens from a PRD and mock API contract",
+    "expectedSkill": "sdcorejs-angular",
+    "phase": 1
+  },
+  {
     "id": "open-ended-localized",
     "prompt": "toi dang phan van giua drawer va full page detail",
     "expectedSkill": "sdcorejs-brainstorming",
@@ -39,6 +45,24 @@
     "id": "user-guide",
     "prompt": "write user guide for module Product",
     "expectedSkill": "sdcorejs-documentation",
+    "phase": 3
+  },
+  {
+    "id": "docstring-api",
+    "prompt": "add docstrings and TSDoc for exported API classes",
+    "expectedSkill": "sdcorejs-documentation",
+    "phase": 3
+  },
+  {
+    "id": "user-guide-screenshot-script",
+    "prompt": "write Playwright screenshot capture script for the user guide",
+    "expectedSkill": "sdcorejs-documentation",
+    "phase": 3
+  },
+  {
+    "id": "playwright-e2e-test",
+    "prompt": "write Playwright e2e test for login",
+    "expectedSkill": "sdcorejs-test",
     "phase": 3
   },
   {

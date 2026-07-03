@@ -83,7 +83,7 @@ Request
        test:    sdcorejs-test
        generic: execute-plan harness fallback
   -> finish gate and tail chain
-       sdcorejs-test -> sdcorejs-review -> repair-loop -> sdcorejs-documentation (comment-code mode)
+       sdcorejs-test -> sdcorejs-review -> repair-loop -> sdcorejs-documentation (code-documentation mode)
        -> sdcorejs-product when user-visible feature traceability is needed
        -> sdcorejs-ship (verify-before-done mode) -> sdcorejs-ship (branch-ready mode) -> _refs/orchestration/tail/auto-docs.md
        -> sdcorejs-documentation (write-user-guide mode) -> _refs/orchestration/tail/auto-task-tracker.md -> sdcorejs-explore (memories mode) when relevant

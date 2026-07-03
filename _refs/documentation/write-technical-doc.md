@@ -14,10 +14,12 @@ Do not use this reference for product PRDs, user stories, acceptance criteria,
 UAT checklists, design handoff artifacts, or test evidence. Those belong to
 their first-class tracks.
 
-When this reference is called from `_refs/documentation/gate.md` with
-`technical_doc=auto`, write only when the gate's auto criteria are met. If the
-change is too small for a persistent technical doc, report the skip reason
-instead of creating a template-only file.
+When this reference is called from `_refs/documentation/gate.md`, write only
+when the gate returned `technical_doc=create` or `technical_doc=update`. If the
+corresponding technical doc is missing for a new feature, do not create it until
+the documentation approval gate or the current user request has approved
+`technical-doc` creation. If the change is too small for a persistent technical
+doc, report the skip reason instead of creating a template-only file.
 
 ## Supported Operations
 
@@ -58,6 +60,11 @@ If several destinations inside `.sdcorejs/documentation/technical-docs/` are
 plausible, ask before writing with numbered candidate paths plus a "do not
 write" option.
 
+`API reference` here means standalone developer-facing API documentation. If the
+user asks for in-code JSDoc/TSDoc, doc comments, or Python docstrings for route
+handlers or exported API units, route to `_refs/documentation/code-documentation.md`
+instead.
+
 Discovery boundary: first-run setup diagnosis, missing env files, port conflicts,
 and "<localized text>" belong to `sdcorejs-explore (env-setup mode)`.
 Use this reference only when the user explicitly asks to write a persistent
@@ -83,6 +90,10 @@ Before writing or changing a technical doc:
 - Preserve existing terminology unless the operation is `standardize`; then define the canonical term once and update consistently.
 - Do not invent acceptance criteria, product commitments, API fields, or operational guarantees.
 - Do not create production-SDLC surfaces such as CI/CD release governance, SRE incident runbooks, observability playbooks, or compliance gates unless the user explicitly approved that scope through the SDLC flow.
+- Never include real secrets, tokens, passwords, private keys, production
+  credentials, or sensitive internal values. Use placeholders such as
+  `<API_KEY>`, `<DATABASE_URL>`, `<PROJECT_ID>`, or `example.com`.
+- Mark destructive or irreversible actions clearly.
 - Treat mojibake as blocking. Fix corrupted text before returning.
 
 ## Operation Rules
@@ -90,9 +101,11 @@ Before writing or changing a technical doc:
 ### write
 
 1. Pick the doc type and destination.
-2. Build a minimal outline from the doc type table.
-3. Fill each section from inspected evidence.
-4. Add an `Open questions` section when evidence is incomplete.
+2. Confirm the destination is approved by `_refs/documentation/gate.md` when
+   creating a missing doc for a new feature.
+3. Build a minimal outline from the doc type table.
+4. Fill each section from inspected evidence.
+5. Add an `Open questions` section when evidence is incomplete.
 
 ### rewrite
 

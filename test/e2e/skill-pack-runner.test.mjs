@@ -1,7 +1,41 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import { dispatchPrompt, loadSkillPack, runPromptEval } from './support/skill-pack-runner.mjs';
+
+async function listMarkdownLikeFiles(rootUrl, relativeDir) {
+  const dirUrl = new URL(`${relativeDir}/`, rootUrl);
+  const entries = await readdir(dirUrl, { withFileTypes: true }).catch(() => []);
+  const nested = await Promise.all(
+    entries.map(async (entry) => {
+      const entryPath = `${relativeDir}/${entry.name}`;
+      if (entry.isDirectory()) return listMarkdownLikeFiles(rootUrl, entryPath);
+      return entry.isFile() && /\.(md|mdc)$/.test(entry.name) ? [entryPath] : [];
+    })
+  );
+  return nested.flat().sort();
+}
+
+function findUnclosedMarkdownFence(text) {
+  let open = null;
+  const lines = text.split(/\r?\n/);
+  for (let index = 0; index < lines.length; index++) {
+    const match = lines[index].match(/^([`~]{3,})([^`~]*)$/);
+    if (!match) continue;
+
+    const fence = match[1];
+    const marker = fence[0];
+    const length = fence.length;
+    if (!open) {
+      open = { marker, length, line: index + 1, text: lines[index] };
+    } else if (marker === open.marker && length >= open.length) {
+      open = null;
+    }
+  }
+  return open;
+}
 
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
@@ -17,6 +51,19 @@ test('phase 1: deterministic runner loads source skills, mirrors, and refs witho
   assert.equal(pack.diagnostics.length, 0);
 });
 
+test('phase 1: markdown fences stay balanced across skills, refs, and mirrors', async () => {
+  const rootUrl = new URL('../../', import.meta.url);
+  const roots = ['skills', '_refs', '.claude', 'plugin', 'codex', '.cursor'];
+  const files = (await Promise.all(roots.map((root) => listMarkdownLikeFiles(rootUrl, root)))).flat();
+
+  assert.ok(files.length > 400, `markdown-like files scanned=${files.length}`);
+  for (const file of files) {
+    const text = await readFile(new URL(`../../${file}`, import.meta.url), 'utf8');
+    const open = findUnclosedMarkdownFence(text);
+    assert.equal(open, null, `${file}:${open?.line} has an unclosed Markdown fence: ${open?.text}`);
+  }
+});
+
 test('phase 1: mandatory workflow invariants are encoded in source skills and refs', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
   const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
@@ -27,6 +74,7 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
     assert.match(text, /_refs\/shared\/finish-gate\.md/, `${name} presents the finish gate`);
     assert.match(text, /_refs\/documentation\/gate\.md/, `${name} runs documentation gate`);
     assert.match(text, /\.sdcorejs\/documentation\/preferences\.md/, `${name} supports saved documentation preferences`);
+    assert.match(text, /finishing steps \(tests, review, code-documentation, technical-doc, user-guide\)/, `${name} progress checklist includes technical-doc`);
     assert.match(text, /sdcorejs-ship \(verify-before-done mode\)/, `${name} runs acceptance verification`);
     assert.match(text, /sdcorejs-ship \(branch-ready mode\)/, `${name} runs branch-ready`);
     assert.match(text, /_refs\/orchestration\/tail\/auto-docs\.md/, `${name} writes auto-docs`);
@@ -34,10 +82,31 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
     assert.match(text, /memories mode/, `${name} hands off durable memories when needed`);
   }
 
+  const angularSkill = sourceByName.get('sdcorejs-angular');
+  assert.match(angularSkill, /_refs\/angular\/write-code\/input-analysis\.md/);
+  assert.match(angularSkill, /SDCoreJS Core reuse analysis/);
+  assert.match(angularSkill, /mandatory UI check/);
+  assert.match(angularSkill, /Core reuse summary/);
+
+  const angularInputAnalysis = await readFile(new URL('../../_refs/angular/write-code/input-analysis.md', import.meta.url), 'utf8');
+  assert.match(angularInputAnalysis, /versions\.json/);
+  assert.match(angularInputAnalysis, /UI decomposition/);
+  assert.match(angularInputAnalysis, /Requirement mapping/);
+  assert.match(angularInputAnalysis, /Image \+ PRD mapping/);
+  assert.match(angularInputAnalysis, /Post-Implementation UI Check/);
+  assert.match(angularInputAnalysis, /Do not claim visual\/browser verification unless it actually happened/);
+
+  const coreDocsFetch = await readFile(new URL('../../_refs/angular/core-docs-fetch.mjs', import.meta.url), 'utf8');
+  assert.match(coreDocsFetch, /package-lock\.json/);
+  assert.match(coreDocsFetch, /pnpm-lock\.yaml/);
+  assert.match(coreDocsFetch, /yarn\.lock/);
+
   const testSkill = sourceByName.get('sdcorejs-test');
   assert.match(testSkill, /## Direct invocation tail/);
   assert.match(testSkill, /_refs\/documentation\/gate\.md/);
   assert.match(testSkill, /\.sdcorejs\/documentation\/preferences\.md/);
+  assert.match(testSkill, /There is no separate `qa_guide` output/);
+  assert.doesNotMatch(testSkill, /QA-guide/);
   assert.match(testSkill, /TRACK=test/);
   assert.match(testSkill, /_refs\/orchestration\/tail\/auto-docs\.md/);
   assert.match(testSkill, /_refs\/orchestration\/tail\/auto-task-tracker\.md/);
@@ -86,15 +155,58 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
 
   const finishGate = await readFile(new URL('../../_refs/shared/finish-gate.md', import.meta.url), 'utf8');
   assert.match(finishGate, /Finish step 1\/3: tests/);
-  assert.match(finishGate, /Finish step 2\/3: documentation/);
-  assert.match(finishGate, /comment_code: skip[\s\S]*user_guide: skip[\s\S]*technical_doc: skip[\s\S]*requirement_record: skip/);
-  assert.match(finishGate, /\(if `comment_code` is not `skip`\) `sdcorejs-documentation \(comment-code mode\)`/);
-  assert.doesNotMatch(finishGate, /\n3\. `sdcorejs-documentation \(comment-code mode\)`/);
+  assert.match(finishGate, /Documentation approval gate/);
+  assert.match(finishGate, /single combined gate/);
+  assert.match(finishGate, /Skip new user\/technical docs/);
+  assert.match(finishGate, /user_guide: skip[\s\S]*technical_doc: skip[\s\S]*requirement_record: skip/);
+  assert.match(finishGate, /`sdcorejs-documentation \(code-documentation mode\)` - automatic/);
+  assert.doesNotMatch(finishGate, /code_documentation: skip/);
   assert.doesNotMatch(finishGate, /Codes:/);
   const documentationGate = await readFile(new URL('../../_refs/documentation/gate.md', import.meta.url), 'utf8');
-  assert.match(documentationGate, /Documentation step 1\/5: code comments/);
-  assert.match(documentationGate, /Documentation step 5\/5: save these choices/);
+  assert.match(documentationGate, /User\/Technical Documentation Approval Gate/);
+  assert.match(documentationGate, /This gate does \*\*not\*\* control `code-documentation`/);
+  assert.match(documentationGate, /user_guide: create \| update \| skip/);
+  assert.match(documentationGate, /technical_doc: create \| update \| skip/);
+  assert.doesNotMatch(documentationGate, /create_or_update/);
+  assert.doesNotMatch(documentationGate, /code_documentation: skip/);
   assert.doesNotMatch(documentationGate, /Codes:/);
+
+  const documentationSkill = sourceByName.get('sdcorejs-documentation');
+  assert.match(documentationSkill, /Playwright screenshot capture script for user guides/);
+
+  const userGuide = await readFile(new URL('../../_refs/documentation/write-user-guide.md', import.meta.url), 'utf8');
+  assert.match(userGuide, /capture-screenshots\.playwright\.mjs/);
+  assert.match(userGuide, /SDCOREJS_DOCS_BASE_URL/);
+  assert.match(userGuide, /Never emit markdown image links for missing files/);
+  assert.match(userGuide, /Do not emit a markdown image link for an image file that does not exist yet/);
+
+  const userGuideTemplate = await readFile(new URL('../../_refs/shared/user-guide-template.md', import.meta.url), 'utf8');
+  assert.match(userGuideTemplate, /capture-screenshots\.playwright\.mjs/);
+  assert.match(userGuideTemplate, /Do not include missing image links/);
+});
+
+test('phase 1: Core docs fetcher prefers installed lockfile version over package range', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'sdcorejs-core-docs-'));
+  await writeFile(
+    join(root, 'package.json'),
+    JSON.stringify({ dependencies: { '@sdcorejs/angular': '^20' } }),
+    'utf8'
+  );
+  await writeFile(
+    join(root, 'package-lock.json'),
+    JSON.stringify({
+      packages: {
+        'node_modules/@sdcorejs/angular': {
+          version: '20.0.7'
+        }
+      }
+    }),
+    'utf8'
+  );
+
+  const { detectInstalledVersion } = await import('../../_refs/angular/core-docs-fetch.mjs');
+
+  assert.equal(detectInstalledVersion(root), '20.0.7');
 });
 
 test('phase 1: long references expose a top-of-file contents map', async () => {
@@ -173,6 +285,7 @@ test('phase 1: deterministic prompt eval dispatches expected skills', async () =
     [
       ['nestjs-init', 'sdcorejs-nestjs', true],
       ['angular-action-localized', 'sdcorejs-angular', true],
+      ['angular-prd-mock-api-prototype', 'sdcorejs-angular', true],
       ['open-ended-localized', 'sdcorejs-brainstorming', true],
       ['product-traceability-localized', 'sdcorejs-product', true],
       ['solution-builder-classroom-localized', 'sdcorejs-solution-builder', true],

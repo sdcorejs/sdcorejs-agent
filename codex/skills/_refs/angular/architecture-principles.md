@@ -167,7 +167,8 @@ export class ProductService extends MockCrudStore<ProductDTO, ProductSaveReq> {
 ```
 
 - Default: `MockCrudStore` via `localStorage`, seeded with 20-40 domain-realistic rows
-- Switch to `BaseService.register('<entity>')` only when backend API contract is provided
+- For PO prototypes driven by mock API docs, stay mock-first but match the contract shape
+- Switch to `BaseService.register('<entity>')` only when a runnable backend endpoint/configuration and project service convention are provided
 
 **Why**: frontend can ship + iterate without a backend. Mock rows must be **domain-realistic** (`<localized text>` not `"Name 1"`) — bad seed data hides UX issues (column too narrow for real names, sort key collisions).
 
@@ -316,4 +317,4 @@ When a principle here changes, propagate to:
 - `_refs/angular/write-code/reuse-existing-entities.md` — codebase-first model/service/entity reuse preflight
 - `_refs/angular/templates/entity-skeleton.md` — canonical code templates these principles produce
 - `_refs/angular/templates/example-product.md` — worked example end-to-end
-- `sdcorejs-documentation (comment-code mode)` + `_refs/documentation/comment-code.md` — when/how to document WHY these principles applied in a specific decision
+- `sdcorejs-documentation (code-documentation mode)` + `_refs/documentation/code-documentation.md` — when/how to document public contracts and WHY these principles applied in a specific decision
