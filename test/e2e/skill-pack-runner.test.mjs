@@ -1,9 +1,41 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { dispatchPrompt, loadSkillPack, runPromptEval } from './support/skill-pack-runner.mjs';
+
+async function listMarkdownLikeFiles(rootUrl, relativeDir) {
+  const dirUrl = new URL(`${relativeDir}/`, rootUrl);
+  const entries = await readdir(dirUrl, { withFileTypes: true }).catch(() => []);
+  const nested = await Promise.all(
+    entries.map(async (entry) => {
+      const entryPath = `${relativeDir}/${entry.name}`;
+      if (entry.isDirectory()) return listMarkdownLikeFiles(rootUrl, entryPath);
+      return entry.isFile() && /\.(md|mdc)$/.test(entry.name) ? [entryPath] : [];
+    })
+  );
+  return nested.flat().sort();
+}
+
+function findUnclosedMarkdownFence(text) {
+  let open = null;
+  const lines = text.split(/\r?\n/);
+  for (let index = 0; index < lines.length; index++) {
+    const match = lines[index].match(/^([`~]{3,})([^`~]*)$/);
+    if (!match) continue;
+
+    const fence = match[1];
+    const marker = fence[0];
+    const length = fence.length;
+    if (!open) {
+      open = { marker, length, line: index + 1, text: lines[index] };
+    } else if (marker === open.marker && length >= open.length) {
+      open = null;
+    }
+  }
+  return open;
+}
 
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
@@ -17,6 +49,19 @@ test('phase 1: deterministic runner loads source skills, mirrors, and refs witho
   assert.ok(pack.referenceDocs.length >= 60, `referenceDocs=${pack.referenceDocs.length}`);
   assert.equal(pack.codexReferenceDocs.length, pack.referenceDocs.length);
   assert.equal(pack.diagnostics.length, 0);
+});
+
+test('phase 1: markdown fences stay balanced across skills, refs, and mirrors', async () => {
+  const rootUrl = new URL('../../', import.meta.url);
+  const roots = ['skills', '_refs', '.claude', 'plugin', 'codex', '.cursor'];
+  const files = (await Promise.all(roots.map((root) => listMarkdownLikeFiles(rootUrl, root)))).flat();
+
+  assert.ok(files.length > 400, `markdown-like files scanned=${files.length}`);
+  for (const file of files) {
+    const text = await readFile(new URL(`../../${file}`, import.meta.url), 'utf8');
+    const open = findUnclosedMarkdownFence(text);
+    assert.equal(open, null, `${file}:${open?.line} has an unclosed Markdown fence: ${open?.text}`);
+  }
 });
 
 test('phase 1: mandatory workflow invariants are encoded in source skills and refs', async () => {
@@ -125,6 +170,19 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.doesNotMatch(documentationGate, /create_or_update/);
   assert.doesNotMatch(documentationGate, /code_documentation: skip/);
   assert.doesNotMatch(documentationGate, /Codes:/);
+
+  const documentationSkill = sourceByName.get('sdcorejs-documentation');
+  assert.match(documentationSkill, /Playwright screenshot capture script for user guides/);
+
+  const userGuide = await readFile(new URL('../../_refs/documentation/write-user-guide.md', import.meta.url), 'utf8');
+  assert.match(userGuide, /capture-screenshots\.playwright\.mjs/);
+  assert.match(userGuide, /SDCOREJS_DOCS_BASE_URL/);
+  assert.match(userGuide, /Never emit markdown image links for missing files/);
+  assert.match(userGuide, /Do not emit a markdown image link for an image file that does not exist yet/);
+
+  const userGuideTemplate = await readFile(new URL('../../_refs/shared/user-guide-template.md', import.meta.url), 'utf8');
+  assert.match(userGuideTemplate, /capture-screenshots\.playwright\.mjs/);
+  assert.match(userGuideTemplate, /Do not include missing image links/);
 });
 
 test('phase 1: Core docs fetcher prefers installed lockfile version over package range', async () => {
@@ -227,6 +285,7 @@ test('phase 1: deterministic prompt eval dispatches expected skills', async () =
     [
       ['nestjs-init', 'sdcorejs-nestjs', true],
       ['angular-action-localized', 'sdcorejs-angular', true],
+      ['angular-prd-mock-api-prototype', 'sdcorejs-angular', true],
       ['open-ended-localized', 'sdcorejs-brainstorming', true],
       ['product-traceability-localized', 'sdcorejs-product', true],
       ['solution-builder-classroom-localized', 'sdcorejs-solution-builder', true],

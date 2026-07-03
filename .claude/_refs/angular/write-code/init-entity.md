@@ -12,7 +12,7 @@
 ## 2. Description
 Generates a complete entity management module following sdcorejs architecture patterns. Creates service layer, models/interfaces, and page components (list and detail) with full CRUD operations, reactive forms, and data tables.
 
-This reference can synthesize UI structure from PRD text, screenshot/attribute images, and sample cURL payloads, then map those into CREATE/UPDATE/DETAIL rendering strategies. When those artifacts are present, first complete `./input-analysis.md` so Core UI reuse, local project reuse, image decomposition, and requirement mapping are explicit before files are created.
+This reference can synthesize UI structure from PRD text, screenshot/attribute images, mock API contracts, OpenAPI/Swagger/Postman artifacts, JSON examples, and sample cURL payloads, then map those into CREATE/UPDATE/DETAIL rendering strategies. When those artifacts are present, first complete `./input-analysis.md` so Core UI reuse, local project reuse, image decomposition, requirement mapping, and API/service assumptions are explicit before files are created.
 
 This reference assumes the target feature module is already known. If the request does not specify a module, the agent must resolve that first using the request intake flow.
 
@@ -27,8 +27,9 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
 ### MUST DO ✅
 - Confirm target module before generating entity files
 - Generate the feature module first if it does not exist (see `./init-module.md`)
-- For PRD, user story, acceptance criteria, screenshot, wireframe, Figma, mockup, or mixed visual/text input, read `./input-analysis.md` before deriving UI structure or creating components
-- Identify the primary entity and every related entity from API docs, PRDs, Figma/image/screenshot input, business descriptions, cURL payloads, or schemas before creating files
+- For PRD, user story, acceptance criteria, screenshot, wireframe, Figma, mockup, mock API, OpenAPI/Swagger, Postman/Insomnia, JSON fixtures, sample cURL, or mixed visual/text input, read `./input-analysis.md` before deriving UI structure or creating components
+- For mock API, OpenAPI/Swagger, Postman/Insomnia, MSW/WireMock/Prism/JSON Server specs, endpoint tables, schemas, JSON fixtures, or sample cURL, read `./mock-api-input.md` before deriving model/service/screen contracts
+- Identify the primary entity and every related entity from API docs, mock API contracts, PRDs, Figma/image/screenshot input, business descriptions, cURL payloads, or schemas before creating files
 - Before creating model/interface/type/dto/service/store/repository/API-client files, scan the target codebase for existing contracts and symbols using the variants listed in `./reuse-existing-entities.md`
 - Decide `reuse`, `extend`, or `create new` for each entity and present a short pre-code summary of found contracts, imports to reuse, existing files to extend, truly new files to create, and why duplicates are not created
 - Check `@sdcorejs/utils` before adding utility/helper functions; reuse `DateUtilities`, `NumberUtilities`, `StringUtilities`, `ValidationUtilities`, `ArrayUtilities`, `FilterUtilities`, `Utilities`, `ObjectUtilities`, `ColorUtilities`, `BrowserUtilities`, models, and constants when applicable
@@ -37,7 +38,8 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
 - Generate mock data immediately after `SaveReq` and `DTO` are finalized (whether from user input or semantic inference); do not wait until after list/detail components are built
 - Seed rows must use domain-realistic values derived from the inferred field schema; never use generic placeholders like `"Name 1"`, `"Code 01"`, or repeated identical values across all rows
 - Ensure mock store reseeds automatically when stored JSON is missing, empty array, or corrupted JSON
-- If backend API contract is provided explicitly, service may switch to `BaseService`-based API integration
+- For PO prototype flows with a mock API contract but no runnable backend, keep mock-first service mode while matching the contract's method names, payloads, response fields, enum/status values, and important error paths
+- If a runnable backend endpoint, base URL/configuration, auth expectation, and project service convention are provided explicitly, service may switch to `BaseService`-based API integration
 - Treat Service public models as the Service-Component contract, not as a forced exact copy of the raw backend API:
   - `SaveReq` / `CreateReq` / `UpdateReq` describe what the Service accepts and sends after mapping.
   - `DTO` / `ListRes` / `DetailRes` describe what the Service returns or guarantees to components.
@@ -49,6 +51,9 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
 - Parse and normalize input artifacts when available:
   - PRD text sections
   - screenshot or attribute image hints
+  - mock API endpoint tables
+  - OpenAPI/Swagger/Postman/Insomnia/MSW/WireMock/Prism/JSON Server artifacts
+  - JSON request/response fixtures
   - sample cURL request/response
 - Derive a field matrix from artifacts before coding:
   - list columns
@@ -56,10 +61,12 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
   - detail read-only fields
   - validators and enum candidates
   - request/response field mapping
-- Apply cURL mapping by state:
+- Apply API contract mapping by state:
   - request payload fields -> CREATE/UPDATE editable controls
   - response meta/status/audit fields -> DETAIL read-only blocks
   - list endpoint lightweight fields -> LIST columns
+  - custom action endpoints -> workflow/action buttons
+  - lookup/select endpoints -> relation controls
 - API URL convention is PROJECT-SPECIFIC, NOT fixed by this reference. Scaffold defaults:
   - `BaseService.register('<entity>')` — no version prefix
   - `<entity>-select` template: `url="<entity>"` — same, no prefix
@@ -343,7 +350,8 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
 - Render long multi-section page forms without anchor navigation when `sd-anchor` is already available
 - Use editable inputs in DETAIL read-only summary sections when `AdaptiveSplitDetail` layout is selected
 - Leave DETAIL page in broken state when `detail(id)` fails (`Entity not found`) without user feedback or recovery navigation
-- Ignore provided cURL contract or PRD image when they define API fields or UI sections
+- Ignore provided mock API/OpenAPI/Postman/cURL contract or PRD image when they define API fields or UI sections
+- Switch from mock-first prototype mode to live API integration from contract text alone; require runnable endpoint/configuration and project convention evidence
 - Add UI-only fields (`checked`, `selected`, `disabled`, `expanded`, `children`, `label`, `displayName`, etc.) directly to `<Entity>SaveReq` or `<Entity>DTO` when the Service does not accept/return/derive them
 - Force Service models to mirror raw backend request/response fields 1:1 when the Service layer intentionally maps, normalizes, or hides that raw API shape
 
@@ -423,10 +431,11 @@ Worked Product entity (full code samples for model + service + list + detail) li
 - [ ] Scan existing service/api/repository/store files and symbols
 - [ ] Record reuse/extend/create-new decision for each entity
 - [ ] Reuse imported related entity types/services or minimally extend existing files before creating new contracts
+- [ ] If mock API/API-contract input exists, complete `./mock-api-input.md` contract mapping before creating models/services/screens
 - [ ] Create model file with SaveReq interface and DTO type
 - [ ] Classify every ambiguous field as raw API, Service input/output, Component ViewModel, or UI state before adding it to a type
 - [ ] Create `services/[entity].mock-data.ts` with 20–40 domain-realistic seed rows immediately after SaveReq/DTO are finalized
-- [ ] Create service with mock-first CRUD (`localStorage`) by default; use BaseService/API mode only when backend contract is explicit
+- [ ] Create service with mock-first CRUD (`localStorage`) by default; use BaseService/API mode only when a runnable backend endpoint/configuration and project convention are explicit
 - [ ] Add mapper/internal API types when raw backend shape differs from the Service contract
 - [ ] Create list component with @SdTabComponent decorator
 - [ ] Create detail component with 3-state machine

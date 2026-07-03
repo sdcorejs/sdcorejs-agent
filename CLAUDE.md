@@ -63,7 +63,7 @@ Tail chain after code generation:
 sdcorejs-test
 -> sdcorejs-review
 -> sdcorejs-repair-loop when findings exist
--> sdcorejs-documentation (comment-code mode)
+-> sdcorejs-documentation (code-documentation mode)
 -> sdcorejs-product when user-visible feature traceability is needed
 -> sdcorejs-ship (verify-before-done mode)
 -> sdcorejs-ship (branch-ready mode)

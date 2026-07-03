@@ -1,4 +1,4 @@
-﻿# SDCoreJS NestJS Core Catalog Snapshot
+# SDCoreJS NestJS Core Catalog Snapshot
 
 Internal knowledge snapshot of `@sdcorejs/nestjs`, consumed by the NestJS write-code packs. Keep this file aligned with the published package, not with old generated app templates.
 

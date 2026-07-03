@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-documentation
-description: Documentation executor/gate for code documentation, user guide/manual, technical docs, requirement records, and doc operations. Use for code-documentation/comments/docstrings/JSDoc/TSDoc, write user guide/manual, TASKID records, technical/API/architecture docs, and doc rewrite/improve/structure/summarize/convert. Do not use for project summary/code-map/env setup, full PRDs/stories/AC/UAT, or design handoff. Runtime-localized.
+description: Documentation executor/gate for code documentation, user guide/manual plus screenshot capture scripts, technical docs, requirement records, and doc operations. Use for code-documentation/comments/docstrings/JSDoc/TSDoc, write user guide/manual, user-guide screenshot scripts, TASKID records, technical/API/architecture docs, and doc rewrite/improve/structure/summarize/convert. Do not use for project summary/code-map/env setup, full PRDs/stories/AC/UAT, or design handoff. Runtime-localized.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
@@ -75,7 +75,7 @@ asks for multiple outputs.
 |---|---|---|
 | `documentation-gate` | user-guide/technical-doc approval, saved documentation preferences, `.sdcorejs/documentation/preferences.md` | `_refs/documentation/gate.md` |
 | `code-documentation` | code documentation, document code, add comments, comment code, implementation comments, docstring, doc comment, JSDoc, TSDoc, document functions/classes/API, localized equivalents | `_refs/documentation/code-documentation.md` |
-| `write-user-guide` | user guide, user manual, module guide, aggregate guide, DOCX/PDF export, legacy reverse-engineer guide | `_refs/documentation/write-user-guide.md` |
+| `write-user-guide` | user guide, user manual, module guide, aggregate guide, DOCX/PDF export, Playwright screenshot capture script for user guides, legacy reverse-engineer guide | `_refs/documentation/write-user-guide.md` |
 | `write-technical-doc` | technical docs, API docs, architecture notes, module reference, integration guide, setup/implementation guide | `_refs/documentation/write-technical-doc.md` |
 | `write-requirement` | `TASKID`, task id, ticket id, "record requirement", "save requirement" | `_refs/documentation/write-requirement.md` |
 | `document-operation` | rewrite, improve, structure, summarize, convert, or standardize existing docs/artifacts | `_refs/documentation/write-technical-doc.md` |
@@ -164,7 +164,10 @@ When called after `auto-docs` in a write-code flow:
 1. Load `_refs/documentation/write-user-guide.md`.
 2. Run Mode 1 for every touched module when `user_guide=create` or
    `user_guide=update`.
-3. Never write user-guide artifacts into the `sdcorejs-agent` authoring repo unless that repo is explicitly the target for documentation testing.
+3. Create or update the sibling Playwright screenshot script at
+   `<target>/.sdcorejs/documentation/user-guides/capture-screenshots.playwright.mjs`
+   when the guide contains UI screens or image checklist entries.
+4. Never write user-guide artifacts into the `sdcorejs-agent` authoring repo unless that repo is explicitly the target for documentation testing.
 
 ## Direct Documentation Requests
 

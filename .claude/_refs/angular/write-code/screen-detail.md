@@ -92,9 +92,11 @@ For form-level refinement (validators, FormArray, error messages), use [`_refs/a
 
 ---
 
-## Detail child collections and editable rows
+## Detail child collections saved with the parent payload
 
-Treat child arrays in a detail screen as first-class form/UI work, not as a decorative block. This section applies when the entity has line items, order details, variants, attachments with metadata, approval steps, contacts, addresses, price tiers, schedules, or any repeated sub-record that can be added, removed, or edited from the detail page.
+Treat child arrays in a detail screen as first-class form/UI work, not as a decorative block. This section applies when the entity has embedded line items, order details, variants, attachments with metadata, approval steps, contacts, addresses, price tiers, schedules, or any repeated sub-record that is saved together in the parent create/update payload.
+
+If the child records are independently persisted through their own service/API, route, or permission set, use the parent detail-scoped child CRUD section below instead of this `FormArray` pattern.
 
 ### Detection triggers
 
@@ -160,6 +162,55 @@ Normalize child rows before save:
 - One large textarea containing JSON/list data instead of row controls.
 - Missing toolbar spacing, missing empty state, or action buttons glued to table edges.
 - Reusing list-page `SdTable` pagination/filter UX for a small editable child set when inline editing is the actual task.
+
+## Parent detail-scoped child CRUD
+
+Use this pattern when a parent DETAIL screen owns a child collection/tab/table and the child entity has independent persistence, permissions, or lifecycle. Example: `Customer Detail` contains an `Orders` tab, and Orders can be created, edited, viewed, or deleted without saving the Customer payload.
+
+### Detection triggers
+
+Use this pattern when any of these are true:
+
+- A detail page contains a child collection with its own entity/service/API, such as `Customer Detail -> Orders`, `Project Detail -> Tasks`, or `Invoice Detail -> Payments`.
+- The child record has its own create/update/detail/delete methods or permission codes.
+- The requested child action should not be submitted as part of the parent form payload.
+- The child collection appears in a tab, section, table, or empty-state inside the parent detail page.
+
+### State and routing contract
+
+- Child create/edit/view/delete actions are available only when the parent screen is in `DETAIL` and the parent id is loaded.
+- Hide child CRUD actions in parent `CREATE`; the parent id does not exist yet.
+- Hide child CRUD actions in parent `UPDATE`; the parent form may contain unsaved dirty state.
+- Do not navigate to child routes such as `/orders/create`, `/orders/:id/edit`, or `/orders/:id` from a parent detail collection.
+- Open child create/edit/view flows in a modal or side-drawer within the current parent DETAIL screen. If the target project has no modal/drawer pattern and Core UI docs cannot provide one, stop and report the UI component gap instead of falling back to child routes.
+- Preserve the parent DETAIL route and the active tab/section for the whole child CRUD flow.
+
+### Action placement
+
+- Place the child create action near the child collection: tab header, section toolbar, table toolbar, or empty-state CTA.
+- Use existing toolbar/header space when present; do not add an extra standalone action row that repeats the same intent.
+- Row-level view/edit/delete actions live in the child table/list action column and remain compact/icon-first when the project pattern supports it.
+- Empty state should explain the absence of child records and offer the same create action only in parent `DETAIL`.
+
+### Child form contract
+
+- Pass the current parent id from the loaded parent detail record into the modal/drawer state before opening the child form.
+- Prefill and lock the foreign key field, such as `customerId`, `projectId`, or `invoiceId`; do not ask the user to select the same parent again.
+- Remove the parent selector from the child form unless the existing business flow explicitly supports re-parenting and the request approved it.
+- Keep child form state isolated from the parent `FormGroup`; do not mark the parent form dirty for child modal/drawer edits.
+- Use child-entity services and models; reuse existing child model/service contracts before creating new ones.
+
+### Permission and success behavior
+
+- Gate each child action with child-entity permissions, not parent permissions. Example: creating an Order inside Customer Detail uses `ORDER_CREATE`, not `CUSTOMER_UPDATE`.
+- On child create/update/delete success: close the modal/drawer, refresh the child collection by parent id, keep the current parent DETAIL route, and restore the same active tab/section.
+- Show success/error notifications for the child operation; do not show parent save notifications for child CRUD.
+- Delete should follow the target project's confirmation pattern before calling the child delete endpoint.
+
+### FormArray boundary
+
+- Use inline `FormArray` in parent `CREATE`/`UPDATE` only when the child rows are saved in the same parent payload.
+- Do not use `FormArray` for independently persisted child CRUD. Wait until the parent exists, then operate on the child collection from parent `DETAIL`.
 
 ## DETAIL state rules
 
@@ -336,7 +387,8 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - `ChangeDetectionStrategy.OnPush` declared on the detail component
 - Required field validation enforced at save (`form.invalid` → `markAllAsTouched()` → notify; do not let invalid submits through)
 - Use `[form]="form"` + `[(model)]="entity.field"` as the default binding pattern, where `entity` is a plain object/ViewModel (Core UI form components self-register via `[form]+name`; do NOT use `formControlName` — they do not implement `ControlValueAccessor`)
-- For child arrays / line items, use the editable child collection pattern above: parent `FormGroup` + child `FormArray` + Core UI table/grid or sectioned row-editor fallback.
+- For child arrays / line items saved with the parent payload, use the editable child collection pattern above: parent `FormGroup` + child `FormArray` + Core UI table/grid or sectioned row-editor fallback.
+- For independently persisted child CRUD inside a parent detail screen, use the parent detail-scoped modal/drawer pattern above: parent DETAIL only, parent id prefilled/locked, child permissions, collection refresh after success, route/tab preserved.
 - Use Vietnamese labels / messages / notify for VI portals (full diacritics); permission codes + route paths stay English
 - Use grid `row row-sm` for form sections (compact spacing)
 - For relation fields, read `./reuse-existing-entities.md`; reuse existing related model/summary types and services, use `<entity>Id` when the API only returns an id, and do not inline the related entity shape when a contract exists
@@ -366,6 +418,10 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - Forget `data.permission` on any of `/create`, `/update/:id`, `/detail/:id`
 - Add/remove child rows in a display-only array while the submitted `FormArray` stays unchanged.
 - Render editable child rows as unstructured card stacks without table/grid/fallback reasoning.
+- Navigate from a parent DETAIL child collection to child CRUD routes such as `/orders/create`, `/orders/:id/edit`, or `/orders/:id`.
+- Show independent child CRUD actions while the parent screen is in CREATE or UPDATE.
+- Ask the user to reselect the current parent in an independent child CRUD form.
+- Use `FormArray` for independently persisted child records.
 
 ---
 
@@ -375,8 +431,11 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - [ ] Component file at `pages/detail/detail.component.ts` with imports from the shared shell ref
 - [ ] `state` signal initialized to `'DETAIL'` (overridden by `ngOnInit` dispatcher)
 - [ ] `initForm()` builds FormGroup from schema (one control per `visibleInDetail` field with declared validators)
-- [ ] Any child array / line-item field is represented in the parent form as a `FormArray`, not a disconnected display array
+- [ ] Any child array / line-item field saved with the parent payload is represented in the parent form as a `FormArray`, not a disconnected display array
 - [ ] Editable child rows use Core UI table/grid when supported, or the documented sectioned row-editor fallback when not supported
+- [ ] Independently persisted child CRUD, if present, is available only in parent DETAIL and opens modal/drawer flows without navigating away from the parent route
+- [ ] Child CRUD forms receive the current parent id, prefill/lock the foreign key, hide parent selection, and use child-entity permissions
+- [ ] Child create/update/delete success closes the modal/drawer, refreshes the child collection, and preserves active tab/section
 - [ ] `ngOnInit` resolves route → one of CREATE / UPDATE / DETAIL, dispatches accordingly
 - [ ] `loadEntityData(id)` shared by DETAIL + UPDATE, with stale-id recovery
 - [ ] CREATE branch: `applyDefaults()` patches domain defaults (isActivated:true, status, parentId)
@@ -414,6 +473,7 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - Inlining a related entity object in the detail form model when an imported relation type or id field should be used
 - Rendering detail child rows as hand-written `<table>`/`div` markup while Core UI table/grid or sectioned FormArray row-editor would fit
 - Building add/remove row UI without spacing, empty state, validation, stable row keys, or payload normalization
+- Treating independent child CRUD as parent `FormArray` rows or routing away to standalone child create/edit/detail pages from the parent DETAIL screen
 
 ---
 

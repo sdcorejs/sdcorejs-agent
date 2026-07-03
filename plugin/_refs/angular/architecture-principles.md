@@ -167,7 +167,8 @@ export class ProductService extends MockCrudStore<ProductDTO, ProductSaveReq> {
 ```
 
 - Default: `MockCrudStore` via `localStorage`, seeded with 20-40 domain-realistic rows
-- Switch to `BaseService.register('<entity>')` only when backend API contract is provided
+- For PO prototypes driven by mock API docs, stay mock-first but match the contract shape
+- Switch to `BaseService.register('<entity>')` only when a runnable backend endpoint/configuration and project service convention are provided
 
 **Why**: frontend can ship + iterate without a backend. Mock rows must be **domain-realistic** (`<localized text>` not `"Name 1"`) — bad seed data hides UX issues (column too narrow for real names, sort key collisions).
 

@@ -2,11 +2,12 @@
 
 Loaded by `sdcorejs-angular` before implementing Angular UI work when the
 request includes visual input, PRD/requirements input, user stories,
-acceptance criteria, or any UI-affecting feature description.
+acceptance criteria, mock API/API-contract input, or any UI-affecting feature
+description.
 
 This reference keeps image/PRD analysis, Core UI reuse, local project reuse,
-and the post-implementation UI check in one place. It is not a dispatchable
-skill.
+API/service assumptions, and the post-implementation UI check in one place. It
+is not a dispatchable skill.
 
 ## When To Run
 
@@ -19,6 +20,8 @@ Use it for:
   attached images
 - PRDs, requirement documents, user stories, feature descriptions, or
   acceptance criteria
+- mock API docs, OpenAPI/Swagger, Postman/Insomnia, MSW/WireMock/Prism/JSON
+  Server specs, endpoint tables, JSON fixtures, schemas, or sample cURL
 - mixed visual and textual input
 - direct UI implementation requests where the source is informal but
   user-facing behavior or layout will change
@@ -134,6 +137,14 @@ Extract pages, forms, fields, validations, actions, tables/lists, filters,
 sorting, pagination, navigation, modals/drawers, permissions, loading/empty/error
 states, success/error messages, API interactions, and analytics/tracking only
 when present in the source material.
+
+For mock API/API-contract input, also read `./mock-api-input.md` and include its
+required `Mock API contract mapping` block. The PRD or acceptance criteria remain
+the behavior source of truth; the API artifact supplies endpoint, request,
+response, field, enum/status, paging/filter/sort, lookup, and error-state
+evidence. If the API artifact is only a mock/specification and no runnable
+backend/configuration is available, plan a mock-first service instead of live API
+integration.
 
 For mixed visual and PRD input, use the PRD as the source of truth for behavior
 and acceptance criteria, the image as the source of truth for visual structure,
