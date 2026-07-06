@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-angular
-description: Angular portal code executor for approved/direct frontend work with confirmed requirements. Use for init portal, PO-friendly PRD/mock-API driven UI prototypes, admin screens, modules, CRUD entities, list/detail screens, forms/validators, actions, approval/bulk/export buttons, reuse of existing related models/services/entities, reuse of @sdcorejs/utils utilities, or generic generate-code/go-ahead requests. Loads _refs/angular/write-code/ packs and runs mandatory finish tail. Runtime-localized.
+description: Angular portal code executor for confirmed frontend implementation. Use for Angular portal init, admin modules, CRUD entities, list/detail screens, forms/validators, approval/bulk/export actions, PRD plus mock-API UI prototypes, or explicit generate/go-ahead requests for Angular code. Do not use for open-ended product ideas, standalone UI component wishes, product docs, design-only work, tests-only work, auth, Docker, review, or approved-plan execution. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, TodoWrite
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-auth
-description: Configure Keycloak auth for an SDCoreJS Angular + NestJS stack after dockerize. Use for login/authentication/Keycloak requests. Ensures realm import, Angular provideSdKeycloak + silent-renew.html, and backend token validation against Keycloak service. Applies to angular, nestjs. Runtime-localized.
+description: Configure Keycloak authentication for an SDCoreJS Angular + NestJS stack after dockerize. Use for implement/configure login, authentication, authorization bootstrap, Keycloak realm import, Angular provideSdKeycloak/silent-renew, or backend token validation. Do not use for login tests, login debugging, auth documentation, generic security review, or non-Keycloak auth choices. Applies to angular, nestjs. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob
 ---
 

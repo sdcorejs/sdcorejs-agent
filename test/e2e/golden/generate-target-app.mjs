@@ -3,14 +3,15 @@ import path from 'node:path';
 
 const args = parseArgs(process.argv.slice(2));
 const targetName = args.target ?? 'sdcorejs-golden-app';
-const outputRoot = args.root ?? '.tmp';
+const outputRoot = path.resolve(args.root ?? '.tmp');
 
 if (!/^[a-zA-Z0-9_-]+$/.test(targetName)) {
   console.error(`Invalid --target "${targetName}". Use only letters, numbers, dash, and underscore.`);
   process.exit(2);
 }
 
-const targetDir = path.join(outputRoot, targetName);
+const targetDir = path.resolve(outputRoot, targetName);
+assertSafeOutputPath(outputRoot, targetDir);
 
 await rm(targetDir, { recursive: true, force: true });
 await mkdir(path.join(targetDir, 'e2e'), { recursive: true });
@@ -26,6 +27,19 @@ await Promise.all([
 ]);
 
 console.log(`Generated golden target app at ${targetDir}`);
+
+function assertSafeOutputPath(root, target) {
+  const driveRoot = path.parse(root).root;
+  if (root === driveRoot) {
+    console.error(`Refusing to use drive/root directory as --root: ${root}`);
+    process.exit(2);
+  }
+
+  if (target === root || !target.startsWith(root + path.sep)) {
+    console.error(`Refusing to write outside --root. root=${root} target=${target}`);
+    process.exit(2);
+  }
+}
 
 function parseArgs(argv) {
   const parsed = {};

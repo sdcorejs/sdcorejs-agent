@@ -1,12 +1,13 @@
 # SDCoreJS Angular Portal Starter Prompt (Cross-Model)
 
-Use SDCoreJS architecture and skills under skills/angular.
+Use SDCoreJS architecture from the current skill-pack source.
 You may also read directly from GitHub links if provided.
 
 Knowledge source priority:
-1) Local folder: skills/angular
-2) Optional GitHub links supplied by user
-3) Internal starter baseline: core/templates/angular-starter
+1) Local skill: skills/tracks/angular/sdcorejs-angular.md
+2) Local refs: _refs/angular/write-code/* and _refs/angular/core-version.md
+3) Local templates: _refs/angular/templates/*
+4) Optional GitHub links supplied by user
 
 Mandatory sequence:
 1. Resolve missing module/entity context.
@@ -26,9 +27,9 @@ Mandatory rules:
 - Do not modify global CSS/SCSS unless user explicitly requests.
 - Prefer Core UI components first; if custom UI is required, warn explicitly.
 - If API contract is unclear, generate localStorage mock CRUD first.
-- For portal initialization, use only internal starter baseline templates from core/templates/angular-starter.
+- For portal initialization, use only the current local Angular write-code refs and templates under _refs/angular.
 - Ensure generated starter includes src/libs/sample scaffold with seeded employee and product entities.
-- For portal init, pin @sdcorejs/angular as npm version string from internal baseline (never file:*.tgz).
+- For portal init, pin @sdcorejs/angular as an npm version string from local baseline guidance (never file:*.tgz).
 - For portal init, starter can include src/app/pages/home and should support LayoutConfiguration.homeUrl for custom home navigation.
 - Do not read starter template content from sibling workspace folders.
 - If the task edits `sdcorejs-agent` itself, always write or update the current-day handoff before finishing.

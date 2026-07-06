@@ -106,5 +106,47 @@
     "prompt": "update dependencies and prepare PR",
     "expectedSkill": "sdcorejs-ship",
     "phase": 3
+  },
+  {
+    "id": "typo-fix-no-skill",
+    "prompt": "fix this one-line typo",
+    "expectedSkill": null,
+    "phase": 3
+  },
+  {
+    "id": "standalone-component-ambiguous",
+    "prompt": "build a button component",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "prd-product-doc",
+    "prompt": "write a PRD for invoice approval",
+    "expectedSkill": "sdcorejs-product",
+    "phase": 3
+  },
+  {
+    "id": "login-tests",
+    "prompt": "write tests for login",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 3
+  },
+  {
+    "id": "failing-login-test-debug",
+    "prompt": "debug failing login test",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "keycloak-login-setup",
+    "prompt": "add Keycloak login to the existing app",
+    "expectedSkill": "sdcorejs-auth",
+    "phase": 3
+  },
+  {
+    "id": "approved-docs-plan",
+    "prompt": "execute the approved docs migration plan",
+    "expectedSkill": "sdcorejs-execute-plan",
+    "phase": 3
   }
 ]

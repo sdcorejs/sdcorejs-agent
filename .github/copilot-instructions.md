@@ -9,6 +9,8 @@ Use this repo as a Runtime-localized SDLC skill pack for Angular, NestJS, Next.j
 3. Read the selected skill body before acting.
 4. If no skill matches, invoke `sdcorejs-using-skills`.
 
+If several skills match, apply this priority: explicit skill name, approved-plan execution, product docs/traceability, design handoff, test-only work, dedicated utility intent, whole app/system build, confirmed track implementation, then brainstorming for ambiguous scope.
+
 ## Workflow
 
 ```text

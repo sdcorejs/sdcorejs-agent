@@ -55,6 +55,18 @@ _refs/
 
 Dispatch by `name:` frontmatter and the `description:` trigger. Load only frontmatter at session start; read a skill body only after selecting that skill.
 
+When multiple skills match, apply this priority before reading a body:
+
+1. Explicit skill name from the user.
+2. Approved spec/plan continuation: `sdcorejs-execute-plan`.
+3. Product docs and traceability: `sdcorejs-product`.
+4. Design handoff artifacts: `sdcorejs-design`.
+5. Test-only work: `sdcorejs-test`, except failing-test root cause/fix goes to `sdcorejs-debug`.
+6. Dedicated utility intent: `sdcorejs-explore`, `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
+7. Whole app/system build intent: `sdcorejs-solution-builder`.
+8. Confirmed track implementation: `sdcorejs-angular`, `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
+9. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
+
 ## Workflow
 
 ```text

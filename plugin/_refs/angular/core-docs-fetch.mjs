@@ -24,10 +24,11 @@
 import { get as httpsGet } from 'node:https';
 import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { join, dirname } from 'node:path';
+import { join, dirname, isAbsolute, normalize } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const SITE = 'https://sdcorejs.github.io/sdcorejs-angular/docs';
+const SITE_ORIGIN = new URL(SITE).origin;
 const CACHE_ROOT = join(homedir(), '.cache', 'sdcorejs', 'core-docs');
 
 // UTF-8-as-CP1252 mojibake signatures (never valid in clean VN/EN docs).
@@ -78,7 +79,12 @@ function httpText(url) {
     httpsGet(url, res => {
       if ([301, 302, 307, 308].includes(res.statusCode)) {
         res.resume();
-        return resolve(httpText(res.headers.location));
+        if (!res.headers.location) return reject(new Error(`HTTP ${res.statusCode} without Location for ${url}`));
+        const nextUrl = new URL(res.headers.location, url);
+        if (nextUrl.origin !== SITE_ORIGIN) {
+          return reject(new Error(`Refusing redirect outside docs origin: ${nextUrl.href}`));
+        }
+        return resolve(httpText(nextUrl.href));
       }
       if (res.statusCode !== 200) {
         res.resume();
@@ -164,7 +170,7 @@ function versionFromTextLock(root) {
 // Fetch `${SITE}/<rel>`; cache at `${CACHE_ROOT}/<rel>`; on network failure fall back to cache.
 // `rel` is the full path under the docs site (e.g. `versions.json`, `21.0.7/index.json`).
 async function getCached(rel) {
-  const dest = join(CACHE_ROOT, rel);
+  const dest = safeCachePath(rel);
   try {
     const text = await httpText(`${SITE}/${rel}`);
     mkdirSync(dirname(dest), { recursive: true });
@@ -177,6 +183,20 @@ async function getCached(rel) {
     }
     throw err;
   }
+}
+
+function safeCachePath(rel) {
+  if (!rel || typeof rel !== 'string') {
+    throw new Error('Invalid empty docs cache path');
+  }
+  if (rel.includes('\\') || isAbsolute(rel) || /^[a-zA-Z]:/.test(rel)) {
+    throw new Error(`Unsafe docs cache path: ${rel}`);
+  }
+  const normalized = normalize(rel).replaceAll('\\', '/');
+  if (normalized === '..' || normalized.startsWith('../') || normalized.includes('/../')) {
+    throw new Error(`Unsafe docs cache path: ${rel}`);
+  }
+  return join(CACHE_ROOT, normalized);
 }
 
 // Read the installed Core UI version from the target project (either package name).

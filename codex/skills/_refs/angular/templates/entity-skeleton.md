@@ -199,23 +199,23 @@ If entity includes workflow (submit/approve/reject):
 ```text
 Choose ONE based on entity complexity:
 
-1. Side-drawer  (≤6 fields, simple form)
+1. Side-drawer  (<=6 fields, simple form)
    - All CRUD embedded in list page via <sd-side-drawer>
    - No sub-routes (create/detail/update); only one list route
    - Use viewChild.required<SdSideDrawer>('drawer') to open/close
-   - Starter reference: core/templates/angular-starter/src/libs/sample/features/product
+   - Template reference: _refs/angular/templates/entity-skeleton.md side-drawer variant
 
 2. UnifiedCompact  (full page, same layout for CREATE/UPDATE/DETAIL)
    - Sub-routes: list + create + detail/:id + update/:id
    - Same component handles all 3 states via [viewed]="state === 'DETAIL'"
-   - Starter reference: core/templates/angular-starter/src/libs/sample/features/employee
+   - Template reference: _refs/angular/templates/entity-skeleton.md UnifiedCompact variant
 
 3. AdaptiveSplitDetail  (full page, DETAIL differs from CREATE/UPDATE)
    - Sub-routes: list + create + detail/:id + update/:id
    - DETAIL renders sd-section + sd-section-item (read-only label-value pairs)
    - CREATE/UPDATE renders editable sd-input / sd-select / sd-textarea
    - Import SdSectionItem from `<CORE_UI_PACKAGE_NAME>/components/section`
-   - Starter reference: core/templates/angular-starter/src/libs/sample/features/department
+   - Template reference: _refs/angular/templates/entity-skeleton.md AdaptiveSplitDetail variant
 ```
 
 ### Side-drawer Project Structure
@@ -688,8 +688,8 @@ export class ListComponent implements OnInit {
 
 ### list.component.ts (Side-drawer variant)
 ```typescript
-// Use when: ≤6 fields, simple form, no separate page/route needed.
-// Reference: core/templates/angular-starter/src/libs/sample/features/product/pages/list/list.component.ts
+// Use when: <=6 fields, simple form, no separate page/route needed.
+// Reference: _refs/angular/templates/entity-skeleton.md side-drawer list variant
 
 import { ChangeDetectionStrategy, Component, OnInit, ViewChild, computed, inject, signal, viewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
@@ -1149,7 +1149,7 @@ export * from './services/[entity].model';
 ```typescript
 // Use when: DETAIL must display read-only label-value pairs (sd-section-item),
 //           while CREATE/UPDATE use editable form controls.
-// Reference: core/templates/angular-starter/src/libs/sample/features/department/pages/detail/detail.component.ts
+// Reference: _refs/angular/templates/entity-skeleton.md AdaptiveSplitDetail detail variant
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormGroup } from '@angular/forms';

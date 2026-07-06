@@ -1,6 +1,6 @@
 # Testing the SDCoreJS SDLC Agent
 
-Repository-level tests for the current 27-skill SDCoreJS Agent layout.
+Repository-level tests for the current 23-skill SDCoreJS Agent layout.
 
 The pack is documentation-driven. Tests focus on dispatch metadata, generated mirrors, reference availability, and entrypoint compatibility.
 
@@ -23,10 +23,10 @@ npm run test:e2e:phase4
 
 ## Expected Inventory
 
-- Source skills: 27
-- `.claude/skills`: 27
-- `plugin/skills`: 27
-- `codex/skills`: 27 skill folders plus shared `_refs`
+- Source skills: 23
+- `.claude/skills`: 23
+- `plugin/skills`: 23
+- `codex/skills`: 23 skill folders plus shared `_refs`
 - `_refs/**/*.md`: at least 60 committed markdown refs; Core UI component docs are fetched on demand
 
 PowerShell count:
