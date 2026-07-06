@@ -1,6 +1,6 @@
 ---
-updated_at: 2026-07-06T19:35:00+07:00
-status: in_progress
+updated_at: 2026-07-06T19:45:00+07:00
+status: complete
 track: generic
 active_skill: sdcorejs-git
 branch: chore/release-validation-hardening
@@ -16,12 +16,12 @@ Resolve merge conflicts on branch `chore/release-validation-hardening` so PR #27
 - [x] Merge `origin/main` into `chore/release-validation-hardening` and resolve conflicts.
 - [x] Sync mirrors if conflicts touch generated skill/ref files.
 - [x] Run required verification.
-- [ ] Commit merge resolution and push branch.
-- [ ] Report final PR, verification, and branch status.
+- [x] Commit merge resolution and push branch.
+- [x] Report final PR, verification, and branch status.
 
 ## Current State
-- Last completed: Ran sync and verification after merging `origin/main`.
-- In progress: Commit and push the merge resolution.
+- Last completed: Pushed merge resolution to `origin/chore/release-validation-hardening`.
+- In progress: none.
 - Blocked/skipped: none.
 
 ## Artifacts Touched
@@ -34,6 +34,8 @@ Resolve merge conflicts on branch `chore/release-validation-hardening` so PR #27
 - `npm run check:skills:ps` - pass.
 - `npm test` - pass, 28/28.
 - `git diff --check` - pass; Git reported CRLF warnings for existing mirrored infra files.
+- `git commit` - pass after restaging synced mirrors.
+- `git push origin chore/release-validation-hardening` - pass.
 
 ## Resume From Here
-Commit the merge resolution and push `chore/release-validation-hardening`.
+PR #27 is updated; monitor GitHub mergeability/checks and merge when green.
