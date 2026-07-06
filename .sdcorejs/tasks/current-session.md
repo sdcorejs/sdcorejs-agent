@@ -1,6 +1,6 @@
 ---
-updated_at: 2026-07-06T22:20:00+07:00
-status: in_progress
+updated_at: 2026-07-06T22:23:00+07:00
+status: complete
 track: generic
 active_skill: sdcorejs-git
 branch: chore/release-readiness-improvements
@@ -17,11 +17,11 @@ Review repo-local improvements, then commit and push a branch.
 - [x] Update CI/dependency automation/audit/deploy reproducibility.
 - [x] Upgrade and verify the site dependency posture.
 - [x] Review changes before commit.
-- [ ] Commit and push a feature branch.
+- [x] Commit and push a feature branch.
 
 ## Current State
-- Last completed: Fixed review findings in `VALIDATION.md` and the PR template.
-- In progress: Preparing commit and push.
+- Last completed: Pushed branch `chore/release-readiness-improvements`.
+- In progress: none.
 - Blocked/skipped: GitHub release publication, GitHub repo description changes, and live-agent transcript capture require external credentials or real tool sessions.
 
 ## Artifacts Touched
@@ -46,6 +46,8 @@ Review repo-local improvements, then commit and push a branch.
 - `npm run check:site:audit` - pass, 0 vulnerabilities.
 - `npm run build:site` - pass, 2 pages built.
 - `git diff --check` - pass.
+- `git commit` - pass, commit `95e533b`.
+- `git push -u origin HEAD` - pass, branch `origin/chore/release-readiness-improvements`.
 
 ## Resume From Here
-Create a branch, stage explicit paths, commit, push, then report the pushed branch and remaining external follow-ups.
+Open a PR from `chore/release-readiness-improvements` when ready.
