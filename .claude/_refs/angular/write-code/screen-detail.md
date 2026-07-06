@@ -40,6 +40,11 @@ Defer to:
 
 Before adding custom validators, date/number formatters, normalizers, query-param helpers, upload/download helpers, clipboard helpers, or other form utilities, read `_refs/shared/sdcorejs-utils.md`. Reuse `@sdcorejs/utils` where it covers the behavior, while keeping Angular `Validators`/`SdValidators` for Angular form-specific contracts.
 
+For PO/BA prototype mode, perform validator inference from PRD/user story/AC,
+field semantics, status workflow, and existing project conventions. Keep CREATE,
+UPDATE, and DETAIL demoable with mock save/update through the entity mock service;
+do not block the detail screen because a backend save endpoint is missing.
+
 ## Core UI component selection gate
 
 Before writing or changing the template, run the Core UI discovery step from the main Angular skill:

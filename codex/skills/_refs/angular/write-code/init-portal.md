@@ -56,6 +56,19 @@ Before generating, clarify with user:
 
 > **Port** is fixed at `4200` (Angular default). Do not ask.
 
+### PO/BA prototype/no-backend mode
+
+When this reference is used from PO/BA prototype mode:
+
+- Generate a portal that boots locally with no backend auth/API dependency.
+- Keep `PermissionConfiguration.disabled = true` as the starter default.
+- Do not add login, auth redirects, live API base URLs, or permission data
+  requirements unless the user explicitly requests them.
+- Keep admin screens and sample/demo routes reachable so PO/BA users can review
+  the shell, sidebar, menu, and prototype modules immediately.
+- Report that permission is bypassed for prototype review and can be re-enabled
+  when the real permission backend exists.
+
 ---
 
 ## Generation Steps

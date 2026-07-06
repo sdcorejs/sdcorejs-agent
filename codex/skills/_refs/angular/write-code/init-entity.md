@@ -35,6 +35,11 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
 - Check `@sdcorejs/utils` before adding utility/helper functions; reuse `DateUtilities`, `NumberUtilities`, `StringUtilities`, `ValidationUtilities`, `ArrayUtilities`, `FilterUtilities`, `Utilities`, `ObjectUtilities`, `ColorUtilities`, `BrowserUtilities`, models, and constants when applicable
 - Generate entity service with runnable mock CRUD by default (`localStorage`) when backend API contract is not provided yet
 - Generate `services/[entity].mock-data.ts` as the single centralized seed source for each entity (target: **20–40 rows**)
+- In PO/BA prototype mode, PRD-only/no API/no backend/no design input is enough
+  to proceed. Infer a safe EntitySchema from the PRD/user story/AC, record
+  assumptions, and keep the service mock-first.
+- In PO/BA prototype mode, mock data uses default 25 rows per primary listing
+  when no count is provided; 20-30 rows is the accepted demo range.
 - Generate mock data immediately after `SaveReq` and `DTO` are finalized (whether from user input or semantic inference); do not wait until after list/detail components are built
 - Seed rows must use domain-realistic values derived from the inferred field schema; never use generic placeholders like `"Name 1"`, `"Code 01"`, or repeated identical values across all rows
 - Ensure mock store reseeds automatically when stored JSON is missing, empty array, or corrupted JSON
