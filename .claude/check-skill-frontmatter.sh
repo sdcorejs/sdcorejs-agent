@@ -5,7 +5,7 @@
 # dispatch-able skills.
 #
 # Without frontmatter the agent cannot dispatch the skill — the
-# sync-skills.sh script would silently drop it from the mirror.
+# sync-skills.mjs fails validation before writing mirrors.
 #
 # Called by lefthook pre-commit hook (see lefthook.yml). Pass each
 # staged .md file as an argument; the check filters by path.
@@ -22,8 +22,8 @@ fi
 
 # Exclusion patterns — must mirror sync-skills.sh's find filters.
 # Files whose basename starts with `_` (e.g. `_README.md`) are track-local
-# docs, not dispatch-able skills; sync-skills.sh skips them with a WARN
-# because they have no `name:` frontmatter.
+# docs, not dispatch-able skills; sync-skills.mjs excludes them because
+# they have no `name:` frontmatter.
 is_excluded() {
   case "$1" in
     */_refs/*|*/shared/templates/*|*/shared/specs/*) return 0 ;;
@@ -97,8 +97,7 @@ if [ "$failed" -ne 0 ]; then
   echo "    allowed-tools: Read, Write, ..." >&2
   echo "    ---" >&2
   echo "" >&2
-  echo "  Without it, sync-skills.sh silently drops the file from .claude/skills/ mirror" >&2
-  echo "  and the agent cannot dispatch it." >&2
+  echo "  Without it, sync-skills.mjs fails validation and the agent cannot dispatch it." >&2
   exit 1
 fi
 

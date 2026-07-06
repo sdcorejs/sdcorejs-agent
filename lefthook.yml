@@ -44,8 +44,8 @@ pre-commit:
       # Every .md under skills/ must have YAML frontmatter (name +
       # description) so the agent can dispatch it — except files in
       # _refs/ (reference data) and shared/templates/, shared/specs/
-      # (placeholder dirs). Without frontmatter, sync-skills.sh
-      # silently drops the file from the mirror.
+      # (placeholder dirs). Without frontmatter, sync-skills.mjs
+      # fails validation before writing mirrors.
       glob: "skills/**/*.md"
       run: bash .claude/check-skill-frontmatter.sh {staged_files}
 

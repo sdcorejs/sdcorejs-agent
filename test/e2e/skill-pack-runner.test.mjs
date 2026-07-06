@@ -273,6 +273,30 @@ test('phase 1: reusable skill source stays English-only while runtime output is 
   const claude = await readFile(new URL('../../CLAUDE.md', import.meta.url), 'utf8');
   assert.match(agents, /Skill Source Language/);
   assert.match(claude, /Skill Source Language/);
+  assert.match(agents, /Localization test prompts may use non-English input/);
+  assert.match(claude, /Localization test prompts may use non-English input/);
+});
+
+test('phase 1: localization fixtures may contain non-English intent prompts', async () => {
+  const promptEvals = await loadPromptEvals();
+  const localizedCases = promptEvals.filter((item) => item.id.endsWith('-localized'));
+
+  assert.ok(localizedCases.length >= 4, `localizedCases=${localizedCases.length}`);
+  assert.ok(
+    localizedCases.some((item) => /\btoi\b|\bthem\b|\bxay\b|\bthiet\b|\bviet\b/.test(item.prompt)),
+    'localized prompt fixtures exercise non-English intent input'
+  );
+});
+
+test('phase 1: generated mirrors do not inject global response-style modifiers', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const bannedPatterns = [/response-style/, /terse mode/i, new RegExp(`cave${'man'}`, 'i')];
+
+  for (const skill of [...pack.claudeMirrorSkills, ...pack.pluginMirrorSkills, ...pack.codexMirrorSkills]) {
+    for (const pattern of bannedPatterns) {
+      assert.doesNotMatch(skill.text, pattern, `${skill.path} should not contain ${pattern}`);
+    }
+  }
 });
 
 test('phase 1: deterministic prompt eval dispatches expected skills', async () => {

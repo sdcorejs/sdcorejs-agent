@@ -22,21 +22,6 @@ const codexSkillsRoot = path.join(repoRoot, 'codex', 'skills');
 const codexRefsRoot = path.join(codexSkillsRoot, '_refs');
 const cursorRuleFile = path.join(repoRoot, '.cursor', 'rules', 'sdcorejs-agent.mdc');
 
-const responseStyleBlock = `
-<!-- response-style: auto-injected by sync-skills; do not edit mirror by hand -->
-
-**Response style (terse mode active for this skill - reduces token usage):**
-
-While executing this skill:
-
-- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
-- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
-- Pattern: \`[thing] [action] [reason]. [next step].\`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal - no caveman inside generated artifacts.**
-- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
-- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.
-`;
-
 main().catch((error) => {
   console.error(error?.stack ?? String(error));
   process.exit(1);
@@ -52,25 +37,17 @@ async function main() {
     await mirrorRefs(targets);
 
     const sourceFiles = await listSourceSkillFiles(skillsRoot);
-    for (const sourceFile of sourceFiles) {
-      const sourceText = await readFile(sourceFile, 'utf8');
-      const { name } = parseFrontmatter(sourceText);
-      if (!name) {
-        console.error(`WARN: no 'name:' frontmatter in ${sourceFile} - skipping`);
-        continue;
-      }
-      if (/^<.*>$/.test(name)) {
-        if (mode === 'sync') console.log(`  skip template: ${relative(sourceFile)} (name=${name})`);
-        continue;
-      }
+    const sourceSkills = await loadSourceSkills(sourceFiles);
+    await validateSourcePack(sourceSkills);
 
-      await mirrorClaudeSkill(sourceFile, sourceText, name, targets.claudeSkillRoots);
-      await mirrorCodexSkill(sourceText, name, targets.codexSkillsRoot);
+    for (const skill of sourceSkills) {
+      await mirrorClaudeSkill(skill.path, skill.text, skill.name, targets.claudeSkillRoots);
+      await mirrorCodexSkill(skill.text, skill.name, targets.codexSkillsRoot);
 
-      kept.add(name);
+      kept.add(skill.name);
       count += 1;
       if (mode === 'sync') {
-        console.log(`  ${relative(sourceFile)} -> {.claude,plugin,codex}/skills/${name}/SKILL.md`);
+        console.log(`  ${relative(skill.path)} -> {.claude,plugin,codex}/skills/${skill.name}/SKILL.md`);
       }
     }
 
@@ -153,7 +130,7 @@ async function mirrorClaudeSkill(sourceFile, sourceText, name, roots) {
   for (const root of roots) {
     const destDir = path.join(root, name);
     await ensureDir(destDir);
-    await writeFile(path.join(destDir, 'SKILL.md'), `${withTrailingNewline(sourceText)}\n${responseStyleBlock.trim()}\n`, 'utf8');
+    await writeFile(path.join(destDir, 'SKILL.md'), withTrailingNewline(sourceText), 'utf8');
   }
 }
 
@@ -242,6 +219,7 @@ async function listSourceSkillFiles(root) {
   const files = await listFiles(root);
   return files
     .filter((file) => file.endsWith('.md'))
+    .filter((file) => !path.basename(file).startsWith('_'))
     .filter((file) => !file.includes(`${path.sep}shared${path.sep}templates${path.sep}`))
     .filter((file) => !file.includes(`${path.sep}shared${path.sep}specs${path.sep}`))
     .sort();
@@ -257,20 +235,160 @@ async function listFiles(root) {
   return nested.flat();
 }
 
+async function loadSourceSkills(files) {
+  return Promise.all(files.map(async (file) => {
+    const text = await readFile(file, 'utf8');
+    const frontmatter = parseFrontmatter(text);
+    return {
+      path: file,
+      text,
+      name: frontmatter.name ?? '',
+      description: frontmatter.description ?? '',
+      frontmatter,
+    };
+  }));
+}
+
+async function validateSourcePack(skills) {
+  const diagnostics = [];
+  const seenNames = new Map();
+
+  for (const skill of skills) {
+    diagnostics.push(...validateSourceSkill(skill, seenNames));
+  }
+
+  diagnostics.push(...await validateReferencedRefs(skills));
+
+  if (diagnostics.length > 0) {
+    throw new Error(`Skill pack validation failed:\n${diagnostics.map((item) => `  - ${item}`).join('\n')}`);
+  }
+}
+
+function validateSourceSkill(skill, seenNames) {
+  const diagnostics = [];
+  const allowedSourceKeys = new Set(['name', 'description', 'allowed-tools']);
+  const label = relative(skill.path);
+
+  diagnostics.push(...skill.frontmatter.__errors.map((error) => `${label}: ${error}`));
+
+  for (const key of skill.frontmatter.__keys) {
+    if (!allowedSourceKeys.has(key)) diagnostics.push(`${label}: unsupported frontmatter key '${key}'`);
+  }
+
+  if (!skill.name) {
+    diagnostics.push(`${label}: missing required 'name' frontmatter`);
+  } else if (!/^sdcorejs-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(skill.name)) {
+    diagnostics.push(`${label}: invalid skill name '${skill.name}' (expected sdcorejs-kebab-case)`);
+  } else if (seenNames.has(skill.name)) {
+    diagnostics.push(`${label}: duplicate skill name '${skill.name}' also used by ${relative(seenNames.get(skill.name))}`);
+  } else {
+    seenNames.set(skill.name, skill.path);
+  }
+
+  if (!skill.description) {
+    diagnostics.push(`${label}: missing required 'description' frontmatter`);
+  }
+
+  return diagnostics;
+}
+
+async function validateReferencedRefs(skills) {
+  const files = [
+    ...skills.map((skill) => skill.path),
+    ...await listRefValidationFiles(),
+  ];
+  const diagnostics = [];
+
+  await Promise.all(files.map(async (file) => {
+    const text = await readFile(file, 'utf8');
+    for (const ref of findExactRefPaths(text)) {
+      const resolved = path.join(repoRoot, ref);
+      if (!(await exists(resolved))) {
+        diagnostics.push(`${relative(file)}: unresolved reference '${ref}'`);
+      }
+    }
+  }));
+
+  return diagnostics.sort();
+}
+
+async function listRefValidationFiles() {
+  if (!(await exists(refsRoot))) return [];
+  const files = await listFiles(refsRoot);
+  return files.filter((file) => {
+    if (file.endsWith('.md') || file.endsWith('.mjs') || file.endsWith('.js')) return true;
+    if (file.endsWith('.json') || file.endsWith('.yml') || file.endsWith('.yaml')) return true;
+    if (file.endsWith('.sh') || file.endsWith('.ps1')) return true;
+    return path.basename(file).includes('Dockerfile');
+  });
+}
+
+function findExactRefPaths(text) {
+  const refs = new Set();
+  const pattern = /(?:^|[\s([{"'`])((?:\.\.\/)*_refs\/[A-Za-z0-9_./{}<>*?,-]+(?:\.json|\.ya?ml|\.mjs|\.js|\.md|\.sh|\.ps1|Dockerfile))/g;
+  for (const match of text.matchAll(pattern)) {
+    const ref = match[1].replace(/^(?:\.\.\/)+/, '');
+    if (/[{}<>*?]/.test(ref)) continue;
+    refs.add(ref);
+  }
+  return refs;
+}
+
 function parseFrontmatter(text) {
-  const normalized = text.replace(/^\uFEFF/, '');
-  if (!normalized.startsWith('---')) return {};
-  const end = normalized.indexOf('\n---', 3);
-  if (end === -1) return {};
-  return parseFrontmatterBlock(normalized.slice(3, end).trim());
+  const parsed = readFrontmatter(text);
+  return {
+    ...parsed.data,
+    __keys: parsed.keys,
+    __errors: parsed.errors,
+  };
 }
 
 function parseFrontmatterBlock(block) {
-  const result = {};
-  for (const line of block.split(/\r?\n/)) {
-    const match = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (match) result[match[1]] = match[2].trim();
+  return readFrontmatter(`---\n${block}\n---\n`).data;
+}
+
+function readFrontmatter(text) {
+  const normalized = text.replace(/^\uFEFF/, '');
+  const result = {
+    data: {},
+    keys: [],
+    errors: [],
+  };
+
+  if (!normalized.startsWith('---\n') && !normalized.startsWith('---\r\n')) {
+    result.errors.push("missing opening '---' frontmatter delimiter");
+    return result;
   }
+
+  const end = normalized.indexOf('\n---', 3);
+  if (end === -1) {
+    result.errors.push("missing closing '---' frontmatter delimiter");
+    return result;
+  }
+
+  const block = normalized.slice(3, end).trim();
+  if (!block) {
+    result.errors.push('frontmatter block is empty');
+    return result;
+  }
+
+  for (const [index, line] of block.split(/\r?\n/).entries()) {
+    if (!line.trim()) continue;
+    const match = line.match(/^([A-Za-z][A-Za-z0-9_-]*):\s*(.*?)\s*$/);
+    if (!match) {
+      result.errors.push(`unsupported frontmatter line ${index + 1}: ${line}`);
+      continue;
+    }
+
+    const [, key, value] = match;
+    if (Object.hasOwn(result.data, key)) {
+      result.errors.push(`duplicate frontmatter key '${key}'`);
+      continue;
+    }
+    result.data[key] = value;
+    result.keys.push(key);
+  }
+
   return result;
 }
 

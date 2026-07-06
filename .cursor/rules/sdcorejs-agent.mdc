@@ -32,6 +32,11 @@ output at runtime, but the reusable skill source itself stays English and
 locale-neutral. Use placeholders such as `<localized label>` instead of concrete
 Vietnamese labels.
 
+Localization test prompts may use non-English input when they are explicitly
+fixtures for dispatch/runtime-localization behavior. Expected source text,
+generated mirrors, reusable examples, and expected generated skill prose must
+remain English-only and locale-neutral.
+
 ## Skill Layout
 
 ```text

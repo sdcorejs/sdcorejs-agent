@@ -1,0 +1,29 @@
+name: Full E2E
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "18 20 * * 0"
+
+permissions:
+  contents: read
+
+jobs:
+  golden-target-app:
+    name: Golden Target App
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SDCOREJS_E2E_FULL: "1"
+      SDCOREJS_E2E_FULL_TIMEOUT_MS: "900000"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run check:skills
+      - run: npm run test:e2e:phase4
