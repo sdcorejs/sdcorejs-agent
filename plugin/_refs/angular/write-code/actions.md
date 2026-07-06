@@ -63,6 +63,9 @@ The decisive question for placement: **does the action operate on the current re
 - For Vietnamese portals: full diacritics on button titles + confirm prompts; permission codes stay English
 - For combined save + transition ("<localized text>"): route through the **same validation gate** as plain save (`form.invalid` → `markAllAsTouched()` → notify), then call `service.create/update` first, then `service.submit/...` on the returned id
 - For bulk actions: confirm with row count in the message (`"<localized text>"`), call `bulkXxx(ids)` in one round-trip, then reload the table
+- In PO/BA prototype mode, every workflow/custom button is a mock-first action:
+  update the mock store state, persist it locally, then reload the list/detail so
+  the status change is visible without a backend.
 - Before adding action methods that call or hydrate a related entity, read `./reuse-existing-entities.md` and reuse the existing related service/model contract instead of creating duplicate action-specific services
 - Before adding action/export helpers for date/number formatting, random ids, query params, filtering, download, upload, clipboard, or browser checks, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when applicable
 

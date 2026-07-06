@@ -40,6 +40,9 @@ Pick the column pattern by field `type` from the schema. For boolean fields rend
 ## Generation rules
 
 - Server-side paging is the default (`type: 'server'`). Switch to `'client'` only when the user explicitly asks for an in-memory list AND the dataset is small/static.
+- In PO/BA prototype mode, generate search/filter/sort/paging behavior and make
+  visible seed data render immediately from the mock service so stakeholders can
+  review the list without backend setup.
 - External filters live in `tableOption.filter.externalFilters`, not as custom controls above the table (see `./init-entity.md` §external-filters).
 - Audit columns (`createdAt`, `createdBy`, `updatedAt`, `updatedBy`) go at the END of the column array on primary list pages. Skip when the table is embedded, a lookup table, or in a compact drawer.
 - Action column always includes Edit + Detail. Add Delete when the user has bulk delete; the bulk-delete handler in `selector.actions` covers row-level delete via "select then delete".

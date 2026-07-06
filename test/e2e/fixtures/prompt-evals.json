@@ -18,6 +18,12 @@
     "phase": 1
   },
   {
+    "id": "angular-po-ba-prototype-no-api",
+    "prompt": "initialize a PO/BA insurance claims portal demo from this PRD with no API, no backend, mock-first services, disabled permission, and 25 realistic rows",
+    "expectedSkill": "sdcorejs-angular",
+    "phase": 1
+  },
+  {
     "id": "open-ended-localized",
     "prompt": "toi dang phan van giua drawer va full page detail",
     "expectedSkill": "sdcorejs-brainstorming",
