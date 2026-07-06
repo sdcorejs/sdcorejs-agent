@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-angular
-description: Angular portal code executor for confirmed frontend implementation. Use for Angular portal init, admin modules, CRUD entities, list/detail screens, forms/validators, approval/bulk/export actions, PRD plus mock-API UI prototypes, or explicit generate/go-ahead requests for Angular code. Do not use for open-ended product ideas, standalone UI component wishes, product docs, design-only work, tests-only work, auth, Docker, review, or approved-plan execution. Runtime-localized.
+description: Angular portal code executor for confirmed frontend implementation. Use for PO/BA mock-first portal prototypes from PRD/no API/no backend/no design, portal init, admin modules, CRUD entities, list/detail screens, forms/validators, approval/bulk/export actions, mock-API UI prototypes, or explicit Angular code generation. Do not use for open-ended product ideas, product docs, design-only, tests-only, auth, Docker, review, or approved-plan execution. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, TodoWrite
 ---
 
@@ -30,6 +30,16 @@ after `init-portal`, generate navigable screens and mock-first services that
 match the provided endpoint/request/response shape closely enough for PO/QC
 users to interact with the feature before a live backend is available.
 
+## PO/BA Prototype Portal Mode
+
+Use PO/BA Prototype Portal Mode when the request asks to initialize a PO/BA
+portal demo, generate a portal prototype from PRD/user story/AC text, work
+without API/backend/design, align module/screens with a client, convert PRD to UI
+prototype, or build a mock-first portal. This mode is PRD-first and demo-first:
+infer safe prototype fields, seed believable data, keep services mock-first, and
+let PO/BA users navigate routes/sidebar/menu locally before the real backend
+exists.
+
 This skill is an **orchestrator**: it does NOT inline the full generation rules for every file type. It picks the right **reference pack** for each scope item and reads it on demand. The detailed rules + code-template links for each concern live in `_refs/angular/write-code/*.md` (formerly the 10/11/12/20/21/31 sub-skills — consolidated here so the track exposes one skill instead of seven).
 
 ## Dispatch table
@@ -43,6 +53,7 @@ For each scope item in the approved plan (or a direct request whose requirements
 | New module (`src/libs/<module>/`) | [`_refs/angular/write-code/init-module.md`](_refs/angular/write-code/init-module.md) |
 | New entity with full CRUD (model + service + routes + list + detail) | [`_refs/angular/write-code/init-entity.md`](_refs/angular/write-code/init-entity.md) |
 | Image/PRD/UI reuse preflight before UI-affecting work | [`_refs/angular/write-code/input-analysis.md`](_refs/angular/write-code/input-analysis.md) |
+| PO/BA PRD-only portal/module prototype with no API/backend/design | [`_refs/angular/write-code/po-ba-prototype.md`](_refs/angular/write-code/po-ba-prototype.md) |
 | Mock API/OpenAPI/Postman/cURL contract to UI/service mapping | [`_refs/angular/write-code/mock-api-input.md`](_refs/angular/write-code/mock-api-input.md) |
 | Entity/model/service reuse preflight before generating or extending entity contracts | [`_refs/angular/write-code/reuse-existing-entities.md`](_refs/angular/write-code/reuse-existing-entities.md) |
 | List page only (entity already exists) | [`_refs/angular/write-code/screen-list.md`](_refs/angular/write-code/screen-list.md) |
@@ -66,6 +77,13 @@ mixed image+PRD mapping, API/service assumptions, and the mandatory
 post-implementation UI check. Present the required reuse analysis/mapping before
 implementation.
 
+If the request is PO/BA Prototype Portal Mode, also read
+`_refs/angular/write-code/po-ba-prototype.md` immediately after
+`input-analysis.md`. Missing API/backend/design is not a blocker in this mode.
+Ask only for a truly unsafe missing project/module/entity name; otherwise infer
+fields, screens, routes, validators, actions, and mock data from the PRD/user
+story/AC/business description.
+
 If a mock API, OpenAPI/Swagger file, Postman collection, MSW handler, mock
 endpoint list, JSON fixture, API schema, or sample cURL drives the UI, also read
 `_refs/angular/write-code/mock-api-input.md` before building `EntitySchema` or
@@ -80,6 +98,8 @@ Before writing any helper, formatter, validator, mapper, pipe utility, paging/fi
 ### Execution order + hand-off
 
 Execution order: portal → admin-screens → module → entity → screens → actions. `admin-screens` ALWAYS runs after `init-portal` and before any domain module work. If the plan touches multiple items, run them in this order; do not parallelize. After all referenced steps finish, hand off as follows:
+
+PO/BA prototype flow: input-analysis -> po-ba-prototype -> init-portal if needed -> admin-screens -> init-module -> init-entity -> screen-list/screen-detail/actions -> finish gate.
 
 #### MANDATORY: Core UI usage summary (show the user right after generating)
 
@@ -143,8 +163,29 @@ When user requests a new entity in a module, or any of the dispatch-table scope 
 - "Create user list screen" → screen-list
 - "Add validator to product form" → screen-detail
 - "Add an approval button for orders" → actions
+- "Initialize PO/BA portal demo from this PRD with no API/backend/design" -> po-ba-prototype
+- "Generate a mock-first portal prototype from PRD so BA can align screens with client" -> po-ba-prototype
+- "Create module-only contract-management prototype in the existing portal, no API/backend" -> po-ba-prototype
 
 ## Input Resolution
+
+### PO/BA Prototype Portal Mode input resolution
+
+For PRD-only/no API/no backend/no design prototype requests:
+
+- Do not block on missing API artifacts, wireframes, exact field lists, endpoint
+  URLs, auth setup, or permission data.
+- Infer module, primary entity, related entities/lookups, list columns, filters,
+  form fields, detail facts, validators, and workflow actions from the PRD, user
+  story, acceptance criteria, business description, and local project
+  conventions.
+- Ask only for unsafe unknowns that cannot be inferred, such as a new portal
+  project name or an ambiguous module/entity owner.
+- Record inferred details under `Prototype assumptions` and present the required
+  `PO/BA Prototype Plan` block from
+  `_refs/angular/write-code/po-ba-prototype.md` before writing code.
+- Run `reuse-existing-entities.md` before creating or extending any entity
+  contract, even in mock-first prototype mode.
 
 Before generating an entity, clarify with user:
 
@@ -215,6 +256,13 @@ Before building the schema from visual or requirement input, complete the
 `_refs/angular/write-code/input-analysis.md` planning output. Use the PRD or
 acceptance criteria as the behavior source of truth, visual input as layout
 direction, and Core UI/local project conventions as implementation primitives.
+
+For PO/BA Prototype Portal Mode, complete
+`_refs/angular/write-code/po-ba-prototype.md` before finalizing `EntitySchema`.
+Use PRD/user story/AC first, then existing conventions, domain semantics, Core UI
+patterns, and safe prototype defaults. Keep Service contracts separate as DTO,
+ListRes, DetailRes, CreateReq, UpdateReq, SaveReq, and Component ViewModel when
+the prototype needs different read/write/UI shapes.
 
 Before building the schema from mock API/API-contract input, complete
 `_refs/angular/write-code/mock-api-input.md`. Use its endpoint inventory and
@@ -351,6 +399,7 @@ Apply to:
 - Show a live progress checklist with **TodoWrite** from the START of generation — one checkbox item per planned unit (each file / screen / entity / pack step) PLUS the finishing steps (tests, review, code-documentation, technical-doc, user-guide). Keep exactly one item `in_progress`; flip it to `completed` the moment that unit is done and start the next. Update after EACH task, never batch at the end — this is how the user tracks progress. Create it before writing the first file.
 - Run the entity reuse preflight before generating model/service/entity code; identify primary + related entities, scan existing model/interface/type/dto/service/api/repository/store files, and decide reuse/extend/create new before writing code.
 - Run `_refs/angular/write-code/input-analysis.md` before UI-affecting work, image/screenshot/Figma input, PRDs, user stories, feature descriptions, or acceptance criteria. Produce the SDCoreJS Core reuse analysis and the matching UI decomposition, requirement mapping, or image+PRD mapping before implementation.
+- Run `_refs/angular/write-code/po-ba-prototype.md` for PO/BA portal demo, PRD-to-UI prototype, no API/backend/design, module/screens-for-client-alignment, or mock-first portal requests. Emit the required PO/BA Prototype Plan, keep services mock-first, and record Prototype assumptions before code generation.
 - Run `_refs/angular/write-code/mock-api-input.md` when UI generation is driven by mock API docs, OpenAPI/Swagger, Postman/Insomnia, MSW/WireMock/Prism/JSON Server specs, endpoint tables, schemas, JSON fixtures, or sample cURL. Produce the mock API contract mapping before writing models, services, or screens.
 - Run the `@sdcorejs/utils` reuse preflight before writing helper/formatter/validator/mapper/pipe utility code; report which utilities were reused and why any custom helper remains necessary.
 - After generating UI, show the **Core UI usage summary** table (every `@sdcorejs/angular` component/service/directive actually used + a one-line, feature-specific purpose, in the user's language) so the user sees the building blocks at a glance. List only what was used. Persist the same table into the module user guide at write-user-guide.
@@ -381,6 +430,7 @@ Apply to:
 - Create custom primitive controls, project-level shared components, or feature-specific components when Core UI or an existing local shared asset fits. Feature-specific components are for domain composition and behavior, not tiny markup fragments.
 - Invent behavior, UI labels, routes, roles, fields, component APIs, or SDCoreJS Angular APIs from image or PRD input. If the Core UI docs cannot be checked, use local evidence and report the fallback.
 - Treat a mock API document as a live backend integration target, hard-code sample absolute URLs, or skip mock-first services for a PO prototype unless live integration was explicitly requested and configured.
+- Block PO/BA Prototype Portal Mode because API/backend/design/permission data is missing; infer safe defaults, document Prototype assumptions, and keep the demo local/mock-first.
 - Skip test generation, defer it to "later", or block spec writing behind a coverage-level question — specs are a required deliverable, written RED-first at `standard` by default.
 - Generate portal code that requires end users to open the Keycloak console to manage accounts or roles.
 - Skip the `admin-screens` pack even when the user's request focuses on a domain entity — the admin layer is always present.
@@ -400,6 +450,7 @@ Apply to:
 Before returning generated code:
 
 ✅ Mock API/OpenAPI/Postman/cURL input has a mock API contract mapping before implementation
+✅ PO/BA Prototype Portal Mode input has a PO/BA Prototype Plan, Prototype assumptions, mock-first service decision, permission mode, and no live API dependency unless explicitly configured
 
 ✅ Each production file (model / service / list / detail) has a corresponding `.spec.ts` written RED before the file was created
 ✅ UI-affecting image/PRD/feature input has SDCoreJS Core reuse analysis and the matching decomposition/mapping before implementation
@@ -418,6 +469,7 @@ Before returning generated code:
 ✅ Parent detail-scoped child CRUD, when present, uses child-entity permissions, modal/drawer create/edit/view flows, parent-id prefill/lock, child collection refresh after success, and preserves the parent DETAIL route plus active tab/section
 ✅ Form validation matches field requirements
 ✅ `{{ entityKebab }}.mock-data.ts` exists with 20–40 domain-realistic seed rows
+✅ PO/BA prototype listings default to 25 realistic rows when no row count is provided, with 20-30 accepted and at least one record per important status
 ✅ Seed rows use realistic domain values derived from inferred field schema, not generic placeholders
 ✅ Service methods are wired to mock store by default
 ✅ Mock store reseeds if persisted dataset is empty or corrupted

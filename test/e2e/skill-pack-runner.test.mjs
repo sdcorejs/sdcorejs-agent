@@ -261,7 +261,8 @@ test('phase 1: reusable skill source stays English-only while runtime output is 
   const extraEnglishOnlyFiles = [
     '../../_refs/angular/core-docs-fetch.mjs',
     '../../AGENTS.md',
-    '../../CLAUDE.md'
+    '../../CLAUDE.md',
+    '../../docs/po-ba-prototype-examples.md'
   ];
 
   for (const file of extraEnglishOnlyFiles) {
@@ -381,6 +382,66 @@ test('phase 1: angular side-drawer detail rules prefer read-only facts and immut
   assert.match(sdlcAngular, /Do not duplicate header-promoted code\/status/);
 });
 
+test('phase 1: angular PO/BA prototype mode is encoded in skill, refs, and examples', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
+  const angularSkill = sourceByName.get('sdcorejs-angular');
+
+  assert.match(angularSkill, /PO\/BA Prototype Portal Mode/);
+  assert.match(angularSkill, /_refs\/angular\/write-code\/po-ba-prototype\.md/);
+  assert.match(
+    angularSkill,
+    /input-analysis -> po-ba-prototype -> init-portal if needed -> admin-screens -> init-module -> init-entity -> screen-list\/screen-detail\/actions -> finish gate/
+  );
+
+  for (const existingRef of [
+    'input-analysis.md',
+    'mock-api-input.md',
+    'reuse-existing-entities.md',
+    'finish-gate.md'
+  ]) {
+    assert.match(angularSkill, new RegExp(existingRef.replace('.', '\\.')), `${existingRef} remains referenced`);
+  }
+
+  const prototypeRef = await readFile(new URL('../../_refs/angular/write-code/po-ba-prototype.md', import.meta.url), 'utf8');
+  assert.match(prototypeRef, /# PO\/BA Prototype Portal Mode/);
+  assert.match(prototypeRef, /Prototype assumptions/);
+  assert.match(prototypeRef, /PO\/BA Prototype Plan:/);
+  assert.match(prototypeRef, /PermissionConfiguration\.disabled = true/);
+  assert.match(prototypeRef, /mock-first/);
+  assert.match(prototypeRef, /localStorage/);
+  assert.match(prototypeRef, /MockCrudStore/);
+  assert.match(prototypeRef, /default 25/);
+  assert.match(prototypeRef, /20-30/);
+  assert.match(prototypeRef, /services\/<entity>\.mock-data\.ts/);
+  assert.match(prototypeRef, /DTO[\s\S]*ListRes[\s\S]*DetailRes[\s\S]*CreateReq[\s\S]*UpdateReq[\s\S]*SaveReq[\s\S]*ViewModel/);
+  assert.match(prototypeRef, /permission bypass status/);
+  assert.match(prototypeRef, /route\/menu/);
+  assert.match(prototypeRef, /mock rows per listing/);
+
+  const relatedRefs = [
+    ['init-portal.md', [/PO\/BA prototype/, /PermissionConfiguration\.disabled = true/, /no backend auth\/API/]],
+    ['init-module.md', [/PO\/BA prototype/, /route/, /menu/]],
+    ['init-entity.md', [/PRD-only/, /default 25/, /20-30/]],
+    ['screen-list.md', [/search\/filter\/sort\/paging/, /visible seed data/]],
+    ['screen-detail.md', [/validator inference/, /mock save\/update/]],
+    ['actions.md', [/mock-first action/, /mock store/]]
+  ];
+
+  for (const [file, patterns] of relatedRefs) {
+    const text = await readFile(new URL(`../../_refs/angular/write-code/${file}`, import.meta.url), 'utf8');
+    for (const pattern of patterns) {
+      assert.match(text, pattern, `${file} includes ${pattern}`);
+    }
+  }
+
+  const examples = await readFile(new URL('../../docs/po-ba-prototype-examples.md', import.meta.url), 'utf8');
+  assert.match(examples, /insurance claims portal demo/i);
+  assert.match(examples, /contract-management/i);
+  assert.match(examples, /no API\/backend/i);
+  assert.match(examples, /25 realistic rows/i);
+});
+
 test('phase 1: deterministic prompt eval dispatches expected skills', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
   const promptEvals = await loadPromptEvals();
@@ -392,6 +453,7 @@ test('phase 1: deterministic prompt eval dispatches expected skills', async () =
       ['nestjs-init', 'sdcorejs-nestjs', true],
       ['angular-action-localized', 'sdcorejs-angular', true],
       ['angular-prd-mock-api-prototype', 'sdcorejs-angular', true],
+      ['angular-po-ba-prototype-no-api', 'sdcorejs-angular', true],
       ['open-ended-localized', 'sdcorejs-brainstorming', true],
       ['product-traceability-localized', 'sdcorejs-product', true],
       ['solution-builder-classroom-localized', 'sdcorejs-solution-builder', true],
