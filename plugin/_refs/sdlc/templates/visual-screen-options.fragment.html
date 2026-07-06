@@ -1,0 +1,42 @@
+<h2>{{decision_question}}</h2>
+<p class="subtitle">{{evaluation_criteria}}</p>
+
+<div class="options">
+  <div class="option" data-choice="1" onclick="toggleSelect(this)">
+    <div class="letter">1</div>
+    <div class="content">
+      <h3>{{option_1_title}}</h3>
+      <p>{{option_1_summary}}</p>
+      <p><strong>Best when:</strong> {{option_1_best_when}}</p>
+      <p><strong>Trade-off:</strong> {{option_1_tradeoff}}</p>
+      <p><strong>Recommendation:</strong> {{option_1_recommendation}}</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="2" onclick="toggleSelect(this)">
+    <div class="letter">2</div>
+    <div class="content">
+      <h3>{{option_2_title}}</h3>
+      <p>{{option_2_summary}}</p>
+      <p><strong>Best when:</strong> {{option_2_best_when}}</p>
+      <p><strong>Trade-off:</strong> {{option_2_tradeoff}}</p>
+      <p><strong>Recommendation:</strong> {{option_2_recommendation}}</p>
+    </div>
+  </div>
+
+  <div class="option optional" data-choice="3" onclick="toggleSelect(this)">
+    <div class="letter">3</div>
+    <div class="content">
+      <h3>{{option_3_title}}</h3>
+      <p>{{option_3_summary}}</p>
+      <p><strong>Best when:</strong> {{option_3_best_when}}</p>
+      <p><strong>Trade-off:</strong> {{option_3_tradeoff}}</p>
+      <p><strong>Recommendation:</strong> {{option_3_recommendation}}</p>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle">
+  Select the option closest to what you want, or respond in the main conversation
+  if you want to combine or revise directions.
+</p>

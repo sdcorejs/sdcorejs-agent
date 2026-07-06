@@ -5,6 +5,16 @@
 
 # Screen: detail.component.ts (CREATE / UPDATE / DETAIL + form refinement)
 
+## Contents
+
+- Purpose, use cases, and Core UI component selection gate
+- Read-only detail/view rendering gate
+- Shared shell code template links
+- Detail child collections saved with the parent payload
+- Parent detail-scoped child CRUD
+- DETAIL, CREATE, and UPDATE state rules
+- Form refinement, checklist, anti-patterns, and related references
+
 ## Purpose
 
 Implement and refine an entity's `pages/detail/detail.component.ts` — one component file backing three URL routes:
@@ -46,6 +56,7 @@ The generator must pick an existing Core UI component first. A custom `div`/`tab
 | Business section | `SdSection` with utility spacing | Nested card-like wrappers, anonymous bordered panels |
 | Text / number / date / boolean / textarea / upload / editor fields | `sd-input`, `sd-input-number`, `sd-date`/`sd-datetime`, `sd-switch`, `sd-textarea`, `sd-upload-file`, `sd-editor` | Native inputs, Material form fields, custom field CSS |
 | Select / relation picker | `sd-select` with existing related model/service contracts | Inline relation objects, ad hoc dropdown markup |
+| Read-only detail facts | Core UI description-list/detail-list/property-list/read-only-field component when available; otherwise `sd-section` plus STYLE-GUIDE utilities | A tall disabled edit form for simple scalar detail data |
 | Primary/secondary/destructive actions | `sd-button` with icon/title/type/color/permission | Raw `<button>` or Material buttons mixed into Core UI screens |
 | Multi-row child data with add/remove/edit rows | Core UI table/grid component if available; otherwise the sectioned FormArray row-editor fallback in this ref | Hand-written `<table>`, repeated card stacks, or unmanaged arrays |
 | Empty/loading/error affordance | Existing Core UI empty/loading/notify patterns when available | Silent blank areas with no spacing or action |
@@ -59,6 +70,20 @@ If the Core UI docs show multiple candidates, choose the component whose API dir
 
 Never "self-draw" a component because the exact syntax is not remembered. Fetch the docs, mirror an existing local usage with `rg`, then generate.
 
+## Read-only detail/view rendering gate
+
+Apply field-role analysis from [`./init-entity.md`](./init-entity.md) before rendering DETAIL or side-drawer view state. Pick the view structure from business role, not only primitive field type.
+
+- Keep CREATE/UPDATE as Core UI forms. DETAIL/view state does not automatically inherit the disabled UPDATE form.
+- For few simple fields in a side-drawer or compact detail view, prefer a read-only facts layout: label on the left, value on the right, subtle row divider, aligned values, and Core UI's empty-value convention.
+- Use an existing Core UI description-list/detail-list/property-list/read-only-field pattern first. If none exists, use the closest Core UI section/layout utilities. Only then document a custom fallback.
+- Promote a business identifier (`code`, `projectCode`, `orderNo`, `sku`, etc.) to the drawer/page header when it improves scanability. Style the identifier with the project's Core UI primary text utility after reading the STYLE-GUIDE.
+- Put lifecycle/status fields near the title with the existing Core UI badge/chip/status component and the project's status mapping.
+- Do not duplicate promoted code/status in the body facts list unless the user asked for an audit/full-field view.
+- Put primary display fields (`name`, `title`, `displayName`) in the summary area. Put visual identity fields (`icon`, `color`, `avatar`, `logo`) beside that summary when useful.
+- Keep long text (`description`, `note`, `remarks`) full-width/vertical only when needed; do not force long prose into a right-aligned facts row.
+- Footer and actions stay unchanged and permission-gated.
+
 ## Shared shell — code templates
 
 File path: `src/libs/<module>/<entity>/pages/detail/detail.component.ts`
@@ -69,7 +94,7 @@ All literal code lives in [`_refs/angular/templates/screen-detail-component.md`]
 |---|---|
 | `ViewState` discriminator + `state` signal | [`#state-discriminator`](_refs/angular/templates/screen-detail-component.md#state-discriminator) |
 | Component imports (Angular + Core UI form components + entity model/service) | [`#imports`](_refs/angular/templates/screen-detail-component.md#imports) |
-| `initForm()` FormGroup definition (one control per `visibleInDetail` field) | [`#formgroup-definition`](_refs/angular/templates/screen-detail-component.md#formgroup-definition) |
+| `initForm()` FormGroup definition (one control per CREATE/UPDATE request/editable field) | [`#formgroup-definition`](_refs/angular/templates/screen-detail-component.md#formgroup-definition) |
 | `ngOnInit` dispatcher (CREATE / UPDATE / DETAIL branching) | [`#route-resolution-ngoninit-dispatcher`](_refs/angular/templates/screen-detail-component.md#route-resolution-ngoninit-dispatcher) |
 | Shared `loadEntityData(id)` with stale-id recovery (used by DETAIL + UPDATE) | [`#shared-entity-loader-with-stale-id-recovery`](_refs/angular/templates/screen-detail-component.md#shared-entity-loader-with-stale-id-recovery) |
 | `headerRight` template (Back always; Edit on DETAIL; Save on CREATE/UPDATE) | [`#header-buttons-template`](_refs/angular/templates/screen-detail-component.md#header-buttons-template) |
@@ -227,9 +252,17 @@ Use this pattern when any of these are true:
 ### Form behavior
 
 - Form is **disabled** after `loadEntityData(id)` resolves — the shared loader calls `this.form.disable()` when `state() === 'DETAIL'`
-- Every form control renders with `[viewed]="true"` (or `[disabled]="true"` for `sd-switch`) so values display read-only
+- Simple DETAIL/side-drawer view renders through the read-only detail/view rendering gate above, not as a tall disabled edit form.
+- If a complex DETAIL screen intentionally reuses the form template, every form control renders with `[viewed]="true"` (or `[disabled]="true"` for `sd-switch`) so values display read-only.
 - No submit button — header shows only Back + Edit (Edit gated by the UPDATE permission)
 - `markAllAsTouched()` and validity checks are NOT used here
+
+### Header + read-only body
+
+- Header: show the localized detail label plus promoted business identifier when present; keep the identifier visually primary using Core UI utilities.
+- Status: if a lifecycle/status field exists, show it next to the header/title using the existing Core UI badge/chip/status component and mapping.
+- Body: skip any promoted code/status fields; render remaining short facts as compact label-left/value-right rows, and render long text as its own readable section.
+- Empty values: use the project's Core UI empty-value convention; do not invent placeholder punctuation.
 
 ### Edit transition
 
@@ -334,6 +367,12 @@ Default: navigate up (`['..']`) — list. Alternative (opt-in): read-only `detai
 - Save button: `*sdPermission="'<MODULE>_C_<ENTITY>_UPDATE'; sdPermissionKey: '<module>'"`
 - Edit button on DETAIL is gated by the same code
 
+### Immutable-after-create handling
+
+- After any UPDATE `form.enable()`, re-apply immutable field locks for business identifiers and backend-managed fields inferred by `init-entity.md`.
+- This lock step must happen after `patchValue(...)` and after the whole-form enable call so `code`-like controls do not become editable by accident.
+- Build the update payload through a contract-aware mapper. If the update API excludes immutable identifiers, omit them from the payload. If the update API requires a full object, preserve the originally loaded values. Do not use disabled controls as the only safeguard.
+
 ### Concurrency / dirty-check (optional, opt-in)
 
 For high-contention entities (orders, approvals): check `dto.updatedAt` against last-known timestamp, prompt user to reload if changed. Do NOT implement by default — only when user requests it.
@@ -387,6 +426,8 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - `ChangeDetectionStrategy.OnPush` declared on the detail component
 - Required field validation enforced at save (`form.invalid` → `markAllAsTouched()` → notify; do not let invalid submits through)
 - Use `[form]="form"` + `[(model)]="entity.field"` as the default binding pattern, where `entity` is a plain object/ViewModel (Core UI form components self-register via `[form]+name`; do NOT use `formControlName` — they do not implement `ControlValueAccessor`)
+- Classify field roles before rendering; business identifiers are create-only/edit-locked by default, primary display fields drive summaries, status fields use status UI, long text gets readable full-width treatment, and visual identity fields stay near the summary.
+- In DETAIL/side-drawer view state, prefer compact read-only facts over disabled form controls for simple scalar data; use Core UI detail-list/description-list/property-list/read-only-field patterns first.
 - For child arrays / line items saved with the parent payload, use the editable child collection pattern above: parent `FormGroup` + child `FormArray` + Core UI table/grid or sectioned row-editor fallback.
 - For independently persisted child CRUD inside a parent detail screen, use the parent detail-scoped modal/drawer pattern above: parent DETAIL only, parent id prefilled/locked, child permissions, collection refresh after success, route/tab preserved.
 - Use Vietnamese labels / messages / notify for VI portals (full diacritics); permission codes + route paths stay English
@@ -410,6 +451,9 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - Overuse signal invocations in template without considering the 2+ times rule
 - Calling `service.detail(id)` in CREATE — there is no id yet
 - Use `[viewed]="true"` on form fields in CREATE state
+- Render simple DETAIL/side-drawer data as a tall stack of disabled edit controls when a compact read-only facts layout would fit.
+- Re-enable `code`-like business identifiers in UPDATE after a whole-form `enable()`.
+- Trust disabled controls as the update API contract for immutable fields; map/omit/preserve explicitly.
 - Show approve / reject / edit buttons in CREATE
 - Upload files AFTER `service.create(...)` / `service.update(...)` — orphans blobs on failure
 - Forget to call `form.enable()` after `patchValue` in UPDATE (form stays disabled if shell defaulted to disable)
@@ -430,7 +474,9 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - [ ] Core UI inventory + STYLE-GUIDE fetched before template generation; component docs read for page/section/form/button/table needs
 - [ ] Component file at `pages/detail/detail.component.ts` with imports from the shared shell ref
 - [ ] `state` signal initialized to `'DETAIL'` (overridden by `ngOnInit` dispatcher)
-- [ ] `initForm()` builds FormGroup from schema (one control per `visibleInDetail` field with declared validators)
+- [ ] `initForm()` builds FormGroup from schema (one control per CREATE/UPDATE request/editable field with declared validators)
+- [ ] Field-role analysis completed before template generation: business identifier, primary display, status/lifecycle, long text, visual identity, server/audit.
+- [ ] Business identifier fields are editable on CREATE only when accepted by the API, locked again after UPDATE `form.enable()`, and mapped safely in update payloads.
 - [ ] Any child array / line-item field saved with the parent payload is represented in the parent form as a `FormArray`, not a disconnected display array
 - [ ] Editable child rows use Core UI table/grid when supported, or the documented sectioned row-editor fallback when not supported
 - [ ] Independently persisted child CRUD, if present, is available only in parent DETAIL and opens modal/drawer flows without navigating away from the parent route
@@ -440,7 +486,8 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - [ ] `loadEntityData(id)` shared by DETAIL + UPDATE, with stale-id recovery
 - [ ] CREATE branch: `applyDefaults()` patches domain defaults (isActivated:true, status, parentId)
 - [ ] CREATE / UPDATE: `onSave()` calls correct service method, uploads files before save, validates first
-- [ ] DETAIL: form disabled, `[viewed]="state() === 'DETAIL'"` on all fields
+- [ ] DETAIL: simple scalar data uses compact read-only facts (label-left/value-right) instead of a disabled edit form; complex form reuse uses `[viewed]="state() === 'DETAIL'"`.
+- [ ] DETAIL header promotes business identifier when useful, status is shown with Core UI status UI when present, and promoted fields are not duplicated in the body unless audit/full-field view is required.
 - [ ] `onBack()`, `onEdit()` defined; navigation targets match user preference (default vs opt-in)
 - [ ] Template `headerRight` has Back + state-conditional Edit / Save
 - [ ] Routes registered with correct `data.permission` per state (`_VIEW` / `_CREATE` / `_UPDATE`)

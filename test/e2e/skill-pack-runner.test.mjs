@@ -273,6 +273,112 @@ test('phase 1: reusable skill source stays English-only while runtime output is 
   const claude = await readFile(new URL('../../CLAUDE.md', import.meta.url), 'utf8');
   assert.match(agents, /Skill Source Language/);
   assert.match(claude, /Skill Source Language/);
+  assert.match(agents, /Localization test prompts may use non-English input/);
+  assert.match(claude, /Localization test prompts may use non-English input/);
+});
+
+test('phase 1: localization fixtures may contain non-English intent prompts', async () => {
+  const promptEvals = await loadPromptEvals();
+  const localizedCases = promptEvals.filter((item) => item.id.endsWith('-localized'));
+
+  assert.ok(localizedCases.length >= 4, `localizedCases=${localizedCases.length}`);
+  assert.ok(
+    localizedCases.some((item) => /\btoi\b|\bthem\b|\bxay\b|\bthiet\b|\bviet\b/.test(item.prompt)),
+    'localized prompt fixtures exercise non-English intent input'
+  );
+});
+
+test('phase 1: generated mirrors do not inject global response-style modifiers', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const bannedPatterns = [/response-style/, /terse mode/i, new RegExp(`cave${'man'}`, 'i')];
+
+  for (const skill of [...pack.claudeMirrorSkills, ...pack.pluginMirrorSkills, ...pack.codexMirrorSkills]) {
+    for (const pattern of bannedPatterns) {
+      assert.doesNotMatch(skill.text, pattern, `${skill.path} should not contain ${pattern}`);
+    }
+  }
+});
+
+test('phase 1: brainstorming visual companion stays optional and gated', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
+  const brainstorming = sourceByName.get('sdcorejs-brainstorming');
+
+  assert.match(brainstorming, /## Optional Visual Companion/);
+  assert.match(brainstorming, /Do not offer the visual companion upfront/);
+  assert.match(brainstorming, /visual-companion\.md/);
+  assert.match(brainstorming, /Reply with `1` or `2`/);
+  assert.match(brainstorming, /main conversation remains the source of truth/i);
+  assert.match(brainstorming, /acceptance criteria and testable\s+behavior/);
+  assert.doesNotMatch(brainstorming, /_refs\/sdlc\/visual-companion\.md/);
+
+  const visualCompanion = await readFile(new URL('../../_refs/sdlc/visual-companion.md', import.meta.url), 'utf8');
+  assert.match(visualCompanion, /Decide per question, not per session/);
+  assert.match(visualCompanion, /Do not offer the visual companion at the start/);
+  assert.match(visualCompanion, /The offer must use two numbered choices/);
+  assert.match(visualCompanion, /Do not proceed to implementation because a mockup was selected/);
+  assert.match(visualCompanion, /Never generate production code directly from a mockup/);
+  assert.doesNotMatch(visualCompanion, /_refs\/sdlc\/templates/);
+
+  const visualOffer = await readFile(new URL('../../_refs/sdlc/templates/visual-offer.md', import.meta.url), 'utf8');
+  assert.match(visualOffer, /^1\. Use visual companion/m);
+  assert.match(visualOffer, /^2\. Do not use visual companion/m);
+  assert.match(visualOffer, /Reply with `1` or `2`/);
+
+  const optionsTemplate = await readFile(new URL('../../_refs/sdlc/templates/visual-screen-options.fragment.html', import.meta.url), 'utf8');
+  assert.match(optionsTemplate, /data-choice="1"/);
+  assert.match(optionsTemplate, /data-choice="2"/);
+  assert.match(optionsTemplate, /data-choice="3"/);
+  assert.match(optionsTemplate, /Best when:/);
+  assert.match(optionsTemplate, /Trade-off:/);
+  assert.match(optionsTemplate, /Recommendation:/);
+
+  const comparisonTemplate = await readFile(new URL('../../_refs/sdlc/templates/visual-screen-comparison.fragment.html', import.meta.url), 'utf8');
+  assert.match(comparisonTemplate, /<h3>1\. {{option_1_title}}<\/h3>/);
+  assert.match(comparisonTemplate, /<h3>2\. {{option_2_title}}<\/h3>/);
+  assert.doesNotMatch(comparisonTemplate, /<h3>[AB]\./);
+
+  const waitingTemplate = await readFile(new URL('../../_refs/sdlc/templates/visual-waiting.fragment.html', import.meta.url), 'utf8');
+  assert.match(waitingTemplate, /Continuing in the main conversation/);
+
+  const vietnameseTextPattern = /[\u0102\u0103\u00c2\u00e2\u0110\u0111\u00ca\u00ea\u00d4\u00f4\u01a0\u01a1\u01af\u01b0\u00c0\u00c1\u00c3\u00c8\u00c9\u00cc\u00cd\u00d2\u00d3\u00d5\u00d9\u00da\u00dd\u00e0\u00e1\u00e3\u00e8\u00e9\u00ec\u00ed\u00f2\u00f3\u00f5\u00f9\u00fa\u00fd\u1ea0-\u1ef9]/u;
+  for (const text of [visualCompanion, visualOffer, optionsTemplate, comparisonTemplate, waitingTemplate]) {
+    assert.doesNotMatch(text, vietnameseTextPattern, 'visual companion source/templates stay English-only');
+  }
+});
+
+test('phase 1: angular side-drawer detail rules prefer read-only facts and immutable identifiers', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
+  const angularSkill = sourceByName.get('sdcorejs-angular');
+
+  assert.match(angularSkill, /business identifiers are create-only\/edit-locked by default/i);
+  assert.match(angularSkill, /compact read-only facts over a disabled edit form/i);
+
+  const initEntity = await readFile(new URL('../../_refs/angular/write-code/init-entity.md', import.meta.url), 'utf8');
+  assert.match(initEntity, /Business identifier \/ business key/);
+  assert.match(initEntity, /employeeCode/);
+  assert.match(initEntity, /After any whole-form `enable\(\)` in UPDATE/);
+  assert.match(initEntity, /Build CREATE\/UPDATE payloads from an explicit mapper/);
+
+  const screenDetail = await readFile(new URL('../../_refs/angular/write-code/screen-detail.md', import.meta.url), 'utf8');
+  assert.match(screenDetail, /## Read-only detail\/view rendering gate/);
+  assert.match(screenDetail, /description-list\/detail-list\/property-list\/read-only-field/);
+  assert.match(screenDetail, /Do not duplicate promoted code\/status/);
+  assert.match(screenDetail, /label-left\/value-right/);
+  assert.match(screenDetail, /locked again after UPDATE `form\.enable\(\)`/);
+  assert.match(screenDetail, /one control per CREATE\/UPDATE request\/editable field/);
+
+  const screenTemplate = await readFile(new URL('../../_refs/angular/templates/screen-detail-component.md', import.meta.url), 'utf8');
+  assert.match(screenTemplate, /private readonly immutableUpdateFields/);
+  assert.match(screenTemplate, /this\.applyUpdateLocks\(\);/);
+  assert.match(screenTemplate, /Define `toUpdatePayload\(\.\.\.\)` from the API contract/);
+  assert.match(screenTemplate, /Facts list excludes any promoted code\/status fields/);
+  assert.match(screenTemplate, /CREATE\/UPDATE, add one control per request\/editable field/);
+
+  const sdlcAngular = await readFile(new URL('../../_refs/sdlc/angular.md', import.meta.url), 'utf8');
+  assert.match(sdlcAngular, /Quick create\/update drawer plus compact read-only detail facts/);
+  assert.match(sdlcAngular, /Do not duplicate header-promoted code\/status/);
 });
 
 test('phase 1: deterministic prompt eval dispatches expected skills', async () => {

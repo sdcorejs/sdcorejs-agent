@@ -21,6 +21,10 @@ npm run test:e2e:phase3
 npm run test:e2e:phase4
 ```
 
+The default E2E run keeps phase 4 in opt-in mode so pull-request feedback stays
+fast. CI runs the default suite on pull requests and pushes to `main`; the
+scheduled/manual `Full E2E` workflow runs phase 4 with `SDCOREJS_E2E_FULL=1`.
+
 ## Expected Inventory
 
 - Source skills: 23
@@ -85,6 +89,20 @@ npm run test:e2e:phase4
 ```
 
 Skipped by default unless `SDCOREJS_E2E_FULL=1` is set in a prepared environment.
+
+GitHub Actions coverage:
+
+- `CI` runs `npm ci`, `npm run check:skills`, `npm run test:e2e`, and a Windows
+  `npm run check:skills:ps` job.
+- `Full E2E` runs `npm run test:e2e:phase4` with `SDCOREJS_E2E_FULL=1` on a
+  schedule and through `workflow_dispatch`.
+
+## Language Fixtures
+
+Core skill content, generated mirrors, reusable examples, and expected generated
+skill prose stay English-only. Localization fixtures may include non-English
+input prompts when the test is explicitly checking runtime-localized dispatch or
+intent handling; expected source text must still remain English-only.
 
 ## Mirror Sync
 

@@ -1,47 +1,39 @@
 ---
-updated_at: 2026-07-06T13:20:00+07:00
+updated_at: 2026-07-06T17:49:00+07:00
 status: complete
 track: generic
-active_skill: skill-creator
+active_skill: sdcorejs-git
 branch: fix/skill-trigger-audit
 ---
 
 # Current Session Checkpoint
 
 ## User Request
-Commit and push the repository-wide trigger/skill audit fixes.
+Resolve merge conflicts with `main` so the PR can merge.
 
 ## Tasks
-- [x] Update checkpoint and confirm patch scope.
-- [x] Fix trigger descriptions, priority rules, stale hook, and prompt files.
-- [x] Fix deterministic trigger tests, line-ending policy, and harness/security guards.
-- [x] Regenerate mirrors and run verification.
-- [x] Summarize changed files, verification, and remaining risks.
-- [x] Run git pre-flight checks.
-- [x] Create a non-main branch for the commit.
-- [x] Commit with explicit staged paths.
-- [x] Push the branch to origin.
+- [x] Load git workflow and inspect branch state.
+- [x] Merge `origin/main` and identify conflicts.
+- [x] Resolve conflicts and regenerate mirrors.
+- [x] Run verification.
+- [x] Commit merge resolution and push branch.
+- [x] Report updated PR status.
 
 ## Current State
-- Last completed: Commit `880305c` was pushed to `origin/fix/skill-trigger-audit`.
+- Last completed: Resolved merge conflict with `origin/main`, regenerated mirrors, and verification passed.
 - In progress: none.
 - Blocked/skipped: none.
 
 ## Artifacts Touched
-- EDIT .sdcorejs/tasks/current-session.md - checkpoint for this fix.
-- EDIT skills/* trigger descriptions and dispatch guide.
-- EDIT AGENTS/CLAUDE/Copilot/Cursor entrypoints priority rules.
-- EDIT prompts, hook, tests, line-ending policy, and safety guards.
-- EDIT generated mirrors under .claude/skills, plugin/skills, codex/skills, .claude/_refs, plugin/_refs, codex/skills/_refs, and .cursor/rules.
+- EDIT .sdcorejs/tasks/current-session.md - conflict resolution checkpoint for this merge.
 
 ## Verification
-- PASS: `npm run sync:skills`.
-- PASS: `npm run check:skills`.
-- PASS: `npm test` (19/19).
-- PASS: `git diff --check`.
-- PASS: stale/mojibake scan for removed triggers, stale paths, old skill counts, and common mojibake signatures returned no matches in source scope.
-- PASS: git pre-flight found branch `main`, remote `origin`, changes scoped to the audit fix, and no real secrets in the diff.
-- PASS: branch `fix/skill-trigger-audit` tracks `origin/fix/skill-trigger-audit`.
+- npm run sync:skills - pass.
+- npm run check:skills - pass.
+- npm test - pass (23/23).
+- npm run check:skills:ps - pass.
+- git diff --check - pass.
+- staged conflict marker scan - pass.
 
 ## Resume From Here
-Branch is pushed and ready for PR creation.
+Merge resolution is ready to push and report.

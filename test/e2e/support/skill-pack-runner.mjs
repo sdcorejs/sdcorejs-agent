@@ -267,9 +267,9 @@ function matchPriorityRule(pack, prompt, tokens) {
 }
 
 async function readSourceSkills(root) {
-  const files = (await listMarkdownFiles(root)).filter((file) => path.basename(file) !== '_README.md');
+  const files = (await listMarkdownFiles(root)).filter((file) => !path.basename(file).startsWith('_'));
   const skills = await Promise.all(files.map(readSkillFile));
-  return skills.filter((skill) => skill.name);
+  return skills;
 }
 
 async function readMirrorSkills(root) {
@@ -287,26 +287,36 @@ async function readSkillFile(file) {
     name: frontmatter.name ?? '',
     description: frontmatter.description ?? '',
     frontmatterKeys: frontmatter.__keys ?? [],
+    frontmatterErrors: frontmatter.__errors ?? [],
     text
   };
 }
 
 function parseFrontmatter(text) {
   const normalized = text.replace(/^\uFEFF/, '');
-  if (!normalized.startsWith('---')) return {};
+  if (!normalized.startsWith('---')) return { __errors: ["missing opening '---' frontmatter delimiter"] };
 
   const end = normalized.indexOf('\n---', 3);
-  if (end === -1) return {};
+  if (end === -1) return { __errors: ["missing closing '---' frontmatter delimiter"] };
 
   const block = normalized.slice(3, end).trim();
-  const result = {};
-  for (const line of block.split(/\r?\n/)) {
-    const match = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (match) {
-      result[match[1]] = match[2].trim();
-      result.__keys ??= [];
-      result.__keys.push(match[1]);
+  const result = { __keys: [], __errors: [] };
+  for (const [index, line] of block.split(/\r?\n/).entries()) {
+    if (!line.trim()) continue;
+    const match = line.match(/^([A-Za-z][A-Za-z0-9_-]*):\s*(.*?)\s*$/);
+    if (!match) {
+      result.__errors.push(`unsupported frontmatter line ${index + 1}: ${line}`);
+      continue;
     }
+
+    const key = match[1];
+    if (Object.hasOwn(result, key)) {
+      result.__errors.push(`duplicate frontmatter key '${key}'`);
+      continue;
+    }
+
+    result[key] = match[2].trim();
+    result.__keys.push(key);
   }
   return result;
 }
@@ -326,11 +336,19 @@ async function listMarkdownFiles(root) {
 function diagnoseSkills(skills, label) {
   const diagnostics = [];
   const seen = new Map();
+  const allowedSourceKeys = new Set(['name', 'description', 'allowed-tools']);
   for (const skill of skills) {
+    for (const error of skill.frontmatterErrors) diagnostics.push(`${label}:${skill.path}: ${error}`);
+    for (const key of skill.frontmatterKeys) {
+      if (!allowedSourceKeys.has(key)) diagnostics.push(`${label}:${skill.path}: unsupported frontmatter key ${key}`);
+    }
+    if (!skill.name) diagnostics.push(`${label}:${skill.path}: missing name`);
     if (!skill.description) diagnostics.push(`${label}:${skill.path}: missing description`);
-    if (!/^[a-z0-9-]+$/.test(skill.name)) diagnostics.push(`${label}:${skill.path}: non-kebab name ${skill.name}`);
+    if (skill.name && !/^sdcorejs-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(skill.name)) {
+      diagnostics.push(`${label}:${skill.path}: non-sdcorejs kebab name ${skill.name}`);
+    }
     if (seen.has(skill.name)) diagnostics.push(`${label}:${skill.path}: duplicate name ${skill.name}`);
-    seen.set(skill.name, skill.path);
+    if (skill.name) seen.set(skill.name, skill.path);
   }
   return diagnostics;
 }
@@ -352,6 +370,7 @@ function diagnoseMirror(sourceSkills, mirrorSkills, label) {
 function diagnoseCodexMirror(skills) {
   const diagnostics = [];
   for (const skill of skills) {
+    for (const error of skill.frontmatterErrors) diagnostics.push(`codex/skills:${skill.path}: ${error}`);
     const extraKeys = skill.frontmatterKeys.filter((key) => !['name', 'description'].includes(key));
     if (extraKeys.length > 0) diagnostics.push(`codex/skills:${skill.path}: unsupported frontmatter keys ${extraKeys.join(',')}`);
     if (/(^|[^./])_refs\//.test(skill.text)) diagnostics.push(`codex/skills:${skill.path}: unresolved repo-root _refs path`);

@@ -1,5 +1,8 @@
 # SDCoreJS
 
+[![CI](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/ci.yml)
+[![Full E2E](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/full-e2e.yml/badge.svg)](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/full-e2e.yml)
+
 An orchestrated SDLC skill pack for AI coding agents. Works in Claude Code, GitHub Copilot, Codex, and Cursor.
 
 Requests flow through:
@@ -43,6 +46,19 @@ The two approval gates and approved snapshot writes live inside `sdcorejs-spec` 
 
 ## Quick Start
 
+This repository is public source, but the root Node package is intentionally
+`private: true`; it is not published to npm. Use GitHub/plugin installation,
+submodules, or generated native skill mirrors as the distribution paths.
+
+The canonical package manager for repository validation is npm. Use the
+committed `package-lock.json` with:
+
+```bash
+npm ci
+npm run check:skills
+npm run test:e2e
+```
+
 ### Claude Code Plugin
 
 ```text
@@ -74,14 +90,14 @@ ln -s .sdcorejs-agent/_refs _refs
 
 ## Tool Support
 
-| Tool | Reads |
-|---|---|
-| Claude Code plugin | `plugin/skills/**`, `plugin/_refs/**` |
-| Claude Code direct | `CLAUDE.md`, `.claude/skills/**` |
-| Codex attached repo | `AGENTS.md` |
-| Codex native | `codex/skills/**` |
-| Cursor | `AGENTS.md`, generated `.cursor/rules/sdcorejs-agent.mdc` |
-| GitHub Copilot | `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md` |
+| Tool | Reads | Verification |
+|---|---|---|
+| Claude Code plugin | `plugin/skills/**`, `plugin/_refs/**` | `npm run check:skills` verifies plugin mirrors |
+| Claude Code direct | `CLAUDE.md`, `.claude/skills/**` | `npm run check:skills` verifies Claude mirrors |
+| Codex attached repo | `AGENTS.md` | Entry-point smoke tests cover dispatch guidance |
+| Codex native | `codex/skills/**` | `npm run check:skills` verifies Codex mirrors and `_refs` |
+| Cursor | `AGENTS.md`, generated `.cursor/rules/sdcorejs-agent.mdc` | Cursor rule is regenerated from `AGENTS.md` |
+| GitHub Copilot | `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md` | Entry-point smoke tests cover Copilot profile |
 
 ## Repo Layout
 
@@ -101,6 +117,18 @@ Run after editing source skills, refs, or `AGENTS.md`:
 npm run sync:skills
 npm run check:skills
 ```
+
+## Release Discipline
+
+- Keep `CHANGELOG.md` updated for user-visible skill, ref, workflow, or
+  validation changes.
+- Create GitHub releases and tags for adopted versions; include the validation
+  commands and CI run links in release notes.
+- Treat generated mirrors as supported distribution artifacts. Any source
+  change to `skills/`, `_refs/`, or `AGENTS.md` must be followed by
+  `npm run sync:skills` and `npm run check:skills`.
+- For upgrades, compare the previous tag to the new tag and review
+  `CHANGELOG.md`, `VALIDATION.md`, and compatibility notes above.
 
 ## Mandatory Behavior
 

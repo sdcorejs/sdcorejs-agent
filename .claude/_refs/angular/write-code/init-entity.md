@@ -61,6 +61,20 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
   - detail read-only fields
   - validators and enum candidates
   - request/response field mapping
+- Classify every field by UI/business role before selecting a primitive control:
+  - Business identifier / business key: `code`, `projectCode`, `orderNo`, `orderNumber`, `number`, `slug`, `sku`, `username`, `employeeCode`, and similar stable user-facing identifiers.
+  - Primary display: `name`, `title`, `displayName`.
+  - Lifecycle/status: `status`, `state`, `active`, `enabled`, `approvalStatus`.
+  - Long text: `description`, `note`, `notes`, `remark`, `remarks`.
+  - Visual identity: `icon`, `color`, `avatar`, `logo`, `image`.
+  - Server identity/audit: `id`, `uuid`, `createdAt`, `updatedAt`, `createdBy`, `updatedBy`, and backend-managed metadata.
+- Treat business identifiers as stable identity by default, not as ordinary editable strings:
+  - CREATE: editable only when the create API accepts the value.
+  - UPDATE: disabled/read-only unless the artifact explicitly says the business key can change.
+  - DETAIL: read-only and eligible for header promotion in simple detail/side-drawer views.
+  - After any whole-form `enable()` in UPDATE, re-apply immutable-control locks from the detail screen rules so `code`-like fields do not become editable again.
+  - Build CREATE/UPDATE payloads from an explicit mapper: omit immutable fields when the update API excludes them, or preserve the originally loaded value when the update API requires a full payload. Do not rely on disabled UI controls as the API contract.
+- Keep server identifiers and audit fields out of SaveReq unless the API contract explicitly accepts them. Render them as read-only DTO facts only when useful for detail/audit views.
 - Apply API contract mapping by state:
   - request payload fields -> CREATE/UPDATE editable controls
   - response meta/status/audit fields -> DETAIL read-only blocks

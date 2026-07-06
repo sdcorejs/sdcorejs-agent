@@ -154,16 +154,3 @@ The chain is long, so it is built to survive interruption.
 ## Tech users
 
 A developer may invoke this skill, and it will work. But the granular skills give finer control - picking the stack, shaping the spec, reviewing each plan task, and approving user/technical docs. A developer who wants that control should drive the per-track skills directly (`sdcorejs-brainstorming` -> `sdcorejs-spec` -> `sdcorejs-plan` -> `sdcorejs-execute-plan` -> `sdcorejs-nestjs` / `sdcorejs-angular` -> `sdcorejs-dockerize` -> ...). This one-door experience is optimized for the **non-technical owner** who wants a running app without touching any of those levers.
-
-<!-- response-style: auto-injected by sync-skills; do not edit mirror by hand -->
-
-**Response style (terse mode active for this skill - reduces token usage):**
-
-While executing this skill:
-
-- Drop articles (a/an/the), filler (just/really/basically/simply/actually), pleasantries (sure/of course/happy to), hedging.
-- Fragments OK. Short synonyms (fix not "implement solution for", big not "extensive").
-- Pattern: `[thing] [action] [reason]. [next step].`
-- Technical terms exact. Error strings quoted verbatim. **Code, commits, PRs, file content: write normal - no caveman inside generated artifacts.**
-- Auto-clarity: drop terse mode for security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, or when user asks to clarify. Resume terse after the clear part is done.
-- If user types "stop caveman" or "normal mode", revert to standard prose for the rest of the session.

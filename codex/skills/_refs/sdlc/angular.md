@@ -11,7 +11,7 @@ When the user wants 2-3 options for a CRUD/workflow feature, present from this m
 
 | Approach | Summary | Pros | Cons | Best when |
 |---|---|---|---|---|
-| **Side-drawer CRUD** | Quick edit panel on the list page | Fast nav, less code, less route work | Cramped >6 fields, no deep workflow | One section, ≤6 fields, no approval flow |
+| **Side-drawer CRUD** | Quick create/update drawer plus compact read-only detail facts | Fast nav, less code, less route work, scannable simple detail | Cramped >6 fields, no deep workflow | One section, <=6 fields, no approval flow |
 | **UnifiedCompact (full-page)** | Same compact layout for CREATE / UPDATE / DETAIL | Simple, predictable, low cognitive load | No visual hint of mode | Medium form, mixed user skill |
 | **UnifiedSplit (full-page)** | Same split layout (left title, right form) for all 3 states | Title context always visible | Slightly more layout code | Forms where the "what is this record" context matters |
 | **AdaptiveSplitDetail** | CREATE/UPDATE use editable split; DETAIL uses read-only split | Rich UX, clear mode distinction | More layout code + state | Heavy workflow, many sections, trained operators |
@@ -64,12 +64,14 @@ When the user wants 2-3 options for a CRUD/workflow feature, present from this m
 
 ### Field inference rules
 When user skips fields, infer from entity name + portal conventions:
-- Identity: `code`, `name` / `title`
-- Classification: `category` / `type` / `status` (with enum candidates from entity domain)
+- Business identifier: `code`, `projectCode`, `orderNo`, `number`, `slug`, `sku`, `username`, `employeeCode` (stable identity; create-only editable unless explicitly mutable)
+- Primary display: `name` / `title` / `displayName`
+- Classification/status: `category` / `type` / `status` / `state` / `active` / `enabled` / `approvalStatus` (with enum candidates from entity domain)
 - Quantitative: `amount` / `price` / `quantity` / `total` (currency = VND default for VI portals)
 - Temporal: `effectiveDate` / `dueDate` / `createdAt` / `updatedAt`
 - Owner: `ownerId` / `assigneeId` / `departmentId`
-- Notes: `description` / `note` (textarea, optional)
+- Notes: `description` / `note` / `remarks` (textarea, optional; full-width in read-only detail when long)
+- Visual identity: `icon` / `color` / `avatar` / `logo`
 - Attachments: `attachments[]` if entity domain implies file upload
 - Audit: `createdAt`, `updatedAt`, `createdBy`, `updatedBy` (always in DTO; never in SaveReq)
 
@@ -172,6 +174,10 @@ npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts
 
 ### Side-drawer variant
 If layout is `side-drawer`, omit `pages/detail/` and add `components/detail-side-drawer/detail-side-drawer.component.ts` instead. Keep `pages/list/list.component.ts`.
+
+- CREATE/UPDATE drawer states remain Core UI forms.
+- DETAIL/view drawer state uses compact read-only facts by default for simple data: promoted business identifier in the header, optional status badge/chip near the title, label-left/value-right rows for short facts, and full-width long text only when needed.
+- Do not duplicate header-promoted code/status in body facts unless the spec asks for audit/full-field view.
 
 ### Standard-coverage spec layer
 - `*.routes.spec.ts` — routing guards + permission gating

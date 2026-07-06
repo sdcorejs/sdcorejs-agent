@@ -77,7 +77,13 @@ readonly #cdr = inject(ChangeDetectorRef);
 
 ### FormGroup definition
 
-Build form controls from the EntitySchema. One control per field that is `visibleInDetail: true`. Validators come from the schema:
+Build form controls from the EntitySchema. In CREATE/UPDATE, add one control per request/editable field. Validators come from the schema:
+
+Use the field roles derived in `init-entity.md` before adding controls:
+- Request fields become CREATE/UPDATE form controls.
+- Business identifiers such as `code`, `projectCode`, `orderNo`, `sku`, and `employeeCode` may be editable on CREATE, but are immutable in UPDATE unless explicitly marked editable.
+- Server identifiers and audit fields (`id`, `createdAt`, `updatedAt`, `createdBy`, `updatedBy`) stay out of SaveReq controls unless the API contract accepts them; render them as read-only DTO facts only when useful.
+- DETAIL/view rendering may use read-only facts instead of form controls for simple data.
 
 ```typescript
 private initForm(): void {
@@ -89,7 +95,7 @@ private initForm(): void {
     salary: ['', [Validators.min(0)]],
     isActivated: [false],
     note: [''],
-    // ... one entry per visibleInDetail field
+    // ... one entry per CREATE/UPDATE request/editable field
   });
 }
 ```
@@ -144,6 +150,7 @@ private async loadEntityData(id: string): Promise<void> {
       this.form.disable();
     } else {
       this.form.enable();
+      this.applyUpdateLocks();
     }
     this.#cdr.markForCheck();
   } catch (err) {
@@ -154,6 +161,23 @@ private async loadEntityData(id: string): Promise<void> {
   }
 }
 ```
+
+#### Immutable update locks
+
+Apply update locks after every whole-form `enable()` so code-like identifiers do not accidentally become editable:
+
+```typescript
+private readonly immutableUpdateFields = ['code']; // derive from EntitySchema field roles
+
+private applyUpdateLocks(): void {
+  if (this.state() !== 'UPDATE') return;
+  for (const field of this.immutableUpdateFields) {
+    this.form.get(field)?.disable({ emitEvent: false });
+  }
+}
+```
+
+If the update API excludes immutable fields, omit them in the update-payload mapper. If the update API requires a full object, preserve the loaded DTO value. Do not rely on disabled controls alone.
 
 ### Header buttons (template)
 
@@ -220,7 +244,9 @@ readonly pageTabColor = computed(() => {
 
 ### Form field rendering (template)
 
-For each schema field, render one control. The `[viewed]` / `[readonly]` flag binds to a computed `isDetail()` so the same template serves all three states without repeated inline conditions.
+For CREATE/UPDATE, render one control per request field. The `[viewed]` / `[readonly]` flag binds to a computed `isDetail()` when a complex screen intentionally reuses the same template across all states.
+
+For simple DETAIL/side-drawer view state, prefer the read-only detail rendering branch below instead of rendering every field as a disabled edit control.
 
 ```typescript
 readonly isDetail = computed(() => this.state() === 'DETAIL');
@@ -263,7 +289,19 @@ readonly isDetail = computed(() => this.state() === 'DETAIL');
 <sd-editor [form]="form" name="description" label="<localized text>" [viewed]="_isDetail"></sd-editor>
 ```
 
-Group fields by section if the schema declares them; otherwise wrap in one `<localized text>`.
+Group editable fields by section if the schema declares them; otherwise wrap in one `<localized text>`.
+
+### Read-only detail rendering (template)
+
+Before writing this branch, fetch Core UI docs and local examples for description-list/detail-list/property-list/read-only-field plus the project's badge/chip/status component. Use those components first. If none exist, use `sd-section` and STYLE-GUIDE utilities for compact facts.
+
+Rules:
+- Header or drawer title promotes the business identifier when present; the code value uses the Core UI primary text utility.
+- Status/lifecycle fields render next to the title through the existing Core UI status UI and mapping.
+- Facts list excludes any promoted code/status fields unless the view is explicitly audit/full-field.
+- Short scalar fields render as compact label-left/value-right rows with subtle dividers and right-aligned values.
+- Long text fields render as readable full-width sections.
+- Empty values use the project's Core UI convention.
 
 ### Editable child collection rendering (template)
 
@@ -453,7 +491,7 @@ Do not wrap each row in a nested card unless the existing screen already uses th
 
 Read-only branch reached via `/detail/:id`. Owned by [`screen-detail.md`](../write-code/screen-detail.md).
 
-After `loadEntityData(id)` resolves, the form is disabled (`this.form.disable()` happens inside the shared loader when `state() === 'DETAIL'`). Every form control still uses `[viewed]="true"` (or `[disabled]="true"` for `sd-switch`) so values display read-only. No submit button; header shows only Back + Edit.
+After `loadEntityData(id)` resolves, the form is disabled (`this.form.disable()` happens inside the shared loader when `state() === 'DETAIL'`). Simple DETAIL/side-drawer screens render the read-only detail branch; complex screens may reuse form controls with `[viewed]="true"` (or `[disabled]="true"` for `sd-switch`). No submit button; header shows only Back + Edit.
 
 Edit transition (already in [`#navigation-helpers`](#navigation-helpers)):
 
@@ -553,6 +591,7 @@ private async loadEntityData(id: string): Promise<void> {
     this.form.markAsPristine();
     this.pageTitle.set(`<localized text>`);
     this.form.enable();   // UPDATE keeps form editable (DETAIL would .disable())
+    this.applyUpdateLocks();
     this.#cdr.markForCheck();
   } catch (err) {
     this.#notify.warning('<localized text>');
@@ -564,6 +603,14 @@ private async loadEntityData(id: string): Promise<void> {
 ```
 
 Prefer the shared loader unless the project really needs distinct UPDATE-vs-DETAIL behavior beyond enable/disable.
+
+### UPDATE payload mapper
+
+Define `toUpdatePayload(...)` from the API contract before writing `onSave()`:
+
+- If the update API excludes immutable business identifiers, return an `UpdateReq` that omits those fields.
+- If the update API requires a full payload, overwrite immutable fields from the loaded DTO before submit so edited/accidentally patched values cannot change them.
+- Keep this mapper explicit; do not rely on disabled form controls alone.
 
 ### UPDATE-specific `onSave()`
 
@@ -580,7 +627,8 @@ async onSave(): Promise<void> {
     if (this.uploadFiles().length) {
       await Promise.all(this.uploadFiles().map(f => f.upload()));
     }
-    const payload = this.form.getRawValue() as EntitySaveReq;
+    const rawValue = this.form.getRawValue() as EntitySaveReq;
+    const payload = this.toUpdatePayload(rawValue);
     const id = this.entity.id;
     await this.#service.update(id, payload);
     this.#notify.success('<localized text>');
@@ -597,6 +645,7 @@ async onSave(): Promise<void> {
 
 Key points:
 - File uploads happen BEFORE `service.update(id, ...)`
+- `toUpdatePayload(...)` omits immutable identifiers when the API excludes them, or preserves loaded DTO values when the API requires a full payload.
 - Navigation default: `['..']`. Alternative (opt-in): `['../../detail', id]`
 - Save button + the "Edit" button on the DETAIL state both gated by `<MODULE>_C_<ENTITY>_UPDATE`
 - Stale-id recovery is shared with DETAIL — see [`#shared-entity-loader-with-stale-id-recovery`](#shared-entity-loader-with-stale-id-recovery)
