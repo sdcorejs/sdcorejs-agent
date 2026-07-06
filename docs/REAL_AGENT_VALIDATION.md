@@ -15,14 +15,16 @@ sanitized evidence for adopted releases.
 
 ## Minimum Release Matrix
 
-For a public release, capture at least:
+For a public release that claims full live-agent coverage, capture all of these
+surfaces:
 
 | Tool surface | Prompt | Required observation |
 |---|---|---|
 | Claude Code plugin | Ask for a small governed docs or code task. | Plugin skill loads, tasklist appears, approval/verification rules are followed. |
 | Codex attached repo | Ask for a concrete but incomplete feature. | `AGENTS.md` dispatches to brainstorming or the right track. |
 | Codex native skills | Ask for a skill that loads `_refs`. | `../_refs/...` resolution works from `codex/skills/_refs`. |
-| Cursor or Copilot | Ask for a product/design/test routing prompt. | Entrypoint instructions select the expected workflow. |
+| Cursor | Ask for a product/design/test routing prompt. | Cursor rules select the expected workflow. |
+| GitHub Copilot | Ask for a product/design/test routing prompt. | Copilot instructions or chatmode select the expected workflow. |
 
 If a tool is not validated for a release, state that limitation in the release
 notes instead of implying coverage.

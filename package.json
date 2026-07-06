@@ -1,6 +1,6 @@
 {
   "name": "sdcorejs-agent",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Portable SDLC skill pack for AI coding agents, with generated mirrors for Claude Code, Codex, Cursor, and Copilot.",
   "license": "MIT",
   "private": true,

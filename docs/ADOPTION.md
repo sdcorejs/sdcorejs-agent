@@ -75,4 +75,6 @@ This matrix tracks supported surfaces and the evidence expected for each.
 - Read `SECURITY.md` and decide whether the team needs safe mode.
 - Link `docs/TROUBLESHOOTING.md` from team onboarding docs.
 - Pin a Git tag or GitHub release instead of a floating branch.
-- Capture real-agent transcript evidence for the tools the team will use.
+- Capture real-agent transcript evidence for every tool surface claimed by the
+  release. For full coverage, validate Claude Code, Codex, Cursor, and GitHub
+  Copilot.

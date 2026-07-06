@@ -83,7 +83,8 @@ Request
 - Present the finish gate after every code-generation run.
 - Before any choice, approval gate, yes/no question, or mode selection, apply `_refs/shared/user-choice-prompt.md` so the user can answer with a number.
 - Run verification before claiming pass, fixed, built, or done.
-- For long or interruptible work, mirror visible `Tasks` progress to `.sdcorejs/tasks/current-session.md`.
+- For long or interruptible work, mirror visible `Tasks` progress to the ignored
+  local `.sdcorejs/tasks/current-session.md`; do not commit live session state.
 - Match the user's language at runtime; keep identifiers and route paths in English.
 
 ## First step guidance

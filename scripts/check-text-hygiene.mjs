@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { execFile } from 'node:child_process';
-import { readdir, readFile } from 'node:fs/promises';
+import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -78,7 +78,7 @@ main().catch((error) => {
 });
 
 async function main() {
-  const files = (await listCandidateFiles(root)).filter(isTextCandidate);
+  const files = await filterExistingFiles((await listCandidateFiles(root)).filter(isTextCandidate));
   const findings = [];
 
   await Promise.all(files.map(async (file) => {
@@ -99,6 +99,19 @@ async function main() {
   }
 
   console.log(`Text hygiene check passed (${files.length} file(s) scanned).`);
+}
+
+async function filterExistingFiles(files) {
+  const existing = await Promise.all(files.map(async (file) => {
+    try {
+      await access(file);
+      return file;
+    } catch (error) {
+      if (error?.code === 'ENOENT') return null;
+      throw error;
+    }
+  }));
+  return existing.filter(Boolean);
 }
 
 async function listCandidateFiles(targetRoot) {

@@ -43,6 +43,12 @@ Symptom:
 Generated Codex instructions mention ..//SKILL.md
 ```
 
+Current generated Codex mirrors should instead mention:
+
+```text
+../<skill-name>/SKILL.md
+```
+
 Fix:
 
 ```bash
@@ -51,7 +57,7 @@ npm run test:e2e:phase1
 ```
 
 Phase 1 tests assert that generated Codex skill guidance uses
-`../<skill-name>/SKILL.md`.
+`../<skill-name>/SKILL.md` and does not contain `..//SKILL.md`.
 
 ## Hidden Unicode Hygiene Failure
 
