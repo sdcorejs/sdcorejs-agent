@@ -1,6 +1,6 @@
 ---
-updated_at: 2026-07-06T13:10:00+07:00
-status: in_progress
+updated_at: 2026-07-06T13:20:00+07:00
+status: complete
 track: generic
 active_skill: skill-creator
 branch: fix/skill-trigger-audit
@@ -19,12 +19,12 @@ Commit and push the repository-wide trigger/skill audit fixes.
 - [x] Summarize changed files, verification, and remaining risks.
 - [x] Run git pre-flight checks.
 - [x] Create a non-main branch for the commit.
-- [ ] Commit with explicit staged paths.
-- [ ] Push the branch to origin.
+- [x] Commit with explicit staged paths.
+- [x] Push the branch to origin.
 
 ## Current State
-- Last completed: Created branch `fix/skill-trigger-audit`.
-- In progress: Staging explicit paths and committing.
+- Last completed: Commit `880305c` was pushed to `origin/fix/skill-trigger-audit`.
+- In progress: none.
 - Blocked/skipped: none.
 
 ## Artifacts Touched
@@ -41,6 +41,7 @@ Commit and push the repository-wide trigger/skill audit fixes.
 - PASS: `git diff --check`.
 - PASS: stale/mojibake scan for removed triggers, stale paths, old skill counts, and common mojibake signatures returned no matches in source scope.
 - PASS: git pre-flight found branch `main`, remote `origin`, changes scoped to the audit fix, and no real secrets in the diff.
+- PASS: branch `fix/skill-trigger-audit` tracks `origin/fix/skill-trigger-audit`.
 
 ## Resume From Here
-Stage explicit paths, commit, and push `fix/skill-trigger-audit` to origin.
+Branch is pushed and ready for PR creation.
