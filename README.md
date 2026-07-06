@@ -3,7 +3,8 @@
 [![CI](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/ci.yml)
 [![Full E2E](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/full-e2e.yml/badge.svg)](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/full-e2e.yml)
 
-An orchestrated SDLC skill pack for AI coding agents. Works in Claude Code, GitHub Copilot, Codex, and Cursor.
+A portable SDLC skill pack for AI coding agents. Works in Claude Code,
+GitHub Copilot, Codex, and Cursor.
 
 Requests flow through:
 
@@ -59,6 +60,21 @@ npm run check:text-hygiene
 npm run check:skills
 npm run test:e2e
 ```
+
+## 5-Minute Adoption
+
+Pick one install path, start a fresh agent session, then use the smoke prompt to
+confirm dispatch behavior before adopting the pack for real work.
+
+| Tool path | Install or attach | Smoke prompt | Expected observation |
+|---|---|---|---|
+| Claude Code plugin | Install from the plugin marketplace. | `Use sdcorejs-documentation to summarize this repo's validation posture.` | A documentation skill loads, creates a tasklist for non-trivial work, and reports verification status. |
+| Codex attached repo | Add this repo as a submodule or keep `AGENTS.md` at the target root. | `Use the SDCoreJS flow to plan a small docs update.` | `AGENTS.md` routes to brainstorming/spec/plan discipline instead of writing immediately. |
+| Codex native skills | Copy `codex/skills/**` plus `codex/skills/_refs/**` into `$CODEX_HOME/skills`. | `Use sdcorejs-documentation to write a short technical doc.` | The skill resolves `../_refs/...` and follows tasklist/verification rules. |
+| Cursor or Copilot | Use `AGENTS.md`, `.cursor/rules/**`, or `.github/**` entrypoints. | `Create acceptance criteria for a small feature using SDCoreJS.` | Product/design/test/doc routing selects the matching workflow. |
+
+For release adoption, pin a Git tag or GitHub Release rather than a floating
+branch, then record the exact tool versions and transcript evidence.
 
 ### Claude Code Plugin
 
@@ -131,6 +147,9 @@ npm run sync:skills
 npm run check:skills
 ```
 
+See `MIRROR_POLICY.md` for canonical source ownership and generated mirror
+review rules.
+
 ## Release Discipline
 
 - Keep `CHANGELOG.md` updated for user-visible skill, ref, workflow, or
@@ -143,6 +162,8 @@ npm run check:skills
   `npm run sync:skills` and `npm run check:skills`.
 - For upgrades, compare the previous tag to the new tag and review
   `CHANGELOG.md`, `VALIDATION.md`, and `docs/ADOPTION.md`.
+- Keep repository metadata aligned with this positioning: this is a portable
+  SDLC skill pack, not a standalone runtime coding agent.
 
 ## Mandatory Behavior
 

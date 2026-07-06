@@ -50,12 +50,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: site
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+        run: npm ci
 
       - name: Build
         working-directory: site

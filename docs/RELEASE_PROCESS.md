@@ -12,12 +12,22 @@ npm run check:text-hygiene
 npm run sync:skills
 npm run check:skills
 npm run test:e2e
+npm audit --omit=dev
 ```
 
 On Windows, also run:
 
 ```powershell
 npm run check:skills:ps
+```
+
+For the showcase site, run:
+
+```bash
+cd site
+npm ci
+npm audit --omit=dev
+npm run build
 ```
 
 ## 2. Full E2E Evidence
@@ -51,7 +61,18 @@ git push origin v<version>
 
 Use a patch release for hygiene-only fixes, for example `v0.5.1`.
 
-## 6. GitHub Release Notes
+## 6. Repository Metadata
+
+Confirm GitHub metadata uses the project positioning:
+
+```bash
+gh repo edit sdcorejs/sdcorejs-agent --description "Portable SDLC skill pack for AI coding agents, with generated mirrors for Claude Code, Codex, Cursor, and Copilot."
+```
+
+This requires a maintainer token. If the command is not available, update the
+repository description through GitHub Settings before publishing the release.
+
+## 7. GitHub Release Notes
 
 Include:
 
@@ -63,7 +84,13 @@ Include:
 - Upgrade notes for plugin/native skill users.
 - Known limitations.
 
-## 7. Post-Release Smoke
+Create the release from the pushed tag:
+
+```bash
+gh release create v<version> --title "v<version>" --notes-file <release-notes-file>
+```
+
+## 8. Post-Release Smoke
 
 After publishing:
 

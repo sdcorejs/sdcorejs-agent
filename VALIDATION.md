@@ -2,7 +2,7 @@
 
 Current validation snapshot for the SDCoreJS SDLC Agent repository.
 
-Date: 2026-06-30
+Date: 2026-07-06
 
 ## Current Layout
 
@@ -49,7 +49,7 @@ actually produced evidence.
 | Static validation | Source layout, frontmatter, exact refs, generated mirrors, markdown fences, text hygiene, and language policy are internally consistent. | `npm run check:text-hygiene`, `npm run check:skills`, and phase 1 E2E tests. | None beyond keeping CI green for the target commit. |
 | Deterministic prompt-routing validation | The local runner selects the expected `sdcorejs-*` skill for fixture prompts without calling an LLM. | `test/e2e/fixtures/prompt-evals.json` plus phase 1 and phase 3 tests. | Add fixtures when new user intents or entrypoints are introduced. |
 | CLI smoke validation | Local adapter code can detect or simulate supported CLI surfaces without requiring live Claude/Codex execution. | Phase 2 tests use fake `codex` and `claude` executables. | Run real CLI smoke tests in a prepared workstation when changing install instructions. |
-| Full target-app validation | The golden target-app generator can run the heavyweight E2E path in a prepared environment. | `.github/workflows/full-e2e.yml` and `npm run test:e2e:phase4` with `SDCOREJS_E2E_FULL=1`. | Attach the latest successful GitHub Actions run link to the release notes. |
+| Full target-app validation | The golden target-app generator can run the heavyweight E2E path in a prepared environment. | Latest observed successful run: <https://github.com/sdcorejs/sdcorejs-agent/actions/runs/28798513991>. Re-run for the exact release commit. | Attach the release-commit successful GitHub Actions run link to the release notes. |
 | Real-agent transcript validation | Actual Claude Code, Codex, Cursor, or Copilot sessions followed the intended skill-selection and approval behavior. | Not proven by deterministic tests. | Store sanitized transcript evidence when validating a release against live tools. |
 
 Do not describe deterministic prompt-routing results as live-agent behavior. The
@@ -87,18 +87,41 @@ npm run check:text-hygiene
 npm run check:skills
 npm run check:skills:ps
 npm run test:e2e
+npm audit --omit=dev
+```
+
+For the showcase site:
+
+```bash
+cd site
+npm ci
+npm audit --omit=dev
+npm run build
 ```
 
 CI coverage:
 
 - `CI` runs on pull requests and pushes to `main`.
 - `CI` runs `npm ci`, `npm run check:text-hygiene`,
-  `npm run check:skills`, and `npm run test:e2e` on Ubuntu.
+  `npm run check:skills`, `npm run check:audit`, and `npm run test:e2e`
+  on Ubuntu.
+- `CI` runs a separate site job with `npm ci`, `npm run check:audit`, and
+  `npm run build` under `site/`.
 - `CI` runs `npm run check:text-hygiene` and `npm run check:skills:ps`
   on Windows.
 - `Full E2E` runs `npm run test:e2e:phase4` with `SDCOREJS_E2E_FULL=1` on a
   schedule and through manual dispatch. Release notes should link the latest
   successful run.
+
+## Release Evidence Status
+
+- GitHub Releases and tags are the distribution anchors for adopted versions.
+  Publish a release before asking consumers to pin this pack.
+- The repository currently has deterministic test and Full E2E infrastructure.
+  Real-agent transcript evidence is still a release-time requirement for each
+  claimed tool surface.
+- Repository metadata should describe the project as a portable SDLC skill pack
+  for AI coding agents, not as a standalone runtime coding agent.
 
 PowerShell inventory:
 

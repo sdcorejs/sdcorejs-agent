@@ -7,6 +7,11 @@ package is private and is not published to npm.
 
 ## Unreleased
 
+- Add generated mirror ownership policy and pull request validation checklist.
+- Add a 5-minute adoption path and release evidence status to clarify first-run
+  expectations.
+- Add release metadata guidance for positioning the project as a portable SDLC
+  skill pack rather than a standalone runtime coding agent.
 - Add hidden/control/bidi Unicode scanner and wire it into npm scripts, CI,
   Full E2E, lefthook, and regression tests.
 - Fix Full E2E Windows command execution by running `.cmd`/`.bat` shims through

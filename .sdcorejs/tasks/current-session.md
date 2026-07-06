@@ -1,41 +1,53 @@
 ---
-updated_at: 2026-07-06T19:45:00+07:00
+updated_at: 2026-07-06T22:23:00+07:00
 status: complete
 track: generic
 active_skill: sdcorejs-git
-branch: chore/release-validation-hardening
+branch: chore/release-readiness-improvements
 ---
 
 # Current Session Checkpoint
 
 ## User Request
-Resolve merge conflicts on branch `chore/release-validation-hardening` so PR #27 can merge.
+Review repo-local improvements, then commit and push a branch.
 
 ## Tasks
-- [x] Inspect current branch/PR conflict state.
-- [x] Merge `origin/main` into `chore/release-validation-hardening` and resolve conflicts.
-- [x] Sync mirrors if conflicts touch generated skill/ref files.
-- [x] Run required verification.
-- [x] Commit merge resolution and push branch.
-- [x] Report final PR, verification, and branch status.
+- [x] Confirm repo-local scope from the reviewed backlog.
+- [x] Update adoption, release, validation, and mirror policy docs.
+- [x] Update CI/dependency automation/audit/deploy reproducibility.
+- [x] Upgrade and verify the site dependency posture.
+- [x] Review changes before commit.
+- [x] Commit and push a feature branch.
 
 ## Current State
-- Last completed: Pushed merge resolution to `origin/chore/release-validation-hardening`.
+- Last completed: Pushed branch `chore/release-readiness-improvements`.
 - In progress: none.
-- Blocked/skipped: none.
+- Blocked/skipped: GitHub release publication, GitHub repo description changes, and live-agent transcript capture require external credentials or real tool sessions.
 
 ## Artifacts Touched
-- EDIT `.sdcorejs/tasks/current-session.md` - conflict resolution checkpoint for PR #27 merge update.
+- EDIT `.sdcorejs/tasks/current-session.md` - session checkpoint.
+- ADD `MIRROR_POLICY.md` - generated mirror ownership policy.
+- ADD `.github/dependabot.yml` - dependency update automation.
+- ADD `.github/pull_request_template.md` - validation and mirror checklist.
+- EDIT `README.md`, `VALIDATION.md`, `docs/RELEASE_PROCESS.md`, `CHANGELOG.md` - adoption and release evidence guidance.
+- EDIT `.github/workflows/ci.yml`, `.github/workflows/deploy-site.yml`, `package.json`, `site/package.json`, `site/package-lock.json` - audit/build/deploy hardening and Astro upgrade.
 
 ## Verification
+- `npm ci` - pass.
+- `cd site && npm ci` - pass.
 - `npm run sync:skills` - pass.
-- `npm run check:text-hygiene` - pass, 583 files scanned.
+- `npm run check:text-hygiene` - pass, 586 files scanned.
 - `npm run check:skills` - pass.
 - `npm run check:skills:ps` - pass.
+- `npm audit --omit=dev` - pass, 0 vulnerabilities.
+- `cd site && npm audit --omit=dev` - pass, 0 vulnerabilities.
+- `cd site && npm run build` - pass, 2 pages built.
 - `npm test` - pass, 28/28.
-- `git diff --check` - pass; Git reported CRLF warnings for existing mirrored infra files.
-- `git commit` - pass after restaging synced mirrors.
-- `git push origin chore/release-validation-hardening` - pass.
+- `npm run check:site:audit` - pass, 0 vulnerabilities.
+- `npm run build:site` - pass, 2 pages built.
+- `git diff --check` - pass.
+- `git commit` - pass, commit `95e533b`.
+- `git push -u origin HEAD` - pass, branch `origin/chore/release-readiness-improvements`.
 
 ## Resume From Here
-PR #27 is updated; monitor GitHub mergeability/checks and merge when green.
+Open a PR from `chore/release-readiness-improvements` when ready.
