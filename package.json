@@ -55,6 +55,6 @@
     "prepare": "lefthook install"
   },
   "devDependencies": {
-    "lefthook": "^1.7.0"
+    "lefthook": "^2.1.9"
   }
 }
