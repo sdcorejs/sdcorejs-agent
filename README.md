@@ -55,6 +55,7 @@ committed `package-lock.json` with:
 
 ```bash
 npm ci
+npm run check:text-hygiene
 npm run check:skills
 npm run test:e2e
 ```
@@ -99,6 +100,18 @@ ln -s .sdcorejs-agent/_refs _refs
 | Cursor | `AGENTS.md`, generated `.cursor/rules/sdcorejs-agent.mdc` | Cursor rule is regenerated from `AGENTS.md` |
 | GitHub Copilot | `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md` | Entry-point smoke tests cover Copilot profile |
 
+For adoption guidance, compatibility evidence, and expected live-tool
+transcripts, see:
+
+- `docs/ADOPTION.md` - when to use this pack, when not to use it, fast-fix
+  rules, compatibility matrix, and adoption checklist.
+- `docs/WORKED_EXAMPLE.md` - example full workflow from request through
+  evidence summary.
+- `docs/TROUBLESHOOTING.md` - mirror drift, Codex refs, text hygiene, plugin,
+  and Full E2E troubleshooting.
+- `docs/REAL_AGENT_VALIDATION.md` - sanitized transcript evidence template.
+- `docs/RELEASE_PROCESS.md` - tag/release checklist.
+
 ## Repo Layout
 
 ```text
@@ -122,13 +135,14 @@ npm run check:skills
 
 - Keep `CHANGELOG.md` updated for user-visible skill, ref, workflow, or
   validation changes.
-- Create GitHub releases and tags for adopted versions; include the validation
-  commands and CI run links in release notes.
+- Create GitHub releases and tags for adopted versions; follow
+  `docs/RELEASE_PROCESS.md` and include validation commands, CI run links, Full
+  E2E evidence, and real-agent transcript evidence in release notes.
 - Treat generated mirrors as supported distribution artifacts. Any source
   change to `skills/`, `_refs/`, or `AGENTS.md` must be followed by
   `npm run sync:skills` and `npm run check:skills`.
 - For upgrades, compare the previous tag to the new tag and review
-  `CHANGELOG.md`, `VALIDATION.md`, and compatibility notes above.
+  `CHANGELOG.md`, `VALIDATION.md`, and `docs/ADOPTION.md`.
 
 ## Mandatory Behavior
 
@@ -137,6 +151,8 @@ npm run check:skills
 - Non-trivial execution tasks use `_refs/shared/tasklist.md`: create a visible `Tasks` section before work starts, update it as work progresses, and disclose skipped verification, blockers, and risks.
 - Long or interruptible tasks mirror that progress to `.sdcorejs/tasks/current-session.md` so another context window or AI can resume.
 - Requirements before code: use `sdcorejs-brainstorming` until blockers are confirmed.
+- For explicitly small low-risk edits, use the fast-fix path in
+  `docs/ADOPTION.md`; escalate to the full workflow if scope grows.
 - Explicit approval required for spec and plan.
 - Approved plans execute through `sdcorejs-execute-plan`.
 - `sdcorejs-execute-plan` always asks sequential vs parallel.
