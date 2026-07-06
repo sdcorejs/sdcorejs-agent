@@ -23,7 +23,27 @@ jobs:
       - run: npm ci
       - run: npm run check:text-hygiene
       - run: npm run check:skills
+      - run: npm run check:audit
       - run: npm run test:e2e
+
+  site:
+    name: Site Build and Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - run: npm ci
+        working-directory: site
+      - run: npm run check:audit
+        working-directory: site
+      - run: npm run build
+        working-directory: site
 
   powershell:
     name: PowerShell Skill Check
