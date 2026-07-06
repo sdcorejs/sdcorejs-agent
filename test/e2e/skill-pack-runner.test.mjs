@@ -347,6 +347,40 @@ test('phase 1: brainstorming visual companion stays optional and gated', async (
   }
 });
 
+test('phase 1: angular side-drawer detail rules prefer read-only facts and immutable identifiers', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
+  const angularSkill = sourceByName.get('sdcorejs-angular');
+
+  assert.match(angularSkill, /business identifiers are create-only\/edit-locked by default/i);
+  assert.match(angularSkill, /compact read-only facts over a disabled edit form/i);
+
+  const initEntity = await readFile(new URL('../../_refs/angular/write-code/init-entity.md', import.meta.url), 'utf8');
+  assert.match(initEntity, /Business identifier \/ business key/);
+  assert.match(initEntity, /employeeCode/);
+  assert.match(initEntity, /After any whole-form `enable\(\)` in UPDATE/);
+  assert.match(initEntity, /Build CREATE\/UPDATE payloads from an explicit mapper/);
+
+  const screenDetail = await readFile(new URL('../../_refs/angular/write-code/screen-detail.md', import.meta.url), 'utf8');
+  assert.match(screenDetail, /## Read-only detail\/view rendering gate/);
+  assert.match(screenDetail, /description-list\/detail-list\/property-list\/read-only-field/);
+  assert.match(screenDetail, /Do not duplicate promoted code\/status/);
+  assert.match(screenDetail, /label-left\/value-right/);
+  assert.match(screenDetail, /locked again after UPDATE `form\.enable\(\)`/);
+  assert.match(screenDetail, /one control per CREATE\/UPDATE request\/editable field/);
+
+  const screenTemplate = await readFile(new URL('../../_refs/angular/templates/screen-detail-component.md', import.meta.url), 'utf8');
+  assert.match(screenTemplate, /private readonly immutableUpdateFields/);
+  assert.match(screenTemplate, /this\.applyUpdateLocks\(\);/);
+  assert.match(screenTemplate, /Define `toUpdatePayload\(\.\.\.\)` from the API contract/);
+  assert.match(screenTemplate, /Facts list excludes any promoted code\/status fields/);
+  assert.match(screenTemplate, /CREATE\/UPDATE, add one control per request\/editable field/);
+
+  const sdlcAngular = await readFile(new URL('../../_refs/sdlc/angular.md', import.meta.url), 'utf8');
+  assert.match(sdlcAngular, /Quick create\/update drawer plus compact read-only detail facts/);
+  assert.match(sdlcAngular, /Do not duplicate header-promoted code\/status/);
+});
+
 test('phase 1: deterministic prompt eval dispatches expected skills', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
   const promptEvals = await loadPromptEvals();

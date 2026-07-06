@@ -1,47 +1,45 @@
 ---
-updated_at: 2026-07-06T16:43:00+07:00
+updated_at: 2026-07-06T17:24:00+07:00
 status: complete
-active_skill: skill-creator + sdcorejs-git
 track: generic
-active_skill: skill-creator + sdcorejs-brainstorming
+active_skill: skill-creator, sdcorejs-review, sdcorejs-git
 branch: fix/skill-trigger-audit
 ---
 
 # Current Session Checkpoint
 
 ## User Request
-Review the optional visual companion changes before committing and pushing.
+Review the pending `sdcorejs-angular` skill-rule changes, then commit them.
 
 ## Tasks
-- [x] Review diff with skill-creator guidance before commit.
-- [x] Run current verification.
-- [x] Commit with explicit staged paths.
-- [x] Push branch to remote.
-- [x] Confirm post-push status.
+- [x] Load required skill instructions and task protocol.
+- [x] Review current diff for skill quality and regressions.
+- [x] Fix any review findings if needed.
+- [x] Run verification before commit.
+- [x] Create commit with scoped staged files.
+- [x] Report review result and commit hash.
 
 ## Current State
-- Last completed: Created the visual companion commit and prepared checkpoint completion.
+- Last completed: Verification passed and checkpoint prepared for commit.
 - In progress: none.
 - Blocked/skipped: none.
 
 ## Artifacts Touched
 - EDIT .sdcorejs/tasks/current-session.md - checkpoint for this change.
-- EDIT skills/shared/sdlc/01-brainstorming.md - optional visual companion section.
-- ADD _refs/sdlc/visual-companion.md - main visual companion reference.
-- ADD _refs/sdlc/templates/visual-offer.md - standalone two-choice offer template.
-- ADD _refs/sdlc/templates/visual-screen-options.fragment.html - 2-3 option screen fragment.
-- ADD _refs/sdlc/templates/visual-screen-comparison.fragment.html - side-by-side screen fragment.
-- ADD _refs/sdlc/templates/visual-waiting.fragment.html - return-to-main-conversation fragment.
-- EDIT test/e2e/skill-pack-runner.test.mjs - visual companion regression coverage.
-- EDIT generated mirrors under .claude, plugin, codex, and .cursor.
+- EDIT skills/tracks/angular/sdcorejs-angular.md - high-level Angular skill rule and validation checklist.
+- EDIT _refs/angular/write-code/init-entity.md - field role and immutable identifier contract rules.
+- EDIT _refs/angular/write-code/screen-detail.md - DETAIL/side-drawer rendering and update lock rules.
+- EDIT _refs/angular/templates/screen-detail-component.md - loader/template/save mapper patterns.
+- EDIT _refs/sdlc/angular.md - side-drawer and field inference SDLC guidance.
+- EDIT test/e2e/skill-pack-runner.test.mjs - regression assertions for the new Angular rules.
 
 ## Verification
-- `npm run sync:skills` - PASS.
-- `npm run check:skills` - PASS.
-- `npm test` - PASS (22/22).
-- `npm run check:skills:ps` - PASS.
-- `git diff --check` - PASS.
-- Diff secret scan for common token/password/private-key markers - PASS (no matches).
+- npm run sync:skills - pass.
+- npm run check:skills - pass.
+- npm test - pass (23/23).
+- npm run check:skills:ps - pass.
+- git diff --check - pass.
+- Diff secret scan for common token/password/private-key markers - pass.
 
 ## Resume From Here
-Branch is ready to push; after push, report commit and branch status.
+Committed in this request; report the commit hash from `git log -1`.
