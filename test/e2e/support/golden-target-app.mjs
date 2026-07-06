@@ -102,11 +102,7 @@ export async function runGoldenTargetAppE2E(options = {}) {
 
 async function defaultExecutor(step) {
   const startedAt = Date.now();
-  const execOptions = {
-    cwd: step.cwd,
-    windowsHide: true,
-    timeout: Number(process.env.SDCOREJS_E2E_FULL_TIMEOUT_MS ?? 600000)
-  };
+  const execOptions = buildGoldenExecOptions(step);
   const { stdout, stderr } = step.file
     ? await execFileAsync(step.file, step.args ?? [], execOptions)
     : await execAsync(step.command, execOptions);
@@ -118,6 +114,19 @@ async function defaultExecutor(step) {
     stdout,
     stderr
   };
+}
+
+export function buildGoldenExecOptions(step) {
+  return {
+    cwd: step.cwd,
+    windowsHide: true,
+    timeout: Number(process.env.SDCOREJS_E2E_FULL_TIMEOUT_MS ?? 600000),
+    ...(usesWindowsCommandShim(step.file) ? { shell: true } : {})
+  };
+}
+
+function usesWindowsCommandShim(file) {
+  return process.platform === 'win32' && typeof file === 'string' && /\.(?:cmd|bat)$/i.test(file);
 }
 
 function assertSafeTargetName(targetName) {

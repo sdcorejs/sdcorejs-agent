@@ -4,12 +4,21 @@ Repository-level tests for the current 23-skill SDCoreJS Agent layout.
 
 The pack is documentation-driven. Tests focus on dispatch metadata, generated mirrors, reference availability, and entrypoint compatibility.
 
+For the claim boundaries between static checks, deterministic routing, CLI
+smoke, Full E2E, and live-agent transcript evidence, see `VALIDATION.md`.
+
 ## Automated E2E Harness
 
 Run all phases:
 
 ```bash
 npm run test:e2e
+```
+
+Run text hygiene before publishing or reviewing release candidates:
+
+```bash
+npm run check:text-hygiene
 ```
 
 Run one phase:
@@ -92,10 +101,12 @@ Skipped by default unless `SDCOREJS_E2E_FULL=1` is set in a prepared environment
 
 GitHub Actions coverage:
 
-- `CI` runs `npm ci`, `npm run check:skills`, `npm run test:e2e`, and a Windows
+- `CI` runs `npm ci`, `npm run check:text-hygiene`, `npm run check:skills`,
+  `npm run test:e2e`, and a Windows `npm run check:text-hygiene` plus
   `npm run check:skills:ps` job.
 - `Full E2E` runs `npm run test:e2e:phase4` with `SDCOREJS_E2E_FULL=1` on a
-  schedule and through `workflow_dispatch`.
+  schedule and through `workflow_dispatch`. Release notes should link a
+  successful run for the release commit.
 
 ## Language Fixtures
 
@@ -108,6 +119,7 @@ intent handling; expected source text must still remain English-only.
 
 ```bash
 npm run sync:skills
+npm run check:text-hygiene
 npm run check:skills
 npm run check:skills:ps
 ```

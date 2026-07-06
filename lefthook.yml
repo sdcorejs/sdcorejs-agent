@@ -5,8 +5,10 @@
 #
 # What it enforces:
 # - Both mirrors (.claude/skills/ for project-local + plugin/skills/ for the
-#   Claude Code plugin distribution) stay in sync with skills/<track>/*.md
-# - any commit that edits skills/<track>/*.md regenerates both mirrors and stages them
+#   Claude Code plugin distribution), Codex mirrors, and Cursor rule stay in sync
+#   with source skills, refs, and AGENTS.md
+# - any commit that edits source skills or refs regenerates mirrors and stages them
+# - no hidden/control/bidi Unicode characters are committed in tracked text files
 # - no hardcoded Core UI package/version in Angular init refs (must use <CORE_UI_PACKAGE_NAME>/<CORE_VERSION> placeholders)
 # - every .md under skills/ (except _refs/, shared/templates/, shared/specs/) has YAML frontmatter
 #
@@ -20,7 +22,12 @@ pre-commit:
       glob:
         - "skills/**/*.md"
         - "_refs/**"
-      run: bash .claude/sync-skills.sh && git add .claude/skills plugin/skills .claude/_refs plugin/_refs
+        - "AGENTS.md"
+      run: bash .claude/sync-skills.sh && git add .claude/skills plugin/skills codex/skills .claude/_refs plugin/_refs .cursor/rules
+    text-hygiene:
+      glob:
+        - "**/*"
+      run: npm run check:text-hygiene
     check-mirror:
       # Always verify both mirrors are consistent (catches the case where
       # someone hand-edits .claude/skills/ or plugin/skills/ without touching skills/).
@@ -53,8 +60,10 @@ pre-commit:
 check:
   commands:
     sync:
-      # Checks BOTH .claude/skills/ and plugin/skills/ against the source.
+      # Checks Claude, plugin, Codex, and Cursor generated outputs against the source.
       run: bash .claude/sync-skills.sh --check
+    text-hygiene:
+      run: npm run check:text-hygiene
     core-version-placeholder:
       run: bash .claude/check-core-version-placeholder.sh _refs/angular/write-code/init-portal.md _refs/angular/write-code/init-module.md _refs/angular/write-code/init-entity.md
     skill-frontmatter:

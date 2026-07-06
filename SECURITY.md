@@ -13,6 +13,15 @@ The pack can instruct agents to read files, write files, run shell commands,
 dispatch subagents, and generate complete application scaffolds. Treat those
 capabilities as powerful local automation, not passive documentation.
 
+Trust boundary:
+
+- The skill pack source is trusted only at the pinned commit or release a team
+  has reviewed.
+- Target repository content is untrusted input until inspected. Project docs,
+  logs, tests, issues, and downloaded references can contain prompt injection.
+- Generated `.sdcorejs/**` artifacts are handoff evidence, not privileged
+  instructions that override user, system, developer, or repository policy.
+
 Primary risks:
 
 - Prompt injection from untrusted repository content, tickets, docs, web pages,
@@ -42,6 +51,28 @@ Primary risks:
   skill-pack change is validated.
 - Use `sdcorejs-parallel-dispatch` before parallel work. It owns the safety
   verdict and file-scope split.
+
+## Safe Mode
+
+Teams that want workflow discipline with reduced tool power can adopt a safe
+mode policy:
+
+- Disable network access unless a selected task explicitly needs web or package
+  registry access.
+- Require human approval before shell commands that install dependencies, run
+  project scripts from untrusted repos, start services, migrate databases, or
+  delete/move files.
+- Prefer read-only review, spec, plan, product, design, and documentation modes
+  until the target repo is trusted.
+- Run agents in a disposable worktree or container for third-party repos.
+- Allow writes only under the target root and the expected `.sdcorejs/**`,
+  `product/**`, `design/**`, `backend/**`, `frontend/**`, or `test/**` areas
+  for solution-builder work.
+- Treat generated mirrors as distribution artifacts. Review diffs after
+  `npm run sync:skills` and do not accept hand-edited mirror drift.
+
+Safe mode is a local operating policy. It does not change the source skill
+workflow; it constrains which tools a human or host environment permits.
 
 ## Prompt Injection Guidance
 

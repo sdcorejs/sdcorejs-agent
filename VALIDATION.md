@@ -39,12 +39,30 @@ Date: 2026-06-30
 | Parallel | `sdcorejs-parallel-dispatch` |
 | Finish | `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)` when durable knowledge surfaced |
 
-## Validation Checklist
+## Validation Tiers
+
+The project has several validation layers. Keep claims tied to the layer that
+actually produced evidence.
+
+| Tier | What it proves | Current evidence | External evidence still required |
+|---|---|---|---|
+| Static validation | Source layout, frontmatter, exact refs, generated mirrors, markdown fences, text hygiene, and language policy are internally consistent. | `npm run check:text-hygiene`, `npm run check:skills`, and phase 1 E2E tests. | None beyond keeping CI green for the target commit. |
+| Deterministic prompt-routing validation | The local runner selects the expected `sdcorejs-*` skill for fixture prompts without calling an LLM. | `test/e2e/fixtures/prompt-evals.json` plus phase 1 and phase 3 tests. | Add fixtures when new user intents or entrypoints are introduced. |
+| CLI smoke validation | Local adapter code can detect or simulate supported CLI surfaces without requiring live Claude/Codex execution. | Phase 2 tests use fake `codex` and `claude` executables. | Run real CLI smoke tests in a prepared workstation when changing install instructions. |
+| Full target-app validation | The golden target-app generator can run the heavyweight E2E path in a prepared environment. | `.github/workflows/full-e2e.yml` and `npm run test:e2e:phase4` with `SDCOREJS_E2E_FULL=1`. | Attach the latest successful GitHub Actions run link to the release notes. |
+| Real-agent transcript validation | Actual Claude Code, Codex, Cursor, or Copilot sessions followed the intended skill-selection and approval behavior. | Not proven by deterministic tests. | Store sanitized transcript evidence when validating a release against live tools. |
+
+Do not describe deterministic prompt-routing results as live-agent behavior. The
+deterministic runner is useful for regression coverage, but it is not a
+substitute for real-agent transcript validation.
+
+## Static Validation Checklist
 
 | Check | Expected |
 |---|---|
 | Source skill count | 23 |
 | Mirror counts | 23 in `.claude`, `plugin`, and `codex` |
+| Text hygiene | No hidden/control/bidi Unicode in tracked text files |
 | Frontmatter | Required `name` and `description`; optional `allowed-tools`; no duplicate keys; no unsupported frontmatter shape |
 | Skill names | Unique `sdcorejs-*` kebab-case names |
 | Ref links | Exact `_refs/...` paths in skills and refs resolve to committed files |
@@ -58,12 +76,14 @@ Date: 2026-06-30
 | Generic harness | `sdcorejs-execute-plan` documents fallback execution |
 | Language policy | Source skills/refs/mirrors stay English-only; explicit localization prompt fixtures may use non-English input |
 
-These checks are enforced by `npm run check:skills` and `npm run test:e2e`.
+These checks are enforced by `npm run check:text-hygiene`,
+`npm run check:skills`, and `npm run test:e2e`.
 
 ## Revalidation Commands
 
 ```bash
 npm run sync:skills
+npm run check:text-hygiene
 npm run check:skills
 npm run check:skills:ps
 npm run test:e2e
@@ -72,10 +92,13 @@ npm run test:e2e
 CI coverage:
 
 - `CI` runs on pull requests and pushes to `main`.
-- `CI` runs `npm ci`, `npm run check:skills`, and `npm run test:e2e` on Ubuntu.
-- `CI` runs `npm run check:skills:ps` on Windows.
+- `CI` runs `npm ci`, `npm run check:text-hygiene`,
+  `npm run check:skills`, and `npm run test:e2e` on Ubuntu.
+- `CI` runs `npm run check:text-hygiene` and `npm run check:skills:ps`
+  on Windows.
 - `Full E2E` runs `npm run test:e2e:phase4` with `SDCOREJS_E2E_FULL=1` on a
-  schedule and through manual dispatch.
+  schedule and through manual dispatch. Release notes should link the latest
+  successful run.
 
 PowerShell inventory:
 

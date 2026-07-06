@@ -3,7 +3,7 @@ import { access, rm } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 import path from 'node:path';
-import { buildGoldenTargetAppPlan, runGoldenTargetAppE2E } from './support/golden-target-app.mjs';
+import { buildGoldenExecOptions, buildGoldenTargetAppPlan, runGoldenTargetAppE2E } from './support/golden-target-app.mjs';
 
 test('phase 4: full target-app golden test is explicit and opt-in', async () => {
   const result = await runGoldenTargetAppE2E();
@@ -35,6 +35,19 @@ test('phase 4: golden plan covers generation, Docker, Playwright, and supertest 
   assert.match(plan.steps[3].command, /docker compose up/);
   assert.match(plan.steps[4].command, /supertest/);
   assert.match(plan.steps[5].command, /playwright/);
+});
+
+test('phase 4: Windows command shims run through a shell', () => {
+  const plan = buildGoldenTargetAppPlan({ targetName: 'golden-crm' });
+  const npmStep = plan.steps.find((step) => step.id === 'install-target-deps');
+  const options = buildGoldenExecOptions({ ...npmStep, file: 'npm.cmd' });
+
+  assert.equal(options.windowsHide, true);
+  if (process.platform === 'win32') {
+    assert.equal(options.shell, true);
+  } else {
+    assert.equal(options.shell, undefined);
+  }
 });
 
 test('phase 4: golden plan rejects unsafe target names', () => {

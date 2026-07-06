@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
+import { execFile } from 'node:child_process';
 import { mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { dispatchPrompt, loadSkillPack, runPromptEval } from './support/skill-pack-runner.mjs';
 
 async function listMarkdownLikeFiles(rootUrl, relativeDir) {
@@ -35,6 +37,18 @@ function findUnclosedMarkdownFence(text) {
     }
   }
   return open;
+}
+
+function execFileResult(file, args, options = {}) {
+  return new Promise((resolve) => {
+    execFile(file, args, { encoding: 'utf8', ...options }, (error, stdout, stderr) => {
+      resolve({
+        code: error?.code ?? 0,
+        stdout,
+        stderr,
+      });
+    });
+  });
 }
 
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
@@ -297,6 +311,54 @@ test('phase 1: generated mirrors do not inject global response-style modifiers',
       assert.doesNotMatch(skill.text, pattern, `${skill.path} should not contain ${pattern}`);
     }
   }
+
+  for (const skill of pack.codexMirrorSkills) {
+    assert.match(skill.text, /\.\.\/<skill-name>\/SKILL\.md/, `${skill.path} documents sibling skill resolution`);
+    assert.doesNotMatch(skill.text, /\.\.\/\/SKILL\.md/, `${skill.path} should not contain malformed sibling skill path`);
+  }
+});
+
+test('phase 1: text hygiene scanner rejects hidden control and bidi characters', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'sdcorejs-text-hygiene-'));
+  const script = fileURLToPath(new URL('../../scripts/check-text-hygiene.mjs', import.meta.url));
+  const badFile = join(root, 'bad.md');
+
+  await writeFile(join(root, 'clean.md'), 'safe markdown\n', 'utf8');
+  await writeFile(badFile, `bad\u202etext\n`, 'utf8');
+
+  const failed = await execFileResult(process.execPath, [script, root]);
+  assert.notEqual(failed.code, 0);
+  assert.match(failed.stderr, /bad\.md:1:4 U\+202E/);
+  assert.match(failed.stderr, /bidirectional/);
+
+  await writeFile(badFile, 'clean text\n', 'utf8');
+  const passed = await execFileResult(process.execPath, [script, root]);
+  assert.equal(passed.code, 0, passed.stderr);
+  assert.match(passed.stdout, /Text hygiene check passed/);
+
+  const gitRoot = await mkdtemp(join(tmpdir(), 'sdcorejs-text-hygiene-git-'));
+  await execFileResult('git', ['init'], { cwd: gitRoot });
+  await writeFile(join(gitRoot, 'untracked.md'), `bad\u202etext\n`, 'utf8');
+  const untrackedFailed = await execFileResult(process.execPath, [script, gitRoot]);
+  assert.notEqual(untrackedFailed.code, 0);
+  assert.match(untrackedFailed.stderr, /untracked\.md:1:4 U\+202E/);
+});
+
+test('phase 1: public validation docs separate validation tiers and evidence limits', async () => {
+  const validation = await readFile(new URL('../../VALIDATION.md', import.meta.url), 'utf8');
+
+  for (const tier of [
+    'Static validation',
+    'Deterministic prompt-routing validation',
+    'CLI smoke validation',
+    'Full target-app validation',
+    'Real-agent transcript validation',
+  ]) {
+    assert.match(validation, new RegExp(tier.replaceAll('-', '[- ]')), `VALIDATION.md documents ${tier}`);
+  }
+
+  assert.match(validation, /Current evidence/);
+  assert.match(validation, /External evidence still required/);
 });
 
 test('phase 1: brainstorming visual companion stays optional and gated', async () => {

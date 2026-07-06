@@ -25,5 +25,6 @@ jobs:
           cache: npm
 
       - run: npm ci
+      - run: npm run check:text-hygiene
       - run: npm run check:skills
       - run: npm run test:e2e:phase4
