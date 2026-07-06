@@ -3,7 +3,12 @@ import { access, rm } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 import path from 'node:path';
-import { buildGoldenExecOptions, buildGoldenTargetAppPlan, runGoldenTargetAppE2E } from './support/golden-target-app.mjs';
+import {
+  buildGoldenExecOptions,
+  buildGoldenTargetAppPlan,
+  formatGoldenStepFailure,
+  runGoldenTargetAppE2E
+} from './support/golden-target-app.mjs';
 
 test('phase 4: full target-app golden test is explicit and opt-in', async () => {
   const result = await runGoldenTargetAppE2E();
@@ -48,6 +53,22 @@ test('phase 4: Windows command shims run through a shell', () => {
   } else {
     assert.equal(options.shell, undefined);
   }
+});
+
+test('phase 4: failed golden steps include command output for diagnosis', () => {
+  const plan = buildGoldenTargetAppPlan({ targetName: 'golden-crm' });
+  const step = plan.steps.find((item) => item.id === 'ui-playwright');
+  const cause = new Error('Command failed');
+  cause.stdout = 'playwright stdout details';
+  cause.stderr = 'playwright stderr details';
+
+  const error = formatGoldenStepFailure(step, cause);
+
+  assert.match(error.message, /ui-playwright/);
+  assert.match(error.message, /npx playwright test/);
+  assert.match(error.message, /playwright stdout details/);
+  assert.match(error.message, /playwright stderr details/);
+  assert.equal(error.cause, cause);
 });
 
 test('phase 4: golden plan rejects unsafe target names', () => {

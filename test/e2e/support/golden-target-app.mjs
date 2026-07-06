@@ -103,16 +103,21 @@ export async function runGoldenTargetAppE2E(options = {}) {
 async function defaultExecutor(step) {
   const startedAt = Date.now();
   const execOptions = buildGoldenExecOptions(step);
-  const { stdout, stderr } = step.file
-    ? await execFileAsync(step.file, step.args ?? [], execOptions)
-    : await execAsync(step.command, execOptions);
+  let output;
+  try {
+    output = step.file
+      ? await execFileAsync(step.file, step.args ?? [], execOptions)
+      : await execAsync(step.command, execOptions);
+  } catch (error) {
+    throw formatGoldenStepFailure(step, error);
+  }
 
   return {
     id: step.id,
     command: step.command,
     durationMs: Date.now() - startedAt,
-    stdout,
-    stderr
+    stdout: output.stdout,
+    stderr: output.stderr
   };
 }
 
@@ -127,6 +132,29 @@ export function buildGoldenExecOptions(step) {
 
 function usesWindowsCommandShim(file) {
   return process.platform === 'win32' && typeof file === 'string' && /\.(?:cmd|bat)$/i.test(file);
+}
+
+export function formatGoldenStepFailure(step, cause) {
+  const sections = [
+    `Golden target-app step failed: ${step.id}`,
+    `Command: ${step.command}`,
+    `Error: ${cause?.message ?? String(cause)}`,
+  ];
+
+  if (cause?.stdout) {
+    sections.push(`stdout:\n${trimOutput(cause.stdout)}`);
+  }
+  if (cause?.stderr) {
+    sections.push(`stderr:\n${trimOutput(cause.stderr)}`);
+  }
+
+  return new Error(sections.join('\n\n'), { cause });
+}
+
+function trimOutput(output) {
+  const text = String(output).trim();
+  if (text.length <= 4000) return text;
+  return `${text.slice(0, 2000)}\n...\n${text.slice(-2000)}`;
 }
 
 function assertSafeTargetName(targetName) {
