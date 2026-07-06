@@ -71,7 +71,8 @@ confirm dispatch behavior before adopting the pack for real work.
 | Claude Code plugin | Install from the plugin marketplace. | `Use sdcorejs-documentation to summarize this repo's validation posture.` | A documentation skill loads, creates a tasklist for non-trivial work, and reports verification status. |
 | Codex attached repo | Add this repo as a submodule or keep `AGENTS.md` at the target root. | `Use the SDCoreJS flow to plan a small docs update.` | `AGENTS.md` routes to brainstorming/spec/plan discipline instead of writing immediately. |
 | Codex native skills | Copy `codex/skills/**` plus `codex/skills/_refs/**` into `$CODEX_HOME/skills`. | `Use sdcorejs-documentation to write a short technical doc.` | The skill resolves `../_refs/...` and follows tasklist/verification rules. |
-| Cursor or Copilot | Use `AGENTS.md`, `.cursor/rules/**`, or `.github/**` entrypoints. | `Create acceptance criteria for a small feature using SDCoreJS.` | Product/design/test/doc routing selects the matching workflow. |
+| Cursor | Use `AGENTS.md` plus `.cursor/rules/**`. | `Create acceptance criteria for a small feature using SDCoreJS.` | Product/design/test/doc routing selects the matching workflow. |
+| GitHub Copilot | Use `.github/copilot-instructions.md` or `.github/chatmodes/**`. | `Create acceptance criteria for a small feature using SDCoreJS.` | Product/design/test/doc routing selects the matching workflow. |
 
 For release adoption, pin a Git tag or GitHub Release rather than a floating
 branch, then record the exact tool versions and transcript evidence.
@@ -156,7 +157,8 @@ review rules.
   validation changes.
 - Create GitHub releases and tags for adopted versions; follow
   `docs/RELEASE_PROCESS.md` and include validation commands, CI run links, Full
-  E2E evidence, and real-agent transcript evidence in release notes.
+  E2E evidence, and real-agent transcript evidence for Claude Code, Codex,
+  Cursor, and GitHub Copilot in release notes.
 - Treat generated mirrors as supported distribution artifacts. Any source
   change to `skills/`, `_refs/`, or `AGENTS.md` must be followed by
   `npm run sync:skills` and `npm run check:skills`.
@@ -170,7 +172,9 @@ review rules.
 - Runtime-localized output: respond in the user's language and preserve locale-specific marks.
 - Non-trivial skills apply `_refs/shared/project-context.md` before executing so direct triggers load summaries, resume checkpoints, specs/plans, tasks, and relevant memories.
 - Non-trivial execution tasks use `_refs/shared/tasklist.md`: create a visible `Tasks` section before work starts, update it as work progresses, and disclose skipped verification, blockers, and risks.
-- Long or interruptible tasks mirror that progress to `.sdcorejs/tasks/current-session.md` so another context window or AI can resume.
+- Long or interruptible tasks can mirror progress to the ignored local
+  `.sdcorejs/tasks/current-session.md`; do not commit live session state as
+  release evidence.
 - Requirements before code: use `sdcorejs-brainstorming` until blockers are confirmed.
 - For explicitly small low-risk edits, use the fast-fix path in
   `docs/ADOPTION.md`; escalate to the full workflow if scope grows.

@@ -43,7 +43,9 @@ Record the successful Actions URL or local command output in release notes.
 ## 3. Real-Agent Evidence
 
 Capture sanitized live-tool evidence using `docs/REAL_AGENT_VALIDATION.md`.
-State any unvalidated tool surfaces explicitly.
+For full live-agent coverage, capture Claude Code, Codex attached repo, Codex
+native skills, Cursor, and GitHub Copilot evidence. State any unvalidated tool
+surfaces explicitly.
 
 ## 4. Changelog And Version
 

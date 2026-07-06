@@ -20,3 +20,8 @@ bin/**/*.tsbuildinfo
 # Claude Code local user settings (track .claude/skills/, README.md, sync-skills.sh)
 .claude/settings.json
 .claude/settings.local.json
+
+# Local agent session state. Commit durable docs, examples, specs, and plans;
+# keep live resume checkpoints out of source history.
+.sdcorejs/tasks/current-session.md
+.sdcorejs/tasks/sessions/

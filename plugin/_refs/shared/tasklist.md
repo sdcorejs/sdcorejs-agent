@@ -98,9 +98,10 @@ Write or update this file when:
 - work becomes blocked, skipped, or complete
 
 Skip this checkpoint for simple Q&A and for work where there is no target
-project root. In the `sdcorejs-agent` authoring repo, write it only when this
-repo itself is the explicit target; never write target-project session artifacts
-here by accident.
+project root. In the `sdcorejs-agent` authoring repo, this checkpoint is local
+session state and must stay ignored/uncommitted; use durable docs, specs, plans,
+or examples for source-controlled evidence. Never write target-project session
+artifacts here by accident.
 
 Use this format:
 

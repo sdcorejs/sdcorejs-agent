@@ -59,7 +59,8 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - Every code-generation run presents the finish gate before tail steps.
 - Never claim pass, built, fixed, or done without current verification output.
 - Write `.sdcorejs/*` artifacts to the target project only.
-- For long or interruptible work, mirror visible `Tasks` progress to `.sdcorejs/tasks/current-session.md`.
+- For long or interruptible work, mirror visible `Tasks` progress to the ignored
+  local `.sdcorejs/tasks/current-session.md`; do not commit live session state.
 - Preserve the user's language and locale marks; keep identifiers and routes in English.
 - Before asking the user to choose, approve, answer yes/no, or select a mode, apply `_refs/shared/user-choice-prompt.md`; ask one decision at a time and number every option as `1/2/3/...`.
 - Treat mojibake as a blocking defect.
