@@ -26,9 +26,21 @@ When a request matches a skill, invoke that skill before responding. Skills deci
 ## Dispatch
 
 1. Match the request against each skill `description`.
-2. If several match, choose the earliest workflow owner.
+2. If several match, apply the priority list below before reading a body.
 3. Read the chosen skill body and follow it.
 4. If nothing matches, answer briefly from this bootstrap and route to `sdcorejs-brainstorming`.
+
+Priority when several skills match:
+
+1. Explicit skill name from the user.
+2. Approved spec/plan continuation: `sdcorejs-execute-plan`.
+3. Product docs and traceability: `sdcorejs-product`.
+4. Design handoff artifacts: `sdcorejs-design`.
+5. Test-only work: `sdcorejs-test`, except failing-test root cause/fix goes to `sdcorejs-debug`.
+6. Dedicated utility intent: `sdcorejs-explore`, `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
+7. Whole app/system build intent: `sdcorejs-solution-builder`.
+8. Confirmed track implementation: `sdcorejs-angular`, `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
+9. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
 
 ## Tracks
 

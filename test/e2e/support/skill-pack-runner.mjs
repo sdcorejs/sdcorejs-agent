@@ -37,8 +37,6 @@ const LOCALIZED_ALIASES = new Map([
   ['nut', ['button', 'action']],
   ['don', ['order']],
   ['hang', ['order']],
-  ['phan', ['deciding', 'unsure', 'brainstorm']],
-  ['van', ['deciding', 'unsure', 'brainstorm']],
   ['giua', ['between', 'compare']],
   ['drawer', ['drawer', 'side-drawer']],
   ['full', ['full', 'page']],
@@ -66,7 +64,7 @@ const LOCALIZED_ALIASES = new Map([
 
 const SKILL_HINTS = [
   { skill: 'sdcorejs-brainstorming', words: ['brainstorm', 'brainstorming', 'requirements', 'clarify', 'unsure', 'deciding', 'between', 'compare', 'should'] },
-  { skill: 'sdcorejs-angular', words: ['angular', 'portal', 'screen', 'screens', 'list', 'detail', 'form', 'button', 'approve', 'approval', 'bulk', 'export', 'action', 'drawer'] },
+  { skill: 'sdcorejs-angular', words: ['angular', 'portal', 'screen', 'screens', 'list', 'detail', 'form', 'approve', 'approval', 'bulk', 'export', 'action', 'drawer'] },
   { skill: 'sdcorejs-nestjs', words: ['nestjs', 'backend', 'module', 'entity', 'crud', 'endpoint', 'scaffold'] },
   { skill: 'sdcorejs-nextjs', words: ['nextjs', 'website', 'landing', 'seo', 'sitemap', 'og', 'contact'] },
   { skill: 'sdcorejs-solution-builder', words: ['build', 'create', 'software', 'app', 'system', 'manage', 'management', 'whole', 'classroom', 'school'] },
@@ -76,6 +74,119 @@ const SKILL_HINTS = [
   { skill: 'sdcorejs-explore', words: ['explore', 'summary', 'overview', 'project', 'codebase', 'repo', 'system', 'map', 'architecture', 'trace', 'flow', 'setup', 'env', 'environment', 'resume', 'recover'] },
   { skill: 'sdcorejs-ship', words: ['verify', 'acceptance', 'criteria', 'final', 'gate', 'branch', 'ready', 'ship', 'push', 'release', 'tag', 'merge', 'dependency', 'dependencies', 'package', 'outdated', 'audit', 'bump'] },
   { skill: 'sdcorejs-git', words: ['commit', 'changes', 'save', 'worktree', 'pr', 'pull', 'request', 'changelog', 'notes'] }
+];
+
+const PRIORITY_RULES = [
+  {
+    skill: null,
+    when: ({ prompt, tokens }) =>
+      /\b(fix|correct)\b/.test(prompt) &&
+      /\b(typo|spelling)\b/.test(prompt) &&
+      !hasAny(tokens, ['debug', 'test', 'tests', 'failing', 'failure'])
+  },
+  {
+    skill: 'sdcorejs-brainstorming',
+    when: ({ prompt, tokens }) =>
+      /\bphan\s+van\b/.test(prompt) ||
+      hasAny(tokens, ['brainstorm', 'unsure', 'deciding', 'between', 'compare', 'should', 'clarify'])
+  },
+  {
+    skill: 'sdcorejs-execute-plan',
+    when: ({ prompt, tokens }) =>
+      hasAny(tokens, ['approved', 'approve', 'plan', 'snapshot']) &&
+      hasAny(tokens, ['execute', 'run', 'continue', 'resume', 'implement', 'generate']) &&
+      !hasAny(tokens, ['test', 'tests', 'review'])
+  },
+  {
+    skill: 'sdcorejs-product',
+    when: ({ prompt, tokens }) =>
+      hasProductIntent(prompt, tokens) &&
+      !hasAny(tokens, ['angular', 'portal', 'screen', 'screens', 'ui', 'wireframe', 'mockup', 'design'])
+  },
+  {
+    skill: 'sdcorejs-design',
+    when: ({ tokens }) =>
+      (hasAny(tokens, ['design', 'ui', 'ux', 'wireframe', 'mockup', 'png', 'preview', 'handoff']) ||
+        (hasAny(tokens, ['flow', 'flows']) && hasAny(tokens, ['screen', 'screens', 'user', 'journey']))) &&
+      !hasAny(tokens, ['angular', 'portal', 'implement', 'code', 'architecture', 'codebase', 'repo', 'map', 'trace'])
+  },
+  {
+    skill: 'sdcorejs-debug',
+    when: ({ tokens }) =>
+      hasAny(tokens, ['debug', 'root-cause', 'repro', 'failing', 'failure', 'error', 'wrong']) &&
+      !hasAny(tokens, ['review'])
+  },
+  {
+    skill: 'sdcorejs-test',
+    when: ({ prompt, tokens }) =>
+      hasTestIntent(tokens) &&
+      !hasProductIntent(prompt, tokens) &&
+      !hasAny(tokens, ['debug', 'root-cause', 'failing', 'failure']) &&
+      !hasAny(tokens, ['docs', 'doc', 'documentation', 'guide', 'user-guide', 'manual', 'screenshot'])
+  },
+  {
+    skill: 'sdcorejs-auth',
+    when: ({ tokens }) =>
+      hasAny(tokens, ['auth', 'authentication', 'authorization', 'keycloak', 'login']) &&
+      !hasAny(tokens, ['test', 'tests', 'debug', 'failing', 'failure', 'docs', 'documentation', 'guide'])
+  },
+  {
+    skill: 'sdcorejs-documentation',
+    when: ({ prompt, tokens }) =>
+      hasDocumentationIntent(prompt, tokens) &&
+      !hasAny(tokens, ['prd', 'story', 'stories', 'acceptance', 'criteria', 'uat', 'traceability']) &&
+      !hasAny(tokens, ['execute', 'approved'])
+  },
+  {
+    skill: 'sdcorejs-explore',
+    when: ({ prompt, tokens }) =>
+      (hasAny(tokens, ['explore', 'overview', 'codebase', 'repo', 'architecture', 'env', 'environment', 'resume', 'recover']) ||
+        /\bsummarize\b.*\b(project|repo|codebase)\b/.test(prompt) ||
+        /\bmap\b.*\b(architecture|flow|codebase)\b/.test(prompt)) &&
+      !hasAny(tokens, ['docs', 'doc', 'documentation'])
+  },
+  {
+    skill: 'sdcorejs-ship',
+    when: ({ prompt, tokens }) =>
+      hasAny(tokens, ['ship', 'merge', 'release', 'tag', 'dependency', 'dependencies', 'outdated', 'audit', 'bump']) ||
+      /\bready\b.*\b(branch|merge|ship)\b/.test(prompt) ||
+      /\bupdate\b.*\b(dependencies|packages)\b/.test(prompt)
+  },
+  {
+    skill: 'sdcorejs-git',
+    when: ({ prompt, tokens }) =>
+      hasAny(tokens, ['commit', 'worktree', 'changelog']) ||
+      /\b(create|prepare|open|write)\b.*\b(pr|pull request)\b/.test(prompt) ||
+      /\brelease notes\b/.test(prompt)
+  },
+  {
+    skill: 'sdcorejs-brainstorming',
+    when: ({ prompt, tokens }) =>
+      /\b(build|create|make)\b.*\b(component)\b/.test(prompt) &&
+      !hasAny(tokens, ['angular', 'portal', 'screen', 'screens', 'page'])
+  },
+  {
+    skill: 'sdcorejs-solution-builder',
+    when: ({ prompt, tokens }) =>
+      (hasAny(tokens, ['build', 'create', 'want', 'need']) && hasAny(tokens, ['software', 'app', 'system', 'solution'])) ||
+      (hasAny(tokens, ['manage', 'management']) && hasAny(tokens, ['software', 'app', 'system', 'classroom', 'school']))
+  },
+  {
+    skill: 'sdcorejs-angular',
+    when: ({ tokens }) =>
+      hasAny(tokens, ['angular', 'portal', 'screen', 'screens', 'list', 'detail', 'form', 'approval', 'bulk', 'export', 'drawer']) ||
+      (hasAny(tokens, ['approve', 'approval', 'action', 'button']) && hasAny(tokens, ['order', 'purchase', 'submit', 'reject', 'bulk']))
+  },
+  {
+    skill: 'sdcorejs-nestjs',
+    when: ({ tokens }) =>
+      hasAny(tokens, ['nestjs', 'backend', 'endpoint']) ||
+      (hasAny(tokens, ['module', 'entity', 'crud', 'scaffold']) && !hasAny(tokens, ['screen', 'screens', 'portal', 'angular']))
+  },
+  {
+    skill: 'sdcorejs-nextjs',
+    when: ({ tokens }) => hasAny(tokens, ['nextjs', 'website', 'landing', 'seo', 'sitemap', 'og'])
+  }
 ];
 
 export async function loadSkillPack(rootUrlOrPath) {
@@ -123,6 +234,9 @@ export function runPromptEval(pack, cases) {
 
 export function dispatchPrompt(pack, prompt) {
   const promptTokens = tokenizeWithAliases(prompt);
+  const priorityMatch = matchPriorityRule(pack, prompt, promptTokens);
+  if (priorityMatch !== undefined) return priorityMatch;
+
   const scored = pack.sourceSkills
     .map((skill) => ({
       skill,
@@ -132,6 +246,24 @@ export function dispatchPrompt(pack, prompt) {
     .sort((a, b) => b.score - a.score || a.skill.name.localeCompare(b.skill.name));
 
   return scored[0]?.skill ?? null;
+}
+
+function matchPriorityRule(pack, prompt, tokens) {
+  const normalizedPrompt = prompt.toLowerCase();
+  const explicitName = normalizedPrompt.match(/\bsdcorejs-[a-z0-9-]+\b/)?.[0];
+  if (explicitName) {
+    const explicitSkill = findSkill(pack, explicitName);
+    if (explicitSkill) return explicitSkill;
+  }
+
+  for (const rule of PRIORITY_RULES) {
+    if (!rule.when({ prompt: normalizedPrompt, tokens })) continue;
+    if (rule.skill === null) return null;
+    const skill = findSkill(pack, rule.skill);
+    if (skill) return skill;
+  }
+
+  return undefined;
 }
 
 async function readSourceSkills(root) {
@@ -242,6 +374,66 @@ function scoreSkill(skill, promptTokens) {
   }
 
   return score;
+}
+
+function findSkill(pack, name) {
+  return pack.sourceSkills.find((skill) => skill.name === name);
+}
+
+function hasAny(tokens, words) {
+  return words.some((word) => tokens.has(word));
+}
+
+function hasTestIntent(tokens) {
+  return hasAny(tokens, ['test', 'tests', 'unit', 'integration', 'e2e', 'playwright', 'cypress', 'uat', 'tdd']);
+}
+
+function hasProductIntent(prompt, tokens) {
+  if (hasAny(tokens, ['taskid', 'record', 'ticket', 'issue'])) return false;
+  if (hasAny(tokens, ['ship', 'branch', 'merge', 'release', 'tag', 'ready', 'final', 'gate'])) return false;
+
+  return (
+    hasAny(tokens, ['po', 'prd', 'story', 'stories', 'acceptance', 'criteria', 'uat', 'traceability', 'requirement', 'requirements', 'ledger']) ||
+    (tokens.has('product') &&
+      hasAny(tokens, ['doc', 'docs', 'requirement', 'requirements', 'story', 'stories', 'acceptance', 'criteria', 'uat', 'traceability', 'ledger', 'gap', 'implementation', 'implement', 'coverage']) &&
+      !hasAny(tokens, ['guide', 'manual', 'user-guide'])) ||
+    /\b(requirements?|acceptance|uat)\b.*\b(implementation|implement|test|coverage|complete|gap)\b/.test(prompt) ||
+    /\b(implementation|implement|test|coverage|complete|gap)\b.*\b(requirements?|acceptance|uat)\b/.test(prompt)
+  );
+}
+
+function hasDocumentationIntent(prompt, tokens) {
+  return (
+    hasAny(tokens, [
+      'documentation',
+      'docs',
+      'doc',
+      'document',
+      'code-documentation',
+      'docstring',
+      'doc-comment',
+      'comment',
+      'comments',
+      'jsdoc',
+      'tsdoc',
+      'api',
+      'guide',
+      'user-guide',
+      'manual',
+      'screenshot',
+      'script',
+      'technical',
+      'taskid',
+      'record',
+      'rewrite',
+      'improve',
+      'structure',
+      'convert',
+      'standardize'
+    ]) ||
+    /\bsummarize\b.*\b(doc|docs|documentation|manual|guide)\b/.test(prompt) ||
+    /\b(api|technical)\b.*\b(doc|docs|documentation)\b/.test(prompt)
+  );
 }
 
 function tokenizeWithAliases(text) {

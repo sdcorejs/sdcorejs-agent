@@ -1,46 +1,56 @@
-# Prompt Pack Smoke Test SDCoreJS Angular Portal (Tiếng Việt)
+# SDCoreJS Angular Portal Localized-Intent Smoke Test Pack
 
-Dùng các prompt sau trong VS Code Chat với mode SDCoreJS.
+This source file stays English-only. When using these cases at runtime, translate
+the prompt text into the target language instead of hardcoding localized prose in
+this repository.
+
+Use these cases in VS Code Chat with SDCoreJS mode to validate localized intent
+handling for Angular portal work.
 
 ## Prompt 1
-Tạo CRUD product với các field code, name, price.
+Create product CRUD with fields code, name, price.
 
 ## Prompt 2
-Tạo màn hình customer. Hiện chưa có module phù hợp, hãy tạo mới giúp mình.
+Create a customer screen. No suitable module exists yet, so create one first.
 
 ## Prompt 3
-Tạo CRUD order trong module sales. Field để mình bổ sung sau.
+Create order CRUD in the sales module. Fields will be refined later.
 
 ## Prompt 4
-Tạo màn hình detail supplier với 6 field: code, name, phone, email, status, note.
-Dùng chuẩn CRUD thông thường.
+Create supplier detail with 6 fields: code, name, phone, email, status, note.
+Use standard CRUD.
 
 ## Prompt 5
-Tạo màn hình purchase request trong module procurement.
-Cần create, update, detail, submit, approve, reject.
-List page cần bulk submit và bulk approve.
-Detail có nhiều section, child table item, và review attachment.
+Create a purchase request screen in the procurement module.
+Need create, update, detail, submit, approve, and reject.
+The list page needs bulk submit and bulk approve.
+The detail page has sections, item child table, and attachment review.
 
 ## Prompt 6
-Khởi tạo portal starter mới từ baseline nội bộ trong sdcorejs-agent/core/templates/angular-starter.
-Giữ shell starter và scaffold bắt buộc src/libs/sample.
-Không giữ các cấu hình tsconfig không cần thiết.
+Initialize a new portal starter from the Angular init refs and templates in
+sdcorejs-agent/_refs/angular.
+Keep the starter shell plus mandatory src/libs/sample scaffold.
+Do not keep unnecessary tsconfig settings.
 
 ## Prompt 7
-Khởi tạo portal starter ở một workspace hoàn toàn mới.
-Version package phải khớp chính xác với sdcorejs-agent/core/templates/angular-starter/package.template.json.
-Không suy luận hoặc tự nâng version theo bất kỳ repo mẫu bên ngoài nào.
-Không dùng dependency kiểu file:*.tgz cho @sdcorejs/angular.
-Cho phép starter có src/app/pages/home và hỗ trợ điều hướng home qua LayoutConfiguration.homeUrl.
-Phải tạo src/libs/sample/modules/employee và src/libs/sample/modules/product.
+Initialize a portal starter in a brand-new workspace.
+Package versions must match the package guidance in
+sdcorejs-agent/_refs/angular/core-version.md and the Angular init refs.
+Do not infer or upgrade versions from any external sample repository.
+Do not use file:*.tgz dependencies for @sdcorejs/angular.
+Support starter home page under src/app/pages/home and wire
+LayoutConfiguration.homeUrl.
+Generate src/libs/sample with employee and product seeded.
 
-## Điểm cần xác nhận
-- Thiếu module thì hỏi lại trước
-- Chưa có module thì tạo module trước
-- Thiếu field thì sinh skeleton tối thiểu trước
-- Form đơn giản thì ưu tiên side-drawer
-- Workflow phức tạp thì ưu tiên full-page và có đủ action detail/list
-- Với portal init, tsconfig không nên giữ `compilerOptions.baseUrl` nếu không có lý do resolve import rõ ràng
-- Với portal init, starter phải có src/libs/sample và seed sẵn 2 entity employee/product
-- Với portal init ở workspace mới, version package sinh ra phải khớp baseline nội bộ (không bị version drift)
-- Với portal init, starter home có thể custom tại src/app/pages/home và nối với LayoutConfiguration.homeUrl
+## What To Validate
+- Missing module asks clarification first.
+- Missing module fallback creates the module first.
+- Vague fields start with a minimal skeleton.
+- Simple forms default to side-drawer.
+- Complex workflows default to full page plus detail/list workflow actions.
+- Portal init tsconfig should not keep compilerOptions.baseUrl unless there is a clear import-resolution reason.
+- Portal init includes src/libs/sample with seeded employee and product entities.
+- Portal init in a new workspace keeps package versions aligned to the local baseline guidance.
+- Portal init keeps @sdcorejs/angular as a normal npm version string, not file:*.tgz.
+- Portal init supports a customizable home page through src/app/pages/home and LayoutConfiguration.homeUrl.
+- Portal init creates src/libs/sample/modules/employee and src/libs/sample/modules/product.

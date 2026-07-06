@@ -26,13 +26,17 @@ Vietnamese labels.
 
 At session start, glob `skills/**/*.md`, excluding `_refs/**`, and read frontmatter only. Match user requests against each skill `description`. Read the selected skill body before acting.
 
-If several skills match, choose the earliest workflow owner:
+If several skills match, apply this priority before reading a body:
 
-1. `sdcorejs-brainstorming`
-2. `sdcorejs-spec`
-3. `sdcorejs-plan`
-4. `sdcorejs-execute-plan`
-5. track executor / review / test / utility skill
+1. Explicit skill name from the user.
+2. Approved spec/plan continuation: `sdcorejs-execute-plan`.
+3. Product docs and traceability: `sdcorejs-product`.
+4. Design handoff artifacts: `sdcorejs-design`.
+5. Test-only work: `sdcorejs-test`, except failing-test root cause/fix goes to `sdcorejs-debug`.
+6. Dedicated utility intent: `sdcorejs-explore`, `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
+7. Whole app/system build intent: `sdcorejs-solution-builder`.
+8. Confirmed track implementation: `sdcorejs-angular`, `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
+9. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
 
 ## Workflow
 

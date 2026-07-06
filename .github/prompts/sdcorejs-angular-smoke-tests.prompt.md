@@ -22,13 +22,13 @@ List page needs bulk submit and bulk approve.
 Detail has sections, child table items, and attachment review.
 
 ## Prompt 6
-Initialize a new portal starter from the internal baseline templates in sdcorejs-agent/core/templates/angular-starter.
+Initialize a new portal starter from the Angular init refs and templates in sdcorejs-agent/_refs/angular.
 Keep starter shell plus mandatory src/libs/sample scaffold.
 Do not keep unnecessary tsconfig settings.
 
 ## Prompt 7
 Initialize a portal starter in a brand-new workspace.
-Package versions must match sdcorejs-agent/core/templates/angular-starter/package.template.json exactly.
+Package versions must match the package guidance in sdcorejs-agent/_refs/angular/core-version.md and the Angular init refs.
 Do not infer or upgrade versions from any external sample repository.
 Support starter home page under src/app/pages/home and wire LayoutConfiguration.homeUrl.
 Generate src/libs/sample with employee and product seeded.

@@ -37,6 +37,36 @@ test('phase 4: golden plan covers generation, Docker, Playwright, and supertest 
   assert.match(plan.steps[5].command, /playwright/);
 });
 
+test('phase 4: golden plan rejects unsafe target names', () => {
+  assert.throws(
+    () => buildGoldenTargetAppPlan({ targetName: '../outside' }),
+    /Invalid targetName/
+  );
+});
+
+test('phase 4: golden generator rejects unsafe target names', () => {
+  const result = spawnSync(
+    process.execPath,
+    ['test/e2e/golden/generate-target-app.mjs', '--target', '../outside'],
+    { encoding: 'utf8' }
+  );
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Invalid --target/);
+});
+
+test('phase 4: golden generator rejects drive/root output directories', () => {
+  const driveRoot = path.parse(process.cwd()).root;
+  const result = spawnSync(
+    process.execPath,
+    ['test/e2e/golden/generate-target-app.mjs', '--root', driveRoot, '--target', 'unsafe-root'],
+    { encoding: 'utf8' }
+  );
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /drive\/root directory/);
+});
+
 test('phase 4: golden generator creates a runnable target-app fixture', async () => {
   const targetName = `golden-generator-${Date.now()}`;
   const root = path.join('.tmp', targetName);

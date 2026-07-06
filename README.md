@@ -86,7 +86,7 @@ ln -s .sdcorejs-agent/_refs _refs
 ## Repo Layout
 
 ```text
-skills/                 source skills, 24 dispatchable skill files
+skills/                 source skills, 23 dispatchable skill files
 _refs/                  source reference docs
 .claude/skills/         generated Claude mirror
 plugin/skills/          generated Claude plugin mirror

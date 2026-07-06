@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-test
-description: Test-track executor for unit/integration/e2e/UAT and RED-first TDD across Angular, NestJS, React, and Next.js. Use for test plans, writing/running tests, user-provided frontend components/hooks/utilities/pages/forms/flows, test-only approved plans, TDD gates, inspector JSON/POM e2e generation, failing-test debugging, or automatic executor tails. Detects stack, level, and test vs tdd mode; loads testing refs. Applies to test, angular, nestjs, react, nextjs. Runtime-localized.
+description: Test-track executor for unit/integration/e2e/UAT and RED-first TDD across Angular, NestJS, React, and Next.js. Use for test plans, writing/running tests, test-only approved plans, frontend component/hook/utility/page/form/flow tests, inspector JSON/POM e2e generation, or automatic executor tails. Prefer sdcorejs-debug for root-cause/fix of failing tests. Do not use for product UAT docs alone, auth setup, docs, or code implementation. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
