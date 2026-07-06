@@ -299,6 +299,54 @@ test('phase 1: generated mirrors do not inject global response-style modifiers',
   }
 });
 
+test('phase 1: brainstorming visual companion stays optional and gated', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
+  const brainstorming = sourceByName.get('sdcorejs-brainstorming');
+
+  assert.match(brainstorming, /## Optional Visual Companion/);
+  assert.match(brainstorming, /Do not offer the visual companion upfront/);
+  assert.match(brainstorming, /visual-companion\.md/);
+  assert.match(brainstorming, /Reply with `1` or `2`/);
+  assert.match(brainstorming, /main conversation remains the source of truth/i);
+  assert.match(brainstorming, /acceptance criteria and testable\s+behavior/);
+  assert.doesNotMatch(brainstorming, /_refs\/sdlc\/visual-companion\.md/);
+
+  const visualCompanion = await readFile(new URL('../../_refs/sdlc/visual-companion.md', import.meta.url), 'utf8');
+  assert.match(visualCompanion, /Decide per question, not per session/);
+  assert.match(visualCompanion, /Do not offer the visual companion at the start/);
+  assert.match(visualCompanion, /The offer must use two numbered choices/);
+  assert.match(visualCompanion, /Do not proceed to implementation because a mockup was selected/);
+  assert.match(visualCompanion, /Never generate production code directly from a mockup/);
+  assert.doesNotMatch(visualCompanion, /_refs\/sdlc\/templates/);
+
+  const visualOffer = await readFile(new URL('../../_refs/sdlc/templates/visual-offer.md', import.meta.url), 'utf8');
+  assert.match(visualOffer, /^1\. Use visual companion/m);
+  assert.match(visualOffer, /^2\. Do not use visual companion/m);
+  assert.match(visualOffer, /Reply with `1` or `2`/);
+
+  const optionsTemplate = await readFile(new URL('../../_refs/sdlc/templates/visual-screen-options.fragment.html', import.meta.url), 'utf8');
+  assert.match(optionsTemplate, /data-choice="1"/);
+  assert.match(optionsTemplate, /data-choice="2"/);
+  assert.match(optionsTemplate, /data-choice="3"/);
+  assert.match(optionsTemplate, /Best when:/);
+  assert.match(optionsTemplate, /Trade-off:/);
+  assert.match(optionsTemplate, /Recommendation:/);
+
+  const comparisonTemplate = await readFile(new URL('../../_refs/sdlc/templates/visual-screen-comparison.fragment.html', import.meta.url), 'utf8');
+  assert.match(comparisonTemplate, /<h3>1\. {{option_1_title}}<\/h3>/);
+  assert.match(comparisonTemplate, /<h3>2\. {{option_2_title}}<\/h3>/);
+  assert.doesNotMatch(comparisonTemplate, /<h3>[AB]\./);
+
+  const waitingTemplate = await readFile(new URL('../../_refs/sdlc/templates/visual-waiting.fragment.html', import.meta.url), 'utf8');
+  assert.match(waitingTemplate, /Continuing in the main conversation/);
+
+  const vietnameseTextPattern = /[\u0102\u0103\u00c2\u00e2\u0110\u0111\u00ca\u00ea\u00d4\u00f4\u01a0\u01a1\u01af\u01b0\u00c0\u00c1\u00c3\u00c8\u00c9\u00cc\u00cd\u00d2\u00d3\u00d5\u00d9\u00da\u00dd\u00e0\u00e1\u00e3\u00e8\u00e9\u00ec\u00ed\u00f2\u00f3\u00f5\u00f9\u00fa\u00fd\u1ea0-\u1ef9]/u;
+  for (const text of [visualCompanion, visualOffer, optionsTemplate, comparisonTemplate, waitingTemplate]) {
+    assert.doesNotMatch(text, vietnameseTextPattern, 'visual companion source/templates stay English-only');
+  }
+});
+
 test('phase 1: deterministic prompt eval dispatches expected skills', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
   const promptEvals = await loadPromptEvals();

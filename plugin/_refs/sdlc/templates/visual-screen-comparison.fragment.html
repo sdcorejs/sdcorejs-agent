@@ -1,0 +1,77 @@
+<h2>{{decision_question}}</h2>
+<p class="subtitle">{{comparison_context}}</p>
+
+<div class="split">
+  <div class="card" data-choice="1" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">{{option_1_mockup_header}}</div>
+        <div class="mockup-body">
+          {{option_1_mockup_html}}
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <h3>1. {{option_1_title}}</h3>
+      <p>{{option_1_description}}</p>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Strengths</h4>
+          <ul>
+            <li>{{option_1_strength_1}}</li>
+            <li>{{option_1_strength_2}}</li>
+          </ul>
+        </div>
+
+        <div class="cons">
+          <h4>Trade-offs</h4>
+          <ul>
+            <li>{{option_1_tradeoff_1}}</li>
+            <li>{{option_1_tradeoff_2}}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="2" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">{{option_2_mockup_header}}</div>
+        <div class="mockup-body">
+          {{option_2_mockup_html}}
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <h3>2. {{option_2_title}}</h3>
+      <p>{{option_2_description}}</p>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Strengths</h4>
+          <ul>
+            <li>{{option_2_strength_1}}</li>
+            <li>{{option_2_strength_2}}</li>
+          </ul>
+        </div>
+
+        <div class="cons">
+          <h4>Trade-offs</h4>
+          <ul>
+            <li>{{option_2_tradeoff_1}}</li>
+            <li>{{option_2_tradeoff_2}}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle">
+  Select the better direction, or respond in the main conversation if you want
+  to combine strengths from both.
+</p>

@@ -83,6 +83,90 @@ When in explore mode:
 
 Do not continue to blocker confirmation until the direction is selected or the user explicitly says "you decide".
 
+## Optional Visual Companion
+
+Use the visual companion as an optional browser-based aid during brainstorming
+when seeing a mockup, wireframe, layout, diagram, flow, or side-by-side
+comparison would make the next decision clearer than text.
+
+The visual companion is a tool, not a mode. Accepting it means it is available
+for suitable visual questions; it does not mean every brainstorming step should
+use the browser.
+
+Do not offer the visual companion upfront. First understand the user's request,
+project context, constraints, and current design question. Offer it only when
+the next decision would genuinely be clearer if shown visually, such as choosing
+between layouts, UI flows, component structures, information architecture,
+navigation models, visual hierarchy, architecture boundaries, data flows, state
+machines, entity relationships, or side-by-side design directions.
+
+When that first genuinely visual decision appears, send the offer as its own
+standalone message using two numbered choices. Runtime-localize the prose while
+preserving the two-choice shape:
+
+```text
+The next decision may be easier to understand if shown visually as a mockup,
+diagram, or browser comparison. Which direction do you want?
+
+1. Use visual companion to preview visual options before approving the design
+2. Do not use visual companion; continue brainstorming in text + TDD
+
+Reply with `1` or `2`.
+```
+
+Do not combine this offer with a clarifying question, implementation plan,
+design summary, or any other content. Wait for the user's response.
+
+If the user chooses option 1:
+
+- Read `visual-companion.md` before proceeding.
+- Locate the visual companion reference, runtime, and templates using the
+  current skill/project convention.
+- Start or use the available visual companion runtime if one exists.
+- If no browser runtime exists, create static HTML or Markdown visual artifacts
+  using the current project convention.
+- Use the visual companion per question, not per session.
+- Create one visual decision screen at a time.
+- Prefer 2-3 options, not many options.
+- Ask the user to review the screen and respond in the main conversation.
+- Treat browser clicks or visual selections as supporting feedback, not as the
+  only source of truth.
+- Merge visual feedback with the user's written response before updating the
+  design.
+
+If the user chooses option 2:
+
+- Continue text-only.
+- Do not offer the visual companion again unless the user asks for it or a later
+  design decision would be extremely unclear without visual support.
+
+Per-question rule:
+
+- Use browser visuals for UI mockups, wireframes, layout comparisons, navigation
+  structures, architecture diagrams, data-flow diagrams, state machines, entity
+  relationships, spatial relationships, before/after UX comparisons, and visual
+  polish questions.
+- Use text for requirements, scope, API design, data model decisions, TDD
+  strategy, trade-off lists, business rules, acceptance criteria, and
+  implementation sequencing.
+
+A UI-related topic is not automatically a visual topic. "What should this
+dashboard do?" is text. "Which dashboard layout feels clearer?" is visual.
+
+The main conversation remains the source of truth. Browser clicks, UI
+selections, or visual-only feedback are supporting signals. If visual feedback
+conflicts with the user's written response, prioritize the written response.
+
+The visual companion must never bypass the normal `sdcorejs-brainstorming` gate:
+
+1. Understand context.
+2. Clarify intent and constraints.
+3. Propose options.
+4. Get design approval.
+5. Convert the approved direction into acceptance criteria and testable
+   behavior.
+6. Only then move to implementation planning and TDD.
+
 ### 4. Confirm blockers
 Ask grouped blocking questions, 3-4 related questions per turn. Reuse answers
 already present in the conversation or artifacts. When a blocker has known
