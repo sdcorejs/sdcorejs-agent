@@ -10,6 +10,15 @@ Generates production-ready Angular portal starter by rendering every file from t
 
 **Output:** Complete portal with sample lib (1 module, 2 entities), dev tools, ready for `npm start`.
 
+## Template-first portal baseline
+
+This reference is the only portal-shell creation path for Angular prototypes.
+For PO/BA prototype requests, create the portal by rendering the Core UI starter
+template first, then modify configuration, routes, modules, entities, and mock
+data inside that generated structure. Do not design a custom portal shell,
+bespoke navigation/sidebar/header, standalone dashboard, or alternative
+list/detail/form framework before this baseline exists.
+
 ---
 
 ## Source of truth — Core UI package
@@ -61,6 +70,8 @@ Before generating, clarify with user:
 When this reference is used from PO/BA prototype mode:
 
 - Generate a portal that boots locally with no backend auth/API dependency.
+- Treat the Core UI starter template as the prototype baseline; prototype
+  screens are added as modules/entities after the starter has been rendered.
 - Keep `PermissionConfiguration.disabled = true` as the starter default.
 - Do not add login, auth redirects, live API base URLs, or permission data
   requirements unless the user explicitly requests them.
@@ -155,6 +166,8 @@ Report pass/fail summary and failing spec names. If E2E missing, report blocker.
 ### MUST DO ✅
 - Read `_refs/angular/core-version.md` and substitute placeholders BEFORE writing any file
 - Render every file from [`_refs/angular/templates/init-portal-templates.md`](_refs/angular/templates/init-portal-templates.md) (no external baseline directory exists or is required)
+- Use this template-first portal baseline for new PO/BA prototypes before any
+  admin/module/entity/list/detail/create/update screen generation
 - Copy [`_refs/angular/assets/logo.png`](_refs/angular/assets/logo.png) to `<project>/public/logo.png` and ensure `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
 - Generate exactly ONE sample lib with TWO entities: `order` + `customer` (Order's create/update form uses `<customer-select>` — demonstrates the reusable dropdown pattern from the init-module reference, `./init-module.md`)
 - Use `features/` (NOT `modules/`) at the lib level — `src/libs/<lib>/features/<entity>/`
@@ -177,6 +190,9 @@ Report pass/fail summary and failing spec names. If E2E missing, report blocker.
 - Do not leave broken path aliases to removed libs in `tsconfig.json`
 - Do not generate a starter that requires backend auth, permissions, or APIs to boot locally
 - Do not replace `<CORE_UI_PACKAGE_NAME>` with ad-hoc local components
+- Do not create a custom portal shell, bespoke navigation/sidebar/header,
+  standalone dashboard, or alternative page/form/table framework for a prototype
+  instead of rendering the Core UI starter template
 - Do not hard-code environment names different from the developer request
 - Do not place `SD_PERMISSION_CONFIGURATION` / `SD_UPLOAD_FILE_CONFIGURATION` in module or route providers with `multi: true` and expect root services to consume them
 - Do not enable permission checks by default (`disabled = true`) when permission backend/data source is not ready
@@ -316,6 +332,7 @@ After generation:
 
 - [ ] `_refs/angular/core-version.md` read; placeholders substituted (no literal version/package string left in generated files)
 - [ ] `_refs/angular/templates/init-portal-templates.md` read and every listed section rendered into the target project (no external baseline copy used)
+- [ ] Template-first portal baseline confirmed for PO/BA prototype mode; no custom portal shell was generated before the Core UI starter template
 - [ ] `public/logo.png` copied from `_refs/angular/assets/logo.png`; `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
 - [ ] `package.json` pins `<CORE_UI_PACKAGE_NAME>@<CORE_VERSION>` (npm, not tgz)
 - [ ] `package.json` includes `@sdcorejs/utils` as a direct dependency

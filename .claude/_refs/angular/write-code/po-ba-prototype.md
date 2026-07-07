@@ -42,8 +42,30 @@ Use this order when deriving screens and data:
 2. Existing project conventions, routes, feature folders, services, models,
    status labels, permission code shape, and local UI patterns.
 3. Domain semantics for the entity and workflow.
-4. Core UI component patterns and style guide.
+4. Core UI starter template, component patterns, and style guide.
 5. Safe prototype defaults from this reference.
+
+## Template-first invariant
+
+PO/BA prototypes must be built on a Core UI portal baseline, not as a freeform
+new app design.
+
+- New portal: run `init-portal.md` first, render the Core UI starter template,
+  keep its app shell/layout/sidebar/permission bootstrap, and then add admin,
+  module, entity, list, detail, create/update, and action changes inside that
+  baseline.
+- Existing portal: modify the existing Core UI portal shell, routes, menu, and
+  component conventions in place. Do not create a second shell or detached demo
+  app beside it.
+- Domain UI is customized through the normal `init-module`, `init-entity`,
+  `screen-list`, `screen-detail`, and `actions` refs. Change fields, data,
+  validators, routes, labels, and workflow behavior; do not replace the Core UI
+  starter template with a new layout system.
+- Do not design a custom portal shell, bespoke sidebar/header/menu, standalone
+  dashboard, raw list/table, or hand-built create/update/detail form when the
+  Core UI starter template and screen refs already provide the pattern.
+- If the target is not an SDCoreJS/Core UI portal yet, treat that as a new
+  portal init or ask which existing Core UI portal should receive the module.
 
 ## Required planning output
 
@@ -54,6 +76,7 @@ identifiers, routes, env keys, permission codes, and file paths in English:
 PO/BA Prototype Plan:
 - Prototype goal:
 - Input source:
+- Template baseline:
 - Portal/module impact:
 - Screens to generate:
 - Primary entities:
@@ -120,6 +143,9 @@ edges, and anything deferred until a real API exists.
 
 ## UI rules
 
+- Start from the selected template baseline. For new portals, this is the
+  `init-portal` Core UI starter template. For existing portals, this is the
+  current Core UI app shell plus local route/menu/component conventions.
 - Every list screen must expose visible seed data immediately, plus
   search/filter/sort/paging behavior where the entity semantics support it.
 - Detail must support CREATE, UPDATE, and DETAIL states unless the PRD explicitly
@@ -135,6 +161,9 @@ edges, and anything deferred until a real API exists.
 - Sidebar/menu/routes must be navigable for demo review.
 - Include empty, loading, error, and success states where the generated screen
   can naturally show them.
+- Use the normal list/detail/create/update templates and Core UI component
+  gates. Customize the generated screens for the PRD; do not invent a separate
+  portal layout, raw table, or custom form system for prototype speed.
 - Do not add visible in-app instructional prose explaining how the prototype
   works. The demo should feel like the actual portal.
 
@@ -176,6 +205,7 @@ Angular refs:
 
 The final response for this mode must include:
 
+- template baseline used,
 - route/menu entries generated or changed,
 - mock rows per listing,
 - permission bypass status,

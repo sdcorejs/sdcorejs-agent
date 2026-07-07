@@ -38,6 +38,9 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
 - In PO/BA prototype mode, PRD-only/no API/no backend/no design input is enough
   to proceed. Infer a safe EntitySchema from the PRD/user story/AC, record
   assumptions, and keep the service mock-first.
+- In PO/BA prototype mode, generate list/detail/create/update by customizing the
+  established entity templates and Core UI component gates. Do not self-design an
+  alternate listing, detail, form, dashboard, or page layout system for speed.
 - In PO/BA prototype mode, mock data uses default 25 rows per primary listing
   when no count is provided; 20-30 rows is the accepted demo range.
 - Generate mock data immediately after `SaveReq` and `DTO` are finalized (whether from user input or semantic inference); do not wait until after list/detail components are built

@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-angular
-description: Angular portal code executor for confirmed frontend implementation. Use for PO/BA mock-first portal prototypes from PRD/no API/no backend/no design, portal init, admin modules, CRUD entities, list/detail screens, forms/validators, approval/bulk/export actions, mock-API UI prototypes, or explicit Angular code generation. Do not use for open-ended product ideas, product docs, design-only, tests-only, auth, Docker, review, or approved-plan execution. Runtime-localized.
+description: Angular portal code executor for confirmed frontend implementation. Use for Core UI template-based PO/BA mock-first portal prototypes from PRD/no API/no backend/no design, portal init, admin modules, CRUD entities, list/detail screens, forms/validators, approval/bulk/export actions, mock-API UI prototypes, or explicit Angular code generation. Do not use for open-ended product ideas, product docs, design-only, tests-only, auth, Docker, review, or approved-plan execution. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, TodoWrite
 ---
 
@@ -26,9 +26,10 @@ Single entry point for generating Angular-portal code. Transforms an approved pl
 - Workflow / bulk / custom action buttons
 
 It also supports PO-friendly UI prototyping from PRDs plus mock API contracts:
-after `init-portal`, generate navigable screens and mock-first services that
-match the provided endpoint/request/response shape closely enough for PO/QC
-users to interact with the feature before a live backend is available.
+after the Core UI starter template exists, generate navigable screens and
+mock-first services that match the provided endpoint/request/response shape
+closely enough for PO/QC users to interact with the feature before a live
+backend is available.
 
 ## PO/BA Prototype Portal Mode
 
@@ -40,6 +41,16 @@ infer safe prototype fields, seed believable data, keep services mock-first, and
 let PO/BA users navigate routes/sidebar/menu locally before the real backend
 exists.
 
+Template-first is mandatory. A PO/BA prototype is not a freeform app design:
+- New portal: run `init-portal.md` first, preserve the Core UI starter template
+  shell/layout/sidebar/permission bootstrap, then add admin/module/entity
+  screens inside that baseline.
+- Existing portal: extend the existing Core UI portal shell, routes, menu, and
+  local component conventions instead of creating a second shell.
+- Do not create a parallel custom portal shell, bespoke navigation system,
+  landing/dashboard layout, or hand-built list/detail/form primitives when the
+  Core UI starter template and screen refs already cover the need.
+
 This skill is an **orchestrator**: it does NOT inline the full generation rules for every file type. It picks the right **reference pack** for each scope item and reads it on demand. The detailed rules + code-template links for each concern live in `_refs/angular/write-code/*.md` (formerly the 10/11/12/20/21/31 sub-skills — consolidated here so the track exposes one skill instead of seven).
 
 ## Dispatch table
@@ -48,7 +59,7 @@ For each scope item in the approved plan (or a direct request whose requirements
 
 | Scope item | Reference pack to read |
 |---|---|
-| New portal (no existing project yet) | [`_refs/angular/write-code/init-portal.md`](_refs/angular/write-code/init-portal.md) (run FIRST before any module work) |
+| New portal (no existing project yet) | [`_refs/angular/write-code/init-portal.md`](_refs/angular/write-code/init-portal.md) (template baseline; run FIRST before any module work) |
 | Always — admin screens (account/role/permission [+tenant/department enterprise]) | [`_refs/angular/write-code/admin-screens.md`](_refs/angular/write-code/admin-screens.md) (ALWAYS run, after init-portal) |
 | New module (`src/libs/<module>/`) | [`_refs/angular/write-code/init-module.md`](_refs/angular/write-code/init-module.md) |
 | New entity with full CRUD (model + service + routes + list + detail) | [`_refs/angular/write-code/init-entity.md`](_refs/angular/write-code/init-entity.md) |
@@ -82,7 +93,9 @@ If the request is PO/BA Prototype Portal Mode, also read
 `input-analysis.md`. Missing API/backend/design is not a blocker in this mode.
 Ask only for a truly unsafe missing project/module/entity name; otherwise infer
 fields, screens, routes, validators, actions, and mock data from the PRD/user
-story/AC/business description.
+story/AC/business description. Enforce the template-first invariant from that
+reference before code generation: new portals start from the Core UI starter
+template, and existing portals are modified in place.
 
 If a mock API, OpenAPI/Swagger file, Postman collection, MSW handler, mock
 endpoint list, JSON fixture, API schema, or sample cURL drives the UI, also read
@@ -97,7 +110,7 @@ Before writing any helper, formatter, validator, mapper, pipe utility, paging/fi
 
 ### Execution order + hand-off
 
-Execution order: portal → admin-screens → module → entity → screens → actions. `admin-screens` ALWAYS runs after `init-portal` and before any domain module work. If the plan touches multiple items, run them in this order; do not parallelize. After all referenced steps finish, hand off as follows:
+Execution order: portal → admin-screens → module → entity → screens → actions. `portal` means the `init-portal` Core UI starter template baseline, not a custom shell. `admin-screens` ALWAYS runs after `init-portal` and before any domain module work. If the plan touches multiple items, run them in this order; do not parallelize. After all referenced steps finish, hand off as follows:
 
 PO/BA prototype flow: input-analysis -> po-ba-prototype -> init-portal if needed -> admin-screens -> init-module -> init-entity -> screen-list/screen-detail/actions -> finish gate.
 
@@ -400,6 +413,7 @@ Apply to:
 - Run the entity reuse preflight before generating model/service/entity code; identify primary + related entities, scan existing model/interface/type/dto/service/api/repository/store files, and decide reuse/extend/create new before writing code.
 - Run `_refs/angular/write-code/input-analysis.md` before UI-affecting work, image/screenshot/Figma input, PRDs, user stories, feature descriptions, or acceptance criteria. Produce the SDCoreJS Core reuse analysis and the matching UI decomposition, requirement mapping, or image+PRD mapping before implementation.
 - Run `_refs/angular/write-code/po-ba-prototype.md` for PO/BA portal demo, PRD-to-UI prototype, no API/backend/design, module/screens-for-client-alignment, or mock-first portal requests. Emit the required PO/BA Prototype Plan, keep services mock-first, and record Prototype assumptions before code generation.
+- Enforce template-first PO/BA prototype generation: new portal prototypes run `init-portal.md` and preserve the Core UI starter template before domain work; existing portal prototypes extend the existing Core UI shell/routes/menu. Do not create a parallel custom portal shell or bespoke list/detail/form layout system.
 - Run `_refs/angular/write-code/mock-api-input.md` when UI generation is driven by mock API docs, OpenAPI/Swagger, Postman/Insomnia, MSW/WireMock/Prism/JSON Server specs, endpoint tables, schemas, JSON fixtures, or sample cURL. Produce the mock API contract mapping before writing models, services, or screens.
 - Run the `@sdcorejs/utils` reuse preflight before writing helper/formatter/validator/mapper/pipe utility code; report which utilities were reused and why any custom helper remains necessary.
 - After generating UI, show the **Core UI usage summary** table (every `@sdcorejs/angular` component/service/directive actually used + a one-line, feature-specific purpose, in the user's language) so the user sees the building blocks at a glance. List only what was used. Persist the same table into the module user guide at write-user-guide.
@@ -427,6 +441,7 @@ Apply to:
 ### MUST NOT
 - Hand-write CSS for flex / spacing / alignment / color / typography that a STYLE-GUIDE utility class already covers, or fill a component `.scss` with rules that duplicate shipped utilities — this is the "too many unnecessary CSS classes" anti-pattern. Put the utilities on the template; keep the `.scss` near-empty. Never use Bootstrap class names (`btn`, `card`, `form-control`, `modal` — they don't exist) or Tailwind syntax when the consumer has no Tailwind.
 - Self-draw Core UI equivalents: native form fields, raw buttons, custom page headers, custom table HTML, or unstructured repeated row divs when a Core UI component or the detail row-editor fallback applies.
+- Design a custom portal shell, landing page, dashboard, navigation system, page layout system, or form/table primitives for PO/BA prototypes outside the `init-portal` Core UI starter template and existing target portal conventions.
 - Create custom primitive controls, project-level shared components, or feature-specific components when Core UI or an existing local shared asset fits. Feature-specific components are for domain composition and behavior, not tiny markup fragments.
 - Invent behavior, UI labels, routes, roles, fields, component APIs, or SDCoreJS Angular APIs from image or PRD input. If the Core UI docs cannot be checked, use local evidence and report the fallback.
 - Treat a mock API document as a live backend integration target, hard-code sample absolute URLs, or skip mock-first services for a PO prototype unless live integration was explicitly requested and configured.
@@ -451,6 +466,7 @@ Before returning generated code:
 
 ✅ Mock API/OpenAPI/Postman/cURL input has a mock API contract mapping before implementation
 ✅ PO/BA Prototype Portal Mode input has a PO/BA Prototype Plan, Prototype assumptions, mock-first service decision, permission mode, and no live API dependency unless explicitly configured
+✅ PO/BA prototype used a template baseline: `init-portal` Core UI starter template for a new portal, or the existing Core UI portal shell for an existing app; no parallel custom shell was created
 
 ✅ Each production file (model / service / list / detail) has a corresponding `.spec.ts` written RED before the file was created
 ✅ UI-affecting image/PRD/feature input has SDCoreJS Core reuse analysis and the matching decomposition/mapping before implementation

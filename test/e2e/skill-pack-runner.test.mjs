@@ -451,6 +451,9 @@ test('phase 1: angular PO/BA prototype mode is encoded in skill, refs, and examp
 
   assert.match(angularSkill, /PO\/BA Prototype Portal Mode/);
   assert.match(angularSkill, /_refs\/angular\/write-code\/po-ba-prototype\.md/);
+  assert.match(angularSkill, /template-first/i);
+  assert.match(angularSkill, /Core UI starter template/i);
+  assert.match(angularSkill, /parallel custom portal shell/i);
   assert.match(
     angularSkill,
     /input-analysis -> po-ba-prototype -> init-portal if needed -> admin-screens -> init-module -> init-entity -> screen-list\/screen-detail\/actions -> finish gate/
@@ -467,6 +470,10 @@ test('phase 1: angular PO/BA prototype mode is encoded in skill, refs, and examp
 
   const prototypeRef = await readFile(new URL('../../_refs/angular/write-code/po-ba-prototype.md', import.meta.url), 'utf8');
   assert.match(prototypeRef, /# PO\/BA Prototype Portal Mode/);
+  assert.match(prototypeRef, /Template-first invariant/);
+  assert.match(prototypeRef, /run `init-portal\.md` first/);
+  assert.match(prototypeRef, /existing Core UI portal shell/);
+  assert.match(prototypeRef, /Do not design a custom portal shell/);
   assert.match(prototypeRef, /Prototype assumptions/);
   assert.match(prototypeRef, /PO\/BA Prototype Plan:/);
   assert.match(prototypeRef, /PermissionConfiguration\.disabled = true/);
@@ -482,7 +489,7 @@ test('phase 1: angular PO/BA prototype mode is encoded in skill, refs, and examp
   assert.match(prototypeRef, /mock rows per listing/);
 
   const relatedRefs = [
-    ['init-portal.md', [/PO\/BA prototype/, /PermissionConfiguration\.disabled = true/, /no backend auth\/API/]],
+    ['init-portal.md', [/PO\/BA prototype/, /PermissionConfiguration\.disabled = true/, /no backend auth\/API/, /Template-first portal baseline/, /custom portal shell/]],
     ['init-module.md', [/PO\/BA prototype/, /route/, /menu/]],
     ['init-entity.md', [/PRD-only/, /default 25/, /20-30/]],
     ['screen-list.md', [/search\/filter\/sort\/paging/, /visible seed data/]],
@@ -501,6 +508,7 @@ test('phase 1: angular PO/BA prototype mode is encoded in skill, refs, and examp
   assert.match(examples, /insurance claims portal demo/i);
   assert.match(examples, /contract-management/i);
   assert.match(examples, /no API\/backend/i);
+  assert.match(examples, /Core UI starter template/i);
   assert.match(examples, /25 realistic rows/i);
 });
 
