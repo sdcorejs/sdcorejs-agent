@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-design
-description: Design-track executor for FE handoff artifacts. Use for UI/UX design, wireframes, mockups, screen flows, PNG previews, design from product stories, or design review before frontend implementation. Writes design/ specs/flows/wireframes/exports and .sdcorejs/docs/design/ traceability; no production code. Runtime-localized.
+description: Design-track executor for FE handoff artifacts. Use for UI/UX design, mobile app/mobile web design, wireframes, mockups, screen flows, PNG previews, design from product stories, or design review before frontend implementation. Writes design/ specs/flows/wireframes/exports and .sdcorejs/docs/design/ traceability; no production code. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -26,6 +26,12 @@ feature briefs, read `_refs/design/frontend-design.md`. Use it to create a
 compact visual direction, token plan, signature element, copy voice, and
 self-critique before writing final design specs or wireframes.
 
+When the target surface is a mobile app, PWA, responsive mobile web experience,
+or explicitly mobile-first screen/flow, also read
+`_refs/design/mobile-design.md`. Use it to add mobile context, platform fit,
+touch ergonomics, navigation, mobile state coverage, and implementation
+governance to the handoff.
+
 ## Step 0 - Context preflight
 
 Before mapping stories to screens, run `sdcorejs-explore (summary mode)` through
@@ -40,6 +46,23 @@ Before mapping stories to screens, run `sdcorejs-explore (summary mode)` through
 - If the summary conflicts with product stories, acceptance criteria, or current
   user attachments, surface the conflict instead of silently choosing one source.
 
+## Existing Design First
+
+Before inventing a visual direction, inspect the project's existing interface
+and treat it as the primary design source of truth for both new UI inside an
+existing project and redesign work. Reuse established components, design tokens,
+CSS variables, Tailwind/theme settings, typography scale, color palette,
+spacing/radius/shadow conventions, icon and illustration style, layout patterns,
+existing pages/screens, accessibility conventions, and interaction patterns
+wherever they exist.
+
+Only fall back to inferred design direction when the codebase or brief does not
+provide enough design evidence. When inference is necessary, state the
+assumption, keep it compatible with the surrounding product context, and avoid
+introducing new fonts, external assets, icon packs, motion libraries, color
+systems, visual dependencies, or a parallel design system without explicit
+brief or project-owner approval.
+
 ## Inputs
 
 Load what exists, in this order:
@@ -53,6 +76,9 @@ Load what exists, in this order:
 7. Existing frontend conventions from `frontend/` or `_refs/angular/` / `_refs/nextjs/` when the target stack is known
 8. Frontend design guidance from `_refs/design/frontend-design.md` when the
    work includes UI layout, visual direction, copy, or frontend handoff
+9. Mobile design guidance from `_refs/design/mobile-design.md` when the target
+   surface includes a mobile app, PWA, responsive mobile web, or mobile-first
+   flow
 
 If product stories or acceptance criteria are missing, write only an exploratory design draft and mark requirements as `inferred - needs confirmation`.
 
@@ -104,6 +130,13 @@ utility classes, component library, and operational density. Distinctive portal
 design should improve recognition, scanning, and task flow; it must not replace
 the app shell with a marketing layout.
 
+When the target is mobile, also read `_refs/design/mobile-design.md` and add a
+mobile design plan to `design/decisions/<kebab-feature>.md`. The mobile plan
+must cover target surface, mobile context of use, navigation model, primary
+action placement, touch/gesture/keyboard/safe-area notes, mobile state coverage,
+dynamic type or zoom behavior, reduced motion, and no-new-dependency fallbacks
+for candidate assets or interaction libraries.
+
 ### 1. Map stories to screens
 
 Create a screen map:
@@ -117,6 +150,9 @@ Cover at minimum:
 - entry screen
 - create/edit/detail states
 - empty/loading/error/permission-denied states
+- mobile-specific offline, poor-network, permission-denied, interrupted,
+  backgrounded/resumed, dynamic-type/zoom, and small/large phone states when
+  the target surface is mobile
 - mobile and desktop behavior when the feature is user-facing
 - UAT scenarios that need visual confirmation
 
@@ -142,6 +178,9 @@ Write `design/specs/<feature>.md`:
 ## Frontend Design Plan
 <visual direction, token roles, type roles, signature element, copy voice, and critique summary from design/decisions>
 
+## Mobile Design Plan
+<target surface, mobile context, navigation, reachability, safe-area/keyboard, gesture alternatives, mobile states, and platform notes when relevant>
+
 ## Components
 | Need | Preferred component | Notes |
 |---|---|---|
@@ -154,7 +193,7 @@ Write `design/specs/<feature>.md`:
 <labels, buttons, empty states, validation messages>
 
 ## Responsive Rules
-<desktop/tablet/mobile notes>
+<desktop/tablet/mobile notes; include safe-area, keyboard, touch target, reachability, small/large phone, dynamic type/zoom, and reduced-motion notes when mobile applies>
 
 ## Accessibility
 <keyboard order, labels, contrast, focus, error messaging>
@@ -172,6 +211,9 @@ Write one HTML or SVG per important screen/state. Keep them plain and implementa
 - show important tables/forms/actions
 - reflect the confirmed frontend design plan, including token roles, type
   hierarchy, signature element, copy voice, and interaction states
+- reflect the confirmed mobile design plan when relevant, including safe areas,
+  keyboard space, reachable primary actions, gesture alternatives, and
+  interruption/offline/permission states
 - include stable dimensions for desktop and mobile frames
 - avoid decorative marketing art for operational tools
 - include `data-story`, `data-ac`, or comments that link the wireframe section back to product IDs
@@ -219,6 +261,7 @@ updatedAt: <ISO-8601 timestamp>
 ## FE Handoff Notes
 - <implementation notes for frontend track>
 - Frontend design plan:
+- Mobile design plan:
 - Confirmed token/component/copy decisions:
 - Inferred or open visual decisions:
 
@@ -235,8 +278,13 @@ updatedAt: <ISO-8601 timestamp>
 - Link every screen to user story and acceptance criterion IDs when available.
 - Read and apply `_refs/design/frontend-design.md` before producing UI
   handoff artifacts from PRDs or user stories.
+- Read and apply `_refs/design/mobile-design.md` before producing mobile app,
+  PWA, responsive mobile web, or mobile-first handoff artifacts.
 - Record the frontend design plan, token roles, signature element, and critique
   in `design/decisions/<feature>.md`.
+- Record the mobile design plan, target surface, ergonomics, mobile state
+  coverage, platform notes, and implementation-governance constraints in
+  `design/decisions/<feature>.md` when mobile applies.
 - Produce editable design source before PNG export.
 - Verify PNG files exist before claiming they were generated.
 - Mark inferred design decisions clearly when product inputs are incomplete.
@@ -255,6 +303,7 @@ updatedAt: <ISO-8601 timestamp>
 
 - `sdcorejs-product` - source of PRDs, user stories, acceptance criteria, and UAT.
 - `_refs/design/frontend-design.md` - visual direction, token plan, copy voice, and self-critique guidance for UI handoff.
+- `_refs/design/mobile-design.md` - mobile-first context, platform, ergonomics, state coverage, and implementation-governance guidance.
 - `sdcorejs-execute-plan` - routes approved design plans here.
 - `sdcorejs-parallel-dispatch` - can run Design as one role in full-stack role split.
 - `sdcorejs-angular` / `sdcorejs-nextjs` - consume design specs and wireframes during FE implementation.
