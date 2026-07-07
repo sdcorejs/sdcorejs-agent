@@ -35,6 +35,13 @@ mock-first services that match the provided endpoint/request/response shape
 closely enough for PO/QC users to interact with the feature before a live
 backend is available.
 
+For normal feature implementation from PRDs, user stories, or acceptance
+criteria, a design handoff is the preferred UI source of truth. If no matching
+`design/specs/` or `design/wireframes/` artifact exists and the user did not
+explicitly request a quick PO/BA prototype with no design, route the work to
+`sdcorejs-design` first so layout, states, copy, and visual direction are
+settled before code generation.
+
 ## PO/BA Prototype Portal Mode
 
 Use PO/BA Prototype Portal Mode when the request asks to initialize a PO/BA
@@ -288,6 +295,13 @@ columns, detail read-only fields, lookup relations, custom actions, and mock
 service behavior.
 
 If a matching `design/specs/` or `design/wireframes/` handoff exists, read it before generating UI. Follow its screen/state/copy contract unless it conflicts with approved product criteria; if it conflicts, stop and surface the mismatch instead of silently choosing one.
+
+If the input is a PRD, user story, acceptance criteria, or product description
+for normal implementation and no matching design handoff exists, do not invent a
+new visual direction inside `sdcorejs-angular`. Stop and route to
+`sdcorejs-design` first, unless the approved plan or current user request
+explicitly says this is PO/BA Prototype Portal Mode, mock-first client
+alignment, or no-design prototype work.
 
 Before finalizing `EntitySchema`, identify the primary entity and every related entity, scan existing model/interface/type/dto/service/api/repository/store files, and record one decision per entity: `reuse`, `extend`, or `create new`. Relationship fields must point to existing imported types or minimal summary types when those contracts exist; use `<entity>Id` when the API only returns an id. Do not inline a related entity object or create a duplicate model/service after an existing contract is found.
 

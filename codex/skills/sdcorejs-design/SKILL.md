@@ -25,6 +25,11 @@ Create FE handoff artifacts from product intent. The output should let Angular/N
 
 PNG generation is feasible, but a PNG alone is not a reliable source of truth. For exact FE implementation, always pair PNG previews with editable design artifacts and a written handoff spec.
 
+Before designing UI from PRDs, user stories, acceptance criteria, or rough
+feature briefs, read `../_refs/design/frontend-design.md`. Use it to create a
+compact visual direction, token plan, signature element, copy voice, and
+self-critique before writing final design specs or wireframes.
+
 ## Step 0 - Context preflight
 
 Before mapping stories to screens, run `sdcorejs-explore (summary mode)` through
@@ -50,6 +55,8 @@ Load what exists, in this order:
 5. Approved specs/plans from `.sdcorejs/specs/` and `.sdcorejs/plans/`
 6. Existing design docs under `design/`
 7. Existing frontend conventions from `frontend/` or `../_refs/angular/` / `../_refs/nextjs/` when the target stack is known
+8. Frontend design guidance from `../_refs/design/frontend-design.md` when the
+   work includes UI layout, visual direction, copy, or frontend handoff
 
 If product stories or acceptance criteria are missing, write only an exploratory design draft and mark requirements as `inferred - needs confirmation`.
 
@@ -76,6 +83,30 @@ Use whichever editable wireframe source best fits the target:
 - PNG export only after a renderer actually produces the file.
 
 ## Workflow
+
+### 0. Create the frontend design plan
+
+When the request includes UI design, design review, wireframes, mockups, or a
+frontend handoff from product artifacts, read `../_refs/design/frontend-design.md`
+before mapping screens.
+
+Write a compact design plan and critique into
+`design/decisions/<kebab-feature>.md`, then summarize the confirmed parts in
+`design/specs/<kebab-feature>.md`. The plan must cover:
+
+- subject, audience, and single job
+- visual direction and product-specific rationale
+- 4-6 token colors with roles
+- type roles or available system stacks
+- desktop/tablet/mobile layout concept
+- one signature element and why it fits
+- copy voice for actions, empty states, and errors
+- self-critique and revision when the first idea is too generic
+
+For Core UI portals, keep the direction compatible with the existing shell,
+utility classes, component library, and operational density. Distinctive portal
+design should improve recognition, scanning, and task flow; it must not replace
+the app shell with a marketing layout.
 
 ### 1. Map stories to screens
 
@@ -112,6 +143,9 @@ Write `design/specs/<feature>.md`:
 ## Layout
 <screen-by-screen structure, hierarchy, key controls>
 
+## Frontend Design Plan
+<visual direction, token roles, type roles, signature element, copy voice, and critique summary from design/decisions>
+
 ## Components
 | Need | Preferred component | Notes |
 |---|---|---|
@@ -140,6 +174,8 @@ Write one HTML or SVG per important screen/state. Keep them plain and implementa
 
 - use realistic product labels from user stories
 - show important tables/forms/actions
+- reflect the confirmed frontend design plan, including token roles, type
+  hierarchy, signature element, copy voice, and interaction states
 - include stable dimensions for desktop and mobile frames
 - avoid decorative marketing art for operational tools
 - include `data-story`, `data-ac`, or comments that link the wireframe section back to product IDs
@@ -186,6 +222,9 @@ updatedAt: <ISO-8601 timestamp>
 
 ## FE Handoff Notes
 - <implementation notes for frontend track>
+- Frontend design plan:
+- Confirmed token/component/copy decisions:
+- Inferred or open visual decisions:
 
 ## Open Questions
 - <question or None>
@@ -198,6 +237,10 @@ updatedAt: <ISO-8601 timestamp>
 - Preserve the user's language for user-facing labels and copy.
 - Keep identifiers, route paths, permission codes, and component names in English.
 - Link every screen to user story and acceptance criterion IDs when available.
+- Read and apply `../_refs/design/frontend-design.md` before producing UI
+  handoff artifacts from PRDs or user stories.
+- Record the frontend design plan, token roles, signature element, and critique
+  in `design/decisions/<feature>.md`.
 - Produce editable design source before PNG export.
 - Verify PNG files exist before claiming they were generated.
 - Mark inferred design decisions clearly when product inputs are incomplete.
@@ -215,6 +258,7 @@ updatedAt: <ISO-8601 timestamp>
 ## Cross-references
 
 - `sdcorejs-product` - source of PRDs, user stories, acceptance criteria, and UAT.
+- `../_refs/design/frontend-design.md` - visual direction, token plan, copy voice, and self-critique guidance for UI handoff.
 - `sdcorejs-execute-plan` - routes approved design plans here.
 - `sdcorejs-parallel-dispatch` - can run Design as one role in full-stack role split.
 - `sdcorejs-angular` / `sdcorejs-nextjs` - consume design specs and wireframes during FE implementation.
