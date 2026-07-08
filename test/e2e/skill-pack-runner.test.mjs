@@ -138,6 +138,37 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(reviewSkill, /plain-angular/);
   assert.match(reviewSkill, /skip SDCoreJS\/Core UI portal findings/i);
 
+  const repairSkill = sourceByName.get('sdcorejs-repair-loop');
+  assert.match(repairSkill, /sdcorejs-ship \(verify-before-done mode\)/);
+  assert.match(repairSkill, /Repair ledger/);
+  assert.match(repairSkill, /Silence is not approval/);
+  assert.match(repairSkill, /Do not edit tests merely to make production code pass/);
+  assert.doesNotMatch(repairSkill, /until the final verification pass is green/);
+
+  const repairRef = await readFile(new URL('../../_refs/orchestration/tail/repair-loop.md', import.meta.url), 'utf8');
+  assert.doesNotMatch(repairRef, /haven/);
+  assert.doesNotMatch(repairRef, /Once converged, hand off to `sdcorejs-git \(commit mode\)`/);
+  assert.doesNotMatch(repairRef, /Done\. Hand off to sdcorejs-git \(commit mode\)/);
+  assert.doesNotMatch(repairRef, /npm run lint && tsc --noEmit/);
+  assert.match(repairRef, /Repair ledger/);
+  assert.match(repairRef, /repair_source/);
+  assert.match(repairRef, /Working-tree Preflight/);
+  assert.match(repairRef, /package manager|lockfile|`package\.json` scripts/i);
+  assert.match(repairRef, /Silence is not approval/);
+  assert.match(repairRef, /Do not edit tests merely to make production code pass/);
+  assert.match(repairRef, /return to the caller's tail chain/);
+  assert.match(repairRef, /sdcorejs-ship \(verify-before-done mode\)/);
+
+  const codexRepairSkill = pack.codexMirrorSkills.find((skill) => skill.name === 'sdcorejs-repair-loop')?.text;
+  assert.match(codexRepairSkill, /Repair ledger/);
+  assert.match(codexRepairSkill, /Silence is not approval/);
+
+  const codexRepairRef = await readFile(new URL('../../codex/skills/_refs/orchestration/tail/repair-loop.md', import.meta.url), 'utf8');
+  assert.match(codexRepairRef, /repair_source/);
+  assert.match(codexRepairRef, /Repair ledger/);
+  assert.doesNotMatch(codexRepairRef, /haven/);
+  assert.doesNotMatch(codexRepairRef, /npm run lint && tsc --noEmit/);
+
   const angularReviewCode = await readFile(new URL('../../_refs/angular/review-code.md', import.meta.url), 'utf8');
   assert.match(angularReviewCode, /## Scope gate/);
   assert.match(angularReviewCode, /plain-angular/);

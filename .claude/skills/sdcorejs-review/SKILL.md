@@ -107,7 +107,10 @@ mapping. The output format below is owned by this skill.
 
 When `sdcorejs-review` is called from a code-generation finish gate, return the
 report to the caller. The caller owns `sdcorejs-repair-loop`, acceptance
-verification, branch-ready, auto-docs, task tracker, and memories.
+verification, branch-ready, auto-docs, task tracker, and memories. The caller
+may invoke `sdcorejs-repair-loop` only when the finish-gate review choice was
+"Run review and repair loop"; a skipped finish-gate review or a direct
+read-only review must not auto-edit.
 
 When `sdcorejs-review` is invoked directly by the user:
 
@@ -123,7 +126,8 @@ When `sdcorejs-review` is invoked directly by the user:
    or stakeholder rule, run `sdcorejs-explore (memories mode)`.
 5. Offer `sdcorejs-repair-loop` as the next action for blocking findings:
    `Critical`/`Important` in the default format, or `BLOCKER`/`REQUIRED` in
-   Angular/NestJS code-review table mode.
+   Angular/NestJS code-review table mode. Do not invoke it automatically from a
+   direct user-requested review; wait for an explicit follow-up request.
 
 If the direct review found no issues and wrote no summary-worthy evidence, skip
 auto-docs and state the residual test/probe gaps.

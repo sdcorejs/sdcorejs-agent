@@ -89,6 +89,12 @@ Finish step 3/3: review.
 Reply with `1` or `2`.
 ```
 
+Option `1` explicitly authorizes the finish-gate caller to run the read-only
+`sdcorejs-review` and then `sdcorejs-repair-loop` for blocking findings. Option
+`2` skips both review and repair-loop for this run. A direct user-requested
+`sdcorejs-review` outside this finish gate remains read-only and may only offer
+repair-loop as a follow-up action.
+
 After these answers, state the selected choices and the always-on steps:
 verify acceptance criteria, branch-hygiene sweep, session docs, task tracker,
 and durable memories.
@@ -113,7 +119,9 @@ and durable memories.
 - If the user chooses "Skip new user/technical docs" at Finish step 2, do not
   create new user-guide or technical-doc files for this run. Existing docs may
   still be updated only when the current request explicitly asked for that.
-- Review default ON; the user may `skip` it.
+- Review default ON; the user may `skip` it. Repair-loop is part of review only
+  when the user chose "Run review and repair loop"; do not auto-edit after a
+  direct read-only review.
 - Execute the tail steps honoring the sequential answers, in the orchestrator's
   defined order. A skipped step is omitted; everything not skipped runs.
 - Plumbing always runs: `sdcorejs-ship (verify-before-done mode)` ->

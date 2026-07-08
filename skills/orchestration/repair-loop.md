@@ -19,20 +19,24 @@ Before executing this skill:
 Thin dispatch skill for applying findings and re-verifying them. The detailed loop lives in `_refs/orchestration/tail/repair-loop.md`.
 
 ## Workflow
-1. Determine the source of findings: `review-code`, `verify-before-done`, `linter`, or `manual`.
+1. Determine and preserve the source of findings: `review-code`, `verify-before-done`, `linter`, `typecheck`, `test`, or `manual`.
 2. Read `_refs/orchestration/tail/repair-loop.md` completely.
-3. Verify each finding is genuine before changing code.
-4. Categorize findings into auto-apply, confirm-then-apply, or user-decision tiers.
-5. Apply only the allowed tier for the current pass, then re-run the verification command required by the source.
-6. Iterate until blocking findings are fixed, explicitly deferred, or the reference's convergence cap is reached. Blocking means `Critical`/`Important` in the default review format, or `BLOCKER`/`REQUIRED` in Angular/NestJS code-review table mode.
+3. Record the working-tree baseline and a visible Repair ledger before edits.
+4. Verify each finding is genuine before changing code and classify it as `VALID`, `STALE`, `MIS-SCOPED`, `REDUNDANT`, or `UNCLEAR`.
+5. Categorize valid findings into `auto`, `confirm`, or `user-decision` tiers.
+6. Apply only the allowed tier for the current pass, then re-run the verification required by the preserved source context.
+7. Iterate until blocking findings are fixed, explicitly deferred, or the reference's 3-pass convergence cap is reached. Blocking means `Critical`/`Important` in the default review format, or `BLOCKER`/`REQUIRED` in Angular/NestJS code-review table mode.
 
 ## Handoff
-- After convergence, hand off to `sdcorejs-ship (verify-before-done mode)` for acceptance verification.
+- After convergence, return to the caller's tail chain.
+- If invoked from a finish-gate review, continue with `sdcorejs-documentation (code-documentation mode)` when source changed, then `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, auto-docs, optional user guide, auto-task-tracker, and durable memories when relevant.
+- If invoked directly by the user, run discovered verification commands and offer explicit numbered next steps: run `sdcorejs-ship (verify-before-done mode)`, stop after the repair summary, or prepare a commit only after ship and branch-ready pass.
 - If findings do not converge after the capped loop, stop and ask the user to choose the next direction.
-- Do not hand off to `sdcorejs-git (commit mode)` until the final verification pass is green.
+- Do not hand off directly to `sdcorejs-git (commit mode)` by default. A commit is allowed only after ship verification and branch-ready passed in the current session, or after the caller explicitly requested a commit after those gates.
 
 ## Rules
+- Silence is not approval.
 - Do not silently apply user-decision findings.
-- Do not disable tests to make the loop pass.
+- Do not edit tests merely to make production code pass.
 - Do not hide stale, mis-scoped, redundant, or unclear findings; report them separately.
 - Do not claim convergence without re-running the source-specific verification.
