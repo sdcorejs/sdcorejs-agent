@@ -5,6 +5,15 @@
 > AFTER the cross-track principles in `_refs/shared/testing-philosophy.md`. Not a
 > dispatchable skill — no frontmatter. Orchestrator owns dispatch + run/report.
 
+## Profile applicability
+
+Use this ref only for `sdcorejs-nestjs`. For `plain-nestjs`, load
+`_refs/shared/test-generic.md` instead.
+
+Do not assume TypeORM, PostgreSQL, Zod, bilingual error shapes, `base/shared`,
+or `@sdcorejs/nestjs` conventions unless those signals are present in the target
+project.
+
 ## Purpose
 Unit tests cover the smallest meaningful piece — one service method with all collaborators (repository, other services) mocked. Many, fast, narrow. The foundation of the test pyramid.
 
@@ -223,15 +232,18 @@ If a controller is more than 3 lines per method, the logic belongs in the servic
 
 ## Run
 
-```bash
+Discover the package manager and test script from
+`_refs/shared/test-command-discovery.md`, then run the narrowest current command.
+
+```text
 # All unit + integration co-located
-npm run test -- --watch=false
+<pm> run <test-script> -- <runner-non-watch-flag>
 
 # Just service files
-npm run test -- --watch=false --testPathPattern='\.service\.spec\.ts$'
+<pm> run <test-script> -- <runner-filter-for-service-specs>
 
 # Coverage
-npm run test -- --watch=false --coverage
+<pm> run <test-script> -- <runner-coverage-flag>
 ```
 
 Coverage target: ≥ 80% line on services + validators + mappers.

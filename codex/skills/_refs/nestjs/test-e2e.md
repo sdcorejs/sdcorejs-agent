@@ -5,6 +5,16 @@
 > AFTER the cross-track principles in `_refs/shared/testing-philosophy.md`. Not a
 > dispatchable skill — no frontmatter. Orchestrator owns dispatch + run/report.
 
+## Profile applicability
+
+Use this ref only for `sdcorejs-nestjs`. For `plain-nestjs`, load
+`_refs/shared/test-generic.md` instead.
+
+Before any e2e run, apply `_refs/shared/test-environment-guard.md`. Do not assume
+TypeORM, PostgreSQL, testcontainers, pg-mem, Zod, bilingual error shapes,
+`base/shared`, or `@sdcorejs/nestjs` conventions unless those signals are present
+in the target project.
+
 ## Purpose
 NestJS e2e tests boot the full application + a real PostgreSQL instance and exercise endpoints end-to-end via `supertest`. Catches wiring bugs that unit + integration tests miss: middleware order, global pipes, transaction rollback, real SQL behaviour, real Zod validation.
 
@@ -27,11 +37,9 @@ Read `_refs/shared/testing-philosophy.md` first.
 
 **Faster alternative**: `pg-mem` (in-memory PG-compatible engine). Almost instant, ~95% SQL compat. Use for early-stage projects; switch to testcontainers when CI is set up.
 
-```bash
-npm install -D @testcontainers/postgresql supertest @types/supertest
-# OR
-npm install -D pg-mem
-```
+If required packages are missing, stop and ask for explicit approval before any
+dependency-changing command. Record the exact package manager command and reason
+in `test_context.commands_skipped`.
 
 `test/setup-e2e.ts` (testcontainers):
 ```typescript
@@ -212,11 +220,11 @@ The test JWT secret matches the test app's secret (overridden in module config).
 
 ### Step 4 — Run
 
-```bash
-# package.json scripts:
-# "test:e2e": "jest --config test/jest-e2e.config.js --runInBand"
+Discover the package manager and e2e script from
+`_refs/shared/test-command-discovery.md`, then run the narrowest current command.
 
-npm run test:e2e
+```text
+<pm> run <e2e-test-script> -- <runner-filter-if-supported>
 ```
 
 `--runInBand` because testcontainers + shared DB state don't parallelize well. Trade speed for reliability.

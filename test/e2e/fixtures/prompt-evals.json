@@ -258,9 +258,81 @@
     "phase": 3
   },
   {
+    "id": "product-requirement-coverage",
+    "prompt": "check requirement coverage gaps for acceptance criteria",
+    "expectedSkill": "sdcorejs-product",
+    "phase": 3
+  },
+  {
+    "id": "product-coverage-review",
+    "prompt": "review product coverage against requirements",
+    "expectedSkill": "sdcorejs-product",
+    "phase": 3
+  },
+  {
+    "id": "test-run-only",
+    "prompt": "run tests for the checkout module",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 3
+  },
+  {
+    "id": "test-write-and-run",
+    "prompt": "write and run Playwright e2e tests for checkout",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 3
+  },
+  {
+    "id": "test-plan-readonly",
+    "prompt": "what should be tested for checkout before we write anything",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 3
+  },
+  {
+    "id": "test-coverage-audit",
+    "prompt": "review test coverage gaps for the order module",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 3
+  },
+  {
+    "id": "test-tdd-cycle",
+    "prompt": "use TDD red green refactor for the pricing service",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 3
+  },
+  {
+    "id": "test-uat-cases",
+    "prompt": "write UAT test cases for the order approval flow",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 3
+  },
+  {
+    "id": "test-failing-output-triage",
+    "prompt": "explain this failing test output without changing files",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 3
+  },
+  {
     "id": "failing-login-test-debug",
     "prompt": "debug failing login test",
     "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "test-debug-handoff",
+    "prompt": "fix failing login test root cause",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "test-localized-vi-run",
+    "prompt": "chay test cho man hinh quan ly don hang",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 3
+  },
+  {
+    "id": "test-localized-vi-write",
+    "prompt": "viet test cho man hinh quan ly don hang",
+    "expectedSkill": "sdcorejs-test",
     "phase": 3
   },
   {

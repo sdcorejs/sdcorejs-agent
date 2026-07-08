@@ -4,6 +4,15 @@
 > Angular portal and the detected level is unit. Not a dispatchable skill — no
 > frontmatter. The orchestrator owns dispatch + the run/report flow.
 
+## Profile applicability
+
+Use this ref only for `core-ui-angular` or `legacy-core-ui-angular`. For
+`plain-angular`, load `_refs/shared/test-generic.md` instead.
+
+Do not assume `@sdcorejs/angular`, `@sd-angular/core`, `SD_API_CONFIGURATION`,
+Core UI components, or `src/libs` layout unless those signals are present in the
+target project.
+
 ## Purpose
 Unit tests cover the smallest meaningful piece of logic — a validator, a pipe, a single service method — with everything else mocked. Fast (< 5 ms each), many (hundreds per module), and the foundation of the test pyramid.
 
@@ -226,15 +235,18 @@ describe('permissionGuard', () => {
 
 ## Run
 
-```bash
+Discover the package manager and test script from
+`_refs/shared/test-command-discovery.md`, then run the narrowest current command.
+
+```text
 # Single module
-npm run test -- --watch=false --include='src/libs/catalog/**/*.spec.ts'
+<pm> run <test-script> -- <runner-filter-for-module-specs>
 
 # Single file
-npm run test -- --watch=false --include='**/product.service.spec.ts'
+<pm> run <test-script> -- <runner-filter-for-one-spec>
 
 # Coverage
-npm run test -- --watch=false --coverage --collectCoverageFrom='src/libs/catalog/**/*.ts'
+<pm> run <test-script> -- <runner-coverage-filter>
 ```
 
 Coverage target: ≥ 80% line on `services/` + `validators/` + `mappers/` + `pipes/`.

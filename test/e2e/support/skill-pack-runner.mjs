@@ -27,6 +27,7 @@ const STOP_WORDS = new Set([
 const LOCALIZED_ALIASES = new Map([
   ['them', ['add', 'create']],
   ['tao', ['create']],
+  ['chay', ['run']],
   ['nop', ['submit']],
   ['sua', ['fix', 'repair', 'resolve']],
   ['loi', ['issue', 'issues', 'finding', 'findings', 'error']],
@@ -49,7 +50,7 @@ const LOCALIZED_ALIASES = new Map([
   ['approve', ['approve', 'approval', 'workflow']],
   ['scaffold', ['scaffold', 'bootstrap', 'init']],
   ['backend', ['backend', 'nestjs']],
-  ['viet', ['write', 'documentation']],
+  ['viet', ['write']],
   ['ghi', ['write']],
   ['thay', ['changes']],
   ['doi', ['changes']],
@@ -103,7 +104,10 @@ const PRIORITY_RULES = [
     skill: 'sdcorejs-brainstorming',
     when: ({ prompt, tokens }) =>
       /\bphan\s+van\b/.test(prompt) ||
-      hasAny(tokens, ['brainstorm', 'unsure', 'deciding', 'between', 'compare', 'should', 'clarify'])
+      (
+        hasAny(tokens, ['brainstorm', 'unsure', 'deciding', 'between', 'compare', 'should', 'clarify']) &&
+        !hasDirectTestWorkIntent(prompt, tokens)
+      )
   },
   {
     skill: 'sdcorejs-repair-loop',
@@ -121,9 +125,21 @@ const PRIORITY_RULES = [
       !hasAny(tokens, ['test', 'tests', 'review'])
   },
   {
+    skill: 'sdcorejs-test',
+    when: ({ prompt, tokens }) =>
+      hasFailingOutputTriageIntent(prompt, tokens) ||
+      (
+        hasDirectTestWorkIntent(prompt, tokens) &&
+        !hasProductCoverageIntent(prompt, tokens) &&
+        !hasAny(tokens, ['debug', 'root-cause', 'fix', 'repair', 'resolve']) &&
+        !hasDocumentationIntent(prompt, tokens)
+      )
+  },
+  {
     skill: 'sdcorejs-product',
     when: ({ prompt, tokens }) =>
       hasProductIntent(prompt, tokens) &&
+      !hasDirectTestWorkIntent(prompt, tokens) &&
       !hasAny(tokens, ['angular', 'portal', 'screen', 'screens', 'ui', 'wireframe', 'mockup', 'design'])
   },
   {
@@ -135,15 +151,16 @@ const PRIORITY_RULES = [
   },
   {
     skill: 'sdcorejs-debug',
-    when: ({ tokens }) =>
+    when: ({ prompt, tokens }) =>
       hasAny(tokens, ['debug', 'root-cause', 'repro', 'failing', 'failure', 'error', 'wrong']) &&
+      !hasFailingOutputTriageIntent(prompt, tokens) &&
       !hasAny(tokens, ['review'])
   },
   {
     skill: 'sdcorejs-test',
     when: ({ prompt, tokens }) =>
       hasTestIntent(tokens) &&
-      !hasProductIntent(prompt, tokens) &&
+      (!hasProductIntent(prompt, tokens) || (hasDirectTestWorkIntent(prompt, tokens) && !hasProductCoverageIntent(prompt, tokens))) &&
       !hasAny(tokens, ['debug', 'root-cause', 'failing', 'failure']) &&
       !hasAny(tokens, ['docs', 'doc', 'documentation', 'guide', 'user-guide', 'manual', 'screenshot'])
   },
@@ -434,7 +451,59 @@ function hasAny(tokens, words) {
 }
 
 function hasTestIntent(tokens) {
-  return hasAny(tokens, ['test', 'tests', 'unit', 'integration', 'e2e', 'playwright', 'cypress', 'uat', 'tdd']);
+  return hasAny(tokens, [
+    'test',
+    'tests',
+    'tested',
+    'testing',
+    'unit',
+    'integration',
+    'e2e',
+    'playwright',
+    'cypress',
+    'uat',
+    'tdd',
+    'coverage'
+  ]);
+}
+
+function hasDirectTestWorkIntent(prompt, tokens) {
+  return (
+    hasAny(tokens, ['tests', 'unit', 'integration', 'e2e', 'playwright', 'cypress', 'tdd']) ||
+    (hasAny(tokens, ['run', 'execute']) && hasAny(tokens, ['test', 'tests'])) ||
+    /\b(write|add|create)\b.*\btests?\b/.test(prompt) ||
+    /\bviet\s+tests?\b/.test(prompt) ||
+    /\b(test|testing)\s+(plan|case|cases|coverage)\b/.test(prompt) ||
+    /\bcoverage\b.*\b(test|tests|gap|gaps)\b/.test(prompt) ||
+    (tokens.has('coverage') && hasAny(tokens, ['audit', 'review', 'gap', 'gaps']) && !hasProductCoverageIntent(prompt, tokens)) ||
+    /\bwhat\b.*\bshould\b.*\b(be\s+)?tested\b/.test(prompt) ||
+    /\buat\b.*\b(test|case|cases|checklist|scenario|scenarios)\b/.test(prompt)
+  );
+}
+
+function hasProductCoverageIntent(prompt, tokens) {
+  return (
+    tokens.has('coverage') &&
+    hasProductIntent(prompt, tokens) &&
+    (
+      hasAny(tokens, ['product', 'po', 'prd', 'requirement', 'requirements', 'acceptance', 'criteria', 'traceability', 'ledger']) ||
+      /\b(requirements?|acceptance|criteria|traceability|product)\b.*\bcoverage\b/.test(prompt) ||
+      /\bcoverage\b.*\b(requirements?|acceptance|criteria|traceability|product)\b/.test(prompt)
+    ) &&
+    !hasAny(tokens, ['tests', 'unit', 'integration', 'e2e', 'playwright', 'cypress', 'tdd'])
+  );
+}
+
+function hasFailingOutputTriageIntent(prompt, tokens) {
+  return (
+    hasAny(tokens, ['failing', 'failure', 'error']) &&
+    hasAny(tokens, ['test', 'tests']) &&
+    (
+      hasAny(tokens, ['explain', 'triage', 'classify', 'summarize']) ||
+      /\bwithout\s+changing\s+files\b/.test(prompt) ||
+      /\bread[- ]?only\b/.test(prompt)
+    )
+  );
 }
 
 function hasRepairLoopIntent(prompt, tokens) {
@@ -451,6 +520,7 @@ function hasRepairLoopIntent(prompt, tokens) {
 function hasReviewIntent(prompt, tokens) {
   if (hasProductIntent(prompt, tokens) || hasRepairLoopIntent(prompt, tokens)) return false;
   if (hasAny(tokens, ['update', 'bump', 'dependency', 'dependencies', 'package', 'outdated'])) return false;
+  if (hasDirectTestWorkIntent(prompt, tokens)) return false;
 
   const explicitReviewWord = /\b(review|audit)\b/.test(prompt);
   const reviewDimension = hasAny(tokens, ['security', 'performance', 'accessibility', 'a11y', 'architecture']);

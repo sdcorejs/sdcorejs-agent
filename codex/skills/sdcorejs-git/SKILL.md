@@ -196,6 +196,7 @@ session state.
 ## Verification Evidence Rules
 
 - Feature/source-code commits should have current `sdcorejs-ship (verify-before-done mode)` and `sdcorejs-ship (branch-ready mode)` evidence tied to the current `HEAD` or diff.
+- When `sdcorejs-test` emitted current `test_context` or `test_evidence`, include that test evidence in commit/PR verification notes when relevant.
 - Docs-only, prompt-only, or chore-only commits may not need full product acceptance verification, but they still need appropriate hygiene checks and a clear verification note.
 - A stale verification run from before the current diff is not sufficient.
 - If verification is deferred, do not present the commit or PR as verified.

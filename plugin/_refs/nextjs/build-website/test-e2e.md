@@ -5,15 +5,25 @@
 > cross-track principles in `_refs/shared/testing-philosophy.md`. Not a
 > dispatchable skill — no frontmatter. The orchestrator owns dispatch + run/report.
 
+## Profile applicability
+
+Use this ref only for `nextjs-build-website`. For `plain-nextjs` or generic
+React inside Next.js, load `_refs/shared/test-generic.md` instead.
+
+Before any browser/API run, apply `_refs/shared/test-environment-guard.md`. Do
+not assume locale-prefixed routing, generated sitemap/robots, public-site SEO,
+contact forms, `setRequestLocale`, or build-website folder conventions unless
+those signals are present in the target project.
+
 ## Purpose
 Cover the happy path of every user-visible page in a Next.js landing site with Playwright. SSR is the default for landing sites — tests must assert on what the server renders, not just what hydrates client-side. Locale-prefixed routing means every test runs against `/vi/...` (default) and a subset against `/en/...`.
 
 Principles (test pyramid, what to mock, AAA) come from `_refs/shared/testing-philosophy.md`. This ref is the HOW for Next.js.
 
 Prerequisites:
-- Site builds (`npm run build`)
-- Dev server runs on port 3000 OR a staging URL is provided
-- Playwright installed (added to a fresh project on first invocation)
+- Existing build/start scripts or an explicit staging base URL.
+- Existing Playwright configuration or user approval to add it.
+- A classified environment from `_refs/shared/test-environment-guard.md`.
 
 ## What ships
 
@@ -29,12 +39,11 @@ Prerequisites:
 
 ## Workflow
 
-### Step 1 — Install Playwright
+### Step 1 — Runner readiness
 
-```bash
-npm install -D @playwright/test
-npx playwright install chromium  # firefox + webkit if multi-browser is in scope
-```
+If Playwright or browser binaries are missing, stop and ask for explicit approval
+before any dependency-changing or browser-installing command. Record the exact
+package manager command and reason in `test_context.commands_skipped`.
 
 Add `e2e/` to `tsconfig.exclude` to avoid type clashes with app code.
 
@@ -65,7 +74,7 @@ export default defineConfig({
   ],
 
   webServer: process.env.E2E_BASE_URL ? undefined : {
-    command: 'npm run build && npm run start',
+    command: process.env.E2E_WEB_SERVER_COMMAND ?? '<detected-build-and-start-command>',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
@@ -73,7 +82,9 @@ export default defineConfig({
 });
 ```
 
-Why `npm run start` (not `dev`): production build catches SSR/hydration mismatches that dev mode papers over with eager re-render.
+Why production start instead of dev: production build catches SSR/hydration
+mismatches that dev mode can hide with eager re-rendering. Use the discovered
+package manager and scripts from `_refs/shared/test-command-discovery.md`.
 
 ### Step 3 — Smoke per page (`e2e/home.spec.ts`)
 
@@ -91,7 +102,7 @@ for (const locale of locales) {
       expect(res.status()).toBe(200);
 
       // Assert: server-rendered content present (not blank shell)
-      const heroText = locale === 'vi'<localized text>'<localized text>' : 'Trusted partner';
+      const heroText = locale === 'vi' ? '<localized text>' : 'Trusted partner';
       expect(html).toContain(heroText);
       expect(html).toContain('<nav');
       expect(html).toContain('<footer');
@@ -106,7 +117,7 @@ for (const locale of locales) {
 
     test('locale switcher changes URL prefix', async ({ page }) => {
       await page.goto(`/${locale}`);
-      const other = locale === 'vi'<localized text>'en' : 'vi';
+      const other = locale === 'vi' ? 'en' : 'vi';
       await page.click(`button[aria-label*="${other.toUpperCase()}"]`);
       await expect(page).toHaveURL(new RegExp(`^.+/${other}(/|$)`));
     });
@@ -242,13 +253,15 @@ test.describe('OG previews', () => {
 
 ### Step 7 — Run + report
 
-```bash
-# Local
-npx playwright test
-npx playwright show-report   # if any failed
+```text
+# Local via discovered script
+<pm> run <playwright-script> -- <runner-filter-if-needed>
 
-# CI
-CI=1 E2E_BASE_URL=https://staging.example.vn npx playwright test --reporter=github
+# Report view only if the project already provides a local report command
+<pm> run <playwright-report-script>
+
+# CI/staging via approved environment variables
+<pm> run <playwright-script> -- <ci-reporter-flag-if-supported>
 ```
 
 Target: full e2e suite < 5 min on a typical landing site.
@@ -257,7 +270,7 @@ Target: full e2e suite < 5 min on a typical landing site.
 
 ### MUST DO
 - Inherit principles from `_refs/shared/testing-philosophy.md` (AAA, test names, what to mock)
-- Use `npm run build && npm run start` for production-like behavior in `webServer`
+- Use discovered build/start scripts for production-like behavior in `webServer`
 - Test EACH locale on smoke tests (loop the `locales` array)
 - Intercept the email-sending API in CI (don't send real email)
 - Use raw `request.get(...)` for SSR HTML assertions BEFORE `page.goto` (catches hydration issues)
