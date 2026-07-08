@@ -43,6 +43,8 @@ Accepted finding shapes:
 - Verification, lint, typecheck, or test output with command, exit code, file
   scope, and failure text.
 - Manual findings from the user, with the behavioral expectation recorded.
+- A redacted `debug_context` from `sdcorejs-debug` when one repair item became a
+  single-bug investigation.
 
 Preserve the original source context before any edits:
 
@@ -189,6 +191,7 @@ Each pass must record:
 - pass ID;
 - findings attempted;
 - files touched;
+- debug_context IDs or root hypotheses consumed, when debug was used;
 - pre/post diffstat;
 - verification command and result;
 - unresolved findings;
@@ -252,6 +255,14 @@ Do not edit tests merely to make production code pass. Only edit tests when:
 
 Never weaken assertions, remove coverage, skip tests, or mark tests pending to
 make verification pass.
+
+If one `VALID` finding is actually a concrete bug that needs reproduce,
+isolate, hypothesize, and root-cause work, call `sdcorejs-debug` for that item
+instead of improvising a parallel debug process. Pass the preserved
+`repair_source`, original finding ID/source, `review_context` when present,
+original commands, package-manager evidence, and any source-specific logs. When
+debug returns, carry its redacted `debug_context` into this Repair ledger and
+continue with the source-specific re-verification below.
 
 ### 4. Re-verify Per Source
 

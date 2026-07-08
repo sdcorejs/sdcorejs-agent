@@ -213,6 +213,11 @@ invoke `sdcorejs-repair-loop` only when the finish-gate review choice was "Run
 review and repair loop"; a skipped finish-gate review or direct read-only review
 must not auto-edit.
 
+If a finding is a concrete single bug rather than a findings set, keep it in
+`review_context` as evidence. Repair-loop may delegate that one item to
+`sdcorejs-debug`, which returns `debug_context` before the caller continues the
+tail chain.
+
 When `sdcorejs-review` is invoked directly by the user:
 
 1. Stay strict read-only by default.
@@ -339,4 +344,5 @@ Findings rules:
 - NestJS SDCoreJS refs: `_refs/nestjs/review-{code,security,performance}.md`
 - Next.js build-website refs: `_refs/nextjs/build-website/review-{code,security,performance,accessibility}.md`
 - Repair loop: `sdcorejs-repair-loop`
+- Single-bug root cause: `sdcorejs-debug`
 - Verification: `sdcorejs-ship (verify-before-done mode)`

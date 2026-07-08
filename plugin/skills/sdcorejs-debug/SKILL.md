@@ -1,13 +1,29 @@
 ---
 name: sdcorejs-debug
-description: Systematic debugging skill for non-trivial bugs. Use when the user asks to debug/root-cause/fix a repro, trace wrong behavior, or investigate failures needing reproduce -> isolate -> hypothesize -> test -> verify. Skip obvious one-line fixes and cosmetic small bugs. Applies to angular, nestjs, nextjs. Runtime-localized.
-allowed-tools: Read, Bash, Grep, Glob, Edit
+description: Systematic debugging skill for root-cause/fix of concrete bugs and failing tests. Use for debug, investigate, resolve, fix, root-cause, wrong behavior, flaky/CI/prod-only failure, runtime/build error, or performance anomaly. Use sdcorejs-test for write/run/plan tests without fix intent. Runtime-localized.
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-# Debug — Systematic Debugging Workflow
+# Debug - Evidence-Driven Root-Cause Workflow
 
 ## Purpose
-Debugging is search through a hypothesis space. The fastest path is the most disciplined one: reliable repro → minimal isolation → falsifiable hypothesis → root cause. Random fixes feel productive and waste hours.
+
+`sdcorejs-debug` owns safe root-cause analysis for concrete failures:
+
+- reproduce locally or evidence-confirm the bug;
+- isolate the smallest failing case;
+- classify `debug_mode`, `bug_class`, `stack_profile`, `repro_status`, and environment;
+- form and falsify hypotheses with a visible Hypothesis Ledger;
+- add temporary diagnostic instrumentation only when needed and track it;
+- apply the smallest safe fix for the confirmed root cause;
+- add or update a focused regression test when feasible;
+- verify the original repro and regression surface;
+- hand off to `sdcorejs-ship` before any commit, PR, changelog, or release flow.
+
+It does not own broad feature implementation, unrelated test-plan generation,
+large new test suites, new test infrastructure, speculative fixes, direct Git
+artifacts, destructive production reproduction, or weakening tests to get a
+green result.
 
 ## Shared Protocols
 
@@ -18,121 +34,388 @@ Before executing this skill:
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
 5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
-## When invoked
-- "not working", "bug", "fix bug", "broken", "doesn't work", "error", "throws", or localized equivalents
-- Stack trace, console error, failing test, unexpected output
-- "why is X behaving as Y", or localized equivalents
+After the shared protocols and before edits, read these debugging refs:
 
-Do NOT invoke for:
-- Feature requests phrased as "should also handle X" — that's `sdcorejs-brainstorming`
-- Performance tuning without a specific anomaly — that's perf work, different discipline
+- `_refs/shared/debugging-discipline.md`
+- `_refs/shared/debug-command-discovery.md`
+- `_refs/shared/debug-environment-guard.md`
+- `_refs/shared/debug-context.md`
 
-## Workflow
+## Routing Boundary
 
-### Step 1 — Reproduce reliably
-Before touching any code:
-- Get the exact reproduction steps from the user (or run them yourself)
-- Confirm the bug fires on demand (≥3/3 attempts). If flaky, that itself is the bug — investigate the source of nondeterminism (timing, network, ordering, test isolation) before anything else.
-- Capture the **observed** behavior precisely: full error message + stack trace + console output + network response (if relevant) + the input that triggered it.
-- Note the **expected** behavior in the user's words.
+Use `sdcorejs-debug` for root-cause analysis and fixing bugs, including failing
+tests when the user asks to debug, fix, investigate, resolve, or find root
+cause.
 
-If you cannot reproduce, STOP and tell the user. Ask for: environment (OS, browser, node version), exact input, and a screen recording or `curl` if applicable. Do not "fix" a bug you cannot trigger.
+Correct routing:
 
-### Step 2 — Isolate
-- Reduce the repro to the smallest possible input/state that still fails.
-- For frontend: shrink to one component + one event + minimal data.
-- For backend: shrink to one endpoint + one payload.
-- For tests: a single `it()` block.
+- "debug this failing test", "fix this failing Jest test", "root-cause this test failure", "investigate flaky test" -> `sdcorejs-debug`.
+- "write tests for X", "add unit tests", "run the test suite", "create UAT cases", "what should be tested?" -> `sdcorejs-test`.
+- `sdcorejs-test` may do read-only failing-output triage only when the user asks to explain, classify, or summarize output without changes.
+- When failing output implies a production bug or needs source changes, `sdcorejs-test` hands off to `sdcorejs-debug` with `test_context`, `test_evidence`, and the smallest failing command.
+- `sdcorejs-debug` may add or update a small focused regression test during a bug fix when the existing runner and test style are clear. Large suites, new infrastructure, multiple test levels, complex UAT/e2e coverage, dependency installs, or browser binary installs belong to `sdcorejs-test`.
 
-If the bug disappears when you simplify, the variable you just removed is the suspect — re-add and bisect.
+Do not invoke for feature requests phrased as new behavior, broad performance
+tuning without a concrete anomaly, review findings sets that belong to
+`sdcorejs-repair-loop`, or readiness/delivery checks that belong to
+`sdcorejs-ship`.
 
-### Step 3 — Hypothesize from observation, not from "what would fix it"
-Bad hypothesis: "maybe I should add a `?.` here just in case"
-Good hypothesis: "the stack trace says `Cannot read 'name' of undefined` at line 42. At line 42, we do `user.name`. So `user` is undefined when this code runs. Why?"
+## Step 0 - Working-Tree And Context Preflight
 
-A good hypothesis:
-- Is falsifiable (you can prove it wrong with a test or a log)
-- Names a specific cause, not a symptom
-- Explains 100% of the observed behavior, not 60%
+Before any source edit, inspect and record:
 
-If you have 3+ unfalsified hypotheses → STOP. You don't have enough information. Add logging, read more code, ask the user.
+```bash
+git branch --show-current
+git rev-parse HEAD
+git status --short
+git diff --staged --stat
+git diff --staged --name-status
+git diff --stat
+git ls-files --others --exclude-standard
+```
 
-### Step 4 — Test the hypothesis
-- Add a `console.log` / `logger.debug` / breakpoint at the point of suspicion
-- Run the repro
-- Read the actual values
-- Confirm or reject the hypothesis
+Preflight output must include:
 
-If rejected → form a new hypothesis from the new evidence. Do not silently move on; an unfalsified theory becomes a future regression.
+```text
+working_tree_preflight:
+  branch:
+  current_HEAD:
+  staged_diffstat:
+  unstaged_diffstat:
+  untracked_files:
+  allowed_edit_scope:
+  unrelated_dirty_files:
+  generated_vendor_build_outputs:
+```
 
-### Step 5 — Find the root cause, not the symptom
-Symptom: form crashes when `roleId` is null.
-Symptom fix: `roleId ?? '00000000-0000-0000-0000-000000000000'`
-Root cause: the API returns role as `{ id: null }` for users with no role, but the DTO declares `roleId: string` (required). The contract is wrong — either DTO is `roleId: string | null` or API should omit the field.
-Root cause fix: align DTO with reality and handle null at the rendering layer.
+Rules:
 
-When you have a fix in mind, ask: "If I revert this fix in 6 months, will the same bug come back?" If yes, you fixed a symptom.
+- If unrelated dirty files exist and this task did not already approve the dirty baseline, stop and ask one numbered choice:
+  1. Continue but restrict edits to bug-scoped files.
+  2. Continue and allow touching selected dirty files.
+  3. Stop so the user can clean or stash changes first.
+- If the workflow already approved dirty state for this task, record the baseline and proceed inside the allowed edit scope.
+- Do not stage, commit, push, or create PRs from `sdcorejs-debug`.
+- Do not modify generated, vendor, build, coverage, cache, or runner output unless the bug is explicitly in generated artifacts and the repo convention supports editing them.
 
-### Step 6 — Verify
-- Run the repro → bug gone
-- Run the test suite — make sure you didn't break adjacent code
-- Add a regression test for the bug if one doesn't exist
-- When the user wants the fix saved, hand off to `sdcorejs-git (commit mode)` with a suggested `fix(scope):` message and a body explaining the root cause.
+## Step 1 - Classify The Debug Session
 
-## Stack-specific guides
+Classify before applying stack-specific guidance or editing files. Unknown is
+valid when evidence is insufficient, and classifications may change when new
+evidence arrives.
 
-### Angular (browser)
-- Open DevTools first — Console, Network, Application (storage), Performance
-- Angular-specific errors: `NG0100` (ExpressionChangedAfterChecked) → side-effect in template or post-render mutation. Often the fix is `effect()` / `runOutsideAngular()` / OnPush + correct signal usage.
-- `RxJS` leaks → check for missing `takeUntilDestroyed()` / `unsubscribe()`
-- Change detection not firing → check `OnPush` + signal/input reference equality
-- Use `ng.applyChanges()` / `ng.getComponent()` in console for live inspection
+Required `debug_mode` values:
 
-### NestJS (server)
-- Set `LOG_LEVEL=debug` if available, or add `Logger.debug` at decision points
-- Check the request ID in logs — trace end-to-end
-- TypeORM: enable `logging: ['query', 'error']` in dev datasource to see SQL
-- Permissions: trace `@HasPermission` decorator → `AuthGuard` → `SdContext` middleware
-- Postgres: `EXPLAIN ANALYZE <query>` for slow queries; check pg_stat_activity for locks
+```text
+runtime-error | failing-test | wrong-behavior | flaky | ci-only | prod-only |
+performance-anomaly | environment-config | dependency-regression |
+security-sensitive | data-integrity | build-compile |
+browser-device-specific | unknown
+```
 
-### Next.js (SSR)
-- Differentiate server-side vs client-side: server logs go to stdout, client logs go to browser
-- Hydration mismatch → server HTML differs from client first render. Common causes: `Date.now()`, `Math.random()`, locale, `window`/`document` access in render
-- API routes: check `revalidate` / `cache: 'no-store'` if you see stale data
+Required `bug_class` values:
+
+```text
+null-or-undefined | async-race | state-lifecycle | validation |
+permission-authz | authentication | routing | database-query |
+transaction-consistency | serialization-deserialization | caching-staleness |
+timezone-locale | dependency-version | configuration | environment |
+network-third-party | type-contract | test-contract |
+performance-regression | memory-leak | unknown
+```
+
+Required `stack_profile` values:
+
+```text
+core-ui-angular | legacy-core-ui-angular | plain-angular |
+sdcorejs-nestjs | plain-nestjs |
+nextjs-build-website | plain-nextjs |
+react-vite | react-cra | react-next-generic |
+node-general | general
+```
+
+Required `repro_status` values:
+
+```text
+local-confirmed | evidence-confirmed | flaky-confirmed | blocked
+```
+
+Environment values:
+
+```text
+local | dev | staging | prod | unknown | mock
+```
+
+Classification rules:
+
+- Evidence decides the label. Do not choose stack-specific bug classes or stack probes unless the target project uses that stack or dependency.
+- For mixed or unknown stacks, use `general` or `node-general` and shared debugging rules.
+- Do not let `unknown` become an excuse to patch. Gather evidence until a hypothesis is testable or mark `repro_status: blocked`.
+
+## Step 2 - Profile-Aware Stack Detection
+
+Detect the target stack from files, dependencies, imports, test files, runner
+config, approved plans, and current error evidence.
+
+Angular:
+
+- Detect Angular from `angular.json`, `@angular/core`, components, modules, routes, or Angular tests.
+- Use `core-ui-angular` only if `@sdcorejs/angular` is installed or the target code imports/uses it.
+- Use `legacy-core-ui-angular` only if `@sd-angular/core` is installed or the target code imports/uses it.
+- Use `plain-angular` when Angular is present but neither Core UI package is detected.
+- Do not assume Core UI components, `Sd*` services, `SD_API_CONFIGURATION`, `src/libs/**/features/**`, or admin portal patterns for `plain-angular`.
+
+NestJS:
+
+- Detect NestJS from `nest-cli.json`, `@nestjs/*` dependencies, modules, controllers, providers, or Nest tests.
+- Use `sdcorejs-nestjs` only if `@sdcorejs/nestjs` or strong SDCoreJS Nest conventions are detected.
+- Use `plain-nestjs` when NestJS is present without SDCoreJS Nest evidence.
+- Do not assume TypeORM, PostgreSQL, Zod, `SdContext`, `@HasPermission`, or `@sdcorejs/nestjs` for `plain-nestjs` unless detected.
+- For plain NestJS, inspect the actual stack first: Prisma, Mongoose, TypeORM, class-validator/class-transformer, Zod, Fastify/Express, Passport/JWT, guards, interceptors, and pipes.
+
+Next.js:
+
+- Detect Next.js from `next.config.*`, `next` dependency, app/pages router files, `page.tsx`, `layout.tsx`, `route.ts`, or Next tests.
+- Use `nextjs-build-website` only with strong build-website/public-site evidence such as `[locale]` i18n routing, typed i18n navigation, content/public-site structure, or prior `sdcorejs-nextjs` build-website context.
+- Use `plain-nextjs` otherwise.
+- Do not assume `[locale]`, `setRequestLocale`, typed i18n navigation, sitemap/public-site metadata, or build-website caching rules for `plain-nextjs`.
+
+React and general:
+
+- Use `react-vite`, `react-cra`, or `react-next-generic` only when the project signals that profile.
+- Use `node-general` for Node tools, libraries, CLIs, scripts, or servers without a stronger framework profile.
+- Use `general` for unsupported or mixed projects and debug from direct evidence only.
+
+## Step 3 - Command Discovery And Environment Guard
+
+Use `_refs/shared/debug-command-discovery.md` as the canonical command policy.
+Before running repro or verification, discover the package manager, lockfiles,
+workspace config, relevant `package.json` scripts, runner configs, original
+failing command, and CI output. Prefer focused repro first, focused regression
+second, and broader existing checks last. Do not mix package managers, invent
+scripts, assume npm/npx/tsc commands, install tools, or run browser installs
+without explicit approval; record missing, unsafe, or environment-blocked
+commands in `commands_skipped`.
+
+Use `_refs/shared/debug-environment-guard.md` as the canonical environment
+policy. Before any repro touches browsers, APIs, databases, external systems,
+or persistent state, classify the environment as `local | dev | staging | prod
+| unknown | mock`, block destructive production/external side effects, and
+record seed/setup/cleanup or blocked evidence in `debug_context`.
+
+## Step 4 - Reproduce Or Evidence-Confirm
+
+Use evidence-aware reproduction, not a rigid "must run locally" rule:
+
+| repro_status | Definition | Verification rule |
+|---|---|---|
+| `local-confirmed` | The bug reproduces locally with a focused command or manual step. | Prefer 3/3 consistent repro when cheap and appropriate. |
+| `evidence-confirmed` | Local execution is unavailable, but stack traces, CI logs, production logs, screenshots, sanitized payloads, or failing output isolate a likely root cause. | Mark confidence and do not claim the original environment is fixed until verified there. |
+| `flaky-confirmed` | Repeated runs or logs show nondeterministic failure. | Treat nondeterminism as the bug; record pass/fail counts and do not claim fixed from one passing run. |
+| `blocked` | Evidence is insufficient or required environment/data/access is unavailable. | Do not patch speculatively. Ask for missing evidence or propose safe instrumentation. |
+
+Capture:
+
+- observed behavior: exact redacted error, stack, command output, network response, screenshot summary, or input;
+- expected behavior in the user's words or the contract;
+- input/data/environment that triggered it;
+- confidence: `high`, `medium`, or `low`.
+
+## Step 5 - Maintain The Hypothesis Ledger
+
+Before any fix, create and update a visible Hypothesis Ledger:
+
+| ID | Observation | Hypothesis | Predicted evidence | Falsification probe | Result | Status |
+|---|---|---|---|---|---|---|
+| H1 | Stack trace points to `user.name` | `user` is undefined when lookup returns 404 | missing-user repro throws before guard | run focused missing-user test | confirmed | ROOT |
+
+Rules:
+
+- Do not patch until at least one hypothesis is confirmed, unless the user explicitly approves a tactical mitigation.
+- Do not keep more than 3 live hypotheses without gathering new evidence.
+- Mark hypotheses as `confirmed`, `falsified`, `inconclusive`, or `root`.
+- If all hypotheses are inconclusive, gather more evidence or escalate.
+- Avoid shotgun debugging. Apply one coherent root-cause fix at a time.
+- The final report must identify the root hypothesis or explain why root cause remains uncertain.
+
+## Step 6 - Track Diagnostic Instrumentation
+
+When adding logs, probes, temporary assertions, breakpoints, tracing, throw
+probes, or debug-only assertions, maintain this ledger:
+
+```text
+Diagnostic Instrumentation Ledger:
+- file:
+- line_or_scope:
+- purpose:
+- sensitive_values_redacted:
+- cleanup_required:
+- cleanup_done:
+- permanent_observability_approved:
+```
+
+Rules:
+
+- Temporary instrumentation must be removed before final verification unless the user explicitly approves permanent observability.
+- Do not leave noisy logs in production code.
+- Do not log secrets, tokens, cookies, credentials, PII, full request bodies, or raw SQL parameter dumps.
+- Permanent observability must be intentional, minimal, redacted, and consistent with project logging conventions.
+- Final report must state whether diagnostic instrumentation remains.
+
+## Step 7 - Fix Scope And Regression Tests
+
+Fix the root cause with the smallest safe patch:
+
+- Do not perform broad refactors during debugging.
+- Do not apply multiple unrelated fixes in one pass.
+- Do not hide symptoms with optional chaining, default values, catch-and-swallow blocks, retries, or null guards unless the confirmed hypothesis proves that this is the correct contract.
+- Do not change public API, schema, security, permissions, migration behavior, or product contract without explicit approval.
+- If the bug reveals a broader design issue, apply only the minimal safe mitigation and propose follow-up planning.
+
+Regression test ownership:
+
+- Add or update a small focused regression test when the existing runner and style are clear, the repro is cheap to capture, the file scope is obvious, and no new infrastructure is needed.
+- Delegate to `sdcorejs-test` when new infrastructure, multiple test levels, a broad suite, complex UAT/e2e coverage, dependency installs, or browser binaries are needed.
+- Do not add test dependencies from `sdcorejs-debug` without explicit approval.
+- Do not weaken tests, delete tests, skip tests, loosen assertions, increase timeouts blindly, or mock away the behavior under test.
+- If an existing test is wrong because of an approved contract change, require explicit approval before updating the expectation.
+
+## Step 8 - Mode-Specific Rules
+
+Flaky:
+
+- Treat nondeterminism as the bug.
+- Run repeated focused repro when cheap and record pass/fail counts.
+- Look for shared state, timing, clock, random, order dependency, retries, race conditions, external services, and cleanup leaks.
+- Do not claim fixed from a single passing run.
+
+CI-only:
+
+- Use CI logs, config, and environment differences as evidence.
+- Compare package manager, Node/browser/OS versions, env vars, timezones, caches, parallelism, workspace paths, and lockfiles.
+- If local repro is impossible, use `evidence-confirmed` and require CI verification before claiming fixed.
+
+Prod-only:
+
+- Require sanitized logs and payloads.
+- Prefer safe instrumentation or feature-flagged diagnostics.
+- Do not use raw production secrets/data or destructive production repro.
+- Mark the fix unverified until production or staging confirmation exists.
+
+Performance-anomaly:
+
+- Debug only concrete wrong behavior or regression, not broad optimization.
+- Use measured evidence such as timings, profiles, query plans, traces, or before/after command output.
+- Avoid broad rewrites unless root cause requires them and the user approves.
+
+Security-sensitive:
+
+- Redact aggressively.
+- Avoid printing exploit payloads, secrets, or sensitive identifiers unnecessarily.
+- Consider a follow-up `sdcorejs-review` security review after the fix.
+- Do not weaken auth, permission, validation, or crypto checks to make a path pass.
+
+Data-integrity:
+
+- Treat migrations, schema changes, backfills, deletions, and transactional fixes as high risk.
+- Prefer read-only inspection first.
+- Do not run destructive data changes without explicit approval plus backup/rollback strategy.
+
+Dependency-regression:
+
+- Isolate version and config changes before changing dependencies.
+- Do not update or downgrade dependencies casually.
+- If a dependency change is required, route delivery through `sdcorejs-ship` dependency-update discipline when present.
+- Record lockfile, package manager, and changelog/migration evidence.
+
+## Step 9 - Redaction Protocol
+
+Never echo secret or PII values from `.env`, local config, CI files, shell
+output, source files, stack traces, network logs, request payloads, cookies,
+authorization headers, JWTs, refresh tokens, database URLs, API keys,
+passwords, private keys, customer PII, production data, or git diffs.
+
+Rules:
+
+- Never print full lines that contain likely secret values.
+- For suspected secrets, report only file path, line number when available, key/category name, risk reason, and redacted evidence such as `API_KEY=[REDACTED]`.
+- If a `grep`/`rg` command would print secret values, do not run it raw. Use safer summaries or redacted inspection.
+- Do not include secret values in `debug_context`, final summaries, auto-docs, task tracker, commit messages, PR bodies, or changelog entries.
+- If suspected secrets are part of the bug, stop before shipping and require remediation.
+
+## Step 10 - Verify And Tail Chain
+
+After the fix:
+
+1. Re-run the original repro or evidence-equivalent focused repro.
+2. Run the focused regression test if available.
+3. Run broader existing checks when appropriate and available.
+4. Remove or explicitly approve diagnostic instrumentation.
+5. Emit final `debug_context`.
+6. Run `sdcorejs-ship (verify-before-done mode)` when acceptance criteria, a bug contract, or source changes exist.
+7. Run `sdcorejs-ship (branch-ready mode)` before any Git artifact path.
+8. Run auto-docs, task tracker, and memories only when durable debug knowledge or changed artifacts justify them and normal tail policy allows it.
+9. Invoke `sdcorejs-git` only after ship and branch-ready gates have passed for the current `HEAD` or diff and the user explicitly asks for commit, PR, changelog, release-note, or workspace artifacts.
+
+If invoked from `sdcorejs-repair-loop`, preserve `repair_source`,
+`review_context`, original finding ID/source, package-manager evidence, and
+verification commands. After the debug fix, return to the caller's tail chain.
+
+If verification is blocked, say blocked/unverified and do not claim the bug is
+fixed. If `repro_status` is `evidence-confirmed` or `blocked`, do not overclaim
+confidence.
+
+## Required Output
+
+Every `sdcorejs-debug` session ends with a redacted `debug_context` block. The
+canonical schema lives in `_refs/shared/debug-context.md`; do not duplicate or
+drift it in this skill body. The final block must include at minimum:
+
+```text
+source, debug_mode, bug_class, stack_profile, repro_status, observed, expected,
+root_cause, root_hypothesis_id, confidence, files_touched,
+diagnostic_instrumentation, regression_tests, commands_run, commands_skipped,
+package_manager, environment, secret_redaction, verification, ship_handoff
+```
+
+Rules:
+
+- `commands_run` includes only commands actually run.
+- Do not claim tests, build, lint, repro, or CI passed unless they were actually run and passed.
+- If verification was skipped or blocked, record why.
+- `debug_context` must not contain secrets, PII, raw production data, or full secret-bearing lines.
 
 ## Rules
 
 ### MUST DO
-- Reproduce reliably BEFORE proposing a fix
-- Read the actual error message, not your memory of similar ones
-- Form falsifiable hypotheses
-- Find the root cause, not the symptom
-- Add a regression test if one doesn't exist
-- Hand off to `sdcorejs-git (commit mode)` for a commit only after verification passes and the user wants the change saved.
+
+- Run working-tree preflight before edits.
+- Classify `debug_mode`, `bug_class`, `stack_profile`, `repro_status`, and environment before stack-specific probes.
+- Use package-manager/script-aware command discovery.
+- Redact secrets and PII in logs, stack traces, network output, grep output, diffs, and final reports.
+- Maintain the Hypothesis Ledger and Diagnostic Instrumentation Ledger.
+- Confirm or evidence-confirm the bug before patching, or mark `blocked`.
+- Fix the root cause, not the symptom.
+- Add/update focused regression coverage when feasible, or delegate to `sdcorejs-test`.
+- Verify original repro plus regression surface.
+- Run `sdcorejs-ship (verify-before-done mode)` and `sdcorejs-ship (branch-ready mode)` before Git artifacts when source or contract changes exist.
 
 ### MUST NOT
-- Add `try/catch` to silence an error you don't understand
-- Add `?.` or `?? defaultValue` without understanding why the value is missing
-- Disable a failing test to "make CI green"
-- Apply a fix without confirming the repro now passes
-- Apply multiple fixes simultaneously when only one was needed (you won't know which one worked)
-- Use `--no-verify` to bypass hooks during debugging
-- Mark a bug "fixed" without running the original repro
 
-## Anti-patterns
-- **Shotgun debugging**: changing 5 things at once and seeing if the bug disappears. You'll fix it without knowing how, and it returns 3 weeks later.
-- **Confirmation bias**: only looking at evidence that supports your favorite hypothesis. Actively seek evidence that would FALSIFY it.
-- **Stack-trace blindness**: scrolling past the error message to start guessing. The stack trace usually names the line and value.
-- **"Works on my machine"**: not reproducing the user's environment.
-- **Mocking the bug away**: replacing real data with a mock that doesn't have the failing case.
-- **Symptom whack-a-mole**: same bug with different shape returns every 2 months — that's a sign you've been fixing symptoms.
-- **Heroic refactor mid-debug**: "while I'm here, let me clean up this file too" — refactor AFTER the fix lands and is verified.
+- Patch speculatively when `repro_status: blocked`.
+- Use shotgun debugging.
+- Silence errors with broad `try/catch`, optional chaining, default values, retries, or null guards without a confirmed root-cause contract.
+- Disable, skip, weaken, or rewrite tests only to make output green.
+- Run destructive production repro or use production data unsafely.
+- Leave temporary diagnostic logs behind.
+- Hardcode one package manager or invent scripts.
+- Use `--no-verify` to bypass hooks.
+- Stage, commit, push, or create PRs.
 
-## When to escalate
-Tell the user and ask for help when:
-- You have 3+ falsified hypotheses and no new lead
-- The repro requires environment access you don't have (prod data, internal API, third-party service)
-- The bug surfaces in code you cannot read (closed-source dependency)
-- The fix would require a breaking change to a shared contract
+## Cross-references
 
-Frame it as: "I tried X, Y, Z. Evidence so far: .... Remaining hypotheses: A vs B. Do you have any information that rules one out?" Translate at runtime.
+- `sdcorejs-test` - owns writing/running/planning tests without root-cause/fix intent and receives delegated large test work.
+- `sdcorejs-ship` - consumes debug evidence for verify-before-done and branch-ready gates.
+- `sdcorejs-review` - optional follow-up review, especially for security/performance-sensitive fixes.
+- `sdcorejs-repair-loop` - can call debug for a single verified bug while preserving `repair_source` and `review_context`.
+- `sdcorejs-git` - creates artifacts only after ship gates pass and the user explicitly requests them.

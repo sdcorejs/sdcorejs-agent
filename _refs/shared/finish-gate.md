@@ -149,6 +149,10 @@ and durable memories.
 
 1. (if tests not skipped) `sdcorejs-test` - run the RED-first specs written
    during the TDD gate and add happy-path coverage; report pass/fail.
+   If the test output reveals a concrete product bug or failing command that
+   needs a root-cause fix, route that item to `sdcorejs-debug` with the
+   `test_context`/`test_evidence`, then resume this tail with the resulting
+   `debug_context`.
 2. (if review choice is `Run review only`) `sdcorejs-review` only; it must
    include `review_context` and must not edit code.
 3. (if review choice is `Run review and repair loop`) `sdcorejs-review` ->

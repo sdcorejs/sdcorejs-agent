@@ -25,6 +25,20 @@ Before executing this skill:
 
 It does not own root-cause debugging or production-code bug fixes. When a failing test needs source investigation or a production fix, hand off to `sdcorejs-debug` with the test context and current evidence. Read-only failing-output triage can stay here only when the user asks to explain, classify, or summarize output without editing files.
 
+When failing output requires a root-cause fix, `sdcorejs-debug` owns the
+investigation and minimal fix. `sdcorejs-test` owns test authoring, test
+planning, and run-only actions.
+
+Correct routing examples:
+
+- "debug this failing test", "fix this failing Jest test", "root-cause this
+  test failure", "investigate flaky test" -> `sdcorejs-debug`.
+- "write tests for X", "add unit tests", "run the test suite", "create UAT
+  cases", "what should be tested?" -> `sdcorejs-test`.
+- If this skill sees a production bug while writing/running tests, stop and
+  hand off to `sdcorejs-debug` with `test_context`, `test_evidence`, and the
+  smallest failing command.
+
 ## Solution-root layout
 
 When the target project has the solution-builder layout:
