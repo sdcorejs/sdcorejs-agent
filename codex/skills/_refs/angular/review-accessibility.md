@@ -13,6 +13,20 @@ frustrating one. Most portal a11y issues: (a) custom modal not trapping focus,
 design", (e) `<html lang>` not switched on locale change. Test BOTH a list page
 AND a detail/form page — they exercise different a11y patterns.
 
+## Profile applicability
+
+Apply this ref only to `core-ui-angular` or `legacy-core-ui-angular`, or to an
+explicit SDCoreJS Core UI migration/install review scope. For `plain-angular`,
+mark this ref N/A and use `_refs/shared/review-accessibility.md` plus the
+project's actual UI library and local components. Do not require `SdTable`,
+Core UI section components, Core UI toasts, `autoId`, or portal detail/list
+patterns in a plain Angular app.
+
+Probe commands below are examples. The parent review must discover scripts and
+installed tools first. Do not download Lighthouse, pa11y, axe, or any other
+probe tool without explicit user approval; record skipped probes in
+`review_context`.
+
 ## Probe layer 1 — Baseline
 
 Run the `_refs/shared/review-accessibility.md` probes against a running portal

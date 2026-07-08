@@ -1,255 +1,362 @@
-# Fix Loop — Apply Review Findings + Iterate
+# Repair Loop - Apply Findings and Re-verify
 
-Reference body for `sdcorejs-repair-loop`. Load this file only after the skill triggers.
+Reference body for `sdcorejs-repair-loop`. Load this file only after the
+skill triggers.
 
 ## Purpose
-A review finding without a fix loop is just a complaint. This skill turns review findings into a closed-loop fix→re-verify→fix cycle until the code is shippable. It supports the default Critical/Important/Minor format and Angular/NestJS code-review table formats with `Gate` values.
 
-## When invoked
-- After `sdcorejs-review` writes findings (auto-invoked)
-- User says "fix findings", "apply review findings", "fix review issues", "fix critical issues", or localized equivalents
-- A linter / typecheck / test reports findings that match the same shape
-- After a `superpowers:receiving-code-review` cycle, when the parent agent decides to act on feedback
+Turn structured review, verification, lint, typecheck, test, or manual findings
+into a deterministic repair loop. The loop validates each finding, applies only
+safe fixes, re-runs the source-specific verification, and returns to the caller
+tail chain instead of jumping directly to a commit.
+
+## When Invoked
+
+- After `sdcorejs-review` reports findings and the finish gate selected
+  "Run review and repair loop".
+- After `sdcorejs-ship (verify-before-done mode)` reports failed acceptance
+  criteria.
+- When the user says "fix findings", "apply review findings", "fix review
+  issues", "fix critical issues", or a localized equivalent.
+- When linter, typecheck, or test output contains actionable findings with file
+  or command evidence.
 
 Do NOT invoke for:
-- Single unrelated bug (use `sdcorejs-debug`)
-- Findings that haven'<localized text>'t fix")
-- Refactoring requests (different workflow)
+
+- Single unrelated bugs. Use `sdcorejs-debug`.
+- Unstructured complaints with no file, scope, source, command, or review
+  evidence. First run `sdcorejs-review` or `sdcorejs-debug`.
+- Refactoring requests that need a new spec or plan.
+
+Findings with `file:line` but no suggested fix are allowed, but must be
+categorized as `user-decision` by default.
 
 ## Inputs
-- A list of findings in either supported shape:
-  - Default review format: `severity` (Critical / Important / Minor), `file:line`, `what`, `why`, `suggested fix`
-  - Angular/NestJS code-review table format: `Severity`, `Gate` (`BLOCKER` / `REQUIRED` / `RECOMMENDED` / `OPTIONAL` / `PASS` / `INFO`), `<localized text>`, `<localized text>`, `<localized text>`, `<localized text>`
-- Source can be: chat message, doc file in `.sdcorejs/docs/<track>/`, or stdout from a linter / test runner
-- **source** (required): origin of the findings — determines which re-verify command runs in Step 5
 
-  | source value | Meaning | Re-verify command |
-  |---|---|---|
-  | `review-code` | Findings from `sdcorejs-review` | Re-invoke `sdcorejs-review` with same file scope |
-  | `verify-before-done` | Failed acceptance criteria from `sdcorejs-ship (verify-before-done mode)` | Re-invoke `sdcorejs-ship (verify-before-done mode)` for the specific failed criteria |
-  | `linter` | Findings from `npm run lint` / `tsc --noEmit` | `npm run lint && tsc --noEmit` (or `npm run build`) |
-  | `manual` | Human-reported findings | No automated re-verify; report fix status to user |
+Accepted finding shapes:
 
-If `source` is not passed explicitly by the caller, infer it from context before proceeding:
-- Findings came from a `sdcorejs-review` invocation → use `review-code`
-- Findings are failed acceptance criteria from `sdcorejs-ship (verify-before-done mode)` → use `verify-before-done`
-- Findings came from `npm run lint` / `tsc --noEmit` / a CI log → use `linter`
-- Findings were written by a human in chat without a tool origin → use `manual`
+- Default review format: `severity` (`Critical`, `Important`, `Minor`),
+  `file:line`, `what`, `why`, `suggested fix`.
+- Angular/NestJS code-review table format: `Severity`, `Gate`
+  (`BLOCKER`, `REQUIRED`, `RECOMMENDED`, `OPTIONAL`, `PASS`, `INFO`),
+  `File/Line`, `Issue`, `Risk`, `Suggested fix`.
+- Verification, lint, typecheck, or test output with command, exit code, file
+  scope, and failure text.
+- Manual findings from the user, with the behavioral expectation recorded.
 
-## Workflow
+Preserve the original source context before any edits:
 
-### 0. Verify each finding is genuine (BEFORE categorizing)
+```yaml
+repair_source:
+  kind: review-code | verify-before-done | linter | typecheck | test | manual
+  track: angular | nestjs | nextjs | test | general
+  track_profile: core-ui-angular | legacy-core-ui-angular | plain-angular | sdcorejs-nestjs | plain-nestjs | nextjs-build-website | plain-nextjs | general | n/a
+  dimension: code | security | performance | accessibility | architecture | ALL
+  file_scope:
+    - src/...
+  refs_loaded:
+    - _refs/...
+  refs_skipped:
+    - ref: _refs/...
+      reason: not applicable to this track_profile
+  original_commands:
+    - pnpm lint
+    - pnpm test
+  package_manager: npm | pnpm | yarn | bun
+  review_mode: table | scored | blocking
+  probes:
+    - security
+    - accessibility
+  review_context:
+    source: sdcorejs-review
+    # Paste or reference the original review_context block without rewriting it.
+```
 
-A review tool — automated or human — is faster than careful. Some findings will be reviewer misunderstandings of context the code already handles correctly. Applying those fixes is worse than ignoring them: you change correct code, the convention drifts, and the original intent is lost.
+Rules:
 
-For each finding, take 30 seconds to verify it BEFORE touching anything. This step is borrowed from `superpowers:receiving-code-review` — technical rigor over performative agreement.
+- If the source is `sdcorejs-review`, re-run the same review track,
+  `track_profile`, dimension, file scope, mode, loaded refs, skipped refs, and
+  probes after repair.
+- Do not reclassify a `plain-angular`, `plain-nestjs`, or `plain-nextjs`
+  source as an SDCoreJS-specific profile during repair.
+- Do not re-run a generic/default code review when the original finding came
+  from `security`, `performance`, `architecture`, `accessibility`, or `ALL`.
+- If the source is `verify-before-done`, re-run the same acceptance gate, not
+  only the failed criterion.
+- If the source is `linter`, `typecheck`, or `test`, re-run the discovered
+  original commands where possible.
+- If the source is `manual`, there may be no source-specific automated
+  re-review, but build/lint/test verification must still run where available
+  and the summary must ask the user to confirm behavioral correctness.
 
-Run this 3-question check per finding:
+If `repair_source` is not passed by the caller, infer it from current evidence
+and record the inference before editing.
 
-1. **Does the file:line actually contain what the finding describes?**
-   - Read the file. If the snippet doesn't match (file changed since review, wrong line number, wrong file), the finding is stale → drop it.
-2. **Does the convention the finding cites actually apply here?**
-   - Check the relevant skill / `_refs/` file. Conventions have scope ("primary list page", "writable endpoints only", "long-form pages"). If the file is out of scope, the finding is mis-targeted → drop it.
-3. **Does the existing code already satisfy the intent via a different mechanism?**
-   - Example: finding says "missing null check", but the code path has an upstream guard that makes the value impossible-null. The check is redundant noise → drop with a brief rationale.
+## Working-tree Preflight
 
-Mark each finding as one of:
+Before the first repair pass:
 
-| Status | Meaning | Next |
-|---|---|---|
-| **VALID** | finding is correct, code needs change | proceed to Step 1 categorization |
-| **STALE** | snippet doesn't match the live file (file changed) | drop; note in summary |
-| **MIS-SCOPED** | convention doesn't apply here | drop with 1-line reason in summary |
-| **REDUNDANT** | code already handles it via a different mechanism | drop with reference to the existing mechanism |
-| **UNCLEAR** | can't tell without more context | ASK user, do not auto-drop |
+1. Run `git status --short`.
+2. Capture a diffstat of currently dirty files.
+3. Detect dirty files unrelated to the finding scope.
+4. Record the files the repair loop is allowed to touch.
 
-Report rejections to the user in the same summary as the fixes:
+If unrelated dirty changes exist and there is no approved dirty baseline from
+the same task, stop and ask the user one numbered decision:
 
-> "Verified 18 findings: 14 valid, 2 stale (files moved during refactor), 1 mis-scoped (`audit columns` rule applies to primary list, this is a sub-table), 1 redundant (null check upstream at `service.ts:88`)."
+```text
+I found unrelated dirty changes before repair. How should I proceed?
 
-This protects against:
-- Linters that over-trigger on edge cases
-- AI reviewers misreading context
-- Conventions cited outside their scope (e.g. "use OnPush" applied to a host component that intentionally needs default for projection)
+1. Continue but restrict edits to finding-scoped files.
+2. Continue and allow touching all dirty files.
+3. Stop so you can clean or stash changes first.
 
-Edge case: if MORE than 30% of findings turn out STALE/MIS-SCOPED/REDUNDANT, the review itself is low-signal — surface this to the user and suggest re-running `sdcorejs-review` with refreshed input before continuing.
+Reply with `1`, `2`, or `3`.
+```
 
-### 1. Categorize findings into 3 fix tiers
+## Repair Ledger
+
+Create a visible Repair ledger before edits and update it after each pass:
+
+| ID | Source | Severity/Gate | File:line | Finding | Verification status | Tier | Action | Reverify |
+|---|---|---|---|---|---|---|---|---|
+| R1 | review:security | High/REQUIRED | src/auth.guard.ts:42 | Missing permission check | VALID | confirm | patched | pending |
+
+Verification status values:
+
+- `VALID`: finding is correct and code needs a change.
+- `STALE`: file, line, or snippet no longer matches live code.
+- `MIS-SCOPED`: cited convention or gate does not apply to this file/scope.
+- `REDUNDANT`: code already satisfies the finding through another mechanism.
+- `UNCLEAR`: cannot decide without more context.
+
+Rules:
+
+- Every finding must be classified before repair.
+- Every `VALID` finding must be categorized as `auto`, `confirm`, or
+  `user-decision`.
+- `STALE`, `MIS-SCOPED`, and `REDUNDANT` findings must not be patched.
+- `UNCLEAR` findings must not be patched without either rerunning
+  review/debug or asking the user.
+
+## Verification Command Discovery
+
+Discover verification commands from package manager, lockfile, workspace
+configuration, `package.json` scripts, and the original failing command. Do not
+hardcode `npm` or `tsc`. Do not invent missing scripts.
+
+Rules:
+
+- Detect package manager from lockfiles and `package.json`.
+- Do not mix `npm`, `yarn`, `pnpm`, and `bun`.
+- Use existing `package.json` scripts only.
+- Prefer the project's own build, lint, typecheck, and test scripts.
+- For monorepos, respect workspace scripts when detectable.
+- If a script does not exist, document the skipped verification with evidence,
+  such as `no lint script found in package.json`.
+- The original failing command is authoritative when it is still available and
+  matches the detected package manager.
+
+## Fix Tiers
 
 | Tier | Definition | Default action |
 |---|---|---|
-| **Auto-apply** | Mechanical, single-file, no semantic decision (e.g. missing `OnPush`, wrong import path, dead variable, missing `multi: true`) | Apply in batch without asking |
-| **Confirm-then-apply** | Semantic but obvious (e.g. wrong DI scope, missing null check that has documented contract, swap `formControlName` → `[form]+name=`) | Show user the proposed diff, apply on OK |
-| **User-decision** | Architectural / scope / preference (e.g. "split this 200-line component", "rename this token", "add caching layer") | Surface to user, defer until they decide |
+| `auto` | Mechanical, low-risk, single-file or tightly scoped fixes with no semantic decision. | Apply in small batches. |
+| `confirm` | Semantic but likely correct fix where the tradeoff is small and explainable. | Ask for explicit approval before editing. |
+| `user-decision` | Architectural, product, contract, naming, permission, UX, migration, or preference decisions. | Defer until the user explicitly decides. |
 
-Rules for categorization:
-- Critical that's auto-apply → still auto-apply, but mention in summary
-- Important that's user-decision → never auto-apply
-- Any finding with no `suggested fix` → user-decision by default (you don't know what they want)
+Rules:
 
-### 2. Apply auto-tier in one batch
+- Critical or `BLOCKER` findings can be `auto` only when the fix is genuinely
+  mechanical.
+- Findings without a suggested fix are `user-decision` by default.
+- Confirm-tier findings may be grouped and offered to the user with exactly:
 
-Single message, one edit per finding. Group findings by file to minimize round trips.
-
-After batch:
-- Run `npm run lint` (catches new convention violations)
-- Run the project's typecheck (`tsc --noEmit` or `npm run build`)
-- Run the relevant test slice — the one that should now PASS the finding
-
-Report:
-> "<localized text>"
-
-### 3. Surface confirm-tier with proposed diffs
-
-For each, show the user a compact diff preview:
-```
-[Important] src/libs/catalog/features/product/services/product.service.ts:42
-  Reason: Service should be `providedIn: 'root'`, not route-scoped (see _refs/angular/write-code/init-module.md)
-  Proposed:
-    - @Injectable()
-    + @Injectable({ providedIn: 'root' })
+```text
+1. Apply all
+2. Apply selected
+3. Defer all
 ```
 
-Group them, then ask: "<localized text>". Default to "all" if they're all in the same category and skill-rule-driven.
+Silence is not approval.
 
-### 4. Defer user-decision tier
-List them with their file:line and the question. Do NOT touch the code. User answers, then this skill re-runs with the answer applied as a new "confirm-then-apply" finding.
+## Pass Discipline
 
-### 5. Re-run per source
+The loop has a hard cap of 3 passes.
 
-After tier 1 + tier 2 fixes are applied, re-verify using the tool that matches the
-invocation source:
+Each pass must record:
 
-| source | Re-verify action |
+- pass ID;
+- findings attempted;
+- files touched;
+- pre/post diffstat;
+- verification command and result;
+- unresolved findings;
+- whether the pass introduced new failures.
+
+Before each pass, capture enough baseline information to revert that pass if it
+makes things worse. If a pass increases failures or causes unrelated
+regressions, either revert that pass or ask the user before proceeding.
+
+Avoid big-bang batches:
+
+- Batch `auto` fixes only when they are mechanical and low-risk.
+- Cap a batch to about 5-8 mechanical findings, or one coherent risk/file group
+  per pass.
+- Never hide `confirm` or `user-decision` findings inside an auto batch.
+- Split large finding sets into sub-passes and verify incrementally.
+
+## Workflow
+
+### 0. Preserve Source Context
+
+Record `repair_source`, current branch, dirty baseline, original commands, file
+scope, and review mode before editing.
+
+### 1. Verify Findings
+
+For each finding:
+
+1. Check whether the live file/line still matches the finding.
+2. Check whether the cited convention applies to this scope.
+3. Check whether existing code already satisfies the intent through another
+   mechanism.
+
+Update the Repair ledger with `VALID`, `STALE`, `MIS-SCOPED`, `REDUNDANT`, or
+`UNCLEAR`.
+
+If more than 30% of findings are not `VALID`, report that the source may be
+stale or low-signal and suggest rerunning the original review/debug/verification
+before continuing.
+
+### 2. Categorize Valid Findings
+
+Assign `auto`, `confirm`, or `user-decision` to every `VALID` finding and record
+the reason in the ledger.
+
+### 3. Apply One Pass
+
+Apply only the approved scope for the current pass:
+
+- `auto` tier can proceed when it is mechanical and inside the allowed file
+  scope.
+- `confirm` tier requires the numbered approval prompt.
+- `user-decision` tier requires explicit user approval before editing.
+
+Do not edit tests merely to make production code pass. Only edit tests when:
+
+- the finding is explicitly in test code;
+- adding regression coverage;
+- updating a test to match an approved contract change;
+- or the user explicitly approved a test-contract update.
+
+Never weaken assertions, remove coverage, skip tests, or mark tests pending to
+make verification pass.
+
+### 4. Re-verify Per Source
+
+After each pass:
+
+| Source | Re-verify action |
 |---|---|
-| `review-code` | Re-invoke `sdcorejs-review` with the same file scope as the original review |
-| `verify-before-done` | Re-invoke `sdcorejs-ship (verify-before-done mode)` (full suite — the skill re-checks all criteria; previously-passing criteria will still pass, so the run is safe and complete) |
-| `linter` | `npm run lint && tsc --noEmit` (or the project's typecheck equivalent) |
-| `manual` | No automated re-verify. Report: "<localized text>" and pause for the user |
+| `review-code` | Re-run `sdcorejs-review` with the same track, `track_profile`, dimension, file scope, mode, refs, and probes from `review_context`. |
+| `verify-before-done` | Re-run `sdcorejs-ship (verify-before-done mode)` for the same acceptance gate. |
+| `linter` | Re-run the original lint command or discovered lint script. |
+| `typecheck` | Re-run the original typecheck command or discovered typecheck/build script. |
+| `test` | Re-run the original test command or the smallest matching existing test script. |
+| `manual` | Run discovered build/lint/test commands where available, then ask the user to confirm behavioral correctness. |
 
 Look for:
-- **Resolved findings** — same file:line no longer flagged → tick off
-- **New findings introduced by the fix** — flag as regressions; do NOT tick off
-- **Same finding still present** — fix didn't take; investigate (cached test, wrong file,
-  syntax error swallowed by the build)
 
-### 6. Iterate
-Loop steps 2–5 until:
-- 0 unresolved blocking findings remain. Blocking means `Critical`/`Important` in the default format, or `BLOCKER`/`REQUIRED` in Angular/NestJS code-review table mode. A blocking finding counts as resolved only when it is fixed, verified stale/mis-scoped/redundant, or explicitly deferred by the user.
-- All remaining findings are non-blocking (`Minor`, `RECOMMENDED`, `OPTIONAL`, `INFO`, or `PASS`) that the user has acknowledged as defer/won't-fix when action is still possible.
-- OR: 3 iterations and the loop hasn't converged → ESCALATE to user
+- resolved findings;
+- new failures introduced by the pass;
+- findings that remain after the attempted fix.
 
-### 7. Convergence escalation
-If after 3 passes there are still blocking findings:
-- One of the "fixes" is introducing a regression that the next pass catches → systematic issue, ask user
-- The finding is mis-categorized (auto-tier when it's actually user-decision) → re-categorize
-- Two findings are mutually exclusive (fix A introduces B) → user must pick
+Do not claim convergence until the source-specific re-verification has run or a
+skipped check is explicitly documented with evidence.
 
-Frame it as:
-> "Looped 3 times; 2 findings still do not converge:
-> - X (still appears after fix Y)
-> - Z (tried 3 approaches and lint still fails)
->
-> Choose next step:
-> 1. Defer (defer) - keep these findings open and ship only if you explicitly accept the risk.
-> 2. Change approach (change) - pick a different fix direction for the stuck finding.
-> 3. Revert batch (revert) - undo the attempted batch and retry from scratch.
->
-> Reply with `1`, `2`, or `3`."
+### 5. Iterate Or Escalate
 
-### 8. Final commit prep
-Once converged, hand off to `sdcorejs-git (commit mode)`. Commit message shape by source:
+Continue until:
 
-```
-# source = review-code
-fix(<scope>): apply N review findings (Critical: A, Important: B, Minor: C)
+- no unresolved blocking findings remain;
+- remaining non-blocking findings are explicitly deferred or acknowledged;
+- or 3 passes have run.
 
-# source = verify-before-done
-fix(<scope>): resolve N failed acceptance criteria
+If the loop does not converge after 3 passes, stop and ask:
 
-# source = linter
-fix(<scope>): resolve N lint / typecheck errors
+```text
+The repair loop reached the 3-pass cap and still has blocking findings.
 
-# source = manual
-fix(<scope>): apply N manually-reported fixes
+1. Defer these findings with an explicit risk note.
+2. Change approach for the stuck findings.
+3. Revert the last repair pass and reassess.
+
+Reply with `1`, `2`, or `3`.
 ```
 
-DO NOT commit before final lint + test pass.
+## Convergence Handoff
 
-## Examples
+After convergence, return to the caller's tail chain.
 
-### Auto-tier only
-```
-Findings:
-  [Critical] missing OnPush in 3 components
-  [Critical] formControlName usage in 9 places (should be [form]+name=)
-  [Minor] trailing whitespace in 4 files
+If invoked from a finish-gate review, continue in this order:
 
-Loop pass 1:
-  - Apply 16 edits in one batch
-  - npm run lint ✓
-  - npm run test ✓
-  - Re-review: 0 findings
-Done. Hand off to sdcorejs-git (commit mode).
-```
+1. `sdcorejs-documentation (code-documentation mode)`, if source changed.
+2. `sdcorejs-ship (verify-before-done mode)`.
+3. `sdcorejs-ship (branch-ready mode)`.
+4. `_refs/orchestration/tail/auto-docs.md`.
+5. `sdcorejs-documentation (write-user-guide mode)`, if selected.
+6. `_refs/orchestration/tail/auto-task-tracker.md`.
+7. `sdcorejs-explore (memories mode)`, if durable knowledge surfaced.
 
-### Mixed tier with user-decision
-```
-Findings:
-  [Critical] @Injectable() → @Injectable({ providedIn: 'root' }) (5 services)  -- auto
-  [Important] split ProductService into ProductCommandService + ProductQueryService  -- user-decision
-  [Minor] missing public-contract JSDoc on 12 methods  -- auto (run sdcorejs-documentation code-documentation mode)
+If invoked directly by the user, run discovered verification commands, then
+offer explicit next steps:
 
-Pass 1:
-  Auto: applied 5 + ran sdcorejs-documentation (code-documentation mode) -> JSDoc added
-  Skip: user-decision finding deferred
-  Re-review: 0 Critical, 1 Important deferred, 0 Minor
-  Table-mode equivalent: 0 BLOCKER, 1 REQUIRED explicitly deferred, 0 blocking unresolved
-Reported to user:
-  "<localized text>"
+```text
+Repair summary complete. Choose next step:
+
+1. Run sdcorejs-ship in verify-before-done mode.
+2. Stop after this repair summary.
+3. Prepare commit only after ship and branch-ready pass.
+
+Reply with `1`, `2`, or `3`.
 ```
 
-### Convergence failure
-```
-Pass 1: fix [Important] X → introduces [Critical] Y
-Pass 2: fix [Critical] Y → reintroduces [Important] X (different angle)
-Pass 3: same loop
-
-Escalate: "<localized text>"
-```
+Do not hand off directly to `sdcorejs-git (commit mode)` by default. Direct
+commit handoff is allowed only when `sdcorejs-ship (verify-before-done mode)`
+and `sdcorejs-ship (branch-ready mode)` passed in the current session, or when
+the caller explicitly requested a commit after those gates.
 
 ## Rules
 
 ### MUST DO
-- Categorize EVERY finding before touching code
-- Auto-apply only mechanical, single-file changes
-- Show diffs for confirm-tier; never silently apply semantic changes
-- Defer user-decision tier without touching code
-- Re-run the originating review/lint/test after each batch
-- Hard cap at 3 iterations before escalating
-- Verify lint + typecheck + tests pass before claiming the loop is converged
-- Surface introduced regressions explicitly (don't silently include them in "fixed" count)
+
+- Preserve `repair_source` before editing.
+- Preserve `review_context` exactly when the source is `sdcorejs-review`.
+- Run working-tree preflight before the first pass.
+- Keep the Repair ledger visible and current.
+- Classify every finding before touching code.
+- Re-run the source-specific verification after each pass.
+- Use package-manager and script discovery instead of hardcoded commands.
+- Keep passes small and reversible.
+- Require explicit approval for semantic and user-decision fixes.
+- Protect tests from being weakened.
 
 ### MUST NOT
-- Skip a finding because "it's minor and tests pass" — Minor still goes into the report
-- Apply user-decision tier without asking
-- Hide failed re-review behind "fix applied" status
-- Disable a failing test to "make the loop converge"
-- Bypass `--no-verify` if hooks reject the fix commit
-- Run >3 iterations silently — escalate
-- Apply a fix that doesn't match the finding's suggested approach without explaining why
 
-## Anti-patterns
-- **Whack-a-mole**: each fix introduces a new finding, loop forever — escalate at pass 3
-- **Cosmetic compliance**: rename a variable to silence a linter rule without understanding why the rule exists
-- **Test-deletion fix**: removing the failing test instead of fixing the code
-- **Big-bang batch**: apply all 30 findings in one go, then nothing works, can't bisect which fix broke it
-- **Silent regression**: fix introduces new bug, parent agent reports "all done"
-- **Convention override**: applying a fix that contradicts the convention the review used to flag it
-- **Premature commit**: commit before final re-review passes
+- Patch stale, mis-scoped, redundant, or unclear findings.
+- Apply user-decision tier without asking.
+- Treat silence as approval.
+- Run more than 3 passes silently.
+- Hide new regressions inside a "fixed" summary.
+- Commit directly from repair-loop by default.
+- Weaken tests, remove coverage, skip tests, or mark tests pending to make
+  verification pass.
 
 ## Cross-references
-- `sdcorejs-review` (track-specific) — produces the findings this skill consumes
-- `sdcorejs-debug` — for single-bug fix workflow (use when the input isn't a structured findings list)
-- `sdcorejs-ship (verify-before-done mode)` — final gate AFTER this loop converges
-- `sdcorejs-git (commit mode)` — handoff destination after convergence
+
+- `sdcorejs-review` - produces structured review findings.
+- `sdcorejs-debug` - handles single-bug investigation.
+- `sdcorejs-ship (verify-before-done mode)` - acceptance verification after
+  convergence.
+- `sdcorejs-ship (branch-ready mode)` - branch hygiene before commit or PR.

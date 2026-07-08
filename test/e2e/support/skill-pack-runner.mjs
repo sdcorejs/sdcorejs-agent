@@ -26,6 +26,8 @@ const STOP_WORDS = new Set([
 
 const LOCALIZED_ALIASES = new Map([
   ['them', ['add', 'create']],
+  ['sua', ['fix', 'repair', 'resolve']],
+  ['loi', ['issue', 'issues', 'finding', 'findings', 'error']],
   ['xay', ['build', 'create']],
   ['dung', ['build', 'create']],
   ['thiet', ['design', 'wireframe', 'mockup']],
@@ -56,10 +58,14 @@ const LOCALIZED_ALIASES = new Map([
   ['mockup', ['mockup', 'design']],
   ['kiem', ['check', 'review']],
   ['tra', ['check', 'review']],
+  ['bao', ['security']],
+  ['mat', ['security']],
   ['yeu', ['requirement']],
   ['cau', ['requirement']],
   ['day', ['complete']],
-  ['du', ['complete']]
+  ['du', ['complete']],
+  ['vua', ['previous']],
+  ['roi', ['previous']]
 ]);
 
 const SKILL_HINTS = [
@@ -72,8 +78,10 @@ const SKILL_HINTS = [
   { skill: 'sdcorejs-design', words: ['design', 'ui', 'ux', 'screen', 'wireframe', 'mockup', 'png', 'preview', 'handoff', 'flow', 'flows', 'story', 'stories'] },
   { skill: 'sdcorejs-documentation', words: ['documentation', 'docs', 'doc', 'document', 'code-documentation', 'docstring', 'doc-comment', 'comment', 'comments', 'jsdoc', 'tsdoc', 'api', 'function', 'functions', 'class', 'classes', 'guide', 'user-guide', 'end-user', 'manual', 'technical', 'taskid', 'ticket', 'issue', 'record', 'save', 'convert', 'standardize', 'rewrite', 'improve', 'structure'] },
   { skill: 'sdcorejs-explore', words: ['explore', 'summary', 'overview', 'project', 'codebase', 'repo', 'system', 'map', 'architecture', 'trace', 'flow', 'setup', 'env', 'environment', 'resume', 'recover'] },
+  { skill: 'sdcorejs-review', words: ['review', 'audit', 'security', 'performance', 'accessibility', 'a11y', 'architecture', 'scored', 'full', 'comprehensive'] },
   { skill: 'sdcorejs-ship', words: ['verify', 'acceptance', 'criteria', 'final', 'gate', 'branch', 'ready', 'ship', 'push', 'release', 'tag', 'merge', 'dependency', 'dependencies', 'package', 'outdated', 'audit', 'bump'] },
-  { skill: 'sdcorejs-git', words: ['commit', 'changes', 'save', 'worktree', 'pr', 'pull', 'request', 'changelog', 'notes'] }
+  { skill: 'sdcorejs-git', words: ['commit', 'changes', 'save', 'worktree', 'pr', 'pull', 'request', 'changelog', 'notes'] },
+  { skill: 'sdcorejs-repair-loop', words: ['fix', 'apply', 'repair', 'resolve', 'finding', 'findings', 'review', 'issues', 'issue', 'critical', 'failed', 'failures', 'verify-before-done'] }
 ];
 
 const PRIORITY_RULES = [
@@ -89,6 +97,14 @@ const PRIORITY_RULES = [
     when: ({ prompt, tokens }) =>
       /\bphan\s+van\b/.test(prompt) ||
       hasAny(tokens, ['brainstorm', 'unsure', 'deciding', 'between', 'compare', 'should', 'clarify'])
+  },
+  {
+    skill: 'sdcorejs-repair-loop',
+    when: ({ prompt, tokens }) => hasRepairLoopIntent(prompt, tokens)
+  },
+  {
+    skill: 'sdcorejs-review',
+    when: ({ prompt, tokens }) => hasReviewIntent(prompt, tokens)
   },
   {
     skill: 'sdcorejs-execute-plan',
@@ -252,6 +268,11 @@ function matchPriorityRule(pack, prompt, tokens) {
   const normalizedPrompt = prompt.toLowerCase();
   const explicitName = normalizedPrompt.match(/\bsdcorejs-[a-z0-9-]+\b/)?.[0];
   if (explicitName) {
+    if (explicitName === 'sdcorejs-review' && hasRepairLoopIntent(normalizedPrompt, tokens)) {
+      const repairSkill = findSkill(pack, 'sdcorejs-repair-loop');
+      if (repairSkill) return repairSkill;
+    }
+
     const explicitSkill = findSkill(pack, explicitName);
     if (explicitSkill) return explicitSkill;
   }
@@ -405,6 +426,35 @@ function hasAny(tokens, words) {
 
 function hasTestIntent(tokens) {
   return hasAny(tokens, ['test', 'tests', 'unit', 'integration', 'e2e', 'playwright', 'cypress', 'uat', 'tdd']);
+}
+
+function hasRepairLoopIntent(prompt, tokens) {
+  return (
+    (
+      hasAny(tokens, ['fix', 'apply', 'repair', 'resolve']) &&
+      hasAny(tokens, ['finding', 'findings', 'review', 'issues', 'issue', 'critical', 'failed', 'failures', 'verify-before-done'])
+    ) ||
+    /\bapply\b.*\breview findings\b/.test(prompt) ||
+    /\brepair\b.*\bverify-before-done\b/.test(prompt)
+  );
+}
+
+function hasReviewIntent(prompt, tokens) {
+  if (hasProductIntent(prompt, tokens) || hasRepairLoopIntent(prompt, tokens)) return false;
+  if (hasAny(tokens, ['update', 'bump', 'dependency', 'dependencies', 'package', 'outdated'])) return false;
+
+  const explicitReviewWord = /\b(review|audit)\b/.test(prompt);
+  const reviewDimension = hasAny(tokens, ['security', 'performance', 'accessibility', 'a11y', 'architecture']);
+
+  return (
+    (explicitReviewWord && (hasAny(tokens, ['review', 'audit', 'code', 'module', 'screen', 'page']) || reviewDimension)) ||
+    (
+      reviewDimension &&
+      hasAny(tokens, ['check', 'review', 'audit', 'module', 'screen', 'page', 'code'])
+    ) ||
+    /\b(full|comprehensive|scored)\b.*\b(review|audit)\b/.test(prompt) ||
+    /\b(review|audit)\b.*\b(code|security|performance|accessibility|a11y|architecture)\b/.test(prompt)
+  );
 }
 
 function hasProductIntent(prompt, tokens) {

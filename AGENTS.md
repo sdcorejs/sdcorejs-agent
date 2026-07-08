@@ -85,7 +85,8 @@ Request
   -> sdcorejs-execute-plan
        Detect executor track and always ask sequential vs parallel.
   -> executor
-       angular: sdcorejs-angular
+       core-ui-angular / legacy-core-ui-angular / new SDCoreJS portal: sdcorejs-angular
+       plain-angular: generic harness
        nestjs:  sdcorejs-nestjs
        nextjs:  sdcorejs-nextjs
        product: sdcorejs-product
@@ -105,7 +106,7 @@ Request
 
 | Track | Executor | Notes |
 |---|---|---|
-| angular | `sdcorejs-angular` | Loads `_refs/angular/write-code/*` packs, Core UI first |
+| angular | `sdcorejs-angular` for Core UI portals; generic harness for plain Angular | Loads `_refs/angular/write-code/*` packs only for `@sdcorejs/angular` / `@sd-angular/core`, new SDCoreJS portal creation, or approved Core UI migration |
 | nestjs | `sdcorejs-nestjs` | Loads `_refs/nestjs/write-code/*`, `@sdcorejs/nestjs` core catalog first |
 | nextjs | `sdcorejs-nextjs` | Loads `_refs/nextjs/build-website/write-code/*` packs |
 | product | `sdcorejs-product` | Writes/audits `product/` PRDs/user stories/AC/UAT docs plus `.sdcorejs/docs/product/` feature ledgers |
@@ -135,7 +136,7 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 2. Requirements before code: use `sdcorejs-brainstorming` until minimum blockers are confirmed.
 3. Approval gates: `sdcorejs-spec` and `sdcorejs-plan` require explicit approval. Silence is not approval.
 4. Approved snapshots: `sdcorejs-spec` and `sdcorejs-plan` write approved snapshots themselves before the next phase.
-5. Execute through `sdcorejs-execute-plan`: it owns track detection, product-track routing, design-track routing, test-track routing, generic harness fallback, and the sequential/parallel question.
+5. Execute through `sdcorejs-execute-plan`: it owns track detection, Angular Core UI/plain Angular classification, product-track routing, design-track routing, test-track routing, generic harness fallback, and the sequential/parallel question.
 6. Finish gate is mandatory after every code-generation run, including direct track executor requests.
 7. Evidence before claims: never say pass, fixed, built, or done without current verification output.
 8. Auto-docs and task tracking write to the target project, not to this agent repo.

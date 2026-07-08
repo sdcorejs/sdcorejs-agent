@@ -19,7 +19,7 @@ sdcorejs-brainstorming
 -> sdcorejs-spec (approval gate + approved spec snapshot)
 -> sdcorejs-plan (approval gate + approved plan snapshot)
 -> sdcorejs-execute-plan
--> executor: angular | nestjs | nextjs | product | design | test | generic harness
+-> executor: Core UI angular | nestjs | nextjs | product | design | test | generic harness
 -> finish gate and tail chain
 ```
 
@@ -37,7 +37,8 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 
 ## Executors
 
-- `sdcorejs-angular`
+- `sdcorejs-angular` for Core UI portals/new SDCoreJS portals/approved Core UI migration
+- generic harness for plain Angular
 - `sdcorejs-nestjs`
 - `sdcorejs-nextjs`
 - `sdcorejs-product`

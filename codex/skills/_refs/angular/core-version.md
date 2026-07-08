@@ -63,7 +63,8 @@ which Angular major `init-portal` installs) is a **separate concern** from the d
 - **Version match (with nearest-version fallback):** auto-detected from the target project'<localized text>'s `index.json` in that order and uses the first that actually downloads — so a version whose docs can't be pulled falls through to the nearest one that can. Example: a literal npm pin like `20.0.1` (which the docs registry doesn't publish as a docs build) maps to the newest published `20.0.x`; an unpublished major like `18.x` maps to the nearest published major (`19.0.x`). (The API is byte-identical across majors 19/20/21, so an exact patch match is not required.)
 - **Cache:** `~/.cache/sdcorejs/core-docs/<version>/` — pulled once, reused, and used as the offline fallback. Never committed.
 - **Mojibake guard (rule 6):** the fetcher refuses (exit 3) any upstream doc that is double-encoded (UTF-8-as-CP1252). The fix is upstream (the doc generator / published site), not here.
-- **Offline:** no network + no cache → the fetcher exits non-zero and the skill falls back to generic Angular Material + `alert('TODO')`, flagged.
+- **Offline with Core UI installed:** no network + no cache -> the fetcher exits non-zero and the skill continues only from local Core UI evidence, with the docs gap flagged. Do not invent Core UI APIs.
+- **No Core UI package installed:** this is not an offline-docs case. Existing-project fetches must use `--require-installed`; if neither `@sdcorejs/angular` nor `@sd-angular/core` is installed, classify the target as `plain-angular` and route to the generic harness unless an approved Core UI migration/install plan exists.
 
 > Rationale: keeps this repo (and the published plugin) lean, and the docs always track the latest published release with zero re-sync/commit churn. Trade-off: the angular track needs network on first use per version (acceptable — it runs inside an AI tool that is already online).
 

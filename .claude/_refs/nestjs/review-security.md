@@ -7,6 +7,19 @@
 
 Most BE issues: (a) endpoint missing auth/auth, (b) raw SQL with user input, (c) over-permissive CORS, (d) secrets in code/logs. The BE is the authorization boundary — enforce, don't assume.
 
+## Profile applicability
+
+Apply this ref only to `sdcorejs-nestjs`, or to an explicit SDCoreJS NestJS
+migration/install review scope. For `plain-nestjs`, mark this ref N/A and use
+`_refs/shared/review-security.md` plus the backend's actual auth, validation,
+database, and framework conventions. Do not require `@HasPermission`,
+`ZodValidationGuard`, TypeORM, PostgreSQL, or SDCoreJS base classes unless the
+target project uses them.
+
+Secret redaction is mandatory. Never echo secret values or full matching lines.
+Report only file, line when available, key/category, and redacted evidence such
+as `JWT_SECRET=[REDACTED]`.
+
 ## NS-1: Every write endpoint has `@HasPermission`
 ```bash
 grep -rnB3 -E "@(Post|Put|Delete|Patch)\(" src/**/*.controller.ts | grep -B3 -E "@(Post|Put|Delete|Patch)"

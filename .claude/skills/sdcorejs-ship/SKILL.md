@@ -49,9 +49,10 @@ acceptance gate:
 - block "done", commit, PR, or release until every automated criterion passes
   and every manual/deferred criterion is explicitly acknowledged
 
-If the gate fails, invoke `sdcorejs-repair-loop` with source
-`verify-before-done`. If it passes, continue to `branch-ready` mode when this is
-part of a tail/ship chain.
+If the gate fails, invoke `sdcorejs-repair-loop` with `repair_source.kind:
+verify-before-done`, the same acceptance scope, original verification commands,
+and package-manager evidence. If it passes, continue to `branch-ready` mode when
+this is part of a tail/ship chain.
 
 ## Mode: branch-ready
 

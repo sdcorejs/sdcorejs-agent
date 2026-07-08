@@ -9,6 +9,19 @@
 
 NestJS performance bottlenecks are almost always one of: N+1 queries, missing indexes, unbounded result sets, sync I/O in the event loop, or connection-pool exhaustion. Audit against the shared budget + these probes. Run against a production-like environment (staging or local production build), NOT `npm run start:dev`, and warm up before measuring.
 
+## Profile applicability
+
+Apply this ref only to `sdcorejs-nestjs`, or to an explicit SDCoreJS NestJS
+migration/install review scope. For `plain-nestjs`, mark this ref N/A and use
+`_refs/shared/review-performance.md` plus the backend's actual database,
+ORM/query layer, queue, cache, and runtime conventions. Do not require TypeORM,
+PostgreSQL, `pg_stat_statements`, or SDCoreJS module layout unless detected.
+
+Probe commands below are examples. The parent review must discover the target
+package manager, scripts, database availability, and installed tools first. Do
+not download load-test tools with `npx --yes` or similar without explicit user
+approval; record skipped probes in `review_context`.
+
 ## NS-P1: N+1 query detection
 
 Enable query logging in test mode and count queries per endpoint:

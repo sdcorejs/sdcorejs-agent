@@ -15,6 +15,15 @@ budgets and add probes that match the stack's bottlenecks.
 A budget that no one checks is just a wish. Pair every threshold with a verifier command + a
 hook (CI, `verify-before-done`, or release checklist).
 
+## Probe discipline
+
+The parent `sdcorejs-review` must discover the target package manager, scripts,
+installed tools, runtime URL, and stack layout before running probes. Commands
+below are examples, not mandatory commands. Do not hardcode `npm`, `tsc`, or
+source roots; do not download Lighthouse, autocannon, bundle analyzers, or any
+other probe tool with `npx --yes` or similar without explicit user approval.
+Record skipped probes in `review_context`.
+
 ## Read-only inventory (parallel)
 - `git log -20 --oneline` — what landed recently
 - `git diff <base>...HEAD` — full diff if a base ref is given, else surface

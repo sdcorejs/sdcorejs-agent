@@ -13,6 +13,19 @@ Prerequisites:
 - Site builds successfully (`npm run build`)
 - Either a staging URL OR `npm run start` runs locally on port 3000 (NEVER audit dev mode)
 
+## Profile applicability
+
+Apply this ref only to `nextjs-build-website`, or to an explicit build-website
+migration/install review scope. For `plain-nextjs`, mark this ref N/A and use
+`_refs/shared/review-performance.md` plus the project's actual Next.js
+performance conventions. Do not require `[locale]`, build-website caching,
+content/public-site layout, or landing-site metadata patterns unless detected.
+
+Probe commands below are examples. The parent review must discover the target
+package manager, scripts, URLs, and installed tools first. Do not install
+bundle analyzers or download Lighthouse/autocannon with `npx --yes` or similar
+without explicit user approval; record skipped probes in `review_context`.
+
 ## NX-P1: Lighthouse mobile
 
 ```bash

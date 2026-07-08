@@ -97,6 +97,11 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   }
 
   const angularSkill = sourceByName.get('sdcorejs-angular');
+  assert.match(angularSkill, /Eligibility preflight/);
+  assert.match(angularSkill, /plain-angular/);
+  assert.match(angularSkill, /--require-installed/);
+  assert.match(angularSkill, /generic harness/);
+  assert.match(angularSkill, /Do not fetch Core UI docs/);
   assert.match(angularSkill, /_refs\/angular\/write-code\/input-analysis\.md/);
   assert.match(angularSkill, /SDCoreJS Core reuse analysis/);
   assert.match(angularSkill, /mandatory UI check/);
@@ -104,6 +109,9 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
 
   const angularInputAnalysis = await readFile(new URL('../../_refs/angular/write-code/input-analysis.md', import.meta.url), 'utf8');
   assert.match(angularInputAnalysis, /versions\.json/);
+  assert.match(angularInputAnalysis, /--require-installed/);
+  assert.match(angularInputAnalysis, /plain-angular/);
+  assert.match(angularInputAnalysis, /Angular\/local UI reuse analysis/);
   assert.match(angularInputAnalysis, /UI decomposition/);
   assert.match(angularInputAnalysis, /Requirement mapping/);
   assert.match(angularInputAnalysis, /Image \+ PRD mapping/);
@@ -111,9 +119,121 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(angularInputAnalysis, /Do not claim visual\/browser verification unless it actually happened/);
 
   const coreDocsFetch = await readFile(new URL('../../_refs/angular/core-docs-fetch.mjs', import.meta.url), 'utf8');
+  assert.match(coreDocsFetch, /--require-installed/);
+  assert.match(coreDocsFetch, /detectInstalledPackage/);
   assert.match(coreDocsFetch, /package-lock\.json/);
   assert.match(coreDocsFetch, /pnpm-lock\.yaml/);
   assert.match(coreDocsFetch, /yarn\.lock/);
+
+  const executePlan = sourceByName.get('sdcorejs-execute-plan');
+  assert.match(executePlan, /Angular project classification preflight/);
+  assert.match(executePlan, /core-ui-angular/);
+  assert.match(executePlan, /legacy-core-ui-angular/);
+  assert.match(executePlan, /plain-angular/);
+  assert.match(executePlan, /migration-request/);
+  assert.match(executePlan, /generic harness fallback/);
+
+  const reviewSkill = sourceByName.get('sdcorejs-review');
+  assert.match(reviewSkill, /track_profile/);
+  assert.match(reviewSkill, /review_context/);
+  assert.match(reviewSkill, /core-ui-angular/);
+  assert.match(reviewSkill, /legacy-core-ui-angular/);
+  assert.match(reviewSkill, /plain-angular/);
+  assert.match(reviewSkill, /plain-nestjs/);
+  assert.match(reviewSkill, /plain-nextjs/);
+  assert.match(reviewSkill, /_refs\/shared\/review-code\.md/);
+  assert.match(reviewSkill, /strict read-only/i);
+  assert.match(reviewSkill, /Do not write `.sdcorejs` docs/);
+  assert.match(reviewSkill, /Do not auto-run `sdcorejs-repair-loop`/);
+  assert.match(reviewSkill, /REDACTED|redact/i);
+  assert.match(reviewSkill, /npx --yes[\s\S]*explicit approval/);
+  assert.doesNotMatch(reviewSkill, /npm run lint && tsc --noEmit/);
+
+  const repairSkill = sourceByName.get('sdcorejs-repair-loop');
+  assert.match(repairSkill, /sdcorejs-ship \(verify-before-done mode\)/);
+  assert.match(repairSkill, /Repair ledger/);
+  assert.match(repairSkill, /Silence is not approval/);
+  assert.match(repairSkill, /Do not edit tests merely to make production code pass/);
+  assert.match(repairSkill, /review_context/);
+  assert.match(repairSkill, /track_profile/);
+  assert.doesNotMatch(repairSkill, /until the final verification pass is green/);
+
+  const repairRef = await readFile(new URL('../../_refs/orchestration/tail/repair-loop.md', import.meta.url), 'utf8');
+  assert.doesNotMatch(repairRef, /haven/);
+  assert.doesNotMatch(repairRef, /Once converged, hand off to `sdcorejs-git \(commit mode\)`/);
+  assert.doesNotMatch(repairRef, /Done\. Hand off to sdcorejs-git \(commit mode\)/);
+  assert.doesNotMatch(repairRef, /npm run lint && tsc --noEmit/);
+  assert.match(repairRef, /Repair ledger/);
+  assert.match(repairRef, /repair_source/);
+  assert.match(repairRef, /track_profile/);
+  assert.match(repairRef, /review_context/);
+  assert.match(repairRef, /Working-tree Preflight/);
+  assert.match(repairRef, /package manager|lockfile|`package\.json` scripts/i);
+  assert.match(repairRef, /Silence is not approval/);
+  assert.match(repairRef, /Do not edit tests merely to make production code pass/);
+  assert.match(repairRef, /return to the caller's tail chain/);
+  assert.match(repairRef, /sdcorejs-ship \(verify-before-done mode\)/);
+
+  const codexRepairSkill = pack.codexMirrorSkills.find((skill) => skill.name === 'sdcorejs-repair-loop')?.text;
+  assert.match(codexRepairSkill, /Repair ledger/);
+  assert.match(codexRepairSkill, /Silence is not approval/);
+
+  const codexRepairRef = await readFile(new URL('../../codex/skills/_refs/orchestration/tail/repair-loop.md', import.meta.url), 'utf8');
+  assert.match(codexRepairRef, /repair_source/);
+  assert.match(codexRepairRef, /track_profile/);
+  assert.match(codexRepairRef, /review_context/);
+  assert.match(codexRepairRef, /Repair ledger/);
+  assert.doesNotMatch(codexRepairRef, /haven/);
+  assert.doesNotMatch(codexRepairRef, /npm run lint && tsc --noEmit/);
+
+  const sharedReviewCode = await readFile(new URL('../../_refs/shared/review-code.md', import.meta.url), 'utf8');
+  assert.match(sharedReviewCode, /Stack-neutral fallback/);
+  assert.match(sharedReviewCode, /Do not enforce SDCoreJS Angular\/Core UI\/NestJS\/build-website conventions/);
+  assert.match(sharedReviewCode, /Do not invent[\s\S]*package manager/);
+  assert.match(sharedReviewCode, /probe tools without explicit approval/);
+
+  const codexReviewSkill = pack.codexMirrorSkills.find((skill) => skill.name === 'sdcorejs-review')?.text;
+  assert.match(codexReviewSkill, /track_profile/);
+  assert.match(codexReviewSkill, /review_context/);
+  assert.match(codexReviewSkill, /strict read-only/i);
+
+  const codexSharedReviewCode = await readFile(new URL('../../codex/skills/_refs/shared/review-code.md', import.meta.url), 'utf8');
+  assert.match(codexSharedReviewCode, /Stack-neutral fallback/);
+  assert.match(codexSharedReviewCode, /Do not enforce SDCoreJS Angular\/Core UI\/NestJS\/build-website conventions/);
+
+  const angularReviewCode = await readFile(new URL('../../_refs/angular/review-code.md', import.meta.url), 'utf8');
+  assert.match(angularReviewCode, /## Profile applicability/);
+  assert.match(angularReviewCode, /core-ui-angular/);
+  assert.match(angularReviewCode, /legacy-core-ui-angular/);
+  assert.match(angularReviewCode, /## Scope gate/);
+  assert.match(angularReviewCode, /plain-angular/);
+  assert.match(angularReviewCode, /_refs\/shared\/review-code\.md/);
+  assert.match(angularReviewCode, /Do not run `core-docs-fetch\.mjs` for `plain-angular`/);
+
+  const nestjsReviewCode = await readFile(new URL('../../_refs/nestjs/review-code.md', import.meta.url), 'utf8');
+  assert.match(nestjsReviewCode, /sdcorejs-nestjs/);
+  assert.match(nestjsReviewCode, /plain-nestjs/);
+  assert.match(nestjsReviewCode, /_refs\/shared\/review-code\.md/);
+
+  const nextjsReviewCode = await readFile(new URL('../../_refs/nextjs/build-website/review-code.md', import.meta.url), 'utf8');
+  assert.match(nextjsReviewCode, /nextjs-build-website/);
+  assert.match(nextjsReviewCode, /plain-nextjs/);
+  assert.match(nextjsReviewCode, /_refs\/shared\/review-code\.md/);
+
+  const sharedReviewSecurity = await readFile(new URL('../../_refs/shared/review-security.md', import.meta.url), 'utf8');
+  assert.match(sharedReviewSecurity, /Probe and redaction discipline/);
+  assert.match(sharedReviewSecurity, /API_KEY=\[REDACTED\]/);
+  assert.match(sharedReviewSecurity, /Use the detected package manager/);
+
+  const sharedReviewPerformance = await readFile(new URL('../../_refs/shared/review-performance.md', import.meta.url), 'utf8');
+  assert.match(sharedReviewPerformance, /## Probe discipline/);
+  assert.match(sharedReviewPerformance, /without explicit user approval/);
+
+  const sharedReviewAccessibility = await readFile(new URL('../../_refs/shared/review-accessibility.md', import.meta.url), 'utf8');
+  assert.match(sharedReviewAccessibility, /backend-only scopes, mark accessibility N\/A/);
+
+  const sharedReviewArchitecture = await readFile(new URL('../../_refs/shared/review-architecture.md', import.meta.url), 'utf8');
+  assert.match(sharedReviewArchitecture, /Most frontend and backend stacks benefit from layered architecture/);
 
   const testSkill = sourceByName.get('sdcorejs-test');
   assert.match(testSkill, /## Direct invocation tail/);
@@ -125,11 +245,9 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(testSkill, /_refs\/orchestration\/tail\/auto-docs\.md/);
   assert.match(testSkill, /_refs\/orchestration\/tail\/auto-task-tracker\.md/);
 
-  const reviewSkill = sourceByName.get('sdcorejs-review');
-  assert.match(reviewSkill, /## Post-review tail/);
-  assert.match(reviewSkill, /status `reviewed`/);
-  assert.match(reviewSkill, /_refs\/orchestration\/tail\/auto-docs\.md/);
-  assert.match(reviewSkill, /_refs\/orchestration\/tail\/auto-task-tracker\.md/);
+  assert.match(reviewSkill, /## Post-review Behavior/);
+  assert.match(reviewSkill, /Persist this review summary as a \.sdcorejs artifact/);
+  assert.doesNotMatch(reviewSkill, /status `reviewed`/);
 
   for (const name of [
     'sdcorejs-execute-plan',
@@ -151,6 +269,8 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   const coreVersion = await readFile(new URL('../../_refs/angular/core-version.md', import.meta.url), 'utf8');
   assert.doesNotMatch(coreVersion, /10-init-portal/);
   assert.match(coreVersion, /_refs\/angular\/write-code\/init-portal\.md/);
+  assert.match(coreVersion, /No Core UI package installed/);
+  assert.doesNotMatch(coreVersion, /generic Angular Material \+ `alert/);
 
   const dockerize = await readFile(new URL('../../skills/infra/dockerize.md', import.meta.url), 'utf8');
   assert.match(dockerize, /frontend\/[^\n]*\r?\n\s+frontend-nginx\.conf/);
@@ -174,6 +294,10 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(finishGate, /Skip new user\/technical docs/);
   assert.match(finishGate, /user_guide: skip[\s\S]*technical_doc: skip[\s\S]*requirement_record: skip/);
   assert.match(finishGate, /`sdcorejs-documentation \(code-documentation mode\)` - automatic/);
+  assert.match(finishGate, /Run review only - read-only review/);
+  assert.match(finishGate, /Run review and repair loop/);
+  assert.match(finishGate, /repair-loop receives the original `review_context`/);
+  assert.match(finishGate, /`sdcorejs-review` only; it must[\s\S]*include `review_context`/);
   assert.doesNotMatch(finishGate, /code_documentation: skip/);
   assert.doesNotMatch(finishGate, /Codes:/);
   const documentationGate = await readFile(new URL('../../_refs/documentation/gate.md', import.meta.url), 'utf8');
@@ -221,6 +345,37 @@ test('phase 1: Core docs fetcher prefers installed lockfile version over package
   const { detectInstalledVersion } = await import('../../_refs/angular/core-docs-fetch.mjs');
 
   assert.equal(detectInstalledVersion(root), '20.0.7');
+});
+
+test('phase 1: Core docs fetcher requires an installed Core UI package when requested', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'sdcorejs-plain-angular-'));
+  await writeFile(
+    join(root, 'package.json'),
+    JSON.stringify({ dependencies: { '@angular/core': '^20.0.0', '@angular/material': '^20.0.0' } }),
+    'utf8'
+  );
+
+  const script = fileURLToPath(new URL('../../_refs/angular/core-docs-fetch.mjs', import.meta.url));
+  const result = await execFileResult(process.execPath, [script, '--cwd', root, '--require-installed', '--list']);
+
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /Core UI package not installed/);
+  assert.match(result.stderr, /plain-angular/);
+  assert.doesNotMatch(result.stderr, /HTTP \d+/);
+});
+
+test('phase 1: Core docs fetcher detects the legacy Core UI package name', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'sdcorejs-legacy-core-docs-'));
+  await writeFile(
+    join(root, 'package.json'),
+    JSON.stringify({ dependencies: { '@sd-angular/core': '^19' } }),
+    'utf8'
+  );
+
+  const { detectInstalledPackage, detectInstalledVersion } = await import('../../_refs/angular/core-docs-fetch.mjs');
+
+  assert.deepEqual(detectInstalledPackage(root), { name: '@sd-angular/core', version: '19.0.0' });
+  assert.equal(detectInstalledVersion(root), '19.0.0');
 });
 
 test('phase 1: long references expose a top-of-file contents map', async () => {
@@ -530,6 +685,30 @@ test('phase 1: deterministic prompt eval dispatches expected skills', async () =
       ['design-from-user-stories-localized', 'sdcorejs-design', true]
     ]
   );
+});
+
+test('phase 3: direct review prompts dispatch to sdcorejs-review', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const promptEvals = await loadPromptEvals();
+  const reviewCases = promptEvals.filter((item) => item.id.startsWith('review-'));
+  const results = runPromptEval(pack, reviewCases);
+
+  assert.deepEqual(
+    results.map((result) => [result.id, result.actualSkill, result.pass]),
+    [
+      ['review-code-direct', 'sdcorejs-review', true],
+      ['review-security-direct', 'sdcorejs-review', true],
+      ['review-accessibility-direct', 'sdcorejs-review', true],
+      ['review-performance-direct', 'sdcorejs-review', true],
+      ['review-scored-direct', 'sdcorejs-review', true],
+      ['review-full-direct', 'sdcorejs-review', true],
+      ['review-security-localized-vi', 'sdcorejs-review', true],
+      ['review-code-localized-vi', 'sdcorejs-review', true]
+    ]
+  );
+
+  assert.equal(dispatchPrompt(pack, 'fix review issues')?.name, 'sdcorejs-repair-loop');
+  assert.equal(dispatchPrompt(pack, 'viet product doc va kiem tra requirement implement test co day du khong')?.name, 'sdcorejs-product');
 });
 
 test('phase 1: documentation trigger does not steal user-management implementation prompts', async () => {

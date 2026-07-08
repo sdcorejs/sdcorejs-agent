@@ -10,6 +10,20 @@
 
 Angular portals have stack-specific bottlenecks that don't apply elsewhere — change-detection cycles, large initial bundle, RxJS subscription leaks, the cost of `*ngFor` without `trackBy`. Audit against the shared budget plus these probes. Run against a PRODUCTION build (`ng build --configuration=production`), never dev.
 
+## Profile applicability
+
+Apply this ref only to `core-ui-angular` or `legacy-core-ui-angular`, or to an
+explicit SDCoreJS Core UI migration/install review scope. For `plain-angular`,
+mark this ref N/A and use `_refs/shared/review-performance.md` plus local
+Angular conventions and installed tooling. Do not apply Core UI bundle,
+portal, route, utility-class, or admin-screen assumptions to a plain Angular
+app.
+
+Probe commands below are examples. The parent review must discover the target
+package manager, scripts, and installed tools first. Do not download probe
+tools with `npx --yes` or similar without explicit user approval; record
+skipped probes in `review_context`.
+
 ## AG-P1: Bundle analysis
 
 ```bash

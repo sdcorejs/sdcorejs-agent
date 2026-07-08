@@ -56,7 +56,8 @@ Request
   -> sdcorejs-execute-plan
        Detect track and always ask sequential vs parallel.
   -> executor
-       angular: sdcorejs-angular
+       core-ui-angular / legacy-core-ui-angular / new SDCoreJS portal: sdcorejs-angular
+       plain-angular: generic harness
        nestjs:  sdcorejs-nestjs
        nextjs:  sdcorejs-nextjs
        product: sdcorejs-product
@@ -88,7 +89,7 @@ sdcorejs-test
 
 | Track | Executor | References |
 |---|---|---|
-| angular | `sdcorejs-angular` | `_refs/angular/write-code/*`, `_refs/angular/core-docs-fetch.mjs` |
+| angular | `sdcorejs-angular` for Core UI portals; generic harness for plain Angular | `_refs/angular/write-code/*`, `_refs/angular/core-docs-fetch.mjs` only for `@sdcorejs/angular` / `@sd-angular/core`, new SDCoreJS portal creation, or approved Core UI migration |
 | nestjs | `sdcorejs-nestjs` | `_refs/nestjs/write-code/*`, `_refs/nestjs/core-catalog.md` |
 | nextjs | `sdcorejs-nextjs` | `_refs/nextjs/build-website/write-code/*` |
 | product | `sdcorejs-product` | `product/` PRDs/user stories/AC/UAT docs plus `.sdcorejs/docs/product/` traceability ledgers |
@@ -120,13 +121,13 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 1. **Requirements before code.** Use `sdcorejs-brainstorming` until the minimum blockers for the detected track are confirmed.
 2. **Approval gates.** `sdcorejs-spec` and `sdcorejs-plan` require explicit user approval. Silence is not approval.
 3. **Approved snapshots.** `sdcorejs-spec` and `sdcorejs-plan` write their own approved snapshots before the next phase.
-4. **Execute-plan.** Approved plans go through `sdcorejs-execute-plan`; it owns track detection, product routing, design routing, test routing, generic fallback, and the sequential/parallel question.
+4. **Execute-plan.** Approved plans go through `sdcorejs-execute-plan`; it owns track detection, Angular Core UI/plain Angular classification, product routing, design routing, test routing, generic fallback, and the sequential/parallel question.
 5. **Finish gate.** Every code-generation run presents the finish gate before tail steps, even direct one-line requests.
 6. **Evidence before claims.** Never claim pass, built, fixed, or done without running and reading the relevant verification command in the current turn.
 7. **Runtime-localized.** Respond in the user's language; preserve locale-specific marks; keep identifiers and route paths in English.
 8. **Mojibake guard.** Treat encoding corruption as blocking in docs, skills, prompts, comments, and user-facing strings.
 9. **Target project writes.** Auto-docs, snapshots, memories, user guides, and task trackers write to the target project, never this agent repo unless this repo is the explicit target.
-10. **Core UI first.** Angular generation prefers documented `@sdcorejs/angular` components.
+10. **Core UI only when installed or approved.** Angular generation prefers documented `@sdcorejs/angular` / `@sd-angular/core` components only for Core UI portals, new SDCoreJS portal creation, or approved migration. Plain Angular uses the generic harness and local project conventions.
 11. **Choice prompts.** Before asking the user to choose, approve, answer yes/no, or select a mode, apply `_refs/shared/user-choice-prompt.md`; ask one decision at a time and number every option as `1/2/3/...`.
 12. **Skill source language.** Keep reusable skill/ref source in English only; translate generated output at runtime based on the consumer's language.
 13. **Do not author new skills without explicit user approval.**

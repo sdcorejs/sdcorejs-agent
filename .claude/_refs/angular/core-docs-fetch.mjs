@@ -16,10 +16,12 @@
 //   node core-docs-fetch.mjs components/button/sd-button     # full id/path also works
 //   node core-docs-fetch.mjs --print sd-select               # print the doc CONTENT to stdout
 //   node core-docs-fetch.mjs --version 21.0.7 --list
+//   node core-docs-fetch.mjs --cwd <target> --require-installed --list
 //
 // Cache (never committed): ~/.cache/sdcorejs/core-docs/<version>/...
 // Offline: if the network is unavailable it falls back to cache; if neither, it exits non-zero
-// with a clear message so the skill degrades (generic Material fallback + alert('TODO')).
+// with a clear message so the skill uses local Core UI evidence only. `--require-installed`
+// fails before network/cache if the target project has no Core UI dependency.
 
 import { get as httpsGet } from 'node:https';
 import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from 'node:fs';
@@ -30,6 +32,7 @@ import { pathToFileURL } from 'node:url';
 const SITE = 'https://sdcorejs.github.io/sdcorejs-angular/docs';
 const SITE_ORIGIN = new URL(SITE).origin;
 const CACHE_ROOT = join(homedir(), '.cache', 'sdcorejs', 'core-docs');
+const CORE_UI_PACKAGES = ['@sdcorejs/angular', '@sd-angular/core'];
 
 // UTF-8-as-CP1252 mojibake signatures (never valid in clean VN/EN docs).
 // Stored as escapes so this reusable script stays ASCII and locale-neutral.
@@ -57,11 +60,12 @@ const MOJIBAKE = new RegExp(MOJIBAKE_PATTERNS.join('|'));
 
 // ── args ───────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
-let version, cwd = process.cwd(), doList = false, doPrint = false, comp;
+let version, cwd = process.cwd(), doList = false, doPrint = false, requireInstalled = false, comp;
 for (let i = 0; i < args.length; i++) {
   const a = args[i];
   if (a === '--list') doList = true;
   else if (a === '--print') doPrint = true;
+  else if (a === '--require-installed') requireInstalled = true;
   else if (a === '--version') version = args[++i];
   else if (a === '--cwd') cwd = args[++i];
   else if (!a.startsWith('--') && !comp) comp = a;
@@ -110,10 +114,17 @@ function versionFromRange(range) {
 }
 
 function versionFromPackageJson(file) {
+  return packageFromPackageJson(file)?.version ?? null;
+}
+
+function packageFromPackageJson(file) {
   const j = readJson(file);
   if (!j) return null;
   const deps = { ...j.dependencies, ...j.devDependencies, ...j.peerDependencies, ...j.optionalDependencies };
-  return versionFromRange(deps['@sdcorejs/angular'] || deps['@sd-angular/core']);
+  for (const name of CORE_UI_PACKAGES) {
+    if (deps[name]) return { name, version: versionFromRange(deps[name]) };
+  }
+  return null;
 }
 
 function walkPackageJsons(root, depth = 4, acc = []) {
@@ -134,35 +145,47 @@ function walkPackageJsons(root, depth = 4, acc = []) {
 }
 
 function versionFromPackageJsons(root) {
+  return packageFromPackageJsons(root)?.version ?? null;
+}
+
+function packageFromPackageJsons(root) {
   const rootPkg = join(root, 'package.json');
-  const direct = versionFromPackageJson(rootPkg);
+  const direct = packageFromPackageJson(rootPkg);
   if (direct) return direct;
   for (const pkg of walkPackageJsons(root)) {
-    const found = versionFromPackageJson(pkg);
+    const found = packageFromPackageJson(pkg);
     if (found) return found;
   }
   return null;
 }
 
 function versionFromPackageLock(root) {
+  return packageFromPackageLock(root)?.version ?? null;
+}
+
+function packageFromPackageLock(root) {
   const lock = readJson(join(root, 'package-lock.json'));
   if (!lock) return null;
-  for (const pkg of ['@sdcorejs/angular', '@sd-angular/core']) {
-    const entry = lock.packages?.[`node_modules/${pkg}`] || lock.dependencies?.[pkg];
-    if (entry?.version) return entry.version;
+  for (const name of CORE_UI_PACKAGES) {
+    const entry = lock.packages?.[`node_modules/${name}`] || lock.dependencies?.[name];
+    if (entry?.version) return { name, version: entry.version };
   }
   return null;
 }
 
 function versionFromTextLock(root) {
+  return packageFromTextLock(root)?.version ?? null;
+}
+
+function packageFromTextLock(root) {
   for (const file of ['pnpm-lock.yaml', 'yarn.lock']) {
     const path = join(root, file);
     if (!existsSync(path)) continue;
     const text = readFileSync(path, 'utf8');
-    const direct = text.match(/(?:@sdcorejs\/angular|@sd-angular\/core)[^\n\d]*(\d+\.\d+\.\d+)/);
-    if (direct) return direct[1];
-    const quoted = text.match(/(?:@sdcorejs\/angular|@sd-angular\/core)[^@\n]*@(?:npm:)?(\d+\.\d+\.\d+)/);
-    if (quoted) return quoted[1];
+    const direct = text.match(/(@sdcorejs\/angular|@sd-angular\/core)[^\n\d]*(\d+\.\d+\.\d+)/);
+    if (direct) return { name: direct[1], version: direct[2] };
+    const quoted = text.match(/(@sdcorejs\/angular|@sd-angular\/core)[^@\n]*@(?:npm:)?(\d+\.\d+\.\d+)/);
+    if (quoted) return { name: quoted[1], version: quoted[2] };
   }
   return null;
 }
@@ -199,15 +222,20 @@ function safeCachePath(rel) {
   return join(CACHE_ROOT, normalized);
 }
 
-// Read the installed Core UI version from the target project (either package name).
-export function detectInstalledVersion(dir) {
-  for (const pkg of ['@sdcorejs/angular', '@sd-angular/core']) {
-    const p = join(dir, 'node_modules', pkg, 'package.json');
+// Read the installed Core UI package from the target project (either package name).
+export function detectInstalledPackage(dir) {
+  for (const name of CORE_UI_PACKAGES) {
+    const p = join(dir, 'node_modules', name, 'package.json');
     if (existsSync(p)) {
-      try { return JSON.parse(readFileSync(p, 'utf8')).version; } catch { /* ignore */ }
+      try { return { name, version: JSON.parse(readFileSync(p, 'utf8')).version }; } catch { /* ignore */ }
     }
   }
-  return versionFromPackageLock(dir) || versionFromTextLock(dir) || versionFromPackageJsons(dir);
+  return packageFromPackageLock(dir) || packageFromTextLock(dir) || packageFromPackageJsons(dir);
+}
+
+// Read the installed Core UI version from the target project (either package name).
+export function detectInstalledVersion(dir) {
+  return detectInstalledPackage(dir)?.version ?? null;
 }
 
 // Version dirs already present in the cache (each with an index.json), newest first.
@@ -245,6 +273,15 @@ function orderCandidates(all, want) {
 
 // Resolve an ORDERED list of candidate versions (best first) to try.
 async function resolveVersionCandidates() {
+  const installedPackage = detectInstalledPackage(cwd);
+  if (requireInstalled && !installedPackage) {
+    throw new Error(
+      `Core UI package not installed in ${cwd}. Expected one of: ${CORE_UI_PACKAGES.join(', ')}. ` +
+      'Classify this target as plain-angular or run an approved Core UI migration first.'
+    );
+  }
+  const wantedVersion = version || installedPackage?.version;
+
   // Load the published registry — cached, so version resolution survives offline use.
   let registry;
   try {
@@ -258,14 +295,14 @@ async function resolveVersionCandidates() {
       throw err;
     }
     process.stderr.write('[core-docs-fetch] no remote registry; using cached docs versions.\n');
-    return orderCandidates(cached, version || detectInstalledVersion(cwd));
+    return orderCandidates(cached, wantedVersion);
   }
   const all = registry.versions.map(v => v.version);
   // Target the explicit --version if given, else the project's installed Core UI version.
   // Resolution: exact published patch → newest patch of SAME major → nearest OTHER major → latest.
   // (The docs registry publishes only some patches, so a literal pin like 20.0.1 may not exist as a
   // docs build even though it's a valid npm pin — the nearest-version policy bridges that.)
-  const want = version || detectInstalledVersion(cwd);
+  const want = wantedVersion;
   const ordered = orderCandidates(all, want);
   if (registry.latest && !ordered.includes(registry.latest)) ordered.push(registry.latest);
   return ordered.length ? ordered : all.sort(cmpDesc);

@@ -4,6 +4,15 @@ Use this reference when `sdcorejs-review` detects the `architecture` dimension.
 Architecture review is module/feature-level and structural. It catches problems that
 do not necessarily break a single file but make the system harder to evolve.
 
+## Probe discipline
+
+The parent `sdcorejs-review` must discover the target package manager, scripts,
+installed tools, source roots, and module boundaries before running probes.
+Commands below are examples, not mandatory commands. Do not hardcode `npm`,
+`tsc`, or source roots; do not download architecture tools such as `madge` with
+`npx --yes` or similar without explicit user approval. Record skipped probes in
+`review_context`.
+
 ## When to run
 - Before merging a feature that adds modules or moves existing ones
 - After several similar features ship and duplication or wrong abstractions appear
@@ -13,7 +22,7 @@ do not necessarily break a single file but make the system harder to evolve.
 ## What to check
 
 ### 1. Layering
-Every SDCoreJS stack has a layered architecture:
+Most frontend and backend stacks benefit from layered architecture:
 
 | Layer | angular | nestjs | nextjs |
 |---|---|---|---|

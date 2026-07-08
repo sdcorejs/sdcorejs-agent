@@ -7,6 +7,18 @@
 
 Most site issues: (a) a secret leaked via `NEXT_PUBLIC_` into the client bundle, (b) a Server Action / route handler that trusts the request without verifying the caller, (c) missing/weak CSP, (d) `dangerouslySetInnerHTML` on user/CMS content, (e) an open redirect from a query param.
 
+## Profile applicability
+
+Apply this ref only to `nextjs-build-website`, or to an explicit build-website
+migration/install review scope. For `plain-nextjs`, mark this ref N/A and use
+`_refs/shared/review-security.md` plus the project's actual Next.js/security
+conventions. Do not require `[locale]`, middleware matcher patterns,
+public-site content conventions, or build-website routing unless detected.
+
+Secret redaction is mandatory. Never echo secret values or full matching lines.
+Report only file, line when available, key/category, and redacted evidence such
+as `NEXT_PUBLIC_API_KEY=[REDACTED]`.
+
 ## NX-1: No secrets in `NEXT_PUBLIC_*`
 Everything `NEXT_PUBLIC_` is inlined into the client bundle at build time.
 ```bash

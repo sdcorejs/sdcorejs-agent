@@ -6,10 +6,10 @@ Loaded on demand by `sdcorejs-angular` (and its write-code packs) whenever a gen
 The STYLE-GUIDE is the SINGLE source of truth for which utility classes exist, and it is deliberately **not** stored in this repo (a committed copy would drift from the published library across versions). Before writing any styling, ALWAYS fetch it:
 
 ```bash
-node _refs/angular/core-docs-fetch.mjs --print assets/STYLE-GUIDE
+node _refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed --print assets/STYLE-GUIDE
 ```
 
-The fetcher pulls it once and caches it (version-matched to the consumer's installed package, legacy `@sd-angular/core` included); if it's already cached it reuses that, and offline it falls back to cache. So "fetch if not present" is automatic — just run it. Never skip it, and never rely on memorized or hardcoded class names: generate templates using ONLY classes that exist in the freshly fetched doc. If a class you want isn't listed, it does not exist — use the nearest one or write a small flagged custom rule (§5). This file holds the stable RULES; the fetched STYLE-GUIDE holds the class list — the class list is intentionally NOT duplicated here.
+The fetcher pulls it once and caches it (version-matched to the consumer's installed package, legacy `@sd-angular/core` included); if it's already cached it reuses that, and offline it falls back to cache. Use `--require-installed` for existing projects so a plain Angular app without Core UI is not treated as a docs-cache miss. Never skip it for Core UI projects, and never rely on memorized or hardcoded class names: generate templates using ONLY classes that exist in the freshly fetched doc. If a class you want isn't listed, it does not exist — use the nearest one or write a small flagged custom rule (§5). This file holds the stable RULES; the fetched STYLE-GUIDE holds the class list — the class list is intentionally NOT duplicated here.
 
 ## 2. Pick the class system
 1. **Core UI utilities (default).** Always available once `assets/scss/sd-core.scss` is in `angular.json` `styles` (init-portal wires this). Cover flex, grid, spacing, sizing, color, typography, border, elevation.

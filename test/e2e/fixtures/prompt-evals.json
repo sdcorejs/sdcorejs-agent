@@ -96,6 +96,78 @@
     "phase": 3
   },
   {
+    "id": "repair-loop-fix-review-issues",
+    "prompt": "fix review issues",
+    "expectedSkill": "sdcorejs-repair-loop",
+    "phase": 3
+  },
+  {
+    "id": "repair-loop-apply-review-findings",
+    "prompt": "apply review findings from sdcorejs-review",
+    "expectedSkill": "sdcorejs-repair-loop",
+    "phase": 3
+  },
+  {
+    "id": "repair-loop-critical-localized-vi",
+    "prompt": "sua cac loi critical trong review vua roi",
+    "expectedSkill": "sdcorejs-repair-loop",
+    "phase": 3
+  },
+  {
+    "id": "repair-loop-ship-verification-failures",
+    "prompt": "repair the failed verify-before-done findings",
+    "expectedSkill": "sdcorejs-repair-loop",
+    "phase": 3
+  },
+  {
+    "id": "review-code-direct",
+    "prompt": "review code for this module",
+    "expectedSkill": "sdcorejs-review",
+    "phase": 3
+  },
+  {
+    "id": "review-security-direct",
+    "prompt": "security review this module",
+    "expectedSkill": "sdcorejs-review",
+    "phase": 3
+  },
+  {
+    "id": "review-accessibility-direct",
+    "prompt": "review accessibility for this screen",
+    "expectedSkill": "sdcorejs-review",
+    "phase": 3
+  },
+  {
+    "id": "review-performance-direct",
+    "prompt": "performance review this page",
+    "expectedSkill": "sdcorejs-review",
+    "phase": 3
+  },
+  {
+    "id": "review-scored-direct",
+    "prompt": "run a scored review",
+    "expectedSkill": "sdcorejs-review",
+    "phase": 3
+  },
+  {
+    "id": "review-full-direct",
+    "prompt": "run a full review across code, security, performance, and accessibility",
+    "expectedSkill": "sdcorejs-review",
+    "phase": 3
+  },
+  {
+    "id": "review-security-localized-vi",
+    "prompt": "review bao mat module don hang giup minh",
+    "expectedSkill": "sdcorejs-review",
+    "phase": 3
+  },
+  {
+    "id": "review-code-localized-vi",
+    "prompt": "review code man hinh quan ly khach hang giup minh",
+    "expectedSkill": "sdcorejs-review",
+    "phase": 3
+  },
+  {
     "id": "explore-codebase",
     "prompt": "map architecture and trace product flow",
     "expectedSkill": "sdcorejs-explore",

@@ -7,6 +7,19 @@
 
 Most portal issues: (a) a route missing `canActivate`, (b) XSS via `bypassSecurityTrust*` / `[innerHTML]` on server data, (c) tokens in `localStorage`, (d) interceptor chain in wrong order, (e) dev API URLs / source maps shipped to prod. **The backend is the real authorization boundary — portal guards are UX, not security.** Flag where the FE assumes protection the BE must enforce.
 
+## Profile applicability
+
+Apply this ref only to `core-ui-angular` or `legacy-core-ui-angular`, or to an
+explicit SDCoreJS Core UI migration/install review scope. For `plain-angular`,
+mark this ref N/A and use `_refs/shared/review-security.md` plus the project's
+actual Angular/security conventions. Do not require Core UI permission
+directives, Core UI imports, portal route/menu conventions, or SDCoreJS admin
+patterns in a plain Angular app.
+
+Secret redaction is mandatory. Never print full lines containing likely
+secrets. Report only the file, line when available, key/category, and redacted
+evidence such as `CLIENT_SECRET=[REDACTED]`.
+
 ## AG-1: Every protected route has a guard
 ```bash
 grep -rnE "path:\s*['\"]" src/ --include='*routes.ts' --include='*-routing.module.ts' | head -40

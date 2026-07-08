@@ -9,6 +9,19 @@
 Run the block(s) for the stack(s) present (`angular.json` / `nest-cli.json` / `next.config.*`).
 For a monorepo, run all applicable blocks and scope each finding to its stack.
 
+## Probe and redaction discipline
+
+The parent `sdcorejs-review` must discover the target package manager, scripts,
+installed tools, and stack layout before running probes. Commands below are
+examples, not mandatory commands. Do not hardcode `npm`, `tsc`, or source roots;
+do not install or download tools without explicit approval.
+
+Secret redaction is mandatory. Never echo secret values from `.env`, local
+config, CI files, source files, command output, or git history. For secret
+findings, report only file path, line number when available, key/category, and
+redacted evidence such as `API_KEY=[REDACTED]`. Prefer scans that print file
+paths or key names instead of full matching lines.
+
 ## Read-only inventory (parallel)
 - `git log -20 --oneline` — what landed recently
 - `git diff <base>...HEAD` — full diff if a base ref is given, else surface
@@ -47,7 +60,9 @@ For a monorepo, run all applicable blocks and scope each finding to its stack.
 ### E. Secrets / sensitive data
 - No `.env` / `*.pem` / credentials in repo (`git log --all --full-history -- '.env'`)
 - `.env.example` has placeholders, not real values
-- No keys/passwords in history (`git log -p | grep -iE 'password|api_key|secret|bearer'` on suspect areas)
+- No keys/passwords in history. If history must be inspected, use a redacted
+  scan that does not print values or full matching lines; report only
+  key/category and affected commit/file evidence.
 - Logs don't dump full request bodies on auth POST/PUT; PII not echoed in error responses
 
 ### F. Transport / network
@@ -58,8 +73,10 @@ For a monorepo, run all applicable blocks and scope each finding to its stack.
 
 ### G. Dependencies
 ```bash
-npm audit --omit=dev      # or yarn/pnpm audit
-npm outdated
+# Use the detected package manager and existing workspace policy.
+# Examples only; record skipped probes if no audit/outdated script or tool exists.
+<package-manager> audit --omit=dev
+<package-manager> outdated
 ```
 - No Critical/High vulns in prod deps; no deps published <30 days in prod (supply-chain)
 - Lockfile committed; no `--legacy-peer-deps` papering over a real conflict
