@@ -83,17 +83,22 @@ preference_saved: false
 ```text
 Finish step 3/3: review.
 
-1. Run review and repair loop. [Recommended]
-2. Skip review for this run.
+1. Ship now - skip review for this run and continue acceptance verification.
+2. Run review only - read-only review; do not edit code.
+3. Run review and repair loop. [Recommended]
+4. Defer - stop before review/ship tail so the user can continue later.
 
-Reply with `1` or `2`.
+Reply with `1`, `2`, `3`, or `4`.
 ```
 
-Option `1` explicitly authorizes the finish-gate caller to run the read-only
-`sdcorejs-review` and then `sdcorejs-repair-loop` for blocking findings. Option
-`2` skips both review and repair-loop for this run. A direct user-requested
-`sdcorejs-review` outside this finish gate remains read-only and may only offer
-repair-loop as a follow-up action.
+Option `2` authorizes read-only `sdcorejs-review` only. Option `3` explicitly
+authorizes the finish-gate caller to run the read-only `sdcorejs-review` and
+then `sdcorejs-repair-loop` for blocking findings with the original
+`review_context`. Option `1` skips review/repair and continues to acceptance
+verification. Option `4` stops the tail chain before review/ship. A direct
+user-requested `sdcorejs-review` outside this finish gate remains strict
+read-only and may only offer repair-loop or artifact persistence as explicit
+next steps.
 
 After these answers, state the selected choices and the always-on steps:
 verify acceptance criteria, branch-hygiene sweep, session docs, task tracker,
@@ -119,15 +124,17 @@ and durable memories.
 - If the user chooses "Skip new user/technical docs" at Finish step 2, do not
   create new user-guide or technical-doc files for this run. Existing docs may
   still be updated only when the current request explicitly asked for that.
-- Review default ON; the user may `skip` it. Repair-loop is part of review only
-  when the user chose "Run review and repair loop"; do not auto-edit after a
-  direct read-only review.
+- Review default is a visible choice. `Run review only` must not edit code.
+  Repair-loop is part of review only when the user chose
+  "Run review and repair loop"; do not auto-edit after a direct read-only
+  review.
 - Execute the tail steps honoring the sequential answers, in the orchestrator's
   defined order. A skipped step is omitted; everything not skipped runs.
-- Plumbing always runs: `sdcorejs-ship (verify-before-done mode)` ->
+- Unless the user chose `Defer`, plumbing runs after the chosen review mode:
+  `sdcorejs-ship (verify-before-done mode)` ->
   `sdcorejs-ship (branch-ready mode)` -> auto-docs tail ref ->
-  auto-task-tracker tail ref -> memories. These are not opt-out, but the gate
-  lists them so the user is aware they happen.
+  auto-task-tracker tail ref -> memories. If `Defer` is selected, stop after a
+  concise checkpoint and do not claim done.
 - Localize the prompt; keep identifiers, permission codes, and route paths in
   English in every language.
 - If the user already gave explicit instructions this turn (for example "add
@@ -138,15 +145,18 @@ and durable memories.
 
 1. (if tests not skipped) `sdcorejs-test` - run the RED-first specs written
    during the TDD gate and add happy-path coverage; report pass/fail.
-2. (if review not skipped) `sdcorejs-review` -> `sdcorejs-repair-loop`.
-3. `sdcorejs-documentation (code-documentation mode)` - automatic for touched
+2. (if review choice is `Run review only`) `sdcorejs-review` only; it must
+   include `review_context` and must not edit code.
+3. (if review choice is `Run review and repair loop`) `sdcorejs-review` ->
+   `sdcorejs-repair-loop`; repair-loop receives the original `review_context`.
+4. `sdcorejs-documentation (code-documentation mode)` - automatic for touched
    source files; use concise maintainability-focused rules and do not ask.
-4. (if `technical_doc=create` or `technical_doc=update`)
+5. (if `technical_doc=create` or `technical_doc=update`)
    `sdcorejs-documentation (write-technical-doc mode)`.
-5. `sdcorejs-ship (verify-before-done mode)` (always).
-6. `sdcorejs-ship (branch-ready mode)` (always).
-7. `_refs/orchestration/tail/auto-docs.md` (always).
-8. (if `user_guide=create` or `user_guide=update`)
+6. `sdcorejs-ship (verify-before-done mode)` (unless deferred).
+7. `sdcorejs-ship (branch-ready mode)` (unless deferred).
+8. `_refs/orchestration/tail/auto-docs.md` (unless deferred).
+9. (if `user_guide=create` or `user_guide=update`)
    `sdcorejs-documentation (write-user-guide mode)`.
-9. `_refs/orchestration/tail/auto-task-tracker.md` (always).
-10. `sdcorejs-explore (memories mode)` when durable knowledge surfaced.
+10. `_refs/orchestration/tail/auto-task-tracker.md` (unless deferred).
+11. `sdcorejs-explore (memories mode)` when durable knowledge surfaced.

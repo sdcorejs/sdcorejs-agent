@@ -14,6 +14,16 @@ adherence to the conventions the `sdcorejs-nestjs` packs actually generate
 (`simple` | `enterprise`; see `init-project.md`). Probes that only apply to one
 profile are marked `[enterprise]`.
 
+## Profile applicability
+
+Apply this ref only when `sdcorejs-review` classified the target as
+`sdcorejs-nestjs`, or when the user explicitly approved an SDCoreJS NestJS
+migration/install review scope. For `plain-nestjs`, mark this ref N/A and use
+`_refs/shared/review-code.md` plus the project's actual NestJS conventions.
+Do not require `@sdcorejs/nestjs`, Zod, TypeORM, PostgreSQL, base entities,
+base repositories/services, or a specific `src/modules/**` layout unless the
+target project already uses them.
+
 ## Conventions checked
 
 ### 0. Mandatory NestJS / PostgreSQL / TypeORM / Zod checklist

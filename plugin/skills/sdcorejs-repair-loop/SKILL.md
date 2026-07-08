@@ -21,11 +21,12 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
 ## Workflow
 1. Determine and preserve the source of findings: `review-code`, `verify-before-done`, `linter`, `typecheck`, `test`, or `manual`.
 2. Read `_refs/orchestration/tail/repair-loop.md` completely.
-3. Record the working-tree baseline and a visible Repair ledger before edits.
-4. Verify each finding is genuine before changing code and classify it as `VALID`, `STALE`, `MIS-SCOPED`, `REDUNDANT`, or `UNCLEAR`.
-5. Categorize valid findings into `auto`, `confirm`, or `user-decision` tiers.
-6. Apply only the allowed tier for the current pass, then re-run the verification required by the preserved source context.
-7. Iterate until blocking findings are fixed, explicitly deferred, or the reference's 3-pass convergence cap is reached. Blocking means `Critical`/`Important` in the default review format, or `BLOCKER`/`REQUIRED` in Angular/NestJS code-review table mode.
+3. If the source is `sdcorejs-review`, preserve the original `review_context` exactly, including `track`, `track_profile`, dimensions, mode, `file_scope`, refs loaded/skipped, probes run/skipped, and package manager.
+4. Record the working-tree baseline and a visible Repair ledger before edits.
+5. Verify each finding is genuine before changing code and classify it as `VALID`, `STALE`, `MIS-SCOPED`, `REDUNDANT`, or `UNCLEAR`.
+6. Categorize valid findings into `auto`, `confirm`, or `user-decision` tiers.
+7. Apply only the allowed tier for the current pass, then re-run the verification required by the preserved source context.
+8. Iterate until blocking findings are fixed, explicitly deferred, or the reference's 3-pass convergence cap is reached. Blocking means `Critical`/`Important` in the default review format, or `BLOCKER`/`REQUIRED` in Angular/NestJS code-review table mode.
 
 ## Handoff
 - After convergence, return to the caller's tail chain.
@@ -40,3 +41,4 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
 - Do not edit tests merely to make production code pass.
 - Do not hide stale, mis-scoped, redundant, or unclear findings; report them separately.
 - Do not claim convergence without re-running the source-specific verification.
+- Do not downgrade or reclassify the original `review_context`; repair-loop must not change a `plain-*` review into an SDCoreJS-specific review during re-verification.

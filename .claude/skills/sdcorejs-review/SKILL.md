@@ -1,20 +1,22 @@
 ---
 name: sdcorejs-review
-description: Read-only review/audit skill across SDCoreJS tracks. Use for code, architecture, security, performance, accessibility, existing-site audits, scored/full audits, or auto review after an executor. Detects stack/dimension, loads matching review refs, and reports actionable findings with file:line and fix. Applies to angular, nestjs, nextjs. Runtime-localized.
+description: Read-only review/audit skill across SDCoreJS tracks. Use for code, architecture, security, performance, accessibility, existing-site audits, scored/full audits, or auto review after an executor. Detects stack/profile/dimension, loads applicable refs only, emits review_context for repair-loop, and stays strict read-only by default. Applies to angular, nestjs, nextjs, general. Runtime-localized.
 allowed-tools: Read, Glob, Grep, Bash
 ---
 
-# Review (unified, track + dimension aware)
+# Review (profile + dimension aware)
 
 ## Purpose
-One skill, every stack, five dimensions. Audit generated or modified code against
-the conventions of whichever SDCoreJS track the project belongs to. **Read-only**:
-surface violations the human reviewer should fix; never edit files. Auto-fix belongs
-to `sdcorejs-repair-loop`.
+One read-only review skill for code, architecture, security, performance, and
+accessibility. It classifies both `track` and `track_profile` before loading
+track-specific references so plain Angular, NestJS, Next.js, and general
+projects are not reviewed against SDCoreJS framework conventions they do not
+use.
 
-This skill replaces the previous per-dimension review skills. The dimension knowledge
-lives as reference docs loaded on demand; the dispatch surface and output format are
-unified here.
+`sdcorejs-review` must not edit source code. Direct user-requested review is
+strict read-only by default and must not silently write `.sdcorejs` artifacts or
+auto-run `sdcorejs-repair-loop`. Repair belongs to `sdcorejs-repair-loop` after
+an explicit user or finish-gate choice.
 
 ## Shared Protocols
 
@@ -26,13 +28,15 @@ Before executing this skill:
 5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## When to use
-- After a track executor finishes a batch (automatic tail-chain default: `code`)
-- Before merging a feature branch
-- User says "review code", "security review", "performance review", "review a11y", "architecture review", "comprehensive audit", or "scored review"
+- After a track executor finishes a batch and the finish gate selected review.
+- Before merging a feature branch.
+- User says "review code", "security review", "performance review",
+  "review a11y", "architecture review", "comprehensive audit", "full review",
+  "scored review", or localized equivalents.
 
-## Step 0 - Context preflight
+## Step 0 - Context and Scope Preflight
 
-Before detecting track/dimension or reading files under review, run
+Before detecting profile/dimension or reading files under review, run
 `sdcorejs-explore (summary mode)` through `_refs/shared/project-context.md`.
 
 - For an existing target project, read or refresh
@@ -45,196 +49,294 @@ Before detecting track/dimension or reading files under review, run
 - Current diffs, failing tests, explicit review scope, and user corrections
   override stored summary context.
 
-## Step 1 - Detect the track and dimension
+Determine review scope in this order:
 
-**Track** (directory signals):
-| Track | Signals |
-|---|---|
-| **angular** | `angular.json`; `@angular/core`; `@sdcorejs/angular`; `@sd-angular/core`; `*.component.ts`, `*.routes.ts` |
-| **nestjs** | `nest-cli.json`; `@nestjs/*`; `*.controller.ts` / `*.service.ts` / `*.entity.ts` |
-| **nextjs** | `next.config.*`; `next`; `src/app/[locale]/`; `page.tsx`, `middleware.ts` |
-| **general** | no stack signal; run general code-quality checks only unless the user asked for a shared dimension |
+1. explicit user-provided files or directories;
+2. current task, plan, or spec scope;
+3. git diff against the current branch/base if available;
+4. changed files in the working tree;
+5. inferred module from the request;
+6. ask the user for one numbered scope choice if the repo is too large and no
+   clear scope exists.
 
-**Dimension** (from intent; default `code`):
+Exclude generated/vendor/build output by default: `node_modules`, `dist`,
+`build`, `coverage`, `.next`, `.turbo`, `.angular`, generated clients,
+lockfiles unless relevant, and generated Codex/Claude/plugin mirrors unless the
+review is about skills/mirrors. "Read every file under review" means every file
+inside the selected `file_scope`, not the entire repository by default.
+
+## Step 1 - Classify Track, Track Profile, Dimension, and Mode
+
+### Track and track_profile
+
+Classify `track_profile` before loading any track-specific ref:
+
+| track | track_profile | Required evidence |
+|---|---|---|
+| angular | `core-ui-angular` | Angular signals plus `@sdcorejs/angular` in `package.json` or strong existing imports/usages. |
+| angular | `legacy-core-ui-angular` | Angular signals plus `@sd-angular/core` in `package.json` or strong existing imports/usages. |
+| angular | `plain-angular` | Angular signals but neither Core UI package/convention is installed or used. |
+| nestjs | `sdcorejs-nestjs` | NestJS signals plus `@sdcorejs/nestjs` or strong SDCoreJS NestJS conventions/libraries. |
+| nestjs | `plain-nestjs` | NestJS signals without `@sdcorejs/nestjs` or SDCoreJS NestJS conventions. |
+| nextjs | `nextjs-build-website` | Next.js signals plus build-website/public-site evidence such as `src/app/[locale]`, typed i18n navigation, content/public-site structure, build-website summary/plan/spec/task context, or explicit public-site scope. |
+| nextjs | `plain-nextjs` | Next.js signals without build-website/public-site evidence. |
+| general | `general` | No known track can be confidently classified, or mixed/unknown stack where only shared rules are safe. |
+
+Rules:
+
+- Do not treat Angular as Core UI Angular merely because `angular.json` or
+  `@angular/core` exists.
+- Do not treat NestJS as SDCoreJS NestJS merely because `@nestjs/*` exists.
+- Do not treat Next.js as build-website merely because `next.config.*` or
+  `next` exists.
+- Do not enforce Zod, TypeORM, PostgreSQL, `@sdcorejs/nestjs`, Core UI,
+  `[locale]`, typed i18n navigation, or build-website caching/layout patterns
+  unless the classified profile or actual installed/used stack supports them.
+- If the user explicitly asks to review a migration/install to an SDCoreJS
+  framework profile, classify the migration scope separately and review only the
+  approved migration evidence.
+
+### Dimensions
+
+Dimension comes from user intent:
+
 | Dimension | Use when |
 |---|---|
-| **code** (default) | "review code", "review", "audit module", per-file conventions; the tail-chain default after write-code |
-| **architecture** | "architecture review", "architecture audit", "code structure check", "circular dependency", "abstraction leak", module boundaries, layering |
-| **security** | "security review", "security audit", "SQL injection", "secrets", "CSP", "route guards" |
-| **performance** | "performance review", "performance", "lighthouse", "N+1", "bundle size", "slow query" |
-| **accessibility** | "review accessibility", "a11y", "WCAG", "aria", "keyboard nav", "contrast" (angular/nextjs only; nestjs has no UI) |
-| **ALL** | "comprehensive audit / full audit / enterprise readiness" -> run code + architecture + security + performance + accessibility if UI |
-| **site-audit** (nextjs only) | Existing whole-site audit: "audit site", "improve existing site", "what is missing on this site", "cloned site to improve"; run the 30-point build-website quality bar, read-only gap report, then hand to `sdcorejs-brainstorming` |
+| `code` | "review code", "review", "audit module", per-file conventions. |
+| `architecture` | "architecture review", "module boundaries", "circular dependency", "layering". |
+| `security` | "security review", "SQL injection", "secrets", "CSP", "route guards". |
+| `performance` | "performance review", "Lighthouse", "N+1", "bundle size", "slow query". |
+| `accessibility` | "accessibility", "a11y", "WCAG", "aria", "keyboard nav", "contrast". |
+| `ALL` | "comprehensive audit", "full review", "enterprise readiness"; run every applicable dimension and mark non-applicable dimensions as N/A. |
+| `site-audit` | Next.js existing whole-site audit; only use build-website site audit when `track_profile=nextjs-build-website`, otherwise run table review and report site-audit N/A. |
 
-State the detected track and dimension(s) in the report header.
+Preserve dimensions. A security review remains `security`; do not relabel it as
+generic `code`. Accessibility is N/A for backend-only profiles unless the user
+asks for API usability/error-shape accessibility or a generated docs/UI review.
 
-### Angular review classification
+### Review mode and scored support
 
-Before loading Angular review knowledge, classify the Angular target:
+- Default mode is `quick-table` or `table`.
+- Angular/NestJS code quick reviews may use table mode.
+- Scored review is currently supported only for `core-ui-angular` and
+  `legacy-core-ui-angular` using `_refs/angular/review-code.md`.
+- For `plain-angular`, `sdcorejs-nestjs`, `plain-nestjs`,
+  `nextjs-build-website`, `plain-nextjs`, and `general`, state that scored mode
+  is unavailable unless a repo-defined rubric exists, then run table mode
+  unless the user asks to stop.
 
-| Classification | Evidence | Review behavior |
-|---|---|---|
-| `core-ui-angular` | `@sdcorejs/angular` dependency/imports | Load `_refs/angular/review-code.md` in Core UI portal mode. |
-| `legacy-core-ui-angular` | `@sd-angular/core` dependency/imports | Load `_refs/angular/review-code.md` in Core UI portal mode and preserve legacy import prefix expectations. |
-| `plain-angular` | Angular app without either Core UI package | Load `_refs/angular/review-code.md` in plain Angular mode: apply the general Angular checklist and local project conventions only; skip SDCoreJS/Core UI portal findings. |
-| `migration-request` | Review scope explicitly covers installing/migrating to Core UI | Review the migration plan/code against the approved scope; do not assume migration is desired from Angular signals alone. |
+## Step 2 - Load Applicable References
 
-For `plain-angular`, do not flag missing `@sdcorejs/angular` or
-`@sd-angular/core`, missing `Sd*` components/services, missing Core UI `autoId`,
-absence of `src/libs/**/features/**`, use of installed Angular Material,
-Bootstrap, PrimeNG, Tailwind, or local shared components, or lack of Core UI
-usage summaries.
+Load track-specific refs only when `track_profile` matches the ref scope. Load
+shared refs for shared dimensions when applicable. If a ref is absent or not
+applicable, record it under `refs_skipped` with a reason; do not fabricate a
+missing ref and do not silently fail.
 
-## Step 2 - Load the matching knowledge
-For each selected dimension:
-- **code** -> `_refs/<track>/review-code.md` (nextjs: `_refs/nextjs/build-website/review-code.md`)
-- **architecture** -> `_refs/shared/review-architecture.md`
-- **security** -> `_refs/shared/review-security.md` + `_refs/<track>/review-security.md` (nextjs under `build-website/`)
-- **performance** -> `_refs/shared/review-performance.md` + `_refs/<track>/review-performance.md`
-- **accessibility** -> `_refs/shared/review-accessibility.md` + `_refs/<track>/review-accessibility.md`
-- **site-audit** (nextjs existing site) -> `_refs/nextjs/build-website/audit-existing-site.md`
+| track_profile | code | security | performance | accessibility | architecture |
+|---|---|---|---|---|---|
+| `core-ui-angular` | `_refs/angular/review-code.md` | `_refs/shared/review-security.md` + `_refs/angular/review-security.md` | `_refs/shared/review-performance.md` + `_refs/angular/review-performance.md` | `_refs/shared/review-accessibility.md` + `_refs/angular/review-accessibility.md` | `_refs/shared/review-architecture.md` |
+| `legacy-core-ui-angular` | `_refs/angular/review-code.md` | same as Core UI Angular | same as Core UI Angular | same as Core UI Angular | `_refs/shared/review-architecture.md` |
+| `plain-angular` | `_refs/shared/review-code.md` plus generic/local Angular checks only | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
+| `sdcorejs-nestjs` | `_refs/nestjs/review-code.md` | `_refs/shared/review-security.md` + `_refs/nestjs/review-security.md` | `_refs/shared/review-performance.md` + `_refs/nestjs/review-performance.md` | N/A unless API usability/docs/UI scope requested | `_refs/shared/review-architecture.md` |
+| `plain-nestjs` | `_refs/shared/review-code.md` plus generic/local NestJS checks only | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | N/A unless API usability/docs/UI scope requested | `_refs/shared/review-architecture.md` |
+| `nextjs-build-website` | `_refs/nextjs/build-website/review-code.md` | `_refs/shared/review-security.md` + `_refs/nextjs/build-website/review-security.md` | `_refs/shared/review-performance.md` + `_refs/nextjs/build-website/review-performance.md` | `_refs/shared/review-accessibility.md` + `_refs/nextjs/build-website/review-accessibility.md` | `_refs/shared/review-architecture.md` |
+| `plain-nextjs` | `_refs/shared/review-code.md` plus generic/local Next.js checks only | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
+| `general` | `_refs/shared/review-code.md` | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
 
-Each ref supplies what to check: checklist, probes, severity criteria, and standards
-mapping. The output format below is owned by this skill.
+Plain-profile guardrails:
 
-## Step 3 - Review
-1. Read every file under review. Do not skim.
-2. Run the dimension's probes; surface raw counts and exit codes before narrative.
-3. Map each finding to severity using the ref's criteria. Group repeated violations.
-4. Emit the unified report. For multi-dimension (`ALL`), one report with a section per dimension.
+- `plain-angular`: must not flag missing `Sd*` components/services, Core UI
+  imports, `autoId`, Core UI style utilities, `src/libs/**/features/**`,
+  `MockCrudStore`, `SdTable`, `SdNotifyService`, forced admin screens, or Core
+  UI usage summaries unless the project already uses SDCoreJS Core UI.
+- `plain-nestjs`: must not enforce `@sdcorejs/nestjs`, Zod, TypeORM,
+  PostgreSQL, base repositories/services, or a specific module layout unless
+  detected in the target project. If the project uses Prisma, class-validator,
+  Mongoose, Fastify, or another stack, review against that actual stack.
+- `plain-nextjs`: must not enforce `[locale]`, `setRequestLocale`, typed i18n
+  navigation, content/public-site folders, landing-site metadata conventions, or
+  build-website caching rules unless detected.
 
-## Post-review tail
+## Step 3 - Probe Discipline and Secret Redaction
+
+Discover review and verification commands from package manager, lockfile,
+workspace configuration, `package.json` scripts, installed tools, and original
+failing commands. Do not hardcode `npm` or `tsc`. Do not invent missing
+scripts. Do not download probe tools with `npx --yes` or similar without
+explicit approval.
+
+Rules:
+
+- Detect package manager from lockfiles and `package.json`.
+- Do not mix `npm`, `yarn`, `pnpm`, and `bun`.
+- Use existing `package.json` scripts only.
+- Prefer the project's own build, lint, typecheck, test, audit, Lighthouse,
+  pa11y, axe, load-test, and bundle-analysis scripts when present.
+- Respect workspace scripts in monorepos when detectable.
+- Do not assume `src/libs`, `src/app/[locale]`, `src/modules`, or any source
+  root unless the project evidence shows it.
+- If a probe cannot run, add it to `probes_skipped` with evidence, for example
+  `no lint script found in package.json`, `tool not installed`, `network not
+  allowed`, `not applicable to backend-only profile`, or `user approval required`.
+
+Security redaction is mandatory:
+
+- Never echo secret values from `.env`, local config, CI files, shell output, or
+  source files.
+- Never print full lines that contain likely secret values.
+- For secret findings, report only file path, line number when available,
+  key/category name, reason, and redacted evidence such as
+  `API_KEY=[REDACTED]`.
+- Do not run a command that would print secrets. Use safer file/path scanning or
+  ask for redacted manual inspection.
+- Review artifacts and `review_context` must not persist secrets.
+
+## Step 4 - Review
+
+1. Read every file inside the selected `file_scope`.
+2. Run applicable probes using the command discipline above.
+3. Map each finding to the selected dimension and the loaded ref criteria.
+4. Assign stable IDs (`R1`, `R2`, `R3`) and repair tier metadata.
+5. Emit the report with `review_context`, human-readable findings, strengths,
+   N/A dimensions/refs, and explicit verification gaps.
+
+If evidence is incomplete, mark the finding `UNCLEAR` or `Needs verification`
+instead of presenting it as a definite blocker. Do not inflate style
+preferences into blockers.
+
+## Post-review Behavior
 
 When `sdcorejs-review` is called from a code-generation finish gate, return the
-report to the caller. The caller owns `sdcorejs-repair-loop`, acceptance
-verification, branch-ready, auto-docs, task tracker, and memories. The caller
-may invoke `sdcorejs-repair-loop` only when the finish-gate review choice was
-"Run review and repair loop"; a skipped finish-gate review or a direct
-read-only review must not auto-edit.
+report to the caller. The caller owns repair-loop, acceptance verification,
+branch-ready, documentation/task tracker artifacts, and memories. The caller may
+invoke `sdcorejs-repair-loop` only when the finish-gate review choice was "Run
+review and repair loop"; a skipped finish-gate review or direct read-only review
+must not auto-edit.
 
 When `sdcorejs-review` is invoked directly by the user:
 
-1. Stay read-only; do not apply fixes from this skill.
-2. If the review produced findings, warnings, or probe results, run
-   `_refs/orchestration/tail/auto-docs.md` as a review-session summary under the
-   detected track folder. Use status `reviewed`, not `done`.
-3. Run `_refs/orchestration/tail/auto-task-tracker.md` immediately after
-   auto-docs so blocking findings become visible follow-up tasks:
-   `Critical`/`Important` in the default format, or `BLOCKER`/`REQUIRED` in
-   Angular/NestJS code-review table mode.
-4. If durable review knowledge surfaced, such as a recurring project convention
-   or stakeholder rule, run `sdcorejs-explore (memories mode)`.
-5. Offer `sdcorejs-repair-loop` as the next action for blocking findings:
-   `Critical`/`Important` in the default format, or `BLOCKER`/`REQUIRED` in
-   Angular/NestJS code-review table mode. Do not invoke it automatically from a
-   direct user-requested review; wait for an explicit follow-up request.
+1. Stay strict read-only by default.
+2. Do not edit source code.
+3. Do not write `.sdcorejs` docs, tasks, memories, or summaries by default.
+4. Do not auto-run `sdcorejs-repair-loop`.
+5. Offer explicit next steps when useful:
 
-If the direct review found no issues and wrote no summary-worthy evidence, skip
-auto-docs and state the residual test/probe gaps.
+```text
+Next step:
+1. Run sdcorejs-repair-loop on blocking findings.
+2. Persist this review summary as a .sdcorejs artifact.
+3. Stop after review.
 
-## Output format (all tracks and dimensions)
-
-Match the user's language at runtime. Cite `file:line` for every finding. Add OWASP for security, WCAG for accessibility, breached budget for performance, and violated boundary/principle for architecture. `Tradeoff` is the cost/risk of the fix (`none` when strictly better).
-
-```markdown
-# Review - <module/feature> - <track> - <dimension(s)> - <date>
-
-## Scope
-- Track: <angular | nestjs | nextjs | general>
-- Dimension(s): <code | architecture | security | performance | accessibility | all>
-- Verification: `<build/test/probe cmd>` -> exit 0/failed; <N> passed
-
-## Critical
-| File:line | Issue | Fix | Tradeoff |
-|---|---|---|---|
-
-## Important
-| File:line | Issue | Fix | Tradeoff |
-|---|---|---|---|
-
-## Minor
-| File:line | Issue | Fix | Tradeoff |
-|---|---|---|---|
-
-## Strengths (mirror these)
-| File:line | What's good | Reuse where |
-|---|---|---|
-
-## Next action
-- Critical -> `sdcorejs-repair-loop`
-- Important -> user decides fix now or defer with reason
-- Minor -> batch into cleanup
+Reply with `1`, `2`, or `3`.
 ```
 
-- In default quick-table mode, a severity table with no rows must contain `_none_`; do not omit the heading.
-- In default quick-table mode, the Strengths table is required with at least one row; never answer with only "Looks good". In Angular/NestJS code-review table mode, put positive observations in table rows using `Info / Kudos`, `Pass / Compliant`, `Excellent`, or `Checked`.
-- Security/performance/accessibility/architecture refs may carry their own passed-checklist or manual-audit lists; include them under the relevant dimension section.
+Only option `2` may write a review artifact, and only after the user explicitly
+chooses it.
 
-### Angular/NestJS code-review table mode
-For **Angular** or **NestJS** track + **code** dimension quick reviews, use the table below instead of the Critical/Important/Minor/Strengths quick tables. In `ALL` reviews, use this table for the Angular/NestJS code section and keep the relevant dimension-specific format for other sections. Keep scored deep-review mode separate as described below.
+## Output Format
 
-Use the user's language for row text. Keep these column names exactly:
+Match the user's language at runtime. Keep identifiers, paths, env keys, route
+paths, and permission codes exact. Include `review_context` in every report,
+even summary reports.
 
-| # | Severity | Group | File/Line | Issue | Risk | Suggested fix | Gate |
-| --: | -------- | ---- | --------- | ----- | ---- | ------------- | ---- |
+````markdown
+# Review - <module/feature> - <track> - <track_profile> - <dimension(s)> - <date>
 
-Severity values:
-- `🔴 Critical` - severe crash, total data loss, serious data leak, or severe user impact.
-- `🟠 High` - major issue affecting core flow, build/release, data integrity, security, serious performance, or likely runtime failure.
-- `🟡 Medium` - actionable warning affecting maintainability, UX, build warnings, type safety, testability, or future risk.
-- `🟢 Low` - small naming, format, style, readability, comment, clean-code, or convention issue.
-- `🔵 Info / Kudos` - useful positive note or praise.
-- `🟢 Pass / Compliant` - checked criterion passed.
-- `✨ Excellent` / `🌟 Excellent` - smart or above-expectation implementation.
-- `✅ Checked` - confirms an item was checked and completed well.
+```yaml
+review_context:
+  source: sdcorejs-review
+  track: angular | nestjs | nextjs | general
+  track_profile: core-ui-angular | legacy-core-ui-angular | plain-angular | sdcorejs-nestjs | plain-nestjs | nextjs-build-website | plain-nextjs | general
+  dimensions:
+    - code | architecture | security | performance | accessibility | ALL
+  review_mode: quick-table | table | scored | blocking | site-audit
+  file_scope:
+    - path/or/glob
+  refs_loaded:
+    - _refs/...
+  refs_skipped:
+    - ref: _refs/...
+      reason: not applicable to this track_profile
+  package_manager: npm | pnpm | yarn | bun | unknown
+  probes_run:
+    - command: command if actually run
+      exit: exit code if available
+      notes: redacted or summarized
+  probes_skipped:
+    - probe: lint/build/test/lighthouse/pa11y/axe/etc.
+      reason: no script found, tool not installed, network not allowed, not applicable, or user approval required
+  finding_ids:
+    - R1
+    - R2
+  repair_gate_mapping:
+    blocking: Critical/Important or BLOCKER/REQUIRED
+    confirm: semantic/non-mechanical fixes
+    user_decision: product/contract/security-policy decisions
+```
 
-Gate values:
-- `BLOCKER` - must fix before merge/release; use for direct-impact Critical/High.
-- `REQUIRED` - should fix before merge; use for clear security, authorization, validation, transaction, data integrity, type safety, migration, build warning, memory leak, or important convention violations.
-- `RECOMMENDED` - should improve but does not necessarily block merge.
-- `OPTIONAL` - small improvement suggestion.
-- `PASS` - checked and compliant.
-- `INFO` - note or praise; no action needed.
+## Findings
+| ID | Severity/Gate | Dimension | File/Line or Scope | Issue | Evidence | Risk | Suggested fix | Repair tier | Gate |
+|---|---|---|---|---|---|---|---|---|---|
+| R1 | High/REQUIRED | security | src/auth.guard.ts:42 | Missing permission check | redacted/summarized evidence | Unauthorized access | Add resource permission guard | confirm | REQUIRED |
 
-Sort rows by severity (`Critical`, `High`, `Medium`, `Low`, positive/info). If no issue exists for a checked group, add a `Pass / Compliant` or `Checked` row with `Gate=PASS`. If context is insufficient, use `INFO` or `RECOMMENDED` and state what evidence is missing instead of guessing.
+## Strengths
+| File/Line or Scope | What's good | Reuse where |
+|---|---|---|
 
-After the table, add a short summary:
-- Total issue count by severity.
-- Blockers to fix before merge.
-- Passed checklist items.
-- Next step: small patch/snippet for small fixes; spec/plan for medium/large fixes with scope, affected files, risks, tests, and rollback when needed. For NestJS, prioritize security, authorization, validation boundary, transaction, data integrity, and DB constraints before style/convention.
+## N/A And Skipped
+| Item | Reason |
+|---|---|
 
-### Scored deep-review mode (Angular code dimension)
-For a full module/branch audit or "scored review / enterprise readiness" on an **Angular** project, use the 13-category scored format defined in `_refs/angular/review-code.md` instead of the quick tables.
+## Next Action
+- Blocking findings -> `sdcorejs-repair-loop` only after explicit user/finish-gate choice.
+- User-decision findings -> ask for the decision before editing.
+- Probe gaps -> run skipped probes only after prerequisites/approval exist.
+````
+
+Findings rules:
+
+- Cite `file:line` for every file-level finding. If no file/line exists, mark
+  the finding as scope-level or architecture-level.
+- Do not omit Suggested fix for blocking findings unless the finding is
+  `user-decision` or an architecture decision; in those cases, say what decision
+  is needed.
+- Use `auto` only for mechanical low-risk fixes. Use `confirm` for semantic or
+  non-mechanical fixes. Use `user-decision` for product, contract,
+  architecture, migration, security-policy, or UX decisions.
+- In table mode, accepted gate values are `BLOCKER`, `REQUIRED`, `ADVISORY`,
+  and `N/A`.
+- In quick-table mode, a severity table with no rows must contain `_none_`; do
+  not omit the heading.
 
 ## Rules
 
 ### MUST DO
-- Detect track and dimension first; state both in the header.
-- Read every file under review; cite `file:line` for every finding.
-- Run the ref's probes / build / test and include exit codes.
-- Sort by severity and group repeated violations. In default quick-table mode, include the Strengths table; in Angular/NestJS code-review table mode, include positive rows inside the required table.
-- Match the user's language; distinguish a real bug from a style preference.
-- For direct reviews with findings or probe evidence, run the Post-review tail so review sessions are recoverable.
+- Classify `track_profile` before loading refs.
+- Load only applicable refs and record `refs_loaded`/`refs_skipped`.
+- Include `review_context` in every report.
+- Preserve requested dimensions and mode.
+- Keep direct review strict read-only by default.
+- Redact secrets and avoid commands that expose secret values.
+- Use package-manager/script/tool discovery for probes.
+- Mark backend-only accessibility as N/A unless explicitly scoped.
+- Distinguish real bugs from style preferences.
 
 ### MUST NOT
 - Edit files.
-- Mark style preferences as Critical.
-- Output a finding without a `file:line`.
-- Duplicate findings across dimensions; keep structure findings in `architecture`, per-line defects in `code`.
-- For security: read/echo `.env` / credentials, or run `npm audit fix --force`.
-
-## Anti-patterns
-- "Looks good" without evidence.
-- Everything tagged Important.
-- Reviewing without running the build/probes.
-- Listing OWASP/WCAG generically with no evidence in this repo.
-- Turning architecture review into a rewrite plan; recommend scoped, incremental fixes.
+- Silently write `.sdcorejs` artifacts from direct review.
+- Auto-run repair-loop from direct review.
+- Apply SDCoreJS/Core UI/NestJS/build-website conventions to plain profiles.
+- Invent missing dependencies, package managers, scripts, tools, source roots,
+  or monorepo layouts.
+- Download probe tools without explicit approval.
+- Print or persist secrets.
+- Duplicate findings across dimensions.
 
 ## Cross-references
-- Dimension knowledge: `_refs/<track>/review-{code,security,performance,accessibility}.md`
+- General fallback: `_refs/shared/review-code.md`
 - Shared baselines: `_refs/shared/review-{architecture,security,performance,accessibility}.md`
+- Angular Core UI refs: `_refs/angular/review-{code,security,performance,accessibility}.md`
+- NestJS SDCoreJS refs: `_refs/nestjs/review-{code,security,performance}.md`
+- Next.js build-website refs: `_refs/nextjs/build-website/review-{code,security,performance,accessibility}.md`
 - Repair loop: `sdcorejs-repair-loop`
 - Verification: `sdcorejs-ship (verify-before-done mode)`
-- `_refs/orchestration/tail/auto-docs.md` - direct review-session summaries
-- `_refs/orchestration/tail/auto-task-tracker.md` - living follow-up tasks from review findings

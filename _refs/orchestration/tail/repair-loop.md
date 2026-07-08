@@ -50,9 +50,15 @@ Preserve the original source context before any edits:
 repair_source:
   kind: review-code | verify-before-done | linter | typecheck | test | manual
   track: angular | nestjs | nextjs | test | general
+  track_profile: core-ui-angular | legacy-core-ui-angular | plain-angular | sdcorejs-nestjs | plain-nestjs | nextjs-build-website | plain-nextjs | general | n/a
   dimension: code | security | performance | accessibility | architecture | ALL
   file_scope:
     - src/...
+  refs_loaded:
+    - _refs/...
+  refs_skipped:
+    - ref: _refs/...
+      reason: not applicable to this track_profile
   original_commands:
     - pnpm lint
     - pnpm test
@@ -61,12 +67,18 @@ repair_source:
   probes:
     - security
     - accessibility
+  review_context:
+    source: sdcorejs-review
+    # Paste or reference the original review_context block without rewriting it.
 ```
 
 Rules:
 
-- If the source is `sdcorejs-review`, re-run the same review track, dimension,
-  file scope, mode, and probes after repair.
+- If the source is `sdcorejs-review`, re-run the same review track,
+  `track_profile`, dimension, file scope, mode, loaded refs, skipped refs, and
+  probes after repair.
+- Do not reclassify a `plain-angular`, `plain-nestjs`, or `plain-nextjs`
+  source as an SDCoreJS-specific profile during repair.
 - Do not re-run a generic/default code review when the original finding came
   from `security`, `performance`, `architecture`, `accessibility`, or `ALL`.
 - If the source is `verify-before-done`, re-run the same acceptance gate, not
@@ -247,7 +259,7 @@ After each pass:
 
 | Source | Re-verify action |
 |---|---|
-| `review-code` | Re-run `sdcorejs-review` with the same track, dimension, file scope, mode, and probes. |
+| `review-code` | Re-run `sdcorejs-review` with the same track, `track_profile`, dimension, file scope, mode, refs, and probes from `review_context`. |
 | `verify-before-done` | Re-run `sdcorejs-ship (verify-before-done mode)` for the same acceptance gate. |
 | `linter` | Re-run the original lint command or discovered lint script. |
 | `typecheck` | Re-run the original typecheck command or discovered typecheck/build script. |
@@ -320,6 +332,7 @@ the caller explicitly requested a commit after those gates.
 ### MUST DO
 
 - Preserve `repair_source` before editing.
+- Preserve `review_context` exactly when the source is `sdcorejs-review`.
 - Run working-tree preflight before the first pass.
 - Keep the Repair ledger visible and current.
 - Classify every finding before touching code.

@@ -11,6 +11,16 @@ Per-file code review for a Next.js landing-site project. Different from
 the `architecture` dimension of `sdcorejs-review` (structural) and performance review (numbers).
 This file checks line-level adherence to Next.js + build-website conventions.
 
+## Profile applicability
+
+Apply this ref only when `sdcorejs-review` classified the target as
+`nextjs-build-website`, or when the user explicitly approved a build-website
+migration/install review scope. For `plain-nextjs`, mark this ref N/A and use
+`_refs/shared/review-code.md` plus the project's actual Next.js conventions.
+Do not require `src/app/[locale]`, `setRequestLocale`, typed i18n navigation,
+content/public-site folders, landing-site metadata conventions, or
+build-website cache/layout rules unless the target project already uses them.
+
 ## Conventions checked (mapped to the write-code reference pack that defined them)
 
 ### 1. Server vs Client component boundary (from the `pages-and-blocks` pack)

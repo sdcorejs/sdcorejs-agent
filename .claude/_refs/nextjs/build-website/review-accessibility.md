@@ -11,6 +11,20 @@ locale-switcher semantics, server-rendered ARIA, multiple `<h1>` from
 copy-pasted section components. Run probes on BOTH locales (`/vi` + `/en`) —
 some issues only appear in one.
 
+## Profile applicability
+
+Apply this ref only to `nextjs-build-website`, or to an explicit build-website
+migration/install review scope. For `plain-nextjs`, mark this ref N/A and use
+`_refs/shared/review-accessibility.md` plus the project's actual UI library and
+local components. Do not require `[locale]`, typed i18n navigation,
+content/public-site structure, or build-website section conventions unless
+detected.
+
+Probe commands below are examples. The parent review must discover scripts,
+URLs, and installed tools first. Do not download Lighthouse, pa11y, axe, or any
+other probe tool without explicit user approval; record skipped probes in
+`review_context`.
+
 ## Probe layer 1 — Run baseline (cross-track)
 
 ```bash

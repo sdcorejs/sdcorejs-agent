@@ -11,6 +11,18 @@
 Audit generated or modified Angular portal code against SDCoreJS Core UI
 conventions. Read-only — surfaces violations the human reviewer should fix.
 
+## Profile applicability
+
+This ref applies only when `sdcorejs-review` classified the target as
+`core-ui-angular` or `legacy-core-ui-angular`, or when the user explicitly
+approved an SDCoreJS Core UI migration/install review scope.
+
+For `plain-angular`, mark this ref N/A and use `_refs/shared/review-code.md`
+plus the project's local Angular conventions. Do not flag missing
+`@sdcorejs/angular`, `@sd-angular/core`, `Sd*` imports, Core UI components,
+Core UI style utilities, `MockCrudStore`, `src/libs/**/features/**`, admin
+screens, or Core UI usage summaries.
+
 ## Scope gate
 
 Before applying findings, classify the target:
@@ -19,7 +31,7 @@ Before applying findings, classify the target:
 |---|---|
 | `core-ui-angular` | Full Angular + SDCoreJS/Core UI portal checks. |
 | `legacy-core-ui-angular` | Full Angular + SDCoreJS/Core UI portal checks, preserving `@sd-angular/core` import prefix where installed. |
-| `plain-angular` | Generic Angular review only. Use local project conventions and installed UI libraries. Skip all SDCoreJS/Core UI portal requirements. |
+| `plain-angular` | N/A for this ref. Use `_refs/shared/review-code.md`, local project conventions, and installed UI libraries. Skip all SDCoreJS/Core UI portal requirements. |
 | `migration-request` | Review only the approved migration/install scope; do not infer migration from Angular signals alone. |
 
 For `plain-angular`, do not flag missing `@sdcorejs/angular` or

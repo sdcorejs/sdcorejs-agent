@@ -6,6 +6,16 @@
 > has no frontmatter. The **output format** (color-coded report) is owned by the
 > parent skill; this file only supplies *what to check*.
 
+## Probe discipline
+
+The parent `sdcorejs-review` must discover the target package manager, scripts,
+installed tools, runtime URL, and UI scope before running probes. Commands below
+are examples, not mandatory commands. Do not download Lighthouse, pa11y, axe, or
+any other probe tool with `npx --yes` or similar without explicit user approval.
+For backend-only scopes, mark accessibility N/A unless the user explicitly
+requests API usability, error-shape accessibility, generated docs, or generated
+UI review.
+
 ## Why
 WCAG 2.1 AA is the legal floor in most jurisdictions (Vietnam's MIC Circular
 18/2014, EU EN 301 549, US Section 508). A11y issues are ~80% structural
