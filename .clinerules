@@ -10,7 +10,7 @@ sdcorejs-brainstorming
 -> sdcorejs-plan (approval gate + approved plan snapshot)
 -> sdcorejs-execute-plan
    always ask sequential vs parallel
--> executor: sdcorejs-angular | sdcorejs-nestjs | sdcorejs-nextjs | sdcorejs-product | sdcorejs-design | sdcorejs-test | generic harness
+-> executor: sdcorejs-angular for Core UI portals/new SDCoreJS portals/approved Core UI migration | sdcorejs-nestjs | sdcorejs-nextjs | sdcorejs-product | sdcorejs-design | sdcorejs-test | generic harness for plain Angular and unsupported stacks
 -> finish gate and tail chain
 ```
 
@@ -25,6 +25,7 @@ Rules:
 - Apply `_refs/shared/project-context.md` before non-trivial skill execution.
 - Explicit approval required for spec and plan.
 - Approved plans execute through `sdcorejs-execute-plan`.
+- `sdcorejs-execute-plan` classifies Angular as Core UI vs plain Angular before dispatch.
 - Parallel work requires `sdcorejs-parallel-dispatch`.
 - Product/PO docs and traceability use `sdcorejs-product`.
 - UI/UX design, wireframes, PNG previews, and FE handoff use `sdcorejs-design`.

@@ -50,7 +50,7 @@ Before detecting track/dimension or reading files under review, run
 **Track** (directory signals):
 | Track | Signals |
 |---|---|
-| **angular** | `angular.json`; `@sdcorejs/angular`; `src/libs/<module>/`; `*.component.ts`, `*.routes.ts` |
+| **angular** | `angular.json`; `@angular/core`; `@sdcorejs/angular`; `@sd-angular/core`; `*.component.ts`, `*.routes.ts` |
 | **nestjs** | `nest-cli.json`; `@nestjs/*`; `*.controller.ts` / `*.service.ts` / `*.entity.ts` |
 | **nextjs** | `next.config.*`; `next`; `src/app/[locale]/`; `page.tsx`, `middleware.ts` |
 | **general** | no stack signal; run general code-quality checks only unless the user asked for a shared dimension |
@@ -67,6 +67,23 @@ Before detecting track/dimension or reading files under review, run
 | **site-audit** (nextjs only) | Existing whole-site audit: "audit site", "improve existing site", "what is missing on this site", "cloned site to improve"; run the 30-point build-website quality bar, read-only gap report, then hand to `sdcorejs-brainstorming` |
 
 State the detected track and dimension(s) in the report header.
+
+### Angular review classification
+
+Before loading Angular review knowledge, classify the Angular target:
+
+| Classification | Evidence | Review behavior |
+|---|---|---|
+| `core-ui-angular` | `@sdcorejs/angular` dependency/imports | Load `_refs/angular/review-code.md` in Core UI portal mode. |
+| `legacy-core-ui-angular` | `@sd-angular/core` dependency/imports | Load `_refs/angular/review-code.md` in Core UI portal mode and preserve legacy import prefix expectations. |
+| `plain-angular` | Angular app without either Core UI package | Load `_refs/angular/review-code.md` in plain Angular mode: apply the general Angular checklist and local project conventions only; skip SDCoreJS/Core UI portal findings. |
+| `migration-request` | Review scope explicitly covers installing/migrating to Core UI | Review the migration plan/code against the approved scope; do not assume migration is desired from Angular signals alone. |
+
+For `plain-angular`, do not flag missing `@sdcorejs/angular` or
+`@sd-angular/core`, missing `Sd*` components/services, missing Core UI `autoId`,
+absence of `src/libs/**/features/**`, use of installed Angular Material,
+Bootstrap, PrimeNG, Tailwind, or local shared components, or lack of Core UI
+usage summaries.
 
 ## Step 2 - Load the matching knowledge
 For each selected dimension:

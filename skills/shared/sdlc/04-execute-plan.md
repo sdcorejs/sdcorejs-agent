@@ -19,11 +19,12 @@ Before executing this skill:
 ## Purpose
 Run the approved plan as the execution contract. This skill is the handoff between planning and doing.
 
-It owns three decisions:
+It owns four decisions:
 
 1. Which execution track should run.
 2. Whether the user wants sequential or parallel execution.
-3. Whether to use a track orchestrator or the generic harness fallback.
+3. Whether Angular work is Core UI portal work or plain Angular work.
+4. Whether to use a track orchestrator or the generic harness fallback.
 
 ## Preconditions
 - `sdcorejs-plan` has explicit user approval.
@@ -66,13 +67,40 @@ Prefer explicit track metadata in the plan. Otherwise infer from project signals
 
 | Track | Signals | Executor |
 |---|---|---|
-| angular | `angular.json`, `@angular/core`, `src/libs/**`, components, routes, Core UI | `sdcorejs-angular` |
+| angular | Core UI Angular classification below, or new SDCoreJS portal creation | `sdcorejs-angular` |
 | nestjs | `nest-cli.json`, `@nestjs/core`, controllers, services, DTOs, modules | `sdcorejs-nestjs` |
 | nextjs | `next.config.*`, `app/**`, `pages/**`, SEO/OG/contact/i18n/caching tasks | `sdcorejs-nextjs` |
 | product | product docs, PO docs, user stories, acceptance criteria, UAT, traceability matrix, requirement/implementation/test gap review | `sdcorejs-product` |
 | design | design docs, wireframes, mockups, UI/UX, screen flow, PNG previews, FE handoff, story-to-screen mapping | `sdcorejs-design` |
 | test | test-only plan, `*.spec.*`, e2e, Playwright/Cypress/Robot/Jest, inspector export | `sdcorejs-test` |
 | generic | unsupported stack, docs/scripts/config changes, mixed non-track work | generic harness fallback |
+
+#### Angular project classification preflight
+
+Before dispatching any Angular executor, classify the target project. Use the
+approved plan, package manifests, lockfiles, existing imports, and current user
+request. Record the classification in the execution summary.
+
+| Classification | Evidence | Executor/fallback |
+|---|---|---|
+| `core-ui-angular` | Existing Angular app depends on or imports `@sdcorejs/angular` | `sdcorejs-angular`; generate imports with `@sdcorejs/angular` |
+| `legacy-core-ui-angular` | Existing Angular app depends on or imports `@sd-angular/core` | `sdcorejs-angular`; preserve `@sd-angular/core` imports |
+| `plain-angular` | Angular signals exist (`angular.json`, `@angular/core`, components, routes), but neither Core UI package is installed/imported | generic harness fallback; reuse local/shared/design-system components and installed UI libraries only |
+| `migration-request` | User or approved plan explicitly asks to install/adopt/migrate to SDCoreJS Core UI | return to `sdcorejs-spec`/`sdcorejs-plan` unless the dependency/migration scope is already explicitly approved |
+| `non-angular` | No Angular evidence | Continue non-Angular track detection |
+
+Only dispatch `sdcorejs-angular` for `core-ui-angular`,
+`legacy-core-ui-angular`, approved `migration-request`, or brand-new SDCoreJS
+portal creation. Do not treat broad Angular signals alone (`angular.json`,
+`@angular/core`, components, routes, or `src/libs/**`) as permission to run the
+Core UI portal executor.
+
+For `plain-angular`, run the generic harness. It must follow the real project
+structure, never import `@sdcorejs/angular` or `@sd-angular/core`, never fetch
+Core UI docs, never emit a Core UI usage summary, never force admin screens,
+never assume `src/libs/**/features/**` when the project uses another structure,
+and must ask for explicit approval before adding `@sdcorejs/angular`,
+`@sd-angular/core`, or `@angular/material`.
 
 For mixed full-stack plans, classify as role-split and prepare to invoke `sdcorejs-parallel-dispatch`. If the plan came from `sdcorejs-solution-builder`, preserve the solution-root contract: product docs in `product/`, design handoff in `design/`, backend in `backend/`, frontend in `frontend/`, cross-stack tests in `test/`, and traceability/evidence in `.sdcorejs/`.
 
@@ -109,13 +137,13 @@ mode reads `_refs/orchestration/workspace-isolation.md` and reports the baseline
 
 Dispatch by detected track:
 
-- angular -> `sdcorejs-angular`
+- angular -> `sdcorejs-angular` only when the Angular classification preflight allows it
 - nestjs -> `sdcorejs-nestjs`
 - nextjs -> `sdcorejs-nextjs`
 - product -> `sdcorejs-product`
 - design -> `sdcorejs-design`
 - test -> `sdcorejs-test`
-- generic -> run the harness fallback below
+- generic or `plain-angular` -> run the harness fallback below
 
 Pass the approved plan as the contract. The executor must not add scope without returning to `sdcorejs-plan`.
 

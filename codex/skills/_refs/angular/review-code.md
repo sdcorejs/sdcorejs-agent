@@ -11,12 +11,33 @@
 Audit generated or modified Angular portal code against SDCoreJS Core UI
 conventions. Read-only — surfaces violations the human reviewer should fix.
 
+## Scope gate
+
+Before applying findings, classify the target:
+
+| Classification | Review mode |
+|---|---|
+| `core-ui-angular` | Full Angular + SDCoreJS/Core UI portal checks. |
+| `legacy-core-ui-angular` | Full Angular + SDCoreJS/Core UI portal checks, preserving `@sd-angular/core` import prefix where installed. |
+| `plain-angular` | Generic Angular review only. Use local project conventions and installed UI libraries. Skip all SDCoreJS/Core UI portal requirements. |
+| `migration-request` | Review only the approved migration/install scope; do not infer migration from Angular signals alone. |
+
+For `plain-angular`, do not flag missing `@sdcorejs/angular` or
+`@sd-angular/core`, missing `Sd*` imports, missing Core UI `autoId`, missing
+`MockCrudStore`, absence of `src/libs/**/features/**`, use of already-installed
+Angular Material/Bootstrap/PrimeNG/Tailwind/local shared components, or lack of a
+Core UI usage summary. Do not run `core-docs-fetch.mjs` for `plain-angular`.
+
 ## Review checklist
 
 For every file under review, check the following.
 
 ### Mandatory Angular code-review checklist
-Run these checks in addition to the SDCoreJS portal checks below. Report results through the parent skill's Angular/NestJS code-review table mode with `#`, `Severity`, `Group`, `File/Line`, `Issue`, `Risk`, `Suggested fix`, and `Gate`.
+Run these checks for every Angular classification. For Core UI classifications,
+also run the SDCoreJS portal checks below. For `plain-angular`, stop after the
+generic Angular/local-project checks. Report results through the parent skill's
+Angular/NestJS code-review table mode with `#`, `Severity`, `Group`,
+`File/Line`, `Issue`, `Risk`, `Suggested fix`, and `Gate`.
 
 #### Naming & file structure
 - Check file names follow Angular/project convention: `a-b-c.<type>.<ext>`.
@@ -246,6 +267,9 @@ Run these checks in addition to the SDCoreJS portal checks below. Report results
 - UI state fields (`checked`, `selected`, `expanded`, `children`, `disabled`, etc.) should not be added to Service DTOs unless the Service derives and guarantees them.
 
 ### Core UI usage
+Apply this section only to `core-ui-angular` and `legacy-core-ui-angular`.
+Skip it for `plain-angular`.
+
 - Uses `@sdcorejs/angular/components`, `@sdcorejs/angular/forms`, `@sdcorejs/angular/modules` instead of hand-rolled equivalents
 - If a custom skeleton exists, it is marked with `// CUSTOM_UI: <reason>` and the generation summary mentioned it
 - Imports come from path-specific subpaths (e.g. `@sdcorejs/angular/components/section`), not the barrel `from 'sd-angular'`
@@ -328,6 +352,10 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 - A Core UI component used without its required configuration token provided (runtime throw) — `node _refs/angular/core-docs-fetch.mjs --print sd-<name>` lists each component's setup requirements
 
 ## Verification commands (run, include exit codes in the report)
+For Core UI portals, prefer the commands below. For `plain-angular`, discover
+and run the target project's existing lint/build/test scripts instead; do not
+assume `src/libs/<module>/**/*.spec.ts`.
+
 - `npm run build-dev` → exit 0 / failed
 - `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts` → N passed, 0 failed
 

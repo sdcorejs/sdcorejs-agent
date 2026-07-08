@@ -97,6 +97,11 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   }
 
   const angularSkill = sourceByName.get('sdcorejs-angular');
+  assert.match(angularSkill, /Eligibility preflight/);
+  assert.match(angularSkill, /plain-angular/);
+  assert.match(angularSkill, /--require-installed/);
+  assert.match(angularSkill, /generic harness/);
+  assert.match(angularSkill, /Do not fetch Core UI docs/);
   assert.match(angularSkill, /_refs\/angular\/write-code\/input-analysis\.md/);
   assert.match(angularSkill, /SDCoreJS Core reuse analysis/);
   assert.match(angularSkill, /mandatory UI check/);
@@ -104,6 +109,9 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
 
   const angularInputAnalysis = await readFile(new URL('../../_refs/angular/write-code/input-analysis.md', import.meta.url), 'utf8');
   assert.match(angularInputAnalysis, /versions\.json/);
+  assert.match(angularInputAnalysis, /--require-installed/);
+  assert.match(angularInputAnalysis, /plain-angular/);
+  assert.match(angularInputAnalysis, /Angular\/local UI reuse analysis/);
   assert.match(angularInputAnalysis, /UI decomposition/);
   assert.match(angularInputAnalysis, /Requirement mapping/);
   assert.match(angularInputAnalysis, /Image \+ PRD mapping/);
@@ -111,9 +119,29 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(angularInputAnalysis, /Do not claim visual\/browser verification unless it actually happened/);
 
   const coreDocsFetch = await readFile(new URL('../../_refs/angular/core-docs-fetch.mjs', import.meta.url), 'utf8');
+  assert.match(coreDocsFetch, /--require-installed/);
+  assert.match(coreDocsFetch, /detectInstalledPackage/);
   assert.match(coreDocsFetch, /package-lock\.json/);
   assert.match(coreDocsFetch, /pnpm-lock\.yaml/);
   assert.match(coreDocsFetch, /yarn\.lock/);
+
+  const executePlan = sourceByName.get('sdcorejs-execute-plan');
+  assert.match(executePlan, /Angular project classification preflight/);
+  assert.match(executePlan, /core-ui-angular/);
+  assert.match(executePlan, /legacy-core-ui-angular/);
+  assert.match(executePlan, /plain-angular/);
+  assert.match(executePlan, /migration-request/);
+  assert.match(executePlan, /generic harness fallback/);
+
+  const reviewSkill = sourceByName.get('sdcorejs-review');
+  assert.match(reviewSkill, /Angular review classification/);
+  assert.match(reviewSkill, /plain-angular/);
+  assert.match(reviewSkill, /skip SDCoreJS\/Core UI portal findings/i);
+
+  const angularReviewCode = await readFile(new URL('../../_refs/angular/review-code.md', import.meta.url), 'utf8');
+  assert.match(angularReviewCode, /## Scope gate/);
+  assert.match(angularReviewCode, /plain-angular/);
+  assert.match(angularReviewCode, /Do not run `core-docs-fetch\.mjs` for `plain-angular`/);
 
   const testSkill = sourceByName.get('sdcorejs-test');
   assert.match(testSkill, /## Direct invocation tail/);
@@ -125,7 +153,6 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(testSkill, /_refs\/orchestration\/tail\/auto-docs\.md/);
   assert.match(testSkill, /_refs\/orchestration\/tail\/auto-task-tracker\.md/);
 
-  const reviewSkill = sourceByName.get('sdcorejs-review');
   assert.match(reviewSkill, /## Post-review tail/);
   assert.match(reviewSkill, /status `reviewed`/);
   assert.match(reviewSkill, /_refs\/orchestration\/tail\/auto-docs\.md/);
@@ -151,6 +178,8 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   const coreVersion = await readFile(new URL('../../_refs/angular/core-version.md', import.meta.url), 'utf8');
   assert.doesNotMatch(coreVersion, /10-init-portal/);
   assert.match(coreVersion, /_refs\/angular\/write-code\/init-portal\.md/);
+  assert.match(coreVersion, /No Core UI package installed/);
+  assert.doesNotMatch(coreVersion, /generic Angular Material \+ `alert/);
 
   const dockerize = await readFile(new URL('../../skills/infra/dockerize.md', import.meta.url), 'utf8');
   assert.match(dockerize, /frontend\/[^\n]*\r?\n\s+frontend-nginx\.conf/);
@@ -221,6 +250,37 @@ test('phase 1: Core docs fetcher prefers installed lockfile version over package
   const { detectInstalledVersion } = await import('../../_refs/angular/core-docs-fetch.mjs');
 
   assert.equal(detectInstalledVersion(root), '20.0.7');
+});
+
+test('phase 1: Core docs fetcher requires an installed Core UI package when requested', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'sdcorejs-plain-angular-'));
+  await writeFile(
+    join(root, 'package.json'),
+    JSON.stringify({ dependencies: { '@angular/core': '^20.0.0', '@angular/material': '^20.0.0' } }),
+    'utf8'
+  );
+
+  const script = fileURLToPath(new URL('../../_refs/angular/core-docs-fetch.mjs', import.meta.url));
+  const result = await execFileResult(process.execPath, [script, '--cwd', root, '--require-installed', '--list']);
+
+  assert.equal(result.code, 1);
+  assert.match(result.stderr, /Core UI package not installed/);
+  assert.match(result.stderr, /plain-angular/);
+  assert.doesNotMatch(result.stderr, /HTTP \d+/);
+});
+
+test('phase 1: Core docs fetcher detects the legacy Core UI package name', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'sdcorejs-legacy-core-docs-'));
+  await writeFile(
+    join(root, 'package.json'),
+    JSON.stringify({ dependencies: { '@sd-angular/core': '^19' } }),
+    'utf8'
+  );
+
+  const { detectInstalledPackage, detectInstalledVersion } = await import('../../_refs/angular/core-docs-fetch.mjs');
+
+  assert.deepEqual(detectInstalledPackage(root), { name: '@sd-angular/core', version: '19.0.0' });
+  assert.equal(detectInstalledVersion(root), '19.0.0');
 });
 
 test('phase 1: long references expose a top-of-file contents map', async () => {

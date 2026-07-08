@@ -20,13 +20,13 @@ Request
   -> sdcorejs-plan (approval gate + approved plan snapshot)
   -> sdcorejs-execute-plan
        always ask sequential vs parallel
-       dispatch angular | nestjs | nextjs | product | design | test | generic harness
+       dispatch Core UI angular | nestjs | nextjs | product | design | test | generic harness
   -> finish gate and tail chain
 ```
 
 Track executors:
 
-- Angular: `sdcorejs-angular`
+- Angular: `sdcorejs-angular` only for Core UI portals/new SDCoreJS portals/approved Core UI migration; plain Angular uses the generic harness
 - NestJS: `sdcorejs-nestjs`
 - Next.js: `sdcorejs-nextjs`
 - Product: `sdcorejs-product`
@@ -49,7 +49,7 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - Requirements before code: use `sdcorejs-brainstorming`.
 - `sdcorejs-spec` and `sdcorejs-plan` require explicit approval.
 - `sdcorejs-spec` and `sdcorejs-plan` write their own approved snapshots.
-- Approved plans execute through `sdcorejs-execute-plan`.
+- Approved plans execute through `sdcorejs-execute-plan`; it classifies Angular as Core UI vs plain Angular before dispatch.
 - Non-trivial skills apply `_refs/shared/project-context.md` before executing.
 - `sdcorejs-execute-plan` always asks sequential vs parallel before execution.
 - Product docs, user stories, acceptance criteria, UAT, and traceability use `sdcorejs-product`.

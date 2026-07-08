@@ -2,6 +2,26 @@
 
 This file is loaded by `skills/shared/sdlc/0[1-3]-*.md` when the detected track is `angular`. It collects only the track-specific bits the cross-track skills need; do NOT duplicate the cross-track workflow here.
 
+## Angular Classification Gate
+
+Before writing an Angular spec/plan, classify the target project:
+
+- `core-ui-angular`: existing Angular app depends on or imports `@sdcorejs/angular`.
+- `legacy-core-ui-angular`: existing Angular app depends on or imports `@sd-angular/core`.
+- `plain-angular`: Angular app exists, but neither Core UI package is installed/imported.
+- `migration-request`: the user explicitly asks to install/adopt/migrate to SDCoreJS Core UI.
+- `non-angular`: no Angular evidence.
+
+The Core UI portal patterns below (`src/libs/<module>/features/<entity>`,
+`MockCrudStore`, `Sd*` components, admin screens, Core UI usage summaries, and
+Core UI utility classes) apply only to `core-ui-angular`,
+`legacy-core-ui-angular`, new SDCoreJS portal creation, or an approved
+`migration-request`. For `plain-angular`, keep the plan on the generic harness:
+reuse local/shared/design-system components first, follow the existing folder
+structure, use installed UI libraries only when already present, and ask for
+explicit approval before adding `@sdcorejs/angular`, `@sd-angular/core`, or
+`@angular/material`.
+
 ---
 
 ## Brainstorming: exploration
