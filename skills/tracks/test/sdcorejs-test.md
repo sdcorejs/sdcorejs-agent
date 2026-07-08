@@ -6,7 +6,6 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 # Test Track
 
-
 ## Shared Protocols
 
 Before executing this skill:
@@ -17,9 +16,10 @@ Before executing this skill:
 5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
-Write and run unit, integration, e2e, and UAT-oriented tests across Angular, NestJS, React, and Next.js. This track skill is also the executor for approved test-only plans from `sdcorejs-execute-plan`.
 
-It also owns `tdd mode`, the RED-first gate used by write-code orchestrators before production code for chunks where TDD is selected by `sdcorejs-brainstorming` and captured in `sdcorejs-plan`.
+`sdcorejs-test` owns test planning, test authoring, test execution, coverage audits, UAT cases, regression evidence, and RED-first TDD loops.
+
+It does not own root-cause debugging or production-code bug fixes. When a failing test needs source investigation or a production fix, hand off to `sdcorejs-debug` with the test context and current evidence. Read-only failing-output triage can stay here only when the user asks to explain, classify, or summarize output without editing files.
 
 ## Solution-root layout
 
@@ -48,8 +48,8 @@ Use these paths:
 
 | Test kind | Location |
 |---|---|
-| Backend unit/integration | `backend/` following NestJS project conventions |
-| Frontend unit/component | `frontend/` following Angular project conventions |
+| Backend unit/integration | `backend/` following backend project conventions |
+| Frontend unit/component | `frontend/` following frontend project conventions |
 | Cross-stack e2e | `test/e2e/` |
 | UAT test case docs | `test/test-cases/` |
 | Shared fixtures | `test/fixtures/` |
@@ -57,104 +57,118 @@ Use these paths:
 
 Read `product/user-stories/`, `product/acceptance-criteria/`, and matching `design/specs/` before writing e2e/UAT tests. Each user story should map to at least one automated e2e, UAT checklist item, or explicitly deferred manual check.
 
-## When to use
-- Right after a code executor finishes, when the finish gate keeps tests enabled.
-- A direct user request asks to write or run tests.
-- The user provides a frontend component, hook, utility function, page, form, or flow and asks for tests.
-- A direct user request asks to use TDD, write tests first, or run a red-green-refactor loop.
-- The user asks what should be tested.
-- The user asks to debug a failing test or paste test error output.
-- `sdcorejs-execute-plan` detects a test-only approved plan.
-- A track write-code orchestrator reaches a TDD gate before writing production code.
-- The user pastes an `sd-autoid-inspector` JSON/POM export.
+## Step 0 - Read-only Context Preflight
 
-## Step 0 - Context preflight
+Classify the request before loading stack refs, editing files, or running commands.
 
-Before detecting mode/stack/level or writing tests, run `sdcorejs-explore
-(summary mode)` through `_refs/shared/project-context.md`.
+Read `_refs/shared/project-context.md` first. Use its existing summaries, memories, approved specs/plans, and task checkpoints as context. Run `sdcorejs-explore (summary mode)` only when the action can write context artifacts and the current project summary is missing, stale, or materially conflicts with the request. For read-only actions, do not refresh `.sdcorejs/summary.md`, do not write `.sdcorejs/docs/*`, and do not dirty the working tree.
 
-- For an existing target project, ensure `<target>/.sdcorejs/summary.md` exists
-  or is refreshed so tests use the real stack, runner, routes, modules, fixtures,
-  page objects, auth shape, and product/design artifacts.
-- For a test-only plan in a not-yet-scaffolded solution root, read the approved
-  spec/plan plus `product/` and `design/` artifacts, then mark runner commands
-  as pending until the relevant backend/frontend scaffold exists.
-- In `tdd` mode called by a write-code orchestrator, use the caller's already
-  loaded summary when it is current; refresh only when paths or stack signals
-  have drifted.
+The preflight output must include:
 
-## Step 1 - Detect mode, target stack, and level
+```text
+test_context:
+  test_action: <one of the actions below>
+  stack_profile: <one of the profiles below>
+  target_paths:
+  test_level:
+  runner:
+  package_manager:
+  environment_class:
+  side_effects_allowed:
+  refs_loaded:
+  commands_planned:
+  write_paths_planned:
+```
 
-Mode signals:
+## Step 1 - Classify `test_action`
 
-| Mode | Use when |
-|---|---|
-| test | default; write/run unit, integration, e2e, or UAT tests |
-| tdd | "use TDD", "write tests first", "test first", "red-green-refactor", or a write-code orchestrator TDD gate |
+Pick exactly one action before reading stack refs:
 
-Stack signals:
-
-- angular: `angular.json`, `@angular/core`, `@sdcorejs/angular`
-- nestjs: `nest-cli.json`, `@nestjs/core`
-- react: `@testing-library/react`, `react`, `vite`, CRA, or React components/hooks outside Next.js
-- nextjs: `next.config.*`, `next`
-
-Level signals:
-
-| Level | Use when |
-|---|---|
-| unit | pure logic, validators, mappers, pipes, guards, component methods |
-| integration | DI/router/DB/API boundary with mocked external services |
-| e2e | full user/browser/API flow, Playwright/Cypress/Robot/supertest |
-| UAT | PO/QC-readable scenario checks from `product/uat-checklists/` |
-
-State the detected mode, stack, and level in the report header.
-
-For direct frontend requests, choose the smallest useful level:
-
-| Target | Prefer | Notes |
+| test_action | Use when | Side-effect boundary |
 |---|---|---|
-| Utility function | unit | Cover valid, invalid, null/undefined when allowed, boundaries, and edge cases. Use table-driven tests for repeated cases. |
-| Custom hook | unit/component | Use `renderHook` when the project supports it. Cover initial state, updates/actions, async behavior, error state, and cleanup. |
-| Component | component | Cover visible rendering, props that change behavior, user interactions, conditional rendering, public callback payloads, and relevant accessibility. |
-| Form | component/integration | Cover fields, required/format/min/max validation, successful submit, API error submit, disabled/loading submit state, and user-visible messages. |
-| Page or multi-component flow | integration | Mock API responses and cover loading, success, empty, error, navigation/redirect, and permission or role-based UI when present. |
-| Critical user journey | e2e | Recommend Playwright/Cypress only for login, register, checkout, payment, main CRUD, permission, or onboarding flows. |
+| `run-only` | User asks to run existing tests | Read files and execute discovered existing commands only. Do not edit tests, source, config, package manifests, lockfiles, or reports unless explicitly requested. |
+| `write-tests` | User asks to create or update tests, but not run them | Edit test files/fixtures only. Do not run commands except safe discovery. |
+| `write-and-run` | User asks to write tests and verify now, or an executor finish gate calls this skill | Edit scoped test files/fixtures, then run focused discovered commands. |
+| `test-plan-readonly` | User asks what should be tested, asks for a test plan, or provides broad scope without approval to edit | Read-only. Produce plan/cases/evidence gaps only. |
+| `coverage-audit` | User asks about coverage, missing tests, or risk gaps | Read-only unless explicitly asked to add tests. Use current coverage reports only when they are tied to the current HEAD/diff; otherwise mark stale. |
+| `uat-cases` | User asks for PO/QC-readable UAT cases/checklists | Write under approved test/UAT docs only when requested; otherwise read-only cases. |
+| `tdd-red` | A write-code orchestrator or user asks for tests first before production code | Write the smallest failing test and run it RED. No production code. |
+| `tdd-cycle` | User asks for a full red-green-refactor cycle | Write test, verify RED, write minimal production code, verify GREEN, refactor only after GREEN. |
+| `failing-output-triage` | User pastes failing output and asks to explain/classify without fixing | Read-only. Classify likely test/source/env fault and hand off if a fix is requested. |
+| `debug-handoff` | User asks to debug, root-cause, fix, repair, or change source because tests fail | Do not continue here. Transfer to `sdcorejs-debug` with `test_context` and `test_evidence`. |
 
-If the user asks to write tests for an entire project or a large module, do not jump straight into broad test authoring. Run the gated SDLC flow:
-`sdcorejs-brainstorming` -> `sdcorejs-spec` -> `sdcorejs-plan` -> `sdcorejs-execute-plan`.
-The plan must split work into small phases, and each phase must correspond to one commit boundary.
+If a request contains "failing test" plus "debug", "root cause", "fix", "repair", or source-code changes, select `debug-handoff` even though it mentions tests.
 
-## Step 2 - Load knowledge
-Always read `_refs/shared/testing-philosophy.md`.
+## Step 2 - Classify `stack_profile`
 
-Then read the matching stack+level ref:
+Detect the target profile from files, dependencies, lockfiles, existing tests, and approved plan context. Never assume SDCoreJS conventions for a plain framework app.
 
-- angular -> `_refs/angular/test-{unit,integration,e2e}.md`
-- nestjs -> `_refs/nestjs/test-{unit,integration,e2e}.md`
-- nextjs -> `_refs/nextjs/build-website/test-e2e.md` for e2e; for unit/integration use project conventions plus the shared philosophy.
+| stack_profile | Signals | Ref policy |
+|---|---|---|
+| `core-ui-angular` | Angular plus installed `@sdcorejs/angular` | Load shared refs plus Angular test refs. Core UI patterns are allowed. |
+| `legacy-core-ui-angular` | Angular plus installed `@sd-angular/core` | Load shared refs plus Angular test refs. Legacy Core UI patterns are allowed only where present. |
+| `plain-angular` | Angular without SDCoreJS Core UI packages | Load shared refs plus `_refs/shared/test-generic.md`. Do not load Angular Core UI-specific refs. |
+| `sdcorejs-nestjs` | NestJS plus SDCoreJS backend conventions already present | Load shared refs plus NestJS refs. SDCoreJS backend conventions are allowed only where detected. |
+| `plain-nestjs` | NestJS without SDCoreJS backend conventions | Load shared refs plus `_refs/shared/test-generic.md`. Do not impose TypeORM/Postgres/Zod/base/shared conventions unless detected. |
+| `nextjs-build-website` | Next.js public-site/build-website conventions are present or plan says build-website | Load shared refs plus `_refs/nextjs/build-website/test-e2e.md` for e2e. |
+| `plain-nextjs` | Next.js app without build-website conventions | Load shared refs plus `_refs/shared/test-generic.md`. Do not impose locale routing, sitemap, public-site SEO, or build-website folder conventions. |
+| `react-vite` | React with Vite | Load shared refs plus `_refs/shared/test-generic.md`. Follow existing Vitest/RTL conventions. |
+| `react-cra` | React with Create React App | Load shared refs plus `_refs/shared/test-generic.md`. Follow existing Jest/RTL conventions. |
+| `react-next-generic` | React components inside plain Next.js | Load shared refs plus `_refs/shared/test-generic.md`. |
+| `general` | No known stack signal | Load only shared refs; ask for target path/runner when needed. |
 
-For Robot Framework, also read `_refs/angular/e2e-robot-conventions.md`.
+Plain profiles must not receive SDCoreJS-specific route, provider, auth, database, folder, or component assumptions. If a stack-specific ref mentions a convention absent from the target project, treat it as an optional example, not a requirement.
 
-For `tdd` mode, also read `_refs/shared/tdd.md` and follow its RED-GREEN-REFACTOR loop exactly. The Iron Law from that reference is absolute: no production code for the selected chunk before a failing test has been written and verified RED for the right reason.
+## Step 3 - Load Knowledge
 
-## Step 3 - Write, run, report
+Always read these shared refs after classification:
+
+- `_refs/shared/testing-philosophy.md`
+- `_refs/shared/test-command-discovery.md`
+- `_refs/shared/test-environment-guard.md`
+- `_refs/shared/test-context.md`
+
+Then read only the profile-appropriate ref:
+
+- `core-ui-angular` or `legacy-core-ui-angular`: `_refs/angular/test-{unit,integration,e2e}.md` for the selected level.
+- `sdcorejs-nestjs`: `_refs/nestjs/test-{unit,integration,e2e}.md` for the selected level.
+- `nextjs-build-website`: `_refs/nextjs/build-website/test-e2e.md` for e2e; use project conventions plus shared refs for unit/integration.
+- Plain Angular, plain NestJS, plain Next.js, React, and general: `_refs/shared/test-generic.md`.
+- Robot Framework: also read `_refs/angular/e2e-robot-conventions.md` only when existing project files show Robot Framework.
+- TDD actions: also read `_refs/shared/tdd.md` and maintain the TDD Cycle Ledger described below.
+
+Do not run package installation, browser installation, `npx --yes`, or dependency-changing commands unless the user explicitly approves that exact action after seeing the command and reason.
+
+## Step 4 - Discover Runner And Environment
+
+Before running or generating tests:
+
+1. Detect package manager from lockfiles and workspace files.
+2. Read `package.json` scripts and runner config files.
+3. Inspect existing test files for naming, helpers, fixtures, providers, mocks, and assertions.
+4. Prefer focused existing scripts over broad all-suite commands.
+5. Classify environment as `local`, `dev`, `staging`, `prod`, `unknown`, or `mock`.
+6. For e2e/UAT, require a base URL or local server command from existing config. If unknown, report the blocker instead of guessing.
+7. Redact secrets, credentials, tokens, cookies, emails, phone numbers, and PII in reports.
+8. Do not commit reports, videos, screenshots, traces, coverage HTML, raw logs, or generated runner artifacts by default.
+
+## Step 5 - Write, Run, Report
 
 1. Read the feature/files under test.
 2. If product docs exist, read the relevant PRD, user stories, acceptance criteria, and UAT checklist.
-3. Reuse existing fixtures, page objects, mocks, and runner conventions.
+3. Reuse existing fixtures, page objects, mocks, factories, and runner conventions.
 4. Write tests that verify behavior, not implementation details.
-5. For solution-builder roots, store cross-stack e2e/UAT assets under `test/` and link them back to user story / AC IDs.
-6. Run the tests in the current turn.
-7. Report command, exit code, pass/fail counts, failing spec names, and the first useful error line.
+5. Protect the existing safety net: do not weaken assertions, delete coverage, skip tests, loosen timeouts, or rewrite failing tests merely to make output green.
+6. For solution-builder roots, store cross-stack e2e/UAT assets under `test/` and link them back to user story / AC IDs.
+7. Run only the current, discovered, focused verification that matches the changed tests and relevant acceptance criteria.
+8. Report command, exit code, pass/fail counts, failing spec names, and the first useful error line.
 
-If failures reveal a real product bug, route to `sdcorejs-debug`. Do not skip or weaken tests to get green output.
+When failures reveal a likely real product bug or require source changes, stop test-authoring and hand off to `sdcorejs-debug`. Do not skip or weaken tests to get green output.
 
-## Frontend direct-test standard
+## Frontend Direct-Test Standard
 
 Use this standard when the user asks for tests for a frontend component, hook, utility function, page, form, or flow.
 
-### General principles
 - Read the source code carefully before writing tests.
 - State short assumptions when context is missing, then write the best runnable tests possible.
 - Prefer behavior the user can see or trigger and business logic the product relies on.
@@ -163,128 +177,100 @@ Use this standard when the user asks for tests for a frontend component, hook, u
 - Do not over-mock so deeply that the test no longer resembles real behavior.
 - Give each test a clear behavior-focused name.
 - Cover happy path, error path, empty state, loading state, edge case, and permission/disabled state when the code supports them.
-- When code calls APIs, prefer MSW or an existing service-layer mock over ad hoc `fetch` mocks.
-- Do not add dependencies unless the existing stack cannot reasonably test the behavior.
+- When code calls APIs, prefer the project's existing network mock approach or service-layer mock over ad hoc global `fetch` mocks.
+- Do not add dependencies unless the user explicitly approves the install/change.
 
-### Runner selection
-- Use the project's configured test runner and conventions.
-- If Jest/Vitest is not explicit, prefer Vitest for Vite projects.
-- Prefer Jest for CRA, older Next.js setups, or projects that already have Jest configured.
-- If no signal exists, write Vitest-compatible tests and note how to switch imports to Jest.
+For React/Next.js, prefer React Testing Library when already configured, accessible queries, `userEvent`, required providers, and correct async helpers. For Angular, prefer existing TestBed/Testing Library conventions and template behavior. For E2E, use the project's configured Playwright, Cypress, Robot Framework, or other runner.
 
-### React and Next.js
-- Prefer React Testing Library.
-- Query with `screen`.
-- Prefer accessible queries: `getByRole`, `getByLabelText`, `getByText`, and `getByPlaceholderText`.
-- Use `userEvent` instead of `fireEvent` for user behavior.
-- Wrap components in required providers such as Router, QueryClientProvider, Redux Provider, ThemeProvider, or app-specific providers.
-- For async UI, use `findBy...`, `waitFor`, or `waitForElementToBeRemoved` correctly.
-- Do not assert directly on component internal state.
+## Coverage, UAT, Snapshot, Mocking, Async, And Flakiness Rules
 
-### Angular
-- Prefer TestBed, ComponentFixture, and Testing Library when the project uses it.
-- Test template behavior, form validation, service interaction, and route state.
-- Mock services clearly, but do not mock logic that should be verified.
-- For Angular Portal using Core UI autoId, prefer Playwright tests against stable auto IDs. If required auto IDs are missing, note the gap and suggest adding them.
+- Coverage is evidence, not a target to game. Report what changed and what remains risky.
+- A coverage report is current only when generated in this turn or clearly tied to the current `HEAD`/diff.
+- UAT cases must name preconditions, actor/role, data setup, steps, expected result, traceability IDs when available, and automation/manual status.
+- Snapshot tests require stable, intentional output and a human-readable reason. Do not snapshot broad rendered HTML or whole API payloads.
+- Mock external systems at the boundary. Do not mock the code under test or the behavior being verified.
+- Use fake timers, awaited promises, `findBy...`, `waitFor`, `whenStable`, or runner-native waits instead of sleeps.
+- Treat flakiness as a defect. Do not hide it with broad retries or longer timeouts unless the environment itself is the documented source.
 
-### E2E
-- Propose E2E only for critical flows such as login, register, checkout, payment, main CRUD, permission, or onboarding.
-- Use Playwright or Cypress according to the project.
-- Test real user flows; keep small edge cases in unit/component/integration tests when those levels cover them better.
+## Failing Test Requests
 
-### Direct test response format
+Use `failing-output-triage` only for read-only explanation. The report must state:
 
-When writing tests directly for a user-provided artifact, report in this order:
+1. Likely fault domain: test, source code, environment, data, or runner config.
+2. Confidence level and evidence lines.
+3. Immediate next command or file to inspect, without running it unless allowed by the action.
+4. Whether this should hand off to `sdcorejs-debug`.
 
-1. `Assumptions` when context is missing.
-2. `Test cases to cover`.
-3. `Complete test file`.
-4. Short reason for the selected test level and technique.
-5. Refactor suggestions only when the current code is hard to test.
+Use `debug-handoff` when the user asks to fix, debug, root-cause, repair, or modify source code. Pass along:
 
-The test file must include complete imports, clear mock setup, cleanup/reset when needed, Arrange-Act-Assert structure, sensible helpers to avoid duplication, and runnable Jest or Vitest syntax matching the project.
+```text
+test_evidence:
+  command:
+  exit_code:
+  failed_specs:
+  first_useful_error:
+  current_head_or_diff:
+  environment_class:
+  artifacts_created:
+  redactions_applied:
+```
 
-### Failing test requests
+## Direct Invocation Tail
 
-When the user sends a failing test or error output:
+Use this section only when `sdcorejs-test` was invoked directly or as the executor for a test-only approved plan. When a code-generation orchestrator called this skill from its finish gate, return the test report to that orchestrator; the caller owns the rest of the tail chain.
 
-1. Analyze the root cause.
-2. State whether the fault is in the test, the source code, or the test environment.
-3. Provide the concrete fix with code or patch guidance.
-4. Avoid generic explanations that do not identify the failing contract.
+Tail order:
 
-## Direct invocation tail
+1. Focused verification first. Run the discovered command(s) required by `test_action`, stack, changed files, and acceptance criteria. If not run, state the exact reason.
+2. Emit final `test_context` and `test_evidence` using `_refs/shared/test-context.md`.
+3. Documentation gate only if this skill wrote or edited test files, fixtures, page objects, UAT cases, or durable reports. Read `_refs/documentation/gate.md`; it asks or loads saved project preferences from `<target>/.sdcorejs/documentation/preferences.md`. There is no separate `qa_guide` output; use `user_guide` for QA-facing user documentation.
+4. Run `sdcorejs-ship (verify-before-done mode)` when an approved test plan, product ledger, or acceptance criteria are in scope. If no criteria exist, report that acceptance verification was skipped and list the test commands that did run.
+5. Run `_refs/orchestration/tail/auto-docs.md` with `TRACK=test` only for write/edit work that produced durable test artifacts.
+6. Run `_refs/orchestration/tail/auto-task-tracker.md` only after auto-docs.
+7. Run `sdcorejs-explore (memories mode)` only when durable testing knowledge surfaced, such as a recurring fixture convention, runner limitation, or stakeholder testing preference.
 
-Use this section only when `sdcorejs-test` was invoked directly or as the executor
-for a test-only approved plan. When a code-generation orchestrator called this
-skill from its finish gate, return the test report to that orchestrator; the
-caller owns the rest of the tail chain.
+Read-only actions stop after the report and visible task/checkpoint updates. Do not call `sdcorejs-git` unless ship/branch-ready criteria have passed and the user explicitly asks for a git artifact.
 
-After direct test work:
+## TDD Mode
 
-Documentation gate: if this skill wrote or edited test files, fixtures, page
-objects, UAT cases, or reports, run
-`sdcorejs-documentation (documentation-gate mode)` after verification and before
-the ship/auto-docs tail. Read `_refs/documentation/gate.md`; it asks or loads
-saved project preferences from `<target>/.sdcorejs/documentation/preferences.md`
-for user-guide updates, including QA-facing flow guidance, and technical docs.
-There is no separate `qa_guide` output; use `user_guide` for QA-facing user
-documentation.
-Source-code documentation for touched test code is automatic and is not
-controlled by this gate. Use those choices to run:
-
-- `sdcorejs-documentation (code-documentation mode)` automatically for touched test source, fixtures, or page objects when useful.
-- `sdcorejs-documentation (write-technical-doc mode)` when `technical_doc=create` or `technical_doc=update`.
-- `sdcorejs-documentation (write-user-guide mode)` when `user_guide=create` or `user_guide=update` and the test work documents user-visible flows.
-
-1. If this skill wrote or edited test files, fixtures, page objects, UAT cases, or
-   reports, run the verification commands from Step 3 and capture the real output.
-2. Run `sdcorejs-ship (verify-before-done mode)` when a spec, product ledger, or
-   approved test plan contains acceptance criteria. If no criteria exist, report
-   that acceptance verification was skipped and list the test commands that did
-   run.
-3. Run `_refs/orchestration/tail/auto-docs.md` with `TRACK=test` so the session
-   summary lands in `<target>/.sdcorejs/docs/test/`.
-4. Run `_refs/orchestration/tail/auto-task-tracker.md` immediately after
-   auto-docs to tick completed test tasks and add follow-ups from the test report.
-5. Run `sdcorejs-explore (memories mode)` only when durable testing knowledge
-   surfaced, such as a recurring fixture convention, runner limitation, or
-   stakeholder testing preference.
-
-If this skill only answered a read-only testing question and wrote no artifacts,
-skip auto-docs and task tracker; update the visible task/checkpoint state only.
-
-## TDD mode
-
-Use this mode inside write-code tasks and when the user asks for test-first work.
+Use TDD only for `tdd-red` and `tdd-cycle`.
 
 For each selected chunk (service, component, function, handler, validator, guard, transaction, or workflow):
 
 1. Read `_refs/shared/tdd.md`.
-2. Write the smallest failing test that names the behavior.
-3. Run the focused test and verify RED for the right reason.
-4. Write the minimum production code to pass.
-5. Run the focused test and verify GREEN.
-6. Refactor only after GREEN, then run the focused test again.
-7. Repeat for the next behavior.
+2. Record a TDD Cycle Ledger entry.
+3. Write the smallest failing test that names the behavior.
+4. Run the focused test and verify RED for the right reason.
+5. For `tdd-red`, stop here and return the RED evidence.
+6. For `tdd-cycle`, write the minimum production code to pass.
+7. Run the focused test and verify GREEN.
+8. Refactor only after GREEN, then run the focused test again.
 
-Skip TDD mode only for template-only changes, configuration, module declarations, and barrel exports. For any testable logic, skipping TDD requires an explicit plan/user override to post-hoc testing.
+TDD Cycle Ledger:
 
-Report:
+```text
+tdd_cycle:
+  behavior:
+  test_file:
+  red_command:
+  red_result:
+  red_reason_verified:
+  production_files_touched:
+  green_command:
+  green_result:
+  refactor_command:
+  refactor_result:
+```
 
-- test file written
-- RED command and first useful failure
-- production file touched
-- GREEN command and result
-- refactor command/result when refactor happened
+Skip TDD only for template-only changes, configuration, module declarations, and barrel exports. For any testable logic, skipping TDD requires an explicit plan/user override to post-hoc testing.
 
-## e2e modes
+## E2E Modes
 
 Mode A - known intent:
 
 - Used after code generation or when the user names the flow.
 - Write happy-path tests and important negative cases.
-- Run the configured runner.
+- Run the configured runner when environment guard passes.
 
 Mode B - inspector export / selector inventory:
 
@@ -297,33 +283,47 @@ Mode B - inspector export / selector inventory:
 ## Rules
 
 ### Must do
-- Use the framework already configured; do not introduce a second runner.
+
+- Classify `test_action` and `stack_profile` before loading stack refs.
+- Use the framework and runner already configured; do not introduce a second runner.
+- Discover commands from lockfiles, scripts, runner configs, workspaces, and existing tests.
 - Read the shared testing philosophy before writing tests.
-- Run the tests and report real output.
+- Run current focused tests and report real output when the action includes execution.
 - Reuse existing project test layout.
 - Use `test/` for solution-builder cross-stack e2e/UAT assets.
 - Link e2e/UAT tests to product user story and acceptance criterion IDs when product docs exist.
-- Keep test data deterministic.
-- In `tdd` mode, verify RED before writing production code and verify GREEN after implementation.
-- For direct write/edit test work, run the Direct invocation tail so auto-docs and the living task tracker stay current.
-- For direct write/edit test work, present the documentation gate from `_refs/documentation/gate.md` for user-guide and technical-doc decisions; apply useful code-documentation automatically for touched test source.
+- Keep test data deterministic and isolated.
+- Redact secrets and PII in all reports.
+- In TDD mode, verify RED before production code and GREEN after implementation.
 
 ### Must not
-- Mark failing tests `.skip` / `xit` to force green CI.
+
+- Install dependencies, install browsers, or use network package probes without explicit approval.
+- Hardcode `npm`, `npx`, or a runner command when the project has a different package manager or script.
+- Mark failing tests `.skip` / `xit` / `test.skip` to force green output.
+- Delete, loosen, or rewrite assertions only to make tests pass.
 - Mock the code under test.
 - Sleep in tests; use proper waits or fake timers.
 - Generate e2e tests from an inspector export without the gated flow.
-- Claim pass without a current runner output.
-- Write solution-level e2e reports only inside backend or frontend when a root `test/` track exists.
-- In `tdd` mode, write production code first and backfill tests later.
+- Hit production endpoints with destructive, write, cleanup, seed, or credential-changing tests.
+- Claim pass without current runner output.
+- Commit reports, screenshots, traces, videos, coverage HTML, or logs by default.
+- Invoke git unless the user asks for it after ship/branch-ready criteria are satisfied.
 
 ## Cross-references
+
 - `sdcorejs-execute-plan` - routes approved test plans here
 - `sdcorejs-brainstorming` - confirms test intent when cases are unclear
+- `sdcorejs-debug` - root-cause/fix path for failing tests or source bugs
 - `sdcorejs-product` - source of product user stories, acceptance criteria, and UAT checklist
 - `sdcorejs-design` - source of screen flows and visual states for e2e/UAT coverage
+- `sdcorejs-ship` - verifies acceptance criteria before done/branch-ready
+- `sdcorejs-git` - includes `test_context`/`test_evidence` in git artifacts only when requested
 - `_refs/orchestration/tail/auto-docs.md` - direct test session summaries under `.sdcorejs/docs/test/`
 - `_refs/orchestration/tail/auto-task-tracker.md` - living test TODO updates after auto-docs
 - `_refs/shared/tdd.md` - failing-test-first discipline inside write-code tasks
 - `_refs/shared/testing-philosophy.md`
-- `_refs/<track>/test-<level>.md`
+- `_refs/shared/test-command-discovery.md`
+- `_refs/shared/test-environment-guard.md`
+- `_refs/shared/test-context.md`
+- `_refs/shared/test-generic.md`

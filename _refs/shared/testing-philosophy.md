@@ -1,111 +1,121 @@
-# Testing Knowledge — Principles (Cross-Track)
+# Testing Knowledge - Principles (Cross-Track)
 
 > Cross-track testing principles loaded on demand by the `sdcorejs-test` skill
-> (and referenced by `sdcorejs-test (tdd mode)`). Not a dispatchable skill — no frontmatter.
-> Covers **why / what** (pyramid, mock-vs-real, when-to-write, AAA, naming,
-> behaviour-vs-implementation, what-not-to-test); the stack+level refs under
-> `_refs/<track>/test-<level>.md` cover the **how** (frameworks, fixtures, runners).
+> and by TDD mode. Not a dispatchable skill; no frontmatter.
 
-## The test pyramid
+## The Test Pyramid
 
-```
-       ▲
-       │  E2E       ← few (5-15 per feature)
-       │  ───────       slow, brittle, high-value (smoke real user flow)
-       │
-       │  Integration ← some (15-40 per module)
-       │  ───────────   real DB / real HTTP server / real router, mocked external services
-       │
-       │  Unit       ← many (50-200 per module)
-       │  ────────     pure functions, validators, mappers, single-class behaviour
-       └──────────────────────────────────────────────────────►
-```
+Prefer many fast unit tests, some integration tests, and a small number of high-value e2e tests.
 
-Concrete targets per feature:
-- **Unit**: 70% of tests. Run in < 5 ms each. No I/O. Cover branching logic, edge cases, validation rules.
-- **Integration**: 25% of tests. Run in < 200 ms each. Hit a real (test) database, real router/HTTP server, real DI container — but mock external 3rd-party services (Resend, Stripe, S3).
-- **E2E**: 5% of tests. Run in < 30 s each. Cover the **happy path** of each user-visible feature + 1-2 critical error paths. Use real browser / real backend.
+| Layer | Purpose | Typical scope |
+|---|---|---|
+| Unit | Branching logic, validators, mappers, single-class behavior | No network, no real DB, no browser |
+| Integration | DI, router, real HTTP server, repository or DB boundaries | Real framework wiring, external services mocked |
+| E2E | Critical user-visible journeys | Real browser or API flow against a guarded environment |
 
-If your pyramid is inverted (heavy E2E, no unit): domain logic is buried in framework code (move it out → testable); tests are documentation not safety net (slow feedback = drift); one flaky E2E blocks the whole CI run.
+Do not invert the pyramid. If most safety comes from slow e2e tests, domain logic is probably buried too deeply in framework code.
 
-## What to mock vs hit for real
+## What To Mock
 
-| Concern | Unit | Integration | E2E |
-|---|---|---|---|
-| Domain logic / pure function | always real | always real | always real |
-| Database | mocked (in-memory or stub) | **REAL** (testcontainers / sqlite in-memory) | **REAL** |
-| HTTP server / router | mocked | **REAL** (supertest / NestJS test module) | **REAL** (Cypress / Playwright) |
-| External API (Stripe, Resend, S3) | mocked | mocked OR contract-test against sandbox | mocked OR sandbox account |
-| Auth / session | stubbed user | real auth flow with test creds | real auth flow with test creds |
-| Filesystem / time / random | controlled (fake timers, fs-mock) | controlled | tolerated drift |
+Mock the things the project does not own: third-party APIs, payment providers, email/SMS, object storage, analytics, and unstable clocks/randomness. Keep the behavior under test real.
 
-**Rule**: Mock things you don'<localized text>'s SQL error won't surface until production.
+Use real collaborators when they are the contract being verified:
 
-## When to write tests
-1. **Before (TDD)** — failing test first; best for bug fixes (reproduce first), pure logic with clear contracts, refactors proving behaviour unchanged. See `sdcorejs-test (tdd mode)`.
-2. **During (test-as-you-build)** — same session as impl, right after each chunk; best for new features where the contract emerges, UI components.
-3. **After (test the diff)** — scoped to the diff; acceptable for spike→prod promotion and generated code (the test is the contract for future edits). Anti-pattern: writing tests only after a bug ships — the bug should drive Test #1.
+- Real validators/mappers/domain logic in all layers.
+- Real router/DI/container for integration tests.
+- Real database only for integration/e2e when the target project already supports a test database strategy.
+- Real browser for critical UI flows only.
 
-## Arrange-Act-Assert (AAA)
-Every test has three separated sections. ONE assert focus per test (multiple `expect()` ok if they check facets of the same outcome). Arrange via factories/builders, not inline literals. Act is ideally one line — if Act is 5 lines you're testing a workflow (use an integration test).
+Never mock the function, component, service, handler, or endpoint being tested.
+
+## When To Write Tests
+
+1. Before implementation for TDD, bug reproduction, refactors that must preserve behavior, and critical business logic.
+2. During implementation for UI/components and workflows where the contract emerges in small chunks.
+3. After implementation for generated code or spike promotion, scoped to the diff and tied to observable behavior.
+
+Backfilled tests are acceptable only when they become the contract for future edits.
+
+## Arrange Act Assert
+
+Every test should have a clear setup, one meaningful action, and behavior-focused assertions. Multiple assertions are fine when they describe facets of the same result.
 
 ```typescript
-it('returns 403 when user lacks PERMISSION_X', async () => {
-  // ARRANGE
+it('returns 403 when user lacks permission', async () => {
   const user = userFactory({ permissions: [] });
   const repo = mockRepo();
-  // ACT
+
   const result = await service.doThing(user, request);
-  // ASSERT
+
   expect(result.status).toBe(403);
   expect(repo.save).not.toHaveBeenCalled();
 });
 ```
 
-## Test naming
-Name the BEHAVIOUR verified, not the method called.
+Use factories/builders for bulky inputs. If the action section needs many unrelated steps, use an integration or e2e test and split scenarios.
 
-| ❌ Bad | ✅ Good |
+## Test Naming
+
+Name the behavior, not the method. A failing test name should tell the reader what user or business contract broke.
+
+| Weak | Strong |
 |---|---|
 | `it('should work')` | `it('returns 403 when user lacks permission')` |
-| `it('calls service.update')` | `it('updates the record and preserves createdAt')` |
-| `describe('UserService.update')` | `<localized text>` |
+| `it('calls update')` | `it('updates the record and preserves createdAt')` |
+| `describe('UserService.update')` | `describe('updating a user profile')` |
 
-A reader of test output should know what failed without opening the test body.
+## Behavior Over Implementation
 
-## Testing behaviour vs implementation
-Test BEHAVIOUR (inputs → outputs, observable side effects). Refactoring internals must not break tests. If renaming a private method breaks 12 tests, they're coupled to implementation.
+Test inputs, outputs, user-visible UI, API responses, persisted state, emitted events, or stable public callbacks. Avoid private methods, internal state, class names, and incidental call order unless they are the only stable contract.
 
-```typescript
-// ❌ Implementation-coupled
-expect(service._validateInternal).toHaveBeenCalledWith(input);
-// ✅ Behaviour
-const result = await service.process(input);
-expect(result).toMatchObject({ status: 'ok', errors: [] });
-```
-Exception: gnarly reused private logic → extract to a pure function in its own file and unit-test THAT directly. Don't reflect into privates.
+If reused private logic deserves direct tests, extract it to a pure function and test that function.
 
-## What does NOT need a test
-Type definitions · pure pass-throughs (covered by the layer above) · code copied from a vetted library's docs · auto-generated code (test the generator) · one-off scripts · framework config.
+## Coverage
 
-## Coverage targets (informational, not enforced)
-Domain (services/validators/mappers) ≥ 80% line / 70% branch · adapters (repos/HTTP clients) ≥ 60% line · UI components ≥ 50% (e2e compensates) · config: don't measure. Coverage is a smell detector, not a goal — 100% with bad assertions is worse than 60% with sharp ones.
+Coverage is a signal, not a goal. Current coverage evidence must be generated in the current turn or clearly tied to the current `HEAD`/diff.
 
-## When tests block velocity, fix the SUT
-| Symptom | Likely cause | Fix |
-|---|---|---|
-| Setup is 20 lines | Too many constructor deps | Split the class; inject narrower interfaces |
-| Test name says "and" | Function does two things | Split the function |
-| Hard to assert outcome | Side effect via internal state | Return the outcome |
-| Flaky timer/async | Real timer / unmocked promise | Fake timers; await all promises |
-| Brittle to refactor | Coupled to implementation | Test the outer contract |
+Coverage reports should answer:
 
-Tests that hurt expose design problems — fix the SUT, don't suppress the pain.
+- Which changed files or requirements are covered.
+- Which branches or user paths are still untested.
+- Whether missing coverage is acceptable, deferred, or blocking.
 
-## Anti-patterns
-- "100% coverage" as the goal · snapshot-everything (detects change, not correctness) · tests sharing mutable state · `beforeEach` resetting globals across files · try/catch wrapping `expect()` to ignore failure · sleeping in tests (`setTimeout`) · mocking the code under test · `xit`/`.skip` instead of fixing · one E2E testing 8 features at once.
+Do not inflate coverage by adding weak assertions, deleting branches from measurement, or testing implementation details.
+
+## Snapshots
+
+Use snapshots only for small, stable, intentional output where a human can review the diff meaningfully. Avoid snapshots for broad rendered HTML, large API payloads, localized UI pages, timestamps, generated IDs, and data whose order may change.
+
+Prefer explicit semantic assertions.
+
+## Async And Flakiness
+
+Do not sleep. Use fake timers, runner-native waits, awaited promises, `findBy...`, `waitFor`, `waitForElementToBeRemoved`, `fixture.whenStable`, `waitForResponse`, or equivalent project helpers.
+
+Treat flaky tests as defects. Document environment-related flakiness as evidence, but do not hide real uncertainty with broad retries, longer timeouts, or skipped tests.
+
+## Test Integrity
+
+Never weaken the safety net to get green output:
+
+- Do not add `.skip`, `xit`, `test.skip`, or broad focus/only markers.
+- Do not loosen assertions without explaining the changed contract.
+- Do not delete failing coverage unless the requirement was removed.
+- Do not rewrite a failing test to match a bug.
+- Do not commit runner artifacts by default.
+
+If a test fails because production behavior is wrong, hand off to `sdcorejs-debug`.
+
+## What Usually Does Not Need Direct Tests
+
+Type definitions, pure pass-throughs covered by a higher layer, code copied from vetted library docs, generated code where the generator is tested, one-off scripts, and framework configuration normally do not need direct tests.
 
 ## Cross-references
-- Stack+level HOW: `_refs/<track>/test-<level>.md`
-- RED-first discipline: `sdcorejs-test (tdd mode)` plus `_refs/shared/tdd.md`
-- Verification: `sdcorejs-ship (verify-before-done mode)` ensures the right tests ran before "done"
+
+- Stack and level HOW refs: `_refs/<track>/test-<level>.md`
+- Command discovery: `_refs/shared/test-command-discovery.md`
+- Environment guard: `_refs/shared/test-environment-guard.md`
+- Evidence schema: `_refs/shared/test-context.md`
+- Generic fallback: `_refs/shared/test-generic.md`
+- RED-first discipline: `_refs/shared/tdd.md`
+- Verification: `sdcorejs-ship (verify-before-done mode)`

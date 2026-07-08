@@ -38,8 +38,11 @@ Before executing this skill:
 | `ship` | "ship", "push it", "ready to merge", "release", "tag" | final verify -> branch-ready -> git artifact chain |
 | `dependency-update` | "update dependencies", "update package", "bump <pkg>", "npm outdated", "audit fix" | dependency delivery workflow -> regression proof -> PR prep |
 
-If the user asks only for commit, PR, changelog, or release notes, use
-`sdcorejs-git`.
+If the user asks only for an artifact-only commit, PR, changelog, or release
+notes action, use `sdcorejs-git`; that skill still rejects missing or stale ship
+evidence before creating delivery artifacts. If the prompt asks whether work is
+ready, should be pushed, can be merged, can be released, or is safe to ship,
+stay in `sdcorejs-ship`.
 
 ## Mode: verify-before-done
 
@@ -73,8 +76,8 @@ read-only hygiene checks:
 
 Verdicts:
 
-- `READY`: hand off to `sdcorejs-git (commit mode)` or `sdcorejs-git (PR mode)`.
-- `READY WITH WARNINGS`: continue only after explicit user acknowledgement.
+- `READY`: hand off to `sdcorejs-git (commit mode)` or `sdcorejs-git (PR mode)` only when the user asked for that artifact or this is the verified ship chain.
+- `READY WITH WARNINGS`: continue only after explicit user acknowledgement; pass the warning acknowledgement and current `HEAD`/diff evidence to `sdcorejs-git`.
 - `BLOCKED`: stop and surface blockers; do not modify files from this mode.
 
 ## Mode: ship
@@ -82,7 +85,7 @@ Verdicts:
 Use for "done, ship it", "push it", "ready to merge", or release requests.
 
 1. Pre-flight:
-   - stop on protected branches
+   - stop on protected branches (`main`, `master`, `trunk`, `production`, `stable`, `release/*`, or repo-defined protected branches)
    - stop when there is nothing to ship
    - surface uncommitted changes and ask whether to commit them
 2. Detect delivery type:
@@ -93,8 +96,8 @@ Use for "done, ship it", "push it", "ready to merge", or release requests.
 5. Rebuild aggregate user guide with `sdcorejs-documentation (write-user-guide mode)` in Mode 2 when `.sdcorejs/documentation/user-guides/*.md` module guides exist.
 6. Release mode only: invoke `sdcorejs-git (changelog mode)` for changelog/release notes; ask before writing a versioned entry using `1. Write release entry` / `2. Skip release entry`.
 7. If the tree is dirty after docs/changelog, invoke `sdcorejs-git (commit mode)`.
-8. Push through `sdcorejs-git` only after verification and hygiene are clear.
-9. Invoke `sdcorejs-git (PR mode)` for feature PR delivery.
+8. Push through `sdcorejs-git` only after verification and hygiene are clear and tied to the current `HEAD` or diff.
+9. Invoke `sdcorejs-git (PR mode)` for feature PR delivery, passing current verify-before-done and branch-ready evidence.
 10. Summarize verification, hygiene, guide, changelog, commit, push, and PR/release URL.
 
 Never tag, push, or release without explicit user approval.
@@ -129,7 +132,7 @@ touching `@sdcorejs/angular`.
 
 Stop and ask before changing anything when:
 
-- current branch is `main`, `master`, or a protected release branch
+- current branch is `main`, `master`, `trunk`, `production`, `stable`, `release/*`, or another repo-defined protected branch
 - there are unrelated uncommitted changes
 - package manager cannot be determined
 - the repo has no verification scripts and the user has not accepted a manual plan

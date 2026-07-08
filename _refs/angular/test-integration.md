@@ -4,6 +4,16 @@
 > Angular portal and the detected level is integration. Not a dispatchable skill —
 > no frontmatter. The orchestrator owns dispatch + the run/report flow.
 
+## Profile applicability
+
+Use this ref only for `core-ui-angular` or `legacy-core-ui-angular`. For
+`plain-angular`, load `_refs/shared/test-generic.md` instead.
+
+Do not assume `@sdcorejs/angular`, `@sd-angular/core`, `SD_API_CONFIGURATION`,
+Core UI components, or `src/libs` layout unless those signals are present in the
+target project. If the target uses plain Angular Material or local components,
+follow the local helpers and avoid Core UI imports.
+
 ## Purpose
 Integration tests wire 2-3 real Angular collaborators (component + service + router + form, etc.) using TestBed's real DI, but mock the network boundary (`HttpClientTestingModule`). Catches bugs that unit tests miss (lifecycle order, change detection timing, DI wiring) and that e2e is too slow to catch.
 
@@ -149,6 +159,8 @@ describe('<localized text>', () => {
 
 ### Step 3 — Mocking Core UI components
 
+This step applies only when the detected profile has Core UI installed.
+
 Don't import the real `@sdcorejs/angular` components in unit/integration tests — they pull dozens of dependencies. Use `ng-mocks` to stub them:
 
 ```typescript
@@ -234,8 +246,11 @@ describe('<localized text>', () => {
 
 ### Step 6 — Run + coverage
 
-```bash
-npm run test -- --watch=false --include=src/libs/catalog/**/*.spec.ts --coverage
+Discover the package manager and test script from
+`_refs/shared/test-command-discovery.md`, then run the narrowest current command.
+
+```text
+<pm> run <test-script> -- <runner-filter-for-integration-specs> <coverage-flag-if-supported>
 ```
 
 Target per module: ≥ 70% line coverage on `pages/` + `services/`.

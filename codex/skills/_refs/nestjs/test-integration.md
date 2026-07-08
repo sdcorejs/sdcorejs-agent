@@ -6,6 +6,15 @@
 > `_refs/shared/testing-philosophy.md`. Not a dispatchable skill — no frontmatter.
 > Orchestrator owns dispatch + run/report.
 
+## Profile applicability
+
+Use this ref only for `sdcorejs-nestjs`. For `plain-nestjs`, load
+`_refs/shared/test-generic.md` instead.
+
+Do not assume TypeORM, PostgreSQL, pg-mem, testcontainers, Zod, bilingual error
+shapes, `base/shared`, or `@sdcorejs/nestjs` conventions unless those signals are
+present in the target project.
+
 ## Purpose
 Integration tests cover service + repository + real DB queries WITHOUT the HTTP layer. Faster than e2e, broader than unit. Best for testing transaction semantics, query correctness, and business logic that touches the DB.
 
@@ -235,8 +244,11 @@ describe('PermissionGuard', () => {
 
 ## Run
 
-```bash
-npm run test -- --watch=false --testPathPattern='\.service\.spec\.ts$'
+Discover the package manager and test script from
+`_refs/shared/test-command-discovery.md`, then run the narrowest current command.
+
+```text
+<pm> run <test-script> -- <runner-filter-for-integration-specs>
 ```
 
 Coverage target: ≥ 80% line on `services/` + `repositories/` + `guards/`.

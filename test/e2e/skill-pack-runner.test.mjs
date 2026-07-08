@@ -236,7 +236,35 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(sharedReviewArchitecture, /Most frontend and backend stacks benefit from layered architecture/);
 
   const testSkill = sourceByName.get('sdcorejs-test');
-  assert.match(testSkill, /## Direct invocation tail/);
+  assert.match(testSkill, /## Direct Invocation Tail/);
+  assert.match(testSkill, /test_action/);
+  assert.match(testSkill, /stack_profile/);
+  assert.match(testSkill, /run-only/);
+  assert.match(testSkill, /write-tests/);
+  assert.match(testSkill, /write-and-run/);
+  assert.match(testSkill, /test-plan-readonly/);
+  assert.match(testSkill, /coverage-audit/);
+  assert.match(testSkill, /uat-cases/);
+  assert.match(testSkill, /tdd-red/);
+  assert.match(testSkill, /tdd-cycle/);
+  assert.match(testSkill, /failing-output-triage/);
+  assert.match(testSkill, /debug-handoff/);
+  assert.match(testSkill, /core-ui-angular/);
+  assert.match(testSkill, /legacy-core-ui-angular/);
+  assert.match(testSkill, /plain-angular/);
+  assert.match(testSkill, /plain-nestjs/);
+  assert.match(testSkill, /plain-nextjs/);
+  assert.match(testSkill, /_refs\/shared\/test-command-discovery\.md/);
+  assert.match(testSkill, /_refs\/shared\/test-environment-guard\.md/);
+  assert.match(testSkill, /_refs\/shared\/test-context\.md/);
+  assert.match(testSkill, /_refs\/shared\/test-generic\.md/);
+  assert.match(testSkill, /test_context/);
+  assert.match(testSkill, /test_evidence/);
+  assert.match(testSkill, /TDD Cycle Ledger/);
+  assert.match(testSkill, /Focused verification first/);
+  assert.match(testSkill, /Do not run package installation, browser installation, `npx --yes`/);
+  assert.match(testSkill, /Do not call `sdcorejs-git` unless ship\/branch-ready criteria have passed/);
+  assert.match(testSkill, /sdcorejs-debug/);
   assert.match(testSkill, /_refs\/documentation\/gate\.md/);
   assert.match(testSkill, /\.sdcorejs\/documentation\/preferences\.md/);
   assert.match(testSkill, /There is no separate `qa_guide` output/);
@@ -244,6 +272,58 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(testSkill, /TRACK=test/);
   assert.match(testSkill, /_refs\/orchestration\/tail\/auto-docs\.md/);
   assert.match(testSkill, /_refs\/orchestration\/tail\/auto-task-tracker\.md/);
+
+  const testCommandDiscovery = await readFile(new URL('../../_refs/shared/test-command-discovery.md', import.meta.url), 'utf8');
+  assert.match(testCommandDiscovery, /lockfiles and workspace files/);
+  assert.match(testCommandDiscovery, /Do not run dependency-changing or browser-installing commands/);
+  assert.match(testCommandDiscovery, /`npx --yes`/);
+
+  const testEnvironmentGuard = await readFile(new URL('../../_refs/shared/test-environment-guard.md', import.meta.url), 'utf8');
+  assert.match(testEnvironmentGuard, /Environment Classes/);
+  assert.match(testEnvironmentGuard, /Block destructive tests/);
+  assert.match(testEnvironmentGuard, /Redact before reporting/);
+
+  const testContextRef = await readFile(new URL('../../_refs/shared/test-context.md', import.meta.url), 'utf8');
+  assert.match(testContextRef, /test_context/);
+  assert.match(testContextRef, /test_evidence/);
+  assert.match(testContextRef, /stale: false/);
+
+  const testGenericRef = await readFile(new URL('../../_refs/shared/test-generic.md', import.meta.url), 'utf8');
+  assert.match(testGenericRef, /Stack-neutral fallback/);
+  assert.match(testGenericRef, /Do not enforce/);
+  assert.match(testGenericRef, /Core UI components/);
+
+  const angularTestUnit = await readFile(new URL('../../_refs/angular/test-unit.md', import.meta.url), 'utf8');
+  const angularTestIntegration = await readFile(new URL('../../_refs/angular/test-integration.md', import.meta.url), 'utf8');
+  const angularTestE2e = await readFile(new URL('../../_refs/angular/test-e2e.md', import.meta.url), 'utf8');
+  for (const text of [angularTestUnit, angularTestIntegration, angularTestE2e]) {
+    assert.match(text, /plain-angular/);
+    assert.match(text, /_refs\/shared\/test-generic\.md/);
+    assert.doesNotMatch(text, /npm run test --/);
+  }
+  assert.match(angularTestE2e, /test-environment-guard/);
+  assert.doesNotMatch(angularTestE2e, /npx cypress|npx playwright/);
+  assert.doesNotMatch(angularTestE2e, /systematic-debugging/);
+
+  const nestTestUnit = await readFile(new URL('../../_refs/nestjs/test-unit.md', import.meta.url), 'utf8');
+  const nestTestIntegration = await readFile(new URL('../../_refs/nestjs/test-integration.md', import.meta.url), 'utf8');
+  const nestTestE2e = await readFile(new URL('../../_refs/nestjs/test-e2e.md', import.meta.url), 'utf8');
+  for (const text of [nestTestUnit, nestTestIntegration, nestTestE2e]) {
+    assert.match(text, /plain-nestjs/);
+    assert.match(text, /_refs\/shared\/test-generic\.md/);
+    assert.doesNotMatch(text, /npm install -D/);
+    assert.doesNotMatch(text, /npm run test/);
+  }
+  assert.match(nestTestE2e, /test-environment-guard/);
+
+  const nextTestE2e = await readFile(new URL('../../_refs/nextjs/build-website/test-e2e.md', import.meta.url), 'utf8');
+  assert.match(nextTestE2e, /plain-nextjs/);
+  assert.match(nextTestE2e, /_refs\/shared\/test-generic\.md/);
+  assert.match(nextTestE2e, /test-environment-guard/);
+  assert.match(nextTestE2e, /locale === 'vi' \? '<localized text>' : 'Trusted partner'/);
+  assert.match(nextTestE2e, /locale === 'vi' \? 'en' : 'vi'/);
+  assert.doesNotMatch(nextTestE2e, /locale === 'vi'<localized text>/);
+  assert.doesNotMatch(nextTestE2e, /npx playwright|npm install -D|npm run build && npm run start/);
 
   assert.match(reviewSkill, /## Post-review Behavior/);
   assert.match(reviewSkill, /Persist this review summary as a \.sdcorejs artifact/);
@@ -278,6 +358,66 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
 
   const gitSkill = sourceByName.get('sdcorejs-git');
   assert.match(gitSkill, /\.sdcorejs\/documentation\/\*\*/);
+  assert.match(gitSkill, /Mode Precedence Guard/);
+  assert.match(gitSkill, /sdcorejs-ship/);
+  assert.match(gitSkill, /current `HEAD` or diff/);
+  assert.match(gitSkill, /Never commit directly from main, master, trunk, production, stable, or[\s\S]*release\/\*/);
+  assert.match(gitSkill, /Never create a PR directly/);
+  assert.match(gitSkill, /There is no continue on protected branch option/);
+  assert.match(gitSkill, /Commit Scope Ledger/);
+  assert.match(gitSkill, /test_context/);
+  assert.match(gitSkill, /test_evidence/);
+  assert.match(gitSkill, /staged_paths:[\s\S]*unstaged_paths:[\s\S]*untracked_paths:[\s\S]*included_paths:[\s\S]*excluded_dirty_paths:/);
+  assert.match(gitSkill, /Use explicit path staging/);
+  assert.match(gitSkill, /Never use dot-all staging or all-index staging flags/);
+  assert.doesNotMatch(gitSkill, /git add \./);
+  assert.doesNotMatch(gitSkill, /git add -A/);
+  assert.match(gitSkill, /command -v gh/);
+  assert.match(gitSkill, /gh auth status/);
+  assert.match(gitSkill, /gh repo view --json defaultBranchRef/);
+  assert.match(gitSkill, /gh pr create/);
+  assert.match(gitSkill, /origin\/\$BASE\.\.HEAD/);
+  assert.match(gitSkill, /origin\/\$BASE\.\.\.HEAD/);
+  assert.doesNotMatch(gitSkill, /git log <base>\.\.HEAD/);
+  assert.doesNotMatch(gitSkill, /git diff <base>\.\.\.HEAD/);
+  assert.match(gitSkill, /existing PR/i);
+  assert.match(gitSkill, /require a clean tree/);
+  assert.match(gitSkill, /REDACTED|redact/i);
+  assert.match(gitSkill, /Verification: deferred by user/);
+  assert.match(gitSkill, /Verification: not applicable, docs-only change/);
+  assert.match(gitSkill, /Mode-Specific Write Boundaries/);
+  assert.match(gitSkill, /Never force push/);
+  assert.match(gitSkill, /Do not tag, push tags, bump versions, create GitHub releases/);
+
+  const workspaceIsolation = await readFile(new URL('../../_refs/orchestration/workspace-isolation.md', import.meta.url), 'utf8');
+  assert.match(workspaceIsolation, /package manager|lockfile|package\.json scripts/i);
+  assert.match(workspaceIsolation, /commands skipped|reason for each skip|skipped: no lint script found in package\.json/i);
+  assert.doesNotMatch(workspaceIsolation, /npm run build-dev/);
+  assert.doesNotMatch(workspaceIsolation, /npm run build/);
+
+  const branchReady = await readFile(new URL('../../_refs/orchestration/tail/branch-ready.md', import.meta.url), 'utf8');
+  assert.match(branchReady, /package manager|lockfiles|package\.json scripts/i);
+  assert.match(branchReady, /commands_skipped/);
+  assert.match(branchReady, /reason_for_each_skip/);
+  assert.match(branchReady, /associated_HEAD_or_diff/);
+  assert.match(branchReady, /API_KEY=\[REDACTED\]/);
+  assert.doesNotMatch(branchReady, /skip silently/i);
+  assert.doesNotMatch(branchReady, /npm run lint/);
+  assert.doesNotMatch(branchReady, /npm run build/);
+  assert.doesNotMatch(branchReady, /npm run test/);
+
+  const changelog = await readFile(new URL('../../_refs/orchestration/release-changelog.md', import.meta.url), 'utf8');
+  assert.match(changelog, /git status --short/);
+  assert.match(changelog, /Do not mix changelog edits with unrelated dirty source changes/);
+  assert.match(changelog, /Do not tag, push tags, bump versions, create releases, or publish by default/);
+  assert.match(changelog, /TOKEN=\[REDACTED\]/);
+
+  const codexGitSkill = pack.codexMirrorSkills.find((skill) => skill.name === 'sdcorejs-git')?.text;
+  assert.match(codexGitSkill, /Commit Scope Ledger/);
+  assert.match(codexGitSkill, /There is no continue on protected branch option/);
+  assert.match(codexGitSkill, /origin\/\$BASE\.\.HEAD/);
+  assert.match(codexGitSkill, /origin\/\$BASE\.\.\.HEAD/);
+  assert.match(codexGitSkill, /REDACTED|redact/i);
 
   const choicePrompt = await readFile(new URL('../../_refs/shared/user-choice-prompt.md', import.meta.url), 'utf8');
   assert.match(choicePrompt, /Never rely on clickable UI options/);
@@ -709,6 +849,35 @@ test('phase 3: direct review prompts dispatch to sdcorejs-review', async () => {
 
   assert.equal(dispatchPrompt(pack, 'fix review issues')?.name, 'sdcorejs-repair-loop');
   assert.equal(dispatchPrompt(pack, 'viet product doc va kiem tra requirement implement test co day du khong')?.name, 'sdcorejs-product');
+  assert.equal(dispatchPrompt(pack, 'check requirement coverage gaps for acceptance criteria')?.name, 'sdcorejs-product');
+  assert.equal(dispatchPrompt(pack, 'review product coverage against requirements')?.name, 'sdcorejs-product');
+});
+
+test('phase 3: direct test prompts dispatch to sdcorejs-test or debug handoff', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const promptEvals = await loadPromptEvals();
+  const testCases = promptEvals.filter((item) => item.id.startsWith('test-') || item.id === 'login-tests');
+  const results = runPromptEval(pack, testCases);
+
+  assert.deepEqual(
+    results.map((result) => [result.id, result.actualSkill, result.pass]),
+    [
+      ['login-tests', 'sdcorejs-test', true],
+      ['test-run-only', 'sdcorejs-test', true],
+      ['test-write-and-run', 'sdcorejs-test', true],
+      ['test-plan-readonly', 'sdcorejs-test', true],
+      ['test-coverage-audit', 'sdcorejs-test', true],
+      ['test-tdd-cycle', 'sdcorejs-test', true],
+      ['test-uat-cases', 'sdcorejs-test', true],
+      ['test-failing-output-triage', 'sdcorejs-test', true],
+      ['test-debug-handoff', 'sdcorejs-debug', true],
+      ['test-localized-vi-run', 'sdcorejs-test', true],
+      ['test-localized-vi-write', 'sdcorejs-test', true]
+    ]
+  );
+
+  assert.equal(dispatchPrompt(pack, 'debug failing login test')?.name, 'sdcorejs-debug');
+  assert.equal(dispatchPrompt(pack, 'explain failing login test output without changing files')?.name, 'sdcorejs-test');
 });
 
 test('phase 1: documentation trigger does not steal user-management implementation prompts', async () => {

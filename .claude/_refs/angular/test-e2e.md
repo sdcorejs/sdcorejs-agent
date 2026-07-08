@@ -5,6 +5,15 @@
 > The orchestrator owns dispatch + the run/report flow. This ref carries the full
 > Mode-A / Mode-B procedure the orchestrator's Step 2 points to.
 
+## Profile applicability
+
+Use this ref only for `core-ui-angular` or `legacy-core-ui-angular`. For
+`plain-angular`, load `_refs/shared/test-generic.md` instead.
+
+Before any browser/API run, apply `_refs/shared/test-environment-guard.md`.
+Do not assume Core UI auto IDs, mock seed services, portal routes, or `src/libs`
+layout unless those signals are present in the target project.
+
 ## Purpose
 After `write-code` (or any sub-skill) has produced a feature, write E2E tests that exercise the happy path of that feature in a real browser. Catches integration bugs unit tests miss (routing, guards, form submission, table reload).
 
@@ -97,21 +106,21 @@ Always check existing tests in the project first — match their folder layout, 
 
 After generating specs, run them and report:
 
-```bash
-# Cypress
-npx cypress run --spec "cypress/e2e/<module>/<entity>/**/*.cy.ts"
+```text
+# Cypress via discovered script
+<pm> run <cypress-script> -- <runner-spec-filter>
 
-# Playwright
-npx playwright test e2e/<module>/<entity>
+# Playwright via discovered script
+<pm> run <playwright-script> -- <runner-spec-filter>
 
-# Robot Framework
-robot --variablefile Variables/ENV_QC.yaml --outputdir results "Projects/<Project>/Tests/<suite>.robot"
+# Robot Framework via existing local runner
+<robot-runner> --variablefile <env-file> --outputdir <local-output-dir> <suite-path>
 ```
 
 Report:
 - pass/fail count
 - failing spec names + first error line
-- if a spec fails because the feature has a real bug, route the user to `systematic-debugging` or fix the feature code (do NOT mark the test `test.skip`)
+- if a spec fails because the feature has a real bug, route the user to `sdcorejs-debug` (do NOT mark the test `test.skip`)
 - if a spec fails because of test environment (no browser, no dev server running), surface the blocker with the exact command the user must run locally (`npm start` in another terminal, etc.)
 
 ## Anti-patterns

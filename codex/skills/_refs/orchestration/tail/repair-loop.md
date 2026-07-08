@@ -317,15 +317,16 @@ Repair summary complete. Choose next step:
 
 1. Run sdcorejs-ship in verify-before-done mode.
 2. Stop after this repair summary.
-3. Prepare commit only after ship and branch-ready pass.
+3. Prepare commit only after ship and branch-ready pass for the current `HEAD` or diff.
 
 Reply with `1`, `2`, or `3`.
 ```
 
 Do not hand off directly to `sdcorejs-git (commit mode)` by default. Direct
 commit handoff is allowed only when `sdcorejs-ship (verify-before-done mode)`
-and `sdcorejs-ship (branch-ready mode)` passed in the current session, or when
-the caller explicitly requested a commit after those gates.
+and `sdcorejs-ship (branch-ready mode)` passed in the current session for the
+current `HEAD` or diff, or when the caller explicitly requested a commit after
+those gates with any verification deferral recorded.
 
 ## Rules
 

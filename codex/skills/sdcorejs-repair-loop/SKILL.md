@@ -35,9 +35,9 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
 ## Handoff
 - After convergence, return to the caller's tail chain.
 - If invoked from a finish-gate review, continue with `sdcorejs-documentation (code-documentation mode)` when source changed, then `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, auto-docs, optional user guide, auto-task-tracker, and durable memories when relevant.
-- If invoked directly by the user, run discovered verification commands and offer explicit numbered next steps: run `sdcorejs-ship (verify-before-done mode)`, stop after the repair summary, or prepare a commit only after ship and branch-ready pass.
+- If invoked directly by the user, run discovered verification commands and offer explicit numbered next steps: run `sdcorejs-ship (verify-before-done mode)`, stop after the repair summary, or prepare a commit only after ship and branch-ready pass for the current `HEAD` or diff.
 - If findings do not converge after the capped loop, stop and ask the user to choose the next direction.
-- Do not hand off directly to `sdcorejs-git (commit mode)` by default. A commit is allowed only after ship verification and branch-ready passed in the current session, or after the caller explicitly requested a commit after those gates.
+- Do not hand off directly to `sdcorejs-git (commit mode)` by default. A commit is allowed only after ship verification and branch-ready passed in the current session for the current `HEAD` or diff, or after the caller explicitly requested a commit after those gates with any verification deferral recorded.
 
 ## Rules
 - Silence is not approval.
