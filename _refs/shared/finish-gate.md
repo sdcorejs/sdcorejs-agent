@@ -135,6 +135,10 @@ and durable memories.
   `sdcorejs-ship (branch-ready mode)` -> auto-docs tail ref ->
   auto-task-tracker tail ref -> memories. If `Defer` is selected, stop after a
   concise checkpoint and do not claim done.
+- The finish gate does not auto-create Git artifacts. Invoke `sdcorejs-git`
+  only when the user asks for commit, PR, changelog, release notes, or worktree
+  artifacts after verify-before-done and branch-ready evidence exists for the
+  current `HEAD` or diff.
 - Localize the prompt; keep identifiers, permission codes, and route paths in
   English in every language.
 - If the user already gave explicit instructions this turn (for example "add
@@ -160,3 +164,7 @@ and durable memories.
    `sdcorejs-documentation (write-user-guide mode)`.
 10. `_refs/orchestration/tail/auto-task-tracker.md` (unless deferred).
 11. `sdcorejs-explore (memories mode)` when durable knowledge surfaced.
+
+`sdcorejs-git` is not part of the automatic finish-gate tail. It may run next
+only when the user requests a Git artifact and current ship evidence is present
+or explicitly deferred with the required risk note.

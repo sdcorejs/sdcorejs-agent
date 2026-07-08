@@ -278,6 +278,64 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
 
   const gitSkill = sourceByName.get('sdcorejs-git');
   assert.match(gitSkill, /\.sdcorejs\/documentation\/\*\*/);
+  assert.match(gitSkill, /Mode Precedence Guard/);
+  assert.match(gitSkill, /sdcorejs-ship/);
+  assert.match(gitSkill, /current `HEAD` or diff/);
+  assert.match(gitSkill, /Never commit directly from main, master, trunk, production, stable, or[\s\S]*release\/\*/);
+  assert.match(gitSkill, /Never create a PR directly/);
+  assert.match(gitSkill, /There is no continue on protected branch option/);
+  assert.match(gitSkill, /Commit Scope Ledger/);
+  assert.match(gitSkill, /staged_paths:[\s\S]*unstaged_paths:[\s\S]*untracked_paths:[\s\S]*included_paths:[\s\S]*excluded_dirty_paths:/);
+  assert.match(gitSkill, /Use explicit path staging/);
+  assert.match(gitSkill, /Never use dot-all staging or all-index staging flags/);
+  assert.doesNotMatch(gitSkill, /git add \./);
+  assert.doesNotMatch(gitSkill, /git add -A/);
+  assert.match(gitSkill, /command -v gh/);
+  assert.match(gitSkill, /gh auth status/);
+  assert.match(gitSkill, /gh repo view --json defaultBranchRef/);
+  assert.match(gitSkill, /gh pr create/);
+  assert.match(gitSkill, /origin\/\$BASE\.\.HEAD/);
+  assert.match(gitSkill, /origin\/\$BASE\.\.\.HEAD/);
+  assert.doesNotMatch(gitSkill, /git log <base>\.\.HEAD/);
+  assert.doesNotMatch(gitSkill, /git diff <base>\.\.\.HEAD/);
+  assert.match(gitSkill, /existing PR/i);
+  assert.match(gitSkill, /require a clean tree/);
+  assert.match(gitSkill, /REDACTED|redact/i);
+  assert.match(gitSkill, /Verification: deferred by user/);
+  assert.match(gitSkill, /Verification: not applicable, docs-only change/);
+  assert.match(gitSkill, /Mode-Specific Write Boundaries/);
+  assert.match(gitSkill, /Never force push/);
+  assert.match(gitSkill, /Do not tag, push tags, bump versions, create GitHub releases/);
+
+  const workspaceIsolation = await readFile(new URL('../../_refs/orchestration/workspace-isolation.md', import.meta.url), 'utf8');
+  assert.match(workspaceIsolation, /package manager|lockfile|package\.json scripts/i);
+  assert.match(workspaceIsolation, /commands skipped|reason for each skip|skipped: no lint script found in package\.json/i);
+  assert.doesNotMatch(workspaceIsolation, /npm run build-dev/);
+  assert.doesNotMatch(workspaceIsolation, /npm run build/);
+
+  const branchReady = await readFile(new URL('../../_refs/orchestration/tail/branch-ready.md', import.meta.url), 'utf8');
+  assert.match(branchReady, /package manager|lockfiles|package\.json scripts/i);
+  assert.match(branchReady, /commands_skipped/);
+  assert.match(branchReady, /reason_for_each_skip/);
+  assert.match(branchReady, /associated_HEAD_or_diff/);
+  assert.match(branchReady, /API_KEY=\[REDACTED\]/);
+  assert.doesNotMatch(branchReady, /skip silently/i);
+  assert.doesNotMatch(branchReady, /npm run lint/);
+  assert.doesNotMatch(branchReady, /npm run build/);
+  assert.doesNotMatch(branchReady, /npm run test/);
+
+  const changelog = await readFile(new URL('../../_refs/orchestration/release-changelog.md', import.meta.url), 'utf8');
+  assert.match(changelog, /git status --short/);
+  assert.match(changelog, /Do not mix changelog edits with unrelated dirty source changes/);
+  assert.match(changelog, /Do not tag, push tags, bump versions, create releases, or publish by default/);
+  assert.match(changelog, /TOKEN=\[REDACTED\]/);
+
+  const codexGitSkill = pack.codexMirrorSkills.find((skill) => skill.name === 'sdcorejs-git')?.text;
+  assert.match(codexGitSkill, /Commit Scope Ledger/);
+  assert.match(codexGitSkill, /There is no continue on protected branch option/);
+  assert.match(codexGitSkill, /origin\/\$BASE\.\.HEAD/);
+  assert.match(codexGitSkill, /origin\/\$BASE\.\.\.HEAD/);
+  assert.match(codexGitSkill, /REDACTED|redact/i);
 
   const choicePrompt = await readFile(new URL('../../_refs/shared/user-choice-prompt.md', import.meta.url), 'utf8');
   assert.match(choicePrompt, /Never rely on clickable UI options/);

@@ -26,6 +26,8 @@ const STOP_WORDS = new Set([
 
 const LOCALIZED_ALIASES = new Map([
   ['them', ['add', 'create']],
+  ['tao', ['create']],
+  ['nop', ['submit']],
   ['sua', ['fix', 'repair', 'resolve']],
   ['loi', ['issue', 'issues', 'finding', 'findings', 'error']],
   ['xay', ['build', 'create']],
@@ -48,6 +50,9 @@ const LOCALIZED_ALIASES = new Map([
   ['scaffold', ['scaffold', 'bootstrap', 'init']],
   ['backend', ['backend', 'nestjs']],
   ['viet', ['write', 'documentation']],
+  ['ghi', ['write']],
+  ['thay', ['changes']],
+  ['doi', ['changes']],
   ['mem', ['software', 'app', 'system']],
   ['quan', ['manage', 'management']],
   ['ly', ['manage', 'management']],
@@ -64,6 +69,8 @@ const LOCALIZED_ALIASES = new Map([
   ['cau', ['requirement']],
   ['day', ['complete']],
   ['du', ['complete']],
+  ['sap', ['upcoming', 'next']],
+  ['toi', ['upcoming', 'next']],
   ['vua', ['previous']],
   ['roi', ['previous']]
 ]);
@@ -150,6 +157,7 @@ const PRIORITY_RULES = [
     skill: 'sdcorejs-documentation',
     when: ({ prompt, tokens }) =>
       hasDocumentationIntent(prompt, tokens) &&
+      !hasGitArtifactIntent(prompt, tokens) &&
       !hasAny(tokens, ['prd', 'story', 'stories', 'acceptance', 'criteria', 'uat', 'traceability']) &&
       !hasAny(tokens, ['execute', 'approved'])
   },
@@ -164,16 +172,17 @@ const PRIORITY_RULES = [
   {
     skill: 'sdcorejs-ship',
     when: ({ prompt, tokens }) =>
-      hasAny(tokens, ['ship', 'merge', 'release', 'tag', 'dependency', 'dependencies', 'outdated', 'audit', 'bump']) ||
+      hasDependencyDeliveryIntent(prompt, tokens) ||
+      (
+        !hasGitArtifactIntent(prompt, tokens) &&
+        hasAny(tokens, ['ship', 'push', 'merge', 'release', 'tag'])
+      ) ||
       /\bready\b.*\b(branch|merge|ship)\b/.test(prompt) ||
       /\bupdate\b.*\b(dependencies|packages)\b/.test(prompt)
   },
   {
     skill: 'sdcorejs-git',
-    when: ({ prompt, tokens }) =>
-      hasAny(tokens, ['commit', 'worktree', 'changelog']) ||
-      /\b(create|prepare|open|write)\b.*\b(pr|pull request)\b/.test(prompt) ||
-      /\brelease notes\b/.test(prompt)
+    when: ({ prompt, tokens }) => hasGitArtifactIntent(prompt, tokens)
   },
   {
     skill: 'sdcorejs-brainstorming',
@@ -454,6 +463,22 @@ function hasReviewIntent(prompt, tokens) {
     ) ||
     /\b(full|comprehensive|scored)\b.*\b(review|audit)\b/.test(prompt) ||
     /\b(review|audit)\b.*\b(code|security|performance|accessibility|a11y|architecture)\b/.test(prompt)
+  );
+}
+
+function hasDependencyDeliveryIntent(prompt, tokens) {
+  return (
+    hasAny(tokens, ['dependency', 'dependencies', 'outdated', 'audit', 'bump']) ||
+    /\bupdate\b.*\b(dependencies|packages)\b/.test(prompt)
+  );
+}
+
+function hasGitArtifactIntent(prompt, tokens) {
+  return (
+    hasAny(tokens, ['commit', 'worktree', 'changelog']) ||
+    (hasAny(tokens, ['create', 'prepare', 'open', 'write', 'submit']) && (tokens.has('pr') || (tokens.has('pull') && tokens.has('request')))) ||
+    /\b(create|prepare|open|write|submit)\b.*\b(pr|pull request)\b/.test(prompt) ||
+    /\brelease notes\b/.test(prompt)
   );
 }
 
