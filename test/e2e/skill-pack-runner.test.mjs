@@ -156,7 +156,60 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(repairSkill, /Do not edit tests merely to make production code pass/);
   assert.match(repairSkill, /review_context/);
   assert.match(repairSkill, /track_profile/);
+  assert.match(repairSkill, /debug_context/);
   assert.doesNotMatch(repairSkill, /until the final verification pass is green/);
+
+  const debugSkill = sourceByName.get('sdcorejs-debug');
+  assert.match(debugSkill, /debug_mode/);
+  assert.match(debugSkill, /bug_class/);
+  assert.match(debugSkill, /stack_profile/);
+  assert.match(debugSkill, /repro_status/);
+  assert.match(debugSkill, /local-confirmed/);
+  assert.match(debugSkill, /evidence-confirmed/);
+  assert.match(debugSkill, /flaky-confirmed/);
+  assert.match(debugSkill, /blocked/);
+  assert.match(debugSkill, /debug_context/);
+  assert.match(debugSkill, /_refs\/shared\/debug-context\.md/);
+  assert.doesNotMatch(debugSkill, /debug_context:\s*\r?\n\s+source:/);
+  assert.match(debugSkill, /Hypothesis Ledger/);
+  assert.match(debugSkill, /Diagnostic Instrumentation Ledger/);
+  assert.match(debugSkill, /git status --short/);
+  assert.match(debugSkill, /package manager|lockfile|package\.json scripts/i);
+  assert.match(debugSkill, /environment:\s*\r?\n|local \| dev \| staging \| prod \| unknown \| mock/);
+  assert.match(debugSkill, /REDACTED|redact|PII/i);
+  assert.match(debugSkill, /sdcorejs-ship \(verify-before-done mode\)/);
+  assert.match(debugSkill, /sdcorejs-ship \(branch-ready mode\)/);
+  assert.match(debugSkill, /allowed-tools: .*Write/);
+  assert.match(debugSkill, /Do not assume TypeORM, PostgreSQL, Zod/);
+  assert.match(debugSkill, /performance-anomaly/);
+  assert.match(debugSkill, /broad performance\s+tuning without a concrete anomaly/);
+  assert.match(debugSkill, /optional chaining[\s\S]*confirmed root-cause contract/);
+  assert.doesNotMatch(debugSkill, /handoff.*sdcorejs-git \(commit mode\)/i);
+  assert.doesNotMatch(debugSkill, /Once.*verified.*sdcorejs-git/i);
+
+  const debugDiscipline = await readFile(new URL('../../_refs/shared/debugging-discipline.md', import.meta.url), 'utf8');
+  assert.match(debugDiscipline, /Hypothesis Ledger/);
+  assert.match(debugDiscipline, /shotgun debugging/);
+  assert.match(debugDiscipline, /optional chaining/);
+
+  const debugCommandDiscovery = await readFile(new URL('../../_refs/shared/debug-command-discovery.md', import.meta.url), 'utf8');
+  assert.match(debugCommandDiscovery, /packageManager/);
+  assert.match(debugCommandDiscovery, /lockfiles/);
+  assert.match(debugCommandDiscovery, /Do not invent missing scripts/);
+  assert.match(debugCommandDiscovery, /npx --yes/);
+
+  const debugEnvironmentGuard = await readFile(new URL('../../_refs/shared/debug-environment-guard.md', import.meta.url), 'utf8');
+  assert.match(debugEnvironmentGuard, /local/);
+  assert.match(debugEnvironmentGuard, /staging/);
+  assert.match(debugEnvironmentGuard, /prod/);
+  assert.match(debugEnvironmentGuard, /TOKEN=\[REDACTED\]/);
+
+  const debugContextRef = await readFile(new URL('../../_refs/shared/debug-context.md', import.meta.url), 'utf8');
+  assert.match(debugContextRef, /debug_context/);
+  assert.match(debugContextRef, /debug_context:\s*\r?\n\s+source:/);
+  assert.match(debugContextRef, /debug_mode/);
+  assert.match(debugContextRef, /commands_run/);
+  assert.match(debugContextRef, /commands_skipped/);
 
   const repairRef = await readFile(new URL('../../_refs/orchestration/tail/repair-loop.md', import.meta.url), 'utf8');
   assert.doesNotMatch(repairRef, /haven/);
@@ -173,6 +226,7 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(repairRef, /Do not edit tests merely to make production code pass/);
   assert.match(repairRef, /return to the caller's tail chain/);
   assert.match(repairRef, /sdcorejs-ship \(verify-before-done mode\)/);
+  assert.match(repairRef, /debug_context/);
 
   const codexRepairSkill = pack.codexMirrorSkills.find((skill) => skill.name === 'sdcorejs-repair-loop')?.text;
   assert.match(codexRepairSkill, /Repair ledger/);
@@ -185,6 +239,16 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(codexRepairRef, /Repair ledger/);
   assert.doesNotMatch(codexRepairRef, /haven/);
   assert.doesNotMatch(codexRepairRef, /npm run lint && tsc --noEmit/);
+
+  const codexDebugSkill = pack.codexMirrorSkills.find((skill) => skill.name === 'sdcorejs-debug')?.text;
+  assert.match(codexDebugSkill, /debug_mode/);
+  assert.match(codexDebugSkill, /Hypothesis Ledger/);
+  assert.match(codexDebugSkill, /Diagnostic Instrumentation Ledger/);
+  assert.doesNotMatch(codexDebugSkill, /\.\.\/\/SKILL\.md/);
+
+  const codexDebugContextRef = await readFile(new URL('../../codex/skills/_refs/shared/debug-context.md', import.meta.url), 'utf8');
+  assert.match(codexDebugContextRef, /debug_context/);
+  assert.match(codexDebugContextRef, /ship_handoff/);
 
   const sharedReviewCode = await readFile(new URL('../../_refs/shared/review-code.md', import.meta.url), 'utf8');
   assert.match(sharedReviewCode, /Stack-neutral fallback/);
@@ -367,6 +431,7 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(gitSkill, /Commit Scope Ledger/);
   assert.match(gitSkill, /test_context/);
   assert.match(gitSkill, /test_evidence/);
+  assert.match(gitSkill, /debug_context/);
   assert.match(gitSkill, /staged_paths:[\s\S]*unstaged_paths:[\s\S]*untracked_paths:[\s\S]*included_paths:[\s\S]*excluded_dirty_paths:/);
   assert.match(gitSkill, /Use explicit path staging/);
   assert.match(gitSkill, /Never use dot-all staging or all-index staging flags/);
@@ -401,6 +466,7 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(branchReady, /reason_for_each_skip/);
   assert.match(branchReady, /associated_HEAD_or_diff/);
   assert.match(branchReady, /API_KEY=\[REDACTED\]/);
+  assert.match(branchReady, /debug_context/);
   assert.doesNotMatch(branchReady, /skip silently/i);
   assert.doesNotMatch(branchReady, /npm run lint/);
   assert.doesNotMatch(branchReady, /npm run build/);
@@ -871,6 +937,8 @@ test('phase 3: direct test prompts dispatch to sdcorejs-test or debug handoff', 
       ['test-uat-cases', 'sdcorejs-test', true],
       ['test-failing-output-triage', 'sdcorejs-test', true],
       ['test-debug-handoff', 'sdcorejs-debug', true],
+      ['test-write-not-debug', 'sdcorejs-test', true],
+      ['test-run-not-debug', 'sdcorejs-test', true],
       ['test-localized-vi-run', 'sdcorejs-test', true],
       ['test-localized-vi-write', 'sdcorejs-test', true]
     ]
@@ -878,6 +946,31 @@ test('phase 3: direct test prompts dispatch to sdcorejs-test or debug handoff', 
 
   assert.equal(dispatchPrompt(pack, 'debug failing login test')?.name, 'sdcorejs-debug');
   assert.equal(dispatchPrompt(pack, 'explain failing login test output without changing files')?.name, 'sdcorejs-test');
+});
+
+test('phase 3: direct debug prompts dispatch to sdcorejs-debug', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const promptEvals = await loadPromptEvals();
+  const debugCases = promptEvals.filter((item) => item.id.startsWith('debug-') || item.id === 'failing-login-test-debug');
+  const results = runPromptEval(pack, debugCases);
+
+  assert.deepEqual(
+    results.map((result) => [result.id, result.actualSkill, result.pass]),
+    [
+      ['failing-login-test-debug', 'sdcorejs-debug', true],
+      ['debug-runtime-error', 'sdcorejs-debug', true],
+      ['debug-stack-trace', 'sdcorejs-debug', true],
+      ['debug-fix-bug', 'sdcorejs-debug', true],
+      ['debug-flaky-test', 'sdcorejs-debug', true],
+      ['debug-wrong-behavior', 'sdcorejs-debug', true],
+      ['debug-ci-only', 'sdcorejs-debug', true],
+      ['debug-prod-only', 'sdcorejs-debug', true],
+      ['debug-performance-anomaly', 'sdcorejs-debug', true],
+      ['debug-localized-vi', 'sdcorejs-debug', true],
+      ['debug-localized-vi-root-cause', 'sdcorejs-debug', true],
+      ['debug-localized-vi-flaky', 'sdcorejs-debug', true]
+    ]
+  );
 });
 
 test('phase 1: documentation trigger does not steal user-management implementation prompts', async () => {

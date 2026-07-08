@@ -43,6 +43,14 @@ If several skills match, apply this priority before reading a body:
 8. Confirmed track implementation: `sdcorejs-angular`, `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
 9. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
 
+Routing clarifications:
+
+- Failing-test root-cause/fix intent routes to `sdcorejs-debug`.
+- Writing, running, or planning tests without root-cause/fix intent routes to `sdcorejs-test`.
+- Review findings repair routes to `sdcorejs-repair-loop`.
+- Ship/readiness gates route to `sdcorejs-ship`.
+- Commit, PR, changelog, and release-note artifacts route to `sdcorejs-git` only after the required ship gates pass or an explicit verification deferral is recorded.
+
 ## Workflow
 
 ```text

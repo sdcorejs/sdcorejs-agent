@@ -25,13 +25,19 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
 4. Record the working-tree baseline and a visible Repair ledger before edits.
 5. Verify each finding is genuine before changing code and classify it as `VALID`, `STALE`, `MIS-SCOPED`, `REDUNDANT`, or `UNCLEAR`.
 6. Categorize valid findings into `auto`, `confirm`, or `user-decision` tiers.
-7. Apply only the allowed tier for the current pass, then re-run the verification required by the preserved source context.
-8. Iterate until blocking findings are fixed, explicitly deferred, or the reference's 3-pass convergence cap is reached. Blocking means `Critical`/`Important` in the default review format, or `BLOCKER`/`REQUIRED` in Angular/NestJS code-review table mode.
+7. For a single `VALID` finding that becomes a concrete bug investigation, call
+   `sdcorejs-debug` with the preserved `repair_source`, `review_context`,
+   finding ID/source, original commands, and package-manager evidence; consume
+   its redacted `debug_context` before continuing.
+8. Apply only the allowed tier for the current pass, then re-run the verification required by the preserved source context.
+9. Iterate until blocking findings are fixed, explicitly deferred, or the reference's 3-pass convergence cap is reached. Blocking means `Critical`/`Important` in the default review format, or `BLOCKER`/`REQUIRED` in Angular/NestJS code-review table mode.
 
 ## Handoff
 - After convergence, return to the caller's tail chain.
 - If invoked from a finish-gate review, continue with `sdcorejs-documentation (code-documentation mode)` when source changed, then `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, auto-docs, optional user guide, auto-task-tracker, and durable memories when relevant.
 - If invoked directly by the user, run discovered verification commands and offer explicit numbered next steps: run `sdcorejs-ship (verify-before-done mode)`, stop after the repair summary, or prepare a commit only after ship and branch-ready pass for the current `HEAD` or diff.
+- If `sdcorejs-debug` was used inside the loop, carry its `debug_context` into
+  the repair summary and subsequent ship gates.
 - If findings do not converge after the capped loop, stop and ask the user to choose the next direction.
 - Do not hand off directly to `sdcorejs-git (commit mode)` by default. A commit is allowed only after ship verification and branch-ready passed in the current session for the current `HEAD` or diff, or after the caller explicitly requested a commit after those gates with any verification deferral recorded.
 

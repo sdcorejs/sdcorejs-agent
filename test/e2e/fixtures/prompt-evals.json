@@ -324,6 +324,84 @@
     "phase": 3
   },
   {
+    "id": "debug-runtime-error",
+    "prompt": "debug this runtime error",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "debug-stack-trace",
+    "prompt": "root-cause this stack trace",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "debug-fix-bug",
+    "prompt": "fix this bug in the order approval flow",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "debug-flaky-test",
+    "prompt": "investigate this flaky test",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "debug-wrong-behavior",
+    "prompt": "why does this API return the wrong permission result?",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "debug-ci-only",
+    "prompt": "debug this CI-only test failure",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "debug-prod-only",
+    "prompt": "investigate this prod-only error from sanitized logs",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "debug-performance-anomaly",
+    "prompt": "debug why this endpoint became slow after the last change",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "test-write-not-debug",
+    "prompt": "write unit tests for the order service",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 3
+  },
+  {
+    "id": "test-run-not-debug",
+    "prompt": "run the test suite",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 3
+  },
+  {
+    "id": "debug-localized-vi",
+    "prompt": "debug loi login dang fail giup minh",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "debug-localized-vi-root-cause",
+    "prompt": "tim nguyen nhan goc loi man hinh don hang bi trang",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "debug-localized-vi-flaky",
+    "prompt": "dieu tra test flaky nay giup minh",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
     "id": "test-localized-vi-run",
     "prompt": "chay test cho man hinh quan ly don hang",
     "expectedSkill": "sdcorejs-test",

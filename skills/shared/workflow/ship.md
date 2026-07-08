@@ -57,6 +57,11 @@ verify-before-done`, the same acceptance scope, original verification commands,
 and package-manager evidence. If it passes, continue to `branch-ready` mode when
 this is part of a tail/ship chain.
 
+When the failed criterion is a concrete single bug or failing command that
+needs root-cause work, the repair loop may delegate that item to
+`sdcorejs-debug`. Preserve the resulting redacted `debug_context` and include it
+in the verification evidence before returning to verify-before-done.
+
 ## Mode: branch-ready
 
 Read `_refs/orchestration/tail/branch-ready.md` completely, then run its
@@ -69,6 +74,7 @@ read-only hygiene checks:
 - possible secrets
 - large or unexpected binary files
 - track-specific lint, test, and build commands when available
+- current `debug_context` from a preceding bug-fix flow when present
 
 Verdicts:
 

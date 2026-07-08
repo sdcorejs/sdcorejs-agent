@@ -61,6 +61,11 @@ Rules:
 Use the detected package manager placeholder in reports, for example
 `<pm> run lint`, only when the `lint` script actually exists.
 
+If a verification script fails and needs root-cause work rather than a simple
+read-only hygiene report, route the failing command and redacted output to
+`sdcorejs-debug`. After debug returns, consume its `debug_context` and re-run
+branch-ready instead of proceeding directly to Git artifacts.
+
 ## Secret Redaction
 
 Secret probes must redact values.

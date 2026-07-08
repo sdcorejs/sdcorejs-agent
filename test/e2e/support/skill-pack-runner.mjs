@@ -64,6 +64,11 @@ const LOCALIZED_ALIASES = new Map([
   ['mockup', ['mockup', 'design']],
   ['kiem', ['check', 'review']],
   ['tra', ['check', 'review']],
+  ['dieu', ['investigate']],
+  ['tim', ['find', 'root-cause']],
+  ['nguyen', ['cause', 'root-cause']],
+  ['nhan', ['cause', 'root-cause']],
+  ['goc', ['root-cause']],
   ['bao', ['security']],
   ['mat', ['security']],
   ['yeu', ['requirement']],
@@ -89,7 +94,8 @@ const SKILL_HINTS = [
   { skill: 'sdcorejs-review', words: ['review', 'audit', 'security', 'performance', 'accessibility', 'a11y', 'architecture', 'scored', 'full', 'comprehensive'] },
   { skill: 'sdcorejs-ship', words: ['verify', 'acceptance', 'criteria', 'final', 'gate', 'branch', 'ready', 'ship', 'push', 'release', 'tag', 'merge', 'dependency', 'dependencies', 'package', 'outdated', 'audit', 'bump'] },
   { skill: 'sdcorejs-git', words: ['commit', 'changes', 'save', 'worktree', 'pr', 'pull', 'request', 'changelog', 'notes'] },
-  { skill: 'sdcorejs-repair-loop', words: ['fix', 'apply', 'repair', 'resolve', 'finding', 'findings', 'review', 'issues', 'issue', 'critical', 'failed', 'failures', 'verify-before-done'] }
+  { skill: 'sdcorejs-repair-loop', words: ['fix', 'apply', 'repair', 'resolve', 'finding', 'findings', 'review', 'issues', 'issue', 'critical', 'failed', 'failures', 'verify-before-done'] },
+  { skill: 'sdcorejs-debug', words: ['debug', 'root-cause', 'bug', 'repro', 'failing', 'failure', 'failed', 'fail', 'error', 'wrong', 'flaky', 'ci-only', 'prod-only', 'runtime', 'stack', 'trace', 'investigate', 'resolve', 'slow', 'broken', 'throws'] }
 ];
 
 const PRIORITY_RULES = [
@@ -143,18 +149,25 @@ const PRIORITY_RULES = [
       !hasAny(tokens, ['angular', 'portal', 'screen', 'screens', 'ui', 'wireframe', 'mockup', 'design'])
   },
   {
+    skill: 'sdcorejs-debug',
+    when: ({ prompt, tokens }) =>
+      (
+        hasAny(tokens, ['debug', 'root-cause', 'repro', 'failing', 'failure', 'failed', 'fail', 'error', 'wrong', 'bug', 'flaky', 'investigate', 'resolve', 'broken', 'throws']) ||
+        /\bfix\b.*\bbug\b/.test(prompt) ||
+        /\bstack\b.*\btrace\b/.test(prompt) ||
+        /\bci-only\b|\bprod-only\b/.test(prompt) ||
+        /\bruntime\b.*\berror\b/.test(prompt) ||
+        (tokens.has('slow') && hasAny(tokens, ['debug', 'why', 'investigate', 'regression']))
+      ) &&
+      !hasFailingOutputTriageIntent(prompt, tokens) &&
+      !hasReviewIntent(prompt, tokens)
+  },
+  {
     skill: 'sdcorejs-design',
     when: ({ tokens }) =>
       (hasAny(tokens, ['design', 'ui', 'ux', 'wireframe', 'mockup', 'png', 'preview', 'handoff']) ||
         (hasAny(tokens, ['flow', 'flows']) && hasAny(tokens, ['screen', 'screens', 'user', 'journey']))) &&
       !hasAny(tokens, ['angular', 'portal', 'implement', 'code', 'architecture', 'codebase', 'repo', 'map', 'trace'])
-  },
-  {
-    skill: 'sdcorejs-debug',
-    when: ({ prompt, tokens }) =>
-      hasAny(tokens, ['debug', 'root-cause', 'repro', 'failing', 'failure', 'error', 'wrong']) &&
-      !hasFailingOutputTriageIntent(prompt, tokens) &&
-      !hasAny(tokens, ['review'])
   },
   {
     skill: 'sdcorejs-test',
