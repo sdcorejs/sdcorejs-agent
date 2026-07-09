@@ -313,12 +313,16 @@ After convergence, return to the caller's tail chain.
 If invoked from a finish-gate review, continue in this order:
 
 1. `sdcorejs-documentation (code-documentation mode)`, if source changed.
-2. `sdcorejs-ship (verify-before-done mode)`.
-3. `sdcorejs-ship (branch-ready mode)`.
-4. `_refs/orchestration/tail/auto-docs.md`.
-5. `sdcorejs-documentation (write-user-guide mode)`, if selected.
-6. `_refs/orchestration/tail/auto-task-tracker.md`.
-7. `sdcorejs-explore (memories mode)`, if durable knowledge surfaced.
+2. `sdcorejs-documentation (write-technical-doc mode)`, if selected.
+3. `_refs/orchestration/tail/auto-docs.md`.
+4. `sdcorejs-documentation (write-user-guide mode)`, if selected.
+5. `_refs/orchestration/tail/auto-task-tracker.md`.
+6. `sdcorejs-explore (memories mode)`, if durable knowledge surfaced.
+7. `sdcorejs-ship (verify-before-done mode)`.
+8. `sdcorejs-ship (branch-ready mode)` as the final read-only gate over the
+   final diff.
+
+No writes after branch-ready unless branch-ready is run again.
 
 If invoked directly by the user, run discovered verification commands, then
 offer explicit next steps:

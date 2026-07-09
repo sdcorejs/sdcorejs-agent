@@ -159,17 +159,17 @@ corresponding user-guide or technical-doc files for a new feature.
 controlled by this gate.
 
 Until the `sdcorejs-nestjs` orchestrator ships, the last plan step should call out the manual tail-call sequence:
-1. `sdcorejs-test` — write e2e tests for happy path
-2. `sdcorejs-review` — convention review
-3. `sdcorejs-repair-loop` — apply review findings
-4. `sdcorejs-documentation (code-documentation mode)` — automatically apply source-code documentation using `_refs/documentation/code-documentation.md`
-5. `sdcorejs-documentation (write-technical-doc mode)` — if approved by the documentation gate
-6. `sdcorejs-ship (verify-before-done mode)` — acceptance criteria gate
-7. `sdcorejs-ship (branch-ready mode)` — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) before docs
-8. `_refs/orchestration/tail/auto-docs.md` — session summary to `.sdcorejs/docs/nestjs/`
-9. `sdcorejs-documentation (write-user-guide mode)` — if approved by the documentation gate
-10. `_refs/orchestration/tail/auto-task-tracker.md` — tick / append tasks
-11. `sdcorejs-explore (memories mode)` — durable knowledge if applicable
+1. `sdcorejs-test` - write e2e tests for happy path
+2. `sdcorejs-review` - convention review
+3. `sdcorejs-repair-loop` - apply review findings
+4. `sdcorejs-documentation (code-documentation mode)` - automatically apply source-code documentation using `_refs/documentation/code-documentation.md`
+5. `sdcorejs-documentation (write-technical-doc mode)` - if approved by the documentation gate
+6. `_refs/orchestration/tail/auto-docs.md` - session summary to `.sdcorejs/docs/nestjs/`
+7. `sdcorejs-documentation (write-user-guide mode)` - if approved by the documentation gate
+8. `_refs/orchestration/tail/auto-task-tracker.md` - tick / append tasks
+9. `sdcorejs-explore (memories mode)` - durable knowledge if applicable
+10. `sdcorejs-ship (verify-before-done mode)` - acceptance criteria gate over the final intended diff
+11. `sdcorejs-ship (branch-ready mode)` - final read-only branch-ready gate over the final diff; no writes after branch-ready unless branch-ready is run again
 
 Once the orchestrator ships, the plan can simply reference `sdcorejs-nestjs` and the tail-call chain is owned there.
 

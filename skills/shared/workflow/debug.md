@@ -352,9 +352,13 @@ After the fix:
 3. Run broader existing checks when appropriate and available.
 4. Remove or explicitly approve diagnostic instrumentation.
 5. Emit final `debug_context`.
-6. Run `sdcorejs-ship (verify-before-done mode)` when acceptance criteria, a bug contract, or source changes exist.
-7. Run `sdcorejs-ship (branch-ready mode)` before any Git artifact path.
-8. Run auto-docs, task tracker, and memories only when durable debug knowledge or changed artifacts justify them and normal tail policy allows it.
+6. Run auto-docs, task tracker, and memories only when durable debug knowledge
+   or changed artifacts justify them and normal tail policy allows it.
+7. Run `sdcorejs-ship (verify-before-done mode)` when acceptance criteria, a
+   bug contract, or source changes exist.
+8. Run `sdcorejs-ship (branch-ready mode)` as the final read-only gate over the
+   final diff before any Git artifact path. No writes after branch-ready unless
+   branch-ready is run again.
 9. Invoke `sdcorejs-git` only after ship and branch-ready gates have passed for the current `HEAD` or diff and the user explicitly asks for commit, PR, changelog, release-note, or workspace artifacts.
 
 If invoked from `sdcorejs-repair-loop`, preserve `repair_source`,

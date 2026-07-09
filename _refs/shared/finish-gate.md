@@ -101,8 +101,9 @@ read-only and may only offer repair-loop or artifact persistence as explicit
 next steps.
 
 After these answers, state the selected choices and the always-on steps:
-verify acceptance criteria, branch-hygiene sweep, session docs, task tracker,
-and durable memories.
+write-producing documentation/task/memory artifacts first, then verification,
+then branch-ready as the final read-only gate before any Git artifact handoff.
+All write-producing steps run before final branch-ready.
 
 ## Rules
 
@@ -131,14 +132,18 @@ and durable memories.
 - Execute the tail steps honoring the sequential answers, in the orchestrator's
   defined order. A skipped step is omitted; everything not skipped runs.
 - Unless the user chose `Defer`, plumbing runs after the chosen review mode:
-  `sdcorejs-ship (verify-before-done mode)` ->
-  `sdcorejs-ship (branch-ready mode)` -> auto-docs tail ref ->
-  auto-task-tracker tail ref -> memories. If `Defer` is selected, stop after a
-  concise checkpoint and do not claim done.
+  all selected write-producing tail steps first, then
+  `sdcorejs-ship (verify-before-done mode)`, then
+  `sdcorejs-ship (branch-ready mode)` as the final read-only gate. If `Defer`
+  is selected, stop after a concise checkpoint and do not claim done.
+- Branch-ready is the final read-only gate before Git artifacts. No writes after branch-ready unless branch-ready is run again.
+- If finish-gate work writes files after an earlier branch-ready check, that
+  evidence is stale and the tail must re-run branch-ready before Git artifact
+  handoff.
 - The finish gate does not auto-create Git artifacts. Invoke `sdcorejs-git`
   only when the user asks for commit, PR, changelog, release notes, or worktree
-  artifacts after verify-before-done and branch-ready evidence exists for the
-  current `HEAD` or diff.
+  artifacts after verify-before-done and final branch-ready evidence exists for
+  the current `HEAD` or diff.
 - Localize the prompt; keep identifiers, permission codes, and route paths in
   English in every language.
 - If the user already gave explicit instructions this turn (for example "add
@@ -161,14 +166,16 @@ and durable memories.
    source files; use concise maintainability-focused rules and do not ask.
 5. (if `technical_doc=create` or `technical_doc=update`)
    `sdcorejs-documentation (write-technical-doc mode)`.
-6. `sdcorejs-ship (verify-before-done mode)` (unless deferred).
-7. `sdcorejs-ship (branch-ready mode)` (unless deferred).
-8. `_refs/orchestration/tail/auto-docs.md` (unless deferred).
-9. (if `user_guide=create` or `user_guide=update`)
+6. `_refs/orchestration/tail/auto-docs.md` (unless deferred).
+7. (if `user_guide=create` or `user_guide=update`)
    `sdcorejs-documentation (write-user-guide mode)`.
-10. `_refs/orchestration/tail/auto-task-tracker.md` (unless deferred).
-11. `sdcorejs-explore (memories mode)` when durable knowledge surfaced.
+8. `_refs/orchestration/tail/auto-task-tracker.md` (unless deferred).
+9. `sdcorejs-explore (memories mode)` when durable knowledge surfaced.
+10. `sdcorejs-ship (verify-before-done mode)` (unless deferred).
+11. `sdcorejs-ship (branch-ready mode)` (unless deferred) - final read-only
+    gate over the final diff.
 
 `sdcorejs-git` is not part of the automatic finish-gate tail. It may run next
-only when the user requests a Git artifact and current ship evidence is present
-or explicitly deferred with the required risk note.
+only when the user requests a Git artifact and current ship evidence plus final
+branch-ready evidence is present for the final current `HEAD` or diff, or
+explicitly deferred with the required risk note.

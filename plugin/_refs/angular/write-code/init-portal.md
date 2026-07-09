@@ -358,7 +358,7 @@ After generation:
 
 ## Post-init — write the project summary
 
-A freshly scaffolded portal has no `.sdcorejs/summary.md` yet. After the validation checklist passes, run `sdcorejs-explore (summary mode)` in WRITE mode to create it (domain, stack, the generated module/lib layout, reuse cheatsheet, conventions, current git HEAD). This is what the next session and the write-code orchestrator's Step 0 pre-flight will read instead of re-scanning blind. Skipping it means the very next code-writing run pays a full re-discovery.
+A freshly scaffolded portal has no `.sdcorejs/summary.md` yet. After the validation checklist passes, run `sdcorejs-explore (summary-refresh)` in write-approved context to create it (domain, stack, the generated module/lib layout, reuse cheatsheet, conventions, current git HEAD, freshness metadata, stack profile evidence, and redaction status). This is what the next session and the write-code orchestrator's Step 0 preflight will read instead of re-scanning blind. Skipping it means the very next code-writing run pays a full re-discovery.
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-execute-plan
-description: Execute an approved plan snapshot. Use after sdcorejs-plan approval or when the user asks to execute, run, generate from, or continue an approved plan. Detects angular/nestjs/nextjs/product/design/test/generic executor, asks sequential vs parallel, handles isolation when needed, and invokes parallel-dispatch when approved. Runtime-localized.
-allowed-tools: Read, Edit, Glob, Grep, Bash, Agent, TodoWrite
+description: Execute an approved plan snapshot. Use after sdcorejs-plan approval or when asked to execute, run, generate from, or continue an approved plan for Angular, NestJS, Next.js, React, Node, fullstack, product, design, documentation, workflow, test, or generic/general work. Detects track/profile, preserves contract/write scope/package-manager evidence, asks sequential vs parallel, and invokes parallel-dispatch when approved. Runtime-localized.
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent, TodoWrite
 ---
 
 # 04 - Execute Plan
@@ -24,29 +24,81 @@ It owns four decisions:
 1. Which execution track should run.
 2. Whether the user wants sequential or parallel execution.
 3. Whether Angular work is Core UI portal work or plain Angular work.
-4. Whether to use a track orchestrator or the generic harness fallback.
+4. Whether NestJS, Next.js, React, Node/general, migration, product, design, or
+   test work needs a track executor or the generic harness fallback.
+
+The generic harness is write-capable because it is the approved-plan fallback
+executor for unsupported stacks and explicit CREATE/EDIT tasks. Write
+permission is constrained by `plan_context.allowed_paths`,
+`plan_context.prohibited_paths`, dependency/env/migration boundaries, and the
+working-tree preflight below.
 
 ## Preconditions
 - `sdcorejs-plan` has explicit user approval.
 - `sdcorejs-plan` has written the approved plan snapshot.
 - The approved plan is available as a path or in context.
+- `plan_context` is present, including `approved_spec_hash`,
+  `approved_plan_hash`, `target_root_kind`, `stack_profile`, `allowed_paths`,
+  `prohibited_paths`, dependency/env/migration boundaries, verification
+  strategy, and parallel candidates.
 
 If the plan is missing or unapproved, route back to `sdcorejs-plan`.
+If the plan hash does not match the current approved spec hash, stop and ask for
+`sdcorejs-plan` regeneration.
 
 ## Step 0 - Context preflight
 
 Before loading the plan or dispatching any executor, run `sdcorejs-explore
-(summary mode)` through `_refs/shared/project-context.md`.
+(summary-read)` through `_refs/shared/project-context.md`.
 
-- If the target root already exists and `<target>/.sdcorejs/summary.md` is
-  missing, generate it first so track detection uses the real project map.
-- If the summary exists, read it and refresh on drift before choosing the
+- Use `summary-read` by default. If the target root already exists and
+  `<target>/.sdcorejs/summary.md` is missing or stale, do not refresh
+  automatically. Run `summary-refresh` only when the approved plan explicitly
+  allows a context write or the user approves the refresh in this execution
+  session; record the write in `explore_context`.
+- If the summary exists and is fresh enough, read it before choosing the
   executor.
 - If the approved plan creates a brand-new target root that does not exist yet,
   record this exception and require the owning executor to run
-  `sdcorejs-explore (summary mode)` immediately after the first scaffold lands.
+  `sdcorejs-explore (summary-refresh)` immediately after the first scaffold lands.
 - Treat the approved plan and current evidence as stronger than stored context
   when they conflict.
+
+## Step 0.5 - Working-tree preflight
+
+Before any edit or subagent dispatch, inspect the current working tree and
+compare it to `plan_context`:
+
+- `git status --short`
+- staged diffstat
+- unstaged diffstat
+- untracked files
+- current branch
+- current_HEAD
+- target_root_kind
+- allowed_paths
+- prohibited_paths
+- unrelated dirty files
+
+If unrelated dirty files exist, ask one numbered decision before editing:
+
+```text
+Working tree has changes outside this approved plan.
+
+Options:
+1. Continue but restrict edits to approved plan-scoped files
+2. Continue and allow touching selected dirty files
+3. Stop so you can clean or stash changes first
+
+Reply with `1`, `2`, or `3`.
+```
+
+Do not edit prohibited paths without explicit approval and plan revision. Do not
+edit env files, secret files, generated/vendor/build output, lockfiles, package
+manifests, or migrations unless `plan_context` explicitly allows it. If
+`target_root_kind` is `sdcorejs-agent-authoring-repo` or
+`skill-pack-authoring-repo`, confirm that the authoring repo itself is the
+intended target before writing.
 
 ## Process
 
@@ -55,10 +107,14 @@ Read the plan from `.sdcorejs/plans/<track>/` or the plan path supplied by `sdco
 
 Extract:
 
+- `plan_context`.
 - Scope and acceptance criteria.
 - Task list and phase order.
 - File paths and commands.
 - Coverage approach.
+- `allowed_paths` and `prohibited_paths`.
+- Dependency, env, and migration boundaries.
+- Verification strategy, `commands_planned`, and `commands_skipped`.
 - Any declared parallel candidates.
 - Solution-root layout when present (`product/`, `design/`, `backend/`, `frontend/`, `test/`, `.sdcorejs/`).
 
@@ -67,9 +123,11 @@ Prefer explicit track metadata in the plan. Otherwise infer from project signals
 
 | Track | Signals | Executor |
 |---|---|---|
-| angular | Core UI Angular classification below, or new SDCoreJS portal creation | `sdcorejs-angular` |
-| nestjs | `nest-cli.json`, `@nestjs/core`, controllers, services, DTOs, modules | `sdcorejs-nestjs` |
-| nextjs | `next.config.*`, `app/**`, `pages/**`, SEO/OG/contact/i18n/caching tasks | `sdcorejs-nextjs` |
+| angular | `core-ui-angular`, `legacy-core-ui-angular`, approved `migration-request`, or new SDCoreJS portal creation | `sdcorejs-angular` |
+| nestjs | `sdcorejs-nestjs` profile or approved SDCoreJS Nest migration | `sdcorejs-nestjs` |
+| nextjs | `nextjs-build-website` profile or approved build-website/public-site migration | `sdcorejs-nextjs` |
+| react | `react-vite`, `react-cra`, or generic React component/app work | generic harness fallback |
+| node | `node-general`, scripts/config/library work | generic harness fallback |
 | product | product docs, PO docs, user stories, acceptance criteria, UAT, traceability matrix, requirement/implementation/test gap review | `sdcorejs-product` |
 | design | design docs, wireframes, mockups, UI/UX, screen flow, PNG previews, FE handoff, story-to-screen mapping | `sdcorejs-design` |
 | test | test-only plan, `*.spec.*`, e2e, Playwright/Cypress/Robot/Jest, inspector export | `sdcorejs-test` |
@@ -101,6 +159,44 @@ Core UI docs, never emit a Core UI usage summary, never force admin screens,
 never assume `src/libs/**/features/**` when the project uses another structure,
 and must ask for explicit approval before adding `@sdcorejs/angular`,
 `@sd-angular/core`, or `@angular/material`.
+
+Do not route plain Angular to `sdcorejs-angular` by default; `plain-angular`
+uses the generic harness unless the approved plan is a migration request or
+brand-new SDCoreJS portal creation.
+
+#### NestJS project classification preflight
+
+Use approved plan metadata, package manifests, imports, modules/controllers/
+providers, and tests.
+
+| Classification | Evidence | Executor/fallback |
+|---|---|---|
+| `sdcorejs-nestjs` | NestJS app depends on/imports `@sdcorejs/nestjs` or strong SDCoreJS Nest conventions | `sdcorejs-nestjs` |
+| `plain-nestjs` | `nest-cli.json`, `@nestjs/*`, modules/controllers/providers, or Nest tests without SDCoreJS Nest evidence | generic harness fallback |
+| `migration-request` | Approved plan explicitly adopts SDCoreJS Nest conventions | `sdcorejs-nestjs` only when dependency/migration scope is approved |
+
+Do not route plain NestJS to `sdcorejs-nestjs` by default. Do not assume
+TypeORM, PostgreSQL, Zod, SdContext, `@HasPermission`, or `@sdcorejs/nestjs`
+for `plain-nestjs` unless detected or approved.
+
+#### Next.js and React classification preflight
+
+Use approved plan metadata, `next.config.*`, React/Vite/CRA config, routes,
+content/i18n structure, and tests.
+
+| Classification | Evidence | Executor/fallback |
+|---|---|---|
+| `nextjs-build-website` | Next.js plus public-site/build-website evidence such as `[locale]`, typed i18n navigation, content/public-site structure, sitemap/OG plan, or prior build-website context | `sdcorejs-nextjs` |
+| `plain-nextjs` | Next.js app/router/page evidence without build-website profile | generic harness fallback |
+| `react-next-generic` | Next.js present but request is generic React app/dashboard behavior | generic harness fallback |
+| `react-vite` | Vite config plus React dependency | generic harness fallback |
+| `react-cra` | `react-scripts` | generic harness fallback |
+| `node-general` | Node package/scripts/config work without stronger framework | generic harness fallback |
+| `general` | unsupported or unknown stack | generic harness fallback |
+
+Do not route plain Next.js to `sdcorejs-nextjs` by default. Do not assume
+`[locale]`, `setRequestLocale`, sitemap/public-site metadata, typed i18n
+navigation, or content folders for `plain-nextjs`.
 
 For mixed full-stack plans, classify as role-split and prepare to invoke `sdcorejs-parallel-dispatch`. If the plan came from `sdcorejs-solution-builder`, preserve the solution-root contract: product docs in `product/`, design handoff in `design/`, backend in `backend/`, frontend in `frontend/`, cross-stack tests in `test/`, and traceability/evidence in `.sdcorejs/`.
 
@@ -151,23 +247,92 @@ Pass the approved plan as the contract. The executor must not add scope without 
 Use the generic harness when no track-specific orchestrator matches.
 
 1. Create a progress checklist with one item per approved task plus finishing steps.
-2. Execute tasks in the approved order using the normal editing and shell tools.
-3. Keep edits inside the approved paths/commands.
-4. Run every verification command from the plan.
-5. If code changed, present the standard finish gate, then run the mandatory tail chain.
-6. If only docs/config changed, still run the verification and report evidence.
+2. Execute tasks in the approved order using the normal editing and shell tools,
+   including Write only for approved CREATE tasks.
+3. Keep edits inside `allowed_paths` and outside `prohibited_paths`.
+4. Run every verification command from `plan_context.commands_planned`; record
+   commands_run with exit codes and commands_skipped with reasons when a script,
+   tool, package manager, service, or environment is unavailable.
+5. If code changed, present the standard finish gate, run write-producing docs
+   or task artifacts before ship, then run `sdcorejs-ship (verify-before-done
+   mode)` and `sdcorejs-ship (branch-ready mode)` as the final read-only gate.
+6. If only docs/config changed, still run the planned verification and report
+   evidence.
 
 The harness is intentionally conservative. If a task needs a domain-specific pattern not captured in the plan, stop and return to `sdcorejs-plan`.
+
+### 7. Emit execution context
+Before handing off, pausing, or reporting, produce `execution_context`:
+
+```yaml
+execution_context:
+  source: sdcorejs-execute-plan
+  contract_id: <contract id>
+  requirement_id: <requirement id>
+  approved_spec_path: <path>
+  approved_spec_hash: <hash>
+  approved_plan_path: <path>
+  approved_plan_hash: <hash>
+  execution_mode: sequential | parallel | generic-harness | delegated-executor
+  target_root: <target root>
+  target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
+  track: <track>
+  stack_profile: <stack profile>
+  executor_selected: <skill or generic harness>
+  executor_reason: <short reason>
+  generic_harness_used: true | false
+  migration_request: true | false
+  working_tree_preflight:
+    current_HEAD: <sha>
+    dirty: true | false
+    staged: <summary>
+    unstaged: <summary>
+    untracked:
+      - <path>
+    unrelated_dirty_paths:
+      - <path>
+  tasks_completed:
+    - id: <task id>
+      summary: <summary>
+      files_changed:
+        - <path>
+  tasks_remaining:
+    - id: <task id>
+      reason: <reason>
+  files_changed:
+    - <path>
+  commands_run:
+    - command_or_script: <command>
+      exit_code: <code>
+      reason: <why run>
+  commands_skipped:
+    - command_or_probe: <command>
+      reason: <why skipped>
+  redaction_applied: true | false
+  ship_handoff:
+    required: true | false
+    verification_mode: feature-acceptance | bugfix-verification | docs-only-hygiene | specless-verification | dependency-regression | release-readiness
+```
 
 ## Rules
 
 ### Must do
 - Never execute without an approved plan snapshot.
+- Consume `plan_context` and preserve `contract_id`, `approved_spec_hash`,
+  `approved_plan_hash`, `target_root_kind`, `track`, `stack_profile`,
+  write-scope boundaries, package-manager evidence, and verification strategy.
 - Always ask sequential vs parallel before execution.
 - Use `sdcorejs-product` as the executor for product-track ledgers and traceability audits.
 - Use `sdcorejs-design` as the executor for design-track FE handoff artifacts.
 - Use `sdcorejs-test` as the executor for test-track plans.
 - Use the generic harness fallback when no track matches.
+- Perform working-tree preflight before edits.
+- Obey `allowed_paths` and `prohibited_paths`.
+- Use package-manager/script discovery from the plan. Do not mix package
+  managers, invent missing scripts, run unapproved installs, or use `npx --yes`
+  without approval.
+- Redact secrets and PII from execution summaries, task checkpoints, logs, and
+  handoffs.
 - Verify success from real command output before claiming anything passed.
 - Keep the user's language in status and summaries.
 
@@ -177,6 +342,11 @@ The harness is intentionally conservative. If a task needs a domain-specific pat
 - Let a subagent change the approved plan.
 - Hide a `SEQUENTIAL` verdict after the user asked for parallel.
 - Skip finish-gate and mandatory tail steps after code generation.
+- Edit outside approved scope.
+- Mutate approved specs/plans instead of returning to the approval gate for a
+  revision.
+- Route plain framework profiles to SDCoreJS-specific executors by default.
+- Write after final branch-ready unless branch-ready is run again.
 
 ## Cross-references
 - `sdcorejs-plan` - approved execution contract

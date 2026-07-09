@@ -11,12 +11,17 @@ read-only hygiene sweep that checks dirty state, focused tests, conflict
 markers, debug output, suspected secrets, unexpected binaries, and available
 project verification scripts before `sdcorejs-git` creates artifacts.
 
-It does not modify code. It surfaces issues so the user can fix, acknowledge,
-or defer them.
+It does not modify code. It is the final read-only gate immediately before
+`sdcorejs-git` creates commit, PR, push, tag, or release artifacts.
+
+No writes after branch-ready unless branch-ready is run again. Writes include
+auto-docs, user guides, task trackers, memories, changelog, release notes,
+generated mirrors, formatting, codegen, source edits, docs edits, dependency
+manifest changes, and lockfile updates.
 
 ## When Invoked
 
-- Automatic: in the tail-call chain after `sdcorejs-ship (verify-before-done mode)` and before any `sdcorejs-git` commit or PR handoff.
+- Automatic: as the final read-only gate after `sdcorejs-ship (verify-before-done mode)` and every selected write-producing tail step, immediately before any `sdcorejs-git` commit, PR, push, tag, or release handoff.
 - Manual: user says "is this branch ready", "ready to ship", "check branch", "check before commit", "check before PR", "final gate", or "branch hygiene".
 
 Do not invoke for noisy mid-work checks unless the user explicitly wants a
@@ -24,7 +29,9 @@ snapshot.
 
 ## Evidence Header
 
-Capture this before reporting:
+Capture this before reporting. When invoked through `sdcorejs-ship`, embed this
+under `ship_context.branch_ready_evidence` and keep the top-level
+`ship_context.associated_HEAD_or_diff` aligned with it:
 
 ```yaml
 branch_ready_evidence:
@@ -36,10 +43,14 @@ branch_ready_evidence:
   commands_skipped:
   reason_for_each_skip:
   result:
+  blockers_not_waivable: true
+  writes_after_branch_ready:
 ```
 
 The `associated_HEAD_or_diff` value must identify the current `HEAD` plus dirty
-diff state, or the exact clean `HEAD` when the tree is clean.
+diff state, or the exact clean `HEAD` when the tree is clean. If any file is
+written after this evidence is collected, the evidence is stale and branch-ready
+must run again before Git artifact handoff.
 
 ## Package Manager And Script Discovery
 
@@ -85,9 +96,15 @@ command would expose secrets.
 
 Severity values:
 
-- `Blocker`: must resolve before commit/PR unless the user explicitly accepts an unverified artifact path where allowed by `sdcorejs-git`.
+- `Blocker`: must resolve before commit, PR, push, tag, or release readiness.
 - `Warning`: surface for user decision.
 - `Info`: useful context.
+
+Branch-ready blockers are not waivable for commit, PR, push, tag, or release
+artifacts. A user may request draft/manual notes or a local summary, but the
+branch-ready verdict remains `BLOCKED` until blocking secret, protected branch,
+dirty tree, merge conflict, build/test/hygiene, or other blockers are fixed and
+branch-ready is re-run.
 
 ### 1. Branch And Dirty State
 
@@ -229,14 +246,15 @@ Match the user's language. Output one block:
 ### Verdict
 READY - all blockers clear and required discovered commands passed.
 
-READY WITH WARNINGS - blockers clear, warnings remain, and the user must acknowledge before git artifacts.
+READY WITH WARNINGS - blockers clear, warnings remain, and the user must acknowledge before draft/manual artifact notes. Commit, PR, push, tag, or release readiness still requires no blockers and current evidence.
 
 BLOCKED - fix blockers and re-run branch-ready.
 ```
 
 When the verdict is `READY` or `READY WITH WARNINGS`, state that the next step
-is `sdcorejs-git (commit mode)` or `sdcorejs-git (PR mode)` only when the user
-asked for that artifact or the caller is the verified ship chain.
+is `sdcorejs-git` only when the user asked for that artifact or the caller is
+the verified ship chain. If any write happens after this report, do not hand off
+to Git artifacts until branch-ready runs again.
 
 ## Edge Cases
 
@@ -272,6 +290,8 @@ as info.
 - Record skipped checks with evidence.
 - Redact suspected secrets.
 - Include `package_manager`, `commands_run`, `commands_skipped`, `reason_for_each_skip`, `result`, and `associated_HEAD_or_diff` in the summary.
+- State that blockers are not waivable for commit, PR, push, tag, or release readiness.
+- State that any writes after branch-ready invalidate this evidence and require re-running branch-ready.
 - Match the user's language at runtime.
 
 ### MUST NOT
@@ -284,7 +304,7 @@ as info.
 - Skip missing scripts without reporting evidence.
 - Run install commands to silence environment problems.
 - Mark a protected branch ready for direct commit, PR, or push.
-- Bypass a blocker silently when the user says "commit anyway".
+- Bypass a blocker when the user says "commit anyway"; draft/manual notes may be produced, but readiness remains `BLOCKED`.
 - Print secret values or raw suspicious lines.
 - Run heavy tag fetches for branch state checks.
 

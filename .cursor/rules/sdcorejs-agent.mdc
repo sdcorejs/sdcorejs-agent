@@ -111,9 +111,13 @@ Request
   -> finish gate and tail chain
        sdcorejs-test -> sdcorejs-review -> repair-loop -> sdcorejs-documentation (code-documentation mode)
        -> sdcorejs-product when user-visible feature traceability is needed
-       -> sdcorejs-ship (verify-before-done mode) -> sdcorejs-ship (branch-ready mode) -> _refs/orchestration/tail/auto-docs.md
-       -> sdcorejs-documentation (write-user-guide mode) -> _refs/orchestration/tail/auto-task-tracker.md -> sdcorejs-explore (memories mode) when relevant
+       -> _refs/orchestration/tail/auto-docs.md -> sdcorejs-documentation (write-user-guide mode)
+       -> _refs/orchestration/tail/auto-task-tracker.md -> sdcorejs-explore (memories mode) when relevant
+       -> sdcorejs-ship (verify-before-done mode) -> sdcorejs-ship (branch-ready mode as the final read-only gate)
 ```
+
+No write-producing step may run after final branch-ready unless branch-ready is
+run again before any Git artifact handoff.
 
 `sdcorejs-execute-plan` always asks the user whether to run sequentially or in parallel before execution. If the user chooses parallel, it must run `sdcorejs-parallel-dispatch`, which owns both the safety verdict and safe fan-out / role-split execution.
 

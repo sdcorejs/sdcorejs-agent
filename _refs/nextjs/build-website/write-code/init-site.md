@@ -290,7 +290,7 @@ If any of these fail, halt and surface — do NOT proceed to next sub-skill with
 
 ### 6. Write the project summary
 
-Once the bootstrap is green, run `sdcorejs-explore (summary mode)` in WRITE mode to create `.sdcorejs/summary.md` (domain, stack, app-router + content + i18n layout, conventions, current git HEAD). The next session and the `sdcorejs-nextjs` orchestrator's Step 0 pre-flight read this instead of re-scanning. A fresh site has none until this step runs.
+Once the bootstrap is green, run `sdcorejs-explore (summary-refresh)` in write-approved context to create `.sdcorejs/summary.md` (domain, stack, app-router + content + i18n layout, conventions, current git HEAD, freshness metadata, stack profile evidence, and redaction status). The next session and the `sdcorejs-nextjs` orchestrator's Step 0 preflight read this instead of re-scanning. A fresh site has none until this step runs.
 
 ## Rules
 

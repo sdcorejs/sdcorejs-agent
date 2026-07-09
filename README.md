@@ -41,9 +41,14 @@ Request
   -> executor
        angular | nestjs | nextjs | product | design | test | generic harness
   -> finish gate and tail chain
+       write-producing docs/task/memory artifacts first
+       -> sdcorejs-ship (verify-before-done mode)
+       -> sdcorejs-ship (branch-ready mode as the final read-only gate)
 ```
 
 The two approval gates and approved snapshot writes live inside `sdcorejs-spec` and `sdcorejs-plan`. `sdcorejs-execute-plan` owns track detection, product-track routing, design-track routing, test-track routing, generic harness fallback, and the sequential/parallel question.
+No write-producing step may run after final branch-ready unless branch-ready is
+run again before Git artifacts.
 
 ## Quick Start
 

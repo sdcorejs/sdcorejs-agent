@@ -38,11 +38,12 @@ governance to the handoff.
 
 ## Step 0 - Context preflight
 
-Before mapping stories to screens, run `sdcorejs-explore (summary mode)` through
+Before mapping stories to screens, run `sdcorejs-explore (summary-read)` through
 `../_refs/shared/project-context.md`.
 
 - For an existing app/site, ensure `<target>/.sdcorejs/summary.md` exists or is
-  refreshed so the design uses the real route structure, modules, component
+  refreshed with `summary-refresh` only in write-approved design execution
+  context so the design uses the real route structure, modules, component
   conventions, permissions, and target stack.
 - For greenfield design before any app scaffold exists, continue from product
   docs and approved specs/plans, but mark UI component choices as `candidate`

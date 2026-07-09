@@ -89,7 +89,7 @@ asks for multiple outputs.
 - Use `sdcorejs-product` for PRDs, user stories, acceptance criteria, UAT, product decisions, and requirement traceability.
 - Use `sdcorejs-design` for UI/UX design, screen flows, wireframes, PNG previews, and FE handoff specs.
 - Use `sdcorejs-test` for test plans, test evidence, UAT execution evidence, and test implementation.
-- Use `sdcorejs-explore` for project summary, code-map, trace-flow, env-setup, recovery, persona, and memories. If the user asks to summarize the project/codebase/repo/system, route to explore summary mode unless they explicitly name an existing doc to summarize.
+- Use `sdcorejs-explore` for project summary, code-map, trace-flow, env-setup, recovery, persona, and memories. If the user asks to summarize the project/codebase/repo/system, route to `summary-read` by default or `summary-refresh` only when they explicitly ask to refresh/persist the summary. If they explicitly name an existing doc, summarize it here instead.
 - Use this skill for general documentation, code documentation, user-facing guides, technical docs, and lightweight task requirement records under `.sdcorejs/documentation/requirements/`.
 - Route code comments, implementation comments, docstrings, doc comments, JSDoc, TSDoc, documented functions/classes/APIs, and localized equivalents to `code-documentation` mode.
 - Route standalone REST/API reference docs to `write-technical-doc` unless the

@@ -24,9 +24,24 @@ The plan is the exact contract that `sdcorejs-execute-plan` runs.
 ## Preconditions
 - A spec has explicit user approval.
 - `sdcorejs-spec` has written the approved spec snapshot.
-- The plan must reference the approved spec path or include the approved spec content in context.
+- The plan must consume `spec_context`, reference the approved spec path, and
+  include the approved spec hash.
 
 If the spec is missing or unapproved, route to `sdcorejs-spec`.
+
+Before drafting, apply `_refs/shared/project-context.md` with:
+
+```text
+caller_context: sdcorejs-plan
+context_mode: summary-read
+side_effects_allowed: true
+```
+
+Plan writes are limited to the draft and approved plan artifacts owned by this
+skill. Missing or stale summary is not permission to refresh context. Preserve
+`contract_id`, `requirement_id`, `target_root`, `target_root_kind`, `track`,
+`stack_profile`, `approved_spec_path`, and `approved_spec_hash` from
+`spec_context`.
 
 ## Process
 
@@ -34,10 +49,17 @@ If the spec is missing or unapproved, route to `sdcorejs-spec`.
 Read:
 
 - Approved spec.
+- `spec_context`, including `approved_spec_path`, `approved_spec_hash`,
+  `target_root_kind`, `stack_profile`, assumptions, risks, non-goals, and
+  approval metadata.
 - Relevant `_refs/sdlc/<track>.md` for angular / nestjs / nextjs.
 - `_refs/shared/testing-philosophy.md` and target stack test ref for test-track plans.
 - Existing `.sdcorejs/docs/product/` ledgers for product-track plans.
 - Latest 1-3 approved plans under `.sdcorejs/plans/<track>/` to mirror the user's preferred granularity.
+- `package.json`, `packageManager`, lockfiles (`package-lock.json`,
+  `pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`/`bun.lock`), workspace config, and
+  `package.json` scripts. Record package manager/script evidence instead of
+  guessing commands.
 
 ### 2. Check paths
 Before drafting:
@@ -46,18 +68,131 @@ Before drafting:
 - Confirm every EDIT path does exist.
 - Surface conflicts instead of silently overwriting.
 - For generic harness plans, mark unknown paths as `VERIFY THEN EDIT` instead of pretending they are known.
+- Define `allowed_paths`, `prohibited_paths`, `generated_artifacts`, and
+  `docs_artifacts`. If a path is unknown, say "discover target path during
+  execution" and give the path-selection rule instead of inventing a path.
+- Mark shared files such as `package.json`, lockfiles, routing modules,
+  app-level providers, generated mirrors, global configs, env files, public API
+  files, and frozen contracts as coordination-risk paths.
+- Record dependency, env, and migration boundaries. Dependency, env, package
+  manifest, lockfile, or migration writes require explicit plan approval.
+
+### 2.1 Working-tree and write-scope preflight plan
+The plan must tell `sdcorejs-execute-plan` to run this preflight before edits:
+
+- `git status --short`
+- staged diffstat
+- unstaged diffstat
+- untracked files
+- current branch
+- current HEAD
+- allowed_paths and prohibited_paths from `plan_context`
+- unrelated dirty files
+- `target_root_kind` authoring-repo guard
+
+If unrelated dirty files exist, execution asks:
+
+```text
+1. Continue but restrict edits to approved plan-scoped files
+2. Continue and allow touching selected dirty files
+3. Stop so the user can clean or stash changes first
+```
+
+Do not plan edits to prohibited paths, env values, secrets, generated/vendor/
+build output, lockfiles, or package manifests unless the approved plan allows
+them.
 
 ### 3. Draft the plan
 Use numbered steps grouped by phase:
 
-```markdown
+````markdown
 ## Scope
 <2-4 lines from the approved spec>
 
 ## Execution context
 - Track: <angular|nestjs|nextjs|test|product|generic>
+- Target root kind: <target_root_kind>
+- Stack profile: <stack_profile>
 - Coverage approach: <post-hoc|TDD>
 - Parallel candidates: <yes/no + why>
+
+```yaml
+plan_context:
+  source: sdcorejs-plan
+  contract_id: <contract id>
+  requirement_id: <requirement id>
+  approved_spec_path: <path>
+  approved_spec_hash: <hash>
+  approved_plan_path: <empty until approved>
+  approved_plan_hash: <empty until approved>
+  supersedes: <prior approved plan path or null>
+  target_root: <target root>
+  target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
+  track: <track>
+  stack_profile: <stack profile>
+  task_count: <N>
+  phase_count: <M>
+  allowed_paths:
+    - <path or glob>
+  prohibited_paths:
+    - <path or glob>
+  generated_artifacts:
+    - <path or glob>
+  docs_artifacts:
+    - <path or glob>
+  dependency_changes:
+    required: true | false
+    packages:
+      - <name or empty>
+    approval_required: true | false
+  env_changes:
+    required: true | false
+    files:
+      - <path or empty>
+    approval_required: true | false
+  migration_changes:
+    required: true | false
+    description: <text or null>
+    approval_required: true | false
+  verification_strategy:
+    package_manager: <npm|pnpm|yarn|bun|unknown>
+    scripts_detected:
+      - name: <script name>
+    commands_planned:
+      - command_or_script: <detected command or script>
+        reason: <why this proves the change>
+    commands_skipped:
+      - command_or_probe: <candidate skipped>
+        reason: <why skipped>
+    focused_checks:
+      - <check>
+    broad_checks:
+      - <check>
+  parallel_candidates:
+    allowed: true | false
+    units:
+      - id: <stable id>
+        title: <title>
+        allowed_paths:
+          - <path or glob>
+        dependencies:
+          - <unit id or empty>
+    shared_files:
+      - path: <path>
+        coordination_strategy: <sequential | parent-owned | lock-step>
+    conflict_risks:
+      - <risk>
+  finish_tail:
+    docs_before_final_branch_ready: true
+    branch_ready_final_gate: true
+  approval:
+    approved: false
+    approved_at: null
+  change_control:
+    revision: <integer>
+    supersedes: <prior approved plan path or null>
+    change_reason: <reason or null>
+```
 
 ## Tasks
 
@@ -73,9 +208,9 @@ Use numbered steps grouped by phase:
 - AC2 -> tasks 2, 3
 
 ## Verification
-- `<command>`
+- `<detected package-manager command or existing script>`
 - Manual: <smoke check>
-```
+````
 
 For test-track plans, steps can be test cases, fixtures, page objects, harness scripts, and runner commands. For product-track plans, steps can be ledger creation, story/AC refinement, implementation map update, test map update, UAT checklist, and traceability audit. For generic harness plans, every task must name the tool/action and verification evidence.
 
@@ -85,10 +220,20 @@ Fix the plan before presenting if any checklist item fails:
 - No placeholders.
 - Every task has a number, action marker, target path or command, and one-line intent.
 - Acceptance criteria map to at least one task.
-- Verification section has exact commands or explicit manual checks.
+- Verification section has commands discovered from package manager/script
+  evidence or explicit manual checks. If no script exists, record
+  `commands_skipped` with the reason instead of inventing one.
 - Path conflicts are surfaced.
 - Test coverage matches the spec's coverage approach.
 - Parallel candidates are identified, but not executed.
+- The plan does not hardcode `npm`, `npx`, `tsc`, Playwright, browser installs,
+  or any package manager as universal defaults. Do not hardcode npm/npx as
+  universal commands, and do not use `npx --yes` or downloading probes without
+  explicit approval.
+- The plan does not mix package managers.
+- Dependency/env/migration/package manifest/lockfile writes are explicitly
+  approved or marked out of scope.
+- No write-producing step occurs after final branch-ready.
 
 ### 5. Present the approval gate
 Show a concise summary:
@@ -126,6 +271,10 @@ Approve:
 <target-project>/.sdcorejs/plans/<track>/<YYYY-MM-DD-HH-mm>-<kebab-topic>.md
 ```
 
+Compute `approved_plan_hash` over the canonical approved plan body, excluding
+frontmatter and the `approved_plan_hash` field, so the hash is not
+self-referential.
+
 2. Include frontmatter:
 
 ```yaml
@@ -138,6 +287,28 @@ track: <angular|nestjs|nextjs|test|product|generic>
 sourceSpecPath: .sdcorejs/specs/<track>/<timestamp>-<topic>.md
 taskCount: <N>
 phaseCount: <M>
+target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
+stack_profile: <stack profile>
+approved_spec_hash: <sha256 from spec_context>
+allowed_paths:
+  - <path or glob>
+prohibited_paths:
+  - <path or glob>
+dependency_changes:
+  required: true | false
+  approval_required: true | false
+env_changes:
+  required: true | false
+  approval_required: true | false
+migration_changes:
+  required: true | false
+  approval_required: true | false
+approved_plan_hash: <sha256 of approved plan body excluding frontmatter and this hash field>
+supersedes: <prior approved plan path or null>
+change_control:
+  revision: <integer>
+  supersedes: <prior approved plan path or null>
+  change_reason: <reason or null>
 ---
 ```
 
@@ -158,7 +329,13 @@ phaseCount: <M>
 sdcorejs-plan (approved on attempt <N> / 3)
 ```
 
-4. Only after the approved snapshot succeeds, hand off to `sdcorejs-execute-plan` with the approved plan snapshot path.
+4. Emit final `plan_context` with `approved_plan_path`,
+   `approved_plan_hash`, write scope, verification strategy, package-manager
+   evidence, parallel candidates, dependency/env/migration boundaries, and
+   change-control metadata.
+5. Only after the approved snapshot succeeds, hand off to
+   `sdcorejs-execute-plan` with the approved plan snapshot path and
+   `plan_context`.
 
 Change request:
 
@@ -179,6 +356,19 @@ Abort:
 - Wait for explicit plan approval.
 - Snapshot the approved plan before execution.
 - Create a new approved snapshot every time; snapshots are immutable history.
+- Treat approved plans as immutable snapshots. If scope changes after approval,
+  create a new plan revision with `supersedes` and `change_reason`.
+- Preserve the latest approved plan that matches the current
+  `approved_spec_hash`. If spec_context and plan_context hashes mismatch, stop
+  and ask for plan regeneration.
+- Record write scope, allowed paths, prohibited paths, generated artifact
+  boundaries, docs artifacts, dependency changes, env changes, migration
+  changes, verification strategy, package manager/script evidence,
+  parallelization metadata, shared-file risks, and final tail ordering.
+- Discover package manager from `packageManager`, lockfiles, and workspace
+  config; read `package.json` scripts before planning commands.
+- Record `commands_planned`, `commands_skipped`, focused checks, and broad
+  checks with evidence.
 - Capture review decisions honestly; never leave the section blank.
 - Pass the approved plan as the exact execution contract to `sdcorejs-execute-plan`.
 - Include verification commands.
@@ -189,6 +379,12 @@ Abort:
 - Treat silence as approval.
 - Hide a path conflict.
 - Overwrite an old approved snapshot.
+- Mutate an approved plan snapshot in place.
+- Add dependencies, env files, migrations, package manifests, lockfiles, or
+  generated/vendor/build output unless the approved plan explicitly allows it.
+- Hardcode one package manager, mix package managers, invent missing scripts, or
+  present npm/npx/tsc as universal defaults.
+- Plan writes after final branch-ready.
 
 ## Cross-references
 - `sdcorejs-spec` - approved spec input

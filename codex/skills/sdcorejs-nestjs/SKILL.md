@@ -36,7 +36,7 @@ Read `<target>/.sdcorejs/persona.md` (project-local persona, if present) and `..
 
 ## Step 0.1 — Pre-flight: ensure project summary
 
-Before dispatching ANY reference, run `sdcorejs-explore (summary mode)`. If `<target>/.sdcorejs/summary.md` is missing it MUST be generated first (`sdcorejs-explore` scans the code map and distills the brief) — this is the gate that keeps generation from inventing module / base-class paths or duplicating shared abstractions. If it exists, `sdcorejs-explore` reads it and refreshes on drift so dispatch slots into the real layout. Exception: when this run is itself a brand-new `init-project`, there is no project to summarize yet — run summary mode at the END of init instead (see `init-project.md` Step 10).
+Before dispatching ANY reference, run `sdcorejs-explore (summary-read)`. If `<target>/.sdcorejs/summary.md` is missing or stale in this write-approved executor, run `summary-refresh` first so generation uses the real layout and does not invent module/base-class paths or duplicate shared abstractions. If the summary exists and is fresh enough, read it and continue. Exception: when this run is itself a brand-new `init-project`, there is no project to summarize yet; run `summary-refresh` at the END of init instead (see `init-project.md` Step 10).
 
 After ensuring the summary exists, READ the **`profile`** field from `<target>/.sdcorejs/summary.md` (default `simple` if absent). Pass the resolved profile into EVERY dispatched pack (`init-project` / `init-module` / `init-entity` / `actions`) — each pack emits only that profile's templates (see each pack's 'Profile (read FIRST)' section).
 
@@ -93,20 +93,20 @@ creating a missing corresponding user-guide or technical-doc for a new feature.
 `code-documentation` is automatic for touched source files and is not controlled
 by this approval gate.
 
-1. *(if Tests not skipped)* `sdcorejs-test` — happy-path tests for what was generated (unit + integration via real DI + pg-mem; e2e via `supertest` against a real test PG where the layer warrants it)
-2. *(if Review not skipped)* `sdcorejs-review` (auto-detects NestJS → loads `../_refs/nestjs/review-code.md`) — NestJS/PostgreSQL/TypeORM/Zod code-review table with severity, group, file/line, risk, fix, and gate
-3. *(if Review not skipped)* `sdcorejs-repair-loop` — apply findings, iterate until `BLOCKER`/`REQUIRED` findings are fixed or explicitly deferred
-4. `sdcorejs-documentation (code-documentation mode)` — automatically apply concise source-code documentation rules to touched source files. Do NOT ASK for approval. Rules live in `../_refs/documentation/code-documentation.md`.
+1. *(if Tests not skipped)* `sdcorejs-test` - happy-path tests for what was generated (unit + integration via real DI + pg-mem; e2e via `supertest` against a real test PG where the layer warrants it)
+2. *(if Review not skipped)* `sdcorejs-review` (auto-detects NestJS and loads `../_refs/nestjs/review-code.md`) - NestJS/PostgreSQL/TypeORM/Zod code-review table with severity, group, file/line, risk, fix, and gate
+3. *(if Review not skipped)* `sdcorejs-repair-loop` - apply findings, iterate until `BLOCKER`/`REQUIRED` findings are fixed or explicitly deferred
+4. `sdcorejs-documentation (code-documentation mode)` - automatically apply concise source-code documentation rules to touched source files. Do NOT ASK for approval. Rules live in `../_refs/documentation/code-documentation.md`.
 5. `sdcorejs-product` *(when user-visible feature traceability is needed)* - seed/update `.sdcorejs/docs/product/` with requirement, implementation, and test mapping
-6. *(if Technical doc approved)* `sdcorejs-documentation (write-technical-doc mode)` — create/update the approved technical doc from source evidence.
-7. `sdcorejs-ship (verify-before-done mode)` *(always)* — BLOCK "done" until every acceptance criterion in the spec is ✅ verified or ⚠️ explicitly deferred
-8. `sdcorejs-ship (branch-ready mode)` *(always)* — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
-9. `../_refs/orchestration/tail/auto-docs.md` *(always)* — session summary written to `<target>/.sdcorejs/docs/nestjs/`
-10. *(if User guide approved)* `sdcorejs-documentation (write-user-guide mode)` — create/update the touched module's `.sdcorejs/documentation/user-guides/<module>.md` only when approved by the documentation gate or explicitly requested. Per-module incremental; the aggregate rebuilds under `.sdcorejs/documentation/` at ship.
-11. `../_refs/orchestration/tail/auto-task-tracker.md` *(always)* — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
-12. `sdcorejs-explore (memories mode)` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
+6. *(if Technical doc approved)* `sdcorejs-documentation (write-technical-doc mode)` - create/update the approved technical doc from source evidence.
+7. `../_refs/orchestration/tail/auto-docs.md` *(always)* - session summary written to `<target>/.sdcorejs/docs/nestjs/`
+8. *(if User guide approved)* `sdcorejs-documentation (write-user-guide mode)` - create/update the touched module's `.sdcorejs/documentation/user-guides/<module>.md` only when approved by the documentation gate or explicitly requested. Per-module incremental; the aggregate rebuilds under `.sdcorejs/documentation/` at ship.
+9. `../_refs/orchestration/tail/auto-task-tracker.md` *(always)* - tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
+10. `sdcorejs-explore (memories mode)` - only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
+11. `sdcorejs-ship (verify-before-done mode)` *(always)* - BLOCK "done" until every acceptance criterion in the selected scope is verified or explicitly deferred
+12. `sdcorejs-ship (branch-ready mode)` *(always)* - final read-only branch-ready gate over the final diff before any Git artifact handoff. No writes after branch-ready unless branch-ready is run again.
 
-The FINISH GATE is mandatory and unconditional. The always-on plumbing steps (`sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, auto-docs tail ref, auto-task-tracker tail ref, memories) run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)` — that's how acceptance criteria silently slip.
+The FINISH GATE is mandatory and unconditional. The always-on plumbing steps (auto-docs tail ref, auto-task-tracker tail ref, memories, `sdcorejs-ship (verify-before-done mode)`, and final `sdcorejs-ship (branch-ready mode)`) run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)`; that is how acceptance criteria silently slip.
 
 ## When to use
 

@@ -28,6 +28,35 @@ This skill is a conductor. It **composes** the existing skills in order - it doe
 
 This skill delivers a verified, locally runnable solution root and supporting evidence. It does **not** create production-SDLC surfaces such as CI/CD pipelines, IaC, environment promotion, observability, incident response, SRE runbooks, migration rollout, compliance gates, or release governance. Do not add new skills or refs for those areas from this flow unless the user explicitly approves that scope expansion and the normal brainstorming -> spec -> plan gates capture it.
 
+## Complexity ladder
+
+Choose the simplest architecture that satisfies the goal. Do not default to a
+heavy Angular + NestJS + Keycloak + Postgres + docker-compose stack unless the
+request contains secure multi-user/internal-system requirements, persistence and
+login are necessary, or the user explicitly accepts that default.
+
+Record the selected complexity level and reason in the requirement/spec/plan
+contexts:
+
+1. `prototype/static response or mockup` - use when the user needs a concept,
+   static prototype, product/design artifact, or throwaway demo without real
+   persistence.
+2. `frontend-only` - use when screens and local/mock data satisfy the goal and
+   no real backend or authentication is required.
+3. `backend-lite` - use when simple API/persistence is required but secure
+   multi-user auth, Keycloak, Postgres, and Docker are not yet required.
+4. `full secure stack` - use when the app needs real login, roles, durable
+   data, backend/frontend integration, local packaging, and end-to-end
+   verification.
+5. `enterprise/full-stack` - use only when the user explicitly requests
+   SDCoreJS full-stack conventions or enterprise-grade security/integration
+   concerns are confirmed.
+
+For non-technical or ambiguous requests, recommend the lowest level that proves
+the value while preserving a path to the next level. If the user explicitly asks
+for an SDCoreJS full-stack Angular and NestJS solution, the full secure stack
+default can remain.
+
 ## When invoked / NOT
 
 **Invoked when:**
@@ -49,7 +78,15 @@ Non-tech means, for every later step:
 - **Plain language** - no unexplained jargon; explain what a step does and how to react, in the user's own words.
 - **Hide the mechanics** - never narrate skill names or pipeline internals to the user ("now running repair-loop" is forbidden). Report progress as outcomes ("the screens are built and checked"). Skill names in this document stay in parentheticals **for maintainers only**.
 - **Feature + UI framing** - talk about what the software does and what the user will see; never about modules, entities, tables, or APIs.
-- **Forced infra defaults** - the generated software is always: **Angular** frontend, **NestJS** modular-monolith backend, **Keycloak** auth, **Postgres**, packaged as **docker-compose** (one `docker compose up`); the generated backend uses the **`simple`** NestJS profile (single-tenant, role-based login) - the user is never asked about multi-tenancy, permission matrices, or architecture; and a **single solution-root** topology (one folder with sibling `product/`, `design/`, `backend/`, `frontend/`, `test/`, plus `.sdcorejs/` - NOT a monorepo `base/shared` kernel, NOT separate published packages). The non-tech door never asks about repository layout. The user is not asked to choose any of these.
+- **Complexity-first defaults** - select the simplest architecture from the
+  complexity ladder. For a full secure stack, the generated software is:
+  **Angular** frontend, **NestJS** modular-monolith backend, **Keycloak** auth,
+  **Postgres**, packaged as **docker-compose** (one `docker compose up`), using
+  the **`simple`** NestJS profile and a **single solution-root** topology (one
+  folder with sibling `product/`, `design/`, `backend/`, `frontend/`, `test/`,
+  plus `.sdcorejs/`). For lower complexity levels, do not add backend/auth/
+  database/docker unless the user goal requires it or the user accepts the
+  escalation.
 
 ## Solution root contract
 
@@ -113,27 +150,31 @@ Drive these steps in order. For the non-tech user, narrate only the plain-langua
 
 4. **Write product docs and screen design** *(`sdcorejs-product` -> `sdcorejs-design`)* - Seed `product/` and `.sdcorejs/docs/product/`, then create `design/` handoff artifacts from the approved user stories: flows, design specs, editable wireframes, and PNG exports when a renderer is available or the user asks for previews. To the user: "writing down the agreed behavior and preparing screen references before building."
 
-5. **Build the engine room + the screens together** *(`sdcorejs-execute-plan` -> `sdcorejs-parallel-dispatch` Mode B when approved)* - Invoke the owning skill with explicit inputs: `profile=simple`, `topology=single solution-root`, `layout=product/design/backend/frontend/test/.sdcorejs`, admin-first enabled, and the approved spec/plan/design handoff. `sdcorejs-execute-plan` must still ask the user whether to run sequentially or in parallel; for this full-stack door, recommend parallel role-split unless the user prefers sequential. To the user this is just "building the part that stores your data and the screens you'll use, together, including the in-app account and role management screens." `sdcorejs-parallel-dispatch` handles contract-freeze, design/backend/frontend/product/QC role split, acceptance-loop verification, and its own build-phase tail chain.
+5. **Build only the selected complexity** *(`sdcorejs-execute-plan` -> `sdcorejs-parallel-dispatch` when approved)* - Invoke the owning skill with the selected `complexity_level`, `profile`, `topology`, `layout`, and approved spec/plan/design handoff. `sdcorejs-execute-plan` must still ask the user whether to run sequentially or in parallel. Branch the build by complexity:
+   - `prototype/static response or mockup`: create product/design/prototype artifacts only; do not add backend, auth, database, Docker, or runnable-stack claims.
+   - `frontend-only`: build the frontend with local/mock data; do not add backend, auth, database, or Docker unless the user explicitly escalates.
+   - `backend-lite`: build only the simple API/persistence and any requested screens; do not add Keycloak, Postgres, Docker, or full secure-stack smoke unless the user explicitly escalates.
+   - `full secure stack` / `enterprise/full-stack`: use `profile=simple` unless enterprise was explicitly selected, `topology=single solution-root`, `layout=product/design/backend/frontend/test/.sdcorejs`, admin-first enabled, and recommend parallel role-split unless the user prefers sequential. To the user this is just "building the part that stores your data and the screens you'll use, together, including the in-app account and role management screens." `sdcorejs-parallel-dispatch` handles contract-freeze, design/backend/frontend/product/QC role split, acceptance-loop verification, and its own build-phase tail chain.
 
    If subagents are unavailable, or Mode B escalates, use the sequential fallback: freeze the same contract, run `sdcorejs-nestjs` with `profile=simple` and `topology=single solution-root` under `backend/`, run `sdcorejs-angular` against the frozen contract and design handoff under `frontend/`, run `sdcorejs-test` under `test/`, then run `sdcorejs-review`, `sdcorejs-repair-loop` if needed, `sdcorejs-product` for final traceability, and `sdcorejs-ship (verify-before-done mode)`. Do not skip the same acceptance criteria just because the fallback is sequential.
 
 6. **Record the product docs + ledger** *(`sdcorejs-product`)* - Update `product/` and `.sdcorejs/docs/product/` after implementation with implementation map, test map, UAT checklist, and open gaps. To the user: "recording what was agreed, what was built, and what still needs checking."
 
-7. **Package it to run with one command** *(`sdcorejs-dockerize`)* - Wrap frontend + backend + database into a single runnable stack so the whole app starts with one command. To the user: "packaging it so you can run it on your machine without installing Node, Postgres, or Keycloak separately." Docker Desktop remains the one required install and belongs in `START.md`.
+7. **Package it to run with one command** *(`sdcorejs-dockerize`, conditional)* - Run only for `full secure stack` / `enterprise/full-stack`, or when a lower complexity level explicitly escalated to Docker packaging. Wrap frontend + backend + database into a single runnable stack so the whole app starts with one command. To the user: "packaging it so you can run it on your machine without installing Node, Postgres, or Keycloak separately." Docker Desktop remains the one required install and belongs in `START.md`.
 
-8. **Add login** *(`sdcorejs-auth`)* - Wire authentication (Keycloak) into the frontend and backend so the app has a real login screen and demo credentials.
+8. **Add login** *(`sdcorejs-auth`, conditional)* - Run only for `full secure stack` / `enterprise/full-stack`, or when login/auth was explicitly approved for a lower complexity level. Wire authentication (Keycloak) into the frontend and backend so the app has a real login screen and demo credentials.
 
-9. **Write the start guide** *(`sdcorejs-run-guide`)* - Emit `START.md` - a plain, numbered guide that takes the user from a fresh machine to a running app.
+9. **Write the start guide** *(`sdcorejs-run-guide`, conditional)* - Emit `START.md` only for runnable deliveries. Match the guide to the selected complexity: frontend-only/local app guides must not mention backend, Docker, Postgres, or Keycloak unless those pieces were actually built.
 
-10. **Verify the app + packaged stack** *(`sdcorejs-ship (verify-before-done mode)` + stack smoke)* - Re-verify the approved acceptance criteria after packaging, including any product-ledger gaps, design handoff coverage, and `test/` e2e/UAT evidence, then verify the solution root before claiming the app runs. Minimum stack checks:
+10. **Verify the selected delivery** *(`sdcorejs-ship (verify-before-done mode)` + conditional smoke)* - Re-verify the approved acceptance criteria for the selected complexity, including any product-ledger gaps, design handoff coverage, and `test/` e2e/UAT evidence. Run Docker stack checks only when Docker packaging was built. Minimum full-stack checks:
    - `docker compose config` from the deploy root.
    - Build/start check: prefer `docker compose up --build -d`, then inspect service health/logs.
    - Smoke check the published frontend URL, backend health/API URL, and the login path with the demo credentials when automatable.
    - Tear down only if the run was a verification helper and the user did not ask to leave it running.
 
-   If Docker is unavailable, a port is occupied, or the smoke cannot be automated, say exactly what was not verified and do **not** claim the packaged stack is runnable. Give the user the next concrete command from `START.md`.
+   If Docker is unavailable, a port is occupied, or the smoke cannot be automated, say exactly what was not verified and do **not** claim the packaged stack is runnable. For lower complexity levels, report the matching local/manual smoke that actually ran and avoid packaged-stack language. Give the user the next concrete command from `START.md` when a start guide exists.
 
-11. **Record the whole build** - After packaging/auth/run-guide/stack verification, run the final tail for the solution-builder invocation: `sdcorejs-ship (branch-ready mode)` -> `_refs/orchestration/tail/auto-docs.md` -> `sdcorejs-documentation (write-user-guide mode)` (Mode 1 for touched modules under `.sdcorejs/documentation/user-guides/`; Mode 2 aggregate under `.sdcorejs/documentation/` if this is a whole-app delivery) -> `_refs/orchestration/tail/auto-task-tracker.md` -> `sdcorejs-explore (memories mode)` when durable knowledge surfaced. This second tail captures infra/auth/run-guide changes too; do not rely only on Mode B's build-phase tail.
+11. **Record the whole build** - After the selected build, optional packaging/auth/run-guide, and matching verification, run the final tail for the solution-builder invocation: `_refs/orchestration/tail/auto-docs.md` -> `sdcorejs-documentation (write-user-guide mode)` (Mode 1 for touched modules under `.sdcorejs/documentation/user-guides/`; Mode 2 aggregate under `.sdcorejs/documentation/` if this is a whole-app delivery) -> `_refs/orchestration/tail/auto-task-tracker.md` -> `sdcorejs-explore (memories mode)` when durable knowledge surfaced -> `sdcorejs-ship (verify-before-done mode)` for final evidence -> `sdcorejs-ship (branch-ready mode)` as the final read-only gate. This second tail captures only the surfaces actually built; do not imply infra/auth/run-guide changes for lower complexity levels. No writes after branch-ready unless branch-ready is run again.
 
 12. **Tell the user how to run it** - Close in plain language only after the relevant checks above have actually run. If verified, say: "Open a terminal in this folder, type `docker compose up`, wait a moment, then open http://localhost:4200 in your browser and log in with **demo / demo**." Point them at `START.md` for the full guide and for how to stop or reset it.
 

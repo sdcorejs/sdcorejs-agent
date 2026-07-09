@@ -37,15 +37,16 @@ Before executing this skill:
 ## Step 0 - Context and Scope Preflight
 
 Before detecting profile/dimension or reading files under review, run
-`sdcorejs-explore (summary mode)` through `_refs/shared/project-context.md`.
+`sdcorejs-explore (summary-read)` through `_refs/shared/project-context.md`.
 
-- For an existing target project, read or refresh
-  `<target>/.sdcorejs/summary.md` so review scope, module boundaries, route
-  conventions, stack profile, and prior decisions are available before findings
-  are classified.
-- Keep the review itself read-only toward source code. If summary creation is
-  blocked by tool mode or user policy, continue with targeted reads and report
-  that summary refresh was skipped.
+- For an existing target project, read `<target>/.sdcorejs/summary.md` when it
+  exists so review scope, module boundaries, route conventions, stack profile,
+  and prior decisions are available before findings are classified.
+- Keep direct review strict read-only. If the summary is missing, stale, dirty,
+  or unknown, do not refresh it from review; continue with targeted reads or
+  `sdcorejs-explore (code-map-readonly)` and report the context limitation.
+- Use `summary-refresh` only when the caller is a write-approved finish chain or
+  the user explicitly approves context artifact writes.
 - Current diffs, failing tests, explicit review scope, and user corrections
   override stored summary context.
 
@@ -212,6 +213,10 @@ branch-ready, documentation/task tracker artifacts, and memories. The caller may
 invoke `sdcorejs-repair-loop` only when the finish-gate review choice was "Run
 review and repair loop"; a skipped finish-gate review or direct read-only review
 must not auto-edit.
+
+The caller must complete any write-producing documentation, task tracker,
+memory, changelog, or release-note steps before the final branch-ready gate. No
+writes after branch-ready unless branch-ready is run again.
 
 If a finding is a concrete single bug rather than a findings set, keep it in
 `review_context` as evidence. Repair-loop may delegate that one item to

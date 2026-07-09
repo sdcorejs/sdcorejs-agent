@@ -79,7 +79,7 @@ Read `product/user-stories/`, `product/acceptance-criteria/`, and matching `desi
 
 Classify the request before loading stack refs, editing files, or running commands.
 
-Read `../_refs/shared/project-context.md` first. Use its existing summaries, memories, approved specs/plans, and task checkpoints as context. Run `sdcorejs-explore (summary mode)` only when the action can write context artifacts and the current project summary is missing, stale, or materially conflicts with the request. For read-only actions, do not refresh `.sdcorejs/summary.md`, do not write `.sdcorejs/docs/*`, and do not dirty the working tree.
+Read `../_refs/shared/project-context.md` first. Use its existing summaries, memories, approved specs/plans, and task checkpoints as context. Use `sdcorejs-explore (summary-read)` for read-only test actions. Use `sdcorejs-explore (summary-refresh)` only when the action can write context artifacts and the current project summary is missing, stale, or materially conflicts with the request. For read-only actions, do not refresh `.sdcorejs/summary.md`, do not write `.sdcorejs/docs/*`, and do not dirty the working tree.
 
 The preflight output must include:
 
@@ -242,10 +242,11 @@ Tail order:
 1. Focused verification first. Run the discovered command(s) required by `test_action`, stack, changed files, and acceptance criteria. If not run, state the exact reason.
 2. Emit final `test_context` and `test_evidence` using `../_refs/shared/test-context.md`.
 3. Documentation gate only if this skill wrote or edited test files, fixtures, page objects, UAT cases, or durable reports. Read `../_refs/documentation/gate.md`; it asks or loads saved project preferences from `<target>/.sdcorejs/documentation/preferences.md`. There is no separate `qa_guide` output; use `user_guide` for QA-facing user documentation.
-4. Run `sdcorejs-ship (verify-before-done mode)` when an approved test plan, product ledger, or acceptance criteria are in scope. If no criteria exist, report that acceptance verification was skipped and list the test commands that did run.
-5. Run `../_refs/orchestration/tail/auto-docs.md` with `TRACK=test` only for write/edit work that produced durable test artifacts.
-6. Run `../_refs/orchestration/tail/auto-task-tracker.md` only after auto-docs.
-7. Run `sdcorejs-explore (memories mode)` only when durable testing knowledge surfaced, such as a recurring fixture convention, runner limitation, or stakeholder testing preference.
+4. Run `../_refs/orchestration/tail/auto-docs.md` with `TRACK=test` only for write/edit work that produced durable test artifacts.
+5. Run `../_refs/orchestration/tail/auto-task-tracker.md` only after auto-docs.
+6. Run `sdcorejs-explore (memories mode)` only when durable testing knowledge surfaced, such as a recurring fixture convention, runner limitation, or stakeholder testing preference.
+7. Run `sdcorejs-ship (verify-before-done mode)` when an approved test plan, product ledger, or acceptance criteria are in scope. If no criteria exist, report that acceptance verification was skipped and list the test commands that did run.
+8. Run `sdcorejs-ship (branch-ready mode)` as the final read-only gate before any Git artifact path when this test work is part of a delivery handoff. No writes after branch-ready unless branch-ready is run again.
 
 Read-only actions stop after the report and visible task/checkpoint updates. Do not call `sdcorejs-git` unless ship/branch-ready criteria have passed and the user explicitly asks for a git artifact.
 

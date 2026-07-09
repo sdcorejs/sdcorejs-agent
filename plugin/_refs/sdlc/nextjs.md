@@ -197,7 +197,7 @@ corresponding user-guide or technical-doc files for a new feature.
 `code-documentation` runs automatically for touched source files and is not
 controlled by this gate.
 
-Last numbered step references the tail-call chain (sdcorejs-test → sdcorejs-review → sdcorejs-repair-loop → sdcorejs-documentation (code-documentation mode, automatic) → sdcorejs-documentation (write-technical-doc mode, if approved) → sdcorejs-ship (verify-before-done mode) → sdcorejs-ship (branch-ready mode) → _refs/orchestration/tail/auto-docs.md → sdcorejs-documentation (write-user-guide mode, if approved) → _refs/orchestration/tail/auto-task-tracker.md → sdcorejs-explore (memories mode)). The reviewer checks the chain is implicit, not omitted.
+Last numbered step references the tail-call chain (sdcorejs-test -> sdcorejs-review -> sdcorejs-repair-loop -> sdcorejs-documentation (code-documentation mode, automatic) -> sdcorejs-documentation (write-technical-doc mode, if approved) -> _refs/orchestration/tail/auto-docs.md -> sdcorejs-documentation (write-user-guide mode, if approved) -> _refs/orchestration/tail/auto-task-tracker.md -> sdcorejs-explore (memories mode) -> sdcorejs-ship (verify-before-done mode) -> sdcorejs-ship (branch-ready mode as the final read-only gate)). The reviewer checks the chain is implicit, not omitted, and that no writes happen after branch-ready unless branch-ready is run again.
 
 ### Existing-site improvement variant
 If the user is improving an EXISTING site (came via `08-audit-existing-site`), phases are gap-driven, not greenfield. The plan should be one phase per audit finding, ordered Critical → Important → Minor.
