@@ -78,7 +78,24 @@ const LOCALIZED_ALIASES = new Map([
   ['sap', ['upcoming', 'next']],
   ['toi', ['upcoming', 'next']],
   ['vua', ['previous']],
-  ['roi', ['previous']]
+  ['roi', ['previous']],
+  ['kien', ['architecture']],
+  ['truc', ['architecture']],
+  ['huong', ['guide', 'setup']],
+  ['dan', ['guide', 'setup']],
+  ['lan', ['previous']],
+  ['truoc', ['previous', 'resume', 'recover']],
+  ['context', ['context', 'resume', 'recover']],
+  ['setup', ['setup', 'env', 'environment']],
+  ['local', ['local', 'setup', 'env']],
+  ['lap', ['plan']],
+  ['trien', ['implement']],
+  ['khai', ['implement']],
+  ['chia', ['split']],
+  ['nhieu', ['multiple']],
+  ['song', ['parallel']],
+  ['chot', ['confirmed']],
+  ['duyet', ['approved']]
 ]);
 
 const SKILL_HINTS = [
@@ -90,7 +107,7 @@ const SKILL_HINTS = [
   { skill: 'sdcorejs-product', words: ['product', 'po', 'story', 'stories', 'acceptance', 'criteria', 'requirement', 'requirements', 'traceability', 'uat', 'ledger', 'gap', 'implementation', 'implement', 'complete'] },
   { skill: 'sdcorejs-design', words: ['design', 'ui', 'ux', 'screen', 'wireframe', 'mockup', 'png', 'preview', 'handoff', 'flow', 'flows', 'story', 'stories'] },
   { skill: 'sdcorejs-documentation', words: ['documentation', 'docs', 'doc', 'document', 'code-documentation', 'docstring', 'doc-comment', 'comment', 'comments', 'jsdoc', 'tsdoc', 'api', 'function', 'functions', 'class', 'classes', 'guide', 'user-guide', 'end-user', 'manual', 'technical', 'taskid', 'ticket', 'issue', 'record', 'save', 'convert', 'standardize', 'rewrite', 'improve', 'structure'] },
-  { skill: 'sdcorejs-explore', words: ['explore', 'summary', 'overview', 'project', 'codebase', 'repo', 'system', 'map', 'architecture', 'trace', 'flow', 'setup', 'env', 'environment', 'resume', 'recover'] },
+  { skill: 'sdcorejs-explore', words: ['explore', 'summary', 'overview', 'project', 'codebase', 'repo', 'system', 'map', 'architecture', 'trace', 'flow', 'setup', 'env', 'environment', 'resume', 'recover', 'context', 'persona', 'memory', 'memories', 'remember', 'harvest'] },
   { skill: 'sdcorejs-review', words: ['review', 'audit', 'security', 'performance', 'accessibility', 'a11y', 'architecture', 'scored', 'full', 'comprehensive'] },
   { skill: 'sdcorejs-ship', words: ['verify', 'acceptance', 'criteria', 'final', 'gate', 'branch', 'ready', 'ship', 'push', 'release', 'tag', 'merge', 'dependency', 'dependencies', 'package', 'outdated', 'audit', 'bump'] },
   { skill: 'sdcorejs-git', words: ['commit', 'changes', 'save', 'worktree', 'pr', 'pull', 'request', 'changelog', 'notes'] },
@@ -110,6 +127,9 @@ const PRIORITY_RULES = [
     skill: 'sdcorejs-brainstorming',
     when: ({ prompt, tokens }) =>
       /\bphan\s+van\b/.test(prompt) ||
+      /\bnot\s+sure\b/.test(prompt) ||
+      /\bchua\s+ro\b/.test(prompt) ||
+      /\bplan(n?ing)?\b.*\b(migrat(e|ing|ion)|adopt(ing)?|install)\b/.test(prompt) ||
       (
         hasAny(tokens, ['brainstorm', 'unsure', 'deciding', 'between', 'compare', 'should', 'clarify']) &&
         !hasDirectTestWorkIntent(prompt, tokens)
@@ -122,6 +142,33 @@ const PRIORITY_RULES = [
   {
     skill: 'sdcorejs-review',
     when: ({ prompt, tokens }) => hasReviewIntent(prompt, tokens)
+  },
+  {
+    skill: 'sdcorejs-spec',
+    when: ({ prompt, tokens }) =>
+      tokens.has('spec') &&
+      (
+        hasAny(tokens, ['confirmed', 'approved', 'requirements', 'requirement', 'revise', 'revision', 'changed', 'change', 'write', 'create']) ||
+        /\b(chot|approve|approved)\b/.test(prompt)
+      ) &&
+      !hasAny(tokens, ['plan', 'execute', 'run', 'parallel', 'split'])
+  },
+  {
+    skill: 'sdcorejs-plan',
+    when: ({ tokens }) =>
+      tokens.has('plan') &&
+      hasAny(tokens, ['spec', 'approved', 'approve', 'revision', 'implementation', 'implement', 'update']) &&
+      !hasAny(tokens, ['execute', 'run', 'parallel', 'split', 'agent', 'agents'])
+  },
+  {
+    skill: 'sdcorejs-parallel-dispatch',
+    when: ({ prompt, tokens }) =>
+      (
+        tokens.has('split') ||
+        (tokens.has('parallel') && hasAny(tokens, ['agent', 'agents', 'multiple']) && !hasAny(tokens, ['execute', 'run'])) ||
+        (/\bsong\s+song\b/.test(prompt) && hasAny(tokens, ['split', 'agent', 'agents', 'multiple']))
+      ) &&
+      hasAny(tokens, ['plan', 'approved', 'approve', 'agent', 'agents', 'multiple'])
   },
   {
     skill: 'sdcorejs-execute-plan',
@@ -160,6 +207,7 @@ const PRIORITY_RULES = [
         (tokens.has('slow') && hasAny(tokens, ['debug', 'why', 'investigate', 'regression']))
       ) &&
       !hasFailingOutputTriageIntent(prompt, tokens) &&
+      !hasShipVerificationIntent(prompt, tokens) &&
       !hasReviewIntent(prompt, tokens)
   },
   {
@@ -184,6 +232,20 @@ const PRIORITY_RULES = [
       !hasAny(tokens, ['test', 'tests', 'debug', 'failing', 'failure', 'docs', 'documentation', 'guide'])
   },
   {
+    skill: 'sdcorejs-explore',
+    when: ({ prompt, tokens }) =>
+      (
+        hasAny(tokens, ['summary', 'overview', 'explore', 'codebase', 'repo', 'architecture', 'env', 'environment', 'resume', 'recover', 'context', 'persona', 'memory', 'memories', 'remember']) ||
+        /\b(set\s+up|setup)\b.*\b(project|repo|codebase|local|locally|environment|env)\b/.test(prompt) ||
+        /\b(project|repo|codebase|local|locally|environment|env)\b.*\b(set\s+up|setup)\b/.test(prompt) ||
+        /\bharvest\b.*\b(guide|documentation|docs|doc|gap|gaps|module)\b/.test(prompt) ||
+        /\b(read|refresh|update)\b.*\b(project|repo|codebase)?\s*summary\b/.test(prompt) ||
+        /\b(map|trace)\b.*\b(architecture|flow|codebase|repo|project)\b/.test(prompt) ||
+        /\b(plain|technical)\b.*\b(explanation|persona|mode)\b/.test(prompt)
+      ) &&
+      !hasGitArtifactIntent(prompt, tokens)
+  },
+  {
     skill: 'sdcorejs-documentation',
     when: ({ prompt, tokens }) =>
       hasDocumentationIntent(prompt, tokens) &&
@@ -203,6 +265,7 @@ const PRIORITY_RULES = [
     skill: 'sdcorejs-ship',
     when: ({ prompt, tokens }) =>
       hasDependencyDeliveryIntent(prompt, tokens) ||
+      hasShipVerificationIntent(prompt, tokens) ||
       (
         !hasGitArtifactIntent(prompt, tokens) &&
         hasAny(tokens, ['ship', 'push', 'merge', 'release', 'tag'])
@@ -361,7 +424,9 @@ function parseFrontmatter(text) {
 
   const block = normalized.slice(3, end).trim();
   const result = { __keys: [], __errors: [] };
-  for (const [index, line] of block.split(/\r?\n/).entries()) {
+  const lines = block.split(/\r?\n/);
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
     if (!line.trim()) continue;
     const match = line.match(/^([A-Za-z][A-Za-z0-9_-]*):\s*(.*?)\s*$/);
     if (!match) {
@@ -375,10 +440,41 @@ function parseFrontmatter(text) {
       continue;
     }
 
-    result[key] = match[2].trim();
+    const rawValue = match[2].trim();
+    if (isBlockScalarMarker(rawValue)) {
+      const folded = [];
+      while (index + 1 < lines.length && /^\s+/.test(lines[index + 1])) {
+        index += 1;
+        folded.push(lines[index].trim());
+      }
+      result[key] = folded.join(rawValue.startsWith('>') ? ' ' : '\n').trim();
+      result.__keys.push(key);
+      continue;
+    }
+
+    if (hasYamlMappingColon(rawValue) && !isQuotedScalar(rawValue)) {
+      result.__errors.push(`frontmatter line ${index + 1} contains an unquoted mapping colon: ${line}`);
+      continue;
+    }
+
+    result[key] = rawValue;
     result.__keys.push(key);
   }
   return result;
+}
+
+function isBlockScalarMarker(value) {
+  return /^[>|][+-]?$/.test(value);
+}
+
+function isQuotedScalar(value) {
+  if (value.length < 2) return false;
+  const quote = value[0];
+  return (quote === '"' || quote === "'") && value.endsWith(quote);
+}
+
+function hasYamlMappingColon(value) {
+  return /:\s/.test(value);
 }
 
 async function listMarkdownFiles(root) {
@@ -532,6 +628,7 @@ function hasRepairLoopIntent(prompt, tokens) {
 
 function hasReviewIntent(prompt, tokens) {
   if (hasProductIntent(prompt, tokens) || hasRepairLoopIntent(prompt, tokens)) return false;
+  if (hasDependencyDeliveryIntent(prompt, tokens)) return false;
   if (hasAny(tokens, ['update', 'bump', 'dependency', 'dependencies', 'package', 'outdated'])) return false;
   if (hasDirectTestWorkIntent(prompt, tokens)) return false;
 
@@ -551,8 +648,19 @@ function hasReviewIntent(prompt, tokens) {
 
 function hasDependencyDeliveryIntent(prompt, tokens) {
   return (
-    hasAny(tokens, ['dependency', 'dependencies', 'outdated', 'audit', 'bump']) ||
-    /\bupdate\b.*\b(dependencies|packages)\b/.test(prompt)
+    hasAny(tokens, ['dependency', 'dependencies', 'outdated', 'bump']) ||
+    /\bupdate\b.*\b(dependencies|packages)\b/.test(prompt) ||
+    /\baudit\s+fix\b/.test(prompt)
+  );
+}
+
+function hasShipVerificationIntent(prompt, tokens) {
+  return (
+    hasAny(tokens, ['verify', 'verification']) &&
+    (
+      hasAny(tokens, ['acceptance', 'criteria', 'done', 'ship', 'branch', 'ready', 'merge', 'release', 'commit', 'pr', 'docs', 'doc', 'documentation']) ||
+      /\bverify\b.*\b(acceptance|criteria|done|branch|ready|merge|release|commit|pr|docs?|documentation)\b/.test(prompt)
+    )
   );
 }
 
@@ -568,6 +676,7 @@ function hasGitArtifactIntent(prompt, tokens) {
 function hasProductIntent(prompt, tokens) {
   if (hasAny(tokens, ['taskid', 'record', 'ticket', 'issue'])) return false;
   if (hasAny(tokens, ['ship', 'branch', 'merge', 'release', 'tag', 'ready', 'final', 'gate'])) return false;
+  if (hasShipVerificationIntent(prompt, tokens)) return false;
 
   return (
     hasAny(tokens, ['po', 'prd', 'story', 'stories', 'acceptance', 'criteria', 'uat', 'traceability', 'requirement', 'requirements', 'ledger']) ||
@@ -625,7 +734,12 @@ function tokenizeWithAliases(text) {
 
 function tokenize(text) {
   const tokens = new Set();
-  for (const token of text.toLowerCase().match(/[a-z0-9-]+/g) ?? []) {
+  const normalized = text
+    .toLowerCase()
+    .replaceAll('đ', 'd')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+  for (const token of normalized.match(/[a-z0-9-]+/g) ?? []) {
     if (!STOP_WORDS.has(token)) tokens.add(token);
   }
   return tokens;

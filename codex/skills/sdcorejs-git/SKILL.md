@@ -66,6 +66,11 @@ the current `HEAD` or diff.
 - the caller explicitly delegated from `sdcorejs-ship` after passing those gates;
 - the user explicitly accepted a docs-only, prompt-only, chore-only, or unverified artifact with the verification caveat recorded.
 
+When `ship_context` is available, consume it before artifact creation. Git
+handoff is allowed only when `ship_context.git_handoff_allowed` is true, the
+`associated_HEAD_or_diff` matches the current `HEAD` or dirty diff,
+`writes_after_branch_ready` is empty, and `branch_ready_evidence` is current.
+
 Do not create commits, pushes, or PRs as a substitute for verification. If the
 prompt is delivery-oriented and evidence is absent or stale, stop and delegate:
 "Run `sdcorejs-ship` first so verify-before-done and branch-ready evidence can
@@ -151,6 +156,7 @@ Commit Scope Ledger:
   suspected_secret_paths:
   secret_scan_result:
   ship_evidence:
+    ship_context:
     mode:
     commands:
     result:
@@ -196,6 +202,8 @@ session state.
 ## Verification Evidence Rules
 
 - Feature/source-code commits should have current `sdcorejs-ship (verify-before-done mode)` and `sdcorejs-ship (branch-ready mode)` evidence tied to the current `HEAD` or diff.
+- If `ship_context.writes_after_branch_ready` is non-empty, branch-ready evidence
+  is stale and Git artifacts must wait until branch-ready runs again.
 - When `sdcorejs-test` emitted current `test_context` or `test_evidence`, include that test evidence in commit/PR verification notes when relevant.
 - When `sdcorejs-debug` emitted current redacted `debug_context`, include the
   root cause, repro status, regression verification, and ship handoff summary

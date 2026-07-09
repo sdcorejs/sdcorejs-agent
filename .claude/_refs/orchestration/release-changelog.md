@@ -23,6 +23,11 @@ It must not edit source code, generated mirrors, package versions, tags,
 GitHub releases, or unrelated docs unless the user explicitly requested that
 separate operation.
 
+Changelog and release-note writes invalidate any earlier branch-ready evidence.
+If these artifacts are generated before a commit, PR, tag, or release handoff,
+`sdcorejs-ship (branch-ready mode)` must run again after the writes and before
+`sdcorejs-git` creates artifacts.
+
 ## Preflight
 
 1. Inspect dirty state before writing:
@@ -172,7 +177,8 @@ Do not do any of the following by default:
 - push branches
 
 Only do those operations after explicit user approval and clean verification
-evidence from the appropriate `sdcorejs-ship` workflow.
+evidence from the appropriate `sdcorejs-ship` workflow, including final
+branch-ready evidence collected after any changelog or release-note writes.
 
 ## Output
 

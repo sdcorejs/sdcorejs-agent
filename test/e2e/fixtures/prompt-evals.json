@@ -48,6 +48,120 @@
     "phase": 1
   },
   {
+    "id": "brainstorming-open-feature",
+    "prompt": "I want to build an order approval flow but not sure about the details",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "brainstorming-plain-angular",
+    "prompt": "help clarify requirements for a plain Angular Material customer screen",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "brainstorming-next-dashboard",
+    "prompt": "brainstorm an internal Next.js admin dashboard feature",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "brainstorming-react-vite",
+    "prompt": "clarify requirements for a React Vite component",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "brainstorming-migration-request",
+    "prompt": "help me plan migrating this Angular app to SDCoreJS Core UI",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "spec-from-confirmed-requirements",
+    "prompt": "create a spec from these confirmed requirements",
+    "expectedSkill": "sdcorejs-spec",
+    "phase": 3
+  },
+  {
+    "id": "spec-revision",
+    "prompt": "revise the approved spec because the requirements changed",
+    "expectedSkill": "sdcorejs-spec",
+    "phase": 3
+  },
+  {
+    "id": "plan-from-approved-spec",
+    "prompt": "create an implementation plan from the approved spec",
+    "expectedSkill": "sdcorejs-plan",
+    "phase": 3
+  },
+  {
+    "id": "plan-revision",
+    "prompt": "update the approved plan for the new spec revision",
+    "expectedSkill": "sdcorejs-plan",
+    "phase": 3
+  },
+  {
+    "id": "execute-approved-plan",
+    "prompt": "execute the approved plan",
+    "expectedSkill": "sdcorejs-execute-plan",
+    "phase": 3
+  },
+  {
+    "id": "execute-approved-node-plan",
+    "prompt": "run the approved Node workflow plan",
+    "expectedSkill": "sdcorejs-execute-plan",
+    "phase": 3
+  },
+  {
+    "id": "execute-approved-plan-parallel",
+    "prompt": "execute this approved plan in parallel where safe",
+    "expectedSkill": "sdcorejs-execute-plan",
+    "phase": 3
+  },
+  {
+    "id": "parallel-dispatch-direct",
+    "prompt": "split this approved plan into parallel agents",
+    "expectedSkill": "sdcorejs-parallel-dispatch",
+    "phase": 3
+  },
+  {
+    "id": "solution-builder-fullstack",
+    "prompt": "create a full SDCoreJS Angular and NestJS solution for inventory management",
+    "expectedSkill": "sdcorejs-solution-builder",
+    "phase": 3
+  },
+  {
+    "id": "localized-vi-brainstorm",
+    "prompt": "minh muon lam man hinh quan ly don hang nhung chua ro yeu cau",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "localized-vi-spec",
+    "prompt": "viet spec tu yeu cau da chot giup minh",
+    "expectedSkill": "sdcorejs-spec",
+    "phase": 3
+  },
+  {
+    "id": "localized-vi-plan",
+    "prompt": "lap plan trien khai tu spec da approve",
+    "expectedSkill": "sdcorejs-plan",
+    "phase": 3
+  },
+  {
+    "id": "localized-vi-execute",
+    "prompt": "chay plan da approve giup minh",
+    "expectedSkill": "sdcorejs-execute-plan",
+    "phase": 3
+  },
+  {
+    "id": "localized-vi-parallel",
+    "prompt": "chia plan nay cho nhieu agent chay song song neu an toan",
+    "expectedSkill": "sdcorejs-parallel-dispatch",
+    "phase": 3
+  },
+  {
     "id": "user-guide",
     "prompt": "write user guide for module Product",
     "expectedSkill": "sdcorejs-documentation",
@@ -72,8 +186,74 @@
     "phase": 3
   },
   {
-    "id": "summarize-project",
-    "prompt": "summarize this project",
+    "id": "explore-summary-read",
+    "prompt": "read the project summary",
+    "expectedSkill": "sdcorejs-explore",
+    "phase": 3
+  },
+  {
+    "id": "explore-summary-refresh",
+    "prompt": "refresh project summary",
+    "expectedSkill": "sdcorejs-explore",
+    "phase": 3
+  },
+  {
+    "id": "explore-code-map",
+    "prompt": "map this codebase architecture",
+    "expectedSkill": "sdcorejs-explore",
+    "phase": 3
+  },
+  {
+    "id": "explore-trace-flow",
+    "prompt": "trace the checkout approval flow end to end",
+    "expectedSkill": "sdcorejs-explore",
+    "phase": 3
+  },
+  {
+    "id": "explore-env-setup",
+    "prompt": "show me how to set up this project locally",
+    "expectedSkill": "sdcorejs-explore",
+    "phase": 3
+  },
+  {
+    "id": "explore-recovery",
+    "prompt": "resume where we left off",
+    "expectedSkill": "sdcorejs-explore",
+    "phase": 3
+  },
+  {
+    "id": "explore-persona",
+    "prompt": "switch this project to plain explanation mode",
+    "expectedSkill": "sdcorejs-explore",
+    "phase": 3
+  },
+  {
+    "id": "explore-memories",
+    "prompt": "remember this convention for next time",
+    "expectedSkill": "sdcorejs-explore",
+    "phase": 3
+  },
+  {
+    "id": "explore-documentation-harvest",
+    "prompt": "harvest user guide gaps from this module",
+    "expectedSkill": "sdcorejs-explore",
+    "phase": 3
+  },
+  {
+    "id": "explore-localized-vi-code-map",
+    "prompt": "map kiến trúc project này giúp mình",
+    "expectedSkill": "sdcorejs-explore",
+    "phase": 3
+  },
+  {
+    "id": "explore-localized-vi-recovery",
+    "prompt": "đọc context xem lần trước đang làm tới đâu",
+    "expectedSkill": "sdcorejs-explore",
+    "phase": 3
+  },
+  {
+    "id": "explore-localized-vi-env",
+    "prompt": "hướng dẫn setup project local giúp mình",
     "expectedSkill": "sdcorejs-explore",
     "phase": 3
   },
@@ -216,20 +396,86 @@
     "phase": 3
   },
   {
-    "id": "explore-codebase",
-    "prompt": "map architecture and trace product flow",
-    "expectedSkill": "sdcorejs-explore",
-    "phase": 3
-  },
-  {
     "id": "ship-final-gate",
     "prompt": "verify acceptance and ship this branch",
     "expectedSkill": "sdcorejs-ship",
     "phase": 3
   },
   {
+    "id": "ship-verify-only",
+    "prompt": "verify acceptance criteria for this feature",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
+  },
+  {
+    "id": "ship-branch-ready-only",
+    "prompt": "check if this branch is ready before PR",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
+  },
+  {
+    "id": "ship-ready-to-merge",
+    "prompt": "is this branch ready to merge?",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
+  },
+  {
+    "id": "ship-bugfix-verification",
+    "prompt": "verify this bug fix before we ship it",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
+  },
+  {
+    "id": "ship-docs-only-hygiene",
+    "prompt": "verify this docs-only change before commit",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
+  },
+  {
+    "id": "ship-release-ready",
+    "prompt": "check release readiness for the next tag",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
+  },
+  {
+    "id": "ship-tag-release",
+    "prompt": "prepare tag and release checklist",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
+  },
+  {
+    "id": "ship-audit-fix",
+    "prompt": "run audit fix safely and prepare PR",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
+  },
+  {
     "id": "dependency-update",
     "prompt": "update dependencies and prepare PR",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
+  },
+  {
+    "id": "ship-dependency-update",
+    "prompt": "update dependencies safely",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
+  },
+  {
+    "id": "ship-localized-vi-verify",
+    "prompt": "verify acceptance giup minh",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
+  },
+  {
+    "id": "ship-localized-vi-ready",
+    "prompt": "kiem tra branch nay da san sang merge chua",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
+  },
+  {
+    "id": "ship-localized-vi-deps",
+    "prompt": "update dependencies va tao PR an toan giup minh",
     "expectedSkill": "sdcorejs-ship",
     "phase": 3
   },

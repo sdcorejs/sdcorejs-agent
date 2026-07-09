@@ -38,7 +38,7 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
 
 ## Handoff
 - After convergence, return to the caller's tail chain.
-- If invoked from a finish-gate review, continue with `sdcorejs-documentation (code-documentation mode)` when source changed, then `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, auto-docs, optional user guide, auto-task-tracker, and durable memories when relevant.
+- If invoked from a finish-gate review, complete write-producing documentation, auto-docs, user guide, task tracker, and memory steps first, then run `sdcorejs-ship (verify-before-done mode)` and `sdcorejs-ship (branch-ready mode)` as the final read-only gate over the final diff. No writes after branch-ready unless branch-ready is run again.
 - If invoked directly by the user, run discovered verification commands and offer explicit numbered next steps: run `sdcorejs-ship (verify-before-done mode)`, stop after the repair summary, or prepare a commit only after ship and branch-ready pass for the current `HEAD` or diff.
 - If `sdcorejs-debug` was used inside the loop, carry its `debug_context` into
   the repair summary and subsequent ship gates.

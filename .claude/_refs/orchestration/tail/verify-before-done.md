@@ -1,254 +1,340 @@
-# Acceptance Gate
+# Verification Gate
 
-Reference body for `sdcorejs-ship (verify-before-done mode)`. Load this file only when that mode runs.
+Reference body for `sdcorejs-ship (verify-before-done mode)`. Load this file
+only when that mode runs.
 
 ## Purpose
-"Tests pass" ≠ "feature done". A test suite covers the cases someone thought to write; acceptance criteria are what the user signed off on. This skill closes the gap — it makes the agent prove, criterion by criterion, that what was built matches what was specified.
 
-> **Scope.** This gate is the feature-end *enforcement point* of the always-on evidence-before-claims rule (CLAUDE.md rule 10). That rule governs EVERY interim success claim during the task too — "tests pass", "build is green", "fixed" each need fresh command output in the same turn they're claimed. This skill is where the rule is checked exhaustively, criterion-by-criterion, before "done".
+This gate proves the current work against the correct delivery contract before
+any final branch-ready or Git artifact path. Passing tests are useful evidence,
+but they are not automatically acceptance evidence. The gate classifies the
+verification mode, selects the correct scope, discovers available commands, and
+records current evidence in `ship_context`.
 
-## When invoked
-- **MANDATORY** automatic invocation BEFORE `sdcorejs-ship (branch-ready mode)` → `_refs/orchestration/tail/auto-docs.md` at the end of every code-writing skill (`write-code` — the `sdcorejs-angular` orchestrator and the reference packs it loads, including `actions` — and `sdcorejs-test`)
-- Before `sdcorejs-git (commit mode)` for a feature commit (not for chore/docs commits)
-- Before `sdcorejs-git (PR mode)`
-- User says "verify", "verify acceptance", "check acceptance criteria", "<localized text>"
+## Invocation
 
-Do NOT invoke for:
-- Chore / docs-only / dep-bump tasks (no acceptance criteria to verify)
-- Bug-fix tasks (use the original repro as the verifier — see `sdcorejs-debug`)
-- Tasks where no spec was written (the workflow's brainstorming path can bypass spec for tiny scope — in that case this skill skips with a warning)
+Run before final `sdcorejs-ship (branch-ready mode)` when work is being marked
+done, merged, pushed, released, or handed to `sdcorejs-git`.
 
-## Workflow
+Do not skip this gate for bug fixes, docs-only changes, dependency updates, or
+specless changes. Instead, select the matching `verification_mode`.
 
-### 1. Find the relevant spec
-```bash
-TARGET_ROOT=$(git rev-parse --show-toplevel)
-TRACK=angular   # detected from stack
+## Step 1 - Classify verification_mode
 
-# Most recent spec doc (by filename timestamp)
-ls -1t "$TARGET_ROOT/.sdcorejs/docs/$TRACK"/*-spec.md 2>/dev/null | head -1
-```
-If multiple specs are recent, ask the user which one is in scope using
-`_refs/shared/user-choice-prompt.md`: show a numbered list with relative paths
-and accept the number.
+Required values:
 
-If no spec exists → skip with a warning:
-> "No spec found in .sdcorejs/docs/<track>/. Skipping acceptance verification; verifying only tests + lint. Ask the user to manually confirm done."
-
-Also look for a related product ledger:
-
-```bash
-ls -1t "$TARGET_ROOT/.sdcorejs/docs/product"/*.md 2>/dev/null | head -5
-```
-
-If a ledger clearly matches the feature, read it before extracting criteria. Any product gap marked `missing`, `partial`, or `blocker` must be resolved or explicitly deferred by the user before this gate can report "done".
-
-### 2. Extract the Acceptance Criteria section
-Look for `## Acceptance criteria` or its localized equivalent. Each criterion is typically a `- [ ]` bullet.
-
-For each criterion, derive a **verification mode**:
-
-| Criterion shape | Verification mode |
+| verification_mode | Definition |
 |---|---|
-| "<localized text>" | E2E test OR `curl` to the route + grep for marker |
-| "Validation: field X required if Y == Z" | Unit test on form spec |
-| "Update preserves audit fields" | Unit test asserting `createdAt` unchanged across update |
-| "API returns 403 for unauthorized" | Integration test or `curl -H` with bad token |
-| "Localized labels render with the expected Unicode marks" | Use a locale-specific Unicode/diacritic check in rendered output or template files |
-| "List filter by status returns only matching rows" | E2E with filter applied + count check |
-| **(NextJS)** "Localized message keys symmetric; content files mirrored" | `npm run check:i18n` (from the `sdcorejs-nextjs` orchestrator, content-quality pack) — exit 0 |
-| **(NextJS)** "Every page meets min word count for its type" | `npm run check:content` — exit 0 |
-| **(NextJS)** "<localized text>" | `npx lighthouse <url> --only-categories=seo --output=json` — parse `categories.seo.score` |
-| **(NextJS)** "Article pages emit Article JSON-LD with author + dates" | `curl <article-url> \| grep -o '"@type":"Article"'` + manual paste to Google Rich Results Test |
-| **(NextJS)** "Title 50-60 chars; description 150-160 chars per page" | Build the page in dev → check console for `[SEO] Title too long/short` warnings from `buildMetadata` |
-| **(NextJS)** "Heading hierarchy: 1 h1, no skipped levels" | `npx pa11y <url>` or `axe-core` heading-order rule |
-| Visual / UX criteria ("looks correct", "smooth animation") | MANUAL — present checklist, cannot auto-verify |
-| **(NextJS)** "EN copy is native-quality, not machine-translated" | MANUAL — must be reviewed by a fluent EN speaker before claiming ✅ |
+| `feature-acceptance` | A spec, plan, product ledger, acceptance criteria, or approved test plan exists and must be verified criterion by criterion. |
+| `bugfix-verification` | A bug fix needs original repro or evidence-equivalent repro, regression evidence, and broader checks when available. |
+| `specless-verification` | A small change has no explicit spec; verify changed scope and report manual done confirmation needs. |
+| `dependency-regression` | Package manifest or lockfile changes need dependency risk, install consistency, audit where supported, and impacted checks. |
+| `docs-only-hygiene` | Documentation, prompt, skill-text, fixture, or mirror-only changes need text/mirror/routing hygiene rather than product AC. |
+| `release-readiness` | Release, tag, publish, or version preparation needs a release ledger and explicit approval for destructive actions. |
+| `branch-ready-only` | The user asked only for final read-only branch hygiene; run branch-ready mode instead of feature acceptance. |
 
-Document the mode you chose in the verification report — the user can adjust.
+Rules:
 
-### 3. Run automatable verifications
+- Do not treat every ship request as `feature-acceptance`.
+- If no feature spec exists for a bug fix, use `bugfix-verification` rather than
+  inventing acceptance criteria.
+- If no spec exists for a small change, use `specless-verification` and state
+  the manual confirmation gap.
+- If only docs/prompt/skill text changed, use `docs-only-hygiene`.
+- If package manifests or lockfiles changed, use `dependency-regression`.
+- If release/tag/publish/version wording is present, use `release-readiness`.
+- Record `verification_mode` in `ship_context`.
 
-Group by type, run in parallel where possible:
+## Step 2 - Select acceptance_scope
 
-#### Build + lint + typecheck (always)
-```bash
-npm run build                        # or relevant variant
-npm run lint
-npm run test -- --watch=false        # full unit + integration suite
-```
-Any failure here → block immediately. The lower-level checks must pass before acceptance verification runs.
+Select the scope in this priority order:
 
-#### Stack-specific automated checks (run if scripts exist)
+1. Explicit user-provided spec, path, criteria, task ID, bug contract, or
+   release range.
+2. Current task, plan, spec, or active workflow context from project context.
+3. Product ledger, plan ledger, or test plan associated with the current task.
+4. Caller contexts: `review_context`, `repair_source`, `debug_context`, or
+   `test_context`.
+5. Changed files and current diff scope.
+6. If multiple plausible scopes remain, ask one numbered choice using
+   `_refs/shared/user-choice-prompt.md`.
 
-Detect by reading `package.json` `scripts` — only run scripts that are actually defined. Missing scripts are not failures; they signal the project hasn't installed that quality gate yet (and the agent should flag it for the user if the track expects it).
+Record:
 
-**NextJS landing sites** (the `sdcorejs-nextjs` orchestrator's content-quality pack installs these):
-
-```bash
-# Language parity — fails if vi.json/en.json keys diverge OR content/vi/*.ts ↔ content/en/*.ts file sets diverge
-npm run check:i18n 2>/dev/null && echo "<localized text>" || echo "<localized text>"
-
-# Minimum content length per page type — fails if any registered content file is below threshold
-npm run check:content 2>/dev/null && echo "<localized text>" || echo "<localized text>"
-```
-
-If `check:i18n` or `check:content` is missing AND the spec mentions multi-language support OR long-form content, surface this as a Critical finding:
-
-> "Spec mentions language parity / long-form articles but `package.json` has no `check:i18n` / `check:content` script. Invoke the `sdcorejs-nextjs` orchestrator (content-quality pack) to install before claiming done."
-
-**Lighthouse SEO (NextJS, when a URL is reachable)**:
-
-```bash
-# Run against the dev server (or staging URL if available)
-SITE_URL=http://localhost:3000
-npx --yes lighthouse "$SITE_URL" --only-categories=seo --quiet --chrome-flags="--headless" --output=json --output-path=.lighthouse-seo.json
-node -e "<localized text>"
+```yaml
+acceptance_scope:
+  selected_spec:
+  selected_plan:
+  selected_task:
+  changed_files_scope:
+  criteria_count:
+  manual_criteria:
+  deferred_criteria:
+  selection_reason:
 ```
 
-Skip if no URL is reachable (e.g. pure offline build); flag as MANUAL deferred.
+Rules:
 
-**NestJS / Angular**: no equivalent content scripts yet. Track this for future skill packs.
+- Do not blindly pick the newest spec in a track folder.
+- Do not default to `TRACK=angular` examples.
+- Do not fabricate acceptance criteria when no spec or AC exists.
+- If multiple specs match and caller context does not disambiguate, ask.
+- Include the selected scope in `ship_context`.
 
-#### Per-criterion (in parallel)
-```bash
-# E2E criterion
-npm run e2e -- --spec=path/to/test
+## Step 3 - Discover commands
 
-# Manual probe
-curl -s http://localhost:4200/catalog/product | grep -c '<tr class="row"' # >= 20
+Discover verification commands from package manager, lockfiles, workspace
+configuration, package.json scripts, project config, original failing command,
+`test_context`, `debug_context`, `review_context`, `repair_source`, selected
+criteria, and repo docs.
+
+Rules:
+
+- Do not hardcode npm/npx as a universal default.
+- Do not mix npm, pnpm, yarn, or bun.
+- Do not invent missing scripts.
+- Do not assume build, lint, test, e2e, typecheck, i18n, content, smoke, or
+  start scripts exist.
+- Do not use auto-download probe tools without explicit approval for the exact
+  command and reason.
+- If a command, script, package manager, browser binary, server, or external
+  probe is unavailable, record it in `commands_skipped` with evidence.
+- Prefer focused commands first, then broader checks when available and
+  appropriate.
+- For monorepos, respect workspace/package scope when detectable.
+- `commands_run` includes only commands actually run.
+- Do not claim verification passed for a skipped command.
+
+Use package-manager placeholders in guidance only after detection, such as
+`<pm> run <existing-script>`. Replace placeholders with real commands in
+reports only when the script exists.
+
+## Step 4 - Verify By Mode
+
+### feature-acceptance
+
+1. Extract explicit AC from the selected scope.
+2. Map each AC to evidence: command, test, manual check, file inspection,
+   screenshot/probe, or deferred note.
+3. Mark each AC as `PASS`, `FAIL`, `MANUAL`, `DEFERRED`, or
+   `NOT_APPLICABLE`.
+4. Do not collapse multiple ACs into one generic tests-passed line.
+5. Manual/deferred criteria require explicit user acknowledgement.
+6. If any required AC fails, final verdict is `BLOCKED`.
+7. If manual criteria remain, final verdict cannot be `READY` unless the user
+   explicitly accepts the manual evidence or deferral under repo policy.
+
+### bugfix-verification
+
+Verify:
+
+- original repro or evidence-equivalent focused repro;
+- focused regression test if available;
+- broader discovered checks when appropriate;
+- no diagnostic instrumentation remains unless intentionally approved;
+- `debug_context` was consumed when present;
+- verification gaps are explicit.
+
+If the original repro cannot run locally, record evidence-confirmed status and
+state what remains unverified. Do not claim fixed in an environment that remains
+unverified.
+
+### specless-verification
+
+Use changed file scope, current diff, and discovered project scripts. Do not
+invent product AC. Report "manual done confirmation required" when there is no
+objective AC. Use `READY_WITH_WARNINGS` or `DEFERRED` when verification is
+partial.
+
+### docs-only-hygiene
+
+Product acceptance is usually `NOT_APPLICABLE`. Still run applicable discovered
+hygiene:
+
+- mirror sync/check if skills or refs changed;
+- text hygiene if available;
+- prompt e2e or invariant tests if fixtures, routing, skills, or refs changed;
+- markdown/frontmatter validation if relevant;
+- package-manager/script-discovered checks only.
+
+Do not run expensive product e2e unless the changed scope or AC requires it.
+Record docs-only rationale in `ship_context`.
+
+### dependency-regression
+
+Treat package and lockfile changes as high risk. Verify:
+
+- dependency update type: patch, minor, major, security-fix,
+  transitive-lockfile-only, dev-only, runtime, or toolchain;
+- detected package manager and lockfile consistency;
+- install or lockfile validation using the detected package manager when
+  supported by project policy;
+- audit only when supported by the package manager/tooling;
+- impacted build, typecheck, lint, test, and smoke checks when available.
+
+Unsupported audit/update commands are skipped with evidence, not invented.
+
+### release-readiness
+
+Collect release evidence:
+
+- release type;
+- version source;
+- release range;
+- changelog status;
+- version bump status;
+- tag status;
+- publish status;
+- branch status;
+- CI/status evidence if available;
+- compatibility/risk notes;
+- rollback plan;
+- manual approval requirements.
+
+Do not create tags, push tags, bump versions, create GitHub releases, publish
+packages, or push release branches by default. Every destructive release action
+requires explicit approval.
+
+### branch-ready-only
+
+Return to `sdcorejs-ship (branch-ready mode)` and record that feature/product
+verification was not in scope.
+
+## Step 5 - Next.js Profile Gate
+
+Build-website checks such as i18n parity, content length, Lighthouse SEO,
+heading order, sitemap, metadata, localized routes, content parity, and public
+site caching apply only when:
+
+- `stack_profile` is `nextjs-build-website`; or
+- acceptance criteria explicitly require those contracts; or
+- project scripts/docs clearly define those checks for the target scope.
+
+Plain Next.js projects use generic Next verification based on actual scripts,
+routes, tests, build, smoke checks, and project evidence. Do not block
+`plain-nextjs` dashboards, admin tools, or internal apps for missing
+build-website conventions. Record `stack_profile` evidence when used.
+
+## Step 6 - Failure Handoff
+
+When verification fails:
+
+- Use `sdcorejs-repair-loop` for fixable collections of findings.
+- Use `sdcorejs-debug` for concrete root-cause bugs or failing commands.
+- Use `sdcorejs-test` for missing or large test coverage work.
+- Use `sdcorejs-review` for quality, security, performance, accessibility, or
+  architecture review requests.
+- Do not patch directly inside verify-before-done.
+
+Pass:
+
+```yaml
+repair_source:
+  kind: verify-before-done
+  verification_mode:
+  acceptance_scope:
+  original_commands:
+  package_manager:
+  failed_criteria:
+  associated_HEAD_or_diff:
 ```
 
-#### Smoke run (Angular / NestJS / NextJS — picks based on stack)
-- Angular: start dev server, hit home route + the feature route, verify no console errors
-- NestJS: hit `/health` + 1 real endpoint with valid auth
-- NextJS: load home + 1 server-rendered page, no hydration errors
+After repair/debug/test changes, re-run the relevant verification and then the
+final branch-ready gate.
 
-If smoke run fails, code may compile and unit-test pass but feature is broken in practice. Block.
+## Step 7 - Report
 
-### 4. Produce the verification report
+Output a concise report in the user's language and include a redacted
+`ship_context` block:
 
-Single table, sorted by status:
-
-```markdown
-## Acceptance Verification — <feature> — <date>
-
-### Spec: `.sdcorejs/docs/<track>/<spec-file>.md`
-
-| # | Criterion | Mode | Result |
-|---|---|---|---|
-| 1 | User can navigate to `/catalog/product` and see ≥20 rows | E2E + curl probe | ✅ 25 rows |
-| 2 | Create validates: code required, discountValue 0-100 if type=PERCENT | Unit (form spec) | ✅ 4/4 tests |
-| 3 | Update preserves audit fields; createdAt unchanged | Unit | ❌ FAIL — createdAt is being overwritten on update |
-| 4 | List filter by status returns only matching rows | E2E | ⏭ skipped (no E2E framework configured) |
-| 5 | All localized labels render with full diacritics | grep in templates | ⚠️ 2 labels missing diacritics: `Cap nhat` (line 42), `Xoa` (line 78) |
-| 6 | Smooth transition between list and detail | MANUAL | ⏸ awaiting human check |
-
-### Product traceability
-- ledger: `.sdcorejs/docs/product/<ledger-file>.md`
-- requirement / implementation / test alignment: partial
-- blockers: AC3 has implementation but no passing test evidence
-
-### Build / lint / typecheck
-- build: ✅
-- lint: ✅
-- test full: 47/48 (1 fail in audit-fields test — see #3)
-- smoke run: ✅ (home + /catalog/product loaded, no console errors)
-
-### Verdict
-🟡 **NOT DONE** — 1 failed criterion (#3), 1 issue flagged (#5), 1 manual pending (#6)
-
-### Next actions
-- #3: `update()` in `product.service.ts` line 47 — investigate and fix (loop via `sdcorejs-repair-loop`)
-- #5: add diacritics to 2 labels in `detail.component.html`
-- #4: skipped because no E2E framework — confirm with user that manual check is enough
-- #6: manual — user verify
+```yaml
+ship_context:
+  source: sdcorejs-ship
+  mode: verify-before-done
+  verification_mode:
+  delivery_type:
+  target_root:
+  current_HEAD:
+  associated_HEAD_or_diff:
+  acceptance_scope:
+    selected_spec:
+    selected_plan:
+    selected_task:
+    changed_files_scope:
+    criteria_count:
+    manual_criteria:
+    deferred_criteria:
+    selection_reason:
+  verification:
+    commands_run:
+      - command:
+        result:
+        exit:
+        associated_HEAD_or_diff:
+    commands_skipped:
+      - command_or_probe:
+        reason:
+    criteria:
+      - id:
+        status: PASS | FAIL | MANUAL | DEFERRED | NOT_APPLICABLE
+        evidence:
+    result: PASS | FAIL | PARTIAL | SKIPPED
+  contexts_consumed:
+    explore_context:
+    test_context:
+    debug_context:
+    review_context:
+    repair_source:
+  manual_deferrals:
+    - item:
+      reason:
+      approved_by_user: true | false
+  final_verdict: READY | READY_WITH_WARNINGS | BLOCKED | DEFERRED
+  git_handoff_allowed: false
+  git_handoff_reason:
 ```
 
-### 5. Block "done" if criteria failed
+Rules:
 
-The agent MUST NOT claim "done", run `_refs/orchestration/tail/auto-docs.md` with a complete status, or trigger `sdcorejs-git (commit mode)` for a feature commit until:
-- ALL ✅ for automatable criteria, OR
-- User explicitly says "defer #N" / "ship with manual check pending" / "won't fix #N"
-
-The user's defer/won't-fix acknowledgment goes into the auto-docs entry under "Open questions / follow-ups" so the next session knows what's outstanding.
-
-### 6. Hand off
-After the report + user direction (the branch-hygiene gate `sdcorejs-ship (branch-ready mode)` runs between this skill and auto-docs — never skip it):
-- If ALL ✅ + no manual deferred → invoke `sdcorejs-ship (branch-ready mode)` (hygiene sweep + merge/PR options), then run `_refs/orchestration/tail/auto-docs.md` with "Status: done"
-- If partial → invoke `sdcorejs-repair-loop` with the failed criteria as the findings list
-- If user defers → invoke `sdcorejs-ship (branch-ready mode)`, then run `_refs/orchestration/tail/auto-docs.md` with "<localized text>", do NOT auto-commit
-
-## Examples
-
-### Clean pass
-```
-6 criteria → 6 ✅
-build/lint/test: ✅
-Verdict: 🟢 DONE
-→ branch-ready (hygiene sweep)
-→ auto-docs (status: done)
-→ commit prep
-```
-
-### Partial pass
-```
-6 criteria → 4 ✅ + 1 ❌ (#3) + 1 ⏸ manual (#6)
-build/lint/test: 47/48 (1 fail from #3)
-Verdict: 🟡 NOT DONE
-→ surface to user
-→ user: "fix #3, defer #6 until staging"
-→ invoke fix-loop with #3
-→ re-run this skill
-```
-
-### Spec-less task
-```
-No spec found (small bug fix, no .sdcorejs/docs/<track>/*-spec.md)
-→ skip acceptance verification with warning
-→ run build/lint/test only
-→ user confirms "done" by hand
-```
+- `ship_context` must not contain secrets or PII.
+- `commands_run` includes only commands actually run.
+- `commands_skipped` includes skipped commands/probes with evidence.
+- Do not claim `PASS` for skipped verification.
+- Record current `associated_HEAD_or_diff`.
+- State what remains unverified when verification is partial or deferred.
 
 ## Rules
 
 ### MUST DO
-- Run BEFORE `_refs/orchestration/tail/auto-docs.md` at end of any feature-writing skill
-- Load the spec from `.sdcorejs/docs/<track>/` — never invent criteria
-- Load the related `.sdcorejs/docs/product/` ledger when it exists and treat product gaps as acceptance blockers unless the user defers them
-- Pick a concrete verification mode for each criterion; document the choice
-- Run build + lint + full test before per-criterion checks
-- Run a smoke command for the stack — don't trust unit tests alone
-- Run stack-specific quality scripts if `package.json` defines them (`check:i18n`, `check:content`, `lighthouse`) — count failures as Critical, count missing-when-relevant as Important
-- For NextJS sites with bilingual or long-form scope: REQUIRE `check:i18n` + `check:content` to be installed (via the `sdcorejs-nextjs` orchestrator's content-quality pack) and passing before claiming done
-- Surface partial failures explicitly; never round up to ✅
-- Block "done" until user confirms defer or all green
+
+- Classify `verification_mode` before selecting criteria or commands.
+- Select `acceptance_scope` explicitly.
+- Discover package manager and scripts before running commands.
+- Run current commands and read current output before making success claims.
+- Record commands run, skipped commands, criteria status, contexts consumed, and
+  manual deferrals.
+- Redact suspected secrets and PII.
+- Re-run verification after repair/debug/test changes.
 
 ### MUST NOT
-- Claim a manual criterion ✅ on behalf of the user
-- Auto-defer a criterion because verification is hard
-- Skip the smoke run because "build is green"
-- Mark `<localized text>` without telling the user
-- Invent acceptance criteria that aren't in the spec
-- Allow `_refs/orchestration/tail/auto-docs.md` to write "status: done" while criteria fail
-- Use a passing CI run as a substitute for actually executing the verification commands
-- Claim ✅ on "EN copy is native-quality" without a fluent-EN-speaker review — machine-translated EN must always go to manual
-- Skip `check:i18n` / `check:content` when they exist — these are cheap and catch real regressions
 
-## Anti-patterns
-- **Test theater**: "all 200 tests pass" → none of them touch the acceptance criterion that actually broke
-- **Optimistic green**: marking manual criteria ✅ because "it should work"
-- **Skipping the smoke run**: tests pass on a server that won't start
-- **Spec drift**: silently revising the spec to match what was built instead of fixing the code
-- **Hidden manual**: pushing all hard criteria to "manual checkbox the user clicks" without surfacing them
-- **CI substitution**: trusting a green PR check as proof — CI runs an older commit OR didn't run the right subset
+- Invent AC from thin air.
+- Blindly use the newest spec.
+- Hardcode one package manager as universal.
+- Download probe tools without explicit approval.
+- Treat skipped scripts as passing.
+- Claim a manual criterion passed on behalf of the user.
+- Patch source directly inside this read-only gate.
+- Let this gate create Git artifacts.
 
-## Cross-references
-- `sdcorejs-ship (branch-ready mode)` — runs immediately AFTER this skill (branch-hygiene sweep) and BEFORE auto-docs; mandatory, never skipped
-- `_refs/orchestration/tail/auto-docs.md` — runs after branch-ready; this skill blocks auto-docs from claiming "done" prematurely
-- `sdcorejs-repair-loop` — invoked when this skill finds failed criteria
-- `_refs/orchestration/tail/auto-task-tracker.md` — open criteria flow into the living TODO until resolved
-- `sdcorejs-spec` (cross-track, `shared/sdlc/02-spec.md`) — defines the Acceptance Criteria section format this skill reads
-- `sdcorejs-test` — many acceptance criteria are best verified via E2E; cross-reference for the right framework
-- `sdcorejs-product` — maintains the requirement / implementation / test ledger that this gate checks when present
-- `sdcorejs-nextjs` (content-quality pack, `_refs/nextjs/build-website/write-code/content-quality.md`) — installs `check:i18n` + `check:content` scripts that this skill invokes; defines the Language parity + minimum content length contracts
+## Cross-References
+
+- `sdcorejs-ship` - parent readiness skill and `ship_context` schema.
+- `sdcorejs-ship (branch-ready mode)` - final read-only gate after verification.
+- `_refs/orchestration/tail/branch-ready.md` - branch hygiene checklist.
+- `sdcorejs-repair-loop` - fixes failed verification findings.
+- `sdcorejs-debug` - concrete root-cause workflow.
+- `sdcorejs-test` - test evidence and additional coverage.
+- `sdcorejs-review` - read-only quality evidence.
+- `sdcorejs-nextjs` - build-website profile and content-quality checks when
+  explicitly applicable.

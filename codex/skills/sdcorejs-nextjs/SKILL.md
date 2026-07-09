@@ -36,7 +36,7 @@ Do NOT invoke if:
 
 ## Step 0 — Pre-flight: ensure project summary
 
-Before reading the plan or dispatching, run `sdcorejs-explore (summary mode)`. For an EXISTING site (taking over / extending), if `<target>/.sdcorejs/summary.md` is missing it MUST be generated first (`sdcorejs-explore` scans the code map and distills the brief) so generation slots into the real app-router / component / content structure instead of guessing. For a brand-new site (`init-site` in scope), there is nothing to summarize yet — run summary mode AFTER init scaffolds the project.
+Before reading the plan or dispatching, run `sdcorejs-explore (summary-read)`. For an EXISTING site (taking over / extending), if `<target>/.sdcorejs/summary.md` is missing or stale in this write-approved executor, run `summary-refresh` first so generation slots into the real app-router / component / content structure instead of guessing. For a brand-new site (`init-site` in scope), there is nothing to summarize yet; run `summary-refresh` AFTER init scaffolds the project.
 
 Before writing any helper, formatter, validator, mapper, paging/filter helper, random-id helper, query-param helper, upload/download helper, clipboard/browser helper, API-route utility, hook utility, or `src/lib/utils.ts` addition, read `../_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior. Keep `next-intl` for locale-bound UI formatting; use `@sdcorejs/utils` for shared pure helper behavior. The package must be a direct target-project dependency before generated code imports it.
 
@@ -117,28 +117,29 @@ FINISH GATE (always, unconditional) ← surfaces the choices below
 sdcorejs-test  (if Tests not skipped)  ← happy-path tests for each generated page
    ↓
 sdcorejs-review (if Review not skipped) ← convention check; Critical / Important / Minor findings
-   ↓
-sdcorejs-repair-loop (if Review not skipped) ← apply findings, iterate to clean
-   ↓
-sdcorejs-documentation (code-documentation mode) ← automatic source-code documentation for touched source files; no approval ASK; rules in ../_refs/documentation/code-documentation.md
-   ↓
-sdcorejs-product (when user-visible feature traceability is needed) ← update .sdcorejs/docs/product/ ledger
-   ↓
-sdcorejs-documentation (write-technical-doc mode, if Technical doc approved) ← create/update the approved technical doc from source evidence
-   ↓
-sdcorejs-ship verify-before-done mode (always) ← BLOCK "done" until acceptance criteria from spec are ✅
-   ↓
-sdcorejs-ship (branch-ready mode) (always) ← branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test)
-   ↓
-../_refs/orchestration/tail/auto-docs.md (always)   ← session summary to .sdcorejs/docs/nextjs/
-   ↓
-sdcorejs-documentation (write-user-guide mode, if User guide approved) ← create/update touched module's .sdcorejs/documentation/user-guides/<module>.md only when approved by the documentation gate or explicitly requested
-   ↓
-../_refs/orchestration/tail/auto-task-tracker.md (always) ← tick done, append new
-sdcorejs-explore (memories mode)     ← durable knowledge (when applicable)
+   |
+sdcorejs-repair-loop (if Review not skipped) - apply findings, iterate to clean
+   |
+sdcorejs-documentation (code-documentation mode) - automatic source-code documentation for touched source files; no approval ASK; rules in ../_refs/documentation/code-documentation.md
+   |
+sdcorejs-product (when user-visible feature traceability is needed) - update .sdcorejs/docs/product/ ledger
+   |
+sdcorejs-documentation (write-technical-doc mode, if Technical doc approved) - create/update the approved technical doc from source evidence
+   |
+../_refs/orchestration/tail/auto-docs.md (always) - session summary to .sdcorejs/docs/nextjs/
+   |
+sdcorejs-documentation (write-user-guide mode, if User guide approved) - create/update touched module's .sdcorejs/documentation/user-guides/<module>.md only when approved by the documentation gate or explicitly requested
+   |
+../_refs/orchestration/tail/auto-task-tracker.md (always) - tick done, append new
+   |
+sdcorejs-explore (memories mode) - durable knowledge (when applicable)
+   |
+sdcorejs-ship verify-before-done mode (always) - BLOCK "done" until acceptance criteria from selected scope are verified or deferred
+   |
+sdcorejs-ship (branch-ready mode) (always) - final read-only gate over the final diff before any Git artifact handoff. No writes after branch-ready unless branch-ready is run again.
 ```
 
-The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLAUDE.md / AGENTS.md / copilot-instructions.md). The always-on plumbing steps run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)` — that's how acceptance criteria slip.
+The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLAUDE.md / AGENTS.md / copilot-instructions.md). The always-on plumbing steps run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)`; that is how acceptance criteria slip.
 
 ## Data Contract & View Model Rules
 

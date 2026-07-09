@@ -105,7 +105,7 @@ Read ON DEMAND only — load the one reference for the step you are executing, n
 
 ### Step 0 — Pre-flight: ensure project summary
 
-Before dispatching ANY reference, run `sdcorejs-explore (summary mode)`. If `<target>/.sdcorejs/summary.md` is missing, it MUST be generated first (`sdcorejs-explore` scans the code map and distills the brief) — this is the gate that stops generation from hallucinating paths / duplicating shared abstractions. If the summary exists, `sdcorejs-explore` reads it and refreshes on drift so dispatch slots into the real architecture. Exception: when this run is itself a brand-new init-portal, there is no project to summarize yet — run summary mode at the END of init instead (see `init-portal.md` Post-init).
+Before dispatching ANY reference, run `sdcorejs-explore (summary-read)`. If `<target>/.sdcorejs/summary.md` is missing or stale in this write-approved executor, run `summary-refresh` first so generation uses the real project map and does not hallucinate paths or duplicate shared abstractions. If the summary exists and is fresh enough, read it and continue. Exception: when this run is itself a brand-new init-portal, there is no project to summarize yet; run `summary-refresh` at the END of init instead (see `init-portal.md` Post-init).
 
 For any UI-affecting request, and always when the input includes a screenshot,
 wireframe, mockup, Figma export, PRD, requirement document, user story, feature
@@ -186,21 +186,21 @@ creating a missing corresponding user-guide or technical-doc for a new feature.
 `code-documentation` is automatic for touched source files and is not controlled
 by this approval gate.
 
-1. *(if Tests not skipped)* `sdcorejs-test` (sdcorejs-test) — RUN the `.spec.ts` files already written RED-first during the TDD gate and report pass/fail + failing names; add happy-path e2e only when a dev server/browser is available (else report the exact local command). Unit specs are NOT optional unless the user chose `skip` in the gate — if any testable file still lacks one, write it here.
-2. *(if Review not skipped)* `sdcorejs-review` (skills/shared/workflow/review.md; auto-detects Angular → loads `_refs/angular/review-code.md`) — convention check; actionable Angular code-review table with severity, group, file/line, risk, fix, and gate
-3. *(if Review not skipped)* `sdcorejs-repair-loop` — apply findings, iterate until `BLOCKER`/`REQUIRED` findings are fixed or explicitly deferred
-4. `sdcorejs-documentation (code-documentation mode)` — automatically apply concise source-code documentation rules to touched source files. Do NOT ASK for approval. Cross-track baseline + per-track addenda live in `_refs/documentation/code-documentation.md`
-5. *(if UI-affecting)* Angular UI check from `_refs/angular/write-code/input-analysis.md` — run browser/preview verification when available; otherwise perform and report a code-level UI review. Fix obvious UI issues before continuing. If this changes code, rerun the smallest relevant check.
+1. *(if Tests not skipped)* `sdcorejs-test` (sdcorejs-test) - RUN the `.spec.ts` files already written RED-first during the TDD gate and report pass/fail + failing names; add happy-path e2e only when a dev server/browser is available (else report the exact local command). Unit specs are NOT optional unless the user chose `skip` in the gate; if any testable file still lacks one, write it here.
+2. *(if Review not skipped)* `sdcorejs-review` (skills/shared/workflow/review.md; auto-detects Angular and loads `_refs/angular/review-code.md`) - convention check; actionable Angular code-review table with severity, group, file/line, risk, fix, and gate
+3. *(if Review not skipped)* `sdcorejs-repair-loop` - apply findings, iterate until `BLOCKER`/`REQUIRED` findings are fixed or explicitly deferred
+4. `sdcorejs-documentation (code-documentation mode)` - automatically apply concise source-code documentation rules to touched source files. Do NOT ASK for approval. Cross-track baseline + per-track addenda live in `_refs/documentation/code-documentation.md`
+5. *(if UI-affecting)* Angular UI check from `_refs/angular/write-code/input-analysis.md` - run browser/preview verification when available; otherwise perform and report a code-level UI review. Fix obvious UI issues before continuing. If this changes code, rerun the smallest relevant check.
 6. `sdcorejs-product` *(when user-visible feature traceability is needed)* - seed/update `.sdcorejs/docs/product/` with requirement, implementation, and test mapping
-7. *(if Technical doc approved)* `sdcorejs-documentation (write-technical-doc mode)` — create/update the approved technical doc from source evidence.
-8. `sdcorejs-ship (verify-before-done mode)` *(always)* — BLOCK "done" until acceptance criteria from the spec are ✅ verified or ⚠️ explicitly deferred
-9. `sdcorejs-ship (branch-ready mode)` *(always)* — branch-hygiene sweep (debug logs, secrets, focused tests, lint+build+test) + merge/PR options
-10. `_refs/orchestration/tail/auto-docs.md` *(always)* — session summary written to `<target>/.sdcorejs/docs/angular/`
-11. *(if User guide approved)* `sdcorejs-documentation (write-user-guide mode)` — create/update the touched module's `.sdcorejs/documentation/user-guides/<module>.md` only when approved by the documentation gate or explicitly requested. Per-module incremental; the aggregate rebuilds under `.sdcorejs/documentation/` at ship.
-12. `_refs/orchestration/tail/auto-task-tracker.md` *(always)* — tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
-13. `sdcorejs-explore (memories mode)` — only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
+7. *(if Technical doc approved)* `sdcorejs-documentation (write-technical-doc mode)` - create/update the approved technical doc from source evidence.
+8. `_refs/orchestration/tail/auto-docs.md` *(always)* - session summary written to `<target>/.sdcorejs/docs/angular/`
+9. *(if User guide approved)* `sdcorejs-documentation (write-user-guide mode)` - create/update the touched module's `.sdcorejs/documentation/user-guides/<module>.md` only when approved by the documentation gate or explicitly requested. Per-module incremental; the aggregate rebuilds under `.sdcorejs/documentation/` at ship.
+10. `_refs/orchestration/tail/auto-task-tracker.md` *(always)* - tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
+11. `sdcorejs-explore (memories mode)` - only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
+12. `sdcorejs-ship (verify-before-done mode)` *(always)* - BLOCK "done" until acceptance criteria from the selected scope are verified or explicitly deferred
+13. `sdcorejs-ship (branch-ready mode)` *(always)* - final read-only branch-ready gate over the final diff before any Git artifact handoff. No writes after branch-ready unless branch-ready is run again.
 
-The FINISH GATE itself is mandatory and unconditional. The always-on plumbing steps (`sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, auto-docs tail ref, auto-task-tracker tail ref, memories) run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)` — that's how acceptance criteria silently slip.
+The FINISH GATE itself is mandatory and unconditional. The always-on plumbing steps (auto-docs tail ref, auto-task-tracker tail ref, memories, `sdcorejs-ship (verify-before-done mode)`, and final `sdcorejs-ship (branch-ready mode)`) run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)`; that is how acceptance criteria silently slip.
 
 ## When to Use
 

@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-parallel-dispatch
 description: Parallel execution gate and subagent fan-out discipline. Use after execute-plan asks sequential vs parallel and user chooses parallel, or when user asks to split/run in parallel. Classifies sequential, parallel-candidate, or role-split work; decomposes, dispatches, reviews, merges, and runs global verification. Applies to all tracks and generic work. Runtime-localized.
-allowed-tools: Read, Glob, Grep, Bash, Agent
+allowed-tools: Read, Write, Glob, Grep, Bash, Agent
 ---
 
 # Parallel Dispatch
@@ -26,29 +26,88 @@ Own the whole parallel path in one skill:
 
 `sdcorejs-execute-plan` still asks the user whether they want sequential or parallel execution. This skill starts only after the user chooses parallel, or when they explicitly ask for parallel execution.
 
+This skill may use Write only for approved parallel contract artifacts or unit
+briefs in the target project's approved `.sdcorejs/` area. If the approved plan
+does not permit that write, embed the frozen contract in the briefs instead.
+All implementation writes remain owned by the selected unit executors and must
+stay inside their allowed paths.
+
 ## Preconditions
 
 - An approved plan snapshot exists, or the request is a read-only batch task that does not need a plan.
 - The user has chosen parallel, or explicitly requested parallel execution.
 - The parent agent has enough context to write self-contained subagent briefs.
+- `plan_context` exists for code/test/docs generation and contains
+  `contract_id`, `approved_plan_hash`, `target_root_kind`, `stack_profile`,
+  `allowed_paths`, `prohibited_paths`, verification strategy, and parallel
+  candidates.
 
 If the work is unapproved code generation, return to `sdcorejs-plan`.
 
 ## Step 0 - Context preflight
 
 Before deciding the parallel verdict or writing subagent briefs, run
-`sdcorejs-explore (summary mode)` through `_refs/shared/project-context.md`.
+`sdcorejs-explore (summary-read)` through `_refs/shared/project-context.md`.
 
-- For an existing target project, ensure `<target>/.sdcorejs/summary.md` exists
-  or is refreshed so units are split using the real module map, shared files,
-  route/API boundaries, test layout, product/design artifacts, and current
-  memory/task context.
+- For an existing target project, read `<target>/.sdcorejs/summary.md` when it
+  exists and is fresh. If it is missing, stale, dirty, or contradictory, use
+  targeted reads plus current plan evidence, demote to sequential, or return to
+  `sdcorejs-plan`; do not refresh the summary merely because execution is
+  write-approved.
 - If the plan creates a brand-new solution root, use the frozen approved plan as
-  the contract and require each role executor to run summary mode after its first
-  scaffold lands.
+  the contract and require each role executor to run `summary-refresh` after its
+  first scaffold lands only when the approved plan records that first-scaffold
+  summary write in `plan_context`.
 - Do not fan out until the parent has enough current context to write
   self-contained briefs. If context is stale or contradictory, demote to
   sequential or return to `sdcorejs-plan`.
+- Use `summary-read` by default. Do not refresh summary or write context
+  artifacts unless the approved plan or the user explicitly allows it.
+
+## Parallel context
+
+Before dispatch, emit `parallel_context`:
+
+```yaml
+parallel_context:
+  source: sdcorejs-parallel-dispatch
+  contract_id: <contract id>
+  approved_plan_path: <path>
+  approved_plan_hash: <hash>
+  target_root: <target root>
+  target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
+  track: <track>
+  stack_profile: <stack profile or role-specific map>
+  verdict: SEQUENTIAL | PARALLEL-CANDIDATE | ROLE-SPLIT
+  allowed_paths_by_unit:
+    <unit-id>:
+      - <path or glob>
+  prohibited_paths:
+    - <path or glob>
+  shared_files:
+    - path: <path>
+      owner: parent | unit-id | sequential-only
+      coordination_strategy: parent-owned | wave-gated | do-not-touch
+  global_verification:
+    commands_planned:
+      - command_or_script: <command or script>
+        reason: <why global, not unit-local>
+    commands_skipped:
+      - command_or_probe: <candidate skipped>
+        reason: <why skipped>
+  unit_isolation:
+    strategy: workspace | disjoint-paths | read-only
+    max_concurrency: <N>
+  redaction_applied: true | false
+  final_tail:
+    verify_before_done: true | false
+    branch_ready_final_gate: true
+```
+
+Every unit brief must include `contract_id`, `approved_plan_hash`,
+`stack_profile`, unit `allowed_paths`, global `prohibited_paths`, shared-file
+strategy, verification expectations, redaction rules, and the instruction not
+to mutate the approved plan/spec or frozen contract.
 
 ## Decision
 
@@ -63,10 +122,13 @@ Return one verdict before dispatching:
 Checks:
 
 - Independence: no two units write the same file or depend on each other's output.
+- Path ownership: each unit has disjoint `allowed_paths_by_unit`; shared files
+  are parent-owned, sequential-only, or wave-gated.
 - Blast radius: one failure does not corrupt the other units.
 - Reviewability: <=5 concurrent subagents, or explicit waves.
 - Budget: subagent overhead is worth it.
-- Verification: every unit has a command or concrete review check.
+- Verification: every unit has a command or concrete review check, and the
+  parent has a global_verification strategy for fan-in.
 
 Do not parallelize brainstorming, spec, plan, approval gates, shared-contract drafting, or one-task work.
 
@@ -78,7 +140,11 @@ Use for multiple entities, screens, docs, audits, or test batches with the same 
 
 Each unit must have:
 
+- `contract_id` and approved plan hash
+- `stack_profile`
 - target path(s)
+- allowed paths and prohibited paths
+- shared files and coordination strategy
 - exact scope
 - inputs from the approved plan/spec
 - verification command or manual check
@@ -103,7 +169,10 @@ TASK: <verb + target + scope>
 
 CONTEXT:
 - repo root and stack
+- contract_id and approved_plan_hash
+- stack_profile
 - approved plan/spec slice
+- allowed paths, prohibited paths, and shared-file strategy
 - relevant files and refs to follow
 - existing conventions
 - frozen inputs; do not invent scope
@@ -151,9 +220,14 @@ Before reporting:
 - conflict-scan shared files
 - remove duplicate helpers or divergent patterns
 - synthesize results into one summary
-- run global verification that no single unit could prove, such as build/lint/full test/smoke
+- run global_verification that no single unit could prove, such as build/lint/
+  full test/smoke, using the detected package manager and approved scripts
+- run write-producing finish-tail artifacts before ship when required, then
+  `sdcorejs-ship (verify-before-done mode)` and `sdcorejs-ship (branch-ready
+  mode)` as the final branch-ready read-only gate over the final diff
 
 If a unit fails, surface it honestly. Do not hide partial failures under successful units.
+No writes after branch-ready unless branch-ready is run again.
 
 ## Mode B - Role-Split Feature Loop
 
@@ -186,6 +260,9 @@ Dispatch up to five role agents:
 - QC/Test: follows `sdcorejs-test`, owns `test/` cross-stack e2e/UAT tests, fixtures, reports, and checklist evidence.
 
 Each role brief includes the frozen contract verbatim and disjoint writable paths.
+Each role brief also includes `contract_id`, approved plan hash, role
+`stack_profile`, allowed/prohibited paths, shared-file strategy, and
+verification expectations.
 
 ### B.2 Fan-in review
 
@@ -205,6 +282,9 @@ If verification fails:
 - route contract drift to the parent, update the frozen contract, then re-brief affected roles
 
 Hard cap: 3 iterations. If no criteria are resolved for 2 consecutive iterations, stop and ask the user for direction.
+After all role writes, run final global verification and
+`sdcorejs-ship (branch-ready mode)` as the final read-only gate before any Git
+artifact handoff.
 
 ## Reporting
 
@@ -219,6 +299,9 @@ Parallel execution: <PARALLEL-CANDIDATE|ROLE-SPLIT>
 
 Global checks:
 - <command>: <result>
+
+Final gate:
+- branch-ready final read-only gate: <passed | blocked | skipped with reason>
 
 Needs decision:
 - <only unresolved blockers>
@@ -237,6 +320,10 @@ Keep status localized to the user's language.
 - Verify each subagent result from actual diff/output.
 - Surface partial failures.
 - Run global verification before claiming success.
+- Preserve `parallel_context` and update it when units are demoted, blocked, or
+  completed.
+- Run final branch-ready after all writes and global verification. No writes
+  after branch-ready unless branch-ready is run again.
 
 ### Must not
 
@@ -247,6 +334,10 @@ Keep status localized to the user's language.
 - Let subagents spawn subagents.
 - Accept success claims without reading evidence.
 - Merge a unit with unresolved blocking review findings (`Critical`/`Important`, or Angular/NestJS `BLOCKER`/`REQUIRED`).
+- Let any unit write outside its allowed paths or touch prohibited paths.
+- Let units mutate approved specs/plans, dependency/env/migration boundaries, or
+  frozen contracts without returning to `sdcorejs-plan`.
+- Hand off to Git artifacts before ship verification and final branch-ready.
 
 ## Cross-references
 

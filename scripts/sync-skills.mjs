@@ -372,7 +372,9 @@ function readFrontmatter(text) {
     return result;
   }
 
-  for (const [index, line] of block.split(/\r?\n/).entries()) {
+  const lines = block.split(/\r?\n/);
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
     if (!line.trim()) continue;
     const match = line.match(/^([A-Za-z][A-Za-z0-9_-]*):\s*(.*?)\s*$/);
     if (!match) {
@@ -385,11 +387,43 @@ function readFrontmatter(text) {
       result.errors.push(`duplicate frontmatter key '${key}'`);
       continue;
     }
-    result.data[key] = value;
+
+    const rawValue = value.trim();
+    if (isBlockScalarMarker(rawValue)) {
+      const folded = [];
+      while (index + 1 < lines.length && /^\s+/.test(lines[index + 1])) {
+        index += 1;
+        folded.push(lines[index].trim());
+      }
+      result.data[key] = folded.join(rawValue.startsWith('>') ? ' ' : '\n').trim();
+      result.keys.push(key);
+      continue;
+    }
+
+    if (hasYamlMappingColon(rawValue) && !isQuotedScalar(rawValue)) {
+      result.errors.push(`frontmatter line ${index + 1} contains an unquoted mapping colon: ${line}`);
+      continue;
+    }
+
+    result.data[key] = rawValue;
     result.keys.push(key);
   }
 
   return result;
+}
+
+function isBlockScalarMarker(value) {
+  return /^[>|][+-]?$/.test(value);
+}
+
+function isQuotedScalar(value) {
+  if (value.length < 2) return false;
+  const quote = value[0];
+  return (quote === '"' || quote === "'") && value.endsWith(quote);
+}
+
+function hasYamlMappingColon(value) {
+  return /:\s/.test(value);
 }
 
 async function diffTrees(expectedRoot, actualRoot) {

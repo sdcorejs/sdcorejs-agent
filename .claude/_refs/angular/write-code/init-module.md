@@ -167,4 +167,4 @@ Expected agent decision:
 
 ## Post-init — refresh the project summary
 
-After a new module is scaffolded, run `sdcorejs-explore (summary mode)` so `.sdcorejs/summary.md` reflects the new module (it patches the changed sections — module inventory, routes, conventions — rather than regenerating from scratch). Keeps the canonical brief in sync so later write-code runs see the module exists.
+After a new module is scaffolded, run `sdcorejs-explore (summary-refresh)` in write-approved context so `.sdcorejs/summary.md` reflects the new module (it patches the changed sections - module inventory, routes, conventions - rather than regenerating from scratch). Keep the canonical brief in sync so later write-code runs see the module exists.

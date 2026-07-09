@@ -83,13 +83,16 @@ sdcorejs-test
 -> sdcorejs-repair-loop when findings exist
 -> sdcorejs-documentation (code-documentation mode)
 -> sdcorejs-product when user-visible feature traceability is needed
--> sdcorejs-ship (verify-before-done mode)
--> sdcorejs-ship (branch-ready mode)
 -> _refs/orchestration/tail/auto-docs.md
 -> sdcorejs-documentation (write-user-guide mode)
 -> _refs/orchestration/tail/auto-task-tracker.md
 -> sdcorejs-explore (memories mode) when durable knowledge surfaced
+-> sdcorejs-ship (verify-before-done mode)
+-> sdcorejs-ship (branch-ready mode as the final read-only gate)
 ```
+
+No write-producing step may run after final branch-ready unless branch-ready is
+run again before any Git artifact handoff.
 
 `sdcorejs-execute-plan` must ask the user whether to run sequentially or in parallel before execution. Parallel execution requires `sdcorejs-parallel-dispatch`, which owns both the safety verdict and safe fan-out / role-split execution.
 
@@ -160,7 +163,7 @@ At the start of a target-project session, load:
 | SDLC | `sdcorejs-brainstorming`, `sdcorejs-spec`, `sdcorejs-plan` |
 | Execution | `sdcorejs-execute-plan`, track executors, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` |
 | Parallel | `sdcorejs-parallel-dispatch`; workspace isolation lives in `sdcorejs-git (workspace mode)` |
-| Finish | `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)` |
+| Finish | `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)`, `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode as the final read-only gate)` |
 | Utilities | `sdcorejs-explore`, `sdcorejs-git`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, `sdcorejs-documentation` |
 
 ## Mirrors
