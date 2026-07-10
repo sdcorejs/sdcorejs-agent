@@ -174,21 +174,43 @@ plan_context:
       - <check>
   parallel_candidates:
     allowed: true | false
+    frozen_contract:
+      path: <path or embedded>
+      hash: <hash>
+      revision: <integer>
+      derived_from_approved_plan_hash: <hash after approval>
+      supersedes: <prior contract id or null>
     units:
       - id: <stable id>
         title: <title>
+        role: <plan-derived role or null>
+        depends_on:
+          - <unit id or empty>
+        produces:
+          - <artifact or empty>
+        consumes:
+          - <artifact or empty>
         allowed_paths:
           - <path or glob>
-        dependencies:
-          - <unit id or empty>
+        prohibited_paths:
+          - <path or glob>
+        exclusive_resources:
+          - <resource or empty>
+        shared_readonly_resources:
+          - <resource or empty>
+        result_type: commit | patch | working-tree-diff | report
+        verification_command: <detected command or manual check>
     shared_files:
       - path: <path>
-        coordination_strategy: <sequential | parent-owned | lock-step>
+        owner: <unit-id> | integration-unit | parent-contract-only
+        coordination_strategy: <sequential | wave-gated | do-not-touch>
     conflict_risks:
       - <risk>
   finish_tail:
     docs_before_final_branch_ready: true
+    verify_before_done: true
     branch_ready_final_gate: true
+    no_writes_after_branch_ready: true
   approval:
     approved: false
     approved_at: null

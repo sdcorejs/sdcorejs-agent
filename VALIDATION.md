@@ -2,7 +2,7 @@
 
 Current validation snapshot for the SDCoreJS SDLC Agent repository.
 
-Date: 2026-07-06
+Date: 2026-07-11
 
 ## Current Layout
 
@@ -47,7 +47,9 @@ actually produced evidence.
 | Tier | What it proves | Current evidence | External evidence still required |
 |---|---|---|---|
 | Static validation | Source layout, frontmatter, exact refs, generated mirrors, markdown fences, text hygiene, and language policy are internally consistent. | `npm run check:text-hygiene`, `npm run check:skills`, and phase 1 E2E tests. | None beyond keeping CI green for the target commit. |
-| Deterministic prompt-routing validation | The local runner selects the expected `sdcorejs-*` skill for fixture prompts without calling an LLM. | `test/e2e/fixtures/prompt-evals.json` plus phase 1 and phase 3 tests. | Add fixtures when new user intents or entrypoints are introduced. |
+| Deterministic prompt-routing validation (local canonical routing) | The canonical local runner selects the expected `sdcorejs-*` skill for fixture prompts without calling an LLM. | `test/e2e/fixtures/prompt-evals.json` plus phase 1 tests. | Add fixtures when new user intents are introduced. |
+| Entrypoint-aware routing validation | Each loaded Claude Code, Codex, Cursor, or Copilot profile contributes derived routing policy; mutation tests prove one changed profile can fail independently. | `test/e2e/entrypoint-smoke.test.mjs`. | This proves deterministic profile-text participation, not live runtime behavior. |
+| Parallel protocol simulation | Selected contract, topology/DAG, path/resource, failure/fan-in, repair/evidence, and state-machine rules are exercised through the distributed deterministic validator. | `_refs/orchestration/parallel-protocol.mjs` via `test/e2e/parallel-dispatch-protocol.test.mjs`; includes synthetic boundary inputs plus real temporary Git worktree, result-commit, conflict, and rollback behavior. | This is partial local simulation. External runtimes must still invoke the validator and enforce the skill instructions, capabilities, and repository-specific commands during real sessions. |
 | CLI smoke validation | Local adapter code can detect or simulate supported CLI surfaces without requiring live Claude/Codex execution. | Phase 2 tests use fake `codex` and `claude` executables. | Run real CLI smoke tests in a prepared workstation when changing install instructions. |
 | Full target-app validation | The golden target-app generator can run the heavyweight E2E path in a prepared environment. | Latest observed successful run: <https://github.com/sdcorejs/sdcorejs-agent/actions/runs/28798513991>. Re-run for the exact release commit. | Attach the release-commit successful GitHub Actions run link to the release notes. |
 | Real-agent transcript validation | Actual Claude Code, Codex attached repo, Codex native skills, Cursor, and GitHub Copilot sessions followed the intended skill-selection and approval behavior. | Not proven by deterministic tests. | Store sanitized transcript evidence for each claimed live-tool surface when validating a release. |
@@ -86,6 +88,7 @@ npm run sync:skills
 npm run check:text-hygiene
 npm run check:skills
 npm run check:skills:ps
+npm run test:e2e:parallel
 npm run test:e2e
 npm audit --omit=dev
 ```

@@ -12,6 +12,11 @@ when work is risky, long-running, parallel, or explicitly requested by the user.
 Workspace mode creates or selects a safe workspace only. It must not edit source
 files, commit, push, delete branches, or delete worktrees.
 
+For parallel protocol v2, workspace mode returns identity rather than a vague
+global isolation choice. Each unit records strategy, resolved path, branch,
+base HEAD, whether the current run created it, and its result protocol. The
+integration workspace is separate from unit worktrees.
+
 ## When To Run
 
 - Before parallel code-writing fan-out.
@@ -66,6 +71,15 @@ Record:
 - new branch name
 - worktree path
 - whether isolation was reused, created, or skipped
+- resolved integration workspace path
+- per-unit workspace path, branch, common base HEAD, and creation owner
+- pre-existing worktrees that cleanup must preserve
+
+Before returning a worktree assignment, verify that it is not nested inside
+another worktree, that the base equals the approved baseline, and that distinct
+units do not share a branch or path. A runtime without agent-specific cwd may
+not receive write-heavy worktree assignments; return to parallel capability
+fallback instead.
 
 ### 4. Discover Package Manager And Scripts
 
@@ -130,6 +144,9 @@ Return:
 - Do not commit worktree contents.
 - Do not push branches from workspace mode.
 - Do not delete branches or worktrees without explicit request and confirmation.
+- Cleanup may remove only a worktree whose resolved path and
+  `created_by_current_run: true` record match the current protocol run. Never
+  remove a pre-existing worktree.
 - Do not proceed past a failing baseline without telling the user.
 - Do not hardcode one package manager as universal.
 - Do not invent missing scripts.

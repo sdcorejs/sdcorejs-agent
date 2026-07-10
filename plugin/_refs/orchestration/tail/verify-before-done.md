@@ -268,9 +268,14 @@ ship_context:
   verification:
     commands_run:
       - command:
+        cwd:
+        started_at:
+        finished_at:
         result:
         exit:
         associated_HEAD_or_diff:
+        output_digest:
+        environment_fingerprint:
     commands_skipped:
       - command_or_probe:
         reason:
@@ -301,6 +306,8 @@ Rules:
 - `commands_skipped` includes skipped commands/probes with evidence.
 - Do not claim `PASS` for skipped verification.
 - Record current `associated_HEAD_or_diff`.
+- Bind every command to its exact cwd, HEAD/diff, output digest, timestamps, and
+  environment fingerprint. A later write makes affected evidence stale.
 - State what remains unverified when verification is partial or deferred.
 
 ## Rules

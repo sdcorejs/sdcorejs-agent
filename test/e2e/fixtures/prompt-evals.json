@@ -126,6 +126,18 @@
     "phase": 3
   },
   {
+    "id": "parallel-read-only-review",
+    "prompt": "run a read-only security review in parallel",
+    "expectedSkill": "sdcorejs-parallel-dispatch",
+    "phase": 3
+  },
+  {
+    "id": "parallel-unapproved-write",
+    "prompt": "implement this feature in parallel",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
     "id": "solution-builder-fullstack",
     "prompt": "create a full SDCoreJS Angular and NestJS solution for inventory management",
     "expectedSkill": "sdcorejs-solution-builder",

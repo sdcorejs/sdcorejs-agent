@@ -79,6 +79,8 @@ compare it to `plan_context`:
 - allowed_paths
 - prohibited_paths
 - unrelated dirty files
+- status snapshot hash and dirty diff hash
+- intended output paths that already exist or overlap dirty paths
 
 If unrelated dirty files exist, ask one numbered decision before editing:
 
@@ -99,6 +101,10 @@ manifests, or migrations unless `plan_context` explicitly allows it. If
 `target_root_kind` is `sdcorejs-agent-authoring-repo` or
 `skill-pack-authoring-repo`, confirm that the authoring repo itself is the
 intended target before writing.
+
+For direct `sdcorejs-parallel-dispatch` entry, pass this same preflight as the
+protocol-v2 `working_tree` block. Direct dispatch is not permission to bypass
+branch/HEAD, dirty-state, untracked-file, or intended-output checks.
 
 ## Process
 

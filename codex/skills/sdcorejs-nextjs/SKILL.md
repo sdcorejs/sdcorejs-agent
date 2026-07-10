@@ -87,7 +87,9 @@ For a new site, read and apply the packs in this order:
                             Output: `npm run check:i18n` + `npm run check:content` pass; Tailwind Typography wired; long-form copy meets thresholds
 ```
 
-When `sdcorejs-parallel-dispatch` green-lights parallelism (3+ independent units, no shared file edits), the orchestrator MAY let it fan out — typically:
+When `sdcorejs-parallel-dispatch` validates protocol-v2 dependency, path,
+resource, runtime, isolation, and fan-in contracts, the orchestrator may fan out
+two or more worthwhile independent units or plan-derived DAG waves, typically:
 - Section components (hero, features, testimonials, …) can be generated in parallel
 - SEO + OG + sitemap can run in parallel after pages exist
 - i18n message extraction can fan out across content/<page>.json files

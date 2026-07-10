@@ -94,6 +94,27 @@ Rules:
 If `repair_source` is not passed by the caller, infer it from current evidence
 and record the inference before editing.
 
+When the finding comes from `sdcorejs-parallel-dispatch`, also require:
+
+```yaml
+repair_assignment:
+  finding_id:
+  original_unit_id:
+  repair_owner: original-unit | integration-owner
+  workspace_path:
+  base_result_ref:
+  contract_hash:
+  allowed_paths: []
+  ownership_transfer_approved: false
+```
+
+Default to the original unit, workspace, result, contract revision, and path
+scope. Do not repair a unit finding in the parent/integration checkout. A
+cross-unit finding requires explicit integration classification and ownership
+transfer; update scopes and invalidate affected evidence before editing. Any
+repair write stales earlier verification for the affected result. A deferred
+blocking finding remains `BLOCKED` and cannot be integrated.
+
 ## Working-tree Preflight
 
 Before the first repair pass:
