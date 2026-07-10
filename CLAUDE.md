@@ -96,6 +96,12 @@ run again before any Git artifact handoff.
 
 `sdcorejs-execute-plan` must ask the user whether to run sequentially or in parallel before execution. Parallel execution requires `sdcorejs-parallel-dispatch`, which owns both the safety verdict and safe fan-out / role-split execution.
 
+Direct splitting of an approved plan may select `sdcorejs-parallel-dispatch`.
+Unapproved write work returns to planning. Read-only parallel review/audit work
+may use a `read-only-request` contract with writes denied; write work requires
+the approved-plan protocol, working-tree preflight, mechanical ownership checks,
+per-unit isolation, and deterministic fan-in.
+
 ## Track Executors
 
 | Track | Executor | References |

@@ -25,6 +25,12 @@ sdcorejs-brainstorming
 
 `sdcorejs-execute-plan` always asks sequential vs parallel before executing. Parallel execution requires `sdcorejs-parallel-dispatch`.
 
+Direct splitting of an approved plan may select `sdcorejs-parallel-dispatch`.
+Unapproved write work returns to planning. Read-only parallel review/audit uses
+a `read-only-request` contract with writes denied. Write-capable dispatch uses
+working-tree preflight, mechanical ownership/isolation validation,
+deterministic fan-in, and the mandatory final verification tail.
+
 ## Mandatory Execution Discipline
 
 For any non-trivial execution task, the agent MUST use `_refs/shared/tasklist.md`.

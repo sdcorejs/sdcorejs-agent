@@ -140,6 +140,13 @@ const PRIORITY_RULES = [
     when: ({ prompt, tokens }) => hasRepairLoopIntent(prompt, tokens)
   },
   {
+    skill: 'sdcorejs-parallel-dispatch',
+    when: ({ prompt, tokens }) =>
+      hasAny(tokens, ['parallel']) &&
+      hasAny(tokens, ['review', 'audit']) &&
+      (/\bread[- ]only\b/.test(prompt) || !hasAny(tokens, ['fix', 'repair', 'implement', 'write', 'edit']))
+  },
+  {
     skill: 'sdcorejs-review',
     when: ({ prompt, tokens }) => hasReviewIntent(prompt, tokens)
   },
@@ -159,6 +166,13 @@ const PRIORITY_RULES = [
       tokens.has('plan') &&
       hasAny(tokens, ['spec', 'approved', 'approve', 'revision', 'implementation', 'implement', 'update']) &&
       !hasAny(tokens, ['execute', 'run', 'parallel', 'split', 'agent', 'agents'])
+  },
+  {
+    skill: 'sdcorejs-brainstorming',
+    when: ({ tokens }) =>
+      tokens.has('parallel') &&
+      hasAny(tokens, ['implement', 'build', 'create', 'write', 'edit']) &&
+      !hasAny(tokens, ['approved', 'approve', 'plan', 'snapshot', 'worktree', 'git'])
   },
   {
     skill: 'sdcorejs-parallel-dispatch',

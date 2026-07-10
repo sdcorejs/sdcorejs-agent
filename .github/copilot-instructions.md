@@ -55,7 +55,11 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - Product docs, user stories, acceptance criteria, UAT, and traceability use `sdcorejs-product`.
 - UI/UX design, screen flows, wireframes, PNG previews, and FE handoff use `sdcorejs-design`.
 - Explore codebase context with `sdcorejs-explore`; write comments, user guides, and technical docs through `sdcorejs-documentation`; verify and ship through `sdcorejs-ship`; commit, PR, changelog, and release notes through `sdcorejs-git`.
-- Parallel execution requires `sdcorejs-parallel-dispatch`.
+- Parallel execution requires `sdcorejs-parallel-dispatch`. Direct approved-plan
+  splitting may select it; unapproved write work returns to planning. Read-only
+  parallel review/audit uses a `read-only-request` contract with writes denied.
+  Write-capable dispatch requires working-tree preflight, mechanical ownership,
+  per-unit isolation, deterministic fan-in, and final verification.
 - Every code-generation run presents the finish gate before tail steps.
 - Never claim pass, built, fixed, or done without current verification output.
 - Write `.sdcorejs/*` artifacts to the target project only.

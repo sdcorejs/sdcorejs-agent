@@ -42,6 +42,7 @@
     "test:e2e:phase2": "node --test test/e2e/cli-adapters.test.mjs",
     "test:e2e:phase3": "node --test test/e2e/entrypoint-smoke.test.mjs",
     "test:e2e:phase4": "node --test test/e2e/golden-target-app.test.mjs",
+    "test:e2e:parallel": "node --test test/e2e/parallel-dispatch-protocol.test.mjs test/e2e/entrypoint-smoke.test.mjs",
     "check:text-hygiene": "node scripts/check-text-hygiene.mjs",
     "sync:skills": "node scripts/sync-skills.mjs",
     "check:skills": "node scripts/sync-skills.mjs --check",

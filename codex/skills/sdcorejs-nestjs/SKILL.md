@@ -64,7 +64,12 @@ Each pack further links the literal code templates / snippets it renders. For a 
 
 Execution order: **project → admin → module → entity → actions**. `init-admin` ALWAYS runs right after `init-project` and BEFORE any `init-module` / `init-entity` — it owns the project's `IPermissionStrategy` + user-lookup `JwtStrategy`, so domain modules' `@HasPermission` resolve against it. If the plan touches multiple items, run them in this order. Most backend work shares DB / module state, so the default is sequential — do NOT parallelize entity stacks that touch the same module wiring.
 
-**Parallel fan-out (when 3+ independent units):** if the plan adds 3 or more *independent* units that do NOT share mutable state — e.g. several entities in DIFFERENT modules, or several self-contained custom actions with no shared files — dispatch them via `sdcorejs-parallel-dispatch` so each unit is generated + reviewed in its own subagent. Units that append to the same `<module>.module.ts` barrels or the same `MODULE_SCHEMAS` / `RouterModule.register` arrays are NOT independent — keep those sequential.
+**Parallel fan-out:** let `sdcorejs-parallel-dispatch` classify plan-derived
+units by dependency topology, mechanical path/resource ownership, runtime
+capability, and integration cost. Two expensive independent units or
+heterogeneous units may qualify; units that append to the same
+`<module>.module.ts` barrels, `MODULE_SCHEMAS`, shared databases, ports, caches,
+or `RouterModule.register` arrays require separate waves or sequential work.
 
 ## TDD gate — mandatory before each code-generating step
 
