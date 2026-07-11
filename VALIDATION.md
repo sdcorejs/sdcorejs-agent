@@ -52,11 +52,34 @@ actually produced evidence.
 | Parallel protocol simulation | Selected contract, topology/DAG, path/resource, failure/fan-in, repair/evidence, and state-machine rules are exercised through the distributed deterministic validator. | `_refs/orchestration/parallel-protocol.mjs` via `test/e2e/parallel-dispatch-protocol.test.mjs`; includes synthetic boundary inputs plus real temporary Git worktree, result-commit, conflict, and rollback behavior. | This is partial local simulation. External runtimes must still invoke the validator and enforce the skill instructions, capabilities, and repository-specific commands during real sessions. |
 | CLI smoke validation | Local adapter code can detect or simulate supported CLI surfaces without requiring live Claude/Codex execution. | Phase 2 tests use fake `codex` and `claude` executables. | Run real CLI smoke tests in a prepared workstation when changing install instructions. |
 | Full target-app validation | The golden target-app generator can run the heavyweight E2E path in a prepared environment. | Latest observed successful run: <https://github.com/sdcorejs/sdcorejs-agent/actions/runs/28798513991>. Re-run for the exact release commit. | Attach the release-commit successful GitHub Actions run link to the release notes. |
+| NestJS pack contract | The canonical manifest, profile contract, pack graph, forbidden-token scan, template renderer, route/security/runtime contract, and generator boundaries agree. | Local command `npm run check:nestjs-pack` and `npm run test:e2e:nestjs`; final branch evidence must be refreshed after the last mirror write. | Static evidence does not prove generated application behavior. |
+| Generated NestJS applications | Canonical templates generate strict `simple` and `enterprise` NestJS projects; dependency installation, compilation, unit, integration, HTTP E2E, tenant isolation, and concurrency tests execute. | Local `npm run test:e2e:nestjs:golden`: both profiles passed on 2026-07-11. | Re-run on the final branch and in CI for the exact commit. |
+| NestJS containers | Real Postgres accepts connections and real Keycloak imports the golden realm and accepts admin API authentication. | Local `npm run test:e2e:nestjs:containers`: Postgres 16 and Keycloak 26.1.4 passed on 2026-07-11; test project and volumes were removed. | This does not yet prove every generated repository call against Postgres or every generated Keycloak saga branch. |
 | Real-agent transcript validation | Actual Claude Code, Codex attached repo, Codex native skills, Cursor, and GitHub Copilot sessions followed the intended skill-selection and approval behavior. | Not proven by deterministic tests. | Store sanitized transcript evidence for each claimed live-tool surface when validating a release. |
 
 Do not describe deterministic prompt-routing results as live-agent behavior. The
 deterministic runner is useful for regression coverage, but it is not a
 substitute for real-agent transcript validation.
+
+### NestJS hardening evidence - 2026-07-11 working tree
+
+| Evidence | Command / result |
+|---|---|
+| Canonical contract, corruption scan, profile propagation, generator safety, route/security/runtime templates | `npm run test:e2e:nestjs` from the repository root -> exit 0; 24 passed and the Linux-only case-sensitive path regression was skipped on Windows |
+| Generated application behavior | `npm run test:e2e:nestjs:golden` -> exit 0; strict compile and direct unit/integration/E2E/profile test processes passed for `simple` and `enterprise` |
+| Evidence integrity | Golden child processes remove inherited `NODE_TEST_CONTEXT` and execute each compiled test group directly; an observed false-green was converted into a regression assertion before final evidence was accepted |
+| Real containers | `npm run test:e2e:nestjs:containers` -> exit 0; Postgres accepted connections and Keycloak imported `sdcorejs-golden` and accepted admin API authentication |
+| Mirrors and language | `npm run check:text-hygiene`, `npm run check:skills`, and `npm run check:skills:ps` -> exit 0 |
+| Repository regression | `npm run test:e2e` -> exit 0; 64 repository tests, 24 focused NestJS tests passed with one Linux-only skip on Windows, and both golden profiles passed |
+| Dependency audit | `npm audit --omit=dev` -> exit 0, 0 vulnerabilities |
+| Independent forward test | A read-only Codex subagent exercised an enterprise orders request. Initial department/action/import/Keycloak gaps were repaired; re-test reported no remaining Critical/High finding. This is one-session evidence, not cross-runtime release proof. |
+| Independent final review | Two review rounds found and then verified repairs for output-boundary deletion, authentication, route metadata auditing, TypeScript parsing, tenant coverage, scoped persistent import idempotency, runtime bounds, and stale mirrors. The final re-review reported no remaining evidence-backed Critical/High merge blocker. |
+| Host skill validator | `quick_validate.py` was not executed successfully because the host Python environment lacks PyYAML (`ModuleNotFoundError: yaml`). No validation pass is claimed for this tier. |
+
+The executable generator intentionally renders a fixed `items` golden sample.
+Domain-specific names and fields are generalized by the manifest-driven packs;
+the current evidence does not claim that the CLI renames the sample into an
+arbitrary domain automatically.
 
 ## Static Validation Checklist
 
@@ -88,6 +111,10 @@ npm run sync:skills
 npm run check:text-hygiene
 npm run check:skills
 npm run check:skills:ps
+npm run check:nestjs-pack
+npm run test:e2e:nestjs
+npm run test:e2e:nestjs:golden
+npm run test:e2e:nestjs:containers
 npm run test:e2e:parallel
 npm run test:e2e
 npm audit --omit=dev
@@ -106,15 +133,18 @@ CI coverage:
 
 - `CI` runs on pull requests and pushes to `main`.
 - `CI` runs `npm ci`, `npm run check:text-hygiene`,
-  `npm run check:skills`, `npm run check:audit`, and `npm run test:e2e`
+  `npm run check:skills`, `npm run check:nestjs-pack`,
+  `npm run check:audit`, and `npm run test:e2e`
   on Ubuntu.
 - `CI` runs a separate site job with `npm ci`, `npm run check:audit`, and
   `npm run build` under `site/`.
 - `CI` runs `npm run check:text-hygiene` and `npm run check:skills:ps`
   on Windows.
-- `Full E2E` runs `npm run test:e2e:phase4` with `SDCOREJS_E2E_FULL=1` on a
-  schedule and through manual dispatch. Release notes should link the latest
-  successful run.
+- `Full E2E` runs `npm run test:e2e:phase4`,
+  `npm run test:e2e:nestjs:golden`, and
+  `npm run test:e2e:nestjs:containers` with `SDCOREJS_E2E_FULL=1` on a schedule
+  and through manual dispatch. Release notes should link the latest successful
+  run.
 
 ## Release Evidence Status
 

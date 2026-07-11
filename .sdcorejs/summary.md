@@ -1,8 +1,8 @@
 ---
-generated_at: 2026-07-02T09:45:00+07:00
-git_head: 04650df77e5242e83514e2658659e0d47b2982f6
-branch: feat/documentation-docstring-capability
-tracks: [generic]
+generated_at: 2026-07-11T08:46:48+07:00
+git_head: 41a369e3d7fad9d77002c33ab8a2bb3f075d1404
+branch: feat/nestjs-skill-hardening
+tracks: [generic, nestjs]
 generator: sdcorejs-explore
 ---
 
@@ -18,7 +18,8 @@ review, ship, git, and orchestration flows.
 ## Stack & track
 
 - Primary runtime for repository tooling: Node.js ESM.
-- Active project track for skill-pack edits: generic.
+- Active project track for skill-pack authoring: generic, with the current
+  approved contract targeting the NestJS skill/reference surface.
 - Package scripts:
   - `npm run sync:skills` mirrors source skills and refs.
   - `npm run check:skills` verifies generated mirrors are in sync.
@@ -32,6 +33,8 @@ review, ship, git, and orchestration flows.
 - `.cursor/rules/sdcorejs-agent.mdc` is generated from `AGENTS.md`.
 - `scripts/sync-skills.mjs` owns mirror generation and check mode.
 - `test/e2e/` contains skill-pack, adapter, entrypoint, and golden target app tests.
+- `skills/tracks/nestjs/sdcorejs-nestjs.md` is the canonical NestJS executor
+  orchestrator; `_refs/nestjs/` owns its reusable authoring packs.
 
 ## Reusable building blocks
 
@@ -56,11 +59,17 @@ review, ship, git, and orchestration flows.
 
 ## Open context
 
-- Current branch: `feat/documentation-docstring-capability`.
-- Current approved plan: `.sdcorejs/plans/generic/2026-07-02-09-43-docstring-documentation-capability.md`.
-- Current task: add `docstring` mode to `sdcorejs-documentation`.
+- Current branch: `feat/nestjs-skill-hardening`.
+- Current approved spec:
+  `.sdcorejs/specs/nestjs/2026-07-11-07-37-nestjs-skill-hardening.md`.
+- Current approved plan:
+  `.sdcorejs/plans/nestjs/2026-07-11-08-00-nestjs-skill-hardening.md`.
+- Current task: harden `sdcorejs-nestjs` generation, security, tenancy, runtime
+  defaults, behavioral golden projects, and bounded validation evidence.
+- Sequential implementation and verification are complete. The branch is at the
+  final read-only review/ship gate before commit, push, and pull request creation.
 
 ## Freshness
 
-Generated from commit `04650df77e5242e83514e2658659e0d47b2982f6` on branch
-`feat/documentation-docstring-capability`.
+Generated from commit `41a369e3d7fad9d77002c33ab8a2bb3f075d1404` on branch
+`feat/nestjs-skill-hardening`. Refresh after branch HEAD changes materially.
