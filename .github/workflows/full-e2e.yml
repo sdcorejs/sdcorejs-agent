@@ -28,3 +28,5 @@ jobs:
       - run: npm run check:text-hygiene
       - run: npm run check:skills
       - run: npm run test:e2e:phase4
+      - run: npm run test:e2e:nestjs:golden
+      - run: npm run test:e2e:nestjs:containers

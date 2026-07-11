@@ -1,0 +1,14 @@
+{
+  "realm": "sdcorejs-golden",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "golden-api",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "local-test-only",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false
+    }
+  ]
+}

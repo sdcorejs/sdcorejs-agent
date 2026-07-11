@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "name": "sdcorejs-nestjs",
+  "description": "Canonical generation graph for secure SDCoreJS NestJS applications.",
+  "profileContract": "_refs/nestjs/profile-contract.json",
+  "generator": "_refs/nestjs/generator/generate-project.mjs",
+  "profiles": {
+    "simple": {
+      "scope": "single-organization",
+      "packs": ["init-project", "init-admin", "init-module", "init-entity", "actions"]
+    },
+    "enterprise": {
+      "scope": "tenant-and-optional-department",
+      "packs": ["init-project", "init-admin", "init-module", "init-entity", "actions"]
+    }
+  },
+  "packs": [
+    {
+      "id": "init-project",
+      "path": "_refs/nestjs/write-code/init-project.md",
+      "dependsOn": [],
+      "requiredInputs": ["targetRoot", "profile"],
+      "outputs": ["project-runtime", "configuration", "database-migrations"],
+      "writeBoundary": ["<target-root>/**"]
+    },
+    {
+      "id": "init-admin",
+      "path": "_refs/nestjs/write-code/init-admin.md",
+      "dependsOn": ["init-project"],
+      "requiredInputs": ["targetRoot", "profile", "authMode"],
+      "outputs": ["users", "roles", "permissions", "identity-provider-boundary"],
+      "writeBoundary": ["<target-root>/src/admin/**", "<target-root>/src/keycloak/**"]
+    },
+    {
+      "id": "init-module",
+      "path": "_refs/nestjs/write-code/init-module.md",
+      "dependsOn": ["init-admin"],
+      "requiredInputs": ["targetRoot", "profile", "module"],
+      "outputs": ["bounded-context-module"],
+      "writeBoundary": ["<target-root>/src/modules/<module>/**"]
+    },
+    {
+      "id": "init-entity",
+      "path": "_refs/nestjs/write-code/init-entity.md",
+      "dependsOn": ["init-module"],
+      "requiredInputs": ["targetRoot", "profile", "module", "entity", "operations"],
+      "outputs": ["entity-stack", "route-audit"],
+      "writeBoundary": ["<target-root>/src/modules/<module>/**"]
+    },
+    {
+      "id": "actions",
+      "path": "_refs/nestjs/write-code/actions.md",
+      "dependsOn": ["init-entity"],
+      "requiredInputs": ["targetRoot", "profile", "module", "entity", "actions"],
+      "outputs": ["policy-checked-actions"],
+      "writeBoundary": ["<target-root>/src/modules/<module>/**"]
+    }
+  ],
+  "verification": [
+    { "id": "pack-contract", "command": "npm run check:nestjs-pack", "mutates": false },
+    { "id": "focused-tests", "command": "npm run test:e2e:nestjs", "mutates": false },
+    { "id": "golden-projects", "command": "npm run test:e2e:nestjs:golden", "mutates": false },
+    { "id": "container-tests", "command": "npm run test:e2e:nestjs:containers", "mutates": false }
+  ]
+}
