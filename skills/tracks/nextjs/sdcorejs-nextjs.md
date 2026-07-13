@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-nextjs
-description: Next.js website code executor for approved/direct site builds with confirmed requirements. Use for bootstrap, theme, pages/sections, SEO/OG, i18n, caching/ISR, responsive fixes, contact form, content quality, or reuse of @sdcorejs/utils utilities. Loads _refs/nextjs/build-website/write-code/ packs; use sdcorejs-review for existing-site audits. Runs mandatory finish tail. Runtime-localized.
+description: Next.js website code executor for approved site builds with confirmed requirements. Use for bootstrap, theme, pages/sections, SEO/OG, i18n, caching/ISR, responsive fixes, contact form, content quality, or reuse of @sdcorejs/utils utilities. Loads _refs/nextjs/build-website/write-code/ packs; use sdcorejs-review for existing-site audits. Runs mandatory finish tail. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Bash, TodoWrite
 ---
 
@@ -17,13 +17,17 @@ Before executing this skill:
 5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
-Single entry point for generating Next.js landing-site code. This skill is the dispatch layer between the approved plan (or a direct request) and the focused REFERENCE PACKS that hold the per-concern generation rules. It does NOT inline those rules — it reads the right pack on demand. The ten packs under `_refs/nextjs/build-website/write-code/` were standalone sub-skills before they were consolidated here so the track exposes one orchestrator instead of eleven.
+Single entry point for generating Next.js landing-site code. This skill is the
+dispatch layer between an approved plan from `sdcorejs-execute-plan` and the
+focused REFERENCE PACKS that hold the per-concern generation rules. It does NOT
+inline those rules — it reads the right pack on demand. The ten packs under
+`_refs/nextjs/build-website/write-code/` were standalone sub-skills before they
+were consolidated here so the track exposes one orchestrator instead of eleven.
 
 ## When invoked
 - After `sdcorejs-execute-plan` dispatches an approved Next.js plan
-- User says "generate code", "go ahead", "OK proceed", or localized equivalents
-- A direct build-website request matching any capability in the dispatch table below
-- After `sdcorejs-explore (recovery mode)` and user explicitly resumes work
+- After `sdcorejs-explore (recovery mode)` and the user explicitly resumes the
+  same approved plan
 
 Do NOT invoke if:
 - No plan exists or plan is unapproved -> go back to `sdcorejs-brainstorming` / `sdcorejs-spec` / `sdcorejs-plan`
@@ -34,11 +38,22 @@ Do NOT invoke if:
 
 Before reading the plan or dispatching, run `sdcorejs-explore (summary-read)`. For an EXISTING site (taking over / extending), if `<target>/.sdcorejs/summary.md` is missing or stale in this write-approved executor, run `summary-refresh` first so generation slots into the real app-router / component / content structure instead of guessing. For a brand-new site (`init-site` in scope), there is nothing to summarize yet; run `summary-refresh` AFTER init scaffolds the project.
 
+Before generating any non-trivial page, section, interactive block, form, or
+frontend data boundary, read `_refs/shared/frontend-architecture.md`. Require the
+approved plan dispatched by `sdcorejs-execute-plan` to contain a completed
+`frontend_architecture` contract. This executor must not create or self-approve a
+missing contract. Stop and return to `sdcorejs-plan` through
+`sdcorejs-execute-plan` when the gate is missing, incomplete, or contradicted by
+current code evidence.
+
 Before writing any helper, formatter, validator, mapper, paging/filter helper, random-id helper, query-param helper, upload/download helper, clipboard/browser helper, API-route utility, hook utility, or `src/lib/utils.ts` addition, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior. Keep `next-intl` for locale-bound UI formatting; use `@sdcorejs/utils` for shared pure helper behavior. The package must be a direct target-project dependency before generated code imports it.
 
 ## Dispatch table
 
-Read the approved plan (or the direct request). Match the work items to the reference pack; READ that pack on demand and follow it. Dispatch in the order listed in the "Full build" row (order matters — theme + i18n + content architecture must exist BEFORE pages are composed).
+Read the approved plan. Match its work items to the reference pack; READ that
+pack on demand and follow it. Dispatch in the order listed in the "Full build"
+row (order matters — theme + i18n + content architecture must exist BEFORE pages
+are composed).
 
 | User intent / plan item | Reference pack to read | Phase |
 |---|---|---|
@@ -67,8 +82,9 @@ For a new site, read and apply the packs in this order:
                             Output: tokens in tailwind.config + globals.css
 3. i18n.md               ← next-intl setup, /vi /en routing, messages skeleton
                             Output: locale switcher, all UI strings go through next-intl
-4. pages-and-blocks.md   ← Page set + section library; externalize content to content/<locale>/
-                            Output: each page composed of imported section blocks
+4. pages-and-blocks.md   ← Approved page/feature-local/shared component tree; externalize content
+                            Output: route pages stay composition/data boundaries;
+                            meaningful one-off blocks remain feature-local
 5. seo.md                ← generateMetadata factory + JSON-LD + sitemap + robots
                             Output: every page gets proper metadata
 6. og-preview.md         ← Static fallback + dynamic per-page (if Standard/Full tier)
@@ -154,6 +170,9 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Show a live progress checklist with **TodoWrite** from the START of generation — one checkbox item per planned unit (each page / block / pack step) PLUS the finishing steps (tests, review, code-documentation, technical-doc, user-guide). Keep exactly one item `in_progress`; flip it to `completed` the moment that unit is done and start the next. Update after EACH task, never batch at the end — this is how the user tracks progress. Create it before writing the first file.
 - Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / user-guide / technical-doc / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
 - Read the approved plan BEFORE dispatching — never invent scope
+- Apply `_refs/shared/frontend-architecture.md` before non-trivial frontend
+  generation and derive page, feature-local, shared, client-island, data-boundary,
+  registration/export, and test files from the approved architecture contract
 - Dispatch in the order listed (theme/i18n/content BEFORE pages BEFORE seo)
 - Pass the `sdcorejs-brainstorming` requirement contract to each pack as context
 - Use parallel dispatch only when `parallel-dispatch` decision tree allows
@@ -162,6 +181,15 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Invoke `sdcorejs-test (tdd mode)` for any pack that writes testable logic (custom hooks, server actions, API route handlers, form validation in `contact-form.md`, utility functions) — write failing tests first, then implement
 - Run the `@sdcorejs/utils` reuse preflight before adding helper logic in `src/lib`, API routes, hooks, forms, content mappers, or client components; report reused utilities and justify any custom helper.
 - Keep raw API/provider payloads behind typed server mappers; expose truthful page/component data contracts only.
+- Keep route pages as Server Component composition/data boundaries where
+  practical. Extract a cohesive or interactive one-off block as a feature-local
+  component when justified; single use neither forces inline markup nor promotes
+  the block into the cross-page section library.
+- Keep Client Components at the smallest meaningful interactive boundary. Do not
+  split one cohesive interaction into arbitrary client wrappers.
+- Follow existing site placement/alias/export conventions. Keep feature-local
+  blocks private and expose shared sections/UI only through their owning public
+  boundary when real external consumers exist.
 
 ### Documentation Gate Rule
 
@@ -177,6 +205,9 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Skip `sdcorejs-test (tdd mode)` for packs that write logic — config files and content may bypass; custom code must not
 - Recreate helper behavior already covered by `@sdcorejs/utils`, deep-import from `@sdcorejs/utils/dist/*`, or import `BrowserUtilities` from server components, route handlers, metadata, sitemap, or other server-only code
 - Add UI-only fields to server DTOs or upstream payload types unless the mapper explicitly derives and guarantees them.
+- Force a meaningful one-off interactive block inline into a monolithic
+  `page.tsx`, promote it globally merely because it was extracted, or split
+  trivial static markup only to reduce line count.
 
 ## Anti-patterns
 - Generating ALL pages first, THEN applying theme/i18n — leads to massive refactor when content gets externalized
@@ -185,6 +216,9 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Re-implementing OG image per page manually instead of using `@vercel/og` factory from `og-preview.md`
 - Bypassing the tail-call chain because "it's a small change" — small changes compound into untracked drift
 - Treating third-party/CMS/API response types as mutable client ViewModels.
+- Treating "used once" as a complete placement decision; cohesion, interaction,
+  accessibility, testability, data ownership, and Server/Client boundaries are
+  the decision criteria.
 
 ## Cross-references
 - Inputs: approved plan from `sdcorejs-plan` / `sdcorejs-execute-plan` + `sdcorejs-brainstorming` outputs
@@ -192,3 +226,4 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Audit an existing site (separate entry, read-only): `sdcorejs-review`
 - Tail-call chain: see CLAUDE.md workflow chart
 - Parallel execution: `sdcorejs-parallel-dispatch`
+- Shared frontend architecture gate: `_refs/shared/frontend-architecture.md`

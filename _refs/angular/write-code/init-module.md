@@ -28,16 +28,19 @@ prototype navigation when permission data is missing.
 | `[module].module.ts` | ✅ Always | `@NgModule` + `useClass()` / `useValue()` statics — primary public API |
 | `configurations/api.configuration.ts` | ✅ Always | Request/error interceptors |
 | `guards/[module].guard.ts` | ✅ Always | Route protection |
-| `routes.ts` | ✅ Always | Guards + lazy-load entity children. NO providers. File naming convention: `routes.ts` at lib/module root (e.g. `libs/agency/routes.ts`); entity-level routes use `<entity>.routing.ts` (e.g. `libs/agency/features/booking/booking.routing.ts`). Don't mix — `<module>.routing.ts` at lib root is acceptable only in legacy projects. |
+| `routes.ts` | ✅ Always | Guards + lazy-load entity children. Detect the feature root and entity-route naming convention from nearby code; use `features/` only as a labeled greenfield fallback. Keep module configuration/interceptor providers off this lib-root route; approved entity services/facades may be registered on their entity feature route. |
 | `configurations/permission.configuration.ts` | ⚙️ Optional | Only when module has its own permission domain |
 | `configurations/upload-file.configuration.ts` | ⚙️ Optional | Only when module entities use file upload |
-| `components/base-select/base-select.component.ts` + `.html` | ✅ Always | Generic dropdown wrapping `sd-select` + `BaseService` search/all. Reused by every `<entity>-select` in this module. One copy per module. |
+| `components/base-select/base-select.component.ts` + `.html` | ⚙️ Conditional | Generate only when a confirmed feature needs searchable/remote selection, no compatible Core UI/project/module component exists, multiple consumers share a stable loading/search contract, and the abstraction has a consumer in this change. |
 
 When generating a new module, ask the developer:
 ```
 1. Does this module have its own permission domain? (add permission.configuration.ts)
 2. Do any entities in this module use file upload? (add upload-file.configuration.ts)
-If unsure, skip both and generate minimal module first.
+3. Does the approved frontend architecture require a shared searchable/remote
+   select contract after Core UI and project-local reuse discovery? If not, do
+   not generate base-select.
+If unsure, skip optional files and generate the minimal module first.
 ```
 
 ## 3. Rules
@@ -45,8 +48,11 @@ If unsure, skip both and generate minimal module first.
 ### MUST DO ✅
 - Apply this reference before entity CRUD when the module does not exist
 - Generate `[module].module.ts` as the primary public API (exposes `useClass()` + `useValue()` statics)
-- Put ALL module-scoped providers (`SD_API_CONFIGURATION`, `SD_UPLOAD_FILE_CONFIGURATION`, custom interceptors, etc.) on `@NgModule({ providers: [...] })` — NOT on the route
-- Create `routes.ts` at lib root with guards + `loadChildren` only (no `providers` array)
+- Put all module configuration/interceptor providers (`SD_API_CONFIGURATION`,
+  `SD_UPLOAD_FILE_CONFIGURATION`, custom interceptors, etc.) on
+  `@NgModule({ providers: [...] })`, not on the lib-root route
+- Create `routes.ts` at lib root with guards + `loadChildren`; entity feature
+  routes may register approved feature-scoped services/facades
 - Wire the lib at app root via `importProvidersFrom([Module]Module.useValue({...}))` in `main.ts` (or `imports: [[Module]Module.useValue(...)]` for legacy NgModule consumers)
 - Do not modify global CSS/SCSS while creating module structure/configuration
 - If `SD_PERMISSION_CONFIGURATION` is opted in: keep it at app root injector (`main.ts`) so root-scoped `SdPermissionService` receives full configuration set immediately
@@ -63,6 +69,22 @@ If unsure, skip both and generate minimal module first.
 - Lazy load all child entities with `loadChildren()`
 - Export routes as `const [module]Routes: Routes = [...]`
 - Support `skeleton module` generation when business details are missing: generate minimum routes/config/guard/index/spec scaffolding first
+- Complete `_refs/shared/frontend-architecture.md` before generating any
+  module-level UI abstraction
+- For a select need, record `reuse`, `extend`, `wrap`,
+  `create_feature_local`, `create_shared`, or `keep_inline` with the exact
+  candidate path and compatibility reason
+- Generate module-level `base-select` only when all of these are true:
+  - a confirmed feature in this change needs searchable or remote selection;
+  - no compatible Core UI, project-shared, or existing module component fits;
+  - at least two selects share a stable loading/search contract, or equivalent
+    project evidence proves the abstraction stable;
+  - the new base select has an actual consumer in the same change
+- Otherwise reuse the existing select, create a domain-specific feature-local
+  selector, or generate no wrapper
+- Keep module internals private. Add only symbols with verified external
+  consumers to `index.ts`/`public-api.ts`; do not use broad export-all entries
+  for components, providers, or implementation collaborators
 - Generate module unit tests (`routes.spec.ts`, `guard.spec.ts`, and configuration smoke spec) in the same pass
 - If project is hybrid NgModule + standalone, generate compatibility wiring without forcing full migration
 - Run a post-generation double-check: token wiring, provider scope, route key consistency, and unresolved imports
@@ -75,14 +97,22 @@ If unsure, skip both and generate minimal module first.
   - reuse existing templates and avoid regenerating unchanged boilerplate explanations
 
 ### MUST NOT ❌
-- Put `providers: [...]` on the route — that creates a lazy-bound injector invisible to root-scoped services like `SdPermissionService`. Use `[Module]Module` instead.
+- Put module configuration/interceptor tokens in a route provider array. Use
+  `[Module]Module` for those root-visible contracts; this does not prohibit an
+  approved entity service/facade on its entity feature route.
 - Provide `[MODULE]_CONFIGURATION` directly in `main.ts` providers — go through `[Module]Module.useValue({...})` so the consumer pattern stays consistent
 - Force migration to pure standalone when developer did not request migration and existing codebase is hybrid
 - Hardcode API URLs (inject via configuration)
 - Skip error handling in interceptors
 - Use global interceptors (module-scoped only via `multi: true` on `SD_API_CONFIGURATION`)
-- Assume route-level providers are visible to root-scoped services — they are not
+- Assume entity feature-route providers are visible to root-scoped services —
+  they are not
 - Generate `permission.configuration.ts` or `upload-file.configuration.ts` without confirmation that the module needs them
+- Generate `components/base-select/` speculatively, duplicate an existing
+  compatible select, create it without a same-change consumer, or create a
+  generic wrapper merely for possible future reuse
+- Export feature-private components/services through the module public barrel
+  or introduce cross-feature deep imports/circular barrel dependencies
 - Do not provide `SD_PERMISSION_CONFIGURATION` at module route level when using root-scoped `SdPermissionService`
 - Do not provide `SD_UPLOAD_FILE_CONFIGURATION` at module route level when using root-scoped upload configuration resolution
 - Do not mark module-local permission providers as `multi: true` and expect root `SdPermissionService` to auto-merge them
@@ -113,12 +143,12 @@ All file-content templates referenced by Section 2 (Required vs Optional) live i
 | `configurations/upload-file.configuration.ts` (optional) | [`#configurationsupload-fileconfigurationts-optional`](_refs/angular/templates/init-module-templates.md#configurationsupload-fileconfigurationts-optional) |
 | `guards/[module].guard.ts` | [`#guardsmoduleguardts`](_refs/angular/templates/init-module-templates.md#guardsmoduleguardts) |
 | `[module].module.ts` (primary public API) | [`#modulemodulets-canonical--exposes-the-lib`](_refs/angular/templates/init-module-templates.md#modulemodulets-canonical--exposes-the-lib) |
-| `routes.ts` (lib root — guards + lazy children, NO providers) | [`#routests-lib-root--guards--lazy-children-only`](_refs/angular/templates/init-module-templates.md#routests-lib-root--guards--lazy-children-only) |
+| `routes.ts` (lib root — guards + lazy children; no module configuration providers) | [`#routests-lib-root--guards--lazy-children-only`](_refs/angular/templates/init-module-templates.md#routests-lib-root--guards--lazy-children-only) |
 | `main.ts` wiring (standalone bootstrap) | [`#maints-standalone-bootstrap`](_refs/angular/templates/init-module-templates.md#maints-standalone-bootstrap) |
 | Legacy NgModule consumer (hybrid apps) | [`#legacy-ngmodule-consumer-when-the-app-shell-is-still-ngmodule-based`](_refs/angular/templates/init-module-templates.md#legacy-ngmodule-consumer-when-the-app-shell-is-still-ngmodule-based) |
 | `permission.configuration.ts` (keyed, optional) | [`#permissionconfigurationts-keyed`](_refs/angular/templates/init-module-templates.md#permissionconfigurationts-keyed) |
-| `components/base-select/base-select.component.ts` (load-bearing — preserve inline rationale verbatim) | [`#componentsbase-selectbase-selectcomponentts`](_refs/angular/templates/init-module-templates.md#componentsbase-selectbase-selectcomponentts) |
-| `components/base-select/base-select.component.html` | [`#componentsbase-selectbase-selectcomponenthtml`](_refs/angular/templates/init-module-templates.md#componentsbase-selectbase-selectcomponenthtml) |
+| `components/base-select/base-select.component.ts` (conditional; materialize only after the gate above passes) | [`#componentsbase-selectbase-selectcomponentts-conditional`](_refs/angular/templates/init-module-templates.md#componentsbase-selectbase-selectcomponentts-conditional) |
+| `components/base-select/base-select.component.html` (conditional companion) | [`#componentsbase-selectbase-selectcomponenthtml-conditional`](_refs/angular/templates/init-module-templates.md#componentsbase-selectbase-selectcomponenthtml-conditional) |
 | Route data contract (`data: { permission, permissionKey }`) | [`#route-data-contract-permission`](_refs/angular/templates/init-module-templates.md#route-data-contract-permission) |
 | `index.ts` (lib barrel) | [`#indexts-lib-barrel`](_refs/angular/templates/init-module-templates.md#indexts-lib-barrel) |
 
@@ -163,7 +193,9 @@ Expected agent decision:
   ```typescript
   importProvidersFrom([Module]Module.useValue({ host: environment.[module]BackendUrl }))
   ```
-  This is what wires `[MODULE]_CONFIGURATION` + interceptors + upload config into the app's root injector — the routes file knows nothing about providers.
+  This wires `[MODULE]_CONFIGURATION` + interceptors + upload config into the
+  app's root injector. The lib-root route does not provide those contracts;
+  entity feature routes may still own approved feature-scoped services/facades.
 
 ## Post-init — refresh the project summary
 

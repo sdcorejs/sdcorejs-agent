@@ -51,6 +51,25 @@ function execFileResult(file, args, options = {}) {
   });
 }
 
+function blockCommentFirstMatch(source, pattern, description) {
+  const mutated = source.replace(pattern, match => `/*\n${match}\n*/`);
+  assert.notEqual(mutated, source, `${description} mutation must be applied`);
+  return mutated;
+}
+
+function htmlCommentFirstMatch(source, pattern, description) {
+  const mutated = source.replace(pattern, match => `<!--\n${match}\n-->`);
+  assert.notEqual(mutated, source, `${description} mutation must be applied`);
+  return mutated;
+}
+
+function executableSource(source) {
+  return source
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/^[ \t]*\/\/[^\r\n]*(?:\r?\n|$)/gm, '');
+}
+
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
 
@@ -576,6 +595,684 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   const userGuideTemplate = await readFile(new URL('../../_refs/shared/user-guide-template.md', import.meta.url), 'utf8');
   assert.match(userGuideTemplate, /capture-screenshots\.playwright\.mjs/);
   assert.match(userGuideTemplate, /Do not include missing image links/);
+});
+
+test('phase 1: frontend architecture preflight covers decomposition and anti-over-splitting regressions', async () => {
+  const [
+    frontendArchitecture,
+    planSkill,
+    executePlanSkill,
+    angularSdlc,
+    angularSkill,
+    angularInputAnalysis,
+    angularInitEntity,
+    angularScreenList,
+    angularScreenDetail,
+    angularInitModule,
+    angularInitPortal,
+    angularEntitySkeleton,
+    angularBoundaryTemplates,
+    angularReview,
+    nextjsSdlc,
+    nextjsSkill,
+    nextjsPages,
+    nextjsReview,
+    designSkill,
+    designReference,
+    reviewSkill,
+  ] = await Promise.all([
+    readFile(new URL('../../_refs/shared/frontend-architecture.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../skills/shared/sdlc/03-plan.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../skills/shared/sdlc/04-execute-plan.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/sdlc/angular.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../skills/tracks/angular/sdcorejs-angular.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/write-code/input-analysis.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/write-code/init-entity.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/write-code/screen-list.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/write-code/screen-detail.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/write-code/init-module.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/write-code/init-portal.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/templates/entity-skeleton.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/templates/feature-component-boundaries.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/review-code.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/sdlc/nextjs.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../skills/tracks/nextjs/sdcorejs-nextjs.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/nextjs/build-website/write-code/pages-and-blocks.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/nextjs/build-website/review-code.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../skills/tracks/design/sdcorejs-design.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/design/frontend-design.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../skills/shared/workflow/review.md', import.meta.url), 'utf8'),
+  ]);
+
+  assert.match(frontendArchitecture, /A non-trivial frontend task must not proceed to code generation/);
+  assert.match(frontendArchitecture, /reuse[\s\S]*extend[\s\S]*wrap[\s\S]*create_feature_local[\s\S]*create_shared[\s\S]*keep_inline/);
+  assert.match(planSkill, /frontend_architecture:/);
+  assert.match(planSkill, /component_tree:[\s\S]*reuse_decisions:[\s\S]*file_decisions:[\s\S]*state_owners:[\s\S]*service_boundaries:[\s\S]*data_flow:[\s\S]*declarations_and_registration:[\s\S]*public_exports:/);
+  assert.match(executePlanSkill, /Shared frontend architecture gate/);
+  assert.match(executePlanSkill, /plain\s+Angular,\s+plain\s+Next\.js,\s+React,\s+Vue,\s+Svelte/);
+
+  // Scenario 1: a complex Angular list gets meaningful route/page child boundaries.
+  assert.match(angularScreenList, /summary[\s\S]*filters[\s\S]*result table[\s\S]*bulk-action toolbar/i);
+  assert.match(angularBoundaryTemplates, /\[Entity\]Summary[\s\S]*\[Entity\]Filters[\s\S]*\[Entity\]Table[\s\S]*\[Entity\]BulkActions/);
+  assert.match(angularBoundaryTemplates, /Route\/page orchestration shell[\s\S]*Feature-local filter contract[\s\S]*Feature-local table contract/);
+
+  // Scenario 2: a simple drawer/form is not split and receives no default facade/store.
+  assert.match(frontendArchitecture, /small cohesive drawer[\s\S]*may remain one\s+component/i);
+  assert.match(angularScreenDetail, /four-field drawer[\s\S]*cohesive/i);
+  assert.match(angularInitEntity, /simple drawer[\s\S]*may remain one cohesive component with no facade\/store/i);
+  assert.doesNotMatch(angularInitEntity, /Entity pages must use 2-component structure/);
+
+  // Scenario 3: existing reusable components/services win with exact evidence.
+  assert.match(angularInputAnalysis, /existing reusable components[\s\S]*API\/data-access\s+abstractions/i);
+  assert.match(frontendArchitecture, /exact symbol and path[\s\S]*compatibility/i);
+  assert.match(angularInitPortal, /Order reuses an existing\/Core UI customer selector[\s\S]*feature-local domain selector[\s\S]*keeps the selection UI inline/i);
+  assert.match(angularInitPortal, /omit when no approved shared selector exists/i);
+  assert.match(angularInitPortal, /Render every unconditional file plus only the conditional selector\s+files approved by the frontend architecture plan/i);
+  assert.doesNotMatch(angularInitPortal, /Order's create\/update form uses `<customer-select>`/);
+
+  // Scenario 4: a one-off Next.js interactive block is feature-local, not forced inline/shared.
+  assert.match(nextjsPages, /one-off pricing estimator[\s\S]*feature-local component/i);
+  assert.match(nextjsPages, /Server Component\/composition boundary[\s\S]*feature-local\s+Client\s+Component/i);
+  assert.doesNotMatch(nextjsPages, /if it's used once, it's not a section/);
+  assert.match(nextjsSdlc, /single use does not force it\s+inline/);
+  assert.match(nextjsSkill, /single use neither forces inline markup nor\s+promotes/);
+
+  // Scenario 5: mutable facade state has an explicit narrow provider lifecycle.
+  assert.match(frontendArchitecture, /Feature facade\/store with mutable feature state[\s\S]*route, feature, or page/);
+  assert.match(angularEntitySkeleton, /Mutable[\s\S]*facades\/stores must not use the root variant by default/);
+  assert.match(
+    angularBoundaryTemplates,
+    /provider lifecycle[\s\S]*isolated facade and service instances for separate feature injectors/i,
+  );
+
+  // Scenario 6: route pages and feature-local children stay out of public barrels.
+  assert.match(frontendArchitecture, /Feature-private route pages and child components stay private/);
+  assert.match(angularEntitySkeleton, /Do not export ListComponent, DetailComponent, or feature-local children/);
+  assert.doesNotMatch(angularEntitySkeleton, /export \{ ListComponent \} from '.\/pages\/list\/list\.component';/);
+
+  // Scenario 7: existing project structure overrides fallback folders.
+  assert.match(frontendArchitecture, /Fallback structures are allowed only for greenfield work/);
+  assert.match(angularSdlc, /greenfield Core\s+UI fallback only[\s\S]*must not override an established project convention/);
+  assert.match(nextjsSdlc, /greenfield pack[\s\S]*not a\s+structure to impose on an established site/);
+  assert.match(angularInitPortal, /preserve its coherent feature root and naming \(`modules\/`, `features\/`[\s\S]*approved migration plan/i);
+  assert.doesNotMatch(angularInitPortal, /still generate new code under `features\/`/);
+
+  // Scenario 8: complex forms extract meaningful sections without duplicating state.
+  assert.match(angularScreenDetail, /form section[\s\S]*line-item editor[\s\S]*async-validation region[\s\S]*permission-dependent block/i);
+  assert.match(angularScreenDetail, /typed parent subgroup[\s\S]*must not create a duplicate form\/entity model/i);
+  assert.match(angularBoundaryTemplates, /Typed form-section child[\s\S]*single source of truth/i);
+
+  assert.match(angularSkill, /_refs\/shared\/frontend-architecture\.md/);
+  assert.match(angularInitModule, /base-select[\s\S]*Conditional/);
+  assert.doesNotMatch(angularInitModule, /base-select[^\n]*✅ Always/);
+  assert.match(angularReview, /Approved frontend architecture conformance/);
+  assert.match(nextjsReview, /Approved frontend architecture conformance/);
+  assert.match(reviewSkill, /approved_frontend_architecture:/);
+  assert.match(designSkill, /Implementation Component Map[\s\S]*Data and Interaction Map/);
+  assert.match(designReference, /confirmed \/ candidate \/ unknown \/ new/);
+});
+
+test('phase 1: frontend architecture workflow preserves approval and review-dimension gates', async () => {
+  const [angularSkill, nextjsSkill, planSkill, reviewSkill] = await Promise.all([
+    readFile(new URL('../../skills/tracks/angular/sdcorejs-angular.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../skills/tracks/nextjs/sdcorejs-nextjs.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../skills/shared/sdlc/03-plan.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../skills/shared/workflow/review.md', import.meta.url), 'utf8'),
+  ]);
+
+  assert.doesNotMatch(angularSkill, /\bdirect request\b/i);
+  assert.doesNotMatch(nextjsSkill, /\bdirect request\b|approved\/direct/i);
+  assert.match(angularSkill, /approved plan dispatched\s+by `sdcorejs-execute-plan`/i);
+  assert.match(nextjsSkill, /approved plan dispatched\s+by `sdcorejs-execute-plan`/i);
+  assert.match(angularSkill, /must not create\s+or self-approve a\s+missing contract/i);
+  assert.match(nextjsSkill, /must not create\s+or self-approve a\s+missing contract/i);
+
+  assert.match(
+    planSkill,
+    /project_conventions:\s*\n\s+component_style:[\s\S]*folder_convention:[\s\S]*state_convention:[\s\S]*service_data_access_convention:[\s\S]*registration_provider_convention:[\s\S]*public_api_barrel_convention:[\s\S]*test_convention:[\s\S]*evidence_inspected:/,
+  );
+  assert.match(planSkill, /scope: app \| module \| route \| feature \| page \| component \| pure_function/);
+
+  assert.match(
+    reviewSkill,
+    /Frontend architecture comparison is active only when[\s\S]*selected dimensions include `code`, `architecture`, or `ALL`/,
+  );
+  assert.match(
+    reviewSkill,
+    /security-, performance-, or accessibility-only frontend\s+review[\s\S]*status: not-applicable/i,
+  );
+  assert.doesNotMatch(reviewSkill, /^For frontend scope, locate the selected approved plan/m);
+  assert.doesNotMatch(reviewSkill, /^For any .*frontend scope, also load/m);
+
+  const planDescription = planSkill.match(/^description:\s*(.+)$/m)?.[1] ?? '';
+  assert.ok(planDescription.length > 0, 'sdcorejs-plan must have a frontmatter description');
+  assert.doesNotMatch(planDescription, /[<>]/);
+});
+
+test('phase 1: Angular architecture templates keep selectors, providers, routes, and paths coherent', async () => {
+  const [
+    angularSkill,
+    initPortal,
+    entitySkeleton,
+    orchestratorExamples,
+    boundaryTemplates,
+    initModule,
+    initModuleTemplates,
+    initEntity,
+    screenList,
+    screenDetail,
+  ] = await Promise.all([
+    readFile(new URL('../../skills/tracks/angular/sdcorejs-angular.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/write-code/init-portal.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/templates/entity-skeleton.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/templates/orchestrator-step-examples.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/templates/feature-component-boundaries.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/write-code/init-module.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/templates/init-module-templates.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/write-code/init-entity.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/write-code/screen-list.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/write-code/screen-detail.md', import.meta.url), 'utf8'),
+  ]);
+
+  assert.match(initPortal, /Render every unconditional file plus only the conditional selector\s+files approved by the frontend architecture plan/i);
+  assert.doesNotMatch(initPortal, /render(?:ing)? every file|every listed section rendered/i);
+
+  assert.doesNotMatch(angularSkill, /<entity>\.routes\.ts[^\n]*no providers/i);
+  const featureProviderPair = entitySkeleton.match(
+    /#### Feature-route-scoped pair \(default\)([\s\S]*?)#### Root-scoped stateless pair \(alternative\)/i,
+  )?.[1] ?? '';
+  const rootProviderPair = entitySkeleton.match(
+    /#### Root-scoped stateless pair \(alternative\)([\s\S]*?)#### Active feature-route-scoped service template/i,
+  )?.[1] ?? '';
+  const assertAtomicProviderPairs = (rawFeaturePair, rawRootPair) => {
+    assert.ok(rawFeaturePair, 'feature-route-scoped provider pair must be a named atomic section');
+    assert.ok(rawRootPair, 'root-scoped provider pair must be a named atomic section');
+    const featurePair = executableSource(rawFeaturePair);
+    const rootPair = executableSource(rawRootPair);
+    assert.match(
+      featurePair,
+      /^[ \t]*@Injectable\(\)[ \t]*$/m,
+      'feature pair must contain an active feature-scoped decorator',
+    );
+    assert.doesNotMatch(
+      featurePair,
+      /^[ \t]*@Injectable\(\{[ \t]*providedIn:[ \t]*['"]root['"][ \t]*\}\)[ \t]*$/m,
+      'feature pair must not use the root-scoped decorator',
+    );
+    assert.match(
+      featurePair,
+      /^[ \t]*import[ \t]+\{[ \t]*\[Entity\]Service[ \t]*\}[ \t]+from[ \t]+['"][^'"]+['"];?[ \t]*$/m,
+    );
+    assert.match(
+      featurePair,
+      /^[ \t]*providers:[ \t]*\[\[Entity\]Service\],[ \t]*$/m,
+      'feature pair must contain an active route provider',
+    );
+    assert.match(
+      rootPair,
+      /^[ \t]*@Injectable\(\{[ \t]*providedIn:[ \t]*'root'[ \t]*\}\)[ \t]*$/m,
+      'root pair must contain an active root-scoped decorator',
+    );
+    assert.doesNotMatch(
+      rootPair,
+      /^[ \t]*@Injectable\(\)[ \t]*$/m,
+      'root pair must not use the feature-scoped decorator',
+    );
+    assert.match(rootPair, /neither a service import nor a route-level\s+service registration/i);
+    assert.doesNotMatch(
+      rootPair,
+      /^[ \t]*import[ \t]+\{[ \t]*\[Entity\]Service[ \t]*\}[ \t]+from[ \t]+['"][^'"]+['"];?[ \t]*$/m,
+    );
+    assert.doesNotMatch(
+      rootPair,
+      /^[ \t]*providers[ \t]*:[^\r\n]*\[Entity\]Service[^\r\n]*$/m,
+      'root pair must not contain an entity service route provider',
+    );
+  };
+  assertAtomicProviderPairs(featureProviderPair, rootProviderPair);
+  assert.throws(
+    () => assertAtomicProviderPairs(
+      `${featureProviderPair}\n@Injectable({ providedIn: 'root' })`,
+      rootProviderPair,
+    ),
+    /feature pair must not use the root-scoped decorator/,
+  );
+  assert.throws(
+    () => assertAtomicProviderPairs(
+      `${featureProviderPair}\n@Injectable({ providedIn: "root" })`,
+      rootProviderPair,
+    ),
+    /feature pair must not use the root-scoped decorator/,
+  );
+  assert.throws(
+    () => assertAtomicProviderPairs(
+      featureProviderPair,
+      `${rootProviderPair}\n@Injectable()`,
+    ),
+    /root pair must not use the feature-scoped decorator/,
+  );
+  assert.throws(
+    () => assertAtomicProviderPairs(
+      featureProviderPair,
+      `${rootProviderPair}\nproviders: [ [Entity]Service ],`,
+    ),
+    /root pair must not contain an entity service route provider/,
+  );
+
+  const commentedFeatureDecoratorPair = featureProviderPair.replace(
+    /^([ \t]*)(@Injectable\(\))/m,
+    '$1// $2',
+  );
+  assert.notEqual(
+    commentedFeatureDecoratorPair,
+    featureProviderPair,
+    'feature decorator comment mutation must be applied',
+  );
+  assert.throws(
+    () => assertAtomicProviderPairs(commentedFeatureDecoratorPair, rootProviderPair),
+    /feature pair must contain an active feature-scoped decorator/,
+  );
+
+  const commentedFeatureProviderPair = featureProviderPair.replace(
+    /^([ \t]*)(providers:[ \t]*\[\[Entity\]Service\],?)/m,
+    '$1// $2',
+  );
+  assert.notEqual(
+    commentedFeatureProviderPair,
+    featureProviderPair,
+    'feature provider comment mutation must be applied',
+  );
+  assert.throws(
+    () => assertAtomicProviderPairs(commentedFeatureProviderPair, rootProviderPair),
+    /feature pair must contain an active route provider/,
+  );
+
+  const blockCommentedFeatureDecoratorPair = blockCommentFirstMatch(
+    featureProviderPair,
+    /^[ \t]*@Injectable\(\)[ \t]*$/m,
+    'block-commented feature decorator',
+  );
+  assert.throws(
+    () => assertAtomicProviderPairs(blockCommentedFeatureDecoratorPair, rootProviderPair),
+    /feature pair must contain an active feature-scoped decorator/,
+  );
+
+  const blockCommentedFeatureProviderPair = blockCommentFirstMatch(
+    featureProviderPair,
+    /^[ \t]*providers:[ \t]*\[\[Entity\]Service\],[ \t]*$/m,
+    'block-commented feature provider',
+  );
+  assert.throws(
+    () => assertAtomicProviderPairs(blockCommentedFeatureProviderPair, rootProviderPair),
+    /feature pair must contain an active route provider/,
+  );
+
+  const blockCommentedRootDecoratorPair = blockCommentFirstMatch(
+    rootProviderPair,
+    /^[ \t]*@Injectable\(\{[ \t]*providedIn:[ \t]*'root'[ \t]*\}\)[ \t]*$/m,
+    'block-commented root decorator',
+  );
+  assert.throws(
+    () => assertAtomicProviderPairs(featureProviderPair, blockCommentedRootDecoratorPair),
+    /root pair must contain an active root-scoped decorator/,
+  );
+
+  const htmlCommentedFeatureProviderPair = htmlCommentFirstMatch(
+    featureProviderPair,
+    /^[ \t]*providers:[ \t]*\[\[Entity\]Service\],[ \t]*$/m,
+    'HTML-commented feature provider',
+  );
+  assert.throws(
+    () => assertAtomicProviderPairs(htmlCommentedFeatureProviderPair, rootProviderPair),
+    /feature pair must contain an active route provider/,
+  );
+  assert.match(orchestratorExamples, /@Injectable\(\)[\s\S]*providers: \[ProductService\]/);
+
+  assert.match(boundaryTemplates, /import \{ ActivatedRoute, Router \} from '@angular\/router';/);
+  assert.match(boundaryTemplates, /navigate\(\[action\.kind, action\.id\], \{ relativeTo: this\.#route \}\)/);
+  assert.match(entitySkeleton, /navigate\(\['create'\], \{ relativeTo: this\.#activatedRoute \}\)/);
+  assert.match(entitySkeleton, /navigate\(\['detail', id\], \{ relativeTo: this\.#activatedRoute \}\)/);
+  assert.doesNotMatch(entitySkeleton, /navigate\(\[(?:'create'|'detail', id)\]\);/);
+  assert.match(boundaryTemplates, /readonly rows = signal<readonly \[Entity\]DTO\[\]>/);
+  assert.match(boundaryTemplates, /export interface \[Entity\]RowVM/);
+
+  assert.match(initModule, /detect(?:ed)? the feature root and entity-route naming convention/i);
+  assert.match(initModuleTemplates, /import\('\.\/\[featureRoot\]\/\[entity-a\]'\)/);
+  assert.match(initModuleTemplates, /import\('\.\/\[featureRoot\]\/\[entity-b\]'\)/);
+  assert.match(initModuleTemplates, /import\('\.\/\[featureRoot\]\/\[entity\]'\)/);
+  assert.doesNotMatch(initModuleTemplates, /import\('\.\/features\//);
+  assert.match(initEntity, /include=src\/libs\/\[module\]\/\[featureRoot\]\/\[entity\]\/\*\*\/\*\.spec\.ts/);
+
+  assert.match(screenList, /feature-component-boundaries\.md#list-routepage-and-child-contracts/);
+  assert.match(screenDetail, /feature-component-boundaries\.md#detail-routepage-and-form-section-contracts/);
+});
+
+test('phase 1: frontend architecture references remain progressive and assertion-backed', async () => {
+  const [frontendArchitecture, boundaryTemplates, angularSkill, nextjsInitSite] = await Promise.all([
+    readFile(new URL('../../_refs/shared/frontend-architecture.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/angular/templates/feature-component-boundaries.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../skills/tracks/angular/sdcorejs-angular.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/nextjs/build-website/write-code/init-site.md', import.meta.url), 'utf8'),
+  ]);
+
+  assert.match(frontendArchitecture, /## Contents[\s\S]*Discover Project Conventions[\s\S]*Mandatory Output Contract[\s\S]*Plan and Review Enforcement/);
+  assert.match(nextjsInitSite, /feature-local blocks[\s\S]*stable shared consumers/i);
+  assert.doesNotMatch(nextjsInitSite, /sections must live in `src\/components\/sections\/`/i);
+
+  assert.match(boundaryTemplates, /toHaveBeenCalledOnceWith/);
+  assert.match(boundaryTemplates, /toEqual/);
+  assert.match(boundaryTemplates, /\.not\.toBe\(/);
+  assert.match(boundaryTemplates, /Tests must contain executable assertions and fail\s+RED before implementation/i);
+
+  const contractTestSection = boundaryTemplates.split('## Architecture Contract Tests')[1] ?? '';
+  const contractCases = [...contractTestSection.matchAll(/^  it\([\s\S]*?^  \}\);/gm)].map(match => match[0]);
+  assert.equal(contractCases.length, 5, 'every documented architecture contract case must be present');
+  for (const contractCase of contractCases) {
+    assert.match(
+      executableSource(contractCase),
+      /^[ \t]*expect\(/m,
+      'each architecture contract case must execute an active assertion',
+    );
+  }
+
+  const providerLifecycleCase = contractCases.find(contractCase =>
+    /creates isolated facade and service instances for separate feature injectors/i.test(contractCase),
+  );
+  const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const expectsDifferentInstances = ([, first], [, second]) => new RegExp(
+    `^[\\t ]*expect\\([\\t ]*${escapeRegex(first)}[\\t ]*\\)` +
+      `[\\t ]*\\.not\\.toBe\\([\\t ]*${escapeRegex(second)}[\\t ]*\\);?[\\t ]*$`,
+    'm',
+  );
+  const assertIsolatedProviderLifecycle = rawContractCase => {
+    assert.ok(rawContractCase, 'provider lifecycle contract case must prove facade and service isolation');
+    const contractCase = executableSource(rawContractCase);
+    assert.match(
+      contractCase,
+      /^[ \t]*const createService = \(\) =>[ \t]*(?:\r?\n[ \t]*)?jasmine\.createSpyObj<\[Entity\]Service>\([ \t]*'\[Entity\]Service'[ \t]*,[ \t]*\[[ \t]*'search'[ \t]*\][ \t]*\);[ \t]*$/m,
+      'provider lifecycle factory must return a fresh service spy directly',
+    );
+    const providersBlock = contractCase.match(
+      /^[ \t]*const featureProviders = \[([\s\S]*?)^[ \t]*\];[ \t]*$/m,
+    )?.[1] ?? '';
+    assert.ok(providersBlock, 'provider lifecycle must define a featureProviders block');
+    assert.match(
+      providersBlock,
+      /^[ \t]*\[Entity\]Facade,[ \t]*$/m,
+      'feature provider block must actively register the facade',
+    );
+    assert.match(
+      providersBlock,
+      /^[ \t]*\{[ \t]*provide:[ \t]*\[Entity\]Service,[ \t]*useFactory:[ \t]*createService[ \t]*\},?[ \t]*$/m,
+      'provider lifecycle must actively register the service factory',
+    );
+    assert.doesNotMatch(
+      providersBlock,
+      /^[ \t]*\{[ \t]*provide:[ \t]*\[Entity\]Service,[ \t]*useValue:/m,
+    );
+    const providerLines = providersBlock
+      .split(/\r?\n/)
+      .map(line => line.trim().replace(/[ \t]+/g, ' '))
+      .filter(Boolean);
+    assert.deepEqual(
+      providerLines,
+      [
+        '[Entity]Facade,',
+        '{ provide: [Entity]Service, useFactory: createService },',
+      ],
+      'featureProviders must contain exactly one facade and one service factory provider',
+    );
+
+    const serviceBindings = [...contractCase.matchAll(
+      /^[ \t]*const[ \t]+([A-Za-z_$][\w$]*)[ \t]*=[ \t]*([A-Za-z_$][\w$]*)\.get\(\[Entity\]Service\);?[ \t]*$/gm,
+    )];
+    const facadeBindings = [...contractCase.matchAll(
+      /^[ \t]*const[ \t]+([A-Za-z_$][\w$]*)[ \t]*=[ \t]*([A-Za-z_$][\w$]*)\.get\(\[Entity\]Facade\);?[ \t]*$/gm,
+    )];
+    const injectorCreations = [...contractCase.matchAll(
+      /^[ \t]*const[ \t]+([A-Za-z_$][\w$]*)[ \t]*=[ \t]*createEnvironmentInjector\([ \t]*\r?\n[ \t]*featureProviders,[ \t]*\r?\n[ \t]*parent,[ \t]*\r?\n[ \t]*\);[ \t]*$/gm,
+    )].map(match => match[1]);
+    assert.equal(
+      injectorCreations.length,
+      2,
+      'provider lifecycle must create two independent environment injectors',
+    );
+    assert.equal(
+      new Set(injectorCreations).size,
+      2,
+      'provider lifecycle must create two independent environment injectors',
+    );
+    assert.equal(serviceBindings.length, 2, 'both feature injectors must resolve their service instance');
+    assert.equal(facadeBindings.length, 2, 'both feature injectors must resolve their facade instance');
+    const createdInjectors = new Set(injectorCreations);
+    for (const [, , injector] of [...serviceBindings, ...facadeBindings]) {
+      assert.ok(createdInjectors.has(injector), `${injector} must be created with createEnvironmentInjector`);
+    }
+    assert.notEqual(serviceBindings[0][2], serviceBindings[1][2], 'service instances must come from different injectors');
+    assert.notEqual(facadeBindings[0][2], facadeBindings[1][2], 'facade instances must come from different injectors');
+    assert.match(
+      contractCase,
+      expectsDifferentInstances(serviceBindings[0], serviceBindings[1]),
+      'provider lifecycle must assert service instance isolation',
+    );
+    assert.match(
+      contractCase,
+      expectsDifferentInstances(facadeBindings[0], facadeBindings[1]),
+      'provider lifecycle must assert facade instance isolation',
+    );
+  };
+  assertIsolatedProviderLifecycle(providerLifecycleCase);
+
+  const aliasedInjectorCase = providerLifecycleCase.replace(
+    /const secondInjector = createEnvironmentInjector\([\s\S]*?\n    \);/,
+    'const secondInjector = firstInjector;',
+  );
+  assert.notEqual(aliasedInjectorCase, providerLifecycleCase, 'injector alias mutation must be applied');
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(aliasedInjectorCase),
+    /provider lifecycle must create two independent environment injectors/,
+  );
+
+  const commentedFactoryProviderCase = providerLifecycleCase.replace(
+    /^([ \t]*)(\{[ \t]*provide:[ \t]*\[Entity\]Service,[ \t]*useFactory:[ \t]*createService[ \t]*\},?)/m,
+    '$1// $2',
+  );
+  assert.notEqual(
+    commentedFactoryProviderCase,
+    providerLifecycleCase,
+    'service factory provider comment mutation must be applied',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(commentedFactoryProviderCase),
+    /provider lifecycle must actively register the service factory/,
+  );
+
+  const commentedFacadeProviderCase = providerLifecycleCase.replace(
+    /^([ \t]*)(\[Entity\]Facade,)/m,
+    '$1// $2',
+  );
+  assert.notEqual(
+    commentedFacadeProviderCase,
+    providerLifecycleCase,
+    'facade provider comment mutation must be applied',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(commentedFacadeProviderCase),
+    /feature provider block must actively register the facade/,
+  );
+
+  const relocatedFactoryProviderCase = providerLifecycleCase
+    .replace(
+      /^([ \t]*)(\{[ \t]*provide:[ \t]*\[Entity\]Service,[ \t]*useFactory:[ \t]*createService[ \t]*\},?)/m,
+      '$1// $2',
+    )
+    .replace(
+      /^([ \t]*const firstInjector)/m,
+      '    { provide: [Entity]Service, useFactory: createService },\n$1',
+    );
+  assert.notEqual(
+    relocatedFactoryProviderCase,
+    providerLifecycleCase,
+    'relocated factory provider mutation must be applied',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(relocatedFactoryProviderCase),
+    /provider lifecycle must actively register the service factory/,
+  );
+
+  const duplicateServiceOverrideCase = providerLifecycleCase.replace(
+    /^([ \t]*\];[ \t]*)$/m,
+    '      { provide: [Entity]Service, useFactory: getSharedService },\n$1',
+  );
+  assert.notEqual(
+    duplicateServiceOverrideCase,
+    providerLifecycleCase,
+    'duplicate service override mutation must be applied',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(duplicateServiceOverrideCase),
+    /featureProviders must contain exactly one facade and one service factory provider/,
+  );
+
+  const duplicateFacadeOverrideCase = providerLifecycleCase.replace(
+    /^([ \t]*\];[ \t]*)$/m,
+    '      { provide: [Entity]Facade, useValue: sharedFacade },\n$1',
+  );
+  assert.notEqual(
+    duplicateFacadeOverrideCase,
+    providerLifecycleCase,
+    'duplicate facade override mutation must be applied',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(duplicateFacadeOverrideCase),
+    /featureProviders must contain exactly one facade and one service factory provider/,
+  );
+
+  const commentedServiceExpectationCase = providerLifecycleCase.replace(
+    /^([ \t]*)(expect\(firstService\)\.not\.toBe\(secondService\);)/m,
+    '$1// $2',
+  );
+  assert.notEqual(
+    commentedServiceExpectationCase,
+    providerLifecycleCase,
+    'service expectation comment mutation must be applied',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(commentedServiceExpectationCase),
+    /provider lifecycle must assert service instance isolation/,
+  );
+
+  const commentedFacadeExpectationCase = providerLifecycleCase.replace(
+    /^([ \t]*)(expect\(firstFacade\)\.not\.toBe\(secondFacade\);)/m,
+    '$1// $2',
+  );
+  assert.notEqual(
+    commentedFacadeExpectationCase,
+    providerLifecycleCase,
+    'facade expectation comment mutation must be applied',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(commentedFacadeExpectationCase),
+    /provider lifecycle must assert facade instance isolation/,
+  );
+
+  const blockCommentedFactoryDeclarationCase = blockCommentFirstMatch(
+    providerLifecycleCase,
+    /^[ \t]*const createService = \(\) =>[ \t]*\r?\n[ \t]*jasmine\.createSpyObj<\[Entity\]Service>\([^;\r\n]+\);[ \t]*$/m,
+    'block-commented service factory declaration',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(blockCommentedFactoryDeclarationCase),
+    /provider lifecycle factory must return a fresh service spy directly/,
+  );
+
+  const blockCommentedFactoryProviderCase = blockCommentFirstMatch(
+    providerLifecycleCase,
+    /^[ \t]*\{[ \t]*provide:[ \t]*\[Entity\]Service,[ \t]*useFactory:[ \t]*createService[ \t]*\},?[ \t]*$/m,
+    'block-commented service factory provider',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(blockCommentedFactoryProviderCase),
+    /provider lifecycle must actively register the service factory/,
+  );
+
+  const htmlCommentedFactoryProviderCase = htmlCommentFirstMatch(
+    providerLifecycleCase,
+    /^[ \t]*\{[ \t]*provide:[ \t]*\[Entity\]Service,[ \t]*useFactory:[ \t]*createService[ \t]*\},?[ \t]*$/m,
+    'HTML-commented service factory provider',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(htmlCommentedFactoryProviderCase),
+    /provider lifecycle must actively register the service factory/,
+  );
+
+  const wrongSecondInjectorProvidersCase = providerLifecycleCase.replace(
+    /(const secondInjector = createEnvironmentInjector\([ \t]*\r?\n)([ \t]*)featureProviders,/,
+    '$1$2[],',
+  );
+  assert.notEqual(
+    wrongSecondInjectorProvidersCase,
+    providerLifecycleCase,
+    'wrong second-injector providers mutation must be applied',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(wrongSecondInjectorProvidersCase),
+    /provider lifecycle must create two independent environment injectors/,
+  );
+
+  const blockCommentedServiceBindingCase = blockCommentFirstMatch(
+    providerLifecycleCase,
+    /^[ \t]*const firstService = firstInjector\.get\(\[Entity\]Service\);[ \t]*$/m,
+    'block-commented service binding',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(blockCommentedServiceBindingCase),
+    /both feature injectors must resolve their service instance/,
+  );
+
+  const blockCommentedFacadeBindingCase = blockCommentFirstMatch(
+    providerLifecycleCase,
+    /^[ \t]*const firstFacade = firstInjector\.get\(\[Entity\]Facade\);[ \t]*$/m,
+    'block-commented facade binding',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(blockCommentedFacadeBindingCase),
+    /both feature injectors must resolve their facade instance/,
+  );
+
+  const blockCommentedServiceExpectationCase = blockCommentFirstMatch(
+    providerLifecycleCase,
+    /^[ \t]*expect\(firstService\)\.not\.toBe\(secondService\);[ \t]*$/m,
+    'block-commented service isolation expectation',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(blockCommentedServiceExpectationCase),
+    /provider lifecycle must assert service instance isolation/,
+  );
+
+  const blockCommentedFacadeExpectationCase = blockCommentFirstMatch(
+    providerLifecycleCase,
+    /^[ \t]*expect\(firstFacade\)\.not\.toBe\(secondFacade\);[ \t]*$/m,
+    'block-commented facade isolation expectation',
+  );
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(blockCommentedFacadeExpectationCase),
+    /provider lifecycle must assert facade instance isolation/,
+  );
+
+  const sharedFactoryCase = providerLifecycleCase.replace(
+    "jasmine.createSpyObj<[Entity]Service>('[Entity]Service', ['search']);",
+    "jasmine.createSpyObj<[Entity]Service>('[Entity]Service', ['search']) && getSharedService();",
+  );
+  assert.notEqual(sharedFactoryCase, providerLifecycleCase, 'shared factory mutation must be applied');
+  assert.throws(
+    () => assertIsolatedProviderLifecycle(sharedFactoryCase),
+    /provider lifecycle factory must return a fresh service spy directly/,
+  );
+
+  const architectureRefMentions = angularSkill.match(/_refs\/shared\/frontend-architecture\.md/g) ?? [];
+  assert.ok(architectureRefMentions.length <= 3, 'Angular orchestrator should delegate architecture detail to the shared reference');
+  assert.doesNotMatch(angularSkill, /^### Frontend architecture gate/m);
 });
 
 test('phase 1: Core docs fetcher prefers installed lockfile version over package range', async () => {

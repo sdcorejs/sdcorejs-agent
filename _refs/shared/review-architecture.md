@@ -86,6 +86,33 @@ Severity:
 - Important: cross-module imports bypass public API
 - Minor: missing public API file where a module already has multiple consumers
 
+### 3a. Frontend architecture plan conformance
+
+For frontend scope, also load `_refs/shared/frontend-architecture.md` and the
+selected approved plan's `frontend_architecture` block. Compare actual files and
+imports with:
+
+- detected project conventions and reuse/extend/wrap/create/inline decisions;
+- route/page containers and meaningful feature-local/shared child boundaries;
+- responsibility, props/events, and single state ownership;
+- API/data-access, optional facade/store/query, and pure collaborator boundaries;
+- provider/service lifecycle and teardown/reset behavior;
+- declarations/imports/providers/routes and framework registration;
+- feature-private symbols, intentional public exports, and barrel/deep-import
+  policy;
+- page orchestration, child contract, mapping, and provider-scope tests.
+
+Flag an unrelated-responsibility monolith, duplicated abstraction/state owner,
+raw API shape in presentation, default-root mutable facade, missing registration,
+or public API leak. Also flag arbitrary pass-through wrappers and excessive prop
+drilling introduced by poor boundaries. A feature-local component needs a
+cohesive responsibility, not multiple consumers; shared promotion needs stronger
+ownership evidence. Line count may trigger inspection but is never a standalone
+failure.
+
+When no approved plan is available, review against current project conventions
+and record that plan conformance could not be verified.
+
 ### 4. Abstraction leaks
 A function signature should not expose its implementation detail.
 

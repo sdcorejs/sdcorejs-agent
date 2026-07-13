@@ -218,6 +218,11 @@ and one-off font declarations through the stylesheet.
 
 ## Handoff Requirements
 
+Read `_refs/shared/frontend-architecture.md` and use its route/page,
+feature-local, shared/design-system, responsibility, state, and data-boundary
+vocabulary. The design handoff informs implementation planning; it does not
+replace codebase discovery.
+
 Every design handoff should tell frontend executors:
 
 - What source artifact each screen/state traces to.
@@ -226,6 +231,29 @@ Every design handoff should tell frontend executors:
 - Which copy, states, responsive rules, accessibility notes, and interaction
   details are authoritative.
 - Which decisions are confirmed, inferred, or still open.
+
+Include both maps below in `design/specs/<feature>.md`:
+
+```markdown
+## Implementation Component Map
+
+| UI region | Component | Classification | Existing path/candidate | State owner | Status |
+|---|---|---|---|---|---|
+| Page shell | <PageName> | Route/page container | <path, candidate, or unknown> | Page | confirmed / candidate / unknown / new |
+| <region> | <ComponentName> | Feature-local / existing shared / design-system / interactive island | <path, candidate, or unknown> | <owner> | confirmed / candidate / unknown / new |
+
+## Data and Interaction Map
+
+| Component | Receives | Emits | Data source | Loading/error owner | Status |
+|---|---|---|---|---|---|
+| <component> | <inputs/props/content> | <events/actions> | <page/service/query/unknown> | <owner/unknown> | confirmed / candidate / unknown / new |
+```
+
+Classify cohesive feature regions even when they are used on one screen only.
+Do not promote every region into shared UI, and do not split trivial markup into
+components. When codebase evidence exists, name the exact reuse candidate/path.
+When it does not, use `candidate` or `unknown`; do not invent a folder, provider,
+service, declaration, route registration, or public export.
 
 PNG previews are optional evidence. Editable specs and wireframes remain the
 source of truth.

@@ -126,6 +126,8 @@ Extract:
 - Dependency, env, and migration boundaries.
 - Verification strategy, `commands_planned`, and `commands_skipped`.
 - Any declared parallel candidates.
+- The completed `plan_context.frontend_architecture` contract when the plan
+  changes a non-trivial frontend feature.
 - Solution-root layout when present (`product/`, `design/`, `backend/`, `frontend/`, `test/`, `.sdcorejs/`).
 
 ### 2. Detect execution track
@@ -210,6 +212,33 @@ navigation, or content folders for `plain-nextjs`.
 
 For mixed full-stack plans, classify as role-split and prepare to invoke `sdcorejs-parallel-dispatch`. If the plan came from `sdcorejs-solution-builder`, preserve the solution-root contract: product docs in `product/`, design handoff in `design/`, backend in `backend/`, frontend in `frontend/`, cross-stack tests in `test/`, and traceability/evidence in `.sdcorejs/`.
 
+#### Shared frontend architecture gate
+
+Before the execution-mode question, detect frontend scope from the approved
+plan, stack/profile, UI routes/screens/components, or frontend file tasks. This
+gate applies to track executors and to generic-harness work, including plain
+Angular, plain Next.js, React, Vue, Svelte, and other frontend stacks.
+
+For every non-trivial frontend task:
+
+1. Read `../_refs/shared/frontend-architecture.md`.
+2. Require `plan_context.frontend_architecture.required: true` and verify that
+   it records inspected project conventions, a route/page and child-component
+   tree, reuse/extend/wrap/create/inline file decisions, responsibilities, state
+   owners, service/data flow, provider lifecycle, registration, public exports,
+   architecture tests, and decomposition rationale.
+3. Verify planned file paths follow detected project conventions and are
+   derived from that contract. Example folder structures are greenfield
+   fallbacks, not mandatory layouts.
+4. Block code generation and return to `sdcorejs-plan` when the architecture
+   block is absent, incomplete, or contradicted by current project evidence.
+5. Allow `required: false` only when the plan gives a concrete backend-only or
+   trivial frontend reason.
+
+The route/page shell is a minimum boundary, not permission for a monolithic
+screen. Conversely, the gate must not invent child components, facades, stores,
+or public barrels without a meaningful responsibility and lifecycle reason.
+
 ### 3. Always ask parallel vs sequential
 Before any code/test generation, ask the user:
 
@@ -257,16 +286,21 @@ Pass the approved plan as the contract. The executor must not add scope without 
 Use the generic harness when no track-specific orchestrator matches.
 
 1. Create a progress checklist with one item per approved task plus finishing steps.
-2. Execute tasks in the approved order using the normal editing and shell tools,
+2. For frontend scope, enforce the shared frontend architecture gate above and
+   keep the approved file decisions, component tree, state ownership,
+   service/data flow, provider scope, registration, and public/private export
+   decisions visible in the checklist. Do not proceed from a generic framework
+   folder recipe.
+3. Execute tasks in the approved order using the normal editing and shell tools,
    including Write only for approved CREATE tasks.
-3. Keep edits inside `allowed_paths` and outside `prohibited_paths`.
-4. Run every verification command from `plan_context.commands_planned`; record
+4. Keep edits inside `allowed_paths` and outside `prohibited_paths`.
+5. Run every verification command from `plan_context.commands_planned`; record
    commands_run with exit codes and commands_skipped with reasons when a script,
    tool, package manager, service, or environment is unavailable.
-5. If code changed, present the standard finish gate, run write-producing docs
+6. If code changed, present the standard finish gate, run write-producing docs
    or task artifacts before ship, then run `sdcorejs-ship (verify-before-done
    mode)` and `sdcorejs-ship (branch-ready mode)` as the final read-only gate.
-6. If only docs/config changed, still run the planned verification and report
+7. If only docs/config changed, still run the planned verification and report
    evidence.
 
 The harness is intentionally conservative. If a task needs a domain-specific pattern not captured in the plan, stop and return to `sdcorejs-plan`.
@@ -292,6 +326,10 @@ execution_context:
   executor_reason: <short reason>
   generic_harness_used: true | false
   migration_request: true | false
+  frontend_architecture:
+    required: true | false
+    source: <approved plan path/section or not applicable reason>
+    conformance: verified | blocked | not-applicable
   working_tree_preflight:
     current_HEAD: <sha>
     dirty: true | false
@@ -336,6 +374,9 @@ execution_context:
 - Use `sdcorejs-design` as the executor for design-track FE handoff artifacts.
 - Use `sdcorejs-test` as the executor for test-track plans.
 - Use the generic harness fallback when no track matches.
+- Apply `../_refs/shared/frontend-architecture.md` to every non-trivial frontend
+  plan, including generic plain-framework work, and block generation when the
+  approved architecture contract is missing or incomplete.
 - Perform working-tree preflight before edits.
 - Obey `allowed_paths` and `prohibited_paths`.
 - Use package-manager/script discovery from the plan. Do not mix package
@@ -356,6 +397,9 @@ execution_context:
 - Mutate approved specs/plans instead of returning to the approval gate for a
   revision.
 - Route plain framework profiles to SDCoreJS-specific executors by default.
+- Let a route/page become the only component boundary for a complex screen, or
+  extract arbitrary wrappers/facades/stores that the approved architecture does
+  not justify.
 - Write after final branch-ready unless branch-ready is run again.
 
 ## Cross-references
@@ -364,3 +408,5 @@ execution_context:
 - `sdcorejs-git (workspace mode)` - isolates work when requested or needed
 - `sdcorejs-angular`, `sdcorejs-nestjs`, `sdcorejs-nextjs`, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` - track executors
 - `sdcorejs-ship (verify-before-done mode)` - acceptance verification gate
+- `../_refs/shared/frontend-architecture.md` - mandatory non-trivial frontend
+  architecture preflight and execution contract

@@ -90,7 +90,7 @@ If user picked Plausible → no extra dep (use plain script tag).
 │   │   ├── apple-icon.png
 │   │   └── layout.tsx                  ← root layout (handles redirect to default locale)
 │   ├── components/
-│   │   ├── sections/                   ← reusable blocks (hero, features, ...) — pages-and-blocks.md
+│   │   ├── sections/                   ← shared/reusable blocks with stable consumers only
 │   │   ├── layout/                     ← Header, Footer, LanguageSwitcher
 │   │   └── ui/                         ← Button, Card, Input, …
 │   ├── content/
@@ -314,7 +314,9 @@ Once the bootstrap is green, run `sdcorejs-explore (summary-refresh)` in write-a
 
 ## Anti-patterns
 - Putting page logic in `src/app/page.tsx` instead of `src/app/[locale]/page.tsx` — breaks i18n
-- Creating a one-file mega-component for the home page — sections must live in `src/components/sections/`
+- Creating a one-file mega-component for the home page — extract meaningful
+  responsibilities into feature-local blocks; promote a block to
+  `src/components/sections/` only when stable shared consumers exist
 - Defaulting `NEXT_PUBLIC_SITE_URL` to `localhost:3000` and forgetting to override before launch
 - Skipping `prettier-plugin-tailwindcss` → Tailwind classes drift into chaos within a week
 - Installing UI libraries (MUI, Chakra) "just in case" — we use custom components + lucide icons

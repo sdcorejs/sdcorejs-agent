@@ -6,13 +6,31 @@
 
 # Init Entity — Entity CRUD Module
 
+## Contents
+
+- [Reference and Description](#1-reference-name)
+- [Rules](#3-rules)
+- [Templates and Code Samples](#4-templates-and-code-samples)
+- [Example Input](#5-example-input)
+- [Functional Test Templates](#5-spec-templates-functional-testing)
+- [Example Output](#6-example-output)
+- [Implementation Checklist](#implementation-checklist)
+
 ## 1. Reference Name
 **Entity CRUD Module Generation**
 
 ## 2. Description
-Generates a complete entity management module following sdcorejs architecture patterns. Creates service layer, models/interfaces, and page components (list and detail) with full CRUD operations, reactive forms, and data tables.
+Generates a complete entity management feature following sdcorejs architecture
+patterns. It creates the approved service/model boundaries, routed page
+containers, and any meaningful feature-local child components required for CRUD,
+forms, tables, child collections, or workflows.
 
 This reference can synthesize UI structure from PRD text, screenshot/attribute images, mock API contracts, OpenAPI/Swagger/Postman artifacts, JSON examples, and sample cURL payloads, then map those into CREATE/UPDATE/DETAIL rendering strategies. When those artifacts are present, first complete `./input-analysis.md` so Core UI reuse, local project reuse, image decomposition, requirement mapping, and API/service assumptions are explicit before files are created.
+
+Before generating a non-trivial screen, complete
+`_refs/shared/frontend-architecture.md`. The approved component tree and service
+boundaries are the generation manifest; this reference must not collapse them
+back into a fixed list/detail pair.
 
 This reference assumes the target feature module is already known. If the request does not specify a module, the agent must resolve that first using the request intake flow.
 
@@ -28,6 +46,9 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
 - Confirm target module before generating entity files
 - Generate the feature module first if it does not exist (see `./init-module.md`)
 - For PRD, user story, acceptance criteria, screenshot, wireframe, Figma, mockup, mock API, OpenAPI/Swagger, Postman/Insomnia, JSON fixtures, sample cURL, or mixed visual/text input, read `./input-analysis.md` before deriving UI structure or creating components
+- Read `_refs/shared/frontend-architecture.md`, inspect existing project
+  conventions, and complete the Frontend architecture plan before creating any
+  non-trivial page/component/service file
 - For mock API, OpenAPI/Swagger, Postman/Insomnia, MSW/WireMock/Prism/JSON Server specs, endpoint tables, schemas, JSON fixtures, or sample cURL, read `./mock-api-input.md` before deriving model/service/screen contracts
 - Identify the primary entity and every related entity from API docs, mock API contracts, PRDs, Figma/image/screenshot input, business descriptions, cURL payloads, or schemas before creating files
 - Before creating model/interface/type/dto/service/store/repository/API-client files, scan the target codebase for existing contracts and symbols using the variants listed in `./reuse-existing-entities.md`
@@ -109,7 +130,11 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
   - `<MODULE>_C_<ENTITY>_<ACTION>` — common variant (e.g. `CRM_C_PRODUCT_LIST`)
   - `<MODULE>_<ENTITY>:<ACTION>`   — colon-separator variant (e.g. `CRM_PRODUCT:LIST`)
   - When applying to an existing project, detect the established convention and follow it. Never mix two conventions in the same project.
-- For root-scoped services, ensure module configuration token is provided at app root (`main.ts`)
+- Choose API service, facade/store, overlay coordinator, and pure collaborator
+  lifecycles explicitly. Use root/app scope only when the existing project and
+  stable cross-feature consumers justify it; use route/feature/page scope for
+  mutable feature state, component scope for overlay coordinators, and pure
+  functions for stateless collaborators when appropriate
 - Use `FormGroup` for all forms with validation
 - Implement 3-state pattern (CREATE/UPDATE/DETAIL) for detail component
 - Use `@SdTabComponent` decorator on list components
@@ -173,14 +198,25 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
 - When the request does not clearly define expected detail layout, ask one clarification question before final generation:
   - "<localized text>"
 - Reserve extension points for workflow actions in both list and detail (wired by `./actions.md`)
-- Entity pages must use 2-component structure for full-page pattern:
-  - `pages/list/list.component.ts`
-  - `pages/detail/detail.component.ts`
-  - URL routes map to `detail.component.ts` states:
-    - `/create` -> CREATE
-    - `/update/:id` -> UPDATE
-    - `/detail/:id` -> DETAIL (read-only)
-  - Side-drawer pattern is the compact exception: `pages/list` + `components/detail-side-drawer`
+- Every routed list/detail screen must have a route/page container. That shell is
+  the minimum boundary, not the maximum component count:
+  - keep route/query parameters, navigation, load/save orchestration, overall
+    form or query state, and screen composition in the page container;
+  - extract summary, filter, table, bulk-action, form-section, line-item,
+    workflow, modal/drawer, or other regions when they own a cohesive contract,
+    state/lifecycle, accessibility behavior, or independent test;
+  - keep small cohesive markup inline when extraction would only forward inputs,
+    duplicate state, add disproportionate prop drilling, or reduce line count;
+  - let typed child form sections receive the parent `FormGroup`/subgroup by the
+    detected convention; never create a second entity/form state;
+  - child components emit meaningful events and do not call raw API/router
+    boundaries unless current project architecture assigns that responsibility;
+  - a simple drawer with a few fields, no independent async region, and no child
+    collection may remain one cohesive component with no facade/store.
+- Preserve URL-state behavior when full-page routes are approved:
+  - `/create` -> CREATE
+  - `/update/:id` -> UPDATE
+  - `/detail/:id` -> DETAIL (read-only)
 - If required UI is not available in Core UI, generate a custom UI skeleton instead of skipping:
   - add `// CUSTOM_UI: <reason>` comment in component
   - render placeholder block for that UI area
@@ -254,7 +290,7 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
   - **Action flow coverage** (detail): verify invalid form blocks save, create path calls `create`, update path calls `update`, and navigation is correct
   - **Signal state coverage**: verify state transitions (`CREATE/UPDATE/DETAIL`) and computed flags (`isDetail`, title) work as expected
 - After generating a new module or entity, run tests immediately and report result:
-  - Preferred command: `npm run test -- --watch=false --include=src/libs/[module]/features/[entity]/**/*.spec.ts`
+  - Preferred command: `npm run test -- --watch=false --include=src/libs/[module]/[featureRoot]/[entity]/**/*.spec.ts`, after replacing `[featureRoot]` with the detected feature directory (`features` only as a greenfield fallback)
   - If include filter is not supported, run full `npm run test -- --watch=false` and summarize spec results
   - If environment lacks headless browser, report blocker explicitly and provide exact command for developer to run locally
 - Reserve extension points for workflow actions in both list and detail
@@ -342,10 +378,14 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
 - Do not force a full standalone migration when developer requests hybrid NgModule + standalone compatibility mode
 - Use ad-hoc permission code naming that breaks Module → Entity → Action order, or mix two conventions within the same project
 - Hard-code API URLs (use configuration tokens)
-- Add logic to components (delegate to services)
+- Put API/data-access or multi-service workflow logic in presentational child
+  components; keep UI event handling and local transient state in components and
+  delegate transport/orchestration to the approved boundary
 - Skip form validation before save
 - Create circular dependencies between modules
-- Import non-scoped components directly (use barrel exports)
+- Deep-import across feature boundaries or export feature-private route/child
+  components through broad barrels; within one feature, use direct local imports
+  when that is the detected convention
 - Force page detail for short common forms that can fit in side-drawer
 - Hard-wire workflow actions into all entities when not requested
 - Build ad-hoc top filter UIs that duplicate table external filter capability
@@ -384,7 +424,7 @@ All `.ts` code templates this reference emits live in template files — this fi
 
 - **Component + service + routes templates** — `_refs/angular/templates/entity-skeleton.md`
   - Preconditions, layout-variant decisions, anchor heuristic
-  - Permission keyed route template (2 components + URL states)
+  - Permission keyed route template (route/page containers + URL states)
   - Permission directive template
   - Test coverage selection
   - Detail UI mode + pattern selection
@@ -396,7 +436,14 @@ All `.ts` code templates this reference emits live in template files — this fi
   - `routes.ts` (side-drawer variant)
   - `detail.component.ts` (UnifiedCompact) and `detail.component.ts` (AdaptiveSplitDetail variant)
   - `[entity].routes.spec.ts` (permission validation)
-  - `index.ts` (barrel export)
+  - `index.ts` (intentional public API only)
+
+- **Architecture-driven feature boundary templates** —
+  `_refs/angular/templates/feature-component-boundaries.md`
+  - route/page orchestration shell with standalone child imports
+  - feature-local filters, table, bulk-action, form-section, and child-collection contracts
+  - optional feature facade, form builder, and mapper collaborators
+  - page orchestration, child contract, and provider lifecycle tests
 
 - **Spec.ts templates** — `_refs/angular/templates/entity-tests.md`
   - Default coverage note (`standard` unless the user explicitly overrode it — no clarify prompt)
@@ -448,6 +495,9 @@ Worked Product entity (full code samples for model + service + list + detail) li
 ## Implementation Checklist
 
 - [ ] Read `./reuse-existing-entities.md` and complete the reuse preflight
+- [ ] Complete `_refs/shared/frontend-architecture.md` with detected conventions,
+      reuse decisions, component tree, state/service ownership, provider scope,
+      registration, public exports, tests, and decomposition rationale
 - [ ] Identify primary and related entities
 - [ ] Scan existing model/interface/type/dto files and symbols
 - [ ] Scan existing service/api/repository/store files and symbols
@@ -459,11 +509,13 @@ Worked Product entity (full code samples for model + service + list + detail) li
 - [ ] Create `services/[entity].mock-data.ts` with 20–40 domain-realistic seed rows immediately after SaveReq/DTO are finalized
 - [ ] Create service with mock-first CRUD (`localStorage`) by default; use BaseService/API mode only when a runnable backend endpoint/configuration and project convention are explicit
 - [ ] Add mapper/internal API types when raw backend shape differs from the Service contract
-- [ ] Create list component with @SdTabComponent decorator
-- [ ] Create detail component with 3-state machine
+- [ ] Create route/page list container with @SdTabComponent and only the approved feature-local children
+- [ ] Create route/page detail container with 3-state machine and only the approved form/workflow/collection children
 - [ ] Define route configuration with lazy loading
-- [ ] Export all from barrel index.ts
-- [ ] Service is `@Injectable({ providedIn: 'root' })` (default) — no route-level provider; if scoping is intentionally narrower, document why in the file header
+- [ ] Register standalone imports or NgModule declarations/imports/exports and providers according to detected project style
+- [ ] Keep route pages and feature-local children private; export only symbols with verified external consumers
+- [ ] State every service/collaborator provider scope and lifecycle reason; do not default mutable feature state to root
+- [ ] Test route/page orchestration and each meaningful child input/output/state contract
 - [ ] Test CREATE/UPDATE/DETAIL flows
 - [ ] Validate form before save
 - [ ] Test file upload functionality

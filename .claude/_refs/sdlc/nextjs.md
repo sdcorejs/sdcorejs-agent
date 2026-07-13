@@ -127,9 +127,16 @@ Next: run `sdcorejs-spec` to draft the spec and ask for confirmation in the same
 ## Spec
 
 ### Path conventions
+Inspect and preserve the site's existing route-colocation, feature, shared
+section, UI, content, data-access, alias, and test conventions. The paths below
+describe the current build-website greenfield pack; they are fallbacks, not a
+structure to impose on an established site.
+
 - Pages (App Router): `app/[locale]/<route>/page.tsx`
 - Layouts: `app/[locale]/layout.tsx`, nested per route
-- Components: `components/` (organized by section/block)
+- Cross-page reusable sections: `components/sections/` only for stable reusable contracts
+- Design-system UI: `components/ui/` only when the project owns those primitives
+- Feature-local blocks: colocate with the route or use the detected feature-local convention; do not promote one-off behavior globally
 - Content (externalized): `content/<locale>/<route>.{json|md}`
 - Assets: `public/` (logos, OG fallback, brand images)
 - API routes: `app/api/<endpoint>/route.ts`
@@ -140,6 +147,13 @@ Next: run `sdcorejs-spec` to draft the spec and ask for confirmation in the same
 ### Architecture section emphasis
 Capture:
 - App Router boundaries — which pages are server components, which are client, why
+- The completed `Frontend architecture plan` from
+  `_refs/shared/frontend-architecture.md`: inspected conventions, route/page and
+  feature-local/shared component tree, reuse decisions, responsibility/state
+  ownership, data/query/action flow, server/client boundaries, registration and
+  exports, and architecture tests
+- Which cohesive one-off blocks remain feature-local and which simple static
+  markup stays inline, with a responsibility-based reason
 - i18n routing strategy (localized pathnames `/san-pham` vs `/products`)
 - Caching strategy per route (default 30-min ISR; exceptions explicit)
 - OG strategy (static fallback + dynamic per `<route>/opengraph-image.tsx`)
@@ -162,12 +176,18 @@ Capture:
 
 ## Plan
 
+Before page or section tasks are authored, read
+`_refs/shared/frontend-architecture.md`. Keep each route page as a Server
+Component/composition and data boundary where practical. A one-off interactive
+block may be a feature-local Client Component; single use does not force it
+inline and does not justify promotion into the shared section library.
+
 ### Phase grouping
 Each phase below maps to a write-code reference pack the `sdcorejs-nextjs` orchestrator dispatches (under `_refs/nextjs/build-website/write-code/`).
 1. **Init** (only if new site): `init-site` pack (create-next-app + standard deps + folder scaffold)
 2. **Theme**: `theme` pack (palette + typography + tokens)
 3. **i18n**: `i18n` pack (next-intl middleware, message JSON, language switcher, localized pathnames)
-4. **Pages & blocks**: `pages-and-blocks` pack (compose section blocks, externalize content)
+4. **Pages & blocks**: `pages-and-blocks` pack (implement the approved route/page, feature-local, shared-section, design-system, and client-island tree; externalize content)
 5. **SEO baseline**: `seo` pack (generateMetadata factory, JSON-LD, sitemap, robots, manifest, favicons)
 6. **OG preview**: `og-preview` pack (static fallback + dynamic `opengraph-image.tsx` per route)
 7. **Contact form**: `contact-form` pack (zod + react-hook-form + API route + Resend + rate limit)

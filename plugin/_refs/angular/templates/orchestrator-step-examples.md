@@ -145,13 +145,18 @@ Service model rule: `ProductSaveReq` and `ProductDTO` are what `ProductService` 
 
 ### product.service.ts
 
+This example selects feature-route scope because the mock store is owned only by
+the Product sample. A real generation run must use the provider scope approved
+by `_refs/shared/frontend-architecture.md`; use `providedIn: 'root'` only when a
+stateless service has stable app-wide consumers and matches project convention.
+
 ```typescript
 import { Injectable } from '@angular/core';
 import { MockCrudStore } from '@sample/services';
 import { ProductDTO, ProductSaveReq } from './product.model';
 import { PRODUCT_SEED_DATA } from './product.mock-data';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class ProductService {
   readonly #store = new MockCrudStore<ProductDTO, ProductSaveReq>(
     'product',
@@ -220,21 +225,26 @@ export const PROMOTION_SEED_DATA: PromotionDTO[] = [
 
 ## Step 4 — Generate Routes (`product.routes.ts`)
 
-Lazy-load components. No `providers` array on the entity route — the entity service is `@Injectable({ providedIn: 'root' })`, and the lib-scoped tokens are wired by `<Lib>Module.useValue({...})` at root (see [`init-module.md`](../write-code/init-module.md) §`[module].module.ts`).
+Lazy-load components. This example registers the feature-owned mock service at
+the route so its mutable state lifecycle follows the feature. Omit the route
+provider only when the approved architecture selects an app/root-provided
+stateless service. Lib-scoped configuration tokens remain wired by
+`<Lib>Module.useValue({...})` at root (see [`init-module.md`](../write-code/init-module.md)
+§`[module].module.ts`).
 
 ```typescript
 import { Routes } from '@angular/router';
-import { ListComponent } from './pages/list/list.component';
-import { DetailComponent } from './pages/detail/detail.component';
+import { ProductService } from './services/product.service';
 
 export const productRoutes: Routes = [
   {
     path: '',
+    providers: [ProductService],
     children: [
-      { path: '', component: ListComponent },
-      { path: 'create', component: DetailComponent },
-      { path: 'detail/:id', component: DetailComponent },
-      { path: 'update/:id', component: DetailComponent }
+      { path: '', loadComponent: () => import('./pages/list/list.component').then(m => m.ListComponent) },
+      { path: 'create', loadComponent: () => import('./pages/detail/detail.component').then(m => m.DetailComponent) },
+      { path: 'detail/:id', loadComponent: () => import('./pages/detail/detail.component').then(m => m.DetailComponent) },
+      { path: 'update/:id', loadComponent: () => import('./pages/detail/detail.component').then(m => m.DetailComponent) }
     ]
   }
 ];
@@ -242,11 +252,16 @@ export const productRoutes: Routes = [
 
 ## Step 5 / Step 6 — List + Detail components
 
-For the list and detail component bodies (`SdTable`, audit columns, action buttons, `CREATE/UPDATE/DETAIL` state machine, stale-id recovery, form refinement), defer to the screen reference packs the orchestrator loads on demand:
+For route/page shells and any approved feature-local children (`SdTable`, audit
+columns, filters, actions, `CREATE/UPDATE/DETAIL` state, form sections, child
+collections), defer to the screen reference packs the orchestrator loads on
+demand:
 
 - List page → see [`screen-list.md`](../write-code/screen-list.md)
 - Detail component (shell + CREATE / UPDATE / DETAIL states + form refinement) → see [`screen-detail.md`](../write-code/screen-detail.md)
 - Action buttons layered on top (workflow / bulk / custom side-effects) → see [`actions.md`](../write-code/actions.md)
+- Architecture-driven page/child/collaborator/test templates → see
+  [`feature-component-boundaries.md`](./feature-component-boundaries.md)
 
 ## Worked end-to-end — Employee entity
 

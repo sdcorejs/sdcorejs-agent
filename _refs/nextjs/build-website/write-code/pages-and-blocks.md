@@ -5,7 +5,10 @@
 # Build Website — Pages & Section Blocks
 
 ## Purpose
-A landing site is composition: same 8-10 reusable section types arranged differently per page. This skill defines the section library, the per-page composition rules, and the strict content-externalization rule that makes the site i18n-ready, CMS-ready, and review-stable.
+A landing site is composition: route pages coordinate content/data and compose
+feature-local blocks, cross-page reusable sections, and design-system UI. This
+reference defines those boundaries and the strict content-externalization rule
+that makes the site i18n-ready, CMS-ready, and review-stable.
 
 ## When invoked
 - Automatic after `theme.md` + `i18n.md` in a "Full build" dispatch
@@ -15,6 +18,38 @@ A landing site is composition: same 8-10 reusable section types arranged differe
 Prerequisites:
 - Theme tokens exist (`theme.md` done)
 - next-intl is wired (`i18n.md` done, or at least messages files exist)
+- The `Frontend architecture plan` from
+  `_refs/shared/frontend-architecture.md` is complete for non-trivial work
+
+## Project conventions and component placement
+
+Inspect existing route colocation, feature folders, `components/sections`,
+`components/ui`, content loaders, queries/actions, aliases, exports, and tests
+before selecting paths. Preserve a coherent existing structure. The paths in
+this build-website reference are greenfield fallbacks only.
+
+Classify every UI region:
+
+- **Route page**: Server Component/composition and data boundary where possible;
+  owns route params, content/data loading, metadata/caching coordination, and
+  page composition.
+- **Feature-local component**: a cohesive block owned by one route/feature. It
+  may be used once and still be valid when it has meaningful behavior, state,
+  accessibility, testing, data mapping, or a Server/Client boundary.
+- **Cross-page reusable section**: a stable prop/content contract with real
+  consumers across pages. This is what belongs in `components/sections/`.
+- **Design-system UI component**: a domain-agnostic primitive owned by the
+  project's UI layer.
+- **Client-side interactive island**: the smallest meaningful cohesive
+  interaction that needs hooks, events, or browser APIs. Do not create one
+  Client Component per button when the interaction belongs together.
+
+Keep a simple static one-off block inline. Extract a one-off pricing estimator,
+comparison tool, calculator, filterable catalog, or other interactive/cohesive
+region as a feature-local component instead of forcing it into `page.tsx` or
+promoting it globally. Record `reuse`, `extend`, `wrap`,
+`create_feature_local`, `create_shared`, or `keep_inline` with exact candidate
+paths and ownership.
 
 ## The strict rule — no hardcoded strings
 
@@ -29,7 +64,10 @@ Content contract boundary:
 - Section props are the public component contract; they do not have to match raw CMS/API fields 1:1.
 - UI-only fields such as `selected`, `expanded`, `checked`, `disabled`, `children`, `label`, or `displayName` stay in local component ViewModels/state unless the content getter derives and documents them as part of the section prop contract.
 
-## Section library — what's in `src/components/sections/`
+## Shared section library — greenfield candidates for `src/components/sections/`
+
+Materialize only sections required by the approved page set. Reuse/extend an
+existing compatible section before creating another one.
 
 | Section | File | Use case | Props |
 |---|---|---|---|
@@ -188,18 +226,26 @@ Rules for section components:
 ## Adding a new page
 
 Process:
-1. Decide which sections from the library compose the page (typical: hero + 2-4 sections + contact CTA).
+1. Complete the approved component tree and decide which existing shared
+   sections, feature-local blocks, and inline regions compose the page.
 2. Create `src/app/[locale]/<route>/page.tsx`.
-3. Create `src/content/<locale>/<route>.ts` + i18n JSON files.
-4. Wire `generateMetadata` (see `seo.md`).
-5. Add the page to `src/app/sitemap.ts` automatically (sitemap reads from a route registry).
-6. Add per-locale path to `src/i18n/routing.ts` `pathnames` (see `i18n.md`) if locales should use different URLs (e.g. `/san-pham` (VI) vs `/products` (EN)).
-7. Add nav link in `components/layout/header.tsx`.
+3. Create only the feature-local component files approved for cohesive or
+   interactive regions, using route colocation or the detected feature convention.
+4. Create `src/content/<locale>/<route>.ts` + i18n JSON files.
+5. Wire `generateMetadata` (see `seo.md`).
+6. Add the page to `src/app/sitemap.ts` automatically (sitemap reads from a route registry).
+7. Add per-locale path to `src/i18n/routing.ts` `pathnames` (see `i18n.md`) if locales should use different URLs (e.g. `/san-pham` (VI) vs `/products` (EN)).
+8. Add nav link in `components/layout/header.tsx`.
+9. Add page-composition/data tests and focused interactive child-contract tests
+   following the project's test convention.
 
 ## Rules
 
 ### MUST DO
 - Compose pages from sections — no monolithic page.tsx
+- Keep route pages as composition/data boundaries and implement cohesive one-off
+  interactive blocks as feature-local components
+- Keep Client Components at the smallest meaningful cohesive interaction boundary
 - Externalize ALL strings to content files; sections receive props
 - Map raw CMS/API/content shapes into typed section props at the content loader boundary
 - Use tokens from `theme.md` for color / spacing — never raw hex/Tailwind colors
@@ -208,6 +254,8 @@ Process:
 - Apply `"use cache"` + `cacheLife()` per page (from `caching.md`)
 - Wire `generateMetadata` per page (from `seo.md`)
 - Add new pages to sitemap + locale routing
+- Keep feature-local blocks private; export shared sections/design-system UI only
+  through the detected public boundary when real consumers exist
 - Before adding date/number/string/array/filter/query/random/browser helper code in page, section, or content mapper files, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior
 
 ### MUST NOT
@@ -217,14 +265,23 @@ Process:
 - Skip `alt` on images
 - Use `<img>` over `next/image`
 - Use `dangerouslySetInnerHTML` for content (XSS risk; if rich text needed, use a markdown renderer with sanitizer)
-- Add a section to one page only — if it's used once, it's not a section (just inline in the page)
+- Force every one-off block inline, or place every extracted block in
+  `components/sections/`; decide between inline, feature-local, and shared from
+  responsibility and ownership
+- Extract one-element/pass-through wrappers, duplicate state between page and
+  child, or create client islands solely to reduce file length
 - Compose pages with >7 sections — that's information overload; split or trim
 - Recreate helper behavior already covered by `@sdcorejs/utils`, or import `BrowserUtilities` from server components
 
 ## Anti-patterns
 - **Hardcoded products array inside ProductsSection.tsx** — common starter-project mistake. Solution: move to `content/<locale>/products.ts`.
 - **Same section copy-pasted across pages** with slight variations — extract a section component with props.
-- **One-off section that doesn't fit the library** — usually means the section is too specific. Generalize OR keep inline in that page only (do not add to `components/sections/`).
+- **One-off interactive estimator forced inline** — keep the route page as the
+  Server Component/composition boundary and colocate a feature-local Client
+  Component for the estimator. Do not generalize it into the shared section
+  library until a stable second consumer exists.
+- **Static one-line block extracted into a component** — keep it inline when it
+  has no semantic, state, accessibility, testing, or Server/Client boundary.
 - **Section that imports specific content** (e.g. `Features` importing `homeFeatures` directly) — Features should accept items prop, callers pass content.
 - **Tailwind class chaos** like `bg-orange-500 hover:bg-orange-600 text-white` in 8 places — extract `Button variant="primary"` to `components/ui/button.tsx`.
 - **`useState` in a section that doesn't need it** — server-render whenever possible.

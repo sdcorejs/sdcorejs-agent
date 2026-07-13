@@ -118,11 +118,17 @@ Next: run `sdcorejs-spec` to draft the spec and ask for confirmation in the same
 ## Spec
 
 ### Path conventions
-- Module folder: `src/libs/<module>/`
-- Module bootstrap files: `src/libs/<module>/<module>.configuration.ts`, `<module>.module.ts`, `routes.ts`, `guards/`, `configurations/`
-- Entity folder: `src/libs/<module>/features/<entity>/`
-- Entity bootstrap: `<entity>.routes.ts`, `services/<entity>.{model,service,mock-data}.ts`, `pages/{list,detail}/{list,detail}.component.ts`
-- Tests: alongside source, `.spec.ts` suffix
+Detect and preserve the target project's module, route, component, service,
+public API, alias, and test layout first. The paths below are a greenfield Core
+UI fallback only; they must not override an established project convention.
+
+- Module folder fallback: `src/libs/<module>/`
+- Module bootstrap fallback: `src/libs/<module>/<module>.configuration.ts`, `<module>.module.ts`, `routes.ts`, `guards/`, `configurations/`
+- Entity folder fallback: `src/libs/<module>/features/<entity>/`
+- Route/page shell fallback: `pages/<screen>/<screen>.component.ts`
+- Feature-local child fallback: `components/<cohesive-region>/<cohesive-region>.component.ts`
+- Data/collaborator fallback: use detected `services/`, `data-access/`, `mappers/`, `validators/`, or equivalent; create only justified files
+- Tests: follow the detected convention; colocate `.spec.ts` only when that is the project pattern
 
 ### Architecture section emphasis
 Capture:
@@ -131,6 +137,12 @@ Capture:
 - Mock-first vs real-API readiness
 - Permission codes introduced
 - Upload-file configuration if relevant (must be at app root in `main.ts`)
+- The completed `Frontend architecture plan` from
+  `_refs/shared/frontend-architecture.md`: detected conventions, reuse
+  decisions, route/page and feature-local component tree, responsibility and
+  state ownership, service/data flow, provider lifecycle, declarations/imports,
+  route registration, feature-private symbols, public exports, and tests
+- Why each extracted component is cohesive and why smaller regions remain inline
 
 ### Acceptance criteria examples
 - [ ] User can navigate to `/<module>/<entity>` and see ≥20 seed rows
@@ -153,11 +165,17 @@ visual/text input, include an early implementation step that loads
 analysis plus the matching UI decomposition, requirement mapping, or image+PRD
 mapping before code is written.
 
+For every non-trivial Angular screen, load
+`_refs/shared/frontend-architecture.md` and complete the architecture block
+before generating files. Task paths come from the approved component tree and
+service boundaries. A routed list/detail page is the minimum container boundary,
+not the maximum number of components.
+
 ### Phase grouping — `post-hoc` coverage (OVERRIDE — only when the user explicitly chooses post-hoc)
 1. **Module bootstrap** (only if new module): configuration, api configuration, guard, module, routes, register in app.routes + main.ts
 2. **Entity model + service + mock**: model.ts, mock-data.ts, service.ts (MockCrudStore), index.ts
-3. **Entity routes + components**: `<entity>.routes.ts`, `pages/list/list.component.ts`, `pages/detail/detail.component.ts`
-4. **Form refinement (if non-trivial)**: custom validators, FormArray, cross-field rules — handled inside `21-screen-detail`
+3. **Entity routes + approved component tree**: route/page containers plus only the feature-local children justified by the frontend architecture plan
+4. **Form refinement (if non-trivial)**: custom validators, FormArray, cross-field rules, form sections, and child-collection editors without duplicated form/entity state
 5. **Actions (if any)**: workflow transitions, bulk operations, custom side-effects via `31-actions`
 6. **Tests** (at `standard` coverage by default): `.routes.spec.ts`, `.list.component.spec.ts`, `.detail.component.spec.ts`
 
@@ -170,7 +188,7 @@ TDD is the default ordering: test bones come earlier. The mechanical "Module boo
    - `*.routes.spec.ts` — permission guards (test that unauthorized request is blocked)
    - `*.list.component.spec.ts` — filter behavior, sort, bulk action visibility
    - `*.detail.component.spec.ts` — state transitions (CREATE / UPDATE / DETAIL), validator triggers, side-effect (e.g. workflow action call)
-4. **Entity routes + components** — implement to make Phase 3 tests pass; verify each `it` flips red → green
+4. **Entity routes + approved component tree** — implement route/page orchestration and each meaningful child contract to make Phase 3 tests pass; verify each `it` flips red → green
 5. **Workflow (if enabled)** — extends Phase 3 with workflow tests, then implements actions
 6. **Form refinement** — same TDD loop for custom validators (validators are easy to TDD — pure functions)
 7. **Tests fill** — fill remaining `*.spec.ts` bodies that weren't covered in Phase 3 (e.g. edge cases beyond acceptance criteria)
@@ -198,6 +216,24 @@ If layout is `side-drawer`, omit `pages/detail/` and add `components/detail-side
 - CREATE/UPDATE drawer states remain Core UI forms.
 - DETAIL/view drawer state uses compact read-only facts by default for simple data: promoted business identifier in the header, optional status badge/chip near the title, label-left/value-right rows for short facts, and full-width long text only when needed.
 - Do not duplicate header-promoted code/status in body facts unless the spec asks for audit/full-field view.
+- A cohesive drawer with a few fields, no child collection, and no independent
+  async workflow may remain one component. Do not generate one component per
+  field or a facade/store without a concrete coordination need.
+
+### Provider and public API decisions
+
+- Detect standalone, NgModule, or hybrid style before choosing imports,
+  declarations, exports, and providers. Never declare a standalone component in
+  an NgModule.
+- Name every service/facade scope and lifecycle reason. Stateless shared API
+  services may follow the existing app/root convention; mutable feature
+  facades/stores belong at route/feature/page scope; overlay coordinators belong
+  at component scope; pure mappers/validators remain functions when appropriate.
+- Record lazy route registration and which parent imports every feature-local
+  standalone child.
+- Keep route pages and feature-local children out of global barrels. Export only
+  contracts with verified external consumers, and avoid cross-feature deep
+  imports or `export *` barrels that can create cycles.
 
 ### Standard-coverage spec layer
 - `*.routes.spec.ts` — routing guards + permission gating
