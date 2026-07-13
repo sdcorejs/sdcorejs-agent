@@ -70,6 +70,15 @@ function executableSource(source) {
     .replace(/^[ \t]*\/\/[^\r\n]*(?:\r?\n|$)/gm, '');
 }
 
+function markdownSection(source, heading) {
+  const marker = `## ${heading}`;
+  const start = source.indexOf(marker);
+  assert.notEqual(start, -1, `${marker} section must exist`);
+  const bodyStart = source.indexOf('\n', start) + 1;
+  const nextSection = source.indexOf('\n## ', bodyStart);
+  return source.slice(bodyStart, nextSection === -1 ? source.length : nextSection);
+}
+
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
 
@@ -651,6 +660,76 @@ test('phase 1: frontend architecture preflight covers decomposition and anti-ove
   assert.match(executePlanSkill, /Shared frontend architecture gate/);
   assert.match(executePlanSkill, /plain\s+Angular,\s+plain\s+Next\.js,\s+React,\s+Vue,\s+Svelte/);
 
+  const angularPurpose = markdownSection(angularSkill, 'Purpose');
+  const angularDispatch = markdownSection(angularSkill, 'Dispatch table');
+  const activeAngularOrchestratorContract = `${angularPurpose}\n${angularDispatch}`;
+  const forbiddenFixedComponentAnchors = [
+    {
+      label: 'fixed Components (List, Detail) output',
+      pattern: /Components\s*\(\s*List\s*,\s*Detail\s*\)/i,
+      sample: '- Components (List, Detail)',
+    },
+    {
+      label: 'fixed full CRUD model/service/routes/list/detail output',
+      pattern: /full CRUD\s*\(\s*model\s*\+\s*service\s*\+\s*routes\s*\+\s*list\s*\+\s*detail\s*\)/i,
+      sample: '| New entity with full CRUD (model + service + routes + list + detail) | init-entity |',
+    },
+    {
+      label: 'worded two-component mandate',
+      pattern: /must use a two-component structure/i,
+      sample: 'Entity pages must use a two-component structure.',
+    },
+    {
+      label: 'numeric two-component mandate',
+      pattern: /must use a 2-component structure/i,
+      sample: 'Entity pages must use a 2-component structure.',
+    },
+  ];
+  const assertNoFixedComponentAnchoring = source => {
+    const activeSource = executableSource(source);
+    for (const forbidden of forbiddenFixedComponentAnchors) {
+      assert.doesNotMatch(
+        activeSource,
+        forbidden.pattern,
+        `active Angular orchestrator contract must not contain ${forbidden.label}`,
+      );
+    }
+  };
+
+  assertNoFixedComponentAnchoring(activeAngularOrchestratorContract);
+
+  const commentedHistoricalExamples = forbiddenFixedComponentAnchors
+    .map(forbidden => `<!-- historical migration example: ${forbidden.sample} -->`)
+    .join('\n');
+  assertNoFixedComponentAnchoring(`${activeAngularOrchestratorContract}\n${commentedHistoricalExamples}`);
+
+  for (const forbidden of forbiddenFixedComponentAnchors) {
+    const mutatedContract = `${activeAngularOrchestratorContract}\n${forbidden.sample}`;
+    assert.notEqual(mutatedContract, activeAngularOrchestratorContract, `${forbidden.label} mutation must be applied`);
+    assert.throws(
+      () => assertNoFixedComponentAnchoring(mutatedContract),
+      { name: 'AssertionError' },
+      `${forbidden.label} mutation must fail the active-instruction regression`,
+    );
+  }
+
+  assert.match(
+    angularPurpose,
+    /Domain and transport contracts[\s\S]*Data-access services and justified feature collaborators[\s\S]*Lazy route\/page containers[\s\S]*Feature-local components derived from cohesive responsibilities[\s\S]*Reused shared\/Core UI components where justified/,
+  );
+  assert.match(
+    angularDispatch,
+    /New entity with full CRUD \(domain\/data contracts \+ data-access services and justified collaborators \+ routes\/page containers \+ architecture-derived feature components\)/,
+  );
+  assert.match(angularPurpose, /minimum screen boundaries, not a maximum component count/i);
+  assert.match(angularPurpose, /simple cohesive screen may remain one page component/i);
+  assert.match(angularPurpose, /Feature-local extraction does not require multiple consumers/i);
+  assert.match(angularPurpose, /shared or public promotion requires stronger ownership and consumer\s+evidence/i);
+  assert.match(
+    frontendArchitecture,
+    /Promote a component to a shared\/design-system boundary only when it is[\s\S]*multiple stable consumers[\s\S]*explicitly owned by the\s+project's shared UI layer/i,
+  );
+
   // Scenario 1: a complex Angular list gets meaningful route/page child boundaries.
   assert.match(angularScreenList, /summary[\s\S]*filters[\s\S]*result table[\s\S]*bulk-action toolbar/i);
   assert.match(angularBoundaryTemplates, /\[Entity\]Summary[\s\S]*\[Entity\]Filters[\s\S]*\[Entity\]Table[\s\S]*\[Entity\]BulkActions/);
@@ -661,6 +740,10 @@ test('phase 1: frontend architecture preflight covers decomposition and anti-ove
   assert.match(angularScreenDetail, /four-field drawer[\s\S]*cohesive/i);
   assert.match(angularInitEntity, /simple drawer[\s\S]*may remain one cohesive component with no facade\/store/i);
   assert.doesNotMatch(angularInitEntity, /Entity pages must use 2-component structure/);
+  assert.match(
+    angularInitEntity,
+    /Worked Product entity[\s\S]*routed page containers[\s\S]*approved architecture-derived feature components/i,
+  );
 
   // Scenario 3: existing reusable components/services win with exact evidence.
   assert.match(angularInputAnalysis, /existing reusable components[\s\S]*API\/data-access\s+abstractions/i);
@@ -776,6 +859,12 @@ test('phase 1: Angular architecture templates keep selectors, providers, routes,
 
   assert.match(initPortal, /Render every unconditional file plus only the conditional selector\s+files approved by the frontend architecture plan/i);
   assert.doesNotMatch(initPortal, /render(?:ing)? every file|every listed section rendered/i);
+  assert.match(orchestratorExamples, /Routed pages and approved feature components/);
+  assert.match(
+    orchestratorExamples,
+    /simple worked request[\s\S]*two cohesive routed\s+page containers are intentional[\s\S]*not a maximum\s+component count/i,
+  );
+  assert.doesNotMatch(orchestratorExamples, /List \+ Detail components/);
 
   assert.doesNotMatch(angularSkill, /<entity>\.routes\.ts[^\n]*no providers/i);
   const featureProviderPair = entitySkeleton.match(

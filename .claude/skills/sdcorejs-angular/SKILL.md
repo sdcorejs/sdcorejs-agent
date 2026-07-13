@@ -21,11 +21,20 @@ Before executing this skill:
 Single entry point for generating SDCoreJS/Core UI Angular portal code.
 Transforms an approved plan from `sdcorejs-execute-plan` plus the user's
 confirmed Core UI portal scope into complete CRUD entity code:
-- Model (DTO, SaveReq, validators)
-- Service (mock-first CRUD via centralized seed data file)
-- Routes (lazy-loaded)
-- Components (List, Detail)
+- Domain and transport contracts where required (DTO, SaveReq, validators)
+- Data-access services and justified feature collaborators
+- Lazy route/page containers
+- Feature-local components derived from cohesive responsibilities
+- Reused shared/Core UI components where justified
 - Workflow / bulk / custom action buttons
+
+List and detail routes remain common screen concepts. Their routed page
+containers are the minimum screen boundaries, not a maximum component count. A
+simple cohesive screen may remain one page component; extract a feature-local
+child only for a meaningful responsibility identified by the approved
+architecture. Feature-local extraction does not require multiple consumers,
+while shared or public promotion requires stronger ownership and consumer
+evidence.
 
 ## Eligibility preflight
 
@@ -93,7 +102,7 @@ For each scope item in the approved plan dispatched by
 | New portal (no existing project yet) | [`_refs/angular/write-code/init-portal.md`](_refs/angular/write-code/init-portal.md) (template baseline; run FIRST before any module work) |
 | Always — admin screens (account/role/permission [+tenant/department enterprise]) | [`_refs/angular/write-code/admin-screens.md`](_refs/angular/write-code/admin-screens.md) (ALWAYS run, after init-portal) |
 | New module (`src/libs/<module>/`) | [`_refs/angular/write-code/init-module.md`](_refs/angular/write-code/init-module.md) |
-| New entity with full CRUD (model + service + routes + list + detail) | [`_refs/angular/write-code/init-entity.md`](_refs/angular/write-code/init-entity.md) |
+| New entity with full CRUD (domain/data contracts + data-access services and justified collaborators + routes/page containers + architecture-derived feature components) | [`_refs/angular/write-code/init-entity.md`](_refs/angular/write-code/init-entity.md) |
 | Shared frontend architecture preflight before non-trivial UI generation | [`_refs/shared/frontend-architecture.md`](_refs/shared/frontend-architecture.md) |
 | Image/PRD/UI reuse preflight before UI-affecting work | [`_refs/angular/write-code/input-analysis.md`](_refs/angular/write-code/input-analysis.md) |
 | PO/BA PRD-only portal/module prototype with no API/backend/design | [`_refs/angular/write-code/po-ba-prototype.md`](_refs/angular/write-code/po-ba-prototype.md) |

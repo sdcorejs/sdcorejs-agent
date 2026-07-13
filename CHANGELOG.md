@@ -7,6 +7,19 @@ package is private and is not published to npm.
 
 ## Unreleased
 
+- Complete the governed frontend architecture contract from planning through
+  execution and review, including project-convention discovery, explicit
+  component/state/service/provider/public-API decisions, and design handoff.
+- Treat Angular list/detail pages as routed minimum boundaries rather than a
+  fixed two-component model; support responsibility-derived feature-local
+  components, conditional collaborators and `base-select`, private feature
+  exports, and justified shared/Core UI reuse while preserving cohesive simple
+  screens.
+- Preserve feature-local one-off interactive Next.js components and minimal
+  Client Component islands, remove the remaining fixed list/detail wording,
+  strengthen scoped negative/positive mutation regressions, and add honest
+  cross-tool live-agent validation scenarios.
+
 ## 0.5.1
 
 - Add generated mirror ownership policy and pull request validation checklist.
