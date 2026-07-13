@@ -2,7 +2,7 @@
 
 Current validation snapshot for the SDCoreJS SDLC Agent repository.
 
-Date: 2026-07-11
+Date: 2026-07-13
 
 ## Current Layout
 
@@ -39,6 +39,56 @@ Date: 2026-07-11
 | Parallel | `sdcorejs-parallel-dispatch` |
 | Finish | `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)` when durable knowledge surfaced |
 
+## Frontend architecture close-out evidence - 2026-07-13 working tree
+
+Evidence target:
+
+- Branch: `main`.
+- Base HEAD: `1e179fa67bd12d78c15bd091ed53f03889788b77`.
+- State: uncommitted frontend architecture close-out working tree, including
+  canonical Angular source, generated mirrors, deterministic regressions,
+  release/adoption docs, and approved workflow artifacts.
+- This is dirty-diff evidence, not a release or committed-CI claim.
+
+### Commands and observed results
+
+| Command | Exit | Result and relevant observation |
+|---|---:|---|
+| `npm ci` | 1 | Dependency files were installed, but the `prepare` lifecycle failed when Lefthook tried to rename `C:\ProgramData\git-secrets\hooks\pre-commit`; the machine-level `core.hooksPath` is not writable by this session. |
+| `npm ci --ignore-scripts` | 0 | Lockfile dependency graph installed successfully: 3 packages added, 4 audited, 0 vulnerabilities. This fallback deliberately skipped the failing external hook install. |
+| `npm run sync:skills` | 0 | Regenerated 23 skills plus `.claude`, plugin, Codex `_refs`, and Cursor distribution mirrors from canonical sources. |
+| `npm run check:skills` | 0 | Node mirror checker reported all skill/ref/Cursor targets in sync. |
+| `npm run check:skills:ps` | 0 | Windows PowerShell mirror checker reported all skill/ref/Cursor targets in sync. |
+| `git diff --check` | 0 | No whitespace error in the pre-evidence implementation diff. |
+| `npm run check:text-hygiene` | 0 | 699 tracked text files scanned successfully. |
+| `npm run test:e2e:phase1` | 0 | Repeated focused runs after the regression edit, mirror sync, and evidence write passed 29/29, including scoped fixed-component negative/mutation checks. |
+| `npm run test:e2e:repository` (60-second tool limit) | 124 | The first attempt was terminated by the command timeout before TAP output; this is not recorded as a test pass or test assertion failure. |
+| `npm run test:e2e:repository` (extended timeout) | 0 | Rerun passed 68/68 repository tests. The full target-app case remained explicit and opt-in. |
+| `npm run test:e2e` | 1 | Repository tests passed 68/68, then two NestJS generator cases failed because Windows supplied the short temp alias `C:\Users\NGHIAT~1\...` while the safety check resolved the long path. Golden tests were not reached in this attempt. |
+| `$env:TEMP=Join-Path $env:LOCALAPPDATA 'Temp'; $env:TMP=$env:TEMP; npm run test:e2e:nestjs` | 0 | Long-form temp-path diagnostic passed 24 tests with one Linux-only skip, confirming the preceding failures were Windows temp-path alias handling rather than frontend changes. No NestJS source was modified. |
+| `$env:TEMP=Join-Path $env:LOCALAPPDATA 'Temp'; $env:TMP=$env:TEMP; npm run test:e2e` | 0 | Both environment-compatible aggregate runs passed: repository 68/68; NestJS 24 pass plus one Linux-only skip; generated simple and enterprise golden projects 2/2. The second run occurred after this evidence section was added. |
+| `npm audit --omit=dev` | 0 | 0 production dependency vulnerabilities. |
+
+### Evidence boundaries
+
+- Mirrors are synchronized by both supported checkers. Generated changes map
+  directly to `skills/tracks/angular/sdcorejs-angular.md` and the two changed
+  canonical Angular references; no mirror-only drift was observed.
+- Full E2E was **not run**: no
+  `SDCOREJS_E2E_FULL=1 npm run test:e2e:phase4` execution or current GitHub
+  Actions run exists for this working tree. The configured `npm run test:e2e`
+  aggregate above is not a substitute for that opt-in environment.
+- Live-agent frontend scenarios were **not run** on Claude Code plugin, Codex
+  attached repo, Codex native skills, Cursor, or GitHub Copilot. All 15
+  tool-surface/scenario pairs remain explicitly pending in
+  `docs/REAL_AGENT_VALIDATION.md`. This implementation session is not counted
+  as live-agent adoption evidence.
+- Historical CI, Full E2E, NestJS, or live-session evidence elsewhere in this
+  document does not validate the 2026-07-13 uncommitted frontend diff.
+- The final handoff must report any read-only verification reruns performed
+  after this evidence section was written; those reruns do not retroactively
+  turn missing Full E2E or live-agent coverage into a pass.
+
 ## Validation Tiers
 
 The project has several validation layers. Keep claims tied to the layer that
@@ -51,7 +101,7 @@ actually produced evidence.
 | Entrypoint-aware routing validation | Each loaded Claude Code, Codex, Cursor, or Copilot profile contributes derived routing policy; mutation tests prove one changed profile can fail independently. | `test/e2e/entrypoint-smoke.test.mjs`. | This proves deterministic profile-text participation, not live runtime behavior. |
 | Parallel protocol simulation | Selected contract, topology/DAG, path/resource, failure/fan-in, repair/evidence, and state-machine rules are exercised through the distributed deterministic validator. | `_refs/orchestration/parallel-protocol.mjs` via `test/e2e/parallel-dispatch-protocol.test.mjs`; includes synthetic boundary inputs plus real temporary Git worktree, result-commit, conflict, and rollback behavior. | This is partial local simulation. External runtimes must still invoke the validator and enforce the skill instructions, capabilities, and repository-specific commands during real sessions. |
 | CLI smoke validation | Local adapter code can detect or simulate supported CLI surfaces without requiring live Claude/Codex execution. | Phase 2 tests use fake `codex` and `claude` executables. | Run real CLI smoke tests in a prepared workstation when changing install instructions. |
-| Full target-app validation | The golden target-app generator can run the heavyweight E2E path in a prepared environment. | Latest observed successful run: <https://github.com/sdcorejs/sdcorejs-agent/actions/runs/28798513991>. Re-run for the exact release commit. | Attach the release-commit successful GitHub Actions run link to the release notes. |
+| Full target-app validation | The golden target-app generator can run the heavyweight E2E path in a prepared environment. | Historical evidence only: <https://github.com/sdcorejs/sdcorejs-agent/actions/runs/28798513991>. It does not validate the 2026-07-13 working tree. | Re-run for the exact release commit and attach that successful run to the release notes. |
 | NestJS pack contract | The canonical manifest, profile contract, pack graph, forbidden-token scan, template renderer, route/security/runtime contract, and generator boundaries agree. | Local command `npm run check:nestjs-pack` and `npm run test:e2e:nestjs`; final branch evidence must be refreshed after the last mirror write. | Static evidence does not prove generated application behavior. |
 | Generated NestJS applications | Canonical templates generate strict `simple` and `enterprise` NestJS projects; dependency installation, compilation, unit, integration, HTTP E2E, tenant isolation, and concurrency tests execute. | Local `npm run test:e2e:nestjs:golden`: both profiles passed on 2026-07-11. | Re-run on the final branch and in CI for the exact commit. |
 | NestJS containers | Real Postgres accepts connections and real Keycloak imports the golden realm and accepts admin API authentication. | Local `npm run test:e2e:nestjs:containers`: Postgres 16 and Keycloak 26.1.4 passed on 2026-07-11; test project and volumes were removed. | This does not yet prove every generated repository call against Postgres or every generated Keycloak saga branch. |

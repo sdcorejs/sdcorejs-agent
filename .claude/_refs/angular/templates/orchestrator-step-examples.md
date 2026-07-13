@@ -14,7 +14,7 @@ For the canonical entity-skeleton + tests + product example actually used by the
   - [product.service.ts](#productservicets)
   - [promotion.mock-data.ts (inferred schema, domain-realistic)](#promotionmock-datats-inferred-schema-domain-realistic)
 - [Step 4 — Generate Routes (`product.routes.ts`)](#step-4--generate-routes-productroutests)
-- [Step 5 / Step 6 — List + Detail components](#step-5--step-6--list--detail-components)
+- [Step 5 / Step 6 — Routed pages and approved feature components](#step-5--step-6--routed-pages-and-approved-feature-components)
 - [Worked end-to-end — Employee entity](#worked-end-to-end--employee-entity)
 
 ---
@@ -250,7 +250,7 @@ export const productRoutes: Routes = [
 ];
 ```
 
-## Step 5 / Step 6 — List + Detail components
+## Step 5 / Step 6 — Routed pages and approved feature components
 
 For route/page shells and any approved feature-local children (`SdTable`, audit
 columns, filters, actions, `CREATE/UPDATE/DETAIL` state, form sections, child
@@ -283,8 +283,8 @@ demand:
 7. Generate `employee.mock-data.ts` (Step 3)
 8. Generate `employee.service.ts` (Step 3)
 9. Generate `employee.routes.ts` (Step 4)
-10. Generate list component (Step 5 — using the `screen-list` reference pack)
-11. Generate detail component (Step 6 — using the `screen-detail` reference pack, all CREATE/UPDATE/DETAIL states)
+10. Generate the list route/page container and any feature-local children approved for cohesive list responsibilities (Step 5 — using the `screen-list` reference pack)
+11. Generate the detail route/page container and any approved form, workflow, or child-collection boundaries (Step 6 — using the `screen-detail` reference pack, all CREATE/UPDATE/DETAIL states)
 12. Verify all files compile without errors
 13. Return complete code package ready to add to module
 
@@ -302,3 +302,9 @@ src/libs/sample/features/employee/
 │   └── detail/detail.component.ts
 └── routes.ts
 ```
+
+This simple worked request has no separately justified summary, filter,
+form-section, child-collection, or workflow boundary, so its two cohesive routed
+page containers are intentional. A more complex approved architecture may add
+feature-local children under `components/`; this example tree is not a maximum
+component count.

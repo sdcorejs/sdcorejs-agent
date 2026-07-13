@@ -490,7 +490,10 @@ Agent must ask:
 Detailed spec.ts code is in `_refs/angular/templates/entity-tests.md`. Default coverage is `standard` (no clarify needed — write RED-first without asking); override to `minimal`/`full` only on explicit user request.
 
 ## 6. Example Output
-Worked Product entity (full code samples for model + service + list + detail) lives at `_refs/angular/templates/example-product.md`. Treat it as a sanity reference, not a paste source.
+Worked Product entity (full code samples for domain/data contracts, data access,
+routed page containers, and approved architecture-derived feature components)
+lives at `_refs/angular/templates/example-product.md`. Treat it as a sanity
+reference, not a paste source.
 
 ## Implementation Checklist
 
