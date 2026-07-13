@@ -89,7 +89,8 @@ This skill is an **orchestrator**: it does NOT inline the full generation rules 
 
 ## Dispatch table
 
-For each scope item in the approved plan (or a direct request whose requirements are already confirmed), READ the matching reference pack and follow it:
+For each scope item in the approved plan dispatched by
+`sdcorejs-execute-plan`, READ the matching reference pack and follow it:
 
 | Scope item | Reference pack to read |
 |---|---|
@@ -97,6 +98,7 @@ For each scope item in the approved plan (or a direct request whose requirements
 | Always — admin screens (account/role/permission [+tenant/department enterprise]) | [`../_refs/angular/write-code/admin-screens.md`](../_refs/angular/write-code/admin-screens.md) (ALWAYS run, after init-portal) |
 | New module (`src/libs/<module>/`) | [`../_refs/angular/write-code/init-module.md`](../_refs/angular/write-code/init-module.md) |
 | New entity with full CRUD (model + service + routes + list + detail) | [`../_refs/angular/write-code/init-entity.md`](../_refs/angular/write-code/init-entity.md) |
+| Shared frontend architecture preflight before non-trivial UI generation | [`../_refs/shared/frontend-architecture.md`](../_refs/shared/frontend-architecture.md) |
 | Image/PRD/UI reuse preflight before UI-affecting work | [`../_refs/angular/write-code/input-analysis.md`](../_refs/angular/write-code/input-analysis.md) |
 | PO/BA PRD-only portal/module prototype with no API/backend/design | [`../_refs/angular/write-code/po-ba-prototype.md`](../_refs/angular/write-code/po-ba-prototype.md) |
 | Mock API/OpenAPI/Postman/cURL contract to UI/service mapping | [`../_refs/angular/write-code/mock-api-input.md`](../_refs/angular/write-code/mock-api-input.md) |
@@ -110,6 +112,14 @@ Read ON DEMAND only — load the one reference for the step you are executing, n
 ### Step 0 — Pre-flight: ensure project summary
 
 Before dispatching ANY reference, run `sdcorejs-explore (summary-read)`. If `<target>/.sdcorejs/summary.md` is missing or stale in this write-approved executor, run `summary-refresh` first so generation uses the real project map and does not hallucinate paths or duplicate shared abstractions. If the summary exists and is fresh enough, read it and continue. Exception: when this run is itself a brand-new init-portal, there is no project to summarize yet; run `summary-refresh` at the END of init instead (see `init-portal.md` Post-init).
+
+Before any non-trivial routed screen, form, table, child collection, drawer,
+workflow panel, or frontend service is generated, read
+`../_refs/shared/frontend-architecture.md`. Verify that the approved plan dispatched
+by `sdcorejs-execute-plan` contains the completed `frontend_architecture`
+contract. This executor must not create or self-approve a missing contract. Stop
+and return to `sdcorejs-plan` through `sdcorejs-execute-plan` when the gate is
+missing, incomplete, or contradicted by current codebase evidence.
 
 For any UI-affecting request, and always when the input includes a screenshot,
 wireframe, mockup, Figma export, PRD, requirement document, user story, feature
@@ -308,7 +318,6 @@ Before building the schema from visual or requirement input, complete the
 `../_refs/angular/write-code/input-analysis.md` planning output. Use the PRD or
 acceptance criteria as the behavior source of truth, visual input as layout
 direction, and Core UI/local project conventions as implementation primitives.
-
 For PO/BA Prototype Portal Mode, complete
 `../_refs/angular/write-code/po-ba-prototype.md` before finalizing `EntitySchema`.
 Use PRD/user story/AC first, then existing conventions, domain semantics, Core UI
@@ -345,9 +354,10 @@ Once the EntitySchema exists, generate each file by following the reference pack
 |---|---|
 | `<entity>.model.ts` (SaveReq / DTO / constants) | `init-entity.md` → [`orchestrator-step-examples.md#step-2--generate-model`](../_refs/angular/templates/orchestrator-step-examples.md#step-2--generate-model-productmodelts) |
 | `<entity>.mock-data.ts` + `<entity>.service.ts` (mock-first CRUD, 20–40 domain-realistic rows) | `init-entity.md` → [`orchestrator-step-examples.md#step-3--generate-mock-data--service`](../_refs/angular/templates/orchestrator-step-examples.md#step-3--generate-mock-data--service) |
-| `<entity>.routes.ts` (lazy-loaded, `data.permission`, no providers) | `init-entity.md` → [`orchestrator-step-examples.md#step-4--generate-routes`](../_refs/angular/templates/orchestrator-step-examples.md#step-4--generate-routes-productroutests) |
+| `<entity>.routes.ts` (lazy-loaded, `data.permission`, provider placement from the approved lifecycle plan) | `init-entity.md` → [`orchestrator-step-examples.md#step-4--generate-routes`](../_refs/angular/templates/orchestrator-step-examples.md#step-4--generate-routes-productroutests) |
 | `pages/list/list.component.ts` | `screen-list.md` (+ `../_refs/angular/templates/screen-list-component.md`) |
 | `pages/detail/detail.component.ts` (CREATE / UPDATE / DETAIL + form) | `screen-detail.md` (+ `screen-detail-component.md`, `reactive-form-templates.md`) |
+| Feature-local list/detail children, optional facade/form builder/mapper, and their contract tests | `screen-list.md` / `screen-detail.md` (+ `../_refs/angular/templates/feature-component-boundaries.md`) |
 | Action buttons (workflow / bulk / custom) | `actions.md` |
 
 For a full new entity, read `init-entity.md` end-to-end (it covers model → service → routes → list → detail in one pass). For a single-file refinement on an existing entity, read just the screen-list / screen-detail / actions reference.
@@ -358,6 +368,11 @@ These cross-cutting rules apply regardless of which reference is dispatched.
 
 ### 1. File Naming & Paths
 
+Detect and follow the target project's structure first. The following is a
+greenfield Core UI fallback and must be expanded or reduced to match the
+approved frontend architecture plan. Optional folders/files are not generated
+without an actual responsibility and consumer.
+
 ```
 src/libs/{{ module }}/features/{{ entityKebab }}/
   ├── services/
@@ -367,9 +382,13 @@ src/libs/{{ module }}/features/{{ entityKebab }}/
   │   └── index.ts                         (exports)
   ├── pages/
   │   ├── list/
-  │   │   └── list.component.ts            (CRUD list with SdTable)
+  │   │   └── list.component.ts            (route/page orchestration shell)
   │   └── detail/
-  │       └── detail.component.ts          (CRUD form, CREATE/UPDATE/DETAIL)
+  │       └── detail.component.ts          (route/page orchestration shell)
+  ├── components/                           (only approved feature-local boundaries)
+  │   └── {{ cohesive-region }}/
+  │       ├── {{ cohesive-region }}.component.ts
+  │       └── {{ cohesive-region }}.component.spec.ts
   └── {{ entityKebab }}.routes.ts          (lazy-loaded routes)
 ```
 

@@ -7,6 +7,17 @@
 > file only supplies *what to check*. The scored deep-review mode (below) is an
 > Angular-specific alternate output.
 
+## Contents
+
+- [Profile Applicability and Scope](#profile-applicability)
+- [Approved Frontend Architecture Conformance](#approved-frontend-architecture-conformance)
+- [Review Checklist](#review-checklist)
+- [Verification Commands](#verification-commands-run-include-exit-codes-in-the-report)
+- [Severity and Gate Mapping](#severity-and-gate-mapping-for-this-track)
+- [Positive Rows](#positive-rows-to-include-when-applicable)
+- [Post-review Assistance](#post-review-assistance)
+- [Scored Deep-review Mode](#scored-deep-review-mode-enterprise-audit--angular-specific-alternate-output)
+
 ## What this covers
 Audit generated or modified Angular portal code against SDCoreJS Core UI
 conventions. Read-only — surfaces violations the human reviewer should fix.
@@ -39,6 +50,43 @@ For `plain-angular`, do not flag missing `@sdcorejs/angular` or
 `MockCrudStore`, absence of `src/libs/**/features/**`, use of already-installed
 Angular Material/Bootstrap/PrimeNG/Tailwind/local shared components, or lack of a
 Core UI usage summary. Do not run `core-docs-fetch.mjs` for `plain-angular`.
+
+## Approved frontend architecture conformance
+
+Read `_refs/shared/frontend-architecture.md` and the selected approved plan's
+`frontend_architecture` block when review follows implementation. For a direct
+review without an approved plan, infer only from current project conventions and
+record that the plan comparison is unavailable.
+
+Verify:
+
+- every routed screen has a route/page container focused on route/query
+  integration, navigation, orchestration, and composition;
+- complex summaries, filters, tables, bulk actions, form sections, child
+  collections, async-validation regions, and workflow panels use meaningful
+  feature-local boundaries when approved, while simple drawers/forms are not
+  arbitrarily split;
+- component responsibilities, typed inputs/outputs, and state owners match the
+  approved tree without duplicated form/entity/filter/selection state or
+  excessive prop drilling;
+- existing compatible components/services were reused, extended, or wrapped as
+  planned and no duplicate abstraction was created;
+- API/data-access services, optional facades/stores/coordinators, and pure
+  mappers/form builders/validators retain distinct responsibilities;
+- provider lifecycle matches the approved scope: mutable feature state is not a
+  default root singleton, component coordinators do not leak beyond the overlay,
+  and stateless shared API services follow detected conventions;
+- standalone imports or NgModule declarations/imports/exports, providers, lazy
+  routes, and integration points are complete and do not redeclare standalone
+  components;
+- route pages and feature-local children remain private unless an external
+  consumer justifies a public export; no broad barrel creates deep-import or
+  circular dependency pressure;
+- implementation files and tests match the approved component/service map.
+
+Use responsibility and cohesion as the primary criteria. Line count may trigger
+closer inspection but is never a hard failure. Flag arbitrary wrappers, facade/
+store-by-default generation, and architecture-plan drift.
 
 ## Review checklist
 
@@ -117,6 +165,8 @@ Angular/NestJS code-review table mode with `#`, `Severity`, `Group`,
 - Do not use line count as a hard rule, but treat components above roughly 300-400 TypeScript lines or very long/complex templates as candidates for closer split analysis.
 - Flag scattered state flags such as `isLoadingX`, `isOpenY`, `selectedZ`, `tempA`, `formB`, or `listC` when they make state ownership unclear.
 - When recommending a split, prefer cohesive UI sections, presentational/container separation, clear input/output contracts, and avoid over-splitting that increases accidental complexity.
+- A feature-local component does not need multiple consumers. Shared promotion
+  does require stronger cross-boundary ownership evidence.
 - For large component splits or state refactors, do not auto-fix directly. Require a spec/plan covering current responsibilities, proposed pieces, input/output contracts, behavior risk, tests to update/run, and rollback strategy.
 - Classify oversized-but-cohesive components as `Info`/`Low`; use `Medium` when maintainability/testability is materially affected, and `High` when state/side-effect bugs are already evident or release flow is blocked.
 
@@ -362,6 +412,11 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 - Missing `autoId` on interactive Core UI elements (breaks E2E + `sd-autoid-inspector`) — WARN, dev backfills
 - Hand-rolled UI where a Core UI component fits — check the candidate against the on-demand inventory (`node _refs/angular/core-docs-fetch.mjs --list`)
 - A Core UI component used without its required configuration token provided (runtime throw) — `node _refs/angular/core-docs-fetch.mjs --print sd-<name>` lists each component's setup requirements
+- Approved component-tree drift, duplicated state owners, root-scoped mutable
+  facades, feature-private symbols exported globally, or missing standalone/
+  NgModule/route registration
+- Monolithic forms/tables/workflow pages with unrelated responsibilities, and
+  pass-through wrappers extracted only to reduce line count
 
 ## Verification commands (run, include exit codes in the report)
 For Core UI portals, prefer the commands below. For `plain-angular`, discover

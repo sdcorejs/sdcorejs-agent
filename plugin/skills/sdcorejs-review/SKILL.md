@@ -115,6 +115,16 @@ Preserve dimensions. A security review remains `security`; do not relabel it as
 generic `code`. Accessibility is N/A for backend-only profiles unless the user
 asks for API usability/error-shape accessibility or a generated docs/UI review.
 
+Frontend architecture comparison is active only when the scope is frontend and
+the selected dimensions include `code`, `architecture`, or `ALL`. When active,
+locate the selected approved plan/spec from the current execution context or the
+matching `.sdcorejs/plans/<track>/` contract. Read its `frontend_architecture`
+block when present; do not blindly select the newest plan. Record the selected
+path/hash or state that no approved architecture plan is available for
+comparison. For a security-, performance-, or accessibility-only frontend
+review, do not load this contract and record
+`approved_frontend_architecture.status: not-applicable`.
+
 ### Review mode and scored support
 
 - Default mode is `quick-table` or `table`.
@@ -143,6 +153,13 @@ missing ref and do not silently fail.
 | `nextjs-build-website` | `_refs/nextjs/build-website/review-code.md` | `_refs/shared/review-security.md` + `_refs/nextjs/build-website/review-security.md` | `_refs/shared/review-performance.md` + `_refs/nextjs/build-website/review-performance.md` | `_refs/shared/review-accessibility.md` + `_refs/nextjs/build-website/review-accessibility.md` | `_refs/shared/review-architecture.md` |
 | `plain-nextjs` | `_refs/shared/review-code.md` plus generic/local Next.js checks only | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
 | `general` | `_refs/shared/review-code.md` | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
+
+When frontend architecture comparison is active, load
+`_refs/shared/frontend-architecture.md` and compare the implementation with the
+approved component tree, reuse decisions, responsibilities, state/service
+ownership, provider lifecycle, registration, public exports, and architecture
+tests. Framework-specific refs add detail; they do not replace the shared
+comparison.
 
 Plain-profile guardrails:
 
@@ -196,9 +213,14 @@ Security redaction is mandatory:
 
 1. Read every file inside the selected `file_scope`.
 2. Run applicable probes using the command discipline above.
-3. Map each finding to the selected dimension and the loaded ref criteria.
-4. Assign stable IDs (`R1`, `R2`, `R3`) and repair tier metadata.
-5. Emit the report with `review_context`, human-readable findings, strengths,
+3. When frontend architecture comparison is active, compare the actual file
+   decisions, route/page and child tree, state owners, service/data flow,
+   provider scope, declarations/registration, private/public exports, and tests
+   with the selected approved `frontend_architecture` contract. Record justified
+   deviations; flag drift when no approved change or compatibility reason exists.
+4. Map each finding to the selected dimension and the loaded ref criteria.
+5. Assign stable IDs (`R1`, `R2`, `R3`) and repair tier metadata.
+6. Emit the report with `review_context`, human-readable findings, strengths,
    N/A dimensions/refs, and explicit verification gaps.
 
 If evidence is incomplete, mark the finding `UNCLEAR` or `Needs verification`
@@ -260,6 +282,10 @@ review_context:
   dimensions:
     - code | architecture | security | performance | accessibility | ALL
   review_mode: quick-table | table | scored | blocking | site-audit
+  approved_frontend_architecture:
+    plan_path: <selected approved plan or null>
+    plan_hash: <approved plan hash or null>
+    status: compared | unavailable | not-applicable
   file_scope:
     - path/or/glob
   refs_loaded:
@@ -330,6 +356,9 @@ Findings rules:
 - Use package-manager/script/tool discovery for probes.
 - Mark backend-only accessibility as N/A unless explicitly scoped.
 - Distinguish real bugs from style preferences.
+- When frontend architecture comparison is active, load
+  `_refs/shared/frontend-architecture.md` and compare implementation against the
+  selected approved architecture plan when one exists.
 
 ### MUST NOT
 - Edit files.

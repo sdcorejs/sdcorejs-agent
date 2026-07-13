@@ -21,6 +21,38 @@ Do not require `src/app/[locale]`, `setRequestLocale`, typed i18n navigation,
 content/public-site folders, landing-site metadata conventions, or
 build-website cache/layout rules unless the target project already uses them.
 
+## Approved frontend architecture conformance
+
+Read `_refs/shared/frontend-architecture.md` and the selected approved plan's
+`frontend_architecture` block when the review is part of an implementation
+flow. If no approved plan exists for a direct review, derive an evidence-based
+comparison from current project conventions and record the limitation.
+
+Verify:
+
+- route `page.tsx` files remain composition, route, content/data, metadata, and
+  caching boundaries rather than monolithic owners of unrelated interactions;
+- cohesive one-off interactive blocks are feature-local Client Components when
+  appropriate, not forced inline and not automatically promoted globally;
+- cross-page shared sections have stable reusable contracts and design-system UI
+  remains domain-agnostic;
+- component responsibilities, props/events, and state owners match the approved
+  tree without duplicated state or excessive prop drilling;
+- raw CMS/API/provider shapes are mapped before presentation, and fetch/query/
+  action logic is not duplicated across pages/components;
+- UI-only state is not mixed into server/data contracts;
+- Client Component boundaries are the smallest meaningful cohesive interactive
+  islands, not one wrapper per control;
+- reuse/extend/wrap/create/inline decisions were honored and no compatible
+  existing abstraction was duplicated;
+- feature-local symbols remain private and public exports do not create
+  cross-feature deep imports or circular barrels;
+- generated files and tests match the approved component/data-flow map.
+
+Flag monolithic pages and arbitrary wrapper components from responsibility and
+cohesion evidence. File length may trigger inspection but is never a standalone
+failure.
+
 ## Conventions checked (mapped to the write-code reference pack that defined them)
 
 ### 1. Server vs Client component boundary (from the `pages-and-blocks` pack)
@@ -284,6 +316,13 @@ Severity: 🔴 Critical — server-only modules in client bundle leak secrets / 
 - **"Add more tests" as a finding** — that belongs in `testing/` skill output, not code review.
 - **Linting concerns flagged as Critical** — ESLint handles those; code review focuses on conventions ESLint doesn't enforce.
 - **DTO as client scratch object** — server data models should not be mutated with UI-only fields; use a local ViewModel or mapper-owned derived field.
+- **Architecture drift** — generated files omit an approved feature-local
+  boundary, add an unapproved shared abstraction, move state ownership, or
+  change data/public API boundaries without an updated plan or compatibility
+  reason.
+- **Used-once shortcut** — a cohesive interactive one-off block is either forced
+  into `page.tsx` or promoted to the global section library without ownership
+  evidence.
 
 ## Cross-references
 - Architecture review (modules, layering): `sdcorejs-review` with the `architecture` dimension

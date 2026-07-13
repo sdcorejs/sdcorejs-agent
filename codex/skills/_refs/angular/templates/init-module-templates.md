@@ -2,7 +2,12 @@
 
 Code templates referenced from the init-module reference pack [`init-module.md`](../write-code/init-module.md) (loaded on demand by the `sdcorejs-angular` orchestrator). The pack owns the decision logic (Required vs Optional, MUST DO / MUST NOT, hybrid compatibility) and chooses which of these templates to materialize for the requested module.
 
-Placeholders used throughout: `[module]` / `[Module]` / `[MODULE]` (kebab / Pascal / SCREAMING_SNAKE forms of the module name), `[entity-a]` / `[entity-b]` (entity kebab names), `<CORE_UI_PACKAGE_NAME>` (resolved from [`../core-version.md`](../core-version.md)).
+Placeholders used throughout: `[module]` / `[Module]` / `[MODULE]` (kebab /
+Pascal / SCREAMING_SNAKE forms of the module name), `[entity-a]` / `[entity-b]`
+(entity kebab names), `[featureRoot]` (detected entity-feature directory relative
+to the module root; `features` is a greenfield fallback only), and
+`<CORE_UI_PACKAGE_NAME>` (resolved from
+[`../core-version.md`](../core-version.md)).
 
 ## Table of contents
 
@@ -15,8 +20,8 @@ Placeholders used throughout: `[module]` / `[Module]` / `[MODULE]` (kebab / Pasc
 - [main.ts (standalone bootstrap)](#maints-standalone-bootstrap)
 - [Legacy NgModule consumer](#legacy-ngmodule-consumer-when-the-app-shell-is-still-ngmodule-based)
 - [permission.configuration.ts (keyed)](#permissionconfigurationts-keyed)
-- [components/base-select/base-select.component.ts](#componentsbase-selectbase-selectcomponentts) — the load-bearing template
-- [components/base-select/base-select.component.html](#componentsbase-selectbase-selectcomponenthtml)
+- [components/base-select/base-select.component.ts](#componentsbase-selectbase-selectcomponentts-conditional) — conditional template
+- [components/base-select/base-select.component.html](#componentsbase-selectbase-selectcomponenthtml-conditional) — conditional companion
 - [Route Data Contract (Permission)](#route-data-contract-permission)
 - [index.ts (lib barrel)](#indexts-lib-barrel)
 
@@ -199,12 +204,12 @@ export const [module]Routes: Routes = [
     children: [
       {
         path: '[entity-a]',
-        loadChildren: () => import('./features/[entity-a]').then(m => m.[entityA]Routes),
+        loadChildren: () => import('./[featureRoot]/[entity-a]').then(m => m.[entityA]Routes),
         data: { permission: '[MODULE]_[ENTITY_A]_LIST', permissionKey: '[module]' },
       },
       {
         path: '[entity-b]',
-        loadChildren: () => import('./features/[entity-b]').then(m => m.[entityB]Routes),
+        loadChildren: () => import('./[featureRoot]/[entity-b]').then(m => m.[entityB]Routes),
         data: { permission: '[MODULE]_[ENTITY_B]_LIST', permissionKey: '[module]' },
       },
       // Add more entities as needed
@@ -213,7 +218,11 @@ export const [module]Routes: Routes = [
 ];
 ```
 
-> ⚠️ **No `providers: []` on the route.** All module-scoped providers (interceptors, configuration token, upload, etc.) belong on `[Module]Module`. Route-level providers create lazy-bound injectors that root-scoped services cannot see — leading to "no provider for `[MODULE]_CONFIGURATION`" errors when `SdPermissionService` / shared services run.
+> ⚠️ **No module configuration providers on this lib-root route.** Interceptors,
+> configuration tokens, upload configuration, and other root-visible contracts
+> belong on `[Module]Module`. An entity child route may still provide an approved
+> feature-scoped service/facade; that narrower injector is intentionally not visible
+> to root services such as `SdPermissionService`.
 >
 > **File naming convention**:
 > - **Lib/module root** (e.g. `libs/agency/`): always `routes.ts` — exports `<module>Routes: Routes`
@@ -298,9 +307,19 @@ export class PermissionConfiguration implements ISdPermissionConfiguration {
 }
 ```
 
-## components/base-select/base-select.component.ts
+## components/base-select/base-select.component.ts (conditional)
 
-Generic dropdown wrapping `sd-select` + `BaseService.register(url).search/all`. Generated ONCE per module, then reused by every `<entity>-select` (e.g. `customer-select`, `project-select`) so dropdowns inside CREATE/UPDATE forms stay consistent and the `BaseService` boilerplate isn't repeated.
+Do not materialize this template during every module scaffold. First complete the
+select reuse and architecture gate in `../write-code/init-module.md`. Generate it
+only when a confirmed searchable/remote selection feature has no compatible
+Core UI/project/module component, multiple consumers share a stable contract (or
+equivalent project evidence proves stability), and at least one consumer is
+created in the same change. Otherwise reuse the existing select, create a
+domain-specific feature-local selector, or create no wrapper.
+
+When the gate passes, this template provides a generic dropdown around
+`sd-select` + `BaseService.register(url).search/all` so approved consumers do not
+repeat the same stable loading/search contract.
 
 The inline rationale comments (`Why this exists`, `Why viewProviders`, the per-`effect` explanations, the `any` type justification) carry load-bearing context — copy them verbatim. Without them, future maintainers will repeatedly re-derive why each piece is shaped the way it is.
 
@@ -529,7 +548,7 @@ export class BaseSelectComponent<T = any> {
 }
 ```
 
-## components/base-select/base-select.component.html
+## components/base-select/base-select.component.html (conditional)
 
 ```html
 @let _displayField = displayField();
@@ -570,7 +589,7 @@ export class BaseSelectComponent<T = any> {
 ```typescript
 {
   path: '[entity]',
-  loadChildren: () => import('./features/[entity]').then(m => m.[entity]Routes),
+  loadChildren: () => import('./[featureRoot]/[entity]').then(m => m.[entity]Routes),
   data: {
     // Pick ONE convention per project and stay consistent:
     //   '[MODULE]_[ENTITY]_LIST' | '[MODULE]_C_[ENTITY]_LIST' | '[MODULE]_[ENTITY]:LIST'
@@ -582,12 +601,16 @@ export class BaseSelectComponent<T = any> {
 
 ## index.ts (lib barrel)
 
+This is an intentional public API, not an inventory of every internal file.
+Keep route pages, feature-local children, facades/stores, mappers, validators,
+and conditional UI helpers private unless verified external consumers require
+them. Prefer named exports and do not add broad `export *` entries that can hide
+cycles.
+
 ```typescript
 export * from './[module].module';        // primary public API — consumed via `.useValue()` / `.useClass()`
 export * from './[module].configuration'; // token + interface
 export * from './routes';                  // for app.routes lazy-load reference
-export * from './guards/[module].guard';
-
-// Services and models from base folder
-export * from './services';
+// Export the guard or other contracts only when an external consumer imports it.
+// export { [module]Guard } from './guards/[module].guard';
 ```

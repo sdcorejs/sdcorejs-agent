@@ -1,6 +1,17 @@
 # Screen — List Component Template
 
-Code template referenced from the screen-list reference pack [`screen-list.md`](../write-code/screen-list.md) (loaded on demand by the `sdcorejs-angular` orchestrator). The pack owns the rules and decision logic (server-paging vs client, external filters, audit columns, score cards, etc.); this file holds the literal `list.component.ts` body the skill emits.
+Code template referenced from the screen-list reference pack
+[`screen-list.md`](../write-code/screen-list.md) (loaded on demand by the
+`sdcorejs-angular` orchestrator). The pack owns server-paging, filter, audit,
+score-card, and component-boundary decisions. This file is the cohesive
+single-page fallback and route/page shell template.
+
+When the approved Frontend architecture plan extracts summary, filters, table,
+bulk actions, or another cohesive region, keep route/query/navigation and
+orchestration here and compose literal child contracts from
+[`feature-component-boundaries.md`](./feature-component-boundaries.md). Do not
+copy every responsibility into this file, and do not extract trivial wrappers
+only to reduce its length.
 
 Placeholders used throughout: `{{ module }}`, `{{ entity }}` (kebab), `{{ entityPascal }}`, `{{ entityCamel }}`, `{{ entityKebab }}`, `{{ entityLabel }}` / `{{ entityLabelPlural }}`, `{{ permissionCreate }}`, `{{ columnsConfig }}` (the schema-derived column array — see "Column configuration patterns" below).
 

@@ -9,6 +9,10 @@ This reference keeps image/PRD analysis, Core UI reuse for eligible Core UI
 projects, local project reuse, API/service assumptions, and the
 post-implementation UI check in one place. It is not a dispatchable skill.
 
+It extends, rather than replaces, the framework-neutral preflight in
+`_refs/shared/frontend-architecture.md`. Complete that shared contract first for
+every non-trivial Angular screen.
+
 ## When To Run
 
 Run this reference before choosing feature-specific components, services, or
@@ -82,6 +86,29 @@ Before implementation, output a concise planning block in the user's language.
 Keep identifiers, component names, selectors, routes, permissions, and file
 paths in English.
 
+First produce the complete `Frontend architecture plan` from
+`_refs/shared/frontend-architecture.md`. For Angular, its evidence and decisions
+must explicitly include:
+
+- detected feature/module folder structure and nearby comparable screens;
+- standalone, NgModule, or hybrid component style;
+- existing reusable components, directives, pipes, services, API/data-access
+  abstractions, facades/stores, mappers, validators, and form builders;
+- the route/page shell and feature-local/shared child-component tree;
+- responsibility, inputs/outputs, and state ownership for every unit;
+- service/data flow from route through service/facade/mapper to ViewModel;
+- API service vs optional facade/store vs pure collaborator boundaries;
+- provider lifecycle and teardown/reset reason;
+- standalone imports or NgModule declarations/imports/exports, providers, lazy
+  routes, and other registration points;
+- feature-private symbols versus intentional public exports;
+- files to reuse, extend, wrap, create, keep inline, or intentionally not create;
+- page-orchestration, child-contract, mapping, and provider-scope tests.
+
+Do not generate code if any of these architecture decisions is missing. A simple
+drawer/form may intentionally keep its fields inline and omit a facade/store;
+record that as a decision rather than manufacturing components.
+
 Always include this block:
 
 ```text
@@ -96,8 +123,14 @@ SDCoreJS Core reuse analysis:
   - <items or "none found">
 - Existing project components/services/utilities to reuse:
   - <items or "none found">
-- Feature-specific components/services to create:
+- Feature-specific components/services/collaborators to create:
   - <items or "none">
+- Route/page and child-component tree:
+  - <tree from the approved frontend architecture plan>
+- State and provider ownership:
+  - <owner, state, scope, and reason>
+- Registration and public API:
+  - <imports/declarations/providers/routes/private/public decisions>
 - Components/services intentionally not reused:
   - <item + reason, or "none">
 - Assumptions:
@@ -115,8 +148,14 @@ Angular/local UI reuse analysis:
   - <items or "none found">
 - Installed UI libraries already available:
   - <Angular Material | Bootstrap | PrimeNG | Tailwind | other, or "none">
-- Feature-specific components/services to create:
+- Feature-specific components/services/collaborators to create:
   - <items or "none">
+- Route/page and child-component tree:
+  - <tree from the approved frontend architecture plan>
+- State and provider ownership:
+  - <owner, state, scope, and reason>
+- Registration and public API:
+  - <imports/declarations/providers/routes/private/public decisions>
 - Dependencies intentionally not added:
   - @sdcorejs/angular, @sd-angular/core, @angular/material unless explicitly approved
 - Assumptions:
@@ -224,6 +263,12 @@ Create feature-specific components only when they are domain-specific,
 compose multiple primitives into a feature flow, improve readability or reuse
 inside the feature, and avoid incorrect coupling to unrelated features.
 
+A feature-local component does not need a second consumer. Promote it into a
+shared folder only when it is domain-agnostic, has stable consumers outside the
+feature, or is explicitly owned by the design system. Do not extract a component
+that only wraps one element, forwards all inputs unchanged, duplicates state, or
+exists solely to reduce line count.
+
 Match project conventions for:
 
 - standalone components vs NgModules
@@ -255,7 +300,8 @@ Check:
   support it
 - source consistency: no duplicated Core UI or project shared primitive, correct
   feature folder placement, local styling conventions, reused services/components,
-  and no unrelated refactors
+  no unrelated refactors, and conformance with the approved component tree,
+  state ownership, provider scope, registration, and public API decisions
 
 Fix obvious UI issues before continuing. If the UI check changes code, rerun the
 smallest relevant verification command before final response.
@@ -274,6 +320,8 @@ Core reuse summary:
   - ...
 - Reason new components/services were needed:
   - ...
+- Architecture conformance:
+  - <approved component tree/provider/export decision matched, or documented deviation>
 
 UI check:
 - <browser/preview check result, or code-level UI review reason>

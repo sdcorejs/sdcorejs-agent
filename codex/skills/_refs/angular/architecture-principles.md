@@ -6,7 +6,11 @@ If a generated file contradicts a principle here, that file is wrong. If a princ
 
 ---
 
-## 1. Feature-first folder structure
+## 1. Project conventions first; feature-first fallback
+
+Inspect and preserve an existing portal's coherent module, route, component,
+service, public API, and test structure. The tree below is the greenfield Core UI
+fallback, not a migration rule.
 
 ```
 src/
@@ -24,9 +28,9 @@ src/
         └── features/
             └── <entity>/         ← one entity vertical slice
                 ├── <entity>.routes.ts
-                ├── pages/list/   ← list.component.ts + .html + .spec.ts
-                ├── pages/detail/ ← detail.component.ts (or side-drawer)
-                ├── components/   ← entity-internal components (e.g. <entity>-select)
+                ├── pages/list/   ← route/page shell + .spec.ts
+                ├── pages/detail/ ← route/page shell (or side-drawer)
+                ├── components/   ← only cohesive feature-local boundaries approved by the architecture plan
                 └── services/
                     ├── <entity>.model.ts
                     ├── <entity>.mock-data.ts
@@ -34,7 +38,9 @@ src/
                     └── index.ts
 ```
 
-**Why feature-first**: when you delete a feature, you delete one folder. When you find a bug in `product`, you grep one folder. Modules-by-type (`controllers/`, `services/`, `views/`) scatter related code across the tree.
+**Why feature-first is the fallback**: when you delete a feature, you delete one
+folder. When you find a bug in `product`, you grep one folder. A project with a
+different established but coherent convention keeps that convention.
 
 ---
 
@@ -157,10 +163,10 @@ When you have async state update **before** assigning to a non-signal field, eit
 
 ---
 
-## 8. Mock-first services until backend contract is explicit
+## 8. Mock-first data boundary until backend contract is explicit
 
 ```ts
-@Injectable({ providedIn: 'root' })
+@Injectable() // example feature-scoped choice; use root only when justified
 export class ProductService extends MockCrudStore<ProductDTO, ProductSaveReq> {
   constructor() { super('product', PRODUCT_SEED); }
 }
@@ -169,6 +175,10 @@ export class ProductService extends MockCrudStore<ProductDTO, ProductSaveReq> {
 - Default: `MockCrudStore` via `localStorage`, seeded with 20-40 domain-realistic rows
 - For PO prototypes driven by mock API docs, stay mock-first but match the contract shape
 - Switch to `BaseService.register('<entity>')` only when a runnable backend endpoint/configuration and project service convention are provided
+- Choose provider scope from responsibility and consumers: stateless shared API
+  services may follow the existing app/root convention; mutable feature
+  facades/stores belong at route/feature/page scope; overlay coordinators belong
+  at component scope; pure mappers/validators remain functions when appropriate
 
 **Why**: frontend can ship + iterate without a backend. Mock rows must be **domain-realistic** (`<localized text>` not `"Name 1"`) — bad seed data hides UX issues (column too narrow for real names, sort key collisions).
 
@@ -315,6 +325,10 @@ When a principle here changes, propagate to:
 - Core UI components inventory — `node _refs/angular/core-docs-fetch.mjs --list` (on-demand; docs not committed)
 - `_refs/angular/entity-field-types.md` — field-type → form-control mapping
 - `_refs/angular/write-code/reuse-existing-entities.md` — codebase-first model/service/entity reuse preflight
+- `_refs/shared/frontend-architecture.md` — mandatory component, state, service,
+  provider, registration, and public API preflight
+- `_refs/angular/templates/feature-component-boundaries.md` — route/page,
+  feature-local child, collaborator, and architecture-test templates
 - `_refs/angular/templates/entity-skeleton.md` — canonical code templates these principles produce
 - `_refs/angular/templates/example-product.md` — worked example end-to-end
 - `sdcorejs-documentation (code-documentation mode)` + `_refs/documentation/code-documentation.md` — when/how to document public contracts and WHY these principles applied in a specific decision

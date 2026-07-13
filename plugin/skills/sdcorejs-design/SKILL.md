@@ -26,6 +26,12 @@ feature briefs, read `_refs/design/frontend-design.md`. Use it to create a
 compact visual direction, token plan, signature element, copy voice, and
 self-critique before writing final design specs or wireframes.
 
+For frontend handoff, also read `_refs/shared/frontend-architecture.md`. Use
+repository evidence to produce an implementation-oriented component/data/
+interaction map. Design may propose `candidate` boundaries, but it must not claim
+exact code paths, providers, or public exports are `confirmed` when the target
+codebase has not been inspected.
+
 When the target surface is a mobile app, PWA, responsive mobile web experience,
 or explicitly mobile-first screen/flow, also read
 `_refs/design/mobile-design.md`. Use it to add mobile context, platform fit,
@@ -125,6 +131,10 @@ Write a compact design plan and critique into
 - one signature element and why it fits
 - copy voice for actions, empty states, and errors
 - self-critique and revision when the first idea is too generic
+- implementation component map covering route/page, feature-local, existing
+  shared/design-system, and interactive-island candidates
+- data and interaction map covering inputs, events, data source, and loading/
+  error ownership
 
 For Core UI portals, keep the direction compatible with the existing shell,
 utility classes, component library, and operational density. Distinctive portal
@@ -185,6 +195,17 @@ Write `design/specs/<feature>.md`:
 ## Components
 | Need | Preferred component | Notes |
 |---|---|---|
+
+## Implementation Component Map
+| UI region | Component | Classification | Existing path/candidate | State owner | Status |
+|---|---|---|---|---|---|
+
+Use `confirmed`, `candidate`, `unknown`, or `new`. Mark paths `candidate` or
+`unknown` unless repository evidence supports them.
+
+## Data and Interaction Map
+| Component | Receives | Emits | Data source | Loading/error owner | Status |
+|---|---|---|---|---|---|
 
 ## States
 | Screen | State | Behavior |
@@ -279,6 +300,9 @@ updatedAt: <ISO-8601 timestamp>
 - Link every screen to user story and acceptance criterion IDs when available.
 - Read and apply `_refs/design/frontend-design.md` before producing UI
   handoff artifacts from PRDs or user stories.
+- Read and apply `_refs/shared/frontend-architecture.md` for frontend handoff;
+  include the implementation component map and data/interaction map without
+  overstating unsupported code-level details.
 - Read and apply `_refs/design/mobile-design.md` before producing mobile app,
   PWA, responsive mobile web, or mobile-first handoff artifacts.
 - Record the frontend design plan, token roles, signature element, and critique
@@ -297,6 +321,8 @@ updatedAt: <ISO-8601 timestamp>
 - Treat a PNG as the only handoff artifact.
 - Use AI-generated raster text as authoritative UI copy.
 - Invent product requirements to make a design look complete.
+- Mark an exact implementation path, provider scope, or public export as
+  confirmed when repository evidence is absent.
 - Add new rendering dependencies without user approval.
 - Claim a design is approved without explicit user approval.
 
@@ -304,6 +330,8 @@ updatedAt: <ISO-8601 timestamp>
 
 - `sdcorejs-product` - source of PRDs, user stories, acceptance criteria, and UAT.
 - `_refs/design/frontend-design.md` - visual direction, token plan, copy voice, and self-critique guidance for UI handoff.
+- `_refs/shared/frontend-architecture.md` - framework-neutral component,
+  responsibility, state, data, registration, and public API vocabulary for handoff.
 - `_refs/design/mobile-design.md` - mobile-first context, platform, ergonomics, state coverage, and implementation-governance guidance.
 - `sdcorejs-execute-plan` - routes approved design plans here.
 - `sdcorejs-parallel-dispatch` - can run Design as one role in full-stack role split.

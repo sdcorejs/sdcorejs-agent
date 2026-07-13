@@ -1,6 +1,18 @@
 # Screen — Detail Component (Shared Shell + State Branches)
 
-The screen-detail reference pack [`screen-detail.md`](../write-code/screen-detail.md) (loaded on demand by the `sdcorejs-angular` orchestrator) owns all three states (CREATE / UPDATE / DETAIL) plus form refinement, because they all write to the **same file**: `src/libs/<module>/<entity>/pages/detail/detail.component.ts`. This ref consolidates the literal code so the developer sees the whole component in one place, with state-specific overlays grouped together.
+The screen-detail reference pack [`screen-detail.md`](../write-code/screen-detail.md)
+(loaded on demand by the `sdcorejs-angular` orchestrator) owns all three route
+states (CREATE / UPDATE / DETAIL) plus overall form orchestration in one
+route/page shell. The common greenfield path is
+`src/libs/<module>/<entity>/pages/detail/detail.component.ts`; preserve a
+different detected project convention.
+
+This file supplies the literal shell/state templates. When the approved
+Frontend architecture plan extracts cohesive form sections, child collections,
+or workflow panels, compose the shell with the templates in
+[`feature-component-boundaries.md`](./feature-component-boundaries.md) instead
+of copying every responsibility into this file. The parent page remains the
+single owner of route mode, load/save orchestration, and overall form state.
 
 Sections to consult based on what you're generating / refining:
 - Shared shell (imports, FormGroup, ngOnInit dispatcher, loader, header buttons, nav helpers, tab name, form-field rendering): [`#shared-shell`](#shared-shell)

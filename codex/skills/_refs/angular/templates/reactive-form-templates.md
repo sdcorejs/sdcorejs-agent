@@ -2,6 +2,13 @@
 
 Code templates referenced from the screen-detail reference pack [`screen-detail.md`](../write-code/screen-detail.md) (form refinement section — validators, signal-first rules, FormArray; loaded on demand by the `sdcorejs-angular` orchestrator). The pack owns the validation strategy and the "lightweight first, strict second" doctrine; this file holds the literal templates.
 
+The route/page remains the single overall form owner. When the approved Frontend
+architecture plan extracts cohesive form sections or child collections, pass a
+typed subgroup/FormArray into feature-local children using
+[`feature-component-boundaries.md#detail-routepage-and-form-section-contracts`](./feature-component-boundaries.md#detail-routepage-and-form-section-contracts).
+Do not create a second form/entity state inside those children. A small
+one-section form may use the templates here without any extraction.
+
 ## Table of contents
 
 - [form-validator.ts — shared `SdValidators` class](#form-validatorts--shared-sdvalidators-class)

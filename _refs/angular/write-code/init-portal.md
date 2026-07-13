@@ -6,7 +6,12 @@
 
 ## Overview
 
-Generates production-ready Angular portal starter by rendering every file from the code templates in [`_refs/angular/templates/init-portal-templates.md`](_refs/angular/templates/init-portal-templates.md) plus the structure tree in §4. No external baseline directory is required.
+Generates a production-ready Angular portal starter from the mapped portal-shell
+templates in
+[`_refs/angular/templates/init-portal-templates.md`](_refs/angular/templates/init-portal-templates.md).
+Generate the sample module and entities through `init-module.md` and
+`init-entity.md`; the structure tree describes the combined result rather than
+an unconditional template inventory. No external baseline directory is required.
 
 **Output:** Complete portal with sample lib (1 module, 2 entities), dev tools, ready for `npm start`.
 
@@ -60,7 +65,9 @@ Before generating, clarify with user:
 1. **Project Name** (required) — e.g. `hr-portal`, `sales-portal`
 2. **Environments** (optional, defaults: `dev`, `qc`, `uat`, `prod`)
 3. **Application Title** (optional, default: `Portal`)
-4. **Sample Entity Names** (optional, defaults: `order`, `customer` — Order uses `<customer-select>` so the sample also demos the base-select / entity-select pattern)
+4. **Sample Entity Names** (optional, defaults: `order`, `customer`; generate a
+   selector abstraction only if the approved sample contract needs remote/search
+   selection and passes the reuse/stability/consumer gate in `./init-module.md`)
 5. **Additional Modules** (optional) — answer: "Use the init-module reference (`./init-module.md`) after generation"
 
 > **Port** is fixed at `4200` (Angular default). Do not ask.
@@ -86,7 +93,11 @@ When this reference is used from PO/BA prototype mode:
 
 ### Step 1: Render Starter From Templates
 
-**Source:** [`_refs/angular/templates/init-portal-templates.md`](_refs/angular/templates/init-portal-templates.md) + the structure tree in §4 ("Expected Starter Structure"). Every file listed in the tree maps to a section in the templates ref; render each one with `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` already substituted (see §"<localized text>" at the top).
+**Source:** Render every unconditional file plus only the conditional selector
+files approved by the frontend architecture plan. Portal-shell files come from
+[`_refs/angular/templates/init-portal-templates.md`](_refs/angular/templates/init-portal-templates.md);
+sample module/entity files come from `init-module.md` and `init-entity.md`.
+Substitute `<CORE_UI_PACKAGE_NAME>` / `<CORE_VERSION>` before writing.
 
 **Brand asset (logo):**
 - Copy [`_refs/angular/assets/logo.png`](_refs/angular/assets/logo.png) into the generated portal at `public/logo.png`.
@@ -119,11 +130,11 @@ portal-new/
 │           ├── routes.ts
 │           ├── configurations/    # API interceptor, upload config
 │           ├── services/base/     # BaseService with CRUD
-│           ├── components/        # MODULE-level reusables
-│           │   ├── base-select/   # generic dropdown
-│           │   └── customer-select/ # per-entity dropdown (reused by Order)
-│           └── features/
-│               ├── order/         # AdaptiveSplitDetail — Order form uses <customer-select>
+│           ├── components/        # optional; only approved module-level reusables
+│           │   ├── base-select/   # conditional shared dropdown contract
+│           │   └── customer-select/ # conditional; only when consumed by Order
+│           └── features/          # greenfield fallback; preserve established project roots
+│               ├── order/         # AdaptiveSplitDetail — approved customer-selection boundary
 │               └── customer/      # UnifiedCompact full-page detail
 ├── .prettierrc.json
 └── .vscode/
@@ -165,14 +176,21 @@ Report pass/fail summary and failing spec names. If E2E missing, report blocker.
 
 ### MUST DO ✅
 - Read `_refs/angular/core-version.md` and substitute placeholders BEFORE writing any file
-- Render every file from [`_refs/angular/templates/init-portal-templates.md`](_refs/angular/templates/init-portal-templates.md) (no external baseline directory exists or is required)
+- Render all mapped portal-shell templates from
+  [`_refs/angular/templates/init-portal-templates.md`](_refs/angular/templates/init-portal-templates.md),
+  then use the module/entity references for the sample feature; materialize
+  selector files only when the approved conditional gate selects them
 - Use this template-first portal baseline for new PO/BA prototypes before any
   admin/module/entity/list/detail/create/update screen generation
 - Copy [`_refs/angular/assets/logo.png`](_refs/angular/assets/logo.png) to `<project>/public/logo.png` and ensure `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
-- Generate exactly ONE sample lib with TWO entities: `order` + `customer` (Order's create/update form uses `<customer-select>` — demonstrates the reusable dropdown pattern from the init-module reference, `./init-module.md`)
-- Use `features/` (NOT `modules/`) at the lib level — `src/libs/<lib>/features/<entity>/`
-- When applying this reference to a legacy project that already uses `modules/`, still generate new code under `features/` and recommend renaming the existing `modules/` directory
-- Place sample lib's reusable dropdowns at MODULE level: `src/libs/sample/components/base-select/` + `src/libs/sample/components/customer-select/`
+- Generate exactly ONE sample lib with TWO entities: `order` + `customer`. Record whether Order reuses an existing/Core UI customer selector, creates a feature-local domain selector, or keeps the selection UI inline; do not require a generic wrapper to demonstrate reuse.
+- For greenfield portals, use `features/` at the lib level: `src/libs/<lib>/features/<entity>/`.
+- In an established project, preserve its coherent feature root and naming (`modules/`, `features/`, or another discovered convention). Change it only under an approved migration plan.
+- Place a sample selector at module level only after
+  `_refs/shared/frontend-architecture.md` and `./init-module.md` prove a stable
+  cross-feature contract, no compatible existing/Core UI selector, and an actual
+  same-change consumer. Otherwise use a feature-local domain selector or no
+  wrapper.
 - Keep the layout route lazy-loaded from Core UI: `loadChildren: () => import('<CORE_UI_PACKAGE_NAME>/modules/layout').then(m => m.SdLayoutModule)`
 - Permission code convention is **flexible per project, consistent within a project**:
   - Scaffold default: `<MODULE>_<ENTITY>_<ACTION>` (e.g. `SAMPLE_ORDER_LIST`)
@@ -270,13 +288,13 @@ Ask the developer:
         ├── services/
         │   └── base/
         │       └── base.service.ts
-        ├── components/
-        │   ├── base-select/
+        ├── components/                         # optional; omit when no approved shared selector exists
+        │   ├── base-select/                    # conditional stable shared abstraction
         │   │   ├── base-select.component.ts
         │   │   └── base-select.component.html
-        │   └── customer-select/
+        │   └── customer-select/                # conditional actual domain consumer
         │       └── customer-select.component.ts
-        └── features/
+        └── features/                           # greenfield default; use the discovered root in established projects
             ├── order/
             │   ├── routes.ts
             │   ├── services/
@@ -315,13 +333,13 @@ Resolve `<CORE_UI_PACKAGE_NAME>` and `<CORE_VERSION>` from `_refs/angular/core-v
 ```text
 After generation:
 1. Confirm package name, Angular project name, and output path match developer request
-2. Confirm every file in §"Expected Starter Structure" was rendered from `_refs/angular/templates/init-portal-templates.md` and that no workspace-external dependency is referenced
+2. Confirm every unconditional file and every approved conditional file in §"Expected Starter Structure" was rendered from `_refs/angular/templates/init-portal-templates.md`, omitted selector files were not generated, and no workspace-external dependency is referenced
 3. Confirm `public/logo.png` exists in the target project (copied from `_refs/angular/assets/logo.png`) and `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
 4. Confirm `tsconfig.json` has no unnecessary `compilerOptions.baseUrl` (or document why it is needed)
 5. Run npm install
 6. Run npm start
 7. Open /sample/order and /sample/customer routes — verify the sidebar renders the logo from `/logo.png`
-8. Open Order detail and verify the <customer-select> dropdown lists customers
+8. Open Order detail and verify the approved customer-selection decision: reused selector, feature-local selector, or cohesive inline selection
 9. If build config exists, run npm run build-dev
 10. Run starter unit tests (at minimum route/bootstrap smoke specs)
 ```
@@ -331,7 +349,9 @@ After generation:
 ## Validation Checklist (apply at end of generation)
 
 - [ ] `_refs/angular/core-version.md` read; placeholders substituted (no literal version/package string left in generated files)
-- [ ] `_refs/angular/templates/init-portal-templates.md` read and every listed section rendered into the target project (no external baseline copy used)
+- [ ] `_refs/angular/templates/init-portal-templates.md` read and all mapped
+      portal-shell sections rendered; module/entity references used for sample
+      feature files; unapproved conditional selectors omitted
 - [ ] Template-first portal baseline confirmed for PO/BA prototype mode; no custom portal shell was generated before the Core UI starter template
 - [ ] `public/logo.png` copied from `_refs/angular/assets/logo.png`; `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
 - [ ] `package.json` pins `<CORE_UI_PACKAGE_NAME>@<CORE_VERSION>` (npm, not tgz)
@@ -339,18 +359,21 @@ After generation:
 - [ ] `tsconfig.json` has `"baseUrl": "./"` + `"@sample": ["./src/libs/sample"]` + `"@sample/*": ["./src/libs/sample/*"]`
 - [ ] `app.routes.ts` lazy-loads sample lib + Core UI layout
 - [ ] `SampleModule.useValue({ host: environment.sampleBackendUrl })` wired at root in `main.ts` (no route-level providers)
-- [ ] Sample lib has 2 entities under `src/libs/sample/features/`:
-  - [ ] `order/` — Order list + detail; detail form contains `<customer-select>` referencing the `customer` entity
+- [ ] Sample lib has 2 entities under the approved feature root (`src/libs/sample/features/` for greenfield; the discovered coherent root for established projects):
+  - [ ] `order/` — Order list + detail; customer selection follows the recorded reuse/feature-local/inline decision
   - [ ] `customer/` — Customer list + detail
-- [ ] Module-level reusables generated:
-  - [ ] `src/libs/sample/components/base-select/`
-  - [ ] `src/libs/sample/components/customer-select/`
+- [ ] Module-level selector decision recorded:
+  - [ ] Reuse an existing/Core UI selector, or
+  - [ ] Generate `src/libs/sample/components/base-select/` only when the stable
+        abstraction gate passes and an actual sample consumer exists
+  - [ ] Generate `src/libs/sample/components/customer-select/` only when the
+        sample Order form consumes it
 - [ ] Permission code convention is consistent across the generated portal (single style)
 - [ ] `PermissionConfiguration.disabled = true` in starter
 - [ ] `npm install` succeeds
 - [ ] `npm run build-dev` exits 0
 - [ ] `npm start` serves at `http://localhost:4200/`
-- [ ] Order list renders; create flow opens with `<customer-select>` populated
+- [ ] Order list renders; create flow opens with the approved customer-selection UI populated
 - [ ] Prettier formats code on save
 - [ ] `.vscode` extensions recommended
 
@@ -375,14 +398,16 @@ Tao src/libs/sample va seed 2 entity order, customer (Order su dung customer-sel
 
 ### Agent Decision
 ```text
-Render every file from _refs/angular/templates/init-portal-templates.md as source.
+Render the mapped portal-shell files from _refs/angular/templates/init-portal-templates.md.
+Generate sample module/entity files from their focused references and omit any
+selector not approved by the architecture plan.
 Copy _refs/angular/assets/logo.png to public/logo.png and wire sidebar.logoUrl.
 Create project portal-starter-moi.
 Keep app shell, core configuration, environments, and generated sample files.
 Generate src/libs/sample scaffold with:
-  - components/base-select (generic dropdown)
-  - components/customer-select (per-entity dropdown)
-  - features/order (uses <customer-select> in detail form)
+  - conditional components/base-select only when the approved stable search contract requires it
+  - conditional components/customer-select only when the Order sample consumes it
+  - features/order (uses the approved reused, feature-local, or inline customer-selection boundary)
   - features/customer
 Pin <CORE_UI_PACKAGE_NAME> to npm version <CORE_VERSION> via _refs/angular/core-version.md (no local tgz).
 Ship PermissionConfiguration with disabled=true so the portal boots without a permission backend.
@@ -405,9 +430,9 @@ Then run npm install and npm start to verify the starter boots.
 [project-name]/src/libs/sample/sample.configuration.ts
 [project-name]/src/libs/sample/sample.module.ts
 [project-name]/src/libs/sample/routes.ts
-[project-name]/src/libs/sample/components/base-select/base-select.component.ts
-[project-name]/src/libs/sample/components/base-select/base-select.component.html
-[project-name]/src/libs/sample/components/customer-select/customer-select.component.ts
+[project-name]/src/libs/sample/components/base-select/base-select.component.ts      # conditional
+[project-name]/src/libs/sample/components/base-select/base-select.component.html    # conditional
+[project-name]/src/libs/sample/components/customer-select/customer-select.component.ts # conditional
 [project-name]/src/libs/sample/features/order/routes.ts
 [project-name]/src/libs/sample/features/order/services/order.service.ts
 [project-name]/src/libs/sample/features/order/services/order.model.ts

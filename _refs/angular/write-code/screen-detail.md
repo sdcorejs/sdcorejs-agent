@@ -1,9 +1,9 @@
 > **Reference for the `sdcorejs-angular` orchestrator.** Loaded on demand when the
-> confirmed plan generates or refines `pages/detail/detail.component.ts` (CREATE / UPDATE /
-> DETAIL states + reactive-form refinement). Not a standalone skill — the orchestrator reads
+> confirmed plan generates or refines a detail route/page container and its
+> approved feature-local children (CREATE / UPDATE / DETAIL states + reactive-form refinement). Not a standalone skill — the orchestrator reads
 > this file when its dispatch table routes a step here.
 
-# Screen: detail.component.ts (CREATE / UPDATE / DETAIL + form refinement)
+# Screen: Detail Route/Page and Form Boundaries
 
 ## Contents
 
@@ -17,13 +17,23 @@
 
 ## Purpose
 
-Implement and refine an entity's `pages/detail/detail.component.ts` — one component file backing three URL routes:
+Implement and refine an entity's detail route/page container, commonly
+`pages/detail/detail.component.ts`, backing three URL routes:
 
 - `/create` → CREATE state (empty form + defaults)
 - `/update/:id` → UPDATE state (prefilled, editable)
 - `/detail/:id` → DETAIL state (prefilled, read-only)
 
-The same file also owns the form definition, so this reference is also where you add validators, custom validators, conditional fields, async validators, and cross-field rules. Workflow actions (approve / reject / bulk operations / custom side-effects) are layered on top by [`./actions.md`](./actions.md).
+The route/page owns route mode, load/save orchestration, navigation, and overall
+form state. Cohesive form sections, child collections, summaries, audit blocks,
+or workflow panels may be feature-local children when the approved architecture
+plan gives them a meaningful contract. Workflow actions (approve / reject /
+bulk operations / custom side-effects) are layered on top by
+[`./actions.md`](./actions.md).
+
+Before changing component boundaries, read
+`_refs/shared/frontend-architecture.md`. Follow the detected project structure;
+the path above is a greenfield Core UI fallback.
 
 ## When to use
 
@@ -39,6 +49,33 @@ Defer to:
 - [`./init-entity.md`](./init-entity.md) when the entity model/service/routes don't exist yet
 
 Before adding custom validators, date/number formatters, normalizers, query-param helpers, upload/download helpers, clipboard helpers, or other form utilities, read `_refs/shared/sdcorejs-utils.md`. Reuse `@sdcorejs/utils` where it covers the behavior, while keeping Angular `Validators`/`SdValidators` for Angular form-specific contracts.
+
+## Detail and form decomposition gate
+
+Use the approved `Frontend architecture plan` to decide whether the page remains
+cohesive or composes feature-local children.
+
+Extract a form section, line-item editor, child collection, workflow panel,
+async-validation region, permission-dependent block, or audit summary when it
+has a distinct responsibility, typed input/output contract, independent state or
+async lifecycle, accessibility behavior, test need, or change cadence.
+
+The route/page keeps overall `FormGroup`/entity state. A child form section
+receives the typed parent subgroup or the project's equivalent and emits
+meaningful UI/domain events; it must not create a duplicate form/entity model,
+call the raw API, or navigate independently unless current project conventions
+explicitly assign that responsibility.
+
+Keep a four-field drawer or one-section form cohesive when it has no child
+collection, independent async region, or workflow boundary. Do not create one
+component per field, a pass-through wrapper, or a facade/store without actual
+coordination/state pressure.
+
+Record API/data service, optional facade/store, form builder, mapper, and
+validator responsibilities separately. Choose provider lifecycles explicitly:
+shared stateless API services may follow the existing app scope; mutable feature
+facades belong at route/feature/page scope; drawer coordinators belong at
+component scope; pure form builders/mappers may remain functions.
 
 For PO/BA prototype mode, perform validator inference from PRD/user story/AC,
 field semantics, status workflow, and existing project conventions. Keep CREATE,
@@ -91,7 +128,8 @@ Apply field-role analysis from [`./init-entity.md`](./init-entity.md) before ren
 
 ## Shared shell — code templates
 
-File path: `src/libs/<module>/<entity>/pages/detail/detail.component.ts`
+Fallback file path: `src/libs/<module>/<entity>/pages/detail/detail.component.ts`.
+Use the detected project path when it differs.
 
 All literal code lives in [`_refs/angular/templates/screen-detail-component.md`](_refs/angular/templates/screen-detail-component.md), sectioned by state. This reference owns the rules; the templates ref owns the code:
 
@@ -107,6 +145,8 @@ All literal code lives in [`_refs/angular/templates/screen-detail-component.md`]
 | `pageTabName` / `pageTabColor` computed values per state | [`#conditional-tab-name--color`](_refs/angular/templates/screen-detail-component.md#conditional-tab-name--color) |
 | Per-field rendering snippets (`sd-input`, `sd-select`, `sd-date`, `sd-upload-file`, `sd-editor`, etc.) | [`#form-field-rendering-template`](_refs/angular/templates/screen-detail-component.md#form-field-rendering-template) |
 | Editable child collections / line items in detail | [`#editable-child-collection-rendering-template`](_refs/angular/templates/screen-detail-component.md#editable-child-collection-rendering-template) |
+| Route/page shell plus feature-local form sections, line items, workflow panels, and optional collaborators | [`#detail-routepage-and-form-section-contracts`](_refs/angular/templates/feature-component-boundaries.md#detail-routepage-and-form-section-contracts) |
+| Page orchestration, child form contract, and provider lifecycle tests | [`#architecture-contract-tests`](_refs/angular/templates/feature-component-boundaries.md#architecture-contract-tests) |
 | **CREATE-specific:** state detection + `applyDefaults()` + `onSave()` | [`#create-state`](_refs/angular/templates/screen-detail-component.md#create-state) |
 | **UPDATE-specific:** state detection + optional loader override + `onSave()` | [`#update-state`](_refs/angular/templates/screen-detail-component.md#update-state) |
 
@@ -426,6 +466,8 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 
 ### MUST DO ✅
 
+- Follow the approved Frontend architecture plan and detected project paths;
+  keep route/load/save orchestration and overall form state in the page container
 - Run Core UI component discovery before generating markup; pick Core UI page/section/form/button/table components before any custom HTML/CSS.
 - Lightweight `new FormGroup({})` allowed by default; add typed validators only when business rules are stable
 - `ChangeDetectionStrategy.OnPush` declared on the detail component
@@ -439,6 +481,12 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - Use grid `row row-sm` for form sections (compact spacing)
 - For relation fields, read `./reuse-existing-entities.md`; reuse existing related model/summary types and services, use `<entity>Id` when the API only returns an id, and do not inline the related entity shape when a contract exists
 - Generate runnable `.spec.ts` per state branch, mocking `inject()` deps (`Router`, `ActivatedRoute`, services, notify, loading)
+- Generate focused tests for page orchestration and every extracted child
+  input/output/form-subgroup contract; add provider-lifecycle coverage when
+  mutable state must reset with a route/page instance
+- Register feature-local standalone children in parent `imports` or follow the
+  detected NgModule declarations/imports convention; keep them out of public
+  barrels
 - Run tests immediately after generation; report pass/fail
 
 ### MUST NOT ❌
@@ -448,6 +496,11 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - Skip form validation before submission (silent broken saves)
 - Hard-code error messages (use i18n constants per project convention)
 - Add form logic to components when business-level (delegate to service or shared validator)
+- Create duplicate entity/form state inside a child form section, let a child
+  call the raw API/router without architectural evidence, or root-provide a
+  mutable detail facade by default
+- Extract a component per field, create pass-through wrappers, or split solely
+  because the route page is long
 - Over-design validators at CREATE stage when business rules are still in flux
 - Allow form submission while invalid
 - Duplicate validation logic across save / submit / approve handlers — funnel through one gate
@@ -474,10 +527,13 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 
 ---
 
-## AI generation checklist (full component)
+## AI generation checklist (route/page and approved children)
 
 - [ ] Core UI inventory + STYLE-GUIDE fetched before template generation; component docs read for page/section/form/button/table needs
-- [ ] Component file at `pages/detail/detail.component.ts` with imports from the shared shell ref
+- [ ] Route/page file follows the detected project path (greenfield fallback:
+      `pages/detail/detail.component.ts`) and imports approved children
+- [ ] Component tree, responsibilities, input/output contracts, state owners,
+      provider scopes, and private/public exports match the architecture plan
 - [ ] `state` signal initialized to `'DETAIL'` (overridden by `ngOnInit` dispatcher)
 - [ ] `initForm()` builds FormGroup from schema (one control per CREATE/UPDATE request/editable field with declared validators)
 - [ ] Field-role analysis completed before template generation: business identifier, primary display, status/lifecycle, long text, visual identity, server/audit.
@@ -499,6 +555,9 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - [ ] Save button gated by matching `*sdPermission`
 - [ ] Validators applied per field criticality (don't over-constrain on first pass)
 - [ ] Related entity controls import/reuse existing model/summary/service contracts or document why a new contract is required
+- [ ] Child form sections receive the typed parent subgroup without duplicating
+      entity or form state
+- [ ] Small cohesive forms/drawers remain intact when extraction is not justified
 - [ ] Per-field error display where business rules need surfaced messages
 - [ ] Row-level add/remove/edit actions are state-aware, permission-aware when needed, and hidden/disabled in DETAIL
 - [ ] Empty state exists for child rows; CREATE/UPDATE empty state includes an add action
@@ -517,7 +576,14 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - Forgetting `replaceUrl: true` on stale-id recovery (back button re-enters the broken URL)
 - Showing the Save button in DETAIL (only Back + Edit belong there)
 - Calling `service.detail(id)` in CREATE — there is no id yet
-- Duplicating the FormGroup across separate files — it lives ONCE in the shared shell ref
+- Duplicating the same FormGroup/entity state across the route page and child
+  sections; child sections may receive typed subgroups but do not create another
+  source of truth
+- Keeping unrelated form sections, line-item workflows, async validation, and
+  permission-dependent regions in one route component after the approved tree
+  assigned them cohesive child boundaries
+- Extracting trivial wrappers or adding a facade/store without a meaningful
+  state, workflow, lifecycle, or testing boundary
 - Hardcoding the Edit button without a permission directive
 - Mixing approve / reject / bulk buttons into the shell — those belong in [`./actions.md`](./actions.md), gated by workflow state inside DETAIL
 - Adding typed validators speculatively before business rules are confirmed (over-constraint on first pass)
@@ -537,3 +603,5 @@ This rule is about signal reads only. Do not replace method/getter calls with re
 - [`./reuse-existing-entities.md`](./reuse-existing-entities.md) — relation model/service reuse before generating fields or service calls
 - [`_refs/angular/templates/screen-detail-component.md`](_refs/angular/templates/screen-detail-component.md) — code templates for the shared shell + per-state branches
 - [`_refs/angular/templates/reactive-form-templates.md`](_refs/angular/templates/reactive-form-templates.md) — code templates for form refinement
+- [`_refs/angular/templates/feature-component-boundaries.md`](_refs/angular/templates/feature-component-boundaries.md) — architecture-driven route/page, child, collaborator, and contract-test templates
+- [`_refs/shared/frontend-architecture.md`](_refs/shared/frontend-architecture.md) — shared component/service/provider/public API preflight

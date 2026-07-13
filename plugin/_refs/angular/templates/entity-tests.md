@@ -6,8 +6,12 @@ Spec.ts templates for the init-entity reference pack ([`init-entity.md`](../writ
 - Test Coverage — default `standard`, no clarify prompt (override only on explicit request)
 - `list.component.spec.ts` — standard coverage
 - `detail.component.spec.ts` — standard coverage
+- page orchestration + feature-local child contract specs — when approved by the component tree
+- provider lifecycle spec — when mutable state is route/page/component scoped
 - `[module]-[entity].routes.spec.ts` — Permission Validation
-- Also see `entity-skeleton.md` for inline `list/detail.component.spec.ts` generated alongside their components.
+- Also see `feature-component-boundaries.md#architecture-contract-tests` for
+  page/child/provider boundary tests and `entity-skeleton.md` for inline
+  list/detail examples.
 
 ---
 
@@ -20,6 +24,22 @@ Spec.ts templates for the init-entity reference pack ([`init-entity.md`](../writ
 > - **minimal**: only `should create` (fastest — prototype/v1; only on explicit request)
 > - **standard** (DEFAULT): + permission route tests + data/sort tests + detail save-flow/state — emit this unless told otherwise
 > - **full**: + all unit + integration tests for save flow, state transitions, edge cases (only on explicit request)
+
+For every component or collaborator actually extracted by the approved Frontend
+architecture plan, add a focused standard-coverage spec for its responsibility:
+
+- route/page orchestration owns navigation, route/query mapping, reload/save, and
+  child-event coordination;
+- a presentational child accepts typed inputs and emits typed events without
+  calling the router or raw data access;
+- a child form section edits the parent-owned subgroup without duplicating form
+  or entity state;
+- a route/page/component-scoped mutable facade/coordinator resets between
+  provider instances when that lifecycle matters.
+
+Do not generate placeholder specs for components, facades, or stores the
+architecture plan intentionally did not create. Use the literal templates in
+[`feature-component-boundaries.md#architecture-contract-tests`](./feature-component-boundaries.md#architecture-contract-tests).
 
 ---
 
@@ -219,4 +239,3 @@ describe('[Entity]Routes (permission guards)', () => {
   });
 });
 ```
-
