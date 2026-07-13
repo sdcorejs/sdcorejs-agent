@@ -1,0 +1,8 @@
+NODE_ENV=development
+PORT=3000
+DATABASE_URL=postgresql://app:change-me@localhost:5432/app
+CORS_ORIGINS=http://localhost:4200
+CORS_CREDENTIALS=true
+GLOBAL_BODY_LIMIT=1mb
+IMPORT_MAX_BYTES=1048576
+IMPORT_MAX_ROWS=1000

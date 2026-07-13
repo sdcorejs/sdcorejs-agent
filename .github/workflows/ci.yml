@@ -23,6 +23,7 @@ jobs:
       - run: npm ci
       - run: npm run check:text-hygiene
       - run: npm run check:skills
+      - run: npm run check:nestjs-pack
       - run: npm run check:audit
       - run: npm run test:e2e
 

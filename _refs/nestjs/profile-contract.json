@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "defaultProfile": "simple",
+  "shared": {
+    "authenticationRequired": true,
+    "permissionMetadataRequired": true,
+    "missingPermissionBehavior": "deny",
+    "explicitControllerRoutes": true,
+    "strictTypeScript": true,
+    "requestResponseTypesSeparated": true,
+    "unknownRequestFields": "reject",
+    "productionSchemaManagement": "migrations-only",
+    "capabilityFlagsAuthoritative": false
+  },
+  "profiles": {
+    "simple": {
+      "tenantFields": [],
+      "trustedContext": ["actor"],
+      "authorizationAdapter": "role-permission",
+      "repositoryScope": []
+    },
+    "enterprise": {
+      "tenantFields": ["tenantCode"],
+      "optionalScopeFields": ["departmentCode"],
+      "trustedContext": ["actor", "tenantCode", "departmentCode"],
+      "authorizationAdapter": "actor-policy",
+      "repositoryScope": ["tenantCode"],
+      "missingScopeBehavior": "deny"
+    }
+  }
+}
