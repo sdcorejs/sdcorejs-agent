@@ -15,8 +15,11 @@ side_effects_allowed: true | false
 ```
 
 If the caller has a richer action field such as `explore_action`,
-`review_action`, `test_action`, `debug_mode`, or `ship_mode`, keep that value in
-the caller context and derive `context_mode` from it.
+`review_action`, `test_action`, `product_action`, `debug_mode`, or `ship_mode`,
+keep that value in the caller context and derive `context_mode` from it.
+`product_action: audit-readonly` always derives read-only mode and
+`side_effects_allowed: false`; it cannot refresh summaries or write a task
+checkpoint.
 
 Read-only context means this preflight may read project artifacts, but must not
 write `.sdcorejs/*`, env files, docs, tasks, persona files, memories, source

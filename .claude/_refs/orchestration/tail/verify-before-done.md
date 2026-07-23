@@ -25,7 +25,7 @@ Required values:
 
 | verification_mode | Definition |
 |---|---|
-| `feature-acceptance` | A spec, plan, product ledger, acceptance criteria, or approved test plan exists and must be verified criterion by criterion. |
+| `feature-acceptance` | An approved spec/product contract, plan, acceptance criteria, or approved test plan exists and must be verified criterion by criterion. A derived product ledger is evidence only. |
 | `bugfix-verification` | A bug fix needs original repro or evidence-equivalent repro, regression evidence, and broader checks when available. |
 | `specless-verification` | A small change has no explicit spec; verify changed scope and report manual done confirmation needs. |
 | `dependency-regression` | Package manifest or lockfile changes need dependency risk, install consistency, audit where supported, and impacted checks. |
@@ -52,7 +52,10 @@ Select the scope in this priority order:
 1. Explicit user-provided spec, path, criteria, task ID, bug contract, or
    release range.
 2. Current task, plan, spec, or active workflow context from project context.
-3. Product ledger, plan ledger, or test plan associated with the current task.
+3. Final `audit-readonly` `product_context`, product ledger, plan ledger, or
+   test plan associated with the selected approved contract. Preserve the
+   approved spec as normative and use these only for evidence, freshness, and
+   gap status.
 4. Caller contexts: `review_context`, `repair_source`, `debug_context`, or
    `test_context`.
 5. Changed files and current diff scope.
@@ -80,6 +83,10 @@ Rules:
 - Do not fabricate acceptance criteria when no spec or AC exists.
 - If multiple specs match and caller context does not disambiguate, ask.
 - Include the selected scope in `ship_context`.
+- When a product contract exists, consume its final `audit-readonly`
+  `product_context`. Block on blocking gaps, stale required verification,
+  failed required UAT, or authority conflict. Automated E2E is never a UAT
+  pass. Do not require product context for unrelated specless or docs-only work.
 
 ## Step 3 - Discover commands
 

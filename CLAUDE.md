@@ -35,7 +35,8 @@ If several skills match, apply this priority before reading a body:
 
 1. Explicit skill name from the user.
 2. Approved spec/plan continuation: `sdcorejs-execute-plan`.
-3. Product docs and traceability: `sdcorejs-product`.
+3. Approved product seeding/revision, traceability sync, product audit,
+   supplied UAT recording, or feature supersession: `sdcorejs-product`.
 4. Design handoff artifacts: `sdcorejs-design`.
 5. Test-only work: `sdcorejs-test`, except failing-test root cause/fix goes to `sdcorejs-debug`.
 6. Dedicated utility intent: `sdcorejs-explore`, `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
@@ -82,17 +83,21 @@ sdcorejs-test
 -> sdcorejs-review
 -> sdcorejs-repair-loop when findings exist
 -> sdcorejs-documentation (code-documentation mode)
--> sdcorejs-product when user-visible feature traceability is needed
 -> _refs/orchestration/tail/auto-docs.md
 -> sdcorejs-documentation (write-user-guide mode)
 -> _refs/orchestration/tail/auto-task-tracker.md
 -> sdcorejs-explore (memories mode) when durable knowledge surfaced
+-> sdcorejs-product (traceability-sync as the final write)
+-> deny-write global verification on the post-sync state
+-> sdcorejs-product (audit-readonly with zero-write proof)
 -> sdcorejs-ship (verify-before-done mode)
 -> sdcorejs-ship (branch-ready mode as the final read-only gate)
 ```
 
-No write-producing step may run after final branch-ready unless branch-ready is
-run again before any Git artifact handoff.
+Any write after traceability sync invalidates the post-sync evidence. Any write
+after the final product audit or branch-ready requires the applicable
+traceability sync, deny-write verification, audit, and ship gates to rerun
+before any Git artifact handoff.
 
 `sdcorejs-execute-plan` must ask the user whether to run sequentially or in parallel before execution. Parallel execution requires `sdcorejs-parallel-dispatch`, which owns both the safety verdict and safe fan-out / role-split execution.
 

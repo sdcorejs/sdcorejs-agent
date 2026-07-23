@@ -75,7 +75,7 @@ Classify `verification_mode` before selecting commands or criteria:
 
 | verification_mode | Use when |
 |---|---|
-| `feature-acceptance` | A spec, plan, product ledger, test plan, or explicit acceptance criteria exists and must be verified criterion by criterion. |
+| `feature-acceptance` | An approved spec/product contract, plan, test plan, or explicit acceptance criteria exists and must be verified criterion by criterion. A derived product ledger is evidence, not normative authority. |
 | `bugfix-verification` | A bug fix must verify original repro, regression evidence, and broader checks when available. |
 | `specless-verification` | A small change has no explicit spec or AC; verify changed scope and report manual done confirmation needs. |
 | `dependency-regression` | Package manifest or lockfile changes require dependency risk, install, audit where supported, and impacted checks. |
@@ -99,7 +99,9 @@ Select `acceptance_scope` in this order:
 
 1. Explicit user-provided spec, path, criteria, task ID, or release range.
 2. Current task, plan, spec, or active workflow context.
-3. Product ledger, plan ledger, or test plan associated with the current task.
+3. Final `audit-readonly` `product_context`, product ledger, plan ledger, or
+   test plan associated with the selected approved contract. These supply
+   evidence and gaps but cannot redefine the approved requirement.
 4. `review_context`, `repair_source`, `debug_context`, or `test_context` from a
    caller.
 5. Changed files and current diff scope.
@@ -215,8 +217,8 @@ Read `_refs/orchestration/tail/branch-ready.md` completely, then run its
 read-only hygiene checks.
 
 Branch-ready is the final read-only gate immediately before `sdcorejs-git`
-creates commit, PR, push, tag, or release artifacts. No writes after
-branch-ready unless branch-ready is run again.
+creates commit, PR, push, tag, or release artifacts. No writes after branch-ready
+unless branch-ready is run again.
 
 Rules:
 
@@ -245,16 +247,22 @@ Preferred order:
    code documentation, technical docs, user guide, auto-docs/session docs, task
    tracker, memories, generated mirrors, changelog, and release notes when
    selected or approved.
-4. Run `verify-before-done` or the appropriate verification mode over the final
+4. When a product contract is in scope, run `traceability-sync` after every
+   other write as the final write, run deny-write global verification on that
+   post-sync state, then run `audit-readonly` with zero-write proof. Ship must
+   consume that final audit context.
+5. Run `verify-before-done` or the appropriate verification mode over the final
    intended diff.
-5. Run `branch-ready` as the final read-only gate over the final diff.
-6. Produce `ship_context`.
-7. Delegate to `sdcorejs-git` only if the user explicitly asked for commit, PR,
+6. Run `branch-ready` as the final read-only gate over the final diff.
+7. Produce `ship_context`.
+8. Delegate to `sdcorejs-git` only if the user explicitly asked for commit, PR,
    push, changelog, tag, or release artifacts and final evidence is current.
 
-If any workflow verifies before docs or changelog writes, re-run branch-ready
-after those writes. No writes after branch-ready unless branch-ready is run
-again.
+Any write after product sync invalidates the product context and requires the
+applicable sync, deny-write verification, audit, and ship gates to run again.
+If any workflow verifies before docs or changelog writes, rerun the applicable
+product sequence and branch-ready after those writes. No writes after branch-ready
+unless branch-ready is run again.
 
 ## Mode: dependency-update
 
@@ -360,11 +368,17 @@ Consume evidence from:
 - `review_context`;
 - `repair_source` or repair ledger;
 - prior `branch_ready_evidence`.
+- final `audit-readonly` `product_context` when a product contract is in scope.
 
-Treat context evidence as stale if files changed after it was produced or if
-`associated_HEAD_or_diff` does not match the current diff. Re-run relevant
-checks when evidence is stale. Do not substitute review, test, or debug evidence
-for an AC unless it actually verifies that criterion.
+Treat exact-state ship/review/debug evidence as stale if files changed after it
+was produced or if `associated_HEAD_or_diff` does not match the current diff.
+For product evidence, apply its contract/revision/spec and relevant-path hash:
+an unrelated documentation-only HEAD change does not automatically make it
+stale, but any relevant-path or normative-contract change does. Re-run relevant
+checks when evidence is stale. Do not substitute review, test, debug, or ledger
+evidence for an AC unless it actually verifies that criterion. A blocking
+product gap, stale required verification, failed required UAT, or authority
+conflict blocks ship. Automated E2E never supplies a UAT pass.
 
 ## Secret And PII Redaction
 
@@ -434,6 +448,7 @@ ship_context:
         evidence:
     result: PASS | FAIL | PARTIAL | SKIPPED
   contexts_consumed:
+    product_context:
     explore_context:
     test_context:
     debug_context:

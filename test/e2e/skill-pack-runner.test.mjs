@@ -1,11 +1,18 @@
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { dispatchPrompt, loadSkillPack, runPromptEval } from './support/skill-pack-runner.mjs';
+import { PRODUCT_ACTIONS } from '../../_refs/product/product-protocol.mjs';
+import {
+  hashApprovedSnapshot,
+  validateApprovedPlanIntegrity
+} from '../../_refs/shared/approved-plan-integrity.mjs';
+import * as approvedPlanProtocol from '../../_refs/shared/approved-plan-integrity.mjs';
 
 async function listMarkdownLikeFiles(rootUrl, relativeDir) {
   const dirUrl = new URL(`${relativeDir}/`, rootUrl);
@@ -78,6 +85,989 @@ function markdownSection(source, heading) {
   const nextSection = source.indexOf('\n## ', bodyStart);
   return source.slice(bodyStart, nextSection === -1 ? source.length : nextSection);
 }
+
+function approvedSnapshot(frontmatter, body) {
+  return `---\n${frontmatter.trim()}\n---\n${body}`;
+}
+
+function sha256(value) {
+  return createHash('sha256').update(value, 'utf8').digest('hex');
+}
+
+function canonicalFixtureHash(body, hashField) {
+  return sha256(body.replace(new RegExp(`^[ \\t]*${hashField}[ \\t]*:.*(?:\\n|$)`, 'gm'), ''));
+}
+
+function noneProductActionAuthority() {
+  return {
+    schema_version: 1,
+    mode: 'none',
+    purpose: 'none',
+    sequence_id: null,
+    steps: [],
+    terminal_step_id: null,
+  };
+}
+
+function standaloneProductActionAuthority({
+  action = 'traceability-sync',
+  writePolicy = action === 'audit-readonly' ? 'deny' : 'allow',
+  allowedPaths = writePolicy === 'deny' ? [] : ['src/approved/**'],
+  checkpoint = 'approved-plan-validated',
+} = {}) {
+  const stepId = `standalone-${action}`;
+  return {
+    schema_version: 1,
+    mode: 'single',
+    purpose: 'standalone',
+    sequence_id: `sequence-${action}`,
+    steps: [{
+      step_id: stepId,
+      ordinal: 1,
+      action,
+      write_policy: writePolicy,
+      allowed_paths: [...allowedPaths],
+      predecessor_step_id: null,
+      required_checkpoint: checkpoint,
+    }],
+    terminal_step_id: stepId,
+  };
+}
+
+function finalTailProductActionAuthority({
+  allowedPaths = ['src/approved/**'],
+} = {}) {
+  return {
+    schema_version: 1,
+    mode: 'ordered',
+    purpose: 'final-tail',
+    sequence_id: 'sequence-final-product-tail',
+    steps: [
+      {
+        step_id: 'final-tail-traceability-sync',
+        ordinal: 1,
+        action: 'traceability-sync',
+        write_policy: 'allow',
+        allowed_paths: [...allowedPaths],
+        predecessor_step_id: null,
+        required_checkpoint: 'write-tail-complete',
+      },
+      {
+        step_id: 'final-tail-audit-readonly',
+        ordinal: 2,
+        action: 'audit-readonly',
+        write_policy: 'deny',
+        allowed_paths: [],
+        predecessor_step_id: 'final-tail-traceability-sync',
+        required_checkpoint: 'post-sync-deny-write-verified',
+      },
+    ],
+    terminal_step_id: 'final-tail-audit-readonly',
+  };
+}
+
+function productActionYamlScalar(value) {
+  if (value === null) return 'null';
+  if (Number.isInteger(value)) return String(value);
+  return JSON.stringify(value);
+}
+
+function renderProductActionAuthorityYaml(authority, indent = '  ') {
+  const nested = `${indent}  `;
+  const stepIndent = `${nested}  `;
+  const fieldIndent = `${stepIndent}  `;
+  const authorityFields = new Set([
+    'schema_version', 'mode', 'purpose', 'sequence_id', 'steps', 'terminal_step_id',
+  ]);
+  const stepFields = new Set([
+    'step_id', 'ordinal', 'action', 'write_policy', 'allowed_paths',
+    'predecessor_step_id', 'required_checkpoint',
+  ]);
+  const lines = [
+    `${indent}product_action_authority:`,
+    `${nested}schema_version: ${productActionYamlScalar(authority.schema_version)}`,
+    `${nested}mode: ${productActionYamlScalar(authority.mode)}`,
+    `${nested}purpose: ${productActionYamlScalar(authority.purpose)}`,
+    `${nested}sequence_id: ${productActionYamlScalar(authority.sequence_id)}`,
+    authority.steps.length ? `${nested}steps:` : `${nested}steps: []`,
+  ];
+  for (const step of authority.steps) {
+    lines.push(
+      `${stepIndent}- step_id: ${productActionYamlScalar(step.step_id)}`,
+      `${fieldIndent}ordinal: ${productActionYamlScalar(step.ordinal)}`,
+      `${fieldIndent}action: ${productActionYamlScalar(step.action)}`,
+      `${fieldIndent}write_policy: ${productActionYamlScalar(step.write_policy)}`,
+      step.allowed_paths.length ? `${fieldIndent}allowed_paths:` : `${fieldIndent}allowed_paths: []`,
+    );
+    for (const allowedPath of step.allowed_paths) {
+      lines.push(`${fieldIndent}  - ${productActionYamlScalar(allowedPath)}`);
+    }
+    lines.push(
+      `${fieldIndent}predecessor_step_id: ${productActionYamlScalar(step.predecessor_step_id)}`,
+      `${fieldIndent}required_checkpoint: ${productActionYamlScalar(step.required_checkpoint)}`,
+    );
+    for (const [key, value] of Object.entries(step)) {
+      if (!stepFields.has(key)) lines.push(`${fieldIndent}${key}: ${productActionYamlScalar(value)}`);
+    }
+  }
+  lines.push(`${nested}terminal_step_id: ${productActionYamlScalar(authority.terminal_step_id)}`);
+  for (const [key, value] of Object.entries(authority)) {
+    if (!authorityFields.has(key)) lines.push(`${nested}${key}: ${productActionYamlScalar(value)}`);
+  }
+  return lines.join('\n');
+}
+
+function approvedPlanIntegrityFixture({
+  allowedPath = 'src/approved/**',
+  specPath = '.sdcorejs/specs/workflow/2026-07-14-contract.md',
+  planPath = '.sdcorejs/plans/workflow/2026-07-14-contract.md',
+  productActionAuthority = null,
+} = {}) {
+  productActionAuthority ??= standaloneProductActionAuthority({ allowedPaths: [allowedPath] });
+  const specBodyTemplate = `# Contract - Approved Spec
+
+\`\`\`yaml
+spec_context:
+  contract_id: contract-001
+  feature_id: feature-001
+  requirement_revision: 2
+  requirement_ids:
+    - AC-001
+  approved_spec_path: ${specPath}
+  approved_spec_hash: <pending>
+\`\`\`
+
+## Approved contract
+
+- AC-001: Preserve approved scope.
+`;
+  const specHash = canonicalFixtureHash(specBodyTemplate, 'approved_spec_hash');
+  const specBody = specBodyTemplate.replace('<pending>', specHash);
+  const specTextTemplate = approvedSnapshot(`
+name: contract
+contract_id: contract-001
+feature_id: feature-001
+track: product
+requirement_revision: 2
+requirement_ids:
+  - AC-001
+approved_spec_hash: ${specHash}
+approved_spec_integrity_hash: <pending-integrity>
+approvedAt: 2026-07-14T00:00:00.000Z
+approvedBy: product-owner
+approval_source: explicit-user-choice
+`, specBody);
+  const specIntegrityHash = approvedPlanProtocol.hashApprovedSnapshotIntegrity(specTextTemplate, 'approved_spec_integrity_hash');
+  const specText = specTextTemplate.replace('<pending-integrity>', specIntegrityHash);
+  const planBodyTemplate = `# Contract - Approved Plan
+
+\`\`\`yaml
+plan_context:
+  contract_id: contract-001
+  feature_id: feature-001
+  requirement_revision: 2
+  requirement_ids:
+    - AC-001
+  approved_spec_path: ${specPath}
+  approved_spec_hash: ${specHash}
+  approved_spec_integrity_hash: ${specIntegrityHash}
+  approved_plan_path: ${planPath}
+  approved_plan_hash: <pending>
+  source: sdcorejs-plan
+  target_root: .
+  target_root_kind: target-project
+  track: product
+  stack_profile: general
+${renderProductActionAuthorityYaml(productActionAuthority)}
+  task_count: 1
+  phase_count: 1
+  frozen_contract_path: .sdcorejs/plans/workflow/2026-07-14-contract.parallel.json
+  frozen_contract_hash: ${'c'.repeat(64)}
+  ownership_manifest_digest: ${'d'.repeat(64)}
+  parallel_contract_revision: 1
+  parallel_contract_supersedes: null
+  allowed_paths:
+    - ${allowedPath}
+  prohibited_paths:
+    - .git/**
+  generated_artifacts:
+    - product/**
+  docs_artifacts:
+    - .sdcorejs/docs/product/**
+  dependency_changes:
+    required: false
+    packages: []
+    approval_required: false
+  env_changes:
+    required: false
+    files: []
+    approval_required: false
+  migration_changes:
+    required: false
+    description: null
+    approval_required: false
+  frontend_architecture:
+    required: false
+    not_applicable_reason: product documentation plan
+  verification_strategy:
+    package_manager: npm
+    scripts_detected:
+      - name: test:e2e:phase1
+    commands_planned:
+      - command_or_script: node --test test/e2e/skill-pack-runner.test.mjs
+        reason: validate the approved-plan integrity contract
+    commands_skipped: []
+    focused_checks:
+      - approved-plan integrity regression
+    broad_checks:
+      - repository phase-one suite
+  finish_tail:
+    docs_before_final_branch_ready: true
+    verify_before_done: true
+    branch_ready_final_gate: true
+    no_writes_after_branch_ready: true
+\`\`\`
+
+## Allowed paths
+
+- \`${allowedPath}\`
+
+## Tasks
+
+1. Implement AC-001.
+`;
+  const planHash = canonicalFixtureHash(planBodyTemplate, 'approved_plan_hash');
+  const planBody = planBodyTemplate.replace('<pending>', planHash);
+  const planTextTemplate = approvedSnapshot(`
+name: contract-plan
+contract_id: contract-001
+feature_id: feature-001
+track: product
+target_root_kind: target-project
+stack_profile: general
+taskCount: 1
+phaseCount: 1
+requirement_revision: 2
+requirement_ids:
+  - AC-001
+sourceSpecPath: ${specPath}
+approved_spec_hash: ${specHash}
+approved_spec_integrity_hash: ${specIntegrityHash}
+frozen_contract_path: .sdcorejs/plans/workflow/2026-07-14-contract.parallel.json
+frozen_contract_hash: ${'c'.repeat(64)}
+ownership_manifest_digest: ${'d'.repeat(64)}
+parallel_contract_revision: 1
+parallel_contract_supersedes: null
+approvedAt: 2026-07-14T00:05:00.000Z
+approvedBy: product-owner
+approval_source: explicit-user-choice
+allowed_paths:
+  - ${allowedPath}
+prohibited_paths:
+  - .git/**
+dependency_changes:
+  required: false
+  approval_required: false
+env_changes:
+  required: false
+  approval_required: false
+migration_changes:
+  required: false
+  approval_required: false
+approved_plan_hash: ${planHash}
+approved_plan_integrity_hash: <pending-integrity>
+`, planBody);
+  const planIntegrityHash = approvedPlanProtocol.hashApprovedSnapshotIntegrity(planTextTemplate, 'approved_plan_integrity_hash');
+  const planText = planTextTemplate.replace('<pending-integrity>', planIntegrityHash);
+  const planContext = {
+    contract_id: 'contract-001',
+    feature_id: 'feature-001',
+    track: 'product',
+    requirement_revision: 2,
+    requirement_ids: ['AC-001'],
+    approved_spec_path: specPath,
+    approved_spec_hash: specHash,
+    approved_spec_integrity_hash: specIntegrityHash,
+    approved_plan_path: planPath,
+    approved_plan_hash: planHash,
+    approved_plan_integrity_hash: planIntegrityHash,
+    source: 'sdcorejs-plan',
+    target_root: '.',
+    target_root_kind: 'target-project',
+    stack_profile: 'general',
+    product_action_authority: structuredClone(productActionAuthority),
+    task_count: 1,
+    phase_count: 1,
+    frozen_contract_path: '.sdcorejs/plans/workflow/2026-07-14-contract.parallel.json',
+    frozen_contract_hash: 'c'.repeat(64),
+    ownership_manifest_digest: 'd'.repeat(64),
+    parallel_contract_revision: 1,
+    parallel_contract_supersedes: null,
+    allowed_paths: [allowedPath],
+    prohibited_paths: ['.git/**'],
+    generated_artifacts: ['product/**'],
+    docs_artifacts: ['.sdcorejs/docs/product/**'],
+    dependency_changes: {
+      required: false,
+      packages: [],
+      approval_required: false,
+    },
+    env_changes: {
+      required: false,
+      files: [],
+      approval_required: false,
+    },
+    migration_changes: {
+      required: false,
+      description: null,
+      approval_required: false,
+    },
+    frontend_architecture: {
+      required: false,
+      not_applicable_reason: 'product documentation plan',
+    },
+    verification_strategy: {
+      package_manager: 'npm',
+      scripts_detected: [{ name: 'test:e2e:phase1' }],
+      commands_planned: [{
+        command_or_script: 'node --test test/e2e/skill-pack-runner.test.mjs',
+        reason: 'validate the approved-plan integrity contract',
+      }],
+      commands_skipped: [],
+      focused_checks: ['approved-plan integrity regression'],
+      broad_checks: ['repository phase-one suite'],
+    },
+    finish_tail: {
+      docs_before_final_branch_ready: true,
+      verify_before_done: true,
+      branch_ready_final_gate: true,
+      no_writes_after_branch_ready: true,
+    },
+  };
+
+  return { specPath, planPath, specText, planText, planContext };
+}
+
+function rehashApprovedPlanFixture(fixture, planText, planContext) {
+  const nextPlanHash = hashApprovedSnapshot(planText, 'approved_plan_hash');
+  let nextPlanText = planText.replaceAll(fixture.planContext.approved_plan_hash, nextPlanHash);
+  const nextPlanIntegrityHash = approvedPlanProtocol.hashApprovedSnapshotIntegrity(
+    nextPlanText,
+    'approved_plan_integrity_hash',
+  );
+  nextPlanText = nextPlanText.replaceAll(
+    fixture.planContext.approved_plan_integrity_hash,
+    nextPlanIntegrityHash,
+  );
+  return {
+    ...fixture,
+    planText: nextPlanText,
+    planContext: {
+      ...planContext,
+      approved_plan_hash: nextPlanHash,
+      approved_plan_integrity_hash: nextPlanIntegrityHash,
+    },
+  };
+}
+
+function withProductActionAuthority(fixture, authority) {
+  const currentYaml = renderProductActionAuthorityYaml(fixture.planContext.product_action_authority);
+  const nextYaml = renderProductActionAuthorityYaml(authority);
+  const planText = fixture.planText.replace(currentYaml, nextYaml);
+  assert.notEqual(planText, fixture.planText, 'product action authority mutation must be applied');
+  return rehashApprovedPlanFixture(fixture, planText, {
+    ...fixture.planContext,
+    product_action_authority: structuredClone(authority),
+  });
+}
+
+function withScalarProductAction(fixture, productAction) {
+  const currentYaml = renderProductActionAuthorityYaml(fixture.planContext.product_action_authority);
+  const planText = fixture.planText.replace(currentYaml, `  product_action: ${productAction}`);
+  assert.notEqual(planText, fixture.planText, 'scalar product action mutation must be applied');
+  const { product_action_authority: _removed, ...planContext } = fixture.planContext;
+  return rehashApprovedPlanFixture(fixture, planText, {
+    ...planContext,
+    product_action: productAction,
+  });
+}
+
+test('product action authority schema is closed across none single and ordered modes', () => {
+  const validAuthorities = [
+    noneProductActionAuthority(),
+    standaloneProductActionAuthority(),
+    finalTailProductActionAuthority(),
+    standaloneProductActionAuthority({ action: 'audit-readonly' }),
+  ];
+  for (const authority of validAuthorities) {
+    const fixture = approvedPlanIntegrityFixture({ productActionAuthority: authority });
+    assert.deepEqual(
+      validateApprovedPlanIntegrity(fixture),
+      [],
+      `${authority.mode}/${authority.purpose} must be a valid closed authority`,
+    );
+  }
+
+  const baseline = standaloneProductActionAuthority();
+  const missingTerminal = structuredClone(baseline);
+  delete missingTerminal.terminal_step_id;
+  const unknownStepField = structuredClone(baseline);
+  unknownStepField.steps[0].caller_grant = true;
+  const nonContiguous = finalTailProductActionAuthority();
+  nonContiguous.steps[1].ordinal = 3;
+  const badPredecessor = finalTailProductActionAuthority();
+  badPredecessor.steps[1].predecessor_step_id = null;
+  const forbiddenPseudoAction = standaloneProductActionAuthority({ action: 'not-applicable' });
+  const emptyWriteScope = standaloneProductActionAuthority({ allowedPaths: [] });
+  const writableAudit = standaloneProductActionAuthority({
+    action: 'audit-readonly',
+    writePolicy: 'allow',
+    allowedPaths: ['src/approved/**'],
+  });
+  const invalidAuthorities = [
+    ['unknown top-level field', { ...baseline, caller_grant: true }, /unknown|unsupported.*caller_grant/i],
+    ['missing top-level field', missingTerminal, /terminal_step_id.*required|missing/i],
+    ['unknown step field', unknownStepField, /caller_grant|step.*unknown|unsupported/i],
+    ['mode-purpose mismatch', { ...baseline, mode: 'ordered' }, /mode|purpose|ordered/i],
+    ['non-contiguous ordinal', nonContiguous, /ordinal|contiguous/i],
+    ['broken predecessor', badPredecessor, /predecessor/i],
+    ['pseudo action', forbiddenPseudoAction, /not-applicable|real product action/i],
+    ['write action without scope', emptyWriteScope, /allowed_paths|write.*scope|non-empty/i],
+    ['writable audit', writableAudit, /audit-readonly|write_policy|allowed_paths/i],
+  ];
+  for (const [label, authority, expected] of invalidAuthorities) {
+    const fixture = withProductActionAuthority(
+      approvedPlanIntegrityFixture(),
+      authority,
+    );
+    assert.match(
+      validateApprovedPlanIntegrity(fixture).join('\n'),
+      expected,
+      `${label} must fail the closed product action authority schema`,
+    );
+  }
+
+  const fixture = approvedPlanIntegrityFixture();
+  const coexistPlanText = fixture.planText.replace(
+    '  product_action_authority:',
+    '  product_action: traceability-sync\n  product_action_authority:',
+  );
+  const coexist = rehashApprovedPlanFixture(fixture, coexistPlanText, {
+    ...fixture.planContext,
+    product_action: 'traceability-sync',
+  });
+  assert.match(
+    validateApprovedPlanIntegrity(coexist).join('\n'),
+    /product_action.*product_action_authority.*(?:mutually exclusive|cannot coexist|exactly one)/i,
+  );
+});
+
+test('product authority treats protected approved paths as prohibitions and never as grants', () => {
+  const protectedProhibition = approvedPlanIntegrityFixture({
+    productActionAuthority: noneProductActionAuthority(),
+  });
+  assert.deepEqual(
+    validateApprovedPlanIntegrity(protectedProhibition),
+    [],
+    'a protected Git path must remain valid in the plan prohibited_paths list',
+  );
+
+  const protectedGrant = withProductActionAuthority(
+    approvedPlanIntegrityFixture(),
+    standaloneProductActionAuthority({ allowedPaths: ['.git/**'] }),
+  );
+  assert.match(
+    validateApprovedPlanIntegrity(protectedGrant).join('\n'),
+    /allowed_paths.*protected.*(?:snapshot|Git)|must not target protected/i,
+    'product action authority must never grant a protected approved snapshot or Git path',
+  );
+});
+
+test('final product tail authority requires exact ordered checkpoints and executor handoff binding', async () => {
+  const valid = approvedPlanIntegrityFixture({
+    productActionAuthority: finalTailProductActionAuthority(),
+  });
+  assert.deepEqual(validateApprovedPlanIntegrity(valid), []);
+
+  const reordered = finalTailProductActionAuthority();
+  reordered.steps.reverse();
+  const wrongSyncCheckpoint = finalTailProductActionAuthority();
+  wrongSyncCheckpoint.steps[0].required_checkpoint = 'verification-complete';
+  const wrongAuditCheckpoint = finalTailProductActionAuthority();
+  wrongAuditCheckpoint.steps[1].required_checkpoint = 'write-tail-complete';
+  const auditWrites = finalTailProductActionAuthority();
+  auditWrites.steps[1].write_policy = 'allow';
+  auditWrites.steps[1].allowed_paths = ['src/approved/**'];
+  const wrongTerminal = finalTailProductActionAuthority();
+  wrongTerminal.terminal_step_id = wrongTerminal.steps[0].step_id;
+  const extraStep = finalTailProductActionAuthority();
+  extraStep.steps.push({
+    step_id: 'unexpected-third-step',
+    ordinal: 3,
+    action: 'audit-readonly',
+    write_policy: 'deny',
+    allowed_paths: [],
+    predecessor_step_id: 'final-tail-audit-readonly',
+    required_checkpoint: 'branch-ready',
+  });
+  extraStep.terminal_step_id = 'unexpected-third-step';
+  const invalidTailAuthorities = [
+    ['reordered steps', reordered, /final-tail|ordered|traceability-sync|audit-readonly|checkpoint|terminal|predecessor|ordinal|write_policy|allowed_paths/i],
+    ['wrong sync checkpoint', wrongSyncCheckpoint, /final-tail|ordered|traceability-sync|audit-readonly|checkpoint|terminal|predecessor|ordinal|write_policy|allowed_paths/i],
+    ['wrong audit checkpoint', wrongAuditCheckpoint, /final-tail|ordered|traceability-sync|audit-readonly|checkpoint|terminal|predecessor|ordinal|write_policy|allowed_paths/i],
+    ['audit with writes', auditWrites, /final-tail|ordered|traceability-sync|audit-readonly|checkpoint|terminal|predecessor|ordinal|write_policy|allowed_paths/i],
+    ['wrong terminal', wrongTerminal, /final-tail|ordered|traceability-sync|audit-readonly|checkpoint|terminal|predecessor|ordinal|write_policy|allowed_paths/i],
+    ['extra final-tail step', extraStep, /final-tail|ordered|traceability-sync|audit-readonly|checkpoint|terminal|predecessor|ordinal|write_policy|allowed_paths/i],
+    ['single mode claiming final tail', {
+      ...standaloneProductActionAuthority(),
+      purpose: 'final-tail',
+    }, /single mode requires purpose standalone/i],
+    ['none mode claiming final tail', {
+      ...noneProductActionAuthority(),
+      purpose: 'final-tail',
+    }, /mode none requires purpose none/i],
+  ];
+  for (const [label, authority, expectedDiagnostic] of invalidTailAuthorities) {
+    const fixture = withProductActionAuthority(valid, authority);
+    assert.match(
+      validateApprovedPlanIntegrity(fixture).join('\n'),
+      expectedDiagnostic,
+      `${label} must not authorize the final product tail`,
+    );
+  }
+
+  const forgedHandoff = structuredClone(valid.planContext);
+  forgedHandoff.product_action_authority.steps[1].required_checkpoint = 'forged-checkpoint';
+  assert.match(
+    validateApprovedPlanIntegrity({ ...valid, planContext: forgedHandoff }).join('\n'),
+    /product_action_authority|required_checkpoint|does not match|cross-bind/i,
+    'the caller handoff must match the exact hash-bound step sequence',
+  );
+
+  const [planSkill, executePlanSkill] = await Promise.all([
+    readFile(new URL('../../skills/shared/sdlc/03-plan.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../skills/shared/sdlc/04-execute-plan.md', import.meta.url), 'utf8'),
+  ]);
+  assert.match(
+    planSkill,
+    /product_action_authority[\s\S]*schema_version[\s\S]*mode[\s\S]*purpose[\s\S]*sequence_id[\s\S]*steps[\s\S]*terminal_step_id/i,
+  );
+  assert.match(planSkill, /new(?:ly authored)? plans?[\s\S]*(?:object authority|object form)|scalar[\s\S]*manifest-bound/i);
+  assert.match(
+    executePlanSkill,
+    /sequence_id[\s\S]*step_id[\s\S]*ordinal[\s\S]*predecessor[\s\S]*checkpoint/i,
+  );
+  assert.match(executePlanSkill, /pre-schema[\s\S]*(?:identity manifest|content-addressed)|manifest-bound[\s\S]*scalar/i);
+  for (const [label, source] of [['plan', planSkill], ['execute-plan', executePlanSkill]]) {
+    assert.match(
+      source,
+      /R4[\s\S]*R5[\s\S]*R6[\s\S]*(?:revok|historical)/i,
+      `${label} guidance must make the recovery revocation chain explicit`,
+    );
+    assert.match(
+      source,
+      /prohibited_paths[\s\S]*protected[\s\S]*allowed_paths|allowed_paths[\s\S]*protected[\s\S]*prohibited_paths/i,
+      `${label} guidance must distinguish protected prohibitions from product grants`,
+    );
+  }
+  assert.match(planSkill, /recovery[\s\S]*supersedes[\s\S]*(?:revision|identity)/i);
+  assert.match(executePlanSkill, /revok[\s\S]*before[\s\S]*(?:execution|executor)/i);
+});
+
+test('phase 1: approved plan cross-binds executor, side-effect, artifact, and command scope', () => {
+  const fixture = approvedPlanIntegrityFixture();
+  assert.deepEqual(validateApprovedPlanIntegrity(fixture), []);
+
+  const mutations = [
+    ['track', /track/i, (context) => { context.track = 'test'; }],
+    ['target_root', /target_root/i, (context) => { context.target_root = 'other-root'; }],
+    ['target_root_kind', /target_root_kind/i, (context) => { context.target_root_kind = 'sdcorejs-agent-authoring-repo'; }],
+    ['stack_profile', /stack_profile/i, (context) => { context.stack_profile = 'sdcorejs-nestjs'; }],
+    ['product_action_authority', /product_action_authority/i, (context) => {
+      context.product_action_authority.steps[0].required_checkpoint = 'caller-forged-checkpoint';
+    }],
+    ['task_count', /task_count/i, (context) => { context.task_count = 2; }],
+    ['phase_count', /phase_count/i, (context) => { context.phase_count = 2; }],
+    ['generated_artifacts', /generated_artifacts/i, (context) => { context.generated_artifacts = ['**']; }],
+    ['docs_artifacts', /docs_artifacts/i, (context) => { context.docs_artifacts = ['docs/**']; }],
+    ['dependency_changes', /dependency_changes/i, (context) => { context.dependency_changes.required = true; }],
+    ['env_changes', /env_changes/i, (context) => { context.env_changes.files = ['.env']; }],
+    ['migration_changes', /migration_changes/i, (context) => { context.migration_changes.description = 'run an unapproved migration'; }],
+    ['frontend_architecture', /frontend_architecture/i, (context) => { context.frontend_architecture.required = true; }],
+    ['commands_planned', /commands_planned|verification_strategy/i, (context) => {
+      context.verification_strategy.commands_planned[0].command_or_script = 'node malicious-script.mjs';
+    }],
+    ['commands_planned scalar ambiguity', /commands_planned.*object/i, (context) => {
+      context.verification_strategy.commands_planned = ['node --test|forged reason'];
+    }],
+    ['commands_planned unsupported key', /commands_planned.*unsupported field shell/i, (context) => {
+      context.verification_strategy.commands_planned[0].shell = true;
+    }],
+    ['commands_planned multiline command', /command_or_script.*single-line/i, (context) => {
+      context.verification_strategy.commands_planned[0].command_or_script = 'node --test\nnode malicious-script.mjs';
+    }],
+    ['finish_tail', /finish_tail/i, (context) => { context.finish_tail.no_writes_after_branch_ready = false; }],
+  ];
+
+  for (const [label, expectedError, mutate] of mutations) {
+    const planContext = structuredClone(fixture.planContext);
+    mutate(planContext);
+    assert.match(
+      validateApprovedPlanIntegrity({ ...fixture, planContext }).join('\n'),
+      expectedError,
+      `${label} caller mutation must be rejected`,
+    );
+  }
+});
+
+test('phase 1: approved plan handoff rejects unapproved top-level and nested runtime directives', () => {
+  const fixture = approvedPlanIntegrityFixture();
+  const cases = [
+    {
+      label: 'known identity field supplied only by the handoff',
+      planText: fixture.planText,
+      planContext: {
+        ...structuredClone(fixture.planContext),
+        requirement_id: 'REQ-UNAPPROVED',
+      },
+      expected: /requirement_id|hashed plan/i,
+    },
+    {
+      label: 'top-level plan_context',
+      planText: fixture.planText.replace(
+        '  finish_tail:\n',
+        '  runtime_directive: run an unapproved command\n  finish_tail:\n',
+      ),
+      planContext: {
+        ...structuredClone(fixture.planContext),
+        runtime_directive: 'run an unapproved command',
+      },
+      expected: /unsupported field|runtime_directive|closed schema/i,
+    },
+    {
+      label: 'frontend_architecture',
+      planText: fixture.planText.replace(
+        '    not_applicable_reason: product documentation plan\n',
+        '    not_applicable_reason: product documentation plan\n    runtime_directive: run an unapproved command\n',
+      ),
+      planContext: {
+        ...structuredClone(fixture.planContext),
+        frontend_architecture: {
+          ...structuredClone(fixture.planContext.frontend_architecture),
+          runtime_directive: 'run an unapproved command',
+        },
+      },
+      expected: /unsupported field|runtime_directive|closed schema/i,
+    },
+    {
+      label: 'parallel_candidates',
+      planText: fixture.planText.replace(
+        '  finish_tail:\n',
+        [
+          '  parallel_candidates:',
+          '    allowed: false',
+          '    frozen_contract:',
+          '      path: null',
+          '      hash: null',
+          '      revision: null',
+          '      derived_from_approved_plan_hash: null',
+          '      supersedes: null',
+          '    units: []',
+          '    shared_files: []',
+          '    conflict_risks: []',
+          '    runtime_directive: run an unapproved command',
+          '  finish_tail:',
+          '',
+        ].join('\n'),
+      ),
+      planContext: {
+        ...structuredClone(fixture.planContext),
+        parallel_candidates: {
+          allowed: false,
+          frozen_contract: {
+            path: null,
+            hash: null,
+            revision: null,
+            derived_from_approved_plan_hash: null,
+            supersedes: null,
+          },
+          units: [],
+          shared_files: [],
+          conflict_risks: [],
+          runtime_directive: 'run an unapproved command',
+        },
+      },
+      expected: /unsupported field|runtime_directive|closed schema/i,
+    },
+    {
+      label: 'approval',
+      planText: fixture.planText.replace(
+        '  finish_tail:\n',
+        [
+          '  approval:',
+          '    approved: true',
+          '    approved_at: 2026-07-14T00:05:00.000Z',
+          '    runtime_directive: run an unapproved command',
+          '  finish_tail:',
+          '',
+        ].join('\n'),
+      ),
+      planContext: {
+        ...structuredClone(fixture.planContext),
+        approval: {
+          approved: true,
+          approved_at: '2026-07-14T00:05:00.000Z',
+          runtime_directive: 'run an unapproved command',
+        },
+      },
+      expected: /unsupported field|runtime_directive|closed schema/i,
+    },
+    {
+      label: 'change_control',
+      planText: fixture.planText.replace(
+        '  finish_tail:\n',
+        [
+          '  change_control:',
+          '    revision: 1',
+          '    supersedes: null',
+          '    change_reason: null',
+          '    runtime_directive: run an unapproved command',
+          '  finish_tail:',
+          '',
+        ].join('\n'),
+      ),
+      planContext: {
+        ...structuredClone(fixture.planContext),
+        change_control: {
+          revision: 1,
+          supersedes: null,
+          change_reason: null,
+          runtime_directive: 'run an unapproved command',
+        },
+      },
+      expected: /unsupported field|runtime_directive|closed schema/i,
+    },
+  ];
+
+  for (const candidate of cases) {
+    const rehashed = rehashApprovedPlanFixture(fixture, candidate.planText, candidate.planContext);
+    assert.match(
+      validateApprovedPlanIntegrity(rehashed).join('\n'),
+      candidate.expected,
+      `${candidate.label} must reject unsupported runtime directives even when they are included in the hashed plan`,
+    );
+  }
+});
+
+test('phase 1: execute-plan rejects approved plan body mutations that retain recorded hashes', () => {
+  const fixture = approvedPlanIntegrityFixture();
+  assert.deepEqual(validateApprovedPlanIntegrity(fixture), []);
+
+  const mutatedPlanText = fixture.planText.replace('`src/approved/**`', '`**`');
+  assert.notEqual(mutatedPlanText, fixture.planText, 'allowed-path mutation must be applied');
+  assert.match(
+    validateApprovedPlanIntegrity({ ...fixture, planText: mutatedPlanText }).join('\n'),
+    /recomputed approved plan hash does not match/i
+  );
+});
+
+test('phase 1: execute-plan fails closed when approved plan identity fields diverge', () => {
+  const fixture = approvedPlanIntegrityFixture();
+  const mutations = [
+    ['contract_id', 'contract-other'],
+    ['feature_id', 'feature-other'],
+    ['requirement_revision', 3],
+    ['requirement_ids', ['AC-002']],
+    ['approved_spec_path', '.sdcorejs/specs/workflow/other.md'],
+    ['approved_spec_hash', 'a'.repeat(64)],
+    ['approved_spec_integrity_hash', '9'.repeat(64)],
+    ['approved_plan_path', '.sdcorejs/plans/workflow/other.md'],
+    ['approved_plan_hash', 'b'.repeat(64)],
+    ['approved_plan_integrity_hash', '8'.repeat(64)],
+    ['frozen_contract_path', '.sdcorejs/plans/workflow/other.parallel.json'],
+    ['frozen_contract_hash', 'e'.repeat(64)],
+    ['ownership_manifest_digest', 'f'.repeat(64)],
+    ['parallel_contract_revision', 2],
+    ['parallel_contract_supersedes', '.sdcorejs/plans/workflow/prior.parallel.json'],
+  ];
+
+  for (const [field, value] of mutations) {
+    const errors = validateApprovedPlanIntegrity({
+      ...fixture,
+      planContext: { ...fixture.planContext, [field]: value },
+    });
+    assert.ok(errors.length > 0, `${field} mutation must be rejected`);
+  }
+
+  const planFrontmatterMutation = fixture.planText.replace('contract_id: contract-001', 'contract_id: contract-other');
+  assert.match(
+    validateApprovedPlanIntegrity({ ...fixture, planText: planFrontmatterMutation }).join('\n'),
+    /contract_id/i
+  );
+});
+
+test('phase 1: execute-plan binds write scope and identity to the hashed plan body', () => {
+  const fixture = approvedPlanIntegrityFixture();
+  assert.match(
+    validateApprovedPlanIntegrity({
+      ...fixture,
+      planContext: { ...fixture.planContext, allowed_paths: ['**'] },
+    }).join('\n'),
+    /allowed_paths/i
+  );
+
+  const widenedFrontmatter = fixture.planText.replace('  - src/approved/**', '  - **');
+  assert.match(
+    validateApprovedPlanIntegrity({
+      ...fixture,
+      planText: widenedFrontmatter,
+      planContext: { ...fixture.planContext, allowed_paths: ['**'] },
+    }).join('\n'),
+    /allowed_paths/i
+  );
+
+  const changedIdentity = {
+    ...fixture,
+    specText: fixture.specText.replace('contract_id: contract-001', 'contract_id: contract-other'),
+    planText: fixture.planText.replace('contract_id: contract-001', 'contract_id: contract-other'),
+    planContext: { ...fixture.planContext, contract_id: 'contract-other' },
+  };
+  assert.match(validateApprovedPlanIntegrity(changedIdentity).join('\n'), /contract_id/i);
+});
+
+test('phase 1: approved plan integrity requires independent approval metadata and safe path roots', () => {
+  const fixture = approvedPlanIntegrityFixture();
+  for (const [label, mutation] of [
+    ['spec approvedAt', { specText: fixture.specText.replace('approvedAt: 2026-07-14T00:00:00.000Z\n', '') }],
+    ['spec approvedBy', { specText: fixture.specText.replace('approvedBy: product-owner\n', '') }],
+    ['spec approval_source', { specText: fixture.specText.replace('approval_source: explicit-user-choice\n', '') }],
+    ['plan approvedAt', { planText: fixture.planText.replace('approvedAt: 2026-07-14T00:05:00.000Z\n', '') }],
+    ['plan approvedBy', { planText: fixture.planText.replace('approvedBy: product-owner\n', '') }],
+    ['plan approval_source', { planText: fixture.planText.replace('approval_source: explicit-user-choice\n', '') }],
+  ]) {
+    assert.match(validateApprovedPlanIntegrity({ ...fixture, ...mutation }).join('\n'), /approvedAt|approvedBy|approval_source|approval metadata/i, label);
+  }
+
+  const invalidSource = fixture.planText.replace('approval_source: explicit-user-choice', 'approval_source: invented-source');
+  assert.match(validateApprovedPlanIntegrity({ ...fixture, planText: invalidSource }).join('\n'), /approval_source/i);
+  const invalidSpecSource = fixture.specText.replace('approval_source: explicit-user-choice', 'approval_source: invented-source');
+  assert.match(validateApprovedPlanIntegrity({ ...fixture, specText: invalidSpecSource }).join('\n'), /approval_source/i);
+  const invalidPlanTime = fixture.planText.replace('approvedAt: 2026-07-14T00:05:00.000Z', 'approvedAt: yesterday');
+  assert.match(validateApprovedPlanIntegrity({ ...fixture, planText: invalidPlanTime }).join('\n'), /approvedAt.*ISO-8601/i);
+
+  for (const invalidPath of ['../outside/**', '/outside/**', 'C:outside/**', '**/outside', '']) {
+    assert.match(
+      validateApprovedPlanIntegrity(approvedPlanIntegrityFixture({ allowedPath: invalidPath })).join('\n'),
+      /allowed_paths.*escape|repository root|repository-relative|concrete repository root|non-empty.*string array/i,
+      invalidPath
+    );
+  }
+  for (const protectedPath of ['.git/**', '.sdcorejs/specs/**', '.sdcorejs/plans/**']) {
+    assert.match(
+      validateApprovedPlanIntegrity(approvedPlanIntegrityFixture({ allowedPath: protectedPath })).join('\n'),
+      /allowed_paths.*protected|must not allow|immutable.*snapshot/i,
+      protectedPath
+    );
+  }
+  assert.match(
+    validateApprovedPlanIntegrity(approvedPlanIntegrityFixture({ specPath: 'docs/contract.md' })).join('\n'),
+    /approved spec path.*\.sdcorejs\/specs|immutable.*spec/i
+  );
+  assert.match(
+    validateApprovedPlanIntegrity(approvedPlanIntegrityFixture({ planPath: 'docs/plan.md' })).join('\n'),
+    /approved plan path.*\.sdcorejs\/plans|immutable.*plan/i
+  );
+  assert.match(validateApprovedPlanIntegrity(null).join('\n'), /input.*object|plan.*object/i);
+});
+
+test('phase 1: canonical approved snapshot hashing rejects duplicate self-reference directives', () => {
+  const body = [
+    '# Approved contract',
+    '',
+    '```yaml',
+    'spec_context:',
+    '  approved_spec_hash: first',
+    '  approved_spec_hash: second',
+    '```',
+    ''
+  ].join('\n');
+  const snapshot = approvedSnapshot('name: duplicate-hash', body);
+  assert.throws(() => hashApprovedSnapshot(snapshot, 'approved_spec_hash'), /duplicate|at most one|single.*approved_spec_hash/i);
+});
+
+test('phase 1: authority integrity digest covers approval metadata and plan approval is independently explicit', () => {
+  assert.equal(typeof approvedPlanProtocol.hashApprovedSnapshotIntegrity, 'function');
+
+  const fixture = approvedPlanIntegrityFixture();
+  const planIntegrity = approvedPlanProtocol.hashApprovedSnapshotIntegrity(fixture.planText, 'approved_plan_integrity_hash');
+  const changedApprover = fixture.planText.replace('approvedBy: product-owner', 'approvedBy: different-approver');
+  assert.notEqual(
+    approvedPlanProtocol.hashApprovedSnapshotIntegrity(changedApprover, 'approved_plan_integrity_hash'),
+    planIntegrity
+  );
+  assert.match(
+    validateApprovedPlanIntegrity({ ...fixture, planText: changedApprover }).join('\n'),
+    /plan integrity hash|approved_plan_integrity_hash/i
+  );
+
+  for (const source of ['imported-approved-spec', 'equivalent-complete-input']) {
+    const planText = fixture.planText.replace('approval_source: explicit-user-choice', `approval_source: ${source}`);
+    assert.match(validateApprovedPlanIntegrity({ ...fixture, planText }).join('\n'), /plan.*approval_source.*explicit/i, source);
+
+    const specText = fixture.specText.replace('approval_source: explicit-user-choice', `approval_source: ${source}`);
+    assert.match(validateApprovedPlanIntegrity({ ...fixture, specText }).join('\n'), /spec.*approval_source.*explicit/i, source);
+  }
+
+  assert.match(
+    validateApprovedPlanIntegrity({
+      ...fixture,
+      specText: fixture.specText.replace(/^approved_spec_integrity_hash:.*\n/m, '')
+    }).join('\n'),
+    /approved spec.*integrity|approved_spec_integrity_hash/i
+  );
+  assert.match(
+    validateApprovedPlanIntegrity({
+      ...fixture,
+      planText: fixture.planText.replace(/^approved_plan_integrity_hash:.*\n/m, '')
+    }).join('\n'),
+    /approved plan.*integrity|approved_plan_integrity_hash/i
+  );
+});
+
+test('phase 1: execute-plan revalidates immutable snapshots after waits and uses a one-shot dispatch handoff', async () => {
+  const executePlan = await readFile(new URL('../../skills/shared/sdlc/04-execute-plan.md', import.meta.url), 'utf8');
+
+  assert.match(
+    executePlan,
+    /after every interactive wait[\s\S]*re-read[\s\S]*validateApprovedPlanIntegrity/i,
+  );
+  assert.match(
+    executePlan,
+    /immediately before[\s\S]*(?:dispatch|first write)[\s\S]*validateApprovedPlanIntegrity/i,
+  );
+  assert.match(
+    executePlan,
+    /one-shot[\s\S]*(?:consume|consumed)[\s\S]*(?:once|single use)[\s\S]*(?:invalid|discard|expire)/i,
+  );
+});
+
+test('phase 1: execution and test evidence contexts carry feature and snapshot integrity identity', async () => {
+  const [executePlan, testSkill, testContextRef] = await Promise.all([
+    readFile(new URL('../../skills/shared/sdlc/04-execute-plan.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../skills/tracks/test/sdcorejs-test.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/shared/test-context.md', import.meta.url), 'utf8'),
+  ]);
+
+  assert.match(
+    executePlan,
+    /execution_context:[\s\S]{0,1800}feature_id:[\s\S]{0,1800}approved_spec_integrity_hash:[\s\S]{0,1800}approved_plan_integrity_hash:/i,
+  );
+  for (const source of [testSkill, testContextRef]) {
+    assert.match(source, /test_context:[\s\S]{0,1400}feature_id:[\s\S]{0,1400}approved_spec_integrity_hash:/i);
+    assert.match(source, /test_evidence:[\s\S]{0,3200}feature_id:[\s\S]{0,1400}approved_spec_integrity_hash:/i);
+    assert.match(source, /freshness[\s\S]{0,1400}feature_id[\s\S]{0,1400}approved_spec_integrity_hash/i);
+  }
+});
 
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
@@ -1589,21 +2579,40 @@ test('phase 1: SDLC harness encodes contract-driven profile-aware execution inva
   assert.match(spec, /spec_context:/);
   assert.match(spec, /source_requirement_context/);
   assert.match(spec, /approved_spec_hash/);
+  assert.match(spec, /approved_spec_integrity_hash/);
+  assert.match(spec, /hashApprovedSnapshotIntegrity/);
   assert.match(spec, /target_root_kind/);
   assert.match(spec, /stack_profile/);
   assert.match(spec, /acceptance_criteria_count/);
   assert.match(spec, /manual_criteria_count/);
-  assert.match(spec, /approval_source:\s*explicit-user-choice\s*\|\s*imported-approved-spec\s*\|\s*equivalent-complete-input/);
+  assert.match(spec, /approval_source:\s*explicit-user-choice\s*$/m);
+  assert.doesNotMatch(spec, /approval_source:\s*explicit-user-choice\s*\|/);
+  assert.match(spec, /imported approved spec[\s\S]*provenance[\s\S]*approval gate[\s\S]*explicit/i);
+  assert.match(spec, /feature_id:.*product|product.*feature_id:/is);
   assert.match(spec, /change_control:[\s\S]*supersedes[\s\S]*change_reason/);
   assert.match(spec, /immutable/i);
   assert.match(spec, /approved contract body excluding frontmatter and (?:the |this )?hash field/i);
+  assert.match(spec, /_refs\/shared\/approved-plan-integrity\.mjs/);
+  assert.match(spec, /hashApprovedSnapshot/);
   assert.doesNotMatch(spec, /approved_spec_hash: <sha256 of approved snapshot body>/);
   assert.match(spec, /AC-[0-9]+|stable IDs/i);
   assert.match(spec, /REDACTED|redact|PII/i);
 
   assert.match(plan, /plan_context:/);
   assert.match(plan, /approved_spec_hash/);
+  assert.match(plan, /approved_spec_integrity_hash/);
   assert.match(plan, /approved_plan_hash/);
+  assert.match(plan, /approved_plan_integrity_hash/);
+  assert.match(plan, /product_action_authority/);
+  assert.match(plan, /schema_version[\s\S]*mode[\s\S]*purpose[\s\S]*sequence_id[\s\S]*steps[\s\S]*terminal_step_id/i);
+  assert.match(plan, /new(?:ly authored)? plans?[\s\S]*(?:object authority|object form)|scalar[\s\S]*manifest-bound/i);
+  assert.match(plan, /frozen_contract_path/);
+  assert.match(plan, /frozen_contract_hash/);
+  assert.match(plan, /ownership_manifest_digest/);
+  assert.match(plan, /parallel_contract_revision/);
+  assert.match(plan, /parallel_contract_supersedes/);
+  assert.match(plan, /approval_source:\s*explicit-user-choice\s*$/m);
+  assert.doesNotMatch(plan, /approval_source:\s*explicit-user-choice\s*\|/);
   assert.match(plan, /allowed_paths/);
   assert.match(plan, /prohibited_paths/);
   assert.match(plan, /dependency_changes/);
@@ -1617,6 +2626,12 @@ test('phase 1: SDLC harness encodes contract-driven profile-aware execution inva
   assert.match(plan, /shared_files/);
   assert.match(plan, /branch_ready_final_gate/);
   assert.match(plan, /approved plan body excluding frontmatter and (?:the |this )?hash field/i);
+  assert.match(plan, /_refs\/shared\/approved-plan-integrity\.mjs/);
+  assert.match(plan, /hashApprovedSnapshot/);
+  assert.match(plan, /hashApprovedSnapshotIntegrity/);
+  assert.match(plan, /materialize[\s\S]*final.*plan_context[\s\S]*(?:then|before)[\s\S]*hash/i);
+  assert.match(plan, /cross-checks?[\s\S]*track[\s\S]*target_root_kind[\s\S]*stack_profile[\s\S]*dependency_changes[\s\S]*env_changes[\s\S]*migration_changes[\s\S]*commands_planned/i);
+  assert.match(plan, /commands_planned[\s\S]*closed[\s\S]*command_or_script[\s\S]*reason[\s\S]*single-line/i);
   assert.doesNotMatch(plan, /approved_plan_hash: <sha256 of approved plan snapshot body>/);
   assert.match(plan, /git status --short/);
   assert.match(plan, /Do not hardcode npm\/npx|Do not hardcode npm|Do not present npm\/npx/i);
@@ -1625,6 +2640,17 @@ test('phase 1: SDLC harness encodes contract-driven profile-aware execution inva
   assert.match(executePlan, /allowed-tools: .*Write/);
   assert.match(executePlan, /execution_context:/);
   assert.match(executePlan, /plan_context/);
+  assert.match(executePlan, /missing.*requirement_ids|requirement_ids.*stop/i);
+  assert.match(executePlan, /recompute.*approved spec.*hash|approved spec.*hash.*recompute/i);
+  assert.match(executePlan, /_refs\/shared\/approved-plan-integrity\.mjs/);
+  assert.match(executePlan, /validateApprovedPlanIntegrity/);
+  assert.match(executePlan, /contract_id[\s\S]*requirement_revision[\s\S]*requirement_ids[\s\S]*approved_spec_path[\s\S]*approved_spec_hash[\s\S]*approved_plan_path[\s\S]*approved_plan_hash/);
+  assert.match(executePlan, /product_action_authority/);
+  assert.match(executePlan, /sequence_id[\s\S]*step_id[\s\S]*ordinal[\s\S]*predecessor[\s\S]*checkpoint/i);
+  assert.match(executePlan, /pre-schema[\s\S]*(?:identity manifest|content-addressed)|manifest-bound[\s\S]*scalar/i);
+  assert.match(executePlan, /track[\s\S]*target_root_kind[\s\S]*stack_profile[\s\S]*dependency_changes[\s\S]*env_changes[\s\S]*migration_changes[\s\S]*commands_planned/i);
+  assert.match(executePlan, /before.*working-tree preflight|before.*dispatch|before.*executor/i);
+  assert.match(executePlan, /top-level `plan_context`[\s\S]*closed schemas?[\s\S]*no caller-authored runtime directive/i);
   assert.match(executePlan, /working_tree_preflight/);
   assert.match(executePlan, /git status --short/);
   assert.match(executePlan, /staged diffstat/);
@@ -1974,6 +3000,65 @@ test('phase 3: direct review prompts dispatch to sdcorejs-review', async () => {
   assert.equal(dispatchPrompt(pack, 'viet product doc va kiem tra requirement implement test co day du khong')?.name, 'sdcorejs-product');
   assert.equal(dispatchPrompt(pack, 'check requirement coverage gaps for acceptance criteria')?.name, 'sdcorejs-product');
   assert.equal(dispatchPrompt(pack, 'review product coverage against requirements')?.name, 'sdcorejs-product');
+});
+
+test('phase 3: explicit product actions route without bypassing requirement change control', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const promptEvals = await loadPromptEvals();
+  const productActionCases = promptEvals.filter((item) =>
+    item.id.startsWith('product-action-') || item.id.startsWith('product-routing-') || item.id === 'prd-product-doc'
+  );
+  const results = runPromptEval(pack, productActionCases);
+
+  assert.deepEqual(
+    results.map((result) => [result.id, result.actualSkill, result.actualProductAction, result.pass]),
+    productActionCases.map((item) => [item.id, item.expectedSkill, item.expectedProductAction ?? null, true])
+  );
+  assert.deepEqual(
+    [...new Set(results.map((result) => result.actualProductAction).filter(Boolean))].sort(),
+    [...PRODUCT_ACTIONS].sort()
+  );
+
+  const productSkill = await readFile(new URL('../../skills/tracks/product/sdcorejs-product.md', import.meta.url), 'utf8');
+  for (const action of ['seed-from-approved-spec', 'requirements-update', 'traceability-sync', 'audit-readonly', 'audit-and-sync', 'record-uat', 'supersede-feature']) {
+    assert.match(productSkill, new RegExp(action));
+  }
+  for (const reference of ['product-protocol.md', 'product-context.md', 'traceability.md', 'evidence-and-uat.md', 'templates.md', 'product-protocol.mjs']) {
+    assert.match(productSkill, new RegExp(reference.replace('.', '\\.')));
+  }
+});
+
+test('repository entrypoints preserve the post-sync deny-write audit and ship order', async () => {
+  const entrypoints = await Promise.all(
+    [
+      ['AGENTS.md', '../../AGENTS.md'],
+      ['CLAUDE.md', '../../CLAUDE.md'],
+      ['.github/copilot-instructions.md', '../../.github/copilot-instructions.md']
+    ].map(async ([label, relativePath]) => [
+      label,
+      await readFile(new URL(relativePath, import.meta.url), 'utf8')
+    ])
+  );
+
+  for (const [label, source] of entrypoints) {
+    const tailStart = source.indexOf('traceability-sync as the final write');
+    assert.notEqual(tailStart, -1, `${label} must name traceability-sync as the final write`);
+    const tail = source.slice(tailStart);
+    const denyWrite = tail.indexOf('deny-write global verification');
+    const audit = tail.indexOf('audit-readonly with zero-write proof');
+    const verifyBeforeDone = tail.indexOf('verify-before-done');
+    const branchReady = tail.indexOf('branch-ready');
+
+    assert.ok(denyWrite > 0, `${label} must verify the post-sync state under deny-write policy`);
+    assert.ok(audit > denyWrite, `${label} must audit after post-sync deny-write verification`);
+    assert.ok(verifyBeforeDone > audit, `${label} must run verify-before-done after product audit`);
+    assert.ok(branchReady > verifyBeforeDone, `${label} must keep branch-ready as the final read-only gate`);
+    assert.match(
+      tail,
+      /Any write after traceability sync invalidates the post-sync evidence\.[\s\S]*?requires the applicable[\s\S]*?sync, deny-write[\s\S]*?verification, audit, and ship gates to rerun/i,
+      `${label} must state the late-write invalidation rule`
+    );
+  }
 });
 
 test('phase 3: direct test prompts dispatch to sdcorejs-test or debug handoff', async () => {

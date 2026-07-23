@@ -31,6 +31,13 @@ A spec answers what and why. A plan answers which files and in what order.
 
 If these are missing, route back to `sdcorejs-brainstorming`.
 
+An imported approved spec (`imported-approved-spec`) or an equivalent complete
+requirement set (`equivalent-complete-input`) may seed a new draft, but it is
+input provenance only. Neither value is a valid `approval_source` or grants
+executable spec authority in this repository. Present the resulting draft at
+this skill's approval gate and require a current `1. Approve` response before
+writing a new approved snapshot.
+
 Before drafting, apply `_refs/shared/project-context.md` with:
 
 ```text
@@ -62,7 +69,8 @@ Then read:
 - Relevant `.sdcorejs/memories/<track>/*.md`.
 - Latest 1-3 approved specs under `.sdcorejs/specs/<track>/` to mirror style.
 - Any provided `requirement_context`; preserve `contract_id`, `requirement_id`,
-  `target_root`, `target_root_kind`, `track`, `stack_profile`,
+  `requirement_revision`, `requirement_ids`, `target_root`, `target_root_kind`,
+  `track`, `stack_profile`,
   `profile_confidence`, explicit decisions, inferred/defaulted assumptions,
   unresolved blockers, and redaction status.
 
@@ -87,7 +95,11 @@ Use this template:
 spec_context:
   source: sdcorejs-spec
   contract_id: <from requirement_context or newly created>
+  feature_id: <stable feature ID when a product contract or product action is in scope; omit otherwise>
   requirement_id: <from requirement_context when present>
+  requirement_revision: <from requirement_context, starting at 1>
+  requirement_ids:
+    - <stable approved acceptance or product requirement id>
   approved_spec_path: <empty until approved>
   approved_spec_hash: <empty until approved>
   supersedes: <prior approved spec path or null>
@@ -109,7 +121,7 @@ spec_context:
   approval:
     approved: false
     approved_at: null
-    approval_source: explicit-user-choice | imported-approved-spec | equivalent-complete-input
+    approval_source: null
   change_control:
     revision: <integer>
     supersedes: <prior approved spec path or null>
@@ -204,7 +216,18 @@ Approve:
 
 Compute `approved_spec_hash` over the canonical approved contract body,
 excluding frontmatter and the `approved_spec_hash` field, so the hash is not
-self-referential.
+self-referential. Use
+`hashApprovedSnapshot(snapshotText, 'approved_spec_hash')` from
+`_refs/shared/approved-plan-integrity.mjs`; do not improvise a second hashing
+algorithm. Its canonical form strips a UTF-8 BOM, converts CRLF/CR line endings
+to LF, removes the complete frontmatter block and the single designated body
+mapping line whose key is `approved_spec_hash`, and hashes the remaining UTF-8
+bytes with SHA-256. More than one such body mapping line is invalid.
+
+These SHA-256 values provide byte-integrity only while the orchestrator and
+filesystem used to read and approve the snapshot are trusted. They are not a
+signature and do not prove the approving human's identity; executable approval
+still requires the explicit user-choice gate and trusted approval metadata.
 
 2. Include frontmatter:
 
@@ -213,16 +236,21 @@ self-referential.
 name: <kebab-topic>
 description: <one-line future-loading hook>
 contract_id: <contract id>
+feature_id: <stable feature ID; required for a product contract or product action, omit otherwise>
 requirement_id: <requirement id>
+requirement_revision: <positive integer>
+requirement_ids:
+  - <stable approved acceptance or product requirement id>
 approvedAt: <ISO-8601 timestamp with timezone>
 approvedBy: <git user.email or session user when known>
-approval_source: explicit-user-choice | imported-approved-spec | equivalent-complete-input
+approval_source: explicit-user-choice
 track: <angular|nestjs|nextjs|react|node|fullstack|test|product|design|documentation|workflow|general>
 target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
 stack_profile: <stack profile>
 profile_confidence: high | medium | low
 sourceDraftPath: .sdcorejs/docs/<track>/<timestamp>-<topic>-spec.md
 approved_spec_hash: <sha256 of approved contract body excluding frontmatter and this hash field>
+approved_spec_integrity_hash: <sha256 of the complete snapshot excluding only this frontmatter field>
 acceptance_criteria_count: <N>
 manual_criteria_count: <N>
 redaction_applied: true | false
@@ -233,6 +261,13 @@ change_control:
   change_reason: <reason or null>
 ---
 ```
+
+`requirement_ids` are part of the normative identity. Preserve upstream IDs,
+including legacy formats, through reordering and removal; never renumber or
+reuse them. A material behavior change creates a new approved spec revision,
+increments `requirement_revision`, records `supersedes` and `change_reason`,
+and invalidates affected plans and evidence. Product projections may reference
+this snapshot but must not mutate it.
 
 3. Body format:
 
@@ -251,10 +286,22 @@ change_control:
 sdcorejs-spec (approved on attempt <N> / 3)
 ```
 
-4. Emit a final `spec_context` block in the handoff. Include the
-   `approved_spec_path`, `approved_spec_hash`, approval metadata,
-   `change_control`, and source `requirement_context` reference.
-5. Only after the approved snapshot succeeds, hand off to `sdcorejs-plan` with
+4. After the body hash is materialized, call
+   `hashApprovedSnapshotIntegrity(snapshotText, 'approved_spec_integrity_hash')`.
+   This digest covers normalized frontmatter, including `approvedAt`,
+   `approvedBy`, and `approval_source: explicit-user-choice`, plus the complete body. It
+   removes only its own single top-level frontmatter field; the body must not
+   contain that field. Substitute the computed digest without changing any
+   other byte.
+5. Emit a final `spec_context` block in the handoff. Include the
+   `approved_spec_path`, `approved_spec_hash`,
+   `approved_spec_integrity_hash`, approval metadata,
+   `change_control`, source `requirement_context` reference, and `feature_id`
+   whenever a product contract or product action is in scope, including when
+   the surrounding workflow track is not literally named `product`.
+   The integrity field exists in approved snapshot frontmatter and final
+   handoff context, not inside the snapshot body.
+6. Only after the approved snapshot succeeds, hand off to `sdcorejs-plan` with
    the draft spec path, approved snapshot path, and `spec_context`.
 
 Change request:
@@ -273,9 +320,20 @@ Abort:
 ## Rules
 
 ### Must do
-- Write the spec in the target project, never in the `sdcorejs-agent` repo.
+- Write the spec only in the explicitly resolved `target_root`. The
+  `sdcorejs-agent` or another skill-pack authoring repo is allowed only when it
+  is itself that explicit resolved target and `target_root_kind` records the
+  matching authoring-repo kind; otherwise write to the target project, never
+  the agent repo.
 - Wait for explicit approval before writing the approved snapshot or planning.
+- Treat imported approved specs and equivalent complete inputs only as draft
+  provenance. Re-present them at the numbered approval gate and record
+  `approval_source: explicit-user-choice`; never convert provenance into
+  executable approval authority.
 - Create a new approved snapshot every time; snapshots are immutable history.
+- Treat a legacy snapshot without `approved_spec_integrity_hash` as
+  unverifiable for new authorization. Create a newly approved revision; never
+  add the field to or rewrite approval metadata in the old snapshot.
 - Treat approved specs as immutable snapshots. If requirements change after
   approval, create a new spec revision with `supersedes` and `change_reason`.
 - Preserve `contract_id`, `target_root_kind`, `stack_profile`, profile evidence,

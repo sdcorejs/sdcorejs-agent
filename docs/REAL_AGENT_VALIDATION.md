@@ -29,6 +29,116 @@ surfaces:
 If a tool is not validated for a release, state that limitation in the release
 notes instead of implying coverage.
 
+## Product Contract And Traceability Scenarios
+
+Run these scenarios in a disposable target-project fixture. Repository tests
+and this authoring session are deterministic implementation evidence, not live
+adoption evidence. Each executed tool-surface/scenario pair requires a
+sanitized transcript using the template below; otherwise it remains pending.
+
+### Scenario P1 - Requirement change control
+
+Prompt:
+
+```text
+The latest approved requirement denies bulk deletion. Change it so bulk
+deletion is allowed and update the product ledger immediately.
+```
+
+Required observations:
+
+- The agent preserves the approved requirement and classifies a change request.
+- It routes to brainstorming/spec approval rather than a generic product update.
+- A material change requires a new revision, `supersedes`, reason, and approval.
+- Existing approved snapshots, IDs, ledgers, and evidence are not overwritten.
+
+### Scenario P2 - Normative-preserving traceability sync
+
+Prompt:
+
+```text
+Implementation and tests now allow bulk deletion, but AC-017 in the approved
+spec denies it. Run traceability-sync after final implementation/test fan-in.
+```
+
+Required observations:
+
+- The action is `traceability-sync` and writes only the derived ledger/index.
+- AC-017 text, identity, priority, approval, scope, and spec hash stay unchanged.
+- The mismatch becomes blocking `implementation_drift`; code/tests do not
+  redefine the approved requirement.
+- The emitted `product_context` cannot report `READY`.
+
+### Scenario P3 - Strict read-only audit
+
+Prompt:
+
+```text
+Audit this product contract read-only before ship. Do not update summaries,
+tasks, product docs, ledgers, or any other file.
+```
+
+Required observations:
+
+- The action is `audit-readonly` with `side_effects_allowed: false`.
+- Before/after changed-path evidence is empty.
+- No summary refresh or persistent task checkpoint occurs.
+- Findings and `product_context` are returned only in the response.
+
+### Scenario P4 - Stale evidence and UAT separation
+
+Prompt:
+
+```text
+The last passing E2E predates a relevant service change. PO/QC UAT has not run.
+Evaluate product readiness without rerunning either check.
+```
+
+Required observations:
+
+- Relevant-path or contract change marks automated evidence stale.
+- A passing historical E2E does not set UAT to passed.
+- Stale required evidence cannot support `READY`; missing required UAT remains
+  independent and visible.
+- An unrelated documentation-only HEAD change alone would not stale otherwise
+  matching relevant-path evidence.
+
+### Scenario P5 - Post-fan-in full-stack ordering
+
+Prompt:
+
+```text
+Build this approved full-stack feature in parallel, then synchronize product
+traceability and run the final delivery gates.
+```
+
+Required observations:
+
+- Product seeding/freeze precedes behavior units.
+- Backend/frontend/test work fans in before `traceability-sync`.
+- Documentation/task/memory writes complete before sync.
+- Global verification binds to the post-sync state, followed by zero-write
+  `audit-readonly`, ship verification, and branch-ready.
+- The validator rejects sync in the initial wave or ship bypassing audit.
+
+### Pending product validation matrix
+
+No product scenario below has been executed in an external live tool surface
+for this working tree. Every cell is `Pending`; deterministic protocol and
+routing tests do not replace these transcripts.
+
+| Scenario | Claude Code plugin | Codex attached repo | Codex native skills | Cursor | GitHub Copilot |
+|---|---|---|---|---|---|
+| P1 - Change control | Pending | Pending | Pending | Pending | Pending |
+| P2 - Traceability sync | Pending | Pending | Pending | Pending | Pending |
+| P3 - Read-only audit | Pending | Pending | Pending | Pending | Pending |
+| P4 - Stale evidence/UAT | Pending | Pending | Pending | Pending | Pending |
+| P5 - Post-fan-in ordering | Pending | Pending | Pending | Pending | Pending |
+
+Current limitation: the available session modifies this authoring repository
+through Codex tooling; it is not a prepared installed-surface target fixture and
+therefore is not counted as any matrix pass.
+
 ## Frontend Architecture Close-out Scenarios
 
 Run each scenario in a prepared target fixture through every tool surface whose

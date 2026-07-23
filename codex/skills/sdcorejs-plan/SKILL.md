@@ -135,7 +135,7 @@ Use numbered steps grouped by phase:
 <2-4 lines from the approved spec>
 
 ## Execution context
-- Track: <angular|nestjs|nextjs|test|product|generic>
+- Track: <angular|nestjs|nextjs|react|node|product|design|test|workflow|generic>
 - Target root kind: <target_root_kind>
 - Stack profile: <stack_profile>
 - Coverage approach: <post-hoc|TDD>
@@ -145,16 +145,41 @@ Use numbered steps grouped by phase:
 plan_context:
   source: sdcorejs-plan
   contract_id: <contract id>
+  feature_id: <stable feature ID when a product contract or product action is in scope; omit otherwise>
   requirement_id: <requirement id>
+  requirement_revision: <approved requirement revision>
+  requirement_ids:
+    - <stable approved acceptance or product requirement id>
   approved_spec_path: <path>
   approved_spec_hash: <hash>
+  approved_spec_integrity_hash: <approval-metadata integrity hash from approved spec>
   approved_plan_path: <empty until approved>
   approved_plan_hash: <empty until approved>
+  frozen_contract_path: <immutable .sdcorejs/plans/<track>/*.parallel.json path or null for sequential>
+  frozen_contract_hash: <sha256 or null for sequential>
+  ownership_manifest_digest: <sha256 of normalized unit ownership or null for sequential>
+  parallel_contract_revision: <positive integer or null for sequential>
+  parallel_contract_supersedes: <prior .parallel.json path, null for revision 1 or sequential>
   supersedes: <prior approved plan path or null>
   target_root: <target root>
   target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
   track: <track>
   stack_profile: <stack profile>
+  product_action_authority:
+    schema_version: 1
+    mode: none | single | ordered
+    purpose: none | standalone | final-tail
+    sequence_id: <stable sequence ID or null for none>
+    steps:
+      - step_id: <stable step ID>
+        ordinal: <positive contiguous integer>
+        action: seed-from-approved-spec | requirements-update | traceability-sync | audit-readonly | audit-and-sync | record-uat | supersede-feature
+        write_policy: allow | deny
+        allowed_paths:
+          - <approved product path or empty for audit-readonly>
+        predecessor_step_id: <immediately prior step ID or null>
+        required_checkpoint: <checkpoint identity>
+    terminal_step_id: <final step ID or null for none>
   task_count: <N>
   phase_count: <M>
   allowed_paths:
@@ -301,15 +326,39 @@ plan_context:
 3. CREATE <path> - <intent>
 
 ## Acceptance mapping
-- AC1 -> tasks 1, 3
-- AC2 -> tasks 2, 3
+- AC-001 -> tasks 1, 3
+- AC-002 -> tasks 2, 3
 
 ## Verification
 - `<detected package-manager command or existing script>`
 - Manual: <smoke check>
 ````
 
-For test-track plans, steps can be test cases, fixtures, page objects, harness scripts, and runner commands. For product-track plans, steps can be ledger creation, story/AC refinement, implementation map update, test map update, UAT checklist, and traceability audit. For generic harness plans, every task must name the tool/action and verification evidence.
+### Product authority and recovery revisions
+
+Newly authored plans use exactly one closed object authority form,
+`product_action_authority`.
+Its top-level fields are `schema_version`, `mode`, `purpose`, `sequence_id`,
+`steps`, and `terminal_step_id`; every step binds `step_id`, `ordinal`, `action`,
+`write_policy`, `allowed_paths`, `predecessor_step_id`, and
+`required_checkpoint`. Object-none uses version 1, `mode: none`, `purpose:
+none`, null sequence/terminal IDs, and empty steps. A standalone action has one
+ordinal-1 step. The final tail is write-allowed `traceability-sync` after
+`write-tail-complete`, then write-denied `audit-readonly` with empty paths after
+`post-sync-deny-write-verified`.
+
+Legacy scalar authority is readable only when its exact path, body hash,
+integrity hash, and action match the content-addressed pre-schema identity
+manifest. `prohibited_paths` may name protected approved snapshots and Git
+paths; a step's `allowed_paths` must never grant those protected surfaces.
+
+Every recovery plan binds `supersedes` to the exact immediately prior approved
+revision and retains older snapshots as immutable evidence. Exact R4, R5, R6,
+R7, R8, R9, and R10 identities are historical and execution-revoked after their
+terminal events. R11 is the current recovery-only object-none identity;
+separately approved R12 owns the final product tail.
+
+For test-track plans, steps can be test cases, fixtures, page objects, harness scripts, and runner commands. A product-track plan must select exactly one real action step through `product_action_authority` and keep normative work separate from descriptive work: `requirements-update` owns approved story/AC changes, `traceability-sync` owns implementation/test mappings and derived gaps, `record-uat` owns supplied UAT execution results, and `audit-readonly` owns zero-write inspection. Never place requirement refinement and evidence synchronization in the same product task. For generic harness plans, every task must name the tool/action and verification evidence.
 
 ### 4. Self-review before showing the user
 Fix the plan before presenting if any checklist item fails:
@@ -342,6 +391,12 @@ Fix the plan before presenting if any checklist item fails:
 - The component tree protects both sides of the boundary decision: route/page
   containers do not absorb unrelated responsibilities, and trivial markup is
   not extracted only to reduce line count.
+- When a product contract is in scope, all implementation and write-producing
+  tail tasks precede `traceability-sync`; sync is the final write, deny-write
+  global verification runs on the post-sync state, `audit-readonly` proves zero
+  writes, and ship consumes that audit. Any later write invalidates the
+  product/ship evidence and requires the applicable sync, verification, audit,
+  and ship gates to run again.
 - No write-producing step occurs after final branch-ready.
 
 ### 5. Present the approval gate
@@ -382,7 +437,18 @@ Approve:
 
 Compute `approved_plan_hash` over the canonical approved plan body, excluding
 frontmatter and the `approved_plan_hash` field, so the hash is not
-self-referential.
+self-referential. Use
+`hashApprovedSnapshot(snapshotText, 'approved_plan_hash')` from
+`../_refs/shared/approved-plan-integrity.mjs`; do not improvise a second hashing
+algorithm. Its canonical form strips a UTF-8 BOM, converts CRLF/CR line endings
+to LF, removes the complete frontmatter block and the single designated body
+mapping line whose key is `approved_plan_hash`, and hashes the remaining UTF-8
+bytes with SHA-256. More than one such body mapping line is invalid.
+
+These SHA-256 values provide byte-integrity only while the orchestrator and
+filesystem used to read and approve the snapshots are trusted. They are not a
+signature and do not prove the approving human's identity; executable approval
+still requires the explicit user-choice gates and trusted approval metadata.
 
 2. Include frontmatter:
 
@@ -390,15 +456,28 @@ self-referential.
 ---
 name: <kebab-topic>
 description: <one-line future-loading hook>
+contract_id: <contract id from approved spec>
+feature_id: <stable feature ID; required for a product contract or product action, omit otherwise>
+requirement_id: <requirement id from approved spec>
+requirement_revision: <approved requirement revision>
+requirement_ids:
+  - <stable approved acceptance or product requirement id>
 approvedAt: <ISO-8601 timestamp with timezone>
 approvedBy: <git user.email or session user when known>
-track: <angular|nestjs|nextjs|test|product|generic>
+approval_source: explicit-user-choice
+track: <angular|nestjs|nextjs|react|node|product|design|test|workflow|generic>
 sourceSpecPath: .sdcorejs/specs/<track>/<timestamp>-<topic>.md
 taskCount: <N>
 phaseCount: <M>
 target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
 stack_profile: <stack profile>
 approved_spec_hash: <sha256 from spec_context>
+approved_spec_integrity_hash: <approval-metadata integrity sha256 from spec_context>
+frozen_contract_path: <immutable .sdcorejs/plans/<track>/*.parallel.json path or null for sequential>
+frozen_contract_hash: <sha256 or null for sequential>
+ownership_manifest_digest: <sha256 of normalized unit ownership or null for sequential>
+parallel_contract_revision: <positive integer or null for sequential>
+parallel_contract_supersedes: <prior .parallel.json path, null for revision 1 or sequential>
 allowed_paths:
   - <path or glob>
 prohibited_paths:
@@ -413,6 +492,7 @@ migration_changes:
   required: true | false
   approval_required: true | false
 approved_plan_hash: <sha256 of approved plan body excluding frontmatter and this hash field>
+approved_plan_integrity_hash: <sha256 of the complete plan snapshot excluding only this frontmatter field>
 supersedes: <prior approved plan path or null>
 change_control:
   revision: <integer>
@@ -438,11 +518,66 @@ change_control:
 sdcorejs-plan (approved on attempt <N> / 3)
 ```
 
-4. Emit final `plan_context` with `approved_plan_path`,
-   `approved_plan_hash`, write scope, verification strategy, package-manager
-   evidence, parallel candidates, dependency/env/migration boundaries, and
-   change-control metadata.
-5. Only after the approved snapshot succeeds, hand off to
+4. For a parallel write contract, allocate an immutable sibling path under
+   `.sdcorejs/plans/<track>/*.parallel.json`. Materialize and write the canonical
+   frozen JSON first with its ownership manifest, `parallel_contract_revision`,
+   and `parallel_contract_supersedes`; it must not contain `approved_plan_hash`,
+   which avoids a hash cycle. Hash those exact JSON bytes as
+   `frozen_contract_hash` and do not mutate the artifact. For sequential work,
+   use explicit nulls for all five parallel-contract fields.
+5. Allocate the final `approved_plan_path`, then materialize the final embedded
+   `plan_context` with that path, every identity and scope field, the frozen
+   contract path/hash, ownership manifest digest, parallel revision/supersession,
+   and exactly one designated `approved_plan_hash` placeholder. Embed that exact
+   context in the snapshot body before hashing. Then call
+   `hashApprovedSnapshot`, substitute only the designated hash placeholder with
+   the computed digest, and use the same digest in frontmatter and handoff
+   context. No identity, path, scope, or other body bytes may change after
+   hashing.
+6. After the body hash is final, call
+   `hashApprovedSnapshotIntegrity(snapshotText, 'approved_plan_integrity_hash')`.
+   This digest covers the complete normalized snapshot, including independent
+   plan `approvedAt`, `approvedBy`, and `approval_source: explicit-user-choice`,
+   and removes only its own single top-level frontmatter field. Substitute that
+   digest without changing any other byte. Do not place
+   `approved_plan_integrity_hash` inside the snapshot body; add it only to
+   approved frontmatter and the final handoff context.
+7. Before handoff, call `validateApprovedPlanIntegrity` from
+   `../_refs/shared/approved-plan-integrity.mjs` with the loaded approved plan
+   text/path, loaded approved spec text/path, and final `plan_context`. Require
+   zero errors. This recomputes both body hashes and both approval-metadata integrity
+   hashes, then cross-checks
+   `contract_id`, `requirement_revision`, `requirement_ids`,
+   `approved_spec_path`, `approved_spec_hash`,
+   `approved_spec_integrity_hash`, `approved_plan_path`, `approved_plan_hash`,
+   and `approved_plan_integrity_hash` across the immutable snapshots and
+   handoff context. It also cross-checks the executor and side-effect contract:
+   `track`, `target_root_kind`, `stack_profile`, `target_root`,
+   `product_action_authority`,
+   task and phase counts, artifact/write boundaries, `dependency_changes`,
+   `env_changes`, `migration_changes`, the complete verification strategy
+   including `commands_planned`, frontend architecture, parallel candidates,
+   finish-tail policy, and change-control data wherever those fields are
+   represented in frontmatter, the hashed body, or the handoff context.
+
+   Treat the three change-boundary objects and the verification strategy as
+   closed schemas. `commands_planned` is a closed, ordered array of structured
+   objects with exactly `command_or_script` and `reason`; both values are
+   normalized non-empty single-line strings. Never compare commands through a
+   delimiter-joined scalar, interpolate an unvalidated field into another
+   command, or accept an extra command-object key. Any missing, malformed,
+   unsupported, or divergent value fails closed and requires a new approved
+   plan revision.
+   Treat the complete top-level `plan_context` and its nested
+   `frontend_architecture`, `parallel_candidates`, `approval`,
+   `change_control`, and `finish_tail` records as closed schemas too. Bind every
+   permitted field to the hashed body before handoff. Never attach a runtime
+   instruction, command, path override, or identity field only to the handoff;
+   unsupported fields fail closed even when copied into both representations.
+   Delete a partially written invalid plan snapshot only when it was created by
+   this approval attempt; never alter an older approved snapshot.
+8. Only after the approved snapshot succeeds and the integrity validator
+   returns zero errors, hand off to
    `sdcorejs-execute-plan` with the approved plan snapshot path and
    `plan_context`.
 
@@ -465,6 +600,9 @@ Abort:
 - Wait for explicit plan approval.
 - Snapshot the approved plan before execution.
 - Create a new approved snapshot every time; snapshots are immutable history.
+- Treat an approved plan without `approved_plan_integrity_hash`, or its spec
+  without `approved_spec_integrity_hash`, as legacy-unverifiable. Create new
+  explicitly approved revisions; never rewrite old immutable approvals.
 - Treat approved plans as immutable snapshots. If scope changes after approval,
   create a new plan revision with `supersedes` and `change_reason`.
 - Preserve the latest approved plan that matches the current
@@ -480,6 +618,8 @@ Abort:
   checks with evidence.
 - Capture review decisions honestly; never leave the section blank.
 - Pass the approved plan as the exact execution contract to `sdcorejs-execute-plan`.
+- Fail closed when approved-plan integrity validation reports any error; a new
+  approved plan revision is required instead of repairing an immutable snapshot.
 - Include verification commands.
 
 ### Must not

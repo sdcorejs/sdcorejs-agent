@@ -9,7 +9,7 @@ Use this repo as a Runtime-localized SDLC skill pack for Angular, NestJS, Next.j
 3. Read the selected skill body before acting.
 4. If no skill matches, invoke `sdcorejs-using-skills`.
 
-If several skills match, apply this priority: explicit skill name, approved-plan execution, product docs/traceability, design handoff, test-only work, dedicated utility intent, whole app/system build, confirmed track implementation, then brainstorming for ambiguous scope.
+If several skills match, apply this priority: explicit skill name, approved-plan execution, approved product projection/revision, traceability sync, product audit, supplied UAT result, or supersession; then design handoff, test-only work, dedicated utility intent, whole app/system build, confirmed track implementation, and brainstorming for ambiguous scope.
 
 ## Workflow
 
@@ -22,7 +22,18 @@ Request
        always ask sequential vs parallel
        dispatch Core UI angular | nestjs | nextjs | product | design | test | generic harness
   -> finish gate and tail chain
+       sdcorejs-test -> sdcorejs-review -> sdcorejs-repair-loop
+       -> complete every write-producing documentation/task/memory tail
+       -> sdcorejs-product (traceability-sync as the final write)
+       -> deny-write global verification on the post-sync state
+       -> sdcorejs-product (audit-readonly with zero-write proof)
+       -> sdcorejs-ship (verify-before-done)
+       -> sdcorejs-ship (branch-ready as the final read-only gate)
 ```
+
+Any write after traceability sync invalidates the post-sync evidence. Any write
+after audit or branch-ready requires the applicable sync, deny-write
+verification, audit, and ship gates to rerun before Git artifact handoff.
 
 Track executors:
 
@@ -52,7 +63,7 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - Approved plans execute through `sdcorejs-execute-plan`; it classifies Angular as Core UI vs plain Angular before dispatch.
 - Non-trivial skills apply `_refs/shared/project-context.md` before executing.
 - `sdcorejs-execute-plan` always asks sequential vs parallel before execution.
-- Product docs, user stories, acceptance criteria, UAT, and traceability use `sdcorejs-product`.
+- Approved product projections, requirement revisions, traceability, supplied UAT executions, and product audits use `sdcorejs-product`. A generic request to draft a new PRD, user story, or acceptance criteria without an immutable approved source returns to `sdcorejs-brainstorming` and `sdcorejs-spec`.
 - UI/UX design, screen flows, wireframes, PNG previews, and FE handoff use `sdcorejs-design`.
 - Explore codebase context with `sdcorejs-explore`; write comments, user guides, and technical docs through `sdcorejs-documentation`; verify and ship through `sdcorejs-ship`; commit, PR, changelog, and release notes through `sdcorejs-git`.
 - Parallel execution requires `sdcorejs-parallel-dispatch`. Direct approved-plan

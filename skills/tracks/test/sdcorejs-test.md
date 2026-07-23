@@ -92,6 +92,15 @@ test_context:
   refs_loaded:
   commands_planned:
   write_paths_planned:
+  contract_id:
+  feature_id:
+  requirement_revision:
+  approved_spec_path:
+  approved_spec_hash:
+  approved_spec_integrity_hash:
+  approved_plan_path:
+  approved_plan_hash:
+  approved_plan_integrity_hash:
 ```
 
 ## Step 1 - Classify `test_action`
@@ -201,6 +210,9 @@ For React/Next.js, prefer React Testing Library when already configured, accessi
 - Coverage is evidence, not a target to game. Report what changed and what remains risky.
 - A coverage report is current only when generated in this turn or clearly tied to the current `HEAD`/diff.
 - UAT cases must name preconditions, actor/role, data setup, steps, expected result, traceability IDs when available, and automation/manual status.
+- Automated unit/integration/E2E output is verification evidence, never PO/QC
+  UAT execution. Keep UAT `not_run` until an explicit manual result is recorded
+  through `sdcorejs-product` action `record-uat`.
 - Snapshot tests require stable, intentional output and a human-readable reason. Do not snapshot broad rendered HTML or whole API payloads.
 - Mock external systems at the boundary. Do not mock the code under test or the behavior being verified.
 - Use fake timers, awaited promises, `findBy...`, `waitFor`, `whenStable`, or runner-native waits instead of sleeps.
@@ -217,17 +229,88 @@ Use `failing-output-triage` only for read-only explanation. The report must stat
 
 Use `debug-handoff` when the user asks to fix, debug, root-cause, repair, or modify source code. Pass along:
 
+`test_evidence` is the canonical product-verification evidence projection from
+`_refs/shared/test-context.md` plus test-run metrics and compatibility aliases.
+Do not omit canonical identity, environment, diff, redaction, or freshness
+fields when a product contract is in scope.
+
 ```text
 test_evidence:
+  evidence_id:
+  requirement_ids:
+  control_requirement_ids:
+  source: sdcorejs-test
+  kind:
+  evidence_type:
   command:
+  cwd:
+  started_at:
+  finished_at:
   exit_code:
+  outcome: passed | failed | blocked
+  observed_at:
+  observed_by: sdcorejs-test
+  observation_source:
+  observed_result:
+  expected_result_ref:
   failed_specs:
   first_useful_error:
-  current_head_or_diff:
+  environment:
+    environment_name:
+    runtime_versions: {}
+    platform:
+    locale:
+    timezone:
+    environment_fingerprint:
+  verified_head:
+  associated_diff:
+    base_head:
+    head:
+    diff_hash:
+    changed_paths: []
+  diff_base:
+  associated_head_or_diff:
+  contract_id:
+  feature_id:
+  requirement_revision:
+  approved_spec_path:
+  approved_spec_hash:
+  approved_spec_integrity_hash:
+  approved_plan_path:
+  approved_plan_hash:
+  approved_plan_integrity_hash:
+  relevant_paths:
+  relevant_path_hashes: {}
+  relevant_paths_hash:
+  output_digest:
   environment_class:
-  artifacts_created:
-  redactions_applied:
+  artifacts: []
+  redaction:
+    redaction_applied:
+    redacted_fields: []
+    excluded_paths: []
+    secret_scan:
+    pii_redacted:
+    logs_sanitized:
+  redaction_applied:
+  freshness:
+    value:
+    reasons: []
+    evaluated_at:
+    head_changed:
+  freshness_value:
+  stale: false | true | unknown
+  stale_reason:
 ```
+
+When a product contract is in scope, copy `feature_id`, the approved-spec
+path/body/integrity identity, and the approved-plan path/body/integrity identity
+from the validated execution authority into both `test_context` and every
+`test_evidence` record. Evidence freshness is `current` only when contract,
+feature, requirement revision, approved spec identity, approved plan identity,
+and relevant-path fingerprint all match current trusted state. Missing identity
+is `unknown`; any mismatch is `stale`. Caller-authored matching strings are
+comparison claims, not authority.
 
 ## Direct Invocation Tail
 
@@ -241,10 +324,20 @@ Tail order:
 4. Run `_refs/orchestration/tail/auto-docs.md` with `TRACK=test` only for write/edit work that produced durable test artifacts.
 5. Run `_refs/orchestration/tail/auto-task-tracker.md` only after auto-docs.
 6. Run `sdcorejs-explore (memories mode)` only when durable testing knowledge surfaced, such as a recurring fixture convention, runner limitation, or stakeholder testing preference.
-7. Run `sdcorejs-ship (verify-before-done mode)` when an approved test plan, product ledger, or acceptance criteria are in scope. If no criteria exist, report that acceptance verification was skipped and list the test commands that did run.
-8. Run `sdcorejs-ship (branch-ready mode)` as the final read-only gate before any Git artifact path when this test work is part of a delivery handoff. No writes after branch-ready unless branch-ready is run again.
+7. When a product contract exists and this direct invocation wrote tests or
+   produced durable execution evidence, run `sdcorejs-product` action
+   `traceability-sync` after auto-doc/task/memory writes, then rerun affected
+   verification and run `audit-readonly` with zero writes.
+8. Run `sdcorejs-ship (verify-before-done mode)` when an approved test plan,
+   product contract, or acceptance criteria are in scope. Consume final product
+   audit context when present, but verify each criterion independently. If no
+   criteria exist, report the skip and commands that did run.
+9. Run `sdcorejs-ship (branch-ready mode)` as the final read-only gate before
+   any Git artifact path. No writes after branch-ready unless product sync,
+   audit, ship verification, and branch-ready are rerun as applicable.
 
-Read-only actions stop after the report and visible task/checkpoint updates. Do not call `sdcorejs-git` unless ship/branch-ready criteria have passed and the user explicitly asks for a git artifact.
+Read-only actions stop after the report and an in-response visible task update;
+they do not write a task checkpoint. Do not call `sdcorejs-git` unless ship/branch-ready criteria have passed and the user explicitly asks for a Git artifact.
 
 ## TDD Mode
 

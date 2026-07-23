@@ -237,8 +237,13 @@ review and repair loop"; a skipped finish-gate review or direct read-only review
 must not auto-edit.
 
 The caller must complete any write-producing documentation, task tracker,
-memory, changelog, or release-note steps before the final branch-ready gate. No
-writes after branch-ready unless branch-ready is run again.
+memory, changelog, or release-note steps first. When a product contract is in
+scope, the caller then runs `traceability-sync` as the final write, deny-write
+global verification on the post-sync state, and `audit-readonly` with zero-write
+proof before ship. A later write invalidates that product/ship evidence and
+requires the applicable sync, verification, audit, and ship gates to run again.
+Branch-ready remains the final read-only gate; no writes after branch-ready
+unless branch-ready is run again.
 
 If a finding is a concrete single bug rather than a findings set, keep it in
 `review_context` as evidence. Repair-loop may delegate that one item to

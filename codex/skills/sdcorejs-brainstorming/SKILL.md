@@ -313,6 +313,9 @@ requirement_context:
   source: sdcorejs-brainstorming
   requirement_id: <stable id>
   contract_id: <stable id shared by spec/plan/execute>
+  requirement_revision: <positive integer, starting at 1>
+  requirement_ids:
+    - <stable acceptance or product requirement id>
   target_root: <absolute or repo-relative target>
   target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
   track: angular | nestjs | nextjs | react | node | fullstack | product | design | documentation | workflow | test | general
@@ -366,9 +369,10 @@ values.
 - Use English identifiers, permission codes, and route paths.
 - Block `sdcorejs-spec` until minimum blockers are confirmed.
 - Save durable repeated preferences through `sdcorejs-explore (memories-write-approved)` only when relevant and approved.
-- Preserve `contract_id`, `target_root`, `target_root_kind`, `track`,
-  `stack_profile`, explicit user decisions, inferred/defaulted assumptions, and
-  profile evidence for downstream skills.
+- Preserve `contract_id`, `requirement_revision`, `requirement_ids`,
+  `target_root`, `target_root_kind`, `track`, `stack_profile`, explicit user
+  decisions, inferred/defaulted assumptions, and profile evidence for
+  downstream skills. Never renumber or reuse a supplied requirement ID.
 - Keep visual companion artifact writes response-only unless
   `visual_companion.artifact_write_approved` is true.
 
@@ -391,6 +395,7 @@ Pass `sdcorejs-spec` this context:
 - detected context/track
 - stack profile and profile evidence
 - confirmed `requirement_context`
+- stable contract identity, requirement revision, and requirement IDs
 - chosen direction and tradeoffs considered
 - source artifacts provided by the user
 - coverage approach

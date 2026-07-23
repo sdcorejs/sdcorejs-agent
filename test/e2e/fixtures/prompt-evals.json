@@ -506,7 +506,92 @@
   {
     "id": "prd-product-doc",
     "prompt": "write a PRD for invoice approval",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "expectedProductAction": null,
+    "phase": 3
+  },
+  {
+    "id": "product-routing-open-requirements-authoring",
+    "prompt": "write product requirements for invoice approval",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "expectedProductAction": null,
+    "phase": 3
+  },
+  {
+    "id": "product-routing-open-prd-long-form",
+    "prompt": "draft a product requirement document for invoice approval",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "expectedProductAction": null,
+    "phase": 3
+  },
+  {
+    "id": "product-routing-record-supplied-uat-pass",
+    "prompt": "record this supplied UAT pass",
     "expectedSkill": "sdcorejs-product",
+    "expectedProductAction": "record-uat",
+    "phase": 3
+  },
+  {
+    "id": "product-routing-approved-requirements-revision-natural",
+    "prompt": "apply the approved revision of product requirements",
+    "expectedSkill": "sdcorejs-product",
+    "expectedProductAction": "requirements-update",
+    "phase": 3
+  },
+  {
+    "id": "product-action-approved-seed",
+    "prompt": "seed the product docs from this approved spec",
+    "expectedSkill": "sdcorejs-product",
+    "expectedProductAction": "seed-from-approved-spec",
+    "phase": 3
+  },
+  {
+    "id": "product-action-approved-requirements-revision",
+    "prompt": "apply this approved requirement revision to the product contract",
+    "expectedSkill": "sdcorejs-product",
+    "expectedProductAction": "requirements-update",
+    "phase": 3
+  },
+  {
+    "id": "product-action-unapproved-requirements-change",
+    "prompt": "change the approved requirement to allow bulk deletion without a new revision",
+    "expectedSkill": "sdcorejs-spec",
+    "expectedProductAction": null,
+    "phase": 3
+  },
+  {
+    "id": "product-action-traceability-sync",
+    "prompt": "run traceability-sync for the product contract after implementation fan-in",
+    "expectedSkill": "sdcorejs-product",
+    "expectedProductAction": "traceability-sync",
+    "phase": 3
+  },
+  {
+    "id": "product-action-audit-readonly",
+    "prompt": "audit the product contract read-only before ship",
+    "expectedSkill": "sdcorejs-product",
+    "expectedProductAction": "audit-readonly",
+    "phase": 3
+  },
+  {
+    "id": "product-action-audit-and-sync",
+    "prompt": "audit-and-sync the product traceability ledger",
+    "expectedSkill": "sdcorejs-product",
+    "expectedProductAction": "audit-and-sync",
+    "phase": 3
+  },
+  {
+    "id": "product-action-record-uat",
+    "prompt": "record the supplied UAT result for AC-001",
+    "expectedSkill": "sdcorejs-product",
+    "expectedProductAction": "record-uat",
+    "phase": 3
+  },
+  {
+    "id": "product-action-supersede-feature",
+    "prompt": "supersede this feature contract through approved change control",
+    "expectedSkill": "sdcorejs-product",
+    "expectedProductAction": "supersede-feature",
     "phase": 3
   },
   {

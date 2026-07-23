@@ -124,6 +124,18 @@ const PRIORITY_RULES = [
       !hasAny(tokens, ['debug', 'test', 'tests', 'failing', 'failure'])
   },
   {
+    skill: 'sdcorejs-spec',
+    when: ({ prompt, tokens }) => hasUnapprovedProductRequirementChange(prompt, tokens)
+  },
+  {
+    skill: 'sdcorejs-product',
+    when: ({ prompt, tokens }) => hasExplicitProductActionIntent(prompt, tokens)
+  },
+  {
+    skill: 'sdcorejs-brainstorming',
+    when: ({ prompt, tokens }) => hasOpenProductAuthoringIntent(prompt, tokens)
+  },
+  {
     skill: 'sdcorejs-brainstorming',
     when: ({ prompt, tokens }) =>
       /\bphan\s+van\b/.test(prompt) ||
@@ -354,12 +366,16 @@ export async function loadSkillPack(rootUrlOrPath) {
 export function runPromptEval(pack, cases) {
   return cases.map((item) => {
     const actualSkill = dispatchPrompt(pack, item.prompt)?.name ?? null;
+    const actualProductAction = actualSkill === 'sdcorejs-product' ? classifyProductAction(item.prompt) : null;
+    const expectedProductAction = item.expectedProductAction ?? null;
     return {
       id: item.id,
       prompt: item.prompt,
       expectedSkill: item.expectedSkill,
       actualSkill,
-      pass: actualSkill === item.expectedSkill
+      expectedProductAction,
+      actualProductAction,
+      pass: actualSkill === item.expectedSkill && actualProductAction === expectedProductAction
     };
   });
 }
@@ -700,6 +716,41 @@ function hasProductIntent(prompt, tokens) {
     /\b(requirements?|acceptance|uat)\b.*\b(implementation|implement|test|coverage|complete|gap)\b/.test(prompt) ||
     /\b(implementation|implement|test|coverage|complete|gap)\b.*\b(requirements?|acceptance|uat)\b/.test(prompt)
   );
+}
+
+function hasExplicitProductActionIntent(prompt, tokens) {
+  return classifyProductAction(prompt) !== null;
+}
+
+export function classifyProductAction(prompt) {
+  const normalized = String(prompt ?? '').toLowerCase();
+  if (/\baudit[- ]and[- ]sync\b|\baudit\b.*\bproduct\b.*\b(sync|persist)\b/.test(normalized)) return 'audit-and-sync';
+  if (/\b(product|contract)\b.*\baudit[- ]readonly\b|\baudit\b.*\bproduct contract\b.*\bread[- ]only\b/.test(normalized)) return 'audit-readonly';
+  if (/\brecord\b.*\buat\b.*\b(result|execution|pass(?:ed)?|fail(?:ed)?|blocked)\b|\brecord-uat\b/.test(normalized)) return 'record-uat';
+  if (/\bsupersede\b.*\b(feature|product)\b.*\bcontract\b|\bsupersede-feature\b/.test(normalized)) return 'supersede-feature';
+  if (/\bseed\b.*\bproduct\b.*\bapproved\b.*\bspec\b|\bseed-from-approved-spec\b/.test(normalized)) return 'seed-from-approved-spec';
+  if (/\bapply\b.*\bapproved\b.*(?:\brequirements?\b.*\brevision\b|\brevision\b.*\b(?:product\s+)?requirements?\b)|\brequirements-update\b/.test(normalized)) return 'requirements-update';
+  if (/\btraceability[- ]sync\b|\bsync\b.*\b(product|traceability)\b/.test(normalized)) return 'traceability-sync';
+  return null;
+}
+
+function hasOpenProductAuthoringIntent(prompt, tokens) {
+  const artifact = hasAny(tokens, ['prd', 'story', 'stories'])
+    || /\bacceptance criteria\b|\bproduct docs?\b|\bproduct requirements?\b|\bproduct requirement documents?\b/.test(prompt);
+  const authoring = hasAny(tokens, ['write', 'create', 'draft', 'author', 'prepare']);
+  const alignmentReview = (
+    hasProductIntent(prompt, tokens) &&
+    hasAny(tokens, ['check', 'review', 'audit', 'traceability', 'coverage', 'gap', 'gaps'])
+  );
+  return artifact && authoring && !alignmentReview && !hasExplicitProductActionIntent(prompt, tokens);
+}
+
+function hasUnapprovedProductRequirementChange(prompt, tokens) {
+  const changesApprovedBehavior = (
+    /\b(change|edit|update|revise)\b.*\bapproved\b.*\b(requirement|behavior|acceptance|criteria)\b/.test(prompt) ||
+    /\bapproved\b.*\b(requirement|behavior|acceptance|criteria)\b.*\b(change|edit|update|revise)\b/.test(prompt)
+  );
+  return changesApprovedBehavior && !hasAny(tokens, ['revision-approved', 'new-approved-revision']) && !/\bapproved requirement revision\b/.test(prompt);
 }
 
 function hasDocumentationIntent(prompt, tokens) {

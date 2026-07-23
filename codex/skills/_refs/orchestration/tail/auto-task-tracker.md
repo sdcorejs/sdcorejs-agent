@@ -35,7 +35,9 @@ mkdir -p "$TARGET_ROOT/.sdcorejs/tasks"
 FILE="$TARGET_ROOT/.sdcorejs/tasks/$TRACK.md"
 ```
 
-One file per track per project. Never write to `sdcorejs-agent` repo.
+One file per track per explicitly resolved target. Write to `sdcorejs-agent`
+only when that authoring repo is itself the explicit resolved target; otherwise
+write to the target project, never the agent repo.
 
 ## File format
 
@@ -52,22 +54,22 @@ One file per track per project. Never write to `sdcorejs-agent` repo.
 ## Next (queued, ordered)
 - [ ] Create Category entity (parent of Product)
 - [ ] Wire Product workflow approval (submit for approval → approve)
-- [ ] Move shared validators ra `libs/shared/validators`
+- [ ] Move shared validators to `libs/shared/validators`
 
 ## Later (someday / maybe)
-- [ ] Migrate mock-data sang real API khi backend ready
-- [ ] E2E coverage cho bulk action
+- [ ] Migrate mock data to the real API when the backend is ready
+- [ ] Add E2E coverage for the bulk action
 
 ## Blocked
 - [!] Initialize NestJS module - waiting for sample code from the team
 
 ## Done (last 7 days)
-- [x] (2026-05-16) Refactor `21-screen-detail` form binding sang `[form]+name=`
+- [x] (2026-05-16) Refactor `21-screen-detail` form binding to `[form]+name=`
 - [x] (2026-05-15) Add 5 _shared skills (commit, pr-create, debug, recovery, env-setup)
 - [x] (2026-05-14) Mirror sync via lefthook pre-commit
 
 ## Stale (no activity >14d — triage)
-- [ ] (added 2026-04-28) Review accessibility cho sd-table
+- [ ] (added 2026-04-28) Review accessibility for `sd-table`
 ```
 
 Rules for the file:
@@ -148,7 +150,8 @@ Don't quote the whole file unless the user asks.
 - Use Edit, not Write, to preserve hand-edits
 
 ### MUST NOT
-- Write the file to the `sdcorejs-agent` repo
+- Write the file to the `sdcorejs-agent` repo unless that authoring repo is the
+  explicit resolved target
 - Auto-add tasks the doc didn't mention
 - Re-add tasks the user manually deleted (respect their edits — if a task was removed by hand, don't resurrect it from older docs)
 - Overwrite the user's section ordering
@@ -168,7 +171,7 @@ At session start, read all of them in parallel; surface a combined banner if mor
 ## Anti-patterns
 - Auto-resurrecting tasks the user deleted by hand
 - Letting "Now" balloon to 10+ items (no focus, no signal)
-- Writing the file to the agent repo instead of the target project
+- Writing the file to the agent repo when it is not the explicit resolved target
 - Translating user-authored text (their language, their text)
 - Pruning Done items the SAME day they were ticked (gives no sense of velocity)
 - Surfacing the whole file at session start (just the counts + top 3)

@@ -20,7 +20,12 @@ The agent MUST run this reference (write mode) at the end of every code-writing 
 
 For nestjs, nextjs, and test tracks, the equivalent writing skills trigger this skill the same way.
 
-If a user-visible feature was created or changed, also invoke or update `sdcorejs-product` so `.sdcorejs/docs/product/` records the business goal, acceptance criteria, implementation map, test map, and gaps.
+If a user-visible feature was created or changed and an approved product
+contract exists, this auto-doc write completes before `sdcorejs-product` action
+`traceability-sync`. The parent executor owns that later call after every
+write-producing docs/task/memory tail and implementation/test fan-in. Auto-docs
+must not invoke a generic product update, change normative product text, or run
+the final read-only audit early.
 
 If the current executor did not change any code AND did not produce a new finding, skip auto-docs.
 
@@ -127,7 +132,10 @@ This skill applies to `angular`, `nestjs`, `nextjs`, and `test` tracks. The only
 - NextJS: `.sdcorejs/docs/nextjs/`
 - Test: `.sdcorejs/docs/test/`
 
-The product track writes PO-facing ledgers under `.sdcorejs/docs/product/` through `sdcorejs-product`. Use auto-docs for session summaries; use product ledgers for feature traceability.
+The product track writes PO-facing ledgers under `.sdcorejs/docs/product/`
+through explicit `sdcorejs-product` actions. Use auto-docs for session
+summaries; use post-write `traceability-sync` for derived feature traceability
+and `audit-readonly` immediately before ship.
 
 When the agent works inside a multi-track repo, write to the track folder
 matching the work performed. If unsure, ask the user before writing using

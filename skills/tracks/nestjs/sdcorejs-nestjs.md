@@ -77,7 +77,11 @@ for touched source.
 After the selected test/review/documentation work, apply
 `_refs/orchestration/tail/auto-docs.md` and
 `_refs/orchestration/tail/auto-task-tracker.md`. Hand durable project knowledge to
-`sdcorejs-explore (memories mode)` when relevant. Always finish with
+`sdcorejs-explore (memories mode)` when relevant. When an approved product
+contract is in scope, run `sdcorejs-product` action `traceability-sync` only
+after those writes and integrated test evidence, rerun affected verification,
+then run `audit-readonly` with zero writes. Always finish with
 `sdcorejs-ship (verify-before-done mode)` followed by
 `sdcorejs-ship (branch-ready mode)`. Do not invoke `sdcorejs-git` until both
-gates pass or a verification deferral is explicitly recorded.
+gates pass or a verification deferral is explicitly recorded. A later write
+requires the applicable product sync/audit and ship gates to run again.

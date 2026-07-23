@@ -1,8 +1,8 @@
 ---
-generated_at: 2026-07-11T08:46:48+07:00
-git_head: 41a369e3d7fad9d77002c33ab8a2bb3f075d1404
-branch: feat/nestjs-skill-hardening
-tracks: [generic, nestjs]
+generated_at: 2026-07-24T01:59:39+07:00
+git_head: cfa7a985e364e99b39a7ed236593649335f00fdf
+branch: refactor/sdcorejs-product-final
+tracks: [generic, workflow, product, test]
 generator: sdcorejs-explore
 ---
 
@@ -11,65 +11,88 @@ generator: sdcorejs-explore
 ## What this project is
 
 `sdcorejs-agent` is an SDLC skill-pack authoring repository. It defines reusable
-skills and references for AI coding agents that work with Angular portals,
-NestJS backends, Next.js sites, product/design/test tracks, documentation,
-review, ship, git, and orchestration flows.
+skills and references for Angular, NestJS, Next.js, product, design, test,
+documentation, review, ship, Git, and orchestration workflows.
 
-## Stack & track
+## Stack and active track
 
-- Primary runtime for repository tooling: Node.js ESM.
-- Active project track for skill-pack authoring: generic, with the current
-  approved contract targeting the NestJS skill/reference surface.
-- Package scripts:
-  - `npm run sync:skills` mirrors source skills and refs.
-  - `npm run check:skills` verifies generated mirrors are in sync.
-  - `npm test` runs `node --test test/e2e/*.test.mjs`.
+- Repository tooling uses Node.js ESM with Windows PowerShell parity checks.
+- The active work is the R23 clean finalization of the `sdcorejs-product`
+  contract refactor.
+- The final branch is rebuilt from `origin/main` in an isolated worktree.
+- Execution is sequential; parallel dispatch and subagents are inactive.
 
 ## Architecture map
 
-- `skills/` contains source skill definitions.
-- `_refs/` contains source reference instructions and templates loaded by skills.
-- `codex/skills/`, `plugin/`, and `.claude/` contain generated mirrors.
-- `.cursor/rules/sdcorejs-agent.mdc` is generated from `AGENTS.md`.
-- `scripts/sync-skills.mjs` owns mirror generation and check mode.
-- `test/e2e/` contains skill-pack, adapter, entrypoint, and golden target app tests.
-- `skills/tracks/nestjs/sdcorejs-nestjs.md` is the canonical NestJS executor
-  orchestrator; `_refs/nestjs/` owns its reusable authoring packs.
+- `skills/` and `_refs/` are canonical authoring sources.
+- `.claude/`, `plugin/`, `codex/skills/`, and
+  `.cursor/rules/sdcorejs-agent.mdc` are generated mirrors.
+- `_refs/product/product-protocol.mjs` is the executable product-contract
+  authority and validation boundary.
+- `test/e2e/product-protocol.test.mjs` provides focused product protocol and
+  mutation coverage.
+- `test/e2e/skill-pack-runner.test.mjs` and its support module exercise
+  repository-level dispatch and contract behavior.
+- `site/` is the documentation showcase and has an independently audited
+  dependency graph.
 
 ## Reusable building blocks
 
-- `skills/orchestration/documentation.md` routes documentation modes.
-- `_refs/documentation/` contains detailed documentation behavior refs.
-- `test/e2e/support/skill-pack-runner.mjs` validates skill routing keywords and mirrors.
-- `scripts/sync-skills.mjs` should be used instead of hand-editing generated mirrors.
+- `npm run sync:skills` regenerates mirrors from canonical sources.
+- `npm run check:skills` and `npm run check:skills:ps` verify mirror parity.
+- `npm run test:e2e:product` is the focused product protocol suite.
+- `npm run test:e2e:repository` and `npm run test:e2e` are the repository and
+  aggregate verification gates.
+- `npm run check:audit`, `npm run check:site:audit`, and
+  `npm run build:site` cover the production dependency and site-build surface.
 
 ## Conventions detected
 
-- Source skill/ref prose is English-only.
-- Runtime localization is described by instructions, not by hard-coded localized source prose.
-- Generated mirrors must not be edited directly.
-- New non-trivial work uses `.sdcorejs/docs`, `.sdcorejs/specs`, `.sdcorejs/plans`, and `.sdcorejs/tasks/current-session.md`.
+- Reusable skill-pack source is English-only and locale-neutral.
+- Canonical sources are edited before generated mirrors.
+- Approved requirement and plan authority is file-backed and fail-closed.
+- Product readiness separates implementation, verification, and UAT evidence.
+- Parent-observed one-shot capabilities bind final authorization to current
+  state and reject missing, forged, stale, or replayed decisions.
+- A content write after final traceability sync invalidates all later evidence.
 
-## Reuse cheatsheet
+## Current R23 projection
 
-- Edit source skill files under `skills/`.
-- Add reusable references under `_refs/`.
-- Run `npm run sync:skills` after source skill/ref edits.
-- Run `npm run check:skills`, `npm test`, and relevant hygiene checks before reporting completion.
+- Source checkpoint:
+  `ea9ae0b3fe77c7c51fed4abcc7316ff23afbd9da`.
+- Clean base:
+  `cfa7a985e364e99b39a7ed236593649335f00fdf`.
+- Included implementation projection: 44 canonical source paths plus 91
+  generated mirrors.
+- Approved same-R23 repair exception: `site/package.json` and
+  `site/package-lock.json`.
+- Excluded recovery/history projection: 40 paths, including all R16-R22
+  recovery-only artifacts.
+- Allowed closeout projection: this summary, one workflow closeout, five human
+  product documents, and one canonical product ledger.
+- The final expected Git path set is 145 paths.
+
+## Current verification
+
+The latest complete closure passed product 80/80, phase 1 124/124, parallel
+86/86, repository 220/220, aggregate repository 220/220, focused NestJS 24
+passed with one intentional Linux-only skip, generated projects 2/2, both
+mirror checks, text hygiene, NestJS pack validation, root and site production
+audits, and the two-page Astro build. The complete review has no unresolved
+Critical or Important finding.
 
 ## Open context
 
-- Current branch: `feat/nestjs-skill-hardening`.
-- Current approved spec:
-  `.sdcorejs/specs/nestjs/2026-07-11-07-37-nestjs-skill-hardening.md`.
-- Current approved plan:
-  `.sdcorejs/plans/nestjs/2026-07-11-08-00-nestjs-skill-hardening.md`.
-- Current task: harden `sdcorejs-nestjs` generation, security, tenancy, runtime
-  defaults, behavioral golden projects, and bounded validation evidence.
-- Sequential implementation and verification are complete. The branch is at the
-  final read-only review/ship gate before commit, push, and pull request creation.
+- R23 tasks 1-8 are complete.
+- Task 9 is producing compact pre-traceability documentation.
+- Task 10 will write the five human product documents and canonical ledger; the
+  ledger must be the final content write.
+- Tasks 11-13 will run deny-write verification and read-only audit/ship gates,
+  stage the exact approved set, then commit, push, and open the pull request.
+- No branch-ready or delivery claim is valid until those remaining tasks pass.
 
 ## Freshness
 
-Generated from commit `41a369e3d7fad9d77002c33ab8a2bb3f075d1404` on branch
-`feat/nestjs-skill-hardening`. Refresh after branch HEAD changes materially.
+Generated against base commit
+`cfa7a985e364e99b39a7ed236593649335f00fdf` on branch
+`refactor/sdcorejs-product-final` before the final R23 traceability write.

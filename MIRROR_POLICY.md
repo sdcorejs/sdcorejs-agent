@@ -19,6 +19,7 @@ Edit these files directly:
 Do not edit these by hand:
 
 - `.claude/skills/**`
+- `.claude/_refs/**`
 - `plugin/skills/**`
 - `plugin/_refs/**`
 - `codex/skills/**`

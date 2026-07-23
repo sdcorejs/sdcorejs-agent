@@ -30,7 +30,11 @@ Priority when several skills match:
 
 1. Explicit skill name from the user.
 2. Approved spec/plan continuation: `sdcorejs-execute-plan`.
-3. Product docs and traceability: `sdcorejs-product`.
+3. Explicit product actions: approved-spec seeding, approved requirement
+   revisions, traceability sync, product audit, supplied UAT recording, or
+   feature supersession -> `sdcorejs-product`. A requested change to approved
+   behavior without an approved revision remains change-control work through
+   brainstorming/spec.
 4. Design handoff artifacts: `sdcorejs-design`.
 5. Test-only work: `sdcorejs-test`, except failing-test root cause/fix goes to `sdcorejs-debug`.
 6. Dedicated utility intent: `sdcorejs-explore`, `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
@@ -50,7 +54,10 @@ Priority when several skills match:
 | Tests | `sdcorejs-test` |
 | Unknown / unsupported stack | `sdcorejs-execute-plan` generic harness fallback |
 
-The product track is first-class: feature docs, user stories, acceptance criteria, UAT, and traceability audits execute through `sdcorejs-product`.
+The product track is first-class. It classifies one of
+`seed-from-approved-spec`, `requirements-update`, `traceability-sync`,
+`audit-readonly`, `audit-and-sync`, `record-uat`, or `supersede-feature` before
+work. Generic legacy `Update` is ambiguous and must not bypass change control.
 
 The design track is first-class: UI/UX design, wireframes, screen flows, PNG previews, and FE handoff artifacts execute through `sdcorejs-design`.
 
@@ -91,7 +98,10 @@ Request
 
 - Open-ended idea or incomplete scope: `sdcorejs-brainstorming`.
 - Concrete feature request: `sdcorejs-brainstorming` in confirm mode.
-- Product docs, user stories, acceptance criteria, UAT, or requirement/implementation/test consistency: `sdcorejs-product`.
+- Approved product seeding/revision, supplied UAT execution, feature
+  supersession, traceability synchronization, or product-contract audit:
+  `sdcorejs-product`; unapproved behavior changes return to
+  `sdcorejs-brainstorming` / `sdcorejs-spec`.
 - Design docs, wireframes, mockups, PNG previews, screen flows, or FE handoff from user stories: `sdcorejs-design`.
 - Code comments, user guides, technical docs, or documentation rewrite/improve/structure/summarize/convert/standardize work: `sdcorejs-documentation`.
 - Project summary, code-map, trace-flow, env setup, recovery, persona, or memories: `sdcorejs-explore`.

@@ -136,8 +136,6 @@ sdcorejs-repair-loop (if Review not skipped) - apply findings, iterate to clean
    |
 sdcorejs-documentation (code-documentation mode) - automatic source-code documentation for touched source files; no approval ASK; rules in _refs/documentation/code-documentation.md
    |
-sdcorejs-product (when user-visible feature traceability is needed) - update .sdcorejs/docs/product/ ledger
-   |
 sdcorejs-documentation (write-technical-doc mode, if Technical doc approved) - create/update the approved technical doc from source evidence
    |
 _refs/orchestration/tail/auto-docs.md (always) - session summary to .sdcorejs/docs/nextjs/
@@ -148,9 +146,11 @@ _refs/orchestration/tail/auto-task-tracker.md (always) - tick done, append new
    |
 sdcorejs-explore (memories mode) - durable knowledge (when applicable)
    |
+sdcorejs-product (when an approved product contract is in scope) - traceability-sync after every write and integrated test evidence; rerun affected verification; then audit-readonly with zero writes
+   |
 sdcorejs-ship verify-before-done mode (always) - BLOCK "done" until acceptance criteria from selected scope are verified or deferred
    |
-sdcorejs-ship (branch-ready mode) (always) - final read-only gate over the final diff before any Git artifact handoff. No writes after branch-ready unless branch-ready is run again.
+sdcorejs-ship (branch-ready mode) (always) - final read-only gate over the final diff before any Git artifact handoff. No writes after branch-ready unless product sync/audit, ship verification, and branch-ready are rerun as applicable.
 ```
 
 The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLAUDE.md / AGENTS.md / copilot-instructions.md). The always-on plumbing steps run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)`; that is how acceptance criteria slip.

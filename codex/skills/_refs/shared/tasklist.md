@@ -97,8 +97,11 @@ Write or update this file when:
 - verification starts or finishes
 - work becomes blocked, skipped, or complete
 
-Skip this checkpoint for simple Q&A and for work where there is no target
-project root. In the `sdcorejs-agent` authoring repo, this checkpoint is local
+Skip this checkpoint for simple Q&A, for work where there is no target project
+root, and for a caller whose action contract is strictly read-only (including
+`product_action: audit-readonly`). A read-only caller keeps the checklist in the
+response and must not create or update `.sdcorejs/tasks/current-session.md`.
+In the `sdcorejs-agent` authoring repo, this checkpoint is local
 session state and must stay ignored/uncommitted; use durable docs, specs, plans,
 or examples for source-controlled evidence. Never write target-project session
 artifacts here by accident.

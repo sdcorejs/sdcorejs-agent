@@ -339,11 +339,18 @@ If invoked from a finish-gate review, continue in this order:
 4. `sdcorejs-documentation (write-user-guide mode)`, if selected.
 5. `_refs/orchestration/tail/auto-task-tracker.md`.
 6. `sdcorejs-explore (memories mode)`, if durable knowledge surfaced.
-7. `sdcorejs-ship (verify-before-done mode)`.
-8. `sdcorejs-ship (branch-ready mode)` as the final read-only gate over the
+7. When a product contract is in scope,
+   `sdcorejs-product (traceability-sync)` as the final write, then deny-write
+   global verification on the post-sync state and
+   `sdcorejs-product (audit-readonly)` with zero-write proof.
+8. `sdcorejs-ship (verify-before-done mode)`, consuming the final product audit
+   context when applicable.
+9. `sdcorejs-ship (branch-ready mode)` as the final read-only gate over the
    final diff.
 
-No writes after branch-ready unless branch-ready is run again.
+Any later write invalidates the applicable product sync/audit and ship evidence
+and requires those gates to run again. No writes after branch-ready unless
+branch-ready is run again.
 
 If invoked directly by the user, run discovered verification commands, then
 offer explicit next steps:

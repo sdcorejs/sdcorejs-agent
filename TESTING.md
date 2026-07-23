@@ -30,6 +30,12 @@ npm run test:e2e:phase3
 npm run test:e2e:phase4
 ```
 
+Run the deterministic product-contract protocol directly:
+
+```bash
+npm run test:e2e:product
+```
+
 The default E2E run keeps phase 4 in opt-in mode so pull-request feedback stays
 fast. CI runs the default suite on pull requests and pushes to `main`; the
 scheduled/manual `Full E2E` workflow runs phase 4 with `SDCOREJS_E2E_FULL=1`.
@@ -38,6 +44,7 @@ scheduled/manual `Full E2E` workflow runs phase 4 with `SDCOREJS_E2E_FULL=1`.
 
 - Source skills: 23
 - `.claude/skills`: 23
+- `.claude/_refs`: recursive canonical reference mirror, including executable `.mjs` protocols
 - `plugin/skills`: 23
 - `codex/skills`: 23 skill folders plus shared `_refs`
 - `_refs/**/*.md`: at least 60 committed markdown refs; Core UI component docs are fetched on demand
@@ -74,6 +81,49 @@ Verifies:
 - No missing or extra mirror skills.
 - Reference docs copied into Codex `_refs`.
 - Prompt eval dispatch, including `sdcorejs-brainstorming`.
+- The executable product protocol and its mutation cases.
+
+### Product contract protocol
+
+`npm run test:e2e:product` executes active behavior rather than keyword-only
+checks. Its 79 behavioral scenarios cover zero-write audit, normative
+immutability, stable identity/removal/reuse, stale and row-bound evidence,
+optional verification failure, E2E/UAT separation, post-write-tail ordering,
+artifact roles and gap taxonomy, unapproved behavior, owned-path authorization,
+closed product context, existing and collision-safe layouts, redaction,
+same-slug contract isolation, implementation drift, dirty overlap,
+non-destructive legacy migration, template safety, canonical test evidence,
+false-ready/forbidden-write mutations, file-backed approved-spec authority,
+canonical body and approval-integrity hashing, linked-ancestor rejection,
+trusted current-state observation, one-shot final reauthorization for readiness
+and non-ready writes, deep malformed validator/authority input handling,
+file-backed UAT scenario hashes, parent-observed build identity, complete UAT
+decision identity, exact evidence path manifests, closed flat row schemas,
+row-bound not-applicable decisions, one-shot multi-row decision consumption,
+in-gate parent observation, missing-observer rejection, approved-plan identity
+through test and product evidence, final file verification of the exact
+approved plan/spec chain after observer waits, plan allow/prohibit scope
+binding for context and persisted paths, conservative glob containment,
+fail-closed public derivation/layout boundaries, execution attestations, and
+pre-write plus post-write redaction ordering. The R3 repair coverage also
+brackets the exact audit execution between status observations, requires
+evidence IDs for optional passed verification, binds complete normative field
+hashes, redacts environment secrets plus account/government identifiers, and
+executes one bounded write inside pre-write authorization. An 80th subtest
+byte-compares the canonical executable reference with
+`.claude/_refs`, `plugin/_refs`, and `codex/skills/_refs` after mirrors are
+generated.
+
+Prompt-routing fixtures assert all seven exact product action IDs. Generic PRD,
+story, or acceptance-criteria authoring without approved authority routes to
+brainstorming/spec; approved requirement changes route to change control. These
+fixtures do not prove an action was executed correctly. The deterministic
+validator proves policy for the data it receives; it does not prove an agent
+collected complete evidence or that a host runtime enforced an operating-system
+write sandbox. Local SHA-256 values prove byte consistency only while the
+orchestrator and filesystem are trusted. Parent-observer callbacks are an
+external trust boundary; they do not authenticate a human approver or replace a
+signature or operating-system sandbox.
 
 ### Phase 2: CLI Adapters
 
@@ -201,9 +251,13 @@ viet product doc va kiem tra requirement implement test co day du khong
 
 Expected:
 
-- Product/PO docs use `sdcorejs-product`.
-- The ledger is written under `.sdcorejs/docs/product/`.
-- The report maps requirement, implementation, and test evidence and lists real gaps.
+- The mixed documentation/alignment request selects `sdcorejs-product`.
+- The executor classifies exactly one product action and asks one decision when
+  write versus read-only intent remains ambiguous.
+- A ledger write requires an approved authority source and an explicitly
+  write-capable action; a generic new PRD request returns to brainstorming/spec.
+- Alignment reports keep requirement, implementation, verification, and UAT
+  state separate and list evidence-backed gaps.
 
 ### Design Track
 
