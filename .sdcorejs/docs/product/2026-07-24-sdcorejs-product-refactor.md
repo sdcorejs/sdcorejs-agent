@@ -19,7 +19,7 @@ userStoriesPath: product/user-stories/sdcorejs-product-refactor.md
 acceptanceCriteriaPath: product/acceptance-criteria/sdcorejs-product-refactor.md
 uatChecklistPath: product/uat-checklists/sdcorejs-product-refactor.md
 decisionsPath: product/decisions/sdcorejs-product-refactor.md
-updatedAt: 2026-07-24T02:16:05.7731469+07:00
+updatedAt: 2026-07-24T03:07:02.7951760+07:00
 ---
 
 # Product Feature Ledger - SDCoreJS Product Contract Refactor Finalization
@@ -35,17 +35,13 @@ write_authorized: true
 requirements_changed: false
 actual_writes:
   - .sdcorejs/docs/product/2026-07-24-sdcorejs-product-refactor.md
-  - product/acceptance-criteria/sdcorejs-product-refactor.md
-  - product/decisions/sdcorejs-product-refactor.md
-  - product/prds/sdcorejs-product-refactor.md
-  - product/uat-checklists/sdcorejs-product-refactor.md
-  - product/user-stories/sdcorejs-product-refactor.md
 verdict: PARTIAL
 ```
 
-The action is intentionally `PARTIAL` at its write boundary. `AC12`-`AC15`
-depend on the deny-write audit, ship, stage, commit, push, and PR steps that
-must happen after this ledger becomes the final content write.
+This repair-cycle action is intentionally `PARTIAL` at its write boundary.
+`AC12`-`AC15` depend on the restarted deny-write audit, ship, stage, follow-up
+commit, push, PR refresh, and terminal CI steps that must happen after this
+ledger becomes the final content write.
 
 ## Business Goal
 
@@ -98,7 +94,7 @@ this write.
 | AC4 | Closeout 44/91/40 projection and exact approved plan manifest | done |
 | AC5 | Final changed-path/residue policy and closeout exclusion record | done |
 | AC6 | `scripts/sync-skills.mjs`, canonical `skills/**` and `_refs/**`, generated mirror roots | done |
-| AC7 | `test/e2e/product-protocol.test.mjs`, `test/e2e/skill-pack-runner.test.mjs`, `test/e2e/parallel-dispatch-protocol.test.mjs` | done |
+| AC7 | Product, runner, and parallel protocol tests, including the deterministic Git committer-time fixture | done |
 | AC8 | `package.json`, `MIRROR_POLICY.md`, generated mirror roots | done |
 | AC9 | Root package audit, `site/package.json`, `site/package-lock.json`, repository and site build surfaces | done |
 | AC10 | `_refs/product/product-protocol.mjs`, readable product refs, focused RED/GREEN regressions | done |
@@ -116,14 +112,15 @@ this write.
 | EVID-R23-02 | AC6, AC8 | `npm run sync:skills`, `npm run check:skills`, `npm run check:skills:ps` | passed |
 | EVID-R23-03 | AC7, AC10 | `npm run test:e2e:product` | 80/80 passed |
 | EVID-R23-04 | AC7, AC8, AC10 | `npm run test:e2e:phase1` | 124/124 passed |
-| EVID-R23-05 | AC7, AC10 | `npm run test:e2e:parallel` | 86/86 passed |
-| EVID-R23-06 | AC8 | `npm run check:text-hygiene` and `npm run check:nestjs-pack` | 729 files passed; NestJS pack passed |
+| EVID-R23-05 | AC7, AC10 | `npm run test:e2e:parallel` after deterministic timestamp repair | 86/86 passed |
+| EVID-R23-06 | AC8 | `npm run check:text-hygiene` and `npm run check:nestjs-pack` | 735 files passed; NestJS pack passed |
 | EVID-R23-07 | AC9, AC10 | `npm run test:e2e:repository` | 220/220 passed |
 | EVID-R23-08 | AC9, AC10 | `npm run test:e2e` | Repository 220/220; NestJS 24 passed with one intentional Linux-only skip; generated projects 2/2 |
 | EVID-R23-09 | AC9, AC10 | Root/site production audits, locked site install, and `npm run build:site` | zero vulnerabilities; two pages built |
-| EVID-R23-10 | AC10, AC11 | Complete read-only review plus RED/GREEN multi-row decision-authority repair and rerun | zero unresolved critical or high findings |
+| EVID-R23-10 | AC10, AC11 | Complete read-only review plus RED/GREEN repairs for multi-row decision authority and the CI timestamp fixture | zero unresolved critical or high findings |
 | EVID-R23-11 | AC13 | `git diff --check` and `git diff --cached --check` before traceability | passed |
-| EVID-R23-12 | AC12-AC15 | Post-sync deny-write audit, ship, stage, commit, push, and PR | pending after this final content write |
+| EVID-R23-12 | AC12-AC15 | Restarted deny-write audit, ship, exact repair stage, follow-up commit/push, PR refresh, and terminal CI | pending after this final content write |
+| EVID-R23-13 | AC7, AC9, AC10 | GitHub Actions run `30039912640`, forced same-second RED/GREEN proof, and ten focused stress attempts | CI race reproduced; repaired command passed 1/1 and stress passed 10/10 |
 
 ## Requirement Traceability
 
@@ -157,7 +154,7 @@ scenarios remain `not_run` in
 | Gap ID | Type | Affected IDs | Blocking for final readiness | Required action |
 |---|---|---|---:|---|
 | GAP-R23-01 | pending_post_sync_verification | AC12, AC13 | true | Complete deny-write verification, zero-write product audit, and both ship gates without content changes. |
-| GAP-R23-02 | pending_git_handoff | AC14, AC15 | true | Stage the exact set, pass final branch-ready, commit, push, and open the PR or report a genuine blocker. |
+| GAP-R23-02 | pending_git_handoff | AC14, AC15 | true | Stage the exact repair set, pass final branch-ready, create and push a non-force follow-up commit, refresh PR 47, and observe terminal CI or report a genuine blocker. |
 | GAP-R23-03 | manual_uat_not_run | AC1-AC15 | false | Optional human PR review may record a separate manual execution; do not infer one from tests. |
 
 ## Status Summary

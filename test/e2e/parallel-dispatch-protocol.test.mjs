@@ -1955,13 +1955,20 @@ test('temporary Git fan-in exposes deterministic cherry-pick conflicts', async (
   const root = await mkdtemp(path.join(os.tmpdir(), 'sdcorejs-fanin-'));
   const wtA = `${root}-a`; const wtB = `${root}-b`;
   const git = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  const gitAtCommitTime = (cwd, timestamp, ...args) => execFileSync('git', args, {
+    cwd,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    env: { ...process.env, GIT_COMMITTER_DATE: timestamp }
+  }).trim();
   try {
     git(root, 'init'); git(root, 'config', 'user.email', 'test@example.com'); git(root, 'config', 'user.name', 'Test');
     await writeFile(path.join(root, 'shared.txt'), 'base\n'); git(root, 'add', '.'); git(root, 'commit', '-m', 'base');
     const base = git(root, 'rev-parse', 'HEAD');
     git(root, 'worktree', 'add', '-b', 'fanin/a', wtA, base);
     git(root, 'worktree', 'add', '-b', 'fanin/b', wtB, base);
-    await writeFile(path.join(wtA, 'shared.txt'), 'from-a\n'); git(wtA, 'add', '.'); git(wtA, 'commit', '-m', 'a');
+    await writeFile(path.join(wtA, 'shared.txt'), 'from-a\n'); git(wtA, 'add', '.');
+    gitAtCommitTime(wtA, '2000-01-01T00:00:00+00:00', 'commit', '-m', 'a');
     await writeFile(path.join(wtB, 'shared.txt'), 'from-b\n'); git(wtB, 'add', '.'); git(wtB, 'commit', '-m', 'b');
     const a = git(wtA, 'rev-parse', 'HEAD');
     const b = git(wtB, 'rev-parse', 'HEAD');
@@ -2000,7 +2007,8 @@ test('temporary Git fan-in exposes deterministic cherry-pick conflicts', async (
       validate: parentPathPass,
       review: parentReviewPass,
       checkpoint: async () => git(root, 'rev-parse', 'HEAD'),
-      apply: async (unit) => git(root, 'cherry-pick', unit.result.ref),
+      // Distinct fixed commit times prevent same-second object reuse on fast CI runners.
+      apply: async (unit) => gitAtCommitTime(root, '2000-01-01T00:00:01+00:00', 'cherry-pick', unit.result.ref),
       probe: async () => {},
       rollbackUnit: async (_unit, checkpoint) => {
         try { git(root, 'cherry-pick', '--abort'); } catch {}
