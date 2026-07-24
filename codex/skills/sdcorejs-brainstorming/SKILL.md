@@ -16,7 +16,8 @@ description: Discovery and requirement-confirmation gate before spec. Use for op
 Before executing this skill:
 1. Read and apply `../_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `../_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+3. Read and apply `../_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
 5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
@@ -129,7 +130,8 @@ Allowed `track` values:
 ### 1. Load context cheaply
 Read only what changes the questions:
 
-- Latest 3 `.sdcorejs/docs/<track>/*.md`, if present.
+- Directly related `.sdcorejs/docs/<track>/*.md`, selected by request scope and
+  artifact metadata rather than recency alone.
 - `.sdcorejs/memories/<track>/*.md` frontmatter; load relevant bodies only.
 - Latest approved specs/plans frontmatter under `.sdcorejs/specs/<track>/` and `.sdcorejs/plans/<track>/`.
 - For angular / nestjs / nextjs: `../_refs/sdlc/<track>.md`.

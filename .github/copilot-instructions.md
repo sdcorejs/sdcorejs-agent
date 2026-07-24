@@ -63,8 +63,13 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - Every code-generation run presents the finish gate before tail steps.
 - Never claim pass, built, fixed, or done without current verification output.
 - Write `.sdcorejs/*` artifacts to the target project only.
-- For long or interruptible work, mirror visible `Tasks` progress to the ignored
-  local `.sdcorejs/tasks/current-session.md`; do not commit live session state.
+- Keep live progress in the current thread/harness; never mirror it to a
+  repository checkpoint file. Use explicit, change-scoped handoffs only for a
+  real transfer or recovery need.
+- Missing or stale summary never blocks work; use targeted reads or a scoped
+  code map.
+- Apply `_refs/shared/artifact-lifecycle.md` to every `.sdcorejs/**` write and
+  Git artifact handoff.
 - Preserve the user's language and locale marks; keep identifiers and routes in English.
 - Before asking the user to choose, approve, answer yes/no, or select a mode, apply `_refs/shared/user-choice-prompt.md`; ask one decision at a time and number every option as `1/2/3/...`.
 - Treat mojibake as a blocking defect.
@@ -77,6 +82,7 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - Next.js code: `_refs/nextjs/build-website/write-code/*`
 - Testing: `_refs/shared/testing-philosophy.md`
 - Project context: `_refs/shared/project-context.md`
+- Artifact lifecycle: `_refs/shared/artifact-lifecycle.md`
 - Tasks protocol: `_refs/shared/tasklist.md`
 - Choice prompts: `_refs/shared/user-choice-prompt.md`
 - Finish gate: `_refs/shared/finish-gate.md`

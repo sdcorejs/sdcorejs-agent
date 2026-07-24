@@ -4,6 +4,20 @@
 
 # Init Portal — Angular Portal Project Initialization
 
+## Contents
+
+- [Overview](#overview)
+- [Template-first Baseline](#template-first-portal-baseline)
+- [Core UI Source Of Truth](#source-of-truth--core-ui-package)
+- [When To Use](#when-to-use)
+- [Input Resolution](#input-resolution)
+- [Generation Steps](#generation-steps)
+- [Rules](#3-rules)
+- [Template](#4-template)
+- [Validation](#validation-checklist-apply-at-end-of-generation)
+- [Post-init Summary](#post-init--write-the-project-summary)
+- [Examples](#5-example-input)
+
 ## Overview
 
 Generates a production-ready Angular portal starter from the mapped portal-shell
@@ -381,7 +395,14 @@ After generation:
 
 ## Post-init — write the project summary
 
-A freshly scaffolded portal has no `.sdcorejs/summary.md` yet. After the validation checklist passes, run `sdcorejs-explore (summary-refresh)` in write-approved context to create it (domain, stack, the generated module/lib layout, reuse cheatsheet, conventions, current git HEAD, freshness metadata, stack profile evidence, and redaction status). This is what the next session and the write-code orchestrator's Step 0 preflight will read instead of re-scanning blind. Skipping it means the very next code-writing run pays a full re-discovery.
+An approved project initialization owns the first project index. After the
+validation checklist passes, the sequential workflow or integration owner may
+run `sdcorejs-explore (summary-refresh)` to create summary v2 with
+repository-relative evidence and workspace/dependency/source-root fingerprints.
+Do not include branch, current HEAD as the freshness key, task/session state, or
+current verification. Emit the summary as a conditional shared artifact in
+`artifact_context`. If the refresh cannot run safely, leave summary missing and
+let later work use targeted reads; project work must not be blocked.
 
 ---
 

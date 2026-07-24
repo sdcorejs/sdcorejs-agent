@@ -1,5 +1,12 @@
 # Finish Gate (cross-track) - consolidated finishing-steps ASK
 
+## Contents
+
+- [When To Present](#when-to-present)
+- [Prompt Sequence](#prompt-sequence)
+- [Rules](#rules)
+- [Execution Order](#order-of-execution-after-the-gate)
+
 Loaded by every track write-code orchestrator (`sdcorejs-angular`,
 `sdcorejs-nestjs`, `sdcorejs-nextjs`). The gate is MANDATORY and
 UNCONDITIONAL: present it after EVERY code-generation run, whether the skill
@@ -95,7 +102,9 @@ Option `2` authorizes read-only `sdcorejs-review` only. Option `3` explicitly
 authorizes the finish-gate caller to run the read-only `sdcorejs-review` and
 then `sdcorejs-repair-loop` for blocking findings with the original
 `review_context`. Option `1` skips review/repair and continues to acceptance
-verification. Option `4` stops the tail chain before review/ship. A direct
+verification. Option `4` stops the tail chain before review/ship and returns a
+runtime-only status update. Create a durable handoff only when the user asks or
+a real blocked/deferred transfer needs it. A direct
 user-requested `sdcorejs-review` outside this finish gate remains strict
 read-only and may only offer repair-loop or artifact persistence as explicit
 next steps.
@@ -104,6 +113,8 @@ After these answers, state the selected choices and the always-on steps:
 write-producing documentation/task/memory artifacts first, then verification,
 then branch-ready as the final read-only gate before any Git artifact handoff.
 All write-producing steps run before final branch-ready.
+All write-producing steps emit and merge `artifact_context` before final
+branch-ready.
 
 ## Rules
 
@@ -135,7 +146,7 @@ All write-producing steps run before final branch-ready.
   all selected write-producing tail steps first, then
   `sdcorejs-ship (verify-before-done mode)`, then
   `sdcorejs-ship (branch-ready mode)` as the final read-only gate. If `Defer`
-  is selected, stop after a concise checkpoint and do not claim done.
+  is selected, stop after a concise runtime update and do not claim done.
 - Branch-ready is the final read-only gate before Git artifacts. No writes after branch-ready unless branch-ready is run again.
 - If finish-gate work writes files after an earlier branch-ready check, that
   evidence is stale and the tail must re-run branch-ready before Git artifact
@@ -169,11 +180,17 @@ All write-producing steps run before final branch-ready.
 6. `_refs/orchestration/tail/auto-docs.md` (unless deferred).
 7. (if `user_guide=create` or `user_guide=update`)
    `sdcorejs-documentation (write-user-guide mode)`.
-8. `_refs/orchestration/tail/auto-task-tracker.md` (unless deferred).
+8. `_refs/orchestration/tail/auto-task-tracker.md` only when the sequential
+   workflow or integration owner is authorized to reconcile the shared durable
+   backlog (and unless deferred). Never use it for live progress.
 9. `sdcorejs-explore (memories mode)` when durable knowledge surfaced.
 10. `sdcorejs-ship (verify-before-done mode)` (unless deferred).
 11. `sdcorejs-ship (branch-ready mode)` (unless deferred) - final read-only
     gate over the final diff.
+
+Every producer passes its `artifact_context` to the next step. Ship merges the
+same-change closure and forwards it to `sdcorejs-git` when the user requests a
+Git artifact.
 
 `sdcorejs-git` is not part of the automatic finish-gate tail. It may run next
 only when the user requests a Git artifact and current ship evidence plus final

@@ -11,15 +11,18 @@ allowed-tools: Read, Write, Edit, Bash, Glob, TodoWrite
 Before execution:
 
 1. Read and apply `_refs/shared/tasklist.md`.
-2. Read and apply `_refs/shared/project-context.md`.
-3. Read and apply `_refs/shared/user-choice-prompt.md` before any user-facing
+2. Read and apply `_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
+3. Read `_refs/shared/artifact-lifecycle.md` and merge producer
+   `artifact_context` through the finishing tail.
+4. Read and apply `_refs/shared/user-choice-prompt.md` before any user-facing
    choice, approval, or finish gate.
-4. Run `sdcorejs-explore (summary mode)` and use current files, diffs, logs, and
-   the approved plan when they conflict with stored context.
-5. Read `_refs/nestjs/pack-manifest.json`,
+5. Use valid summary sections when available. Missing or stale summary never
+   blocks generation; continue with targeted reads or a scoped code map.
+6. Read `_refs/nestjs/pack-manifest.json`,
    `_refs/nestjs/profile-contract.json`, and
    `_refs/nestjs/core-catalog.md`.
-6. Before authoring a helper, read `_refs/shared/sdcorejs-utils.md`.
+7. Before authoring a helper, read `_refs/shared/sdcorejs-utils.md`.
 
 ## Resolve the generation contract once
 
@@ -76,7 +79,9 @@ for touched source.
 
 After the selected test/review/documentation work, apply
 `_refs/orchestration/tail/auto-docs.md` and
-`_refs/orchestration/tail/auto-task-tracker.md`. Hand durable project knowledge to
+`_refs/orchestration/tail/auto-task-tracker.md` only when the sequential
+workflow or integration owner is authorized to update the durable backlog.
+Hand durable project knowledge to
 `sdcorejs-explore (memories mode)` when relevant. Always finish with
 `sdcorejs-ship (verify-before-done mode)` followed by
 `sdcorejs-ship (branch-ready mode)`. Do not invoke `sdcorejs-git` until both

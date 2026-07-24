@@ -23,9 +23,12 @@ an explicit user or finish-gate choice.
 Before executing this skill:
 1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
-4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+3. Read and apply `_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
+4. Read `_refs/shared/artifact-lifecycle.md` only when the user explicitly
+   chooses to persist the report.
+5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## When to use
 - After a track executor finishes a batch and the finish gate selected review.
@@ -45,8 +48,9 @@ Before detecting profile/dimension or reading files under review, run
 - Keep direct review strict read-only. If the summary is missing, stale, dirty,
   or unknown, do not refresh it from review; continue with targeted reads or
   `sdcorejs-explore (code-map-readonly)` and report the context limitation.
-- Use `summary-refresh` only when the caller is a write-approved finish chain or
-  the user explicitly approves context artifact writes.
+- Review never refreshes summary. A separate user-requested summary refresh or
+  an architecture-level change owned by the sequential/integration workflow
+  may do so before or after review.
 - Current diffs, failing tests, explicit review scope, and user corrections
   override stored summary context.
 
@@ -263,7 +267,10 @@ Reply with `1`, `2`, or `3`.
 ```
 
 Only option `2` may write a review artifact, and only after the user explicitly
-chooses it.
+chooses it. Persist it as a change-scoped durable artifact with
+`commit_policy: with-change` when it belongs to the change, then emit
+`artifact_context.required_with_change`. If relationship metadata is
+insufficient, classify it as `conditional` and do not imply Git inclusion.
 
 ## Output Format
 

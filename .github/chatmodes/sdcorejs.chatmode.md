@@ -68,8 +68,12 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - Present the finish gate after every code-generation run.
 - Verify with real command output before claiming success.
 - Write `.sdcorejs/*` artifacts to the target project only.
-- Mirror long-running `Tasks` progress to the ignored local
-  `.sdcorejs/tasks/current-session.md`; do not commit live session state.
+- Keep live progress in the current thread/harness; never mirror it to a
+  repository checkpoint file.
+- Missing or stale summary never blocks work; use targeted reads or a scoped
+  code map.
+- Apply `_refs/shared/artifact-lifecycle.md` to every `.sdcorejs/**` write and
+  Git artifact handoff.
 - Preserve locale-specific marks; keep identifiers and routes in English.
 
 ## Key Files

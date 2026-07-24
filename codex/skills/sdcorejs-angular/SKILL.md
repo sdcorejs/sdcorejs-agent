@@ -16,9 +16,12 @@ description: Angular Core UI portal executor for confirmed frontend implementati
 Before executing this skill:
 1. Read and apply `../_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `../_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
-4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+3. Read and apply `../_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
+4. Read `../_refs/shared/artifact-lifecycle.md` and merge producer
+   `artifact_context` through the finishing tail.
+5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 
@@ -118,9 +121,15 @@ For each scope item in the approved plan dispatched by
 
 Read ON DEMAND only — load the one reference for the step you are executing, not all of them. Each reference further links to the literal code templates under `../_refs/angular/templates/`.
 
-### Step 0 — Pre-flight: ensure project summary
+### Step 0 — Read-oriented project context
 
-Before dispatching ANY reference, run `sdcorejs-explore (summary-read)`. If `<target>/.sdcorejs/summary.md` is missing or stale in this write-approved executor, run `summary-refresh` first so generation uses the real project map and does not hallucinate paths or duplicate shared abstractions. If the summary exists and is fresh enough, read it and continue. Exception: when this run is itself a brand-new init-portal, there is no project to summarize yet; run `summary-refresh` at the END of init instead (see `init-portal.md` Post-init).
+Before dispatching any reference, assemble read-only `project_context`. Use
+valid summary sections when available. If summary is missing, legacy, unknown,
+or stale, continue with targeted reads; use a scoped code map only when
+cross-module relationships remain unresolved. Never refresh merely because the
+summary is absent. A brand-new approved `init-portal` may create summary v2
+after the scaffold exists; an architecture-level refresh belongs only to the
+sequential workflow or integration owner.
 
 Before any non-trivial routed screen, form, table, child collection, drawer,
 workflow panel, or frontend service is generated, read
@@ -216,14 +225,19 @@ by this approval gate.
 5. *(if UI-affecting)* Angular UI check from `../_refs/angular/write-code/input-analysis.md` - run browser/preview verification when available; otherwise perform and report a code-level UI review. Fix obvious UI issues before continuing. If this changes code, rerun the smallest relevant check.
 6. `sdcorejs-product` *(when user-visible feature traceability is needed)* - seed/update `.sdcorejs/docs/product/` with requirement, implementation, and test mapping
 7. *(if Technical doc approved)* `sdcorejs-documentation (write-technical-doc mode)` - create/update the approved technical doc from source evidence.
-8. `../_refs/orchestration/tail/auto-docs.md` *(always)* - session summary written to `<target>/.sdcorejs/docs/angular/`
+8. `../_refs/orchestration/tail/auto-docs.md` *(always)* - change-scoped execution record written to `<target>/.sdcorejs/docs/angular/`
 9. *(if User guide approved)* `sdcorejs-documentation (write-user-guide mode)` - create/update the touched module's `.sdcorejs/documentation/user-guides/<module>.md` only when approved by the documentation gate or explicitly requested. Per-module incremental; the aggregate rebuilds under `.sdcorejs/documentation/` at ship.
-10. `../_refs/orchestration/tail/auto-task-tracker.md` *(always)* - tick `[x]` completed tasks, append new ones from the doc's "Next suggested action" / "Open questions"
+10. `../_refs/orchestration/tail/auto-task-tracker.md` *(only when the sequential workflow or integration owner is authorized to update the shared backlog)* - reconcile durable follow-up work; never mirror live progress
 11. `sdcorejs-explore (memories mode)` - only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 12. `sdcorejs-ship (verify-before-done mode)` *(always)* - BLOCK "done" until acceptance criteria from the selected scope are verified or explicitly deferred
 13. `sdcorejs-ship (branch-ready mode)` *(always)* - final read-only branch-ready gate over the final diff before any Git artifact handoff. No writes after branch-ready unless branch-ready is run again.
 
-The FINISH GATE itself is mandatory and unconditional. The always-on plumbing steps (auto-docs tail ref, auto-task-tracker tail ref, memories, `sdcorejs-ship (verify-before-done mode)`, and final `sdcorejs-ship (branch-ready mode)`) run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)`; that is how acceptance criteria silently slip.
+The FINISH GATE itself is mandatory and unconditional. Change execution
+records, relevant memories, `sdcorejs-ship (verify-before-done mode)`, and final
+`sdcorejs-ship (branch-ready mode)` run regardless of gate answers. Durable
+backlog reconciliation runs only with sequential/integration ownership. Do NOT
+skip `sdcorejs-ship (verify-before-done mode)`; that is how acceptance criteria
+silently slip.
 
 ## When to Use
 
@@ -371,114 +385,14 @@ Once the EntitySchema exists, generate each file by following the reference pack
 
 For a full new entity, read `init-entity.md` end-to-end (it covers model → service → routes → list → detail in one pass). For a single-file refinement on an existing entity, read just the screen-list / screen-detail / actions reference.
 
-## Code Generation Rules
+## Cross-Cutting Generation Rules
 
-These cross-cutting rules apply regardless of which reference is dispatched.
-
-### 1. File Naming & Paths
-
-Detect and follow the target project's structure first. The following is a
-greenfield Core UI fallback and must be expanded or reduced to match the
-approved frontend architecture plan. Optional folders/files are not generated
-without an actual responsibility and consumer.
-
-```
-src/libs/{{ module }}/features/{{ entityKebab }}/
-  ├── services/
-  │   ├── {{ entityKebab }}.model.ts       (DTO, SaveReq, constants)
-  │   ├── {{ entityKebab }}.mock-data.ts   (20–40 domain-realistic seed rows)
-  │   ├── {{ entityKebab }}.service.ts     (mock-first CRUD via MockCrudStore)
-  │   └── index.ts                         (exports)
-  ├── pages/
-  │   ├── list/
-  │   │   └── list.component.ts            (route/page orchestration shell)
-  │   └── detail/
-  │       └── detail.component.ts          (route/page orchestration shell)
-  ├── components/                           (only approved feature-local boundaries)
-  │   └── {{ cohesive-region }}/
-  │       ├── {{ cohesive-region }}.component.ts
-  │       └── {{ cohesive-region }}.component.spec.ts
-  └── {{ entityKebab }}.routes.ts          (lazy-loaded routes)
-```
-
-### 2. Naming Conventions
-
-- **entity** (kebab-case): product, purchase-order
-- **entityPascal** (PascalCase): Product, PurchaseOrder
-- **entityCamel** (camelCase): product, purchaseOrder
-- **entityConstant** (CONSTANT_CASE): PRODUCT, PURCHASE_ORDER
-
-Apply to:
-- Service class name: `{{ entityPascal }}Service`
-- Service injection token: `#{{ entityCamel }}Service`
-- Model types: `{{ entityPascal }}DTO`, `{{ entityPascal }}SaveReq`
-- Component selector: `{{ entityKebab }}-list`, `{{ entityKebab }}-detail`
-- Route paths: `/{{ entity }}`, `/{{ entity }}/create`
-
-### 2a. Existing entity/service reuse
-
-- Search the target codebase for related entity contracts before creating new model/service/type files.
-- Import and reuse existing related entity models, DTOs, summary types, options, and services.
-- Extend an existing model/service minimally when it lacks the field/method required by the new feature.
-- Preserve compatibility: prefer optional additions, do not rename existing fields without checking usages, and do not change a contract used by another feature without evidence.
-- Create a new model/service only after the reuse search confirms no suitable existing contract and the folder/naming convention is clear.
-- Never inline a full related entity object inside another model when a related entity type already exists.
-
-### 3. TypeScript Strict Mode
-
-- Use non-null assertions (!) only when 100% certain
-- Avoid `any` type - use proper generics
-- Inject services with `readonly #service = inject(...)`
-- Use `@ViewChild` with proper typing
-
-### 4. Change Detection & Template Binding Discipline
-
-- Every generated component uses `changeDetection: ChangeDetectionStrategy.OnPush`; import `ChangeDetectionStrategy` from `@angular/core`.
-- UI state is signal-first: use `signal()` for mutable state and `computed()` for derived display values, permissions, titles, disabled states, counts, labels, colors, and visibility flags.
-- Do not call component methods or getters from interpolation, property bindings, class/style bindings, or structural conditions to compute displayed/derived values. Precompute them in `computed()`, a signal, a pure pipe, or a typed view model.
-- Allowed template calls are event handlers such as `(click)="onSave()"`, Angular signal reads such as `state()`, and pure-pipe transforms. If a signal is read 2+ times, use `@let` or a `computed()`.
-
-### 5. Service Contract, API Mapping & View Models
-
-- Treat Service input/output models (`SaveReq`, `CreateReq`, `UpdateReq`, `DTO`, `ListRes`, `DetailRes`) as the public contract between Service and Component, not as a required 1:1 copy of the raw backend API contract.
-- A Service may map, normalize, derive, add, rename, or omit fields at the boundary, but every public Service model field must be accepted, processed, returned, or guaranteed by that Service/mapper.
-- When the raw backend shape differs, define internal raw API types near the Service/mapper (for example `ProductApiRes`) and map them into the public Service DTO before exposing data to components.
-- Components must not mutate or extend Service DTOs with UI-only fields such as `label`, `displayName`, `checked`, `selected`, `disabled`, `expanded`, `children`, `color`, or `icon`.
-- If UI needs extra fields, either the Service mapper owns and documents them as part of the Service contract, or the Component defines a local `ViewModel`/`RowVM`/`TreeNodeVM` and maps `DTO -> VM`.
-- During generation and review, label ambiguous fields by layer: `BE API field`, `Service input/output field`, `Component ViewModel field`, or `UI state field`.
-
-### 6. Form Validation
-
-- Use `Validators.required` for required fields
-- Use `Validators.maxLength(n)` for string length
-- Use `Validators.min(n)`, `Validators.max(n)` for numbers
-- Use `Validators.pattern(regex)` for patterns
-- Custom validators for complex rules (see `screen-detail.md` form refinement)
-
-### 6a. Parent Detail-Scoped Child CRUD
-
-- When a parent DETAIL screen contains child collections/tabs/tables (for example `Customer Detail` -> `Orders`), independent child create/edit/view/delete actions stay inside the parent DETAIL screen.
-- Use a modal or side-drawer for child create/edit/view flows. Do not navigate from the parent detail to child routes such as `/orders/create`, `/orders/:id/edit`, or `/orders/:id`.
-- Show child CRUD actions only in the parent DETAIL state. Hide them in parent CREATE because there is no persisted parent id, and hide them in parent UPDATE because the parent form may contain unsaved dirty state.
-- Place child create/edit actions near the child collection: tab header, section toolbar, table toolbar, or empty-state CTA. Do not add a separate action row when a toolbar/header already exists.
-- Child forms receive the current parent id from the loaded parent detail record, prefill/lock the foreign key (for example `customerId`), and must not ask the user to select the same parent again.
-- After child create/update/delete succeeds, close the modal/drawer, refresh only the child collection, and preserve the parent DETAIL route plus active tab/section.
-- Gate child actions with child-entity permissions (for example `ORDER_CREATE` for creating an Order inside Customer Detail), not parent entity permissions.
-- Use inline `FormArray` in CREATE/UPDATE only when child rows are saved in the same parent payload. Independent child CRUD waits until the parent exists and runs from DETAIL.
-
-### 7. Error Handling
-
-- Wrap service calls in try-catch
-- Call `SdLoadingService.show()/hide()` around async operations
-- Call `SdNotifyService.error/success/warning/info()` for feedback
-- Handle cancel/back cases gracefully
-- Revert form state if save fails
-
-### 8. Code Documentation
-
-- Automatically apply `sdcorejs-documentation (code-documentation mode)` for public method/API contracts and complex implementation logic (e.g., form state transitions) whenever this skill creates or modifies source code. Do not ask for approval before adding or updating source-code documentation.
-- Document special cases (e.g., bulk updates)
-- Keep comments concise and up-to-date
+Before writing files, read
+`../_refs/angular/write-code/generation-rules.md` completely. It owns the shared
+file/naming fallback, reuse and strict-TypeScript rules, OnPush/signal template
+discipline, Service/ViewModel boundaries, validation, parent-detail child CRUD,
+error handling, and code-documentation requirements. Apply it together with
+the dispatched per-file reference and the approved frontend architecture.
 
 ## Rules
 

@@ -1,5 +1,19 @@
 # Branch Ready - Hygiene Gate Before Commit/PR
 
+## Contents
+
+- [Purpose](#purpose)
+- [When Invoked](#when-invoked)
+- [Evidence Header](#evidence-header)
+- [Package Manager And Scripts](#package-manager-and-script-discovery)
+- [Secret Redaction](#secret-redaction)
+- [Checks](#checks)
+- [Output](#output-format)
+- [Edge Cases](#edge-cases)
+- [Rules](#rules)
+- [Anti-patterns](#anti-patterns)
+- [Cross-references](#cross-references)
+
 Reference body for `sdcorejs-ship (branch-ready mode)`. Load this file only
 after that skill triggers.
 
@@ -15,7 +29,7 @@ It does not modify code. It is the final read-only gate immediately before
 `sdcorejs-git` creates commit, PR, push, tag, or release artifacts.
 
 No writes after branch-ready unless branch-ready is run again. Writes include
-auto-docs, user guides, task trackers, memories, changelog, release notes,
+execution records, user guides, durable backlog updates, memories, changelog, release notes,
 generated mirrors, formatting, codegen, source edits, docs edits, dependency
 manifest changes, and lockfile updates.
 
@@ -197,11 +211,20 @@ git rev-list --count HEAD..origin/<base>
 - local branch behind remote base is info unless it creates merge risk;
 - if remote/base cannot be resolved, report the skip with evidence.
 
-### 9. `.sdcorejs/` Artifacts
+### 9. `.sdcorejs/` Artifact Closure
 
-For non-trivial SDCoreJS track work, surface whether fresh session docs, task
-tracker updates, product/design/test evidence, or memories are present when
-expected. This is advisory and should not replace acceptance verification.
+Read `_refs/shared/artifact-lifecycle.md` and run read-only artifact closure
+discovery. Surface required, shared-owned, conditional, local-only, unrelated,
+unknown, and missing paths without printing artifact contents.
+
+- A missing required artifact is a blocker.
+- An unknown artifact that may belong to the change is a blocker.
+- Local-only artifacts must remain excluded.
+- Unrelated artifacts must not be staged.
+- Closure must be `complete` before Git handoff.
+- Legacy session checkpoint files are local-only and ignored.
+
+This check does not stage files and does not replace acceptance verification.
 
 ### 10. Specialized Review Hints
 

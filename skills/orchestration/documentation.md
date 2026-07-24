@@ -11,9 +11,12 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 Before executing this skill:
 1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
-4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+3. Read and apply `_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
+4. Read `_refs/shared/artifact-lifecycle.md`; every `.sdcorejs/**`
+   documentation write must emit `artifact_context`.
+5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 
@@ -181,6 +184,15 @@ For direct write/rewrite/improve/structure/summarize/convert/standardize request
 6. Load `_refs/documentation/write-technical-doc.md`.
 7. Preserve source meaning; do not invent requirements, APIs, constraints, or acceptance criteria.
 
+## Artifact Output
+
+For each new or updated `.sdcorejs/documentation/**` artifact, add lifecycle
+metadata when the format permits. Feature/change documentation is normally
+`required_with_change`; saved preferences are `shared_owned` only when this
+workflow explicitly owns the update; screenshots, traces, browser state, and
+temporary export intermediates are `local_only`. Emit the standard
+`artifact_context` and pass it to the caller.
+
 ## Cross-References
 
 - `_refs/documentation/gate.md` - user-guide/technical-doc approval, saved preferences, and new-doc creation guard
@@ -189,5 +201,5 @@ For direct write/rewrite/improve/structure/summarize/convert/standardize request
 - `_refs/documentation/write-technical-doc.md` - technical docs and document operations
 - `_refs/documentation/write-requirement.md` - task-level requirement record under `.sdcorejs/documentation/requirements/<TASKID>.md`
 - `_refs/shared/finish-gate.md` - surfaces the documentation gate inside code-generation flows
-- `_refs/orchestration/tail/auto-docs.md` - session-delta documentation, distinct from evergreen documentation
+- `_refs/orchestration/tail/auto-docs.md` - change-scoped execution records, distinct from evergreen documentation
 - `sdcorejs-explore` - project discovery, summaries, code maps, flow traces, env setup, and documentation harvests

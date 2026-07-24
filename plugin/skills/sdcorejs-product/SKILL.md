@@ -12,9 +12,12 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 Before executing this skill:
 1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
-4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+3. Read and apply `_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
+4. Read `_refs/shared/artifact-lifecycle.md` and emit `artifact_context` for
+   every product ledger written.
+5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 Maintain PO-facing feature docs and the traceability ledger for every meaningful feature. Human-readable docs explain what the product should do. The `.sdcorejs` ledger records why the feature exists, what was agreed, what was implemented, how it was tested, and what still does not line up.
@@ -40,16 +43,15 @@ If the request is only app code generation, do not replace the app executor. Run
 
 ## Step 0 - Context preflight
 
-Before reading product docs or writing ledgers, run `sdcorejs-explore
-(summary-read)` through `_refs/shared/project-context.md`.
+Before reading product docs or writing ledgers, assemble `project_context`.
 
-- For an existing target project, ensure `<target>/.sdcorejs/summary.md` exists
-  or, in write-approved product execution context, use `summary-refresh` so
-  product traceability can map requirements to the real modules, routes, APIs,
-  screens, tests, and docs.
+- For an existing target project, use valid summary sections when present. If
+  summary is missing or stale, use targeted source/config/test reads and a
+  scoped code map only when relationships remain unresolved. Do not create or
+  refresh summary merely because product work is write-approved.
 - For an early product-only phase where no app root exists yet, do not invent
   architecture. Continue from the approved spec/product inputs and mark
-  implementation paths as `unknown` until the first scaffold creates a summary.
+  implementation paths as `unknown` until current source evidence exists.
 - If stored summary context conflicts with the current approved spec, plan, diff,
   test output, or user correction, prefer current evidence and record the gap.
 
@@ -61,7 +63,8 @@ Load what exists, in this order:
 2. Approved plan from `.sdcorejs/plans/<track>/`.
 3. Existing PO docs under `product/` for the same feature.
 4. Existing design handoff under `design/` for the same feature.
-5. Current session summary from `.sdcorejs/docs/<track>/`.
+5. Change-scoped execution docs related through `change_ref`, `source_spec`, or
+   `source_plan`.
 6. Relevant git diff or changed file list.
 7. Test output supplied by `sdcorejs-test` or verification commands.
 8. Existing product ledger under `.sdcorejs/docs/product/` for the same feature.
@@ -87,6 +90,19 @@ Also create or update the agent traceability ledger:
 ```
 
 For updates, prefer editing the existing product docs and ledger for that feature. If the old ledger is ambiguous, create a new dated ledger and link the older files in "Related docs".
+
+Add durable metadata to the ledger and emit it as
+`artifact_context.required_with_change`:
+
+```yaml
+artifact_id: <stable feature-ledger id>
+artifact_kind: feature-ledger
+change_ref: <change id>
+source_spec: <repo-relative path | none>
+source_plan: <repo-relative path | none>
+commit_policy: with-change
+owner: sdcorejs-product
+```
 
 ## Human-Readable Doc Templates
 
@@ -218,7 +234,7 @@ updatedAt: <ISO-8601 timestamp>
 - Decisions: product/decisions/<kebab-feature>.md
 - Spec: <path>
 - Plan: <path>
-- Session docs: <path>
+- Change execution records: <path>
 ```
 
 ## Audit Rules

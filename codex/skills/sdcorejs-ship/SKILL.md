@@ -48,14 +48,16 @@ Before executing this skill:
 
 1. Read and apply `../_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `../_refs/shared/project-context.md` for project memory, resume
-   checkpoints, summaries, specs/plans, tasks, and relevant memories.
-4. Current user request, current files, diffs, logs, failing tests, and command
+3. Read and apply `../_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
+4. Read `../_refs/shared/artifact-lifecycle.md`; consume and pass through the
+   current change's `artifact_context`.
+5. Current user request, current files, diffs, logs, failing tests, and command
    output override stored context.
-5. Before presenting user-facing choices, approval gates, yes/no questions, or
+6. Before presenting user-facing choices, approval gates, yes/no questions, or
    mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so
    options are sequential numbered choices.
-6. Redact suspected secrets before printing evidence.
+7. Redact suspected secrets before printing evidence.
 
 ## Mode Selection
 
@@ -246,14 +248,18 @@ Preferred order:
    `test_context`, `debug_context`, `repair_source`, and any prior
    `branch_ready_evidence`.
 3. Complete selected write-producing tail steps before final branch-ready:
-   code documentation, technical docs, user guide, auto-docs/session docs, task
-   tracker, memories, generated mirrors, changelog, and release notes when
-   selected or approved.
-4. Run `verify-before-done` or the appropriate verification mode over the final
+   code documentation, technical docs, user guide, change execution records,
+   explicitly owned durable backlog updates, memories, generated mirrors,
+   changelog, and release notes when selected or approved.
+4. Merge producer `artifact_context` entries for the same change. Preserve
+   local-only and unrelated exclusions; require one explicit owner for shared
+   artifacts.
+5. Run `verify-before-done` or the appropriate verification mode over the final
    intended diff.
-5. Run `branch-ready` as the final read-only gate over the final diff.
-6. Produce `ship_context`.
-7. Delegate to `sdcorejs-git` only if the user explicitly asked for commit, PR,
+6. Run `branch-ready`, including read-only SDCoreJS Artifact Closure, as the
+   final read-only gate over the final diff.
+7. Produce `ship_context`.
+8. Delegate to `sdcorejs-git` only if the user explicitly asked for commit, PR,
    push, changelog, tag, or release artifacts and final evidence is current.
 
 If any workflow verifies before docs or changelog writes, re-run branch-ready
@@ -403,91 +409,38 @@ Rules:
 
 ## ship_context Output
 
-Every `sdcorejs-ship` output includes a redacted `ship_context` block:
+Read `../_refs/orchestration/tail/ship-context.md` completely before emitting the
+redacted output. Every mode returns the full contract from that reference; this
+compact projection highlights the delivery-critical fields:
 
 ```yaml
 ship_context:
   source: sdcorejs-ship
   mode: verify-before-done | branch-ready | ship | dependency-update | release-ready
   verification_mode: feature-acceptance | bugfix-verification | specless-verification | dependency-regression | docs-only-hygiene | release-readiness | branch-ready-only
-  delivery_type: feature-pr | bugfix | docs-only | dependency-update | release | manual-check | unknown
-  target_root:
-  current_HEAD:
   associated_HEAD_or_diff:
-  acceptance_scope:
-    selected_spec:
-    selected_plan:
-    selected_task:
-    changed_files_scope:
-    criteria_count:
-    manual_criteria:
-    deferred_criteria:
-    selection_reason:
   verification:
-    commands_run:
-      - command:
-        result:
-        exit:
-        associated_HEAD_or_diff:
-    commands_skipped:
-      - command_or_probe:
-        reason:
-    criteria:
-      - id:
-        status: PASS | FAIL | MANUAL | DEFERRED | NOT_APPLICABLE
-        evidence:
     result: PASS | FAIL | PARTIAL | SKIPPED
-  contexts_consumed:
-    explore_context:
-    test_context:
-    debug_context:
-    review_context:
-    repair_source:
-  writes_before_branch_ready:
-    - path:
-      writer_skill:
-      reason:
-  writes_after_branch_ready:
-    - path:
-      writer_skill:
-      reason:
+  artifact_context:
+    schema_version: 1
+    change_ref:
+    required_with_change: []
+    shared_owned: []
+    conditional: []
+    local_only: []
+    unrelated_observed: []
+  writes_after_branch_ready: []
   branch_ready_evidence:
     result:
-    commands_run:
-    commands_skipped:
     associated_HEAD_or_diff:
-  dependency_evidence:
-    update_type:
-    package_manager:
-    packages:
-    commands_run:
-    commands_skipped:
-    audit_result:
-  release_evidence:
-    version:
-    range:
-    changelog:
-    tag_approval:
-    publish_approval:
-  manual_deferrals:
-    - item:
-      reason:
-      approved_by_user: true | false
   final_verdict: READY | READY_WITH_WARNINGS | BLOCKED | DEFERRED
   git_handoff_allowed: true | false
   git_handoff_reason:
 ```
 
-Rules:
-
-- `ship_context` must not contain secrets.
-- `commands_run` includes only commands actually run.
-- Do not claim a result as PASS if it was skipped.
-- `associated_HEAD_or_diff` must tie evidence to the current diff or `HEAD`.
-- If `writes_after_branch_ready` is non-empty, `final_verdict` cannot be
-  `READY` for Git handoff until branch-ready runs again.
-- `git_handoff_allowed` is true only when final branch-ready evidence is current
-  and the user requested Git artifacts.
+Never include secrets, skipped commands as passes, stale diff evidence, or a
+true `git_handoff_allowed` when writes followed branch-ready or artifact closure
+is not complete.
 
 ## Cross-References
 
@@ -496,6 +449,8 @@ Rules:
 - `../_refs/orchestration/tail/verify-before-done.md` - verification mode and
   acceptance evidence gate.
 - `../_refs/orchestration/tail/branch-ready.md` - final read-only hygiene gate.
+- `../_refs/orchestration/tail/ship-context.md` - complete output contract and
+  invariants.
 - `sdcorejs-git` - commit, PR, changelog, release notes, tag/release artifacts.
 - `../_refs/angular/core-version.md` - pinned Core UI version guard for Angular
   dependency updates.

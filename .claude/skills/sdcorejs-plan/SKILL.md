@@ -12,9 +12,12 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 Before executing this skill:
 1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
-4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+3. Read and apply `_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
+4. Read `_refs/shared/artifact-lifecycle.md`; draft and approved plan artifacts
+   must emit `artifact_context`.
+5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 Translate an approved spec into an executable contract, hold the user approval gate, and persist the approved plan corpus inside the same skill.
@@ -55,7 +58,9 @@ Read:
 - Relevant `_refs/sdlc/<track>.md` for angular / nestjs / nextjs.
 - `_refs/shared/testing-philosophy.md` and target stack test ref for test-track plans.
 - Existing `.sdcorejs/docs/product/` ledgers for product-track plans.
-- Latest 1-3 approved plans under `.sdcorejs/plans/<track>/` to mirror the user's preferred granularity.
+- Directly related approved plans under `.sdcorejs/plans/<track>/`, selected by
+  metadata and request scope; use an unrelated prior plan only as explicit
+  style evidence.
 - `package.json`, `packageManager`, lockfiles (`package-lock.json`,
   `pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`/`bun.lock`), workspace config, and
   `package.json` scripts. Record package manager/script evidence instead of
@@ -370,77 +375,16 @@ Translate at runtime.
 
 Approve:
 
-1. Write an immutable approved-plan snapshot under:
-
-```text
-<target-project>/.sdcorejs/plans/<track>/<YYYY-MM-DD-HH-mm>-<kebab-topic>.md
-```
-
-Compute `approved_plan_hash` over the canonical approved plan body, excluding
-frontmatter and the `approved_plan_hash` field, so the hash is not
-self-referential.
-
-2. Include frontmatter:
-
-```yaml
----
-name: <kebab-topic>
-description: <one-line future-loading hook>
-approvedAt: <ISO-8601 timestamp with timezone>
-approvedBy: <git user.email or session user when known>
-track: <angular|nestjs|nextjs|test|product|generic>
-sourceSpecPath: .sdcorejs/specs/<track>/<timestamp>-<topic>.md
-taskCount: <N>
-phaseCount: <M>
-target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
-stack_profile: <stack profile>
-approved_spec_hash: <sha256 from spec_context>
-allowed_paths:
-  - <path or glob>
-prohibited_paths:
-  - <path or glob>
-dependency_changes:
-  required: true | false
-  approval_required: true | false
-env_changes:
-  required: true | false
-  approval_required: true | false
-migration_changes:
-  required: true | false
-  approval_required: true | false
-approved_plan_hash: <sha256 of approved plan body excluding frontmatter and this hash field>
-supersedes: <prior approved plan path or null>
-change_control:
-  revision: <integer>
-  supersedes: <prior approved plan path or null>
-  change_reason: <reason or null>
----
-```
-
-3. Body format:
-
-```markdown
-# <Title> - Approved Plan
-
-> Snapshot of what the user approved at the `sdcorejs-plan` gate. Do not edit by hand; re-author through `sdcorejs-plan` if the contract changes.
-
-## Approved contract
-<verbatim approved plan content>
-
-## Decisions captured during review
-- <what changed during review, or `(approved as drafted)`>
-
-## Skill provenance
-sdcorejs-plan (approved on attempt <N> / 3)
-```
-
-4. Emit final `plan_context` with `approved_plan_path`,
-   `approved_plan_hash`, write scope, verification strategy, package-manager
-   evidence, parallel candidates, dependency/env/migration boundaries, and
-   change-control metadata.
-5. Only after the approved snapshot succeeds, hand off to
-   `sdcorejs-execute-plan` with the approved plan snapshot path and
-   `plan_context`.
+1. Read `_refs/sdlc/plan-approval-artifact.md` completely.
+2. Write its immutable approved-plan snapshot and compute `approved_plan_hash`
+   over the approved plan body excluding frontmatter and the hash field.
+3. Emit the approved spec, draft plan, and approved plan under
+   `artifact_context.required_with_change`; set `source_plan` to the approved
+   snapshot.
+4. Emit final `plan_context` with the approved path/hash, write scope,
+   verification and package-manager evidence, parallel candidates,
+   dependency/env/migration boundaries, and change control.
+5. Handoff to `sdcorejs-execute-plan` only after the snapshot succeeds.
 
 Change request:
 
@@ -494,3 +438,4 @@ Abort:
 ## Cross-references
 - `sdcorejs-spec` - approved spec input
 - `sdcorejs-execute-plan` - runs the approved plan
+- `_refs/sdlc/plan-approval-artifact.md` - approved snapshot schema and handoff

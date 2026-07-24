@@ -12,7 +12,8 @@ allowed-tools: Read, Edit, Write, Bash, Grep
 Before executing this skill:
 1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+3. Read and apply `_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
 5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
@@ -39,7 +40,7 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
 - If `sdcorejs-debug` was used inside the loop, carry its `debug_context` into
   the repair summary and subsequent ship gates.
 - If findings do not converge after the capped loop, stop and ask the user to choose the next direction.
-- Do not hand off directly to `sdcorejs-git (commit mode)` by default. A commit is allowed only after ship verification and branch-ready passed in the current session for the current `HEAD` or diff, or after the caller explicitly requested a commit after those gates with any verification deferral recorded.
+- Do not hand off directly to `sdcorejs-git (commit mode)` by default. A commit is allowed only after ship verification and branch-ready passed for the current `HEAD` or diff, or after the caller explicitly requested a commit after those gates with any verification deferral recorded.
 
 ## Rules
 - Silence is not approval.

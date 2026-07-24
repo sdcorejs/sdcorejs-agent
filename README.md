@@ -175,11 +175,16 @@ review rules.
 ## Mandatory Behavior
 
 - Runtime-localized output: respond in the user's language and preserve locale-specific marks.
-- Non-trivial skills apply `_refs/shared/project-context.md` before executing so direct triggers load summaries, resume checkpoints, specs/plans, tasks, and relevant memories.
+- Non-trivial skills apply the read-only `_refs/shared/project-context.md`.
+  Valid summary sections help orientation; missing or stale summary falls back
+  to targeted reads or a scoped code map and never blocks work.
 - Non-trivial execution tasks use `_refs/shared/tasklist.md`: create a visible `Tasks` section before work starts, update it as work progresses, and disclose skipped verification, blockers, and risks.
-- Long or interruptible tasks can mirror progress to the ignored local
-  `.sdcorejs/tasks/current-session.md`; do not commit live session state as
-  release evidence.
+- Live progress remains in the current thread/harness. Durable handoffs are
+  explicit and change-scoped; repository files never mirror live checkbox
+  state.
+- `.sdcorejs/**` producers emit runtime `artifact_context`. Git artifact
+  closure automatically includes required same-change specs/plans/docs while
+  excluding unrelated and local-only artifacts.
 - Requirements before code: use `sdcorejs-brainstorming` until blockers are confirmed.
 - For explicitly small low-risk edits, use the fast-fix path in
   `docs/ADOPTION.md`; escalate to the full workflow if scope grows.
@@ -188,7 +193,7 @@ review rules.
 - `sdcorejs-execute-plan` always asks sequential vs parallel.
 - Product/PO docs, user stories, acceptance criteria, UAT, and traceability use the `sdcorejs-product` track.
 - UI/UX design, FE handoff specs, wireframes, and PNG previews use the `sdcorejs-design` track.
-- Solution-builder roots use `product/`, `design/`, `backend/`, `frontend/`, `test/`, and `.sdcorejs/`; human product docs live in `product/`, design handoff lives in `design/`, while logs/ledgers/evidence stay in `.sdcorejs/`.
+- Solution-builder roots use `product/`, `design/`, `backend/`, `frontend/`, `test/`, and `.sdcorejs/`; human product docs live in `product/`, design handoff lives in `design/`, while approved snapshots/change records/ledgers/evidence stay in `.sdcorejs/`.
 - Test-only plans use the `sdcorejs-test` track.
 - Codebase understanding, summaries, flow tracing, and local setup discovery use `sdcorejs-explore`.
 - Final gate, acceptance verification, branch readiness, dependency-update delivery, ready-to-merge, and release readiness use `sdcorejs-ship`.

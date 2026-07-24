@@ -18,11 +18,16 @@ Rules:
 
 - For any non-trivial execution task, use `_refs/shared/tasklist.md`.
 - Create the `Tasks` section before work starts and update it as work progresses.
-- For long or interruptible work, mirror visible `Tasks` progress to `.sdcorejs/tasks/current-session.md`.
+- Keep live progress in the current thread/harness; never mirror it to a
+  repository checkpoint file.
 - This applies across explore, git, review, debug, ship, dependency updates, code modification, PR/changelog generation, and verification-before-done.
 - Do not say "done", "ready", or "safe to ship" unless verification is complete or skipped verification is explicitly disclosed.
 - Requirements before code.
 - Apply `_refs/shared/project-context.md` before non-trivial skill execution.
+- Missing or stale summary never blocks work; use targeted reads or a scoped
+  code map.
+- Apply `_refs/shared/artifact-lifecycle.md` to every `.sdcorejs/**` write and
+  Git artifact handoff.
 - Explicit approval required for spec and plan.
 - Approved plans execute through `sdcorejs-execute-plan`.
 - `sdcorejs-execute-plan` classifies Angular as Core UI vs plain Angular before dispatch.

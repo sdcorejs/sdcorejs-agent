@@ -32,9 +32,12 @@ Before executing this skill:
 
 1. Read and apply `../_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `../_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
-4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+3. Read and apply `../_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
+4. Read and apply `../_refs/shared/artifact-lifecycle.md`; run SDCoreJS Artifact
+   Closure before staging, commit, or push.
+5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Mode Selection
 
@@ -137,61 +140,103 @@ Rules:
 - Do not include secret values in commit messages, PR bodies, changelog entries, release notes, or final summaries.
 - If suspected secrets are staged or inside the PR diff, stop before commit or PR and require remediation.
 
+## SDCoreJS Artifact Closure
+
+Run this read-only workflow before staging, commit, or any push:
+
+```bash
+git status --short -- .sdcorejs
+git diff --name-status -- .sdcorejs
+git diff --cached --name-status -- .sdcorejs
+```
+
+Use `../_refs/shared/artifact-lifecycle.md` as the normative contract. When the
+mirrored helper is available, the following produces a deterministic
+classification without staging:
+
+```bash
+node <skill-pack-root>/_refs/shared/artifact-lifecycle.mjs \
+  --root <target-root> \
+  --change-ref <change-ref> \
+  --mode <commit-or-push>
+```
+
+Do not print artifact contents during discovery. Consume the caller's
+`artifact_context` first. When Git is invoked from a new thread, reconstruct
+the closure from artifact frontmatter, `source_spec`, `source_plan`,
+`change_ref`, current Git diff, explicit user scope, and repository
+conventions.
+
+Classify every changed `.sdcorejs/**` path:
+
+- `required_with_change`;
+- `shared_owned`;
+- `conditional`;
+- `local_only`;
+- `unrelated`;
+- `unknown`.
+
+Rules:
+
+1. Automatically include `required_with_change`.
+2. Include `shared_owned` only when the current workflow or integration role
+   proves ownership.
+3. Include `conditional` only when both its condition and ownership are proven.
+   In particular, do not generate or edit `.sdcorejs/summary.md`; include an
+   existing summary change only when the current workflow owns a valid refresh.
+4. Exclude `local_only` and `unrelated`.
+5. Block when a required artifact is missing.
+6. Return `ambiguous` and stop when an unknown artifact may belong to the
+   change.
+7. Screen included paths for secrets and PII without printing values.
+8. Stage only the explicit `included_paths`.
+9. Never use dot-all staging, all-index staging, or directory-wide
+   `.sdcorejs` staging.
+10. After commit, verify that no required artifact owned by the change remains
+    outside the commit.
+
+When closure is complete, do not ask the user whether to include each required
+spec, plan, execution doc, feature ledger, or approved documentation asset.
+The request to commit the change already covers those artifacts.
+
+For parallel writes, closure runs only after deterministic fan-in. A worker
+cannot run Git artifact creation for its partial unit.
+
 ## Commit Scope Ledger
 
-Before any staging or commit, show a visible Commit Scope Ledger:
+Before staging or commit, read `../_refs/shared/git-commit-scope.md` completely
+and show its visible Commit Scope Ledger. At minimum preserve this ownership
+projection:
 
 ```yaml
 Commit Scope Ledger:
   branch:
   current_HEAD:
-  protected_branch_status:
   staged_paths:
   unstaged_paths:
   untracked_paths:
   included_paths:
   excluded_dirty_paths:
-  generated_mirrors:
-  docs_or_task_artifacts:
-  suspected_secret_paths:
+  sdcorejs_artifacts:
+    discovery_complete:
+    discovery_errors:
+    closure_result: complete | incomplete | ambiguous
   secret_scan_result:
   ship_evidence:
     ship_context:
-    mode:
-    commands:
-    result:
     associated_HEAD_or_diff:
-    timestamp_if_available:
   branch_ready_evidence:
-    commands:
     result:
     associated_HEAD_or_diff:
-    timestamp_if_available:
   commit_type:
   commit_scope:
   commit_message_preview:
 ```
 
-Ledger rules:
-
-- Always inspect `git status --short` before staging or committing.
-- Always inspect staged diffstat and staged file names when staged files exist.
-- Always inspect unstaged diffstat and untracked file names.
-- If pre-existing staged changes exist, do not assume they belong to this commit.
-- If staged, unstaged, and untracked changes coexist, ask the user to choose the commit scope unless the current task context clearly owns all changed files.
-- If no staged changes exist, stage only explicit included paths or explicit path groups.
-- Use explicit path staging, for example `git add -- path/to/file another/file`.
-- Never use dot-all staging or all-index staging flags.
-- Never stage unrelated work.
-- Never stage generated, vendor, build, cache, log, local env, or temporary output by default.
-- Exclude `node_modules`, `dist`, `build`, `coverage`, `.next`, `.turbo`, `.angular`, cache folders, local env files, logs, and temporary files unless explicitly requested and safe.
-- If the user says "commit all", still show the ledger and ask for confirmation when unrelated or ambiguous changes exist.
-- If files appear unrelated to the current task, stop and ask:
-  `1. Commit only task-scoped files` / `2. Include selected additional files` / `3. Stop so the user can clean or stash changes`.
-- Do not silently include unrelated staged files.
-- Do not commit excluded dirty paths.
-- Include generated mirrors only when repo mirror policy expects them and they are part of the current source/ref change.
-- Include docs/task artifacts only when they are intentional artifacts from the current workflow.
+Use explicit path staging only. Never use dot-all staging or all-index staging flags.
+Do not sweep unrelated work into the ledger or treat `.sdcorejs/**` as one
+staging unit. The full dirty-tree, generated-mirror, docs/task, and ambiguity
+rules live in the reference.
 
 Documentation preferences are project artifacts. When a commit or PR includes
 work that used or changed saved documentation settings, include
@@ -249,19 +294,23 @@ git log -5 --oneline
 
 2. Apply the protected branch hard stop before staging or committing.
 3. Run the secret redaction protocol before printing diff details.
-4. Build and show the Commit Scope Ledger.
-5. Stop or ask when:
+4. Run SDCoreJS Artifact Closure and stop on `incomplete` or `ambiguous`.
+5. Build and show the Commit Scope Ledger.
+6. Stop or ask when:
    - no staged, unstaged, or untracked changes exist;
    - changes span unrelated concerns;
    - suspected secrets are present;
    - generated mirrors are stale;
    - feature readiness has not passed through `sdcorejs-ship` for the current `HEAD` or diff and has not been explicitly deferred;
    - `.sdcorejs/documentation/**` changed but is outside the requested feature commit scope.
-6. Stage only explicit included paths when staging is needed.
-7. Infer Conventional Commit type from included paths and change summary, not from excluded dirty files.
-8. Use a scope when obvious from module, package, or skill name.
-9. Commit with a heredoc for multi-line bodies.
-10. Verify with `git status --short` and `git log -1 --stat`.
+7. Stage only explicit included paths, including the resolved required
+   `.sdcorejs/**` closure, when staging is needed.
+8. Infer Conventional Commit type from included paths and change summary, not from excluded dirty files.
+9. Use a scope when obvious from module, package, or skill name.
+10. Commit with a heredoc for multi-line bodies.
+11. Verify with `git status --short`, `git log -1 --stat`, and a second artifact
+    closure check that proves no task-owned required artifact remains
+    uncommitted.
 
 Conventional Commit format:
 
@@ -362,6 +411,9 @@ Suggested PR body sections:
 
 If pushing is part of PR or delivery:
 
+- Run SDCoreJS Artifact Closure in `push` mode first. If a required spec, plan,
+  execution doc, ledger, or approved documentation asset remains uncommitted,
+  stop with `artifact closure incomplete`.
 - Never force push.
 - Never push protected branches directly.
 - Push only the current branch.
@@ -369,7 +421,10 @@ If pushing is part of PR or delivery:
 - If upstream is missing, set upstream only after confirming branch name and remote.
 - If remote is missing, stop and provide a local commit summary.
 - If push fails due to non-fast-forward or permissions, stop; do not retry with force.
-- Do not push if the working tree is dirty unless the operation is explicitly PR-body-only and no source commit is expected.
+- Unrelated dirty changes from another thread do not by themselves block
+  pushing the current commit when they are clearly classified, unstaged, and
+  repository policy permits the push. Required, unknown, staged unrelated, or
+  local-only artifact ambiguity still blocks.
 
 ## Mode: changelog
 

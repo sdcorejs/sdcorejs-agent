@@ -1,193 +1,251 @@
-# Project Context Preflight
+# Project Context Preflight v2
 
-Use this before any non-trivial SDCoreJS skill execution so direct-triggered
-skills and full workflow skills see the same project memory without dirtying
-the working tree unexpectedly.
+Use this read-oriented context assembler before non-trivial SDCoreJS skill
+execution. It selects relevant evidence without making project writes.
+
+The deterministic helper `_refs/shared/project-context.mjs` implements summary
+freshness, context-strategy selection, graph-provider detection, and a
+side-effect-free runtime projection. Skills may call it when the helper is
+available; the contract in this reference remains authoritative.
+
+## Contents
+
+- [Caller Contract](#caller-contract)
+- [Non-recursion](#non-recursion-rule)
+- [Context Priority](#context-priority)
+- [Resolve Target Root](#step-1---resolve-target-root)
+- [Detect Tracks And Profiles](#step-2---detect-tracks-and-profiles)
+- [Read Summary v2](#step-3---read-summary-v2)
+- [Select Code Context](#step-4---select-code-context-strategy)
+- [Select Related Artifacts](#step-5---select-related-artifacts)
+- [Redaction And Bounded Reads](#step-6---redaction-and-bounded-reads)
+- [No-write Invariant](#no-write-invariant)
+- [Output Contract](#output-contract)
 
 ## Caller Contract
 
-Before applying this preflight, the caller must classify:
+Classify the caller before applying the preflight:
 
 ```text
 caller_context: <skill-name>
 context_mode: read-only | write-approved | summary-read | summary-refresh | code-map-readonly | trace-flow-readonly | env-setup-readonly | recovery-readonly | persona-read | memories-read | documentation-harvest-readonly
 side_effects_allowed: true | false
+request_scope: <short task scope>
 ```
 
-If the caller has a richer action field such as `explore_action`,
-`review_action`, `test_action`, `debug_mode`, or `ship_mode`, keep that value in
-the caller context and derive `context_mode` from it.
-
-Read-only context means this preflight may read project artifacts, but must not
-write `.sdcorejs/*`, env files, docs, tasks, persona files, memories, source
-files, or generated mirrors.
+`side_effects_allowed` describes the caller, not this preflight. Project
+context itself is always read-only. A write-approved caller still needs the
+owning workflow and artifact lifecycle contract before it writes anything.
 
 ## Non-Recursion Rule
 
-Project-context must never recursively invoke `sdcorejs-explore` while
-`sdcorejs-explore` is already running.
+Project context must never recursively invoke `sdcorejs-explore` while
+`sdcorejs-explore` is active. When the caller is `sdcorejs-explore`, return
+summary status and selected evidence; let the active explore action continue.
 
-When `caller_context: sdcorejs-explore`, project-context may read existing
-summary/persona/memory/task artifacts, but it must not call or suggest another
-`sdcorejs-explore` run. If summary is missing or stale, return a
-missing/stale-summary signal and let the active explore action continue with
-ephemeral context.
+Missing or stale summary is a context signal, never write permission and never
+a blocker for code, test, review, debug, planning, or Git work.
 
-Missing or stale summary is not itself permission to write.
+## Context Priority
 
-## When Required
+Resolve context in this order:
 
-Run this preflight for:
+1. Current user request.
+2. Repository instructions such as `AGENTS.md`.
+3. Explicit files, diffs, errors, logs, or artifacts named by the user.
+4. Fresh or partially usable `.sdcorejs/summary.md` sections.
+5. Approved specs/plans directly related to the change.
+6. Artifact relationship metadata from `_refs/shared/artifact-lifecycle.md`.
+7. Current Git status, diff, or log when the task needs it.
+8. Targeted source, config, and test reads.
+9. A scoped code map when cross-component relationships remain unclear.
+10. Relevant memory or an explicit handoff tied to the same change.
 
-- code generation;
-- spec or plan work;
-- product, design, or test execution;
-- review, debug, ship, dependency update, git artifact work;
-- any multi-step task that could depend on prior project decisions.
+Use relevance before recency. Do not load an artifact merely because it is the
+newest, and do not default to the latest three documents when they are
+unrelated.
 
-Skip it for simple Q&A, naming advice, short explanations, translations, or
-single-step answers that do not depend on project state.
+Current files, diffs, logs, failing tests, commands, and explicit user
+corrections override durable context.
 
 ## Step 1 - Resolve Target Root
 
-Resolve the target project root from the user's current working directory:
+Prefer:
 
 ```bash
 git rev-parse --show-toplevel
 ```
 
-If there is no git root, use the user's provided path or current directory.
-
-Classify target root:
+Otherwise use the user-provided root or current directory. Classify:
 
 ```text
-target_root_kind:
-  target-project
-  sdcorejs-agent-authoring-repo
-  skill-pack-authoring-repo
-  unknown
+target-project
+sdcorejs-agent-authoring-repo
+skill-pack-authoring-repo
+unknown
 ```
 
-Never write `.sdcorejs/*` artifacts to the `sdcorejs-agent` authoring repo or
-another skill-pack authoring repo unless that repo itself is the explicit target
-and the caller is write-approved.
+Unknown roots remain read-only until clarified. Authoring repositories may be
+the explicit target, but project-context still makes no writes.
 
-If `target_root_kind` is unknown, keep the preflight read-only and ask for
-clarification before any write.
+## Step 2 - Detect Tracks And Profiles
 
-## Step 2 - Detect Track And Profile Evidence
+Use concrete project evidence to detect applicable tracks and stack profiles:
 
-Detect one or more active tracks from request intent and project signals:
+- Angular: `angular.json`, Angular dependencies, routes, components, or tests;
+- NestJS: `nest-cli.json`, Nest dependencies, modules, controllers, or tests;
+- Next.js: `next.config.*`, Next dependency, app/pages routes, or tests;
+- React/Node/general: actual manifests, configs, source, and tests;
+- product/design/test/documentation/workflow: request intent plus matching
+  source folders and artifacts.
 
-- angular: `angular.json`, Angular components, `@angular/core`,
-  `@sdcorejs/angular`, `@sd-angular/core`;
-- nestjs: `nest-cli.json`, `@nestjs/core`, controllers, modules, providers;
-- nextjs: `next.config.*`, `next`, app/pages routes;
-- react: React dependency, Vite config, CRA scripts, React components/hooks;
-- node: package manifest, scripts, Node entrypoints;
-- product: `product/`, PRDs, user stories, acceptance criteria, UAT;
-- design: `design/`, wireframes, design specs, exports;
-- test: test-only request, e2e/UAT/unit/integration focus;
-- documentation: documentation request or docs source tree;
-- workflow: skill-pack, process, or orchestration work;
-- general: unsupported stack or non-track work.
+Use Core UI, SDCoreJS Nest, and build-website profiles only when the repository
+contains their actual package, import, config, or contract evidence. Profiles
+are evidence, not unquestionable truth.
 
-When `sdcorejs-explore` has produced `explore_context`, downstream skills should
-reuse its `tracks`, `stack_profiles`, `profile_confidence`, and
-`profile_evidence`. Treat them as evidence, not as unquestionable truth; current
-files and explicit user scope still override stale context.
+## Step 3 - Read Summary v2
 
-## Step 3 - Summary Handling
+Read `.sdcorejs/summary.md` when it exists.
 
-For `context_mode: summary-read` or read-only callers:
+- `schema_version: 2` summaries use section-level fingerprint checks.
+- Legacy summaries remain readable but have `legacy-schema` and `unknown`
+  freshness until a write-approved `summary-refresh` upgrades them.
+- Missing summaries return `missing`.
+- Invalid or unverifiable fingerprints return `unknown` or the appropriate
+  stale status; never pretend they are fresh.
 
-1. Read `.sdcorejs/summary.md` if present.
-2. Check freshness metadata if present.
-3. If the summary is missing, stale, dirty, or unknown, return that signal.
-4. Do not refresh or write `.sdcorejs/summary.md`.
-5. Let the caller continue with targeted reads or ephemeral context.
+Summary status values:
 
-For `context_mode: summary-refresh` or write-approved callers:
+```text
+fresh | partially-stale | stale | missing | unknown
+```
 
-1. A summary refresh is allowed only when the user explicitly requested
-   refresh/update/persist summary or the caller has a write-approved workflow.
-2. The caller must run the authoring-repo guard before writing.
-3. The caller must record any summary write in its context block.
+Use valid sections from a partially stale summary and replace only invalidated
+sections with targeted reads. Branch name and current HEAD are not summary
+freshness keys.
 
-Project-context itself does not write the summary. It decides whether summary is
-available, stale, missing, or refresh-eligible.
+## Step 4 - Select Code Context Strategy
 
-## Step 4 - Read Resume And Memory Context
+Use the smallest sufficient strategy:
 
-Read these files when present, keeping context lean:
+1. `summary-only` for orientation when a fresh summary answers the navigation
+   question.
+2. `targeted-read` for a small task, named files, a known entrypoint, or a
+   relationship answerable from `rg`, manifests, route/module config, or a few
+   source/test files.
+3. `scoped-code-map` when the task crosses modules, packages, or layers; needs
+   impact/ownership analysis; or requires a UI -> client -> API -> service ->
+   persistence trace.
+4. `existing-codegraph` only when the repository already provides a dependency
+   graph, language index, LSP index, or build graph and a read-only scoped query
+   is documented.
 
-1. `.sdcorejs/tasks/current-session.md`
-   - If `status: in_progress` or `blocked`, treat it as the highest-priority
-     resume signal.
-2. `.sdcorejs/persona.md`
-   - Load `_refs/shared/persona.md` and adapt output.
-3. `.sdcorejs/summary.md`
-   - Use summary-read behavior unless the caller is explicitly write-approved.
-4. Latest 3 `.sdcorejs/docs/<track>/*.md`
-   - Session history and recent decisions.
-5. `.sdcorejs/memories/<track>/*.md`
-   - Read frontmatter first. Load body only when the memory matches the current
-     request, module, stakeholder, convention, or recurring constraint.
-6. Latest `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md`
-   - Read frontmatter first; load relevant bodies when executing or revising an
-     approved artifact.
-7. `.sdcorejs/tasks/<track>.md`
-   - Living TODO for open Now/Next/Blocked items.
+Do not install a graph tool, generate a repository-wide graph, persist a code
+map, or treat graph output as stronger than current code/config. Query only the
+required slice. Any provider cache is `local-only` under the artifact lifecycle
+contract.
 
-For product/design/test work, also read matching human-facing folders when
-present:
+A scoped code map returns:
 
-- `product/prds/`;
-- `product/user-stories/`;
-- `product/acceptance-criteria/`;
-- `product/uat-checklists/`;
-- `design/specs/`;
-- `design/wireframes/`;
-- `test/reports/`.
+```yaml
+code_context:
+  strategy: scoped-code-map
+  scope: <feature/module/flow>
+  entrypoints: []
+  nodes:
+    - id: <logical id>
+      kind: <module/package/route/service/file>
+      path: <repo-relative path>
+      responsibility: <short description>
+  edges:
+    - from: <id>
+      to: <id>
+      relation: imports | calls | routes-to | injects | reads | writes | emits | generates
+      evidence: <repo-relative path>
+  unresolved_relationships: []
+```
 
-## Step 5 - Current Evidence Overrides Stored Context
+Keep it bounded. Do not load or display thousands of nodes.
 
-The current user request, selected files, diffs, logs, failing tests, command
-output, and explicit user corrections override stored context.
+## Step 5 - Select Related Artifacts
 
-If stored context conflicts with current evidence:
+Read artifact frontmatter first and follow `change_ref`, `source_spec`,
+`source_plan`, and explicit user scope. Load bodies only for artifacts that are
+actually related.
 
-1. Prefer current evidence.
-2. Mention the conflict briefly when it affects the result.
-3. Update durable context only through the appropriate tail step or
-   `sdcorejs-explore (memories-write-approved)` when the new fact should
-   persist and the user approved it.
+Relevant durable inputs may include:
 
-## Step 6 - Keep Context Lean And Redacted
+- `.sdcorejs/specs/<track>/*.md`;
+- `.sdcorejs/plans/<track>/*.md`;
+- `.sdcorejs/docs/<track>/*.md`;
+- `.sdcorejs/handoffs/<track>/*.md` when explicitly relevant;
+- `.sdcorejs/memories/<track>/*.md`;
+- `.sdcorejs/tasks/<track>.md` when a durable shared backlog is relevant.
 
-Do not load every historical doc. Prefer:
+Ignore legacy `.sdcorejs/tasks/current-session.md` and
+`.sdcorejs/tasks/sessions/**`. Do not read them as resume or ownership signals.
+Do not update, stage, delete, or recreate them.
 
-- latest 3 docs per track;
-- frontmatter before full bodies;
-- relevant memories only;
-- exact files named by the request, plan, failure, or diff.
+For recovery, use the approved plan, relevant change-scoped artifacts, an
+explicit handoff, Git evidence, and current user direction. Do not auto-resume.
 
-Do not echo secrets or PII from summaries, tasks, logs, env files, reports,
-memories, or docs. If sensitive values appear in current evidence, replace the
-value with `[REDACTED]` and report only the path/key/category needed for the
-task.
+## Step 6 - Redaction And Bounded Reads
+
+- Prefer `git ls-files`, targeted `rg`, manifests, entrypoints, configs, and
+  nearby tests.
+- Exclude vendor, generated, build, cache, trace, storage-state, and binary
+  output unless directly relevant.
+- Do not read secret values from env files or logs.
+- Report sensitive evidence only by path, key/category, and `[REDACTED]`.
+- Cap broad result sets and record unresolved relationships instead of dumping
+  the repository.
+
+## No-Write Invariant
+
+This preflight must not:
+
+- create or refresh a summary;
+- create a task file or handoff;
+- write memory, persona, docs, metadata, or source;
+- persist `project_context` or `artifact_context`;
+- write a code map or graph cache;
+- stage files or mutate Git state.
+
+It decides what to read and returns runtime context only.
 
 ## Output Contract
 
-After preflight, the executing skill should know:
+```yaml
+project_context:
+  target_root: <path>
+  target_root_kind: <kind>
+  request_scope: <short task scope>
+  tracks: []
+  stack_profiles: []
+  summary:
+    status: fresh | partially-stale | stale | missing | unknown
+    schema: v2 | legacy-schema | missing | unknown
+    path: .sdcorejs/summary.md | none
+    usable_sections: []
+    invalidated_sections: []
+  related_artifacts:
+    specs: []
+    plans: []
+    docs: []
+    handoffs: []
+    tasks: []
+  code_context:
+    strategy: summary-only | targeted-read | scoped-code-map | existing-codegraph
+    scope: <scope>
+    entrypoints: []
+    evidence_paths: []
+    unresolved_relationships: []
+  current_evidence:
+    files: []
+    diffs: []
+    commands: []
+  writes_allowed: true | false
+  redaction_applied: true | false
+```
 
-- target root and `target_root_kind`;
-- active track(s) and stack profile evidence when available;
-- persona;
-- current checkpoint status;
-- summary status: fresh, stale, missing, dirty, or unknown;
-- whether summary refresh is allowed;
-- recent docs/specs/plans that matter;
-- relevant memories;
-- open tasks;
-- current evidence that overrides stored context.
+This block is runtime-only. Do not persist it as a global project file.

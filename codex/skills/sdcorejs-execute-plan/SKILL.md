@@ -16,9 +16,12 @@ description: Execute an approved plan snapshot. Use after sdcorejs-plan approval
 Before executing this skill:
 1. Read and apply `../_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `../_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
-4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+3. Read and apply `../_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
+4. Read `../_refs/shared/artifact-lifecycle.md`; preserve and merge
+   `artifact_context` from the approved spec, plan, and every producer.
+5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 Run the approved plan as the execution contract. This skill is the handoff between planning and doing.
@@ -52,19 +55,17 @@ If the plan hash does not match the current approved spec hash, stop and ask for
 
 ## Step 0 - Context preflight
 
-Before loading the plan or dispatching any executor, run `sdcorejs-explore
-(summary-read)` through `../_refs/shared/project-context.md`.
+Before loading the plan or dispatching an executor, assemble `project_context`.
 
-- Use `summary-read` by default. If the target root already exists and
-  `<target>/.sdcorejs/summary.md` is missing or stale, do not refresh
-  automatically. Run `summary-refresh` only when the approved plan explicitly
-  allows a context write or the user approves the refresh in this execution
-  session; record the write in `explore_context`.
-- If the summary exists and is fresh enough, read it before choosing the
-  executor.
-- If the approved plan creates a brand-new target root that does not exist yet,
-  record this exception and require the owning executor to run
-  `sdcorejs-explore (summary-refresh)` immediately after the first scaffold lands.
+- Use valid summary sections when present.
+- If the summary is missing, legacy, unknown, or stale, continue with targeted
+  reads. Use a scoped code map only when cross-component relationships remain
+  unclear.
+- Do not refresh a summary merely because it is missing or because execution is
+  write-approved.
+- A brand-new approved project initialization may create summary v2 after the
+  scaffold exists. An architecture-level change may refresh it only when the
+  sequential workflow or integration owner owns that shared write.
 - Treat the approved plan and current evidence as stronger than stored context
   when they conflict.
 
@@ -349,6 +350,16 @@ execution_context:
       reason: <reason>
   files_changed:
     - <path>
+  artifact_context:
+    schema_version: 1
+    change_ref: <id or durable artifact path>
+    source_spec: <path | none>
+    source_plan: <path | none>
+    required_with_change: []
+    shared_owned: []
+    conditional: []
+    local_only: []
+    unrelated_observed: []
   commands_run:
     - command_or_script: <command>
       exit_code: <code>
@@ -382,7 +393,7 @@ execution_context:
 - Use package-manager/script discovery from the plan. Do not mix package
   managers, invent missing scripts, run unapproved installs, or use `npx --yes`
   without approval.
-- Redact secrets and PII from execution summaries, task checkpoints, logs, and
+- Redact secrets and PII from execution summaries, runtime task state, logs, and
   handoffs.
 - Verify success from real command output before claiming anything passed.
 - Keep the user's language in status and summaries.

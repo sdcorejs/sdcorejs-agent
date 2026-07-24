@@ -1,57 +1,9 @@
 #!/usr/bin/env bash
 # SessionStart hook for the sdcorejs-agent plugin.
-# Injects the sdcorejs-using-skills bootstrap so dispatch discipline holds
-# even in a foreign project that has no sdcorejs CLAUDE.md.
+# The Node helper emits the bootstrap only. Project context is assembled later
+# by the selected skill and never writes during session start.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-
-# The bootstrap skill is mirrored to plugin/skills/ by .claude/sync-skills.sh.
-bootstrap_path="${PLUGIN_ROOT}/skills/sdcorejs-using-skills/SKILL.md"
-bootstrap_content=$(cat "$bootstrap_path" 2>&1 || echo "Error reading sdcorejs-using-skills skill")
-
-# Escape for JSON embedding via bash parameter substitution (single C-level
-# pass each - far faster than a char-by-char loop).
-escape_for_json() {
-    local s="$1"
-    s="${s//\\/\\\\}"
-    s="${s//\"/\\\"}"
-    s="${s//$'\n'/\\n}"
-    s="${s//$'\r'/\\r}"
-    s="${s//$'\t'/\\t}"
-    printf '%s' "$s"
-}
-
-bootstrap_escaped=$(escape_for_json "$bootstrap_content")
-session_context="<EXTREMELY_IMPORTANT>\nYou have the sdcorejs SDLC skill pack.\n\n**Below is the full content of your 'sdcorejs-using-skills' bootstrap - how to find and dispatch sdcorejs skills. For all other skills, use the 'Skill' tool:**\n\n${bootstrap_escaped}\n</EXTREMELY_IMPORTANT>"
-
-# --- project summary gate: require .sdcorejs/summary.md before substantive work ---
-# Fires in a recognizable target project (angular/nest/next) that lacks the canonical
-# brief - detecting the track config at the repo ROOT *or* nested under a monorepo
-# subdir (apps/*, packages/*, projects/*), since many real projects aren't root-level.
-# Never fires on the agent repo (no track config anywhere in the shallow scan).
-# All logic stays inside if-conditions so it cannot trip `set -e` and drop the bootstrap.
-project_root="${CLAUDE_PROJECT_DIR:-$PWD}"
-track_found=""
-if [ -f "${project_root}/angular.json" ] || [ -f "${project_root}/nest-cli.json" ] || ls "${project_root}"/next.config.* >/dev/null 2>&1; then
-  track_found="root"
-elif [ -n "$(find "${project_root}" -maxdepth 3 \( -name node_modules -o -name .git -o -name dist -o -name .next \) -prune -o \( -name angular.json -o -name nest-cli.json -o -name 'next.config.*' \) -print 2>/dev/null | head -n1)" ]; then
-  track_found="nested"
-fi
-if [ -n "$track_found" ] && [ ! -f "${project_root}/.sdcorejs/summary.md" ]; then
-  session_context="${session_context}\n\n<EXTREMELY_IMPORTANT>\nNo .sdcorejs/summary.md exists in this project (track config detected: ${track_found}). Before substantive code-writing work, run 'sdcorejs-explore (summary-refresh)' only in a write-approved context to create the canonical project brief with freshness metadata and stack profile evidence. A pure informational or read-only question may use 'summary-read' or ephemeral context first.\n</EXTREMELY_IMPORTANT>"
-fi
-
-# Emit only the field the current platform consumes.
-# Uses printf (not heredoc) to avoid a bash 5.3+ heredoc hang.
-if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
-  printf '{\n  "additional_context": "%s"\n}\n' "$session_context"
-elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
-  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
-else
-  printf '{\n  "additionalContext": "%s"\n}\n' "$session_context"
-fi
-
-exit 0
+exec node "${SCRIPT_DIR}/session-start.mjs"

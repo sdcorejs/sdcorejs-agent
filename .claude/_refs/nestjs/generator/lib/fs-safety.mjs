@@ -67,7 +67,8 @@ export async function assertOutputAvailable(output, { force = false } = {}) {
 export async function prepareOutput(output) {
   await mkdir(output, { recursive: true });
   const parent = await realpath(path.dirname(output));
-  assertWithin(parent, output, 'resolved output');
+  const canonicalOutput = await realpath(output);
+  assertWithin(parent, canonicalOutput, 'resolved output');
 }
 
 export async function pathExists(value) {

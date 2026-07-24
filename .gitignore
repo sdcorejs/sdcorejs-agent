@@ -21,7 +21,23 @@ bin/**/*.tsbuildinfo
 .claude/settings.json
 .claude/settings.local.json
 
-# Local agent session state. Commit durable docs, examples, specs, and plans;
-# keep live resume checkpoints out of source history.
+# SDCoreJS diagnostic/local-only artifacts. Durable specs, plans, summaries,
+# handoffs, ledgers, documentation, memories, and owned backlogs remain visible.
+# Legacy live-session checkpoints are ignored for backward compatibility. New
+# workflows must not create or update them.
 .sdcorejs/tasks/current-session.md
 .sdcorejs/tasks/sessions/
+.sdcorejs/cache/
+.sdcorejs/caches/
+.sdcorejs/codegraph-cache/
+.sdcorejs/storage/
+.sdcorejs/temp/
+.sdcorejs/tmp/
+.sdcorejs/trace/
+.sdcorejs/traces/
+.sdcorejs/**/*auth-state*
+.sdcorejs/**/*browser-state*
+.sdcorejs/**/*storage-state*
+.sdcorejs/**/*.har
+.sdcorejs/**/*.trace
+.sdcorejs/**/*.webm
