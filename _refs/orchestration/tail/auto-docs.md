@@ -1,146 +1,148 @@
-# Auto-Docs Tail Reference — Session Summary
+# Change Execution Record Tail Reference
+
+## Contents
+
+- [Purpose](#purpose)
+- [When To Write](#when-to-write)
+- [Relevance-first Reads](#relevance-first-reads)
+- [Output Path](#output-path)
+- [Template](#template)
+- [Runtime Output](#runtime-output)
+- [Rules](#rules)
+- [Cross-track Usage](#cross-track-usage)
 
 ## Purpose
-Internal tail reference. Load this file from a dispatchable executor when a session summary must be written or read. This file is not a dispatchable skill.
 
-Gives the next session a memory of what was done, what was decided, and what's still open. Without this, every new session starts blind.
+Internal tail reference for a change-scoped durable execution record. It is not
+a live session checkpoint, progress mirror, or dispatchable skill.
 
-This reference is shared across SDCoreJS app/test tracks (`angular`, `nestjs`, `nextjs`, `test`). The agent substitutes the `<track>` placeholder below with the active track name when resolving paths.
+The record captures decisions and evidence that are useful beyond the current
+thread and cannot be recovered cheaply from the diff. Product traceability
+remains a separate feature ledger under `.sdcorejs/docs/product/`.
 
-Product traceability is a separate ledger under `.sdcorejs/docs/product/`, owned by `sdcorejs-product`. Auto-docs should link to that ledger when a user-visible feature changes, but it should not duplicate the requirement/implementation/test matrix.
+Read `_refs/shared/artifact-lifecycle.md` before writing.
 
-## When invoked
+## When To Write
 
-### End of code-writing skills
-The agent MUST run this reference (write mode) at the end of every code-writing skill invocation, without prompting. For the angular track that means:
-- `write-code` (the `sdcorejs-angular` orchestrator, plus the on-demand reference packs it loads: `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail`, `actions`)
-- `sdcorejs-test`
-- `sdcorejs-review` (write a "review session" doc summarizing findings, even though no code changed)
-- `sdcorejs-documentation (code-documentation mode)` automatically after source-code changes
+Write one immutable record after a code/test/design/product workflow when:
 
-For nestjs, nextjs, and test tracks, the equivalent writing skills trigger this skill the same way.
+- the change produced implementation or durable test evidence;
+- material decisions or limitations should travel with the change; and
+- the approved workflow owns the artifact.
 
-If a user-visible feature was created or changed, also invoke or update `sdcorejs-product` so `.sdcorejs/docs/product/` records the business goal, acceptance criteria, implementation map, test map, and gaps.
+Skip when nothing changed, no durable finding exists, or the diff/approved plan
+already provides all useful evidence. Do not write a record merely because a
+thread started or ended.
 
-If the current executor did not change any code AND did not produce a new finding, skip auto-docs.
+Workers in parallel write workflows may create only their assigned
+change-scoped record. The integration owner merges artifact contexts and may
+create one integrated record after fan-in. Workers do not update shared summary,
+persona, memory, or living backlog files.
 
-### Session-start ritual (read-only mode)
-At the START of any new session in a target project, the agent MUST:
-1. Resolve target project root: `git rev-parse --show-toplevel` from the user's CWD
-2. Glob `<target-root>/.sdcorejs/docs/<track>/*.md` for the relevant track
-3. Read the latest 3 files (sorted by filename — timestamp prefix sorts naturally)
-4. Summarize them to itself before answering the user's first question
-5. Acknowledge briefly: "<localized text>" (or EN equivalent)
+## Relevance-First Reads
 
-This read-only step does NOT write a new doc.
+Do not load the latest records by default. Project-context preflight reads
+frontmatter first and selects records related through `change_ref`,
+`source_spec`, `source_plan`, explicit user scope, or directly matching paths.
 
-## Output path
+## Output Path
 
-```bash
-# Resolve target project root (NOT the sdcorejs-agent repo!)
-TARGET_ROOT=$(git rev-parse --show-toplevel)
-
-# Pick the active <track>: angular | nestjs | nextjs | test
-TRACK=angular
-
-# Ensure folder exists (note the leading dot in .sdcorejs/)
-mkdir -p "$TARGET_ROOT/.sdcorejs/docs/$TRACK"
-
-# Filename pattern: YYYY-MM-DD-HH-mm-<kebab-topic>.md
-FILE="$TARGET_ROOT/.sdcorejs/docs/$TRACK/2026-05-09-14-30-add-product-entity.md"
+```text
+<target-root>/.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<change-slug>.md
 ```
 
-The `<kebab-topic>` is a 3-6 word slug derived from what was actually done. Examples:
-- `init-sales-portal`
-- `add-product-entity-to-catalog`
-- `refine-employee-form-validation`
-- `review-pricing-module`
-- `add-comments-to-payment-flow`
+Resolve the target root from the user's working directory. Never write a target
+project record into the skill-pack authoring repository unless it is the
+explicit target.
 
-## Output content template
+Use a collision suffix (`-2`, `-3`) rather than overwriting an existing record.
+
+## Template
 
 ```markdown
-# <Title> — <YYYY-MM-DD HH:mm>
+---
+artifact_id: execution-<change-id>-<timestamp>
+artifact_kind: execution-doc
+change_ref: <change id>
+source_spec: <repo-relative path | none>
+source_plan: <repo-relative path | none>
+commit_policy: with-change
+owner: <executor or integration-owner>
+track: <track>
+created_at: <ISO-8601 timestamp>
+redaction_applied: true
+---
 
-## What was requested
-<1-3 sentence verbatim or paraphrased user request, in user's original language>
+# Change Execution Record - <Title>
 
-## What was changed
-- CREATE  src/libs/catalog/features/product/services/product.model.ts — Product DTO + SaveReq with 6 fields
-- CREATE  src/libs/catalog/features/product/services/product.mock-data.ts — 25 seed rows
-- CREATE  src/libs/catalog/features/product/services/product.service.ts — MockCrudStore wiring
-- CREATE  src/libs/catalog/features/product/pages/list/list.component.ts — list page with audit columns
-- CREATE  src/libs/catalog/features/product/pages/detail/detail.component.ts — UnifiedCompact 3-state
-- EDIT    src/libs/catalog/routes.ts — registered product child route
+## Requested Outcome
+<brief localized paraphrase>
 
-## Decisions made
-- Layout: chose UnifiedCompact (form is 6 fields, no workflow blocks)
-- Test coverage level: standard (per user response)
-- Runtime-localized labels with locale-specific marks preserved
-- Permission codes: `CATALOG_C_PRODUCT_LIST/DETAIL/CREATE/UPDATE/DELETE`
+## Material Changes
+- EDIT path/to/file - <short purpose>
 
-## Open questions / follow-ups
-- Backend API host not yet provided — service is mock-first; switch to BaseService when API contract lands
-- No workflow yet; if approval flow is needed later, invoke `sdcorejs-angular` (actions pack)
+## Decisions And Invariants
+- <decision that is not obvious from the diff>
 
-## Product traceability
-- Ledger: `.sdcorejs/docs/product/2026-05-09-14-20-add-product-entity.md`
-- Status: partial - backend API host is still open
+## Verification Evidence
+- `<actual command>` - exit <code> - <short result>
 
-## Next suggested action
-- Run `npm run test -- --watch=false --include=src/libs/catalog/features/product/**/*.spec.ts`
-- Open `http://localhost:4200/catalog/product` to verify list renders
-- Optional: invoke `sdcorejs-test` to add happy-path E2E coverage
+## Known Gaps
+- <real unresolved item or none>
 
-## Skill provenance
-Skills invoked this session: `sdcorejs-brainstorming` -> `sdcorejs-spec` -> `sdcorejs-plan` -> `sdcorejs-execute-plan` -> `write-code` (init-entity pack)
+## Related Artifacts
+- Spec: <path | none>
+- Plan: <path | none>
+- Product/design/test ledger: <path | none>
 ```
+
+Use the user's language for artifact prose. Keep identifiers, commands, env
+keys, permission codes, and paths exact.
+
+## Runtime Output
+
+Emit:
+
+```yaml
+artifact_context:
+  schema_version: 1
+  change_ref: <change id>
+  source_spec: <path | none>
+  source_plan: <path | none>
+  required_with_change:
+    - path: .sdcorejs/docs/<track>/<file>.md
+      kind: execution-doc
+      reason: durable change evidence
+  shared_owned: []
+  conditional: []
+  local_only: []
+  unrelated_observed: []
+```
+
+Merge this block with upstream producer contexts and pass it to
+`sdcorejs-ship`.
 
 ## Rules
 
 ### MUST DO
-- Resolve `TARGET_ROOT` via `git rev-parse --show-toplevel` from the user's CWD; never write to the agent repo
-- Create the `.sdcorejs/docs/<track>/` folder if it doesn't exist (leading dot is required)
-- Use timestamp prefix `YYYY-MM-DD-HH-mm-` so files sort chronologically
-- Always create a NEW file — never overwrite an existing one
-- Include the file list with CREATE/EDIT markers
-- Capture decisions and trade-offs that future sessions would not infer from the code alone
-- Link the related `.sdcorejs/docs/product/` ledger when one exists or was created for the feature
-- Note open questions / follow-ups so the next session knows what's incomplete
-- At session start, read the 3 latest docs and acknowledge in ≤1 sentence so the user knows context was loaded
-- Pair with `sdcorejs-explore (memories mode)`: auto-docs captures session-scoped facts; memories mode captures durable knowledge that survives across sessions
+
+- Keep the record change-scoped and immutable.
+- Include only material paths, decisions, actual commands, exit codes, and
+  genuine gaps.
+- Link related specs, plans, and ledgers by repository-relative path.
+- Redact secrets and PII.
+- Classify the record as `required_with_change`.
 
 ### MUST NOT
-- Write a doc to the `sdcorejs-agent` repo (the agent repo is the source for skills, not session memory)
-- Write to `docs/sdcorejs/` or `.docs/sdcorejs/` (legacy paths) — the canonical location is `.sdcorejs/docs/`
-- Overwrite an existing doc — collisions are impossible if the timestamp includes minutes; if collision still happens (rapid-fire), append `-2`, `-3` suffix
-- Write empty / template-only docs — if nothing was done, skip
-- Write docs in a language different from the user's session language; for mixed-language sessions, match the dominant language
-- Skip the session-start read step — that's how memory works
-- Leak secrets, tokens, or full file contents into the doc (file paths + summaries only)
 
-## Cross-track usage
+- Store live checkbox progress or "resume from here" state.
+- Create a record automatically for every thread.
+- Read unrelated records merely because they are newest.
+- Paste large diffs, raw logs, full file contents, tokens, credentials, or PII.
+- Overwrite another change's record.
+- Treat the record as product traceability or a project summary.
 
-This skill applies to `angular`, `nestjs`, `nextjs`, and `test` tracks. The only difference is the `<track>` segment in the output path:
-- Angular: `.sdcorejs/docs/angular/`
-- NestJS: `.sdcorejs/docs/nestjs/`
-- NextJS: `.sdcorejs/docs/nextjs/`
-- Test: `.sdcorejs/docs/test/`
+## Cross-Track Usage
 
-The product track writes PO-facing ledgers under `.sdcorejs/docs/product/` through `sdcorejs-product`. Use auto-docs for session summaries; use product ledgers for feature traceability.
-
-When the agent works inside a multi-track repo, write to the track folder
-matching the work performed. If unsure, ask the user before writing using
-`_refs/shared/user-choice-prompt.md` with numbered candidate tracks and aliases.
-
-## Anti-patterns
-- Writing the doc to the agent repo (`sdcorejs-agent/.sdcorejs/...`) instead of the target project
-- Writing to `docs/sdcorejs/` or `.docs/sdcorejs/` (legacy paths) — canonical is `.sdcorejs/docs/`
-- Overwriting yesterday's doc with today's — destroys the history that makes this skill valuable
-- Empty doc with only a title (no info to recall later)
-- Doc that lists every file change with no decisions/rationale (the diff already exists in git)
-- Skipping session-start read because "user didn't ask for it" — this is mandatory automatic behavior
-- Dumping full file contents into the doc — keep it scannable (file path + 1-line intent)
-- Forgetting to set `<track>` correctly in multi-track repos
-- Hardcoding `angular` when the active track is actually nestjs/nextjs/test
-- Treating auto-docs as a substitute for the product traceability ledger
+Use the actual active track (`angular`, `nestjs`, `nextjs`, `product`, `design`,
+`test`, `documentation`, `workflow`, or `general`). Do not default to Angular.

@@ -16,9 +16,12 @@ description: Design-track executor for FE handoff artifacts. Use for UI/UX desig
 Before executing this skill:
 1. Read and apply `../_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `../_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
-4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+3. Read and apply `../_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
+4. Read `../_refs/shared/artifact-lifecycle.md` and emit `artifact_context` for
+   every design ledger written.
+5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 Create FE handoff artifacts from product intent. The output should let Angular/Next.js executors implement screens without guessing layout, states, copy, interactions, or responsive behavior.
@@ -44,16 +47,14 @@ governance to the handoff.
 
 ## Step 0 - Context preflight
 
-Before mapping stories to screens, run `sdcorejs-explore (summary-read)` through
-`../_refs/shared/project-context.md`.
+Before mapping stories to screens, assemble read-only `project_context`.
 
-- For an existing app/site, ensure `<target>/.sdcorejs/summary.md` exists or is
-  refreshed with `summary-refresh` only in write-approved design execution
-  context so the design uses the real route structure, modules, component
-  conventions, permissions, and target stack.
+- For an existing app/site, use valid summary sections when present. Missing or
+  stale summary does not block design; continue with targeted reads or a scoped
+  code map. Do not refresh merely because design execution is write-approved.
 - For greenfield design before any app scaffold exists, continue from product
   docs and approved specs/plans, but mark UI component choices as `candidate`
-  until the frontend/backend summary exists.
+  until frontend/backend source evidence exists.
 - If the summary conflicts with product stories, acceptance criteria, or current
   user attachments, surface the conflict instead of silently choosing one source.
 
@@ -266,6 +267,13 @@ Write `.sdcorejs/docs/design/<timestamp>-<feature>.md`:
 
 ```markdown
 ---
+artifact_id: design-ledger-<feature>
+artifact_kind: execution-doc
+change_ref: <change id>
+source_spec: <repo-relative path | none>
+source_plan: <repo-relative path | none>
+commit_policy: with-change
+owner: sdcorejs-design
 feature: <kebab-feature>
 status: draft | reviewed | approved | partial
 sourceUserStories: <path>
@@ -294,6 +302,8 @@ updatedAt: <ISO-8601 timestamp>
 ## Open Questions
 - <question or None>
 ```
+
+Emit this ledger in `artifact_context.required_with_change`.
 
 ## Rules
 

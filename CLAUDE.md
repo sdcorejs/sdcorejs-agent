@@ -85,7 +85,7 @@ sdcorejs-test
 -> sdcorejs-product when user-visible feature traceability is needed
 -> _refs/orchestration/tail/auto-docs.md
 -> sdcorejs-documentation (write-user-guide mode)
--> _refs/orchestration/tail/auto-task-tracker.md
+-> _refs/orchestration/tail/auto-task-tracker.md when the sequential/integration owner updates durable backlog
 -> sdcorejs-explore (memories mode) when durable knowledge surfaced
 -> sdcorejs-ship (verify-before-done mode)
 -> sdcorejs-ship (branch-ready mode as the final read-only gate)
@@ -119,7 +119,7 @@ The product track is first-class. Feature docs, user stories, acceptance criteri
 
 The design track is first-class. FE handoff specs, flows, wireframes, mockups, and PNG previews are not routed through the generic harness.
 
-`sdcorejs-solution-builder` creates one solution root with `product/`, `design/`, `backend/`, `frontend/`, `test/`, and `.sdcorejs/`. Human-readable PO/QC docs live in `product/`; design handoff lives in `design/`; agent logs, approved snapshots, ledgers, memories, tasks, and verification evidence stay in `.sdcorejs/`.
+`sdcorejs-solution-builder` creates one solution root with `product/`, `design/`, `backend/`, `frontend/`, `test/`, and `.sdcorejs/`. Human-readable PO/QC docs live in `product/`; design handoff lives in `design/`; approved snapshots, change records, ledgers, memories, durable backlogs, and verification evidence stay in `.sdcorejs/`.
 
 The test track is first-class. Test-only plans are not routed through app write-code skills.
 
@@ -151,16 +151,19 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 
 ## Session Context
 
-At the start of a target-project session, load:
+At the start of a target-project session:
 
-- `_refs/shared/project-context.md` for the current request
-- `_refs/shared/user-choice-prompt.md` before choices, approval gates, yes/no prompts, or mode selections
-- Latest 3 `.sdcorejs/docs/<track>/*.md`
-- `.sdcorejs/memories/<track>/*.md` frontmatter
-- `.sdcorejs/specs/<track>/*.md` frontmatter
-- `.sdcorejs/plans/<track>/*.md` frontmatter
-- `.sdcorejs/tasks/current-session.md` when present, prioritizing `in_progress` or `blocked`
-- `.sdcorejs/persona.md` when present
+- Apply the read-only `_refs/shared/project-context.md`.
+- Use explicit user evidence first, then valid summary sections.
+- Select specs, plans, change records, handoffs, memories, and durable backlog
+  entries by relationship metadata and request relevance.
+- Ignore legacy session checkpoint files; live progress stays in the
+  thread/harness.
+- Read `.sdcorejs/persona.md` when relevant.
+- Read `_refs/shared/user-choice-prompt.md` before choices, approval gates,
+  yes/no prompts, or mode selections.
+- Read `_refs/shared/artifact-lifecycle.md` before any `.sdcorejs/**` write or
+  Git artifact handoff.
 
 ## Skill Groups
 

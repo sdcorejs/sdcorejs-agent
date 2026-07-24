@@ -75,7 +75,7 @@ const promptExamples = [
 
 const promptPrinciples = [
   ["Người dùng", "Chỉ cần nói intent ngắn gọn và đính kèm ảnh, PRD, API docs, file hoặc log khi có."],
-  ["Agent", "Tự trigger sdcorejs-explore / project-context preflight để nạp IDE context, repo context, docs, memories và task tracker."],
+  ["Agent", "Tự chạy project-context preflight chỉ-đọc, dùng summary nếu phù hợp rồi bổ sung targeted reads hoặc scoped code map."],
   ["Safety", "Nếu context thiếu hoặc mâu thuẫn, agent phải hỏi lại trước khi spec/plan/code."],
 ];
 
@@ -209,8 +209,9 @@ const conflictExamples = [
             <h2>Explore: đọc trước khi trả lời</h2>
             <p>
               `project-context.md` là recipe đọc context. `.sdcorejs/summary.md`
-              là project brief sinh trong target project. Explore cũng đọc docs,
-              memories, specs/plans, task tracker và persona khi có.
+              là project index ổn định trong target project. Explore chọn
+              specs/plans, change records, memories, backlog và persona theo
+              mức liên quan; summary thiếu không chặn công việc.
             </p>
           </div>
           <div class="stack-list">
@@ -303,13 +304,14 @@ const conflictExamples = [
             <p class="kicker">Handoff</p>
             <h2>Phiên sau không bắt đầu từ số không</h2>
             <p>
-              Auto-docs ghi tóm tắt phiên. Task tracker giữ TODO sống. Memories
-              lưu constraint, decision, pattern và correction dài hạn.
+              Change record lưu bằng chứng bền vững theo change. Tiến độ sống
+              nằm trong thread/harness; backlog chỉ giữ follow-up dùng chung.
+              Memories lưu constraint, decision, pattern và correction dài hạn.
             </p>
           </div>
           <div class="memory-lanes">
-            <article><b>auto-docs</b><span>.sdcorejs/docs/&lt;track&gt;/</span></article>
-            <article><b>task tracker</b><span>.sdcorejs/tasks/current-session.md</span></article>
+            <article><b>change records</b><span>.sdcorejs/docs/&lt;track&gt;/</span></article>
+            <article><b>runtime progress</b><span>thread / harness task mechanism</span></article>
             <article><b>memories</b><span>.sdcorejs/memories/&lt;track&gt;/</span></article>
             <article><b>persona</b><span>.sdcorejs/persona.md</span></article>
           </div>

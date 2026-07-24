@@ -46,14 +46,15 @@ Before non-trivial exploration:
 
 1. Read and apply `../_refs/shared/tasklist.md`.
 2. Read and apply `../_refs/shared/persona.md` only when a project persona exists.
-3. Classify `explore_action` before deep refs, broad scans, commands, or writes.
-4. Read `../_refs/shared/project-context.md` with:
+3. Read `../_refs/shared/artifact-lifecycle.md` before any write-approved action.
+4. Classify `explore_action` before deep refs, broad scans, commands, or writes.
+5. Read `../_refs/shared/project-context.md` with:
    - `caller_context: sdcorejs-explore`;
    - `context_mode: <explore_action>`;
    - `side_effects_allowed: false` for read-only actions.
-5. Current user request, current files, diffs, logs, failing tests, and command
+6. Current user request, current files, diffs, logs, failing tests, and command
    output override stored context.
-6. Before presenting choices, approval gates, yes/no questions, or mode
+7. Before presenting choices, approval gates, yes/no questions, or mode
    selections, read `../_refs/shared/user-choice-prompt.md`.
 
 Project-context must never recursively invoke `sdcorejs-explore` while
@@ -66,9 +67,9 @@ anything:
 
 | explore_action | Use when | Side-effect boundary |
 |---|---|---|
-| `summary-read` | Read the project summary, understand the project, or a read-only caller needs context | Read existing `.sdcorejs/summary.md`; if missing/stale, produce ephemeral summary in the response only. No writes. |
-| `summary-refresh` | User explicitly asks to refresh/update/persist the summary, or a caller has write-approved context | May write `.sdcorejs/summary.md` after authoring-repo guard and redaction. |
-| `code-map-readonly` | Map architecture, reusable paths, modules, routes, services, or code ownership | Read-only inventory. No cache writes. |
+| `summary-read` | Read the project index, understand the project, or a read-only caller needs context | Read existing `.sdcorejs/summary.md`; legacy/missing/stale summaries are signals, not blockers. Continue with targeted reads. No writes. |
+| `summary-refresh` | User explicitly requests it, approved project initialization owns it, or an architecture-level change assigns it to the sequential/integration owner | May write summary v2 after authoring-repo guard, fingerprinting, ownership, redaction, and artifact classification. |
+| `code-map-readonly` | Map architecture, reusable paths, modules, routes, services, or code ownership after targeted reads are insufficient | Return a task-scoped map. Query an existing graph/index provider read-only when available. No map or cache writes. |
 | `trace-flow-readonly` | Trace one behavior, feature, route, job, command, or test flow | Read-only trace output. No diagram/file writes unless the user separately asks. |
 | `env-setup-readonly` | Explain local setup, prerequisites, scripts, env keys, or first-run steps | Read README/config/examples and output instructions. No env/config writes. |
 | `env-setup-write-approved` | User explicitly approves safe env file creation from an example | May create a missing env file with placeholders only. Never overwrite existing env files. |
@@ -84,7 +85,7 @@ source files, memory files, persona files, generated mirrors, or project
 artifacts. Missing or stale summary is not itself permission to write.
 
 Write-approved actions must record the approval source, target path, reason, and
-write outcome in `explore_context.writes`.
+write outcome in `explore_context.writes` and emit `artifact_context`.
 
 ## Target Root And Authoring-Repo Guard
 
@@ -232,153 +233,49 @@ path, key/category, reason, and redacted evidence such as
 If the user provides sensitive data, summarize with placeholders and advise
 rotation only when appropriate.
 
-## Output Contract: `explore_context`
+## Output And Summary Contracts
 
-Every `sdcorejs-explore` response includes a compact machine-readable-ish block:
+Read `../_refs/shared/explore-context.md` completely before emitting
+`explore_context`, running `summary-read`, or performing an approved
+`summary-refresh`. It owns the runtime schema, Summary v2 frontmatter/body, and
+freshness rules. Preserve the read-only `project_context` returned by
+`../_refs/shared/project-context.md`.
 
-```yaml
-explore_context:
-  source: sdcorejs-explore
-  action: summary-read | summary-refresh | code-map-readonly | trace-flow-readonly | env-setup-readonly | env-setup-write-approved | recovery-readonly | persona-read | persona-write-approved | memories-read | memories-write-approved | documentation-harvest-readonly
-  target_root: <path>
-  target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
-  tracks:
-    - angular | nestjs | nextjs | react | node | product | design | test | documentation | workflow | general
-  stack_profiles:
-    - core-ui-angular | legacy-core-ui-angular | plain-angular | sdcorejs-nestjs | plain-nestjs | nextjs-build-website | plain-nextjs | react-vite | react-cra | react-next-generic | node-general | general
-  profile_confidence: high | medium | low
-  profile_evidence:
-    - profile: <stack_profile>
-      evidence:
-        - <path or dependency or config signal>
-  source_roots:
-    - <path>
-  files_read:
-    - <path>
-  commands_run:
-    - command: <exact command>
-      result: <short result>
-      exit: <exit code>
-      notes: <redacted notes>
-  commands_skipped:
-    - command_or_probe: <probe>
-      reason: <reason>
-  writes:
-    - path: <path>
-      reason: <reason>
-      approved: true | false
-  freshness:
-    git_head: <sha | unknown>
-    dirty: true | false | unknown
-    relevant_dirty_paths:
-      - <path>
-    drift_commits: <number | unknown>
-    summary_scope: <scope>
-  redaction:
-    applied: true | false
-    notes: <short note>
-  next_skill_hint:
-    skill: <sdcorejs-* | none>
-    reason: <why>
-```
+Keep these invariants in the active skill:
 
-Rules:
-
-- `explore_context` must not contain secrets or PII.
-- `writes` must be empty for read-only actions.
-- `files_read` should be summarized when huge; never flood thousands of paths.
-- `commands_run` includes only commands actually run.
-- `profile_evidence` cites evidence, not guesses.
-- `next_skill_hint` may point to review/debug/test/ship/documentation/git but
-  does not execute those workflows automatically.
-
-## Summary Actions
-
-### `summary-read`
-
-Read existing `.sdcorejs/summary.md` when present, check freshness metadata when
-available, and report whether it is fresh, stale, dirty, or unknown. If missing
-or stale, produce an ephemeral summary in the response only. Do not write files.
-
-Use `summary-read` for read-only callers such as direct review, test-plan
-questions, failing-output triage, recovery, debug triage, code-map requests,
-and any action where the user did not approve context writes.
-
-### `summary-refresh`
-
-Write or refresh `.sdcorejs/summary.md` only when the user explicitly requested
-refresh/update/persist summary or the caller has write-approved context.
-
-Before writing:
-
-1. Run the authoring-repo guard.
-2. Apply redaction.
-3. Check working-tree freshness.
-4. Record approval and writes in `explore_context`.
-
-Missing or stale summary is not itself permission to write.
-
-Summary frontmatter must include at least:
-
-```yaml
----
-generated_at: <ISO timestamp>
-generator: sdcorejs-explore
-target_root: <path>
-target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
-git_head: <full sha | unknown>
-dirty: true | false | unknown
-relevant_dirty_paths: []
-tracks: []
-stack_profiles: []
-profile_confidence: high | medium | low
-source_roots: []
-summary_scope: <scope>
-package_manager: <npm | pnpm | yarn | bun | unknown>
-package_manifest_hash: <hash | unknown>
-package_lock_hash: <hash | unknown>
-source_roots_hash: <hash | unknown>
-generated_from: []
-commands_run: []
-commands_skipped: []
-redaction_applied: true | false
----
-```
-
-Freshness rules:
-
-- If relevant source/config files are dirty, mark the summary dirty or
-  stale-for-write-sensitive downstream use.
-- Relevant config includes `package.json`, lockfiles, `angular.json`,
-  `nest-cli.json`, `next.config.*`, `tsconfig*`, workspace config, and detected
-  source roots.
-- If dirty state cannot be assessed because the repo is not git-backed, mark
-  freshness as unknown rather than fresh.
-- Use `source_roots_hash`, `package_manifest_hash`, or `package_lock_hash` when
-  practical so package/config drift is visible without relying only on `git_head`.
-- Summary body includes actual architecture and path evidence, not guessed
-  SDCoreJS conventions.
+- read-only actions emit no writes;
+- summary refresh requires one of the explicit ownership conditions;
+- workers and `sdcorejs-git` never update the summary;
+- the fingerprint keys are `workspace_structure`, `dependency_manifests`, and
+  `source_roots`;
+- write-approved actions emit `artifact_context`;
+- missing or stale summary is never itself permission to write.
 
 ## `code-map-readonly`
 
-Produce a read-only architecture inventory:
+First decide whether targeted reads already answer the question. Do not create
+a code map for a few named files, a known entrypoint, or a relationship
+answerable from `rg`, manifests, routes, or module config.
 
-```markdown
-## Code Map - <repo>/<profile> - <timestamp>
-### Detected tracks and stack_profiles
-### Source roots
-### Module / package inventory
-### Routes / controllers / pages / jobs
-### Shared UI / services / utilities
-### Data boundaries and integrations
-### Tests and docs nearby
-### Reusable for the upcoming task
-### Path conventions detected
-### Unknowns
-```
+Use a scoped map for cross-module/package/layer work, impact or ownership
+analysis, composition hosts, frontend-to-persistence traces, unclear dependency
+direction, or a large repository where sequential reads would be wasteful.
 
-Every recommendation must cite real path evidence. Unknown or mixed-stack
-projects still use shared/general rules rather than SDCoreJS-specific guesses.
+Return the bounded `code_context` node/edge contract from
+`../_refs/shared/project-context.md`. Every node and edge cites repository-relative
+path evidence. Do not persist the map.
+
+When the repository already has a dependency graph, language/LSP index, or
+build graph:
+
+- detect it from config, scripts, or documented tooling;
+- use only a documented read-only scoped query;
+- do not install or download a tool;
+- record provider evidence and limitations;
+- classify any generated provider cache as `local_only`;
+- keep current code/config as the higher source of truth.
+
+Do not generate, embed, auto-refresh, or commit a repository-wide codegraph.
 
 ## `documentation-harvest-readonly`
 
@@ -443,10 +340,13 @@ the write in `explore_context`.
 
 ## `recovery-readonly`
 
-Recovery mode is read-only by default. Read the current summary, task
-checkpoint, recent docs, specs/plans frontmatter, memory metadata, git status,
-and recent commits. Redact sensitive content from logs/reports. Do not
-auto-resume work. Do not auto-refresh summary unless the user explicitly asks.
+Recovery mode is read-only. Read valid summary sections, the directly related
+approved spec/plan, change-scoped execution docs, an explicit handoff when one
+exists, relevant memory metadata, Git status/diff/log, and current user scope.
+Use relevance before recency.
+
+Ignore legacy session checkpoint files. Do not auto-resume work, create a
+handoff, or refresh summary.
 
 End with one numbered choice prompt:
 
@@ -474,6 +374,13 @@ Persona file template:
 
 ```markdown
 ---
+artifact_id: project-persona
+artifact_kind: persona
+change_ref: shared-project-persona
+source_spec: none
+source_plan: none
+commit_policy: conditional
+owner: sdcorejs-explore
 persona: non-tech   # tech | non-tech
 set: <YYYY-MM-DD>   # use current date
 ---
@@ -495,6 +402,13 @@ Memory entries should include:
 
 ```yaml
 ---
+artifact_id: memory-<scope>-<timestamp>
+artifact_kind: memory
+change_ref: shared-project-memory
+source_spec: <path | none>
+source_plan: <path | none>
+commit_policy: conditional
+owner: sdcorejs-explore
 track: general
 stack_profile: general
 source_skill: sdcorejs-explore
@@ -514,8 +428,8 @@ as evidence, not unquestionable truth.
 
 - Direct read-only workflows use `summary-read`, existing summary reads,
   `code-map-readonly`, or ephemeral context.
-- Write-approved workflows may request `summary-refresh` only when context
-  artifact writes are allowed.
+- Write-approved workflows may request `summary-refresh` only when one of the
+  explicit summary ownership/write conditions applies.
 - If summary is stale/missing in read-only context, continue with targeted reads
   and report stale/missing context in `explore_context.commands_skipped` or
   `freshness`.
@@ -546,6 +460,8 @@ as evidence, not unquestionable truth.
 - Write env files without explicit approval.
 - Overwrite existing env files.
 - Save transient state or secrets as memory.
+- Use a repository file as live task/session state.
+- Generate or commit a full codegraph.
 
 ## Cross-References
 

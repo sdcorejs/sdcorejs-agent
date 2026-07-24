@@ -12,9 +12,12 @@ allowed-tools: Read, Write, Edit, Glob, Bash, TodoWrite
 Before executing this skill:
 1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
-4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+3. Read and apply `_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
+4. Read `_refs/shared/artifact-lifecycle.md` and merge producer
+   `artifact_context` through the finishing tail.
+5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Purpose
 Single entry point for generating Next.js landing-site code. This skill is the
@@ -34,9 +37,15 @@ Do NOT invoke if:
 - Scope changed since plan was approved -> re-plan with `sdcorejs-plan`
 - The user wants to AUDIT an existing site (not generate) → `sdcorejs-review`
 
-## Step 0 — Pre-flight: ensure project summary
+## Step 0 — Read-oriented project context
 
-Before reading the plan or dispatching, run `sdcorejs-explore (summary-read)`. For an EXISTING site (taking over / extending), if `<target>/.sdcorejs/summary.md` is missing or stale in this write-approved executor, run `summary-refresh` first so generation slots into the real app-router / component / content structure instead of guessing. For a brand-new site (`init-site` in scope), there is nothing to summarize yet; run `summary-refresh` AFTER init scaffolds the project.
+Before reading the plan or dispatching, assemble read-only `project_context`.
+Use valid summary sections when available. For an existing site with a missing,
+legacy, unknown, or stale summary, continue with targeted reads and use a scoped
+code map only for unresolved cross-component relationships. Do not refresh
+merely because summary is absent. A brand-new approved `init-site` may create
+summary v2 after scaffolding; an architecture-level refresh belongs only to the
+sequential workflow or integration owner.
 
 Before generating any non-trivial page, section, interactive block, form, or
 frontend data boundary, read `_refs/shared/frontend-architecture.md`. Require the
@@ -140,11 +149,11 @@ sdcorejs-product (when user-visible feature traceability is needed) - update .sd
    |
 sdcorejs-documentation (write-technical-doc mode, if Technical doc approved) - create/update the approved technical doc from source evidence
    |
-_refs/orchestration/tail/auto-docs.md (always) - session summary to .sdcorejs/docs/nextjs/
+_refs/orchestration/tail/auto-docs.md (always) - change-scoped execution record to .sdcorejs/docs/nextjs/
    |
 sdcorejs-documentation (write-user-guide mode, if User guide approved) - create/update touched module's .sdcorejs/documentation/user-guides/<module>.md only when approved by the documentation gate or explicitly requested
    |
-_refs/orchestration/tail/auto-task-tracker.md (always) - tick done, append new
+_refs/orchestration/tail/auto-task-tracker.md (integration/sequential owner only) - reconcile durable backlog, never live progress
    |
 sdcorejs-explore (memories mode) - durable knowledge (when applicable)
    |

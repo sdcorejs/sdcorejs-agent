@@ -1,5 +1,20 @@
 # Repair Loop - Apply Findings and Re-verify
 
+## Contents
+
+- [Purpose](#purpose)
+- [When Invoked](#when-invoked)
+- [Inputs](#inputs)
+- [Working-tree Preflight](#working-tree-preflight)
+- [Repair Ledger](#repair-ledger)
+- [Verification Discovery](#verification-command-discovery)
+- [Fix Tiers](#fix-tiers)
+- [Pass Discipline](#pass-discipline)
+- [Workflow](#workflow)
+- [Convergence Handoff](#convergence-handoff)
+- [Rules](#rules)
+- [Cross-references](#cross-references)
+
 Reference body for `sdcorejs-repair-loop`. Load this file only after the
 skill triggers.
 
@@ -360,7 +375,7 @@ Reply with `1`, `2`, or `3`.
 
 Do not hand off directly to `sdcorejs-git (commit mode)` by default. Direct
 commit handoff is allowed only when `sdcorejs-ship (verify-before-done mode)`
-and `sdcorejs-ship (branch-ready mode)` passed in the current session for the
+and `sdcorejs-ship (branch-ready mode)` passed for the
 current `HEAD` or diff, or when the caller explicitly requested a commit after
 those gates with any verification deferral recorded.
 

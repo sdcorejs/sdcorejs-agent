@@ -4,6 +4,16 @@
 
 # Init Module — Feature Module Configuration
 
+## Contents
+
+- [Reference Name](#1-reference-name)
+- [Description](#2-description)
+- [Rules](#3-rules)
+- [Templates](#4-templates)
+- [Example Input](#5-example-input)
+- [Integration Points](#integration-points)
+- [Post-init Summary](#post-init--refresh-the-project-summary)
+
 ## 1. Reference Name
 **Feature Module Configuration Setup**
 
@@ -199,4 +209,8 @@ Expected agent decision:
 
 ## Post-init — refresh the project summary
 
-After a new module is scaffolded, run `sdcorejs-explore (summary-refresh)` in write-approved context so `.sdcorejs/summary.md` reflects the new module (it patches the changed sections - module inventory, routes, conventions - rather than regenerating from scratch). Keep the canonical brief in sync so later write-code runs see the module exists.
+A new module is an architecture-level change. The sequential workflow or
+integration owner may refresh summary v2 after validation, updating only the
+invalidated module/route/navigation sections and fingerprints. Workers do not
+edit summary. If ownership or safe fingerprint evidence is unavailable, leave
+the summary partially stale and let callers use targeted reads.

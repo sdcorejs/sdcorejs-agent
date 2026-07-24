@@ -1,5 +1,13 @@
 # Workspace Isolation
 
+## Contents
+
+- [Purpose](#purpose)
+- [When To Run](#when-to-run)
+- [Procedure](#procedure)
+- [Report](#report)
+- [Rules](#rules)
+
 Reference body for `sdcorejs-git` workspace mode and
 `sdcorejs-parallel-dispatch` fan-out preparation. Load this file only when work
 needs an isolated checkout or the user explicitly asks for a worktree.
@@ -16,6 +24,10 @@ For parallel protocol v2, workspace mode returns identity rather than a vague
 global isolation choice. Each unit records strategy, resolved path, branch,
 base HEAD, whether the current run created it, and its result protocol. The
 integration workspace is separate from unit worktrees.
+
+Live progress stays in each runtime task mechanism. Workspaces, branches,
+approved plans, result identities, and `artifact_context` coordinate work;
+repository session checkpoint files do not.
 
 ## When To Run
 
@@ -73,6 +85,8 @@ Record:
 - whether isolation was reused, created, or skipped
 - resolved integration workspace path
 - per-unit workspace path, branch, common base HEAD, and creation owner
+- per-unit change-scoped artifact paths and integration ownership for every
+  shared `.sdcorejs/**` artifact
 - pre-existing worktrees that cleanup must preserve
 
 Before returning a worktree assignment, verify that it is not nested inside
@@ -150,3 +164,6 @@ Return:
 - Do not proceed past a failing baseline without telling the user.
 - Do not hardcode one package manager as universal.
 - Do not invent missing scripts.
+- Do not let workers update shared summary, persona, memory, or living backlog
+  artifacts; assign those writes to the integration owner after fan-in.
+- Do not use a session checkpoint file as a concurrency primitive.

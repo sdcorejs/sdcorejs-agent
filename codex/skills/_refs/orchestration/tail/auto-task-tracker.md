@@ -1,175 +1,147 @@
-# Auto Task Tracker Tail Reference — Living TODO per Track
+# Durable Track Backlog Tail Reference
+
+## Contents
+
+- [Purpose](#purpose)
+- [Ownership Gate](#ownership-gate)
+- [Output Path](#output-path)
+- [Frontmatter](#frontmatter)
+- [Suggested Body](#suggested-body)
+- [Reconciliation](#reconciliation)
+- [Runtime Output](#runtime-output)
+- [Rules](#rules)
 
 ## Purpose
-Internal tail reference. Load this file from a dispatchable executor after auto-docs and user-guide work. This file is not a dispatchable skill.
 
-`auto-docs` captures what just happened. `memories` captures durable facts. Neither answers "<localized text>". This reference maintains a single, ordered, always-current TODO list per track so the next session knows where to pick up — without re-reading every doc.
+Internal tail reference for a shared, durable project backlog under
+`.sdcorejs/tasks/<track>.md`. This is not live thread progress, a session
+checkpoint, or a coordination file.
 
-## When invoked
+The active thread/harness owns live progress. The approved plan is the durable
+execution contract. This backlog contains only follow-up work the project wants
+to preserve across changes.
 
-### Read mode — at session start (after auto-docs read ritual)
-1. Resolve target root: `git rev-parse --show-toplevel`
-2. Detect track
-3. Read `<target-root>/.sdcorejs/tasks/<track>.md` if it exists
-4. Surface to user: "<localized text>"
-5. If file does not exist → silent skip (don't create empty file)
+Read `_refs/shared/artifact-lifecycle.md` before writing.
 
-### Write mode — at end of every code-writing task (after auto-docs runs)
-The agent MUST run this reference (write mode) immediately after `_refs/orchestration/tail/auto-docs.md` finishes writing the session summary. This runs for every code-writing skill invocation:
-- `write-code` (the `sdcorejs-angular` orchestrator and the reference packs it loads: `init-portal`, `init-module`, `init-entity`, `screen-list`, `screen-detail`, `actions`)
-- `sdcorejs-test`, `sdcorejs-review`, `sdcorejs-documentation (code-documentation mode)` when source code changed
+## Ownership Gate
 
-Read the auto-docs file the previous step just wrote. From it:
-- Match "What was changed" items against existing open `[ ]` tasks → tick them `[x]` with timestamp
-- Parse "Next suggested action" and "Open questions" → append as new open tasks
-- Move stale tasks (older than 14 days, untouched) into a "Stale" section for triage
+Do not update the backlog after every code task.
 
-If `auto-docs` was skipped (no code-writing happened) → skip this reference too.
+Write only when:
 
-## Output path
+- the user explicitly asks to update the project backlog;
+- an approved tail selects durable backlog reconciliation; or
+- the sequential workflow or parallel integration owner is assigned the shared
+  artifact.
 
-```bash
-TARGET_ROOT=$(git rev-parse --show-toplevel)
-TRACK=angular            # or nestjs / nextjs / product / test
-mkdir -p "$TARGET_ROOT/.sdcorejs/tasks"
-FILE="$TARGET_ROOT/.sdcorejs/tasks/$TRACK.md"
+Parallel workers never update summary, persona, memory, or living backlog
+files. The integration owner performs at most one shared backlog update after
+fan-in.
+
+If ownership is absent, leave the file unchanged and put the path under
+`artifact_context.conditional` only when a future update condition exists.
+
+## Output Path
+
+```text
+<target-root>/.sdcorejs/tasks/<track>.md
 ```
 
-One file per track per project. Never write to `sdcorejs-agent` repo.
+One backlog per track is allowed because it is shared durable project state,
+not current thread state. Do not create an empty file.
 
-## File format
+## Frontmatter
+
+```yaml
+---
+artifact_id: backlog-<track>
+artifact_kind: task
+change_ref: shared-track-backlog
+source_spec: none
+source_plan: none
+commit_policy: conditional
+owner: <integration role or workflow>
+track: <track>
+updated_at: <ISO-8601 timestamp>
+redaction_applied: true
+---
+```
+
+## Suggested Body
 
 ```markdown
-# Living TODO — <track> — <project name>
+# Durable Backlog - <track>
 
-> Maintained by `_refs/orchestration/tail/auto-task-tracker.md`. Edit by hand when needed.
-> Format: `[ ]` open / `[x] (YYYY-MM-DD)` completed / `[!]` blocked.
+## Prioritized
+- [ ] <project follow-up>
 
-## Now (in-flight or top priority)
-- [ ] Finish the Product detail screen (validation + lookup combobox)
-- [ ] Add permission code CATALOG_C_PRODUCT_BULK_DELETE
-
-## Next (queued, ordered)
-- [ ] Create Category entity (parent of Product)
-- [ ] Wire Product workflow approval (submit for approval → approve)
-- [ ] Move shared validators ra `libs/shared/validators`
-
-## Later (someday / maybe)
-- [ ] Migrate mock-data sang real API khi backend ready
-- [ ] E2E coverage cho bulk action
+## Next
+- [ ] <queued project follow-up>
 
 ## Blocked
-- [!] Initialize NestJS module - waiting for sample code from the team
+- [!] <item> - <external dependency or decision>
 
-## Done (last 7 days)
-- [x] (2026-05-16) Refactor `21-screen-detail` form binding sang `[form]+name=`
-- [x] (2026-05-15) Add 5 _shared skills (commit, pr-create, debug, recovery, env-setup)
-- [x] (2026-05-14) Mirror sync via lefthook pre-commit
-
-## Stale (no activity >14d — triage)
-- [ ] (added 2026-04-28) Review accessibility cho sd-table
+## Recently Completed
+- [x] (<YYYY-MM-DD>) <durable outcome>
 ```
 
-Rules for the file:
-- **One section per state.** No checkbox outside the right section.
-- **Now ≤ 3 items.** If more than 3 are in-flight, focus is broken.
-- **Next ordered by priority** (top = sooner).
-- **Done capped at last 7 days.** Older completions get pruned (the doc history captures them).
-- **Stale = open >14 days untouched** — visible reminder to defer / drop / promote.
-- Match user's session language.
+The checkboxes represent durable backlog items, not the active thread's
+step-by-step progress. Do not update this file when a runtime task checkbox
+changes.
 
-## Workflow — write mode
+## Reconciliation
 
-### 1. Locate the auto-docs file just written
-```bash
-LATEST_DOC=$(ls -t .sdcorejs/docs/$TRACK/*.md | head -1)
+1. Read the existing backlog only when the current request/plan/metadata makes
+   it relevant.
+2. Read the current change's execution record and approved plan.
+3. Close an existing item only when current evidence proves its durable outcome.
+4. Add only explicit follow-ups, approved deferred work, or genuine blockers.
+5. Preserve hand edits, ordering, and user-authored wording.
+6. Keep the backlog compact; archive or remove old completed items only when the
+   owner intentionally maintains the file.
+7. Emit one concise update summary without dumping the file.
+
+Do not derive tasks from unrelated old execution records, chat history, or the
+latest document by default.
+
+## Runtime Output
+
+When the current workflow owns the update:
+
+```yaml
+artifact_context:
+  schema_version: 1
+  change_ref: <current change id>
+  source_spec: <path | none>
+  source_plan: <path | none>
+  required_with_change: []
+  shared_owned:
+    - path: .sdcorejs/tasks/<track>.md
+      kind: task
+      reason: integration owner reconciled durable follow-up work
+  conditional: []
+  local_only: []
+  unrelated_observed: []
 ```
 
-### 2. Parse the doc
-Extract:
-- **"What was changed"** bullets → these correspond to tasks that should be ticked off
-- **"Next suggested action"** bullets → candidate new tasks
-- **"Open questions / follow-ups"** bullets → candidate new tasks (often blocked)
-
-### 3. Reconcile with existing tasks
-
-For each "What was changed" item:
-- Search the existing `[ ]` tasks (all sections except Done) for a fuzzy match
-- If matched → move to Done with today's timestamp: `[x] (YYYY-MM-DD) <task text>`
-- If no match → don't auto-add; the change was unplanned (still captured in the doc itself)
-
-For each "Next suggested action":
-- Check if a similar task already exists → don't duplicate
-- Else append to "Next" section
-
-For each "Open question / follow-up":
-- If phrased as a blocker → "Blocked" section with `[!]`
-- If phrased as a question → "Next" section as `[ ] <Question: ...>`
-- Else "Next"
-
-### 4. Promote / demote
-- If a "Next" task was referenced in the doc as "starting next" → promote to "Now"
-- If "Now" has >3 items → demote the oldest back to "Next" and surface the conflict to the user (one focus per session)
-
-### 5. Mark stale
-For each `[ ]` task with no activity in 14+ days (look at the surrounding section's timestamps or git log of the file):
-- Move to "Stale" section
-- Prefix with `(added YYYY-MM-DD)`
-
-### 6. Prune Done
-Remove `[x]` entries older than 7 days. The git history of the file preserves them; the live file stays scannable.
-
-### 7. Write back
-Use Edit (preferred) over Write to preserve hand-edits the user made between sessions.
-
-### 8. Report to user
-One line:
-> "TODO updated: 2 done, 1 new Next item, 0 stale."
-
-Don't dump the full file.
-
-## Read mode (session start)
-
-After `auto-docs` session-start ritual:
-1. Glob `.sdcorejs/tasks/<track>.md`
-2. If exists, read it
-3. Count items per section
-4. Surface: "<localized text>"
-
-Don't quote the whole file unless the user asks.
+When ownership is not proven, do not write and do not place the path in
+`shared_owned`.
 
 ## Rules
 
 ### MUST DO
-- Run write mode IMMEDIATELY after `_refs/orchestration/tail/auto-docs.md`, not as a separate user trigger
-- Match user's session language (the file's language is set by the FIRST entry)
-- Cap "Now" at 3 to enforce focus
-- Mark stale tasks visibly; don't silently drop them
-- Use Edit, not Write, to preserve hand-edits
+
+- Keep live progress in the thread or harness.
+- Require one explicit owner for shared backlog writes.
+- Use current change evidence and directly related artifacts.
+- Preserve user edits and language.
+- Redact secrets and PII.
 
 ### MUST NOT
-- Write the file to the `sdcorejs-agent` repo
-- Auto-add tasks the doc didn't mention
-- Re-add tasks the user manually deleted (respect their edits — if a task was removed by hand, don't resurrect it from older docs)
-- Overwrite the user's section ordering
-- Translate hand-written task text — leave verbatim
-- Run write mode when `auto-docs` was skipped (nothing happened → nothing to track)
 
-## Cross-track usage
-For multi-track repos, one file per track:
-- `.sdcorejs/tasks/angular.md`
-- `.sdcorejs/tasks/nestjs.md`
-- `.sdcorejs/tasks/nextjs.md`
-- `.sdcorejs/tasks/product.md`
-- `.sdcorejs/tasks/test.md`
-
-At session start, read all of them in parallel; surface a combined banner if more than one has open Now items.
-
-## Anti-patterns
-- Auto-resurrecting tasks the user deleted by hand
-- Letting "Now" balloon to 10+ items (no focus, no signal)
-- Writing the file to the agent repo instead of the target project
-- Translating user-authored text (their language, their text)
-- Pruning Done items the SAME day they were ticked (gives no sense of velocity)
-- Surfacing the whole file at session start (just the counts + top 3)
-- Adding tasks from non-doc sources (chat history, memory) — keep auto-docs as the single source for auto-additions; manual additions are fine
+- Mirror runtime progress to the repository.
+- Create a "current", "active", session index, or per-thread state file.
+- Let parallel workers update the shared backlog.
+- Auto-add tasks after every code-writing invocation.
+- Re-add tasks the user removed.
+- Use this backlog as proof of completion.

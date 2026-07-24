@@ -105,7 +105,8 @@ Request
        sdcorejs-test -> sdcorejs-review -> repair-loop -> sdcorejs-documentation (code-documentation mode)
        -> sdcorejs-product when user-visible feature traceability is needed
        -> _refs/orchestration/tail/auto-docs.md -> sdcorejs-documentation (write-user-guide mode)
-       -> _refs/orchestration/tail/auto-task-tracker.md -> sdcorejs-explore (memories mode) when relevant
+       -> _refs/orchestration/tail/auto-task-tracker.md only when the sequential/integration owner updates durable backlog
+       -> sdcorejs-explore (memories mode) when relevant
        -> sdcorejs-ship (verify-before-done mode) -> sdcorejs-ship (branch-ready mode as the final read-only gate)
 ```
 
@@ -151,14 +152,18 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 
 ## Mandatory Rules
 
-1. Project context first when needed: read `.sdcorejs/summary.md` or invoke `sdcorejs-explore`.
+1. Project context first when needed: apply the read-only
+   `_refs/shared/project-context.md`; use summary when valid and targeted reads
+   when it is missing or stale.
 2. Requirements before code: use `sdcorejs-brainstorming` until minimum blockers are confirmed.
 3. Approval gates: `sdcorejs-spec` and `sdcorejs-plan` require explicit approval. Silence is not approval.
 4. Approved snapshots: `sdcorejs-spec` and `sdcorejs-plan` write approved snapshots themselves before the next phase.
 5. Execute through `sdcorejs-execute-plan`: it owns track detection, Angular Core UI/plain Angular classification, product-track routing, design-track routing, test-track routing, generic harness fallback, and the sequential/parallel question.
 6. Finish gate is mandatory after every code-generation run, including direct track executor requests.
 7. Evidence before claims: never say pass, fixed, built, or done without current verification output.
-8. Auto-docs and task tracking write to the target project, not to this agent repo.
+8. Durable execution records and explicitly owned backlog artifacts write to
+   the target project, not to this agent repo. Live task progress remains in
+   the thread/harness.
 9. Mojibake is a blocking defect in prompts, docs, skills, comments, and user-facing strings.
 10. User choice prompts must not rely on clickable options; apply `_refs/shared/user-choice-prompt.md`, ask one decision at a time, and provide numbered choices such as `1/2/3`.
 11. Skill-pack source language is English only; keep runtime-localized behavior by translating generated output to the user's language during execution, not by hardcoding Vietnamese in reusable skills or refs.
@@ -170,17 +175,22 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 In a target project:
 
 - Apply `_refs/shared/project-context.md` for the current request.
-- Read latest 3 `.sdcorejs/docs/<track>/*.md`.
-- Read `.sdcorejs/memories/<track>/*.md` frontmatter.
-- Read `.sdcorejs/specs/<track>/*.md` and `.sdcorejs/plans/<track>/*.md` frontmatter.
-- Read `.sdcorejs/tasks/current-session.md` if present; prioritize it when status is `in_progress` or `blocked`.
-- Read `.sdcorejs/persona.md` if present; otherwise default to technical style unless `sdcorejs-explore (persona mode)` is triggered.
+- Read explicit user evidence first, then valid summary sections.
+- Select specs, plans, docs, handoffs, memories, and durable backlog entries by
+  relationship metadata and request relevance; do not load the latest files by
+  default.
+- Ignore legacy session checkpoint files. Live progress belongs to the current
+  thread/harness.
+- Read `.sdcorejs/persona.md` if relevant; otherwise default to technical style
+  unless `sdcorejs-explore (persona mode)` is triggered.
 
 ## Reference Loading
 
 Load references on demand:
 
 - `_refs/shared/project-context.md` before non-trivial skill execution.
+- `_refs/shared/artifact-lifecycle.md` before writing, verifying, staging,
+  committing, or pushing `.sdcorejs/**` artifacts.
 - `_refs/sdlc/{angular,nestjs,nextjs}.md` during brainstorming/spec/plan.
 - `_refs/shared/tasklist.md` for non-trivial execution tasks.
 - `_refs/shared/user-choice-prompt.md` before any user-facing choice, approval gate, yes/no question, or mode selection.
@@ -213,5 +223,5 @@ Load references on demand:
   backend/     # NestJS app and backend tests
   frontend/    # Angular app and frontend tests
   test/        # cross-stack e2e/UAT tests, fixtures, reports
-  .sdcorejs/   # specs, plans, session docs, ledgers, memories, tasks
+  .sdcorejs/   # specs, plans, change records, ledgers, memories, durable backlogs
 ```

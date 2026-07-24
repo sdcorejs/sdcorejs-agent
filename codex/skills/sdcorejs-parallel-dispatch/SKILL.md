@@ -15,12 +15,15 @@ description: Parallel execution gate and subagent fan-out discipline. Use after 
 Before executing this skill:
 1. Read and apply `../_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `../_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
-4. Read `../_refs/orchestration/parallel-protocol.md` completely and validate every dispatch against it.
-5. Import the deterministic validators from `../_refs/orchestration/parallel-protocol.mjs`; do not reimplement their contract, path, workspace, topology, fan-in, repair, evidence, or state checks in prompts.
-6. For write-capable work, read `../_refs/orchestration/workspace-isolation.md` before creating or selecting unit workspaces.
-7. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-8. Before a user-facing choice, apply `../_refs/shared/user-choice-prompt.md`.
+3. Read and apply `../_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
+4. Read `../_refs/shared/artifact-lifecycle.md` and assign one owner for every
+   shared `.sdcorejs/**` artifact.
+5. Read `../_refs/orchestration/parallel-protocol.md` completely and validate every dispatch against it.
+6. Import the deterministic validators from `../_refs/orchestration/parallel-protocol.mjs`; do not reimplement their contract, path, workspace, topology, fan-in, repair, evidence, or state checks in prompts.
+7. For write-capable work, read `../_refs/orchestration/workspace-isolation.md` before creating or selecting unit workspaces.
+8. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+9. Before a user-facing choice, apply `../_refs/shared/user-choice-prompt.md`.
 
 ## Purpose
 
@@ -38,12 +41,15 @@ The public compatibility verdicts remain:
 The underlying topology is one of `READ_ONLY_FANOUT`,
 `INDEPENDENT_WRITE_UNITS`, `CONTRACT_BOUND_ROLES`, or `SEQUENTIAL_DAG`.
 
-Parent write permission is narrow: it may write an approved protocol/brief
-artifact under the target `.sdcorejs/` area and may apply validated unit results
-in the integration workspace. It does not own implementation files. Shared
-implementation paths belong to a concrete unit or `integration-unit`;
-`parent-contract-only` owns contract metadata only. In the read-only contract,
-the parent and units make no writes.
+Parent write permission is narrow: it may write an approved, change-scoped
+protocol/brief artifact under the target `.sdcorejs/` area and may apply
+validated unit results in the integration workspace. It does not own
+implementation files. Workers may create only change-scoped artifacts and must
+not update summary, persona, memory, or living track backlogs. The named
+integration owner updates shared artifacts once after fan-in and emits the
+merged `artifact_context`. Shared implementation paths belong to a concrete
+unit or `integration-unit`; `parent-contract-only` owns contract metadata only.
+In the read-only contract, the parent and units make no writes.
 
 ## Entry Contracts
 
@@ -65,8 +71,9 @@ direct invocation is not a bypass.
 
 ### 1. Precheck
 
-1. Run `sdcorejs-explore (summary-read)` through project-context. Do not refresh the summary merely because execution is
-   write-approved.
+1. Assemble read-only `project_context`. Use valid summary sections when
+   available; otherwise continue with targeted reads or a scoped code map. Do
+   not refresh the summary merely because execution is write-approved.
 2. Validate the contract union and its hashes.
 3. Capture current branch, HEAD, staged, unstaged, untracked, dirty-diff hash,
    unrelated dirty paths, and intended-output overlap.
@@ -75,6 +82,9 @@ direct invocation is not a bypass.
    approved plan and target evidence. Do not assume a framework or directory
    layout.
 6. Emit the complete `parallel_context` from the protocol reference.
+7. Carry one runtime `artifact_context` per change. Workers return only their
+   owned change-scoped entries; the integration owner performs deterministic
+   merge and owns shared entries.
 
 The emitted context begins with:
 
@@ -182,6 +192,10 @@ exact integrated HEAD/diff. Each evidence record contains command, cwd,
 timestamps, exit code, associated result identity, output digest, and
 environment fingerprint.
 
+Run `sdcorejs-git` only after fan-in. Before final verification, the integration
+owner updates any authorized summary, persona, memory, or living backlog once;
+workers never write those shared artifacts.
+
 For write-capable work, `verify_before_done`, `branch_ready_final_gate`, and
 `no_writes_after_branch_ready` are always true. Run all write-producing tail
 steps before `sdcorejs-ship (verify-before-done mode)`, then run
@@ -206,6 +220,10 @@ local simulation from real runtime concurrency evidence.
 - Mechanically compute actual changed paths and store the normalized list.
 - Use plan-derived DAG waves and deterministic integration.
 - Keep approved snapshots immutable and stale old evidence after revision.
+- Keep live progress in runtime task state; never coordinate through a session
+  checkpoint file.
+- Require explicit ownership for shared artifacts and merge `artifact_context`
+  deterministically after fan-in.
 - Route repairs to an explicit owner/workspace.
 - Surface partial failures and unsupported cancellation honestly.
 - Run global verification and final branch-ready on the final state.

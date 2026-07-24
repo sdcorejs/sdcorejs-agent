@@ -1,5 +1,17 @@
 # Write User Guide Reference
 
+## Contents
+
+- [Purpose](#purpose)
+- [Modes](#modes)
+- [Out Of Scope](#not)
+- [Per-module Incremental Mode](#mode-1--per-module-incremental-write-code-tail)
+- [Coverage Versus Requirements](#mode-4--coverage-vs-requirements-runs-inside-mode-1--2)
+- [Rules](#rules)
+- [Related References](#related)
+- [Aggregate Build And Export](#mode-2--aggregate-build--export)
+- [Legacy Reverse-engineering](#mode-3--legacy-reverse-engineer)
+
 Internal reference loaded by `sdcorejs-documentation` in `write-user-guide`
 mode. This file is not a dispatchable skill.
 
@@ -266,7 +278,8 @@ Also load matching task-level requirement records when present:
 
 ```bash
 Glob: <target>/.sdcorejs/documentation/requirements/*.md
-# Prefer files whose id/title/source refs match the module, TASKID, branch, or current session.
+# Prefer files whose id/title/source refs match the module, TASKID, change_ref,
+# source_spec, source_plan, or explicit user scope.
 ```
 
 If spec, PRD, and requirement records exist, merge their criteria (deduplicate by intent).

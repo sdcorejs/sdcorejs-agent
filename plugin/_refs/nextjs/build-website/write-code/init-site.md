@@ -4,6 +4,16 @@
 
 # Build Website — Init Site
 
+## Contents
+
+- [Purpose](#purpose)
+- [When Invoked](#when-invoked)
+- [Prerequisites](#prerequisites-from-01-brainstorming)
+- [Workflow](#workflow)
+- [Rules](#rules)
+- [Anti-patterns](#anti-patterns)
+- [Cross-references](#cross-references)
+
 ## Purpose
 Stand up a Next.js 16 landing-site skeleton that every later sub-skill (theme, pages, SEO, i18n, …) expects. After this skill runs, `npm run dev` succeeds, the root route renders an empty hero, and the folder structure is in place for content + components + i18n.
 
@@ -290,7 +300,13 @@ If any of these fail, halt and surface — do NOT proceed to next sub-skill with
 
 ### 6. Write the project summary
 
-Once the bootstrap is green, run `sdcorejs-explore (summary-refresh)` in write-approved context to create `.sdcorejs/summary.md` (domain, stack, app-router + content + i18n layout, conventions, current git HEAD, freshness metadata, stack profile evidence, and redaction status). The next session and the `sdcorejs-nextjs` orchestrator's Step 0 preflight read this instead of re-scanning. A fresh site has none until this step runs.
+Once the bootstrap is green, the approved project-initialization owner may run
+`sdcorejs-explore (summary-refresh)` to create summary v2 with
+repository-relative evidence plus workspace/dependency/source-root
+fingerprints. Do not include branch, current HEAD as the freshness key,
+task/session state, or current verification. Emit the summary as a conditional
+shared artifact in `artifact_context`. If the refresh is unavailable or unsafe,
+leave summary missing and let later work use targeted reads.
 
 ## Rules
 

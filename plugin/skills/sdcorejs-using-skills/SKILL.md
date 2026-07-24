@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-using-skills
-description: Session bootstrap and dispatch guide for sdcorejs skills. Use at session start, onboarding/help/list-skill requests, or any request matching an sdcorejs skill. Establishes brainstorming -> spec -> plan -> execute-plan -> finish flow, approval gates, track selection, generic fallback, and invoke-relevant-skill-first discipline. Runtime-localized.
+description: Session bootstrap and dispatch guide for sdcorejs skills. Use at session start, onboarding/help/list-skill requests, or any request matching an sdcorejs skill. Establishes the brainstorming-to-spec-to-plan-to-execute-plan-to-finish flow, approval gates, track selection, generic fallback, and invoke-relevant-skill-first discipline. Runtime-localized.
 allowed-tools: Read, Glob
 ---
 
@@ -12,9 +12,12 @@ allowed-tools: Read, Glob
 Before executing this skill:
 1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
-4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+3. Read and apply `_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
+4. Read `_refs/shared/artifact-lifecycle.md` before any workflow writes,
+   verifies, stages, commits, or pushes `.sdcorejs/**` artifacts.
+5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
+6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
 ## Rule
 When a request matches a skill, invoke that skill before responding. Skills decide how to explore, plan, build, verify, and ship.
@@ -60,8 +63,8 @@ The test track is first-class: test-only plans execute through `sdcorejs-test`, 
 
 ```text
 Session start
-  -> read .sdcorejs/tasks/current-session.md when present
-  -> sdcorejs-explore when project context is needed
+  -> assemble relevant project context without writes
+  -> use summary sections when valid, then targeted reads as needed
 Request
   -> sdcorejs-brainstorming       (explore if needed, then confirm blockers)
   -> sdcorejs-spec                (write spec + approval gate + approved spec snapshot)
@@ -78,13 +81,18 @@ Request
 - Confirm requirements before spec. Do not generate code from an unconfirmed scope.
 - Keep the two approval gates: spec approval and plan approval. Silence is not approval.
 - `sdcorejs-spec` and `sdcorejs-plan` write their own approved snapshots before moving forward.
-- Apply `_refs/shared/project-context.md` before any non-trivial skill execution so direct-triggered skills load summaries, checkpoints, specs/plans, tasks, and relevant memories.
+- Apply `_refs/shared/project-context.md` before non-trivial execution. Missing
+  or stale summary never blocks work; continue with targeted reads or a scoped
+  code map.
 - Use `sdcorejs-execute-plan` after plan approval; it owns track detection, product-track routing, design-track routing, test-track routing, generic harness fallback, and the parallel/sequential question.
 - Present the finish gate after every code-generation run.
 - Before any choice, approval gate, yes/no question, or mode selection, apply `_refs/shared/user-choice-prompt.md` so the user can answer with a number.
 - Run verification before claiming pass, fixed, built, or done.
-- For long or interruptible work, mirror visible `Tasks` progress to the ignored
-  local `.sdcorejs/tasks/current-session.md`; do not commit live session state.
+- Keep visible progress in the current thread or harness. Never mirror live
+  task state to a repository file. Create an explicit change-scoped handoff only
+  for a real transfer or recovery need.
+- Every producer of `.sdcorejs/**` durable artifacts emits `artifact_context`
+  and passes it through ship to Git artifact closure.
 - Match the user's language at runtime; keep identifiers and route paths in English.
 
 ## First step guidance

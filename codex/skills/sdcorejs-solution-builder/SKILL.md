@@ -16,7 +16,8 @@ description: End-to-end orchestrator for users asking to build a whole runnable 
 Before executing this skill:
 1. Read and apply `../_refs/shared/tasklist.md` for non-trivial execution tasks.
 2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `../_refs/shared/project-context.md` for project memory, resume checkpoints, summaries, specs/plans, tasks, and relevant memories.
+3. Read and apply `../_refs/shared/project-context.md` as a read-only,
+   relevance-first context assembler.
 4. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
 5. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
 
@@ -138,7 +139,10 @@ Rules:
 - `backend/` is the NestJS app and owns backend code plus backend unit/integration tests.
 - `frontend/` is the Angular app and owns UI code plus frontend unit/component tests.
 - `test/` is the cross-stack test track: e2e/UAT automation, shared test cases, fixtures, and reports based on the approved user stories.
-- `.sdcorejs/` remains the agent memory and evidence layer: approved specs/plans, session logs, product traceability ledgers, task tracker, memories, and verification evidence.
+- `.sdcorejs/` remains the durable evidence layer: approved specs/plans,
+  change-scoped execution records, product traceability ledgers, explicitly
+  owned backlogs, memories, and verification evidence. Live progress stays in
+  the thread/harness.
 - Product docs and `.sdcorejs/docs/product/` are both required: product docs explain the feature to humans; the ledger maps requirement -> implementation -> test evidence for recovery and verification.
 - Design docs and `.sdcorejs/docs/design/` are both allowed: design docs guide FE implementation; the ledger maps user stories -> screens -> PNG/wireframe exports.
 
@@ -178,7 +182,7 @@ Drive these steps in order. For the non-tech user, narrate only the plain-langua
 
    If Docker is unavailable, a port is occupied, or the smoke cannot be automated, say exactly what was not verified and do **not** claim the packaged stack is runnable. For lower complexity levels, report the matching local/manual smoke that actually ran and avoid packaged-stack language. Give the user the next concrete command from `START.md` when a start guide exists.
 
-11. **Record the whole build** - After the selected build, optional packaging/auth/run-guide, and matching verification, run the final tail for the solution-builder invocation: `../_refs/orchestration/tail/auto-docs.md` -> `sdcorejs-documentation (write-user-guide mode)` (Mode 1 for touched modules under `.sdcorejs/documentation/user-guides/`; Mode 2 aggregate under `.sdcorejs/documentation/` if this is a whole-app delivery) -> `../_refs/orchestration/tail/auto-task-tracker.md` -> `sdcorejs-explore (memories mode)` when durable knowledge surfaced -> `sdcorejs-ship (verify-before-done mode)` for final evidence -> `sdcorejs-ship (branch-ready mode)` as the final read-only gate. This second tail captures only the surfaces actually built; do not imply infra/auth/run-guide changes for lower complexity levels. No writes after branch-ready unless branch-ready is run again.
+11. **Record the whole build** - After the selected build, optional packaging/auth/run-guide, and matching verification, run the final tail for the solution-builder invocation: `../_refs/orchestration/tail/auto-docs.md` -> `sdcorejs-documentation (write-user-guide mode)` (Mode 1 for touched modules under `.sdcorejs/documentation/user-guides/`; Mode 2 aggregate under `.sdcorejs/documentation/` if this is a whole-app delivery) -> `../_refs/orchestration/tail/auto-task-tracker.md` only when the sequential/integration owner is authorized to update durable backlog -> `sdcorejs-explore (memories mode)` when durable knowledge surfaced -> `sdcorejs-ship (verify-before-done mode)` for final evidence -> `sdcorejs-ship (branch-ready mode)` as the final read-only gate. Merge producer `artifact_context` through the tail. This second tail captures only the surfaces actually built; do not imply infra/auth/run-guide changes for lower complexity levels. No writes after branch-ready unless branch-ready is run again.
 
 12. **Tell the user how to run it** - Close in plain language only after the relevant checks above have actually run. If verified, say: "Open a terminal in this folder, type `docker compose up`, wait a moment, then open http://localhost:4200 in your browser and log in with **demo / demo**." Point them at `START.md` for the full guide and for how to stop or reset it.
 
@@ -192,7 +196,11 @@ Every generation step (brainstorming/spec/plan/execute/product/design/backend/fr
 
 The chain is long, so it is built to survive interruption.
 
-- If a session is interrupted mid-chain, resume with `sdcorejs-explore (recovery mode)` plus the target project's `.sdcorejs/` docs, `product/` docs, and `design/` handoff (the persisted persona, specs, plans, session summaries, PRDs, user stories, UAT checklists, design specs/wireframes, user guide, and task tracker) - together they reconstruct where the build stopped and what's left.
+- If a thread is interrupted mid-chain, use `sdcorejs-explore (recovery mode)`
+  with the approved plan, related change records, current Git evidence,
+  `product/` docs, `design/` handoff, and an explicit durable handoff when one
+  was requested or genuinely needed. Recovery ignores legacy session
+  checkpoint files and does not auto-resume.
 - The **two approval gates** (GATE 1 spec, GATE 2 plan) are natural pause points - a build commonly stops there waiting on the user and resumes cleanly once they answer.
 - If interruption happens after packaging but before stack verification, treat the package as unverified until the stack smoke in Step 10 runs in the resumed session.
 

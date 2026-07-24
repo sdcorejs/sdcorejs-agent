@@ -106,6 +106,30 @@ test('phase 1: markdown fences stay balanced across skills, refs, and mirrors', 
   }
 });
 
+test('phase 1: skills preserve progressive disclosure and validator-safe descriptions', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
+
+  for (const skill of pack.sourceSkills) {
+    const lineCount = skill.text.split(/\r?\n/).length;
+    assert.ok(lineCount <= 500, `${skill.name} has ${lineCount} lines; move details to a direct ref`);
+    assert.doesNotMatch(skill.description, /[<>]/, `${skill.name} description must be validator-safe`);
+  }
+
+  const directRefs = [
+    ['sdcorejs-explore', '_refs/shared/explore-context.md'],
+    ['sdcorejs-angular', '_refs/angular/write-code/generation-rules.md'],
+    ['sdcorejs-git', '_refs/shared/git-commit-scope.md'],
+    ['sdcorejs-ship', '_refs/orchestration/tail/ship-context.md'],
+    ['sdcorejs-plan', '_refs/sdlc/plan-approval-artifact.md'],
+  ];
+  for (const [skillName, referencePath] of directRefs) {
+    assert.match(sourceByName.get(skillName), new RegExp(referencePath.replaceAll('/', '\\/')));
+    const reference = await readFile(new URL(`../../${referencePath}`, import.meta.url), 'utf8');
+    assert.match(reference, /^## Contents$/m, `${referencePath} must expose top-level navigation`);
+  }
+});
+
 test('phase 1: mandatory workflow invariants are encoded in source skills and refs', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
   const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
@@ -435,7 +459,16 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
     const text = sourceByName.get(name);
     assert.ok(text, `${name} exists`);
     assert.match(text, /project-context\.md/, `${name} loads project-context before execution`);
-    assert.match(text, /sdcorejs-explore\s+\((summary-read|summary-refresh|summary\s+mode)\)/, `${name} runs summary context preflight`);
+    assert.match(
+      text,
+      /targeted reads|targeted source|targeted project reads|scoped code map/i,
+      `${name} can continue without a summary gate`
+    );
+    assert.match(
+      text,
+      /missing|legacy|stale|unknown/i,
+      `${name} defines degraded-summary behavior`
+    );
   }
 
   const coreVersion = await readFile(new URL('../../_refs/angular/core-version.md', import.meta.url), 'utf8');
@@ -577,7 +610,7 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(finishGate, /Run review and repair loop/);
   assert.match(finishGate, /repair-loop receives the original `review_context`/);
   assert.match(finishGate, /`sdcorejs-review` only; it must[\s\S]*include `review_context`/);
-  assert.match(finishGate, /write-producing.*before final branch-ready/i);
+  assert.match(finishGate, /write-producing[\s\S]*before final branch-ready/i);
   assert.match(finishGate, /No writes after branch-ready unless branch-ready is run again/i);
   assert.match(finishGate, /branch-ready.*final read-only gate|final read-only gate.*branch-ready/i);
   assert.doesNotMatch(finishGate, /sdcorejs-ship \(branch-ready mode\)` \(unless deferred\)\.[\s\S]*auto-docs tail ref/);
@@ -1500,8 +1533,11 @@ test('phase 1: explore encodes read-only-safe context production invariants', as
     assert.match(text, /react-next-generic/);
     assert.match(text, /node-general/);
     assert.match(text, /profile_confidence/);
-    assert.match(text, /relevant_dirty_paths/);
-    assert.match(text, /source_roots_hash|package_manifest_hash|package_lock_hash/);
+    assert.match(text, /project_context/);
+    assert.match(text, /current files, diffs/);
+    assert.match(text, /workspace_structure/);
+    assert.match(text, /dependency_manifests/);
+    assert.match(text, /source_roots/);
     assert.match(text, /git ls-files/);
     assert.match(text, /node_modules/);
     assert.match(text, /generated\/vendor\/build|vendor\/generated\/build|vendor.*generated.*build/i);
@@ -1525,8 +1561,11 @@ test('phase 1: explore encodes read-only-safe context production invariants', as
   assert.match(projectContext, /summary-read/);
   assert.match(projectContext, /summary-refresh/);
   assert.match(projectContext, /must never recursively invoke sdcorejs-explore|never recursively invoke/i);
-  assert.match(projectContext, /read-only context/i);
-  assert.match(projectContext, /missing or stale summary is not .*permission to write|not itself permission to write/i);
+  assert.match(projectContext, /read-(?:only|oriented)[\s\S]{0,30}context|context itself is always read-only/i);
+  assert.match(
+    projectContext,
+    /missing or stale summary is (?:not .*permission to write|a context signal, never write permission)|not itself permission to write/i
+  );
 });
 
 test('phase 1: SDLC harness encodes contract-driven profile-aware execution invariants', async () => {
@@ -1641,7 +1680,9 @@ test('phase 1: SDLC harness encodes contract-driven profile-aware execution inva
   assert.match(executePlan, /react-cra/);
   assert.match(executePlan, /node-general/);
   assert.match(executePlan, /generic harness fallback/);
-  assert.match(executePlan, /summary-read/);
+  assert.match(executePlan, /project-context\.md/);
+  assert.match(executePlan, /targeted[\s\S]{0,80}reads/);
+  assert.match(executePlan, /scoped code map/);
   assert.match(executePlan, /Do not route plain Angular|plain-angular.*generic harness/i);
   assert.match(executePlan, /Do not route plain NestJS|plain-nestjs.*generic harness/i);
   assert.match(executePlan, /Do not route plain Next\.js|plain-nextjs.*generic harness/i);
@@ -1657,7 +1698,7 @@ test('phase 1: SDLC harness encodes contract-driven profile-aware execution inva
   assert.match(parallel, /global_verification/);
   assert.match(parallel, /final branch-ready|branch-ready.*final/i);
   assert.match(parallel, /No writes after branch-ready/i);
-  assert.match(parallel, /do not refresh the summary merely because execution is\s+write-approved/i);
+  assert.match(parallel, /do\s+not refresh the summary merely because execution is\s+write-approved/i);
   assert.doesNotMatch(parallel, /write-approved execution context,\s*use `summary-refresh`/i);
 
   assert.match(solutionBuilder, /complexity ladder/i);

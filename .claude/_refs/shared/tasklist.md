@@ -1,163 +1,117 @@
 # Tasks / Progress Protocol
 
-Use a visible Markdown checkbox `Tasks` section before starting any non-trivial
-agent task.
+Use a visible task/progress mechanism before starting non-trivial work. The
+mechanism belongs to the active thread, agent harness, or client runtime. It is
+not repository state.
+
+## Contents
+
+- [When Required](#when-required)
+- [Task Shape](#task-shape)
+- [Derive From Existing Plans](#derive-from-existing-plans)
+- [Update Rules](#update-rules)
+- [Runtime-only State](#runtime-only-state)
+- [Explicit Handoff](#explicit-handoff)
+- [Final Response](#final-response)
 
 ## When Required
 
-Use a `Tasks` section for non-trivial work:
+Use visible progress for:
 
-- multi-step work
-- file edits
-- code analysis
-- debugging
-- review
-- dependency update
-- commit, PR, changelog, or release work
-- verification or readiness checks
+- multi-step work;
+- file edits;
+- code analysis, debugging, and review;
+- dependency updates;
+- commit, PR, changelog, or release work;
+- verification and readiness checks.
 
-Do not use a `Tasks` section for:
-
-- simple Q&A
-- naming advice
-- short explanations
-- translations
-- single-step answers
+Skip it for simple Q&A, naming advice, short explanations, translations, and
+single-step answers.
 
 ## Task Shape
 
-Tasks must be outcome-based, not microscopic. Prefer a few meaningful outcomes
-over line-by-line or command-by-command checkboxes.
+Tasks must be outcome-based rather than microscopic. Prefer a few meaningful
+outcomes over line-by-line or command-by-command entries.
 
-Suggested default format:
+Suggested presentation when the client uses Markdown:
 
 ```md
 ### Tasks
 - [ ] Understand the request and constraints
-- [ ] Inspect relevant context/files
+- [ ] Inspect relevant context and files
 - [ ] Execute the main work
 - [ ] Verify the result
-- [ ] Prepare final response with outcome, risks, and next steps
+- [ ] Prepare the final response with outcome, risks, and next steps
 ```
 
-Adapt the labels to the actual work. For example, a review may use "Inspect
-changed files" and "Report findings"; a dependency update may use "Classify
-upgrade risk" and "Run regression checks".
+Clients may use an equivalent native progress API, task tool, checklist, or
+harness-owned state. Do not require every client to implement Markdown
+checkboxes when it already has a native mechanism.
 
 ## Derive From Existing Plans
 
-If the task is executing an approved plan, derive the visible `Tasks` section from that
-plan's outcome steps. If the skill already uses `TodoWrite` or a track-specific
-progress checklist, keep the Markdown `Tasks` section aligned with that source instead
-of creating a second, conflicting tracker.
+When executing an approved plan, derive progress from its outcome steps. Keep
+one authoritative runtime tracker:
 
-For track executors, use the approved plan or executor task units as the
-progress source:
+- `sdcorejs-execute-plan`: approved plan steps and execution mode;
+- track executors: planned units, affected artifacts, and finishing steps;
+- utility workflows: the workflow phases required by the request.
 
-- `sdcorejs-execute-plan`: approved plan steps and selected execution mode.
-- Track executors (`sdcorejs-angular`, `sdcorejs-nestjs`, `sdcorejs-nextjs`,
-  `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test`): planned units,
-  affected artifacts, and mandatory finishing steps.
-- Utility workflows (`sdcorejs-git`, `sdcorejs-ship`, `sdcorejs-debug`,
-  `sdcorejs-review`, `sdcorejs-explore`): the workflow phases required by the
-  request.
+The approved plan is the durable execution contract. Runtime progress is not a
+replacement for that plan, and the plan is not mutated after approval.
 
 ## Update Rules
 
-- Create the `Tasks` section before work starts.
-- Keep the `Tasks` section visible to the user.
-- Mark `[x]` only after the task is actually done.
-- Keep blocked, skipped, or unfinished work unchecked and explain why.
-- Update the `Tasks` section if scope changes.
-- Never mark verification complete unless verification was actually performed.
-- Do not use the checkbox list as proof; commands, diffs, logs, and inspected files
-  are the proof.
-- Before the final response, send one last `Tasks` update when any checkbox state
-  changed. Mark every actually completed item `[x]`; leave skipped, blocked, or
-  unfinished items unchecked with a short reason.
+- Create visible progress before non-trivial execution begins.
+- Mark an item complete only after the outcome is real.
+- Keep blocked, skipped, or unfinished items open and explain why.
+- Update the runtime tracker when scope or status changes.
+- Never mark verification complete unless verification actually ran.
+- Treat commands, diffs, logs, tests, and inspected files as proof; the task
+  list itself is not evidence.
+- Before the final response, make one final runtime progress update.
 
-## Persistent Checkpoint
+## Runtime-Only State
 
-For non-trivial work inside a target project, mirror the visible `Tasks` state to
-a lightweight checkpoint so a new context window or another AI can resume even
-if the session stops before the tail chain runs.
+Live progress belongs only to:
 
-Path:
+- the current thread or harness task mechanism;
+- the approved plan being executed;
+- runtime contexts passed between skills in the same workflow;
+- current execution evidence.
+
+Do not mirror checkbox changes, verification transitions, or live status into a
+repository file. Do not create a mutable global "current task", "active
+change", session index, per-thread checkpoint directory, or equivalent
+repository-backed coordination mechanism.
+
+Legacy `.sdcorejs/tasks/current-session.md` files may exist in older target
+projects. Ignore them as context, never update or stage them, and do not
+recreate them. A workflow may mention once that the user can remove the legacy
+file, but it must not delete user data without permission.
+
+## Explicit Handoff
+
+Create a durable handoff only when:
+
+- the user explicitly requests one;
+- work is blocked or deferred and another thread must take over; or
+- a genuine recovery workflow requires durable transfer.
+
+Use a change-scoped immutable path such as:
 
 ```text
-<target-project>/.sdcorejs/tasks/current-session.md
+.sdcorejs/handoffs/<track>/<timestamp>-<change-id>-handoff.md
 ```
 
-Write or update this file when:
-
-- the `Tasks` section is first created
-- any checkbox state changes
-- scope changes
-- a meaningful artifact is written
-- verification starts or finishes
-- work becomes blocked, skipped, or complete
-
-Skip this checkpoint for simple Q&A and for work where there is no target
-project root. In the `sdcorejs-agent` authoring repo, this checkpoint is local
-session state and must stay ignored/uncommitted; use durable docs, specs, plans,
-or examples for source-controlled evidence. Never write target-project session
-artifacts here by accident.
-
-Use this format:
-
-```md
----
-updated_at: <ISO-8601 timestamp>
-status: in_progress | blocked | complete
-track: <angular | nestjs | nextjs | product | design | test | multi | generic>
-active_skill: <skill-name>
-branch: <git-branch-or-unknown>
----
-
-# Current Session Checkpoint
-
-## User Request
-<short paraphrase in the user's language>
-
-## Tasks
-- [x] <completed task>
-- [ ] <open task>
-
-## Current State
-- Last completed: <latest real completed action>
-- In progress: <current action or none>
-- Blocked/skipped: <reason or none>
-
-## Artifacts Touched
-- EDIT path/to/file - <short reason>
-
-## Verification
-- <command> - <pass/fail/not run yet>
-
-## Resume From Here
-<one concrete next step>
-```
-
-Rules:
-
-- Keep it short. It is a handoff note, not an auto-docs replacement.
-- Do not paste secrets, tokens, large diffs, or full file contents.
-- Do not claim verification passed unless the command actually ran.
-- On normal completion, set `status: complete` and keep the final task state.
-- If the tail chain later writes auto-docs and the living TODO, link those paths
-  in `Artifacts Touched` or `Resume From Here`.
-- Recovery should treat `status: in_progress` or `blocked` as higher priority
-  than older auto-docs because it may describe an interrupted session.
+The handoff must follow `_refs/shared/artifact-lifecycle.md`, include artifact
+metadata, stay concise, and omit secrets, credentials, PII, large diffs, and
+raw logs. It is not a replacement for live progress and is committed only when
+its declared policy and the user/workflow intent allow it.
 
 ## Final Response
 
-The final response must accurately mention, when relevant:
-
-- completed work
-- skipped work
-- blockers
-- verification status
-- remaining risks
-
-Do not say "done", "ready", or "safe to ship" unless verification is complete,
-or skipped verification is explicitly disclosed.
+The final response must accurately mention completed work, skipped work,
+blockers, verification status, and remaining risks. Do not say "done",
+"ready", or "safe to ship" unless verification is complete or skipped
+verification is explicitly disclosed.

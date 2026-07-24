@@ -1,5 +1,19 @@
 # Verification Gate
 
+## Contents
+
+- [Purpose](#purpose)
+- [Invocation](#invocation)
+- [Classify Mode](#step-1---classify-verification_mode)
+- [Select Scope](#step-2---select-acceptance_scope)
+- [Discover Commands](#step-3---discover-commands)
+- [Verify By Mode](#step-4---verify-by-mode)
+- [Next.js Profile Gate](#step-5---nextjs-profile-gate)
+- [Failure Handoff](#step-6---failure-handoff)
+- [Report](#step-7---report)
+- [Rules](#rules)
+- [Cross-references](#cross-references)
+
 Reference body for `sdcorejs-ship (verify-before-done mode)`. Load this file
 only when that mode runs.
 
@@ -51,7 +65,7 @@ Select the scope in this priority order:
 
 1. Explicit user-provided spec, path, criteria, task ID, bug contract, or
    release range.
-2. Current task, plan, spec, or active workflow context from project context.
+2. Current runtime task, approved plan/spec, or active workflow context.
 3. Product ledger, plan ledger, or test plan associated with the current task.
 4. Caller contexts: `review_context`, `repair_source`, `debug_context`, or
    `test_context`.
@@ -290,6 +304,16 @@ ship_context:
     debug_context:
     review_context:
     repair_source:
+  artifact_context:
+    schema_version: 1
+    change_ref:
+    source_spec:
+    source_plan:
+    required_with_change: []
+    shared_owned: []
+    conditional: []
+    local_only: []
+    unrelated_observed: []
   manual_deferrals:
     - item:
       reason:
@@ -306,6 +330,8 @@ Rules:
 - `commands_skipped` includes skipped commands/probes with evidence.
 - Do not claim `PASS` for skipped verification.
 - Record current `associated_HEAD_or_diff`.
+- Preserve the current change's `artifact_context`; verification is read-only
+  and must not promote unrelated or local-only artifacts.
 - Bind every command to its exact cwd, HEAD/diff, output digest, timestamps, and
   environment fingerprint. A later write makes affected evidence stale.
 - State what remains unverified when verification is partial or deferred.
