@@ -68,6 +68,16 @@ Determine review scope in this order:
 6. ask the user for one numbered scope choice if the repo is too large and no
    clear scope exists.
 
+When current `test_context`, `test_status`, or `test_evidence` is available,
+consume it as read-only review input. Build a compact test matrix mapping
+requirements/risks to authored cases, executed runs, results, blockers,
+environment/persona coverage, data cleanup, and UI captures. Test evidence must
+match the current `associated_HEAD_or_diff`; written-but-unexecuted cases and
+legacy/stale runs remain gaps. Do not run missing tests merely to complete a
+review unless the user expands the request. Preserve `ui_capture_context` and
+`artifact_context` classifications; diagnostic/local-only artifacts are not
+review deliverables.
+
 Exclude generated/vendor/build output by default: `node_modules`, `dist`,
 `build`, `coverage`, `.next`, `.turbo`, `.angular`, generated clients,
 lockfiles unless relevant, and generated Codex/Claude/plugin mirrors unless the
@@ -312,6 +322,10 @@ review_context:
   probes_skipped:
     - probe: lint/build/test/lighthouse/pa11y/axe/etc.
       reason: no script found, tool not installed, network not allowed, not applicable, or user approval required
+  test_evidence_summary:
+    test_matrix_status: complete | partial | absent | stale
+    associated_HEAD_or_diff: <sha-or-diff-fingerprint>
+    gaps: []
   finding_ids:
     - R1
     - R2

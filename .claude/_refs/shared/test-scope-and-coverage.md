@@ -1,0 +1,88 @@
+# Test Scope and Coverage
+
+## Contents
+
+- [Scope inputs](#scope-inputs)
+- [Risk matrix](#risk-matrix)
+- [Coverage matrix](#coverage-matrix)
+- [Status rules](#status-rules)
+- [Parallel ownership](#parallel-ownership)
+
+## Scope inputs
+
+Build scope from current requirements, acceptance criteria, changed behavior,
+repository conventions, and current evidence. A framework pattern is never a
+requirement by itself. Record:
+
+- target paths and owning project;
+- user-visible behavior, API contracts, authorization boundaries, and data
+  lifecycle affected by the change;
+- required levels (`unit`, `component`, `integration`, `api-e2e`,
+  `browser-e2e`, `uat`, or `ui-evidence-capture`);
+- explicit exclusions and deferred risks;
+- the current `associated_HEAD_or_diff`.
+
+Missing or stale project summary is not a blocker. Use current files, the diff,
+requirements, and targeted discovery.
+
+## Risk matrix
+
+Choose tests from observable risk rather than a fixed stack checklist.
+
+| Risk | Prefer | Add when applicable |
+|---|---|---|
+| Pure transformation or branch logic | unit | property/boundary cases |
+| Rendering and interaction | component | accessibility and keyboard cases |
+| Adapter, database, queue, or external boundary | integration | failure, retry, and idempotency |
+| HTTP contract or authorization | API e2e | server-side denial and tenant isolation |
+| Critical user journey | browser e2e | real UI auth and cross-page state |
+| Requirement sign-off | UAT | evidence link or explicit manual result |
+| Guide screenshot | `ui-evidence-capture` | provenance, PII screening, artifact closure |
+
+Test authorization at the server/API boundary when it exists. A hidden or
+disabled control is useful UI behavior evidence, but is not proof that an
+unauthorized request is denied.
+
+## Coverage matrix
+
+Create a requirement-driven `coverage_matrix`:
+
+```yaml
+coverage_matrix:
+  - requirement_id: AC-1
+    risk: authorization
+    levels: [api-e2e, browser-e2e]
+    case_ids: [case-orders-viewer-denied]
+    status: covered # covered | partial | deferred | missing | not-applicable
+    evidence_refs: [run-api-1, run-ui-1]
+    rationale: null
+```
+
+Every in-scope requirement or material risk needs a status. `not-applicable`
+and `deferred` require a rationale. Do not invent a numeric coverage threshold.
+If the project already enforces a threshold, preserve it and report the
+discovered source.
+
+Coverage reports are fresh only when tied to the current
+`associated_HEAD_or_diff`, command, workspace, and runner configuration.
+
+## Status rules
+
+- A planned case is not authored.
+- An authored test is not executable proof.
+- Written does not mean executed.
+- Executed does not mean passed.
+- A passing command does not cover requirements absent from the matrix.
+- A stale report is historical context, never current verification.
+- A blocked test records the blocker and skipped commands; it is not a failure.
+
+## Parallel ownership
+
+Partition by module or non-overlapping test path. Assign exactly one coordinator
+as writer for shared runner configuration, persona catalogs, environment
+manifests, global setup, snapshots, and aggregate reports. Workers must not edit
+shared configuration or shared `.sdcorejs` summary/persona/memory/backlog
+artifacts. Assign one auth setup writer per persona/environment state.
+The coordinator merges case IDs, coverage rows, run IDs, artifact contexts, and
+shared configuration after deterministic fan-in without dropping prior
+evidence. Global verification and any Git handoff happen only after fan-in.

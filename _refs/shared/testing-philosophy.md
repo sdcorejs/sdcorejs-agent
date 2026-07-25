@@ -3,9 +3,11 @@
 > Cross-track testing principles loaded on demand by the `sdcorejs-test` skill
 > and by TDD mode. Not a dispatchable skill; no frontmatter.
 
-## The Test Pyramid
+## Layer Selection
 
-Prefer many fast unit tests, some integration tests, and a small number of high-value e2e tests.
+The test pyramid is a useful cost heuristic, not a universal quota. Prefer the
+smallest layer that proves each requirement or risk, with enough integration
+and e2e evidence for real boundaries and critical journeys.
 
 | Layer | Purpose | Typical scope |
 |---|---|---|
@@ -81,6 +83,12 @@ Coverage reports should answer:
 - Whether missing coverage is acceptable, deferred, or blocking.
 
 Do not inflate coverage by adding weak assertions, deleting branches from measurement, or testing implementation details.
+Coverage percentage is supporting evidence, not an independent Definition of
+Done. Use mutation testing only when the project already configures it or the
+user explicitly requests and approves it. Apply accessibility to user-visible
+UI; assign a performance pass/fail only when a requirement or project budget
+defines the threshold. Do not add security/performance/accessibility scenarios
+merely to fill a matrix.
 
 ## Snapshots
 

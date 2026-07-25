@@ -682,5 +682,65 @@
     "prompt": "execute the approved docs migration plan",
     "expectedSkill": "sdcorejs-execute-plan",
     "phase": 3
+  },
+  {
+    "id": "test-authenticated-personas",
+    "prompt": "write and run browser tests for supervisor and viewer personas",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 4
+  },
+  {
+    "id": "test-tenant-isolation-api",
+    "prompt": "add API tests proving tenant isolation and server-side denial",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 4
+  },
+  {
+    "id": "test-run-checkout",
+    "prompt": "run the existing checkout test command",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 4
+  },
+  {
+    "id": "test-failing-output-explain",
+    "prompt": "explain and classify this failing test output without fixing code",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 4
+  },
+  {
+    "id": "debug-failing-login-fix",
+    "prompt": "debug and fix this failing login browser test",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 4
+  },
+  {
+    "id": "auth-keycloak-configure",
+    "prompt": "configure Keycloak authentication for the application",
+    "expectedSkill": "sdcorejs-auth",
+    "phase": 4
+  },
+  {
+    "id": "documentation-verified-screenshots",
+    "prompt": "update the user guide with verified screenshots from the real UI",
+    "expectedSkill": "sdcorejs-documentation",
+    "phase": 4
+  },
+  {
+    "id": "test-authenticated-personas-vi",
+    "prompt": "viet va chay test trinh duyet cho persona supervisor va viewer",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 4
+  },
+  {
+    "id": "documentation-verified-screenshots-vi",
+    "prompt": "cap nhat huong dan nguoi dung bang screenshot da xac minh tu giao dien that",
+    "expectedSkill": "sdcorejs-documentation",
+    "phase": 4
+  },
+  {
+    "id": "product-requirement-coverage-no-test-work",
+    "prompt": "review requirement coverage and traceability without writing tests",
+    "expectedSkill": "sdcorejs-product",
+    "phase": 4
   }
 ]

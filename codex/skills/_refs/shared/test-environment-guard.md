@@ -1,66 +1,50 @@
 # Test Environment Guard
 
-> Loaded by `sdcorejs-test` before e2e, UAT, integration tests that touch external
-> state, or any command that can write outside local test artifacts.
+## Contents
+
+- [Environment Classes](#environment-classes)
+- [Preflight](#preflight)
+- [Write policy](#write-policy)
+- [Secrets and artifacts](#secrets-and-artifacts)
 
 ## Environment Classes
 
-Classify the environment before running tests:
+| Class | Default write policy |
+|---|---|
+| `local` / isolated container | `isolated-only` when ownership and cleanup are known |
+| local mock/sandbox | policy supplied by the existing fixture contract |
+| shared `dev` | read-only until isolation and cleanup are proven |
+| `staging` / UAT | read-only; explicit isolated approval required for writes |
+| `prod` / production | read-only smoke only with explicit request |
+| `unknown` | block all state-changing execution |
 
-| Class | Signals | Policy |
-|---|---|---|
-| `local` | localhost, local container, local dev server, in-memory DB | Safe for normal test execution when commands are discovered. |
-| `mock` | mocked backend, fixture server, local fake services | Safe when the mock data contract is understood. |
-| `dev` | shared dev URL or DB | Avoid destructive tests unless test data is isolated and cleanup is approved. |
-| `staging` | staging/UAT URL | Read-only smoke tests by default; writes require approved test accounts/data and cleanup. |
-| `prod` | production host, production DB, live payment/email/SMS | Block destructive tests. Read-only smoke only when explicitly requested and safe. |
-| `unknown` | base URL/env cannot be classified | Block e2e/UAT writes and report missing environment data. |
+Unknown must block writes. Prod must block destructive or state-changing tests.
+Do not infer environment class from a friendly hostname alone.
 
-## Required Inputs For E2E/UAT
+## Preflight
 
-Before running browser/API journey tests, establish:
+Record logical environment ID, base URL key reference, class, `write_policy`,
+actor/persona ID, auth source, data strategy, cleanup, external effects, and
+runner artifacts. Missing environment, actor/persona, auth source, or ownership
+data blocks the affected test without guessing.
 
-- base URL or local server command from existing config
-- actor/role and auth source
-- environment class
-- test data setup and cleanup
-- whether external email/SMS/payment/integration calls are mocked, sandboxed, or live
-- artifacts that the runner may create
+## Write policy
 
-If any required input is missing, report the blocker instead of guessing.
+Block destructive tests against production: record mutations, reset/truncate,
+seed/migration, account/password/token changes, or real email, SMS, payment, and
+notification effects. Shared dev/staging writes require run-owned isolated data,
+an ownership filter, idempotent cleanup, and approved sandbox integrations.
+Cleanup failure blocks evidence promotion.
 
-## Production And Shared-Env Safety
+Read-only production smoke is allowed only when explicitly requested, scoped,
+rate-safe, and free of sensitive artifact capture.
 
-Do not run destructive operations against production:
+## Secrets and artifacts
 
-- create/update/delete records
-- cleanup/truncate/reset scripts
-- payment, email, SMS, or notification sends
-- permission, password, token, or account mutations
-- seed or migration commands
+Redact before reporting credentials, tokens, cookies, headers, PII, embedded
+database credentials, and secret-bearing URLs. Emit only key references and
+logical IDs.
 
-For dev/staging, require isolated test data and cleanup proof before writes. Prefer generated test identifiers and idempotent cleanup.
-
-## Secrets And PII
-
-Redact before reporting:
-
-- credentials, tokens, cookies, API keys, authorization headers
-- emails, phone numbers, national IDs, customer names, addresses
-- database URLs and service endpoints with embedded credentials
-
-Use `[REDACTED]` in evidence snippets.
-
-## Artifact Policy
-
-Do not commit by default:
-
-- reports
-- videos
-- screenshots
-- traces
-- coverage HTML
-- raw runner logs
-- downloaded browser binaries
-
-Keep artifacts only when the user asks or when the target project already has a committed convention for that artifact type.
+Traces, video, failure screenshots, storage state, raw reports, coverage HTML,
+and browser binaries are local-only by default. A verified guide screenshot is
+classified separately through the UI evidence and artifact lifecycle contracts.

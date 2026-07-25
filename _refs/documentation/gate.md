@@ -73,6 +73,9 @@ for this gate and drop them the next time preferences are saved.
      `<TARGET_ROOT>/.sdcorejs/documentation/technical-docs/` whose name,
      frontmatter, title, or source refs match the touched module, API, feature,
      integration, configuration, or architecture surface.
+   - verified screenshot/UI evidence: current `ui_capture_context`,
+     `test_evidence.captures`, and `artifact_context` for images referenced by
+     the corresponding guide.
 4. If this is a new feature and either corresponding doc is missing, ask the
    approval gate below before creating any missing file.
 5. If corresponding docs already exist, saved preferences may default whether
@@ -180,6 +183,12 @@ The caller then runs documentation tail steps in order:
    the user agrees to record the requirement and provides `TASKID`.
 3. `sdcorejs-documentation (write-user-guide mode)` when
    `user_guide=create` or `user_guide=update`.
+
+When the selected guide requires a new or refreshed screenshot, the
+documentation workflow calls `sdcorejs-test (ui-evidence-capture)` and reuses
+the target runner. A screenshot is verified only when its target-state,
+auth-provenance, PII-screening, hash, and current-diff evidence pass. Otherwise
+the guide keeps a blocked checklist entry and no image link.
 
 Use `_refs/documentation/write-technical-doc.md`,
 `_refs/documentation/write-user-guide.md`, and

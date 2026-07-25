@@ -163,12 +163,15 @@ branch-ready.
 
 ## Order of execution after the gate
 
-1. (if tests not skipped) `sdcorejs-test` - run the RED-first specs written
-   during the TDD gate and add happy-path coverage; report pass/fail.
+1. (if tests not skipped) `sdcorejs-test` - execute the approved
+   requirement/risk coverage scope using discovered commands. Preserve v2
+   `test_context`, independent `test_status`, append-oriented `test_evidence`,
+   capture evidence, and `artifact_context`; authored tests alone are not a
+   pass.
    If the test output reveals a concrete product bug or failing command that
    needs a root-cause fix, route that item to `sdcorejs-debug` with the
-   `test_context`/`test_evidence`, then resume this tail with the resulting
-   `debug_context`.
+   `test_context`/`test_status`/`test_evidence` and smallest reproduction, then
+   resume this tail with the resulting `debug_context`.
 2. (if review choice is `Run review only`) `sdcorejs-review` only; it must
    include `review_context` and must not edit code.
 3. (if review choice is `Run review and repair loop`) `sdcorejs-review` ->

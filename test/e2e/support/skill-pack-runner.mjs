@@ -206,7 +206,7 @@ const PRIORITY_RULES = [
     skill: 'sdcorejs-product',
     when: ({ prompt, tokens }) =>
       hasProductIntent(prompt, tokens) &&
-      !hasDirectTestWorkIntent(prompt, tokens) &&
+      (!hasDirectTestWorkIntent(prompt, tokens) || hasProductCoverageIntent(prompt, tokens)) &&
       !hasAny(tokens, ['angular', 'portal', 'screen', 'screens', 'ui', 'wireframe', 'mockup', 'design'])
   },
   {
@@ -226,9 +226,10 @@ const PRIORITY_RULES = [
   },
   {
     skill: 'sdcorejs-design',
-    when: ({ tokens }) =>
+    when: ({ prompt, tokens }) =>
       (hasAny(tokens, ['design', 'ui', 'ux', 'wireframe', 'mockup', 'png', 'preview', 'handoff']) ||
         (hasAny(tokens, ['flow', 'flows']) && hasAny(tokens, ['screen', 'screens', 'user', 'journey']))) &&
+      !hasDocumentationIntent(prompt, tokens) &&
       !hasAny(tokens, ['angular', 'portal', 'implement', 'code', 'architecture', 'codebase', 'repo', 'map', 'trace'])
   },
   {
@@ -591,6 +592,7 @@ function hasTestIntent(tokens) {
 }
 
 function hasDirectTestWorkIntent(prompt, tokens) {
+  if (hasTestWorkExclusion(prompt)) return false;
   return (
     hasAny(tokens, ['tests', 'unit', 'integration', 'e2e', 'playwright', 'cypress', 'tdd']) ||
     (hasAny(tokens, ['run', 'execute']) && hasAny(tokens, ['test', 'tests'])) ||
@@ -613,8 +615,15 @@ function hasProductCoverageIntent(prompt, tokens) {
       /\b(requirements?|acceptance|criteria|traceability|product)\b.*\bcoverage\b/.test(prompt) ||
       /\bcoverage\b.*\b(requirements?|acceptance|criteria|traceability|product)\b/.test(prompt)
     ) &&
-    !hasAny(tokens, ['tests', 'unit', 'integration', 'e2e', 'playwright', 'cypress', 'tdd'])
+    (
+      !hasAny(tokens, ['tests', 'unit', 'integration', 'e2e', 'playwright', 'cypress', 'tdd']) ||
+      hasTestWorkExclusion(prompt)
+    )
   );
+}
+
+function hasTestWorkExclusion(prompt) {
+  return /\bwithout\s+(writing|adding|creating|running|changing)\s+tests?\b/.test(prompt);
 }
 
 function hasFailingOutputTriageIntent(prompt, tokens) {

@@ -27,6 +27,10 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
 1. Determine and preserve the source of findings: `review-code`, `verify-before-done`, `linter`, `typecheck`, `test`, or `manual`.
 2. Read `../_refs/orchestration/tail/repair-loop.md` completely.
 3. If the source is `sdcorejs-review`, preserve the original `review_context` exactly, including `track`, `track_profile`, dimensions, mode, `file_scope`, refs loaded/skipped, probes run/skipped, and package manager.
+   Preserve any `test_context`, `test_status`, `test_evidence`,
+   `ui_capture_context`, and `artifact_context` exactly as source evidence;
+   append new run/case evidence after repair instead of overwriting or upgrading
+   stale/blocked results.
 4. Record the working-tree baseline and a visible Repair ledger before edits.
 5. Verify each finding is genuine before changing code and classify it as `VALID`, `STALE`, `MIS-SCOPED`, `REDUNDANT`, or `UNCLEAR`.
 6. Categorize valid findings into `auto`, `confirm`, or `user-decision` tiers.
@@ -35,6 +39,8 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
    finding ID/source, original commands, and package-manager evidence; consume
    its redacted `debug_context` before continuing.
 8. Apply only the allowed tier for the current pass, then re-run the verification required by the preserved source context.
+   Use the smallest relevant discovered command first and associate new
+   evidence with the repaired diff.
 9. Iterate until blocking findings are fixed, explicitly deferred, or the reference's 3-pass convergence cap is reached. Blocking means `Critical`/`Important` in the default review format, or `BLOCKER`/`REQUIRED` in Angular/NestJS code-review table mode.
 
 ## Handoff

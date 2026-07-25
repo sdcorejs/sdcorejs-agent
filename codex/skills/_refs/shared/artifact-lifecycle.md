@@ -24,10 +24,10 @@ discovery and classification helper. It never stages or commits files.
 
 | Lifecycle | Examples | Commit policy |
 |---|---|---|
-| Change-scoped durable | approved spec, approved plan, execution doc, feature ledger, committed documentation asset | `with-change` |
+| Change-scoped durable | approved spec, approved plan, execution doc, feature ledger, verified guide screenshot or documentation asset | `with-change` |
 | Shared durable | project summary, persona, memory, living track backlog | `conditional`, with an explicit owner |
 | Explicit handoff | requested change-scoped handoff | `conditional` or `with-change` |
-| Diagnostic/local | trace, video, auth/storage state, temp, cache, codegraph cache, legacy session checkpoint | `never` |
+| Diagnostic/local | trace, video, raw report, coverage HTML, auth/storage state, failure screenshot or diagnostic screenshot, temp, cache, codegraph cache, legacy session checkpoint | `never` |
 | Unknown | unclassified path or insufficient relationship metadata | never auto-stage; report ambiguity |
 
 No mutable global artifact manifest is allowed. In particular, do not create a
@@ -112,8 +112,11 @@ When several producers run, merge contexts by `change_ref` and path:
 - A handoff is created only on explicit request, blocked/deferred transfer, or
   a genuine recovery need. It is immutable/change-scoped and is not live
   progress.
-- Local diagnostics, caches, browser/auth/storage state, traces, videos, temp
-  files, and graph caches are always `local_only`.
+- Local diagnostics, raw reports, coverage HTML, caches, browser/auth/storage
+  state, traces, videos, temp files, and graph caches are always `local_only`.
+- A verified guide screenshot is `required_with_change` only when its current
+  UI capture evidence is PII-safe, hashed, and referenced by the changed guide.
+  Failure/diagnostic screenshots remain `local_only`.
 - Legacy `.sdcorejs/tasks/current-session.md` and
   `.sdcorejs/tasks/sessions/**` are `local_only`, ignored, never read as
   context, never updated, never staged, and never recreated.

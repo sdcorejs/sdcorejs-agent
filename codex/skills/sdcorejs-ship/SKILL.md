@@ -371,6 +371,20 @@ Consume evidence from:
 - `repair_source` or repair ledger;
 - prior `branch_ready_evidence`.
 
+For test evidence, prefer `test_context.schema_version: 2`,
+`test_status`, and `test_evidence.schema_version: 2`. Legacy v1 is readable
+only as historical context; map it conservatively and require a current v2 run
+for verification. Authored/written tests are not verified until the matching
+case ran against the current `associated_HEAD_or_diff` and the independent
+result is passing.
+
+Validate multi-run evidence rather than a single last command: required cases
+must map to fresh run IDs, cleanup must succeed, skipped commands remain
+skipped, and blockers remain blocking. For guide screenshots, consume
+`test_evidence.captures` and `ui_capture_context`; capture evidence is valid
+only when target state, real-UI auth provenance, PII screening, hash, and
+artifact classification are current.
+
 Treat context evidence as stale if files changed after it was produced or if
 `associated_HEAD_or_diff` does not match the current diff. Re-run relevant
 checks when evidence is stale. Do not substitute review, test, or debug evidence

@@ -4,8 +4,8 @@ Templates the documentation skill renders in `write-user-guide` mode. Per-module
 `<target>/.sdcorejs/documentation/user-guides/<module>.md`; the aggregate lives at
 `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md`.
 Markdown is canonical; DOCX/PDF is produced by the pandoc command at the bottom. Screenshots are
-captured by `<target>/.sdcorejs/documentation/user-guides/capture-screenshots.playwright.mjs`
-when the target app is running.
+captured and verified by `sdcorejs-test (ui-evidence-capture)` through the
+target project's existing browser runner.
 
 Write generated prose in the user's runtime language. Keep this reusable template English-only.
 
@@ -13,6 +13,13 @@ Write generated prose in the user's runtime language. Keep this reusable templat
 
 ````markdown
 ---
+artifact_id: guide-<module>
+artifact_kind: documentation-asset
+change_ref: <change-id>
+source_spec: <repo-relative-path-or-none>
+source_plan: <repo-relative-path-or-none>
+commit_policy: with-change
+owner: sdcorejs-documentation
 module: <module>
 title: <Feature title>
 tracks: [angular, nestjs]
@@ -39,7 +46,9 @@ coverage: { total: 0, met: 0, partial: 0, missing: 0 }
 - **What the user does:** <task description>
 - **Who can use it:** permission `<module>_<entity>:<action>`
 - **Main fields/buttons:** <list>
-<If `images/<module>-<screen>.png` exists, render `![<Screen title>](images/<module>-<screen>.png)`. Otherwise omit the image link and keep the checklist entry below.>
+<Render `![<Screen title>](images/<module>-<screen>.png)` only when current
+`ui_capture_context` verifies the target state, auth provenance, PII screening,
+image hash, and change identity. Otherwise omit the image link.>
 
 ## Permission Table
 | Permission code | Task | Who / Role |
@@ -75,17 +84,22 @@ coverage: { total: 0, met: 0, partial: 0, missing: 0 }
 - [ ] `images/<module>-list.png` - list screen
 - [ ] `images/<module>-detail.png` - detail screen
 
-Capture command:
-
-```bash
-SDCOREJS_DOCS_BASE_URL=http://localhost:4200 node .sdcorejs/documentation/user-guides/capture-screenshots.playwright.mjs
-```
+Capture evidence request: `sdcorejs-test (ui-evidence-capture)` using the
+target project's existing runner, environment key reference, logical persona,
+route/target state, and approved output path.
 ````
 
 ## Aggregate Template (.sdcorejs/documentation/sdcorejs-user-guide.md)
 
 ````markdown
 ---
+artifact_id: guide-aggregate
+artifact_kind: documentation-asset
+change_ref: <change-id>
+source_spec: <repo-relative-path-or-none>
+source_plan: <repo-relative-path-or-none>
+commit_policy: with-change
+owner: sdcorejs-documentation
 title: <Project name> - User Guide
 generated_at: <ISO8601>
 git_head: <sha>
@@ -124,5 +138,7 @@ PDF:
 pandoc <target>/.sdcorejs/documentation/sdcorejs-user-guide.md -o <target>/.sdcorejs/documentation/sdcorejs-user-guide.pdf --resource-path=<target>/.sdcorejs/documentation/user-guides
 ```
 
-- Run `<target>/.sdcorejs/documentation/user-guides/capture-screenshots.playwright.mjs` before export so image links point at real files under `<target>/.sdcorejs/documentation/user-guides/images/`.
-- Do not include missing image links in module guides; keep checklist entries until screenshots exist.
+- Before export, verify every linked image through current
+  `ui_capture_context` and artifact closure.
+- Do not include missing or unverified image links; keep checklist entries until
+  verified screenshots exist.

@@ -352,7 +352,8 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(sharedReviewArchitecture, /Most frontend and backend stacks benefit from layered architecture/);
 
   const testSkill = sourceByName.get('sdcorejs-test');
-  assert.match(testSkill, /## Direct Invocation Tail/);
+  assert.match(testSkill, /## Purpose and ownership/);
+  assert.match(testSkill, /## Direct invocation tail/);
   assert.match(testSkill, /test_action/);
   assert.match(testSkill, /stack_profile/);
   assert.match(testSkill, /run-only/);
@@ -374,20 +375,20 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(testSkill, /_refs\/shared\/test-environment-guard\.md/);
   assert.match(testSkill, /_refs\/shared\/test-context\.md/);
   assert.match(testSkill, /_refs\/shared\/test-generic\.md/);
+  assert.match(testSkill, /_refs\/shared\/test-auth-personas\.md/);
+  assert.match(testSkill, /_refs\/shared\/test-data-lifecycle\.md/);
+  assert.match(testSkill, /_refs\/shared\/test-ui-evidence\.md/);
   assert.match(testSkill, /test_context/);
+  assert.match(testSkill, /test_status/);
   assert.match(testSkill, /test_evidence/);
-  assert.match(testSkill, /TDD Cycle Ledger/);
-  assert.match(testSkill, /Focused verification first/);
-  assert.match(testSkill, /Do not run package installation, browser installation, `npx --yes`/);
-  assert.match(testSkill, /Do not call `sdcorejs-git` unless ship\/branch-ready criteria have passed/);
+  assert.match(testSkill, /## TDD ledger/);
+  assert.match(testSkill, /narrowest relevant command/);
+  assert.match(testSkill, /Never invent a command/);
+  assert.match(testSkill, /must\s+not invoke Git/i);
   assert.match(testSkill, /sdcorejs-debug/);
-  assert.match(testSkill, /_refs\/documentation\/gate\.md/);
-  assert.match(testSkill, /\.sdcorejs\/documentation\/preferences\.md/);
-  assert.match(testSkill, /There is no separate `qa_guide` output/);
-  assert.doesNotMatch(testSkill, /QA-guide/);
-  assert.match(testSkill, /TRACK=test/);
-  assert.match(testSkill, /_refs\/orchestration\/tail\/auto-docs\.md/);
-  assert.match(testSkill, /_refs\/orchestration\/tail\/auto-task-tracker\.md/);
+  assert.match(testSkill, /sdcorejs-documentation/);
+  assert.match(testSkill, /ui-evidence-capture/);
+  assert.doesNotMatch(testSkill, /current-session\.md/);
 
   const testCommandDiscovery = await readFile(new URL('../../_refs/shared/test-command-discovery.md', import.meta.url), 'utf8');
   assert.match(testCommandDiscovery, /lockfiles and workspace files/);
@@ -401,8 +402,10 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
 
   const testContextRef = await readFile(new URL('../../_refs/shared/test-context.md', import.meta.url), 'utf8');
   assert.match(testContextRef, /test_context/);
+  assert.match(testContextRef, /test_status/);
   assert.match(testContextRef, /test_evidence/);
-  assert.match(testContextRef, /stale: false/);
+  assert.match(testContextRef, /schema_version: 2/);
+  assert.match(testContextRef, /associated_HEAD_or_diff/);
 
   const testGenericRef = await readFile(new URL('../../_refs/shared/test-generic.md', import.meta.url), 'utf8');
   assert.match(testGenericRef, /Stack-neutral fallback/);
@@ -626,17 +629,18 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.doesNotMatch(documentationGate, /Codes:/);
 
   const documentationSkill = sourceByName.get('sdcorejs-documentation');
-  assert.match(documentationSkill, /Playwright screenshot capture script for user guides/);
+  assert.match(documentationSkill, /verified real-UI screenshots/);
+  assert.match(documentationSkill, /sdcorejs-test \(ui-evidence-capture\)/);
 
   const userGuide = await readFile(new URL('../../_refs/documentation/write-user-guide.md', import.meta.url), 'utf8');
-  assert.match(userGuide, /capture-screenshots\.playwright\.mjs/);
-  assert.match(userGuide, /SDCOREJS_DOCS_BASE_URL/);
-  assert.match(userGuide, /Never emit markdown image links for missing files/);
-  assert.match(userGuide, /Do not emit a markdown image link for an image file that does not exist yet/);
+  assert.match(userGuide, /sdcorejs-test \(ui-evidence-capture\)/);
+  assert.match(userGuide, /existing runner/);
+  assert.match(userGuide, /ui_capture_context/);
+  assert.doesNotMatch(userGuide, /localhost:4200/);
 
   const userGuideTemplate = await readFile(new URL('../../_refs/shared/user-guide-template.md', import.meta.url), 'utf8');
-  assert.match(userGuideTemplate, /capture-screenshots\.playwright\.mjs/);
-  assert.match(userGuideTemplate, /Do not include missing image links/);
+  assert.match(userGuideTemplate, /ui-evidence-capture/);
+  assert.match(userGuideTemplate, /Do not include missing or unverified image links/);
 });
 
 test('phase 1: frontend architecture preflight covers decomposition and anti-over-splitting regressions', async () => {
@@ -2038,7 +2042,12 @@ test('phase 3: direct test prompts dispatch to sdcorejs-test or debug handoff', 
       ['test-write-not-debug', 'sdcorejs-test', true],
       ['test-run-not-debug', 'sdcorejs-test', true],
       ['test-localized-vi-run', 'sdcorejs-test', true],
-      ['test-localized-vi-write', 'sdcorejs-test', true]
+      ['test-localized-vi-write', 'sdcorejs-test', true],
+      ['test-authenticated-personas', 'sdcorejs-test', true],
+      ['test-tenant-isolation-api', 'sdcorejs-test', true],
+      ['test-run-checkout', 'sdcorejs-test', true],
+      ['test-failing-output-explain', 'sdcorejs-test', true],
+      ['test-authenticated-personas-vi', 'sdcorejs-test', true]
     ]
   );
 
@@ -2066,7 +2075,8 @@ test('phase 3: direct debug prompts dispatch to sdcorejs-debug', async () => {
       ['debug-performance-anomaly', 'sdcorejs-debug', true],
       ['debug-localized-vi', 'sdcorejs-debug', true],
       ['debug-localized-vi-root-cause', 'sdcorejs-debug', true],
-      ['debug-localized-vi-flaky', 'sdcorejs-debug', true]
+      ['debug-localized-vi-flaky', 'sdcorejs-debug', true],
+      ['debug-failing-login-fix', 'sdcorejs-debug', true]
     ]
   );
 });

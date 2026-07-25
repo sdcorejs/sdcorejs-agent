@@ -1,84 +1,59 @@
 # Test Command Discovery
 
-> Loaded by `sdcorejs-test` before any test command is run or recommended.
-> Not a dispatchable skill; no frontmatter.
+## Contents
 
-## Purpose
+- [Principle](#principle)
+- [Signals](#signals)
+- [Selection](#selection)
+- [Installation guard](#installation-guard)
+- [Evidence](#evidence)
 
-Discover the project's existing package manager, runner, scripts, workspaces, and test conventions before executing or proposing commands.
+## Principle
 
-## Discovery Order
+The Existing project command is the source of truth. Discover the runner,
+workspace/cwd, config, and supported filters before running or recommending
+anything. Do not invent a script, runner, service, package manager, or command.
 
-1. Read lockfiles and workspace files:
-   - `pnpm-lock.yaml`, `pnpm-workspace.yaml`
-   - `yarn.lock`, `.yarnrc.yml`
-   - `package-lock.json`, `npm-shrinkwrap.json`
-   - `bun.lock`, `bun.lockb`
-2. Read `package.json` scripts in the target package and workspace root.
-3. Inspect runner configs:
-   - Jest, Vitest, Karma, Angular, Cypress, Playwright, Robot Framework, pytest, or project-specific configs.
-4. Inspect existing tests for folder layout, naming, helpers, fixtures, page objects, and commands mentioned in local docs.
-5. Choose the narrowest current command that covers the changed file, target path, or acceptance criterion.
+## Signals
 
-## Package Manager Policy
+Inspect lockfiles and workspace files, then manifests, runner configs, CI, local
+docs, and nearby tests:
 
-Use the detected package manager and existing scripts. Do not hardcode a package manager when the repository signals another one.
+| Ecosystem | Common discovery signals |
+|---|---|
+| Node | `package.json`, `pnpm-workspace.yaml`, lockfiles, Jest/Vitest/Angular/Cypress/Playwright configs |
+| Python | `pyproject.toml`, `pytest.ini`, `tox.ini`, requirements |
+| Java | `pom.xml`, `build.gradle`, `gradlew` |
+| .NET | `*.sln`, `*.csproj`, `global.json` |
+| Go | `go.mod`, `Makefile` |
+| Rust | `Cargo.toml`, workspace metadata |
+| Robot | `*.robot`, `*.resource`, variable files, `robot.yaml` |
 
-Use neutral placeholders in plans and docs when discovery is incomplete:
+In a monorepo, identify the owning workspace and correct working directory.
+Root and package scripts are not interchangeable. Preserve wrapper commands,
+environment setup, reporters, and filters already used in CI.
 
-```text
-<pm> run <script> -- <runner-filter>
-```
+## Selection
 
-Examples of valid evidence statements:
+Prefer:
 
-```text
-package_manager: pnpm (pnpm-lock.yaml found)
-runner: vitest (vitest.config.ts found)
-command_planned: pnpm test -- src/foo.spec.ts
-```
+1. an existing focused command for the case/file;
+2. an existing package/workspace command with a supported filter;
+3. the owning project's existing suite command;
+4. the full suite only when focused execution is unavailable or required.
 
-## Installation Guard
+Record uncertainty as a blocker. A generic plan may use
+`<existing-test-command>`; executable output must use a discovered command.
 
-Do not run dependency-changing or browser-installing commands without explicit user approval for the exact command and reason.
+## Installation guard
 
-Blocked by default:
+Do not run dependency-changing or browser-installing commands without explicit
+approval for the exact command and reason. This includes install/add commands,
+browser binary installers, downloading exec/dlx probes, config bootstrap, and
+`npx --yes`. Missing tooling is a blocker, not permission to install.
 
-- dependency add/install commands
-- browser binary install commands
-- package-manager dlx/x/exec probes that download packages
-- runner bootstrap commands that change config or lockfiles
-- `npx --yes` or equivalent auto-download behavior
+## Evidence
 
-When a tool is missing, report:
-
-```text
-blocked_command:
-reason:
-existing_evidence:
-user_approval_needed:
-```
-
-## Command Selection
-
-Prefer in this order:
-
-1. Focused test file command already supported by the runner.
-2. Existing package script with a runner filter.
-3. Existing package script for the target package/workspace.
-4. Full test suite only when focused execution is not available or acceptance criteria require it.
-
-Do not invent a script. If no script exists, state the discovered runner/config and ask for approval before adding scripts or dependencies.
-
-## Reporting
-
-Every run report must include:
-
-```text
-command:
-cwd:
-package_manager:
-runner:
-exit_code:
-current_head_or_diff:
-```
+Record command, cwd, runner, config path, package manager or ecosystem,
+environment references, exit code, and `associated_HEAD_or_diff`. Summarize
+redacted output; do not retain raw sensitive logs.
