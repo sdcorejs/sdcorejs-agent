@@ -1,34 +1,31 @@
-# NestJS E2E Test Reference
+# NestJS API End-to-End Testing
 
-## Applicability
-
-For `sdcorejs-nestjs`, boot the generated Nest application and inspect real HTTP
-metadata and behavior. For `plain-nestjs`, load
-`_refs/shared/test-generic.md`. Before any external service test, apply
+Use for `sdcorejs-nestjs` only when its conventions are detected. For
+`plain-nestjs`, use `_refs/shared/test-generic.md`. Always apply
 `_refs/shared/test-environment-guard.md`.
 
-Do not install browsers, dependencies, databases, or images implicitly.
+## Scope
 
-## Required HTTP cases
+Select API e2e cases from acceptance criteria and public contract risk when
+applicable: validation, response shape, error mapping, authentication,
+authorization, tenant isolation, transaction behavior, pagination, or external
+side effects. Do not infer endpoints or operations from framework conventions.
 
-- every protected route rejects unauthenticated and unauthorized requests;
-- expected protection with missing permission metadata fails closed;
-- read-only resources expose no mutation route;
-- malformed params and bodies fail before repository execution;
-- unknown/server-owned fields are rejected;
-- wildcard credentialed CORS and insecure production configuration fail startup;
-- global and action-specific body limits return bounded errors;
-- error envelopes are stable and redacted;
-- enterprise requests deny search, detail, mutation, transition, export, report,
-  uniqueness inference, and background artifact access across tenants.
+## Setup
 
-## Evidence tiers
+Reuse the existing application bootstrap, HTTP client, auth fixture, database
+helper, migration, and teardown. Real permission behavior is required for
+authorization evidence; do not replace it with a mocked guard. Test personas
+use credential or token key references without persisting values.
 
-1. Generated project compile.
-2. Unit and in-process integration.
-3. Nest HTTP E2E.
-4. Real Postgres concurrency and scope behavior.
-5. Real Keycloak admin behavior.
+State-changing tests require run-owned records and idempotent cleanup.
+Production remains read-only; unknown or unsafe environments block execution.
+Use sandboxed email, SMS, payment, queue, or webhook infrastructure only when
+already provided and required.
 
-Apply `test-environment-guard` before tiers 4 and 5. If Docker or an image is
-unavailable, report the tier as skipped/blocked with the exact reason.
+## Execution and evidence
+
+Run the discovered API e2e command in the owning workspace. Record current diff,
+config, environment class, persona IDs, case results, cleanup, and redacted
+failure excerpts in v2 context/status/evidence. Preserve existing thresholds;
+do not create a numeric coverage requirement.

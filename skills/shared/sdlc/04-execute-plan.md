@@ -380,6 +380,9 @@ execution_context:
 - Use `sdcorejs-product` as the executor for product-track ledgers and traceability audits.
 - Use `sdcorejs-design` as the executor for design-track FE handoff artifacts.
 - Use `sdcorejs-test` as the executor for test-track plans.
+  Preserve its public action/profile classification and consume v2
+  `test_context`, independent `test_status`, append-oriented `test_evidence`,
+  and `artifact_context`. Do not infer execution/pass from authored tests.
 - Use the generic harness fallback when no track matches.
 - Apply `_refs/shared/frontend-architecture.md` to every non-trivial frontend
   plan, including generic plain-framework work, and block generation when the

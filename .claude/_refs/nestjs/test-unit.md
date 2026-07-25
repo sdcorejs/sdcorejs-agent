@@ -1,30 +1,22 @@
-# NestJS Unit Test Reference
+# NestJS Unit Testing
 
-## Applicability
+Use for `sdcorejs-nestjs` only when its conventions are detected. For
+`plain-nestjs`, use `_refs/shared/test-generic.md`.
 
-For `sdcorejs-nestjs`, test generated policy, schema, mapper, service, and
-transaction decisions in isolation. For `plain-nestjs`, load
-`_refs/shared/test-generic.md` and preserve the project's existing runner and
-conventions.
+## Scope
 
-Do not install dependencies from this reference. Use the detected package manager
-and scripts from the target project.
+Test service, guard, policy, mapper, validator, and controller branches when
+applicable to current requirements or changed risk. Prefer direct observable
+outputs and errors. Mock only true boundaries and keep mock contracts aligned
+with the existing code.
 
-## Required cases
+Reuse the project's current Jest, Vitest, Node test, or other runner and its
+module builder/helpers. Do not require TypeORM, Prisma, Zod, Postgres, a base
+class, or SDCoreJS error conventions unless present.
 
-- strict create/update schemas reject unknown and server-owned fields;
-- route parameter schemas reject malformed UUID/date/enum input;
-- missing actor or permission metadata denies;
-- cross-tenant denial occurs before ownership/role evaluation;
-- forged capability flags cannot authorize mutation;
-- transition policy rejects stale versions and invalid next states;
-- import sanitization handles spreadsheet formula prefixes;
-- stable errors exclude stack, SQL, token, and secret material.
+Authorization cases should cover role/tenant decisions at the responsible
+policy or service boundary. Add retries, idempotency, localization, or date
+boundaries only when requirement- or risk-driven.
 
-Mock infrastructure boundaries, not the policy under test. Name tests by observable
-behavior and keep fixtures locale-neutral.
-
-## TDD
-
-Run the smallest discovered unit command to observe RED, implement the minimum
-behavior, and rerun to GREEN. Record command, cwd, exit code, and result identity.
+Run the narrowest discovered command from the owning workspace. Preserve any
+existing coverage policy and return requirement-linked v2 evidence.

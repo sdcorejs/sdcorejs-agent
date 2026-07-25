@@ -58,6 +58,11 @@ Correct routing:
 - "write tests for X", "add unit tests", "run the test suite", "create UAT cases", "what should be tested?" -> `sdcorejs-test`.
 - `sdcorejs-test` may do read-only failing-output triage only when the user asks to explain, classify, or summarize output without changes.
 - When failing output implies a production bug or needs source changes, `sdcorejs-test` hands off to `sdcorejs-debug` with `test_context`, `test_evidence`, and the smallest failing command.
+- Preserve `test_status`, case/run IDs, environment/persona references, and
+  redaction state. Carry `ui_capture_context` and `artifact_context` by
+  reference/classification without attaching raw state, traces, or images.
+  Start from the smallest reproduction and command; do not broaden the suite
+  until the hypothesis needs it.
 - `sdcorejs-debug` may add or update a small focused regression test during a bug fix when the existing runner and test style are clear. Large suites, new infrastructure, multiple test levels, complex UAT/e2e coverage, dependency installs, or browser binary installs belong to `sdcorejs-test`.
 
 Do not invoke for feature requests phrased as new behavior, broad performance

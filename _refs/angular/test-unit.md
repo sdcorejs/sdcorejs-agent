@@ -1,285 +1,33 @@
-# Test-Unit Knowledge — Angular Portal
+# Angular Unit Testing
 
-> Unit-test patterns loaded on demand by `sdcorejs-test` when the project is an
-> Angular portal and the detected level is unit. Not a dispatchable skill — no
-> frontmatter. The orchestrator owns dispatch + the run/report flow.
+Use only for `core-ui-angular` or `legacy-core-ui-angular`. For `plain-angular`,
+use `_refs/shared/test-generic.md`.
 
-## Profile applicability
+## Scope
 
-Use this ref only for `core-ui-angular` or `legacy-core-ui-angular`. For
-`plain-angular`, load `_refs/shared/test-generic.md` instead.
+Select unit cases from requirements and changed risk. Typical candidates are
+pure validators, mappers, pipes, guards, state reducers, service branches, and
+component logic that does not require rendering. Test observable outcomes,
+errors, and boundary inputs; do not assert private implementation details.
 
-Do not assume `@sdcorejs/angular`, `@sd-angular/core`, `SD_API_CONFIGURATION`,
-Core UI components, or `src/libs` layout unless those signals are present in the
-target project.
+## Existing runner first
 
-## Purpose
-Unit tests cover the smallest meaningful piece of logic — a validator, a pipe, a single service method — with everything else mocked. Fast (< 5 ms each), many (hundreds per module), and the foundation of the test pyramid.
+Discover the configured Angular test builder and nearby tests. Preserve the
+existing Karma, Jest, Vitest, Web Test Runner, or other runner, including its
+command, setup files, TestBed helpers, fake timers, and coverage policy. Do not
+install or migrate a runner.
 
-Read `_refs/shared/testing-philosophy.md` first. This ref is the Angular-specific HOW.
+## Angular and Core UI boundaries
 
-## Patterns
+- Use TestBed only when dependency injection or Angular lifecycle is material.
+- Prefer direct construction for truly pure code when the project does so.
+- Reuse existing provider/test helpers; do not rebuild application bootstrap.
+- Core UI providers, components, and auto IDs are allowed only when present in
+  the target path.
+- Authorization UI behavior does not replace server/API denial coverage.
 
-### Pattern 1 — Validator function
+## Evidence
 
-```typescript
-import { FormControl } from '@angular/forms';
-import { vietnamesePhoneValidator } from './phone.validator';
-
-describe('vietnamesePhoneValidator', () => {
-  it.each([
-    ['0901234567', null],
-    ['+84901234567', null],
-    ['84901234567', null],
-    ['090123', { invalidPhone: true }],
-    ['', null],                  // empty is for required validator
-    ['abc1234567', { invalidPhone: true }],
-  ])('input "%s" yields %s', (input, expected) => {
-    const result = vietnamesePhoneValidator(new FormControl(input));
-    expect(result).toEqual(expected);
-  });
-});
-```
-
-`it.each` keeps the matrix readable; one failing case names exactly which input broke.
-
-### Pattern 2 — Pipe
-
-```typescript
-import { TestBed } from '@angular/core/testing';
-import { DatePipe, registerLocaleData } from '@angular/common';
-import { VnCurrencyPipe } from './vn-currency.pipe';
-import localeVi from '@angular/common/locales/vi';
-
-registerLocaleData(localeVi);
-
-describe('VnCurrencyPipe', () => {
-  let pipe: VnCurrencyPipe;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [VnCurrencyPipe] });
-    pipe = TestBed.inject(VnCurrencyPipe);
-  });
-
-  it('formats integer as VND', () => {
-    expect(pipe.transform(1500000)).toBe('<localized text>');
-  });
-
-  it('returns empty string for null', () => {
-    expect(pipe.transform(null as any)).toBe('');
-  });
-
-  it('rounds to 0 decimals', () => {
-    expect(pipe.transform(1500.75)).toBe('<localized text>');
-  });
-});
-```
-
-### Pattern 3 — Service method with mocked HTTP
-
-For testing service logic IN ISOLATION (not the integration), spy the HTTP client:
-
-```typescript
-import { TestBed } from '@angular/core/testing';
-import { HttpClient } from '@angular/common/http';
-import { of, throwError } from 'rxjs';
-import { ProductService } from './product.service';
-
-describe('ProductService', () => {
-  let service: ProductService;
-  let http: jest.Mocked<HttpClient>;
-
-  beforeEach(() => {
-    const httpSpy = { get: jest.fn(), post: jest.fn(), put: jest.fn(), delete: jest.fn() };
-    TestBed.configureTestingModule({
-      providers: [
-        ProductService,
-        { provide: HttpClient, useValue: httpSpy },
-      ],
-    });
-    service = TestBed.inject(ProductService);
-    http = TestBed.inject(HttpClient) as jest.Mocked<HttpClient>;
-  });
-
-  describe('search', () => {
-    it('posts query and maps response', async () => {
-      http.post.mockReturnValue(of({ data: [{ id: '1' }], total: 1 }));
-
-      const result = await service.search({ keyword: 'X' });
-
-      expect(http.post).toHaveBeenCalledWith(
-        expect.stringContaining('/api/product/search'),
-        expect.objectContaining({ keyword: 'X' }),
-      );
-      expect(result.data).toEqual([{ id: '1' }]);
-    });
-
-    it('maps server error to user-friendly message', async () => {
-      http.post.mockReturnValue(throwError(() => ({ status: 500 })));
-
-      await expect(service.search({})).rejects.toMatchObject({
-        message: expect.stringContaining('<localized text>'),
-      });
-    });
-  });
-});
-```
-
-For most service test cases, `HttpClientTestingModule` (integration test) is clearer than spying on `HttpClient`. Use spy when you're testing the service's error-mapping or pre/post-processing in isolation.
-
-### Pattern 4 — Mapper / pure function
-
-```typescript
-import { mapProductToTableRow } from './product.mapper';
-
-describe('mapProductToTableRow', () => {
-  it('maps required fields', () => {
-    const input = {
-      id: '123',
-      code: 'P001',
-      name: '<localized text>',
-      unitPrice: 100000,
-      createdAt: '2026-05-17T10:00:00Z',
-    };
-
-    expect(mapProductToTableRow(input)).toEqual({
-      id: '123',
-      displayName: '<localized text>',
-      formattedPrice: '<localized text>',
-      createdAtFormatted: '17/05/2026',
-    });
-  });
-
-  it('handles null unitPrice', () => {
-    expect(mapProductToTableRow({ id: '1', code: 'X', name: 'Y', unitPrice: null }).formattedPrice).toBe('-');
-  });
-});
-```
-
-### Pattern 5 — Async validator
-
-```typescript
-import { fakeAsync, tick } from '@angular/core/testing';
-import { FormControl } from '@angular/forms';
-import { of } from 'rxjs';
-import { codeUniqueValidator } from './code-unique.validator';
-
-describe('codeUniqueValidator', () => {
-  let service: { exists: jest.Mock };
-  beforeEach(() => {
-    service = { exists: jest.fn() };
-  });
-
-  it('returns null when code is unique', fakeAsync(() => {
-    service.exists.mockReturnValue(of(false));
-    const v = codeUniqueValidator(service as any);
-    const control = new FormControl('NEW_CODE');
-
-    let result: any;
-    v(control).subscribe((r) => (result = r));
-    tick(); // flush async pipe
-
-    expect(result).toBeNull();
-    expect(service.exists).toHaveBeenCalledWith('NEW_CODE');
-  }));
-
-  it('returns { duplicateCode: true } when code exists', fakeAsync(() => {
-    service.exists.mockReturnValue(of(true));
-    const v = codeUniqueValidator(service as any);
-
-    let result: any;
-    v(new FormControl('DUP_CODE')).subscribe((r) => (result = r));
-    tick();
-
-    expect(result).toEqual({ duplicateCode: true });
-  }));
-});
-```
-
-### Pattern 6 — Guard / interceptor
-
-Use `TestBed.runInInjectionContext` for the guard function-based API (Angular 14+):
-
-```typescript
-import { TestBed } from '@angular/core/testing';
-import { canActivateFn } from './permission.guard';
-import { CurrentUserService } from '@/libs/shared/services/current-user.service';
-
-describe('permissionGuard', () => {
-  it('allows when user has permission', () => {
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: CurrentUserService, useValue: { hasPermission: () => true } },
-      ],
-    });
-
-    const route = { data: { permission: 'CATALOG_PRODUCT_LIST' } } as any;
-
-    const result = TestBed.runInInjectionContext(() => canActivateFn(route, {} as any));
-    expect(result).toBe(true);
-  });
-
-  it('blocks when user lacks permission', () => {
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: CurrentUserService, useValue: { hasPermission: () => false } },
-      ],
-    });
-    const route = { data: { permission: 'CATALOG_PRODUCT_LIST' } } as any;
-
-    const result = TestBed.runInInjectionContext(() => canActivateFn(route, {} as any));
-    expect(result).toBe(false);
-  });
-});
-```
-
-## Run
-
-Discover the package manager and test script from
-`_refs/shared/test-command-discovery.md`, then run the narrowest current command.
-
-```text
-# Single module
-<pm> run <test-script> -- <runner-filter-for-module-specs>
-
-# Single file
-<pm> run <test-script> -- <runner-filter-for-one-spec>
-
-# Coverage
-<pm> run <test-script> -- <runner-coverage-filter>
-```
-
-Coverage target: ≥ 80% line on `services/` + `validators/` + `mappers/` + `pipes/`.
-
-## Rules
-
-### MUST DO
-- Inherit principles from `_refs/shared/testing-philosophy.md`
-- Use `it.each([...])` for table-driven cases — readable + comprehensive
-- Test ONE behaviour per `it()`; if you say "and" in the name, split
-- Use `fakeAsync` + `tick()` for RxJS time-based tests, NOT real timers
-- Mock HTTP via `HttpClient` spy OR `HttpClientTestingModule` — never hit the network
-- Use builders / factories for input objects, not 30-line inline literals
-
-### MUST NOT
-- Test private methods directly — test the public method that calls them
-- Use real timers (`setTimeout(..., 1000)`) — flaky + slow
-- Spy on every method of a service — usually means you're testing a stub of yourself
-- Skip the unhappy path — error cases are where bugs live
-- Use `xit` / `it.skip` to "fix later" — fix now or delete
-
-## Anti-patterns
-
-- **Snapshot-testing template output for unit tests** — too coarse + brittle; assert on specific facts
-- **`<localized text>`** — neither name describes what's verified
-- **Mocking the function under test** — meaningless
-- **Big setup + tiny assertion** — invert; if setup dominates, you're testing wrong layer (use integration)
-- **`expect(...).toEqual(realObject)` with 20 fields** — too brittle; assert key fields with `toMatchObject`
-- **Catching errors with `.catch()` and asserting on the caught value** — use `expect(...).rejects.toMatch...`
-
-## Cross-references
-- Principles: `_refs/shared/testing-philosophy.md`
-- Integration tests: `_refs/angular/test-integration.md`
-- E2E tests: `_refs/angular/test-e2e.md`
-- Build skill producing testable code: the `sdcorejs-angular` orchestrator — `_refs/angular/write-code/screen-detail.md` for validators / form refinement, `_refs/angular/write-code/init-entity.md` for services
-- Verification: `sdcorejs-ship (verify-before-done mode)`
+Map each case to a requirement or risk. Run the narrowest discovered command
+from the correct workspace, then record v2 context/status/evidence. Preserve an
+existing project threshold; do not introduce a numeric target.

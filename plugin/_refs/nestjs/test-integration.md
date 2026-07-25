@@ -1,25 +1,30 @@
-# NestJS Integration Test Reference
+# NestJS Integration Testing
 
-## Applicability
+Use for `sdcorejs-nestjs` only when its conventions are detected. For
+`plain-nestjs`, use `_refs/shared/test-generic.md`.
 
-For `sdcorejs-nestjs`, compile real Nest dependency injection and exercise the
-repository/service boundary. For `plain-nestjs`, load
-`_refs/shared/test-generic.md` and use the project's established database test
-strategy.
+## Scope
 
-Do not add packages or mutate shared infrastructure from this reference.
+Use integration tests when applicable requirements or risks cross Nest modules,
+database/repository adapters, queues, caches, external clients, validation, or
+transaction boundaries. Search, detail, mutation, workflow, export, report,
+and uniqueness cases are conditional, never an enterprise checklist that
+always applies.
 
-## Required cases
+## Infrastructure
 
-- module providers and Symbol ports resolve through real Nest DI;
-- migrations create the expected schema without runtime synchronization;
-- enterprise search/detail/mutation/workflow/export/report/uniqueness operations
-  always apply required tenant and optional department predicates;
-- missing scope fails before SQL execution;
-- tenant A cannot observe tenant B through counts, errors, uniqueness, or exports;
-- optimistic version or row-lock conflicts allow only one transition to commit;
-- idempotency state survives retry and ambiguous external outcomes;
-- role uniqueness matches global, tenant, and department semantics.
+Reuse existing test module builders, database helpers, containers, migrations,
+factories, and cleanup. Follow the detected Prisma, TypeORM, Mongoose, MikroORM,
+Sequelize, or custom repository pattern. Do not introduce an alternative.
 
-Prefer an isolated transaction/database per test. Record the actual engine:
-in-memory emulation is not evidence for Postgres locking or Keycloak behavior.
+Each state-changing run owns uniquely identified records and performs
+idempotent filtered cleanup. A cleanup failure blocks promotion. External email,
+SMS, payment, webhook, and queue effects require an existing sandbox or test
+double.
+
+## Assertions and evidence
+
+Assert persisted state and public adapter contracts, including rollback,
+authorization, tenant isolation, retry, or idempotency when required. Discover
+the current command/cwd; do not install tooling or invent a threshold. Return
+v2 context/status/evidence and data lifecycle results.

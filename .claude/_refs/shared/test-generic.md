@@ -1,59 +1,54 @@
-# Generic Test Ref
+# Generic Test Reference
 
-> Stack-neutral fallback loaded by `sdcorejs-test` for plain Angular, plain
-> NestJS, plain Next.js, React, and unknown projects.
+> Stack-neutral fallback for plain framework applications and unknown projects.
 
-## Scope
+## Contents
 
-Use this ref when the project does not match an SDCoreJS-specific stack profile or when the profile is uncertain. It prevents SDCoreJS-specific conventions from leaking into plain apps.
+- [Boundary](#boundary)
+- [Runner discovery](#runner-discovery)
+- [Test design](#test-design)
+- [Output](#output)
 
-Do not enforce:
+## Boundary
 
-- Core UI components, providers, auto IDs, routes, or `src/libs` layout
-- SDCoreJS NestJS module, repository, schema, bilingual error, or Postgres conventions
-- build-website public-site, locale routing, sitemap, or SEO conventions
-- any package manager, runner, or dependency not already present
+Use this ref for `plain-angular`, `plain-nestjs`, `plain-nextjs`, React, and
+`general`. Do not enforce Core UI components, SDCoreJS providers, route shapes,
+database libraries, locale policy, folder layout, or build-website behavior.
 
-## Workflow
+## Runner discovery
 
-1. Read the files under test and nearby existing tests.
-2. Detect runner/config from the project.
-3. Match naming, folder layout, imports, helpers, fixtures, providers, and cleanup style.
-4. Choose the smallest meaningful level:
-   - pure functions and mappers: unit
-   - components/forms/hooks: component or integration
-   - routers/API boundaries: integration
-   - critical user journeys: e2e
-5. Prefer existing factories, mock servers, page objects, and test utilities.
-6. Run or recommend only discovered commands.
+The existing runner is authoritative:
 
-## Frontend Guidance
+| Ecosystem | Signals to inspect |
+|---|---|
+| Node | `package.json`, lockfile, workspace config, runner config, CI |
+| Python | `pyproject.toml`, `pytest.ini`, `tox.ini`, requirements, CI |
+| Java | `pom.xml`, `build.gradle*`, wrapper files, CI |
+| .NET | `*.sln`, `*.csproj`, `global.json`, CI |
+| Go | `go.mod`, `Makefile`, CI |
+| Rust | `Cargo.toml`, workspace configuration, CI |
 
-For React-like projects, prefer behavior-focused tests with accessible queries when the project uses Testing Library. Use `userEvent` for user behavior when available. Handle async UI with runner-native async helpers.
+Reuse the discovered command, cwd, helpers, factories, fixtures, cleanup, and
+reporter. Do not invent a package manager or translate every project into npm.
 
-For Angular-like projects, use the existing TestBed, Testing Library, Karma/Jest/Vitest, or project helper conventions. Do not import Core UI or SDCoreJS providers unless the target project already uses them.
+## Test design
 
-For Next.js, test generic pages/components/routes according to the project's existing app/pages router setup. Do not assume locale prefixes, generated metadata, sitemap, or public landing-site requirements unless present.
+Map current requirements and risks to the smallest useful level:
 
-## Backend Guidance
+- pure branches and transformations: unit;
+- component interaction and accessibility: component;
+- database, adapter, queue, or service boundary: integration;
+- HTTP contract, authorization, and tenant isolation: API e2e;
+- critical user journey: browser e2e;
+- acceptance sign-off: UAT/manual evidence.
 
-For NestJS-like projects, follow the existing testing strategy:
+Follow nearby naming, imports, lifecycle, and assertion style. Prefer observable
+behavior over implementation details. Add retry, idempotency, performance, or
+external-effect cases only when required or risk-justified. Preserve project
+thresholds if they exist; never create a universal threshold.
 
-- If repositories are mocked in unit tests, keep that unit style.
-- If the project has a test database helper, reuse it.
-- If it uses Prisma, Mongoose, TypeORM, MikroORM, Sequelize, or another data layer, follow the local pattern.
-- Do not introduce Postgres/testcontainers/pg-mem/Zod/supertest unless already present or explicitly approved.
+## Output
 
-## Output Standard
-
-For plans or audits, list:
-
-- target behavior
-- proposed level
-- files to test
-- existing helpers/runner discovered
-- command to run or blocker
-- risk covered
-- residual risk
-
-For authored tests, include only scoped changes and current verification evidence.
+Return v2 `test_context`, independent `test_status`, append-oriented
+`test_evidence`, the requirement/risk coverage matrix, commands and cwd,
+cleanup outcome, blockers, and artifact classification.
