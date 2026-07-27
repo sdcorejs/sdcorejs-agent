@@ -43,10 +43,9 @@ Priority when several skills match:
 6. Dedicated utility intent: `sdcorejs-simplify`, `sdcorejs-explore`,
    `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-repair-loop`,
    `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
-7. Whole app/system build intent: `sdcorejs-solution-builder`.
-8. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
+7. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
    `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
-9. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
+8. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
 
 ## Tracks
 

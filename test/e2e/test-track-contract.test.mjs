@@ -315,7 +315,7 @@ test('routing fixtures cover authenticated, tenant, documentation, auth, debug, 
     ['test-run-checkout', 'sdcorejs-test'],
     ['test-failing-output-explain', 'sdcorejs-test'],
     ['debug-failing-login-fix', 'sdcorejs-debug'],
-    ['auth-keycloak-configure', 'sdcorejs-auth'],
+    ['auth-keycloak-configure', 'sdcorejs-brainstorming'],
     ['documentation-verified-screenshots', 'sdcorejs-documentation'],
     ['test-authenticated-personas-vi', 'sdcorejs-test'],
     ['documentation-verified-screenshots-vi', 'sdcorejs-documentation'],
@@ -501,7 +501,7 @@ test('forward fixtures emit context, ownership, commands, blockers, and artifact
       },
     },
     {
-      name: 'solution-builder uses shared test project',
+      name: 'multi-project layout uses shared test project',
       files: {
         'frontend/package.json': { scripts: { test: 'vitest run' } },
         'backend/package.json': { scripts: { test: 'jest' } },
@@ -509,7 +509,7 @@ test('forward fixtures emit context, ownership, commands, blockers, and artifact
       },
       request: { action: 'test-plan-readonly', level: 'browser-e2e' },
       check: (result) => {
-        assert.equal(result.test_context.classification.repository_kind, 'solution-builder');
+        assert.equal(result.test_context.classification.repository_kind, 'multi-project');
         assert.equal(result.test_context.scope.owner, 'shared-test-project');
       },
     },

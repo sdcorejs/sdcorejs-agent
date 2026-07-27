@@ -179,7 +179,7 @@ PO/BA prototype flow: input-analysis -> po-ba-prototype -> init-portal if needed
 
 #### MANDATORY: Core UI usage summary (show the user right after generating)
 
-Right after the code is written and BEFORE the finish gate, emit a short table of every `@sdcorejs/angular` Core UI piece the feature actually uses — component, service, or directive — each with a one-line purpose **tied to this feature**, in the user's language. This gives the user (especially non-tech) a plain-language overview of the building blocks. Build the rows from what you ACTUALLY imported/used — never list a component you didn't use, never describe it generically.
+Right after the code is written and BEFORE the finish gate, emit a short table of every `@sdcorejs/angular` Core UI piece the feature actually uses — component, service, or directive — each with a one-line purpose **tied to this feature**, in the user's language. This gives the team a concise overview of the building blocks. Build the rows from what you ACTUALLY imported/used — never list a component you didn't use, never describe it generically.
 
 ```text
 Core UI used in <feature name>:
@@ -192,7 +192,7 @@ Core UI used in <feature name>:
 | `sd-button` | Renders save, cancel, and action buttons |
 ```
 
-Keep each purpose one line, concrete to the feature (not "a table component"). Persona-aware: plain wording for non-tech. The same table is persisted into the module's user guide at the write-user-guide step.
+Keep each purpose one line, concrete to the feature (not "a table component"). Use plain wording when the communication persona requests it. The same table is persisted into the module's user guide at the write-user-guide step.
 
 This summary is Core UI only. If the target project is classified as
 `plain-angular`, this skill must not run and no Core UI usage summary is

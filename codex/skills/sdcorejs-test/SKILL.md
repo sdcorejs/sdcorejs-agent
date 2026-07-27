@@ -78,10 +78,11 @@ approved requirements. Do not infer conventions from framework name alone.
 | `react-next-generic` | React component work inside plain Next.js. |
 | `general` | Any other stack, including Python, Java, .NET, Go, and Rust. |
 
-Repository kind is independently `single-app`, `monorepo`, `solution-builder`,
-`test-only`, or `unknown`. In a monorepo, identify the owning project and
-command cwd. In solution-builder layout, component tests stay with their
-project; shared cross-stack e2e lives under the existing `test/` project.
+Repository kind is independently `single-app`, `monorepo`, `multi-project`,
+`test-only`, or `unknown`. In a monorepo or multi-project layout, identify the
+owning project and command cwd. Component tests stay with their project;
+shared cross-stack e2e lives under an existing shared test project when one is
+present.
 
 ## Step 3 - Load only relevant contracts
 

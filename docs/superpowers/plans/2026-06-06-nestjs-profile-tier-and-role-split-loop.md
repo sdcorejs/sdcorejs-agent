@@ -10,6 +10,11 @@
 
 **Design doc:** `docs/superpowers/specs/2026-06-06-nestjs-generalization-and-role-split-loop-design.md`
 
+> **Historical note (v0.6.0):** Retired full-stack workflow steps and
+> placeholders below are retained only as decision context. They are not live
+> skill paths or executable instructions; the NestJS profile and role-split
+> technical decisions remain the reusable content.
+
 ---
 
 ## Conventions for every task in this plan
@@ -36,7 +41,7 @@
 | `_refs/nestjs/write-code/actions.md` | Profile branch: `SdContext` fields, permission codes | 2 |
 | `_refs/nestjs/core-catalog.md` | Note neutral-core vs profile-template boundary | 2 |
 | `skills/tracks/nestjs/write-code.md` | Read profile from summary; pass to each pack | 2 |
-| `skills/orchestration/solution-builder.md` | Non-tech default `simple`; invoke Mode B for cross-track features | 2 + 3 |
+| `<retired full-stack workflow>` | Historical plain-language default `simple`; invoke Mode B for cross-track features | 2 + 3 |
 | `skills/orchestration/subagent-driven-dev.md` | Mode selector + Mode B (role-split feature loop) body | 3 |
 | `skills/orchestration/parallel-dispatch.md` | `ROLE-SPLIT` verdict branch | 3 |
 
@@ -154,7 +159,7 @@ Expected: frontmatter / sync / core-version checks green. Phase 1 is independent
 
 # PHASE 2 — Profile tier (`simple` | `enterprise`)
 
-Resolves over-fit items 1–8. `enterprise` preserves today's output; `simple` is the new non-tech default.
+Resolves over-fit items 1–8. `enterprise` preserves today's output; `simple` is the new plain-language stakeholder default.
 
 ## Task 3: Add `profile` as a blocking clarify input
 
@@ -167,7 +172,7 @@ Resolves over-fit items 1–8. `enterprise` preserves today's output; `simple` i
 In `_refs/sdlc/nestjs.md` → `## Clarify` → `### Minimum-required (blocking)`, add as item 9:
 ```
 9. **Profile** — `simple` (default) | `enterprise`.
-   - `simple`: single-tenant, flat Keycloak-role permissions, DTOs in `src/modules/<module>/dto/`, lib `WithAudit(BaseEntity)`, core `AuthGuard`. The non-tech default.
+   - `simple`: single-tenant, flat Keycloak-role permissions, DTOs in `src/modules/<module>/dto/`, lib `WithAudit(BaseEntity)`, core `AuthGuard`. The plain-language stakeholder default.
    - `enterprise`: multi-tenant (`tenantCode` + `departmentCode` scoping), page-permission matrix, `@shared` monorepo kernel, `AdminAuthGuard`, internal-secret module, `MASTER`/`TENANT_ADMIN` scopes. Pick when the app is genuinely multi-tenant / multi-service.
 ```
 
@@ -180,7 +185,7 @@ In the same file's `### Summary template`, add a row:
 
 - [ ] **Step 3: Add the routing note in the clarify skill**
 
-In `skills/shared/sdlc/02-clarify-requirements.md`, in the nestjs blocking-inputs section, add: "Ask **profile** (`simple` default | `enterprise`). For a `non-tech` persona, do NOT ask — default `simple` silently (persona rule 7: never expose architecture); still confirm the derived data model in plain terms."
+In `skills/shared/sdlc/02-clarify-requirements.md`, in the nestjs blocking-inputs section, add: "Ask **profile** (`simple` default | `enterprise`). For a `plain-language stakeholder` persona, do NOT ask — default `simple` silently (persona rule 7: never expose architecture); still confirm the derived data model in plain terms."
 
 - [ ] **Step 4: Verify**
 
@@ -481,27 +486,27 @@ git add _refs/nestjs/core-catalog.md .claude/_refs plugin/_refs
 git commit -m "docs(refs): note neutral-core vs profile-template boundary in nestjs core-catalog"
 ```
 
-## Task 9: orchestrator + solution-builder read/pass the profile
+## Task 9: orchestrator + retired full-stack workflow read/pass the profile
 
 **Files:**
 - Modify: `skills/tracks/nestjs/write-code.md`
-- Modify: `skills/orchestration/solution-builder.md`
+- Modify: `<retired full-stack workflow>`
 
 - [ ] **Step 1: `nestjs-write-code` reads the profile**
 
 In `skills/tracks/nestjs/write-code.md` Step 0.1 (pre-flight), add: "Read `profile` from `<target>/.sdcorejs/summary.md` (default `simple`). Pass the resolved profile into every dispatched pack — each pack emits only that profile's templates." Add a MUST-DO bullet: "Emit a single profile consistently across all packs in one project (never mix)."
 
-- [ ] **Step 2: `solution-builder` non-tech default**
+- [ ] **Step 2: `retired full-stack workflow` plain-language stakeholder default**
 
-In `skills/orchestration/solution-builder.md` step 1 ("Understand what you want") + the forced-infra-defaults list, add: "**Profile** is forced to `simple` for the non-tech door (single-tenant, role-based login) — never surfaced as a choice. A developer using the granular flow picks `enterprise` at clarify if needed."
+In `<retired full-stack workflow>` step 1 ("Understand what you want") + the forced-infra-defaults list, add: "**Profile** is forced to `simple` for the plain-language stakeholder door (single-tenant, role-based login) — never surfaced as a choice. A developer using the granular flow picks `enterprise` at clarify if needed."
 
 - [ ] **Step 3: Verify + sync + commit**
 
 ```bash
-rg -n "profile" skills/tracks/nestjs/write-code.md skills/orchestration/solution-builder.md | rg -i profile   # expect matches
+rg -n "profile" skills/tracks/nestjs/write-code.md <retired full-stack workflow> | rg -i profile   # expect matches
 bash .claude/sync-skills.sh
-git add skills/tracks/nestjs/write-code.md skills/orchestration/solution-builder.md .claude/skills plugin/skills
-git commit -m "feat(skills): nestjs-write-code reads profile; solution-builder defaults non-tech to simple"
+git add skills/tracks/nestjs/write-code.md <retired full-stack workflow> .claude/skills plugin/skills
+git commit -m "feat(skills): nestjs-write-code reads profile; retired full-stack workflow defaults plain-language stakeholder to simple"
 ```
 
 - [ ] **Step 4: Phase 2 gate (enterprise non-regression)**
@@ -644,10 +649,10 @@ git add skills/orchestration/parallel-dispatch.md .claude/skills plugin/skills
 git commit -m "feat(skills): add ROLE-SPLIT verdict routing to subagent-driven-dev Mode B"
 ```
 
-## Task 12: `solution-builder.md` — use Mode B for cross-track features
+## Task 12: `retired-full-stack-workflow` — use Mode B for cross-track features
 
 **Files:**
-- Modify: `skills/orchestration/solution-builder.md`
+- Modify: `<retired full-stack workflow>`
 
 - [ ] **Step 1: Replace the sequential BE→FE narration**
 
@@ -656,10 +661,10 @@ In "## The chain", merge steps 4 (backend) + 5 (frontend) into one step: "**Buil
 - [ ] **Step 2: Verify + sync + commit**
 
 ```bash
-rg -n "Mode B|in parallel and loop" skills/orchestration/solution-builder.md   # expect matches
+rg -n "Mode B|in parallel and loop" <retired full-stack workflow>   # expect matches
 bash .claude/sync-skills.sh
-git add skills/orchestration/solution-builder.md .claude/skills plugin/skills
-git commit -m "feat(skills): solution-builder builds cross-track features via Mode B loop"
+git add <retired full-stack workflow> .claude/skills plugin/skills
+git commit -m "feat(skills): retired full-stack workflow builds cross-track features via Mode B loop"
 ```
 
 ## Task 13: Final gate + design-doc status + CLAUDE.md touch-ups
@@ -696,14 +701,14 @@ git commit -m "docs: mark profile-tier + role-split-loop delivered; note in CLAU
 |---|---|
 | simple init-project: no tenancy/MASTER/internal-secret/base/shared; WithAudit; `string[]` perms | Task 4 (Steps 4–9) |
 | enterprise byte-equivalent (no regression) | Task 4 Step 9, Task 6 Step 6, Task 9 Step 4 |
-| profile is a blocking clarify question; solution-builder defaults simple | Task 3, Task 9 |
+| profile is a blocking clarify question; retired full-stack workflow defaults simple | Task 3, Task 9 |
 | review-code.md off be-masterdata; probes match generated code | Task 1 |
 | architecture-principles §2/§4/§13 match output | Task 2 |
 | sync-skills --check passes; lefthook green | Task 2 Step 6, Task 9 Step 4, Task 13 Step 3 |
 | subagent-driven-dev has selector; Mode A unchanged; Mode B = 4 phases + loop control | Task 10 |
 | parallel-dispatch routes BE+FE → ROLE-SPLIT/Mode B | Task 11 |
 | Mode B Phase 0 freezes a profile-shaped contract; disjoint briefs; verify-before-done gate; cap 3 + no-progress×2 | Task 10 Step 2 |
-| solution-builder uses Mode B for cross-track; sequential fallback documented | Task 12 |
+| retired full-stack workflow uses Mode B for cross-track; sequential fallback documented | Task 12 |
 | dry-run walkthrough showing contract-drift reconciliation | Task 10 Step 2 (B.7) |
 
 All spec acceptance criteria map to at least one task. No gaps.

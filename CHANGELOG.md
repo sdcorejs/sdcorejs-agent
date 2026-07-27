@@ -5,7 +5,20 @@ All notable changes to this repository should be documented here.
 This project uses GitHub tags/releases for adopted versions. The root npm
 package is private and is not published to npm.
 
-## Unreleased
+## 0.6.0
+
+- **Breaking:** permanently remove the standalone skills
+  `sdcorejs-auth`, `sdcorejs-dockerize`, `sdcorejs-run-guide`, and
+  `sdcorejs-solution-builder` from canonical sources and every generated
+  distribution.
+- Recenter dispatch, documentation, and examples on developers and technical
+  teams using the core engineering lifecycle and direct technical-track
+  executors.
+- Keep shared Angular/NestJS authentication, authorization, security, and
+  container-test contracts while removing the obsolete standalone packaging
+  templates.
+- Update routing fixtures, catalogs, mirrors, validation expectations, and
+  version metadata for the 21-skill public surface.
 
 - Add `sdcorejs-simplify` as a first-class workflow utility for bounded
   current-diff or explicit executable-source analysis/refinement with preserved
@@ -16,8 +29,7 @@ package is private and is not published to npm.
   test baseline and review, rerun affected focused tests after writes, and pass
   freshness evidence through test, review, repair, debug, ship, and Git owners.
 - Add narrow deterministic routing, localized input fixtures, mutation guards,
-  synchronized 25-skill mirrors, and public catalog/adoption guidance without a
-  package-version bump or release claim.
+  synchronized mirrors, and public catalog/adoption guidance.
 - Add the first-class `sdcorejs-ai-agent` track with two independent lifecycle
   engines, twelve business capability profiles, application-owned trust/tool/
   approval/state/evidence/tracing/usage contracts, offline validation, golden

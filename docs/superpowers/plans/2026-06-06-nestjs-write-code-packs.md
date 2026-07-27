@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build out the NestJS track from a scaffold plan-walker into a real pack-dispatching code generator — mirroring `angular-write-code` — so `nestjs-write-code` can scaffold a modular-monolith backend that consumes the `@sdcorejs/nestjs` core and follows the `enterprise-platform` reference architecture. This is design-doc Phase 3 (`docs/superpowers/specs/2026-06-06-non-tech-solution-builder-design.md`).
+**Goal:** Build out the NestJS track from a scaffold plan-walker into a real pack-dispatching code generator — mirroring `angular-write-code` — so `nestjs-write-code` can scaffold a modular-monolith backend that consumes the `@sdcorejs/nestjs` core and follows the `enterprise-platform` reference architecture.
 
 **Architecture:** Add on-demand reference packs under `_refs/nestjs/write-code/` (no frontmatter, not dispatchable — same shape as `_refs/angular/write-code/`) loaded by the single `nestjs-write-code` skill. Packs encode the real, grounded shapes from `@sdcorejs/nestjs` (v0.1.6) + the `enterprise-platform` modular monolith.
 
@@ -40,7 +40,6 @@
 | `_refs/sdlc/nestjs.md`, `_refs/nestjs/architecture-principles.md` | Modify | Reconcile with the real core: package name `@sdcorejs/nestjs`, sub-path imports, `model:action` codes, schema-per-module, **synchronize-in-dev vs migrations** note (+ reconcile the Plan 2 `backend.Dockerfile` migration CMD). |
 | `CLAUDE.md`, `AGENTS.md`, `.github/copilot-instructions.md` | Modify | (a) Amend the Bilingual rule → "skills-go-global / English source" convention; (b) flip the NestJS track status scaffold → complete + reference the packs. |
 | `TESTING.md` | Modify | Smoke tests for nestjs init-project / init-module / init-entity. |
-| `docs/superpowers/specs/2026-06-06-non-tech-solution-builder-design.md` | Modify | Mark Phase 3 shipped. |
 | mirrors (`.claude/**`, `plugin/**`) | Generated | `sync-skills.sh` only. |
 
 ---
@@ -236,7 +235,9 @@ Expected: lefthook check passes; mirrors in sync (skill count unchanged at 40 �
 
 ## Self-review notes (author)
 
-- **Spec coverage:** implements design §Phase 3 (nestjs write-code packs). The pack set deviates from the design's illustrative `controller/service/repository` list → `init-project/init-module/init-entity/actions` (justified above; flagged for review). Phase 4 (`sdcorejs-solution-builder`) deferred.
+- **Spec coverage:** implements the NestJS write-code packs. The pack set
+  follows `init-project/init-module/init-entity/actions`; deviations from
+  illustrative controller/service/repository groupings are documented above.
 - **Grounded, not invented:** every template traces to `@sdcorejs/nestjs` v0.1.6 exports (core fact sheet) + the `enterprise-platform` reference app (anatomy fact sheet) — import sub-paths, base classes, `SdCoreModule.forRoot`, `model:action` codes, schema-per-module, Zod v4 schemas, `SdContext`, `AdminAuthGuard`.
 - **English source** applied throughout (Task 1 records the convention; all packs + the skill description authored in English).
 - **Cross-plan reconciliation:** Task 3 + Task 7 explicitly reconcile the Plan 2 `backend.Dockerfile` migration CMD against the reference app's synchronize-in-dev model (don't leave the Dockerfile assuming a migration script that init-project doesn't create).

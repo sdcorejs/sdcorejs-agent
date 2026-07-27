@@ -61,7 +61,7 @@ const GOLDEN_FIXTURES = [
   'fixtures/golden/openai-agents-sdk-multi-agent-supervisor.json',
 ];
 
-test('ai-agent: canonical skill exists exactly once and source count is 25', async () => {
+test('ai-agent: canonical skill exists exactly once and source count is 21', async () => {
   const skillFiles = await listFiles(join(ROOT, 'skills'), file => file.endsWith('.md'));
   const namedSkills = await Promise.all(skillFiles.map(async file => ({
     file,
@@ -69,7 +69,7 @@ test('ai-agent: canonical skill exists exactly once and source count is 25', asy
   })));
   const aiSkills = namedSkills.filter(item => item.name === 'sdcorejs-ai-agent');
 
-  assert.equal(namedSkills.length, 25);
+  assert.equal(namedSkills.length, 21);
   assert.equal(aiSkills.length, 1);
   assert.equal(aiSkills[0].file, SKILL_PATH);
 
@@ -228,7 +228,6 @@ test('ai-agent: workflow and downstream skills consume immutable AI-agent contex
     ['spec', 'skills/shared/sdlc/02-spec.md'],
     ['plan', 'skills/shared/sdlc/03-plan.md'],
     ['execute', 'skills/shared/sdlc/04-execute-plan.md'],
-    ['solution', 'skills/orchestration/solution-builder.md'],
     ['test', 'skills/tracks/test/sdcorejs-test.md'],
     ['review', 'skills/shared/workflow/review.md'],
     ['repair', 'skills/orchestration/repair-loop.md'],
@@ -242,8 +241,6 @@ test('ai-agent: workflow and downstream skills consume immutable AI-agent contex
   assert.match(files.get('plan'), /agent_architecture:/);
   assert.match(files.get('execute'), /track:\s*ai-agent|`ai-agent`/);
   assert.match(files.get('execute'), /sdcorejs-ai-agent/);
-  assert.match(files.get('solution'), /AI-agent role|AI agent role/i);
-
   for (const id of ['test', 'review', 'repair', 'debug', 'ship', 'git']) {
     assert.match(files.get(id), /ai_agent_context/, `${id} consumes AI context`);
   }
@@ -276,7 +273,7 @@ test('ai-agent: mutation guards fail when security and execution invariants are 
 
 test('ai-agent: package boundary remains dependency-free and repository suite includes the contract test', async () => {
   const pkg = await readJson(join(ROOT, 'package.json'));
-  assert.equal(pkg.version, '0.5.1');
+  assert.equal(pkg.version, '0.6.0');
   assert.equal(pkg.packageManager, 'npm@10.9.2');
   assert.match(pkg.scripts['test:e2e:repository'], /test\/e2e\/ai-agent-track-contract\.test\.mjs/);
   assert.equal(pkg.dependencies?.openai, undefined);

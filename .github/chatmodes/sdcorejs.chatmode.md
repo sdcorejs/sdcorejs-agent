@@ -70,7 +70,7 @@ their dedicated owners.
 ## Rules
 
 - Read skill frontmatter, then the selected skill body.
-- If several skills match, prioritize explicit skill name, approved-plan execution, product docs/traceability, design handoff, test-only work, dedicated utility intent, whole app/system build, confirmed track implementation, then brainstorming for ambiguous scope.
+- If several skills match, prioritize explicit skill name, approved-plan execution, product docs/traceability, design handoff, test-only work, dedicated utility intent, confirmed track implementation, then brainstorming for ambiguous scope.
 - Use `sdcorejs-brainstorming` before code when requirements are not confirmed.
 - Do not proceed past `sdcorejs-spec` or `sdcorejs-plan` without explicit approval.
 - Let `sdcorejs-spec` and `sdcorejs-plan` write their own approved snapshots.

@@ -69,9 +69,8 @@ mode policy:
 - Prefer read-only review, spec, plan, product, design, and documentation modes
   until the target repo is trusted.
 - Run agents in a disposable worktree or container for third-party repos.
-- Allow writes only under the target root and the expected `.sdcorejs/**`,
-  `product/**`, `design/**`, `backend/**`, `frontend/**`, or `test/**` areas
-  for solution-builder work.
+- Allow writes only under the target root and the paths explicitly approved by
+  the current plan.
 - Treat generated mirrors as distribution artifacts. Review diffs after
   `npm run sync:skills` and do not accept hand-edited mirror drift.
 

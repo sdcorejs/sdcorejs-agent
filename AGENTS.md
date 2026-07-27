@@ -3,7 +3,8 @@
 Entry point for AGENTS.md-aware tools: Codex, Cursor, OpenAI Agents SDK, and compatible assistants.
 Claude Code reads `CLAUDE.md`; Copilot reads `.github/copilot-instructions.md`.
 
-This repo is an SDLC skill pack for:
+This repo is an engineering skill pack for developers and technical teams
+working across the software delivery lifecycle:
 
 - Angular portals using `@sdcorejs/angular`
 - NestJS + Postgres backends
@@ -57,7 +58,7 @@ skills/
   shared/workflow/ship.md -> sdcorejs-ship
   shared/workflow/git.md -> sdcorejs-git
 _refs/
-  ai-agent/, angular/, nestjs/, nextjs/, sdlc/, shared/, infra/, orchestration/, documentation/
+  ai-agent/, angular/, nestjs/, nextjs/, sdlc/, shared/, orchestration/, documentation/
   simplify/, shared/tdd.md -> loaded by sdcorejs-simplify / sdcorejs-test (tdd mode)
 ```
 
@@ -73,10 +74,9 @@ When multiple skills match, apply this priority before reading a body:
 6. Dedicated utility intent: `sdcorejs-simplify`, `sdcorejs-explore`,
    `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-repair-loop`,
    `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
-7. Whole app/system build intent: `sdcorejs-solution-builder`.
-8. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
+7. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
    `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
-9. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
+8. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
 
 Routing clarifications:
 
@@ -149,12 +149,16 @@ deterministic fan-in.
 | ai-agent | `sdcorejs-ai-agent` | Approved-plan-only authoring with 2 engine profiles, 12 independent capability profiles, offline contracts/evals, and no bundled provider runtime |
 | product | `sdcorejs-product` | Writes/audits `product/` PRDs/user stories/AC/UAT docs plus `.sdcorejs/docs/product/` feature ledgers |
 | design | `sdcorejs-design` | Writes/audits `design/` FE handoff specs, flows, wireframes, and PNG previews |
-| test | `sdcorejs-test` | First-class track for unit/integration/e2e/UAT plans; solution-root cross-stack tests live in `test/` |
+| test | `sdcorejs-test` | First-class track for unit/integration/e2e/UAT plans; multi-project cross-stack tests use an existing shared `test/` project |
 | generic | `sdcorejs-execute-plan` harness | Executes approved plans for unsupported stacks or non-track work |
 
 ## Production SDLC Scope Decision
 
-Current approved scope is a verified, locally runnable SDLC skill pack: product/design/test evidence, Angular/NestJS/Next.js code generation, governed AI-agent application authoring, Docker compose packaging, Keycloak auth, run guides, branch hygiene, PR/changelog support, and recovery memory.
+Current approved scope is an engineering-focused SDLC skill pack:
+product/design/test evidence, Angular/NestJS/Next.js code generation, governed
+AI-agent application authoring, shared authentication and authorization
+guidance within technical tracks, branch hygiene, PR/changelog support, and
+recovery memory.
 
 Do **not** add new production-SDLC skills or refs for CI/CD pipelines, IaC, staging/production promotion, observability, incident response, SRE runbooks, migration rollout, compliance gates, or release governance until the user explicitly approves that expansion. If requested, start with `sdcorejs-brainstorming` and an approved spec/plan before authoring new skill/ref surfaces.
 
@@ -216,7 +220,6 @@ Load references on demand:
 - `_refs/simplify/**` for bounded behavior-preserving source refinement.
 - `_refs/angular/core-docs-fetch.mjs` before using Core UI components.
 - `_refs/<track>/review-*.md` during review.
-- `_refs/infra/*` during dockerize/auth/run-guide.
 - `_refs/orchestration/workspace-isolation.md` during `sdcorejs-git (workspace mode)`.
 - `_refs/orchestration/tail/verify-before-done.md` during `sdcorejs-ship (verify-before-done mode)`.
 - `_refs/orchestration/tail/branch-ready.md` during `sdcorejs-ship (branch-ready mode)`.
@@ -234,17 +237,3 @@ Load references on demand:
 - Treating `sdcorejs-simplify` as a broad refactor, bug fix, formatter,
   performance optimizer, or permission to change prompts/contracts/config.
 - Writing `.sdcorejs/*` session artifacts into `sdcorejs-agent` when the target project is elsewhere.
-
-## Solution Builder Output
-
-`sdcorejs-solution-builder` creates one solution root:
-
-```text
-<solution-root>/
-  product/     # PRDs, user stories, acceptance criteria, UAT, decisions
-  design/      # flows, specs, wireframes, optional PNG exports
-  backend/     # NestJS app and backend tests
-  frontend/    # Angular app and frontend tests
-  test/        # cross-stack e2e/UAT tests, fixtures, reports
-  .sdcorejs/   # specs, plans, change records, ledgers, memories, durable backlogs
-```

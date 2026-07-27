@@ -3,8 +3,9 @@
 [![CI](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/ci.yml)
 [![Full E2E](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/full-e2e.yml/badge.svg)](https://github.com/sdcorejs/sdcorejs-agent/actions/workflows/full-e2e.yml)
 
-A portable SDLC skill pack for AI coding agents. Works in Claude Code,
-GitHub Copilot, Codex, and Cursor.
+An engineering-focused SDLC skill pack for developers and technical teams
+using AI coding agents. Works in Claude Code, GitHub Copilot, Codex, and
+Cursor.
 
 Requests flow through:
 
@@ -159,7 +160,7 @@ transcripts, see:
 ## Repo Layout
 
 ```text
-skills/                 source skills, 25 dispatchable skill files
+skills/                 source skills, 21 dispatchable skill files
 _refs/                  source reference docs
 .claude/skills/         generated Claude mirror
 plugin/skills/          generated Claude plugin mirror
@@ -215,7 +216,6 @@ review rules.
 - `sdcorejs-execute-plan` always asks sequential vs parallel.
 - Product/PO docs, user stories, acceptance criteria, UAT, and traceability use the `sdcorejs-product` track.
 - UI/UX design, FE handoff specs, wireframes, and PNG previews use the `sdcorejs-design` track.
-- Solution-builder roots use `product/`, `design/`, `backend/`, `frontend/`, `test/`, and `.sdcorejs/`; human product docs live in `product/`, design handoff lives in `design/`, while approved snapshots/change records/ledgers/evidence stay in `.sdcorejs/`.
 - Test-only plans use the `sdcorejs-test` track.
 - Confirmed AI-agent implementations use `sdcorejs-ai-agent`; under-specified
   AI-agent ideas return to brainstorming, while test, review, and debug requests
@@ -227,6 +227,9 @@ review rules.
 - Final gate, acceptance verification, branch readiness, dependency-update delivery, ready-to-merge, and release readiness use `sdcorejs-ship`.
 - Commit, PR, changelog, release notes, and Git artifact creation use `sdcorejs-git`.
 - Unknown stacks can still run through the generic harness fallback.
+- Authentication, authorization, security, and container-based test guidance
+  remain embedded in the technical tracks that own those concerns; they are
+  not standalone end-to-end packaging workflows.
 - Every code-generation run presents the finish gate before tail steps.
 - Never claim pass, built, fixed, or done without current verification output.
 

@@ -36,9 +36,9 @@
     "phase": 1
   },
   {
-    "id": "solution-builder-classroom-localized",
+    "id": "broad-app-classroom-localized",
     "prompt": "xay dung phan mem quan ly lop hoc",
-    "expectedSkill": "sdcorejs-solution-builder",
+    "expectedSkill": "sdcorejs-brainstorming",
     "phase": 1
   },
   {
@@ -138,9 +138,9 @@
     "phase": 3
   },
   {
-    "id": "solution-builder-fullstack",
+    "id": "broad-fullstack-requirements",
     "prompt": "create a full SDCoreJS Angular and NestJS solution for inventory management",
-    "expectedSkill": "sdcorejs-solution-builder",
+    "expectedSkill": "sdcorejs-brainstorming",
     "phase": 3
   },
   {
@@ -674,7 +674,7 @@
   {
     "id": "keycloak-login-setup",
     "prompt": "add Keycloak login to the existing app",
-    "expectedSkill": "sdcorejs-auth",
+    "expectedSkill": "sdcorejs-brainstorming",
     "phase": 3
   },
   {
@@ -716,7 +716,7 @@
   {
     "id": "auth-keycloak-configure",
     "prompt": "configure Keycloak authentication for the application",
-    "expectedSkill": "sdcorejs-auth",
+    "expectedSkill": "sdcorejs-brainstorming",
     "phase": 4
   },
   {
@@ -830,7 +830,7 @@
   {
     "id": "ai-agent-chatgpt-app-owner",
     "prompt": "build a ChatGPT App with an MCP widget",
-    "expectedSkill": "sdcorejs-solution-builder",
+    "expectedSkill": "sdcorejs-brainstorming",
     "phase": 3
   },
   {

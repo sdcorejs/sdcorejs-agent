@@ -2,7 +2,8 @@
 
 Claude Code entry point for the SDCoreJS skill pack. The same skill model is mirrored to Codex, Cursor, and Copilot through their entry files.
 
-This repo provides Runtime-localized SDLC skills for:
+This repo provides Runtime-localized engineering skills for developers and
+technical teams working across the software delivery lifecycle:
 
 - Angular portals with `@sdcorejs/angular`
 - NestJS + Postgres backends
@@ -42,10 +43,9 @@ If several skills match, apply this priority before reading a body:
 6. Dedicated utility intent: `sdcorejs-simplify`, `sdcorejs-explore`,
    `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-repair-loop`,
    `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
-7. Whole app/system build intent: `sdcorejs-solution-builder`.
-8. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
+7. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
    `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
-9. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
+8. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
 
 Routing clarifications:
 
@@ -128,15 +128,13 @@ per-unit isolation, and deterministic fan-in.
 | ai-agent | `sdcorejs-ai-agent` | `_refs/ai-agent/**`; two engine profiles and twelve independent capability profiles |
 | product | `sdcorejs-product` | `product/` PRDs/user stories/AC/UAT docs plus `.sdcorejs/docs/product/` traceability ledgers |
 | design | `sdcorejs-design` | `design/` flows/specs/wireframes/PNG exports plus `.sdcorejs/docs/design/` traceability |
-| test | `sdcorejs-test` | `_refs/shared/testing-philosophy.md`, `_refs/<track>/test-*.md`; `test/` for solution-root e2e/UAT |
+| test | `sdcorejs-test` | `_refs/shared/testing-philosophy.md`, `_refs/<track>/test-*.md`; an existing shared `test/` project for multi-project e2e/UAT |
 | documentation | `sdcorejs-documentation` | `_refs/documentation/*` |
 | generic | `sdcorejs-execute-plan` | approved plan + project scripts |
 
 The product track is first-class. Feature docs, user stories, acceptance criteria, UAT, and traceability audits are not routed through the generic harness.
 
 The design track is first-class. FE handoff specs, flows, wireframes, mockups, and PNG previews are not routed through the generic harness.
-
-`sdcorejs-solution-builder` creates one solution root with `product/`, `design/`, `backend/`, `frontend/`, `test/`, and `.sdcorejs/`. Human-readable PO/QC docs live in `product/`; design handoff lives in `design/`; approved snapshots, change records, ledgers, memories, durable backlogs, and verification evidence stay in `.sdcorejs/`.
 
 The test track is first-class. Test-only plans are not routed through app write-code skills.
 

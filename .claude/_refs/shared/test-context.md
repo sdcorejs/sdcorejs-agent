@@ -31,7 +31,7 @@ test_context:
     test_action: <public-or-internal-action>
     stack_profile: general
     test_levels: []
-    repository_kind: single-app # single-app | monorepo | solution-builder | test-only | unknown
+    repository_kind: single-app # single-app | monorepo | multi-project | test-only | unknown
     environment_class: local
   scope:
     owner: target-project-convention

@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-07-26T13:08:56+07:00
+generated_at: 2026-07-27T18:30:00+07:00
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks: [workflow, ai-agent, angular, nestjs, nextjs, product, design, test]
@@ -14,7 +14,7 @@ evidence:
   key_entrypoints: [scripts/sync-skills.mjs, bin/sdcorejs-agent.mjs]
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:c68f4dad131cda2d163fde7f9b4b4100a73fb2d23eea8ca143aa8e50d43358b3
+  dependency_manifests: sha256:b3685ae8c670e1d027e22c8afca63cd757b31c2f28b3d8fe1737b11194694566
   source_roots: sha256:ddec7e2dffa8a69905218e58e710cd58376cd3cbc4dc15fc1d809fc8a6e2ec12
 redaction_applied: true
 artifact_id: project-summary
@@ -30,11 +30,11 @@ owner: integration-owner
 
 ## Purpose
 
-`sdcorejs-agent` is an authoring repository for a portable SDLC skill pack.
-It defines reusable workflows for AI coding agents working with governed
-AI-agent applications, Angular, NestJS, Next.js, product, design, test,
-documentation, review, ship, Git, Docker, authentication, run guides, and
-generic execution.
+`sdcorejs-agent` is the authoring repository for a 21-skill engineering pack
+for developers and technical teams. It defines reusable software-delivery
+workflows for governed AI-agent applications, Angular, NestJS, Next.js,
+product, design, test, documentation, review, ship, Git, and generic
+execution.
 
 The repository publishes the same canonical behavior through adapters for
 Codex, Claude Code, Cursor, GitHub Copilot, and the packaged plugin surface.

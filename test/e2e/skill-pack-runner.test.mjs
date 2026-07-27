@@ -82,15 +82,63 @@ function markdownSection(source, heading) {
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
 
-  assert.equal(pack.sourceSkills.length, 25);
-  assert.equal(pack.claudeMirrorSkills.length, 25);
-  assert.equal(pack.pluginMirrorSkills.length, 25);
-  assert.equal(pack.codexMirrorSkills.length, 25);
+  assert.equal(pack.sourceSkills.length, 21);
+  assert.equal(pack.claudeMirrorSkills.length, 21);
+  assert.equal(pack.pluginMirrorSkills.length, 21);
+  assert.equal(pack.codexMirrorSkills.length, 21);
   // Core UI per-component docs are fetched on-demand (not committed), so this count
   // dropped from ~150 to ~69. Floor still catches accidental mass-deletion of refs.
   assert.ok(pack.referenceDocs.length >= 60, `referenceDocs=${pack.referenceDocs.length}`);
   assert.equal(pack.codexReferenceDocs.length, pack.referenceDocs.length);
   assert.equal(pack.diagnostics.length, 0);
+});
+
+test('phase 1: retired standalone skills and exclusive refs stay absent from active surfaces', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const retiredSkillNames = [
+    'sdcorejs-auth',
+    'sdcorejs-dockerize',
+    'sdcorejs-run-guide',
+    'sdcorejs-solution-builder',
+  ];
+  const activeSkillNames = [
+    ...pack.sourceSkills,
+    ...pack.claudeMirrorSkills,
+    ...pack.pluginMirrorSkills,
+    ...pack.codexMirrorSkills,
+  ].map((skill) => skill.name);
+
+  for (const retiredName of retiredSkillNames) {
+    assert.ok(!activeSkillNames.includes(retiredName), `${retiredName} stays retired`);
+  }
+
+  const activeSurfacePaths = [
+    'AGENTS.md',
+    'CLAUDE.md',
+    'README.md',
+    'SECURITY.md',
+    'VALIDATION.md',
+    '.github/copilot-instructions.md',
+    '.github/chatmodes/sdcorejs.chatmode.md',
+    '.cursor/rules/sdcorejs-agent.mdc',
+    'site/src/components/SkillCatalog.astro',
+  ];
+  for (const path of activeSurfacePaths) {
+    const text = await readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
+    for (const retiredName of retiredSkillNames) {
+      assert.doesNotMatch(text, new RegExp(retiredName), `${path} does not expose ${retiredName}`);
+    }
+    assert.doesNotMatch(text, /\bsolution-root\b/, `${path} uses the multi-project contract`);
+  }
+
+  const agents = await readFile(new URL('../../AGENTS.md', import.meta.url), 'utf8');
+  assert.doesNotMatch(agents, /\binfra\//, 'AGENTS.md does not inventory deleted infra refs');
+
+  const exclusiveInfra = await readdir(new URL('../../_refs/infra/', import.meta.url)).catch((error) => {
+    if (error?.code === 'ENOENT') return null;
+    throw error;
+  });
+  assert.equal(exclusiveInfra, null, '_refs/infra stays removed');
 });
 
 test('phase 1: markdown fences stay balanced across skills, refs, and mirrors', async () => {
@@ -479,10 +527,6 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(coreVersion, /_refs\/angular\/write-code\/init-portal\.md/);
   assert.match(coreVersion, /No Core UI package installed/);
   assert.doesNotMatch(coreVersion, /generic Angular Material \+ `alert/);
-
-  const dockerize = await readFile(new URL('../../skills/infra/dockerize.md', import.meta.url), 'utf8');
-  assert.match(dockerize, /frontend\/[^\n]*\r?\n\s+frontend-nginx\.conf/);
-  assert.doesNotMatch(dockerize, /test\/\?[^\n]*\r?\n\s+frontend-nginx\.conf/);
 
   const gitSkill = sourceByName.get('sdcorejs-git');
   assert.match(gitSkill, /\.sdcorejs\/documentation\/\*\*/);
@@ -1489,9 +1533,7 @@ test('phase 1: skill metadata stays concise and production scope stays explicit'
   assert.match(agents, /## Production SDLC Scope Decision/);
   assert.match(agents, /Do \*\*not\*\* add new production-SDLC skills or refs/);
 
-  const solutionBuilder = await readFile(new URL('../../skills/orchestration/solution-builder.md', import.meta.url), 'utf8');
-  assert.match(solutionBuilder, /## Production SDLC boundary/);
-  assert.match(solutionBuilder, /does \*\*not\*\* create production-SDLC surfaces/);
+  assert.match(agents, /developers and technical teams/i);
 });
 
 test('phase 1: explore encodes read-only-safe context production invariants', async () => {
@@ -1585,7 +1627,6 @@ test('phase 1: SDLC harness encodes contract-driven profile-aware execution inva
   const executePlan = sourceByName.get('sdcorejs-execute-plan');
   const executePlanMeta = sourceSkillByName.get('sdcorejs-execute-plan');
   const parallel = sourceByName.get('sdcorejs-parallel-dispatch');
-  const solutionBuilder = sourceByName.get('sdcorejs-solution-builder');
   const agents = await readFile(new URL('../../AGENTS.md', import.meta.url), 'utf8');
   const finishGate = await readFile(new URL('../../_refs/shared/finish-gate.md', import.meta.url), 'utf8');
 
@@ -1706,19 +1747,6 @@ test('phase 1: SDLC harness encodes contract-driven profile-aware execution inva
   assert.match(parallel, /No writes after branch-ready/i);
   assert.match(parallel, /do\s+not refresh the summary merely because execution is\s+write-approved/i);
   assert.doesNotMatch(parallel, /write-approved execution context,\s*use `summary-refresh`/i);
-
-  assert.match(solutionBuilder, /complexity ladder/i);
-  assert.match(solutionBuilder, /prototype\/static|static response|mockup/i);
-  assert.match(solutionBuilder, /frontend-only/);
-  assert.match(solutionBuilder, /backend-lite/);
-  assert.match(solutionBuilder, /full secure stack/);
-  assert.match(solutionBuilder, /enterprise\/full-stack|enterprise full-stack/i);
-  assert.match(solutionBuilder, /simplest architecture/i);
-  assert.match(solutionBuilder, /Build only the selected complexity/);
-  assert.match(solutionBuilder, /frontend-only[\s\S]*do not add backend, auth, database, or Docker/i);
-  assert.match(solutionBuilder, /Docker stack checks only when Docker packaging was built/i);
-  assert.match(solutionBuilder, /branch-ready.*final read-only gate|final read-only gate.*branch-ready/i);
-  assert.match(solutionBuilder, /No writes after branch-ready/i);
 
   assert.match(agents + finishGate, /branch-ready.*final read-only gate|final read-only gate.*branch-ready/i);
   assert.match(agents + finishGate, /No writes after branch-ready|writes after branch-ready.*re-run/i);
@@ -1991,7 +2019,7 @@ test('phase 1: deterministic prompt eval dispatches expected skills', async () =
       ['angular-po-ba-prototype-no-api', 'sdcorejs-angular', true],
       ['open-ended-localized', 'sdcorejs-brainstorming', true],
       ['product-traceability-localized', 'sdcorejs-product', true],
-      ['solution-builder-classroom-localized', 'sdcorejs-solution-builder', true],
+      ['broad-app-classroom-localized', 'sdcorejs-brainstorming', true],
       ['design-from-user-stories-localized', 'sdcorejs-design', true]
     ]
   );
@@ -2123,7 +2151,7 @@ test('phase 3: SDLC harness prompts dispatch to the owning workflow skills', asy
     'execute-approved-plan',
     'execute-approved-plan-parallel',
     'parallel-dispatch-direct',
-    'solution-builder-fullstack',
+    'broad-fullstack-requirements',
     'localized-vi-brainstorm',
     'localized-vi-spec',
     'localized-vi-plan',
@@ -2147,7 +2175,7 @@ test('phase 3: SDLC harness prompts dispatch to the owning workflow skills', asy
       ['execute-approved-plan', 'sdcorejs-execute-plan', true],
       ['execute-approved-plan-parallel', 'sdcorejs-execute-plan', true],
       ['parallel-dispatch-direct', 'sdcorejs-parallel-dispatch', true],
-      ['solution-builder-fullstack', 'sdcorejs-solution-builder', true],
+      ['broad-fullstack-requirements', 'sdcorejs-brainstorming', true],
       ['localized-vi-brainstorm', 'sdcorejs-brainstorming', true],
       ['localized-vi-spec', 'sdcorejs-spec', true],
       ['localized-vi-plan', 'sdcorejs-plan', true],

@@ -1,15 +1,20 @@
 # Design — NestJS generalization (profile tier) + role-split feature loop
 
 **Date:** 2026-06-06
-**Status:** Delivered — Phases 1–3 shipped on `feat/non-tech-solution-builder` (doc-drift + profile tier + role-split loop), plus post-delivery hardening G1–G3 (below). Live `docker compose up` validation of generated `simple`/`enterprise` output remains a deferred target-project E2E.
+**Status:** Delivered — Phases 1–3 shipped on `<historical delivery branch>` (doc-drift + profile tier + role-split loop), plus post-delivery hardening G1–G3 (below). Live `docker compose up` validation of generated `simple`/`enterprise` output remains a deferred target-project E2E.
 
-### Post-delivery hardening (from a `solution-builder` dry-run, "quản lý học sinh")
+> **Historical note (v0.6.0):** The retired full-stack workflow references
+> below describe the delivery context at the time. They are not live skill
+> names or paths; the NestJS profile and role-split technical decisions remain
+> applicable.
 
-A dogfood dry-run of `sdcorejs-solution-builder` exercised the new simple-profile + Mode B path end-to-end (contract-freeze → BE‖FE‖QC → acceptance loop converged in 2 iters) and surfaced 3 integration seams the per-task reviews missed (seams between skills, not within a file). All fixed:
+### Post-delivery hardening (from a `retired full-stack workflow` dry-run, "quản lý học sinh")
 
-- **G1 (🔴) — topology undefined on the non-tech door.** Mode B B.1 keyed the contract location off a topology "asked at clarify", but `solution-builder`'s clarify never asks architecture (persona rule 7). Fix: `solution-builder` now forces a **single deploy-root** topology and passes `topology` + `profile=simple` EXPLICITLY into Mode B; B.0 documents caller-passed inputs; B.1 covers the single-deploy-root case (FE mirrors BE DTOs). (commit `1c4b15a`)
+A dogfood dry-run of the retired full-stack workflow exercised the new simple-profile + Mode B path end-to-end (contract-freeze → BE‖FE‖QC → acceptance loop converged in 2 iters) and surfaced 3 integration seams the per-task reviews missed (seams between skills, not within a file). All fixed:
+
+- **G1 (🔴) — topology undefined on the plain-language stakeholder door.** Mode B B.1 keyed the contract location off a topology "asked at clarify", but the retired full-stack workflow did not ask architecture. The historical fix forced a **single deploy-root** topology and passed `topology` + `profile=simple` EXPLICITLY into Mode B; B.0 documents caller-passed inputs; B.1 covers the single-deploy-root case (FE mirrors BE DTOs). (commit `1c4b15a`)
 - **G2 (🟡) — profile implicit on first build.** `nestjs-write-code` reads `profile` from `.sdcorejs/summary.md`, which doesn't exist until the END of init-project. Fix: the orchestrator passes `profile` explicitly into the Mode B contract-freeze/BE brief; summary.md is a fallback only. (commit `1c4b15a`)
-- **G3 (🟡) — simple-profile permission codes ≠ Keycloak realm roles.** The seeded demo realm has only `user`/`admin`, but simple `@HasPermission('<module>_<entity>:<action>')` checks membership against the user's realm roles → every write 403s. Fix: `sdcorejs-auth` Step 1.5 + `auth-keycloak.md` §7 — for the simple profile, seed the app's permission codes AS realm roles (assigned to `demo`) before first boot; enterprise keeps the page-permission matrix. (commit `09c4f86`)
+- **G3 (🟡) — simple-profile permission codes ≠ Keycloak realm roles.** The seeded demo realm has only `user`/`admin`, but simple `@HasPermission('<module>_<entity>:<action>')` checks membership against the user's realm roles → every write 403s. Fix: `retired standalone authentication workflow` Step 1.5 + `retired standalone authentication reference` §7 — for the simple profile, seed the app's permission codes AS realm roles (assigned to `demo`) before first boot; enterprise keeps the page-permission matrix. (commit `09c4f86`)
 **Author:** brainstorming session (Opus 4.8).
 
 ## TL;DR
@@ -44,11 +49,11 @@ Findings (severity from the review):
 | 9 | 🔵 | `review-code.md` still on the dead `be-masterdata` baseline (`base/core-be/`, `bilingualMsg`); probes grep patterns the packs don't generate → false findings | `_refs/nestjs/review-code.md` |
 | 10 | 🔵 | `architecture-principles.md` drift: §2 `updatedBy` (lib=`modifiedBy`), §4 Zod in `libs/shared/` (packs use `src/modules/<m>/schemas/`), §13 `{data,error}` envelope (core=`ApiResponse.ok`) | `_refs/nestjs/architecture-principles.md` |
 
-Root cause: **no complexity tier.** One shape exists — enterprise-platform's. The escape hatches are prose ("for a single-tenant app return `{}`"); the templates emit the enterprise shape regardless. A non-tech "tool to manage my warehouse" gets 2-level tenancy, `MASTER`/`TENANT_ADMIN`, internal-secret, and a `base/shared` monorepo it never needs.
+Root cause: **no complexity tier.** One shape exists — enterprise-platform's. The escape hatches are prose ("for a single-tenant app return `{}`"); the templates emit the enterprise shape regardless. A plain-language stakeholder "tool to manage my warehouse" gets 2-level tenancy, `MASTER`/`TENANT_ADMIN`, internal-secret, and a `base/shared` monorepo it never needs.
 
 ### P2 — no fast full-stack build path
 
-`solution-builder` runs backend (step 4) then frontend (step 5) **sequentially**, with no QC role and no iterate-to-done loop. `subagent-driven-dev` parallelizes only **independent same-kind units** (entity A ‖ B ‖ C) and explicitly forces BE↔FE and shared-file work to be sequential. There is no orchestration for "build one feature across BE+FE+QC concurrently and loop until it meets the spec."
+`retired full-stack workflow` runs backend (step 4) then frontend (step 5) **sequentially**, with no QC role and no iterate-to-done loop. `subagent-driven-dev` parallelizes only **independent same-kind units** (entity A ‖ B ‖ C) and explicitly forces BE↔FE and shared-file work to be sequential. There is no orchestration for "build one feature across BE+FE+QC concurrently and loop until it meets the spec."
 
 ---
 
@@ -71,7 +76,7 @@ Root cause: **no complexity tier.** One shape exists — enterprise-platform's. 
 
 Introduce a project-level **`profile`** with two values, chosen once at clarify and recorded in the target's **`.sdcorejs/summary.md`** (the canonical project brief owned by `sdcorejs-explore`, which the `nestjs-write-code` pre-flight already reads — so the packs pick it up with no new storage mechanism):
 
-| Aspect | `simple` (new default for non-tech) | `enterprise` (current behavior) |
+| Aspect | `simple` (new default for plain-language stakeholder) | `enterprise` (current behavior) |
 |---|---|---|
 | Base entity | lib `WithAudit(BaseEntity)` directly (`createdAt`/`updatedAt`/`deletedAt` + `createdBy`/`modifiedBy`) | local `src/common/base-entity.ts` (legacy-schema columns) |
 | Tenancy | none — no `@Scoped` columns, tenancy strategy returns `{}` | `tenantCode` + `departmentCode` `@Scoped`, `@Index`/`@Unique(['departmentCode','code'])` |
@@ -90,7 +95,7 @@ Each of `init-project`, `init-module`, `init-entity`, `actions` gains a **profil
 
 ### A.3 Clarify wiring
 
-`sdcorejs-clarify-requirements` (nestjs) + `_refs/sdlc/nestjs.md` add a blocking question: **profile** (with `simple` as the non-tech default, `enterprise` offered to technical users / when multi-tenancy is stated). `solution-builder`'s non-tech clarify defaults to `simple` silently (no architecture question to the user — consistent with persona rule 7) but still derives + confirms the data model in plain terms.
+`sdcorejs-clarify-requirements` (nestjs) + `_refs/sdlc/nestjs.md` add a blocking question: **profile** (with `simple` as the plain-language stakeholder default, `enterprise` offered to technical users / when multi-tenancy is stated). `retired full-stack workflow`'s plain-language stakeholder clarify defaults to `simple` silently (no architecture question to the user — consistent with persona rule 7) but still derives + confirms the data model in plain terms.
 
 ### A.4 Doc-drift fixes (items 9–10, independent quick wins)
 
@@ -108,7 +113,7 @@ Each of `init-project`, `init-module`, `init-entity`, `actions` gains a **profil
 - **Mode A — independent same-kind units** (existing, unchanged).
 - **Mode B — role-split feature loop** (new).
 
-`skills/orchestration/parallel-dispatch.md` decision gate gains a branch: *N same-kind independent units* → `PARALLEL-CANDIDATE` → Mode A; *one feature spanning BE+FE* → new verdict `ROLE-SPLIT` → Mode B. `solution-builder` invokes Mode B in place of its sequential steps 4→5 when a feature spans both tracks; the per-track `write-code` orchestrators can also route here.
+`skills/orchestration/parallel-dispatch.md` decision gate gains a branch: *N same-kind independent units* → `PARALLEL-CANDIDATE` → Mode A; *one feature spanning BE+FE* → new verdict `ROLE-SPLIT` → Mode B. `retired full-stack workflow` invokes Mode B in place of its sequential steps 4→5 when a feature spans both tracks; the per-track `write-code` orchestrators can also route here.
 
 ### B.1 Phase 0 — contract freeze (sequential barrier)
 
@@ -158,13 +163,13 @@ On DONE: `comment-code` (ASK) → `branch-ready` → `auto-docs` → `auto-task-
 - `_refs/nestjs/core-catalog.md` — note neutral-core vs profile-template boundary (no API change).
 - `_refs/nestjs/review-code.md`, `_refs/nestjs/architecture-principles.md` — doc-drift fixes.
 - `_refs/sdlc/nestjs.md`, `skills/shared/sdlc/02-clarify-requirements.md` (or its nestjs ref) — profile question.
-- `skills/orchestration/solution-builder.md` — non-tech default `simple`.
+- `<retired full-stack workflow>` — plain-language stakeholder default `simple`.
 - `skills/tracks/nestjs/write-code.md` — pass profile to packs.
 
 **Workstream B:**
 - `skills/orchestration/subagent-driven-dev.md` — Mode A/B selector + Mode B body.
 - `skills/orchestration/parallel-dispatch.md` — `ROLE-SPLIT` verdict branch.
-- `skills/orchestration/solution-builder.md` — invoke Mode B for cross-track features.
+- `<retired full-stack workflow>` — invoke Mode B for cross-track features.
 - Descriptions/triggers updated where Mode B should auto-fire.
 
 **Mirror:** every `skills/**` or `_refs/**` edit must be followed by `bash .claude/sync-skills.sh` and staging the regenerated `.claude/skills` + `plugin/skills` + `.claude/_refs` + `plugin/_refs` (lefthook enforces on commit). **Never hand-edit the mirrors.**
@@ -176,7 +181,7 @@ On DONE: `comment-code` (ASK) → `branch-ready` → `auto-docs` → `auto-task-
 **Workstream A:**
 - [ ] A `simple`-profile `init-project` emits NO `tenantCode`/`departmentCode` columns, NO `MASTER`/`TENANT_ADMIN` flags, NO internal-secret module, NO `base/shared`; entities extend lib `WithAudit(BaseEntity)`; `IPermissionStrategy.load()` returns `string[]`.
 - [ ] An `enterprise`-profile run is byte-equivalent to the current pack output (no regression).
-- [ ] The profile is a blocking clarify question (nestjs); `solution-builder` non-tech defaults to `simple` without asking architecture.
+- [ ] The profile is a blocking clarify question (nestjs); `retired full-stack workflow` plain-language stakeholder defaults to `simple` without asking architecture.
 - [ ] `review-code.md` contains no `be-masterdata`/`base/core-be/`/`bilingualMsg` references; its probes match generated code at each profile.
 - [ ] `architecture-principles.md` §2/§4/§13 match actual pack output (`modifiedBy`, `src/modules/<m>/schemas/`, `ApiResponse`).
 - [ ] `bash .claude/sync-skills.sh --check` passes; `npx lefthook run check` green.
@@ -185,7 +190,7 @@ On DONE: `comment-code` (ASK) → `branch-ready` → `auto-docs` → `auto-task-
 - [ ] `subagent-driven-dev.md` has a mode selector; Mode A unchanged; Mode B documents the 4 phases + loop control.
 - [ ] `parallel-dispatch.md` routes a BE+FE feature to `ROLE-SPLIT`/Mode B and N same-kind units to Mode A.
 - [ ] Mode B's Phase 0 freezes a profile-shaped contract; the 3 role briefs are file-disjoint; the loop gate is `verify-before-done` with cap 3 + no-progress-×2 escalation.
-- [ ] `solution-builder` uses Mode B for a feature spanning BE+FE (sequential path remains the documented fallback).
+- [ ] `retired full-stack workflow` uses Mode B for a feature spanning BE+FE (sequential path remains the documented fallback).
 - [ ] A dry-run walkthrough in the doc shows a contract-drift iteration reconciling FE+QC.
 
 ---
@@ -208,7 +213,7 @@ On DONE: `comment-code` (ASK) → `branch-ready` → `auto-docs` → `auto-task-
 ## Suggested phasing (for the plan)
 
 1. **Phase 1 — doc-drift (items 9–10).** Independent, cheap, no behavior change. Ship first.
-2. **Phase 2 — profile tier (items 1–8).** Pack branches + clarify wiring + solution-builder default.
+2. **Phase 2 — profile tier (items 1–8).** Pack branches + clarify wiring + retired full-stack workflow default.
 3. **Phase 3 — role-split loop (Workstream B).** Depends on the profile (contract-freeze shape) from Phase 2.
 
 Each phase is independently shippable and mirror-synced.

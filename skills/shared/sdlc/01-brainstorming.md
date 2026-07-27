@@ -383,7 +383,8 @@ values.
 - Do not write specs, plans, or code from brainstorming.
 - Do not write `.sdcorejs/summary.md`, specs, plans, visual companion files, or
   durable memories by default.
-- Ask architecture questions to a non-tech persona when a safe default exists.
+- Treat a plain-language persona as permission to infer or hide technical
+  decisions that require owner approval.
 - Show angular blockers to nextjs, or nestjs blockers to test.
 - Force SDCoreJS/Core UI/TypeORM/build-website assumptions onto plain profiles.
 - Dump every question at once.
