@@ -91,6 +91,9 @@ const LOCALIZED_ALIASES = new Map([
   ['lap', ['plan']],
   ['trien', ['implement']],
   ['khai', ['implement']],
+  ['thuc', ['execute', 'run']],
+  ['thi', ['execute', 'run']],
+  ['hoach', ['plan']],
   ['chia', ['split']],
   ['nhieu', ['multiple']],
   ['song', ['parallel']],
@@ -100,6 +103,7 @@ const LOCALIZED_ALIASES = new Map([
 
 const SKILL_HINTS = [
   { skill: 'sdcorejs-brainstorming', words: ['brainstorm', 'brainstorming', 'requirements', 'clarify', 'unsure', 'deciding', 'between', 'compare', 'should'] },
+  { skill: 'sdcorejs-ai-agent', words: ['ai-agent', 'agentic', 'responses', 'assistant', 'capability-profile', 'engine-profile'] },
   { skill: 'sdcorejs-angular', words: ['angular', 'portal', 'screen', 'screens', 'list', 'detail', 'form', 'approve', 'approval', 'bulk', 'export', 'action', 'drawer'] },
   { skill: 'sdcorejs-nestjs', words: ['nestjs', 'backend', 'module', 'entity', 'crud', 'endpoint', 'scaffold'] },
   { skill: 'sdcorejs-nextjs', words: ['nextjs', 'website', 'landing', 'seo', 'sitemap', 'og', 'contact'] },
@@ -162,10 +166,13 @@ const PRIORITY_RULES = [
   },
   {
     skill: 'sdcorejs-plan',
-    when: ({ tokens }) =>
+    when: ({ prompt, tokens }) =>
       tokens.has('plan') &&
       hasAny(tokens, ['spec', 'approved', 'approve', 'revision', 'implementation', 'implement', 'update']) &&
-      !hasAny(tokens, ['execute', 'run', 'parallel', 'split', 'agent', 'agents'])
+      (
+        !hasAny(tokens, ['execute', 'run', 'continue', 'resume', 'implement', 'generate', 'parallel', 'split', 'agent', 'agents']) ||
+        /\blap\s+(?:ke\s+hoach|plan)\b/.test(prompt)
+      )
   },
   {
     skill: 'sdcorejs-brainstorming',
@@ -183,6 +190,14 @@ const PRIORITY_RULES = [
         (/\bsong\s+song\b/.test(prompt) && hasAny(tokens, ['split', 'agent', 'agents', 'multiple']))
       ) &&
       hasAny(tokens, ['plan', 'approved', 'approve', 'agent', 'agents', 'multiple'])
+  },
+  {
+    skill: 'sdcorejs-brainstorming',
+    when: ({ prompt, tokens }) => hasUnderSpecifiedAiAgentIntent(prompt, tokens)
+  },
+  {
+    skill: 'sdcorejs-ai-agent',
+    when: ({ prompt, tokens }) => hasConfirmedAiAgentImplementationIntent(prompt, tokens)
   },
   {
     skill: 'sdcorejs-execute-plan',
@@ -373,7 +388,10 @@ export function dispatchPrompt(pack, prompt) {
   const scored = pack.sourceSkills
     .map((skill) => ({
       skill,
-      score: scoreSkill(skill, promptTokens)
+      score: skill.name === 'sdcorejs-ai-agent'
+        && !hasConfirmedAiAgentImplementationIntent(prompt.toLowerCase(), promptTokens)
+        ? 0
+        : scoreSkill(skill, promptTokens)
     }))
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score || a.skill.name.localeCompare(b.skill.name));
@@ -646,6 +664,79 @@ function hasRepairLoopIntent(prompt, tokens) {
     ) ||
     /\bapply\b.*\breview findings\b/.test(prompt) ||
     /\brepair\b.*\bverify-before-done\b/.test(prompt)
+  );
+}
+
+function hasUnderSpecifiedAiAgentIntent(prompt, tokens) {
+  if (!hasAiAgentSubject(prompt, tokens)) return false;
+  if (hasDedicatedAiOwnerIntent(prompt, tokens)) return false;
+  if (hasAny(tokens, ['approved', 'contract', 'snapshot'])) return false;
+
+  return (
+    hasAny(tokens, ['build', 'create', 'make', 'want', 'need', 'design']) ||
+    /\bhelp\s+me\b/.test(prompt)
+  );
+}
+
+function hasConfirmedAiAgentImplementationIntent(prompt, tokens) {
+  if (!hasAiAgentSubject(prompt, tokens)) return false;
+  if (hasDedicatedAiOwnerIntent(prompt, tokens)) return false;
+  if (
+    hasAny(tokens, ['plan', 'snapshot'])
+    && hasAny(tokens, ['execute', 'run', 'continue', 'resume', 'implement', 'generate'])
+  ) {
+    return false;
+  }
+
+  const hasEngine = /\b(responses api|agents sdk)\b/.test(prompt)
+    || (tokens.has('responses') && tokens.has('api'))
+    || (tokens.has('agents') && tokens.has('sdk'));
+  const hasCapability = hasAny(tokens, [
+    'reporting',
+    'analytics',
+    'knowledge',
+    'audit',
+    'crm',
+    'workflow',
+    'support',
+    'document',
+    'provisioning',
+    'tenant',
+    'approval',
+    'supervisor',
+    'assistant'
+  ]);
+  const hasImplementation = hasAny(tokens, [
+    'approved',
+    'contract',
+    'continue',
+    'implement',
+    'implementation'
+  ]);
+
+  return hasEngine && hasCapability && hasImplementation;
+}
+
+function hasAiAgentSubject(prompt, tokens) {
+  return (
+    /\bai[- ]agent\b|\bai assistant\b|\bagentic\b/.test(prompt) ||
+    (tokens.has('ai') && hasAny(tokens, ['agent', 'agents', 'assistant'])) ||
+    /\b(responses api|agents sdk)\b/.test(prompt)
+  );
+}
+
+function hasDedicatedAiOwnerIntent(prompt, tokens) {
+  return (
+    hasDirectTestWorkIntent(prompt, tokens) ||
+    hasReviewIntent(prompt, tokens) ||
+    hasAny(tokens, ['debug', 'root-cause', 'failing', 'failure', 'failed', 'error', 'wrong', 'bug', 'repair']) ||
+    (
+      hasDocumentationIntent(prompt, tokens) &&
+      hasAny(tokens, ['documentation', 'docs', 'doc', 'guide', 'manual', 'user-guide', 'screenshot'])
+    ) ||
+    hasGitArtifactIntent(prompt, tokens) ||
+    hasShipVerificationIntent(prompt, tokens) ||
+    /\bchatgpt app\b|\bmcp widget\b/.test(prompt)
   );
 }
 

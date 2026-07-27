@@ -52,6 +52,8 @@ targeted reads instead unless the user explicitly approved a summary refresh.
 Read the relevant guidance:
 
 - angular / nestjs / nextjs: `_refs/sdlc/<track>.md`
+- ai-agent: `_refs/sdlc/ai-agent.md` plus
+  `_refs/ai-agent/{manifest.json,profile-contract.json,profiles/common.md}`
 - test: `_refs/shared/testing-philosophy.md` plus the target stack test ref if known
 - product: existing product ledgers under `.sdcorejs/docs/product/`
 - generic harness: previous approved specs/plans and available project scripts
@@ -150,6 +152,15 @@ spec_context:
 
 For test-track specs, "File structure" may describe test files, fixtures, page objects, or harness files. For product-track specs, it may describe product ledgers, UAT checklists, traceability matrices, and source artifacts. For generic harness specs, it may describe the files/commands the harness is allowed to touch.
 
+For `track: ai-agent`, the Architecture section must resolve one engine profile
+and one independent capability profile, and specify runtime ownership, target
+paths, trust/tenancy/data boundaries, provider storage posture,
+business-shaped tool contracts, guardrails, approvals, session/state,
+evidence, tracing/audit/usage, limits, reliability, deterministic evals,
+separate live-verification evidence, rollout, rollback, and non-goals. Apply
+`_refs/sdlc/ai-agent.md`; fail closed when any security or ownership decision is
+unresolved.
+
 ### 3. Self-review before showing the user
 Fix the spec before presenting if any checklist item fails:
 
@@ -169,6 +180,10 @@ Fix the spec before presenting if any checklist item fails:
   `general`.
 - Redact secrets and PII; use `[REDACTED]` placeholders and record
   `redaction_applied: true` if sensitive input appeared.
+- For `ai-agent`, verify the selected IDs exist in the manifest, provider state
+  remains disabled unless governance approval is explicit, generic raw tools
+  are absent, and acceptance criteria cover server denial plus the offline/live
+  evidence boundary.
 
 ### 4. Present the approval gate
 Show a concise summary, not the whole spec:
@@ -228,7 +243,7 @@ requirement_id: <requirement id>
 approvedAt: <ISO-8601 timestamp with timezone>
 approvedBy: <git user.email or session user when known>
 approval_source: explicit-user-choice | imported-approved-spec | equivalent-complete-input
-track: <angular|nestjs|nextjs|react|node|fullstack|test|product|design|documentation|workflow|general>
+track: <angular|nestjs|nextjs|react|node|fullstack|ai-agent|test|product|design|documentation|workflow|general>
 target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
 stack_profile: <stack profile>
 profile_confidence: high | medium | low

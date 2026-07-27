@@ -79,6 +79,16 @@ test('phase 3: routing context distinguishes execution, direct split, planning, 
   }
 });
 
+test('phase 3: every entrypoint advertises the first-class AI-agent boundary', async () => {
+  const profiles = await loadEntrypointProfiles(new URL('../..', import.meta.url));
+  for (const [name, profile] of Object.entries(profiles)) {
+    assert.match(profile.text, /sdcorejs-ai-agent/, `${name} exposes the executor`);
+    assert.match(profile.text, /ai-agent/i, `${name} exposes the track`);
+    assert.match(profile.text, /under-specified|unresolved|brainstorming/i, `${name} preserves discovery`);
+    assert.match(profile.text, /test.*review.*debug|review.*debug.*test/is, `${name} preserves dedicated owners`);
+  }
+});
+
 async function loadPromptEvals() {
   const file = new URL('./fixtures/prompt-evals.json', import.meta.url);
   return JSON.parse(await readFile(file, 'utf8'));

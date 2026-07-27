@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "track": "ai-agent",
+  "profile_axes": {
+    "engine_profile": "engines",
+    "capability_profile": "capability_profiles"
+  },
+  "engines": [
+    {
+      "id": "openai-responses",
+      "path": "_refs/ai-agent/engines/openai-responses.md"
+    },
+    {
+      "id": "openai-agents-sdk",
+      "path": "_refs/ai-agent/engines/openai-agents-sdk.md"
+    }
+  ],
+  "capability_profiles": [
+    {
+      "id": "reporting-assistant",
+      "path": "_refs/ai-agent/profiles/reporting-assistant.md"
+    },
+    {
+      "id": "analytics-assistant",
+      "path": "_refs/ai-agent/profiles/analytics-assistant.md"
+    },
+    {
+      "id": "knowledge-assistant",
+      "path": "_refs/ai-agent/profiles/knowledge-assistant.md"
+    },
+    {
+      "id": "audit-assistant",
+      "path": "_refs/ai-agent/profiles/audit-assistant.md"
+    },
+    {
+      "id": "crm-assistant",
+      "path": "_refs/ai-agent/profiles/crm-assistant.md"
+    },
+    {
+      "id": "workflow-assistant",
+      "path": "_refs/ai-agent/profiles/workflow-assistant.md"
+    },
+    {
+      "id": "support-assistant",
+      "path": "_refs/ai-agent/profiles/support-assistant.md"
+    },
+    {
+      "id": "document-assistant",
+      "path": "_refs/ai-agent/profiles/document-assistant.md"
+    },
+    {
+      "id": "data-provisioning-assistant",
+      "path": "_refs/ai-agent/profiles/data-provisioning-assistant.md"
+    },
+    {
+      "id": "tenant-operations-assistant",
+      "path": "_refs/ai-agent/profiles/tenant-operations-assistant.md"
+    },
+    {
+      "id": "approval-coordinator",
+      "path": "_refs/ai-agent/profiles/approval-coordinator.md"
+    },
+    {
+      "id": "multi-agent-supervisor",
+      "path": "_refs/ai-agent/profiles/multi-agent-supervisor.md"
+    }
+  ],
+  "contracts": {
+    "agent": "_refs/ai-agent/agent-contract.md",
+    "tool": "_refs/ai-agent/tool-contract.md",
+    "guardrails_and_approvals": "_refs/ai-agent/guardrails-and-approvals.md",
+    "sessions_and_state": "_refs/ai-agent/sessions-and-state.md",
+    "evidence_and_reporting": "_refs/ai-agent/evidence-and-reporting.md",
+    "tracing_audit_finops": "_refs/ai-agent/tracing-audit-finops.md",
+    "evals": "_refs/ai-agent/evals.md",
+    "testing": "_refs/ai-agent/testing.md"
+  },
+  "common_profile": "_refs/ai-agent/profiles/common.md",
+  "profile_contract": "_refs/ai-agent/profile-contract.json",
+  "validator": "_refs/ai-agent/validate-agent-contract.mjs"
+}

@@ -1,6 +1,6 @@
 # SDCoreJS SDLC Agent - GitHub Copilot Instructions
 
-Use this repo as a Runtime-localized SDLC skill pack for Angular, NestJS, Next.js, product-track, design-track, test-track, and generic harness work.
+Use this repo as a Runtime-localized SDLC skill pack for AI-agent, Angular, NestJS, Next.js, product-track, design-track, test-track, and generic harness work.
 
 ## Dispatch
 
@@ -20,7 +20,7 @@ Request
   -> sdcorejs-plan (approval gate + approved plan snapshot)
   -> sdcorejs-execute-plan
        always ask sequential vs parallel
-       dispatch Core UI angular | nestjs | nextjs | product | design | test | generic harness
+       dispatch ai-agent | Core UI angular | nestjs | nextjs | product | design | test | generic harness
   -> finish gate and tail chain
 ```
 
@@ -29,10 +29,17 @@ Track executors:
 - Angular: `sdcorejs-angular` only for Core UI portals/new SDCoreJS portals/approved Core UI migration; plain Angular uses the generic harness
 - NestJS: `sdcorejs-nestjs`
 - Next.js: `sdcorejs-nextjs`
+- AI-agent: `sdcorejs-ai-agent` only for an approved plan with one engine and
+  one independent capability profile
 - Product: `sdcorejs-product`
 - Design: `sdcorejs-design`
 - Test: `sdcorejs-test`
 - Generic: `sdcorejs-execute-plan` harness fallback
+
+Under-specified AI-agent requests return to brainstorming. Test, review, and
+debug intent keep their dedicated owners. The AI-agent track authors governed
+application contracts/integration and offline evidence; it does not bundle a
+provider runtime or imply live verification.
 
 ## Mandatory Execution Discipline
 
@@ -49,7 +56,7 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - Requirements before code: use `sdcorejs-brainstorming`.
 - `sdcorejs-spec` and `sdcorejs-plan` require explicit approval.
 - `sdcorejs-spec` and `sdcorejs-plan` write their own approved snapshots.
-- Approved plans execute through `sdcorejs-execute-plan`; it classifies Angular as Core UI vs plain Angular before dispatch.
+- Approved plans execute through `sdcorejs-execute-plan`; it classifies Angular as Core UI vs plain Angular and validates `agent_architecture` before AI-agent dispatch.
 - Non-trivial skills apply `_refs/shared/project-context.md` before executing.
 - `sdcorejs-execute-plan` always asks sequential vs parallel before execution.
 - Product docs, user stories, acceptance criteria, UAT, and traceability use `sdcorejs-product`.
@@ -76,7 +83,8 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 
 ## References
 
-- Design: `_refs/sdlc/{angular,nestjs,nextjs}.md`
+- Design: `_refs/sdlc/{ai-agent,angular,nestjs,nextjs}.md`
+- AI-agent contracts: `_refs/ai-agent/**`
 - Angular code: `_refs/angular/write-code/*`
 - NestJS code: `_refs/nestjs/write-code/*`, `_refs/nestjs/core-catalog.md`
 - Next.js code: `_refs/nextjs/build-website/write-code/*`

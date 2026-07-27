@@ -15,6 +15,7 @@ This repo is an SDLC skill pack for:
 - Angular portals using `@sdcorejs/angular`
 - NestJS + Postgres backends
 - Next.js public sites
+- Governed AI-agent application contracts and implementations
 - Product-track feature ledgers for PO traceability
 - Design-track FE handoff artifacts
 - Test-track work across those stacks
@@ -53,6 +54,7 @@ skills/
     angular/sdcorejs-angular.md
     nestjs/sdcorejs-nestjs.md
     nextjs/sdcorejs-nextjs.md
+    ai-agent/sdcorejs-ai-agent.md
     product/sdcorejs-product.md
     design/sdcorejs-design.md
     test/sdcorejs-test.md
@@ -61,7 +63,7 @@ skills/
   shared/workflow/ship.md -> sdcorejs-ship
   shared/workflow/git.md -> sdcorejs-git
 _refs/
-  angular/, nestjs/, nextjs/, sdlc/, shared/, infra/, orchestration/, documentation/
+  ai-agent/, angular/, nestjs/, nextjs/, sdlc/, shared/, infra/, orchestration/, documentation/
   shared/tdd.md -> loaded by sdcorejs-test (tdd mode)
 ```
 
@@ -76,7 +78,8 @@ When multiple skills match, apply this priority before reading a body:
 5. Test-only work: `sdcorejs-test`, except failing-test root cause/fix goes to `sdcorejs-debug`.
 6. Dedicated utility intent: `sdcorejs-explore`, `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
 7. Whole app/system build intent: `sdcorejs-solution-builder`.
-8. Confirmed track implementation: `sdcorejs-angular`, `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
+8. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
+   `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
 9. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
 
 Routing clarifications:
@@ -86,6 +89,10 @@ Routing clarifications:
 - Review findings repair routes to `sdcorejs-repair-loop`.
 - Ship/readiness gates route to `sdcorejs-ship`.
 - Commit, PR, changelog, and release-note artifacts route to `sdcorejs-git` only after the required ship gates pass or an explicit verification deferral is recorded.
+- Confirmed AI-agent implementation requires an approved plan with one engine
+  profile and one independent capability profile. Under-specified AI-agent
+  requests return to brainstorming; test, review, and debug intents retain
+  their dedicated owners.
 
 ## Workflow
 
@@ -104,6 +111,7 @@ Request
        plain-angular: generic harness
        nestjs:  sdcorejs-nestjs
        nextjs:  sdcorejs-nextjs
+       ai-agent: sdcorejs-ai-agent
        product: sdcorejs-product
        design:  sdcorejs-design
        test:    sdcorejs-test
@@ -136,6 +144,7 @@ deterministic fan-in.
 | angular | `sdcorejs-angular` for Core UI portals; generic harness for plain Angular | Loads `_refs/angular/write-code/*` packs only for `@sdcorejs/angular` / `@sd-angular/core`, new SDCoreJS portal creation, or approved Core UI migration |
 | nestjs | `sdcorejs-nestjs` | Loads `_refs/nestjs/write-code/*`, `@sdcorejs/nestjs` core catalog first |
 | nextjs | `sdcorejs-nextjs` | Loads `_refs/nextjs/build-website/write-code/*` packs |
+| ai-agent | `sdcorejs-ai-agent` | Approved-plan-only authoring with 2 engine profiles, 12 independent capability profiles, offline contracts/evals, and no bundled provider runtime |
 | product | `sdcorejs-product` | Writes/audits `product/` PRDs/user stories/AC/UAT docs plus `.sdcorejs/docs/product/` feature ledgers |
 | design | `sdcorejs-design` | Writes/audits `design/` FE handoff specs, flows, wireframes, and PNG previews |
 | test | `sdcorejs-test` | First-class track for unit/integration/e2e/UAT plans; solution-root cross-stack tests live in `test/` |
@@ -143,7 +152,7 @@ deterministic fan-in.
 
 ## Production SDLC Scope Decision
 
-Current approved scope is a verified, locally runnable SDLC skill pack: product/design/test evidence, Angular/NestJS/Next.js code generation, Docker compose packaging, Keycloak auth, run guides, branch hygiene, PR/changelog support, and recovery memory.
+Current approved scope is a verified, locally runnable SDLC skill pack: product/design/test evidence, Angular/NestJS/Next.js code generation, governed AI-agent application authoring, Docker compose packaging, Keycloak auth, run guides, branch hygiene, PR/changelog support, and recovery memory.
 
 Do **not** add new production-SDLC skills or refs for CI/CD pipelines, IaC, staging/production promotion, observability, incident response, SRE runbooks, migration rollout, compliance gates, or release governance until the user explicitly approves that expansion. If requested, start with `sdcorejs-brainstorming` and an approved spec/plan before authoring new skill/ref surfaces.
 
@@ -165,7 +174,7 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 2. Requirements before code: use `sdcorejs-brainstorming` until minimum blockers are confirmed.
 3. Approval gates: `sdcorejs-spec` and `sdcorejs-plan` require explicit approval. Silence is not approval.
 4. Approved snapshots: `sdcorejs-spec` and `sdcorejs-plan` write approved snapshots themselves before the next phase.
-5. Execute through `sdcorejs-execute-plan`: it owns track detection, Angular Core UI/plain Angular classification, product-track routing, design-track routing, test-track routing, generic harness fallback, and the sequential/parallel question.
+5. Execute through `sdcorejs-execute-plan`: it owns track detection, Angular Core UI/plain Angular classification, AI-agent/product/design/test routing, generic harness fallback, and the sequential/parallel question.
 6. Finish gate is mandatory after every code-generation run, including direct track executor requests.
 7. Evidence before claims: never say pass, fixed, built, or done without current verification output.
 8. Durable execution records and explicitly owned backlog artifacts write to
@@ -198,7 +207,7 @@ Load references on demand:
 - `_refs/shared/project-context.md` before non-trivial skill execution.
 - `_refs/shared/artifact-lifecycle.md` before writing, verifying, staging,
   committing, or pushing `.sdcorejs/**` artifacts.
-- `_refs/sdlc/{angular,nestjs,nextjs}.md` during brainstorming/spec/plan.
+- `_refs/sdlc/{ai-agent,angular,nestjs,nextjs}.md` during brainstorming/spec/plan.
 - `_refs/shared/tasklist.md` for non-trivial execution tasks.
 - `_refs/shared/user-choice-prompt.md` before any user-facing choice, approval gate, yes/no question, or mode selection.
 - `_refs/shared/testing-philosophy.md` for test-track work.
@@ -216,6 +225,8 @@ Load references on demand:
 - Treating test work as a tail-only concern; test-only plans use the `test` track.
 - Treating product docs as generic docs; human docs in `product/` and traceability ledgers in `.sdcorejs/docs/product/` use the `product` track.
 - Treating design as generic docs or production code; FE handoff artifacts use the `design` track and frontend implementation stays in the frontend track.
+- Routing broad words such as AI, agent, assistant, tool, or report directly to
+  `sdcorejs-ai-agent` without confirmed engine/capability architecture.
 - Running parallel work without the parallel-dispatch gate.
 - Writing `.sdcorejs/*` session artifacts into `sdcorejs-agent` when the target project is elsewhere.
 

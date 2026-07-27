@@ -1,0 +1,363 @@
+{
+  "base_contract": {
+    "agent_contract": {
+      "schema_version": 1,
+      "contract_id": "invalid-catalog-base",
+      "contract_version": "1.0.0",
+      "status": "approved",
+      "engine_profile": "openai-agents-sdk",
+      "capability_profile": "data-provisioning-assistant",
+      "objective": {
+        "outcome": "Provide a valid synthetic base that each case mutates once.",
+        "non_goals": ["live calls", "production data"]
+      },
+      "model_policy": {
+        "selection_owner": "application",
+        "model_id_source": "project-policy",
+        "fallback_preserves_contract": true,
+        "silent_fallback_allowed": false,
+        "billing_source_owner": "application"
+      },
+      "trusted_context": {
+        "source": "authenticated-server",
+        "required_fields": ["tenantId", "actorId", "principalId", "permissions", "locale", "correlationId", "accessScope", "environment", "approvalAuthority", "billingSource", "providerSelection", "credentialSelection"],
+        "model_may_define_or_override": false
+      },
+      "input": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {"plan_id": {"type": "string"}},
+        "max_bytes": 8192,
+        "redaction_required": true
+      },
+      "output": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {"result": {"type": "object"}},
+        "max_bytes": 65536,
+        "redaction_required": true
+      },
+      "data": {
+        "store_provider_state": false,
+        "provider_conversation_enabled": false,
+        "provider_storage_governance_approved": false,
+        "secret_serialization_allowed": false
+      },
+      "tools": [
+        {
+          "name": "applyApprovedSyntheticPlan",
+          "version": "1.0.0",
+          "purpose": "Apply one exactly approved synthetic plan.",
+          "business_shaped": true,
+          "input_schema": {"type": "object", "additionalProperties": false},
+          "output_schema": {"type": "object", "additionalProperties": false},
+          "side_effect": "write",
+          "risk": "high",
+          "required_permissions": ["synthetic.apply"],
+          "tenant_scope_binding": "trusted-context",
+          "server_authorization": true,
+          "approval": "required",
+          "preview": true,
+          "idempotency": true,
+          "resource_version": true,
+          "optimistic_concurrency": true,
+          "evidence": {"required": true},
+          "timeout_ms": 5000,
+          "retry": {"class": "idempotency-lookup-only", "max_attempts": 1},
+          "fixture_ids": ["synthetic-apply-v1"],
+          "audit_category": "synthetic.apply",
+          "redaction": true,
+          "deterministic_error": true
+        }
+      ],
+      "guardrails": {
+        "input": true,
+        "tool_input": true,
+        "tool_output": true,
+        "final_output": true,
+        "server_authorization_independent": true
+      },
+      "approvals": {
+        "exact_input_binding": true,
+        "preview_hash": true,
+        "resource_version": true,
+        "approval_expiry": true,
+        "self_approval_allowed": false,
+        "fingerprint_verified": true,
+        "tool_binding": true,
+        "tenant_binding": true,
+        "actor_binding": true,
+        "permission_scope_binding": true,
+        "resource_ids_binding": true,
+        "authority_binding": true
+      },
+      "session": {
+        "owner": "application",
+        "cross_tenant_reuse": "forbidden",
+        "tenant_actor_binding": true,
+        "optimistic_concurrency": true,
+        "approval_checkpoint_separate": true,
+        "retention_policy": "fixture-ttl",
+        "deletion_policy": "fixture-delete",
+        "compaction_policy": "redacted-summary",
+        "resume_policy": "revalidate-current-context",
+        "replay_policy": "idempotency-lookup",
+        "concurrent_turn_policy": "version-conflict",
+        "cancellation_policy": "durable-terminal",
+        "outage_policy": "reconcile-before-retry",
+        "cross_device_policy": "re-authenticate"
+      },
+      "evidence": {
+        "invented_evidence_allowed": false,
+        "data_as_of_required": true,
+        "partial_stale_disclosure_required": true,
+        "semantic_definition_version_required": true,
+        "authoritative_source_required": true,
+        "source_reference_required": true,
+        "retrieval_time_required": true,
+        "tenant_provenance_required": true,
+        "zero_vs_unavailable_required": true,
+        "material_assumptions_required": true
+      },
+      "observability": {
+        "metadata_only_logging": true,
+        "raw_prompt_logging": false,
+        "raw_tool_payload_logging": false,
+        "chain_of_thought_logging": false,
+        "secret_payload_logging": false,
+        "durable_audit_separate": true,
+        "usage_finops_separate": true,
+        "pricing_policy_source": "versioned-external",
+        "budget_enforcement": true
+      },
+      "governance": {
+        "owner": "fixture",
+        "classification": "synthetic",
+        "retention_policy": "fixture-only",
+        "exception_requires_approval": true
+      },
+      "limits": {
+        "max_turns": 6,
+        "max_tool_calls": 4,
+        "max_handoff_depth": 0,
+        "max_duration_ms": 10000,
+        "max_output_tokens": 1000
+      },
+      "reliability": {
+        "read_retries": 1,
+        "ambiguous_write_retry": false,
+        "timeouts_required": true,
+        "cancellation_defined": true,
+        "reconciliation_defined": true
+      },
+      "evals": {
+        "deterministic_gate_required": true,
+        "offline_required": true,
+        "security_thresholds": {
+          "unauthorized_actions": 0,
+          "cross_tenant_disclosures": 0,
+          "unapproved_side_effects": 0,
+          "secret_leakage": 0
+        },
+        "fixture": "invalid-catalog-v1"
+      },
+      "change_control": {
+        "approved_spec_hash": "synthetic-spec-hash",
+        "approved_plan_hash": "synthetic-plan-hash",
+        "rollback_owner": "fixture"
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "unknown-engine-profile",
+      "overrides": {
+        "agent_contract.engine_profile": "unknown-engine"
+      },
+      "expected_codes": ["ENGINE_PROFILE_INVALID"]
+    },
+    {
+      "id": "unknown-capability-profile",
+      "overrides": {
+        "agent_contract.capability_profile": "unknown-assistant"
+      },
+      "expected_codes": ["CAPABILITY_PROFILE_INVALID"]
+    },
+    {
+      "id": "model-supplies-trusted-identity",
+      "overrides": {
+        "agent_contract.trusted_context.source": "model-output"
+      },
+      "expected_codes": ["TRUST_MODEL_SOURCE"]
+    },
+    {
+      "id": "model-may-override-permissions",
+      "overrides": {
+        "agent_contract.trusted_context.model_may_define_or_override": true
+      },
+      "expected_codes": ["TRUST_MODEL_SOURCE"]
+    },
+    {
+      "id": "generic-sql-tool",
+      "overrides": {
+        "agent_contract.tools.0.name": "runSql"
+      },
+      "expected_codes": ["GENERIC_TOOL_FORBIDDEN"]
+    },
+    {
+      "id": "generic-network-tool",
+      "overrides": {
+        "agent_contract.tools.0.name": "httpRequest"
+      },
+      "expected_codes": ["GENERIC_TOOL_FORBIDDEN"]
+    },
+    {
+      "id": "write-without-approval",
+      "overrides": {
+        "agent_contract.tools.0.approval": "not-required"
+      },
+      "expected_codes": ["APPROVAL_REQUIRED"]
+    },
+    {
+      "id": "tool-without-server-authorization",
+      "overrides": {
+        "agent_contract.tools.0.server_authorization": false
+      },
+      "expected_codes": ["TOOL_CONTRACT_INVALID"]
+    },
+    {
+      "id": "write-without-idempotency",
+      "overrides": {
+        "agent_contract.tools.0.idempotency": false
+      },
+      "expected_codes": ["IDEMPOTENCY_REQUIRED"]
+    },
+    {
+      "id": "write-without-resource-version",
+      "overrides": {
+        "agent_contract.tools.0.resource_version": false
+      },
+      "expected_codes": ["RESOURCE_VERSION_REQUIRED"]
+    },
+    {
+      "id": "cross-tenant-session-reuse",
+      "overrides": {
+        "agent_contract.session.cross_tenant_reuse": "allowed"
+      },
+      "expected_codes": ["CROSS_TENANT_SESSION"]
+    },
+    {
+      "id": "provider-storage-without-governance",
+      "overrides": {
+        "agent_contract.data.store_provider_state": true,
+        "agent_contract.data.provider_storage_governance_approved": false
+      },
+      "expected_codes": ["PROVIDER_STORAGE_GOVERNANCE"]
+    },
+    {
+      "id": "missing-positive-turn-limit",
+      "overrides": {
+        "agent_contract.limits.max_turns": 0
+      },
+      "expected_codes": ["LIMIT_REQUIRED"]
+    },
+    {
+      "id": "missing-positive-tool-limit",
+      "overrides": {
+        "agent_contract.limits.max_tool_calls": 0
+      },
+      "expected_codes": ["LIMIT_REQUIRED"]
+    },
+    {
+      "id": "trace-secret-payload",
+      "overrides": {
+        "agent_contract.observability.secret_payload_logging": true
+      },
+      "expected_codes": ["TRACE_SECRET"]
+    },
+    {
+      "id": "invented-evidence-enabled",
+      "overrides": {
+        "agent_contract.evidence.invented_evidence_allowed": true
+      },
+      "expected_codes": ["EVIDENCE_INVENTED"]
+    },
+    {
+      "id": "approval-fingerprint-not-verified",
+      "overrides": {
+        "agent_contract.approvals.fingerprint_verified": false
+      },
+      "expected_codes": ["APPROVAL_FINGERPRINT"]
+    },
+    {
+      "id": "unsupported-contract-schema-version",
+      "overrides": {
+        "agent_contract.schema_version": 2
+      },
+      "expected_codes": ["CONTRACT_IDENTITY_INVALID"]
+    },
+    {
+      "id": "empty-contract-id",
+      "overrides": {
+        "agent_contract.contract_id": ""
+      },
+      "expected_codes": ["CONTRACT_IDENTITY_INVALID"]
+    },
+    {
+      "id": "invalid-contract-version",
+      "overrides": {
+        "agent_contract.contract_version": 7
+      },
+      "expected_codes": ["CONTRACT_IDENTITY_INVALID"]
+    },
+    {
+      "id": "unknown-contract-status",
+      "overrides": {
+        "agent_contract.status": "unreviewed"
+      },
+      "expected_codes": ["CONTRACT_IDENTITY_INVALID"]
+    },
+    {
+      "id": "empty-objective",
+      "overrides": {
+        "agent_contract.objective": {}
+      },
+      "expected_codes": ["OBJECTIVE_INVALID"]
+    },
+    {
+      "id": "empty-tool-name",
+      "overrides": {
+        "agent_contract.tools.0.name": ""
+      },
+      "expected_codes": ["TOOL_CONTRACT_INVALID"]
+    },
+    {
+      "id": "empty-tool-purpose",
+      "overrides": {
+        "agent_contract.tools.0.purpose": ""
+      },
+      "expected_codes": ["TOOL_CONTRACT_INVALID"]
+    },
+    {
+      "id": "tool-without-permission-code",
+      "overrides": {
+        "agent_contract.tools.0.required_permissions": []
+      },
+      "expected_codes": ["TOOL_CONTRACT_INVALID"]
+    },
+    {
+      "id": "tool-without-evidence-policy",
+      "overrides": {
+        "agent_contract.tools.0.evidence": {}
+      },
+      "expected_codes": ["TOOL_CONTRACT_INVALID"]
+    },
+    {
+      "id": "tool-with-unbounded-retry-policy",
+      "overrides": {
+        "agent_contract.tools.0.retry": {}
+      },
+      "expected_codes": ["TOOL_CONTRACT_INVALID"]
+    }
+  ]
+}

@@ -82,10 +82,10 @@ function markdownSection(source, heading) {
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
 
-  assert.equal(pack.sourceSkills.length, 23);
-  assert.equal(pack.claudeMirrorSkills.length, 23);
-  assert.equal(pack.pluginMirrorSkills.length, 23);
-  assert.equal(pack.codexMirrorSkills.length, 23);
+  assert.equal(pack.sourceSkills.length, 24);
+  assert.equal(pack.claudeMirrorSkills.length, 24);
+  assert.equal(pack.pluginMirrorSkills.length, 24);
+  assert.equal(pack.codexMirrorSkills.length, 24);
   // Core UI per-component docs are fetched on-demand (not committed), so this count
   // dropped from ~150 to ~69. Floor still catches accidental mass-deletion of refs.
   assert.ok(pack.referenceDocs.length >= 60, `referenceDocs=${pack.referenceDocs.length}`);
@@ -2160,6 +2160,28 @@ test('phase 1: documentation trigger does not steal user-management implementati
 
   assert.equal(dispatchPrompt(pack, 'Implement user management list and detail screens')?.name, 'sdcorejs-angular');
   assert.equal(dispatchPrompt(pack, 'Add user guide for the order module')?.name, 'sdcorejs-documentation');
+});
+
+test('phase 3: AI-agent routing stays narrow and preserves dedicated intent owners', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const promptEvals = await loadPromptEvals();
+  const cases = promptEvals.filter((item) => item.id.startsWith('ai-agent-'));
+  const results = runPromptEval(pack, cases);
+
+  for (const result of results) {
+    assert.equal(result.pass, true, `${result.id} -> ${result.actualSkill}`);
+  }
+
+  for (const prompt of [
+    'agent',
+    'create a recurring daily automation',
+    'configure a GitHub Actions runner agent',
+    'inspect the browser user agent',
+    'add a new skill to sdcorejs-agent',
+    'show me the monthly revenue report',
+  ]) {
+    assert.notEqual(dispatchPrompt(pack, prompt)?.name, 'sdcorejs-ai-agent', prompt);
+  }
 });
 
 async function loadPromptEvals() {

@@ -142,6 +142,14 @@ Rules:
 - Product docs and `.sdcorejs/docs/product/` are both required: product docs explain the feature to humans; the ledger maps requirement -> implementation -> test evidence for recovery and verification.
 - Design docs and `.sdcorejs/docs/design/` are both allowed: design docs guide FE implementation; the ledger maps user stories -> screens -> PNG/wireframe exports.
 
+An AI-agent role is optional and must be explicitly approved inside an existing
+backend, frontend, or named application owner. Do not add a universal
+top-level `ai/` or `agent/` directory, do not assume an `@sdcorejs/ai` package,
+and do not add a model runtime to every solution. When selected, its spec and
+plan use `track: ai-agent`, choose one engine and one capability profile, place
+contracts/code/tests in project-conventional approved paths, and preserve
+`ai_agent_context` through the remaining solution chain.
+
 ## The chain
 
 Drive these steps in order. For the non-tech user, narrate only the plain-language sentence - the skill named in each parenthetical is for maintainers.
@@ -159,6 +167,11 @@ Drive these steps in order. For the non-tech user, narrate only the plain-langua
    - `frontend-only`: build the frontend with local/mock data; do not add backend, auth, database, or Docker unless the user explicitly escalates.
    - `backend-lite`: build only the simple API/persistence and any requested screens; do not add Keycloak, Postgres, Docker, or full secure-stack smoke unless the user explicitly escalates.
    - `full secure stack` / `enterprise/full-stack`: use `profile=simple` unless enterprise was explicitly selected, `topology=single solution-root`, `layout=product/design/backend/frontend/test/.sdcorejs`, admin-first enabled, and recommend parallel role-split unless the user prefers sequential. To the user this is just "building the part that stores your data and the screens you'll use, together, including the in-app account and role management screens." `sdcorejs-parallel-dispatch` handles contract-freeze, design/backend/frontend/product/QC role split, acceptance-loop verification, and its own build-phase tail chain.
+   - Approved AI-agent role: dispatch its independent approved plan to
+     `sdcorejs-ai-agent` inside the named application owner. This role is
+     conditional at every complexity level and does not imply provider storage,
+     new dependencies, live provider verification, or a new solution-root
+     directory.
 
    If subagents are unavailable, or Mode B escalates, use the sequential fallback: freeze the same contract, run `sdcorejs-nestjs` with `profile=simple` and `topology=single solution-root` under `backend/`, run `sdcorejs-angular` against the frozen contract and design handoff under `frontend/`, run `sdcorejs-test` under `test/`, then run `sdcorejs-review`, `sdcorejs-repair-loop` if needed, `sdcorejs-product` for final traceability, and `sdcorejs-ship (verify-before-done mode)`. Do not skip the same acceptance criteria just because the fallback is sequential.
 

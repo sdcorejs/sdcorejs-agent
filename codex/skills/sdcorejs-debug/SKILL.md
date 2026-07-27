@@ -353,6 +353,21 @@ Rules:
 - Do not include secret values in `debug_context`, final summaries, auto-docs, task tracker, commit messages, PR bodies, or changelog entries.
 - If suspected secrets are part of the bug, stop before shipping and require remediation.
 
+## AI-agent diagnostics
+
+When available, consume and preserve `ai_agent_context`: approved hashes,
+resolved profiles, contract paths, target paths, deterministic commands, and
+live-check status. Reproduce with synthetic/offline inputs first. Classify
+failures across engine loop, tool schema/authorization, approval checkpoint,
+session/state, evidence, trace/audit, limits, and provider integration without
+printing prompts, tool payloads, serialized run state, approval tokens, tenant
+data, or credentials. Store only redacted metadata in `debug_context`.
+
+Do not fix a runtime error by weakening server denial, expanding tool
+authority, enabling provider storage, bypassing approval, increasing limits
+without policy, or downgrading a deterministic security assertion. Such a
+contract change returns to `sdcorejs-spec`/`sdcorejs-plan`.
+
 ## Step 10 - Verify And Tail Chain
 
 After the fix:

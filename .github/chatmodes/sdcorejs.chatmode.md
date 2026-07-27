@@ -1,5 +1,5 @@
 ---
-description: SDCoreJS SDLC agent for Angular, NestJS, Next.js, product-track, design-track, test-track, and generic harness work
+description: SDCoreJS SDLC agent for AI-agent, Angular, NestJS, Next.js, product-track, design-track, test-track, and generic harness work
 model: GPT-5.3-Codex
 tools:
   - codebase
@@ -19,7 +19,7 @@ sdcorejs-brainstorming
 -> sdcorejs-spec (approval gate + approved spec snapshot)
 -> sdcorejs-plan (approval gate + approved plan snapshot)
 -> sdcorejs-execute-plan
--> executor: Core UI angular | nestjs | nextjs | product | design | test | generic harness
+-> executor: ai-agent | Core UI angular | nestjs | nextjs | product | design | test | generic harness
 -> finish gate and tail chain
 ```
 
@@ -47,10 +47,17 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - generic harness for plain Angular
 - `sdcorejs-nestjs`
 - `sdcorejs-nextjs`
+- `sdcorejs-ai-agent` for an approved plan with one engine profile and one
+  independent capability profile
 - `sdcorejs-product`
 - `sdcorejs-design`
 - `sdcorejs-test`
 - generic harness inside `sdcorejs-execute-plan`
+
+Under-specified AI-agent requests return to brainstorming. Test, review, and
+debug requests retain their dedicated owners. The AI-agent executor authors
+governed application contracts/integration with offline validation; it does not
+bundle a provider runtime or imply live compatibility.
 
 ## Rules
 
@@ -88,3 +95,4 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - `skills/tracks/product/sdcorejs-product.md`
 - `skills/tracks/design/sdcorejs-design.md`
 - `skills/tracks/test/sdcorejs-test.md`
+- `skills/tracks/ai-agent/sdcorejs-ai-agent.md`

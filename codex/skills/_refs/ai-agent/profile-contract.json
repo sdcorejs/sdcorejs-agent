@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "security_floor_ref": "_refs/ai-agent/profiles/common.md",
+  "profile_may_weaken_security_floor": false,
+  "required_profile_fields": [
+    "profile_id",
+    "profile_version",
+    "objective",
+    "supported_intents",
+    "non_goals",
+    "posture",
+    "allowed_tool_categories",
+    "forbidden_tools",
+    "required_permissions",
+    "evidence",
+    "guardrail_delta",
+    "approval_delta",
+    "session_delta",
+    "tracing_audit_delta",
+    "token_budget_delta",
+    "positive_scenarios",
+    "negative_scenarios",
+    "adversarial_scenarios",
+    "boundary_scenarios",
+    "clarification_requirements",
+    "deterministic_invariants",
+    "quality_thresholds"
+  ]
+}

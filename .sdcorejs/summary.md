@@ -1,10 +1,10 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-07-24T14:34:58+07:00
+generated_at: 2026-07-26T13:08:56+07:00
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
-tracks: [workflow, angular, nestjs, nextjs, product, design, test]
+tracks: [workflow, ai-agent, angular, nestjs, nextjs, product, design, test]
 stack_profiles: [node-esm, markdown-skill-pack, astro-site]
 summary_scope: skill-pack architecture, mirrors, adapters, and verification
 source_roots: [_refs, plugin, scripts, site, skills, test]
@@ -14,7 +14,7 @@ evidence:
   key_entrypoints: [scripts/sync-skills.mjs, bin/sdcorejs-agent.mjs]
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:8120b551be7728a304a459e6f0a18769e8d3cfea558299e6ab3d9ef455ea1e73
+  dependency_manifests: sha256:c68f4dad131cda2d163fde7f9b4b4100a73fb2d23eea8ca143aa8e50d43358b3
   source_roots: sha256:ddec7e2dffa8a69905218e58e710cd58376cd3cbc4dc15fc1d809fc8a6e2ec12
 redaction_applied: true
 artifact_id: project-summary
@@ -31,9 +31,10 @@ owner: integration-owner
 ## Purpose
 
 `sdcorejs-agent` is an authoring repository for a portable SDLC skill pack.
-It defines reusable workflows for AI coding agents working with Angular,
-NestJS, Next.js, product, design, test, documentation, review, ship, Git,
-Docker, authentication, run guides, and generic execution.
+It defines reusable workflows for AI coding agents working with governed
+AI-agent applications, Angular, NestJS, Next.js, product, design, test,
+documentation, review, ship, Git, Docker, authentication, run guides, and
+generic execution.
 
 The repository publishes the same canonical behavior through adapters for
 Codex, Claude Code, Cursor, GitHub Copilot, and the packaged plugin surface.
@@ -48,6 +49,8 @@ generated project artifacts at runtime.
 - `_refs/shared/project-context.md` owns read-oriented context assembly.
 - `_refs/shared/artifact-lifecycle.md` owns durable artifact classification.
 - `_refs/shared/tasklist.md` keeps execution progress in runtime state.
+- `skills/tracks/ai-agent/sdcorejs-ai-agent.md` and
+  `_refs/ai-agent/manifest.json` own the approved-plan-only AI-agent track.
 - `package.json` lists synchronization, test, hygiene, audit, and site commands.
 
 Read only the references selected by a skill. Do not load every reference pack
@@ -75,6 +78,7 @@ Dependency evidence:
 |---|---|---|---|---|
 | Skill sources | `skills/` | Canonical routing and executor contracts | `skills/orchestration/using-skills.md` | `_refs/` |
 | Reference sources | `_refs/` | Shared procedures, templates, and track packs | `_refs/shared/project-context.md` | source skills |
+| AI-agent track | `skills/tracks/ai-agent/`, `_refs/ai-agent/` | Approved engine/capability composition, security contracts, offline fixtures, and executor evidence | `skills/tracks/ai-agent/sdcorejs-ai-agent.md` | SDLC gates, downstream skills |
 | Sync pipeline | `scripts/` | Validate and generate adapter mirrors | `scripts/sync-skills.mjs` | `skills/`, `_refs/` |
 | CLI adapter | `bin/` | Expose the pack to command-line consumers | `bin/sdcorejs-agent.mjs` | canonical sources |
 | Plugin adapter | `plugin/` | Package skills, refs, hooks, and manifest | `plugin/hooks/session-start` | generated mirrors |
@@ -101,7 +105,8 @@ Consumer flow:
 
 1. A tool loads its adapter entrypoint.
 2. Dispatch selects one canonical skill by name and description.
-3. The skill loads only the references needed for its mode and detected stack.
+3. The skill loads only the references needed for its mode and detected stack;
+   AI-agent execution resolves one engine and one capability profile once.
 4. Write-producing work passes runtime artifact context through the finish gate.
 5. Ship verifies evidence; Git computes artifact closure before explicit staging.
 
@@ -136,6 +141,8 @@ canonical source and rerun synchronization.
 - `npm run check:skills` checks mirror parity without repository writes.
 - `npm test` runs repository, NestJS contract, and golden-project suites.
 - `npm run test:e2e:repository` runs repository-level contract tests.
+- `node --test test/e2e/ai-agent-track-contract.test.mjs` runs the dedicated
+  AI-agent contract, fixture, mutation, and downstream checks.
 - `npm run test:e2e:nestjs` runs NestJS pack contract and generation tests.
 - `npm run test:e2e:nestjs:golden` validates the generated golden project.
 - `npm run check:text-hygiene` checks encoding and source-language hygiene.
@@ -150,6 +157,9 @@ canonical source and rerun synchronization.
 - Reusable skill and reference prose is English-only and locale-neutral.
 - User-facing runtime output follows the user's language.
 - Approval gates separate brainstorming, spec, plan, and execution.
+- AI-agent source selects lifecycle and business capability independently,
+  defaults provider storage off, forbids generic raw tools, and keeps offline
+  evidence separate from live verification.
 - Non-trivial execution uses a runtime task list; no mutable session checkpoint
   belongs in the repository.
 - Project context assembly is read-only unless a distinct artifact write is
@@ -173,6 +183,7 @@ canonical source and rerun synchronization.
 | Change Angular generation | `skills/tracks/angular/` | `_refs/angular/` |
 | Change NestJS generation | `skills/tracks/nestjs/` | `_refs/nestjs/` |
 | Change Next.js generation | `skills/tracks/nextjs/` | `_refs/nextjs/` |
+| Change AI-agent authoring | `skills/tracks/ai-agent/` | `_refs/ai-agent/`, `_refs/sdlc/ai-agent.md`, dedicated contract tests |
 | Change product/design/test | `skills/tracks/` | matching track references |
 | Change finish behavior | `_refs/shared/finish-gate.md` | `_refs/orchestration/tail/` |
 | Change mirror generation | `scripts/sync-skills.mjs` | `MIRROR_POLICY.md` |

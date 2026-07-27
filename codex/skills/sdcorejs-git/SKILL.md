@@ -418,6 +418,8 @@ Suggested PR body sections:
 - Risks and rollback
 - Notes for reviewer
 
+For `ai_agent_context`, preserve redacted IDs/hashes/paths/evidence/deferrals; classify raw traces, serialized run state, prompts, tool payloads, approval tokens, provider responses, credentials, tenant data, and diagnostics as `local_only` or prohibited.
+
 ## Push Safety
 
 If pushing is part of PR or delivery:

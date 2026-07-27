@@ -28,7 +28,7 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
 2. Read `../_refs/orchestration/tail/repair-loop.md` completely.
 3. If the source is `sdcorejs-review`, preserve the original `review_context` exactly, including `track`, `track_profile`, dimensions, mode, `file_scope`, refs loaded/skipped, probes run/skipped, and package manager.
    Preserve any `test_context`, `test_status`, `test_evidence`,
-   `ui_capture_context`, and `artifact_context` exactly as source evidence;
+   `ui_capture_context`, `ai_agent_context`, and `artifact_context` exactly as source evidence;
    append new run/case evidence after repair instead of overwriting or upgrading
    stale/blocked results.
 4. Record the working-tree baseline and a visible Repair ledger before edits.
@@ -59,3 +59,8 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
 - Do not hide stale, mis-scoped, redundant, or unclear findings; report them separately.
 - Do not claim convergence without re-running the source-specific verification.
 - Do not downgrade or reclassify the original `review_context`; repair-loop must not change a `plain-*` review into an SDCoreJS-specific review during re-verification.
+- When `ai_agent_context` is present, do not change resolved profiles, trust
+  sources, provider storage, tool authority, approvals, state isolation,
+  evidence rules, limits, or security thresholds to make a finding disappear.
+  A required contract/policy change returns through `sdcorejs-spec` and
+  `sdcorejs-plan`; only plan-scoped implementation defects may be repaired.
