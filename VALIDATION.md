@@ -6,7 +6,7 @@ Date: 2026-07-27
 
 ## Current Layout
 
-- `skills/**/*.md` - 25 dispatchable source skills.
+- `skills/**/*.md` - 21 dispatchable source skills.
 - `_refs/**` - reference data loaded on demand.
 - `.claude/skills/<name>/SKILL.md` - generated Claude Code mirror.
 - `plugin/skills/<name>/SKILL.md` - generated Claude plugin mirror.
@@ -18,10 +18,10 @@ Date: 2026-07-27
 
 | Bucket | Count |
 |---|---:|
-| Source skills | 25 |
-| Claude Code mirror skills | 25 |
-| Plugin mirror skills | 25 |
-| Codex mirror skills | 25 |
+| Source skills | 21 |
+| Claude Code mirror skills | 21 |
+| Plugin mirror skills | 21 |
+| Codex mirror skills | 21 |
 
 ## Workflow Inventory
 
@@ -40,6 +40,60 @@ Date: 2026-07-27
 | Simplification utility | `sdcorejs-simplify` |
 | Parallel | `sdcorejs-parallel-dispatch` |
 | Finish | `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)` when durable knowledge surfaced |
+
+## Retired standalone skills removal evidence - 2026-07-27
+
+Evidence target:
+
+- Base: `main` at
+  `0a8653fa34ea3a2099da7cda34cff7cd40477b0a`, matching `origin/main`
+  before the refactor.
+- State: pre-commit final diff for permanent removal of four standalone skills and their
+  exclusive infrastructure references, with core workflow, mirrors, routing,
+  public documentation, site catalog, version metadata, and regression tests
+  updated.
+- Inventory moved from 25 canonical skills to 21, with 21 skills in every
+  generated distribution.
+- Version moved from root `0.5.1` and drifted distribution metadata to
+  synchronized `0.6.0`.
+- These are local pre-commit command results. Git/PR handoff and remote CI are
+  not validation evidence.
+
+### Commands and observed results
+
+| Command | Exit | Result and relevant observation |
+|---|---:|---|
+| `npm run clean:skills` | 0 | Removed 12 stale generated skill directories across Claude, plugin, and Codex mirrors; regenerated all committed distributions at 21 skills. |
+| `node --test test/e2e/ai-agent-track-contract.test.mjs test/e2e/simplify-skill-contract.test.mjs test/e2e/skill-pack-runner.test.mjs test/e2e/test-track-contract.test.mjs` | 0 | Focused post-repair routing and contract run passed 86/86 tests. |
+| `npm run check:skills` | 0 | Node checker reported 21 skills plus refs and Cursor in sync. |
+| `npm run check:skills:ps` | 0 | PowerShell checker reported the same 21-skill/ref/Cursor parity. |
+| `PYTHONUTF8=1 python <skill-creator>/scripts/quick_validate.py <skill-dir>` across Claude, plugin, and Codex skill directories | 0 | The host `skill-creator` validator passed all 63 generated skill packages. UTF-8 mode avoids the Windows default code-page limitation for valid Unicode source. |
+| `npm run check:text-hygiene` | 0 | 876 text files passed hidden/control/bidi and reusable-source language checks after the review repair. |
+| `npm run check:nestjs-pack` | 0 | Canonical NestJS pack validation passed, including retained shared auth/security contracts. |
+| `npm run test:e2e` | 0 | Repository 135/135; NestJS 24 passed with one intentional Linux-only skip on Windows; generated simple and enterprise golden projects 2/2. |
+| `npm run test:e2e:phase1` | 0 | Post-review repair run passed 32/32 skill, mirror, text, and routing invariants. |
+| `npm run build:site` | 0 | Astro built both static pages successfully with the 21-skill, eight-track catalog. |
+| `npm run check:audit` | 0 | Root production dependency audit found 0 vulnerabilities. |
+| `npm run check:site:audit` | 0 | Site production dependency audit found 0 vulnerabilities. |
+| `docker version --format '{{json .Server.Version}}'` | 1 | Docker Desktop Linux engine pipe was unavailable; `npm run test:e2e:nestjs:containers` is therefore `SKIPPED - Docker unavailable`. |
+
+### Evidence boundaries
+
+- The Linux-only case-sensitive path regression is intentionally skipped by
+  the NestJS suite on Windows; it is reported as a skip, not a pass.
+- Container E2E is not claimed because the Docker daemon is unavailable in
+  this environment.
+- The repository exposes no root or site `lint` or `typecheck` script.
+  Existing TypeScript compilation is exercised by the generated NestJS golden
+  builds; standalone lint/typecheck are `SKIPPED - no repository script`.
+- Shared Keycloak/JWT/JWKS/RBAC/permission guidance, authenticated test
+  contracts, container-based golden fixtures, and contributor install/test/
+  generator instructions remain in their existing technical owners.
+- Active skills, routing, mirrors, catalogs, and public documentation have zero
+  retired-surface residue. Approved historical spec/plan snapshots retain their
+  original hashes and wording as immutable audit records.
+- No dependency graph, package manager, environment, migration, tag, publish,
+  or release action was changed or run during validation.
 
 ## Simplify workflow utility evidence - 2026-07-27 working tree
 
@@ -243,8 +297,8 @@ arbitrary domain automatically.
 
 | Check | Expected |
 |---|---|
-| Source skill count | 25 |
-| Mirror counts | 25 in `.claude`, `plugin`, and `codex` |
+| Source skill count | 21 |
+| Mirror counts | 21 in `.claude`, `plugin`, and `codex` |
 | Text hygiene | No hidden/control/bidi Unicode in tracked text files |
 | Frontmatter | Required `name` and `description`; optional `allowed-tools`; no duplicate keys; no unsupported frontmatter shape |
 | Skill names | Unique `sdcorejs-*` kebab-case names |

@@ -212,7 +212,9 @@ Do not route plain Next.js to `sdcorejs-nextjs` by default. Do not assume
 `[locale]`, `setRequestLocale`, sitemap/public-site metadata, typed i18n
 navigation, or content folders for `plain-nextjs`.
 
-For mixed full-stack plans, classify as role-split and prepare to invoke `sdcorejs-parallel-dispatch`. If the plan came from `sdcorejs-solution-builder`, preserve the solution-root contract: product docs in `product/`, design handoff in `design/`, backend in `backend/`, frontend in `frontend/`, cross-stack tests in `test/`, and traceability/evidence in `.sdcorejs/`.
+For mixed full-stack plans, classify as role-split and prepare to invoke
+`sdcorejs-parallel-dispatch`. Preserve any approved multi-project layout
+directly from the plan; do not infer or create a universal repository layout.
 
 #### AI-agent architecture preflight
 

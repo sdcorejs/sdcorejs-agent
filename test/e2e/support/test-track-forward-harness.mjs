@@ -55,7 +55,7 @@ async function classifyRepository(root, pkg) {
     await exists(root, 'frontend/package.json') &&
     await exists(root, 'backend/package.json') &&
     await exists(root, 'test/e2e/checkout.spec.ts')
-  ) return 'solution-builder';
+  ) return 'multi-project';
   if (pkg.workspaces) return 'monorepo';
   return 'single-app';
 }
@@ -361,7 +361,7 @@ export async function projectTestFixture(root, request) {
   ];
 
   let owner = 'project';
-  if (repositoryKind === 'solution-builder' && request.level === 'browser-e2e') owner = 'shared-test-project';
+  if (repositoryKind === 'multi-project' && request.level === 'browser-e2e') owner = 'shared-test-project';
   else if (repositoryKind === 'monorepo' && request.level === 'browser-e2e') owner = 'portal';
   else if (deps['@nestjs/core']) owner = 'backend-service';
 

@@ -107,7 +107,6 @@ const SKILL_HINTS = [
   { skill: 'sdcorejs-angular', words: ['angular', 'portal', 'screen', 'screens', 'list', 'detail', 'form', 'approve', 'approval', 'bulk', 'export', 'action', 'drawer'] },
   { skill: 'sdcorejs-nestjs', words: ['nestjs', 'backend', 'module', 'entity', 'crud', 'endpoint', 'scaffold'] },
   { skill: 'sdcorejs-nextjs', words: ['nextjs', 'website', 'landing', 'seo', 'sitemap', 'og', 'contact'] },
-  { skill: 'sdcorejs-solution-builder', words: ['build', 'create', 'software', 'app', 'system', 'manage', 'management', 'whole', 'classroom', 'school'] },
   { skill: 'sdcorejs-product', words: ['product', 'po', 'story', 'stories', 'acceptance', 'criteria', 'requirement', 'requirements', 'traceability', 'uat', 'ledger', 'gap', 'implementation', 'implement', 'complete'] },
   { skill: 'sdcorejs-design', words: ['design', 'ui', 'ux', 'screen', 'wireframe', 'mockup', 'png', 'preview', 'handoff', 'flow', 'flows', 'story', 'stories'] },
   { skill: 'sdcorejs-documentation', words: ['documentation', 'docs', 'doc', 'document', 'code-documentation', 'docstring', 'doc-comment', 'comment', 'comments', 'jsdoc', 'tsdoc', 'api', 'function', 'functions', 'class', 'classes', 'guide', 'user-guide', 'end-user', 'manual', 'technical', 'taskid', 'ticket', 'issue', 'record', 'save', 'convert', 'standardize', 'rewrite', 'improve', 'structure'] },
@@ -139,6 +138,13 @@ const PRIORITY_RULES = [
         hasAny(tokens, ['brainstorm', 'unsure', 'deciding', 'between', 'compare', 'should', 'clarify']) &&
         !hasDirectTestWorkIntent(prompt, tokens)
       )
+  },
+  {
+    skill: 'sdcorejs-brainstorming',
+    when: ({ prompt, tokens }) =>
+      hasUnresolvedStandaloneAuthIntent(prompt, tokens) ||
+      hasUnsupportedChatGptAppBuildIntent(prompt, tokens) ||
+      hasUnderSpecifiedApplicationBuildIntent(prompt, tokens)
   },
   {
     skill: 'sdcorejs-repair-loop',
@@ -271,12 +277,6 @@ const PRIORITY_RULES = [
       !hasAny(tokens, ['docs', 'doc', 'documentation', 'guide', 'user-guide', 'manual', 'screenshot'])
   },
   {
-    skill: 'sdcorejs-auth',
-    when: ({ tokens }) =>
-      hasAny(tokens, ['auth', 'authentication', 'authorization', 'keycloak', 'login']) &&
-      !hasAny(tokens, ['test', 'tests', 'debug', 'failing', 'failure', 'docs', 'documentation', 'guide'])
-  },
-  {
     skill: 'sdcorejs-explore',
     when: ({ prompt, tokens }) =>
       (
@@ -327,12 +327,6 @@ const PRIORITY_RULES = [
     when: ({ prompt, tokens }) =>
       /\b(build|create|make)\b.*\b(component)\b/.test(prompt) &&
       !hasAny(tokens, ['angular', 'portal', 'screen', 'screens', 'page'])
-  },
-  {
-    skill: 'sdcorejs-solution-builder',
-    when: ({ prompt, tokens }) =>
-      (hasAny(tokens, ['build', 'create', 'want', 'need']) && hasAny(tokens, ['software', 'app', 'system', 'solution'])) ||
-      (hasAny(tokens, ['manage', 'management']) && hasAny(tokens, ['software', 'app', 'system', 'classroom', 'school']))
   },
   {
     skill: 'sdcorejs-angular',
@@ -612,6 +606,36 @@ function findSkill(pack, name) {
 
 function hasAny(tokens, words) {
   return words.some((word) => tokens.has(word));
+}
+
+function hasUnresolvedStandaloneAuthIntent(prompt, tokens) {
+  return (
+    hasAny(tokens, ['keycloak', 'authentication', 'authorization', 'login']) &&
+    hasAny(tokens, ['add', 'build', 'configure', 'create', 'implement', 'setup']) &&
+    !hasAny(tokens, ['angular', 'nestjs', 'nextjs', 'backend', 'frontend', 'portal']) &&
+    !hasAny(tokens, ['approved', 'plan', 'spec'])
+  );
+}
+
+function hasUnsupportedChatGptAppBuildIntent(prompt, tokens) {
+  return (
+    /\bchatgpt\s+app\b/.test(prompt) &&
+    hasAny(tokens, ['build', 'create', 'implement', 'scaffold'])
+  );
+}
+
+function hasUnderSpecifiedApplicationBuildIntent(prompt, tokens) {
+  if (!hasAny(tokens, ['build', 'create', 'make'])) return false;
+  if (!hasAny(tokens, ['app', 'application', 'software', 'system', 'solution'])) return false;
+  if (hasAny(tokens, ['approved', 'plan', 'spec'])) return false;
+  if (hasAny(tokens, ['debug', 'fix', 'repair', 'review', 'test', 'tests'])) return false;
+
+  const hasAngular = tokens.has('angular');
+  const hasNestJs = tokens.has('nestjs');
+  const hasNextJs = tokens.has('nextjs');
+  const explicitTrackCount = Number(hasAngular) + Number(hasNestJs) + Number(hasNextJs);
+
+  return explicitTrackCount === 0 || explicitTrackCount > 1 || tokens.has('full');
 }
 
 function hasTestIntent(tokens) {
