@@ -21,6 +21,7 @@ The pack is documentation-driven: markdown skills plus `_refs/` knowledge. There
 | Angular Portal | `sdcorejs-angular` |
 | NestJS | `sdcorejs-nestjs` |
 | Next.js | `sdcorejs-nextjs` |
+| AI-agent | `sdcorejs-ai-agent` |
 | Product | `sdcorejs-product` |
 | Design | `sdcorejs-design` |
 | Test | `sdcorejs-test` |
@@ -39,16 +40,25 @@ Request
   -> sdcorejs-execute-plan
        Detect track and always ask sequential vs parallel.
   -> executor
-       angular | nestjs | nextjs | product | design | test | generic harness
+       ai-agent | angular | nestjs | nextjs | product | design | test | generic harness
   -> finish gate and tail chain
        write-producing docs/task/memory artifacts first
        -> sdcorejs-ship (verify-before-done mode)
        -> sdcorejs-ship (branch-ready mode as the final read-only gate)
 ```
 
-The two approval gates and approved snapshot writes live inside `sdcorejs-spec` and `sdcorejs-plan`. `sdcorejs-execute-plan` owns track detection, product-track routing, design-track routing, test-track routing, generic harness fallback, and the sequential/parallel question.
+The two approval gates and approved snapshot writes live inside `sdcorejs-spec` and `sdcorejs-plan`. `sdcorejs-execute-plan` owns track detection, AI-agent/product/design/test routing, generic harness fallback, and the sequential/parallel question.
 No write-producing step may run after final branch-ready unless branch-ready is
 run again before Git artifacts.
+
+The AI-agent track is an approved-plan-only authoring surface, not a bundled
+agent runtime. It selects one lifecycle engine (`openai-responses` or
+`openai-agents-sdk`) independently from one of twelve business capability
+profiles. Its contracts default provider storage off, prohibit generic raw
+tools, require trusted server identity and tenant scope, bind approvals to exact
+inputs/versions, separate application state, require evidence and redacted
+tracing/audit/usage data, and run offline deterministic evals. Live engine/model
+verification is always reported separately.
 
 ## Quick Start
 
@@ -137,7 +147,7 @@ transcripts, see:
 ## Repo Layout
 
 ```text
-skills/                 source skills, 23 dispatchable skill files
+skills/                 source skills, 24 dispatchable skill files
 _refs/                  source reference docs
 .claude/skills/         generated Claude mirror
 plugin/skills/          generated Claude plugin mirror
@@ -195,6 +205,9 @@ review rules.
 - UI/UX design, FE handoff specs, wireframes, and PNG previews use the `sdcorejs-design` track.
 - Solution-builder roots use `product/`, `design/`, `backend/`, `frontend/`, `test/`, and `.sdcorejs/`; human product docs live in `product/`, design handoff lives in `design/`, while approved snapshots/change records/ledgers/evidence stay in `.sdcorejs/`.
 - Test-only plans use the `sdcorejs-test` track.
+- Confirmed AI-agent implementations use `sdcorejs-ai-agent`; under-specified
+  AI-agent ideas return to brainstorming, while test, review, and debug requests
+  keep their dedicated owners.
 - Codebase understanding, summaries, flow tracing, and local setup discovery use `sdcorejs-explore`.
 - Final gate, acceptance verification, branch readiness, dependency-update delivery, ready-to-merge, and release readiness use `sdcorejs-ship`.
 - Commit, PR, changelog, release notes, and Git artifact creation use `sdcorejs-git`.

@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-brainstorming
-description: Discovery and requirement-confirmation gate before spec. Use for open-ended ideas, compare approaches, missing blockers, or CRUD/entity/screen/module/backend/site/test/product/design/doc/workflow requests across Angular, NestJS, Next.js, React, Node, fullstack, documentation, workflow, test, product, design, and generic/general tracks. Detects track/profile, explores only when unsettled, then confirms minimum inputs for spec. Runtime-localized.
+description: Discovery and requirement-confirmation gate before spec. Use for open-ended ideas, compare approaches, missing blockers, or CRUD/entity/screen/module/backend/site/AI-agent/test/product/design/doc/workflow requests across Angular, NestJS, Next.js, React, Node, fullstack, AI-agent, documentation, workflow, test, product, design, and generic/general tracks. Detects track/profile, explores only when unsettled, then confirms minimum inputs for spec. Runtime-localized.
 allowed-tools: Read, Glob, Grep, Bash, WebFetch
 ---
 
@@ -119,9 +119,16 @@ React and general profiles:
 - `general`: no known stack evidence.
 - `unknown`: conflicting or insufficient evidence.
 
+AI-agent profile:
+
+- `ai-agent`: the confirmed primary deliverable is an application agent
+  contract/implementation. Under-specified "build an agent" or "use AI"
+  remains in explore mode until capability, engine, runtime owner, trust,
+  tools, state, evidence, limits, and verification are confirmed.
+
 Allowed `track` values:
 `angular`, `nestjs`, `nextjs`, `react`, `node`, `fullstack`, `product`,
-`design`, `documentation`, `workflow`, `test`, `general`.
+`design`, `ai-agent`, `documentation`, `workflow`, `test`, `general`.
 
 ### 1. Load context cheaply
 Read only what changes the questions:
@@ -130,7 +137,7 @@ Read only what changes the questions:
   artifact metadata rather than recency alone.
 - `.sdcorejs/memories/<track>/*.md` frontmatter; load relevant bodies only.
 - Latest approved specs/plans frontmatter under `.sdcorejs/specs/<track>/` and `.sdcorejs/plans/<track>/`.
-- For angular / nestjs / nextjs: `_refs/sdlc/<track>.md`.
+- For angular / nestjs / nextjs / ai-agent: `_refs/sdlc/<track>.md`.
 - For test: `_refs/shared/testing-philosophy.md`, then the target stack test ref when known.
 - For product: latest `.sdcorejs/docs/product/*.md` plus related specs/plans.
 - `package.json`, lockfiles, and workspace config only enough to identify
@@ -264,6 +271,7 @@ Minimum blockers by profile/context:
 | `plain-nextjs` / `react-next-generic` | app/dashboard/page intent, routes/components, data source, auth/session expectations, rendering constraints, verification; do not ask build-website/domain/i18n blockers unless public-site delivery is intended |
 | `react-vite` / `react-cra` | feature/component, state/data source, routing, styling system, test runner |
 | `node-general` / `general` | goal, files/areas in scope, constraints, acceptance criteria, verification command or manual check |
+| `ai-agent` | business capability and non-goals; engine owner; consuming runtime/paths; trusted identity and tenant source; data/storage policy; business-shaped tools and side effects; approvals; sessions/state; evidence; tracing/audit/usage; limits; offline evals; live-verification boundary |
 | test | target stack, test level, subject under test, cases with expected results, data/auth/env, selector/source inventory, reuse vs new fixtures |
 | product | feature name, business goal, users/personas, scenarios, acceptance criteria seed, source artifacts, impacted tracks, UAT expectations |
 
@@ -313,7 +321,7 @@ requirement_context:
   contract_id: <stable id shared by spec/plan/execute>
   target_root: <absolute or repo-relative target>
   target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
-  track: angular | nestjs | nextjs | react | node | fullstack | product | design | documentation | workflow | test | general
+  track: angular | nestjs | nextjs | react | node | fullstack | ai-agent | product | design | documentation | workflow | test | general
   stack_profile: core-ui-angular | legacy-core-ui-angular | plain-angular | sdcorejs-nestjs | plain-nestjs | nextjs-build-website | plain-nextjs | react-vite | react-cra | react-next-generic | node-general | general | migration-request | unknown
   profile_confidence: high | medium | low
   profile_evidence:

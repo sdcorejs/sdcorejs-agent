@@ -12,6 +12,8 @@ It is strongest when the target project uses one of the supported tracks:
 - Angular portals using `@sdcorejs/angular`.
 - NestJS + Postgres backends.
 - Next.js public sites.
+- Governed AI-agent application contracts/integration with one approved engine
+  profile and one approved business capability profile.
 - Product, design, and test-track evidence.
 - Generic plans where a strict approval and verification harness is useful.
 
@@ -29,6 +31,13 @@ Do not use the full workflow when:
 
 For unsupported stacks, use the generic harness only after the scope and
 verification commands are explicit.
+
+Do not adopt the AI-agent track as a turnkey hosted runtime. It ships
+provider-portable contracts, two lifecycle profiles, twelve independent
+capability profiles, an offline validator, deterministic fixtures, and SDLC
+gates. The consuming application owns dependencies, credentials, runtime
+deployment, trusted identity/tenant context, tools, data/state, and any
+separately authorized live compatibility or behavioral verification.
 
 ## Fast-Fix Path
 
@@ -78,3 +87,6 @@ This matrix tracks supported surfaces and the evidence expected for each.
 - Capture real-agent transcript evidence for every tool surface claimed by the
   release. For full coverage, validate Claude Code, Codex, Cursor, and GitHub
   Copilot.
+- For AI-agent adoption, confirm provider storage defaults off, generic raw
+  tools are absent, mutation approval/state/evidence/tracing/limits are
+  application-owned, and offline results are not presented as live evidence.

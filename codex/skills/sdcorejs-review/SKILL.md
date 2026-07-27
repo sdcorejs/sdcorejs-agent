@@ -369,6 +369,18 @@ Findings rules:
 - In quick-table mode, a severity table with no rows must contain `_none_`; do
   not omit the heading.
 
+## AI-agent review
+
+When `ai_agent_context` is present, preserve its approved hashes, selected
+profiles, contract/target paths, and offline/live evidence status. Load only the
+applicable `../_refs/ai-agent/**` contracts. Review trust and tenant derivation,
+server-side authorization, business-shaped tool boundaries, mutation approval,
+idempotency/resource versions, session isolation, provider storage governance,
+evidence provenance/freshness, trace/audit redaction, budgets/limits,
+deterministic security gates, dependency/runtime ownership, and honest live
+claims. Treat any silent weakening of the common floor as a blocking
+security-policy finding and `user-decision`, not an automatic style repair.
+
 ## Rules
 
 ### MUST DO

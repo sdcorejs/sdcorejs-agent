@@ -7,6 +7,7 @@ This repo provides Runtime-localized SDLC skills for:
 - Angular portals with `@sdcorejs/angular`
 - NestJS + Postgres backends
 - Next.js public sites
+- Governed AI-agent application contracts and implementations
 - A product track for PO-facing docs plus feature ledgers and traceability
 - A design track for FE handoff artifacts from product user stories
 - A first-class test track
@@ -40,7 +41,8 @@ If several skills match, apply this priority before reading a body:
 5. Test-only work: `sdcorejs-test`, except failing-test root cause/fix goes to `sdcorejs-debug`.
 6. Dedicated utility intent: `sdcorejs-explore`, `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
 7. Whole app/system build intent: `sdcorejs-solution-builder`.
-8. Confirmed track implementation: `sdcorejs-angular`, `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
+8. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
+   `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
 9. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
 
 Routing clarifications:
@@ -50,6 +52,10 @@ Routing clarifications:
 - Review findings repair routes to `sdcorejs-repair-loop`.
 - Ship/readiness gates route to `sdcorejs-ship`.
 - Commit, PR, changelog, and release-note artifacts route to `sdcorejs-git` only after the required ship gates pass or an explicit verification deferral is recorded.
+- Confirmed AI-agent implementation requires an approved plan with one engine
+  profile and one independent capability profile. Under-specified AI-agent
+  requests return to brainstorming; test, review, and debug intents retain
+  their dedicated owners.
 
 ## Workflow
 
@@ -68,6 +74,7 @@ Request
        plain-angular: generic harness
        nestjs:  sdcorejs-nestjs
        nextjs:  sdcorejs-nextjs
+       ai-agent: sdcorejs-ai-agent
        product: sdcorejs-product
        design:  sdcorejs-design
        test:    sdcorejs-test
@@ -109,6 +116,7 @@ per-unit isolation, and deterministic fan-in.
 | angular | `sdcorejs-angular` for Core UI portals; generic harness for plain Angular | `_refs/angular/write-code/*`, `_refs/angular/core-docs-fetch.mjs` only for `@sdcorejs/angular` / `@sd-angular/core`, new SDCoreJS portal creation, or approved Core UI migration |
 | nestjs | `sdcorejs-nestjs` | `_refs/nestjs/write-code/*`, `_refs/nestjs/core-catalog.md` |
 | nextjs | `sdcorejs-nextjs` | `_refs/nextjs/build-website/write-code/*` |
+| ai-agent | `sdcorejs-ai-agent` | `_refs/ai-agent/**`; two engine profiles and twelve independent capability profiles |
 | product | `sdcorejs-product` | `product/` PRDs/user stories/AC/UAT docs plus `.sdcorejs/docs/product/` traceability ledgers |
 | design | `sdcorejs-design` | `design/` flows/specs/wireframes/PNG exports plus `.sdcorejs/docs/design/` traceability |
 | test | `sdcorejs-test` | `_refs/shared/testing-philosophy.md`, `_refs/<track>/test-*.md`; `test/` for solution-root e2e/UAT |
@@ -122,6 +130,12 @@ The design track is first-class. FE handoff specs, flows, wireframes, mockups, a
 `sdcorejs-solution-builder` creates one solution root with `product/`, `design/`, `backend/`, `frontend/`, `test/`, and `.sdcorejs/`. Human-readable PO/QC docs live in `product/`; design handoff lives in `design/`; approved snapshots, change records, ledgers, memories, durable backlogs, and verification evidence stay in `.sdcorejs/`.
 
 The test track is first-class. Test-only plans are not routed through app write-code skills.
+
+The AI-agent track is first-class but approved-plan-only. It authors governed
+application contracts/integration with provider storage disabled by default,
+business-shaped tools, exact-input approvals, tenant-isolated state,
+evidence/tracing/FinOps contracts, offline deterministic evals, and separately
+reported live verification. It does not bundle an agent runtime.
 
 ## Mandatory Execution Discipline
 
@@ -138,7 +152,7 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 1. **Requirements before code.** Use `sdcorejs-brainstorming` until the minimum blockers for the detected track are confirmed.
 2. **Approval gates.** `sdcorejs-spec` and `sdcorejs-plan` require explicit user approval. Silence is not approval.
 3. **Approved snapshots.** `sdcorejs-spec` and `sdcorejs-plan` write their own approved snapshots before the next phase.
-4. **Execute-plan.** Approved plans go through `sdcorejs-execute-plan`; it owns track detection, Angular Core UI/plain Angular classification, product routing, design routing, test routing, generic fallback, and the sequential/parallel question.
+4. **Execute-plan.** Approved plans go through `sdcorejs-execute-plan`; it owns track detection, Angular Core UI/plain Angular classification, AI-agent/product/design/test routing, generic fallback, and the sequential/parallel question.
 5. **Finish gate.** Every code-generation run presents the finish gate before tail steps, even direct one-line requests.
 6. **Evidence before claims.** Never claim pass, built, fixed, or done without running and reading the relevant verification command in the current turn.
 7. **Runtime-localized.** Respond in the user's language; preserve locale-specific marks; keep identifiers and route paths in English.
@@ -170,7 +184,7 @@ At the start of a target-project session:
 | Group | Skills |
 |---|---|
 | SDLC | `sdcorejs-brainstorming`, `sdcorejs-spec`, `sdcorejs-plan` |
-| Execution | `sdcorejs-execute-plan`, track executors, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` |
+| Execution | `sdcorejs-execute-plan`, `sdcorejs-ai-agent`, other track executors, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` |
 | Parallel | `sdcorejs-parallel-dispatch`; workspace isolation lives in `sdcorejs-git (workspace mode)` |
 | Finish | `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)`, `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode as the final read-only gate)` |
 | Utilities | `sdcorejs-explore`, `sdcorejs-git`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, `sdcorejs-documentation` |

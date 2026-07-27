@@ -55,7 +55,10 @@ Read:
 - `spec_context`, including `approved_spec_path`, `approved_spec_hash`,
   `target_root_kind`, `stack_profile`, assumptions, risks, non-goals, and
   approval metadata.
-- Relevant `_refs/sdlc/<track>.md` for angular / nestjs / nextjs.
+- Relevant `_refs/sdlc/<track>.md` for angular / nestjs / nextjs / ai-agent.
+- For ai-agent, also read `_refs/ai-agent/manifest.json`,
+  `_refs/ai-agent/profile-contract.json`, and
+  `_refs/ai-agent/profiles/common.md`.
 - `_refs/shared/testing-philosophy.md` and target stack test ref for test-track plans.
 - Existing `.sdcorejs/docs/product/` ledgers for product-track plans.
 - Directly related approved plans under `.sdcorejs/plans/<track>/`, selected by
@@ -136,7 +139,7 @@ Use numbered steps grouped by phase:
 <2-4 lines from the approved spec>
 
 ## Execution context
-- Track: <angular|nestjs|nextjs|test|product|generic>
+- Track: <ai-agent|angular|nestjs|nextjs|test|product|generic>
 - Target root kind: <target_root_kind>
 - Stack profile: <stack_profile>
 - Coverage approach: <post-hoc|TDD>
@@ -230,6 +233,36 @@ plan_context:
       - <page orchestration, child contract, data mapping, or provider-scope test>
     decomposition_rationale:
       - <why extracted and inline boundaries are meaningful>
+  agent_architecture:
+    required: <true for track ai-agent; false otherwise>
+    not_applicable_reason: <reason when required is false; null otherwise>
+    schema_version: 1
+    engine_profile: <exact manifest engine id>
+    capability_profile: <exact independent manifest capability id>
+    runtime_owner: <application component>
+    target_paths:
+      - <approved path>
+    trusted_context_sources:
+      - <authenticated server/job source>
+    tenant_isolation: <policy>
+    provider_state:
+      store_provider_state: false
+      provider_conversation_enabled: false
+      governance_approval: null
+    tool_contract_paths:
+      - <path>
+    approval_policy: <policy reference>
+    session_policy: <policy reference>
+    evidence_policy: <policy reference>
+    observability_policy: <policy reference>
+    limits: <bounded values>
+    deterministic_eval_commands:
+      - <offline command>
+    live_verification:
+      required: false
+      authorization: null
+    non_goals:
+      - <explicit exclusion>
   verification_strategy:
     package_manager: <npm|pnpm|yarn|bun|unknown>
     scripts_detected:
@@ -334,6 +367,15 @@ Fix the plan before presenting if any checklist item fails:
 - Every non-trivial frontend plan has a complete `frontend_architecture` block
   sourced from `_refs/shared/frontend-architecture.md`; backend-only and trivial
   frontend plans record a concrete `not_applicable_reason`.
+- Every AI-agent plan has a complete `agent_architecture` block sourced from
+  `_refs/sdlc/ai-agent.md`; its two profile IDs resolve independently in the
+  manifest, target paths and dependencies are approved, security-floor fields
+  are complete, deterministic checks are offline, and live checks are
+  separately authorized or explicitly deferred.
+- AI-agent plan review fails generic tools, model/client-owned tenant or
+  permissions, missing exact mutation approval, implicit provider storage,
+  unbounded execution, missing deterministic/security gates, or unapproved
+  dependency/package/lockfile changes.
 - Frontend task paths and file decisions match the approved component tree,
   data flow, service boundaries, provider/registration decisions, public API
   policy, and architecture tests.

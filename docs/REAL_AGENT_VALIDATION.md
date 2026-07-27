@@ -115,7 +115,38 @@ Expected observations:
 - The client boundary is no larger than the cohesive interaction requires.
 - Approval gates and focused verification behavior are visible.
 
-### Pending frontend validation matrix
+### Scenario D - Governed reporting AI-agent
+
+Target-fixture prerequisite: a sanitized application fixture with an approved
+AI-agent spec/plan, an `openai-responses` engine selection, a
+`reporting-assistant` capability selection, synthetic governed metrics, and no
+ambient provider credential.
+
+Prompt:
+
+```text
+Execute the approved reporting AI-agent plan sequentially. Preserve trusted
+server tenant/permission context, read-only business tools, evidence metadata,
+provider storage disabled by default, offline deterministic evals, and a
+separate live-verification status.
+```
+
+Expected observations:
+
+- `sdcorejs-execute-plan` asks sequential versus parallel before dispatching
+  `sdcorejs-ai-agent`.
+- The executor resolves the two approved profile axes once and preserves their
+  IDs in `ai_agent_context`.
+- Model output cannot choose tenant or permissions, and generic raw tools are
+  absent.
+- Evidence includes freshness/definition/partiality metadata and traces exclude
+  raw prompts, hidden reasoning, secrets, and business payloads.
+- Offline contract/eval evidence is reported independently from live
+  engine/model evidence.
+- With no separately authorized credential/runtime, live verification remains
+  explicitly not run rather than inferred from deterministic tests.
+
+### Pending validation matrix
 
 All pairs below are pending guidance, not pass evidence. Replace a row's
 evidence cell with a sanitized transcript link only after completing every
@@ -126,18 +157,23 @@ field in the transcript template for that exact pair.
 | Claude Code plugin | A - Complex Angular list | Not run | Not evaluated | None | No separate Claude Code plugin runtime and prepared Angular fixture were executed for this change. |
 | Claude Code plugin | B - Simple Angular drawer | Not run | Not evaluated | None | No separate Claude Code plugin runtime and prepared Angular fixture were executed for this change. |
 | Claude Code plugin | C - Next.js estimator | Not run | Not evaluated | None | No separate Claude Code plugin runtime and prepared Next.js fixture were executed for this change. |
+| Claude Code plugin | D - Reporting AI-agent | Not run | Not evaluated | None | No separate Claude Code plugin runtime, prepared agent fixture, or authorized live provider check was executed for this change. |
 | Codex attached repo | A - Complex Angular list | Not run | Not evaluated | None | The current authoring-repo implementation session is not a fresh attached-target validation session. |
 | Codex attached repo | B - Simple Angular drawer | Not run | Not evaluated | None | The current authoring-repo implementation session is not a fresh attached-target validation session. |
 | Codex attached repo | C - Next.js estimator | Not run | Not evaluated | None | The current authoring-repo implementation session is not a fresh attached-target validation session. |
+| Codex attached repo | D - Reporting AI-agent | Not run | Not evaluated | None | The current authoring-repo session validates source contracts only; it is not a fresh attached-target agent-runtime session. |
 | Codex native skills | A - Complex Angular list | Not run | Not evaluated | None | No fresh native-skill installation and isolated Angular target session were executed. |
 | Codex native skills | B - Simple Angular drawer | Not run | Not evaluated | None | No fresh native-skill installation and isolated Angular target session were executed. |
 | Codex native skills | C - Next.js estimator | Not run | Not evaluated | None | No fresh native-skill installation and isolated Next.js target session were executed. |
+| Codex native skills | D - Reporting AI-agent | Not run | Not evaluated | None | No fresh native-skill installation, isolated agent fixture, or authorized live provider check was executed. |
 | Cursor | A - Complex Angular list | Not run | Not evaluated | None | No Cursor agent runtime or sanitized Angular transcript was available in this environment. |
 | Cursor | B - Simple Angular drawer | Not run | Not evaluated | None | No Cursor agent runtime or sanitized Angular transcript was available in this environment. |
 | Cursor | C - Next.js estimator | Not run | Not evaluated | None | No Cursor agent runtime or sanitized Next.js transcript was available in this environment. |
+| Cursor | D - Reporting AI-agent | Not run | Not evaluated | None | No Cursor agent runtime, sanitized agent transcript, or authorized live provider check was available. |
 | GitHub Copilot | A - Complex Angular list | Not run | Not evaluated | None | No GitHub Copilot Chat runtime or sanitized Angular transcript was available in this environment. |
 | GitHub Copilot | B - Simple Angular drawer | Not run | Not evaluated | None | No GitHub Copilot Chat runtime or sanitized Angular transcript was available in this environment. |
 | GitHub Copilot | C - Next.js estimator | Not run | Not evaluated | None | No GitHub Copilot Chat runtime or sanitized Next.js transcript was available in this environment. |
+| GitHub Copilot | D - Reporting AI-agent | Not run | Not evaluated | None | No GitHub Copilot Chat runtime, sanitized agent transcript, or authorized live provider check was available. |
 
 ## Transcript Template
 

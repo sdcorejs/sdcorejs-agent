@@ -42,7 +42,8 @@ Priority when several skills match:
 5. Test-only work: `sdcorejs-test`, except failing-test root cause/fix goes to `sdcorejs-debug`.
 6. Dedicated utility intent: `sdcorejs-explore`, `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
 7. Whole app/system build intent: `sdcorejs-solution-builder`.
-8. Confirmed track implementation: `sdcorejs-angular`, `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
+8. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
+   `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
 9. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
 
 ## Tracks
@@ -52,6 +53,7 @@ Priority when several skills match:
 | Angular portal | `sdcorejs-angular` |
 | NestJS backend | `sdcorejs-nestjs` |
 | Next.js site | `sdcorejs-nextjs` |
+| AI-agent application contract | `sdcorejs-ai-agent` |
 | Product / PO traceability | `sdcorejs-product` |
 | Design / FE handoff | `sdcorejs-design` |
 | Tests | `sdcorejs-test` |
@@ -62,6 +64,11 @@ The product track is first-class: feature docs, user stories, acceptance criteri
 The design track is first-class: UI/UX design, wireframes, screen flows, PNG previews, and FE handoff artifacts execute through `sdcorejs-design`.
 
 The test track is first-class: test-only plans execute through `sdcorejs-test`, not through the app write-code skills.
+
+The AI-agent track is first-class only after an approved spec and plan select
+one engine profile and one independent capability profile. Under-specified
+agent ideas return to brainstorming; test, review, debug, documentation, ship,
+and Git intents retain their dedicated owners.
 
 ## Workflow
 
@@ -74,7 +81,7 @@ Request
   -> sdcorejs-spec                (write spec + approval gate + approved spec snapshot)
   -> sdcorejs-plan                (write plan + approval gate + approved plan snapshot)
   -> sdcorejs-execute-plan        (detect track, always ask sequential vs parallel)
-  -> track executor or harness    (angular | nestjs | nextjs | product | design | test | generic)
+  -> track executor or harness    (ai-agent | angular | nestjs | nextjs | product | design | test | generic)
   -> finish gate and mandatory tail
 ```
 
@@ -109,6 +116,8 @@ Request
 - Project summary, code-map, trace-flow, env setup, recovery, persona, or memories: `sdcorejs-explore`.
 - Existing site audit: `sdcorejs-review`.
 - Test request: `sdcorejs-test` for direct test work, or `sdcorejs-brainstorming` first if cases/assertions are not confirmed.
+- Confirmed AI-agent implementation with approved architecture:
+  `sdcorejs-execute-plan`, then `sdcorejs-ai-agent`.
 - Approved plan: `sdcorejs-execute-plan`.
 
 ## Cross-references
@@ -119,5 +128,6 @@ Request
 - `sdcorejs-product`
 - `sdcorejs-design`
 - `sdcorejs-test`
+- `sdcorejs-ai-agent`
 - `sdcorejs-documentation`
 - `sdcorejs-parallel-dispatch`

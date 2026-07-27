@@ -742,5 +742,95 @@
     "prompt": "review requirement coverage and traceability without writing tests",
     "expectedSkill": "sdcorejs-product",
     "phase": 4
+  },
+  {
+    "id": "ai-agent-explicit-approved-reporting",
+    "prompt": "use sdcorejs-ai-agent to execute the approved reporting agent plan",
+    "expectedSkill": "sdcorejs-ai-agent",
+    "phase": 3
+  },
+  {
+    "id": "ai-agent-approved-plan-execution",
+    "prompt": "execute the approved ai-agent plan",
+    "expectedSkill": "sdcorejs-execute-plan",
+    "phase": 3
+  },
+  {
+    "id": "ai-agent-approved-engine-plan-implementation",
+    "prompt": "implement the approved Responses API reporting assistant plan",
+    "expectedSkill": "sdcorejs-execute-plan",
+    "phase": 3
+  },
+  {
+    "id": "ai-agent-confirmed-agents-sdk-crm",
+    "prompt": "implement the approved OpenAI Agents SDK CRM assistant contract",
+    "expectedSkill": "sdcorejs-ai-agent",
+    "phase": 3
+  },
+  {
+    "id": "ai-agent-confirmed-responses-reporting",
+    "prompt": "continue the approved Responses API reporting assistant implementation",
+    "expectedSkill": "sdcorejs-ai-agent",
+    "phase": 3
+  },
+  {
+    "id": "ai-agent-explicit-localized",
+    "prompt": "dung sdcorejs-ai-agent de thuc thi ke hoach reporting agent da duyet",
+    "expectedSkill": "sdcorejs-ai-agent",
+    "phase": 3
+  },
+  {
+    "id": "ai-agent-approved-plan-localized",
+    "prompt": "thuc thi ke hoach ai-agent da duyet",
+    "expectedSkill": "sdcorejs-execute-plan",
+    "phase": 3
+  },
+  {
+    "id": "ai-agent-underspecified-crm",
+    "prompt": "build an AI agent for CRM",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "ai-agent-underspecified-workflow",
+    "prompt": "I want an AI assistant that can update workflows",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "ai-agent-underspecified-reporting-design",
+    "prompt": "help me design an AI reporting assistant",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "ai-agent-underspecified-localized",
+    "prompt": "toi muon xay AI agent nhung yeu cau chua ro",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "ai-agent-test-owner",
+    "prompt": "write eval tests for this existing agent",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 3
+  },
+  {
+    "id": "ai-agent-review-owner",
+    "prompt": "security review this AI agent",
+    "expectedSkill": "sdcorejs-review",
+    "phase": 3
+  },
+  {
+    "id": "ai-agent-debug-owner",
+    "prompt": "debug why this agent selected the wrong tool",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "ai-agent-chatgpt-app-owner",
+    "prompt": "build a ChatGPT App with an MCP widget",
+    "expectedSkill": "sdcorejs-solution-builder",
+    "phase": 3
   }
 ]

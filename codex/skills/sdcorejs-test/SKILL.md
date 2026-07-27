@@ -145,6 +145,22 @@ reason, GREEN command and result, refactor result, and associated diff. RED must
 fail for the intended missing behavior. A compile/config/environment failure is
 blocked, not a valid RED.
 
+## AI-agent context
+
+When the subject carries `ai_agent_context`, verify its approved hashes,
+resolved engine/capability profiles, contract paths, target paths, and
+offline/live evidence boundary before authoring cases. Preserve the context in
+`test_context`; do not reinterpret profile policy from implementation prose.
+
+Test server-side denial independently from model behavior: untrusted/model
+tenant selection, missing permissions, raw tools, stale/unbound approval,
+self-approval, cross-tenant session reuse, provider storage without governance,
+invented evidence, unsafe trace payloads, and exhausted limits must fail
+deterministically. Run offline contract fixtures and deterministic gates
+separately from any authorized live behavioral check. Never promote an offline
+pass to live engine/model compatibility evidence, and never read ambient
+credentials merely to discover whether a live check is possible.
+
 ## Parallel and downstream handoff
 
 Use one writer for shared runner config, persona catalogs, environment files,

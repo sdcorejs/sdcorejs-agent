@@ -1,0 +1,169 @@
+{
+  "agent_contract": {
+    "schema_version": 1,
+    "contract_id": "golden-sdk-reporting",
+    "contract_version": "1.0.0",
+    "status": "approved",
+    "engine_profile": "openai-agents-sdk",
+    "capability_profile": "reporting-assistant",
+    "objective": {
+      "outcome": "Generate a synthetic quarterly service report through a runner-owned loop.",
+      "non_goals": ["mutation", "provider persistence", "live verification"]
+    },
+    "model_policy": {
+      "selection_owner": "application",
+      "model_id_source": "project-policy",
+      "fallback_preserves_contract": true,
+      "silent_fallback_allowed": false,
+      "billing_source_owner": "application"
+    },
+    "trusted_context": {
+      "source": "authenticated-server",
+      "required_fields": ["tenantId", "actorId", "principalId", "permissions", "locale", "correlationId", "accessScope", "environment", "approvalAuthority", "billingSource", "providerSelection", "credentialSelection"],
+      "model_may_define_or_override": false
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {"report_request": {"type": "string"}},
+      "max_bytes": 4096,
+      "redaction_required": true
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {"report": {"type": "object"}},
+      "max_bytes": 65536,
+      "redaction_required": true
+    },
+    "data": {
+      "store_provider_state": false,
+      "provider_conversation_enabled": false,
+      "provider_storage_governance_approved": false,
+      "secret_serialization_allowed": false
+    },
+    "tools": [
+      {
+        "name": "getServiceReportMetrics",
+        "version": "1.0.0",
+        "purpose": "Read governed synthetic service-report metrics.",
+        "business_shaped": true,
+        "input_schema": {"type": "object", "additionalProperties": false},
+        "output_schema": {"type": "object", "additionalProperties": false},
+        "side_effect": "read",
+        "risk": "low",
+        "required_permissions": ["report.read"],
+        "tenant_scope_binding": "trusted-context",
+        "server_authorization": true,
+        "approval": "not-required",
+        "preview": false,
+        "idempotency": false,
+        "resource_version": false,
+        "optimistic_concurrency": false,
+        "evidence": {"required": true},
+        "timeout_ms": 3000,
+        "retry": {"class": "safe-read", "max_attempts": 2},
+        "fixture_ids": ["service-report-metrics-v1"],
+        "audit_category": "service-report.read",
+        "redaction": true,
+        "deterministic_error": true
+      }
+    ],
+    "guardrails": {
+      "input": true,
+      "tool_input": true,
+      "tool_output": true,
+      "final_output": true,
+      "server_authorization_independent": true
+    },
+    "approvals": {
+      "exact_input_binding": true,
+      "preview_hash": true,
+      "resource_version": true,
+      "approval_expiry": true,
+      "self_approval_allowed": false,
+      "fingerprint_verified": true,
+      "tool_binding": true,
+      "tenant_binding": true,
+      "actor_binding": true,
+      "permission_scope_binding": true,
+      "resource_ids_binding": true,
+      "authority_binding": true
+    },
+    "session": {
+      "owner": "application",
+      "cross_tenant_reuse": "forbidden",
+      "tenant_actor_binding": true,
+      "optimistic_concurrency": true,
+      "approval_checkpoint_separate": true,
+      "retention_policy": "fixture-ttl",
+      "deletion_policy": "fixture-delete",
+      "compaction_policy": "redacted-summary",
+      "resume_policy": "revalidate-current-context",
+      "replay_policy": "reads-only",
+      "concurrent_turn_policy": "version-conflict",
+      "cancellation_policy": "durable-terminal",
+      "outage_policy": "safe-stop",
+      "cross_device_policy": "re-authenticate"
+    },
+    "evidence": {
+      "invented_evidence_allowed": false,
+      "data_as_of_required": true,
+      "partial_stale_disclosure_required": true,
+      "semantic_definition_version_required": true,
+      "authoritative_source_required": true,
+      "source_reference_required": true,
+      "retrieval_time_required": true,
+      "tenant_provenance_required": true,
+      "zero_vs_unavailable_required": true,
+      "material_assumptions_required": true
+    },
+    "observability": {
+      "metadata_only_logging": true,
+      "raw_prompt_logging": false,
+      "raw_tool_payload_logging": false,
+      "chain_of_thought_logging": false,
+      "secret_payload_logging": false,
+      "durable_audit_separate": true,
+      "usage_finops_separate": true,
+      "pricing_policy_source": "versioned-external",
+      "budget_enforcement": true
+    },
+    "governance": {
+      "owner": "service-reporting",
+      "classification": "synthetic",
+      "retention_policy": "fixture-only",
+      "exception_requires_approval": true
+    },
+    "limits": {
+      "max_turns": 8,
+      "max_tool_calls": 5,
+      "max_handoff_depth": 0,
+      "max_duration_ms": 12000,
+      "max_output_tokens": 1400
+    },
+    "reliability": {
+      "read_retries": 1,
+      "ambiguous_write_retry": false,
+      "timeouts_required": true,
+      "cancellation_defined": true,
+      "reconciliation_defined": true
+    },
+    "evals": {
+      "deterministic_gate_required": true,
+      "offline_required": true,
+      "security_thresholds": {
+        "unauthorized_actions": 0,
+        "cross_tenant_disclosures": 0,
+        "unapproved_side_effects": 0,
+        "secret_leakage": 0
+      },
+      "fixture": "sdk-reporting-golden-v1"
+    },
+    "change_control": {
+      "approved_spec_hash": "synthetic-spec-hash",
+      "approved_plan_hash": "synthetic-plan-hash",
+      "rollback_owner": "application"
+    }
+  }
+}

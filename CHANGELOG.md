@@ -7,6 +7,16 @@ package is private and is not published to npm.
 
 ## Unreleased
 
+- Add the first-class `sdcorejs-ai-agent` track with two independent lifecycle
+  engines, twelve business capability profiles, application-owned trust/tool/
+  approval/state/evidence/tracing/usage contracts, offline validation, golden
+  and adversarial fixtures, and no bundled provider runtime or dependency.
+- Route confirmed AI-agent architecture through the approved spec/plan flow
+  while returning under-specified agent ideas to brainstorming and preserving
+  test, review, debug, documentation, ship, and Git ownership.
+- Publish the AI-agent boundary across entrypoints, adoption guidance, the
+  public skill catalog, deterministic repository checks, and generated mirrors;
+  report live provider verification separately from offline evidence.
 - Complete the governed frontend architecture contract from planning through
   execution and review, including project-convention discovery, explicit
   component/state/service/provider/public-API decisions, and design handoff.

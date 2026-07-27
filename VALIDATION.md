@@ -2,11 +2,11 @@
 
 Current validation snapshot for the SDCoreJS SDLC Agent repository.
 
-Date: 2026-07-13
+Date: 2026-07-26
 
 ## Current Layout
 
-- `skills/**/*.md` - 23 dispatchable source skills.
+- `skills/**/*.md` - 24 dispatchable source skills.
 - `_refs/**` - reference data loaded on demand.
 - `.claude/skills/<name>/SKILL.md` - generated Claude Code mirror.
 - `plugin/skills/<name>/SKILL.md` - generated Claude plugin mirror.
@@ -18,10 +18,10 @@ Date: 2026-07-13
 
 | Bucket | Count |
 |---|---:|
-| Source skills | 23 |
-| Claude Code mirror skills | 23 |
-| Plugin mirror skills | 23 |
-| Codex mirror skills | 23 |
+| Source skills | 24 |
+| Claude Code mirror skills | 24 |
+| Plugin mirror skills | 24 |
+| Codex mirror skills | 24 |
 
 ## Workflow Inventory
 
@@ -31,6 +31,7 @@ Date: 2026-07-13
 | Spec gate | `sdcorejs-spec` |
 | Plan gate | `sdcorejs-plan` |
 | Execution gate | `sdcorejs-execute-plan` |
+| AI-agent executor | `sdcorejs-ai-agent` |
 | App executors | `sdcorejs-angular`, `sdcorejs-nestjs`, `sdcorejs-nextjs` |
 | Product executor | `sdcorejs-product` |
 | Design executor | `sdcorejs-design` |
@@ -38,6 +39,66 @@ Date: 2026-07-13
 | Documentation executor | `sdcorejs-documentation` |
 | Parallel | `sdcorejs-parallel-dispatch` |
 | Finish | `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)` when durable knowledge surfaced |
+
+## First-class AI-agent track evidence - 2026-07-26 working tree
+
+Evidence target:
+
+- Branch: `agent/first-class-ai-agent-track`.
+- Base and current HEAD: `5b6028a47ff1f9ab4efb9ae8b7ca06a27a65a352`.
+- State: uncommitted first-class `sdcorejs-ai-agent` track implementation,
+  generated mirrors, deterministic fixtures, routing integration, public docs,
+  approved workflow artifacts, and review-driven validator hardening.
+- This is dirty-diff evidence, not a release, commit, CI, or live-provider
+  compatibility claim.
+
+### Commands and observed results
+
+| Command | Exit | Result and relevant observation |
+|---|---:|---|
+| `node --test test/e2e/ai-agent-track-contract.test.mjs` (review-repair run) | 1 | 7/8 passed; one terminology assertion exposed `approval suspension/resume` instead of the normalized `approval resume` contract. |
+| `node --test test/e2e/ai-agent-track-contract.test.mjs` (after repair) | 0 | 8/8 contract, registry, validator, workflow propagation, mutation-guard, and package-boundary tests passed. |
+| `node --test test/e2e/ai-agent-track-contract.test.mjs test/e2e/skill-pack-runner.test.mjs test/e2e/entrypoint-smoke.test.mjs` (first repair run) | 1 | 42/44 passed; the new approved-engine-plan fixture exposed routing to `sdcorejs-plan` instead of `sdcorejs-execute-plan`. |
+| Same focused routing command (second repair run) | 1 | 42/44 passed; the English continuation was fixed, but a localized plan-authoring fixture regressed. |
+| Same focused routing command (final repair run) | 0 | 44/44 passed, including approved-plan implementation and localized plan-authoring/plan-execution boundaries. |
+| `node --test test/e2e/ai-agent-track-contract.test.mjs` (validator review repair) | 0 | 8/8 passed after adding fail-closed identity, objective, tool-permission, evidence-policy, and bounded-retry validation; all four golden contracts and at least 27 invalid cases passed. |
+| `npm run test:e2e:phase1` (post-review repair) | 0 | 31/31 deterministic skill, policy, localization, hygiene, and routing contract tests passed. |
+| `npm run test:e2e:phase3` (post-review repair) | 0 | 5/5 entrypoint and AI-agent boundary tests passed. |
+| `npm run sync:skills` | 0 | Mirrored all 24 skills, the full `_refs` tree, and the Cursor rule into their generated distribution targets. |
+| `npm run check:text-hygiene` | 0 | 894 text files scanned successfully. |
+| `npm run check:skills` | 0 | Node checker reported 24 skills plus refs and the Cursor rule in sync. |
+| `npm run check:skills:ps` | 0 | PowerShell checker reported the same 24-skill/ref/Cursor parity. |
+| `npm run check:nestjs-pack` | 0 | Canonical NestJS pack validation passed. |
+| `npm run test:e2e` (short caller timeout) | 124 | The caller closed the output pipe before TAP completion, producing `EPIPE`; this is not a test pass or assertion failure. |
+| `npm run test:e2e:nestjs:golden` (post-review first extended attempt) | 1 | The simple project passed; the enterprise case reached its 300-second test timeout without an assertion/build failure. A targeted enterprise retry passed 1/1 in about 94 seconds. |
+| `npm run test:e2e` (post-review extended aggregate) | 0 | Repository 121/121; NestJS 24 passed with one intentional Linux-only skip on Windows; generated simple and enterprise golden projects 2/2. |
+| `npm run build:site` | 0 | Astro built both static pages successfully. |
+| `npm run check:audit` | 0 | Root production dependency audit found 0 vulnerabilities. |
+| `npm run check:site:audit` | 0 | Site production dependency audit found 0 vulnerabilities. |
+| `quick_validate.py codex/skills/sdcorejs-ai-agent` and `quick_validate.py plugin/skills/sdcorejs-ai-agent` | 0 | Both generated skill packages passed the host `skill-creator` validator. |
+
+### Evidence boundaries
+
+- The AI-agent validator and fixtures are offline, deterministic, and use Node
+  standard-library modules only. They validate contracts and fail-closed
+  boundaries, including typed identity/status/objective fields and non-empty
+  business-tool permissions/evidence/retry policy; they do not call a provider.
+- No live OpenAI Responses API or Agents SDK run was authorized or performed.
+  Credential selection, model availability, provider compatibility, live
+  streaming/tool behavior, billing, and provider-side retention therefore
+  remain external verification items.
+- Full target-app phase 4 and real NestJS container checks were not run in this
+  change. The configured aggregate did run both generated NestJS golden
+  projects.
+- `package.json` changed only to add the AI-agent contract test to the existing
+  repository E2E command. No dependency entry, package manager, root
+  `package-lock.json`, or `site/package-lock.json` changed.
+- No separate product ledger, user guide, durable backlog, or memory artifact
+  was required: this is a skill-pack capability addition documented by the
+  approved spec/plan, public adoption/validation docs, and repository summary.
+- Final handoff must report the diff-sensitive verification rerun after this
+  evidence section was written. That rerun does not convert missing live
+  provider or opt-in environment evidence into a pass.
 
 ## Frontend architecture close-out evidence - 2026-07-13 working tree
 
@@ -99,6 +160,7 @@ actually produced evidence.
 | Static validation | Source layout, frontmatter, exact refs, generated mirrors, markdown fences, text hygiene, and language policy are internally consistent. | `npm run check:text-hygiene`, `npm run check:skills`, and phase 1 E2E tests. | None beyond keeping CI green for the target commit. |
 | Deterministic prompt-routing validation (local canonical routing) | The canonical local runner selects the expected `sdcorejs-*` skill for fixture prompts without calling an LLM. | `test/e2e/fixtures/prompt-evals.json` plus phase 1 tests. | Add fixtures when new user intents are introduced. |
 | Entrypoint-aware routing validation | Each loaded Claude Code, Codex, Cursor, or Copilot profile contributes derived routing policy; mutation tests prove one changed profile can fail independently. | `test/e2e/entrypoint-smoke.test.mjs`. | This proves deterministic profile-text participation, not live runtime behavior. |
+| AI-agent contract validation | Engine/profile registries, agent/tool schemas, trusted context, approval bindings, state, evidence, observability, limits, eval thresholds, and invalid mutations agree offline. | `_refs/ai-agent/validate-agent-contract.mjs` and `test/e2e/ai-agent-track-contract.test.mjs`; four golden contracts and at least 27 invalid cases. | Run separately authorized live provider checks for each claimed engine/model/tool integration; deterministic conformance is not provider compatibility. |
 | Parallel protocol simulation | Selected contract, topology/DAG, path/resource, failure/fan-in, repair/evidence, and state-machine rules are exercised through the distributed deterministic validator. | `_refs/orchestration/parallel-protocol.mjs` via `test/e2e/parallel-dispatch-protocol.test.mjs`; includes synthetic boundary inputs plus real temporary Git worktree, result-commit, conflict, and rollback behavior. | This is partial local simulation. External runtimes must still invoke the validator and enforce the skill instructions, capabilities, and repository-specific commands during real sessions. |
 | CLI smoke validation | Local adapter code can detect or simulate supported CLI surfaces without requiring live Claude/Codex execution. | Phase 2 tests use fake `codex` and `claude` executables. | Run real CLI smoke tests in a prepared workstation when changing install instructions. |
 | Full target-app validation | The golden target-app generator can run the heavyweight E2E path in a prepared environment. | Historical evidence only: <https://github.com/sdcorejs/sdcorejs-agent/actions/runs/28798513991>. It does not validate the 2026-07-13 working tree. | Re-run for the exact release commit and attach that successful run to the release notes. |
@@ -135,8 +197,8 @@ arbitrary domain automatically.
 
 | Check | Expected |
 |---|---|
-| Source skill count | 23 |
-| Mirror counts | 23 in `.claude`, `plugin`, and `codex` |
+| Source skill count | 24 |
+| Mirror counts | 24 in `.claude`, `plugin`, and `codex` |
 | Text hygiene | No hidden/control/bidi Unicode in tracked text files |
 | Frontmatter | Required `name` and `description`; optional `allowed-tools`; no duplicate keys; no unsupported frontmatter shape |
 | Skill names | Unique `sdcorejs-*` kebab-case names |
@@ -148,6 +210,7 @@ arbitrary domain automatically.
 | Product track | `sdcorejs-product` exists and product docs/traceability route to it |
 | Design track | `sdcorejs-design` exists and design docs/wireframes/PNG previews route to it |
 | Test track | `sdcorejs-test` exists and `sdcorejs-execute-plan` routes test-only plans to it |
+| AI-agent track | `sdcorejs-ai-agent` exists; engine and capability profiles remain independent and approved-plan continuation stays owned by `sdcorejs-execute-plan` |
 | Generic harness | `sdcorejs-execute-plan` documents fallback execution |
 | Language policy | Source skills/refs/mirrors stay English-only; explicit localization prompt fixtures may use non-English input |
 
@@ -162,6 +225,7 @@ npm run check:text-hygiene
 npm run check:skills
 npm run check:skills:ps
 npm run check:nestjs-pack
+node --test test/e2e/ai-agent-track-contract.test.mjs
 npm run test:e2e:nestjs
 npm run test:e2e:nestjs:golden
 npm run test:e2e:nestjs:containers

@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-execute-plan
-description: Execute an approved plan snapshot. Use after sdcorejs-plan approval or when asked to execute, run, generate from, or continue an approved plan for Angular, NestJS, Next.js, React, Node, fullstack, product, design, documentation, workflow, test, or generic/general work. Detects track/profile, preserves contract/write scope/package-manager evidence, asks sequential vs parallel, and invokes parallel-dispatch when approved. Runtime-localized.
+description: Execute an approved plan snapshot. Use after sdcorejs-plan approval or when asked to execute, run, generate from, or continue an approved plan for AI-agent, Angular, NestJS, Next.js, React, Node, fullstack, product, design, documentation, workflow, test, or generic/general work. Detects track/profile, preserves contract/write scope/package-manager evidence, asks sequential vs parallel, and invokes parallel-dispatch when approved. Runtime-localized.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent, TodoWrite
 ---
 
@@ -140,6 +140,7 @@ Prefer explicit track metadata in the plan. Otherwise infer from project signals
 | product | product docs, PO docs, user stories, acceptance criteria, UAT, traceability matrix, requirement/implementation/test gap review | `sdcorejs-product` |
 | design | design docs, wireframes, mockups, UI/UX, screen flow, PNG previews, FE handoff, story-to-screen mapping | `sdcorejs-design` |
 | test | test-only plan, `*.spec.*`, e2e, Playwright/Cypress/Robot/Jest, inspector export | `sdcorejs-test` |
+| ai-agent | approved `track: ai-agent` plus complete `agent_architecture` with one manifest engine and one independent capability | `sdcorejs-ai-agent` |
 | generic | unsupported stack, docs/scripts/config changes, mixed non-track work | generic harness fallback |
 
 #### Angular project classification preflight
@@ -209,6 +210,17 @@ navigation, or content folders for `plain-nextjs`.
 
 For mixed full-stack plans, classify as role-split and prepare to invoke `sdcorejs-parallel-dispatch`. If the plan came from `sdcorejs-solution-builder`, preserve the solution-root contract: product docs in `product/`, design handoff in `design/`, backend in `backend/`, frontend in `frontend/`, cross-stack tests in `test/`, and traceability/evidence in `.sdcorejs/`.
 
+#### AI-agent architecture preflight
+
+For approved `track: ai-agent`, require `plan_context.agent_architecture` and
+apply `_refs/sdlc/ai-agent.md`. Verify `approved_spec_hash` and
+`approved_plan_hash`, then resolve `engine_profile` and `capability_profile`
+exactly once from `_refs/ai-agent/manifest.json`. Block and return to
+`sdcorejs-plan` when either profile is missing, the architecture block is
+incomplete, provider storage lacks explicit governance, paths exceed approved
+scope, or the selected capability weakens
+`_refs/ai-agent/profiles/common.md`.
+
 #### Shared frontend architecture gate
 
 Before the execution-mode question, detect frontend scope from the approved
@@ -275,6 +287,7 @@ Dispatch by detected track:
 - product -> `sdcorejs-product`
 - design -> `sdcorejs-design`
 - test -> `sdcorejs-test`
+- ai-agent -> `sdcorejs-ai-agent`
 - generic or `plain-angular` -> run the harness fallback below
 
 Pass the approved plan as the contract. The executor must not add scope without returning to `sdcorejs-plan`.
@@ -416,7 +429,7 @@ execution_context:
 - `sdcorejs-plan` - approved execution contract
 - `sdcorejs-parallel-dispatch` - decides whether parallel is safe and executes safe fan-out or role-split work
 - `sdcorejs-git (workspace mode)` - isolates work when requested or needed
-- `sdcorejs-angular`, `sdcorejs-nestjs`, `sdcorejs-nextjs`, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` - track executors
+- `sdcorejs-ai-agent`, `sdcorejs-angular`, `sdcorejs-nestjs`, `sdcorejs-nextjs`, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` - track executors
 - `sdcorejs-ship (verify-before-done mode)` - acceptance verification gate
 - `_refs/shared/frontend-architecture.md` - mandatory non-trivial frontend
   architecture preflight and execution contract

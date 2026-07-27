@@ -390,6 +390,18 @@ Treat context evidence as stale if files changed after it was produced or if
 checks when evidence is stale. Do not substitute review, test, or debug evidence
 for an AC unless it actually verifies that criterion.
 
+## AI-agent delivery evidence
+
+When `ai_agent_context` is present, freshness-check its approved spec/plan
+hashes, resolved profiles, contract/target paths, validator fixtures,
+deterministic evals, server-denial tests, review/repair evidence, and current
+diff association. Keep offline conformance, simulated behavioral evidence, and
+authorized live engine/model evidence as separate rows. Missing live evidence
+is an explicit deferral, never an inferred pass. Any profile drift, provider
+storage without governance, raw tool exposure, stale approval behavior,
+cross-tenant reuse, invented evidence, unsafe trace payload, or weakened
+zero-tolerance gate blocks readiness.
+
 ## Secret And PII Redaction
 
 Never echo secret values from `.env`, CI files, shell output, source files,
