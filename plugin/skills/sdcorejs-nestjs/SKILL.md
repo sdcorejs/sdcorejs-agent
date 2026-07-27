@@ -69,7 +69,8 @@ so would make the route surface implicit.
 
 ## Completion
 
-Create a progress checklist that includes the finishing steps (tests, review, code-documentation, technical-doc, user-guide).
+Create a progress checklist that includes the finishing steps (tests,
+optional behavior-preserving simplification, review, code-documentation, technical-doc, user-guide).
 Present the consolidated finish
 gate from `_refs/shared/finish-gate.md`, then run
 `sdcorejs-documentation (documentation-gate mode)` with

@@ -80,8 +80,13 @@ const groups = [
     title: "Daily support skills",
     label: "Common helpers",
     intro:
-      "These are direct helper skills for project discovery, Git artifacts, review, debugging, and final delivery gates.",
+      "These are direct helper skills for bounded code refinement, project discovery, Git artifacts, review, debugging, and final delivery gates.",
     skills: [
+      {
+        name: "sdcorejs-simplify",
+        role: "Behavior-preserving changed-source refinement utility.",
+        use: "Use to analyze or simplify a bounded current diff or explicit executable-source scope after a green baseline; it never changes prompts, strings, configuration, public contracts, dependencies, or framework boundaries.",
+      },
       {
         name: "sdcorejs-explore",
         role: "Understand codebase, map architecture, trace flows, persona, recovery context, and durable memories.",
@@ -179,7 +184,7 @@ const groups = [
       >
       <h2>Know which skill to call, and which ones run behind the scenes</h2>
       <p class="lead">
-        The pack has 24 dispatchable skills. The first groups are the ones most
+        The pack has 25 dispatchable skills. The first groups are the ones most
         people invoke directly. The later groups are specialized guards,
         packaging steps, or context helpers that often run as part of a larger
         flow.

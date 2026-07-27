@@ -28,7 +28,8 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
 2. Read `../_refs/orchestration/tail/repair-loop.md` completely.
 3. If the source is `sdcorejs-review`, preserve the original `review_context` exactly, including `track`, `track_profile`, dimensions, mode, `file_scope`, refs loaded/skipped, probes run/skipped, and package manager.
    Preserve any `test_context`, `test_status`, `test_evidence`,
-   `ui_capture_context`, `ai_agent_context`, and `artifact_context` exactly as source evidence;
+   `ui_capture_context`, `ai_agent_context`, `simplify_context`, and
+   `artifact_context` exactly as source evidence;
    append new run/case evidence after repair instead of overwriting or upgrading
    stale/blocked results.
 4. Record the working-tree baseline and a visible Repair ledger before edits.
@@ -64,3 +65,9 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
   evidence rules, limits, or security thresholds to make a finding disappear.
   A required contract/policy change returns through `sdcorejs-spec` and
   `sdcorejs-plan`; only plan-scoped implementation defects may be repaired.
+- When `simplify_context` is present, preserve the original
+  `simplify_context` exactly. Do not turn behavior-preserving refinement into a
+  semantic refactor, widen its scope, or change protected contracts. Every
+  repair write makes affected simplification/test/review evidence stale and
+  requires the source-specific verification to run again. Architecture or
+  public-behavior changes return to spec/plan.

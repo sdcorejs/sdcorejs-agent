@@ -414,7 +414,7 @@ Suggested PR body sections:
 - Risks and rollback
 - Notes for reviewer
 
-For `ai_agent_context`, preserve redacted IDs/hashes/paths/evidence/deferrals; classify raw traces, serialized run state, prompts, tool payloads, approval tokens, provider responses, credentials, tenant data, and diagnostics as `local_only` or prohibited.
+For `ai_agent_context`, preserve redacted IDs/hashes/paths/evidence/deferrals; classify raw traces, serialized run state, prompts, tool payloads, approval tokens, provider responses, credentials, tenant data, and diagnostics as `local_only` or prohibited. For `simplify_context`, consume the final diff association and file list, but do not stage runtime-only `simplify_context`, temporary baselines/snippets, raw prompts, or sensitive evidence; require current ship and branch-ready evidence after every write.
 
 ## Push Safety
 

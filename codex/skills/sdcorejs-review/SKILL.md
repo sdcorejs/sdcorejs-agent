@@ -381,6 +381,19 @@ deterministic security gates, dependency/runtime ownership, and honest live
 claims. Treat any silent weakening of the common floor as a blocking
 security-policy finding and `user-decision`, not an automatic style repair.
 
+## Simplification review
+
+When `simplify_context` is present, preserve it and review the selected
+files/hunks against the recorded baseline and preserved surfaces. Check for
+scope expansion, protected file or protected content changes, public-contract
+drift, string/prompt changes, framework metadata changes, auth/tenant/permission
+drift, side-effect or ordering drift, over-simplification, stale test evidence,
+and dependency/config churn.
+
+Treat missing post-change verification, changed protected literals, an
+unreverted failed pass, or `behavior_verification: not-verified` as blocking.
+Review remains read-only and does not widen the simplification scope.
+
 ## Rules
 
 ### MUST DO

@@ -87,6 +87,9 @@ repair_source:
   review_context:
     source: sdcorejs-review
     # Paste or reference the original review_context block without rewriting it.
+  simplify_context:
+    source: sdcorejs-simplify
+    # Preserve the original runtime context without rewriting its scope or contract.
 ```
 
 Rules:
@@ -102,6 +105,13 @@ Rules:
   only the failed criterion.
 - If the source is `linter`, `typecheck`, or `test`, re-run the discovered
   original commands where possible.
+- If `simplify_context` is present, preserve its original selected files/hunks,
+  preserved surfaces, baseline commands, and pass ledger. A repair write makes
+  affected simplification and test/review evidence stale. Re-run the affected
+  focused commands and do not start another simplification pass automatically.
+- Do not widen a behavior-preserving simplification into an architecture,
+  public-contract, dependency, configuration, prompt, or agent-contract change.
+  Return such work to spec/plan.
 - If the source is `manual`, there may be no source-specific automated
   re-review, but build/lint/test verification must still run where available
   and the summary must ask the user to confirm behavioral correctness.
@@ -385,6 +395,8 @@ those gates with any verification deferral recorded.
 
 - Preserve `repair_source` before editing.
 - Preserve `review_context` exactly when the source is `sdcorejs-review`.
+- Preserve `simplify_context` exactly when present and invalidate affected
+  evidence after every repair write.
 - Run working-tree preflight before the first pass.
 - Keep the Repair ledger visible and current.
 - Classify every finding before touching code.

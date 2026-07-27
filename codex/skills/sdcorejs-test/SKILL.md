@@ -161,6 +161,19 @@ separately from any authorized live behavioral check. Never promote an offline
 pass to live engine/model compatibility evidence, and never read ambient
 credentials merely to discover whether a live check is possible.
 
+## Simplification context
+
+When `simplify_context` is present, consume its selected files/hunks, diff
+scope hash, preserved surfaces, baseline commands, and pass ledger. Keep
+pre-simplification and post-simplification command evidence as distinct
+append-only runs. Rerun the affected focused commands after every successful
+write pass and associate the result with the current diff.
+
+Do not edit expectations, fixtures, snapshots, prompts, strings, or contracts
+to legitimize a behavior change. Authored tests without a passing run are not a
+green baseline. A simplification write makes prior affected test evidence
+stale; only a current post-simplification run can restore it.
+
 ## Parallel and downstream handoff
 
 Use one writer for shared runner config, persona catalogs, environment files,

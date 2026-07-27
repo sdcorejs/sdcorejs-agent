@@ -21,6 +21,8 @@ sdcorejs-brainstorming
 -> sdcorejs-execute-plan
 -> executor: ai-agent | Core UI angular | nestjs | nextjs | product | design | test | generic harness
 -> finish gate and tail chain
+   tests -> optional sdcorejs-simplify -> affected focused tests
+   -> review/repair -> documentation/task/memory -> ship gates
 ```
 
 `sdcorejs-execute-plan` always asks sequential vs parallel before executing. Parallel execution requires `sdcorejs-parallel-dispatch`.
@@ -59,6 +61,12 @@ debug requests retain their dedicated owners. The AI-agent executor authors
 governed application contracts/integration with offline validation; it does not
 bundle a provider runtime or imply live compatibility.
 
+`sdcorejs-simplify` is a workflow utility, not an executor track. Use it only
+for current-diff or explicit executable-source refinement with preserved
+behavior. Broad refactors return to planning; bugs, findings, tests,
+documentation/prompts, performance, dependencies, and public contracts retain
+their dedicated owners.
+
 ## Rules
 
 - Read skill frontmatter, then the selected skill body.
@@ -70,6 +78,8 @@ bundle a provider runtime or imply live compatibility.
 - Use `sdcorejs-product` for product docs, user stories, acceptance criteria, UAT, and traceability audits.
 - Use `sdcorejs-design` for UI/UX design, wireframes, PNG previews, and FE handoff from user stories.
 - Use `sdcorejs-explore` for codebase understanding, architecture maps, flow tracing, project summaries, and setup discovery.
+- Use `sdcorejs-simplify` for bounded behavior-preserving refinement of changed
+  executable source after a green baseline.
 - Use `sdcorejs-ship` for final gate, verify-before-done, branch-ready checks, ready-to-merge, ship, and release.
 - Use `sdcorejs-git` for commit, PR, changelog, and release notes.
 - Present the finish gate after every code-generation run.
@@ -90,6 +100,7 @@ bundle a provider runtime or imply live compatibility.
 - `skills/shared/sdlc/03-plan.md`
 - `skills/shared/sdlc/04-execute-plan.md`
 - `skills/shared/workflow/explore.md`
+- `skills/shared/workflow/simplify.md`
 - `skills/shared/workflow/ship.md`
 - `skills/shared/workflow/git.md`
 - `skills/tracks/product/sdcorejs-product.md`

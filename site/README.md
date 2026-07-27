@@ -35,7 +35,8 @@ in a stakeholder presentation.
 6. **Spec gate** - explicit approval before planning.
 7. **Plan gate** - file-by-file plan and sequential/parallel choice.
 8. **Track dispatch** - product, design, angular, nestjs, nextjs, test, generic.
-9. **Finish gate** - ordered mandatory tail from tests/review to docs/tasks/memories.
+9. **Finish gate** - tests, documentation choice, opt-in behavior-preserving
+   simplification, review, then the ordered docs/tasks/memories and ship tail.
 10. **Memory handoff** - auto-docs, task tracker, memories, persona.
 11. **Claude setup** - install and smoke prompts.
 12. **Codex setup** - AGENTS.md-compatible usage and smoke prompts.
@@ -53,7 +54,7 @@ slide navigation.
 
 ## Current facts reflected by the site
 
-- 24 dispatchable skills.
+- 25 dispatchable skills.
 - 7 executor tracks: product, design, angular, nestjs, nextjs, test, generic.
 - 2 explicit approval gates: spec and plan.
 - 12 deterministic E2E smoke checks.

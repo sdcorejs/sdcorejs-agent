@@ -398,6 +398,19 @@ storage without governance, raw tool exposure, stale approval behavior,
 cross-tenant reuse, invented evidence, unsafe trace payload, or weakened
 zero-tolerance gate blocks readiness.
 
+## Simplification delivery evidence
+
+When `simplify_context` is present, freshness-check its diff-scope hash,
+selected files/hunks, preserved surfaces, baseline commands, pass ledger,
+post-change commands, and current test/review association.
+
+Block readiness when any simplification write has stale post-simplification evidence,
+`behavior_verification: not-verified`, protected strings/prompts/contracts
+changed, public API/config/dependency drift occurred outside approved scope, a
+failed pass was not reverted, or affected test/review evidence is stale.
+`behavior_verification: limited` requires an explicit risk and deferral; never
+describe it as verified behavior preservation.
+
 ## Secret And PII Redaction
 
 Never echo secret values from `.env`, CI files, shell output, source files,

@@ -89,6 +89,16 @@ test('phase 3: every entrypoint advertises the first-class AI-agent boundary', a
   }
 });
 
+test('phase 3: every entrypoint advertises the bounded simplify utility boundary', async () => {
+  const profiles = await loadEntrypointProfiles(new URL('../..', import.meta.url));
+  for (const [name, profile] of Object.entries(profiles)) {
+    assert.match(profile.text, /sdcorejs-simplify/, `${name} exposes the utility`);
+    assert.match(profile.text, /behavior-preserving|preserv(?:e|ing) behavior/i, `${name} preserves behavior`);
+    assert.match(profile.text, /current diff|changed source|explicit.*scope/i, `${name} exposes bounded scope`);
+    assert.match(profile.text, /utility|not a track/i, `${name} keeps simplify outside tracks`);
+  }
+});
+
 async function loadPromptEvals() {
   const file = new URL('./fixtures/prompt-evals.json', import.meta.url);
   return JSON.parse(await readFile(file, 'utf8'));

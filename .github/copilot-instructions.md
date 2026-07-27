@@ -22,6 +22,8 @@ Request
        always ask sequential vs parallel
        dispatch ai-agent | Core UI angular | nestjs | nextjs | product | design | test | generic harness
   -> finish gate and tail chain
+       tests -> optional sdcorejs-simplify -> affected focused tests
+       -> review/repair -> documentation/task/memory -> ship gates
 ```
 
 Track executors:
@@ -40,6 +42,12 @@ Under-specified AI-agent requests return to brainstorming. Test, review, and
 debug intent keep their dedicated owners. The AI-agent track authors governed
 application contracts/integration and offline evidence; it does not bundle a
 provider runtime or imply live verification.
+
+`sdcorejs-simplify` is a dedicated workflow utility, not a track. Route only
+bounded current-diff or explicit executable-source refinement that preserves
+behavior. Broad refactors return to planning; bugs, review findings, tests,
+documentation/prompts, performance, dependencies, and public-contract changes
+retain their owners.
 
 ## Mandatory Execution Discipline
 
@@ -61,7 +69,11 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - `sdcorejs-execute-plan` always asks sequential vs parallel before execution.
 - Product docs, user stories, acceptance criteria, UAT, and traceability use `sdcorejs-product`.
 - UI/UX design, screen flows, wireframes, PNG previews, and FE handoff use `sdcorejs-design`.
-- Explore codebase context with `sdcorejs-explore`; write comments, user guides, and technical docs through `sdcorejs-documentation`; verify and ship through `sdcorejs-ship`; commit, PR, changelog, and release notes through `sdcorejs-git`.
+- Simplify eligible changed source without behavior changes through
+  `sdcorejs-simplify`; explore codebase context with `sdcorejs-explore`; write
+  comments, user guides, and technical docs through
+  `sdcorejs-documentation`; verify and ship through `sdcorejs-ship`; commit,
+  PR, changelog, and release notes through `sdcorejs-git`.
 - Parallel execution requires `sdcorejs-parallel-dispatch`. Direct approved-plan
   splitting may select it; unapproved write work returns to planning. Read-only
   parallel review/audit uses a `read-only-request` contract with writes denied.
@@ -89,6 +101,7 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - NestJS code: `_refs/nestjs/write-code/*`, `_refs/nestjs/core-catalog.md`
 - Next.js code: `_refs/nextjs/build-website/write-code/*`
 - Testing: `_refs/shared/testing-philosophy.md`
+- Simplification: `_refs/simplify/**`
 - Project context: `_refs/shared/project-context.md`
 - Artifact lifecycle: `_refs/shared/artifact-lifecycle.md`
 - Tasks protocol: `_refs/shared/tasklist.md`

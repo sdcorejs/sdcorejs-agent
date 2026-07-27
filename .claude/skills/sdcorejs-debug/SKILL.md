@@ -364,6 +364,19 @@ authority, enabling provider storage, bypassing approval, increasing limits
 without policy, or downgrading a deterministic security assertion. Such a
 contract change returns to `sdcorejs-spec`/`sdcorejs-plan`.
 
+## Simplification diagnostics
+
+When available, consume and preserve `simplify_context`, including the
+pre-simplification and post-simplification commands, selected files/hunks,
+diff-scope hash, preserved surfaces, and pass ledger. Use the smallest sanitized
+reproduction to distinguish a pre-existing failure from a simplification
+regression.
+
+Do not expose protected strings, prompts, AI payloads, credentials, customer
+data, or raw logs. Do not fix a regression by widening scope, changing a
+protected contract, or updating tests to match drift. Return semantic,
+architectural, or public-behavior changes to spec/plan.
+
 ## Step 10 - Verify And Tail Chain
 
 After the fix:

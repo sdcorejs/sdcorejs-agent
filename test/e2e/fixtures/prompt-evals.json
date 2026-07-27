@@ -832,5 +832,119 @@
     "prompt": "build a ChatGPT App with an MCP widget",
     "expectedSkill": "sdcorejs-solution-builder",
     "phase": 3
+  },
+  {
+    "id": "simplify-explicit-current-diff",
+    "prompt": "use sdcorejs-simplify on the current diff",
+    "expectedSkill": "sdcorejs-simplify",
+    "phase": 3
+  },
+  {
+    "id": "simplify-current-typescript",
+    "prompt": "simplify the recently changed TypeScript code without changing behavior",
+    "expectedSkill": "sdcorejs-simplify",
+    "phase": 3
+  },
+  {
+    "id": "simplify-modified-function",
+    "prompt": "clean up this modified function for clarity while preserving its exact output",
+    "expectedSkill": "sdcorejs-simplify",
+    "phase": 3
+  },
+  {
+    "id": "simplify-analyze-current-source",
+    "prompt": "analyze simplification opportunities in the current changed source files",
+    "expectedSkill": "sdcorejs-simplify",
+    "phase": 3
+  },
+  {
+    "id": "simplify-explicit-localized",
+    "prompt": "dùng sdcorejs-simplify trên current diff",
+    "expectedSkill": "sdcorejs-simplify",
+    "phase": 3
+  },
+  {
+    "id": "simplify-behavior-localized",
+    "prompt": "đơn giản hóa code vừa sửa nhưng giữ nguyên hành vi",
+    "expectedSkill": "sdcorejs-simplify",
+    "phase": 3
+  },
+  {
+    "id": "simplify-analyze-localized",
+    "prompt": "phân tích cơ hội đơn giản hóa trong file vừa sửa",
+    "expectedSkill": "sdcorejs-simplify",
+    "phase": 3
+  },
+  {
+    "id": "simplify-modernization-localized",
+    "prompt": "hiện đại hóa file vừa sửa nhưng giữ nguyên hành vi",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "simplify-whole-repo-planning",
+    "prompt": "refactor the whole repository",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "simplify-architecture-planning",
+    "prompt": "simplify the architecture of this system",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "simplify-public-api-planning",
+    "prompt": "change the public API to make it simpler",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "simplify-approved-refactor-plan",
+    "prompt": "execute the approved refactor plan",
+    "expectedSkill": "sdcorejs-execute-plan",
+    "phase": 3
+  },
+  {
+    "id": "simplify-readme-owner",
+    "prompt": "simplify this README",
+    "expectedSkill": "sdcorejs-documentation",
+    "phase": 3
+  },
+  {
+    "id": "simplify-prompt-owner",
+    "prompt": "rewrite this LLM prompt to be shorter",
+    "expectedSkill": "sdcorejs-documentation",
+    "phase": 3
+  },
+  {
+    "id": "simplify-test-owner",
+    "prompt": "simplify these test cases",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 3
+  },
+  {
+    "id": "simplify-bug-owner",
+    "prompt": "fix this bug by simplifying the logic",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "simplify-findings-owner",
+    "prompt": "apply the complexity findings from review",
+    "expectedSkill": "sdcorejs-repair-loop",
+    "phase": 3
+  },
+  {
+    "id": "simplify-review-owner",
+    "prompt": "review this code for complexity",
+    "expectedSkill": "sdcorejs-review",
+    "phase": 3
+  },
+  {
+    "id": "simplify-dependency-owner",
+    "prompt": "remove unused dependencies",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
   }
 ]
