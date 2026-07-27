@@ -87,8 +87,10 @@ npm run check:skills
 npm run test:e2e
 ```
 
-The root package is private and is not published to npm. Do not switch docs or
-CI to Yarn unless the package metadata and lockfile are intentionally changed.
+The private root Node workspace uses npm only as its development and validation
+toolchain; the root project is not distributed through npm. Do not switch docs
+or CI to Yarn unless the tooling manifest and lockfile are intentionally
+changed.
 
 ## Full E2E Has No Runs
 

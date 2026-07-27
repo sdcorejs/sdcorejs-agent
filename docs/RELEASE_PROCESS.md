@@ -1,7 +1,8 @@
 # Release Process
 
 Use this checklist when cutting an adopted `sdcorejs-agent` release. The root
-package is private; Git tags and GitHub releases are the distribution anchors.
+Node workspace is private and is not distributed through npm. Git tags and
+GitHub releases are the distribution anchors.
 
 ## 1. Preflight
 
@@ -50,8 +51,9 @@ surfaces explicitly.
 ## 4. Changelog And Version
 
 - Move relevant `CHANGELOG.md` items from `Unreleased` into the release heading.
-- Bump `package.json` only when the source package version is part of the
-  adopted release decision.
+- Keep the root, site, marketplace, and plugin versions as synchronized
+  repository/plugin release metadata. Bump them together only when the adopted
+  release decision requires a new version.
 - Re-run mirror sync after any source skill, ref, or entrypoint change.
 
 ## 5. Tag
@@ -94,7 +96,7 @@ gh release create v<version> --title "v<version>" --notes-file <release-notes-fi
 
 ## 8. Post-Release Smoke
 
-After publishing:
+After publishing the GitHub Release:
 
 - Install from the tagged release using each supported distribution path that is
   claimed in the notes.

@@ -2,8 +2,21 @@
 
 All notable changes to this repository should be documented here.
 
-This project uses GitHub tags/releases for adopted versions. The root npm
-package is private and is not published to npm.
+This project uses GitHub tags/releases for adopted versions. The private root
+Node workspace is not distributed through npm.
+
+## Unreleased
+
+- npm publication is permanently retired for the root repository; remove the
+  publication-only `files` and `keywords` metadata while retaining
+  `private: true`.
+- npm remains the development and validation toolchain; `name` and `version`
+  remain synchronized repository/plugin release metadata.
+- Add deterministic regression coverage for root manifest, lifecycle,
+  workflow, authentication, documentation, dependency, version, and skill
+  inventory boundaries.
+- Skill behavior, routing, installation paths, mirrors, and versions were not
+  changed.
 
 ## 0.6.0
 

@@ -42,9 +42,7 @@ const globalPass = async () => ({ status: 'PASS', associated_head_or_diff: 'inte
 
 test('skill invokes a distributed deterministic protocol validator', async () => {
   const skill = await readFile(new URL('../../skills/orchestration/parallel-dispatch.md', import.meta.url), 'utf8');
-  const packageJson = JSON.parse(await readFile(new URL('../../package.json', import.meta.url), 'utf8'));
 
-  assert.ok(packageJson.files.includes('_refs'));
   assert.match(skill, /_refs\/orchestration\/parallel-protocol\.mjs/);
 });
 
