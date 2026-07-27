@@ -125,7 +125,7 @@ Steps 1–4 are sequential (each depends on the previous). Steps 5–8 can be pa
 
 ### MANDATORY FINISH GATE (always — standalone trigger OR full SDLC flow)
 
-**STOP and present the consolidated finish gate from [`../_refs/shared/finish-gate.md`](../_refs/shared/finish-gate.md) before running ANY tail step.** UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add a page", "add a section") — NOT only inside the spec→plan flow. The gate surfaces tests / user-guide / technical-doc / review choices with defaults so the user always knows these steps exist and can opt out of new user/technical docs. "Small change" is not a reason to skip the gate.
+**STOP and present the consolidated finish gate from [`../_refs/shared/finish-gate.md`](../_refs/shared/finish-gate.md) before running ANY tail step.** UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add a page", "add a section") — NOT only inside the spec→plan flow. The gate surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review choices with defaults so the user always knows these steps exist and can opt out of new user/technical docs. "Small change" is not a reason to skip the gate.
 
 Then run the tail-call chain, honoring the gate's answers (skip = omit that step; everything not skipped runs):
 
@@ -180,8 +180,8 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 ## Rules
 
 ### MUST DO
-- Show a live progress checklist with **TodoWrite** from the START of generation — one checkbox item per planned unit (each page / block / pack step) PLUS the finishing steps (tests, review, code-documentation, technical-doc, user-guide). Keep exactly one item `in_progress`; flip it to `completed` the moment that unit is done and start the next. Update after EACH task, never batch at the end — this is how the user tracks progress. Create it before writing the first file.
-- Present the **MANDATORY FINISH GATE** ([`../_refs/shared/finish-gate.md`](../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / user-guide / technical-doc / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
+- Show a live progress checklist with **TodoWrite** from the START of generation — one checkbox item per planned unit (each page / block / pack step) PLUS the finishing steps (tests, optional behavior-preserving simplification, review, code-documentation, technical-doc, user-guide). Keep exactly one item `in_progress`; flip it to `completed` the moment that unit is done and start the next. Update after EACH task, never batch at the end — this is how the user tracks progress. Create it before writing the first file.
+- Present the **MANDATORY FINISH GATE** ([`../_refs/shared/finish-gate.md`](../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
 - Read the approved plan BEFORE dispatching — never invent scope
 - Apply `../_refs/shared/frontend-architecture.md` before non-trivial frontend
   generation and derive page, feature-local, shared, client-island, data-boundary,

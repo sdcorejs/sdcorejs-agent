@@ -39,6 +39,29 @@ gates. The consuming application owns dependencies, credentials, runtime
 deployment, trusted identity/tenant context, tools, data/state, and any
 separately authorized live compatibility or behavioral verification.
 
+## Behavior-Preserving Simplification
+
+Use `sdcorejs-simplify` as a workflow utility, not a track, when the request
+names recently changed executable source or an explicit file/function/path and
+requires clarity or maintainability without behavior changes.
+
+- `analyze-current-diff` and `analyze-explicit-scope` are read-only.
+- `apply-current-diff` and `apply-explicit-scope` require a current green
+  focused baseline and rerun the same commands afterward.
+- Broad repository/architecture/public-contract refactors return to the normal
+  brainstorming -> spec -> plan flow.
+- Bugs, review findings, tests, documentation/prompts, performance, and
+  dependency work retain their dedicated owners.
+- Documentation, prompts, configuration, protected strings, tests/fixtures/
+  snapshots, public contracts, dependencies, and framework or AI-agent
+  contracts are excluded from direct simplification.
+- The finish gate presents simplification as an opt-in choice after the test
+  baseline; it never runs silently.
+
+Focused tests provide coverage evidence, not proof that arbitrary
+transformations are semantically identical. Record limited or unavailable
+behavior verification explicitly.
+
 ## Fast-Fix Path
 
 The fast-fix path exists for low-risk, one-topic changes. It reduces ceremony
@@ -90,3 +113,6 @@ This matrix tracks supported surfaces and the evidence expected for each.
 - For AI-agent adoption, confirm provider storage defaults off, generic raw
   tools are absent, mutation approval/state/evidence/tracing/limits are
   application-owned, and offline results are not presented as live evidence.
+- For simplification adoption, confirm the current-diff/explicit-scope boundary,
+  protected content, green baseline, post-change evidence, and
+  `simplify_context` freshness are enforced.

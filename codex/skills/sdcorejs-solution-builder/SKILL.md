@@ -177,7 +177,7 @@ Drive these steps in order. For the non-tech user, narrate only the plain-langua
      new dependencies, live provider verification, or a new solution-root
      directory.
 
-   If subagents are unavailable, or Mode B escalates, use the sequential fallback: freeze the same contract, run `sdcorejs-nestjs` with `profile=simple` and `topology=single solution-root` under `backend/`, run `sdcorejs-angular` against the frozen contract and design handoff under `frontend/`, run `sdcorejs-test` under `test/`, then run `sdcorejs-review`, `sdcorejs-repair-loop` if needed, `sdcorejs-product` for final traceability, and `sdcorejs-ship (verify-before-done mode)`. Do not skip the same acceptance criteria just because the fallback is sequential.
+   If subagents are unavailable, or Mode B escalates, use the sequential fallback: freeze the same contract, run `sdcorejs-nestjs` with `profile=simple` and `topology=single solution-root` under `backend/`, run `sdcorejs-angular` against the frozen contract and design handoff under `frontend/`, run `sdcorejs-test` under `test/`, present the visible opt-in `sdcorejs-simplify` decision and rerun affected focused tests after any simplification write, then run `sdcorejs-review`, `sdcorejs-repair-loop` if needed, `sdcorejs-product` for final traceability, and `sdcorejs-ship (verify-before-done mode)`. Do not skip the same acceptance criteria just because the fallback is sequential.
 
 6. **Record the product docs + ledger** *(`sdcorejs-product`)* - Update `product/` and `.sdcorejs/docs/product/` after implementation with implementation map, test map, UAT checklist, and open gaps. To the user: "recording what was agreed, what was built, and what still needs checking."
 

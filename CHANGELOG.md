@@ -7,6 +7,17 @@ package is private and is not published to npm.
 
 ## Unreleased
 
+- Add `sdcorejs-simplify` as a first-class workflow utility for bounded
+  current-diff or explicit executable-source analysis/refinement with preserved
+  behavior, protected strings/prompts/config/contracts, green baseline and
+  post-change verification, runtime-only `simplify_context`, and no Git or
+  dependency mutation.
+- Add visible opt-in simplification to the four-step finish gate between the
+  test baseline and review, rerun affected focused tests after writes, and pass
+  freshness evidence through test, review, repair, debug, ship, and Git owners.
+- Add narrow deterministic routing, localized input fixtures, mutation guards,
+  synchronized 25-skill mirrors, and public catalog/adoption guidance without a
+  package-version bump or release claim.
 - Add the first-class `sdcorejs-ai-agent` track with two independent lifecycle
   engines, twelve business capability profiles, application-owned trust/tool/
   approval/state/evidence/tracing/usage contracts, offline validation, golden

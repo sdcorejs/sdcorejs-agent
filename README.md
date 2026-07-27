@@ -42,6 +42,8 @@ Request
   -> executor
        ai-agent | angular | nestjs | nextjs | product | design | test | generic harness
   -> finish gate and tail chain
+       sdcorejs-test -> optional sdcorejs-simplify -> affected focused tests
+       -> sdcorejs-review / repair-loop
        write-producing docs/task/memory artifacts first
        -> sdcorejs-ship (verify-before-done mode)
        -> sdcorejs-ship (branch-ready mode as the final read-only gate)
@@ -59,6 +61,16 @@ tools, require trusted server identity and tenant scope, bind approvals to exact
 inputs/versions, separate application state, require evidence and redacted
 tracing/audit/usage data, and run offline deterministic evals. Live engine/model
 verification is always reported separately.
+
+`sdcorejs-simplify` is a daily workflow utility, not an implementation track.
+It analyzes or applies bounded refinements to recently changed executable
+source or an explicit source scope while preserving observable behavior.
+Apply mode requires a green focused baseline and reruns the same verification;
+analyze mode is read-only. Prompts, docs, configuration, strings, tests,
+fixtures, snapshots, public contracts, dependencies, and framework/AI-agent
+contracts are protected. The finish gate presents simplification as a visible
+opt-in step; it never auto-runs, and current tests are evidence rather than a
+general semantic-equivalence proof.
 
 ## Quick Start
 
@@ -147,7 +159,7 @@ transcripts, see:
 ## Repo Layout
 
 ```text
-skills/                 source skills, 24 dispatchable skill files
+skills/                 source skills, 25 dispatchable skill files
 _refs/                  source reference docs
 .claude/skills/         generated Claude mirror
 plugin/skills/          generated Claude plugin mirror
@@ -209,6 +221,9 @@ review rules.
   AI-agent ideas return to brainstorming, while test, review, and debug requests
   keep their dedicated owners.
 - Codebase understanding, summaries, flow tracing, and local setup discovery use `sdcorejs-explore`.
+- Bounded behavior-preserving refinement of recently changed or explicitly
+  scoped executable source uses `sdcorejs-simplify`; broad refactors return to
+  planning.
 - Final gate, acceptance verification, branch readiness, dependency-update delivery, ready-to-merge, and release readiness use `sdcorejs-ship`.
 - Commit, PR, changelog, release notes, and Git artifact creation use `sdcorejs-git`.
 - Unknown stacks can still run through the generic harness fallback.

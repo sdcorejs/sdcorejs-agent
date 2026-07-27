@@ -82,10 +82,10 @@ function markdownSection(source, heading) {
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
 
-  assert.equal(pack.sourceSkills.length, 24);
-  assert.equal(pack.claudeMirrorSkills.length, 24);
-  assert.equal(pack.pluginMirrorSkills.length, 24);
-  assert.equal(pack.codexMirrorSkills.length, 24);
+  assert.equal(pack.sourceSkills.length, 25);
+  assert.equal(pack.claudeMirrorSkills.length, 25);
+  assert.equal(pack.pluginMirrorSkills.length, 25);
+  assert.equal(pack.codexMirrorSkills.length, 25);
   // Core UI per-component docs are fetched on-demand (not committed), so this count
   // dropped from ~150 to ~69. Floor still catches accidental mass-deletion of refs.
   assert.ok(pack.referenceDocs.length >= 60, `referenceDocs=${pack.referenceDocs.length}`);
@@ -140,7 +140,7 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
     assert.match(text, /_refs\/shared\/finish-gate\.md/, `${name} presents the finish gate`);
     assert.match(text, /_refs\/documentation\/gate\.md/, `${name} runs documentation gate`);
     assert.match(text, /\.sdcorejs\/documentation\/preferences\.md/, `${name} supports saved documentation preferences`);
-    assert.match(text, /finishing steps \(tests, review, code-documentation, technical-doc, user-guide\)/, `${name} progress checklist includes technical-doc`);
+    assert.match(text, /finishing steps \(tests,\s+optional behavior-preserving simplification, review, code-documentation, technical-doc, user-guide\)/, `${name} progress checklist includes simplify and technical-doc`);
     assert.match(text, /sdcorejs-ship \(verify-before-done mode\)/, `${name} runs acceptance verification`);
     assert.match(text, /sdcorejs-ship \(branch-ready mode\)/, `${name} runs branch-ready`);
     assert.match(text, /_refs\/orchestration\/tail\/auto-docs\.md/, `${name} writes auto-docs`);
@@ -603,7 +603,9 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   }
 
   const finishGate = await readFile(new URL('../../_refs/shared/finish-gate.md', import.meta.url), 'utf8');
-  assert.match(finishGate, /Finish step 1\/3: tests/);
+  assert.match(finishGate, /Finish step 1\/4: tests/);
+  assert.match(finishGate, /Finish step 3\/4: behavior-preserving code simplification/);
+  assert.match(finishGate, /Finish step 4\/4: review/);
   assert.match(finishGate, /Documentation approval gate/);
   assert.match(finishGate, /single combined gate/);
   assert.match(finishGate, /Skip new user\/technical docs/);

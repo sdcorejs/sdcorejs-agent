@@ -111,6 +111,7 @@ const SKILL_HINTS = [
   { skill: 'sdcorejs-product', words: ['product', 'po', 'story', 'stories', 'acceptance', 'criteria', 'requirement', 'requirements', 'traceability', 'uat', 'ledger', 'gap', 'implementation', 'implement', 'complete'] },
   { skill: 'sdcorejs-design', words: ['design', 'ui', 'ux', 'screen', 'wireframe', 'mockup', 'png', 'preview', 'handoff', 'flow', 'flows', 'story', 'stories'] },
   { skill: 'sdcorejs-documentation', words: ['documentation', 'docs', 'doc', 'document', 'code-documentation', 'docstring', 'doc-comment', 'comment', 'comments', 'jsdoc', 'tsdoc', 'api', 'function', 'functions', 'class', 'classes', 'guide', 'user-guide', 'end-user', 'manual', 'technical', 'taskid', 'ticket', 'issue', 'record', 'save', 'convert', 'standardize', 'rewrite', 'improve', 'structure'] },
+  { skill: 'sdcorejs-simplify', words: ['simplify', 'simplification', 'refine', 'refinement', 'clean-up', 'cleanup', 'clarity', 'maintainability', 'current-diff', 'behavior-preserving'] },
   { skill: 'sdcorejs-explore', words: ['explore', 'summary', 'overview', 'project', 'codebase', 'repo', 'system', 'map', 'architecture', 'trace', 'flow', 'setup', 'env', 'environment', 'resume', 'recover', 'context', 'persona', 'memory', 'memories', 'remember', 'harvest'] },
   { skill: 'sdcorejs-review', words: ['review', 'audit', 'security', 'performance', 'accessibility', 'a11y', 'architecture', 'scored', 'full', 'comprehensive'] },
   { skill: 'sdcorejs-ship', words: ['verify', 'acceptance', 'criteria', 'final', 'gate', 'branch', 'ready', 'ship', 'push', 'release', 'tag', 'merge', 'dependency', 'dependencies', 'package', 'outdated', 'audit', 'bump'] },
@@ -205,6 +206,20 @@ const PRIORITY_RULES = [
       hasAny(tokens, ['approved', 'approve', 'plan', 'snapshot']) &&
       hasAny(tokens, ['execute', 'run', 'continue', 'resume', 'implement', 'generate']) &&
       !hasAny(tokens, ['test', 'tests', 'review'])
+  },
+  {
+    skill: 'sdcorejs-brainstorming',
+    when: ({ prompt, tokens }) => hasBroadSimplifyPlanningIntent(prompt, tokens)
+  },
+  {
+    skill: 'sdcorejs-simplify',
+    when: ({ prompt, tokens }) => hasDirectSimplifyIntent(prompt, tokens)
+  },
+  {
+    skill: 'sdcorejs-brainstorming',
+    when: ({ prompt, tokens }) =>
+      hasSimplifyIntent(prompt, tokens) &&
+      !hasCompetingSimplifyOwnerIntent(prompt, tokens)
   },
   {
     skill: 'sdcorejs-test',
@@ -388,10 +403,17 @@ export function dispatchPrompt(pack, prompt) {
   const scored = pack.sourceSkills
     .map((skill) => ({
       skill,
-      score: skill.name === 'sdcorejs-ai-agent'
-        && !hasConfirmedAiAgentImplementationIntent(prompt.toLowerCase(), promptTokens)
-        ? 0
-        : scoreSkill(skill, promptTokens)
+      score:
+        (
+          skill.name === 'sdcorejs-ai-agent'
+          && !hasConfirmedAiAgentImplementationIntent(prompt.toLowerCase(), promptTokens)
+        ) ||
+        (
+          skill.name === 'sdcorejs-simplify'
+          && !hasDirectSimplifyIntent(prompt.toLowerCase(), promptTokens)
+        )
+          ? 0
+          : scoreSkill(skill, promptTokens)
     }))
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score || a.skill.name.localeCompare(b.skill.name));
@@ -667,6 +689,160 @@ function hasRepairLoopIntent(prompt, tokens) {
   );
 }
 
+function hasDirectSimplifyIntent(prompt, tokens) {
+  if (!hasSimplifyIntent(prompt, tokens)) return false;
+  if (hasCompetingSimplifyOwnerIntent(prompt, tokens)) return false;
+  if (!hasBoundedSimplifyScope(prompt, tokens)) return false;
+  return hasBehaviorPreservationIntent(prompt, tokens) || hasAnalyzeSimplifyIntent(prompt, tokens);
+}
+
+function hasSimplifyIntent(prompt, tokens) {
+  return (
+    hasAny(tokens, [
+      'simplify',
+      'simplification',
+      'simpler',
+      'refine',
+      'refinement',
+      'cleanup',
+      'clean-up',
+    ]) ||
+    /\bclean\s+up\b/.test(prompt) ||
+    hasLocalizedSimplifyIntent(prompt)
+  );
+}
+
+function hasLocalizedSimplifyIntent(prompt) {
+  return /\bdon\s+gian\s+hoa\b/.test(normalizePromptText(prompt));
+}
+
+function hasLocalizedBehaviorPreservationIntent(prompt) {
+  return /\bgiu\s+nguyen\s+hanh\s+vi\b/.test(normalizePromptText(prompt));
+}
+
+function hasLocalizedAnalyzeSimplifyIntent(prompt) {
+  const normalized = normalizePromptText(prompt);
+  return /\bphan\s+tich\b/.test(normalized) || /\bco\s+hoi\b/.test(normalized);
+}
+
+function hasLocalizedCompetingSimplifyIntent(prompt) {
+  const normalized = normalizePromptText(prompt);
+  return (
+    /\btoi\s+uu(?:\s+hoa)?\b/.test(normalized) ||
+    hasLocalizedModernizationIntent(prompt)
+  );
+}
+
+function hasLocalizedModernizationIntent(prompt) {
+  return /\bhien\s+dai\s+hoa\b/.test(normalizePromptText(prompt));
+}
+
+function hasBoundedSimplifyScope(prompt, tokens) {
+  return (
+    hasAny(tokens, [
+      'current-diff',
+      'diff',
+      'hunk',
+      'hunks',
+      'recently',
+      'modified',
+      'changed',
+      'function',
+      'method',
+      'file',
+      'files',
+      'path',
+      'source',
+      'typescript',
+      'javascript',
+    ]) ||
+    /\bcurrent\s+(?:changed\s+)?(?:diff|source|code)\b/.test(prompt) ||
+    /\brecently\s+(?:changed|modified)\b/.test(prompt) ||
+    /\bthis\s+(?:modified|changed)\s+(?:function|method|file|code)\b/.test(prompt) ||
+    /\bcode\s+vua\s+sua\b/.test(prompt) ||
+    (
+      tokens.has('code') &&
+      tokens.has('previous') &&
+      hasAny(tokens, ['fix', 'repair'])
+    )
+  );
+}
+
+function hasBehaviorPreservationIntent(prompt, tokens) {
+  return (
+    (hasAny(tokens, ['preserve', 'preserving', 'unchanged']) && hasAny(tokens, ['behavior', 'output', 'semantics'])) ||
+    /\bwithout\s+chang(?:e|ing)\s+(?:observable\s+)?behaviou?r\b/.test(prompt) ||
+    /\bno\s+(?:functional|behavioral)\s+change\b/.test(prompt) ||
+    /\bpreserv(?:e|ing)\s+(?:its\s+)?(?:exact\s+)?(?:behavior|output|semantics)\b/.test(prompt) ||
+    hasLocalizedBehaviorPreservationIntent(prompt)
+  );
+}
+
+function hasAnalyzeSimplifyIntent(prompt, tokens) {
+  return (
+    hasAny(tokens, ['analyze', 'analyse', 'opportunities']) ||
+    /\breport\s+(?:simplification|refinement)\s+opportunities\b/.test(prompt) ||
+    /\bread[- ]only\b/.test(prompt) ||
+    hasLocalizedAnalyzeSimplifyIntent(prompt)
+  );
+}
+
+function hasBroadSimplifyPlanningIntent(prompt, tokens) {
+  if (hasLocalizedModernizationIntent(prompt)) return true;
+  if (!hasSimplifyIntent(prompt, tokens) && !tokens.has('refactor')) return false;
+  if (
+    hasAny(tokens, ['approved', 'snapshot']) &&
+    hasAny(tokens, ['execute', 'run', 'continue', 'implement'])
+  ) {
+    return false;
+  }
+
+  return (
+    /\b(?:whole|entire|all)\s+(?:the\s+)?(?:repository|repo|codebase|system)\b/.test(prompt) ||
+    hasAny(tokens, ['architecture', 'schema', 'migration']) ||
+    /\bpublic\s+(?:api|contract|type)\b/.test(prompt) ||
+    /\b(module|framework)\s+boundar(?:y|ies)\b/.test(prompt)
+  );
+}
+
+function hasCompetingSimplifyOwnerIntent(prompt, tokens) {
+  return (
+    hasDirectTestWorkIntent(prompt, tokens) ||
+    hasDocumentationIntent(prompt, tokens) ||
+    hasRepairLoopIntent(prompt, tokens) ||
+    hasReviewIntent(prompt, tokens) ||
+    hasDependencyDeliveryIntent(prompt, tokens) ||
+    hasGitArtifactIntent(prompt, tokens) ||
+    hasShipVerificationIntent(prompt, tokens) ||
+    hasLocalizedCompetingSimplifyIntent(prompt) ||
+    hasAny(tokens, [
+      'bug',
+      'debug',
+      'failing',
+      'failure',
+      'error',
+      'wrong',
+      'flaky',
+      'performance',
+      'optimize',
+      'optimization',
+      'dependency',
+      'dependencies',
+      'package',
+      'architecture',
+      'schema',
+      'migration',
+    ]) ||
+    (
+      tokens.has('root-cause') &&
+      !hasBehaviorPreservationIntent(prompt, tokens)
+    ) ||
+    /\bpublic\s+(?:api|contract|type)\b/.test(prompt) ||
+    /\b(?:ai[- ]agent|llm)\b.*\b(?:prompt|instruction|tool schema|schema)\b/.test(prompt) ||
+    /\b(?:prompt|instruction|tool schema)\b.*\b(?:ai[- ]agent|llm)\b/.test(prompt)
+  );
+}
+
 function hasUnderSpecifiedAiAgentIntent(prompt, tokens) {
   if (!hasAiAgentSubject(prompt, tokens)) return false;
   if (hasDedicatedAiOwnerIntent(prompt, tokens)) return false;
@@ -809,6 +985,11 @@ function hasDocumentationIntent(prompt, tokens) {
       'docs',
       'doc',
       'document',
+      'readme',
+      'prompt',
+      'prompts',
+      'prose',
+      'instructions',
       'code-documentation',
       'docstring',
       'doc-comment',
@@ -848,15 +1029,19 @@ function tokenizeWithAliases(text) {
 
 function tokenize(text) {
   const tokens = new Set();
-  const normalized = text
-    .toLowerCase()
-    .replaceAll('đ', 'd')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
+  const normalized = normalizePromptText(text);
   for (const token of normalized.match(/[a-z0-9-]+/g) ?? []) {
     if (!STOP_WORDS.has(token)) tokens.add(token);
   }
   return tokens;
+}
+
+function normalizePromptText(text) {
+  return text
+    .toLowerCase()
+    .replaceAll('đ', 'd')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
 }
 
 function toPath(rootUrlOrPath) {

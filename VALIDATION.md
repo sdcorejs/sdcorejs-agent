@@ -2,11 +2,11 @@
 
 Current validation snapshot for the SDCoreJS SDLC Agent repository.
 
-Date: 2026-07-26
+Date: 2026-07-27
 
 ## Current Layout
 
-- `skills/**/*.md` - 24 dispatchable source skills.
+- `skills/**/*.md` - 25 dispatchable source skills.
 - `_refs/**` - reference data loaded on demand.
 - `.claude/skills/<name>/SKILL.md` - generated Claude Code mirror.
 - `plugin/skills/<name>/SKILL.md` - generated Claude plugin mirror.
@@ -18,10 +18,10 @@ Date: 2026-07-26
 
 | Bucket | Count |
 |---|---:|
-| Source skills | 24 |
-| Claude Code mirror skills | 24 |
-| Plugin mirror skills | 24 |
-| Codex mirror skills | 24 |
+| Source skills | 25 |
+| Claude Code mirror skills | 25 |
+| Plugin mirror skills | 25 |
+| Codex mirror skills | 25 |
 
 ## Workflow Inventory
 
@@ -37,8 +37,54 @@ Date: 2026-07-26
 | Design executor | `sdcorejs-design` |
 | Test executor | `sdcorejs-test` |
 | Documentation executor | `sdcorejs-documentation` |
+| Simplification utility | `sdcorejs-simplify` |
 | Parallel | `sdcorejs-parallel-dispatch` |
 | Finish | `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)` when durable knowledge surfaced |
+
+## Simplify workflow utility evidence - 2026-07-27 working tree
+
+Evidence target:
+
+- Branch and current HEAD: `main` at
+  `c8fdf152e87153d8a0dd64921a66df5b8d6ea933`, matching `origin/main`.
+- State: uncommitted `sdcorejs-simplify` workflow utility, four-step finish
+  gate, routing and downstream evidence integration, deterministic tests,
+  generated mirrors, public docs, and change-scoped spec/plan artifacts.
+- Inventory moved from the clean 24-skill baseline to 25 canonical and 25
+  skills in each generated distribution.
+- This is local dirty-diff evidence, not a commit, CI result, release, live
+  model/tool compatibility claim, or arbitrary semantic-equivalence proof.
+
+### Commands and observed results
+
+| Command | Exit | Result and relevant observation |
+|---|---:|---|
+| `node --test test/e2e/simplify-skill-contract.test.mjs` (RED baseline) | 1 | 1/12 passed and 11/12 failed because the skill, refs, routing, finish integration, and mirrors did not exist yet. |
+| `node --test test/e2e/simplify-skill-contract.test.mjs` (implemented contract) | 0 | 12/12 canonical, scope/protection, stack, verification, finish, routing, mutation, mirror, and dependency-boundary tests passed. |
+| `node --test test/e2e/skill-pack-runner.test.mjs` | 0 | 31/31 repository skill, source-language, routing, and finish invariants passed after repairing two exact contract assertions. |
+| `node --test test/e2e/entrypoint-smoke.test.mjs` | 0 | 6/6 Codex, Claude, Copilot, and Cursor entrypoint checks passed. |
+| `npm run sync:skills` | 0 | Mirrored 25 skills, the complete `_refs` tree, and the Cursor rule. |
+| `npm run check:text-hygiene` | 0 | 915 text files passed hidden/control/bidi and reusable-source language checks. |
+| `npm run check:skills` and `npm run check:skills:ps` | 0 | Node and PowerShell checkers reported 25 skills plus refs and Cursor in sync. |
+| `quick_validate.py codex/skills/sdcorejs-simplify` and `quick_validate.py plugin/skills/sdcorejs-simplify` | 0 | Both generated skill packages passed the host `skill-creator` validator. |
+| `npm run test:e2e:repository` | 0 | 134/134 repository tests passed. |
+| `npm run check:nestjs-pack` | 0 | Canonical NestJS pack validation passed. |
+| `npm run test:e2e` | 0 | Repository 134/134; NestJS 24 passed with one intentional Linux-only skip on Windows; generated simple and enterprise golden projects 2/2. |
+| `npm run build:site` | 0 | Astro built both static pages successfully. |
+| `npm run check:audit` and `npm run check:site:audit` | 0 | Root and site production dependency audits each found 0 vulnerabilities. |
+| `node _refs/shared/artifact-lifecycle.mjs --root . --change-ref sdcorejs-simplify-20260727 --owner sdcorejs-plan --mode commit` (review pre-repair) | 1 | Correctly reported `ambiguous` because the two draft execution docs lacked lifecycle frontmatter. |
+| Same artifact closure command after the scoped metadata repair | 0 | All four spec/plan artifacts are `required_with_change`; closure is `complete` with no unknown, missing, invalid, or sensitive paths. |
+
+### Evidence boundaries
+
+- Container E2E was not run because this workflow/docs/routing change does not
+  modify generated container behavior; the existing NestJS build and golden
+  suites are the applicable generated-project evidence.
+- No live model, paid evaluation, credentialed external tool, or provider
+  compatibility check was run. Deterministic routing/contract tests are the
+  applicable offline evidence.
+- No package version, dependency, package manager, lockfile, environment,
+  migration, Git history, tag, publish, or release action was changed or run.
 
 ## First-class AI-agent track evidence - 2026-07-26 working tree
 
@@ -197,8 +243,8 @@ arbitrary domain automatically.
 
 | Check | Expected |
 |---|---|
-| Source skill count | 24 |
-| Mirror counts | 24 in `.claude`, `plugin`, and `codex` |
+| Source skill count | 25 |
+| Mirror counts | 25 in `.claude`, `plugin`, and `codex` |
 | Text hygiene | No hidden/control/bidi Unicode in tracked text files |
 | Frontmatter | Required `name` and `description`; optional `allowed-tools`; no duplicate keys; no unsupported frontmatter shape |
 | Skill names | Unique `sdcorejs-*` kebab-case names |
@@ -211,6 +257,7 @@ arbitrary domain automatically.
 | Design track | `sdcorejs-design` exists and design docs/wireframes/PNG previews route to it |
 | Test track | `sdcorejs-test` exists and `sdcorejs-execute-plan` routes test-only plans to it |
 | AI-agent track | `sdcorejs-ai-agent` exists; engine and capability profiles remain independent and approved-plan continuation stays owned by `sdcorejs-execute-plan` |
+| Simplification utility | `sdcorejs-simplify` exists outside the track enum; current-diff/explicit-scope, protected content, before/after verification, finish-gate opt-in, and `simplify_context` invariants remain mutation-tested |
 | Generic harness | `sdcorejs-execute-plan` documents fallback execution |
 | Language policy | Source skills/refs/mirrors stay English-only; explicit localization prompt fixtures may use non-English input |
 

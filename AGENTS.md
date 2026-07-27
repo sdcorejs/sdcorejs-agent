@@ -53,11 +53,12 @@ skills/
     test/sdcorejs-test.md
   shared/workflow/explore.md -> sdcorejs-explore
   shared/workflow/review.md -> sdcorejs-review
+  shared/workflow/simplify.md -> sdcorejs-simplify
   shared/workflow/ship.md -> sdcorejs-ship
   shared/workflow/git.md -> sdcorejs-git
 _refs/
   ai-agent/, angular/, nestjs/, nextjs/, sdlc/, shared/, infra/, orchestration/, documentation/
-  shared/tdd.md -> loaded by sdcorejs-test (tdd mode)
+  simplify/, shared/tdd.md -> loaded by sdcorejs-simplify / sdcorejs-test (tdd mode)
 ```
 
 Dispatch by `name:` frontmatter and the `description:` trigger. Load only frontmatter at session start; read a skill body only after selecting that skill.
@@ -69,7 +70,9 @@ When multiple skills match, apply this priority before reading a body:
 3. Product docs and traceability: `sdcorejs-product`.
 4. Design handoff artifacts: `sdcorejs-design`.
 5. Test-only work: `sdcorejs-test`, except failing-test root cause/fix goes to `sdcorejs-debug`.
-6. Dedicated utility intent: `sdcorejs-explore`, `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
+6. Dedicated utility intent: `sdcorejs-simplify`, `sdcorejs-explore`,
+   `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-repair-loop`,
+   `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
 7. Whole app/system build intent: `sdcorejs-solution-builder`.
 8. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
    `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
@@ -80,6 +83,11 @@ Routing clarifications:
 - Failing-test root-cause/fix intent routes to `sdcorejs-debug`.
 - Writing, running, or planning tests without root-cause/fix intent routes to `sdcorejs-test`.
 - Review findings repair routes to `sdcorejs-repair-loop`.
+- Bounded behavior-preserving refinement of recently changed or explicitly
+  scoped executable source routes to `sdcorejs-simplify`. It is a utility, not
+  a track. Broad refactors return to planning; bugs, tests, documentation or
+  prompts, review findings, performance, dependencies, and public-contract
+  changes retain their dedicated owners.
 - Ship/readiness gates route to `sdcorejs-ship`.
 - Commit, PR, changelog, and release-note artifacts route to `sdcorejs-git` only after the required ship gates pass or an explicit verification deferral is recorded.
 - Confirmed AI-agent implementation requires an approved plan with one engine
@@ -110,7 +118,8 @@ Request
        test:    sdcorejs-test
        generic: execute-plan harness fallback
   -> finish gate and tail chain
-       sdcorejs-test -> sdcorejs-review -> repair-loop -> sdcorejs-documentation (code-documentation mode)
+       sdcorejs-test -> optional sdcorejs-simplify -> affected focused tests
+       -> sdcorejs-review -> repair-loop -> sdcorejs-documentation (code-documentation mode)
        -> sdcorejs-product when user-visible feature traceability is needed
        -> _refs/orchestration/tail/auto-docs.md -> sdcorejs-documentation (write-user-guide mode)
        -> _refs/orchestration/tail/auto-task-tracker.md only when the sequential/integration owner updates durable backlog
@@ -204,6 +213,7 @@ Load references on demand:
 - `_refs/shared/tasklist.md` for non-trivial execution tasks.
 - `_refs/shared/user-choice-prompt.md` before any user-facing choice, approval gate, yes/no question, or mode selection.
 - `_refs/shared/testing-philosophy.md` for test-track work.
+- `_refs/simplify/**` for bounded behavior-preserving source refinement.
 - `_refs/angular/core-docs-fetch.mjs` before using Core UI components.
 - `_refs/<track>/review-*.md` during review.
 - `_refs/infra/*` during dockerize/auth/run-guide.
@@ -221,6 +231,8 @@ Load references on demand:
 - Routing broad words such as AI, agent, assistant, tool, or report directly to
   `sdcorejs-ai-agent` without confirmed engine/capability architecture.
 - Running parallel work without the parallel-dispatch gate.
+- Treating `sdcorejs-simplify` as a broad refactor, bug fix, formatter,
+  performance optimizer, or permission to change prompts/contracts/config.
 - Writing `.sdcorejs/*` session artifacts into `sdcorejs-agent` when the target project is elsewhere.
 
 ## Solution Builder Output

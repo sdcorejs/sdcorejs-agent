@@ -40,7 +40,9 @@ Priority when several skills match:
 3. Product docs and traceability: `sdcorejs-product`.
 4. Design handoff artifacts: `sdcorejs-design`.
 5. Test-only work: `sdcorejs-test`, except failing-test root cause/fix goes to `sdcorejs-debug`.
-6. Dedicated utility intent: `sdcorejs-explore`, `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
+6. Dedicated utility intent: `sdcorejs-simplify`, `sdcorejs-explore`,
+   `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-repair-loop`,
+   `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
 7. Whole app/system build intent: `sdcorejs-solution-builder`.
 8. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
    `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
@@ -69,6 +71,14 @@ The AI-agent track is first-class only after an approved spec and plan select
 one engine profile and one independent capability profile. Under-specified
 agent ideas return to brainstorming; test, review, debug, documentation, ship,
 and Git intents retain their dedicated owners.
+
+`sdcorejs-simplify` is a workflow utility, not a track. Route direct requests
+only when they combine recently changed or explicit executable-source scope
+with behavior-preserving refinement intent (or analyze-only intent). Broad
+refactors return to brainstorming/spec/plan. Bugs, review findings, tests,
+documentation/prompts, performance, dependencies, public contracts, and
+approved plans retain their dedicated owners. A generic "simplify",
+"refactor", or "clean" request never authorizes writes.
 
 ## Workflow
 
@@ -115,6 +125,8 @@ Request
 - Code comments, user guides, technical docs, or documentation rewrite/improve/structure/summarize/convert/standardize work: `sdcorejs-documentation`.
 - Project summary, code-map, trace-flow, env setup, recovery, persona, or memories: `sdcorejs-explore`.
 - Existing site audit: `sdcorejs-review`.
+- Recently changed or explicitly scoped executable-source refinement that must
+  preserve behavior: `sdcorejs-simplify`.
 - Test request: `sdcorejs-test` for direct test work, or `sdcorejs-brainstorming` first if cases/assertions are not confirmed.
 - Confirmed AI-agent implementation with approved architecture:
   `sdcorejs-execute-plan`, then `sdcorejs-ai-agent`.
@@ -129,5 +141,6 @@ Request
 - `sdcorejs-design`
 - `sdcorejs-test`
 - `sdcorejs-ai-agent`
+- `sdcorejs-simplify`
 - `sdcorejs-documentation`
 - `sdcorejs-parallel-dispatch`

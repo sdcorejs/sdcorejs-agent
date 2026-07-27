@@ -16,9 +16,9 @@ knows these finishing steps exist and can choose; the steps are never silently
 skipped, and never silently auto-run without the user seeing them.
 
 Why this gate exists: standalone skill triggers used to stop right after
-code-gen, so tests, user/technical documentation, review, and shipping checks silently never
-happened. The gate makes the whole finishing chain visible at one decision
-point, every time.
+code-gen, so tests, user/technical documentation, optional behavior-preserving
+simplification, review, and shipping checks silently never happened. The gate
+makes the whole finishing chain visible, every time.
 
 ## When to present
 
@@ -37,7 +37,7 @@ artifacts share the same new-file approval boundary.
 ### Step 1 - Tests
 
 ```text
-Code generated for <scope>. Finish step 1/3: tests.
+Code generated for <scope>. Finish step 1/4: tests.
 
 1. Standard tests - write now, RED-first, standard coverage. [Recommended]
 2. Minimal tests - fastest useful coverage.
@@ -57,6 +57,7 @@ whether corresponding `user-guide` and `technical-doc` files already exist. If a
 new feature has no corresponding docs, ask:
 
 ```text
+Finish step 2/4: user/technical documentation.
 Documentation approval gate:
 This appears to be a new feature and I did not find an existing corresponding `user-guide` or `technical-doc`.
 
@@ -85,10 +86,41 @@ requirement_record: skip
 preference_saved: false
 ```
 
-### Step 3 - Review
+### Step 3 - Behavior-preserving simplification
+
+Never auto-run simplification. Present the decision even when a simplification
+recommendation is Skip. Resolve eligibility from changed executable source,
+protected-file/content boundaries, and the selected test baseline.
 
 ```text
-Finish step 3/3: review.
+Finish step 3/4: behavior-preserving code simplification.
+
+1. Skip simplification for this run.
+2. Analyze eligible changed code and report opportunities only; do not edit.
+3. Simplify eligible changed source code after a green baseline, then rerun the same focused verification.
+
+Recommendation: <option> because <evidence-based reason>.
+
+Reply with `1`, `2`, or `3`.
+```
+
+Recommend:
+
+- `1` for docs/config/test-only/trivial changes, protected files, missing scope,
+  or no runnable behavior oracle;
+- `2` when scope or risk is not clear enough for an edit;
+- `3` only for non-trivial eligible executable code with a bounded scope and a
+  runnable green baseline.
+
+If the user explicitly requested simplification in the same turn, prefill
+option `3`, but still enforce the green baseline. When tests were skipped and
+there is no current green evidence, block option `3`; allow analyze-only or
+return to the required focused tests.
+
+### Step 4 - Review
+
+```text
+Finish step 4/4: review.
 
 1. Ship now - skip review for this run and continue acceptance verification.
 2. Run review only - read-only review; do not edit code.
@@ -133,6 +165,15 @@ branch-ready.
 - The documentation gate captures `user_guide`, `technical_doc`, and whether a
   missing corresponding doc file may be created. `skip` is valid for user-guide
   and technical-doc, but skipping does not skip automatic code-documentation.
+- Behavior-preserving simplification is a visible opt-in choice. Never silently
+  choose or run it. `Analyze` is read-only. `Apply` must invoke
+  `sdcorejs-simplify` with current test evidence and the bounded changed-source
+  scope.
+- A simplification write makes affected test, review, and ship evidence stale.
+  Rerun the same focused tests before review and pass the resulting
+  `simplify_context` through the remaining tail.
+- Do not automatically simplify again after `sdcorejs-repair-loop`. A new pass
+  requires a separate invocation.
 - If the user chooses "Skip new user/technical docs" at Finish step 2, do not
   create new user-guide or technical-doc files for this run. Existing docs may
   still be updated only when the current request explicitly asked for that.
@@ -172,23 +213,32 @@ branch-ready.
    needs a root-cause fix, route that item to `sdcorejs-debug` with the
    `test_context`/`test_status`/`test_evidence` and smallest reproduction, then
    resume this tail with the resulting `debug_context`.
-2. (if review choice is `Run review only`) `sdcorejs-review` only; it must
+2. (if simplification choice is `Analyze`) `sdcorejs-simplify
+   (analyze-current-diff)` - inspect eligible changed source hunks and emit
+   `simplify_context` without edits.
+3. (if simplification choice is `Apply`) `sdcorejs-simplify
+   (apply-current-diff)` - consume the green test baseline, refine only eligible
+   changed source hunks, and emit `simplify_context`.
+4. (after simplification Apply) `sdcorejs-test` - rerun affected focused
+   commands, append post-simplification evidence, and mark it current before
+   review. Do not change expectations to legitimize behavior drift.
+5. (if review choice is `Run review only`) `sdcorejs-review` only; it must
    include `review_context` and must not edit code.
-3. (if review choice is `Run review and repair loop`) `sdcorejs-review` ->
+6. (if review choice is `Run review and repair loop`) `sdcorejs-review` ->
    `sdcorejs-repair-loop`; repair-loop receives the original `review_context`.
-4. `sdcorejs-documentation (code-documentation mode)` - automatic for touched
+7. `sdcorejs-documentation (code-documentation mode)` - automatic for touched
    source files; use concise maintainability-focused rules and do not ask.
-5. (if `technical_doc=create` or `technical_doc=update`)
+8. (if `technical_doc=create` or `technical_doc=update`)
    `sdcorejs-documentation (write-technical-doc mode)`.
-6. `_refs/orchestration/tail/auto-docs.md` (unless deferred).
-7. (if `user_guide=create` or `user_guide=update`)
+9. `_refs/orchestration/tail/auto-docs.md` (unless deferred).
+10. (if `user_guide=create` or `user_guide=update`)
    `sdcorejs-documentation (write-user-guide mode)`.
-8. `_refs/orchestration/tail/auto-task-tracker.md` only when the sequential
+11. `_refs/orchestration/tail/auto-task-tracker.md` only when the sequential
    workflow or integration owner is authorized to reconcile the shared durable
    backlog (and unless deferred). Never use it for live progress.
-9. `sdcorejs-explore (memories mode)` when durable knowledge surfaced.
-10. `sdcorejs-ship (verify-before-done mode)` (unless deferred).
-11. `sdcorejs-ship (branch-ready mode)` (unless deferred) - final read-only
+12. `sdcorejs-explore (memories mode)` when durable knowledge surfaced.
+13. `sdcorejs-ship (verify-before-done mode)` (unless deferred).
+14. `sdcorejs-ship (branch-ready mode)` (unless deferred) - final read-only
     gate over the final diff.
 
 Every producer passes its `artifact_context` to the next step. Ship merges the

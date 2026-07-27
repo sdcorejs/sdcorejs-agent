@@ -39,7 +39,9 @@ If several skills match, apply this priority before reading a body:
 3. Product docs and traceability: `sdcorejs-product`.
 4. Design handoff artifacts: `sdcorejs-design`.
 5. Test-only work: `sdcorejs-test`, except failing-test root cause/fix goes to `sdcorejs-debug`.
-6. Dedicated utility intent: `sdcorejs-explore`, `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
+6. Dedicated utility intent: `sdcorejs-simplify`, `sdcorejs-explore`,
+   `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-repair-loop`,
+   `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
 7. Whole app/system build intent: `sdcorejs-solution-builder`.
 8. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
    `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
@@ -50,6 +52,11 @@ Routing clarifications:
 - Failing-test root-cause/fix intent routes to `sdcorejs-debug`.
 - Writing, running, or planning tests without root-cause/fix intent routes to `sdcorejs-test`.
 - Review findings repair routes to `sdcorejs-repair-loop`.
+- Recently changed or explicitly scoped executable-source cleanup that must
+  preserve behavior routes to `sdcorejs-simplify`. It is a utility, not a
+  track. Broad refactors and public-contract changes return to planning; bugs,
+  tests, docs/prompts, review findings, performance, and dependencies retain
+  their dedicated owners.
 - Ship/readiness gates route to `sdcorejs-ship`.
 - Commit, PR, changelog, and release-note artifacts route to `sdcorejs-git` only after the required ship gates pass or an explicit verification deferral is recorded.
 - Confirmed AI-agent implementation requires an approved plan with one engine
@@ -86,6 +93,8 @@ Tail chain after code generation:
 
 ```text
 sdcorejs-test
+-> optional sdcorejs-simplify
+-> affected focused tests after any simplification write
 -> sdcorejs-review
 -> sdcorejs-repair-loop when findings exist
 -> sdcorejs-documentation (code-documentation mode)
@@ -187,7 +196,7 @@ At the start of a target-project session:
 | Execution | `sdcorejs-execute-plan`, `sdcorejs-ai-agent`, other track executors, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` |
 | Parallel | `sdcorejs-parallel-dispatch`; workspace isolation lives in `sdcorejs-git (workspace mode)` |
 | Finish | `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)`, `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode as the final read-only gate)` |
-| Utilities | `sdcorejs-explore`, `sdcorejs-git`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, `sdcorejs-documentation` |
+| Utilities | `sdcorejs-simplify`, `sdcorejs-explore`, `sdcorejs-git`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, `sdcorejs-documentation` |
 
 ## Mirrors
 

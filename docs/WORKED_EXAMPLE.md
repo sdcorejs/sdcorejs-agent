@@ -47,8 +47,9 @@ good plan decomposes work into outcomes such as:
 2. Add Angular Product models, service, routes, list screen, and detail flow.
 3. Add export action and permission checks.
 4. Run unit/integration/e2e checks.
-5. Run finish gates: test, review, repair loop, docs, verify-before-done, and
-   branch-ready.
+5. Run finish gates: tests, documentation choice, optional behavior-preserving
+   simplification, affected focused tests, review/repair loop, docs,
+   verify-before-done, and branch-ready.
 
 The user must explicitly approve the plan before execution.
 
@@ -71,6 +72,8 @@ Expected execution routing:
 Every code-generation run ends with the finish tail:
 
 - Run relevant tests and disclose skipped checks.
+- Offer bounded behavior-preserving simplification; if selected, use the green
+  test baseline and rerun affected focused tests before review.
 - Run review and repair-loop if findings exist.
 - Add or update code documentation for touched source.
 - Ask the documentation gate for user/technical docs when needed.
