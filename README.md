@@ -75,12 +75,14 @@ general semantic-equivalence proof.
 
 ## Quick Start
 
-This repository is public source, but the root Node package is intentionally
-`private: true`; it is not published to npm. Use GitHub/plugin installation,
-submodules, or generated native skill mirrors as the distribution paths.
+This repository is public source, while the root repository tooling manifest
+describes a private root Node workspace with `private: true`. The root project
+is not distributed through npm. Use GitHub/plugin installation, submodules, or
+generated native skill mirrors as the distribution paths.
 
-The canonical package manager for repository validation is npm. Use the
-committed `package-lock.json` with:
+The root `name` and `version` are synchronized repository/plugin release
+metadata, not an npm package identity. The canonical package manager for
+repository validation remains npm. Use the committed `package-lock.json` with:
 
 ```bash
 npm ci

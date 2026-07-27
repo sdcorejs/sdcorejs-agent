@@ -1,6 +1,6 @@
 # Testing the SDCoreJS SDLC Agent
 
-Repository-level tests for the current 23-skill SDCoreJS Agent layout.
+Repository-level tests for the current 21-skill SDCoreJS Agent layout.
 
 The pack is documentation-driven. Tests focus on dispatch metadata, generated mirrors, reference availability, and entrypoint compatibility.
 
@@ -15,7 +15,7 @@ Run all phases:
 npm run test:e2e
 ```
 
-Run text hygiene before publishing or reviewing release candidates:
+Run text hygiene before reviewing release candidates:
 
 ```bash
 npm run check:text-hygiene
@@ -36,10 +36,10 @@ scheduled/manual `Full E2E` workflow runs phase 4 with `SDCOREJS_E2E_FULL=1`.
 
 ## Expected Inventory
 
-- Source skills: 23
-- `.claude/skills`: 23
-- `plugin/skills`: 23
-- `codex/skills`: 23 skill folders plus shared `_refs`
+- Source skills: 21
+- `.claude/skills`: 21
+- `plugin/skills`: 21
+- `codex/skills`: 21 skill folders plus shared `_refs`
 - `_refs/**/*.md`: at least 60 committed markdown refs; Core UI component docs are fetched on demand
 
 PowerShell count:
@@ -60,6 +60,17 @@ $refs = Get-ChildItem -Recurse -File -Path _refs -Filter *.md
 ```
 
 ## Phase Coverage
+
+### npm Publication Contract
+
+```bash
+node --test test/e2e/npm-publication-contract.test.mjs
+```
+
+Verifies that the private root tooling workspace has no npm publication
+metadata, scripts, lifecycle hooks, workflow credentials, registry commands, or
+dependency-install documentation while preserving npm development commands,
+release-version synchronization, and the 21-skill source/mirror inventories.
 
 ### Phase 1: Skill Pack Runner
 

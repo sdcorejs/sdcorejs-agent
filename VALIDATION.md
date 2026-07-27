@@ -306,6 +306,7 @@ arbitrary domain automatically.
 | Codex mirror | `name` + `description` only, refs rewritten to `../_refs/...` |
 | Cursor rule | In sync with `AGENTS.md` |
 | Stale mirrors | No missing, changed, or extra generated mirror files |
+| Root npm publication | `private: true`; no publication-only manifest metadata, scripts, lifecycle hooks, workflow credentials, registry commands, or npm dependency-install guidance |
 | Workflow names | No removed legacy skills remain |
 | Product track | `sdcorejs-product` exists and product docs/traceability route to it |
 | Design track | `sdcorejs-design` exists and design docs/wireframes/PNG previews route to it |
@@ -326,6 +327,7 @@ npm run check:text-hygiene
 npm run check:skills
 npm run check:skills:ps
 npm run check:nestjs-pack
+node --test test/e2e/npm-publication-contract.test.mjs
 node --test test/e2e/ai-agent-track-contract.test.mjs
 npm run test:e2e:nestjs
 npm run test:e2e:nestjs:golden
