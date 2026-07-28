@@ -1,23 +1,20 @@
 ---
 name: sdcorejs-nextjs
 description: Next.js website code executor for approved site builds with confirmed requirements. Use for bootstrap, theme, pages/sections, SEO/OG, i18n, caching/ISR, responsive fixes, contact form, content quality, or reuse of @sdcorejs/utils utilities. Loads _refs/nextjs/build-website/write-code/ packs; use sdcorejs-review for existing-site audits. Runs mandatory finish tail. Runtime-localized.
-allowed-tools: Read, Write, Edit, Glob, Bash, TodoWrite
+allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, WebFetch, Write
 ---
+
+<!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
+
 
 # Build Website — Write Code Orchestrator
 
 
 ## Shared Protocols
 
-Before executing this skill:
-1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
-2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` as a read-only,
-   relevance-first context assembler.
-4. Read `_refs/shared/artifact-lifecycle.md` and merge producer
-   `artifact_context` through the finishing tail.
-5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+Read `_refs/shared/runtime-protocols.md` and
+`_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through
+the finishing tail.
 
 ## Purpose
 Single entry point for generating Next.js landing-site code. This skill is the
@@ -176,7 +173,10 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 ## Rules
 
 ### MUST DO
-- Show a live progress checklist with **TodoWrite** from the START of generation — one checkbox item per planned unit (each page / block / pack step) PLUS the finishing steps (tests, optional behavior-preserving simplification, review, code-documentation, technical-doc, user-guide). Keep exactly one item `in_progress`; flip it to `completed` the moment that unit is done and start the next. Update after EACH task, never batch at the end — this is how the user tracks progress. Create it before writing the first file.
+- Create visible runtime progress from the START of generation through
+  `progress.create`, with one item per planned unit and the finishing steps (tests, optional behavior-preserving simplification, review, code-documentation, technical-doc, user-guide).
+  Keep one item `in_progress`, call `progress.update` after each unit, and never
+  mirror live progress to a repository file.
 - Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
 - Read the approved plan BEFORE dispatching — never invent scope
 - Apply `_refs/shared/frontend-architecture.md` before non-trivial frontend

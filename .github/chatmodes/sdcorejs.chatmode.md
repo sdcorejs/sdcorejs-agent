@@ -25,13 +25,20 @@ sdcorejs-brainstorming
    -> review/repair -> documentation/task/memory -> ship gates
 ```
 
-`sdcorejs-execute-plan` always asks sequential vs parallel before executing. Parallel execution requires `sdcorejs-parallel-dispatch`.
+`sdcorejs-execute-plan` auto-selects sequential for one unit or unsafe/
+unavailable parallel execution. It asks only when both modes are feasible;
+parallel execution requires `sdcorejs-parallel-dispatch`.
 
 Direct splitting of an approved plan may select `sdcorejs-parallel-dispatch`.
 Unapproved write work returns to planning. Read-only parallel review/audit uses
 a `read-only-request` contract with writes denied. Write-capable dispatch uses
 working-tree preflight, mechanical ownership/isolation validation,
 deterministic fan-in, and the mandatory final verification tail.
+
+Pure Q&A answers directly. A bounded low-risk fix may use targeted context,
+smallest edit, focused verification, and concise review; scope growth escalates
+to the full workflow. Unsupported or unknown native capabilities use portable
+numbered Markdown and sequential parent fallbacks.
 
 ## Mandatory Execution Discipline
 

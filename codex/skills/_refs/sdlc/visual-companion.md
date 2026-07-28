@@ -1,207 +1,70 @@
 # Visual Companion
 
-The visual companion helps the user see design choices before implementation.
-Use it only when visual representation improves understanding or decision
-quality.
+The visual companion is an optional decision aid for spatial or visual choices.
+It does not replace the main conversation, an approval gate, or the approved
+spec and plan.
 
-It is an optional aid for brainstorming and design validation. It is not a
-default mode, not a replacement for the main conversation, and not permission to
-implement before the design is approved.
+## When To Offer
 
-## Core Principle
+Offer it just in time when seeing alternatives materially improves the next
+decision: layout, navigation, visual hierarchy, screen flow, wireframe,
+before/after UX, diagram topology, or another spatial relationship.
 
-Decide per question, not per session.
+Keep requirements, scope, business rules, API design, data modeling, test
+strategy, acceptance criteria, naming, and implementation sequencing in text
+unless a diagram is necessary to understand a spatial relationship. A UI topic
+is not automatically a visual decision.
 
-Before using the browser, ask:
+Do not repeat an offer after the user declines unless a new and materially
+different visual decision appears.
 
-> Would the user understand or decide this better by seeing it than by reading
-> it?
+## Surface Selection
 
-If yes, use the visual companion. If no, stay in the main conversation.
+Follow `_refs/shared/user-choice-prompt.md`:
 
-## Use Visual Companion For
+1. Use native structured choice when its capability is `supported`.
+2. For a spatial or visual decision, use a typed native visual surface only
+   when its capability is `supported`.
+3. Otherwise use `_refs/sdlc/static-visual-composer.mjs` with
+   `_refs/sdlc/visual-screen.schema.json` when a static HTML artifact is
+   supported.
+4. Always include the renderer's numbered Markdown fallback.
 
-Use browser visuals for:
+Capability `unknown` never authorizes a native surface. No workflow may depend
+on click events or a running server.
 
-- UI wireframes
-- Screen layouts
-- Component composition
-- Navigation structures
-- Multi-step user flows
-- Dashboard or admin panel layouts
-- Side-by-side design comparisons
-- Visual hierarchy and spacing
-- Architecture diagrams
-- Data-flow diagrams
-- State machines
-- Entity relationship diagrams
-- Before/after UX comparisons
-- Spatial relationships
-- Visual polish comparisons
+## Static Screen Contract
 
-## Do Not Use Visual Companion For
+- One decision per screen.
+- Exactly two or three options.
+- Use `single_select`, `multi_select`, `comparison`, or `wireframe`.
+- Include the question, criteria, option summary, best-when guidance,
+  trade-off, preview metadata, recommendation, and fallback prompt.
+- Author screen values in the user's language. Pass the matching runtime locale
+  and a complete localized renderer-message bundle for non-English output.
+- Treat preview assets as escaped metadata only; never inject arbitrary HTML.
+- Ask the user to copy the structured selection or reply in the main
+  conversation.
 
-Keep these in text:
+The static composer returns a self-contained local HTML string. It does not
+write a durable artifact. Save output only when the user requests it, then apply
+`_refs/shared/artifact-lifecycle.md` and classify temporary/generated output
+appropriately.
 
-- Requirements and scope questions
-- Business rules
-- Acceptance criteria
-- API design
-- Data modeling
-- TDD/test strategy
-- Pros/cons tables that are clear in text
-- Purely conceptual choices
-- Naming decisions
-- Error-handling policy
-- Implementation sequencing
-- Code generation
-- Production implementation
+## Approval Boundary
 
-## Offer Timing
+Written feedback in the main conversation wins over any native or visual state.
+A selection is design feedback, not implementation approval. Summarize the
+chosen direction in the main conversation, convert it to testable acceptance
+criteria, and preserve the normal spec and plan approval gates.
 
-Do not offer the visual companion at the start of every brainstorming session.
+## Future Runtime Boundary
 
-First understand the user's request, context, constraints, and the current
-design question.
-
-Offer it just-in-time, only when the next question would be clearer visually.
-
-The offer must be one standalone message. Do not include a clarifying question,
-implementation plan, or design summary in the same message.
-
-The offer must use two numbered choices. Runtime-localize the prose while
-preserving the two-choice shape:
-
-```text
-The next decision may be easier to understand if shown visually as a mockup,
-diagram, or browser comparison. Which direction do you want?
-
-1. Use visual companion to preview visual options before approving the design
-2. Do not use visual companion; continue brainstorming in text + TDD
-
-Reply with `1` or `2`.
-```
-
-## Accepted Flow
-
-When the user chooses option 1:
-
-1. Locate this reference and any related templates using the current
-   skill/project convention.
-2. Confirm whether a visual companion runtime exists.
-3. If a runtime exists, start or open it using the project's configured command.
-4. If no runtime exists, create static HTML or Markdown visual artifacts
-   according to the current convention.
-5. Render one decision per screen.
-6. Prefer 2-3 options, not many options.
-7. Give each option a clear number, label, purpose, best-when, trade-off, and
-   optional recommendation.
-8. Ask the user to respond in the main conversation.
-9. Merge written feedback with any visual selections.
-10. Update the design spec or brainstorming summary.
-11. Continue text-only when the next question is not visual.
-
-## Declined Flow
-
-When the user chooses option 2:
-
-- Continue with text-only brainstorming.
-- Do not mention the visual companion again unless the user asks for it or a
-  later decision becomes genuinely hard to explain without a visual.
-
-## Per-Question Decision Rule
-
-Use the browser for visual or spatial decisions.
-
-Use the main conversation for requirements, scope, business rules, API design,
-data modeling, TDD strategy, acceptance criteria, trade-offs, and implementation
-sequencing.
-
-A UI-related topic is not automatically a visual topic.
-
-Examples:
-
-- "What should this dashboard do?" is a text question.
-- "Which dashboard layout feels clearer?" is a visual question.
-- "Should we use REST or GraphQL?" is a text question.
-- "Which architecture boundary is easier to maintain?" may be visual if a
-  diagram helps.
-- "What tests should we write?" is a text question.
-
-## Screen Design Rules
-
-Each visual screen should answer exactly one design question.
-
-Good screen questions:
-
-- "Which dashboard layout should we use?"
-- "Which onboarding flow feels simplest?"
-- "Which sidebar/navigation structure matches the product?"
-- "Which architecture boundary is easier to maintain?"
-- "Which empty-state pattern is more useful?"
-- "Which before/after UX direction is clearer?"
-
-Bad screen questions:
-
-- "What should we build?"
-- "What features are in scope?"
-- "Should we use REST or GraphQL?"
-- "What tests should we write?"
-- "What is the data model?"
-- "Can we start implementing?"
-
-## Visual Screen Content
-
-Each visual screen should include:
-
-- Title: the decision being made.
-- Subtitle: the evaluation criteria.
-- 2-3 numbered visual options.
-- Short explanation per option.
-- Best-when guidance per option.
-- Trade-off per option.
-- Optional recommendation.
-- Prompt asking the user to select or comment in the main conversation.
-
-Use option numbers 1, 2, and optionally 3. Do not use A/B/C unless the existing
-project convention requires it.
-
-## Interaction Contract
-
-The main conversation remains the source of truth.
-
-Browser selections are helpful structured feedback, but the user's written
-response has priority when there is conflict.
-
-Do not proceed to implementation because a mockup was selected.
-
-After a visual direction is selected, summarize the chosen direction in the main
-conversation and get explicit design approval before moving forward.
-
-## TDD Boundary
-
-The visual companion is for brainstorming and design validation only.
-
-After visual approval:
-
-- Convert the chosen design into acceptance criteria.
-- Identify testable behavior.
-- Define edge cases.
-- Identify test layers or test types.
-- Then transition to the implementation/TDD skill or implementation plan.
-
-Never generate production code directly from a mockup before the design is
-approved.
-
-## Templates
-
-Use `visual-offer.md` for the standalone two-choice offer.
-
-Use `visual-screen-options.fragment.html` when presenting 2-3 options without a
-rich mockup comparison.
-
-Use `visual-screen-comparison.fragment.html` when comparing two visual
-directions side by side.
-
-Use `visual-waiting.fragment.html` when returning to the main conversation so a
-browser surface does not keep an old decision screen open.
+A future local server or event bridge is intentionally out of scope. If added
+later, it must bind locally by default, use an unguessable session token,
+authenticate every event, validate the same closed screen schema, escape all
+content, reject replay and cross-session events, use restrictive origin/CSP
+controls, avoid telemetry and remote dependencies, reconnect without losing the
+Markdown fallback, and never translate a visual event into implementation
+approval. Do not add a partial server, socket, reconnect loop, or unauthenticated
+event bridge to the static composer.

@@ -75,7 +75,7 @@ Request
   -> sdcorejs-plan
        Write plan + approval gate + approved plan snapshot.
   -> sdcorejs-execute-plan
-       Detect track and always ask sequential vs parallel.
+       Detect track; ask execution mode only when both modes are feasible.
   -> executor
        core-ui-angular / legacy-core-ui-angular / new SDCoreJS portal: sdcorejs-angular
        plain-angular: generic harness
@@ -110,13 +110,25 @@ sdcorejs-test
 No write-producing step may run after final branch-ready unless branch-ready is
 run again before any Git artifact handoff.
 
-`sdcorejs-execute-plan` must ask the user whether to run sequentially or in parallel before execution. Parallel execution requires `sdcorejs-parallel-dispatch`, which owns both the safety verdict and safe fan-out / role-split execution.
+`sdcorejs-execute-plan` auto-selects sequential for one executable unit or when
+parallel execution is unavailable/unsafe. It asks only when sequential and
+parallel are both feasible for at least two independent units. Parallel
+execution requires `sdcorejs-parallel-dispatch`.
 
 Direct splitting of an approved plan may select `sdcorejs-parallel-dispatch`.
 Unapproved write work returns to planning. Read-only parallel review/audit work
 may use a `read-only-request` contract with writes denied; write work requires
 the approved-plan protocol, working-tree preflight, mechanical ownership checks,
 per-unit isolation, and deterministic fan-in.
+
+Pure Q&A answers directly. A small, explicit, low-risk fix uses targeted
+context, the smallest edit, focused verification, and concise review. Scope,
+ownership, risk, or behavior growth escalates to the full workflow.
+
+Canonical skills declare semantic `required-actions`. Provider mappings and
+tri-state capabilities live in `_refs/harness/capability-contract.json`;
+unsupported or unknown capabilities use portable Markdown/sequential
+fallbacks.
 
 ## Track Executors
 
@@ -159,7 +171,10 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 1. **Requirements before code.** Use `sdcorejs-brainstorming` until the minimum blockers for the detected track are confirmed.
 2. **Approval gates.** `sdcorejs-spec` and `sdcorejs-plan` require explicit user approval. Silence is not approval.
 3. **Approved snapshots.** `sdcorejs-spec` and `sdcorejs-plan` write their own approved snapshots before the next phase.
-4. **Execute-plan.** Approved plans go through `sdcorejs-execute-plan`; it owns track detection, Angular Core UI/plain Angular classification, AI-agent/product/design/test routing, generic fallback, and the sequential/parallel question.
+4. **Execute-plan.** Approved plans go through `sdcorejs-execute-plan`; it owns
+   track detection, Angular Core UI/plain Angular classification,
+   AI-agent/product/design/test routing, generic fallback, and execution-mode
+   resolution.
 5. **Finish gate.** Every code-generation run presents the finish gate before tail steps, even direct one-line requests.
 6. **Evidence before claims.** Never claim pass, built, fixed, or done without running and reading the relevant verification command in the current turn.
 7. **Runtime-localized.** Respond in the user's language; preserve locale-specific marks; keep identifiers and route paths in English.
@@ -171,6 +186,11 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 13. **Do not author new skills without explicit user approval.**
 
 ## Session Context
+
+Load `_refs/shared/runtime-protocols.md` as the shared router. Load harness
+capability, delegation, task-brief, or visual references only when that
+capability is relevant; do not copy full spec/plan/repository context into
+worker prompts.
 
 At the start of a target-project session:
 

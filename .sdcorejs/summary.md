@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-07-27T18:30:00+07:00
+generated_at: 2026-07-28T00:00:00+07:00
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks: [workflow, ai-agent, angular, nestjs, nextjs, product, design, test]
@@ -11,11 +11,12 @@ source_roots: [_refs, plugin, scripts, site, skills, test]
 evidence:
   workspace_configs: []
   package_manifests: [package.json, site/package.json]
-  key_entrypoints: [scripts/sync-skills.mjs, bin/sdcorejs-agent.mjs]
+  key_entrypoints: [AGENTS.md, CLAUDE.md, skills/orchestration/using-skills.md, scripts/sync-skills.mjs, plugin/hooks/session-start, .github/copilot-instructions.md, .cursor/rules/sdcorejs-agent.mdc, site/src/pages/index.astro]
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:b3685ae8c670e1d027e22c8afca63cd757b31c2f28b3d8fe1737b11194694566
+  dependency_manifests: sha256:e995267aa61f0f4bb46559a70b988d2ffa72252bebdd638445706f2745903b5a
   source_roots: sha256:ddec7e2dffa8a69905218e58e710cd58376cd3cbc4dc15fc1d809fc8a6e2ec12
+  entrypoint_contract: sha256:e6c4711c8d252043a06d76d7bec3adf9b886605dbece9371cf9b621b9ec9dce2
 redaction_applied: true
 artifact_id: project-summary
 artifact_kind: summary
@@ -36,8 +37,9 @@ workflows for governed AI-agent applications, Angular, NestJS, Next.js,
 product, design, test, documentation, review, ship, Git, and generic
 execution.
 
-The repository publishes the same canonical behavior through adapters for
-Codex, Claude Code, Cursor, GitHub Copilot, and the packaged plugin surface.
+The private root workspace distributes the same canonical behavior through
+repository/plugin adapters for Codex, Claude Code, Cursor, and GitHub Copilot;
+it is not published to npm and has no standalone CLI.
 Source instructions stay English-only; consuming agents localize responses and
 generated project artifacts at runtime.
 
@@ -49,6 +51,8 @@ generated project artifacts at runtime.
 - `_refs/shared/project-context.md` owns read-oriented context assembly.
 - `_refs/shared/artifact-lifecycle.md` owns durable artifact classification.
 - `_refs/shared/tasklist.md` keeps execution progress in runtime state.
+- `_refs/harness/capability-contract.json` owns portable actions and adapter
+  capabilities.
 - `skills/tracks/ai-agent/sdcorejs-ai-agent.md` and
   `_refs/ai-agent/manifest.json` own the approved-plan-only AI-agent track.
 - `package.json` lists synchronization, test, hygiene, audit, and site commands.
@@ -80,7 +84,8 @@ Dependency evidence:
 | Reference sources | `_refs/` | Shared procedures, templates, and track packs | `_refs/shared/project-context.md` | source skills |
 | AI-agent track | `skills/tracks/ai-agent/`, `_refs/ai-agent/` | Approved engine/capability composition, security contracts, offline fixtures, and executor evidence | `skills/tracks/ai-agent/sdcorejs-ai-agent.md` | SDLC gates, downstream skills |
 | Sync pipeline | `scripts/` | Validate and generate adapter mirrors | `scripts/sync-skills.mjs` | `skills/`, `_refs/` |
-| CLI adapter | `bin/` | Expose the pack to command-line consumers | `bin/sdcorejs-agent.mjs` | canonical sources |
+| Harness contracts | `_refs/harness/` | Portable actions, capabilities, role/model policy, and bounded delegation envelopes | `_refs/harness/runtime-policy.mjs` | canonical skills, adapters, sentinels |
+| Static visual companion | `_refs/sdlc/static-visual-composer.mjs` | Validate typed screens and render safe standalone HTML plus Markdown fallback | `_refs/sdlc/visual-screen.schema.json` | interaction protocol |
 | Plugin adapter | `plugin/` | Package skills, refs, hooks, and manifest | `plugin/hooks/session-start` | generated mirrors |
 | Claude adapter | `.claude/` | Generated Claude skills and references | `.claude/skills/` | sync pipeline |
 | Codex adapter | `codex/skills/` | Generated Codex skills and references | `codex/skills/` | sync pipeline |
@@ -105,7 +110,8 @@ Consumer flow:
 
 1. A tool loads its adapter entrypoint.
 2. Dispatch selects one canonical skill by name and description.
-3. The skill loads only the references needed for its mode and detected stack;
+3. The adapter maps semantic actions to supported native surfaces or portable
+   fallbacks; the skill loads only the references needed for its mode and stack;
    AI-agent execution resolves one engine and one capability profile once.
 4. Write-producing work passes runtime artifact context through the finish gate.
 5. Ship verifies evidence; Git computes artifact closure before explicit staging.
@@ -131,6 +137,11 @@ Generated surfaces:
 - `codex/skills/**`
 - `codex/skills/_refs/**`
 - `.cursor/rules/sdcorejs-agent.mdc`
+- `.claude/sdcorejs-harness.json`
+- `plugin/sdcorejs-harness.json`
+- `codex/sdcorejs-harness.json`
+- `.cursor/sdcorejs-harness.json`
+- `.github/sdcorejs-harness.json`
 
 Never repair mirror drift by editing generated files directly. Change the
 canonical source and rerun synchronization.
@@ -141,6 +152,8 @@ canonical source and rerun synchronization.
 - `npm run check:skills` checks mirror parity without repository writes.
 - `npm test` runs repository, NestJS contract, and golden-project suites.
 - `npm run test:e2e:repository` runs repository-level contract tests.
+- `npm run test:e2e:harness` runs behavioral sentinels, summary mutations, and
+  static visual safety tests.
 - `node --test test/e2e/ai-agent-track-contract.test.mjs` runs the dedicated
   AI-agent contract, fixture, mutation, and downstream checks.
 - `npm run test:e2e:nestjs` runs NestJS pack contract and generation tests.
@@ -153,10 +166,13 @@ canonical source and rerun synchronization.
 
 ## Conventions and Invariants
 
-- Canonical skill sources use `name:` and `description:` frontmatter.
+- Canonical skill sources use `name:`, `description:`, and semantic
+  `required-actions:` frontmatter.
 - Reusable skill and reference prose is English-only and locale-neutral.
 - User-facing runtime output follows the user's language.
-- Approval gates separate brainstorming, spec, plan, and execution.
+- Pure Q&A answers directly; bounded low-risk changes may take fast-fix.
+- Approval gates separate brainstorming, spec, plan, and execution for
+  governed changes.
 - AI-agent source selects lifecycle and business capability independently,
   defaults provider storage off, forbids generic raw tools, and keeps offline
   evidence separate from live verification.
@@ -164,8 +180,9 @@ canonical source and rerun synchronization.
   belongs in the repository.
 - Project context assembly is read-only unless a distinct artifact write is
   explicitly authorized.
-- Summary freshness uses bounded architecture, dependency, and source-root
-  fingerprints rather than branch or commit identity.
+- Summary freshness uses bounded workspace, dependency, source-root, and
+  declared/discovered entrypoint fingerprints rather than branch/commit
+  identity.
 - Durable `.sdcorejs/**` producers declare ownership and commit policy.
 - Parallel workers do not mutate shared summary, memory, or backlog artifacts.
 - Git stages explicit paths only after artifact closure succeeds.
@@ -177,6 +194,9 @@ canonical source and rerun synchronization.
 | Task | Start path | Follow-up evidence |
 |---|---|---|
 | Change dispatch behavior | `skills/orchestration/using-skills.md` | adapter entrypoints |
+| Change action/capability mapping | `_refs/harness/capability-contract.json` | generated adapter manifests and behavioral sentinels |
+| Change delegation tiers/roles | `_refs/harness/delegation-policy.json` | task-brief contract and behavioral sentinels |
+| Change static visual behavior | `_refs/sdlc/static-visual-composer.mjs` | screen schema and safety tests |
 | Change project context | `_refs/shared/project-context.md` | `_refs/shared/project-context.mjs` |
 | Change artifact closure | `_refs/shared/artifact-lifecycle.md` | `_refs/shared/artifact-lifecycle.mjs` |
 | Change an SDLC gate | `skills/shared/sdlc/` | `_refs/sdlc/` |

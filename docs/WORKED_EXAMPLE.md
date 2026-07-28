@@ -56,9 +56,12 @@ The user must explicitly approve the plan before execution.
 ## 4. Execute Plan
 
 `sdcorejs-execute-plan` owns execution routing. Before any implementation, it
-asks whether to run sequentially or in parallel. Parallel work only proceeds
-through `sdcorejs-parallel-dispatch`, which decides whether the file scopes are
-safe to split.
+checks the executable units, ownership, and runtime capabilities. This example
+may offer sequential versus parallel because backend and frontend can be real,
+independent choices; one unit or an unsafe/unavailable split auto-selects
+sequential without a fake prompt. Parallel work only proceeds through
+`sdcorejs-parallel-dispatch`, which decides whether the file scopes are safe to
+split.
 
 Expected execution routing:
 

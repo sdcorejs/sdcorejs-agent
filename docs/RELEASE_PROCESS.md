@@ -12,6 +12,7 @@ npm ci
 npm run check:text-hygiene
 npm run sync:skills
 npm run check:skills
+npm run test:e2e:harness
 npm run test:e2e
 npm audit --omit=dev
 ```
@@ -85,6 +86,8 @@ Include:
 - Link to the latest successful CI run.
 - Link to the latest successful Full E2E run, or a clear limitation if missing.
 - Real-agent transcript evidence summary.
+- Harness/model/source-commit/scenario/outcome metadata for every optional live
+  eval, or an explicit not-run reason.
 - Upgrade notes for plugin/native skill users.
 - Known limitations.
 
@@ -102,5 +105,7 @@ After publishing the GitHub Release:
   claimed in the notes.
 - Confirm mirrors are present: `.claude/skills`, `plugin/skills`,
   `codex/skills`, and `.cursor/rules`.
+- Confirm each adapter `sdcorejs-harness.json` has the current canonical source
+  hash and 21-skill mapping.
 - Confirm `docs/ADOPTION.md` and `docs/TROUBLESHOOTING.md` still match the
   release instructions.

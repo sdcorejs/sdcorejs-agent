@@ -1,0 +1,345 @@
+{
+  "schema_version": 1,
+  "adapter": "cursor",
+  "source_path": "_refs/harness/capability-contract.json",
+  "source_hash": "sha256:e48f1f7c592751ba18075340862071e8f0c2e02af47a80da5b9d46cc3bb4b9d6",
+  "content_hash": "sha256:d45c985378a960bfa6310bd482366a6391670e2041ae5ce8238ee210253adfd1",
+  "generated_path": ".cursor/sdcorejs-harness.json",
+  "capabilities": {
+    "native_structured_choice": "unknown",
+    "visual_surface": "unknown",
+    "static_html_artifact": "unknown",
+    "subagents": "unknown",
+    "per_agent_model_override": "unknown",
+    "agent_resume_steer": "unknown",
+    "workspace_isolation": "unknown",
+    "browser": "unknown",
+    "web_fetch": "unknown",
+    "artifact_write": "unknown",
+    "permission_approval": "unknown"
+  },
+  "actions": {
+    "progress.create": {
+      "status": "unknown",
+      "native": [],
+      "capability": null,
+      "fallback": "Render a visible Markdown task list in the current conversation."
+    },
+    "progress.update": {
+      "status": "unknown",
+      "native": [],
+      "capability": null,
+      "fallback": "Update the visible Markdown task list in the current conversation."
+    },
+    "user.choose": {
+      "status": "unknown",
+      "native": [],
+      "capability": "native_structured_choice",
+      "fallback": "Render stable numbered Markdown choices and accept a written reply."
+    },
+    "user.approve": {
+      "status": "unknown",
+      "native": [],
+      "capability": "native_structured_choice",
+      "fallback": "Render one numbered approval gate and accept a written reply."
+    },
+    "agent.dispatch": {
+      "status": "unknown",
+      "native": [],
+      "capability": "subagents",
+      "fallback": "Execute the unit sequentially in the parent or report that delegation is unavailable."
+    },
+    "agent.resume": {
+      "status": "unknown",
+      "native": [],
+      "capability": "agent_resume_steer",
+      "fallback": "Return the scoped finding to the parent for sequential repair."
+    },
+    "agent.interrupt": {
+      "status": "unknown",
+      "native": [],
+      "capability": "agent_resume_steer",
+      "fallback": "Stop new dispatch, report in-flight work honestly, and continue best effort."
+    },
+    "visual.present": {
+      "status": "unknown",
+      "native": [],
+      "capability": "visual_surface",
+      "fallback": "Use the static visual composer when available, otherwise numbered Markdown."
+    },
+    "workspace.isolate": {
+      "status": "unknown",
+      "native": [],
+      "capability": "workspace_isolation",
+      "fallback": "Use a validated Git worktree fallback or run sequentially when isolation is unsafe."
+    },
+    "web.fetch": {
+      "status": "unknown",
+      "native": [],
+      "capability": "web_fetch",
+      "fallback": "Use supplied local evidence or report that current web evidence is unavailable."
+    },
+    "artifact.read": {
+      "status": "supported",
+      "native": [],
+      "capability": null,
+      "fallback": "Use the runtime's bounded repository read surface."
+    },
+    "artifact.write": {
+      "status": "unknown",
+      "native": [],
+      "capability": "artifact_write",
+      "fallback": "Report the intended patch without claiming that files changed."
+    },
+    "verification.run": {
+      "status": "unknown",
+      "native": [],
+      "capability": null,
+      "fallback": "Report the exact unrun command and why execution is unavailable."
+    }
+  },
+  "skills": {
+    "sdcorejs-documentation": {
+      "source_path": "skills/orchestration/documentation.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "user.choose",
+        "user.approve"
+      ]
+    },
+    "sdcorejs-parallel-dispatch": {
+      "source_path": "skills/orchestration/parallel-dispatch.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose",
+        "agent.dispatch",
+        "agent.resume",
+        "agent.interrupt",
+        "workspace.isolate"
+      ]
+    },
+    "sdcorejs-repair-loop": {
+      "source_path": "skills/orchestration/repair-loop.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose",
+        "agent.resume"
+      ]
+    },
+    "sdcorejs-using-skills": {
+      "source_path": "skills/orchestration/using-skills.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "user.choose"
+      ]
+    },
+    "sdcorejs-brainstorming": {
+      "source_path": "skills/shared/sdlc/01-brainstorming.md",
+      "required_actions": [
+        "artifact.read",
+        "web.fetch",
+        "verification.run",
+        "user.choose",
+        "visual.present"
+      ]
+    },
+    "sdcorejs-spec": {
+      "source_path": "skills/shared/sdlc/02-spec.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "user.approve"
+      ]
+    },
+    "sdcorejs-plan": {
+      "source_path": "skills/shared/sdlc/03-plan.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "user.approve"
+      ]
+    },
+    "sdcorejs-execute-plan": {
+      "source_path": "skills/shared/sdlc/04-execute-plan.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose",
+        "agent.dispatch",
+        "workspace.isolate"
+      ]
+    },
+    "sdcorejs-debug": {
+      "source_path": "skills/shared/workflow/debug.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose"
+      ]
+    },
+    "sdcorejs-explore": {
+      "source_path": "skills/shared/workflow/explore.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "user.choose",
+        "web.fetch"
+      ]
+    },
+    "sdcorejs-git": {
+      "source_path": "skills/shared/workflow/git.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "user.choose",
+        "user.approve",
+        "workspace.isolate"
+      ]
+    },
+    "sdcorejs-review": {
+      "source_path": "skills/shared/workflow/review.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose"
+      ]
+    },
+    "sdcorejs-ship": {
+      "source_path": "skills/shared/workflow/ship.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "user.choose",
+        "user.approve"
+      ]
+    },
+    "sdcorejs-simplify": {
+      "source_path": "skills/shared/workflow/simplify.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose"
+      ]
+    },
+    "sdcorejs-ai-agent": {
+      "source_path": "skills/tracks/ai-agent/sdcorejs-ai-agent.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose",
+        "user.approve",
+        "web.fetch"
+      ]
+    },
+    "sdcorejs-angular": {
+      "source_path": "skills/tracks/angular/sdcorejs-angular.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose",
+        "user.approve",
+        "web.fetch",
+        "visual.present"
+      ]
+    },
+    "sdcorejs-design": {
+      "source_path": "skills/tracks/design/sdcorejs-design.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose",
+        "user.approve",
+        "visual.present"
+      ]
+    },
+    "sdcorejs-nestjs": {
+      "source_path": "skills/tracks/nestjs/sdcorejs-nestjs.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose",
+        "user.approve",
+        "web.fetch"
+      ]
+    },
+    "sdcorejs-nextjs": {
+      "source_path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose",
+        "user.approve",
+        "web.fetch",
+        "visual.present"
+      ]
+    },
+    "sdcorejs-product": {
+      "source_path": "skills/tracks/product/sdcorejs-product.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose",
+        "user.approve"
+      ]
+    },
+    "sdcorejs-test": {
+      "source_path": "skills/tracks/test/sdcorejs-test.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose",
+        "user.approve"
+      ]
+    }
+  }
+}

@@ -541,7 +541,7 @@ async function listMarkdownFiles(root) {
 function diagnoseSkills(skills, label) {
   const diagnostics = [];
   const seen = new Map();
-  const allowedSourceKeys = new Set(['name', 'description', 'allowed-tools']);
+  const allowedSourceKeys = new Set(['name', 'description', 'required-actions']);
   for (const skill of skills) {
     for (const error of skill.frontmatterErrors) diagnostics.push(`${label}:${skill.path}: ${error}`);
     for (const key of skill.frontmatterKeys) {

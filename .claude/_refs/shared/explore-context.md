@@ -103,9 +103,15 @@ Before writing:
 
 1. Run the authoring-repo guard.
 2. Apply redaction.
-3. Compute bounded architecture, dependency, and source-root fingerprints.
-4. Record owner, approval, and writes in `explore_context` and
+3. Select the normalized repository-relative `evidence.key_entrypoints`.
+4. Compute bounded workspace, dependency, source-root, and entrypoint-contract
+   fingerprints with that same declared entrypoint list.
+5. Record owner, approval, and writes in `explore_context` and
    `artifact_context`.
+
+Treat the chosen key-entrypoint list and its fingerprint as one refresh
+transaction. Do not compute the fingerprint first and add new declared
+entrypoints afterward; the next summary read must round-trip as `fresh`.
 
 ## Summary v2 Frontmatter
 
@@ -128,6 +134,7 @@ fingerprints:
   workspace_structure: <sha256 | unknown>
   dependency_manifests: <sha256 | unknown>
   source_roots: <sha256 | unknown>
+  entrypoint_contract: <sha256 | unknown>
 redaction_applied: true | false
 artifact_id: project-summary
 artifact_kind: summary
@@ -177,7 +184,13 @@ or repeated README/package content.
 - `missing`: no summary exists.
 - `unknown`: legacy schema, missing evidence, or unsafe calculation.
 
-Unrelated commits do not invalidate Summary v2. Dependency changes invalidate
-stack/command/convention sections; workspace and source-root changes invalidate
-only mapped architecture/navigation sections. Unknown fingerprints never
-pretend to be fresh.
+Unrelated source-content edits do not invalidate Summary v2. Dependency changes
+invalidate stack/command/convention sections; workspace and source-root changes
+invalidate only their mapped architecture/navigation sections.
+
+The `entrypoint_contract` fingerprint includes package entrypoint fields
+(`main`, `bin`, `exports`, `module`, `browser`, and `types`), known
+adapter/plugin entrypoints, and the existence of declared
+`evidence.key_entrypoints`. Deleting or renaming one invalidates only
+`Application and Module Map`, `Entrypoints and Main Runtime Flows`, and
+`Task-to-Path Navigation`. Unknown fingerprints never pretend to be fresh.

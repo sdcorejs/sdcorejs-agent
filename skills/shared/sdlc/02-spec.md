@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-spec
 description: Spec authoring and approval gate. Use after brainstorming confirms requirements, or when the user asks to write/review/approve/change a spec or design doc. Writes a draft in the matching track directory under .sdcorejs/docs, self-reviews, waits for explicit approval, then persists the approved snapshot in the matching track directory under .sdcorejs/specs before plan. Applies across tracks. Runtime-localized.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+required-actions: artifact.read, artifact.write, verification.run, user.approve
 ---
 
 # 02 - Spec
@@ -9,15 +9,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 ## Shared Protocols
 
-Before executing this skill:
-1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
-2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` as a read-only,
-   relevance-first context assembler.
-4. Read `_refs/shared/artifact-lifecycle.md`; draft and approved spec artifacts
-   must emit `artifact_context`.
-5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+Read `_refs/shared/runtime-protocols.md`. Draft and approved spec artifacts
+apply `_refs/shared/artifact-lifecycle.md` and emit `artifact_context`.
 
 ## Purpose
 Turn the confirmed requirement contract into a durable spec, hold the user approval gate, and persist the approved spec corpus inside the same skill.

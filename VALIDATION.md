@@ -2,7 +2,7 @@
 
 Current validation snapshot for the SDCoreJS SDLC Agent repository.
 
-Date: 2026-07-27
+Date: 2026-07-28
 
 ## Current Layout
 
@@ -13,6 +13,10 @@ Date: 2026-07-27
 - `codex/skills/<name>/SKILL.md` - generated Codex-native mirror.
 - `codex/skills/_refs/**` - shared Codex reference mirror.
 - `.cursor/rules/sdcorejs-agent.mdc` - generated Cursor rule from `AGENTS.md`.
+- `_refs/harness/**` - canonical semantic actions, tri-state capabilities,
+  model/role policy, runtime envelopes, and deterministic sentinel policy.
+- `*/sdcorejs-harness.json` - generated adapter mappings with canonical content
+  hash and 21-skill action declarations.
 
 ## Inventory
 
@@ -259,6 +263,7 @@ actually produced evidence.
 |---|---|---|---|
 | Static validation | Source layout, frontmatter, exact refs, generated mirrors, markdown fences, text hygiene, and language policy are internally consistent. | `npm run check:text-hygiene`, `npm run check:skills`, and phase 1 E2E tests. | None beyond keeping CI green for the target commit. |
 | Deterministic prompt-routing validation (local canonical routing) | The canonical local runner selects the expected `sdcorejs-*` skill for fixture prompts without calling an LLM. | `test/e2e/fixtures/prompt-evals.json` plus phase 1 tests. | Add fixtures when new user intents are introduced. |
+| Behavioral harness sentinel | Executable policies distinguish Q&A, fast-fix, and governed work; select real execution choices; enforce capability/model/task boundaries; mutate summary entrypoints; and render escaped static visual output. | `npm run test:e2e:harness` over parsed contracts, simulations, and mutation fixtures. | It is deterministic local evidence, not proof that a hosted model followed the policy. |
 | Entrypoint-aware routing validation | Each loaded Claude Code, Codex, Cursor, or Copilot profile contributes derived routing policy; mutation tests prove one changed profile can fail independently. | `test/e2e/entrypoint-smoke.test.mjs`. | This proves deterministic profile-text participation, not live runtime behavior. |
 | AI-agent contract validation | Engine/profile registries, agent/tool schemas, trusted context, approval bindings, state, evidence, observability, limits, eval thresholds, and invalid mutations agree offline. | `_refs/ai-agent/validate-agent-contract.mjs` and `test/e2e/ai-agent-track-contract.test.mjs`; four golden contracts and at least 27 invalid cases. | Run separately authorized live provider checks for each claimed engine/model/tool integration; deterministic conformance is not provider compatibility. |
 | Parallel protocol simulation | Selected contract, topology/DAG, path/resource, failure/fan-in, repair/evidence, and state-machine rules are exercised through the distributed deterministic validator. | `_refs/orchestration/parallel-protocol.mjs` via `test/e2e/parallel-dispatch-protocol.test.mjs`; includes synthetic boundary inputs plus real temporary Git worktree, result-commit, conflict, and rollback behavior. | This is partial local simulation. External runtimes must still invoke the validator and enforce the skill instructions, capabilities, and repository-specific commands during real sessions. |
@@ -300,11 +305,14 @@ arbitrary domain automatically.
 | Source skill count | 21 |
 | Mirror counts | 21 in `.claude`, `plugin`, and `codex` |
 | Text hygiene | No hidden/control/bidi Unicode in tracked text files |
-| Frontmatter | Required `name` and `description`; optional `allowed-tools`; no duplicate keys; no unsupported frontmatter shape |
+| Frontmatter | Canonical skills require `name`, `description`, and semantic `required-actions`; provider tool allowlists exist only in generated adapter mirrors |
 | Skill names | Unique `sdcorejs-*` kebab-case names |
 | Ref links | Exact `_refs/...` paths in skills and refs resolve to committed files |
 | Codex mirror | `name` + `description` only, refs rewritten to `../_refs/...` |
 | Cursor rule | In sync with `AGENTS.md` |
+| Harness manifests | Five generated adapter manifests match the canonical capability source hash and contain all 21 skills |
+| Capability contract | Every adapter maps all 13 actions and declares all 11 capabilities as supported, unsupported, or unknown with fallbacks |
+| Behavioral sentinel | Direct/fast/full workflow, interaction, delegation, ownership, summary mutation, and static visual scenarios pass |
 | Stale mirrors | No missing, changed, or extra generated mirror files |
 | Root npm publication | `private: true`; no publication-only manifest metadata, scripts, lifecycle hooks, workflow credentials, registry commands, or npm dependency-install guidance |
 | Workflow names | No removed legacy skills remain |
@@ -326,6 +334,7 @@ npm run sync:skills
 npm run check:text-hygiene
 npm run check:skills
 npm run check:skills:ps
+npm run test:e2e:harness
 npm run check:nestjs-pack
 node --test test/e2e/npm-publication-contract.test.mjs
 node --test test/e2e/ai-agent-track-contract.test.mjs

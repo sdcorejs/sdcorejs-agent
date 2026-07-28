@@ -1,25 +1,19 @@
 ---
 name: sdcorejs-parallel-dispatch
-description: Parallel execution gate and subagent fan-out discipline. Use after execute-plan asks sequential vs parallel and user chooses parallel, when an approved plan is explicitly split across agents, or for read-only parallel audits. Validates protocol-v2 contracts, runtime capabilities, path/resource ownership, per-unit isolation, DAG waves, deterministic fan-in, repair ownership, and evidence freshness. Applies to all tracks and generic work. Runtime-localized.
-allowed-tools: Read, Write, Glob, Grep, Bash, Agent
+description: Parallel execution gate and role-aware subagent fan-out discipline. Use when an approved plan has multiple feasible independent units, when the user explicitly requests a safe split, or for read-only parallel audits. Validates protocol-v2 contracts, capabilities, model tiers, path/resource ownership, task briefs, deterministic fan-in, repair ownership, and evidence freshness. Runtime-localized.
+required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose, agent.dispatch, agent.resume, agent.interrupt, workspace.isolate
 ---
 
 # Parallel Dispatch
 
 ## Shared Protocols
 
-Before executing this skill:
-1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
-2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` as a read-only,
-   relevance-first context assembler.
-4. Read `_refs/shared/artifact-lifecycle.md` and assign one owner for every
-   shared `.sdcorejs/**` artifact.
-5. Read `_refs/orchestration/parallel-protocol.md` completely and validate every dispatch against it.
-6. Import the deterministic validators from `_refs/orchestration/parallel-protocol.mjs`; do not reimplement their contract, path, workspace, topology, fan-in, repair, evidence, or state checks in prompts.
-7. For write-capable work, read `_refs/orchestration/workspace-isolation.md` before creating or selecting unit workspaces.
-8. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-9. Before a user-facing choice, apply `_refs/shared/user-choice-prompt.md`.
+Read `_refs/shared/runtime-protocols.md` and the complete
+`_refs/orchestration/parallel-protocol.md`; use its deterministic validators
+rather than reimplementing them in prompts. For write-capable work, load
+`_refs/orchestration/workspace-isolation.md` and assign one owner for every
+shared artifact. Load `_refs/harness/delegation-policy.json` and
+`_refs/harness/task-brief.md` only after dispatch is feasible.
 
 ## Purpose
 
@@ -38,10 +32,12 @@ The underlying topology is one of `READ_ONLY_FANOUT`,
 `INDEPENDENT_WRITE_UNITS`, `CONTRACT_BOUND_ROLES`, or `SEQUENTIAL_DAG`.
 
 Parent write permission is narrow: it may write an approved, change-scoped
-protocol/brief artifact under the target `.sdcorejs/` area and may apply
-validated unit results in the integration workspace. It does not own
-implementation files. Workers may create only change-scoped artifacts and must
-not update summary, persona, memory, or living track backlogs. The named
+protocol artifact under the target `.sdcorejs/` area and may apply validated
+unit results in the integration workspace. Runtime `task_brief` and
+`review_package` messages stay in the harness/thread and never become mutable
+`.sdcorejs/**` checkpoints. The parent does not own implementation files.
+Workers may create only approved change-scoped artifacts and must not update
+summary, persona, memory, or living track backlogs. The named
 integration owner updates shared artifacts once after fan-in and emits the
 merged `artifact_context`. Shared implementation paths belong to a concrete
 unit or `integration-unit`; `parent-contract-only` owns contract metadata only.
@@ -73,7 +69,10 @@ direct invocation is not a bypass.
 2. Validate the contract union and its hashes.
 3. Capture current branch, HEAD, staged, unstaged, untracked, dirty-diff hash,
    unrelated dirty paths, and intended-output overlap.
-4. Negotiate runtime capabilities. Unknown write-heavy capability is blocking.
+4. Negotiate runtime capabilities through
+   `_refs/harness/capability-contract.json`. Unsupported or unknown subagent,
+   isolation, or per-worker control falls back to sequential parent execution;
+   never assume it exists.
 5. Derive paths, stacks, executors, commands, roles, and resources from the
    approved plan and target evidence. Do not assume a framework or directory
    layout.
@@ -133,10 +132,26 @@ hash. Supported strategies are:
 - `worktree`, with a distinct unit worktree/result and separate integration
   workspace
 
-Briefs are self-contained and include contract identity, approved-plan slice,
-dependencies, exact scope, allowed/prohibited paths, resources, verification,
-result protocol, redaction rules, and out-of-scope behavior. A unit may not
-self-certify path compliance and may not spawn subagents.
+Create the exact runtime `task_brief` from `_refs/harness/task-brief.md`.
+Reference the approved spec/plan by ID, path, and hash; include only the bounded
+plan step or excerpt needed by the unit. Never paste a full spec, full plan, or
+repository summary into each worker. A unit may not self-certify path
+compliance and may not spawn subagents.
+
+Select one role (`explorer`, `test_writer`, `docs_writer`, `reviewer`, or
+`implementation_worker`) and semantic model tier (`fast`, `balanced`, or
+`deep`) from `_refs/harness/delegation-policy.json`.
+
+- Fast workers are limited to bounded documentation or test scaffolding after
+  behavior, acceptance criteria, test layer, and owned paths are confirmed.
+- Test writing is not inherently simple. Security, concurrency, flaky,
+  integration-root-cause, and public-contract tests use balanced or deep.
+- Architecture, security review, public-contract decisions, and final
+  acceptance remain with the parent or a deep reviewer.
+- When model override is unsupported or unknown, inherit the parent model and
+  record the limitation. Never require a provider model ID.
+- Do not create a worker just to run one command. Delegate execution only for
+  independent suites or substantial log analysis.
 
 ### 4. Dispatch And Collect
 
@@ -144,11 +159,12 @@ Dispatch only units whose dependencies are satisfied. Respect the runtime's
 effective concurrency. If calls serialize, run explicit sequential waves and
 report that real concurrency was unavailable.
 
-Each result must identify its commit, patch, exact working-tree diff, or report;
-the expected base; actual changed paths computed by the parent; exit code;
-blockers; and evidence digest. A missing result, non-zero claimed success,
-wrong cwd/base, timeout, deterministic path/contract violation, or unexpected
-write fails or blocks the unit under the protocol state machine.
+Each result returns the exact runtime `review_package` plus its commit, patch,
+exact working-tree diff, or report; expected base; actual changed paths
+computed by the parent; exit code; blockers; and evidence digest. A missing
+result, non-zero claimed success, wrong cwd/base, timeout, deterministic
+path/contract violation, or unexpected write fails or blocks the unit under the
+protocol state machine.
 
 ### 5. Review, Repair, And Fan In
 
@@ -158,11 +174,14 @@ For each result:
 2. Run the mandatory path-boundary validator from the protocol reference.
 3. Validate base ancestry/result identity and Stage A scope compliance.
 4. Run Stage B `sdcorejs-review` for changed code.
-5. Route valid findings through `sdcorejs-repair-loop` using an explicit
-   `repair_assignment` bound to the original owner, workspace, base result,
-   current contract hash, and allowlist.
+5. Prefer `agent.resume` to return valid findings to the original implementer,
+   using an explicit `repair_assignment` bound to the original owner,
+   workspace, base result, current contract hash, and allowlist. Permit at most
+   three scoped repair rounds; then escalate to the parent/deeper role. Escalate
+   immediately if a finding changes architecture, security, or public behavior.
 6. Re-run Stage A, Stage B, path validation, and unit verification after writes.
-7. Fan in only a `PASSED` unit, one at a time, in declared merge order using the
+7. The parent re-reads the current diff and fresh evidence; then fan in only a
+   `PASSED` unit, one at a time, in declared merge order using the
    declared cherry-pick, patch, or disjoint-same-tree strategy.
 8. Run required integration probes after each accepted result.
 
@@ -212,7 +231,8 @@ local simulation from real runtime concurrency evidence.
 
 - Validate protocol v2 before dispatch.
 - Fail closed on unknown write-heavy capability, ownership, base, workspace, or
-  result identity.
+  result identity for parallel dispatch; continue through the portable
+  sequential parent fallback when safe.
 - Mechanically compute actual changed paths and store the normalized list.
 - Use plan-derived DAG waves and deterministic integration.
 - Keep approved snapshots immutable and stale old evidence after revision.
@@ -221,6 +241,7 @@ local simulation from real runtime concurrency evidence.
 - Require explicit ownership for shared artifacts and merge `artifact_context`
   deterministically after fan-in.
 - Route repairs to an explicit owner/workspace.
+- Keep task briefs and review packages runtime-only and bounded.
 - Surface partial failures and unsupported cancellation honestly.
 - Run global verification and final branch-ready on the final state.
 

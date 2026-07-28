@@ -4,19 +4,6 @@ node_modules/
 # npm package artifacts
 *.tgz
 
-# Keep CLI source file, ignore generated files in bin/
-bin/*
-!bin/
-!bin/sdcorejs-agent.mjs
-
-# Common generated outputs in bin/
-bin/**/*.js
-bin/**/*.cjs
-bin/**/*.map
-bin/**/*.d.ts
-bin/**/*.d.ts.map
-bin/**/*.tsbuildinfo
-
 # Claude Code local user settings (track .claude/skills/, README.md, sync-skills.sh)
 .claude/settings.json
 .claude/settings.local.json

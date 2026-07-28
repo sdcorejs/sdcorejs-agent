@@ -1,14 +1,11 @@
 ---
 name: sdcorejs-ai-agent
-description: >-
-  Approved-plan executor for first-class AI-agent contracts using one declared
-  engine profile and one independent capability profile. Use for confirmed
-  implementation of Responses API or Agents SDK agent architecture, tools,
-  guardrails, approvals, state, evidence, tracing, offline evals, and tests.
-  Under-specified agent ideas return to brainstorming; test, review, and debug
-  remain owned by their dedicated skills.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, TodoWrite
+description: Approved-plan executor for first-class AI-agent contracts using one declared engine profile and one independent capability profile. Use for confirmed implementation of Responses API or Agents SDK agent architecture, tools, guardrails, approvals, state, evidence, tracing, offline evals, and tests. Under-specified agent ideas return to brainstorming; test, review, and debug remain owned by their dedicated skills.
+allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, WebFetch, Write
 ---
+
+<!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
+
 
 # SDCoreJS AI Agent
 
@@ -35,13 +32,8 @@ owning workflow gate. Do not infer a profile from prose after plan approval.
 
 ## Shared Protocols
 
-Before a non-trivial run, apply:
-
-1. `_refs/shared/project-context.md`
-2. `_refs/shared/tasklist.md`
-3. `_refs/shared/artifact-lifecycle.md` when `.sdcorejs/**` is written
-4. `_refs/shared/user-choice-prompt.md` before any user-facing choice
-5. `_refs/ai-agent/manifest.json`
+Read `_refs/shared/runtime-protocols.md` and `_refs/ai-agent/manifest.json`.
+Apply `_refs/shared/artifact-lifecycle.md` when `.sdcorejs/**` is written.
 
 Use the live `Tasks` section for progress. Preserve unrelated working-tree
 changes and fail closed on overlapping paths.

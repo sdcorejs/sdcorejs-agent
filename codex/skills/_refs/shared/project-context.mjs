@@ -54,6 +54,8 @@ const LOCKFILE_PATTERN =
 const PACKAGE_MANIFEST_PATTERN = /(?:^|\/)package\.json$/i;
 const ENTRYPOINT_PATTERN =
   /(?:^|\/)(?:main|index|server|bootstrap)\.[cm]?[jt]sx?$|(?:^|\/)(?:app|pages)\/.*\/(?:page|layout|route)\.[cm]?[jt]sx?$/i;
+const ADAPTER_ENTRYPOINT_PATTERN =
+  /^(?:AGENTS\.md|CLAUDE\.md|skills\/orchestration\/using-skills\.md|scripts\/sync-skills\.mjs|\.claude-plugin\/plugin\.json|plugin\/hooks\/(?:hooks\.json|session-start(?:\.mjs)?)|\.github\/copilot-instructions\.md|\.github\/chatmodes\/[^/]+\.md|\.cursor\/rules\/[^/]+\.mdc)$/i;
 
 export async function assembleProjectContext({
   root,
@@ -69,9 +71,13 @@ export async function assembleProjectContext({
   const targetRoot = path.resolve(root ?? process.cwd());
   const files = await listRepositoryFiles(targetRoot);
   const targetRootKind = await classifyTargetRoot(targetRoot, files);
-  const fingerprintResult = await computeProjectFingerprints(targetRoot, files);
   const summaryPath = path.join(targetRoot, '.sdcorejs', 'summary.md');
-  const summaryResult = await readSummary(summaryPath, fingerprintResult.fingerprints);
+  const summaryText = await readFile(summaryPath, 'utf8').catch(() => null);
+  const declaredEntrypoints = extractDeclaredEntrypoints(summaryText);
+  const fingerprintResult = await computeProjectFingerprints(targetRoot, files, {
+    declaredEntrypoints,
+  });
+  const summaryResult = assessSummaryFreshness(summaryText, fingerprintResult.fingerprints);
   const provider = graphProvider ?? detectExistingGraphProvider(targetRoot, files, fingerprintResult.packageJsonRecords);
   const codeContext = chooseCodeContextStrategy({
     taskShape,
@@ -119,11 +125,14 @@ export async function assembleProjectContext({
   };
 }
 
-export async function computeProjectFingerprints(root, knownFiles) {
+export async function computeProjectFingerprints(root, knownFiles, { declaredEntrypoints = [] } = {}) {
   const targetRoot = path.resolve(root);
   const files = knownFiles ?? await listRepositoryFiles(targetRoot);
+  const fileSet = new Set(files);
   const workspaceRecords = [];
   const dependencyRecords = [];
+  const entrypointRecords = [];
+  const keyEntrypoints = new Set();
   const packageJsonRecords = [];
 
   for (const relativePath of files) {
@@ -143,7 +152,9 @@ export async function computeProjectFingerprints(root, knownFiles) {
       workspaceRecords.push(`${relativePath}\0${content}`);
     }
     if (LOCKFILE_PATTERN.test(relativePath) || PACKAGE_MANIFEST_PATTERN.test(relativePath)) {
-      dependencyRecords.push(`${relativePath}\0${content}`);
+      if (LOCKFILE_PATTERN.test(relativePath)) {
+        dependencyRecords.push(`${relativePath}\0${content}`);
+      }
     }
     if (PACKAGE_MANIFEST_PATTERN.test(relativePath)) {
       const parsed = safeJsonParse(content);
@@ -156,29 +167,61 @@ export async function computeProjectFingerprints(root, knownFiles) {
           workspaces: parsed.workspaces ?? null,
         };
         workspaceRecords.push(`${relativePath}#workspace\0${stableStringify(workspaceShape)}`);
+        const dependencyShape = {
+          packageManager: parsed.packageManager ?? null,
+          engines: parsed.engines ?? null,
+          scripts: parsed.scripts ?? null,
+          dependencies: parsed.dependencies ?? null,
+          devDependencies: parsed.devDependencies ?? null,
+          optionalDependencies: parsed.optionalDependencies ?? null,
+          peerDependencies: parsed.peerDependencies ?? null,
+          peerDependenciesMeta: parsed.peerDependenciesMeta ?? null,
+          overrides: parsed.overrides ?? null,
+          resolutions: parsed.resolutions ?? null,
+        };
+        dependencyRecords.push(`${relativePath}#dependencies\0${stableStringify(dependencyShape)}`);
+
+        const packageEntrypoints = collectPackageEntrypoints(relativePath, parsed);
+        entrypointRecords.push(
+          `${relativePath}#entrypoint-fields\0${stableStringify(packageEntrypoints.fields)}`
+        );
+        for (const entrypoint of packageEntrypoints.paths) {
+          keyEntrypoints.add(entrypoint);
+          entrypointRecords.push(
+            `package-entrypoint:${entrypoint}\0exists=${fileSet.has(entrypoint)}`
+          );
+        }
       }
     }
   }
 
   const sourceRoots = detectSourceRoots(files);
-  const entrypoints = files.filter((item) => ENTRYPOINT_PATTERN.test(item)).sort();
-  const sourceRootRecords = [
-    ...sourceRoots.map((item) => `root:${item}`),
-    ...entrypoints.map((item) => `entrypoint:${item}`),
-  ];
+  const discoveredEntrypoints = files
+    .filter((item) => ENTRYPOINT_PATTERN.test(item) || ADAPTER_ENTRYPOINT_PATTERN.test(item))
+    .sort();
+  for (const entrypoint of discoveredEntrypoints) {
+    keyEntrypoints.add(entrypoint);
+    entrypointRecords.push(`discovered-entrypoint:${entrypoint}\0exists=true`);
+  }
+  for (const declared of declaredEntrypoints.map(normalizeRelativePath).filter(Boolean)) {
+    keyEntrypoints.add(declared);
+    entrypointRecords.push(`declared-entrypoint:${declared}\0exists=${fileSet.has(declared)}`);
+  }
+  const sourceRootRecords = sourceRoots.map((item) => `root:${item}`);
 
   return {
     fingerprints: {
       workspace_structure: hashRecords(workspaceRecords),
       dependency_manifests: hashRecords(dependencyRecords),
       source_roots: hashRecords(sourceRootRecords),
+      entrypoint_contract: hashRecords(entrypointRecords),
     },
     evidence: {
       workspace_configs: files.filter((item) => WORKSPACE_CONFIG_PATTERN.test(item)),
       package_manifests: files.filter((item) => PACKAGE_MANIFEST_PATTERN.test(item)),
       lockfiles: files.filter((item) => LOCKFILE_PATTERN.test(item)),
       source_roots: sourceRoots,
-      key_entrypoints: entrypoints,
+      key_entrypoints: [...keyEntrypoints].sort(),
     },
     packageJsonRecords,
   };
@@ -243,6 +286,11 @@ export function assessSummaryFreshness(summaryText, currentFingerprints) {
       'Entrypoints and Main Runtime Flows',
       'Task-to-Path Navigation',
     ],
+    entrypoint_contract: [
+      'Application and Module Map',
+      'Entrypoints and Main Runtime Flows',
+      'Task-to-Path Navigation',
+    ],
   };
 
   for (const [key, sections] of Object.entries(mapping)) {
@@ -258,10 +306,16 @@ export function assessSummaryFreshness(summaryText, currentFingerprints) {
     }
   }
 
+  const independentMismatches = mismatches.filter(
+    (key) => key !== 'entrypoint_contract' || !mismatches.includes('source_roots')
+  );
   let status = 'fresh';
-  if (mismatches.length >= 2 || (mismatches.includes('workspace_structure') && mismatches.includes('source_roots'))) {
+  if (
+    independentMismatches.length >= 2 ||
+    (mismatches.includes('workspace_structure') && mismatches.includes('source_roots'))
+  ) {
     status = 'stale';
-  } else if (mismatches.length === 1) {
+  } else if (independentMismatches.length === 1) {
     status = 'partially-stale';
   } else if (unknowns.length > 0) {
     status = 'unknown';
@@ -395,11 +449,6 @@ export function detectExistingGraphProvider(root, files = [], packageJsonRecords
   return null;
 }
 
-async function readSummary(summaryPath, currentFingerprints) {
-  const content = await readFile(summaryPath, 'utf8').catch(() => null);
-  return assessSummaryFreshness(content, currentFingerprints);
-}
-
 async function listRepositoryFiles(root) {
   try {
     const { stdout } = await execFileAsync(
@@ -407,13 +456,16 @@ async function listRepositoryFiles(root) {
       ['ls-files', '--cached', '--others', '--exclude-standard', '-z'],
       { cwd: root, encoding: 'buffer', maxBuffer: 20 * 1024 * 1024 }
     );
-    return stdout
+    const candidates = stdout
       .toString('utf8')
       .split('\0')
       .filter(Boolean)
       .map(normalizeRelativePath)
-      .filter((item) => !isSkippedPath(item))
-      .sort();
+      .filter((item) => !isSkippedPath(item));
+    const present = await Promise.all(
+      candidates.map(async (item) => await exists(path.join(root, item)) ? item : null)
+    );
+    return present.filter(Boolean).sort();
   } catch {
     const result = [];
     await walk(root, root, result);
@@ -580,6 +632,70 @@ function parseSummaryMetadata(text) {
   return result;
 }
 
+function extractDeclaredEntrypoints(text) {
+  if (!text) return [];
+  const frontmatter = extractFrontmatter(text);
+  const inline = frontmatter.match(/^\s*key_entrypoints:\s*\[(.*?)\]\s*$/m);
+  if (inline) {
+    return inline[1]
+      .split(',')
+      .map((item) => parseScalar(item))
+      .filter(isNonEmptyString);
+  }
+  const block = frontmatter.match(
+    /^\s*key_entrypoints:\s*\r?\n((?:\s+-\s+.*(?:\r?\n|$))+)/m
+  );
+  if (!block) return [];
+  return block[1]
+    .split(/\r?\n/)
+    .map((line) => line.match(/^\s+-\s+(.*?)\s*$/)?.[1])
+    .filter(Boolean)
+    .map(parseScalar)
+    .filter(isNonEmptyString);
+}
+
+function collectPackageEntrypoints(manifestPath, manifest) {
+  const fields = {
+    main: manifest.main ?? null,
+    bin: manifest.bin ?? null,
+    exports: manifest.exports ?? null,
+    module: manifest.module ?? null,
+    browser: manifest.browser ?? null,
+    types: manifest.types ?? null,
+  };
+  const base = path.posix.dirname(manifestPath);
+  const values = [];
+  collectStringLeaves(fields, values);
+  const paths = values
+    .filter(looksLikeEntrypointPath)
+    .map((value) => normalizeRelativePath(path.posix.join(base === '.' ? '' : base, value)))
+    .sort();
+  return { fields, paths: [...new Set(paths)] };
+}
+
+function collectStringLeaves(value, output) {
+  if (typeof value === 'string') {
+    output.push(value);
+    return;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((item) => collectStringLeaves(item, output));
+    return;
+  }
+  if (value && typeof value === 'object') {
+    Object.values(value).forEach((item) => collectStringLeaves(item, output));
+  }
+}
+
+function looksLikeEntrypointPath(value) {
+  return (
+    value.startsWith('./') ||
+    value.startsWith('../') ||
+    /[\\/]/.test(value) ||
+    /\.[cm]?[jt]sx?$/.test(value)
+  );
+}
+
 function extractFrontmatter(text) {
   const normalized = text.replace(/^\uFEFF/, '');
   if (!normalized.startsWith('---')) return '';
@@ -616,6 +732,10 @@ function safeJsonParse(value) {
   } catch {
     return null;
   }
+}
+
+function isNonEmptyString(value) {
+  return typeof value === 'string' && value.trim().length > 0;
 }
 
 function normalizeRelativePath(value) {

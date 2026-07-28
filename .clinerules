@@ -9,7 +9,7 @@ sdcorejs-brainstorming
 -> sdcorejs-spec (approval gate + approved spec snapshot)
 -> sdcorejs-plan (approval gate + approved plan snapshot)
 -> sdcorejs-execute-plan
-   always ask sequential vs parallel
+   auto-select sequential unless both modes are feasible
 -> executor: sdcorejs-angular for Core UI portals/new SDCoreJS portals/approved Core UI migration | sdcorejs-nestjs | sdcorejs-nextjs | sdcorejs-product | sdcorejs-design | sdcorejs-test | generic harness for plain Angular and unsupported stacks
 -> finish gate and tail chain
 ```
@@ -30,6 +30,10 @@ Rules:
   Git artifact handoff.
 - Explicit approval required for spec and plan.
 - Approved plans execute through `sdcorejs-execute-plan`.
+- Pure Q&A answers directly; bounded low-risk fixes use targeted context,
+  focused verification, and concise review.
+- Ask sequential versus parallel only for two or more independent units when
+  both modes are feasible.
 - `sdcorejs-execute-plan` classifies Angular as Core UI vs plain Angular before dispatch.
 - Parallel work requires `sdcorejs-parallel-dispatch`.
 - Product/PO docs and traceability use `sdcorejs-product`.

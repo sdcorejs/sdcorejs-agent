@@ -1,15 +1,11 @@
 ---
 name: sdcorejs-simplify
-description: >-
-  Behavior-preserving code simplification utility for recently changed or
-  explicitly scoped executable source code. Use to improve clarity,
-  consistency, and maintainability after a green baseline without changing
-  observable behavior, public contracts, strings, prompts, configuration, or
-  protected framework boundaries. Broad refactors return to planning; bugs,
-  findings, tests, documentation, and performance work retain their dedicated
-  owners. Runtime-localized.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, TodoWrite
+description: Behavior-preserving code simplification utility for recently changed or explicitly scoped executable source code. Use to improve clarity, consistency, and maintainability after a green baseline without changing observable behavior, public contracts, strings, prompts, configuration, or protected framework boundaries. Broad refactors return to planning; bugs, findings, tests, documentation, and performance work retain their dedicated owners. Runtime-localized.
+allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 ---
+
+<!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
+
 
 # Simplify
 

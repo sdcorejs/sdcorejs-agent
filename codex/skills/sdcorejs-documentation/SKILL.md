@@ -12,15 +12,9 @@ description: Documentation executor/gate for documentation artifacts. Use for co
 
 ## Shared Protocols
 
-Before executing this skill:
-1. Read and apply `../_refs/shared/tasklist.md` for non-trivial execution tasks.
-2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `../_refs/shared/project-context.md` as a read-only,
-   relevance-first context assembler.
-4. Read `../_refs/shared/artifact-lifecycle.md`; every `.sdcorejs/**`
-   documentation write must emit `artifact_context`.
-5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+Read `../_refs/shared/runtime-protocols.md` and load only the references needed for
+the selected mode. Every `.sdcorejs/**` documentation write applies
+`../_refs/shared/artifact-lifecycle.md` and emits `artifact_context`.
 
 ## Purpose
 

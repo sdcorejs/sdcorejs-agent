@@ -2,7 +2,10 @@
 
 Repository-level tests for the current 21-skill SDCoreJS Agent layout.
 
-The pack is documentation-driven. Tests focus on dispatch metadata, generated mirrors, reference availability, and entrypoint compatibility.
+The pack is documentation-driven, with deterministic executable contracts for
+capabilities, entry gating, delegation boundaries, summary freshness, and the
+static visual composer. Tests retain prose checks and add behavioral
+simulations/mutation fixtures.
 
 For the claim boundaries between static checks, deterministic routing, CLI
 smoke, Full E2E, and live-agent transcript evidence, see `VALIDATION.md`.
@@ -24,6 +27,7 @@ npm run check:text-hygiene
 Run one phase:
 
 ```bash
+npm run test:e2e:harness
 npm run test:e2e:phase1
 npm run test:e2e:phase2
 npm run test:e2e:phase3
@@ -40,6 +44,7 @@ scheduled/manual `Full E2E` workflow runs phase 4 with `SDCOREJS_E2E_FULL=1`.
 - `.claude/skills`: 21
 - `plugin/skills`: 21
 - `codex/skills`: 21 skill folders plus shared `_refs`
+- Adapter harness manifests: 5 generated files with one canonical source hash
 - `_refs/**/*.md`: at least 60 committed markdown refs; Core UI component docs are fetched on demand
 
 PowerShell count:
@@ -60,6 +65,18 @@ $refs = Get-ChildItem -Recurse -File -Path _refs -Filter *.md
 ```
 
 ## Phase Coverage
+
+### Behavioral Harness Sentinels
+
+```bash
+npm run test:e2e:harness
+```
+
+Simulates direct Q&A, bounded fast-fix, ambiguous full-workflow entry,
+single/multi-unit execution mode, tri-state interaction fallback, worker-tier
+selection, bounded task/review envelopes, entrypoint deletion/rename
+invalidation, disjoint ownership, and safe static visual rendering. It does not
+call a live model.
 
 ### npm Publication Contract
 
@@ -141,6 +158,9 @@ npm run check:skills:ps
 - `plugin/skills`
 - `codex/skills`
 - `.cursor/rules/sdcorejs-agent.mdc`
+- `.claude/sdcorejs-harness.json`, `plugin/sdcorejs-harness.json`,
+  `codex/sdcorejs-harness.json`, `.cursor/sdcorejs-harness.json`, and
+  `.github/sdcorejs-harness.json`
 
 ## Fresh-Session Smoke Prompts
 

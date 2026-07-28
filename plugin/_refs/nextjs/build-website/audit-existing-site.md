@@ -84,43 +84,43 @@ npx --yes lighthouse "$URL" --only-categories=seo,performance,accessibility --qu
   --chrome-flags="--headless" --output=json --output-path=/tmp/audit-lh.json
 ```
 
-### Step 3 — Code-level checks (read-only, grep-driven)
+### Step 3 — Code-level checks (read-only, evidence-driven)
 
 Each check maps to one sub-skill from the build-website pack. The findings table at the end uses these checks.
 
 | # | Check | Probe |
 |---|---|---|
-| A1 | **init-site** Folder structure has `src/app/[locale]/`, `src/i18n/`, `src/content/<locale>/` | `Glob` those paths |
-| A2 | **theme** Tokens defined in `tailwind.config.ts` (extend.colors.brand, fontFamily) | `Grep` `theme.extend.colors` |
-| A3 | **theme** Vietnamese subset loaded via `next/font` | `Grep` `subsets:\s*\[.*vietnamese` |
-| B1 | **pages-and-blocks** Section components exist in `src/components/sections/` | `Glob src/components/sections/*.tsx` |
+| A1 | **init-site** Folder structure has `src/app/[locale]/`, `src/i18n/`, `src/content/<locale>/` | `artifact.read`: match those paths |
+| A2 | **theme** Tokens defined in `tailwind.config.ts` (extend.colors.brand, fontFamily) | `artifact.read`: search for `theme.extend.colors` |
+| A3 | **theme** Vietnamese subset loaded via `next/font` | `artifact.read`: search for `subsets:\s*\[.*vietnamese` |
+| B1 | **pages-and-blocks** Section components exist in `src/components/sections/` | `artifact.read`: match `src/components/sections/*.tsx` |
 | B2 | **pages-and-blocks** No hardcoded Vietnamese in components (all strings via props/t()) | `<localized text>` — should return 0 |
-| B3 | **pages-and-blocks** Content externalized to `src/content/<locale>/` | `Glob src/content/*/*` non-empty |
-| C1 | **seo** `generateMetadata` per page | `Grep 'generateMetadata\|export const metadata' src/app/**/*.tsx` per page |
-| C2 | **seo** `app/sitemap.ts` exists | `Glob src/app/sitemap.{ts,tsx}` |
-| C3 | **seo** `app/robots.ts` exists | `Glob src/app/robots.{ts,tsx}` |
-| C4 | **seo** Favicon variants — `icon.svg`, `apple-icon.png`, `manifest.ts` | Glob |
-| C5 | **seo** Organization JSON-LD on home | `Grep 'application/ld+json' src/app/[locale]/page.tsx` |
+| B3 | **pages-and-blocks** Content externalized to `src/content/<locale>/` | `artifact.read`: confirm `src/content/*/*` is non-empty |
+| C1 | **seo** `generateMetadata` per page | `artifact.read`: search `generateMetadata\|export const metadata` in `src/app/**/*.tsx` per page |
+| C2 | **seo** `app/sitemap.ts` exists | `artifact.read`: match `src/app/sitemap.{ts,tsx}` |
+| C3 | **seo** `app/robots.ts` exists | `artifact.read`: match `src/app/robots.{ts,tsx}` |
+| C4 | **seo** Favicon variants — `icon.svg`, `apple-icon.png`, `manifest.ts` | `artifact.read`: match the files |
+| C5 | **seo** Organization JSON-LD on home | `artifact.read`: search `application/ld+json` in `src/app/[locale]/page.tsx` |
 | D1 | **og-preview** Static OG fallback at `public/og-default.png` | File exists |
-| D2 | **og-preview** Dynamic OG via `opengraph-image.tsx` for at least home | Glob |
-| E1 | **i18n** `src/middleware.ts` uses `createMiddleware` | Grep |
-| E2 | **i18n** `routing.ts` with `pathnames` (localized URLs) | Grep `pathnames:` |
-| E3 | **i18n** Both `vi.json` + `en.json` exist | Glob |
+| D2 | **og-preview** Dynamic OG via `opengraph-image.tsx` for at least home | `artifact.read`: match the file |
+| E1 | **i18n** `src/middleware.ts` uses `createMiddleware` | `artifact.read`: search the file |
+| E2 | **i18n** `routing.ts` with `pathnames` (localized URLs) | `artifact.read`: search for `pathnames:` |
+| E3 | **i18n** Both `vi.json` + `en.json` exist | `artifact.read`: match both files |
 | E4 | **i18n** Keys symmetric (handled by `check:i18n` in Step 2) | from /tmp/audit-i18n.log |
-| F1 | **caching** `"use cache"` + `cacheLife` on pages | `Grep '"use cache"' src/app/**/*.tsx` |
-| F2 | **caching** On-demand revalidation route exists if content can change | `Glob src/app/api/revalidate/route.ts` |
-| G1 | **responsive** Tailwind mobile-first; no `lg:hidden md:hidden` blocking mobile nav | `Grep -r 'md:hidden\|lg:hidden' src/components/layout/` — sanity check |
-| G2 | **responsive** `next/image` everywhere; no raw `<img>` | `Grep '<img ' src/` — should be 0 |
-| G3 | **responsive** `sizes` prop on responsive images | `Grep -A2 'Image' src/components/sections/*.tsx \| grep -c sizes` |
-| H1 | **contact-form** Real API route at `src/app/api/contact/` | Glob |
-| H2 | **contact-form** Email service wired (Resend / SendGrid) — not `setTimeout` stub | `Grep 'setTimeout' src/components/sections/contact-form.tsx` — should be 0; `Grep 'resend\|sendgrid' src/app/api/contact/route.ts` — should be 1+ |
-| H3 | **contact-form** Rate limit applied | `Grep 'rateLimit\|RATE_LIMIT' src/app/api/contact/` |
-| I1 | **content-quality** `@tailwindcss/typography` installed | `Grep '@tailwindcss/typography' package.json` |
+| F1 | **caching** `"use cache"` + `cacheLife` on pages | `artifact.read`: search `"use cache"` in `src/app/**/*.tsx` |
+| F2 | **caching** On-demand revalidation route exists if content can change | `artifact.read`: match `src/app/api/revalidate/route.ts` |
+| G1 | **responsive** Tailwind mobile-first; no `lg:hidden md:hidden` blocking mobile nav | `artifact.read`: search `md:hidden\|lg:hidden` in `src/components/layout/` |
+| G2 | **responsive** `next/image` everywhere; no raw `<img>` | `artifact.read`: search `<img ` in `src/`; expected count 0 |
+| G3 | **responsive** `sizes` prop on responsive images | `artifact.read`: inspect image usages in `src/components/sections/*.tsx` |
+| H1 | **contact-form** Real API route at `src/app/api/contact/` | `artifact.read`: match the route |
+| H2 | **contact-form** Email service wired (Resend / SendGrid) — not `setTimeout` stub | `artifact.read`: search the component for `setTimeout` (expected 0) and the route for `resend\|sendgrid` (expected 1+) |
+| H3 | **contact-form** Rate limit applied | `artifact.read`: search `rateLimit\|RATE_LIMIT` in `src/app/api/contact/` |
+| I1 | **content-quality** `@tailwindcss/typography` installed | `artifact.read`: search `package.json` |
 | I2 | **content-quality** `check:i18n` script (handled in Step 2) | from log |
 | I3 | **content-quality** `check:content` script (handled in Step 2) | from log |
-| I4 | **content-quality** Article JSON-LD builder for article pages | `Grep 'articleJsonLd\|"@type":\s*"Article"' src/lib/structured-data.ts` |
+| I4 | **content-quality** Article JSON-LD builder for article pages | `artifact.read`: search `articleJsonLd\|"@type":\s*"Article"` in `src/lib/structured-data.ts` |
 | I5 | **content-quality** Min word counts respected on key pages | from /tmp/audit-content.log |
-| I6 | **content-quality** Heading hierarchy — exactly 1 `<h1>` per page | `Grep -c '<h1' src/app/**/*.tsx` per file = 1 |
+| I6 | **content-quality** Heading hierarchy — exactly 1 `<h1>` per page | `artifact.read`: count `<h1` in each `src/app/**/*.tsx`; expected 1 per file |
 
 The reference pack that fixes each finding is named in the "Check" column — drives the gap report's "Fix via" cell automatically. All packs are dispatched through the `sdcorejs-nextjs` orchestrator.
 
@@ -226,7 +226,7 @@ Pass these context fields to `01-brainstorming` so it knows to skip what's alrea
 ## Rules
 
 ### MUST DO
-- READ-ONLY operation — no Write, no Edit on the target repo
+- READ-ONLY operation — do not invoke `artifact.write` on the target repo
 - Confirm Next.js project before running any probe
 - Run every automated check that the project supports; surface missing scripts as Important findings
 - Sort findings by Severity (Critical → Important → Minor) and then by ease (small effort first within same severity for quick wins)

@@ -13,15 +13,9 @@ description: Angular Core UI portal executor for confirmed frontend implementati
 
 ## Shared Protocols
 
-Before executing this skill:
-1. Read and apply `../_refs/shared/tasklist.md` for non-trivial execution tasks.
-2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `../_refs/shared/project-context.md` as a read-only,
-   relevance-first context assembler.
-4. Read `../_refs/shared/artifact-lifecycle.md` and merge producer
-   `artifact_context` through the finishing tail.
-5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+Read `../_refs/shared/runtime-protocols.md` and
+`../_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through
+the finishing tail.
 
 ## Purpose
 
@@ -397,7 +391,10 @@ the dispatched per-file reference and the approved frontend architecture.
 ## Rules
 
 ### MUST DO
-- Show a live progress checklist with **TodoWrite** from the START of generation — one checkbox item per planned unit (each file / screen / entity / pack step) PLUS the finishing steps (tests, optional behavior-preserving simplification, review, code-documentation, technical-doc, user-guide). Keep exactly one item `in_progress`; flip it to `completed` the moment that unit is done and start the next. Update after EACH task, never batch at the end — this is how the user tracks progress. Create it before writing the first file.
+- Create visible runtime progress from the START of generation through
+  `progress.create`, with one item per planned unit and the finishing steps (tests, optional behavior-preserving simplification, review, code-documentation, technical-doc, user-guide).
+  Keep one item `in_progress`, call `progress.update` after each unit, and never
+  mirror live progress to a repository file.
 - Run the entity reuse preflight before generating model/service/entity code; identify primary + related entities, scan existing model/interface/type/dto/service/api/repository/store files, and decide reuse/extend/create new before writing code.
 - Run `../_refs/angular/write-code/input-analysis.md` before UI-affecting work, image/screenshot/Figma input, PRDs, user stories, feature descriptions, or acceptance criteria. Produce the SDCoreJS Core reuse analysis and the matching UI decomposition, requirement mapping, or image+PRD mapping before implementation.
 - Run `../_refs/angular/write-code/po-ba-prototype.md` for PO/BA portal demo, PRD-to-UI prototype, no API/backend/design, module/screens-for-client-alignment, or mock-first portal requests. Emit the required PO/BA Prototype Plan, keep services mock-first, and record Prototype assumptions before code generation.
