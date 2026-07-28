@@ -7,7 +7,7 @@ description: >-
   guardrails, approvals, state, evidence, tracing, offline evals, and tests.
   Under-specified agent ideas return to brainstorming; test, review, and debug
   remain owned by their dedicated skills.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, TodoWrite
+required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose, user.approve, web.fetch
 ---
 
 # SDCoreJS AI Agent
@@ -35,13 +35,8 @@ owning workflow gate. Do not infer a profile from prose after plan approval.
 
 ## Shared Protocols
 
-Before a non-trivial run, apply:
-
-1. `_refs/shared/project-context.md`
-2. `_refs/shared/tasklist.md`
-3. `_refs/shared/artifact-lifecycle.md` when `.sdcorejs/**` is written
-4. `_refs/shared/user-choice-prompt.md` before any user-facing choice
-5. `_refs/ai-agent/manifest.json`
+Read `_refs/shared/runtime-protocols.md` and `_refs/ai-agent/manifest.json`.
+Apply `_refs/shared/artifact-lifecycle.md` when `.sdcorejs/**` is written.
 
 Use the live `Tasks` section for progress. Preserve unrelated working-tree
 changes and fail closed on overlapping paths.

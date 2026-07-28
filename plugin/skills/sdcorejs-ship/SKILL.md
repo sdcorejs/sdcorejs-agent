@@ -1,8 +1,11 @@
 ---
 name: sdcorejs-ship
 description: Final delivery and dependency-update gate. Use for verify-before-done, branch readiness, ready-to-merge, ship/push/release/tag, update dependencies, update package, bump package, npm outdated, audit fix, or consistency checks before handoff. Owns verify-before-done, branch-ready, ship, dependency-update, and release-ready modes; delegates git artifacts to sdcorejs-git. Applies to all tracks and this repo. Runtime-localized.
-allowed-tools: Bash, Read, Grep, Glob, Write, Edit
+allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 ---
+
+<!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
+
 
 # Ship
 
@@ -40,20 +43,9 @@ for commit, PR, push, changelog, tag, or release artifacts.
 
 ## Shared Protocols
 
-Before executing this skill:
-
-1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
-2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` as a read-only,
-   relevance-first context assembler.
-4. Read `_refs/shared/artifact-lifecycle.md`; consume and pass through the
-   current change's `artifact_context`.
-5. Current user request, current files, diffs, logs, failing tests, and command
-   output override stored context.
-6. Before presenting user-facing choices, approval gates, yes/no questions, or
-   mode selections, read and apply `_refs/shared/user-choice-prompt.md` so
-   options are sequential numbered choices.
-7. Redact suspected secrets before printing evidence.
+Read `_refs/shared/runtime-protocols.md` and
+`_refs/shared/artifact-lifecycle.md`; consume and pass through the current
+change's `artifact_context`. Redact suspected secrets before printing evidence.
 
 ## Mode Selection
 

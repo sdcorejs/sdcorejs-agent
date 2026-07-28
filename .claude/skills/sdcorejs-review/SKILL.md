@@ -1,8 +1,11 @@
 ---
 name: sdcorejs-review
 description: Read-only review/audit skill across SDCoreJS tracks. Use for code, architecture, security, performance, accessibility, existing-site audits, scored/full audits, or auto review after an executor. Detects stack/profile/dimension, loads applicable refs only, emits review_context for repair-loop, and stays strict read-only by default. Applies to angular, nestjs, nextjs, general. Runtime-localized.
-allowed-tools: Read, Glob, Grep, Bash
+allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 ---
+
+<!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
+
 
 # Review (profile + dimension aware)
 
@@ -20,15 +23,9 @@ an explicit user or finish-gate choice.
 
 ## Shared Protocols
 
-Before executing this skill:
-1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
-2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` as a read-only,
-   relevance-first context assembler.
-4. Read `_refs/shared/artifact-lifecycle.md` only when the user explicitly
-   chooses to persist the report.
-5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+Read `_refs/shared/runtime-protocols.md`. Apply
+`_refs/shared/artifact-lifecycle.md` only when the user explicitly chooses to
+persist the report.
 
 ## When to use
 - After a track executor finishes a batch and the finish gate selected review.

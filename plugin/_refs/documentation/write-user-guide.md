@@ -82,7 +82,7 @@ rg -n "data:\s*\{[^}]*permission" <fe>/src/libs/<module>
 rg -n "sdPermission" <fe>/src/libs/<module>
 
 # Route declarations (covers flat routes.ts + nested *.routes.ts / *.routing.ts)
-Glob: <fe>/src/libs/<module>/**/{routes.ts,*.routes.ts,*.routing.ts}
+artifact.read path match: <fe>/src/libs/<module>/**/{routes.ts,*.routes.ts,*.routing.ts}
 rg -rn "path:" <fe>/src/libs/<module>/
 ```
 
@@ -107,14 +107,14 @@ rg -n "@HasPermission\('([^']+)'\)" <be>/src/modules/<module>
 rg -n "@Column" <be>/src/modules/<module>/entities/
 
 # Zod schema file
-Glob: <be>/src/modules/<module>/schemas/<module>.schema.ts
-Read: extract field names + validation rules
+artifact.read path match: <be>/src/modules/<module>/schemas/<module>.schema.ts
+artifact.read extraction: field names + validation rules
 ```
 
 **Screen types (Angular):**
 ```bash
 # Detect list / detail / create / update / custom-action screens
-Glob: <fe>/src/libs/<module>/features/<entity>/pages/*/
+artifact.read path match: <fe>/src/libs/<module>/features/<entity>/pages/*/
 # list.component.ts | detail.component.ts | create.component.ts | update.component.ts
 rg -n "openWorkflow\|openBulk\|openCustomAction\|SdActionButton" <fe>/src/libs/<module>
 ```
@@ -200,8 +200,8 @@ Map every requirement from the approved spec / PRD to either ✅ documented & im
 
 ```bash
 # Prefer spec scoped to this module (filename contains module slug)
-Glob: <target>/.sdcorejs/docs/<track>/*-<module>*-spec.md
-Glob: <target>/.sdcorejs/specs/<track>/*-<module>*-spec.md
+artifact.read path match: <target>/.sdcorejs/docs/<track>/*-<module>*-spec.md
+artifact.read path match: <target>/.sdcorejs/specs/<track>/*-<module>*-spec.md
 # If no module-scoped match: select a related change-scoped execution record
 # by change_ref/source metadata and resolve its spec_refs field.
 # Last fallback: most-recent *-spec.md in the track docs dir regardless of module.
@@ -212,14 +212,14 @@ Glob: <target>/.sdcorejs/specs/<track>/*-<module>*-spec.md
 
 ```bash
 # External PRD if it exists
-Glob: <target>/.sdcorejs/prd/<feature>.md
-Read: extract requirement list / acceptance criteria
+artifact.read path match: <target>/.sdcorejs/prd/<feature>.md
+artifact.read extraction: requirement list / acceptance criteria
 ```
 
 Also load matching task-level requirement records when present:
 
 ```bash
-Glob: <target>/.sdcorejs/documentation/requirements/*.md
+artifact.read path match: <target>/.sdcorejs/documentation/requirements/*.md
 # Prefer files whose id/title/source refs match the module, TASKID, change_ref,
 # source_spec, source_plan, or explicit user scope.
 ```
@@ -334,7 +334,7 @@ This step prevents the aggregate from silently embedding stale module guides wri
 Glob all per-module guides (after step 2 has refreshed any stale ones):
 
 ```bash
-Glob: <target>/.sdcorejs/documentation/user-guides/*.md
+artifact.read path match: <target>/.sdcorejs/documentation/user-guides/*.md
 # Read each file; extract YAML frontmatter (module, title, coverage) + body (strip frontmatter block)
 ```
 

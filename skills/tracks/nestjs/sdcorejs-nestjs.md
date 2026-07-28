@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-nestjs
 description: NestJS code executor for approved/direct backend work with confirmed requirements. Use after execute-plan or for project/admin/module/entity CRUD, explicit endpoints, workflows, bulk operations, exports, or reuse of @sdcorejs/utils. Loads the canonical NestJS manifest and only the packs required for the resolved profile. Not for spec, plan, review, or unresolved requests. Runs the mandatory finish tail. Runtime-localized.
-allowed-tools: Read, Write, Edit, Bash, Glob, TodoWrite
+required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose, user.approve, web.fetch
 ---
 
 # SDCoreJS NestJS Executor

@@ -1,23 +1,20 @@
 ---
 name: sdcorejs-design
 description: Design-track executor for FE handoff artifacts. Use for UI/UX design, mobile app/mobile web design, wireframes, mockups, screen flows, PNG previews, design from product stories, or design review before frontend implementation. Writes design/ specs/flows/wireframes/exports and .sdcorejs/docs/design/ traceability; no production code. Runtime-localized.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 ---
+
+<!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
+
 
 # Design Track
 
 
 ## Shared Protocols
 
-Before executing this skill:
-1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
-2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` as a read-only,
-   relevance-first context assembler.
-4. Read `_refs/shared/artifact-lifecycle.md` and emit `artifact_context` for
-   every design ledger written.
-5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+Read `_refs/shared/runtime-protocols.md` and
+`_refs/shared/artifact-lifecycle.md`; emit `artifact_context` for every design
+ledger written.
 
 ## Purpose
 Create FE handoff artifacts from product intent. The output should let Angular/Next.js executors implement screens without guessing layout, states, copy, interactions, or responsive behavior.

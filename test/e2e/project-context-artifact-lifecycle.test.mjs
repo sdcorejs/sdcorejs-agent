@@ -77,19 +77,20 @@ test('summary v2 freshness is section-aware and ignores unrelated source-content
   await write(root, 'src/feature.js', 'export const feature = 1;\n');
   await commitAll(root, 'initial');
 
-  const baseline = await computeProjectFingerprints(root);
-  const summary = summaryV2(baseline.fingerprints);
+  const declaredEntrypoints = ['src/main.js'];
+  const baseline = await computeProjectFingerprints(root, undefined, { declaredEntrypoints });
+  const summary = summaryV2(baseline.fingerprints, declaredEntrypoints);
   assert.deepEqual(validateSummaryV2(summary), []);
   assert.equal(assessSummaryFreshness(summary, baseline.fingerprints).status, 'fresh');
 
   await write(root, 'src/feature.js', 'export const feature = 2;\n');
-  const unrelated = await computeProjectFingerprints(root);
+  const unrelated = await computeProjectFingerprints(root, undefined, { declaredEntrypoints });
   assert.deepEqual(unrelated.fingerprints, baseline.fingerprints);
   assert.equal(assessSummaryFreshness(summary, unrelated.fingerprints).status, 'fresh');
 
   packageJson.dependencies.beta = '2.0.0';
   await write(root, 'package.json', `${JSON.stringify(packageJson, null, 2)}\n`);
-  const dependencyChange = await computeProjectFingerprints(root);
+  const dependencyChange = await computeProjectFingerprints(root, undefined, { declaredEntrypoints });
   const dependencyFreshness = assessSummaryFreshness(summary, dependencyChange.fingerprints);
   assert.equal(dependencyFreshness.status, 'partially-stale');
   assert.deepEqual(
@@ -100,7 +101,7 @@ test('summary v2 freshness is section-aware and ignores unrelated source-content
   delete packageJson.dependencies.beta;
   await write(root, 'package.json', `${JSON.stringify(packageJson, null, 2)}\n`);
   await write(root, 'backend/src/main.ts', 'export const backend = true;\n');
-  const sourceRootChange = await computeProjectFingerprints(root);
+  const sourceRootChange = await computeProjectFingerprints(root, undefined, { declaredEntrypoints });
   const sourceFreshness = assessSummaryFreshness(summary, sourceRootChange.fingerprints);
   assert.equal(sourceFreshness.status, 'partially-stale');
   assert.deepEqual(
@@ -114,7 +115,7 @@ test('summary v2 freshness is section-aware and ignores unrelated source-content
 
   await rm(join(root, 'backend'), { recursive: true, force: true });
   await write(root, 'nx.json', '{"extends":"nx/presets/npm.json"}\n');
-  const workspaceChange = await computeProjectFingerprints(root);
+  const workspaceChange = await computeProjectFingerprints(root, undefined, { declaredEntrypoints });
   const workspaceFreshness = assessSummaryFreshness(summary, workspaceChange.fingerprints);
   assert.equal(workspaceFreshness.status, 'partially-stale');
   assert.ok(workspaceFreshness.invalidatedSections.includes('Stack and Workspace'));
@@ -130,6 +131,54 @@ test('summary v2 freshness is section-aware and ignores unrelated source-content
     'kind: project-summary\nbranch: feature/volatile'
   );
   assert.match(validateSummaryV2(volatile).join('\n'), /forbidden volatile frontmatter key: branch/);
+});
+
+test('summary v2 mutation fixture invalidates exactly entrypoint-dependent sections', async () => {
+  const root = await createGitRepo();
+  const declaredEntrypoints = ['src/launcher.custom.js'];
+  await write(root, 'package.json', JSON.stringify({ name: 'entrypoint-fixture', private: true, main: 'src/package-entry.custom.js' }, null, 2));
+  await write(root, 'src/package-entry.custom.js', 'export const packageEntry = true;\n');
+  await write(root, 'src/launcher.custom.js', 'export const launch = true;\n');
+  await write(root, 'src/feature.js', 'export const feature = 1;\n');
+  await commitAll(root, 'initial entrypoint fixture');
+
+  const baseline = await computeProjectFingerprints(root, undefined, { declaredEntrypoints });
+  const summary = summaryV2(baseline.fingerprints, declaredEntrypoints);
+  await write(root, '.sdcorejs/summary.md', summary);
+  const expected = [
+    'Application and Module Map',
+    'Entrypoints and Main Runtime Flows',
+    'Task-to-Path Navigation',
+  ].sort();
+  const initialRoundTrip = await assembleProjectContext({ root, requestScope: 'entrypoint round trip' });
+  assert.equal(initialRoundTrip.project_context.summary.status, 'fresh');
+  assert.deepEqual(initialRoundTrip.project_context.summary.usable_sections.sort(), summarySections().sort());
+
+  await write(root, 'src/feature.js', 'export const feature = 2;\n');
+  const unrelatedEdit = await computeProjectFingerprints(root, undefined, { declaredEntrypoints });
+  assert.deepEqual(assessSummaryFreshness(summary, unrelatedEdit.fingerprints).usableSections.sort(), summarySections().sort());
+
+  await rm(join(root, 'src/launcher.custom.js'));
+  const deletedEntrypoint = await computeProjectFingerprints(root, undefined, { declaredEntrypoints });
+  const deletionFreshness = assessSummaryFreshness(summary, deletedEntrypoint.fingerprints);
+  assert.deepEqual(deletionFreshness.invalidatedSections.sort(), expected);
+  assert.deepEqual(deletionFreshness.usableSections.sort(), summarySections().filter((section) => !expected.includes(section)).sort());
+
+  await write(root, 'src/launcher.custom.js', 'export const launch = true;\n');
+  await rm(join(root, 'src/launcher.custom.js'));
+  await write(root, 'src/renamed.custom.js', 'export const renamed = true;\n');
+  const renamedEntrypoint = await computeProjectFingerprints(root, undefined, { declaredEntrypoints });
+  const renameFreshness = assessSummaryFreshness(summary, renamedEntrypoint.fingerprints);
+  assert.deepEqual(renameFreshness.invalidatedSections.sort(), expected);
+  assert.deepEqual(renameFreshness.usableSections.sort(), summarySections().filter((section) => !expected.includes(section)).sort());
+
+  await write(root, 'src/launcher.custom.js', 'export const launch = true;\n');
+  await write(root, 'src/renamed-package-entry.custom.js', 'export const renamedPackageEntry = true;\n');
+  await write(root, 'package.json', JSON.stringify({ name: 'entrypoint-fixture', private: true, main: 'src/renamed-package-entry.custom.js' }, null, 2));
+  const packageFieldRename = await computeProjectFingerprints(root, undefined, { declaredEntrypoints });
+  const packageFreshness = assessSummaryFreshness(summary, packageFieldRename.fingerprints);
+  assert.deepEqual(packageFreshness.invalidatedSections.sort(), expected);
+  assert.deepEqual(packageFreshness.usableSections.sort(), summarySections().filter((section) => !expected.includes(section)).sort());
 });
 
 test('code-context escalation stays scoped and existing graph providers are read-only', () => {
@@ -488,7 +537,7 @@ test('every durable artifact producer participates in lifecycle propagation', as
   }
 });
 
-function summaryV2(fingerprints) {
+function summaryV2(fingerprints, keyEntrypoints = ['src/main.js']) {
   return `---
 schema_version: 2
 kind: project-summary
@@ -502,11 +551,12 @@ source_roots: [src]
 evidence:
   workspace_configs: []
   package_manifests: [package.json]
-  key_entrypoints: [src/main.js]
+  key_entrypoints: [${keyEntrypoints.join(', ')}]
 fingerprints:
   workspace_structure: ${fingerprints.workspace_structure}
   dependency_manifests: ${fingerprints.dependency_manifests}
   source_roots: ${fingerprints.source_roots}
+  entrypoint_contract: ${fingerprints.entrypoint_contract}
 redaction_applied: true
 artifact_id: project-summary
 artifact_kind: summary
@@ -554,6 +604,22 @@ None.
 ## Refresh Triggers
 Refresh for workspace, dependency, or source-root changes.
 `;
+}
+
+function summarySections() {
+  return [
+    'Purpose',
+    'Read First',
+    'Stack and Workspace',
+    'Application and Module Map',
+    'Entrypoints and Main Runtime Flows',
+    'Source-of-Truth and Generated Boundaries',
+    'Commands',
+    'Conventions and Invariants',
+    'Task-to-Path Navigation',
+    'Known Unknowns',
+    'Refresh Triggers',
+  ];
 }
 
 function artifact(kind, changeRef, owner, overrides = {}) {

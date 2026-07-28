@@ -1,14 +1,24 @@
 #!/usr/bin/env node
+import { createHash } from 'node:crypto';
 import { constants as fsConstants } from 'node:fs';
 import { access, cp, mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  CANONICAL_BEHAVIOR_ENTRYPOINTS,
+  validateCapabilityContract,
+  validateProviderNeutralText,
+} from '../_refs/harness/runtime-policy.mjs';
 
 const mode = parseMode(process.argv.slice(2));
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const skillsRoot = path.join(repoRoot, 'skills');
 const refsRoot = path.join(repoRoot, '_refs');
+const capabilityContractFile = path.join(refsRoot, 'harness', 'capability-contract.json');
+const canonicalBehaviorEntrypointFiles = CANONICAL_BEHAVIOR_ENTRYPOINTS.map(
+  (relativePath) => path.join(repoRoot, ...relativePath.split('/'))
+);
 
 const claudeSkillRoots = [
   path.join(repoRoot, '.claude', 'skills'),
@@ -21,6 +31,13 @@ const claudeRefRoots = [
 const codexSkillsRoot = path.join(repoRoot, 'codex', 'skills');
 const codexRefsRoot = path.join(codexSkillsRoot, '_refs');
 const cursorRuleFile = path.join(repoRoot, '.cursor', 'rules', 'sdcorejs-agent.mdc');
+const manifestSpecs = [
+  { adapter: 'claude-code', relativePath: '.claude/sdcorejs-harness.json' },
+  { adapter: 'claude-code', relativePath: 'plugin/sdcorejs-harness.json' },
+  { adapter: 'codex', relativePath: 'codex/sdcorejs-harness.json' },
+  { adapter: 'cursor', relativePath: '.cursor/sdcorejs-harness.json' },
+  { adapter: 'copilot', relativePath: '.github/sdcorejs-harness.json' },
+];
 
 main().catch((error) => {
   console.error(error?.stack ?? String(error));
@@ -34,14 +51,27 @@ async function main() {
     const kept = new Set();
     let count = 0;
 
-    await mirrorRefs(targets);
+    const capabilitySource = await readFile(capabilityContractFile, 'utf8');
+    const capabilityContract = JSON.parse(capabilitySource);
+    const contractErrors = validateCapabilityContract(capabilityContract);
+    if (contractErrors.length > 0) {
+      throw new Error(
+        `Harness capability contract is invalid:\n${contractErrors.map((item) => `  - ${item}`).join('\n')}`
+      );
+    }
 
     const sourceFiles = await listSourceSkillFiles(skillsRoot);
     const sourceSkills = await loadSourceSkills(sourceFiles);
-    await validateSourcePack(sourceSkills);
+    await validateSourcePack(sourceSkills, capabilityContract);
+
+    await mirrorRefs(targets);
 
     for (const skill of sourceSkills) {
-      await mirrorClaudeSkill(skill.path, skill.text, skill.name, targets.claudeSkillRoots);
+      await mirrorClaudeSkill(
+        skill,
+        targets.claudeSkillRoots,
+        capabilityContract.adapters['claude-code']
+      );
       await mirrorCodexSkill(skill.text, skill.name, targets.codexSkillsRoot);
 
       kept.add(skill.name);
@@ -52,6 +82,12 @@ async function main() {
     }
 
     await writeCursorRule(targets.cursorRuleFile);
+    await writeHarnessManifests(
+      targets.manifestFiles,
+      sourceSkills,
+      capabilityContract,
+      capabilitySource
+    );
 
     if (mode === 'check') {
       const drift = await checkMirrors(targets, count);
@@ -91,12 +127,18 @@ async function prepareTargets(workBase) {
       codexSkillsRoot: path.join(workBase, 'codex-skills'),
       codexRefsRoot: path.join(workBase, 'codex-skills', '_refs'),
       cursorRuleFile: path.join(workBase, 'cursor', 'sdcorejs-agent.mdc'),
+      manifestFiles: manifestSpecs.map((spec) => ({
+        ...spec,
+        expected: path.join(workBase, 'manifests', ...spec.relativePath.split('/')),
+        actual: path.join(repoRoot, ...spec.relativePath.split('/')),
+      })),
     };
     await Promise.all([
       ...targets.claudeSkillRoots.map(ensureDir),
       ...targets.claudeRefRoots.map(ensureDir),
       ensureDir(targets.codexSkillsRoot),
       ensureDir(path.dirname(targets.cursorRuleFile)),
+      ...targets.manifestFiles.map((item) => ensureDir(path.dirname(item.expected))),
     ]);
     return targets;
   }
@@ -114,6 +156,10 @@ async function prepareTargets(workBase) {
     codexSkillsRoot,
     codexRefsRoot,
     cursorRuleFile,
+    manifestFiles: manifestSpecs.map((spec) => {
+      const target = path.join(repoRoot, ...spec.relativePath.split('/'));
+      return { ...spec, expected: target, actual: target };
+    }),
   };
 }
 
@@ -126,12 +172,29 @@ async function mirrorRefs(targets) {
   }
 }
 
-async function mirrorClaudeSkill(sourceFile, sourceText, name, roots) {
+async function mirrorClaudeSkill(skill, roots, adapter) {
+  const generated = toClaudeSkill(skill, adapter);
   for (const root of roots) {
-    const destDir = path.join(root, name);
+    const destDir = path.join(root, skill.name);
     await ensureDir(destDir);
-    await writeFile(path.join(destDir, 'SKILL.md'), withTrailingNewline(sourceText), 'utf8');
+    await writeFile(path.join(destDir, 'SKILL.md'), generated, 'utf8');
   }
+}
+
+function toClaudeSkill(skill, adapter) {
+  const normalized = skill.text.replace(/^\uFEFF/, '');
+  const frontmatterEnd = normalized.indexOf('\n---', 3);
+  if (!normalized.startsWith('---') || frontmatterEnd === -1) return withTrailingNewline(normalized);
+  const body = normalized.slice(frontmatterEnd + '\n---'.length).replace(/^\r?\n/, '');
+  const allowedTools = [...new Set(
+    skill.requiredActions.flatMap((action) => adapter.actions[action]?.native ?? [])
+  )].sort();
+  const toolLine = allowedTools.length > 0 ? `\nallowed-tools: ${allowedTools.join(', ')}` : '';
+  return withTrailingNewline(
+    `---\nname: ${skill.name}\ndescription: ${skill.description}${toolLine}\n---\n\n` +
+    '<!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->\n\n' +
+    body
+  );
 }
 
 async function mirrorCodexSkill(sourceText, name, root) {
@@ -165,6 +228,42 @@ async function writeCursorRule(destFile) {
   await writeFile(destFile, text, 'utf8');
 }
 
+async function writeHarnessManifests(files, sourceSkills, contract, contractSource) {
+  const sourceHash = `sha256:${createHash('sha256').update(contractSource).digest('hex')}`;
+  for (const file of files) {
+    const skills = Object.fromEntries(sourceSkills.map((skill) => [
+      skill.name,
+      {
+        source_path: relative(skill.path),
+        required_actions: skill.requiredActions,
+      },
+    ]));
+    const adapterPayload = {
+      schema_version: 1,
+      adapter: file.adapter,
+      capabilities: contract.adapters[file.adapter].capabilities,
+      actions: contract.adapters[file.adapter].actions,
+      skills,
+    };
+    const contentHash = `sha256:${createHash('sha256')
+      .update(JSON.stringify(adapterPayload))
+      .digest('hex')}`;
+    const manifest = {
+      schema_version: adapterPayload.schema_version,
+      adapter: adapterPayload.adapter,
+      source_path: '_refs/harness/capability-contract.json',
+      source_hash: sourceHash,
+      content_hash: contentHash,
+      generated_path: file.relativePath,
+      capabilities: adapterPayload.capabilities,
+      actions: adapterPayload.actions,
+      skills: adapterPayload.skills,
+    };
+    await ensureDir(path.dirname(file.expected));
+    await writeFile(file.expected, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+  }
+}
+
 async function checkMirrors(targets, count) {
   let drift = false;
   for (let i = 0; i < claudeSkillRoots.length; i += 1) {
@@ -175,6 +274,9 @@ async function checkMirrors(targets, count) {
   }
   drift = (await checkTree(targets.codexSkillsRoot, codexSkillsRoot, `${relative(codexSkillsRoot)}/`, `${count} source files + shared _refs`)) || drift;
   drift = (await checkFile(targets.cursorRuleFile, cursorRuleFile, relative(cursorRuleFile))) || drift;
+  for (const manifest of targets.manifestFiles) {
+    drift = (await checkFile(manifest.expected, manifest.actual, manifest.relativePath)) || drift;
+  }
   return drift;
 }
 
@@ -244,29 +346,32 @@ async function loadSourceSkills(files) {
       text,
       name: frontmatter.name ?? '',
       description: frontmatter.description ?? '',
+      requiredActions: splitCsv(frontmatter['required-actions']),
       frontmatter,
     };
   }));
 }
 
-async function validateSourcePack(skills) {
+async function validateSourcePack(skills, capabilityContract) {
   const diagnostics = [];
   const seenNames = new Map();
+  const requiredActions = new Set(capabilityContract.required_actions);
 
   for (const skill of skills) {
-    diagnostics.push(...validateSourceSkill(skill, seenNames));
+    diagnostics.push(...validateSourceSkill(skill, seenNames, requiredActions));
   }
 
   diagnostics.push(...await validateReferencedRefs(skills));
+  diagnostics.push(...await validateProviderToolLeakage(skills));
 
   if (diagnostics.length > 0) {
     throw new Error(`Skill pack validation failed:\n${diagnostics.map((item) => `  - ${item}`).join('\n')}`);
   }
 }
 
-function validateSourceSkill(skill, seenNames) {
+function validateSourceSkill(skill, seenNames, requiredActions) {
   const diagnostics = [];
-  const allowedSourceKeys = new Set(['name', 'description', 'allowed-tools']);
+  const allowedSourceKeys = new Set(['name', 'description', 'required-actions']);
   const label = relative(skill.path);
 
   diagnostics.push(...skill.frontmatter.__errors.map((error) => `${label}: ${error}`));
@@ -288,8 +393,36 @@ function validateSourceSkill(skill, seenNames) {
   if (!skill.description) {
     diagnostics.push(`${label}: missing required 'description' frontmatter`);
   }
+  if (skill.requiredActions.length === 0) {
+    diagnostics.push(`${label}: missing required 'required-actions' frontmatter`);
+  }
+  for (const action of skill.requiredActions) {
+    if (!requiredActions.has(action)) {
+      diagnostics.push(`${label}: unknown required action '${action}'`);
+    }
+  }
 
   return diagnostics;
+}
+
+async function validateProviderToolLeakage(skills) {
+  const diagnostics = [];
+  const files = [
+    ...skills.map((skill) => skill.path),
+    ...await listRefValidationFiles(),
+    ...canonicalBehaviorEntrypointFiles,
+  ].filter((file) => {
+    const rel = relative(file);
+    return (
+      rel !== '_refs/harness/capability-contract.json' &&
+      rel !== '_refs/harness/adapter-compatibility.md'
+    );
+  });
+  await Promise.all(files.map(async (file) => {
+    const text = await readFile(file, 'utf8');
+    diagnostics.push(...validateProviderNeutralText(text, relative(file)));
+  }));
+  return diagnostics.sort();
 }
 
 async function validateReferencedRefs(skills) {
@@ -345,6 +478,13 @@ function parseFrontmatter(text) {
 
 function parseFrontmatterBlock(block) {
   return readFrontmatter(`---\n${block}\n---\n`).data;
+}
+
+function splitCsv(value) {
+  return String(value ?? '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
 function readFrontmatter(text) {

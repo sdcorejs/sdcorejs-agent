@@ -21,6 +21,38 @@ npm run check:skills
 Do not edit generated mirrors by hand. Edit source files under `skills/`,
 `_refs/`, and entrypoints, then regenerate mirrors.
 
+The sync also regenerates each adapter's `sdcorejs-harness.json`. A source or
+content hash, capability, action, or per-skill mapping mismatch is mirror drift,
+not a file to repair by hand.
+
+## Native Choice Or Delegation Is Missing
+
+Capability `unknown` is deliberately conservative. The harness must use
+numbered Markdown for interaction and sequential parent execution for
+delegation/isolation unless the runtime proves native support.
+
+- Inspect the adapter's generated `sdcorejs-harness.json`.
+- Confirm the client actually exposes the native surface in the current
+  session.
+- Run `npm run test:e2e:harness`.
+- Do not change `unknown` to `supported` from product documentation alone;
+  capture current runtime evidence.
+
+Per-agent model override is optional. When unavailable, inherit the parent
+model rather than blocking the task.
+
+## Static Visual Output
+
+The shipped companion is a static composer, not a local server. It always
+includes a numbered Markdown fallback and keeps the written response
+authoritative.
+
+- Do not add remote scripts, telemetry, arbitrary HTML, or a half-configured
+  socket/event bridge.
+- Treat generated HTML as temporary/local-only unless the user asks to save it.
+- If scripts are disabled, use the visible Markdown fallback.
+- A visual selection is feedback, not implementation approval.
+
 ## Missing Codex Refs
 
 Symptom:

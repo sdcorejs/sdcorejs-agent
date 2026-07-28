@@ -39,7 +39,7 @@ Request
   -> sdcorejs-plan
        Write numbered plan, ask for approval, and persist approved plan.
   -> sdcorejs-execute-plan
-       Detect track and always ask sequential vs parallel.
+       Detect track; ask execution mode only when both modes are feasible.
   -> executor
        ai-agent | angular | nestjs | nextjs | product | design | test | generic harness
   -> finish gate and tail chain
@@ -50,9 +50,23 @@ Request
        -> sdcorejs-ship (branch-ready mode as the final read-only gate)
 ```
 
-The two approval gates and approved snapshot writes live inside `sdcorejs-spec` and `sdcorejs-plan`. `sdcorejs-execute-plan` owns track detection, AI-agent/product/design/test routing, generic harness fallback, and the sequential/parallel question.
+The two approval gates and approved snapshot writes live inside `sdcorejs-spec`
+and `sdcorejs-plan`. `sdcorejs-execute-plan` owns track detection,
+AI-agent/product/design/test routing, generic fallback, and execution-mode
+resolution. It auto-selects sequential for one unit or when safe parallel
+execution is unavailable.
 No write-producing step may run after final branch-ready unless branch-ready is
 run again before Git artifacts.
+
+Pure Q&A answers directly. Small, explicit, low-risk fixes use targeted context,
+the smallest edit, focused verification, and concise review; they escalate to
+the full workflow if scope, risk, ownership, or behavior grows.
+
+Canonical skills declare provider-neutral `required-actions`.
+`_refs/harness/capability-contract.json` maps those actions and tri-state
+capabilities for Codex, Claude Code, Cursor, and Copilot. Unsupported or unknown
+capabilities retain numbered Markdown, static visual, and sequential parent
+fallbacks.
 
 The AI-agent track is an approved-plan-only authoring surface, not a bundled
 agent runtime. It selects one lifecycle engine (`openai-responses` or
@@ -140,12 +154,12 @@ ln -s .sdcorejs-agent/_refs _refs
 
 | Tool | Reads | Verification |
 |---|---|---|
-| Claude Code plugin | `plugin/skills/**`, `plugin/_refs/**` | `npm run check:skills` verifies plugin mirrors |
-| Claude Code direct | `CLAUDE.md`, `.claude/skills/**` | `npm run check:skills` verifies Claude mirrors |
-| Codex attached repo | `AGENTS.md` | Entry-point smoke tests cover dispatch guidance |
-| Codex native | `codex/skills/**` | `npm run check:skills` verifies Codex mirrors and `_refs` |
-| Cursor | `AGENTS.md`, generated `.cursor/rules/sdcorejs-agent.mdc` | Cursor rule is regenerated from `AGENTS.md` |
-| GitHub Copilot | `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md` | Entry-point smoke tests cover Copilot profile |
+| Claude Code plugin | `plugin/skills/**`, `plugin/_refs/**`, `plugin/sdcorejs-harness.json` | Mirror/action/capability drift checks |
+| Claude Code direct | `CLAUDE.md`, `.claude/skills/**`, `.claude/sdcorejs-harness.json` | Mirror and behavioral sentinel checks |
+| Codex attached repo | `AGENTS.md` | Entrypoint and behavioral sentinel checks |
+| Codex native | `codex/skills/**`, `codex/sdcorejs-harness.json` | Codex mirror/action/ref checks |
+| Cursor | `AGENTS.md`, `.cursor/rules/sdcorejs-agent.mdc`, `.cursor/sdcorejs-harness.json` | Generated rule/manifest drift checks |
+| GitHub Copilot | `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md`, `.github/sdcorejs-harness.json` | Entrypoint and manifest checks |
 
 For adoption guidance, compatibility evidence, and expected live-tool
 transcripts, see:
@@ -164,11 +178,13 @@ transcripts, see:
 ```text
 skills/                 source skills, 21 dispatchable skill files
 _refs/                  source reference docs
+_refs/harness/          actions, capabilities, model roles, runtime envelopes
 .claude/skills/         generated Claude mirror
 plugin/skills/          generated Claude plugin mirror
 codex/skills/           generated Codex-native mirror
 .cursor/rules/          generated Cursor rule
 scripts/sync-skills.mjs cross-platform mirror generator
+*/sdcorejs-harness.json generated adapter capability/action metadata
 ```
 
 Run after editing source skills, refs, or `AGENTS.md`:
@@ -211,11 +227,15 @@ review rules.
   closure automatically includes required same-change specs/plans/docs while
   excluding unrelated and local-only artifacts.
 - Requirements before code: use `sdcorejs-brainstorming` until blockers are confirmed.
+- Pure Q&A answers directly without entering the SDLC.
 - For explicitly small low-risk edits, use the fast-fix path in
   `docs/ADOPTION.md`; escalate to the full workflow if scope grows.
 - Explicit approval required for spec and plan.
 - Approved plans execute through `sdcorejs-execute-plan`.
-- `sdcorejs-execute-plan` always asks sequential vs parallel.
+- `sdcorejs-execute-plan` asks sequential versus parallel only for two or more
+  independent units when both modes are actually feasible.
+- Supported native structured interaction may be used for real decisions;
+  static visual and numbered Markdown fallbacks keep the workflow portable.
 - Product/PO docs, user stories, acceptance criteria, UAT, and traceability use the `sdcorejs-product` track.
 - UI/UX design, FE handoff specs, wireframes, and PNG previews use the `sdcorejs-design` track.
 - Test-only plans use the `sdcorejs-test` track.

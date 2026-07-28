@@ -24,6 +24,15 @@ Do not edit these by hand:
 - `codex/skills/**`
 - `codex/skills/_refs/**`
 - `.cursor/rules/sdcorejs-agent.mdc`
+- `.claude/sdcorejs-harness.json`
+- `plugin/sdcorejs-harness.json`
+- `codex/sdcorejs-harness.json`
+- `.cursor/sdcorejs-harness.json`
+- `.github/sdcorejs-harness.json`
+
+Canonical skills declare `required-actions`. Claude Code tool allowlists and all
+adapter action/capability manifests are derived from
+`_refs/harness/capability-contract.json`; they are not canonical edits.
 
 Regenerate mirrors after any canonical source change:
 
@@ -46,6 +55,11 @@ npm run check:skills:ps
   `scripts/sync-skills.mjs` should include `npm run check:skills` evidence.
 - If a generated mirror changes without a matching source or generator change,
   treat it as drift and regenerate from source.
+- A missing action mapping, capability-state mismatch, or manifest source-hash
+  mismatch is mirror drift and fails validation.
+- Each harness manifest records its canonical `source_path`, adapter,
+  `generated_path`, and `content_hash` together with the derived capability and
+  action declarations.
 - If a source change intentionally alters generated wording, add or update a
   regression test when the behavior is important for tool compatibility.
 - Generated mirrors are distribution artifacts. Keep them committed, but keep

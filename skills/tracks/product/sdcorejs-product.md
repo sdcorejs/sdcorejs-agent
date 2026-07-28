@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-product
 description: Product-track executor for PO docs and traceability. Use for PRDs, user stories, acceptance criteria, feature ledgers, requirement review, traceability matrix, UAT checklists, or consistency between requirements, implementation, and tests. Updates product/ docs and .sdcorejs/docs/product/ ledgers; does not generate app code. Applies across tracks. Runtime-localized.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose, user.approve
 ---
 
 # Product Track
@@ -9,15 +9,9 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 ## Shared Protocols
 
-Before executing this skill:
-1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
-2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` as a read-only,
-   relevance-first context assembler.
-4. Read `_refs/shared/artifact-lifecycle.md` and emit `artifact_context` for
-   every product ledger written.
-5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+Read `_refs/shared/runtime-protocols.md` and
+`_refs/shared/artifact-lifecycle.md`; emit `artifact_context` for every product
+ledger written.
 
 ## Purpose
 Maintain PO-facing feature docs and the traceability ledger for every meaningful feature. Human-readable docs explain what the product should do. The `.sdcorejs` ledger records why the feature exists, what was agreed, what was implemented, how it was tested, and what still does not line up.

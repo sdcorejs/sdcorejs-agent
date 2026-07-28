@@ -106,7 +106,7 @@ Request
   -> sdcorejs-plan
        Write numbered plan, self-review, ask for approval, persist approved plan.
   -> sdcorejs-execute-plan
-       Detect executor track and always ask sequential vs parallel.
+       Detect executor track; ask execution mode only when both modes are feasible.
   -> executor
        core-ui-angular / legacy-core-ui-angular / new SDCoreJS portal: sdcorejs-angular
        plain-angular: generic harness
@@ -130,7 +130,10 @@ Request
 No write-producing step may run after final branch-ready unless branch-ready is
 run again before any Git artifact handoff.
 
-`sdcorejs-execute-plan` always asks the user whether to run sequentially or in parallel before execution. If the user chooses parallel, it must run `sdcorejs-parallel-dispatch`, which owns both the safety verdict and safe fan-out / role-split execution.
+`sdcorejs-execute-plan` auto-selects sequential for one executable unit or when
+parallel capability/isolation is unavailable or unsafe. It asks sequential
+versus parallel only for at least two independent units where both modes are
+feasible. A parallel selection must run `sdcorejs-parallel-dispatch`.
 
 Direct splitting of an approved plan may route to `sdcorejs-parallel-dispatch`.
 Unapproved write requests still return to planning. Read-only parallel reviews
@@ -138,6 +141,16 @@ or audits may use its `read-only-request` contract with `write_policy: deny`;
 any detected write fails that unit. Write-capable dispatch uses the approved-plan
 contract, working-tree preflight, protocol-v2 ownership/isolation checks, and
 deterministic fan-in.
+
+Pure Q&A answers directly. A small, explicit, low-risk fix may use targeted
+context, the smallest edit, focused verification, and concise review without
+spec/plan artifacts. Scope, ownership, risk, or behavior growth escalates to
+the full workflow.
+
+Canonical skills declare semantic `required-actions`; provider mappings and
+tri-state capabilities live in `_refs/harness/capability-contract.json`.
+Unsupported or unknown capabilities use portable Markdown and sequential
+fallbacks.
 
 ## Tracks
 
@@ -180,14 +193,19 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 2. Requirements before code: use `sdcorejs-brainstorming` until minimum blockers are confirmed.
 3. Approval gates: `sdcorejs-spec` and `sdcorejs-plan` require explicit approval. Silence is not approval.
 4. Approved snapshots: `sdcorejs-spec` and `sdcorejs-plan` write approved snapshots themselves before the next phase.
-5. Execute through `sdcorejs-execute-plan`: it owns track detection, Angular Core UI/plain Angular classification, AI-agent/product/design/test routing, generic harness fallback, and the sequential/parallel question.
+5. Execute approved plans through `sdcorejs-execute-plan`: it owns track
+   detection, Angular Core UI/plain Angular classification,
+   AI-agent/product/design/test routing, generic fallback, and execution-mode
+   resolution.
 6. Finish gate is mandatory after every code-generation run, including direct track executor requests.
 7. Evidence before claims: never say pass, fixed, built, or done without current verification output.
 8. Durable execution records and explicitly owned backlog artifacts write to
    the target project, not to this agent repo. Live task progress remains in
    the thread/harness.
 9. Mojibake is a blocking defect in prompts, docs, skills, comments, and user-facing strings.
-10. User choice prompts must not rely on clickable options; apply `_refs/shared/user-choice-prompt.md`, ask one decision at a time, and provide numbered choices such as `1/2/3`.
+10. User choices use supported native structured interaction when available,
+    typed/static visuals only for visual decisions, and numbered Markdown in
+    every environment. Written replies remain authoritative.
 11. Skill-pack source language is English only; keep runtime-localized behavior by translating generated output to the user's language during execution, not by hardcoding Vietnamese in reusable skills or refs.
 12. Do not author new skills without explicit user approval.
 13. Do not expand into production SDLC skill/ref coverage without the explicit approval described in **Production SDLC Scope Decision**.
@@ -210,6 +228,12 @@ In a target project:
 
 Load references on demand:
 
+- `_refs/shared/runtime-protocols.md` to route shared references without
+  repeating them in every skill.
+- `_refs/harness/capability-contract.json` only when resolving a semantic
+  action or adapter capability.
+- `_refs/harness/delegation-policy.json` and `_refs/harness/task-brief.md` only
+  when delegation is feasible.
 - `_refs/shared/project-context.md` before non-trivial skill execution.
 - `_refs/shared/artifact-lifecycle.md` before writing, verifying, staging,
   committing, or pushing `.sdcorejs/**` artifacts.
@@ -227,7 +251,8 @@ Load references on demand:
 ## Anti-Patterns
 
 - Skipping `sdcorejs-brainstorming` because scope "looks obvious".
-- Starting code before the plan approval and execute-plan parallel question.
+- Starting governed code work before plan approval and execute-plan mode
+  resolution.
 - Treating test work as a tail-only concern; test-only plans use the `test` track.
 - Treating product docs as generic docs; human docs in `product/` and traceability ledgers in `.sdcorejs/docs/product/` use the `product` track.
 - Treating design as generic docs or production code; FE handoff artifacts use the `design` track and frontend implementation stays in the frontend track.

@@ -19,7 +19,7 @@ Request
   -> sdcorejs-spec (approval gate + approved spec snapshot)
   -> sdcorejs-plan (approval gate + approved plan snapshot)
   -> sdcorejs-execute-plan
-       always ask sequential vs parallel
+       ask execution mode only when both modes are feasible
        dispatch ai-agent | Core UI angular | nestjs | nextjs | product | design | test | generic harness
   -> finish gate and tail chain
        tests -> optional sdcorejs-simplify -> affected focused tests
@@ -66,7 +66,8 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - `sdcorejs-spec` and `sdcorejs-plan` write their own approved snapshots.
 - Approved plans execute through `sdcorejs-execute-plan`; it classifies Angular as Core UI vs plain Angular and validates `agent_architecture` before AI-agent dispatch.
 - Non-trivial skills apply `_refs/shared/project-context.md` before executing.
-- `sdcorejs-execute-plan` always asks sequential vs parallel before execution.
+- `sdcorejs-execute-plan` auto-selects sequential for one unit or unsafe/
+  unavailable parallel execution, and asks only when both modes are feasible.
 - Product docs, user stories, acceptance criteria, UAT, and traceability use `sdcorejs-product`.
 - UI/UX design, screen flows, wireframes, PNG previews, and FE handoff use `sdcorejs-design`.
 - Simplify eligible changed source without behavior changes through
@@ -79,6 +80,11 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
   parallel review/audit uses a `read-only-request` contract with writes denied.
   Write-capable dispatch requires working-tree preflight, mechanical ownership,
   per-unit isolation, deterministic fan-in, and final verification.
+- Pure Q&A answers directly. A bounded low-risk fix may use targeted context,
+  the smallest edit, focused verification, and concise review; scope growth
+  escalates to the full workflow.
+- Canonical skills request semantic actions. Unsupported or unknown native
+  capabilities use numbered Markdown and sequential parent fallbacks.
 - Every code-generation run presents the finish gate before tail steps.
 - Never claim pass, built, fixed, or done without current verification output.
 - Write `.sdcorejs/*` artifacts to the target project only.

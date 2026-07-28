@@ -70,7 +70,8 @@ without removing evidence discipline.
 Allowed when all are true:
 
 - The user explicitly asks for a small direct fix.
-- The change is narrow and affects one behavior or one documentation concern.
+- The behavior and acceptance criteria are already explicit.
+- The change is narrow, low risk, and has bounded owned paths.
 - No new architecture, workflow, skill, or production SDLC surface is created.
 - The agent can run targeted verification before reporting the result.
 
@@ -85,6 +86,34 @@ Required steps:
 Fast-fix is not a bypass for security, destructive commands, hidden Unicode
 hygiene, mojibake, or verification-before-done.
 
+Pure Q&A does not enter fast-fix or the full SDLC: answer it directly. Security,
+architecture, concurrency, flaky/root-cause, public-contract, ambiguous, or
+cross-cutting work always uses the governed workflow. If a fast-fix discovers
+one of those conditions, stop and escalate.
+
+For approved plans, one executable unit or unavailable/unsafe parallel
+capability auto-selects sequential execution. Ask sequential versus parallel
+only when at least two independent units make both choices real.
+
+## Portable Interaction And Delegation
+
+Canonical skills request semantic actions rather than vendor tool names.
+`_refs/harness/capability-contract.json` declares each adapter capability as
+`supported`, `unsupported`, or `unknown`; unknown uses the portable fallback.
+
+Choice priority is supported native structured interaction, a typed visual
+surface for visual decisions, the static visual composer when only HTML is
+available, then numbered Markdown. The written main-conversation response is
+authoritative, and visual selection never approves implementation.
+
+Delegation uses the roles `explorer`, `test_writer`, `docs_writer`, `reviewer`,
+and `implementation_worker` plus semantic tiers `fast`, `balanced`, and `deep`.
+Fast workers may handle only bounded docs or confirmed test scaffolding with an
+already-selected layer and disjoint owned paths. They do not decide behavior.
+Security, architecture, concurrency, flaky/root-cause, integration, and
+public-contract work stays balanced/deep. If model override is unavailable,
+workers inherit the parent model.
+
 ## Compatibility Matrix
 
 Record exact tool versions in release notes when validating an adopted release.
@@ -92,12 +121,11 @@ This matrix tracks supported surfaces and the evidence expected for each.
 
 | Tool surface | Reads from | Repository validation | Release evidence to capture |
 |---|---|---|---|
-| Claude Code plugin | `plugin/skills/**`, `plugin/_refs/**` | `npm run check:skills` verifies generated plugin mirrors. | Plugin install transcript and one representative skill dispatch. |
-| Claude Code direct repo | `CLAUDE.md`, `.claude/skills/**`, `.claude/_refs/**` | Mirror sync plus entrypoint smoke tests. | Direct repo session transcript showing skill selection and approval gate behavior. |
-| Codex attached repo | `AGENTS.md` | Entrypoint smoke tests cover dispatch guidance. | Codex session transcript from an attached target repo. |
-| Codex native skills | `codex/skills/**` and `codex/skills/_refs/**` | `npm run check:skills` verifies Codex frontmatter and ref rewrites. | Native-skill install transcript and a ref-loading check. |
-| Cursor | `AGENTS.md`, `.cursor/rules/sdcorejs-agent.mdc` | Cursor rule generated from `AGENTS.md`. | Cursor session transcript showing selected workflow. |
-| GitHub Copilot | `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md` | Entrypoint smoke tests cover the Copilot profile. | Copilot chat transcript for a simple governed task. |
+| Claude Code plugin | `plugin/skills/**`, `plugin/_refs/**`, `plugin/sdcorejs-harness.json` | `npm run check:skills` verifies generated mirrors, derived tool allowlists, capabilities, and hashes. | Plugin dispatch plus native-choice/Markdown fallback evidence. |
+| Claude Code direct repo | `CLAUDE.md`, `.claude/skills/**`, `.claude/_refs/**`, `.claude/sdcorejs-harness.json` | Mirror sync plus entrypoint and behavioral sentinel tests. | Direct session showing entry-gate, approval, and fallback behavior. |
+| Codex attached/native | `AGENTS.md`, `codex/skills/**`, `codex/sdcorejs-harness.json` | Entrypoint, mirror, and behavioral sentinel tests. | Codex session transcript with model/harness/source commit recorded. |
+| Cursor | `AGENTS.md`, `.cursor/rules/sdcorejs-agent.mdc`, `.cursor/sdcorejs-harness.json` | Generated rule/manifest drift checks and entrypoint tests. | Cursor session showing Markdown fallback and governed execution. |
+| GitHub Copilot | `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md`, `.github/sdcorejs-harness.json` | Manifest and entrypoint/behavioral checks. | Copilot transcript for direct Q&A, fast-fix, and one governed task. |
 
 ## Adoption Checklist
 

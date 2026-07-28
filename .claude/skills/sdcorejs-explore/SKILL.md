@@ -1,8 +1,11 @@
 ---
 name: sdcorejs-explore
 description: "Project exploration and durable context skill. Use to understand/map a codebase, trace feature flows, find reusable components/services, refresh .sdcorejs/summary.md, recover context, set/read persona, save/read memories, harvest documentation facts, or inspect local env shape. Modes: summary-read, summary-refresh, code-map, trace-flow, env-setup, recovery, persona, memories, documentation-harvest. Runtime-localized."
-allowed-tools: Bash, Read, Grep, Glob, Write, Edit
+allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, WebFetch, Write
 ---
+
+<!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
+
 
 # Explore
 
@@ -38,20 +41,14 @@ If the user asks to edit documentation, route to `sdcorejs-documentation`.
 
 ## Shared Protocols
 
-Before non-trivial exploration:
+Read `_refs/shared/runtime-protocols.md`. Before deep refs, broad scans,
+commands, or writes, classify `explore_action` and load project context with:
 
-1. Read and apply `_refs/shared/tasklist.md`.
-2. Read and apply `_refs/shared/persona.md` only when a project persona exists.
-3. Read `_refs/shared/artifact-lifecycle.md` before any write-approved action.
-4. Classify `explore_action` before deep refs, broad scans, commands, or writes.
-5. Read `_refs/shared/project-context.md` with:
    - `caller_context: sdcorejs-explore`;
    - `context_mode: <explore_action>`;
    - `side_effects_allowed: false` for read-only actions.
-6. Current user request, current files, diffs, logs, failing tests, and command
-   output override stored context.
-7. Before presenting choices, approval gates, yes/no questions, or mode
-   selections, read `_refs/shared/user-choice-prompt.md`.
+
+Apply `_refs/shared/artifact-lifecycle.md` before any write-approved action.
 
 Project-context must never recursively invoke `sdcorejs-explore` while
 `sdcorejs-explore` is already running.
@@ -242,8 +239,11 @@ Keep these invariants in the active skill:
 - read-only actions emit no writes;
 - summary refresh requires one of the explicit ownership conditions;
 - workers and `sdcorejs-git` never update the summary;
-- the fingerprint keys are `workspace_structure`, `dependency_manifests`, and
-  `source_roots`;
+- the fingerprint keys are `workspace_structure`, `dependency_manifests`,
+  `source_roots`, and `entrypoint_contract`;
+- entrypoint freshness covers package entrypoint fields, adapter/plugin
+  entrypoints, and declared key-entrypoint existence rather than only
+  conventional filename regexes;
 - write-approved actions emit `artifact_context`;
 - missing or stale summary is never itself permission to write.
 

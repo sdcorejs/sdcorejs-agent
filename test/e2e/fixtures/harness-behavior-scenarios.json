@@ -1,0 +1,34 @@
+{
+  "capabilities": {
+    "structured": { "native_structured_choice": "supported" },
+    "typed_visual": { "native_structured_choice": "unsupported", "visual_surface": "supported", "static_html_artifact": "supported" },
+    "static_visual": { "native_structured_choice": "unsupported", "visual_surface": "unsupported", "static_html_artifact": "supported" },
+    "fallback": { "native_structured_choice": "unsupported" },
+    "unknown": { "native_structured_choice": "unknown" }
+  },
+  "actions": [
+    { "id": "answer", "request": "What does this validator return?", "expected": "direct-answer" },
+    { "id": "docs-fix", "request": "Fix this explicit typo in docs/guide.md", "expected": "fast-fix" },
+    { "id": "code-fix", "request": "Fix the explicit null guard in src/value.mjs", "expected": "fast-fix" },
+    { "id": "feature", "request": "Add a dashboard for operators", "expected": "full-workflow" }
+  ],
+  "tasks": {
+    "answer": { "request": "What does this validator return?" },
+    "docs-fix": { "request": "Fix this explicit typo in docs/guide.md", "owned_paths": ["docs/guide.md"], "behavior_confirmed": true, "acceptance_criteria_confirmed": true, "test_layer_confirmed": true },
+    "code-fix": { "request": "Fix the explicit null guard in src/value.mjs", "owned_paths": ["src/value.mjs"], "behavior_confirmed": true, "acceptance_criteria_confirmed": true, "verification_confirmed": true },
+    "feature": { "request": "Add a dashboard for operators" }
+  },
+  "units": {
+    "one": [{ "id": "docs", "owned_paths": ["docs/guide.md"], "resources": [] }],
+    "two": [
+      { "id": "api", "owned_paths": ["src/api/**"], "resources": ["api-contract"] },
+      { "id": "web", "owned_paths": ["src/web/**"], "resources": ["web-ui"] }
+    ]
+  },
+  "sentinel_outcomes": [
+    "direct-answer", "fast-fix", "brainstorm-first", "single-unit-sequential", "parallel-choice",
+    "native-choice", "typed-visual", "static-visual", "unsupported-markdown", "unknown-markdown", "ambiguous-unselected", "fast-worker",
+    "security-not-fast", "architecture-not-fast", "brief-no-embedded-artifacts", "review-package-shape",
+    "disjoint-ownership", "visual-only", "decline-not-reoffered", "single-option-auto-select"
+  ]
+}

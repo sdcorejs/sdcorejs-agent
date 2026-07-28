@@ -67,7 +67,7 @@ const groups = [
       {
         name: "sdcorejs-execute-plan",
         role: "Dispatch an approved plan to the right track or harness.",
-        use: "Use when the plan is approved and the user is ready to run it; always asks sequential vs parallel.",
+        use: "Use when the plan is approved; it auto-selects sequential unless multiple independent units make both modes feasible.",
       },
     ],
   },
@@ -141,7 +141,7 @@ const groups = [
       {
         name: "sdcorejs-parallel-dispatch",
         role: "Parallel execution safety gate.",
-        use: "Use after execute-plan asks sequential vs parallel and the user chooses parallel.",
+        use: "Use when multiple independent units make parallel execution feasible, or for an explicit safe split/read-only fan-out.",
       },
     ],
   },

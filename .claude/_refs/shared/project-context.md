@@ -108,6 +108,13 @@ are evidence, not unquestionable truth.
 Read `.sdcorejs/summary.md` when it exists.
 
 - `schema_version: 2` summaries use section-level fingerprint checks.
+- Summary v2 freshness uses four bounded fingerprints:
+  `workspace_structure`, `dependency_manifests`, `source_roots`, and
+  `entrypoint_contract`.
+- `entrypoint_contract` covers package entrypoint fields such as `main`, `bin`,
+  and `exports`, known adapter/plugin entrypoints, and whether declared
+  `evidence.key_entrypoints` still exist. It does not rely only on conventional
+  `main`, `index`, `server`, or `bootstrap` filenames.
 - Legacy summaries remain readable but have `legacy-schema` and `unknown`
   freshness until a write-approved `summary-refresh` upgrades them.
 - Missing summaries return `missing`.
@@ -123,6 +130,12 @@ fresh | partially-stale | stale | missing | unknown
 Use valid sections from a partially stale summary and replace only invalidated
 sections with targeted reads. Branch name and current HEAD are not summary
 freshness keys.
+
+Deleting or renaming a declared entrypoint invalidates only `Application and
+Module Map`, `Entrypoints and Main Runtime Flows`, and `Task-to-Path
+Navigation`. An unrelated source-content edit does not invalidate the summary.
+Summary refresh must pass the same normalized `evidence.key_entrypoints` list
+into fingerprint computation before persisting both values.
 
 ## Step 4 - Select Code Context Strategy
 

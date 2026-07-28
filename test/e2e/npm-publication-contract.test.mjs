@@ -258,12 +258,9 @@ test('npm publication: active documentation uses repository release and installa
   assert.match(release, /Git tags and\s+GitHub releases are the distribution anchors/i);
   assert.doesNotMatch(release, /source package version/i);
   assert.match(changelog, /^## Unreleased$/m);
-  assert.match(changelog, /npm publication is permanently retired/i);
-  assert.match(changelog, /npm remains the development and validation toolchain/i);
-  assert.match(
-    changelog,
-    /skill behavior, routing, installation paths, mirrors, and versions were not\s+changed/i,
-  );
+  assert.match(changelog, /npm publication[\s\S]*remain retired/i);
+  assert.match(changelog, /root Node workspace[\s\S]*private/i);
+  assert.match(changelog, /provider-neutral semantic actions/i);
 });
 
 test('npm publication: lockfile, versions, dependencies, and skill inventories stay synchronized', async () => {

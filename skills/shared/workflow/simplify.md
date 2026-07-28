@@ -8,7 +8,7 @@ description: >-
   protected framework boundaries. Broad refactors return to planning; bugs,
   findings, tests, documentation, and performance work retain their dedicated
   owners. Runtime-localized.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, TodoWrite
+required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose
 ---
 
 # Simplify

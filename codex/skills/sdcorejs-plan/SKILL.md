@@ -13,15 +13,8 @@ description: Plan authoring and approval gate. Use after approved spec, or when 
 
 ## Shared Protocols
 
-Before executing this skill:
-1. Read and apply `../_refs/shared/tasklist.md` for non-trivial execution tasks.
-2. Read and apply `../_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `../_refs/shared/project-context.md` as a read-only,
-   relevance-first context assembler.
-4. Read `../_refs/shared/artifact-lifecycle.md`; draft and approved plan artifacts
-   must emit `artifact_context`.
-5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `../_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+Read `../_refs/shared/runtime-protocols.md`. Draft and approved plan artifacts
+apply `../_refs/shared/artifact-lifecycle.md` and emit `artifact_context`.
 
 ## Purpose
 Translate an approved spec into an executable contract, hold the user approval gate, and persist the approved plan corpus inside the same skill.
@@ -72,6 +65,11 @@ Read:
   `pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`/`bun.lock`), workspace config, and
   `package.json` scripts. Record package manager/script evidence instead of
   guessing commands.
+
+Keep the approved spec as the `what`, `why`, constraints, and acceptance source
+of truth. The plan references its path/hash and carries only the short scope
+delta needed to explain the `how`, order, commands, and file-level changes; it
+must not copy the full spec body.
 
 For any non-trivial frontend task, also read
 `../_refs/shared/frontend-architecture.md` and inspect nearby route/page,

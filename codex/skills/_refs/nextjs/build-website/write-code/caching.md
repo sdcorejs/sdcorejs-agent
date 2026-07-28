@@ -197,7 +197,8 @@ npm run start
 - "<localized text>" → yes, up to 1-24 hour for stable content. Just ensure on-demand revalidation is wired so urgent fixes don't wait.
 - "<localized text>" → equivalent to SSR; perf will drop; ask why before applying. Usually the real need is on-demand revalidation, not no-cache.
 
-Confirm the change in conversation, apply via Edit, re-build, verify.
+Confirm the change in conversation, apply with `artifact.write`, re-build, and
+verify.
 
 ## Cross-references
 - Inputs: hosting + caching answers from `sdcorejs-brainstorming`

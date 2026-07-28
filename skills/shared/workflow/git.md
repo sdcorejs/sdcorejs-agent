@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-git
 description: Git artifact workflow. Use for commit/save changes, create PR, push verified branch, changelog, release notes, diff since tag, PR text, or executor worktree isolation. Do not use for readiness/ship gates; use sdcorejs-ship first, then this for commit/PR/changelog artifacts. Applies to all tracks and this repo. Runtime-localized.
-allowed-tools: Bash, Read, Grep, Glob, Write, Edit
+required-actions: artifact.read, artifact.write, verification.run, user.choose, user.approve, workspace.isolate
 ---
 
 # Git
@@ -24,16 +24,9 @@ substitute for verification.
 
 ## Shared Protocols
 
-Before executing this skill:
-
-1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
-2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` as a read-only,
-   relevance-first context assembler.
-4. Read and apply `_refs/shared/artifact-lifecycle.md`; run SDCoreJS Artifact
-   Closure before staging, commit, or push.
-5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+Read `_refs/shared/runtime-protocols.md`. Apply
+`_refs/shared/artifact-lifecycle.md` and run SDCoreJS Artifact Closure before
+staging, commit, or push.
 
 ## Mode Selection
 

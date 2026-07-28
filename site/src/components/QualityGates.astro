@@ -1,6 +1,13 @@
 ---
 const phases = [
   {
+    phase: "Harness",
+    title: "Behavioral sentinel simulations",
+    body:
+      "Exercises direct Q&A, fast-fix, real execution-mode choices, capability fallbacks, worker tiers, bounded briefs, summary mutations, and safe static visuals.",
+    command: "npm run test:e2e:harness",
+  },
+  {
     phase: "Phase 1",
     title: "Deterministic skill-pack runner",
     body:
@@ -39,9 +46,10 @@ const phases = [
       >
       <h2>Automated E2E checks for the agent itself</h2>
       <p class="lead">
-        The repo now ships a Node-based E2E harness for the skill pack. The
-        default path is deterministic and cheap; the full golden target-app path
-        is explicit opt-in when Docker and browsers are available.
+        The Node-based harness combines static contract checks with behavioral
+        sentinel simulations. Adapter capabilities and generated metadata are
+        deterministic; full target-app and credentialed live-agent evidence
+        remain explicit opt-in layers.
       </p>
     </div>
 

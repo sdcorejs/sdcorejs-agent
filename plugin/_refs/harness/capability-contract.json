@@ -1,0 +1,418 @@
+{
+  "schema_version": 1,
+  "statuses": [
+    "supported",
+    "unsupported",
+    "unknown"
+  ],
+  "required_actions": [
+    "progress.create",
+    "progress.update",
+    "user.choose",
+    "user.approve",
+    "agent.dispatch",
+    "agent.resume",
+    "agent.interrupt",
+    "visual.present",
+    "workspace.isolate",
+    "web.fetch",
+    "artifact.read",
+    "artifact.write",
+    "verification.run"
+  ],
+  "required_capabilities": [
+    "native_structured_choice",
+    "visual_surface",
+    "static_html_artifact",
+    "subagents",
+    "per_agent_model_override",
+    "agent_resume_steer",
+    "workspace_isolation",
+    "browser",
+    "web_fetch",
+    "artifact_write",
+    "permission_approval"
+  ],
+  "adapters": {
+    "codex": {
+      "capabilities": {
+        "native_structured_choice": "unknown",
+        "visual_surface": "unknown",
+        "static_html_artifact": "supported",
+        "subagents": "unknown",
+        "per_agent_model_override": "unknown",
+        "agent_resume_steer": "unknown",
+        "workspace_isolation": "unknown",
+        "browser": "unknown",
+        "web_fetch": "unknown",
+        "artifact_write": "supported",
+        "permission_approval": "supported"
+      },
+      "actions": {
+        "progress.create": {
+          "status": "supported",
+          "native": ["update_plan"],
+          "capability": null,
+          "fallback": "Render a visible Markdown task list in the current conversation."
+        },
+        "progress.update": {
+          "status": "supported",
+          "native": ["update_plan"],
+          "capability": null,
+          "fallback": "Update the visible Markdown task list in the current conversation."
+        },
+        "user.choose": {
+          "status": "unknown",
+          "native": ["request_user_input"],
+          "capability": "native_structured_choice",
+          "fallback": "Render stable numbered Markdown choices and accept a written reply."
+        },
+        "user.approve": {
+          "status": "unknown",
+          "native": ["request_user_input"],
+          "capability": "native_structured_choice",
+          "fallback": "Render one numbered approval gate and accept a written reply."
+        },
+        "agent.dispatch": {
+          "status": "unknown",
+          "native": ["spawn_agent"],
+          "capability": "subagents",
+          "fallback": "Execute the unit sequentially in the parent or report that delegation is unavailable."
+        },
+        "agent.resume": {
+          "status": "unknown",
+          "native": ["followup_task"],
+          "capability": "agent_resume_steer",
+          "fallback": "Return the scoped finding to the parent for sequential repair."
+        },
+        "agent.interrupt": {
+          "status": "unknown",
+          "native": ["interrupt_agent"],
+          "capability": "agent_resume_steer",
+          "fallback": "Stop new dispatch, report in-flight work honestly, and continue best effort."
+        },
+        "visual.present": {
+          "status": "unknown",
+          "native": ["visualize"],
+          "capability": "visual_surface",
+          "fallback": "Use the static visual composer when available, otherwise numbered Markdown."
+        },
+        "workspace.isolate": {
+          "status": "unknown",
+          "native": ["worktree"],
+          "capability": "workspace_isolation",
+          "fallback": "Use a validated Git worktree fallback or run sequentially when isolation is unsafe."
+        },
+        "web.fetch": {
+          "status": "unknown",
+          "native": ["web.run"],
+          "capability": "web_fetch",
+          "fallback": "Use supplied local evidence or report that current web evidence is unavailable."
+        },
+        "artifact.read": {
+          "status": "supported",
+          "native": ["shell_command"],
+          "capability": null,
+          "fallback": "Use the runtime's bounded repository read surface."
+        },
+        "artifact.write": {
+          "status": "supported",
+          "native": ["apply_patch"],
+          "capability": "artifact_write",
+          "fallback": "Report the intended patch without claiming that files changed."
+        },
+        "verification.run": {
+          "status": "supported",
+          "native": ["shell_command"],
+          "capability": null,
+          "fallback": "Report the exact unrun command and why execution is unavailable."
+        }
+      }
+    },
+    "claude-code": {
+      "capabilities": {
+        "native_structured_choice": "supported",
+        "visual_surface": "unknown",
+        "static_html_artifact": "supported",
+        "subagents": "supported",
+        "per_agent_model_override": "supported",
+        "agent_resume_steer": "unknown",
+        "workspace_isolation": "unknown",
+        "browser": "unknown",
+        "web_fetch": "supported",
+        "artifact_write": "supported",
+        "permission_approval": "supported"
+      },
+      "actions": {
+        "progress.create": {
+          "status": "supported",
+          "native": ["TodoWrite"],
+          "capability": null,
+          "fallback": "Render a visible Markdown task list in the current conversation."
+        },
+        "progress.update": {
+          "status": "supported",
+          "native": ["TodoWrite"],
+          "capability": null,
+          "fallback": "Update the visible Markdown task list in the current conversation."
+        },
+        "user.choose": {
+          "status": "supported",
+          "native": ["AskUserQuestion"],
+          "capability": "native_structured_choice",
+          "fallback": "Render stable numbered Markdown choices and accept a written reply."
+        },
+        "user.approve": {
+          "status": "supported",
+          "native": ["AskUserQuestion"],
+          "capability": "native_structured_choice",
+          "fallback": "Render one numbered approval gate and accept a written reply."
+        },
+        "agent.dispatch": {
+          "status": "supported",
+          "native": ["Agent"],
+          "capability": "subagents",
+          "fallback": "Execute the unit sequentially in the parent or report that delegation is unavailable."
+        },
+        "agent.resume": {
+          "status": "unknown",
+          "native": ["Agent"],
+          "capability": "agent_resume_steer",
+          "fallback": "Return the scoped finding to the parent for sequential repair."
+        },
+        "agent.interrupt": {
+          "status": "unknown",
+          "native": ["Agent"],
+          "capability": "agent_resume_steer",
+          "fallback": "Stop new dispatch, report in-flight work honestly, and continue best effort."
+        },
+        "visual.present": {
+          "status": "unknown",
+          "native": [],
+          "capability": "visual_surface",
+          "fallback": "Use the static visual composer when available, otherwise numbered Markdown."
+        },
+        "workspace.isolate": {
+          "status": "unknown",
+          "native": ["Bash"],
+          "capability": "workspace_isolation",
+          "fallback": "Use a validated Git worktree fallback or run sequentially when isolation is unsafe."
+        },
+        "web.fetch": {
+          "status": "supported",
+          "native": ["WebFetch"],
+          "capability": "web_fetch",
+          "fallback": "Use supplied local evidence or report that current web evidence is unavailable."
+        },
+        "artifact.read": {
+          "status": "supported",
+          "native": ["Read", "Glob", "Grep"],
+          "capability": null,
+          "fallback": "Use the runtime's bounded repository read surface."
+        },
+        "artifact.write": {
+          "status": "supported",
+          "native": ["Write", "Edit"],
+          "capability": "artifact_write",
+          "fallback": "Report the intended patch without claiming that files changed."
+        },
+        "verification.run": {
+          "status": "supported",
+          "native": ["Bash"],
+          "capability": null,
+          "fallback": "Report the exact unrun command and why execution is unavailable."
+        }
+      }
+    },
+    "cursor": {
+      "capabilities": {
+        "native_structured_choice": "unknown",
+        "visual_surface": "unknown",
+        "static_html_artifact": "unknown",
+        "subagents": "unknown",
+        "per_agent_model_override": "unknown",
+        "agent_resume_steer": "unknown",
+        "workspace_isolation": "unknown",
+        "browser": "unknown",
+        "web_fetch": "unknown",
+        "artifact_write": "unknown",
+        "permission_approval": "unknown"
+      },
+      "actions": {
+        "progress.create": {
+          "status": "unknown",
+          "native": [],
+          "capability": null,
+          "fallback": "Render a visible Markdown task list in the current conversation."
+        },
+        "progress.update": {
+          "status": "unknown",
+          "native": [],
+          "capability": null,
+          "fallback": "Update the visible Markdown task list in the current conversation."
+        },
+        "user.choose": {
+          "status": "unknown",
+          "native": [],
+          "capability": "native_structured_choice",
+          "fallback": "Render stable numbered Markdown choices and accept a written reply."
+        },
+        "user.approve": {
+          "status": "unknown",
+          "native": [],
+          "capability": "native_structured_choice",
+          "fallback": "Render one numbered approval gate and accept a written reply."
+        },
+        "agent.dispatch": {
+          "status": "unknown",
+          "native": [],
+          "capability": "subagents",
+          "fallback": "Execute the unit sequentially in the parent or report that delegation is unavailable."
+        },
+        "agent.resume": {
+          "status": "unknown",
+          "native": [],
+          "capability": "agent_resume_steer",
+          "fallback": "Return the scoped finding to the parent for sequential repair."
+        },
+        "agent.interrupt": {
+          "status": "unknown",
+          "native": [],
+          "capability": "agent_resume_steer",
+          "fallback": "Stop new dispatch, report in-flight work honestly, and continue best effort."
+        },
+        "visual.present": {
+          "status": "unknown",
+          "native": [],
+          "capability": "visual_surface",
+          "fallback": "Use the static visual composer when available, otherwise numbered Markdown."
+        },
+        "workspace.isolate": {
+          "status": "unknown",
+          "native": [],
+          "capability": "workspace_isolation",
+          "fallback": "Use a validated Git worktree fallback or run sequentially when isolation is unsafe."
+        },
+        "web.fetch": {
+          "status": "unknown",
+          "native": [],
+          "capability": "web_fetch",
+          "fallback": "Use supplied local evidence or report that current web evidence is unavailable."
+        },
+        "artifact.read": {
+          "status": "supported",
+          "native": [],
+          "capability": null,
+          "fallback": "Use the runtime's bounded repository read surface."
+        },
+        "artifact.write": {
+          "status": "unknown",
+          "native": [],
+          "capability": "artifact_write",
+          "fallback": "Report the intended patch without claiming that files changed."
+        },
+        "verification.run": {
+          "status": "unknown",
+          "native": [],
+          "capability": null,
+          "fallback": "Report the exact unrun command and why execution is unavailable."
+        }
+      }
+    },
+    "copilot": {
+      "capabilities": {
+        "native_structured_choice": "unknown",
+        "visual_surface": "unknown",
+        "static_html_artifact": "unknown",
+        "subagents": "unknown",
+        "per_agent_model_override": "unknown",
+        "agent_resume_steer": "unknown",
+        "workspace_isolation": "unknown",
+        "browser": "unknown",
+        "web_fetch": "unknown",
+        "artifact_write": "unknown",
+        "permission_approval": "unknown"
+      },
+      "actions": {
+        "progress.create": {
+          "status": "unknown",
+          "native": [],
+          "capability": null,
+          "fallback": "Render a visible Markdown task list in the current conversation."
+        },
+        "progress.update": {
+          "status": "unknown",
+          "native": [],
+          "capability": null,
+          "fallback": "Update the visible Markdown task list in the current conversation."
+        },
+        "user.choose": {
+          "status": "unknown",
+          "native": [],
+          "capability": "native_structured_choice",
+          "fallback": "Render stable numbered Markdown choices and accept a written reply."
+        },
+        "user.approve": {
+          "status": "unknown",
+          "native": [],
+          "capability": "native_structured_choice",
+          "fallback": "Render one numbered approval gate and accept a written reply."
+        },
+        "agent.dispatch": {
+          "status": "unknown",
+          "native": [],
+          "capability": "subagents",
+          "fallback": "Execute the unit sequentially in the parent or report that delegation is unavailable."
+        },
+        "agent.resume": {
+          "status": "unknown",
+          "native": [],
+          "capability": "agent_resume_steer",
+          "fallback": "Return the scoped finding to the parent for sequential repair."
+        },
+        "agent.interrupt": {
+          "status": "unknown",
+          "native": [],
+          "capability": "agent_resume_steer",
+          "fallback": "Stop new dispatch, report in-flight work honestly, and continue best effort."
+        },
+        "visual.present": {
+          "status": "unknown",
+          "native": [],
+          "capability": "visual_surface",
+          "fallback": "Use the static visual composer when available, otherwise numbered Markdown."
+        },
+        "workspace.isolate": {
+          "status": "unknown",
+          "native": [],
+          "capability": "workspace_isolation",
+          "fallback": "Use a validated Git worktree fallback or run sequentially when isolation is unsafe."
+        },
+        "web.fetch": {
+          "status": "unknown",
+          "native": [],
+          "capability": "web_fetch",
+          "fallback": "Use supplied local evidence or report that current web evidence is unavailable."
+        },
+        "artifact.read": {
+          "status": "supported",
+          "native": [],
+          "capability": null,
+          "fallback": "Use the runtime's bounded repository read surface."
+        },
+        "artifact.write": {
+          "status": "unknown",
+          "native": [],
+          "capability": "artifact_write",
+          "fallback": "Report the intended patch without claiming that files changed."
+        },
+        "verification.run": {
+          "status": "unknown",
+          "native": [],
+          "capability": null,
+          "fallback": "Report the exact unrun command and why execution is unavailable."
+        }
+      }
+    }
+  }
+}

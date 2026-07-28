@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-execute-plan
-description: Execute an approved plan snapshot. Use after sdcorejs-plan approval or when asked to execute, run, generate from, or continue an approved plan for AI-agent, Angular, NestJS, Next.js, React, Node, fullstack, product, design, documentation, workflow, test, or generic/general work. Detects track/profile, preserves contract/write scope/package-manager evidence, asks sequential vs parallel, and invokes parallel-dispatch when approved. Runtime-localized.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent, TodoWrite
+description: Execute an approved plan snapshot. Use after sdcorejs-plan approval or when asked to execute, run, generate from, or continue an approved plan for AI-agent, Angular, NestJS, Next.js, React, Node, fullstack, product, design, documentation, workflow, test, or generic/general work. Detects track/profile, preserves contract/write scope/package-manager evidence, auto-selects sequential for one or unsafe units, and offers parallel only when feasible. Runtime-localized.
+required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose, agent.dispatch, workspace.isolate
 ---
 
 # 04 - Execute Plan
@@ -9,15 +9,9 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent, TodoWrite
 
 ## Shared Protocols
 
-Before executing this skill:
-1. Read and apply `_refs/shared/tasklist.md` for non-trivial execution tasks.
-2. Read and apply `_refs/shared/persona.md` if a project persona exists.
-3. Read and apply `_refs/shared/project-context.md` as a read-only,
-   relevance-first context assembler.
-4. Read `_refs/shared/artifact-lifecycle.md`; preserve and merge
-   `artifact_context` from the approved spec, plan, and every producer.
-5. Current user request, current files, diffs, logs, failing tests, and command output override stored context.
-6. Before presenting user-facing choices, approval gates, yes/no questions, or mode selections, read and apply `_refs/shared/user-choice-prompt.md` so options are presented as sequential numbered choices.
+Read `_refs/shared/runtime-protocols.md`. Apply
+`_refs/shared/artifact-lifecycle.md` and preserve/merge `artifact_context` from
+the approved spec, plan, and every producer.
 
 ## Purpose
 Run the approved plan as the execution contract. This skill is the handoff between planning and doing.
@@ -25,7 +19,8 @@ Run the approved plan as the execution contract. This skill is the handoff betwe
 It owns four decisions:
 
 1. Which execution track should run.
-2. Whether the user wants sequential or parallel execution.
+2. Whether sequential execution is required or a real sequential/parallel
+   choice exists.
 3. Whether Angular work is Core UI portal work or plain Angular work.
 4. Whether NestJS, Next.js, React, Node/general, migration, product, design, or
    test work needs a track executor or the generic harness fallback.
@@ -250,8 +245,25 @@ The route/page shell is a minimum boundary, not permission for a monolithic
 screen. Conversely, the gate must not invent child components, facades, stores,
 or public barrels without a meaningful responsibility and lifecycle reason.
 
-### 3. Always ask parallel vs sequential
-Before any code/test generation, ask the user:
+### 3. Select execution mode
+
+Count executable units after dependency, path, resource, workspace, and runtime
+capability checks.
+
+- One executable unit: auto-select sequential and state that there is no useful
+  fan-out.
+- Two or more units but unavailable/unknown subagent or isolation capability,
+  overlapping ownership, dependent work, or unsafe resources: auto-select
+  sequential and state the blocking reason.
+- Two or more independent units with disjoint ownership and both modes
+  feasible: present the real trade-off and ask once.
+
+When auto-selecting, continue without a prompt. Mention an override only when
+the plan can genuinely be split differently and the required runtime
+capabilities are supported. Capability `unknown` uses the portable sequential
+fallback.
+
+When both modes are feasible, use `_refs/shared/user-choice-prompt.md`:
 
 ```text
 Execution mode?
@@ -265,7 +277,8 @@ Options:
 Reply with `1` or `2`.
 ```
 
-Translate at runtime. Do not execute until the user answers. If the user says "you decide", choose the recommendation and state it.
+Translate at runtime. Do not execute until the user answers this real choice.
+If the user delegates the decision, choose the recommendation and state it.
 
 ### 4. If parallel is chosen
 Invoke `sdcorejs-parallel-dispatch`. It owns both the safety verdict and the safe parallel execution path.
@@ -391,7 +404,8 @@ execution_context:
 - Consume `plan_context` and preserve `contract_id`, `approved_spec_hash`,
   `approved_plan_hash`, `target_root_kind`, `track`, `stack_profile`,
   write-scope boundaries, package-manager evidence, and verification strategy.
-- Always ask sequential vs parallel before execution.
+- Auto-select sequential for one executable unit or when safe parallel
+  execution is unavailable; ask only when both modes are feasible.
 - Use `sdcorejs-product` as the executor for product-track ledgers and traceability audits.
 - Use `sdcorejs-design` as the executor for design-track FE handoff artifacts.
 - Use `sdcorejs-test` as the executor for test-track plans.
@@ -413,7 +427,8 @@ execution_context:
 - Keep the user's language in status and summaries.
 
 ### Must not
-- Dispatch a track orchestrator before the parallel question is answered.
+- Dispatch a track orchestrator before execution mode is resolved, including
+  any required real choice.
 - Parallelize shared-file or dependent steps just because it looks faster.
 - Let a subagent change the approved plan.
 - Hide a `SEQUENTIAL` verdict after the user asked for parallel.

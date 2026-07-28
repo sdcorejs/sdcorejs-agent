@@ -7,16 +7,24 @@ Node workspace is not distributed through npm.
 
 ## Unreleased
 
-- npm publication is permanently retired for the root repository; remove the
-  publication-only `files` and `keywords` metadata while retaining
-  `private: true`.
-- npm remains the development and validation toolchain; `name` and `version`
-  remain synchronized repository/plugin release metadata.
-- Add deterministic regression coverage for root manifest, lifecycle,
-  workflow, authentication, documentation, dependency, version, and skill
-  inventory boundaries.
-- Skill behavior, routing, installation paths, mirrors, and versions were not
-  changed.
+- Keep the root Node workspace private and validation-only; npm publication,
+  `npx`, and the removed standalone entrypoint remain retired.
+- Add provider-neutral semantic actions, tri-state adapter capabilities, hashed
+  generated harness manifests, and native-interaction fallbacks for Codex,
+  Claude Code, Cursor, and GitHub Copilot.
+- Make direct Q&A and bounded fast-fix operational while retaining the full
+  approval/verification/finish workflow for ambiguous or high-risk work.
+- Auto-select sequential execution when there is no real parallel choice.
+- Add role/model-tier delegation policy, bounded runtime task briefs/review
+  packages, original-owner repair rounds, and deterministic fan-in rules.
+- Add behavioral sentinel simulations and summary entrypoint
+  deletion/rename mutation coverage.
+- Add a closed-schema, escaped, accessible static visual composer with
+  keyboard/copy interaction, restrictive CSP, and full Markdown fallback; a
+  local server/event bridge remains out of scope, and the orphaned raw-HTML
+  visual fragments are retired.
+- Reduce repeated orchestration context through a just-in-time runtime protocol
+  router while preserving artifact lifecycle and verification contracts.
 
 ## 0.6.0
 

@@ -7,6 +7,8 @@ sanitized evidence for adopted releases.
 ## Evidence Rules
 
 - Record exact tool, version, install mode, repository commit, and date.
+- Record model, harness version, source commit, scenario ID, outcome, and
+  sanitized evidence. A skipped run records the exact reason.
 - Use prompts that exercise one clear behavior.
 - Sanitize secrets, private paths, customer names, and unrelated code.
 - Keep enough transcript context to show skill selection, approval gates, and
@@ -20,7 +22,7 @@ surfaces:
 
 | Tool surface | Prompt | Required observation |
 |---|---|---|
-| Claude Code plugin | Ask for a small governed docs or code task. | Plugin skill loads, tasklist appears, approval/verification rules are followed. |
+| Claude Code plugin | Run pure Q&A, a bounded docs fix, and an ambiguous feature. | Direct answer, fast-fix, and full workflow are distinct; native choice retains fallback. |
 | Codex attached repo | Ask for a concrete but incomplete feature. | `AGENTS.md` dispatches to brainstorming or the right track. |
 | Codex native skills | Ask for a skill that loads `_refs`. | `../_refs/...` resolution works from `codex/skills/_refs`. |
 | Cursor | Ask for a product/design/test routing prompt. | Cursor rules select the expected workflow. |
@@ -133,8 +135,8 @@ separate live-verification status.
 
 Expected observations:
 
-- `sdcorejs-execute-plan` asks sequential versus parallel before dispatching
-  `sdcorejs-ai-agent`.
+- `sdcorejs-execute-plan` honors the explicit sequential instruction without a
+  fake sequential/parallel prompt.
 - The executor resolves the two approved profile axes once and preserves their
   IDs in `ai_agent_context`.
 - Model output cannot choose tenant or permissions, and generic raw tools are

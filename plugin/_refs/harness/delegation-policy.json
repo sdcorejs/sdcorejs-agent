@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "model_tiers": ["fast", "balanced", "deep"],
+  "roles": {
+    "explorer": {
+      "purpose": "Collect bounded repository evidence and map relevant paths without deciding architecture or public behavior.",
+      "allowed_task_shape": ["read-only scan", "targeted code map", "adapter and mirror inventory"],
+      "prohibited_task_shape": ["architecture decision", "security acceptance", "public-contract decision", "write task"],
+      "preferred_model_tier": "fast",
+      "reasoning_tier": "low",
+      "read_write_boundary": "read-only; no repository writes",
+      "expected_evidence": ["exact paths", "commands run", "unresolved relationships"],
+      "escalation_conditions": ["contradictory evidence", "security-sensitive finding", "scope requires a public decision"]
+    },
+    "test_writer": {
+      "purpose": "Author tests for already-confirmed behavior at an already-selected test layer.",
+      "allowed_task_shape": ["bounded test scaffolding", "deterministic fixture authoring", "confirmed regression test"],
+      "prohibited_task_shape": ["infer production behavior", "security test design on fast tier", "concurrency root-cause", "flaky-test diagnosis", "public-contract decision"],
+      "preferred_model_tier": "balanced",
+      "reasoning_tier": "medium",
+      "read_write_boundary": "write only assigned test and fixture paths; production paths are read-only",
+      "expected_evidence": ["RED output", "targeted command", "owned changed paths", "assumptions"],
+      "escalation_conditions": ["acceptance criteria are incomplete", "test layer is unclear", "production behavior must be inferred", "failure suggests integration root cause"]
+    },
+    "docs_writer": {
+      "purpose": "Update bounded documentation from an approved behavior contract without inventing behavior.",
+      "allowed_task_shape": ["documentation synchronization", "compatibility table update", "bounded reference prose"],
+      "prohibited_task_shape": ["workflow behavior decision", "architecture decision", "security acceptance", "unbounded repository rewrite"],
+      "preferred_model_tier": "fast",
+      "reasoning_tier": "low",
+      "read_write_boundary": "write only assigned documentation paths; canonical orchestration remains parent-owned",
+      "expected_evidence": ["changed paths", "source contract references", "text and link checks"],
+      "escalation_conditions": ["source contracts conflict", "documentation requires new behavior", "ownership overlaps another worker"]
+    },
+    "reviewer": {
+      "purpose": "Review contract compliance, correctness, security, maintainability, and evidence without implementing fixes.",
+      "allowed_task_shape": ["read-only diff review", "security review", "architecture review", "final acceptance review"],
+      "prohibited_task_shape": ["silent repair", "self-approval of owned implementation", "scope expansion"],
+      "preferred_model_tier": "deep",
+      "reasoning_tier": "high",
+      "read_write_boundary": "strictly read-only; findings return to the original implementer or parent",
+      "expected_evidence": ["severity-ranked findings", "exact file evidence", "verification gaps", "residual risks"],
+      "escalation_conditions": ["public contract is ambiguous", "security boundary is unresolved", "three scoped repair rounds fail"]
+    },
+    "implementation_worker": {
+      "purpose": "Implement a confirmed, bounded plan unit inside explicit path and resource ownership.",
+      "allowed_task_shape": ["independent implementation unit", "bounded repair for the original unit", "mechanically isolated change"],
+      "prohibited_task_shape": ["change approved plan", "decide architecture", "edit shared files without ownership", "recursive delegation"],
+      "preferred_model_tier": "balanced",
+      "reasoning_tier": "medium",
+      "read_write_boundary": "write only owned paths; read only the declared readable paths and bounded excerpts",
+      "expected_evidence": ["review_package", "actual changed paths", "verification output", "risks and unresolved items"],
+      "escalation_conditions": ["scope grows", "ownership overlaps", "contract changes", "security or architecture judgment is required"]
+    }
+  },
+  "fast_worker_gate": {
+    "allowed_categories": ["documentation", "test"],
+    "required": [
+      "behavior_confirmed",
+      "acceptance_criteria_confirmed",
+      "test_layer_confirmed",
+      "owned_paths"
+    ],
+    "forbidden_categories": [
+      "security",
+      "architecture",
+      "concurrency",
+      "flaky-test",
+      "integration-root-cause",
+      "public-contract"
+    ]
+  },
+  "fallback": {
+    "model_override_unsupported": "inherit-parent",
+    "spark_override": "optional-user-opt-in",
+    "recursive_delegation": "forbidden"
+  },
+  "repair_policy": {
+    "preferred_owner": "original-implementer",
+    "max_scoped_rounds": 3,
+    "resume_unsupported_or_unknown": "parent",
+    "semantic_change_escalation": "parent-or-deep-reviewer"
+  },
+  "fan_in_policy": {
+    "order": "approved-dag-then-declared-merge-order",
+    "completion_order_authoritative": false,
+    "ownership_conflict": "block",
+    "parent_rereads_diff_and_evidence": true
+  }
+}

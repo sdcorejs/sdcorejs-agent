@@ -1,8 +1,11 @@
 ---
 name: sdcorejs-test
 description: Requirement-driven test executor for planning, authoring, running, TDD, UAT, test coverage analysis, authenticated browser testing, and verified UI evidence across existing project stacks. Use for direct test work; route product requirement/traceability coverage without test work to sdcorejs-product, debugging fixes to sdcorejs-debug, and guide or screenshot documentation to sdcorejs-documentation. Runtime-localized.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash
+allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 ---
+
+<!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
+
 
 # Test Track
 
