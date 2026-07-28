@@ -95,6 +95,32 @@ For approved plans, one executable unit or unavailable/unsafe parallel
 capability auto-selects sequential execution. Ask sequential versus parallel
 only when at least two independent units make both choices real.
 
+## Communication Economy Policy
+
+The Communication Economy Policy reduces total communication cost by selecting
+only related context, keeping runtime state separate from user-facing prose,
+and avoiding repeated summaries. `compact` is the default for direct answers,
+routine progress, successful fast-fix, verification, and handoff. It still uses
+complete professional sentences. Use `standard` for normal explanations,
+trade-offs, review findings, or partially skipped verification.
+
+The resolver automatically selects `detailed` for spec or plan approval,
+security warnings, destructive actions, ambiguous or high-impact decisions,
+order-sensitive instructions, migrations or public-contract decisions,
+verification failure, conflicting evidence, and unresolved blockers. These
+clarity rules override a request for shorter output when consequence or approval
+scope would otherwise become unclear.
+
+Adopters can ask for `compact`, `standard`, `detailed`, or `full context`.
+`full context` is an explicit diagnostic projection; it does not change the
+authoritative state or workflow result. The profiles change explanation depth,
+not decision, status, evidence, or acceptance outcome.
+
+Do not force compact style onto approved specs, approved plans, architecture
+documents, user guides, PR descriptions, release notes, security documents,
+durable handoffs, test plans, or traceability artifacts. Those artifacts keep
+their canonical templates and complete prose.
+
 ## Portable Interaction And Delegation
 
 Canonical skills request semantic actions rather than vendor tool names.
@@ -105,6 +131,17 @@ Choice priority is supported native structured interaction, a typed visual
 surface for visual decisions, the static visual composer when only HTML is
 available, then numbered Markdown. The written main-conversation response is
 authoritative, and visual selection never approves implementation.
+
+The provider-neutral `context.pass` action uses the tri-state
+`runtime_context_channel` capability. A `supported` host may pass full typed
+authoritative runtime context without echoing it to the user. `unsupported` and
+`unknown` use a portable handoff with consumer-required fields, IDs, paths,
+hashes, freshness, evidence references, artifact closure, blockers, and the
+exact next consumer/action. Missing authoritative fields fail closed; model
+conversation memory alone is not evidence of a supported channel. Field shape,
+approved artifact identity, independent test status/evidence, parallel
+ownership/fan-in state, and nested artifact-body exclusion are validated before
+the fallback can be emitted.
 
 Delegation uses the roles `explorer`, `test_writer`, `docs_writer`, `reviewer`,
 and `implementation_worker` plus semantic tiers `fast`, `balanced`, and `deep`.

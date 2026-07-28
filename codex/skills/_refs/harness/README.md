@@ -8,6 +8,7 @@ Code, Cursor, and GitHub Copilot.
 Canonical skills request semantic actions:
 
 - `progress.create`, `progress.update`
+- `context.pass`
 - `user.choose`, `user.approve`
 - `agent.dispatch`, `agent.resume`, `agent.interrupt`
 - `visual.present`
@@ -43,6 +44,8 @@ machine-testable:
 - semantic worker tiers, parent-model inheritance when override is unknown or
   unsupported, and bounded task/review envelopes;
 - disjoint parallel path and resource ownership.
+- response-profile resolution, event-driven progress, related-artifact
+  selection, user projection, and fail-closed portable context handoff.
 
 The `fast` worker tier is narrower than fast-fix: it may author only bounded
 documentation or already-specified tests. A fast-fix to production code remains
@@ -56,5 +59,7 @@ finish gate, and deterministic fan-in remain authoritative.
 Load this overview only when dispatch or adapter behavior is relevant. Load
 `capability-contract.json` when resolving an action, `delegation-policy.json`
 when delegation is viable, and `task-brief.md` when creating or reviewing a
-worker boundary. Do not paste these files, a full spec, a full plan, or the
-repository summary into every worker prompt.
+worker boundary. Load `communication-economy.md` only when resolving a response
+profile, progress event, context handoff, or related artifact. Do not paste
+these files, a full spec, a full plan, or the repository summary into every
+worker prompt.

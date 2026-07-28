@@ -53,7 +53,9 @@ retain their owners.
 
 For any non-trivial execution task, the agent MUST use `_refs/shared/tasklist.md`.
 
-Create the `Tasks` section before work starts and update it as work progresses.
+Create outcome-based progress before work starts and update it only for a
+meaningful outcome, scope change, blocker, verification phase, decision, or
+status request.
 
 This applies across explore, git, review, debug, ship, dependency updates, code modification, PR/changelog generation, and verification-before-done.
 
@@ -85,6 +87,11 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
   escalates to the full workflow.
 - Canonical skills request semantic actions. Unsupported or unknown native
   capabilities use numbered Markdown and sequential parent fallbacks.
+- Apply `_refs/harness/communication-economy.md` just in time. Default routine
+  output to compact professional sentences; use detailed output for approval,
+  security, destructive action, ambiguity, conflict, blockers, or failed
+  verification. Pass full typed context only to its consumer; use a portable
+  handoff when `runtime_context_channel` is unsupported or unknown.
 - Every code-generation run presents the finish gate before tail steps.
 - Never claim pass, built, fixed, or done without current verification output.
 - Write `.sdcorejs/*` artifacts to the target project only.
@@ -112,6 +119,7 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - Artifact lifecycle: `_refs/shared/artifact-lifecycle.md`
 - Tasks protocol: `_refs/shared/tasklist.md`
 - Choice prompts: `_refs/shared/user-choice-prompt.md`
+- Communication profiles and handoffs: `_refs/harness/communication-economy.md`
 - Finish gate: `_refs/shared/finish-gate.md`
 - Documentation: `_refs/documentation/*`
 

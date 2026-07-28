@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-nestjs
 description: NestJS code executor for approved/direct backend work with confirmed requirements. Use after execute-plan or for project/admin/module/entity CRUD, explicit endpoints, workflows, bulk operations, exports, or reuse of @sdcorejs/utils. Loads the canonical NestJS manifest and only the packs required for the resolved profile. Not for spec, plan, review, or unresolved requests. Runs the mandatory finish tail. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose, user.approve, web.fetch
+required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose, user.approve, web.fetch
 ---
 
 # SDCoreJS NestJS Executor
@@ -10,7 +10,8 @@ required-actions: artifact.read, artifact.write, verification.run, progress.crea
 
 Before execution:
 
-1. Read and apply `_refs/shared/tasklist.md`.
+1. Read `_refs/shared/runtime-protocols.md`, then apply
+   `_refs/shared/tasklist.md`.
 2. Read and apply `_refs/shared/project-context.md` as a read-only,
    relevance-first context assembler.
 3. Read `_refs/shared/artifact-lifecycle.md` and merge producer

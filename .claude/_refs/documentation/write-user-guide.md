@@ -136,7 +136,8 @@ Fill the YAML frontmatter:
 - `permissions` — flat list of all permission codes found
 - `entities` — list of `{ name, fields[] }` from entity harvest
 - `screens` — list of screen types detected: `[list, detail, create, update]`
-- `spec_refs` — path(s) to the relevant `<target>/.sdcorejs/docs/<track>/*-spec.md` (glob latest)
+- `spec_refs` — path(s) to the relevant spec selected by contract, change,
+  requirement, module, or explicit user reference
 - `prd_refs` — path(s) to `<target>/.sdcorejs/prd/<feature>.md` if they exist (leave `[]` if absent)
 - `coverage` — filled by Mode 4 below; initialize to `{ total: 0, met: 0, partial: 0, missing: 0 }`
 
@@ -204,7 +205,8 @@ artifact.read path match: <target>/.sdcorejs/docs/<track>/*-<module>*-spec.md
 artifact.read path match: <target>/.sdcorejs/specs/<track>/*-<module>*-spec.md
 # If no module-scoped match: select a related change-scoped execution record
 # by change_ref/source metadata and resolve its spec_refs field.
-# Last fallback: most-recent *-spec.md in the track docs dir regardless of module.
+# Last fallback: use the canonical guide/spec template and record the missing
+# related spec as a coverage gap; do not select an unrelated spec by recency.
 # Extract "## Acceptance criteria" section from the resolved spec file.
 ```
 

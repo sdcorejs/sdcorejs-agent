@@ -135,10 +135,12 @@ Read only what changes the questions:
 - Directly related `.sdcorejs/docs/<track>/*.md`, selected by request scope and
   artifact metadata rather than recency alone.
 - `.sdcorejs/memories/<track>/*.md` frontmatter; load relevant bodies only.
-- Latest approved specs/plans frontmatter under `.sdcorejs/specs/<track>/` and `.sdcorejs/plans/<track>/`.
+- Related approved spec/plan frontmatter selected in order by the same
+  `contract_id`, `change_ref`, `supersedes` relationship, requirement, exact
+  module, or explicit user selection. Recency only breaks a relationship tie.
 - For angular / nestjs / nextjs / ai-agent: `../_refs/sdlc/<track>.md`.
 - For test: `../_refs/shared/testing-philosophy.md`, then the target stack test ref when known.
-- For product: latest `.sdcorejs/docs/product/*.md` plus related specs/plans.
+- For product: product ledgers related to the exact requirement or module.
 - `package.json`, lockfiles, and workspace config only enough to identify
   package manager/script evidence; do not run installs or mutate dependencies.
 
@@ -293,9 +295,10 @@ When a semantic default is obvious, propose it instead of asking from scratch:
 Always present inferred values for confirmation before locking them.
 
 ### 6. Output the requirement contract
-End with a concise confirmed summary in the user's language and a structured
-`requirement_context` block. Do not persist it unless a later write-approved
-skill owns the artifact.
+End with a concise confirmed summary in the user's language. Build the complete
+`requirement_context` for `sdcorejs-spec`, but do not echo the full block by
+default. Pass it through `context.pass` or the validated portable handoff. Do
+not persist it unless a later write-approved skill owns the artifact.
 
 - Track/context.
 - Target root and `target_root_kind`.
@@ -388,7 +391,8 @@ values.
 - Treat "thanks" or silence as approval.
 
 ## Hand-off
-Pass `sdcorejs-spec` this context:
+Pass `sdcorejs-spec` this authoritative context without repeating the summary
+or embedding source artifact bodies:
 
 - target root
 - target root kind

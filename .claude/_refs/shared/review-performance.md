@@ -25,8 +25,9 @@ other probe tool with `npx --yes` or similar without explicit user approval.
 Record skipped probes in `review_context`.
 
 ## Read-only inventory (parallel)
-- `git log -20 --oneline` — what landed recently
-- `git diff <base>...HEAD` — full diff if a base ref is given, else surface
+- Inspect the current diff or an explicitly bounded Git review range; do not
+  widen scope to arbitrary recent history.
+- `git diff <base>...HEAD` — full diff when an explicit base ref defines scope
 - `package.json` — heavy deps, bundle analyzers, load-test tools
 - Build config — `angular.json` / `next.config.*` / `ormconfig` (prod settings)
 

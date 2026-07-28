@@ -10,64 +10,26 @@ alwaysApply: true
 Entry point for AGENTS.md-aware tools: Codex, Cursor, OpenAI Agents SDK, and compatible assistants.
 Claude Code reads `CLAUDE.md`; Copilot reads `.github/copilot-instructions.md`.
 
-This repo is an engineering skill pack for developers and technical teams
-working across the software delivery lifecycle:
-
-- Angular portals using `@sdcorejs/angular`
-- NestJS + Postgres backends
-- Next.js public sites
-- Governed AI-agent application contracts and implementations
-- Product-track feature ledgers for PO traceability
-- Design-track FE handoff artifacts
-- Test-track work across those stacks
-- Generic harness execution when no known track matches
+This repository is an engineering skill pack for developers and technical teams.
+Its root Node workspace is private and validation-only. Its 21 skills cover
+governed requirements, product, design, tests, Angular,
+NestJS, Next.js, AI-agent contracts, documentation, review, delivery, and a
+generic harness for other stacks.
 
 All user-facing behavior is Runtime-localized: detect the user's language, respond in that language, and preserve locale-specific marks. Keep identifiers, permission codes, env keys, and route paths in English.
 
 ## Skill Source Language
 
-Author this skill pack in English only. `skills/**`, `_refs/**`, prompts,
-templates, examples, generated mirrors, and validation fixtures must not embed
-Vietnamese prose or Vietnamese-only sample UI text. Runtime localization belongs
-to the consuming project/session: instructions may say to translate or localize
-output at runtime, but the reusable skill source itself stays English and
-locale-neutral. Use placeholders such as `<localized label>` instead of concrete
-Vietnamese labels.
+Author `skills/**`, `_refs/**`, prompts, templates, reusable examples, and
+generated mirrors in English only. Runtime localization belongs to the
+consuming project/session; use locale-neutral placeholders such as
+`<localized label>` in reusable sources.
 
 Localization test prompts may use non-English input when they are explicitly
-fixtures for dispatch/runtime-localization behavior. Expected source text,
-generated mirrors, reusable examples, and expected generated skill prose must
-remain English-only and locale-neutral.
+fixtures for dispatch/runtime-localization behavior. Expected source text and
+generated prose remain English-only and locale-neutral.
 
-## Skill Layout
-
-```text
-skills/
-  shared/sdlc/
-    01-brainstorming.md  -> sdcorejs-brainstorming
-    02-spec.md           -> sdcorejs-spec
-    03-plan.md           -> sdcorejs-plan
-    04-execute-plan.md   -> sdcorejs-execute-plan
-  orchestration/
-    parallel-dispatch.md -> sdcorejs-parallel-dispatch
-    documentation.md, repair-loop.md, ...
-  tracks/
-    angular/sdcorejs-angular.md
-    nestjs/sdcorejs-nestjs.md
-    nextjs/sdcorejs-nextjs.md
-    ai-agent/sdcorejs-ai-agent.md
-    product/sdcorejs-product.md
-    design/sdcorejs-design.md
-    test/sdcorejs-test.md
-  shared/workflow/explore.md -> sdcorejs-explore
-  shared/workflow/review.md -> sdcorejs-review
-  shared/workflow/simplify.md -> sdcorejs-simplify
-  shared/workflow/ship.md -> sdcorejs-ship
-  shared/workflow/git.md -> sdcorejs-git
-_refs/
-  ai-agent/, angular/, nestjs/, nextjs/, sdlc/, shared/, orchestration/, documentation/
-  simplify/, shared/tdd.md -> loaded by sdcorejs-simplify / sdcorejs-test (tdd mode)
-```
+## Dispatch
 
 Dispatch by `name:` frontmatter and the `description:` trigger. Load only frontmatter at session start; read a skill body only after selecting that skill.
 
@@ -75,63 +37,30 @@ When multiple skills match, apply this priority before reading a body:
 
 1. Explicit skill name from the user.
 2. Approved spec/plan continuation: `sdcorejs-execute-plan`.
-3. Product docs and traceability: `sdcorejs-product`.
-4. Design handoff artifacts: `sdcorejs-design`.
-5. Test-only work: `sdcorejs-test`, except failing-test root cause/fix goes to `sdcorejs-debug`.
-6. Dedicated utility intent: `sdcorejs-simplify`, `sdcorejs-explore`,
+3. Product, design, or direct test work: `sdcorejs-product`,
+   `sdcorejs-design`, or `sdcorejs-test`; failing-test diagnosis uses
+   `sdcorejs-debug`.
+4. Dedicated utility intent: `sdcorejs-simplify`, `sdcorejs-explore`,
    `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-repair-loop`,
    `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
-7. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
+5. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
    `sdcorejs-nestjs`, or `sdcorejs-nextjs`.
-8. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
+6. Open-ended, ambiguous, or under-specified scope: `sdcorejs-brainstorming`.
 
-Routing clarifications:
-
-- Failing-test root-cause/fix intent routes to `sdcorejs-debug`.
-- Writing, running, or planning tests without root-cause/fix intent routes to `sdcorejs-test`.
-- Review findings repair routes to `sdcorejs-repair-loop`.
-- Bounded behavior-preserving refinement of recently changed or explicitly
-  scoped executable source routes to `sdcorejs-simplify`. It is a utility, not
-  a track. Broad refactors return to planning; bugs, tests, documentation or
-  prompts, review findings, performance, dependencies, and public-contract
-  changes retain their dedicated owners.
-- Ship/readiness gates route to `sdcorejs-ship`.
-- Commit, PR, changelog, and release-note artifacts route to `sdcorejs-git` only after the required ship gates pass or an explicit verification deferral is recorded.
-- Confirmed AI-agent implementation requires an approved plan with one engine
-  profile and one independent capability profile. Under-specified AI-agent
-  requests return to brainstorming; test, review, and debug intents retain
-  their dedicated owners.
+Review repair belongs to `sdcorejs-repair-loop`; readiness belongs to
+`sdcorejs-ship`; Git artifacts belong to `sdcorejs-git` after the required
+ship evidence. Broad refactors and under-specified AI-agent work return to
+brainstorming. `sdcorejs-simplify` is only for bounded, behavior-preserving
+source refinement.
 
 ## Workflow
 
 ```text
-Request
-  -> sdcorejs-brainstorming
-       Explore only when direction is open; otherwise confirm blockers.
-  -> sdcorejs-spec
-       Write spec, self-review, ask for approval, persist approved spec.
-  -> sdcorejs-plan
-       Write numbered plan, self-review, ask for approval, persist approved plan.
-  -> sdcorejs-execute-plan
-       Detect executor track; ask execution mode only when both modes are feasible.
-  -> executor
-       core-ui-angular / legacy-core-ui-angular / new SDCoreJS portal: sdcorejs-angular
-       plain-angular: generic harness
-       nestjs:  sdcorejs-nestjs
-       nextjs:  sdcorejs-nextjs
-       ai-agent: sdcorejs-ai-agent
-       product: sdcorejs-product
-       design:  sdcorejs-design
-       test:    sdcorejs-test
-       generic: execute-plan harness fallback
-  -> finish gate and tail chain
-       sdcorejs-test -> optional sdcorejs-simplify -> affected focused tests
-       -> sdcorejs-review -> repair-loop -> sdcorejs-documentation (code-documentation mode)
-       -> sdcorejs-product when user-visible feature traceability is needed
-       -> _refs/orchestration/tail/auto-docs.md -> sdcorejs-documentation (write-user-guide mode)
-       -> _refs/orchestration/tail/auto-task-tracker.md only when the sequential/integration owner updates durable backlog
-       -> sdcorejs-explore (memories mode) when relevant
-       -> sdcorejs-ship (verify-before-done mode) -> sdcorejs-ship (branch-ready mode as the final read-only gate)
+brainstorming -> spec approval -> plan approval -> execute-plan
+  -> selected executor or generic harness -> mandatory finish gate
+  -> test -> optional simplify -> focused tests -> review -> repair
+  -> required docs/traceability -> verify-before-done
+  -> branch-ready as the final read-only gate
 ```
 
 No write-producing step may run after final branch-ready unless branch-ready is
@@ -142,12 +71,11 @@ parallel capability/isolation is unavailable or unsafe. It asks sequential
 versus parallel only for at least two independent units where both modes are
 feasible. A parallel selection must run `sdcorejs-parallel-dispatch`.
 
-Direct splitting of an approved plan may route to `sdcorejs-parallel-dispatch`.
-Unapproved write requests still return to planning. Read-only parallel reviews
-or audits may use its `read-only-request` contract with `write_policy: deny`;
-any detected write fails that unit. Write-capable dispatch uses the approved-plan
-contract, working-tree preflight, protocol-v2 ownership/isolation checks, and
-deterministic fan-in.
+Parallel work must use `sdcorejs-parallel-dispatch`, disjoint ownership,
+isolation where required, and deterministic fan-in. Unapproved writes return
+to planning; any write in a read-only unit fails that unit.
+Direct splitting of an approved plan may select `sdcorejs-parallel-dispatch`.
+Read-only parallel review/audit work may use bounded fan-out with writes denied.
 
 Pure Q&A answers directly. A small, explicit, low-risk fix may use targeted
 context, the smallest edit, focused verification, and concise review without
@@ -159,25 +87,20 @@ tri-state capabilities live in `_refs/harness/capability-contract.json`.
 Unsupported or unknown capabilities use portable Markdown and sequential
 fallbacks.
 
-## Tracks
-
-| Track | Executor | Notes |
-|---|---|---|
-| angular | `sdcorejs-angular` for Core UI portals; generic harness for plain Angular | Loads `_refs/angular/write-code/*` packs only for `@sdcorejs/angular` / `@sd-angular/core`, new SDCoreJS portal creation, or approved Core UI migration |
-| nestjs | `sdcorejs-nestjs` | Loads `_refs/nestjs/write-code/*`, `@sdcorejs/nestjs` core catalog first |
-| nextjs | `sdcorejs-nextjs` | Loads `_refs/nextjs/build-website/write-code/*` packs |
-| ai-agent | `sdcorejs-ai-agent` | Approved-plan-only authoring with 2 engine profiles, 12 independent capability profiles, offline contracts/evals, and no bundled provider runtime |
-| product | `sdcorejs-product` | Writes/audits `product/` PRDs/user stories/AC/UAT docs plus `.sdcorejs/docs/product/` feature ledgers |
-| design | `sdcorejs-design` | Writes/audits `design/` FE handoff specs, flows, wireframes, and PNG previews |
-| test | `sdcorejs-test` | First-class track for unit/integration/e2e/UAT plans; multi-project cross-stack tests use an existing shared `test/` project |
-| generic | `sdcorejs-execute-plan` harness | Executes approved plans for unsupported stacks or non-track work |
+Communication defaults to compact, outcome-first, complete professional
+sentences. Load `_refs/harness/communication-economy.md` just in time for
+profile resolution, progress, context handoff, or related-artifact selection.
+Approval, security, destructive action, ambiguity, conflict, blockers, and
+failed verification automatically use detailed communication. Preserve exact
+code, commands, paths, IDs, hashes, errors, numbers, and evidence. Pass full
+typed context to its consumer without echoing it to the user; unsupported or
+unknown `runtime_context_channel` uses a validated portable handoff.
 
 ## Production SDLC Scope Decision
 
-Current approved scope is an engineering-focused SDLC skill pack:
-product/design/test evidence, Angular/NestJS/Next.js code generation, governed
-AI-agent application authoring, shared authentication and authorization
-guidance within technical tracks, branch hygiene, PR/changelog support, and
+Current approved scope is an engineering-focused SDLC skill pack: governed
+product/design/test evidence, supported code generation, AI-agent application
+contracts, technical security guidance, branch hygiene, Git artifacts, and
 recovery memory.
 
 Do **not** add new production-SDLC skills or refs for CI/CD pipelines, IaC, staging/production promotion, observability, incident response, SRE runbooks, migration rollout, compliance gates, or release governance until the user explicitly approves that expansion. If requested, start with `sdcorejs-brainstorming` and an approved spec/plan before authoring new skill/ref surfaces.
@@ -186,9 +109,8 @@ Do **not** add new production-SDLC skills or refs for CI/CD pipelines, IaC, stag
 
 For any non-trivial execution task, the agent MUST use `_refs/shared/tasklist.md`.
 
-Create the `Tasks` section before work starts and update it as work progresses.
-
-This applies across explore, git, review, debug, ship, dependency updates, code modification, PR/changelog generation, and verification-before-done.
+Create an outcome-based runtime tracker before work starts and update it only
+for meaningful progress events.
 
 Do not say "done", "ready", or "safe to ship" unless verification is complete or skipped verification is explicitly disclosed.
 
@@ -200,20 +122,17 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 2. Requirements before code: use `sdcorejs-brainstorming` until minimum blockers are confirmed.
 3. Approval gates: `sdcorejs-spec` and `sdcorejs-plan` require explicit approval. Silence is not approval.
 4. Approved snapshots: `sdcorejs-spec` and `sdcorejs-plan` write approved snapshots themselves before the next phase.
-5. Execute approved plans through `sdcorejs-execute-plan`: it owns track
-   detection, Angular Core UI/plain Angular classification,
-   AI-agent/product/design/test routing, generic fallback, and execution-mode
-   resolution.
+5. Execute approved plans through `sdcorejs-execute-plan`; it owns track,
+   profile, generic fallback, and execution-mode resolution.
 6. Finish gate is mandatory after every code-generation run, including direct track executor requests.
 7. Evidence before claims: never say pass, fixed, built, or done without current verification output.
 8. Durable execution records and explicitly owned backlog artifacts write to
    the target project, not to this agent repo. Live task progress remains in
    the thread/harness.
 9. Mojibake is a blocking defect in prompts, docs, skills, comments, and user-facing strings.
-10. User choices use supported native structured interaction when available,
-    typed/static visuals only for visual decisions, and numbered Markdown in
-    every environment. Written replies remain authoritative.
-11. Skill-pack source language is English only; keep runtime-localized behavior by translating generated output to the user's language during execution, not by hardcoding Vietnamese in reusable skills or refs.
+10. Use supported native interaction when available and portable numbered
+    Markdown otherwise. Written replies remain authoritative.
+11. Keep source English-only and localize generated runtime output.
 12. Do not author new skills without explicit user approval.
 13. Do not expand into production SDLC skill/ref coverage without the explicit approval described in **Production SDLC Scope Decision**.
 
@@ -239,6 +158,8 @@ Load references on demand:
   repeating them in every skill.
 - `_refs/harness/capability-contract.json` only when resolving a semantic
   action or adapter capability.
+- `_refs/harness/communication-economy.md` only when resolving response
+  profiles, progress events, runtime handoffs, or related artifacts.
 - `_refs/harness/delegation-policy.json` and `_refs/harness/task-brief.md` only
   when delegation is feasible.
 - `_refs/shared/project-context.md` before non-trivial skill execution.
@@ -254,18 +175,3 @@ Load references on demand:
 - `_refs/orchestration/workspace-isolation.md` during `sdcorejs-git (workspace mode)`.
 - `_refs/orchestration/tail/verify-before-done.md` during `sdcorejs-ship (verify-before-done mode)`.
 - `_refs/orchestration/tail/branch-ready.md` during `sdcorejs-ship (branch-ready mode)`.
-
-## Anti-Patterns
-
-- Skipping `sdcorejs-brainstorming` because scope "looks obvious".
-- Starting governed code work before plan approval and execute-plan mode
-  resolution.
-- Treating test work as a tail-only concern; test-only plans use the `test` track.
-- Treating product docs as generic docs; human docs in `product/` and traceability ledgers in `.sdcorejs/docs/product/` use the `product` track.
-- Treating design as generic docs or production code; FE handoff artifacts use the `design` track and frontend implementation stays in the frontend track.
-- Routing broad words such as AI, agent, assistant, tool, or report directly to
-  `sdcorejs-ai-agent` without confirmed engine/capability architecture.
-- Running parallel work without the parallel-dispatch gate.
-- Treating `sdcorejs-simplify` as a broad refactor, bug fix, formatter,
-  performance optimizer, or permission to change prompts/contracts/config.
-- Writing `.sdcorejs/*` session artifacts into `sdcorejs-agent` when the target project is elsewhere.

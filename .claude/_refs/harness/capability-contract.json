@@ -8,6 +8,7 @@
   "required_actions": [
     "progress.create",
     "progress.update",
+    "context.pass",
     "user.choose",
     "user.approve",
     "agent.dispatch",
@@ -21,6 +22,7 @@
     "verification.run"
   ],
   "required_capabilities": [
+    "runtime_context_channel",
     "native_structured_choice",
     "visual_surface",
     "static_html_artifact",
@@ -36,6 +38,7 @@
   "adapters": {
     "codex": {
       "capabilities": {
+        "runtime_context_channel": "unknown",
         "native_structured_choice": "unknown",
         "visual_surface": "unknown",
         "static_html_artifact": "supported",
@@ -49,6 +52,12 @@
         "permission_approval": "supported"
       },
       "actions": {
+        "context.pass": {
+          "status": "unknown",
+          "native": [],
+          "capability": "runtime_context_channel",
+          "fallback": "Build a validated portable handoff with required fields and stable artifact or evidence references."
+        },
         "progress.create": {
           "status": "supported",
           "native": ["update_plan"],
@@ -131,6 +140,7 @@
     },
     "claude-code": {
       "capabilities": {
+        "runtime_context_channel": "unknown",
         "native_structured_choice": "supported",
         "visual_surface": "unknown",
         "static_html_artifact": "supported",
@@ -144,6 +154,12 @@
         "permission_approval": "supported"
       },
       "actions": {
+        "context.pass": {
+          "status": "unknown",
+          "native": [],
+          "capability": "runtime_context_channel",
+          "fallback": "Build a validated portable handoff with required fields and stable artifact or evidence references."
+        },
         "progress.create": {
           "status": "supported",
           "native": ["TodoWrite"],
@@ -226,6 +242,7 @@
     },
     "cursor": {
       "capabilities": {
+        "runtime_context_channel": "unknown",
         "native_structured_choice": "unknown",
         "visual_surface": "unknown",
         "static_html_artifact": "unknown",
@@ -239,6 +256,12 @@
         "permission_approval": "unknown"
       },
       "actions": {
+        "context.pass": {
+          "status": "unknown",
+          "native": [],
+          "capability": "runtime_context_channel",
+          "fallback": "Build a validated portable handoff with required fields and stable artifact or evidence references."
+        },
         "progress.create": {
           "status": "unknown",
           "native": [],
@@ -321,6 +344,7 @@
     },
     "copilot": {
       "capabilities": {
+        "runtime_context_channel": "unknown",
         "native_structured_choice": "unknown",
         "visual_surface": "unknown",
         "static_html_artifact": "unknown",
@@ -334,6 +358,12 @@
         "permission_approval": "unknown"
       },
       "actions": {
+        "context.pass": {
+          "status": "unknown",
+          "native": [],
+          "capability": "runtime_context_channel",
+          "fallback": "Build a validated portable handoff with required fields and stable artifact or evidence references."
+        },
         "progress.create": {
           "status": "unknown",
           "native": [],

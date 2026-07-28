@@ -104,8 +104,10 @@ edits, not Git.
 
 ## Runtime `simplify_context`
 
-Emit this runtime-only evidence for every analyze, apply, blocked, unchanged,
-partial, or reverted run:
+Build this runtime-only evidence for every analyze, apply, blocked, unchanged,
+partial, or reverted run. Pass it to the exact consumer without echoing the
+full block to the user by default. The user projection preserves changed paths,
+pass/revert outcome, verification, skipped checks, blockers, and risks.
 
 ```yaml
 simplify_context:

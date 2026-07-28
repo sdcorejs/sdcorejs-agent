@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-angular
 description: Angular Core UI portal executor for confirmed frontend implementation. Use for new SDCoreJS portal init, existing @sdcorejs/angular or @sd-angular/core portals, PO/BA mock-first portal prototypes, admin modules, CRUD entities, list/detail screens, forms/validators, approval/bulk/export actions, or approved Core UI migration. Do not use for plain Angular apps without Core UI. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose, user.approve, web.fetch, visual.present
+required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose, user.approve, web.fetch, visual.present
 ---
 
 # 07 — Write Code (Orchestrator)

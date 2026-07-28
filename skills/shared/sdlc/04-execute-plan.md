@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-execute-plan
 description: Execute an approved plan snapshot. Use after sdcorejs-plan approval or when asked to execute, run, generate from, or continue an approved plan for AI-agent, Angular, NestJS, Next.js, React, Node, fullstack, product, design, documentation, workflow, test, or generic/general work. Detects track/profile, preserves contract/write scope/package-manager evidence, auto-selects sequential for one or unsafe units, and offers parallel only when feasible. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose, agent.dispatch, workspace.isolate
+required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose, agent.dispatch, workspace.isolate
 ---
 
 # 04 - Execute Plan
@@ -330,8 +330,13 @@ Use the generic harness when no track-specific orchestrator matches.
 
 The harness is intentionally conservative. If a task needs a domain-specific pattern not captured in the plan, stop and return to `sdcorejs-plan`.
 
-### 7. Emit execution context
-Before handing off, pausing, or reporting, produce `execution_context`:
+### 7. Build execution context
+Before handing off, pausing, or reporting, build the complete
+`execution_context` for the exact next consumer. Pass it through
+`context.pass`; if `runtime_context_channel` is unsupported or unknown, use
+the validated portable handoff. User-facing output projects only the outcome,
+changed paths, verification, blockers, risks, skipped checks, and real next
+action. Do not echo this full schema by default:
 
 ```yaml
 execution_context:

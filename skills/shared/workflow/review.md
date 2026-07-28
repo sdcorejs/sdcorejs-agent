@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-review
 description: Read-only review/audit skill across SDCoreJS tracks. Use for code, architecture, security, performance, accessibility, existing-site audits, scored/full audits, or auto review after an executor. Detects stack/profile/dimension, loads applicable refs only, emits review_context for repair-loop, and stays strict read-only by default. Applies to angular, nestjs, nextjs, general. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose
+required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose
 ---
 
 # Review (profile + dimension aware)
@@ -228,8 +228,9 @@ Security redaction is mandatory:
    deviations; flag drift when no approved change or compatibility reason exists.
 4. Map each finding to the selected dimension and the loaded ref criteria.
 5. Assign stable IDs (`R1`, `R2`, `R3`) and repair tier metadata.
-6. Emit the report with `review_context`, human-readable findings, strengths,
-   N/A dimensions/refs, and explicit verification gaps.
+6. Build the complete `review_context` for the exact downstream consumer and
+   pass it through `context.pass`. Show the user a localized projection with
+   every finding, strength, N/A dimension/ref, and verification gap.
 
 If evidence is incomplete, mark the finding `UNCLEAR` or `Needs verification`
 instead of presenting it as a definite blocker. Do not inflate style
@@ -279,10 +280,20 @@ insufficient, classify it as `conditional` and do not imply Git inclusion.
 ## Output Format
 
 Match the user's language at runtime. Keep identifiers, paths, env keys, route
-paths, and permission codes exact. Include `review_context` in every report,
-even summary reports.
+paths, and permission codes exact. Build the complete `review_context` for
+repair-loop/ship compatibility, but do not render or echo the full
+`review_context` in user-facing output by default. Findings in the user
+projection must still include severity, evidence, `file:line` or exact scope,
+risk, repair tier, and suggested action. Use the validated portable handoff
+when `runtime_context_channel` is unsupported or unknown. Show the full
+structured context only when the user requests it or validation requires it.
 
 ````markdown
+# Authoritative runtime context (not user-visible by default)
+
+The following schema is passed to the consumer or reduced by the declared
+consumer-required-field matrix for a portable handoff.
+
 # Review - <module/feature> - <track> - <track_profile> - <dimension(s)> - <date>
 
 ```yaml
@@ -319,6 +330,17 @@ review_context:
   finding_ids:
     - R1
     - R2
+  findings:
+    - id: R1
+      severity_or_gate: High/REQUIRED
+      dimension: security
+      file_line_or_scope: src/auth.guard.ts:42
+      issue: Missing permission check
+      evidence: <redacted or summarized evidence>
+      risk: Unauthorized access
+      suggested_action: Add resource permission guard
+      repair_tier: confirm
+      gate: REQUIRED
   repair_gate_mapping:
     blocking: Critical/Important or BLOCKER/REQUIRED
     confirm: semantic/non-mechanical fixes
@@ -389,7 +411,8 @@ Review remains read-only and does not widen the simplification scope.
 ### MUST DO
 - Classify `track_profile` before loading refs.
 - Load only applicable refs and record `refs_loaded`/`refs_skipped`.
-- Include `review_context` in every report.
+- Preserve the full `review_context` for its consumer without echoing redundant
+  metadata in every user report.
 - Preserve requested dimensions and mode.
 - Keep direct review strict read-only by default.
 - Redact secrets and avoid commands that expose secret values.

@@ -16,6 +16,12 @@
 append-oriented, multi-run, multi-case evidence. Written does not mean executed.
 Executed does not mean pass.
 
+Build the full context/status/evidence for the exact consumer and pass it
+through `context.pass`. User-facing output projects the requirement-linked
+result, exact commands and exit codes, failures, skipped checks, blockers, and
+next action; it does not echo the full structures by default. Use the validated
+portable handoff when `runtime_context_channel` is unsupported or unknown.
+
 ## Test context
 
 ```yaml

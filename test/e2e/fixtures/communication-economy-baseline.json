@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "source_commit": "ec6afdb4e2494416d985be610837e728a9278a2f",
+  "measurement_kind": "deterministic-source-bound-contract-projection",
+  "visible_output_basis": {
+    "observed_live": false,
+    "source": "git-show",
+    "method": "Baseline commit schemas are read from source_commit and combined with sanitized scenario projections. These are deterministic contract-surface measurements, not captured agent transcripts."
+  },
+  "tokenizer": {
+    "available": false,
+    "reason": "The repository has no tokenizer dependency; bytes, lines, and words are recorded without inventing token counts."
+  },
+  "bootstrap": {
+    "paths": [
+      "AGENTS.md",
+      "skills/orchestration/using-skills.md",
+      "_refs/shared/runtime-protocols.md"
+    ],
+    "files": 3,
+    "utf8_bytes": 20173,
+    "semantic_bytes": 19723,
+    "lines": 387,
+    "words": 2361
+  },
+  "jit_scenarios": {
+    "pure-qa": {
+      "files": 0,
+      "utf8_bytes": 0,
+      "lines": 0,
+      "words": 0
+    },
+    "small-docs-fast-fix": {
+      "files": 2,
+      "utf8_bytes": 13814,
+      "lines": 383,
+      "words": 1821
+    },
+    "small-production-fast-fix": {
+      "files": 3,
+      "utf8_bytes": 26383,
+      "lines": 635,
+      "words": 3555
+    },
+    "spec-approval": {
+      "files": 5,
+      "utf8_bytes": 53954,
+      "lines": 1326,
+      "words": 6971
+    },
+    "approved-plan-execution": {
+      "files": 6,
+      "utf8_bytes": 67185,
+      "lines": 1637,
+      "words": 8566
+    },
+    "direct-review": {
+      "files": 4,
+      "utf8_bytes": 42786,
+      "lines": 955,
+      "words": 5484
+    },
+    "review-repair-ship": {
+      "files": 10,
+      "utf8_bytes": 117368,
+      "lines": 2861,
+      "words": 15335
+    },
+    "security-destructive": {
+      "files": 5,
+      "utf8_bytes": 60588,
+      "lines": 1396,
+      "words": 8271
+    },
+    "delegated-test-docs": {
+      "files": 8,
+      "utf8_bytes": 79972,
+      "lines": 2032,
+      "words": 8353
+    },
+    "no-runtime-context-channel": {
+      "files": 6,
+      "utf8_bytes": 52553,
+      "lines": 1593,
+      "words": 4976
+    }
+  },
+  "typed_context_schema_bytes": {
+    "requirement_context": 1665,
+    "spec_context": 1054,
+    "plan_context": 6347,
+    "execution_context": 1879,
+    "test_context": 1862,
+    "review_context": 1457,
+    "debug_context": 1590,
+    "simplify_context": 3214,
+    "ship_context": 1995,
+    "artifact_context": 646,
+    "ui_capture_context": 1191,
+    "explore_context": 1574,
+    "ai_agent_context": 1426
+  },
+  "confirmed_broad_reads": [
+    {
+      "path": "skills/shared/sdlc/02-spec.md",
+      "baseline_behavior": "Load the latest one to three approved specs to mirror style.",
+      "classification": "style-only broad read",
+      "replacement": "relationship metadata, then frontmatter/headings or the canonical template"
+    },
+    {
+      "path": "skills/shared/sdlc/01-brainstorming.md",
+      "baseline_behavior": "Load latest approved artifact frontmatter and latest product docs.",
+      "classification": "recency-biased read",
+      "replacement": "relationship metadata and exact request scope"
+    },
+    {
+      "path": "_refs/documentation/write-user-guide.md",
+      "baseline_behavior": "Fall back to the most recent track spec.",
+      "classification": "unrelated fallback read",
+      "replacement": "same contract, change, requirement, module, or explicit user selection"
+    },
+    {
+      "path": "_refs/shared/review-security.md",
+      "baseline_behavior": "Read the latest twenty commits.",
+      "classification": "broad history probe",
+      "replacement": "current diff or an explicit bounded review range"
+    },
+    {
+      "path": "_refs/shared/review-performance.md",
+      "baseline_behavior": "Read the latest twenty commits.",
+      "classification": "broad history probe",
+      "replacement": "current diff or an explicit bounded review range"
+    }
+  ]
+}

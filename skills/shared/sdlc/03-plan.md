@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-plan
 description: Plan authoring and approval gate. Use after approved spec, or when the user asks to write/review/approve/change an implementation plan. Produces numbered file/task plans, self-reviews, waits for explicit approval, then persists the approved snapshot in the matching track directory under .sdcorejs/plans/ before execute-plan. Applies across tracks. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, user.approve
+required-actions: artifact.read, artifact.write, context.pass, verification.run, user.approve
 ---
 
 # 03 - Plan
@@ -418,13 +418,16 @@ Approve:
 1. Read `_refs/sdlc/plan-approval-artifact.md` completely.
 2. Write its immutable approved-plan snapshot and compute `approved_plan_hash`
    over the approved plan body excluding frontmatter and the hash field.
-3. Emit the approved spec, draft plan, and approved plan under
+3. Record the approved spec, draft plan, and approved plan under
    `artifact_context.required_with_change`; set `source_plan` to the approved
    snapshot.
-4. Emit final `plan_context` with the approved path/hash, write scope,
+4. Build final `plan_context` with the approved path/hash, write scope,
    verification and package-manager evidence, parallel candidates,
    dependency/env/migration boundaries, and change control.
-5. Handoff to `sdcorejs-execute-plan` only after the snapshot succeeds.
+5. Handoff to `sdcorejs-execute-plan` only after the snapshot succeeds. Pass
+   the full context through `context.pass` or the validated portable handoff;
+   reference the approved spec by `contract_id`, path, and hash instead of
+   repeating its body in runtime output.
 
 Change request:
 

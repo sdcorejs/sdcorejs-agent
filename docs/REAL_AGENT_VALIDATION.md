@@ -15,6 +15,34 @@ sanitized evidence for adopted releases.
   verification behavior.
 - Store transcript links or summaries in release notes.
 
+## Communication Economy Policy Live A/B Evidence
+
+The deterministic Communication Economy Policy fixtures prove profile,
+handoff, field-coverage, exact-preservation, and repeated-block behavior. They
+do not measure a hosted model's actual token usage. Metrics are evidence, not a
+marketing claim.
+
+An optional live A/B run is valid only when the same sanitized scenario can run
+through a trusted, isolated harness with comparable usage reporting. Record:
+
+- Source commit and harness version.
+- Tool surface, model, and reasoning effort.
+- Scenario ID and resolved `compact`, `standard`, or `detailed` profile.
+- Input token count.
+- Cached input token count, when the provider exposes it.
+- Output token count.
+- Total token count.
+- Workflow outcome and approval, security, verification, and evidence
+  completeness.
+- Sanitized transcript reference.
+
+The A and B runs must preserve the same authoritative outcome and required
+fields. Do not infer support for `runtime_context_channel` from conversation
+memory; test the native structured transfer or exercise the portable handoff.
+If credentials, isolation, comparable models, or usage telemetry are
+unavailable, record the live A/B eval as `skipped` or `not run` with the exact
+reason. Never estimate a missing token count.
+
 ## Minimum Release Matrix
 
 For a public release that claims full live-agent coverage, capture all of these
@@ -192,6 +220,8 @@ field in the transcript template for that exact pair.
 - Prompt:
 - Expected skill/workflow:
 - Observed skill/workflow:
+- Communication profile:
+- Runtime handoff mode: native structured channel/portable handoff/not applicable
 - Approval gate observed: yes/no/not applicable
 - Verification evidence observed: yes/no/not applicable
 - Result:

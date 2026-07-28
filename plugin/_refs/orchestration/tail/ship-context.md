@@ -1,6 +1,10 @@
 # Ship Context Contract
 
-Use this reference whenever `sdcorejs-ship` emits `ship_context`.
+Use this reference whenever `sdcorejs-ship` builds `ship_context`. Preserve the
+full structure for the exact downstream consumer, but do not echo it in the
+user-facing result by default. Show outcome, verification, artifact closure,
+blockers, skipped checks, risks, and an actual next decision. Use the validated
+portable handoff when `runtime_context_channel` is unsupported or unknown.
 
 ## Contents
 

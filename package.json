@@ -20,8 +20,10 @@
   "scripts": {
     "test": "npm run test:e2e",
     "test:e2e": "npm run test:e2e:repository && npm run test:e2e:nestjs && npm run test:e2e:nestjs:golden",
-    "test:e2e:repository": "node --test test/e2e/ai-agent-track-contract.test.mjs test/e2e/cli-adapters.test.mjs test/e2e/entrypoint-smoke.test.mjs test/e2e/golden-target-app.test.mjs test/e2e/harness-behavioral-sentinel.test.mjs test/e2e/npm-publication-contract.test.mjs test/e2e/parallel-dispatch-protocol.test.mjs test/e2e/project-context-artifact-lifecycle.test.mjs test/e2e/simplify-skill-contract.test.mjs test/e2e/skill-pack-runner.test.mjs test/e2e/static-visual-composer.test.mjs test/e2e/test-track-contract.test.mjs",
-    "test:e2e:harness": "node --test test/e2e/harness-behavioral-sentinel.test.mjs test/e2e/project-context-artifact-lifecycle.test.mjs test/e2e/static-visual-composer.test.mjs",
+    "test:e2e:repository": "node --test test/e2e/ai-agent-track-contract.test.mjs test/e2e/cli-adapters.test.mjs test/e2e/communication-economy.test.mjs test/e2e/entrypoint-smoke.test.mjs test/e2e/golden-target-app.test.mjs test/e2e/harness-behavioral-sentinel.test.mjs test/e2e/npm-publication-contract.test.mjs test/e2e/parallel-dispatch-protocol.test.mjs test/e2e/project-context-artifact-lifecycle.test.mjs test/e2e/simplify-skill-contract.test.mjs test/e2e/skill-pack-runner.test.mjs test/e2e/static-visual-composer.test.mjs test/e2e/test-track-contract.test.mjs",
+    "test:e2e:harness": "node --test test/e2e/communication-economy.test.mjs test/e2e/harness-behavioral-sentinel.test.mjs test/e2e/project-context-artifact-lifecycle.test.mjs test/e2e/static-visual-composer.test.mjs",
+    "test:e2e:communication-economy": "node --test test/e2e/communication-economy.test.mjs",
+    "report:communication-economy": "node scripts/measure-communication-economy.mjs",
     "test:e2e:nestjs": "node --test test/e2e/nestjs-pack-contract.test.mjs test/e2e/nestjs-pack-generation.test.mjs test/e2e/nestjs-pack-security.test.mjs test/e2e/nestjs-pack-runtime.test.mjs",
     "test:e2e:nestjs:golden": "node --test test/e2e/nestjs-golden-project.test.mjs",
     "test:e2e:nestjs:containers": "node --test test/e2e/nestjs-golden-containers.test.mjs",

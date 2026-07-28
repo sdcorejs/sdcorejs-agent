@@ -56,6 +56,14 @@ allowlists are empty, workspace strategy is `shared-readonly`, result type is
 
 ## Required Context
 
+Keep the complete structure as authoritative runtime state. Do not echo it in
+routine user output. Pass it to the execute-plan parent or final ship consumer
+through `context.pass`; when `runtime_context_channel` is `unsupported` or
+`unknown`, the Communication Economy Policy portable matrix must preserve the
+contract, target, working-tree identity, capability verdict, topology,
+integration, units, failure/redaction policy, global verification, and final
+tail. Missing or malformed state fails closed.
+
 ```yaml
 parallel_context:
   schema_version: 2

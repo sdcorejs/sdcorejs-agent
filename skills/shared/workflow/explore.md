@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-explore
 description: "Project exploration and durable context skill. Use to understand/map a codebase, trace feature flows, find reusable components/services, refresh .sdcorejs/summary.md, recover context, set/read persona, save/read memories, harvest documentation facts, or inspect local env shape. Modes: summary-read, summary-refresh, code-map, trace-flow, env-setup, recovery, persona, memories, documentation-harvest. Runtime-localized."
-required-actions: artifact.read, artifact.write, verification.run, user.choose, web.fetch
+required-actions: artifact.read, artifact.write, context.pass, verification.run, user.choose, web.fetch
 ---
 
 # Explore
@@ -63,7 +63,7 @@ anything:
 | `trace-flow-readonly` | Trace one behavior, feature, route, job, command, or test flow | Read-only trace output. No diagram/file writes unless the user separately asks. |
 | `env-setup-readonly` | Explain local setup, prerequisites, scripts, env keys, or first-run steps | Read README/config/examples and output instructions. No env/config writes. |
 | `env-setup-write-approved` | User explicitly approves safe env file creation from an example | May create a missing env file with placeholders only. Never overwrite existing env files. |
-| `recovery-readonly` | Resume, recover context, or read where work stopped | Read summaries, tasks, docs, recent commits, and status. No auto-resume and no writes. |
+| `recovery-readonly` | Resume, recover context, or read where work stopped | Read related summaries, tasks, docs, request-scoped commits, and current status. No auto-resume and no writes. |
 | `persona-read` | Read current project persona or explanation mode | Read-only. |
 | `persona-write-approved` | User explicitly asks to set/change persona or approves persona storage | May write `.sdcorejs/persona.md` after authoring-repo guard and redaction. |
 | `memories-read` | Load durable project memory context | Read relevant memory index/frontmatter first. Bodies only on match. No writes. |

@@ -17,7 +17,9 @@ sdcorejs-brainstorming
 Rules:
 
 - For any non-trivial execution task, use `_refs/shared/tasklist.md`.
-- Create the `Tasks` section before work starts and update it as work progresses.
+- Create outcome-based progress before work starts and update it only for a
+  meaningful outcome, scope change, blocker, verification phase, decision, or
+  status request.
 - Keep live progress in the current thread/harness; never mirror it to a
   repository checkpoint file.
 - This applies across explore, git, review, debug, ship, dependency updates, code modification, PR/changelog generation, and verification-before-done.
@@ -32,10 +34,17 @@ Rules:
 - Approved plans execute through `sdcorejs-execute-plan`.
 - Pure Q&A answers directly; bounded low-risk fixes use targeted context,
   focused verification, and concise review.
+- Apply `_refs/harness/communication-economy.md` just in time. Default routine
+  output to compact professional sentences; use detailed output for approval,
+  security, destructive action, ambiguity, conflict, blockers, or failed
+  verification. Pass full typed context only to its consumer; use a portable
+  handoff when `runtime_context_channel` is unsupported or unknown.
 - Ask sequential versus parallel only for two or more independent units when
   both modes are feasible.
 - `sdcorejs-execute-plan` classifies Angular as Core UI vs plain Angular before dispatch.
 - Parallel work requires `sdcorejs-parallel-dispatch`.
+- Direct splitting of an approved plan may select it; read-only parallel
+  review/audit work denies writes.
 - Product/PO docs and traceability use `sdcorejs-product`.
 - UI/UX design, wireframes, PNG previews, and FE handoff use `sdcorejs-design`.
 - Test-only plans use `sdcorejs-test`.

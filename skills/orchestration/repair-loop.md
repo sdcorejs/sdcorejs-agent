@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-repair-loop
 description: Repair workflow for findings from sdcorejs-review or sdcorejs-ship verify-before-done. Use for fix findings/review issues/critical issues, or auto after findings. Verifies each finding, fixes systematically, re-runs source-specific verification, and iterates until resolved or deferred. Applies to angular, nestjs, nextjs. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose, agent.resume
+required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose, agent.resume
 ---
 
 # Repair Loop

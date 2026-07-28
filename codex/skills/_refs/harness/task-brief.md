@@ -14,6 +14,7 @@ task_brief:
   owned_paths: []
   readable_paths: []
   do_not_touch: []
+  context_refs: []
   acceptance_criteria: []
   verification_commands: []
   expected_output:
@@ -21,12 +22,14 @@ task_brief:
   escalation_conditions: []
 ```
 
-Use IDs, exact paths, and bounded excerpts. Reference the approved spec and plan
-by stable ID/path/hash; do not embed their complete bodies or a complete
-repository context. Do not place a full spec/plan body inside a nominally valid
-string field. Write-capable workers must have non-overlapping path and
-exclusive-resource ownership. The worker stops and returns control when scope,
-ownership, contract, or risk exceeds the brief.
+Use IDs, exact paths, and bounded excerpts. `context_refs` contains portable
+contract, artifact, diff, and evidence references required by the worker.
+Reference the approved spec and plan by stable ID/path/hash; do not embed their
+complete bodies or a complete repository context. Do not place a full
+spec/plan body inside a nominally valid string field. Write-capable workers
+must have non-overlapping path and exclusive-resource ownership. The worker
+stops and returns control when scope, ownership, contract, or risk exceeds the
+brief.
 
 ## Review Package
 

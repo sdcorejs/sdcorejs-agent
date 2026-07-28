@@ -12,6 +12,8 @@ npm ci
 npm run check:text-hygiene
 npm run sync:skills
 npm run check:skills
+npm run test:e2e:communication-economy
+npm run report:communication-economy
 npm run test:e2e:harness
 npm run test:e2e
 npm audit --omit=dev
@@ -48,6 +50,14 @@ Capture sanitized live-tool evidence using `docs/REAL_AGENT_VALIDATION.md`.
 For full live-agent coverage, capture Claude Code, Codex attached repo, Codex
 native skills, Cursor, and GitHub Copilot evidence. State any unvalidated tool
 surfaces explicitly.
+
+For Communication Economy Policy claims, distinguish deterministic contract
+measurements from an optional live A/B eval. A valid live record includes the
+source commit, harness version, tool/model, reasoning effort, input token,
+cached input token when available, output token, total token, outcome,
+approval/evidence completeness, and sanitized transcript reference. Record
+missing credentials, isolation, or comparable usage telemetry as `skipped`;
+never substitute an estimate or a marketing reduction claim.
 
 ## 4. Changelog And Version
 
@@ -88,6 +98,8 @@ Include:
 - Real-agent transcript evidence summary.
 - Harness/model/source-commit/scenario/outcome metadata for every optional live
   eval, or an explicit not-run reason.
+- Communication Economy Policy profile, handoff mode, required-field parity,
+  and deterministic-versus-live measurement label.
 - Upgrade notes for plugin/native skill users.
 - Known limitations.
 

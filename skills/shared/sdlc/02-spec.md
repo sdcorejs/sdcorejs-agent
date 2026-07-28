@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-spec
 description: Spec authoring and approval gate. Use after brainstorming confirms requirements, or when the user asks to write/review/approve/change a spec or design doc. Writes a draft in the matching track directory under .sdcorejs/docs, self-reviews, waits for explicit approval, then persists the approved snapshot in the matching track directory under .sdcorejs/specs before plan. Applies across tracks. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, user.approve
+required-actions: artifact.read, artifact.write, context.pass, verification.run, user.approve
 ---
 
 # 02 - Spec
@@ -41,29 +41,39 @@ targeted reads instead unless the user explicitly approved a summary refresh.
 
 ## Process
 
-### 1. Load guidance and prior style
+### 1. Load guidance and related artifacts
 Read the relevant guidance:
 
 - angular / nestjs / nextjs: `_refs/sdlc/<track>.md`
 - ai-agent: `_refs/sdlc/ai-agent.md` plus
   `_refs/ai-agent/{manifest.json,profile-contract.json,profiles/common.md}`
 - test: `_refs/shared/testing-philosophy.md` plus the target stack test ref if known
-- product: existing product ledgers under `.sdcorejs/docs/product/`
-- generic harness: previous approved specs/plans and available project scripts
+- product: product ledgers related to the same requirement or module
+- generic harness: the canonical template plus available project scripts
 - package manager evidence: `packageManager`, lockfiles, workspace files, and
   `package.json` scripts, only to set verification expectations. Do not invent
   scripts or hardcode `npm`, `npx`, or `tsc` as universal commands.
 
-Then read:
+Select prior artifacts by relationship, in this order:
 
-- Directly related `.sdcorejs/docs/<track>/*.md`, selected by artifact metadata
-  and request scope rather than recency alone.
-- Relevant `.sdcorejs/memories/<track>/*.md`.
-- Latest 1-3 approved specs under `.sdcorejs/specs/<track>/` to mirror style.
-- Any provided `requirement_context`; preserve `contract_id`, `requirement_id`,
+1. same `contract_id`;
+2. same `change_ref`;
+3. an explicit `supersedes` relationship;
+4. same requirement or exact module;
+5. an artifact selected by the user;
+6. the canonical template, frontmatter, and headings.
+
+Recency may break a tie only within the same relationship. If the purpose is
+style, read the canonical template or only the frontmatter and headings of one
+related artifact. Read a prior body only when its content is a real dependency
+of the current change. Do not load unrelated recent specs merely to mirror
+style.
+
+Also read relevant `.sdcorejs/memories/<track>/*.md` and any provided
+`requirement_context`. Preserve `contract_id`, `requirement_id`,
   `target_root`, `target_root_kind`, `track`, `stack_profile`,
   `profile_confidence`, explicit decisions, inferred/defaulted assumptions,
-  unresolved blockers, and redaction status.
+unresolved blockers, and redaction status.
 
 If the user asks to revise an approved spec, do not mutate the approved
 snapshot. Create a new revision with `supersedes` and `change_reason`. If a
@@ -274,11 +284,14 @@ change_control:
 sdcorejs-spec (approved on attempt <N> / 3)
 ```
 
-4. Emit a final `spec_context` block in the handoff. Include the
+4. Build the final `spec_context` for the handoff. Include the
    `approved_spec_path`, `approved_spec_hash`, approval metadata,
    `change_control`, and source `requirement_context` reference.
 5. Only after the approved snapshot succeeds, hand off to `sdcorejs-plan` with
-   the draft spec path, approved snapshot path, and `spec_context`.
+   the draft spec path, approved snapshot path, and `spec_context`. Pass the
+   full context through `context.pass`; if the channel is unsupported or
+   unknown, use the validated portable handoff. Do not repeat the approved spec
+   body in the runtime handoff or final user projection.
 
 Change request:
 

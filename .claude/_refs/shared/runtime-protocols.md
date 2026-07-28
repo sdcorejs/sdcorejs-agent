@@ -4,6 +4,11 @@ Load only the references required by the selected task:
 
 - Non-trivial execution progress: `_refs/shared/tasklist.md`. Keep live state in
   the runtime; never create a mutable session checkpoint.
+- Response profiles, user projections, runtime-context handoffs, or related
+  artifact selection: `_refs/harness/communication-economy.md`. Keep full typed
+  context for its consumer, default user output to compact professional prose,
+  and expand automatically for approval, security, destructive action,
+  ambiguity, conflict, blockers, or failed verification.
 - Project evidence: `_refs/shared/project-context.md`. Prefer explicit/current
   evidence, valid summary sections, then targeted reads.
 - Project persona: `_refs/shared/persona.md` only when one exists and is

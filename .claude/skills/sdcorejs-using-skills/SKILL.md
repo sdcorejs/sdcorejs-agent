@@ -71,6 +71,13 @@ must pass `sdcorejs-parallel-dispatch`.
 ## Invariants
 
 - Run current verification before claiming pass, fixed, built, or done.
+- Apply `_refs/harness/communication-economy.md` just in time for response
+  profiles, progress, runtime-context handoff, or related-artifact selection.
+  Default routine output to compact professional sentences; expand for
+  approval, security, destructive action, ambiguity, failure, or blockers.
+- Keep authoritative typed context available to its exact consumer without
+  echoing it to the user. When `runtime_context_channel` is unsupported or
+  unknown, use the validated portable handoff for `context.pass`.
 - Keep live progress in the runtime, never in `.sdcorejs/**` session files.
 - Every durable `.sdcorejs/**` producer propagates `artifact_context`.
 - Finish gates, verification-before-done, and no-writes-after-branch-ready stay

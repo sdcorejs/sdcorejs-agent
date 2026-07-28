@@ -23,8 +23,9 @@ redacted evidence such as `API_KEY=[REDACTED]`. Prefer scans that print file
 paths or key names instead of full matching lines.
 
 ## Read-only inventory (parallel)
-- `git log -20 --oneline` — what landed recently
-- `git diff <base>...HEAD` — full diff if a base ref is given, else surface
+- Inspect the current diff or an explicitly bounded Git review range; do not
+  widen scope to arbitrary recent history.
+- `git diff <base>...HEAD` — full diff when an explicit base ref defines scope
 - `package.json` — auth/crypto/parsing libs
 - `.env.example` / config — env var **names** only (never read real `.env`)
 

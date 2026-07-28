@@ -78,6 +78,41 @@ selection, bounded task/review envelopes, entrypoint deletion/rename
 invalidation, disjoint ownership, and safe static visual rendering. It does not
 call a live model.
 
+### Communication Economy Policy
+
+```bash
+npm run test:e2e:communication-economy
+npm run report:communication-economy
+```
+
+The behavioral test covers `compact`, `standard`, and `detailed` resolution;
+approval/security/destructive escalation; exact-content preservation;
+authoritative runtime context, user projection, and portable handoff separation;
+consumer-required field and shape validation, including independent
+`test_status`, `test_evidence`, and `parallel_context`; rejection of nested
+artifact bodies; numbered approval options; provider-neutral `context.pass`;
+event-driven progress; related-artifact selection; empty-section elision;
+rendered semantic parity; and absence of mutable runtime state under
+`.sdcorejs/**`.
+
+The deterministic report compares ten sanitized scenario fixtures. Baseline
+context schemas are read with `git show` from the declared baseline commit,
+then combined with the sanitized scenario projection; current user output is
+rendered by the current policy. These visible-output figures are source-bound
+contract-surface projections, not captured agent transcripts. The report
+records bootstrap and just-in-time bytes, visible output bytes and words,
+serialized portable fallback bytes, serialized authoritative-context bytes sent
+through a supported runtime context channel, repeated-block bytes, total
+communication bytes, authoritative-field coverage, and rendered
+approval/security/verification parity. The current total counts exactly one
+handoff representation for each typed context: native structured context when
+supported, otherwise the portable fallback. The baseline includes the context
+it echoed in visible output. The report does not fabricate an estimated token
+count when no tokenizer is installed, and it labels optional live A/B evidence
+as skipped or not run when trusted usage telemetry is unavailable. Metrics are
+evidence, not a marketing claim; tests should not fail on whitespace or prose
+that does not alter behavior.
+
 ### npm Publication Contract
 
 ```bash
@@ -277,3 +312,5 @@ Expected:
 - Sync output paths change.
 - The workflow or approval gates change.
 - A new tool surface is supported.
+- The Communication Economy Policy, context field matrix, projection, or
+  measurement scenarios change.
