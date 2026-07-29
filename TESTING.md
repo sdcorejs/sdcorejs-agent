@@ -83,6 +83,7 @@ call a live model.
 ```bash
 npm run test:e2e:communication-economy
 npm run report:communication-economy
+npm run report:communication-economy:live
 ```
 
 The behavioral test covers `compact`, `standard`, and `detailed` resolution;
@@ -109,9 +110,27 @@ handoff representation for each typed context: native structured context when
 supported, otherwise the portable fallback. The baseline includes the context
 it echoed in visible output. The report does not fabricate an estimated token
 count when no tokenizer is installed, and it labels optional live A/B evidence
-as skipped or not run when trusted usage telemetry is unavailable. Metrics are
-evidence, not a marketing claim; tests should not fail on whitespace or prose
-that does not alter behavior.
+as skipped when trusted usage telemetry is not supplied. The `:live` command
+does not invoke a provider or require credentials; it validates and projects
+the sanitized Codex/Claude fixture. Invalid parity, token fields,
+source hashes, or sanitization declarations fail closed. Metrics are evidence,
+not a marketing claim; tests should not fail on whitespace or prose that does
+not alter behavior.
+
+### Documentation Layout v2
+
+```bash
+npm run test:e2e:documentation-layout
+```
+
+This deterministic suite exercises cross-platform key/path safety,
+canonical-first exact discovery, the documentation gate, migration planning and
+idempotent snapshot application, asset ownership/collisions, aggregate
+frontmatter and link rewriting, broken-link blocking, guide/image containment,
+Pandoc argument arrays and separate DOCX/PDF capability reports, and the
+single-invocation finish-tail rule. Repository E2E includes this file directly.
+It does not install Pandoc, open a browser, access a network, or mutate a
+consumer repository.
 
 ### npm Publication Contract
 

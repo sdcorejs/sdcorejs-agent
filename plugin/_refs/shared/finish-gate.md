@@ -232,7 +232,8 @@ branch-ready.
    `sdcorejs-documentation (write-technical-doc mode)`.
 9. `_refs/orchestration/tail/auto-docs.md` (unless deferred).
 10. (if `user_guide=create` or `user_guide=update`)
-   `sdcorejs-documentation (write-user-guide mode)`.
+   run Mode 1 per selected module, then Mode 2 exactly once if a guide changed
+   or an aggregate was approved; export remains separate.
 11. `_refs/orchestration/tail/auto-task-tracker.md` only when the sequential
    workflow or integration owner is authorized to reconcile the shared durable
    backlog (and unless deferred). Never use it for live progress.

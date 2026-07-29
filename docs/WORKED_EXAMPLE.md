@@ -102,6 +102,11 @@ Every code-generation run ends with the finish tail:
 - Run review and repair-loop if findings exist.
 - Add or update code documentation for touched source.
 - Ask the documentation gate for user/technical docs when needed.
+- Write approved module guides as
+  `.sdcorejs/documentation/user-guides/<module>/<module>.md`, with verified
+  images under the same unit. If any module guide changed, rebuild the root
+  aggregate exactly once before final verification; do not imply DOCX/PDF
+  export.
 - Run `sdcorejs-ship` verify-before-done and branch-ready modes.
 - Close native progress only if its state changed; do not emit a duplicate
   user-visible summary immediately before the final response.

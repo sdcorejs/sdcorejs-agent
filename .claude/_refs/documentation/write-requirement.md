@@ -2,6 +2,7 @@
 
 Internal reference loaded by `sdcorejs-documentation` in `write-requirement`
 mode. This file is not a dispatchable skill.
+Load `_refs/shared/documentation-layout.md` before resolving the output path.
 
 ## Purpose
 
@@ -18,12 +19,15 @@ matrices, and requirement/implementation/test consistency reviews.
 Write exactly one file per task id:
 
 ```text
-<target>/.sdcorejs/documentation/requirements/<TASKID>.md
+<target>/.sdcorejs/documentation/requirements/<TASKID>/<TASKID>.md
 ```
 
-Normalize `TASKID` for the filename by preserving uppercase/lowercase letters,
-digits, `_`, and `-`; reject path separators. Examples: `TASK-001.md`,
-`JIRA-123.md`, `REQ_AUTH_LOGIN.md`.
+Preserve the supplied `TASKID` case and allow only letters, digits, `_`, and
+`-`. Reject empty/dot values, separators, absolute paths, drive prefixes,
+trailing dot/space, Windows reserved names, and case-insensitive collisions.
+Do not invent or rewrite the TASKID. Examples:
+`TASK-001/TASK-001.md`, `JIRA-123/JIRA-123.md`, and
+`REQ_AUTH_LOGIN/REQ_AUTH_LOGIN.md`.
 
 ## When To Run
 
@@ -44,7 +48,7 @@ ask once after code/test documentation gate for user-visible requirement work:
 
 ```text
 Do you want to record this requirement under
-.sdcorejs/documentation/requirements/<TASKID>.md? If yes, please provide TASKID.
+.sdcorejs/documentation/requirements/<TASKID>/<TASKID>.md? If yes, please provide TASKID.
 ```
 
 If they decline or do not provide a `TASKID`, skip this reference and report
@@ -148,7 +152,15 @@ so that <business/user outcome>.
 
 ## Update Rules
 
-- If `<TASKID>.md` already exists, read it first and update in place.
+- Probe the canonical exact entry
+  `requirements/<TASKID>/<TASKID>.md` first, then the transitional legacy flat
+  entry `requirements/<TASKID>.md`.
+- If the canonical entry exists, read it first and update in place.
+- Treat a legacy entry as existing. Do not create a duplicate canonical record.
+  For an authorized update, build and validate the complete migration plan
+  before moving it. A canonical/legacy conflict blocks the write.
+- Coverage discovery accepts only those two exact shapes; never use a broad
+  glob that can include unit attachments or examples.
 - Preserve confirmed facts, source links, decisions, and open questions.
 - Update `updated_at` on every edit. Keep `created_at` unchanged.
 - Increment `version` only when a meaningful requirement changes; use patch
@@ -161,5 +173,5 @@ so that <business/user outcome>.
 
 - Run `git diff --check` after writing.
 - Manually verify the output path stays under
-  `.sdcorejs/documentation/requirements/`.
+  `.sdcorejs/documentation/requirements/<TASKID>/` for new writes.
 - Report whether a `TASKID` was provided, asked for, or skipped.

@@ -233,7 +233,7 @@ Preferred order:
    `test_context`, `debug_context`, `repair_source`, and any prior
    `branch_ready_evidence`.
 3. Complete selected write-producing tail steps before final branch-ready:
-   code documentation, technical docs, user guide, change execution records,
+   code documentation, technical docs, user guide/aggregate, change execution records,
    explicitly owned durable backlog updates, memories, generated mirrors,
    changelog, and release notes when selected or approved.
 4. Merge producer `artifact_context` entries for the same change. Preserve

@@ -13,6 +13,7 @@ npm run check:text-hygiene
 npm run sync:skills
 npm run check:skills
 npm run test:e2e:communication-economy
+npm run test:e2e:documentation-layout
 npm run report:communication-economy
 npm run test:e2e:harness
 npm run test:e2e

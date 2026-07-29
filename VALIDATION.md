@@ -2,7 +2,7 @@
 
 Current validation snapshot for the SDCoreJS SDLC Agent repository.
 
-Date: 2026-07-28
+Date: 2026-07-29
 
 ## Current Layout
 
@@ -45,7 +45,27 @@ Date: 2026-07-28
 | Parallel | `sdcorejs-parallel-dispatch` |
 | Finish | `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)` when durable knowledge surfaced |
 
-## Communication Economy Policy evidence - 2026-07-28 working tree
+## Documentation Layout v2 validation
+
+The canonical just-in-time contract is
+`_refs/shared/documentation-layout.md`; its executable behavior lives in the
+dependency-free ESM helper `_refs/shared/documentation-layout.mjs`.
+
+```bash
+npm run test:e2e:documentation-layout
+node --test test/e2e/test-track-contract.test.mjs
+node --test test/e2e/project-context-artifact-lifecycle.test.mjs
+node --test test/e2e/skill-pack-runner.test.mjs
+```
+
+These deterministic checks cover canonical and transitional discovery, safe and
+idempotent migration planning/application, aggregate link rewriting, UI-capture
+containment, lifecycle closure, export argument/capability reporting, JIT
+loading, and mirror integration. They do not prove that Pandoc, a PDF engine,
+an authenticated browser, or a live provider runtime is available; those
+capabilities remain separately reported as passed, failed, blocked, or skipped.
+
+## Communication Economy Policy evidence - 2026-07-28 PR #55 snapshot
 
 The Communication Economy Policy is a just-in-time reference plus deterministic
 runtime policy. It separates authoritative runtime context, user projection,
@@ -63,15 +83,15 @@ working-tree diff:
 
 | Measure | Baseline | Current working tree |
 |---|---:|---:|
-| Always-loaded bootstrap UTF-8 bytes | 20,173 | 15,691 |
-| Always-loaded bootstrap words | 2,361 | 1,865 |
-| Aggregate just-in-time scenario bytes | 514,603 | 535,763 |
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 15,885 |
+| Always-loaded bootstrap words | 2,361 | 1,884 |
+| Aggregate just-in-time scenario bytes | 514,603 | 535,486 |
 | Aggregate visible output bytes | 42,558 | 2,802 |
 | Aggregate visible output words | 3,961 | 337 |
 | Portable fallback handoff bytes | 0 | 21,303 |
 | Supported runtime context channel bytes | 0 | 1,205 |
 | Repeated-block bytes | 2,319 | 0 |
-| Total measured communication bytes | 577,334 | 576,764 |
+| Total measured communication bytes | 577,334 | 576,681 |
 | Consumer-required authoritative fields | 288 | 288 preserved |
 
 The report includes ten scenarios, per-scenario selected paths, bytes, words,
@@ -88,11 +108,38 @@ removed to improve the metric. The report does not estimate token count because
 this private workspace has no tokenizer dependency. Metrics are evidence, not a
 marketing claim.
 
-Both Codex and Claude CLIs were present during this implementation, but their
-help output did not establish a trusted isolated A/B flow with comparable input
-token, cached input token, output token, and total token telemetry. No
-credentialed agent was invoked, and the live A/B result remains `skipped`
-rather than being converted to a pass or an estimate.
+The default report still marks `live_ab_eval` as `skipped` because deterministic
+validation must not invoke a credentialed provider. The separately authorized
+command `npm run report:communication-economy:live` validates the sanitized
+fixture
+`test/e2e/fixtures/communication-economy-live-ab.json` and reports the observed
+Codex and Claude A/B smoke evidence without rerunning either provider.
+
+### Trusted live A/B smoke - 2026-07-29
+
+The same read-only pure-Q&A scenario ran baseline first and current second
+through Codex CLI `0.132.0` and Claude Code `2.1.163`. A used
+`ec6afdb4e2494416d985be610837e728a9278a2f`; B used HEAD
+`845b5ecd6fab11adaf4ea3ba6b54c016f98f95b8` with associated dirty-diff
+fingerprint
+`84da59a5042c03041060884072cdb998733a3c51c20bd32a3b2e82c6238ec4b8`.
+Every run returned exit `0` and preserved the repository-purpose, public
+21-skill count, and exact `npm run check:skills` outcome.
+
+| Provider / effort | Derived total tokens A -> B | Output tokens A -> B | Visible bytes A -> B | Observed delta boundary |
+|---|---:|---:|---:|---|
+| Codex `gpt-5.5` / `medium` | 398,963 -> 166,708 | 3,482 -> 1,506 | 1,332 -> 702 | Total `-58.21%`; visible `-47.30%` |
+| Codex `gpt-5.5` / `high` | 517,483 -> 387,418 | 4,172 -> 3,951 | 1,426 -> 911 | Total `-25.13%`; visible `-36.12%` |
+| Claude `sonnet` / `medium` | 36,351 -> 36,512 | 1,770 -> 837 | 1,987 -> 1,801 | Total `+0.44%`; visible `-9.36%` |
+| Claude `sonnet` / `high` | 64,260 -> 45,365 | 1,095 -> 820 | 2,043 -> 2,030 | Total `-29.40%`; visible `-0.64%` |
+
+Codex totals are provider input plus output tokens. Claude totals are direct
+input plus cache-creation input, cache-read input, and output tokens. These
+accounting models are not cross-provider comparable. Provider caches were not
+reset, the execution order was not counterbalanced, and B also contains the
+in-progress Documentation Layout v2 diff. This one scenario is a live smoke,
+not the ten-scenario deterministic matrix or full release-agent coverage.
+Observed deltas are evidence for these runs, not a fixed savings claim.
 
 ## Retired standalone skills removal evidence - 2026-07-27
 
@@ -313,7 +360,7 @@ actually produced evidence.
 | Static validation | Source layout, frontmatter, exact refs, generated mirrors, markdown fences, text hygiene, and language policy are internally consistent. | `npm run check:text-hygiene`, `npm run check:skills`, and phase 1 E2E tests. | None beyond keeping CI green for the target commit. |
 | Deterministic prompt-routing validation (local canonical routing) | The canonical local runner selects the expected `sdcorejs-*` skill for fixture prompts without calling an LLM. | `test/e2e/fixtures/prompt-evals.json` plus phase 1 tests. | Add fixtures when new user intents are introduced. |
 | Behavioral harness sentinel | Executable policies distinguish Q&A, fast-fix, and governed work; select real execution choices; enforce capability/model/task boundaries; mutate summary entrypoints; and render escaped static visual output. | `npm run test:e2e:harness` over parsed contracts, simulations, and mutation fixtures. | It is deterministic local evidence, not proof that a hosted model followed the policy. |
-| Communication Economy Policy | Deterministic profiles, clarity escalation, context projection, shape-aware portable handoff, test/parallel state, rendered semantic parity, progress events, related-artifact selection, exact preservation, and source-bound context-budget fixtures agree. | `npm run test:e2e:communication-economy` and `npm run report:communication-economy`. | Run an optional trusted live A/B eval for actual provider token usage; record unavailable telemetry as skipped. |
+| Communication Economy Policy | Deterministic profiles, clarity escalation, context projection, shape-aware portable handoff, test/parallel state, rendered semantic parity, progress events, related-artifact selection, exact preservation, and source-bound context-budget fixtures agree. | `npm run test:e2e:communication-economy`, `npm run report:communication-economy`, and the validated Codex/Claude smoke fixture exposed by `npm run report:communication-economy:live`. | Expand live coverage beyond one pure-Q&A scenario, counterbalance run order, and keep unavailable telemetry explicit. |
 | Entrypoint-aware routing validation | Each loaded Claude Code, Codex, Cursor, or Copilot profile contributes derived routing policy; mutation tests prove one changed profile can fail independently. | `test/e2e/entrypoint-smoke.test.mjs`. | This proves deterministic profile-text participation, not live runtime behavior. |
 | AI-agent contract validation | Engine/profile registries, agent/tool schemas, trusted context, approval bindings, state, evidence, observability, limits, eval thresholds, and invalid mutations agree offline. | `_refs/ai-agent/validate-agent-contract.mjs` and `test/e2e/ai-agent-track-contract.test.mjs`; four golden contracts and at least 27 invalid cases. | Run separately authorized live provider checks for each claimed engine/model/tool integration; deterministic conformance is not provider compatibility. |
 | Parallel protocol simulation | Selected contract, topology/DAG, path/resource, failure/fan-in, repair/evidence, and state-machine rules are exercised through the distributed deterministic validator. | `_refs/orchestration/parallel-protocol.mjs` via `test/e2e/parallel-dispatch-protocol.test.mjs`; includes synthetic boundary inputs plus real temporary Git worktree, result-commit, conflict, and rollback behavior. | This is partial local simulation. External runtimes must still invoke the validator and enforce the skill instructions, capabilities, and repository-specific commands during real sessions. |
@@ -386,6 +433,7 @@ npm run check:skills
 npm run check:skills:ps
 npm run test:e2e:communication-economy
 npm run report:communication-economy
+npm run report:communication-economy:live
 npm run test:e2e:harness
 npm run check:nestjs-pack
 node --test test/e2e/npm-publication-contract.test.mjs
@@ -432,8 +480,9 @@ CI coverage:
   Real-agent transcript evidence for Claude Code, Codex attached repo, Codex
   native skills, Cursor, and GitHub Copilot is still a release-time requirement
   before claiming full live-agent coverage.
-- Communication Economy Policy live A/B telemetry is skipped until a trusted
-  isolated runner exposes comparable usage fields.
+- Communication Economy Policy has one trusted Codex/Claude pure-Q&A A/B smoke
+  at `medium` and `high`; the full scenario and tool-surface matrix remains a
+  release-time requirement.
 - Repository metadata should describe the project as a portable SDLC skill pack
   for AI coding agents, not as a standalone runtime coding agent.
 

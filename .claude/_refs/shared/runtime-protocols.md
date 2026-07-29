@@ -17,6 +17,9 @@ Load only the references required by the selected task:
   `_refs/shared/user-choice-prompt.md`.
 - Any `.sdcorejs/**` write, verification, staging, commit, or push:
   `_refs/shared/artifact-lifecycle.md`; propagate `artifact_context`.
+- Operations that create, discover, read, update, migrate, aggregate, export,
+  validate, or close paths below `.sdcorejs/documentation/**`:
+  `_refs/shared/documentation-layout.md` (JIT only).
 - Delegation after runtime capability checks:
   `_refs/harness/delegation-policy.json` and `_refs/harness/task-brief.md`.
 - Visual/spatial decision after the user accepts:

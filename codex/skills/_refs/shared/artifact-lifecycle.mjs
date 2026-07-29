@@ -5,6 +5,15 @@ import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import {
+  buildCanonicalEntryPath,
+  buildLegacyEntryPath,
+  classifyDocumentationPath,
+  discoverDocumentationEntries,
+  resolveDocumentationEntryState,
+  validateGuideImageRelationship,
+  validateSharedOwnership,
+} from './documentation-layout.mjs';
 
 const execFileAsync = promisify(execFile);
 
@@ -51,12 +60,28 @@ export async function buildArtifactClosure({
   const runtimeBuckets = normalizeRuntimeContext(artifactContext);
   const invalidContextPaths = runtimeBuckets.invalid_paths;
   const classifications = [];
+  const discoveredContents = new Map();
 
   for (const relativePath of discovery.discoveredPaths) {
-    const absolutePath = path.join(targetRoot, relativePath);
-    const content = await readFile(absolutePath, 'utf8').catch(() => '');
+    discoveredContents.set(
+      relativePath,
+      await readFile(path.join(targetRoot, relativePath), 'utf8').catch(() => ''),
+    );
+  }
+  const projectedDocumentationContents =
+    await collectProjectedDocumentationContents(
+      targetRoot,
+      discovery.discoveredPaths,
+      discoveredContents,
+    );
+  const documentationDuplicates = analyzeDocumentationDuplicates(
+    projectedDocumentationContents,
+  );
+
+  for (const relativePath of discovery.discoveredPaths) {
+    const content = discoveredContents.get(relativePath) ?? '';
     const metadata = parseArtifactFrontmatter(content);
-    const classification = classifyArtifact({
+    let classification = classifyArtifact({
       path: relativePath,
       metadata,
       changeRef,
@@ -64,6 +89,22 @@ export async function buildArtifactClosure({
       ownedSharedPaths,
       runtimeBuckets,
     });
+    const duplicate = documentationDuplicates.byPath.get(relativePath);
+    if (duplicate?.state === 'equivalent-legacy') {
+      classification = unrelated(
+        relativePath,
+        'documentation-asset',
+        metadata,
+        'equivalent legacy documentation copy is superseded by canonical entry',
+      );
+    } else if (duplicate?.state === 'conflict') {
+      classification = unknown(
+        relativePath,
+        'documentation-asset',
+        metadata,
+        'canonical and legacy documentation entries conflict',
+      );
+    }
     const sensitiveCategories = scanSensitiveArtifactContent(relativePath, content);
     classifications.push({
       ...classification,
@@ -116,6 +157,9 @@ export async function buildArtifactClosure({
   if (missingRequiredPaths.length > 0) blockers.push('required artifact missing');
   if (unknownPaths.length > 0) blockers.push('unknown artifact may belong to the change');
   if (sensitivePaths.length > 0) blockers.push('secret or PII screening requires remediation');
+  if (documentationDuplicates.conflicts.length > 0) {
+    blockers.push('documentation canonical/legacy conflict');
+  }
   if (mode === 'push' && uncommittedIncludedPaths.length > 0) {
     blockers.push('artifact closure incomplete: required artifacts remain uncommitted');
   }
@@ -139,6 +183,7 @@ export async function buildArtifactClosure({
       unknown_paths: unknownPaths,
       missing_required_paths: missingRequiredPaths,
       invalid_context_paths: invalidContextPaths,
+      documentation_layout_conflicts: documentationDuplicates.conflicts,
       uncommitted_included_paths: mode === 'push' ? uncommittedIncludedPaths : [],
       sensitive_paths: sensitivePaths,
       closure_result: closureResult,
@@ -219,6 +264,25 @@ export function classifyArtifact({
   const currentOwner = normalizeRef(owner);
   const commitPolicy = metadata.commit_policy ?? defaultCommitPolicy(kind);
   const runtimeBucket = findRuntimeBucket(normalizedPath, runtimeBuckets);
+  const runtimeEntry = findRuntimeEntry(normalizedPath, runtimeBuckets);
+
+  if (
+    kind === 'documentation-asset' &&
+    runtimeBucket === 'required_with_change'
+  ) {
+    const promotion = validateDocumentationRuntimePromotion(
+      normalizedPath,
+      runtimeEntry,
+    );
+    if (!promotion.ok) {
+      return unknown(
+        normalizedPath,
+        kind,
+        metadata,
+        `documentation promotion rejected: ${promotion.code}`,
+      );
+    }
+  }
 
   if (SHARED_KINDS.has(kind)) {
     const explicitlyOwned =
@@ -351,7 +415,7 @@ function normalizeRuntimeContext(context) {
     'local_only',
     'unrelated_observed',
   ];
-  const result = { invalid_paths: [] };
+  const result = { invalid_paths: [], entries: new Map() };
   for (const key of keys) {
     result[key] = [];
     for (const item of context?.[key] ?? []) {
@@ -362,10 +426,209 @@ function normalizeRuntimeContext(context) {
         continue;
       }
       result[key].push(candidate);
+      if (item && typeof item === 'object') {
+        result.entries.set(`${key}:${candidate}`, item);
+      }
     }
   }
   result.invalid_paths = unique(result.invalid_paths);
   return result;
+}
+
+function findRuntimeEntry(artifactPath, buckets) {
+  for (const key of [
+    'required_with_change',
+    'shared_owned',
+    'conditional',
+    'local_only',
+    'unrelated_observed',
+  ]) {
+    const entry = buckets.entries?.get(`${key}:${artifactPath}`);
+    if (entry) return entry;
+  }
+  return null;
+}
+
+function validateDocumentationRuntimePromotion(artifactPath, entry) {
+  const classification = classifyDocumentationPath(artifactPath);
+  if (!classification.ok) return classification;
+  if (
+    ['canonical-entry', 'legacy-entry', 'singleton'].includes(
+      classification.kind,
+    )
+  ) {
+    return { ok: true };
+  }
+
+  const relatedEntryPath = entry?.guide_path ?? entry?.related_entry_path;
+  if (classification.kind === 'shared-asset') {
+    if (
+      relatedEntryPath &&
+      /\.(?:png|jpe?g|webp|gif|svg)$/i.test(artifactPath)
+    ) {
+      if (entry?.relationship_verified !== true) {
+        return {
+          ok: false,
+          code: 'DOCUMENTATION_RELATIONSHIP_UNVERIFIED',
+        };
+      }
+      return validateGuideImageRelationship({
+        guidePath: relatedEntryPath,
+        imagePath: artifactPath,
+        sharedOwnership: entry?.shared_ownership,
+      });
+    }
+    const ownership = validateSharedOwnership({
+      ownerUnits: entry?.shared_ownership?.ownerUnits,
+    });
+    return entry?.relationship_verified === true &&
+      entry?.shared_ownership?.proven === true &&
+      ownership.ok
+      ? { ok: true }
+      : { ok: false, code: 'SHARED_OWNERSHIP_UNPROVEN' };
+  }
+
+  if (classification.kind !== 'unit-asset' || !relatedEntryPath) {
+    return { ok: false, code: 'DOCUMENTATION_RELATIONSHIP_UNPROVEN' };
+  }
+  if (
+    classification.category === 'user-guides' &&
+    classification.assetDirectory === 'images'
+  ) {
+    if (entry?.relationship_verified !== true) {
+      return {
+        ok: false,
+        code: 'DOCUMENTATION_RELATIONSHIP_UNVERIFIED',
+      };
+    }
+    return validateGuideImageRelationship({
+      guidePath: relatedEntryPath,
+      imagePath: artifactPath,
+      sharedOwnership: entry?.shared_ownership,
+    });
+  }
+  const related = classifyDocumentationPath(relatedEntryPath);
+  if (
+    !related.ok ||
+    !['canonical-entry', 'legacy-entry'].includes(related.kind) ||
+    related.category !== classification.category ||
+    related.key.toLowerCase() !== classification.key.toLowerCase()
+  ) {
+    return { ok: false, code: 'CROSS_UNIT_ASSET' };
+  }
+  return entry?.relationship_verified === true
+    ? { ok: true }
+    : { ok: false, code: 'DOCUMENTATION_RELATIONSHIP_UNVERIFIED' };
+}
+
+async function collectProjectedDocumentationContents(
+  root,
+  discoveredPaths,
+  discoveredContents,
+) {
+  const result = new Map();
+  for (const candidate of discoveredPaths) {
+    const classification = classifyDocumentationPath(candidate);
+    if (
+      !classification.ok ||
+      !['canonical-entry', 'legacy-entry'].includes(classification.kind)
+    ) {
+      continue;
+    }
+    if (await exists(path.join(root, candidate))) {
+      result.set(candidate, discoveredContents.get(candidate) ?? '');
+    }
+    const counterpart =
+      classification.kind === 'canonical-entry'
+        ? buildLegacyEntryPath(
+            classification.category,
+            classification.key,
+            { allowInactive: true },
+          )
+        : buildCanonicalEntryPath(
+            classification.category,
+            classification.key,
+            { allowInactive: true },
+          );
+    if (result.has(counterpart) || !(await exists(path.join(root, counterpart)))) {
+      continue;
+    }
+    result.set(
+      counterpart,
+      await readFile(path.join(root, counterpart), 'utf8').catch(() => ''),
+    );
+  }
+  return result;
+}
+
+export function analyzeDocumentationDuplicates(files) {
+  const byPath = new Map();
+  const conflicts = [];
+  for (const category of ['user-guides', 'requirements', 'technical-docs']) {
+    const discovery = discoverDocumentationEntries(files, { category });
+    for (const collision of discovery.collisions) {
+      const conflict = {
+        ...collision,
+        category,
+      };
+      conflicts.push(conflict);
+      for (const conflictPath of collision.paths ?? []) {
+        byPath.set(conflictPath, { state: 'conflict' });
+      }
+    }
+    const keys = new Set([
+      ...discovery.canonical.map((item) => item.key),
+      ...discovery.legacy.map((item) => item.key),
+    ]);
+    for (const key of keys) {
+      const state = resolveDocumentationEntryState({ files, category, key });
+      if (state.state === 'both-equivalent') {
+        byPath.set(state.legacyPath, { state: 'equivalent-legacy' });
+      } else if (state.state === 'both-conflicting') {
+        const conflict = {
+          code: 'CANONICAL_LEGACY_CONFLICT',
+          category,
+          key,
+          canonical_path: state.canonicalPath,
+          legacy_path: state.legacyPath,
+        };
+        conflicts.push(conflict);
+        byPath.set(state.canonicalPath, { state: 'conflict' });
+        byPath.set(state.legacyPath, { state: 'conflict' });
+      } else if (
+        ['case-insensitive-conflict', 'path-inventory-conflict'].includes(
+          state.state,
+        )
+      ) {
+        const conflictPaths = [
+          ...(state.conflictingPaths ?? []),
+          ...(state.pathConflicts ?? []).flatMap((conflict) => [
+            conflict.normalizedPath,
+            conflict.path,
+            ...(conflict.paths ?? []),
+          ]),
+        ].filter(Boolean);
+        const unclassifiedPaths = conflictPaths.filter(
+          (conflictPath) => !byPath.has(conflictPath),
+        );
+        if (unclassifiedPaths.length === 0) continue;
+        conflicts.push({
+          code:
+            state.conflict ??
+            (state.state === 'case-insensitive-conflict'
+              ? 'CASE_INSENSITIVE_COLLISION'
+              : 'PATH_INVENTORY_CONFLICT'),
+          category,
+          key,
+          paths: [...new Set(conflictPaths)].sort(),
+        });
+        for (const conflictPath of conflictPaths) {
+          byPath.set(conflictPath, { state: 'conflict' });
+        }
+      }
+    }
+  }
+  return { byPath, conflicts };
 }
 
 function findRuntimeBucket(artifactPath, buckets) {

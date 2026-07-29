@@ -16,6 +16,9 @@ existing browser runner and authenticated persona fixtures. It does not install
 a runner, start an app, invent routes, bypass login, write guide prose, or
 invoke Git.
 
+Load `_refs/shared/documentation-layout.md` before accepting a documentation
+capture path.
+
 ## Capture contract
 
 Build this complete context for documentation/ship consumers. User-facing
@@ -27,7 +30,7 @@ ui_capture_context:
   schema_version: 1
   capture_id: capture-orders-list
   change_ref: <change-id>
-  guide_path: .sdcorejs/documentation/user-guides/orders.md
+  guide_path: .sdcorejs/documentation/user-guides/orders/orders.md
   module_or_feature: orders
   scenario_id: orders-list-supervisor
   source_test_ref: e2e/orders-list.spec.ts
@@ -54,7 +57,7 @@ ui_capture_context:
     loading_complete: true
     pii_screening: pass
   image:
-    file: .sdcorejs/documentation/user-guides/images/orders-list.png
+    file: .sdcorejs/documentation/user-guides/orders/images/list.png
     sha256: <digest>
     width: 1440
     height: 1000
@@ -79,7 +82,18 @@ A verified capture requires:
 3. the target state asserted before capture;
 4. loading completed, PII screening passed, and necessary redactions applied;
 5. an existing, non-empty, valid-decodable image with dimensions and SHA-256;
+   the dependency-free layout helper independently decodes PNG chunk CRC,
+   compressed scanlines, and dimensions, and rejects GIF/JPEG header-only
+   claims rather than trusting self-asserted decodability;
 6. provenance tied to current `associated_HEAD_or_diff`.
+7. `guide_path` is an exact documentation-unit entry (or an explicitly approved
+   existing path), and `image.file` is inside the same unit. A `_shared` image
+   requires proven ownership by at least two units, including this guide.
+
+Normalize accepted repository separators to `/`. Reject `..`, POSIX absolute
+paths, Windows absolute/drive paths, paths outside the documentation root,
+cross-unit images, and unproven `_shared` ownership. A non-empty `guidePath`
+does not prove the relationship; invalid relationships fail closed.
 
 A login page, access-denied page, blank state, stale build, failed selector, or
 unknown auth provenance is not documentation evidence.
@@ -104,3 +118,6 @@ Pass `test_context`, `test_status`, `test_evidence.captures`,
 through the runtime channel or validated portable handoff.
 Documentation may link the image only after verification. It owns guide prose;
 the test track owns the real UI capture and technical evidence.
+The runtime channel or portable handoff carries only exact consumer-required
+fields and stable path/hash/evidence references, not the full guide, spec, plan,
+diff, or log.

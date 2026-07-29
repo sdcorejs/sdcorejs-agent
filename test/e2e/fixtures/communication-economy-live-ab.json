@@ -1,0 +1,273 @@
+{
+  "schema_version": 1,
+  "measurement_kind": "credentialed-live-agent-ab-smoke",
+  "scenario": {
+    "id": "pure-qa-repo-purpose-skill-count-mirror-command",
+    "prompt_sha256": "sha256:e27e893b9b0b9043e276228ddc48b4b6613f7f1a4d549e0436e01dd17ef74d52",
+    "resolved_profile": "compact",
+    "read_only": true
+  },
+  "source": {
+    "baseline_commit": "ec6afdb4e2494416d985be610837e728a9278a2f",
+    "current_HEAD": "845b5ecd6fab11adaf4ea3ba6b54c016f98f95b8",
+    "current_associated_HEAD_or_diff": "845b5ecd6fab11adaf4ea3ba6b54c016f98f95b8+dirty:84da59a5042c03041060884072cdb998733a3c51c20bd32a3b2e82c6238ec4b8"
+  },
+  "evaluations": [
+    {
+      "captured_at": "2026-07-29T15:51:59.754Z",
+      "provider": "codex",
+      "cli_version": "0.132.0",
+      "requested_model": "gpt-5.5",
+      "resolved_models": [
+        "gpt-5.5"
+      ],
+      "reasoning_effort": "medium",
+      "execution_order": [
+        "baseline",
+        "current"
+      ],
+      "baseline": {
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 395481,
+          "cached_input_tokens": 346880,
+          "output_tokens": 3482,
+          "reasoning_output_tokens": 628,
+          "derived_total_tokens": 398963
+        },
+        "visible_output": {
+          "utf8_bytes": 1332,
+          "words": 135
+        },
+        "semantic_checks": {
+          "repository_purpose": true,
+          "public_skill_count": true,
+          "mirror_drift_command": true
+        }
+      },
+      "current": {
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 165202,
+          "cached_input_tokens": 123776,
+          "output_tokens": 1506,
+          "reasoning_output_tokens": 303,
+          "derived_total_tokens": 166708
+        },
+        "visible_output": {
+          "utf8_bytes": 702,
+          "words": 98
+        },
+        "semantic_checks": {
+          "repository_purpose": true,
+          "public_skill_count": true,
+          "mirror_drift_command": true
+        }
+      },
+      "outcome_parity": true,
+      "semantic_parity": true
+    },
+    {
+      "captured_at": "2026-07-29T15:51:59.754Z",
+      "provider": "claude",
+      "cli_version": "2.1.163",
+      "requested_model": "sonnet",
+      "resolved_models": [
+        "claude-haiku-4-5-20251001",
+        "claude-sonnet-4-6"
+      ],
+      "reasoning_effort": "medium",
+      "execution_order": [
+        "baseline",
+        "current"
+      ],
+      "constraints": {
+        "max_turns": 8,
+        "max_budget_usd_per_run": 2,
+        "tools": [
+          "Read",
+          "Glob",
+          "Grep"
+        ]
+      },
+      "baseline": {
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 4,
+          "cache_creation_input_tokens": 34577,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 1770,
+          "derived_total_input_tokens": 34581,
+          "derived_total_tokens": 36351
+        },
+        "provider_reported_cost_usd": 0.15679475,
+        "visible_output": {
+          "utf8_bytes": 1987,
+          "words": 279
+        },
+        "semantic_checks": {
+          "repository_purpose": true,
+          "public_skill_count": true,
+          "mirror_drift_command": true
+        }
+      },
+      "current": {
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 1497,
+          "cache_creation_input_tokens": 29883,
+          "cache_read_input_tokens": 4295,
+          "output_tokens": 837,
+          "derived_total_input_tokens": 35675,
+          "derived_total_tokens": 36512
+        },
+        "provider_reported_cost_usd": 0.13095975,
+        "visible_output": {
+          "utf8_bytes": 1801,
+          "words": 265
+        },
+        "semantic_checks": {
+          "repository_purpose": true,
+          "public_skill_count": true,
+          "mirror_drift_command": true
+        }
+      },
+      "outcome_parity": true,
+      "semantic_parity": true
+    },
+    {
+      "captured_at": "2026-07-29T16:08:27.394Z",
+      "provider": "codex",
+      "cli_version": "0.132.0",
+      "requested_model": "gpt-5.5",
+      "resolved_models": [
+        "gpt-5.5"
+      ],
+      "reasoning_effort": "high",
+      "execution_order": [
+        "baseline",
+        "current"
+      ],
+      "baseline": {
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 513311,
+          "cached_input_tokens": 450048,
+          "output_tokens": 4172,
+          "reasoning_output_tokens": 1236,
+          "derived_total_tokens": 517483
+        },
+        "visible_output": {
+          "utf8_bytes": 1426,
+          "words": 150
+        },
+        "semantic_checks": {
+          "repository_purpose": true,
+          "public_skill_count": true,
+          "mirror_drift_command": true
+        }
+      },
+      "current": {
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 383467,
+          "cached_input_tokens": 319872,
+          "output_tokens": 3951,
+          "reasoning_output_tokens": 1328,
+          "derived_total_tokens": 387418
+        },
+        "visible_output": {
+          "utf8_bytes": 911,
+          "words": 110
+        },
+        "semantic_checks": {
+          "repository_purpose": true,
+          "public_skill_count": true,
+          "mirror_drift_command": true
+        }
+      },
+      "outcome_parity": true,
+      "semantic_parity": true
+    },
+    {
+      "captured_at": "2026-07-29T16:08:27.394Z",
+      "provider": "claude",
+      "cli_version": "2.1.163",
+      "requested_model": "sonnet",
+      "resolved_models": [
+        "claude-sonnet-4-6"
+      ],
+      "reasoning_effort": "high",
+      "execution_order": [
+        "baseline",
+        "current"
+      ],
+      "constraints": {
+        "max_turns": 8,
+        "max_budget_usd_per_run": 2,
+        "tools": [
+          "Read",
+          "Glob",
+          "Grep"
+        ]
+      },
+      "baseline": {
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 5,
+          "cache_creation_input_tokens": 21607,
+          "cache_read_input_tokens": 41553,
+          "output_tokens": 1095,
+          "derived_total_input_tokens": 63165,
+          "derived_total_tokens": 64260
+        },
+        "provider_reported_cost_usd": 0.10993215,
+        "visible_output": {
+          "utf8_bytes": 2043,
+          "words": 234
+        },
+        "semantic_checks": {
+          "repository_purpose": true,
+          "public_skill_count": true,
+          "mirror_drift_command": true
+        }
+      },
+      "current": {
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 4,
+          "cache_creation_input_tokens": 13873,
+          "cache_read_input_tokens": 30668,
+          "output_tokens": 820,
+          "derived_total_input_tokens": 44545,
+          "derived_total_tokens": 45365
+        },
+        "provider_reported_cost_usd": 0.07353615,
+        "visible_output": {
+          "utf8_bytes": 2030,
+          "words": 249
+        },
+        "semantic_checks": {
+          "repository_purpose": true,
+          "public_skill_count": true,
+          "mirror_drift_command": true
+        }
+      },
+      "outcome_parity": true,
+      "semantic_parity": true
+    }
+  ],
+  "evidence_policy": {
+    "sanitized_metrics_only": true,
+    "raw_transcripts_committed": false,
+    "contains_secrets_or_user_data": false
+  },
+  "interpretation_boundary": [
+    "This is one read-only pure-Q&A scenario, not the full ten-scenario deterministic matrix.",
+    "Compare baseline and current only within the same provider, model, and effort.",
+    "Do not compare Codex token counts with Claude token counts because usage accounting differs.",
+    "The current source includes Communication Economy Policy and the in-progress Documentation Layout v2 dirty diff.",
+    "Runs executed baseline before current, so provider cache state and run order are recorded confounds.",
+    "Observed reductions are evidence for these runs, not a fixed savings target or marketing claim."
+  ]
+}

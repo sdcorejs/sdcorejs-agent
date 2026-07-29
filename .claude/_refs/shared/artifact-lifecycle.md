@@ -118,8 +118,8 @@ When several producers run, merge contexts by `change_ref` and path:
 - Local diagnostics, raw reports, coverage HTML, caches, browser/auth/storage
   state, traces, videos, temp files, and graph caches are always `local_only`.
 - A verified guide screenshot is `required_with_change` only when its current
-  UI capture evidence is PII-safe, hashed, and referenced by the changed guide.
-  Failure/diagnostic screenshots remain `local_only`.
+  UI capture is PII-safe, hashed, and passes the documentation-layout
+  relationship. Failure/diagnostic screenshots remain `local_only`.
 - Legacy `.sdcorejs/tasks/current-session.md` and
   `.sdcorejs/tasks/sessions/**` are `local_only`, ignored, never read as
   context, never updated, never staged, and never recreated.
@@ -178,7 +178,7 @@ Closure rules:
 1. Require all Git discovery commands to succeed. Any failed command makes
    discovery incomplete and blocks closure.
 2. Consume runtime `artifact_context` when present, but validate shared
-   artifact buckets against explicit ownership.
+   buckets and documentation relationships against explicit ownership.
 3. Otherwise reconstruct relationships from frontmatter, `source_spec`,
    `source_plan`, `change_ref`, current diff, and explicit user scope.
 4. Automatically include `required_with_change`.
@@ -186,9 +186,9 @@ Closure rules:
 6. Include `conditional` only when its condition and owner are proven.
 7. Exclude `local_only` and `unrelated`.
 8. Block if a required artifact is missing.
-9. Return `ambiguous` when an unknown path may belong to the change.
+9. Return `ambiguous` for unknown paths or conflicting documentation copies.
 10. Screen included paths for secrets and PII without printing values.
-11. Stage only an explicit path list.
+11. Stage only an explicit validated path list.
 12. Never use `git add .`, `git add -A`, or `git add .sdcorejs`.
 13. After commit, confirm no task-owned required artifact remains outside it.
 

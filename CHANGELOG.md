@@ -38,12 +38,19 @@ Node workspace is not distributed through npm.
 - Add deterministic Communication Economy Policy scenarios and context-budget
   reporting bound to baseline schema surfaces; audit rendered semantic coverage,
   typed test/parallel handoffs, nested-body rejection, and numbered approval
-  choices. Token metrics remain evidence rather than a marketing claim, and
-  unavailable live A/B telemetry is reported as skipped.
+  choices. The default report keeps unavailable telemetry explicit, while an
+  opt-in report validates sanitized Codex/Claude live A/B evidence without
+  invoking a provider. Token metrics remain evidence rather than a marketing
+  claim.
 - Reject artifact, diff, durable-context, and log bodies disguised inside
   portable string fields or user projections, and count both supported native
   context transfers and portable fallbacks in deterministic communication
   totals.
+- Add Documentation Layout v2 with one directory per document, unit-local
+  assets, canonical-first transitional discovery, conflict-aware idempotent
+  migration, exact aggregate discovery/link rewriting, safe Pandoc argument
+  plans, UI-evidence containment, lifecycle closure, and conditional
+  single-pass aggregate rebuilds.
 
 ## 0.6.0
 

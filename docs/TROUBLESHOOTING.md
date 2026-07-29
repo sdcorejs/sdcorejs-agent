@@ -222,3 +222,28 @@ The deterministic report reads baseline schema surfaces from its declared
 commit and measures sanitized contract projections, not captured transcripts or
 live model usage. Metrics are evidence, not a marketing claim. Record
 unavailable live telemetry as skipped rather than estimating token counts.
+
+## Documentation Layout Migration Is Blocked
+
+Run the focused contract first:
+
+```bash
+npm run test:e2e:documentation-layout
+```
+
+If a target project contains both a flat and nested entry, compare their
+semantic content. Equivalent copies select canonical for reads but require an
+explicit migration before legacy cleanup. Different copies block migration,
+aggregate build, and export; do not choose by mtime or overwrite either file.
+
+If an asset is reported as orphaned, prove ownership through a document link,
+`ui_capture_context`, `artifact_context`, exact unit metadata, or explicit user
+scope. Do not move it into `_shared` as a fallback. `_shared` requires at least
+two proven owning units. A filename or case-insensitive destination collision
+must be resolved before rerunning the idempotent migration plan.
+
+For aggregate failures, confirm entries use the exact
+`user-guides/<module>/<module>.md` shape and every emitted local target exists
+below `.sdcorejs/documentation/`. For export failures, inspect DOCX and PDF
+capability/results separately; a missing PDF engine or failed image-embed check
+is not a pass.

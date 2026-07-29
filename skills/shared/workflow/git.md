@@ -247,7 +247,7 @@ session state.
   a verified run.
 - Include a verified guide screenshot or other documentation asset only when
   its `ui_capture_context` is current, PII-safe, hashed, referenced by the
-  changed guide, and classified `required_with_change`.
+  changed guide, passes Layout v2 containment, and is `required_with_change`.
 - If capture provenance or artifact ownership is unknown or ambiguous, stop
   closure instead of guessing or staging the file.
 - When `sdcorejs-debug` emitted current redacted `debug_context`, include the

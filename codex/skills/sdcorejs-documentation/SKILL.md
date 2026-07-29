@@ -12,8 +12,9 @@ description: Documentation executor/gate for documentation artifacts. Use for co
 
 ## Shared Protocols
 
-Read `../_refs/shared/runtime-protocols.md` and load only the references needed for
-the selected mode. Every `.sdcorejs/**` documentation write applies
+Read `../_refs/shared/runtime-protocols.md`; load
+`../_refs/shared/documentation-layout.md` only for operations below
+`.sdcorejs/documentation/**`. Every `.sdcorejs/**` write applies
 `../_refs/shared/artifact-lifecycle.md` and emits `artifact_context`.
 
 ## Purpose
@@ -154,7 +155,8 @@ When called after the documentation gate:
 When called after the documentation gate or direct requirement request:
 
 1. Load `../_refs/documentation/write-requirement.md`.
-2. If the user provided a `TASKID`, write or update `<target>/.sdcorejs/documentation/requirements/<TASKID>.md`.
+2. If the user provided a `TASKID`, write or update
+   `<target>/.sdcorejs/documentation/requirements/<TASKID>/<TASKID>.md`.
 3. If no `TASKID` exists but the user wants a requirement record, ask for `TASKID` before writing.
 4. If the user declines requirement recording, skip and report it.
 
@@ -201,7 +203,7 @@ temporary export intermediates are `local_only`. Emit the standard
 - `../_refs/documentation/code-documentation.md` - source-code documentation, including public contracts and implementation comments
 - `../_refs/documentation/write-user-guide.md` - end-user guide generation and aggregate/export flow
 - `../_refs/documentation/write-technical-doc.md` - technical docs and document operations
-- `../_refs/documentation/write-requirement.md` - task-level requirement record under `.sdcorejs/documentation/requirements/<TASKID>.md`
+- `../_refs/documentation/write-requirement.md` - task-level requirement record under `.sdcorejs/documentation/requirements/<TASKID>/<TASKID>.md`
 - `../_refs/shared/finish-gate.md` - surfaces the documentation gate inside code-generation flows
 - `../_refs/orchestration/tail/auto-docs.md` - change-scoped execution records, distinct from evergreen documentation
 - `sdcorejs-explore` - project discovery, summaries, code maps, flow traces, env setup, and documentation harvests

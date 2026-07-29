@@ -14,6 +14,8 @@
 
 Internal reference loaded by `sdcorejs-documentation` in `write-user-guide`
 mode. This file is not a dispatchable skill.
+Load `_refs/shared/documentation-layout.md` before resolving, discovering,
+migrating, aggregating, exporting, or placing guide assets.
 
 ## Purpose
 
@@ -21,20 +23,24 @@ Generate and maintain **evergreen end-user feature references** for generated SD
 
 | Artifact | Question answered | Lifecycle |
 |---|---|---|
-| **`.sdcorejs/documentation/user-guides/<module>.md`** (this reference) | "<localized text>" | idempotent change-scoped artifact with current provenance |
+| **`.sdcorejs/documentation/user-guides/<module>/<module>.md`** (this reference) | "<localized text>" | idempotent change-scoped artifact with current provenance |
 | **Verified UI evidence** | "How were guide screenshots captured and verified?" | reuse the target runner; link evidence through `artifact_context` |
 | **`.sdcorejs/documentation/sdcorejs-user-guide.md`** (aggregate, Mode 2) | "<localized text>" | rebuilt from per-module guides on demand |
 | `.sdcorejs/docs/<track>/*.md` (`auto-docs`) | "What durable decisions/evidence belong to this change?" | immutable change-scoped execution records |
 | `.sdcorejs/summary.md` (`sdcorejs-explore`) | "What IS this project" | one canonical project brief |
 
-Templates live in `_refs/shared/user-guide-template.md`. Per-module guides go to `<target>/.sdcorejs/documentation/user-guides/<module>.md`; the aggregate goes to `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md`. Both are generated artifacts and are idempotently overwritten.
+Templates live in `_refs/shared/user-guide-template.md`. Per-module guides go
+to `<target>/.sdcorejs/documentation/user-guides/<module>/<module>.md`; their
+assets stay in the same documentation unit. The aggregate goes to
+`<target>/.sdcorejs/documentation/sdcorejs-user-guide.md`. Both are generated
+artifacts and are idempotently overwritten.
 
 ## Modes
 
 | # | Mode | When | Trigger |
 |---|---|---|---|
 | 1 | **Per-module incremental** | write-code tail chain (auto), or manual for one module | end of write-code / `auto-docs`; "write user guide for module X" |
-| 2 | **Aggregate build** | ship a large feature, export to DOCX/PDF, manual | "build aggregate user guide", "export user guide docx/pdf", `sdcorejs-ship` |
+| 2 | **Aggregate build** | a module guide changed, an approved stale aggregate, export to DOCX/PDF, or manual request | "build aggregate user guide", "export user guide docx/pdf", conditional finish tail |
 | 3 | **Legacy reverse-engineer** | existing project, no spec, read-first | "read the whole project and write the user guide", "write user guide from legacy code" |
 | 4 | **PRD-coverage compare** | runs inside Mode 1 & 2 automatically | "compare against PRD / requirement coverage"; always fires when a spec or PRD exists |
 
@@ -121,7 +127,12 @@ rg -n "openWorkflow\|openBulk\|openCustomAction\|SdActionButton" <fe>/src/libs/<
 
 ### 3. Render the per-module guide
 
-Write `<target>/.sdcorejs/documentation/user-guides/<module>.md` from the per-module template in `_refs/shared/user-guide-template.md`.
+Resolve the canonical exact entry first. For a new write, write
+`<target>/.sdcorejs/documentation/user-guides/<module>/<module>.md` from the
+per-module template in `_refs/shared/user-guide-template.md`. If only a
+transitional legacy entry exists, treat it as an update and run the authorized
+migration preflight; do not create a duplicate canonical guide. A conflicting
+canonical/legacy pair blocks the update.
 
 Fill the YAML frontmatter:
 - `artifact_id`, `artifact_kind: documentation-asset`, `change_ref`,
@@ -143,13 +154,13 @@ Fill the YAML frontmatter:
 
 Fill the body sections using the harvested data:
 1. **Overview** — plain-language description of what the module does for the user.
-2. **Screens and tasks** — one subsection per detected screen, with user tasks, required permission, and main fields/buttons. Include `![<screen>](images/<module>-<screen>.png)` only when that file already exists or the screenshot was successfully captured during this run; otherwise omit the image markdown and rely on the screenshot checklist.
+2. **Screens and tasks** — one subsection per detected screen, with user tasks, required permission, and main fields/buttons. Include `![<screen>](images/<screen>.png)` only when current `ui_capture_context` verifies that same-unit file during this run; file existence alone is insufficient. Otherwise omit the image markdown and rely on the screenshot checklist.
 3. **Permission table** — table of all permission codes with their action and typical role.
 4. **Data reference** — table of entity fields (name / type / required / constraints) from the `@Column` / Zod harvest.
 5. **Special actions** — workflow transitions, bulk actions, custom side-effects (omit section if none found).
 6. **Core UI components used** (**angular only**) — table of every `@sdcorejs/angular` component/service/directive the module actually imports/uses, each with a one-line feature-specific purpose (the same table the orchestrator showed the user after generating). Harvest from the templates/components (`sd-*` tags, `inject(Sd*Service)`, `*sd*` directives). Omit this section for nestjs/nextjs.
 7. **Coverage vs requirements** — filled by Mode 4 (see below).
-8. **Illustration images — capture checklist** — `- [ ] images/<module>-<screen>.png`
+8. **Illustration images — capture checklist** — `- [ ] images/<screen>.png`
    for every detected screen, plus the required `ui-evidence-capture` scenario
    inputs.
 
@@ -170,7 +181,9 @@ runner or certify screenshots by file existence alone.
    references, persona catalog, and screenshot fixture.
 2. When a required image is missing or stale, call
    `sdcorejs-test (ui-evidence-capture)` with route, target state, logical
-   persona, output path, and current `associated_HEAD_or_diff`.
+   persona, the unit-local output path
+   `.sdcorejs/documentation/user-guides/<module>/images/<screen>.png`, and
+   current `associated_HEAD_or_diff`.
 3. Reuse the existing runner and its real-ui or approved manual-real-ui login.
    Do not install Playwright, generate a standalone bare-browser script, invent
    a localhost fallback, or bypass authentication.
@@ -178,7 +191,9 @@ runner or certify screenshots by file existence alone.
    `ui_capture_context`, and `artifact_context`.
 5. Link an image only when the capture is verified: target state visible,
    login redirect absent, access denied absent, PII screening passed, file hash
-   present, and provenance current.
+   present, provenance current, and the guide/image containment relationship
+   passes `_refs/shared/documentation-layout.md`. `_shared` is valid only with
+   proven ownership by at least two units, including this module.
 
 Keep the `## Illustration images` checklist. For each missing, blocked, or stale
 image, record its requested state and blocker without a broken markdown link.
@@ -221,9 +236,11 @@ artifact.read extraction: requirement list / acceptance criteria
 Also load matching task-level requirement records when present:
 
 ```bash
-artifact.read path match: <target>/.sdcorejs/documentation/requirements/*.md
-# Prefer files whose id/title/source refs match the module, TASKID, change_ref,
-# source_spec, source_plan, or explicit user scope.
+artifact.read exact canonical shape: <target>/.sdcorejs/documentation/requirements/<TASKID>/<TASKID>.md
+artifact.read transitional exact shape: <target>/.sdcorejs/documentation/requirements/<TASKID>.md
+# Select by id/title/source refs matching the module, TASKID, contract_id,
+# change_ref, source_spec, source_plan, or explicit user scope. Do not broad-glob
+# attachments/examples and do not select an unrelated record by recency.
 ```
 
 If spec, PRD, and requirement records exist, merge their criteria (deduplicate by intent).
@@ -274,14 +291,16 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
 
 ### MUST DO
 - Render from `_refs/shared/user-guide-template.md` — do NOT hard-code the template inline.
-- **Creation approval required** — when `<target>/.sdcorejs/documentation/user-guides/<module>.md` does not exist for a new feature, create it only after `_refs/documentation/gate.md` returns `user_guide=create` or the current request explicitly asks for it.
-- **Idempotent overwrite after approval** — once creation/update is approved, `<target>/.sdcorejs/documentation/user-guides/<module>.md` is a generated artifact; overwrite it, never append.
+- **Creation approval required** — when the canonical-first documentation gate returns `missing` for `<target>/.sdcorejs/documentation/user-guides/<module>/<module>.md`, create it only after `_refs/documentation/gate.md` returns `user_guide=create` or the current request explicitly asks for it.
+- **Idempotent overwrite after approval** — once creation/update is approved, `<target>/.sdcorejs/documentation/user-guides/<module>/<module>.md` is a generated artifact; overwrite it, never append. A detected legacy guide must be migrated through the authorized complete preflight, not duplicated.
 - Write to the **TARGET project** (resolve `TARGET_ROOT=$(git rev-parse --show-toplevel)` from the user's CWD; never write into the `sdcorejs-agent` repo). **Guard:** if `TARGET_ROOT` basename matches `sdcorejs-agent`, or the directory contains no `src/`, `frontend/`, or `package.json` at its root (no evidence of an app project), **abort and ask** the user to provide the target project path explicitly — do not write user guides into the agent repo.
 - **Runtime-localized** — section headings and prose use the user's session language; field names, permission codes, and route paths stay English.
 - Emit the capture checklist and request `ui-evidence-capture` only for required
   missing/stale images. Reuse the target project's existing runner.
 - Never emit markdown image links for missing or unverified files. Keep their
   checklist entries blocked until evidence is current.
+- Create a unit asset directory only when its first asset is written. Never
+  create empty directories, `.gitkeep`, or a compatibility symlink.
 - Record lifecycle/source metadata, `git_head`, and `generated_at` in every
   frontmatter block. HEAD is provenance, not the sole freshness/lifecycle key.
 
@@ -299,21 +318,27 @@ If no spec or PRD file is found (legacy project or early-stage feature), write:
 ## Related
 
 - `_refs/shared/user-guide-template.md` — per-module + aggregate templates + pandoc export command
+- `_refs/shared/documentation-layout.md` — Layout v2 path, migration,
+  aggregate-link, export, and containment contract
 - `sdcorejs-explore` — discovery engine used by Mode 3 (legacy reverse-engineer)
 - `_refs/orchestration/tail/auto-docs.md` — change-scoped execution-record tail
   (distinct from evergreen guides)
 - `sdcorejs-explore` — canonical project brief (read as context before writing guides)
-- `sdcorejs-ship` — triggers Mode 2 (aggregate build) as part of the ship checklist
+- `sdcorejs-ship` — invokes Mode 2 exactly once only when module guides changed,
+  an aggregate rebuild was explicitly requested, or an approved-scope aggregate
+  is known stale
 
 ## Mode 2 — Aggregate build + export
 
 ### 1. Trigger
 
-**Automatic** when `sdcorejs-ship` runs (large-feature or release mode).
+**Automatic** after all Mode 1 updates when at least one module guide changed,
+and before final verification. It may also run once when the aggregate is known
+stale inside approved scope. An unrelated ship operation does not rebuild it.
 
 Also triggered **manually**: "build aggregate user guide", "export user guide docx/pdf", "build user guide", or any explicit request to produce the aggregate or export to DOCX/PDF.
 
-### 2. Refresh stale guides before assembling
+### 2. Select current guides before assembling
 
 Each per-module guide records lifecycle/source metadata plus `git_head`.
 Before assembling, compare its `change_ref`, source spec/plan, target paths,
@@ -324,20 +349,25 @@ provenance signal:
 CURRENT_HEAD=$(git -C <target> rev-parse HEAD)
 ```
 
-Refresh a guide when related source/requirements/captures changed or its
+Refresh only an in-scope guide when related source/requirements/captures changed or its
 relationship metadata is stale. A different `git_head` caused only by unrelated
 changes does not force a refresh; a matching `git_head` does not prove the
 guide/capture is current.
 
-This step prevents the aggregate from silently embedding stale module guides written before the latest commits.
+Do not recapture unrelated stale modules. Report them if relevant to the
+requested aggregate.
 
 ### 3. Assemble the aggregate
 
-Glob all per-module guides (after step 2 has refreshed any stale ones):
+Discover exact per-module entries (after step 2 has refreshed in-scope stale
+ones):
 
 ```bash
-artifact.read path match: <target>/.sdcorejs/documentation/user-guides/*.md
-# Read each file; extract YAML frontmatter (module, title, coverage) + body (strip frontmatter block)
+artifact.read canonical exact shape: <target>/.sdcorejs/documentation/user-guides/<module>/<module>.md
+artifact.read transitional exact shape: <target>/.sdcorejs/documentation/user-guides/<module>.md
+# Exclude examples, attachments, diagrams, images, assets, and _shared.
+# Read metadata first. Resolve equivalent canonical/legacy copies to canonical;
+# block conflicting copies.
 ```
 
 Build `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md` from the **aggregate template** in `_refs/shared/user-guide-template.md`:
@@ -347,7 +377,13 @@ Build `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md` from the **aggre
    provenance, `modules` (sorted), and summed `coverage`.
 2. **`## Table of contents`** — numbered list linking to each `## <Module>` section anchor.
 3. **`## System Overview`** — 1-2 sentences: what the system does, who it is for (read from `.sdcorejs/summary.md` if it exists; otherwise write best-effort from module titles).
-4. **One `## <Module>` section per file** — insert each module's body content verbatim after stripping the YAML frontmatter block (the `---…---` header). Preserve all headings (shift level if needed so they sit below the `##` module heading).
+4. **One `## <Module>` section per file** — insert each selected module body
+   after stripping frontmatter, shift headings below the module heading, and
+   structurally rewrite unit-local Markdown/HTML links for the aggregate.
+   `images/list.png` becomes `user-guides/<module>/images/list.png`, while
+   `../../_shared/diagrams/system-flow.png` becomes
+   `_shared/diagrams/system-flow.png`. Do not rewrite external URLs, anchors,
+   absolute paths, fenced code, or inline code.
 5. **`## Coverage vs requirements summary`** — global summary table; sum each module's `coverage` frontmatter counts:
 
 ```markdown
@@ -364,19 +400,24 @@ Update the aggregate frontmatter `coverage` block with the summed totals.
 
 ### 4. Export to DOCX / PDF
 
-After writing the aggregate, emit the pandoc commands from `_refs/shared/user-guide-template.md`:
+Before writing the aggregate, validate every emitted local link stays below the
+documentation root and exists. A conflict, traversal, broken link, or stale
+verified-image relationship blocks aggregate output and export. Build the
+aggregate helper's `verifiedImageEvidence` inventory only from current structured
+`ui_capture_context` and `artifact_context` lifecycle evidence. Each accepted
+record preserves schema version 1, `capture_id`, `change_ref`, `guide_path`,
+the current `associated_HEAD_or_diff`, runner and real-UI persona provenance,
+target-state/PII assertions, redaction state, and `image.file`, `image.kind`,
+`image.sha256`, dimensions, existence, non-empty, and decodable status. A bare
+path list, self-asserted `decodable`, or file existence alone is not
+verification. Confirm the current image bytes match the hash and dimensions and
+pass format decoding.
 
-```bash
-# DOCX (preferred — supports embedded scaffold images):
-pandoc <target>/.sdcorejs/documentation/sdcorejs-user-guide.md \
-  -o <target>/.sdcorejs/documentation/sdcorejs-user-guide.docx \
-  --resource-path=<target>/.sdcorejs/documentation/user-guides
-
-# PDF (alternative):
-pandoc <target>/.sdcorejs/documentation/sdcorejs-user-guide.md \
-  -o <target>/.sdcorejs/documentation/sdcorejs-user-guide.pdf \
-  --resource-path=<target>/.sdcorejs/documentation/user-guides
-```
+For an approved export, build a process argument array from
+`_refs/shared/documentation-layout.mjs`. The resource root is
+`<target>/.sdcorejs/documentation`. Do not shell-concatenate target paths; keep
+spaces and Unicode in one argument. `_refs/shared/user-guide-template.md`
+contains correct POSIX and PowerShell display forms.
 
 **The skill does NOT run pandoc or start the target app unless explicitly
 asked.** Before export, it reports missing/stale images and requests
@@ -384,10 +425,19 @@ asked.** Before export, it reports missing/stale images and requests
 project's existing runner. Export only verified images; blocked images remain
 unlinked checklist items.
 
-When invoked from `sdcorejs-ship`: **always rebuild** the aggregate. **Ask before emitting the pandoc export command** (large-feature ships may not need DOCX every time):
+Report DOCX and PDF capabilities/results separately. Verify exit status,
+non-empty parseable output, and actual embedded images. Bind verification to the
+exact aggregate SHA-256 and compare the reported embedded path manifest with
+image syntax in that aggregate; ordinary download links to image files are not
+embedded-image evidence. A missing Pandoc or PDF engine is skipped/blocked,
+never pass.
+
+When invoked from `sdcorejs-ship`, rebuild only under the Mode 2 trigger above.
+Ask before running an export command (a ship may not need DOCX/PDF):
 > "<localized text>"
 
-When triggered manually (e.g. "export user guide docx" or localized equivalents): emit the export command immediately without asking.
+When explicitly triggered manually for export, that request supplies export
+approval. Aggregate rebuild and export remain separate results.
 
 ---
 
@@ -422,7 +472,10 @@ screen data after that harvest, keep the module and mark missing values as
 
 ### 3. Render per-module guides
 
-For **each module** discovered by `sdcorejs-explore`, render `<target>/.sdcorejs/documentation/user-guides/<module>.md` from the per-module template in `_refs/shared/user-guide-template.md`, best-effort from the harvested facts.
+For **each module** discovered by `sdcorejs-explore`, render
+`<target>/.sdcorejs/documentation/user-guides/<module>/<module>.md` from the
+per-module template in `_refs/shared/user-guide-template.md`, best-effort from
+the harvested facts.
 
 Fill frontmatter and all body sections exactly as in Mode 1, Step 3 (including the angular-only Core UI components table), using only data found in the harvest — **do NOT invent** routes, permissions, field names, or Core UI components not present in the code. Where a value could not be resolved, write `<localized text>` rather than fabricating.
 

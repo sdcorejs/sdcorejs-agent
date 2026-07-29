@@ -100,6 +100,34 @@ Detailed policy is loaded just in time from
 `_refs/harness/communication-economy.md`. This is a communication contract, not
 a workflow gate, runtime server, or new `sdcorejs-caveman` skill.
 
+## Documentation Layout v2
+
+Project documentation below `.sdcorejs/documentation/` uses one directory per
+document:
+
+```text
+user-guides/<module>/<module>.md
+user-guides/<module>/images/<screen>.png
+requirements/<TASKID>/<TASKID>.md
+technical-docs/<doc-key>/<doc-key>.md
+```
+
+Unit-local links stay concise, for example `images/list.png`. `_shared` is used
+only when at least two exact documentation units are proven owners. New writes
+always use v2; canonical-first discovery can read transitional flat entries,
+but migration requires an authorized, collision-free, idempotent preflight.
+Canonical/legacy conflicts block migration, aggregate build, and export.
+
+The aggregate remains `.sdcorejs/documentation/sdcorejs-user-guide.md`. Its
+builder discovers exact entry shapes, rewrites unit-local links relative to the
+documentation root, and validates emitted links. DOCX and PDF are separate
+approved capabilities; neither is reported as passing without a non-empty
+parseable output and embedded-image verification. The full contract and pure
+deterministic helper are loaded just in time from
+`_refs/shared/documentation-layout.md` and
+`_refs/shared/documentation-layout.mjs`, so unrelated Q&A bootstrap does not
+grow.
+
 The AI-agent track is an approved-plan-only authoring surface, not a bundled
 agent runtime. It selects one lifecycle engine (`openai-responses` or
 `openai-agents-sdk`) independently from one of twelve business capability

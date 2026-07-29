@@ -13,6 +13,10 @@ const scenarioFixtureUrl = new URL(
   './fixtures/communication-economy-scenarios.json',
   import.meta.url
 );
+const liveEvidenceUrl = new URL(
+  './fixtures/communication-economy-live-ab.json',
+  import.meta.url
+);
 const capabilityUrl = new URL('../../_refs/harness/capability-contract.json', import.meta.url);
 const policyUrl = new URL('../../_refs/harness/communication-economy.md', import.meta.url);
 const reportModuleUrl = new URL('../../scripts/measure-communication-economy.mjs', import.meta.url);
@@ -1456,6 +1460,22 @@ test('deterministic report compares ten scenarios without invented token counts'
   assert.equal(report.scenarios['spec-approval'].profile, 'detailed');
   assert.equal(report.scenarios['security-destructive'].profile, 'detailed');
   assert.equal(report.scenarios['no-runtime-context-channel'].handoff_mode, 'portable-handoff');
+  assert.ok(
+    !report.scenarios['pure-qa'].jit_context.selected_paths.includes(
+      '_refs/shared/documentation-layout.md'
+    )
+  );
+  assert.ok(
+    report.scenarios['delegated-test-docs'].jit_context.selected_paths.includes(
+      '_refs/shared/documentation-layout.md'
+    )
+  );
+  assert.ok(
+    !report.scenarios['delegated-test-docs'].jit_context.selected_paths.includes(
+      '_refs/harness/capability-contract.json'
+    ),
+    'runtime capability resolution must not require loading the full adapter manifest into model context'
+  );
   assert.deepEqual(Object.keys(report.duplication_pairs).sort(), [
     'execution-test-review-ship',
     'plan-execution',
@@ -1466,8 +1486,123 @@ test('deterministic report compares ten scenarios without invented token counts'
     assert.ok(pair.current.repeated_block_bytes < pair.baseline.repeated_block_bytes, name);
     assert.ok(pair.current.repeated_ratio < pair.baseline.repeated_ratio, name);
   }
+  const formatInteger = new Intl.NumberFormat('en-US').format;
+  const validationDocument = await readFile(path.join(root, 'VALIDATION.md'), 'utf8');
+  for (const expectedRow of [
+    `| Always-loaded bootstrap UTF-8 bytes | ${formatInteger(report.bootstrap.baseline.utf8_bytes)} | ${formatInteger(report.bootstrap.current.utf8_bytes)} |`,
+    `| Always-loaded bootstrap words | ${formatInteger(report.bootstrap.baseline.words)} | ${formatInteger(report.bootstrap.current.words)} |`,
+    `| Aggregate just-in-time scenario bytes | ${formatInteger(report.aggregate.baseline_jit_utf8_bytes)} | ${formatInteger(report.aggregate.current_jit_utf8_bytes)} |`,
+    `| Aggregate visible output bytes | ${formatInteger(report.aggregate.baseline_visible_utf8_bytes)} | ${formatInteger(report.aggregate.current_visible_utf8_bytes)} |`,
+    `| Aggregate visible output words | ${formatInteger(report.aggregate.baseline_visible_words)} | ${formatInteger(report.aggregate.current_visible_words)} |`,
+    `| Portable fallback handoff bytes | 0 | ${formatInteger(report.aggregate.current_portable_handoff_utf8_bytes)} |`,
+    `| Supported runtime context channel bytes | 0 | ${formatInteger(report.aggregate.current_runtime_context_channel_utf8_bytes)} |`,
+    `| Repeated-block bytes | ${formatInteger(report.aggregate.baseline_repeated_block_bytes)} | ${formatInteger(report.aggregate.current_repeated_block_bytes)} |`,
+    `| Total measured communication bytes | ${formatInteger(report.aggregate.baseline_total_communication_utf8_bytes)} | ${formatInteger(report.aggregate.current_total_communication_utf8_bytes)} |`,
+    `| Consumer-required authoritative fields | ${formatInteger(report.aggregate.required_fields)} | ${formatInteger(report.aggregate.preserved_fields)} preserved |`,
+  ]) {
+    assert.ok(
+      validationDocument.includes(expectedRow),
+      `VALIDATION.md is stale for report row: ${expectedRow}`
+    );
+  }
   assert.equal(report.live_ab_eval.status, 'skipped');
   assert.ok(!Object.hasOwn(report, 'generated_at'));
+});
+
+test('optional live report validates sanitized A/B evidence without changing the deterministic default', async (t) => {
+  const reportModule = await import(reportModuleUrl);
+  const defaultReport = await reportModule.buildCommunicationEconomyReport({ root });
+  assert.equal(defaultReport.live_ab_eval.status, 'skipped');
+
+  const liveReport = await reportModule.buildCommunicationEconomyReport({
+    root,
+    liveEvidencePath: path.resolve(root, 'test/e2e/fixtures/communication-economy-live-ab.json'),
+  });
+  assert.equal(liveReport.measurement_kind, 'deterministic-source-bound-contract-projection');
+  assert.equal(liveReport.live_ab_eval.status, 'observed');
+  assert.equal(liveReport.live_ab_eval.observed_live, true);
+  assert.equal(
+    liveReport.live_ab_eval.fixture,
+    'test/e2e/fixtures/communication-economy-live-ab.json'
+  );
+  assert.equal(
+    liveReport.live_ab_eval.scenario_id,
+    'pure-qa-repo-purpose-skill-count-mirror-command'
+  );
+  assert.equal(liveReport.live_ab_eval.evaluations.length, 4);
+  assert.deepEqual(
+    liveReport.live_ab_eval.evaluations.map(({ provider, reasoning_effort }) =>
+      `${provider}:${reasoning_effort}`
+    ),
+    ['codex:medium', 'claude:medium', 'codex:high', 'claude:high']
+  );
+  for (const evaluation of liveReport.live_ab_eval.evaluations) {
+    assert.equal(evaluation.outcome_parity, true);
+    assert.equal(evaluation.semantic_parity, true);
+    assert.equal(evaluation.baseline.exit_code, 0);
+    assert.equal(evaluation.current.exit_code, 0);
+    assert.ok(evaluation.baseline.usage.derived_total_tokens > 0);
+    assert.ok(evaluation.current.usage.derived_total_tokens > 0);
+  }
+
+  const fixture = JSON.parse(await readFile(liveEvidenceUrl, 'utf8'));
+  assert.equal(fixture.evidence_policy.sanitized_metrics_only, true);
+  assert.equal(fixture.evidence_policy.raw_transcripts_committed, false);
+  assert.equal(fixture.evidence_policy.contains_secrets_or_user_data, false);
+  assert.doesNotMatch(JSON.stringify(fixture), /C:\\Users\\|BEGIN (?:RSA |OPENSSH )?PRIVATE KEY/);
+
+  const invalidRoot = await mkdtemp(path.join(tmpdir(), 'communication-economy-live-invalid-'));
+  t.after(() => rm(invalidRoot, { recursive: true, force: true }));
+  const invalidPath = path.join(invalidRoot, 'invalid-live-ab.json');
+  const invalidFixture = structuredClone(fixture);
+  invalidFixture.evaluations[0].semantic_parity = false;
+  await writeFile(invalidPath, JSON.stringify(invalidFixture, null, 2), 'utf8');
+  await assert.rejects(
+    reportModule.buildCommunicationEconomyReport({ root, liveEvidencePath: invalidPath }),
+    /semantic parity/i
+  );
+
+  const invalidTotalPath = path.join(invalidRoot, 'invalid-live-total.json');
+  const invalidTotalFixture = structuredClone(fixture);
+  invalidTotalFixture.evaluations[0].current.usage.derived_total_tokens += 1;
+  await writeFile(invalidTotalPath, JSON.stringify(invalidTotalFixture, null, 2), 'utf8');
+  await assert.rejects(
+    reportModule.buildCommunicationEconomyReport({
+      root,
+      liveEvidencePath: invalidTotalPath,
+    }),
+    /derived_total_tokens.*does not match/i
+  );
+
+  const unsanitizedPath = path.join(invalidRoot, 'unsanitized-live-ab.json');
+  const unsanitizedFixture = structuredClone(fixture);
+  unsanitizedFixture.raw_transcript = 'C:\\Users\\Example\\private-response.txt';
+  await writeFile(unsanitizedPath, JSON.stringify(unsanitizedFixture, null, 2), 'utf8');
+  await assert.rejects(
+    reportModule.buildCommunicationEconomyReport({
+      root,
+      liveEvidencePath: unsanitizedPath,
+    }),
+    /forbidden raw evidence field/i
+  );
+
+  const secretPath = path.join(invalidRoot, 'secret-live-ab.json');
+  const secretFixture = structuredClone(fixture);
+  secretFixture.api_key = 'not-a-real-secret';
+  await writeFile(secretPath, JSON.stringify(secretFixture, null, 2), 'utf8');
+  await assert.rejects(
+    reportModule.buildCommunicationEconomyReport({
+      root,
+      liveEvidencePath: secretPath,
+    }),
+    /forbidden sensitive evidence field/i
+  );
+
+  const packageJson = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
+  assert.equal(
+    packageJson.scripts['report:communication-economy:live'],
+    'node scripts/measure-communication-economy.mjs --live-evidence test/e2e/fixtures/communication-economy-live-ab.json'
+  );
 });
 
 test('baseline snapshot matches the audited commit when history is available', async (t) => {
