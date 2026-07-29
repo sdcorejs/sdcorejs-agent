@@ -12,7 +12,8 @@ description: Behavior-preserving code simplification utility for recently change
 
 ## Shared protocols
 
-1. Read `../_refs/shared/tasklist.md` and keep progress runtime-only.
+1. Read `../_refs/shared/runtime-protocols.md`, then
+   `../_refs/shared/tasklist.md`; keep progress runtime-only.
 2. Apply Project Context Preflight v2 from
    `../_refs/shared/project-context.md`.
 3. Read repository instructions, current diffs, relevant approved artifacts,

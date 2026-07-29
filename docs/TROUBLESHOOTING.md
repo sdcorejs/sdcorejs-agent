@@ -189,3 +189,36 @@ entrypoints and should be reviewed when workflow rules change.
 Deterministic prompt routing is not live-agent proof. Capture a sanitized
 transcript using `docs/REAL_AGENT_VALIDATION.md` and update fixtures only when
 the expected behavior is clearly defined.
+
+## Communication Economy Policy Looks Too Verbose Or Too Sparse
+
+The Communication Economy Policy resolves to `compact`, `standard`, or
+`detailed`. Ask explicitly for one of those profiles, or ask for `full context`
+when diagnosing a context transfer. Compact output must still use complete
+professional sentences.
+
+If routine success is verbose, check that the caller renders the user
+projection instead of echoing the authoritative runtime context. Also check
+that progress updates are event-driven and that a final progress summary is not
+immediately repeated by the final response.
+
+If an approval, security warning, destructive action, ambiguity, failed
+verification, or blocker is too terse, treat it as a resolver or caller defect:
+those cases must automatically use `detailed`. A compact preference cannot
+remove exact scope, consequence, recovery, evidence, or required decision.
+
+If downstream context is missing, inspect the adapter declaration for
+`runtime_context_channel`. Only evidence of a structured runtime transfer may
+mark it `supported`; `unsupported` and `unknown` must use the portable handoff.
+Do not treat conversation memory or hidden provider state as a portable
+fallback. Run:
+
+```bash
+npm run test:e2e:communication-economy
+npm run report:communication-economy
+```
+
+The deterministic report reads baseline schema surfaces from its declared
+commit and measures sanitized contract projections, not captured transcripts or
+live model usage. Metrics are evidence, not a marketing claim. Record
+unavailable live telemetry as skipped rather than estimating token counts.

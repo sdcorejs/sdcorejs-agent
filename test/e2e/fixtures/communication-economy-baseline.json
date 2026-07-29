@@ -1,0 +1,313 @@
+{
+  "schema_version": 1,
+  "source_commit": "ec6afdb4e2494416d985be610837e728a9278a2f",
+  "measurement_kind": "deterministic-source-bound-contract-projection",
+  "visible_output_basis": {
+    "observed_live": false,
+    "source": "source-bound-fixture",
+    "method": "Baseline scenario measurements, source paths, blob OIDs, and the duplicate progress rule are captured from the audited source_commit in this deterministic fixture and checked against that commit when history is available. Runtime report generation requires neither a live transcript nor baseline Git history."
+  },
+  "visible_output_snapshot": {
+    "source_commit": "ec6afdb4e2494416d985be610837e728a9278a2f",
+    "duplicate_progress_rule": {
+      "path": "_refs/shared/tasklist.md",
+      "blob_oid": "5ba7f76bda55fc9dc1d406950f6178a176c8ccfc",
+      "rule": "Before the final response, make one final runtime progress update."
+    },
+    "scenarios": {
+      "pure-qa": {
+        "measurement": {
+          "utf8_bytes": 134,
+          "semantic_bytes": 131,
+          "lines": 5,
+          "words": 17
+        },
+        "repeated_block_bytes": 0,
+        "source_paths": [],
+        "source_blobs": []
+      },
+      "small-docs-fast-fix": {
+        "measurement": {
+          "utf8_bytes": 496,
+          "semantic_bytes": 413,
+          "lines": 31,
+          "words": 54
+        },
+        "repeated_block_bytes": 205,
+        "source_paths": [],
+        "source_blobs": []
+      },
+      "small-production-fast-fix": {
+        "measurement": {
+          "utf8_bytes": 2466,
+          "semantic_bytes": 2172,
+          "lines": 99,
+          "words": 241
+        },
+        "repeated_block_bytes": 223,
+        "source_paths": [
+          "skills/shared/sdlc/04-execute-plan.md"
+        ],
+        "source_blobs": [
+          "24864a8602abbbc6a8cea56ee934f11384de1f73"
+        ]
+      },
+      "spec-approval": {
+        "measurement": {
+          "utf8_bytes": 1653,
+          "semantic_bytes": 1521,
+          "lines": 60,
+          "words": 166
+        },
+        "repeated_block_bytes": 0,
+        "source_paths": [
+          "skills/shared/sdlc/02-spec.md"
+        ],
+        "source_blobs": [
+          "66b7488ca092b58d0d8f59fa74e1eaf74748a05c"
+        ]
+      },
+      "approved-plan-execution": {
+        "measurement": {
+          "utf8_bytes": 8939,
+          "semantic_bytes": 7737,
+          "lines": 283,
+          "words": 854
+        },
+        "repeated_block_bytes": 270,
+        "source_paths": [
+          "skills/shared/sdlc/03-plan.md",
+          "skills/shared/sdlc/04-execute-plan.md"
+        ],
+        "source_blobs": [
+          "a0612dda03399feda127d95337ce940c656c4073",
+          "24864a8602abbbc6a8cea56ee934f11384de1f73"
+        ]
+      },
+      "direct-review": {
+        "measurement": {
+          "utf8_bytes": 2343,
+          "semantic_bytes": 2095,
+          "lines": 83,
+          "words": 254
+        },
+        "repeated_block_bytes": 354,
+        "source_paths": [
+          "skills/shared/workflow/review.md"
+        ],
+        "source_blobs": [
+          "e429e522431dacbef96cc5b9209d6e4e424af54f"
+        ]
+      },
+      "review-repair-ship": {
+        "measurement": {
+          "utf8_bytes": 10706,
+          "semantic_bytes": 9316,
+          "lines": 411,
+          "words": 996
+        },
+        "repeated_block_bytes": 280,
+        "source_paths": [
+          "skills/shared/workflow/review.md",
+          "skills/shared/sdlc/04-execute-plan.md",
+          "_refs/shared/test-context.md",
+          "_refs/shared/test-context.md",
+          "_refs/shared/test-context.md",
+          "_refs/shared/artifact-lifecycle.md",
+          "_refs/orchestration/tail/ship-context.md"
+        ],
+        "source_blobs": [
+          "e429e522431dacbef96cc5b9209d6e4e424af54f",
+          "24864a8602abbbc6a8cea56ee934f11384de1f73",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "d040a4d837fbdcf6c337c0bb30ce77ab55de76e9",
+          "f8b5ca84e76f9a10a0617e5e924b8eecfbcad95b"
+        ]
+      },
+      "security-destructive": {
+        "measurement": {
+          "utf8_bytes": 3793,
+          "semantic_bytes": 3289,
+          "lines": 159,
+          "words": 351
+        },
+        "repeated_block_bytes": 484,
+        "source_paths": [
+          "_refs/orchestration/tail/ship-context.md",
+          "_refs/shared/artifact-lifecycle.md"
+        ],
+        "source_blobs": [
+          "f8b5ca84e76f9a10a0617e5e924b8eecfbcad95b",
+          "d040a4d837fbdcf6c337c0bb30ce77ab55de76e9"
+        ]
+      },
+      "delegated-test-docs": {
+        "measurement": {
+          "utf8_bytes": 9610,
+          "semantic_bytes": 8163,
+          "lines": 398,
+          "words": 795
+        },
+        "repeated_block_bytes": 298,
+        "source_paths": [
+          "_refs/shared/test-context.md",
+          "_refs/shared/test-context.md",
+          "_refs/shared/test-context.md",
+          "_refs/orchestration/parallel-protocol.md",
+          "_refs/shared/test-ui-evidence.md",
+          "_refs/shared/artifact-lifecycle.md"
+        ],
+        "source_blobs": [
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "738feda7ff4a4dad637cee75264af261bfb2805f",
+          "84fc6024761167ff8e0f52d98425c6bd7e0b449a",
+          "d040a4d837fbdcf6c337c0bb30ce77ab55de76e9"
+        ]
+      },
+      "no-runtime-context-channel": {
+        "measurement": {
+          "utf8_bytes": 2418,
+          "semantic_bytes": 2136,
+          "lines": 95,
+          "words": 233
+        },
+        "repeated_block_bytes": 205,
+        "source_paths": [
+          "skills/shared/sdlc/04-execute-plan.md"
+        ],
+        "source_blobs": [
+          "24864a8602abbbc6a8cea56ee934f11384de1f73"
+        ]
+      }
+    }
+  },
+  "tokenizer": {
+    "available": false,
+    "reason": "The repository has no tokenizer dependency; bytes, lines, and words are recorded without inventing token counts."
+  },
+  "bootstrap": {
+    "paths": [
+      "AGENTS.md",
+      "skills/orchestration/using-skills.md",
+      "_refs/shared/runtime-protocols.md"
+    ],
+    "files": 3,
+    "utf8_bytes": 20173,
+    "semantic_bytes": 19723,
+    "lines": 387,
+    "words": 2361
+  },
+  "jit_scenarios": {
+    "pure-qa": {
+      "files": 0,
+      "utf8_bytes": 0,
+      "lines": 0,
+      "words": 0
+    },
+    "small-docs-fast-fix": {
+      "files": 2,
+      "utf8_bytes": 13814,
+      "lines": 383,
+      "words": 1821
+    },
+    "small-production-fast-fix": {
+      "files": 3,
+      "utf8_bytes": 26383,
+      "lines": 635,
+      "words": 3555
+    },
+    "spec-approval": {
+      "files": 5,
+      "utf8_bytes": 53954,
+      "lines": 1326,
+      "words": 6971
+    },
+    "approved-plan-execution": {
+      "files": 6,
+      "utf8_bytes": 67185,
+      "lines": 1637,
+      "words": 8566
+    },
+    "direct-review": {
+      "files": 4,
+      "utf8_bytes": 42786,
+      "lines": 955,
+      "words": 5484
+    },
+    "review-repair-ship": {
+      "files": 10,
+      "utf8_bytes": 117368,
+      "lines": 2861,
+      "words": 15335
+    },
+    "security-destructive": {
+      "files": 5,
+      "utf8_bytes": 60588,
+      "lines": 1396,
+      "words": 8271
+    },
+    "delegated-test-docs": {
+      "files": 8,
+      "utf8_bytes": 79972,
+      "lines": 2032,
+      "words": 8353
+    },
+    "no-runtime-context-channel": {
+      "files": 6,
+      "utf8_bytes": 52553,
+      "lines": 1593,
+      "words": 4976
+    }
+  },
+  "typed_context_schema_bytes": {
+    "requirement_context": 1665,
+    "spec_context": 1054,
+    "plan_context": 6347,
+    "execution_context": 1879,
+    "test_context": 1862,
+    "review_context": 1457,
+    "debug_context": 1590,
+    "simplify_context": 3214,
+    "ship_context": 1995,
+    "artifact_context": 646,
+    "ui_capture_context": 1191,
+    "explore_context": 1574,
+    "ai_agent_context": 1426
+  },
+  "confirmed_broad_reads": [
+    {
+      "path": "skills/shared/sdlc/02-spec.md",
+      "baseline_behavior": "Load the latest one to three approved specs to mirror style.",
+      "classification": "style-only broad read",
+      "replacement": "relationship metadata, then frontmatter/headings or the canonical template"
+    },
+    {
+      "path": "skills/shared/sdlc/01-brainstorming.md",
+      "baseline_behavior": "Load latest approved artifact frontmatter and latest product docs.",
+      "classification": "recency-biased read",
+      "replacement": "relationship metadata and exact request scope"
+    },
+    {
+      "path": "_refs/documentation/write-user-guide.md",
+      "baseline_behavior": "Fall back to the most recent track spec.",
+      "classification": "unrelated fallback read",
+      "replacement": "same contract, change, requirement, module, or explicit user selection"
+    },
+    {
+      "path": "_refs/shared/review-security.md",
+      "baseline_behavior": "Read the latest twenty commits.",
+      "classification": "broad history probe",
+      "replacement": "current diff or an explicit bounded review range"
+    },
+    {
+      "path": "_refs/shared/review-performance.md",
+      "baseline_behavior": "Read the latest twenty commits.",
+      "classification": "broad history probe",
+      "replacement": "current diff or an explicit bounded review range"
+    }
+  ]
+}

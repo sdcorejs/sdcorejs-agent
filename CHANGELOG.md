@@ -25,6 +25,25 @@ Node workspace is not distributed through npm.
   visual fragments are retired.
 - Reduce repeated orchestration context through a just-in-time runtime protocol
   router while preserving artifact lifecycle and verification contracts.
+- Add the Communication Economy Policy with `compact`, `standard`, and
+  automatically escalated `detailed` projections while retaining complete
+  professional prose and exact commands, paths, identifiers, hashes, errors,
+  numbers, and verification evidence.
+- Separate authoritative runtime context, user projection, and portable
+  handoff; add provider-neutral `context.pass` and tri-state
+  `runtime_context_channel` contracts with fail-closed consumer field coverage.
+- Make progress event-driven, remove duplicated final progress summaries, and
+  replace recency-based spec-style loading with deterministic relationship-based
+  artifact selection.
+- Add deterministic Communication Economy Policy scenarios and context-budget
+  reporting bound to baseline schema surfaces; audit rendered semantic coverage,
+  typed test/parallel handoffs, nested-body rejection, and numbered approval
+  choices. Token metrics remain evidence rather than a marketing claim, and
+  unavailable live A/B telemetry is reported as skipped.
+- Reject artifact, diff, durable-context, and log bodies disguised inside
+  portable string fields or user projections, and count both supported native
+  context transfers and portable fallbacks in deterministic communication
+  totals.
 
 ## 0.6.0
 

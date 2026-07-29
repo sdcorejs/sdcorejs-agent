@@ -86,7 +86,8 @@ repair_source:
     - accessibility
   review_context:
     source: sdcorejs-review
-    # Paste or reference the original review_context block without rewriting it.
+    # Reference the original review_context by validated runtime or portable
+    # handoff; do not paste or rewrite its full body.
   simplify_context:
     source: sdcorejs-simplify
     # Preserve the original runtime context without rewriting its scope or contract.

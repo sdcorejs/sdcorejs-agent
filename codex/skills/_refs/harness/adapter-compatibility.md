@@ -3,16 +3,21 @@
 This file documents provider-specific mappings. Canonical workflow prose uses
 semantic actions and tiers instead.
 
-| Harness | Structured choice | Static HTML | Subagents | Model override | Resume/steer | Isolation | Browser/web | Artifact write | Approval |
-|---|---|---|---|---|---|---|---|---|---|
-| Codex | Detect at runtime | Supported | Detect at runtime | Detect at runtime | Detect at runtime | Detect at runtime | Detect at runtime | Supported | Supported |
-| Claude Code | Supported | Supported | Supported | Supported | Unknown; use parent fallback | Unknown; use validated Git fallback | Web fetch supported; browser unknown | Supported | Supported |
-| Cursor | Unknown; use Markdown | Unknown; use Markdown | Unknown | Unknown; inherit | Unknown | Unknown | Unknown | Unknown | Unknown |
-| GitHub Copilot | Unknown; use Markdown | Unknown; use Markdown | Unknown | Unknown; inherit | Unknown | Unknown | Unknown | Unknown | Unknown |
+| Harness | Runtime context | Structured choice | Static HTML | Subagents | Model override | Resume/steer | Isolation | Browser/web | Artifact write | Approval |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Codex | Unknown; portable handoff | Detect at runtime | Supported | Detect at runtime | Detect at runtime | Detect at runtime | Detect at runtime | Detect at runtime | Supported | Supported |
+| Claude Code | Unknown; portable handoff | Supported | Supported | Supported | Supported | Unknown; use parent fallback | Unknown; use validated Git fallback | Web fetch supported; browser unknown | Supported | Supported |
+| Cursor | Unknown; portable handoff | Unknown; use Markdown | Unknown; use Markdown | Unknown | Unknown; inherit | Unknown | Unknown | Unknown | Unknown | Unknown |
+| GitHub Copilot | Unknown; portable handoff | Unknown; use Markdown | Unknown; use Markdown | Unknown | Unknown; inherit | Unknown | Unknown | Unknown | Unknown | Unknown |
 
 The generated `sdcorejs-harness.json` beside each adapter entrypoint contains
 the exact capability/action mapping and a hash of
 `_refs/harness/capability-contract.json`.
+
+`runtime_context_channel` is never inferred from conversational memory. Until a
+host provides evidence for structured producer-to-consumer transfer,
+`context.pass` uses the validated portable handoff with required fields,
+freshness, artifact closure, evidence references, and the exact next consumer.
 
 ## Codex Model Guidance
 

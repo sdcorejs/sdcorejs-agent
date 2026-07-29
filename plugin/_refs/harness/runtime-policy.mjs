@@ -1,6 +1,7 @@
 const ACTIONS = [
   'progress.create',
   'progress.update',
+  'context.pass',
   'user.choose',
   'user.approve',
   'agent.dispatch',
@@ -15,6 +16,7 @@ const ACTIONS = [
 ];
 
 const CAPABILITIES = [
+  'runtime_context_channel',
   'native_structured_choice',
   'visual_surface',
   'static_html_artifact',
@@ -39,6 +41,7 @@ const TASK_BRIEF_FIELDS = [
   'owned_paths',
   'readable_paths',
   'do_not_touch',
+  'context_refs',
   'acceptance_criteria',
   'verification_commands',
   'expected_output',
@@ -492,6 +495,7 @@ export function validateTaskBrief(brief) {
     'owned_paths',
     'readable_paths',
     'do_not_touch',
+    'context_refs',
     'acceptance_criteria',
     'verification_commands',
     'escalation_conditions',
@@ -724,3 +728,19 @@ function isNonEmptyString(value) {
 function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
+
+export {
+  CONSUMER_REQUIRED_FIELD_KINDS,
+  CONSUMER_REQUIRED_FIELDS,
+  auditRenderedProjection,
+  buildPortableHandoff,
+  containsForbiddenEmbeddedArtifactFields,
+  measureRepeatedBlockBytes,
+  measureText,
+  projectRuntimeContext,
+  renderUserProjection,
+  resolveCommunicationProfile,
+  selectRelatedArtifacts,
+  shouldEmitProgress,
+  validateRequiredHandoffFields,
+} from './communication-economy.mjs';

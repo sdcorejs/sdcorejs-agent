@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-using-skills
 description: Session bootstrap and dispatch guide for sdcorejs skills. Use at session start, onboarding/help/list-skill requests, or any request matching an sdcorejs skill. Routes direct answers, bounded fast-fixes, and governed brainstorming-to-spec-to-plan execution while preserving approval, verification, and finish gates. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, user.choose
+required-actions: artifact.read, artifact.write, context.pass, verification.run, user.choose
 ---
 
 # Using sdcorejs Skills
@@ -68,6 +68,13 @@ must pass `sdcorejs-parallel-dispatch`.
 ## Invariants
 
 - Run current verification before claiming pass, fixed, built, or done.
+- Apply `_refs/harness/communication-economy.md` just in time for response
+  profiles, progress, runtime-context handoff, or related-artifact selection.
+  Default routine output to compact professional sentences; expand for
+  approval, security, destructive action, ambiguity, failure, or blockers.
+- Keep authoritative typed context available to its exact consumer without
+  echoing it to the user. When `runtime_context_channel` is unsupported or
+  unknown, use the validated portable handoff for `context.pass`.
 - Keep live progress in the runtime, never in `.sdcorejs/**` session files.
 - Every durable `.sdcorejs/**` producer propagates `artifact_context`.
 - Finish gates, verification-before-done, and no-writes-after-branch-ready stay

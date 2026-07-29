@@ -2,10 +2,11 @@
   "schema_version": 1,
   "adapter": "claude-code",
   "source_path": "_refs/harness/capability-contract.json",
-  "source_hash": "sha256:e48f1f7c592751ba18075340862071e8f0c2e02af47a80da5b9d46cc3bb4b9d6",
-  "content_hash": "sha256:1209bf57fd3242dba5bb9881aba5dcea6c1f7e3fd6686e3d91a4d89aa986326b",
+  "source_hash": "sha256:d6bf74c23399960c9424357773dd6490c0e6356b4a4c9be39254597996aaa698",
+  "content_hash": "sha256:628b13af5eba9f46e2cfd752d5f952b5a0fd7204f799c4399fb51e2247061af2",
   "generated_path": ".claude/sdcorejs-harness.json",
   "capabilities": {
+    "runtime_context_channel": "unknown",
     "native_structured_choice": "supported",
     "visual_surface": "unknown",
     "static_html_artifact": "supported",
@@ -19,6 +20,12 @@
     "permission_approval": "supported"
   },
   "actions": {
+    "context.pass": {
+      "status": "unknown",
+      "native": [],
+      "capability": "runtime_context_channel",
+      "fallback": "Build a validated portable handoff with required fields and stable artifact or evidence references."
+    },
     "progress.create": {
       "status": "supported",
       "native": [
@@ -131,6 +138,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "user.choose",
         "user.approve"
@@ -141,6 +149,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "progress.create",
         "progress.update",
@@ -156,6 +165,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "progress.create",
         "progress.update",
@@ -168,6 +178,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "user.choose"
       ]
@@ -176,6 +187,7 @@
       "source_path": "skills/shared/sdlc/01-brainstorming.md",
       "required_actions": [
         "artifact.read",
+        "context.pass",
         "web.fetch",
         "verification.run",
         "user.choose",
@@ -187,6 +199,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "user.approve"
       ]
@@ -196,6 +209,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "user.approve"
       ]
@@ -205,6 +219,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "progress.create",
         "progress.update",
@@ -218,6 +233,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "progress.create",
         "progress.update",
@@ -229,6 +245,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "user.choose",
         "web.fetch"
@@ -239,6 +256,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "user.choose",
         "user.approve",
@@ -250,6 +268,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "progress.create",
         "progress.update",
@@ -261,6 +280,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "user.choose",
         "user.approve"
@@ -271,6 +291,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "progress.create",
         "progress.update",
@@ -282,6 +303,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "progress.create",
         "progress.update",
@@ -295,6 +317,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "progress.create",
         "progress.update",
@@ -309,6 +332,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "progress.create",
         "progress.update",
@@ -322,6 +346,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "progress.create",
         "progress.update",
@@ -335,6 +360,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "progress.create",
         "progress.update",
@@ -349,6 +375,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "progress.create",
         "progress.update",
@@ -361,6 +388,7 @@
       "required_actions": [
         "artifact.read",
         "artifact.write",
+        "context.pass",
         "verification.run",
         "progress.create",
         "progress.update",

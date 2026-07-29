@@ -18,6 +18,10 @@ invoke Git.
 
 ## Capture contract
 
+Build this complete context for documentation/ship consumers. User-facing
+output shows the capture result, image path/hash, provenance status, blockers,
+and skipped checks; it does not echo the full structure by default.
+
 ```yaml
 ui_capture_context:
   schema_version: 1
@@ -95,7 +99,8 @@ Do not commit `storageState`, raw traces, videos, or diagnostic screenshots.
 
 ## Documentation handoff
 
-Return `test_context`, `test_status`, `test_evidence.captures`,
-`ui_capture_context`, and `artifact_context` to `sdcorejs-documentation`.
+Pass `test_context`, `test_status`, `test_evidence.captures`,
+`ui_capture_context`, and `artifact_context` to `sdcorejs-documentation`
+through the runtime channel or validated portable handoff.
 Documentation may link the image only after verification. It owns guide prose;
 the test track owns the real UI capture and technical evidence.

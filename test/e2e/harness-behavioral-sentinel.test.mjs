@@ -34,14 +34,15 @@ test('capability contract is structurally valid and drives native-or-Markdown in
   assert.deepEqual(validateCapabilityContract(contract), []);
   assert.deepEqual(contract.required_actions.sort(), [
     'agent.dispatch', 'agent.interrupt', 'agent.resume', 'artifact.read',
-    'artifact.write', 'progress.create', 'progress.update', 'user.approve',
+    'artifact.write', 'context.pass', 'progress.create', 'progress.update', 'user.approve',
     'user.choose', 'verification.run', 'visual.present', 'web.fetch',
     'workspace.isolate',
   ]);
   assert.deepEqual(contract.required_capabilities.sort(), [
     'agent_resume_steer', 'artifact_write', 'browser', 'native_structured_choice',
-    'per_agent_model_override', 'permission_approval', 'static_html_artifact',
-    'subagents', 'visual_surface', 'web_fetch', 'workspace_isolation',
+    'per_agent_model_override', 'permission_approval', 'runtime_context_channel',
+    'static_html_artifact', 'subagents', 'visual_surface', 'web_fetch',
+    'workspace_isolation',
   ]);
   assert.deepEqual(Object.keys(contract.adapters).sort(), ['claude-code', 'codex', 'copilot', 'cursor']);
   for (const adapter of Object.values(contract.adapters)) {
@@ -173,14 +174,14 @@ test('canonical skills declare semantic actions while adapter manifests own prov
   );
 
   const callerActionRequirements = {
-    'skills/orchestration/using-skills.md': ['artifact.write', 'verification.run', 'user.choose'],
-    'skills/orchestration/repair-loop.md': ['user.choose'],
-    'skills/shared/workflow/debug.md': ['user.choose'],
-    'skills/shared/workflow/explore.md': ['user.choose'],
-    'skills/shared/workflow/git.md': ['user.choose'],
-    'skills/shared/workflow/review.md': ['artifact.write', 'user.choose'],
-    'skills/shared/workflow/ship.md': ['user.choose'],
-    'skills/shared/workflow/simplify.md': ['user.choose'],
+    'skills/orchestration/using-skills.md': ['artifact.write', 'context.pass', 'verification.run', 'user.choose'],
+    'skills/orchestration/repair-loop.md': ['context.pass', 'user.choose'],
+    'skills/shared/workflow/debug.md': ['context.pass', 'user.choose'],
+    'skills/shared/workflow/explore.md': ['context.pass', 'user.choose'],
+    'skills/shared/workflow/git.md': ['context.pass', 'user.choose'],
+    'skills/shared/workflow/review.md': ['artifact.write', 'context.pass', 'user.choose'],
+    'skills/shared/workflow/ship.md': ['context.pass', 'user.choose'],
+    'skills/shared/workflow/simplify.md': ['context.pass', 'user.choose'],
   };
   for (const [relativePath, requiredActions] of Object.entries(callerActionRequirements)) {
     const text = await readFile(new URL(`../../${relativePath}`, import.meta.url), 'utf8');
@@ -310,6 +311,7 @@ test('task briefs and review packages reject embedded delivery artifacts and inv
   const brief = {
     task_id: 'harness-tests-02', objective: 'Fix docs typo', plan_step: 'Phase 1', dependencies: [],
     owned_paths: ['docs/guide.md'], readable_paths: ['docs/**'], do_not_touch: ['package.json'],
+    context_refs: ['plan:communication-economy#sha256:plan'],
     acceptance_criteria: ['typo corrected'], verification_commands: ['node --test test/e2e/docs.test.mjs'],
     expected_output: 'review package', model_tier: 'fast', escalation_conditions: ['ambiguous ownership'],
   };

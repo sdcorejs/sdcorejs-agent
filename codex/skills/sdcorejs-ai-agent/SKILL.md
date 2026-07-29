@@ -87,9 +87,12 @@ categories, approvals, state delta, token delta, scenarios, invariants, and
 quality thresholds. It never owns credentials, trusted identity, tenant
 selection, raw infrastructure tools, or a relaxation of the common floor.
 
-## Required Output
+## Required Runtime Context
 
-Pass this immutable evidence block to every downstream stage:
+Build this immutable evidence for each downstream stage. Pass the complete
+context through `context.pass`; do not echo it to the user by default. The user
+projection preserves the outcome, changed paths, verification, live-provider
+status, findings, risks, blockers, and next action.
 
 ```yaml
 ai_agent_context:

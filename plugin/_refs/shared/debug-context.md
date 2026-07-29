@@ -4,9 +4,14 @@
 > hand off to `sdcorejs-ship`, `sdcorejs-review`, `sdcorejs-repair-loop`, and
 > `sdcorejs-git`.
 
-## Required Final Block
+## Required Runtime Context
 
-Every debug session emits a redacted `debug_context` block:
+Every debug session builds a redacted `debug_context` for its exact consumer.
+Pass it through `context.pass`; do not echo the full block in the user-facing
+result by default. The projection keeps outcome, root cause, touched paths,
+verification, blockers, skipped checks, risk, and next action. If
+`runtime_context_channel` is unsupported or unknown, send the validated
+portable handoff from `_refs/harness/communication-economy.md`.
 
 ```yaml
 debug_context:
@@ -79,4 +84,3 @@ debug_context:
   `debug_context` when a repair item became a single-bug investigation.
 - `sdcorejs-git` may summarize current redacted `debug_context` in commit or PR
   artifacts only after ship gates pass and the user asks for those artifacts.
-

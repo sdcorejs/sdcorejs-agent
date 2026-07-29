@@ -8,14 +8,15 @@ description: >-
   protected framework boundaries. Broad refactors return to planning; bugs,
   findings, tests, documentation, and performance work retain their dedicated
   owners. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose
+required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose
 ---
 
 # Simplify
 
 ## Shared protocols
 
-1. Read `_refs/shared/tasklist.md` and keep progress runtime-only.
+1. Read `_refs/shared/runtime-protocols.md`, then
+   `_refs/shared/tasklist.md`; keep progress runtime-only.
 2. Apply Project Context Preflight v2 from
    `_refs/shared/project-context.md`.
 3. Read repository instructions, current diffs, relevant approved artifacts,

@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-test
 description: Requirement-driven test executor for planning, authoring, running, TDD, UAT, test coverage analysis, authenticated browser testing, and verified UI evidence across existing project stacks. Use for direct test work; route product requirement/traceability coverage without test work to sdcorejs-product, debugging fixes to sdcorejs-debug, and guide or screenshot documentation to sdcorejs-documentation. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose, user.approve
+required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose, user.approve
 ---
 
 # Test Track
@@ -17,7 +17,8 @@ runtime unless the current request explicitly authorizes that exact action.
 
 ## Shared protocols
 
-1. Read `_refs/shared/tasklist.md` for non-trivial work and
+1. Read `_refs/shared/runtime-protocols.md`, then
+   `_refs/shared/tasklist.md` for non-trivial work and
    `_refs/shared/persona.md` when present.
 2. Apply Project Context Preflight v2 from `_refs/shared/project-context.md`.
    Current request, files, diff, requirements, command output, and test failures

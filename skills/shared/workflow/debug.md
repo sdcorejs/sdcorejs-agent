@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-debug
 description: Systematic debugging skill for root-cause/fix of concrete bugs and failing tests. Use for debug, investigate, resolve, fix, root-cause, wrong behavior, flaky/CI/prod-only failure, runtime/build error, or performance anomaly. Use sdcorejs-test for write/run/plan tests without fix intent. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose
+required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose
 ---
 
 # Debug - Evidence-Driven Root-Cause Workflow

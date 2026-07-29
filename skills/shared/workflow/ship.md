@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-ship
 description: Final delivery and dependency-update gate. Use for verify-before-done, branch readiness, ready-to-merge, ship/push/release/tag, update dependencies, update package, bump package, npm outdated, audit fix, or consistency checks before handoff. Owns verify-before-done, branch-ready, ship, dependency-update, and release-ready modes; delegates git artifacts to sdcorejs-git. Applies to all tracks and this repo. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, user.choose, user.approve
+required-actions: artifact.read, artifact.write, context.pass, verification.run, user.choose, user.approve
 ---
 
 # Ship

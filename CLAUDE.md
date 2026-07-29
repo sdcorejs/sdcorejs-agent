@@ -160,7 +160,9 @@ reported live verification. It does not bundle an agent runtime.
 
 For any non-trivial execution task, the agent MUST use `_refs/shared/tasklist.md`.
 
-Create the `Tasks` section before work starts and update it as work progresses.
+Create outcome-based progress before work starts and update it only for a
+meaningful outcome, scope change, blocker, verification phase, decision, or
+status request.
 
 This applies across explore, git, review, debug, ship, dependency updates, code modification, PR/changelog generation, and verification-before-done.
 
@@ -184,6 +186,12 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 11. **Choice prompts.** Before asking the user to choose, approve, answer yes/no, or select a mode, apply `_refs/shared/user-choice-prompt.md`; ask one decision at a time and number every option as `1/2/3/...`.
 12. **Skill source language.** Keep reusable skill/ref source in English only; translate generated output at runtime based on the consumer's language.
 13. **Do not author new skills without explicit user approval.**
+14. **Communication economy.** Apply
+    `_refs/harness/communication-economy.md` just in time. Default routine
+    output to compact professional sentences; use detailed output for
+    approval, security, destructive action, ambiguity, conflict, blockers, or
+    failed verification. Pass full typed context only to its consumer; use a
+    portable handoff when `runtime_context_channel` is unsupported or unknown.
 
 ## Session Context
 

@@ -333,8 +333,13 @@ Use the generic harness when no track-specific orchestrator matches.
 
 The harness is intentionally conservative. If a task needs a domain-specific pattern not captured in the plan, stop and return to `sdcorejs-plan`.
 
-### 7. Emit execution context
-Before handing off, pausing, or reporting, produce `execution_context`:
+### 7. Build execution context
+Before handing off, pausing, or reporting, build the complete
+`execution_context` for the exact next consumer. Pass it through
+`context.pass`; if `runtime_context_channel` is unsupported or unknown, use
+the validated portable handoff. User-facing output projects only the outcome,
+changed paths, verification, blockers, risks, skipped checks, and real next
+action. Do not echo this full schema by default:
 
 ```yaml
 execution_context:

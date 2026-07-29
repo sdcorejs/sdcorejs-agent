@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-documentation
 description: Documentation executor/gate for documentation artifacts. Use for code comments/docstrings/JSDoc/TSDoc, user guides/manuals with verified UI evidence, TASKID or requirement records, technical/API docs, doc rewrite/improve/structure/summarize/convert. Do not use for project summary/code maps/env setup/recovery, product PRDs/stories/AC/UAT/traceability, design handoff, code implementation, tests, review, or approved-plan execution. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, user.choose, user.approve
+required-actions: artifact.read, artifact.write, context.pass, verification.run, user.choose, user.approve
 ---
 
 # Documentation

@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-git
 description: Git artifact workflow. Use for commit/save changes, create PR, push verified branch, changelog, release notes, diff since tag, PR text, or executor worktree isolation. Do not use for readiness/ship gates; use sdcorejs-ship first, then this for commit/PR/changelog artifacts. Applies to all tracks and this repo. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, user.choose, user.approve, workspace.isolate
+required-actions: artifact.read, artifact.write, context.pass, verification.run, user.choose, user.approve, workspace.isolate
 ---
 
 # Git

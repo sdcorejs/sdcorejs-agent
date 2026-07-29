@@ -14,7 +14,11 @@ Use this reference after `sdcorejs-explore` selects an action that emits
 
 ## Explore Context
 
-Every `sdcorejs-explore` response includes a compact runtime block:
+Every `sdcorejs-explore` action builds this runtime context for its exact
+consumer. Do not render the full block in every user response. Project only
+the requested map/trace/summary outcome, evidence limits, blockers, and next
+action; use a validated portable handoff when the runtime context channel is
+unsupported or unknown.
 
 ```yaml
 explore_context:

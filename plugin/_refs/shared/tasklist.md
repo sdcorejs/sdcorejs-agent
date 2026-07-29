@@ -4,99 +4,76 @@ Use a visible task/progress mechanism before starting non-trivial work. The
 mechanism belongs to the active thread, agent harness, or client runtime. It is
 not repository state.
 
-## Contents
-
-- [When Required](#when-required)
-- [Task Shape](#task-shape)
-- [Derive From Existing Plans](#derive-from-existing-plans)
-- [Update Rules](#update-rules)
-- [Runtime-only State](#runtime-only-state)
-- [Explicit Handoff](#explicit-handoff)
-- [Final Response](#final-response)
-
 ## When Required
 
-Use visible progress for:
-
-- multi-step work;
-- file edits;
-- code analysis, debugging, and review;
-- dependency updates;
-- commit, PR, changelog, or release work;
-- verification and readiness checks.
-
-Skip it for simple Q&A, naming advice, short explanations, translations, and
-single-step answers.
+Use visible progress for multi-step edits, analysis, debugging, review,
+dependency/Git work, verification, and readiness checks. Skip it for simple
+Q&A, naming, short explanations, translations, and single-step answers.
 
 ## Task Shape
 
 Tasks must be outcome-based rather than microscopic. Prefer a few meaningful
 outcomes over line-by-line or command-by-command entries.
 
-Suggested presentation when the client uses Markdown:
-
-```md
-### Tasks
-- [ ] Understand the request and constraints
-- [ ] Inspect relevant context and files
-- [ ] Execute the main work
-- [ ] Verify the result
-- [ ] Prepare the final response with outcome, risks, and next steps
-```
-
 Clients may use an equivalent native progress API, task tool, checklist, or
-harness-owned state. Do not require every client to implement Markdown
-checkboxes when it already has a native mechanism.
+harness-owned state; Markdown checkboxes are not required when a native
+mechanism exists.
 
 ## Derive From Existing Plans
 
-When executing an approved plan, derive progress from its outcome steps. Keep
-one authoritative runtime tracker:
+Derive progress from approved-plan outcomes, executor units, or utility
+workflow phases, and keep one authoritative runtime tracker. The approved plan
+remains the immutable durable execution contract; progress neither replaces nor
+mutates it.
 
-- `sdcorejs-execute-plan`: approved plan steps and execution mode;
-- track executors: planned units, affected artifacts, and finishing steps;
-- utility workflows: the workflow phases required by the request.
+## Progress Events
 
-The approved plan is the durable execution contract. Runtime progress is not a
-replacement for that plan, and the plan is not mutated after approval.
+Create or update visible progress when:
 
-## Update Rules
+- non-trivial work starts;
+- a meaningful outcome completes;
+- scope changes;
+- a blocker appears;
+- a verification phase completes or fails;
+- a user decision is required; or
+- the user asks for status.
 
-- Create visible progress before non-trivial execution begins.
-- Mark an item complete only after the outcome is real.
-- Keep blocked, skipped, or unfinished items open and explain why.
-- Update the runtime tracker when scope or status changes.
-- Never mark verification complete unless verification actually ran.
-- Treat commands, diffs, logs, tests, and inspected files as proof; the task
-  list itself is not evidence.
-- Before the final response, make one final runtime progress update.
+Do not emit progress merely because:
+
+- another file is read;
+- an ordinary action runs;
+- execution moves between commands within the same outcome;
+- the final response is about to be sent; or
+- internal reasoning could be narrated.
+
+Mark an outcome complete only when it is real. Keep blocked, skipped, or
+unfinished outcomes open and explain why. Never mark verification complete
+unless it actually ran; commands, diffs, logs, tests, and inspected files are
+evidence, while the task list is not.
+
+If a native tracker must be closed and its state changed, update it. Do not
+emit a user-visible summary immediately before a final response with the same
+content. The final response may be the final user projection. A host-required
+heartbeat for long-running work stays short and does not repeat evidence.
 
 ## Runtime-Only State
 
-Live progress belongs only to:
-
-- the current thread or harness task mechanism;
-- the approved plan being executed;
-- runtime contexts passed between skills in the same workflow;
-- current execution evidence.
+Live progress belongs to the current thread/harness, the approved plan being
+executed, runtime contexts passed within that workflow, and current evidence.
 
 Do not mirror checkbox changes, verification transitions, or live status into a
 repository file. Do not create a mutable global "current task", "active
 change", session index, per-thread checkpoint directory, or equivalent
 repository-backed coordination mechanism.
 
-Legacy `.sdcorejs/tasks/current-session.md` files may exist in older target
-projects. Ignore them as context, never update or stage them, and do not
-recreate them. A workflow may mention once that the user can remove the legacy
-file, but it must not delete user data without permission.
+Ignore legacy `.sdcorejs/tasks/current-session.md`; never update, stage, or
+recreate it. Mention optional removal at most once and never delete user data
+without permission.
 
 ## Explicit Handoff
 
-Create a durable handoff only when:
-
-- the user explicitly requests one;
-- work is blocked or deferred and another thread must take over; or
-- a genuine recovery workflow requires durable transfer.
+Create a durable handoff only on explicit request, genuine blocked/deferred
+transfer, or recovery need.
 
 Use a change-scoped immutable path such as:
 
@@ -111,7 +88,9 @@ its declared policy and the user/workflow intent allow it.
 
 ## Final Response
 
-The final response must accurately mention completed work, skipped work,
-blockers, verification status, and remaining risks. Do not say "done",
-"ready", or "safe to ship" unless verification is complete or skipped
-verification is explicitly disclosed.
+Lead the final response with the outcome. Include material changed paths,
+verification, blockers, risks, skipped checks, or a required decision; omit
+empty sections. Do not repeat the plan, full context, full diff, or action log.
+Do not say "done", "ready", or "safe to ship" unless current verification is
+complete or skipped verification is explicitly disclosed. Apply
+`_refs/harness/communication-economy.md` when projection details are needed.

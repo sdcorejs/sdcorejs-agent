@@ -80,7 +80,13 @@ direct invocation is not a bypass.
 5. Derive paths, stacks, executors, commands, roles, and resources from the
    approved plan and target evidence. Do not assume a framework or directory
    layout.
-6. Emit the complete `parallel_context` from the protocol reference.
+6. Emit the complete `parallel_context` from the protocol reference. Keep it
+   authoritative and internal by default; pass it to the execute-plan parent or
+   final ship consumer through `context.pass`. If
+   `runtime_context_channel` is `unsupported` or `unknown`, use the validated
+   portable matrix so contract identity, ownership, unit result identity,
+   deterministic fan-in state, global verification, and final-tail state are
+   preserved without embedding plan, diff, or log bodies.
 7. Carry one runtime `artifact_context` per change. Workers return only their
    owned change-scoped entries; the integration owner performs deterministic
    merge and owns shared entries.

@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-design
 description: Design-track executor for FE handoff artifacts. Use for UI/UX design, mobile app/mobile web design, wireframes, mockups, screen flows, PNG previews, design from product stories, or design review before frontend implementation. Writes design/ specs/flows/wireframes/exports and .sdcorejs/docs/design/ traceability; no production code. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose, user.approve, visual.present
+required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose, user.approve, visual.present
 ---
 
 # Design Track

@@ -70,7 +70,29 @@ Expected execution routing:
 - Test-only evidence -> `sdcorejs-test`.
 - Product traceability updates -> `sdcorejs-product`.
 
-## 5. Finish Gates
+## 5. Communication Economy Policy
+
+During execution, the authoritative runtime context retains the approved spec
+and plan identities, current HEAD or diff fingerprint, acceptance criteria,
+ownership, verification state, and artifact closure. The user projection does
+not repeat the full spec, plan, diff, or command log. A routine progress event
+can say that backend verification completed; the final response then reports
+the overall outcome without repeating an identical progress summary.
+
+When the host proves support for `runtime_context_channel`, `context.pass` can
+deliver the typed context to the next consumer. An `unsupported` or `unknown`
+host uses a portable handoff containing the required IDs, paths, hashes, state
+delta, evidence references, blockers, and exact next action. Missing required
+fields fail closed.
+
+This successful execution uses the `compact` profile with complete professional
+sentences. A normal review with findings uses `standard`. Spec/plan approval,
+security or destructive decisions, ambiguity, failed verification, and blockers
+automatically use `detailed`. The user may also request `compact`, `standard`,
+`detailed`, or `full context`; explanation depth changes, but outcomes and
+evidence do not.
+
+## 6. Finish Gates
 
 Every code-generation run ends with the finish tail:
 
@@ -81,11 +103,15 @@ Every code-generation run ends with the finish tail:
 - Add or update code documentation for touched source.
 - Ask the documentation gate for user/technical docs when needed.
 - Run `sdcorejs-ship` verify-before-done and branch-ready modes.
-- Update task tracker and durable memories when useful.
+- Close native progress only if its state changed; do not emit a duplicate
+  user-visible summary immediately before the final response.
+- Update durable task records and memories when useful. Runtime progress remains
+  in the current thread or harness.
 
-## 6. Evidence Summary
+## 7. Evidence Summary
 
-A good final response reports evidence, not confidence:
+A good Communication Economy Policy final response reports evidence, not
+confidence or repeated runtime state:
 
 ```text
 Implemented Product management across backend and frontend.

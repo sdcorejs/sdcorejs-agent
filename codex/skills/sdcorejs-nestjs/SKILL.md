@@ -14,7 +14,8 @@ description: NestJS code executor for approved/direct backend work with confirme
 
 Before execution:
 
-1. Read and apply `../_refs/shared/tasklist.md`.
+1. Read `../_refs/shared/runtime-protocols.md`, then apply
+   `../_refs/shared/tasklist.md`.
 2. Read and apply `../_refs/shared/project-context.md` as a read-only,
    relevance-first context assembler.
 3. Read `../_refs/shared/artifact-lifecycle.md` and merge producer

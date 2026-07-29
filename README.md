@@ -68,6 +68,38 @@ capabilities for Codex, Claude Code, Cursor, and Copilot. Unsupported or unknown
 capabilities retain numbered Markdown, static visual, and sequential parent
 fallbacks.
 
+## Communication Economy Policy
+
+The Communication Economy Policy minimizes total communication cost: bootstrap
+and just-in-time context, repeated handoff content, and user-visible output. It
+does not optimize output length in isolation or turn responses into fragments.
+Compact output remains localized, grammatical, and written in complete
+professional sentences.
+
+Runtime communication has three distinct layers:
+
+- Authoritative runtime context retains the typed fields required by the next
+  consumer for routing, approval, security, verification, and artifact closure.
+- User projection reports only the outcome, material evidence, risk, blocker,
+  and next decision that the user needs.
+- Portable handoff carries required IDs, paths, hashes, state deltas, evidence
+  references, and the exact next consumer when a structured runtime context
+  channel is unsupported or unknown. Its shape-aware matrix also preserves
+  independent test lifecycle/evidence and parallel ownership/fan-in state, and
+  rejects missing approval identity or embedded spec/plan/diff/log bodies.
+
+The default profile is `compact`; normal technical explanation and review
+findings use `standard`; approval, security, destructive action, ambiguity,
+order-sensitive work, public-contract decisions, failed verification, and
+unresolved blockers automatically use `detailed`. A user may request `compact`,
+`standard`, `detailed`, or `full context`, but a shorter request cannot obscure
+an approval scope or safety consequence. Code, commands, paths, identifiers,
+hashes, errors, numbers, and verification results remain exact.
+
+Detailed policy is loaded just in time from
+`_refs/harness/communication-economy.md`. This is a communication contract, not
+a workflow gate, runtime server, or new `sdcorejs-caveman` skill.
+
 The AI-agent track is an approved-plan-only authoring surface, not a bundled
 agent runtime. It selects one lifecycle engine (`openai-responses` or
 `openai-agents-sdk`) independently from one of twelve business capability
@@ -219,7 +251,11 @@ review rules.
 - Non-trivial skills apply the read-only `_refs/shared/project-context.md`.
   Valid summary sections help orientation; missing or stale summary falls back
   to targeted reads or a scoped code map and never blocks work.
-- Non-trivial execution tasks use `_refs/shared/tasklist.md`: create a visible `Tasks` section before work starts, update it as work progresses, and disclose skipped verification, blockers, and risks.
+- Non-trivial execution tasks use `_refs/shared/tasklist.md`: create visible
+  outcome-based progress when work starts, then update only for a meaningful
+  outcome, scope change, blocker, verification event, required decision, or
+  explicit status request. Disclose skipped verification, blockers, and risks
+  without duplicating the final response.
 - Live progress remains in the current thread/harness. Durable handoffs are
   explicit and change-scoped; repository files never mirror live checkbox
   state.

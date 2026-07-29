@@ -1,7 +1,7 @@
 ---
 name: sdcorejs-product
 description: Product-track executor for PO docs and traceability. Use for PRDs, user stories, acceptance criteria, feature ledgers, requirement review, traceability matrix, UAT checklists, or consistency between requirements, implementation, and tests. Updates product/ docs and .sdcorejs/docs/product/ ledgers; does not generate app code. Applies across tracks. Runtime-localized.
-required-actions: artifact.read, artifact.write, verification.run, progress.create, progress.update, user.choose, user.approve
+required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose, user.approve
 ---
 
 # Product Track

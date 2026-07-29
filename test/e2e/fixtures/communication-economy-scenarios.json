@@ -1,0 +1,374 @@
+{
+  "schema_version": 1,
+  "data_classification": "synthetic-sanitized",
+  "scenarios": {
+    "pure-qa": {
+      "message_kind": "direct-answer",
+      "capability_status": "supported",
+      "current_jit_paths": [],
+      "context_contracts": [],
+      "baseline_duplicate_summary": false,
+      "projection": {
+        "outcome": "The runtime context channel is a structured producer-to-consumer handoff, not conversation memory."
+      }
+    },
+    "small-docs-fast-fix": {
+      "message_kind": "fast-fix-success",
+      "capability_status": "supported",
+      "current_jit_paths": [
+        "_refs/shared/project-context.md",
+        "_refs/shared/tasklist.md"
+      ],
+      "context_contracts": [],
+      "baseline_duplicate_summary": true,
+      "projection": {
+        "outcome": "The documentation typo is corrected.",
+        "changed_paths": [
+          "docs/guide.md"
+        ],
+        "verification": [
+          {
+            "command": "npm run check:text-hygiene",
+            "exit_code": 0,
+            "status": "pass"
+          }
+        ]
+      }
+    },
+    "small-production-fast-fix": {
+      "message_kind": "fast-fix-success",
+      "capability_status": "supported",
+      "current_jit_paths": [
+        "_refs/shared/project-context.md",
+        "_refs/shared/tasklist.md",
+        "_refs/shared/finish-gate.md"
+      ],
+      "context_contracts": [
+        {
+          "context_type": "execution_context",
+          "consumer": "sdcorejs-ship"
+        }
+      ],
+      "baseline_duplicate_summary": true,
+      "projection": {
+        "outcome": "The bounded production fix is implemented.",
+        "changed_paths": [
+          "src/orders/validator.ts"
+        ],
+        "verification": [
+          {
+            "command": "npm test -- orders-validator",
+            "exit_code": 0,
+            "status": "pass"
+          }
+        ]
+      }
+    },
+    "spec-approval": {
+      "message_kind": "spec-approval",
+      "capability_status": "unknown",
+      "current_jit_paths": [
+        "_refs/shared/project-context.md",
+        "_refs/shared/user-choice-prompt.md",
+        "_refs/shared/artifact-lifecycle.md",
+        "skills/shared/sdlc/02-spec.md",
+        "_refs/harness/communication-economy.md"
+      ],
+      "context_contracts": [
+        {
+          "context_type": "spec_context",
+          "consumer": "sdcorejs-plan"
+        }
+      ],
+      "baseline_duplicate_summary": false,
+      "projection": {
+        "outcome": "The specification is ready for approval.",
+        "approval_scope": [
+          "Contract `communication-economy` revision 1."
+        ],
+        "acceptance_criteria": [
+          "AC-001 preserves approval, security, and verification evidence."
+        ],
+        "non_goals": [
+          "No new workflow gate or runtime server."
+        ],
+        "risks": [
+          "Unknown runtime context capability requires a portable handoff."
+        ],
+        "options": [
+          "Approve",
+          "Change",
+          "Cancel"
+        ],
+        "next_decision": "Approve contract `communication-economy` revision 1."
+      }
+    },
+    "approved-plan-execution": {
+      "message_kind": "execution-handoff-success",
+      "capability_status": "unknown",
+      "current_jit_paths": [
+        "_refs/shared/project-context.md",
+        "_refs/shared/tasklist.md",
+        "_refs/shared/artifact-lifecycle.md",
+        "skills/shared/sdlc/04-execute-plan.md",
+        "_refs/shared/finish-gate.md",
+        "_refs/harness/communication-economy.md"
+      ],
+      "context_contracts": [
+        {
+          "context_type": "plan_context",
+          "consumer": "sdcorejs-execute-plan"
+        },
+        {
+          "context_type": "execution_context",
+          "consumer": "sdcorejs-ship"
+        }
+      ],
+      "baseline_duplicate_summary": true,
+      "projection": {
+        "outcome": "The approved plan execution completed.",
+        "changed_paths": [
+          "_refs/harness/runtime-policy.mjs"
+        ],
+        "verification": [
+          {
+            "command": "npm run test:e2e:communication-economy",
+            "exit_code": 0,
+            "status": "pass"
+          }
+        ],
+        "next_action": "sdcorejs-ship"
+      }
+    },
+    "direct-review": {
+      "message_kind": "review-findings",
+      "capability_status": "supported",
+      "current_jit_paths": [
+        "_refs/shared/project-context.md",
+        "_refs/shared/tasklist.md",
+        "skills/shared/workflow/review.md",
+        "_refs/shared/review-code.md",
+        "_refs/harness/communication-economy.md"
+      ],
+      "context_contracts": [
+        {
+          "context_type": "review_context",
+          "consumer": "sdcorejs-repair-loop"
+        }
+      ],
+      "baseline_duplicate_summary": true,
+      "projection": {
+        "outcome": "The review found one required repair.",
+        "status": "blocked",
+        "findings": [
+          {
+            "id": "R1",
+            "severity": "High",
+            "location": "src/auth.guard.ts:42",
+            "evidence": "The `orders.write` permission check is absent.",
+            "risk": "Unauthorized mutation.",
+            "suggested_action": "Add the resource permission guard."
+          }
+        ],
+        "blockers": [
+          "R1"
+        ]
+      }
+    },
+    "review-repair-ship": {
+      "message_kind": "execution-handoff-success",
+      "capability_status": "unknown",
+      "current_jit_paths": [
+        "_refs/shared/project-context.md",
+        "_refs/shared/tasklist.md",
+        "_refs/shared/artifact-lifecycle.md",
+        "skills/shared/workflow/review.md",
+        "skills/orchestration/repair-loop.md",
+        "skills/shared/workflow/ship.md",
+        "_refs/orchestration/tail/repair-loop.md",
+        "_refs/orchestration/tail/verify-before-done.md",
+        "_refs/orchestration/tail/branch-ready.md",
+        "_refs/orchestration/tail/ship-context.md",
+        "_refs/shared/test-context.md",
+        "_refs/harness/communication-economy.md"
+      ],
+      "context_contracts": [
+        {
+          "context_type": "review_context",
+          "consumer": "sdcorejs-repair-loop"
+        },
+        {
+          "context_type": "execution_context",
+          "consumer": "sdcorejs-ship"
+        },
+        {
+          "context_type": "test_context",
+          "consumer": "sdcorejs-ship"
+        },
+        {
+          "context_type": "test_status",
+          "consumer": "sdcorejs-ship"
+        },
+        {
+          "context_type": "test_evidence",
+          "consumer": "sdcorejs-ship"
+        },
+        {
+          "context_type": "artifact_context",
+          "consumer": "sdcorejs-ship"
+        },
+        {
+          "context_type": "ship_context",
+          "consumer": "sdcorejs-git"
+        }
+      ],
+      "baseline_duplicate_summary": true,
+      "projection": {
+        "outcome": "Review repair and ship verification completed.",
+        "changed_paths": [
+          "src/auth.guard.ts"
+        ],
+        "verification": [
+          {
+            "command": "npm test -- auth-guard",
+            "exit_code": 0,
+            "status": "pass"
+          },
+          {
+            "command": "npm run lint",
+            "exit_code": 0,
+            "status": "pass"
+          }
+        ]
+      }
+    },
+    "security-destructive": {
+      "message_kind": "destructive-action",
+      "capability_status": "unknown",
+      "current_jit_paths": [
+        "_refs/shared/user-choice-prompt.md",
+        "_refs/shared/artifact-lifecycle.md",
+        "_refs/shared/review-security.md",
+        "skills/shared/workflow/ship.md",
+        "skills/shared/workflow/git.md",
+        "_refs/harness/communication-economy.md"
+      ],
+      "context_contracts": [
+        {
+          "context_type": "ship_context",
+          "consumer": "sdcorejs-git"
+        },
+        {
+          "context_type": "artifact_context",
+          "consumer": "sdcorejs-git"
+        }
+      ],
+      "baseline_duplicate_summary": true,
+      "projection": {
+        "outcome": "Approval is required before deleting `artifact-17`.",
+        "consequences": [
+          "The delete is irreversible after remote garbage collection."
+        ],
+        "recovery": [
+          "Restore from `backup-2026-07-28` before garbage collection."
+        ],
+        "approval_scope": [
+          "Delete only `artifact-17` from repository `orders-prod`."
+        ],
+        "risks": [
+          "Recovery depends on the verified backup."
+        ],
+        "options": [
+          "Approve deletion",
+          "Cancel"
+        ],
+        "next_decision": "Approve deletion of `artifact-17`."
+      }
+    },
+    "delegated-test-docs": {
+      "message_kind": "normal-handoff",
+      "capability_status": "unknown",
+      "current_jit_paths": [
+        "_refs/shared/tasklist.md",
+        "_refs/harness/capability-contract.json",
+        "_refs/harness/delegation-policy.json",
+        "_refs/harness/task-brief.md",
+        "_refs/orchestration/parallel-protocol.md",
+        "skills/tracks/test/sdcorejs-test.md",
+        "skills/orchestration/parallel-dispatch.md",
+        "skills/orchestration/documentation.md",
+        "_refs/shared/test-context.md",
+        "_refs/shared/artifact-lifecycle.md",
+        "_refs/harness/communication-economy.md"
+      ],
+      "context_contracts": [
+        {
+          "context_type": "test_context",
+          "consumer": "sdcorejs-documentation"
+        },
+        {
+          "context_type": "test_status",
+          "consumer": "sdcorejs-documentation"
+        },
+        {
+          "context_type": "test_evidence",
+          "consumer": "sdcorejs-documentation"
+        },
+        {
+          "context_type": "parallel_context",
+          "consumer": "sdcorejs-ship"
+        },
+        {
+          "context_type": "ui_capture_context",
+          "consumer": "sdcorejs-documentation"
+        },
+        {
+          "context_type": "artifact_context",
+          "consumer": "sdcorejs-ship"
+        }
+      ],
+      "baseline_duplicate_summary": true,
+      "projection": {
+        "outcome": "The delegated test and documentation units returned bounded evidence.",
+        "changed_paths": [
+          "test/orders.spec.ts",
+          "docs/orders.md"
+        ],
+        "verification": [
+          {
+            "command": "npm test -- orders",
+            "exit_code": 0,
+            "status": "pass"
+          }
+        ],
+        "next_action": "parent integration review"
+      }
+    },
+    "no-runtime-context-channel": {
+      "message_kind": "normal-handoff",
+      "capability_status": "unknown",
+      "current_jit_paths": [
+        "_refs/harness/capability-contract.json",
+        "_refs/harness/communication-economy.md"
+      ],
+      "context_contracts": [
+        {
+          "context_type": "execution_context",
+          "consumer": "sdcorejs-test"
+        }
+      ],
+      "baseline_duplicate_summary": true,
+      "projection": {
+        "outcome": "The portable handoff is ready.",
+        "verification": [
+          {
+            "command": "npm run test:e2e:communication-economy",
+            "exit_code": 0,
+            "status": "pass"
+          }
+        ],
+        "next_action": "sdcorejs-test"
+      }
+    }
+  }
+}

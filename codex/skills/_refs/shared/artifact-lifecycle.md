@@ -56,7 +56,10 @@ remains ambiguity.
 
 ## Runtime `artifact_context`
 
-Every workflow that creates or updates `.sdcorejs/**` emits:
+Every workflow that creates or updates `.sdcorejs/**` builds and passes this
+context to its exact consumer. User-facing output normally projects only
+artifact paths/classification, closure blockers, and required action; it does
+not echo the full structure.
 
 ```yaml
 artifact_context:

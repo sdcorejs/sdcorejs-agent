@@ -44,7 +44,9 @@ numbered Markdown and sequential parent fallbacks.
 
 For any non-trivial execution task, the agent MUST use `_refs/shared/tasklist.md`.
 
-Create the `Tasks` section before work starts and update it as work progresses.
+Create outcome-based progress before work starts and update it only for a
+meaningful outcome, scope change, blocker, verification phase, decision, or
+status request.
 
 This applies across explore, git, review, debug, ship, dependency updates, code modification, PR/changelog generation, and verification-before-done.
 
@@ -99,6 +101,11 @@ their dedicated owners.
 - Apply `_refs/shared/artifact-lifecycle.md` to every `.sdcorejs/**` write and
   Git artifact handoff.
 - Preserve locale-specific marks; keep identifiers and routes in English.
+- Apply `_refs/harness/communication-economy.md` just in time. Default routine
+  output to compact professional sentences; use detailed output for approval,
+  security, destructive action, ambiguity, conflict, blockers, or failed
+  verification. Pass full typed context only to its consumer; use a portable
+  handoff when `runtime_context_channel` is unsupported or unknown.
 
 ## Key Files
 
