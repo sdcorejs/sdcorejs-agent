@@ -1,14 +1,39 @@
 import assert from 'node:assert/strict';
-import { readFile, readdir } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
+import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import test from 'node:test';
 import * as runtimePolicy from '../../_refs/harness/runtime-policy.mjs';
 
 const root = path.resolve(new URL('../..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
 const baselineUrl = new URL('./fixtures/communication-economy-baseline.json', import.meta.url);
+const scenarioFixtureUrl = new URL(
+  './fixtures/communication-economy-scenarios.json',
+  import.meta.url
+);
 const capabilityUrl = new URL('../../_refs/harness/capability-contract.json', import.meta.url);
 const policyUrl = new URL('../../_refs/harness/communication-economy.md', import.meta.url);
 const reportModuleUrl = new URL('../../scripts/measure-communication-economy.mjs', import.meta.url);
+const BASELINE_CONTEXT_SCHEMA_PATHS = {
+  requirement_context: 'skills/shared/sdlc/01-brainstorming.md',
+  spec_context: 'skills/shared/sdlc/02-spec.md',
+  plan_context: 'skills/shared/sdlc/03-plan.md',
+  execution_context: 'skills/shared/sdlc/04-execute-plan.md',
+  test_context: '_refs/shared/test-context.md',
+  test_status: '_refs/shared/test-context.md',
+  test_evidence: '_refs/shared/test-context.md',
+  review_context: 'skills/shared/workflow/review.md',
+  debug_context: '_refs/shared/debug-context.md',
+  simplify_context: '_refs/simplify/verification.md',
+  ship_context: '_refs/orchestration/tail/ship-context.md',
+  artifact_context: '_refs/shared/artifact-lifecycle.md',
+  ui_capture_context: '_refs/shared/test-ui-evidence.md',
+  explore_context: '_refs/shared/explore-context.md',
+  ai_agent_context: 'skills/tracks/ai-agent/sdcorejs-ai-agent.md',
+  parallel_context: '_refs/orchestration/parallel-protocol.md',
+};
 
 const REQUIRED_EXPORTS = [
   'CONSUMER_REQUIRED_FIELD_KINDS',
@@ -1362,8 +1387,8 @@ test('deterministic report compares ten scenarios without invented token counts'
   assert.equal(report.measurement_kind, 'deterministic-source-bound-contract-projection');
   assert.equal(report.baseline.source_commit, 'ec6afdb4e2494416d985be610837e728a9278a2f');
   assert.equal(report.baseline.visible_output.observed_live, false);
-  assert.equal(report.baseline.visible_output.source, 'git-show');
-  assert.match(report.baseline.visible_output.method, /baseline commit schema/i);
+  assert.equal(report.baseline.visible_output.source, 'source-bound-fixture');
+  assert.match(report.baseline.visible_output.method, /audited source_commit/i);
   assert.equal(
     report.baseline.visible_output.duplicate_progress_rule.rule,
     'Before the final response, make one final runtime progress update.'
@@ -1445,6 +1470,184 @@ test('deterministic report compares ten scenarios without invented token counts'
   assert.ok(!Object.hasOwn(report, 'generated_at'));
 });
 
+test('baseline snapshot matches the audited commit when history is available', async (t) => {
+  const baseline = JSON.parse(await readFile(baselineUrl, 'utf8'));
+  const sourceCommit = baseline.source_commit;
+  try {
+    execFileSync('git', ['cat-file', '-e', `${sourceCommit}^{commit}`], {
+      cwd: root,
+      stdio: 'ignore',
+      windowsHide: true,
+    });
+  }
+  catch {
+    t.skip(`audited commit ${sourceCommit} is unavailable in this checkout`);
+    return;
+  }
+
+  const scenarioFixture = JSON.parse(await readFile(scenarioFixtureUrl, 'utf8'));
+  const snapshot = baseline.visible_output_snapshot;
+  const progressRule = snapshot.duplicate_progress_rule;
+  assert.equal(
+    gitFromRoot(['rev-parse', `${sourceCommit}:${progressRule.path}`]),
+    progressRule.blob_oid
+  );
+  assert.match(
+    gitFromRoot(['show', `${sourceCommit}:${progressRule.path}`]),
+    new RegExp(escapeRegExp(progressRule.rule))
+  );
+
+  for (const [name, definition] of Object.entries(scenarioFixture.scenarios)) {
+    const contextTypes = [
+      ...new Set(definition.context_contracts.map(({ context_type }) => context_type)),
+    ];
+    const sources = contextTypes.map((contextType) => {
+      const sourcePath = BASELINE_CONTEXT_SCHEMA_PATHS[contextType];
+      assert.ok(sourcePath, `${name}: source path for ${contextType}`);
+      const content = gitFromRoot(['show', `${sourceCommit}:${sourcePath}`]);
+      return {
+        context_type: contextType,
+        path: sourcePath,
+        blob_oid: gitFromRoot(['rev-parse', `${sourceCommit}:${sourcePath}`]),
+        schema: extractHistoricalContextSchema(content, contextType, sourcePath),
+      };
+    });
+    const summary = renderHistoricalScenarioProjection(definition.projection);
+    const context = sources
+      .map(({ context_type, schema }) => `${context_type}\n\n\`\`\`yaml\n${schema}\n\`\`\``)
+      .join('\n\n');
+    const final = context.length > 0
+      ? `${summary}\n\nFull runtime context\n\n${context}`
+      : summary;
+    const messages = definition.baseline_duplicate_summary
+      ? [summary, final]
+      : [final];
+    const regenerated = {
+      measurement: runtimePolicy.measureText(messages.join('\n\n')),
+      repeated_block_bytes: runtimePolicy.measureRepeatedBlockBytes(messages),
+      source_paths: sources.map(({ path: sourcePath }) => sourcePath),
+      source_blobs: sources.map(({ blob_oid }) => blob_oid),
+    };
+
+    assert.deepEqual(snapshot.scenarios[name], regenerated, name);
+  }
+});
+
+test('deterministic report does not require audited commit history', async () => {
+  const checkout = await createShallowReportCheckout();
+
+  try {
+    assert.equal(
+      execFileSync('git', ['-C', checkout.root, 'rev-parse', '--is-shallow-repository'], {
+        encoding: 'utf8',
+        windowsHide: true,
+      }).trim(),
+      'true'
+    );
+    assert.throws(() =>
+      execFileSync(
+        'git',
+        [
+          '-C',
+          checkout.root,
+          'cat-file',
+          '-e',
+          'ec6afdb4e2494416d985be610837e728a9278a2f^{commit}',
+        ],
+        { stdio: 'ignore', windowsHide: true }
+      )
+    );
+    const shallowReportModule = await import(
+      `${pathToFileURL(path.join(checkout.root, 'scripts/measure-communication-economy.mjs')).href}?shallow`
+    );
+    const report = await shallowReportModule.buildCommunicationEconomyReport({
+      root: checkout.root,
+    });
+
+    assert.equal(report.baseline.source_commit, 'ec6afdb4e2494416d985be610837e728a9278a2f');
+    assert.equal(report.baseline.visible_output.source, 'source-bound-fixture');
+  }
+  finally {
+    await checkout.cleanup();
+  }
+});
+
+test('deterministic report rejects corrupt baseline snapshots', async () => {
+  const temporaryRoot = await mkdtemp(path.join(tmpdir(), 'sdcorejs-invalid-baseline-'));
+
+  try {
+    const fixtureDirectory = path.join(temporaryRoot, 'test/e2e/fixtures');
+    await mkdir(fixtureDirectory, { recursive: true });
+    const fixturePath = path.join(
+      temporaryRoot,
+      'test/e2e/fixtures/communication-economy-baseline.json'
+    );
+    await copyFile(
+      scenarioFixtureUrl,
+      path.join(fixtureDirectory, 'communication-economy-scenarios.json')
+    );
+    const original = JSON.parse(await readFile(baselineUrl, 'utf8'));
+    const invalidSnapshots = [
+      {
+        name: 'negative measurement',
+        mutate: (fixture) => {
+          fixture.visible_output_snapshot.scenarios['direct-review']
+            .measurement.utf8_bytes = -1;
+        },
+      },
+      {
+        name: 'repeated bytes exceed measured output',
+        mutate: (fixture) => {
+          const scenario = fixture.visible_output_snapshot.scenarios['direct-review'];
+          scenario.repeated_block_bytes = scenario.measurement.utf8_bytes + 1;
+        },
+      },
+      {
+        name: 'unsafe source path',
+        mutate: (fixture) => {
+          fixture.visible_output_snapshot.scenarios['direct-review']
+            .source_paths[0] = '../review.md';
+        },
+      },
+      {
+        name: 'malformed blob OID',
+        mutate: (fixture) => {
+          fixture.visible_output_snapshot.scenarios['direct-review']
+            .source_blobs[0] = 'not-a-git-oid';
+        },
+      },
+      {
+        name: 'unexpected scenario',
+        mutate: (fixture) => {
+          fixture.visible_output_snapshot.scenarios['unrelated-newest'] =
+            structuredClone(fixture.visible_output_snapshot.scenarios['pure-qa']);
+        },
+      },
+      {
+        name: 'incomplete progress-rule provenance',
+        mutate: (fixture) => {
+          delete fixture.visible_output_snapshot.duplicate_progress_rule.blob_oid;
+        },
+      },
+    ];
+    const reportModule = await import(reportModuleUrl);
+
+    for (const invalid of invalidSnapshots) {
+      const fixture = structuredClone(original);
+      invalid.mutate(fixture);
+      await writeFile(fixturePath, `${JSON.stringify(fixture, null, 2)}\n`, 'utf8');
+      await assert.rejects(
+        reportModule.buildCommunicationEconomyReport({ root: temporaryRoot }),
+        /baseline visible-output snapshot/i,
+        invalid.name
+      );
+    }
+  }
+  finally {
+    await rm(temporaryRoot, { recursive: true, force: true });
+  }
+});
+
 test('runtime policy functions are side-effect free and create no mutable .sdcorejs state', async () => {
   const resolve = requireFunction('resolveCommunicationProfile');
   const shouldEmit = requireFunction('shouldEmitProgress');
@@ -1460,6 +1663,87 @@ test('runtime policy functions are side-effect free and create no mutable .sdcor
   assert.deepEqual(after, before);
   assert.ok(!added.some((item) => /current-session|runtime-context|checkpoint/i.test(item)));
 });
+
+function gitFromRoot(args) {
+  return execFileSync('git', args, {
+    cwd: root,
+    encoding: 'utf8',
+    windowsHide: true,
+  }).trim();
+}
+
+function extractHistoricalContextSchema(content, contextType, sourcePath) {
+  const lines = String(content).split(/\r?\n/);
+  const markerIndex = lines.findIndex((line) => line.trim() === `${contextType}:`);
+  assert.ok(markerIndex >= 0, `${sourcePath} has a ${contextType} schema marker`);
+
+  let fence = null;
+  for (let index = markerIndex - 1; index >= 0; index -= 1) {
+    const match = lines[index].trim().match(/^(`{3,})(?:yaml)?$/i);
+    if (match) {
+      fence = match[1];
+      break;
+    }
+  }
+  assert.ok(fence, `${sourcePath} has a fenced ${contextType} schema`);
+
+  const closingIndex = lines.findIndex(
+    (line, index) => index > markerIndex && line.trim() === fence
+  );
+  assert.ok(closingIndex > markerIndex, `${sourcePath} terminates the ${contextType} schema`);
+  return lines.slice(markerIndex, closingIndex).join('\n').trim();
+}
+
+function renderHistoricalScenarioProjection(projection) {
+  return [
+    'Scenario result',
+    JSON.stringify(projection, null, 2),
+  ].join('\n\n');
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+async function createShallowReportCheckout() {
+  const temporaryRoot = await mkdtemp(path.join(tmpdir(), 'sdcorejs-communication-economy-'));
+  const shallowRoot = path.join(temporaryRoot, 'checkout');
+  const gitOptions = { encoding: 'utf8', windowsHide: true };
+
+  try {
+    execFileSync('git', ['init', '--quiet', shallowRoot], gitOptions);
+    execFileSync(
+      'git',
+      ['-C', shallowRoot, 'remote', 'add', 'origin', pathToFileURL(root).href],
+      gitOptions
+    );
+    execFileSync(
+      'git',
+      ['-C', shallowRoot, 'fetch', '--quiet', '--depth', '1', '--no-tags', 'origin', 'HEAD'],
+      gitOptions
+    );
+    execFileSync(
+      'git',
+      ['-C', shallowRoot, 'checkout', '--quiet', '--detach', 'FETCH_HEAD'],
+      gitOptions
+    );
+    for (const relativePath of [
+      'scripts/measure-communication-economy.mjs',
+      'test/e2e/fixtures/communication-economy-baseline.json',
+    ]) {
+      await copyFile(path.join(root, relativePath), path.join(shallowRoot, relativePath));
+    }
+  }
+  catch (error) {
+    await rm(temporaryRoot, { recursive: true, force: true });
+    throw error;
+  }
+
+  return {
+    root: shallowRoot,
+    cleanup: () => rm(temporaryRoot, { recursive: true, force: true }),
+  };
+}
 
 async function measurePaths(paths) {
   let utf8Bytes = 0;

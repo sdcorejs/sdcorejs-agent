@@ -4,8 +4,186 @@
   "measurement_kind": "deterministic-source-bound-contract-projection",
   "visible_output_basis": {
     "observed_live": false,
-    "source": "git-show",
-    "method": "Baseline commit schemas are read from source_commit and combined with sanitized scenario projections. These are deterministic contract-surface measurements, not captured agent transcripts."
+    "source": "source-bound-fixture",
+    "method": "Baseline scenario measurements, source paths, blob OIDs, and the duplicate progress rule are captured from the audited source_commit in this deterministic fixture and checked against that commit when history is available. Runtime report generation requires neither a live transcript nor baseline Git history."
+  },
+  "visible_output_snapshot": {
+    "source_commit": "ec6afdb4e2494416d985be610837e728a9278a2f",
+    "duplicate_progress_rule": {
+      "path": "_refs/shared/tasklist.md",
+      "blob_oid": "5ba7f76bda55fc9dc1d406950f6178a176c8ccfc",
+      "rule": "Before the final response, make one final runtime progress update."
+    },
+    "scenarios": {
+      "pure-qa": {
+        "measurement": {
+          "utf8_bytes": 134,
+          "semantic_bytes": 131,
+          "lines": 5,
+          "words": 17
+        },
+        "repeated_block_bytes": 0,
+        "source_paths": [],
+        "source_blobs": []
+      },
+      "small-docs-fast-fix": {
+        "measurement": {
+          "utf8_bytes": 496,
+          "semantic_bytes": 413,
+          "lines": 31,
+          "words": 54
+        },
+        "repeated_block_bytes": 205,
+        "source_paths": [],
+        "source_blobs": []
+      },
+      "small-production-fast-fix": {
+        "measurement": {
+          "utf8_bytes": 2466,
+          "semantic_bytes": 2172,
+          "lines": 99,
+          "words": 241
+        },
+        "repeated_block_bytes": 223,
+        "source_paths": [
+          "skills/shared/sdlc/04-execute-plan.md"
+        ],
+        "source_blobs": [
+          "24864a8602abbbc6a8cea56ee934f11384de1f73"
+        ]
+      },
+      "spec-approval": {
+        "measurement": {
+          "utf8_bytes": 1653,
+          "semantic_bytes": 1521,
+          "lines": 60,
+          "words": 166
+        },
+        "repeated_block_bytes": 0,
+        "source_paths": [
+          "skills/shared/sdlc/02-spec.md"
+        ],
+        "source_blobs": [
+          "66b7488ca092b58d0d8f59fa74e1eaf74748a05c"
+        ]
+      },
+      "approved-plan-execution": {
+        "measurement": {
+          "utf8_bytes": 8939,
+          "semantic_bytes": 7737,
+          "lines": 283,
+          "words": 854
+        },
+        "repeated_block_bytes": 270,
+        "source_paths": [
+          "skills/shared/sdlc/03-plan.md",
+          "skills/shared/sdlc/04-execute-plan.md"
+        ],
+        "source_blobs": [
+          "a0612dda03399feda127d95337ce940c656c4073",
+          "24864a8602abbbc6a8cea56ee934f11384de1f73"
+        ]
+      },
+      "direct-review": {
+        "measurement": {
+          "utf8_bytes": 2343,
+          "semantic_bytes": 2095,
+          "lines": 83,
+          "words": 254
+        },
+        "repeated_block_bytes": 354,
+        "source_paths": [
+          "skills/shared/workflow/review.md"
+        ],
+        "source_blobs": [
+          "e429e522431dacbef96cc5b9209d6e4e424af54f"
+        ]
+      },
+      "review-repair-ship": {
+        "measurement": {
+          "utf8_bytes": 10706,
+          "semantic_bytes": 9316,
+          "lines": 411,
+          "words": 996
+        },
+        "repeated_block_bytes": 280,
+        "source_paths": [
+          "skills/shared/workflow/review.md",
+          "skills/shared/sdlc/04-execute-plan.md",
+          "_refs/shared/test-context.md",
+          "_refs/shared/test-context.md",
+          "_refs/shared/test-context.md",
+          "_refs/shared/artifact-lifecycle.md",
+          "_refs/orchestration/tail/ship-context.md"
+        ],
+        "source_blobs": [
+          "e429e522431dacbef96cc5b9209d6e4e424af54f",
+          "24864a8602abbbc6a8cea56ee934f11384de1f73",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "d040a4d837fbdcf6c337c0bb30ce77ab55de76e9",
+          "f8b5ca84e76f9a10a0617e5e924b8eecfbcad95b"
+        ]
+      },
+      "security-destructive": {
+        "measurement": {
+          "utf8_bytes": 3793,
+          "semantic_bytes": 3289,
+          "lines": 159,
+          "words": 351
+        },
+        "repeated_block_bytes": 484,
+        "source_paths": [
+          "_refs/orchestration/tail/ship-context.md",
+          "_refs/shared/artifact-lifecycle.md"
+        ],
+        "source_blobs": [
+          "f8b5ca84e76f9a10a0617e5e924b8eecfbcad95b",
+          "d040a4d837fbdcf6c337c0bb30ce77ab55de76e9"
+        ]
+      },
+      "delegated-test-docs": {
+        "measurement": {
+          "utf8_bytes": 9610,
+          "semantic_bytes": 8163,
+          "lines": 398,
+          "words": 795
+        },
+        "repeated_block_bytes": 298,
+        "source_paths": [
+          "_refs/shared/test-context.md",
+          "_refs/shared/test-context.md",
+          "_refs/shared/test-context.md",
+          "_refs/orchestration/parallel-protocol.md",
+          "_refs/shared/test-ui-evidence.md",
+          "_refs/shared/artifact-lifecycle.md"
+        ],
+        "source_blobs": [
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "738feda7ff4a4dad637cee75264af261bfb2805f",
+          "84fc6024761167ff8e0f52d98425c6bd7e0b449a",
+          "d040a4d837fbdcf6c337c0bb30ce77ab55de76e9"
+        ]
+      },
+      "no-runtime-context-channel": {
+        "measurement": {
+          "utf8_bytes": 2418,
+          "semantic_bytes": 2136,
+          "lines": 95,
+          "words": 233
+        },
+        "repeated_block_bytes": 205,
+        "source_paths": [
+          "skills/shared/sdlc/04-execute-plan.md"
+        ],
+        "source_blobs": [
+          "24864a8602abbbc6a8cea56ee934f11384de1f73"
+        ]
+      }
+    }
   },
   "tokenizer": {
     "available": false,

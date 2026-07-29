@@ -17,24 +17,6 @@ import {
 
 const modulePath = fileURLToPath(import.meta.url);
 const defaultRoot = path.resolve(path.dirname(modulePath), '..');
-const BASELINE_CONTEXT_SCHEMA_PATHS = {
-  requirement_context: 'skills/shared/sdlc/01-brainstorming.md',
-  spec_context: 'skills/shared/sdlc/02-spec.md',
-  plan_context: 'skills/shared/sdlc/03-plan.md',
-  execution_context: 'skills/shared/sdlc/04-execute-plan.md',
-  test_context: '_refs/shared/test-context.md',
-  test_status: '_refs/shared/test-context.md',
-  test_evidence: '_refs/shared/test-context.md',
-  review_context: 'skills/shared/workflow/review.md',
-  debug_context: '_refs/shared/debug-context.md',
-  simplify_context: '_refs/simplify/verification.md',
-  ship_context: '_refs/orchestration/tail/ship-context.md',
-  artifact_context: '_refs/shared/artifact-lifecycle.md',
-  ui_capture_context: '_refs/shared/test-ui-evidence.md',
-  explore_context: '_refs/shared/explore-context.md',
-  ai_agent_context: 'skills/tracks/ai-agent/sdcorejs-ai-agent.md',
-  parallel_context: '_refs/orchestration/parallel-protocol.md',
-};
 
 export async function buildCommunicationEconomyReport({ root = defaultRoot } = {}) {
   const baseline = await readJson(
@@ -42,6 +24,10 @@ export async function buildCommunicationEconomyReport({ root = defaultRoot } = {
   );
   const fixture = await readJson(
     path.join(root, 'test/e2e/fixtures/communication-economy-scenarios.json')
+  );
+  const baselineSnapshot = loadBaselineVisibleOutputSnapshot(
+    baseline,
+    Object.keys(fixture.scenarios)
   );
   const currentBootstrap = await measurePaths(root, baseline.bootstrap.paths);
   const scenarios = {};
@@ -85,25 +71,10 @@ export async function buildCommunicationEconomyReport({ root = defaultRoot } = {
     const currentFinal = renderUserProjection(definition.projection, {
       profile: resolved.profile,
     });
-    const baselineSummary = renderBaselineScenarioProjection(definition.projection);
-    const baselineSchemas = loadBaselineContextSchemas({
-      root,
-      commit: baseline.source_commit,
-      contextTypes: [...new Set(contracts.map(({ context_type }) => context_type))],
-    });
-    const baselineContext = baselineSchemas
-      .map(({ context_type, schema }) => `${context_type}\n\n\`\`\`yaml\n${schema}\n\`\`\``)
-      .join('\n\n');
-    const baselineFinal = baselineContext.length > 0
-      ? `${baselineSummary}\n\nFull runtime context\n\n${baselineContext}`
-      : baselineSummary;
-    const baselineMessages = definition.baseline_duplicate_summary
-      ? [baselineSummary, baselineFinal]
-      : [baselineFinal];
+    const baselineScenario = loadBaselineScenarioSnapshot(baselineSnapshot, name);
     const currentMessages = name === 'pure-qa'
       ? [currentFinal]
       : [`Progress changed for scenario \`${name}\`.`, currentFinal];
-    const baselineVisible = baselineMessages.join('\n\n');
     const currentVisible = currentMessages.join('\n\n');
     const currentJit = await measurePaths(root, definition.current_jit_paths);
     const baselineJit = baseline.jit_scenarios[name];
@@ -153,14 +124,14 @@ export async function buildCommunicationEconomyReport({ root = defaultRoot } = {
         selected_paths: definition.current_jit_paths,
       },
       visible_output: {
-        baseline: measureText(baselineVisible),
+        baseline: baselineScenario.measurement,
         current: measureText(currentVisible),
-        baseline_source_paths: baselineSchemas.map(({ path: sourcePath }) => sourcePath),
-        baseline_source_blobs: baselineSchemas.map(({ blob_oid }) => blob_oid),
+        baseline_source_paths: baselineScenario.source_paths,
+        baseline_source_blobs: baselineScenario.source_blobs,
         observed_live: false,
       },
       repeated_block_bytes: {
-        baseline: measureRepeatedBlockBytes(baselineMessages),
+        baseline: baselineScenario.repeated_block_bytes,
         current: measureRepeatedBlockBytes(currentMessages),
       },
       portable_handoff_utf8_bytes: portableBytes,
@@ -188,7 +159,6 @@ export async function buildCommunicationEconomyReport({ root = defaultRoot } = {
     aggregate.current_visible_utf8_bytes +
     aggregate.current_portable_handoff_utf8_bytes +
     aggregate.current_runtime_context_channel_utf8_bytes;
-  const baselineProgressRule = loadBaselineProgressRule(root, baseline.source_commit);
 
   return {
     schema_version: 1,
@@ -202,7 +172,7 @@ export async function buildCommunicationEconomyReport({ root = defaultRoot } = {
       fixture: 'test/e2e/fixtures/communication-economy-baseline.json',
       visible_output: {
         ...baseline.visible_output_basis,
-        duplicate_progress_rule: baselineProgressRule,
+        duplicate_progress_rule: baselineSnapshot.duplicate_progress_rule,
       },
     },
     tokenizer: {
@@ -376,73 +346,125 @@ function syntheticContext(contextType, consumer) {
   return context;
 }
 
-function loadBaselineContextSchemas({ root, commit, contextTypes }) {
-  return contextTypes.map((contextType) => {
-    const sourcePath = BASELINE_CONTEXT_SCHEMA_PATHS[contextType];
-    if (!sourcePath) throw new Error(`No baseline schema source path for ${contextType}`);
-    const content = git(root, ['show', `${commit}:${sourcePath}`]);
-    return {
-      context_type: contextType,
-      path: sourcePath,
-      blob_oid: git(root, ['rev-parse', `${commit}:${sourcePath}`]),
-      schema: extractContextSchema(content, contextType, sourcePath),
-    };
-  });
+function loadBaselineVisibleOutputSnapshot(baseline, expectedScenarioNames) {
+  const errorPrefix = 'Baseline visible-output snapshot';
+  const snapshot = baseline.visible_output_snapshot;
+  if (!isRecord(snapshot) || snapshot.source_commit !== baseline.source_commit) {
+    throw new Error(`${errorPrefix} must match source_commit`);
+  }
+  if (!/^[0-9a-f]{40}$/.test(snapshot.source_commit)) {
+    throw new Error(`${errorPrefix} has an invalid source_commit`);
+  }
+  if (!isRecord(snapshot.duplicate_progress_rule) || !isRecord(snapshot.scenarios)) {
+    throw new Error(`${errorPrefix} is incomplete`);
+  }
+
+  validateSourceReference(
+    snapshot.duplicate_progress_rule.path,
+    snapshot.duplicate_progress_rule.blob_oid,
+    `${errorPrefix} duplicate progress rule`
+  );
+  if (
+    typeof snapshot.duplicate_progress_rule.rule !== 'string' ||
+    snapshot.duplicate_progress_rule.rule.trim().length === 0
+  ) {
+    throw new Error(`${errorPrefix} duplicate progress rule is empty`);
+  }
+
+  const actualScenarioNames = Object.keys(snapshot.scenarios).sort();
+  const expectedNames = [...expectedScenarioNames].sort();
+  if (
+    actualScenarioNames.length !== expectedNames.length ||
+    actualScenarioNames.some((name, index) => name !== expectedNames[index])
+  ) {
+    throw new Error(`${errorPrefix} scenario coverage does not match the scenario fixture`);
+  }
+
+  for (const name of expectedNames) {
+    validateBaselineScenarioSnapshot(snapshot.scenarios[name], name);
+  }
+  return snapshot;
 }
 
-function loadBaselineProgressRule(root, commit) {
-  const sourcePath = '_refs/shared/tasklist.md';
-  const rule = 'Before the final response, make one final runtime progress update.';
-  const content = git(root, ['show', `${commit}:${sourcePath}`]);
-  if (!content.includes(rule)) {
-    throw new Error(`Baseline source ${sourcePath} does not contain the audited duplicate progress rule`);
+function loadBaselineScenarioSnapshot(snapshot, name) {
+  const scenario = snapshot.scenarios[name];
+  if (!isRecord(scenario)) {
+    throw new Error(`Baseline visible-output snapshot has no scenario ${name}`);
   }
-  return {
-    path: sourcePath,
-    blob_oid: git(root, ['rev-parse', `${commit}:${sourcePath}`]),
-    rule,
-  };
+  return scenario;
 }
 
-function extractContextSchema(content, contextType, sourcePath) {
-  const lines = String(content).split(/\r?\n/);
-  const markerIndex = lines.findIndex((line) => line.trim() === `${contextType}:`);
-  if (markerIndex < 0) {
-    throw new Error(`Baseline source ${sourcePath} has no ${contextType} schema marker`);
+function validateBaselineScenarioSnapshot(scenario, name) {
+  const errorPrefix = `Baseline visible-output snapshot is invalid for scenario ${name}`;
+  if (
+    !isRecord(scenario) ||
+    !isRecord(scenario.measurement) ||
+    !Array.isArray(scenario.source_paths) ||
+    !Array.isArray(scenario.source_blobs) ||
+    scenario.source_paths.length !== scenario.source_blobs.length
+  ) {
+    throw new Error(errorPrefix);
   }
 
-  let openingIndex = -1;
-  let fence = null;
-  for (let index = markerIndex - 1; index >= 0; index -= 1) {
-    const match = lines[index].trim().match(/^(`{3,})(?:yaml)?$/i);
-    if (match) {
-      openingIndex = index;
-      fence = match[1];
-      break;
-    }
+  const measurementFields = ['lines', 'semantic_bytes', 'utf8_bytes', 'words'];
+  const actualMeasurementFields = Object.keys(scenario.measurement).sort();
+  if (
+    actualMeasurementFields.length !== measurementFields.length ||
+    actualMeasurementFields.some(
+      (field, index) => field !== measurementFields[index]
+    )
+  ) {
+    throw new Error(`${errorPrefix}: measurement fields do not match the schema`);
   }
-  if (openingIndex < 0 || !fence) {
-    throw new Error(`Baseline source ${sourcePath} has no fenced ${contextType} schema`);
+  for (const field of measurementFields) {
+    validateNonNegativeInteger(scenario.measurement[field], `${errorPrefix}: ${field}`);
+  }
+  if (scenario.measurement.semantic_bytes > scenario.measurement.utf8_bytes) {
+    throw new Error(`${errorPrefix}: semantic_bytes exceeds utf8_bytes`);
   }
 
-  let closingIndex = -1;
-  for (let index = markerIndex + 1; index < lines.length; index += 1) {
-    if (lines[index].trim() === fence) {
-      closingIndex = index;
-      break;
-    }
+  validateNonNegativeInteger(
+    scenario.repeated_block_bytes,
+    `${errorPrefix}: repeated_block_bytes`
+  );
+  if (scenario.repeated_block_bytes > scenario.measurement.utf8_bytes) {
+    throw new Error(`${errorPrefix}: repeated_block_bytes exceeds utf8_bytes`);
   }
-  if (closingIndex < 0) {
-    throw new Error(`Baseline source ${sourcePath} has an unterminated ${contextType} schema`);
+
+  for (let index = 0; index < scenario.source_paths.length; index += 1) {
+    validateSourceReference(
+      scenario.source_paths[index],
+      scenario.source_blobs[index],
+      `${errorPrefix}: source ${index}`
+    );
   }
-  return lines.slice(markerIndex, closingIndex).join('\n').trim();
 }
 
-function renderBaselineScenarioProjection(projection) {
-  return [
-    'Scenario result',
-    JSON.stringify(projection, null, 2),
-  ].join('\n\n');
+function validateSourceReference(sourcePath, blobOid, label) {
+  if (
+    typeof sourcePath !== 'string' ||
+    sourcePath.length === 0 ||
+    sourcePath.includes('\\') ||
+    sourcePath.startsWith('/') ||
+    /^[A-Za-z]:\//.test(sourcePath) ||
+    path.posix.normalize(sourcePath) !== sourcePath ||
+    sourcePath.split('/').some((segment) => segment === '.' || segment === '..')
+  ) {
+    throw new Error(`${label} has an unsafe source path`);
+  }
+  if (typeof blobOid !== 'string' || !/^[0-9a-f]{40}$/.test(blobOid)) {
+    throw new Error(`${label} has an invalid blob OID`);
+  }
+}
+
+function validateNonNegativeInteger(value, label) {
+  if (!Number.isSafeInteger(value) || value < 0) {
+    throw new Error(`${label} must be a non-negative safe integer`);
+  }
+}
+
+function isRecord(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
 function syntheticValue(contextType, field) {
