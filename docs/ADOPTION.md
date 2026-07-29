@@ -121,6 +121,31 @@ documents, user guides, PR descriptions, release notes, security documents,
 durable handoffs, test plans, or traceability artifacts. Those artifacts keep
 their canonical templates and complete prose.
 
+## Documentation Layout v2
+
+SDCoreJS writes each project document as a documentation unit:
+
+```text
+.sdcorejs/documentation/user-guides/<module>/<module>.md
+.sdcorejs/documentation/user-guides/<module>/images/<screen>.png
+.sdcorejs/documentation/requirements/<TASKID>/<TASKID>.md
+.sdcorejs/documentation/technical-docs/<doc-key>/<doc-key>.md
+```
+
+Existing flat entries remain readable during the transition. An update probes
+the canonical exact path first and the legacy flat path second; it never creates
+a duplicate merely because the legacy entry exists. Migration is an explicit
+public-contract decision with a complete collision, ownership, containment,
+reference-rewrite, and hash preflight. Authorization is scoped to exact
+documentation units; approving one guide never migrates unrelated legacy
+requirements or technical documents. Conflicting copies and orphan assets are
+reported instead of guessed or overwritten.
+
+All provider surfaces consume the same generated canonical contract. Layout v2
+does not add an adapter capability or change `context.pass`; unsupported or
+unknown runtime-context channels still carry bounded paths, hashes, lifecycle
+state, blockers, and the exact consumer through the portable fallback.
+
 ## Portable Interaction And Delegation
 
 Canonical skills request semantic actions rather than vendor tool names.
@@ -163,6 +188,7 @@ This matrix tracks supported surfaces and the evidence expected for each.
 | Codex attached/native | `AGENTS.md`, `codex/skills/**`, `codex/sdcorejs-harness.json` | Entrypoint, mirror, and behavioral sentinel tests. | Codex session transcript with model/harness/source commit recorded. |
 | Cursor | `AGENTS.md`, `.cursor/rules/sdcorejs-agent.mdc`, `.cursor/sdcorejs-harness.json` | Generated rule/manifest drift checks and entrypoint tests. | Cursor session showing Markdown fallback and governed execution. |
 | GitHub Copilot | `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md`, `.github/sdcorejs-harness.json` | Manifest and entrypoint/behavioral checks. | Copilot transcript for direct Q&A, fast-fix, and one governed task. |
+| Shared Documentation Layout v2 | Canonical `_refs/shared/documentation-layout.*` through each generated ref mirror | `npm run test:e2e:documentation-layout` plus `npm run check:skills`; no provider capability or action changes. | One canonical nested write and, when legacy data exists, the authorized migration/conflict result with path/hash evidence. |
 
 ## Adoption Checklist
 

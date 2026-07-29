@@ -290,7 +290,6 @@
       "capability_status": "unknown",
       "current_jit_paths": [
         "_refs/shared/tasklist.md",
-        "_refs/harness/capability-contract.json",
         "_refs/harness/delegation-policy.json",
         "_refs/harness/task-brief.md",
         "_refs/orchestration/parallel-protocol.md",
@@ -299,6 +298,7 @@
         "skills/orchestration/documentation.md",
         "_refs/shared/test-context.md",
         "_refs/shared/artifact-lifecycle.md",
+        "_refs/shared/documentation-layout.md",
         "_refs/harness/communication-economy.md"
       ],
       "context_contracts": [

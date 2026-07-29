@@ -216,7 +216,7 @@ by this approval gate.
 6. `sdcorejs-product` *(when user-visible feature traceability is needed)* - seed/update `.sdcorejs/docs/product/` with requirement, implementation, and test mapping
 7. *(if Technical doc approved)* `sdcorejs-documentation (write-technical-doc mode)` - create/update the approved technical doc from source evidence.
 8. `_refs/orchestration/tail/auto-docs.md` *(always)* - change-scoped execution record written to `<target>/.sdcorejs/docs/angular/`
-9. *(if User guide approved)* `sdcorejs-documentation (write-user-guide mode)` - create/update the touched module's `.sdcorejs/documentation/user-guides/<module>.md` only when approved by the documentation gate or explicitly requested. Per-module incremental; the aggregate rebuilds under `.sdcorejs/documentation/` at ship.
+9. *(if User guide approved)* `sdcorejs-documentation (write-user-guide mode)` - create/update the touched module's `.sdcorejs/documentation/user-guides/<module>/<module>.md` only when approved by the documentation gate or explicitly requested. Per-module incremental; after all module updates, the aggregate rebuilds exactly once when a guide changed, when explicitly requested, or when stale inside approved scope.
 10. `_refs/orchestration/tail/auto-task-tracker.md` *(only when the sequential workflow or integration owner is authorized to update the shared backlog)* - reconcile durable follow-up work; never mirror live progress
 11. `sdcorejs-explore (memories mode)` - only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 12. `sdcorejs-ship (verify-before-done mode)` *(always)* - BLOCK "done" until acceptance criteria from the selected scope are verified or explicitly deferred

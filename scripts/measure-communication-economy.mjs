@@ -18,7 +18,10 @@ import {
 const modulePath = fileURLToPath(import.meta.url);
 const defaultRoot = path.resolve(path.dirname(modulePath), '..');
 
-export async function buildCommunicationEconomyReport({ root = defaultRoot } = {}) {
+export async function buildCommunicationEconomyReport({
+  root = defaultRoot,
+  liveEvidencePath = null,
+} = {}) {
   const baseline = await readJson(
     path.join(root, 'test/e2e/fixtures/communication-economy-baseline.json')
   );
@@ -199,11 +202,300 @@ export async function buildCommunicationEconomyReport({ root = defaultRoot } = {
         'Recently changed executable source as an explicit simplify scope.',
       ],
     },
-    live_ab_eval: {
-      status: 'skipped',
-      reason: 'The deterministic suite does not invoke a credentialed live agent CLI or claim usage telemetry without a trusted isolated run and actual usage reporting.',
-    },
+    live_ab_eval: liveEvidencePath
+      ? await loadLiveAbEvidence({ root, liveEvidencePath })
+      : {
+          status: 'skipped',
+          observed_live: false,
+          reason: 'The deterministic suite does not invoke a credentialed live agent CLI or claim usage telemetry without a trusted isolated run and actual usage reporting.',
+        },
   };
+}
+
+export function validateLiveAbEvidence(fixture) {
+  validateNoRawLiveEvidence(fixture);
+  requireLiveEvidence(
+    fixture?.schema_version === 1,
+    'Live A/B evidence must use schema_version 1.'
+  );
+  requireLiveEvidence(
+    fixture.measurement_kind === 'credentialed-live-agent-ab-smoke',
+    'Live A/B evidence has an unsupported measurement_kind.'
+  );
+  requireNonEmptyString(fixture.scenario?.id, 'scenario.id');
+  requireLiveEvidence(
+    /^sha256:[0-9a-f]{64}$/.test(fixture.scenario?.prompt_sha256 ?? ''),
+    'Live A/B evidence scenario.prompt_sha256 must be an exact SHA-256 reference.'
+  );
+  requireLiveEvidence(
+    fixture.scenario?.read_only === true,
+    'Live A/B evidence must come from a read-only scenario.'
+  );
+  requireLiveEvidence(
+    /^[0-9a-f]{40}$/.test(fixture.source?.baseline_commit ?? ''),
+    'Live A/B evidence source.baseline_commit must be an exact commit hash.'
+  );
+  requireLiveEvidence(
+    /^[0-9a-f]{40}$/.test(fixture.source?.current_HEAD ?? ''),
+    'Live A/B evidence source.current_HEAD must be an exact commit hash.'
+  );
+  requireNonEmptyString(
+    fixture.source?.current_associated_HEAD_or_diff,
+    'source.current_associated_HEAD_or_diff'
+  );
+  requireLiveEvidence(
+    new RegExp(
+      `^${fixture.source.current_HEAD}(?:\\+dirty:[0-9a-f]{64})?$`
+    ).test(fixture.source.current_associated_HEAD_or_diff),
+    'Live A/B evidence source.current_associated_HEAD_or_diff does not match current_HEAD.'
+  );
+  requireLiveEvidence(
+    Array.isArray(fixture.evaluations) && fixture.evaluations.length > 0,
+    'Live A/B evidence must include at least one provider evaluation.'
+  );
+
+  const evaluationKeys = new Set();
+  for (const evaluation of fixture.evaluations) {
+    requireLiveEvidence(
+      typeof evaluation.captured_at === 'string' &&
+        /^\d{4}-\d{2}-\d{2}T.*Z$/.test(evaluation.captured_at) &&
+        Number.isFinite(Date.parse(evaluation.captured_at)),
+      'Live A/B evidence evaluations[].captured_at must be an exact UTC timestamp.'
+    );
+    requireNonEmptyString(evaluation.provider, 'evaluations[].provider');
+    requireNonEmptyString(evaluation.cli_version, 'evaluations[].cli_version');
+    requireNonEmptyString(evaluation.requested_model, 'evaluations[].requested_model');
+    requireLiveEvidence(
+      Array.isArray(evaluation.resolved_models) &&
+        evaluation.resolved_models.length > 0 &&
+        evaluation.resolved_models.every(isNonEmptyString),
+      'Live A/B evidence evaluations[].resolved_models must contain exact model identifiers.'
+    );
+    requireLiveEvidence(
+      ['low', 'medium', 'high', 'xhigh', 'max'].includes(evaluation.reasoning_effort),
+      'Live A/B evidence evaluations[].reasoning_effort is unsupported.'
+    );
+    requireLiveEvidence(
+      Array.isArray(evaluation.execution_order) &&
+        evaluation.execution_order.length === 2 &&
+        evaluation.execution_order.includes('baseline') &&
+        evaluation.execution_order.includes('current'),
+      'Live A/B evidence evaluations[].execution_order must record baseline and current.'
+    );
+    const evaluationKey = `${evaluation.provider}:${evaluation.reasoning_effort}`;
+    requireLiveEvidence(
+      !evaluationKeys.has(evaluationKey),
+      `Live A/B evidence contains duplicate evaluation ${evaluationKey}.`
+    );
+    evaluationKeys.add(evaluationKey);
+    requireLiveEvidence(
+      evaluation.outcome_parity === true,
+      `Live A/B evidence ${evaluationKey} does not preserve outcome parity.`
+    );
+    requireLiveEvidence(
+      evaluation.semantic_parity === true,
+      `Live A/B evidence ${evaluationKey} does not preserve semantic parity.`
+    );
+    validateLiveAbSide(evaluation.baseline, `${evaluationKey}.baseline`);
+    validateLiveAbSide(evaluation.current, `${evaluationKey}.current`);
+  }
+
+  requireLiveEvidence(
+    fixture.evidence_policy?.sanitized_metrics_only === true,
+    'Live A/B evidence must contain sanitized metrics only.'
+  );
+  requireLiveEvidence(
+    fixture.evidence_policy?.raw_transcripts_committed === false,
+    'Live A/B evidence must not commit raw transcripts.'
+  );
+  requireLiveEvidence(
+    fixture.evidence_policy?.contains_secrets_or_user_data === false,
+    'Live A/B evidence must not contain secrets or user data.'
+  );
+  requireLiveEvidence(
+    Array.isArray(fixture.interpretation_boundary) &&
+      fixture.interpretation_boundary.length > 0 &&
+      fixture.interpretation_boundary.every(isNonEmptyString),
+    'Live A/B evidence must state its interpretation boundary.'
+  );
+
+  return fixture;
+}
+
+async function loadLiveAbEvidence({ root, liveEvidencePath }) {
+  const resolvedPath = path.resolve(root, liveEvidencePath);
+  const fixture = validateLiveAbEvidence(await readJson(resolvedPath));
+  const relativePath = path.relative(root, resolvedPath);
+  const fixtureReference =
+    relativePath &&
+    relativePath !== '..' &&
+    !relativePath.startsWith(`..${path.sep}`) &&
+    !path.isAbsolute(relativePath)
+      ? relativePath.split(path.sep).join('/')
+      : `external:${path.basename(resolvedPath)}`;
+
+  return {
+    status: 'observed',
+    observed_live: true,
+    fixture: fixtureReference,
+    measurement_kind: fixture.measurement_kind,
+    scenario_id: fixture.scenario.id,
+    evaluated_source: fixture.source,
+    evaluations: fixture.evaluations,
+    evidence_policy: fixture.evidence_policy,
+    interpretation_boundary: fixture.interpretation_boundary,
+  };
+}
+
+function validateLiveAbSide(side, label) {
+  requireLiveEvidence(side?.exit_code === 0, `Live A/B evidence ${label}.exit_code must be 0.`);
+  const usage = side.usage;
+  requireLiveEvidence(
+    isNonNegativeInteger(usage?.input_tokens),
+    `Live A/B evidence ${label}.usage.input_tokens must be a non-negative integer.`
+  );
+  requireLiveEvidence(
+    isNonNegativeInteger(usage?.output_tokens),
+    `Live A/B evidence ${label}.usage.output_tokens must be a non-negative integer.`
+  );
+  for (const field of [
+    'cached_input_tokens',
+    'cache_creation_input_tokens',
+    'cache_read_input_tokens',
+    'reasoning_output_tokens',
+  ]) {
+    if (Object.hasOwn(usage, field)) {
+      requireLiveEvidence(
+        isNonNegativeInteger(usage[field]),
+        `Live A/B evidence ${label}.usage.${field} must be a non-negative integer.`
+      );
+    }
+  }
+  if (Object.hasOwn(usage, 'cached_input_tokens')) {
+    requireLiveEvidence(
+      usage.cached_input_tokens <= usage.input_tokens,
+      `Live A/B evidence ${label}.usage.cached_input_tokens cannot exceed input_tokens.`
+    );
+  }
+  const separateCacheTokens =
+    (usage.cache_creation_input_tokens ?? 0) + (usage.cache_read_input_tokens ?? 0);
+  const derivedInputTokens = usage.input_tokens + separateCacheTokens;
+  if (Object.hasOwn(usage, 'derived_total_input_tokens')) {
+    requireLiveEvidence(
+      usage.derived_total_input_tokens === derivedInputTokens,
+      `Live A/B evidence ${label}.usage.derived_total_input_tokens does not match provider usage fields.`
+    );
+  }
+  const expectedTotalTokens = derivedInputTokens + usage.output_tokens;
+  requireLiveEvidence(
+    usage.derived_total_tokens === expectedTotalTokens,
+    `Live A/B evidence ${label}.usage.derived_total_tokens does not match provider usage fields.`
+  );
+  requireLiveEvidence(
+    isNonNegativeInteger(side.visible_output?.utf8_bytes) &&
+      side.visible_output.utf8_bytes > 0,
+    `Live A/B evidence ${label}.visible_output.utf8_bytes must be a positive integer.`
+  );
+  requireLiveEvidence(
+    isNonNegativeInteger(side.visible_output?.words) && side.visible_output.words > 0,
+    `Live A/B evidence ${label}.visible_output.words must be a positive integer.`
+  );
+  requireLiveEvidence(
+    side.semantic_checks &&
+      Object.keys(side.semantic_checks).length > 0 &&
+      Object.values(side.semantic_checks).every((value) => value === true),
+    `Live A/B evidence ${label} must preserve every semantic check.`
+  );
+  if (Object.hasOwn(side, 'provider_reported_cost_usd')) {
+    requireLiveEvidence(
+      Number.isFinite(side.provider_reported_cost_usd) &&
+        side.provider_reported_cost_usd >= 0,
+      `Live A/B evidence ${label}.provider_reported_cost_usd must be non-negative.`
+    );
+  }
+}
+
+function validateNoRawLiveEvidence(value, pathParts = []) {
+  if (Array.isArray(value)) {
+    value.forEach((item, index) =>
+      validateNoRawLiveEvidence(item, [...pathParts, String(index)])
+    );
+    return;
+  }
+  if (!value || typeof value !== 'object') {
+    if (
+      typeof value === 'string' &&
+      (
+        /(?:^|[\\/])Users[\\/][^\\/]+/i.test(value) ||
+        /(?:^|[\\/])home[\\/][^\\/]+/i.test(value) ||
+        /-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----/i.test(value) ||
+        /(?:api[_-]?key|password|secret)\s*[:=]\s*\S+/i.test(value)
+      )
+    ) {
+      throw new Error(
+        `Live A/B evidence contains a forbidden private or secret value at ${pathParts.join('.')}.`
+      );
+    }
+    return;
+  }
+
+  const forbiddenFields = new Set([
+    'command_line',
+    'event_log',
+    'events',
+    'prompt',
+    'raw_output',
+    'raw_transcript',
+    'response_text',
+    'stderr',
+    'stdout',
+    'transcript',
+  ]);
+  const forbiddenSensitiveFields = new Set([
+    'access_token',
+    'api_key',
+    'authorization',
+    'cookie',
+    'credentials',
+    'password',
+    'refresh_token',
+    'secret',
+    'session_token',
+    'token',
+  ]);
+  for (const [key, nestedValue] of Object.entries(value)) {
+    const normalizedKey = key.toLowerCase().replaceAll('-', '_');
+    if (forbiddenFields.has(normalizedKey)) {
+      throw new Error(
+        `Live A/B evidence contains forbidden raw evidence field ${[...pathParts, key].join('.')}.`
+      );
+    }
+    if (forbiddenSensitiveFields.has(normalizedKey)) {
+      throw new Error(
+        `Live A/B evidence contains forbidden sensitive evidence field ${[...pathParts, key].join('.')}.`
+      );
+    }
+    validateNoRawLiveEvidence(nestedValue, [...pathParts, key]);
+  }
+}
+
+function requireLiveEvidence(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+function requireNonEmptyString(value, field) {
+  requireLiveEvidence(
+    isNonEmptyString(value),
+    `Live A/B evidence ${field} must be a non-empty string.`
+  );
+}
+
+function isNonEmptyString(value) {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isNonNegativeInteger(value) {
+  return Number.isInteger(value) && value >= 0;
 }
 
 function buildDuplicationPairs() {
@@ -712,6 +1004,33 @@ function git(root, args) {
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === modulePath) {
-  const report = await buildCommunicationEconomyReport();
+  const { liveEvidencePath } = parseArguments(process.argv.slice(2));
+  const report = await buildCommunicationEconomyReport({ liveEvidencePath });
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+}
+
+function parseArguments(args) {
+  let liveEvidencePath = null;
+  for (let index = 0; index < args.length; index += 1) {
+    const argument = args[index];
+    if (argument === '--live-evidence') {
+      liveEvidencePath = args[index + 1] ?? null;
+      index += 1;
+      requireLiveEvidence(
+        isNonEmptyString(liveEvidencePath),
+        '--live-evidence requires a fixture path.'
+      );
+      continue;
+    }
+    if (argument.startsWith('--live-evidence=')) {
+      liveEvidencePath = argument.slice('--live-evidence='.length);
+      requireLiveEvidence(
+        isNonEmptyString(liveEvidencePath),
+        '--live-evidence requires a fixture path.'
+      );
+      continue;
+    }
+    throw new Error(`Unknown argument: ${argument}`);
+  }
+  return { liveEvidencePath };
 }

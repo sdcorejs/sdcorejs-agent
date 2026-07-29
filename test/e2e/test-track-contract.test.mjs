@@ -570,7 +570,7 @@ test('forward fixtures emit context, ownership, commands, blockers, and artifact
     },
     {
       name: 'staging read-only blocks writes',
-      files: { 'package.json': { scripts: { e2e: 'playwright test' }, devDependencies: { '@playwright/test': '^1' } }, 'playwright.config.ts': '' },
+      files: { 'package.json': { scripts: { e2e: 'playwright test' }, devDependencies: { '@playwright/test': '^1' } }, 'package-lock.json': { lockfileVersion: 3 }, 'playwright.config.ts': '' },
       request: { action: 'run-only', level: 'browser-e2e', environment: 'staging', stateChanging: true },
       check: (result) => assert.equal(result.test_status.result, 'blocked'),
     },
@@ -610,8 +610,8 @@ test('forward fixtures emit context, ownership, commands, blockers, and artifact
         envKeys: ['E2E_BASE_URL', 'E2E_SUPERVISOR_USERNAME', 'E2E_SUPERVISOR_PASSWORD'],
         capture: {
           result: 'verified',
-          path: '.sdcorejs/documentation/user-guides/images/orders-list.png',
-          guidePath: '.sdcorejs/documentation/user-guides/orders.md',
+          path: '.sdcorejs/documentation/user-guides/orders/images/list.png',
+          guidePath: '.sdcorejs/documentation/user-guides/orders/orders.md',
           referencedByChangedGuide: true,
           targetStateAsserted: true,
           loadingComplete: true,
@@ -648,8 +648,8 @@ test('forward fixtures emit context, ownership, commands, blockers, and artifact
         authRequired: true,
         capture: {
           result: 'verified',
-          path: '.sdcorejs/documentation/user-guides/images/unproven.png',
-          guidePath: '.sdcorejs/documentation/user-guides/orders.md',
+          path: '.sdcorejs/documentation/user-guides/orders/images/unproven.png',
+          guidePath: '.sdcorejs/documentation/user-guides/orders/orders.md',
           referencedByChangedGuide: true,
           targetStateAsserted: true,
           loadingComplete: true,
@@ -686,8 +686,8 @@ test('forward fixtures emit context, ownership, commands, blockers, and artifact
         authRequired: false,
         capture: {
           result: 'verified',
-          path: '.sdcorejs/documentation/user-guides/images/unrunnable.png',
-          guidePath: '.sdcorejs/documentation/user-guides/orders.md',
+          path: '.sdcorejs/documentation/user-guides/orders/images/unrunnable.png',
+          guidePath: '.sdcorejs/documentation/user-guides/orders/orders.md',
           referencedByChangedGuide: true,
           targetStateAsserted: true,
           loadingComplete: true,
@@ -727,7 +727,7 @@ test('forward fixtures emit context, ownership, commands, blockers, and artifact
           result: 'verified',
           reason: 'access-denied',
           path: 'test-results/access-denied.png',
-          guidePath: '.sdcorejs/documentation/user-guides/orders.md',
+          guidePath: '.sdcorejs/documentation/user-guides/orders/orders.md',
           referencedByChangedGuide: true,
           targetStateAsserted: true,
           loadingComplete: true,
@@ -761,8 +761,8 @@ test('forward fixtures emit context, ownership, commands, blockers, and artifact
         authRequired: false,
         capture: {
           result: 'verified',
-          path: '.sdcorejs/documentation/user-guides/images/invalid.png',
-          guidePath: '.sdcorejs/documentation/user-guides/orders.md',
+          path: '.sdcorejs/documentation/user-guides/orders/images/invalid.png',
+          guidePath: '.sdcorejs/documentation/user-guides/orders/orders.md',
           referencedByChangedGuide: true,
           targetStateAsserted: false,
           loadingComplete: true,
@@ -783,6 +783,131 @@ test('forward fixtures emit context, ownership, commands, blockers, and artifact
       },
     },
     {
+      name: 'guide image traversal fails closed',
+      files: { 'package.json': { scripts: { e2e: 'playwright test' }, devDependencies: { '@playwright/test': '^1' } }, 'playwright.config.ts': '' },
+      request: {
+        action: 'ui-evidence-capture',
+        level: 'ui-evidence-capture',
+        environment: 'local',
+        capture: {
+          result: 'verified',
+          path: '.sdcorejs/documentation/user-guides/orders/../users/images/list.png',
+          guidePath: '.sdcorejs/documentation/user-guides/orders/orders.md',
+          referencedByChangedGuide: true,
+          targetStateAsserted: true,
+          loadingComplete: true,
+          pii: false,
+          redactionsApplied: true,
+          image: { exists: true, nonEmpty: true, decodable: true, sha256: 'c'.repeat(64), width: 1440, height: 1000 },
+        },
+      },
+      check: (result) => {
+        assert.equal(result.ui_capture_context.result, 'blocked');
+        assert.match(result.ui_capture_context.blocker, /path_traversal/i);
+      },
+    },
+    {
+      name: 'Windows absolute guide path fails closed',
+      files: { 'package.json': { scripts: { e2e: 'playwright test' }, devDependencies: { '@playwright/test': '^1' } }, 'playwright.config.ts': '' },
+      request: {
+        action: 'ui-evidence-capture',
+        level: 'ui-evidence-capture',
+        environment: 'local',
+        capture: {
+          result: 'verified',
+          path: '.sdcorejs/documentation/user-guides/orders/images/list.png',
+          guidePath: 'C:\\work\\orders\\orders.md',
+          referencedByChangedGuide: true,
+          targetStateAsserted: true,
+          loadingComplete: true,
+          pii: false,
+          redactionsApplied: true,
+          image: { exists: true, nonEmpty: true, decodable: true, sha256: 'd'.repeat(64), width: 1440, height: 1000 },
+        },
+      },
+      check: (result) => {
+        assert.equal(result.ui_capture_context.result, 'blocked');
+        assert.match(result.ui_capture_context.blocker, /windows_absolute_path/i);
+      },
+    },
+    {
+      name: 'cross-unit guide image fails closed',
+      files: { 'package.json': { scripts: { e2e: 'playwright test' }, devDependencies: { '@playwright/test': '^1' } }, 'playwright.config.ts': '' },
+      request: {
+        action: 'ui-evidence-capture',
+        level: 'ui-evidence-capture',
+        environment: 'local',
+        capture: {
+          result: 'verified',
+          path: '.sdcorejs/documentation/user-guides/users/images/list.png',
+          guidePath: '.sdcorejs/documentation/user-guides/orders/orders.md',
+          referencedByChangedGuide: true,
+          targetStateAsserted: true,
+          loadingComplete: true,
+          pii: false,
+          redactionsApplied: true,
+          image: { exists: true, nonEmpty: true, decodable: true, sha256: 'e'.repeat(64), width: 1440, height: 1000 },
+        },
+      },
+      check: (result) => {
+        assert.equal(result.ui_capture_context.result, 'blocked');
+        assert.match(result.ui_capture_context.blocker, /cross_unit_image/i);
+      },
+    },
+    {
+      name: 'proven shared guide image can be promoted',
+      files: { 'package.json': { scripts: { e2e: 'playwright test' }, devDependencies: { '@playwright/test': '^1' } }, 'package-lock.json': { lockfileVersion: 3 }, 'playwright.config.ts': '' },
+      request: {
+        action: 'ui-evidence-capture',
+        level: 'ui-evidence-capture',
+        environment: 'local',
+        capture: {
+          result: 'verified',
+          path: '.sdcorejs/documentation/_shared/images/system-flow.png',
+          guidePath: '.sdcorejs/documentation/user-guides/orders/orders.md',
+          sharedOwnership: {
+            proven: true,
+            ownerUnits: ['user-guides:orders', 'user-guides:users'],
+          },
+          referencedByChangedGuide: true,
+          targetStateAsserted: true,
+          loadingComplete: true,
+          pii: false,
+          redactionsApplied: true,
+          image: { exists: true, nonEmpty: true, decodable: true, sha256: 'f'.repeat(64), width: 1440, height: 1000 },
+        },
+      },
+      check: (result) => {
+        assert.equal(result.ui_capture_context.result, 'verified');
+        assert.equal(result.artifact_context.required_with_change.length, 1);
+      },
+    },
+    {
+      name: 'stale capture diff identity cannot be promoted',
+      files: { 'package.json': { scripts: { e2e: 'playwright test' }, devDependencies: { '@playwright/test': '^1' } }, 'playwright.config.ts': '' },
+      request: {
+        action: 'ui-evidence-capture',
+        level: 'ui-evidence-capture',
+        environment: 'local',
+        capture: {
+          result: 'verified',
+          path: '.sdcorejs/documentation/user-guides/orders/images/list.png',
+          guidePath: '.sdcorejs/documentation/user-guides/orders/orders.md',
+          associatedHeadOrDiff: 'stale-diff',
+          referencedByChangedGuide: true,
+          targetStateAsserted: true,
+          loadingComplete: true,
+          pii: false,
+          redactionsApplied: true,
+          image: { exists: true, nonEmpty: true, decodable: true, sha256: '1'.repeat(64), width: 1440, height: 1000 },
+        },
+      },
+      check: (result) => {
+        assert.equal(result.ui_capture_context.result, 'blocked');
+        assert.match(result.ui_capture_context.blocker, /provenance-stale/i);
+      },
+    },
+    {
       name: 'login redirect capture remains diagnostic',
       files: { 'package.json': { scripts: { e2e: 'playwright test' }, devDependencies: { '@playwright/test': '^1' } }, 'playwright.config.ts': '' },
       request: { action: 'ui-evidence-capture', level: 'ui-evidence-capture', environment: 'local', authRequired: true, capture: { result: 'failed', reason: 'login-redirect', path: 'test-results/login.png' } },
@@ -794,7 +919,7 @@ test('forward fixtures emit context, ownership, commands, blockers, and artifact
     {
       name: 'PII capture cannot be promoted',
       files: { 'package.json': { scripts: { e2e: 'playwright test' }, devDependencies: { '@playwright/test': '^1' } }, 'playwright.config.ts': '' },
-      request: { action: 'ui-evidence-capture', level: 'ui-evidence-capture', environment: 'local', capture: { result: 'verified', path: '.sdcorejs/documentation/user-guides/images/customer.png', pii: true } },
+      request: { action: 'ui-evidence-capture', level: 'ui-evidence-capture', environment: 'local', capture: { result: 'verified', path: '.sdcorejs/documentation/user-guides/customers/images/list.png', guidePath: '.sdcorejs/documentation/user-guides/customers/customers.md', pii: true } },
       check: (result) => {
         assert.equal(result.test_status.result, 'blocked');
         assert.equal(result.artifact_context.required_with_change.length, 0);
@@ -835,7 +960,7 @@ test('forward fixtures emit context, ownership, commands, blockers, and artifact
     },
   ];
 
-  assert.equal(scenarios.length, 27);
+  assert.equal(scenarios.length, 32);
   for (const scenario of scenarios) {
     await t.test(scenario.name, async () => {
       const root = await mkdtemp(join(tmpdir(), 'sdcorejs-test-track-'));

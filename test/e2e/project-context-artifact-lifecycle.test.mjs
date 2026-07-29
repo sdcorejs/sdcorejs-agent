@@ -23,6 +23,7 @@ import {
 import {
   buildArtifactClosure,
 } from '../../_refs/shared/artifact-lifecycle.mjs';
+import * as artifactLifecycle from '../../_refs/shared/artifact-lifecycle.mjs';
 
 const execFileAsync = promisify(execFile);
 
@@ -418,6 +419,189 @@ test('artifact closure fails closed when Git discovery cannot complete', async (
   assert.equal(closure.sdcorejs_artifacts.closure_result, 'incomplete');
   assert.equal(closure.sdcorejs_artifacts.push_allowed, null);
   assert.match(closure.sdcorejs_artifacts.blockers.join('\n'), /artifact discovery failed/);
+});
+
+test('artifact closure validates nested documentation units and canonical legacy duplicates', async () => {
+  const root = await createGitRepo();
+  await write(root, 'README.md', '# Fixture\n');
+  await commitAll(root, 'initial');
+
+  const guidePath =
+    '.sdcorejs/documentation/user-guides/orders/orders.md';
+  const legacyGuidePath =
+    '.sdcorejs/documentation/user-guides/orders.md';
+  const imagePath =
+    '.sdcorejs/documentation/user-guides/orders/images/list.png';
+  const unverifiedImagePath =
+    '.sdcorejs/documentation/user-guides/orders/images/unverified.png';
+  const attachmentPath =
+    '.sdcorejs/documentation/user-guides/orders/attachments/raw.md';
+  const sharedPath =
+    '.sdcorejs/documentation/_shared/images/system-flow.png';
+  const guide = artifact(
+    'documentation-asset',
+    'documentation-layout-v2',
+    'sdcorejs-documentation',
+  );
+  await write(root, guidePath, guide);
+  await write(root, legacyGuidePath, guide);
+  await write(root, imagePath, Uint8Array.from([137, 80, 78, 71]));
+  await write(root, unverifiedImagePath, Uint8Array.from([137, 80, 78, 72]));
+  await write(root, attachmentPath, '# Unrelated attachment\n');
+  await write(root, sharedPath, Uint8Array.from([137, 80, 78, 71, 2]));
+  await write(
+    root,
+    '.sdcorejs/documentation/user-guides/orders/images/failure.trace',
+    'diagnostic\n',
+  );
+
+  const closure = await buildArtifactClosure({
+    root,
+    changeRef: 'documentation-layout-v2',
+    artifactContext: {
+      required_with_change: [
+        { path: guidePath },
+        { path: legacyGuidePath },
+        {
+          path: imagePath.replaceAll('/', '\\'),
+          guide_path: guidePath.replaceAll('/', '\\'),
+          related_entry_path: guidePath,
+          relationship_verified: true,
+        },
+        {
+          path: unverifiedImagePath,
+          guide_path: guidePath,
+          related_entry_path: guidePath,
+        },
+        { path: sharedPath },
+        { path: '../outside.md' },
+      ],
+    },
+    owner: 'sdcorejs-documentation',
+  });
+
+  assert.ok(
+    closure.sdcorejs_artifacts.required_paths.includes(guidePath),
+    JSON.stringify({
+      artifacts: closure.sdcorejs_artifacts,
+      classifications: closure.classifications,
+    }),
+  );
+  assert.ok(closure.sdcorejs_artifacts.required_paths.includes(imagePath));
+  assert.ok(
+    closure.sdcorejs_artifacts.unknown_paths.includes(unverifiedImagePath),
+  );
+  assert.ok(!closure.sdcorejs_artifacts.included_paths.includes(legacyGuidePath));
+  assert.ok(
+    closure.sdcorejs_artifacts.excluded_unrelated_paths.includes(
+      legacyGuidePath,
+    ),
+  );
+  assert.ok(closure.sdcorejs_artifacts.unknown_paths.includes(attachmentPath));
+  assert.ok(closure.sdcorejs_artifacts.unknown_paths.includes(sharedPath));
+  assert.ok(
+    closure.sdcorejs_artifacts.local_only_paths.includes(
+      '.sdcorejs/documentation/user-guides/orders/images/failure.trace',
+    ),
+  );
+  assert.ok(closure.sdcorejs_artifacts.invalid_context_paths.includes('../outside.md'));
+  assert.equal(closure.sdcorejs_artifacts.documentation_layout_conflicts.length, 0);
+
+  await write(root, legacyGuidePath, `${guide}\nConflicting legacy body.\n`);
+  const conflicting = await buildArtifactClosure({
+    root,
+    changeRef: 'documentation-layout-v2',
+    artifactContext: {
+      required_with_change: [{ path: guidePath }, { path: legacyGuidePath }],
+    },
+  });
+  assert.equal(conflicting.sdcorejs_artifacts.documentation_layout_conflicts.length, 1);
+  assert.match(
+    conflicting.sdcorejs_artifacts.blockers.join('\n'),
+    /canonical\/legacy conflict/,
+  );
+  assert.ok(conflicting.sdcorejs_artifacts.unknown_paths.includes(guidePath));
+  assert.ok(conflicting.sdcorejs_artifacts.unknown_paths.includes(legacyGuidePath));
+});
+
+test('artifact closure compares changed documentation entries with projected counterparts', async () => {
+  const conflictRoot = await createGitRepo();
+  const canonicalPath =
+    '.sdcorejs/documentation/user-guides/orders/orders.md';
+  const legacyPath = '.sdcorejs/documentation/user-guides/orders.md';
+  const canonicalGuide = artifact(
+    'documentation-asset',
+    'documentation-layout-v2',
+    'sdcorejs-documentation',
+  );
+  await write(conflictRoot, canonicalPath, canonicalGuide);
+  await commitAll(conflictRoot, 'canonical guide');
+  await write(conflictRoot, legacyPath, `${canonicalGuide}\nConflicting flat copy.\n`);
+
+  const conflict = await buildArtifactClosure({
+    root: conflictRoot,
+    changeRef: 'documentation-layout-v2',
+    artifactContext: {
+      required_with_change: [{ path: legacyPath }],
+    },
+  });
+  assert.equal(
+    conflict.sdcorejs_artifacts.documentation_layout_conflicts.length,
+    1,
+    'an unchanged canonical counterpart must still participate in conflict detection',
+  );
+  assert.match(
+    conflict.sdcorejs_artifacts.blockers.join('\n'),
+    /canonical\/legacy conflict/,
+  );
+
+  const migrationRoot = await createGitRepo();
+  await write(migrationRoot, legacyPath, canonicalGuide);
+  await commitAll(migrationRoot, 'legacy guide');
+  await rm(join(migrationRoot, legacyPath));
+  await write(migrationRoot, canonicalPath, canonicalGuide);
+
+  const migrated = await buildArtifactClosure({
+    root: migrationRoot,
+    changeRef: 'documentation-layout-v2',
+    artifactContext: {
+      required_with_change: [{ path: legacyPath }, { path: canonicalPath }],
+    },
+  });
+  assert.deepEqual(
+    migrated.sdcorejs_artifacts.documentation_layout_conflicts,
+    [],
+    'a deleted legacy source must not be compared as an empty live copy',
+  );
+  assert.equal(migrated.sdcorejs_artifacts.closure_result, 'complete');
+  assert.ok(migrated.sdcorejs_artifacts.required_paths.includes(legacyPath));
+  assert.ok(migrated.sdcorejs_artifacts.required_paths.includes(canonicalPath));
+});
+
+test('artifact closure analysis blocks case-insensitive documentation entry collisions', () => {
+  assert.equal(
+    typeof artifactLifecycle.analyzeDocumentationDuplicates,
+    'function',
+    'the lifecycle duplicate analyzer must be directly regression-testable',
+  );
+  const upperPath =
+    '.sdcorejs/documentation/requirements/ABC/ABC.md';
+  const lowerPath =
+    '.sdcorejs/documentation/requirements/abc/abc.md';
+  const analysis = artifactLifecycle.analyzeDocumentationDuplicates({
+    [upperPath]: '# Upper\n',
+    [lowerPath]: '# Lower\n',
+  });
+
+  assert.ok(
+    analysis.conflicts.some(
+      (conflict) =>
+        conflict.code === 'CASE_INSENSITIVE_COLLISION' &&
+        conflict.category === 'requirements',
+    ),
+  );
+  assert.equal(analysis.byPath.get(upperPath)?.state, 'conflict');
+  assert.equal(analysis.byPath.get(lowerPath)?.state, 'conflict');
 });
 
 test('session-start hook injects bootstrap for monorepos and non-SD repos without writes', async () => {

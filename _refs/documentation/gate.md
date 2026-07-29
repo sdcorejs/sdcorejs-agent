@@ -2,6 +2,8 @@
 
 Internal reference loaded by track executors after the test decision and before
 user-guide or technical-doc generation. This file is not a dispatchable skill.
+Load `_refs/shared/documentation-layout.md` before probing any documentation
+path.
 
 ## Purpose
 
@@ -65,26 +67,44 @@ for this gate and drop them the next time preferences are saved.
 
 1. Resolve `TARGET_ROOT` from the target project, not from `sdcorejs-agent`.
 2. Identify the feature/module/scope touched by the current code-writing run.
-3. Probe for corresponding docs:
-   - user guide: `<TARGET_ROOT>/.sdcorejs/documentation/user-guides/<module>.md`
-     or another existing guide whose frontmatter/title/source refs match the
-     touched module or feature.
-   - technical doc: files under
-     `<TARGET_ROOT>/.sdcorejs/documentation/technical-docs/` whose name,
-     frontmatter, title, or source refs match the touched module, API, feature,
-     integration, configuration, or architecture surface.
+3. Probe for corresponding docs using the canonical-first state resolver:
+   - user guide: probe the canonical exact entry
+     `<TARGET_ROOT>/.sdcorejs/documentation/user-guides/<module>/<module>.md`,
+     then the legacy flat entry
+     `<TARGET_ROOT>/.sdcorejs/documentation/user-guides/<module>.md`.
+   - technical doc: resolve the relationship-first `<doc-key>`, then probe the
+     canonical exact entry
+     `<TARGET_ROOT>/.sdcorejs/documentation/technical-docs/<doc-key>/<doc-key>.md`,
+     followed by the legacy flat entry
+     `<TARGET_ROOT>/.sdcorejs/documentation/technical-docs/<doc-key>.md`.
+   - only after exact-path probes, use matching frontmatter/title/source refs
+     for an existing explicit project convention. Read metadata before body.
    - verified screenshot/UI evidence: current `ui_capture_context`,
      `test_evidence.captures`, and `artifact_context` for images referenced by
      the corresponding guide.
-4. If this is a new feature and either corresponding doc is missing, ask the
+4. Classify each probe as `canonical-existing`, `legacy-existing`,
+   `both-equivalent`, `both-conflicting`, `case-insensitive-conflict`, or
+   `path-inventory-conflict`, or `missing`. A legacy entry is existing, not
+   missing. A conflict, including an existing path that differs only by case or
+   aliases the expected path after separator/trailing-dot/trailing-space
+   normalization, blocks update, migration, aggregate, and export until it is
+   resolved. An equivalent pair selects canonical without silently deleting
+   legacy.
+5. If this is a new feature and either corresponding doc is missing, ask the
    approval gate below before creating any missing file.
-5. If corresponding docs already exist, saved preferences may default whether
+6. If corresponding docs already exist, saved preferences may default whether
    to update them. Current-turn explicit instructions still override saved
    preferences.
-6. If the current request explicitly asks to create or update `user-guide` or
+7. If an authorized update targets a legacy entry, build the complete migration
+   preflight from `_refs/shared/documentation-layout.md`; do not create a
+   duplicate canonical document. Apply the move only after the current operation
+   authorizes that exact documentation unit and every conflict, ownership,
+   containment, rewrite, and hash check passes. Never let one document approval
+   authorize other legacy units found during discovery.
+8. If the current request explicitly asks to create or update `user-guide` or
    `technical-doc`, treat that as approval for the requested doc type and report
    it before writing.
-7. If a `TASKID`, task id, ticket id, or issue id is present, write/update the
+9. If a `TASKID`, task id, ticket id, or issue id is present, write/update the
    requirement record through `_refs/documentation/write-requirement.md`
    without blocking the user-guide/technical-doc gate.
 
@@ -171,6 +191,8 @@ documentation:
   task_id: <TASKID> | null
   user_guide_path: <path> | null
   technical_doc_path: <path> | null
+  layout_state: canonical-existing | legacy-existing | both-equivalent | both-conflicting | case-insensitive-conflict | path-inventory-conflict | missing | explicit-existing | explicit-missing
+  migration_required: true | false
   preference_saved: true | false
   preference_path: .sdcorejs/documentation/preferences.md | null
 ```
@@ -203,6 +225,11 @@ Use `_refs/documentation/write-technical-doc.md`,
   request.
 - Existing corresponding docs may be updated when saved preferences or current
   request authorize updates.
+- An explicit user path remains authoritative. Layout v2 is the SDCoreJS
+  default; do not silently override an approved project convention.
+- Never report a legacy flat entry as missing, create a duplicate canonical
+  entry, select a conflicting copy by recency, or migrate without a complete
+  authorized preflight.
 - Skipping user/technical docs does not skip source-code documentation,
   acceptance verification, branch hygiene, auto-docs, task tracker updates, or
   memories.

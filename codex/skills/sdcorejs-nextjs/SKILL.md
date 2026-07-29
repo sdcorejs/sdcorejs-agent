@@ -149,7 +149,7 @@ sdcorejs-documentation (write-technical-doc mode, if Technical doc approved) - c
    |
 ../_refs/orchestration/tail/auto-docs.md (always) - change-scoped execution record to .sdcorejs/docs/nextjs/
    |
-sdcorejs-documentation (write-user-guide mode, if User guide approved) - create/update touched module's .sdcorejs/documentation/user-guides/<module>.md only when approved by the documentation gate or explicitly requested
+sdcorejs-documentation (write-user-guide mode, if User guide approved) - create/update touched module's .sdcorejs/documentation/user-guides/<module>/<module>.md only when approved by the documentation gate or explicitly requested
    |
 ../_refs/orchestration/tail/auto-task-tracker.md (integration/sequential owner only) - reconcile durable backlog, never live progress
    |

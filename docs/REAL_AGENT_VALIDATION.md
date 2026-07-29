@@ -43,6 +43,38 @@ If credentials, isolation, comparable models, or usage telemetry are
 unavailable, record the live A/B eval as `skipped` or `not run` with the exact
 reason. Never estimate a missing token count.
 
+### Observed Communication Economy smoke - 2026-07-29
+
+Evidence fixture:
+`test/e2e/fixtures/communication-economy-live-ab.json`.
+
+- Harness repository version: `0.6.0`.
+- Scenario: `pure-qa-repo-purpose-skill-count-mirror-command`, resolved
+  `compact`, read-only.
+- A source: `ec6afdb4e2494416d985be610837e728a9278a2f`.
+- B source: HEAD `845b5ecd6fab11adaf4ea3ba6b54c016f98f95b8`,
+  associated dirty-diff fingerprint
+  `84da59a5042c03041060884072cdb998733a3c51c20bd32a3b2e82c6238ec4b8`.
+- Required semantic outcome: repository purpose, public skill count `21`, and
+  exact mirror-drift command `npm run check:skills`.
+- Approval, security, destructive-action, and typed context handoff checks:
+  not applicable to this pure-Q&A smoke.
+
+| Surface | Model / effort | Derived total A -> B | Output A -> B | Visible bytes A -> B | Parity |
+|---|---|---:|---:|---:|---|
+| Codex CLI `0.132.0` | `gpt-5.5` / `medium` | 398,963 -> 166,708 | 3,482 -> 1,506 | 1,332 -> 702 | Outcome and semantic parity preserved |
+| Codex CLI `0.132.0` | `gpt-5.5` / `high` | 517,483 -> 387,418 | 4,172 -> 3,951 | 1,426 -> 911 | Outcome and semantic parity preserved |
+| Claude Code `2.1.163` | `sonnet` / `medium` | 36,351 -> 36,512 | 1,770 -> 837 | 1,987 -> 1,801 | Outcome and semantic parity preserved |
+| Claude Code `2.1.163` | `sonnet` / `high` | 64,260 -> 45,365 | 1,095 -> 820 | 2,043 -> 2,030 | Outcome and semantic parity preserved |
+
+The fixture contains sanitized metrics and semantic booleans, not raw
+transcripts, credentials, private paths, or user data. Codex and Claude totals
+use different provider accounting and must not be compared with each other.
+Cache state was observed rather than reset, all pairs ran A before B, and B
+also includes the in-progress Documentation Layout v2 diff. This evidence
+therefore supports only the stated smoke scenario; it does not prove a fixed
+token reduction or full live-agent release coverage.
+
 ## Minimum Release Matrix
 
 For a public release that claims full live-agent coverage, capture all of these
@@ -241,7 +273,10 @@ field in the transcript template for that exact pair.
 - Install mode: copied `codex/skills/**` into `$CODEX_HOME/skills`
 - Target repo: sanitized Angular/NestJS sample
 - Prompt: "Use sdcorejs-documentation to write a short technical doc."
-- Expected skill/workflow: `sdcorejs-documentation`, loads documentation refs.
+- Expected skill/workflow: `sdcorejs-documentation` loads the Layout v2
+  reference just in time and proposes or writes
+  `.sdcorejs/documentation/technical-docs/<doc-key>/<doc-key>.md`; it does not
+  create a flat entry.
 - Observed skill/workflow: matched expected.
 - Approval gate observed: not applicable for direct documentation summary.
 - Verification evidence observed: yes, command output included.

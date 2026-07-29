@@ -1,5 +1,8 @@
 import { access, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import {
+  validateGuideImageRelationship,
+} from '../../../_refs/shared/documentation-layout.mjs';
 
 async function exists(root, relativePath) {
   return access(join(root, relativePath)).then(() => true, () => false);
@@ -233,7 +236,20 @@ function captureArtifacts(request, head, runnerName, command) {
   if (capture.redactionsApplied !== true) blockers.push('capture-redaction-unverified');
   if (!capture.guidePath || capture.referencedByChangedGuide !== true) {
     blockers.push('capture-guide-relationship-unverified');
+  } else {
+    const relationship = validateGuideImageRelationship({
+      guidePath: capture.guidePath,
+      imagePath: capture.path,
+      sharedOwnership: capture.sharedOwnership,
+      explicitApprovedGuidePath: capture.explicitApprovedGuidePath === true,
+      allowLegacyGuide: capture.allowLegacyGuide === true,
+    });
+    if (!relationship.ok) {
+      blockers.push(`capture-guide-image-${relationship.code.toLowerCase()}`);
+    }
   }
+  const associatedHeadOrDiff = capture.associatedHeadOrDiff ?? head;
+  if (associatedHeadOrDiff !== head) blockers.push('capture-provenance-stale');
   if (
     image.exists !== true ||
     image.nonEmpty !== true ||
@@ -254,6 +270,10 @@ function captureArtifacts(request, head, runnerName, command) {
     artifact_id: `capture:${capture.path}`,
     kind: safe ? 'documentation-asset' : 'diagnostic',
     path: capture.path,
+    guide_path: capture.guidePath ?? null,
+    related_entry_path: capture.guidePath ?? null,
+    relationship_verified: safe,
+    shared_ownership: capture.sharedOwnership ?? null,
     reason: safe
       ? 'verified current capture referenced by the changed guide'
       : blockers[0],
@@ -271,7 +291,7 @@ function captureArtifacts(request, head, runnerName, command) {
       guide_path: capture.guidePath ?? null,
       scenario_id: capture.scenarioId ?? null,
       source_test_ref: capture.sourceTestRef ?? null,
-      associated_HEAD_or_diff: head,
+      associated_HEAD_or_diff: associatedHeadOrDiff,
       environment: {
         environment_id: request.environment ?? 'local',
         class: request.environment ?? 'local',

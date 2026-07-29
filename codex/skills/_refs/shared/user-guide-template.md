@@ -1,15 +1,18 @@
 # User-Guide Templates (for `sdcorejs-documentation (write-user-guide mode)`)
 
-Templates the documentation skill renders in `write-user-guide` mode. Per-module guides live at
-`<target>/.sdcorejs/documentation/user-guides/<module>.md`; the aggregate lives at
+Templates the documentation skill renders in `write-user-guide` mode. Load
+`_refs/shared/documentation-layout.md` with this template. Per-module guides
+live at
+`<target>/.sdcorejs/documentation/user-guides/<module>/<module>.md`; the aggregate lives at
 `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md`.
-Markdown is canonical; DOCX/PDF is produced by the pandoc command at the bottom. Screenshots are
+Markdown is canonical; approved DOCX/PDF export uses the argument-array contract
+at the bottom. Screenshots are
 captured and verified by `sdcorejs-test (ui-evidence-capture)` through the
 target project's existing browser runner.
 
 Write generated prose in the user's runtime language. Keep this reusable template English-only.
 
-## Per-Module Template (.sdcorejs/documentation/user-guides/<module>.md)
+## Per-Module Template (.sdcorejs/documentation/user-guides/<module>/<module>.md)
 
 ````markdown
 ---
@@ -46,9 +49,10 @@ coverage: { total: 0, met: 0, partial: 0, missing: 0 }
 - **What the user does:** <task description>
 - **Who can use it:** permission `<module>_<entity>:<action>`
 - **Main fields/buttons:** <list>
-<Render `![<Screen title>](images/<module>-<screen>.png)` only when current
+<Render `![<Screen title>](images/<screen>.png)` only when current
 `ui_capture_context` verifies the target state, auth provenance, PII screening,
-image hash, and change identity. Otherwise omit the image link.>
+image hash, change identity, and same-unit containment. Otherwise omit the image
+link.>
 
 ## Permission Table
 | Permission code | Task | Who / Role |
@@ -81,8 +85,8 @@ image hash, and change identity. Otherwise omit the image link.>
 | 3 | <criterion> | missing | - |
 
 ## Illustration Image Checklist
-- [ ] `images/<module>-list.png` - list screen
-- [ ] `images/<module>-detail.png` - detail screen
+- [ ] `images/list.png` - list screen
+- [ ] `images/detail.png` - detail screen
 
 Capture evidence request: `sdcorejs-test (ui-evidence-capture)` using the
 target project's existing runner, environment key reference, logical persona,
@@ -116,7 +120,9 @@ coverage: { total: 0, met: 0, partial: 0, missing: 0 }
 <One or two paragraphs: what the system does and who it serves.>
 
 ## <Module 1>
-<Insert .sdcorejs/documentation/user-guides/<module1>.md content without frontmatter>
+<Insert .sdcorejs/documentation/user-guides/<module1>/<module1>.md content
+without frontmatter after structurally rewriting unit-local links for the
+aggregate.>
 
 ## Coverage vs Requirements Summary
 | Module | Met | Partial | Missing |
@@ -124,21 +130,48 @@ coverage: { total: 0, met: 0, partial: 0, missing: 0 }
 | <module1> | 5 | 1 | 0 |
 ````
 
-## DOCX/PDF Export (pandoc)
+## DOCX/PDF Export (Pandoc)
 
-DOCX:
+Construct the command with an executable plus argument array. The documentation
+root is the `--resource-path`; do not concatenate untrusted paths into a shell
+string. These displays show correct quoting for target paths with spaces or
+Unicode.
 
-```bash
-pandoc <target>/.sdcorejs/documentation/sdcorejs-user-guide.md -o <target>/.sdcorejs/documentation/sdcorejs-user-guide.docx --resource-path=<target>/.sdcorejs/documentation/user-guides
+POSIX DOCX:
+
+```sh
+pandoc '<documentation root>/sdcorejs-user-guide.md' -o '<documentation root>/sdcorejs-user-guide.docx' --resource-path '<documentation root>'
 ```
 
-PDF:
+PowerShell DOCX:
 
-```bash
-pandoc <target>/.sdcorejs/documentation/sdcorejs-user-guide.md -o <target>/.sdcorejs/documentation/sdcorejs-user-guide.pdf --resource-path=<target>/.sdcorejs/documentation/user-guides
+```powershell
+& 'pandoc' '<documentation root>\sdcorejs-user-guide.md' '-o' '<documentation root>\sdcorejs-user-guide.docx' '--resource-path' '<documentation root>'
 ```
 
+POSIX PDF:
+
+```sh
+pandoc '<documentation root>/sdcorejs-user-guide.md' -o '<documentation root>/sdcorejs-user-guide.pdf' --resource-path '<documentation root>'
+```
+
+PowerShell PDF:
+
+```powershell
+& 'pandoc' '<documentation root>\sdcorejs-user-guide.md' '-o' '<documentation root>\sdcorejs-user-guide.pdf' '--resource-path' '<documentation root>'
+```
+
+- Do not run export without workflow approval.
+- Block export when the aggregate has a canonical/legacy conflict, path
+  traversal, broken local link, or stale verified-image relationship.
 - Before export, verify every linked image through current
   `ui_capture_context` and artifact closure.
 - Do not include missing or unverified image links; keep checklist entries until
   verified screenshots exist.
+- Report DOCX and PDF separately. A missing Pandoc or PDF engine is skipped or
+  blocked, not pass. A pass requires exit code zero, a non-empty parseable
+  output, verification bound to the exact aggregate SHA-256, and an exact
+  expected/embedded path manifest plus counts proving that every image emitted
+  by Markdown image syntax, a used image reference, or HTML `img src` is
+  embedded. Ordinary download links to image files are not embedded images.
+  Missing or fabricated manifest/count evidence cannot pass.
