@@ -116,6 +116,16 @@ simplify_context:
   action: analyze-current-diff | apply-current-diff | analyze-explicit-scope | apply-explicit-scope | planning-handoff
   invocation: direct | finish-gate | approved-plan
 
+  artifact_identity:
+    owner_repository_id: <stable repository id>
+    owner_module_id: <module id or null>
+    execution_host_repository_id: <stable repository id>
+  source_revision: <owner repository revision>
+  approved_plan_step:
+    step_id: <id or null>
+    owner_repository_id: <stable repository id or null>
+    allowed_paths: []
+
   target_root: <path>
   target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
 
@@ -223,7 +233,8 @@ and raw logs.
   over-simplification, freshness, and dependency/config churn.
 - `sdcorejs-repair-loop` preserves the original context. Repair writes make
   affected simplification verification stale and cannot turn the change into a
-  semantic refactor.
+  semantic refactor. Neither workflow may recursively invoke the other; the
+  caller owns at most one bounded handoff.
 - `sdcorejs-debug` consumes pre/post evidence and the pass ledger to distinguish
   a pre-existing failure from a regression using the smallest sanitized
   reproduction.

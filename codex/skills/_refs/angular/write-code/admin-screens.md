@@ -1,6 +1,6 @@
-> **Reference for the `sdcorejs-angular` orchestrator.** Loaded on demand and ALWAYS run after
-> `init-portal`. Not a standalone skill. Generates the admin-module SCREENS (the FE for the BE
-> `init-admin` pack) so end users administer accounts/roles/permissions in-app — never the Keycloak console.
+> **Reference for the `sdcorejs-angular` orchestrator.** Loaded on demand only
+> when an approved requirement or explicit approved profile/template contract
+> names the admin/auth/account/role/permission pack. Not a standalone skill.
 
 # Admin Screens — Account / Role / Permission (Angular)
 
@@ -17,8 +17,11 @@
 
 ## Purpose / when to use
 
-Generate `src/libs/admin/` feature screens that pair with the BE admin module (`_refs/nestjs/write-code/init-admin.md`):
-account management, role management, and a read-only permission list. Routed under `/admin`.
+Generate only the approved subset of `src/libs/admin/` screens that pairs with
+an approved BE admin contract (`_refs/nestjs/write-code/init-admin.md`). Portal
+creation or a domain entity request never implies this pack. Do not generate
+admin routes, accounts, roles, permissions, tenants, or departments from this
+reference unless each capability is present in approved scope.
 
 ## Source of truth — Core UI + sibling packs
 
@@ -31,8 +34,11 @@ Admin screens that build permission trees, department trees, role matrices, or s
 
 ## Profile (read FIRST)
 
-Read `profile` from the caller (default `simple`). **simple** = Account + Role + Permission (read-only).
-**enterprise** = + Tenant + Department (see the "Enterprise extension" section — added later). Emit only the chosen profile's screens.
+Read the explicitly approved `profile` and capability list from the caller.
+There is no default profile. **simple** may authorize Account + Role + Permission
+(read-only); **enterprise** may additionally authorize Tenant + Department.
+Emit only capabilities named by both the approved profile/template contract and
+the approved requirement.
 
 ---
 

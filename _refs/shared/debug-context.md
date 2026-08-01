@@ -16,6 +16,31 @@ portable handoff from `_refs/harness/communication-economy.md`.
 ```yaml
 debug_context:
   source: sdcorejs-debug
+  schema_version: 1
+  registry_version:
+  subject_track:
+  intent: diagnose-only | fix
+  artifact_identity:
+    owner_repository_id:
+    owner_module_id:
+    execution_host_repository_id:
+  failing_implementation:
+    repository_id:
+    path:
+    source_revision:
+  source_fingerprint:
+  source_revision_map: {}
+  environment_fingerprint:
+  approved_plan_step:
+    step_id:
+    approval_hash:
+    owner_repository_id:
+    allowed_paths: []
+  test_evidence:
+    repository_id:
+    source_revision:
+    source_fingerprint:
+    status: current | stale
   debug_mode: runtime-error | failing-test | wrong-behavior | flaky | ci-only | prod-only | performance-anomaly | environment-config | dependency-regression | security-sensitive | data-integrity | build-compile | browser-device-specific | unknown
   bug_class: null-or-undefined | async-race | state-lifecycle | validation | permission-authz | authentication | routing | database-query | transaction-consistency | serialization-deserialization | caching-staleness | timezone-locale | dependency-version | configuration | environment | network-third-party | type-contract | test-contract | performance-regression | memory-leak | unknown
   stack_profile: core-ui-angular | legacy-core-ui-angular | plain-angular | sdcorejs-nestjs | plain-nestjs | nextjs-build-website | plain-nextjs | react-vite | react-cra | react-next-generic | node-general | general
@@ -52,6 +77,7 @@ debug_context:
     original_repro:
     focused_regression:
     broader_checks:
+    flaky_retry_summary:
   ship_handoff:
     needed: true | false
     reason:
@@ -71,6 +97,12 @@ debug_context:
   local reproduction and what original environment verification remains.
 - If `repro_status` is `flaky-confirmed`, record pass/fail counts and sample
   size.
+- Validate identity, freshness, plan authority, and write scope through
+  `_refs/shared/debug-contract.mjs`. `diagnose-only` is always read-only.
+- A single successful retry is not fix evidence. Retried flaky verification
+  remains bounded and records its sample; no infinite retry loop is allowed.
+- Do not mutate an approved spec, plan, approval hash, or acceptance criterion
+  to make a failure disappear.
 - If `repro_status` is `blocked`, record the missing evidence and do not report
   the bug as fixed.
 

@@ -33,6 +33,12 @@ remain English-only and locale-neutral.
 
 At session start, glob `skills/**/*.md`, excluding `_refs/**`, and read frontmatter only. Match user requests against each skill `description`. Read the selected skill body before acting.
 
+Resolve tracks, stack profiles, repository roles, artifact ownership, review/
+repair/ship support, and evidence classes from the versioned
+`_refs/shared/system-registry.json`. A capability profile refines an approved
+track; it is not a track. Keep the semantic artifact owner separate from the
+execution host, and never use the current working directory to infer ownership.
+
 If several skills match, apply this priority before reading a body:
 
 1. Explicit skill name from the user.

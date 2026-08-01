@@ -12,6 +12,7 @@ documentation_root: .sdcorejs/documentation
 ## Contents
 
 - [Documentation units](#documentation-units)
+- [Semantic repository ownership](#semantic-repository-ownership)
 - [Keys and containment](#keys-and-containment)
 - [Asset ownership](#asset-ownership)
 - [Canonical-first discovery and the documentation gate](#canonical-first-discovery-and-the-documentation-gate)
@@ -30,12 +31,13 @@ Load only the function needed by the current documentation operation:
 | --- | --- |
 | Normalize and validate | `normalizeRepositoryPath`, `validateDocumentKey`, `resolveDocumentationRoot` |
 | Build paths | `buildCanonicalEntryPath`, `buildLegacyEntryPath`, `buildUnitAssetPath`, `buildSharedAssetPath` |
+| Resolve semantic owner | `resolveDocumentationWriteTarget` |
 | Prove shared ownership | `validateSharedOwnership` |
 | Discover and gate | `discoverDocumentationEntries`, `resolveDocumentationEntryState` |
 | Plan and apply migration | `buildDocumentationMigrationPlan`, `applyMigrationPlanToSnapshot` |
-| Aggregate and rewrite links | `buildAggregateUserGuide`, `rewriteAggregateLinks` |
+| Aggregate and rewrite links | `buildAggregateUserGuide`, `buildMultiRepositoryDocumentationAggregate`, `rewriteAggregateLinks` |
 | Export | `buildPandocExportPlan`, `summarizeExportCapabilities` |
-| Validate UI evidence | `validateGuideImageRelationship` |
+| Validate UI evidence | `validateGuideImageRelationship`, `validateDocumentationVisualEvidence` |
 | Finish and lifecycle | `resolveDocumentationTailPlan`, `classifyDocumentationPath` |
 
 ## Documentation units
@@ -72,6 +74,23 @@ This contract does not change `.sdcorejs/docs/**`, `.sdcorejs/specs/**`,
 `.sdcorejs/plans/**`, `.sdcorejs/handoffs/**`, `.sdcorejs/memories/**`,
 `.sdcorejs/tasks/**`, `.sdcorejs/prd/**`, `product/**`, `design/**`, source-code
 comments, JSDoc, TSDoc, or docstrings.
+
+## Semantic repository ownership
+
+Resolve stable repository identity and portal/module relationships before any
+documentation write. A module owns its user guide, requirement record,
+technical docs, and assets inside that module's Git repository. The portal owns
+only portal/integration documentation, indexes, references, and generated
+cross-repository aggregates. The execution host, checkout path, current working
+directory, and parent repository do not transfer semantic ownership.
+
+Use `resolveDocumentationWriteTarget` with
+`_refs/shared/repository-contract.mjs`. An unavailable, missing, ambiguous, or
+unwritable module repository blocks the module write; never fall back to an
+editable copy in the portal. All paths in metadata and handoffs remain
+repository-relative and carry `repository_id`, `repository_role`, optional
+`module_id`, source/app revision, approved source identity, and content hash.
+Track names come from `_refs/shared/system-registry.json`.
 
 ## Keys and containment
 
@@ -191,6 +210,17 @@ major release. No new write may use v1.
 The aggregate remains the singleton
 `.sdcorejs/documentation/sdcorejs-user-guide.md`.
 
+In a single repository, `buildAggregateUserGuide` consumes canonical module
+units directly. In a portal with separate module repositories, use
+`buildMultiRepositoryDocumentationAggregate`. Each module contribution must
+either be a repository link pinned to its exact revision or a versioned export
+whose canonical guide hash, repository ID, module ID, source revision, and
+export version validate. The portal output declares
+`generated_projection: true`, `editable_source: false`, and preserves per-module
+provenance. It may project verified assets required by a versioned export, but
+must never become a second editable source for the module guide. Missing,
+duplicate, stale, hash-mismatched, or colliding sources block the aggregate.
+
 Canonical discovery accepts only
 `user-guides/<module>/<module>.md`. Transitional discovery may also accept
 `user-guides/<module>.md`. Deduplicate by normalized module key, sort
@@ -224,13 +254,18 @@ Shift module headings outside fenced code without breaking hierarchy, recompute
 coverage totals from the selected entries, and validate every emitted local link. A local target must
 remain below the documentation root, contain no traversal, exist, and retain any
 required current screenshot evidence. `verifiedImageEvidence` requires schema
-v1; stable `capture_id`; matching change/HEAD-or-diff; verified, unblocked
-documentation classification; known runner; approved real-UI provenance;
+v1; stable `capture_id`; matching change and source revision; explicit source
+and app Git revisions; `evidence_origin` classified as `real-ui`,
+`generated-mockup`, or `illustration`; verified, unblocked documentation
+classification; known runner; approved real-UI provenance;
 target-state, PII, and redaction evidence; and image path/kind/existence,
 non-empty, decodable, SHA-256, width, and height fields. Current bytes must match
 the hash/dimensions and decode. The dependency-free helper validates PNG CRC,
 zlib, and scanlines; it rejects GIF/JPEG header claims. Bare paths,
 self-asserted decodability, and existence alone are insufficient.
+Only `real-ui` evidence can satisfy a real screenshot requirement. Generated
+mockups and illustrations require generator provenance and remain visibly
+classified; they cannot be relabeled as observed application state.
 Read-only legacy compatibility may accept a clearly prefixed flat image owned by
 its flat guide; new captures still use unit-local paths. Aggregate generation is
 deterministic and idempotent.
@@ -281,6 +316,9 @@ A current verified guide capture uses unit paths:
 ```yaml
 ui_capture_context:
   guide_path: .sdcorejs/documentation/user-guides/orders/orders.md
+  source_revision: <40-char Git revision>
+  app_revision: <40-char Git revision>
+  evidence_origin: real-ui
   image:
     file: .sdcorejs/documentation/user-guides/orders/images/list.png
 ```

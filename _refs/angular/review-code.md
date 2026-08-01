@@ -335,7 +335,10 @@ Skip it for `plain-angular`.
 - Uses `@sdcorejs/angular/components`, `@sdcorejs/angular/forms`, `@sdcorejs/angular/modules` instead of hand-rolled equivalents
 - If a custom skeleton exists, it is marked with `// CUSTOM_UI: <reason>` and the generation summary mentioned it
 - Imports come from path-specific subpaths (e.g. `@sdcorejs/angular/components/section`), not the barrel `from 'sd-angular'`
-- **Don'<localized text>'s per-component conventions and required configuration tokens via `node _refs/angular/core-docs-fetch.mjs --print sd-<name>` — consult it rather than hard-coding a component list here (drift-proof: the fetcher is version-matched to the pinned `@sdcorejs/angular` and stays current).
+- Do not memorize Core UI APIs. Fetch each component's conventions and required
+  configuration tokens with
+  `node _refs/angular/core-docs-fetch.mjs --print sd-<name>` instead of
+  hard-coding a component list here.
 
 ### Naming
 - Files: `<entity-kebab>.model.ts`, `<entity-kebab>.service.ts`, `<entity-kebab>.routes.ts`, `<entity-kebab>.mock-data.ts`

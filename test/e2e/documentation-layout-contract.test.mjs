@@ -13,6 +13,7 @@ import {
   buildCanonicalEntryPath,
   buildDocumentationMigrationPlan,
   buildLegacyEntryPath,
+  buildMultiRepositoryDocumentationAggregate,
   buildPandocExportPlan,
   buildSharedAssetPath,
   buildUnitAssetPath,
@@ -20,8 +21,10 @@ import {
   discoverDocumentationEntries,
   normalizeRepositoryPath,
   resolveDocumentationEntryState,
+  resolveDocumentationWriteTarget,
   resolveDocumentationTailPlan,
   summarizeExportCapabilities,
+  validateDocumentationVisualEvidence,
   validateDocumentKey,
   validateGuideImageRelationship,
 } from '../../_refs/shared/documentation-layout.mjs';
@@ -89,6 +92,266 @@ test('Documentation Layout v2 resolves canonical entries and unit-local assets',
     '.sdcorejs/documentation/sdcorejs-user-guide.docx',
     '.sdcorejs/documentation/sdcorejs-user-guide.pdf',
   ]);
+});
+
+test('documentation writes resolve to the semantic owner repository without portal fallback', () => {
+  const portal = { repository_id: 'github.com/sdcorejs/portal' };
+  const module = {
+    id: 'orders',
+    repository_id: 'github.com/sdcorejs/orders',
+    available: true,
+    writable: true,
+  };
+  const moduleTarget = resolveDocumentationWriteTarget({
+    document_role: 'module-source',
+    category: 'user-guides',
+    key: 'orders',
+    scope: 'module',
+    module,
+    portal,
+    execution_host_repository_id: portal.repository_id,
+  });
+  assert.deepEqual(moduleTarget, {
+    status: 'resolved',
+    artifact_kind: 'documentation-asset',
+    document_role: 'module-source',
+    owner_repository_id: module.repository_id,
+    owner_repository_role: 'module',
+    owner_module_id: 'orders',
+    execution_host_repository_id: portal.repository_id,
+    repository_relative_path:
+      '.sdcorejs/documentation/user-guides/orders/orders.md',
+    blockers: [],
+  });
+
+  const unavailable = resolveDocumentationWriteTarget({
+    document_role: 'module-source',
+    category: 'requirements',
+    key: 'NSP-3149',
+    scope: 'module',
+    module: { ...module, available: false },
+    portal,
+    execution_host_repository_id: portal.repository_id,
+  });
+  assert.equal(unavailable.status, 'blocked');
+  assert.equal(unavailable.repository_relative_path, null);
+  assert.match(unavailable.blockers.join(' '), /unavailable/i);
+
+  assert.throws(
+    () =>
+      resolveDocumentationWriteTarget({
+        document_role: 'module-source',
+        category: 'technical-docs',
+        key: 'orders-api',
+        scope: 'portal-composition',
+        module,
+        portal,
+        execution_host_repository_id: portal.repository_id,
+      }),
+    /portal fallback is forbidden/i,
+  );
+
+  const aggregate = resolveDocumentationWriteTarget({
+    document_role: 'aggregate',
+    scope: 'cross-repository-aggregate',
+    portal,
+    execution_host_repository_id: module.repository_id,
+  });
+  assert.equal(aggregate.owner_repository_id, portal.repository_id);
+  assert.equal(
+    aggregate.repository_relative_path,
+    '.sdcorejs/documentation/sdcorejs-user-guide.md',
+  );
+});
+
+test('multi-repository aggregate is a provenance-bound projection, not a second editable module source', () => {
+  const ordersRevision = 'a'.repeat(40);
+  const usersRevision = 'b'.repeat(40);
+  const ordersGuide =
+    '# Orders\n\n## Tasks\n\n![List](images/list.png)\n';
+  const result = buildMultiRepositoryDocumentationAggregate({
+    projectTitle: 'Portal',
+    generatedAt: '2026-07-31T00:00:00Z',
+    portalRevision: 'c'.repeat(40),
+    changeRef: 'docs-multi-repo',
+    sources: [
+      {
+        module_id: 'orders',
+        repository_id: 'github.com/sdcorejs/orders',
+        source_revision: ordersRevision,
+        source_mode: 'versioned-export',
+        export_version: 'orders-docs@1',
+        source_path:
+          '.sdcorejs/documentation/user-guides/orders/orders.md',
+        content_sha256: createHash('sha256').update(ordersGuide).digest('hex'),
+        files: {
+          '.sdcorejs/documentation/user-guides/orders/orders.md': ordersGuide,
+          '.sdcorejs/documentation/user-guides/orders/images/list.png':
+            ONE_PIXEL_PNG,
+        },
+        verified_image_evidence: [
+          verifiedCapture(
+            '.sdcorejs/documentation/user-guides/orders/orders.md',
+            '.sdcorejs/documentation/user-guides/orders/images/list.png',
+            ordersRevision,
+            'capture-orders-multi-repo',
+            ONE_PIXEL_PNG,
+            'docs-multi-repo',
+          ),
+        ],
+      },
+      {
+        module_id: 'users',
+        repository_id: 'github.com/sdcorejs/users',
+        source_revision: usersRevision,
+        source_mode: 'repository-link',
+        source_path:
+          '.sdcorejs/documentation/user-guides/users/users.md',
+        source_url:
+          'https://github.com/sdcorejs/users/blob/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/.sdcorejs/documentation/user-guides/users/users.md',
+        title: 'Users',
+      },
+    ],
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.generated_projection, true);
+  assert.equal(result.editable_source, false);
+  assert.deepEqual(
+    result.provenance.map(({ module_id, source_mode }) => ({
+      module_id,
+      source_mode,
+    })),
+    [
+      { module_id: 'orders', source_mode: 'versioned-export' },
+      { module_id: 'users', source_mode: 'repository-link' },
+    ],
+  );
+  assert.match(result.output, /generated_projection: true/);
+  assert.match(result.output, /editable_source: false/);
+  assert.match(result.output, /github\.com\/sdcorejs\/orders/);
+  assert.match(result.output, new RegExp(ordersRevision));
+  assert.match(
+    result.output,
+    /!\[List\]\(user-guides\/orders\/images\/list\.png\)/,
+  );
+  assert.match(result.output, /users\/blob\/b{40}/);
+  assert.deepEqual(result.projected_assets, [
+    '.sdcorejs/documentation/user-guides/orders/images/list.png',
+  ]);
+
+  const missingSource = buildMultiRepositoryDocumentationAggregate({
+    projectTitle: 'Portal',
+    generatedAt: '2026-07-31T00:00:00Z',
+    portalRevision: 'c'.repeat(40),
+    changeRef: 'docs-multi-repo',
+    sources: [
+      {
+        module_id: 'orders',
+        repository_id: 'github.com/sdcorejs/orders',
+        source_revision: ordersRevision,
+        source_mode: 'versioned-export',
+        export_version: 'orders-docs@1',
+        source_path:
+          '.sdcorejs/documentation/user-guides/orders/orders.md',
+        content_sha256: '0'.repeat(64),
+        files: {},
+      },
+    ],
+  });
+  assert.equal(missingSource.ok, false);
+  assert.ok(
+    missingSource.errors.some(
+      ({ code }) => code === 'MISSING_VERSIONED_SOURCE',
+    ),
+  );
+
+  const duplicate = buildMultiRepositoryDocumentationAggregate({
+    projectTitle: 'Portal',
+    portalRevision: 'c'.repeat(40),
+    sources: [
+      {
+        module_id: 'orders',
+        repository_id: 'github.com/sdcorejs/orders',
+        source_revision: ordersRevision,
+        source_mode: 'repository-link',
+        source_path:
+          '.sdcorejs/documentation/user-guides/orders/orders.md',
+        source_url: 'https://example.test/orders',
+      },
+      {
+        module_id: 'orders',
+        repository_id: 'github.com/sdcorejs/orders-copy',
+        source_revision: ordersRevision,
+        source_mode: 'repository-link',
+        source_path:
+          '.sdcorejs/documentation/user-guides/orders/orders.md',
+        source_url: 'https://example.test/orders-copy',
+      },
+    ],
+  });
+  assert.equal(duplicate.ok, false);
+  assert.ok(
+    duplicate.errors.some(
+      ({ code }) => code === 'DUPLICATE_MODULE_SOURCE',
+    ),
+  );
+});
+
+test('documentation visual evidence distinguishes real UI from generated visuals and binds revisions', () => {
+  const revision = 'a'.repeat(40);
+  const guidePath =
+    '.sdcorejs/documentation/user-guides/orders/orders.md';
+  const imagePath =
+    '.sdcorejs/documentation/user-guides/orders/images/list.png';
+  const files = new Map([
+    [guidePath, '# Orders\n'],
+    [imagePath, ONE_PIXEL_PNG],
+  ]);
+  const realUi = verifiedCapture(
+    guidePath,
+    imagePath,
+    revision,
+    'capture-visual-contract',
+    ONE_PIXEL_PNG,
+  );
+  assert.deepEqual(
+    validateDocumentationVisualEvidence({ record: realUi, sourceFiles: files }),
+    {
+      ok: true,
+      code: null,
+      evidence_origin: 'real-ui',
+      usable_as_real_ui_screenshot: true,
+      guide_path: guidePath,
+      image_path: imagePath,
+    },
+  );
+
+  const mockup = {
+    ...realUi,
+    evidence_origin: 'generated-mockup',
+    generator: 'imagegen',
+  };
+  assert.deepEqual(
+    validateDocumentationVisualEvidence({ record: mockup, sourceFiles: files }),
+    {
+      ok: true,
+      code: null,
+      evidence_origin: 'generated-mockup',
+      usable_as_real_ui_screenshot: false,
+      guide_path: guidePath,
+      image_path: imagePath,
+    },
+  );
+  const missingRevision = { ...realUi };
+  delete missingRevision.app_revision;
+  assert.equal(
+    validateDocumentationVisualEvidence({
+      record: missingRevision,
+      sourceFiles: files,
+    }).code,
+    'INVALID_VISUAL_REVISION',
+  );
 });
 
 test('key validation and repository paths fail closed across Windows and POSIX inputs', () => {
@@ -1600,6 +1863,50 @@ test('active canonical prose uses Layout v2 JIT without changing provider action
   }
 });
 
+test('canonical documentation prose carries repository ownership, visual provenance, and Node prerequisites', async () => {
+  const [
+    skill,
+    layout,
+    userGuide,
+    requirement,
+    technical,
+    readme,
+    adoption,
+    rootPackageText,
+    sitePackageText,
+  ] = await Promise.all([
+    readFile(path.join(root, 'skills/orchestration/documentation.md'), 'utf8'),
+    readFile(path.join(root, '_refs/shared/documentation-layout.md'), 'utf8'),
+    readFile(path.join(root, '_refs/documentation/write-user-guide.md'), 'utf8'),
+    readFile(path.join(root, '_refs/documentation/write-requirement.md'), 'utf8'),
+    readFile(path.join(root, '_refs/documentation/write-technical-doc.md'), 'utf8'),
+    readFile(path.join(root, 'README.md'), 'utf8'),
+    readFile(path.join(root, 'docs/ADOPTION.md'), 'utf8'),
+    readFile(path.join(root, 'package.json'), 'utf8'),
+    readFile(path.join(root, 'site/package.json'), 'utf8'),
+  ]);
+  const ownerProse = skill + layout + userGuide + requirement + technical;
+  assert.match(ownerProse, /semantic owner repository/i);
+  assert.match(ownerProse, /portal fallback is forbidden/i);
+  assert.match(ownerProse, /repository_id/);
+  assert.match(layout + userGuide, /buildMultiRepositoryDocumentationAggregate/);
+  assert.match(layout + userGuide, /generated_projection/);
+  assert.match(layout + userGuide, /editable_source/);
+  assert.match(layout + userGuide, /versioned export/i);
+  assert.match(layout + userGuide, /source_revision/);
+  assert.match(layout + userGuide, /app_revision/);
+  assert.match(layout + userGuide, /generated-mockup/);
+  assert.match(layout + userGuide, /illustration/);
+  assert.match(adoption, /summaries[\s\S]*sdcorejs-explore/i);
+
+  const rootPackage = JSON.parse(rootPackageText);
+  const sitePackage = JSON.parse(sitePackageText);
+  assert.equal(rootPackage.engines.node, '>=18');
+  assert.equal(sitePackage.engines.node, '>=22.12.0');
+  assert.match(readme + adoption, /Node\.js `>=18`/);
+  assert.match(readme + adoption, /Node\.js `>=22\.12\.0`/);
+});
+
 function snapshotDigest(files) {
   const hash = createHash('sha256');
   for (const [filePath, content] of Object.entries(files).sort(([left], [right]) =>
@@ -1618,13 +1925,23 @@ function toBytes(value) {
   throw new TypeError(`Unsupported fixture content: ${typeof value}`);
 }
 
-function verifiedCapture(guidePath, imagePath, head, captureId, imageContent) {
+function verifiedCapture(
+  guidePath,
+  imagePath,
+  head,
+  captureId,
+  imageContent,
+  changeRef = 'docs-v2',
+) {
   return {
     schema_version: 1,
     capture_id: captureId,
-    change_ref: 'docs-v2',
+    change_ref: changeRef,
     guide_path: guidePath,
     associated_HEAD_or_diff: head,
+    source_revision: head,
+    app_revision: head,
+    evidence_origin: 'real-ui',
     environment: {
       environment_id: 'local',
       class: 'local',

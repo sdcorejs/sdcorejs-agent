@@ -14,7 +14,11 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 Read `_refs/shared/runtime-protocols.md`; load
 `_refs/shared/documentation-layout.md` only for operations below
 `.sdcorejs/documentation/**`. Every `.sdcorejs/**` write applies
-`_refs/shared/artifact-lifecycle.md` and emits `artifact_context`.
+`_refs/shared/artifact-lifecycle.md` and emits `artifact_context`. Resolve
+tracks through `_refs/shared/system-registry.json`, approved artifact identity
+through `_refs/shared/approved-artifact.mjs`, and semantic repository ownership
+through `_refs/shared/repository-contract.mjs`; checkout paths and the current
+working directory are never durable repository identity.
 
 ## Purpose
 
@@ -96,12 +100,17 @@ asks for multiple outputs.
 ## Workflow
 
 1. Resolve the target project root and active track from the request and current repo signals.
-2. Select one mode from the table above. If two modes match, prefer the explicit user wording; in finish tails, prefer the tail mode passed by the orchestrator. If the user explicitly asks for multiple documentation outputs, run each selected mode separately and label the outputs.
-3. Read the matching reference completely before writing.
-4. Execute only the selected reference. Do not load every documentation reference up front.
-5. Keep generated prose runtime-localized; keep identifiers, env keys, permission codes, route paths, filenames, and symbols in English.
-6. Preserve UTF-8 and locale marks. Mojibake in documentation, prompts, comments, or user-facing strings is a blocking defect.
-7. Verify with the smallest relevant command or check available in the target project, and report skipped verification explicitly.
+2. Discover the portal/module repository topology read-only, derive stable
+   repository IDs, and resolve the semantic owner before choosing any output
+   path. Module guides, requirements, technical docs, and their assets are
+   written in the owning module repository. An unavailable or unwritable owner
+   blocks the write; portal fallback is forbidden.
+3. Select one mode from the table above. If two modes match, prefer the explicit user wording; in finish tails, prefer the tail mode passed by the orchestrator. If the user explicitly asks for multiple documentation outputs, run each selected mode separately and label the outputs.
+4. Read the matching reference completely before writing.
+5. Execute only the selected reference. Do not load every documentation reference up front.
+6. Keep generated prose runtime-localized; keep identifiers, env keys, permission codes, route paths, filenames, and symbols in English.
+7. Preserve UTF-8 and locale marks. Mojibake in documentation, prompts, comments, or user-facing strings is a blocking defect.
+8. Verify with the smallest relevant command or check available in the target project, and report skipped verification explicitly.
 
 ## Tail Modes
 
@@ -155,7 +164,7 @@ When called after the documentation gate or direct requirement request:
 
 1. Load `_refs/documentation/write-requirement.md`.
 2. If the user provided a `TASKID`, write or update
-   `<target>/.sdcorejs/documentation/requirements/<TASKID>/<TASKID>.md`.
+   `<semantic-owner-repo>/.sdcorejs/documentation/requirements/<TASKID>/<TASKID>.md`.
 3. If no `TASKID` exists but the user wants a requirement record, ask for `TASKID` before writing.
 4. If the user declines requirement recording, skip and report it.
 
@@ -165,14 +174,16 @@ When called after `auto-docs` in a write-code flow:
 
 1. Load `_refs/documentation/write-user-guide.md`.
 2. Run Mode 1 for every touched module when `user_guide=create` or
-   `user_guide=update`.
+   `user_guide=update`, in that module's semantic owner repository.
 3. For required missing/stale images, request
    `sdcorejs-test (ui-evidence-capture)`. Reuse the target project's runner,
    environment/persona catalog, and real-ui/manual-real-ui auth; consume
    `ui_capture_context`, `test_evidence`, and `artifact_context`.
 4. Link only current, verified, PII-safe documentation assets. Keep missing,
    blocked, login/access-denied, or diagnostic images as unlinked checklist
-   entries.
+   entries. Evidence must classify the visual as `real-ui`,
+   `generated-mockup`, or `illustration` and bind its source and app revisions;
+   only `real-ui` can satisfy a real screenshot requirement.
 5. Never write user-guide artifacts into the `sdcorejs-agent` authoring repo unless that repo is explicitly the target for documentation testing.
 
 ## Direct Documentation Requests
@@ -194,7 +205,14 @@ metadata when the format permits. Feature/change documentation is normally
 `required_with_change`; saved preferences are `shared_owned` only when this
 workflow explicitly owns the update; screenshots, traces, browser state, and
 temporary export intermediates are `local_only`. Emit the standard
-`artifact_context` and pass it to the caller.
+`artifact_context` and pass it to the caller. Include stable
+`repository_id`, `repository_role`, optional `module_id`, repository-relative
+path, source/app revision, source spec/plan identity, and content hash. The
+portal may own only portal/integration docs, indexes, references, and generated
+cross-repository aggregates. Such an aggregate is a non-editable projection:
+it links module-owned sources or consumes versioned exports and preserves every
+module repository/revision/path in provenance. Never create an editable module
+document copy in the portal.
 
 ## Cross-References
 

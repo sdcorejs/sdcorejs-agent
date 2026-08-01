@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-repair-loop
-description: Repair workflow for findings from sdcorejs-review or sdcorejs-ship verify-before-done. Use for fix findings/review issues/critical issues, or auto after findings. Verifies each finding, fixes systematically, re-runs source-specific verification, and iterates until resolved or deferred. Applies to angular, nestjs, nextjs. Runtime-localized.
+description: Bounded owner-scoped repair workflow for selected findings from sdcorejs-review, sdcorejs-ship, supported implementation tracks, simplify output, and product/design/test/documentation/workflow artifacts. Verifies authority and evidence, repairs within registry-supported scope, re-runs source-specific validation, and escalates at the attempt cap. Runtime-localized.
 required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose, agent.resume
 ---
 
@@ -14,6 +14,12 @@ the scoped finding.
 
 Thin dispatch skill for applying findings and re-verifying them. The detailed loop lives in `_refs/orchestration/tail/repair-loop.md`.
 
+Resolve supported tracks from `_refs/shared/system-registry.json`; do not keep a
+framework-only enum. Validate every repair with
+`_refs/orchestration/repair-contract.mjs`, which binds the original evidence,
+artifact/implementation owner, execution host, approved write scope, bounded
+attempts, and repaired evidence linkage.
+
 ## Workflow
 1. Determine and preserve the source of findings: `review-code`, `verify-before-done`, `linter`, `typecheck`, `test`, or `manual`.
 2. Read `_refs/orchestration/tail/repair-loop.md` completely.
@@ -26,6 +32,8 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
 4. Record the working-tree baseline and a visible Repair ledger before edits.
 5. Verify each finding is genuine before changing code and classify it as `VALID`, `STALE`, `MIS-SCOPED`, `REDUNDANT`, or `UNCLEAR`.
 6. Categorize valid findings into `auto`, `confirm`, or `user-decision` tiers.
+   A review finding must also be explicitly selected for repair and carry
+   matching write authority; review output alone is not authorization.
 7. For a single `VALID` finding that becomes a concrete bug investigation, call
    `sdcorejs-debug` with the preserved `repair_source`, `review_context`,
    finding ID/source, original commands, and package-manager evidence; consume
@@ -50,6 +58,9 @@ Thin dispatch skill for applying findings and re-verifying them. The detailed lo
 - Do not edit tests merely to make production code pass.
 - Do not hide stale, mis-scoped, redundant, or unclear findings; report them separately.
 - Do not claim convergence without re-running the source-specific verification.
+- Do not write outside the semantic owner repository, mutate approved
+  specs/plans, widen allowed paths, or unlink repaired evidence from the
+  original failing evidence.
 - Do not downgrade or reclassify the original `review_context`; repair-loop must not change a `plain-*` review into an SDCoreJS-specific review during re-verification.
 - When `ai_agent_context` is present, do not change resolved profiles, trust
   sources, provider storage, tool authority, approvals, state isolation,

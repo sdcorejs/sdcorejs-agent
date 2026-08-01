@@ -43,6 +43,14 @@ All technical documentation produced by this reference goes under:
 <target>/.sdcorejs/documentation/technical-docs/<doc-key>/<doc-key>.md
 ```
 
+Resolve `<target>` as the semantic owner repository. Module implementation/API
+documentation belongs in that module repository. Only portal integration,
+composition, index, and reference documentation belongs in the portal. Record
+stable `repository_id`, `repository_role`, optional `module_id`, source/app
+revision, and approved source identity. If a module owner is missing,
+ambiguous, unavailable, or unwritable, block; never create an editable portal
+copy as fallback.
+
 If a target project already has a conflicting documented convention, ask before
 writing outside this folder using `_refs/shared/user-choice-prompt.md`. Do not
 write technical docs to `docs/technical/` by default.

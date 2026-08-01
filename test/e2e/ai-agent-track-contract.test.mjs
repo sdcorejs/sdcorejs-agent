@@ -273,7 +273,7 @@ test('ai-agent: mutation guards fail when security and execution invariants are 
 
 test('ai-agent: package boundary remains dependency-free and repository suite includes the contract test', async () => {
   const pkg = await readJson(join(ROOT, 'package.json'));
-  assert.equal(pkg.version, '0.6.0');
+  assert.equal(pkg.version, '0.7.0');
   assert.equal(pkg.packageManager, 'npm@10.9.2');
   assert.match(pkg.scripts['test:e2e:repository'], /test\/e2e\/ai-agent-track-contract\.test\.mjs/);
   assert.equal(pkg.dependencies?.openai, undefined);
@@ -288,6 +288,36 @@ function assertExecutorContract(source) {
   assert.match(source, /approved_plan_hash/, 'executor verifies the plan hash');
   assert.match(source, /resolve.*engine_profile.*capability_profile.*exactly once/is, 'profiles resolve exactly once');
   assert.match(source, /tenantId/, 'executor requires trusted tenant context');
+  assert.match(
+    source,
+    /must not (?:author|synthesize|fabricate)[\s\S]*concrete[\s\S]*tenantId[\s\S]*actorId[\s\S]*roles[\s\S]*permissions[\s\S]*(?:application source|config|scenario)[\s\S]*runtime defaults/i,
+    'executor cannot manufacture trusted identity or authorization context',
+  );
+  assert.match(
+    source,
+    /clearly synthetic test-only values[\s\S]*must never be promoted[\s\S]*runtime\s+trust or evidence/i,
+    'synthetic security fixtures stay test-only',
+  );
+  assert.match(
+    source,
+    /trusted server or job source is absent[\s\S]*stop[\s\S]*do not fabricate/i,
+    'missing trusted context blocks execution instead of being fabricated',
+  );
+  assert.match(
+    source,
+    /must not (?:author|predeclare)[\s\S]*`PASSED`[\s\S]*actual command\s+evidence/i,
+    'offline PASSED evidence can only follow executed verification',
+  );
+  assert.match(
+    source,
+    /application or runtime source must never return[\s\S]*offline_verification[\s\S]*`PASSED`[\s\S]*unconditionally/i,
+    'application code cannot manufacture a passing verification result',
+  );
+  assert.match(
+    source,
+    /`PASSED` is orchestration evidence[\s\S]*after the listed command[\s\S]*not application runtime output/i,
+    'passing evidence belongs to the command-running orchestrator',
+  );
   assert.match(source, /ai_agent_context/, 'executor emits AI runtime evidence');
   for (const field of [
     'runtime_owner',

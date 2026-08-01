@@ -1,5 +1,7 @@
 # Content Quality — Reference Blocks
 
+<!-- executable-reference-default: copy-ready -->
+
 Extracted from the `content-quality` write-code pack (`_refs/nextjs/build-website/write-code/content-quality.md`) to keep that pack under the 500-line ideal. Load this file when generating the parity/length scripts or the article presentation components. Paths are repo-root-relative.
 
 ## `scripts/check-i18n-parity.ts` (bilingual parity)
@@ -254,7 +256,7 @@ export function ArticleBody({
           <h1 className="text-4xl font-bold mb-4">{title}</h1>
           {(author || publishedAt) && (
             <div className="flex items-center gap-3 text-sm text-neutral-500 mb-8">
-              {author && <span>{author.name}{author.role && `<localized text>`}</span>}
+              {author && <span>{author.name}{author.role && ` · ${author.role}`}</span>}
               {publishedAt && (
                 <time dateTime={publishedAt.toISOString()}>
                   {publishedAt.toLocaleDateString()}
@@ -310,7 +312,7 @@ export function articleJsonLd(input: {
       logo: { '@type': 'ImageObject', url: absoluteUrl('/logo.png') },
     },
     mainEntityOfPage: { '@type': 'WebPage', '@id': input.url },
-    inLanguage: input.locale === 'en'<localized text>'en-US' : 'vi-VN',
+    inLanguage: input.locale === 'en' ? 'en-US' : 'vi-VN',
   };
 }
 ```

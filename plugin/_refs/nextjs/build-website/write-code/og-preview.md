@@ -8,7 +8,7 @@
 A share link without a preview image looks broken on Zalo and Messenger (Vietnam's dominant platforms). This skill installs the OG image baseline — static fallback + dynamic per-page generation — and walks through the verification steps that catch the common gotchas (relative URLs, missing alt, cache invalidation).
 
 ## When invoked
-- Automatic after `seo.md` in a "Full build"
+- The resolved execution contract includes `og`, after its approved SEO prerequisite
 - User says "OG image", "<localized text>", "<localized text>", "Twitter card", "social preview"
 - After a homepage hero / branding update → re-generate OG
 

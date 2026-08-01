@@ -8,13 +8,13 @@
 Most "responsive bugs" are not bugs — they're missing breakpoint variants, raw fixed widths, or images served at the wrong size. This skill establishes the mobile-first conventions, the image `sizes` policy, and the patterns that ship without the typical breakpoints-broken-at-768px problem.
 
 ## When invoked
-- Automatic step in the `sdcorejs-nextjs` orchestrator after pages exist (audit pass)
+- The approved profile includes `responsive`, after pages exist
 - User says "<localized text>", "mobile broken", "<localized text>", "responsive audit"
 - Adding new sections or pages — verify before committing
 
 ## Breakpoint conventions
 
-Tailwind'<localized text>'t redefine. Use as-is:
+Use Tailwind's standard mobile-first breakpoints; do not redefine them:
 
 | Prefix | Min width | Typical device |
 |---|---|---|
@@ -105,7 +105,8 @@ h2 { font-size: clamp(1.5rem, 3vw, 2.5rem); }
 h3 { font-size: clamp(1.25rem, 2vw, 1.75rem); }
 ```
 
-Body text stays at `16px` (Tailwind'<localized text>'t shrink for mobile (a11y issue + reduces conversion).
+Body text stays at `16px` (`text-base`); do not shrink it for mobile because
+that harms accessibility and conversion.
 
 ## Touch targets — minimum 44×44 px
 

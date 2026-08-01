@@ -14,13 +14,22 @@ description: Product-track executor for PO docs and traceability. Use for PRDs, 
 ## Shared Protocols
 
 Read `../_refs/shared/runtime-protocols.md` and
-`../_refs/shared/artifact-lifecycle.md`; emit `artifact_context` for every product
-ledger written.
+`../_refs/shared/artifact-lifecycle.md`; load
+`../_refs/shared/product-ledger.md` for ledger work. Resolve track/profile through
+`../_refs/shared/system-registry.json`, artifact/approval identity through
+`../_refs/shared/approved-artifact.mjs`, and semantic repository ownership through
+`../_refs/shared/repository-contract.mjs`. Emit `artifact_context` for every
+product ledger written. The registry is authoritative for every track,
+including AI-agent, Design, Documentation, Workflow, and General; never maintain
+a second hard-coded track list here.
 
 ## Purpose
 Maintain PO-facing feature docs and the traceability ledger for every meaningful feature. Human-readable docs explain what the product should do. The `.sdcorejs` ledger records why the feature exists, what was agreed, what was implemented, how it was tested, and what still does not line up.
 
-This skill does not write application code. It writes two documentation layers in the target project:
+This skill does not write application code. A ledger is a relationship view,
+not a competing spec or plan: specs own approved behavior, plans own execution
+steps, Design owns handoffs, and Test owns test artifacts/evidence. It writes
+two documentation layers in the semantic owner repository:
 
 ```text
 <target-project>/product/                 # human-readable PO/QC docs
@@ -68,10 +77,17 @@ Load what exists, in this order:
 8. Existing product ledger under `.sdcorejs/docs/product/` for the same feature.
 
 If a required input is missing, write the known facts and mark the missing item as a gap instead of inventing it.
+Every cross-repository input is an immutable reference containing repository
+ID, repository-relative path or artifact ID, exact revision, and applicable
+approval/artifact hash. Do not copy an editable requirement into another
+repository.
 
 ## Output Path
 
-For a new feature, create or update the human-readable docs:
+Resolve the owner before selecting output paths. Module-specific product
+artifacts belong in the module repository. A missing, ambiguous, unavailable,
+or unwritable module owner blocks the write; portal fallback is forbidden.
+For a new feature, create or update the human-readable docs in that owner:
 
 ```text
 <target-project>/product/prds/<kebab-feature>.md
@@ -84,23 +100,46 @@ For a new feature, create or update the human-readable docs:
 Also create or update the agent traceability ledger:
 
 ```text
-<target-project>/.sdcorejs/docs/product/<YYYY-MM-DD-HH-mm>-<kebab-feature>.md
+<semantic-owner-repo>/.sdcorejs/docs/product/<kebab-feature>.md
 ```
 
-For updates, prefer editing the existing product docs and ledger for that feature. If the old ledger is ambiguous, create a new dated ledger and link the older files in "Related docs".
+For updates, edit the existing uniquely identified product docs and ledger for
+that feature. Ambiguous or duplicate editable sources block; do not create
+another dated ledger to hide ambiguity. Use `supersedes` only for an explicit
+identity migration.
 
 Add durable metadata to the ledger and emit it as
 `artifact_context.required_with_change`:
 
 ```yaml
-artifact_id: <stable feature-ledger id>
-artifact_kind: feature-ledger
+schema_version: 1
+artifact_id: product-ledger:<feature>
+artifact_kind: product-ledger
+contract_id: <approved contract id>
+requirement_id: <primary requirement id>
 change_ref: <change id>
+track: <canonical registry track>
+stack_profile: <canonical registry profile>
+owner_repository_id: <stable repository id>
+owner_repository_role: <registry repository role>
+owner_module_id: <module id | null>
+ownership_scope: <registry ownership scope>
+repository_relative_path: .sdcorejs/docs/product/<feature>.md
+source_revision: <40-character Git revision>
+parent_references: []
+supersedes: <prior artifact id | null>
+approval_hash: <sha256:v1 hash when applicable | null>
+artifact_hash: <sha256:v1 hash from product-ledger.mjs>
 source_spec: <repo-relative path | none>
 source_plan: <repo-relative path | none>
 commit_policy: with-change
 owner: sdcorejs-product
 ```
+
+A cross-module Product view may belong to the portal integration owner only as
+`view_kind: cross-module-view` with `editable_requirements: false`. It must
+reference module artifacts with repository/module/path/revision/artifact-hash
+provenance and never duplicate their editable requirements.
 
 ## Human-Readable Doc Templates
 
@@ -172,16 +211,35 @@ owner: sdcorejs-product
 
 ```markdown
 ---
+schema_version: 1
+artifact_id: product-ledger:<feature>
+artifact_kind: product-ledger
+contract_id: <contract id>
+requirement_id: <requirement id>
+change_ref: <change id>
 feature: <kebab-feature>
 status: draft | planned | implemented | verified | partial
-tracks: [angular, nestjs, nextjs, test, generic]
-sourceSpecPath: <relative path or unknown>
-sourcePlanPath: <relative path or unknown>
-prdPath: product/prds/<kebab-feature>.md
-userStoriesPath: product/user-stories/<kebab-feature>.md
-acceptanceCriteriaPath: product/acceptance-criteria/<kebab-feature>.md
-uatChecklistPath: product/uat-checklists/<kebab-feature>.md
-updatedAt: <ISO-8601 timestamp>
+track: <canonical registry track>
+stack_profile: <canonical registry profile>
+owner_repository_id: <stable repository id>
+owner_repository_role: <registry repository role>
+owner_module_id: <module id | null>
+ownership_scope: <registry ownership scope>
+repository_relative_path: .sdcorejs/docs/product/<kebab-feature>.md
+source_revision: <40-character Git revision>
+parent_references: []
+supersedes: <artifact id | null>
+approval_hash: <sha256:v1 hash when applicable | null>
+artifact_hash: <sha256:v1 hash>
+source_spec: <relative path or none>
+source_plan: <relative path or none>
+prd_path: product/prds/<kebab-feature>.md
+user_stories_path: product/user-stories/<kebab-feature>.md
+acceptance_criteria_path: product/acceptance-criteria/<kebab-feature>.md
+uat_checklist_path: product/uat-checklists/<kebab-feature>.md
+updated_at: <ISO-8601 timestamp>
+commit_policy: with-change
+owner: sdcorejs-product
 ---
 
 # Product Feature Ledger - <Title>
@@ -197,15 +255,10 @@ updatedAt: <ISO-8601 timestamp>
 |---|---|---|---|---|
 | AC1 | <criterion> | Must | spec/user | agreed |
 
-## Implementation Map
-| AC | Backend | Frontend | Other | Status |
-|---|---|---|---|---|
-| AC1 | <file/path or n/a> | <file/path or n/a> | <config/doc or n/a> | missing / partial / done |
-
-## Test Map
-| AC | Unit | Integration | E2E / UAT | Evidence | Status |
-|---|---|---|---|---|
-| AC1 | <spec file or n/a> | <spec file or n/a> | <flow/check or n/a> | <command/result> | missing / partial / done |
+## Traceability Map
+| Requirement | AC | Design | Plan | Implementation | Test | Evidence | Delivery |
+|---|---|---|---|---|---|---|---|
+| <requirement id/ref> | AC1 | <handoff ref or missing> | <plan ref or missing> | <repository/path/revision or missing> | <test ref or missing> | <class/result/revision or missing> | draft / planned / implemented / verified / partial / stale / blocked / deferred |
 
 ## UAT Checklist
 | Scenario | Steps | Expected Result | Owner | Status |
@@ -214,8 +267,11 @@ updatedAt: <ISO-8601 timestamp>
 
 ## Gap Review
 - Requirement gaps:
+- Design gaps:
+- Plan gaps:
 - Implementation gaps:
 - Test gaps:
+- Evidence freshness gaps:
 - Ambiguities:
 
 ## Decisions
@@ -241,15 +297,23 @@ For each acceptance criterion:
 
 1. It must map to at least one implementation artifact or a deliberate "not implemented" decision.
 2. It must map to at least one verification artifact: unit, integration, e2e, UAT, or explicit manual check.
-3. If implementation exists with no requirement, mark it as scope creep.
-4. If test exists with no requirement, mark it as orphan coverage.
-5. If requirement exists with no implementation or test, mark it as a blocker before "done" unless the user explicitly defers it.
+3. Preserve applicable Design and approved Plan references without copying
+   their bodies or taking ownership of them.
+4. Compare evidence revision with the current owner repository revision.
+   Mismatches are `STALE`/`stale`, never pass.
+5. If implementation exists with no requirement, mark it as scope creep.
+6. If test exists with no requirement, mark it as orphan coverage.
+7. If requirement exists with no implementation, current test, or current
+   evidence, mark it as a blocker before `verified` unless the user explicitly
+   defers it. Missing test/evidence is not pass.
 
 Status vocabulary:
 
 - `done`: requirement, implementation, and test evidence all align.
+- `verified`: requirement, implementation, test, and current `PASSED` evidence align.
 - `partial`: one side is present but incomplete.
 - `missing`: no matching artifact.
+- `stale`: evidence is bound to an older repository revision.
 - `deferred`: user explicitly postponed it.
 - `n/a`: not applicable and explained.
 
@@ -282,6 +346,9 @@ Next actions:
 - Preserve the user's language for prose.
 - Keep identifiers, route paths, permission codes, and env keys in English.
 - Link PRDs, user stories, specs, plans, changed files, and test outputs by path instead of pasting full file contents.
+- Preserve requirement, acceptance criterion, Design, Plan, implementation,
+  Test, evidence, and delivery references with stable artifact/repository
+  identity and exact revisions.
 - Treat requirement/implementation/test mismatch as a product gap, not just a testing gap.
 - Mark inferred requirements as "inferred - needs confirmation" unless already approved.
 
@@ -291,7 +358,10 @@ Next actions:
 - Invent acceptance criteria to make a trace look complete.
 - Claim a feature is covered without current evidence.
 - Hide deferred or missing tests.
+- Treat stale evidence as pass.
 - Overwrite an unrelated product ledger.
+- Duplicate editable module requirements in a portal or cross-module view.
+- Write application code, a replacement spec/plan, or Test-owned evidence.
 - Update `.sdcorejs/docs/product/` without updating the matching `product/` docs when the user-facing requirement changed.
 
 ## Cross-references

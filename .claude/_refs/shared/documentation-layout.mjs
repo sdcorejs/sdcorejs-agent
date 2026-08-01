@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { inflateSync } from 'node:zlib';
+import { resolveArtifactOwner } from './repository-contract.mjs';
 
 export const DOCUMENTATION_LAYOUT_VERSION = 2;
 export const DOCUMENTATION_ROOT = '.sdcorejs/documentation';
@@ -52,6 +53,13 @@ export const DOCUMENTATION_SINGLETONS = Object.freeze([
   `${DOCUMENTATION_ROOT}/sdcorejs-user-guide.md`,
   `${DOCUMENTATION_ROOT}/sdcorejs-user-guide.docx`,
   `${DOCUMENTATION_ROOT}/sdcorejs-user-guide.pdf`,
+]);
+
+const GIT_REVISION_PATTERN = /^[a-f0-9]{40}$/u;
+const DOCUMENTATION_VISUAL_ORIGINS = new Set([
+  'real-ui',
+  'generated-mockup',
+  'illustration',
 ]);
 
 const WINDOWS_RESERVED_NAMES =
@@ -950,6 +958,307 @@ export function applyMigrationPlanToSnapshot(files, plan) {
   };
 }
 
+export function resolveDocumentationWriteTarget({
+  document_role: documentRole,
+  category,
+  key,
+  scope,
+  module,
+  portal,
+  execution_host_repository_id: executionHostRepositoryId,
+} = {}) {
+  if (
+    !['module-source', 'portal-integration', 'portal-index', 'portal-reference', 'aggregate']
+      .includes(documentRole)
+  ) {
+    throw new TypeError(`unsupported documentation role: ${documentRole}`);
+  }
+  if (documentRole === 'module-source' && scope !== 'module') {
+    throw new Error('portal fallback is forbidden for an editable module document');
+  }
+  if (documentRole === 'aggregate' && scope !== 'cross-repository-aggregate') {
+    throw new Error('a cross-repository aggregate must be owned by the portal repository');
+  }
+  if (
+    ['portal-integration', 'portal-index', 'portal-reference'].includes(documentRole) &&
+    scope !== 'portal-composition'
+  ) {
+    throw new Error(`${documentRole} must be owned by the portal repository`);
+  }
+
+  const owner = resolveArtifactOwner({
+    artifact_kind: 'documentation-asset',
+    scope,
+    module,
+    portal,
+    execution_host_repository_id: executionHostRepositoryId,
+  });
+  if (documentRole === 'module-source') {
+    if (module?.available !== true || module?.writable !== true) {
+      return {
+        status: 'blocked',
+        artifact_kind: owner.artifact_kind,
+        document_role: documentRole,
+        owner_repository_id: owner.owner_repository_id,
+        owner_repository_role: owner.owner_repository_role,
+        owner_module_id: owner.owner_module_id,
+        execution_host_repository_id: owner.execution_host_repository_id,
+        repository_relative_path: null,
+        blockers: [
+          module?.available !== true
+            ? `owner repository is unavailable for ${module?.id ?? 'module'}`
+            : `owner repository is not writable for ${module?.id ?? 'module'}`,
+        ],
+      };
+    }
+    if (category === 'user-guides' && module.id !== key) {
+      throw new Error('a module user guide key must equal its semantic module id');
+    }
+  }
+
+  const repositoryRelativePath =
+    documentRole === 'aggregate'
+      ? `${DOCUMENTATION_ROOT}/sdcorejs-user-guide.md`
+      : buildCanonicalEntryPath(category, key);
+  return {
+    status: 'resolved',
+    artifact_kind: owner.artifact_kind,
+    document_role: documentRole,
+    owner_repository_id: owner.owner_repository_id,
+    owner_repository_role: owner.owner_repository_role,
+    owner_module_id: owner.owner_module_id,
+    execution_host_repository_id: owner.execution_host_repository_id,
+    repository_relative_path: repositoryRelativePath,
+    blockers: [],
+  };
+}
+
+export function buildMultiRepositoryDocumentationAggregate({
+  sources,
+  projectTitle,
+  generatedAt,
+  portalRevision,
+  changeRef = 'documentation-aggregate',
+  sourceSpec = 'none',
+  sourcePlan = 'none',
+} = {}) {
+  const errors = [];
+  const warnings = [];
+  const modules = [];
+  const provenance = [];
+  const projectedAssetContent = new Map();
+  const seenModules = new Set();
+  if (!GIT_REVISION_PATTERN.test(portalRevision ?? '')) {
+    errors.push({ code: 'INVALID_PORTAL_REVISION' });
+  }
+  if (!Array.isArray(sources) || sources.length === 0) {
+    errors.push({ code: 'NO_MODULE_SOURCES' });
+  }
+
+  const orderedSources = Array.isArray(sources)
+    ? [...sources].sort((left, right) =>
+        compareCodePoints(
+          String(left?.module_id ?? ''),
+          String(right?.module_id ?? ''),
+        ))
+    : [];
+  for (const source of orderedSources) {
+    const moduleId = source?.module_id;
+    const repositoryId = source?.repository_id;
+    const revision = source?.source_revision;
+    const sourceMode = source?.source_mode;
+    const validation = validateDocumentKey('user-guides', moduleId);
+    if (
+      !validation.ok ||
+      typeof repositoryId !== 'string' ||
+      repositoryId.trim() === '' ||
+      !GIT_REVISION_PATTERN.test(revision ?? '')
+    ) {
+      errors.push({
+        code: 'INVALID_MODULE_SOURCE_IDENTITY',
+        module_id: moduleId ?? null,
+      });
+      continue;
+    }
+    if (seenModules.has(lower(moduleId))) {
+      errors.push({ code: 'DUPLICATE_MODULE_SOURCE', module_id: moduleId });
+      continue;
+    }
+    seenModules.add(lower(moduleId));
+
+    const expectedSourcePath = buildCanonicalEntryPath('user-guides', moduleId);
+    const normalizedSourcePath = normalizeRepositoryPath(source.source_path);
+    if (
+      !normalizedSourcePath.ok ||
+      normalizedSourcePath.path !== expectedSourcePath
+    ) {
+      errors.push({
+        code: 'INVALID_MODULE_SOURCE_PATH',
+        module_id: moduleId,
+        expected: expectedSourcePath,
+        actual: source.source_path ?? null,
+      });
+      continue;
+    }
+    const sourceRecord = {
+      module_id: moduleId,
+      repository_id: repositoryId,
+      source_revision: revision,
+      source_mode: sourceMode,
+      source_path: expectedSourcePath,
+      export_version: source.export_version ?? null,
+      source_url: source.source_url ?? null,
+    };
+
+    if (sourceMode === 'repository-link') {
+      if (
+        typeof source.source_url !== 'string' ||
+        !/^https?:\/\//u.test(source.source_url)
+      ) {
+        errors.push({ code: 'INVALID_REPOSITORY_SOURCE_LINK', module_id: moduleId });
+        continue;
+      }
+      if (source.files && fileEntries(source.files).length > 0) {
+        errors.push({ code: 'EDITABLE_PORTAL_COPY_FORBIDDEN', module_id: moduleId });
+        continue;
+      }
+      const title = singleLineText(source.title || titleFromKey(moduleId));
+      modules.push({
+        key: moduleId,
+        title,
+        path: expectedSourcePath,
+        kind: 'repository-link',
+        coverage: { total: 0, met: 0, partial: 0, missing: 0 },
+        body:
+          `Canonical source: [${title}](${source.source_url})\n\n` +
+          `Editable content remains owned by \`${repositoryId}\` at revision \`${revision}\`.`,
+        localLinks: [],
+      });
+      provenance.push(sourceRecord);
+      continue;
+    }
+
+    if (
+      sourceMode !== 'versioned-export' ||
+      typeof source.export_version !== 'string' ||
+      source.export_version.trim() === ''
+    ) {
+      errors.push({ code: 'INVALID_VERSIONED_EXPORT', module_id: moduleId });
+      continue;
+    }
+    const inventory = normalizedFileInventory(source.files);
+    const guideContent = inventory.files.get(expectedSourcePath);
+    if (guideContent === undefined) {
+      errors.push({ code: 'MISSING_VERSIONED_SOURCE', module_id: moduleId });
+      continue;
+    }
+    if (
+      !/^[a-f0-9]{64}$/iu.test(source.content_sha256 ?? '') ||
+      contentHash(guideContent) !== source.content_sha256.toLowerCase()
+    ) {
+      errors.push({ code: 'SOURCE_CONTENT_HASH_MISMATCH', module_id: moduleId });
+      continue;
+    }
+    errors.push(
+      ...inventory.errors
+        .filter(isDocumentationInventoryError)
+        .map((error) => ({ ...error, module_id: moduleId })),
+    );
+    const sharedPaths = [...inventory.files.keys()].filter((filePath) =>
+      filePath.startsWith(`${DOCUMENTATION_ROOT}/_shared/`));
+    if (sharedPaths.length > 0) {
+      const sharedOwnership = validateSharedOwnership(source.shared_ownership);
+      if (!sharedOwnership.ok) {
+        errors.push({
+          code: sharedOwnership.code,
+          module_id: moduleId,
+          paths: sharedPaths,
+        });
+        continue;
+      }
+    }
+
+    const moduleBuild = buildAggregateUserGuide({
+      files: source.files,
+      projectTitle,
+      generatedAt,
+      gitHead: revision,
+      changeRef,
+      sourceSpec,
+      sourcePlan,
+      verifiedImageEvidence: source.verified_image_evidence ?? [],
+    });
+    if (!moduleBuild.ok || moduleBuild.modules.length !== 1) {
+      errors.push(
+        ...moduleBuild.errors.map((error) => ({
+          ...error,
+          module_id: moduleId,
+        })),
+      );
+      continue;
+    }
+    modules.push(moduleBuild.modules[0]);
+    warnings.push(...moduleBuild.warnings.map((warning) => ({
+      ...warning,
+      module_id: moduleId,
+    })));
+    provenance.push(sourceRecord);
+    for (const [filePath, content] of inventory.files) {
+      if (filePath === expectedSourcePath) continue;
+      const existing = projectedAssetContent.get(filePath);
+      if (existing !== undefined && contentHash(existing) !== contentHash(content)) {
+        errors.push({
+          code: 'PROJECTED_ASSET_COLLISION',
+          module_id: moduleId,
+          path: filePath,
+        });
+        continue;
+      }
+      projectedAssetContent.set(filePath, content);
+    }
+  }
+
+  modules.sort((left, right) =>
+    compareCodePoints(lower(left.key), lower(right.key)) ||
+    compareCodePoints(left.key, right.key));
+  provenance.sort((left, right) =>
+    compareCodePoints(lower(left.module_id), lower(right.module_id)));
+  const coverage = modules.reduce(
+    (total, module) => ({
+      total: total.total + module.coverage.total,
+      met: total.met + module.coverage.met,
+      partial: total.partial + module.coverage.partial,
+      missing: total.missing + module.coverage.missing,
+    }),
+    { total: 0, met: 0, partial: 0, missing: 0 },
+  );
+  const output = renderAggregate({
+    projectTitle: projectTitle || 'Project',
+    generatedAt: generatedAt || '<ISO8601>',
+    gitHead: portalRevision || '<sha>',
+    changeRef,
+    sourceSpec,
+    sourcePlan,
+    modules,
+    coverage,
+    provenance,
+    generatedProjection: true,
+    editableSource: false,
+  });
+  return {
+    ok: errors.length === 0 && modules.length === orderedSources.length,
+    output,
+    modules,
+    coverage,
+    provenance,
+    generated_projection: true,
+    editable_source: false,
+    projected_assets: [...projectedAssetContent.keys()].sort(compareCodePoints),
+    warnings: uniqueObjects(warnings),
+    errors: uniqueObjects(errors),
+  };
+}
+
 export function buildAggregateUserGuide({
   files,
   projectTitle,
@@ -1315,6 +1624,104 @@ export function validateGuideImageRelationship({
   };
 }
 
+export function validateDocumentationVisualEvidence({ record, sourceFiles } = {}) {
+  if (
+    !record ||
+    typeof record !== 'object' ||
+    record.schema_version !== 1 ||
+    typeof record.capture_id !== 'string' ||
+    record.capture_id.trim() === '' ||
+    record.classification !== 'documentation' ||
+    record.result !== 'verified' ||
+    record.blocker !== null ||
+    !DOCUMENTATION_VISUAL_ORIGINS.has(record.evidence_origin)
+  ) {
+    return { ok: false, code: 'INVALID_VISUAL_EVIDENCE' };
+  }
+  if (
+    !GIT_REVISION_PATTERN.test(record.source_revision ?? '') ||
+    !GIT_REVISION_PATTERN.test(record.app_revision ?? '') ||
+    record.associated_HEAD_or_diff !== record.source_revision
+  ) {
+    return { ok: false, code: 'INVALID_VISUAL_REVISION' };
+  }
+  if (
+    record.image?.kind !== 'documentation' ||
+    record.image?.exists !== true ||
+    record.image?.non_empty !== true ||
+    record.image?.decodable !== true ||
+    !/^[a-f0-9]{64}$/iu.test(record.image?.sha256 ?? '') ||
+    !Number.isInteger(record.image?.width) ||
+    record.image.width <= 0 ||
+    !Number.isInteger(record.image?.height) ||
+    record.image.height <= 0
+  ) {
+    return { ok: false, code: 'INVALID_VISUAL_IMAGE' };
+  }
+  if (
+    record.evidence_origin === 'real-ui' &&
+    (
+      typeof record.runner !== 'string' ||
+      record.runner.trim() === '' ||
+      record.runner === 'unknown' ||
+      !['real-ui', 'manual-real-ui'].includes(record.persona?.auth_provenance) ||
+      record.assertions?.login_redirect_absent !== true ||
+      record.assertions?.access_denied_absent !== true ||
+      record.assertions?.target_state_visible !== true ||
+      record.assertions?.loading_complete !== true ||
+      record.assertions?.pii_screening !== 'pass' ||
+      record.redactions_applied !== true
+    )
+  ) {
+    return { ok: false, code: 'INVALID_REAL_UI_EVIDENCE' };
+  }
+  if (
+    record.evidence_origin !== 'real-ui' &&
+    (
+      typeof record.generator !== 'string' ||
+      record.generator.trim() === ''
+    )
+  ) {
+    return { ok: false, code: 'MISSING_VISUAL_GENERATOR' };
+  }
+
+  const guide = normalizeRepositoryPath(record.guide_path);
+  const image = normalizeRepositoryPath(record.image.file);
+  if (!guide.ok || !image.ok) {
+    return { ok: false, code: 'INVALID_VISUAL_PATH' };
+  }
+  const inventory = normalizedFileInventory(sourceFiles);
+  const imageContent = inventory.files.get(image.path);
+  const imageInspection = inspectRasterImage(imageContent);
+  if (
+    imageContent === undefined ||
+    contentHash(imageContent) !== record.image.sha256.toLowerCase() ||
+    !imageInspection.ok ||
+    imageInspection.width !== record.image.width ||
+    imageInspection.height !== record.image.height
+  ) {
+    return { ok: false, code: 'VISUAL_CONTENT_MISMATCH' };
+  }
+  const relationship = validateGuideImageRelationship({
+    guidePath: guide.path,
+    imagePath: image.path,
+    sharedOwnership: record.shared_ownership ?? record.sharedOwnership,
+    explicitApprovedGuidePath: record.explicit_approved_guide_path === true,
+    allowLegacyGuide: true,
+  });
+  if (!relationship.ok) {
+    return { ok: false, code: relationship.code };
+  }
+  return {
+    ok: true,
+    code: null,
+    evidence_origin: record.evidence_origin,
+    usable_as_real_ui_screenshot: record.evidence_origin === 'real-ui',
+    guide_path: guide.path,
+    image_path: image.path,
+  };
+}
+
 function verifiedImageEvidenceKeys(
   records,
   currentHeadOrDiff,
@@ -1327,63 +1734,17 @@ function verifiedImageEvidenceKeys(
   }
   for (const record of records) {
     if (
-      !record ||
-      typeof record !== 'object' ||
-      typeof record.capture_id !== 'string' ||
-      !record.capture_id.trim() ||
-      record.schema_version !== 1 ||
-      record.change_ref !== currentChangeRef ||
-      record.result !== 'verified' ||
-      record.blocker !== null ||
-      record.classification !== 'documentation' ||
-      record.associated_HEAD_or_diff !== currentHeadOrDiff ||
-      record.image?.kind !== 'documentation' ||
-      record.image?.exists !== true ||
-      record.image?.non_empty !== true ||
-      record.image?.decodable !== true ||
-      !/^[a-f0-9]{64}$/i.test(record.image?.sha256 ?? '') ||
-      !Number.isInteger(record.image?.width) ||
-      record.image.width <= 0 ||
-      !Number.isInteger(record.image?.height) ||
-      record.image.height <= 0 ||
-      typeof record.runner !== 'string' ||
-      !record.runner.trim() ||
-      record.runner === 'unknown' ||
-      !['real-ui', 'manual-real-ui'].includes(
-        record.persona?.auth_provenance,
-      ) ||
-      record.assertions?.login_redirect_absent !== true ||
-      record.assertions?.access_denied_absent !== true ||
-      record.assertions?.target_state_visible !== true ||
-      record.assertions?.loading_complete !== true ||
-      record.assertions?.pii_screening !== 'pass' ||
-      record.redactions_applied !== true
+      record?.change_ref !== currentChangeRef ||
+      record?.source_revision !== currentHeadOrDiff
     ) {
       continue;
     }
-    const guide = normalizeRepositoryPath(record.guide_path);
-    const image = normalizeRepositoryPath(record.image?.file);
-    if (!guide.ok || !image.ok) continue;
-    const imageContent = sourceFiles.get(image.path);
-    const imageInspection = inspectRasterImage(imageContent);
-    if (
-      imageContent === undefined ||
-      contentHash(imageContent) !== record.image.sha256.toLowerCase() ||
-      !imageInspection.ok ||
-      imageInspection.width !== record.image.width ||
-      imageInspection.height !== record.image.height
-    ) {
-      continue;
-    }
-    const relationship = validateGuideImageRelationship({
-      guidePath: guide.path,
-      imagePath: image.path,
-      sharedOwnership: record.shared_ownership ?? record.sharedOwnership,
-      explicitApprovedGuidePath: record.explicit_approved_guide_path === true,
-      allowLegacyGuide: true,
+    const validation = validateDocumentationVisualEvidence({
+      record,
+      sourceFiles,
     });
-    if (!relationship.ok) continue;
-    keys.add(`${guide.path}\0${image.path}`);
+    if (!validation.ok || !validation.usable_as_real_ui_screenshot) continue;
+    keys.add(`${validation.guide_path}\0${validation.image_path}`);
   }
   return keys;
 }
@@ -2675,6 +3036,9 @@ function renderAggregate({
   sourcePlan,
   modules,
   coverage,
+  provenance = [],
+  generatedProjection = false,
+  editableSource = true,
 }) {
   const moduleKeys = modules.map((module) => yamlScalar(module.key)).join(', ');
   const displayProjectTitle = singleLineText(projectTitle);
@@ -2691,6 +3055,21 @@ function renderAggregate({
     )
     .join('\n');
   const totalRow = `| **Total** | **${coverage.met}** | **${coverage.partial}** | **${coverage.missing}** |`;
+  const provenanceYaml =
+    provenance.length === 0
+      ? 'source_provenance: []'
+      : `source_provenance:\n${provenance
+          .map(
+            (source) =>
+              `  - module_id: ${yamlScalar(source.module_id)}\n` +
+              `    repository_id: ${yamlScalar(source.repository_id)}\n` +
+              `    source_revision: ${yamlScalar(source.source_revision)}\n` +
+              `    source_mode: ${yamlScalar(source.source_mode)}\n` +
+              `    source_path: ${yamlScalar(source.source_path)}\n` +
+              `    export_version: ${yamlScalar(source.export_version)}\n` +
+              `    source_url: ${yamlScalar(source.source_url)}`,
+          )
+          .join('\n')}`;
   return `---
 artifact_id: guide-aggregate
 artifact_kind: documentation-asset
@@ -2704,6 +3083,9 @@ generated_at: ${yamlScalar(generatedAt)}
 git_head: ${yamlScalar(gitHead)}
 modules: [${moduleKeys}]
 coverage: { total: ${coverage.total}, met: ${coverage.met}, partial: ${coverage.partial}, missing: ${coverage.missing} }
+generated_projection: ${generatedProjection}
+editable_source: ${editableSource}
+${provenanceYaml}
 ---
 
 # ${displayProjectTitle} - User Guide

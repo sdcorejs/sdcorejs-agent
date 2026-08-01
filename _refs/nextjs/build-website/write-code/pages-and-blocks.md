@@ -8,16 +8,17 @@
 A landing site is composition: route pages coordinate content/data and compose
 feature-local blocks, cross-page reusable sections, and design-system UI. This
 reference defines those boundaries and the strict content-externalization rule
-that makes the site i18n-ready, CMS-ready, and review-stable.
+that keeps approved localization/CMS boundaries possible without installing
+those optional features by default.
 
 ## When invoked
-- Automatic after `theme.md` + `i18n.md` in a "Full build" dispatch
+- Approved after `theme.md`; after `i18n.md` only when localization is approved
 - User says "add a page", "<localized text>", "<localized text>", "compose home page"
 - Refactoring an existing page to use the section library
 
 Prerequisites:
 - Theme tokens exist (`theme.md` done)
-- next-intl is wired (`i18n.md` done, or at least messages files exist)
+- If `i18n` is approved, next-intl is wired before localized pages are generated
 - The `Frontend architecture plan` from
   `_refs/shared/frontend-architecture.md` is complete for non-trivial work
 
@@ -54,8 +55,9 @@ paths and ownership.
 ## The strict rule — no hardcoded strings
 
 **Section components receive ALL strings as props.** They do NOT contain Vietnamese (or English) text literals. Content lives in:
-1. `src/content/<locale>/<page>.ts` — typed data per page (products, services, milestones)
-2. `src/i18n/messages/<locale>.json` — UI strings (button labels, nav, generic copy)
+1. `src/content/<page>.ts` for a basic single-locale site, or
+   `src/content/<locale>/<page>.ts` when `i18n` is approved.
+2. `src/i18n/messages/<locale>.json` only when `i18n` is approved.
 
 This is the #1 rule that separates a production-grade landing site from a throwaway. Without it, adding i18n or wiring a CMS later requires a full component rewrite.
 
@@ -228,13 +230,14 @@ Rules for section components:
 Process:
 1. Complete the approved component tree and decide which existing shared
    sections, feature-local blocks, and inline regions compose the page.
-2. Create `src/app/[locale]/<route>/page.tsx`.
+2. Create `src/app/<route>/page.tsx`, or
+   `src/app/[locale]/<route>/page.tsx` only when `i18n` is approved.
 3. Create only the feature-local component files approved for cohesive or
    interactive regions, using route colocation or the detected feature convention.
-4. Create `src/content/<locale>/<route>.ts` + i18n JSON files.
-5. Wire `generateMetadata` (see `seo.md`).
-6. Add the page to `src/app/sitemap.ts` automatically (sitemap reads from a route registry).
-7. Add per-locale path to `src/i18n/routing.ts` `pathnames` (see `i18n.md`) if locales should use different URLs (e.g. `/san-pham` (VI) vs `/products` (EN)).
+4. Create the approved single-locale or localized content files.
+5. Wire `generateMetadata` only when the approved SEO pack requires it.
+6. Add the page to `src/app/sitemap.ts` only when sitemap generation is approved.
+7. Add per-locale mappings only when `i18n` is approved and localized URLs differ.
 8. Add nav link in `components/layout/header.tsx`.
 9. Add page-composition/data tests and focused interactive child-contract tests
    following the project's test convention.
@@ -251,9 +254,9 @@ Process:
 - Use tokens from `theme.md` for color / spacing — never raw hex/Tailwind colors
 - `next/image` for every image, with `alt` + `sizes` (mandatory)
 - Server component by default; `"use client"` only when interactivity demands
-- Apply `"use cache"` + `cacheLife()` per page (from `caching.md`)
-- Wire `generateMetadata` per page (from `seo.md`)
-- Add new pages to sitemap + locale routing
+- Apply the approved caching contract; do not introduce cache APIs otherwise
+- Wire approved metadata and sitemap behavior; do not imply advanced SEO
+- Add locale routing only when `i18n` is approved
 - Keep feature-local blocks private; export shared sections/design-system UI only
   through the detected public boundary when real consumers exist
 - Before adding date/number/string/array/filter/query/random/browser helper code in page, section, or content mapper files, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior

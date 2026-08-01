@@ -16,7 +16,11 @@ Read `../_refs/shared/runtime-protocols.md` and the complete
 `../_refs/orchestration/parallel-protocol.md`; use its deterministic validators
 rather than reimplementing them in prompts. For write-capable work, load
 `../_refs/orchestration/workspace-isolation.md` and assign one owner for every
-shared artifact. Load `../_refs/harness/delegation-policy.json` and
+shared artifact. Verify plan identity with
+`../_refs/shared/approved-artifact.mjs`, resolve roles/tracks through
+`../_refs/shared/system-registry.json`, and build every unit envelope with
+`../_refs/orchestration/parallel-protocol.mjs`. Load
+`../_refs/harness/delegation-policy.json` and
 `../_refs/harness/task-brief.md` only after dispatch is feasible.
 
 ## Purpose
@@ -44,7 +48,8 @@ Workers may create only approved change-scoped artifacts and must not update
 summary, persona, memory, or living track backlogs. The named
 integration owner updates shared artifacts once after fan-in and emits the
 merged `artifact_context`. Shared implementation paths belong to a concrete
-unit or `integration-unit`; `parent-contract-only` owns contract metadata only.
+unit; shared/coordinated files and module gitlinks belong only to the named
+`integration-unit`. `parent-contract-only` owns contract metadata only.
 In the read-only contract, the parent and units make no writes.
 
 ## Entry Contracts
@@ -70,7 +75,8 @@ direct invocation is not a bypass.
 1. Assemble read-only `project_context`. Use valid summary sections when
    available; otherwise continue with targeted reads or a scoped code map. Do
    not refresh the summary merely because execution is write-approved.
-2. Validate the contract union and its hashes.
+2. Verify the immutable approved artifact and validate the contract union,
+   artifact ID/hash, repository owner, registry role, and source revision.
 3. Capture current branch, HEAD, staged, unstaged, untracked, dirty-diff hash,
    unrelated dirty paths, and intended-output overlap.
 4. Negotiate runtime capabilities through
@@ -115,8 +121,11 @@ or mark the run `BLOCKED`; do not dispatch optimistically.
 ### 2. Classify And Wave
 
 Build a dependency/resource graph from each unit's `depends_on`, `produces`,
-`consumes`, path ownership, exclusive resources, shared read-only resources,
-ports, database namespace, temp/cache/coverage roots, and expected cost.
+`consumes`, repository ID, Git root, allowed/prohibited paths, generated
+outputs, shared config, module gitlinks, exclusive resources, shared read-only
+resources, ports, database namespace, temp/cache/coverage roots, and expected
+cost. The same relative path in different repository identities is disjoint;
+different repository identities may never share one physical Git root.
 
 - Read-only audits may share one checkout.
 - Two expensive independent write units are enough to justify parallelism.
@@ -143,10 +152,15 @@ hash. Supported strategies are:
   workspace
 
 Create the exact runtime `task_brief` from `../_refs/harness/task-brief.md`.
-Reference the approved spec/plan by ID, path, and hash; include only the bounded
-plan step or excerpt needed by the unit. Never paste a full spec, full plan, or
-repository summary into each worker. A unit may not self-certify path
-compliance and may not spawn subagents.
+Its immutable `dispatch_envelope` carries contract ID, plan artifact ID/hash,
+repository ID/role, module ID, Git root, source revision, allowed/prohibited
+paths, read/write authority, required validations, and output evidence
+contract. Reference only the bounded approved plan step needed by the unit.
+Never paste a full spec, full plan, or repository summary into each worker. A
+unit may not self-certify path compliance, cross into another Git root, edit an
+unassigned shared path, mutate approved artifacts, stage, commit, push, or
+spawn subagents. If a commit result is selected, the primary integration agent
+creates the immutable snapshot from the mechanically validated worker diff.
 
 Select one role (`explorer`, `test_writer`, `docs_writer`, `reviewer`, or
 `implementation_worker`) and semantic model tier (`fast`, `balanced`, or
@@ -157,7 +171,9 @@ Select one role (`explorer`, `test_writer`, `docs_writer`, `reviewer`, or
 - Test writing is not inherently simple. Security, concurrency, flaky,
   integration-root-cause, and public-contract tests use balanced or deep.
 - Architecture, security review, public-contract decisions, and final
-  acceptance remain with the parent or a deep reviewer.
+  acceptance remain with the primary integration agent or a deep reviewer.
+- Runtime may select a semantic tier by role, but security, schema, and
+  integration decisions remain with the primary integration agent.
 - When model override is unsupported or unknown, inherit the parent model and
   record the limitation. Never require a provider model ID.
 - Do not create a worker just to run one command. Delegate execution only for
@@ -174,7 +190,8 @@ exact working-tree diff, or report; expected base; actual changed paths
 computed by the parent; exit code; blockers; and evidence digest. A missing
 result, non-zero claimed success, wrong cwd/base, timeout, deterministic
 path/contract violation, or unexpected write fails or blocks the unit under the
-protocol state machine.
+protocol state machine. Evidence repeats repository ID/role, module ID, and
+source revision; partial failure remains visible in the collected unit matrix.
 
 ### 5. Review, Repair, And Fan In
 
@@ -240,6 +257,7 @@ local simulation from real runtime concurrency evidence.
 ### Must do
 
 - Validate protocol v2 before dispatch.
+- Validate every dispatch envelope and worker action mechanically.
 - Fail closed on unknown write-heavy capability, ownership, base, workspace, or
   result identity for parallel dispatch; continue through the portable
   sequential parent fallback when safe.
@@ -265,6 +283,9 @@ local simulation from real runtime concurrency evidence.
 - Retry deterministic path or contract violations automatically.
 - Fan in failed, blocked, cancelled, or stale units.
 - Hard-code one framework, package manager, directory layout, or five-role wave.
+- Hard-code a provider or model name in the canonical contract.
+- Let a worker expand Git roots, own coordinated integration paths, mutate
+  approved artifacts, stage, commit, or push.
 - Promise timeout/cancellation/concurrency a runtime cannot provide.
 - Write after final branch-ready without invalidating and rerunning it.
 

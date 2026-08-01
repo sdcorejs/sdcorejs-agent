@@ -70,11 +70,12 @@ fallbacks.
 
 ## Communication Economy Policy
 
-The Communication Economy Policy minimizes total communication cost: bootstrap
-and just-in-time context, repeated handoff content, and user-visible output. It
-does not optimize output length in isolation or turn responses into fragments.
-Compact output remains localized, grammatical, and written in complete
-professional sentences.
+The Communication Economy Policy improves visible-output and portable-handoff
+efficiency through just-in-time context and fewer repeated blocks. Current
+evidence does not establish broad token or cost reduction. The policy does not
+optimize output length in isolation or turn responses into fragments. Compact
+output remains localized, grammatical, and written in complete professional
+sentences.
 
 Runtime communication has three distinct layers:
 
@@ -128,6 +129,12 @@ deterministic helper are loaded just in time from
 `_refs/shared/documentation-layout.mjs`, so unrelated Q&A bootstrap does not
 grow.
 
+In a multi-repository system, each module repository owns its module guides,
+requirements, technical docs, and assets. The portal owns only
+portal/integration docs and generated aggregates. An aggregate links pinned
+module sources or consumes versioned exports with repository/revision/hash
+provenance; it is not a second editable source of module documentation.
+
 The AI-agent track is an approved-plan-only authoring surface, not a bundled
 agent runtime. It selects one lifecycle engine (`openai-responses` or
 `openai-agents-sdk`) independently from one of twelve business capability
@@ -158,6 +165,9 @@ The root `name` and `version` are synchronized repository/plugin release
 metadata, not an npm package identity. The canonical package manager for
 repository validation remains npm. Use the committed `package-lock.json` with:
 
+- Root repository tooling requires Node.js `>=18`.
+- The Astro showcase under `site/` requires Node.js `>=22.12.0`.
+
 ```bash
 npm ci
 npm run check:text-hygiene
@@ -172,7 +182,7 @@ confirm dispatch behavior before adopting the pack for real work.
 
 | Tool path | Install or attach | Smoke prompt | Expected observation |
 |---|---|---|---|
-| Claude Code plugin | Install from the plugin marketplace. | `Use sdcorejs-documentation to summarize this repo's validation posture.` | A documentation skill loads, creates a tasklist for non-trivial work, and reports verification status. |
+| Claude Code plugin | Install from the plugin marketplace. | `Use sdcorejs-explore to summarize this repo's validation posture.` | The explore skill loads in read-only summary mode, creates a tasklist for non-trivial work, and reports verification status. |
 | Codex attached repo | Add this repo as a submodule or keep `AGENTS.md` at the target root. | `Use the SDCoreJS flow to plan a small docs update.` | `AGENTS.md` routes to brainstorming/spec/plan discipline instead of writing immediately. |
 | Codex native skills | Copy `codex/skills/**` plus `codex/skills/_refs/**` into `$CODEX_HOME/skills`. | `Use sdcorejs-documentation to write a short technical doc.` | The skill resolves `../_refs/...` and follows tasklist/verification rules. |
 | Cursor | Use `AGENTS.md` plus `.cursor/rules/**`. | `Create acceptance criteria for a small feature using SDCoreJS.` | Product/design/test/doc routing selects the matching workflow. |

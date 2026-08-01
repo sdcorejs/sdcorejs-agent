@@ -18,12 +18,12 @@ verification. The contract is provider-portable and defaults to denial.
 
 ## Trusted Input
 
-`trusted_context` records the authenticated server or job source for `tenantId`,
-`userId` or service principal, permissions, locale, correlation ID, and
-application session, access scope, environment, approval authority, billing
-source, and provider/credential selection. Model output and untrusted client
-fields cannot define, elevate, or override this context. Re-authorize at every
-tool boundary.
+`trusted_context` records the authenticated server/application or job source
+for tenant ID, actor ID or service principal, roles, permissions, locale,
+correlation ID, access scope, and application session, plus environment,
+approval authority, billing source, and provider/credential selection. Model
+output, retrieved content, prompt injection, and untrusted client fields cannot
+define, elevate, or override this context. Re-authorize at every tool boundary.
 
 `input` and `output` hold closed, versioned application schemas plus
 classification, maximum-size, and redaction policy. Structured output is
@@ -63,6 +63,11 @@ validated before evidence/guardrail release.
 4. Evidence-backed answers disclose material freshness and partiality.
 5. No engine profile may weaken the capability-independent security floor.
 6. Offline validation does not prove live provider compatibility.
+
+Approved spec/plan identity uses
+`_refs/shared/approved-artifact.mjs`. Module-owned contract/code/evidence paths
+use the module repository identity from
+`_refs/shared/repository-contract.mjs`; portal fallback is forbidden.
 
 Validate serialized contracts with:
 

@@ -23,7 +23,7 @@ unsupported or unknown.
 ```yaml
 explore_context:
   source: sdcorejs-explore
-  action: summary-read | summary-refresh | code-map-readonly | trace-flow-readonly | env-setup-readonly | env-setup-write-approved | recovery-readonly | persona-read | persona-write-approved | memories-read | memories-write-approved | documentation-harvest-readonly
+  action: summary-read | summary-refresh | code-map-readonly | code-map-write-approved | trace-flow-readonly | env-setup-readonly | env-setup-write-approved | recovery-readonly | persona-read | persona-write-approved | memories-read | memories-write-approved | documentation-harvest-readonly
   target_root: <path>
   target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
   tracks:
@@ -35,6 +35,38 @@ explore_context:
     - profile: <stack_profile>
       evidence:
         - <path or dependency or config signal>
+  repository_topology:
+    execution_host_repository_id: <stable remote-derived id | unknown>
+    integration_owner_repository_id: <stable remote-derived id | unknown>
+    repositories:
+      - repository_id: <stable id | unknown>
+        repository_role: portal | module | standalone | integration
+        module_id: <id | null>
+        repository_relative_path: <path>
+        source_revision: <revision | null>
+        portal_pinned_revision: <revision | null>
+        status: initialized | uninitialized
+        freshness: fresh | stale | unknown
+    relationships:
+      - kind: portal-module-gitlink
+        portal_repository_id: <id>
+        module_repository_id: <id>
+        module_id: <id>
+        repository_relative_path: <path>
+    artifact_locations:
+      - artifact_id: <id | unknown>
+        artifact_kind: <kind>
+        repository_id: <id>
+        repository_relative_path: <path>
+    ownership_hypotheses:
+      - artifact_id: <id>
+        owner_repository_id: <id>
+        owner_module_id: <id | null>
+        confidence: high | medium | low
+        evidence: <relationship metadata/path>
+    findings:
+      - code: <stable finding code>
+        evidence: <repository-relative evidence>
   source_roots:
     - <path>
   files_read:
@@ -71,6 +103,12 @@ Rules:
 - Summarize large `files_read` sets.
 - Include only commands that actually ran.
 - Cite evidence rather than guesses in `profile_evidence`.
+- Resolve tracks/profiles through `_refs/shared/system-registry.json`; every
+  first-class track, including `ai-agent`, is accepted.
+- Keep topology discovery read-only. Do not initialize modules, update
+  gitlinks, move artifacts, refresh summaries, or migrate discovered state.
+- Use stable remote-derived repository IDs and repository-relative artifact
+  paths. Absolute checkout paths are not durable identity.
 - Use `next_skill_hint` only as a routing hint.
 - For approved writes, also emit the standard `artifact_context` from
   `_refs/shared/artifact-lifecycle.md`.
@@ -130,6 +168,11 @@ tracks: []
 stack_profiles: []
 summary_scope: <scope>
 source_roots: []
+repository:
+  repository_id: <stable remote-derived id | unknown>
+  repository_role: portal | module | standalone | integration
+  module_id: <id | null>
+  parent_repository_id: <stable id | null>
 evidence:
   workspace_configs: []
   package_manifests: []
@@ -154,6 +197,11 @@ Use repository-relative paths. Never persist absolute machine paths, current
 task/progress, current spec/plan, resume instructions, working-tree or session
 status, recently changed files, or current-change verification. Branch and HEAD
 must not be the sole freshness keys.
+
+Each repository owns its own summary. A portal summary may record composition
+relationships and pinned module revisions, but it must not contain an editable
+copy of a module summary or module-owned code map. Summary and durable
+task-scoped code-map authoring belongs only to `sdcorejs-explore`.
 
 ## Summary v2 Body
 

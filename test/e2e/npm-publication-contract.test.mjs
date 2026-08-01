@@ -5,7 +5,7 @@ import { basename, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
-const EXPECTED_RELEASE_VERSION = '0.6.0';
+const EXPECTED_RELEASE_VERSION = '0.7.0';
 const EXPECTED_SKILL_COUNT = 21;
 const CONTRACT_PATH = 'test/e2e/npm-publication-contract.test.mjs';
 
@@ -163,7 +163,12 @@ test('npm publication: root manifest is private tooling without publication meta
   assert.equal(packageJson.types, undefined);
   assert.equal(packageJson.bin, undefined);
   assert.deepEqual(packageJson.dependencies ?? {}, {});
-  assert.deepEqual(Object.keys(packageJson.devDependencies).sort(), ['lefthook', 'typescript']);
+  assert.deepEqual(Object.keys(packageJson.devDependencies).sort(), [
+    '@angular/compiler',
+    'lefthook',
+    'typescript',
+    'yaml',
+  ]);
 });
 
 test('npm publication: scripts retain development behavior without publish commands or lifecycle hooks', async () => {

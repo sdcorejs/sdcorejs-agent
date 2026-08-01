@@ -1,5 +1,7 @@
 # Worked Example — `product` entity
 
+<!-- executable-reference-default: partial-example -->
+
 Reference output from a complete init-entity run (the `sdcorejs-angular` orchestrator with the [`init-entity.md`](../write-code/init-entity.md) pack) against `product`. Use this to verify the shape and conventions of the generated bundle; do NOT copy-paste — let the orchestrator emit the parameterized templates from `entity-skeleton.md`.
 
 ## Contents
@@ -356,7 +358,7 @@ export class DetailComponent implements OnInit {
   entity: Partial<ProductSaveReq & { id?: string }> = {};
   readonly pageTitle = computed(() => {
     if (this.state() === 'CREATE') return '<localized text>';
-    return this.state() === 'DETAIL'<localized text>'<localized text>' : '<localized text>';
+    return this.state() === 'DETAIL' ? '<localized text>' : '<localized text>';
   });
   readonly isDetail = computed(() => this.state() === 'DETAIL');
   readonly PRODUCT_CATEGORIES = PRODUCT_CATEGORIES;

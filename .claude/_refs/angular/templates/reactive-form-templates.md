@@ -1,5 +1,7 @@
 # Reactive Form — Code Templates
 
+<!-- executable-reference-default: partial-example -->
+
 Code templates referenced from the screen-detail reference pack [`screen-detail.md`](../write-code/screen-detail.md) (form refinement section — validators, signal-first rules, FormArray; loaded on demand by the `sdcorejs-angular` orchestrator). The pack owns the validation strategy and the "lightweight first, strict second" doctrine; this file holds the literal templates.
 
 The route/page remains the single overall form owner. When the approved Frontend
@@ -359,7 +361,9 @@ export class DetailAdvancedComponent implements OnInit {
 
   rowKey(itemGroup: unknown): string {
     const group = itemGroup as FormGroup;
-    return group.get('id'<localized text>'tempId')?.value ?? String(this.items.controls.indexOf(group));
+    return group.get('id')?.value
+      ?? group.get('tempId')?.value
+      ?? String(this.items.controls.indexOf(group));
   }
 
   async onSave(): Promise<void> {
@@ -448,7 +452,9 @@ removeLineItem(index: number): void {
 
 rowKey(group: unknown): string {
   const formGroup = group as FormGroup;
-  return formGroup.get('id'<localized text>'tempId')?.value ?? String(this.lineItems.controls.indexOf(formGroup));
+  return formGroup.get('id')?.value
+    ?? formGroup.get('tempId')?.value
+    ?? String(this.lineItems.controls.indexOf(formGroup));
 }
 
 #buildPayload(): ParentSaveReq {
@@ -647,7 +653,7 @@ export class DetailComponent implements OnInit {
   entity: Partial<ProductSaveReq & { id?: string }> = {};
   readonly pageTitle = computed(() => {
     if (this.state() === 'CREATE') return '<localized text>';
-    return this.state() === 'DETAIL'<localized text>'<localized text>' : '<localized text>';
+    return this.state() === 'DETAIL' ? '<localized text>' : '<localized text>';
   });
   readonly fieldErrorMessages = signal<Record<ProductFieldName, string | null>>({
     code: null,

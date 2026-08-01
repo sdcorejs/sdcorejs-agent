@@ -1,20 +1,24 @@
-> **Reference for the `sdcorejs-angular` orchestrator.** Loaded on demand when the
-> confirmed request is a PO/BA portal, module, or feature prototype from PRD-like
-> input with no API/backend/design available. Not a standalone skill.
+> **Reference for the `sdcorejs-angular` orchestrator.** Loaded on demand only
+> after an explicit opt-in to the registry `technical-prototype` profile and
+> approval of its scope/assumptions. Not a standalone skill.
 
-# PO/BA Prototype Portal Mode
+# Technical Prototype Mode
+
+This profile is demo-only and **not production**. Its output cannot establish
+production readiness, production auth, or acceptance evidence for unimplemented
+requirements. Never infer it from a user's role or from missing input.
 
 ## When to use
 
-Use this reference when the request asks for any of these outcomes:
+Use this reference only when all of these are true:
 
-- PO/BA portal, module, feature, or workflow demo.
-- Generate a portal prototype from PRD, user story, acceptance criteria,
-  business description, function list, or stakeholder notes.
-- Build without API/backend, without design handoff, or before auth/permission
-  services exist.
-- Align module/screens with a client using realistic local demo data.
-- Convert PRD to UI prototype or create a mock-first portal.
+- the approved artifact or current user request names `technical-prototype`;
+- `explicit_profile_approval` is recorded;
+- semantic application/module ownership is resolved;
+- prototype assumptions and every optional feature are approved.
+
+A PRD, story, stakeholder note, vague UI request, nontechnical/PO/BA role,
+missing backend/design, or request for a demo is insufficient by itself.
 
 Do not use this reference for production API integration. A mock API document,
 PRD, endpoint table, or sample JSON is not a live backend unless the user also
@@ -23,16 +27,11 @@ project service convention.
 
 ## Input handling
 
-Missing API, backend, design, exact fields, or permission data is not a blocker.
-Infer a safe first prototype from the best available source. Ask only when a
-missing value is genuinely unsafe to infer, such as:
-
-- New portal project name.
-- Target module when multiple existing modules could own the feature.
-- Primary entity when the PRD describes several peers and no lead workflow is
-  clear.
-
-Record all inferred choices under `Prototype assumptions` before generating.
+Validate the request with `_refs/angular/execution-contract.mjs`. Missing API,
+backend, or design is tolerable only when the approved prototype assumptions
+state the demo substitute. Missing target ownership, entity boundary, fields,
+screens, or optional-feature approval blocks code generation. Record all
+authorized substitutions under `Prototype assumptions` before generating.
 
 ## Source priority
 
@@ -41,19 +40,18 @@ Use this order when deriving screens and data:
 1. PRD, user story, acceptance criteria, business rules, function list.
 2. Existing project conventions, routes, feature folders, services, models,
    status labels, permission code shape, and local UI patterns.
-3. Domain semantics for the entity and workflow.
+3. Explicitly approved prototype assumptions.
 4. Core UI starter template, component patterns, and style guide.
-5. Safe prototype defaults from this reference.
 
 ## Template-first invariant
 
-PO/BA prototypes must be built on a Core UI portal baseline, not as a freeform
-new app design.
+Technical prototypes must be built on an approved Core UI application baseline,
+not as a freeform new app design.
 
 - New portal: run `init-portal.md` first, render the Core UI starter template,
-  keep its app shell/layout/sidebar/permission bootstrap, and then add admin,
-  module, entity, list, detail, create/update, and action changes inside that
-  baseline.
+  keep its app shell/layout/sidebar/permission bootstrap, and then add only the
+  approved module, entity, list, detail, create/update, and action changes inside
+  that baseline.
 - Existing portal: modify the existing Core UI portal shell, routes, menu, and
   component conventions in place. Do not create a second shell or detached demo
   app beside it.
@@ -73,7 +71,7 @@ Before writing files, present this block in the user's language while keeping
 identifiers, routes, env keys, permission codes, and file paths in English:
 
 ```text
-PO/BA Prototype Plan:
+Technical Prototype Plan:
 - Prototype goal:
 - Input source:
 - Template baseline:
@@ -89,20 +87,21 @@ PO/BA Prototype Plan:
 - Out of scope for prototype:
 ```
 
-Also include a `Prototype assumptions` section covering inferred fields,
-statuses, validators, relations, route/menu labels, workflow actions, seed-data
-edges, and anything deferred until a real API exists.
+Also include a `Prototype assumptions` section covering every approved demo
+substitution and anything deferred until a real API/design exists. Do not add
+fields, statuses, validators, relations, route/menu labels, workflow actions,
+seed data, admin, auth, or extra screens merely as defaults.
 
 ## Mock-first service mode
 
-- Default service mode is mock-first with local persistence.
+- Mock-first service mode is allowed only when named in the approved assumptions.
 - Use `localStorage` by default, or reuse `MockCrudStore` when the target project
   already has that helper/convention.
 - Do not create live API calls, hard-code mock API URLs, or require backend auth.
 - Do not introduce login/auth dependencies for a prototype unless the request is
   specifically about auth.
-- Create a safe stub context when the shell expects current user, tenant, or
-  permission data. The stub must be local/demo-only and easy to replace.
+- Create a local/demo-only user, tenant, auth, or permission stub only when that
+  exact capability is approved. A stub is never production auth evidence.
 - Keep mock services behind the same public service methods the future API mode
   will need, so the later backend swap is mechanical.
 - Centralize seed rows in `services/<entity>.mock-data.ts` or the established
@@ -110,25 +109,23 @@ edges, and anything deferred until a real API exists.
 
 ## Permission behavior
 
-- For a new portal prototype, generate `PermissionConfiguration.disabled = true`
-  so the portal boots locally without a permission backend.
-- For an existing portal prototype, keep routes and menu demoable when the
-  permission backend is not ready.
-- Keep route metadata and permission codes for future backend alignment, but
-  default to allow in prototype mode when permission data is missing.
-- Do not hide Create, Update, Detail, workflow, export, or sync buttons merely
-  because permission data has not been seeded yet.
-- In the final response, report the permission bypass status clearly.
+- A permission bypass requires explicit approval in the prototype assumptions.
+- Preserve an existing portal's auth and permission behavior unless bypass is
+  approved; do not silently turn authorization off.
+- Create permission codes or route metadata only from approved requirements or
+  an explicit profile/template contract.
+- Report any bypass as demo-only, insecure for production, and not production
+  evidence.
 
 ## Mock data rules
 
-- Use default 25 rows per primary listing when no count is provided.
-- Acceptable prototype range is 20-30 rows. Use fewer only when the entity is a
-  small lookup or the user explicitly requests it.
+- Generate seed data only when `seed-data` is an approved optional feature.
+- Use the approved row count; if absent, stop and add a row-count assumption for
+  approval instead of silently choosing one.
 - Seed realistic domain data. Never use generic placeholders such as `Name 1`,
   `Code 01`, repeated identical descriptions, or meaningless lorem text.
 - Include status distribution with at least one record per important status.
-- Include valid edge cases that help PO/BA review behavior:
+- Include approved valid edge cases that help stakeholder review behavior:
   - nullable optional fields,
   - long descriptions,
   - inactive, overdue, expired, rejected, cancelled, or draft records when
@@ -138,26 +135,23 @@ edges, and anything deferred until a real API exists.
 - Do not include real secrets, tokens, credentials, private customer data, or
   real personal information.
 - Keep relations and lookup ids consistent across files.
-- If the entity needs related lookups, seed those lookup rows too or reuse
-  existing lookup data.
+- If approved seed data needs related lookups, seed those lookup rows too or
+  reuse existing lookup data.
 
 ## UI rules
 
 - Start from the selected template baseline. For new portals, this is the
   `init-portal` Core UI starter template. For existing portals, this is the
   current Core UI app shell plus local route/menu/component conventions.
-- Every list screen must expose visible seed data immediately, plus
-  search/filter/sort/paging behavior where the entity semantics support it.
-- Detail must support CREATE, UPDATE, and DETAIL states unless the PRD explicitly
-  defines a read-only screen.
-- Infer validators from PRD, field semantics, status workflow, and common
-  business rules. Keep validator inference light enough for PO/BA review and
-  record stricter rules as assumptions when uncertain.
+- Generate only approved list/detail/create/update states and actions.
+- Search/filter/sort/paging exist only when approved.
+- Derive validators from approved requirements/API contracts; do not invent
+  common-business-rule validators.
 - Use a side-drawer for simple 5-6 field create/update/detail flows.
 - Use a full page for complex, multi-section, workflow-heavy, or child-collection
   detail screens.
 - Workflow actions such as submit, approve, reject, cancel, export, and sync
-  become mock-first action buttons that update the mock store state.
+  become mock-first actions only when each action is explicitly approved.
 - Sidebar/menu/routes must be navigable for demo review.
 - Include empty, loading, error, and success states where the generated screen
   can naturally show them.
@@ -167,12 +161,12 @@ edges, and anything deferred until a real API exists.
 - Do not add visible in-app instructional prose explaining how the prototype
   works. The demo should feel like the actual portal.
 
-## PRD-to-EntitySchema inference
+## Approved input-to-EntitySchema mapping
 
 Before creating files, run `reuse-existing-entities.md` and decide reuse,
 extend, or create new for every primary and related entity.
 
-Infer:
+Map only approved:
 
 - Module and route path.
 - Primary entity and related entities/lookups.
@@ -181,7 +175,7 @@ Infer:
 - Detail read-only facts, promoted identifiers, status display, and audit facts.
 - Workflow actions and status transitions.
 - Mock service methods and action methods.
-- Permission metadata for future production alignment.
+- Permission metadata from an approved requirement/profile contract.
 
 Keep Service and UI contracts explicit. Separate DTO, ListRes, DetailRes,
 CreateReq, UpdateReq, SaveReq, and ViewModel when read, write, list, detail, and
@@ -193,9 +187,10 @@ Use this reference as the prototype overlay, then continue through the normal
 Angular refs:
 
 1. `input-analysis.md` for PRD/requirement mapping and Core UI reuse.
-2. `po-ba-prototype.md` for prototype assumptions and no-backend decisions.
+2. `po-ba-prototype.md` for explicit profile validation and approved assumptions.
 3. `init-portal.md` if a new portal is needed.
-4. `admin-screens.md` after new portal init.
+4. `admin-screens.md` only when its admin/auth/account/role/permission pack is
+   explicitly approved.
 5. `init-module.md` when the module does not exist.
 6. `init-entity.md` for model/service/mock-data/routes/list/detail.
 7. `screen-list.md`, `screen-detail.md`, and `actions.md` for refinements.
@@ -209,7 +204,8 @@ The final response for this mode must include:
 - route/menu entries generated or changed,
 - mock rows per listing,
 - permission bypass status,
-- how PO/BA can run the demo locally,
+- how reviewers can run the demo locally,
+- a prominent not-production statement,
 - Prototype assumptions to confirm,
 - next step when the real API/backend exists.
 

@@ -54,20 +54,24 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
 - Before creating model/interface/type/dto/service/store/repository/API-client files, scan the target codebase for existing contracts and symbols using the variants listed in `./reuse-existing-entities.md`
 - Decide `reuse`, `extend`, or `create new` for each entity and present a short pre-code summary of found contracts, imports to reuse, existing files to extend, truly new files to create, and why duplicates are not created
 - Check `@sdcorejs/utils` before adding utility/helper functions; reuse `DateUtilities`, `NumberUtilities`, `StringUtilities`, `ValidationUtilities`, `ArrayUtilities`, `FilterUtilities`, `Utilities`, `ObjectUtilities`, `ColorUtilities`, `BrowserUtilities`, models, and constants when applicable
-- Generate entity service with runnable mock CRUD by default (`localStorage`) when backend API contract is not provided yet
-- Generate `services/[entity].mock-data.ts` as the single centralized seed source for each entity (target: **20–40 rows**)
-- In PO/BA prototype mode, PRD-only/no API/no backend/no design input is enough
-  to proceed. Infer a safe EntitySchema from the PRD/user story/AC, record
-  assumptions, and keep the service mock-first.
-- In PO/BA prototype mode, generate list/detail/create/update by customizing the
+- Generate mock CRUD only for an explicitly approved `technical-prototype`
+  whose assumptions include `mock-service`.
+- Generate `services/[entity].mock-data.ts` only when `seed-data` is approved;
+  use the approved row count rather than an implicit range/default.
+- In explicit technical-prototype mode, missing API/backend/design is tolerable
+  only when the approved assumptions define the substitute. Derive a safe
+  EntitySchema from approved requirements and record assumptions.
+- In explicit technical-prototype mode, generate only approved
+  list/detail/create/update states by customizing the
   established entity templates and Core UI component gates. Do not self-design an
   alternate listing, detail, form, dashboard, or page layout system for speed.
-- In PO/BA prototype mode, mock data uses default 25 rows per primary listing
-  when no count is provided; 20-30 rows is the accepted demo range.
-- Generate mock data immediately after `SaveReq` and `DTO` are finalized (whether from user input or semantic inference); do not wait until after list/detail components are built
+- When `seed-data` is approved, generate it immediately after `SaveReq` and
+  `DTO` are finalized; if row count is absent, block for approval rather than
+  inventing a default.
 - Seed rows must use domain-realistic values derived from the inferred field schema; never use generic placeholders like `"Name 1"`, `"Code 01"`, or repeated identical values across all rows
 - Ensure mock store reseeds automatically when stored JSON is missing, empty array, or corrupted JSON
-- For PO prototype flows with a mock API contract but no runnable backend, keep mock-first service mode while matching the contract's method names, payloads, response fields, enum/status values, and important error paths
+- For an approved technical prototype with `mock-service` and no runnable
+  backend, keep mock-first service mode while matching the approved contract.
 - If a runnable backend endpoint, base URL/configuration, auth expectation, and project service convention are provided explicitly, service may switch to `BaseService`-based API integration
 - Treat Service public models as the Service-Component contract, not as a forced exact copy of the raw backend API:
   - `SaveReq` / `CreateReq` / `UpdateReq` describe what the Service accepts and sends after mapping.
@@ -509,8 +513,10 @@ reference, not a paste source.
 - [ ] If mock API/API-contract input exists, complete `./mock-api-input.md` contract mapping before creating models/services/screens
 - [ ] Create model file with SaveReq interface and DTO type
 - [ ] Classify every ambiguous field as raw API, Service input/output, Component ViewModel, or UI state before adding it to a type
-- [ ] Create `services/[entity].mock-data.ts` with 20–40 domain-realistic seed rows immediately after SaveReq/DTO are finalized
-- [ ] Create service with mock-first CRUD (`localStorage`) by default; use BaseService/API mode only when a runnable backend endpoint/configuration and project convention are explicit
+- [ ] Create `services/[entity].mock-data.ts` only for approved `seed-data`,
+      with the approved count and domain-realistic values
+- [ ] Use mock-first CRUD only for an approved technical-prototype
+      `mock-service`; otherwise follow the approved runnable backend contract
 - [ ] Add mapper/internal API types when raw backend shape differs from the Service contract
 - [ ] Create route/page list container with @SdTabComponent and only the approved feature-local children
 - [ ] Create route/page detail container with 3-state machine and only the approved form/workflow/collection children

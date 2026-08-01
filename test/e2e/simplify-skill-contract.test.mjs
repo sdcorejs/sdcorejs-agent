@@ -237,7 +237,7 @@ test('simplify: mutation guards detect removed safety and routing invariants', a
 
 test('simplify: package, mirrors, refs, catalog, and dependency boundary agree on 21 skills', async () => {
   const pkg = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8'));
-  assert.equal(pkg.version, '0.6.0');
+  assert.equal(pkg.version, '0.7.0');
   assert.equal(pkg.packageManager, 'npm@10.9.2');
   assert.match(pkg.scripts['test:e2e:repository'], /test\/e2e\/simplify-skill-contract\.test\.mjs/);
 
@@ -266,7 +266,7 @@ test('simplify: package, mirrors, refs, catalog, and dependency boundary agree o
   assert.ok(publicSources.every(source => /\b21\b/.test(source)), 'public inventories show 21');
 
   const lock = JSON.parse(await readFile(join(ROOT, 'package-lock.json'), 'utf8'));
-  assert.equal(lock.packages[''].version, '0.6.0');
+  assert.equal(lock.packages[''].version, '0.7.0');
 
   const versionedMetadata = await Promise.all([
     'site/package.json',
@@ -276,11 +276,11 @@ test('simplify: package, mirrors, refs, catalog, and dependency boundary agree o
   ].map(async file => [file, JSON.parse(await readFile(join(ROOT, file), 'utf8'))]));
   for (const [file, metadata] of versionedMetadata) {
     if (file === '.claude-plugin/marketplace.json') {
-      assert.equal(metadata.plugins[0].version, '0.6.0', file);
+      assert.equal(metadata.plugins[0].version, '0.7.0', file);
     } else if (file.endsWith('package-lock.json')) {
-      assert.equal(metadata.packages[''].version, '0.6.0', file);
+      assert.equal(metadata.packages[''].version, '0.7.0', file);
     } else {
-      assert.equal(metadata.version, '0.6.0', file);
+      assert.equal(metadata.version, '0.7.0', file);
     }
   }
 });

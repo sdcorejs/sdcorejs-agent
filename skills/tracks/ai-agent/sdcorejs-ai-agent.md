@@ -22,8 +22,8 @@ does not perform live provider calls.
 Require all of the following before writing:
 
 - an immutable approved plan with `track: ai-agent`;
-- its immutable approved spec and `approved_spec_hash`;
-- a valid `approved_plan_hash`;
+- its immutable approved spec and shared `approval_hash`;
+- a valid plan `approval_hash` whose verified parent graph includes that spec;
 - an `agent_architecture` block that names one `engine_profile`, one
   `capability_profile`, target paths, trust boundaries, tool boundaries,
   persistence policy, approval policy, eval policy, and verification commands;
@@ -32,11 +32,21 @@ Require all of the following before writing:
 
 If any item is absent, ambiguous, stale, or hash-invalid, stop and return to the
 owning workflow gate. Do not infer a profile from prose after plan approval.
+Create and verify approved spec/plan identity only through
+`_refs/shared/approved-artifact.mjs`; do not use a track-local hash scheme.
+When a legacy portable handoff names these values `approved_spec_hash` and
+`approved_plan_hash`, each value must equal the corresponding shared
+`approval_hash`; the aliases do not authorize an independent hash contract.
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and `_refs/ai-agent/manifest.json`.
-Apply `_refs/shared/artifact-lifecycle.md` when `.sdcorejs/**` is written.
+Read `_refs/shared/runtime-protocols.md`, `_refs/shared/system-registry.json`,
+and `_refs/ai-agent/manifest.json`. Apply
+`_refs/shared/artifact-lifecycle.md` when `.sdcorejs/**` is written. Use
+`_refs/shared/repository-contract.mjs` for repository ownership and
+`_refs/ai-agent/execution-identity.mjs` for profile resolution, approved graph
+verification, runtime approval fingerprints, downstream artifact identity, and
+offline/live evidence classification.
 
 Use the live `Tasks` section for progress. Preserve unrelated working-tree
 changes and fail closed on overlapping paths.
@@ -45,7 +55,8 @@ changes and fail closed on overlapping paths.
 
 1. Record branch, HEAD, status, diff summary, approved artifact paths, and
    verification baseline.
-2. Verify `approved_spec_hash` and `approved_plan_hash` before source edits.
+2. Verify the approved spec/plan graph and shared approval hashes before source
+   edits.
 3. Resolve `engine_profile` and `capability_profile` exactly once from the
    manifest. Record the resolved IDs and file paths in the live task record.
 4. Load the common security floor, the selected engine, the selected capability,
@@ -53,9 +64,16 @@ changes and fail closed on overlapping paths.
    approved plan.
 5. Validate profile completeness. A capability profile may narrow behavior but
    must not weaken the common security floor.
-6. Confirm trusted `tenantId`, `userId` or service principal, permissions,
-   correlation ID, locale, and application session come from authenticated
-   server or job context. Model output cannot define or override them.
+6. Confirm trusted `tenantId`, `actorId`/service principal, roles, permissions,
+   locale, `correlationId`, `accessScope`, and application session come from
+   authenticated server/application or job context. Model/user input cannot
+   define or override them. The executor must not author concrete `tenantId`,
+   `actorId`, roles, permissions, session values, or trusted-context records into
+   application source, config, or scenario inputs, or use them as runtime defaults,
+   to satisfy this check. Clearly synthetic test-only values may exercise trust
+   rejection and authorization boundaries but must never be promoted into runtime
+   trust or evidence. When the trusted server or job source is absent, stop, retain
+   the existing paths, and do not fabricate a substitute.
 7. Implement only approved target paths. Keep tools business-shaped, enforce
    authorization server-side, and make mutation approval, idempotency, resource
    version, audit, and redaction behavior explicit.
@@ -69,6 +87,11 @@ changes and fail closed on overlapping paths.
 
 The executor must not invoke Git. Git artifacts remain owned by
 `sdcorejs-git` after the final read-only gates.
+
+Module-owned AI-agent contracts, integration code, and evidence live in the
+module repository named by the approved artifacts. An unavailable/unwritable
+module owner blocks; portal fallback is forbidden. This repository remains a
+skill pack and must not add an `@sdcorejs/ai` runtime package.
 
 ## Engine Boundary
 
@@ -99,10 +122,17 @@ status, findings, risks, blockers, and next action.
 ```yaml
 ai_agent_context:
   schema_version: 1
-  approved_spec_path: <path>
-  approved_spec_hash: <sha256>
-  approved_plan_path: <path>
-  approved_plan_hash: <sha256>
+  contract_id: <shared contract id>
+  requirement_id: <shared requirement id>
+  track: ai-agent
+  stack_profile: ai-agent
+  owner_repository_id: <stable repository id>
+  owner_repository_role: <repository role>
+  owner_module_id: <module id>
+  ownership_scope: module
+  source_revision: <40-character Git revision>
+  approved_spec: <repository/artifact/path/revision/approval-hash ref>
+  approved_plan: <repository/artifact/path/revision/approval-hash ref>
   engine_profile: <resolved engine id>
   engine_profile_path: <resolved path>
   capability_profile: <resolved capability id>
@@ -126,14 +156,34 @@ ai_agent_context:
   provider_storage_policy: <disabled or approved governance reference>
   deterministic_eval_commands: [<command>]
   focused_test_commands: [<command>]
-  verification:
+  downstream_artifacts:
+    test: <test-plan identity>
+    review: <review-report identity>
+    repair: <repair-report identity>
+    ship: <release-evidence identity>
+  offline_verification:
+    evidence_class: GOLDEN
     commands: [<command>]
-    result: <pass|fail|skipped>
+    result: PASSED | FAILED | NOT RUN
   live_provider_verification:
-    performed: false
+    evidence_class: LIVE_AGENT
+    credentials_available: false
+    result: NOT RUN
     evidence: null
+  context_hash: <sha256:v1 hash>
   findings: []
 ```
+
+When provider credentials are unavailable, run the complete offline suite and
+record live provider verification as `NOT RUN`; never claim live validation
+passed. The executor must not author or predeclare `PASSED` in source, config,
+fixtures, or scenario inputs; an offline `PASSED` value may be emitted only after
+the listed verification commands run successfully and produce actual command
+evidence. Application or runtime source must never return `offline_verification`
+as `PASSED` unconditionally or derive it from static config or fixture data.
+`PASSED` is orchestration evidence emitted only after the listed command runs
+successfully with attached command evidence; it is not application runtime output.
+A live `PASSED` result requires separate current durable evidence.
 
 Reject downstream work when this block conflicts with the approved hashes,
 resolved profiles, changed target paths, or current working-tree evidence.

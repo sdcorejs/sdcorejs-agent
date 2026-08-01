@@ -29,7 +29,10 @@ substitute for verification.
 
 Read `_refs/shared/runtime-protocols.md`. Apply
 `_refs/shared/artifact-lifecycle.md` and run SDCoreJS Artifact Closure before
-staging, commit, or push.
+staging, commit, or push. For multiple worktrees, nested repositories, or
+submodules, also load `_refs/shared/git-closure-contract.mjs`; it verifies
+approved artifacts with the common approval helper and emits one exact,
+repository-local path set per Git root.
 
 ## Mode Selection
 
@@ -187,6 +190,15 @@ Rules:
 10. After commit, verify that no required artifact owned by the change remains
     outside the commit.
 
+For multi-root, thread, worktree, nested-repository, or submodule changes, the
+repository-local helper output is normative. Bind and verify owner, active
+contract/plan, approval hash, source/evidence revision, and exact paths per Git
+root. Module and portal closure/commit units stay independent; parents never
+stage nested content, and stage a gitlink only with active-plan approval.
+Exclude other-thread/worktree/owner, unrelated, local-only, secret, stale, and
+unknown paths. Never create or stage either `.sdcorejs/current-session.md` or
+`.sdcorejs/tasks/current-session.md`; the direct ledger reference has details.
+
 When closure is complete, do not ask the user whether to include each required
 spec, plan, execution doc, feature ledger, or approved documentation asset.
 The request to commit the change already covers those artifacts.
@@ -209,17 +221,10 @@ Commit Scope Ledger:
   untracked_paths:
   included_paths:
   excluded_dirty_paths:
-  sdcorejs_artifacts:
-    discovery_complete:
-    discovery_errors:
-    closure_result: complete | incomplete | ambiguous
+  sdcorejs_artifacts: {closure_result: complete | incomplete | ambiguous}
   secret_scan_result:
-  ship_evidence:
-    ship_context:
-    associated_HEAD_or_diff:
-  branch_ready_evidence:
-    result:
-    associated_HEAD_or_diff:
+  ship_evidence: {associated_HEAD_or_diff:}
+  branch_ready_evidence: {result:, associated_HEAD_or_diff:}
   commit_type:
   commit_scope:
   commit_message_preview:
@@ -308,6 +313,8 @@ git log -5 --oneline
    - `.sdcorejs/documentation/**` changed but is outside the requested feature commit scope.
 7. Stage only explicit included paths, including the resolved required
    `.sdcorejs/**` closure, when staging is needed.
+   For multiple repositories, execute each repository's exact staging commands
+   from its own Git root; never run parent staging over nested module content.
 8. Infer Conventional Commit type from included paths and change summary, not from excluded dirty files.
 9. Use a scope when obvious from module, package, or skill name.
 10. Commit with a heredoc for multi-line bodies.

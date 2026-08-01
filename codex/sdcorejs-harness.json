@@ -3,7 +3,7 @@
   "adapter": "codex",
   "source_path": "_refs/harness/capability-contract.json",
   "source_hash": "sha256:d6bf74c23399960c9424357773dd6490c0e6356b4a4c9be39254597996aaa698",
-  "content_hash": "sha256:8c65d6009dff9a74e13661755f950d40eacd9ea5e5f6169069556036456c1e8b",
+  "content_hash": "sha256:3922600e33fce57b7a4e0eda93e1e58a2fb18641e8d5ad047a97de4a6517fb3c",
   "generated_path": "codex/sdcorejs-harness.json",
   "capabilities": {
     "runtime_context_channel": "unknown",
@@ -129,6 +129,30 @@
       ],
       "capability": null,
       "fallback": "Report the exact unrun command and why execution is unavailable."
+    }
+  },
+  "system_registry": {
+    "source_path": "_refs/shared/system-registry.json",
+    "source_hash": "sha256:58f35f444fdf54d86630a3b138e25b9260e086ceedbca4e39bac874cf6217fe0",
+    "tracks": [
+      "ai-agent",
+      "angular",
+      "design",
+      "documentation",
+      "fullstack",
+      "general",
+      "nestjs",
+      "nextjs",
+      "node",
+      "product",
+      "react",
+      "test",
+      "workflow"
+    ],
+    "aliases": {
+      "generic": "general",
+      "nest": "nestjs",
+      "next": "nextjs"
     }
   },
   "skills": {

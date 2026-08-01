@@ -46,6 +46,9 @@ commands, or writes, classify `explore_action` and load project context with:
    - `side_effects_allowed: false` for read-only actions.
 
 Apply `_refs/shared/artifact-lifecycle.md` before any write-approved action.
+Use `_refs/shared/system-registry.json` for every track/profile classification
+and `_refs/shared/explore-contract.mjs` for write authority and read-only
+repository-topology discovery. Never reproduce their enums in prompts.
 
 Project-context must never recursively invoke `sdcorejs-explore` while
 `sdcorejs-explore` is already running.
@@ -60,6 +63,7 @@ anything:
 | `summary-read` | Read the project index, understand the project, or a read-only caller needs context | Read existing `.sdcorejs/summary.md`; legacy/missing/stale summaries are signals, not blockers. Continue with targeted reads. No writes. |
 | `summary-refresh` | User explicitly requests it, approved project initialization owns it, or an architecture-level change assigns it to the sequential/integration owner | May write summary v2 after authoring-repo guard, fingerprinting, ownership, redaction, and artifact classification. |
 | `code-map-readonly` | Map architecture, reusable paths, modules, routes, services, or code ownership after targeted reads are insufficient | Return a task-scoped map. Query an existing graph/index provider read-only when available. No map or cache writes. |
+| `code-map-write-approved` | User explicitly requests a durable, task-scoped code map and approves its exact owner/path | Explore may write only that bounded map after topology, authoring-repo, redaction, and artifact gates. Never write a repository-wide codegraph. |
 | `trace-flow-readonly` | Trace one behavior, feature, route, job, command, or test flow | Read-only trace output. No diagram/file writes unless the user separately asks. |
 | `env-setup-readonly` | Explain local setup, prerequisites, scripts, env keys, or first-run steps | Read README/config/examples and output instructions. No env/config writes. |
 | `env-setup-write-approved` | User explicitly approves safe env file creation from an example | May create a missing env file with placeholders only. Never overwrite existing env files. |
@@ -115,29 +119,11 @@ to read-only and ask for clarification before any write.
 Every action that inspects project shape must classify `tracks`,
 `stack_profiles`, `profile_confidence`, and `profile_evidence`.
 
-Allowed tracks:
-
-```text
-angular | nestjs | nextjs | react | node | product | design | test |
-documentation | workflow | general
-```
-
-Allowed `stack_profiles`:
-
-```text
-core-ui-angular
-legacy-core-ui-angular
-plain-angular
-sdcorejs-nestjs
-plain-nestjs
-nextjs-build-website
-plain-nextjs
-react-vite
-react-cra
-react-next-generic
-node-general
-general
-```
+Accept every first-class track and stack profile from
+`_refs/shared/system-registry.json`, including `ai-agent`, `fullstack`, and
+future registry additions. Apply registry aliases before emitting
+`explore_context`; unknown values remain findings rather than locally invented
+enums.
 
 Profile rules:
 
@@ -167,6 +153,28 @@ Profile rules:
 
 `profile_evidence` must cite concrete files, dependencies, imports, configs, or
 tests. Do not record guesses as evidence.
+
+## Repository Topology And Ownership Discovery
+
+When `.gitmodules`, nested Git roots, portal/module metadata, module-owned
+artifacts, or multi-repository scope is present, run the read-only topology
+discovery from `_refs/shared/explore-contract.mjs`.
+
+Record stable remote-derived repository IDs/roles, portal-module gitlink
+relationships, portal-pinned and module source revisions, artifact locations,
+and owner hypotheses with confidence/evidence. Absolute checkout paths are
+runtime probes only and never durable repository or artifact identity.
+
+Report, without repairing:
+
+- missing or uninitialized modules;
+- stale portal-pinned module revisions;
+- module artifacts misplaced in a portal;
+- duplicate editable artifact identities;
+- remote/repository identity mismatches.
+
+Discovery never initializes modules, changes gitlinks, moves artifacts,
+rewrites ownership metadata, refreshes summaries, or starts a migration.
 
 ## Scanning Discipline
 
@@ -234,6 +242,8 @@ freshness rules. Preserve the read-only `project_context` returned by
 Keep these invariants in the active skill:
 
 - read-only actions emit no writes;
+- project summaries and durable scoped code maps are owned by
+  `sdcorejs-explore`, never by `sdcorejs-documentation`;
 - summary refresh requires one of the explicit ownership conditions;
 - workers and `sdcorejs-git` never update the summary;
 - the fingerprint keys are `workspace_structure`, `dependency_manifests`,
@@ -269,6 +279,9 @@ build graph:
 - keep current code/config as the higher source of truth.
 
 Do not generate, embed, auto-refresh, or commit a repository-wide codegraph.
+`code-map-write-approved` may persist only the explicitly approved task-scoped
+map under its semantic owner repository. Missing owner repositories block; a
+portal is not a fallback for a module-owned map.
 
 ## `documentation-harvest-readonly`
 
@@ -336,7 +349,9 @@ the write in `explore_context`.
 Recovery mode is read-only. Read valid summary sections, the directly related
 approved spec/plan, change-scoped execution docs, an explicit handoff when one
 exists, relevant memory metadata, Git status/diff/log, and current user scope.
-Use relevance before recency.
+Select artifacts by exact `contract_id`, `requirement_id`, `change_ref`,
+parent/supersedes links, and repository/module owner before path hints. Never
+select a durable artifact merely because it is newest.
 
 Ignore legacy session checkpoint files. Do not auto-resume work, create a
 handoff, or refresh summary.
@@ -438,6 +453,8 @@ as evidence, not unquestionable truth.
 - Use authoring-repo guard before any write.
 - Produce `explore_context`.
 - Produce stack profile evidence with concrete paths/dependencies/config.
+- Produce repository topology, artifact locations, and owner hypotheses when
+  multi-repository signals exist.
 - Redact secrets and PII globally.
 - Cite real paths and line numbers where useful.
 - Distill; do not dump huge file contents.
@@ -455,6 +472,8 @@ as evidence, not unquestionable truth.
 - Save transient state or secrets as memory.
 - Use a repository file as live task/session state.
 - Generate or commit a full codegraph.
+- Turn topology discovery into initialization, rewrite, migration, or artifact
+  relocation.
 
 ## Cross-References
 

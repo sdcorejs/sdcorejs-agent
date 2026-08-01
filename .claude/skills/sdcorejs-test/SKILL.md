@@ -104,6 +104,15 @@ selected level from `_refs/angular/test-{unit,integration,e2e}.md`,
 Load `_refs/shared/test-playwright.md` only for detected/approved Playwright.
 TDD actions also load `_refs/shared/tdd.md`.
 
+When topology contains modules, nested repositories, or submodules, also load
+`_refs/shared/module-e2e-contract.md` and execute its
+`module-e2e-contract.mjs` validators. Behavior ownership controls authoring:
+module behavior keeps tests, fixtures, page objects, selectors, personas, and
+data contracts in the module repository; portal-shell behavior stays in the
+portal; cross-module behavior requires an explicit integration owner. Portal
+may discover/run/aggregate but never copy a module suite or fall back to portal
+when the module is missing or non-writable.
+
 `ui-evidence-capture` additionally loads
 `_refs/shared/test-ui-evidence.md`. It must reuse the existing runner and return
 verified provenance; otherwise classify the capture as diagnostic/local-only.
@@ -119,10 +128,16 @@ Before edits or commands, emit the schema from `_refs/shared/test-context.md`:
   execution, result, evidence, and documentation;
 - `test_evidence.schema_version: 2` with append-oriented runs, cases, captures,
   skipped commands, and `redactions_applied: true`.
+- Stable owner repository/module plus execution-host identity, source
+  fingerprint/revision map, evidence class, artifact hashes, actual command,
+  and portal/module/pinned revisions when module E2E is in scope.
 
 Validate credential key references without reading or printing secret values.
 Unknown/prod environments and unsafe writes fail closed per environment/data
 contracts. Planning never masquerades as execution.
+Preserve `PASSED`, `FAILED`, `SKIPPED`, `NOT RUN`, and `NOT APPLICABLE` as
+distinct module results. Only current `full-e2e` evidence can satisfy a required
+module release check.
 
 ## Step 5 - Discover and execute
 

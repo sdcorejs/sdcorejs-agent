@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review
-description: Read-only review/audit skill across SDCoreJS tracks. Use for code, architecture, security, performance, accessibility, existing-site audits, scored/full audits, or auto review after an executor. Detects stack/profile/dimension, loads applicable refs only, emits review_context for repair-loop, and stays strict read-only by default. Applies to angular, nestjs, nextjs, general. Runtime-localized.
+description: Read-only review/audit skill for every central-registry track, including Angular, NestJS, Next.js, AI-agent, product, design, documentation, workflow, test, React, Node, fullstack, and general. Reviews code/artifacts, ownership, security, evidence, traceability, and generated/reference validity; emits durable findings without writing or auto-repair. Runtime-localized.
 allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 ---
 
@@ -20,6 +20,11 @@ use.
 strict read-only by default and must not silently write `.sdcorejs` artifacts or
 auto-run `sdcorejs-repair-loop`. Repair belongs to `sdcorejs-repair-loop` after
 an explicit user or finish-gate choice.
+
+Resolve `track` and its durable `review_profile` from
+`_refs/shared/system-registry.json`, then validate context/findings with
+`_refs/shared/review-contract.mjs`. Do not maintain a separate first-class
+track enum in this skill.
 
 ## Shared Protocols
 
@@ -82,6 +87,12 @@ inside the selected `file_scope`, not the entire repository by default.
 ### Track and track_profile
 
 Classify `track_profile` before loading any track-specific ref:
+
+First resolve the first-class artifact track and `review_profile` from the
+central registry. The stack-specific table below refines executable-code
+reviews only; AI-agent, design, documentation, workflow, product, test, React,
+Node, fullstack, and general remain durable review profiles rather than orphan
+sections.
 
 | track | track_profile | Required evidence |
 |---|---|---|
@@ -230,6 +241,9 @@ Security redaction is mandatory:
    with the selected approved `frontend_architecture` contract. Record justified
    deviations; flag drift when no approved change or compatibility reason exists.
 4. Map each finding to the selected dimension and the loaded ref criteria.
+   Also verify approved artifact freshness/hash, scope, semantic repository
+   ownership, test/generated-reference validity, traceability, cross-repository
+   provenance, and portal-pinned module revisions when applicable.
 5. Assign stable IDs (`R1`, `R2`, `R3`) and repair tier metadata.
 6. Build the complete `review_context` for the exact downstream consumer and
    pass it through `context.pass`. Show the user a localized projection with
@@ -302,8 +316,20 @@ consumer-required-field matrix for a portable handoff.
 ```yaml
 review_context:
   source: sdcorejs-review
-  track: angular | nestjs | nextjs | general
-  track_profile: core-ui-angular | legacy-core-ui-angular | plain-angular | sdcorejs-nestjs | plain-nestjs | nextjs-build-website | plain-nextjs | general
+  track: <central-registry track id>
+  review_profile: <track.review_profile from central registry>
+  track_profile: <detected stack profile or not-applicable>
+  artifact_identity:
+    owner_repository_id: <stable repository id>
+    owner_module_id: <module id or null>
+    execution_host_repository_id: <stable repository id>
+  approved_artifact:
+    path:
+    approval_hash:
+    current_hash:
+    freshness: current | stale | mutated | unavailable
+  source_revision_map: {}
+  portal_pinned_module_revision_map: {}
   dimensions:
     - code | architecture | security | performance | accessibility | ALL
   review_mode: quick-table | table | scored | blocking | site-audit
@@ -351,9 +377,9 @@ review_context:
 ```
 
 ## Findings
-| ID | Severity/Gate | Dimension | File/Line or Scope | Issue | Evidence | Risk | Suggested fix | Repair tier | Gate |
+| ID | Severity/Gate | Dimension | File/Line or Artifact Locator | Repository/Module | Issue | Evidence | Impact | Required fix | Repair tier | Gate |
 |---|---|---|---|---|---|---|---|---|---|
-| R1 | High/REQUIRED | security | src/auth.guard.ts:42 | Missing permission check | redacted/summarized evidence | Unauthorized access | Add resource permission guard | confirm | REQUIRED |
+| R1 | High/REQUIRED | security | src/auth.guard.ts:42 | repo-id / module-id | Missing permission check | redacted/summarized evidence | Unauthorized access | Add resource permission guard | confirm | REQUIRED |
 
 ## Strengths
 | File/Line or Scope | What's good | Reuse where |

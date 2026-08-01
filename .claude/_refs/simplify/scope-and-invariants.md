@@ -113,6 +113,28 @@ Direct simplification must exclude:
 - golden files, seed/customer data, and contract/eval datasets;
 - tests, fixtures, and snapshots, which are protected verification oracles.
 
+The executable contract uses these protected-surface IDs:
+
+- `security-validation`
+- `authentication-authorization`
+- `approval-checks`
+- `artifact-hashing`
+- `repository-ownership`
+- `evidence-collection`
+- `required-error-handling`
+- `generated-source-boundary`
+- `tenant-isolation`
+- `secret-pii-redaction`
+- `concurrency-protection`
+- `tests-fixtures-snapshots`
+- `public-contracts`
+- `dependency-environment-migration-boundaries`
+
+Any selected hunk carrying one of these responsibilities is excluded even when
+the file extension would otherwise be eligible. Generated skill/reference
+mirrors are never direct simplify targets; edit canonical sources through their
+own workflow and regenerate mirrors with the repository sync command.
+
 Requests to simplify tests route to `sdcorejs-test`. Documentation, prompt, or
 prose changes route to `sdcorejs-documentation`. Protected files require a
 separate approved semantic-change plan; direct simplification cannot edit them.

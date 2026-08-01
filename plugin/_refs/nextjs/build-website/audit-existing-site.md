@@ -1,5 +1,7 @@
 # Build Website — Audit Existing Site
 
+<!-- executable-reference-default: copy-ready -->
+
 > Loaded on demand by `sdcorejs-review` when auditing an EXISTING Next.js site
 > (full-site quality-bar audit mode). Not a dispatchable skill — no frontmatter.
 > Read-only; the parent skill owns dispatch.
@@ -32,7 +34,7 @@ test -f "$TARGET_ROOT/package.json" || { echo "<localized text>"; exit 1; }
 grep -q '"next"' "$TARGET_ROOT/package.json" || { echo "Not a Next.js project"; exit 1; }
 
 # Capture key facts
-NEXT_VERSION=$(node -p "require('$TARGET_ROOT/package.json'<localized text>'unknown'")
+NEXT_VERSION=$(node -p "require('$TARGET_ROOT/package.json').dependencies?.next ?? require('$TARGET_ROOT/package.json').devDependencies?.next ?? 'unknown'")
 APP_ROUTER=$([ -d "$TARGET_ROOT/src/app" ] || [ -d "$TARGET_ROOT/app" ] && echo "yes" || echo "no")
 TAILWIND=$(grep -q '"tailwindcss"' "$TARGET_ROOT/package.json" && echo "yes" || echo "no")
 ```
@@ -67,11 +69,11 @@ npm run lint   2>&1 | tail -20  > /tmp/audit-lint.log
 npx tsc --noEmit 2>&1 | tail -20 > /tmp/audit-tsc.log
 
 # Bilingual + content scripts (from the content-quality pack) — only run if defined
-node -e "<localized text>" \
+node -e "const p=require('./package.json'); process.exit(p.scripts?.['check:i18n'] ? 0 : 1)" \
   && npm run check:i18n 2>&1 > /tmp/audit-i18n.log \
   || echo "MISSING:check:i18n" > /tmp/audit-i18n.log
 
-node -e "<localized text>" \
+node -e "const p=require('./package.json'); process.exit(p.scripts?.['check:content'] ? 0 : 1)" \
   && npm run check:content 2>&1 > /tmp/audit-content.log \
   || echo "MISSING:check:content" > /tmp/audit-content.log
 
@@ -94,7 +96,7 @@ Each check maps to one sub-skill from the build-website pack. The findings table
 | A2 | **theme** Tokens defined in `tailwind.config.ts` (extend.colors.brand, fontFamily) | `artifact.read`: search for `theme.extend.colors` |
 | A3 | **theme** Vietnamese subset loaded via `next/font` | `artifact.read`: search for `subsets:\s*\[.*vietnamese` |
 | B1 | **pages-and-blocks** Section components exist in `src/components/sections/` | `artifact.read`: match `src/components/sections/*.tsx` |
-| B2 | **pages-and-blocks** No hardcoded Vietnamese in components (all strings via props/t()) | `<localized text>` — should return 0 |
+| B2 | **pages-and-blocks** No hardcoded Vietnamese in components (all strings via props/t()) | `artifact.read`: scan component string literals; expected count 0 |
 | B3 | **pages-and-blocks** Content externalized to `src/content/<locale>/` | `artifact.read`: confirm `src/content/*/*` is non-empty |
 | C1 | **seo** `generateMetadata` per page | `artifact.read`: search `generateMetadata\|export const metadata` in `src/app/**/*.tsx` per page |
 | C2 | **seo** `app/sitemap.ts` exists | `artifact.read`: match `src/app/sitemap.{ts,tsx}` |
@@ -151,23 +153,23 @@ The reference pack that fixes each finding is named in the "Check" column — dr
 #### Critical (blocks launch / hurts ranking now)
 | # | Finding | Fix via | Effort |
 |---|---|---|---|
-| C-1 | Contact form uses `setTimeout` stub — no email actually sent (H2) | `<localized text>` | M |
+| C-1 | Contact form uses `setTimeout` stub — no email actually sent (H2) | `write-code → contact-form` | M |
 | C-2 | No `app/sitemap.ts` — search engines can't discover pages (C2) | `write-code → seo` | S |
-| C-3 | check:content fails: home.vi.ts has 180 words (min 400) — Google thin-content threshold (I5) | `<localized text>` | M |
+| C-3 | check:content fails: home.vi.ts has 180 words (min 400) — Google thin-content threshold (I5) | `write-code → content-quality` | M |
 
 #### Important (degrades UX or SEO meaningfully)
 | # | Finding | Fix via | Effort |
 |---|---|---|---|
-| I-1 | `<img>` tags in 4 components instead of `next/image` — no AVIF/WebP, no LCP optimization (G2) | `<localized text>` | M |
-| I-2 | No Article JSON-LD on blog pages — rich snippets disabled (I4) | `<localized text>` | S |
-| I-3 | EN message file missing 14 keys present in VI — i18n parity broken (E4) | `<localized text>` | S |
+| I-1 | `<img>` tags in 4 components instead of `next/image` — no AVIF/WebP, no LCP optimization (G2) | `write-code → responsive` | M |
+| I-2 | No Article JSON-LD on blog pages — rich snippets disabled (I4) | `write-code → content-quality` | S |
+| I-3 | EN message file missing 14 keys present in VI — i18n parity broken (E4) | `write-code → i18n + content-quality` | S |
 
 #### Minor (polish; ship-blocking only if all above resolved)
 | # | Finding | Fix via | Effort |
 |---|---|---|---|
-| M-1 | No dynamic OG image — every share uses the same default (D2) | `<localized text>` | M |
-| M-2 | No `opengraph-image.tsx` per route segment (D2) | `<localized text>` | S |
-| M-3 | Favicon set incomplete — missing apple-icon.png (C4) | `<localized text>` | S |
+| M-1 | No dynamic OG image — every share uses the same default (D2) | `write-code → og-preview` | M |
+| M-2 | No `opengraph-image.tsx` per route segment (D2) | `write-code → og-preview` | S |
+| M-3 | Favicon set incomplete — missing apple-icon.png (C4) | `write-code → seo` | S |
 
 ### Quality bar coverage
 <X> / 30 checks passing.

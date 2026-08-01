@@ -1,5 +1,7 @@
 # Screen — Detail Component (Shared Shell + State Branches)
 
+<!-- executable-reference-default: partial-example -->
+
 The screen-detail reference pack [`screen-detail.md`](../write-code/screen-detail.md)
 (loaded on demand by the `sdcorejs-angular` orchestrator) owns all three route
 states (CREATE / UPDATE / DETAIL) plus overall form orchestration in one
@@ -338,7 +340,9 @@ readonly lineItemsRevision = signal(0);
 readonly lineItemRows = computed<LineItemRow[]>(() => {
   this.lineItemsRevision();
   return this.lineItems.controls.map((control, index) => ({
-    rowKey: control.get('id'<localized text>'tempId')?.value ?? String(index),
+    rowKey: control.get('id')?.value
+      ?? control.get('tempId')?.value
+      ?? String(index),
     formGroup: control as FormGroup,
     index,
     productId: control.get('productId')?.value,

@@ -212,6 +212,40 @@ function requiredFieldValue(contextType, field) {
         produces: ['test-result'],
         consumes: ['approved-plan'],
         contract_hash: 'sha256:contract-fixture',
+        dispatch_envelope: {
+          schema_version: 1,
+          source: 'approved-plan',
+          contract_id: 'contract-fixture',
+          plan_artifact_id: 'plan-fixture-r1',
+          plan_approval_hash: 'sha256:plan-fixture',
+          repository_id: 'github.com/sdcorejs/fixture',
+          repository_role: 'module',
+          module_id: 'fixture',
+          git_root: 'C:/repo-unit-fixture',
+          source_revision: 'ec6afdb4e2494416d985be610837e728a9278a2f',
+          allowed_paths: ['test/**'],
+          prohibited_paths: ['package-lock.json'],
+          authority: 'read-write',
+          git_mutations: 'deny',
+          approved_artifact_mutation: 'deny',
+          required_validations: [
+            'path-boundary',
+            'stage-a',
+            'stage-b',
+            'unit-verification',
+          ],
+          output_evidence_contract: {
+            result_type: 'commit',
+            required_fields: [
+              'repository_id',
+              'repository_role',
+              'module_id',
+              'source_revision',
+              'associated_head_or_diff',
+              'output_digest',
+            ],
+          },
+        },
         workspace: {
           strategy: 'worktree',
           path: 'C:/repo-unit-fixture',
@@ -253,6 +287,10 @@ function requiredFieldValue(contextType, field) {
           exit_code: 0,
           output_digest: 'sha256:unit-output',
           blockers: [],
+          repository_id: 'github.com/sdcorejs/fixture',
+          repository_role: 'module',
+          module_id: 'fixture',
+          source_revision: 'ec6afdb4e2494416d985be610837e728a9278a2f',
         },
         status: 'PASSED',
         attempts: 1,
@@ -619,6 +657,13 @@ test('portable compatibility preserves test lifecycle, test evidence, and parall
   parallel.units = [{
     ...parallel.units[0],
     id: 'unit-test',
+    dispatch_envelope: {
+      ...parallel.units[0].dispatch_envelope,
+      contract_id: 'contract-17',
+      plan_approval_hash: 'sha256:plan',
+      allowed_paths: ['test/**'],
+      prohibited_paths: ['package-lock.json'],
+    },
     ownership: {
       ...parallel.units[0].ownership,
       allowed_paths: ['test/**'],
@@ -1354,7 +1399,8 @@ test('public documentation and site describe the communication contract without 
     );
   }
 
-  assert.match(combined, /total communication cost/i);
+  assert.match(combined, /visible-output and portable-handoff/i);
+  assert.match(combined, /does not establish|do not prove broad token or cost reduction/i);
   assert.match(combined, /complete professional sentences|complete grammatical sentences/i);
   assert.match(combined, /authoritative runtime context/i);
   assert.match(combined, /user projection/i);
@@ -1420,9 +1466,11 @@ test('deterministic report compares ten scenarios without invented token counts'
       portableHandoffBytes +
       runtimeContextChannelBytes
   );
-  assert.ok(
-    report.aggregate.current_total_communication_utf8_bytes <
-      report.aggregate.baseline_total_communication_utf8_bytes
+  assert.ok(report.aggregate.current_total_communication_utf8_bytes > 0);
+  assert.ok(report.aggregate.baseline_total_communication_utf8_bytes > 0);
+  assert.equal(
+    report.measurement_kind,
+    'deterministic-source-bound-contract-projection',
   );
 
   for (const [name, scenario] of Object.entries(report.scenarios)) {

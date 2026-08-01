@@ -13,7 +13,10 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 ## Shared Protocols
 
 Read `_refs/shared/runtime-protocols.md`. Draft and approved spec artifacts
-apply `_refs/shared/artifact-lifecycle.md` and emit `artifact_context`.
+apply `_refs/shared/artifact-lifecycle.md` and emit `artifact_context`. Resolve
+track/profile/repository semantics from `_refs/shared/system-registry.json`.
+Create and verify every approval identity with the executable
+`_refs/shared/approved-artifact.mjs` helper.
 
 ## Purpose
 Turn the confirmed requirement contract into a durable spec, hold the user approval gate, and persist the approved spec corpus inside the same skill.
@@ -26,9 +29,14 @@ A spec answers what and why. A plan answers which files and in what order.
   complete requirement set with explicit decisions, assumptions, target root,
   target root kind, track, stack profile, and acceptance criteria seed.
 - Target root and context/track are known.
+- `owner_repository_id`, `owner_repository_role`, optional `owner_module_id`,
+  and `execution_host_repository_id` are resolved from semantic topology rather
+  than the current working directory.
 - For non-trivial code/test generation, do not proceed from an unconfirmed idea.
 
 If these are missing, route back to `sdcorejs-brainstorming`.
+If the semantic owner repository is unavailable or not writable, block. Do not
+write a module spec into the portal as a fallback.
 
 Before drafting, apply `_refs/shared/project-context.md` with:
 
@@ -74,9 +82,14 @@ style.
 
 Also read relevant `.sdcorejs/memories/<track>/*.md` and any provided
 `requirement_context`. Preserve `contract_id`, `requirement_id`,
-  `target_root`, `target_root_kind`, `track`, `stack_profile`,
-  `profile_confidence`, explicit decisions, inferred/defaulted assumptions,
-unresolved blockers, and redaction status.
+`target_root`, `target_root_kind`, `track`, `stack_profile`,
+`profile_confidence`, owner repository/role/module, execution host repository,
+explicit decisions, inferred/defaulted assumptions, unresolved blockers, and
+redaction status. Validate track/profile against the central registry.
+
+Cross-repository parent references must carry exact `repository_id`,
+`artifact_id`, `artifact_kind`, 40-character `revision`, and `approval_hash`.
+Reject a stale, missing, or mutated parent reference before drafting.
 
 If the user asks to revise an approved spec, do not mutate the approved
 snapshot. Create a new revision with `supersedes` and `change_reason`. If a
@@ -87,7 +100,7 @@ ask for an updated requirement contract.
 Write the editable draft to:
 
 ```text
-<target-project>/.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<kebab-topic>-spec.md
+<semantic-owner-root>/.sdcorejs/docs/<track>/<YYYY-MM-DD-HH-mm>-<kebab-topic>-spec.md
 ```
 
 Use this template:
@@ -105,6 +118,10 @@ spec_context:
   supersedes: <prior approved spec path or null>
   target_root: <target root>
   target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
+  owner_repository_id: <stable owner repository id>
+  owner_repository_role: standalone | portal | module | library | service | documentation
+  owner_module_id: <module id or null>
+  execution_host_repository_id: <stable execution host repository id>
   track: <track>
   stack_profile: <stack profile>
   profile_confidence: high | medium | low
@@ -216,6 +233,8 @@ Reply with `1`, `2`, or `3`. If you choose `2`, describe the change.
 ```
 
 Translate the prompt at runtime.
+Silence is not approval. A thank-you, question, or unrelated follow-up also
+does not cross this gate.
 
 ### 5. Handle user response
 
@@ -224,12 +243,17 @@ Approve:
 1. Write an immutable approved-spec snapshot under:
 
 ```text
-<target-project>/.sdcorejs/specs/<track>/<YYYY-MM-DD-HH-mm>-<kebab-topic>.md
+<semantic-owner-root>/.sdcorejs/specs/<track>/<YYYY-MM-DD-HH-mm>-<kebab-topic>.md
 ```
 
-Compute `approved_spec_hash` over the canonical approved contract body,
-excluding frontmatter and the `approved_spec_hash` field, so the hash is not
-self-referential.
+Build the approved body and protected metadata as UTF-8, then call
+`createApprovedArtifact` (or CLI `create`) from
+`_refs/shared/approved-artifact.mjs`. Immediately call
+`verifyApprovedArtifact` (or CLI `verify`) before persisting/handoff. The
+versioned `sha256:v1` algorithm normalizes line endings and field order,
+excludes only the self-referential `approval_hash`, and never includes an
+absolute checkout path. Supply the approved contract body excluding frontmatter and the hash field as the helper body input; the omitted field is
+self-referential. A non-zero/invalid result blocks the workflow.
 
 2. Include frontmatter:
 
@@ -237,6 +261,7 @@ self-referential.
 ---
 artifact_id: spec-<contract-id>-r<revision>
 artifact_kind: spec
+schema_version: 1
 change_ref: <contract id>
 source_spec: none
 source_plan: none
@@ -246,15 +271,28 @@ name: <kebab-topic>
 description: <one-line future-loading hook>
 contract_id: <contract id>
 requirement_id: <requirement id>
-approvedAt: <ISO-8601 timestamp with timezone>
-approvedBy: <git user.email or session user when known>
+owner_repository_id: <stable semantic owner repository id>
+owner_repository_role: standalone | portal | module | library | service | documentation
+owner_module_id: <module id or null>
+repository_relative_path: .sdcorejs/specs/<track>/<timestamp>-<topic>.md
+source_revision: <40-character Git revision belonging to the owner repository>
+parent_repository_id: <stable parent repository id or null>
+parent_references:
+  - repository_id: <stable repository id>
+    artifact_id: <exact parent artifact id>
+    artifact_kind: <registry artifact kind>
+    revision: <exact 40-character repository revision>
+    approval_hash: <exact sha256:v1 hash>
+approved_at: <ISO-8601 UTC timestamp>
+approved_by: <safe session identity or null>
 approval_source: explicit-user-choice | imported-approved-spec | equivalent-complete-input
-track: <angular|nestjs|nextjs|react|node|fullstack|ai-agent|test|product|design|documentation|workflow|general>
+track: <canonical registry track>
 target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
 stack_profile: <stack profile>
 profile_confidence: high | medium | low
 sourceDraftPath: .sdcorejs/docs/<track>/<timestamp>-<topic>-spec.md
-approved_spec_hash: <sha256 of approved contract body excluding frontmatter and this hash field>
+approval_hash: <sha256:v1 hash created by approved-artifact helper>
+approved_spec_hash: <same value, compatibility projection for spec_context>
 acceptance_criteria_count: <N>
 manual_criteria_count: <N>
 redaction_applied: true | false
@@ -288,7 +326,8 @@ sdcorejs-spec (approved on attempt <N> / 3)
 ```
 
 4. Build the final `spec_context` for the handoff. Include the
-   `approved_spec_path`, `approved_spec_hash`, approval metadata,
+   `approved_spec_path`, canonical `approval_hash`, compatibility
+   `approved_spec_hash`, approval metadata,
    `change_control`, and source `requirement_context` reference.
 5. Only after the approved snapshot succeeds, hand off to `sdcorejs-plan` with
    the draft spec path, approved snapshot path, and `spec_context`. Pass the
@@ -312,7 +351,12 @@ Abort:
 ## Rules
 
 ### Must do
-- Write the spec in the target project, never in the `sdcorejs-agent` repo.
+- Write draft and approved snapshots in the semantic owner repository. If the
+  authoring repo itself is the explicit target, an `sdcorejs-agent-authoring-repo`
+  or `skill-pack-authoring-repo` artifact is allowed after explicit confirmation.
+- When a module-owned spec is coordinated from a portal, keep the full editable
+  spec in the module repository. A portal index may contain only a durable
+  reference with exact repository/artifact/revision/hash identity.
 - Wait for explicit approval before writing the approved snapshot or planning.
 - Create a new approved snapshot every time; snapshots are immutable history.
 - Treat approved specs as immutable snapshots. If requirements change after
@@ -345,6 +389,10 @@ Abort:
   summary artifacts.
 - Add migration or dependency adoption scope unless the requirement context
   explicitly approved it.
+- Copy a full module spec into the portal or use the execution host as an owner
+  fallback.
+- Compute, accept, or describe an approval hash without running the shared
+  create and verify helper.
 
 ## Cross-references
 - `sdcorejs-brainstorming` - requirement contract input

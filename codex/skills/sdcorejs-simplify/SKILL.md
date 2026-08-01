@@ -54,6 +54,7 @@ Always read:
 
 - [`../_refs/simplify/scope-and-invariants.md`](../_refs/simplify/scope-and-invariants.md)
 - [`../_refs/simplify/verification.md`](../_refs/simplify/verification.md)
+- [`../_refs/simplify/simplify-contract.mjs`](../_refs/simplify/simplify-contract.mjs)
 
 Read
 [`../_refs/simplify/stack-guardrails.md`](../_refs/simplify/stack-guardrails.md)
@@ -116,6 +117,10 @@ Before any edit:
 4. Move to `planning-handoff` when the request changes architecture, public
    behavior, schemas, dependencies, performance, caching, retry, concurrency,
    transactions, agent/tool contracts, or lacks a suitable oracle.
+
+Validate owner repository, approved plan-step identity, source revision,
+protected-surface IDs, pass cap, rollback, and pre/post behavior evidence with
+the executable simplify contract. Never target generated mirrors directly.
 
 Analyze actions stop after reporting ranked local opportunities, exclusions,
 risks, and runtime `simplify_context`. They do not edit or claim the code was

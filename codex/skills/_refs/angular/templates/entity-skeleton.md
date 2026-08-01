@@ -1,5 +1,7 @@
 # Entity Skeleton Templates — init-entity (sdcorejs-angular)
 
+<!-- executable-reference-default: partial-example -->
+
 This file holds the canonical Angular code templates the init-entity reference pack ([`init-entity.md`](../write-code/init-entity.md), loaded on demand by the `sdcorejs-angular` orchestrator) generates. The pack picks which template to use based on the chosen layout variant; the actual code lives here so the pack stays concise.
 
 ## Contents
@@ -1125,7 +1127,7 @@ export class DetailComponent implements OnInit {
   entity: Partial<[Entity]SaveReq & { id?: string }> = {};
   readonly pageTitle = computed(() => {
     if (this.state() === 'CREATE') return '<localized text>';
-    return this.state() === 'DETAIL'<localized text>'<localized text>' : '<localized text>';
+    return this.state() === 'DETAIL' ? '<localized text>' : '<localized text>';
   });
   readonly isDetail = computed(() => this.state() === 'DETAIL');
 
@@ -1360,7 +1362,7 @@ export class DetailComponent implements OnInit {
   });
 
   ngOnInit() {
-    const paramId = this.#route.snapshot.params?.['id'<localized text>'';
+    const paramId = this.#route.snapshot.params?.['id'] ?? '';
     this.id.set(paramId);
 
     const url = this.#router.url;
@@ -1386,7 +1388,7 @@ export class DetailComponent implements OnInit {
   };
 
   onBack = () => {
-    const path = this.state() === 'CREATE'<localized text>'../'] : ['../../'];
+    const path = this.state() === 'CREATE' ? ['../'] : ['../../'];
     this.#router.navigate(path, { relativeTo: this.#route, state: { replaceTab: true } });
   };
 

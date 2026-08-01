@@ -26,6 +26,12 @@ generated prose remain English-only and locale-neutral.
 
 Dispatch by `name:` frontmatter and the `description:` trigger. Load only frontmatter at session start; read a skill body only after selecting that skill.
 
+Use `_refs/shared/system-registry.json` as the versioned source for tracks,
+stack profiles, artifact kinds, repository roles, review/repair/ship support,
+and evidence classes. Keep track, stack profile, capability profile, artifact
+owner, repository role, and execution host as separate fields. The current
+working directory is never evidence of artifact ownership.
+
 When multiple skills match, apply this priority before reading a body:
 
 1. Explicit skill name from the user.

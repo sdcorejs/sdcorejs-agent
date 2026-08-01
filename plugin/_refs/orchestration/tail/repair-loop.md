@@ -66,7 +66,7 @@ Preserve the original source context before any edits:
 ```yaml
 repair_source:
   kind: review-code | verify-before-done | linter | typecheck | test | manual
-  track: angular | nestjs | nextjs | test | general
+  track: <repair-supported track id from _refs/shared/system-registry.json>
   track_profile: core-ui-angular | legacy-core-ui-angular | plain-angular | sdcorejs-nestjs | plain-nestjs | nextjs-build-website | plain-nextjs | general | n/a
   dimension: code | security | performance | accessibility | architecture | ALL
   file_scope:
@@ -95,6 +95,8 @@ repair_source:
 
 Rules:
 
+- Validate the source, owner, authority, attempts, and evidence graph with
+  `_refs/orchestration/repair-contract.mjs`.
 - If the source is `sdcorejs-review`, re-run the same review track,
   `track_profile`, dimension, file scope, mode, loaded refs, skipped refs, and
   probes after repair.
@@ -113,6 +115,12 @@ Rules:
 - Do not widen a behavior-preserving simplification into an architecture,
   public-contract, dependency, configuration, prompt, or agent-contract change.
   Return such work to spec/plan.
+- A review finding is not writable merely because it exists. Record explicit
+  selection plus matching owner/path write authority before the first repair.
+- All supported artifact tracks, including AI-agent, product, design, test,
+  documentation, workflow, and simplify output, use their registry identity
+  and semantic repository owner. Never repair a module finding in the portal
+  execution host.
 - If the source is `manual`, there may be no source-specific automated
   re-review, but build/lint/test verification must still run where available
   and the summary must ask the user to confirm behavioral correctness.

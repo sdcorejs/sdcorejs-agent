@@ -31,10 +31,10 @@ an unconditional template inventory. No external baseline directory is required.
 
 ## Template-first portal baseline
 
-This reference is the only portal-shell creation path for Angular prototypes.
-For PO/BA prototype requests, create the portal by rendering the Core UI starter
-template first, then modify configuration, routes, modules, entities, and mock
-data inside that generated structure. Do not design a custom portal shell,
+This reference is the only portal-shell creation path for explicitly approved
+Angular technical prototypes. Render the Core UI starter template first, then
+modify only the approved configuration, routes, modules, entities, and optional
+mock data inside that generated structure. Do not design a custom portal shell,
 bespoke navigation/sidebar/header, standalone dashboard, or alternative
 list/detail/form framework before this baseline exists.
 
@@ -86,18 +86,19 @@ Before generating, clarify with user:
 
 > **Port** is fixed at `4200` (Angular default). Do not ask.
 
-### PO/BA prototype/no-backend mode
+### Explicit technical-prototype/no-backend mode
 
-When this reference is used from PO/BA prototype mode:
+When this reference is used from an explicitly approved `technical-prototype`:
 
 - Generate a portal that boots locally with no backend auth/API dependency.
 - Treat the Core UI starter template as the prototype baseline; prototype
   screens are added as modules/entities after the starter has been rendered.
-- Keep `PermissionConfiguration.disabled = true` as the starter default.
+- Set `PermissionConfiguration.disabled = true` only when permission bypass is
+  explicitly approved as a demo-only assumption.
 - Do not add login, auth redirects, live API base URLs, or permission data
   requirements unless the user explicitly requests them.
-- Keep admin screens and sample/demo routes reachable so PO/BA users can review
-  the shell, sidebar, menu, and prototype modules immediately.
+- Generate/keep admin screens only when `admin-screens` is an approved optional
+  feature. Keep only approved sample/demo routes reachable for review.
 - Report that permission is bypassed for prototype review and can be re-enabled
   when the real permission backend exists.
 
@@ -194,8 +195,9 @@ Report pass/fail summary and failing spec names. If E2E missing, report blocker.
   [`_refs/angular/templates/init-portal-templates.md`](_refs/angular/templates/init-portal-templates.md),
   then use the module/entity references for the sample feature; materialize
   selector files only when the approved conditional gate selects them
-- Use this template-first portal baseline for new PO/BA prototypes before any
-  admin/module/entity/list/detail/create/update screen generation
+- Use this template-first portal baseline for new approved technical prototypes
+  before approved module/entity/list/detail/create/update generation; admin
+  screens remain conditional
 - Copy [`_refs/angular/assets/logo.png`](_refs/angular/assets/logo.png) to `<project>/public/logo.png` and ensure `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
 - Generate exactly ONE sample lib with TWO entities: `order` + `customer`. Record whether Order reuses an existing/Core UI customer selector, creates a feature-local domain selector, or keeps the selection UI inline; do not require a generic wrapper to demonstrate reuse.
 - For greenfield portals, use `features/` at the lib level: `src/libs/<lib>/features/<entity>/`.
@@ -366,7 +368,7 @@ After generation:
 - [ ] `_refs/angular/templates/init-portal-templates.md` read and all mapped
       portal-shell sections rendered; module/entity references used for sample
       feature files; unapproved conditional selectors omitted
-- [ ] Template-first portal baseline confirmed for PO/BA prototype mode; no custom portal shell was generated before the Core UI starter template
+- [ ] Template-first portal baseline confirmed for explicit technical-prototype mode; no custom portal shell was generated before the Core UI starter template
 - [ ] `public/logo.png` copied from `_refs/angular/assets/logo.png`; `LayoutConfiguration.sidebar.logoUrl === '/logo.png'`
 - [ ] `package.json` pins `<CORE_UI_PACKAGE_NAME>@<CORE_VERSION>` (npm, not tgz)
 - [ ] `package.json` includes `@sdcorejs/utils` as a direct dependency
@@ -383,7 +385,8 @@ After generation:
   - [ ] Generate `src/libs/sample/components/customer-select/` only when the
         sample Order form consumes it
 - [ ] Permission code convention is consistent across the generated portal (single style)
-- [ ] `PermissionConfiguration.disabled = true` in starter
+- [ ] Permission behavior matches the approved profile; any bypass is explicit,
+      demo-only, and not production evidence
 - [ ] `npm install` succeeds
 - [ ] `npm run build-dev` exits 0
 - [ ] `npm start` serves at `http://localhost:4200/`

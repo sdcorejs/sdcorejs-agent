@@ -82,11 +82,35 @@ ship_context:
     commands_skipped:
     audit_result:
   release_evidence:
+    release_type: patch | minor | major | prerelease | hotfix | docs-only | unknown
+    version_source: package.json | changelog | tag | user-provided | unknown
+    release_range: explicit range | latest tag..HEAD | base..HEAD | unknown
+    changelog_status: present | generated | needed | skipped
+    version_bump_status: approved | not approved | not applicable
+    tag_status: approved | not approved | not created
+    publish_status: approved | not approved | not run
+    branch_status: protected | feature/release branch | unknown
+    ci_status:
+    compatibility_risk:
+    rollback_plan:
+    manual_approval_requirements:
     version:
     range:
     changelog:
     tag_approval:
     publish_approval:
+    source_revision:
+    source_fingerprint:
+    portal_revision:
+    module_revision_map:
+    evidence_classes:
+    stages:
+      ready_to_ship:
+      commit_ready:
+      push_ready:
+      pr_ready:
+      release_ready:
+      actually_published:
   manual_deferrals:
     - item:
       reason:
@@ -108,3 +132,9 @@ ship_context:
   are staged.
 - Allow Git handoff only when final branch-ready evidence is current and the
   user requested a Git artifact.
+- Preserve actual command, evidence class, source SHA/fingerprint, portal SHA,
+  module SHA/pinned-SHA map, environment fingerprint, timestamp, and result for
+  every production/release evidence row.
+- Supplemental smoke cannot satisfy Full E2E or a required module matrix.
+- `release_ready` never implies `actually_published`; publication requires an
+  existing immutable tag and Release evidence.
