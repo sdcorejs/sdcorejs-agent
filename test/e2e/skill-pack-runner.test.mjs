@@ -888,19 +888,72 @@ test('phase 1: frontend architecture preflight covers decomposition and anti-ove
 });
 
 test('phase 1: frontend architecture workflow preserves approval and review-dimension gates', async () => {
-  const [angularSkill, nextjsSkill, planSkill, reviewSkill] = await Promise.all([
+  const [usingSkills, angularSkill, nextjsSkill, planSkill, reviewSkill] = await Promise.all([
+    readFile(new URL('../../skills/orchestration/using-skills.md', import.meta.url), 'utf8'),
     readFile(new URL('../../skills/tracks/angular/sdcorejs-angular.md', import.meta.url), 'utf8'),
     readFile(new URL('../../skills/tracks/nextjs/sdcorejs-nextjs.md', import.meta.url), 'utf8'),
     readFile(new URL('../../skills/shared/sdlc/03-plan.md', import.meta.url), 'utf8'),
     readFile(new URL('../../skills/shared/workflow/review.md', import.meta.url), 'utf8'),
   ]);
 
+  assert.match(
+    usingSkills,
+    /imperative verbs such as `implement`, `build`, or `create` express write intent\s+only[\s\S]*not spec approval or plan approval/i,
+  );
+  assert.match(
+    usingSkills,
+    /fixture, lab, benchmark, or disposable repository[\s\S]*does not\s+waive[\s\S]*approval gate/i,
+  );
+  assert.match(
+    usingSkills,
+    /non-trivial implementation request without[\s\S]*approved plan[\s\S]*route to `sdcorejs-brainstorming`[\s\S]*not confirmed implementation/i,
+  );
   assert.doesNotMatch(angularSkill, /\bdirect request\b/i);
   assert.doesNotMatch(nextjsSkill, /\bdirect request\b|approved\/direct/i);
   assert.match(angularSkill, /approved plan dispatched\s+by `sdcorejs-execute-plan`/i);
   assert.match(nextjsSkill, /approved plan dispatched\s+by `sdcorejs-execute-plan`/i);
   assert.match(angularSkill, /must not create\s+or self-approve a\s+missing contract/i);
   assert.match(nextjsSkill, /must not create\s+or self-approve a\s+missing contract/i);
+  assert.match(
+    angularSkill,
+    /`implement`, `build`, or `create`[\s\S]*write intent\s+only[\s\S]*not spec approval or plan approval/i,
+  );
+  assert.match(
+    angularSkill,
+    /summary[\s\S]*filters[\s\S]*result table[\s\S]*bulk actions[\s\S]*workflow[\s\S]*stop before writing code/i,
+  );
+  assert.match(
+    angularSkill,
+    /must never treat the current prompt as the\s+controlling approved scope/i,
+  );
+  assert.match(
+    angularSkill,
+    /approved artifacts are absent[\s\S]*remain read-only[\s\S]*must not modify source or test files/i,
+  );
+  assert.match(
+    angularSkill,
+    /read `_refs\/shared\/frontend-architecture\.md` before formulating[\s\S]*architecture decision/i,
+  );
+  assert.match(
+    angularSkill,
+    /route must not own all[\s\S]*summary[\s\S]*filters[\s\S]*result table[\s\S]*selection[\s\S]*bulk actions[\s\S]*workflow/i,
+  );
+  assert.match(
+    angularSkill,
+    /approval preflight[\s\S]*first action[\s\S]*fail closed/i,
+  );
+  assert.match(
+    angularSkill,
+    /before project classification[\s\S]*TDD[\s\S]*frontend architecture[\s\S]*implementation reference/i,
+  );
+  assert.match(
+    angularSkill,
+    /stop this skill immediately[\s\S]*no project classification[\s\S]*TDD[\s\S]*architecture planning[\s\S]*implementation-reference reads/i,
+  );
+  assert.match(
+    angularSkill,
+    /eligibility may route only after[\s\S]*approval gate[\s\S]*passed/i,
+  );
 
   assert.match(
     planSkill,
@@ -1950,20 +2003,18 @@ test('phase 1: angular side-drawer detail rules prefer read-only facts and immut
   assert.match(sdlcAngular, /Do not duplicate header-promoted code\/status/);
 });
 
-test('phase 1: angular PO/BA prototype mode is encoded in skill, refs, and examples', async () => {
+test('phase 1: Angular technical prototype is explicit, role-neutral, and feature-gated', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
   const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
   const angularSkill = sourceByName.get('sdcorejs-angular');
 
-  assert.match(angularSkill, /PO\/BA Prototype Portal Mode/);
   assert.match(angularSkill, /_refs\/angular\/write-code\/po-ba-prototype\.md/);
-  assert.match(angularSkill, /template-first/i);
-  assert.match(angularSkill, /Core UI starter template/i);
-  assert.match(angularSkill, /parallel custom portal shell/i);
-  assert.match(
-    angularSkill,
-    /input-analysis -> po-ba-prototype -> init-portal if needed -> admin-screens -> init-module -> init-entity -> screen-list\/screen-detail\/actions -> finish gate/
-  );
+  assert.match(angularSkill, /explicitly approved registry `technical-prototype`/i);
+  assert.match(angularSkill, /not production/i);
+  assert.match(angularSkill, /Never infer.*PO\/BA role|Infer `technical-prototype` from a PO\/BA/i);
+  assert.match(angularSkill, /admin-screens.*approved/i);
+  assert.match(angularSkill, /seed-data.*approved/i);
+  assert.doesNotMatch(angularSkill, /PO\/BA Prototype Portal Mode/);
 
   for (const existingRef of [
     'input-analysis.md',
@@ -1975,47 +2026,40 @@ test('phase 1: angular PO/BA prototype mode is encoded in skill, refs, and examp
   }
 
   const prototypeRef = await readFile(new URL('../../_refs/angular/write-code/po-ba-prototype.md', import.meta.url), 'utf8');
-  assert.match(prototypeRef, /# PO\/BA Prototype Portal Mode/);
-  assert.match(prototypeRef, /Template-first invariant/);
+  assert.match(prototypeRef, /# Technical Prototype Mode/);
+  assert.match(prototypeRef, /explicit opt-in/i);
+  assert.match(prototypeRef, /Never infer it from a user's role/i);
+  assert.match(prototypeRef, /Template-first invariant/i);
   assert.match(prototypeRef, /run `init-portal\.md` first/);
   assert.match(prototypeRef, /existing Core UI portal shell/);
   assert.match(prototypeRef, /Do not design a custom portal shell/);
   assert.match(prototypeRef, /Prototype assumptions/);
-  assert.match(prototypeRef, /PO\/BA Prototype Plan:/);
-  assert.match(prototypeRef, /PermissionConfiguration\.disabled = true/);
-  assert.match(prototypeRef, /mock-first/);
+  assert.match(prototypeRef, /Technical Prototype Plan:/);
+  assert.match(prototypeRef, /permission bypass requires explicit approval/i);
+  assert.match(prototypeRef, /mock-first.*approved assumptions/is);
   assert.match(prototypeRef, /localStorage/);
   assert.match(prototypeRef, /MockCrudStore/);
-  assert.match(prototypeRef, /default 25/);
-  assert.match(prototypeRef, /20-30/);
+  assert.match(prototypeRef, /seed data only when `seed-data` is an approved optional feature/i);
+  assert.match(prototypeRef, /if absent, stop.*approval/is);
   assert.match(prototypeRef, /services\/<entity>\.mock-data\.ts/);
-  assert.match(prototypeRef, /DTO[\s\S]*ListRes[\s\S]*DetailRes[\s\S]*CreateReq[\s\S]*UpdateReq[\s\S]*SaveReq[\s\S]*ViewModel/);
-  assert.match(prototypeRef, /permission bypass status/);
-  assert.match(prototypeRef, /route\/menu/);
-  assert.match(prototypeRef, /mock rows per listing/);
+  assert.doesNotMatch(prototypeRef, /default 25|20-30 rows/i);
 
-  const relatedRefs = [
-    ['init-portal.md', [/PO\/BA prototype/, /PermissionConfiguration\.disabled = true/, /no backend auth\/API/, /Template-first portal baseline/, /custom portal shell/]],
-    ['init-module.md', [/PO\/BA prototype/, /route/, /menu/]],
-    ['init-entity.md', [/PRD-only/, /default 25/, /20-30/]],
-    ['screen-list.md', [/search\/filter\/sort\/paging/, /visible seed data/]],
-    ['screen-detail.md', [/validator inference/, /mock save\/update/]],
-    ['actions.md', [/mock-first action/, /mock store/]]
-  ];
-
-  for (const [file, patterns] of relatedRefs) {
-    const text = await readFile(new URL(`../../_refs/angular/write-code/${file}`, import.meta.url), 'utf8');
-    for (const pattern of patterns) {
-      assert.match(text, pattern, `${file} includes ${pattern}`);
-    }
-  }
+  const initPortal = await readFile(new URL('../../_refs/angular/write-code/init-portal.md', import.meta.url), 'utf8');
+  const initEntity = await readFile(new URL('../../_refs/angular/write-code/init-entity.md', import.meta.url), 'utf8');
+  const screenList = await readFile(new URL('../../_refs/angular/write-code/screen-list.md', import.meta.url), 'utf8');
+  const actions = await readFile(new URL('../../_refs/angular/write-code/actions.md', import.meta.url), 'utf8');
+  assert.match(initPortal, /admin screens only when `admin-screens` is an approved/i);
+  assert.match(initPortal, /permission bypass is.*explicit/is);
+  assert.match(initEntity, /mock CRUD only for an explicitly approved/i);
+  assert.match(initEntity, /row count is absent, block for approval/i);
+  assert.match(screenList, /both `mock-service` and `seed-data` are approved/i);
+  assert.match(actions, /Never infer extra actions from prototype mode/i);
 
   const examples = await readFile(new URL('../../docs/po-ba-prototype-examples.md', import.meta.url), 'utf8');
-  assert.match(examples, /insurance claims portal demo/i);
+  assert.match(examples, /Explicit Technical Prototype Prompt Examples/i);
+  assert.match(examples, /role of the requester never selects this profile/i);
   assert.match(examples, /contract-management/i);
-  assert.match(examples, /no API\/backend/i);
-  assert.match(examples, /Core UI starter template/i);
-  assert.match(examples, /25 realistic rows/i);
+  assert.match(examples, /Explicitly approve `technical-prototype`/i);
 });
 
 test('phase 1: deterministic prompt eval dispatches expected skills', async () => {

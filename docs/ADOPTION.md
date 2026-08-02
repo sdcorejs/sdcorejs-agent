@@ -97,12 +97,13 @@ only when at least two independent units make both choices real.
 
 ## Communication Economy Policy
 
-The Communication Economy Policy reduces total communication cost by selecting
-only related context, keeping runtime state separate from user-facing prose,
-and avoiding repeated summaries. `compact` is the default for direct answers,
-routine progress, successful fast-fix, verification, and handoff. It still uses
-complete professional sentences. Use `standard` for normal explanations,
-trade-offs, review findings, or partially skipped verification.
+The Communication Economy Policy improves visible-output and portable-handoff
+efficiency by selecting only related context, keeping runtime state separate
+from user-facing prose, and avoiding repeated summaries. Existing measurements
+do not prove broad token or cost reduction. `compact` is the default for direct
+answers, routine progress, successful fast-fix, verification, and handoff. It
+still uses complete professional sentences. Use `standard` for normal
+explanations, trade-offs, review findings, or partially skipped verification.
 
 The resolver automatically selects `detailed` for spec or plan approval,
 security warnings, destructive actions, ambiguous or high-impact decisions,
@@ -145,6 +146,17 @@ All provider surfaces consume the same generated canonical contract. Layout v2
 does not add an adapter capability or change `context.pass`; unsupported or
 unknown runtime-context channels still carry bounded paths, hashes, lifecycle
 state, blockers, and the exact consumer through the portable fallback.
+
+For a portal with separate module repositories, module docs stay editable only
+in their semantic owner repositories. The portal may keep portal/integration
+docs and a generated aggregate that links revision-pinned module sources or
+consumes versioned exports with repository/revision/hash provenance. Missing or
+unwritable module owners block the write; portal fallback is forbidden.
+
+Repository/project summaries, code maps, trace flow, environment setup, and
+recovery context belong to `sdcorejs-explore`, not
+`sdcorejs-documentation`. Use documentation only to summarize an explicitly
+named existing document.
 
 ## Portable Interaction And Delegation
 
@@ -192,6 +204,8 @@ This matrix tracks supported surfaces and the evidence expected for each.
 
 ## Adoption Checklist
 
+- Use Node.js `>=18` for root repository tooling and Node.js `>=22.12.0` for
+  the Astro showcase under `site/`.
 - Choose install mode: plugin, direct repo, submodule, or copied native skills.
 - Run `npm ci`, `npm run check:text-hygiene`, `npm run check:skills`, and
   `npm run test:e2e` at the source commit.

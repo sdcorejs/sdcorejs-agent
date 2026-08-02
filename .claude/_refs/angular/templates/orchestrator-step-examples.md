@@ -183,9 +183,10 @@ export class ProductService {
 
 ### promotion.mock-data.ts (inferred schema, domain-realistic)
 
-Mock-data rules (apply when generating any entity's seed file):
+This worked example assumes `seed-data` and a 30-row count were explicitly
+approved. Mock-data rules for this example:
 
-- Produce **20–40 rows** total
+- Produce exactly **30 rows**
 - Distribute select/enum values across every option (don't use one value for all rows)
 - Spread dates across the past ~12 months
 - Use plausible numeric ranges that match the domain (percentage 1–50, fixed amount 10k–500k, stock 0–1000)
@@ -219,7 +220,7 @@ export const PROMOTION_SEED_DATA: PromotionDTO[] = [
     status: 'INACTIVE', description: '<localized text>',
     isActivated: false, createdAt: '2024-12-20T10:00:00Z', updatedAt: '2024-12-20T10:00:00Z',
   },
-  // ... continue to 20–40 rows, distributed evenly across type/status
+  // ... continue to the approved 30 rows, distributed evenly across type/status
 ];
 ```
 

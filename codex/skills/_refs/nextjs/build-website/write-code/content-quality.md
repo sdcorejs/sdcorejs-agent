@@ -15,7 +15,8 @@ A landing site that ships with 50-word "Lorem ipsum about us" sections + auto-tr
 This skill enforces the floor: minimum lengths, prose discipline, parity check, on-page SEO.
 
 ## When invoked
-- Automatic step in the `sdcorejs-nextjs` orchestrator after `pages-and-blocks.md` + `seo.md` (so we have pages and metadata to audit)
+- The resolved execution contract includes `content`, after its approved page
+  and SEO prerequisites
 - User says "<localized text>", "<localized text>", "<localized text>", "review content quality"
 - After adding new pages or articles — before launch
 - Anytime `sdcorejs-review` flags "Critical: thin content"
@@ -23,7 +24,8 @@ This skill enforces the floor: minimum lengths, prose discipline, parity check, 
 ## Prerequisites
 - Pages exist (`pages-and-blocks.md` done)
 - Metadata factory exists (`seo.md` done)
-- i18n wired (`i18n.md` done) — even for "VI only" sites, the structure must be bilingual-ready
+- If `i18n` is approved, its parity contract is wired; single-locale sites do
+  not create placeholder locale trees
 
 ## What ships
 
@@ -177,7 +179,9 @@ Tailwind Typography's defaults are tuned for English. Vietnamese needs adjustmen
 
 Three components ship for long-form reading; full code in `_refs/nextjs/build-website/content-quality-refs.md` ("Presentation components"):
 
-- **`src/components/ui/prose.tsx`** — wraps content in `prose prose-neutral max-w-prose mx-auto` (Tailwind'<localized text>'s eye between rows). Accepts a `size` prop.
+- **`src/components/ui/prose.tsx`** — wraps content in
+  `prose prose-neutral max-w-prose mx-auto` so line length and vertical rhythm
+  remain readable. Accepts a `size` prop.
 - **`src/components/ui/toc.tsx`** — sticky desktop Table of Contents with an `IntersectionObserver` active-section highlight. Render only for articles ≥ 4 `<h2>` blocks. Extract TOC items server-side; for MDX use `rehype-slug` + `rehype-autolink-headings`.
 - **`src/components/sections/article-body.tsx`** — composes `Prose` + `TableOfContents` + author byline + published/updated dates into the article layout.
 

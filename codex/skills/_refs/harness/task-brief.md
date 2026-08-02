@@ -10,6 +10,24 @@ task_brief:
   task_id:
   objective:
   plan_step:
+  dispatch_envelope:
+    contract_id:
+    plan_artifact_id:
+    plan_approval_hash:
+    repository_id:
+    repository_role:
+    module_id:
+    git_root:
+    source_revision:
+    allowed_paths: []
+    prohibited_paths: []
+    authority: read-only | read-write
+    git_mutations: deny
+    approved_artifact_mutation: deny
+    required_validations: []
+    output_evidence_contract:
+      result_type:
+      required_fields: []
   dependencies: []
   owned_paths: []
   readable_paths: []
@@ -29,13 +47,20 @@ complete bodies or a complete repository context. Do not place a full
 spec/plan body inside a nominally valid string field. Write-capable workers
 must have non-overlapping path and exclusive-resource ownership. The worker
 stops and returns control when scope, ownership, contract, or risk exceeds the
-brief.
+brief. The worker never changes Git roots, writes coordinated integration
+paths, mutates approved artifacts, stages, commits, or pushes. The primary
+integration agent validates the returned diff and creates any integration
+snapshot required by the result protocol.
 
 ## Review Package
 
 ```yaml
 review_package:
   task_id:
+  repository_id:
+  repository_role:
+  module_id:
+  source_revision:
   changed_paths: []
   diff_reference:
   verification:

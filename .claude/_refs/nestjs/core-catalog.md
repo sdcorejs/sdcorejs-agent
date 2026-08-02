@@ -47,6 +47,19 @@ an unauditable inherited HTTP surface.
 ## Auth, validation, and errors
 
 - Authentication establishes a trusted actor before authorization.
+- Generated production authentication uses `jose` `jwtVerify` with a remote
+  JWKS, exact issuer/audience checks, an asymmetric algorithm allowlist,
+  required lifetime claims, bounded clock tolerance, and bounded token age.
+- `OIDC_ISSUER`, `OIDC_AUDIENCE`, `OIDC_JWKS_URI`, and
+  `OIDC_ALLOWED_ALGORITHMS` are validated configuration. Production issuer and
+  JWKS URLs require HTTPS.
+- Permission, tenant, and department claim names are configuration, but their
+  values are accepted only after cryptographic verification. Request bodies,
+  headers other than the bearer token, and capability flags never establish
+  actor scope.
+- Test doubles may exist only in test code. Production modules bind
+  `TOKEN_VERIFIER` to `OidcTokenVerifier`; tests exercise that same verifier
+  against locally served JWKS and signed tokens rather than overriding it.
 - `@HasPermission` or the generated policy decorator records stable permission
   metadata.
 - Zod validation rejects unknown and server-owned request fields.

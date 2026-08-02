@@ -10,7 +10,9 @@ required-actions: artifact.read, context.pass, web.fetch, verification.run, user
 ## Shared Protocols
 
 Read `_refs/shared/runtime-protocols.md`. Load project context, choice, or
-visual references only when the current question requires them.
+visual references only when the current question requires them. Resolve track,
+stack profile, repository role, and artifact kinds from the versioned
+`_refs/shared/system-registry.json`; do not maintain a local competing enum.
 
 ## Purpose
 Turn a request into a confirmed requirement contract. This skill now owns both jobs that used to be split:
@@ -24,7 +26,8 @@ Output dialogue only. Do not write specs, plans, or code here.
 
 ### 0. Detect execution context
 Detect the target project root, `target_root_kind`, track, and
-`stack_profile` before asking blockers. Use `_refs/shared/project-context.md`
+`stack_profile` before asking blockers. Target-root discovery locates evidence;
+it does not establish artifact ownership. Use `_refs/shared/project-context.md`
 with:
 
 ```text
@@ -46,8 +49,8 @@ cd "$TARGET_ROOT"
 
 If multiple app roots exist, ask the user which root to target with a numbered
 list and short aliases from `_refs/shared/user-choice-prompt.md`. If no known
-stack is detected, keep `TRACK=generic`; `sdcorejs-execute-plan` can still run
-the approved plan through the harness fallback.
+stack is detected, resolve it through the `general` generic-harness fallback in
+the central registry.
 
 Classify `target_root_kind`:
 
@@ -60,7 +63,29 @@ Classify `target_root_kind`:
 Writing to an authoring repo requires explicit confirmation that the authoring
 repo itself is the target. Brainstorming remains read-only either way.
 
-### 0.1 Stack profile classification
+### 0.1 Resolve semantic repository ownership
+
+Discover repository topology and stable repository IDs using
+`_refs/shared/repository-contract.mjs` before creating the handoff. Record the
+repository coordinating this conversation as `execution_host_repository_id`.
+Resolve the semantic requirement/spec owner independently:
+
+- A module-scoped requirement is owned by that module repository even when the
+  request starts in the portal.
+- Portal ownership is limited to its shell, composition, cross-module
+  integration, and aggregate runner/report behavior.
+- A repository-local or standalone request is owned by its identified target
+  repository.
+- The current working directory, most recent artifact, and execution host are
+  never ownership evidence by themselves.
+
+When module mapping is ambiguous, block before any durable write. When a module
+repository is missing, unavailable, or read-only, record an unresolved blocker
+and keep `write_target: null`; missing module ownership must never fall back to
+the portal. Preserve both owner and execution-host IDs in the context.
+Brainstorming remains read-only and does not probe writability by writing.
+
+### 0.2 Stack profile classification
 Set `track`, `stack_profile`, `profile_confidence`, and `profile_evidence` from
 current evidence. If `sdcorejs-explore` already produced `explore_context`,
 consume `stack_profiles` and `profile_evidence` as evidence, not truth.
@@ -121,9 +146,15 @@ AI-agent profile:
   remains in explore mode until capability, engine, runtime owner, trust,
   tools, state, evidence, limits, and verification are confirmed.
 
-Allowed `track` values:
-`angular`, `nestjs`, `nextjs`, `react`, `node`, `fullstack`, `product`,
-`design`, `ai-agent`, `documentation`, `workflow`, `test`, `general`.
+Use the central registry's `tracks` and `stack_profiles` collections. Treat its
+legacy aliases only as deterministic inputs; emit the canonical track in
+`requirement_context`.
+
+The Angular `technical-prototype` profile is explicit opt-in only. A
+non-technical persona, mockup request, incomplete backend, or ambiguous
+requirement must not activate it. Never infer admin/auth/account/role/permission
+scope unless an approved requirement or explicitly selected profile includes
+that scope. Mark every other inference as an assumption requiring confirmation.
 
 ### 1. Load context cheaply
 Read only what changes the questions:
@@ -298,6 +329,7 @@ not persist it unless a later write-approved skill owns the artifact.
 
 - Track/context.
 - Target root and `target_root_kind`.
+- Semantic owner repository/module and execution host repository.
 - `stack_profile`, confidence, and evidence.
 - Chosen direction.
 - Required inputs.
@@ -317,11 +349,19 @@ requirement_context:
   contract_id: <stable id shared by spec/plan/execute>
   target_root: <absolute or repo-relative target>
   target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
-  track: angular | nestjs | nextjs | react | node | fullstack | ai-agent | product | design | documentation | workflow | test | general
-  stack_profile: core-ui-angular | legacy-core-ui-angular | plain-angular | sdcorejs-nestjs | plain-nestjs | nextjs-build-website | plain-nextjs | react-vite | react-cra | react-next-generic | node-general | general | migration-request | unknown
+  track: <canonical registry track>
+  stack_profile: <registry stack profile>
   profile_confidence: high | medium | low
   profile_evidence:
     - <dependency/config/file/import evidence>
+  owner_repository_id: <stable semantic owner repository id>
+  owner_repository_role: standalone | portal | module | library | service | documentation
+  owner_module_id: <module id or null>
+  execution_host_repository_id: <stable repository id coordinating this run>
+  ownership_resolution:
+    source: topology-manifest | explicit-user-evidence | repository-evidence
+    status: resolved | blocked
+    write_target: <owner repository id or null>
   user_goal: <summary>
   user_type: technical | non-technical | mixed | unknown
   problem_statement: <summary>
@@ -329,9 +369,12 @@ requirement_context:
   in_scope:
     - item: <scope item>
       source: explicit | inferred | defaulted
-  out_of_scope:
+  non_goals:
     - item: <scope item>
       source: explicit | inferred | defaulted
+  risks:
+    - risk: <material risk>
+      mitigation: <confirmed mitigation or unresolved>
   decisions_confirmed:
     - decision: <name>
       value: <value>
@@ -345,7 +388,13 @@ requirement_context:
       - item: <text>
     unresolved:
       - item: <text>
+  unresolved_blockers:
+    - <blocking decision, owner availability issue, or empty>
   coverage_approach: post-hoc | tdd | test-plan-only | not-applicable | unknown
+  acceptance_criteria_seed:
+    - id: AC-1
+      behavior: <observable behavior>
+      expected_result: <testable outcome>
   visual_companion:
     offered: true | false
     selected: true | false
@@ -369,8 +418,10 @@ values.
 - Block `sdcorejs-spec` until minimum blockers are confirmed.
 - Save durable repeated preferences through `sdcorejs-explore (memories-write-approved)` only when relevant and approved.
 - Preserve `contract_id`, `target_root`, `target_root_kind`, `track`,
-  `stack_profile`, explicit user decisions, inferred/defaulted assumptions, and
-  profile evidence for downstream skills.
+  `stack_profile`, owner repository/role/module, execution host repository,
+  explicit user decisions, non-goals, risks, acceptance-criteria seed,
+  inferred/defaulted assumptions, unresolved blockers, and profile evidence for
+  downstream skills.
 - Keep visual companion artifact writes response-only unless
   `visual_companion.artifact_write_approved` is true.
 
@@ -381,6 +432,8 @@ values.
   durable memories by default.
 - Treat a plain-language persona as permission to infer or hide technical
   decisions that require owner approval.
+- Write a module requirement/spec/plan into the portal because its semantic
+  owner repository is unavailable or not writable.
 - Show angular blockers to nextjs, or nestjs blockers to test.
 - Force SDCoreJS/Core UI/TypeORM/build-website assumptions onto plain profiles.
 - Dump every question at once.
@@ -394,6 +447,7 @@ or embedding source artifact bodies:
 - target root kind
 - detected context/track
 - stack profile and profile evidence
+- semantic owner repository/role/module and execution host repository
 - confirmed `requirement_context`
 - chosen direction and tradeoffs considered
 - source artifacts provided by the user

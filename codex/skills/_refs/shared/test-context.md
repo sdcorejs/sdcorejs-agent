@@ -33,6 +33,8 @@ test_context:
     source_spec: <repo-relative-path-or-none>
     source_plan: <repo-relative-path-or-none>
     associated_HEAD_or_diff: <sha-or-diff-fingerprint>
+    source_fingerprint: <sha256>
+    source_revision_map: {}
   classification:
     test_action: <public-or-internal-action>
     stack_profile: general
@@ -41,6 +43,9 @@ test_context:
     environment_class: local
   scope:
     owner: target-project-convention
+    owner_repository_id: <stable-repository-id>
+    owner_module_id: <module-id-or-null>
+    execution_host_repository_id: <stable-repository-id>
     orchestration_root: <path>
     workspaces: []
     target_projects: []
@@ -144,6 +149,13 @@ test_evidence:
       package_manager: <ecosystem>
       environment_id: local
       environment_class: local
+      evidence_class: unit # unit | golden | container | full-e2e | live-agent | supplemental-smoke
+      repository_id: <stable-repository-id>
+      source_fingerprint: <sha256>
+      portal_revision: <sha-or-null>
+      module_revision: <sha-or-null>
+      portal_pinned_module_revision: <sha-or-null>
+      artifact_hashes: {}
       persona_ids: []
       started_at: <iso-time>
       finished_at: <iso-time>
@@ -188,6 +200,12 @@ contain secrets.
 Evidence is current only when `associated_HEAD_or_diff`, scope, config,
 environment, and command match the target state. Otherwise mark it stale.
 `stale: false` is a verified fact, not a default.
+
+For module-owned E2E, also require exact repository provenance, source
+fingerprint, portal/module/pinned revisions, artifact hashes, actual command,
+and evidence class from `_refs/shared/module-e2e-contract.md`. A module/pinned
+revision mismatch is `mismatched`, not current. Golden/container/supplemental
+smoke cannot satisfy full-E2E evidence.
 
 Legacy v1 evidence remains readable as historical context. Map known fields
 conservatively, leave unknown fields unknown, and never infer freshness, pass,

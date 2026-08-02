@@ -77,7 +77,12 @@ For write-code tails, this automatic trigger is gated by
 ### 2. Harvest the touched module
 
 Identify the `<module>` name from current change context and target paths. Then
-probe the target project for routes, permissions, entity fields, and screens.
+resolve its stable repository ID and semantic owner from the discovered
+portal/module topology. The guide and its assets belong to that module Git
+repository even when execution started in a portal checkout. If the module
+repository is missing, ambiguous, unavailable, or unwritable, block; never
+write an editable module guide into the portal as fallback. Then probe the
+semantic owner project for routes, permissions, entity fields, and screens.
 
 **Angular — routes & permissions:**
 ```bash
@@ -143,6 +148,8 @@ Fill the YAML frontmatter:
 - `tracks` — e.g. `[angular, nestjs]`
 - `generated_at` — ISO 8601 timestamp
 - `git_head` — `git rev-parse HEAD` of the target repo
+- `repository_id`, `repository_role: module`, and `module_id` — stable semantic
+  owner identity, independent of checkout path
 - `routes` — list of `{ path, screen, permission }` from the harvest
 - `permissions` — flat list of all permission codes found
 - `entities` — list of `{ name, fields[] }` from entity harvest
@@ -183,7 +190,7 @@ runner or certify screenshots by file existence alone.
    `sdcorejs-test (ui-evidence-capture)` with route, target state, logical
    persona, the unit-local output path
    `.sdcorejs/documentation/user-guides/<module>/images/<screen>.png`, and
-   current `associated_HEAD_or_diff`.
+   current `associated_HEAD_or_diff`, `source_revision`, and `app_revision`.
 3. Reuse the existing runner and its real-ui or approved manual-real-ui login.
    Do not install Playwright, generate a standalone bare-browser script, invent
    a localhost fallback, or bypass authentication.
@@ -194,6 +201,10 @@ runner or certify screenshots by file existence alone.
    present, provenance current, and the guide/image containment relationship
    passes `_refs/shared/documentation-layout.md`. `_shared` is valid only with
    proven ownership by at least two units, including this module.
+   Classify every visual as `real-ui`, `generated-mockup`, or `illustration`.
+   Only `real-ui` evidence can satisfy a real screenshot requirement; generated
+   visuals retain generator provenance and must never be presented as observed
+   application state.
 
 Keep the `## Illustration images` checklist. For each missing, blocked, or stale
 image, record its requested state and blocker without a broken markdown link.
@@ -370,6 +381,15 @@ artifact.read transitional exact shape: <target>/.sdcorejs/documentation/user-gu
 # block conflicting copies.
 ```
 
+For separate module repositories, do not scan or create portal-side editable
+copies. Use `buildMultiRepositoryDocumentationAggregate` with one contribution
+per module. A contribution is either a repository link pinned to the exact
+module revision or a validated versioned export containing repository ID,
+module ID, canonical source path, source revision, export version, guide hash,
+assets, and current image evidence. Missing, duplicate, stale, hash-mismatched,
+or colliding contributions block the build. The portal output is a generated,
+non-editable projection and preserves per-module provenance.
+
 Build `<target>/.sdcorejs/documentation/sdcorejs-user-guide.md` from the **aggregate template** in `_refs/shared/user-guide-template.md`:
 
 1. **YAML frontmatter** — set Artifact Lifecycle metadata, `title` (project
@@ -406,7 +426,8 @@ verified-image relationship blocks aggregate output and export. Build the
 aggregate helper's `verifiedImageEvidence` inventory only from current structured
 `ui_capture_context` and `artifact_context` lifecycle evidence. Each accepted
 record preserves schema version 1, `capture_id`, `change_ref`, `guide_path`,
-the current `associated_HEAD_or_diff`, runner and real-UI persona provenance,
+the current `associated_HEAD_or_diff`, exact `source_revision` and
+`app_revision`, explicit `evidence_origin`, runner and real-UI persona provenance,
 target-state/PII assertions, redaction state, and `image.file`, `image.kind`,
 `image.sha256`, dimensions, existence, non-empty, and decodable status. A bare
 path list, self-asserted `decodable`, or file existence alone is not

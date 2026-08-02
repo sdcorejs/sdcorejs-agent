@@ -4,18 +4,24 @@
 
 # Build Website — Contact Form (REAL)
 
+<!-- executable-reference-default: copy-ready -->
+
 ## Purpose
-A landing site without a working contact form is incomplete — leads vanish. A common starter-project anti-pattern is shipping a `setTimeout(1000)` stub that only simulates submit (UI shows "sent" but nothing actually goes anywhere). This skill ships a real form: zod validation, POST to API route, Resend email delivery, rate limit, bilingual UX, and accessibility.
+When a contact form is approved, it must be real rather than a
+`setTimeout(1000)` simulation. This pack ships the approved provider boundary,
+server-side validation, POST route, rate limiting, accessible UX, and
+localized messages only when `i18n` is also approved.
 
 ## When invoked
-- Automatic last step of "Full build" in the `sdcorejs-nextjs` orchestrator
+- The resolved execution contract includes the `contact` feature
 - User says "contact form", "<localized text>", "<localized text>", "fix fake form"
 - Adding a new form (newsletter signup uses a similar pattern)
 
 Prerequisites:
 - Contact email destination from `sdcorejs-brainstorming` (`CONTACT_TO_EMAIL`)
 - Resend account + API key (default email service) OR SendGrid alternative
-- i18n messages exist (form labels, errors via `i18n.md`)
+- If `i18n` is approved, its message contract exists; otherwise use the
+  approved single-locale content contract
 
 ## Files
 
@@ -165,9 +171,10 @@ export const runtime = 'nodejs';  // Resend SDK needs Node runtime (not edge)
 
 export async function POST(req: NextRequest) {
   // Identify caller — prefer X-Forwarded-For (set by Vercel / most proxies)
+  const forwardedFor = req.headers.get('x-forwarded-for');
   const ip =
-    req.headers.get('x-forwarded-for'<localized text>',')[0].trim() ??
-    req.headers.get('x-real-ip') ??
+    forwardedFor?.split(',')[0]?.trim() ||
+    req.headers.get('x-real-ip')?.trim() ||
     'unknown';
 
   // Rate limit: 5 submissions per 15 minutes per IP
@@ -201,7 +208,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  const locale = req.headers.get('x-locale'<localized text>'vi';
+  const requestedLocale = req.headers.get('x-locale');
+  const locale = requestedLocale === 'en' ? 'en' : 'vi';
 
   try {
     await sendContactEmail(parsed.data, locale);
@@ -317,7 +325,7 @@ export function ContactForm() {
         disabled={status === 'submitting'}
         className="min-h-11 bg-brand text-white px-6 rounded-md font-semibold disabled:opacity-60"
       >
-        {status === 'submitting'<localized text>'submitting') : t('submit')}
+        {status === 'submitting' ? t('submitting') : t('submit')}
       </button>
     </form>
   );

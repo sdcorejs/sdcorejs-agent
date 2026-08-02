@@ -15,10 +15,13 @@
 - [Cross-references](#cross-references)
 
 ## Purpose
-Stand up a Next.js 16 landing-site skeleton that every later sub-skill (theme, pages, SEO, i18n, …) expects. After this skill runs, `npm run dev` succeeds, the root route renders an empty hero, and the folder structure is in place for content + components + i18n.
+Stand up a Next.js 16 App Router skeleton for the approved site/module and its
+approved feature set. After this pack runs, `npm run dev` succeeds and the root
+route renders a minimal page. Optional i18n, contact, advanced SEO, analytics,
+CMS, and provider files exist only when their feature is approved.
 
 ## When invoked
-- First step of a "Full build" dispatch in the `sdcorejs-nextjs` orchestrator
+- First step of an approved new-site dispatch in the `sdcorejs-nextjs` orchestrator
 - User says "init site", "<localized text>", "<localized text>", "bootstrap"
 - Brand-new directory or empty project root
 
@@ -29,7 +32,7 @@ Do NOT invoke if:
 ## Prerequisites (from `01-brainstorming`)
 - Site name + tagline
 - Production domain
-- Languages (VI default; EN ready)
+- Languages, only when localization is approved
 - Logo + brand assets path
 
 ## Workflow
@@ -51,16 +54,27 @@ Notes:
 - `--no-eslint` → we install our own (next/core-web-vitals + custom rules) below
 - `--turbopack` is on by default in Next 16; keep it
 
-### 2. Install standard dependency set
+### 2. Install the baseline and approved feature dependencies
 
 ```bash
 cd <site-slug>
-npm install next-intl @vercel/og lucide-react resend zod clsx tailwind-merge
+npm install lucide-react clsx tailwind-merge
 npm install @sdcorejs/utils
 npm install -D @types/node prettier prettier-plugin-tailwindcss eslint eslint-config-next
 ```
 
-Why each:
+Then add dependencies only for approved features:
+
+```bash
+# i18n
+npm install next-intl
+# dynamic OG images
+npm install @vercel/og
+# contact using Resend
+npm install resend zod
+```
+
+Why each optional dependency:
 | Dep | Purpose |
 |---|---|
 | `next-intl` | i18n; `i18n.md` setup |
@@ -76,7 +90,12 @@ If user picked Cloudflare hosting during brainstorming → also: `npm install -D
 If user picked GA4 → also: `npm install @next/third-parties`.
 If user picked Plausible → no extra dep (use plain script tag).
 
-### 3. Folder structure — create these directories + files
+### 3. Folder structure — materialize only approved branches
+
+The baseline is `src/app/{layout,page}.tsx` plus the approved page/component
+tree. The tree below is a feature catalog, not a mandatory scaffold. Add
+optional branches only when their feature is in `approved_features`; never
+create empty i18n/contact/analytics/CMS/provider stubs.
 
 ```
 <site-slug>/
@@ -314,7 +333,8 @@ leave summary missing and let later work use targeted reads.
 - Use `--app` flag (App Router only — never Pages Router)
 - Use `--src-dir` for clean layout
 - Pin Next.js to `latest` at install time but record the version in the auto-docs entry
-- Create all folders listed above, even if empty (other sub-skills assume them)
+- Create the baseline folders and only optional branches authorized by
+  `approved_features`
 - Write `.env.example` committed; `.env.local` gitignored
 - Run typecheck + dev-server smoke test before claiming "init done"
 - Keep generic helpers out of `src/lib/utils.ts` when `@sdcorejs/utils` already covers the behavior
@@ -329,7 +349,8 @@ leave summary missing and let later work use targeted reads.
 - Recreate Date/Number/String/Validation/Array/Filter/Object/Color/Browser utilities in `src/lib/utils.ts`
 
 ## Anti-patterns
-- Putting page logic in `src/app/page.tsx` instead of `src/app/[locale]/page.tsx` — breaks i18n
+- Putting localized page logic outside `src/app/[locale]/` when `i18n` is
+  approved, or forcing `[locale]` when it is not approved
 - Creating a one-file mega-component for the home page — extract meaningful
   responsibilities into feature-local blocks; promote a block to
   `src/components/sections/` only when stable shared consumers exist
@@ -339,5 +360,6 @@ leave summary missing and let later work use targeted reads.
 
 ## Cross-references
 - Inputs: brainstorming answers (domain, contact email, languages, brand)
-- Next: `theme.md` (palette + typography tokens), then `i18n.md` (next-intl middleware + messages), then `pages-and-blocks.md`
+- Next: only the approved packs in dependency order; `i18n.md` precedes
+  localized pages only when `i18n` is approved
 - `shared/workflow/env-setup` covers post-clone environment if a teammate joins later

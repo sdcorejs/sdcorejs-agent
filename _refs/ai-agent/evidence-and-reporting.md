@@ -44,6 +44,13 @@ Generated prose may summarize supported facts, but numeric claims, record
 status, policy conclusions, and audit assertions must map to evidence items.
 Tests should fail when a material claim has no evidence reference.
 
+Offline contract/eval evidence and live provider evidence are separate claims.
+Use registry class `GOLDEN` for the deterministic offline gate and
+`LIVE_AGENT` for current provider execution. When live credentials are absent,
+the live result is `NOT RUN`; an offline pass is never provider certification.
+Durable evidence references carry repository/artifact/path/revision/hash
+identity and remain owned by the application repository.
+
 ## Golden Baselines
 
 Deterministic reporting evals compare normalized evidence envelopes and

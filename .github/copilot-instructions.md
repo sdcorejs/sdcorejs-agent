@@ -9,6 +9,11 @@ Use this repo as a Runtime-localized SDLC skill pack for AI-agent, Angular, Nest
 3. Read the selected skill body before acting.
 4. If no skill matches, invoke `sdcorejs-using-skills`.
 
+Resolve track/profile/repository/evidence semantics from the versioned
+`_refs/shared/system-registry.json`. Keep track, stack profile, capability
+profile, repository role, artifact owner, and execution host distinct. Current
+working directory is not artifact-owner evidence.
+
 If several skills match, apply this priority: explicit skill name, approved-plan execution, product docs/traceability, design handoff, test-only work, dedicated utility intent, confirmed track implementation, then brainstorming for ambiguous scope.
 
 ## Workflow

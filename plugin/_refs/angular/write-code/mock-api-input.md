@@ -88,9 +88,9 @@ Mock API contract mapping:
 
 ## Service Mode Decision
 
-- Default PO prototype mode: generate a mock-first service backed by
-  `MockCrudStore`/`localStorage`, seeded from contract examples plus realistic
-  generated rows.
+- In an explicitly approved `technical-prototype`, generate a mock-first
+  `MockCrudStore`/`localStorage` service only when `mock-service` is approved.
+  Seed rows only when `seed-data` plus a row-count assumption are approved.
 - Use live `BaseService`/API integration only when a runnable backend endpoint,
   base URL/configuration, auth expectation, and project service convention are
   explicitly available or the user explicitly asks for live integration.

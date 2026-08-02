@@ -7,6 +7,31 @@ Node workspace is not distributed through npm.
 
 ## Unreleased
 
+## 0.7.0
+
+- **Breaking:** make track/profile, artifact identity, approval hash,
+  repository ownership, and evidence identity executable shared contracts
+  across all 21 skills.
+- Add deterministic approved-artifact creation/verification with canonical
+  SHA-256 hashing, protected metadata, mutation rejection, and cross-repository
+  parent references.
+- Make portal/module ownership semantic and repository-local across planning,
+  execution, documentation, design handoff, testing, review, repair, simplify,
+  Git closure, and ship readiness.
+- Replace generated NestJS deny-all production authentication with tested
+  OIDC/JWKS signature verification and adversarial token coverage.
+- Validate executable/copy-ready Angular and Next.js references by language,
+  and add generated Angular, NestJS, and Next.js production golden projects.
+- Make Angular technical prototypes and admin/auth/account/role/permission
+  surfaces explicit opt-ins; make Next.js i18n/contact/advanced SEO profile
+  features approval-dependent.
+- Add repository-local Git closure for concurrent worktrees, nested
+  repositories, submodules, approved gitlinks, stale evidence, secrets, and
+  durable `.sdcorejs/**` artifacts without singleton session state.
+- Add a release-readiness evaluator that separates ship, commit, push, PR,
+  release, and actual publication states and rejects stale/incomplete evidence.
+- Synchronize repository/plugin/site metadata at `0.7.0`; no tag, publication,
+  push, pull request, or GitHub Release is created by this change.
 - Keep the root Node workspace private and validation-only; npm publication,
   `npx`, and the removed standalone entrypoint remain retired.
 - Add provider-neutral semantic actions, tri-state adapter capabilities, hashed

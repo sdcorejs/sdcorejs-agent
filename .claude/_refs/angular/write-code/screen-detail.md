@@ -5,6 +5,8 @@
 
 # Screen: Detail Route/Page and Form Boundaries
 
+<!-- executable-reference-default: partial-example -->
+
 ## Contents
 
 - Purpose, use cases, and Core UI component selection gate
@@ -77,10 +79,11 @@ shared stateless API services may follow the existing app scope; mutable feature
 facades belong at route/feature/page scope; drawer coordinators belong at
 component scope; pure form builders/mappers may remain functions.
 
-For PO/BA prototype mode, perform validator inference from PRD/user story/AC,
-field semantics, status workflow, and existing project conventions. Keep CREATE,
-UPDATE, and DETAIL demoable with mock save/update through the entity mock service;
-do not block the detail screen because a backend save endpoint is missing.
+For an explicitly approved `technical-prototype`, derive only the fields and
+validators authorized by the approved prototype assumptions. Keep CREATE,
+UPDATE, and DETAIL demoable through a clearly demo-only mock service when that
+mock boundary is in scope. Never infer prototype mode from a PO/BA role, vague
+input, or a missing backend/design artifact.
 
 ## Core UI component selection gate
 
@@ -450,7 +453,7 @@ The `FormGroup` itself stays imperative. Use signals for UI state, and keep edit
 readonly state = signal<'CREATE' | 'UPDATE' | 'DETAIL'>('CREATE');
 entity: Partial<ProductSaveReq & { id?: string }> = {};
 readonly pageTitle = computed(() =>
-  this.state() === 'CREATE'<localized text>'<localized text>' : '<localized text>'
+  this.state() === 'CREATE' ? '<localized text>' : '<localized text>'
 );
 ```
 

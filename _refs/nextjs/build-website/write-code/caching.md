@@ -8,7 +8,7 @@
 A landing site that re-renders every request hits origin too hard; one that's pure SSG is a pain to update. The right default is **ISR with a 30-minute revalidation window** — content updates appear within 30 min without rebuilding, CDN serves cached responses for the rest. This skill applies that default uniformly and gives the user one knob to tune.
 
 ## When invoked
-- Automatic step of the `sdcorejs-nextjs` orchestrator after pages are generated
+- The resolved execution contract includes `caching`, after pages are generated
 - User says "set up caching", "<localized text>", "<localized text>", "fix ISR", "revalidate"
 - After CMS integration (need on-demand revalidation)
 
@@ -182,7 +182,7 @@ npm run start
 - Cache API routes that handle mutations (`force-dynamic` instead)
 - Default to `force-dynamic` everywhere "just in case" — kills perf
 - Use `output: 'export'` for sites that need ISR
-- Skip the on-demand endpoint — even if no CMS yet, the user might add one later
+- Add an on-demand endpoint merely because a CMS might be added later
 - Set `revalidate: 0` thinking it means "no cache" — it means "always revalidate", which is effectively SSR with extra steps
 
 ## Anti-patterns

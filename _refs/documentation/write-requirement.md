@@ -22,6 +22,13 @@ Write exactly one file per task id:
 <target>/.sdcorejs/documentation/requirements/<TASKID>/<TASKID>.md
 ```
 
+Resolve `<target>` as the semantic owner repository before writing. A
+module-scoped requirement belongs in that module repository; portal/integration
+requirements belong in the portal only when their scope is explicitly
+portal-composition. Record stable `repository_id`, `repository_role`, optional
+`module_id`, and source spec/plan identity. A missing, ambiguous, unavailable,
+or unwritable module owner blocks the write; portal fallback is forbidden.
+
 Preserve the supplied `TASKID` case and allow only letters, digits, `_`, and
 `-`. Reject empty/dot values, separators, absolute paths, drive prefixes,
 trailing dot/space, Windows reserved names, and case-insensitive collisions.

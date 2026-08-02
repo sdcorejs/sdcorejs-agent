@@ -14,11 +14,19 @@ description: Design-track executor for FE handoff artifacts. Use for UI/UX desig
 ## Shared Protocols
 
 Read `../_refs/shared/runtime-protocols.md` and
-`../_refs/shared/artifact-lifecycle.md`; emit `artifact_context` for every design
-ledger written.
+`../_refs/shared/artifact-lifecycle.md`; load
+`../_refs/shared/design-handoff.md` for durable handoffs. Consume canonical
+track/profile and artifact values from `../_refs/shared/system-registry.json`,
+verify approved spec/plan parents with
+`../_refs/shared/approved-artifact.mjs`, and resolve semantic ownership with
+`../_refs/shared/repository-contract.mjs`. Emit `artifact_context` for every
+design handoff/ledger written.
 
 ## Purpose
 Create FE handoff artifacts from product intent. The output should let Angular/Next.js executors implement screens without guessing layout, states, copy, interactions, or responsive behavior.
+
+Design does not write production code, replace a spec/plan, mutate an approved
+artifact, invent behavior outside approved requirements, or create module code.
 
 PNG generation is feasible, but a PNG alone is not a reliable source of truth. For exact FE implementation, always pair PNG previews with editable design artifacts and a written handoff spec.
 
@@ -90,7 +98,16 @@ If product stories or acceptance criteria are missing, write only an exploratory
 
 ## Output Paths
 
-For a feature:
+Resolve `experience_scope` and the semantic owner before any output path:
+
+- `module` design belongs in the module repository; an unavailable/unwritable
+  owner blocks and portal fallback is forbidden.
+- `portal-shell` and `portal-composition` belong in the portal repository.
+- `cross-module` belongs to one explicit portal/integration owner and references
+  module handoffs using immutable repository/artifact/path/revision/hash
+  identities. Never duplicate an editable module handoff.
+
+For a feature in the resolved owner:
 
 ```text
 <target-project>/design/
@@ -101,7 +118,7 @@ For a feature:
   exports/png/<kebab-feature>/<screen>.png
   decisions/<kebab-feature>.md
 
-<target-project>/.sdcorejs/docs/design/<YYYY-MM-DD-HH-mm>-<kebab-feature>.md
+<target-project>/.sdcorejs/docs/design/<kebab-feature>.md
 ```
 
 Use whichever editable wireframe source best fits the target:
@@ -248,6 +265,12 @@ Preferred PNG pipeline:
 3. Verify the file exists and is non-empty.
 4. Link the PNG from the design spec and `.sdcorejs/docs/design/` ledger.
 
+Classify generated static images as `generated-mockup` or `illustration` and
+bind them to the editable-source artifact hash. A real application capture is
+`real-product-screenshot` and must carry repository ID, source/app revisions,
+capture evidence ID/timestamp, and content hash. Never present a generated
+image as a real product screenshot.
+
 Use project tooling if available. If Playwright or another browser renderer is
 already installed, use it. If no renderer is available, apply
 `../_refs/shared/user-choice-prompt.md` before adding dependencies:
@@ -255,15 +278,35 @@ already installed, use it. If no renderer is available, apply
 
 If an image-generation tool is available and the user explicitly wants high-fidelity visual concepts, it can create concept PNGs. Treat those as mood/reference only. Do not rely on AI-raster text for exact labels, tables, or form fields; exact UI text belongs in the design spec and editable wireframe source.
 
+If the target editable surface is unavailable, record the concrete limitation,
+leave the editable-source result blocked/limited, and do not claim editable
+source pass. A PNG alone never satisfies the handoff.
+
 ### 5. Write the design ledger
 
-Write `.sdcorejs/docs/design/<timestamp>-<feature>.md`:
+Write `.sdcorejs/docs/design/<feature>.md`:
 
 ```markdown
 ---
-artifact_id: design-ledger-<feature>
-artifact_kind: execution-doc
+schema_version: 1
+artifact_id: design-handoff:<feature>
+artifact_kind: design-handoff
+contract_id: <approved contract id>
+requirement_id: <requirement id>
 change_ref: <change id>
+track: design
+stack_profile: design
+experience_scope: module | portal-shell | portal-composition | cross-module
+owner_repository_id: <stable repository id>
+owner_repository_role: module | portal
+owner_module_id: <module id | null>
+ownership_scope: module | portal-composition | cross-repository-aggregate
+repository_relative_path: design/specs/<feature>.md
+source_revision: <40-character Git revision>
+parent_references: [<approved spec ref>, <approved plan ref>]
+supersedes: <artifact id | null>
+approval_hash: <sha256:v1 hash when applicable | null>
+artifact_hash: <sha256:v1 hash from design-handoff.mjs>
 source_spec: <repo-relative path | none>
 source_plan: <repo-relative path | none>
 commit_policy: with-change
@@ -273,6 +316,7 @@ status: draft | reviewed | approved | partial
 sourceUserStories: <path>
 sourceAcceptanceCriteria: <path>
 updatedAt: <ISO-8601 timestamp>
+editable_source_status: available | unavailable
 ---
 
 # Design Ledger - <Feature>
@@ -319,6 +363,11 @@ Emit this ledger in `artifact_context.required_with_change`.
   coverage, platform notes, and implementation-governance constraints in
   `design/decisions/<feature>.md` when mobile applies.
 - Produce editable design source before PNG export.
+- Validate editable source, static visual classification, real screenshot
+  provenance, responsive coverage, evidence-aware component mapping, existing
+  design-system reuse, and cross-repository references through
+  `../_refs/shared/design-handoff.mjs`.
+- Preserve approved spec/plan identities and hashes as parent references.
 - Verify PNG files exist before claiming they were generated.
 - Mark inferred design decisions clearly when product inputs are incomplete.
 - Keep design docs in the target project, never in `sdcorejs-agent` unless that repo is explicitly the target.
@@ -326,6 +375,10 @@ Emit this ledger in `artifact_context.required_with_change`.
 ### Must Not
 
 - Generate production FE code; hand off to `sdcorejs-angular` or `sdcorejs-nextjs` for implementation.
+- Bypass the approved spec/plan, mutate approved artifacts, or expand
+  implementation authority.
+- Write a module handoff into the portal or duplicate an editable cross-repo
+  handoff.
 - Treat a PNG as the only handoff artifact.
 - Use AI-generated raster text as authoritative UI copy.
 - Invent product requirements to make a design look complete.

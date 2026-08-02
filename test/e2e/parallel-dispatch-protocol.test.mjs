@@ -7,6 +7,7 @@ import test from 'node:test';
 import {
   applyStateEvent,
   assignRepair,
+  buildDispatchEnvelope,
   classifyTopology,
   createEvidence,
   integrateResults,
@@ -16,13 +17,16 @@ import {
   runUnitWithPolicy,
   validateContract,
   validateDispatchContext,
+  validateDispatchEnvelope,
   validateEvidence,
   validatePathBoundary,
   validateResultIdentity,
   validateRuntimeCapabilities,
+  validateWorkerAuthority,
   validateWorkspaceAssignment,
   validateWorkingTree
 } from '../../_refs/orchestration/parallel-protocol.mjs';
+import { createApprovedArtifact } from '../../_refs/shared/approved-artifact.mjs';
 
 const baseCapabilities = {
   runtime: 'test', supports_subagents: true, supports_parallel_dispatch: true,
@@ -36,9 +40,64 @@ const approvedContract = {
   frozen_contract_hash: 'contract-hash', revision: 1, supersedes: null
 };
 
+const dispatchEnvelope = {
+  schema_version: 1,
+  source: 'approved-plan',
+  contract_id: 'C1',
+  plan_artifact_id: 'plan-module-a-r1',
+  plan_approval_hash: 'plan-hash',
+  repository_id: 'github.com/sdcorejs/module-a',
+  repository_role: 'module',
+  module_id: 'module-a',
+  git_root: '/wt/u1',
+  source_revision: 'a'.repeat(40),
+  allowed_paths: ['src/a/**'],
+  prohibited_paths: [],
+  authority: 'read-write',
+  git_mutations: 'deny',
+  approved_artifact_mutation: 'deny',
+  required_validations: ['path-boundary', 'stage-a', 'stage-b', 'unit-verification'],
+  output_evidence_contract: {
+    result_type: 'commit',
+    required_fields: ['repository_id', 'module_id', 'associated_head_or_diff'],
+  },
+};
+
 const parentPathPass = (unit) => ({ status: 'PASS', associated_head_or_diff: unit.result.associated_head_or_diff, changed_paths: unit.result.changed_paths });
 const parentReviewPass = (unit) => ({ status: 'PASS', associated_head_or_diff: unit.result.associated_head_or_diff, blockers: [] });
 const globalPass = async () => ({ status: 'PASS', associated_head_or_diff: 'integrated-head', output_digest: 'global-digest' });
+
+function approvedPlanArtifact({
+  allowedPaths = ['src/orders/**'],
+  prohibitedPaths = ['src/orders/generated/**'],
+} = {}) {
+  return createApprovedArtifact({
+    metadata: {
+      schema_version: 1,
+      artifact_id: 'plan-module-a-r1',
+      artifact_kind: 'plan',
+      contract_id: 'C1',
+      requirement_id: 'R1',
+      change_ref: 'change-1',
+      track: 'angular',
+      stack_profile: 'plain-angular',
+      owner_repository_id: 'github.com/sdcorejs/module-a',
+      owner_repository_role: 'module',
+      owner_module_id: 'module-a',
+      repository_relative_path: '.sdcorejs/plans/angular/module-a.md',
+      source_revision: 'a'.repeat(40),
+      allowed_paths: allowedPaths,
+      prohibited_paths: prohibitedPaths,
+      parent_repository_id: 'github.com/sdcorejs/portal',
+      parent_references: [],
+      supersedes: null,
+      approval_source: 'explicit-user-choice',
+      approved_at: '2026-07-31T12:00:00.000Z',
+      approved_by: null,
+    },
+    body: '# Module plan\n',
+  });
+}
 
 test('skill invokes a distributed deterministic protocol validator', async () => {
   const skill = await readFile(new URL('../../skills/orchestration/parallel-dispatch.md', import.meta.url), 'utf8');
@@ -59,6 +118,175 @@ test('protocol v2 validates distinct approved-plan and read-only contracts', () 
   assert.match(validateContract({ source: 'read-only-request', request_hash: 'r', scope_hash: 's', write_policy: 'allow' })[0], /write_policy/);
   assert.match(validateContract({ source: 'read-only-request', request_hash: 'r', scope_hash: 's', write_policy: 'deny' }, { writeCapable: true })[0], /approved plan/);
   assert.match(validateContract({ source: 'read-only-request', request_hash: 'r', scope_hash: 's', write_policy: 'deny', contract_id: 'fake', frozen_contract_hash: 'fake' }).join('\n'), /must not define contract_id.*frozen_contract_hash/s);
+});
+
+test('read-only dispatch envelopes use request identity without approved-plan fields', () => {
+  const envelope = {
+    schema_version: 1,
+    source: 'read-only-request',
+    request_hash: 'request-hash',
+    scope_hash: 'scope-hash',
+    repository_id: 'github.com/sdcorejs/module-a',
+    repository_role: 'module',
+    module_id: 'module-a',
+    git_root: '/worktrees/module-a-read-only',
+    source_revision: 'a'.repeat(40),
+    allowed_paths: [],
+    prohibited_paths: ['**'],
+    authority: 'read-only',
+    git_mutations: 'deny',
+    approved_artifact_mutation: 'deny',
+    required_validations: ['read-only-boundary'],
+    output_evidence_contract: {
+      result_type: 'report',
+      required_fields: ['repository_id', 'output_digest'],
+    },
+  };
+
+  assert.deepEqual(validateDispatchEnvelope(envelope), []);
+  assert.match(
+    validateDispatchEnvelope({ ...envelope, contract_id: 'forbidden' }).join('\n'),
+    /read-only.*must not define contract_id/iu,
+  );
+});
+
+test('dispatch envelope preserves approved artifact and repository identity', () => {
+  const approvedPlan = approvedPlanArtifact();
+  const envelope = buildDispatchEnvelope({
+    approved_plan: approvedPlan,
+    repository: {
+      repository_id: 'github.com/sdcorejs/module-a',
+      repository_role: 'module',
+      module_id: 'module-a',
+      git_root: '/worktrees/module-a',
+      source_revision: 'a'.repeat(40),
+    },
+    allowed_paths: ['src/orders/**'],
+    prohibited_paths: ['src/orders/generated/**'],
+    authority: 'read-write',
+    required_validations: ['path-boundary', 'stage-a', 'stage-b', 'unit-verification'],
+    output_evidence_contract: {
+      result_type: 'patch',
+      required_fields: [
+        'repository_id',
+        'repository_role',
+        'module_id',
+        'source_revision',
+        'associated_head_or_diff',
+        'output_digest',
+      ],
+    },
+  });
+
+  assert.deepEqual(validateDispatchEnvelope(envelope), []);
+  assert.equal(envelope.contract_id, 'C1');
+  assert.equal(envelope.plan_artifact_id, 'plan-module-a-r1');
+  assert.equal(envelope.plan_approval_hash, approvedPlan.metadata.approval_hash);
+  assert.equal(envelope.repository_id, 'github.com/sdcorejs/module-a');
+  assert.equal(envelope.repository_role, 'module');
+  assert.equal(envelope.module_id, 'module-a');
+  assert.equal(envelope.git_root, '/worktrees/module-a');
+  assert.equal(envelope.source_revision, 'a'.repeat(40));
+  assert.equal(envelope.git_mutations, 'deny');
+  assert.equal(envelope.approved_artifact_mutation, 'deny');
+  assert.match(
+    validateDispatchEnvelope({ ...envelope, repository_role: 'unknown-role' }).join('\n'),
+    /repository_role/iu,
+  );
+  assert.throws(
+    () =>
+      buildDispatchEnvelope({
+        approved_plan: approvedPlan,
+        repository: {
+          repository_id: 'github.com/sdcorejs/module-a',
+          repository_role: 'module',
+          module_id: 'module-a',
+          git_root: '/worktrees/module-a',
+          source_revision: 'a'.repeat(40),
+        },
+        allowed_paths: ['**'],
+        prohibited_paths: [],
+        authority: 'read-write',
+        required_validations: ['path-boundary'],
+        output_evidence_contract: {
+          result_type: 'patch',
+          required_fields: ['repository_id', 'associated_head_or_diff'],
+        },
+      }),
+    /approved plan.*scope|scope.*approved plan/iu,
+  );
+});
+
+test('worker authority denies cross-root, read-only writes, Git mutations, and approved artifact mutation', () => {
+  const approvedPlan = approvedPlanArtifact({
+    allowedPaths: ['src/**'],
+    prohibitedPaths: ['src/generated/**'],
+  });
+  const envelope = buildDispatchEnvelope({
+    approved_plan: approvedPlan,
+    repository: {
+      repository_id: 'github.com/sdcorejs/module-a',
+      repository_role: 'module',
+      module_id: 'module-a',
+      git_root: '/worktrees/module-a',
+      source_revision: 'a'.repeat(40),
+    },
+    allowed_paths: ['src/**'],
+    prohibited_paths: ['src/generated/**'],
+    authority: 'read-write',
+    required_validations: ['path-boundary'],
+    output_evidence_contract: {
+      result_type: 'patch',
+      required_fields: ['repository_id', 'associated_head_or_diff'],
+    },
+  });
+  const unit = { dispatch_envelope: envelope };
+  assert.deepEqual(
+    validateWorkerAuthority(unit, {
+      operation: 'write',
+      current_repository_id: envelope.repository_id,
+      current_git_root: envelope.git_root,
+      repository_relative_path: 'src/a.ts',
+    }),
+    [],
+  );
+  assert.match(
+    validateWorkerAuthority(unit, {
+      operation: 'write',
+      current_repository_id: 'github.com/sdcorejs/portal',
+      current_git_root: '/worktrees/portal',
+      repository_relative_path: 'src/a.ts',
+    }).join('\n'),
+    /cross-root/iu,
+  );
+  assert.match(
+    validateWorkerAuthority(unit, {
+      operation: 'git-commit',
+      current_repository_id: envelope.repository_id,
+      current_git_root: envelope.git_root,
+    }).join('\n'),
+    /Git mutation/iu,
+  );
+  assert.match(
+    validateWorkerAuthority(unit, {
+      operation: 'mutate-approved-artifact',
+      current_repository_id: envelope.repository_id,
+      current_git_root: envelope.git_root,
+    }).join('\n'),
+    /approved artifact/iu,
+  );
+  assert.match(
+    validateWorkerAuthority(
+      { dispatch_envelope: { ...envelope, authority: 'read-only' } },
+      {
+        operation: 'write',
+        current_repository_id: envelope.repository_id,
+        current_git_root: envelope.git_root,
+        repository_relative_path: 'src/a.ts',
+      },
+    ).join('\n'),
+    /read-only/iu,
+  );
 });
 
 test('approved-plan contracts require complete frozen-contract identity', () => {
@@ -89,7 +317,7 @@ test('write dispatch requires working-tree, workspace, base, result, verificatio
     working_tree: { repo_root: '/repo', current_branch: 'feature', current_head: 'abc', status_snapshot_hash: 's', dirty_diff_hash: 'd', staged_paths: [], unstaged_paths: [], untracked_paths: [], unrelated_dirty_paths: [], user_dirty_tree_decision: 'clean' },
     runtime_capabilities: baseCapabilities,
     integration: { workspace_path: '/wt/integration', branch: 'integration', base_head: 'abc', merge_strategy: 'cherry-pick', merge_order: ['u1'], atomicity: 'all-or-nothing', rollback_strategy: 'restore-base' },
-    units: [{ id: 'u1', workspace: { strategy: 'worktree', path: '/wt/u1', branch: 'unit/u1', base_head: 'abc' }, ownership: { allowed_paths: ['src/a/**'], prohibited_paths: [] }, verification: { command: 'npm test', cwd: '/wt/u1' }, result: { type: 'commit', ref: null, associated_head_or_diff: null, changed_paths: [] } }],
+    units: [{ id: 'u1', dispatch_envelope: dispatchEnvelope, workspace: { strategy: 'worktree', path: '/wt/u1', branch: 'unit/u1', base_head: 'abc' }, ownership: { allowed_paths: ['src/a/**'], prohibited_paths: [] }, verification: { command: 'npm test', cwd: '/wt/u1' }, result: { type: 'commit', ref: null, associated_head_or_diff: null, changed_paths: [] } }],
     final_tail: { verify_before_done: true, branch_ready_final_gate: true, no_writes_after_branch_ready: true }
   };
   assert.deepEqual(validateDispatchContext(context), []);
@@ -169,6 +397,56 @@ test('topology classification supports two expensive units, heterogeneous units,
   assert.equal(classifyTopology({ contract: approvedContract, units: normalizedTempConflict, runtimeCapabilities: baseCapabilities }).verdict, 'SEQUENTIAL');
 });
 
+test('topology separates repository-local paths but detects generated, shared-config, and gitlink conflicts', () => {
+  const unit = (id, repositoryId, ownership = {}) => ({
+    id,
+    dispatch_envelope: {
+      ...dispatchEnvelope,
+      repository_id: repositoryId,
+      git_root: `/worktrees/${id}`,
+    },
+    ownership: {
+      allowed_paths: ['src/**'],
+      prohibited_paths: [],
+      exclusive_resources: [],
+      ...ownership,
+    },
+  });
+  const multiRepository = classifyTopology({
+    contract: approvedContract,
+    units: [
+      unit('a', 'github.com/sdcorejs/module-a'),
+      unit('b', 'github.com/sdcorejs/module-b'),
+    ],
+    runtimeCapabilities: baseCapabilities,
+  });
+  assert.equal(multiRepository.kind, 'INDEPENDENT_WRITE_UNITS');
+  assert.equal(multiRepository.verdict, 'PARALLEL-CANDIDATE');
+
+  for (const ownership of [
+    { generated_outputs: ['dist/**'] },
+    { shared_config_paths: ['tsconfig.base.json'] },
+    {
+      module_gitlinks: [
+        {
+          repository_id: 'github.com/sdcorejs/portal',
+          path: 'modules/shared',
+        },
+      ],
+    },
+  ]) {
+    const conflict = classifyTopology({
+      contract: approvedContract,
+      units: [
+        unit('a', 'github.com/sdcorejs/module-a', ownership),
+        unit('b', 'github.com/sdcorejs/module-a', ownership),
+      ],
+      runtimeCapabilities: baseCapabilities,
+    });
+    assert.equal(conflict.verdict, 'SEQUENTIAL');
+  }
+});
+
 test('classification catches parent/child globs and case-only ownership conflicts', () => {
   const classify = (paths) => classifyTopology({
     contract: approvedContract,
@@ -194,7 +472,7 @@ test('runtime capability negotiation demotes or fails closed safely', () => {
   assert.equal(validateRuntimeCapabilities({ ...baseCapabilities, supports_subagents: false }, true).mode, 'SEQUENTIAL');
   assert.equal(validateRuntimeCapabilities({ ...baseCapabilities, supports_parallel_dispatch: false }, false).mode, 'SEQUENTIAL_WAVES');
   assert.equal(validateRuntimeCapabilities({ ...baseCapabilities, supports_agent_cwd: false }, true).mode, 'DISJOINT_SAME_TREE_ONLY');
-  assert.equal(validateRuntimeCapabilities({ runtime: 'unknown' }, true).mode, 'BLOCKED');
+  assert.equal(validateRuntimeCapabilities({ runtime: 'unknown' }, true).mode, 'SEQUENTIAL');
   assert.equal(validateRuntimeCapabilities({ ...baseCapabilities, supports_cancellation: false }, true).cancellation, 'best-effort');
   const worktreeWithoutCwd = classifyTopology({
     contract: approvedContract,
@@ -386,9 +664,16 @@ test('repairs stay with the original owner/workspace and invalidate evidence', (
 });
 
 test('evidence is bound to command, cwd, result identity, output digest, and exact state', () => {
-  const evidence = createEvidence({ command: 'npm test', cwd: '/wt/u1', exit_code: 0, associated_head_or_diff: 'abc', output: 'ok', environment_fingerprint: 'node20' });
-  assert.deepEqual(validateEvidence(evidence, { cwd: '/wt/u1', associated_head_or_diff: 'abc', output: 'ok' }), []);
+  const identity = {
+    repository_id: 'github.com/sdcorejs/module-a',
+    repository_role: 'module',
+    module_id: 'module-a',
+    source_revision: 'a'.repeat(40),
+  };
+  const evidence = createEvidence({ command: 'npm test', cwd: '/wt/u1', exit_code: 0, associated_head_or_diff: 'abc', output: 'ok', environment_fingerprint: 'node20', ...identity });
+  assert.deepEqual(validateEvidence(evidence, { cwd: '/wt/u1', associated_head_or_diff: 'abc', output: 'ok', ...identity }), []);
   assert.match(validateEvidence(evidence, { cwd: '/wrong', associated_head_or_diff: 'new', output: 'changed' }).join('\n'), /cwd.*state.*digest/s);
+  assert.match(validateEvidence(evidence, { ...identity, repository_id: 'github.com/sdcorejs/module-b' }).join('\n'), /repository identity/);
   assert.match(validateEvidence({ ...evidence, valid: false }, { cwd: '/wt/u1', associated_head_or_diff: 'abc', output: 'ok' }).join('\n'), /stale/);
   assert.equal(applyStateEvent('GLOBAL_VERIFIED', 'WRITE').state, 'GLOBAL_VERIFICATION_STALE');
   assert.equal(applyStateEvent('BRANCH_READY', 'WRITE').state, 'BRANCH_READY_STALE');

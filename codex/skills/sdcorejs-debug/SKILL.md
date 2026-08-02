@@ -40,6 +40,13 @@ After the shared protocols and before edits, read these debugging refs:
 - `../_refs/shared/debug-command-discovery.md`
 - `../_refs/shared/debug-environment-guard.md`
 - `../_refs/shared/debug-context.md`
+- `../_refs/shared/debug-contract.mjs`
+
+The executable debug contract consumes the central registry and stable
+artifact/repository identity. It binds the failing implementation, semantic
+owner repository/module, execution host, test evidence, environment
+fingerprint, approved plan step, source fingerprint, and per-repository source
+revision map. Validate it before any write handoff.
 
 ## Routing Boundary
 
@@ -271,6 +278,14 @@ Rules:
 
 Fix the root cause with the smallest safe patch:
 
+- If the request is diagnose-only, keep `write_authorized: false`; report the
+  root cause and stop without implementation edits.
+- In multi-repository work, resolve the repository that owns the defect before
+  handing off any write. Never patch the execution host or portal merely
+  because the debugger was invoked there.
+- Treat stale test/source evidence as a blocker and do not mutate an approved
+  spec, plan, approval hash, or acceptance criterion to make the failure
+  disappear.
 - Do not perform broad refactors during debugging.
 - Do not apply multiple unrelated fixes in one pass.
 - Do not hide symptoms with optional chaining, default values, catch-and-swallow blocks, retries, or null guards unless the confirmed hypothesis proves that this is the correct contract.

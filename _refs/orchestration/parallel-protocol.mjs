@@ -1,8 +1,189 @@
 import { createHash } from 'node:crypto';
 import { access, lstat, realpath } from 'node:fs/promises';
 import path from 'node:path';
+import {
+  validateApprovedWriteScope,
+  verifyApprovedArtifact,
+} from '../shared/approved-artifact.mjs';
+import { systemRegistry } from '../shared/system-registry.mjs';
 
 const WRITE_RESULT_TYPES = new Set(['commit', 'patch', 'working-tree-diff']);
+const AUTHORITIES = new Set(['read-only', 'read-write']);
+const HEX_40 = /^[a-f0-9]{40}$/u;
+const MAX_ATTEMPTS = 3;
+
+export function validateDispatchEnvelope(envelope = {}) {
+  const errors = [];
+  if (envelope.schema_version !== 1) errors.push('dispatch envelope schema_version must be 1');
+  for (const field of ['repository_id', 'repository_role', 'git_root', 'source_revision']) {
+    if (typeof envelope[field] !== 'string' || envelope[field].trim() === '') {
+      errors.push(`dispatch envelope requires ${field}`);
+    }
+  }
+  if (envelope.source === 'approved-plan') {
+    for (const field of ['contract_id', 'plan_artifact_id', 'plan_approval_hash']) {
+      if (typeof envelope[field] !== 'string' || envelope[field].trim() === '') {
+        errors.push(`approved-plan dispatch envelope requires ${field}`);
+      }
+    }
+    for (const forbidden of ['request_hash', 'scope_hash']) {
+      if (Object.hasOwn(envelope, forbidden)) {
+        errors.push(`approved-plan dispatch envelope must not define ${forbidden}`);
+      }
+    }
+  } else if (envelope.source === 'read-only-request') {
+    for (const field of ['request_hash', 'scope_hash']) {
+      if (typeof envelope[field] !== 'string' || envelope[field].trim() === '') {
+        errors.push(`read-only dispatch envelope requires ${field}`);
+      }
+    }
+    for (const forbidden of ['contract_id', 'plan_artifact_id', 'plan_approval_hash']) {
+      if (Object.hasOwn(envelope, forbidden)) {
+        errors.push(`read-only dispatch envelope must not define ${forbidden}`);
+      }
+    }
+    if (envelope.authority !== 'read-only') {
+      errors.push('read-only dispatch envelope authority must be read-only');
+    }
+  } else {
+    errors.push('dispatch envelope source must be approved-plan or read-only-request');
+  }
+  if (!systemRegistry.repository_roles.includes(envelope.repository_role)) {
+    errors.push(`dispatch envelope repository_role is unknown: ${envelope.repository_role}`);
+  }
+  if (envelope.repository_role === 'module' && !envelope.module_id) {
+    errors.push('dispatch envelope module role requires module_id');
+  }
+  if (!HEX_40.test(envelope.source_revision ?? '')) {
+    errors.push('dispatch envelope source_revision must be a lowercase 40-character Git revision');
+  }
+  if (!Array.isArray(envelope.allowed_paths) || !Array.isArray(envelope.prohibited_paths)) {
+    errors.push('dispatch envelope requires allowed_paths and prohibited_paths arrays');
+  }
+  if (!AUTHORITIES.has(envelope.authority)) {
+    errors.push('dispatch envelope authority must be read-only or read-write');
+  }
+  if (envelope.git_mutations !== 'deny') {
+    errors.push('dispatch envelope must deny worker Git mutations');
+  }
+  if (envelope.approved_artifact_mutation !== 'deny') {
+    errors.push('dispatch envelope must deny approved artifact mutation');
+  }
+  if (
+    !Array.isArray(envelope.required_validations) ||
+    envelope.required_validations.length === 0
+  ) {
+    errors.push('dispatch envelope requires required_validations');
+  }
+  if (
+    !envelope.output_evidence_contract ||
+    typeof envelope.output_evidence_contract !== 'object' ||
+    typeof envelope.output_evidence_contract.result_type !== 'string' ||
+    !Array.isArray(envelope.output_evidence_contract.required_fields) ||
+    envelope.output_evidence_contract.required_fields.length === 0
+  ) {
+    errors.push('dispatch envelope requires an output_evidence_contract');
+  }
+  if (envelope.authority === 'read-only' && (envelope.allowed_paths ?? []).length > 0) {
+    errors.push('read-only dispatch envelope allowed_paths must be empty');
+  }
+  return errors;
+}
+
+export function buildDispatchEnvelope({
+  approved_plan: approvedPlan,
+  repository,
+  allowed_paths: allowedPaths,
+  prohibited_paths: prohibitedPaths,
+  authority,
+  required_validations: requiredValidations,
+  output_evidence_contract: outputEvidenceContract,
+}) {
+  const verified = verifyApprovedArtifact(approvedPlan);
+  if (verified.metadata.artifact_kind !== 'plan') {
+    throw new Error(`dispatch requires an approved plan, received ${verified.metadata.artifact_kind}`);
+  }
+  if (verified.metadata.owner_repository_id !== repository?.repository_id) {
+    throw new Error(
+      `dispatch owner mismatch: plan belongs to ${verified.metadata.owner_repository_id}, not ${repository?.repository_id ?? '<missing>'}`,
+    );
+  }
+  if (verified.metadata.source_revision !== repository?.source_revision) {
+    throw new Error('dispatch source revision is stale');
+  }
+  const authorizedScope = validateApprovedWriteScope(verified.metadata, {
+    allowed_paths: allowedPaths,
+    prohibited_paths: prohibitedPaths,
+  });
+  const envelope = {
+    schema_version: 1,
+    source: 'approved-plan',
+    contract_id: verified.metadata.contract_id,
+    plan_artifact_id: verified.metadata.artifact_id,
+    plan_approval_hash: verified.approval_hash,
+    repository_id: repository.repository_id,
+    repository_role: repository.repository_role,
+    module_id: repository.module_id ?? null,
+    git_root: repository.git_root,
+    source_revision: repository.source_revision,
+    allowed_paths: structuredClone(authorizedScope.allowed_paths),
+    prohibited_paths: structuredClone(authorizedScope.prohibited_paths),
+    authority,
+    git_mutations: 'deny',
+    approved_artifact_mutation: 'deny',
+    required_validations: structuredClone(requiredValidations ?? []),
+    output_evidence_contract: structuredClone(outputEvidenceContract ?? {}),
+  };
+  const errors = validateDispatchEnvelope(envelope);
+  if (errors.length > 0) {
+    throw new Error(`invalid dispatch envelope:\n${errors.map((error) => `- ${error}`).join('\n')}`);
+  }
+  return envelope;
+}
+
+export function validateWorkerAuthority(
+  unit = {},
+  {
+    operation,
+    current_repository_id: currentRepositoryId,
+    current_git_root: currentGitRoot,
+    repository_relative_path: repositoryRelativePath,
+  } = {},
+) {
+  const envelope = unit.dispatch_envelope ?? {};
+  const errors = validateDispatchEnvelope(envelope);
+  if (
+    currentRepositoryId !== envelope.repository_id ||
+    path.resolve(currentGitRoot ?? '.') !== path.resolve(envelope.git_root ?? '.')
+  ) {
+    errors.push('cross-root worker operation is denied');
+  }
+  if (['git-stage', 'git-commit', 'git-push'].includes(operation)) {
+    errors.push('worker Git mutation is denied; only the integration owner may stage or commit');
+  }
+  if (operation === 'mutate-approved-artifact') {
+    errors.push('worker approved artifact mutation is denied');
+  }
+  if (operation === 'write') {
+    if (envelope.authority !== 'read-write') errors.push('read-only worker write is denied');
+    let normalized;
+    try {
+      normalized = normalizeRelative(repositoryRelativePath);
+    } catch (error) {
+      errors.push(error.message);
+    }
+    if (normalized) {
+      if (!matchesAny(normalized, envelope.allowed_paths ?? [], process.platform === 'win32')) {
+        errors.push(`worker path is outside allowed_paths: ${normalized}`);
+      }
+      if (matchesAny(normalized, envelope.prohibited_paths ?? [], process.platform === 'win32')) {
+        errors.push(`worker path matches prohibited_paths: ${normalized}`);
+      }
+    }
+  }
+  return [...new Set(errors)];
+}
+
 export function validateContract(contract = {}, { writeCapable = false } = {}) {
   const errors = [];
   if (!['approved-plan', 'read-only-request'].includes(contract.source)) {
@@ -71,7 +252,59 @@ export function validateDispatchContext(context = {}) {
   }
   for (const unit of context.units ?? []) {
     const prefix = `unit ${unit.id ?? '<unknown>'}`;
+    const envelopeErrors = validateDispatchEnvelope(unit.dispatch_envelope);
+    errors.push(...envelopeErrors.map((error) => `${prefix}: ${error}`));
+    const envelope = unit.dispatch_envelope ?? {};
+    if (envelope.contract_id !== context.contract?.contract_id && writeCapable) {
+      errors.push(`${prefix} dispatch contract_id mismatch`);
+    }
+    if (envelope.plan_approval_hash !== context.contract?.approved_plan_hash && writeCapable) {
+      errors.push(`${prefix} dispatch plan approval hash mismatch`);
+    }
+    if (writeCapable && envelope.source !== 'approved-plan') {
+      errors.push(`${prefix} write dispatch requires approved-plan envelope identity`);
+    }
+    if (!writeCapable) {
+      if (envelope.source !== 'read-only-request') {
+        errors.push(`${prefix} read-only dispatch requires read-only-request envelope identity`);
+      }
+      if (envelope.request_hash !== context.contract?.request_hash) {
+        errors.push(`${prefix} dispatch request_hash mismatch`);
+      }
+      if (envelope.scope_hash !== context.contract?.scope_hash) {
+        errors.push(`${prefix} dispatch scope_hash mismatch`);
+      }
+    }
+    if (
+      unit.workspace?.path &&
+      envelope.git_root &&
+      path.resolve(unit.workspace.path) !== path.resolve(envelope.git_root)
+    ) {
+      errors.push(`${prefix} dispatch Git root does not match workspace`);
+    }
+    if (
+      JSON.stringify(envelope.allowed_paths ?? []) !==
+        JSON.stringify(unit.ownership?.allowed_paths ?? []) ||
+      JSON.stringify(envelope.prohibited_paths ?? []) !==
+        JSON.stringify(unit.ownership?.prohibited_paths ?? [])
+    ) {
+      errors.push(`${prefix} dispatch path authority differs from ownership`);
+    }
+    if (
+      envelope.output_evidence_contract?.result_type &&
+      envelope.output_evidence_contract.result_type !== unit.result?.type
+    ) {
+      errors.push(`${prefix} result type differs from output evidence contract`);
+    }
+    for (const sharedFile of unit.ownership?.shared_files ?? []) {
+      if (sharedFile.owner !== 'integration-unit') {
+        errors.push(`${prefix} shared/coordinated file must be owned by integration-unit`);
+      }
+    }
     if (writeCapable) {
+      if (envelope.authority !== 'read-write') {
+        errors.push(`${prefix} write dispatch requires read-write authority`);
+      }
       if (!['disjoint-same-tree', 'worktree'].includes(unit.workspace?.strategy)) errors.push(`${prefix} has invalid workspace strategy`);
       for (const field of ['strategy', 'path', 'base_head']) {
         if (!unit.workspace?.[field]) errors.push(`${prefix} workspace requires ${field}`);
@@ -84,6 +317,9 @@ export function validateDispatchContext(context = {}) {
       errors.push(...validateWorkspaceAssignment({ unit, integration: context.integration ?? {}, existingWorktrees: context.existing_worktrees ?? [] }).map((error) => `${prefix}: ${error}`));
       if (unit.workspace?.strategy === 'disjoint-same-tree' && !isDisjointSameTreeSafe(unit)) errors.push(`${prefix} disjoint-same-tree command or resources are unsafe`);
     } else {
+      if (envelope.authority !== 'read-only') {
+        errors.push(`${prefix} read-only dispatch requires read-only authority`);
+      }
       if (unit.workspace?.strategy !== 'shared-readonly') errors.push(`${prefix} read-only workspace must be shared-readonly`);
       if ((unit.ownership?.allowed_paths ?? []).length > 0) errors.push(`${prefix} read-only allowed_paths must be empty`);
       if (unit.result?.type !== 'report') errors.push(`${prefix} read-only result must be report`);
@@ -119,7 +355,7 @@ export function validateWorkingTree(tree = {}, { caseInsensitive = process.platf
 
 export function validateRuntimeCapabilities(capabilities = {}, writeHeavy = false) {
   const required = ['supports_subagents', 'supports_parallel_dispatch', 'supports_agent_cwd'];
-  if (required.some((key) => typeof capabilities[key] !== 'boolean')) return { mode: writeHeavy ? 'BLOCKED' : 'SEQUENTIAL', reason: 'capability unknown' };
+  if (required.some((key) => typeof capabilities[key] !== 'boolean')) return { mode: 'SEQUENTIAL', reason: 'capability unknown' };
   if (!capabilities.supports_subagents) return { mode: 'SEQUENTIAL', reason: 'subagents unavailable' };
   if (!capabilities.supports_parallel_dispatch) return { mode: 'SEQUENTIAL_WAVES', reason: 'calls serialize' };
   if (writeHeavy && !capabilities.supports_agent_cwd) return { mode: 'DISJOINT_SAME_TREE_ONLY', reason: 'agent cwd unavailable' };
@@ -157,11 +393,27 @@ export function validateResultIdentity(unit = {}, { baseHead, readOnly = false }
   if (!unit.result.associated_head_or_diff) errors.push('result is missing associated state');
   if (!unit.result.output_digest) errors.push('result is missing output digest');
   if (readOnly && (unit.result.changed_paths ?? []).length > 0) errors.push('read-only unit changed files');
+  const envelope = unit.dispatch_envelope;
+  if (envelope) {
+    for (const field of envelope.output_evidence_contract?.required_fields ?? []) {
+      if (unit.result?.[field] === undefined || unit.result?.[field] === null) {
+        errors.push(`result is missing required repository evidence field: ${field}`);
+      }
+    }
+    for (const field of ['repository_id', 'repository_role', 'module_id', 'source_revision']) {
+      if (
+        Object.hasOwn(unit.result ?? {}, field) &&
+        unit.result[field] !== envelope[field]
+      ) {
+        errors.push(`result repository identity mismatch: ${field}`);
+      }
+    }
+  }
   return errors;
 }
 
 export async function runUnitWithPolicy(run, policy = {}) {
-  const maxAttempts = Math.max(1, policy.max_attempts ?? 1);
+  const maxAttempts = Math.min(MAX_ATTEMPTS, Math.max(1, policy.max_attempts ?? 1));
   let attempts = 0;
   while (attempts < maxAttempts) {
     attempts += 1;
@@ -282,7 +534,10 @@ export async function integrateResults({ units = [], integration = {}, failurePo
     catch (error) { return failIntegration(`unit review failed: ${id}: ${error.message}`, integrated, integration, rollback); }
     if (!isParentValidationPass(reviewResult, unit, 'review')) return failIntegration(`unit review failed: ${id}`, integrated, integration, rollback);
     let attempt = 0;
-    const maxAttempts = Math.max(1, failurePolicy.max_attempts ?? 1);
+    const maxAttempts = Math.min(
+      MAX_ATTEMPTS,
+      Math.max(1, failurePolicy.max_attempts ?? 1),
+    );
     while (true) {
       attempt += 1;
       try { await apply(unit); break; }
@@ -323,8 +578,35 @@ export function assignRepair({ finding, unit, ownershipTransfer }) {
   };
 }
 
-export function createEvidence({ command, cwd, started_at = new Date().toISOString(), finished_at = new Date().toISOString(), exit_code, associated_head_or_diff, output, environment_fingerprint }) {
-  return { command, cwd, started_at, finished_at, exit_code, associated_head_or_diff, output_digest: digest(output), environment_fingerprint, valid: true };
+export function createEvidence({
+  command,
+  cwd,
+  started_at = new Date().toISOString(),
+  finished_at = new Date().toISOString(),
+  exit_code,
+  associated_head_or_diff,
+  output,
+  environment_fingerprint,
+  repository_id,
+  repository_role,
+  module_id,
+  source_revision,
+}) {
+  return {
+    command,
+    cwd,
+    started_at,
+    finished_at,
+    exit_code,
+    associated_head_or_diff,
+    output_digest: digest(output),
+    environment_fingerprint,
+    repository_id,
+    repository_role,
+    module_id,
+    source_revision,
+    valid: true,
+  };
 }
 
 export function validateEvidence(evidence = {}, expected = {}) {
@@ -334,6 +616,16 @@ export function validateEvidence(evidence = {}, expected = {}) {
   if (expected.cwd && evidence.cwd !== expected.cwd) errors.push('evidence cwd mismatch');
   if (expected.associated_head_or_diff && evidence.associated_head_or_diff !== expected.associated_head_or_diff) errors.push('evidence state mismatch');
   if (expected.output !== undefined && evidence.output_digest !== digest(expected.output)) errors.push('evidence output digest mismatch');
+  for (const field of [
+    'repository_id',
+    'repository_role',
+    'module_id',
+    'source_revision',
+  ]) {
+    if (Object.hasOwn(expected, field) && evidence[field] !== expected[field]) {
+      errors.push(`evidence repository identity mismatch: ${field}`);
+    }
+  }
   if (!evidence.command || !evidence.started_at || !evidence.finished_at || !evidence.environment_fingerprint) errors.push('evidence is incomplete');
   return errors;
 }
@@ -354,11 +646,64 @@ export function applyStateEvent(state, event) {
 }
 
 function ownershipOverlaps(units) {
-  const roots = units.map((unit) => (unit.ownership?.allowed_paths ?? []).map(patternRoot));
-  for (let i = 0; i < roots.length; i += 1) for (let j = i + 1; j < roots.length; j += 1) {
-    if (roots[i].some((a) => roots[j].some((b) => !a || !b || a === b || a.startsWith(`${b}/`) || b.startsWith(`${a}/`)))) return true;
+  const claims = units.map(ownershipPathClaims);
+  for (let i = 0; i < claims.length; i += 1) for (let j = i + 1; j < claims.length; j += 1) {
+    const leftEnvelope = units[i].dispatch_envelope ?? {};
+    const rightEnvelope = units[j].dispatch_envelope ?? {};
+    if (
+      leftEnvelope.repository_id &&
+      rightEnvelope.repository_id &&
+      leftEnvelope.repository_id !== rightEnvelope.repository_id &&
+      leftEnvelope.git_root &&
+      rightEnvelope.git_root &&
+      path.resolve(leftEnvelope.git_root) === path.resolve(rightEnvelope.git_root)
+    ) {
+      return true;
+    }
+    if (claims[i].some((left) => claims[j].some((right) => {
+      if (left.repository_id !== right.repository_id) return false;
+      const a = left.root;
+      const b = right.root;
+      return !a || !b || a === b || a.startsWith(`${b}/`) || b.startsWith(`${a}/`);
+    }))) return true;
   }
   return false;
+}
+
+function ownershipPathClaims(unit) {
+  const ownership = unit.ownership ?? {};
+  const defaultRepositoryId =
+    unit.dispatch_envelope?.repository_id ?? '__legacy-current-repository__';
+  const claims = [
+    ...(ownership.allowed_paths ?? []).map((value) => ({
+      repository_id: defaultRepositoryId,
+      path: value,
+    })),
+    ...(ownership.generated_outputs ?? []).map((value) => ({
+      repository_id: defaultRepositoryId,
+      path: value,
+    })),
+    ...(ownership.shared_config_paths ?? []).map((value) => ({
+      repository_id: defaultRepositoryId,
+      path: value,
+    })),
+    ...(ownership.shared_files ?? []).map((value) => ({
+      repository_id: value.repository_id ?? defaultRepositoryId,
+      path: value.path,
+    })),
+    ...(ownership.module_gitlinks ?? []).map((value) =>
+      typeof value === 'string'
+        ? { repository_id: defaultRepositoryId, path: value }
+        : {
+            repository_id: value.repository_id ?? defaultRepositoryId,
+            path: value.path,
+          },
+    ),
+  ];
+  return claims.map(({ repository_id: repositoryId, path: claimPath }) => ({
+    repository_id: String(repositoryId).toLowerCase(),
+    root: patternRoot(claimPath),
+  }));
 }
 
 function resourcesOverlap(units) {

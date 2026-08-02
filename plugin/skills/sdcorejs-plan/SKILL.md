@@ -13,7 +13,10 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 ## Shared Protocols
 
 Read `_refs/shared/runtime-protocols.md`. Draft and approved plan artifacts
-apply `_refs/shared/artifact-lifecycle.md` and emit `artifact_context`.
+apply `_refs/shared/artifact-lifecycle.md` and emit `artifact_context`. Resolve
+all track/profile/repository semantics from
+`_refs/shared/system-registry.json`; create and verify approval identity with
+`_refs/shared/approved-artifact.mjs`.
 
 ## Purpose
 Translate an approved spec into an executable contract, hold the user approval gate, and persist the approved plan corpus inside the same skill.
@@ -25,8 +28,13 @@ The plan is the exact contract that `sdcorejs-execute-plan` runs.
 - `sdcorejs-spec` has written the approved spec snapshot.
 - The plan must consume `spec_context`, reference the approved spec path, and
   include the approved spec hash.
+- The approved spec repository ID, repository-relative path, source revision,
+  artifact ID, and approval hash are available.
 
 If the spec is missing or unapproved, route to `sdcorejs-spec`.
+Run `verifyApprovedArtifactGraph` against the exact approved spec before
+drafting. Any missing parent, hash/revision mismatch, mutation, unknown registry
+track/profile, or semantic-owner mismatch blocks planning.
 
 Before drafting, apply `_refs/shared/project-context.md` with:
 
@@ -39,8 +47,9 @@ side_effects_allowed: true
 Plan writes are limited to the draft and approved plan artifacts owned by this
 skill. Missing or stale summary is not permission to refresh context. Preserve
 `contract_id`, `requirement_id`, `target_root`, `target_root_kind`, `track`,
-`stack_profile`, `approved_spec_path`, and `approved_spec_hash` from
-`spec_context`.
+`stack_profile`, owner repository/role/module, execution host repository,
+`approved_spec_path`, approved spec repository-relative path/revision, and
+`approved_spec_hash` from `spec_context`.
 
 ## Process
 
@@ -91,6 +100,16 @@ Before drafting:
   files, and frozen contracts as coordination-risk paths.
 - Record dependency, env, and migration boundaries. Dependency, env, package
   manifest, lockfile, or migration writes require explicit plan approval.
+- Every mutable `CREATE`, `EDIT`, or `VERIFY-THEN-EDIT` step names exactly one
+  `owner_repository_id` and one matching Git root. Validate/split the result
+  with `_refs/shared/repository-contract.mjs`.
+- A module-owned plan and its editable steps stay in the module repository, not
+  the portal. The portal plan owns only shell/composition/cross-module
+  integration, aggregate runner/report, and exact child references.
+- For multi-repository work, emit a parent integration plan plus repository-local
+  child plans, or repository-local steps with exact deterministic cross-repo
+  references. Record semantic owner, execution host, integration owner,
+  dependency order, and whether a Gitlink update is approved.
 
 For a non-trivial frontend task:
 
@@ -140,7 +159,7 @@ Use numbered steps grouped by phase:
 <2-4 lines from the approved spec>
 
 ## Execution context
-- Track: <ai-agent|angular|nestjs|nextjs|test|product|generic>
+- Track: <canonical registry track>
 - Target root kind: <target_root_kind>
 - Stack profile: <stack_profile>
 - Coverage approach: <post-hoc|TDD>
@@ -153,11 +172,25 @@ plan_context:
   requirement_id: <requirement id>
   approved_spec_path: <path>
   approved_spec_hash: <hash>
+  approved_spec_reference:
+    repository_id: <stable spec owner repository id>
+    repository_relative_path: <approved spec repository-relative path>
+    artifact_id: <approved spec artifact id>
+    revision: <approved spec owner-repository revision>
+    approval_hash: <approved spec sha256:v1 hash>
   approved_plan_path: <empty until approved>
   approved_plan_hash: <empty until approved>
   supersedes: <prior approved plan path or null>
   target_root: <target root>
   target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
+  owner_repository_id: <stable plan owner repository id>
+  owner_repository_role: standalone | portal | module | library | service | documentation
+  owner_module_id: <module id or null>
+  execution_host_repository_id: <stable execution host repository id>
+  integration_owner_repository_id: <stable integration owner repository id>
+  dependency_order:
+    - <repository-local unit id>
+  gitlink_updates_in_scope: true | false
   track: <track>
   stack_profile: <stack profile>
   task_count: <N>
@@ -186,132 +219,84 @@ plan_context:
     approval_required: true | false
   frontend_architecture:
     required: <true for non-trivial frontend work; false otherwise>
-    not_applicable_reason: <reason when required is false; null otherwise>
+    not_applicable_reason: <reason or null>
     project_conventions:
-      component_style: <detected value or explicitly labeled fallback>
-      folder_convention: <detected value or explicitly labeled fallback>
-      state_convention: <detected value or explicitly labeled fallback>
-      service_data_access_convention: <detected value or explicitly labeled fallback>
-      registration_provider_convention: <detected value or explicitly labeled fallback>
-      public_api_barrel_convention: <detected value or explicitly labeled fallback>
-      test_convention: <detected value or explicitly labeled fallback>
-      evidence_inspected:
-        - <inspected path or config>
-    component_tree:
-      - <route/page container and meaningful children>
-    reuse_decisions:
-      - need: <UI or data need>
-        candidate: <exact symbol/path or none>
-        decision: reuse | extend | wrap | create_feature_local | create_shared | keep_inline
-        reason: <compatibility and ownership reason>
-    file_decisions:
-      - path: <planned file path>
-        decision: reuse | extend | wrap | create_feature_local | create_shared | keep_inline
-        symbols: <symbols owned by the file>
-        reason: <why this path and boundary fit project conventions>
-    responsibilities:
-      - symbol: <component/service/collaborator>
-        responsibility: <one cohesive responsibility>
-        inputs: <contract or none>
-        outputs: <events/contract or none>
-    state_owners:
-      - owner: <symbol>
-        state: <owned state>
+      component_style: <detected value or labeled fallback>
+      folder_convention: <detected value or labeled fallback>
+      state_convention: <detected value or labeled fallback>
+      service_data_access_convention: <detected value or labeled fallback>
+      registration_provider_convention: <detected value or labeled fallback>
+      public_api_barrel_convention: <detected value or labeled fallback>
+      test_convention: <detected value or labeled fallback>
+      evidence_inspected: [<path or config>]
+    component_tree: [<route/page container and meaningful children>]
+    reuse_decisions: [<need, exact candidate, decision, reason>]
+    file_decisions: [<path, decision, symbols, reason>]
+    responsibilities: [<symbol, cohesive responsibility, inputs, outputs>]
+    state_owners: [<symbol and owned state>]
     service_boundaries:
-      - symbol: <symbol>
-        responsibility: <API/data access, facade/query, or pure collaborator responsibility>
+      - symbol: <service/collaborator>
         scope: app | module | route | feature | page | component | pure_function
-        reason: <lifecycle reason>
-    data_flow:
-      - <route/page -> optional facade/query -> API/data access -> mapper -> view model>
-    declarations_and_registration:
-      - symbol: <symbol>
-        mechanism: <imports, declarations, providers, routes, or framework equivalent>
-    public_exports:
-      - symbol: <symbol or none>
-        reason: <external consumer or feature-private decision>
-    tests:
-      - <page orchestration, child contract, data mapping, or provider-scope test>
-    decomposition_rationale:
-      - <why extracted and inline boundaries are meaningful>
+    data_flow: [<page to data access to mapper to view model>]
+    declarations_and_registration: [<symbol and mechanism>]
+    public_exports: [<symbol or none plus reason>]
+    tests: [<architecture contract test>]
+    decomposition_rationale: [<meaningful extracted/inline boundary>]
   agent_architecture:
-    required: <true for track ai-agent; false otherwise>
-    not_applicable_reason: <reason when required is false; null otherwise>
+    required: <true for ai-agent; false otherwise>
+    not_applicable_reason: <reason or null>
     schema_version: 1
     engine_profile: <exact manifest engine id>
     capability_profile: <exact independent manifest capability id>
     runtime_owner: <application component>
-    target_paths:
-      - <approved path>
-    trusted_context_sources:
-      - <authenticated server/job source>
+    target_paths: [<approved path>]
+    trusted_context_sources: [<authenticated server/job source>]
     tenant_isolation: <policy>
-    provider_state:
-      store_provider_state: false
-      provider_conversation_enabled: false
-      governance_approval: null
-    tool_contract_paths:
-      - <path>
+    provider_state: { store_provider_state: false, provider_conversation_enabled: false, governance_approval: null }
+    tool_contract_paths: [<path>]
     approval_policy: <policy reference>
     session_policy: <policy reference>
     evidence_policy: <policy reference>
     observability_policy: <policy reference>
     limits: <bounded values>
-    deterministic_eval_commands:
-      - <offline command>
-    live_verification:
-      required: false
-      authorization: null
-    non_goals:
-      - <explicit exclusion>
+    deterministic_eval_commands: [<offline command>]
+    live_verification: { required: false, authorization: null }
+    non_goals: [<explicit exclusion>]
   verification_strategy:
     package_manager: <npm|pnpm|yarn|bun|unknown>
-    scripts_detected:
-      - name: <script name>
-    commands_planned:
-      - command_or_script: <detected command or script>
-        reason: <why this proves the change>
-    commands_skipped:
-      - command_or_probe: <candidate skipped>
-        reason: <why skipped>
-    focused_checks:
-      - <check>
-    broad_checks:
-      - <check>
+    scripts_detected: [<script name>]
+    commands_planned: [<command/script and proof reason>]
+    commands_skipped: [<candidate and skip reason>]
+    focused_checks: [<check>]
+    broad_checks: [<check>]
   parallel_candidates:
     allowed: true | false
-    frozen_contract:
-      path: <path or embedded>
-      hash: <hash>
-      revision: <integer>
-      derived_from_approved_plan_hash: <hash after approval>
-      supersedes: <prior contract id or null>
+    frozen_contract: { path: <path or embedded>, hash: <hash>, revision: <integer>, derived_from_approved_plan_hash: <hash>, supersedes: <id or null> }
     units:
       - id: <stable id>
-        title: <title>
-        role: <plan-derived role or null>
-        depends_on:
-          - <unit id or empty>
-        produces:
-          - <artifact or empty>
-        consumes:
-          - <artifact or empty>
-        allowed_paths:
-          - <path or glob>
-        prohibited_paths:
-          - <path or glob>
-        exclusive_resources:
-          - <resource or empty>
-        shared_readonly_resources:
-          - <resource or empty>
+        depends_on: [<unit id or empty>]
+        allowed_paths: [<path or glob>]
+        prohibited_paths: [<path or glob>]
+        exclusive_resources: [<resource or empty>]
         result_type: commit | patch | working-tree-diff | report
         verification_command: <detected command or manual check>
-    shared_files:
-      - path: <path>
-        owner: <unit-id> | integration-unit | parent-contract-only
-        coordination_strategy: <sequential | wave-gated | do-not-touch>
-    conflict_risks:
-      - <risk>
+    shared_files: [<path, single owner, coordination strategy>]
+    conflict_risks: [<risk>]
+  repository_plan:
+    schema_version: 1
+    integration_owner_repository_id: <stable repository id>
+    gitlink_updates_in_scope: true | false
+    dependency_order: [<module/integration unit id>]
+    repositories: [<repository id, role, module id, plan artifact id>]
+    steps:
+      - id: <stable step id>
+        action: CREATE | EDIT | VERIFY-THEN-EDIT | VERIFY
+        semantic_scope: module | portal-composition | repository
+        owner_repository_id: <stable repository id>
+        git_roots: [<same repository id for a mutable step>]
+        allowed_paths: [<repository-relative path or glob>]
+        prohibited_paths: [<repository-relative path or glob>]
+        depends_on: [<step id or empty>]
   finish_tail:
     docs_before_final_branch_ready: true
     verify_before_done: true
@@ -329,8 +314,8 @@ plan_context:
 ## Tasks
 
 ### Phase 1 - <phase name>
-1. CREATE <path> - <intent>
-2. EDIT <path> - <intent>
+1. CREATE <repository-id>:<path> - write the RED test before production code
+2. EDIT <same-repository-id>:<path> - implement only after the RED evidence
 
 ### Phase 2 - Tests / verification
 3. CREATE <path> - <intent>
@@ -357,6 +342,8 @@ Fix the plan before presenting if any checklist item fails:
   `commands_skipped` with the reason instead of inventing one.
 - Path conflicts are surfaced.
 - Test coverage matches the spec's coverage approach.
+- Test authoring and the approved TDD decision occur before production-code
+  tasks; a plan may not defer this decision until after implementation.
 - Parallel candidates are identified, but not executed.
 - The plan does not hardcode `npm`, `npx`, `tsc`, Playwright, browser installs,
   or any package manager as universal defaults. Do not hardcode npm/npx as
@@ -419,8 +406,11 @@ Translate at runtime.
 Approve:
 
 1. Read `_refs/sdlc/plan-approval-artifact.md` completely.
-2. Write its immutable approved-plan snapshot and compute `approved_plan_hash`
-   over the approved plan body excluding frontmatter and the hash field.
+2. Write its immutable approved-plan snapshot in the semantic owner repository.
+   Create and immediately verify the `sha256:v1` identity through
+   `_refs/shared/approved-artifact.mjs`; `approved_plan_hash` is the
+   compatibility projection of canonical `approval_hash`. Supply the approved plan body excluding frontmatter and the hash field as the helper body input;
+   the omitted field is self-referential.
 3. Record the approved spec, draft plan, and approved plan under
    `artifact_context.required_with_change`; set `source_plan` to the approved
    snapshot.
@@ -456,6 +446,9 @@ Abort:
 - Preserve the latest approved plan that matches the current
   `approved_spec_hash`. If spec_context and plan_context hashes mismatch, stop
   and ask for plan regeneration.
+- Preserve `contract_id`, `requirement_id`, exact approved-spec reference,
+  artifact owner, source revision, execution/integration owners, repository
+  split, dependency order, and Gitlink scope.
 - Record write scope, allowed paths, prohibited paths, generated artifact
   boundaries, docs artifacts, dependency changes, env changes, migration
   changes, verification strategy, package manager/script evidence,
@@ -480,6 +473,8 @@ Abort:
 - Hardcode one package manager, mix package managers, invent missing scripts, or
   present npm/npx/tsc as universal defaults.
 - Plan writes after final branch-ready.
+- Put a module-owned plan in the portal, copy a full child plan into the parent,
+  or allow one mutable step to span two Git roots.
 
 ## Cross-references
 - `sdcorejs-spec` - approved spec input

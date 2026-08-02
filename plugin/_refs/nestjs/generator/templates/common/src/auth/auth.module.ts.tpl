@@ -1,5 +1,6 @@
 import { Global, Module } from '@nestjs/common';
-import { AuthenticationGuard, DenyAllTokenVerifier, TOKEN_VERIFIER } from './authentication';
+import { APP_ENV, loadEnv } from '../config/env';
+import { AuthenticationGuard, OidcTokenVerifier, TOKEN_VERIFIER } from './authentication';
 import { PolicyGuard } from './policy';
 
 @Global()
@@ -7,7 +8,8 @@ import { PolicyGuard } from './policy';
   providers: [
     AuthenticationGuard,
     PolicyGuard,
-    { provide: TOKEN_VERIFIER, useClass: DenyAllTokenVerifier },
+    { provide: APP_ENV, useFactory: () => loadEnv(process.env) },
+    { provide: TOKEN_VERIFIER, useClass: OidcTokenVerifier },
   ],
   exports: [AuthenticationGuard, PolicyGuard, TOKEN_VERIFIER],
 })

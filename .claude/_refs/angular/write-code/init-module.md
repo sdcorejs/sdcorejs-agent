@@ -24,11 +24,10 @@ In a brand-new portal repo, this is the first generation step whenever the targe
 
 Default mode is standalone-first, but this reference can generate hybrid-compatible structure when the target application still uses NgModule with standalone components.
 
-For PO/BA prototype mode, generate route and menu wiring that makes the module
-demoable immediately. Prefer a simple module path such as `/claims` or
-`/contract-management`, add sidebar/menu metadata using the target project's
-existing convention, and keep permission metadata future-ready while allowing
-prototype navigation when permission data is missing.
+For an explicitly approved `technical-prototype`, generate only the approved
+route and menu wiring. Prefer the approved module path, use the target
+project's existing sidebar/menu convention, and preserve existing permission
+behavior unless a demo-only bypass is itself an approved assumption.
 
 ### Required vs Optional
 

@@ -75,9 +75,9 @@ Pick the column pattern by field `type` from the schema. For boolean fields rend
 ## Generation rules
 
 - Server-side paging is the default (`type: 'server'`). Switch to `'client'` only when the user explicitly asks for an in-memory list AND the dataset is small/static.
-- In PO/BA prototype mode, generate search/filter/sort/paging behavior and make
-  visible seed data render immediately from the mock service so stakeholders can
-  review the list without backend setup.
+- In explicit technical-prototype mode, generate only approved
+  search/filter/sort/paging behavior. Render seed data from a mock service only
+  when both `mock-service` and `seed-data` are approved.
 - External filters live in `tableOption.filter.externalFilters`, not as custom controls above the table (see `./init-entity.md` §external-filters).
 - When the approved architecture extracts a filter component, it emits a typed
   filter change to the page; the page maps it into the project's table/query

@@ -229,6 +229,7 @@ test('canonical skills declare semantic actions while adapter manifests own prov
       adapter: manifest.adapter,
       capabilities: manifest.capabilities,
       actions: manifest.actions,
+      system_registry: manifest.system_registry,
       skills: manifest.skills,
     };
     const expectedContentHash = `sha256:${createHash('sha256')

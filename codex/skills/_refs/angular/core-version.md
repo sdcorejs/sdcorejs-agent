@@ -60,7 +60,10 @@ generation time via `_refs/angular/core-docs-fetch.mjs`. The npm *pin* (`current
 which Angular major `init-portal` installs) is a **separate concern** from the docs version.
 
 - **Fetch:** `node _refs/angular/core-docs-fetch.mjs --list` (inventory) / `node _refs/angular/core-docs-fetch.mjs <id>` (one component's full API) → raw fetch (NOT summarized) from `https://sdcorejs.github.io/sdcorejs-angular/docs/<version>/`.
-- **Version match (with nearest-version fallback):** auto-detected from the target project'<localized text>'s `index.json` in that order and uses the first that actually downloads — so a version whose docs can't be pulled falls through to the nearest one that can. Example: a literal npm pin like `20.0.1` (which the docs registry doesn't publish as a docs build) maps to the newest published `20.0.x`; an unpublished major like `18.x` maps to the nearest published major (`19.0.x`). (The API is byte-identical across majors 19/20/21, so an exact patch match is not required.)
+- **Version match (with nearest-version fallback):** the target project's
+  installed Core UI version is auto-detected. Candidate docs versions are tried
+  in this order: exact patch, newest patch of the same major, then nearest
+  published major. The first candidate whose `index.json` downloads is used.
 - **Cache:** `~/.cache/sdcorejs/core-docs/<version>/` — pulled once, reused, and used as the offline fallback. Never committed.
 - **Mojibake guard (rule 6):** the fetcher refuses (exit 3) any upstream doc that is double-encoded (UTF-8-as-CP1252). The fix is upstream (the doc generator / published site), not here.
 - **Offline with Core UI installed:** no network + no cache -> the fetcher exits non-zero and the skill continues only from local Core UI evidence, with the docs gap flagged. Do not invent Core UI APIs.

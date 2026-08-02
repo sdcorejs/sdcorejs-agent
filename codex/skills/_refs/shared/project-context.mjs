@@ -6,6 +6,7 @@ import { access, readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { systemRegistry } from './system-registry.mjs';
 
 const execFileAsync = promisify(execFile);
 
@@ -365,6 +366,15 @@ export function validateSummaryV2(summaryText) {
 
   if (Number(metadata.schema_version) !== 2) errors.push('schema_version must be 2');
   if (metadata.kind !== 'project-summary') errors.push('kind must be project-summary');
+  const registryTracks = new Set(systemRegistry.tracks.map(({ id }) => id));
+  const registryProfiles = new Set(systemRegistry.stack_profiles.map(({ id }) => id));
+  for (const track of extractFrontmatterList(summaryText, 'tracks')) {
+    const canonical = systemRegistry.aliases[track] ?? track;
+    if (!registryTracks.has(canonical)) errors.push(`unknown summary track: ${track}`);
+  }
+  for (const profile of extractFrontmatterList(summaryText, 'stack_profiles')) {
+    if (!registryProfiles.has(profile)) errors.push(`unknown summary stack profile: ${profile}`);
+  }
   if (/\b[A-Za-z]:\\|\/(?:Users|home)\//.test(summaryText)) {
     errors.push('committed summary must use repository-relative paths');
   }
@@ -554,7 +564,7 @@ async function findRelatedArtifacts(root, { requestScope, changeRef }) {
 
   const candidates = [];
   await walkArtifactFiles(base, base, candidates);
-  const tokens = `${requestScope} ${changeRef ?? ''}`
+  const tokens = `${requestScope}`
     .toLowerCase()
     .split(/[^a-z0-9_-]+/)
     .filter((item) => item.length >= 3);
@@ -562,10 +572,34 @@ async function findRelatedArtifacts(root, { requestScope, changeRef }) {
   for (const relative of candidates) {
     if (relative === 'tasks/current-session.md' || relative.startsWith('tasks/sessions/')) continue;
     const absolute = path.join(base, relative);
-    const head = (await readFile(absolute, 'utf8').catch(() => '')).slice(0, 4000).toLowerCase();
+    const head = (await readFile(absolute, 'utf8').catch(() => '')).slice(0, 8000);
+    const metadata = parseRelationshipMetadata(head);
+    const relationshipValues = [
+      metadata.artifact_id,
+      metadata.contract_id,
+      metadata.requirement_id,
+      metadata.change_ref,
+      metadata.supersedes,
+      metadata.source_spec,
+      metadata.source_plan,
+      metadata.parent_repository_id,
+    ]
+      .filter(isNonEmptyString)
+      .map((value) => value.toLowerCase());
+    const normalizedChangeRef = String(changeRef ?? '').trim().toLowerCase();
+    const relationshipMatch =
+      normalizedChangeRef !== '' && relationshipValues.includes(normalizedChangeRef);
+    const scopedMetadataMatch =
+      normalizedChangeRef === '' &&
+      tokens.some(
+        (token) =>
+          relationshipValues.some((value) => value === token || value.includes(token)) ||
+          relative.toLowerCase().includes(token),
+      );
     const relevant =
-      tokens.length === 0 ||
-      tokens.some((token) => relative.toLowerCase().includes(token) || head.includes(`change_ref: ${token}`));
+      relationshipMatch ||
+      (normalizedChangeRef === '' && tokens.length === 0) ||
+      scopedMetadataMatch;
     if (!relevant) continue;
     const repoPath = `.sdcorejs/${normalizeRelativePath(relative)}`;
     if (relative.startsWith('specs/')) buckets.specs.push(repoPath);
@@ -575,6 +609,16 @@ async function findRelatedArtifacts(root, { requestScope, changeRef }) {
     else if (relative.startsWith('tasks/')) buckets.tasks.push(repoPath);
   }
   return buckets;
+}
+
+function parseRelationshipMetadata(content) {
+  const block = extractFrontmatter(content);
+  const metadata = {};
+  for (const line of block.split(/\r?\n/u)) {
+    const match = line.match(/^([A-Za-z][A-Za-z0-9_-]*):\s*(.*?)\s*$/u);
+    if (match && match[2]) metadata[match[1]] = parseScalar(match[2]);
+  }
+  return metadata;
 }
 
 async function walkArtifactFiles(base, current, result) {
@@ -649,6 +693,33 @@ function extractDeclaredEntrypoints(text) {
   return block[1]
     .split(/\r?\n/)
     .map((line) => line.match(/^\s+-\s+(.*?)\s*$/)?.[1])
+    .filter(Boolean)
+    .map(parseScalar)
+    .filter(isNonEmptyString);
+}
+
+function extractFrontmatterList(text, field) {
+  const frontmatter = extractFrontmatter(text);
+  const escapedField = escapeRegExp(field);
+  const inline = frontmatter.match(
+    new RegExp(`^\\s*${escapedField}:\\s*\\[(.*?)\\]\\s*$`, 'mu'),
+  );
+  if (inline) {
+    return inline[1]
+      .split(',')
+      .map((item) => parseScalar(item))
+      .filter(isNonEmptyString);
+  }
+  const block = frontmatter.match(
+    new RegExp(
+      `^\\s*${escapedField}:\\s*\\r?\\n((?:\\s+-\\s+.*(?:\\r?\\n|$))+)`,
+      'mu',
+    ),
+  );
+  if (!block) return [];
+  return block[1]
+    .split(/\r?\n/u)
+    .map((line) => line.match(/^\s+-\s+(.*?)\s*$/u)?.[1])
     .filter(Boolean)
     .map(parseScalar)
     .filter(isNonEmptyString);

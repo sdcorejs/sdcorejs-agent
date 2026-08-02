@@ -28,7 +28,8 @@ const LOCAL_ONLY_PATTERNS = [
 const ARTIFACT_KIND_BY_PATH = [
   [/^\.sdcorejs\/specs\//i, 'spec'],
   [/^\.sdcorejs\/plans\//i, 'plan'],
-  [/^\.sdcorejs\/docs\/product\//i, 'feature-ledger'],
+  [/^\.sdcorejs\/docs\/product\//i, 'product-ledger'],
+  [/^\.sdcorejs\/docs\/design\//i, 'design-handoff'],
   [/^\.sdcorejs\/docs\//i, 'execution-doc'],
   [/^\.sdcorejs\/documentation\//i, 'documentation-asset'],
   [/^\.sdcorejs\/handoffs\//i, 'handoff'],
@@ -41,8 +42,9 @@ const ARTIFACT_KIND_BY_PATH = [
 const SHARED_KINDS = new Set(['memory', 'persona', 'summary', 'task']);
 const CHANGE_SCOPED_KINDS = new Set([
   'documentation-asset',
+  'design-handoff',
   'execution-doc',
-  'feature-ledger',
+  'product-ledger',
   'plan',
   'spec',
 ]);
@@ -257,7 +259,9 @@ export function classifyArtifact({
     };
   }
 
-  const kind = metadata.artifact_kind ?? inferArtifactKind(normalizedPath);
+  const kind = normalizeArtifactKind(
+    metadata.artifact_kind ?? inferArtifactKind(normalizedPath),
+  );
   const artifactChangeRef = normalizeRef(metadata.change_ref);
   const requestedChangeRef = normalizeRef(changeRef);
   const metadataOwner = normalizeRef(metadata.owner);
@@ -645,6 +649,10 @@ function inferArtifactKind(artifactPath) {
     if (pattern.test(artifactPath)) return kind;
   }
   return 'unknown';
+}
+
+function normalizeArtifactKind(kind) {
+  return kind === 'feature-ledger' ? 'product-ledger' : kind;
 }
 
 function defaultCommitPolicy(kind) {

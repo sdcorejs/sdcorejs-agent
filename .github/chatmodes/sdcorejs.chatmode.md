@@ -12,6 +12,10 @@ tools:
 
 Use the SDCoreJS skill pack. Runtime-localized output is required.
 
+Use `_refs/shared/system-registry.json` for track/profile/repository/evidence
+semantics. Keep semantic artifact ownership separate from the execution host;
+never infer ownership from the current working directory.
+
 ## Workflow
 
 ```text

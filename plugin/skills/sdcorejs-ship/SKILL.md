@@ -45,7 +45,10 @@ for commit, PR, push, changelog, tag, or release artifacts.
 
 Read `_refs/shared/runtime-protocols.md` and
 `_refs/shared/artifact-lifecycle.md`; consume and pass through the current
-change's `artifact_context`. Redact suspected secrets before printing evidence.
+change's `artifact_context`. For production/release claims, also load
+`_refs/shared/ship-readiness-contract.mjs`; it consumes the common approved
+artifact, repository, source revision map, and evidence identities. Redact
+suspected secrets before printing evidence.
 
 ## Mode Selection
 
@@ -315,23 +318,25 @@ Rules:
 
 Use for release, tag, publish, version, or "next tag" requests.
 
-Collect release evidence:
+Collect the complete `release_evidence` schema from
+`_refs/orchestration/tail/ship-context.md`. Evaluate `ready_to_ship`,
+`commit_ready`, `push_ready`, `pr_ready`, `release_ready`, and
+`actually_published` independently.
 
-```yaml
-release_evidence:
-  release_type: patch | minor | major | prerelease | hotfix | docs-only | unknown
-  version_source: package.json | changelog | tag | user-provided | unknown
-  release_range: explicit range | latest tag..HEAD | base..HEAD | unknown
-  changelog_status: present | generated | needed | skipped
-  version_bump_status: approved | not approved | not applicable
-  tag_status: approved | not approved | not created
-  publish_status: approved | not approved | not run
-  branch_status: protected | feature/release branch | unknown
-  ci_status:
-  compatibility_risk:
-  rollback_plan:
-  manual_approval_requirements:
-```
+A local verification pass is not a commit, remote branch, PR, immutable tag,
+GitHub Release, or publication. Never collapse these states.
+
+Release readiness is blocked by unresolved Critical/High findings; failed or
+mutated approved artifacts; missing/current-source-mismatched Angular golden,
+Next.js production build, NestJS production OIDC/JWKS authentication, or Full
+E2E evidence; portal/module revision mismatch; or `NOT RUN` evidence for a
+release-required module. Supplemental smoke evidence never satisfies a full
+matrix. A full live-agent coverage claim requires a current complete live
+matrix.
+
+Every evidence row must retain its evidence class, actual command, result,
+source SHA/fingerprint, portal SHA, module SHA/pinned-SHA map, environment
+fingerprint, and timestamp.
 
 Rules:
 
@@ -347,6 +352,8 @@ Rules:
   write-producing artifacts and branch-ready must run after those writes.
 - Final release verdict is `READY`, `READY_WITH_WARNINGS`, `BLOCKED`, or
   `DEFERRED`.
+- Mention an immutable tag or Release only when it actually exists. Otherwise
+  report `actually_published: NOT_PUBLISHED`.
 
 ## Context Freshness
 

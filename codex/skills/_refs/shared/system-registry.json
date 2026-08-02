@@ -1,0 +1,260 @@
+{
+  "schema_version": 1,
+  "registry_version": "1.0.0",
+  "generic_harness_fallback": {
+    "track": "general",
+    "executor": "sdcorejs-execute-plan",
+    "review_profile": "general"
+  },
+  "tracks": [
+    {
+      "id": "ai-agent",
+      "executor": "sdcorejs-ai-agent",
+      "review_profile": "ai-agent",
+      "repair_supported": true,
+      "ship_supported": true
+    },
+    {
+      "id": "angular",
+      "executor": "sdcorejs-angular",
+      "review_profile": "angular",
+      "repair_supported": true,
+      "ship_supported": true
+    },
+    {
+      "id": "design",
+      "executor": "sdcorejs-design",
+      "review_profile": "design",
+      "repair_supported": true,
+      "ship_supported": true
+    },
+    {
+      "id": "documentation",
+      "executor": "sdcorejs-documentation",
+      "review_profile": "documentation",
+      "repair_supported": true,
+      "ship_supported": true
+    },
+    {
+      "id": "fullstack",
+      "executor": "sdcorejs-execute-plan",
+      "review_profile": "fullstack",
+      "repair_supported": true,
+      "ship_supported": true
+    },
+    {
+      "id": "general",
+      "executor": "sdcorejs-execute-plan",
+      "review_profile": "general",
+      "repair_supported": true,
+      "ship_supported": true
+    },
+    {
+      "id": "nestjs",
+      "executor": "sdcorejs-nestjs",
+      "review_profile": "nestjs",
+      "repair_supported": true,
+      "ship_supported": true
+    },
+    {
+      "id": "nextjs",
+      "executor": "sdcorejs-nextjs",
+      "review_profile": "nextjs",
+      "repair_supported": true,
+      "ship_supported": true
+    },
+    {
+      "id": "node",
+      "executor": "sdcorejs-execute-plan",
+      "review_profile": "node",
+      "repair_supported": true,
+      "ship_supported": true
+    },
+    {
+      "id": "product",
+      "executor": "sdcorejs-product",
+      "review_profile": "product",
+      "repair_supported": true,
+      "ship_supported": true
+    },
+    {
+      "id": "react",
+      "executor": "sdcorejs-execute-plan",
+      "review_profile": "react",
+      "repair_supported": true,
+      "ship_supported": true
+    },
+    {
+      "id": "test",
+      "executor": "sdcorejs-test",
+      "review_profile": "test",
+      "repair_supported": true,
+      "ship_supported": true
+    },
+    {
+      "id": "workflow",
+      "executor": "sdcorejs-execute-plan",
+      "review_profile": "workflow",
+      "repair_supported": true,
+      "ship_supported": true
+    }
+  ],
+  "aliases": {
+    "generic": "general",
+    "nest": "nestjs",
+    "next": "nextjs"
+  },
+  "stack_profiles": [
+    {
+      "id": "core-ui-angular",
+      "description": "Angular application with the current @sdcorejs/angular package."
+    },
+    {
+      "id": "legacy-core-ui-angular",
+      "description": "Angular application with the legacy @sd-angular/core package."
+    },
+    {
+      "id": "plain-angular",
+      "description": "Angular application without detected SDCoreJS Core UI."
+    },
+    {
+      "id": "migration-request",
+      "description": "Explicitly approved adoption or framework/profile migration."
+    },
+    {
+      "id": "sdcorejs-nestjs",
+      "description": "NestJS application with detected SDCoreJS Nest conventions."
+    },
+    {
+      "id": "plain-nestjs",
+      "description": "NestJS application without detected SDCoreJS Nest conventions."
+    },
+    {
+      "id": "nextjs-build-website",
+      "description": "Approved Next.js public-site generation profile."
+    },
+    {
+      "id": "plain-nextjs",
+      "description": "Next.js application without public-site profile assumptions."
+    },
+    {
+      "id": "react-next-generic",
+      "description": "Generic React application implemented with Next.js."
+    },
+    {
+      "id": "react-vite",
+      "description": "React application using Vite."
+    },
+    {
+      "id": "react-cra",
+      "description": "React application using react-scripts."
+    },
+    {
+      "id": "node-general",
+      "description": "Node.js project without a stronger framework profile."
+    },
+    {
+      "id": "node-esm",
+      "description": "Node.js project authored with ECMAScript modules."
+    },
+    {
+      "id": "markdown-skill-pack",
+      "description": "Markdown-first reusable skill and reference pack."
+    },
+    {
+      "id": "astro-site",
+      "description": "Astro documentation or public-site workspace."
+    },
+    {
+      "id": "developer",
+      "description": "Production implementation for developer-owned application scope."
+    },
+    {
+      "id": "technical-prototype",
+      "description": "Explicitly approved technical prototype; never inferred from a role."
+    },
+    {
+      "id": "product",
+      "description": "Product requirements, stories, acceptance criteria, and traceability."
+    },
+    {
+      "id": "design",
+      "description": "Design artifacts and implementation handoff."
+    },
+    {
+      "id": "quality",
+      "description": "Test strategy, executable validation, and evidence."
+    },
+    {
+      "id": "documentation",
+      "description": "Module- or repository-owned durable documentation."
+    },
+    {
+      "id": "ai-agent",
+      "description": "Approved first-class AI-agent contract and capability profile."
+    },
+    {
+      "id": "general",
+      "description": "Stack-neutral governed execution."
+    },
+    {
+      "id": "unknown",
+      "description": "Conflicting or insufficient profile evidence; blocks profile-specific assumptions."
+    }
+  ],
+  "capability_profile_registries": [
+    {
+      "track": "ai-agent",
+      "source": "_refs/ai-agent/manifest.json",
+      "collection": "capability_profiles"
+    }
+  ],
+  "artifact_kinds": [
+    "brainstorm",
+    "spec",
+    "plan",
+    "product-ledger",
+    "design-handoff",
+    "documentation",
+    "test-plan",
+    "e2e-test",
+    "review-report",
+    "repair-report",
+    "release-evidence"
+  ],
+  "repository_roles": [
+    "standalone",
+    "portal",
+    "module",
+    "library",
+    "service",
+    "documentation"
+  ],
+  "ownership_scopes": [
+    "repository",
+    "module",
+    "portal-composition",
+    "cross-repository-aggregate"
+  ],
+  "evidence_classes": [
+    "UNIT",
+    "GOLDEN",
+    "CONTAINER",
+    "FULL_E2E",
+    "LIVE_AGENT",
+    "SUPPLEMENTAL_SMOKE"
+  ],
+  "evidence_results": [
+    "PASSED",
+    "FAILED",
+    "NOT APPLICABLE",
+    "NOT RUN",
+    "STALE"
+  ],
+  "executable_reference_classes": [
+    "executable",
+    "copy-ready",
+    "partial-example",
+    "pseudocode"
+  ]
+}

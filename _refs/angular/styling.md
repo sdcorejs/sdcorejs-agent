@@ -55,7 +55,7 @@ Generated UI must declare spacing intentionally. Missing `gap-*`, `p-*`, `m-*`, 
 
 ## 5. When custom CSS IS justified
 Only when no utility fits (a true one-off: a specific `clip-path`, a computed gradient, a `w-250` above the 0–200 range, a component-specific animation). Then:
-- Keep it in the component'<localized text>'s out of scope).
+- Keep it in the component's `.scss`; unrelated global styling is out of scope.
 - Add a one-line `// why:` comment so the reviewer knows it's deliberate, not laziness.
 - Reuse Core UI tokens inside it: `var(--sd-primary)`, `var(--sd-black200)` — don't hardcode hex.
 - Theme/color overrides + `mat.all-component-themes` belong in `styles.scss` via `sd.theme(...)`, not in components (STYLE-GUIDE §14).

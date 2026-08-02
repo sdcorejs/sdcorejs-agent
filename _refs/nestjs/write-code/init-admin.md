@@ -20,6 +20,23 @@ explicit reviewed removal.
 
 A protected route without permission metadata fails closed.
 
+## Production authentication
+
+Bind `TOKEN_VERIFIER` to the generated `OidcTokenVerifier` in every runtime
+profile. The verifier uses `jose` `jwtVerify` and `createRemoteJWKSet` with
+validated issuer, audience, asymmetric algorithm allowlist, expiration,
+not-before, issued-at/max-age, clock tolerance, and JWKS rotation behavior.
+Production requires HTTPS issuer/JWKS configuration.
+
+Map `sub`, permissions, tenant, and department claims to `RequestActor` only
+after verification. A malformed claim or missing lifetime claim returns 401.
+Never substitute a deny-all placeholder as the production binding, never trust
+unsigned/decoded claims, and never let a request body establish actor scope.
+Verifier doubles are test-only. Generated adversarial tests use a local JWKS
+server and real signatures to cover wrong signature, issuer, audience, expired
+and not-yet-valid tokens, unsupported algorithms, unknown `kid`, and key
+rotation without `overrideProvider(TOKEN_VERIFIER)`.
+
 ## Role uniqueness
 
 Represent role scope explicitly:

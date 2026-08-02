@@ -45,6 +45,24 @@ Record command, timestamp, exit status, test counts, fixture versions, contract
 versions, and any skipped live check. A local pass cannot be described as a
 provider certification. Preserve failing output for repair-loop handoff.
 
+Classify offline deterministic evidence separately from live/provider evidence:
+
+```yaml
+offline_verification:
+  evidence_class: GOLDEN
+  result: PASSED | FAILED | NOT RUN
+live_provider_verification:
+  evidence_class: LIVE_AGENT
+  credentials_available: true | false
+  result: PASSED | FAILED | NOT RUN
+  evidence: <durable identity | null>
+```
+
+Missing live credentials do not skip the offline suite. They require live
+result `NOT RUN` with no evidence; never relabel an offline pass as live pass.
+Test/review/repair/ship outputs preserve canonical `test-plan`,
+`review-report`, `repair-report`, and `release-evidence` identity.
+
 Run the shared validator over every golden and generated contract, then run the
 dedicated track contract test, routing tests, entrypoint tests, mirror tests,
 text hygiene, and the approved repository aggregate.

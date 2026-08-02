@@ -24,7 +24,7 @@ discovery and classification helper. It never stages or commits files.
 
 | Lifecycle | Examples | Commit policy |
 |---|---|---|
-| Change-scoped durable | approved spec, approved plan, execution doc, feature ledger, verified guide screenshot or documentation asset | `with-change` |
+| Change-scoped durable | approved spec, approved plan, execution doc, product ledger, design handoff, verified guide screenshot or documentation asset | `with-change` |
 | Shared durable | project summary, persona, memory, living track backlog | `conditional`, with an explicit owner |
 | Explicit handoff | requested change-scoped handoff | `conditional` or `with-change` |
 | Diagnostic/local | trace, video, raw report, coverage HTML, auth/storage state, failure screenshot or diagnostic screenshot, temp, cache, codegraph cache, legacy session checkpoint | `never` |
@@ -41,7 +41,7 @@ supports it:
 
 ```yaml
 artifact_id: <stable id>
-artifact_kind: spec | plan | execution-doc | feature-ledger | handoff | summary | task | memory | persona | documentation-asset
+artifact_kind: spec | plan | execution-doc | product-ledger | design-handoff | handoff | summary | task | memory | persona | documentation-asset
 change_ref: <logical change id or durable artifact path>
 source_spec: <repo-relative path | none>
 source_plan: <repo-relative path | none>
@@ -103,7 +103,7 @@ When several producers run, merge contexts by `change_ref` and path:
 
 ## Producer Rules
 
-- Approved specs, plans, execution docs, feature ledgers, and approved
+- Approved specs, plans, execution docs, product ledgers, design handoffs, and approved
   documentation assets are normally `required_with_change`.
 - Summary, persona, memory, and living track backlog writes are
   `shared_owned` only when the current workflow is the explicit owner;

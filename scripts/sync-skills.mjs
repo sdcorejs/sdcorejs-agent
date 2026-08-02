@@ -16,6 +16,7 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 const skillsRoot = path.join(repoRoot, 'skills');
 const refsRoot = path.join(repoRoot, '_refs');
 const capabilityContractFile = path.join(refsRoot, 'harness', 'capability-contract.json');
+const systemRegistryFile = path.join(refsRoot, 'shared', 'system-registry.json');
 const canonicalBehaviorEntrypointFiles = CANONICAL_BEHAVIOR_ENTRYPOINTS.map(
   (relativePath) => path.join(repoRoot, ...relativePath.split('/'))
 );
@@ -53,6 +54,8 @@ async function main() {
 
     const capabilitySource = await readFile(capabilityContractFile, 'utf8');
     const capabilityContract = JSON.parse(capabilitySource);
+    const systemRegistrySource = await readFile(systemRegistryFile, 'utf8');
+    const systemRegistry = JSON.parse(systemRegistrySource);
     const contractErrors = validateCapabilityContract(capabilityContract);
     if (contractErrors.length > 0) {
       throw new Error(
@@ -86,7 +89,9 @@ async function main() {
       targets.manifestFiles,
       sourceSkills,
       capabilityContract,
-      capabilitySource
+      capabilitySource,
+      systemRegistry,
+      systemRegistrySource
     );
 
     if (mode === 'check') {
@@ -228,8 +233,18 @@ async function writeCursorRule(destFile) {
   await writeFile(destFile, text, 'utf8');
 }
 
-async function writeHarnessManifests(files, sourceSkills, contract, contractSource) {
+async function writeHarnessManifests(
+  files,
+  sourceSkills,
+  contract,
+  contractSource,
+  systemRegistry,
+  systemRegistrySource
+) {
   const sourceHash = `sha256:${createHash('sha256').update(contractSource).digest('hex')}`;
+  const systemRegistryHash = `sha256:${createHash('sha256')
+    .update(systemRegistrySource)
+    .digest('hex')}`;
   for (const file of files) {
     const skills = Object.fromEntries(sourceSkills.map((skill) => [
       skill.name,
@@ -243,6 +258,12 @@ async function writeHarnessManifests(files, sourceSkills, contract, contractSour
       adapter: file.adapter,
       capabilities: contract.adapters[file.adapter].capabilities,
       actions: contract.adapters[file.adapter].actions,
+      system_registry: {
+        source_path: '_refs/shared/system-registry.json',
+        source_hash: systemRegistryHash,
+        tracks: systemRegistry.tracks.map(({ id }) => id),
+        aliases: systemRegistry.aliases,
+      },
       skills,
     };
     const contentHash = `sha256:${createHash('sha256')
@@ -257,6 +278,7 @@ async function writeHarnessManifests(files, sourceSkills, contract, contractSour
       generated_path: file.relativePath,
       capabilities: adapterPayload.capabilities,
       actions: adapterPayload.actions,
+      system_registry: adapterPayload.system_registry,
       skills: adapterPayload.skills,
     };
     await ensureDir(path.dirname(file.expected));

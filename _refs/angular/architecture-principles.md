@@ -68,7 +68,9 @@ Module A **MUST NOT** import from Module B directly. Both modules import from:
 
 If `module-a` needs data from `module-b`, the contract goes through `@sdcorejs/angular` (a base `<Entity>Service` extension) OR through a shared service registered at app root.
 
-**Why**: cross-module imports = the death spiral. Module A imports Module B'<localized text>'s lazy chunk → A'<localized text>'t be code-split → CI build time doubles → no one notices until production. Plus: refactoring B breaks A silently.
+**Why**: cross-module imports create a dependency spiral. Module A imports
+Module B's lazy chunk, so A cannot be code-split; CI build time grows and
+refactoring B can break A silently.
 
 **Enforce by**: `eslint-plugin-boundaries` rules (config in target project), and `sdcorejs-review` flags violations as **Critical**.
 
@@ -172,8 +174,10 @@ export class ProductService extends MockCrudStore<ProductDTO, ProductSaveReq> {
 }
 ```
 
-- Default: `MockCrudStore` via `localStorage`, seeded with 20-40 domain-realistic rows
-- For PO prototypes driven by mock API docs, stay mock-first but match the contract shape
+- For an explicitly approved `technical-prototype`, use
+  `MockCrudStore`/`localStorage` only when `mock-service` is approved; generate
+  seed rows only when `seed-data` and its row count are approved
+- For technical prototypes driven by mock API docs, match the approved contract shape
 - Switch to `BaseService.register('<entity>')` only when a runnable backend endpoint/configuration and project service convention are provided
 - Choose provider scope from responsibility and consumers: stateless shared API
   services may follow the existing app/root convention; mutable feature
@@ -195,7 +199,8 @@ export class ProductService extends MockCrudStore<ProductDTO, ProductSaveReq> {
 
 **Why constrain to 4**: layout consistency across modules is more important than perfect per-screen UX. A user opening a new screen recognizes the pattern in 2 seconds. Custom layouts = retraining cost per screen.
 
-If a screen genuinely doesn'<localized text>'t silently invent a 5th variant.
+If a screen genuinely does not fit these variants, return to design approval;
+do not silently invent a fifth variant.
 
 ---
 

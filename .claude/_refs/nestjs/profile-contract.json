@@ -3,6 +3,8 @@
   "defaultProfile": "simple",
   "shared": {
     "authenticationRequired": true,
+    "authenticationAdapter": "oidc-jwks",
+    "testDoubleScope": "test-only",
     "permissionMetadataRequired": true,
     "missingPermissionBehavior": "deny",
     "explicitControllerRoutes": true,

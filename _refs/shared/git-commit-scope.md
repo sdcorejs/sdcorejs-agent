@@ -15,6 +15,12 @@ authoritative for `.sdcorejs/**`.
 Commit Scope Ledger:
   branch:
   current_HEAD:
+  repository_id:
+  git_root:
+  thread_id:
+  worktree_id:
+  active_contract_id:
+  active_plan_id:
   protected_branch_status:
   staged_paths:
   unstaged_paths:
@@ -75,5 +81,14 @@ Commit Scope Ledger:
   them.
 - Use `artifact_context` and lifecycle metadata as authority for
   `.sdcorejs/**`; never treat that directory as one staging unit.
+- Use `_refs/shared/git-closure-contract.mjs` for multi-thread, multi-worktree,
+  nested-repository, or submodule work. Its output is one independent ledger
+  and exact path set per repository.
+- Verify approval hashes, source/evidence freshness, semantic owner, active
+  contract, and active plan before staging.
+- Never stage child-repository content from the parent. An approved gitlink
+  update is a separate parent-repository commit unit.
+- Never create or stage `.sdcorejs/current-session.md` or
+  `.sdcorejs/tasks/current-session.md`.
 - If files are unrelated, offer commit task-scoped files, include selected
   additional files, or stop for cleanup/stash.

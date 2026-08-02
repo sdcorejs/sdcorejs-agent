@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-07-28T00:00:00+07:00
+generated_at: 2026-08-01T17:08:16.000Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks: [workflow, ai-agent, angular, nestjs, nextjs, product, design, test]
@@ -14,7 +14,7 @@ evidence:
   key_entrypoints: [AGENTS.md, CLAUDE.md, skills/orchestration/using-skills.md, scripts/sync-skills.mjs, plugin/hooks/session-start, .github/copilot-instructions.md, .cursor/rules/sdcorejs-agent.mdc, site/src/pages/index.astro]
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:e995267aa61f0f4bb46559a70b988d2ffa72252bebdd638445706f2745903b5a
+  dependency_manifests: sha256:655a1d283b56793769795021d7ca73fcb69f65f01d54139fb83a8e07b085d943
   source_roots: sha256:ddec7e2dffa8a69905218e58e710cd58376cd3cbc4dc15fc1d809fc8a6e2ec12
   entrypoint_contract: sha256:e6c4711c8d252043a06d76d7bec3adf9b886605dbece9371cf9b621b9ec9dce2
 redaction_applied: true

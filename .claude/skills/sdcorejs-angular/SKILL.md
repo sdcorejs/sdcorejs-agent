@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-angular
-description: Angular Core UI portal executor for confirmed frontend implementation. Use for new SDCoreJS portal init, existing @sdcorejs/angular or @sd-angular/core portals, PO/BA mock-first portal prototypes, admin modules, CRUD entities, list/detail screens, forms/validators, approval/bulk/export actions, or approved Core UI migration. Do not use for plain Angular apps without Core UI. Runtime-localized.
+description: Angular Core UI executor for approved implementation in new or existing @sdcorejs/angular and @sd-angular/core apps, covering portal init, CRUD/list/detail/form/action scope, explicit technical prototypes, or approved migration. Optional admin/auth packs require approved scope. Do not use for plain Angular apps or non-trivial work without verified approved spec and plan; route those through the governed workflow first. Runtime-localized.
 allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, WebFetch, Write
 ---
 
@@ -9,6 +9,14 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, WebFetc
 
 # 07 — Write Code (Orchestrator)
 
+
+## Approval preflight — first action, fail closed
+
+Before project classification, TDD, frontend architecture, or reading any implementation reference, locate and verify the approved spec, approved plan, and completed `frontend_architecture` artifact.
+The verbs `implement`, `build`, or `create` express write intent only; they are not spec approval or plan approval, never satisfy this executor's approved-artifact gate, and this executor must never treat the current prompt as the controlling approved scope.
+When required approved artifacts are absent, remain read-only and must not modify source or test files. Stop this skill immediately and return the blocker: no project classification, TDD, architecture planning, implementation-reference reads, tests, or other work.
+A fixture, lab, benchmark, disposable repository, hidden acceptance test, or generic-harness possibility never bypasses this gate. Eligibility may route only after the approval gate has passed.
+A request combining a summary, filters, a result table, bulk actions, and workflow controls is non-trivial; without approved frontend architecture/spec/plan, stop before writing code and return to the owning gate.
 
 ## Shared Protocols
 
@@ -28,13 +36,8 @@ confirmed Core UI portal scope into complete CRUD entity code:
 - Reused shared/Core UI components where justified
 - Workflow / bulk / custom action buttons
 
-List and detail routes remain common screen concepts. Their routed page
-containers are the minimum screen boundaries, not a maximum component count. A
-simple cohesive screen may remain one page component; extract a feature-local
-child only for a meaningful responsibility identified by the approved
-architecture. Feature-local extraction does not require multiple consumers,
-while shared or public promotion requires stronger ownership and consumer
-evidence.
+List and detail route containers are minimum screen boundaries, not a maximum component count. A route must not own all summary, filters, result table, selection, bulk actions, and workflow responsibilities; the approved architecture must name meaningful feature-local boundaries.
+A simple cohesive screen may remain one page component; shared or public promotion requires stronger ownership and consumer evidence. Feature-local extraction does not require multiple consumers.
 
 ## Eligibility preflight
 
@@ -57,33 +60,32 @@ local/shared/design-system components first and use installed UI libraries only
 when they are already direct dependencies. Ask for explicit approval before
 adding `@sdcorejs/angular`, `@sd-angular/core`, or `@angular/material`.
 
-It also supports PO-friendly UI prototyping from PRDs plus mock API contracts:
-after the Core UI starter template exists, generate navigable screens and
-mock-first services that match the provided endpoint/request/response shape
-closely enough for PO/QC users to interact with the feature before a live
-backend is available.
+This executor defaults to the `developer` production profile. A user's
+nontechnical role, a vague request, or missing backend/design evidence never
+switches profiles or authorizes inferred screens, seed data, auth, or admin
+features.
 
 For normal feature implementation from PRDs, user stories, or acceptance
 criteria, a design handoff is the preferred UI source of truth. If no matching
-`design/specs/` or `design/wireframes/` artifact exists and the user did not
-explicitly request a quick PO/BA prototype with no design, route the work to
+`design/specs/` or `design/wireframes/` artifact exists and the approved
+execution profile is not `technical-prototype`, route the work to
 `sdcorejs-design` first so layout, states, copy, and visual direction are
 settled before code generation.
 
-## PO/BA Prototype Portal Mode
+## Explicit `technical-prototype` profile
 
-Use PO/BA Prototype Portal Mode when the request asks to initialize a PO/BA
-portal demo, generate a portal prototype from PRD/user story/AC text, work
-without API/backend/design, align module/screens with a client, convert PRD to UI
-prototype, or build a mock-first portal. This mode is PRD-first and demo-first:
-infer safe prototype fields, seed believable data, keep services mock-first, and
-let PO/BA users navigate routes/sidebar/menu locally before the real backend
-exists.
+Enter this profile only when the approved spec/plan or current user request
+explicitly opts into the registry profile `technical-prototype`. Record that
+approval and its assumptions before writing. A prototype is demo-only and not
+production-eligible evidence. Missing API/backend/design may be handled only
+inside the approved assumptions; it is never itself a trigger. Do not infer this
+profile from PO/BA/nontechnical identity, a PRD, stakeholder notes, or phrases
+such as "quick screen" or "show a demo".
 
-Template-first is mandatory. A PO/BA prototype is not a freeform app design:
+Template-first is mandatory for an approved technical prototype:
 - New portal: run `init-portal.md` first, preserve the Core UI starter template
-  shell/layout/sidebar/permission bootstrap, then add admin/module/entity
-  screens inside that baseline.
+  shell/layout/sidebar/permission bootstrap, then add only approved
+  module/entity screens inside that baseline.
 - Existing portal: extend the existing Core UI portal shell, routes, menu, and
   local component conventions instead of creating a second shell.
 - Do not create a parallel custom portal shell, bespoke navigation system,
@@ -100,12 +102,12 @@ For each scope item in the approved plan dispatched by
 | Scope item | Reference pack to read |
 |---|---|
 | New portal (no existing project yet) | [`_refs/angular/write-code/init-portal.md`](_refs/angular/write-code/init-portal.md) (template baseline; run FIRST before any module work) |
-| Always — admin screens (account/role/permission [+tenant/department enterprise]) | [`_refs/angular/write-code/admin-screens.md`](_refs/angular/write-code/admin-screens.md) (ALWAYS run, after init-portal) |
+| Approved admin/auth/account/role/permission scope only | [`_refs/angular/write-code/admin-screens.md`](_refs/angular/write-code/admin-screens.md) (conditional; never a portal default) |
 | New module (`src/libs/<module>/`) | [`_refs/angular/write-code/init-module.md`](_refs/angular/write-code/init-module.md) |
 | New entity with full CRUD (domain/data contracts + data-access services and justified collaborators + routes/page containers + architecture-derived feature components) | [`_refs/angular/write-code/init-entity.md`](_refs/angular/write-code/init-entity.md) |
 | Shared frontend architecture preflight before non-trivial UI generation | [`_refs/shared/frontend-architecture.md`](_refs/shared/frontend-architecture.md) |
 | Image/PRD/UI reuse preflight before UI-affecting work | [`_refs/angular/write-code/input-analysis.md`](_refs/angular/write-code/input-analysis.md) |
-| PO/BA PRD-only portal/module prototype with no API/backend/design | [`_refs/angular/write-code/po-ba-prototype.md`](_refs/angular/write-code/po-ba-prototype.md) |
+| Explicitly approved `technical-prototype` profile | [`_refs/angular/write-code/po-ba-prototype.md`](_refs/angular/write-code/po-ba-prototype.md) |
 | Mock API/OpenAPI/Postman/cURL contract to UI/service mapping | [`_refs/angular/write-code/mock-api-input.md`](_refs/angular/write-code/mock-api-input.md) |
 | Entity/model/service reuse preflight before generating or extending entity contracts | [`_refs/angular/write-code/reuse-existing-entities.md`](_refs/angular/write-code/reuse-existing-entities.md) |
 | List page only (entity already exists) | [`_refs/angular/write-code/screen-list.md`](_refs/angular/write-code/screen-list.md) |
@@ -124,12 +126,12 @@ summary is absent. A brand-new approved `init-portal` may create summary v2
 after the scaffold exists; an architecture-level refresh belongs only to the
 sequential workflow or integration owner.
 
-Before any non-trivial routed screen, form, table, child collection, drawer,
-workflow panel, or frontend service is generated, read
-`_refs/shared/frontend-architecture.md`. Verify that the approved plan dispatched
-by `sdcorejs-execute-plan` contains the completed `frontend_architecture`
-contract. This executor must not create or self-approve a missing contract. Stop
-and return to `sdcorejs-plan` through `sdcorejs-execute-plan` when the gate is
+Read `_refs/shared/frontend-architecture.md` before formulating or presenting any
+architecture decision for a non-trivial routed screen, form, table, child
+collection, drawer, workflow panel, or frontend service.
+Verify that the approved plan dispatched by `sdcorejs-execute-plan` contains the completed
+`frontend_architecture` contract. This executor must not create or self-approve a
+missing contract; stop and return through `sdcorejs-execute-plan` when the gate is
 missing, incomplete, or contradicted by current codebase evidence.
 
 For any UI-affecting request, and always when the input includes a screenshot,
@@ -144,14 +146,13 @@ scanning, image decomposition, PRD requirement mapping, mixed image+PRD mapping,
 API/service assumptions, and the mandatory post-implementation UI check. Present
 the required reuse analysis/mapping before implementation.
 
-If the request is PO/BA Prototype Portal Mode, also read
+If the approved execution profile is `technical-prototype`, also read
 `_refs/angular/write-code/po-ba-prototype.md` immediately after
-`input-analysis.md`. Missing API/backend/design is not a blocker in this mode.
-Ask only for a truly unsafe missing project/module/entity name; otherwise infer
-fields, screens, routes, validators, actions, and mock data from the PRD/user
-story/AC/business description. Enforce the template-first invariant from that
-reference before code generation: new portals start from the Core UI starter
-template, and existing portals are modified in place.
+`input-analysis.md`. Validate the profile, semantic owner, optional-feature
+approvals, and prototype assumptions with
+`_refs/angular/execution-contract.mjs`. Generate only the approved fields,
+screens, routes, validators, actions, and demo data. Enforce the template-first
+invariant from that reference before code generation.
 
 If a mock API, OpenAPI/Swagger file, Postman collection, MSW handler, mock
 endpoint list, JSON fixture, API schema, or sample cURL drives the UI, also read
@@ -166,9 +167,17 @@ Before writing any helper, formatter, validator, mapper, pipe utility, paging/fi
 
 ### Execution order + hand-off
 
-Execution order: portal → admin-screens → module → entity → screens → actions. `portal` means the `init-portal` Core UI starter template baseline, not a custom shell. `admin-screens` ALWAYS runs after `init-portal` and before any domain module work. If the plan touches multiple items, run them in this order; do not parallelize. After all referenced steps finish, hand off as follows:
+Execution order: application baseline → module → entity → screens → actions,
+with any explicitly approved optional pack inserted at the plan-defined
+dependency point. `portal` means the `init-portal` Core UI starter template
+baseline, not a custom shell. Admin/auth/account/role/permission is never added
+unless the approved requirement/profile names it. If the plan touches multiple
+items, preserve its dependency order and do not parallelize shared-state steps.
+After all referenced steps finish, hand off as follows:
 
-PO/BA prototype flow: input-analysis -> po-ba-prototype -> init-portal if needed -> admin-screens -> init-module -> init-entity -> screen-list/screen-detail/actions -> finish gate.
+Technical prototype flow: input-analysis -> explicit profile validation ->
+prototype assumptions -> init-portal if approved/needed -> approved module/entity
+screens/actions -> finish gate.
 
 #### MANDATORY: Core UI usage summary (show the user right after generating)
 
@@ -199,8 +208,13 @@ sections named `Core reuse summary` and `UI check`, as defined in
 
 **STOP and present the consolidated finish gate from [`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md) before running ANY tail step.** This is UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add entity", "create module X") — NOT only inside the spec→plan flow. The gate surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review choices with defaults so the user always knows these steps exist and can opt out of new user/technical docs. "Small change" is not a reason to skip the gate. Read the ref for the exact prompt + rules.
 
-Then run the tail in this order, honoring the gate's answers (skip = omit
-that step; everything not skipped runs):
+Test authoring and the RED/GREEN/refactor loop are mandatory implementation
+work completed before production code and cannot be disabled here. The finish
+gate controls only extra integration/E2E execution plus optional documentation,
+simplification, and review work. It cannot retroactively skip authored unit and
+contract tests or convert a RED/GREEN failure into success.
+
+Then run the tail in this order, honoring only those finish-gate choices:
 
 Documentation supplement: immediately after the Finish Gate test decision, run
 `sdcorejs-documentation (documentation-gate mode)` and read
@@ -211,7 +225,7 @@ creating a missing corresponding user-guide or technical-doc for a new feature.
 `code-documentation` is automatic for touched source files and is not controlled
 by this approval gate.
 
-1. *(if Tests not skipped)* `sdcorejs-test` (sdcorejs-test) - RUN the `.spec.ts` files already written RED-first during the TDD gate and report pass/fail + failing names; add happy-path e2e only when a dev server/browser is available (else report the exact local command). Unit specs are NOT optional unless the user chose `skip` in the gate; if any testable file still lacks one, write it here.
+1. `sdcorejs-test` (sdcorejs-test) - ALWAYS run the smallest relevant unit and contract tests already written RED-first and report pass/fail + failing names. The finish gate may enable or decline only additional integration/E2E execution; unavailable infrastructure is reported as `NOT RUN`, never pass. If any testable file still lacks a required spec, return to the TDD gate before continuing.
 2. *(if Review not skipped)* `sdcorejs-review` (skills/shared/workflow/review.md; auto-detects Angular and loads `_refs/angular/review-code.md`) - convention check; actionable Angular code-review table with severity, group, file/line, risk, fix, and gate
 3. *(if Review not skipped)* `sdcorejs-repair-loop` - apply findings, iterate until `BLOCKER`/`REQUIRED` findings are fixed or explicitly deferred
 4. `sdcorejs-documentation (code-documentation mode)` - automatically apply concise source-code documentation rules to touched source files. Do NOT ASK for approval. Cross-track baseline + per-track addenda live in `_refs/documentation/code-documentation.md`
@@ -241,26 +255,22 @@ When user requests a new entity in a module, or any of the dispatch-table scope 
 - "Create user list screen" → screen-list
 - "Add validator to product form" → screen-detail
 - "Add an approval button for orders" → actions
-- "Initialize PO/BA portal demo from this PRD with no API/backend/design" -> po-ba-prototype
-- "Generate a mock-first portal prototype from PRD so BA can align screens with client" -> po-ba-prototype
-- "Create module-only contract-management prototype in the existing portal, no API/backend" -> po-ba-prototype
+- "Use the explicit technical-prototype profile approved in this plan" → po-ba-prototype
+- "Build this demo-only mock-first module; I approve technical-prototype assumptions" → po-ba-prototype
 
 ## Input Resolution
 
-### PO/BA Prototype Portal Mode input resolution
+### `technical-prototype` input resolution
 
-For PRD-only/no API/no backend/no design prototype requests:
+Only after explicit opt-in and approved assumptions:
 
-- Do not block on missing API artifacts, wireframes, exact field lists, endpoint
-  URLs, auth setup, or permission data.
-- Infer module, primary entity, related entities/lookups, list columns, filters,
-  form fields, detail facts, validators, and workflow actions from the PRD, user
-  story, acceptance criteria, business description, and local project
-  conventions.
-- Ask only for unsafe unknowns that cannot be inferred, such as a new portal
-  project name or an ambiguous module/entity owner.
-- Record inferred details under `Prototype assumptions` and present the required
-  `PO/BA Prototype Plan` block from
+- Resolve application/module ownership with
+  `_refs/angular/execution-contract.mjs`; an unresolved module blocks writes and
+  never falls back to the portal repository.
+- Use only approved assumptions to fill missing API/design details. Do not infer
+  extra screens, admin/auth, roles, permissions, seed data, or workflow actions.
+- Record every authorized assumption under `Prototype assumptions` and present
+  the required `Technical Prototype Plan` block from
   `_refs/angular/write-code/po-ba-prototype.md` before writing code.
 - Run `reuse-existing-entities.md` before creating or extending any entity
   contract, even in mock-first prototype mode.
@@ -277,38 +287,40 @@ Before generating an entity, clarify with user:
    - Examples: "Product", "Employee", "Purchase Order"
 
 4. **Fields**: What fields should this entity have?
-  - Ask user to describe fields OR infer a semantic schema when fields are omitted
+   - Use approved requirements/design/API fields; do not infer a production schema
+     from a vague entity name
   - For each field: name, type (string/number/date/select/etc), required?, label
-  - When inferring, derive concrete domain fields from the entity meaning and current portal conventions
+  - When refining approved fields, derive labels/control choices from the field
+    contract and current portal conventions
   - For localized portals, all generated labels must use proper diacritics
 
 5. **UI Preferences**:
-   - Detail layout: auto-select side-drawer or full-page from inferred complexity, unless user overrides
-   - Has search? filter? delete? excel? (defaults: yes/yes/yes/no). If asking,
+   - Detail layout: choose side-drawer or full-page from approved complexity and
+     design handoff
+   - Search/filter/delete/export exist only when approved. If asking,
      ask each toggle sequentially with `_refs/shared/user-choice-prompt.md`
      using `1. Yes` / `2. No`.
    - Permissions: use default naming pattern or custom? (default: {{ MODULE }}_{{ ENTITY }}_CREATE, etc.)
 
-### Semantic Inference Fallback
+### Semantic schema refinement
 
-If the user gives only the entity name or only a very vague description, do not stop at a generic skeleton. Build a first-pass `EntitySchema` from the entity semantics.
+If the user gives only an entity name or a vague description, stop code
+generation and return to requirements/design clarification. Semantic refinement
+may fill low-risk presentation metadata only after the approved artifact defines
+the entity boundary and fields.
 
-Use this inference order:
-1. Entity noun meaning in localized/English
-2. Existing portal conventions already confirmed in this repository
-3. Common business fields for that entity class
-4. Safe defaults for status/audit/search fields
+Use this refinement order:
+1. Approved requirement, acceptance criteria, design, and API contract.
+2. Existing portal conventions already confirmed in this repository.
+3. Core UI component contract and accessibility requirements.
 
-Inference rules:
-- Always infer an identity pair: `code` + `name` or `title`
-- Add one or more classification fields when the entity naturally belongs to a type/category/group
-- Add amount/date/status fields when the entity semantics imply pricing, lifecycle, scheduling, or accounting
-- Add note/description only when the entity likely needs free-text explanation
-- Add attachment/upload only when the entity likely carries documents/images/files
+Refinement rules:
+- Never invent an identity pair, classification, amount/date/status, free-text,
+  upload, role, or permission field that is absent from approved scope.
 - Separate writable fields (`SaveReq`) from read-only/detail fields (`DTO`) such as approval status, created info, updated info, or derived totals
-- Produce at least 3 meaningful list columns when the entity supports them
-- Keep the inferred schema small enough to stay maintainable, but rich enough to render a believable business screen
-- If the inferred form fits one compact business section, use `side-drawer`; otherwise use full page
+- Include only approved list columns and states.
+- If the approved form fits one compact business section, use `side-drawer`;
+  otherwise follow the approved full-page design
 
 ## Generation Process
 
@@ -334,10 +346,10 @@ Before building the schema from visual or requirement input, complete the
 `_refs/angular/write-code/input-analysis.md` planning output. Use the PRD or
 acceptance criteria as the behavior source of truth, visual input as layout
 direction, and Core UI/local project conventions as implementation primitives.
-For PO/BA Prototype Portal Mode, complete
+For an approved `technical-prototype`, complete
 `_refs/angular/write-code/po-ba-prototype.md` before finalizing `EntitySchema`.
-Use PRD/user story/AC first, then existing conventions, domain semantics, Core UI
-patterns, and safe prototype defaults. Keep Service contracts separate as DTO,
+Use approved requirements and assumptions first, then existing conventions and
+Core UI patterns. Keep Service contracts separate as DTO,
 ListRes, DetailRes, CreateReq, UpdateReq, SaveReq, and Component ViewModel when
 the prototype needs different read/write/UI shapes.
 
@@ -353,8 +365,7 @@ If the input is a PRD, user story, acceptance criteria, or product description
 for normal implementation and no matching design handoff exists, do not invent a
 new visual direction inside `sdcorejs-angular`. Stop and route to
 `sdcorejs-design` first, unless the approved plan or current user request
-explicitly says this is PO/BA Prototype Portal Mode, mock-first client
-alignment, or no-design prototype work.
+explicitly records an approved `technical-prototype` profile.
 
 Before finalizing `EntitySchema`, identify the primary entity and every related entity, scan existing model/interface/type/dto/service/api/repository/store files, and record one decision per entity: `reuse`, `extend`, or `create new`. Relationship fields must point to existing imported types or minimal summary types when those contracts exist; use `<entity>Id` when the API only returns an id. Do not inline a related entity object or create a duplicate model/service after an existing contract is found.
 
@@ -396,25 +407,26 @@ the dispatched per-file reference and the approved frontend architecture.
   mirror live progress to a repository file.
 - Run the entity reuse preflight before generating model/service/entity code; identify primary + related entities, scan existing model/interface/type/dto/service/api/repository/store files, and decide reuse/extend/create new before writing code.
 - Run `_refs/angular/write-code/input-analysis.md` before UI-affecting work, image/screenshot/Figma input, PRDs, user stories, feature descriptions, or acceptance criteria. Produce the SDCoreJS Core reuse analysis and the matching UI decomposition, requirement mapping, or image+PRD mapping before implementation.
-- Run `_refs/angular/write-code/po-ba-prototype.md` for PO/BA portal demo, PRD-to-UI prototype, no API/backend/design, module/screens-for-client-alignment, or mock-first portal requests. Emit the required PO/BA Prototype Plan, keep services mock-first, and record Prototype assumptions before code generation.
-- Enforce template-first PO/BA prototype generation: new portal prototypes run `init-portal.md` and preserve the Core UI starter template before domain work; existing portal prototypes extend the existing Core UI shell/routes/menu. Do not create a parallel custom portal shell or bespoke list/detail/form layout system.
+- Run `_refs/angular/write-code/po-ba-prototype.md` only for an explicitly approved registry `technical-prototype` profile. Emit the required Technical Prototype Plan, mark it not production, and record approved Prototype assumptions before code generation.
+- Enforce template-first technical-prototype generation: new portal prototypes run `init-portal.md` only when portal creation is approved; existing prototypes extend the existing Core UI shell/routes/menu. Do not create a parallel custom portal shell or bespoke list/detail/form layout system.
 - Run `_refs/angular/write-code/mock-api-input.md` when UI generation is driven by mock API docs, OpenAPI/Swagger, Postman/Insomnia, MSW/WireMock/Prism/JSON Server specs, endpoint tables, schemas, JSON fixtures, or sample cURL. Produce the mock API contract mapping before writing models, services, or screens.
 - Run the `@sdcorejs/utils` reuse preflight before writing helper/formatter/validator/mapper/pipe utility code; report which utilities were reused and why any custom helper remains necessary.
 - After generating UI, show the **Core UI usage summary** table (every `@sdcorejs/angular` component/service/directive actually used + a one-line, feature-specific purpose, in the user's language) so the user sees the building blocks at a glance. List only what was used. Persist the same table into the module user guide at write-user-guide.
-- Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
-- Tests are mandatory and written RED-first at `standard` coverage by default (see the TDD Gate). They are surfaced (default ON) in the finish gate so the user can opt out or change level — but never silently skipped. NEVER ask a separate "which coverage level?" question outside the gate.
-- Every generated portal includes the admin screens (`admin-screens`) so end users administer accounts/roles in-app — never the Keycloak console. Run `admin-screens` right after `init-portal`, before any domain module work.
+- Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces extra integration/E2E execution, user-guide, technical-doc, behavior-preserving simplification, and review choices. Test authoring and the required unit/contract run are not opt-outs.
+- Test authoring is mandatory and written RED-first at `standard` coverage by default (see the TDD Gate). The finish gate controls only additional integration/E2E execution; it cannot skip authored tests after RED/GREEN or downgrade a failure. NEVER ask a separate coverage question outside approved planning.
+- Resolve semantic application/module ownership and optional-feature approval through `_refs/angular/execution-contract.mjs`, which consumes `_refs/shared/system-registry.json`. Portal is not a fallback owner for a module artifact.
+- Run `admin-screens` only when admin/auth/account/role/permission is named in an approved requirement or explicit approved profile/template contract.
 - Detect the installed Core UI package FIRST — a project is a Core UI portal if `package.json`, a lockfile, installed package metadata, or existing imports show EITHER `@sdcorejs/angular` (new default) OR `@sd-angular/core` (legacy alias — same code, same version, actively co-deployed). Treat both as equal: NEVER skip doc discovery just because the project uses the legacy name, and generate imports with whichever prefix the project installed. If neither package is present and the request is not new portal creation or an approved migration, stop and return to `sdcorejs-execute-plan` generic harness as `plain-angular`.
 - Discover Core UI on-demand before generating (docs are NOT committed — pulled fresh from the published site, version-matched, cached): for existing Core UI projects run `node _refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed --list` to see the component inventory, then `node _refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed <id>` (e.g. `sd-button`, or `--print <id>` for inline content) to read a component's full API BEFORE using it. Before writing any template styling, ALWAYS fetch the Core UI style guide first — `node _refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed --print assets/STYLE-GUIDE` — the single authoritative list of shipped utility classes. New portal creation may pass `--version <CORE_VERSION>` from `_refs/angular/core-version.md` before install. Never rely on hardcoded/memorized class names. Prefer a Core UI component when one fits; if none does, scaffold a skeleton + `alert('TODO: ...')` and flag it. It mojibake-guards upstream + falls back to cache offline. If a Core UI package exists but no remote/cache docs are available, continue only from local Core UI evidence and explicitly report the docs gap. If no Core UI package exists, do not use this docs fallback; route as `plain-angular`.
 - For any detail/create/update screen, apply the Core UI component selection gate in [`_refs/angular/write-code/screen-detail.md`](../../../_refs/angular/write-code/screen-detail.md) before writing markup. Child arrays/line items saved with the parent payload must use the documented `FormArray` + Core UI table/grid or sectioned row-editor pattern; independent child CRUD must use the parent detail-scoped modal/drawer pattern and never self-draw a native table or unmanaged repeated divs.
 - Before generating an entity detail or side-drawer view, classify fields by role via [`_refs/angular/write-code/init-entity.md`](../../../_refs/angular/write-code/init-entity.md): business identifiers, primary display, lifecycle/status, long text, visual identity, and server/audit. Business identifiers are create-only/edit-locked by default; DETAIL/side-drawer view should prefer compact read-only facts over a disabled edit form for simple data.
 - Keep independent child CRUD scoped to the parent DETAIL screen: use modal/drawer flows, pass the current parent id into the child form, refresh the child collection after success, and preserve the parent route plus active tab/section.
 - Style utility-first — see [`_refs/angular/styling.md`](../../../_refs/angular/styling.md). Lean on the Core UI utility classes from the STYLE-GUIDE (`d-flex`, `flex-1`, `justify-content-between`, `gap-16`, `m-*`/`p-*`, `w-full`, `rounded-8`, `text-primary`, `T14M`, `row`/`col-*`, `grid-container`/`grid-cols-*`, `mat-elevation-z*`) for layout / spacing / sizing / color / typography. If the consumer app ships Tailwind (`tailwind.config.*` or a `tailwindcss` dependency), use Tailwind utilities too, matching whatever the existing components use. Core UI spacing/sizing utilities are **px-based, integer 0–200** (`mb-16` = 16px — NOT a Bootstrap multiplier); use multiples of 4. Write custom component `.scss` ONLY when no utility fits, keep it token-based (`var(--sd-*)`), and flag each rule with a one-line `// why:`.
-- Enforce the execution order (portal → admin-screens → module → entity → screens → actions) and do not skip or reorder steps.
+- Enforce the approved dependency order (application baseline → module → entity → screens → actions), inserting optional packs only where the approved plan names them.
 - Generate every component with `changeDetection: ChangeDetectionStrategy.OnPush`; treat a missing OnPush decorator entry or missing import as a generation defect to fix before review.
 - Precompute all values displayed or bound in templates with `signal()`, `computed()`, pure pipes, or view-model fields. Do not bind to component methods/getters for display, visibility, title/color, disabled/loading, permission, or list-derived values.
 - Keep Service models as Service-owned contracts. Do not force them to equal the raw backend API when the Service maps the payload, and do not add UI-only fields to `SaveReq`/`DTO` unless the Service actually accepts/returns/derives those fields.
-- For PO prototype flows, stay mock-first unless a runnable backend endpoint, base URL/configuration, auth expectation, and project service convention are explicitly available or the user explicitly asks for live API integration.
+- For an approved technical prototype, stay mock-first within its assumptions unless a runnable backend endpoint, base URL/configuration, auth expectation, and project service convention are explicitly approved for live integration.
 - For UI-affecting changes, perform the mandatory UI check from `_refs/angular/write-code/input-analysis.md` before final response. Prefer an actual browser/preview check when available; otherwise perform a code-level UI review and state that limitation honestly.
 - Run the full tail chain after the last step.
 - Never handle `plain-angular` inside this skill. The generic harness owns plain Angular and must never import `@sdcorejs/angular` or `@sd-angular/core`, fetch Core UI docs, emit Core UI usage summaries, force admin screens, or assume `src/libs/**/features/**`.
@@ -426,14 +438,15 @@ the dispatched per-file reference and the approved frontend architecture.
 ### MUST NOT
 - Hand-write CSS for flex / spacing / alignment / color / typography that a STYLE-GUIDE utility class already covers, or fill a component `.scss` with rules that duplicate shipped utilities — this is the "too many unnecessary CSS classes" anti-pattern. Put the utilities on the template; keep the `.scss` near-empty. Never use Bootstrap class names (`btn`, `card`, `form-control`, `modal` — they don't exist) or Tailwind syntax when the consumer has no Tailwind.
 - Self-draw Core UI equivalents: native form fields, raw buttons, custom page headers, custom table HTML, or unstructured repeated row divs when a Core UI component or the detail row-editor fallback applies.
-- Design a custom portal shell, landing page, dashboard, navigation system, page layout system, or form/table primitives for PO/BA prototypes outside the `init-portal` Core UI starter template and existing target portal conventions.
+- Design a custom portal shell, landing page, dashboard, navigation system, page layout system, or form/table primitives for technical prototypes outside the approved `init-portal` baseline and existing target conventions.
 - Create custom primitive controls, project-level shared components, or feature-specific components when Core UI or an existing local shared asset fits. Feature-specific components are for domain composition and behavior, not tiny markup fragments.
 - Invent behavior, UI labels, routes, roles, fields, component APIs, or SDCoreJS Angular APIs from image or PRD input. If the Core UI docs cannot be checked, use local evidence and report the fallback.
-- Treat a mock API document as a live backend integration target, hard-code sample absolute URLs, or skip mock-first services for a PO prototype unless live integration was explicitly requested and configured.
-- Block PO/BA Prototype Portal Mode because API/backend/design/permission data is missing; infer safe defaults, document Prototype assumptions, and keep the demo local/mock-first.
+- Treat a mock API document as a live backend integration target or hard-code sample absolute URLs.
+- Infer `technical-prototype` from a PO/BA/nontechnical role, vague wording, missing backend/design, PRD input, or desire for a demo.
+- Infer admin/auth/account/role/permission, seed data, or extra screens outside approved requirement/profile scope.
 - Skip test generation, defer it to "later", or block spec writing behind a coverage-level question — specs are a required deliverable, written RED-first at `standard` by default.
 - Generate portal code that requires end users to open the Keycloak console to manage accounts or roles.
-- Skip the `admin-screens` pack even when the user's request focuses on a domain entity — the admin layer is always present.
+- Run `admin-screens` merely because a portal or domain entity is being created.
 - Create duplicate model/service/type/store/repository/API-client files for a related entity that already has a usable contract in the project.
 - Inline a full related entity object inside another model when an imported related model or summary type exists.
 - Navigate from a parent DETAIL child collection to independent child routes such as `/child/create`, `/child/:id/edit`, or `/child/:id`; use a modal/drawer scoped to the parent DETAIL screen.
@@ -450,8 +463,8 @@ the dispatched per-file reference and the approved frontend architecture.
 Before returning generated code:
 
 ✅ Mock API/OpenAPI/Postman/cURL input has a mock API contract mapping before implementation
-✅ PO/BA Prototype Portal Mode input has a PO/BA Prototype Plan, Prototype assumptions, mock-first service decision, permission mode, and no live API dependency unless explicitly configured
-✅ PO/BA prototype used a template baseline: `init-portal` Core UI starter template for a new portal, or the existing Core UI portal shell for an existing app; no parallel custom shell was created
+✅ Any technical prototype has explicit opt-in, approved assumptions, a Technical Prototype Plan, clear not-production status, mock/live service decision, and approved owner/scope
+✅ Any technical prototype used its approved template baseline; no parallel custom shell was created
 
 ✅ Each production file (model / service / list / detail) has a corresponding `.spec.ts` written RED before the file was created
 ✅ UI-affecting image/PRD/feature input has SDCoreJS Core reuse analysis and the matching decomposition/mapping before implementation
@@ -469,11 +482,9 @@ Before returning generated code:
 ✅ Relationship fields use imported existing types or `<entity>Id` instead of unnecessary inline object shapes
 ✅ Parent detail-scoped child CRUD, when present, uses child-entity permissions, modal/drawer create/edit/view flows, parent-id prefill/lock, child collection refresh after success, and preserves the parent DETAIL route plus active tab/section
 ✅ Form validation matches field requirements
-✅ `{{ entityKebab }}.mock-data.ts` exists with 20–40 domain-realistic seed rows
-✅ PO/BA prototype listings default to 25 realistic rows when no row count is provided, with 20-30 accepted and at least one record per important status
-✅ Seed rows use realistic domain values derived from inferred field schema, not generic placeholders
-✅ Service methods are wired to mock store by default
-✅ Mock store reseeds if persisted dataset is empty or corrupted
+✅ Mock data exists only when `seed-data` is explicitly approved for a technical prototype
+✅ Approved seed rows use realistic domain values and contain no secrets or personal data
+✅ Mock-store wiring exists only inside the approved demo-only boundary
 ✅ Component decorators (@SdTabComponent) are present
 ✅ State management (CREATE/UPDATE/DETAIL) works correctly
 ✅ DETAIL route handles stale entity IDs by recovering to list instead of rendering blank fields

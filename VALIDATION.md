@@ -83,15 +83,15 @@ working-tree diff:
 
 | Measure | Baseline | Current working tree |
 |---|---:|---:|
-| Always-loaded bootstrap UTF-8 bytes | 20,173 | 15,885 |
-| Always-loaded bootstrap words | 2,361 | 1,884 |
-| Aggregate just-in-time scenario bytes | 514,603 | 535,486 |
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 18,297 |
+| Always-loaded bootstrap words | 2,361 | 2,188 |
+| Aggregate just-in-time scenario bytes | 514,603 | 557,682 |
 | Aggregate visible output bytes | 42,558 | 2,802 |
 | Aggregate visible output words | 3,961 | 337 |
-| Portable fallback handoff bytes | 0 | 21,303 |
+| Portable fallback handoff bytes | 0 | 22,240 |
 | Supported runtime context channel bytes | 0 | 1,205 |
 | Repeated-block bytes | 2,319 | 0 |
-| Total measured communication bytes | 577,334 | 576,681 |
+| Total measured communication bytes | 577,334 | 602,226 |
 | Consumer-required authoritative fields | 288 | 288 preserved |
 
 The report includes ten scenarios, per-scenario selected paths, bytes, words,
@@ -103,9 +103,12 @@ than omitting authoritative safety state. The current total counts serialized
 authoritative context for `supported` channels and the serialized portable
 fallback for `unsupported` and `unknown` channels, so each typed handoff is
 counted exactly once. The baseline already counts its echoed context inside
-visible output. The measured total still decreases, and no required field was
-removed to improve the metric. The report does not estimate token count because
-this private workspace has no tokenizer dependency. Metrics are evidence, not a
+visible output. The current source-bound total is higher because the audited
+parallel dispatch envelope now preserves repository/module identity and write
+authority; visible output and repeated blocks remain lower. No required field
+was removed to improve a metric, and this comparison does not establish broad
+token or cost reduction. The report does not estimate token count because this
+private workspace has no tokenizer dependency. Metrics are evidence, not a
 marketing claim.
 
 The default report still marks `live_ab_eval` as `skipped` because deterministic

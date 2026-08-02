@@ -11,7 +11,10 @@ required-actions: artifact.read, artifact.write, context.pass, verification.run,
 Match skill descriptions before reading bodies. Load
 `_refs/shared/runtime-protocols.md`, then only the references required by the
 selected task. Current user instructions and current evidence override stored
-context.
+context. `_refs/shared/system-registry.json` is the versioned source of truth
+for track, stack-profile, artifact-kind, repository-role, review, repair, ship,
+and evidence semantics. Read only the registry fields needed for the selected
+route; do not load every referenced track body during bootstrap.
 
 Priority when several skills match:
 
@@ -38,6 +41,17 @@ Choose one path before loading a full workflow:
   ownership, and verification must already be bounded.
 - Ambiguous, architectural, cross-cutting, security-sensitive, destructive,
   concurrency-sensitive, or public-contract change: full workflow.
+
+Imperative verbs such as `implement`, `build`, or `create` express write intent
+only; they are not spec approval or plan approval. Apply the selected path's
+entry criteria and approval artifacts independently of the wording of the
+requested outcome. A fixture, lab, benchmark, or disposable repository does not
+waive a required approval gate, and an explicit scoped prompt is not a substitute
+for a required artifact.
+
+A non-trivial implementation request without a valid approved plan must
+route to `sdcorejs-brainstorming`; it is not confirmed implementation. Do not load a track
+executor as an escape from the governed workflow.
 
 Fast-fix is not available for flaky/root-cause work or when a worker must infer
 behavior. If scope, ownership, risk, or public behavior grows during a
@@ -86,19 +100,39 @@ must pass `sdcorejs-parallel-dispatch`.
 - Do not add scope, dependencies, migrations, environment changes, commits,
   pushes, tags, releases, or new skills without the authority required by the
   selected contract.
+- Keep semantic identity separate: `track` selects the workflow/executor;
+  `stack_profile` refines stack behavior; an optional `capability_profile`
+  refines an approved domain capability; `repository_role` describes topology;
+  `artifact_owner_repository_id` is the durable write owner; and
+  `execution_host_repository_id` is only the repository coordinating the run.
+  In plain language, keep the artifact owner separate from the execution host.
+  Never infer artifact ownership from the current working directory.
+- Resolve aliases and unsupported stacks through
+  `_refs/shared/system-registry.mjs`. Unknown stacks use the declared generic
+  harness fallback; unknown runtime capabilities use the portable fallback
+  from the capability contract.
 
 ## Track Map
 
-| Intent | Owner |
+This display is checked deterministically against
+`_refs/shared/system-registry.json`; consumers resolve the registry rather than
+copying this table into durable artifacts.
+
+| Canonical track | Executor |
 |---|---|
-| Angular Core UI portal | `sdcorejs-angular` |
-| SDCoreJS NestJS backend | `sdcorejs-nestjs` |
-| Next.js public site | `sdcorejs-nextjs` |
-| Approved AI-agent contract | `sdcorejs-ai-agent` |
-| Product traceability | `sdcorejs-product` |
-| Design handoff | `sdcorejs-design` |
-| Direct tests | `sdcorejs-test` |
-| Unknown/plain stack | `sdcorejs-execute-plan` generic harness |
+| `ai-agent` | `sdcorejs-ai-agent` |
+| `angular` | `sdcorejs-angular` |
+| `design` | `sdcorejs-design` |
+| `documentation` | `sdcorejs-documentation` |
+| `fullstack` | `sdcorejs-execute-plan` generic harness |
+| `general` | `sdcorejs-execute-plan` generic harness |
+| `nestjs` | `sdcorejs-nestjs` |
+| `nextjs` | `sdcorejs-nextjs` |
+| `node` | `sdcorejs-execute-plan` generic harness |
+| `product` | `sdcorejs-product` |
+| `react` | `sdcorejs-execute-plan` generic harness |
+| `test` | `sdcorejs-test` |
+| `workflow` | `sdcorejs-execute-plan` generic harness |
 
 Broad simplification/refactor, under-specified AI-agent work, or unapproved
 production SDLC expansion returns to brainstorming. Project summary/code-map

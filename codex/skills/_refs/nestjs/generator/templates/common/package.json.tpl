@@ -17,6 +17,7 @@
     "@nestjs/platform-express": "^11.0.0",
     "@sdcorejs/nestjs": "^1.0.0",
     "express": "^5.1.0",
+    "jose": "^5.9.6",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.20",

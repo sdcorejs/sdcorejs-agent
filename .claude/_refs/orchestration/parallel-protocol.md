@@ -5,6 +5,9 @@ required validation below before it treats a unit or integration state as safe.
 The distributed `_refs/orchestration/parallel-protocol.mjs` module implements
 the mechanically enforceable subset. Passing its tests is not evidence that an
 external runtime invokes it or enforces the remaining orchestration rules.
+It consumes `_refs/shared/approved-artifact.mjs` and
+`_refs/shared/system-registry.json`; local enums or unverified plan identity
+cannot authorize dispatch.
 
 ## Contents
 
@@ -77,6 +80,7 @@ parallel_context:
     target_root_kind:
     track:
     stack_profile:
+    repository_revision_map: {}
 
   working_tree:
     repo_root:
@@ -109,6 +113,7 @@ parallel_context:
     verdict: SEQUENTIAL | PARALLEL-CANDIDATE | ROLE-SPLIT
 
   integration:
+    integration_owner_repository_id:
     workspace_path:
     branch:
     base_head:
@@ -126,6 +131,26 @@ parallel_context:
       consumes: []
       contract_hash:
 
+      dispatch_envelope:
+        schema_version: 1
+        contract_id:
+        plan_artifact_id:
+        plan_approval_hash:
+        repository_id:
+        repository_role:
+        module_id:
+        git_root:
+        source_revision:
+        allowed_paths: []
+        prohibited_paths: []
+        authority: read-only | read-write
+        git_mutations: deny
+        approved_artifact_mutation: deny
+        required_validations: []
+        output_evidence_contract:
+          result_type: report | commit | patch | working-tree-diff
+          required_fields: []
+
       workspace:
         strategy: shared-readonly | disjoint-same-tree | worktree
         path:
@@ -137,9 +162,15 @@ parallel_context:
       ownership:
         allowed_paths: []
         prohibited_paths: []
+        generated_outputs: []
+        shared_config_paths: []
+        module_gitlinks:
+          - repository_id:
+            path:
         shared_files:
           - path:
-            owner: <unit-id> | integration-unit | parent-contract-only
+            repository_id:
+            owner: integration-unit
         exclusive_resources: []
         shared_readonly_resources: []
         allocated_ports: []
@@ -168,6 +199,10 @@ parallel_context:
         exit_code:
         output_digest:
         blockers: []
+        repository_id:
+        repository_role:
+        module_id:
+        source_revision:
 
       status: PENDING | RUNNING | PASSED | FAILED | BLOCKED | CANCELLED | STALE
       attempts: 0
@@ -205,8 +240,11 @@ parallel_context:
 Fields are operational:
 
 - hashes select the immutable contract/result state;
+- the dispatch envelope binds each unit to the verified artifact, semantic
+  repository/module owner, one Git root, authority, and evidence contract;
 - workspace fields select the unit checkout and prohibit wrong-cwd execution;
-- ownership fields feed path/resource conflict validation;
+- ownership fields feed repository-aware path, generated-output, shared-config,
+  gitlink, and runtime-resource conflict validation;
 - dependency fields generate waves;
 - verification and result fields bind evidence;
 - failure fields decide retries, partial integration, rollback, and checkpointing;
@@ -234,17 +272,20 @@ snapshot so an after-snapshot can prove zero writes.
 | no agent cwd | read-only or mechanically proven `disjoint-same-tree` only |
 | no immutable result ref | exact changed-path/diff snapshot bound to evidence |
 | no timeout/cancellation | best-effort reporting; no fail-fast cancellation claim |
-| unknown for write-heavy work | `BLOCKED` |
+| unknown isolation for write-heavy work | portable sequential parent fallback |
 
 The effective concurrency is the smaller of runtime capacity, safe unit count,
 and repository/resource limits.
 
 ## Topology And DAG Rules
 
-Classification uses dependency edges, normalized path overlap, exclusive
-resource overlap, expected benefit, coordination/review cost, blast radius,
-runtime capability, and integration complexity. Unit count and role names alone
-are insufficient.
+Classification uses dependency edges; repository ID and Git-root identity;
+normalized allowed, generated-output, shared-config, coordinated-file, and
+module-gitlink overlap; exclusive resource overlap; expected benefit;
+coordination/review cost; blast radius; runtime capability; and integration
+complexity. Equal relative paths in different repositories are disjoint, but
+two repository identities on one physical Git root are invalid. Unit count and
+role names alone are insufficient.
 
 Topologically sort units into deterministic waves. A cycle or missing dependency
 is blocking. Derive roles from the plan; do not manufacture Product, Design,
@@ -276,6 +317,12 @@ Record which worktrees the current run created. Cleanup may remove only those
 recorded worktrees after verifying their resolved paths; never remove a
 pre-existing or nested worktree.
 
+Before each worker operation, validate the dispatch envelope against the
+current repository ID and resolved Git root. Workers cannot cross roots, write
+an unassigned shared/coordinated path, mutate an approved artifact, or stage,
+commit, or push. When the result protocol calls for an immutable commit, the
+primary integration agent creates it from the validated exact diff.
+
 ## Mechanical Path-boundary Validator
 
 The parent/integration owner, not the unit report, performs this algorithm:
@@ -292,7 +339,8 @@ The parent/integration owner, not the unit report, performs this algorithm:
 6. Match every normalized actual path against the unit allowlist and prohibited
    list. Lockfiles, manifests, env/migration files, frozen contracts, and shared
    generated artifacts remain prohibited unless explicitly approved.
-7. Detect parent/child and glob overlap between units before dispatch.
+7. Detect repository-aware parent/child and glob overlap, generated output,
+   shared config, module gitlink, and Git-root conflicts before dispatch.
 8. Compare the computed list with the unit's report. A mismatch is failure, not
    a warning.
 9. Store the exact normalized actual list in result/evidence.
@@ -378,7 +426,8 @@ then re-brief and rerun affected units.
 
 ## Failure Policy
 
-Record timeout per unit, transient/deterministic classification, retry count,
+Record timeout per unit, transient/deterministic classification, bounded retry
+count (at most three attempts),
 runtime cancellation support, straggler handling, partial-success policy,
 rollback, checkpoint path, and idempotency key (`contract_hash + unit_id +
 attempt + base_head`). A crash/no result, claimed success with non-zero exit,
@@ -392,6 +441,10 @@ Best-effort may finish independent units but does not fan in blocked results.
 
 ```yaml
 verification_evidence:
+  repository_id:
+  repository_role:
+  module_id:
+  source_revision:
   command:
   cwd:
   started_at:
@@ -402,11 +455,12 @@ verification_evidence:
   environment_fingerprint:
 ```
 
-The associated identity must be the exact commit, patch, or canonical diff.
-Wrong cwd, old HEAD, output digest mismatch, or any later write makes evidence
-stale. Integration requires new integration evidence. Global verification must
-run after the final accepted result. Read-only evidence also stores the empty
-changed-path proof.
+The associated identity must be the exact commit, patch, or canonical diff and
+must repeat the envelope's repository/module identity and source revision.
+Wrong owner, cwd, old HEAD, output digest mismatch, or any later write makes
+evidence stale. Integration requires new integration evidence. Global
+verification must run after the final accepted result. Read-only evidence also
+stores the empty changed-path proof and retains write authority as denied.
 
 Redaction excludes secret/env/key/credential paths and configured patterns from
 briefs and logs, runs an available secret scan, records PII/log sanitation, and

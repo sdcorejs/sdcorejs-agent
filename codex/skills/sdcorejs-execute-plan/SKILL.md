@@ -15,7 +15,14 @@ description: Execute an approved plan snapshot. Use after sdcorejs-plan approval
 
 Read `../_refs/shared/runtime-protocols.md`. Apply
 `../_refs/shared/artifact-lifecycle.md` and preserve/merge `artifact_context` from
-the approved spec, plan, and every producer.
+the approved spec, plan, and every producer. Use these executable sources of
+truth before any write or dispatch:
+
+- `../_refs/shared/approved-artifact.mjs` for approval identity and parent graph.
+- `../_refs/shared/system-registry.json` for track/profile routing.
+- `../_refs/orchestration/execution-contract.mjs` for execution preparation,
+  current-root/path authorization, owner routing, working-tree boundaries, and
+  execution-mode selection.
 
 ## Purpose
 Run the approved plan as the execution contract. This skill is the handoff between planning and doing.
@@ -36,17 +43,30 @@ permission is constrained by `plan_context.allowed_paths`,
 working-tree preflight below.
 
 ## Preconditions
-- `sdcorejs-plan` has explicit user approval.
-- `sdcorejs-plan` has written the approved plan snapshot.
-- The approved plan is available as a path or in context.
+- The approved spec and plan snapshots are available as paths or in context.
 - `plan_context` is present, including `approved_spec_hash`,
   `approved_plan_hash`, `target_root_kind`, `stack_profile`, `allowed_paths`,
   `prohibited_paths`, dependency/env/migration boundaries, verification
   strategy, and parallel candidates.
 
 If the plan is missing or unapproved, route back to `sdcorejs-plan`.
-If the plan hash does not match the current approved spec hash, stop and ask for
-`sdcorejs-plan` regeneration.
+Before every write, `prepareExecution` MUST verify the approved spec, approved
+plan, exact parent reference, schema, hash, track, profile, artifact owner, and
+`source_revision` against `repository_revision_map`. Reject stale source,
+unknown schema/track, owner mismatch, or hash mismatch. Do not mutate approved
+artifacts to make execution pass.
+
+For each mutable plan step, resolve the current Git root and call
+`authorizePlanWrite`. The current repository must be the step's sole Git root
+and `owner_repository_id`; the target must match `allowed_paths` and not
+`prohibited_paths`. Reauthorize every path, including generic-harness writes.
+After final branch-ready, no write is valid until the Finish gate is rerun.
+
+Resolve every step with `resolveExecutionTarget`. If work starts in a portal but
+the step owner is a module, execute in the module repository. Missing,
+unavailable, or unwritable module repositories block execution; never author
+module output into the portal. A review finding is not an authorized write
+unless the user or approved repair scope selected it.
 
 ## Step 0 - Context preflight
 
@@ -127,20 +147,11 @@ Extract:
 - Solution-root layout when present (`product/`, `design/`, `backend/`, `frontend/`, `test/`, `.sdcorejs/`).
 
 ### 2. Detect execution track
-Prefer explicit track metadata in the plan. Otherwise infer from project signals and paths:
-
-| Track | Signals | Executor |
-|---|---|---|
-| angular | `core-ui-angular`, `legacy-core-ui-angular`, approved `migration-request`, or new SDCoreJS portal creation | `sdcorejs-angular` |
-| nestjs | `sdcorejs-nestjs` profile or approved SDCoreJS Nest migration | `sdcorejs-nestjs` |
-| nextjs | `nextjs-build-website` profile or approved build-website/public-site migration | `sdcorejs-nextjs` |
-| react | `react-vite`, `react-cra`, or generic React component/app work | generic harness fallback |
-| node | `node-general`, scripts/config/library work | generic harness fallback |
-| product | product docs, PO docs, user stories, acceptance criteria, UAT, traceability matrix, requirement/implementation/test gap review | `sdcorejs-product` |
-| design | design docs, wireframes, mockups, UI/UX, screen flow, PNG previews, FE handoff, story-to-screen mapping | `sdcorejs-design` |
-| test | test-only plan, `*.spec.*`, e2e, Playwright/Cypress/Robot/Jest, inspector export | `sdcorejs-test` |
-| ai-agent | approved `track: ai-agent` plus complete `agent_architecture` with one manifest engine and one independent capability | `sdcorejs-ai-agent` |
-| generic | unsupported stack, docs/scripts/config changes, mixed non-track work | generic harness fallback |
+Resolve the verified plan track through `../_refs/shared/system-registry.json`.
+Canonical tracks use their declared executor. Aliases resolve to their canonical
+track; an unsupported signal resolves deterministically to the registry's
+`general` generic-harness fallback. The profile classification gates below
+refine executor eligibility but cannot replace or mutate verified plan identity.
 
 #### Angular project classification preflight
 
@@ -347,6 +358,11 @@ execution_context:
   source: sdcorejs-execute-plan
   contract_id: <contract id>
   requirement_id: <requirement id>
+  owner_repository_id: <semantic artifact owner>
+  execution_host_repository_id: <repository where workflow started>
+  integration_owner_repository_id: <composition/integration owner>
+  repository_revision_map:
+    <repository id>: <verified current revision>
   approved_spec_path: <path>
   approved_spec_hash: <hash>
   approved_plan_path: <path>
@@ -375,6 +391,8 @@ execution_context:
       - <path>
   tasks_completed:
     - id: <task id>
+      owner_repository_id: <repository id>
+      current_git_root: <verified repository id>
       summary: <summary>
       files_changed:
         - <path>
@@ -434,6 +452,10 @@ execution_context:
   handoffs.
 - Verify success from real command output before claiming anything passed.
 - Keep the user's language in status and summaries.
+- Run multi-repository steps locally in dependency order; a worker owns one
+  repository-local plan and must never expand into another Git root.
+- Keep live progress in runtime state. Never create or update
+  `.sdcorejs/current-session.md`.
 
 ### Must not
 - Dispatch a track orchestrator before execution mode is resolved, including
@@ -445,6 +467,9 @@ execution_context:
 - Edit outside approved scope.
 - Mutate approved specs/plans instead of returning to the approval gate for a
   revision.
+- Treat an unselected review finding as authorized write scope.
+- Write module artifacts into a portal fallback when the module repository is
+  missing or unavailable.
 - Route plain framework profiles to SDCoreJS-specific executors by default.
 - Let a route/page become the only component boundary for a complex screen, or
   extract arbitrary wrappers/facades/stores that the approved architecture does
