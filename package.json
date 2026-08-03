@@ -53,9 +53,9 @@
     "prepare": "lefthook install"
   },
   "devDependencies": {
-    "@angular/compiler": "20.3.27",
-    "lefthook": "^1.7.0",
-    "typescript": "^5.9.3",
+    "@angular/compiler": "22.1.0",
+    "lefthook": "^2.1.10",
+    "typescript": "^7.0.2",
     "yaml": "2.9.0"
   }
 }
