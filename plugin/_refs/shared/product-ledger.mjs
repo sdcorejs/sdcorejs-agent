@@ -1,4 +1,15 @@
 import { createHash } from 'node:crypto';
+import {
+  CANONICAL_PRODUCT_LEDGER_PREFIX,
+  PRODUCT_DOCUMENT_CATEGORIES,
+  PRODUCT_DOCUMENT_ROOT,
+  PRODUCT_LEDGER_ROOT,
+  planLegacyArtifactMigration,
+  requireFileInventory,
+  resolveArtifactReadSource,
+  resolveProductArtifactPaths,
+  validateCanonicalArtifactMetadataPath,
+} from './artifact-paths.mjs';
 import { resolveArtifactOwner } from './repository-contract.mjs';
 import { systemRegistry } from './system-registry.mjs';
 
@@ -141,7 +152,7 @@ function validateMetadata(metadata, errors) {
   }
   if (
     !validRelativePath(metadata.repository_relative_path) ||
-    !metadata.repository_relative_path.startsWith('.sdcorejs/docs/product/') ||
+    !metadata.repository_relative_path.startsWith(CANONICAL_PRODUCT_LEDGER_PREFIX) ||
     !metadata.repository_relative_path.endsWith('.md')
   ) {
     errors.push({
@@ -149,6 +160,7 @@ function validateMetadata(metadata, errors) {
       path: metadata.repository_relative_path,
     });
   }
+  validateProductDocumentPaths(metadata, errors);
   if (!GIT_REVISION.test(metadata.source_revision ?? '')) {
     errors.push({ code: 'INVALID_SOURCE_REVISION', field: 'source_revision' });
   }
@@ -202,6 +214,28 @@ function validateMetadata(metadata, errors) {
     !SHA256_IDENTITY.test(metadata.approval_hash)
   ) {
     errors.push({ code: 'INVALID_APPROVAL_HASH', field: 'approval_hash' });
+  }
+}
+
+/**
+ * Product document paths are optional metadata, but when present they must name
+ * canonical `.sdcorejs/product/**` locations. A root-level legacy path is a
+ * read-only compatibility input and is never valid in new metadata.
+ */
+function validateProductDocumentPaths(metadata, errors) {
+  for (const [category, contract] of Object.entries(PRODUCT_DOCUMENT_CATEGORIES)) {
+    const field = contract.metadata_field;
+    const value = metadata[field];
+    if (value === null || value === undefined || value === '') continue;
+    if (typeof value !== 'string') {
+      errors.push({ code: 'INVALID_PRODUCT_DOCUMENT_PATH', field });
+      continue;
+    }
+    const result = validateCanonicalArtifactMetadataPath(value, {
+      track: 'product',
+      category,
+    });
+    if (!result.ok) errors.push({ code: result.code, field, path: result.path });
   }
 }
 
@@ -423,6 +457,13 @@ export function resolveProductLedgerTarget({
       status: 'blocked',
       ...owner,
       repository_relative_path: null,
+      ledger_relative_path: null,
+      document_root: PRODUCT_DOCUMENT_ROOT,
+      ledger_root: PRODUCT_LEDGER_ROOT,
+      documents: [],
+      document_paths: [],
+      metadata_paths: {},
+      legacy_read_only_paths: [],
       blockers: [
         module?.available !== true
           ? `owner repository is unavailable for ${module?.id ?? feature}; portal fallback is forbidden`
@@ -430,11 +471,111 @@ export function resolveProductLedgerTarget({
       ],
     };
   }
+  const bundle = resolveProductArtifactPaths(feature);
   return {
     status: 'resolved',
     ...owner,
-    repository_relative_path: `.sdcorejs/docs/product/${feature}.md`,
+    repository_relative_path: bundle.ledger_relative_path,
+    ledger_relative_path: bundle.ledger_relative_path,
+    document_root: bundle.document_root,
+    ledger_root: bundle.ledger_root,
+    documents: bundle.documents,
+    document_paths: bundle.document_paths,
+    metadata_paths: bundle.metadata_paths,
+    legacy_read_only_paths: bundle.legacy.document_paths,
     blockers: [],
+  };
+}
+
+/**
+ * Resolve the Product read source for one feature, preferring canonical
+ * `.sdcorejs/product/**` and falling back to a legacy root-level document only
+ * when no canonical equivalent exists. Conflicting copies block.
+ */
+export function resolveProductDocumentSources({ files, feature } = {}) {
+  requireFileInventory(files, 'product document source resolution');
+  const bundle = resolveProductArtifactPaths(feature);
+  const sources = bundle.documents.map((document) => ({
+    category: document.category,
+    metadata_field: document.metadata_field,
+    ...resolveArtifactReadSource({
+      files,
+      canonicalPath: document.path,
+      legacyPath: document.legacy_path,
+    }),
+  }));
+  const blockers = sources.flatMap((source) => source.blockers);
+  return {
+    status: blockers.length > 0 ? 'blocked' : 'resolved',
+    feature: bundle.feature,
+    ledger_relative_path: bundle.ledger_relative_path,
+    sources,
+    legacy_fallback_paths: sources
+      .filter((source) => source.status === 'legacy-fallback')
+      .map((source) => source.readPath),
+    blockers,
+  };
+}
+
+/**
+ * Plan the canonical migration for one Product feature bundle. Only the
+ * requested feature moves; unrelated historical artifacts are never rewritten.
+ */
+export function planProductArtifactMigration({ files, feature } = {}) {
+  return planLegacyArtifactMigration({ files, track: 'product', feature });
+}
+
+/**
+ * Build the `artifact_context.required_with_change` closure entries for a
+ * Product run. Every created or updated Product document participates, not just
+ * the ledger.
+ */
+export function buildProductArtifactContext({
+  feature,
+  change_ref: changeRef,
+  source_spec: sourceSpec = 'none',
+  source_plan: sourcePlan = 'none',
+  written_documents: writtenDocuments,
+  ledger_written: ledgerWritten = true,
+} = {}) {
+  if (typeof changeRef !== 'string' || changeRef.trim() === '') {
+    throw new TypeError('change_ref is required to build a product artifact context');
+  }
+  const bundle = resolveProductArtifactPaths(feature);
+  const selected =
+    writtenDocuments === undefined
+      ? bundle.documents.map((document) => document.category)
+      : [...writtenDocuments];
+  const unknown = selected.filter(
+    (category) => !Object.hasOwn(PRODUCT_DOCUMENT_CATEGORIES, category),
+  );
+  if (unknown.length > 0) {
+    throw new TypeError(`unknown product document category: ${unknown.join(', ')}`);
+  }
+  const required = bundle.documents
+    .filter((document) => selected.includes(document.category))
+    .map((document) => ({
+      path: document.path,
+      kind: 'product-doc',
+      reason: `product ${document.category.replaceAll('_', ' ')} written for this change`,
+    }));
+  if (ledgerWritten) {
+    required.push({
+      path: bundle.ledger_relative_path,
+      kind: 'product-ledger',
+      reason: 'product traceability ledger written for this change',
+    });
+  }
+  return {
+    schema_version: 1,
+    change_ref: changeRef,
+    source_spec: sourceSpec,
+    source_plan: sourcePlan,
+    required_with_change: required,
+    shared_owned: [],
+    conditional: [],
+    local_only: [],
+    unrelated_observed: [],
   };
 }
 

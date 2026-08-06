@@ -3,7 +3,7 @@
   "adapter": "cursor",
   "source_path": "_refs/harness/capability-contract.json",
   "source_hash": "sha256:d6bf74c23399960c9424357773dd6490c0e6356b4a4c9be39254597996aaa698",
-  "content_hash": "sha256:015d741053d442772ea2d91c5ef851a153f557b0747dac7d7136d1c87fb29858",
+  "content_hash": "sha256:0d4471a38782f889b032f6ef41932b23580800c42916f684ec2034d5c504b7fb",
   "generated_path": ".cursor/sdcorejs-harness.json",
   "capabilities": {
     "runtime_context_channel": "unknown",
@@ -107,7 +107,7 @@
   },
   "system_registry": {
     "source_path": "_refs/shared/system-registry.json",
-    "source_hash": "sha256:58f35f444fdf54d86630a3b138e25b9260e086ceedbca4e39bac874cf6217fe0",
+    "source_hash": "sha256:3423ba43abcc69060172966824583ac291d8d9d00b948863ee987e2cab33920e",
     "tracks": [
       "ai-agent",
       "angular",

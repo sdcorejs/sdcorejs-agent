@@ -50,8 +50,8 @@ section markers unless they encode something useful about the content.
 ### Pass 1 - Design Plan
 
 Create a compact frontend design plan before writing wireframes or PNG exports.
-Persist the plan in `design/decisions/<feature>.md` and summarize it inside
-`design/specs/<feature>.md`.
+Persist the plan in `.sdcorejs/design/decisions/<feature>.md` and summarize it inside
+`.sdcorejs/design/specs/<feature>.md`.
 
 Include:
 
@@ -232,7 +232,7 @@ Every design handoff should tell frontend executors:
   details are authoritative.
 - Which decisions are confirmed, inferred, or still open.
 
-Include both maps below in `design/specs/<feature>.md`:
+Include both maps below in `.sdcorejs/design/specs/<feature>.md`:
 
 ```markdown
 ## Implementation Component Map

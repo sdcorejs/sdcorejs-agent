@@ -287,7 +287,9 @@ viet product doc va kiem tra requirement implement test co day du khong
 Expected:
 
 - Product/PO docs use `sdcorejs-product`.
+- The PRD, user stories, acceptance criteria, UAT checklist, and decisions are written under `.sdcorejs/product/`.
 - The ledger is written under `.sdcorejs/docs/product/`.
+- No root-level `product/` directory is created.
 - The report maps requirement, implementation, and test evidence and lists real gaps.
 
 ### Design Track
@@ -299,7 +301,8 @@ thiet ke man hinh quan ly lop hoc va gen png theo user stories
 Expected:
 
 - FE handoff work uses `sdcorejs-design`.
-- The design source is written under `design/` and the ledger under `.sdcorejs/docs/design/`.
+- The design source is written under `.sdcorejs/design/` (`flows/`, `specs/`, `decisions/`, `wireframes/`, `exports/png/`, `references/`) and the ledger under `.sdcorejs/docs/design/`.
+- No root-level `design/` directory is created.
 - PNG previews are treated as exports from editable specs/wireframes, not the only source of truth.
 
 ### Generic Harness

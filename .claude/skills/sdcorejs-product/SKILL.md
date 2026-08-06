@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-product
-description: Product-track executor for PO docs and traceability. Use for PRDs, user stories, acceptance criteria, feature ledgers, requirement review, traceability matrix, UAT checklists, or consistency between requirements, implementation, and tests. Updates product/ docs and .sdcorejs/docs/product/ ledgers; does not generate app code. Applies across tracks. Runtime-localized.
+description: Product-track executor for PO docs and traceability. Use for PRDs, user stories, acceptance criteria, feature ledgers, requirement review, traceability matrix, UAT checklists, or consistency between requirements, implementation, and tests. Updates .sdcorejs/product/ docs and .sdcorejs/docs/product/ ledgers; does not generate app code. Applies across tracks. Runtime-localized.
 allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 ---
 
@@ -15,12 +15,14 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 Read `_refs/shared/runtime-protocols.md` and
 `_refs/shared/artifact-lifecycle.md`; load
 `_refs/shared/product-ledger.md` for ledger work. Resolve track/profile through
-`_refs/shared/system-registry.json`, artifact/approval identity through
+`_refs/shared/system-registry.json`, canonical artifact roots through
+`_refs/shared/artifact-paths.mjs`, artifact/approval identity through
 `_refs/shared/approved-artifact.mjs`, and semantic repository ownership through
 `_refs/shared/repository-contract.mjs`. Emit `artifact_context` for every
-product ledger written. The registry is authoritative for every track,
-including AI-agent, Design, Documentation, Workflow, and General; never maintain
-a second hard-coded track list here.
+Product document and ledger written. The registry is authoritative for every
+track, including AI-agent, Design, Documentation, Workflow, and General; never
+maintain a second hard-coded track list here, and never rebuild Product paths by
+hand.
 
 ## Purpose
 Maintain PO-facing feature docs and the traceability ledger for every meaningful feature. Human-readable docs explain what the product should do. The `.sdcorejs` ledger records why the feature exists, what was agreed, what was implemented, how it was tested, and what still does not line up.
@@ -31,8 +33,8 @@ steps, Design owns handoffs, and Test owns test artifacts/evidence. It writes
 two documentation layers in the semantic owner repository:
 
 ```text
-<target-project>/product/                 # human-readable PO/QC docs
-<target-project>/.sdcorejs/docs/product/  # agent traceability ledger
+<semantic-owner-repository>/.sdcorejs/product/       # human-readable PO/QC docs
+<semantic-owner-repository>/.sdcorejs/docs/product/  # agent traceability ledger
 ```
 
 ## When to Use
@@ -67,13 +69,20 @@ Load what exists, in this order:
 
 1. Approved product or app spec from `.sdcorejs/specs/<track>/`.
 2. Approved plan from `.sdcorejs/plans/<track>/`.
-3. Existing PO docs under `product/` for the same feature.
-4. Existing design handoff under `design/` for the same feature.
+3. Existing PO docs under `.sdcorejs/product/` for the same feature.
+4. Existing design handoff under `.sdcorejs/design/` for the same feature.
 5. Change-scoped execution docs related through `change_ref`, `source_spec`, or
    `source_plan`.
 6. Relevant git diff or changed file list.
 7. Test output supplied by `sdcorejs-test` or verification commands.
 8. Existing product ledger under `.sdcorejs/docs/product/` for the same feature.
+9. Legacy root-level `product/` or `design/` documents only as a read-only
+   compatibility fallback when no canonical `.sdcorejs` equivalent exists. See
+   [Legacy Layout Compatibility](#legacy-layout-compatibility).
+
+Resolve every Product read through `resolveProductDocumentSources` in
+`_refs/shared/product-ledger.mjs` so canonical locations always win and a legacy
+fallback is explicit.
 
 If a required input is missing, write the known facts and mark the missing item as a gap instead of inventing it.
 Every cross-repository input is an immutable reference containing repository
@@ -86,29 +95,36 @@ repository.
 Resolve the owner before selecting output paths. Module-specific product
 artifacts belong in the module repository. A missing, ambiguous, unavailable,
 or unwritable module owner blocks the write; portal fallback is forbidden.
+
+Obtain the complete path bundle from `resolveProductLedgerTarget` in
+`_refs/shared/product-ledger.mjs`. Do not reconstruct these strings by hand.
 For a new feature, create or update the human-readable docs in that owner:
 
 ```text
-<target-project>/product/prds/<kebab-feature>.md
-<target-project>/product/user-stories/<kebab-feature>.md
-<target-project>/product/acceptance-criteria/<kebab-feature>.md
-<target-project>/product/uat-checklists/<kebab-feature>.md
-<target-project>/product/decisions/<kebab-feature>.md
+<semantic-owner-repository>/.sdcorejs/product/prds/<kebab-feature>.md
+<semantic-owner-repository>/.sdcorejs/product/user-stories/<kebab-feature>.md
+<semantic-owner-repository>/.sdcorejs/product/acceptance-criteria/<kebab-feature>.md
+<semantic-owner-repository>/.sdcorejs/product/uat-checklists/<kebab-feature>.md
+<semantic-owner-repository>/.sdcorejs/product/decisions/<kebab-feature>.md
 ```
 
 Also create or update the agent traceability ledger:
 
 ```text
-<semantic-owner-repo>/.sdcorejs/docs/product/<kebab-feature>.md
+<semantic-owner-repository>/.sdcorejs/docs/product/<kebab-feature>.md
 ```
+
+Root-level `product/**` is never a write target. It is a read-only compatibility
+input only.
 
 For updates, edit the existing uniquely identified product docs and ledger for
 that feature. Ambiguous or duplicate editable sources block; do not create
 another dated ledger to hide ambiguity. Use `supersedes` only for an explicit
 identity migration.
 
-Add durable metadata to the ledger and emit it as
-`artifact_context.required_with_change`:
+Add durable metadata to the ledger and emit the ledger plus every created or
+updated Product document as `artifact_context.required_with_change`. Build that
+block with `buildProductArtifactContext`:
 
 ```yaml
 schema_version: 1
@@ -131,9 +147,41 @@ approval_hash: <sha256:v1 hash when applicable | null>
 artifact_hash: <sha256:v1 hash from product-ledger.mjs>
 source_spec: <repo-relative path | none>
 source_plan: <repo-relative path | none>
+prd_path: .sdcorejs/product/prds/<feature>.md
+user_stories_path: .sdcorejs/product/user-stories/<feature>.md
+acceptance_criteria_path: .sdcorejs/product/acceptance-criteria/<feature>.md
+uat_checklist_path: .sdcorejs/product/uat-checklists/<feature>.md
+decisions_path: .sdcorejs/product/decisions/<feature>.md
 commit_policy: with-change
 owner: sdcorejs-product
 ```
+
+`validateProductLedger` rejects a root-level `product/**` value in any of those
+document path fields with `LEGACY_PRODUCT_DOCUMENT_PATH`.
+
+Emit closure for the whole bundle, not just the ledger:
+
+```yaml
+artifact_context:
+  schema_version: 1
+  change_ref: <change id>
+  required_with_change:
+    - path: .sdcorejs/product/prds/<feature>.md
+      kind: product-doc
+    - path: .sdcorejs/product/user-stories/<feature>.md
+      kind: product-doc
+    - path: .sdcorejs/product/acceptance-criteria/<feature>.md
+      kind: product-doc
+    - path: .sdcorejs/product/uat-checklists/<feature>.md
+      kind: product-doc
+    - path: .sdcorejs/product/decisions/<feature>.md
+      kind: product-doc
+    - path: .sdcorejs/docs/product/<feature>.md
+      kind: product-ledger
+```
+
+Never emit only the ledger while omitting PRD, user stories, acceptance
+criteria, UAT, or decisions from artifact closure.
 
 A cross-module Product view may belong to the portal integration owner only as
 `view_kind: cross-module-view` with `editable_requirements: false`. It must
@@ -141,6 +189,25 @@ reference module artifacts with repository/module/path/revision/artifact-hash
 provenance and never duplicate their editable requirements.
 
 ## Human-Readable Doc Templates
+
+Every durable Product Markdown document carries lifecycle frontmatter using the
+shared vocabulary from `_refs/shared/artifact-lifecycle.md`. Do not invent a
+Product-only lifecycle vocabulary.
+
+```yaml
+---
+artifact_id: product-doc:<kind>:<kebab-feature>
+artifact_kind: product-doc
+change_ref: <change id>
+source_spec: <repo-relative path | none>
+source_plan: <repo-relative path | none>
+commit_policy: with-change
+owner: sdcorejs-product
+---
+```
+
+`<kind>` is `prd`, `user-stories`, `acceptance-criteria`, `uat-checklist`, or
+`decisions`. Prepend this block to each template below.
 
 ### PRD
 
@@ -232,10 +299,11 @@ approval_hash: <sha256:v1 hash when applicable | null>
 artifact_hash: <sha256:v1 hash>
 source_spec: <relative path or none>
 source_plan: <relative path or none>
-prd_path: product/prds/<kebab-feature>.md
-user_stories_path: product/user-stories/<kebab-feature>.md
-acceptance_criteria_path: product/acceptance-criteria/<kebab-feature>.md
-uat_checklist_path: product/uat-checklists/<kebab-feature>.md
+prd_path: .sdcorejs/product/prds/<kebab-feature>.md
+user_stories_path: .sdcorejs/product/user-stories/<kebab-feature>.md
+acceptance_criteria_path: .sdcorejs/product/acceptance-criteria/<kebab-feature>.md
+uat_checklist_path: .sdcorejs/product/uat-checklists/<kebab-feature>.md
+decisions_path: .sdcorejs/product/decisions/<kebab-feature>.md
 updated_at: <ISO-8601 timestamp>
 commit_policy: with-change
 owner: sdcorejs-product
@@ -280,15 +348,45 @@ owner: sdcorejs-product
 - <question or "None">
 
 ## Related Docs
-- PRD: product/prds/<kebab-feature>.md
-- User stories: product/user-stories/<kebab-feature>.md
-- Acceptance criteria: product/acceptance-criteria/<kebab-feature>.md
-- UAT checklist: product/uat-checklists/<kebab-feature>.md
-- Decisions: product/decisions/<kebab-feature>.md
+- PRD: .sdcorejs/product/prds/<kebab-feature>.md
+- User stories: .sdcorejs/product/user-stories/<kebab-feature>.md
+- Acceptance criteria: .sdcorejs/product/acceptance-criteria/<kebab-feature>.md
+- UAT checklist: .sdcorejs/product/uat-checklists/<kebab-feature>.md
+- Decisions: .sdcorejs/product/decisions/<kebab-feature>.md
+- Design handoff: .sdcorejs/design/specs/<kebab-feature>.md
 - Spec: <path>
 - Plan: <path>
 - Change execution records: <path>
 ```
+
+## Legacy Layout Compatibility
+
+Older target projects keep Product documents in a root-level `product/**`
+directory. That layout is a read-only compatibility input; it is never a write
+target.
+
+1. New writes always use `.sdcorejs/product/**`.
+2. Canonical paths are always preferred for reads.
+3. A legacy path is read only when no canonical equivalent exists.
+4. Never create a second canonical copy silently.
+5. When the user asks to update a legacy-only Product artifact, migrate that
+   feature bundle to `.sdcorejs/product/**` inside the same approved change and
+   update every internal reference, including ledger metadata.
+6. Never bulk-migrate unrelated historical artifacts. Migration scope is the
+   requested feature bundle.
+7. When canonical and legacy copies both exist for the same logical identity:
+   equivalent copies must not both remain editable, so retire the legacy copy in
+   the same change; conflicting copies block with an explicit ambiguity, and
+   competing requirement sources are never silently merged.
+8. Portal fallback remains forbidden during migration. The module owner still
+   owns module-specific Product artifacts.
+9. Preserve repository ownership, artifact identity, source revisions, approval
+   hashes, artifact hashes, and `supersedes` semantics across the move.
+10. Never write a legacy path into newly generated metadata.
+
+Use `planProductArtifactMigration` in `_refs/shared/product-ledger.mjs`. It
+returns `not-required`, `migration-required`, or `blocked` plus the exact
+`migrations`, `retirements`, `conflicts`, and blockers.
 
 ## Audit Rules
 
@@ -330,18 +428,27 @@ Product traceability - <feature>
 
 Verdict: done | partial | blocked
 Ledger: `.sdcorejs/docs/product/<file>.md`
-Product docs: `product/prds/<file>.md`, `product/user-stories/<file>.md`, `product/acceptance-criteria/<file>.md`
+Product docs: `.sdcorejs/product/prds/<file>.md`, `.sdcorejs/product/user-stories/<file>.md`, `.sdcorejs/product/acceptance-criteria/<file>.md`
+Legacy compatibility reads: `<legacy path | none>`
 
 Next actions:
 - <only real gaps>
 ```
+
+Every generated report and final response displays canonical paths.
 
 ## Rules
 
 ### Must Do
 
 - Write product docs to the target project, never to the `sdcorejs-agent` repo unless it is the explicit target.
-- Keep `product/` docs and `.sdcorejs/docs/product/` ledger in sync for the same feature.
+- Write every Product document under `.sdcorejs/product/**` and every ledger
+  under `.sdcorejs/docs/product/**`.
+- Resolve paths through `resolveProductLedgerTarget`; never hardcode a Product
+  root in prose or output.
+- Keep `.sdcorejs/product/` docs and the `.sdcorejs/docs/product/` ledger in sync for the same feature.
+- Emit every created or updated Product document plus the ledger in
+  `artifact_context.required_with_change`.
 - Preserve the user's language for prose.
 - Keep identifiers, route paths, permission codes, and env keys in English.
 - Link PRDs, user stories, specs, plans, changed files, and test outputs by path instead of pasting full file contents.
@@ -361,13 +468,19 @@ Next actions:
 - Overwrite an unrelated product ledger.
 - Duplicate editable module requirements in a portal or cross-module view.
 - Write application code, a replacement spec/plan, or Test-owned evidence.
-- Update `.sdcorejs/docs/product/` without updating the matching `product/` docs when the user-facing requirement changed.
+- Create or update a root-level `product/**` path.
+- Emit a root-level `product/**` path in new or updated metadata, reports, or
+  links.
+- Keep an editable legacy copy alongside an equivalent canonical copy.
+- Silently merge conflicting canonical and legacy requirement sources.
+- Update `.sdcorejs/docs/product/` without updating the matching `.sdcorejs/product/` docs when the user-facing requirement changed.
 
 ## Cross-references
 
 - `sdcorejs-brainstorming` - confirms requirements.
 - `sdcorejs-spec` - source of approved acceptance criteria.
 - `sdcorejs-plan` - source of planned implementation and verification.
-- `sdcorejs-design` - maps product stories and acceptance criteria to screens, wireframes, PNG previews, and FE handoff.
+- `sdcorejs-design` - reads `.sdcorejs/product/**` and maps product stories and acceptance criteria to screens, wireframes, PNG previews, and FE handoff under `.sdcorejs/design/**`.
+- `_refs/shared/artifact-paths.mjs` - single canonical source for Product and Design roots.
 - `sdcorejs-test` - source of test evidence.
 - `sdcorejs-ship (verify-before-done mode)` - final acceptance gate; product gaps should be resolved or deferred before done.

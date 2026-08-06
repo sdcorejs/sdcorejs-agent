@@ -140,7 +140,7 @@ Extract:
 - Any declared parallel candidates.
 - The completed `plan_context.frontend_architecture` contract when the plan
   changes a non-trivial frontend feature.
-- Solution-root layout when present (`product/`, `design/`, `backend/`, `frontend/`, `test/`, `.sdcorejs/`).
+- Solution-root layout when present (`backend/`, `frontend/`, `test/`, `.sdcorejs/`, including the `.sdcorejs/product/` and `.sdcorejs/design/` artifact roots).
 
 ### 2. Detect execution track
 Resolve the verified plan track through `_refs/shared/system-registry.json`.

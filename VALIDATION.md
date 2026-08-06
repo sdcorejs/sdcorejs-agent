@@ -65,6 +65,30 @@ loading, and mirror integration. They do not prove that Pandoc, a PDF engine,
 an authenticated browser, or a live provider runtime is available; those
 capabilities remain separately reported as passed, failed, blocked, or skipped.
 
+## Product and Design `.sdcorejs` artifact layout validation
+
+Canonical roots come from `artifact_roots` in
+`_refs/shared/system-registry.json` and are resolved through
+`_refs/shared/artifact-paths.mjs`. Contracts live in
+`_refs/shared/product-ledger.md` and `_refs/shared/design-handoff.md`.
+
+```bash
+node --test test/e2e/artifact-path-convention.test.mjs
+node --test test/e2e/product-ledger-contract.test.mjs
+node --test test/e2e/design-handoff-contract.test.mjs
+node --test test/e2e/project-context-artifact-lifecycle.test.mjs
+npm run check:skills
+```
+
+These deterministic checks cover canonical resolver output, ledger root
+stability, legacy-root rejection in new metadata, canonical-first reads with an
+explicit legacy fallback, scoped legacy migration, canonical/legacy equivalence
+and conflict handling, lifecycle classification of `.sdcorejs/product/**` and
+`.sdcorejs/design/**`, binary-safe durable PNG closure, downstream consumer
+paths, and mirror synchronization. They do not prove that a browser renderer,
+image-generation tool, or live provider runtime is available; those capabilities
+remain separately reported.
+
 ## Communication Economy Policy evidence - 2026-07-28 PR #55 snapshot
 
 The Communication Economy Policy is a just-in-time reference plus deterministic
@@ -85,13 +109,13 @@ working-tree diff:
 |---|---:|---:|
 | Always-loaded bootstrap UTF-8 bytes | 20,173 | 18,297 |
 | Always-loaded bootstrap words | 2,361 | 2,188 |
-| Aggregate just-in-time scenario bytes | 514,603 | 557,682 |
+| Aggregate just-in-time scenario bytes | 514,603 | 589,629 |
 | Aggregate visible output bytes | 42,558 | 2,802 |
 | Aggregate visible output words | 3,961 | 337 |
 | Portable fallback handoff bytes | 0 | 22,240 |
 | Supported runtime context channel bytes | 0 | 1,205 |
 | Repeated-block bytes | 2,319 | 0 |
-| Total measured communication bytes | 577,334 | 602,226 |
+| Total measured communication bytes | 577,334 | 634,173 |
 | Consumer-required authoritative fields | 288 | 288 preserved |
 
 The report includes ten scenarios, per-scenario selected paths, bytes, words,
@@ -99,7 +123,9 @@ handoff mode, profile, rendered semantic coverage, cross-profile outcome/status
 parity, and required-field coverage. The just-in-time aggregate increases
 because delegated and review/repair/ship scenarios now explicitly load and
 validate test lifecycle/evidence and parallel ownership/fan-in contracts rather
-than omitting authoritative safety state. The current total counts serialized
+than omitting authoritative safety state, and because the Product and Design
+contracts now carry the canonical `.sdcorejs` artifact layout, legacy
+compatibility matrix, and binary-safe closure rules. The current total counts serialized
 authoritative context for `supported` channels and the serialized portable
 fallback for `unsupported` and `unknown` channels, so each typed handoff is
 counted exactly once. The baseline already counts its echoed context inside
@@ -418,6 +444,7 @@ arbitrary domain automatically.
 | Workflow names | No removed legacy skills remain |
 | Product track | `sdcorejs-product` exists and product docs/traceability route to it |
 | Design track | `sdcorejs-design` exists and design docs/wireframes/PNG previews route to it |
+| Product/Design artifact roots | Producers, consumers, resolvers, validators, metadata templates, and reports use `.sdcorejs/product/**` and `.sdcorejs/design/**`; ledgers stay under `.sdcorejs/docs/product/**` and `.sdcorejs/docs/design/**`; root-level `product/**` and `design/**` remain only as legacy read-only compatibility, migration logic, or negative tests |
 | Test track | `sdcorejs-test` exists and `sdcorejs-execute-plan` routes test-only plans to it |
 | AI-agent track | `sdcorejs-ai-agent` exists; engine and capability profiles remain independent and approved-plan continuation stays owned by `sdcorejs-execute-plan` |
 | Simplification utility | `sdcorejs-simplify` exists outside the track enum; current-diff/explicit-scope, protected content, before/after verification, finish-gate opt-in, and `simplify_context` invariants remain mutation-tested |

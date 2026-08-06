@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-08-01T17:08:16.000Z
+generated_at: 2026-08-06T00:00:00.000Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks: [workflow, ai-agent, angular, nestjs, nextjs, product, design, test]
@@ -14,7 +14,7 @@ evidence:
   key_entrypoints: [AGENTS.md, CLAUDE.md, skills/orchestration/using-skills.md, scripts/sync-skills.mjs, plugin/hooks/session-start, .github/copilot-instructions.md, .cursor/rules/sdcorejs-agent.mdc, site/src/pages/index.astro]
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:655a1d283b56793769795021d7ca73fcb69f65f01d54139fb83a8e07b085d943
+  dependency_manifests: sha256:61224c8bd99b8d88cb2568a8433e29dee2681415aa2db9ffd79a38c88da67bf1
   source_roots: sha256:ddec7e2dffa8a69905218e58e710cd58376cd3cbc4dc15fc1d809fc8a6e2ec12
   entrypoint_contract: sha256:e6c4711c8d252043a06d76d7bec3adf9b886605dbece9371cf9b621b9ec9dce2
 redaction_applied: true
@@ -154,6 +154,8 @@ canonical source and rerun synchronization.
 - `npm run test:e2e:repository` runs repository-level contract tests.
 - `npm run test:e2e:harness` runs behavioral sentinels, summary mutations, and
   static visual safety tests.
+- `npm run test:e2e:artifact-paths` runs the Product/Design canonical path
+  sentinel, both artifact contracts, and lifecycle closure tests.
 - `node --test test/e2e/ai-agent-track-contract.test.mjs` runs the dedicated
   AI-agent contract, fixture, mutation, and downstream checks.
 - `npm run test:e2e:nestjs` runs NestJS pack contract and generation tests.
@@ -184,6 +186,14 @@ canonical source and rerun synchronization.
   declared/discovered entrypoint fingerprints rather than branch/commit
   identity.
 - Durable `.sdcorejs/**` producers declare ownership and commit policy.
+- Canonical artifact roots live once in `_refs/shared/system-registry.json` and
+  resolve through `_refs/shared/artifact-paths.mjs`. Product documents use
+  `.sdcorejs/product/**`, Design artifacts use `.sdcorejs/design/**`, and their
+  ledgers stay under `.sdcorejs/docs/product/**` and `.sdcorejs/docs/design/**`.
+  Root-level `product/**` and `design/**` are legacy read-only compatibility
+  inputs only.
+- Artifact discovery is binary-safe: durable images are hashed, never parsed as
+  frontmatter, never text-scanned, and never printed.
 - Parallel workers do not mutate shared summary, memory, or backlog artifacts.
 - Git stages explicit paths only after artifact closure succeeds.
 - Verification evidence is required before completion or ship claims.

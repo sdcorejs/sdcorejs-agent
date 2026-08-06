@@ -65,6 +65,51 @@ export function validateSystemRegistry(registry = systemRegistry) {
       errors.push(`${field} must be a non-empty array`);
     }
   }
+  errors.push(...validateArtifactRoots(registry));
+  return errors;
+}
+
+const REQUIRED_ARTIFACT_ROOTS = [
+  'product_documents',
+  'product_ledger',
+  'design_artifacts',
+  'design_ledger',
+  'documentation',
+];
+const REQUIRED_LEGACY_ARTIFACT_ROOTS = ['product_documents', 'design_artifacts'];
+
+function validateArtifactRoots(registry) {
+  const errors = [];
+  const roots = registry?.artifact_roots;
+  const legacyRoots = registry?.legacy_artifact_roots;
+  if (!roots || typeof roots !== 'object' || Array.isArray(roots)) {
+    errors.push('artifact_roots must be an object of canonical repository-relative roots');
+  } else {
+    for (const key of REQUIRED_ARTIFACT_ROOTS) {
+      const value = roots[key];
+      if (typeof value !== 'string' || !value.startsWith('.sdcorejs/')) {
+        errors.push(`artifact_roots.${key} must be a repository-relative path under .sdcorejs/`);
+      } else if (value.endsWith('/')) {
+        errors.push(`artifact_roots.${key} must not end with a path separator`);
+      }
+    }
+  }
+  if (!legacyRoots || typeof legacyRoots !== 'object' || Array.isArray(legacyRoots)) {
+    errors.push('legacy_artifact_roots must be an object of read-only compatibility roots');
+    return errors;
+  }
+  for (const key of REQUIRED_LEGACY_ARTIFACT_ROOTS) {
+    const value = legacyRoots[key];
+    if (typeof value !== 'string' || value === '' || value.includes('/')) {
+      errors.push(
+        `legacy_artifact_roots.${key} must be a single repository-relative directory name`,
+      );
+      continue;
+    }
+    if (value.startsWith('.sdcorejs')) {
+      errors.push(`legacy_artifact_roots.${key} must not be a canonical .sdcorejs root`);
+    }
+  }
   return errors;
 }
 

@@ -3,7 +3,7 @@
   "adapter": "claude-code",
   "source_path": "_refs/harness/capability-contract.json",
   "source_hash": "sha256:d6bf74c23399960c9424357773dd6490c0e6356b4a4c9be39254597996aaa698",
-  "content_hash": "sha256:ec80bad0121398556e6e09b25b403b1ac362fc761aa5ae918d997996d33104f3",
+  "content_hash": "sha256:4230e7ed94dd1a10570a52d76cd1327f484be38ecbb00fce2b10863c036e14a4",
   "generated_path": "plugin/sdcorejs-harness.json",
   "capabilities": {
     "runtime_context_channel": "unknown",
@@ -134,7 +134,7 @@
   },
   "system_registry": {
     "source_path": "_refs/shared/system-registry.json",
-    "source_hash": "sha256:58f35f444fdf54d86630a3b138e25b9260e086ceedbca4e39bac874cf6217fe0",
+    "source_hash": "sha256:3423ba43abcc69060172966824583ac291d8d9d00b948863ee987e2cab33920e",
     "tracks": [
       "ai-agent",
       "angular",

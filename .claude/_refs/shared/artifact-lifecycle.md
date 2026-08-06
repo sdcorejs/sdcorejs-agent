@@ -10,6 +10,7 @@ discovery and classification helper. It never stages or commits files.
 ## Contents
 
 - [Lifecycle Classes](#lifecycle-classes)
+- [Canonical Artifact Roots](#canonical-artifact-roots)
 - [Durable Metadata](#durable-artifact-metadata)
 - [Runtime Context](#runtime-artifact_context)
 - [Producer Rules](#producer-rules)
@@ -18,13 +19,14 @@ discovery and classification helper. It never stages or commits files.
 - [Artifact Closure](#sdcorejs-artifact-closure)
 - [Push Rule](#push-rule)
 - [Concurrency And Ownership](#concurrency-and-ownership)
+- [Binary-Safe Discovery](#binary-safe-discovery)
 - [Redaction](#redaction)
 
 ## Lifecycle Classes
 
 | Lifecycle | Examples | Commit policy |
 |---|---|---|
-| Change-scoped durable | approved spec, approved plan, execution doc, product ledger, design handoff, verified guide screenshot or documentation asset | `with-change` |
+| Change-scoped durable | approved spec, approved plan, execution doc, product ledger, Product document, design handoff, Design spec/flow/decision/wireframe/export/reference, verified guide screenshot or documentation asset | `with-change` |
 | Shared durable | project summary, persona, memory, living track backlog | `conditional`, with an explicit owner |
 | Explicit handoff | requested change-scoped handoff | `conditional` or `with-change` |
 | Diagnostic/local | trace, video, raw report, coverage HTML, auth/storage state, failure screenshot or diagnostic screenshot, temp, cache, codegraph cache, legacy session checkpoint | `never` |
@@ -34,6 +36,43 @@ No mutable global artifact manifest is allowed. In particular, do not create a
 "current change", active task, session index, per-thread session file, or other
 shared current-state file.
 
+## Canonical Artifact Roots
+
+Canonical roots live once in `_refs/shared/system-registry.json` under
+`artifact_roots` and are resolved through `_refs/shared/artifact-paths.mjs`. No
+helper hardcodes them.
+
+| Root | Artifact kind | Contents |
+|---|---|---|
+| `.sdcorejs/specs/**` | `spec` | approved specs |
+| `.sdcorejs/plans/**` | `plan` | approved plans |
+| `.sdcorejs/product/**` | `product-doc` | PRDs, user stories, acceptance criteria, UAT checklists, Product decisions |
+| `.sdcorejs/docs/product/**` | `product-ledger` | Product traceability ledgers |
+| `.sdcorejs/design/**` | `design-asset` | Design flows, specs, decisions, wireframes, PNG exports, screenshot references |
+| `.sdcorejs/docs/design/**` | `design-handoff` | Design traceability ledgers |
+| `.sdcorejs/docs/**` | `execution-doc` | remaining change execution records |
+| `.sdcorejs/documentation/**` | `documentation-asset` | documentation layout entries and assets |
+
+`.sdcorejs/product/**` and `.sdcorejs/design/**` are deterministically classified
+from the path. They never fall through to `unknown` merely because they are not
+ledgers. Category membership requires the declared file extension and the
+declared path depth: `flows`, `specs`, and `decisions` address
+`<feature>.md`, while `wireframes`, `exports/png`, and `references` address
+`<feature>/<screen>.<ext>`. Anything else fails closed to `unknown`.
+
+Documentation-layout promotion checks apply only inside
+`.sdcorejs/documentation/**`. That scoping is not an escape hatch: a
+`documentation-asset` kind claimed for a path outside the documentation root is a
+metadata/path contradiction and fails closed.
+
+Root-level `product/**` and `design/**` are legacy read-only compatibility
+inputs. They are never write targets, never valid in new metadata, and are not
+part of `.sdcorejs` artifact discovery. See `_refs/shared/product-ledger.md` and
+`_refs/shared/design-handoff.md`.
+
+`.sdcorejs/design/diagnostics/**`, `.sdcorejs/design/failures/**`, and
+`.sdcorejs/design/tmp/**` are always `local_only`.
+
 ## Durable Artifact Metadata
 
 New or updated durable artifacts use top-level frontmatter when the format
@@ -41,13 +80,17 @@ supports it:
 
 ```yaml
 artifact_id: <stable id>
-artifact_kind: spec | plan | execution-doc | product-ledger | design-handoff | handoff | summary | task | memory | persona | documentation-asset
+artifact_kind: spec | plan | execution-doc | product-ledger | product-doc | design-handoff | design-asset | handoff | summary | task | memory | persona | documentation-asset
 change_ref: <logical change id or durable artifact path>
 source_spec: <repo-relative path | none>
 source_plan: <repo-relative path | none>
 commit_policy: with-change | conditional | never
 owner: <workflow or integration role>
 ```
+
+A binary durable artifact cannot carry frontmatter. It inherits its change
+relationship from runtime `artifact_context` or from the Product/Design ledger
+that owns the same feature identity.
 
 Use repository-relative paths. Do not bulk-rewrite historical artifacts only to
 add metadata. For legacy artifacts, infer relationships conservatively from
@@ -103,8 +146,14 @@ When several producers run, merge contexts by `change_ref` and path:
 
 ## Producer Rules
 
-- Approved specs, plans, execution docs, product ledgers, design handoffs, and approved
-  documentation assets are normally `required_with_change`.
+- Approved specs, plans, execution docs, Product documents, product ledgers,
+  Design artifacts, design handoffs, and approved documentation assets are
+  normally `required_with_change`.
+- A Product run emits every created or updated PRD, user-story, acceptance-
+  criteria, UAT, and decision document plus its ledger. A Design run emits every
+  created or updated spec, flow, decision log, editable wireframe, durable
+  export, and approved screenshot reference plus its ledger. Emitting only the
+  ledger is a contract violation.
 - Summary, persona, memory, and living track backlog writes are
   `shared_owned` only when the current workflow is the explicit owner;
   otherwise they remain `conditional`.
@@ -120,6 +169,11 @@ When several producers run, merge contexts by `change_ref` and path:
 - A verified guide screenshot is `required_with_change` only when its current
   UI capture is PII-safe, hashed, and passes the documentation-layout
   relationship. Failure/diagnostic screenshots remain `local_only`.
+- A durable Design PNG is `required_with_change` only when it sits under
+  `.sdcorejs/design/exports/png/**` or `.sdcorejs/design/references/**`, carries
+  valid provenance from `_refs/shared/design-handoff.md`, and is bound to the
+  current change through runtime `artifact_context` or the Design ledger for the
+  same feature.
 - Legacy `.sdcorejs/tasks/current-session.md` and
   `.sdcorejs/tasks/sessions/**` are `local_only`, ignored, never read as
   context, never updated, never staged, and never recreated.
@@ -208,7 +262,10 @@ sdcorejs_artifacts:
   local_only_paths: []
   unknown_paths: []
   missing_required_paths: []
+  unreadable_required_paths: []
   invalid_context_paths: []
+  feature_ledger_conflicts: []
+  documentation_layout_conflicts: []
   uncommitted_included_paths: []
   closure_result: complete | incomplete | ambiguous
 ```
@@ -241,6 +298,59 @@ Push only commits. Therefore:
 - Session checkpoint files are never used for coordination.
 - Removing a checkpoint file does not make concurrent writes to one checkout
   safe; workspace and ownership isolation still apply.
+
+## Binary-Safe Discovery
+
+`.sdcorejs/**` now contains binary durable artifacts, notably Design PNG exports
+and screenshot references. Discovery treats them as opaque bytes.
+
+Read every discovered artifact as bytes once, then derive three separate
+decisions from it. Conflating them is how a credential escapes screening.
+
+1. **Structural handling** is binary when the extension is a known binary type
+   or the first 8000 bytes contain a NUL. Binary bytes are never parsed as
+   Markdown frontmatter, so binary metadata is `{}`.
+2. **Secret screening** is withheld only when the extension *and* the byte probe
+   agree the file is genuinely opaque. A text extension carrying a stray NUL is
+   still screened, and a binary extension holding decodable text is still
+   screened. Neither shape may smuggle a private key past closure. Only truly
+   opaque bytes fall back to path-only screening (`.env`-style names,
+   credential/private-key/service-account file names).
+3. **Integrity** is the `sha256:` content hash, reported for either shape.
+
+Additional rules:
+
+4. Never print, echo, diff, or inline binary content. Report only the path, the
+   `sha256:` content hash, and the byte size.
+5. Classify a durable binary artifact from its canonical path, runtime
+   `artifact_context`, the Product/Design ledger relationship for the same
+   feature, its content hash, and its declared provenance. Canonical-path
+   membership requires the declared extension and the declared
+   `<feature>/<screen>` depth, so a stray archive in an export directory fails
+   closed to `unknown` instead of inheriting the feature's change relationship.
+6. Keep real-screenshot classification and provenance validation in
+   `_refs/shared/design-handoff.mjs`. Lifecycle discovery does not relax it.
+7. Keep failure screenshots, traces, videos, auth state, storage state, caches,
+   and temporary output `local_only`. Local-only classification is driven only
+   by declared directories and diagnostic extensions, never by a filename
+   heuristic: it is evaluated before the runtime `artifact_context` bucket, so a
+   heuristic would silently override an explicit `required_with_change` entry,
+   and `failure-state.png` or `checkout-failed.svg` are legitimate designed
+   states. Renderer failure captures belong in `.sdcorejs/design/diagnostics/**`.
+8. A required artifact that cannot be read has no integrity evidence and blocks
+   closure through `unreadable_required_paths`, unless its Git status is a
+   deletion.
+9. A Product or Design ledger's feature identity is its path, not its
+   frontmatter. A ledger declaring another feature's name, or two ledgers
+   claiming one feature with different `change_ref` values, is reported in
+   `feature_ledger_conflicts` and blocks closure instead of overwriting the real
+   mapping.
+10. PII and secret safety requirements are unchanged; an unresolved finding still
+    blocks closure.
+
+`_refs/shared/artifact-lifecycle.mjs` exports `isBinaryArtifactPath`,
+`isLocalOnlyArtifactPath`, and `scanSensitiveArtifactPath` for callers that need
+the same decision.
 
 ## Redaction
 

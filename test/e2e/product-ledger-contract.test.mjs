@@ -4,6 +4,7 @@ import path from 'node:path';
 import test from 'node:test';
 import {
   buildCrossRepositoryProductView,
+  buildProductArtifactContext,
   createProductLedger,
   resolveProductLedgerTarget,
   validateProductLedger,
@@ -43,6 +44,11 @@ function ledgerMetadata(overrides = {}) {
     ],
     supersedes: null,
     approval_hash: null,
+    prd_path: '.sdcorejs/product/prds/orders.md',
+    user_stories_path: '.sdcorejs/product/user-stories/orders.md',
+    acceptance_criteria_path: '.sdcorejs/product/acceptance-criteria/orders.md',
+    uat_checklist_path: '.sdcorejs/product/uat-checklists/orders.md',
+    decisions_path: '.sdcorejs/product/decisions/orders.md',
     ...overrides,
   };
 }
@@ -179,6 +185,23 @@ test('module-owned ledgers route to the module and never fall back to the portal
     target.repository_relative_path,
     '.sdcorejs/docs/product/orders.md',
   );
+  assert.equal(target.ledger_relative_path, '.sdcorejs/docs/product/orders.md');
+  assert.equal(target.document_root, '.sdcorejs/product');
+  assert.equal(target.ledger_root, '.sdcorejs/docs/product');
+  assert.deepEqual(target.document_paths, [
+    '.sdcorejs/product/prds/orders.md',
+    '.sdcorejs/product/user-stories/orders.md',
+    '.sdcorejs/product/acceptance-criteria/orders.md',
+    '.sdcorejs/product/uat-checklists/orders.md',
+    '.sdcorejs/product/decisions/orders.md',
+  ]);
+  assert.deepEqual(target.metadata_paths, {
+    prd_path: '.sdcorejs/product/prds/orders.md',
+    user_stories_path: '.sdcorejs/product/user-stories/orders.md',
+    acceptance_criteria_path: '.sdcorejs/product/acceptance-criteria/orders.md',
+    uat_checklist_path: '.sdcorejs/product/uat-checklists/orders.md',
+    decisions_path: '.sdcorejs/product/decisions/orders.md',
+  });
 
   const blocked = resolveProductLedgerTarget({
     scope: 'module',
@@ -288,6 +311,102 @@ test('stale or missing test evidence cannot produce a verified delivery status',
   );
 });
 
+test('product ledger metadata accepts only canonical document paths', () => {
+  const canonical = validateProductLedger({
+    metadata: ledgerMetadata(),
+    traceability: traceability(),
+    source_artifacts: [],
+  });
+  assert.deepEqual(canonical.errors, []);
+
+  for (const [field, legacyPath] of [
+    ['prd_path', 'product/prds/orders.md'],
+    ['user_stories_path', 'product/user-stories/orders.md'],
+    ['acceptance_criteria_path', 'product/acceptance-criteria/orders.md'],
+    ['uat_checklist_path', 'product/uat-checklists/orders.md'],
+    ['decisions_path', 'product/decisions/orders.md'],
+  ]) {
+    const rejected = validateProductLedger({
+      metadata: ledgerMetadata({ [field]: legacyPath }),
+      traceability: traceability(),
+      source_artifacts: [],
+    });
+    assert.equal(rejected.ok, false, `${field} must reject ${legacyPath}`);
+    assert.ok(
+      rejected.errors.some(
+        (error) => error.code === 'LEGACY_PRODUCT_DOCUMENT_PATH' && error.field === field,
+      ),
+      `${field} must report LEGACY_PRODUCT_DOCUMENT_PATH`,
+    );
+  }
+
+  const wrongCategory = validateProductLedger({
+    metadata: ledgerMetadata({ prd_path: '.sdcorejs/product/user-stories/orders.md' }),
+    traceability: traceability(),
+    source_artifacts: [],
+  });
+  assert.ok(
+    wrongCategory.errors.some(
+      ({ code }) => code === 'PRODUCT_DOCUMENT_CATEGORY_MISMATCH',
+    ),
+  );
+
+  const legacyLedgerRoot = validateProductLedger({
+    metadata: ledgerMetadata({ repository_relative_path: 'product/ledgers/orders.md' }),
+    traceability: traceability(),
+    source_artifacts: [],
+  });
+  assert.ok(
+    legacyLedgerRoot.errors.some(({ code }) => code === 'INVALID_PRODUCT_LEDGER_PATH'),
+  );
+});
+
+test('product artifact context covers every written document plus the ledger', () => {
+  const full = buildProductArtifactContext({
+    feature: 'orders',
+    change_ref: 'orders-change',
+    source_spec: '.sdcorejs/specs/product/orders.md',
+    source_plan: '.sdcorejs/plans/product/orders.md',
+  });
+  assert.equal(full.change_ref, 'orders-change');
+  assert.deepEqual(full.required_with_change.map(({ path: item }) => item), [
+    '.sdcorejs/product/prds/orders.md',
+    '.sdcorejs/product/user-stories/orders.md',
+    '.sdcorejs/product/acceptance-criteria/orders.md',
+    '.sdcorejs/product/uat-checklists/orders.md',
+    '.sdcorejs/product/decisions/orders.md',
+    '.sdcorejs/docs/product/orders.md',
+  ]);
+  assert.deepEqual(
+    [...new Set(full.required_with_change.map(({ kind }) => kind))].sort(),
+    ['product-doc', 'product-ledger'],
+  );
+
+  const partial = buildProductArtifactContext({
+    feature: 'orders',
+    change_ref: 'orders-change',
+    written_documents: ['prd', 'acceptance_criteria'],
+  });
+  assert.deepEqual(partial.required_with_change.map(({ path: item }) => item), [
+    '.sdcorejs/product/prds/orders.md',
+    '.sdcorejs/product/acceptance-criteria/orders.md',
+    '.sdcorejs/docs/product/orders.md',
+  ]);
+  assert.throws(
+    () => buildProductArtifactContext({ feature: 'orders' }),
+    /change_ref is required/,
+  );
+  assert.throws(
+    () =>
+      buildProductArtifactContext({
+        feature: 'orders',
+        change_ref: 'orders-change',
+        written_documents: ['roadmap'],
+      }),
+    /unknown product document category/,
+  );
+});
+
 test('product prose consumes the registry and does not compete with spec, plan, test, or code owners', async () => {
   const [skill, contract] = await Promise.all([
     readFile(path.join(root, 'skills/tracks/product/sdcorejs-product.md'), 'utf8'),
@@ -303,4 +422,23 @@ test('product prose consumes the registry and does not compete with spec, plan, 
   assert.match(skill + contract, /does not write application code/i);
   assert.match(skill + contract, /not a competing spec or plan/i);
   assert.match(skill + contract, /missing[\s\S]*evidence[\s\S]*not[\s\S]*pass/i);
+  assert.match(skill, /\.sdcorejs\/product\/prds\/</);
+  assert.match(skill, /\.sdcorejs\/product\/user-stories\/</);
+  assert.match(skill, /\.sdcorejs\/product\/acceptance-criteria\/</);
+  assert.match(skill, /\.sdcorejs\/product\/uat-checklists\/</);
+  assert.match(skill, /\.sdcorejs\/product\/decisions\/</);
+  assert.match(skill, /\.sdcorejs\/docs\/product\/</);
+  assert.match(skill + contract, /read-only compatibility/i);
+  assert.match(skill + contract, /artifact-paths\.mjs/);
+  assert.match(contract, /LEGACY_PRODUCT_DOCUMENT_PATH/);
+  for (const legacyWrite of [
+    /Write[^\n]*`product\/prds\//i,
+    /prd_path: product\//,
+    /user_stories_path: product\//,
+    /acceptance_criteria_path: product\//,
+    /uat_checklist_path: product\//,
+  ]) {
+    assert.doesNotMatch(skill, legacyWrite);
+    assert.doesNotMatch(contract, legacyWrite);
+  }
 });

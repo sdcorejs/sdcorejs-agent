@@ -135,6 +135,43 @@ portal/integration docs and generated aggregates. An aggregate links pinned
 module sources or consumes versioned exports with repository/revision/hash
 provenance; it is not a second editable source of module documentation.
 
+## Product And Design Artifact Layout
+
+Product and Design artifacts live under the target repository's `.sdcorejs/`
+directory:
+
+```text
+.sdcorejs/product/prds/<feature>.md
+.sdcorejs/product/user-stories/<feature>.md
+.sdcorejs/product/acceptance-criteria/<feature>.md
+.sdcorejs/product/uat-checklists/<feature>.md
+.sdcorejs/product/decisions/<feature>.md
+.sdcorejs/docs/product/<feature>.md
+
+.sdcorejs/design/flows/<feature>.md
+.sdcorejs/design/specs/<feature>.md
+.sdcorejs/design/decisions/<feature>.md
+.sdcorejs/design/wireframes/<feature>/<screen>.html
+.sdcorejs/design/wireframes/<feature>/<screen>.svg
+.sdcorejs/design/exports/png/<feature>/<screen>.png
+.sdcorejs/design/references/<feature>/<screen>.png
+.sdcorejs/docs/design/<feature>.md
+```
+
+Canonical roots are declared once as `artifact_roots` in
+`_refs/shared/system-registry.json` and resolved through
+`_refs/shared/artifact-paths.mjs`. Root-level `product/**` and `design/**` are
+legacy read-only compatibility inputs for older target projects: canonical
+locations always win on read, a legacy path is read only when no canonical
+equivalent exists, updating a legacy-only artifact migrates that feature bundle
+to the canonical location in the same approved change, and a conflicting
+canonical/legacy pair blocks instead of merging. No skill creates or updates a
+root-level Product or Design path.
+
+Durable Design PNG exports and screenshot references participate in Git artifact
+closure as binary artifacts. Discovery hashes them, never parses them as
+Markdown, never text-scans them for secrets, and never prints their bytes.
+
 The AI-agent track is an approved-plan-only authoring surface, not a bundled
 agent runtime. It selects one lifecycle engine (`openai-responses` or
 `openai-agents-sdk`) independently from one of twelve business capability

@@ -226,8 +226,8 @@ are designed.
 ### Pass 1 - Mobile Design Plan
 
 Create a compact mobile design plan before writing wireframes or PNG exports.
-Persist the plan in `design/decisions/<feature>.md` and summarize it inside
-`design/specs/<feature>.md`.
+Persist the plan in `.sdcorejs/design/decisions/<feature>.md` and summarize it inside
+`.sdcorejs/design/specs/<feature>.md`.
 
 Include:
 
@@ -296,7 +296,7 @@ Before producing final handoff artifacts, review the mobile plan:
   subject renamed?
 
 If any check fails, revise the plan and record what changed in
-`design/decisions/<feature>.md`.
+`.sdcorejs/design/decisions/<feature>.md`.
 
 ## Implementation Governance
 

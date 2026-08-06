@@ -22,9 +22,13 @@ node_modules/
 .sdcorejs/tmp/
 .sdcorejs/trace/
 .sdcorejs/traces/
+.sdcorejs/design/diagnostics/
+.sdcorejs/design/failures/
+.sdcorejs/design/tmp/
 .sdcorejs/**/*auth-state*
 .sdcorejs/**/*browser-state*
 .sdcorejs/**/*storage-state*
 .sdcorejs/**/*.har
 .sdcorejs/**/*.trace
 .sdcorejs/**/*.webm
+.sdcorejs/**/*.mp4

@@ -214,14 +214,28 @@
     "spec",
     "plan",
     "product-ledger",
+    "product-doc",
     "design-handoff",
+    "design-asset",
     "documentation",
+    "documentation-asset",
     "test-plan",
     "e2e-test",
     "review-report",
     "repair-report",
     "release-evidence"
   ],
+  "artifact_roots": {
+    "product_documents": ".sdcorejs/product",
+    "product_ledger": ".sdcorejs/docs/product",
+    "design_artifacts": ".sdcorejs/design",
+    "design_ledger": ".sdcorejs/docs/design",
+    "documentation": ".sdcorejs/documentation"
+  },
+  "legacy_artifact_roots": {
+    "product_documents": "product",
+    "design_artifacts": "design"
+  },
   "repository_roles": [
     "standalone",
     "portal",

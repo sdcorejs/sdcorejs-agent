@@ -2,8 +2,24 @@
 
 Use this contract for every Product traceability ledger. The deterministic
 implementation is `_refs/shared/product-ledger.mjs`; track, profile, artifact
-kind, repository role, ownership scope, and evidence values come from
-`_refs/shared/system-registry.json`.
+kind, repository role, ownership scope, canonical artifact roots, and evidence
+values come from `_refs/shared/system-registry.json`, resolved through
+`_refs/shared/artifact-paths.mjs`.
+
+## Canonical Layout
+
+```text
+<semantic-owner-repository>/.sdcorejs/product/prds/<kebab-feature>.md
+<semantic-owner-repository>/.sdcorejs/product/user-stories/<kebab-feature>.md
+<semantic-owner-repository>/.sdcorejs/product/acceptance-criteria/<kebab-feature>.md
+<semantic-owner-repository>/.sdcorejs/product/uat-checklists/<kebab-feature>.md
+<semantic-owner-repository>/.sdcorejs/product/decisions/<kebab-feature>.md
+<semantic-owner-repository>/.sdcorejs/docs/product/<kebab-feature>.md
+```
+
+The human-readable documents live under the `.sdcorejs/product` artifact root.
+The traceability ledger keeps its own `.sdcorejs/docs/product` ledger root.
+Root-level `product/**` is never a write target.
 
 ## Purpose And Ownership Boundary
 
@@ -23,10 +39,18 @@ It must not duplicate editable requirements.
 
 | Operation | Function |
 | --- | --- |
-| Validate identity, traceability, freshness, and duplicates | `validateProductLedger` |
+| Validate identity, traceability, freshness, document paths, and duplicates | `validateProductLedger` |
 | Create a canonical ledger and artifact hash | `createProductLedger` |
-| Resolve module or integration owner and durable path | `resolveProductLedgerTarget` |
+| Resolve module or integration owner plus the complete canonical path bundle | `resolveProductLedgerTarget` |
+| Resolve canonical-first reads with an explicit legacy fallback | `resolveProductDocumentSources` |
+| Plan a scoped legacy-to-canonical migration | `planProductArtifactMigration` |
+| Build `artifact_context` closure entries for the whole Product bundle | `buildProductArtifactContext` |
 | Build an immutable-reference cross-module view | `buildCrossRepositoryProductView` |
+
+`resolveProductLedgerTarget` returns `repository_relative_path`,
+`ledger_relative_path`, `document_root`, `ledger_root`, `documents`,
+`document_paths`, `metadata_paths`, and `legacy_read_only_paths`. Callers write
+the Product bundle from that result instead of rebuilding path strings.
 
 ## Lifecycle Metadata
 
@@ -57,6 +81,11 @@ parent_references:
 supersedes: <prior artifact id | null>
 approval_hash: <sha256:v1 identity when explicitly approved | null>
 artifact_hash: sha256:v1:<64 lowercase hex>
+prd_path: .sdcorejs/product/prds/<feature>.md
+user_stories_path: .sdcorejs/product/user-stories/<feature>.md
+acceptance_criteria_path: .sdcorejs/product/acceptance-criteria/<feature>.md
+uat_checklist_path: .sdcorejs/product/uat-checklists/<feature>.md
+decisions_path: .sdcorejs/product/decisions/<feature>.md
 ```
 
 Repository paths are always repository-relative. Checkout locations and the
@@ -64,6 +93,58 @@ current working directory are not durable identity. `artifact_hash` binds the
 normalized metadata, traceability rows, and source references. An
 `approval_hash` is required only when an approval contract applies; parent
 references to approved artifacts preserve their approval hashes.
+
+Product document path fields are optional, but a supplied value must name a
+canonical `.sdcorejs/product/<category>/<feature>.md` location that matches its
+field. `validateProductLedger` fails closed with:
+
+| Code | Cause |
+| --- | --- |
+| `LEGACY_PRODUCT_DOCUMENT_PATH` | the value names root-level `product/**` |
+| `INVALID_PRODUCT_DOCUMENT_PATH` | the value is outside the canonical Product root |
+| `PRODUCT_DOCUMENT_CATEGORY_MISMATCH` | the value names another Product category |
+| `INVALID_PRODUCT_LEDGER_PATH` | `repository_relative_path` is outside `.sdcorejs/docs/product/` |
+
+## Durable Product Documents
+
+Each human-readable Product document is a `product-doc` durable artifact with
+lifecycle frontmatter from `_refs/shared/artifact-lifecycle.md`:
+
+```yaml
+artifact_id: product-doc:<kind>:<kebab-feature>
+artifact_kind: product-doc
+change_ref: <change id>
+source_spec: <repo-relative path | none>
+source_plan: <repo-relative path | none>
+commit_policy: with-change
+owner: sdcorejs-product
+```
+
+`buildProductArtifactContext` emits every created or updated document plus the
+ledger in `artifact_context.required_with_change`. Emitting only the ledger is a
+contract violation.
+
+## Legacy Layout Compatibility
+
+Root-level `product/**` is a read-only compatibility input for target projects
+created before this layout.
+
+| Situation | Read | Write |
+| --- | --- | --- |
+| canonical only | canonical | canonical |
+| legacy only | legacy fallback | canonical, after migrating the requested feature bundle |
+| canonical plus equivalent legacy copy | canonical | canonical; retire the legacy copy in the same change |
+| canonical plus conflicting legacy copy | blocked | blocked with `CANONICAL_LEGACY_CONFLICT` |
+| neither | none | canonical |
+
+`resolveProductDocumentSources` reports `canonical`, `legacy-fallback`,
+`missing`, or `blocked` per document. `planProductArtifactMigration` returns
+`not-required`, `migration-required`, or `blocked` with the exact moves. Only the
+requested feature bundle migrates; unrelated historical artifacts are never bulk
+rewritten. Portal fallback stays forbidden, and repository ownership, artifact
+identity, source revisions, approval hashes, artifact hashes, and `supersedes`
+semantics are preserved across the move. A legacy path is never valid in newly
+generated metadata.
 
 ## Traceability Rows
 

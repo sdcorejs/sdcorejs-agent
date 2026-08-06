@@ -66,11 +66,11 @@ switches profiles or authorizes inferred screens, seed data, auth, or admin
 features.
 
 For normal feature implementation from PRDs, user stories, or acceptance
-criteria, a design handoff is the preferred UI source of truth. If no matching
-`design/specs/` or `design/wireframes/` artifact exists and the approved
-execution profile is not `technical-prototype`, route the work to
-`sdcorejs-design` first so layout, states, copy, and visual direction are
-settled before code generation.
+criteria, a design handoff is the preferred UI source of truth. The UI preflight
+searches `.sdcorejs/design/specs/**` and `.sdcorejs/design/wireframes/**`. If no
+matching artifact exists there and the approved execution profile is not
+`technical-prototype`, route the work to `sdcorejs-design` first so layout,
+states, copy, and visual direction are settled before code generation.
 
 ## Explicit `technical-prototype` profile
 
@@ -359,7 +359,7 @@ contract mapping to decide request types, response DTOs, validators, list
 columns, detail read-only fields, lookup relations, custom actions, and mock
 service behavior.
 
-If a matching `design/specs/` or `design/wireframes/` handoff exists, read it before generating UI. Follow its screen/state/copy contract unless it conflicts with approved product criteria; if it conflicts, stop and surface the mismatch instead of silently choosing one.
+If a matching `.sdcorejs/design/specs/` or `.sdcorejs/design/wireframes/` handoff exists, read it before generating UI. Follow its screen/state/copy contract unless it conflicts with approved product criteria; if it conflicts, stop and surface the mismatch instead of silently choosing one.
 
 If the input is a PRD, user story, acceptance criteria, or product description
 for normal implementation and no matching design handoff exists, do not invent a
