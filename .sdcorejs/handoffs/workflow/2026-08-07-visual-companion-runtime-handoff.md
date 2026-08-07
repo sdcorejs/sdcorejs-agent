@@ -7,10 +7,17 @@ source_spec: none
 source_plan: none
 commit_policy: with-change
 owner: sdcorejs-brainstorming
-status: partial
+status: resolved
 ---
 
 # Handoff - Visual Companion live runtime
+
+> **Resolved on 2026-08-07.** Every item in "What is NOT done" and every step in
+> "Recommended next steps" was completed in the same working tree. The feature
+> is no longer inert: `_refs/sdlc/visual-companion/cli.mjs` drives the runtime,
+> the harness routes visual decisions to it, and
+> `npm run test:e2e:visual-companion` covers all eight test categories. The
+> body below is preserved as the historical transfer note.
 
 Transfer note for continuing this work on another machine. The runtime core is
 implemented and verified; the workflow integration is not started. The feature

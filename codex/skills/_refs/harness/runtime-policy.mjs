@@ -8,6 +8,10 @@ const ACTIONS = [
   'agent.resume',
   'agent.interrupt',
   'visual.present',
+  'visual.session.start',
+  'visual.session.publish',
+  'visual.session.read',
+  'visual.session.stop',
   'workspace.isolate',
   'web.fetch',
   'artifact.read',
@@ -20,6 +24,10 @@ const CAPABILITIES = [
   'native_structured_choice',
   'visual_surface',
   'static_html_artifact',
+  'live_visual_companion',
+  'visual_event_bridge',
+  'persistent_local_process',
+  'browser_auto_open',
   'subagents',
   'per_agent_model_override',
   'agent_resume_steer',
@@ -325,13 +333,34 @@ export function selectExecutionMode({ units = [], feasible = false, capabilities
   };
 }
 
+/** Visual surface kinds, best first. Every one of them is supporting feedback. */
+export const VISUAL_INTERACTION_KINDS = Object.freeze([
+  'live-visual-companion',
+  'typed-visual-screen',
+  'static-visual-composer',
+]);
+
+/**
+ * Select the surface for one decision.
+ *
+ * Visual and non-visual decisions run on separate priority ladders. A single
+ * ladder that put native structured choice first meant a genuinely spatial
+ * decision never reached a visual surface at all, because every runtime that
+ * can show a picture can also show a picker.
+ *
+ * An approval never reaches a visual surface. A browser click is design
+ * feedback; routing an approval through it would let a click stand in for a
+ * spec, plan, dependency, permission, or destructive-action gate.
+ */
 export function selectInteraction({
   capabilities = {},
   options = [],
   visual_spatial = false,
+  approval = false,
 } = {}) {
   const labels = options.map((item) => String(item));
   const markdown = numberedMarkdown(labels);
+  const base = { options: labels, markdown, fallback_markdown: markdown };
 
   if (labels.length === 0) {
     return {
@@ -351,35 +380,95 @@ export function selectInteraction({
     };
   }
 
-  if (normalizeCapabilityStatus(capabilities.native_structured_choice) === 'supported') {
+  const status = (name) => normalizeCapabilityStatus(capabilities[name]);
+
+  if (visual_spatial && !approval) {
+    if (
+      status('live_visual_companion') === 'supported' &&
+      status('persistent_local_process') === 'supported'
+    ) {
+      return {
+        ...base,
+        kind: 'live-visual-companion',
+        supporting_feedback_only: true,
+        event_channel: status('visual_event_bridge') === 'supported' ? 'live' : 'conversation',
+        reason: 'a spatial decision is clearer on the live companion surface',
+      };
+    }
+    if (status('visual_surface') === 'supported') {
+      return {
+        ...base,
+        kind: 'typed-visual-screen',
+        supporting_feedback_only: true,
+        event_channel: 'conversation',
+        reason: 'a typed visual surface is available for a spatial decision',
+      };
+    }
+    if (status('static_html_artifact') === 'supported') {
+      return {
+        ...base,
+        kind: 'static-visual-composer',
+        supporting_feedback_only: true,
+        event_channel: 'conversation',
+        reason: 'a standalone static artifact is available for a spatial decision',
+      };
+    }
+  }
+
+  if (status('native_structured_choice') === 'supported') {
     return {
+      ...base,
       kind: 'native-structured-choice',
-      options: labels,
-      markdown,
-      fallback_markdown: markdown,
-    };
-  }
-  if (visual_spatial && normalizeCapabilityStatus(capabilities.visual_surface) === 'supported') {
-    return {
-      kind: 'typed-visual-screen',
-      options: labels,
-      markdown,
-      fallback_markdown: markdown,
-    };
-  }
-  if (visual_spatial && normalizeCapabilityStatus(capabilities.static_html_artifact) === 'supported') {
-    return {
-      kind: 'static-visual-composer',
-      options: labels,
-      markdown,
-      fallback_markdown: markdown,
+      reason: approval && visual_spatial
+        ? 'an approval stays on a non-visual surface'
+        : 'native structured choice is available',
     };
   }
   return {
+    ...base,
     kind: 'markdown-numbered-choice',
-    options: labels,
-    markdown,
-    fallback_markdown: markdown,
+    reason: 'no richer supported surface is available',
+  };
+}
+
+/**
+ * Resolve how a Visual Companion session may run.
+ *
+ * A live session writes local runtime state and can launch a browser on the
+ * user's machine. Neither is implied by "the user wants a visual decision", so
+ * both are gated on an explicit consent flag as well as the capability.
+ */
+export function resolveVisualCompanionPlan({
+  capabilities = {},
+  consent = {},
+} = {}) {
+  const status = (name) => normalizeCapabilityStatus(capabilities[name]);
+  const localRuntimeConsent = consent.local_runtime_writes === true;
+  const liveCapable =
+    status('live_visual_companion') === 'supported' &&
+    status('persistent_local_process') === 'supported';
+
+  if (!liveCapable || !localRuntimeConsent) {
+    const staticCapable = status('static_html_artifact') === 'supported';
+    return {
+      mode: staticCapable ? 'static' : 'markdown',
+      event_channel: 'conversation',
+      auto_open: false,
+      local_runtime_writes: false,
+      supporting_feedback_only: true,
+      reason: !liveCapable
+        ? `live companion capability is ${status('live_visual_companion')} and persistent local process is ${status('persistent_local_process')}`
+        : 'local runtime writes were not consented to',
+    };
+  }
+
+  return {
+    mode: 'live',
+    event_channel: status('visual_event_bridge') === 'supported' ? 'live' : 'conversation',
+    auto_open: status('browser_auto_open') === 'supported' && consent.browser_open === true,
+    local_runtime_writes: true,
+    supporting_feedback_only: true,
+    reason: 'the runtime can host a local companion session and the user consented',
   };
 }
 

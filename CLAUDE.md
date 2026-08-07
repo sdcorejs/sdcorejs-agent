@@ -204,6 +204,12 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
     approval, security, destructive action, ambiguity, conflict, blockers, or
     failed verification. Pass full typed context only to its consumer; use a
     portable handoff when `runtime_context_channel` is unsupported or unknown.
+15. **Local runtime consent.** A Visual Companion session writes local runtime
+    state and may open a browser. Each is a separate explicit consent, and
+    capability is never permission. Session state under
+    `.sdcorejs/tmp/visual-companion/**` is `local_only`: never staged, never
+    committed, never read back as context. A visual selection is supporting
+    feedback and never satisfies an approval gate.
 
 ## Session Context
 
@@ -225,6 +231,8 @@ At the start of a target-project session:
   yes/no prompts, or mode selections.
 - Read `_refs/shared/artifact-lifecycle.md` before any `.sdcorejs/**` write or
   Git artifact handoff.
+- Read `_refs/sdlc/visual-companion.md` before offering a visual surface or
+  starting a companion session.
 
 ## Skill Groups
 

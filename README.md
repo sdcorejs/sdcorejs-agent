@@ -99,7 +99,36 @@ hashes, errors, numbers, and verification results remain exact.
 
 Detailed policy is loaded just in time from
 `_refs/harness/communication-economy.md`. This is a communication contract, not
-a workflow gate, runtime server, or new `sdcorejs-caveman` skill.
+a workflow gate or a new `sdcorejs-caveman` skill.
+
+## Visual Companion
+
+Spatial decisions during brainstorming may run on a local, authenticated
+browser surface instead of a picker. Visual and non-visual decisions use
+separate priority ladders, so a genuinely spatial question is no longer
+shadowed by a native structured choice. Approvals never reach a visual surface.
+
+Surfaces, best first: the live companion runtime, a typed native visual
+surface, the standalone static composer, then numbered Markdown. All four share
+one screen model and always carry the same numbered Markdown fallback.
+
+The live runtime is `_refs/sdlc/visual-companion/`: a zero-dependency Node
+server on a loopback origin with an RFC 6455 event channel, a browser client
+pinned by CSP hash, server-owned screen revisions that make stale-click
+rejection possible, and a bounded event log. Drive it through
+`_refs/sdlc/visual-companion/cli.mjs`, which prints one JSON object per command
+and exits non-zero on failure.
+
+Two independent gates: `live_visual_companion` plus `persistent_local_process`
+must be `supported`, and the user must consent to local runtime writes.
+Auto-opening a browser is a third, separate consent. Session state lives under
+the execution host's `.sdcorejs/tmp/visual-companion/`, which is `local_only`:
+never staged, never committed, never read back as project context. Every
+browser event is stamped `authority: supporting-feedback` by the server and
+asserted on read, so a click can never carry workflow approval.
+
+Contract: `_refs/sdlc/visual-companion.md`. Security model and attribution:
+`_refs/sdlc/visual-companion/README.md`.
 
 ## Documentation Layout v2
 

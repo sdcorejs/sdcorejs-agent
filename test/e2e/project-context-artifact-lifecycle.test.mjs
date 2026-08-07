@@ -22,9 +22,13 @@ import {
   validateSummaryV2,
 } from '../../_refs/shared/project-context.mjs';
 import {
+  VISUAL_COMPANION_RUNTIME_ROOT,
   buildArtifactClosure,
   classifyArtifact,
   isBinaryArtifactPath,
+  isLocalOnlyArtifactPath,
+  isLocalRuntimePath,
+  isVisualCompanionRuntimePath,
   scanSensitiveArtifactContent,
   scanSensitiveArtifactPath,
 } from '../../_refs/shared/artifact-lifecycle.mjs';
@@ -1049,6 +1053,96 @@ test('active source encodes runtime-only progress and explicit-path Git staging'
     '.sdcorejs/session-index.json',
   ]) {
     assert.doesNotMatch(activeText, new RegExp(forbidden.replaceAll('.', '\\.')));
+  }
+});
+
+test('Visual Companion runtime state is local-only by explicit rule and never stageable', async () => {
+  const sessionDir = `${VISUAL_COMPANION_RUNTIME_ROOT}/sessions/vc-0123456789abcdef`;
+  const serverInfo = `${sessionDir}/state/server-info.json`;
+  const publishedScreen = `${sessionDir}/content/layout.r1.json`;
+  const eventLog = `${sessionDir}/state/events.jsonl`;
+
+  assert.equal(VISUAL_COMPANION_RUNTIME_ROOT, '.sdcorejs/tmp/visual-companion');
+  for (const candidate of [serverInfo, publishedScreen, eventLog, sessionDir]) {
+    assert.equal(isVisualCompanionRuntimePath(candidate), true, `${candidate} is companion runtime state`);
+    assert.equal(isLocalRuntimePath(candidate), true, `${candidate} is local runtime state`);
+    assert.equal(isLocalOnlyArtifactPath(candidate), true, `${candidate} is local-only`);
+    const classification = classifyArtifact({ path: candidate, changeRef: 'visual-companion-runtime' });
+    assert.equal(classification.bucket, 'local_only');
+    assert.equal(classification.lifecycle, 'diagnostic-local');
+    assert.equal(classification.commit_policy, 'never');
+  }
+  assert.equal(isVisualCompanionRuntimePath('.sdcorejs/design/specs/checkout.md'), false);
+  assert.equal(isLocalRuntimePath('.sdcorejs/specs/workflow/change.md'), false);
+
+  // A producer that mistakenly declares a session file as required must not be
+  // able to stage a session key, a port, or a raw browser event.
+  const root = await createGitRepo();
+  await write(root, serverInfo, '{"session_id":"vc-0123456789abcdef","token":"redacted"}\n');
+  await write(root, publishedScreen, '{"schema_version":1}\n');
+  const closure = await buildArtifactClosure({
+    root,
+    changeRef: 'visual-companion-runtime',
+    owner: 'sdcorejs-brainstorming',
+    artifactContext: {
+      schema_version: 1,
+      change_ref: 'visual-companion-runtime',
+      source_spec: 'none',
+      source_plan: 'none',
+      required_with_change: [{ path: serverInfo }],
+      shared_owned: [],
+      conditional: [{ path: publishedScreen }],
+      local_only: [],
+      unrelated_observed: [],
+    },
+  });
+  assert.ok(closure.sdcorejs_artifacts.local_only_paths.includes(serverInfo));
+  assert.ok(closure.sdcorejs_artifacts.local_only_paths.includes(publishedScreen));
+  assert.ok(!closure.sdcorejs_artifacts.included_paths.includes(serverInfo));
+  assert.ok(!closure.sdcorejs_artifacts.required_paths.includes(serverInfo));
+  assert.ok(!closure.sdcorejs_artifacts.included_paths.includes(publishedScreen));
+  await rm(root, { recursive: true, force: true });
+});
+
+test('local runtime writes are a consent boundary separate from durable writes', async () => {
+  const root = path.resolve('.');
+  const lifecycle = await readFile(join(root, '_refs/shared/artifact-lifecycle.md'), 'utf8');
+  const context = await readFile(join(root, '_refs/shared/project-context.md'), 'utf8');
+  const companion = await readFile(join(root, '_refs/sdlc/visual-companion.md'), 'utf8');
+
+  assert.match(lifecycle, /\.sdcorejs\/tmp\/\*\*` is conversation-local runtime state/);
+  assert.match(lifecycle, /\.sdcorejs\/tmp\/visual-companion\/\*\*/);
+  assert.match(lifecycle, /local_runtime_writes_allowed_after_consent/);
+  assert.match(context, /local_runtime_writes_allowed_after_consent: true \| false/);
+  assert.match(context, /## Local Runtime Writes/);
+  assert.match(context, /capability alone is never permission|is `false` until the user\n?explicitly confirms/);
+  assert.match(companion, /## Consent Boundary/);
+  assert.match(companion, /Browser auto-open/);
+
+  // The two prohibitions the live runtime replaced must be gone, or the
+  // contract would still tell a reader that the runtime cannot exist.
+  const brainstorming = await readFile(join(root, 'skills/shared/sdlc/01-brainstorming.md'), 'utf8');
+  assert.doesNotMatch(brainstorming, /Do not start or invent a local server\/event bridge/);
+  assert.doesNotMatch(companion, /A future local server or event bridge is intentionally out of scope/);
+
+  const scratch = await mkdtemp(join(tmpdir(), 'sdcorejs-consent-'));
+  try {
+    const withoutConsent = await assembleProjectContext({ root: scratch, requestScope: 'visual decision' });
+    assert.equal(withoutConsent.project_context.local_runtime_writes_allowed_after_consent, false);
+    assert.equal(withoutConsent.project_context.writes_allowed, false);
+    const withConsent = await assembleProjectContext({
+      root: scratch,
+      requestScope: 'visual decision',
+      localRuntimeWritesConsented: true,
+    });
+    assert.equal(withConsent.project_context.local_runtime_writes_allowed_after_consent, true);
+    assert.equal(
+      withConsent.project_context.writes_allowed,
+      false,
+      'consenting to local runtime state never authorizes durable writes'
+    );
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
   }
 });
 

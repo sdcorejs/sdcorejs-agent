@@ -23,6 +23,27 @@ Messages are exposed to the fixed interaction script only through escaped data
 attributes; authored strings are never interpolated into executable source.
 English remains the deterministic default when no locale is supplied.
 
+## Shared screen model
+
+The screen schema, the safe-content rules, the option markup, and the localized
+message bundle are owned by the Visual Companion modules under
+`_refs/sdlc/visual-companion/`. This composer delegates to them and adds only
+the static document shell, the copy-to-clipboard interaction, and the
+copied-response contract. A second copy of the schema here is what previously
+let the static and live surfaces drift into two incompatible option models.
+
+A screen carries two to four options and may carry one optional renderable
+preview per option: `wireframe`, `svg`, `image`, `flow`, or `table`. A standalone
+file has no asset route, so an image preview degrades to its accessible
+description rather than emitting a link the file cannot resolve.
+
 ## Runtime boundary
 
-No local server, WebSocket, authentication token, reconnect loop, or event bridge is part of this composer. A future full runtime would need a separate threat model covering origin isolation, authentication, replay protection, CSRF, session lifecycle, reconnect behavior, and cleanup before it can be designed or implemented.
+No local server, WebSocket, authentication token, reconnect loop, or event
+bridge is part of this composer, and rendering refuses a `runtime_server` or
+`event_bridge` runtime flag rather than pretending to honor it. A live session
+belongs to the separate Visual Companion runtime, which carries its own threat
+model for origin isolation, authentication, replay protection, session
+lifecycle, reconnect behavior, and cleanup. See `_refs/sdlc/visual-companion.md`
+for the contract and `_refs/sdlc/visual-companion/README.md` for the security
+model.

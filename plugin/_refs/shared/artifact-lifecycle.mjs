@@ -31,9 +31,22 @@ const execFileAsync = promisify(execFile);
 
 const DOCUMENTATION_ROOT_PREFIX = `${DOCUMENTATION_ROOT}/`;
 
+/**
+ * Conversation-local runtime root.
+ *
+ * Declared explicitly rather than relying on the generic `tmp` pattern, so a
+ * rename of that pattern can never quietly make a Visual Companion session
+ * directory stageable. Session directories hold keys, ports, process ids, and
+ * raw browser events; none of that may reach a commit or a durable artifact.
+ */
+export const LOCAL_RUNTIME_ROOT = '.sdcorejs/tmp';
+export const VISUAL_COMPANION_RUNTIME_ROOT = `${LOCAL_RUNTIME_ROOT}/visual-companion`;
+
 const LOCAL_ONLY_PATTERNS = [
   /^\.sdcorejs\/tasks\/current-session\.md$/i,
   /^\.sdcorejs\/tasks\/sessions\//i,
+  new RegExp(`^${escapeForPattern(VISUAL_COMPANION_RUNTIME_ROOT)}(?:/|$)`, 'i'),
+  new RegExp(`^${escapeForPattern(LOCAL_RUNTIME_ROOT)}(?:/|$)`, 'i'),
   /^\.sdcorejs\/(?:cache|caches|tmp|temp|traces?|storage|codegraph-cache)\//i,
   /^\.sdcorejs\/.*(?:auth-state|browser-state|storage-state)(?:\/|\.|$)/i,
   new RegExp(
@@ -58,6 +71,19 @@ const LOCAL_ONLY_PATTERNS = [
 export function isLocalOnlyArtifactPath(value) {
   const normalizedPath = normalizePath(value);
   return LOCAL_ONLY_PATTERNS.some((pattern) => pattern.test(normalizedPath));
+}
+
+/** True for conversation-local runtime state, which is never a durable artifact. */
+export function isLocalRuntimePath(value) {
+  const normalizedPath = normalizePath(value);
+  return new RegExp(`^${escapeForPattern(LOCAL_RUNTIME_ROOT)}(?:/|$)`, 'i').test(normalizedPath);
+}
+
+export function isVisualCompanionRuntimePath(value) {
+  const normalizedPath = normalizePath(value);
+  return new RegExp(`^${escapeForPattern(VISUAL_COMPANION_RUNTIME_ROOT)}(?:/|$)`, 'i').test(
+    normalizedPath,
+  );
 }
 
 const ARTIFACT_KIND_BY_PATH = [

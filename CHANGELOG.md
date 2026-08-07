@@ -7,6 +7,38 @@ Node workspace is not distributed through npm.
 
 ## Unreleased
 
+- Make the Visual Companion live runtime reachable from the workflow. Add
+  `_refs/sdlc/visual-companion/cli.mjs` with a machine-readable JSON contract,
+  stable result/error codes, non-zero failure exits, and deterministic session
+  path resolution, plus a shell-free cross-platform browser launcher.
+- Give visual and non-visual decisions separate priority ladders so a spatial
+  question is no longer shadowed by a native structured choice, and keep every
+  approval on a non-visual surface.
+- Add the `visual.session.start`, `visual.session.publish`,
+  `visual.session.read`, and `visual.session.stop` semantic actions and the
+  `live_visual_companion`, `visual_event_bridge`, `persistent_local_process`,
+  and `browser_auto_open` capabilities across the capability contract, the four
+  adapters, and the five generated harness manifests.
+- Gate a live session on explicit consent through
+  `local_runtime_writes_allowed_after_consent`, with browser auto-open as a
+  second, separate consent. Capability alone is never permission.
+- Classify `.sdcorejs/tmp/**`, including every Visual Companion session
+  directory, as `local_only` by explicit rule rather than by an incidental
+  ignore pattern.
+- Migrate the static visual composer onto the single screen model in
+  `_refs/sdlc/visual-companion/screen.mjs`, removing the duplicated schema and
+  message bundle and raising option cardinality from 2-3 to 2-4 with optional
+  renderable previews.
+- Rewrite the brainstorming visual section and `_refs/sdlc/visual-companion.md`
+  as an executable session contract and remove the two now-false prohibitions
+  against a local server and event bridge.
+- Add `npm run test:e2e:visual-companion` covering protocol, screen model,
+  rendering, RFC 6455 framing, server security, event lifecycle, the command
+  line, and process lifecycle.
+- Resolve `bash -n` from an explicit override, `SHELL`, the well-known paths,
+  and finally `PATH`, so `check:executable-references` also runs against a
+  user-scoped Git installation.
+
 ## 0.7.0
 
 - **Breaking:** make track/profile, artifact identity, approval hash,

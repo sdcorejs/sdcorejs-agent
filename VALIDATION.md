@@ -107,15 +107,15 @@ working-tree diff:
 
 | Measure | Baseline | Current working tree |
 |---|---:|---:|
-| Always-loaded bootstrap UTF-8 bytes | 20,173 | 18,297 |
-| Always-loaded bootstrap words | 2,361 | 2,188 |
-| Aggregate just-in-time scenario bytes | 514,603 | 589,629 |
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 18,694 |
+| Always-loaded bootstrap words | 2,361 | 2,242 |
+| Aggregate just-in-time scenario bytes | 514,603 | 604,568 |
 | Aggregate visible output bytes | 42,558 | 2,802 |
 | Aggregate visible output words | 3,961 | 337 |
 | Portable fallback handoff bytes | 0 | 22,240 |
 | Supported runtime context channel bytes | 0 | 1,205 |
 | Repeated-block bytes | 2,319 | 0 |
-| Total measured communication bytes | 577,334 | 634,173 |
+| Total measured communication bytes | 577,334 | 649,509 |
 | Consumer-required authoritative fields | 288 | 288 preserved |
 
 The report includes ten scenarios, per-scenario selected paths, bytes, words,
@@ -125,7 +125,9 @@ because delegated and review/repair/ship scenarios now explicitly load and
 validate test lifecycle/evidence and parallel ownership/fan-in contracts rather
 than omitting authoritative safety state, and because the Product and Design
 contracts now carry the canonical `.sdcorejs` artifact layout, legacy
-compatibility matrix, and binary-safe closure rules. The current total counts serialized
+compatibility matrix, and binary-safe closure rules, and because the Visual
+Companion contract is now an executable session lifecycle rather than a
+one-page surface note. The current total counts serialized
 authoritative context for `supported` channels and the serialized portable
 fallback for `unsupported` and `unknown` channels, so each typed handoff is
 counted exactly once. The baseline already counts its echoed context inside
@@ -169,6 +171,37 @@ reset, the execution order was not counterbalanced, and B also contains the
 in-progress Documentation Layout v2 diff. This one scenario is a live smoke,
 not the ten-scenario deterministic matrix or full release-agent coverage.
 Observed deltas are evidence for these runs, not a fixed savings claim.
+
+## Visual Companion live runtime evidence - 2026-08-07 working tree
+
+Evidence target: the live companion runtime became reachable from the workflow
+instead of remaining working code with no caller.
+
+What the deterministic suite proves:
+
+- `npm run test:e2e:visual-companion` covers eight categories: protocol identity
+  and redaction, the single screen model, rendering with the CSP hash matching
+  the served client bytes, RFC 6455 framing, server authentication and
+  filesystem containment, event identity, the command-line contract, and process
+  lifecycle including the idle watchdog and the browser launcher.
+- `npm run test:e2e:harness` proves visual and non-visual decisions now run on
+  separate priority ladders, that an approval never reaches a visual surface,
+  that a live session needs both capability and explicit consent, and that every
+  adapter maps the four `visual.session.*` actions to a capability and a
+  portable fallback.
+- `npm run test:e2e:artifact-paths` proves `.sdcorejs/tmp/visual-companion/**`
+  is `local_only` by explicit rule and cannot be staged even when a runtime
+  context wrongly declares a session file required.
+
+What it does not prove: no browser rendered a screen, no user clicked an option,
+and no platform browser launcher was executed. The launcher test injects a
+recording spawn function and asserts the argument vector and the absence of a
+shell; it never starts a browser. Live browser behaviour remains separately
+reported.
+
+Runtime facts recorded for review: zero runtime dependencies, Node 18+
+built-ins only, loopback bind by default, at least 256 bits of session entropy,
+and an event `authority` field the server assigns and the read path asserts.
 
 ## Retired standalone skills removal evidence - 2026-07-27
 
@@ -465,6 +498,8 @@ npm run test:e2e:communication-economy
 npm run report:communication-economy
 npm run report:communication-economy:live
 npm run test:e2e:harness
+npm run test:e2e:visual-companion
+npm run test:e2e:artifact-paths
 npm run check:nestjs-pack
 node --test test/e2e/npm-publication-contract.test.mjs
 node --test test/e2e/ai-agent-track-contract.test.mjs

@@ -73,6 +73,18 @@ part of `.sdcorejs` artifact discovery. See `_refs/shared/product-ledger.md` and
 `.sdcorejs/design/diagnostics/**`, `.sdcorejs/design/failures/**`, and
 `.sdcorejs/design/tmp/**` are always `local_only`.
 
+`.sdcorejs/tmp/**` is conversation-local runtime state and is always
+`local_only` with `commit_policy: never`. This is an explicit rule, not an
+incidental consequence of the ignore file. It covers
+`.sdcorejs/tmp/visual-companion/**`, which holds Visual Companion session
+directories: published screens, server records, event logs, session keys, ports,
+and process ids. None of it may be staged, committed, read back as project
+context, promoted to a Product or Design artifact, or quoted into a spec, plan,
+handoff, or summary. Writing it requires
+`local_runtime_writes_allowed_after_consent` from
+`_refs/shared/project-context.md`; capability alone is never permission. To keep
+a selected mockup, hand the confirmed result to the owning Design workflow.
+
 ## Durable Artifact Metadata
 
 New or updated durable artifacts use top-level frontmatter when the format

@@ -7,8 +7,23 @@ import {
   renderStaticVisualScreen,
   validateVisualScreen,
 } from '../../_refs/sdlc/static-visual-composer.mjs';
+import {
+  MAX_OPTIONS,
+  MIN_OPTIONS,
+  validateVisualScreen as validateScreenModel,
+} from '../../_refs/sdlc/visual-companion/screen.mjs';
+import { MESSAGE_KEYS } from '../../_refs/sdlc/visual-companion/renderer.mjs';
 
 const schemaUrl = new URL('../../_refs/sdlc/visual-screen.schema.json', import.meta.url);
+const composerUrl = new URL('../../_refs/sdlc/static-visual-composer.mjs', import.meta.url);
+const option = (id, label) => ({
+  id,
+  label,
+  summary: label + ' summary.',
+  best_when: 'Always.',
+  tradeoff: 'None.',
+  preview_asset: id + '.svg',
+});
 const screen = {
   schema_version: 1,
   screen_id: 'execution-mode',
@@ -33,6 +48,7 @@ const vietnameseRuntime = {
     best_when: 'Phù hợp nhất khi',
     tradeoff: 'Đánh đổi',
     preview_metadata: 'Dữ liệu xem trước',
+    preview_label: 'Xem trước',
     selection_help: 'Dùng Tab để chọn; dùng phím số 1-{count} làm phím tắt.',
     visual_decision_options: 'Các lựa chọn trực quan',
     feedback_optional: 'Phản hồi (không bắt buộc)',
@@ -44,17 +60,62 @@ const vietnameseRuntime = {
     selection_updated: 'Đã cập nhật lựa chọn.',
     copy_unavailable: 'Không thể sao chép. Phản hồi có thể chọn được hiển thị bên dưới.',
     response_copied: 'Đã sao chép phản hồi.',
+    submit_selection: 'Gửi lựa chọn',
+    submit_selection_aria: 'Gửi lựa chọn trực quan đã chọn',
+    selection_submitted: 'Đã gửi lựa chọn cho tác nhân.',
+    select_before_submit: 'Hãy chọn một phương án trước khi gửi.',
+    status_connecting: 'Đang kết nối...',
+    status_connected: 'Đã kết nối',
+    status_reconnecting: 'Đang kết nối lại...',
+    status_paused: 'Đã tạm dừng',
+    paused_title: 'Trình đồng hành trực quan đã tạm dừng',
+    paused_body: 'Trình đồng hành đã ngừng phản hồi. Hãy yêu cầu tác nhân khởi động lại.',
+    waiting_title: 'Đang chờ quyết định trực quan tiếp theo',
+    waiting_body: 'Cuộc hội thoại đã quay lại dạng văn bản.',
+    supporting_feedback_note: 'Lựa chọn của bạn là phản hồi thiết kế. Việc phê duyệt vẫn diễn ra trong hội thoại.',
   },
 };
+
+test('the static surface delegates to the one screen model instead of copying it', async () => {
+  const source = await readFile(composerUrl, 'utf8');
+  assert.match(source, /from '\.\/visual-companion\/screen\.mjs'/);
+  assert.match(source, /from '\.\/visual-companion\/renderer\.mjs'/);
+  assert.doesNotMatch(
+    source,
+    /^const (?:SCREEN_KEYS|OPTION_KEYS|TYPES)\s*=/m,
+    'the static surface must not redeclare the screen schema'
+  );
+  assert.doesNotMatch(
+    source,
+    /^const DEFAULT_MESSAGES\s*=/m,
+    'the static surface must not redeclare the localized message bundle'
+  );
+  assert.deepEqual(validateVisualScreen(screen), validateScreenModel(screen));
+  const broken = { ...screen, recommendation: 'missing-option' };
+  assert.deepEqual(validateVisualScreen(broken), validateScreenModel(broken));
+  assert.ok(MESSAGE_KEYS.has('supporting_feedback_note'));
+});
 
 test('visual schema and validator require a bounded unique option screen shape', async () => {
   const schema = JSON.parse(await readFile(schemaUrl, 'utf8'));
   for (const key of ['schema_version', 'screen_id', 'type', 'question', 'criteria', 'options', 'recommendation', 'fallback_prompt']) assert.ok(schema.required.includes(key));
   assert.ok(Array.isArray(schema.properties.type.enum));
   assert.deepEqual(schema.properties.type.enum.sort(), ['comparison', 'multi_select', 'single_select', 'wireframe']);
+  assert.equal(schema.properties.options.minItems, MIN_OPTIONS);
+  assert.equal(schema.properties.options.maxItems, MAX_OPTIONS);
+  assert.equal(MIN_OPTIONS, 2);
+  assert.equal(MAX_OPTIONS, 4);
+  assert.ok(schema.$defs.option.properties.preview, 'the published schema carries the preview contract');
+
   assert.deepEqual(validateVisualScreen(screen, schema), []);
-  assert.ok(validateVisualScreen({ ...screen, options: [screen.options[0]] }, schema).length > 0);
-  assert.ok(validateVisualScreen({ ...screen, options: [...screen.options, screen.options[1], { id: 'other', label: 'Other', summary: 'Other', best_when: 'Never', tradeoff: 'Unknown', preview_asset: 'other.svg' }] }, schema).length > 0);
+  const four = {
+    ...screen,
+    options: [...screen.options, option('hybrid', 'Hybrid'), option('staged', 'Staged')],
+  };
+  assert.deepEqual(validateVisualScreen(four, schema), [], 'four options are within the bound');
+  const five = { ...four, options: [...four.options, option('manual', 'Manual')] };
+  assert.match(validateVisualScreen(five, schema).join('\n'), /2 to 4 options/);
+  assert.match(validateVisualScreen({ ...screen, options: [screen.options[0]] }, schema).join('\n'), /2 to 4 options/);
   assert.ok(validateVisualScreen({ ...screen, options: [...screen.options, { ...screen.options[0] }] }, schema).length > 0);
   assert.ok(validateVisualScreen({ ...screen, options: [{ ...screen.options[0], id: 'bad id' }, screen.options[1] ] }, schema).length > 0);
   assert.ok(validateVisualScreen({ ...screen, recommendation: 'missing-option' }, schema).length > 0);
@@ -75,6 +136,59 @@ test('static rendering is deterministic, keyboard-accessible, and network-free',
   assert.match(first, /Reply 1 for Sequential or 2 for Parallel\./);
   assert.doesNotMatch(first, /https?:\/\/|telemetry|<script\b[^>]*src=/i);
   assert.equal((first.match(/<script\b/gi) ?? []).length, 1, 'one fixed inline script is permitted for keyboard/copy feedback');
+  assert.throws(
+    () => renderStaticVisualScreen(screen, { runtime_server: true }),
+    /Visual Companion runtime/,
+    'the static surface refuses to pose as a live session'
+  );
+  assert.throws(() => renderStaticVisualScreen(screen, { event_bridge: true }), /Visual Companion runtime/);
+});
+
+test('shared preview blocks render on the static surface without a network reference', () => {
+  const withPreviews = {
+    ...screen,
+    options: [
+      {
+        ...screen.options[0],
+        preview: {
+          kind: 'wireframe',
+          caption: 'Sidebar layout',
+          regions: [
+            { label: 'Nav', area: 'sidebar', span: 3 },
+            { label: 'Content', area: 'main', span: 9 },
+          ],
+        },
+      },
+      {
+        ...screen.options[1],
+        preview: {
+          kind: 'image',
+          asset: 'parallel.png',
+          alt: 'Two lanes running side by side',
+          caption: 'Parallel lanes',
+        },
+      },
+    ],
+  };
+  const html = renderStaticVisualScreen(withPreviews, {});
+  assert.match(html, /data-preview-kind="wireframe"/);
+  assert.match(html, /class="vc-region vc-area-sidebar"/);
+  assert.match(html, /Two lanes running side by side/);
+  assert.doesNotMatch(html, /<img\b/i, 'a standalone file has no asset route, so an image degrades to its description');
+  const markdown = renderMarkdownFallback(withPreviews, {});
+  assert.match(markdown, /Preview: Sidebar layout/);
+  assert.match(markdown, /Preview: Parallel lanes/);
+  assert.throws(
+    () => renderStaticVisualScreen({
+      ...screen,
+      options: [
+        { ...screen.options[0], preview: { kind: 'svg', svg: '<svg><script>alert(1)</script></svg>' } },
+        screen.options[1],
+      ],
+    }, {}),
+    /Invalid visual screen/,
+    'an unsafe preview is rejected at render time rather than sanitized'
+  );
 });
 
 test('runtime locale localizes HTML, accessibility text, status messages, and Markdown fallback', () => {
@@ -108,6 +222,7 @@ test('runtime locale localizes HTML, accessibility text, status messages, and Ma
   assert.match(html, /aria-label="Các lựa chọn trực quan"/);
   assert.match(html, /data-message-selection-updated="Đã cập nhật lựa chọn\."/);
   assert.match(html, /data-message-response-copied="Đã sao chép phản hồi\."/);
+  assert.match(html, /Việc phê duyệt vẫn diễn ra trong hội thoại\./);
   assert.match(markdown, /Tiêu chí:/);
   assert.match(markdown, /Phù hợp nhất khi:/);
   assert.match(markdown, /Đánh đổi:/);

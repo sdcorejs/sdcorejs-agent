@@ -107,6 +107,10 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
   code map.
 - Apply `_refs/shared/artifact-lifecycle.md` to every `.sdcorejs/**` write and
   Git artifact handoff.
+- A Visual Companion session needs its own explicit consent for local runtime
+  writes, and a second one to open a browser. Capability is never permission.
+  Session state under `.sdcorejs/tmp/visual-companion/**` is `local_only`, and a
+  visual selection never satisfies an approval gate.
 - Preserve the user's language and locale marks; keep identifiers and routes in English.
 - Before asking the user to choose, approve, answer yes/no, or select a mode, apply `_refs/shared/user-choice-prompt.md`; ask one decision at a time and number every option as `1/2/3/...`.
 - Treat mojibake as a blocking defect.

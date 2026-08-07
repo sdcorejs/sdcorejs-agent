@@ -24,10 +24,17 @@ export const ALLOWED_ASSET_EXTENSIONS = Object.freeze(['.png', '.jpg', '.jpeg', 
  * local runtime state, so the companion still works in a read-only or
  * non-repository checkout instead of failing the whole brainstorming turn.
  */
-export function resolveRuntimeRoot({ projectRoot, tmpdir = os.tmpdir(), ensure = true } = {}) {
+export function runtimeRootCandidates({ projectRoot, tmpdir = os.tmpdir() } = {}) {
   const candidates = [];
-  if (projectRoot) candidates.push({ root: path.resolve(projectRoot, ...RUNTIME_ROOT_SEGMENTS), location: 'project' });
+  if (projectRoot) {
+    candidates.push({ root: path.resolve(projectRoot, ...RUNTIME_ROOT_SEGMENTS), location: 'project' });
+  }
   candidates.push({ root: path.join(tmpdir, 'sdcorejs-visual-companion'), location: 'os-temp' });
+  return candidates;
+}
+
+export function resolveRuntimeRoot({ projectRoot, tmpdir = os.tmpdir(), ensure = true } = {}) {
+  const candidates = runtimeRootCandidates({ projectRoot, tmpdir });
 
   for (const candidate of candidates) {
     if (!ensure) return candidate;
@@ -41,13 +48,13 @@ export function resolveRuntimeRoot({ projectRoot, tmpdir = os.tmpdir(), ensure =
   throw new Error('unable to create a Visual Companion runtime root');
 }
 
-export function resolveSessionPaths({ projectRoot, sessionId, tmpdir = os.tmpdir(), ensure = true } = {}) {
+/** Session paths inside an already-resolved runtime root. */
+export function sessionPathsIn({ root, location, sessionId }) {
   if (!SESSION_ID.test(sessionId ?? '')) {
     throw new TypeError('sessionId must be a Visual Companion session identifier');
   }
-  const { root, location } = resolveRuntimeRoot({ projectRoot, tmpdir, ensure });
   const sessionDir = path.join(root, 'sessions', sessionId);
-  const paths = {
+  return {
     location,
     runtimeRoot: root,
     sessionDir,
@@ -57,6 +64,14 @@ export function resolveSessionPaths({ projectRoot, sessionId, tmpdir = os.tmpdir
     eventsFile: path.join(sessionDir, 'state', 'events.jsonl'),
     stoppedFile: path.join(sessionDir, 'state', 'stopped.json'),
   };
+}
+
+export function resolveSessionPaths({ projectRoot, sessionId, tmpdir = os.tmpdir(), ensure = true } = {}) {
+  if (!SESSION_ID.test(sessionId ?? '')) {
+    throw new TypeError('sessionId must be a Visual Companion session identifier');
+  }
+  const { root, location } = resolveRuntimeRoot({ projectRoot, tmpdir, ensure });
+  const paths = sessionPathsIn({ root, location, sessionId });
   if (ensure) {
     mkdirSync(paths.contentDir, { recursive: true, mode: 0o700 });
     mkdirSync(paths.stateDir, { recursive: true, mode: 0o700 });
