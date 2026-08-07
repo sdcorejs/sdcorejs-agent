@@ -235,14 +235,15 @@ If the user chooses option 1:
   for the surface, the session lifecycle, and the consent boundary.
 - Resolve the surface from the capability contract, not from preference. A live
   companion session requires `live_visual_companion` and
-  `persistent_local_process` to be `supported`; otherwise fall back to a typed
-  visual surface, then the static composer at
-  `../_refs/sdlc/static-visual-composer.mjs`, then numbered Markdown.
+  `persistent_local_process` to be `supported`; `visual-companion.md` owns the
+  rest of the fallback ladder, so read it there rather than assuming an order.
 - A live session writes local runtime state under the execution host's
   `.sdcorejs/tmp/visual-companion/`. Confirm that separately before starting
   one, and never start a session as a side effect of another decision.
-- Auto-opening a browser is a second, separate consent. Without it, present the
-  session URL and let the user open it.
+- Auto-opening a browser is a second, separate consent. Both are visible side
+  effects on the user's own machine, which is why a supported capability never
+  authorizes either on its own. Without browser consent, present the session URL
+  and let the user open it.
 - Use the visual companion per question, not per session.
 - Create one visual decision screen at a time.
 - Prefer 2-4 options, not many options.
