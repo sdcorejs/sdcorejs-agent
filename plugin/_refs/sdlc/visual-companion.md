@@ -81,6 +81,23 @@ omitted. `start` additionally accepts `--host`, `--port`,
 `--allow-non-loopback`, `--idle-timeout-ms`, and `--start-timeout-ms`;
 `cleanup` accepts `--max-age-ms` and `--force`; `stop` accepts `--instance`.
 
+Pass `--owner-pid` with the process that owns the brainstorming turn. The server
+then exits when that process does. Without it the only backstop is the idle
+timeout, which defaults to four hours, so repeated starts leave background
+servers holding ports until then. `cleanup` removes stopped sessions, but it
+deliberately keeps a running one, so an orphan must be stopped by session id.
+
+A non-English `--locale` requires `--messages-file` with a complete localized
+bundle. A partly translated surface is worse than an English one, because the
+user cannot tell which labels are authoritative. `start` validates the pair
+before it binds a port and fails with `INVALID_ARGUMENTS`, so a missing bundle
+can never produce a started session that fails on every render.
+
+`events` returns the read summary at the top level of its result:
+`authority`, `cursor`, `event_count`, `exploration_count`, `submission_count`,
+`latest_submission`, `feedback`, `events`, and the authoritative `current`
+screen identity.
+
 Ordinary flow:
 
 1. `start` once per visual thread. Keep the returned `session_id`. Present the

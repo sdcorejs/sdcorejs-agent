@@ -23,6 +23,7 @@ import {
   contentSecurityPolicy,
   cookieNameForPort,
   isAllowedEventOrigin,
+  redact,
   securityHeaders,
   sealEvent,
   timingSafeEqualString,
@@ -356,7 +357,32 @@ export function createCompanionServer({
     return true;
   }
 
+  /**
+   * Error boundary for the request path.
+   *
+   * `createServer`'s handler runs synchronously, so any throw below it becomes
+   * an unhandled exception and takes the whole session down with it. A render
+   * failure must degrade one response, never kill a live companion the user is
+   * mid-decision on.
+   */
   function handleRequest(request, response) {
+    try {
+      routeRequest(request, response);
+    } catch (error) {
+      if (!response.headersSent) {
+        response.writeHead(500, baseHeaders({ 'Content-Type': 'application/json; charset=utf-8' }));
+      }
+      response.end(
+        JSON.stringify({
+          ok: false,
+          code: ERROR_CODES.RUNTIME_UNAVAILABLE,
+          detail: redact(String(error?.message ?? error)),
+        }),
+      );
+    }
+  }
+
+  function routeRequest(request, response) {
     if (!isAuthorized(request)) {
       response.writeHead(403, baseHeaders({ 'Content-Type': 'text/html; charset=utf-8' }));
       response.end(

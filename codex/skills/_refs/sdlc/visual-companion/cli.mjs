@@ -52,6 +52,7 @@ import {
   summarizeEvents,
 } from './protocol.mjs';
 import { openInBrowser } from './launcher.mjs';
+import { resolveRuntime } from './renderer.mjs';
 import { resolveSessionPaths, runtimeRootCandidates, sessionPathsIn } from './paths.mjs';
 import { validateVisualScreen } from './screen.mjs';
 import { createCompanionServer } from './server.mjs';
@@ -381,6 +382,17 @@ async function commandStart(flags) {
   const messages = readMessageBundle(flags);
   if (!messages.ok) return fail(ERROR_CODES.INVALID_ARGUMENTS, messages.detail);
 
+  // Resolve the locale and message bundle before binding anything. A
+  // non-English locale needs a complete bundle, and that used to surface only
+  // when the browser requested the first screen, which left a started session
+  // that failed on every render.
+  const locale = flags.locale ? String(flags.locale) : 'en';
+  try {
+    resolveRuntime({ locale, messages: messages.value });
+  } catch (error) {
+    return fail(ERROR_CODES.INVALID_ARGUMENTS, String(error?.message ?? error));
+  }
+
   const sessionId = generateSessionId();
   const instanceId = generateInstanceId();
   const token = generateToken();
@@ -401,7 +413,7 @@ async function commandStart(flags) {
     content_dir: paths.contentDir,
     state_dir: paths.stateDir,
     server_info_file: paths.serverInfoFile,
-    locale: flags.locale ? String(flags.locale) : 'en',
+    locale,
     messages: messages.value,
     owner_pid: ownerPid.value,
     idle_timeout_ms: idleTimeout.value,

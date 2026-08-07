@@ -316,13 +316,24 @@ export function summarizeEvents(events, { after = null } = {}) {
           server_sequence: latestSubmission.server_sequence,
         }
       : null,
-    feedback: fresh
-      .filter((event) => isText(event.feedback))
-      .map((event) => ({
+    // The client attaches the feedback field to every event it sends, so one
+    // typed comment rides along on each later selection and submission. Collapse
+    // consecutive identical text per screen, keeping the latest sequence, or the
+    // agent reads one comment as if the user had repeated it.
+    feedback: fresh.reduce((collected, event) => {
+      if (!isText(event.feedback)) return collected;
+      const previous = collected.at(-1);
+      if (previous && previous.screen_id === event.screen_id && previous.text === event.feedback) {
+        previous.server_sequence = event.server_sequence;
+        return collected;
+      }
+      collected.push({
         screen_id: event.screen_id,
         text: event.feedback,
         server_sequence: event.server_sequence,
-      })),
+      });
+      return collected;
+    }, []),
     events: fresh.map((event) => ({
       event_type: event.event_type,
       screen_id: event.screen_id,

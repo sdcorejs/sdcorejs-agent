@@ -903,3 +903,193 @@ test('launcher: auto-open is opt-in, shell-free, and refuses anything but a plai
     'a missing platform launcher is reported, never thrown',
   );
 });
+
+test('resilience: a render failure degrades one response instead of killing the session', async () => {
+  // A non-English locale without a complete bundle makes the renderer throw.
+  // The handler runs synchronously under createServer, so before the error
+  // boundary existed this took the whole companion down mid-decision.
+  const root = await mkdtemp(path.join(tmpdir(), 'sdcorejs-vc-boundary-'));
+  const sessionId = generateSessionId();
+  const token = generateToken();
+  const paths = resolveSessionPaths({ projectRoot: root, sessionId });
+  const session = createCompanionServer({
+    sessionId,
+    instanceId: generateInstanceId(),
+    token,
+    host: '127.0.0.1',
+    port: 0,
+    contentDir: paths.contentDir,
+    stateDir: paths.stateDir,
+    locale: 'vi',
+    messages: null,
+  });
+  const port = await session.listen(0, '127.0.0.1');
+  try {
+    session.publishScreen(screen());
+    const failed = await fetch(`http://127.0.0.1:${port}/`, {
+      headers: { cookie: `sdcorejs-visual-companion-${port}=${token}` },
+    });
+    assert.equal(failed.status, 500, 'a render failure is a 500, not a dropped connection');
+    const body = await failed.json();
+    assert.equal(body.code, ERROR_CODES.RUNTIME_UNAVAILABLE);
+    assert.ok(!JSON.stringify(body).includes(token), 'an error response never leaks the session key');
+
+    const alive = await fetch(`http://127.0.0.1:${port}/admin/status?key=${token}`);
+    assert.equal(alive.status, 200, 'the session survives a failed render');
+    assert.equal((await alive.json()).status.running, true);
+  } finally {
+    session.shutdown('test complete');
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('command line: a locale without a complete bundle fails before a session exists', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'sdcorejs-vc-locale-'));
+  try {
+    const rejected = await cli(['start', '--project-root', root, '--locale', 'vi']);
+    assert.equal(rejected.exitCode, 1);
+    assert.equal(rejected.result.ok, false);
+    assert.equal(rejected.result.code, ERROR_CODES.INVALID_ARGUMENTS);
+    assert.match(rejected.result.detail, /complete localized message bundle/i);
+    // Failing late would leave a bound port and a session directory behind.
+    assert.equal(existsSync(path.join(root, '.sdcorejs', 'tmp', 'visual-companion', 'sessions')), false);
+
+    const accepted = await cli(['start', '--project-root', root, '--locale', 'en']);
+    assert.equal(accepted.exitCode, 0);
+    await cli(['stop', '--project-root', root, '--session', accepted.result.session_id]);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('multi-session: two sessions in one project stay isolated in state, token, and events', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'sdcorejs-vc-multi-'));
+  const first = await cli(['start', '--project-root', root]);
+  const second = await cli(['start', '--project-root', root]);
+  try {
+    assert.equal(first.exitCode, 0);
+    assert.equal(second.exitCode, 0);
+    assert.notEqual(first.result.session_id, second.result.session_id);
+    assert.notEqual(first.result.port, second.result.port, 'a second session never reuses a live port');
+    assert.notEqual(first.result.instance_id, second.result.instance_id);
+
+    const firstToken = new URL(first.result.authenticated_url).searchParams.get('key');
+    const secondToken = new URL(second.result.authenticated_url).searchParams.get('key');
+    assert.notEqual(firstToken, secondToken, 'concurrent sessions never share a token');
+
+    // A live session's persisted state must not be overwritten by the next start.
+    const firstStatus = await cli(['status', '--project-root', root, '--session', first.result.session_id]);
+    assert.equal(firstStatus.result.status.port, first.result.port);
+    assert.equal(firstStatus.result.status.running, true);
+
+    // The first session's token must not authenticate the second origin.
+    const crossOrigin = await fetch(`http://127.0.0.1:${second.result.port}/?key=${firstToken}`);
+    assert.equal(crossOrigin.status, 403, 'a token is scoped to the session that issued it');
+
+    await cli(['publish', '--project-root', root, '--session', first.result.session_id], {
+      input: JSON.stringify(screen()),
+    });
+    const secondEvents = await cli(['events', '--project-root', root, '--session', second.result.session_id]);
+    assert.equal(secondEvents.result.event_count, 0, 'events never cross sessions');
+    assert.equal(secondEvents.result.session_id, second.result.session_id);
+
+    // Stopping one session leaves the other serving.
+    const stopped = await cli(['stop', '--project-root', root, '--session', first.result.session_id]);
+    assert.equal(stopped.exitCode, 0);
+    const survivor = await cli(['status', '--project-root', root, '--session', second.result.session_id]);
+    assert.equal(survivor.exitCode, 0);
+    assert.equal(survivor.result.status.running, true, 'stopping one session leaves the other alive');
+  } finally {
+    for (const started of [first, second]) {
+      if (started.result?.session_id) {
+        await cli(['stop', '--project-root', root, '--session', started.result.session_id]).catch(() => {});
+      }
+    }
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('multi-session: two projects keep separate runtime roots and session state', async () => {
+  const projectA = await mkdtemp(path.join(tmpdir(), 'sdcorejs-vc-a-'));
+  const projectB = await mkdtemp(path.join(tmpdir(), 'sdcorejs-vc-b-'));
+  const a = await cli(['start', '--project-root', projectA]);
+  const b = await cli(['start', '--project-root', projectB]);
+  try {
+    assert.equal(a.exitCode, 0);
+    assert.equal(b.exitCode, 0);
+
+    const sessionsIn = async (root) =>
+      readdir(path.join(root, '.sdcorejs', 'tmp', 'visual-companion', 'sessions')).catch(() => []);
+    assert.deepEqual(await sessionsIn(projectA), [a.result.session_id]);
+    assert.deepEqual(await sessionsIn(projectB), [b.result.session_id]);
+
+    // A session id from one project is unknown to the other.
+    const foreign = await cli(['status', '--project-root', projectA, '--session', b.result.session_id]);
+    assert.equal(foreign.exitCode, 1);
+    assert.equal(foreign.result.ok, false);
+
+    // Cleaning one project never touches the other.
+    await cli(['stop', '--project-root', projectA, '--session', a.result.session_id]);
+    await cli(['cleanup', '--project-root', projectA, '--all']);
+    assert.deepEqual(await sessionsIn(projectB), [b.result.session_id], 'cleanup is scoped to its own project');
+    const survivor = await cli(['status', '--project-root', projectB, '--session', b.result.session_id]);
+    assert.equal(survivor.result.status.running, true);
+  } finally {
+    for (const [root, started] of [[projectA, a], [projectB, b]]) {
+      if (started.result?.session_id) {
+        await cli(['stop', '--project-root', root, '--session', started.result.session_id]).catch(() => {});
+      }
+      await rm(root, { recursive: true, force: true });
+    }
+  }
+});
+
+test('event summary: one typed comment is reported once even though it rides every later event', () => {
+  // The browser client attaches the feedback field to every event it sends, so a
+  // real session produces feedback -> selection_submitted carrying identical
+  // text. Observed against a live browser: the summary listed the same comment
+  // twice, which reads as the user repeating themselves.
+  const sealed = (sequence, eventType, feedback, screenId = 'orders-nav') =>
+    sealEvent(
+      {
+        schema_version: 1,
+        event_id: `e${sequence}`,
+        session_id: 'vc-0123456789abcdef',
+        screen_id: screenId,
+        screen_revision: 1,
+        event_type: eventType,
+        selected_option_ids: ['sidebar'],
+        feedback,
+        client_timestamp: 0,
+      },
+      { sequence, receivedAt: 0 },
+    );
+
+  const once = summarizeEvents([
+    sealed(6, 'selection_changed', null),
+    sealed(7, 'feedback', 'Ok'),
+    sealed(8, 'selection_submitted', 'Ok'),
+  ]);
+  assert.equal(once.feedback.length, 1, 'one comment is reported once');
+  assert.equal(once.feedback[0].text, 'Ok');
+  assert.equal(once.feedback[0].server_sequence, 8, 'the latest occurrence keeps the sequence');
+  assert.equal(once.submission_count, 1);
+
+  // A genuinely different comment is never collapsed away.
+  const revised = summarizeEvents([
+    sealed(1, 'feedback', 'Ok'),
+    sealed(2, 'selection_submitted', 'Ok'),
+    sealed(3, 'feedback', 'Actually the sidebar'),
+  ]);
+  assert.deepEqual(revised.feedback.map((entry) => entry.text), ['Ok', 'Actually the sidebar']);
+
+  // Identical text on two screens answers two different questions.
+  const perScreen = summarizeEvents([
+    sealed(1, 'feedback', 'Ok'),
+    sealed(2, 'feedback', 'Ok', 'orders-columns'),
+  ]);
+  assert.deepEqual(perScreen.feedback.map((entry) => entry.screen_id), [
+    'orders-nav',
+    'orders-columns',
+  ]);
+});
