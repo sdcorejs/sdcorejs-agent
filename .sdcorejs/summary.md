@@ -16,7 +16,7 @@ fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
   dependency_manifests: sha256:61224c8bd99b8d88cb2568a8433e29dee2681415aa2db9ffd79a38c88da67bf1
   source_roots: sha256:ddec7e2dffa8a69905218e58e710cd58376cd3cbc4dc15fc1d809fc8a6e2ec12
-  entrypoint_contract: sha256:e6c4711c8d252043a06d76d7bec3adf9b886605dbece9371cf9b621b9ec9dce2
+  entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
 artifact_id: project-summary
 artifact_kind: summary
