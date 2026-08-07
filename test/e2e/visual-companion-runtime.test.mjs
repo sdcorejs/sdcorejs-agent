@@ -73,6 +73,7 @@ import {
   openInBrowser,
   resolveLaunchCommand,
 } from '../../_refs/sdlc/visual-companion/launcher.mjs';
+import { COMMANDS, parseArguments, runCommand } from '../../_refs/sdlc/visual-companion/cli.mjs';
 import { connectCompanionClient } from './helpers/visual-companion-client.mjs';
 
 const CLI = path.resolve('_refs/sdlc/visual-companion/cli.mjs');
@@ -662,26 +663,33 @@ test('command line: the full session lifecycle is machine readable and fails non
     assert.equal(events.result.event_count, 0);
     assert.equal(events.result.current.screen_id, 'navigation');
     assert.equal(events.result.cursor, encodeCursor(0));
-    const badCursor = await cli(['events', '--project-root', root, '--session', sessionId, '--after', '9']);
-    assert.equal(badCursor.exitCode, 1);
-    assert.equal(badCursor.result.code, ERROR_CODES.INVALID_ARGUMENTS);
-
     const waiting = await cli(['waiting', '--project-root', root, '--session', sessionId]);
     assert.equal(waiting.result.code, RESULT_CODES.WAITING_PUBLISHED);
     assert.equal(waiting.result.published.waiting, true);
 
-    const unknown = await cli(['status', '--project-root', root, '--session', 'vc-ffffffffffffffff']);
-    assert.equal(unknown.exitCode, 1);
-    assert.equal(unknown.result.code, ERROR_CODES.UNKNOWN_SESSION);
-    const malformed = await cli(['status', '--project-root', root, '--session', 'not-a-session']);
-    assert.equal(malformed.result.code, ERROR_CODES.INVALID_ARGUMENTS);
-    const noCommand = await cli([]);
-    assert.equal(noCommand.exitCode, 1);
-    assert.deepEqual(noCommand.result.commands, [
+    // Argument and lookup failures need no subprocess: the spawned cases above
+    // already prove the published stdout-plus-exit-code contract, and a host
+    // near its process limit should not pay for the same proof repeatedly.
+    assert.equal(
+      (await runCommand('events', { 'project-root': root, session: sessionId, after: '9' })).code,
+      ERROR_CODES.INVALID_ARGUMENTS,
+    );
+    assert.equal(
+      (await runCommand('status', { 'project-root': root, session: 'vc-ffffffffffffffff' })).code,
+      ERROR_CODES.UNKNOWN_SESSION,
+    );
+    assert.equal(
+      (await runCommand('status', { 'project-root': root, session: 'not-a-session' })).code,
+      ERROR_CODES.INVALID_ARGUMENTS,
+    );
+    assert.deepEqual((await runCommand('bogus', {})).commands, [...COMMANDS]);
+    assert.deepEqual([...COMMANDS], [
       'start', 'status', 'publish', 'events', 'waiting', 'stop', 'cleanup',
     ]);
-    const missingValue = await cli(['status', '--session']);
-    assert.equal(missingValue.result.code, ERROR_CODES.INVALID_ARGUMENTS);
+    assert.equal(parseArguments(['status', '--session']).ok, false);
+    assert.match(parseArguments(['status', '--session']).detail, /requires a value/);
+    assert.equal(parseArguments(['status', '--session', 'x']).command, 'status');
+    assert.equal(parseArguments(['start', '--open']).flags.open, true);
 
     const wrongInstance = await cli([
       'stop', '--project-root', root, '--session', sessionId, '--instance', '0'.repeat(32),
@@ -711,15 +719,20 @@ test('command line: an unsafe bind or a taken port fails before a session exists
   const root = await mkdtemp(path.join(tmpdir(), 'sdcorejs-vc-bind-'));
   let sessionId = null;
   try {
-    for (const [args, code] of [
-      [['--host', '0.0.0.0', '--allow-non-loopback'], ERROR_CODES.UNSAFE_HOST],
-      [['--host', '10.0.0.5'], ERROR_CODES.UNSAFE_HOST],
-      [['--port', 'not-a-port'], ERROR_CODES.INVALID_ARGUMENTS],
-      [['--port', '-1'], ERROR_CODES.INVALID_ARGUMENTS],
+    // These refusals happen before anything is spawned, so they run in-process.
+    // Paying for a subprocess per argument-validation case would add real cost
+    // on a host already near its process limit without proving anything the
+    // end-to-end lifecycle test does not already prove.
+    for (const [flags, code] of [
+      [{ host: '0.0.0.0', 'allow-non-loopback': true }, ERROR_CODES.UNSAFE_HOST],
+      [{ host: '10.0.0.5' }, ERROR_CODES.UNSAFE_HOST],
+      [{ port: 'not-a-port' }, ERROR_CODES.INVALID_ARGUMENTS],
+      [{ port: '-1' }, ERROR_CODES.INVALID_ARGUMENTS],
+      [{ 'messages-file': path.join(root, 'missing.json') }, ERROR_CODES.INVALID_ARGUMENTS],
     ]) {
-      const refused = await cli(['start', '--project-root', root, ...args]);
-      assert.equal(refused.exitCode, 1, `start ${args.join(' ')} exits non-zero`);
-      assert.equal(refused.result.code, code);
+      const refused = await runCommand('start', { 'project-root': root, ...flags });
+      assert.equal(refused.ok, false, `start ${JSON.stringify(flags)} is refused`);
+      assert.equal(refused.code, code);
     }
     assert.equal(
       existsSync(path.join(root, ...RUNTIME_ROOT_SEGMENTS, 'sessions')),
