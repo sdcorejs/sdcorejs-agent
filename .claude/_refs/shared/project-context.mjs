@@ -68,6 +68,7 @@ export async function assembleProjectContext({
   graphProvider,
   changeRef,
   writesAllowed = false,
+  localRuntimeWritesConsented = false,
 } = {}) {
   const targetRoot = path.resolve(root ?? process.cwd());
   const files = await listRepositoryFiles(targetRoot);
@@ -115,6 +116,10 @@ export async function assembleProjectContext({
         commands: gitEvidence.commands,
       },
       writes_allowed: Boolean(writesAllowed),
+      // Conversation-local runtime state is a separate boundary from durable
+      // writes. It stays false until the user confirms it for the current
+      // purpose, so a capable runtime never implies permission.
+      local_runtime_writes_allowed_after_consent: Boolean(localRuntimeWritesConsented),
       redaction_applied: true,
       legacy_notice: await exists(path.join(targetRoot, '.sdcorejs', 'tasks', 'current-session.md'))
         ? 'legacy session checkpoint ignored; it was not read'

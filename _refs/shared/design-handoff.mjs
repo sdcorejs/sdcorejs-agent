@@ -1,4 +1,22 @@
 import { createHash } from 'node:crypto';
+import {
+  CANONICAL_DESIGN_HANDOFF_PREFIX,
+  CANONICAL_DESIGN_PNG_EXPORT_PREFIX,
+  CANONICAL_DESIGN_REFERENCE_PREFIX,
+  CANONICAL_DESIGN_WIREFRAME_PREFIX,
+  DESIGN_ARTIFACT_ROOT,
+  DESIGN_LEDGER_ROOT,
+  isLegacyDesignArtifactPath,
+  DESIGN_ASSET_CATEGORIES,
+  DESIGN_DOCUMENT_CATEGORIES,
+  DESIGN_LOCAL_ONLY_DIRECTORIES,
+  LEGACY_DESIGN_ARTIFACT_ROOT,
+  planLegacyArtifactMigration,
+  requireFileInventory,
+  resolveArtifactReadSource,
+  resolveDesignArtifactPaths,
+  validateCanonicalArtifactMetadataPath,
+} from './artifact-paths.mjs';
 import { resolveArtifactOwner } from './repository-contract.mjs';
 import { systemRegistry } from './system-registry.mjs';
 
@@ -80,6 +98,16 @@ function validateReference(reference, field, errors, {
   }
 }
 
+/**
+ * Root-level `design/**` is a read-only compatibility input. New or updated
+ * Design metadata must always name a canonical `.sdcorejs/design/**` path.
+ */
+function rejectLegacyDesignPath(value, field, errors) {
+  if (!isLegacyDesignArtifactPath(value)) return false;
+  errors.push({ code: 'LEGACY_DESIGN_ARTIFACT_PATH', field, path: value });
+  return true;
+}
+
 function validateMetadata(metadata, errors) {
   if (!metadata || typeof metadata !== 'object') {
     errors.push({ code: 'MISSING_DESIGN_METADATA' });
@@ -128,10 +156,18 @@ function validateMetadata(metadata, errors) {
   }
   if (
     !isRelativePath(metadata.repository_relative_path) ||
-    !metadata.repository_relative_path.startsWith('design/specs/') ||
+    !metadata.repository_relative_path.startsWith(CANONICAL_DESIGN_HANDOFF_PREFIX) ||
     !metadata.repository_relative_path.endsWith('.md')
   ) {
-    errors.push({ code: 'INVALID_DESIGN_HANDOFF_PATH' });
+    errors.push({
+      code: 'INVALID_DESIGN_HANDOFF_PATH',
+      path: metadata.repository_relative_path,
+    });
+    rejectLegacyDesignPath(
+      metadata.repository_relative_path,
+      'repository_relative_path',
+      errors,
+    );
   }
   if (!GIT_REVISION.test(metadata.source_revision ?? '')) {
     errors.push({ code: 'INVALID_DESIGN_SOURCE_REVISION' });
@@ -210,9 +246,10 @@ function validateEditableSource(source, errors) {
   }
   if (
     !isRelativePath(source.path) ||
-    !source.path.startsWith('design/wireframes/')
+    !source.path.startsWith(CANONICAL_DESIGN_WIREFRAME_PREFIX)
   ) {
-    errors.push({ code: 'INVALID_EDITABLE_SOURCE_PATH' });
+    errors.push({ code: 'INVALID_EDITABLE_SOURCE_PATH', path: source.path });
+    rejectLegacyDesignPath(source.path, 'editable_source.path', errors);
   }
   if (!['html', 'svg', 'figma', 'figjam'].includes(source.format)) {
     errors.push({ code: 'INVALID_EDITABLE_SOURCE_FORMAT' });
@@ -229,12 +266,13 @@ function validateVisuals(handoff, errors) {
     for (const [index, output] of handoff.static_exports.entries()) {
       if (
         !isRelativePath(output?.path) ||
-        !output.path.startsWith('design/exports/png/') ||
+        !output.path.startsWith(CANONICAL_DESIGN_PNG_EXPORT_PREFIX) ||
         !['generated-mockup', 'illustration'].includes(output.classification) ||
         !CONTENT_HASH.test(output.sha256 ?? '') ||
         !HASH_IDENTITY.test(output.source_editable_artifact_hash ?? '')
       ) {
         errors.push({ code: 'INVALID_STATIC_DESIGN_PROVENANCE', index });
+        rejectLegacyDesignPath(output?.path, `static_exports[${index}].path`, errors);
       }
       if (
         handoff.editable_source?.status === 'available' &&
@@ -251,6 +289,7 @@ function validateVisuals(handoff, errors) {
     for (const [index, screenshot] of handoff.product_screenshots.entries()) {
       if (
         !isRelativePath(screenshot?.path) ||
+        !screenshot.path.startsWith(CANONICAL_DESIGN_REFERENCE_PREFIX) ||
         screenshot.classification !== 'real-product-screenshot' ||
         typeof screenshot.repository_id !== 'string' ||
         !GIT_REVISION.test(screenshot.source_revision ?? '') ||
@@ -260,6 +299,11 @@ function validateVisuals(handoff, errors) {
         !CONTENT_HASH.test(screenshot.sha256 ?? '')
       ) {
         errors.push({ code: 'INVALID_PRODUCT_SCREENSHOT_PROVENANCE', index });
+        rejectLegacyDesignPath(
+          screenshot?.path,
+          `product_screenshots[${index}].path`,
+          errors,
+        );
       }
     }
   }
@@ -341,10 +385,16 @@ function validateCrossRepositoryReferences(
     if (
       reference?.artifact_kind !== 'design-handoff' ||
       !isRelativePath(reference.repository_relative_path) ||
+      !reference.repository_relative_path.startsWith(CANONICAL_DESIGN_HANDOFF_PREFIX) ||
       !HASH_IDENTITY.test(reference.artifact_hash ?? '') ||
       reference.editable !== false
     ) {
       errors.push({ code: 'INVALID_CROSS_REPOSITORY_DESIGN_REFERENCE', index });
+      rejectLegacyDesignPath(
+        reference?.repository_relative_path,
+        `cross_repository_references[${index}].repository_relative_path`,
+        errors,
+      );
     }
     const identity = `${reference?.repository_id}\0${reference?.artifact_id}`;
     if (identities.has(identity)) {
@@ -429,6 +479,7 @@ export function resolveDesignHandoffTarget({
   feature,
   module,
   portal,
+  screens = [],
   execution_host_repository_id: executionHostRepositoryId,
 } = {}) {
   if (!EXPERIENCE_SCOPES.has(experienceScope)) {
@@ -459,6 +510,16 @@ export function resolveDesignHandoffTarget({
       experience_scope: experienceScope,
       ...owner,
       repository_relative_path: null,
+      ledger_relative_path: null,
+      artifact_root: DESIGN_ARTIFACT_ROOT,
+      ledger_root: DESIGN_LEDGER_ROOT,
+      flow_path: null,
+      decisions_path: null,
+      wireframe_directory: null,
+      png_export_directory: null,
+      reference_directory: null,
+      screens: [],
+      legacy_read_only_root: `${LEGACY_DESIGN_ARTIFACT_ROOT}/`,
       blockers: [
         module?.available !== true
           ? `module design owner is unavailable; portal fallback is forbidden`
@@ -466,12 +527,198 @@ export function resolveDesignHandoffTarget({
       ],
     };
   }
+  const bundle = resolveDesignArtifactPaths(feature, { screens });
   return {
     status: 'resolved',
     experience_scope: experienceScope,
     ...owner,
-    repository_relative_path: `design/specs/${feature}.md`,
-    ledger_relative_path: `.sdcorejs/docs/design/${feature}.md`,
+    repository_relative_path: bundle.spec_path,
+    ledger_relative_path: bundle.ledger_relative_path,
+    artifact_root: bundle.artifact_root,
+    ledger_root: bundle.ledger_root,
+    flow_path: bundle.flow_path,
+    decisions_path: bundle.decisions_path,
+    wireframe_directory: bundle.wireframe_directory,
+    png_export_directory: bundle.png_export_directory,
+    reference_directory: bundle.reference_directory,
+    screens: bundle.screens,
+    legacy_read_only_root: `${LEGACY_DESIGN_ARTIFACT_ROOT}/`,
     blockers: [],
+  };
+}
+
+/**
+ * Resolve Design read sources for one feature, preferring canonical
+ * `.sdcorejs/design/**` and falling back to a legacy root-level artifact only
+ * when no canonical equivalent exists. Conflicting copies block.
+ */
+export function resolveDesignArtifactSources({ files, feature, screens = [] } = {}) {
+  requireFileInventory(files, 'design artifact source resolution');
+  const bundle = resolveDesignArtifactPaths(feature, { screens });
+  const candidates = [
+    ...bundle.documents.map((document) => ({
+      category: document.category,
+      canonicalPath: document.path,
+      legacyPath: document.legacy_path,
+    })),
+    ...bundle.screens.flatMap((screen) => [
+      {
+        category: 'wireframe',
+        canonicalPath: screen.wireframe_html_path,
+        legacyPath: screen.legacy_wireframe_html_path,
+      },
+      {
+        category: 'wireframe',
+        canonicalPath: screen.wireframe_svg_path,
+        legacyPath: screen.legacy_wireframe_svg_path,
+      },
+      {
+        category: 'png_export',
+        canonicalPath: screen.png_export_path,
+        legacyPath: screen.legacy_png_export_path,
+      },
+      {
+        category: 'reference',
+        canonicalPath: screen.reference_path,
+        legacyPath: screen.legacy_reference_path,
+      },
+    ]),
+  ];
+  const sources = candidates.map((candidate) => ({
+    category: candidate.category,
+    ...resolveArtifactReadSource({
+      files,
+      canonicalPath: candidate.canonicalPath,
+      legacyPath: candidate.legacyPath,
+    }),
+  }));
+  const blockers = sources.flatMap((source) => source.blockers);
+  return {
+    status: blockers.length > 0 ? 'blocked' : 'resolved',
+    feature: bundle.feature,
+    spec_path: bundle.spec_path,
+    ledger_relative_path: bundle.ledger_relative_path,
+    sources,
+    legacy_fallback_paths: sources
+      .filter((source) => source.status === 'legacy-fallback')
+      .map((source) => source.readPath),
+    blockers,
+  };
+}
+
+/**
+ * Plan the canonical migration for one Design feature bundle. Only the requested
+ * feature moves; unrelated historical artifacts are never rewritten.
+ */
+export function planDesignArtifactMigration({ files, feature, screens = [] } = {}) {
+  return planLegacyArtifactMigration({ files, track: 'design', feature, screens });
+}
+
+/**
+ * Build the `artifact_context.required_with_change` closure entries for a Design
+ * run. Specs, flows, decision logs, editable wireframes, durable exports,
+ * approved screenshot references, and the ledger all participate.
+ * Generated diagnostics that are not part of an approved handoff stay
+ * `local_only`.
+ */
+export function buildDesignArtifactContext({
+  feature,
+  change_ref: changeRef,
+  source_spec: sourceSpec = 'none',
+  source_plan: sourcePlan = 'none',
+  documents = ['spec', 'flow', 'decisions'],
+  editable_sources: editableSources = [],
+  static_exports: staticExports = [],
+  product_screenshots: productScreenshots = [],
+  diagnostics = [],
+  ledger_written: ledgerWritten = true,
+} = {}) {
+  if (typeof changeRef !== 'string' || changeRef.trim() === '') {
+    throw new TypeError('change_ref is required to build a design artifact context');
+  }
+  // A typo in `documents` used to silently drop an approved handoff document
+  // from closure, so an unknown category fails loudly the way the Product side
+  // already does.
+  const unknownDocuments = [...documents].filter(
+    (category) => !Object.hasOwn(DESIGN_DOCUMENT_CATEGORIES, category),
+  );
+  if (unknownDocuments.length > 0) {
+    throw new TypeError(`unknown design document category: ${unknownDocuments.join(', ')}`);
+  }
+  const bundle = resolveDesignArtifactPaths(feature);
+  const required = [];
+  for (const document of bundle.documents) {
+    if (!documents.includes(document.category)) continue;
+    required.push({
+      path: document.path,
+      kind: 'design-asset',
+      reason: `design ${document.category} written for this change`,
+    });
+  }
+  // Validate through the shared path contract rather than a prefix check, so the
+  // declared extension and `<feature>/<screen>` depth are gates too.
+  const addAll = (paths, category, reason) => {
+    for (const candidate of paths) {
+      const normalized = String(candidate ?? '').replaceAll('\\', '/');
+      const result = validateCanonicalArtifactMetadataPath(normalized, {
+        track: 'design',
+        category,
+      });
+      if (!result.ok) {
+        throw new TypeError(
+          `design ${category} path is not a canonical ${DESIGN_ASSET_CATEGORIES[category].directory} artifact (${result.code}): ${normalized}`,
+        );
+      }
+      required.push({ path: normalized, kind: 'design-asset', reason });
+    }
+  };
+  addAll(editableSources, 'wireframe', 'editable wireframe source for this change');
+  addAll(
+    staticExports,
+    'png_export',
+    'durable generated export bound to the editable source hash',
+  );
+  addAll(
+    productScreenshots,
+    'reference',
+    'approved real product screenshot reference with provenance',
+  );
+  if (ledgerWritten) {
+    required.push({
+      path: bundle.ledger_relative_path,
+      kind: 'design-handoff',
+      reason: 'design traceability ledger written for this change',
+    });
+  }
+  // Diagnostics were unvalidated, which is the inverse hazard: it could mark a
+  // durable export never-commit.
+  const localOnly = diagnostics.map((candidate) => {
+    const normalized = String(candidate ?? '').replaceAll('\\', '/');
+    const allowed = DESIGN_LOCAL_ONLY_DIRECTORIES.some((directory) =>
+      normalized.startsWith(`${DESIGN_ARTIFACT_ROOT}/${directory}/`),
+    );
+    if (!allowed) {
+      throw new TypeError(
+        `design diagnostic must live under ${DESIGN_ARTIFACT_ROOT}/{${DESIGN_LOCAL_ONLY_DIRECTORIES.join(
+          ',',
+        )}}/: ${normalized}`,
+      );
+    }
+    return {
+      path: normalized,
+      kind: 'diagnostic',
+      reason: 'generated design diagnostic outside an approved durable handoff',
+    };
+  });
+  return {
+    schema_version: 1,
+    change_ref: changeRef,
+    source_spec: sourceSpec,
+    source_plan: sourcePlan,
+    required_with_change: required,
+    shared_owned: [],
+    conditional: [],
+    local_only: localOnly,
+    unrelated_observed: [],
   };
 }

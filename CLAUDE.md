@@ -144,8 +144,8 @@ fallbacks.
 | nestjs | `sdcorejs-nestjs` | `_refs/nestjs/write-code/*`, `_refs/nestjs/core-catalog.md` |
 | nextjs | `sdcorejs-nextjs` | `_refs/nextjs/build-website/write-code/*` |
 | ai-agent | `sdcorejs-ai-agent` | `_refs/ai-agent/**`; two engine profiles and twelve independent capability profiles |
-| product | `sdcorejs-product` | `product/` PRDs/user stories/AC/UAT docs plus `.sdcorejs/docs/product/` traceability ledgers |
-| design | `sdcorejs-design` | `design/` flows/specs/wireframes/PNG exports plus `.sdcorejs/docs/design/` traceability |
+| product | `sdcorejs-product` | `.sdcorejs/product/` PRDs/user stories/AC/UAT docs plus `.sdcorejs/docs/product/` traceability ledgers |
+| design | `sdcorejs-design` | `.sdcorejs/design/` flows/specs/wireframes/PNG exports/references plus `.sdcorejs/docs/design/` traceability |
 | test | `sdcorejs-test` | `_refs/shared/testing-philosophy.md`, `_refs/<track>/test-*.md`; an existing shared `test/` project for multi-project e2e/UAT |
 | documentation | `sdcorejs-documentation` | `_refs/documentation/*` |
 | generic | `sdcorejs-execute-plan` | approved plan + project scripts |
@@ -153,6 +153,12 @@ fallbacks.
 The product track is first-class. Feature docs, user stories, acceptance criteria, UAT, and traceability audits are not routed through the generic harness.
 
 The design track is first-class. FE handoff specs, flows, wireframes, mockups, and PNG previews are not routed through the generic harness.
+
+Product and Design artifacts always live under the target repository's
+`.sdcorejs/` directory. Canonical roots come from `artifact_roots` in
+`_refs/shared/system-registry.json` and are resolved through
+`_refs/shared/artifact-paths.mjs`. Root-level `product/**` and `design/**` are
+legacy read-only compatibility inputs, never write targets.
 
 The test track is first-class. Test-only plans are not routed through app write-code skills.
 
@@ -198,6 +204,12 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
     approval, security, destructive action, ambiguity, conflict, blockers, or
     failed verification. Pass full typed context only to its consumer; use a
     portable handoff when `runtime_context_channel` is unsupported or unknown.
+15. **Local runtime consent.** A Visual Companion session writes local runtime
+    state and may open a browser. Each is a separate explicit consent, and
+    capability is never permission. Session state under
+    `.sdcorejs/tmp/visual-companion/**` is `local_only`: never staged, never
+    committed, never read back as context. A visual selection is supporting
+    feedback and never satisfies an approval gate.
 
 ## Session Context
 
@@ -219,6 +231,8 @@ At the start of a target-project session:
   yes/no prompts, or mode selections.
 - Read `_refs/shared/artifact-lifecycle.md` before any `.sdcorejs/**` write or
   Git artifact handoff.
+- Read `_refs/sdlc/visual-companion.md` before offering a visual surface or
+  starting a companion session.
 
 ## Skill Groups
 

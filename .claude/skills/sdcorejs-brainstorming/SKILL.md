@@ -230,18 +230,30 @@ Do not combine this offer with another approval or dependent decision.
 
 If the user chooses option 1:
 
-- Read `visual-companion.md` before proceeding.
-- Use a supported typed visual surface, otherwise the static composer from
-  `_refs/sdlc/static-visual-composer.mjs`, otherwise numbered Markdown.
-- Do not start or invent a local server/event bridge.
+- Read `visual-companion.md` before proceeding. It is the executable contract
+  for the surface, the session lifecycle, and the consent boundary.
+- Resolve the surface from the capability contract, not from preference. A live
+  companion session requires `live_visual_companion` and
+  `persistent_local_process` to be `supported`; `visual-companion.md` owns the
+  rest of the fallback ladder, so read it there rather than assuming an order.
+- A live session writes local runtime state under the execution host's
+  `.sdcorejs/tmp/visual-companion/`. Confirm that separately before starting
+  one, and never start a session as a side effect of another decision.
+- Auto-opening a browser is a second, separate consent. Both are visible side
+  effects on the user's own machine, which is why a supported capability never
+  authorizes either on its own. Without browser consent, present the session URL
+  and let the user open it.
 - Use the visual companion per question, not per session.
 - Create one visual decision screen at a time.
-- Prefer 2-3 options, not many options.
+- Prefer 2-4 options, not many options.
 - Ask the user to review the screen and respond in the main conversation.
 - Treat visual selections as supporting feedback, not approval or the only
-  source of truth.
+  source of truth. The runtime stamps every browser event
+  `authority: supporting-feedback` and asserts it on read.
 - Merge visual feedback with the user's written response before updating the
   design.
+- Publish the waiting screen when the conversation moves back to text, and stop
+  the session when the visual thread is finished.
 
 If the user chooses option 2:
 

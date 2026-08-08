@@ -1,7 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://sdcorejs.local/schemas/visual-screen.schema.json",
-  "title": "Static visual screen",
+  "title": "Visual screen",
+  "description": "One screen model shared by the live Visual Companion, the standalone static artifact, and the numbered Markdown fallback. The executable model in _refs/sdlc/visual-companion/screen.mjs is authoritative.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "screen_id", "type", "question", "criteria", "options", "recommendation", "fallback_prompt"],
@@ -11,12 +12,13 @@
     "type": { "enum": ["single_select", "multi_select", "comparison", "wireframe"] },
     "question": { "type": "string", "minLength": 1 },
     "criteria": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-    "options": { "type": "array", "minItems": 2, "maxItems": 3, "items": { "$ref": "#/$defs/option" } },
+    "options": { "type": "array", "minItems": 2, "maxItems": 4, "items": { "$ref": "#/$defs/option" } },
     "recommendation": { "$ref": "#/$defs/id" },
     "fallback_prompt": { "type": "string", "minLength": 1 }
   },
   "$defs": {
     "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$" },
+    "assetName": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}\\.(?:png|jpe?g|gif|webp|svg)$" },
     "option": {
       "type": "object",
       "additionalProperties": false,
@@ -27,7 +29,119 @@
         "summary": { "type": "string", "minLength": 1 },
         "best_when": { "type": "string", "minLength": 1 },
         "tradeoff": { "type": "string", "minLength": 1 },
-        "preview_asset": { "type": "string", "minLength": 1 }
+        "preview_asset": { "type": "string", "minLength": 1 },
+        "preview": { "$ref": "#/$defs/preview" }
+      }
+    },
+    "preview": {
+      "description": "Optional renderable preview. A screen describes what to show and never carries behaviour.",
+      "oneOf": [
+        { "$ref": "#/$defs/wireframePreview" },
+        { "$ref": "#/$defs/svgPreview" },
+        { "$ref": "#/$defs/imagePreview" },
+        { "$ref": "#/$defs/flowPreview" },
+        { "$ref": "#/$defs/tablePreview" }
+      ]
+    },
+    "wireframePreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "regions"],
+      "properties": {
+        "kind": { "const": "wireframe" },
+        "caption": { "type": "string", "minLength": 1 },
+        "regions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["label", "area"],
+            "properties": {
+              "label": { "type": "string", "minLength": 1 },
+              "area": { "enum": ["header", "nav", "sidebar", "main", "aside", "footer"] },
+              "span": { "type": "integer", "minimum": 1, "maximum": 12 },
+              "note": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "svgPreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "svg"],
+      "properties": {
+        "kind": { "const": "svg" },
+        "caption": { "type": "string", "minLength": 1 },
+        "svg": { "type": "string", "minLength": 1, "maxLength": 65536 }
+      }
+    },
+    "imagePreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "asset", "alt"],
+      "properties": {
+        "kind": { "const": "image" },
+        "caption": { "type": "string", "minLength": 1 },
+        "asset": { "$ref": "#/$defs/assetName" },
+        "alt": { "type": "string", "minLength": 1 }
+      }
+    },
+    "flowPreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "nodes", "edges"],
+      "properties": {
+        "kind": { "const": "flow" },
+        "caption": { "type": "string", "minLength": 1 },
+        "nodes": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "label": { "type": "string", "minLength": 1 },
+              "role": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["from", "to"],
+            "properties": {
+              "from": { "$ref": "#/$defs/id" },
+              "to": { "$ref": "#/$defs/id" },
+              "label": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "tablePreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "columns", "rows"],
+      "properties": {
+        "kind": { "const": "table" },
+        "caption": { "type": "string", "minLength": 1 },
+        "columns": { "type": "array", "minItems": 1, "maxItems": 8, "items": { "type": "string", "minLength": 1 } },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 24,
+          "items": { "type": "array", "items": { "type": "string" } }
+        }
       }
     }
   }

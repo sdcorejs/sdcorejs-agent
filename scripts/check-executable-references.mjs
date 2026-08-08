@@ -166,15 +166,35 @@ function typeScriptFenceErrors(fence, file) {
     });
 }
 
+let resolvedBash;
+
+/**
+ * Locate a bash able to run `bash -n`.
+ *
+ * The well-known paths only cover a machine-wide Git install. A user-scoped
+ * install lives under the profile directory, so PATH is consulted as a last
+ * resort. The PATH candidate is proven to run before being returned, otherwise
+ * a missing shell would surface as a fabricated syntax error instead of the
+ * honest "unavailable" report.
+ */
 function bashExecutable() {
-  const candidates =
+  if (resolvedBash !== undefined) return resolvedBash;
+  const wellKnown =
     process.platform === 'win32'
       ? [
           'C:\\Program Files\\Git\\bin\\bash.exe',
           'C:\\Program Files\\Git\\usr\\bin\\bash.exe',
         ]
       : ['/bin/bash', '/usr/bin/bash'];
-  return candidates.find((candidate) => existsSync(candidate)) ?? null;
+  const explicit = [process.env.SDCOREJS_BASH, process.env.SHELL].filter(
+    (candidate) => typeof candidate === 'string' && /bash(?:\.exe)?$/iu.test(candidate),
+  );
+  resolvedBash = [...explicit, ...wellKnown].find((candidate) => existsSync(candidate)) ?? null;
+  if (resolvedBash === null) {
+    const probe = spawnSync('bash', ['-c', 'exit 0'], { encoding: 'utf8', windowsHide: true });
+    resolvedBash = probe.status === 0 ? 'bash' : null;
+  }
+  return resolvedBash;
 }
 
 async function executableFenceErrors(source, file, { angularTemplates = false } = {}) {

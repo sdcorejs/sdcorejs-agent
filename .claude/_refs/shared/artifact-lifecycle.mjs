@@ -1,11 +1,23 @@
 #!/usr/bin/env node
 
 import { execFile } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
+  DESIGN_ARTIFACT_ROOT,
+  DESIGN_LEDGER_ROOT,
+  DESIGN_LOCAL_ONLY_DIRECTORIES,
+  PRODUCT_DOCUMENT_ROOT,
+  PRODUCT_LEDGER_ROOT,
+  classifyDesignArtifactPath,
+  classifyProductArtifactPath,
+  isSafeFeature,
+} from './artifact-paths.mjs';
+import {
+  DOCUMENTATION_ROOT,
   buildCanonicalEntryPath,
   buildLegacyEntryPath,
   classifyDocumentationPath,
@@ -17,20 +29,71 @@ import {
 
 const execFileAsync = promisify(execFile);
 
+const DOCUMENTATION_ROOT_PREFIX = `${DOCUMENTATION_ROOT}/`;
+
+/**
+ * Conversation-local runtime root.
+ *
+ * Declared explicitly rather than relying on the generic `tmp` pattern, so a
+ * rename of that pattern can never quietly make a Visual Companion session
+ * directory stageable. Session directories hold keys, ports, process ids, and
+ * raw browser events; none of that may reach a commit or a durable artifact.
+ */
+export const LOCAL_RUNTIME_ROOT = '.sdcorejs/tmp';
+export const VISUAL_COMPANION_RUNTIME_ROOT = `${LOCAL_RUNTIME_ROOT}/visual-companion`;
+
 const LOCAL_ONLY_PATTERNS = [
   /^\.sdcorejs\/tasks\/current-session\.md$/i,
   /^\.sdcorejs\/tasks\/sessions\//i,
+  new RegExp(`^${escapeForPattern(VISUAL_COMPANION_RUNTIME_ROOT)}(?:/|$)`, 'i'),
+  new RegExp(`^${escapeForPattern(LOCAL_RUNTIME_ROOT)}(?:/|$)`, 'i'),
   /^\.sdcorejs\/(?:cache|caches|tmp|temp|traces?|storage|codegraph-cache)\//i,
   /^\.sdcorejs\/.*(?:auth-state|browser-state|storage-state)(?:\/|\.|$)/i,
-  /\.(?:har|log|trace|webm)$/i,
+  new RegExp(
+    `^${escapeForPattern(DESIGN_ARTIFACT_ROOT)}/(?:${DESIGN_LOCAL_ONLY_DIRECTORIES.map(
+      escapeForPattern,
+    ).join('|')})/`,
+    'i',
+  ),
+  /\.(?:har|log|trace|webm|mp4)$/i,
 ];
+
+/**
+ * Local-only classification is directory- and extension-driven only.
+ *
+ * A filename heuristic such as `failure-*.png` cannot be used here: it is
+ * checked before the runtime `artifact_context` bucket, so it would silently
+ * override an explicit `required_with_change` entry, and `failure-state.png` or
+ * `checkout-failed.svg` are legitimate designed states. Renderer failure
+ * captures belong in the declared `DESIGN_LOCAL_ONLY_DIRECTORIES`, which is
+ * deterministic and cannot swallow an approved artifact.
+ */
+export function isLocalOnlyArtifactPath(value) {
+  const normalizedPath = normalizePath(value);
+  return LOCAL_ONLY_PATTERNS.some((pattern) => pattern.test(normalizedPath));
+}
+
+/** True for conversation-local runtime state, which is never a durable artifact. */
+export function isLocalRuntimePath(value) {
+  const normalizedPath = normalizePath(value);
+  return new RegExp(`^${escapeForPattern(LOCAL_RUNTIME_ROOT)}(?:/|$)`, 'i').test(normalizedPath);
+}
+
+export function isVisualCompanionRuntimePath(value) {
+  const normalizedPath = normalizePath(value);
+  return new RegExp(`^${escapeForPattern(VISUAL_COMPANION_RUNTIME_ROOT)}(?:/|$)`, 'i').test(
+    normalizedPath,
+  );
+}
 
 const ARTIFACT_KIND_BY_PATH = [
   [/^\.sdcorejs\/specs\//i, 'spec'],
   [/^\.sdcorejs\/plans\//i, 'plan'],
-  [/^\.sdcorejs\/docs\/product\//i, 'product-ledger'],
-  [/^\.sdcorejs\/docs\/design\//i, 'design-handoff'],
+  [new RegExp(`^${escapeForPattern(PRODUCT_LEDGER_ROOT)}/`, 'i'), 'product-ledger'],
+  [new RegExp(`^${escapeForPattern(DESIGN_LEDGER_ROOT)}/`, 'i'), 'design-handoff'],
   [/^\.sdcorejs\/docs\//i, 'execution-doc'],
+  [new RegExp(`^${escapeForPattern(PRODUCT_DOCUMENT_ROOT)}/`, 'i'), 'product-doc'],
+  [new RegExp(`^${escapeForPattern(DESIGN_ARTIFACT_ROOT)}/`, 'i'), 'design-asset'],
   [/^\.sdcorejs\/documentation\//i, 'documentation-asset'],
   [/^\.sdcorejs\/handoffs\//i, 'handoff'],
   [/^\.sdcorejs\/memories\//i, 'memory'],
@@ -41,13 +104,42 @@ const ARTIFACT_KIND_BY_PATH = [
 
 const SHARED_KINDS = new Set(['memory', 'persona', 'summary', 'task']);
 const CHANGE_SCOPED_KINDS = new Set([
-  'documentation-asset',
+  'design-asset',
   'design-handoff',
+  'documentation-asset',
   'execution-doc',
+  'product-doc',
   'product-ledger',
   'plan',
   'spec',
 ]);
+
+/**
+ * Feature-scoped Product and Design artifacts inherit their change relationship
+ * from the ledger that owns the same feature identity.
+ */
+const FEATURE_LEDGER_KINDS = new Set(['product-doc', 'design-asset']);
+
+const BINARY_EXTENSIONS = new Set([
+  '.avif',
+  '.bmp',
+  '.gif',
+  '.ico',
+  '.jpeg',
+  '.jpg',
+  '.mp4',
+  '.pdf',
+  '.png',
+  '.webm',
+  '.webp',
+  '.woff',
+  '.woff2',
+  '.zip',
+]);
+
+function escapeForPattern(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+}
 
 export async function buildArtifactClosure({
   root,
@@ -62,13 +154,14 @@ export async function buildArtifactClosure({
   const runtimeBuckets = normalizeRuntimeContext(artifactContext);
   const invalidContextPaths = runtimeBuckets.invalid_paths;
   const classifications = [];
+  const discoveredFiles = new Map();
   const discoveredContents = new Map();
 
   for (const relativePath of discovery.discoveredPaths) {
-    discoveredContents.set(
-      relativePath,
-      await readFile(path.join(targetRoot, relativePath), 'utf8').catch(() => ''),
-    );
+    const file = await readArtifactFile(targetRoot, relativePath);
+    discoveredFiles.set(relativePath, file);
+    // Text-only consumers never receive binary bytes.
+    discoveredContents.set(relativePath, file.binary ? '' : file.text);
   }
   const projectedDocumentationContents =
     await collectProjectedDocumentationContents(
@@ -79,10 +172,16 @@ export async function buildArtifactClosure({
   const documentationDuplicates = analyzeDocumentationDuplicates(
     projectedDocumentationContents,
   );
+  const featureLedgers = collectFeatureChangeRefs(
+    discovery.discoveredPaths,
+    discoveredFiles,
+  );
+  const featureChangeRefs = featureLedgers.byFeature;
 
   for (const relativePath of discovery.discoveredPaths) {
-    const content = discoveredContents.get(relativePath) ?? '';
-    const metadata = parseArtifactFrontmatter(content);
+    const file = discoveredFiles.get(relativePath) ?? emptyArtifactFile(relativePath);
+    const content = file.binary ? '' : file.text;
+    const metadata = file.binary ? {} : parseArtifactFrontmatter(content);
     let classification = classifyArtifact({
       path: relativePath,
       metadata,
@@ -90,6 +189,7 @@ export async function buildArtifactClosure({
       owner,
       ownedSharedPaths,
       runtimeBuckets,
+      featureChangeRefs,
     });
     const duplicate = documentationDuplicates.byPath.get(relativePath);
     if (duplicate?.state === 'equivalent-legacy') {
@@ -107,11 +207,18 @@ export async function buildArtifactClosure({
         'canonical and legacy documentation entries conflict',
       );
     }
-    const sensitiveCategories = scanSensitiveArtifactContent(relativePath, content);
+    const sensitiveCategories =
+      file.scan_text === null
+        ? scanSensitiveArtifactPath(relativePath)
+        : scanSensitiveArtifactContent(relativePath, file.scan_text);
     classifications.push({
       ...classification,
       git_status: discovery.statusByPath[relativePath] ?? [],
       sensitive_categories: sensitiveCategories,
+      binary: file.binary,
+      byte_size: file.bytes,
+      content_hash: file.sha256,
+      read_error: file.read_error === true,
     });
   }
 
@@ -144,6 +251,13 @@ export async function buildArtifactClosure({
     const metadataOwner = normalizeRef(classification?.metadata?.owner);
     return Boolean(owner && metadataOwner && normalizeRef(owner) === metadataOwner);
   });
+  // A required durable artifact that cannot be read has no integrity evidence.
+  // A staged or working-tree deletion is the one legitimate unreadable case.
+  const unreadableRequiredPaths = classifications
+    .filter((item) => item.read_error && item.bucket === 'required_with_change')
+    .filter((item) => !(item.git_status ?? []).some((status) => status.includes('D')))
+    .map((item) => item.path)
+    .sort();
   const discoveryFailures = discovery.commandsRun.filter((item) => item.exit !== 0);
   const includedPaths = unique([
     ...requiredPaths,
@@ -159,6 +273,12 @@ export async function buildArtifactClosure({
   if (missingRequiredPaths.length > 0) blockers.push('required artifact missing');
   if (unknownPaths.length > 0) blockers.push('unknown artifact may belong to the change');
   if (sensitivePaths.length > 0) blockers.push('secret or PII screening requires remediation');
+  if (unreadableRequiredPaths.length > 0) {
+    blockers.push('required artifact could not be read for integrity evidence');
+  }
+  if (featureLedgers.conflicts.length > 0) {
+    blockers.push('product or design ledger feature identity conflict');
+  }
   if (documentationDuplicates.conflicts.length > 0) {
     blockers.push('documentation canonical/legacy conflict');
   }
@@ -184,7 +304,9 @@ export async function buildArtifactClosure({
       local_only_paths: localOnlyPaths,
       unknown_paths: unknownPaths,
       missing_required_paths: missingRequiredPaths,
+      unreadable_required_paths: unreadableRequiredPaths,
       invalid_context_paths: invalidContextPaths,
+      feature_ledger_conflicts: featureLedgers.conflicts,
       documentation_layout_conflicts: documentationDuplicates.conflicts,
       uncommitted_included_paths: mode === 'push' ? uncommittedIncludedPaths : [],
       sensitive_paths: sensitivePaths,
@@ -245,16 +367,18 @@ export function classifyArtifact({
   owner,
   ownedSharedPaths = [],
   runtimeBuckets = normalizeRuntimeContext({}),
+  featureChangeRefs = new Map(),
 } = {}) {
   const normalizedPath = normalizePath(artifactPath);
-  if (LOCAL_ONLY_PATTERNS.some((pattern) => pattern.test(normalizedPath))) {
+  if (isLocalOnlyArtifactPath(normalizedPath)) {
     return {
       path: normalizedPath,
       kind: normalizedPath.endsWith('/current-session.md') ? 'legacy-session-checkpoint' : 'diagnostic',
       lifecycle: 'diagnostic-local',
       commit_policy: 'never',
       bucket: 'local_only',
-      reason: 'local state, cache, trace, storage state, or legacy checkpoint',
+      reason:
+        'local state, cache, trace, storage state, failure capture, generated diagnostic, or legacy checkpoint',
       metadata,
     };
   }
@@ -270,10 +394,21 @@ export function classifyArtifact({
   const runtimeBucket = findRuntimeBucket(normalizedPath, runtimeBuckets);
   const runtimeEntry = findRuntimeEntry(normalizedPath, runtimeBuckets);
 
-  if (
-    kind === 'documentation-asset' &&
-    runtimeBucket === 'required_with_change'
-  ) {
+  // Documentation-layout promotion rules are scoped to the documentation root so
+  // they are not applied to Product or Design artifacts, which have their own
+  // canonical roots and their own contracts. Scoping must not become an escape
+  // hatch: a `documentation-asset` kind claimed for a path outside that root is
+  // a metadata/path contradiction, so it fails closed rather than skipping the
+  // gate.
+  if (kind === 'documentation-asset' && runtimeBucket === 'required_with_change') {
+    if (!normalizedPath.startsWith(DOCUMENTATION_ROOT_PREFIX)) {
+      return unknown(
+        normalizedPath,
+        kind,
+        metadata,
+        'documentation-asset declared outside the documentation root',
+      );
+    }
     const promotion = validateDocumentationRuntimePromotion(
       normalizedPath,
       runtimeEntry,
@@ -372,6 +507,29 @@ export function classifyArtifact({
     if (artifactChangeRef && requestedChangeRef && artifactChangeRef !== requestedChangeRef) {
       return unrelated(normalizedPath, kind, metadata, 'change_ref identifies another change');
     }
+    if (FEATURE_LEDGER_KINDS.has(kind)) {
+      const ledger = resolveFeatureLedgerRelationship(
+        normalizedPath,
+        kind,
+        featureChangeRefs,
+      );
+      if (ledger.changeRef && requestedChangeRef && ledger.changeRef === requestedChangeRef) {
+        return required(
+          normalizedPath,
+          kind,
+          metadata,
+          `${ledger.track} ledger relationship for feature ${ledger.feature}`,
+        );
+      }
+      if (ledger.changeRef && requestedChangeRef && ledger.changeRef !== requestedChangeRef) {
+        return unrelated(
+          normalizedPath,
+          kind,
+          metadata,
+          `${ledger.track} ledger for feature ${ledger.feature} identifies another change`,
+        );
+      }
+    }
     if (legacyRelationshipMatches(normalizedPath, metadata, requestedChangeRef)) {
       return required(normalizedPath, kind, metadata, 'conservative legacy relationship inference');
     }
@@ -393,7 +551,11 @@ export function parseArtifactFrontmatter(text) {
   return metadata;
 }
 
-export function scanSensitiveArtifactContent(artifactPath, content) {
+/**
+ * Path-only secret screening. Safe for binary artifacts because it never
+ * inspects, decodes, or prints file bytes.
+ */
+export function scanSensitiveArtifactPath(artifactPath) {
   const categories = new Set();
   const normalizedPath = normalizePath(artifactPath);
   if (/\.env(?:\.|$)/i.test(normalizedPath) && !/\.example$/i.test(normalizedPath)) {
@@ -402,6 +564,12 @@ export function scanSensitiveArtifactContent(artifactPath, content) {
   if (/(?:credential|private[-_]?key|service[-_]?account)/i.test(path.basename(normalizedPath))) {
     categories.add('credential-file-name');
   }
+  return [...categories].sort();
+}
+
+export function scanSensitiveArtifactContent(artifactPath, content) {
+  const categories = new Set(scanSensitiveArtifactPath(artifactPath));
+  if (typeof content !== 'string') return [...categories].sort();
   if (/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/.test(content)) {
     categories.add('private-key');
   }
@@ -409,6 +577,142 @@ export function scanSensitiveArtifactContent(artifactPath, content) {
     /^\s*(?:api[_-]?key|authorization|client[_-]?secret|password|private[_-]?key|refresh[_-]?token|secret|token)\s*[:=]\s*(?!<|\[REDACTED\]|none\b|null\b|unknown\b|false\b|true\b)(?:"[^"]+"|'[^']+'|\S+)/gim;
   if (secretAssignment.test(content)) categories.add('secret-like-assignment');
   return [...categories].sort();
+}
+
+/**
+ * Decide whether a discovered artifact must be treated as opaque bytes.
+ * Binary artifacts are never parsed as Markdown frontmatter, never scanned as
+ * UTF-8 text, and never printed.
+ */
+export function isBinaryArtifactPath(artifactPath) {
+  return BINARY_EXTENSIONS.has(path.extname(normalizePath(artifactPath)).toLowerCase());
+}
+
+function emptyArtifactFile(relativePath) {
+  return {
+    path: normalizePath(relativePath),
+    binary: isBinaryArtifactPath(relativePath),
+    text: '',
+    scan_text: null,
+    bytes: 0,
+    sha256: null,
+    read_error: true,
+  };
+}
+
+/**
+ * Read a discovered artifact once and derive three separate decisions from it,
+ * because conflating them is how a credential escapes screening:
+ *
+ * - `binary` controls structural handling. Bytes are never parsed as Markdown
+ *   frontmatter and never exposed as text to documentation comparison.
+ * - `scan_text` controls secret screening. It is withheld only when the
+ *   extension AND the byte probe agree that the file is genuinely opaque. A
+ *   text extension carrying a stray NUL is still screened, and a binary
+ *   extension holding decodable text is still screened, so neither shape can
+ *   smuggle a private key past closure.
+ * - `sha256` is the reportable integrity value for either shape.
+ */
+async function readArtifactFile(root, relativePath) {
+  const normalizedPath = normalizePath(relativePath);
+  const buffer = await readFile(path.join(root, normalizedPath)).catch(() => null);
+  if (!buffer) return emptyArtifactFile(normalizedPath);
+  const binaryExtension = isBinaryArtifactPath(normalizedPath);
+  const containsNulBytes = buffer.subarray(0, 8000).includes(0);
+  const binary = binaryExtension || containsNulBytes;
+  const opaqueBytes = binaryExtension && containsNulBytes;
+  return {
+    path: normalizedPath,
+    binary,
+    text: binary ? '' : buffer.toString('utf8'),
+    scan_text: opaqueBytes ? null : buffer.toString('utf8'),
+    bytes: buffer.byteLength,
+    sha256: `sha256:${createHash('sha256').update(buffer).digest('hex')}`,
+    read_error: false,
+  };
+}
+
+/**
+ * Map a feature identity to the `change_ref` declared by its Product or Design
+ * ledger. Durable Product documents and Design assets - including binary PNG
+ * exports that carry no frontmatter - inherit that relationship.
+ *
+ * The ledger's own path is the identity, not its frontmatter. A ledger that
+ * declares another feature's name could otherwise overwrite that feature's
+ * mapping and push a genuinely required artifact into `unrelated`, so a
+ * mismatch and a duplicate are both reported as conflicts instead of silently
+ * winning.
+ */
+function collectFeatureChangeRefs(discoveredPaths, discoveredFiles) {
+  const byFeature = new Map();
+  const sources = new Map();
+  const conflicts = [];
+  for (const relativePath of discoveredPaths) {
+    const file = discoveredFiles.get(relativePath);
+    if (!file || file.binary) continue;
+    const track = ledgerTrackForPath(relativePath);
+    if (!track) continue;
+    const metadata = parseArtifactFrontmatter(file.text);
+    const changeRef = normalizeRef(metadata.change_ref);
+    const feature = featureFromLedgerPath(relativePath);
+    if (!changeRef || !feature) continue;
+    if (!isSafeFeature(feature)) {
+      conflicts.push({ code: 'INVALID_LEDGER_FEATURE', path: relativePath, feature });
+      continue;
+    }
+    const declared = normalizeRef(metadata.feature);
+    if (declared && declared !== feature) {
+      conflicts.push({
+        code: 'LEDGER_FEATURE_IDENTITY_MISMATCH',
+        path: relativePath,
+        declared_feature: declared,
+        expected_feature: feature,
+      });
+      continue;
+    }
+    const key = `${track}:${feature}`;
+    if (byFeature.has(key) && byFeature.get(key) !== changeRef) {
+      conflicts.push({
+        code: 'DUPLICATE_LEDGER_FEATURE',
+        track,
+        feature,
+        paths: [sources.get(key), relativePath].sort(),
+      });
+      continue;
+    }
+    byFeature.set(key, changeRef);
+    sources.set(key, relativePath);
+  }
+  return { byFeature, conflicts };
+}
+
+function ledgerTrackForPath(relativePath) {
+  const normalizedPath = normalizePath(relativePath);
+  if (normalizedPath.startsWith(`${PRODUCT_LEDGER_ROOT}/`)) return 'product';
+  if (normalizedPath.startsWith(`${DESIGN_LEDGER_ROOT}/`)) return 'design';
+  return null;
+}
+
+function featureFromLedgerPath(relativePath) {
+  const base = path.basename(normalizePath(relativePath));
+  return normalizeRef(base.replace(/\.[^.]+$/u, ''));
+}
+
+function resolveFeatureLedgerRelationship(normalizedPath, kind, featureChangeRefs) {
+  const track = kind === 'product-doc' ? 'product' : 'design';
+  const classification =
+    track === 'product'
+      ? classifyProductArtifactPath(normalizedPath)
+      : classifyDesignArtifactPath(normalizedPath);
+  const feature = normalizeRef(classification.feature);
+  if (!feature) return { track, feature: null, changeRef: null };
+  const lookup = featureChangeRefs instanceof Map ? featureChangeRefs : new Map();
+  // `changeRef` is compared against `normalizeRef(changeRef)` by the caller, so
+  // normalize here too. `featureChangeRefs` is a public parameter and a
+  // caller-supplied mixed-case value would otherwise exclude a required
+  // artifact with a confidently wrong reason.
+  const changeRef = normalizeRef(lookup.get(`${track}:${feature}`));
+  return { track, feature, changeRef: changeRef === '' ? null : changeRef };
 }
 
 function normalizeRuntimeContext(context) {
@@ -557,10 +861,8 @@ async function collectProjectedDocumentationContents(
     if (result.has(counterpart) || !(await exists(path.join(root, counterpart)))) {
       continue;
     }
-    result.set(
-      counterpart,
-      await readFile(path.join(root, counterpart), 'utf8').catch(() => ''),
-    );
+    const file = await readArtifactFile(root, counterpart);
+    result.set(counterpart, file.binary ? '' : file.text);
   }
   return result;
 }

@@ -65,6 +65,30 @@ loading, and mirror integration. They do not prove that Pandoc, a PDF engine,
 an authenticated browser, or a live provider runtime is available; those
 capabilities remain separately reported as passed, failed, blocked, or skipped.
 
+## Product and Design `.sdcorejs` artifact layout validation
+
+Canonical roots come from `artifact_roots` in
+`_refs/shared/system-registry.json` and are resolved through
+`_refs/shared/artifact-paths.mjs`. Contracts live in
+`_refs/shared/product-ledger.md` and `_refs/shared/design-handoff.md`.
+
+```bash
+node --test test/e2e/artifact-path-convention.test.mjs
+node --test test/e2e/product-ledger-contract.test.mjs
+node --test test/e2e/design-handoff-contract.test.mjs
+node --test test/e2e/project-context-artifact-lifecycle.test.mjs
+npm run check:skills
+```
+
+These deterministic checks cover canonical resolver output, ledger root
+stability, legacy-root rejection in new metadata, canonical-first reads with an
+explicit legacy fallback, scoped legacy migration, canonical/legacy equivalence
+and conflict handling, lifecycle classification of `.sdcorejs/product/**` and
+`.sdcorejs/design/**`, binary-safe durable PNG closure, downstream consumer
+paths, and mirror synchronization. They do not prove that a browser renderer,
+image-generation tool, or live provider runtime is available; those capabilities
+remain separately reported.
+
 ## Communication Economy Policy evidence - 2026-07-28 PR #55 snapshot
 
 The Communication Economy Policy is a just-in-time reference plus deterministic
@@ -83,15 +107,15 @@ working-tree diff:
 
 | Measure | Baseline | Current working tree |
 |---|---:|---:|
-| Always-loaded bootstrap UTF-8 bytes | 20,173 | 18,297 |
-| Always-loaded bootstrap words | 2,361 | 2,188 |
-| Aggregate just-in-time scenario bytes | 514,603 | 557,682 |
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 18,694 |
+| Always-loaded bootstrap words | 2,361 | 2,242 |
+| Aggregate just-in-time scenario bytes | 514,603 | 604,568 |
 | Aggregate visible output bytes | 42,558 | 2,802 |
 | Aggregate visible output words | 3,961 | 337 |
 | Portable fallback handoff bytes | 0 | 22,240 |
 | Supported runtime context channel bytes | 0 | 1,205 |
 | Repeated-block bytes | 2,319 | 0 |
-| Total measured communication bytes | 577,334 | 602,226 |
+| Total measured communication bytes | 577,334 | 649,509 |
 | Consumer-required authoritative fields | 288 | 288 preserved |
 
 The report includes ten scenarios, per-scenario selected paths, bytes, words,
@@ -99,7 +123,11 @@ handoff mode, profile, rendered semantic coverage, cross-profile outcome/status
 parity, and required-field coverage. The just-in-time aggregate increases
 because delegated and review/repair/ship scenarios now explicitly load and
 validate test lifecycle/evidence and parallel ownership/fan-in contracts rather
-than omitting authoritative safety state. The current total counts serialized
+than omitting authoritative safety state, and because the Product and Design
+contracts now carry the canonical `.sdcorejs` artifact layout, legacy
+compatibility matrix, and binary-safe closure rules, and because the Visual
+Companion contract is now an executable session lifecycle rather than a
+one-page surface note. The current total counts serialized
 authoritative context for `supported` channels and the serialized portable
 fallback for `unsupported` and `unknown` channels, so each typed handoff is
 counted exactly once. The baseline already counts its echoed context inside
@@ -143,6 +171,37 @@ reset, the execution order was not counterbalanced, and B also contains the
 in-progress Documentation Layout v2 diff. This one scenario is a live smoke,
 not the ten-scenario deterministic matrix or full release-agent coverage.
 Observed deltas are evidence for these runs, not a fixed savings claim.
+
+## Visual Companion live runtime evidence - 2026-08-07 working tree
+
+Evidence target: the live companion runtime became reachable from the workflow
+instead of remaining working code with no caller.
+
+What the deterministic suite proves:
+
+- `npm run test:e2e:visual-companion` covers eight categories: protocol identity
+  and redaction, the single screen model, rendering with the CSP hash matching
+  the served client bytes, RFC 6455 framing, server authentication and
+  filesystem containment, event identity, the command-line contract, and process
+  lifecycle including the idle watchdog and the browser launcher.
+- `npm run test:e2e:harness` proves visual and non-visual decisions now run on
+  separate priority ladders, that an approval never reaches a visual surface,
+  that a live session needs both capability and explicit consent, and that every
+  adapter maps the four `visual.session.*` actions to a capability and a
+  portable fallback.
+- `npm run test:e2e:artifact-paths` proves `.sdcorejs/tmp/visual-companion/**`
+  is `local_only` by explicit rule and cannot be staged even when a runtime
+  context wrongly declares a session file required.
+
+What it does not prove: no browser rendered a screen, no user clicked an option,
+and no platform browser launcher was executed. The launcher test injects a
+recording spawn function and asserts the argument vector and the absence of a
+shell; it never starts a browser. Live browser behaviour remains separately
+reported.
+
+Runtime facts recorded for review: zero runtime dependencies, Node 18+
+built-ins only, loopback bind by default, at least 256 bits of session entropy,
+and an event `authority` field the server assigns and the read path asserts.
 
 ## Retired standalone skills removal evidence - 2026-07-27
 
@@ -418,6 +477,7 @@ arbitrary domain automatically.
 | Workflow names | No removed legacy skills remain |
 | Product track | `sdcorejs-product` exists and product docs/traceability route to it |
 | Design track | `sdcorejs-design` exists and design docs/wireframes/PNG previews route to it |
+| Product/Design artifact roots | Producers, consumers, resolvers, validators, metadata templates, and reports use `.sdcorejs/product/**` and `.sdcorejs/design/**`; ledgers stay under `.sdcorejs/docs/product/**` and `.sdcorejs/docs/design/**`; root-level `product/**` and `design/**` remain only as legacy read-only compatibility, migration logic, or negative tests |
 | Test track | `sdcorejs-test` exists and `sdcorejs-execute-plan` routes test-only plans to it |
 | AI-agent track | `sdcorejs-ai-agent` exists; engine and capability profiles remain independent and approved-plan continuation stays owned by `sdcorejs-execute-plan` |
 | Simplification utility | `sdcorejs-simplify` exists outside the track enum; current-diff/explicit-scope, protected content, before/after verification, finish-gate opt-in, and `simplify_context` invariants remain mutation-tested |
@@ -438,6 +498,8 @@ npm run test:e2e:communication-economy
 npm run report:communication-economy
 npm run report:communication-economy:live
 npm run test:e2e:harness
+npm run test:e2e:visual-companion
+npm run test:e2e:artifact-paths
 npm run check:nestjs-pack
 node --test test/e2e/npm-publication-contract.test.mjs
 node --test test/e2e/ai-agent-track-contract.test.mjs

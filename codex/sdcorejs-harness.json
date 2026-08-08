@@ -2,14 +2,18 @@
   "schema_version": 1,
   "adapter": "codex",
   "source_path": "_refs/harness/capability-contract.json",
-  "source_hash": "sha256:d6bf74c23399960c9424357773dd6490c0e6356b4a4c9be39254597996aaa698",
-  "content_hash": "sha256:3922600e33fce57b7a4e0eda93e1e58a2fb18641e8d5ad047a97de4a6517fb3c",
+  "source_hash": "sha256:60b4239412a5af7d1077a5e9bf84dc1f3b31c5a1ddfe7c6c33dd277184a0149e",
+  "content_hash": "sha256:9397b67e92d6c62a0998160bdea73c7e7c62bf08ed5144c2b2a1d7ddda0ca1f3",
   "generated_path": "codex/sdcorejs-harness.json",
   "capabilities": {
     "runtime_context_channel": "unknown",
     "native_structured_choice": "unknown",
     "visual_surface": "unknown",
     "static_html_artifact": "supported",
+    "live_visual_companion": "supported",
+    "visual_event_bridge": "supported",
+    "persistent_local_process": "supported",
+    "browser_auto_open": "unknown",
     "subagents": "unknown",
     "per_agent_model_override": "unknown",
     "agent_resume_steer": "unknown",
@@ -20,12 +24,6 @@
     "permission_approval": "supported"
   },
   "actions": {
-    "context.pass": {
-      "status": "unknown",
-      "native": [],
-      "capability": "runtime_context_channel",
-      "fallback": "Build a validated portable handoff with required fields and stable artifact or evidence references."
-    },
     "progress.create": {
       "status": "supported",
       "native": [
@@ -41,6 +39,12 @@
       ],
       "capability": null,
       "fallback": "Update the visible Markdown task list in the current conversation."
+    },
+    "context.pass": {
+      "status": "unknown",
+      "native": [],
+      "capability": "runtime_context_channel",
+      "fallback": "Build a validated portable handoff with required fields and stable artifact or evidence references."
     },
     "user.choose": {
       "status": "unknown",
@@ -90,6 +94,38 @@
       "capability": "visual_surface",
       "fallback": "Use the static visual composer when available, otherwise numbered Markdown."
     },
+    "visual.session.start": {
+      "status": "supported",
+      "native": [
+        "shell_command"
+      ],
+      "capability": "persistent_local_process",
+      "fallback": "Present the standalone static visual artifact, otherwise numbered Markdown, and keep the decision in the conversation."
+    },
+    "visual.session.publish": {
+      "status": "supported",
+      "native": [
+        "shell_command"
+      ],
+      "capability": "live_visual_companion",
+      "fallback": "Render the screen through the static visual composer, otherwise numbered Markdown."
+    },
+    "visual.session.read": {
+      "status": "supported",
+      "native": [
+        "shell_command"
+      ],
+      "capability": "visual_event_bridge",
+      "fallback": "Ask the user to reply in the conversation and treat the reply as supporting feedback."
+    },
+    "visual.session.stop": {
+      "status": "supported",
+      "native": [
+        "shell_command"
+      ],
+      "capability": "persistent_local_process",
+      "fallback": "Report that no live companion session is running and continue in the conversation."
+    },
     "workspace.isolate": {
       "status": "unknown",
       "native": [
@@ -133,7 +169,7 @@
   },
   "system_registry": {
     "source_path": "_refs/shared/system-registry.json",
-    "source_hash": "sha256:58f35f444fdf54d86630a3b138e25b9260e086ceedbca4e39bac874cf6217fe0",
+    "source_hash": "sha256:3423ba43abcc69060172966824583ac291d8d9d00b948863ee987e2cab33920e",
     "tracks": [
       "ai-agent",
       "angular",
@@ -214,7 +250,11 @@
         "web.fetch",
         "verification.run",
         "user.choose",
-        "visual.present"
+        "visual.present",
+        "visual.session.start",
+        "visual.session.publish",
+        "visual.session.read",
+        "visual.session.stop"
       ]
     },
     "sdcorejs-spec": {

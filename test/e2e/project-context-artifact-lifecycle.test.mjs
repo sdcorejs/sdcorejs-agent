@@ -13,6 +13,7 @@ import { tmpdir } from 'node:os';
 import path, { join } from 'node:path';
 import test from 'node:test';
 import { promisify } from 'node:util';
+import { deflateSync } from 'node:zlib';
 import {
   assembleProjectContext,
   assessSummaryFreshness,
@@ -21,7 +22,15 @@ import {
   validateSummaryV2,
 } from '../../_refs/shared/project-context.mjs';
 import {
+  VISUAL_COMPANION_RUNTIME_ROOT,
   buildArtifactClosure,
+  classifyArtifact,
+  isBinaryArtifactPath,
+  isLocalOnlyArtifactPath,
+  isLocalRuntimePath,
+  isVisualCompanionRuntimePath,
+  scanSensitiveArtifactContent,
+  scanSensitiveArtifactPath,
 } from '../../_refs/shared/artifact-lifecycle.mjs';
 import * as artifactLifecycle from '../../_refs/shared/artifact-lifecycle.mjs';
 
@@ -406,6 +415,379 @@ test('artifact closure includes only the current change and blocks ambiguous or 
   assert.match(invalidContext.sdcorejs_artifacts.blockers.join('\n'), /out-of-root path/);
 });
 
+test('artifact closure classifies Product and Design artifact roots deterministically', async () => {
+  const root = await createGitRepo();
+  await write(root, 'README.md', '# Fixture\n');
+  await commitAll(root, 'initial');
+
+  const productLedger = '.sdcorejs/docs/product/orders.md';
+  const designLedger = '.sdcorejs/docs/design/orders.md';
+  const productDocs = [
+    '.sdcorejs/product/prds/orders.md',
+    '.sdcorejs/product/user-stories/orders.md',
+    '.sdcorejs/product/acceptance-criteria/orders.md',
+    '.sdcorejs/product/uat-checklists/orders.md',
+    '.sdcorejs/product/decisions/orders.md',
+  ];
+  const designDocs = [
+    '.sdcorejs/design/flows/orders.md',
+    '.sdcorejs/design/specs/orders.md',
+    '.sdcorejs/design/decisions/orders.md',
+  ];
+  const designSources = [
+    '.sdcorejs/design/wireframes/orders/list.html',
+    '.sdcorejs/design/wireframes/orders/list.svg',
+  ];
+
+  await write(root, productLedger, artifact('product-ledger', 'orders-change', 'sdcorejs-product', {
+    feature: 'orders',
+  }));
+  await write(root, designLedger, artifact('design-handoff', 'orders-change', 'sdcorejs-design', {
+    feature: 'orders',
+  }));
+  for (const documentPath of productDocs) {
+    await write(root, documentPath, artifact('product-doc', 'orders-change', 'sdcorejs-product'));
+  }
+  for (const documentPath of designDocs) {
+    await write(root, documentPath, artifact('design-asset', 'orders-change', 'sdcorejs-design'));
+  }
+  for (const sourcePath of designSources) {
+    await write(root, sourcePath, '<main data-story="US1"></main>\n');
+  }
+  await write(
+    root,
+    '.sdcorejs/product/prds/invoices.md',
+    artifact('product-doc', 'invoices-change', 'sdcorejs-product'),
+  );
+
+  const closure = await buildArtifactClosure({
+    root,
+    changeRef: 'orders-change',
+    artifactContext: {
+      schema_version: 1,
+      change_ref: 'orders-change',
+      required_with_change: designSources.map((item) => ({ path: item })),
+    },
+    owner: 'sdcorejs-design',
+  });
+
+  for (const required of [...productDocs, ...designDocs, ...designSources, productLedger, designLedger]) {
+    assert.ok(
+      closure.sdcorejs_artifacts.required_paths.includes(required),
+      `${required} must be required with the change`,
+    );
+  }
+  assert.ok(
+    closure.sdcorejs_artifacts.excluded_unrelated_paths.includes(
+      '.sdcorejs/product/prds/invoices.md',
+    ),
+    'another change stays unrelated',
+  );
+  assert.deepEqual(closure.sdcorejs_artifacts.unknown_paths, []);
+  assert.equal(closure.sdcorejs_artifacts.closure_result, 'complete');
+  assert.equal(closure.sdcorejs_artifacts.staging_policy, 'explicit-paths-only');
+
+  const byPath = new Map(closure.classifications.map((item) => [item.path, item]));
+  assert.equal(byPath.get(productDocs[0]).kind, 'product-doc');
+  assert.equal(byPath.get(designDocs[0]).kind, 'design-asset');
+  assert.equal(byPath.get(productLedger).kind, 'product-ledger');
+  assert.equal(byPath.get(designLedger).kind, 'design-handoff');
+  assert.equal(byPath.get(designSources[0]).kind, 'design-asset');
+  assert.equal(byPath.get(designSources[0]).lifecycle, 'change-scoped-durable');
+
+  const missing = await buildArtifactClosure({
+    root,
+    changeRef: 'orders-change',
+    artifactContext: {
+      required_with_change: [{ path: '.sdcorejs/product/prds/missing-feature.md' }],
+    },
+  });
+  assert.equal(missing.sdcorejs_artifacts.closure_result, 'incomplete');
+  assert.deepEqual(missing.sdcorejs_artifacts.missing_required_paths, [
+    '.sdcorejs/product/prds/missing-feature.md',
+  ]);
+});
+
+test('artifact closure includes an approved durable Design PNG without decoding it as text', async () => {
+  const root = await createGitRepo();
+  await write(root, 'README.md', '# Fixture\n');
+  await commitAll(root, 'initial');
+
+  const exportPath = '.sdcorejs/design/exports/png/orders/list.png';
+  const referencePath = '.sdcorejs/design/references/orders/list.png';
+  const diagnosticPath = '.sdcorejs/design/diagnostics/orders/list-failure.png';
+  const png = minimalPngBytes();
+  assert.ok(png.includes(0), 'the fixture must contain binary NUL bytes');
+  assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+
+  await write(
+    root,
+    '.sdcorejs/docs/design/orders.md',
+    artifact('design-handoff', 'orders-change', 'sdcorejs-design', { feature: 'orders' }),
+  );
+  await write(
+    root,
+    '.sdcorejs/design/wireframes/orders/list.html',
+    '<main data-story="US1"></main>\n',
+  );
+  await writeBytes(root, exportPath, png);
+  await writeBytes(root, referencePath, png);
+  await writeBytes(root, diagnosticPath, png);
+
+  const closure = await buildArtifactClosure({
+    root,
+    changeRef: 'orders-change',
+    artifactContext: {
+      schema_version: 1,
+      change_ref: 'orders-change',
+      required_with_change: [
+        { path: '.sdcorejs/design/wireframes/orders/list.html' },
+        {
+          path: exportPath,
+          kind: 'design-asset',
+          reason: 'generated mockup bound to the editable source hash',
+        },
+        {
+          path: referencePath,
+          kind: 'design-asset',
+          reason: 'approved real product screenshot reference',
+        },
+      ],
+      local_only: [{ path: diagnosticPath }],
+    },
+    owner: 'sdcorejs-design',
+  });
+
+  const serialized = JSON.stringify(closure);
+  assert.ok(closure.sdcorejs_artifacts.required_paths.includes(exportPath));
+  assert.ok(closure.sdcorejs_artifacts.required_paths.includes(referencePath));
+  assert.ok(closure.sdcorejs_artifacts.local_only_paths.includes(diagnosticPath));
+  assert.deepEqual(closure.sdcorejs_artifacts.unknown_paths, []);
+  assert.deepEqual(closure.sdcorejs_artifacts.sensitive_paths, []);
+  assert.equal(closure.sdcorejs_artifacts.closure_result, 'complete');
+
+  const byPath = new Map(closure.classifications.map((item) => [item.path, item]));
+  for (const binaryPath of [exportPath, referencePath]) {
+    const entry = byPath.get(binaryPath);
+    assert.equal(entry.binary, true, `${binaryPath} must be treated as binary`);
+    assert.equal(entry.kind, 'design-asset');
+    assert.equal(entry.byte_size, png.byteLength);
+    assert.match(entry.content_hash, /^sha256:[a-f0-9]{64}$/);
+    assert.deepEqual(entry.metadata, {}, 'binary bytes are never parsed as frontmatter');
+  }
+  for (const marker of [
+    String.fromCharCode(0),
+    'IHDR',
+    'IEND',
+    png.toString('base64'),
+    png.toString('latin1'),
+  ]) {
+    assert.ok(
+      !serialized.includes(marker),
+      'binary content must never be echoed into the closure report',
+    );
+  }
+
+  const withoutRuntimeContext = await buildArtifactClosure({
+    root,
+    changeRef: 'orders-change',
+    owner: 'sdcorejs-design',
+  });
+  assert.ok(
+    withoutRuntimeContext.sdcorejs_artifacts.required_paths.includes(exportPath),
+    'the Design ledger relationship alone must classify a durable PNG',
+  );
+  const inferred = withoutRuntimeContext.classifications.find(
+    (item) => item.path === exportPath,
+  );
+  assert.match(inferred.reason, /design ledger relationship for feature orders/);
+
+  const otherChange = await buildArtifactClosure({
+    root,
+    changeRef: 'invoices-change',
+    owner: 'sdcorejs-design',
+  });
+  assert.ok(
+    otherChange.sdcorejs_artifacts.excluded_unrelated_paths.includes(exportPath),
+    'a durable PNG from another change stays unrelated',
+  );
+
+  assert.equal(isBinaryArtifactPath(exportPath), true);
+  assert.equal(isBinaryArtifactPath('.sdcorejs/design/specs/orders.md'), false);
+  assert.deepEqual(
+    scanSensitiveArtifactPath('.sdcorejs/design/references/orders/service-account.png'),
+    ['credential-file-name'],
+  );
+  assert.deepEqual(scanSensitiveArtifactContent(exportPath, png), []);
+});
+
+test('documentation promotion is scoped to the documentation root without becoming an escape hatch', async () => {
+  const root = await createGitRepo();
+  await write(root, 'README.md', '# Fixture\n');
+  await commitAll(root, 'initial');
+
+  const productDoc = '.sdcorejs/product/prds/orders.md';
+  const masquerade = '.sdcorejs/specs/masquerade.md';
+  const guideImage = '.sdcorejs/documentation/user-guides/orders/images/list.png';
+  await write(root, productDoc, artifact('product-doc', 'orders-change', 'sdcorejs-product'));
+  await write(
+    root,
+    masquerade,
+    artifact('documentation-asset', 'orders-change', 'sdcorejs-product'),
+  );
+  await writeBytes(root, guideImage, minimalPngBytes());
+
+  const closure = await buildArtifactClosure({
+    root,
+    changeRef: 'orders-change',
+    artifactContext: {
+      required_with_change: [
+        { path: productDoc },
+        { path: masquerade },
+        { path: guideImage },
+      ],
+    },
+    owner: 'sdcorejs-product',
+  });
+
+  assert.ok(
+    closure.sdcorejs_artifacts.required_paths.includes(productDoc),
+    'a Product path is classified by the Product root, not documentation-layout promotion',
+  );
+  assert.equal(
+    closure.classifications.find((item) => item.path === productDoc).kind,
+    'product-doc',
+  );
+  assert.ok(
+    closure.sdcorejs_artifacts.unknown_paths.includes(masquerade),
+    'scoping the promotion gate must not let a documentation-asset kind claimed outside the documentation root through',
+  );
+  assert.match(
+    closure.classifications.find((item) => item.path === masquerade).reason,
+    /documentation-asset declared outside the documentation root/,
+  );
+  assert.ok(
+    closure.sdcorejs_artifacts.unknown_paths.includes(guideImage),
+    'an unverified documentation image inside the documentation root stays rejected',
+  );
+  assert.match(
+    closure.classifications.find((item) => item.path === guideImage).reason,
+    /documentation promotion rejected/,
+  );
+  assert.equal(closure.sdcorejs_artifacts.closure_result, 'ambiguous');
+
+  assert.equal(
+    classifyArtifact({
+      path: productDoc,
+      metadata: { artifact_kind: 'product-doc', change_ref: 'orders-change' },
+      changeRef: 'orders-change',
+    }).bucket,
+    'required_with_change',
+  );
+});
+
+test('secret screening survives the binary-safe read for every file shape', async () => {
+  const root = await createGitRepo();
+  await write(root, 'README.md', '# Fixture\n');
+  await commitAll(root, 'initial');
+
+  const nulBearingText = '.sdcorejs/design/wireframes/orders/list.html';
+  const textInBinaryExtension = '.sdcorejs/design/exports/png/orders/notes.pdf';
+  const opaqueImage = '.sdcorejs/design/exports/png/orders/list.png';
+  await write(
+    root,
+    '.sdcorejs/docs/design/orders.md',
+    artifact('design-handoff', 'orders-change', 'sdcorejs-design', { feature: 'orders' }),
+  );
+  // A text artifact carrying a stray NUL must not be downgraded to path-only
+  // screening, or a private key rides along inside an approved wireframe.
+  await writeBytes(
+    root,
+    nulBearingText,
+    Buffer.concat([
+      Buffer.from('<main>'),
+      Buffer.from([0]),
+      Buffer.from('</main>\n-----BEGIN PRIVATE KEY-----\nredacted\n'),
+    ]),
+  );
+  // A binary extension holding decodable text is still text.
+  await write(root, textInBinaryExtension, 'api_key = "REDACTED-LOOKALIKE"\n');
+  await writeBytes(root, opaqueImage, minimalPngBytes());
+
+  const closure = await buildArtifactClosure({
+    root,
+    changeRef: 'orders-change',
+    owner: 'sdcorejs-design',
+  });
+  const at = (candidate) =>
+    closure.classifications.find((item) => item.path === candidate);
+
+  assert.deepEqual(at(nulBearingText).sensitive_categories, ['private-key']);
+  assert.deepEqual(at(textInBinaryExtension).sensitive_categories, [
+    'secret-like-assignment',
+  ]);
+  assert.deepEqual(
+    at(opaqueImage).sensitive_categories,
+    [],
+    'genuinely opaque bytes are never text-scanned',
+  );
+  assert.deepEqual(at(opaqueImage).metadata, {});
+  assert.match(
+    closure.sdcorejs_artifacts.blockers.join('\n'),
+    /secret or PII screening requires remediation/,
+  );
+  assert.notEqual(closure.sdcorejs_artifacts.closure_result, 'complete');
+});
+
+test('a ledger cannot claim another feature identity or silently win a collision', async () => {
+  const root = await createGitRepo();
+  await write(root, 'README.md', '# Fixture\n');
+  await commitAll(root, 'initial');
+
+  const exportPath = '.sdcorejs/design/exports/png/orders/list.png';
+  await write(
+    root,
+    '.sdcorejs/docs/design/orders.md',
+    artifact('design-handoff', 'orders-change', 'sdcorejs-design', { feature: 'orders' }),
+  );
+  await writeBytes(root, exportPath, minimalPngBytes());
+
+  const clean = await buildArtifactClosure({
+    root,
+    changeRef: 'orders-change',
+    owner: 'sdcorejs-design',
+  });
+  assert.deepEqual(clean.sdcorejs_artifacts.feature_ledger_conflicts, []);
+  assert.ok(clean.sdcorejs_artifacts.required_paths.includes(exportPath));
+
+  await write(
+    root,
+    '.sdcorejs/docs/design/payments.md',
+    artifact('design-handoff', 'payments-change', 'sdcorejs-design', { feature: 'orders' }),
+  );
+  const impostor = await buildArtifactClosure({
+    root,
+    changeRef: 'orders-change',
+    owner: 'sdcorejs-design',
+  });
+  assert.deepEqual(impostor.sdcorejs_artifacts.feature_ledger_conflicts, [
+    {
+      code: 'LEDGER_FEATURE_IDENTITY_MISMATCH',
+      path: '.sdcorejs/docs/design/payments.md',
+      declared_feature: 'orders',
+      expected_feature: 'payments',
+    },
+  ]);
+  assert.match(
+    impostor.sdcorejs_artifacts.blockers.join('\n'),
+    /ledger feature identity conflict/,
+  );
+  assert.ok(
+    impostor.sdcorejs_artifacts.required_paths.includes(exportPath),
+    'the impostor ledger must not overwrite the real feature mapping',
+  );
+});
+
 test('artifact closure fails closed when Git discovery cannot complete', async (t) => {
   const root = await mkdtemp(join(tmpdir(), 'sdcorejs-artifact-discovery-'));
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -674,6 +1056,96 @@ test('active source encodes runtime-only progress and explicit-path Git staging'
   }
 });
 
+test('Visual Companion runtime state is local-only by explicit rule and never stageable', async () => {
+  const sessionDir = `${VISUAL_COMPANION_RUNTIME_ROOT}/sessions/vc-0123456789abcdef`;
+  const serverInfo = `${sessionDir}/state/server-info.json`;
+  const publishedScreen = `${sessionDir}/content/layout.r1.json`;
+  const eventLog = `${sessionDir}/state/events.jsonl`;
+
+  assert.equal(VISUAL_COMPANION_RUNTIME_ROOT, '.sdcorejs/tmp/visual-companion');
+  for (const candidate of [serverInfo, publishedScreen, eventLog, sessionDir]) {
+    assert.equal(isVisualCompanionRuntimePath(candidate), true, `${candidate} is companion runtime state`);
+    assert.equal(isLocalRuntimePath(candidate), true, `${candidate} is local runtime state`);
+    assert.equal(isLocalOnlyArtifactPath(candidate), true, `${candidate} is local-only`);
+    const classification = classifyArtifact({ path: candidate, changeRef: 'visual-companion-runtime' });
+    assert.equal(classification.bucket, 'local_only');
+    assert.equal(classification.lifecycle, 'diagnostic-local');
+    assert.equal(classification.commit_policy, 'never');
+  }
+  assert.equal(isVisualCompanionRuntimePath('.sdcorejs/design/specs/checkout.md'), false);
+  assert.equal(isLocalRuntimePath('.sdcorejs/specs/workflow/change.md'), false);
+
+  // A producer that mistakenly declares a session file as required must not be
+  // able to stage a session key, a port, or a raw browser event.
+  const root = await createGitRepo();
+  await write(root, serverInfo, '{"session_id":"vc-0123456789abcdef","token":"redacted"}\n');
+  await write(root, publishedScreen, '{"schema_version":1}\n');
+  const closure = await buildArtifactClosure({
+    root,
+    changeRef: 'visual-companion-runtime',
+    owner: 'sdcorejs-brainstorming',
+    artifactContext: {
+      schema_version: 1,
+      change_ref: 'visual-companion-runtime',
+      source_spec: 'none',
+      source_plan: 'none',
+      required_with_change: [{ path: serverInfo }],
+      shared_owned: [],
+      conditional: [{ path: publishedScreen }],
+      local_only: [],
+      unrelated_observed: [],
+    },
+  });
+  assert.ok(closure.sdcorejs_artifacts.local_only_paths.includes(serverInfo));
+  assert.ok(closure.sdcorejs_artifacts.local_only_paths.includes(publishedScreen));
+  assert.ok(!closure.sdcorejs_artifacts.included_paths.includes(serverInfo));
+  assert.ok(!closure.sdcorejs_artifacts.required_paths.includes(serverInfo));
+  assert.ok(!closure.sdcorejs_artifacts.included_paths.includes(publishedScreen));
+  await rm(root, { recursive: true, force: true });
+});
+
+test('local runtime writes are a consent boundary separate from durable writes', async () => {
+  const root = path.resolve('.');
+  const lifecycle = await readFile(join(root, '_refs/shared/artifact-lifecycle.md'), 'utf8');
+  const context = await readFile(join(root, '_refs/shared/project-context.md'), 'utf8');
+  const companion = await readFile(join(root, '_refs/sdlc/visual-companion.md'), 'utf8');
+
+  assert.match(lifecycle, /\.sdcorejs\/tmp\/\*\*` is conversation-local runtime state/);
+  assert.match(lifecycle, /\.sdcorejs\/tmp\/visual-companion\/\*\*/);
+  assert.match(lifecycle, /local_runtime_writes_allowed_after_consent/);
+  assert.match(context, /local_runtime_writes_allowed_after_consent: true \| false/);
+  assert.match(context, /## Local Runtime Writes/);
+  assert.match(context, /capability alone is never permission|is `false` until the user\n?explicitly confirms/);
+  assert.match(companion, /## Consent Boundary/);
+  assert.match(companion, /Browser auto-open/);
+
+  // The two prohibitions the live runtime replaced must be gone, or the
+  // contract would still tell a reader that the runtime cannot exist.
+  const brainstorming = await readFile(join(root, 'skills/shared/sdlc/01-brainstorming.md'), 'utf8');
+  assert.doesNotMatch(brainstorming, /Do not start or invent a local server\/event bridge/);
+  assert.doesNotMatch(companion, /A future local server or event bridge is intentionally out of scope/);
+
+  const scratch = await mkdtemp(join(tmpdir(), 'sdcorejs-consent-'));
+  try {
+    const withoutConsent = await assembleProjectContext({ root: scratch, requestScope: 'visual decision' });
+    assert.equal(withoutConsent.project_context.local_runtime_writes_allowed_after_consent, false);
+    assert.equal(withoutConsent.project_context.writes_allowed, false);
+    const withConsent = await assembleProjectContext({
+      root: scratch,
+      requestScope: 'visual decision',
+      localRuntimeWritesConsented: true,
+    });
+    assert.equal(withConsent.project_context.local_runtime_writes_allowed_after_consent, true);
+    assert.equal(
+      withConsent.project_context.writes_allowed,
+      false,
+      'consenting to local runtime state never authorizes durable writes'
+    );
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
 test('every durable artifact producer participates in lifecycle propagation', async () => {
   const root = path.resolve('.');
   const producerPaths = [
@@ -851,6 +1323,48 @@ async function write(root, relativePath, content) {
   const absolutePath = join(root, relativePath);
   await mkdir(path.dirname(absolutePath), { recursive: true });
   await writeFile(absolutePath, content, 'utf8');
+}
+
+async function writeBytes(root, relativePath, bytes) {
+  const absolutePath = join(root, relativePath);
+  await mkdir(path.dirname(absolutePath), { recursive: true });
+  await writeFile(absolutePath, bytes);
+}
+
+/** Deterministic 1x1 grayscale PNG built from real chunks, not a decoded blob. */
+function minimalPngBytes() {
+  const signature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(1, 0);
+  header.writeUInt32BE(1, 4);
+  header[8] = 8;
+  header[9] = 0;
+  return Buffer.concat([
+    signature,
+    pngChunk('IHDR', header),
+    pngChunk('IDAT', deflateSync(Buffer.from([0x00, 0x00]), { level: 9 })),
+    pngChunk('IEND', Buffer.alloc(0)),
+  ]);
+}
+
+function pngChunk(type, data) {
+  const length = Buffer.alloc(4);
+  length.writeUInt32BE(data.byteLength, 0);
+  const body = Buffer.concat([Buffer.from(type, 'ascii'), data]);
+  const checksum = Buffer.alloc(4);
+  checksum.writeUInt32BE(crc32(body), 0);
+  return Buffer.concat([length, body, checksum]);
+}
+
+function crc32(buffer) {
+  let crc = 0xffffffff;
+  for (const byte of buffer) {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit += 1) {
+      crc = crc & 1 ? (crc >>> 1) ^ 0xedb88320 : crc >>> 1;
+    }
+  }
+  return (crc ^ 0xffffffff) >>> 0;
 }
 
 async function listFiles(root, current = root) {

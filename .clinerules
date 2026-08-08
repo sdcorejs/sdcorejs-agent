@@ -34,6 +34,10 @@ Rules:
   code map.
 - Apply `_refs/shared/artifact-lifecycle.md` to every `.sdcorejs/**` write and
   Git artifact handoff.
+- A Visual Companion session needs explicit consent for local runtime writes and
+  a second consent to open a browser. Session state under
+  `.sdcorejs/tmp/visual-companion/**` is `local_only`, and a visual selection
+  never satisfies an approval gate.
 - Explicit approval required for spec and plan.
 - Approved plans execute through `sdcorejs-execute-plan`.
 - Pure Q&A answers directly; bounded low-risk fixes use targeted context,

@@ -1935,6 +1935,13 @@ test('phase 1: brainstorming visual companion stays optional and gated', async (
   assert.match(brainstorming, /acceptance criteria and testable\s+behavior/);
   assert.doesNotMatch(brainstorming, /_refs\/sdlc\/visual-companion\.md/);
 
+  // The live runtime exists, so the skill must drive it rather than forbid it.
+  assert.doesNotMatch(brainstorming, /Do not start or invent a local server\/event bridge/);
+  assert.match(brainstorming, /live_visual_companion/);
+  assert.match(brainstorming, /Confirm that separately before starting/);
+  assert.match(brainstorming, /Auto-opening a browser is a second, separate consent/);
+  assert.match(brainstorming, /supporting feedback, not approval/);
+
   const visualCompanion = await readFile(new URL('../../_refs/sdlc/visual-companion.md', import.meta.url), 'utf8');
   assert.match(visualCompanion, /optional decision aid for spatial or visual choices/);
   assert.match(visualCompanion, /Do not repeat an offer after the user declines/);
@@ -1943,8 +1950,23 @@ test('phase 1: brainstorming visual companion stays optional and gated', async (
   assert.match(visualCompanion, /static-visual-composer\.mjs/);
   assert.match(visualCompanion, /numbered Markdown fallback/);
   assert.match(visualCompanion, /not implementation approval/);
-  assert.match(visualCompanion, /local server or event bridge is intentionally out of scope/);
   assert.doesNotMatch(visualCompanion, /_refs\/sdlc\/templates/);
+
+  // The contract is executable: it names the entry point, the lifecycle, the
+  // two consent gates, and the codes a caller branches on.
+  assert.doesNotMatch(visualCompanion, /local server or event bridge is intentionally out of scope/);
+  assert.match(visualCompanion, /_refs\/sdlc\/visual-companion\/cli\.mjs/);
+  assert.match(visualCompanion, /## Consent Boundary/);
+  assert.match(visualCompanion, /## Session Lifecycle/);
+  assert.match(visualCompanion, /An approval never reaches a visual surface/);
+  for (const command of ['start', 'status', 'publish', 'events', 'waiting', 'stop', 'cleanup']) {
+    assert.match(visualCompanion, new RegExp(`cli\\.mjs ${command}\\b`), `contract documents ${command}`);
+  }
+  for (const code of ['SESSION_STARTED', 'SCREEN_PUBLISHED', 'EVENTS_READ', 'OWNERSHIP_UNPROVEN', 'STALE_SCREEN']) {
+    assert.match(visualCompanion, new RegExp(`\\b${code}\\b`), `contract documents ${code}`);
+  }
+  assert.match(visualCompanion, /Two to four options/);
+  assert.match(visualCompanion, /local_only/);
 
   for (const legacyPath of [
     'visual-offer.md',

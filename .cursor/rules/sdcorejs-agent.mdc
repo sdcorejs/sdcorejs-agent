@@ -141,6 +141,10 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 11. Keep source English-only and localize generated runtime output.
 12. Do not author new skills without explicit user approval.
 13. Do not expand into production SDLC skill/ref coverage without the explicit approval described in **Production SDLC Scope Decision**.
+14. Local runtime state, such as a Visual Companion session, requires its own
+    explicit consent and stays `local_only`. Capability is never permission,
+    auto-opening a browser is a separate consent, and a visual selection is
+    supporting feedback that never satisfies an approval gate.
 
 ## Session-Start Ritual
 
@@ -174,6 +178,8 @@ Load references on demand:
 - `_refs/sdlc/{ai-agent,angular,nestjs,nextjs}.md` during brainstorming/spec/plan.
 - `_refs/shared/tasklist.md` for non-trivial execution tasks.
 - `_refs/shared/user-choice-prompt.md` before any user-facing choice, approval gate, yes/no question, or mode selection.
+- `_refs/sdlc/visual-companion.md` before offering a visual surface or starting
+  a companion session.
 - `_refs/shared/testing-philosophy.md` for test-track work.
 - `_refs/simplify/**` for bounded behavior-preserving source refinement.
 - `_refs/angular/core-docs-fetch.mjs` before using Core UI components.

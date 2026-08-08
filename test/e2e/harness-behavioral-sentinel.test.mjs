@@ -4,10 +4,12 @@ import { readFile, readdir } from 'node:fs/promises';
 import test from 'node:test';
 import {
   CANONICAL_BEHAVIOR_ENTRYPOINTS,
+  VISUAL_INTERACTION_KINDS,
   classifyTask,
   normalizeChoiceResponse,
   resolveAction,
   resolveModelPolicy,
+  resolveVisualCompanionPlan,
   selectExecutionMode,
   selectInteraction,
   selectWorkerPolicy,
@@ -35,14 +37,16 @@ test('capability contract is structurally valid and drives native-or-Markdown in
   assert.deepEqual(contract.required_actions.sort(), [
     'agent.dispatch', 'agent.interrupt', 'agent.resume', 'artifact.read',
     'artifact.write', 'context.pass', 'progress.create', 'progress.update', 'user.approve',
-    'user.choose', 'verification.run', 'visual.present', 'web.fetch',
+    'user.choose', 'verification.run', 'visual.present', 'visual.session.publish',
+    'visual.session.read', 'visual.session.start', 'visual.session.stop', 'web.fetch',
     'workspace.isolate',
   ]);
   assert.deepEqual(contract.required_capabilities.sort(), [
-    'agent_resume_steer', 'artifact_write', 'browser', 'native_structured_choice',
-    'per_agent_model_override', 'permission_approval', 'runtime_context_channel',
-    'static_html_artifact', 'subagents', 'visual_surface', 'web_fetch',
-    'workspace_isolation',
+    'agent_resume_steer', 'artifact_write', 'browser', 'browser_auto_open',
+    'live_visual_companion', 'native_structured_choice',
+    'per_agent_model_override', 'permission_approval', 'persistent_local_process',
+    'runtime_context_channel', 'static_html_artifact', 'subagents', 'visual_event_bridge',
+    'visual_surface', 'web_fetch', 'workspace_isolation',
   ]);
   assert.deepEqual(Object.keys(contract.adapters).sort(), ['claude-code', 'codex', 'copilot', 'cursor']);
   for (const adapter of Object.values(contract.adapters)) {
@@ -86,6 +90,9 @@ test('capability contract is structurally valid and drives native-or-Markdown in
   assert.equal(delegation.fan_in_policy.parent_rereads_diff_and_evidence, true);
   assert.ok(validateCapabilityContract({ ...contract, provider_tool: 'vendor-only-choice-api' }).length > 0, 'canonical contracts reject provider-tool leakage');
   assert.equal(selectInteraction({ capabilities: scenarios.capabilities.structured, options: ['sequential', 'parallel'] }).kind, 'native-structured-choice');
+  // A visual decision runs its own ladder. Native structured choice no longer
+  // shadows a visual surface, which is why a spatial question used to arrive as
+  // a picker on every runtime that could also draw it.
   assert.equal(selectInteraction({
     capabilities: {
       ...scenarios.capabilities.typed_visual,
@@ -93,9 +100,54 @@ test('capability contract is structurally valid and drives native-or-Markdown in
     },
     options: ['left', 'right'],
     visual_spatial: true,
-  }).kind, 'native-structured-choice');
+  }).kind, 'typed-visual-screen');
+  assert.equal(selectInteraction({
+    capabilities: scenarios.capabilities.live_visual,
+    options: ['left', 'right'],
+    visual_spatial: true,
+  }).kind, 'live-visual-companion');
+  assert.equal(selectInteraction({
+    capabilities: scenarios.capabilities.live_visual,
+    options: ['left', 'right'],
+  }).kind, 'native-structured-choice', 'a non-spatial decision never starts a companion');
   assert.equal(selectInteraction({ capabilities: scenarios.capabilities.typed_visual, options: ['left', 'right'], visual_spatial: true }).kind, 'typed-visual-screen');
   assert.equal(selectInteraction({ capabilities: scenarios.capabilities.static_visual, options: ['left', 'right'], visual_spatial: true }).kind, 'static-visual-composer');
+  assert.equal(selectInteraction({
+    capabilities: scenarios.capabilities.live_visual,
+    options: ['left', 'right'],
+    visual_spatial: true,
+  }).event_channel, 'live');
+  assert.equal(selectInteraction({
+    capabilities: scenarios.capabilities.live_visual_no_bridge,
+    options: ['left', 'right'],
+    visual_spatial: true,
+  }).event_channel, 'conversation', 'without an event bridge the reply comes back through the conversation');
+  for (const kind of VISUAL_INTERACTION_KINDS) {
+    const capabilities = {
+      'live-visual-companion': scenarios.capabilities.live_visual,
+      'typed-visual-screen': scenarios.capabilities.typed_visual,
+      'static-visual-composer': scenarios.capabilities.static_visual,
+    }[kind];
+    const interaction = selectInteraction({ capabilities, options: ['left', 'right'], visual_spatial: true });
+    assert.equal(interaction.kind, kind);
+    assert.equal(interaction.supporting_feedback_only, true, `${kind} is supporting feedback only`);
+    assert.match(interaction.fallback_markdown, /^1\. .*\n2\. /m);
+  }
+  // An approval is never routed to a surface whose only output is a click.
+  const approval = selectInteraction({
+    capabilities: scenarios.capabilities.live_visual,
+    options: ['approve', 'change'],
+    visual_spatial: true,
+    approval: true,
+  });
+  assert.equal(approval.kind, 'native-structured-choice');
+  assert.notEqual(approval.supporting_feedback_only, true);
+  assert.equal(selectInteraction({
+    capabilities: { ...scenarios.capabilities.live_visual, native_structured_choice: 'unsupported' },
+    options: ['approve', 'change'],
+    visual_spatial: true,
+    approval: true,
+  }).kind, 'markdown-numbered-choice');
   for (const capabilities of [scenarios.capabilities.fallback, scenarios.capabilities.unknown]) {
     const interaction = selectInteraction({ capabilities, options: ['sequential', 'parallel'] });
     assert.equal(interaction.kind, 'markdown-numbered-choice');
@@ -245,7 +297,7 @@ test('canonical skills declare semantic actions while adapter manifests own prov
 test('action and workflow classification are deterministic for answer, low-risk fix, and ambiguity', async () => {
   const scenarios = await json(fixtureUrl);
   const policy = { classifyTask, resolveAction, selectInteraction };
-  assert.equal(scenarios.sentinel_outcomes.length, 20);
+  assert.equal(scenarios.sentinel_outcomes.length, 24);
   for (const actionScenario of scenarios.actions) {
     const classification = classifyTask(scenarios.tasks[actionScenario.id]);
     const resolved = resolveAction({ task: scenarios.tasks[actionScenario.id], classification });
@@ -339,6 +391,97 @@ test('visual offer is limited to a new visual or spatial decision and is not rep
   assert.equal(shouldOfferVisual({ decision: 'Choose a worker', visual_spatial: false, previous_response: null }), false);
   assert.equal(shouldOfferVisual({ decision: 'Choose a screen layout', visual_spatial: true, previous_response: 'declined' }), false);
   assert.equal(shouldOfferVisual({ decision: 'Choose a different navigation map', visual_spatial: true, previous_response: 'declined', new_visual_decision: true }), true);
+});
+
+test('a live companion session requires both capability and explicit local-runtime consent', async () => {
+  const scenarios = await json(fixtureUrl);
+  const consented = resolveVisualCompanionPlan({
+    capabilities: scenarios.capabilities.live_visual,
+    consent: { local_runtime_writes: true, browser_open: true },
+  });
+  assert.equal(consented.mode, 'live');
+  assert.equal(consented.event_channel, 'live');
+  assert.equal(consented.local_runtime_writes, true);
+  assert.equal(consented.auto_open, true);
+  assert.equal(consented.supporting_feedback_only, true);
+
+  // Capability alone never authorizes writing local runtime state or opening a
+  // browser window on the user's machine.
+  const withoutConsent = resolveVisualCompanionPlan({
+    capabilities: scenarios.capabilities.live_visual,
+    consent: {},
+  });
+  assert.equal(withoutConsent.mode, 'static');
+  assert.equal(withoutConsent.local_runtime_writes, false);
+  assert.equal(withoutConsent.auto_open, false);
+  assert.match(withoutConsent.reason, /consent/);
+
+  const withoutBrowserConsent = resolveVisualCompanionPlan({
+    capabilities: scenarios.capabilities.live_visual,
+    consent: { local_runtime_writes: true },
+  });
+  assert.equal(withoutBrowserConsent.mode, 'live');
+  assert.equal(withoutBrowserConsent.auto_open, false);
+
+  const degraded = resolveVisualCompanionPlan({
+    capabilities: scenarios.capabilities.live_visual_no_bridge,
+    consent: { local_runtime_writes: true, browser_open: true },
+  });
+  assert.equal(degraded.mode, 'live');
+  assert.equal(degraded.event_channel, 'conversation');
+  assert.equal(degraded.auto_open, false, 'an unknown auto-open capability never launches a browser');
+
+  const incapable = resolveVisualCompanionPlan({
+    capabilities: scenarios.capabilities.static_visual,
+    consent: { local_runtime_writes: true, browser_open: true },
+  });
+  assert.equal(incapable.mode, 'static');
+  assert.equal(incapable.local_runtime_writes, false);
+
+  assert.equal(
+    resolveVisualCompanionPlan({ capabilities: scenarios.capabilities.fallback, consent: { local_runtime_writes: true } }).mode,
+    'markdown'
+  );
+});
+
+test('every adapter maps the live companion lifecycle to a capability and a portable fallback', async () => {
+  const contract = await json(capabilityUrl);
+  const lifecycle = {
+    'visual.session.start': 'persistent_local_process',
+    'visual.session.publish': 'live_visual_companion',
+    'visual.session.read': 'visual_event_bridge',
+    'visual.session.stop': 'persistent_local_process',
+  };
+  for (const [adapterName, adapter] of Object.entries(contract.adapters)) {
+    for (const [action, capability] of Object.entries(lifecycle)) {
+      const mapping = adapter.actions[action];
+      assert.ok(mapping, `${adapterName} maps ${action}`);
+      assert.equal(mapping.capability, capability, `${adapterName} ${action} gates on ${capability}`);
+      assert.ok(mapping.fallback.length > 0, `${adapterName} ${action} keeps a portable fallback`);
+      assert.ok(['supported', 'unsupported', 'unknown'].includes(mapping.status));
+    }
+    // Auto-open stays unknown everywhere: no adapter can prove a browser exists
+    // on the host, and guessing would open windows the user never asked for.
+    assert.equal(adapter.capabilities.browser_auto_open, 'unknown');
+  }
+  assert.equal(
+    resolveAction({
+      contract,
+      adapter: 'cursor',
+      action: 'visual.session.publish',
+      runtimeCapabilities: { live_visual_companion: 'unknown' },
+    }).mode,
+    'fallback'
+  );
+  assert.equal(
+    resolveAction({
+      contract,
+      adapter: 'claude-code',
+      action: 'visual.session.publish',
+      runtimeCapabilities: { live_visual_companion: 'supported' },
+    }).mode,
+    'native'
+  );
 });
 
 async function listFiles(directoryUrl, extension) {

@@ -15,6 +15,10 @@
     "agent.resume",
     "agent.interrupt",
     "visual.present",
+    "visual.session.start",
+    "visual.session.publish",
+    "visual.session.read",
+    "visual.session.stop",
     "workspace.isolate",
     "web.fetch",
     "artifact.read",
@@ -26,6 +30,10 @@
     "native_structured_choice",
     "visual_surface",
     "static_html_artifact",
+    "live_visual_companion",
+    "visual_event_bridge",
+    "persistent_local_process",
+    "browser_auto_open",
     "subagents",
     "per_agent_model_override",
     "agent_resume_steer",
@@ -42,6 +50,10 @@
         "native_structured_choice": "unknown",
         "visual_surface": "unknown",
         "static_html_artifact": "supported",
+        "live_visual_companion": "supported",
+        "visual_event_bridge": "supported",
+        "persistent_local_process": "supported",
+        "browser_auto_open": "unknown",
         "subagents": "unknown",
         "per_agent_model_override": "unknown",
         "agent_resume_steer": "unknown",
@@ -52,87 +64,145 @@
         "permission_approval": "supported"
       },
       "actions": {
+        "progress.create": {
+          "status": "supported",
+          "native": [
+            "update_plan"
+          ],
+          "capability": null,
+          "fallback": "Render a visible Markdown task list in the current conversation."
+        },
+        "progress.update": {
+          "status": "supported",
+          "native": [
+            "update_plan"
+          ],
+          "capability": null,
+          "fallback": "Update the visible Markdown task list in the current conversation."
+        },
         "context.pass": {
           "status": "unknown",
           "native": [],
           "capability": "runtime_context_channel",
           "fallback": "Build a validated portable handoff with required fields and stable artifact or evidence references."
         },
-        "progress.create": {
-          "status": "supported",
-          "native": ["update_plan"],
-          "capability": null,
-          "fallback": "Render a visible Markdown task list in the current conversation."
-        },
-        "progress.update": {
-          "status": "supported",
-          "native": ["update_plan"],
-          "capability": null,
-          "fallback": "Update the visible Markdown task list in the current conversation."
-        },
         "user.choose": {
           "status": "unknown",
-          "native": ["request_user_input"],
+          "native": [
+            "request_user_input"
+          ],
           "capability": "native_structured_choice",
           "fallback": "Render stable numbered Markdown choices and accept a written reply."
         },
         "user.approve": {
           "status": "unknown",
-          "native": ["request_user_input"],
+          "native": [
+            "request_user_input"
+          ],
           "capability": "native_structured_choice",
           "fallback": "Render one numbered approval gate and accept a written reply."
         },
         "agent.dispatch": {
           "status": "unknown",
-          "native": ["spawn_agent"],
+          "native": [
+            "spawn_agent"
+          ],
           "capability": "subagents",
           "fallback": "Execute the unit sequentially in the parent or report that delegation is unavailable."
         },
         "agent.resume": {
           "status": "unknown",
-          "native": ["followup_task"],
+          "native": [
+            "followup_task"
+          ],
           "capability": "agent_resume_steer",
           "fallback": "Return the scoped finding to the parent for sequential repair."
         },
         "agent.interrupt": {
           "status": "unknown",
-          "native": ["interrupt_agent"],
+          "native": [
+            "interrupt_agent"
+          ],
           "capability": "agent_resume_steer",
           "fallback": "Stop new dispatch, report in-flight work honestly, and continue best effort."
         },
         "visual.present": {
           "status": "unknown",
-          "native": ["visualize"],
+          "native": [
+            "visualize"
+          ],
           "capability": "visual_surface",
           "fallback": "Use the static visual composer when available, otherwise numbered Markdown."
         },
+        "visual.session.start": {
+          "status": "supported",
+          "native": [
+            "shell_command"
+          ],
+          "capability": "persistent_local_process",
+          "fallback": "Present the standalone static visual artifact, otherwise numbered Markdown, and keep the decision in the conversation."
+        },
+        "visual.session.publish": {
+          "status": "supported",
+          "native": [
+            "shell_command"
+          ],
+          "capability": "live_visual_companion",
+          "fallback": "Render the screen through the static visual composer, otherwise numbered Markdown."
+        },
+        "visual.session.read": {
+          "status": "supported",
+          "native": [
+            "shell_command"
+          ],
+          "capability": "visual_event_bridge",
+          "fallback": "Ask the user to reply in the conversation and treat the reply as supporting feedback."
+        },
+        "visual.session.stop": {
+          "status": "supported",
+          "native": [
+            "shell_command"
+          ],
+          "capability": "persistent_local_process",
+          "fallback": "Report that no live companion session is running and continue in the conversation."
+        },
         "workspace.isolate": {
           "status": "unknown",
-          "native": ["worktree"],
+          "native": [
+            "worktree"
+          ],
           "capability": "workspace_isolation",
           "fallback": "Use a validated Git worktree fallback or run sequentially when isolation is unsafe."
         },
         "web.fetch": {
           "status": "unknown",
-          "native": ["web.run"],
+          "native": [
+            "web.run"
+          ],
           "capability": "web_fetch",
           "fallback": "Use supplied local evidence or report that current web evidence is unavailable."
         },
         "artifact.read": {
           "status": "supported",
-          "native": ["shell_command"],
+          "native": [
+            "shell_command"
+          ],
           "capability": null,
           "fallback": "Use the runtime's bounded repository read surface."
         },
         "artifact.write": {
           "status": "supported",
-          "native": ["apply_patch"],
+          "native": [
+            "apply_patch"
+          ],
           "capability": "artifact_write",
           "fallback": "Report the intended patch without claiming that files changed."
         },
         "verification.run": {
           "status": "supported",
-          "native": ["shell_command"],
+          "native": [
+            "shell_command"
+          ],
           "capability": null,
           "fallback": "Report the exact unrun command and why execution is unavailable."
         }
@@ -144,6 +214,10 @@
         "native_structured_choice": "supported",
         "visual_surface": "unknown",
         "static_html_artifact": "supported",
+        "live_visual_companion": "supported",
+        "visual_event_bridge": "supported",
+        "persistent_local_process": "supported",
+        "browser_auto_open": "unknown",
         "subagents": "supported",
         "per_agent_model_override": "supported",
         "agent_resume_steer": "unknown",
@@ -154,51 +228,65 @@
         "permission_approval": "supported"
       },
       "actions": {
+        "progress.create": {
+          "status": "supported",
+          "native": [
+            "TodoWrite"
+          ],
+          "capability": null,
+          "fallback": "Render a visible Markdown task list in the current conversation."
+        },
+        "progress.update": {
+          "status": "supported",
+          "native": [
+            "TodoWrite"
+          ],
+          "capability": null,
+          "fallback": "Update the visible Markdown task list in the current conversation."
+        },
         "context.pass": {
           "status": "unknown",
           "native": [],
           "capability": "runtime_context_channel",
           "fallback": "Build a validated portable handoff with required fields and stable artifact or evidence references."
         },
-        "progress.create": {
-          "status": "supported",
-          "native": ["TodoWrite"],
-          "capability": null,
-          "fallback": "Render a visible Markdown task list in the current conversation."
-        },
-        "progress.update": {
-          "status": "supported",
-          "native": ["TodoWrite"],
-          "capability": null,
-          "fallback": "Update the visible Markdown task list in the current conversation."
-        },
         "user.choose": {
           "status": "supported",
-          "native": ["AskUserQuestion"],
+          "native": [
+            "AskUserQuestion"
+          ],
           "capability": "native_structured_choice",
           "fallback": "Render stable numbered Markdown choices and accept a written reply."
         },
         "user.approve": {
           "status": "supported",
-          "native": ["AskUserQuestion"],
+          "native": [
+            "AskUserQuestion"
+          ],
           "capability": "native_structured_choice",
           "fallback": "Render one numbered approval gate and accept a written reply."
         },
         "agent.dispatch": {
           "status": "supported",
-          "native": ["Agent"],
+          "native": [
+            "Agent"
+          ],
           "capability": "subagents",
           "fallback": "Execute the unit sequentially in the parent or report that delegation is unavailable."
         },
         "agent.resume": {
           "status": "unknown",
-          "native": ["Agent"],
+          "native": [
+            "Agent"
+          ],
           "capability": "agent_resume_steer",
           "fallback": "Return the scoped finding to the parent for sequential repair."
         },
         "agent.interrupt": {
           "status": "unknown",
-          "native": ["Agent"],
+          "native": [
+            "Agent"
+          ],
           "capability": "agent_resume_steer",
           "fallback": "Stop new dispatch, report in-flight work honestly, and continue best effort."
         },
@@ -208,33 +296,78 @@
           "capability": "visual_surface",
           "fallback": "Use the static visual composer when available, otherwise numbered Markdown."
         },
+        "visual.session.start": {
+          "status": "supported",
+          "native": [
+            "Bash"
+          ],
+          "capability": "persistent_local_process",
+          "fallback": "Present the standalone static visual artifact, otherwise numbered Markdown, and keep the decision in the conversation."
+        },
+        "visual.session.publish": {
+          "status": "supported",
+          "native": [
+            "Bash"
+          ],
+          "capability": "live_visual_companion",
+          "fallback": "Render the screen through the static visual composer, otherwise numbered Markdown."
+        },
+        "visual.session.read": {
+          "status": "supported",
+          "native": [
+            "Bash"
+          ],
+          "capability": "visual_event_bridge",
+          "fallback": "Ask the user to reply in the conversation and treat the reply as supporting feedback."
+        },
+        "visual.session.stop": {
+          "status": "supported",
+          "native": [
+            "Bash"
+          ],
+          "capability": "persistent_local_process",
+          "fallback": "Report that no live companion session is running and continue in the conversation."
+        },
         "workspace.isolate": {
           "status": "unknown",
-          "native": ["Bash"],
+          "native": [
+            "Bash"
+          ],
           "capability": "workspace_isolation",
           "fallback": "Use a validated Git worktree fallback or run sequentially when isolation is unsafe."
         },
         "web.fetch": {
           "status": "supported",
-          "native": ["WebFetch"],
+          "native": [
+            "WebFetch"
+          ],
           "capability": "web_fetch",
           "fallback": "Use supplied local evidence or report that current web evidence is unavailable."
         },
         "artifact.read": {
           "status": "supported",
-          "native": ["Read", "Glob", "Grep"],
+          "native": [
+            "Read",
+            "Glob",
+            "Grep"
+          ],
           "capability": null,
           "fallback": "Use the runtime's bounded repository read surface."
         },
         "artifact.write": {
           "status": "supported",
-          "native": ["Write", "Edit"],
+          "native": [
+            "Write",
+            "Edit"
+          ],
           "capability": "artifact_write",
           "fallback": "Report the intended patch without claiming that files changed."
         },
         "verification.run": {
           "status": "supported",
-          "native": ["Bash"],
+          "native": [
+            "Bash"
+          ],
           "capability": null,
           "fallback": "Report the exact unrun command and why execution is unavailable."
         }
@@ -246,6 +379,10 @@
         "native_structured_choice": "unknown",
         "visual_surface": "unknown",
         "static_html_artifact": "unknown",
+        "live_visual_companion": "unknown",
+        "visual_event_bridge": "unknown",
+        "persistent_local_process": "unknown",
+        "browser_auto_open": "unknown",
         "subagents": "unknown",
         "per_agent_model_override": "unknown",
         "agent_resume_steer": "unknown",
@@ -256,12 +393,6 @@
         "permission_approval": "unknown"
       },
       "actions": {
-        "context.pass": {
-          "status": "unknown",
-          "native": [],
-          "capability": "runtime_context_channel",
-          "fallback": "Build a validated portable handoff with required fields and stable artifact or evidence references."
-        },
         "progress.create": {
           "status": "unknown",
           "native": [],
@@ -273,6 +404,12 @@
           "native": [],
           "capability": null,
           "fallback": "Update the visible Markdown task list in the current conversation."
+        },
+        "context.pass": {
+          "status": "unknown",
+          "native": [],
+          "capability": "runtime_context_channel",
+          "fallback": "Build a validated portable handoff with required fields and stable artifact or evidence references."
         },
         "user.choose": {
           "status": "unknown",
@@ -309,6 +446,30 @@
           "native": [],
           "capability": "visual_surface",
           "fallback": "Use the static visual composer when available, otherwise numbered Markdown."
+        },
+        "visual.session.start": {
+          "status": "unknown",
+          "native": [],
+          "capability": "persistent_local_process",
+          "fallback": "Present the standalone static visual artifact, otherwise numbered Markdown, and keep the decision in the conversation."
+        },
+        "visual.session.publish": {
+          "status": "unknown",
+          "native": [],
+          "capability": "live_visual_companion",
+          "fallback": "Render the screen through the static visual composer, otherwise numbered Markdown."
+        },
+        "visual.session.read": {
+          "status": "unknown",
+          "native": [],
+          "capability": "visual_event_bridge",
+          "fallback": "Ask the user to reply in the conversation and treat the reply as supporting feedback."
+        },
+        "visual.session.stop": {
+          "status": "unknown",
+          "native": [],
+          "capability": "persistent_local_process",
+          "fallback": "Report that no live companion session is running and continue in the conversation."
         },
         "workspace.isolate": {
           "status": "unknown",
@@ -348,6 +509,10 @@
         "native_structured_choice": "unknown",
         "visual_surface": "unknown",
         "static_html_artifact": "unknown",
+        "live_visual_companion": "unknown",
+        "visual_event_bridge": "unknown",
+        "persistent_local_process": "unknown",
+        "browser_auto_open": "unknown",
         "subagents": "unknown",
         "per_agent_model_override": "unknown",
         "agent_resume_steer": "unknown",
@@ -358,12 +523,6 @@
         "permission_approval": "unknown"
       },
       "actions": {
-        "context.pass": {
-          "status": "unknown",
-          "native": [],
-          "capability": "runtime_context_channel",
-          "fallback": "Build a validated portable handoff with required fields and stable artifact or evidence references."
-        },
         "progress.create": {
           "status": "unknown",
           "native": [],
@@ -375,6 +534,12 @@
           "native": [],
           "capability": null,
           "fallback": "Update the visible Markdown task list in the current conversation."
+        },
+        "context.pass": {
+          "status": "unknown",
+          "native": [],
+          "capability": "runtime_context_channel",
+          "fallback": "Build a validated portable handoff with required fields and stable artifact or evidence references."
         },
         "user.choose": {
           "status": "unknown",
@@ -411,6 +576,30 @@
           "native": [],
           "capability": "visual_surface",
           "fallback": "Use the static visual composer when available, otherwise numbered Markdown."
+        },
+        "visual.session.start": {
+          "status": "unknown",
+          "native": [],
+          "capability": "persistent_local_process",
+          "fallback": "Present the standalone static visual artifact, otherwise numbered Markdown, and keep the decision in the conversation."
+        },
+        "visual.session.publish": {
+          "status": "unknown",
+          "native": [],
+          "capability": "live_visual_companion",
+          "fallback": "Render the screen through the static visual composer, otherwise numbered Markdown."
+        },
+        "visual.session.read": {
+          "status": "unknown",
+          "native": [],
+          "capability": "visual_event_bridge",
+          "fallback": "Ask the user to reply in the conversation and treat the reply as supporting feedback."
+        },
+        "visual.session.stop": {
+          "status": "unknown",
+          "native": [],
+          "capability": "persistent_local_process",
+          "fallback": "Report that no live companion session is running and continue in the conversation."
         },
         "workspace.isolate": {
           "status": "unknown",

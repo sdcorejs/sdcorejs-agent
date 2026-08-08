@@ -3,6 +3,23 @@
     "structured": { "native_structured_choice": "supported" },
     "typed_visual": { "native_structured_choice": "unsupported", "visual_surface": "supported", "static_html_artifact": "supported" },
     "static_visual": { "native_structured_choice": "unsupported", "visual_surface": "unsupported", "static_html_artifact": "supported" },
+    "live_visual": {
+      "native_structured_choice": "supported",
+      "visual_surface": "supported",
+      "static_html_artifact": "supported",
+      "live_visual_companion": "supported",
+      "visual_event_bridge": "supported",
+      "persistent_local_process": "supported",
+      "browser_auto_open": "supported"
+    },
+    "live_visual_no_bridge": {
+      "native_structured_choice": "supported",
+      "static_html_artifact": "supported",
+      "live_visual_companion": "supported",
+      "visual_event_bridge": "unknown",
+      "persistent_local_process": "supported",
+      "browser_auto_open": "unknown"
+    },
     "fallback": { "native_structured_choice": "unsupported" },
     "unknown": { "native_structured_choice": "unknown" }
   },
@@ -27,8 +44,9 @@
   },
   "sentinel_outcomes": [
     "direct-answer", "fast-fix", "brainstorm-first", "single-unit-sequential", "parallel-choice",
-    "native-choice", "typed-visual", "static-visual", "unsupported-markdown", "unknown-markdown", "ambiguous-unselected", "fast-worker",
+    "native-choice", "live-visual", "typed-visual", "static-visual", "unsupported-markdown", "unknown-markdown", "ambiguous-unselected", "fast-worker",
     "security-not-fast", "architecture-not-fast", "brief-no-embedded-artifacts", "review-package-shape",
-    "disjoint-ownership", "visual-only", "decline-not-reoffered", "single-option-auto-select"
+    "disjoint-ownership", "visual-only", "decline-not-reoffered", "single-option-auto-select",
+    "visual-approval-stays-textual", "live-companion-needs-consent", "live-companion-event-channel-degrades"
   ]
 }

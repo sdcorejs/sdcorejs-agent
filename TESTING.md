@@ -28,6 +28,7 @@ Run one phase:
 
 ```bash
 npm run test:e2e:harness
+npm run test:e2e:visual-companion
 npm run test:e2e:phase1
 npm run test:e2e:phase2
 npm run test:e2e:phase3
@@ -73,10 +74,27 @@ npm run test:e2e:harness
 ```
 
 Simulates direct Q&A, bounded fast-fix, ambiguous full-workflow entry,
-single/multi-unit execution mode, tri-state interaction fallback, worker-tier
-selection, bounded task/review envelopes, entrypoint deletion/rename
-invalidation, disjoint ownership, and safe static visual rendering. It does not
-call a live model.
+single/multi-unit execution mode, tri-state interaction fallback, separate
+visual and non-visual surface ladders, worker-tier selection, bounded
+task/review envelopes, entrypoint deletion/rename invalidation, disjoint
+ownership, and safe static visual rendering. It does not call a live model.
+
+### Visual Companion Runtime
+
+```bash
+npm run test:e2e:visual-companion
+```
+
+Eight categories over the live companion runtime and the static surface they
+share: protocol identity and redaction, the one screen model, rendering with the
+CSP hash pinned to the served client bytes, RFC 6455 framing, server
+authentication and filesystem containment, event identity including stale,
+cross-session, and replayed clicks, the command-line contract with its JSON
+result and error codes, and process lifecycle including the idle watchdog, the
+runtime-root fallback, and the shell-free browser launcher.
+
+It binds only ephemeral loopback ports and writes only under a temporary
+directory, so it needs no browser and no network access.
 
 ### Communication Economy Policy
 
@@ -287,7 +305,9 @@ viet product doc va kiem tra requirement implement test co day du khong
 Expected:
 
 - Product/PO docs use `sdcorejs-product`.
+- The PRD, user stories, acceptance criteria, UAT checklist, and decisions are written under `.sdcorejs/product/`.
 - The ledger is written under `.sdcorejs/docs/product/`.
+- No root-level `product/` directory is created.
 - The report maps requirement, implementation, and test evidence and lists real gaps.
 
 ### Design Track
@@ -299,7 +319,8 @@ thiet ke man hinh quan ly lop hoc va gen png theo user stories
 Expected:
 
 - FE handoff work uses `sdcorejs-design`.
-- The design source is written under `design/` and the ledger under `.sdcorejs/docs/design/`.
+- The design source is written under `.sdcorejs/design/` (`flows/`, `specs/`, `decisions/`, `wireframes/`, `exports/png/`, `references/`) and the ledger under `.sdcorejs/docs/design/`.
+- No root-level `design/` directory is created.
 - PNG previews are treated as exports from editable specs/wireframes, not the only source of truth.
 
 ### Generic Harness

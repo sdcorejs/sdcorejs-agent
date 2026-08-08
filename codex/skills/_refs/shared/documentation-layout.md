@@ -72,8 +72,12 @@ These root-level files are deliberate singleton exceptions:
 
 This contract does not change `.sdcorejs/docs/**`, `.sdcorejs/specs/**`,
 `.sdcorejs/plans/**`, `.sdcorejs/handoffs/**`, `.sdcorejs/memories/**`,
-`.sdcorejs/tasks/**`, `.sdcorejs/prd/**`, `product/**`, `design/**`, source-code
-comments, JSDoc, TSDoc, or docstrings.
+`.sdcorejs/tasks/**`, `.sdcorejs/prd/**`, `.sdcorejs/product/**`,
+`.sdcorejs/design/**`, source-code comments, JSDoc, TSDoc, or docstrings.
+Documentation-layout promotion and canonical/legacy entry checks apply only
+inside `.sdcorejs/documentation/**`. The Product and Design artifact roots keep
+their own contracts in `_refs/shared/product-ledger.md` and
+`_refs/shared/design-handoff.md`.
 
 ## Semantic repository ownership
 

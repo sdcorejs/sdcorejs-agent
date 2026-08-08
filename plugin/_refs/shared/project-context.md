@@ -258,7 +258,25 @@ project_context:
     diffs: []
     commands: []
   writes_allowed: true | false
+  local_runtime_writes_allowed_after_consent: true | false
   redaction_applied: true | false
 ```
 
 This block is runtime-only. Do not persist it as a global project file.
+
+## Local Runtime Writes
+
+`local_runtime_writes_allowed_after_consent` is a separate boundary from
+`writes_allowed`. It governs conversation-local runtime state only, such as
+`.sdcorejs/tmp/visual-companion/**`, and it is `false` until the user
+explicitly confirms it for the current purpose.
+
+- It never authorizes a durable `.sdcorejs/**` artifact, source code, or Git
+  state. Those stay under `writes_allowed` and the normal approval gates.
+- It never survives as a standing permission. Confirm it again for a new
+  purpose.
+- Read-only contexts keep it `false` even when a runtime is technically able to
+  write.
+- Everything it authorizes is `local_only` under
+  `_refs/shared/artifact-lifecycle.md`: never staged, never committed, and
+  never read back as project context.

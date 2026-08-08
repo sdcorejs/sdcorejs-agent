@@ -41,17 +41,40 @@ delegation/isolation unless the runtime proves native support.
 Per-agent model override is optional. When unavailable, inherit the parent
 model rather than blocking the task.
 
-## Static Visual Output
+## Visual Output
 
-The shipped companion is a static composer, not a local server. It always
-includes a numbered Markdown fallback and keeps the written response
-authoritative.
+Two surfaces share one screen model: the live companion runtime and the
+standalone static composer. Both always include a numbered Markdown fallback and
+both keep the written response authoritative.
 
-- Do not add remote scripts, telemetry, arbitrary HTML, or a half-configured
-  socket/event bridge.
-- Treat generated HTML as temporary/local-only unless the user asks to save it.
+- Do not add remote scripts, telemetry, or arbitrary HTML to either surface.
+- Treat generated HTML and every companion session directory as local-only
+  unless the user asks to save a result.
 - If scripts are disabled, use the visible Markdown fallback.
 - A visual selection is feedback, not implementation approval.
+
+## Visual Companion Session Will Not Start
+
+A live session is capability-gated and consent-gated. Both must hold.
+
+- Confirm `live_visual_companion` and `persistent_local_process` are `supported`
+  in the adapter's generated `sdcorejs-harness.json`. `unknown` falls back to
+  the static composer by design.
+- Confirm the user consented to local runtime writes. Capability alone is never
+  permission; see `local_runtime_writes_allowed_after_consent` in
+  `_refs/shared/project-context.md`.
+- Read the command's JSON result. `PORT_UNAVAILABLE` means the requested port is
+  taken; omit `--port` to take an ephemeral one. `RUNTIME_UNAVAILABLE` means the
+  detached server never became ready. `UNSAFE_HOST` means a non-loopback bind
+  was requested without `--allow-non-loopback`.
+- `UNKNOWN_SESSION` after a machine restart is expected: the runtime root is
+  local-only and is not restored. Start a new session.
+- Nothing opens in the browser unless `--open` is passed and
+  `browser_auto_open` is `supported`. Otherwise present the returned
+  `authenticated_url` and let the user open it.
+- Reclaim stopped sessions with `cleanup`. It never removes a running session
+  unless that session is named and `--force` is passed.
+- Verify the runtime with `npm run test:e2e:visual-companion`.
 
 ## Missing Codex Refs
 

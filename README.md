@@ -99,7 +99,36 @@ hashes, errors, numbers, and verification results remain exact.
 
 Detailed policy is loaded just in time from
 `_refs/harness/communication-economy.md`. This is a communication contract, not
-a workflow gate, runtime server, or new `sdcorejs-caveman` skill.
+a workflow gate or a new `sdcorejs-caveman` skill.
+
+## Visual Companion
+
+Spatial decisions during brainstorming may run on a local, authenticated
+browser surface instead of a picker. Visual and non-visual decisions use
+separate priority ladders, so a genuinely spatial question is no longer
+shadowed by a native structured choice. Approvals never reach a visual surface.
+
+Surfaces, best first: the live companion runtime, a typed native visual
+surface, the standalone static composer, then numbered Markdown. All four share
+one screen model and always carry the same numbered Markdown fallback.
+
+The live runtime is `_refs/sdlc/visual-companion/`: a zero-dependency Node
+server on a loopback origin with an RFC 6455 event channel, a browser client
+pinned by CSP hash, server-owned screen revisions that make stale-click
+rejection possible, and a bounded event log. Drive it through
+`_refs/sdlc/visual-companion/cli.mjs`, which prints one JSON object per command
+and exits non-zero on failure.
+
+Two independent gates: `live_visual_companion` plus `persistent_local_process`
+must be `supported`, and the user must consent to local runtime writes.
+Auto-opening a browser is a third, separate consent. Session state lives under
+the execution host's `.sdcorejs/tmp/visual-companion/`, which is `local_only`:
+never staged, never committed, never read back as project context. Every
+browser event is stamped `authority: supporting-feedback` by the server and
+asserted on read, so a click can never carry workflow approval.
+
+Contract: `_refs/sdlc/visual-companion.md`. Security model and attribution:
+`_refs/sdlc/visual-companion/README.md`.
 
 ## Documentation Layout v2
 
@@ -134,6 +163,43 @@ requirements, technical docs, and assets. The portal owns only
 portal/integration docs and generated aggregates. An aggregate links pinned
 module sources or consumes versioned exports with repository/revision/hash
 provenance; it is not a second editable source of module documentation.
+
+## Product And Design Artifact Layout
+
+Product and Design artifacts live under the target repository's `.sdcorejs/`
+directory:
+
+```text
+.sdcorejs/product/prds/<feature>.md
+.sdcorejs/product/user-stories/<feature>.md
+.sdcorejs/product/acceptance-criteria/<feature>.md
+.sdcorejs/product/uat-checklists/<feature>.md
+.sdcorejs/product/decisions/<feature>.md
+.sdcorejs/docs/product/<feature>.md
+
+.sdcorejs/design/flows/<feature>.md
+.sdcorejs/design/specs/<feature>.md
+.sdcorejs/design/decisions/<feature>.md
+.sdcorejs/design/wireframes/<feature>/<screen>.html
+.sdcorejs/design/wireframes/<feature>/<screen>.svg
+.sdcorejs/design/exports/png/<feature>/<screen>.png
+.sdcorejs/design/references/<feature>/<screen>.png
+.sdcorejs/docs/design/<feature>.md
+```
+
+Canonical roots are declared once as `artifact_roots` in
+`_refs/shared/system-registry.json` and resolved through
+`_refs/shared/artifact-paths.mjs`. Root-level `product/**` and `design/**` are
+legacy read-only compatibility inputs for older target projects: canonical
+locations always win on read, a legacy path is read only when no canonical
+equivalent exists, updating a legacy-only artifact migrates that feature bundle
+to the canonical location in the same approved change, and a conflicting
+canonical/legacy pair blocks instead of merging. No skill creates or updates a
+root-level Product or Design path.
+
+Durable Design PNG exports and screenshot references participate in Git artifact
+closure as binary artifacts. Discovery hashes them, never parses them as
+Markdown, never text-scans them for secrets, and never prints their bytes.
 
 The AI-agent track is an approved-plan-only authoring surface, not a bundled
 agent runtime. It selects one lifecycle engine (`openai-responses` or
