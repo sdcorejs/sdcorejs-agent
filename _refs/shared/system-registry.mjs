@@ -55,6 +55,13 @@ export function validateSystemRegistry(registry = systemRegistry) {
   for (const field of [
     'stack_profiles',
     'artifact_kinds',
+    'review_dimensions',
+    'consistency_finding_kinds',
+    'convention_rule_statuses',
+    'convention_enforcement_levels',
+    'convention_source_kinds',
+    'convention_capture_modes',
+    'convention_scope_kinds',
     'repository_roles',
     'ownership_scopes',
     'evidence_classes',
@@ -66,6 +73,64 @@ export function validateSystemRegistry(registry = systemRegistry) {
     }
   }
   errors.push(...validateArtifactRoots(registry));
+  errors.push(...validateReviewDimensions(registry));
+  errors.push(...validateConventionVocabulary(registry));
+  return errors;
+}
+
+const CONSISTENCY_SCOPES = new Set([
+  'complete',
+  'applicable',
+  'structural',
+  'dimension-affecting-only',
+]);
+
+/**
+ * `review_dimensions` is the single authoritative dimension enum. Skills and
+ * contracts read it instead of restating a local list, so `consistency` cannot
+ * drift between the review skill, the review contract, and the mirrors.
+ */
+function validateReviewDimensions(registry) {
+  const errors = [];
+  const dimensions = registry?.review_dimensions;
+  if (!Array.isArray(dimensions) || dimensions.length === 0) return errors;
+  for (const [index, dimension] of dimensions.entries()) {
+    if (typeof dimension?.id !== 'string' || dimension.id === '') {
+      errors.push(`review_dimensions[${index}].id must be text`);
+    }
+    if (!CONSISTENCY_SCOPES.has(dimension?.consistency_scope)) {
+      errors.push(
+        `review_dimensions[${index}].consistency_scope must be one of ${[...CONSISTENCY_SCOPES].join(', ')}`,
+      );
+    }
+  }
+  for (const duplicate of findDuplicates(dimensions.map(({ id }) => id))) {
+    errors.push(`duplicate review dimension id: ${duplicate}`);
+  }
+  for (const required of ['code', 'architecture', 'consistency', 'ALL']) {
+    if (!dimensions.some(({ id }) => id === required)) {
+      errors.push(`review_dimensions must declare ${required}`);
+    }
+  }
+  return errors;
+}
+
+/**
+ * Convention vocabularies live beside the tracks they govern so the convention
+ * contract never grows a second copy of the registry.
+ */
+function validateConventionVocabulary(registry) {
+  const errors = [];
+  if (!registry?.artifact_kinds?.includes('convention')) {
+    errors.push('artifact_kinds must declare the convention artifact kind');
+  }
+  const scopeKinds = registry?.convention_scope_kinds ?? [];
+  const ownershipScopes = new Set(registry?.ownership_scopes ?? []);
+  for (const scope of scopeKinds) {
+    if (!ownershipScopes.has(scope)) {
+      errors.push(`convention_scope_kinds.${scope} must also be a declared ownership scope`);
+    }
+  }
   return errors;
 }
 
@@ -75,6 +140,7 @@ const REQUIRED_ARTIFACT_ROOTS = [
   'design_artifacts',
   'design_ledger',
   'documentation',
+  'conventions',
 ];
 const REQUIRED_LEGACY_ARTIFACT_ROOTS = ['product_documents', 'design_artifacts'];
 

@@ -1,6 +1,49 @@
+import {
+  CONSISTENCY_FINDING_KINDS,
+  validateConsistencyFinding,
+} from './convention-contract.mjs';
 import { systemRegistry } from './system-registry.mjs';
 
-const SEVERITIES = new Set(['Critical', 'High', 'Important', 'Medium', 'Minor', 'Low']);
+const SEVERITIES = new Set(['Critical', 'High', 'Important', 'Medium', 'Minor', 'Low', 'Info']);
+
+const REVIEW_DIMENSIONS = new Map(
+  systemRegistry.review_dimensions.map((dimension) => [dimension.id, dimension]),
+);
+
+/**
+ * How much of the consistency dimension a requested review actually runs.
+ *
+ * The distinction matters because a consistency audit is expensive and
+ * opinionated. Someone who asked for a security review wants authorization and
+ * injection findings, not a naming inventory, so a security-only request may
+ * only surface a consistency issue when it changes the security answer - for
+ * example a permission code that two layers spell differently.
+ */
+export function resolveConsistencyScope(dimensions = []) {
+  const requested = dimensions.filter((dimension) => REVIEW_DIMENSIONS.has(dimension));
+  const scopes = new Set(
+    requested.map((dimension) => REVIEW_DIMENSIONS.get(dimension).consistency_scope),
+  );
+  if (scopes.has('complete')) {
+    return { scope: 'complete', reason: 'consistency or ALL was requested directly' };
+  }
+  if (scopes.has('applicable')) {
+    return { scope: 'applicable', reason: 'code review includes applicable consistency checks' };
+  }
+  if (scopes.has('structural')) {
+    return {
+      scope: 'structural',
+      reason: 'architecture review includes structural and cross-layer consistency checks',
+    };
+  }
+  if (requested.length === 0) {
+    return { scope: 'none', reason: 'no recognized review dimension was requested' };
+  }
+  return {
+    scope: 'dimension-affecting-only',
+    reason: 'narrow dimension reports consistency only where it affects that dimension',
+  };
+}
 
 function finding(id, severity, kind, observation, requiredFix) {
   return {
@@ -31,6 +74,19 @@ export function evaluateReviewContract(context) {
   if ((context?.write_actions ?? []).length > 0) {
     blockers.push('read-only review cannot contain write actions');
   }
+
+  const requestedDimensions = context?.dimensions ?? [];
+  for (const dimension of requestedDimensions) {
+    if (!REVIEW_DIMENSIONS.has(dimension)) {
+      blockers.push(`unsupported review dimension: ${dimension}`);
+    }
+  }
+  const consistency = resolveConsistencyScope(requestedDimensions);
+  // The dimensions the user asked for survive verbatim. A consistency issue is
+  // reported as `consistency`, never relabelled into generic code style, and a
+  // narrow request is never widened into a full audit behind the user's back.
+  const consistencyReportingAllowed = consistency.scope !== 'none';
+
   const findings = [];
   let sequence = 1;
   for (const item of context?.reported_findings ?? []) {
@@ -45,8 +101,49 @@ export function evaluateReviewContract(context) {
       blockers.push(`finding ${item.id ?? sequence} does not satisfy the durable schema`);
       continue;
     }
+    // Match on a declared consistency kind, not on the mere presence of a
+    // `finding_kind` field. A truthy check would drag any finding that happens
+    // to carry that field - including a security finding from another producer -
+    // into the consistency gate and reject it as an audit that was never asked
+    // for.
+    const reportsConsistency =
+      item.dimension === 'consistency' || CONSISTENCY_FINDING_KINDS.includes(item.finding_kind);
+    if (reportsConsistency) {
+      if (!consistencyReportingAllowed) {
+        blockers.push(
+          `finding ${item.id ?? sequence} reports consistency but no requested dimension covers it`,
+        );
+        continue;
+      }
+      if (consistency.scope === 'dimension-affecting-only' && item.affects_requested_dimension !== true) {
+        blockers.push(
+          `finding ${item.id ?? sequence} expands a narrow review into a consistency audit`,
+        );
+        continue;
+      }
+      const consistencyValidation = validateConsistencyFinding(item);
+      if (!consistencyValidation.ok) {
+        blockers.push(
+          `finding ${item.id ?? sequence} is not a valid consistency finding: ${consistencyValidation.errors.join('; ')}`,
+        );
+        continue;
+      }
+    }
     findings.push({ ...item });
     sequence += 1;
+  }
+
+  const conventionContext = context?.convention_context ?? null;
+  if (conventionContext) {
+    if (conventionContext.mode !== 'read-only') {
+      blockers.push('convention_context carried by review must stay read-only');
+    }
+    if ((conventionContext.write_actions ?? []).length > 0) {
+      blockers.push('convention_context carried by review cannot contain write actions');
+    }
+    if (conventionContext.persistence?.performed === true) {
+      blockers.push('review must not perform convention persistence');
+    }
   }
 
   const artifacts = context?.artifacts ?? [];
@@ -165,6 +262,14 @@ export function evaluateReviewContract(context) {
     review_profile: context?.review_profile ?? null,
     owner_repository_id: context?.owner_repository_id ?? null,
     execution_host_repository_id: context?.execution_host_repository_id ?? null,
+    requested_dimensions: [...requestedDimensions],
+    consistency_scope: consistency.scope,
+    consistency_scope_reason: consistency.reason,
+    convention_context_read_only:
+      conventionContext == null
+        ? null
+        : conventionContext.mode === 'read-only' &&
+          (conventionContext.write_actions ?? []).length === 0,
     findings,
     blockers,
   };
@@ -177,4 +282,8 @@ export const firstClassReviewProfiles = Object.freeze(
       reviewProfile,
     ]),
   ),
+);
+
+export const reviewDimensions = Object.freeze(
+  systemRegistry.review_dimensions.map(({ id }) => id),
 );

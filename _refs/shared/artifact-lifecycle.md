@@ -27,7 +27,7 @@ discovery and classification helper. It never stages or commits files.
 | Lifecycle | Examples | Commit policy |
 |---|---|---|
 | Change-scoped durable | approved spec, approved plan, execution doc, product ledger, Product document, design handoff, Design spec/flow/decision/wireframe/export/reference, verified guide screenshot or documentation asset | `with-change` |
-| Shared durable | project summary, persona, memory, living track backlog | `conditional`, with an explicit owner |
+| Shared durable | project summary, persona, memory, living track backlog, convention rule and capture policy | `conditional`, with an explicit owner |
 | Explicit handoff | requested change-scoped handoff | `conditional` or `with-change` |
 | Diagnostic/local | trace, video, raw report, coverage HTML, auth/storage state, failure screenshot or diagnostic screenshot, temp, cache, codegraph cache, legacy session checkpoint | `never` |
 | Unknown | unclassified path or insufficient relationship metadata | never auto-stage; report ambiguity |
@@ -52,6 +52,17 @@ helper hardcodes them.
 | `.sdcorejs/docs/design/**` | `design-handoff` | Design traceability ledgers |
 | `.sdcorejs/docs/**` | `execution-doc` | remaining change execution records |
 | `.sdcorejs/documentation/**` | `documentation-asset` | documentation layout entries and assets |
+| `.sdcorejs/conventions/**` | `convention` | capture policy and one-rule-per-file project conventions |
+
+`.sdcorejs/conventions/**` is classified by `_refs/shared/convention-paths.mjs`.
+The path carries identity - scope directory, module segment, category, and rule
+filename - so a path that fails validation is `unknown` and blocks closure, and a
+`convention` kind claimed outside the root is a metadata/path contradiction that
+fails closed. Module rules are owned by the module repository, repository rules
+by that repository, and portal-composition rules by the portal or integration
+repository. There is no portal fallback for a module-owned rule: an unavailable
+or unwritable owner blocks persistence. See
+`_refs/shared/convention-context.md`.
 
 `.sdcorejs/product/**` and `.sdcorejs/design/**` are deterministically classified
 from the path. They never fall through to `unknown` merely because they are not
@@ -92,7 +103,7 @@ supports it:
 
 ```yaml
 artifact_id: <stable id>
-artifact_kind: spec | plan | execution-doc | product-ledger | product-doc | design-handoff | design-asset | handoff | summary | task | memory | persona | documentation-asset
+artifact_kind: spec | plan | execution-doc | product-ledger | product-doc | design-handoff | design-asset | handoff | summary | task | memory | persona | documentation-asset | convention
 change_ref: <logical change id or durable artifact path>
 source_spec: <repo-relative path | none>
 source_plan: <repo-relative path | none>
@@ -166,9 +177,16 @@ When several producers run, merge contexts by `change_ref` and path:
   created or updated spec, flow, decision log, editable wireframe, durable
   export, and approved screenshot reference plus its ledger. Emitting only the
   ledger is a contract violation.
-- Summary, persona, memory, and living track backlog writes are
+- Summary, persona, memory, living track backlog, and convention writes are
   `shared_owned` only when the current workflow is the explicit owner;
   otherwise they remain `conditional`.
+- Convention rules and the capture policy are written only by
+  `sdcorejs-explore (conventions-sync-write-approved)` run by the sequential or
+  fan-in integration owner. `sdcorejs-review` never writes them, a parallel
+  worker never writes them, and `sdcorejs-git` never generates or updates them.
+  An authorized same-change sync emits every created or updated convention file,
+  not only the policy; a required convention artifact missing from that
+  `artifact_context` blocks closure.
 - A worker in a parallel write workflow creates only change-scoped artifacts
   inside its ownership boundary. It must not update shared artifacts.
 - The integration/fan-in owner updates shared artifacts once after results are

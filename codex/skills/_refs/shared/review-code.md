@@ -74,6 +74,14 @@ library, or routing convention without evidence.
 - Duplicate helper logic should reuse local shared utilities or direct
   dependencies when those are actually installed.
 
+### Naming And Convention Consistency
+
+- When the resolved consistency scope is not `none`, apply
+  `_refs/shared/review-consistency.md` instead of restating naming rules here.
+- Compare against the project's own accepted conventions loaded through
+  `sdcorejs-explore (conventions-read)`, not against generic taste.
+- Report a consistency issue as `consistency`; do not relabel it as code style.
+
 ### Maintainability And Cohesion
 
 - Files, functions, components, services, and handlers should have clear

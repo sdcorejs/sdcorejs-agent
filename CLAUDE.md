@@ -109,6 +109,7 @@ sdcorejs-test
 -> sdcorejs-documentation (write-user-guide mode)
 -> _refs/orchestration/tail/auto-task-tracker.md when the sequential/integration owner updates durable backlog
 -> sdcorejs-explore (memories mode) when durable knowledge surfaced
+-> sdcorejs-explore (conventions-sync-write-approved) when convention candidates exist and policy or explicit authority permits persistence
 -> sdcorejs-ship (verify-before-done mode)
 -> sdcorejs-ship (branch-ready mode as the final read-only gate)
 ```
@@ -159,6 +160,13 @@ Product and Design artifacts always live under the target repository's
 `_refs/shared/system-registry.json` and are resolved through
 `_refs/shared/artifact-paths.mjs`. Root-level `product/**` and `design/**` are
 legacy read-only compatibility inputs, never write targets.
+
+Project conventions live under `.sdcorejs/conventions/**`, one rule per file,
+resolved through `_refs/shared/convention-paths.mjs`. `sdcorejs-review` reads
+them and reports drift read-only; only
+`sdcorejs-explore (conventions-sync-write-approved)` persists them, run by the
+sequential or fan-in integration owner. See
+`_refs/shared/convention-context.md` and `_refs/shared/review-consistency.md`.
 
 The test track is first-class. Test-only plans are not routed through app write-code skills.
 
@@ -241,7 +249,7 @@ At the start of a target-project session:
 | SDLC | `sdcorejs-brainstorming`, `sdcorejs-spec`, `sdcorejs-plan` |
 | Execution | `sdcorejs-execute-plan`, `sdcorejs-ai-agent`, other track executors, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` |
 | Parallel | `sdcorejs-parallel-dispatch`; workspace isolation lives in `sdcorejs-git (workspace mode)` |
-| Finish | `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)`, `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode as the final read-only gate)` |
+| Finish | `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)`, `sdcorejs-explore (conventions-sync-write-approved)`, `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode as the final read-only gate)` |
 | Utilities | `sdcorejs-simplify`, `sdcorejs-explore`, `sdcorejs-git`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, `sdcorejs-documentation` |
 
 ## Mirrors

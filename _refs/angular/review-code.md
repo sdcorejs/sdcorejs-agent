@@ -346,6 +346,19 @@ Skip it for `plain-angular`.
 - Selectors: `<entity-kebab>-list`, `<entity-kebab>-detail`
 - Permission codes: `<MODULE>_C_<ENTITY>_<ACTION>` strict format
 
+### Consistency (boundary detail for `_refs/shared/review-consistency.md`)
+Apply the shared semantic rules; this section only names the Angular boundaries.
+- TypeScript member naming against the project's accepted rule, not generic taste
+- Component `input()`/`output()` and event names against sibling components
+- Public service DTO versus ViewModel boundary: no UI-only field on a service
+  contract, no raw API type used directly as presentation state
+- Route path, menu entry, breadcrumb, and permission mapping for one feature:
+  decide which are presentation labels and which are competing identifiers
+- Core UI `autoId` selectors against the project's accepted selector rule
+- Form control names against their DTO fields and the mapper between them
+- Observable/signal suffix conventions only when the project accepted one
+- API mapper coverage: raw payload casing must not leak past the mapper
+
 ### Components
 - `changeDetection: ChangeDetectionStrategy.OnPush` on every generated or modified component
 - All injections via `inject()` function, not constructor params

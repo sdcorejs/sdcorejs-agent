@@ -53,6 +53,11 @@ Before detecting profile/dimension or reading files under review, run
 - Current diffs, failing tests, explicit review scope, and user corrections
   override stored summary context.
 
+Then run `sdcorejs-explore (conventions-read)` through
+`_refs/shared/convention-context.md` for the categories this review touches. It
+never creates the capture policy and never refreshes evidence; a missing registry
+is a context signal, not a blocker and not write permission.
+
 Determine review scope in this order:
 
 1. explicit user-provided files or directories;
@@ -118,12 +123,14 @@ Rules:
 
 ### Dimensions
 
-Dimension comes from user intent:
+Dimension comes from user intent. Ids come from `review_dimensions` in
+`_refs/shared/system-registry.json`; keep no second enum here.
 
 | Dimension | Use when |
 |---|---|
 | `code` | "review code", "review", "audit module", per-file conventions. |
 | `architecture` | "architecture review", "module boundaries", "circular dependency", "layering". |
+| `consistency` | "consistency review", "review naming consistency", "review API conventions", singular/plural or casing drift, "same thing named differently", convention audit. |
 | `security` | "security review", "SQL injection", "secrets", "CSP", "route guards". |
 | `performance` | "performance review", "Lighthouse", "N+1", "bundle size", "slow query". |
 | `accessibility` | "accessibility", "a11y", "WCAG", "aria", "keyboard nav", "contrast". |
@@ -133,6 +140,9 @@ Dimension comes from user intent:
 Preserve dimensions. A security review remains `security`; do not relabel it as
 generic `code`. Accessibility is N/A for backend-only profiles unless the user
 asks for API usability/error-shape accessibility or a generated docs/UI review.
+Consistency coverage resolves through `resolveConsistencyScope` in
+`_refs/shared/review-contract.mjs`: never relabel a consistency issue as code
+style, never let a narrow dimension expand into a full audit.
 
 Frontend architecture comparison is active only when the scope is frontend and
 the selected dimensions include `code`, `architecture`, or `ALL`. When active,
@@ -172,6 +182,10 @@ missing ref and do not silently fail.
 | `nextjs-build-website` | `_refs/nextjs/build-website/review-code.md` | `_refs/shared/review-security.md` + `_refs/nextjs/build-website/review-security.md` | `_refs/shared/review-performance.md` + `_refs/nextjs/build-website/review-performance.md` | `_refs/shared/review-accessibility.md` + `_refs/nextjs/build-website/review-accessibility.md` | `_refs/shared/review-architecture.md` |
 | `plain-nextjs` | `_refs/shared/review-code.md` plus generic/local Next.js checks only | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
 | `general` | `_refs/shared/review-code.md` | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
+
+Load `_refs/shared/review-consistency.md` whenever the resolved consistency
+scope is not `none`. It is profile-neutral; track refs add boundary examples but
+never fork its semantic rules.
 
 When frontend architecture comparison is active, load
 `_refs/shared/frontend-architecture.md` and compare the implementation with the
@@ -241,8 +255,12 @@ Security redaction is mandatory:
    Also verify approved artifact freshness/hash, scope, semantic repository
    ownership, test/generated-reference validity, traceability, cross-repository
    provenance, and portal-pinned module revisions when applicable.
-5. Assign stable IDs (`R1`, `R2`, `R3`) and repair tier metadata.
-6. Build the complete `review_context` for the exact downstream consumer and
+5. When consistency is in scope, compare current evidence against accepted
+   rules, authoritative config/contracts, approved specs/plans, observed
+   patterns, exceptions, deprecations, and stale/conflicted rules. Classify
+   concept, role, layer, boundary, ownership, tense, and compatibility first.
+6. Assign stable IDs (`R1`, `R2`, `R3`) and repair tier metadata.
+7. Build the complete `review_context` for the exact downstream consumer and
    pass it through `context.pass`. Show the user a localized projection with
    every finding, strength, N/A dimension/ref, and verification gap.
 
@@ -260,13 +278,19 @@ review and repair loop"; a skipped finish-gate review or direct read-only review
 must not auto-edit.
 
 The caller must complete any write-producing documentation, task tracker,
-memory, changelog, or release-note steps before the final branch-ready gate. No
-writes after branch-ready unless branch-ready is run again.
+memory, convention-sync, changelog, or release-note steps before the final
+branch-ready gate. No writes after branch-ready unless it is run again.
 
 If a finding is a concrete single bug rather than a findings set, keep it in
 `review_context` as evidence. Repair-loop may delegate that one item to
 `sdcorejs-debug`, which returns `debug_context` before the caller continues the
 tail chain.
+
+Convention persistence is the caller's separate
+`sdcorejs-explore (conventions-sync-write-approved)` step. Direct review returns
+candidates plus whether an approved `after-review` policy authorizes a later
+sync; finish-gate review passes `convention_context` through the tail so the
+sync sees the final code writes.
 
 When `sdcorejs-review` is invoked directly by the user:
 
@@ -328,7 +352,8 @@ review_context:
   source_revision_map: {}
   portal_pinned_module_revision_map: {}
   dimensions:
-    - code | architecture | security | performance | accessibility | ALL
+    - code | architecture | consistency | security | performance | accessibility | ALL
+  consistency_scope: complete | applicable | structural | dimension-affecting-only | none
   review_mode: quick-table | table | scored | blocking | site-audit
   approved_frontend_architecture:
     plan_path: <selected approved plan or null>
@@ -371,6 +396,7 @@ review_context:
     blocking: Critical/Important or BLOCKER/REQUIRED
     confirm: semantic/non-mechanical fixes
     user_decision: product/contract/security-policy decisions
+  convention_context: <read-only block from _refs/shared/convention-context.md>
 ```
 
 ## Findings
@@ -452,6 +478,8 @@ Review remains read-only and does not widen the simplification scope.
 ### MUST NOT
 - Edit files.
 - Silently write `.sdcorejs` artifacts from direct review.
+- Write under `.sdcorejs/conventions/**`, treat a finding as write authorization,
+  promote an observed pattern to an accepted rule, or widen a narrow dimension.
 - Auto-run repair-loop from direct review.
 - Apply SDCoreJS/Core UI/NestJS/build-website conventions to plain profiles.
 - Invent missing dependencies, package managers, scripts, tools, source roots,
@@ -462,7 +490,7 @@ Review remains read-only and does not widen the simplification scope.
 
 ## Cross-references
 - General fallback: `_refs/shared/review-code.md`
-- Shared baselines: `_refs/shared/review-{architecture,security,performance,accessibility}.md`
+- Shared baselines: `_refs/shared/review-{architecture,security,performance,accessibility,consistency}.md`, `_refs/shared/convention-context.md`
 - Angular Core UI refs: `_refs/angular/review-{code,security,performance,accessibility}.md`
 - NestJS SDCoreJS refs: `_refs/nestjs/review-{code,security,performance}.md`
 - Next.js build-website refs: `_refs/nextjs/build-website/review-{code,security,performance,accessibility}.md`
