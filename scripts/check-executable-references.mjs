@@ -137,7 +137,37 @@ function extractCodeFences(source, defaultClass = null) {
   return fences;
 }
 
+/**
+ * This checker needs the classic TypeScript compiler API to transpile fenced
+ * samples and read back syntax diagnostics.
+ *
+ * TypeScript 7 is a ground-up Go rewrite: `require('typescript')` there exports
+ * only `version`, and the programmatic API moved behind `typescript/unstable/*`.
+ * Upgrading into it turns every call below into `undefined`, which surfaced as
+ * an unexplained `Cannot read properties of undefined (reading 'Preserve')`.
+ * Fail with the actual reason instead, so a future dependency bump reports what
+ * broke rather than sending the next reader into the stack trace.
+ */
+export function assertClassicTypeScriptApi() {
+  const missing = [
+    'transpileModule',
+    'flattenDiagnosticMessageText',
+    'JsxEmit',
+    'ModuleKind',
+    'ScriptTarget',
+    'DiagnosticCategory',
+  ].filter((member) => ts?.[member] === undefined);
+  if (missing.length === 0) return;
+  throw new Error(
+    `typescript@${ts?.version ?? 'unknown'} does not expose the classic compiler API ` +
+      `(missing: ${missing.join(', ')}). This checker requires the TypeScript 5.x ` +
+      'programmatic API; TypeScript 7 moved it behind "typescript/unstable/*". ' +
+      'Keep the devDependency on a 5.x release or port this checker to the new API.',
+  );
+}
+
 function typeScriptFenceErrors(fence, file) {
+  assertClassicTypeScriptApi();
   const isTsx =
     fence.language === 'tsx' ||
     /return\s*\(\s*</u.test(fence.source) ||

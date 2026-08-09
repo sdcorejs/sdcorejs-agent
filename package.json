@@ -58,7 +58,7 @@
   "devDependencies": {
     "@angular/compiler": "22.1.0",
     "lefthook": "^2.1.10",
-    "typescript": "^7.0.2",
+    "typescript": "^5.9.3",
     "yaml": "2.9.0"
   }
 }

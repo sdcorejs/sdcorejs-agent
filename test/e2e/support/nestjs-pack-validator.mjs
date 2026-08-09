@@ -2,6 +2,7 @@ import { access, readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
+import { assertClassicTypeScriptApi } from '../../../scripts/check-executable-references.mjs';
 
 export const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 
@@ -116,6 +117,11 @@ export function basicFenceSyntaxErrors(fence) {
 }
 
 export function typescriptFenceSyntaxErrors(fence) {
+  // Same classic-compiler-API requirement as the reference checker. This is the
+  // second consumer, and it runs in a later test group, so without the guard an
+  // API-incompatible TypeScript major would report the cryptic failure here
+  // after the reference checker had already been fixed.
+  assertClassicTypeScriptApi();
   const result = ts.transpileModule(fence.source, {
     fileName: `${fence.file}.${fence.language === 'tsx' ? 'tsx' : 'ts'}`,
     reportDiagnostics: true,
