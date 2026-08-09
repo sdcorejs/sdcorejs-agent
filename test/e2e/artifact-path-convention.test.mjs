@@ -121,6 +121,7 @@ test('canonical artifact roots live once in the system registry', () => {
     design_artifacts: '.sdcorejs/design',
     design_ledger: '.sdcorejs/docs/design',
     documentation: '.sdcorejs/documentation',
+    conventions: '.sdcorejs/conventions',
   });
   assert.deepEqual(systemRegistry.legacy_artifact_roots, {
     product_documents: 'product',

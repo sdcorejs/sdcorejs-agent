@@ -28,8 +28,8 @@ attempts, and repaired evidence linkage.
 2. Read `_refs/orchestration/tail/repair-loop.md` completely.
 3. If the source is `sdcorejs-review`, preserve the original `review_context` exactly, including `track`, `track_profile`, dimensions, mode, `file_scope`, refs loaded/skipped, probes run/skipped, and package manager.
    Preserve any `test_context`, `test_status`, `test_evidence`,
-   `ui_capture_context`, `ai_agent_context`, `simplify_context`, and
-   `artifact_context` exactly as source evidence;
+   `ui_capture_context`, `ai_agent_context`, `simplify_context`,
+   `convention_context`, and `artifact_context` exactly as source evidence;
    append new run/case evidence after repair instead of overwriting or upgrading
    stale/blocked results.
 4. Record the working-tree baseline and a visible Repair ledger before edits.
@@ -70,6 +70,18 @@ attempts, and repaired evidence linkage.
   evidence rules, limits, or security thresholds to make a finding disappear.
   A required contract/policy change returns through `sdcorejs-spec` and
   `sdcorejs-plan`; only plan-scoped implementation defects may be repaired.
+- When `convention_context` is present, preserve the original rule source,
+  status, evidence, ownership, and public-contract/compatibility classification.
+  Classify each convention finding as valid, stale, mis-scoped, redundant,
+  unclear, a conflict needing a user decision, a public-contract migration, or
+  spec/plan work before editing. Automatic repair is limited to bounded,
+  behavior-preserving findings with clear current authority. A public API route,
+  external event field, database column, persisted enum, permission code,
+  environment variable, queue or topic name, or public package export rename is
+  never a blind repair: report the migration, deprecation, compatibility layer,
+  or specification decision instead. Never edit an accepted convention rule to
+  make a finding disappear, and pass the final `convention_context` to the
+  separate convention sync step.
 - When `simplify_context` is present, preserve the original
   `simplify_context` exactly. Do not turn behavior-preserving refinement into a
   semantic refactor, widen its scope, or change protected contracts. Every

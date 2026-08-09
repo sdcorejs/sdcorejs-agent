@@ -23,7 +23,7 @@ unsupported or unknown.
 ```yaml
 explore_context:
   source: sdcorejs-explore
-  action: summary-read | summary-refresh | code-map-readonly | code-map-write-approved | trace-flow-readonly | env-setup-readonly | env-setup-write-approved | recovery-readonly | persona-read | persona-write-approved | memories-read | memories-write-approved | documentation-harvest-readonly
+  action: summary-read | summary-refresh | code-map-readonly | code-map-write-approved | trace-flow-readonly | env-setup-readonly | env-setup-write-approved | recovery-readonly | persona-read | persona-write-approved | memories-read | memories-write-approved | conventions-read | conventions-sync-write-approved | documentation-harvest-readonly
   target_root: <path>
   target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
   tracks:
@@ -226,6 +226,12 @@ Use these sections:
 Use a compact `Area | Path | Responsibility | Entry point | Depends on` module
 map. Aim for 100–250 lines. Do not dump a large tree, full code, every symbol,
 or repeated README/package content.
+
+`Conventions and Invariants` may hold only a small set of high-impact accepted
+invariants, convention root references, policy state, scope and ownership notes,
+and pointers to relevant convention categories. Do not duplicate the convention
+catalog into the summary, and do not let a convention edit invalidate the
+summary: convention validity is checked independently of the four fingerprints.
 
 ## Freshness Rules
 

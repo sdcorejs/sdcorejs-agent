@@ -141,3 +141,10 @@ copying this table into durable artifacts.
 Broad simplification/refactor, under-specified AI-agent work, or unapproved
 production SDLC expansion returns to brainstorming. Project summary/code-map
 work belongs to `sdcorejs-explore`; documentation does not own project context.
+
+Consistency and convention intent - "consistency review", "review naming
+consistency", "review API conventions", singular/plural or casing drift - routes
+to `sdcorejs-review` with the `consistency` dimension. Review stays read-only.
+Reading or persisting `.sdcorejs/conventions/**` belongs to `sdcorejs-explore`
+(`conventions-read` and `conventions-sync-write-approved`); `sdcorejs-git` never
+generates or updates conventions.

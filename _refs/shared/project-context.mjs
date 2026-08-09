@@ -6,6 +6,17 @@ import { access, readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import {
+  parseConventionDocument,
+  projectConventionContext,
+  validateConventionPolicy,
+  validateConventionRule,
+} from './convention-contract.mjs';
+import {
+  CONVENTION_POLICY_PATH,
+  CONVENTION_ROOT,
+  classifyConventionPath,
+} from './convention-paths.mjs';
 import { systemRegistry } from './system-registry.mjs';
 
 const execFileAsync = promisify(execFile);
@@ -69,6 +80,8 @@ export async function assembleProjectContext({
   changeRef,
   writesAllowed = false,
   localRuntimeWritesConsented = false,
+  conventionCategories = [],
+  conventionModuleIds = [],
 } = {}) {
   const targetRoot = path.resolve(root ?? process.cwd());
   const files = await listRepositoryFiles(targetRoot);
@@ -93,6 +106,10 @@ export async function assembleProjectContext({
     changeRef,
   });
   const gitEvidence = await readGitEvidence(targetRoot);
+  const conventions = await collectConventionProjection(targetRoot, {
+    categories: conventionCategories,
+    moduleIds: conventionModuleIds,
+  });
 
   return {
     project_context: {
@@ -109,6 +126,7 @@ export async function assembleProjectContext({
         invalidated_sections: summaryResult.invalidatedSections,
       },
       related_artifacts: relatedArtifacts,
+      conventions,
       code_context: codeContext,
       current_evidence: {
         files: explicitFiles.map(normalizeRelativePath),
@@ -129,6 +147,107 @@ export async function assembleProjectContext({
     fingerprint_evidence: fingerprintResult.evidence,
     graph_provider: provider ?? null,
   };
+}
+
+/**
+ * Read-only projection of `.sdcorejs/conventions/**` for `project_context`.
+ *
+ * Only the categories the current task actually touches are loaded, and only
+ * rule identifiers and paths are returned. Loading every rule body into every
+ * context would recreate the single mutable catalog the one-rule-per-file layout
+ * exists to avoid, just in memory instead of on disk.
+ *
+ * An unparseable or schema-invalid rule is reported through `invalid_paths`
+ * rather than repaired or guessed at, because a rule nobody can validate must
+ * not quietly become enforceable.
+ */
+export async function collectConventionProjection(
+  root,
+  { categories = [], moduleIds = [] } = {},
+) {
+  const targetRoot = path.resolve(root);
+  const conventionRoot = path.join(targetRoot, CONVENTION_ROOT);
+  if (!(await exists(conventionRoot))) {
+    return projectConventionContext({ policy_status: 'missing' });
+  }
+
+  const policyText = await readFile(path.join(targetRoot, CONVENTION_POLICY_PATH), 'utf8').catch(
+    () => null,
+  );
+  let policyStatus = 'missing';
+  if (policyText != null) {
+    const parsed = await parseConventionDocument(policyText);
+    policyStatus = parsed.ok
+      ? validateConventionPolicy(parsed.document, { path: CONVENTION_POLICY_PATH }).ok
+        ? 'valid'
+        : 'invalid'
+      : 'invalid';
+  }
+
+  const categoryFilter = new Set(categories);
+  const moduleFilter = new Set(moduleIds);
+  const discovered = [];
+  const unreadable = [];
+  await collectFiles(conventionRoot, conventionRoot, discovered, unreadable);
+
+  const rules = [];
+  // A directory we could not read is reported, never silently treated as empty.
+  // "No conventions exist" and "the conventions could not be read" lead to very
+  // different reviews, and only one of them is safe to act on.
+  const invalidPaths = [...unreadable];
+  for (const relative of discovered) {
+    const repositoryRelativePath = `${CONVENTION_ROOT}/${relative}`;
+    if (repositoryRelativePath === CONVENTION_POLICY_PATH) continue;
+    const classification = classifyConventionPath(repositoryRelativePath);
+    if (!classification.ok) {
+      invalidPaths.push(repositoryRelativePath);
+      continue;
+    }
+    if (categoryFilter.size > 0 && !categoryFilter.has(classification.category)) continue;
+    if (
+      classification.scope_kind === 'module' &&
+      moduleFilter.size > 0 &&
+      !moduleFilter.has(classification.module_id)
+    ) {
+      continue;
+    }
+    const text = await readFile(path.join(targetRoot, repositoryRelativePath), 'utf8').catch(
+      () => null,
+    );
+    const parsed = text == null ? { ok: false } : await parseConventionDocument(text);
+    if (!parsed.ok || !validateConventionRule(parsed.document, { path: repositoryRelativePath }).ok) {
+      invalidPaths.push(repositoryRelativePath);
+      continue;
+    }
+    rules.push({ ...parsed.document, artifact_path: repositoryRelativePath });
+  }
+
+  return projectConventionContext({
+    policy_status: policyStatus,
+    policy_path: policyStatus === 'missing' ? 'none' : CONVENTION_POLICY_PATH,
+    rules,
+    invalid_paths: invalidPaths,
+  });
+}
+
+async function collectFiles(base, current, result, unreadable = []) {
+  let entries;
+  try {
+    entries = await readdir(current, { withFileTypes: true });
+  } catch {
+    const relative = path.relative(base, current).replaceAll('\\', '/');
+    unreadable.push(`${CONVENTION_ROOT}${relative ? `/${relative}` : ''}`);
+    return;
+  }
+  for (const entry of entries) {
+    const absolute = path.join(current, entry.name);
+    if (entry.isDirectory()) {
+      if (ARTIFACT_SKIPPED_DIRS.has(entry.name)) continue;
+      await collectFiles(base, absolute, result, unreadable);
+    } else if (entry.isFile()) {
+      result.push(path.relative(base, absolute).replaceAll('\\', '/'));
+    }
+  }
 }
 
 export async function computeProjectFingerprints(root, knownFiles, { declaredEntrypoints = [] } = {}) {

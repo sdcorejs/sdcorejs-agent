@@ -298,6 +298,22 @@ done
 
 Severity: 🔴 Critical — server-only modules in client bundle leak secrets / break build.
 
+## Consistency (boundary detail for `_refs/shared/review-consistency.md`)
+
+Apply the shared semantic rules; this section only names the Next.js boundaries.
+
+- app route segment naming and cardinality across sibling routes, including
+  `[locale]` and other dynamic segments;
+- route handler and server action naming against the operations they perform;
+- `searchParams` keys against the API query contract they map onto, including
+  pagination, sort, and filter key names;
+- server component, client component, provider, and public component boundaries:
+  one name must not mean two different render environments;
+- URL, canonical URL, and locale route consistency with `generateMetadata`
+  identifiers and sitemap entries;
+- API route contracts against their client callers and response envelopes;
+- component ViewModel names against the server or API contract they adapt.
+
 ## Severity mapping for this track
 - **🔴 Critical** — build-breaking (`use client` gap, missing `setRequestLocale`), broken URLs (direct `next/link`), XSS (`dangerouslySetInnerHTML`), hydration mismatches, server-only leaks into client, hardcoded VI/EN in prod, unguarded public POST.
 - **🟡 Important** — missing metadata/cache/`metadataBase`, unnecessary `"use client"`, multi-field form without zod, false route/action/fetcher model fields, or UI-only state added to server DTOs.

@@ -172,6 +172,8 @@ branch-ready.
 - A simplification write makes affected test, review, and ship evidence stale.
   Rerun the same focused tests before review and pass the resulting
   `simplify_context` through the remaining tail.
+- Convention sync is a write-producing step. When it writes files after an
+  earlier verification, rerun every affected final gate before branch-ready.
 - Do not automatically simplify again after `sdcorejs-repair-loop`. A new pass
   requires a separate invocation.
 - If the user chooses "Skip new user/technical docs" at Finish step 2, do not
@@ -238,8 +240,15 @@ branch-ready.
    workflow or integration owner is authorized to reconcile the shared durable
    backlog (and unless deferred). Never use it for live progress.
 12. `sdcorejs-explore (memories mode)` when durable knowledge surfaced.
-13. `sdcorejs-ship (verify-before-done mode)` (unless deferred).
-14. `sdcorejs-ship (branch-ready mode)` (unless deferred) - final read-only
+13. `sdcorejs-explore (conventions-sync-write-approved)` only when convention
+    candidates or rule updates exist AND the project capture policy or explicit
+    workflow authorization permits persistence. It runs after every other
+    write-producing step so it revalidates the final source/config state, and it
+    merges its `artifact_context` into the same-change closure. Never run it
+    from a parallel worker, and never add convention sync to `sdcorejs-git`;
+    Git consumes already-produced artifacts.
+14. `sdcorejs-ship (verify-before-done mode)` (unless deferred).
+15. `sdcorejs-ship (branch-ready mode)` (unless deferred) - final read-only
     gate over the final diff.
 
 Every producer passes its `artifact_context` to the next step. Ship merges the

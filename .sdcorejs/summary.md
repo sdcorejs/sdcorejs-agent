@@ -14,7 +14,7 @@ evidence:
   key_entrypoints: [AGENTS.md, CLAUDE.md, skills/orchestration/using-skills.md, scripts/sync-skills.mjs, plugin/hooks/session-start, .github/copilot-instructions.md, .cursor/rules/sdcorejs-agent.mdc, site/src/pages/index.astro]
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:6305104b064977f1b079f7ea4a8795659d0544b3915fc2450806504c3f5a54b0
+  dependency_manifests: sha256:25d46dc5802b7a30286b3b449a902ed1a5af59c6a01d78ba727600beb9f8f179
   source_roots: sha256:ddec7e2dffa8a69905218e58e710cd58376cd3cbc4dc15fc1d809fc8a6e2ec12
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
@@ -156,6 +156,9 @@ canonical source and rerun synchronization.
   static visual safety tests.
 - `npm run test:e2e:artifact-paths` runs the Product/Design canonical path
   sentinel, both artifact contracts, and lifecycle closure tests.
+- `npm run test:e2e:conventions` runs the convention schema/path/precedence
+  contract, the consistency review contract, and convention artifact lifecycle
+  and closure tests.
 - `node --test test/e2e/ai-agent-track-contract.test.mjs` runs the dedicated
   AI-agent contract, fixture, mutation, and downstream checks.
 - `npm run test:e2e:nestjs` runs NestJS pack contract and generation tests.
@@ -192,6 +195,12 @@ canonical source and rerun synchronization.
   ledgers stay under `.sdcorejs/docs/product/**` and `.sdcorejs/docs/design/**`.
   Root-level `product/**` and `design/**` are legacy read-only compatibility
   inputs only.
+- Project conventions live under `.sdcorejs/conventions/**`, one rule per file,
+  resolved through `_refs/shared/convention-paths.mjs`. They are shared durable
+  artifacts: `sdcorejs-review` reads them and reports drift read-only, and only
+  `sdcorejs-explore (conventions-sync-write-approved)` persists them. An
+  inferred pattern is never auto-accepted, and a module-owned rule is never
+  written into a portal.
 - Artifact discovery is binary-safe: durable images are hashed, never parsed as
   frontmatter, never text-scanned, and never printed.
 - Parallel workers do not mutate shared summary, memory, or backlog artifacts.

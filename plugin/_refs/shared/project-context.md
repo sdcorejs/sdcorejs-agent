@@ -28,7 +28,7 @@ Classify the caller before applying the preflight:
 
 ```text
 caller_context: <skill-name>
-context_mode: read-only | write-approved | summary-read | summary-refresh | code-map-readonly | trace-flow-readonly | env-setup-readonly | recovery-readonly | persona-read | memories-read | documentation-harvest-readonly
+context_mode: read-only | write-approved | summary-read | summary-refresh | code-map-readonly | trace-flow-readonly | env-setup-readonly | recovery-readonly | persona-read | memories-read | conventions-read | documentation-harvest-readonly
 side_effects_allowed: true | false
 request_scope: <short task scope>
 ```
@@ -202,6 +202,16 @@ Do not update, stage, delete, or recreate them.
 For recovery, use the approved plan, relevant change-scoped artifacts, an
 explicit handoff, Git evidence, and current user direction. Do not auto-resume.
 
+Load project conventions from `.sdcorejs/conventions/**` for the categories the
+current task actually touches, through `collectConventionProjection` in
+`_refs/shared/project-context.mjs`. Read metadata before bodies and return rule
+identifiers and paths only; dumping rule bodies into every context rebuilds the
+single catalog the one-rule-per-file layout exists to avoid. Preserve owner
+repository identity and current revision evidence, use repository-relative
+paths, and mark an unparseable or schema-invalid rule as invalid rather than
+guessing at it. Conventions are independent of summary freshness and are never
+written during context preflight. See `_refs/shared/convention-context.md`.
+
 ## Step 6 - Redaction And Bounded Reads
 
 - Prefer `git ls-files`, targeted `rg`, manifests, entrypoints, configs, and
@@ -247,6 +257,17 @@ project_context:
     docs: []
     handoffs: []
     tasks: []
+  conventions:
+    policy_status: missing | valid | invalid
+    policy_path: .sdcorejs/conventions/policy.yaml | none
+    loaded_paths: []
+    accepted_rule_ids: []
+    observed_rule_ids: []
+    conflicted_rule_ids: []
+    deprecated_rule_ids: []
+    stale_rule_ids: []
+    invalid_paths: []
+    unresolved_owner_repositories: []
   code_context:
     strategy: summary-only | targeted-read | scoped-code-map | existing-codegraph
     scope: <scope>

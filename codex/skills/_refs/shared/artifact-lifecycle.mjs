@@ -17,6 +17,10 @@ import {
   isSafeFeature,
 } from './artifact-paths.mjs';
 import {
+  CONVENTION_ROOT,
+  classifyConventionPath,
+} from './convention-paths.mjs';
+import {
   DOCUMENTATION_ROOT,
   buildCanonicalEntryPath,
   buildLegacyEntryPath,
@@ -94,6 +98,7 @@ const ARTIFACT_KIND_BY_PATH = [
   [/^\.sdcorejs\/docs\//i, 'execution-doc'],
   [new RegExp(`^${escapeForPattern(PRODUCT_DOCUMENT_ROOT)}/`, 'i'), 'product-doc'],
   [new RegExp(`^${escapeForPattern(DESIGN_ARTIFACT_ROOT)}/`, 'i'), 'design-asset'],
+  [new RegExp(`^${escapeForPattern(CONVENTION_ROOT)}/`, 'i'), 'convention'],
   [/^\.sdcorejs\/documentation\//i, 'documentation-asset'],
   [/^\.sdcorejs\/handoffs\//i, 'handoff'],
   [/^\.sdcorejs\/memories\//i, 'memory'],
@@ -102,7 +107,15 @@ const ARTIFACT_KIND_BY_PATH = [
   [/^\.sdcorejs\/summary\.md$/i, 'summary'],
 ];
 
-const SHARED_KINDS = new Set(['memory', 'persona', 'summary', 'task']);
+/**
+ * Shared durable kinds need a proven owner before they may be staged.
+ *
+ * `convention` belongs here rather than with the change-scoped kinds because a
+ * convention outlives the change that discovered it. Treating it as shared is
+ * also what stops a parallel worker from staging one: shared writes are the
+ * sequential or fan-in integration owner's job, merged once.
+ */
+const SHARED_KINDS = new Set(['convention', 'memory', 'persona', 'summary', 'task']);
 const CHANGE_SCOPED_KINDS = new Set([
   'design-asset',
   'design-handoff',
@@ -419,6 +432,43 @@ export function classifyArtifact({
         kind,
         metadata,
         `documentation promotion rejected: ${promotion.code}`,
+      );
+    }
+  }
+
+  // Convention identity is carried by the path: the scope directory, the module
+  // segment, the category, and the rule filename are what prove a rule is owned
+  // where it sits. A path that does not parse cannot be trusted to belong to
+  // anyone, and a `convention` kind claimed outside the convention root is a
+  // metadata/path contradiction, so both fail closed instead of inheriting the
+  // shared-artifact path and becoming stageable.
+  if (kind === 'convention' || normalizedPath.startsWith(`${CONVENTION_ROOT}/`)) {
+    const conventionClassification = classifyConventionPath(normalizedPath);
+    if (!conventionClassification.ok) {
+      return unknown(
+        normalizedPath,
+        'convention',
+        metadata,
+        `invalid convention path: ${conventionClassification.code}`,
+      );
+    }
+    if (kind !== 'convention') {
+      return unknown(
+        normalizedPath,
+        kind,
+        metadata,
+        'artifact under the convention root declares a non-convention kind',
+      );
+    }
+    if (
+      metadata.document_type &&
+      metadata.document_type !== conventionClassification.document_type
+    ) {
+      return unknown(
+        normalizedPath,
+        kind,
+        metadata,
+        'convention document_type contradicts its canonical path',
       );
     }
   }

@@ -219,6 +219,7 @@
     "design-asset",
     "documentation",
     "documentation-asset",
+    "convention",
     "test-plan",
     "e2e-test",
     "review-report",
@@ -230,12 +231,90 @@
     "product_ledger": ".sdcorejs/docs/product",
     "design_artifacts": ".sdcorejs/design",
     "design_ledger": ".sdcorejs/docs/design",
-    "documentation": ".sdcorejs/documentation"
+    "documentation": ".sdcorejs/documentation",
+    "conventions": ".sdcorejs/conventions"
   },
   "legacy_artifact_roots": {
     "product_documents": "product",
     "design_artifacts": "design"
   },
+  "review_dimensions": [
+    {
+      "id": "code",
+      "consistency_scope": "applicable"
+    },
+    {
+      "id": "architecture",
+      "consistency_scope": "structural"
+    },
+    {
+      "id": "consistency",
+      "consistency_scope": "complete"
+    },
+    {
+      "id": "security",
+      "consistency_scope": "dimension-affecting-only"
+    },
+    {
+      "id": "performance",
+      "consistency_scope": "dimension-affecting-only"
+    },
+    {
+      "id": "accessibility",
+      "consistency_scope": "dimension-affecting-only"
+    },
+    {
+      "id": "site-audit",
+      "consistency_scope": "dimension-affecting-only"
+    },
+    {
+      "id": "ALL",
+      "consistency_scope": "complete"
+    }
+  ],
+  "consistency_finding_kinds": [
+    "CONVENTION_VIOLATION",
+    "SEMANTIC_ALIAS_DRIFT",
+    "TERM_COLLISION",
+    "CROSS_LAYER_DRIFT",
+    "BOUNDARY_MAPPING_GAP",
+    "PUBLIC_CONTRACT_DRIFT",
+    "UNRESOLVED_CONVENTION",
+    "STALE_CONVENTION",
+    "CONVENTION_CANDIDATE"
+  ],
+  "convention_rule_statuses": [
+    "accepted",
+    "observed",
+    "conflicted",
+    "deprecated",
+    "stale"
+  ],
+  "convention_enforcement_levels": [
+    "required",
+    "advisory",
+    "none",
+    "compatibility-aware"
+  ],
+  "convention_source_kinds": [
+    "explicit-user-decision",
+    "approved-specification",
+    "approved-plan",
+    "authoritative-repository-config",
+    "public-external-contract",
+    "existing-code-observation",
+    "imported-legacy-convention"
+  ],
+  "convention_capture_modes": [
+    "disabled",
+    "manual",
+    "after-review"
+  ],
+  "convention_scope_kinds": [
+    "repository",
+    "module",
+    "portal-composition"
+  ],
   "repository_roles": [
     "standalone",
     "portal",

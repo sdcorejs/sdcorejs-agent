@@ -58,9 +58,16 @@ source refinement.
 brainstorming -> spec approval -> plan approval -> execute-plan
   -> selected executor or generic harness -> mandatory finish gate
   -> test -> optional simplify -> focused tests -> review -> repair
-  -> required docs/traceability -> verify-before-done
-  -> branch-ready as the final read-only gate
+  -> required docs/traceability -> authorized convention sync
+  -> verify-before-done -> branch-ready as the final read-only gate
 ```
+
+Project conventions live under `.sdcorejs/conventions/**`, one rule per file.
+`sdcorejs-review` reads them and reports naming, API, route, casing,
+vocabulary, cross-layer, and mapping drift while staying read-only. Only
+`sdcorejs-explore (conventions-sync-write-approved)` persists them, run by the
+sequential or fan-in integration owner after the final code writes. See
+`_refs/shared/convention-context.md` and `_refs/shared/review-consistency.md`.
 
 No write-producing step may run after final branch-ready unless branch-ready is
 run again before any Git artifact handoff.

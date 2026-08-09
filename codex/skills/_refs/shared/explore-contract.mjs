@@ -2,6 +2,7 @@ import { execFile } from 'node:child_process';
 import { access, readFile, readdir, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
+import { classifyConventionPath } from './convention-paths.mjs';
 import { stableRepositoryId } from './repository-contract.mjs';
 import { systemRegistry } from './system-registry.mjs';
 
@@ -15,6 +16,7 @@ const READ_ONLY_ACTIONS = new Set([
   'persona-read',
   'memories-read',
   'documentation-harvest-readonly',
+  'conventions-read',
 ]);
 const AUTHORIZED_WRITE_ACTIONS = new Set([
   'summary-refresh',
@@ -22,6 +24,12 @@ const AUTHORIZED_WRITE_ACTIONS = new Set([
   'env-setup-write-approved',
   'persona-write-approved',
   'memories-write-approved',
+  'conventions-sync-write-approved',
+]);
+const SHARED_WRITE_ROLES = new Set([
+  'sequential-owner',
+  'integration-owner',
+  'fan-in-owner',
 ]);
 const ARTIFACT_EXTENSIONS = /\.(?:md|json|ya?ml)$/iu;
 const SKIPPED_ARTIFACT_DIRECTORIES = new Set([
@@ -55,6 +63,8 @@ export function resolveExploreWriteAuthority({
   explicit_authority: explicitAuthority = false,
   approved_initialization: approvedInitialization = false,
   integration_owner_assigned: integrationOwnerAssigned = false,
+  convention_capture_mode: conventionCaptureMode = 'disabled',
+  worker_role: workerRole = 'sequential-owner',
 } = {}) {
   if (READ_ONLY_ACTIONS.has(action)) {
     return {
@@ -68,14 +78,35 @@ export function resolveExploreWriteAuthority({
       reason: 'unknown explore action defaults to read-only',
     };
   }
+  // A committed `after-review` capture policy is standing project-level
+  // authorization, so routine reviews do not re-ask on every run. It is still
+  // only an authorization to run the separate sync action, and it never applies
+  // to a parallel worker: shared convention state is merged once by the
+  // sequential or fan-in integration owner.
+  const policyAuthorized =
+    action === 'conventions-sync-write-approved' && conventionCaptureMode === 'after-review';
   const assigned =
     explicitAuthority === true ||
     approvedInitialization === true ||
-    integrationOwnerAssigned === true;
+    integrationOwnerAssigned === true ||
+    policyAuthorized;
+  // Allowlist, not a denylist: an unrecognized or misspelled role must not fall
+  // through into write authority just because it is not the one role we named.
+  if (assigned && !SHARED_WRITE_ROLES.has(workerRole)) {
+    return {
+      write_allowed: false,
+      reason:
+        workerRole === 'parallel-worker'
+          ? 'parallel workers emit runtime candidates and never write shared state'
+          : `role ${workerRole} may not write shared state; expected one of ${[...SHARED_WRITE_ROLES].join(', ')}`,
+    };
+  }
   return {
     write_allowed: assigned,
     reason: assigned
-      ? 'explicit or approved explore ownership'
+      ? policyAuthorized && explicitAuthority !== true && approvedInitialization !== true
+        ? 'approved project convention capture policy'
+        : 'explicit or approved explore ownership'
       : 'write authority is missing',
   };
 }
@@ -374,16 +405,20 @@ async function discoverArtifacts(root, repository) {
       () => '',
     );
     const metadata = parseArtifactMetadata(content, relativePath);
+    const repositoryRelativePath = `.sdcorejs/${normalizeRelative(relativePath)}`;
+    const conventionOwner = conventionOwnership(repositoryRelativePath);
     artifacts.push({
       artifact_id: metadata.artifact_id ?? null,
       artifact_kind: metadata.artifact_kind ?? inferArtifactKind(relativePath),
       repository_id: repository.repository_id,
       repository_role: repository.repository_role,
       module_id: repository.module_id,
-      repository_relative_path: `.sdcorejs/${normalizeRelative(relativePath)}`,
+      repository_relative_path: repositoryRelativePath,
       owner_repository_id: metadata.owner_repository_id ?? null,
-      owner_repository_role: metadata.owner_repository_role ?? null,
-      owner_module_id: normalizeNullable(metadata.owner_module_id),
+      owner_repository_role:
+        metadata.owner_repository_role ?? conventionOwner?.owner_repository_role ?? null,
+      owner_module_id:
+        normalizeNullable(metadata.owner_module_id) ?? conventionOwner?.owner_module_id ?? null,
       change_ref: metadata.change_ref ?? null,
       contract_id: metadata.contract_id ?? null,
       requirement_id: metadata.requirement_id ?? null,
@@ -424,10 +459,26 @@ function inferArtifactKind(relativePath) {
   return {
     specs: 'spec',
     plans: 'plan',
+    conventions: 'convention',
     documentation: 'documentation',
     docs: 'documentation',
     summaries: 'summary',
   }[bucket] ?? 'unknown';
+}
+
+/**
+ * A convention rule declares its module in its path, not only its frontmatter.
+ * Deriving ownership from the path is what lets topology discovery report a
+ * module rule that was written into a portal, which is the exact drift the
+ * one-editable-source rule exists to prevent.
+ */
+function conventionOwnership(repositoryRelativePath) {
+  const classification = classifyConventionPath(repositoryRelativePath);
+  if (!classification.ok || classification.scope_kind !== 'module') return null;
+  return {
+    owner_module_id: classification.module_id,
+    owner_repository_role: 'module',
+  };
 }
 
 function normalizeNullable(value) {

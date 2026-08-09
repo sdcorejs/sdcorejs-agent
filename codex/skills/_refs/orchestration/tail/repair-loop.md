@@ -91,6 +91,10 @@ repair_source:
   simplify_context:
     source: sdcorejs-simplify
     # Preserve the original runtime context without rewriting its scope or contract.
+  convention_context:
+    source: sdcorejs-review
+    # Preserve rule source/status, evidence, ownership, and compatibility
+    # classification. Repair never edits a convention rule.
 ```
 
 Rules:
@@ -112,6 +116,23 @@ Rules:
   preserved surfaces, baseline commands, and pass ledger. A repair write makes
   affected simplification and test/review evidence stale. Re-run the affected
   focused commands and do not start another simplification pass automatically.
+- If `convention_context` is present, classify every convention finding as
+  valid, stale, mis-scoped, redundant, unclear, a conflict needing a user
+  decision, a public-contract migration, or spec/plan work before editing.
+  Automatic repair covers only bounded, behavior-preserving findings with clear
+  current authority: a private local name against an accepted rule, a new
+  internal method using a clearly wrong accepted action term, a new route in an
+  unreleased internal module with no external consumers, or a missing mapper
+  field with an unambiguous current contract.
+- Never auto-repair a public API route, external event field, database column,
+  persisted enum, permission code, environment variable, queue or topic name, or
+  public package export rename, nor a conflicting rule, unresolved alias,
+  compatibility exception, or migration decision. Report the required migration,
+  deprecation, compatibility layer, or specification decision instead.
+- After repair, re-read current code/config evidence and append it. Do not
+  overwrite the original stale evidence, and do not edit an accepted convention
+  rule to make a finding disappear. Pass the final `convention_context` to the
+  separate convention sync step.
 - Do not widen a behavior-preserving simplification into an architecture,
   public-contract, dependency, configuration, prompt, or agent-contract change.
   Return such work to spec/plan.
