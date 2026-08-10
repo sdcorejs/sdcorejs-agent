@@ -82,10 +82,10 @@ function markdownSection(source, heading) {
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
 
-  assert.equal(pack.sourceSkills.length, 21);
-  assert.equal(pack.claudeMirrorSkills.length, 21);
-  assert.equal(pack.pluginMirrorSkills.length, 21);
-  assert.equal(pack.codexMirrorSkills.length, 21);
+  assert.equal(pack.sourceSkills.length, 22);
+  assert.equal(pack.claudeMirrorSkills.length, 22);
+  assert.equal(pack.pluginMirrorSkills.length, 22);
+  assert.equal(pack.codexMirrorSkills.length, 22);
   // Core UI per-component docs are fetched on-demand (not committed), so this count
   // dropped from ~150 to ~69. Floor still catches accidental mass-deletion of refs.
   assert.ok(pack.referenceDocs.length >= 60, `referenceDocs=${pack.referenceDocs.length}`);

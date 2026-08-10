@@ -3,7 +3,7 @@
   "adapter": "cursor",
   "source_path": "_refs/harness/capability-contract.json",
   "source_hash": "sha256:60b4239412a5af7d1077a5e9bf84dc1f3b31c5a1ddfe7c6c33dd277184a0149e",
-  "content_hash": "sha256:fd50b534e43e00fcaeda603b75b027d89a92fa6a8e97617dd1fc75b54e3b136d",
+  "content_hash": "sha256:91e07277e72e6d9ab8fbbeaabf3eef635cf4c654726dcfc24d85ca0d4bb48c07",
   "generated_path": ".cursor/sdcorejs-harness.json",
   "capabilities": {
     "runtime_context_channel": "unknown",
@@ -135,7 +135,7 @@
   },
   "system_registry": {
     "source_path": "_refs/shared/system-registry.json",
-    "source_hash": "sha256:2fbb3ef6153e547772e5065b9ab5a11426f9be153dbd78829832017191340656",
+    "source_hash": "sha256:3129b4e2f18d1579431075501034d184900cf9c3998680dea98793c2ee2cfb13",
     "tracks": [
       "ai-agent",
       "angular",
@@ -255,6 +255,16 @@
         "user.choose",
         "agent.dispatch",
         "workspace.isolate"
+      ]
+    },
+    "sdcorejs-architecture": {
+      "source_path": "skills/shared/sdlc/architecture.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "context.pass",
+        "verification.run",
+        "user.approve"
       ]
     },
     "sdcorejs-debug": {

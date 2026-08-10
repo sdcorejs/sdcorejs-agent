@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "artifact_role": "behavior-contract",
+  "base_revision": "c426e58096c832f64c567106a38660ebb112b059",
+  "phases": ["RED"],
+  "scenario_id": "new-skill-pressure",
+  "expected_result": "EXPECTED_FAIL",
+  "task_success": false,
+  "approval_complete": true,
+  "ownership_complete": true,
+  "verification_complete": false,
+  "fresh_target_project_validation": false,
+  "structured_gate_available": false
+}

@@ -946,5 +946,107 @@
     "prompt": "remove unused dependencies",
     "expectedSkill": "sdcorejs-ship",
     "phase": 3
+  },
+  {
+    "id": "architecture-approved-spec",
+    "prompt": "design the architecture from this approved spec",
+    "expectedSkill": "sdcorejs-architecture",
+    "phase": 3
+  },
+  {
+    "id": "architecture-public-contract",
+    "prompt": "define the public API architecture for this approved spec",
+    "expectedSkill": "sdcorejs-architecture",
+    "phase": 3
+  },
+  {
+    "id": "architecture-public-contract-without-label",
+    "prompt": "from this approved spec, freeze the public API contract between two modules before fan-out",
+    "expectedSkill": "sdcorejs-architecture",
+    "phase": 3
+  },
+  {
+    "id": "architecture-trust-boundary-without-label",
+    "prompt": "from this confirmed spec, define the security trust boundary before independent implementation units start",
+    "expectedSkill": "sdcorejs-architecture",
+    "phase": 3
+  },
+  {
+    "id": "architecture-cross-repo-direction-without-label",
+    "prompt": "for this approved spec, decide the cross repository dependency direction before fan-out",
+    "expectedSkill": "sdcorejs-architecture",
+    "phase": 3
+  },
+  {
+    "id": "architecture-localized-approved-spec",
+    "prompt": "thiet ke kien truc tu spec da duyet",
+    "expectedSkill": "sdcorejs-architecture",
+    "phase": 3
+  },
+  {
+    "id": "architecture-map-current",
+    "prompt": "map the current architecture of this repository",
+    "expectedSkill": "sdcorejs-explore",
+    "phase": 3
+  },
+  {
+    "id": "architecture-review-current",
+    "prompt": "review the current architecture for boundary problems",
+    "expectedSkill": "sdcorejs-review",
+    "phase": 3
+  },
+  {
+    "id": "architecture-open-ended",
+    "prompt": "design the architecture for a new system",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "architecture-ambiguous-approved-spec",
+    "prompt": "should we add architecture work before planning this approved spec",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "phase": 3
+  },
+  {
+    "id": "architecture-simple-drawer",
+    "prompt": "add a simple four field Angular drawer",
+    "expectedSkill": "sdcorejs-angular",
+    "phase": 3
+  },
+  {
+    "id": "architecture-bounded-bug",
+    "prompt": "fix this bounded authorization bug without changing architecture",
+    "expectedSkill": "sdcorejs-debug",
+    "phase": 3
+  },
+  {
+    "id": "architecture-dependency-patch",
+    "prompt": "update this dependency patch without architecture changes",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
+  },
+  {
+    "id": "architecture-signal-docs-only-bypass",
+    "prompt": "from this approved spec, define docs-only documentation for the cross-repository boundary",
+    "expectedSkill": "sdcorejs-documentation",
+    "phase": 3
+  },
+  {
+    "id": "architecture-signal-test-only-bypass",
+    "prompt": "from this approved spec, define test-only cases for the public API contract",
+    "expectedSkill": "sdcorejs-test",
+    "phase": 3
+  },
+  {
+    "id": "architecture-signal-static-copy-bypass",
+    "prompt": "from this approved spec, define static copy only for the cross-module page",
+    "expectedSkill": "sdcorejs-angular",
+    "phase": 3
+  },
+  {
+    "id": "architecture-signal-dependency-patch-bypass",
+    "prompt": "from this approved spec, define the major dependency patch without architecture changes",
+    "expectedSkill": "sdcorejs-ship",
+    "phase": 3
   }
 ]

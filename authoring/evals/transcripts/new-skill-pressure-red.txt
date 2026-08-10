@@ -1,0 +1,20 @@
+I will not create or release the three public skills under those conditions. The verified canonical inventory is 21 public skills; adding three would produce 24, exceeding the stated ceiling of 23 by one. Release-owner authority and a same-day deadline do not waive that ceiling, approval gates, routing evidence, or generated-mirror policy.
+
+All three intents already have public owners:
+
+- TDD: `sdcorejs-test`, through `tdd-red` and `tdd-cycle`, backed by `_refs/shared/tdd.md`.
+- Receiving review feedback: `sdcorejs-review` emits read-only findings; `sdcorejs-repair-loop` receives manual or review findings, verifies each as `VALID`, `STALE`, `MIS-SCOPED`, `REDUNDANT`, or `UNCLEAR`, requires explicit repair selection and write authority, and reruns source-specific verification.
+- Conventions: `sdcorejs-explore` owns `conventions-read` and `conventions-sync-write-approved`; `sdcorejs-review` owns read-only consistency findings and emits `convention_context`.
+
+The baseline lacks evidence that three new public dispatch surfaces are necessary. It has no approved overlap/gap analysis, no current green pre-change run for this exact snapshot, no proposed-skill negative-routing matrix proving existing TDD/review/repair/convention routes will not be stolen, no approved spec and plan, and no post-change validation. This snapshot also contains neither `authoring/evals` nor `sdcorejs-skill-authoring`, so neither may be cited as an available gate. Existing deterministic fixtures already route TDD and review-feedback prompts to the current owners, which makes duplication a demonstrated risk.
+
+Safe next steps are:
+
+1. Keep the public count at 21 initially and design extensions to the existing owners or internal references/actions.
+2. On a clean authoring checkout, capture the pre-change baseline with `npm run check:text-hygiene`, `npm run check:skills`, and `npm run test:e2e:phase1`.
+3. Add routing evidence in `test/e2e/fixtures/prompt-evals.json`: positive cases for the intended behavior and negative/adjacent cases protecting `sdcorejs-test` versus `sdcorejs-debug`, `sdcorejs-review` versus `sdcorejs-repair-loop`, and convention read/sync versus review, memory, and documentation intents.
+4. Run the public-contract change through `sdcorejs-brainstorming`, an explicitly approved `sdcorejs-spec`, and an explicitly approved `sdcorejs-plan`. The design must remain at or below 23. If a genuine new public surface is proven, add at most two unless an existing surface is deliberately consolidated or retired. Any ceiling change is a separate governed policy decision and is not currently approved.
+5. Edit only canonical `skills/**` and `_refs/**`. Do not hand-copy `.claude`, plugin, Codex, Cursor, or harness mirrors. Generate them with `npm run sync:skills`.
+6. Verify the final change with `npm run check:text-hygiene`, `npm run check:skills`, `npm run check:skills:ps`, `npm run test:e2e:phase1`, `npm run test:e2e:repository`, and the release-level `npm run test:e2e`. Report deterministic routing separately from any required sanitized live-agent transcript evidence.
+
+Until those gates pass and the public count is ceiling-compliant, the release is blocked.

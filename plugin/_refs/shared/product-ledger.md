@@ -178,6 +178,7 @@ implementation, tests, evidence, or delivery success.
 ```yaml
 repository_id:
 module_id:
+acceptance_criterion_id: AC-001
 artifact_id:
 artifact_kind: product-ledger
 repository_relative_path:
@@ -189,4 +190,9 @@ editable: false
 The generated view declares `view_kind: cross-module-view` and
 `editable_requirements: false`. It preserves provenance and references module
 ledgers; it does not copy their editable requirement bodies. Duplicate
-repository/artifact identities and editable sources block generation.
+repository/artifact identities and editable sources block generation. The
+`acceptance_criterion_id` is source-owned and uses the canonical `AC-001`
+zero-padded positive-integer form. The view preserves that identity verbatim:
+reordering or inserting module references must not reassign existing criteria.
+Missing, noncanonical, or duplicate `acceptance_criterion_id` values fail
+closed and block generation.

@@ -1,18 +1,77 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 
 import {
   createApprovedArtifact,
 } from '../../_refs/shared/approved-artifact.mjs';
 import {
+  createConvergenceReceiptArtifact,
+  evaluateConvergence,
+} from '../../_refs/shared/convergence-contract.mjs';
+import {
   evaluateShipReadiness,
 } from '../../_refs/shared/ship-readiness-contract.mjs';
+import { convergenceFixture } from '../../authoring/evals/run-deterministic.mjs';
 
 const SHA = 'a'.repeat(40);
 const FINGERPRINT = `sha256:${'b'.repeat(64)}`;
 const PORTAL = 'github.com/acme/portal';
 const MODULE = 'github.com/acme/module-a';
 const MODULE_MAP = { 'module-a': SHA };
+
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize).sort((left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right), 'en'));
+  if (value && typeof value === 'object') return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalize(value[key])]));
+  return value;
+}
+
+function hash(value) {
+  return `sha256:v1:${createHash('sha256').update(JSON.stringify(canonicalize(value))).digest('hex')}`;
+}
+
+function sealConvergence(projection) {
+  const value = structuredClone(projection);
+  delete value.provenance;
+  return {
+    ...value,
+    provenance: {
+      evaluator: 'sdcorejs-convergence:v1',
+      input_hash: hash({ fixture: 'ship-readiness', change_ref: value.change_ref }),
+      projection_hash: hash(value),
+    },
+  };
+}
+
+function convergenceInput(moduleRevisionMap = MODULE_MAP) {
+  const input = convergenceFixture();
+  input.change_ref = 'release-change';
+  input.thread = { thread_id: 'thread-release', owner_thread_id: 'thread-release' };
+  input.source = {
+    repository_id: PORTAL,
+    revision: SHA,
+    fingerprint: FINGERPRINT,
+    portal_revision: SHA,
+    module_revision_map: moduleRevisionMap,
+    pinned_module_revision_map: moduleRevisionMap,
+  };
+  for (const item of input.evidence) {
+    item.source_revision = SHA;
+    item.source_fingerprint = FINGERPRINT;
+    item.portal_revision = SHA;
+    item.module_revision_map = moduleRevisionMap;
+  }
+  input.lifecycle.verification_revision = SHA;
+  input.lifecycle.artifact_thread_id = 'thread-release';
+  return input;
+}
+
+function convergenceResult(overrides = {}) {
+  const evaluated = evaluateConvergence(convergenceInput());
+  return Object.keys(overrides).length === 0
+    ? evaluated
+    : sealConvergence({ ...evaluated, ...overrides });
+}
 
 function artifact() {
   return createApprovedArtifact({
@@ -30,9 +89,10 @@ function artifact() {
       owner_module_id: 'portal',
       approval_source: 'explicit-user-approval',
       approved_at: '2026-07-31T00:00:00.000Z',
-      approved_by: null,
+      approved_by: 'release-owner',
       repository_relative_path: '.sdcorejs/plans/release.md',
       source_revision: SHA,
+      convergence_mode: 'feature',
       parent_repository_id: null,
       parent_references: [],
       supersedes: null,
@@ -58,6 +118,8 @@ function evidence(evidenceType, evidenceClass, overrides = {}) {
 }
 
 function validContract(overrides = {}) {
+  const convergenceInputValue = convergenceInput();
+  const convergence = evaluateConvergence(convergenceInputValue);
   return {
     schema_version: 1,
     source_identity: {
@@ -65,6 +127,7 @@ function validContract(overrides = {}) {
       source_fingerprint: FINGERPRINT,
       portal_repository_id: PORTAL,
       portal_revision: SHA,
+      owner_thread_id: 'thread-release',
       modules: [
         {
           module_id: 'module-a',
@@ -76,6 +139,8 @@ function validContract(overrides = {}) {
       ],
     },
     approved_artifacts: [{ artifact: artifact(), parent_artifacts: [] }],
+    convergence_result: convergence,
+    convergence_receipt: createConvergenceReceiptArtifact(convergenceInputValue),
     findings: [],
     evidence: [
       evidence('angular-golden', 'golden-build'),
@@ -129,6 +194,31 @@ test('malformed readiness input fails closed instead of throwing', () => {
   );
 });
 
+test('missing, blocked, deferred, stale, or source-mismatched convergence blocks ship and branch readiness', () => {
+  const mutations = [
+    ['missing', undefined],
+    ['blocked', convergenceResult({ status: 'BLOCKED' })],
+    ['deferred', convergenceResult({ status: 'DEFERRED' })],
+    ['stale', convergenceResult({ fresh: false })],
+    ['synthetic empty feature', convergenceResult({
+      evidence_refs: [],
+      summary: { requirements: 0, acceptance_criteria: 0, tasks: 0, changed_paths: 0, evidence: 0 },
+    })],
+    ['source mismatch', convergenceResult({
+      source_identity: {
+        ...convergenceResult().source_identity,
+        revision: 'd'.repeat(40),
+      },
+    })],
+  ];
+  for (const [name, convergence_result] of mutations) {
+    const result = evaluateShipReadiness(validContract({ convergence_result }));
+    assert.equal(result.stages.ready_to_ship.status, 'BLOCKED', name);
+    assert.equal(result.stages.commit_ready.status, 'BLOCKED', name);
+    assert.match(result.stages.ready_to_ship.blockers.join(' '), /convergence/iu, name);
+  }
+});
+
 test('equivalent module revision maps are independent of object insertion order', () => {
   const contract = validContract();
   const moduleBRevision = 'c'.repeat(40);
@@ -146,6 +236,9 @@ test('equivalent module revision maps are independent of object insertion order'
   for (const entry of contract.evidence) {
     entry.module_revision_map = reorderedMap;
   }
+  const convergenceInputValue = convergenceInput(reorderedMap);
+  contract.convergence_result = evaluateConvergence(convergenceInputValue);
+  contract.convergence_receipt = createConvergenceReceiptArtifact(convergenceInputValue);
   contract.evidence.push(
     evidence('module-e2e', 'module-matrix', {
       module_id: 'module-b',

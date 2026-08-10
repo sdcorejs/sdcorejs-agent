@@ -7,6 +7,7 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
+  ARCHITECTURE_ARTIFACT_ROOT,
   DESIGN_ARTIFACT_ROOT,
   DESIGN_LEDGER_ROOT,
   DESIGN_LOCAL_ONLY_DIRECTORIES,
@@ -92,6 +93,7 @@ export function isVisualCompanionRuntimePath(value) {
 
 const ARTIFACT_KIND_BY_PATH = [
   [/^\.sdcorejs\/specs\//i, 'spec'],
+  [new RegExp(`^${escapeForPattern(ARCHITECTURE_ARTIFACT_ROOT)}/`, 'i'), 'architecture'],
   [/^\.sdcorejs\/plans\//i, 'plan'],
   [new RegExp(`^${escapeForPattern(PRODUCT_LEDGER_ROOT)}/`, 'i'), 'product-ledger'],
   [new RegExp(`^${escapeForPattern(DESIGN_LEDGER_ROOT)}/`, 'i'), 'design-handoff'],
@@ -117,6 +119,7 @@ const ARTIFACT_KIND_BY_PATH = [
  */
 const SHARED_KINDS = new Set(['convention', 'memory', 'persona', 'summary', 'task']);
 const CHANGE_SCOPED_KINDS = new Set([
+  'architecture',
   'design-asset',
   'design-handoff',
   'documentation-asset',

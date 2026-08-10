@@ -9,6 +9,7 @@
 - [Discover Commands](#step-3---discover-commands)
 - [Verify By Mode](#step-4---verify-by-mode)
 - [Next.js Profile Gate](#step-5---nextjs-profile-gate)
+- [Convergence Gate](#step-55---convergence-gate)
 - [Failure Handoff](#step-6---failure-handoff)
 - [Report](#step-7---report)
 - [Rules](#rules)
@@ -24,6 +25,17 @@ any final branch-ready or Git artifact path. Passing tests are useful evidence,
 but they are not automatically acceptance evidence. The gate classifies the
 verification mode, selects the correct scope, discovers available commands, and
 records current evidence in `ship_context`.
+
+Read `_refs/shared/decision-coverage.md`. Verification preserves
+`decision_coverage` and `goal_backward_review` exactly and treats missing
+record/task/evidence coverage, invariant gaps, or unresolved goal-backward
+critique blockers as failed readiness evidence rather than silently narrowing
+the acceptance scope.
+Read `_refs/shared/validation-map.md`. For plan-backed acceptance, call
+`evaluateValidationEvidence` from `_refs/shared/validation-map.mjs` with the
+approved map, exact coverage projection, actual evidence, and current state.
+Read `_refs/shared/convergence-contract.md` and use its executable evaluator;
+verification is not complete until delivery convergence is current.
 
 ## Invocation
 
@@ -127,7 +139,8 @@ reports only when the script exists.
 
 ### feature-acceptance
 
-1. Extract explicit AC from the selected scope.
+1. Extract explicit AC from the selected scope and validate the approved
+   `plan_context.validation_map` when present.
 2. Map each AC to evidence: command, test, manual check, file inspection,
    screenshot/probe, or deferred note.
 3. Mark each AC as `PASS`, `FAIL`, `MANUAL`, `DEFERRED`, or
@@ -137,6 +150,8 @@ reports only when the script exists.
 6. If any required AC fails, final verdict is `BLOCKED`.
 7. If manual criteria remain, final verdict cannot be `READY` unless the user
    explicitly accepts the manual evidence or deferral under repo policy.
+8. A failed, stale, drifted, manual-unacknowledged, or deferred
+   `evaluateValidationEvidence` result blocks an automated `READY` verdict.
 
 ### bugfix-verification
 
@@ -229,6 +244,16 @@ routes, tests, build, smoke checks, and project evidence. Do not block
 `plain-nextjs` dashboards, admin tools, or internal apps for missing
 build-website conventions. Record `stack_profile` evidence when used.
 
+## Step 5.5 - Convergence Gate
+
+Assemble the canonical mode input from approved intent/spec/architecture/plan,
+`execution_context.convergence_trace`, the validation map, current
+`test_evidence.convergence_evidence_refs`, review architecture/convention
+findings, required ledgers, source/module/pin identity, lifecycle writes, and
+artifact closure. Call `evaluateConvergence`; do not reconstruct its rules.
+Preserve its compact result as `ship_context.convergence_result`. `BLOCKED`,
+`DEFERRED`, `fresh: false`, missing input, or a later write blocks readiness.
+
 ## Step 6 - Failure Handoff
 
 When verification fails:
@@ -264,6 +289,21 @@ Output a concise report in the user's language and include a redacted
 ```yaml
 ship_context:
   source: sdcorejs-ship
+  decision_coverage:
+    schema_version: 1
+    revision: <integer>
+    records: []
+    history: []
+  goal_backward_review:
+    schema_version: 1
+    mode: sdcorejs-plan:goal-backward
+    goals: []
+    tasks: []
+    repository_inventory:
+      repositories: []
+    critique_history: []
+  validation_map: []
+  convergence_result: <exact compact evaluateConvergence result>
   mode: verify-before-done
   verification_mode:
   delivery_type:

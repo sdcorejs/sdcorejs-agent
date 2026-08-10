@@ -1,0 +1,6 @@
+interface:
+  display_name: "SDCoreJS Skill Authoring"
+  short_description: "Evaluate and author this repository skill pack safely"
+  default_prompt: "Use $sdcorejs-skill-authoring to evaluate a proposed skill-pack change with RED-GREEN-REFACTOR evidence."
+policy:
+  allow_implicit_invocation: false

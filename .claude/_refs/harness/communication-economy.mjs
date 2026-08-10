@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from 'node:util';
 import {
   validateDispatchContext,
   validateResultIdentity,
@@ -5,6 +6,12 @@ import {
 
 const PROFILES = new Set(['compact', 'standard', 'detailed']);
 const CAPABILITY_STATUSES = new Set(['supported', 'unsupported', 'unknown']);
+
+const CONTEXT_INPUT_ALIASES = deepFreeze({
+  requirement_context: {
+    out_of_scope: 'non_goals',
+  },
+});
 
 const DETAILED_MESSAGE_KINDS = new Set([
   'spec-approval',
@@ -142,6 +149,8 @@ const TEST_EVIDENCE_FIELDS = [
   'status.documentation',
   'runs',
   'cases',
+  'acknowledgements',
+  'convergence_evidence_refs',
   'data_lifecycle',
   'captures',
   'commands_skipped',
@@ -161,6 +170,8 @@ const TEST_EVIDENCE_EXECUTION_FIELDS = [
   'status.evidence',
   'runs',
   'cases',
+  'acknowledgements',
+  'convergence_evidence_refs',
   'commands_skipped',
   'blockers',
   'residual_risks',
@@ -178,6 +189,8 @@ const TEST_EVIDENCE_DOCUMENTATION_FIELDS = [
   'status.documentation',
   'runs',
   'cases',
+  'acknowledgements',
+  'convergence_evidence_refs',
   'captures',
   'commands_skipped',
   'blockers',
@@ -220,9 +233,11 @@ const TEST_STATUS_ENUMS = {
 
 export const CONSUMER_REQUIRED_FIELD_KINDS = deepFreeze({
   requirement_context: {
+    decision_coverage: 'object',
+    goal_backward_review: 'object',
     profile_evidence: 'array',
     in_scope: 'array',
-    out_of_scope: 'array',
+    non_goals: 'array',
     decisions_confirmed: 'array',
     assumptions: 'array',
     'blockers.resolved': 'array',
@@ -230,6 +245,9 @@ export const CONSUMER_REQUIRED_FIELD_KINDS = deepFreeze({
     redaction_applied: 'boolean',
   },
   spec_context: {
+    decision_coverage: 'object',
+    goal_backward_review: 'object',
+    architecture_gate: 'object',
     source_requirement_context: 'reference-or-object',
     acceptance_criteria_count: 'number',
     manual_criteria_count: 'number',
@@ -241,6 +259,12 @@ export const CONSUMER_REQUIRED_FIELD_KINDS = deepFreeze({
     change_control: 'object',
   },
   plan_context: {
+    schema_version: 'number',
+    decision_coverage: 'object',
+    goal_backward_review: 'object',
+    architecture_gate: 'object',
+    architecture_context: 'nullable-object',
+    validation_map: 'array',
     allowed_paths: 'array',
     prohibited_paths: 'array',
     generated_artifacts: 'array',
@@ -251,12 +275,18 @@ export const CONSUMER_REQUIRED_FIELD_KINDS = deepFreeze({
     frontend_architecture: 'object',
     agent_architecture: 'object',
     verification_strategy: 'object',
-    parallel_candidates: 'array',
+    parallel_candidates: 'object',
     finish_tail: 'object',
     approval: 'object',
     change_control: 'object',
   },
   execution_context: {
+    decision_coverage: 'object',
+    goal_backward_review: 'object',
+    architecture_gate: 'object',
+    architecture_context: 'nullable-object',
+    validation_map: 'array',
+    convergence_trace: 'array',
     files_changed: 'array',
     artifact_context: 'object',
     commands_run: 'array',
@@ -268,6 +298,11 @@ export const CONSUMER_REQUIRED_FIELD_KINDS = deepFreeze({
   },
   test_context: {
     schema_version: 'number',
+    decision_coverage: 'object',
+    goal_backward_review: 'object',
+    architecture_gate: 'object',
+    architecture_context: 'nullable-object',
+    validation_map: 'array',
     change: 'object',
     classification: 'object',
     scope: 'object',
@@ -286,6 +321,8 @@ export const CONSUMER_REQUIRED_FIELD_KINDS = deepFreeze({
     schema_version: 'number',
     runs: 'array',
     cases: 'array',
+    acknowledgements: 'array',
+    convergence_evidence_refs: 'array',
     data_lifecycle: 'object',
     captures: 'array',
     commands_skipped: 'array',
@@ -308,6 +345,12 @@ export const CONSUMER_REQUIRED_FIELD_KINDS = deepFreeze({
     final_tail: 'object',
   },
   review_context: {
+    decision_coverage: 'object',
+    goal_backward_review: 'object',
+    architecture_gate: 'object',
+    architecture_context: 'nullable-object',
+    validation_map: 'array',
+    convergence_findings: 'object',
     dimensions: 'array',
     approved_frontend_architecture: 'object',
     file_scope: 'array',
@@ -342,6 +385,13 @@ export const CONSUMER_REQUIRED_FIELD_KINDS = deepFreeze({
     'result.files_changed': 'array',
   },
   ship_context: {
+    decision_coverage: 'object',
+    goal_backward_review: 'object',
+    architecture_gate: 'object',
+    architecture_context: 'nullable-object',
+    validation_map: 'array',
+    convergence_result: 'object',
+    convergence_receipt: 'object',
     acceptance_scope: 'object',
     verification: 'object',
     artifact_context: 'object',
@@ -380,12 +430,14 @@ export const CONSUMER_REQUIRED_FIELD_KINDS = deepFreeze({
   },
   ai_agent_context: {
     schema_version: 'number',
+    approved_spec: 'object',
+    approved_plan: 'object',
     target_paths: 'array',
     trusted_context_sources: 'array',
     tool_contract_paths: 'array',
     deterministic_eval_commands: 'array',
     focused_test_commands: 'array',
-    verification: 'object',
+    offline_verification: 'object',
     live_provider_verification: 'object',
     findings: 'array',
   },
@@ -448,6 +500,8 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
   requirement_context: {
     'sdcorejs-spec': [
       'source',
+      'decision_coverage',
+      'goal_backward_review',
       'requirement_id',
       'contract_id',
       'target_root',
@@ -460,7 +514,7 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
       'problem_statement',
       'success_outcome',
       'in_scope',
-      'out_of_scope',
+      'non_goals',
       'decisions_confirmed',
       'assumptions',
       'blockers.resolved',
@@ -473,6 +527,9 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
   spec_context: {
     'sdcorejs-plan': [
       'source',
+      'decision_coverage',
+      'goal_backward_review',
+      'architecture_gate',
       'contract_id',
       'requirement_id',
       'approved_spec_path',
@@ -495,7 +552,13 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
   },
   plan_context: {
     'sdcorejs-execute-plan': [
+      'schema_version',
       'source',
+      'decision_coverage',
+      'goal_backward_review',
+      'architecture_gate',
+      'architecture_context',
+      'validation_map',
       'contract_id',
       'requirement_id',
       'approved_spec_path',
@@ -524,6 +587,12 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
   },
   execution_context: {
     'sdcorejs-test': [
+      'decision_coverage',
+      'goal_backward_review',
+      'architecture_gate',
+      'architecture_context',
+      'validation_map',
+      'convergence_trace',
       'contract_id',
       'approved_spec_path',
       'approved_spec_hash',
@@ -543,6 +612,12 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
       'redaction_applied',
     ],
     'sdcorejs-review': [
+      'decision_coverage',
+      'goal_backward_review',
+      'architecture_gate',
+      'architecture_context',
+      'validation_map',
+      'convergence_trace',
       'contract_id',
       'approved_spec_path',
       'approved_spec_hash',
@@ -561,6 +636,12 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
       'tasks_remaining',
     ],
     'sdcorejs-ship': [
+      'decision_coverage',
+      'goal_backward_review',
+      'architecture_gate',
+      'architecture_context',
+      'validation_map',
+      'convergence_trace',
       'contract_id',
       'approved_spec_path',
       'approved_spec_hash',
@@ -575,6 +656,11 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
       'ship_handoff',
     ],
     'sdcorejs-simplify': [
+      'decision_coverage',
+      'goal_backward_review',
+      'architecture_gate',
+      'architecture_context',
+      'validation_map',
       'contract_id',
       'working_tree_preflight.current_HEAD',
       'files_changed',
@@ -587,6 +673,10 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
     'sdcorejs-review': [
       'schema_version',
       'source',
+      'decision_coverage',
+      'goal_backward_review',
+      'architecture_gate',
+      'architecture_context',
       'change',
       'classification',
       'scope',
@@ -595,11 +685,16 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
       'auth',
       'data',
       'execution',
+      'validation_map',
       'coverage_matrix',
       'redaction_applied',
     ],
     'sdcorejs-ship': [
       'schema_version',
+      'decision_coverage',
+      'goal_backward_review',
+      'architecture_gate',
+      'architecture_context',
       'change.associated_HEAD_or_diff',
       'classification',
       'scope',
@@ -608,11 +703,16 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
       'auth',
       'data',
       'execution',
+      'validation_map',
       'coverage_matrix',
       'redaction_applied',
     ],
     'sdcorejs-documentation': [
       'schema_version',
+      'decision_coverage',
+      'goal_backward_review',
+      'architecture_gate',
+      'architecture_context',
       'change',
       'classification',
       'scope',
@@ -620,6 +720,7 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
       'environment',
       'auth',
       'execution',
+      'validation_map',
       'redaction_applied',
     ],
   },
@@ -648,6 +749,12 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
   review_context: {
     'sdcorejs-repair-loop': [
       'source',
+      'decision_coverage',
+      'goal_backward_review',
+      'architecture_gate',
+      'architecture_context',
+      'validation_map',
+      'convergence_findings',
       'track',
       'track_profile',
       'dimensions',
@@ -665,6 +772,12 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
       'repair_gate_mapping',
     ],
     'sdcorejs-ship': [
+      'decision_coverage',
+      'goal_backward_review',
+      'architecture_gate',
+      'architecture_context',
+      'validation_map',
+      'convergence_findings',
       'track',
       'track_profile',
       'dimensions',
@@ -766,6 +879,13 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
   ship_context: {
     'sdcorejs-git': [
       'source',
+      'decision_coverage',
+      'goal_backward_review',
+      'architecture_gate',
+      'architecture_context',
+      'validation_map',
+      'convergence_result',
+      'convergence_receipt',
       'mode',
       'verification_mode',
       'delivery_type',
@@ -878,10 +998,8 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
   ai_agent_context: {
     'sdcorejs-test': [
       'schema_version',
-      'approved_spec_path',
-      'approved_spec_hash',
-      'approved_plan_path',
-      'approved_plan_hash',
+      'approved_spec',
+      'approved_plan',
       'engine_profile',
       'engine_profile_path',
       'capability_profile',
@@ -898,14 +1016,14 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
       'provider_storage_policy',
       'deterministic_eval_commands',
       'focused_test_commands',
-      'verification',
+      'offline_verification',
       'live_provider_verification',
       'findings',
     ],
     'sdcorejs-review': [
       'schema_version',
-      'approved_spec_hash',
-      'approved_plan_hash',
+      'approved_spec',
+      'approved_plan',
       'engine_profile',
       'capability_profile',
       'target_paths',
@@ -919,14 +1037,14 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
       'usage_and_finops_policy',
       'limits',
       'provider_storage_policy',
-      'verification',
+      'offline_verification',
       'live_provider_verification',
       'findings',
     ],
     'sdcorejs-debug': [
       'schema_version',
-      'approved_spec_hash',
-      'approved_plan_hash',
+      'approved_spec',
+      'approved_plan',
       'engine_profile',
       'capability_profile',
       'target_paths',
@@ -936,15 +1054,13 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
       'evidence_policy',
       'limits',
       'provider_storage_policy',
-      'verification',
+      'offline_verification',
       'live_provider_verification',
     ],
     'sdcorejs-ship': [
       'schema_version',
-      'approved_spec_path',
-      'approved_spec_hash',
-      'approved_plan_path',
-      'approved_plan_hash',
+      'approved_spec',
+      'approved_plan',
       'engine_profile',
       'capability_profile',
       'target_paths',
@@ -960,18 +1076,18 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
       'provider_storage_policy',
       'deterministic_eval_commands',
       'focused_test_commands',
-      'verification',
+      'offline_verification',
       'live_provider_verification',
       'findings',
     ],
     'sdcorejs-git': [
       'schema_version',
-      'approved_spec_hash',
-      'approved_plan_hash',
+      'approved_spec',
+      'approved_plan',
       'engine_profile',
       'capability_profile',
       'target_paths',
-      'verification',
+      'offline_verification',
       'live_provider_verification',
       'findings',
     ],
@@ -1087,18 +1203,24 @@ export function validateRequiredHandoffFields({ contextType, consumer, context }
   if (!fields) return [`no consumer field contract for ${contextType ?? '<unknown>'} -> ${consumer ?? '<unknown>'}`];
   if (!isPlainObject(context)) return [`${contextType} must be an object`];
 
-  const errors = [];
+  const compatibility = normalizeCompatibilityInput(contextType, context);
+  const normalizedContext = compatibility.context;
+  const errors = [...compatibility.errors];
   for (const field of fields) {
-    if (!pathExists(context, field)) {
+    if (!pathExists(normalizedContext, field)) {
       errors.push(`${contextType} missing required field for ${consumer}: ${field}`);
       continue;
     }
-    const valueError = validateRequiredFieldValue(contextType, field, getPath(context, field));
+    const valueError = validateRequiredFieldValue(
+      contextType,
+      field,
+      getPath(normalizedContext, field),
+    );
     if (valueError) {
       errors.push(`${contextType} invalid required field for ${consumer}: ${field} ${valueError}`);
     }
   }
-  errors.push(...validateContextSemantics(contextType, consumer, context));
+  errors.push(...validateContextSemantics(contextType, consumer, normalizedContext));
   return errors;
 }
 
@@ -1120,9 +1242,11 @@ export function buildPortableHandoff({
     throw error;
   }
 
+  const normalizedContext = normalizeCompatibilityInput(contextType, context).context;
+
   const resolvedNextAction = nextAction ?? consumer;
-  const resolvedFreshness = currentHeadOrDiff ?? inferFreshness(context);
-  const resolvedRedaction = redactionApplied ?? inferRedactionStatus(context);
+  const resolvedFreshness = currentHeadOrDiff ?? inferFreshness(normalizedContext);
+  const resolvedRedaction = redactionApplied ?? inferRedactionStatus(normalizedContext);
   const envelopeErrors = [];
   if (!Array.isArray(artifactRefs)) envelopeErrors.push('artifact_refs must be an array');
   else if (artifactRefs.some((reference) => !isNonEmptyString(reference))) {
@@ -1191,7 +1315,7 @@ export function buildPortableHandoff({
   }
 
   const requiredFields = CONSUMER_REQUIRED_FIELDS[contextType][consumer];
-  const authoritative = pickPaths(context, requiredFields);
+  const authoritative = pickPaths(normalizedContext, requiredFields);
   const embeddedAuthoritativePath = findForbiddenEmbeddedArtifact(authoritative);
   if (embeddedAuthoritativePath) {
     const error = new Error(
@@ -1237,6 +1361,8 @@ export function projectRuntimeContext({
     throw error;
   }
 
+  const normalizedContext = normalizeCompatibilityInput(contextType, context).context;
+
   const resolvedStatus = CAPABILITY_STATUSES.has(capabilityStatus) ? capabilityStatus : 'unknown';
   assertNoEmbeddedArtifactBody(projection, 'user projection');
   const userProjection = elideEmptySections(cloneValue(projection));
@@ -1244,7 +1370,7 @@ export function projectRuntimeContext({
     ? null
     : buildPortableHandoff({
         contextType,
-        context,
+        context: normalizedContext,
         consumer,
         nextAction,
         currentHeadOrDiff,
@@ -1261,10 +1387,10 @@ export function projectRuntimeContext({
     profile: fullContextRequested
       ? 'detailed'
       : (PROFILES.has(profile) ? profile : 'compact'),
-    authoritative_context: cloneValue(context),
+    authoritative_context: cloneValue(normalizedContext),
     user_projection: userProjection,
     portable_handoff: portableHandoff,
-    full_context: fullContextRequested ? cloneValue(context) : null,
+    full_context: fullContextRequested ? cloneValue(normalizedContext) : null,
   };
 }
 
@@ -1556,6 +1682,29 @@ function hasPath(object, dottedPath) {
   return cursor !== undefined && cursor !== null;
 }
 
+function normalizeCompatibilityInput(contextType, context) {
+  if (!isPlainObject(context)) return { context, errors: [] };
+  const normalized = cloneValue(context);
+  const errors = [];
+  for (const [legacyField, canonicalField] of Object.entries(
+    CONTEXT_INPUT_ALIASES[contextType] ?? {},
+  )) {
+    if (!Object.hasOwn(normalized, legacyField)) continue;
+    if (
+      Object.hasOwn(normalized, canonicalField) &&
+      !isDeepStrictEqual(normalized[canonicalField], normalized[legacyField])
+    ) {
+      errors.push(
+        `${contextType} conflicting legacy alias ${legacyField} and canonical field ${canonicalField}`,
+      );
+      continue;
+    }
+    normalized[canonicalField] ??= normalized[legacyField];
+    delete normalized[legacyField];
+  }
+  return { context: normalized, errors };
+}
+
 function validateRequiredFieldValue(contextType, field, value) {
   const kind = CONSUMER_REQUIRED_FIELD_KINDS[contextType]?.[field] ?? 'scalar';
   const kindError = validateFieldKind(kind, value);
@@ -1608,6 +1757,11 @@ function validateRequiredFieldValue(contextType, field, value) {
 
 function validateFieldKind(kind, value) {
   if (kind === 'nullable-scalar' && value === null) return null;
+  if (kind === 'nullable-object') {
+    if (value === null) return null;
+    if (!isPlainObject(value)) return 'must be null or an object';
+    return Object.keys(value).length > 0 ? null : 'must not be an empty object';
+  }
   if (kind === 'array') return Array.isArray(value) ? null : 'must be an array';
   if (kind === 'object') {
     if (!isPlainObject(value)) return 'must be an object';

@@ -131,8 +131,20 @@ ai_agent_context:
   owner_module_id: <module id>
   ownership_scope: module
   source_revision: <40-character Git revision>
-  approved_spec: <repository/artifact/path/revision/approval-hash ref>
-  approved_plan: <repository/artifact/path/revision/approval-hash ref>
+  approved_spec:
+    repository_id: <stable owner repository id>
+    artifact_id: <approved spec artifact id>
+    artifact_kind: spec
+    repository_relative_path: <approved spec path>
+    revision: <40-character owner-repository revision>
+    approval_hash: <sha256:v1 hash>
+  approved_plan:
+    repository_id: <stable owner repository id>
+    artifact_id: <approved plan artifact id>
+    artifact_kind: plan
+    repository_relative_path: <approved plan path>
+    revision: <40-character owner-repository revision>
+    approval_hash: <sha256:v1 hash>
   engine_profile: <resolved engine id>
   engine_profile_path: <resolved path>
   capability_profile: <resolved capability id>

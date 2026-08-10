@@ -29,11 +29,9 @@ substitute for verification.
 ## Shared Protocols
 
 Read `../_refs/shared/runtime-protocols.md`. Apply
-`../_refs/shared/artifact-lifecycle.md` and run SDCoreJS Artifact Closure before
-staging, commit, or push. For multiple worktrees, nested repositories, or
-submodules, also load `../_refs/shared/git-closure-contract.mjs`; it verifies
-approved artifacts with the common approval helper and emits one exact,
-repository-local path set per Git root.
+`../_refs/shared/artifact-lifecycle.md` and run SDCoreJS Artifact Closure before staging, commit, or push. For multiple worktrees, nested repositories, or
+submodules, load `../_refs/shared/git-closure-contract.mjs`; it verifies approved artifacts, emits exact repository-local path sets, and delegates freshness to
+`../_refs/shared/convergence-contract.mjs#evaluateConvergenceHandoff` with its verified receipt.
 
 ## Mode Selection
 
@@ -69,6 +67,7 @@ When `ship_context` is available, consume it before artifact creation. Git
 handoff is allowed only when `ship_context.git_handoff_allowed` is true, the
 `associated_HEAD_or_diff` matches the current `HEAD` or dirty diff,
 `writes_after_branch_ready` is empty, and `branch_ready_evidence` is current.
+Missing, blocked, deferred, or stale convergence always refuses handoff; so does unreceipted, vacuous, or plan-mismatched convergence.
 
 Do not create commits, pushes, or PRs as a substitute for verification. If the
 prompt is delivery-oriented and evidence is absent or stale, stop and delegate:

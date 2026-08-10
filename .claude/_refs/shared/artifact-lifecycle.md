@@ -26,7 +26,7 @@ discovery and classification helper. It never stages or commits files.
 
 | Lifecycle | Examples | Commit policy |
 |---|---|---|
-| Change-scoped durable | approved spec, approved plan, execution doc, product ledger, Product document, design handoff, Design spec/flow/decision/wireframe/export/reference, verified guide screenshot or documentation asset | `with-change` |
+| Change-scoped durable | approved spec, approved architecture, approved plan, execution doc, product ledger, Product document, design handoff, Design spec/flow/decision/wireframe/export/reference, verified guide screenshot or documentation asset | `with-change` |
 | Shared durable | project summary, persona, memory, living track backlog, convention rule and capture policy | `conditional`, with an explicit owner |
 | Explicit handoff | requested change-scoped handoff | `conditional` or `with-change` |
 | Diagnostic/local | trace, video, raw report, coverage HTML, auth/storage state, failure screenshot or diagnostic screenshot, temp, cache, codegraph cache, legacy session checkpoint | `never` |
@@ -45,6 +45,7 @@ helper hardcodes them.
 | Root | Artifact kind | Contents |
 |---|---|---|
 | `.sdcorejs/specs/**` | `spec` | approved specs |
+| `.sdcorejs/architecture/**` | `architecture` | immutable approved architecture snapshots |
 | `.sdcorejs/plans/**` | `plan` | approved plans |
 | `.sdcorejs/product/**` | `product-doc` | PRDs, user stories, acceptance criteria, UAT checklists, Product decisions |
 | `.sdcorejs/docs/product/**` | `product-ledger` | Product traceability ledgers |
@@ -103,7 +104,7 @@ supports it:
 
 ```yaml
 artifact_id: <stable id>
-artifact_kind: spec | plan | execution-doc | product-ledger | product-doc | design-handoff | design-asset | handoff | summary | task | memory | persona | documentation-asset | convention
+artifact_kind: spec | architecture | plan | execution-doc | product-ledger | product-doc | design-handoff | design-asset | handoff | summary | task | memory | persona | documentation-asset | convention
 change_ref: <logical change id or durable artifact path>
 source_spec: <repo-relative path | none>
 source_plan: <repo-relative path | none>
@@ -169,7 +170,7 @@ When several producers run, merge contexts by `change_ref` and path:
 
 ## Producer Rules
 
-- Approved specs, plans, execution docs, Product documents, product ledgers,
+- Approved specs, approved architectures, plans, execution docs, Product documents, product ledgers,
   Design artifacts, design handoffs, and approved documentation assets are
   normally `required_with_change`.
 - A Product run emits every created or updated PRD, user-story, acceptance-
@@ -300,9 +301,9 @@ sdcorejs_artifacts:
   closure_result: complete | incomplete | ambiguous
 ```
 
-When closure is complete, do not ask whether each required spec, plan, or
-execution doc should be included. The user's request to commit the change
-already includes valid required artifacts.
+When closure is complete, do not ask whether each required spec, architecture,
+plan, or execution doc should be included. The user's request to commit the
+change already includes valid required artifacts.
 
 ## Push Rule
 

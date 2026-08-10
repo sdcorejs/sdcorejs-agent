@@ -4,7 +4,7 @@ Entry point for AGENTS.md-aware tools: Codex, Cursor, OpenAI Agents SDK, and com
 Claude Code reads `CLAUDE.md`; Copilot reads `.github/copilot-instructions.md`.
 
 This repository is an engineering skill pack for developers and technical teams.
-Its root Node workspace is private and validation-only. Its 21 skills cover
+Its root Node workspace is private and validation-only. Its 22 public skills cover
 governed requirements, product, design, tests, Angular,
 NestJS, Next.js, AI-agent contracts, documentation, review, delivery, and a
 generic harness for other stacks.
@@ -35,7 +35,7 @@ working directory is never evidence of artifact ownership.
 When multiple skills match, apply this priority before reading a body:
 
 1. Explicit skill name from the user.
-2. Approved spec/plan continuation: `sdcorejs-execute-plan`.
+2. Approved spec: architecture when required; approved plan: `sdcorejs-execute-plan`.
 3. Product, design, or direct test work: `sdcorejs-product`,
    `sdcorejs-design`, or `sdcorejs-test`; failing-test diagnosis uses
    `sdcorejs-debug`.
@@ -55,11 +55,11 @@ source refinement.
 ## Workflow
 
 ```text
-brainstorming -> spec approval -> plan approval -> execute-plan
+brainstorming -> spec -> architecture when required -> plan -> execute-plan
   -> selected executor or generic harness -> mandatory finish gate
   -> test -> optional simplify -> focused tests -> review -> repair
   -> required docs/traceability -> authorized convention sync
-  -> verify-before-done -> branch-ready as the final read-only gate
+  -> validation evidence -> convergence -> final read-only branch-ready
 ```
 
 Project conventions live under `.sdcorejs/conventions/**`, one rule per file.
@@ -68,6 +68,10 @@ vocabulary, cross-layer, and mapping drift while staying read-only. Only
 `sdcorejs-explore (conventions-sync-write-approved)` persists them, run by the
 sequential or fan-in integration owner after the final code writes. See
 `_refs/shared/convention-context.md` and `_refs/shared/review-consistency.md`.
+
+Decision identities, conditional architecture, validation-map evidence, and
+convergence are executable gates. Repair classifies external feedback before
+writes. Internal `authoring/**` skills are never public or mirrored.
 
 No write-producing step may run after final branch-ready unless branch-ready is
 run again before any Git artifact handoff.
@@ -175,12 +179,13 @@ Load references on demand:
 - `_refs/shared/project-context.md` before non-trivial skill execution.
 - `_refs/shared/artifact-lifecycle.md` before writing, verifying, staging,
   committing, or pushing `.sdcorejs/**` artifacts.
-- `_refs/sdlc/{ai-agent,angular,nestjs,nextjs}.md` during brainstorming/spec/plan.
+- Relevant `_refs/sdlc/*.md` during brainstorming, architecture, spec, or plan.
 - `_refs/shared/tasklist.md` for non-trivial execution tasks.
 - `_refs/shared/user-choice-prompt.md` before any user-facing choice, approval gate, yes/no question, or mode selection.
 - `_refs/sdlc/visual-companion.md` before offering a visual surface or starting
   a companion session.
 - `_refs/shared/testing-philosophy.md` for test-track work.
+- Decision coverage, validation-map, and convergence references at their gates.
 - `_refs/simplify/**` for bounded behavior-preserving source refinement.
 - `_refs/angular/core-docs-fetch.mjs` before using Core UI components.
 - `_refs/<track>/review-*.md` during review.

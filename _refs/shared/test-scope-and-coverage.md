@@ -25,6 +25,15 @@ requirement by itself. Record:
 Missing or stale project summary is not a blocker. Use current files, the diff,
 requirements, and targeted discovery.
 
+Read `_refs/shared/decision-coverage.md`. Treat the approved
+`decision_coverage` and `goal_backward_review` as authoritative coverage input:
+preserve exact `R-###`, `AC-###`, `D-###`, `INV-###`, `TASK-###`, and
+`EVIDENCE-###` identities, and surface any missing task, evidence, or invariant
+mapping as a coverage gap. Test planning and execution may attach current run
+evidence, but they do not renumber or silently replace approved identities.
+For plan-backed work, also read `_refs/shared/validation-map.md`; it turns the
+risk choices below into the single approved row-level validation authority.
+
 ## Risk matrix
 
 Choose tests from observable risk rather than a fixed stack checklist.
@@ -45,23 +54,19 @@ unauthorized request is denied.
 
 ## Coverage matrix
 
-Create a requirement-driven `coverage_matrix`:
+For plan-backed work, create `coverage_matrix` only by exact runtime projection
+of `plan_context.validation_map`:
 
 ```yaml
-coverage_matrix:
-  - requirement_id: AC-1
-    risk: authorization
-    levels: [api-e2e, browser-e2e]
-    case_ids: [case-orders-viewer-denied]
-    status: covered # covered | partial | deferred | missing | not-applicable
-    evidence_refs: [run-api-1, run-ui-1]
-    rationale: null
+validation_map: <exact approved plan_context.validation_map>
+coverage_matrix: <projectCoverageMatrix(validation_map) without edits>
 ```
 
-Every in-scope requirement or material risk needs a status. `not-applicable`
-and `deferred` require a rationale. Do not invent a numeric coverage threshold.
-If the project already enforces a threshold, preserve it and report the
-discovered source.
+Use `_refs/shared/validation-map.mjs`; do not merge, drop, infer, or rewrite rows
+at test time. Every in-scope AC or material risk needs a status.
+`not-applicable` and `deferred` require a rationale. Do not invent a numeric
+coverage threshold. If the project already enforces one, preserve it and report
+the discovered source.
 
 Coverage reports are fresh only when tied to the current
 `associated_HEAD_or_diff`, command, workspace, and runner configuration.

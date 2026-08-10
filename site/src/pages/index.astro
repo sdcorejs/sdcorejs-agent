@@ -6,7 +6,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const flowSteps = [
   ["01", "Khám phá", "Hiểu bối cảnh, tài liệu, ảnh, code, log, ràng buộc."],
   ["02", "Đặc tả", "Viết spec và acceptance criteria để người dùng duyệt."],
-  ["03", "Kế hoạch", "Chốt file-by-file plan trước khi sinh code."],
+  ["03", "Kiến trúc + kế hoạch", "Duyệt architecture khi cần, rồi chốt file-by-file plan."],
   ["04", "Dispatch", "Chọn track executor hoặc parallel-dispatch khi an toàn."],
   ["05", "Kết thúc", "Test, review, repair, verify, docs, tasks, memories."],
 ];
@@ -27,13 +27,13 @@ const tailSteps = [
   "sdcorejs-review",
   "repair-loop",
   "documentation: comments",
-  "product ledger",
-  "verify-before-done",
-  "branch-ready",
-  "auto-docs",
   "documentation: user guide",
+  "product ledger",
+  "auto-docs",
   "task tracker",
   "memories",
+  "convergence verification",
+  "branch-ready",
   "handoff",
 ];
 
@@ -115,9 +115,9 @@ const conflictExamples = [
             approval gate, verification, tài liệu, task tracker và memory handoff.
           </p>
           <div class="metric-row">
-            <span>21 skills</span>
+            <span>22 skills</span>
             <span>8 tracks</span>
-            <span>2 approval gates</span>
+            <span>2 + 1 conditional gates</span>
             <span>12 e2e checks</span>
           </div>
         </div>
@@ -248,7 +248,8 @@ const conflictExamples = [
             <h2>Plan khóa cách làm trước khi sinh code</h2>
             <p>
               Plan là danh sách bước theo file, dependency, risk và verification.
-              Sau plan approval, execute-plan luôn hỏi chạy sequential hay parallel.
+              Architecture chỉ là gate khi scope đáng kể. Sau plan approval,
+              execute-plan chỉ hỏi sequential hay parallel khi cả hai đều khả thi.
             </p>
           </div>
           <div class="mode-grid">

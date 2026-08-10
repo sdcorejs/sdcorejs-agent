@@ -17,7 +17,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 22.22.3
           cache: npm
 
       - run: npm ci
@@ -35,7 +35,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 22.22.3
           cache: npm
           cache-dependency-path: site/package-lock.json
 
@@ -54,9 +54,21 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 22.22.3
           cache: npm
 
       - run: npm ci
       - run: npm run check:text-hygiene
       - run: npm run check:skills:ps
+
+  visual-companion-node18:
+    name: Visual Companion (Node 18.20.8)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 18.20.8
+
+      - run: node --test test/e2e/visual-companion-runtime.test.mjs test/e2e/static-visual-composer.test.mjs

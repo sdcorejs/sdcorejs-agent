@@ -24,8 +24,7 @@ for commit, PR, push, changelog, tag, or release artifacts.
 - dependency-update safety verification;
 - release readiness checks;
 - final branch-ready checks;
-- collecting evidence from explore, review, test, debug, repair-loop, and prior
-  branch-ready contexts;
+- collecting evidence from explore, review, test, debug, repair-loop, and prior branch-ready contexts;
 - producing `ship_context`.
 
 `sdcorejs-ship` is not responsible for:
@@ -45,7 +44,16 @@ Read `_refs/shared/runtime-protocols.md` and
 change's `artifact_context`. For production/release claims, also load
 `_refs/shared/ship-readiness-contract.mjs`; it consumes the common approved
 artifact, repository, source revision map, and evidence identities. Redact
-suspected secrets before printing evidence.
+suspected secrets before printing evidence. Read
+`_refs/shared/decision-coverage.md`, preserve `decision_coverage` and
+`goal_backward_review`, and block readiness when either reports an uncovered
+record, invariant evidence gap, or unresolved critique blocker.
+Preserve `architecture_context` and the exact `architecture_gate`. For required
+architecture, verify the immutable spec -> architecture -> plan graph and
+current `INV-*` conformance; missing/stale/mutated architecture or mismatched
+path/hash/reference blocks readiness. A concrete not-applicable gate retains
+`architecture_context: null` and must not be upgraded to PASS by inference.
+Read `_refs/shared/validation-map.md`; preserve the validation map's approved evidence evaluation. Read `_refs/shared/convergence-contract.mjs`; verify-before-done evaluates and seals a receipt, while branch-ready verifies both against approved change/mode and current identity.
 
 ## Mode Selection
 
@@ -447,23 +455,23 @@ compact projection highlights the delivery-critical fields:
 ```yaml
 ship_context:
   source: sdcorejs-ship
+  decision_coverage:
+    contract: <exact current decision coverage>
+  goal_backward_review:
+    contract: <exact current goal-backward review>
+  architecture_gate: { valid: true, required: true | false, status: required | not-applicable, signals: [], bypass: <exact bypass object or null>, rationale: <exact normalized rationale> }
+  architecture_context: null # exact approved object when required
+  validation_map: [] # exact approved planning authority
+  convergence_result_and_receipt: <compact result plus hash-verified release-evidence receipt>
   mode: verify-before-done | branch-ready | ship | dependency-update | release-ready
   verification_mode: feature-acceptance | bugfix-verification | specless-verification | dependency-regression | docs-only-hygiene | release-readiness | branch-ready-only
   associated_HEAD_or_diff:
   verification:
     result: PASS | FAIL | PARTIAL | SKIPPED
   artifact_context:
-    schema_version: 1
-    change_ref:
-    required_with_change: []
-    shared_owned: []
-    conditional: []
-    local_only: []
-    unrelated_observed: []
+    contract: <exact artifact closure context from the canonical lifecycle ref>
   writes_after_branch_ready: []
-  branch_ready_evidence:
-    result:
-    associated_HEAD_or_diff:
+  branch_ready_evidence: { result: <result>, associated_HEAD_or_diff: <sha or diff> }
   final_verdict: READY | READY_WITH_WARNINGS | BLOCKED | DEFERRED
   git_handoff_allowed: true | false
   git_handoff_reason:
@@ -475,8 +483,7 @@ is not complete.
 
 ## Cross-References
 
-- `_refs/shared/finish-gate.md` - consolidated post-code options and final
-  branch-ready ordering.
+- `_refs/shared/finish-gate.md` - consolidated post-code options and final branch-ready ordering.
 - `_refs/orchestration/tail/verify-before-done.md` - verification mode and
   acceptance evidence gate.
 - `_refs/orchestration/tail/branch-ready.md` - final read-only hygiene gate.

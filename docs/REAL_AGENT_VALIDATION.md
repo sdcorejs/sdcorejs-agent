@@ -75,6 +75,30 @@ also includes the in-progress Documentation Layout v2 diff. This evidence
 therefore supports only the stated smoke scenario; it does not prove a fixed
 token reduction or full live-agent release coverage.
 
+## 0.8.0 Authoring And Convergence Evidence Boundary
+
+The machine-readable live matrix is
+`authoring/evals/live-agent-matrix.json`. It is separate from the deterministic
+authoring matrix and the linked RED/GREEN/REFACTOR pressure records in
+`authoring/evals/records/`.
+
+| Evidence layer | Status | What it supports | Limitation |
+|---|---|---|---|
+| Deterministic contract/mutation matrix | Run by `npm run test:e2e:skill-authoring` | Architecture routing, decision pressure, validation/convergence drift, feedback no-write, convention authority, module ownership, toolchain drift, public ceiling, and internal distribution boundaries | No hosted model/provider compatibility claim |
+| RED/GREEN/REFACTOR pressure lifecycle | Validated linked records for one sanitized pressure scenario | RED records the missing executable gate; GREEN adds repository-derived inventory/routing and approval checks; REFACTOR preserves the GREEN behavior-contract hash with a distinct source-state hash | All three use the same base Git revision plus phase-specific source-state hashes; runtime did not expose model, effort, CLI version, or token telemetry, and this is not a fresh target-project session |
+| Local repository/golden Full E2E | `PASS`: `npm run test:e2e` exited 0 on the 2026-08-09 working tree | Repository contracts plus generated Angular, NestJS, and Next.js golden-project behavior | This is local repository evidence, not a credentialed agent or fresh external target project |
+| Prepared external-target Full E2E | `NOT RUN` until its prepared-environment command executes | Target-project integration only when its real environment and dependencies run | Local deterministic and golden results do not substitute |
+| Live-agent A/B matrix | `NOT RUN` | Nothing yet | Explicit authorization for credentialed provider use was not provided; provider/model/runtime/token/transcript fields remain `null` |
+
+The live matrix has ten explicit `NOT RUN` rows: conditional architecture and
+simple bypass, blocking assumptions, missing AC mapping, unrelated passing
+tests, out-of-intent convergence, incorrect review feedback, observed
+conventions, missing module ownership, and engine drift. Provider calls remain
+zero, ambient credentials are not inspected, `full_live_agent_coverage` is
+false, and this authoring session is not fresh target-project validation.
+The authorized branch is schema-validated too; authorization alone cannot make
+missing provider/model/results/transcripts or an incomplete scenario set valid.
+
 ## Minimum Release Matrix
 
 For a public release that claims full live-agent coverage, capture all of these

@@ -12,6 +12,11 @@ npm ci
 npm run check:text-hygiene
 npm run sync:skills
 npm run check:skills
+npm run test:e2e:decision-coverage
+npm run test:e2e:architecture
+npm run test:e2e:validation-map
+npm run test:e2e:convergence
+npm run test:e2e:skill-authoring
 npm run test:e2e:communication-economy
 npm run test:e2e:documentation-layout
 npm run report:communication-economy
@@ -51,6 +56,16 @@ Capture sanitized live-tool evidence using `docs/REAL_AGENT_VALIDATION.md`.
 For full live-agent coverage, capture Claude Code, Codex attached repo, Codex
 native skills, Cursor, and GitHub Copilot evidence. State any unvalidated tool
 surfaces explicitly.
+
+Keep deterministic contract evidence, prepared-environment Full E2E, and
+authorized live-agent evidence in separate release-note rows. A deterministic
+pass cannot upgrade `NOT RUN` Full E2E or live evidence. Confirm the public
+inventory contains 22 skills, the ceiling remains 23, and internal
+`authoring/skills/sdcorejs-skill-authoring` appears in no mirror, adapter
+manifest, marketplace inventory, or site catalog.
+Confirm decision-boundary authority matches its approved artifact, convergence
+has a verified receipt bound to approved change/mode, and internal distribution
+and provider-dependency scans recurse through package lockfiles and mirrors.
 
 For Communication Economy Policy claims, distinguish deterministic contract
 measurements from an optional live A/B eval. A valid live record includes the
@@ -119,6 +134,6 @@ After publishing the GitHub Release:
 - Confirm mirrors are present: `.claude/skills`, `plugin/skills`,
   `codex/skills`, and `.cursor/rules`.
 - Confirm each adapter `sdcorejs-harness.json` has the current canonical source
-  hash and 21-skill mapping.
+  hash and 22-skill mapping.
 - Confirm `docs/ADOPTION.md` and `docs/TROUBLESHOOTING.md` still match the
   release instructions.

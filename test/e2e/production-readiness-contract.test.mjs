@@ -118,6 +118,7 @@ test('entrypoint routing and adapter manifests consume the central registry with
     'skills/shared/sdlc/01-brainstorming.md',
     'skills/shared/sdlc/02-spec.md',
     'skills/shared/sdlc/03-plan.md',
+    'skills/shared/sdlc/architecture.md',
     'skills/shared/sdlc/04-execute-plan.md',
     'skills/orchestration/parallel-dispatch.md',
     'skills/shared/workflow/explore.md',
@@ -141,7 +142,7 @@ test('entrypoint routing and adapter manifests consume the central registry with
     assert.ok(name, `${relativePath} has a skill name`);
     sourceSkills.push(name);
   }
-  assert.equal(new Set(sourceSkills).size, 21);
+  assert.equal(new Set(sourceSkills).size, 22);
 
   const expectedRegistryHash = `sha256:${registry.registry_hash_input ?? ''}`;
   for (const relativePath of [
@@ -548,6 +549,7 @@ test('execute-plan verifies artifacts, source freshness, owner root, and path sc
   const prepared = prepareExecution({
     approved_plan: planArtifact,
     approved_spec: spec,
+    plan_context: { schema_version: 1 },
     repository_plan: repositoryPlan,
     owner_revisions: {
       [planArtifact.metadata.owner_repository_id]: planArtifact.metadata.source_revision,
@@ -665,6 +667,7 @@ test('execute-plan verifies artifacts, source freshness, owner root, and path sc
       prepareExecution({
         approved_plan: planArtifact,
         approved_spec: spec,
+        plan_context: { schema_version: 1 },
         repository_plan: {
           ...repositoryPlan,
           steps: [
@@ -686,6 +689,7 @@ test('execute-plan verifies artifacts, source freshness, owner root, and path sc
       prepareExecution({
         approved_plan: planArtifact,
         approved_spec: spec,
+        plan_context: { schema_version: 1 },
         repository_plan: repositoryPlan,
         owner_revisions: {
           [planArtifact.metadata.owner_repository_id]: 'd'.repeat(40),

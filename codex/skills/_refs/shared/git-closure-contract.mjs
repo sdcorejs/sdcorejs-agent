@@ -1,4 +1,5 @@
 import { verifyApprovedArtifact } from './approved-artifact.mjs';
+import { evaluateConvergenceHandoff } from './convergence-contract.mjs';
 
 const REVISION = /^[a-f0-9]{40}$/u;
 const LEGACY_SINGLETON =
@@ -21,6 +22,64 @@ function validRelativePath(value) {
     !/^[A-Za-z]:\//u.test(value) &&
     !value.split('/').includes('..')
   );
+}
+
+function deriveConvergenceCurrent(contract) {
+  const blockers = [];
+  const repositories = Array.isArray(contract?.repositories) ? contract.repositories : [];
+  const planMetadata = [];
+  for (const repository of repositories) {
+    if (repository.evidence?.source_fingerprint !== contract.source_fingerprint) {
+      blockers.push(`repository evidence fingerprint is not bound to Git closure: ${repository.repository_id}`);
+    }
+    for (const artifact of Array.isArray(repository.approved_artifacts) ? repository.approved_artifacts : []) {
+      try {
+        const verified = verifyApprovedArtifact(artifact);
+        if (verified.metadata.artifact_kind === 'plan') {
+          if (typeof verified.metadata.approved_by !== 'string' || verified.metadata.approved_by.trim() === '') {
+            blockers.push(`approved Git plan lacks an approving identity: ${verified.metadata.artifact_id}`);
+          }
+          planMetadata.push(verified.metadata);
+        }
+      } catch {
+        // Repository closure validation reports the exact artifact failure.
+      }
+    }
+  }
+  const changeRefs = [...new Set(planMetadata.map(({ change_ref: value }) => value))];
+  const modes = [...new Set(planMetadata.map(({ convergence_mode: value }) => value))];
+  if (changeRefs.length !== 1 || modes.length !== 1 || !['feature', 'bugfix', 'docs-only', 'dependency-regression'].includes(modes[0])) {
+    blockers.push('approved Git plans must bind one change_ref and convergence mode');
+  }
+  const portals = repositories.filter(({ role }) => role === 'portal');
+  const modules = repositories.filter(({ role }) => role === 'module');
+  const parentRepositories = [...new Set(planMetadata.map(({ parent_repository_id: id }) => id).filter(Boolean))];
+  const repositoryId = portals[0]?.repository_id ?? (parentRepositories.length === 1 ? parentRepositories[0] : null);
+  const portalRevisions = portals.length > 0
+    ? portals.map(({ source_revision: revision }) => revision)
+    : modules.map(({ portal_pinned_revision: revision }) => revision);
+  const uniquePortalRevisions = [...new Set(portalRevisions.filter(Boolean))];
+  if (!repositoryId || uniquePortalRevisions.length !== 1) blockers.push('Git closure cannot derive one portal repository and revision from repository topology');
+  const moduleEntries = modules.map((repository) => {
+    const metadata = planMetadata.find(({ owner_repository_id: id }) => id === repository.repository_id);
+    return [metadata?.owner_module_id ?? repository.repository_id, repository];
+  });
+  const moduleRevisionMap = Object.fromEntries(moduleEntries.map(([id, { source_revision: revision }]) => [id, revision]));
+  const pinnedModuleRevisionMap = Object.fromEntries(moduleEntries.map(([id, { portal_pinned_revision: revision }]) => [id, revision]));
+  return {
+    current: {
+      repository_id: repositoryId,
+      revision: uniquePortalRevisions[0] ?? null,
+      fingerprint: contract.source_fingerprint,
+      portal_revision: uniquePortalRevisions[0] ?? null,
+      module_revision_map: moduleRevisionMap,
+      pinned_module_revision_map: pinnedModuleRevisionMap,
+      owner_thread_id: contract.active_thread_id,
+      change_ref: changeRefs[0] ?? null,
+      mode: modes[0] ?? null,
+    },
+    blockers,
+  };
 }
 
 function pushUnique(target, value) {
@@ -81,8 +140,8 @@ function validateRepositoryIdentity(repository, contract, blockers) {
   }
 }
 
-function planRepositoryClosure(repository, contract) {
-  const blockers = [];
+function planRepositoryClosure(repository, contract, convergenceBlockers = []) {
+  const blockers = [...convergenceBlockers];
   const includedPaths = [];
   const excludedPaths = [];
   const decisions = [];
@@ -213,12 +272,9 @@ function planRepositoryClosure(repository, contract) {
     included_paths: uniqueIncludedPaths,
     excluded_paths: uniqueExcludedPaths,
     decisions,
-    staging_commands: uniqueIncludedPaths.map((path) => [
-      'git',
-      'add',
-      '--',
-      path,
-    ]),
+    staging_commands: convergenceBlockers.length === 0
+      ? uniqueIncludedPaths.map((path) => ['git', 'add', '--', path])
+      : [],
   };
 }
 
@@ -238,22 +294,38 @@ export function planRepositoryLocalClosures(contract) {
   if (new Set(identities).size !== identities.length) {
     throw new TypeError('repository closures must have unique repository identities');
   }
+  const derivedConvergence = deriveConvergenceCurrent(contract);
+  const convergenceEvaluation = evaluateConvergenceHandoff({
+    result: contract.convergence_result,
+    current: derivedConvergence.current,
+    receipt: contract.convergence_receipt,
+  });
+  const convergenceBlockers = [
+    ...derivedConvergence.blockers,
+    ...convergenceEvaluation.blockers.map(
+    ({ code, message }) => `convergence ${code}: ${message}`,
+    ),
+  ];
   const closures = contract.repositories.map((repository) =>
-    planRepositoryClosure(repository, contract),
+    planRepositoryClosure(repository, contract, convergenceBlockers),
   );
+  const complete = closures.every(({ status }) => status === 'complete');
   return {
     schema_version: 1,
     active_thread_id: contract.active_thread_id,
     active_worktree_id: contract.active_worktree_id,
-    status: closures.every(({ status }) => status === 'complete')
-      ? 'complete'
-      : 'blocked',
+    status: complete ? 'complete' : 'blocked',
+    convergence: {
+      status: convergenceEvaluation.status,
+      blocker_codes: convergenceEvaluation.blocker_codes,
+      blockers: convergenceBlockers,
+    },
     closures,
-    commit_units: closures.map((closure) => ({
+    commit_units: complete ? closures.map((closure) => ({
       repository_id: closure.repository_id,
       git_root: closure.git_root,
       included_paths: closure.included_paths,
       independent_commit_required: true,
-    })),
+    })) : [],
   };
 }

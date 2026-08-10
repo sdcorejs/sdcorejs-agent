@@ -2,11 +2,14 @@
 
 Current validation snapshot for the SDCoreJS SDLC Agent repository.
 
-Date: 2026-07-29
+Date: 2026-08-09
 
 ## Current Layout
 
-- `skills/**/*.md` - 21 dispatchable source skills.
+- `skills/**/*.md` - 22 dispatchable public source skills; the enforced ceiling
+  is 23.
+- `authoring/**` - internal-only skill-authoring lifecycle and evaluation
+  harness; it is not a public skill source or distribution input.
 - `_refs/**` - reference data loaded on demand.
 - `.claude/skills/<name>/SKILL.md` - generated Claude Code mirror.
 - `plugin/skills/<name>/SKILL.md` - generated Claude plugin mirror.
@@ -16,16 +19,17 @@ Date: 2026-07-29
 - `_refs/harness/**` - canonical semantic actions, tri-state capabilities,
   model/role policy, runtime envelopes, and deterministic sentinel policy.
 - `*/sdcorejs-harness.json` - generated adapter mappings with canonical content
-  hash and 21-skill action declarations.
+  hash and 22-skill action declarations.
 
 ## Inventory
 
 | Bucket | Count |
 |---|---:|
-| Source skills | 21 |
-| Claude Code mirror skills | 21 |
-| Plugin mirror skills | 21 |
-| Codex mirror skills | 21 |
+| Source skills | 22 |
+| Claude Code mirror skills | 22 |
+| Plugin mirror skills | 22 |
+| Codex mirror skills | 22 |
+| Internal-only authoring skills | 1 (excluded from all rows above) |
 
 ## Workflow Inventory
 
@@ -34,6 +38,7 @@ Date: 2026-07-29
 | Discovery | `sdcorejs-brainstorming` |
 | Spec gate | `sdcorejs-spec` |
 | Plan gate | `sdcorejs-plan` |
+| Architecture gate | `sdcorejs-architecture` |
 | Execution gate | `sdcorejs-execute-plan` |
 | AI-agent executor | `sdcorejs-ai-agent` |
 | App executors | `sdcorejs-angular`, `sdcorejs-nestjs`, `sdcorejs-nextjs` |
@@ -44,6 +49,63 @@ Date: 2026-07-29
 | Simplification utility | `sdcorejs-simplify` |
 | Parallel | `sdcorejs-parallel-dispatch` |
 | Finish | `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)` when durable knowledge surfaced |
+
+## 0.8.0 executable contract evidence - 2026-08-09 working tree
+
+| Phase | Delivered capability | Executable boundary |
+|---|---|---|
+| 0 | Canonical context parity, legacy-alias read boundaries, root/direct-toolchain engine compatibility, and synchronized `0.8.0` metadata | Communication-economy and toolchain mutation contracts |
+| 1 | Stable `A-*`, `D-*`, `R-*`, `AC-*`, and `INV-*` identities plus fail-closed goal-backward task/path/evidence coverage | `_refs/shared/decision-coverage.mjs` |
+| 2 | Conditional public `sdcorejs-architecture` gate with applicability, bypass, ownership, immutable approval lineage, module boundary, and conformance checks | `_refs/shared/architecture-contract.mjs` |
+| 3 | Plan-owned validation map and non-vacuous delivery convergence across intent, artifacts, task/path/symbol trace, evidence, ledgers, revisions, toolchain, and closure | `_refs/shared/validation-map.mjs`, `_refs/shared/convergence-contract.mjs` |
+| 4 | External-review feedback classification, technical pushback, migration protection, intersected scope, typed approvals, hash-bound repair evidence, and exact command receipts | `_refs/orchestration/repair-contract.mjs` |
+| 5 | Internal RED/GREEN/REFACTOR skill-authoring lifecycle, deterministic pressure matrix, leak detection, ceiling checks, and explicit live-evidence authorization | `authoring/evals/skill-authoring-contract.mjs` |
+| 6 | Exactly 22 public skills in each generated surface, public ceiling 23, internal authoring absent, synchronized docs/site/plugin metadata | `scripts/sync-skills.mjs` and distribution-boundary mutations |
+
+The assessment, approval, snapshot, command-receipt, architecture, validation,
+and convergence artifacts are canonical body/hash-bound contracts. Caller
+booleans or co-mutated projections cannot replace their trusted source. New
+output emits canonical fields; supported legacy aliases remain read-only at
+documented compatibility boundaries. Public API renames still require an exact
+migration/deprecation/compatibility decision.
+
+Evidence classes remain separate:
+
+- **Deterministic:** focused decision (40), architecture (26), validation-map
+  (15), convergence (23), repair (24), and internal authoring (6) suites passed;
+  the expanded cross-contract slice passed 72/72. Both independent canonical
+  reviews approved after the assessment-binding mutation was repaired.
+- **Full E2E:** `npm run test:e2e:repository` and the local composite
+  `npm run test:e2e` passed. The composite includes repository contracts plus
+  Angular, NestJS, and Next.js golden-project suites. Site build and both
+  production dependency audits also passed.
+- **Live agent:** `NOT RUN`. No credentialed provider or fresh external target
+  project was authorized. `authoring/evals/live-agent-matrix.json` therefore
+  retains ten explicit `NOT RUN` rows, null usage/transcript/receipt fields,
+  `full_live_agent_coverage: false`, and
+  `fresh_target_project_validation: false`; skipped is not a pass.
+
+## Current Root Toolchain Compatibility
+
+Root repository tooling declares Node.js
+`^22.22.3 || ^24.15.0 || >=26.0.0`, matching the direct
+`@angular/compiler@22.1.0` engine contract in both `package.json` and
+`package-lock.json`. `npm run test:e2e:toolchain` derives direct dependencies
+from those two files, checks every declared direct dependency engine without
+network access or a transitive semver package, and mutation-tests a stricter
+dependency plus a broadened root range.
+
+The Node.js `18.20.8` compatibility exception is limited to the standalone Visual Companion built-ins-only tests. Its CI evidence runs this command directly
+without `npm ci` or a root dependency install:
+
+```bash
+node --test test/e2e/visual-companion-runtime.test.mjs test/e2e/static-visual-composer.test.mjs
+```
+
+This exception does not extend the supported root toolchain. Root, site, full
+E2E, and site-deployment setup jobs use the deterministic supported Node.js
+version `22.22.3`; the separate exception lane uses `18.20.8` only for the two
+files above.
 
 ## Documentation Layout v2 validation
 
@@ -107,16 +169,16 @@ working-tree diff:
 
 | Measure | Baseline | Current working tree |
 |---|---:|---:|
-| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,603 |
-| Always-loaded bootstrap words | 2,361 | 2,338 |
-| Aggregate just-in-time scenario bytes | 514,603 | 625,338 |
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,951 |
+| Always-loaded bootstrap words | 2,361 | 2,385 |
+| Aggregate just-in-time scenario bytes | 514,603 | 652,614 |
 | Aggregate visible output bytes | 42,558 | 2,802 |
 | Aggregate visible output words | 3,961 | 337 |
-| Portable fallback handoff bytes | 0 | 22,240 |
-| Supported runtime context channel bytes | 0 | 1,205 |
+| Portable fallback handoff bytes | 0 | 25,383 |
+| Supported runtime context channel bytes | 0 | 1,819 |
 | Repeated-block bytes | 2,319 | 0 |
-| Total measured communication bytes | 577,334 | 671,188 |
-| Consumer-required authoritative fields | 288 | 288 preserved |
+| Total measured communication bytes | 577,334 | 702,569 |
+| Consumer-required authoritative fields | 361 | 361 preserved |
 
 The report includes ten scenarios, per-scenario selected paths, bytes, words,
 handoff mode, profile, rendered semantic coverage, cross-profile outcome/status
@@ -461,19 +523,21 @@ arbitrary domain automatically.
 
 | Check | Expected |
 |---|---|
-| Source skill count | 21 |
-| Mirror counts | 21 in `.claude`, `plugin`, and `codex` |
+| Source skill count | 22 public; ceiling 23; internal authoring excluded |
+| Mirror counts | 22 in `.claude`, `plugin`, and `codex` |
 | Text hygiene | No hidden/control/bidi Unicode in tracked text files |
 | Frontmatter | Canonical skills require `name`, `description`, and semantic `required-actions`; provider tool allowlists exist only in generated adapter mirrors |
 | Skill names | Unique `sdcorejs-*` kebab-case names |
 | Ref links | Exact `_refs/...` paths in skills and refs resolve to committed files |
 | Codex mirror | `name` + `description` only, refs rewritten to `../_refs/...` |
 | Cursor rule | In sync with `AGENTS.md` |
-| Harness manifests | Five generated adapter manifests match the canonical capability source hash and contain all 21 skills |
+| Harness manifests | Five generated adapter manifests match the canonical capability source hash and contain all 22 public skills; internal authoring is absent |
 | Capability contract | Every adapter maps all 14 actions, including `context.pass`, and declares all 12 capabilities, including `runtime_context_channel`, as supported, unsupported, or unknown with fallbacks |
 | Behavioral sentinel | Direct/fast/full workflow, interaction, delegation, ownership, summary mutation, static visual, communication profiles, projection, portable handoff, and related-artifact scenarios pass |
 | Stale mirrors | No missing, changed, or extra generated mirror files |
 | Root npm publication | `private: true`; no publication-only manifest metadata, scripts, lifecycle hooks, workflow credentials, registry commands, or npm dependency-install guidance |
+| Root Node toolchain | Manifest and lockfile use `^22.22.3 || ^24.15.0 || >=26.0.0`; direct dependency engines are checked offline with mutation guards |
+| Visual Companion Node 18 exception | The isolated CI lane pins `18.20.8` and directly runs only the two built-ins-only tests without installing root dependencies |
 | Workflow names | No removed legacy skills remain |
 | Product track | `sdcorejs-product` exists and product docs/traceability route to it |
 | Design track | `sdcorejs-design` exists and design docs/wireframes/PNG previews route to it |
@@ -490,14 +554,22 @@ These checks are enforced by `npm run check:text-hygiene`,
 ## Revalidation Commands
 
 ```bash
+npm ci
 npm run sync:skills
 npm run check:text-hygiene
 npm run check:skills
 npm run check:skills:ps
+npm run check:executable-references
+npm run test:e2e:decision-coverage
+npm run test:e2e:architecture
+npm run test:e2e:validation-map
+npm run test:e2e:convergence
+npm run test:e2e:skill-authoring
 npm run test:e2e:communication-economy
 npm run report:communication-economy
 npm run report:communication-economy:live
 npm run test:e2e:harness
+npm run test:e2e:toolchain
 npm run test:e2e:visual-companion
 npm run test:e2e:artifact-paths
 npm run check:nestjs-pack
@@ -523,6 +595,8 @@ npm run build
 CI coverage:
 
 - `CI` runs on pull requests and pushes to `main`.
+- Root-tooling setup jobs in `CI`, `Full E2E`, and site deployment pin Node.js
+  `22.22.3`.
 - `CI` runs `npm ci`, `npm run check:text-hygiene`,
   `npm run check:skills`, `npm run check:nestjs-pack`,
   `npm run check:audit`, and `npm run test:e2e`
@@ -531,6 +605,10 @@ CI coverage:
   `npm run build` under `site/`.
 - `CI` runs `npm run check:text-hygiene` and `npm run check:skills:ps`
   on Windows.
+- `CI` separately pins Node.js `18.20.8` and directly runs only
+  `test/e2e/visual-companion-runtime.test.mjs` and
+  `test/e2e/static-visual-composer.test.mjs`, without root dependency
+  installation.
 - `Full E2E` runs `npm run test:e2e:phase4`,
   `npm run test:e2e:nestjs:golden`, and
   `npm run test:e2e:nestjs:containers` with `SDCOREJS_E2E_FULL=1` on a schedule
@@ -548,6 +626,9 @@ CI coverage:
 - Communication Economy Policy has one trusted Codex/Claude pure-Q&A A/B smoke
   at `medium` and `high`; the full scenario and tool-surface matrix remains a
   release-time requirement.
+- The 0.8.0 internal authoring live matrix is deliberately `NOT RUN`: no
+  credentialed provider or fresh external target project was authorized, so it
+  supplies no live-agent or token-usage claim.
 - Repository metadata should describe the project as a portable SDLC skill pack
   for AI coding agents, not as a standalone runtime coding agent.
 

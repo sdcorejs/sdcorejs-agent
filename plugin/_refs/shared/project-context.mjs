@@ -628,6 +628,7 @@ function detectSourceRoots(files) {
     '_refs',
     'app',
     'apps',
+    'authoring',
     'backend',
     'design',
     'frontend',

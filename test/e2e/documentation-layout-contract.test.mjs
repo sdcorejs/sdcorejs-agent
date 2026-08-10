@@ -1901,10 +1901,14 @@ test('canonical documentation prose carries repository ownership, visual provena
 
   const rootPackage = JSON.parse(rootPackageText);
   const sitePackage = JSON.parse(sitePackageText);
-  assert.equal(rootPackage.engines.node, '>=18');
+  const rootNodeRange = '^22.22.3 || ^24.15.0 || >=26.0.0';
+  assert.equal(rootPackage.engines.node, rootNodeRange);
   assert.equal(sitePackage.engines.node, '>=22.12.0');
-  assert.match(readme + adoption, /Node\.js `>=18`/);
+  assert.ok((readme + adoption).includes(`Node.js \`${rootNodeRange}\``));
   assert.match(readme + adoption, /Node\.js `>=22\.12\.0`/);
+  assert.match(readme + adoption, /Node\.js `18\.20\.8` compatibility exception/);
+  assert.match(readme + adoption, /standalone Visual Companion built-ins-only tests/);
+  assert.match(readme + adoption, /does not extend the supported root toolchain/);
 });
 
 function snapshotDigest(files) {

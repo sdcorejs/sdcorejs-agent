@@ -54,9 +54,10 @@ slide navigation.
 
 ## Current facts reflected by the site
 
-- 21 dispatchable skills.
+- 22 dispatchable public skills; internal skill-authoring is not distributed.
 - 8 executor tracks: AI-agent, product, design, angular, nestjs, nextjs, test, generic.
-- 2 explicit approval gates: spec and plan.
+- 2 always-present approval gates: spec and plan.
+- 1 conditional architecture gate plus validation-map and convergence checks.
 - 12 deterministic E2E smoke checks.
 - Current scope boundary: verified local delivery is covered; production SDLC expansion needs explicit approval/spec/plan.
 

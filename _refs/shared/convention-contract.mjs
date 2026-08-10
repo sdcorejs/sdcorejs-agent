@@ -45,6 +45,7 @@ const FRESHNESS_STATUSES = new Set(['current', 'stale', 'unknown']);
 const AUTO_ACCEPTABLE_SOURCE_KINDS = Object.freeze({
   'explicit-user-decision': 'explicit_user_decisions',
   'approved-specification': 'approved_specs_and_plans',
+  'approved-architecture': 'approved_specs_and_plans',
   'approved-plan': 'approved_specs_and_plans',
   'authoritative-repository-config': 'authoritative_repository_config',
   'public-external-contract': 'public_external_contracts',
@@ -483,6 +484,7 @@ export const CONVENTION_PRECEDENCE = Object.freeze([
   'explicit-user-decision',
   'current-public-or-authoritative-contract',
   'approved-specification',
+  'approved-architecture',
   'approved-plan',
   'accepted-module-convention',
   'accepted-repository-convention',
@@ -496,6 +498,7 @@ const SOURCE_PRECEDENCE_LABEL = {
   'public-external-contract': 'current-public-or-authoritative-contract',
   'authoritative-repository-config': 'current-public-or-authoritative-contract',
   'approved-specification': 'approved-specification',
+  'approved-architecture': 'approved-architecture',
   'approved-plan': 'approved-plan',
 };
 

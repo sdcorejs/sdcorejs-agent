@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import test from 'node:test';
+import { isMap, isScalar, isSeq, parseDocument } from 'yaml';
 import * as runtimePolicy from '../../_refs/harness/runtime-policy.mjs';
 
 const root = path.resolve(new URL('../..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
@@ -20,6 +21,8 @@ const liveEvidenceUrl = new URL(
 const capabilityUrl = new URL('../../_refs/harness/capability-contract.json', import.meta.url);
 const policyUrl = new URL('../../_refs/harness/communication-economy.md', import.meta.url);
 const reportModuleUrl = new URL('../../scripts/measure-communication-economy.mjs', import.meta.url);
+const repairLoopUrl = new URL('../../_refs/orchestration/tail/repair-loop.md', import.meta.url);
+const systemRegistryUrl = new URL('../../_refs/shared/system-registry.json', import.meta.url);
 const BASELINE_CONTEXT_SCHEMA_PATHS = {
   requirement_context: 'skills/shared/sdlc/01-brainstorming.md',
   spec_context: 'skills/shared/sdlc/02-spec.md',
@@ -85,6 +88,117 @@ function deletePath(target, dottedPath) {
   if (cursor && typeof cursor === 'object') delete cursor[parts.at(-1)];
 }
 
+function getPath(target, dottedPath) {
+  let cursor = target;
+  for (const part of dottedPath.split('.')) {
+    if (!cursor || typeof cursor !== 'object' || !Object.hasOwn(cursor, part)) return undefined;
+    cursor = cursor[part];
+  }
+  return cursor;
+}
+
+function canonicalContextContract(sourceText, contextType, sourcePath) {
+  const schema = extractHistoricalContextSchema(sourceText, contextType, sourcePath);
+  const document = parseDocument(schema, { strict: true, uniqueKeys: true });
+  assert.deepEqual(
+    document.errors.map(({ message }) => message),
+    [],
+    `${sourcePath} ${contextType} must be valid YAML with unique keys`,
+  );
+  const rootNode = document.get(contextType, true);
+  assert.ok(isMap(rootNode), `${sourcePath} ${contextType} must be a YAML object`);
+  return {
+    fieldKinds: collectSchemaFieldKinds(rootNode),
+    schema,
+  };
+}
+
+function collectSchemaFieldKinds(rootNode) {
+  const fields = {};
+  const visit = (node, dottedPath) => {
+    if (dottedPath) fields[dottedPath] = schemaNodeKind(node);
+    if (!isMap(node)) return;
+    for (const pair of node.items) {
+      const key = String(pair.key?.value ?? '');
+      visit(pair.value, dottedPath ? `${dottedPath}.${key}` : key);
+    }
+  };
+  visit(rootNode, '');
+  return fields;
+}
+
+function schemaNodeKind(node) {
+  if (isMap(node)) return 'object';
+  if (isSeq(node)) return 'array';
+  if (!isScalar(node)) return 'unknown';
+  if (node.value === null) return 'nullable-scalar';
+  if (typeof node.value === 'number') return 'number';
+  if (typeof node.value === 'boolean') return 'boolean';
+  const value = String(node.value).trim();
+  if (/^<number>$/iu.test(value)) return 'number';
+  if (/^(?:true\s*\|\s*false|false\s*\|\s*true)$/iu.test(value)) return 'boolean';
+  return 'scalar';
+}
+
+function fieldKindsAreCompatible(expected, actual) {
+  if (expected === 'scalar') {
+    return ['scalar', 'number', 'boolean', 'nullable-scalar'].includes(actual);
+  }
+  if (expected === 'nullable-scalar') {
+    return ['nullable-scalar', 'scalar', 'number', 'boolean'].includes(actual);
+  }
+  if (expected === 'reference-or-object') {
+    return actual === 'scalar' || actual === 'object';
+  }
+  if (expected === 'nullable-object') {
+    return actual === 'nullable-scalar' || actual === 'object';
+  }
+  return expected === actual;
+}
+
+function consumerProducerParityErrors(contextType, fieldKinds) {
+  const consumers = runtimePolicy.CONSUMER_REQUIRED_FIELDS[contextType] ?? {};
+  const kindMatrix = runtimePolicy.CONSUMER_REQUIRED_FIELD_KINDS;
+  const demandedFields = new Set(Object.values(consumers).flat());
+  const errors = [];
+
+  for (const [consumer, fields] of Object.entries(consumers)) {
+    for (const field of fields) {
+      const actualKind = fieldKinds[field];
+      if (!actualKind) {
+        errors.push(`${contextType} -> ${consumer} demands absent producer field ${field}`);
+        continue;
+      }
+      const expectedKind = kindMatrix[contextType]?.[field] ?? 'scalar';
+      if (!fieldKindsAreCompatible(expectedKind, actualKind)) {
+        errors.push(
+          `${contextType}.${field} is ${actualKind} in its producer but ${consumer} demands ${expectedKind}`,
+        );
+      }
+    }
+  }
+
+  for (const field of Object.keys(kindMatrix[contextType] ?? {})) {
+    if (!demandedFields.has(field)) {
+      errors.push(`${contextType}.${field} has a stale kind without a current consumer`);
+    }
+    if (!Object.hasOwn(fieldKinds, field)) {
+      errors.push(`${contextType}.${field} kind has no canonical producer field`);
+    }
+  }
+  return errors;
+}
+
+function repairSourceDimensions(sourceText) {
+  const value = sourceText.match(/^\s*dimension:\s*(.+)$/mu)?.[1];
+  assert.ok(value, 'repair_source declares its review dimension enum');
+  return value.split('|').map((item) => item.trim());
+}
+
+function assertRepairSourceDimensionParity(sourceText, expected) {
+  assert.deepEqual(repairSourceDimensions(sourceText), expected);
+}
+
 function contextFor(contextType, consumer) {
   const matrix = requireObject('CONSUMER_REQUIRED_FIELDS');
   const context = {};
@@ -133,7 +247,7 @@ function requiredFieldValue(contextType, field) {
         interrupted: false,
       }];
     }
-    if (['cases', 'captures', 'commands_skipped', 'blockers', 'residual_risks'].includes(field)) {
+    if (['cases', 'acknowledgements', 'captures', 'commands_skipped', 'blockers', 'residual_risks'].includes(field)) {
       return [];
     }
     if (field === 'data_lifecycle') {
@@ -327,6 +441,7 @@ function requiredFieldValue(contextType, field) {
     };
     if (Object.hasOwn(values, field)) return structuredClone(values[field]);
   }
+  if (kind === 'nullable-object') return null;
   if (kind === 'array') return [`<${field}>`];
   if (kind === 'object') return { fixture_value: `<${field}>` };
   if (kind === 'number') return 1;
@@ -440,6 +555,88 @@ test('progress is event-driven and does not duplicate a final response', () => {
   });
   assert.equal(heartbeat.emit, true);
   assert.equal(heartbeat.profile, 'compact');
+});
+
+test('canonical context producers stay structurally aligned with portable consumer contracts', async () => {
+  const matrix = requireObject('CONSUMER_REQUIRED_FIELDS');
+  requireObject('CONSUMER_REQUIRED_FIELD_KINDS');
+  assert.deepEqual(
+    Object.keys(BASELINE_CONTEXT_SCHEMA_PATHS).sort(),
+    Object.keys(matrix).sort(),
+    'every portable context has exactly one canonical producer schema source',
+  );
+
+  const parityErrors = [];
+  for (const [contextType, consumers] of Object.entries(matrix)) {
+    const sourcePath = BASELINE_CONTEXT_SCHEMA_PATHS[contextType];
+    const sourceText = await readFile(path.join(root, sourcePath), 'utf8');
+    const { fieldKinds } = canonicalContextContract(sourceText, contextType, sourcePath);
+    parityErrors.push(...consumerProducerParityErrors(contextType, fieldKinds));
+  }
+
+  const requirementFields = matrix.requirement_context['sdcorejs-spec'];
+  if (requirementFields.includes('out_of_scope')) {
+    parityErrors.push('requirement_context current consumer demands legacy alias out_of_scope');
+  }
+  if (!requirementFields.includes('non_goals')) {
+    parityErrors.push('requirement_context current consumer does not demand canonical non_goals');
+  }
+
+  assert.deepEqual(parityErrors, []);
+});
+
+test('canonical context schema parity guards fail under structural mutations', async () => {
+  const requirementPath = BASELINE_CONTEXT_SCHEMA_PATHS.requirement_context;
+  const requirementText = await readFile(path.join(root, requirementPath), 'utf8');
+  const duplicateKeyMutation = requirementText.replace(
+    /^  non_goals:$/mu,
+    '  in_scope: []\n  non_goals:',
+  );
+  assert.throws(
+    () => canonicalContextContract(
+      duplicateKeyMutation,
+      'requirement_context',
+      requirementPath,
+    ),
+    /unique keys|Map keys must be unique/iu,
+  );
+
+  const canonical = canonicalContextContract(
+    requirementText,
+    'requirement_context',
+    requirementPath,
+  );
+  const missingFieldKinds = { ...canonical.fieldKinds };
+  delete missingFieldKinds.non_goals;
+  assert.match(
+    consumerProducerParityErrors('requirement_context', missingFieldKinds).join('\n'),
+    /absent producer field non_goals/iu,
+  );
+
+  const planPath = BASELINE_CONTEXT_SCHEMA_PATHS.plan_context;
+  const planText = await readFile(path.join(root, planPath), 'utf8');
+  const mutatedPlan = canonicalContextContract(planText, 'plan_context', planPath);
+  mutatedPlan.fieldKinds.parallel_candidates = 'array';
+  assert.equal(mutatedPlan.fieldKinds.parallel_candidates, 'array');
+  assert.match(
+    consumerProducerParityErrors('plan_context', mutatedPlan.fieldKinds).join('\n'),
+    /parallel_candidates.*array.*demands object/iu,
+  );
+});
+
+test('repair source dimensions stay in exact parity with the central review registry', async () => {
+  const [registry, repairSource] = await Promise.all([
+    readFile(systemRegistryUrl, 'utf8').then(JSON.parse),
+    readFile(repairLoopUrl, 'utf8'),
+  ]);
+  const expected = registry.review_dimensions.map(({ id }) => id);
+  assertRepairSourceDimensionParity(repairSource, expected);
+
+  const mutated = repairSource.replace(' | consistency', '');
+  assert.throws(
+    () => assertRepairSourceDimensionParity(mutated, expected),
+    /strictly deep-equal/iu,
+  );
 });
 
 test('consumer field matrix fails closed for every typed runtime context', () => {
@@ -591,6 +788,92 @@ test('consumer field matrix fails closed for every typed runtime context', () =>
       context: malformedParallel,
     }),
     (error) => error?.code === 'ERR_INCOMPLETE_PORTABLE_HANDOFF'
+  );
+});
+
+test('portable handoff preserves every required field for every supported context', () => {
+  const matrix = requireObject('CONSUMER_REQUIRED_FIELDS');
+  const build = requireFunction('buildPortableHandoff');
+
+  for (const [contextType, consumers] of Object.entries(matrix)) {
+    for (const [consumer, fields] of Object.entries(consumers)) {
+      const context = contextFor(contextType, consumer);
+      const handoff = build({ contextType, consumer, context });
+      for (const field of fields) {
+        assert.deepEqual(
+          getPath(handoff.authoritative, field),
+          getPath(context, field),
+          `${contextType} -> ${consumer} preserves ${field}`,
+        );
+
+        const mutation = structuredClone(context);
+        deletePath(mutation, field);
+        assert.throws(
+          () => build({ contextType, consumer, context: mutation }),
+          (error) => error?.code === 'ERR_INCOMPLETE_PORTABLE_HANDOFF',
+          `${contextType} -> ${consumer} rejects loss of ${field}`,
+        );
+      }
+    }
+  }
+});
+
+test('portable test evidence preserves manual acknowledgements for every consumer', () => {
+  const matrix = requireObject('CONSUMER_REQUIRED_FIELDS');
+  const build = requireFunction('buildPortableHandoff');
+  const acknowledgements = [{
+    case_id: 'case-manual-uat',
+    acknowledged_by: 'product-owner',
+    associated_HEAD_or_diff: 'sha256:current-diff',
+  }];
+
+  for (const consumer of Object.keys(matrix.test_evidence)) {
+    const context = contextFor('test_evidence', consumer);
+    context.acknowledgements = acknowledgements;
+    const handoff = build({ contextType: 'test_evidence', consumer, context });
+    assert.deepEqual(
+      handoff.authoritative.acknowledgements,
+      acknowledgements,
+      `test_evidence -> ${consumer} preserves acknowledgements`,
+    );
+  }
+});
+
+test('requirement context accepts the legacy scope alias only at input and emits non_goals', () => {
+  const fields = requireObject('CONSUMER_REQUIRED_FIELDS')
+    .requirement_context['sdcorejs-spec'];
+  assert.ok(fields.includes('non_goals'));
+  assert.ok(!fields.includes('out_of_scope'));
+
+  const canonical = contextFor('requirement_context', 'sdcorejs-spec');
+  canonical.non_goals = ['No release automation.'];
+  assert.deepEqual(runtimePolicy.validateRequiredHandoffFields({
+    contextType: 'requirement_context',
+    consumer: 'sdcorejs-spec',
+    context: canonical,
+  }), []);
+
+  const legacyInput = structuredClone(canonical);
+  legacyInput.out_of_scope = legacyInput.non_goals;
+  delete legacyInput.non_goals;
+  const handoff = runtimePolicy.buildPortableHandoff({
+    contextType: 'requirement_context',
+    consumer: 'sdcorejs-spec',
+    context: legacyInput,
+  });
+  assert.deepEqual(handoff.authoritative.non_goals, ['No release automation.']);
+  assert.equal(Object.hasOwn(handoff.authoritative, 'out_of_scope'), false);
+
+  assert.throws(
+    () => runtimePolicy.buildPortableHandoff({
+      contextType: 'requirement_context',
+      consumer: 'sdcorejs-spec',
+      context: {
+        ...canonical,
+        out_of_scope: ['A conflicting legacy value.'],
+      },
+    }),
+    /conflicting legacy alias/iu,
   );
 });
 
@@ -1341,7 +1624,7 @@ test('canonical workflows integrate compact projection, event progress, and rela
 
   const skillFiles = (await listRelativeFiles(path.join(root, 'skills')))
     .filter((relativePath) => relativePath.endsWith('.md'));
-  assert.equal(skillFiles.length, 21);
+  assert.equal(skillFiles.length, 22);
   for (const relativePath of skillFiles) {
     const text = await readFile(path.join(root, 'skills', relativePath), 'utf8');
     const actions = text.match(/^required-actions:\s*(.+)$/m)?.[1]

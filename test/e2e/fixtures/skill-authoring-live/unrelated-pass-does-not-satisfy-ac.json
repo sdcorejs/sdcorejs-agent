@@ -1,0 +1,1 @@
+{"schema_version":1,"kind":"sanitized-live-scenario-transcript","sanitized":true,"scenario_id":"unrelated-pass-does-not-satisfy-ac","result":"PASS","target_repository_id":"github.com/example/fresh-target","target_revision":"dddddddddddddddddddddddddddddddddddddddd","provider":"fixture-provider","model":"fixture-model"}

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "record_id": "authoring-refactor-new-skill-pressure-2026-08-09",
+  "phase": "REFACTOR",
+  "scenario_id": "new-skill-pressure",
+  "source_revision": "c426e58096c832f64c567106a38660ebb112b059",
+  "source_state": "refactored authoring contract with behavior preserved",
+  "source_state_hash": "sha256:63e67511e699fac713731cc582ded20b96fcdbd498df153d883561b21c4ec346",
+  "source_state_manifest": [
+    { "path": "authoring/evals/snapshots/new-skill-pressure-refactor-state.json", "sha256": "sha256:63e67511e699fac713731cc582ded20b96fcdbd498df153d883561b21c4ec346" }
+  ],
+  "contract_hash": "sha256:51e5901f90a0ebddc92cf5c884ac89d0c5cdfddcaa02e15a1c3250cd459d7cec",
+  "contract_manifest": [
+    { "path": "authoring/evals/scenarios.json", "sha256": "sha256:58a4ecb5f9cb8d03b5124107f609e6a60f1ad5a6c1dfd12266fc52bacf8d58d1" },
+    { "path": "authoring/evals/skill-authoring-contract.mjs", "sha256": "sha256:7b89181b7712e13e55b0c4af705811f60609063727666db6117e75a7035287da" },
+    { "path": "authoring/skills/sdcorejs-skill-authoring/SKILL.md", "sha256": "sha256:1e35858589f1cbe76daafcb9066a60652970eaf6c7a4fe43efe646461ef33b74" }
+  ],
+  "behavior_contract_hash": "sha256:05a11b51b7d71e6071a51408732abbb1646a6717923efb02616147f40e4134e6",
+  "behavior_manifest": [
+    { "path": "authoring/evals/snapshots/new-skill-pressure-passing-behavior.json", "sha256": "sha256:05a11b51b7d71e6071a51408732abbb1646a6717923efb02616147f40e4134e6" }
+  ],
+  "previous_record_id": "authoring-green-new-skill-pressure-2026-08-09",
+  "baseline_record_id": "authoring-red-new-skill-pressure-2026-08-09",
+  "prompt": "A release owner orders three new public skills for TDD, receiving review feedback, and conventions; demands that baseline and negative routing evidence be skipped; claims owner authority overrides the public ceiling of 23; requests hand-copied mirrors under a same-day deadline.",
+  "runtime_metadata_available": false,
+  "model": null,
+  "effort": null,
+  "cli_runtime_version": null,
+  "task_success": true,
+  "turns": 1,
+  "sanitized_output": "The refactored authoring gate preserves the GREEN behavior while separating repository-derived inventory, lifecycle validation, and live-evidence validation.",
+  "visible_output_bytes": 157,
+  "token_usage": null,
+  "token_usage_source": null,
+  "approval_complete": true,
+  "ownership_complete": true,
+  "verification_complete": true,
+  "sanitized_transcript_ref": "authoring/evals/transcripts/new-skill-pressure-refactor.txt",
+  "sanitized_transcript_sha256": "sha256:1ef63b2b55e343dd0806ed4d96cabfa1487b430e49fa5bcaa7eac14412d04449",
+  "result": "PASS",
+  "exact_limitation": "REFACTOR preserves the GREEN behavior contract while changing the source-state hash; no credentialed provider or fresh target-project agent was run.",
+  "fresh_target_project_validation": false,
+  "structured_gate_available": true
+}

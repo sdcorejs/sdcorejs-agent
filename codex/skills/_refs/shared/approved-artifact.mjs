@@ -148,7 +148,6 @@ function validateMetadata(input) {
     'stack_profile',
     'owner_repository_id',
     'owner_repository_role',
-    'owner_module_id',
     'approval_source',
     'approved_at',
   ]) {
@@ -167,6 +166,15 @@ function validateMetadata(input) {
   }
   if (!registry.repository_roles.includes(metadata.owner_repository_role)) {
     throw new TypeError(`unknown repository role: ${metadata.owner_repository_role}`);
+  }
+  if (
+    metadata.owner_module_id !== null &&
+    (typeof metadata.owner_module_id !== 'string' || metadata.owner_module_id.trim() === '')
+  ) {
+    throw new TypeError('owner_module_id must be null or a non-empty string');
+  }
+  if (metadata.owner_repository_role === 'module' && metadata.owner_module_id === null) {
+    throw new TypeError('a module-owned artifact requires owner_module_id');
   }
   if (
     Number.isNaN(Date.parse(metadata.approved_at)) ||

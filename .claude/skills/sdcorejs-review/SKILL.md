@@ -30,7 +30,17 @@ track enum in this skill.
 
 Read `_refs/shared/runtime-protocols.md`. Apply
 `_refs/shared/artifact-lifecycle.md` only when the user explicitly chooses to
-persist the report.
+persist the report. Read `_refs/shared/decision-coverage.md`; preserve
+`decision_coverage` and `goal_backward_review`, and report drift, missing task
+or evidence mappings, invariant gaps, or unresolved critique blockers without
+renumbering or repairing the approved records.
+Preserve `architecture_context` and the exact conditional gate from the
+approved plan. Architecture review compares changed boundaries, ownership,
+public contracts, profile blocks, and validation evidence with approved
+`INV-*`; a stale/missing/mutated required context is a finding, never permission
+to rewrite architecture or conventions.
+Read `_refs/shared/validation-map.md`; preserve the approved `validation_map`
+and report drift from mapped cases or current evidence without rewriting rows.
 
 ## When to use
 - After a track executor finishes a batch and the finish gate selected review.
@@ -60,6 +70,9 @@ Then run `sdcorejs-explore (conventions-read)` through
 `_refs/shared/convention-context.md` for the categories this review touches. It
 never creates the capture policy and never refreshes evidence; a missing registry
 is a context signal, not a blocker and not write permission.
+Read `_refs/shared/convergence-contract.mjs`; emit `convergence_findings` from
+current review evidence. Architecture violations and accepted convention
+violations may block; observed convention candidates stay advisory.
 
 Determine review scope in this order:
 
@@ -340,61 +353,41 @@ consumer-required-field matrix for a portable handoff.
 ```yaml
 review_context:
   source: sdcorejs-review
+  decision_coverage:
+    contract: <exact current decision coverage>
+  goal_backward_review:
+    contract: <exact current goal-backward review>
+  architecture_gate: { valid: true, required: true | false, status: required | not-applicable, signals: [], bypass: <exact bypass object or null>, rationale: <exact normalized rationale> }
+  architecture_context: null # exact approved object when required
+  validation_map: [] # exact approved plan authority
+  convergence_findings: { architecture: { status: <conformant|violated|stale>, violated_invariant_refs: [] }, convention: { accepted_violations: [], observed_findings: [] } }
   track: <central-registry track id>
   review_profile: <track.review_profile from central registry>
   track_profile: <detected stack profile or not-applicable>
   artifact_identity:
-    owner_repository_id: <stable repository id>
-    owner_module_id: <module id or null>
-    execution_host_repository_id: <stable repository id>
+    contract: <owner repository/module and execution host identities>
   approved_artifact:
-    path:
-    approval_hash:
-    current_hash:
-    freshness: current | stale | mutated | unavailable
+    contract: <path, approved/current hashes, and freshness>
   source_revision_map: {}
   portal_pinned_module_revision_map: {}
-  dimensions:
-    - code | architecture | consistency | security | performance | accessibility | ALL
+  dimensions: [code, architecture, consistency, security, performance, accessibility, ALL]
   consistency_scope: complete | applicable | structural | dimension-affecting-only | none
   review_mode: quick-table | table | scored | blocking | site-audit
   approved_frontend_architecture:
-    plan_path: <selected approved plan or null>
-    plan_hash: <approved plan hash or null>
-    status: compared | unavailable | not-applicable
-  file_scope:
-    - path/or/glob
-  refs_loaded:
-    - _refs/...
-  refs_skipped:
-    - ref: _refs/...
-      reason: not applicable to this track_profile
+    contract: <plan path/hash and compared/unavailable/not-applicable status>
+  file_scope: [<path or glob>]
+  refs_loaded: [<_refs path>]
+  refs_skipped: [<ref and not-applicable reason>]
   package_manager: npm | pnpm | yarn | bun | unknown
   probes_run:
-    - command: command if actually run
-      exit: exit code if available
-      notes: redacted or summarized
+    - <actual command, exit, and redacted notes>
   probes_skipped:
-    - probe: lint/build/test/lighthouse/pa11y/axe/etc.
-      reason: no script found, tool not installed, network not allowed, not applicable, or user approval required
+    - <probe and concrete skip reason>
   test_evidence_summary:
-    test_matrix_status: complete | partial | absent | stale
-    associated_HEAD_or_diff: <sha-or-diff-fingerprint>
-    gaps: []
-  finding_ids:
-    - R1
-    - R2
+    contract: <matrix status, associated HEAD/diff, and gaps>
+  finding_ids: [R1, R2]
   findings:
-    - id: R1
-      severity_or_gate: High/REQUIRED
-      dimension: security
-      file_line_or_scope: src/auth.guard.ts:42
-      issue: Missing permission check
-      evidence: <redacted or summarized evidence>
-      risk: Unauthorized access
-      suggested_action: Add resource permission guard
-      repair_tier: confirm
-      gate: REQUIRED
+    - <id, severity/gate, dimension, locator, issue, evidence, risk, action, repair tier>
   repair_gate_mapping:
     blocking: Critical/Important or BLOCKER/REQUIRED
     confirm: semantic/non-mechanical fixes

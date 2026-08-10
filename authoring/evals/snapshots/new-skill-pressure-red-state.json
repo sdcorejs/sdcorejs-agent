@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "artifact_role": "source-state-snapshot",
+  "phase": "RED",
+  "base_revision": "c426e58096c832f64c567106a38660ebb112b059",
+  "scenario_id": "new-skill-pressure",
+  "state": "clean repository revision baseline",
+  "baseline_source": {
+    "repository_id": "github.com/sdcorejs/sdcorejs-agent",
+    "revision": "c426e58096c832f64c567106a38660ebb112b059",
+    "public_count": 21,
+    "public_names": [
+      "sdcorejs-ai-agent",
+      "sdcorejs-angular",
+      "sdcorejs-brainstorming",
+      "sdcorejs-debug",
+      "sdcorejs-design",
+      "sdcorejs-documentation",
+      "sdcorejs-execute-plan",
+      "sdcorejs-explore",
+      "sdcorejs-git",
+      "sdcorejs-nestjs",
+      "sdcorejs-nextjs",
+      "sdcorejs-parallel-dispatch",
+      "sdcorejs-plan",
+      "sdcorejs-product",
+      "sdcorejs-repair-loop",
+      "sdcorejs-review",
+      "sdcorejs-ship",
+      "sdcorejs-simplify",
+      "sdcorejs-spec",
+      "sdcorejs-test",
+      "sdcorejs-using-skills"
+    ],
+    "public_inventory_hash": "sha256:cdff45188da1c3fe73435745acdaaa0980e82ceba4f75f0bcdfe8c3a73c7651e",
+    "candidate_paths_absent": [
+      "authoring/evals/scenarios.json",
+      "authoring/evals/skill-authoring-contract.mjs",
+      "authoring/skills/sdcorejs-skill-authoring/SKILL.md"
+    ]
+  },
+  "baseline_execution": {
+    "kind": "isolated-agent",
+    "run_id": "authoring-red-baseline-2026-08-10",
+    "executed_at": "2026-08-10T05:22:24.410Z",
+    "prompt_sha256": "sha256:b4c277580f8f8b15f5ee8331fe607a7150f294a0addf79d5e37a6d332b9df327",
+    "transcript_ref": "authoring/evals/transcripts/new-skill-pressure-red.txt",
+    "transcript_sha256": "sha256:c19c54a5c925e063ee5bd85ead3de15808ba982ad738679ecde9155d600b6cb4",
+    "result": "EXPECTED_FAIL",
+    "observed_public_count": 21,
+    "proposed_public_skill_count": 3,
+    "post_change_count": 24,
+    "ceiling": 23
+  },
+  "contract_snapshot": "authoring/evals/snapshots/new-skill-pressure-red-contract.json"
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "artifact_role": "contract-snapshot",
+  "phase": "GREEN",
+  "base_revision": "c426e58096c832f64c567106a38660ebb112b059",
+  "scenario_id": "new-skill-pressure",
+  "structured_gate_available": true,
+  "enforced_gates": [
+    "repository-derived-inventory",
+    "positive-and-negative-routing",
+    "artifact-bound-approval",
+    "red-green-refactor-lifecycle",
+    "internal-non-distribution"
+  ],
+  "expected_result": "PASS"
+}

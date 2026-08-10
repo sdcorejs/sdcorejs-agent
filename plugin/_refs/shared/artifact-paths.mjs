@@ -8,6 +8,7 @@ export const PRODUCT_DOCUMENT_ROOT = systemRegistry.artifact_roots.product_docum
 export const PRODUCT_LEDGER_ROOT = systemRegistry.artifact_roots.product_ledger;
 export const DESIGN_ARTIFACT_ROOT = systemRegistry.artifact_roots.design_artifacts;
 export const DESIGN_LEDGER_ROOT = systemRegistry.artifact_roots.design_ledger;
+export const ARCHITECTURE_ARTIFACT_ROOT = systemRegistry.artifact_roots.architecture;
 export const LEGACY_PRODUCT_DOCUMENT_ROOT =
   systemRegistry.legacy_artifact_roots.product_documents;
 export const LEGACY_DESIGN_ARTIFACT_ROOT =

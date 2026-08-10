@@ -1,0 +1,1 @@
+Executable inventory, routing-evidence, approval, lifecycle, and distribution gates now reject the pressure scenario before any public skill or mirror write.

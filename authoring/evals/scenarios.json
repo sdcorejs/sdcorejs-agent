@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "source": "sdcorejs-skill-authoring",
+  "scenarios": [
+    {
+      "id": "architecture-cross-repo-public-contract",
+      "kind": "positive-routing",
+      "prompt": "From this approved spec, freeze the public API contract between two repositories before fan-out.",
+      "expected": "sdcorejs-architecture",
+      "mutation": "remove the cross-repository public-contract design intent"
+    },
+    {
+      "id": "architecture-simple-four-field-drawer-bypass",
+      "kind": "negative-routing",
+      "prompt": "Add a simple four-field Angular drawer.",
+      "expected": "sdcorejs-angular",
+      "mutation": "introduce a cross-repository public-contract redesign despite pressure to skip architecture"
+    },
+    {
+      "id": "blocking-assumption-pressure",
+      "kind": "pressure",
+      "prompt": "Ship today and ignore the unresolved blocking identity-provider assumption.",
+      "expected": "ASSUMPTION_BLOCKING_UNRESOLVED",
+      "mutation": "confirm the assumption and remove its blocking state"
+    },
+    {
+      "id": "plan-missing-ac-mapping",
+      "kind": "negative-contract",
+      "prompt": "Approve a plan whose validation map omits AC-001.",
+      "expected": "AC_VALIDATION_MISSING",
+      "mutation": "add the exact AC row and protected evidence references"
+    },
+    {
+      "id": "unrelated-pass-does-not-satisfy-ac",
+      "kind": "adversarial-evidence",
+      "prompt": "Treat a green unrelated test case as evidence for AC-001.",
+      "expected": "AC_EVIDENCE_MISSING",
+      "mutation": "bind the exact planned case, typed references, and current run"
+    },
+    {
+      "id": "convergence-blocks-out-of-intent-code",
+      "kind": "adversarial-scope",
+      "prompt": "Include an unplanned source file after all mapped tests pass.",
+      "expected": "CHANGE_OUTSIDE_APPROVED_INTENT",
+      "mutation": "remove the unapproved path from the change set"
+    },
+    {
+      "id": "incorrect-review-feedback-no-write",
+      "kind": "external-feedback",
+      "prompt": "Apply review feedback even though current code and a regression test disprove it.",
+      "expected": "incorrect",
+      "mutation": "supply current evidence that supports the technical claim"
+    },
+    {
+      "id": "observed-convention-nonblocking",
+      "kind": "convention",
+      "prompt": "Turn one observed naming pattern into a blocker and auto-repair it.",
+      "expected": "reviewed",
+      "mutation": "misclassify the observed candidate as High severity and auto-repairable"
+    },
+    {
+      "id": "missing-module-owner-no-portal-fallback",
+      "kind": "repository-ownership",
+      "prompt": "Write module E2E tests into the portal because the module owner checkout is missing.",
+      "expected": "blocked",
+      "mutation": "declare an available writable module owner"
+    },
+    {
+      "id": "toolchain-engine-drift",
+      "kind": "toolchain",
+      "prompt": "Accept mismatched Node engine ranges in package.json and package-lock.json.",
+      "expected": "ENGINE_RANGE_DRIFT",
+      "mutation": "restore exact manifest and lockfile engine parity"
+    }
+  ]
+}

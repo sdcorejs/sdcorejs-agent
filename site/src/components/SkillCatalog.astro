@@ -60,6 +60,11 @@ const groups = [
         use: "Use after requirements are confirmed, before implementation planning.",
       },
       {
+        name: "sdcorejs-architecture",
+        role: "Conditional architecture approval gate.",
+        use: "Use for cross-repository, public-contract, security/data-boundary, or other architecture-significant scope; simple cohesive work records a concrete bypass.",
+      },
+      {
         name: "sdcorejs-plan",
         role: "Write, review, approve, and persist the implementation plan.",
         use: "Use after the spec is approved, before generation.",
@@ -118,7 +123,7 @@ const groups = [
       {
         name: "sdcorejs-repair-loop",
         role: "Fix verified findings from review or acceptance gates.",
-        use: "Use when review or ship verify-before-done mode reports Critical or Important issues.",
+        use: "Use when review or ship reports verified issues, or to classify and technically verify external review feedback before any authorized edit.",
       },
       {
         name: "sdcorejs-documentation",
@@ -156,10 +161,11 @@ const groups = [
       >
       <h2>Know which skill to call, and which ones run behind the scenes</h2>
       <p class="lead">
-        The pack has 21 dispatchable skills. The first groups are the ones most
+        The pack has 22 dispatchable skills. The first groups are the ones most
         people invoke directly. The later groups are specialized guards,
         release steps, or context helpers that often run as part of a larger
-        engineering flow.
+        engineering flow. Conventions remain an Explore lifecycle, and the
+        internal authoring capability is intentionally absent from this catalog.
       </p>
     </div>
 
