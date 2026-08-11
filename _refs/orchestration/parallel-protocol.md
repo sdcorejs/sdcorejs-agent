@@ -72,7 +72,9 @@ parallel_context:
   schema_version: 2
   source: sdcorejs-parallel-dispatch
 
-  contract: <one union branch above>
+  contract:
+    source: approved-plan | read-only-request
+    # Include exactly one complete union branch from Contract Union above.
 
   target:
     repo_root:

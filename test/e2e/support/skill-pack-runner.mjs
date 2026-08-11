@@ -136,7 +136,8 @@ const PRIORITY_RULES = [
       /\bplan(n?ing)?\b.*\b(migrat(e|ing|ion)|adopt(ing)?|install)\b/.test(prompt) ||
       (
         hasAny(tokens, ['brainstorm', 'unsure', 'deciding', 'between', 'compare', 'should', 'clarify']) &&
-        !hasDirectTestWorkIntent(prompt, tokens)
+        !hasDirectTestWorkIntent(prompt, tokens) &&
+        !hasArchitectureDesignIntent(prompt, tokens)
       )
   },
   {
@@ -162,6 +163,24 @@ const PRIORITY_RULES = [
     when: ({ prompt, tokens }) => hasReviewIntent(prompt, tokens)
   },
   {
+    skill: 'sdcorejs-angular',
+    when: ({ prompt, tokens }) =>
+      /\bstatic\b.*\b(copy|style)\b|\b(copy|style)[- ]only\b/u.test(prompt) &&
+      hasAny(tokens, ['angular', 'portal', 'page', 'screen'])
+  },
+  {
+    skill: 'sdcorejs-architecture',
+    when: ({ prompt, tokens }) => hasArchitectureDesignIntent(prompt, tokens)
+  },
+  {
+    skill: 'sdcorejs-brainstorming',
+    when: ({ prompt, tokens }) =>
+      hasAny(tokens, ['architecture']) &&
+      hasAny(tokens, ['design', 'define', 'choose', 'compare', 'should']) &&
+      !hasAny(tokens, ['approved', 'confirmed', 'spec']) &&
+      !hasAny(tokens, ['map', 'review', 'audit', 'simplify'])
+  },
+  {
     skill: 'sdcorejs-spec',
     when: ({ prompt, tokens }) =>
       tokens.has('spec') &&
@@ -169,7 +188,8 @@ const PRIORITY_RULES = [
         hasAny(tokens, ['confirmed', 'approved', 'requirements', 'requirement', 'revise', 'revision', 'changed', 'change', 'write', 'create']) ||
         /\b(chot|approve|approved)\b/.test(prompt)
       ) &&
-      !hasAny(tokens, ['plan', 'execute', 'run', 'parallel', 'split'])
+      !hasAny(tokens, ['plan', 'execute', 'run', 'parallel', 'split']) &&
+      !hasArchitectureBypassIntent(prompt, tokens)
   },
   {
     skill: 'sdcorejs-plan',
@@ -271,7 +291,7 @@ const PRIORITY_RULES = [
   {
     skill: 'sdcorejs-test',
     when: ({ prompt, tokens }) =>
-      hasTestIntent(tokens) &&
+      (hasTestIntent(tokens) || /\btest[- ]only\b/u.test(prompt)) &&
       (!hasProductIntent(prompt, tokens) || (hasDirectTestWorkIntent(prompt, tokens) && !hasProductCoverageIntent(prompt, tokens))) &&
       !hasAny(tokens, ['debug', 'root-cause', 'failing', 'failure']) &&
       !hasAny(tokens, ['docs', 'doc', 'documentation', 'guide', 'user-guide', 'manual', 'screenshot'])
@@ -288,6 +308,7 @@ const PRIORITY_RULES = [
         /\b(map|trace)\b.*\b(architecture|flow|codebase|repo|project)\b/.test(prompt) ||
         /\b(plain|technical)\b.*\b(explanation|persona|mode)\b/.test(prompt)
       ) &&
+      !hasDependencyDeliveryIntent(prompt, tokens) &&
       !hasGitArtifactIntent(prompt, tokens)
   },
   {
@@ -304,6 +325,7 @@ const PRIORITY_RULES = [
       (hasAny(tokens, ['explore', 'overview', 'codebase', 'repo', 'architecture', 'env', 'environment', 'resume', 'recover']) ||
         /\bsummarize\b.*\b(project|repo|codebase)\b/.test(prompt) ||
         /\bmap\b.*\b(architecture|flow|codebase)\b/.test(prompt)) &&
+      !hasDependencyDeliveryIntent(prompt, tokens) &&
       !hasAny(tokens, ['docs', 'doc', 'documentation'])
   },
   {
@@ -405,6 +427,10 @@ export function dispatchPrompt(pack, prompt) {
         (
           skill.name === 'sdcorejs-simplify'
           && !hasDirectSimplifyIntent(prompt.toLowerCase(), promptTokens)
+        ) ||
+        (
+          skill.name === 'sdcorejs-architecture'
+          && !hasArchitectureDesignIntent(prompt.toLowerCase(), promptTokens)
         )
           ? 0
           : scoreSkill(skill, promptTokens)
@@ -958,6 +984,35 @@ function hasReviewIntent(prompt, tokens) {
     /\b(full|comprehensive|scored)\b.*\b(review|audit)\b/.test(prompt) ||
     /\b(review|audit)\b.*\b(code|security|performance|accessibility|a11y|architecture)\b/.test(prompt)
   );
+}
+
+function hasArchitectureDesignIntent(prompt, tokens) {
+  if (!hasAny(tokens, ['approved', 'confirmed']) || !tokens.has('spec')) return false;
+  if (!hasAny(tokens, ['design', 'define', 'freeze', 'decide'])) return false;
+  if (hasArchitectureBypassIntent(prompt, tokens)) return false;
+  if (hasAny(tokens, ['map', 'review', 'audit', 'simplify', 'plan', 'execute', 'implement'])) {
+    return false;
+  }
+  const hasArchitectureSignal = tokens.has('architecture') ||
+    /\b(cross[- ](?:module|repository)|public api contract|event contract|queue(?:\/topic| topic)? contract|persisted data[- ]model contract|(?:state|data) ownership|security trust boundary|trust boundary|major dependency|architectural paradigm|dependency direction|independent implementation units?)\b/u.test(prompt);
+  return (
+    hasArchitectureSignal ||
+    /\bthiet\s+ke\s+kien\s+truc\b/u.test(prompt)
+  );
+}
+
+function hasArchitectureBypassIntent(prompt, tokens) {
+  const documentationOnly = hasAny(tokens, ['documentation', 'docs', 'doc', 'guide', 'manual']) ||
+    /\bdocs?[- ]only\b/u.test(prompt);
+  const staticOnly = /\bstatic\b.*\b(copy|style)\b|\b(copy|style)[- ]only\b/u.test(prompt);
+  const simpleDrawer = /\bsimple\b.*\bfour[- ]field\b.*\bdrawer\b/u.test(prompt);
+  const boundedFix = /\bbounded\b.*\b(?:bug|fix)\b/u.test(prompt);
+  const invariantCrud = tokens.has('crud') && hasAny(tokens, ['ordinary', 'invariant', 'existing']);
+  const dependencyPatch = hasDependencyDeliveryIntent(prompt, tokens) &&
+    /\b(?:patch|update|bump)\b/u.test(prompt) &&
+    /\b(?:without|no)\b.*\barchitecture\b.*\bchange/u.test(prompt);
+  return documentationOnly || /\btest[- ]only\b/u.test(prompt) || hasDirectTestWorkIntent(prompt, tokens) || staticOnly ||
+    simpleDrawer || boundedFix || invariantCrud || dependencyPatch;
 }
 
 function hasDependencyDeliveryIntent(prompt, tokens) {

@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "artifact_role": "source-state-snapshot",
+  "phase": "GREEN",
+  "base_revision": "c426e58096c832f64c567106a38660ebb112b059",
+  "scenario_id": "new-skill-pressure",
+  "state": "candidate authoring contract after the RED baseline",
+  "contract_snapshot": "authoring/evals/snapshots/new-skill-pressure-green-contract.json"
+}

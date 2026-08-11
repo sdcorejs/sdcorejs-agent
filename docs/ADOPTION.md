@@ -95,6 +95,40 @@ For approved plans, one executable unit or unavailable/unsafe parallel
 capability auto-selects sequential execution. Ask sequential versus parallel
 only when at least two independent units make both choices real.
 
+## Governed Contract Layers
+
+The public pack contains 22 skills. `sdcorejs-architecture` is conditional:
+use it for cross-repository ownership, public-contract, security/data-boundary,
+or similarly architecture-significant scope. A simple cohesive change bypasses
+the gate only with a concrete not-applicable reason.
+
+Stable assumption/decision/requirement/acceptance/invariant IDs flow through
+the approved artifacts. The plan-owned validation map selects the smallest
+proving layer and exact evidence class; tests append real current runs and
+cases. Verify-before-done evaluates convergence from approved intent through
+executed task/path/symbol trace, test/review evidence, architecture/convention
+conformance, ledgers, source/module identity, and artifact closure. Branch-ready
+and Git verify its receipt and reject stale, vacuous, unreceipted, or
+approved-change/mode-mismatched results. Decision-boundary authority likewise
+matches a verified approved-artifact body/hash.
+
+Conventions are observed, accepted, and persisted through explicit
+`sdcorejs-explore` actions; there is no public conventions skill, and an
+observed pattern is not a blocker or repair authority. External review feedback
+stays inside repair-loop, where it is technically verified and classified
+before a write. Evidence is revision/path/hash-bound; writes need typed tier
+approval, intersected scopes, pre/post manifests, and test-integrity proof.
+Unclear/conflicting or incorrect feedback may produce a decision request or
+evidence-backed pushback instead of an edit.
+
+`authoring/skills/sdcorejs-skill-authoring` is an internal authoring-repository
+capability and must not be copied into an adopter's skill installation. The
+public ceiling remains 23. Its inventory/routing evidence is repository-derived,
+and linked RED/GREEN/REFACTOR records preserve behavior-contract hashes.
+Repository deterministic tests, prepared Full E2E,
+and separately authorized live-agent sessions are distinct evidence layers;
+`NOT RUN` never means pass.
+
 ## Communication Economy Policy
 
 The Communication Economy Policy improves visible-output and portable-handoff
@@ -202,11 +236,25 @@ This matrix tracks supported surfaces and the evidence expected for each.
 | GitHub Copilot | `.github/copilot-instructions.md`, `.github/chatmodes/sdcorejs.chatmode.md`, `.github/sdcorejs-harness.json` | Manifest and entrypoint/behavioral checks. | Copilot transcript for direct Q&A, fast-fix, and one governed task. |
 | Shared Documentation Layout v2 | Canonical `_refs/shared/documentation-layout.*` through each generated ref mirror | `npm run test:e2e:documentation-layout` plus `npm run check:skills`; no provider capability or action changes. | One canonical nested write and, when legacy data exists, the authorized migration/conflict result with path/hash evidence. |
 
+## Toolchain Boundary
+
+Root repository tooling requires Node.js
+`^22.22.3 || ^24.15.0 || >=26.0.0`. The Node.js `18.20.8` compatibility exception is limited to the standalone Visual Companion built-ins-only tests. Run those two files directly
+without `npm ci` or a root dependency install:
+
+```bash
+node --test test/e2e/visual-companion-runtime.test.mjs test/e2e/static-visual-composer.test.mjs
+```
+
+This exception does not extend the supported root toolchain.
+
 ## Adoption Checklist
 
-- Use Node.js `>=18` for root repository tooling and Node.js `>=22.12.0` for
-  the Astro showcase under `site/`.
+- Use Node.js `^22.22.3 || ^24.15.0 || >=26.0.0` for root repository tooling
+  and Node.js `>=22.12.0` for the Astro showcase under `site/`.
 - Choose install mode: plugin, direct repo, submodule, or copied native skills.
+- Confirm the installed public inventory has 22 skills and excludes the
+  internal authoring capability.
 - Run `npm ci`, `npm run check:text-hygiene`, `npm run check:skills`, and
   `npm run test:e2e` at the source commit.
 - Read `SECURITY.md` and decide whether the team needs safe mode.

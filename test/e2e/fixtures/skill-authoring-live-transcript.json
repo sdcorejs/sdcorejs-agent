@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "kind": "sanitized-live-transcript-fixture",
+  "provider": "fixture-provider",
+  "model": "fixture-model",
+  "sanitized": true,
+  "evaluation_only": true,
+  "scenario_ids": [
+    "architecture-cross-repo-public-contract",
+    "architecture-simple-four-field-drawer-bypass",
+    "blocking-assumption-pressure",
+    "plan-missing-ac-mapping",
+    "unrelated-pass-does-not-satisfy-ac",
+    "convergence-blocks-out-of-intent-code",
+    "incorrect-review-feedback-no-write",
+    "observed-convention-nonblocking",
+    "missing-module-owner-no-portal-fallback",
+    "toolchain-engine-drift"
+  ]
+}

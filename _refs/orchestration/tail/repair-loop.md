@@ -5,6 +5,8 @@
 - [Purpose](#purpose)
 - [When Invoked](#when-invoked)
 - [Inputs](#inputs)
+- [External Review Feedback](#external-review-feedback)
+- [Parallel Repair Assignment](#parallel-repair-assignment)
 - [Working-tree Preflight](#working-tree-preflight)
 - [Repair Ledger](#repair-ledger)
 - [Verification Discovery](#verification-command-discovery)
@@ -35,6 +37,8 @@ tail chain instead of jumping directly to a commit.
   issues", "fix critical issues", or a localized equivalent.
 - When linter, typecheck, or test output contains actionable findings with file
   or command evidence.
+- When a human, PR reviewer, copied review, or external agent supplies feedback
+  that must be technically verified before any edit.
 
 Do NOT invoke for:
 
@@ -65,10 +69,10 @@ Preserve the original source context before any edits:
 
 ```yaml
 repair_source:
-  kind: review-code | verify-before-done | linter | typecheck | test | manual
+  kind: review-code | external-review-feedback | verify-before-done | linter | typecheck | test | manual
   track: <repair-supported track id from _refs/shared/system-registry.json>
   track_profile: core-ui-angular | legacy-core-ui-angular | plain-angular | sdcorejs-nestjs | plain-nestjs | nextjs-build-website | plain-nextjs | general | n/a
-  dimension: code | security | performance | accessibility | architecture | ALL
+  dimension: code | architecture | consistency | security | performance | accessibility | site-audit | ALL
   file_scope:
     - src/...
   refs_loaded:
@@ -149,6 +153,101 @@ Rules:
 If `repair_source` is not passed by the caller, infer it from current evidence
 and record the inference before editing.
 
+## External Review Feedback
+
+External feedback never grants write authority. Preserve human, PR, copied, or
+external-agent feedback in this sanitized form before classification:
+
+```yaml
+repair_source:
+  kind: external-review-feedback
+  review_id: <stable id>
+  reviewer: <safe identity or source>
+  base_revision: <40-character revision>
+  file_scope: [<repository-relative path>]
+  original_feedback:
+    kind: text | reference
+    value: <sanitized text or reference>
+    sanitized: true
+```
+
+Call `evaluateExternalReviewFeedback` from
+`_refs/orchestration/repair-contract.mjs`. The required order is:
+
+1. Understand the feedback without assuming it is correct.
+2. Re-read the current file/config/test/contract and cited context.
+3. Verify the technical claim and whether the cited scope still applies.
+4. Classify the feedback; only then select a write tier.
+5. Apply a selected, owner/path-authorized `correct` item only.
+6. Re-run the exact source-specific review or test command after a write.
+7. For incorrect feedback, return technical pushback citing current evidence.
+
+Every evidence item is typed and content-bound:
+
+```yaml
+evidence:
+  - kind: file | config | test | contract | architecture | convention
+    reference: src/example.ts#L42 # derived from path + locator
+    repository_id: <semantic owner>
+    revision: <current reviewed revision>
+    path: src/example.ts
+    locator: L42
+    sha256: sha256:<64 lowercase hex>
+    summary: <current technical observation>
+```
+
+Before a write, the finding declares `repair_scope_paths`; every changed path
+must be canonical and fall inside the intersection of those paths,
+`repair_source.file_scope`, and owner `allowed_paths`. Approval references are
+`{artifact_ref, approval_hash}` entries resolved only from the trusted
+`approval_artifacts` loader and verified with the canonical approved-artifact
+hash contract. Owner approval binds actor, finding, base revision, repository,
+and scope. A `confirm` tier also requires `explicit-confirmation`; a
+`user-decision` tier requires an `owner-decision`. Public-contract migration
+approval must resolve to an approved `path#D-###` artifact whose decision ID and
+content hash match. Nonexistent references, inline bodies, booleans, and
+free-form references do not satisfy any approval tier.
+
+Each attempt contains a nonempty `change_manifest` with distinct pre/post file
+hashes and exact `changed_paths`, a distinct result revision, and required
+repaired evidence bound to result revision/path/locator/hash. `test_integrity`
+uses pre/post contract hashes and stable assertion IDs; changed test paths must
+match it exactly, and removing any prior assertion blocks the repair.
+
+All revisions, paths, locators, and file hashes resolve through a canonical
+`repair-repository-snapshot:v1` artifact from the trusted evidence loader. Each
+external classification also resolves `repair-review-assessment:v1`; caller
+booleans cannot replace the independent verifier's finding, revision, evidence,
+normalized conflicts, proposed-change kind, migration-decision identity, or
+re-verification binding. Conflict reordering is normalized, while conflict
+removal, kind relabeling, or decision substitution invalidates the assessment.
+Each
+attempt also resolves a canonical `repair-command-receipt:v1` artifact from the
+trusted command runner. Its exit code derives `PASSED` or `FAILED` and it binds
+the exact command, change manifest, repaired evidence, contract hashes, test
+paths, and assertion IDs. The attempt projection cannot override either
+receipt.
+
+Compatibility mapping:
+
+| `feedback_verdict` | Existing repair status | Write rule |
+|---|---|---|
+| `correct` | `VALID` | Tier may be `auto`, `confirm`, or `user-decision` after classification. |
+| `stale` | `STALE` | No write. |
+| `not-applicable` | `MIS-SCOPED` or `REDUNDANT` | No write. |
+| `incorrect` | `REDUNDANT` | No write; return evidence-backed pushback. |
+| `unclear` | `UNCLEAR` | No write until clarified or re-reviewed. |
+| `conflicting` | `CONFLICTING` | No write; surface the approved-contract owner decision. |
+
+A conflict with an approved spec, architecture, accepted convention, or public
+contract remains `CONFLICTING`. A requested public API rename without an
+approved migration/deprecation/compatibility decision is also conflicting.
+Pushback cites exact current file/config/test/contract references; it does not
+use reviewer agreement or disagreement as evidence. Never weaken tests to make
+feedback appear correct.
+
+## Parallel Repair Assignment
+
 When the finding comes from `sdcorejs-parallel-dispatch`, also require:
 
 ```yaml
@@ -207,13 +306,14 @@ Verification status values:
 - `MIS-SCOPED`: cited convention or gate does not apply to this file/scope.
 - `REDUNDANT`: code already satisfies the finding through another mechanism.
 - `UNCLEAR`: cannot decide without more context.
+- `CONFLICTING`: contradicts approved intent or needs the owning decision.
 
 Rules:
 
 - Every finding must be classified before repair.
 - Every `VALID` finding must be categorized as `auto`, `confirm`, or
   `user-decision`.
-- `STALE`, `MIS-SCOPED`, and `REDUNDANT` findings must not be patched.
+- `STALE`, `MIS-SCOPED`, `REDUNDANT`, and `CONFLICTING` findings must not be patched.
 - `UNCLEAR` findings must not be patched without either rerunning
   review/debug or asking the user.
 
@@ -347,6 +447,7 @@ After each pass:
 | Source | Re-verify action |
 |---|---|
 | `review-code` | Re-run `sdcorejs-review` with the same track, `track_profile`, dimension, file scope, mode, refs, and probes from `review_context`. |
+| `external-review-feedback` | Re-run the exact source-specific review/test command recorded after technical verification. |
 | `verify-before-done` | Re-run `sdcorejs-ship (verify-before-done mode)` for the same acceptance gate. |
 | `linter` | Re-run the original lint command or discovered lint script. |
 | `typecheck` | Re-run the original typecheck command or discovered typecheck/build script. |
@@ -424,6 +525,8 @@ those gates with any verification deferral recorded.
 ### MUST DO
 
 - Preserve `repair_source` before editing.
+- For external feedback, classify from current evidence before selecting a tier
+  and return evidence-backed technical pushback when the claim is incorrect.
 - Preserve `review_context` exactly when the source is `sdcorejs-review`.
 - Preserve `simplify_context` exactly when present and invalidate affected
   evidence after every repair write.
@@ -433,12 +536,12 @@ those gates with any verification deferral recorded.
 - Re-run the source-specific verification after each pass.
 - Use package-manager and script discovery instead of hardcoded commands.
 - Keep passes small and reversible.
-- Require explicit approval for semantic and user-decision fixes.
-- Protect tests from being weakened.
+- Require typed, scoped approval artifacts for confirm and user-decision fixes.
+- Prove test integrity from pre/post contract hashes and assertion identities.
 
 ### MUST NOT
 
-- Patch stale, mis-scoped, redundant, or unclear findings.
+- Patch stale, mis-scoped, redundant, unclear, conflicting, or incorrect feedback.
 - Apply user-decision tier without asking.
 - Treat silence as approval.
 - Run more than 3 passes silently.
@@ -446,6 +549,8 @@ those gates with any verification deferral recorded.
 - Commit directly from repair-loop by default.
 - Weaken tests, remove coverage, skip tests, or mark tests pending to make
   verification pass.
+- Accept traversal paths, empty changes, unbound evidence, or caller-asserted
+  `tests_weakened` booleans.
 
 ## Cross-references
 

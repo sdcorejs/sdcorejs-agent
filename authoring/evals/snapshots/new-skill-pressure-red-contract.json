@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "artifact_role": "contract-snapshot",
+  "phase": "RED",
+  "base_revision": "c426e58096c832f64c567106a38660ebb112b059",
+  "scenario_id": "new-skill-pressure",
+  "structured_gate_available": false,
+  "enforced_gates": [],
+  "expected_result": "EXPECTED_FAIL"
+}

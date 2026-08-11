@@ -1,21 +1,21 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-08-08T00:00:00.000Z
+generated_at: 2026-08-09T00:00:00.000Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks: [workflow, ai-agent, angular, nestjs, nextjs, product, design, test]
 stack_profiles: [node-esm, markdown-skill-pack, astro-site]
 summary_scope: skill-pack architecture, mirrors, adapters, and verification
-source_roots: [_refs, plugin, scripts, site, skills, test]
+source_roots: [_refs, authoring, plugin, scripts, site, skills, test]
 evidence:
   workspace_configs: []
   package_manifests: [package.json, site/package.json]
   key_entrypoints: [AGENTS.md, CLAUDE.md, skills/orchestration/using-skills.md, scripts/sync-skills.mjs, plugin/hooks/session-start, .github/copilot-instructions.md, .cursor/rules/sdcorejs-agent.mdc, site/src/pages/index.astro]
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:f5ea583a6c0ecfa49424e27d6b192f7e879573b72601bdda38e0f43188fe7dd0
-  source_roots: sha256:ddec7e2dffa8a69905218e58e710cd58376cd3cbc4dc15fc1d809fc8a6e2ec12
+  dependency_manifests: sha256:6265ea96334d928c96d3d520fb7c8cbe032aa1c266127b7ae39e5a448e79c1db
+  source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
 artifact_id: project-summary
@@ -31,11 +31,12 @@ owner: integration-owner
 
 ## Purpose
 
-`sdcorejs-agent` is the authoring repository for a 21-skill engineering pack
+`sdcorejs-agent` is the authoring repository for a 22-skill engineering pack
 for developers and technical teams. It defines reusable software-delivery
-workflows for governed AI-agent applications, Angular, NestJS, Next.js,
-product, design, test, documentation, review, ship, Git, and generic
-execution.
+workflows for governed architecture and AI-agent applications, Angular,
+NestJS, Next.js, product, design, test, documentation, review, ship, Git, and
+generic execution. A separate internal skill-authoring lifecycle lives under
+`authoring/` and is never part of the public pack or generated mirrors.
 
 The private root workspace distributes the same canonical behavior through
 repository/plugin adapters for Codex, Claude Code, Cursor, and GitHub Copilot;
@@ -62,7 +63,8 @@ for routine work.
 
 ## Stack and Workspace
 
-- Repository tooling uses Node.js ESM and requires Node.js 18 or newer.
+- Repository tooling uses Node.js ESM and requires
+  `^22.22.3 || ^24.15.0 || >=26.0.0`.
 - The root package is private and uses npm.
 - Most source assets are Markdown instructions plus small JavaScript helpers.
 - Tests use the built-in Node.js test runner.
@@ -82,7 +84,9 @@ Dependency evidence:
 |---|---|---|---|---|
 | Skill sources | `skills/` | Canonical routing and executor contracts | `skills/orchestration/using-skills.md` | `_refs/` |
 | Reference sources | `_refs/` | Shared procedures, templates, and track packs | `_refs/shared/project-context.md` | source skills |
+| Architecture gate | `skills/shared/sdlc/architecture.md`, `_refs/sdlc/architecture.md` | Conditional architecture significance, ownership, approval lineage, and conformance | `skills/shared/sdlc/architecture.md` | spec and plan gates |
 | AI-agent track | `skills/tracks/ai-agent/`, `_refs/ai-agent/` | Approved engine/capability composition, security contracts, offline fixtures, and executor evidence | `skills/tracks/ai-agent/sdcorejs-ai-agent.md` | SDLC gates, downstream skills |
+| Internal skill authoring | `authoring/` | RED/GREEN/REFACTOR records, deterministic pressure scenarios, distribution-leak checks, and explicit live-evidence boundary | `authoring/skills/sdcorejs-skill-authoring/SKILL.md` | canonical contracts; never the sync pipeline |
 | Sync pipeline | `scripts/` | Validate and generate adapter mirrors | `scripts/sync-skills.mjs` | `skills/`, `_refs/` |
 | Harness contracts | `_refs/harness/` | Portable actions, capabilities, role/model policy, and bounded delegation envelopes | `_refs/harness/runtime-policy.mjs` | canonical skills, adapters, sentinels |
 | Static visual companion | `_refs/sdlc/static-visual-composer.mjs` | Validate typed screens and render safe standalone HTML plus Markdown fallback | `_refs/sdlc/visual-screen.schema.json` | interaction protocol |
@@ -102,7 +106,8 @@ Authoring flow:
 1. Edit canonical instructions in `skills/`, `_refs/`, or top-level entrypoints.
 2. Run `scripts/sync-skills.mjs` through `npm run sync:skills`.
 3. The sync script validates source skills and regenerates tool-specific mirrors.
-4. Contract tests exercise routing, generated content, adapters, and fixtures.
+4. Contract tests exercise routing, decision and architecture gates, validation
+   maps, convergence, generated content, adapters, and fixtures.
 5. `npm run check:skills` reconstructs mirrors in a temporary directory and
    reports drift without modifying the repository.
 
@@ -114,7 +119,8 @@ Consumer flow:
    fallbacks; the skill loads only the references needed for its mode and stack;
    AI-agent execution resolves one engine and one capability profile once.
 4. Write-producing work passes runtime artifact context through the finish gate.
-5. Ship verifies evidence; Git computes artifact closure before explicit staging.
+5. Ship verifies the plan-owned validation map and compact convergence receipt;
+   Git computes artifact closure before explicit staging.
 
 ## Source-of-Truth and Generated Boundaries
 
@@ -152,6 +158,15 @@ canonical source and rerun synchronization.
 - `npm run check:skills` checks mirror parity without repository writes.
 - `npm test` runs repository, NestJS contract, and golden-project suites.
 - `npm run test:e2e:repository` runs repository-level contract tests.
+- `npm run test:e2e:decision-coverage` validates decision identities and
+  goal-backward task/path/evidence completeness.
+- `npm run test:e2e:architecture` validates conditional applicability,
+  ownership, approval lineage, module boundaries, and conformance.
+- `npm run test:e2e:validation-map` validates plan-owned acceptance evidence.
+- `npm run test:e2e:convergence` validates delivery closure and compact
+  handoffs across execute, test, review, ship, branch-ready, and Git.
+- `npm run test:e2e:skill-authoring` validates the internal lifecycle,
+  behavioral matrix, public-skill ceiling, and non-distribution boundary.
 - `npm run test:e2e:harness` runs behavioral sentinels, summary mutations, and
   static visual safety tests.
 - `npm run test:e2e:artifact-paths` runs the Product/Design canonical path
@@ -176,8 +191,20 @@ canonical source and rerun synchronization.
 - Reusable skill and reference prose is English-only and locale-neutral.
 - User-facing runtime output follows the user's language.
 - Pure Q&A answers directly; bounded low-risk changes may take fast-fix.
-- Approval gates separate brainstorming, spec, plan, and execution for
-  governed changes.
+- Approval gates separate brainstorming, spec, conditional architecture, plan,
+  and execution for governed changes.
+- Stable `A-*`, `D-*`, `R-*`, `AC-*`, and `INV-*` identities connect approved
+  intent to goal-backward plan tasks, paths, symbols, and evidence.
+- Planning owns the validation map; test records exact current evidence and
+  ship rejects unrelated, stale, deferred, or incomplete proof.
+- Convergence is receipt-bound and non-vacuous across approved intent,
+  implementation trace, validation, review, ledgers, revisions, toolchain, and
+  artifact closure.
+- External review feedback remains read-only until trusted snapshot,
+  assessment, approval, command-receipt, scope, and test-integrity contracts all
+  authorize a bounded repair.
+- Internal skill authoring is excluded from `skills/**`, mirrors, manifests,
+  catalog, installation guidance, and the public inventory.
 - AI-agent source selects lifecycle and business capability independently,
   defaults provider storage off, forbids generic raw tools, and keeps offline
   evidence separate from live verification.
@@ -219,6 +246,10 @@ canonical source and rerun synchronization.
 | Change project context | `_refs/shared/project-context.md` | `_refs/shared/project-context.mjs` |
 | Change artifact closure | `_refs/shared/artifact-lifecycle.md` | `_refs/shared/artifact-lifecycle.mjs` |
 | Change an SDLC gate | `skills/shared/sdlc/` | `_refs/sdlc/` |
+| Change architecture applicability or lineage | `skills/shared/sdlc/architecture.md` | `_refs/sdlc/architecture.md`, `_refs/shared/architecture-contract.mjs` |
+| Change decision or plan coverage | `_refs/shared/decision-coverage.md` | `_refs/shared/decision-coverage.mjs`, validation-map contracts |
+| Change convergence or delivery proof | `_refs/shared/convergence-contract.md` | `_refs/shared/convergence-contract.mjs`, ship and Git contracts |
+| Change internal skill authoring | `authoring/skills/sdcorejs-skill-authoring/SKILL.md` | `authoring/evals/`, distribution-boundary tests |
 | Change Angular generation | `skills/tracks/angular/` | `_refs/angular/` |
 | Change NestJS generation | `skills/tracks/nestjs/` | `_refs/nestjs/` |
 | Change Next.js generation | `skills/tracks/nextjs/` | `_refs/nextjs/` |

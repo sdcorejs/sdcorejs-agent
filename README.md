@@ -10,7 +10,7 @@ Cursor.
 Requests flow through:
 
 ```text
-brainstorming -> spec -> plan -> execute-plan -> track executor -> finish gates -> ship -> git
+brainstorming -> spec -> architecture when required -> plan -> execute-plan -> executor -> convergence -> branch-ready -> git
 ```
 
 The pack is documentation-driven: markdown skills plus `_refs/` knowledge. There is no runtime server.
@@ -36,6 +36,8 @@ Request
        Explore if needed, then confirm blockers.
   -> sdcorejs-spec
        Write spec, ask for approval, and persist approved spec.
+  -> sdcorejs-architecture (conditional)
+       Approve architecture only for architecture-significant scope.
   -> sdcorejs-plan
        Write numbered plan, ask for approval, and persist approved plan.
   -> sdcorejs-execute-plan
@@ -44,9 +46,9 @@ Request
        ai-agent | angular | nestjs | nextjs | product | design | test | generic harness
   -> finish gate and tail chain
        sdcorejs-test -> optional sdcorejs-simplify -> affected focused tests
-       -> sdcorejs-review / repair-loop
+       -> sdcorejs-review / repair-loop, including verified external feedback
        write-producing docs/task/memory artifacts first
-       -> sdcorejs-ship (verify-before-done mode)
+       -> sdcorejs-ship (validation-map and convergence verification)
        -> sdcorejs-ship (branch-ready mode as the final read-only gate)
 ```
 
@@ -57,6 +59,42 @@ resolution. It auto-selects sequential for one unit or when safe parallel
 execution is unavailable.
 No write-producing step may run after final branch-ready unless branch-ready is
 run again before Git artifacts.
+
+## Governance Contracts
+
+- Decision coverage preserves current assumptions, decisions, requirements,
+  acceptance criteria, and invariants as stable `A-*`, `D-*`, `R-*`, `AC-*`,
+  and `INV-*` identities. Goal-backward checking rejects plans that omit the
+  task, path, or evidence needed to prove an approved outcome.
+- `sdcorejs-architecture` is the twenty-second public skill and a conditional
+  gate, not a mandatory ceremony. Cross-repository ownership, public contracts,
+  security boundaries, and other architecture-significant work require an
+  approved architecture artifact; a small cohesive change records a concrete
+  not-applicable reason.
+- `plan_context.validation_map` is the planning authority. Test preserves its
+  exact coverage projection, appends actual runs/cases, and emits only current
+  approved evidence IDs. A green but unrelated command cannot satisfy an AC.
+- The convergence evaluator joins approved intent/artifacts to executed
+  task-path-symbol trace, current test/review evidence, architecture and
+  convention conformance, required ledgers, source/module identity, and artifact
+  closure. Verify-before-done evaluates it; branch-ready and Git recheck the
+  compact result plus its hash-verified receipt against approved change/mode
+  and current state. Git derives identity from repositories and approved plans.
+- Conventions remain an `sdcorejs-explore` action lifecycle, not a public
+  `sdcorejs-conventions` skill. Observed patterns are advisory; only a separately
+  authorized conventions-sync action persists accepted rules.
+- External review feedback is handled inside `sdcorejs-repair-loop`: it is
+  re-read, technically verified, classified, and either repaired within explicit
+  tiered authority or answered with revision/path/hash-bound pushback. Writes
+  stay inside intersected scopes and carry pre/post hashes plus test-integrity
+  proof. Unclear/conflicting feedback and unapproved API migrations do not write.
+- Internal `sdcorejs-skill-authoring` lives under `authoring/**` and is excluded
+  from public inventories, mirrors, manifests, and the site. The public ceiling
+  remains 23 skills. Its gate derives inventory/routing hashes from the repo and
+  validates linked RED/GREEN/REFACTOR records and complete live-matrix schemas.
+- Deterministic contract tests, prepared-environment Full E2E, and authorized
+  live-agent evidence are separate layers. A deterministic pass never implies a
+  Full E2E or live-agent pass, and unavailable live validation is `NOT RUN`.
 
 Pure Q&A answers directly. Small, explicit, low-risk fixes use targeted context,
 the smallest edit, focused verification, and concise review; they escalate to
@@ -118,6 +156,15 @@ pinned by CSP hash, server-owned screen revisions that make stale-click
 rejection possible, and a bounded event log. Drive it through
 `_refs/sdlc/visual-companion/cli.mjs`, which prints one JSON object per command
 and exits non-zero on failure.
+
+The Node.js `18.20.8` compatibility exception is limited to the standalone Visual Companion built-ins-only tests. Run the evidence command directly
+without `npm ci` or a root dependency install:
+
+```bash
+node --test test/e2e/visual-companion-runtime.test.mjs test/e2e/static-visual-composer.test.mjs
+```
+
+This exception does not extend the supported root toolchain.
 
 Two independent gates: `live_visual_companion` plus `persistent_local_process`
 must be `supported`, and the user must consent to local runtime writes.
@@ -231,7 +278,7 @@ The root `name` and `version` are synchronized repository/plugin release
 metadata, not an npm package identity. The canonical package manager for
 repository validation remains npm. Use the committed `package-lock.json` with:
 
-- Root repository tooling requires Node.js `>=18`.
+- Root repository tooling requires Node.js `^22.22.3 || ^24.15.0 || >=26.0.0`.
 - The Astro showcase under `site/` requires Node.js `>=22.12.0`.
 
 ```bash
@@ -312,7 +359,7 @@ transcripts, see:
 ## Repo Layout
 
 ```text
-skills/                 source skills, 21 dispatchable skill files
+skills/                 source skills, 22 dispatchable skill files
 _refs/                  source reference docs
 _refs/harness/          actions, capabilities, model roles, runtime envelopes
 .claude/skills/         generated Claude mirror

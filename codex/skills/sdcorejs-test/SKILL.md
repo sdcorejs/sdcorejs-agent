@@ -94,6 +94,8 @@ Always load:
 - `../_refs/shared/test-environment-guard.md`
 - `../_refs/shared/test-context.md`
 - `../_refs/shared/test-scope-and-coverage.md`
+- `../_refs/shared/validation-map.md`
+- `../_refs/shared/convergence-contract.mjs`
 - `../_refs/shared/test-auth-personas.md`
 - `../_refs/shared/test-data-lifecycle.md`
 
@@ -124,7 +126,8 @@ Before edits or commands, emit the schema from `../_refs/shared/test-context.md`
 
 - `test_context.schema_version: 2`, current `associated_HEAD_or_diff`,
   classification, scope/owner, runner/config/cwd, environment/write policy,
-  auth/personas, data ownership/cleanup, execution plan, and coverage matrix;
+  auth/personas, data ownership/cleanup, execution plan, the exact approved
+  validation map, and its `projectCoverageMatrix` runtime projection;
 - independent `test_status` fields for planning, authoring, executability,
   execution, result, evidence, and documentation;
 - `test_evidence.schema_version: 2` with append-oriented runs, cases, captures,
@@ -147,11 +150,14 @@ module release check.
 2. Resolve the correct workspace/cwd. Never invent a command, package manager,
    threshold, service, seed, browser install, auth bypass, or database reset.
 3. Map requirements and risks before authoring. Prefer the smallest level that
-   proves behavior; use server/API denial for authorization boundaries.
+   proves behavior; use server/API denial for authorization boundaries. For an
+   approved plan, preserve `plan_context.validation_map` exactly.
 4. For state changes, prove run ownership and idempotent cleanup first. Block
    unsafe staging/production effects and real email, SMS, or payments.
 5. Run the narrowest relevant command before broader verification. Preserve
-   exact exit code and a redacted summary. Record skipped commands explicitly.
+   exact exit code and a redacted summary. Append mapped runs/cases, then call
+   `evaluateValidationEvidence`; emit exact current `convergence_evidence_refs`
+   from approved row evidence IDs, and record skipped commands explicitly.
 6. On a source failure, do not silently fix production code outside `tdd-cycle`;
    route to `sdcorejs-debug`.
 
@@ -200,6 +206,7 @@ assigned test paths and must not edit shared config.
 Return localized summary plus:
 
 - `test_context`, `test_status`, and `test_evidence`;
+- current `convergence_evidence_refs` (never authored, stale, skipped, or invented IDs);
 - authored/changed files and coverage matrix gaps;
 - exact commands run/skipped, exit codes, cleanup outcome, and blockers;
 - `ui_capture_context` when applicable;

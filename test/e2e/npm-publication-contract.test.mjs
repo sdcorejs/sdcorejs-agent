@@ -5,9 +5,12 @@ import { basename, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
-const EXPECTED_RELEASE_VERSION = '0.7.0';
-const EXPECTED_SKILL_COUNT = 21;
+const EXPECTED_RELEASE_VERSION = '0.8.0';
+const EXPECTED_SKILL_COUNT = 22;
+const EXPECTED_ROOT_NODE_RANGE = '^22.22.3 || ^24.15.0 || >=26.0.0';
 const CONTRACT_PATH = 'test/e2e/npm-publication-contract.test.mjs';
+const VISUAL_COMPANION_NODE18_COMMAND =
+  'node --test test/e2e/visual-companion-runtime.test.mjs test/e2e/static-visual-composer.test.mjs';
 
 const HISTORICAL_DOCUMENTATION_FILES = new Set([
   'docs/skill-consolidation-plan.md',
@@ -266,6 +269,23 @@ test('npm publication: active documentation uses repository release and installa
   assert.match(changelog, /npm publication[\s\S]*remain retired/i);
   assert.match(changelog, /root Node workspace[\s\S]*private/i);
   assert.match(changelog, /provider-neutral semantic actions/i);
+});
+
+test('npm publication: current docs separate root tooling from the Visual Companion Node 18 exception', async () => {
+  const documentation = await Promise.all([
+    'README.md',
+    'docs/ADOPTION.md',
+    'VALIDATION.md',
+  ].map(async path => ({ path, source: await readText(path) })));
+
+  for (const { path, source } of documentation) {
+    assert.ok(source.includes(EXPECTED_ROOT_NODE_RANGE), `${path} states the exact root Node range`);
+    assert.ok(source.includes('Node.js `18.20.8` compatibility exception'), `${path} states the Node 18 exception`);
+    assert.ok(source.includes('standalone Visual Companion built-ins-only tests'), `${path} keeps the exception standalone`);
+    assert.ok(source.includes('without `npm ci` or a root dependency install'), `${path} keeps the lane install-free`);
+    assert.ok(source.includes('does not extend the supported root toolchain'), `${path} does not broaden root support`);
+    assert.ok(source.includes(VISUAL_COMPANION_NODE18_COMMAND), `${path} gives the direct two-test command`);
+  }
 });
 
 test('npm publication: lockfile, versions, dependencies, and skill inventories stay synchronized', async () => {

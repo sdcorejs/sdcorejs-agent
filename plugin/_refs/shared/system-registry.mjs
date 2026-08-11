@@ -121,6 +121,9 @@ function validateReviewDimensions(registry) {
  */
 function validateConventionVocabulary(registry) {
   const errors = [];
+  if (!registry?.artifact_kinds?.includes('architecture')) {
+    errors.push('artifact_kinds must declare the architecture artifact kind');
+  }
   if (!registry?.artifact_kinds?.includes('convention')) {
     errors.push('artifact_kinds must declare the convention artifact kind');
   }
@@ -140,6 +143,7 @@ const REQUIRED_ARTIFACT_ROOTS = [
   'design_artifacts',
   'design_ledger',
   'documentation',
+  'architecture',
   'conventions',
 ];
 const REQUIRED_LEGACY_ARTIFACT_ROOTS = ['product_documents', 'design_artifacts'];

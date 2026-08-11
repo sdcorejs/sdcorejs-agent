@@ -21,6 +21,16 @@ through `context.pass`. User-facing output projects the requirement-linked
 result, exact commands and exit codes, failures, skipped checks, blockers, and
 next action; it does not echo the full structures by default. Use the validated
 portable handoff when `runtime_context_channel` is unsupported or unknown.
+Read `_refs/shared/decision-coverage.md`. Preserve the approved
+`decision_coverage` and `goal_backward_review` objects unchanged; test planning
+may add current run evidence elsewhere, but it must not renumber records,
+rewrite plan task ownership, or hide invariant evidence gaps.
+Preserve `architecture_gate` and `architecture_context` unchanged from the
+approved plan. Test planning projects architecture `validation_obligations`
+into cases/evidence; it must not replace the approved spine, reclassify the
+gate, or claim profile conformance without relevant `INV-*` evidence.
+Read `_refs/shared/validation-map.md`. Preserve the exact approved
+`plan_context.validation_map`; `coverage_matrix` is only its runtime projection.
 
 ## Test context
 
@@ -28,6 +38,21 @@ portable handoff when `runtime_context_channel` is unsupported or unknown.
 test_context:
   schema_version: 2
   source: sdcorejs-test
+  architecture_gate: { valid: true, required: true | false, status: required | not-applicable, signals: [], bypass: <exact bypass object or null>, rationale: <exact normalized rationale> }
+  architecture_context: null # exact approved object when required
+  decision_coverage:
+    schema_version: 1
+    revision: <integer>
+    records: []
+    history: []
+  goal_backward_review:
+    schema_version: 1
+    mode: sdcorejs-plan:goal-backward
+    goals: []
+    tasks: []
+    repository_inventory:
+      repositories: []
+    critique_history: []
   change:
     change_ref: <id-or-none>
     source_spec: <repo-relative-path-or-none>
@@ -98,7 +123,8 @@ test_context:
     commands_skipped: []
     write_paths_planned: []
     local_artifact_paths: []
-  coverage_matrix: []
+  validation_map: [] # exact approved plan_context.validation_map
+  coverage_matrix: [] # exact projectCoverageMatrix(validation_map)
   redaction_applied: true
 ```
 
@@ -149,7 +175,10 @@ test_evidence:
       package_manager: <ecosystem>
       environment_id: local
       environment_class: local
-      evidence_class: unit # unit | golden | container | full-e2e | live-agent | supplemental-smoke
+      evidence_class: UNIT # UNIT | GOLDEN | CONTAINER | FULL_E2E | LIVE_AGENT | SUPPLEMENTAL_SMOKE
+      associated_HEAD_or_diff: <sha-or-diff-fingerprint>
+      config_fingerprint: <sha256-of-runner-config>
+      environment_fingerprint: <sha256-of-relevant-environment>
       repository_id: <stable-repository-id>
       source_fingerprint: <sha256>
       portal_revision: <sha-or-null>
@@ -173,12 +202,18 @@ test_evidence:
       stale: false
   cases:
     - case_id: case-1
-      requirement_refs: [AC-1]
+      requirement_refs: [R-001, AC-001]
+      invariant_refs: [INV-001]
       test_ref: <path-and-case>
       persona_id: null
       result: pass # pass | fail | blocked | skipped | not-run
       evidence_run_id: run-1
       blocker_or_error: null
+  acknowledgements:
+    - case_id: case-manual-uat
+      acknowledged_by: <approved-owner>
+      associated_HEAD_or_diff: <sha-or-diff-fingerprint>
+  convergence_evidence_refs: [EVIDENCE-001] # current approved IDs only
   data_lifecycle:
     setup_status: not-applicable
     cleanup_status: not-applicable
@@ -200,6 +235,10 @@ contain secrets.
 Evidence is current only when `associated_HEAD_or_diff`, scope, config,
 environment, and command match the target state. Otherwise mark it stale.
 `stale: false` is a verified fact, not a default.
+Call `evaluateValidationEvidence` from `_refs/shared/validation-map.mjs` before
+claiming mapped acceptance evidence is ready. Its validated
+`convergence_evidence_refs` projection is the only test-emitted evidence-ID
+input to the convergence evaluator; never include authored, stale, or skipped proof.
 
 For module-owned E2E, also require exact repository provenance, source
 fingerprint, portal/module/pinned revisions, artifact hashes, actual command,

@@ -1,4 +1,5 @@
 import { verifyApprovedArtifactGraph } from './approved-artifact.mjs';
+import { evaluateConvergenceHandoff } from './convergence-contract.mjs';
 
 const REVISION = /^[a-f0-9]{40}$/u;
 const PASS = 'PASSED';
@@ -87,6 +88,8 @@ function validateSourceIdentity(sourceIdentity, blockers) {
     !REVISION.test(sourceIdentity?.source_revision ?? '') ||
     !REVISION.test(sourceIdentity?.portal_revision ?? '') ||
     typeof sourceIdentity?.source_fingerprint !== 'string' ||
+    typeof sourceIdentity?.owner_thread_id !== 'string' ||
+    sourceIdentity.owner_thread_id.length === 0 ||
     sourceIdentity.source_fingerprint.length < 16
   ) {
     blockers.push(
@@ -116,6 +119,47 @@ function validateSourceIdentity(sourceIdentity, blockers) {
       blockers.push(`portal/module revision mismatch: ${module.module_id}`);
     }
   }
+}
+
+function currentConvergenceIdentity(sourceIdentity, approvedContext) {
+  const modules = Array.isArray(sourceIdentity?.modules) ? sourceIdentity.modules : [];
+  return {
+    repository_id: sourceIdentity?.portal_repository_id,
+    revision: sourceIdentity?.source_revision,
+    fingerprint: sourceIdentity?.source_fingerprint,
+    portal_revision: sourceIdentity?.portal_revision,
+    module_revision_map: Object.fromEntries(modules.map(({ module_id: id, revision }) => [id, revision])),
+    pinned_module_revision_map: Object.fromEntries(modules.map(({ module_id: id, pinned_revision: revision }) => [id, revision])),
+    owner_thread_id: sourceIdentity?.owner_thread_id,
+    change_ref: approvedContext.change_ref,
+    mode: approvedContext.mode,
+  };
+}
+
+function approvedConvergenceContext(contract, blockers) {
+  const contexts = [];
+  for (const record of Array.isArray(contract?.approved_artifacts) ? contract.approved_artifacts : []) {
+    try {
+      const verified = verifyApprovedArtifactGraph(record.artifact, record.parent_artifacts ?? []);
+      if (verified.metadata.artifact_kind === 'plan') {
+        if (typeof verified.metadata.approved_by !== 'string' || verified.metadata.approved_by.trim() === '') {
+          blockers.push(`approved convergence plan lacks an approving identity: ${verified.metadata.artifact_id}`);
+        }
+        contexts.push({
+          change_ref: verified.metadata.change_ref,
+          mode: verified.metadata.convergence_mode,
+        });
+      }
+    } catch {
+      // The primary artifact validator reports the exact verification failure.
+    }
+  }
+  const unique = [...new Map(contexts.map((context) => [`${context.change_ref}:${context.mode}`, context])).values()];
+  if (unique.length !== 1 || !['feature', 'bugfix', 'docs-only', 'dependency-regression'].includes(unique[0]?.mode)) {
+    blockers.push('approved plan artifacts must bind one change_ref and convergence mode');
+    return { change_ref: null, mode: null };
+  }
+  return unique[0];
 }
 
 function validateApprovedArtifacts(contract, blockers) {
@@ -238,7 +282,16 @@ export function evaluateShipReadiness(contract) {
   const productionBlockers = [];
   validateSourceIdentity(sourceIdentity, productionBlockers);
   validateApprovedArtifacts(contract, productionBlockers);
+  const approvedConvergence = approvedConvergenceContext(contract, productionBlockers);
   validateRequiredEvidence(contract, productionBlockers);
+  const convergence = evaluateConvergenceHandoff({
+    result: contract.convergence_result,
+    current: currentConvergenceIdentity(sourceIdentity, approvedConvergence),
+    receipt: contract.convergence_receipt,
+  });
+  for (const blocker of convergence.blockers) {
+    pushUnique(productionBlockers, `convergence ${blocker.code}: ${blocker.message}`);
+  }
 
   const findings = Array.isArray(contract.findings) ? contract.findings : [];
   for (const finding of findings) {
@@ -315,6 +368,7 @@ export function evaluateShipReadiness(contract) {
     schema_version: 1,
     source_identity:
       Object.keys(sourceIdentity).length > 0 ? structuredClone(sourceIdentity) : null,
+    convergence: structuredClone(convergence),
     stages: {
       ready_to_ship: stage(
         readyToShip ? 'READY' : 'BLOCKED',

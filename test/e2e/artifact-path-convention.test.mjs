@@ -3,6 +3,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 import {
+  ARCHITECTURE_ARTIFACT_ROOT,
   DESIGN_ARTIFACT_ROOT,
   DESIGN_LEDGER_ROOT,
   DESIGN_LOCAL_ONLY_DIRECTORIES,
@@ -121,6 +122,7 @@ test('canonical artifact roots live once in the system registry', () => {
     design_artifacts: '.sdcorejs/design',
     design_ledger: '.sdcorejs/docs/design',
     documentation: '.sdcorejs/documentation',
+    architecture: '.sdcorejs/architecture',
     conventions: '.sdcorejs/conventions',
   });
   assert.deepEqual(systemRegistry.legacy_artifact_roots, {
@@ -131,9 +133,10 @@ test('canonical artifact roots live once in the system registry', () => {
   assert.equal(PRODUCT_LEDGER_ROOT, '.sdcorejs/docs/product');
   assert.equal(DESIGN_ARTIFACT_ROOT, '.sdcorejs/design');
   assert.equal(DESIGN_LEDGER_ROOT, '.sdcorejs/docs/design');
+  assert.equal(ARCHITECTURE_ARTIFACT_ROOT, '.sdcorejs/architecture');
   assert.equal(LEGACY_PRODUCT_DOCUMENT_ROOT, 'product');
   assert.equal(LEGACY_DESIGN_ARTIFACT_ROOT, 'design');
-  for (const field of ['product_documents', 'product_ledger', 'design_artifacts', 'design_ledger']) {
+  for (const field of Object.keys(systemRegistry.artifact_roots)) {
     const registry = structuredClone(systemRegistry);
     registry.artifact_roots[field] = 'product';
     assert.ok(

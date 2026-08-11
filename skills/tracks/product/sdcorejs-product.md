@@ -183,7 +183,11 @@ criteria, UAT, or decisions from artifact closure.
 A cross-module Product view may belong to the portal integration owner only as
 `view_kind: cross-module-view` with `editable_requirements: false`. It must
 reference module artifacts with repository/module/path/revision/artifact-hash
-provenance and never duplicate their editable requirements.
+provenance and a source-owned `acceptance_criterion_id: AC-001` in canonical
+zero-padded positive-integer form, and never duplicate their editable
+requirements. Preserve that identity verbatim: reordering or inserting module
+references must not reassign existing criteria. Missing, noncanonical, or
+duplicate `acceptance_criterion_id` values fail closed and block generation.
 
 ## Human-Readable Doc Templates
 

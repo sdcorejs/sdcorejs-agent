@@ -143,6 +143,24 @@ test('summary v2 freshness is section-aware and ignores unrelated source-content
   assert.match(validateSummaryV2(volatile).join('\n'), /forbidden volatile frontmatter key: branch/);
 });
 
+test('summary fingerprints include the internal authoring source root', async () => {
+  const root = await createGitRepo();
+  await write(root, 'package.json', '{"name":"authoring-root-fixture","private":true}\n');
+  await write(root, 'src/main.js', 'export const main = true;\n');
+  await commitAll(root, 'initial');
+
+  const baseline = await computeProjectFingerprints(root);
+  assert.ok(!baseline.evidence.source_roots.includes('authoring'));
+
+  await write(root, 'authoring/evals/contract.mjs', 'export const internal = true;\n');
+  const withAuthoring = await computeProjectFingerprints(root);
+  assert.ok(withAuthoring.evidence.source_roots.includes('authoring'));
+  assert.notEqual(
+    withAuthoring.fingerprints.source_roots,
+    baseline.fingerprints.source_roots,
+  );
+});
+
 test('summary v2 mutation fixture invalidates exactly entrypoint-dependent sections', async () => {
   const root = await createGitRepo();
   const declaredEntrypoints = ['src/launcher.custom.js'];
@@ -506,6 +524,36 @@ test('artifact closure classifies Product and Design artifact roots deterministi
   assert.deepEqual(missing.sdcorejs_artifacts.missing_required_paths, [
     '.sdcorejs/product/prds/missing-feature.md',
   ]);
+});
+
+test('artifact closure treats approved architecture as change-scoped durable', async () => {
+  const root = await createGitRepo();
+  await write(root, 'README.md', '# Fixture\n');
+  await commitAll(root, 'initial');
+
+  const architecturePath = '.sdcorejs/architecture/angular/2026-08-10-orders.md';
+  await write(
+    root,
+    architecturePath,
+    artifact('architecture', 'orders-change', 'sdcorejs-architecture'),
+  );
+
+  const closure = await buildArtifactClosure({
+    root,
+    changeRef: 'orders-change',
+    owner: 'sdcorejs-architecture',
+  });
+  const classification = closure.classifications.find(
+    ({ path: candidate }) => candidate === architecturePath,
+  );
+
+  assert.equal(classification.kind, 'architecture');
+  assert.equal(classification.lifecycle, 'change-scoped-durable');
+  assert.equal(classification.commit_policy, 'with-change');
+  assert.equal(classification.bucket, 'required_with_change');
+  assert.ok(closure.sdcorejs_artifacts.required_paths.includes(architecturePath));
+  assert.deepEqual(closure.sdcorejs_artifacts.unknown_paths, []);
+  assert.equal(closure.sdcorejs_artifacts.closure_result, 'complete');
 });
 
 test('artifact closure includes an approved durable Design PNG without decoding it as text', async () => {

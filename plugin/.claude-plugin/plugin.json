@@ -1,7 +1,7 @@
 {
   "name": "sdcorejs-agent",
   "description": "Engineering-focused AI-assisted SDLC for developers and technical teams: clarify, specify, plan, implement through technical tracks, test, review, and ship with explicit approval gates and evidence. Skills are auto-synced from the canonical source tree and localize output at runtime.",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "author": {
     "name": "SDCoreJS",
     "url": "https://github.com/sdcorejs"

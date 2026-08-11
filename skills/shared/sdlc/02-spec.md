@@ -13,7 +13,14 @@ Read `_refs/shared/runtime-protocols.md`. Draft and approved spec artifacts
 apply `_refs/shared/artifact-lifecycle.md` and emit `artifact_context`. Resolve
 track/profile/repository semantics from `_refs/shared/system-registry.json`.
 Create and verify every approval identity with the executable
-`_refs/shared/approved-artifact.mjs` helper.
+`_refs/shared/approved-artifact.mjs` helper. Read
+`_refs/shared/decision-coverage.md`, validate `decision_coverage` at the `spec`
+stage with `_refs/shared/decision-coverage.mjs`, and preserve its stable IDs,
+revision history, blockers, and future planning gaps.
+Read `_refs/sdlc/architecture.md` and classify the post-spec conditional gate
+with `classifyArchitectureGate` from
+`_refs/shared/architecture-contract.mjs`. The spec records the classification;
+it does not author the architecture artifact.
 
 ## Purpose
 Turn the confirmed requirement contract into a durable spec, hold the user approval gate, and persist the approved spec corpus inside the same skill.
@@ -82,7 +89,9 @@ Also read relevant `.sdcorejs/memories/<track>/*.md` and any provided
 `target_root`, `target_root_kind`, `track`, `stack_profile`,
 `profile_confidence`, owner repository/role/module, execution host repository,
 explicit decisions, inferred/defaulted assumptions, unresolved blockers, and
-redaction status. Validate track/profile against the central registry.
+redaction status. Preserve `decision_coverage` and `goal_backward_review`
+without renumbering records or hiding future task/evidence gaps. Validate
+track/profile against the central registry.
 
 Cross-repository parent references must carry exact `repository_id`,
 `artifact_id`, `artifact_kind`, 40-character `revision`, and `approval_hash`.
@@ -108,6 +117,23 @@ Use this template:
 ```yaml
 spec_context:
   source: sdcorejs-spec
+  decision_coverage:
+    schema_version: 1
+    revision: <integer>
+    records: []
+    history: []
+  goal_backward_review:
+    schema_version: 1
+    mode: "sdcorejs-plan:goal-backward"
+    stage: spec
+    future_gaps: []
+  architecture_gate:
+    valid: true | false
+    required: true | false | null
+    status: required | not-applicable | blocked
+    signals: []
+    bypass: null # or { kind: <canonical bypass>, rationale: <concrete reason> }
+    rationale: <required-signal rationale, bypass rationale, or null>
   contract_id: <from requirement_context or newly created>
   requirement_id: <from requirement_context when present>
   approved_spec_path: <empty until approved>
@@ -144,6 +170,20 @@ spec_context:
 
 ## Problem & Goals
 <What problem this solves, who it serves, and what success looks like.>
+
+## Requirements
+- R-001 - <Observable or contractual requirement, source, status, and semantic owner>
+
+## Decisions
+- D-001 - <Question, selected value, source, status, scope, owner, rationale, and supersession>
+
+## Assumptions
+- A-001 - <Source, confidence, status, blocking flag, evidence, consequence, validation method, and owner>
+
+## Architecture gate classification
+- Status: required | not-applicable
+- Signals: <canonical signals or none>
+- Rationale/bypass: <concrete reason>
 
 ## Non-goals
 - <Explicit out-of-scope item>
@@ -190,7 +230,14 @@ Fix the spec before presenting if any checklist item fails:
 - At least one acceptance criterion per user-visible behavior.
 - Acceptance criteria have stable IDs such as `AC-001`, `AC-002`; mark manual
   or deferred criteria clearly.
+- Requirements, acceptance criteria, assumptions, and decisions contain the
+  complete type-specific fields from `_refs/shared/decision-coverage.md`.
+- Spec-stage decision coverage has no unresolved blocking decision or
+  assumption, duplicate ID, invalid enum, or dangling reference.
 - Architecture matches the confirmed requirement contract.
+- `classifyArchitectureGate` returns a valid required classification or a
+  concrete not-applicable bypass. Ambiguous or conflicting classification
+  blocks spec approval.
 - File paths match the detected context or are clearly marked generic harness paths.
 - Language is consistent with the user.
 - Scope is not too large; suggest splitting if the spec is over 2 pages.
@@ -222,7 +269,7 @@ Summary:
 Do you approve this spec?
 
 Options:
-1. Approve - snapshot the spec and draft the plan.
+1. Approve - snapshot the spec, then route through the conditional architecture gate.
 2. Change - tell me what to update, then I will revise the spec.
 3. Cancel - stop here.
 
@@ -326,8 +373,11 @@ sdcorejs-spec (approved on attempt <N> / 3)
    `approved_spec_path`, canonical `approval_hash`, compatibility
    `approved_spec_hash`, approval metadata,
    `change_control`, and source `requirement_context` reference.
-5. Only after the approved snapshot succeeds, hand off to `sdcorejs-plan` with
-   the draft spec path, approved snapshot path, and `spec_context`. Pass the
+5. Only after the approved snapshot succeeds, preserve the exact
+   `architecture_gate`. When it is `required`, hand off to
+   `sdcorejs-architecture`; when it is concretely `not-applicable`, hand off
+   directly to `sdcorejs-plan`. Never treat `blocked` or ambiguous as bypass.
+   Pass the draft spec path, approved snapshot path, and `spec_context`. Pass the
    full context through `context.pass`; if the channel is unsupported or
    unknown, use the validated portable handoff. Do not repeat the approved spec
    body in the runtime handoff or final user projection.
@@ -355,6 +405,9 @@ Abort:
   spec in the module repository. A portal index may contain only a durable
   reference with exact repository/artifact/revision/hash identity.
 - Wait for explicit approval before writing the approved snapshot or planning.
+- Route required architecture through `sdcorejs-architecture` before planning;
+  route not-applicable architecture directly to `sdcorejs-plan` only with the
+  concrete classifier reason.
 - Create a new approved snapshot every time; snapshots are immutable history.
 - Treat approved specs as immutable snapshots. If requirements change after
   approval, create a new spec revision with `supersedes` and `change_reason`.
@@ -380,6 +433,7 @@ Abort:
 - Auto-approve the spec.
 - Skip approved snapshot writing on approval.
 - Proceed to `sdcorejs-plan` before the SPEC snapshot is written.
+- Skip a required architecture gate or fabricate a not-applicable reason.
 - Overwrite an old approved snapshot.
 - Mutate an approved snapshot in place.
 - Treat stale/missing context as permission to write or refresh `.sdcorejs`
@@ -393,4 +447,5 @@ Abort:
 
 ## Cross-references
 - `sdcorejs-brainstorming` - requirement contract input
+- `sdcorejs-architecture` - conditional approved-spec architecture gate
 - `sdcorejs-plan` - consumes the approved spec

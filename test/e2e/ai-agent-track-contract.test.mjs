@@ -61,7 +61,7 @@ const GOLDEN_FIXTURES = [
   'fixtures/golden/openai-agents-sdk-multi-agent-supervisor.json',
 ];
 
-test('ai-agent: canonical skill exists exactly once and source count is 21', async () => {
+test('ai-agent: canonical skill exists exactly once and source count is 22', async () => {
   const skillFiles = await listFiles(join(ROOT, 'skills'), file => file.endsWith('.md'));
   const namedSkills = await Promise.all(skillFiles.map(async file => ({
     file,
@@ -69,7 +69,7 @@ test('ai-agent: canonical skill exists exactly once and source count is 21', asy
   })));
   const aiSkills = namedSkills.filter(item => item.name === 'sdcorejs-ai-agent');
 
-  assert.equal(namedSkills.length, 21);
+  assert.equal(namedSkills.length, 22);
   assert.equal(aiSkills.length, 1);
   assert.equal(aiSkills[0].file, SKILL_PATH);
 
@@ -273,7 +273,7 @@ test('ai-agent: mutation guards fail when security and execution invariants are 
 
 test('ai-agent: package boundary remains dependency-free and repository suite includes the contract test', async () => {
   const pkg = await readJson(join(ROOT, 'package.json'));
-  assert.equal(pkg.version, '0.7.0');
+  assert.equal(pkg.version, '0.8.0');
   assert.equal(pkg.packageManager, 'npm@10.9.2');
   assert.match(pkg.scripts['test:e2e:repository'], /test\/e2e\/ai-agent-track-contract\.test\.mjs/);
   assert.equal(pkg.dependencies?.openai, undefined);

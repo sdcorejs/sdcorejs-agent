@@ -218,6 +218,7 @@ the rule, not `CONVENTION_VIOLATION` against the code.
 |---|---|
 | `explicit-user-decision` | yes |
 | `approved-specification` | yes |
+| `approved-architecture` | yes |
 | `approved-plan` | yes |
 | `authoritative-repository-config` | yes |
 | `public-external-contract` | yes |
@@ -257,7 +258,7 @@ capture:
 
   auto_accept:
     explicit_user_decisions: true
-    approved_specs_and_plans: true
+    approved_specs_and_plans: true # includes approved architecture snapshots
     authoritative_repository_config: true
     public_external_contracts: true
     inferred_patterns: false
@@ -301,12 +302,13 @@ authority.
 1. explicit current user correction or decision
 2. current public/external contract and current authoritative repository config
 3. current approved change specification
-4. current approved change plan
-5. accepted module convention
-6. accepted repository convention
-7. accepted portal-composition convention
-8. observed project pattern
-9. framework or general engineering recommendation
+4. current approved architecture
+5. current approved change plan
+6. accepted module convention
+7. accepted repository convention
+8. accepted portal-composition convention
+9. observed project pattern
+10. framework or general engineering recommendation
 ```
 
 Qualifications:
@@ -615,6 +617,12 @@ With `capture.mode: after-review` committed, review stays read-only and sets
 `policy.write_authority: project-policy`. The caller then runs the sync step
 without asking again, and the sync still revalidates ownership, redaction,
 lifecycle, and the final diff.
+
+An approved architecture may likewise use
+`source.kind: approved-architecture`. Only the separate write-approved sync may
+persist that candidate; `sdcorejs-architecture` itself never writes the
+convention registry. A merely inferred architecture preference remains
+`observed` and is never auto-accepted.
 
 ## Operating Tasks
 

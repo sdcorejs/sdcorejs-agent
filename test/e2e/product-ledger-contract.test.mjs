@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
@@ -15,6 +16,27 @@ const root = path.resolve('.');
 const SHA_A = 'a'.repeat(40);
 const SHA_B = 'b'.repeat(40);
 const APPROVAL_A = `sha256:v1:${'a'.repeat(64)}`;
+
+function fixtureArtifactHash(ledger) {
+  const canonicalize = (value) => {
+    if (Array.isArray(value)) return value.map(canonicalize);
+    if (value && typeof value === 'object') {
+      return Object.fromEntries(
+        Object.keys(value)
+          .sort()
+          .map((key) => [key, canonicalize(value[key])]),
+      );
+    }
+    return typeof value === 'string'
+      ? value.replace(/\r\n?/gu, '\n').normalize('NFC')
+      : value;
+  };
+  const payload = structuredClone(ledger);
+  delete payload.metadata?.artifact_hash;
+  return `sha256:v1:${createHash('sha256')
+    .update(JSON.stringify(canonicalize(payload)), 'utf8')
+    .digest('hex')}`;
+}
 
 function ledgerMetadata(overrides = {}) {
   return {
@@ -117,8 +139,70 @@ test('every central registry track is representable in a product ledger', () => 
       source_artifacts: [],
     });
     assert.equal(ledger.metadata.track, track);
+    assert.equal(
+      ledger.traceability[0].acceptance_criterion_id,
+      'AC-001',
+      'legacy AC-1 input is normalized at the product-ledger boundary',
+    );
     assert.match(ledger.metadata.artifact_hash, /^sha256:v1:[a-f0-9]{64}$/);
   }
+});
+
+test('product ledger emits canonical acceptance IDs and rejects invalid or duplicate normalized IDs', () => {
+  const legacy = validateProductLedger({
+    metadata: ledgerMetadata(),
+    traceability: traceability({ acceptance_criterion_id: 'AC-1' }),
+    source_artifacts: [],
+  });
+  assert.equal(legacy.ok, true);
+  assert.equal(legacy.traceability[0].acceptance_criterion_id, 'AC-001');
+
+  const duplicate = validateProductLedger({
+    metadata: ledgerMetadata(),
+    traceability: [
+      ...traceability({ acceptance_criterion_id: 'AC-1' }),
+      ...traceability({ acceptance_criterion_id: 'AC-001' }),
+    ],
+    source_artifacts: [],
+  });
+  assert.equal(duplicate.ok, false);
+  assert.ok(
+    duplicate.errors.some(({ code }) => code === 'DUPLICATE_ACCEPTANCE_CRITERION_SOURCE'),
+  );
+
+  const invalid = validateProductLedger({
+    metadata: ledgerMetadata(),
+    traceability: traceability({ acceptance_criterion_id: 'criterion-one' }),
+    source_artifacts: [],
+  });
+  assert.equal(invalid.ok, false);
+  assert.ok(invalid.errors.some(({ code }) => code === 'INVALID_ACCEPTANCE_CRITERION_ID'));
+});
+
+test('legacy acceptance IDs verify their input hash before canonical hash emission', () => {
+  const legacyPayload = {
+    metadata: ledgerMetadata(),
+    traceability: traceability({ acceptance_criterion_id: 'AC-1' }),
+    source_artifacts: [],
+  };
+  const legacyHash = fixtureArtifactHash(legacyPayload);
+  legacyPayload.metadata.artifact_hash = legacyHash;
+
+  const validated = validateProductLedger(legacyPayload);
+  assert.equal(validated.ok, true);
+  assert.equal(validated.ledger.traceability[0].acceptance_criterion_id, 'AC-001');
+  assert.notEqual(validated.ledger.metadata.artifact_hash, legacyHash);
+  assert.equal(
+    validated.ledger.metadata.artifact_hash,
+    fixtureArtifactHash(validated.ledger),
+    'canonical output carries a hash over the normalized payload',
+  );
+
+  const tampered = structuredClone(legacyPayload);
+  tampered.metadata.artifact_hash = `sha256:v1:${'0'.repeat(64)}`;
+  const rejected = validateProductLedger(tampered);
+  assert.equal(rejected.ok, false);
+  assert.ok(rejected.errors.some(({ code }) => code === 'ARTIFACT_HASH_MISMATCH'));
 });
 
 test('AI-agent, design, documentation, workflow, and general fixtures preserve lifecycle identity', () => {
@@ -219,6 +303,7 @@ test('cross-repository product view keeps provenance and rejects editable or dup
   const source = {
     repository_id: 'github.com/sdcorejs/orders',
     module_id: 'orders',
+    acceptance_criterion_id: 'AC-010',
     artifact_id: 'product-ledger:orders',
     artifact_kind: 'product-ledger',
     repository_relative_path: '.sdcorejs/docs/product/orders.md',
@@ -246,6 +331,7 @@ test('cross-repository product view keeps provenance and rejects editable or dup
         ...source,
         repository_id: 'github.com/sdcorejs/users',
         module_id: 'users',
+        acceptance_criterion_id: 'AC-020',
         artifact_id: 'product-ledger:users',
         repository_relative_path: '.sdcorejs/docs/product/users.md',
         revision: SHA_B,
@@ -257,6 +343,10 @@ test('cross-repository product view keeps provenance and rejects editable or dup
   assert.equal(result.ledger.view_kind, 'cross-module-view');
   assert.equal(result.ledger.editable_requirements, false);
   assert.equal(result.ledger.source_artifacts.length, 2);
+  assert.deepEqual(
+    result.ledger.traceability.map(({ acceptance_criterion_id: id }) => id),
+    ['AC-010', 'AC-020'],
+  );
 
   assert.throws(
     () =>
@@ -273,6 +363,67 @@ test('cross-repository product view keeps provenance and rejects editable or dup
         module_ledgers: [source, source],
       }),
     /duplicate product source/i,
+  );
+});
+
+test('cross-repository acceptance identities survive reorder and insertion and fail closed', () => {
+  const metadata = ledgerMetadata({
+    artifact_id: 'product-ledger:portal-view',
+    contract_id: 'contract:portal-view',
+    requirement_id: 'requirement:portal-view',
+    owner_repository_id: 'github.com/sdcorejs/portal',
+    owner_repository_role: 'portal',
+    owner_module_id: null,
+    ownership_scope: 'cross-repository-aggregate',
+    repository_relative_path: '.sdcorejs/docs/product/portal-view.md',
+    source_revision: SHA_B,
+    parent_references: [],
+  });
+  const source = (moduleId, acceptanceCriterionId, revision = SHA_A) => ({
+    repository_id: `github.com/sdcorejs/${moduleId}`,
+    module_id: moduleId,
+    acceptance_criterion_id: acceptanceCriterionId,
+    artifact_id: `product-ledger:${moduleId}`,
+    artifact_kind: 'product-ledger',
+    repository_relative_path: `.sdcorejs/docs/product/${moduleId}.md`,
+    revision,
+    artifact_hash: `sha256:v1:${(moduleId === 'orders' ? 'b' : 'c').repeat(64)}`,
+    editable: false,
+  });
+  const orders = source('orders', 'AC-010');
+  const users = source('users', 'AC-020', SHA_B);
+  const billing = source('billing', 'AC-015');
+  const identityMap = (moduleLedgers) =>
+    Object.fromEntries(
+      buildCrossRepositoryProductView({ metadata, module_ledgers: moduleLedgers })
+        .ledger.traceability.map((row) => [
+          row.requirement_ref.artifact_id,
+          row.acceptance_criterion_id,
+        ]),
+    );
+
+  const original = identityMap([orders, users]);
+  assert.deepEqual(identityMap([users, orders]), original);
+  const inserted = identityMap([orders, billing, users]);
+  assert.equal(inserted['product-ledger:orders'], original['product-ledger:orders']);
+  assert.equal(inserted['product-ledger:users'], original['product-ledger:users']);
+  assert.equal(inserted['product-ledger:billing'], 'AC-015');
+
+  assert.throws(
+    () => identityMap([{ ...orders, acceptance_criterion_id: undefined }]),
+    /canonical acceptance_criterion_id/i,
+  );
+  assert.throws(
+    () => identityMap([{ ...orders, acceptance_criterion_id: 'AC-1' }]),
+    /canonical acceptance_criterion_id/i,
+  );
+  assert.throws(
+    () => identityMap([{ ...orders, acceptance_criterion_id: 'criterion-one' }]),
+    /canonical acceptance_criterion_id/i,
+  );
+  assert.throws(
+    () => identityMap([orders, { ...users, acceptance_criterion_id: 'AC-010' }]),
+    /duplicate acceptance_criterion_id/i,
   );
 });
 
@@ -440,5 +591,34 @@ test('product prose consumes the registry and does not compete with spec, plan, 
   ]) {
     assert.doesNotMatch(skill, legacyWrite);
     assert.doesNotMatch(contract, legacyWrite);
+  }
+});
+
+test('cross-repository prose matches the runtime acceptance identity contract', async () => {
+  const [contract, skill, runtime] = await Promise.all([
+    readFile(path.join(root, '_refs/shared/product-ledger.md'), 'utf8'),
+    readFile(path.join(root, 'skills/tracks/product/sdcorejs-product.md'), 'utf8'),
+    readFile(path.join(root, '_refs/shared/product-ledger.mjs'), 'utf8'),
+  ]);
+  assert.match(runtime, /acceptance_criterion_id: source\.acceptance_criterion_id/u);
+  assert.match(runtime, /duplicate acceptance_criterion_id/u);
+
+  const proseContracts = [
+    [
+      '_refs/shared/product-ledger.md',
+      contract.match(/## Cross-Repository View[\s\S]*?(?=\n## |$)/u)?.[0] ?? '',
+    ],
+    [
+      'skills/tracks/product/sdcorejs-product.md',
+      skill.match(/A cross-module Product view[\s\S]*?(?=\n## |$)/u)?.[0] ?? '',
+    ],
+  ];
+  for (const [file, section] of proseContracts) {
+    assert.match(section, /acceptance_criterion_id:\s*AC-001/u, file);
+    assert.match(section, /source-(?:owned|provided)/iu, file);
+    assert.match(section, /reorder/iu, file);
+    assert.match(section, /insert/iu, file);
+    assert.match(section, /duplicate[^.\n]*acceptance_criterion_id/iu, file);
+    assert.match(section, /(?:fail closed|block generation)/iu, file);
   }
 });

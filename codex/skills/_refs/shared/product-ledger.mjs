@@ -16,6 +16,7 @@ import { systemRegistry } from './system-registry.mjs';
 const GIT_REVISION = /^[a-f0-9]{40}$/u;
 const SHA256_IDENTITY = /^sha256:v1:[a-f0-9]{64}$/u;
 const SAFE_FEATURE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+const ACCEPTANCE_CRITERION_ID = /^AC-(\d+)$/u;
 const DELIVERY_STATUSES = new Set([
   'draft',
   'planned',
@@ -60,6 +61,13 @@ function requiredString(value, field, errors) {
     return false;
   }
   return true;
+}
+
+function normalizeAcceptanceCriterionId(value) {
+  const match = ACCEPTANCE_CRITERION_ID.exec(value ?? '');
+  if (!match || !/[1-9]/u.test(match[1])) return null;
+  const digits = match[1].replace(/^0+/u, '');
+  return `AC-${digits.padStart(3, '0')}`;
 }
 
 function validRelativePath(value) {
@@ -278,8 +286,22 @@ function normalizeTraceability(rows, repositoryRevisions, errors) {
   const criteria = new Set();
   return rows.map((input, rowIndex) => {
     const row = structuredClone(input);
-    for (const field of ['requirement_id', 'acceptance_criterion_id', 'delivery_status']) {
+    for (const field of ['requirement_id', 'delivery_status']) {
       requiredString(row[field], `traceability[${rowIndex}].${field}`, errors);
+    }
+    if (requiredString(
+      row.acceptance_criterion_id,
+      `traceability[${rowIndex}].acceptance_criterion_id`,
+      errors,
+    )) {
+      const canonicalId = normalizeAcceptanceCriterionId(row.acceptance_criterion_id);
+      if (canonicalId) row.acceptance_criterion_id = canonicalId;
+      else {
+        errors.push({
+          code: 'INVALID_ACCEPTANCE_CRITERION_ID',
+          acceptance_criterion_id: row.acceptance_criterion_id,
+        });
+      }
     }
     if (criteria.has(row.acceptance_criterion_id)) {
       errors.push({
@@ -385,6 +407,13 @@ export function validateProductLedger(
   { repository_revisions: repositoryRevisions = {} } = {},
 ) {
   const ledger = structuredClone(input ?? {});
+  const hasSuppliedArtifactHash = Object.hasOwn(
+    ledger.metadata ?? {},
+    'artifact_hash',
+  );
+  const suppliedArtifactHash = ledger.metadata?.artifact_hash;
+  const inputArtifactHashMatches =
+    !hasSuppliedArtifactHash || suppliedArtifactHash === artifactHash(ledger);
   const errors = [];
   validateMetadata(ledger.metadata, errors);
   validateSourceArtifacts(ledger.source_artifacts, errors);
@@ -399,11 +428,10 @@ export function validateProductLedger(
   ) {
     errors.push({ code: 'CROSS_MODULE_EDITABLE_REQUIREMENTS_FORBIDDEN' });
   }
-  if (
-    ledger.metadata?.artifact_hash &&
-    ledger.metadata.artifact_hash !== artifactHash(ledger)
-  ) {
+  if (!inputArtifactHashMatches) {
     errors.push({ code: 'ARTIFACT_HASH_MISMATCH' });
+  } else if (hasSuppliedArtifactHash) {
+    ledger.metadata.artifact_hash = artifactHash(ledger);
   }
   return {
     ok: errors.length === 0,
@@ -428,8 +456,9 @@ export function createProductLedger(input) {
         .join('\n')}`,
     );
   }
-  candidate.metadata.artifact_hash = artifactHash(candidate);
-  return canonicalize(candidate);
+  const normalized = validation.ledger;
+  normalized.metadata.artifact_hash = artifactHash(normalized);
+  return canonicalize(normalized);
 }
 
 export function resolveProductLedgerTarget({
@@ -584,6 +613,7 @@ export function buildCrossRepositoryProductView({ metadata, module_ledgers: modu
     throw new TypeError('module_ledgers must contain at least one module ledger reference');
   }
   const seen = new Set();
+  const seenAcceptanceCriteria = new Set();
   for (const source of moduleLedgers) {
     if (source?.editable !== false) {
       throw new Error('editable module requirement source is forbidden in a cross-module view');
@@ -593,6 +623,23 @@ export function buildCrossRepositoryProductView({ metadata, module_ledgers: modu
       throw new Error(`duplicate product source: ${source.repository_id}:${source.artifact_id}`);
     }
     seen.add(identity);
+    const acceptanceCriterionId = normalizeAcceptanceCriterionId(
+      source?.acceptance_criterion_id,
+    );
+    if (
+      acceptanceCriterionId === null ||
+      acceptanceCriterionId !== source.acceptance_criterion_id
+    ) {
+      throw new Error(
+        'module ledger reference requires a canonical acceptance_criterion_id',
+      );
+    }
+    if (seenAcceptanceCriteria.has(acceptanceCriterionId)) {
+      throw new Error(
+        `duplicate acceptance_criterion_id: ${acceptanceCriterionId}`,
+      );
+    }
+    seenAcceptanceCriteria.add(acceptanceCriterionId);
   }
   if (
     metadata?.ownership_scope !== 'cross-repository-aggregate' ||
@@ -604,7 +651,7 @@ export function buildCrossRepositoryProductView({ metadata, module_ledgers: modu
   const sourceArtifacts = moduleLedgers.map((source) => structuredClone(source));
   const traceability = sourceArtifacts.map((source) => ({
     requirement_id: `requirement:${source.module_id}`,
-    acceptance_criterion_id: `reference:${source.module_id}`,
+    acceptance_criterion_id: source.acceptance_criterion_id,
     requirement_ref: {
       repository_id: source.repository_id,
       artifact_id: source.artifact_id,

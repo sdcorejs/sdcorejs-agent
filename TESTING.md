@@ -1,6 +1,6 @@
 # Testing the SDCoreJS SDLC Agent
 
-Repository-level tests for the current 21-skill SDCoreJS Agent layout.
+Repository-level tests for the current 22-skill SDCoreJS Agent layout.
 
 The pack is documentation-driven, with deterministic executable contracts for
 capabilities, entry gating, delegation boundaries, summary freshness, and the
@@ -41,12 +41,14 @@ scheduled/manual `Full E2E` workflow runs phase 4 with `SDCOREJS_E2E_FULL=1`.
 
 ## Expected Inventory
 
-- Source skills: 21
-- `.claude/skills`: 21
-- `plugin/skills`: 21
-- `codex/skills`: 21 skill folders plus shared `_refs`
+- Source skills: 22
+- `.claude/skills`: 22
+- `plugin/skills`: 22
+- `codex/skills`: 22 skill folders plus shared `_refs`
 - Adapter harness manifests: 5 generated files with one canonical source hash
 - `_refs/**/*.md`: at least 60 committed markdown refs; Core UI component docs are fetched on demand
+- Internal `authoring/skills/sdcorejs-skill-authoring`: 1, excluded from every
+  public count, mirror, adapter manifest, and site catalog
 
 PowerShell count:
 
@@ -66,6 +68,30 @@ $refs = Get-ChildItem -Recurse -File -Path _refs -Filter *.md
 ```
 
 ## Phase Coverage
+
+### Decision, architecture, validation, convergence, and authoring contracts
+
+```bash
+npm run test:e2e:decision-coverage
+npm run test:e2e:architecture
+npm run test:e2e:validation-map
+npm run test:e2e:convergence
+npm run test:e2e:skill-authoring
+```
+
+These deterministic/mutation suites keep decision and assumption identities,
+goal-backward task/path/evidence coverage, conditional architecture lineage,
+the shared validation map, delivery convergence, external feedback safety, and
+the internal-only authoring boundary load-bearing. The authoring harness never
+reads ambient credentials or invokes a provider. Its live matrix remains
+structured `NOT RUN` evidence unless a separate authorized run supplies real
+runtime, transcript, and provider telemetry.
+
+Mutation cases also co-mutate validation rows with decision boundaries, forge
+zero-count convergence, change Git current/result identities together, escape
+repair scopes, remove test assertions, fabricate approvals/telemetry, and hide
+the internal skill in nested public surfaces. Approved hashes, convergence
+receipts, repository-derived identities, and recursive scans must catch them.
 
 ### Behavioral Harness Sentinels
 
@@ -159,7 +185,7 @@ node --test test/e2e/npm-publication-contract.test.mjs
 Verifies that the private root tooling workspace has no npm publication
 metadata, scripts, lifecycle hooks, workflow credentials, registry commands, or
 dependency-install documentation while preserving npm development commands,
-release-version synchronization, and the 21-skill source/mirror inventories.
+release-version synchronization, and the 22-skill source/mirror inventories.
 
 ### Phase 1: Skill Pack Runner
 

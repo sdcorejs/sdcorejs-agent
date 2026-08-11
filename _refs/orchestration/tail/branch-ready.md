@@ -32,6 +32,11 @@ No writes after branch-ready unless branch-ready is run again. Writes include
 execution records, user guides, durable backlog updates, memories, changelog, release notes,
 generated mirrors, formatting, codegen, source edits, docs edits, dependency
 manifest changes, and lockfile updates.
+Read `_refs/shared/convergence-contract.mjs` and call
+`evaluateConvergenceHandoff` with the compact result, verified receipt, current
+source/module/pin/owner-thread identity, and approved change/mode. Missing,
+blocked, deferred, stale, vacuous, unreceipted, or mismatched convergence is a
+non-waivable blocker.
 
 ## When Invoked
 
@@ -57,6 +62,8 @@ branch_ready_evidence:
   commands_skipped:
   reason_for_each_skip:
   result:
+  convergence_result: <exact compact result checked against current identity>
+  convergence_receipt: <exact hash-verified release-evidence artifact>
   blockers_not_waivable: true
   writes_after_branch_ready:
 ```

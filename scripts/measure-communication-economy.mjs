@@ -990,6 +990,7 @@ function syntheticValue(contextType, field) {
     };
     if (Object.hasOwn(values, field)) return structuredClone(values[field]);
   }
+  if (kind === 'nullable-object') return null;
   if (kind === 'array') return [`<${field}>`];
   if (kind === 'object') return { fixture_value: `<${field}>` };
   if (kind === 'number') return 1;

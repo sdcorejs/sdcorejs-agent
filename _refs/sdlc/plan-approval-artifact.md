@@ -7,6 +7,7 @@ draft.
 
 - [Path And Hash](#path-and-hash)
 - [Repository Ownership](#repository-ownership)
+- [Conditional Parent Graph](#conditional-parent-graph)
 - [Frontmatter](#frontmatter)
 - [Body](#body)
 - [Handoff](#handoff)
@@ -33,6 +34,19 @@ plan is never written to the portal. Multi-repository work uses exact
 parent/child references and one Git root per mutable step; the parent contains
 integration order and references, not editable copies of child plans.
 
+## Conditional Parent Graph
+
+Use one exact immutable parent for each plan snapshot:
+
+- when `architecture_gate.required` is true, the graph is approved spec ->
+  approved architecture -> approved plan, so the plan parent is the approved
+  architecture;
+- when the gate is explicitly not applicable, the graph is approved spec ->
+  approved plan, so the plan parent is the approved spec.
+
+Validate the graph with `validateArchitecturePlanHandoff`. Never infer a
+not-applicable result from a missing architecture artifact.
+
 ## Frontmatter
 
 ```yaml
@@ -42,6 +56,7 @@ artifact_kind: plan
 schema_version: 1
 change_ref: <contract id>
 source_spec: .sdcorejs/specs/<track>/<timestamp>-<topic>.md
+source_architecture: .sdcorejs/architecture/<track>/<timestamp>-<topic>.md | none
 source_plan: none
 commit_policy: with-change
 owner: sdcorejs-plan
@@ -60,11 +75,12 @@ approved_spec_reference:
   artifact_id: <approved spec artifact id>
   revision: <exact 40-character owner-repository revision>
   approval_hash: <exact spec sha256:v1 hash>
+approved_architecture_reference: null | <exact immutable architecture reference>
 parent_repository_id: <integration/parent repository id or null>
 parent_references:
   - repository_id: <stable parent repository id>
     artifact_id: <exact parent artifact id>
-    artifact_kind: spec | plan
+    artifact_kind: architecture | spec | plan
     revision: <exact 40-character repository revision>
     approval_hash: <exact sha256:v1 hash>
 owner_repository_id: <stable plan owner repository id>
@@ -82,6 +98,7 @@ phase_count: <M>
 target_root_kind: target-project | sdcorejs-agent-authoring-repo | skill-pack-authoring-repo | unknown
 stack_profile: <stack profile>
 approved_spec_hash: <same exact hash as approved_spec_reference.approval_hash>
+approved_architecture_hash: <exact architecture hash when required, otherwise null>
 allowed_paths:
   - <path or glob>
 prohibited_paths:
@@ -128,9 +145,11 @@ sdcorejs-plan (approved on attempt <N> / 3)
 
 ## Handoff
 
-Emit the approved spec, draft plan, and approved plan under
-`artifact_context.required_with_change`, set `source_plan` to the approved
-snapshot, and return final `plan_context` with hashes, write scope,
-verification/package-manager evidence, parallel candidates, dependency/env/
-migration boundaries, and change control. Handoff to `sdcorejs-execute-plan`
-only after the snapshot write succeeds.
+Emit the approved spec, any required approved architecture, the draft plan, and
+the approved plan under `artifact_context.required_with_change`; set
+`source_plan` to the approved snapshot. Return final `plan_context` with the
+exact `architecture_gate`, nullable `architecture_context`, artifact hashes,
+write scope, verification/package-manager evidence, parallel candidates,
+dependency/env/migration boundaries, and change control. Handoff to
+`sdcorejs-execute-plan` only after the snapshot write and conditional graph
+validation succeed.

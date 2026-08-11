@@ -365,6 +365,7 @@ test('authoritative sources may be accepted while inferred patterns never are', 
   for (const kind of [
     'explicit-user-decision',
     'approved-specification',
+    'approved-architecture',
     'approved-plan',
     'authoritative-repository-config',
     'public-external-contract',
@@ -435,11 +436,16 @@ test('authoritative sources may be accepted while inferred patterns never are', 
 test('precedence ranks sources and scopes, and refuses to enforce stale or conflicted rules', () => {
   const userDecision = rule({ source: { kind: 'explicit-user-decision', reference: 'chat' } });
   const spec = rule({ source: { kind: 'approved-specification', reference: '.sdcorejs/specs/a.md' } });
+  const architecture = rule({ source: { kind: 'approved-architecture', reference: '.sdcorejs/architecture/a.md' } });
+  const plan = rule({ source: { kind: 'approved-plan', reference: '.sdcorejs/plans/a.md' } });
   const observed = rule({
     rule: { status: 'observed', enforcement: 'advisory' },
     source: { kind: 'existing-code-observation', reference: 'src/' },
   });
   assert.ok(precedenceRank(userDecision) < precedenceRank(spec));
+  assert.ok(precedenceRank(spec) < precedenceRank(architecture));
+  assert.ok(precedenceRank(architecture) < precedenceRank(plan));
+  assert.ok(precedenceRank(plan) < precedenceRank(observed));
   assert.ok(precedenceRank(spec) < precedenceRank(observed));
   assert.equal(
     precedenceRank(rule({ rule: { status: 'stale', enforcement: 'none' } })),

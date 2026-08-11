@@ -1,7 +1,14 @@
+import { isDeepStrictEqual } from 'node:util';
+
 import {
   validateApprovedWriteScope,
   verifyApprovedArtifactGraph,
 } from '../shared/approved-artifact.mjs';
+import {
+  assertDecisionCoverage,
+  assertGoalBackwardPlan,
+} from '../shared/decision-coverage.mjs';
+import { validateArchitecturePlanHandoff } from '../shared/architecture-contract.mjs';
 import { validateRepositoryPlan } from '../shared/repository-contract.mjs';
 import { resolveTrack } from '../shared/system-registry.mjs';
 
@@ -65,12 +72,100 @@ function assertArtifactKind(artifact, expectedKind) {
 export function prepareExecution({
   approved_plan: approvedPlan,
   approved_spec: approvedSpec,
+  approved_architecture: approvedArchitecture = null,
   repository_plan: repositoryPlan,
   owner_revisions: ownerRevisions,
+  plan_context: planContext,
 }) {
+  if (planContext === undefined || planContext === null) {
+    throw new TypeError('plan_context is required and cannot be omitted or null');
+  }
   const specVerification = verifyApprovedArtifactGraph(approvedSpec);
-  const planVerification = verifyApprovedArtifactGraph(approvedPlan, [approvedSpec]);
   assertArtifactKind(approvedSpec, 'spec');
+
+  let decisionCoverageMode = 'legacy-schema-v1';
+  let decisionCoverageResult = null;
+  let goalBackwardResult = null;
+  let architectureMode = 'legacy-schema-v1';
+  let architectureResult = null;
+  let planVerification;
+  if (typeof planContext !== 'object' || Array.isArray(planContext)) {
+    throw new TypeError('plan_context must be an object');
+  }
+  const hasDecisionCoverage = Object.hasOwn(planContext, 'decision_coverage');
+  const hasGoalBackwardReview = Object.hasOwn(planContext, 'goal_backward_review');
+  const hasArchitectureGate = Object.hasOwn(planContext, 'architecture_gate');
+  const hasArchitectureContext = Object.hasOwn(planContext, 'architecture_context');
+  if (
+    planContext.schema_version === 1 &&
+    !hasDecisionCoverage &&
+    !hasGoalBackwardReview &&
+    !hasArchitectureGate &&
+    !hasArchitectureContext
+  ) {
+    planVerification = verifyApprovedArtifactGraph(approvedPlan, [approvedSpec]);
+  } else if (planContext.schema_version === 2) {
+    if (!hasDecisionCoverage) {
+      throw new Error('schema-v2 plan_context decision_coverage is required');
+    }
+    if (!hasGoalBackwardReview) {
+      throw new Error('schema-v2 plan_context goal_backward_review is required');
+    }
+    if (!hasArchitectureGate) {
+      throw new Error('schema-v2 plan_context architecture_gate is required');
+    }
+    if (!hasArchitectureContext) {
+      throw new Error(
+        'schema-v2 plan_context architecture_context is required; use null when not applicable',
+      );
+    }
+    if (!isDeepStrictEqual(
+      planContext.decision_coverage,
+      planContext.goal_backward_review?.decision_coverage,
+    )) {
+      throw new Error(
+        'schema-v2 plan_context decision_coverage must match goal_backward_review decision_coverage',
+      );
+    }
+    decisionCoverageResult = assertDecisionCoverage(planContext.decision_coverage, {
+      stage: 'execution',
+    });
+    goalBackwardResult = assertGoalBackwardPlan(planContext.goal_backward_review);
+    decisionCoverageMode = 'strict-v2';
+    architectureResult = validateArchitecturePlanHandoff({
+      gate: planContext.architecture_gate,
+      architecture_context: planContext.architecture_context,
+      approved_spec: approvedSpec,
+      approved_architecture: approvedArchitecture,
+      approved_plan: approvedPlan,
+      decision_coverage: planContext.decision_coverage,
+      plan_context: planContext,
+      repository_topology: repositoryPlan,
+    });
+    if (!architectureResult.valid) {
+      throw new Error(
+        `architecture handoff blocked:\n${architectureResult.blocker_messages.join('\n')}`,
+      );
+    }
+    architectureMode = architectureResult.architecture_required
+      ? 'required-approved'
+      : 'not-applicable';
+    planVerification = verifyApprovedArtifactGraph(
+      approvedPlan,
+      architectureResult.architecture_required ? [approvedArchitecture] : [approvedSpec],
+    );
+  } else if (
+    hasDecisionCoverage ||
+    hasGoalBackwardReview ||
+    hasArchitectureGate ||
+    hasArchitectureContext
+  ) {
+    throw new Error(
+      'decision coverage, goal-backward review, and architecture fields require plan_context schema_version 2',
+    );
+  } else {
+    throw new TypeError(`unsupported plan_context schema version: ${planContext.schema_version}`);
+  }
   assertArtifactKind(approvedPlan, 'plan');
 
   const planOwner = planVerification.metadata.owner_repository_id;
@@ -108,6 +203,13 @@ export function prepareExecution({
     integration_owner_repository_id: repositoryPlan.integration_owner_repository_id,
     approved_spec_hash: specVerification.approval_hash,
     approved_plan_hash: planVerification.approval_hash,
+    decision_coverage_mode: decisionCoverageMode,
+    decision_coverage: decisionCoverageResult,
+    goal_backward_review: goalBackwardResult,
+    architecture_mode: architectureMode,
+    architecture_handoff: architectureResult,
+    approved_architecture_hash:
+      architectureMode === 'required-approved' ? approvedArchitecture.metadata.approval_hash : null,
     repository_plan: structuredClone(repositoryPlan),
   };
 }

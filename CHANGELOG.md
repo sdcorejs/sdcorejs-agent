@@ -39,6 +39,43 @@ Node workspace is not distributed through npm.
   and finally `PATH`, so `check:executable-references` also runs against a
   user-scoped Git installation.
 
+## 0.8.0
+
+- Add `sdcorejs-architecture` as the twenty-second public skill and a
+  conditional approval gate for cross-repository, public-contract, security,
+  data-ownership, and other architecture-significant changes. Small cohesive
+  work keeps a concrete not-applicable bypass instead of paying a universal gate.
+- Add executable architecture applicability, ownership, immutable
+  spec-to-architecture-to-plan lineage, module-owner, and conformance contracts.
+- Add canonical `A-*`, `D-*`, `R-*`, `AC-*`, and `INV-*` decision coverage plus
+  a fail-closed goal-backward plan checker for task/path/evidence omissions.
+- Add the shared validation map: planning owns the map, test emits its exact
+  projection and current evidence IDs, and ship rejects unrelated, stale,
+  deferred, or incomplete proof. Decision boundaries are bound to a verified
+  approved-artifact body/hash so row-and-authority co-mutation fails closed.
+- Add delivery convergence across approved intent, artifacts, executed
+  task/path/symbol trace, validation, review conformance, ledgers, toolchain,
+  source/module revisions, and artifact closure. Branch-ready and Git reject a
+  missing, blocked, deferred, stale, vacuous, unreceipted, or source/plan-
+  mismatched compact result; Git derives identity from repository topology and
+  approved plans.
+- Extend `sdcorejs-repair-loop` with external-review feedback verification,
+  classification, evidence-backed pushback, migration protection, explicit
+  tier-specific approval artifacts, intersected scopes, hash-bound change and
+  evidence manifests, test-integrity comparison, and exact reverification.
+- Add internal-only `sdcorejs-skill-authoring` under `authoring/**`, with a
+  deterministic pressure harness, public-surface ceiling checks, honest
+  telemetry, linked RED/GREEN/REFACTOR records, recursive distribution/provider
+  scans, and a structured live matrix that remains `NOT RUN` without explicit
+  authorization. It is not distributed or listed as a public skill.
+- Keep conventions as an `sdcorejs-explore` action lifecycle rather than a new
+  public skill; observed conventions remain advisory until separately accepted.
+- Synchronize active repository, plugin, site, and inventory metadata at
+  `0.8.0` and 22 public skills. Historical release evidence retains its
+  historical counts.
+- No tag, GitHub Release, npm publication, push, or pull request has occurred
+  for `0.8.0`; the root workspace remains private and validation-only.
+
 ## 0.7.0
 
 - **Breaking:** make track/profile, artifact identity, approval hash,

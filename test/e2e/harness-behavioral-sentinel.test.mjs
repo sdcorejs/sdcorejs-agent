@@ -181,7 +181,7 @@ test('canonical skills declare semantic actions while adapter manifests own prov
     /\b(?:via|using|invoke|run|use|uses|no)\s+(?:the\s+)?(?:Write|Edit|Bash)\b/,
   ];
 
-  assert.equal(skillFiles.length, 21);
+  assert.equal(skillFiles.length, 22);
   for (const file of skillFiles) {
     const text = await readFile(file, 'utf8');
     assert.doesNotMatch(text, /^allowed-tools:/m, `${file} keeps provider tools out of canonical frontmatter`);
@@ -290,7 +290,7 @@ test('canonical skills declare semantic actions while adapter manifests own prov
     assert.equal(manifest.content_hash, expectedContentHash);
     assert.notEqual(manifest.content_hash, manifest.source_hash);
     assert.equal(manifest.generated_path, relativePath);
-    assert.equal(Object.keys(manifest.skills).length, 21);
+    assert.equal(Object.keys(manifest.skills).length, 22);
   }
 });
 

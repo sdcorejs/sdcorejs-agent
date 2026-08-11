@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "artifact_role": "source-state-snapshot",
+  "phase": "REFACTOR",
+  "base_revision": "c426e58096c832f64c567106a38660ebb112b059",
+  "scenario_id": "new-skill-pressure",
+  "state": "refactored authoring contract with behavior preserved",
+  "canonical_contract_paths": [
+    "authoring/evals/scenarios.json",
+    "authoring/evals/skill-authoring-contract.mjs",
+    "authoring/skills/sdcorejs-skill-authoring/SKILL.md"
+  ]
+}

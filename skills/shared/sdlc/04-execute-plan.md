@@ -6,7 +6,6 @@ required-actions: artifact.read, artifact.write, context.pass, verification.run,
 
 # 04 - Execute Plan
 
-
 ## Shared Protocols
 
 Read `_refs/shared/runtime-protocols.md`. Apply
@@ -16,6 +15,11 @@ truth before any write or dispatch:
 
 - `_refs/shared/approved-artifact.mjs` for approval identity and parent graph.
 - `_refs/shared/system-registry.json` for track/profile routing.
+- `_refs/shared/decision-coverage.md` and its executable validator for strict
+  decision/task/path/evidence coverage.
+- `_refs/shared/architecture-contract.mjs` for the conditional approved
+  architecture graph, exact handoff identity, and invariant ownership.
+- `_refs/shared/convergence-contract.mjs` for exact executed task/change trace rows.
 - `_refs/orchestration/execution-contract.mjs` for execution preparation,
   current-root/path authorization, owner routing, working-tree boundaries, and
   execution-mode selection.
@@ -45,11 +49,26 @@ working-tree preflight below.
   `prohibited_paths`, dependency/env/migration boundaries, verification
   strategy, and parallel candidates.
 
+For a schema-v2 `plan_context`, `decision_coverage`, `goal_backward_review`,
+and a validated `validation_map` are required, and `architecture_gate` plus
+`architecture_context` are mandatory (`architecture_context: null` only for a
+concrete not-applicable gate). `prepareExecution` accepts
+`approved_architecture` when required and validates their exact
+identity, strict execution-stage readiness, task/path/evidence coverage, and
+critique result plus the spec -> architecture -> plan graph before any write
+authorization. Schema v1 without these fields
+remains input-only compatibility; a malformed or incomplete schema-v2 context
+must never fall back to that legacy path.
+
+`plan_context` is required: an omitted or null value blocks execution. Only an
+explicit `plan_context` with `schema_version: 1` selects legacy compatibility.
+
 If the plan is missing or unapproved, route back to `sdcorejs-plan`.
-Before every write, `prepareExecution` MUST verify the approved spec, approved
-plan, exact parent reference, schema, hash, track, profile, artifact owner, and
-`source_revision` against `repository_revision_map`. Reject stale source,
-unknown schema/track, owner mismatch, or hash mismatch. Do not mutate approved
+Before every write, `prepareExecution` MUST verify the approved spec,
+`approved_architecture` when required, approved plan, exact conditional parent
+graph, schema, hash, track, profile, artifact owner, and `source_revision`
+against `repository_revision_map`. Reject missing/stale/mutated architecture,
+unknown schema/track, owner mismatch, or path/hash/reference mismatch. Do not mutate approved
 artifacts to make execution pass.
 
 For each mutable plan step, resolve the current Git root and call
@@ -352,6 +371,15 @@ action. Do not echo this full schema by default:
 ```yaml
 execution_context:
   source: sdcorejs-execute-plan
+  decision_coverage:
+    contract: <exact approved decision coverage object>
+  goal_backward_review:
+    contract: <exact approval-ready goal-backward object>
+  architecture_gate: { valid: true, required: true | false, status: required | not-applicable, signals: [], bypass: <exact bypass object or null>, rationale: <exact normalized rationale> }
+  architecture_context: null # exact approved object when required
+  validation_map: [] # exact approved plan_context.validation_map
+  approved_architecture:
+    identity: <path/hash/status or explicit not-applicable/legacy result>
   contract_id: <contract id>
   requirement_id: <requirement id>
   owner_repository_id: <semantic artifact owner>
@@ -378,20 +406,10 @@ execution_context:
     conformance: verified | blocked | not-applicable
   working_tree_preflight:
     current_HEAD: <sha>
-    dirty: true | false
-    staged: <summary>
-    unstaged: <summary>
-    untracked:
-      - <path>
-    unrelated_dirty_paths:
-      - <path>
+    evidence: <HEAD, dirty state, staged, unstaged, untracked, unrelated paths>
   tasks_completed:
-    - id: <task id>
-      owner_repository_id: <repository id>
-      current_git_root: <verified repository id>
-      summary: <summary>
-      files_changed:
-        - <path>
+    - <task id, repository owner/root, summary, and changed paths>
+  convergence_trace: [{ task_id: <TASK-###>, changed_path_refs: [], changed_symbol_refs: [], requirement_refs: [], acceptance_criterion_refs: [], invariant_refs: [], risk_refs: [], evidence_refs: [] }]
   tasks_remaining:
     - id: <task id>
       reason: <reason>
@@ -426,7 +444,7 @@ execution_context:
 - Never execute without an approved plan snapshot.
 - Consume `plan_context` and preserve `contract_id`, `approved_spec_hash`,
   `approved_plan_hash`, `target_root_kind`, `track`, `stack_profile`,
-  write-scope boundaries, package-manager evidence, and verification strategy.
+  validation map, write-scope boundaries, package-manager evidence, and verification strategy.
 - Auto-select sequential for one executable unit or when safe parallel
   execution is unavailable; ask only when both modes are feasible.
 - Use `sdcorejs-product` as the executor for product-track ledgers and traceability audits.
@@ -478,5 +496,4 @@ execution_context:
 - `sdcorejs-git (workspace mode)` - isolates work when requested or needed
 - `sdcorejs-ai-agent`, `sdcorejs-angular`, `sdcorejs-nestjs`, `sdcorejs-nextjs`, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` - track executors
 - `sdcorejs-ship (verify-before-done mode)` - acceptance verification gate
-- `_refs/shared/frontend-architecture.md` - mandatory non-trivial frontend
-  architecture preflight and execution contract
+- `_refs/shared/frontend-architecture.md` - mandatory non-trivial frontend architecture preflight and execution contract

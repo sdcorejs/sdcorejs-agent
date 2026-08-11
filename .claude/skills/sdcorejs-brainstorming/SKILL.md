@@ -16,6 +16,11 @@ Read `_refs/shared/runtime-protocols.md`. Load project context, choice, or
 visual references only when the current question requires them. Resolve track,
 stack profile, repository role, and artifact kinds from the versioned
 `_refs/shared/system-registry.json`; do not maintain a local competing enum.
+Read `_refs/shared/decision-coverage.md` and preserve stable requirement,
+acceptance-criterion, assumption, decision, and invariant identities. Validate
+the graph at the `discovery` stage: future task/evidence mappings remain
+explicit `future_gaps`, while malformed identities, dangling references, and
+blocking assumptions remain blockers.
 
 ## Purpose
 Turn a request into a confirmed requirement contract. This skill now owns both jobs that used to be split:
@@ -360,6 +365,16 @@ Use this schema:
 ```yaml
 requirement_context:
   source: sdcorejs-brainstorming
+  decision_coverage:
+    schema_version: 1
+    revision: <integer>
+    records: []
+    history: []
+  goal_backward_review:
+    schema_version: 1
+    mode: sdcorejs-plan:goal-backward
+    stage: discovery
+    future_gaps: []
   requirement_id: <stable id>
   contract_id: <stable id shared by spec/plan/execute>
   target_root: <absolute or repo-relative target>
@@ -407,7 +422,7 @@ requirement_context:
     - <blocking decision, owner availability issue, or empty>
   coverage_approach: post-hoc | tdd | test-plan-only | not-applicable | unknown
   acceptance_criteria_seed:
-    - id: AC-1
+    - id: AC-001
       behavior: <observable behavior>
       expected_result: <testable outcome>
   visual_companion:
@@ -437,6 +452,9 @@ values.
   explicit user decisions, non-goals, risks, acceptance-criteria seed,
   inferred/defaulted assumptions, unresolved blockers, and profile evidence for
   downstream skills.
+- Preserve `decision_coverage` and the discovery-stage
+  `goal_backward_review`; downstream planning owns task, path, and evidence
+  completion and must not renumber an existing record.
 - Keep visual companion artifact writes response-only unless
   `visual_companion.artifact_write_approved` is true.
 
