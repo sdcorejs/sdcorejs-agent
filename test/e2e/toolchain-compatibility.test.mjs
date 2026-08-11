@@ -306,6 +306,22 @@ test('CI pins supported toolchains and isolates the Node 18 Visual Companion lan
   assertCiToolchains(ci, fullE2e, deploySite);
 });
 
+test('Skills and E2E fetches full history for revision-bound authoring evidence', async () => {
+  const ci = parseWorkflow(await readText('.github/workflows/ci.yml'), 'ci.yml');
+  const skillsJob = ci.jobs.skills;
+  assert.ok(skillsJob, 'Workflow job skills must exist');
+
+  const checkoutSteps = (skillsJob.steps ?? []).filter(
+    (step) => step.uses === 'actions/checkout@v7',
+  );
+  assert.equal(checkoutSteps.length, 1, 'Skills and E2E must have one checkout step');
+  assert.equal(
+    checkoutSteps[0].with?.['fetch-depth'],
+    0,
+    'Skills and E2E must fetch full history for revision-bound evidence',
+  );
+});
+
 test('CI rejects weakened Visual Companion execution-policy mutations', async () => {
   const [ci, fullE2e, deploySite] = await Promise.all([
     readText('.github/workflows/ci.yml'),
