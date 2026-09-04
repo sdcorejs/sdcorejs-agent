@@ -36,8 +36,8 @@ When multiple skills match, apply this priority before reading a body:
 
 1. Explicit skill name from the user.
 2. Approved spec: architecture when required; approved plan:
-   `sdcorejs-subagent-driven-development` for explicit delegation/fresh-worker
-   intent, otherwise `sdcorejs-execute-plan`.
+   `sdcorejs-execute-plan`; explicit delegated execution:
+   `sdcorejs-subagent-driven-development`.
 3. Product, design, or direct test work: `sdcorejs-product`,
    `sdcorejs-design`, or `sdcorejs-test`; failing-test diagnosis uses
    `sdcorejs-debug`.
@@ -78,18 +78,12 @@ writes. Internal `authoring/**` skills are never public or mirrored.
 No write-producing step may run after final branch-ready unless branch-ready is
 run again before any Git artifact handoff.
 
-`sdcorejs-execute-plan` attests current delegation and concurrency separately
-and preserves the approved execution policy. Explicit delegated execution of an
-approved plan uses `sdcorejs-subagent-driven-development`: safe ready waves use
-parallel fresh workers, unsafe waves use sequential fresh workers, and the
-parent is the last fallback when delegation is unavailable.
-
-`sdcorejs-parallel-dispatch` is the low-level safe-wave scheduler. Parallel work
-requires disjoint ownership, isolation where needed, bounded concurrency, and
-deterministic fan-in. Unapproved writes return to planning; any write in a
-read-only unit fails that unit. Direct splitting of an approved plan selects
-`sdcorejs-subagent-driven-development`; read-only parallel review/audit remains
-owned by `sdcorejs-parallel-dispatch` with writes denied.
+`sdcorejs-execute-plan` preserves the approved execution policy. Explicit
+approved-plan delegation or parallel-agent splitting uses
+`sdcorejs-subagent-driven-development`; parent execution is the fallback.
+Read-only parallel audits use the low-level `sdcorejs-parallel-dispatch`
+scheduler. Both paths require safe ownership, isolation, and deterministic
+fan-in; unapproved writes return to planning.
 
 Pure Q&A answers directly. A small, explicit, low-risk fix may use targeted
 context, the smallest edit, focused verification, and concise review without
@@ -193,7 +187,6 @@ Load references on demand:
 - `_refs/simplify/**` for bounded behavior-preserving source refinement.
 - `_refs/angular/core-docs-fetch.mjs` before using Core UI components.
 - `_refs/<track>/review-*.md` during review.
-- `_refs/orchestration/workspace-isolation.md` when resolving the
-  provider-neutral `workspace.isolate` action for execute-plan or delegated work.
+- `_refs/orchestration/workspace-isolation.md` for execution workspace isolation.
 - `_refs/orchestration/tail/verify-before-done.md` during `sdcorejs-ship (verify-before-done mode)`.
 - `_refs/orchestration/tail/branch-ready.md` during `sdcorejs-ship (branch-ready mode)`.

@@ -124,10 +124,14 @@ function walkFiles(directory, prefix = '', ignoredDirectories = new Set()) {
   return files.sort();
 }
 
-function fileHash(relative) {
+function fileHash(relative, { normalizeTextEol = false } = {}) {
   if (!safeRelativePath(relative)) return null;
   try {
-    return digestEntries([[relative, readFileSync(path.join(REPOSITORY_ROOT, relative))]]);
+    const bytes = readFileSync(path.join(REPOSITORY_ROOT, relative));
+    const canonicalBytes = normalizeTextEol
+      ? Buffer.from(bytes.toString('utf8').replace(/\r\n?/gu, '\n'), 'utf8')
+      : bytes;
+    return digestEntries([[relative, canonicalBytes]]);
   } catch {
     return null;
   }
@@ -372,7 +376,9 @@ function validateTranscriptBinding(record, errors) {
     errors.push('sanitized transcript must bind a repository-relative path and sha256');
     return;
   }
-  const actualHash = fileHash(record.sanitized_transcript_ref);
+  const actualHash = fileHash(record.sanitized_transcript_ref, {
+    normalizeTextEol: true,
+  });
   if (actualHash === null || actualHash !== record.sanitized_transcript_sha256) {
     errors.push('sanitized transcript is missing or stale');
     return;
@@ -380,7 +386,7 @@ function validateTranscriptBinding(record, errors) {
   const transcript = readFileSync(
     path.join(REPOSITORY_ROOT, record.sanitized_transcript_ref),
     'utf8',
-  ).replace(/\r?\n$/u, '');
+  ).replace(/\r\n?/gu, '\n').replace(/\n$/u, '');
   if (transcript !== record.sanitized_output) {
     errors.push('sanitized transcript content does not match sanitized_output');
   }

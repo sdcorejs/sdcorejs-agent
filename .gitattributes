@@ -28,6 +28,7 @@
 *.mdc           text eol=lf
 *.astro         text eol=lf
 *.tpl           text eol=lf
+*.txt           text eol=lf
 *.conf          text eol=lf
 *.Dockerfile    text eol=lf
 Dockerfile      text eol=lf

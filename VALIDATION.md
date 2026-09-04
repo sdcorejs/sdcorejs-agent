@@ -59,20 +59,22 @@ Date: 2026-09-04
 | Architecture, AI-agent, publication, and simplify distribution contracts | `PASS` - 70/70 |
 | Generated skill synchronization and integrity | `PASS` - 23 source skills and 23 skills in every generated surface |
 | PowerShell skill check and text hygiene | `PASS` |
-| Deterministic authoring evaluation | `PASS` - zero provider calls and no ambient credential reads |
+| Deterministic authoring evaluation | `PASS` - 6/6, zero provider calls, and no ambient credential reads |
 | Dependency audits | `PASS` - root and site lockfiles report zero vulnerabilities |
-| Composite E2E | `BLOCKED` in the repository phase - 529/536 passed; later framework phases did not start |
-| Site build | `BLOCKED` - the local `astro` executable is absent |
+| Composite E2E | `PASS` - repository 572/572; Angular golden 1/1; NestJS 24 passed with one intentional Linux-only skip; NestJS golden 2/2; Next.js golden 2/2 |
+| Site build | `PASS` - Astro built both static pages successfully |
 | Live-provider evaluation | `NOT RUN` - no credentialed provider execution was authorized |
 
-The seven repository-phase failures are environment or pre-existing evidence
-failures, not delegated-execution contract regressions: three tests cannot load
-the absent `yaml` package, three cannot load the absent `@angular/compiler`
-package, and the existing sanitized authoring transcript binding is stale (the
-working tree also checks it out with CRLF). The standalone authoring suite
-therefore remains 5/6. This worktree has no `node_modules`, and its Node.js
-`22.22.2` runtime is below the repository minimum `22.22.3`; dependencies and
-toolchain were deliberately not mutated as part of this skill-only change.
+The earlier 529/536 result was a partial-discovery run: absent local lockfile
+dependencies prevented three test modules from loading, so 36 tests were never
+discovered. After a clean local `npm ci`, the complete repository suite exposes
+572 tests and all 572 pass. The repair did not relax assertions: bootstrap
+routing prose was deduplicated below the locked communication budget; sanitized
+transcript bindings now canonicalize text line endings and `.txt` files are
+checked out as LF; and Windows golden harnesses honor npm's `npm_execpath` when
+Node and npm are installed separately. All current commands used Node.js
+`24.19.0`, which satisfies the repository engine contract. Local dependencies
+and generated site output remain ignored and are not delivery artifacts.
 
 ## 0.8.0 executable contract evidence - 2026-08-09 working tree
 
@@ -193,15 +195,15 @@ working-tree diff:
 
 | Measure | Baseline | Current working tree |
 |---|---:|---:|
-| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,951 |
-| Always-loaded bootstrap words | 2,361 | 2,385 |
-| Aggregate just-in-time scenario bytes | 514,603 | 652,614 |
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,846 |
+| Always-loaded bootstrap words | 2,361 | 2,348 |
+| Aggregate just-in-time scenario bytes | 514,603 | 656,066 |
 | Aggregate visible output bytes | 42,558 | 2,802 |
 | Aggregate visible output words | 3,961 | 337 |
 | Portable fallback handoff bytes | 0 | 25,383 |
 | Supported runtime context channel bytes | 0 | 1,819 |
 | Repeated-block bytes | 2,319 | 0 |
-| Total measured communication bytes | 577,334 | 702,569 |
+| Total measured communication bytes | 577,334 | 705,916 |
 | Consumer-required authoritative fields | 361 | 361 preserved |
 
 The report includes ten scenarios, per-scenario selected paths, bytes, words,

@@ -22,9 +22,8 @@ route; do not load every referenced track body during bootstrap.
 Priority when several skills match:
 
 1. Explicit skill named by the user.
-2. Direct delegation, fresh-subagent, or worker-fleet execution of an approved
-   plan: `sdcorejs-subagent-driven-development`; generic approved-plan
-   continuation remains `sdcorejs-execute-plan`.
+2. Approved plan: `sdcorejs-subagent-driven-development` for explicit
+   delegation; otherwise `sdcorejs-execute-plan`.
 3. Product, design, and direct test work: `sdcorejs-product`,
    `sdcorejs-design`, `sdcorejs-test`; failing-test diagnosis uses
    `sdcorejs-debug`.
@@ -70,8 +69,8 @@ gate.
 brainstorming
   -> spec (explicit approval + immutable approved snapshot)
   -> plan (explicit approval + immutable approved snapshot)
-  -> execute-plan (track detection + runtime attestation + policy selection)
-  -> subagent-driven development or parent executor/generic harness
+  -> execute-plan (track detection + execution policy)
+  -> delegated or parent executor/generic harness
   -> finish gate and mandatory tail
 ```
 
@@ -79,13 +78,10 @@ Silence is never spec or plan approval. Do not generate code from ambiguous or
 unconfirmed scope. The product, design, test, and AI-agent tracks remain
 first-class; unsupported stacks use the generic execute-plan harness.
 
-Execute-plan preserves the approved `execution_policy` and attests current
-delegation separately from concurrency. With delegation available, approved
-units use `sdcorejs-subagent-driven-development`: safe ready waves may run
-concurrently, otherwise fresh workers run sequentially. Parent execution is the
-last fallback when delegation is unavailable. `sdcorejs-parallel-dispatch`
-remains the low-level scheduler and the direct owner of read-only parallel
-review/audit fan-out.
+Explicit approved-plan delegation uses `sdcorejs-subagent-driven-development`;
+safe waves may run in parallel, otherwise fresh workers run sequentially.
+Parent execution is the fallback. `sdcorejs-parallel-dispatch` remains the
+low-level scheduler for safe waves and read-only parallel audits.
 
 ## Invariants
 
