@@ -1404,7 +1404,7 @@ test('canonical SDLC producers and consumers preserve the conditional architectu
   ]) assert.match(source, exactGate, `${name} must preserve the exact six-field gate`);
 });
 
-test('architecture is the only new public skill and stays below the skill ceiling', async () => {
+test('architecture and delegated execution each exist once at the skill ceiling', async () => {
   const root = new URL('../../skills/', import.meta.url);
   const files = (await readdir(root, { recursive: true }))
     .map(String)
@@ -1414,10 +1414,13 @@ test('architecture is the only new public skill and stays below the skill ceilin
     text: await readFile(new URL(file.replaceAll('\\', '/'), root), 'utf8'),
   })));
   const architectureSources = sources.filter(({ text }) => /^name:\s*sdcorejs-architecture$/mu.test(text));
-  assert.equal(sources.length, 22);
+  const delegatedSources = sources.filter(({ text }) => /^name:\s*sdcorejs-subagent-driven-development$/mu.test(text));
+  assert.equal(sources.length, 23);
   assert.ok(sources.length <= 23);
   assert.equal(architectureSources.length, 1);
   assert.equal(architectureSources[0].file.replaceAll('\\', '/'), 'shared/sdlc/architecture.md');
+  assert.equal(delegatedSources.length, 1);
+  assert.equal(delegatedSources[0].file.replaceAll('\\', '/'), 'orchestration/subagent-driven-development.md');
 });
 
 test('the focused alias is part of the repository partition', async () => {

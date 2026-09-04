@@ -60,7 +60,7 @@ surfaces explicitly.
 Keep deterministic contract evidence, prepared-environment Full E2E, and
 authorized live-agent evidence in separate release-note rows. A deterministic
 pass cannot upgrade `NOT RUN` Full E2E or live evidence. Confirm the public
-inventory contains 22 skills, the ceiling remains 23, and internal
+inventory contains 23 skills, the ceiling remains 23, and internal
 `authoring/skills/sdcorejs-skill-authoring` appears in no mirror, adapter
 manifest, marketplace inventory, or site catalog.
 Confirm decision-boundary authority matches its approved artifact, convergence
@@ -134,6 +134,6 @@ After publishing the GitHub Release:
 - Confirm mirrors are present: `.claude/skills`, `plugin/skills`,
   `codex/skills`, and `.cursor/rules`.
 - Confirm each adapter `sdcorejs-harness.json` has the current canonical source
-  hash and 22-skill mapping.
+  hash and 23-skill mapping.
 - Confirm `docs/ADOPTION.md` and `docs/TROUBLESHOOTING.md` still match the
   release instructions.

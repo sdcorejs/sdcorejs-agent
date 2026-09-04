@@ -14,6 +14,13 @@ The generated `sdcorejs-harness.json` beside each adapter entrypoint contains
 the exact capability/action mapping and a hash of
 `_refs/harness/capability-contract.json`.
 
+Concurrency, worker-CWD binding, native/manual worktree support, cancellation,
+and result-reference support remain `unknown` in static adapter defaults unless
+the adapter can guarantee them. Immediately before delegated execution, use
+`_refs/harness/runtime-attestation.mjs` to record current-session evidence and
+effective maximum concurrency. This runtime overlay may enable a native path
+for that session only; it never rewrites the generated adapter manifest.
+
 `runtime_context_channel` is never inferred from conversational memory. Until a
 host provides evidence for structured producer-to-consumer transfer,
 `context.pass` uses the validated portable handoff with required fields,
@@ -37,6 +44,6 @@ unavailable.
 ## Claude Code and Other Adapters
 
 Claude Code mirrors derive their provider tool allowlist from each canonical
-skill's `required-actions`. Cursor and Copilot remain fully operable through the
-portable Markdown and sequential parent fallbacks when native capabilities
-cannot be proven.
+skill's `required-actions`. Cursor and Copilot remain fully operable through
+portable Markdown, sequential fresh workers when delegation is attested, and
+parent fallback when it is not.

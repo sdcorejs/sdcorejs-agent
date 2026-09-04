@@ -292,9 +292,10 @@ plan_context:
     commands_planned: [<command/script and proof reason>]
     commands_skipped: [<candidate and skip reason>]
     checks: <detected scripts plus focused and broad checks>
+  execution_policy: auto | sequential | parallel-preferred
   parallel_candidates:
     allowed: true | false
-    contract: <frozen units, ownership, resources, verification, and risks from parallel protocol>
+    units: [<compact id, dependencies, ownership, resources, and estimated cost>]
     shared_files: [<path, single owner, coordination strategy>]
   repository_plan:
     schema_version: 1
@@ -351,7 +352,7 @@ Fix the plan before presenting if any checklist item fails:
 - Test coverage matches the spec's coverage approach.
 - Test authoring and the approved TDD decision occur before production-code
   tasks; a plan may not defer this decision until after implementation.
-- Parallel candidates are identified, but not executed.
+- Parallel candidates are identified, not executed, and include an approved `execution_policy` from the parallel protocol.
 - The plan does not hardcode `npm`, `npx`, `tsc`, Playwright, browser installs,
   or any package manager as universal defaults. Do not hardcode npm/npx as
   universal commands, and do not use `npx --yes` or downloading probes without
@@ -464,10 +465,9 @@ Abort:
 - Preserve the exact architecture gate and, when required, approved
   architecture path/hash/reference. Never downgrade a required gate to a
   bypass inside planning.
-- Record write scope, allowed paths, prohibited paths, generated artifact
-  boundaries, docs artifacts, dependency changes, env changes, migration
-  changes, verification strategy, package manager/script evidence,
-  parallelization metadata, shared-file risks, and final tail ordering.
+- Record write scope, path/artifact boundaries, docs artifacts, dependency/env/
+  migration changes, verification and package-manager evidence, parallelization
+  metadata, approved `execution_policy`, shared-file risks, and tail ordering.
 - Discover package manager from `packageManager`, lockfiles, and workspace
   config; read `package.json` scripts before planning commands.
 - Record `commands_planned`, `commands_skipped`, focused checks, and broad

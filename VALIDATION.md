@@ -2,11 +2,11 @@
 
 Current validation snapshot for the SDCoreJS SDLC Agent repository.
 
-Date: 2026-08-09
+Date: 2026-09-04
 
 ## Current Layout
 
-- `skills/**/*.md` - 22 dispatchable public source skills; the enforced ceiling
+- `skills/**/*.md` - 23 dispatchable public source skills; the enforced ceiling
   is 23.
 - `authoring/**` - internal-only skill-authoring lifecycle and evaluation
   harness; it is not a public skill source or distribution input.
@@ -19,16 +19,16 @@ Date: 2026-08-09
 - `_refs/harness/**` - canonical semantic actions, tri-state capabilities,
   model/role policy, runtime envelopes, and deterministic sentinel policy.
 - `*/sdcorejs-harness.json` - generated adapter mappings with canonical content
-  hash and 22-skill action declarations.
+  hash and 23-skill action declarations.
 
 ## Inventory
 
 | Bucket | Count |
 |---|---:|
-| Source skills | 22 |
-| Claude Code mirror skills | 22 |
-| Plugin mirror skills | 22 |
-| Codex mirror skills | 22 |
+| Source skills | 23 |
+| Claude Code mirror skills | 23 |
+| Plugin mirror skills | 23 |
+| Codex mirror skills | 23 |
 | Internal-only authoring skills | 1 (excluded from all rows above) |
 
 ## Workflow Inventory
@@ -47,8 +47,32 @@ Date: 2026-08-09
 | Test executor | `sdcorejs-test` |
 | Documentation executor | `sdcorejs-documentation` |
 | Simplification utility | `sdcorejs-simplify` |
-| Parallel | `sdcorejs-parallel-dispatch` |
+| Delegated execution lifecycle | `sdcorejs-subagent-driven-development` |
+| Parallel scheduler | `sdcorejs-parallel-dispatch` |
 | Finish | `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)` when durable knowledge surfaced |
+
+## Delegated execution change evidence - 2026-09-04 working tree
+
+| Evidence layer | Result |
+|---|---|
+| Focused orchestration, harness, entrypoint, and skill-pack contracts | `PASS` - 83/83 |
+| Architecture, AI-agent, publication, and simplify distribution contracts | `PASS` - 70/70 |
+| Generated skill synchronization and integrity | `PASS` - 23 source skills and 23 skills in every generated surface |
+| PowerShell skill check and text hygiene | `PASS` |
+| Deterministic authoring evaluation | `PASS` - zero provider calls and no ambient credential reads |
+| Dependency audits | `PASS` - root and site lockfiles report zero vulnerabilities |
+| Composite E2E | `BLOCKED` in the repository phase - 529/536 passed; later framework phases did not start |
+| Site build | `BLOCKED` - the local `astro` executable is absent |
+| Live-provider evaluation | `NOT RUN` - no credentialed provider execution was authorized |
+
+The seven repository-phase failures are environment or pre-existing evidence
+failures, not delegated-execution contract regressions: three tests cannot load
+the absent `yaml` package, three cannot load the absent `@angular/compiler`
+package, and the existing sanitized authoring transcript binding is stale (the
+working tree also checks it out with CRLF). The standalone authoring suite
+therefore remains 5/6. This worktree has no `node_modules`, and its Node.js
+`22.22.2` runtime is below the repository minimum `22.22.3`; dependencies and
+toolchain were deliberately not mutated as part of this skill-only change.
 
 ## 0.8.0 executable contract evidence - 2026-08-09 working tree
 
@@ -60,7 +84,7 @@ Date: 2026-08-09
 | 3 | Plan-owned validation map and non-vacuous delivery convergence across intent, artifacts, task/path/symbol trace, evidence, ledgers, revisions, toolchain, and closure | `_refs/shared/validation-map.mjs`, `_refs/shared/convergence-contract.mjs` |
 | 4 | External-review feedback classification, technical pushback, migration protection, intersected scope, typed approvals, hash-bound repair evidence, and exact command receipts | `_refs/orchestration/repair-contract.mjs` |
 | 5 | Internal RED/GREEN/REFACTOR skill-authoring lifecycle, deterministic pressure matrix, leak detection, ceiling checks, and explicit live-evidence authorization | `authoring/evals/skill-authoring-contract.mjs` |
-| 6 | Exactly 22 public skills in each generated surface, public ceiling 23, internal authoring absent, synchronized docs/site/plugin metadata | `scripts/sync-skills.mjs` and distribution-boundary mutations |
+| 6 | Exactly 22 public skills in each generated surface, public ceiling 22, internal authoring absent, synchronized docs/site/plugin metadata | `scripts/sync-skills.mjs` and distribution-boundary mutations |
 
 The assessment, approval, snapshot, command-receipt, architecture, validation,
 and convergence artifacts are canonical body/hash-bound contracts. Caller
@@ -523,16 +547,16 @@ arbitrary domain automatically.
 
 | Check | Expected |
 |---|---|
-| Source skill count | 22 public; ceiling 23; internal authoring excluded |
-| Mirror counts | 22 in `.claude`, `plugin`, and `codex` |
+| Source skill count | 23 public; ceiling 23; internal authoring excluded |
+| Mirror counts | 23 in `.claude`, `plugin`, and `codex` |
 | Text hygiene | No hidden/control/bidi Unicode in tracked text files |
 | Frontmatter | Canonical skills require `name`, `description`, and semantic `required-actions`; provider tool allowlists exist only in generated adapter mirrors |
 | Skill names | Unique `sdcorejs-*` kebab-case names |
 | Ref links | Exact `_refs/...` paths in skills and refs resolve to committed files |
 | Codex mirror | `name` + `description` only, refs rewritten to `../_refs/...` |
 | Cursor rule | In sync with `AGENTS.md` |
-| Harness manifests | Five generated adapter manifests match the canonical capability source hash and contain all 22 public skills; internal authoring is absent |
-| Capability contract | Every adapter maps all 14 actions, including `context.pass`, and declares all 12 capabilities, including `runtime_context_channel`, as supported, unsupported, or unknown with fallbacks |
+| Harness manifests | Five generated adapter manifests match the canonical capability source hash and contain all 23 public skills; internal authoring is absent |
+| Capability contract | Every adapter maps all 18 actions and declares all 22 capabilities, including delegation, concurrency, cancellation, result references, and workspace isolation, as supported, unsupported, or unknown with fallbacks; runtime attestation supplies observed evidence before execution |
 | Behavioral sentinel | Direct/fast/full workflow, interaction, delegation, ownership, summary mutation, static visual, communication profiles, projection, portable handoff, and related-artifact scenarios pass |
 | Stale mirrors | No missing, changed, or extra generated mirror files |
 | Root npm publication | `private: true`; no publication-only manifest metadata, scripts, lifecycle hooks, workflow credentials, registry commands, or npm dependency-install guidance |

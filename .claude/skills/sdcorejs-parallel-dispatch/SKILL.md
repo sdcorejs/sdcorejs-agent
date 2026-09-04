@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-parallel-dispatch
-description: Parallel execution gate and role-aware subagent fan-out discipline. Use when an approved plan has multiple feasible independent units, when the user explicitly requests a safe split, or for read-only parallel audits. Validates protocol-v2 contracts, capabilities, model tiers, path/resource ownership, task briefs, deterministic fan-in, repair ownership, and evidence freshness. Runtime-localized.
+description: Low-level parallel safety scheduler. Use when sdcorejs-subagent-driven-development or execute-plan requests an attested wave verdict/fan-in, or when the user explicitly requests a read-only parallel review or audit. Validates protocol-v2 contracts, dependency waves, capabilities, path/resource ownership, task briefs, deterministic fan-in, repair ownership, and evidence freshness. Runtime-localized.
 allowed-tools: Agent, AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 ---
 
@@ -24,10 +24,12 @@ shared artifact. Verify plan identity with
 
 ## Purpose
 
-This skill is the fail-closed gate for parallel work. It validates a protocol-v2
-contract, classifies the dependency topology, dispatches only mechanically safe
-units, integrates immutable or exact-diff results deterministically, and runs
-global verification plus the final read-only branch-ready gate.
+This skill is the low-level fail-closed scheduler for parallel work. It validates
+a protocol-v2 contract, classifies the dependency topology, schedules only
+mechanically safe waves, integrates immutable or exact-diff results
+deterministically, and runs global verification plus the final read-only
+branch-ready gate. `sdcorejs-subagent-driven-development` owns the higher-level
+fresh-worker and two-stage-review lifecycle.
 
 The public compatibility verdicts remain:
 
@@ -78,21 +80,25 @@ direct invocation is not a bypass.
    artifact ID/hash, repository owner, registry role, and source revision.
 3. Capture current branch, HEAD, staged, unstaged, untracked, dirty-diff hash,
    unrelated dirty paths, and intended-output overlap.
-4. Negotiate runtime capabilities through
-   `_refs/harness/capability-contract.json`. Unsupported or unknown subagent,
-   isolation, or per-worker control falls back to sequential parent execution;
-   never assume it exists.
+4. Build current-session evidence through
+   `_refs/harness/runtime-attestation.mjs`; static values in
+   `_refs/harness/capability-contract.json` are defaults, not runtime proof.
+   Unknown capability never enables dispatch. Return a blocked parallel verdict
+   to the caller so delegated execution can use sequential fresh workers before
+   considering parent execution.
 5. Derive paths, stacks, executors, commands, roles, and resources from the
    approved plan and target evidence. Do not assume a framework or directory
    layout.
-6. Emit the complete `parallel_context` from the protocol reference. Keep it
+6. Call `compileParallelContext` for dependency waves and the parallel
+   opportunity report, then complete every dispatch-readiness field.
+7. Emit the complete `parallel_context` from the protocol reference. Keep it
    authoritative and internal by default; pass it to the execute-plan parent or
    final ship consumer through `context.pass`. If
    `runtime_context_channel` is `unsupported` or `unknown`, use the validated
    portable matrix so contract identity, ownership, unit result identity,
    deterministic fan-in state, global verification, and final-tail state are
    preserved without embedding plan, diff, or log bodies.
-7. Carry one runtime `artifact_context` per change. Workers return only their
+8. Carry one runtime `artifact_context` per change. Workers return only their
    owned change-scoped entries; the integration owner performs deterministic
    merge and owns shared entries.
 
@@ -258,8 +264,8 @@ local simulation from real runtime concurrency evidence.
 - Validate protocol v2 before dispatch.
 - Validate every dispatch envelope and worker action mechanically.
 - Fail closed on unknown write-heavy capability, ownership, base, workspace, or
-  result identity for parallel dispatch; continue through the portable
-  sequential parent fallback when safe.
+  result identity for parallel dispatch; return evidence so the caller can use
+  sequential fresh workers before parent fallback.
 - Mechanically compute actual changed paths and store the normalized list.
 - Use plan-derived DAG waves and deterministic integration.
 - Keep approved snapshots immutable and stale old evidence after revision.
@@ -297,6 +303,7 @@ local simulation from real runtime concurrency evidence.
 - `_refs/orchestration/workspace-isolation.md` - safe unit/integration workspace
   creation and cleanup ownership.
 - `sdcorejs-execute-plan` - approved-plan execution entrypoint.
+- `sdcorejs-subagent-driven-development` - fresh-worker lifecycle and fallback owner.
 - `sdcorejs-plan` - immutable plan creation and revision approval.
 - `sdcorejs-review`, `sdcorejs-repair-loop`, and `sdcorejs-ship` - per-unit
   review/repair and final verification gates.

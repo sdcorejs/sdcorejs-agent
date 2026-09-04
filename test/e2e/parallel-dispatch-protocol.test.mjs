@@ -9,6 +9,7 @@ import {
   assignRepair,
   buildDispatchEnvelope,
   classifyTopology,
+  compileParallelContext,
   createEvidence,
   integrateResults,
   invalidateForContractRevision,
@@ -26,6 +27,7 @@ import {
   validateWorkspaceAssignment,
   validateWorkingTree
 } from '../../_refs/orchestration/parallel-protocol.mjs';
+import { selectExecutionMode as selectPlanExecutionMode } from '../../_refs/orchestration/execution-contract.mjs';
 import { createApprovedArtifact } from '../../_refs/shared/approved-artifact.mjs';
 
 const baseCapabilities = {
@@ -321,6 +323,16 @@ test('write dispatch requires working-tree, workspace, base, result, verificatio
     final_tail: { verify_before_done: true, branch_ready_final_gate: true, no_writes_after_branch_ready: true }
   };
   assert.deepEqual(validateDispatchContext(context), []);
+  const withoutWorktreeCapability = structuredClone(context);
+  withoutWorktreeCapability.runtime_capabilities.supports_native_worktree = false;
+  withoutWorktreeCapability.runtime_capabilities.supports_manual_worktree = false;
+  assert.match(
+    validateDispatchContext(withoutWorktreeCapability).join('\n'),
+    /worktree capability/iu,
+  );
+  const withManualWorktree = structuredClone(withoutWorktreeCapability);
+  withManualWorktree.runtime_capabilities.supports_manual_worktree = true;
+  assert.doesNotMatch(validateDispatchContext(withManualWorktree).join('\n'), /worktree capability/iu);
   const broken = structuredClone(context);
   delete broken.units[0].workspace.base_head;
   broken.final_tail.verify_before_done = false;
@@ -468,6 +480,116 @@ test('DAG waves do not force five roles and defer cross-stack execution until in
   assert.deepEqual(waves, [['backend', 'frontend'], ['integration'], ['qc-execute']]);
 });
 
+test('execute-plan and parallel protocol agree on dependency waves', () => {
+  const units = [
+    { id: 'backend', depends_on: [], ownership: { allowed_paths: ['apps/api/**'], prohibited_paths: [], exclusive_resources: [] } },
+    { id: 'frontend', depends_on: [], ownership: { allowed_paths: ['apps/web/**'], prohibited_paths: [], exclusive_resources: [] } },
+    { id: 'integration', depends_on: ['backend', 'frontend'], ownership: { allowed_paths: ['integration/**'], prohibited_paths: [], exclusive_resources: [] } },
+  ];
+  const topology = classifyTopology({
+    contract: approvedContract,
+    units,
+    runtimeCapabilities: baseCapabilities,
+  });
+  const selection = selectPlanExecutionMode({
+    units,
+    delegation_capability: 'supported',
+    parallel_capability: 'supported',
+    isolation_safe: true,
+    ownership_disjoint: true,
+    execution_policy: 'parallel-preferred',
+  });
+
+  assert.equal(topology.verdict, 'PARALLEL-CANDIDATE');
+  assert.equal(selection.mode, 'parallel');
+  assert.deepEqual(selection.waves, topology.waves);
+});
+
+test('compact plan compilation emits a deterministic opportunity report', () => {
+  const compiled = compileParallelContext({
+    plan_context: {
+      contract_id: 'C1',
+      approved_plan_path: '.sdcorejs/plans/p.md',
+      approved_plan_hash: 'plan-hash',
+      execution_policy: 'auto',
+      parallel_candidates: {
+        allowed: true,
+        units: [
+          { id: 'backend', depends_on: [], ownership: { allowed_paths: ['apps/api/**'], allowed_lockfiles: ['apps/api/package-lock.json'] }, estimated_cost: 5 },
+          { id: 'frontend', depends_on: [], allowed_paths: ['apps/web/**'], estimated_cost: 5 },
+          { id: 'integration', depends_on: ['backend', 'frontend'], allowed_paths: ['integration/**'], estimated_cost: 2 },
+        ],
+      },
+    },
+    runtime_capabilities: baseCapabilities,
+  });
+
+  assert.equal(compiled.parallel_context.schema_version, 2);
+  assert.deepEqual(compiled.opportunity_report.waves, [['backend', 'frontend'], ['integration']]);
+  assert.equal(compiled.opportunity_report.eligibility, 'parallel');
+  assert.equal(compiled.opportunity_report.selected_mode, 'parallel');
+  assert.equal(compiled.opportunity_report.max_parallelism, 2);
+  assert.equal(compiled.opportunity_report.estimated_serial_cost, 12);
+  assert.equal(compiled.opportunity_report.estimated_parallel_cost, 7);
+  assert.equal(compiled.opportunity_report.estimated_savings, 5);
+  assert.deepEqual(compiled.opportunity_report.blockers, []);
+  assert.deepEqual(compiled.parallel_context.units[0].ownership.allowed_lockfiles, ['apps/api/package-lock.json']);
+
+  const missingCwd = compileParallelContext({
+    plan_context: {
+      contract_id: 'C1',
+      approved_plan_path: '.sdcorejs/plans/p.md',
+      approved_plan_hash: 'plan-hash',
+      execution_policy: 'auto',
+      parallel_candidates: {
+        allowed: true,
+        units: [
+          { id: 'a', depends_on: [], allowed_paths: ['a/**'] },
+          { id: 'b', depends_on: [], allowed_paths: ['b/**'] },
+        ],
+      },
+    },
+    runtime_capabilities: { ...baseCapabilities, supports_agent_cwd: undefined },
+  });
+  assert.equal(missingCwd.opportunity_report.selected_mode, 'delegated-sequential');
+  assert.match(missingCwd.opportunity_report.blockers.join('\n'), /capability unknown/iu);
+
+  const disabled = compileParallelContext({
+    plan_context: {
+      contract_id: 'C1',
+      approved_plan_path: '.sdcorejs/plans/p.md',
+      approved_plan_hash: 'plan-hash',
+      execution_policy: 'parallel-preferred',
+      parallel_candidates: {
+        allowed: false,
+        units: [
+          { id: 'a', depends_on: [], allowed_paths: ['a/**'] },
+          { id: 'b', depends_on: [], allowed_paths: ['b/**'] },
+        ],
+      },
+    },
+    runtime_capabilities: baseCapabilities,
+  });
+  assert.equal(disabled.opportunity_report.selected_mode, 'delegated-sequential');
+  assert.match(disabled.opportunity_report.blockers.join('\n'), /parallel_candidates\.allowed/iu);
+
+  const ownerless = compileParallelContext({
+    plan_context: {
+      contract_id: 'C1',
+      approved_plan_path: '.sdcorejs/plans/p.md',
+      approved_plan_hash: 'plan-hash',
+      execution_policy: 'parallel-preferred',
+      parallel_candidates: {
+        allowed: true,
+        units: [{ id: 'a', depends_on: [] }, { id: 'b', depends_on: [] }],
+      },
+    },
+    runtime_capabilities: baseCapabilities,
+  });
+  assert.equal(ownerless.opportunity_report.selected_mode, 'delegated-sequential');
+  assert.match(ownerless.opportunity_report.blockers.join('\n'), /owned paths/iu);
+});
+
 test('runtime capability negotiation demotes or fails closed safely', () => {
   assert.equal(validateRuntimeCapabilities({ ...baseCapabilities, supports_subagents: false }, true).mode, 'SEQUENTIAL');
   assert.equal(validateRuntimeCapabilities({ ...baseCapabilities, supports_parallel_dispatch: false }, false).mode, 'SEQUENTIAL_WAVES');
@@ -480,6 +602,18 @@ test('runtime capability negotiation demotes or fails closed safely', () => {
     runtimeCapabilities: { ...baseCapabilities, supports_agent_cwd: false }
   });
   assert.equal(worktreeWithoutCwd.verdict, 'SEQUENTIAL');
+  assert.throws(() => selectPlanExecutionMode({
+    units: [{ id: 'only', depends_on: [] }],
+    delegation_capability: 'supported',
+    parallel_capability: 'supported',
+    isolation_safe: true,
+    ownership_disjoint: true,
+    execution_policy: 'fastest',
+  }), /execution_policy/iu);
+  assert.throws(() => selectPlanExecutionMode({
+    units: [{ depends_on: [] }],
+    delegation_capability: 'supported',
+  }), /non-empty id/iu);
 });
 
 test('workspace validation rejects wrong cwd, nesting, dirty integration, stale base, and non-descendant result', () => {
@@ -646,6 +780,55 @@ test('unit policy handles timeout, crash, fail-fast, and best-effort result stat
   ], { mode: 'best-effort', max_attempts: 1, timeout_seconds: 1 });
   assert.deepEqual(bestEffortCalls, ['bad', 'later']);
   assert.equal(bestEffort.results[1].status, 'PASSED');
+});
+
+test('unit policy proves bounded overlap only with explicit concurrency support', async () => {
+  let active = 0;
+  let maxActive = 0;
+  const makeUnit = (id) => ({
+    id,
+    run: async () => {
+      active += 1;
+      maxActive = Math.max(maxActive, active);
+      await new Promise((resolve) => setTimeout(resolve, 35));
+      active -= 1;
+      return { exit_code: 0 };
+    },
+  });
+
+  const parallel = await runUnitsWithPolicy(
+    [makeUnit('a'), makeUnit('b'), makeUnit('c')],
+    {
+      mode: 'best-effort',
+      supports_parallel_dispatch: true,
+      effective_max_concurrency: 2,
+    },
+  );
+  assert.equal(maxActive, 2);
+  assert.deepEqual(parallel.results.map(({ status }) => status), ['PASSED', 'PASSED', 'PASSED']);
+
+  active = 0;
+  maxActive = 0;
+  await runUnitsWithPolicy([makeUnit('d'), makeUnit('e')], { mode: 'best-effort' });
+  assert.equal(maxActive, 1);
+});
+
+test('fail-fast distinguishes in-flight work from work that never started', async () => {
+  const calls = [];
+  const result = await runUnitsWithPolicy([
+    { id: 'bad', run: async () => { calls.push('bad'); throw new Error('boom'); } },
+    { id: 'in-flight', run: async () => { calls.push('in-flight'); await new Promise((resolve) => setTimeout(resolve, 20)); return { exit_code: 0 }; } },
+    { id: 'never-started', run: async () => { calls.push('never-started'); return { exit_code: 0 }; } },
+  ], {
+    mode: 'fail-fast',
+    supports_parallel_dispatch: true,
+    effective_max_concurrency: 2,
+    supports_cancellation: true,
+  });
+
+  assert.deepEqual(calls.sort(), ['bad', 'in-flight']);
+  assert.equal(result.results.find(({ id }) => id === 'in-flight').status, 'PASSED');
+  assert.equal(result.results.find(({ id }) => id === 'never-started').status, 'CANCELLED');
 });
 
 test('repairs stay with the original owner/workspace and invalidate evidence', () => {

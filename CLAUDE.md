@@ -117,13 +117,16 @@ sdcorejs-test
 No write-producing step may run after final branch-ready unless branch-ready is
 run again before any Git artifact handoff.
 
-`sdcorejs-execute-plan` auto-selects sequential for one executable unit or when
-parallel execution is unavailable/unsafe. It asks only when sequential and
-parallel are both feasible for at least two independent units. Parallel
-execution requires `sdcorejs-parallel-dispatch`.
+`sdcorejs-execute-plan` attests delegation and concurrency separately and
+preserves the approved execution policy. Explicit delegated execution of an
+approved plan uses `sdcorejs-subagent-driven-development`: safe ready waves use
+parallel fresh workers, unsafe waves use sequential fresh workers, and parent
+execution is the last fallback. `sdcorejs-parallel-dispatch` remains the
+low-level safe-wave scheduler.
 
-Direct splitting of an approved plan may select `sdcorejs-parallel-dispatch`.
-Unapproved write work returns to planning. Read-only parallel review/audit work
+Direct splitting of an approved plan selects
+`sdcorejs-subagent-driven-development`. Unapproved write work returns to
+planning. Read-only parallel review/audit work
 may use a `read-only-request` contract with writes denied; write work requires
 the approved-plan protocol, working-tree preflight, mechanical ownership checks,
 per-unit isolation, and deterministic fan-in.
@@ -248,7 +251,7 @@ At the start of a target-project session:
 |---|---|
 | SDLC | `sdcorejs-brainstorming`, `sdcorejs-spec`, `sdcorejs-plan` |
 | Execution | `sdcorejs-execute-plan`, `sdcorejs-ai-agent`, other track executors, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` |
-| Parallel | `sdcorejs-parallel-dispatch`; workspace isolation lives in `sdcorejs-git (workspace mode)` |
+| Delegated execution | `sdcorejs-subagent-driven-development`; `sdcorejs-parallel-dispatch` schedules safe waves; workspace isolation is a provider-neutral orchestration action |
 | Finish | `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)`, `sdcorejs-explore (conventions-sync-write-approved)`, `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode as the final read-only gate)` |
 | Utilities | `sdcorejs-simplify`, `sdcorejs-explore`, `sdcorejs-git`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, `sdcorejs-documentation` |
 

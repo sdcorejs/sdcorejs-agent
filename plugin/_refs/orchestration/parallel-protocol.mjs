@@ -306,6 +306,15 @@ export function validateDispatchContext(context = {}) {
         errors.push(`${prefix} write dispatch requires read-write authority`);
       }
       if (!['disjoint-same-tree', 'worktree'].includes(unit.workspace?.strategy)) errors.push(`${prefix} has invalid workspace strategy`);
+      if (unit.workspace?.strategy === 'worktree') {
+        const nativeWorktree = context.runtime_capabilities?.supports_native_worktree === true;
+        const manualWorktree =
+          context.runtime_capabilities?.supports_manual_worktree === true &&
+          context.runtime_capabilities?.supports_agent_cwd === true;
+        if (!nativeWorktree && !manualWorktree) {
+          errors.push(`${prefix} worktree capability is not attested`);
+        }
+      }
       for (const field of ['strategy', 'path', 'base_head']) {
         if (!unit.workspace?.[field]) errors.push(`${prefix} workspace requires ${field}`);
       }
@@ -434,26 +443,53 @@ export async function runUnitWithPolicy(run, policy = {}) {
 }
 
 export async function runUnitsWithPolicy(units, policy = {}) {
-  const results = [];
-  for (let index = 0; index < units.length; index += 1) {
-    const unit = units[index];
-    const result = { id: unit.id, ...await runUnitWithPolicy(unit.run, policy) };
-    results.push(result);
-    if (result.status !== 'PASSED' && policy.mode === 'fail-fast') {
-      for (const pending of units.slice(index + 1)) {
-        results.push({ id: pending.id, status: policy.supports_cancellation ? 'CANCELLED' : 'PENDING', cancellation: policy.supports_cancellation ? 'supported' : 'best-effort' });
+  if (!Array.isArray(units)) throw new TypeError('units must be an array');
+  const requestedConcurrency = policy.supports_parallel_dispatch === true
+    ? (policy.effective_max_concurrency ?? policy.max_concurrency ?? 1)
+    : 1;
+  if (!Number.isInteger(requestedConcurrency) || requestedConcurrency < 1) {
+    throw new TypeError('effective_max_concurrency must be a positive integer');
+  }
+  const concurrency = Math.max(1, Math.min(units.length || 1, requestedConcurrency));
+  const results = new Array(units.length);
+  let nextIndex = 0;
+  let stopScheduling = false;
+
+  async function runNext() {
+    while (!stopScheduling) {
+      const index = nextIndex;
+      if (index >= units.length) return;
+      nextIndex += 1;
+      const unit = units[index];
+      const result = { id: unit.id, ...await runUnitWithPolicy(unit.run, policy) };
+      results[index] = result;
+      if (result.status !== 'PASSED' && policy.mode === 'fail-fast') {
+        stopScheduling = true;
       }
-      break;
     }
   }
-  return { mode: policy.mode ?? 'best-effort', results };
+
+  await Promise.all(Array.from({ length: concurrency }, () => runNext()));
+  for (let index = 0; index < units.length; index += 1) {
+    if (results[index]) continue;
+    results[index] = {
+      id: units[index].id,
+      status: policy.supports_cancellation ? 'CANCELLED' : 'PENDING',
+      cancellation: policy.supports_cancellation ? 'supported' : 'best-effort',
+    };
+  }
+  return {
+    mode: policy.mode ?? 'best-effort',
+    effective_max_concurrency: concurrency,
+    results,
+  };
 }
 
 export function classifyTopology({ contract, units = [], runtimeCapabilities = {} }) {
   const readOnly = contract?.source === 'read-only-request';
   const runtime = validateRuntimeCapabilities(runtimeCapabilities, !readOnly);
   if (readOnly) return { kind: 'READ_ONLY_FANOUT', verdict: runtime.mode === 'PARALLEL' ? 'PARALLEL-CANDIDATE' : 'SEQUENTIAL', runtime };
-  if (['BLOCKED', 'SEQUENTIAL', 'SEQUENTIAL_WAVES'].includes(runtime.mode)) return { kind: 'SEQUENTIAL_DAG', verdict: 'SEQUENTIAL', runtime };
+  if (['BLOCKED', 'SEQUENTIAL', 'SEQUENTIAL_WAVES'].includes(runtime.mode)) return { kind: 'SEQUENTIAL_DAG', verdict: 'SEQUENTIAL', runtime, reason: runtime.reason };
   if (runtime.mode === 'DISJOINT_SAME_TREE_ONLY' && units.some((unit) => unit.workspace?.strategy !== 'disjoint-same-tree' || !isDisjointSameTreeSafe(unit))) {
     return { kind: 'SEQUENTIAL_DAG', verdict: 'SEQUENTIAL', runtime, reason: 'runtime lacks safe per-agent cwd' };
   }
@@ -467,6 +503,21 @@ export function classifyTopology({ contract, units = [], runtimeCapabilities = {
 }
 
 export function planWaves(units) {
+  if (!Array.isArray(units) || units.length === 0) {
+    throw new TypeError('units must be a non-empty array');
+  }
+  const ids = units.map((unit) => unit.id);
+  if (ids.some((id) => typeof id !== 'string' || id.trim() === '')) {
+    throw new TypeError('every unit requires a non-empty id');
+  }
+  if (new Set(ids).size !== ids.length) throw new Error('unit ids must be unique');
+  const known = new Set(ids);
+  for (const unit of units) {
+    for (const dependency of unit.depends_on ?? []) {
+      if (!known.has(dependency)) throw new Error(`missing dependency: ${dependency}`);
+      if (dependency === unit.id) throw new Error(`unit cannot depend on itself: ${unit.id}`);
+    }
+  }
   const remaining = new Map(units.map((unit) => [unit.id, new Set(unit.depends_on ?? [])]));
   const done = new Set();
   const waves = [];
@@ -477,6 +528,138 @@ export function planWaves(units) {
     for (const id of wave) { remaining.delete(id); done.add(id); }
   }
   return waves;
+}
+
+export function compileParallelContext({
+  plan_context: planContext = {},
+  runtime_capabilities: runtimeCapabilities = {},
+} = {}) {
+  const compact = planContext.parallel_candidates;
+  if (!compact || typeof compact !== 'object' || !Array.isArray(compact.units)) {
+    throw new TypeError('plan_context.parallel_candidates.units must be an array');
+  }
+  const executionPolicy = planContext.execution_policy ?? 'auto';
+  if (!['auto', 'sequential', 'parallel-preferred'].includes(executionPolicy)) {
+    throw new TypeError('execution_policy must be auto, sequential, or parallel-preferred');
+  }
+  const units = compact.units.map((unit) => {
+    const cloned = structuredClone(unit);
+    const ownership = cloned.ownership ?? {};
+    return {
+      ...cloned,
+      depends_on: [...(cloned.depends_on ?? [])],
+      estimated_cost: normalizeEstimatedCost(cloned.estimated_cost),
+      ownership: {
+        ...ownership,
+        allowed_paths: [...(ownership.allowed_paths ?? cloned.allowed_paths ?? [])],
+        prohibited_paths: [...(ownership.prohibited_paths ?? cloned.prohibited_paths ?? [])],
+        exclusive_resources: [...(ownership.exclusive_resources ?? cloned.exclusive_resources ?? [])],
+        shared_readonly_resources: [...(ownership.shared_readonly_resources ?? cloned.shared_readonly_resources ?? [])],
+      },
+    };
+  });
+  const waves = planWaves(units);
+  const parallelAllowed = compact.allowed === true;
+  const ownerlessUnits = units
+    .filter((unit) => unit.ownership.allowed_paths.length === 0)
+    .map((unit) => unit.id);
+  const contract = {
+    source: 'approved-plan',
+    contract_id: planContext.contract_id,
+    approved_plan_path: planContext.approved_plan_path,
+    approved_plan_hash: planContext.approved_plan_hash,
+  };
+  const topology = classifyTopology({ contract, units, runtimeCapabilities });
+  const maxParallelism = Math.max(...waves.map((wave) => wave.length));
+  const runtimeLimit = runtimeCapabilities.supports_parallel_dispatch === true &&
+    Number.isInteger(runtimeCapabilities.effective_max_concurrency)
+    ? Math.max(1, runtimeCapabilities.effective_max_concurrency)
+    : 1;
+  const estimatedSerialCost = units.reduce((total, unit) => total + unit.estimated_cost, 0);
+  const byId = new Map(units.map((unit) => [unit.id, unit]));
+  const estimatedParallelCost = waves.reduce((total, wave) =>
+    total + estimateWaveCost(wave.map((id) => byId.get(id).estimated_cost), runtimeLimit), 0);
+  const hasConcurrentWave = maxParallelism >= 2;
+  const parallelEligible =
+    parallelAllowed &&
+    ownerlessUnits.length === 0 &&
+    runtimeCapabilities.supports_subagents === true &&
+    runtimeCapabilities.supports_parallel_dispatch === true &&
+    runtimeLimit >= 2 &&
+    hasConcurrentWave &&
+    ['PARALLEL-CANDIDATE', 'ROLE-SPLIT'].includes(topology.verdict);
+  const blockers = [];
+  const repairs = [];
+  if (!parallelAllowed) {
+    blockers.push('parallel_candidates.allowed must be true');
+    repairs.push('keep delegated execution sequential or approve safe parallel candidates in the plan');
+  }
+  if (ownerlessUnits.length > 0) {
+    blockers.push(`units require owned paths: ${ownerlessUnits.join(', ')}`);
+    repairs.push('assign non-empty disjoint allowed_paths before parallel dispatch');
+  }
+  if (runtimeCapabilities.supports_subagents !== true) {
+    blockers.push('delegation capability is unsupported or unknown');
+    repairs.push('attest delegation support for this session or use parent execution');
+  } else if (runtimeCapabilities.supports_parallel_dispatch !== true || runtimeLimit < 2) {
+    blockers.push('concurrent dispatch is unsupported, unknown, or limited below 2');
+    repairs.push('use sequential fresh workers or provide evidence-backed concurrency attestation');
+  }
+  if (!hasConcurrentWave) {
+    blockers.push('dependency graph has no wave with two ready units');
+    repairs.push('keep sequential fresh workers unless the approved plan can safely expose independent units');
+  }
+  if (topology.reason) {
+    blockers.push(topology.reason);
+    repairs.push(topology.reason.includes('overlap')
+      ? 'assign disjoint path and resource ownership or serialize the conflicting units'
+      : 'repair the reported topology constraint before parallel dispatch');
+  }
+
+  let eligibility = 'delegated-sequential';
+  let selectedMode = 'delegated-sequential';
+  if (runtimeCapabilities.supports_subagents !== true) {
+    eligibility = 'parent-sequential';
+    selectedMode = 'parent-sequential';
+  } else if (parallelEligible) {
+    eligibility = 'parallel';
+    const savings = estimatedSerialCost - estimatedParallelCost;
+    selectedMode = executionPolicy === 'sequential'
+      ? 'delegated-sequential'
+      : executionPolicy === 'parallel-preferred' || savings > 0
+        ? 'parallel'
+        : 'delegated-sequential';
+  }
+
+  return {
+    parallel_context: {
+      schema_version: 2,
+      source: 'sdcorejs-plan-compiler',
+      contract,
+      target: structuredClone(planContext.target ?? {}),
+      runtime_capabilities: structuredClone(runtimeCapabilities),
+      execution_policy: executionPolicy,
+      units,
+      waves,
+      dispatch_ready: false,
+      dispatch_readiness_reason: 'workspace, envelope, integration, and final-tail evidence must be completed before dispatch',
+    },
+    opportunity_report: {
+      schema_version: 1,
+      execution_policy: executionPolicy,
+      eligibility,
+      selected_mode: selectedMode,
+      topology: topology.kind,
+      verdict: topology.verdict,
+      waves,
+      max_parallelism: Math.min(maxParallelism, runtimeLimit),
+      estimated_serial_cost: estimatedSerialCost,
+      estimated_parallel_cost: estimatedParallelCost,
+      estimated_savings: Math.max(0, estimatedSerialCost - estimatedParallelCost),
+      blockers: [...new Set(blockers)],
+      repair_suggestions: [...new Set(repairs)],
+    },
+  };
 }
 
 export async function validatePathBoundary({ repoRoot, unit, actualChanges = [], selfReportedPaths, caseInsensitive = process.platform === 'win32' }) {
@@ -736,6 +919,24 @@ function normalizeRelative(value) {
   const normalized = path.posix.normalize(raw).replace(/^\.\//, '');
   if (normalized === '..' || normalized.startsWith('../')) throw new Error(`path escapes repository: ${value}`);
   return normalized;
+}
+
+function normalizeEstimatedCost(value) {
+  if (value === undefined || value === null) return 1;
+  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
+    throw new TypeError('estimated_cost must be a positive finite number');
+  }
+  return value;
+}
+
+function estimateWaveCost(costs, maxConcurrency) {
+  const laneCount = Math.max(1, Math.min(costs.length, maxConcurrency));
+  const lanes = Array.from({ length: laneCount }, () => 0);
+  for (const cost of [...costs].sort((left, right) => right - left)) {
+    const lane = lanes.indexOf(Math.min(...lanes));
+    lanes[lane] += cost;
+  }
+  return Math.max(...lanes, 0);
 }
 
 function repositoryPathsOverlap(left, right, caseInsensitive) {

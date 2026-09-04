@@ -27,6 +27,12 @@ Every runtime capability is `supported`, `unsupported`, or `unknown`.
 `unsupported` and `unknown` take the declared portable fallback. Unknown never
 means “probably available.”
 
+Before delegated execution, `_refs/harness/runtime-attestation.mjs` overlays
+evidence-backed current-session observations on these static defaults. It keeps
+delegation, concurrent dispatch, worker-CWD binding, native/manual worktrees,
+cancellation, result refs, and maximum concurrency separate. Static adapter
+support is not current-session evidence.
+
 ## Runtime Decisions
 
 `runtime-policy.mjs` is a deterministic sentinel implementation, not a session
@@ -37,8 +43,9 @@ machine-testable:
 - fast-fix only for explicit, bounded, low-risk changes;
 - full workflow for ambiguity, architecture, security, cross-cutting work, and
   public-contract changes;
-- sequential auto-selection for one executable unit or unsafe/unavailable
-  parallel execution;
+- parallel fresh workers for attested safe waves, sequential fresh workers when
+  only concurrency/isolation is unsafe, and parent fallback only when
+  delegation is unavailable;
 - native structured interaction only for a supported capability, with numbered
   Markdown fallback;
 - semantic worker tiers, parent-model inheritance when override is unknown or
@@ -57,9 +64,10 @@ finish gate, and deterministic fan-in remain authoritative.
 ## Just-in-Time Loading
 
 Load this overview only when dispatch or adapter behavior is relevant. Load
-`capability-contract.json` when resolving an action, `delegation-policy.json`
-when delegation is viable, and `task-brief.md` when creating or reviewing a
-worker boundary. Load `communication-economy.md` only when resolving a response
+`capability-contract.json` when resolving an action,
+`runtime-attestation.md` immediately before delegated execution,
+`delegation-policy.json` when delegation is viable, and `task-brief.md` when
+creating or reviewing a worker boundary. Load `communication-economy.md` only when resolving a response
 profile, progress event, context handoff, or related artifact. Do not paste
 these files, a full spec, a full plan, or the repository summary into every
 worker prompt.

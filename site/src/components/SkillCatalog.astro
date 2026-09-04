@@ -145,8 +145,13 @@ const groups = [
       },
       {
         name: "sdcorejs-parallel-dispatch",
-        role: "Parallel execution safety gate.",
-        use: "Use when multiple independent units make parallel execution feasible, or for an explicit safe split/read-only fan-out.",
+        role: "Low-level dependency-wave scheduler.",
+        use: "Use for an explicit read-only fan-out or when another lifecycle needs bounded scheduling and fan-in evidence.",
+      },
+      {
+        name: "sdcorejs-subagent-driven-development",
+        role: "Approved-plan delegated execution lifecycle.",
+        use: "Use for an approved plan or explicit delegated split: attest runtime capabilities, compile dependency waves, then use parallel or sequential fresh workers with isolated ownership and verification.",
       },
     ],
   },
@@ -161,7 +166,7 @@ const groups = [
       >
       <h2>Know which skill to call, and which ones run behind the scenes</h2>
       <p class="lead">
-        The pack has 22 dispatchable skills. The first groups are the ones most
+        The pack has 23 dispatchable skills. The first groups are the ones most
         people invoke directly. The later groups are specialized guards,
         release steps, or context helpers that often run as part of a larger
         engineering flow. Conventions remain an Explore lifecycle, and the

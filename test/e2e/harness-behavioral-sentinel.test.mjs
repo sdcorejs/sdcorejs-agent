@@ -21,6 +21,11 @@ import {
   validateTaskBrief,
 } from '../../_refs/harness/runtime-policy.mjs';
 import {
+  attestRuntimeCapabilities,
+  toParallelRuntimeCapabilities,
+  validateRuntimeAttestation,
+} from '../../_refs/harness/runtime-attestation.mjs';
+import {
   assertNoEmbeddedArtifactFields,
   runScenario,
 } from './support/harness-behavior-runner.mjs';
@@ -42,11 +47,13 @@ test('capability contract is structurally valid and drives native-or-Markdown in
     'workspace.isolate',
   ]);
   assert.deepEqual(contract.required_capabilities.sort(), [
-    'agent_resume_steer', 'artifact_write', 'browser', 'browser_auto_open',
-    'live_visual_companion', 'native_structured_choice',
+    'agent_cwd_binding', 'agent_resume_steer', 'artifact_write', 'browser',
+    'browser_auto_open', 'cancellation', 'concurrent_dispatch',
+    'live_visual_companion', 'manual_git_worktree', 'native_structured_choice',
+    'native_worktree',
     'per_agent_model_override', 'permission_approval', 'persistent_local_process',
-    'runtime_context_channel', 'static_html_artifact', 'subagents', 'visual_event_bridge',
-    'visual_surface', 'web_fetch', 'workspace_isolation',
+    'result_ref', 'runtime_context_channel', 'static_html_artifact', 'subagents',
+    'visual_event_bridge', 'visual_surface', 'web_fetch', 'workspace_isolation',
   ]);
   assert.deepEqual(Object.keys(contract.adapters).sort(), ['claude-code', 'codex', 'copilot', 'cursor']);
   for (const adapter of Object.values(contract.adapters)) {
@@ -181,7 +188,7 @@ test('canonical skills declare semantic actions while adapter manifests own prov
     /\b(?:via|using|invoke|run|use|uses|no)\s+(?:the\s+)?(?:Write|Edit|Bash)\b/,
   ];
 
-  assert.equal(skillFiles.length, 22);
+  assert.equal(skillFiles.length, 23);
   for (const file of skillFiles) {
     const text = await readFile(file, 'utf8');
     assert.doesNotMatch(text, /^allowed-tools:/m, `${file} keeps provider tools out of canonical frontmatter`);
@@ -290,7 +297,7 @@ test('canonical skills declare semantic actions while adapter manifests own prov
     assert.equal(manifest.content_hash, expectedContentHash);
     assert.notEqual(manifest.content_hash, manifest.source_hash);
     assert.equal(manifest.generated_path, relativePath);
-    assert.equal(Object.keys(manifest.skills).length, 22);
+    assert.equal(Object.keys(manifest.skills).length, 23);
   }
 });
 
@@ -313,17 +320,89 @@ test('action and workflow classification are deterministic for answer, low-risk 
   assert.equal(classifyTask(scenarios.tasks.feature).entry_gate, 'brainstorm-first');
 });
 
-test('execution selection only offers parallel choice for multiple feasible independent units', async () => {
+test('execution selection separates delegation from concurrency and honors approved policy', async () => {
   const scenarios = await json(fixtureUrl);
   assert.equal(selectExecutionMode({ units: scenarios.units.one, feasible: true, capabilities: { subagents: 'supported' } }).mode, 'sequential');
   assert.equal(selectExecutionMode({ units: scenarios.units.one, feasible: true, capabilities: { subagents: 'supported' } }).prompt_required, false);
-  const parallel = selectExecutionMode({ units: scenarios.units.two, feasible: true, capabilities: { subagents: 'supported' } });
+  const parallel = selectExecutionMode({ units: scenarios.units.two, feasible: true, capabilities: { subagents: 'supported', concurrent_dispatch: 'supported' } });
   assert.equal(parallel.mode, 'choice');
   assert.equal(parallel.prompt_required, true);
+  const delegatedSequential = selectExecutionMode({ units: scenarios.units.two, feasible: true, capabilities: { subagents: 'supported', concurrent_dispatch: 'unknown' } });
+  assert.equal(delegatedSequential.mode, 'sequential');
+  assert.equal(delegatedSequential.executor, 'fresh-workers');
+  const preferred = selectExecutionMode({ units: scenarios.units.two, feasible: true, capabilities: { subagents: 'supported', concurrent_dispatch: 'supported' }, execution_policy: 'parallel-preferred' });
+  assert.equal(preferred.mode, 'parallel');
+  assert.equal(preferred.prompt_required, false);
   assert.equal(selectExecutionMode({ units: scenarios.units.two, feasible: true, capabilities: { subagents: 'unknown' } }).mode, 'sequential');
+  assert.equal(selectExecutionMode({ units: scenarios.units.two, feasible: true, capabilities: { subagents: 'unknown' } }).executor, 'parent');
   assert.equal(selectExecutionMode({ units: scenarios.units.two, feasible: true, capabilities: { subagents: 'unsupported' } }).prompt_required, false);
+  assert.throws(() => selectExecutionMode({
+    units: scenarios.units.two,
+    feasible: true,
+    capabilities: { subagents: 'supported', concurrent_dispatch: 'supported' },
+    execution_policy: 'fastest',
+  }), /execution_policy/iu);
   assert.deepEqual(validateDisjointOwnership(scenarios.units.two), []);
   assert.ok(validateDisjointOwnership([{ id: 'a', owned_paths: ['src/**'], resources: ['port:3000'] }, { id: 'b', owned_paths: ['src/api/**'], resources: ['port:3000'] }]).length > 0);
+});
+
+test('runtime attestation preserves unknown defaults and accepts evidence-backed observations', async () => {
+  const contract = await json(capabilityUrl);
+  const observed = (detail) => ({ source: 'runtime-probe', detail });
+  const attestation = attestRuntimeCapabilities({
+    adapter: 'codex',
+    defaults: contract.adapters.codex.capabilities,
+    observations: {
+      subagents: { status: 'supported', evidence: observed('delegation action exposed') },
+      concurrent_dispatch: { status: 'supported', evidence: observed('four execution slots exposed') },
+      agent_cwd_binding: { status: 'supported', evidence: observed('worker cwd can be selected') },
+      native_worktree: { status: 'unsupported', evidence: observed('native isolation action absent') },
+      manual_git_worktree: { status: 'supported', evidence: observed('Git worktree probe passed') },
+      cancellation: { status: 'supported', evidence: observed('interrupt action exposed') },
+      result_ref: { status: 'supported', evidence: observed('stable worker result id exposed') },
+    },
+    max_concurrency: 4,
+  });
+
+  assert.deepEqual(validateRuntimeAttestation(attestation), []);
+  assert.equal(attestation.capabilities.workspace_isolation, 'supported');
+  assert.equal(attestation.effective_max_concurrency, 4);
+  assert.deepEqual(toParallelRuntimeCapabilities(attestation), {
+    runtime: 'codex',
+    supports_subagents: true,
+    supports_parallel_dispatch: true,
+    supports_agent_cwd: true,
+    supports_native_worktree: false,
+    supports_manual_worktree: true,
+    supports_result_ref: true,
+    supports_cancellation: true,
+    effective_max_concurrency: 4,
+  });
+});
+
+test('runtime attestation fails closed without evidence or a coherent concurrency limit', () => {
+  const observed = (detail) => ({ source: 'runtime-probe', detail });
+  assert.throws(() => attestRuntimeCapabilities({
+    adapter: 'codex',
+    observations: { subagents: { status: 'supported' } },
+  }), /evidence/iu);
+  assert.throws(() => attestRuntimeCapabilities({
+    adapter: 'codex',
+    observations: {
+      subagents: { status: 'supported', evidence: observed('available') },
+      concurrent_dispatch: { status: 'supported', evidence: observed('claimed') },
+    },
+    max_concurrency: 1,
+  }), /max_concurrency/iu);
+  assert.throws(() => attestRuntimeCapabilities({
+    adapter: 'claude-code',
+    defaults: { subagents: 'supported' },
+  }), /runtime evidence/iu);
+  const unknown = attestRuntimeCapabilities({ adapter: 'codex' });
+  assert.equal(unknown.capabilities.subagents, 'unknown');
+  assert.equal(unknown.capabilities.concurrent_dispatch, 'unknown');
+  assert.equal(toParallelRuntimeCapabilities(unknown).supports_subagents, undefined);
+  assert.equal(toParallelRuntimeCapabilities(unknown).supports_parallel_dispatch, undefined);
 });
 
 test('choice normalization rejects ambiguity without selecting an option', () => {

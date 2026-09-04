@@ -209,14 +209,16 @@ const PRIORITY_RULES = [
       !hasAny(tokens, ['approved', 'approve', 'plan', 'snapshot', 'worktree', 'git'])
   },
   {
-    skill: 'sdcorejs-parallel-dispatch',
+    skill: 'sdcorejs-subagent-driven-development',
     when: ({ prompt, tokens }) =>
       (
         tokens.has('split') ||
-        (tokens.has('parallel') && hasAny(tokens, ['agent', 'agents', 'multiple']) && !hasAny(tokens, ['execute', 'run'])) ||
+        hasAny(tokens, ['subagent', 'subagents', 'delegate', 'delegated', 'fleet']) ||
+        /\bfresh\s+(?:sub)?agents?\b/.test(prompt) ||
+        (tokens.has('parallel') && hasAny(tokens, ['agent', 'agents', 'multiple'])) ||
         (/\bsong\s+song\b/.test(prompt) && hasAny(tokens, ['split', 'agent', 'agents', 'multiple']))
       ) &&
-      hasAny(tokens, ['plan', 'approved', 'approve', 'agent', 'agents', 'multiple'])
+      hasAny(tokens, ['plan', 'approved', 'approve'])
   },
   {
     skill: 'sdcorejs-brainstorming',

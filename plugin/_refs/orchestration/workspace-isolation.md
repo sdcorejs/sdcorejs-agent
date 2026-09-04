@@ -8,19 +8,21 @@
 - [Report](#report)
 - [Rules](#rules)
 
-Reference body for `sdcorejs-git` workspace mode and
-`sdcorejs-parallel-dispatch` fan-out preparation. Load this file only when work
-needs an isolated checkout or the user explicitly asks for a worktree.
+Canonical owner of the provider-neutral `workspace.isolate` action. Load it
+from `sdcorejs-execute-plan`, `sdcorejs-subagent-driven-development`, or
+`sdcorejs-parallel-dispatch` when work needs an isolated checkout or the user
+explicitly asks for a worktree. `sdcorejs-git` may consume the resulting
+workspace identity later, but it does not create executor workspaces.
 
 ## Purpose
 
 Generation should not surprise the user's current branch. Isolation is useful
 when work is risky, long-running, parallel, or explicitly requested by the user.
 
-Workspace mode creates or selects a safe workspace only. It must not edit source
+The isolation action creates or selects a safe workspace only. It must not edit source
 files, commit, push, delete branches, or delete worktrees.
 
-For parallel protocol v2, workspace mode returns identity rather than a vague
+For parallel protocol v2, the action returns identity rather than a vague
 global isolation choice. Each unit records strategy, resolved path, branch,
 base HEAD, whether the current run created it, and its result protocol. The
 integration workspace is separate from unit worktrees.
@@ -154,9 +156,9 @@ Return:
 - Do not nest worktrees.
 - Do not treat a submodule as a linked worktree.
 - Do not use manual `git worktree` when the harness provides native isolation.
-- Do not edit source files from workspace mode.
+- Do not edit source files from the isolation action.
 - Do not commit worktree contents.
-- Do not push branches from workspace mode.
+- Do not push branches from the isolation action.
 - Do not delete branches or worktrees without explicit request and confirmation.
 - Cleanup may remove only a worktree whose resolved path and
   `created_by_current_run: true` record match the current protocol run. Never

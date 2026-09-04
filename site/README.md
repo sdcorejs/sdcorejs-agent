@@ -54,7 +54,7 @@ slide navigation.
 
 ## Current facts reflected by the site
 
-- 22 dispatchable public skills; internal skill-authoring is not distributed.
+- 23 dispatchable public skills; internal skill-authoring is not distributed.
 - 8 executor tracks: AI-agent, product, design, angular, nestjs, nextjs, test, generic.
 - 2 always-present approval gates: spec and plan.
 - 1 conditional architecture gate plus validation-map and convergence checks.

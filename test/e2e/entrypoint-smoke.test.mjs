@@ -40,10 +40,10 @@ test('phase 3: each profile text participates in routing and mutations stay prof
   const cases = [{
     id: 'parallel-dispatch-direct',
     prompt: 'split this approved plan into parallel agents',
-    expectedSkill: 'sdcorejs-parallel-dispatch'
+    expectedSkill: 'sdcorejs-subagent-driven-development'
   }];
   const mutated = structuredClone(profiles);
-  mutated.codex.text = mutated.codex.text.replaceAll('sdcorejs-parallel-dispatch', 'removed-parallel-route');
+  mutated.codex.text = mutated.codex.text.replaceAll('sdcorejs-subagent-driven-development', 'removed-delegated-route');
 
   const results = runEntrypointPromptSmoke(pack, mutated, cases);
   assert.equal(results.find((item) => item.profile === 'codex').pass, false);
@@ -62,7 +62,7 @@ test('phase 3: each profile text participates in routing and mutations stay prof
   assert.equal(contradictionResults.find((item) => item.profile === 'claude-code').pass, true);
 
   const priorityConflict = structuredClone(profiles);
-  priorityConflict.codex.text += '\nFor an approved plan, always use sdcorejs-execute-plan; do not use sdcorejs-parallel-dispatch directly.';
+  priorityConflict.codex.text += '\nDirect delegated execution of an approved plan must never use sdcorejs-subagent-driven-development.';
   const priorityResults = runEntrypointPromptSmoke(pack, priorityConflict, cases);
   assert.equal(priorityResults.find((item) => item.profile === 'codex').pass, false);
   assert.equal(priorityResults.find((item) => item.profile === 'cursor').pass, true);
@@ -73,7 +73,7 @@ test('phase 3: routing context distinguishes execution, direct split, planning, 
   for (const [name, profile] of Object.entries(profiles)) {
     const context = deriveEntrypointRoutingContext(profile);
     assert.equal(context.approvedPlanExecution, true, `${name} approved-plan execution guidance`);
-    assert.equal(context.directParallelDispatch, true, `${name} direct split guidance`);
+    assert.equal(context.delegatedExecution, true, `${name} delegated approved-plan guidance`);
     assert.equal(context.requiresApprovedPlanForWrites, true, `${name} planning gate`);
     assert.equal(context.readOnlyParallel, true, `${name} read-only parallel guidance`);
   }

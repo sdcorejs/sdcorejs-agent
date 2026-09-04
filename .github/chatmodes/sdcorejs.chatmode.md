@@ -29,11 +29,12 @@ sdcorejs-brainstorming
    -> review/repair -> documentation/task/memory -> ship gates
 ```
 
-`sdcorejs-execute-plan` auto-selects sequential for one unit or unsafe/
-unavailable parallel execution. It asks only when both modes are feasible;
-parallel execution requires `sdcorejs-parallel-dispatch`.
+`sdcorejs-execute-plan` attests delegation and concurrency separately and
+preserves the approved execution policy. Direct delegated execution of an
+approved plan uses `sdcorejs-subagent-driven-development`: safe waves run
+through the low-level `sdcorejs-parallel-dispatch` scheduler, unsafe waves use
+sequential fresh workers, and parent execution is the last fallback.
 
-Direct splitting of an approved plan may select `sdcorejs-parallel-dispatch`.
 Unapproved write work returns to planning. Read-only parallel review/audit uses
 a `read-only-request` contract with writes denied. Write-capable dispatch uses
 working-tree preflight, mechanical ownership/isolation validation,

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "adapter": "claude-code",
   "source_path": "_refs/harness/capability-contract.json",
-  "source_hash": "sha256:60b4239412a5af7d1077a5e9bf84dc1f3b31c5a1ddfe7c6c33dd277184a0149e",
-  "content_hash": "sha256:6dcedaa9fa8a95ba27c5a7e9dcb060b33a0f07d7437cec3783524ecd5b3f31cc",
+  "source_hash": "sha256:cd864af235654e35ed199769d3ade3dd2b145f0f148f75de1f2df50ee551e096",
+  "content_hash": "sha256:809fb6c4957aa6ad2878cb1076a695d7bf394fe1fc67d4eacc0a672bca0ce817",
   "generated_path": "plugin/sdcorejs-harness.json",
   "capabilities": {
     "runtime_context_channel": "unknown",
@@ -15,6 +15,12 @@
     "persistent_local_process": "supported",
     "browser_auto_open": "unknown",
     "subagents": "supported",
+    "concurrent_dispatch": "unknown",
+    "agent_cwd_binding": "unknown",
+    "native_worktree": "unknown",
+    "manual_git_worktree": "unknown",
+    "cancellation": "unknown",
+    "result_ref": "unknown",
     "per_agent_model_override": "supported",
     "agent_resume_steer": "unknown",
     "workspace_isolation": "unknown",
@@ -233,6 +239,21 @@
         "agent.resume"
       ]
     },
+    "sdcorejs-subagent-driven-development": {
+      "source_path": "skills/orchestration/subagent-driven-development.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "context.pass",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "agent.dispatch",
+        "agent.resume",
+        "agent.interrupt",
+        "workspace.isolate"
+      ]
+    },
     "sdcorejs-using-skills": {
       "source_path": "skills/orchestration/using-skills.md",
       "required_actions": [
@@ -333,8 +354,7 @@
         "context.pass",
         "verification.run",
         "user.choose",
-        "user.approve",
-        "workspace.isolate"
+        "user.approve"
       ]
     },
     "sdcorejs-review": {

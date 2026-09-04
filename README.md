@@ -41,7 +41,9 @@ Request
   -> sdcorejs-plan
        Write numbered plan, ask for approval, and persist approved plan.
   -> sdcorejs-execute-plan
-       Detect track; ask execution mode only when both modes are feasible.
+       Detect track; compile execution opportunities from the approved plan.
+  -> sdcorejs-subagent-driven-development (when delegation is available)
+       Run fresh workers in dependency waves with bounded concurrency.
   -> executor
        ai-agent | angular | nestjs | nextjs | product | design | test | generic harness
   -> finish gate and tail chain
@@ -54,9 +56,12 @@ Request
 
 The two approval gates and approved snapshot writes live inside `sdcorejs-spec`
 and `sdcorejs-plan`. `sdcorejs-execute-plan` owns track detection,
-AI-agent/product/design/test routing, generic fallback, and execution-mode
-resolution. It auto-selects sequential for one unit or when safe parallel
-execution is unavailable.
+AI-agent/product/design/test routing, generic fallback, and execution-policy
+resolution. `sdcorejs-subagent-driven-development` owns the delegated lifecycle;
+`sdcorejs-parallel-dispatch` remains its low-level scheduler. The runtime first
+attests delegation, concurrency, cancellation, result-reference, and workspace
+isolation capabilities, then selects parallel fresh workers, sequential fresh
+workers, or parent execution without treating static adapter metadata as proof.
 No write-producing step may run after final branch-ready unless branch-ready is
 run again before Git artifacts.
 
@@ -66,11 +71,13 @@ run again before Git artifacts.
   acceptance criteria, and invariants as stable `A-*`, `D-*`, `R-*`, `AC-*`,
   and `INV-*` identities. Goal-backward checking rejects plans that omit the
   task, path, or evidence needed to prove an approved outcome.
-- `sdcorejs-architecture` is the twenty-second public skill and a conditional
-  gate, not a mandatory ceremony. Cross-repository ownership, public contracts,
-  security boundaries, and other architecture-significant work require an
-  approved architecture artifact; a small cohesive change records a concrete
-  not-applicable reason.
+- `sdcorejs-architecture` remains a conditional gate, not mandatory ceremony.
+  Cross-repository ownership, public contracts, security boundaries, and other
+  architecture-significant work require an approved architecture artifact; a
+  small cohesive change records a concrete not-applicable reason.
+- `sdcorejs-subagent-driven-development` is the twenty-third public skill. It
+  turns an approved plan into dependency-aware worker waves, while preserving
+  `sdcorejs-parallel-dispatch` as the reusable low-level scheduling contract.
 - `plan_context.validation_map` is the planning authority. Test preserves its
   exact coverage projection, appends actual runs/cases, and emits only current
   approved evidence IDs. A green but unrelated command cannot satisfy an AC.
@@ -359,7 +366,7 @@ transcripts, see:
 ## Repo Layout
 
 ```text
-skills/                 source skills, 22 dispatchable skill files
+skills/                 source skills, 23 dispatchable skill files
 _refs/                  source reference docs
 _refs/harness/          actions, capabilities, model roles, runtime envelopes
 .claude/skills/         generated Claude mirror

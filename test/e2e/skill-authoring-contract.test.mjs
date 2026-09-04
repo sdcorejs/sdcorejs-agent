@@ -166,7 +166,7 @@ function distinctProposal(overrides = {}) {
       artifact_sha256: repositoryState.routing_matrix_hash,
     }],
     acceptable_surface_cost: true,
-    current_public_count: 22,
+    current_public_count: 23,
     proposed_public_skills: ['sdcorejs-example'],
     ceiling: 23,
     inventory_hash: repositoryState.public_inventory_hash,
@@ -195,24 +195,28 @@ test('new-skill decision gate defaults to reuse and enforces inventory approvals
     },
   }));
   assert.equal(overlap.decision, 'use-existing-surface');
-  assert.equal(overlap.current_public_count, 22);
-  assert.equal(overlap.post_change_count, 24);
+  assert.equal(overlap.current_public_count, 23);
+  assert.equal(overlap.post_change_count, 25);
   assert.equal(overlap.ceiling, 23);
   assert.equal(overlap.create_public_skill, false);
   assert.deepEqual(overlap.approvals_required.sort(), ['ceiling-change', 'new-trigger']);
 
   const approvalMissing = evaluateNewSkillDecision(distinctProposal());
   assert.equal(approvalMissing.decision, 'blocked-approval');
-  assert.deepEqual(approvalMissing.approvals_required, ['new-trigger']);
+  assert.deepEqual(approvalMissing.approvals_required.sort(), ['ceiling-change', 'new-trigger']);
 
   const approvedProposal = distinctProposal();
   const approvedTrigger = newTriggerApproval(approvedProposal);
-  approvedProposal.approvals.new_trigger = approvedTrigger.reference;
-  approvedProposal.approval_artifacts = [approvedTrigger.artifact];
+  const approvedCeiling = ceilingChangeApproval(approvedProposal);
+  approvedProposal.approvals = {
+    new_trigger: approvedTrigger.reference,
+    ceiling_change: approvedCeiling.reference,
+  };
+  approvedProposal.approval_artifacts = [approvedTrigger.artifact, approvedCeiling.artifact];
   const approvedDecision = evaluateNewSkillDecision(approvedProposal);
   assert.equal(approvedDecision.valid, true, approvedDecision.errors.join('\n'));
   assert.equal(approvedDecision.decision, 'create-public-skill');
-  assert.equal(approvedDecision.post_change_count, 23);
+  assert.equal(approvedDecision.post_change_count, 24);
 
   const overCeilingProposal = distinctProposal({
     proposed_public_skills: ['sdcorejs-example', 'sdcorejs-example-two'],
@@ -231,7 +235,7 @@ test('new-skill decision gate defaults to reuse and enforces inventory approvals
   assert.equal(overCeilingDecision.valid, true, overCeilingDecision.errors.join('\n'));
   assert.equal(overCeilingDecision.decision, 'create-public-skill');
   assert.equal(overCeilingDecision.create_public_skill, true);
-  assert.equal(overCeilingDecision.post_change_count, 24);
+  assert.equal(overCeilingDecision.post_change_count, 25);
   assert.deepEqual(overCeilingDecision.approvals_required, []);
 
   const staleApproval = structuredClone(approvedProposal);
@@ -241,8 +245,8 @@ test('new-skill decision gate defaults to reuse and enforces inventory approvals
   );
   assert.equal(evaluateNewSkillDecision(staleApproval).valid, false);
 
-  assert.equal(repositoryState.public_count, 22);
-  assert.equal(repositoryState.public_names.length, 22);
+  assert.equal(repositoryState.public_count, 23);
+  assert.equal(repositoryState.public_names.length, 23);
 
   const missingEvidence = distinctProposal({
     positive_routing_evidence: [],
@@ -274,7 +278,7 @@ test('new-skill decision gate defaults to reuse and enforces inventory approvals
     proposed_public_skills: ['sdcorejs-example', 'sdcorejs-example-two'],
   }));
   assert.equal(forgedInventory.valid, false);
-  assert.equal(forgedInventory.current_public_count, 22);
+  assert.equal(forgedInventory.current_public_count, 23);
   assert.equal(forgedInventory.create_public_skill, false);
 
   const emptyProposal = evaluateNewSkillDecision(distinctProposal({ proposed_public_skills: [] }));
@@ -637,7 +641,7 @@ test('internal authoring capability is initialized but excluded from every publi
   assert.match(readme, /must not be installed/iu);
 
   const publicFiles = await markdownFiles(path.join(root, 'skills'));
-  assert.equal(publicFiles.length, 22);
+  assert.equal(publicFiles.length, 23);
   assert.equal(publicFiles.some((file) => file.includes('skill-authoring')), false);
   for (const mirror of ['skills', '.claude', 'plugin', 'codex', '.cursor', '.github', 'site']) {
     if (!await exists(path.join(root, mirror))) continue;

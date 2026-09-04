@@ -29,6 +29,12 @@ const CAPABILITIES = [
   'persistent_local_process',
   'browser_auto_open',
   'subagents',
+  'concurrent_dispatch',
+  'agent_cwd_binding',
+  'native_worktree',
+  'manual_git_worktree',
+  'cancellation',
+  'result_ref',
   'per_agent_model_override',
   'agent_resume_steer',
   'workspace_isolation',
@@ -302,31 +308,70 @@ export function resolveAction({
       };
 }
 
-export function selectExecutionMode({ units = [], feasible = false, capabilities = {} } = {}) {
+export function selectExecutionMode({
+  units = [],
+  feasible = false,
+  capabilities = {},
+  execution_policy: executionPolicy,
+} = {}) {
+  if (
+    executionPolicy !== undefined &&
+    !['auto', 'sequential', 'parallel-preferred'].includes(executionPolicy)
+  ) throw new TypeError('execution_policy must be auto, sequential, or parallel-preferred');
+  const subagents = normalizeCapabilityStatus(capabilities.subagents ?? 'unknown');
   if (units.length <= 1) {
     return {
       mode: 'sequential',
+      executor: subagents === 'supported' ? 'fresh-workers' : 'parent',
       prompt_required: false,
       reason: units.length === 0 ? 'no executable unit' : 'single executable unit',
     };
   }
 
   const ownershipErrors = validateDisjointOwnership(units);
-  const subagents = normalizeCapabilityStatus(capabilities.subagents ?? 'unknown');
-  if (!feasible || ownershipErrors.length > 0 || subagents !== 'supported') {
+  if (subagents !== 'supported') {
     return {
       mode: 'sequential',
+      executor: 'parent',
+      prompt_required: false,
+      reason: `subagent capability is ${subagents}`,
+    };
+  }
+  const concurrentDispatch = normalizeCapabilityStatus(
+    capabilities.concurrent_dispatch ?? 'unknown',
+  );
+  if (!feasible || ownershipErrors.length > 0 || concurrentDispatch !== 'supported') {
+    return {
+      mode: 'sequential',
+      executor: 'fresh-workers',
       prompt_required: false,
       reason: !feasible
         ? 'parallel execution is not feasible'
         : ownershipErrors.length > 0
           ? ownershipErrors.join('; ')
-          : `subagent capability is ${subagents}`,
+          : `concurrent dispatch capability is ${concurrentDispatch}`,
+    };
+  }
+  if (executionPolicy === 'sequential') {
+    return {
+      mode: 'sequential',
+      executor: 'fresh-workers',
+      prompt_required: false,
+      reason: 'approved execution policy requires sequential fresh workers',
+    };
+  }
+  if (executionPolicy === 'parallel-preferred' || executionPolicy === 'auto') {
+    return {
+      mode: 'parallel',
+      executor: 'fresh-workers',
+      prompt_required: false,
+      reason: `approved execution policy ${executionPolicy} selected safe parallel execution`,
     };
   }
 
   return {
     mode: 'choice',
+    executor: 'fresh-workers',
     prompt_required: true,
     reason: 'multiple independent units have disjoint path and resource ownership',
     options: ['sequential', 'parallel'],
