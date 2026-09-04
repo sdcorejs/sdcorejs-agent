@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const EXPECTED_RELEASE_VERSION = '0.8.0';
-const EXPECTED_SKILL_COUNT = 22;
+const EXPECTED_SKILL_COUNT = 23;
 const EXPECTED_ROOT_NODE_RANGE = '^22.22.3 || ^24.15.0 || >=26.0.0';
 const CONTRACT_PATH = 'test/e2e/npm-publication-contract.test.mjs';
 const VISUAL_COMPANION_NODE18_COMMAND =

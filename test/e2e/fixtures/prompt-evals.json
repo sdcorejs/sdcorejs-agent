@@ -122,7 +122,13 @@
   {
     "id": "parallel-dispatch-direct",
     "prompt": "split this approved plan into parallel agents",
-    "expectedSkill": "sdcorejs-parallel-dispatch",
+    "expectedSkill": "sdcorejs-subagent-driven-development",
+    "phase": 3
+  },
+  {
+    "id": "subagent-driven-approved-plan",
+    "prompt": "use fresh subagents to execute this approved plan",
+    "expectedSkill": "sdcorejs-subagent-driven-development",
     "phase": 3
   },
   {
@@ -170,7 +176,7 @@
   {
     "id": "localized-vi-parallel",
     "prompt": "chia plan nay cho nhieu agent chay song song neu an toan",
-    "expectedSkill": "sdcorejs-parallel-dispatch",
+    "expectedSkill": "sdcorejs-subagent-driven-development",
     "phase": 3
   },
   {

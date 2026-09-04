@@ -15,6 +15,7 @@ cannot authorize dispatch.
 - [Required Context](#required-context)
 - [Working-tree Preflight](#working-tree-preflight)
 - [Runtime Capability Fallback](#runtime-capability-fallback)
+- [Plan Compilation And Opportunity Report](#plan-compilation-and-opportunity-report)
 - [Topology And DAG Rules](#topology-and-dag-rules)
 - [Isolation And Resource Validation](#isolation-and-resource-validation)
 - [Mechanical Path-boundary Validator](#mechanical-path-boundary-validator)
@@ -105,6 +106,7 @@ parallel_context:
     supports_parallel_dispatch:
     supports_agent_cwd:
     supports_native_worktree:
+    supports_manual_worktree:
     supports_result_ref:
     supports_timeout:
     supports_cancellation:
@@ -269,15 +271,44 @@ snapshot so an after-snapshot can prove zero writes.
 
 | Capability result | Required behavior |
 |---|---|
-| no subagents | sequential execution |
-| subagent calls serialize | explicit sequential waves; report no concurrency |
+| no subagents | sequential parent execution |
+| subagent calls serialize | sequential fresh workers; report no concurrency |
 | no agent cwd | read-only or mechanically proven `disjoint-same-tree` only |
 | no immutable result ref | exact changed-path/diff snapshot bound to evidence |
 | no timeout/cancellation | best-effort reporting; no fail-fast cancellation claim |
-| unknown isolation for write-heavy work | portable sequential parent fallback |
+| unknown isolation for write-heavy work | sequential fresh workers when delegation is supported; parent only when it is not |
 
 The effective concurrency is the smaller of runtime capacity, safe unit count,
 and repository/resource limits.
+
+Build current-session evidence with
+`_refs/harness/runtime-attestation.mjs`. Static adapter capability values are
+defaults, not proof that a capability is exposed now. An unknown observation
+never becomes `true` in the parallel capability projection.
+
+## Plan Compilation And Opportunity Report
+
+`compileParallelContext` accepts compact `parallel_candidates.units` from the
+approved plan plus validated parallel runtime capabilities. Parallel eligibility
+requires `parallel_candidates.allowed: true`; each unit needs an ID, dependency
+IDs, non-empty owned paths, and optional exclusive resources and positive
+estimated cost. Missing approval or ownership produces sequential blockers and
+repair suggestions. The compiler normalizes ownership, calls the same
+`planWaves` algorithm used by topology classification, and returns:
+
+- a schema-v2 `parallel_context` scaffold with `dispatch_ready: false` until
+  workspace, envelope, integration, verification, and final-tail evidence is
+  complete;
+- deterministic waves;
+- topology/verdict and selected mode;
+- effective maximum parallelism;
+- estimated serial cost, bounded parallel cost, and savings;
+- blockers and concrete repair suggestions.
+
+The approved `execution_policy` is `auto`, `sequential`, or
+`parallel-preferred`. `auto` selects parallel only for a safe positive-savings
+wave. A policy never bypasses capability, ownership, resource, workspace, or
+contract validation.
 
 ## Topology And DAG Rules
 
@@ -315,6 +346,8 @@ canonical separators and case rules; equal or parent/child roots conflict.
 
 `worktree` uses one worktree/branch per unit, a common approved base, and a
 separate integration workspace. Verify result ancestry/base before fan-in.
+The runtime must attest native worktree support or both manual-worktree support
+and worker-CWD binding before a worktree unit can dispatch.
 Record which worktrees the current run created. Cleanup may remove only those
 recorded worktrees after verifying their resolved paths; never remove a
 pre-existing or nested worktree.
@@ -435,8 +468,12 @@ rollback, checkpoint path, and idempotency key (`contract_hash + unit_id +
 attempt + base_head`). A crash/no result, claimed success with non-zero exit,
 fake path report, timeout, or deterministic violation is not `PASSED`.
 
-Fail-fast cancels pending work only when the runtime supports cancellation;
-otherwise stop new dispatch and report in-flight work as best effort.
+`runUnitsWithPolicy` remains sequential unless concurrent dispatch is explicitly
+supported and a positive effective maximum concurrency is supplied. It then
+runs a bounded worker pool and returns results in input order. Fail-fast stops
+new scheduling; already-started units remain in flight and retain their actual
+result. It marks never-started work cancelled only when the runtime supports
+cancellation; otherwise those units remain pending with best-effort status.
 Best-effort may finish independent units but does not fan in blocked results.
 
 ## Evidence And Redaction

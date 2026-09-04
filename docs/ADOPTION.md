@@ -91,13 +91,15 @@ architecture, concurrency, flaky/root-cause, public-contract, ambiguous, or
 cross-cutting work always uses the governed workflow. If a fast-fix discovers
 one of those conditions, stop and escalate.
 
-For approved plans, one executable unit or unavailable/unsafe parallel
-capability auto-selects sequential execution. Ask sequential versus parallel
-only when at least two independent units make both choices real.
+For approved plans, runtime attestation separates delegation from concurrency.
+At least two safe independent units plus observed concurrency can use parallel
+fresh workers; delegation without concurrency uses sequential fresh workers;
+unavailable delegation falls back to parent execution. Ask for a mode only when
+the approved `execution_policy` and observed capabilities leave a real choice.
 
 ## Governed Contract Layers
 
-The public pack contains 22 skills. `sdcorejs-architecture` is conditional:
+The public pack contains 23 skills. `sdcorejs-architecture` is conditional:
 use it for cross-repository ownership, public-contract, security/data-boundary,
 or similarly architecture-significant scope. A simple cohesive change bypasses
 the gate only with a concrete not-applicable reason.
@@ -253,7 +255,7 @@ This exception does not extend the supported root toolchain.
 - Use Node.js `^22.22.3 || ^24.15.0 || >=26.0.0` for root repository tooling
   and Node.js `>=22.12.0` for the Astro showcase under `site/`.
 - Choose install mode: plugin, direct repo, submodule, or copied native skills.
-- Confirm the installed public inventory has 22 skills and excludes the
+- Confirm the installed public inventory has 23 skills and excludes the
   internal authoring capability.
 - Run `npm ci`, `npm run check:text-hygiene`, `npm run check:skills`, and
   `npm run test:e2e` at the source commit.

@@ -11,13 +11,14 @@ const npmInvocation =
     ? {
         command: process.execPath,
         prefix: [
-          path.join(
-            path.dirname(process.execPath),
-            'node_modules',
-            'npm',
-            'bin',
-            'npm-cli.js',
-          ),
+          process.env.npm_execpath ||
+            path.join(
+              path.dirname(process.execPath),
+              'node_modules',
+              'npm',
+              'bin',
+              'npm-cli.js',
+            ),
         ],
       }
     : { command: 'npm', prefix: [] };

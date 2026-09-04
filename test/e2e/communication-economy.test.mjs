@@ -1624,7 +1624,7 @@ test('canonical workflows integrate compact projection, event progress, and rela
 
   const skillFiles = (await listRelativeFiles(path.join(root, 'skills')))
     .filter((relativePath) => relativePath.endsWith('.md'));
-  assert.equal(skillFiles.length, 22);
+  assert.equal(skillFiles.length, 23);
   for (const relativePath of skillFiles) {
     const text = await readFile(path.join(root, 'skills', relativePath), 'utf8');
     const actions = text.match(/^required-actions:\s*(.+)$/m)?.[1]

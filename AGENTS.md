@@ -4,7 +4,7 @@ Entry point for AGENTS.md-aware tools: Codex, Cursor, OpenAI Agents SDK, and com
 Claude Code reads `CLAUDE.md`; Copilot reads `.github/copilot-instructions.md`.
 
 This repository is an engineering skill pack for developers and technical teams.
-Its root Node workspace is private and validation-only. Its 22 public skills cover
+Its root Node workspace is private and validation-only. Its 23 public skills cover
 governed requirements, product, design, tests, Angular,
 NestJS, Next.js, AI-agent contracts, documentation, review, delivery, and a
 generic harness for other stacks.
@@ -35,7 +35,9 @@ working directory is never evidence of artifact ownership.
 When multiple skills match, apply this priority before reading a body:
 
 1. Explicit skill name from the user.
-2. Approved spec: architecture when required; approved plan: `sdcorejs-execute-plan`.
+2. Approved spec: architecture when required; approved plan:
+   `sdcorejs-execute-plan`; explicit delegated execution:
+   `sdcorejs-subagent-driven-development`.
 3. Product, design, or direct test work: `sdcorejs-product`,
    `sdcorejs-design`, or `sdcorejs-test`; failing-test diagnosis uses
    `sdcorejs-debug`.
@@ -76,16 +78,12 @@ writes. Internal `authoring/**` skills are never public or mirrored.
 No write-producing step may run after final branch-ready unless branch-ready is
 run again before any Git artifact handoff.
 
-`sdcorejs-execute-plan` auto-selects sequential for one executable unit or when
-parallel capability/isolation is unavailable or unsafe. It asks sequential
-versus parallel only for at least two independent units where both modes are
-feasible. A parallel selection must run `sdcorejs-parallel-dispatch`.
-
-Parallel work must use `sdcorejs-parallel-dispatch`, disjoint ownership,
-isolation where required, and deterministic fan-in. Unapproved writes return
-to planning; any write in a read-only unit fails that unit.
-Direct splitting of an approved plan may select `sdcorejs-parallel-dispatch`.
-Read-only parallel review/audit work may use bounded fan-out with writes denied.
+`sdcorejs-execute-plan` preserves the approved execution policy. Explicit
+approved-plan delegation or parallel-agent splitting uses
+`sdcorejs-subagent-driven-development`; parent execution is the fallback.
+Read-only parallel audits use the low-level `sdcorejs-parallel-dispatch`
+scheduler. Both paths require safe ownership, isolation, and deterministic
+fan-in; unapproved writes return to planning.
 
 Pure Q&A answers directly. A small, explicit, low-risk fix may use targeted
 context, the smallest edit, focused verification, and concise review without
@@ -189,6 +187,6 @@ Load references on demand:
 - `_refs/simplify/**` for bounded behavior-preserving source refinement.
 - `_refs/angular/core-docs-fetch.mjs` before using Core UI components.
 - `_refs/<track>/review-*.md` during review.
-- `_refs/orchestration/workspace-isolation.md` during `sdcorejs-git (workspace mode)`.
+- `_refs/orchestration/workspace-isolation.md` for execution workspace isolation.
 - `_refs/orchestration/tail/verify-before-done.md` during `sdcorejs-ship (verify-before-done mode)`.
 - `_refs/orchestration/tail/branch-ready.md` during `sdcorejs-ship (branch-ready mode)`.

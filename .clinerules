@@ -47,12 +47,14 @@ Rules:
   security, destructive action, ambiguity, conflict, blockers, or failed
   verification. Pass full typed context only to its consumer; use a portable
   handoff when `runtime_context_channel` is unsupported or unknown.
-- Ask sequential versus parallel only for two or more independent units when
-  both modes are feasible.
+- Preserve the approved execution policy after current-session delegation and
+  concurrency attestation.
 - `sdcorejs-execute-plan` classifies Angular as Core UI vs plain Angular before dispatch.
-- Parallel work requires `sdcorejs-parallel-dispatch`.
-- Direct splitting of an approved plan may select it; read-only parallel
-  review/audit work denies writes.
+- Direct delegated execution of an approved plan uses
+  `sdcorejs-subagent-driven-development`: safe waves run through the low-level
+  `sdcorejs-parallel-dispatch` scheduler, unsafe waves use sequential fresh
+  workers, and parent execution is the last fallback. Read-only parallel
+  review/audit stays with `sdcorejs-parallel-dispatch` and denies writes.
 - Product/PO docs and traceability use `sdcorejs-product`.
 - UI/UX design, wireframes, PNG previews, and FE handoff use `sdcorejs-design`.
 - Test-only plans use `sdcorejs-test`.

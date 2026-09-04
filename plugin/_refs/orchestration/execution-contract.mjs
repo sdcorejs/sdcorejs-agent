@@ -11,6 +11,7 @@ import {
 import { validateArchitecturePlanHandoff } from '../shared/architecture-contract.mjs';
 import { validateRepositoryPlan } from '../shared/repository-contract.mjs';
 import { resolveTrack } from '../shared/system-registry.mjs';
+import { planWaves } from './parallel-protocol.mjs';
 
 const MUTABLE_ACTIONS = new Set(['CREATE', 'EDIT', 'VERIFY-THEN-EDIT']);
 const PARALLEL_CAPABILITIES = new Set(['supported']);
@@ -305,34 +306,79 @@ export function evaluateWorkingTree({
 
 export function selectExecutionMode({
   units,
+  delegation_capability: delegationCapability,
   parallel_capability: parallelCapability,
   isolation_safe: isolationSafe,
   ownership_disjoint: ownershipDisjoint,
+  execution_policy: executionPolicy,
 }) {
   if (!Array.isArray(units) || units.length === 0) {
     throw new TypeError('units must be a non-empty array');
   }
+  if (
+    executionPolicy !== undefined &&
+    !['auto', 'sequential', 'parallel-preferred'].includes(executionPolicy)
+  ) throw new TypeError('execution_policy must be auto, sequential, or parallel-preferred');
+  const waves = planWaves(units);
   if (units.length === 1) {
-    return { mode: 'sequential', reason: 'single executable unit' };
-  }
-  if (!PARALLEL_CAPABILITIES.has(parallelCapability)) {
     return {
       mode: 'sequential',
-      reason: `parallel capability is ${parallelCapability ?? 'unknown'}`,
+      executor: delegationCapability === 'supported' ? 'fresh-workers' : 'parent',
+      reason: 'single executable unit',
+      waves,
+    };
+  }
+  const effectiveDelegation = delegationCapability ?? parallelCapability;
+  if (!PARALLEL_CAPABILITIES.has(effectiveDelegation)) {
+    return {
+      mode: 'sequential',
+      executor: 'parent',
+      reason: `delegation capability is ${effectiveDelegation ?? 'unknown'}`,
+      waves,
     };
   }
   if (
+    !PARALLEL_CAPABILITIES.has(parallelCapability) ||
     isolationSafe !== true ||
-    ownershipDisjoint !== true ||
-    units.some(({ depends_on: dependsOn }) => (dependsOn ?? []).length > 0)
+    ownershipDisjoint !== true
   ) {
     return {
       mode: 'sequential',
-      reason: 'parallel isolation, ownership, or dependency safety is not satisfied',
+      executor: 'fresh-workers',
+      reason: !PARALLEL_CAPABILITIES.has(parallelCapability)
+        ? `parallel capability is ${parallelCapability ?? 'unknown'}`
+        : 'parallel isolation or ownership safety is not satisfied',
+      waves,
+    };
+  }
+  if (!waves.some((wave) => wave.length >= 2)) {
+    return {
+      mode: 'sequential',
+      executor: 'fresh-workers',
+      reason: 'dependency graph has no wave with concurrent ready units',
+      waves,
+    };
+  }
+  if (executionPolicy === 'sequential') {
+    return {
+      mode: 'sequential',
+      executor: 'fresh-workers',
+      reason: 'approved execution policy requires sequential fresh workers',
+      waves,
+    };
+  }
+  if (executionPolicy === 'parallel-preferred' || executionPolicy === 'auto') {
+    return {
+      mode: 'parallel',
+      executor: 'fresh-workers',
+      reason: `approved execution policy ${executionPolicy} selected safe dependency waves`,
+      waves,
     };
   }
   return {
     mode: 'choice-required',
+    executor: 'fresh-workers',
     reason: 'sequential and parallel execution are both feasible',
+    waves,
   };
 }

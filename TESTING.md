@@ -1,6 +1,6 @@
 # Testing the SDCoreJS SDLC Agent
 
-Repository-level tests for the current 22-skill SDCoreJS Agent layout.
+Repository-level tests for the current 23-skill SDCoreJS Agent layout.
 
 The pack is documentation-driven, with deterministic executable contracts for
 capabilities, entry gating, delegation boundaries, summary freshness, and the
@@ -41,10 +41,10 @@ scheduled/manual `Full E2E` workflow runs phase 4 with `SDCOREJS_E2E_FULL=1`.
 
 ## Expected Inventory
 
-- Source skills: 22
-- `.claude/skills`: 22
-- `plugin/skills`: 22
-- `codex/skills`: 22 skill folders plus shared `_refs`
+- Source skills: 23
+- `.claude/skills`: 23
+- `plugin/skills`: 23
+- `codex/skills`: 23 skill folders plus shared `_refs`
 - Adapter harness manifests: 5 generated files with one canonical source hash
 - `_refs/**/*.md`: at least 60 committed markdown refs; Core UI component docs are fetched on demand
 - Internal `authoring/skills/sdcorejs-skill-authoring`: 1, excluded from every
@@ -100,10 +100,11 @@ npm run test:e2e:harness
 ```
 
 Simulates direct Q&A, bounded fast-fix, ambiguous full-workflow entry,
-single/multi-unit execution mode, tri-state interaction fallback, separate
-visual and non-visual surface ladders, worker-tier selection, bounded
-task/review envelopes, entrypoint deletion/rename invalidation, disjoint
-ownership, and safe static visual rendering. It does not call a live model.
+single/multi-unit execution mode, runtime capability attestation, delegation
+versus concurrency fallback, separate visual and non-visual surface ladders,
+worker-tier selection, bounded task/review envelopes, entrypoint
+deletion/rename invalidation, disjoint ownership, and safe static visual
+rendering. It does not call a live model.
 
 ### Visual Companion Runtime
 
@@ -185,7 +186,7 @@ node --test test/e2e/npm-publication-contract.test.mjs
 Verifies that the private root tooling workspace has no npm publication
 metadata, scripts, lifecycle hooks, workflow credentials, registry commands, or
 dependency-install documentation while preserving npm development commands,
-release-version synchronization, and the 22-skill source/mirror inventories.
+release-version synchronization, and the 23-skill source/mirror inventories.
 
 ### Phase 1: Skill Pack Runner
 
@@ -308,7 +309,9 @@ Expected:
 - `sdcorejs-spec` writes the approved spec snapshot only after approval.
 - `sdcorejs-plan` waits for explicit approval.
 - `sdcorejs-plan` writes the approved plan snapshot only after approval.
-- `sdcorejs-execute-plan` asks sequential vs parallel before execution.
+- `sdcorejs-execute-plan` compiles the approved policy and observed runtime
+  capabilities before selecting parent, sequential-worker, or parallel-worker
+  execution.
 
 ### Test Track
 
@@ -358,7 +361,9 @@ execute this approved docs/config migration plan
 Expected:
 
 - `sdcorejs-execute-plan` detects no app track if appropriate.
-- Asks sequential vs parallel.
+- Compiles dependency waves and records why parallel execution is or is not
+  currently feasible.
+- Routes delegated execution through `sdcorejs-subagent-driven-development`.
 - Uses generic harness fallback.
 - Runs declared verification commands.
 

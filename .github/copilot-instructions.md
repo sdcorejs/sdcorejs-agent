@@ -73,8 +73,8 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
 - `sdcorejs-spec` and `sdcorejs-plan` write their own approved snapshots.
 - Approved plans execute through `sdcorejs-execute-plan`; it classifies Angular as Core UI vs plain Angular and validates `agent_architecture` before AI-agent dispatch.
 - Non-trivial skills apply `_refs/shared/project-context.md` before executing.
-- `sdcorejs-execute-plan` auto-selects sequential for one unit or unsafe/
-  unavailable parallel execution, and asks only when both modes are feasible.
+- `sdcorejs-execute-plan` attests delegation and concurrency separately and
+  preserves the approved execution policy.
 - Product docs, user stories, acceptance criteria, UAT, and traceability use `sdcorejs-product`.
 - UI/UX design, screen flows, wireframes, PNG previews, and FE handoff use `sdcorejs-design`.
 - Simplify eligible changed source without behavior changes through
@@ -82,9 +82,12 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
   comments, user guides, and technical docs through
   `sdcorejs-documentation`; verify and ship through `sdcorejs-ship`; commit,
   PR, changelog, and release notes through `sdcorejs-git`.
-- Parallel execution requires `sdcorejs-parallel-dispatch`. Direct approved-plan
-  splitting may select it; unapproved write work returns to planning. Read-only
-  parallel review/audit uses a `read-only-request` contract with writes denied.
+- Direct delegated execution or splitting of an approved plan uses
+  `sdcorejs-subagent-driven-development`: safe waves run through the low-level
+  `sdcorejs-parallel-dispatch` scheduler, unsafe waves use sequential fresh
+  workers, and parent execution is the last fallback. Unapproved write work
+  returns to planning. Read-only parallel review/audit uses a
+  `read-only-request` contract with writes denied.
   Write-capable dispatch requires working-tree preflight, mechanical ownership,
   per-unit isolation, deterministic fan-in, and final verification.
 - Pure Q&A answers directly. A bounded low-risk fix may use targeted context,

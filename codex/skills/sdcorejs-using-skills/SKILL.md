@@ -23,7 +23,8 @@ route; do not load every referenced track body during bootstrap.
 Priority when several skills match:
 
 1. Explicit skill named by the user.
-2. Approved plan continuation: `sdcorejs-execute-plan`.
+2. Approved plan: `sdcorejs-subagent-driven-development` for explicit
+   delegation; otherwise `sdcorejs-execute-plan`.
 3. Product, design, and direct test work: `sdcorejs-product`,
    `sdcorejs-design`, `sdcorejs-test`; failing-test diagnosis uses
    `sdcorejs-debug`.
@@ -69,8 +70,8 @@ gate.
 brainstorming
   -> spec (explicit approval + immutable approved snapshot)
   -> plan (explicit approval + immutable approved snapshot)
-  -> execute-plan (track detection + real execution-mode decision)
-  -> executor/generic harness
+  -> execute-plan (track detection + execution policy)
+  -> delegated or parent executor/generic harness
   -> finish gate and mandatory tail
 ```
 
@@ -78,10 +79,10 @@ Silence is never spec or plan approval. Do not generate code from ambiguous or
 unconfirmed scope. The product, design, test, and AI-agent tracks remain
 first-class; unsupported stacks use the generic execute-plan harness.
 
-Execute-plan auto-selects sequential when there is one executable unit or safe
-parallel execution is unavailable. It asks sequential versus parallel only
-when at least two independent units make both modes feasible. Parallel work
-must pass `sdcorejs-parallel-dispatch`.
+Explicit approved-plan delegation uses `sdcorejs-subagent-driven-development`;
+safe waves may run in parallel, otherwise fresh workers run sequentially.
+Parent execution is the fallback. `sdcorejs-parallel-dispatch` remains the
+low-level scheduler for safe waves and read-only parallel audits.
 
 ## Invariants
 

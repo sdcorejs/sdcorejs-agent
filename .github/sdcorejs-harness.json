@@ -2,8 +2,8 @@
   "schema_version": 1,
   "adapter": "copilot",
   "source_path": "_refs/harness/capability-contract.json",
-  "source_hash": "sha256:60b4239412a5af7d1077a5e9bf84dc1f3b31c5a1ddfe7c6c33dd277184a0149e",
-  "content_hash": "sha256:174181c76a14b08a12897d27376f81887daa3fcec6e843875f7ce824e3cc6f56",
+  "source_hash": "sha256:cd864af235654e35ed199769d3ade3dd2b145f0f148f75de1f2df50ee551e096",
+  "content_hash": "sha256:9de22ca47a786d4b32b9b8b8492a8008b45011746e38df21abfaed85af15ebb3",
   "generated_path": ".github/sdcorejs-harness.json",
   "capabilities": {
     "runtime_context_channel": "unknown",
@@ -15,6 +15,12 @@
     "persistent_local_process": "unknown",
     "browser_auto_open": "unknown",
     "subagents": "unknown",
+    "concurrent_dispatch": "unknown",
+    "agent_cwd_binding": "unknown",
+    "native_worktree": "unknown",
+    "manual_git_worktree": "unknown",
+    "cancellation": "unknown",
+    "result_ref": "unknown",
     "per_agent_model_override": "unknown",
     "agent_resume_steer": "unknown",
     "workspace_isolation": "unknown",
@@ -198,6 +204,21 @@
         "agent.resume"
       ]
     },
+    "sdcorejs-subagent-driven-development": {
+      "source_path": "skills/orchestration/subagent-driven-development.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "context.pass",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "agent.dispatch",
+        "agent.resume",
+        "agent.interrupt",
+        "workspace.isolate"
+      ]
+    },
     "sdcorejs-using-skills": {
       "source_path": "skills/orchestration/using-skills.md",
       "required_actions": [
@@ -298,8 +319,7 @@
         "context.pass",
         "verification.run",
         "user.choose",
-        "user.approve",
-        "workspace.isolate"
+        "user.approve"
       ]
     },
     "sdcorejs-review": {

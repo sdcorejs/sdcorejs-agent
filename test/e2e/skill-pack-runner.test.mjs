@@ -82,10 +82,10 @@ function markdownSection(source, heading) {
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
 
-  assert.equal(pack.sourceSkills.length, 22);
-  assert.equal(pack.claudeMirrorSkills.length, 22);
-  assert.equal(pack.pluginMirrorSkills.length, 22);
-  assert.equal(pack.codexMirrorSkills.length, 22);
+  assert.equal(pack.sourceSkills.length, 23);
+  assert.equal(pack.claudeMirrorSkills.length, 23);
+  assert.equal(pack.pluginMirrorSkills.length, 23);
+  assert.equal(pack.codexMirrorSkills.length, 23);
   // Core UI per-component docs are fetched on-demand (not committed), so this count
   // dropped from ~150 to ~69. Floor still catches accidental mass-deletion of refs.
   assert.ok(pack.referenceDocs.length >= 60, `referenceDocs=${pack.referenceDocs.length}`);
@@ -505,7 +505,8 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
     'sdcorejs-design',
     'sdcorejs-test',
     'sdcorejs-review',
-    'sdcorejs-parallel-dispatch'
+    'sdcorejs-parallel-dispatch',
+    'sdcorejs-subagent-driven-development'
   ]) {
     const text = sourceByName.get(name);
     assert.ok(text, `${name} exists`);
@@ -549,12 +550,16 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(gitSkill, /Never use dot-all staging or all-index staging flags/);
   assert.doesNotMatch(gitSkill, /git add \./);
   assert.doesNotMatch(gitSkill, /git add -A/);
-  assert.match(gitSkill, /command -v gh/);
+  assert.doesNotMatch(gitSkill, /command -v gh/);
+  assert.doesNotMatch(gitSkill, /heredoc/i);
+  assert.match(gitSkill, /current shell/i);
+  assert.match(gitSkill, /git commit -F/);
+  assert.match(gitSkill, /gh pr create --body-file/);
   assert.match(gitSkill, /gh auth status/);
   assert.match(gitSkill, /gh repo view --json defaultBranchRef/);
   assert.match(gitSkill, /gh pr create/);
-  assert.match(gitSkill, /origin\/\$BASE\.\.HEAD/);
-  assert.match(gitSkill, /origin\/\$BASE\.\.\.HEAD/);
+  assert.match(gitSkill, /origin\/<resolved-base>\.\.HEAD/);
+  assert.match(gitSkill, /origin\/<resolved-base>\.\.\.HEAD/);
   assert.doesNotMatch(gitSkill, /git log <base>\.\.HEAD/);
   assert.doesNotMatch(gitSkill, /git diff <base>\.\.\.HEAD/);
   assert.match(gitSkill, /existing PR/i);
@@ -638,8 +643,12 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   const codexGitSkill = pack.codexMirrorSkills.find((skill) => skill.name === 'sdcorejs-git')?.text;
   assert.match(codexGitSkill, /Commit Scope Ledger/);
   assert.match(codexGitSkill, /There is no continue on protected branch option/);
-  assert.match(codexGitSkill, /origin\/\$BASE\.\.HEAD/);
-  assert.match(codexGitSkill, /origin\/\$BASE\.\.\.HEAD/);
+  assert.match(codexGitSkill, /origin\/<resolved-base>\.\.HEAD/);
+  assert.match(codexGitSkill, /origin\/<resolved-base>\.\.\.HEAD/);
+  assert.match(codexGitSkill, /current shell's command-lookup mechanism/);
+  assert.match(codexGitSkill, /git commit -F <message-file>/);
+  assert.match(codexGitSkill, /gh pr create --body-file <body-file>/);
+  assert.doesNotMatch(codexGitSkill, /command -v gh|heredoc/iu);
   assert.match(codexGitSkill, /REDACTED|redact/i);
 
   const choicePrompt = await readFile(new URL('../../_refs/shared/user-choice-prompt.md', import.meta.url), 'utf8');
@@ -1690,6 +1699,7 @@ test('phase 1: SDLC harness encodes contract-driven profile-aware execution inva
   const executePlan = sourceByName.get('sdcorejs-execute-plan');
   const executePlanMeta = sourceSkillByName.get('sdcorejs-execute-plan');
   const parallel = sourceByName.get('sdcorejs-parallel-dispatch');
+  const subagentDriven = sourceByName.get('sdcorejs-subagent-driven-development');
   const agents = await readFile(new URL('../../AGENTS.md', import.meta.url), 'utf8');
   const finishGate = await readFile(new URL('../../_refs/shared/finish-gate.md', import.meta.url), 'utf8');
 
@@ -1763,6 +1773,7 @@ test('phase 1: SDLC harness encodes contract-driven profile-aware execution inva
   assert.match(plan, /commands_planned/);
   assert.match(plan, /commands_skipped/);
   assert.match(plan, /parallel_candidates/);
+  assert.match(plan, /execution_policy:[\s\S]*auto[\s\S]*sequential[\s\S]*parallel-preferred/);
   assert.match(plan, /shared_files/);
   assert.match(plan, /must not copy the full spec body/i);
   assert.match(plan, /branch_ready_final_gate/);
@@ -1773,6 +1784,9 @@ test('phase 1: SDLC harness encodes contract-driven profile-aware execution inva
   assert.doesNotMatch(plan, /npm run test\s*$/m);
 
   assert.match(executePlan, /required-actions: .*artifact\.write/);
+  assert.match(executePlan, /sdcorejs-subagent-driven-development/);
+  assert.match(executePlan, /runtime-attestation\.mjs/);
+  assert.match(executePlan, /compileParallelContext/);
   assert.match(executePlan, /execution_context:/);
   assert.match(executePlan, /plan_context/);
   assert.match(executePlan, /working_tree_preflight/);
@@ -1788,6 +1802,14 @@ test('phase 1: SDLC harness encodes contract-driven profile-aware execution inva
   assert.match(executePlan, /plain-nestjs/);
   assert.match(executePlan, /plain-nextjs/);
   assert.match(executePlan, /react-vite/);
+  assert.match(subagentDriven, /fresh worker/i);
+  assert.match(subagentDriven, /sequential fresh workers/i);
+  assert.match(subagentDriven, /sdcorejs-parallel-dispatch/);
+  assert.match(subagentDriven, /Stage A[\s\S]*Stage B/i);
+  assert.match(subagentDriven, /owner-scoped repair/i);
+  assert.match(subagentDriven, /global verification/i);
+  assert.match(subagentDriven, /must not (?:commit|create Git artifacts)|Git mutations.*deny/i);
+  assert.match(parallel, /low-level.*scheduler|scheduler.*low-level/i);
   assert.match(executePlan, /react-cra/);
   assert.match(executePlan, /node-general/);
   assert.match(executePlan, /generic harness fallback/);
@@ -2230,6 +2252,7 @@ test('phase 3: SDLC harness prompts dispatch to the owning workflow skills', asy
     'execute-approved-plan',
     'execute-approved-plan-parallel',
     'parallel-dispatch-direct',
+    'subagent-driven-approved-plan',
     'broad-fullstack-requirements',
     'localized-vi-brainstorm',
     'localized-vi-spec',
@@ -2253,13 +2276,14 @@ test('phase 3: SDLC harness prompts dispatch to the owning workflow skills', asy
       ['plan-revision', 'sdcorejs-plan', true],
       ['execute-approved-plan', 'sdcorejs-execute-plan', true],
       ['execute-approved-plan-parallel', 'sdcorejs-execute-plan', true],
-      ['parallel-dispatch-direct', 'sdcorejs-parallel-dispatch', true],
+      ['parallel-dispatch-direct', 'sdcorejs-subagent-driven-development', true],
+      ['subagent-driven-approved-plan', 'sdcorejs-subagent-driven-development', true],
       ['broad-fullstack-requirements', 'sdcorejs-brainstorming', true],
       ['localized-vi-brainstorm', 'sdcorejs-brainstorming', true],
       ['localized-vi-spec', 'sdcorejs-spec', true],
       ['localized-vi-plan', 'sdcorejs-plan', true],
       ['localized-vi-execute', 'sdcorejs-execute-plan', true],
-      ['localized-vi-parallel', 'sdcorejs-parallel-dispatch', true]
+      ['localized-vi-parallel', 'sdcorejs-subagent-driven-development', true]
     ]
   );
 });

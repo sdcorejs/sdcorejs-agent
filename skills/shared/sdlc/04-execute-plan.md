@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-execute-plan
-description: Execute an approved plan snapshot. Use after sdcorejs-plan approval or when asked to execute, run, generate from, or continue an approved plan for AI-agent, Angular, NestJS, Next.js, React, Node, fullstack, product, design, documentation, workflow, test, or generic/general work. Detects track/profile, preserves contract/write scope/package-manager evidence, auto-selects sequential for one or unsafe units, and offers parallel only when feasible. Runtime-localized.
+description: Execute an approved plan snapshot. Use after sdcorejs-plan approval or when asked to execute, run, generate from, or continue an approved plan for AI-agent, Angular, NestJS, Next.js, React, Node, fullstack, product, design, documentation, workflow, test, or generic/general work. Detects track/profile, preserves contract and write scope, attests runtime capabilities, and routes delegated execution only when safe. Runtime-localized.
 required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose, agent.dispatch, workspace.isolate
 ---
 
@@ -23,6 +23,8 @@ truth before any write or dispatch:
 - `_refs/orchestration/execution-contract.mjs` for execution preparation,
   current-root/path authorization, owner routing, working-tree boundaries, and
   execution-mode selection.
+- `_refs/harness/runtime-attestation.mjs` for observed delegation/concurrency;
+  `_refs/orchestration/parallel-protocol.mjs` builds waves and opportunity evidence.
 
 ## Purpose
 Run the approved plan as the execution contract. This skill is the handoff between planning and doing.
@@ -30,8 +32,8 @@ Run the approved plan as the execution contract. This skill is the handoff betwe
 It owns four decisions:
 
 1. Which execution track should run.
-2. Whether sequential execution is required or a real sequential/parallel
-   choice exists.
+2. Whether execution uses parallel fresh workers, sequential fresh workers, or
+   parent fallback.
 3. Whether Angular work is Core UI portal work or plain Angular work.
 4. Whether NestJS, Next.js, React, Node/general, migration, product, design, or
    test work needs a track executor or the generic harness fallback.
@@ -277,21 +279,17 @@ or public barrels without a meaningful responsibility and lifecycle reason.
 
 ### 3. Select execution mode
 
-Count executable units after dependency, path, resource, workspace, and runtime
-capability checks.
+Count units after dependency, ownership, workspace, and runtime checks. Validate
+attestation, then call `compileParallelContext`; dependencies form safe waves.
 
-- One executable unit: auto-select sequential and state that there is no useful
-  fan-out.
-- Two or more units but unavailable/unknown subagent or isolation capability,
-  overlapping ownership, dependent work, or unsafe resources: auto-select
-  sequential and state the blocking reason.
-- Two or more independent units with disjoint ownership and both modes
-  feasible: present the real trade-off and ask once.
+- Delegation unsupported or unknown: execute in the parent sequentially.
+- Delegation supported without safe concurrency: use sequential fresh workers
+  through `sdcorejs-subagent-driven-development`.
+- Safe delegation and concurrency: invoke that skill with approved
+  `execution_policy` (`auto`, `sequential`, or `parallel-preferred`).
 
-When auto-selecting, continue without a prompt. Mention an override only when
-the plan can genuinely be split differently and the required runtime
-capabilities are supported. Capability `unknown` uses the portable sequential
-fallback.
+Approved policy does not trigger another prompt; `unknown` never enables a
+native path. Ask once only for a legacy plan with both modes genuinely feasible.
 
 When both modes are feasible, use `_refs/shared/user-choice-prompt.md`:
 
@@ -310,19 +308,20 @@ Reply with `1` or `2`.
 Translate at runtime. Do not execute until the user answers this real choice.
 If the user delegates the decision, choose the recommendation and state it.
 
-### 4. If parallel is chosen
-Invoke `sdcorejs-parallel-dispatch`. It owns both the safety verdict and the safe parallel execution path.
+### 4. If delegated execution is selected
 
-- If verdict is `PARALLEL-CANDIDATE`, it runs independent-unit fan-out.
-- If verdict is `ROLE-SPLIT`, it runs the product/design/backend/frontend/test-QC role-split loop.
-- If verdict is `SEQUENTIAL`, explain why parallel is unsafe and ask whether to
-  continue sequentially with `1. Continue sequentially (yes)` /
-  `2. Stop and revise plan (no)`.
+Invoke `sdcorejs-subagent-driven-development` for fresh workers, waves, Stage
+A/Stage B review, owner-scoped repair, and evidence; it calls the low-level scheduler.
 
-### 5. If sequential is chosen
+On a `SEQUENTIAL` safety verdict, use sequential fresh workers without reopening
+approved policy; use parent fallback only when delegation is unavailable.
+
+### 5. If parent execution is selected
+
 If the user requested isolation, or the plan is risky enough that isolation is
-needed, invoke `sdcorejs-git (workspace mode)` before dispatching. That
-mode reads `_refs/orchestration/workspace-isolation.md` and reports the baseline.
+needed, read `_refs/orchestration/workspace-isolation.md` and resolve the
+`workspace.isolate` semantic action before dispatching. Workspace creation is
+an orchestration precondition, not a `sdcorejs-git` artifact mode.
 
 Dispatch by detected track:
 
@@ -445,8 +444,9 @@ execution_context:
 - Consume `plan_context` and preserve `contract_id`, `approved_spec_hash`,
   `approved_plan_hash`, `target_root_kind`, `track`, `stack_profile`,
   validation map, write-scope boundaries, package-manager evidence, and verification strategy.
-- Auto-select sequential for one executable unit or when safe parallel
-  execution is unavailable; ask only when both modes are feasible.
+- Preserve approved `execution_policy`; prefer sequential fresh workers over
+  parent fallback when delegation is supported but safe parallel execution is
+  unavailable.
 - Use `sdcorejs-product` as the executor for product-track ledgers and traceability audits.
 - Use `sdcorejs-design` as the executor for design-track FE handoff artifacts.
 - Use `sdcorejs-test` as the executor for test-track plans.
@@ -492,8 +492,8 @@ execution_context:
 
 ## Cross-references
 - `sdcorejs-plan` - approved execution contract
-- `sdcorejs-parallel-dispatch` - decides whether parallel is safe and executes safe fan-out or role-split work
-- `sdcorejs-git (workspace mode)` - isolates work when requested or needed
+- `sdcorejs-subagent-driven-development` - fresh-worker lifecycle; `sdcorejs-parallel-dispatch` - safe-wave scheduler and fan-in
+- `_refs/orchestration/workspace-isolation.md` - provider-neutral workspace ownership
 - `sdcorejs-ai-agent`, `sdcorejs-angular`, `sdcorejs-nestjs`, `sdcorejs-nextjs`, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` - track executors
 - `sdcorejs-ship (verify-before-done mode)` - acceptance verification gate
 - `_refs/shared/frontend-architecture.md` - mandatory non-trivial frontend architecture preflight and execution contract

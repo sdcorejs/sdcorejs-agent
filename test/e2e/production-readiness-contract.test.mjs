@@ -121,6 +121,7 @@ test('entrypoint routing and adapter manifests consume the central registry with
     'skills/shared/sdlc/architecture.md',
     'skills/shared/sdlc/04-execute-plan.md',
     'skills/orchestration/parallel-dispatch.md',
+    'skills/orchestration/subagent-driven-development.md',
     'skills/shared/workflow/explore.md',
     'skills/orchestration/documentation.md',
     'skills/tracks/product/sdcorejs-product.md',
@@ -142,7 +143,7 @@ test('entrypoint routing and adapter manifests consume the central registry with
     assert.ok(name, `${relativePath} has a skill name`);
     sourceSkills.push(name);
   }
-  assert.equal(new Set(sourceSkills).size, 22);
+  assert.equal(new Set(sourceSkills).size, 23);
 
   const expectedRegistryHash = `sha256:${registry.registry_hash_input ?? ''}`;
   for (const relativePath of [

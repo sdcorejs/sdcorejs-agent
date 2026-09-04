@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-git
-description: Git artifact workflow. Use for commit/save changes, create PR, push verified branch, changelog, release notes, diff since tag, PR text, or executor worktree isolation. Do not use for readiness/ship gates; use sdcorejs-ship first, then this for commit/PR/changelog artifacts. Applies to all tracks and this repo. Runtime-localized.
+description: Git artifact workflow. Use for commit/save changes, create PR, push verified branch, changelog, release notes, diff since tag, or PR text. An explicit worktree request is a compatibility handoff to the orchestration workspace-isolation contract, not a Git artifact mode. Do not use for readiness/ship gates; use sdcorejs-ship first. Runtime-localized.
 allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 ---
 
@@ -13,7 +13,6 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 
 One skill for Git artifacts:
 
-- isolate risky or parallel work from the user's current branch
 - create a scoped Conventional Commit
 - push a verified branch
 - open or update a pull request
@@ -36,15 +35,20 @@ submodules, load `_refs/shared/git-closure-contract.mjs`; it verifies approved a
 
 | Mode | Trigger examples | Output |
 |---|---|---|
-| `workspace` | "worktree", "isolate workspace", "do not touch current branch", "run in parallel" | isolated workspace decision plus baseline result |
 | `commit` | "commit", "commit changes", "save changes" | one scoped Conventional Commit |
 | `pr` | "create PR", "open PR", "gh pr create", "PR text" | pushed current branch plus PR URL or local PR draft |
 | `changelog` | "write changelog", "update CHANGELOG", "release notes", "what changed since vX.Y.Z" | Keep a Changelog entry plus semver recommendation |
 
 If multiple modes match, choose the narrowest explicit artifact request:
-`commit`, `pr`, `workspace`, and `changelog` are artifact modes; readiness,
+`commit`, `pr`, and `changelog` are artifact modes; readiness,
 delivery, dependency updates, release readiness, and "is this ready" belong to
 `sdcorejs-ship`.
+
+An explicit worktree/isolation request is not an artifact mode. Forward it to
+the canonical `workspace.isolate` owner in
+`_refs/orchestration/workspace-isolation.md`, then return the resulting
+workspace identity to the execution caller. Do not perform commit, PR, push, or
+changelog work during that handoff.
 
 ## Mode Precedence Guard
 
@@ -57,7 +61,7 @@ the current `HEAD` or diff.
 
 `sdcorejs-git` may proceed only when at least one condition is true:
 
-- the user explicitly requested an artifact-only action, such as "commit these docs", "write changelog", or "create worktree";
+- the user explicitly requested an artifact-only action, such as "commit these docs" or "write changelog";
 - `sdcorejs-ship (verify-before-done mode)` and `sdcorejs-ship (branch-ready mode)` have already passed for the current `HEAD` or diff;
 - the caller explicitly delegated from `sdcorejs-ship` after passing those gates;
 - the user explicitly accepted a docs-only, prompt-only, chore-only, or unverified artifact with the verification caveat recorded.
@@ -75,7 +79,6 @@ be tied to the current `HEAD` or diff."
 
 ## Mode-Specific Write Boundaries
 
-- `workspace` mode may create a branch or worktree and inspect baseline state. It must not edit source files.
 - `commit` mode may inspect, stage explicit included paths, and create a commit. It must not edit source files.
 - `pr` mode may push the current branch and create or update PR text after gates pass. It must not edit source files.
 - `changelog` mode may edit `CHANGELOG.md`, release note files, or repo-defined release artifact files only when the user explicitly requested changelog or release-note work and the scope is clear.
@@ -268,23 +271,6 @@ session state.
   - `Verification: not applicable, docs-only change`
 - PR mode requires current verify-before-done and branch-ready evidence unless the PR is documentation-only or the user accepts an unverified draft with a clear warning.
 
-## Mode: workspace
-
-Read `_refs/orchestration/workspace-isolation.md` completely, then follow it to:
-
-- detect whether the current checkout is already isolated
-- ask consent before creating a worktree unless the user already requested one
-- prefer a native harness worktree feature when available
-- fall back to `git worktree` only when safe
-- discover package manager and package scripts before baseline checks
-- run only existing baseline scripts appropriate to the changed stack
-- report skipped baseline checks with evidence
-
-This mode is mostly called by `sdcorejs-execute-plan` or
-`sdcorejs-parallel-dispatch`. When invoked directly, report the workspace path,
-base branch, new branch, package manager, baseline commands run, skipped checks,
-existing baseline failures, and blockers.
-
 ## Mode: commit
 
 1. Inspect:
@@ -316,7 +302,9 @@ git log -5 --oneline
    from its own Git root; never run parent staging over nested module content.
 8. Infer Conventional Commit type from included paths and change summary, not from excluded dirty files.
 9. Use a scope when obvious from module, package, or skill name.
-10. Commit with a heredoc for multi-line bodies.
+10. Write a multi-line message to a UTF-8 temporary file owned by the current
+    run, then commit with `git commit -F <message-file>`. Remove only that exact
+    temporary file after the command finishes.
 11. Verify with `git status --short`, `git log -1 --stat`, and a second artifact
     closure check that proves no task-owned required artifact remains
     uncommitted.
@@ -362,7 +350,8 @@ PR mode must use explicit base and range commands.
 
 Required flow:
 
-1. Run `command -v gh`.
+1. Detect `gh` with the current shell's command-lookup mechanism; do not assume
+   a POSIX shell.
 2. Run `gh auth status`.
 3. If `gh` is missing or unauthenticated, do not attempt `gh repo view` or `gh pr create`; generate a local PR title/body draft and stop with manual instructions.
 4. Run `git branch --show-current`.
@@ -371,34 +360,38 @@ Required flow:
 7. Require current verify-before-done and branch-ready evidence unless docs-only or explicitly deferred.
 8. Resolve the default branch explicitly:
 
-```bash
-BASE=$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)
-git fetch origin "$BASE" --quiet
-git log --no-merges "origin/$BASE..HEAD" --pretty=format:'%h %s'
-git diff --stat "origin/$BASE...HEAD"
-git diff --name-status "origin/$BASE...HEAD"
+```text
+gh repo view --json defaultBranchRef -q .defaultBranchRef.name
+git fetch origin <resolved-base> --quiet
+git log --no-merges origin/<resolved-base>..HEAD --pretty=format:<hash-and-subject-format>
+git diff --stat origin/<resolved-base>...HEAD
+git diff --name-status origin/<resolved-base>...HEAD
 ```
 
-9. Stop if the branch has zero commits ahead of `origin/$BASE`.
-10. Stop or explain if `BASE` cannot be resolved.
+9. Stop if the branch has zero commits ahead of `origin/<resolved-base>`.
+10. Stop or explain if the base cannot be resolved.
 11. Detect existing PRs for the current branch before creating a new one:
 
-```bash
+```text
 gh pr view --json number,url,title,baseRefName,headRefName
-gh pr list --head "$(git branch --show-current)" --json number,url,title,baseRefName,headRefName
+gh pr list --head <current-branch> --json number,url,title,baseRefName,headRefName
 ```
 
 12. If an existing PR exists, ask:
     `1. Update existing PR body` / `2. Create a new PR only if the platform allows and user confirms` / `3. Stop`.
 13. Push only the current branch if needed, using the explicit branch name.
-14. Create or update the PR only after confirmation when there is an existing PR or ambiguity.
+14. Write the PR body to a UTF-8 temporary file owned by the current run. Create
+    with `gh pr create --body-file <body-file>` or update with the equivalent
+    body-file option only after confirmation when there is an existing PR or
+    ambiguity. Remove only that exact temporary file afterward.
 
 Never use unqualified two-dot or three-dot HEAD ranges in PR mode. Bind PR
-commit and diff ranges to `origin/$BASE..HEAD` and `origin/$BASE...HEAD`.
+commit and diff ranges to `origin/<resolved-base>..HEAD` and
+`origin/<resolved-base>...HEAD`.
 
 PR body requirements:
 
-- Include a summary derived from `origin/$BASE...HEAD`.
+- Include a summary derived from `origin/<resolved-base>...HEAD`.
 - Include change bullets from diff name/status or stat, not full diffs.
 - Include verification evidence from `sdcorejs-ship`, branch-ready, docs-only rationale, or deferred verification warning.
 - Include review/repair evidence when the PR came from a review/repair loop.
@@ -477,7 +470,8 @@ If release or tag behavior is mentioned:
 - Hard-stop protected branches for commit, PR, and push.
 - Show the Commit Scope Ledger before staging or commit.
 - Use explicit path staging only.
-- Use heredocs for commit and PR bodies.
+- Use current-run UTF-8 files plus `git commit -F` and PR body-file options for
+  multi-line commit and PR bodies.
 - Redact suspected secrets before printing evidence.
 - Match the user's language for explanation; keep commands, branches, scopes, URLs, and env keys exact.
 
@@ -490,12 +484,12 @@ If release or tag behavior is mentioned:
 - Use dot-all or all-index staging shortcuts.
 - Bypass `sdcorejs-ship` when the user asks whether work is ready.
 - Tag, push tags, bump versions, or create releases without explicit approval.
-- Edit source files from commit, PR, or workspace mode.
+- Edit source files from commit or PR mode.
 - Print raw secret-bearing lines.
 
 ## Cross-References
 
 - `sdcorejs-ship` - final gate, verify-before-done, branch readiness, release readiness
-- `_refs/orchestration/workspace-isolation.md` - workspace/worktree isolation reference
+- `_refs/orchestration/workspace-isolation.md` - canonical orchestration owner for workspace/worktree isolation
 - `_refs/orchestration/tail/branch-ready.md` - branch hygiene checklist
 - `_refs/orchestration/release-changelog.md` - release notes and CHANGELOG workflow
