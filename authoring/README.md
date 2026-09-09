@@ -33,6 +33,16 @@ credentials. Live A/B evaluation is separate and may run only after explicit
 authorization. An unavailable or unauthorized live layer remains `NOT RUN`
 with an exact reason; it is never reported as passing.
 
+For shared UI/UX authoring changes, also run `npm run test:e2e:uiux`.
+This extends the existing prompt-routing harness with topic/surface retrieval,
+exact-version Core UI resolution, finding evidence mutations and semantic-owner
+closure checks. It is included in `test:e2e:repository`. Scenario coverage and
+sanitized baseline/RED/GREEN/REFACTOR evidence live under `authoring/evals/uiux/`.
+These records describe source/contract evaluation, not fresh target-project or
+visual execution. The original new-skill ceiling lifecycle and ten-scenario live
+matrix stay unchanged; their schema cannot truthfully represent this zero-new-skill
+reference change. Do not fabricate a new-skill proposal to fit those records.
+
 The new-skill gate reads canonical `skills/**` and routing evidence itself.
 Caller-supplied counts, arbitrary routing strings, empty proposals, or boolean
 approvals fail closed; approvals resolve through the canonical approved-artifact

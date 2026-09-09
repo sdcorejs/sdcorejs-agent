@@ -5,6 +5,7 @@ import {
 import { systemRegistry } from './system-registry.mjs';
 
 const SEVERITIES = new Set(['Critical', 'High', 'Important', 'Medium', 'Minor', 'Low', 'Info']);
+const UIUX_DIMENSIONS = Object.freeze({ functional: 'code', accessibility: 'accessibility', convention: 'consistency', aesthetic: 'code' });
 
 const REVIEW_DIMENSIONS = new Map(
   systemRegistry.review_dimensions.map((dimension) => [dimension.id, dimension]),
@@ -100,6 +101,42 @@ export function evaluateReviewContract(context) {
     ) {
       blockers.push(`finding ${item.id ?? sequence} does not satisfy the durable schema`);
       continue;
+    }
+    // UI/UX observations retain the existing durable finding/report shape.
+    // Additional evidence fields apply only to explicitly classified UI work.
+    if (item.kind === 'uiux' || item.uiux !== undefined) {
+      const uiux = item.uiux;
+      const text = (value) => typeof value === 'string' && value.trim().length > 0;
+      if (!uiux || !['functional', 'accessibility', 'convention', 'aesthetic'].includes(uiux.classification) ||
+        !['source', 'rendered', 'interaction'].includes(uiux.evidence_kind) ||
+        !text(uiux.rule_id) || !text(uiux.verification) ||
+        (uiux.evidence_kind === 'source' && !text(uiux.limitation))) {
+        blockers.push(`finding ${item.id ?? sequence} lacks UI/UX classification, evidence scope, verification, or source-only limitation`);
+        continue;
+      }
+      if (uiux.classification === 'aesthetic' &&
+        (!['Minor', 'Low', 'Info'].includes(item.severity) || ['BLOCKER', 'REQUIRED'].includes(item.gate) ||
+          item.repair_tier === 'auto' || item.eligible_for_automatic_repair === true)) {
+        blockers.push(`finding ${item.id ?? sequence} cannot make an aesthetic preference blocking`);
+        continue;
+      }
+      if (!REVIEW_DIMENSIONS.has(item.dimension) ||
+        (uiux.classification !== 'convention' &&
+          !requestedDimensions.includes(item.dimension) && !requestedDimensions.includes('ALL') &&
+          !(requestedDimensions.includes('site-audit') && ['code', 'accessibility'].includes(item.dimension)))) {
+        blockers.push(`finding ${item.id ?? sequence} expands a narrow review into an unrequested UI/UX dimension`);
+        continue;
+      }
+      if (item.dimension !== UIUX_DIMENSIONS[uiux.classification]) {
+        blockers.push(`finding ${item.id ?? sequence} has a contradictory UI/UX classification and dimension`);
+        continue;
+      }
+      if (uiux.classification === 'convention' && !CONSISTENCY_FINDING_KINDS.includes(item.finding_kind)) {
+        blockers.push(`finding ${item.id ?? sequence} must use the existing consistency finding contract`);
+        continue;
+      }
+      // Convention observations use the existing applicable/structural/narrow
+      // consistency scope below, including affects_requested_dimension.
     }
     // Match on a declared consistency kind, not on the mere presence of a
     // `finding_kind` field. A truthy check would drag any finding that happens

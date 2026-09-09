@@ -17,6 +17,10 @@
 //   node core-docs-fetch.mjs --print sd-select               # print the doc CONTENT to stdout
 //   node core-docs-fetch.mjs --version 21.0.7 --list
 //   node core-docs-fetch.mjs --cwd <target> --require-installed --list
+//   node core-docs-fetch.mjs --cwd <target> --require-installed --exact-version --list
+// --exact-version requires a resolved version, never falls back to another
+// version, and fails clearly when those docs are unavailable. Verify installed
+// source/exports before using APIs; nearest mode is reference discovery only.
 //
 // Cache (never committed): ~/.cache/sdcorejs/core-docs/<version>/...
 // Offline: if the network is unavailable it falls back to cache; if neither, it exits non-zero
@@ -26,7 +30,7 @@
 import { get as httpsGet } from 'node:https';
 import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { join, dirname, isAbsolute, normalize } from 'node:path';
+import { join, dirname, isAbsolute, normalize, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const SITE = 'https://sdcorejs.github.io/sdcorejs-angular/docs';
@@ -60,12 +64,13 @@ const MOJIBAKE = new RegExp(MOJIBAKE_PATTERNS.join('|'));
 
 // ── args ───────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
-let version, cwd = process.cwd(), doList = false, doPrint = false, requireInstalled = false, comp;
+let version, cwd = process.cwd(), doList = false, doPrint = false, requireInstalled = false, exactVersion = false, comp;
 for (let i = 0; i < args.length; i++) {
   const a = args[i];
   if (a === '--list') doList = true;
   else if (a === '--print') doPrint = true;
   else if (a === '--require-installed') requireInstalled = true;
+  else if (a === '--exact-version') exactVersion = true;
   else if (a === '--version') version = args[++i];
   else if (a === '--cwd') cwd = args[++i];
   else if (!a.startsWith('--') && !comp) comp = a;
@@ -163,10 +168,10 @@ function versionFromPackageLock(root) {
   return packageFromPackageLock(root)?.version ?? null;
 }
 
-function packageFromPackageLock(root) {
+function packageFromPackageLock(root, names = CORE_UI_PACKAGES) {
   const lock = readJson(join(root, 'package-lock.json'));
   if (!lock) return null;
-  for (const name of CORE_UI_PACKAGES) {
+  for (const name of names) {
     const entry = lock.packages?.[`node_modules/${name}`] || lock.dependencies?.[name];
     if (entry?.version) return { name, version: entry.version };
   }
@@ -222,15 +227,49 @@ function safeCachePath(rel) {
   return join(CACHE_ROOT, normalized);
 }
 
-// Read the installed Core UI package from the target project (either package name).
-export function detectInstalledPackage(dir) {
-  for (const name of CORE_UI_PACKAGES) {
-    const p = join(dir, 'node_modules', name, 'package.json');
-    if (existsSync(p)) {
-      try { return { name, version: JSON.parse(readFileSync(p, 'utf8')).version }; } catch { /* ignore */ }
-    }
+function ancestorDirectories(dir) {
+  const directories = [];
+  for (let current = resolve(dir); ; current = dirname(current)) {
+    directories.push(current);
+    if (dirname(current) === current) return directories;
   }
-  return packageFromPackageLock(dir) || packageFromTextLock(dir) || packageFromPackageJsons(dir);
+}
+
+// Resolve the app's alias first, then its nearest installed package. Ancestor
+// node_modules support npm workspace hoisting without relying on the package's
+// public exports (package.json need not be exported). Do not select a second,
+// incidental alias merely because it appears first in CORE_UI_PACKAGES.
+export function detectInstalledPackage(dir, { exact = false } = {}) {
+  const directories = ancestorDirectories(dir);
+  const contextDir = directories.find((directory) => existsSync(join(directory, 'package.json'))) ?? directories[0];
+  const manifest = readJson(join(contextDir, 'package.json')) ?? {};
+  const dependencies = { ...manifest.dependencies, ...manifest.devDependencies, ...manifest.peerDependencies, ...manifest.optionalDependencies };
+  const declared = CORE_UI_PACKAGES.filter((name) => Object.hasOwn(dependencies, name));
+  if (declared.length > 1) {
+    throw new Error('Multiple Core UI aliases declared; package identity is ambiguous. Inspect target usage and run from the application package with one established alias.');
+  }
+  const names = declared.length ? declared : CORE_UI_PACKAGES;
+  // An undeclared alias hoisted for a sibling does not make this a Core UI app.
+  const lookupDirectories = declared.length ? directories : directories.slice(0, directories.indexOf(contextDir) + 1);
+  const candidates = names.flatMap((name) => {
+    for (const directory of lookupDirectories) {
+      const metadata = readJson(join(directory, 'node_modules', name, 'package.json'));
+      if (metadata) return [{ name, version: metadata.version }];
+    }
+    const locked = packageFromPackageLock(contextDir, [name]);
+    return locked ? [locked] : [];
+  });
+  if (candidates.length > 1) {
+    throw new Error('Multiple Core UI aliases are available without a target declaration; package identity is ambiguous. Run from the application package and verify its dependency.');
+  }
+  if (candidates.length) return candidates[0];
+  // The legacy text-lock/declaration discovery extracts range minima. It is
+  // useful for discovery but cannot establish an exact installed version.
+  // With pnpm/yarn, use installed package metadata or an explicitly verified
+  // --version; do not parse a specifier as a resolved package version.
+  if (exact) return null;
+  const textLocked = packageFromTextLock(contextDir);
+  return (textLocked && names.includes(textLocked.name) ? textLocked : null) || packageFromPackageJsons(contextDir);
 }
 
 // Read the installed Core UI version from the target project (either package name).
@@ -272,6 +311,17 @@ function orderCandidates(all, want) {
 }
 
 // Resolve an ORDERED list of candidate versions (best first) to try.
+export function exactVersionCandidates({ installedPackage, version: explicitVersion } = {}) {
+  const wanted = explicitVersion || installedPackage?.version;
+  if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(wanted ?? '')) {
+    throw new Error('An exact resolved Core UI version is required; inspect the installed package or lockfile.');
+  }
+  if (explicitVersion && installedPackage && explicitVersion !== installedPackage.version) {
+    throw new Error('Explicit docs version conflicts with the detected Core UI version. Use installed source to resolve the conflict.');
+  }
+  return [wanted];
+}
+
 async function resolveVersionCandidates() {
   const installedPackage = detectInstalledPackage(cwd);
   if (requireInstalled && !installedPackage) {
@@ -281,6 +331,9 @@ async function resolveVersionCandidates() {
     );
   }
   const wantedVersion = version || installedPackage?.version;
+  // Exact mode never consults nearest versions, even if the registry/cache has
+  // another usable major. A missing exact index fails into local-source guidance.
+  if (exactVersion) return exactVersionCandidates({ installedPackage: detectInstalledPackage(cwd, { exact: true }), version });
 
   // Load the published registry — cached, so version resolution survives offline use.
   let registry;
@@ -337,6 +390,11 @@ async function main() {
     }
   }
   if (!index) throw new Error(`no fetchable docs version among: ${candidates.join(', ')}`);
+  const installed = detectInstalledPackage(cwd);
+  process.stderr.write(`[core-docs-fetch] requested=${version || installed?.version || 'unspecified'} resolved=${v} policy=${exactVersion ? 'exact' : 'nearest'}\n`);
+  if (installed && installed.version !== v) {
+    process.stderr.write('[core-docs-fetch] version mismatch: these docs are background only; verify APIs against installed source before use.\n');
+  }
 
   if (doList || !comp) {
     process.stdout.write(`# Core UI docs version: ${v}\n`);

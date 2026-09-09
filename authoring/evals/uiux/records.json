@@ -1,0 +1,616 @@
+{
+  "schema_version": 1,
+  "base_revision": "4fa58c66bc8b96c3ddcad887403d1eb9cfb5c8f4",
+  "upstream_revision": "4aad0584d92131626b16d4ff4d77f0455385013c",
+  "evidence_class": "deterministic-contract-and-source-assessment",
+  "green_snapshot": {
+    "path": "authoring/evals/uiux/green-sources.json",
+    "sha256": "sha256:e4007a066e4796d30fa73ef8bdb793f363a03503dca98dae1b5d5957bab12e1f"
+  },
+  "behavior_contract": {
+    "path": "test/e2e/uiux-knowledge.test.mjs",
+    "sha256": "sha256:e451f0271de570daa203e1399f2e28d5dc261825ecd85bca0c44ed9ce833f605"
+  },
+  "phases": [
+    {
+      "phase": "RED",
+      "result": "EXPECTED_FAIL",
+      "command": "node --test test/e2e/uiux-knowledge.test.mjs",
+      "transcript": {
+        "path": "authoring/evals/uiux/red.txt",
+        "sha256": "sha256:3c56402e3d7a79b47a446aae039502c078cdcdf93d6a9fe88728d5496ea45e74"
+      },
+      "live_target_project": false,
+      "tokens": null
+    },
+    {
+      "phase": "GREEN",
+      "result": "PASSED",
+      "command": "node --test test/e2e/uiux-knowledge.test.mjs",
+      "transcript": {
+        "path": "authoring/evals/uiux/green.txt",
+        "sha256": "sha256:d6e21679152eb46f59da77eb9588563853b4eaa73639086ee02e410eaf44dcab"
+      },
+      "live_target_project": false,
+      "tokens": null
+    },
+    {
+      "phase": "REFACTOR",
+      "result": "PASSED",
+      "command": "node --test test/e2e/uiux-knowledge.test.mjs",
+      "transcript": {
+        "path": "authoring/evals/uiux/refactor.txt",
+        "sha256": "sha256:108fae0182d512a23f204c70d9251fd5fbdf5d99542ae9008293f4828f5bfbd3"
+      },
+      "live_target_project": false,
+      "tokens": null
+    }
+  ],
+  "refactor_sources": [
+    {
+      "path": "_refs/angular/core-docs-fetch.mjs",
+      "sha256": "sha256:bab1f546397af4336f08a0310198b2931fd8d6f4c10c4482bb2a903bf88175d7"
+    },
+    {
+      "path": "_refs/angular/review-accessibility.md",
+      "sha256": "sha256:758532551b4e908866a95aeb20f9b7596f80691c78ad0c56a9ec0ae2430bede5"
+    },
+    {
+      "path": "_refs/angular/write-code/input-analysis.md",
+      "sha256": "sha256:2d09433ea2cbf80853aba744c50b8e45ab89356cec273d62275ba7b4a15babad"
+    },
+    {
+      "path": "_refs/design/frontend-design.md",
+      "sha256": "sha256:40181e495cdbcff8f8375efdffdc3a8f89d8301abf8806c8381cef8d13b848ee"
+    },
+    {
+      "path": "_refs/design/mobile-design.md",
+      "sha256": "sha256:92bc975d5d33b9081f26c4bb43609ef6fceb97ad97c09e7cac2718c84ad05587"
+    },
+    {
+      "path": "_refs/design/uiux/catalog.json",
+      "sha256": "sha256:e9b91cedc4bbde431e086e040a8b2bd5bd5e53f03aa32fbfd8bd36ba0e0612c9"
+    },
+    {
+      "path": "_refs/design/uiux/charts.md",
+      "sha256": "sha256:18d07aebcdf81cc029e8a15f74361b1115520c9cf078605ae94795a8ffaa01cf"
+    },
+    {
+      "path": "_refs/design/uiux/forms.md",
+      "sha256": "sha256:e0c691dee24229d2183f6fcf63776d2df6cfdc42bd431b7d1002070280483261"
+    },
+    {
+      "path": "_refs/design/uiux/index.md",
+      "sha256": "sha256:5f7e9f44d85426ad878886503f5e11936594c06f94e22988bedab4672989d188"
+    },
+    {
+      "path": "_refs/design/uiux/navigation.md",
+      "sha256": "sha256:396fb9e47024aa1fe86ef66edb55bcd2028bc86a9a3c6df409ff891e20f1c808"
+    },
+    {
+      "path": "_refs/design/uiux/public-web.md",
+      "sha256": "sha256:18f55e3fcb3b8d5dcbfd7d52a38d12c7d8da87ef260ee0bcca12de95e4f56fad"
+    },
+    {
+      "path": "_refs/design/uiux/select-references.mjs",
+      "sha256": "sha256:5bf4dbbcb46ebcb83e85318f55498b7a00123fb59a57dc39496402b39f8edd75"
+    },
+    {
+      "path": "_refs/design/uiux/sources.md",
+      "sha256": "sha256:c686481c4d4c87994d84edfe2ee55474eb9d645cbc73416532577f5bc3532e81"
+    },
+    {
+      "path": "_refs/design/uiux/states.md",
+      "sha256": "sha256:febbea087c19ac5a950303e8afcbbacb459207c8ecace1a93692816e0cd65744"
+    },
+    {
+      "path": "_refs/design/uiux/tables.md",
+      "sha256": "sha256:c8a3830c7cf135c557dd4d684e68d516a288e085a386aa6ef74c52f283c7b169"
+    },
+    {
+      "path": "_refs/design/uiux/upstream-license.txt",
+      "sha256": "sha256:738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014"
+    },
+    {
+      "path": "_refs/design/uiux/visual.md",
+      "sha256": "sha256:a8d67199953355a62b817b6b4b2d620263cc910fd905510f47ae05f0b75a8222"
+    },
+    {
+      "path": "_refs/nextjs/build-website/review-accessibility.md",
+      "sha256": "sha256:55aaad9a5b56da98a33a0516993c020e1f0ee02edf43935fd280f263d2f5d68b"
+    },
+    {
+      "path": "_refs/nextjs/build-website/write-code/responsive.md",
+      "sha256": "sha256:16b061eabb9950524c3bcec4130601cc789d01581e2af712e92c58110b35f8fb"
+    },
+    {
+      "path": "_refs/shared/design-handoff.md",
+      "sha256": "sha256:747b25aaedaff6c3b1c8098a49f35acc38fdae86aee58cd6e0608008bc936b4e"
+    },
+    {
+      "path": "_refs/shared/review-accessibility.md",
+      "sha256": "sha256:280abe7bfa5f27e781d53dffd156c554bd629f5ffc6d6a996b2654164e0bc2c2"
+    },
+    {
+      "path": "_refs/shared/review-contract.mjs",
+      "sha256": "sha256:a1ef728ec556f97cf19520ed6433b71e7503aa65edac3329b286928ede279497"
+    },
+    {
+      "path": "skills/orchestration/using-skills.md",
+      "sha256": "sha256:1823c3d8e4daee8c9fb0fefe2b8920d7e8189e6a4c1cbf9f61be501a56be4cd0"
+    },
+    {
+      "path": "skills/shared/sdlc/01-brainstorming.md",
+      "sha256": "sha256:5260b76a46c0f29848184338f34735199a3f49b9ef1bbdc8096fc544636c25a6"
+    },
+    {
+      "path": "skills/shared/sdlc/04-execute-plan.md",
+      "sha256": "sha256:628dcbc49f18ef1b3b7aa8c564bfde9102b4aee2ad350f73c0b62415e11d5f0a"
+    },
+    {
+      "path": "skills/shared/workflow/review.md",
+      "sha256": "sha256:b528c78389f10669194e8dcb49bc055671d053060584a800d62c69274f828f51"
+    },
+    {
+      "path": "skills/tracks/angular/sdcorejs-angular.md",
+      "sha256": "sha256:a59e0a4dbcdcafbc27c03a99e104091f55587a5eb61cdcafe8dc54e506b033b3"
+    },
+    {
+      "path": "skills/tracks/design/sdcorejs-design.md",
+      "sha256": "sha256:c12ee960caf48b21d2f1dc0b9db34f7ecb567de7a77dccced596f804968895a6"
+    },
+    {
+      "path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
+      "sha256": "sha256:70ea96785c19f49bfd396a211002d658f56d71762056fe080323a6a3d5816918"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "sha256:b44663116fb3fade03a9c571feeffc415614e63393f85b0ba588f29179f0cc82"
+    }
+  ],
+  "live_agent": {
+    "result": "NOT RUN",
+    "reason": "No explicit credentialed provider-use authorization or fresh target-project run was supplied.",
+    "tokens": null
+  },
+  "visual": {
+    "result": "NOT RUN",
+    "reason": "No target application UI/renderer was exercised; source and contract checks only."
+  },
+  "final_sources": [
+    {
+      "path": "_refs/angular/core-docs-fetch.mjs",
+      "sha256": "sha256:5ddadf5c69b5686f70a844a601f6ffa40a4cbbd14759b7ef3f206bea7c8a8e46"
+    },
+    {
+      "path": "_refs/angular/review-accessibility.md",
+      "sha256": "sha256:758532551b4e908866a95aeb20f9b7596f80691c78ad0c56a9ec0ae2430bede5"
+    },
+    {
+      "path": "_refs/angular/write-code/input-analysis.md",
+      "sha256": "sha256:3048612c06352c9bf1ccbac8d0ecf67ff8ccade5ee3f13cb6797af694c392590"
+    },
+    {
+      "path": "_refs/design/frontend-design.md",
+      "sha256": "sha256:40181e495cdbcff8f8375efdffdc3a8f89d8301abf8806c8381cef8d13b848ee"
+    },
+    {
+      "path": "_refs/design/mobile-design.md",
+      "sha256": "sha256:92bc975d5d33b9081f26c4bb43609ef6fceb97ad97c09e7cac2718c84ad05587"
+    },
+    {
+      "path": "_refs/design/uiux/catalog.json",
+      "sha256": "sha256:247d420f509b6fc73b10f19103b3d6c62f2e7473c52d4bfee69e0cb3f69229ff"
+    },
+    {
+      "path": "_refs/design/uiux/charts.md",
+      "sha256": "sha256:18d07aebcdf81cc029e8a15f74361b1115520c9cf078605ae94795a8ffaa01cf"
+    },
+    {
+      "path": "_refs/design/uiux/forms.md",
+      "sha256": "sha256:e0c691dee24229d2183f6fcf63776d2df6cfdc42bd431b7d1002070280483261"
+    },
+    {
+      "path": "_refs/design/uiux/index.md",
+      "sha256": "sha256:307d3eccbc7b0426f8d870153135f15a94cbee73cd628482fee397f7c867f609"
+    },
+    {
+      "path": "_refs/design/uiux/navigation.md",
+      "sha256": "sha256:396fb9e47024aa1fe86ef66edb55bcd2028bc86a9a3c6df409ff891e20f1c808"
+    },
+    {
+      "path": "_refs/design/uiux/public-web.md",
+      "sha256": "sha256:18f55e3fcb3b8d5dcbfd7d52a38d12c7d8da87ef260ee0bcca12de95e4f56fad"
+    },
+    {
+      "path": "_refs/design/uiux/select-references.mjs",
+      "sha256": "sha256:5bf4dbbcb46ebcb83e85318f55498b7a00123fb59a57dc39496402b39f8edd75"
+    },
+    {
+      "path": "_refs/design/uiux/sources.md",
+      "sha256": "sha256:c686481c4d4c87994d84edfe2ee55474eb9d645cbc73416532577f5bc3532e81"
+    },
+    {
+      "path": "_refs/design/uiux/states.md",
+      "sha256": "sha256:febbea087c19ac5a950303e8afcbbacb459207c8ecace1a93692816e0cd65744"
+    },
+    {
+      "path": "_refs/design/uiux/tables.md",
+      "sha256": "sha256:c8a3830c7cf135c557dd4d684e68d516a288e085a386aa6ef74c52f283c7b169"
+    },
+    {
+      "path": "_refs/design/uiux/upstream-license.txt",
+      "sha256": "sha256:738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014"
+    },
+    {
+      "path": "_refs/design/uiux/visual.md",
+      "sha256": "sha256:a8d67199953355a62b817b6b4b2d620263cc910fd905510f47ae05f0b75a8222"
+    },
+    {
+      "path": "_refs/nextjs/build-website/review-accessibility.md",
+      "sha256": "sha256:55aaad9a5b56da98a33a0516993c020e1f0ee02edf43935fd280f263d2f5d68b"
+    },
+    {
+      "path": "_refs/nextjs/build-website/write-code/responsive.md",
+      "sha256": "sha256:cb852fd68412f825b63c0eecf9f7e387d2957e467d0dee78c0999103aa88d17b"
+    },
+    {
+      "path": "_refs/shared/design-handoff.md",
+      "sha256": "sha256:747b25aaedaff6c3b1c8098a49f35acc38fdae86aee58cd6e0608008bc936b4e"
+    },
+    {
+      "path": "_refs/shared/review-accessibility.md",
+      "sha256": "sha256:280abe7bfa5f27e781d53dffd156c554bd629f5ffc6d6a996b2654164e0bc2c2"
+    },
+    {
+      "path": "_refs/shared/review-contract.mjs",
+      "sha256": "sha256:f268334733e255677268692b9e7740d259b6121b4a81c194dca9f0170c139a62"
+    },
+    {
+      "path": "skills/orchestration/using-skills.md",
+      "sha256": "sha256:1823c3d8e4daee8c9fb0fefe2b8920d7e8189e6a4c1cbf9f61be501a56be4cd0"
+    },
+    {
+      "path": "skills/shared/sdlc/01-brainstorming.md",
+      "sha256": "sha256:5260b76a46c0f29848184338f34735199a3f49b9ef1bbdc8096fc544636c25a6"
+    },
+    {
+      "path": "skills/shared/sdlc/04-execute-plan.md",
+      "sha256": "sha256:628dcbc49f18ef1b3b7aa8c564bfde9102b4aee2ad350f73c0b62415e11d5f0a"
+    },
+    {
+      "path": "skills/shared/workflow/review.md",
+      "sha256": "sha256:36932bf0ef95cc369b005992deb5e753a7ca90c4120ba3baf2875c4c5f45c11b"
+    },
+    {
+      "path": "skills/tracks/angular/sdcorejs-angular.md",
+      "sha256": "sha256:5adcc6e0a205600563637bc105503896b5631f299c5de321abc722d4c421d492"
+    },
+    {
+      "path": "skills/tracks/design/sdcorejs-design.md",
+      "sha256": "sha256:c712314f3b1b649d1a84a672e5b689b3fb5dd9bea9ee5403ce71364b1462a99e"
+    },
+    {
+      "path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
+      "sha256": "sha256:70ea96785c19f49bfd396a211002d658f56d71762056fe080323a6a3d5816918"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "sha256:b44663116fb3fade03a9c571feeffc415614e63393f85b0ba588f29179f0cc82"
+    }
+  ],
+  "post_review": {
+    "contract": {
+      "path": "test/e2e/uiux-review-regression.test.mjs",
+      "sha256": "sha256:fb4b5075bd6e7a224d8c16bd45084c2114a332e932f53b11ed412a09fe519f9a"
+    },
+    "phases": [
+      {
+        "phase": "RED",
+        "tests": 3,
+        "failures": 3,
+        "transcript": {
+          "path": "authoring/evals/uiux/post-review-red.txt",
+          "sha256": "sha256:1473fe05d7d733243b0a273c0208d579659a28b0f95117130daf3c038a20c535"
+        }
+      },
+      {
+        "phase": "GREEN",
+        "tests": 19,
+        "failures": 0,
+        "transcript": {
+          "path": "authoring/evals/uiux/post-review-green.txt",
+          "sha256": "sha256:d05b6ffd72a3d71a8244b951fb075587042624d644fc6b45f692a9724cfd7c38"
+        }
+      }
+    ]
+  },
+  "skill_creator_repair": {
+    "finding_ids": [
+      "R1",
+      "R2",
+      "R3"
+    ],
+    "source": "skill-creator review in this task; explicitly selected by the user",
+    "baseline_sources": [
+      {
+        "path": "_refs/angular/core-docs-fetch.mjs",
+        "sha256": "sha256:bab1f546397af4336f08a0310198b2931fd8d6f4c10c4482bb2a903bf88175d7"
+      },
+      {
+        "path": "_refs/angular/review-accessibility.md",
+        "sha256": "sha256:758532551b4e908866a95aeb20f9b7596f80691c78ad0c56a9ec0ae2430bede5"
+      },
+      {
+        "path": "_refs/angular/write-code/input-analysis.md",
+        "sha256": "sha256:2d09433ea2cbf80853aba744c50b8e45ab89356cec273d62275ba7b4a15babad"
+      },
+      {
+        "path": "_refs/design/frontend-design.md",
+        "sha256": "sha256:40181e495cdbcff8f8375efdffdc3a8f89d8301abf8806c8381cef8d13b848ee"
+      },
+      {
+        "path": "_refs/design/mobile-design.md",
+        "sha256": "sha256:92bc975d5d33b9081f26c4bb43609ef6fceb97ad97c09e7cac2718c84ad05587"
+      },
+      {
+        "path": "_refs/design/uiux/catalog.json",
+        "sha256": "sha256:e9b91cedc4bbde431e086e040a8b2bd5bd5e53f03aa32fbfd8bd36ba0e0612c9"
+      },
+      {
+        "path": "_refs/design/uiux/charts.md",
+        "sha256": "sha256:18d07aebcdf81cc029e8a15f74361b1115520c9cf078605ae94795a8ffaa01cf"
+      },
+      {
+        "path": "_refs/design/uiux/forms.md",
+        "sha256": "sha256:e0c691dee24229d2183f6fcf63776d2df6cfdc42bd431b7d1002070280483261"
+      },
+      {
+        "path": "_refs/design/uiux/index.md",
+        "sha256": "sha256:ec0ff950bc32c5fc80c37696ec80a501ee410b57914d98097b1b86f623b45b1f"
+      },
+      {
+        "path": "_refs/design/uiux/navigation.md",
+        "sha256": "sha256:396fb9e47024aa1fe86ef66edb55bcd2028bc86a9a3c6df409ff891e20f1c808"
+      },
+      {
+        "path": "_refs/design/uiux/public-web.md",
+        "sha256": "sha256:18f55e3fcb3b8d5dcbfd7d52a38d12c7d8da87ef260ee0bcca12de95e4f56fad"
+      },
+      {
+        "path": "_refs/design/uiux/select-references.mjs",
+        "sha256": "sha256:5bf4dbbcb46ebcb83e85318f55498b7a00123fb59a57dc39496402b39f8edd75"
+      },
+      {
+        "path": "_refs/design/uiux/sources.md",
+        "sha256": "sha256:c686481c4d4c87994d84edfe2ee55474eb9d645cbc73416532577f5bc3532e81"
+      },
+      {
+        "path": "_refs/design/uiux/states.md",
+        "sha256": "sha256:febbea087c19ac5a950303e8afcbbacb459207c8ecace1a93692816e0cd65744"
+      },
+      {
+        "path": "_refs/design/uiux/tables.md",
+        "sha256": "sha256:c8a3830c7cf135c557dd4d684e68d516a288e085a386aa6ef74c52f283c7b169"
+      },
+      {
+        "path": "_refs/design/uiux/upstream-license.txt",
+        "sha256": "sha256:738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014"
+      },
+      {
+        "path": "_refs/design/uiux/visual.md",
+        "sha256": "sha256:a8d67199953355a62b817b6b4b2d620263cc910fd905510f47ae05f0b75a8222"
+      },
+      {
+        "path": "_refs/nextjs/build-website/review-accessibility.md",
+        "sha256": "sha256:55aaad9a5b56da98a33a0516993c020e1f0ee02edf43935fd280f263d2f5d68b"
+      },
+      {
+        "path": "_refs/nextjs/build-website/write-code/responsive.md",
+        "sha256": "sha256:cb852fd68412f825b63c0eecf9f7e387d2957e467d0dee78c0999103aa88d17b"
+      },
+      {
+        "path": "_refs/shared/design-handoff.md",
+        "sha256": "sha256:747b25aaedaff6c3b1c8098a49f35acc38fdae86aee58cd6e0608008bc936b4e"
+      },
+      {
+        "path": "_refs/shared/review-accessibility.md",
+        "sha256": "sha256:280abe7bfa5f27e781d53dffd156c554bd629f5ffc6d6a996b2654164e0bc2c2"
+      },
+      {
+        "path": "_refs/shared/review-contract.mjs",
+        "sha256": "sha256:f268334733e255677268692b9e7740d259b6121b4a81c194dca9f0170c139a62"
+      },
+      {
+        "path": "skills/orchestration/using-skills.md",
+        "sha256": "sha256:1823c3d8e4daee8c9fb0fefe2b8920d7e8189e6a4c1cbf9f61be501a56be4cd0"
+      },
+      {
+        "path": "skills/shared/sdlc/01-brainstorming.md",
+        "sha256": "sha256:5260b76a46c0f29848184338f34735199a3f49b9ef1bbdc8096fc544636c25a6"
+      },
+      {
+        "path": "skills/shared/sdlc/04-execute-plan.md",
+        "sha256": "sha256:628dcbc49f18ef1b3b7aa8c564bfde9102b4aee2ad350f73c0b62415e11d5f0a"
+      },
+      {
+        "path": "skills/shared/workflow/review.md",
+        "sha256": "sha256:36932bf0ef95cc369b005992deb5e753a7ca90c4120ba3baf2875c4c5f45c11b"
+      },
+      {
+        "path": "skills/tracks/angular/sdcorejs-angular.md",
+        "sha256": "sha256:5adcc6e0a205600563637bc105503896b5631f299c5de321abc722d4c421d492"
+      },
+      {
+        "path": "skills/tracks/design/sdcorejs-design.md",
+        "sha256": "sha256:c712314f3b1b649d1a84a672e5b689b3fb5dd9bea9ee5403ce71364b1462a99e"
+      },
+      {
+        "path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
+        "sha256": "sha256:70ea96785c19f49bfd396a211002d658f56d71762056fe080323a6a3d5816918"
+      },
+      {
+        "path": "test/e2e/support/skill-pack-runner.mjs",
+        "sha256": "sha256:b44663116fb3fade03a9c571feeffc415614e63393f85b0ba588f29179f0cc82"
+      }
+    ],
+    "contract": {
+      "path": "test/e2e/uiux-skill-creator-regression.test.mjs",
+      "sha256": "sha256:179f5e965d2acfb4a1302daeb76fa9f6ff3a9c6fde79c08539776155d21aa098"
+    },
+    "phases": [
+      {
+        "phase": "RED",
+        "tests": 6,
+        "failures": 6,
+        "transcript": {
+          "path": "authoring/evals/uiux/skill-creator-red.txt",
+          "sha256": "sha256:578a7aefd554329199d5a308a5165ccd4bcc785bb516981383f6de0b7c8a62d8"
+        }
+      },
+      {
+        "phase": "ISOLATION_RED",
+        "tests": 6,
+        "failures": 1,
+        "transcript": {
+          "path": "authoring/evals/uiux/skill-creator-isolation-red.txt",
+          "sha256": "sha256:1fc406fbc07149d48fb0fa71fad0e3b5ac7cfea4c388eca37d6e911cb06c7412"
+        }
+      },
+      {
+        "phase": "GREEN",
+        "tests": 6,
+        "failures": 0,
+        "transcript": {
+          "path": "authoring/evals/uiux/skill-creator-green.txt",
+          "sha256": "sha256:a35376109d249390a32c9b7bd1a5f344d9c05a5bf0ef1d9734b19a7435bb25ad"
+        }
+      }
+    ]
+  },
+  "transcript_normalization": {
+    "reason": "Git staged-diff hygiene; test results and diagnostic content are unchanged.",
+    "receipts": [
+      {
+        "path": "authoring/evals/uiux/post-review-red.txt",
+        "operation": "remove-trailing-horizontal-whitespace",
+        "before_sha256": "sha256:d7e3266dfcca550e2c3c041440e366973270c582281decf78bc90bbce3e11272",
+        "after_sha256": "sha256:1473fe05d7d733243b0a273c0208d579659a28b0f95117130daf3c038a20c535",
+        "removed": [
+          {
+            "line": 19,
+            "suffix": "  "
+          },
+          {
+            "line": 22,
+            "suffix": "  "
+          },
+          {
+            "line": 40,
+            "suffix": "  "
+          },
+          {
+            "line": 43,
+            "suffix": "  "
+          },
+          {
+            "line": 63,
+            "suffix": "  "
+          },
+          {
+            "line": 66,
+            "suffix": "  "
+          }
+        ]
+      },
+      {
+        "path": "authoring/evals/uiux/review-red.txt",
+        "operation": "remove-trailing-horizontal-whitespace",
+        "before_sha256": "sha256:a78a40e7783d5446dfd62103a9afc09bf30c89dfdec62ab4ae399be02b486433",
+        "after_sha256": "sha256:c397be7190ee6c7eb2cdb762cf7788b738ba21053cb880329d15c44a76c90f1d",
+        "removed": [
+          {
+            "line": 17,
+            "suffix": "  "
+          },
+          {
+            "line": 20,
+            "suffix": "  "
+          }
+        ]
+      },
+      {
+        "path": "authoring/evals/uiux/skill-creator-isolation-red.txt",
+        "operation": "remove-trailing-horizontal-whitespace",
+        "before_sha256": "sha256:5844b3dfb6f6d0cbb0021d0cfde4a5e6cdc96599fbfa70acb6903fc0076fc254",
+        "after_sha256": "sha256:1fc406fbc07149d48fb0fa71fad0e3b5ac7cfea4c388eca37d6e911cb06c7412",
+        "removed": [
+          {
+            "line": 22,
+            "suffix": "  "
+          },
+          {
+            "line": 28,
+            "suffix": "  "
+          }
+        ]
+      },
+      {
+        "path": "authoring/evals/uiux/skill-creator-red.txt",
+        "operation": "remove-trailing-horizontal-whitespace",
+        "before_sha256": "sha256:357488d4a88c926d3f58baf2997bf80ee089d0b9986e3fd07fa6afe8c727581b",
+        "after_sha256": "sha256:578a7aefd554329199d5a308a5165ccd4bcc785bb516981383f6de0b7c8a62d8",
+        "removed": [
+          {
+            "line": 22,
+            "suffix": "  "
+          },
+          {
+            "line": 28,
+            "suffix": "  "
+          },
+          {
+            "line": 46,
+            "suffix": "  "
+          },
+          {
+            "line": 52,
+            "suffix": "  "
+          },
+          {
+            "line": 70,
+            "suffix": "  "
+          },
+          {
+            "line": 77,
+            "suffix": "  "
+          },
+          {
+            "line": 95,
+            "suffix": "  "
+          },
+          {
+            "line": 102,
+            "suffix": "  "
+          },
+          {
+            "line": 120,
+            "suffix": "  "
+          },
+          {
+            "line": 126,
+            "suffix": "  "
+          },
+          {
+            "line": 144,
+            "suffix": "  "
+          },
+          {
+            "line": 147,
+            "suffix": "  "
+          }
+        ]
+      }
+    ]
+  }
+}

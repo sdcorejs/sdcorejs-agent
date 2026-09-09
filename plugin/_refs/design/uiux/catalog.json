@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tasks": ["design-new", "improve", "fix", "implement", "review", "qa", "non-ui"],
+  "surfaces": {
+    "enterprise-portal": ["navigation", "table", "form", "state", "accessibility"],
+    "dashboard": ["chart", "state", "hierarchy", "accessibility"],
+    "public-website": ["public-web", "hierarchy", "accessibility"],
+    "landing-page": ["public-web", "hierarchy", "accessibility"],
+    "mobile-web": ["mobile", "state", "accessibility"],
+    "mobile-native": ["mobile", "state", "hierarchy"]
+  },
+  "references": [
+    { "id": "navigation", "path": "_refs/design/uiux/navigation.md", "topics": ["navigation", "sidebar", "breadcrumb", "module-switcher"], "surfaces": ["enterprise-portal", "dashboard", "public-website", "landing-page", "mobile-web"], "rule_ids": ["UX-NAV-HIERARCHY", "UX-NAV-COLLAPSE", "UX-NAV-CONTEXT"] },
+    { "id": "tables", "path": "_refs/design/uiux/tables.md", "topics": ["table", "density", "selection", "row-action", "filter", "pagination"], "surfaces": ["enterprise-portal", "dashboard", "public-website", "mobile-web", "mobile-native"], "rule_ids": ["UX-TABLE-WORKSPACE", "UX-TABLE-SELECTION", "UX-TABLE-MOBILE"] },
+    { "id": "forms", "path": "_refs/design/uiux/forms.md", "topics": ["form", "detail", "validation", "drawer", "unsaved-changes"], "surfaces": ["*"], "rule_ids": ["UX-FORM-STRUCTURE", "UX-FORM-RECOVERY", "UX-FORM-CONSEQUENCE"] },
+    { "id": "states", "path": "_refs/design/uiux/states.md", "topics": ["state", "loading", "empty", "error", "retry", "disabled"], "surfaces": ["*"], "rule_ids": ["UX-STATE-DATA", "UX-STATE-RECOVERY", "UX-STATE-FEEDBACK"] },
+    { "id": "public-web", "path": "_refs/design/uiux/public-web.md", "topics": ["public-web", "landing", "content", "conversion"], "surfaces": ["public-website", "landing-page", "mobile-web"], "rule_ids": ["UX-WEB-PURPOSE", "UX-WEB-ACTION"] },
+    { "id": "visual", "path": "_refs/design/uiux/visual.md", "topics": ["hierarchy", "layout", "typography", "color", "icon", "spacing", "motion"], "surfaces": ["*"], "rule_ids": ["UX-VISUAL-HIERARCHY", "UX-VISUAL-TOKENS", "UX-VISUAL-MOTION"] },
+    { "id": "charts", "path": "_refs/design/uiux/charts.md", "topics": ["chart", "dashboard", "metric"], "surfaces": ["enterprise-portal", "dashboard", "public-website", "mobile-web", "mobile-native"], "rule_ids": ["UX-CHART-QUESTION", "UX-CHART-INTEGRITY"] },
+    { "id": "mobile", "path": "_refs/design/mobile-design.md", "topics": ["mobile", "navigation", "touch", "gesture", "safe-area", "interruption"], "surfaces": ["mobile-web", "mobile-native"], "rule_ids": ["UX-MOBILE-NAV", "UX-MOBILE-INPUT", "UX-MOBILE-RESUME"] },
+    { "id": "accessibility", "path": "_refs/shared/review-accessibility.md", "topics": ["accessibility", "focus", "keyboard", "accessible-name", "contrast", "responsive", "reflow", "reduced-motion"], "surfaces": ["enterprise-portal", "dashboard", "public-website", "landing-page", "mobile-web"], "rule_ids": ["UX-A11Y-NAME", "UX-A11Y-KEYBOARD", "UX-A11Y-CONTRAST", "UX-A11Y-REFLOW", "UX-A11Y-TARGET", "UX-A11Y-MOTION", "UX-A11Y-ERROR"] }
+  ]
+}

@@ -1,0 +1,32 @@
+✖ UI review requires verification, keeps preferences advisory, and forbids writes (2.6492ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 178.2099
+
+✖ failing tests:
+
+test at test\e2e\uiux-knowledge.test.mjs:110:1
+✖ UI review requires verification, keeps preferences advisory, and forbids writes (2.6492ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'reviewed'
+  - 'blocked'
+
+      at TestContext.<anonymous> (file:///<authoring-worktree>/test/e2e/uiux-knowledge.test.mjs:141:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'reviewed',
+    expected: 'blocked',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

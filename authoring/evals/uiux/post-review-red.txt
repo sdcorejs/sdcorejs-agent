@@ -1,0 +1,80 @@
+✖ aesthetic preferences cannot use either blocking gate label (2.4516ms)
+✖ UI convention metadata preserves applicable consistency in code reviews (0.4445ms)
+✖ narrow reviews admit only UI conventions that affect their requested dimension (0.2711ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 0
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 85.348
+
+✖ failing tests:
+
+test at test\e2e\uiux-review-regression.test.mjs:25:1
+✖ aesthetic preferences cannot use either blocking gate label (2.4516ms)
+  AssertionError [ERR_ASSERTION]: BLOCKER
+  + actual - expected
+
+  + 'reviewed'
+  - 'blocked'
+
+      at TestContext.<anonymous> (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-review-regression.test.mjs:30:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'reviewed',
+    expected: 'blocked',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\e2e\uiux-review-regression.test.mjs:34:1
+✖ UI convention metadata preserves applicable consistency in code reviews (0.4445ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'blocked'
+  - 'reviewed'
+
+      at TestContext.<anonymous> (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-review-regression.test.mjs:37:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'blocked',
+    expected: 'reviewed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\e2e\uiux-review-regression.test.mjs:41:1
+✖ narrow reviews admit only UI conventions that affect their requested dimension (0.2711ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'blocked'
+  - 'reviewed'
+
+      at TestContext.<anonymous> (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-review-regression.test.mjs:45:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'blocked',
+    expected: 'reviewed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

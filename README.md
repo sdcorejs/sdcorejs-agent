@@ -220,6 +220,26 @@ provenance; it is not a second editable source of module documentation.
 
 ## Product And Design Artifact Layout
 
+Shared UI/UX knowledge is available through
+[`_refs/design/uiux/index.md`](_refs/design/uiux/index.md). Design, Angular,
+Next.js and independent review select only the relevant surface and topic.
+Existing components, tokens, icons and approved behavior remain the starting
+point; bounded fixes do not require a complete design system. The optional Node
+selector works offline, and the Markdown index is the fallback.
+
+Examples (runtime output follows the user's language):
+
+- `sdcorejs-design: Improve this existing three-level Core UI sidebar. Preserve routes, permissions, tokens and icon family; focus on expansion, active state and keyboard behavior.`
+- `sdcorejs-design: Design mobile cards for this data table. Preserve item identity, selection scope, row actions and opening behavior; show the desktop/mobile parity decisions.`
+- `sdcorejs-design: Design a new landing page from these approved requirements. Use the existing brand and explain content hierarchy, responsive behavior and states.`
+- `sdcorejs-review: Review this UI from source only. Separate functional/accessibility defects, accepted-convention drift and aesthetic suggestions; give evidence, severity and verification without editing code.`
+
+Implementation still uses the approved track workflow. Core UI documentation
+lookup supports `--exact-version` for either installed package name; unavailable
+exact documentation requires local API evidence or an explicit limitation.
+Baseline references and feature exceptions use the existing design decisions,
+handoff and ledger; no new public skill or root-level artifact directory.
+
 Product and Design artifacts live under the target repository's `.sdcorejs/`
 directory:
 

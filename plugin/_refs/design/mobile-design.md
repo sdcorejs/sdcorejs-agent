@@ -30,6 +30,50 @@ performant, and resilient to interruption.
 
 ## Mobile Situation
 
+For a targeted mobile improvement, select only affected concerns through
+`_refs/design/uiux/index.md`; the full mobile plan below is for a new flow or
+durable handoff. For table-to-card conversion also select `table`, preserving
+selection, row actions and opening behavior. These shared mobile patterns are
+SDCoreJS-authored heuristics, candidate until grounded in the project/platform.
+
+### UX-MOBILE-NAV - Keep destinations and alternatives discoverable
+
+- Applies: mobile web/native navigation and gestures in the approved flow.
+- Excludes: desktop-only layouts and navigation capabilities absent from scope.
+- Do: preserve current back/history behavior, distinguish peer destinations from
+  drill-in detail, and provide visible alternatives to essential gestures. Follow
+  actual platform semantics; retain local navigation/component conventions.
+- Avoid: adding a bottom bar by default, hiding essential actions behind swipe,
+  or using mock native controls that cannot provide the promised interaction.
+- Verify: back/deep links, return position/focus, touch and keyboard alternatives,
+  reachable actions and interrupted navigation on the supported platform.
+
+### UX-MOBILE-INPUT - Keep work visible with keyboard and safe areas
+
+- Applies: phone/tablet input, fixed actions, viewport and text scaling.
+- Excludes: platform-specific inset/haptic APIs on surfaces that do not use them.
+- Do: account for the actual keyboard and system safe areas; keep focused fields,
+  errors and submit controls accessible. Use suitable input types/autofill where
+  supported, readable text scaling and touch spacing based on real tasks. Web
+  target/reflow standards come from `_refs/shared/review-accessibility.md`;
+  native target sizes and accessibility APIs require the actual platform docs.
+- Avoid: assuming a screenshot proves keyboard behavior, disabling zoom, hiding
+  submit behind the keyboard, or applying one fixed pixel inset across devices.
+- Verify: small/large phone, orientation, keyboard open/closed, long text,
+  platform text scaling, safe areas and the complete error/submit flow.
+
+### UX-MOBILE-RESUME - Preserve truthful state through interruption
+
+- Applies: background/resume, connectivity changes and approved offline behavior.
+- Excludes: implementing new offline storage/sync/permission capabilities.
+- Do: specify what is retained, pending, completed or failed after interruption.
+  Preserve recoverable input, communicate stale/partial data and permission
+  recovery, and reconcile results without duplicate operations.
+- Avoid: fake queued/saved state, automatic non-idempotent retries, or claiming
+  offline support because a loading placeholder exists.
+- Verify: interrupt/resume during read/edit/submit; reconnect, permission changes,
+  and completion/failure recovery using the actual supported contract.
+
 Before designing, identify:
 
 - Subject: the concrete product, workflow, or domain object.
@@ -142,8 +186,9 @@ or system-font fallback when proposing a new visual asset.
 
 Color choices must be usable, not just attractive. In the design plan, identify
 the main text/background, muted text/background, CTA, focus, selected, disabled,
-and status-state pairings, and choose values with WCAG AA intent for normal
-interface text wherever practical.
+  and status-state pairings. For web use `_refs/shared/review-accessibility.md`
+  with the project's required WCAG version/level; for native use actual platform
+  guidance. Record measured evidence separately from intended visual direction.
 
 Focus indicators must be visible against both the component and surrounding
 surface. Status, error, warning, success, syncing, offline, and selected states
@@ -155,18 +200,18 @@ gradient SaaS, dark glassmorphism with neon accent, beige wellness minimalism,
 pastel bento cards, or endless white rounded cards with soft shadows, unless
 the brief truly calls for them.
 
-Use this structure for the token plan. Do not copy placeholder values; in the
-actual design plan, replace them with 4-6 subject-specific named colors and real
-hex values derived from the brief.
+Use source token/component references and revisions for the token plan. Reuse
+existing values; only an evidenced missing role needs a candidate value. There
+is no color-count quota and no requirement for a new palette or font per screen.
 
-| Token | Role | Hex | Intended use |
+| Token | Role | Source/evidence | Intended use |
 |---|---|---:|---|
-| <Subject surface name> | Primary app surface | <hex> | Main screen background |
-| <Raised or inset surface name> | Elevated or inset surface | <hex> | Cards, sheets, panels, input fields |
-| <Primary text name> | Primary text | <hex> | Headlines, labels, body copy |
-| <Muted text name> | Secondary text | <hex> | Captions, metadata, helper text |
-| <Accent/action name> | Brand/action accent | <hex> | Primary actions, active states, signature interaction |
-| <State/focus name> | Status or focus color | <hex> | Focus rings, errors, warnings, confirmations, sync/offline state |
+| <Subject surface name> | Primary app surface | <source reference or missing-role candidate> | Main screen background |
+| <Raised or inset surface name> | Elevated or inset surface | <source reference or missing-role candidate> | Cards, sheets, panels, input fields |
+| <Primary text name> | Primary text | <source reference or missing-role candidate> | Headlines, labels, body copy |
+| <Muted text name> | Secondary text | <source reference or missing-role candidate> | Captions, metadata, helper text |
+| <Accent/action name> | Brand/action accent | <source reference or missing-role candidate> | Primary actions, active states, signature interaction |
+| <State/focus name> | Status or focus color | <source reference or missing-role candidate> | Focus rings, errors, warnings, confirmations, sync/offline state |
 
 ### Motion should explain the interface
 
@@ -174,10 +219,9 @@ Mobile motion should clarify continuity, causality, and touch response. A
 transition should help the user understand where an object went, what changed,
 or whether an action completed.
 
-Choose one orchestrated mobile moment: a meaningful page transition, tactile
-confirmation, signature pull gesture, object morph, scanning sweep, map reveal,
-card handoff, or loading state that reflects the product's world. Let that
-moment carry the personality and keep other motion quiet.
+Use an existing transition or feedback only when it improves understanding.
+No new animation or gesture is required. Reuse current motion conventions and
+test interruption, reduced-motion alternatives and completion behavior.
 
 Respect reduced motion. Avoid unnecessary parallax, endlessly animated
 gradients, scroll-jacking, and heavy blur effects that degrade performance.
@@ -246,7 +290,7 @@ Include:
 - Type roles:
 - Spacing rhythm:
 - Shape/surface treatment:
-- Motion signature:
+- Existing motion behavior or justified candidate change:
 - Reduced-motion behavior:
 
 ### Layout And Ergonomics

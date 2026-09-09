@@ -1,0 +1,27 @@
+✔ on-demand reference selection: sidebar (1.1594ms)
+✔ on-demand reference selection: mobile-table (0.1503ms)
+✔ on-demand reference selection: portal-crud (0.1329ms)
+✔ on-demand reference selection: landing (0.1196ms)
+✔ on-demand reference selection: review (0.0819ms)
+✔ on-demand reference selection: focus-fix (0.0882ms)
+✔ on-demand reference selection: spacing-fix (0.0966ms)
+✔ unknown topics and surfaces never manufacture a marketing match (0.3034ms)
+✔ Q&A and non-UI work load no knowledge and malformed requests fail closed (0.3881ms)
+✔ the catalog has resolvable rule locations and no hidden eager file loading (6.9025ms)
+✔ Core UI exact docs selection supports aliases and refuses version guessing (0.3688ms)
+✔ exact-version resolution uses package evidence without stripping ranges or guessing text locks (16.727ms)
+✔ UI review requires verification, keeps preferences advisory, and forbids writes (0.9005ms)
+✔ feature decisions use the existing semantic-owner paths and closure (0.7556ms)
+✔ routing preserves design, implementation, independent review and direct answers (2.5879ms)
+✔ public inventory is unchanged from the recorded main revision (53.8764ms)
+✔ aesthetic preferences cannot use either blocking gate label (1.0696ms)
+✔ UI convention metadata preserves applicable consistency in code reviews (0.2363ms)
+✔ narrow reviews admit only UI conventions that affect their requested dimension (0.2235ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 186.9792

@@ -37,6 +37,7 @@ Priority when several skills match:
 Choose one path before loading a full workflow:
 
 - Pure Q&A with no authorized write: answer directly.
+- UI work selects topics via `_refs/design/uiux/index.md`; backend/Q&A load none.
 - Small, explicit, low-risk fix: targeted context, smallest scoped edit,
   focused verification, and concise review. Behavior, acceptance criteria,
   ownership, and verification must already be bounded.

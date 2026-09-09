@@ -7,6 +7,21 @@ Node workspace is not distributed through npm.
 
 ## Unreleased
 
+- Upgrade `sdcorejs-design` for focused improvements and existing-UI reuse, with
+  shared UI/UX topic references for design, Angular, Next.js and read-only review.
+  Preserve the 23 public skills, Core UI aliases, semantic artifact owners and
+  existing baseline/feature decision paths. Add transparent offline no-match
+  retrieval, scoped findings and deterministic authoring evidence.
+- Add exact-version Core UI documentation lookup that rejects unresolved ranges
+  and conflicting versions; consolidate accessibility criteria and separate
+  project ergonomics from standards-based requirements.
+- Resolve hoisted Core UI installations from the application context, select
+  aliases from its manifest, and reject ambiguous identity. Route native mobile
+  navigation to the existing mobile guidance; cover each review finding with
+  regression fixtures.
+- Refresh the site's Astro dependency group within the existing manifest range
+  to resolve audit findings; no root dependency or manifest range changes.
+
 - Make the Visual Companion live runtime reachable from the workflow. Add
   `_refs/sdlc/visual-companion/cli.mjs` with a machine-readable JSON contract,
   stable result/error codes, non-zero failure exits, and deterministic session

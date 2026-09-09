@@ -123,6 +123,13 @@ const PRIORITY_RULES = [
   {
     skill: null,
     when: ({ prompt, tokens }) =>
+      /^what is the difference\b/u.test(prompt) &&
+      hasAny(tokens, ['drawer', 'dialog', 'sidebar', 'table', 'card']) &&
+      !hasAny(tokens, ['implement', 'build', 'create', 'fix', 'review', 'audit'])
+  },
+  {
+    skill: null,
+    when: ({ prompt, tokens }) =>
       /\b(fix|correct)\b/.test(prompt) &&
       /\b(typo|spelling)\b/.test(prompt) &&
       !hasAny(tokens, ['debug', 'test', 'tests', 'failing', 'failure'])
@@ -288,7 +295,8 @@ const PRIORITY_RULES = [
       (hasAny(tokens, ['design', 'ui', 'ux', 'wireframe', 'mockup', 'png', 'preview', 'handoff']) ||
         (hasAny(tokens, ['flow', 'flows']) && hasAny(tokens, ['screen', 'screens', 'user', 'journey']))) &&
       !hasDocumentationIntent(prompt, tokens) &&
-      !hasAny(tokens, ['angular', 'portal', 'implement', 'code', 'architecture', 'codebase', 'repo', 'map', 'trace'])
+      !hasAny(tokens, ['implement', 'code', 'architecture', 'codebase', 'repo', 'map', 'trace']) &&
+      (!hasAny(tokens, ['angular', 'portal']) || hasAny(tokens, ['design', 'wireframe', 'mockup', 'handoff']))
   },
   {
     skill: 'sdcorejs-test',

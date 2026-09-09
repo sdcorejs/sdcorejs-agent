@@ -97,7 +97,7 @@ This skill is an **orchestrator**: it does NOT inline the full generation rules 
 ## Dispatch table
 
 For each scope item in the approved plan dispatched by
-`sdcorejs-execute-plan`, READ the matching reference pack and follow it:
+`sdcorejs-execute-plan`, READ the matching reference pack; UI work also reads `_refs/design/uiux/index.md` for focused topics and exact-version Core UI evidence within existing approval/eligibility boundaries:
 
 | Scope item | Reference pack to read |
 |---|---|
