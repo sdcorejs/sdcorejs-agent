@@ -8,8 +8,6 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 
 
 # 03 - Plan
-
-
 ## Shared Protocols
 
 Read `_refs/shared/runtime-protocols.md`. Draft and approved plan artifacts apply
@@ -21,11 +19,13 @@ Read `_refs/sdlc/architecture.md`. From `_refs/shared/architecture-contract.mjs`
 `validateArchitecturePrePlanHandoff` before drafting, `validateArchitectureDraftPlanHandoff`
 for draft self-review, and `validateArchitecturePlanHandoff` only after approval and in execution.
 
+Forward runtime `requirement_context.visual_companion` via `context.pass` (portable
+`state_delta.visual_companion`); preserve identity, scopes, surface and
+consent. Apply `_refs/sdlc/visual-offer-policy.md` for unresolved choices; never
+persist runtime permission in approved artifacts or reopen settled choices.
+
 ## Purpose
-Translate an approved spec into an executable contract, hold the user approval gate, and persist the approved plan corpus inside the same skill.
-
-The plan is the exact contract that `sdcorejs-execute-plan` runs.
-
+Translate an approved spec into the exact contract `sdcorejs-execute-plan` runs, hold approval, and persist the approved plan corpus inside this skill.
 ## Preconditions
 - A spec has explicit user approval.
 - `sdcorejs-spec` has written the approved spec snapshot.

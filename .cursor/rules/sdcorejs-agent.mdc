@@ -187,8 +187,9 @@ Load references on demand:
 - Relevant `_refs/sdlc/*.md` during brainstorming, architecture, spec, or plan.
 - `_refs/shared/tasklist.md` for non-trivial execution tasks.
 - `_refs/shared/user-choice-prompt.md` before any user-facing choice, approval gate, yes/no question, or mode selection.
-- `_refs/sdlc/visual-companion.md` before offering a visual surface or starting
-  a companion session.
+- `_refs/sdlc/visual-offer-policy.md` before open choices; skip fixed work.
+- `_refs/sdlc/visual-companion.md` for requested/accepted previews or missing
+  runtime consent; preserve scoped responses.
 - `_refs/shared/testing-philosophy.md` for test-track work.
 - Decision coverage, validation-map, and convergence references at their gates.
 - `_refs/simplify/**` for bounded behavior-preserving source refinement.

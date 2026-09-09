@@ -268,15 +268,15 @@
     },
     {
       "path": "skills/orchestration/using-skills.md",
-      "sha256": "sha256:1823c3d8e4daee8c9fb0fefe2b8920d7e8189e6a4c1cbf9f61be501a56be4cd0"
+      "sha256": "sha256:848fb674eb8702755325d963ddef37b43dce79262fa8e540255ee9b032fabf5f"
     },
     {
       "path": "skills/shared/sdlc/01-brainstorming.md",
-      "sha256": "sha256:5260b76a46c0f29848184338f34735199a3f49b9ef1bbdc8096fc544636c25a6"
+      "sha256": "sha256:61cdbf1daca3938a0dc4adb18c5bd60f8a3cbf73a9ccbe8ddfee32635e8907a4"
     },
     {
       "path": "skills/shared/sdlc/04-execute-plan.md",
-      "sha256": "sha256:628dcbc49f18ef1b3b7aa8c564bfde9102b4aee2ad350f73c0b62415e11d5f0a"
+      "sha256": "sha256:d164568a8675d87264c2f044eecd3385366be982751a0b5ba4b848276c76cda0"
     },
     {
       "path": "skills/shared/workflow/review.md",
@@ -284,15 +284,15 @@
     },
     {
       "path": "skills/tracks/angular/sdcorejs-angular.md",
-      "sha256": "sha256:5adcc6e0a205600563637bc105503896b5631f299c5de321abc722d4c421d492"
+      "sha256": "sha256:53e01ad40945a1bc38999d8a9ddffc70b4cf646c56858295deffa0919892c389"
     },
     {
       "path": "skills/tracks/design/sdcorejs-design.md",
-      "sha256": "sha256:c712314f3b1b649d1a84a672e5b689b3fb5dd9bea9ee5403ce71364b1462a99e"
+      "sha256": "sha256:5821395d976bbffa2f57e341055c915530666c6638235e8b170fa8a13f3c7e2e"
     },
     {
       "path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
-      "sha256": "sha256:70ea96785c19f49bfd396a211002d658f56d71762056fe080323a6a3d5816918"
+      "sha256": "sha256:4b3faeb2131e6c374bf0266097d88e7d53770f76c9a1c452a92fdb304bbefbb5"
     },
     {
       "path": "test/e2e/support/skill-pack-runner.mjs",
@@ -612,5 +612,166 @@
         ]
       }
     ]
+  },
+  "visual_offer_integration": {
+    "change_ref": "visual-companion-offer",
+    "source_revision": "1e74140592794bc64bd6d955d89dd4a83e390bcb",
+    "previous_final_sources": [
+      {
+        "path": "_refs/angular/core-docs-fetch.mjs",
+        "sha256": "sha256:5ddadf5c69b5686f70a844a601f6ffa40a4cbbd14759b7ef3f206bea7c8a8e46"
+      },
+      {
+        "path": "_refs/angular/review-accessibility.md",
+        "sha256": "sha256:758532551b4e908866a95aeb20f9b7596f80691c78ad0c56a9ec0ae2430bede5"
+      },
+      {
+        "path": "_refs/angular/write-code/input-analysis.md",
+        "sha256": "sha256:3048612c06352c9bf1ccbac8d0ecf67ff8ccade5ee3f13cb6797af694c392590"
+      },
+      {
+        "path": "_refs/design/frontend-design.md",
+        "sha256": "sha256:40181e495cdbcff8f8375efdffdc3a8f89d8301abf8806c8381cef8d13b848ee"
+      },
+      {
+        "path": "_refs/design/mobile-design.md",
+        "sha256": "sha256:92bc975d5d33b9081f26c4bb43609ef6fceb97ad97c09e7cac2718c84ad05587"
+      },
+      {
+        "path": "_refs/design/uiux/catalog.json",
+        "sha256": "sha256:247d420f509b6fc73b10f19103b3d6c62f2e7473c52d4bfee69e0cb3f69229ff"
+      },
+      {
+        "path": "_refs/design/uiux/charts.md",
+        "sha256": "sha256:18d07aebcdf81cc029e8a15f74361b1115520c9cf078605ae94795a8ffaa01cf"
+      },
+      {
+        "path": "_refs/design/uiux/forms.md",
+        "sha256": "sha256:e0c691dee24229d2183f6fcf63776d2df6cfdc42bd431b7d1002070280483261"
+      },
+      {
+        "path": "_refs/design/uiux/index.md",
+        "sha256": "sha256:307d3eccbc7b0426f8d870153135f15a94cbee73cd628482fee397f7c867f609"
+      },
+      {
+        "path": "_refs/design/uiux/navigation.md",
+        "sha256": "sha256:396fb9e47024aa1fe86ef66edb55bcd2028bc86a9a3c6df409ff891e20f1c808"
+      },
+      {
+        "path": "_refs/design/uiux/public-web.md",
+        "sha256": "sha256:18f55e3fcb3b8d5dcbfd7d52a38d12c7d8da87ef260ee0bcca12de95e4f56fad"
+      },
+      {
+        "path": "_refs/design/uiux/select-references.mjs",
+        "sha256": "sha256:5bf4dbbcb46ebcb83e85318f55498b7a00123fb59a57dc39496402b39f8edd75"
+      },
+      {
+        "path": "_refs/design/uiux/sources.md",
+        "sha256": "sha256:c686481c4d4c87994d84edfe2ee55474eb9d645cbc73416532577f5bc3532e81"
+      },
+      {
+        "path": "_refs/design/uiux/states.md",
+        "sha256": "sha256:febbea087c19ac5a950303e8afcbbacb459207c8ecace1a93692816e0cd65744"
+      },
+      {
+        "path": "_refs/design/uiux/tables.md",
+        "sha256": "sha256:c8a3830c7cf135c557dd4d684e68d516a288e085a386aa6ef74c52f283c7b169"
+      },
+      {
+        "path": "_refs/design/uiux/upstream-license.txt",
+        "sha256": "sha256:738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014"
+      },
+      {
+        "path": "_refs/design/uiux/visual.md",
+        "sha256": "sha256:a8d67199953355a62b817b6b4b2d620263cc910fd905510f47ae05f0b75a8222"
+      },
+      {
+        "path": "_refs/nextjs/build-website/review-accessibility.md",
+        "sha256": "sha256:55aaad9a5b56da98a33a0516993c020e1f0ee02edf43935fd280f263d2f5d68b"
+      },
+      {
+        "path": "_refs/nextjs/build-website/write-code/responsive.md",
+        "sha256": "sha256:cb852fd68412f825b63c0eecf9f7e387d2957e467d0dee78c0999103aa88d17b"
+      },
+      {
+        "path": "_refs/shared/design-handoff.md",
+        "sha256": "sha256:747b25aaedaff6c3b1c8098a49f35acc38fdae86aee58cd6e0608008bc936b4e"
+      },
+      {
+        "path": "_refs/shared/review-accessibility.md",
+        "sha256": "sha256:280abe7bfa5f27e781d53dffd156c554bd629f5ffc6d6a996b2654164e0bc2c2"
+      },
+      {
+        "path": "_refs/shared/review-contract.mjs",
+        "sha256": "sha256:f268334733e255677268692b9e7740d259b6121b4a81c194dca9f0170c139a62"
+      },
+      {
+        "path": "skills/orchestration/using-skills.md",
+        "sha256": "sha256:1823c3d8e4daee8c9fb0fefe2b8920d7e8189e6a4c1cbf9f61be501a56be4cd0"
+      },
+      {
+        "path": "skills/shared/sdlc/01-brainstorming.md",
+        "sha256": "sha256:5260b76a46c0f29848184338f34735199a3f49b9ef1bbdc8096fc544636c25a6"
+      },
+      {
+        "path": "skills/shared/sdlc/04-execute-plan.md",
+        "sha256": "sha256:628dcbc49f18ef1b3b7aa8c564bfde9102b4aee2ad350f73c0b62415e11d5f0a"
+      },
+      {
+        "path": "skills/shared/workflow/review.md",
+        "sha256": "sha256:36932bf0ef95cc369b005992deb5e753a7ca90c4120ba3baf2875c4c5f45c11b"
+      },
+      {
+        "path": "skills/tracks/angular/sdcorejs-angular.md",
+        "sha256": "sha256:5adcc6e0a205600563637bc105503896b5631f299c5de321abc722d4c421d492"
+      },
+      {
+        "path": "skills/tracks/design/sdcorejs-design.md",
+        "sha256": "sha256:c712314f3b1b649d1a84a672e5b689b3fb5dd9bea9ee5403ce71364b1462a99e"
+      },
+      {
+        "path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
+        "sha256": "sha256:70ea96785c19f49bfd396a211002d658f56d71762056fe080323a6a3d5816918"
+      },
+      {
+        "path": "test/e2e/support/skill-pack-runner.mjs",
+        "sha256": "sha256:b44663116fb3fade03a9c571feeffc415614e63393f85b0ba588f29179f0cc82"
+      }
+    ],
+    "changed_paths": [
+      "skills/orchestration/using-skills.md",
+      "skills/shared/sdlc/01-brainstorming.md",
+      "skills/shared/sdlc/04-execute-plan.md",
+      "skills/tracks/angular/sdcorejs-angular.md",
+      "skills/tracks/design/sdcorejs-design.md",
+      "skills/tracks/nextjs/sdcorejs-nextjs.md"
+    ],
+    "verification": {
+      "command": "node --test test/e2e/uiux-knowledge.test.mjs test/e2e/uiux-review-regression.test.mjs test/e2e/uiux-skill-creator-regression.test.mjs",
+      "started_at": "2026-09-09T13:54:10.874Z",
+      "finished_at": "2026-09-09T13:54:14.323Z",
+      "node": "v22.22.3",
+      "exit_code": 0,
+      "tests": 25,
+      "pass": 25,
+      "fail": 0,
+      "contract_manifest": [
+        {
+          "path": "test/e2e/uiux-knowledge.test.mjs",
+          "sha256": "sha256:e451f0271de570daa203e1399f2e28d5dc261825ecd85bca0c44ed9ce833f605"
+        },
+        {
+          "path": "test/e2e/uiux-review-regression.test.mjs",
+          "sha256": "sha256:fb4b5075bd6e7a224d8c16bd45084c2114a332e932f53b11ed412a09fe519f9a"
+        },
+        {
+          "path": "test/e2e/uiux-skill-creator-regression.test.mjs",
+          "sha256": "sha256:179f5e965d2acfb4a1302daeb76fa9f6ff3a9c6fde79c08539776155d21aa098"
+        }
+      ],
+      "output_sha256": "sha256:e38e09b4cd825a150a21136fb10b6bc3a2fcf1df16e040f35da8813ea6769568",
+      "transcript": "TAP version 13\n# Subtest: on-demand reference selection: sidebar\nok 1 - on-demand reference selection: sidebar\n  ---\n  duration_ms: 9.9053\n  type: 'test'\n  ...\n# Subtest: on-demand reference selection: mobile-table\nok 2 - on-demand reference selection: mobile-table\n  ---\n  duration_ms: 1.4564\n  type: 'test'\n  ...\n# Subtest: on-demand reference selection: portal-crud\nok 3 - on-demand reference selection: portal-crud\n  ---\n  duration_ms: 0.9903\n  type: 'test'\n  ...\n# Subtest: on-demand reference selection: landing\nok 4 - on-demand reference selection: landing\n  ---\n  duration_ms: 0.6172\n  type: 'test'\n  ...\n# Subtest: on-demand reference selection: review\nok 5 - on-demand reference selection: review\n  ---\n  duration_ms: 0.9988\n  type: 'test'\n  ...\n# Subtest: on-demand reference selection: focus-fix\nok 6 - on-demand reference selection: focus-fix\n  ---\n  duration_ms: 0.6616\n  type: 'test'\n  ...\n# Subtest: on-demand reference selection: spacing-fix\nok 7 - on-demand reference selection: spacing-fix\n  ---\n  duration_ms: 0.9285\n  type: 'test'\n  ...\n# Subtest: unknown topics and surfaces never manufacture a marketing match\nok 8 - unknown topics and surfaces never manufacture a marketing match\n  ---\n  duration_ms: 2.0879\n  type: 'test'\n  ...\n# Subtest: Q&A and non-UI work load no knowledge and malformed requests fail closed\nok 9 - Q&A and non-UI work load no knowledge and malformed requests fail closed\n  ---\n  duration_ms: 6.7132\n  type: 'test'\n  ...\n# Subtest: the catalog has resolvable rule locations and no hidden eager file loading\nok 10 - the catalog has resolvable rule locations and no hidden eager file loading\n  ---\n  duration_ms: 56.016\n  type: 'test'\n  ...\n# Subtest: Core UI exact docs selection supports aliases and refuses version guessing\nok 11 - Core UI exact docs selection supports aliases and refuses version guessing\n  ---\n  duration_ms: 2.3912\n  type: 'test'\n  ...\n# Subtest: exact-version resolution uses package evidence without stripping ranges or guessing text locks\nok 12 - exact-version resolution uses package evidence without stripping ranges or guessing text locks\n  ---\n  duration_ms: 117.7492\n  type: 'test'\n  ...\n# Subtest: UI review requires verification, keeps preferences advisory, and forbids writes\nok 13 - UI review requires verification, keeps preferences advisory, and forbids writes\n  ---\n  duration_ms: 11.9085\n  type: 'test'\n  ...\n# Subtest: feature decisions use the existing semantic-owner paths and closure\nok 14 - feature decisions use the existing semantic-owner paths and closure\n  ---\n  duration_ms: 4.8404\n  type: 'test'\n  ...\n# Subtest: routing preserves design, implementation, independent review and direct answers\nok 15 - routing preserves design, implementation, independent review and direct answers\n  ---\n  duration_ms: 20.0038\n  type: 'test'\n  ...\n# Subtest: public inventory is unchanged from the recorded main revision\nok 16 - public inventory is unchanged from the recorded main revision\n  ---\n  duration_ms: 699.918\n  type: 'test'\n  ...\n# Subtest: aesthetic preferences cannot use either blocking gate label\nok 17 - aesthetic preferences cannot use either blocking gate label\n  ---\n  duration_ms: 12.031\n  type: 'test'\n  ...\n# Subtest: UI convention metadata preserves applicable consistency in code reviews\nok 18 - UI convention metadata preserves applicable consistency in code reviews\n  ---\n  duration_ms: 2.7065\n  type: 'test'\n  ...\n# Subtest: narrow reviews admit only UI conventions that affect their requested dimension\nok 19 - narrow reviews admit only UI conventions that affect their requested dimension\n  ---\n  duration_ms: 2.1194\n  type: 'test'\n  ...\n# Subtest: R1: exact docs resolve a hoisted dependency from the application workspace\nok 20 - R1: exact docs resolve a hoisted dependency from the application workspace\n  ---\n  duration_ms: 256.0212\n  type: 'test'\n  ...\n# Subtest: R1: an application-local installation shadows the hoisted package\nok 21 - R1: an application-local installation shadows the hoisted package\n  ---\n  duration_ms: 68.8284\n  type: 'test'\n  ...\n# Subtest: R2: the application declaration selects its alias when both are installed\nok 22 - R2: the application declaration selects its alias when both are installed\n  ---\n  duration_ms: 150.7628\n  type: 'test'\n  ...\n# Subtest: R2: lockfile fallback also respects the declared alias\nok 23 - R2: lockfile fallback also respects the declared alias\n  ---\n  duration_ms: 28.8271\n  type: 'test'\n  ...\n# Subtest: R2: missing or ambiguous package identity cannot certify the other alias\nok 24 - R2: missing or ambiguous package identity cannot certify the other alias\n  ---\n  duration_ms: 49.9501\n  type: 'test'\n  ...\n# Subtest: R3: native navigation selects existing mobile rules without web-only references\nok 25 - R3: native navigation selects existing mobile rules without web-only references\n  ---\n  duration_ms: 3.3825\n  type: 'test'\n  ...\n1..25\n# tests 25\n# suites 0\n# pass 25\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 2238.7421\n"
+    },
+    "limitation": "Current deterministic UI/UX regression after visual-offer integration. Historical phase transcripts and source hashes remain unchanged in previous_final_sources and earlier phases; no target-project/live/UI rendering claim."
   }
 }

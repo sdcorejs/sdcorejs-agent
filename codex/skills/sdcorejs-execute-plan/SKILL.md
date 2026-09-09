@@ -10,6 +10,10 @@ description: Execute an approved plan snapshot. Use after sdcorejs-plan approval
 
 # 04 - Execute Plan
 
+For unresolved visual decisions, apply `../_refs/sdlc/visual-offer-policy.md`;
+forward `requirement_context.visual_companion` through `context.pass`
+(portable `state_delta.visual_companion`) to the owning workflow.
+
 ## Shared Protocols
 
 Read `../_refs/shared/runtime-protocols.md`; UI executors select topics via `../_refs/design/uiux/index.md` without imposing Core UI on plain stacks. Non-UI units load none. Apply
@@ -31,16 +35,12 @@ truth before any write or dispatch:
   `../_refs/orchestration/parallel-protocol.mjs` builds waves and opportunity evidence.
 
 ## Purpose
-Run the approved plan as the execution contract. This skill is the handoff between planning and doing.
-
-It owns four decisions:
+Run the approved plan as the execution contract. This handoff between planning and doing owns four decisions:
 
 1. Which execution track should run.
-2. Whether execution uses parallel fresh workers, sequential fresh workers, or
-   parent fallback.
+2. Whether execution uses parallel fresh workers, sequential fresh workers, or parent fallback.
 3. Whether Angular work is Core UI portal work or plain Angular work.
-4. Whether NestJS, Next.js, React, Node/general, migration, product, design, or
-   test work needs a track executor or the generic harness fallback.
+4. Whether NestJS, Next.js, React, Node/general, migration, product, design, or test work needs a track executor or the generic harness fallback.
 
 The generic harness is write-capable because it is the approved-plan fallback
 executor for unsupported stacks and explicit CREATE/EDIT tasks. Write

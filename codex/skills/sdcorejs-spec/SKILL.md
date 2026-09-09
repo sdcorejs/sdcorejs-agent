@@ -26,6 +26,13 @@ with `classifyArchitectureGate` from
 `../_refs/shared/architecture-contract.mjs`. The spec records the classification;
 it does not author the architecture artifact.
 
+Preserve `requirement_context.visual_companion` as runtime context through
+`context.pass` (portable `state_delta.visual_companion`), including stable decision/thread identity, scoped responses,
+actual surface and purpose-bound consent. Do not reset it when changing phase,
+persist runtime permission in approved artifacts, or reopen a settled visual
+choice. An unresolved choice returns to its owner under
+`../_refs/sdlc/visual-offer-policy.md`; normal approval/change-control gates remain.
+
 ## Purpose
 Turn the confirmed requirement contract into a durable spec, hold the user approval gate, and persist the approved spec corpus inside the same skill.
 

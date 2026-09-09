@@ -11,11 +11,13 @@ description: Next.js website code executor for approved site/module work with co
 # Build Website — Write Code Orchestrator
 
 
+For unresolved visual decisions, apply `../_refs/sdlc/visual-offer-policy.md`;
+forward `requirement_context.visual_companion` through `context.pass`
+(portable `state_delta.visual_companion`) to the owning workflow.
+
 ## Shared Protocols
 
-Read `../_refs/shared/runtime-protocols.md` and
-`../_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through
-the finishing tail.
+Read `../_refs/shared/runtime-protocols.md` and `../_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through the finishing tail.
 
 ## Purpose
 Single entry point for generating approved Next.js website code. This skill is the

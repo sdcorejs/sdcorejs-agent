@@ -148,14 +148,27 @@ a workflow gate or a new `sdcorejs-caveman` skill.
 
 ## Visual Companion
 
-Spatial decisions during brainstorming may run on a local, authenticated
-browser surface instead of a picker. Visual and non-visual decisions use
-separate priority ladders, so a genuinely spatial question is no longer
-shadowed by a native structured choice. Approvals never reach a visual surface.
+Before an open choice is settled, Brainstorming and Design (including direct
+entry) assess whether seeing alternatives will help the user choose. They
+proactively offer a short comparison at the first useful visual decision, such
+as sidebar navigation, mobile selection/actions, wizard flow or dashboard
+hierarchy. A direct preview request proceeds without another invitation. Typos,
+fixed spacing, approved layouts and delegated choices need no offer.
 
-Surfaces, best first: the live companion runtime, a typed native visual
-surface, the standalone static composer, then numbered Markdown. All four share
-one screen model and always carry the same numbered Markdown fallback.
+For example, ask: "Improve the three-level sidebar; I am unsure how to arrange
+navigation." Once real alternatives are clear, the agent offers to show their
+mockups side by side. To try it directly, ask: "Show me two mobile card mockups
+with different selection and action placement." Invitations and screen labels
+follow the user's language. A refusal carries across skills/phases in its visual
+thread (or whole session if requested); an explicit narrow re-enable changes
+only the requested scope.
+
+Visual surfaces, best first: supported live companion with scoped runtime
+consent, native visual, static HTML, then numbered Markdown. Text decisions and
+approvals use native structured choice, then numbered Markdown. A text picker
+can collect preview preference but cannot replace the requested preview. Unknown
+browser auto-open means manual opening, not loss of visual capability. Failures
+fall through the same ladder with the original decision/options intact.
 
 The live runtime is `_refs/sdlc/visual-companion/`: a zero-dependency Node
 server on a loopback origin with an RFC 6455 event channel, a browser client
@@ -175,13 +188,16 @@ This exception does not extend the supported root toolchain.
 
 Two independent gates: `live_visual_companion` plus `persistent_local_process`
 must be `supported`, and the user must consent to local runtime writes.
-Auto-opening a browser is a third, separate consent. Session state lives under
+Auto-opening a browser needs its own separate consent. Reuse grants only within
+the same conversation session, scope and purpose. Session state lives under
 the execution host's `.sdcorejs/tmp/visual-companion/`, which is `local_only`:
 never staged, never committed, never read back as project context. Every
 browser event is stamped `authority: supporting-feedback` by the server and
 asserted on read, so a click can never carry workflow approval.
 
-Contract: `_refs/sdlc/visual-companion.md`. Security model and attribution:
+Recognition: `_refs/sdlc/visual-offer-policy.md`. Runtime contract:
+`_refs/sdlc/visual-companion.md`. Natural-language/multi-turn eval commands and
+honest live-evidence limitations: [visual offer evals](authoring/evals/visual-offer/README.md). Security model and attribution:
 `_refs/sdlc/visual-companion/README.md`.
 
 ## Documentation Layout v2

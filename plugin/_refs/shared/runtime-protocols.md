@@ -22,8 +22,10 @@ Load only the references required by the selected task:
   `_refs/shared/documentation-layout.md` (JIT only).
 - Delegation after runtime capability checks:
   `_refs/harness/delegation-policy.json` and `_refs/harness/task-brief.md`.
-- Visual/spatial decision after the user accepts:
-  `_refs/sdlc/visual-companion.md`.
+- Open choices: `_refs/sdlc/visual-offer-policy.md` before deciding, including
+  direct Design; skip visual loading for fixed work.
+- Requested/accepted preview or missing runtime consent:
+  `_refs/sdlc/visual-companion.md` for surfaces and lifecycle.
 
 Current user instructions, files, diffs, logs, failing tests, and current
 command output override stored context. Match the user's language at runtime;

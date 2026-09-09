@@ -209,95 +209,17 @@ Do not continue to blocker confirmation until the direction is selected or the u
 
 ## Optional Visual Companion
 
-Use the visual companion as an optional typed aid during brainstorming when a
-mockup, wireframe, layout, diagram, flow, or side-by-side comparison would make
-the next decision clearer than text.
+Before presenting or settling an open decision, apply
+`_refs/sdlc/visual-offer-policy.md`. Assess actual alternatives and visual
+benefit, then invite just in time before choosing a direction. Direct preview
+requests already establish intent. Preserve scoped `visual_companion` state
+through handoffs; a skill or phase change does not reset a decline or pending
+invitation. Load the detailed `_refs/sdlc/visual-companion.md` only to prepare
+an accepted/requested surface or its missing runtime consent.
 
-The visual companion is a surface, not a mode. Accepting it does not mean every
-brainstorming step becomes visual.
-
-Do not offer the visual companion upfront. First understand the user's request,
-project context, constraints, and current design question. Offer it only when
-the next decision would genuinely be clearer if shown visually, such as choosing
-between layouts, UI flows, component structures, information architecture,
-navigation models, visual hierarchy, architecture boundaries, data flows, state
-machines, entity relationships, or side-by-side design directions.
-
-When that first genuinely visual decision appears, apply
-`_refs/shared/user-choice-prompt.md`. Use a native structured choice when its
-capability is supported and preserve this numbered Markdown fallback:
-
-```text
-The next decision may be easier to understand if shown visually as a mockup,
-diagram, or browser comparison. Which direction do you want?
-
-1. Use visual companion to preview visual options before approving the design
-2. Do not use visual companion; continue brainstorming in text + TDD
-
-Reply with `1` or `2`.
-```
-
-Do not combine this offer with another approval or dependent decision.
-
-If the user chooses option 1:
-
-- Read `visual-companion.md` before proceeding. It is the executable contract
-  for the surface, the session lifecycle, and the consent boundary.
-- Resolve the surface from the capability contract, not from preference. A live
-  companion session requires `live_visual_companion` and
-  `persistent_local_process` to be `supported`; `visual-companion.md` owns the
-  rest of the fallback ladder, so read it there rather than assuming an order.
-- A live session writes local runtime state under the execution host's
-  `.sdcorejs/tmp/visual-companion/`. Confirm that separately before starting
-  one, and never start a session as a side effect of another decision.
-- Auto-opening a browser is a second, separate consent. Both are visible side
-  effects on the user's own machine, which is why a supported capability never
-  authorizes either on its own. Without browser consent, present the session URL
-  and let the user open it.
-- Use the visual companion per question, not per session.
-- Create one visual decision screen at a time.
-- Prefer 2-4 options, not many options.
-- Ask the user to review the screen and respond in the main conversation.
-- Treat visual selections as supporting feedback, not approval or the only
-  source of truth. The runtime stamps every browser event
-  `authority: supporting-feedback` and asserts it on read.
-- Merge visual feedback with the user's written response before updating the
-  design.
-- Publish the waiting screen when the conversation moves back to text, and stop
-  the session when the visual thread is finished.
-
-If the user chooses option 2:
-
-- Continue text-only.
-- Do not offer the visual companion again unless a genuinely new visual or
-  spatial decision appears.
-
-Per-question rule:
-
-- Use visuals for UI mockups, wireframes, layout comparisons, navigation
-  structures, architecture diagrams, data-flow diagrams, state machines, entity
-  relationships, spatial relationships, before/after UX comparisons, and visual
-  polish questions.
-- Use text for requirements, scope, API design, data model decisions, TDD
-  strategy, trade-off lists, business rules, acceptance criteria, and
-  implementation sequencing.
-
-A UI-related topic is not automatically a visual topic. "What should this
-dashboard do?" is text. "Which dashboard layout feels clearer?" is visual.
-
-The main conversation remains the source of truth. Native/static selections or
-visual-only feedback are supporting signals. If visual feedback conflicts with
-the user's written response, prioritize the written response.
-
-The visual companion must never bypass the normal `sdcorejs-brainstorming` gate:
-
-1. Understand context.
-2. Clarify intent and constraints.
-3. Propose options.
-4. Get design approval.
-5. Convert the approved direction into acceptance criteria and testable
-   behavior.
-6. Only then move to implementation planning and TDD.
+The visual companion remains an optional decision aid. Conversation feedback
+owns the direction; convert it to acceptance criteria and preserve normal
+spec/plan approval gates before implementation.
 
 ### 4. Confirm blockers
 Reuse answers already present in the conversation or artifacts. Ask one
@@ -432,9 +354,11 @@ requirement_context:
       behavior: <observable behavior>
       expected_result: <testable outcome>
   visual_companion:
-    offered: true | false
-    selected: true | false
-    artifact_write_approved: true | false
+    schema_version: 1
+    decisions: [] # scoped identity, assessment status/reason and actual surface
+    responses: [] # pending/accepted/declined with conversation scope
+    consents: [] # explicit local-runtime/browser grants with scope and purpose
+    artifact_write_approved: true | false # separate artifact lifecycle authority
   redaction_applied: true | false
   next_skill: sdcorejs-spec
 ```

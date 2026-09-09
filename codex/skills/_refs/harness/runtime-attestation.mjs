@@ -9,6 +9,37 @@ const OBSERVABLE_CAPABILITIES = Object.freeze([
   'result_ref',
   'workspace_isolation',
 ]);
+const VISUAL_CAPABILITIES = Object.freeze([
+  'native_structured_choice', 'visual_surface', 'static_html_artifact',
+  'live_visual_companion', 'visual_event_bridge', 'persistent_local_process', 'browser_auto_open',
+]);
+
+function validateVisualAttestation(visual) {
+  if (!isRecord(visual) || !isRecord(visual.capabilities) || !Array.isArray(visual.observations)) {
+    return ['visual attestation requires capabilities and observations'];
+  }
+  const errors = [];
+  const seen = new Set();
+  for (const name of Object.keys(visual.capabilities)) {
+    if (!VISUAL_CAPABILITIES.includes(name)) errors.push(`unknown visual capability: ${name}`);
+  }
+  for (const observation of visual.observations) {
+    if (!isRecord(observation) || !VISUAL_CAPABILITIES.includes(observation.capability)) {
+      errors.push('unknown visual observation'); continue;
+    }
+    if (seen.has(observation.capability)) errors.push(`duplicate visual observation: ${observation.capability}`);
+    seen.add(observation.capability);
+    if (!evidenceIsValid(observation.evidence)) errors.push(`${observation.capability} requires evidence`);
+    if (!STATUSES.has(observation.status) || visual.capabilities[observation.capability] !== observation.status) {
+      errors.push(`visual observation projection differs: ${observation.capability}`);
+    }
+  }
+  for (const name of VISUAL_CAPABILITIES) {
+    if (!STATUSES.has(visual.capabilities[name])) errors.push(`invalid visual capability status: ${name}`);
+    if (visual.capabilities[name] !== 'unknown' && !seen.has(name)) errors.push(`${name} requires current-session runtime evidence`);
+  }
+  return errors;
+}
 
 function isRecord(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -50,6 +81,7 @@ export function validateRuntimeAttestation(attestation = {}) {
   const errors = [];
   const observedCapabilities = new Set();
   if (!isRecord(attestation)) return ['runtime attestation must be an object'];
+  if (attestation.visual !== undefined) errors.push(...validateVisualAttestation(attestation.visual));
   if (attestation.schema_version !== 1) errors.push('schema_version must be 1');
   if (typeof attestation.adapter !== 'string' || attestation.adapter.trim() === '') {
     errors.push('adapter must be a non-empty string');
@@ -137,6 +169,7 @@ export function attestRuntimeCapabilities({
   defaults = {},
   observations = {},
   max_concurrency: maxConcurrency = null,
+  visual_observations: visualObservations,
 } = {}) {
   if (typeof adapter !== 'string' || adapter.trim() === '') {
     throw new TypeError('adapter must be a non-empty string');
@@ -191,6 +224,22 @@ export function attestRuntimeCapabilities({
     observations: evidence.sort((left, right) =>
       left.capability.localeCompare(right.capability, 'en')),
   };
+  // Opt-in group: existing orchestration attestations retain their exact shape.
+  if (visualObservations !== undefined) {
+    if (!isRecord(visualObservations)) throw new TypeError('visual_observations must be an object');
+    const visual = { capabilities: Object.fromEntries(VISUAL_CAPABILITIES.map((name) => [name, 'unknown'])), observations: [] };
+    for (const [capability, observation] of Object.entries(visualObservations)) {
+      if (!VISUAL_CAPABILITIES.includes(capability)) throw new TypeError(`unknown visual capability: ${capability}`);
+      if (!isRecord(observation) || !STATUSES.has(observation.status) || !evidenceIsValid(observation.evidence)) {
+        throw new TypeError(`${capability} requires a tri-state status and runtime evidence`);
+      }
+      visual.capabilities[capability] = observation.status;
+      visual.observations.push({ capability, status: observation.status, evidence: {
+        source: observation.evidence.source.trim(), detail: observation.evidence.detail.trim(),
+      } });
+    }
+    attestation.visual = visual;
+  }
   const errors = validateRuntimeAttestation(attestation);
   if (errors.length > 0) {
     throw new Error(`invalid runtime attestation: ${errors.join('; ')}`);

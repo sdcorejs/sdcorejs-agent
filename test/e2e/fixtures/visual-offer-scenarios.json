@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "localization_fixture": true,
+  "description": "Natural-language and multi-turn visual offer evaluation. Expected labels are evaluator-only; assistant turns must come from actual runs.",
+  "capabilities": {
+    "native_structured_choice": "supported",
+    "visual_surface": "supported",
+    "static_html_artifact": "supported",
+    "live_visual_companion": "unsupported",
+    "persistent_local_process": "unsupported",
+    "browser_auto_open": "unknown"
+  },
+  "scenarios": [
+    {
+      "id": "sidebar",
+      "entry": "brainstorming",
+      "turns": [
+        {
+          "user": "Cải thiện sidebar ba cấp, mình chưa biết nên bố trí navigation thế nào. So sánh giúp các cách hợp lý trước khi mình chọn.",
+          "expected": "offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "mobile-cards",
+      "entry": "brainstorming",
+      "turns": [
+        {
+          "user": "sd-table trên mobile thành card, chưa biết đặt selection và action ở đâu. Có thao tác chọn nhiều và một action mở chi tiết.",
+          "expected": "offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "direct-design",
+      "entry": "design",
+      "turns": [
+        {
+          "user": "Dùng sdcorejs-design: dashboard có doanh số, đơn hàng và cảnh báo, mình chưa rõ nên bố trí layout thế nào. Hãy đưa các hướng để mình chọn.",
+          "expected": "offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "requested-mockups",
+      "entry": "brainstorming",
+      "turns": [
+        {
+          "user": "Cho mình xem hai mockup sidebar đặt cạnh nhau: cây ba cấp và điều hướng theo section.",
+          "expected": "preview",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "fixed-rename",
+      "entry": "brainstorming",
+      "turns": [
+        {
+          "user": "Đổi tên input customerName thành clientName, giữ nguyên behavior và layout.",
+          "expected": "no-offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "fixed-spacing",
+      "entry": "brainstorming",
+      "turns": [
+        {
+          "user": "Sửa spacing giữa hai input từ 8px thành 16px.",
+          "expected": "no-offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "approved-layout",
+      "entry": "executor",
+      "turns": [
+        {
+          "user": "Triển khai layout đã duyệt: sidebar trái cố định 240px, nội dung bên phải. Không còn quyết định thiết kế nào đang mở.",
+          "expected": "no-offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "mixed-business",
+      "entry": "brainstorming",
+      "turns": [
+        {
+          "user": "Làm màn xử lý đơn, mình chưa rõ ai được hủy và nên bố trí bước xác nhận thế nào.",
+          "expected": "clarify",
+          "requires": "response"
+        },
+        {
+          "user": "Chỉ quản lý được hủy, đơn chưa giao mới hủy được. Giờ so sánh wizard hai bước với drawer xác nhận để mình chọn.",
+          "expected": "offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "decline-handoff",
+      "entry": "brainstorming",
+      "turns": [
+        {
+          "user": "So sánh hai cách navigation cho sidebar ba cấp để mình chọn.",
+          "expected": "offer",
+          "requires": "response"
+        },
+        {
+          "user": "Không dùng preview trong luồng này, tiếp tục bằng chữ. Chuyển sang sdcorejs-design để bàn tiếp bố trí navigation.",
+          "expected": "no-repeat",
+          "requires": "offer"
+        }
+      ]
+    },
+    {
+      "id": "reenable",
+      "entry": "brainstorming",
+      "turns": [
+        {
+          "user": "So sánh wizard với drawer cho màn xác nhận.",
+          "expected": "offer",
+          "requires": "response"
+        },
+        {
+          "user": "Không xem preview trong phiên này. Tiếp tục bằng chữ.",
+          "expected": "no-repeat",
+          "requires": "offer"
+        },
+        {
+          "user": "Riêng quyết định này, bật lại giúp mình và cho xem hai mockup.",
+          "expected": "preview",
+          "requires": "response"
+        },
+        {
+          "user": "Sang bố trí dashboard ở thread khác, vẫn theo lựa chọn không preview của phiên.",
+          "expected": "no-repeat",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "native-and-visual",
+      "entry": "brainstorming",
+      "turns": [
+        {
+          "user": "So sánh hai kiểu wizard, một trang dài và chia ba bước, bằng mockup để mình chọn.",
+          "expected": "preview",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "runtime-failure",
+      "entry": "brainstorming",
+      "turns": [
+        {
+          "user": "Phiên live đã lỗi RUNTIME_UNAVAILABLE. Mình đã đồng ý xem mockup, hãy tiếp tục so sánh hai layout sidebar với cùng các phương án.",
+          "expected": "fallback",
+          "requires": "response"
+        }
+      ],
+      "capabilities": {
+        "native_structured_choice": "supported",
+        "visual_surface": "supported",
+        "static_html_artifact": "supported",
+        "live_visual_companion": "supported",
+        "persistent_local_process": "supported",
+        "browser_auto_open": "unknown"
+      },
+      "runtime_event": {
+        "kind": "failure",
+        "surface": "live-visual-companion",
+        "code": "RUNTIME_UNAVAILABLE"
+      }
+    },
+    {
+      "id": "click-not-approval",
+      "entry": "brainstorming",
+      "turns": [
+        {
+          "user": "Browser vừa chọn phương án A. Spec và plan chưa được duyệt; tiếp tục workflow đúng gate.",
+          "expected": "no-approval",
+          "requires": "response"
+        }
+      ],
+      "runtime_event": {
+        "kind": "selection",
+        "option_id": "A",
+        "authority": "supporting-feedback"
+      }
+    },
+    {
+      "id": "delegated-choice",
+      "entry": "brainstorming",
+      "turns": [
+        {
+          "user": "Mình giao bạn tự chọn bố trí sidebar phù hợp nhất theo convention hiện có, không cần hỏi mình chọn.",
+          "expected": "no-offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "keyword-only",
+      "entry": "brainstorming",
+      "turns": [
+        {
+          "user": "Trong tài liệu UI Angular design, sửa typo \"digram\" thành \"diagram\".",
+          "expected": "no-offer",
+          "requires": "response"
+        }
+      ]
+    },
+    {
+      "id": "text-only-runtime",
+      "entry": "brainstorming",
+      "turns": [
+        {
+          "user": "Mình muốn so sánh hai cách bố trí sidebar ba cấp.",
+          "expected": "no-offer",
+          "requires": "response"
+        }
+      ],
+      "capabilities": {
+        "native_structured_choice": "supported",
+        "visual_surface": "unknown",
+        "static_html_artifact": "unsupported",
+        "live_visual_companion": "unknown",
+        "persistent_local_process": "unknown",
+        "browser_auto_open": "unknown"
+      }
+    }
+  ]
+}

@@ -70,6 +70,12 @@ An additional failing isolation probe within R1 prevents a plain Angular sibling
 from inheriting another workspace application's hoisted Core UI identity; the
 final GREEN run includes that assertion for both supported aliases.
 
+The Visual Companion integration refreshes `final_sources` after a new actual
+25-case deterministic UI/UX regression. `visual_offer_integration` preserves the
+prior final hashes bound to its source revision and adds the current contract
+manifest and captured output. It does not relabel historical phase transcripts
+or claim fresh target-project, live-agent or visual rendering coverage.
+
 Before commit, four RED transcripts had trailing horizontal whitespace removed
 to satisfy Git diff hygiene. `transcript_normalization` retains each original
 hash and the exact removed line suffixes, so the original normalized output can

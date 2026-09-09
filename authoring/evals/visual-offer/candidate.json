@@ -1,0 +1,3191 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "actual-cli-dialogue",
+  "created_at": "2026-09-09T10:28:40.646Z",
+  "source_revision": "1e74140592794bc64bd6d955d89dd4a83e390bcb",
+  "source_manifest": {
+    "entries": [
+      {
+        "path": "skills/orchestration/documentation.md",
+        "sha256": "6f8cf63b611e463b973c1fc736993ff20ff201d515bf4d3eae1e825e961e5bd4"
+      },
+      {
+        "path": "skills/orchestration/parallel-dispatch.md",
+        "sha256": "59167bc6b22b3fb41fa4e0890ba6ab8cf835166087c3634382c633d6911347a3"
+      },
+      {
+        "path": "skills/orchestration/repair-loop.md",
+        "sha256": "e6b789c862876c16819766beea64fc041befb0a1206ff980272bfc6bb1988701"
+      },
+      {
+        "path": "skills/orchestration/subagent-driven-development.md",
+        "sha256": "f4c9ecb8525f31f05a21e13ac36ea40834c1bcc0022a654793bdc339dc29a9ff"
+      },
+      {
+        "path": "skills/orchestration/using-skills.md",
+        "sha256": "486869445bf7d5f771d1e009ee0cfa977681b839037c5301ff6f34fad8bdd483"
+      },
+      {
+        "path": "skills/shared/sdlc/01-brainstorming.md",
+        "sha256": "61cdbf1daca3938a0dc4adb18c5bd60f8a3cbf73a9ccbe8ddfee32635e8907a4"
+      },
+      {
+        "path": "skills/shared/sdlc/02-spec.md",
+        "sha256": "2c5f5074ecabeba1a2ae4dc6aa5d4fdaac594dd24e04b4c4913b3c599b55058d"
+      },
+      {
+        "path": "skills/shared/sdlc/03-plan.md",
+        "sha256": "0a5a77966b2ffaab430fe37e1c584a23f5fc7f69446b5086f8a62f513f7508d2"
+      },
+      {
+        "path": "skills/shared/sdlc/04-execute-plan.md",
+        "sha256": "b0c7a9b2369eda1b9d62d680bbcfa018fc68cc28bc86afb47aa03f8589e68d93"
+      },
+      {
+        "path": "skills/shared/sdlc/architecture.md",
+        "sha256": "581d0b6f63d3579cf238b15f2933f938ea4731f3faa0e4ed60bbd4a9251638cb"
+      },
+      {
+        "path": "skills/shared/workflow/debug.md",
+        "sha256": "84c83bf9764f85f484ec9d56deedb359caa7c2c991cb1355912fd3b5d3fa7027"
+      },
+      {
+        "path": "skills/shared/workflow/explore.md",
+        "sha256": "8d30ad46be311ef11ab8db50cd1d7e41352b465036a0cf377aab9ad29353f672"
+      },
+      {
+        "path": "skills/shared/workflow/git.md",
+        "sha256": "d6b1418c2f0355e6709309668b18242e358ad6541e1c12c52463789c22528de9"
+      },
+      {
+        "path": "skills/shared/workflow/review.md",
+        "sha256": "36932bf0ef95cc369b005992deb5e753a7ca90c4120ba3baf2875c4c5f45c11b"
+      },
+      {
+        "path": "skills/shared/workflow/ship.md",
+        "sha256": "be6f39460466c445726b4bf9bd28c7c51617ef239fb549cd47645181bcf27193"
+      },
+      {
+        "path": "skills/shared/workflow/simplify.md",
+        "sha256": "8eb0f2e92adf0e98d54a643f1178c3de5f6520e1feda242e6ea91b595aff8f03"
+      },
+      {
+        "path": "skills/tracks/ai-agent/sdcorejs-ai-agent.md",
+        "sha256": "4d6325d740b47159a4544ce239f5bf66098e794a0187e18ae2f198b0e6357a5f"
+      },
+      {
+        "path": "skills/tracks/angular/sdcorejs-angular.md",
+        "sha256": "f553abb33f7cef7cb05215d9cedb303fe9e88e201e1ceb685692a4d6d0b192c9"
+      },
+      {
+        "path": "skills/tracks/design/sdcorejs-design.md",
+        "sha256": "b14e2e7d1bf843e8db4b79acb9bdc749d13c608ef6a86fd2c2de0eb7d69eff47"
+      },
+      {
+        "path": "skills/tracks/nestjs/sdcorejs-nestjs.md",
+        "sha256": "ebfc3efd48d8b4550caf046b2e39d6f946e46a2fc80c3b9fb3b41c2381b1ec2b"
+      },
+      {
+        "path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
+        "sha256": "9df28ac07236fb6c3e1d76a43755ec87239d2f722b9b4fe2a72fb1a9bf343cff"
+      },
+      {
+        "path": "skills/tracks/product/sdcorejs-product.md",
+        "sha256": "5c6bc67c73e49a2c9533ba8dec2266bb0912ee0f0f49dd12308f32ff4c7b3cdb"
+      },
+      {
+        "path": "skills/tracks/test/sdcorejs-test.md",
+        "sha256": "88f02a90758a25edfdca02fa8ad4f206b864dfd28ae761e70fe65aa96d1b677c"
+      },
+      {
+        "path": "_refs/ai-agent/agent-contract.md",
+        "sha256": "8d533ba9ba9373bb3c7c1854dd54e5a634eb10505bec4ddee844dd9e00a8dab6"
+      },
+      {
+        "path": "_refs/ai-agent/engines/openai-agents-sdk.md",
+        "sha256": "a35c95f55b24e1bbd71d8004e55c7d0fee07d84bd63d5613ad19eb6ebe79bb4c"
+      },
+      {
+        "path": "_refs/ai-agent/engines/openai-responses.md",
+        "sha256": "1c31d05922ab9b6eb74e22e5753e8f2beef3461381043c57a565e249b1ce5931"
+      },
+      {
+        "path": "_refs/ai-agent/evals.md",
+        "sha256": "ae1a3e92998807678bd4c427e26a2f4adecb98da3857643a530c6ce2b9dcb957"
+      },
+      {
+        "path": "_refs/ai-agent/evidence-and-reporting.md",
+        "sha256": "f81320ab4d83006d4e4eedddff43dc1b03577323cf13bb3dadae663ef8ff5c2b"
+      },
+      {
+        "path": "_refs/ai-agent/execution-identity.mjs",
+        "sha256": "015874fe77e1629b6f17463a3d33f2907acfa3699c2a01ede20f5ce47b1ee6b9"
+      },
+      {
+        "path": "_refs/ai-agent/fixtures/golden/openai-agents-sdk-data-provisioning-assistant.json",
+        "sha256": "4766c410dfe8afcba5a3b08411dfb9f04abaf0192600e65d2e4b7db30da70b96"
+      },
+      {
+        "path": "_refs/ai-agent/fixtures/golden/openai-agents-sdk-multi-agent-supervisor.json",
+        "sha256": "b564cb8b645186a48b4c9d5ea6c0e7599c057f81561104e997106f6d5a2285c5"
+      },
+      {
+        "path": "_refs/ai-agent/fixtures/golden/openai-agents-sdk-reporting-assistant.json",
+        "sha256": "e2a06dbd7d35ab68165010fafc0f09c6d171477d3b4f15bbf7354620fd5917a6"
+      },
+      {
+        "path": "_refs/ai-agent/fixtures/golden/openai-responses-reporting-assistant.json",
+        "sha256": "327a1e82f79a8ff44220450c3549b6116aee12a23254b059ce4d1dd486123dee"
+      },
+      {
+        "path": "_refs/ai-agent/fixtures/invalid/agent-contract-invalid-cases.json",
+        "sha256": "a90dcebb95bbe772a60de6f22c16df961078411ba8ce00d3272c247698eb34a3"
+      },
+      {
+        "path": "_refs/ai-agent/guardrails-and-approvals.md",
+        "sha256": "2a8fba20a28761d34a48161034eaeae8df8f76817cf8fe27e7b2d8c779e17042"
+      },
+      {
+        "path": "_refs/ai-agent/manifest.json",
+        "sha256": "9ec900f9ecdf2cecc7750e0e59d0a5f4a90be048a2a26bdff511e8613ad56ac7"
+      },
+      {
+        "path": "_refs/ai-agent/profile-contract.json",
+        "sha256": "114f0c8c3a6e3ea14fa988a058c1248abe803c5e5e3ef755f8c04e589f34a694"
+      },
+      {
+        "path": "_refs/ai-agent/profiles/analytics-assistant.md",
+        "sha256": "4027f82b5f9bc3ecc7fc77a12754b9027a981fc2f90633c48d1aa0bd92fdbc50"
+      },
+      {
+        "path": "_refs/ai-agent/profiles/approval-coordinator.md",
+        "sha256": "a19a0fe3332dfc7f557a6d6455caa7269b78c7c93f1798257d9cb705c83ca953"
+      },
+      {
+        "path": "_refs/ai-agent/profiles/audit-assistant.md",
+        "sha256": "2ce05d155a65b4dae9840f243b0fe68cb8b45a01c1946415ac9c4b844c6b62ce"
+      },
+      {
+        "path": "_refs/ai-agent/profiles/common.md",
+        "sha256": "9254129ef0333c24908cd0dca43804ce335ff83605a44136ad197c4d1d5d4585"
+      },
+      {
+        "path": "_refs/ai-agent/profiles/crm-assistant.md",
+        "sha256": "9b31d19d46207728b5877055a6cd9448e32d0537edf72b325b6a84aad43014d3"
+      },
+      {
+        "path": "_refs/ai-agent/profiles/data-provisioning-assistant.md",
+        "sha256": "66a0bc2c2a1ccf50114be158851e4975b1d2aab9004e405b7bd888fd5ff0abfd"
+      },
+      {
+        "path": "_refs/ai-agent/profiles/document-assistant.md",
+        "sha256": "89975bc56d3f2b771b0f2328a4b4762ecdccc9ba8647011fc68ec4b2abb14d8a"
+      },
+      {
+        "path": "_refs/ai-agent/profiles/knowledge-assistant.md",
+        "sha256": "633322fbad1eb927d8d4c1235232888ed76ebb36f3e00b7088ee4b6f92535eb8"
+      },
+      {
+        "path": "_refs/ai-agent/profiles/multi-agent-supervisor.md",
+        "sha256": "ab42aad6110f869259dfd021c9e3cbffe06722027e1862eaef35bf03a2c26a12"
+      },
+      {
+        "path": "_refs/ai-agent/profiles/reporting-assistant.md",
+        "sha256": "bc80f57fd39c2d46c4e1617e540afebd836c34d83622e9b87dd376184350ffde"
+      },
+      {
+        "path": "_refs/ai-agent/profiles/support-assistant.md",
+        "sha256": "9f42873f425f08bba573cca47a29497426ed18358af3c653f6aa9a78a24773a0"
+      },
+      {
+        "path": "_refs/ai-agent/profiles/tenant-operations-assistant.md",
+        "sha256": "7597ec28b0649f6ed92d61f210fb46bb4208315721a0640213bd1a4ab8327974"
+      },
+      {
+        "path": "_refs/ai-agent/profiles/workflow-assistant.md",
+        "sha256": "fc35896ef266df5844f818110aeeb2f449b0b3b974882a9f83d611c5ecd8fff8"
+      },
+      {
+        "path": "_refs/ai-agent/sessions-and-state.md",
+        "sha256": "3ae45e17c6dc5c96b3b6ae263b76d947d29c0013a3e5534008813efece920d28"
+      },
+      {
+        "path": "_refs/ai-agent/testing.md",
+        "sha256": "68733422e6e6abf22f900b23343eba5e3f0d93fa3247cf99544cf324fd1682e3"
+      },
+      {
+        "path": "_refs/ai-agent/tool-contract.md",
+        "sha256": "de310e7a23121c164886d3af7fac0eb8943edb4f547cfa6546ec856792ebcbd3"
+      },
+      {
+        "path": "_refs/ai-agent/tracing-audit-finops.md",
+        "sha256": "92bfb443212eeecf3988d265a38691332dc62cd1b15805704fa784d8fdf44c00"
+      },
+      {
+        "path": "_refs/ai-agent/validate-agent-contract.mjs",
+        "sha256": "7db5c2af25b93be225ea8cbed89151c016b793ad1acf967b4ebdadcf55c2c8f5"
+      },
+      {
+        "path": "_refs/angular/architecture-principles.md",
+        "sha256": "b6f1df3e9b85e3ae9a9101230169cdf9f6f16b1a3ceebcfe3359cfd0ccb0fefd"
+      },
+      {
+        "path": "_refs/angular/assets/logo.png",
+        "sha256": "c108ff7972c96db03ac05209c77ef74e4a87d3314b531e121382357ea8540146"
+      },
+      {
+        "path": "_refs/angular/core-docs-fetch.mjs",
+        "sha256": "5ddadf5c69b5686f70a844a601f6ffa40a4cbbd14759b7ef3f206bea7c8a8e46"
+      },
+      {
+        "path": "_refs/angular/core-version.md",
+        "sha256": "3f1714db523f23924376db81596b4386d7b6ec0e3e451b0f6732050f70fe5fb4"
+      },
+      {
+        "path": "_refs/angular/e2e-robot-conventions.md",
+        "sha256": "d0d140d8099180356cbbd51c82e131747b3373814187167788953c27b74f839e"
+      },
+      {
+        "path": "_refs/angular/entity-field-types.md",
+        "sha256": "7fc0e32e4ec2cfb0bf54588f406bbdb3b679478a6df9a53d86f78d59f41eda54"
+      },
+      {
+        "path": "_refs/angular/execution-contract.mjs",
+        "sha256": "d7da8c47953a3e58df773717c98af6099d65fb3705c23b5e0d71eb2de4c83404"
+      },
+      {
+        "path": "_refs/angular/generator/generate-golden-project.mjs",
+        "sha256": "d7c18d6dfe2c3ac6ecd045c3fe00478672244bb3ca364e7ed65ca051b4728a7a"
+      },
+      {
+        "path": "_refs/angular/review-accessibility.md",
+        "sha256": "758532551b4e908866a95aeb20f9b7596f80691c78ad0c56a9ec0ae2430bede5"
+      },
+      {
+        "path": "_refs/angular/review-code.md",
+        "sha256": "83ccecb1d1507541084728ace43d1d683c677bc6fd2e127ca2f15f1b7f805639"
+      },
+      {
+        "path": "_refs/angular/review-performance.md",
+        "sha256": "a07464b2a7c4e8290819662aeb961b77fd121af38128a8480230991dfeedf1c0"
+      },
+      {
+        "path": "_refs/angular/review-security.md",
+        "sha256": "e785dcd2f4091c74992c7f0636af4510b91d64410fa65f9be011f140c454c049"
+      },
+      {
+        "path": "_refs/angular/styling.md",
+        "sha256": "bd9daf4cb94576198af145f01f43c36cba5428c74edb69247ae805e7e1f766f3"
+      },
+      {
+        "path": "_refs/angular/templates/entity-skeleton.md",
+        "sha256": "0845d59b290366ff01bf6868e8c3063c66afc05eb42117ff53a270c30464e3d4"
+      },
+      {
+        "path": "_refs/angular/templates/entity-tests.md",
+        "sha256": "26963cb76a2b8c5658b899ccc10608ec5198c5592960cc9d30fcff832f450552"
+      },
+      {
+        "path": "_refs/angular/templates/example-product.md",
+        "sha256": "776cd6465a92e99233610b7b93eeaf364c902d354abdbd38723769885576742c"
+      },
+      {
+        "path": "_refs/angular/templates/feature-component-boundaries.md",
+        "sha256": "bf33fe29f5e6a0766284e2fcd7bcf19527084d35bd2ba0dd45a83ce9233b8a5d"
+      },
+      {
+        "path": "_refs/angular/templates/init-module-templates.md",
+        "sha256": "d1a6872cda5831374f1bd7f16f66f98e6f54bc565b6f2b0e8bc8a53f4fffe6a9"
+      },
+      {
+        "path": "_refs/angular/templates/init-portal-templates.md",
+        "sha256": "f58f7b2cd9114c9229c056df5eab4f4b45071d5460ab5292b9d8a7ef8e1295fc"
+      },
+      {
+        "path": "_refs/angular/templates/orchestrator-step-examples.md",
+        "sha256": "a9cde18c27a17be743433b21238a219e44f6ea8cebfaa3bc57ea3bdb869a93fc"
+      },
+      {
+        "path": "_refs/angular/templates/reactive-form-templates.md",
+        "sha256": "38f489c3b12217aa418bd32d41e2f13077bd43556c7c647814a9b0afebc82151"
+      },
+      {
+        "path": "_refs/angular/templates/screen-detail-component.md",
+        "sha256": "fde9daf5ac59e4ad3aafeb09dd4f86eef1694c090397c1bb14ead3e0bb9e0678"
+      },
+      {
+        "path": "_refs/angular/templates/screen-list-component.md",
+        "sha256": "2cd37cbea3bde89d9beed7fb5d53b889c9cd7c473cf1531a76be74a7aae50ca7"
+      },
+      {
+        "path": "_refs/angular/test-e2e.md",
+        "sha256": "a8ba93e89eb3d7611256b1221ff62274b66cdae3918e6cdb7ac612f89594b2c3"
+      },
+      {
+        "path": "_refs/angular/test-integration.md",
+        "sha256": "7eda9da7adde782ed6d7b46569a75cf0b1a308c2ee5453c95f2b02bce6e93450"
+      },
+      {
+        "path": "_refs/angular/test-unit.md",
+        "sha256": "8186e1c5275cae50183a9bc64aadb146bfd4be130e415bb5cc6a9d5e87573262"
+      },
+      {
+        "path": "_refs/angular/write-code/actions.md",
+        "sha256": "ba0c32ddeebb47d8b5d7c20ee7d2271dcd3b5e50cfb0caf4ad0d06c64631f5c1"
+      },
+      {
+        "path": "_refs/angular/write-code/admin-screens.md",
+        "sha256": "b8519c8989650507595d734e167ee3d16c343f5cb5228334aed0a49d87bb111a"
+      },
+      {
+        "path": "_refs/angular/write-code/generation-rules.md",
+        "sha256": "dd8e225e1e1fe1219be0a6bf17ead207f0e63bea963d8a1d26d17f32eed40756"
+      },
+      {
+        "path": "_refs/angular/write-code/init-entity.md",
+        "sha256": "9e0e4379dce0ff450813b2f0f12f1a9c462afa7a82bdfe4763674dacb87ad11c"
+      },
+      {
+        "path": "_refs/angular/write-code/init-module.md",
+        "sha256": "08fc1557129393e199286f294f7e4b675eab1c3936c48aae95aef1598d8545eb"
+      },
+      {
+        "path": "_refs/angular/write-code/init-portal.md",
+        "sha256": "c7d78a75a8af7716ff420cd08a62e5c15ea84b4ea88317f308906a05d0f1d4d0"
+      },
+      {
+        "path": "_refs/angular/write-code/input-analysis.md",
+        "sha256": "3048612c06352c9bf1ccbac8d0ecf67ff8ccade5ee3f13cb6797af694c392590"
+      },
+      {
+        "path": "_refs/angular/write-code/mock-api-input.md",
+        "sha256": "d9b0439559bdf7fbdc746837fff084f66f41af1e52fbe69009b4841a1e5f2528"
+      },
+      {
+        "path": "_refs/angular/write-code/po-ba-prototype.md",
+        "sha256": "04574152e5afe029a80a5eff2e248f1e8de1c41823185a0c95bbfac6c052a7b2"
+      },
+      {
+        "path": "_refs/angular/write-code/reuse-existing-entities.md",
+        "sha256": "973e436fdc9a1db5a0a1c93b5ba50185a94bf0379b17147fb95820c9ce2f5aa4"
+      },
+      {
+        "path": "_refs/angular/write-code/screen-detail.md",
+        "sha256": "fc6b5882166adb3425a6440041aab8654da955bcf27f481d03cdfcbee66a226d"
+      },
+      {
+        "path": "_refs/angular/write-code/screen-list.md",
+        "sha256": "6c8611d04cb4ab6f7a62f4b56d59c53c0093536eb8dbdfc28b86fe54da8f95f0"
+      },
+      {
+        "path": "_refs/design/frontend-design.md",
+        "sha256": "40181e495cdbcff8f8375efdffdc3a8f89d8301abf8806c8381cef8d13b848ee"
+      },
+      {
+        "path": "_refs/design/mobile-design.md",
+        "sha256": "92bc975d5d33b9081f26c4bb43609ef6fceb97ad97c09e7cac2718c84ad05587"
+      },
+      {
+        "path": "_refs/design/uiux/catalog.json",
+        "sha256": "247d420f509b6fc73b10f19103b3d6c62f2e7473c52d4bfee69e0cb3f69229ff"
+      },
+      {
+        "path": "_refs/design/uiux/charts.md",
+        "sha256": "18d07aebcdf81cc029e8a15f74361b1115520c9cf078605ae94795a8ffaa01cf"
+      },
+      {
+        "path": "_refs/design/uiux/forms.md",
+        "sha256": "e0c691dee24229d2183f6fcf63776d2df6cfdc42bd431b7d1002070280483261"
+      },
+      {
+        "path": "_refs/design/uiux/index.md",
+        "sha256": "307d3eccbc7b0426f8d870153135f15a94cbee73cd628482fee397f7c867f609"
+      },
+      {
+        "path": "_refs/design/uiux/navigation.md",
+        "sha256": "396fb9e47024aa1fe86ef66edb55bcd2028bc86a9a3c6df409ff891e20f1c808"
+      },
+      {
+        "path": "_refs/design/uiux/public-web.md",
+        "sha256": "18f55e3fcb3b8d5dcbfd7d52a38d12c7d8da87ef260ee0bcca12de95e4f56fad"
+      },
+      {
+        "path": "_refs/design/uiux/select-references.mjs",
+        "sha256": "5bf4dbbcb46ebcb83e85318f55498b7a00123fb59a57dc39496402b39f8edd75"
+      },
+      {
+        "path": "_refs/design/uiux/sources.md",
+        "sha256": "c686481c4d4c87994d84edfe2ee55474eb9d645cbc73416532577f5bc3532e81"
+      },
+      {
+        "path": "_refs/design/uiux/states.md",
+        "sha256": "febbea087c19ac5a950303e8afcbbacb459207c8ecace1a93692816e0cd65744"
+      },
+      {
+        "path": "_refs/design/uiux/tables.md",
+        "sha256": "c8a3830c7cf135c557dd4d684e68d516a288e085a386aa6ef74c52f283c7b169"
+      },
+      {
+        "path": "_refs/design/uiux/upstream-license.txt",
+        "sha256": "738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014"
+      },
+      {
+        "path": "_refs/design/uiux/visual.md",
+        "sha256": "a8d67199953355a62b817b6b4b2d620263cc910fd905510f47ae05f0b75a8222"
+      },
+      {
+        "path": "_refs/documentation/code-documentation.md",
+        "sha256": "8ebbe63b969eaab4968ecb0522ebb24be2deda871532c5c5ac39573cc2c04e78"
+      },
+      {
+        "path": "_refs/documentation/gate.md",
+        "sha256": "a7456cb2d1290a61e46d51b9af1452f24e3d655a344eb0d8378db4bc3d1b3869"
+      },
+      {
+        "path": "_refs/documentation/write-requirement.md",
+        "sha256": "c61f572c1cde7055698ff3ca16fb70e65c1265878df376d727c53516a4fc3ebb"
+      },
+      {
+        "path": "_refs/documentation/write-technical-doc.md",
+        "sha256": "324447b9ca40704837508ac16e595d5bcbe4b5553bd217fab955d244a938a7b0"
+      },
+      {
+        "path": "_refs/documentation/write-user-guide.md",
+        "sha256": "6e20da637f7f4c0ff2ee3caf8deb20268ba7545770f87b2e7efbfa43c4427248"
+      },
+      {
+        "path": "_refs/harness/adapter-compatibility.md",
+        "sha256": "11bb02b10a49983ef456b5aa40f188842c5ac5e04f8950d1bf3f456e2e3b9eac"
+      },
+      {
+        "path": "_refs/harness/capability-contract.json",
+        "sha256": "57e326a1af1c4a038bfa2e6befc459252fd9209b822d6365939aa04e82688c56"
+      },
+      {
+        "path": "_refs/harness/communication-economy.md",
+        "sha256": "5e6e91562bcdfc525383bbf0fb094f44ff7b390956b96e0bf2d4249d683af083"
+      },
+      {
+        "path": "_refs/harness/communication-economy.mjs",
+        "sha256": "3811990fe0d1b046e838da6188fb4708b95d78f1b95c014839050183cced4690"
+      },
+      {
+        "path": "_refs/harness/delegation-policy.json",
+        "sha256": "1dc65ca512930f6c994f5953927c9e4f6b46b7abd8bbe40ff08884c6cb980a7e"
+      },
+      {
+        "path": "_refs/harness/README.md",
+        "sha256": "e1e76962b7d7f2b885b5782fcdceeb13957270b2ec27d6bfd95c1b64a4a6db03"
+      },
+      {
+        "path": "_refs/harness/runtime-attestation.md",
+        "sha256": "5ffb00921581f2e28a365848956dffad84b61a127fb5f0160b25f4929ac2145e"
+      },
+      {
+        "path": "_refs/harness/runtime-attestation.mjs",
+        "sha256": "1748201d4fa5bc9902afa95b59a841572b7ebbdde0ba6cd9223c556fdd6ae05d"
+      },
+      {
+        "path": "_refs/harness/runtime-policy.mjs",
+        "sha256": "528feb60546697890ebc2b37983b38862c81562486e857b2e1142170b4cf1622"
+      },
+      {
+        "path": "_refs/harness/task-brief.md",
+        "sha256": "c37f10554ccdf70248c6456813db2abadcab50b90bc880b28fa57798761ebd16"
+      },
+      {
+        "path": "_refs/nestjs/architecture-principles.md",
+        "sha256": "369b2a82987e084b161941d0e8bdf7e3862e6433aa92580fe2b323df93283f66"
+      },
+      {
+        "path": "_refs/nestjs/core-catalog.md",
+        "sha256": "6e68d02ca66210ba8d17d40a508354b7a82b216603842aa86e8773b922feb80e"
+      },
+      {
+        "path": "_refs/nestjs/generator/containers/docker-compose.yml",
+        "sha256": "7cd59bddf8e7f942048fc13f321e9024336c196523e9c48792eaf20b4b8b52f2"
+      },
+      {
+        "path": "_refs/nestjs/generator/containers/keycloak/realm-export.json",
+        "sha256": "95fe3b461893ba43b1d07abe217388c0d821978b4eb0986b525bb4eca2628692"
+      },
+      {
+        "path": "_refs/nestjs/generator/generate-project.mjs",
+        "sha256": "855069e0d0924af600d79f2f19adc2f3936c372226039c3d36b196436150d51d"
+      },
+      {
+        "path": "_refs/nestjs/generator/lib/contract.mjs",
+        "sha256": "431f780d4b9b7505b5a8f7f4268db8c1a489f7a2fbb230930ce7b6bcc9b791d5"
+      },
+      {
+        "path": "_refs/nestjs/generator/lib/fs-safety.mjs",
+        "sha256": "fbda40c79b0a144827aecb03fb4fd40b6c29eb5a9567bd9759333032325ab817"
+      },
+      {
+        "path": "_refs/nestjs/generator/lib/render.mjs",
+        "sha256": "2b9e7f4ce752ac7084d3facf3ffed122dc98ade54750a2c28262272e0bc09b88"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/.env.example.tpl",
+        "sha256": "9696b874f29965640d3d97ab1321af2df12fb52d94a2d1877cf21a8a18c7118b"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/nest-cli.json.tpl",
+        "sha256": "7b6dededd5a73f1f9a4b7f43a862937e7669114a0923aaeb2809996733abcba1"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/package.json.tpl",
+        "sha256": "b798c5d4e6b1836a4674cafb5b96c00e2eec662d947c35f5d013fd5ae46effc2"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/admin/permission-manifest.ts.tpl",
+        "sha256": "2c05edec2539cc69181abb586ff3bae90ba5c3e222c1f94b0751ba2904ea7941"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/admin/role-scope.ts.tpl",
+        "sha256": "00a5dd7b95428ed6fa41c007c078b2941d5fbe751e79cd61dfb43eb5919cbc15"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/app.module.ts.tpl",
+        "sha256": "47252f381a237669365f95d26301f3a21b1423c83b0ead383fe25644f4438b98"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/auth/auth.module.ts.tpl",
+        "sha256": "b7e31295809667571a6eb99600072cb9dcdfd51bb467e68a3a6d66fbebdd1d3c"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/auth/authentication.ts.tpl",
+        "sha256": "282c8b376c8a93b6b72ec8ecf8bd86df35ac5feb9be7a29a68548bb0de552c8e"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/auth/policy.ts.tpl",
+        "sha256": "eb6202bf8734ace2d2bf62b5c94fdf1aefc454b82265e04236db0d3d825a33da"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/auth/request-actor.ts.tpl",
+        "sha256": "d7d28d6979ae4c095dad85f6c099591349f7719ce7f8230fa9172ff5c97cd2de"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/config/env.ts.tpl",
+        "sha256": "9dde4471c9300c2ae41cd44b2aa7325a059ce5666f797e54ebe273d27178f4c3"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/database/migrations/initial.ts.tpl",
+        "sha256": "d7d3d007c052b59766d2dd247df7a55eb15fef00ff2e736caf7d095eac97965a"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/errors/app-error.ts.tpl",
+        "sha256": "5cdd2cb87c39bd5c6a04f17cdd8ae8f81ccbe933931d2f355b6cc2216fe4f7fc"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/keycloak/admin-client.ts.tpl",
+        "sha256": "43089dcbc1b5e7b2842ea01bf0b5c5d7f9091d56a3690f98e09ca7fdad6472a4"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/keycloak/operation-state.ts.tpl",
+        "sha256": "4ee66a985fa0e36e5730c00567e61dcef04d46fed1f016c576c0f7eac3e4b187"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/keycloak/reconciler.ts.tpl",
+        "sha256": "158aa66f3fd6fe051ee488a248e3b074c6379380134f65ba12f782fbc92c04b8"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/keycloak/secret-provider.ts.tpl",
+        "sha256": "84155159711871fd944c39af50a0c87abebd594301232d3779abc5b7f6f7b370"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/main.ts.tpl",
+        "sha256": "7523f8cbd81b046937e6c8d1dafa3b672638017e58ec4ab0c8a2f8643ed0fbdb"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/src/validation/zod.pipe.ts.tpl",
+        "sha256": "4bbe3d9a4c12282d320fc48cebd5b7a7d854b1099f99a97bb5718d8e47db97b7"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/test/admin-security.spec.ts.tpl",
+        "sha256": "3a1d1fe91f5209942febdb5fce6833dd703d946b2f8637a03ff56eccba742cd8"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/test/config-abuse.spec.ts.tpl",
+        "sha256": "e13f1b419fd41748b1612563db85498d200d554e8411dbbc84d15957aee9ef76"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/test/e2e/item-auth.e2e-spec.ts.tpl",
+        "sha256": "9cffd3c161b34551f8ac230ce51e2fe06e251e7ae2175c08cd3da2394b90d048"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/test/e2e/item-read-only.e2e-spec.ts.tpl",
+        "sha256": "97c7ee34cb969d65f709a7d5912f0d7906e5e0f505f277d1b6c06be02077464c"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/test/e2e/item-validation.e2e-spec.ts.tpl",
+        "sha256": "7412ce0f1461e55ec4454d82edec804e59ed755b2d4852fec10b7c23bf981012"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/test/integration/item-repository.spec.ts.tpl",
+        "sha256": "ee08a9b59e480842a5fad326f4bf2179f194b3ae96cdb602cbbbe76800be4d72"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/test/integration/item-route-audit.spec.ts.tpl",
+        "sha256": "2e57206611f51ea111a28c9bdf6722700e538351030e4b5f20c386ba789f3dc9"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/test/keycloak-saga.spec.ts.tpl",
+        "sha256": "3cbcb3ea9d432b83d39db696fb5c757253e76854bc7157b39fe909c95e659fd7"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/test/support/oidc-fixture.ts.tpl",
+        "sha256": "62a3cbf08aaf474f1932da9c7b003362b4631a4e47d3110d903a37bd7b9941d3"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/test/support/test-app.ts.tpl",
+        "sha256": "9f9a7043b90ea9eb9ff5e397706b83bbf7847025e0c4c07016393d462aa883b7"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/test/unit/item-policy.spec.ts.tpl",
+        "sha256": "2bae7e4736c863a1fe8cfe85f32b15aa004968f57c533a3558b5c32555ddfedc"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/test/unit/item-service.spec.ts.tpl",
+        "sha256": "66696556fa2bc603015b99b40e4ab30637e26d7489050227832c6441f2a2d90b"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/common/tsconfig.json.tpl",
+        "sha256": "ab728d3a5f17e17c5584c1aa2b60f44dcccba6bfa562b05445a65622f372a1a9"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item-action.schema.ts.tpl",
+        "sha256": "6b58280847c9a0bdb2eb5d70dab957f15c3dc7bb554dafb7369eb3e560a6f8b1"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item-create.schema.ts.tpl",
+        "sha256": "7e261dbd60d642bd8c07571a00a6c86e32baa2a12965c7513cd848034e947e6d"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item-export.ts.tpl",
+        "sha256": "1ed400d892c8820ebecc53dec7a4f097ab737a4e516c8e46d967a6f26a974591"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item-import-store.ts.tpl",
+        "sha256": "c6bb7811118e44325f68a87983145511d4ce55a1a451848c40a6f32697bdecf5"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item-import.ts.tpl",
+        "sha256": "3d45892bdbc8a79082392f70409bb09a62cd21908812bcb07ca54e60da082a09"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item-policy.ts.tpl",
+        "sha256": "04796d909223dc9bc09a94509b22f6e99c2ca626915d4c41b09208dc0b6a538d"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item-response.dto.ts.tpl",
+        "sha256": "73e368bd5da19de62cab5c220c11d660a8cf3f94d89ade08ecfc1d97ed0ab530"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item-route-audit.ts.tpl",
+        "sha256": "777c1438b057b2d3d225660814ad5c699d010af300cbc8de866d9cbada4fc5de"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item-update.schema.ts.tpl",
+        "sha256": "ca84fd868be7256182bed3333449a184c7bf015ccf1f4274417fc5f5934fce61"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item-workflow.ts.tpl",
+        "sha256": "b33ef63c0cf429a3c3dc04d3421ef35a3adc3a7afa147791e42851464fc22206"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item.controller.ts.tpl",
+        "sha256": "84e4c90f7ccf57a90b64af84874563deb098e1c31745fa09f3f60a6266d2a376"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item.entity.ts.tpl",
+        "sha256": "f1b523b1394ddcb194702504f683b8430e6a3c519d9f56adb00eb65469698924"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item.module.ts.tpl",
+        "sha256": "3de2a285640743f120f88ff9b798af385d4c7975ab3a3c0fab810b71454341cd"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item.repository.ts.tpl",
+        "sha256": "d4cab1267c909e79c9f1e4887b2336e00ae8900fafcdcf35ee406401e14281a3"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/items/item.service.ts.tpl",
+        "sha256": "defef4686ae31f54fe0298df6371943d75058fddb369f4699250b7a8b5cb840c"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/scope/scope-contract.ts.tpl",
+        "sha256": "49ec4c9f82754d4e31f0fe6f0de96f4b8f309e57d7140dd962186d7980ee48a8"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/src/scope/scoped-repository.ts.tpl",
+        "sha256": "04ad65b097a045c83ea6a6f60d98d2842c5e5efc56c8417db80cd7fb05e3a3ee"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/test/bulk-import.spec.ts.tpl",
+        "sha256": "f45be47fc1e14f6c9ade716c1cfa0f82b68eb7852b0d9da461aa05f093c0571c"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/test/export-scope.spec.ts.tpl",
+        "sha256": "4da54c78685e3096b1df2a8f8220de07d2634ed4abd02e37cbc7735d25219315"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/test/tenant-isolation.spec.ts.tpl",
+        "sha256": "66026e1ca72e7434a93fc1fb96583486367f20002e2fa803d1beec3664745bd3"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/enterprise/test/workflow-concurrency.spec.ts.tpl",
+        "sha256": "6ab096b3bf93112b21bae5878d58b32ffe2dd5d18f1e4c878b1e0c418c7b8583"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/simple/src/auth/role-permission-adapter.ts.tpl",
+        "sha256": "fba7be84edec896bdb1bbdb5bd425f52d9cd08cf5fba472f9235efbc8ccb5799"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/simple/src/items/item-create.schema.ts.tpl",
+        "sha256": "7e261dbd60d642bd8c07571a00a6c86e32baa2a12965c7513cd848034e947e6d"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/simple/src/items/item-response.dto.ts.tpl",
+        "sha256": "7724d69acd9ccbabb8777dc6c819a4349ea60cbd2a3a90e67dd6dce9198a7df6"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/simple/src/items/item-route-audit.ts.tpl",
+        "sha256": "cd95d067b762796a5b5d3c58cd73ef14ab4558b16b4cd2a25bdd52acaf8dee7e"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/simple/src/items/item-update.schema.ts.tpl",
+        "sha256": "ca84fd868be7256182bed3333449a184c7bf015ccf1f4274417fc5f5934fce61"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/simple/src/items/item.controller.ts.tpl",
+        "sha256": "cd73c40c8f0e347b315d3288ca83dcf6fb55109e2426ced40beb139723a8e13d"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/simple/src/items/item.entity.ts.tpl",
+        "sha256": "3f8bdcfe59a5d301252b61e39a687d1ca81f763b1c90887b37b9999f36ca9b8d"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/simple/src/items/item.module.ts.tpl",
+        "sha256": "1c7efc15e1c12a28c8710fd4167f75d05f711e9d47df28f6ec55c6ec6acd215f"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/simple/src/items/item.repository.ts.tpl",
+        "sha256": "38e72e577c53d20a3d9f35645afdb748951d13630b719a22e3ca5e94d066ea6e"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/simple/src/items/item.service.ts.tpl",
+        "sha256": "c6c6769c5835534daaecc5f6b702cf6e018f52aaeddc077fd0d4e42bf6c4114a"
+      },
+      {
+        "path": "_refs/nestjs/generator/templates/simple/src/scope/scope-contract.ts.tpl",
+        "sha256": "b92249c74525a60e0567bfe1032eebebc729e7ead1cd4baad0650c2650054c97"
+      },
+      {
+        "path": "_refs/nestjs/pack-manifest.json",
+        "sha256": "18a35947cc111208fe4632c2fe2c946de2386d13282c1ea485b4d933dee0c62c"
+      },
+      {
+        "path": "_refs/nestjs/profile-contract.json",
+        "sha256": "52668ae74975f40f54d703dee58f376ef8e5d7f35098d57ee8d5d25e5db04471"
+      },
+      {
+        "path": "_refs/nestjs/review-code.md",
+        "sha256": "ace6fe05ea3808c67df7c37b4f0859f5e224e3dc16ade37e1cf9829f95b35082"
+      },
+      {
+        "path": "_refs/nestjs/review-performance.md",
+        "sha256": "1545a6f1674b1c0846e04c9ffa5c9e36cd464ae0cbd658f1a7addd9efa5d2881"
+      },
+      {
+        "path": "_refs/nestjs/review-security.md",
+        "sha256": "6db9301d52d568e583a1e2ce23fcb9ecfda9e4d76059cf9b60be792b8ed440a0"
+      },
+      {
+        "path": "_refs/nestjs/test-e2e.md",
+        "sha256": "896315c74284a5c7206c4d87e09d459a577ad34bafc4eb7192219f93f001c56d"
+      },
+      {
+        "path": "_refs/nestjs/test-integration.md",
+        "sha256": "739ce13e47982a1c98887a807e82dd06cadb12d43dbda24b7117658251289066"
+      },
+      {
+        "path": "_refs/nestjs/test-unit.md",
+        "sha256": "12edfa18d45d24e798266f600de3a0ca5a72812f2ec61d19d71b7c0c4dd0e5c9"
+      },
+      {
+        "path": "_refs/nestjs/write-code/actions.md",
+        "sha256": "33f968e240380c3b18ff426d7aaa4595fc14dcec1056a25479914afef1fea039"
+      },
+      {
+        "path": "_refs/nestjs/write-code/init-admin.md",
+        "sha256": "f490cafea4a043dad5fb00b2aaf5cf7a5af096a43ba9ca84a47697c04a9fc683"
+      },
+      {
+        "path": "_refs/nestjs/write-code/init-entity.md",
+        "sha256": "a66ba16feffaf0f567b3f275fda6ce4fdfcb8dedd40b8eaaf24dc178dc7ce136"
+      },
+      {
+        "path": "_refs/nestjs/write-code/init-module.md",
+        "sha256": "aeeeb47f0a884fde5cc634287513effe202b47c539bebfdd94ede0cbdb1581eb"
+      },
+      {
+        "path": "_refs/nestjs/write-code/init-project.md",
+        "sha256": "1bc6025ab7fda24a5ff00fbb6241d7f437985e80bcd42c3fd0a1dc07cdf1a78a"
+      },
+      {
+        "path": "_refs/nextjs/build-website/architecture-principles.md",
+        "sha256": "9821793033ad167fd2583a4d69c6473d6048035a88612eb8df7b77abc444ae7c"
+      },
+      {
+        "path": "_refs/nextjs/build-website/audit-existing-site.md",
+        "sha256": "4c0198f2d3a65539a3d69aecbb1b4d1e54ae8c6677a56fdc48442ad53e53a8b9"
+      },
+      {
+        "path": "_refs/nextjs/build-website/contact-form-refs.md",
+        "sha256": "0f94dae5e21fad6081bdc31aa7b8a1145a4f885313b19a795be070891b16f12a"
+      },
+      {
+        "path": "_refs/nextjs/build-website/content-quality-refs.md",
+        "sha256": "1a2461beecef430cf06331d44c4276b488868e75852afbc9c6d4633519acf8c8"
+      },
+      {
+        "path": "_refs/nextjs/build-website/review-accessibility.md",
+        "sha256": "55aaad9a5b56da98a33a0516993c020e1f0ee02edf43935fd280f263d2f5d68b"
+      },
+      {
+        "path": "_refs/nextjs/build-website/review-code.md",
+        "sha256": "e3e07d3eb2058117f7ce20f8ef7ff69704531dd036a681b1e12e0cb07bb5acbb"
+      },
+      {
+        "path": "_refs/nextjs/build-website/review-performance.md",
+        "sha256": "62a51522143e3e1af13d382d818edb346d6639315105c46f096ce44c16cccbc4"
+      },
+      {
+        "path": "_refs/nextjs/build-website/review-security.md",
+        "sha256": "f0b75182b90baba3cbc8e1a5c89c223b6762ada1305e723a76df8d61b61c5861"
+      },
+      {
+        "path": "_refs/nextjs/build-website/test-e2e.md",
+        "sha256": "c4cd0dbde2cd42d3b207fea6463c302a7f70d4e759ede63acdea31da14492c35"
+      },
+      {
+        "path": "_refs/nextjs/build-website/write-code/caching.md",
+        "sha256": "0c19650e78f9e78289cc135d5a19f60c4e7d08d124bfead1dbda83a4a257e7b6"
+      },
+      {
+        "path": "_refs/nextjs/build-website/write-code/contact-form.md",
+        "sha256": "a1c8f1a9973be171d09222c49277315cd2542dc62d4545d271520ffad8437b1c"
+      },
+      {
+        "path": "_refs/nextjs/build-website/write-code/content-quality.md",
+        "sha256": "73b03d6747e71d76bf0434310b002852fc938951279bdc98a097179144ca6682"
+      },
+      {
+        "path": "_refs/nextjs/build-website/write-code/i18n.md",
+        "sha256": "10f839d179db72a44a29143b0b9c7cd7641c3f5b92db1aa8029999dfdd50bb94"
+      },
+      {
+        "path": "_refs/nextjs/build-website/write-code/init-site.md",
+        "sha256": "a8d4f59b77d6867f52fa8daef3fb710fdc56fb3ba0447cc576762f3829dd72b3"
+      },
+      {
+        "path": "_refs/nextjs/build-website/write-code/og-preview.md",
+        "sha256": "eacf2cbdaa478187c3f6a8d3b41c4d6afd6fe990b6a5bd924a7bbf7eb711917f"
+      },
+      {
+        "path": "_refs/nextjs/build-website/write-code/pages-and-blocks.md",
+        "sha256": "85091870bd98a52f1c3b9222df5fa9fc538fbe4d92ebd9f93134de1ad1dc812c"
+      },
+      {
+        "path": "_refs/nextjs/build-website/write-code/responsive.md",
+        "sha256": "cb852fd68412f825b63c0eecf9f7e387d2957e467d0dee78c0999103aa88d17b"
+      },
+      {
+        "path": "_refs/nextjs/build-website/write-code/seo.md",
+        "sha256": "5f550ecf664c81abed99a03b0979b1623ebde5ef01c213fc4de91b69fbb557df"
+      },
+      {
+        "path": "_refs/nextjs/build-website/write-code/theme.md",
+        "sha256": "421ca6df83c09b469bb4a771f71a09b6811e8d59b910a2d32971c153b92af7a3"
+      },
+      {
+        "path": "_refs/nextjs/execution-contract.mjs",
+        "sha256": "5fb56385a6d6828aa77f7616d4c52fd707b33f4a3d8590f53dad4a8958d8e885"
+      },
+      {
+        "path": "_refs/nextjs/generator/generate-golden-project.mjs",
+        "sha256": "9f3218b1f6dd5aa1055f8b246cd0f0d72f58d9cc46b2dea47c3063a9670c63b5"
+      },
+      {
+        "path": "_refs/orchestration/execution-contract.mjs",
+        "sha256": "c2bf2fdbd47a47d6c0c6be28bb618e0d306d70ca909cdf5af5a7aaf9edb57e0b"
+      },
+      {
+        "path": "_refs/orchestration/parallel-protocol.md",
+        "sha256": "58d80f37764e4c31cad959ad3b4e486bc7371d913f2756123fccd2ee2c3acd9e"
+      },
+      {
+        "path": "_refs/orchestration/parallel-protocol.mjs",
+        "sha256": "73cbf745e92dbf1694a43cea98c50e3e1fe62bff5cbd05383c6ed119de358482"
+      },
+      {
+        "path": "_refs/orchestration/release-changelog.md",
+        "sha256": "00f214155da94585b588bbb2414631c146ca2140b21f966930d1317f2e0a2552"
+      },
+      {
+        "path": "_refs/orchestration/repair-contract.mjs",
+        "sha256": "aa734d1cb66a2290fadabac896cf21d4a2b62cfa514d81eed9b26f1e08044d2a"
+      },
+      {
+        "path": "_refs/orchestration/tail/auto-docs.md",
+        "sha256": "121b9fb2ae965fb45ceb800a24cb6eacd5961f79188ae893cb0565530df14302"
+      },
+      {
+        "path": "_refs/orchestration/tail/auto-task-tracker.md",
+        "sha256": "1a8bed3abe11c994c33cb6badb6b9e3e7d595b335e6be60bc5b039d76a0fbb87"
+      },
+      {
+        "path": "_refs/orchestration/tail/branch-ready.md",
+        "sha256": "8557ccf2c4a9a3c29202349da2b1780fbd410a0b65f436823a161a5df009e12c"
+      },
+      {
+        "path": "_refs/orchestration/tail/repair-loop.md",
+        "sha256": "d52b6e980c8d12cb1c8e18894fda8e24167c9023a75178c72bfbcfdf6923a92e"
+      },
+      {
+        "path": "_refs/orchestration/tail/ship-context.md",
+        "sha256": "71568662da730ab33acb5794a2c771aa0ee38ae842e039c8f557454fedec95a9"
+      },
+      {
+        "path": "_refs/orchestration/tail/verify-before-done.md",
+        "sha256": "cb42908002146186f889f54f4e7d1ac24442a5c97f57565625e4aef26ae5081c"
+      },
+      {
+        "path": "_refs/orchestration/workspace-isolation.md",
+        "sha256": "0b608bebef4af394c5ef5cd7bdae10154e9e3551aaeba7fc3b59334051905724"
+      },
+      {
+        "path": "_refs/sdlc/ai-agent.md",
+        "sha256": "68951a2cfddefcf48df503a20aa1634494e8ba0c2d066c15d3b7802d35eb8265"
+      },
+      {
+        "path": "_refs/sdlc/angular.md",
+        "sha256": "35bd85f20add5bac4d963865cda021a2e68795f719ef58fbd73f727e2cb5a4f0"
+      },
+      {
+        "path": "_refs/sdlc/architecture.md",
+        "sha256": "01df46407ad59e00b038e908adb229409498a1bd4ebf9a2e352d1fc314ffd4da"
+      },
+      {
+        "path": "_refs/sdlc/nestjs.md",
+        "sha256": "eba0d65c85a222c4cdefdceaa166bb3151a55df2cbb08cf524e8e98e7fe93c38"
+      },
+      {
+        "path": "_refs/sdlc/nextjs.md",
+        "sha256": "05403f1ca849fae9ffbf61f175d72eff468df9be64061f2a5aa1ae0740cc0a66"
+      },
+      {
+        "path": "_refs/sdlc/plan-approval-artifact.md",
+        "sha256": "5df631ed381dae3e2bb568c15ad55d5a96785da666ac636f611bdef3553a06c4"
+      },
+      {
+        "path": "_refs/sdlc/static-visual-composer.md",
+        "sha256": "dc61ba3bc2791dad2263cadb83368a240372b76f1b221fcf78c3c230efd1468b"
+      },
+      {
+        "path": "_refs/sdlc/static-visual-composer.mjs",
+        "sha256": "79deb8c9a3e07d49407a125de8000aa3756d1341a99a2b5adb332b5f7a82880c"
+      },
+      {
+        "path": "_refs/sdlc/visual-companion/cli.mjs",
+        "sha256": "3ea0136b9f524c2f55942bc9005d263ab879af68a5bb5fb96f60eaba1146963a"
+      },
+      {
+        "path": "_refs/sdlc/visual-companion/client-script.mjs",
+        "sha256": "047ccea7e42ab7d7a87710a8944da10eace0fff6272eb407e52a86a1a7cde6ea"
+      },
+      {
+        "path": "_refs/sdlc/visual-companion/launcher.mjs",
+        "sha256": "0dca0ce37b0b45241c0bfc70c1b372741815024e724374660ade762f0ef2c7f3"
+      },
+      {
+        "path": "_refs/sdlc/visual-companion/live-document.mjs",
+        "sha256": "3c70cb6d48d5bc4dc3f0cb7d75580890f62b99f784bbe1a60827c861c02e4ee5"
+      },
+      {
+        "path": "_refs/sdlc/visual-companion/paths.mjs",
+        "sha256": "1a281fbc9831a6aa38b69b27a003afbfd960ed1faa9de6c1c5e09954cd468e06"
+      },
+      {
+        "path": "_refs/sdlc/visual-companion/protocol.mjs",
+        "sha256": "612034861ae8a20070ae4cc06eb3413ab83d88c486c02ebb69897b9d4134eb68"
+      },
+      {
+        "path": "_refs/sdlc/visual-companion/README.md",
+        "sha256": "dbce4e575fba0d15445fbe51bd49a4b67f548853586de029d8021fd895e63d43"
+      },
+      {
+        "path": "_refs/sdlc/visual-companion/renderer.mjs",
+        "sha256": "07deeefde106fb20ffb187970bc33e79747c8a41eecc8a52f10a3eab81f6c116"
+      },
+      {
+        "path": "_refs/sdlc/visual-companion/screen.mjs",
+        "sha256": "bb68c5c53a97b42076be6ccf6c327f81925515a587b3fd0aa658af645c8ff08c"
+      },
+      {
+        "path": "_refs/sdlc/visual-companion/server.mjs",
+        "sha256": "9f10baa2ff1fc7cae661062b7d27feb2948e426c9869ebc8f2f26dd6d3e61c87"
+      },
+      {
+        "path": "_refs/sdlc/visual-companion.md",
+        "sha256": "d5f883ce006016ebefb2ad8b9e39dd7d7ebdd3b1ef94db09957c7fc799735ae6"
+      },
+      {
+        "path": "_refs/sdlc/visual-offer-policy.md",
+        "sha256": "bae959d122d92a66a4a1232c71f3ce58727e2f087385c15f48909e3d454c47d8"
+      },
+      {
+        "path": "_refs/sdlc/visual-screen.schema.json",
+        "sha256": "123b29750124f0df2b275e9d4e2afe9ef1b5ec1491ef7d4227f25acf884556ab"
+      },
+      {
+        "path": "_refs/shared/approved-artifact.mjs",
+        "sha256": "4cd23e59812cb0b3e58448755df66a99c3e864fcf908fb2ba505a7f18ce46795"
+      },
+      {
+        "path": "_refs/shared/architecture-contract.mjs",
+        "sha256": "f11da9b0f3fe9af83a1d046e8dbf146eccb6632d65ffb3e878e8985c86e87025"
+      },
+      {
+        "path": "_refs/shared/artifact-lifecycle.md",
+        "sha256": "2a596f703ab9b5799db52143c6db8081988c296892bf4518a5c3d8f234c7dc14"
+      },
+      {
+        "path": "_refs/shared/artifact-lifecycle.mjs",
+        "sha256": "fbcb19f3e76689d7e479856e90f524553cc5583be8d8adff4eba0f14866beebd"
+      },
+      {
+        "path": "_refs/shared/artifact-paths.mjs",
+        "sha256": "e40a064c540985d5ae0b05c6679117e260cce1dc7ee27a6aad6e20b5df9db30f"
+      },
+      {
+        "path": "_refs/shared/convention-context.md",
+        "sha256": "c5e7ffd212647a2b71ef2fb4d1d4f072035a2d0649b5911a8ed0c3f4c974671f"
+      },
+      {
+        "path": "_refs/shared/convention-contract.mjs",
+        "sha256": "ad2d960349898fc73c81f2d4d1cd3c5eaa5552b8084b77a270400828216ee5c9"
+      },
+      {
+        "path": "_refs/shared/convention-paths.mjs",
+        "sha256": "a4d06cd8e6690160719a3be89aa977080499b0082e3732385150ccb17a9ce5ce"
+      },
+      {
+        "path": "_refs/shared/convergence-contract.md",
+        "sha256": "fe962268d3177d95574f596c4fb5ed9a4185a9ed9a296d5c634b6394943b584e"
+      },
+      {
+        "path": "_refs/shared/convergence-contract.mjs",
+        "sha256": "4c156e274874c6a27f6efdc0f755c14b897dd0d69f29bef3b3b72dc1d02f3abe"
+      },
+      {
+        "path": "_refs/shared/debug-command-discovery.md",
+        "sha256": "5c919439455bfa8c357c3bd3b9e79bfe7f37b1035a6a4e613f36463694b13a99"
+      },
+      {
+        "path": "_refs/shared/debug-context.md",
+        "sha256": "61019311a5f29162653ad1b27d0ef5d83c723e297a84925180495049bbcad5a8"
+      },
+      {
+        "path": "_refs/shared/debug-contract.mjs",
+        "sha256": "d32772564369779177f286cf6c3060bfe655e0ea1fe95a3b638e20bc3c114443"
+      },
+      {
+        "path": "_refs/shared/debug-environment-guard.md",
+        "sha256": "1e17777cd38517488e42cdd6fb8fb7a16e17f882199408349c6c3584c647f8ef"
+      },
+      {
+        "path": "_refs/shared/debugging-discipline.md",
+        "sha256": "8f48bc832150576fb38e377562cc8285ebee05df8db99396468ae0fe81bffe49"
+      },
+      {
+        "path": "_refs/shared/decision-coverage.md",
+        "sha256": "327dfa68fd8b50b6cbb299c3bbd3783a6e3ca84977a7773604d88683268877c0"
+      },
+      {
+        "path": "_refs/shared/decision-coverage.mjs",
+        "sha256": "1d3e5dcb12d2b0db1e354d37e9ebaa325cef41e750500d30dbfe5f953e6965ea"
+      },
+      {
+        "path": "_refs/shared/design-handoff.md",
+        "sha256": "747b25aaedaff6c3b1c8098a49f35acc38fdae86aee58cd6e0608008bc936b4e"
+      },
+      {
+        "path": "_refs/shared/design-handoff.mjs",
+        "sha256": "778499b00a828e21b91629a151ec6301e3c71c5fdea7aa204d37846bc99723ab"
+      },
+      {
+        "path": "_refs/shared/documentation-layout.md",
+        "sha256": "a7077b49ff39eb4a97fe5516028c4df53ebb45700d3842943800cfbd17023d1a"
+      },
+      {
+        "path": "_refs/shared/documentation-layout.mjs",
+        "sha256": "1de1054fb98ad3a5c95388b4a8c6761a74217f5ed4fc3c12234805784ca6d2d3"
+      },
+      {
+        "path": "_refs/shared/explore-context.md",
+        "sha256": "c84e32cf2c8fbaacf8db92b78fae8701197e765c70e2e4971440a5dadbb640f5"
+      },
+      {
+        "path": "_refs/shared/explore-contract.mjs",
+        "sha256": "58ed9a36130ba2d9163bf82ccb9d170d99e349609a7be094bafcd99e4b415aec"
+      },
+      {
+        "path": "_refs/shared/finish-gate.md",
+        "sha256": "9a0d68b0fa8b7c4d486f07bfba9097d3788528d93e78f2b048aa35af33106dfc"
+      },
+      {
+        "path": "_refs/shared/frontend-architecture.md",
+        "sha256": "568a8a5b2be277f2f8e7fbf9042da0f5936bf206341113ee1cee923f417ce516"
+      },
+      {
+        "path": "_refs/shared/git-closure-contract.mjs",
+        "sha256": "86bb576b8978b284531071d6099fc6dff7cb3e8af387febf3215f164ea33f744"
+      },
+      {
+        "path": "_refs/shared/git-commit-scope.md",
+        "sha256": "1e0f1f916ae583628cf7a0753a45ad7fc4f2ad9f447407f007fad93046615ea5"
+      },
+      {
+        "path": "_refs/shared/module-e2e-contract.md",
+        "sha256": "ef43b09e851a05c3a22c7a2c1f217af85ee03bc23e2d8d36cfa30f8b300d622d"
+      },
+      {
+        "path": "_refs/shared/module-e2e-contract.mjs",
+        "sha256": "c880ef97ee240ec5c054907554cdbd909aead65c99d927f6709d59535f099f07"
+      },
+      {
+        "path": "_refs/shared/persona.md",
+        "sha256": "3bbc5053c6a14205f4f7d4d8ec97f8fbc1056a3f9f44a6edc30bd87d0b2c0d31"
+      },
+      {
+        "path": "_refs/shared/product-ledger.md",
+        "sha256": "75d29c1579ec0eff4d61316afcf0ff8c4b63ec358ed6e64c298b183ec5cbd58c"
+      },
+      {
+        "path": "_refs/shared/product-ledger.mjs",
+        "sha256": "4b1c7b4a573a1b428a27ea5b396e1e68fd3b615503b207f22ef03c30803062f0"
+      },
+      {
+        "path": "_refs/shared/project-context.md",
+        "sha256": "0afba63de412d38e0ca6b5d46cc79cd800d75091d05ea1acc3c52b6837446376"
+      },
+      {
+        "path": "_refs/shared/project-context.mjs",
+        "sha256": "918ee807cde0cd650c9535438cb8b92af380973db73ca640c258bc1b5b1832a2"
+      },
+      {
+        "path": "_refs/shared/repository-contract.mjs",
+        "sha256": "5418a8a618edf179de8af9d4194265456df3cf9e6068126ef873c9a931195bb2"
+      },
+      {
+        "path": "_refs/shared/review-accessibility.md",
+        "sha256": "280abe7bfa5f27e781d53dffd156c554bd629f5ffc6d6a996b2654164e0bc2c2"
+      },
+      {
+        "path": "_refs/shared/review-architecture.md",
+        "sha256": "e3ae4a0b9f4ba8de70b5ad07b56839029fc07dd8ad741099ccb5b45d78ed54df"
+      },
+      {
+        "path": "_refs/shared/review-code.md",
+        "sha256": "16c2f7b1922e94d9d125acdb24cac2e071269b3a0ff2339fb60fe8281b92d823"
+      },
+      {
+        "path": "_refs/shared/review-consistency.md",
+        "sha256": "c6d40eaa9d381dba35491c13ed0535e289f4ce6fcd0acf076d851b7722d58d81"
+      },
+      {
+        "path": "_refs/shared/review-contract.mjs",
+        "sha256": "f268334733e255677268692b9e7740d259b6121b4a81c194dca9f0170c139a62"
+      },
+      {
+        "path": "_refs/shared/review-performance.md",
+        "sha256": "096a2d1eaebd79a49430a555429f1653789aacb157e8e078f9c8bc939c906572"
+      },
+      {
+        "path": "_refs/shared/review-security.md",
+        "sha256": "80631b96075a2c7fd3f801159c377e4e288d4e0158a6c82859dbadcb63778dab"
+      },
+      {
+        "path": "_refs/shared/runtime-protocols.md",
+        "sha256": "7bcd47a1c5efebafc7f146a172cd012185c12b9144dfb78e818a62e4db2cad82"
+      },
+      {
+        "path": "_refs/shared/sdcorejs-utils.md",
+        "sha256": "312c860408d0becc21558002835b86d9902ec107f0aa25fba5b49763ac482e04"
+      },
+      {
+        "path": "_refs/shared/ship-readiness-contract.mjs",
+        "sha256": "e88ab5e7ba4fb816e0c8b40e0c07133e201abe69889025caf4555bfca5809cfc"
+      },
+      {
+        "path": "_refs/shared/system-registry.json",
+        "sha256": "3129b4e2f18d1579431075501034d184900cf9c3998680dea98793c2ee2cfb13"
+      },
+      {
+        "path": "_refs/shared/system-registry.mjs",
+        "sha256": "230518edc3e527ee48e86a63257696ba76715762a53aaf94795512b6d757b561"
+      },
+      {
+        "path": "_refs/shared/tasklist.md",
+        "sha256": "b3bf2914c204e631d874883f5ca13dd7263d895f4b18be7fe457921425636d40"
+      },
+      {
+        "path": "_refs/shared/tdd.md",
+        "sha256": "ff5478699b3fd220f7656be8a1abe079833cd5fd2037420c58d586a6073a6426"
+      },
+      {
+        "path": "_refs/shared/test-auth-personas.md",
+        "sha256": "dc9983d189a2212ca26a44eb3b006d0c8a76bba450af2a0b6d6b2939efa9ec48"
+      },
+      {
+        "path": "_refs/shared/test-command-discovery.md",
+        "sha256": "08ace741236498e6f04e8aa95f9fa005031cc4b49e846096e299b03764b720df"
+      },
+      {
+        "path": "_refs/shared/test-context.md",
+        "sha256": "feaa047328d0ab37e6c6ad56ccab13ad398d237433281fb7941677cf450c89d6"
+      },
+      {
+        "path": "_refs/shared/test-data-lifecycle.md",
+        "sha256": "e74b3ba0c1ee00bcc69364967ca63430326794f912bc9d444fee736aa7ad66ca"
+      },
+      {
+        "path": "_refs/shared/test-environment-guard.md",
+        "sha256": "58693b3007a08150dd6ad35e51263a34f667ab224184ecb28525433992a3f014"
+      },
+      {
+        "path": "_refs/shared/test-generic.md",
+        "sha256": "dfa7170fb45c52e3871fdb6d175697f125ae63d070dc661a88dbc6e15c9642a2"
+      },
+      {
+        "path": "_refs/shared/test-playwright.md",
+        "sha256": "9a90b95835a7602d9d3bb4239d9497accdc02a635da34c51a8541ea825946b69"
+      },
+      {
+        "path": "_refs/shared/test-scope-and-coverage.md",
+        "sha256": "32afe22c6a550dc8e6ebaacc876255a2decae811287e01ec9603111929216b8b"
+      },
+      {
+        "path": "_refs/shared/test-ui-evidence.md",
+        "sha256": "18cc54be5e033453173c927925e8597d3de0051fc356caf535d4d7d9cec1c930"
+      },
+      {
+        "path": "_refs/shared/testing-philosophy.md",
+        "sha256": "cf18bd8c45d3ae6485d0a7e7729bdb8372b087b259319e16ec03db6235e31e56"
+      },
+      {
+        "path": "_refs/shared/user-choice-prompt.md",
+        "sha256": "0de6f4625f210a0316936a83951bc80f52d82d1c4252aaafc7cc170d89c56953"
+      },
+      {
+        "path": "_refs/shared/user-guide-template.md",
+        "sha256": "c2538577cb5ed7c0fbce98209f20843f10e5224411862988ee549295c9a5dc7f"
+      },
+      {
+        "path": "_refs/shared/validation-map.md",
+        "sha256": "300e0a9d17cf26733644e2c42b55b91a2050e8f71f0cc73cc6307895e9889f2e"
+      },
+      {
+        "path": "_refs/shared/validation-map.mjs",
+        "sha256": "93459af40bab56f5c3d239c4e8f53e78fdff355e7b0c91466ebe56826d0dd523"
+      },
+      {
+        "path": "_refs/simplify/scope-and-invariants.md",
+        "sha256": "2c80ce01dbec0c2a6e54326e1c4eccd144f87e93944b26e06127f2b6dd489817"
+      },
+      {
+        "path": "_refs/simplify/simplify-contract.mjs",
+        "sha256": "0e7e8e63ba89f3f1fc8355b3efe94e8b7dbf4092023e03f189681461d21df935"
+      },
+      {
+        "path": "_refs/simplify/stack-guardrails.md",
+        "sha256": "2e5c32fd45ff9c52273313b8c6a583457e4c008491fbd03599efa1a1faeba499"
+      },
+      {
+        "path": "_refs/simplify/verification.md",
+        "sha256": "b916b4a481b7bb158ddeff74f5078f200201cf95b35c527f8b7a286a2fa9d2ca"
+      }
+    ],
+    "sha256": "17c382bcf4d413f2b5b01bc34e93450b7f692d838b886efa1a74438cbab4fd5f"
+  },
+  "fixture_hash": "857dbaa59dd425e15f589f5c8e9368456fc9bf580de4f8232046ea32389d0e63",
+  "runtime": {
+    "cli": "codex",
+    "version": "codex-cli 0.153.4",
+    "model": "inherited-default-not-reported",
+    "effort": "inherited-default-not-reported",
+    "capture": "ephemeral-read-only-full-actual-history",
+    "capabilities": "simulated-fixture",
+    "timeout_ms": 300000
+  },
+  "scenarios": [
+    {
+      "scenario_id": "sidebar",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "Cải thiện sidebar ba cấp, mình chưa biết nên bố trí navigation thế nào. So sánh giúp các cách hợp lý trước khi mình chọn.",
+          "prompt_hash": "e14d41b807d25b7dbea645169f7592fdfafaf701ac3621746a30ecb99b0cf2e6",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 97071,
+          "assistant": "Mình sẽ dùng luồng `sdcorejs-brainstorming` để so sánh các cách bố trí sidebar ba cấp, tập trung vào việc tìm đúng mục và biết đang ở đâu trong portal.\n\n\nCó ba cách đáng cân nhắc. Chưa có cây menu cụ thể, mình so sánh theo khả năng tìm mục và diện tích còn lại cho bảng `sd-table`:\n\n| Phương án | Bố trí | Điểm mạnh | Đánh đổi |\n|---|---|---|---|\n| **1. Cây ba cấp thu gọn/mở rộng** | Cả ba cấp nằm trong sidebar, thụt lề theo cấp | Dễ thấy quan hệ cha–con; thuận tiện chuyển giữa các nhánh | Menu dài, tên cấp cuối dễ chật khi nhiều mục cùng mở |\n| **2. Bộ chọn phân hệ + sidebar hai cấp — đề xuất** | Cấp 1 ở bộ chọn phân hệ; sidebar hiển thị cấp 2–3 của phân hệ đang chọn | Giảm độ lồng, dễ đọc tên mục, dành thêm chỗ cho bảng | Chuyển phân hệ cần thêm thao tác; các phân hệ khác ít hiện diện |\n| **3. Sidebar hai cấp + tab trong trang** | Cấp 1–2 ở sidebar; cấp 3 thành tab phía trên nội dung | Sidebar gọn; chuyển nhanh giữa các trang cùng nhóm | Điều hướng bị chia hai nơi; tab khó dùng khi cấp 3 nhiều hoặc tên dài |\n\nMình nghiêng về **phương án 2 nếu cấp 1 là các phân hệ tương đối độc lập**. Phương án 1 hợp hơn khi người dùng thường xuyên chuyển giữa nhiều nhánh; phương án 3 hợp khi cấp cuối chỉ có vài trang liên quan chặt chẽ.\n\nCả ba nên phân biệt rõ **trang đang xem** với **nhóm đang mở**, và tách thao tác mở nhóm khỏi chuyển trang.\n\nBạn có muốn xem ba bố cục đặt cạnh nhau, dùng cùng một cây menu mẫu và vùng bảng, trước khi chọn không?\n\n1. **Có, xem bản minh họa — đề xuất.**\n2. **Không, tiếp tục so sánh bằng chữ.**",
+          "usage": {
+            "input_tokens": 186965,
+            "cached_input_tokens": 148096,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1424,
+            "reasoning_output_tokens": 544
+          },
+          "session_id": "01a085b6-768b-7aa1-a79c-b05a201065b8",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/runtime-protocols.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/sdlc/visual-offer-policy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/shared/project-context.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/shared/decision-coverage.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/shared/user-choice-prompt.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/design/uiux/index.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/harness/communication-economy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/system-registry.json | ConvertFrom-Json | Select-Object -Property schema_version,tracks,stack_profiles | ConvertTo-Json -Depth 9'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/design/uiux/index.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/sdlc/visual-offer-policy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/harness/communication-economy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/design/uiux/navigation.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/shared/decision-coverage.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/sdlc/angular.md'\""
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": false
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Invites side-by-side sketches before the user chooses among three named navigation layouts.",
+            "correct_offer": true,
+            "missed_offer": false
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "mobile-cards",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "sd-table trên mobile thành card, chưa biết đặt selection và action ở đâu. Có thao tác chọn nhiều và một action mở chi tiết.",
+          "prompt_hash": "7f1a2074adf959863878d73f71d26d7baa4f04ad46da47b5118dcb98de6dfbff",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 88904,
+          "assistant": "Mình sẽ dùng `sdcorejs-brainstorming` để so sánh vị trí chọn nhiều và mở chi tiết trên card mobile.\n\n\nCó hai hướng đáng so sánh: **checkbox luôn hiện ở góc trên trái**, nút **“Xem chi tiết” ở cuối card** giúp chọn nhiều ngay; hoặc **bật chế độ “Chọn” mới hiện checkbox**, giữ card gọn hơn nhưng thêm một bước khi chọn nhiều. Cả hai đều cần vùng chọn và mở chi tiết riêng để tránh chạm nhầm.\n\nBạn muốn xem hai bố cục cạnh nhau, gồm cả trạng thái đã chọn nhiều card, trước khi chọn hướng không?\n\n1. **Có, xem bản minh họa — khuyến nghị:** dễ so sánh vị trí chạm và diện tích nội dung.\n2. **Không, trao đổi bằng chữ:** mình sẽ phân tích ưu, nhược điểm để chốt bố cục.\n\nBạn trả lời **1** hoặc **2** nhé.",
+          "usage": {
+            "input_tokens": 188755,
+            "cached_input_tokens": 150656,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1100,
+            "reasoning_output_tokens": 331
+          },
+          "session_id": "01a085b7-f925-7733-8558-7691e0da1c15",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/runtime-protocols.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-offer-policy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/project-context.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/harness/communication-economy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/index.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/user-choice-prompt.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/decision-coverage.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/angular.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/index.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-offer-policy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command '$registry = Get-Content -Raw _refs/shared/system-registry.json | ConvertFrom-Json; $registry.tracks.angular | ConvertTo-Json -Depth 8; $registry.stack_profiles | Where-Object { $_.id -match '\"'angular' } | ConvertTo-Json -Depth 8\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw -Encoding utf8 _refs/design/uiux/tables.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw -Encoding utf8 _refs/design/mobile-design.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command '$registry = Get-Content -Raw -Encoding utf8 _refs/shared/system-registry.json | ConvertFrom-Json; $registry.tracks | Where-Object { $_.id -eq '\"'angular' } | ConvertTo-Json -Depth 6\""
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": false
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Names always-visible checkbox versus explicit selection mode, then invites a side-by-side card mockup comparison.",
+            "correct_offer": true,
+            "missed_offer": false
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "direct-design",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "Dùng sdcorejs-design: dashboard có doanh số, đơn hàng và cảnh báo, mình chưa rõ nên bố trí layout thế nào. Hãy đưa các hướng để mình chọn.",
+          "prompt_hash": "1f8ff6e448d87afede4a9daecbb64cfe16c82faae2da252659c50e08d306d76c",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 90775,
+          "assistant": "Mình sẽ dùng `sdcorejs-design` để đề xuất các hướng bố trí phù hợp với portal Angular hiện có, tận dụng `sd-table`.\n\n\nMình đề xuất **ba hướng bố trí**, đều tận dụng bảng đơn hàng `sd-table` và phong cách của portal hiện có. Đây là các hướng thăm dò, chưa chốt thiết kế.\n\n| Hướng | Bố trí | Phù hợp và đánh đổi |\n|---|---|---|\n| **Cân bằng — đề xuất ban đầu** | Chỉ số doanh số, đơn hàng ở trên; vùng doanh số bên trái, cảnh báo bên phải; bảng đơn hàng toàn chiều rộng bên dưới. | Dễ nắm tổng quan rồi xem chi tiết. Bảng đơn hàng có thể cần cuộn mới thấy hết. |\n| **Ưu tiên vận hành** | Cảnh báo ở đầu; chỉ số gọn ngay dưới; bảng đơn hàng chiếm phần lớn màn hình. | Hợp với người theo dõi, xử lý đơn hằng ngày. Doanh số ít nổi bật hơn. |\n| **Ưu tiên doanh số** | Doanh số chiếm vùng chính; đơn hàng tổng hợp bên cạnh; cảnh báo và bảng chi tiết phía dưới. | Hợp với người theo dõi kết quả kinh doanh. Việc cần xử lý có thể ít được chú ý hơn. |\n\nNếu cần nhìn đồng thời cả ba nhóm thông tin, mình nghiêng về **Cân bằng**. Biểu đồ xu hướng chỉ là phương án khi có dữ liệu theo thời gian.\n\nBạn muốn xem **bản phác ba hướng đặt cạnh nhau** trước khi chọn bố cục không?\n\n1. **Có, xem bản phác — khuyến nghị:** dễ so sánh diện tích và thứ tự nổi bật.\n2. **Không, tiếp tục bằng mô tả:** chọn hướng dựa trên ưu tiên công việc.",
+          "usage": {
+            "input_tokens": 185156,
+            "cached_input_tokens": 151168,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1504,
+            "reasoning_output_tokens": 586
+          },
+          "session_id": "01a085b9-4aa2-7880-b19f-fdbda99fd805",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/runtime-protocols.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/index.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/frontend-design.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/artifact-lifecycle.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/project-context.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-offer-policy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/harness/communication-economy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/user-choice-prompt.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/harness/communication-economy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/index.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content _refs/shared/system-registry.json -TotalCount 100'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/charts.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/visual.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/tables.md'"
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": false
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Direct Design entry describes three dashboard layouts and invites a comparative sketch before selection.",
+            "correct_offer": true,
+            "missed_offer": false
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "requested-mockups",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "Cho mình xem hai mockup sidebar đặt cạnh nhau: cây ba cấp và điều hướng theo section.",
+          "prompt_hash": "7bc4ccb8b2dd331f8ebae507c0e4a1c2a32704c774052eaddd3c7938f2f4e78b",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 170942,
+          "assistant": "Mình sẽ dùng hướng dẫn SDCoreJS để dựng hai mockup cạnh nhau, với cùng một bộ mục menu để bạn dễ so sánh.\n\n\nMình dùng mục “Đơn hàng” làm ví dụ ở cả hai bản: cây ba cấp thể hiện quan hệ cha–con; kiểu section đưa các trang ra ngay dưới tiêu đề nhóm. Tên menu chỉ là dữ liệu minh họa.\n\n\nHai mockup dùng cùng menu minh họa và cùng trang **Đơn hàng** đang được chọn. Phần nội dung bảng được giữ giống nhau để tập trung so sánh sidebar.\n\n```svg\n<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1000 530\" role=\"img\" aria-labelledby=\"title desc\">\n  <title id=\"title\">So sánh sidebar cây ba cấp và điều hướng theo section</title>\n  <desc id=\"desc\">Bên trái: Kinh doanh, Bán hàng, Đơn hàng là ba cấp lồng nhau. Bên phải: Kinh doanh là ngữ cảnh chung, Bán hàng và Kho hàng là tiêu đề nhóm. Đơn hàng được đánh dấu đang chọn ở cả hai bản.</desc>\n  <rect width=\"1000\" height=\"530\" rx=\"16\" fill=\"#f1f5f9\"/>\n  <g font-family=\"Arial, sans-serif\" fill=\"#1e293b\">\n    <text x=\"24\" y=\"36\" font-size=\"20\" font-weight=\"700\">1. Cây ba cấp</text>\n    <text x=\"516\" y=\"36\" font-size=\"20\" font-weight=\"700\">2. Điều hướng theo section</text>\n\n    <rect x=\"24\" y=\"56\" width=\"460\" height=\"444\" rx=\"12\" fill=\"white\" stroke=\"#cbd5e1\"/>\n    <rect x=\"516\" y=\"56\" width=\"460\" height=\"444\" rx=\"12\" fill=\"white\" stroke=\"#cbd5e1\"/>\n    <path d=\"M244 57V499 M736 57V499\" stroke=\"#e2e8f0\"/>\n\n    <g font-size=\"15\" font-weight=\"700\">\n      <text x=\"44\" y=\"91\">CỔNG NGHIỆP VỤ</text>\n      <text x=\"536\" y=\"91\">CỔNG NGHIỆP VỤ</text>\n    </g>\n    <path d=\"M25 110H243 M517 110H735\" stroke=\"#e2e8f0\"/>\n\n    <!-- Cây: ba mức thụt lề -->\n    <g font-size=\"14\">\n      <text x=\"44\" y=\"145\" fill=\"#64748b\">Tổng quan</text>\n      <text x=\"44\" y=\"189\">⌄</text>\n      <text x=\"66\" y=\"189\" font-weight=\"700\">Kinh doanh</text>\n      <text x=\"66\" y=\"228\">⌄</text>\n      <text x=\"88\" y=\"228\" font-weight=\"700\">Bán hàng</text>\n      <path d=\"M73 241V346 M73 260H88 M73 300H88 M73 340H88\"\n            fill=\"none\" stroke=\"#cbd5e1\"/>\n      <rect x=\"88\" y=\"242\" width=\"144\" height=\"36\" rx=\"6\" fill=\"#dbeafe\"/>\n      <rect x=\"88\" y=\"250\" width=\"3\" height=\"20\" rx=\"1.5\" fill=\"#2563eb\"/>\n      <text x=\"101\" y=\"265\" fill=\"#1d4ed8\" font-weight=\"700\">Đơn hàng</text>\n      <text x=\"101\" y=\"305\">Báo giá</text>\n      <text x=\"101\" y=\"345\">Khách hàng</text>\n      <text x=\"66\" y=\"389\">⌄</text>\n      <text x=\"88\" y=\"389\" font-weight=\"700\">Kho hàng</text>\n      <path d=\"M73 401V420H88\" fill=\"none\" stroke=\"#cbd5e1\"/>\n      <text x=\"101\" y=\"425\">Tồn kho</text>\n    </g>\n\n    <!-- Section: ngữ cảnh chung và các nhóm phẳng -->\n    <rect x=\"532\" y=\"123\" width=\"188\" height=\"38\" rx=\"6\"\n          fill=\"#f8fafc\" stroke=\"#cbd5e1\"/>\n    <text x=\"546\" y=\"147\" font-size=\"14\" font-weight=\"700\">Kinh doanh</text>\n    <text x=\"698\" y=\"146\" font-size=\"14\">⌄</text>\n    <text x=\"544\" y=\"191\" font-size=\"14\" fill=\"#64748b\">Tổng quan</text>\n    <text x=\"544\" y=\"230\" font-size=\"11\" font-weight=\"700\"\n          letter-spacing=\"1.2\" fill=\"#64748b\">BÁN HÀNG</text>\n    <rect x=\"532\" y=\"242\" width=\"188\" height=\"36\" rx=\"6\" fill=\"#dbeafe\"/>\n    <rect x=\"532\" y=\"250\" width=\"3\" height=\"20\" rx=\"1.5\" fill=\"#2563eb\"/>\n    <g font-size=\"14\">\n      <text x=\"546\" y=\"265\" fill=\"#1d4ed8\" font-weight=\"700\">Đơn hàng</text>\n      <text x=\"546\" y=\"305\">Báo giá</text>\n      <text x=\"546\" y=\"345\">Khách hàng</text>\n    </g>\n    <path d=\"M544 363H708\" stroke=\"#e2e8f0\"/>\n    <text x=\"544\" y=\"389\" font-size=\"11\" font-weight=\"700\"\n          letter-spacing=\"1.2\" fill=\"#64748b\">KHO HÀNG</text>\n    <text x=\"546\" y=\"425\" font-size=\"14\">Tồn kho</text>\n\n    <!-- Cùng nội dung trang ở hai phương án -->\n    <g transform=\"translate(260 0)\">\n      <text x=\"0\" y=\"91\" font-size=\"11\" fill=\"#64748b\">Kinh doanh / Bán hàng</text>\n      <text x=\"0\" y=\"143\" font-size=\"21\" font-weight=\"700\">Đơn hàng</text>\n      <rect x=\"0\" y=\"165\" width=\"208\" height=\"32\" rx=\"5\"\n            fill=\"#f8fafc\" stroke=\"#e2e8f0\"/>\n      <text x=\"10\" y=\"185\" font-size=\"12\" fill=\"#64748b\">Tìm đơn hàng…</text>\n      <rect x=\"0\" y=\"215\" width=\"208\" height=\"196\" rx=\"6\"\n            fill=\"white\" stroke=\"#e2e8f0\"/>\n      <path d=\"M1 248H207 M1 289H207 M1 330H207 M1 371H207\"\n            stroke=\"#e2e8f0\"/>\n      <g font-size=\"11\" fill=\"#64748b\">\n        <text x=\"10\" y=\"236\">Mã đơn</text>\n        <text x=\"100\" y=\"236\">Trạng thái</text>\n        <text x=\"10\" y=\"274\">DH-001</text>\n        <text x=\"100\" y=\"274\">Chờ xử lý</text>\n        <text x=\"10\" y=\"315\">DH-002</text>\n        <text x=\"100\" y=\"315\">Đang giao</text>\n        <text x=\"10\" y=\"356\">DH-003</text>\n        <text x=\"100\" y=\"356\">Hoàn tất</text>\n        <text x=\"10\" y=\"397\">DH-004</text>\n        <text x=\"100\" y=\"397\">Chờ xử lý</text>\n      </g>\n    </g>\n    <g transform=\"translate(752 0)\">\n      <text x=\"0\" y=\"91\" font-size=\"11\" fill=\"#64748b\">Kinh doanh / Bán hàng</text>\n      <text x=\"0\" y=\"143\" font-size=\"21\" font-weight=\"700\">Đơn hàng</text>\n      <rect x=\"0\" y=\"165\" width=\"208\" height=\"32\" rx=\"5\"\n            fill=\"#f8fafc\" stroke=\"#e2e8f0\"/>\n      <text x=\"10\" y=\"185\" font-size=\"12\" fill=\"#64748b\">Tìm đơn hàng…</text>\n      <rect x=\"0\" y=\"215\" width=\"208\" height=\"196\" rx=\"6\"\n            fill=\"white\" stroke=\"#e2e8f0\"/>\n      <path d=\"M1 248H207 M1 289H207 M1 330H207 M1 371H207\"\n            stroke=\"#e2e8f0\"/>\n      <g font-size=\"11\" fill=\"#64748b\">\n        <text x=\"10\" y=\"236\">Mã đơn</text>\n        <text x=\"100\" y=\"236\">Trạng thái</text>\n        <text x=\"10\" y=\"274\">DH-001</text>\n        <text x=\"100\" y=\"274\">Chờ xử lý</text>\n        <text x=\"10\" y=\"315\">DH-002</text>\n        <text x=\"100\" y=\"315\">Đang giao</text>\n        <text x=\"10\" y=\"356\">DH-003</text>\n        <text x=\"100\" y=\"356\">Hoàn tất</text>\n        <text x=\"10\" y=\"397\">DH-004</text>\n        <text x=\"100\" y=\"397\">Chờ xử lý</text>\n      </g>\n    </g>\n    <g font-size=\"11\" fill=\"#64748b\">\n      <text x=\"44\" y=\"479\">Ba mức: phân hệ → nhóm → trang</text>\n      <text x=\"536\" y=\"479\">Tiêu đề nhóm + liên kết trực tiếp</text>\n    </g>\n  </g>\n</svg>\n```\n\n1. **Cây ba cấp:** phù hợp khi cần thấy rõ quan hệ cha–con; đổi lại, thụt lề chiếm chỗ và cần mở nhánh để tìm trang.\n2. **Theo section — đề xuất với bộ menu minh họa này:** dễ quét và truy cập trực tiếp; sidebar sẽ dài hơn khi có nhiều mục.\n\nBạn nghiêng về **1**, **2**, hay muốn mình tự chọn? Đây là phản hồi về hướng thiết kế; việc triển khai vẫn cần duyệt spec và plan riêng.",
+          "usage": {
+            "input_tokens": 210561,
+            "cached_input_tokens": 170240,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3620,
+            "reasoning_output_tokens": 698
+          },
+          "session_id": "01a085ba-abe4-7fb3-aa99-17b4f435b3fc",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/runtime-protocols.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "failed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath 'skills/sdcorejs-design/SKILL.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/user-choice-prompt.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/sdlc/visual-offer-policy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/design/uiux/index.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/harness/communication-economy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/sdlc/visual-companion.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/project-context.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"rg --files -g SKILL.md -g '*visual*' -g '*tasklist*' -g '*sidebar*'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/user-choice-prompt.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/design/uiux/index.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Select-String -LiteralPath '_refs/harness/capability-contract.json' -Pattern 'visual_surface|static_html_artifact|visual.present|native_structured_choice' -Context 3,8\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/design/uiux/navigation.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/tasklist.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/sdlc/visual-screen.schema.json'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command '$registry = Get-Content -Raw -LiteralPath '\"'_refs/shared/system-registry.json' | ConvertFrom-Json; \"'$registry.tracks.design | ConvertTo-Json -Depth 5; $registry.stack_profiles | ConvertTo-Json -Depth 4'"
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": true
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Emits two SVG mockups with the same menu data, without asking whether visuals are wanted.",
+            "redundant_preview_question": false,
+            "preview_missing": false
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "fixed-rename",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "Đổi tên input customerName thành clientName, giữ nguyên behavior và layout.",
+          "prompt_hash": "0b13e081f0eeb38f314e875a90d57f001fd4ab870768dbfbc8f639619079c27f",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 52883,
+          "assistant": "Mình áp dụng `sdcorejs-using-skills` cho thay đổi nhỏ, đã rõ phạm vi này.\n\nMình sẽ đổi input `customerName` thành `clientName` và cập nhật các tham chiếu liên quan, giữ nguyên hành vi và bố cục.\n\nTrong lượt mô phỏng này, chưa chỉnh sửa mã hoặc chạy kiểm tra.",
+          "usage": {
+            "input_tokens": 56087,
+            "cached_input_tokens": 40064,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 453,
+            "reasoning_output_tokens": 326
+          },
+          "session_id": "01a085bd-4ddd-7d30-a922-09e40a2b1730",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/runtime-protocols.md'\""
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": false
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Acknowledges the exact rename with no visual invitation.",
+            "false_offer": false
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "fixed-spacing",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "Sửa spacing giữa hai input từ 8px thành 16px.",
+          "prompt_hash": "48e05c5d8823fc427f45f8186ad2a6b3865941bee90f34494fc1a4c7a44beef2",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 48047,
+          "assistant": "Tôi sẽ áp dụng hướng dẫn SDCoreJS cho chỉnh sửa nhỏ, rõ phạm vi và kiểm tra quy tắc liên quan trong fixture.\n\nThay đổi mô phỏng: khoảng cách giữa hai input từ **8px → 16px**.\n\nChưa sửa mã nguồn hoặc kiểm tra giao diện thực tế trong fixture này.",
+          "usage": {
+            "input_tokens": 56008,
+            "cached_input_tokens": 44288,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 414,
+            "reasoning_output_tokens": 287
+          },
+          "session_id": "01a085be-1dbc-7ae3-8d79-90ce6252c581",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/runtime-protocols.md'\""
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": false
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Acknowledges the fixed 8px to 16px change with no visual invitation.",
+            "false_offer": false
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "approved-layout",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "Triển khai layout đã duyệt: sidebar trái cố định 240px, nội dung bên phải. Không còn quyết định thiết kế nào đang mở.",
+          "prompt_hash": "b004b4118dbff3b454a8176dcd570abf9efc1bd65f3e8cf641c445fe8b8f4a5d",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 93635,
+          "assistant": "Tôi dùng `sdcorejs-using-skills` và `sdcorejs-angular` để kiểm tra điều kiện triển khai, đồng thời giữ nguyên layout bạn đã duyệt.\n\nĐã ghi nhận layout đã duyệt: **sidebar trái cố định 240px, nội dung bên phải**.\n\nFixture chưa cung cấp spec, plan đã duyệt và artifact `frontend_architecture` tương ứng. Bạn cung cấp các hồ sơ này để tôi đối chiếu trước bước triển khai. Lượt này chưa sửa mã hoặc chạy kiểm thử.\n\nĐây là yêu cầu kiểm tra hồ sơ của [sdcorejs-angular](/C:/Users/NGHIAT~1/AppData/Local/Temp/sdcorejs-visual-offer-XtJKp8/candidate/skills/tracks/angular/sdcorejs-angular.md): “When required approved artifacts are absent, remain read-only and must not modify source or test files.” Layout vẫn được ghi nhận là đã chốt.",
+          "usage": {
+            "input_tokens": 178772,
+            "cached_input_tokens": 152960,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1229,
+            "reasoning_output_tokens": 720
+          },
+          "session_id": "01a085be-d722-7eb2-bd70-0a6ead43fefb",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/runtime-protocols.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "failed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"rg --files -g '*spec*' -g '*plan*' -g '*architecture*' -g '*.md' .sdcorejs\""
+            },
+            {
+              "type": "command_execution",
+              "status": "failed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"rg --files skills | rg 'angular[\\\\\\\\/]SKILL\\\\.md\"'$'\"'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/harness/communication-economy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"rg --files | rg '(\"'^|['\"\\\\\\\\/])(SKILL\\\\.md|angular\\\\.md)\"'$|sdcorejs-angular'\"'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath 'skills/tracks/angular/sdcorejs-angular.md' -TotalCount 32\""
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": false
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Preserves the approved layout. Requests missing implementation artifacts, not a visual decision.",
+            "false_offer": false
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "mixed-business",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "Làm màn xử lý đơn, mình chưa rõ ai được hủy và nên bố trí bước xác nhận thế nào.",
+          "prompt_hash": "d2c47dba77501fd9e7f0e504ee530502136498fc7b35ea0c5fdd18ba0572811e",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 90925,
+          "assistant": "Mình dùng skill `sdcorejs-brainstorming` để làm rõ quyền hủy đơn và cách xác nhận trước khi chốt yêu cầu màn hình.\n\nMàn này cần chốt **ai được hủy ở từng trạng thái đơn** và **cách xác nhận trước khi hủy**. Bước xác nhận giúp tránh bấm nhầm; quyền hủy vẫn cần quy tắc riêng.\n\nVới bảng `sd-table`, có hai cách bố trí đáng cân nhắc: **hộp thoại xác nhận** gọn, phù hợp khi chỉ cần kiểm tra mã đơn và hậu quả hủy; **khung bên** có thêm chỗ đối chiếu chi tiết đơn nhưng chiếm nhiều diện tích hơn.\n\nBạn có muốn xem hai bản phác cạnh nhau trước khi chọn cách bố trí không?\n\n1. **Có, xem bản phác (đề xuất)** — dễ so sánh vị trí thao tác và nội dung xác nhận.\n2. **Không, trao đổi bằng chữ** — tiếp tục làm rõ quyền hủy và luồng xử lý.\n\nBạn trả lời **1** hoặc **2**; việc xem bản phác chỉ hỗ trợ lựa chọn, chưa chốt quyền hủy hay duyệt triển khai.",
+          "usage": {
+            "input_tokens": 185341,
+            "cached_input_tokens": 150656,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1551,
+            "reasoning_output_tokens": 969
+          },
+          "session_id": "01a085c0-4656-7042-9cc9-1ae0374aa957",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/runtime-protocols.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/system-registry.json'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/decision-coverage.md, _refs/design/uiux/index.md, _refs/sdlc/angular.md, _refs/harness/communication-economy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/project-context.md, _refs/shared/user-choice-prompt.md, _refs/sdlc/visual-offer-policy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/index.md, _refs/shared/decision-coverage.md, _refs/sdlc/visual-offer-policy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/tables.md, _refs/design/uiux/forms.md'"
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": false
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Prematurely invites dialog versus drawer layouts while unresolved cancellation authority can change the flow.",
+            "false_offer": true
+          }
+        },
+        {
+          "turn_index": 1,
+          "user": "Chỉ quản lý được hủy, đơn chưa giao mới hủy được. Giờ so sánh wizard hai bước với drawer xác nhận để mình chọn.",
+          "prompt_hash": "370b9b118034c1a55913bb7756b6224deac5ec877422239eb87c0e8e87fb037e",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 139568,
+          "assistant": "Mình tiếp tục dùng `sdcorejs-brainstorming`, ghi nhận quyền hủy bạn vừa chốt và chuẩn bị bản so sánh wizard hai bước với drawer xác nhận.\n\n\nĐã ghi nhận: **chỉ quản lý được hủy và chỉ hủy đơn chưa giao**. Dưới đây là bản phác trực quan mô phỏng, dùng cùng một đơn minh họa để so sánh.\n\n```svg\n<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 940 350\" role=\"img\" aria-labelledby=\"title desc\">\n<title id=\"title\">Wizard hai bước và drawer xác nhận hủy đơn</title>\n<desc id=\"desc\">Bên trái là hai bước đối chiếu rồi xác nhận. Bên phải là bảng đơn với khung xác nhận mở bên cạnh.</desc>\n<rect width=\"940\" height=\"350\" fill=\"#f1f5f9\"/>\n<g font-family=\"Arial, sans-serif\" font-size=\"14\" fill=\"#172033\">\n  <rect x=\"16\" y=\"16\" width=\"444\" height=\"318\" rx=\"12\" fill=\"white\"/>\n  <text x=\"32\" y=\"44\" font-size=\"19\" font-weight=\"bold\">1. Wizard hai bước</text>\n  <text x=\"32\" y=\"73\">Bảng đơn → Chọn “Hủy đơn” → Wizard</text>\n  <rect x=\"32\" y=\"94\" width=\"190\" height=\"192\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/>\n  <text x=\"46\" y=\"120\" font-weight=\"bold\">Bước 1 · Đối chiếu</text>\n  <text x=\"46\" y=\"153\">Đơn DH-1042</text>\n  <text x=\"46\" y=\"181\">Trạng thái: Chưa giao</text>\n  <text x=\"46\" y=\"209\">Kiểm tra đúng đơn</text>\n  <rect x=\"112\" y=\"237\" width=\"94\" height=\"32\" rx=\"5\" fill=\"#1d4ed8\"/>\n  <text x=\"136\" y=\"258\" fill=\"white\">Tiếp tục</text>\n  <text x=\"228\" y=\"193\" font-size=\"20\">→</text>\n  <rect x=\"252\" y=\"94\" width=\"192\" height=\"192\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/>\n  <text x=\"266\" y=\"120\" font-weight=\"bold\">Bước 2 · Xác nhận</text>\n  <text x=\"266\" y=\"153\">Hủy đơn DH-1042?</text>\n  <text x=\"266\" y=\"181\">Đơn sẽ chuyển sang</text>\n  <text x=\"266\" y=\"203\">trạng thái “Đã hủy”.</text>\n  <text x=\"264\" y=\"258\">Quay lại</text>\n  <rect x=\"326\" y=\"237\" width=\"104\" height=\"32\" rx=\"5\" fill=\"#b91c1c\"/>\n  <text x=\"340\" y=\"258\" fill=\"white\">Xác nhận hủy</text>\n  <text x=\"32\" y=\"313\" fill=\"#475569\">Tách việc kiểm tra và quyết định thành hai bước.</text>\n\n  <rect x=\"476\" y=\"16\" width=\"448\" height=\"318\" rx=\"12\" fill=\"white\"/>\n  <text x=\"492\" y=\"44\" font-size=\"19\" font-weight=\"bold\">2. Drawer xác nhận · Đề xuất</text>\n  <text x=\"492\" y=\"73\">Bảng đơn → Chọn “Hủy đơn” → Khung bên</text>\n  <rect x=\"492\" y=\"94\" width=\"156\" height=\"192\" rx=\"8\" fill=\"#e2e8f0\"/>\n  <text x=\"506\" y=\"121\" font-weight=\"bold\">Bảng đơn</text>\n  <rect x=\"500\" y=\"137\" width=\"140\" height=\"39\" rx=\"4\" fill=\"#dbeafe\"/>\n  <text x=\"508\" y=\"162\">DH-1042 · Đang chọn</text>\n  <path d=\"M506 198h118 M506 226h118 M506 254h118\" stroke=\"#94a3b8\"/>\n  <rect x=\"660\" y=\"94\" width=\"248\" height=\"192\" rx=\"8\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/>\n  <text x=\"674\" y=\"120\" font-weight=\"bold\">Hủy đơn DH-1042?</text>\n  <text x=\"674\" y=\"153\">Trạng thái: Chưa giao</text>\n  <text x=\"674\" y=\"181\">Đơn sẽ chuyển sang “Đã hủy”.</text>\n  <text x=\"674\" y=\"258\">Đóng</text>\n  <rect x=\"780\" y=\"237\" width=\"114\" height=\"32\" rx=\"5\" fill=\"#b91c1c\"/>\n  <text x=\"795\" y=\"258\" fill=\"white\">Xác nhận hủy</text>\n  <text x=\"492\" y=\"313\" fill=\"#475569\">Đối chiếu và xác nhận cùng chỗ, vẫn thấy bảng.</text>\n</g>\n</svg>\n```\n\n| Phương án | Phù hợp khi | Đánh đổi |\n|---|---|---|\n| **1. Wizard hai bước** | Cần một bước rà soát riêng trước khi quyết định. | Thêm lượt bấm; dễ lặp nội dung nếu thông tin cần kiểm tra ít. |\n| **2. Drawer xác nhận — đề xuất** | Quản lý xử lý từng đơn ngay trên `sd-table`. | Gọn và giữ ngữ cảnh bảng; phần đối chiếu và nút hủy cùng một khung. |\n\nMình nghiêng về **drawer** vì phạm vi hiện tại chỉ cần đối chiếu đơn rồi xác nhận. Cả hai phương án đều chỉ thực hiện hủy khi bấm **“Xác nhận hủy”**; “Tiếp tục”, “Quay lại” hoặc “Đóng” không hủy đơn.\n\nBạn chọn **1 — wizard**, **2 — drawer**, hoặc **“bạn quyết định”**? Lựa chọn này chốt hướng bố trí, chưa phải duyệt triển khai.",
+          "usage": {
+            "input_tokens": 190283,
+            "cached_input_tokens": 149248,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2530,
+            "reasoning_output_tokens": 595
+          },
+          "session_id": "01a085c1-a68e-72b3-afbd-645b13644b42",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/runtime-protocols.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/design/uiux/index.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/shared/user-choice-prompt.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/harness/communication-economy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/sdlc/visual-companion.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/shared/decision-coverage.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/sdlc/visual-offer-policy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/shared/project-context.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/sdlc/visual-companion.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/sdlc/visual-offer-policy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/shared/user-choice-prompt.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/forms.md, _refs/design/uiux/tables.md, _refs/sdlc/angular.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command '$registry = Get-Content -Raw _refs/shared/system-registry.json | ConvertFrom-Json; $registry.tracks.angular | ConvertTo-Json -Depth 6; $registry.stack_profiles | ConvertTo-Json -Depth 6'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"rg -n -C 3 'visual_surface|static_html_artifact|live_visual_companion|persistent_local_process|native_structured_choice|visual.present' _refs/harness/capability-contract.json\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content _refs/shared/decision-coverage.md | Select-Object -Skip 139'"
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": true
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Emits SVG and asks to choose a layout, treating ordinary comparison and a resolved business rule as visual acceptance. No explicit invitation acceptance or preview request was supplied.",
+            "correct_offer": false,
+            "missed_offer": true
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "decline-handoff",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "So sánh hai cách navigation cho sidebar ba cấp để mình chọn.",
+          "prompt_hash": "4cfc91294a885d380cf703b0a7e67085fd047f1123f271af736d63b038092abc",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 60360,
+          "assistant": "Mình dùng `sdcorejs-brainstorming` để so sánh hai cách điều hướng và giúp bạn chọn hướng phù hợp cho portal hiện tại.\n\nVới sidebar ba cấp, hai cách đáng cân nhắc là:\n\n| Tiêu chí | **A — Cây mở/thu gọn (accordion)** | **B — Đi sâu từng cấp (drill-down)** |\n|---|---|---|\n| Cách dùng | Mở cấp 1 → hiện cấp 2 → mở tiếp cấp 3 ngay bên dưới | Chọn cấp 1 → sidebar hiện cấp 2; chọn tiếp → hiện cấp 3, có nút quay lại |\n| Điểm mạnh | Nhìn rõ phân cấp, chuyển giữa các nhánh thuận tiện | Gọn, ít mục xuất hiện cùng lúc, dành nhiều chiều ngang cho nhãn |\n| Đánh đổi | Menu dài phải cuộn; thụt lề ba cấp làm nhãn dễ bị chật | Chuyển sang nhánh khác cần quay lại; khó nhìn tổng thể |\n| Phù hợp | Thường xuyên chuyển qua lại giữa nhiều nhóm chức năng | Nhiều mục, tên dài, người dùng thường làm việc trong một nhánh |\n\n**Mình nghiêng về A** nếu người dùng portal thường chuyển giữa các màn hình bảng. B phù hợp hơn khi menu lớn và việc tập trung trong một nhánh quan trọng hơn chuyển nhanh.\n\nCả hai nên đánh dấu rõ trang đang mở, phân biệt thao tác mở nhóm với chuyển trang và hỗ trợ bàn phím.\n\nBạn có muốn xem **hai bản phác thảo đặt cạnh nhau, dùng cùng một menu ba cấp**, trước khi chọn không?\n\n1. **Có, xem phác thảo — khuyến nghị:** dễ so sánh độ dài menu và thao tác chuyển nhánh.\n2. **Không, tiếp tục bằng mô tả:** chọn hướng qua trao đổi bằng chữ.\n\nBạn trả lời **1** hoặc **2** nhé.",
+          "usage": {
+            "input_tokens": 101839,
+            "cached_input_tokens": 73728,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 898,
+            "reasoning_output_tokens": 261
+          },
+          "session_id": "01a085c3-c246-7441-959b-164df562a576",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/runtime-protocols.md', '_refs/sdlc/visual-offer-policy.md', '_refs/shared/user-choice-prompt.md', '_refs/design/uiux/index.md', '_refs/harness/communication-economy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/design/uiux/navigation.md', '_refs/shared/project-context.md', '_refs/shared/decision-coverage.md'; \"'$registry = Get-Content -Raw -LiteralPath '\"'_refs/shared/system-registry.json' | ConvertFrom-Json; \"'$registry.tracks.angular | ConvertTo-Json -Depth 8; $registry.stack_profiles | Where-Object { $_.id -match '\"'angular' } | ConvertTo-Json -Depth 6\""
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": false
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Invites side-by-side navigation sketches before selection.",
+            "correct_offer": true,
+            "missed_offer": false
+          }
+        },
+        {
+          "turn_index": 1,
+          "user": "Không dùng preview trong luồng này, tiếp tục bằng chữ. Chuyển sang sdcorejs-design để bàn tiếp bố trí navigation.",
+          "prompt_hash": "eb765c8f203a68e16b8ecd829af940c27de7820951030729248fb64f2ebd06f9",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 82839,
+          "assistant": "Mình ghi nhận không dùng preview trong luồng này và chuyển sang `sdcorejs-design` để bàn bố trí navigation bằng chữ.\n\n\nMình chuyển sang `sdcorejs-design` và giữ lựa chọn **chỉ trao đổi bằng chữ trong toàn bộ luồng này**.\n\nVề bố trí navigation, hai hướng vẫn đang mở:\n\n1. **A — Cây mở/thu gọn: khuyến nghị ban đầu.** Sidebar bên trái giữ chiều rộng ổn định; cấp 2 và cấp 3 mở ngay dưới nhóm cha, thụt lề vừa đủ để nhãn còn dễ đọc. Trang hiện tại được đánh dấu rõ, nhóm cha có trạng thái mở riêng. Dễ nhìn cấu trúc và chuyển nhánh, nhưng menu dài sẽ cần cuộn.\n\n2. **B — Đi sâu từng cấp.** Đầu sidebar hiển thị nhóm đang xem và nút “Quay lại”; bên dưới chỉ hiện các mục của cấp đó. Nhãn có nhiều chỗ hơn, danh sách gọn hơn, nhưng chuyển sang nhánh khác cần thêm bước quay lại.\n\nVới cả hai, mình đề xuất đặt **đường dẫn phân cấp phía trên tiêu đề trang**, giúp người dùng biết vị trí khi đang làm việc với bảng `sd-table`. Nếu mục cha vừa có trang riêng vừa chứa mục con, thao tác chuyển trang và mở nhóm cần tách rõ.\n\n**Bạn muốn bàn chi tiết bố trí theo 1 (A) hay 2 (B)?** Bạn cũng có thể trả lời “bạn quyết định”.",
+          "usage": {
+            "input_tokens": 191790,
+            "cached_input_tokens": 150528,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1330,
+            "reasoning_output_tokens": 488
+          },
+          "session_id": "01a085d0-39a0-7db0-b84c-d4d151d062e5",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "failed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw skills/sdcorejs-design/SKILL.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/runtime-protocols.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/user-choice-prompt.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-offer-policy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"rg --files -g '*design*' -g 'SKILL.md' -g 'system-registry.json'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/project-context.md\nGet-Content -Raw _refs/harness/communication-economy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw skills/tracks/design/sdcorejs-design.md\nGet-Content -Raw _refs/design/uiux/index.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command '$registry = Get-Content -Raw _refs/shared/system-registry.json | ConvertFrom-Json\n$registry.tracks.design | ConvertTo-Json -Depth 8\n$registry.stack_profiles | ConvertTo-Json -Depth 5'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/navigation.md\nGet-Content -Raw _refs/design/frontend-design.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/artifact-lifecycle.md\n$registry = Get-Content -Raw _refs/shared/system-registry.json | ConvertFrom-Json\n$registry.tracks | Where-Object { $_.id -eq '\"'design' } | ConvertTo-Json -Depth 6\""
+            }
+          ],
+          "observed": {
+            "possible_offer": true,
+            "preview_content": false
+          },
+          "requires_prior_offer": true,
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Explicitly adopts Design and continues in text in the declined thread; no new preview invitation.",
+            "duplicate_offer": false
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "reenable",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "So sánh wizard với drawer cho màn xác nhận.",
+          "prompt_hash": "abbc7e43d0e0c49e0b72d8c063aaddfbd8f77caa7593cd4e076db175fb92b780",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 94703,
+          "assistant": "Mình dùng `sdcorejs-brainstorming` để so sánh hai cách xác nhận trong portal đang dùng `sd-table`.\n\n**Drawer hợp với xác nhận ngắn ngay từ `sd-table`; wizard hợp với quy trình có nhiều bước phụ thuộc nhau.** Wizard tổ chức luồng theo bước, còn drawer là khung trượt bên cạnh màn hiện tại.\n\n| Tiêu chí | Wizard | Drawer |\n|---|---|---|\n| Tình huống phù hợp | Cần bổ sung thông tin, kiểm tra rồi xác nhận | Xem lại thông tin và xác nhận trong một lượt |\n| Ngữ cảnh bảng | Người dùng tập trung vào luồng riêng | Giữ bảng phía sau, thuận tiện quay lại xử lý dòng tiếp theo |\n| Điểm mạnh | Chia nhỏ nội dung, thể hiện tiến độ rõ | Ít thao tác, phù hợp công việc lặp lại |\n| Đánh đổi | Thêm lượt “Tiếp tục/Quay lại”; dễ rườm rà nếu nội dung ít | Không gian hẹp, dễ phải cuộn khi thông tin dài |\n\nVới giả định màn này chỉ **kiểm tra bản ghi rồi xác nhận**, mình nghiêng về **drawer**. Nếu các bước có lựa chọn làm thay đổi nội dung bước sau, wizard hợp hơn. Cả hai cần nêu rõ bản ghi bị tác động và kết quả của thao tác xác nhận.\n\nBạn muốn xem **hai bố cục minh họa đặt cạnh nhau**, cùng nội dung xác nhận từ `sd-table`, trước khi chọn hướng không?\n\n1. **Có, xem minh họa — đề xuất:** dễ so sánh không gian và số bước.\n2. **Không, tiếp tục bằng chữ:** đối chiếu theo nghiệp vụ cụ thể.\n\nBạn có thể trả lời **1** hoặc **2**.",
+          "usage": {
+            "input_tokens": 139940,
+            "cached_input_tokens": 105344,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1190,
+            "reasoning_output_tokens": 366
+          },
+          "session_id": "01a085c4-af26-7502-a620-f687ffa9e051",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/runtime-protocols.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/decision-coverage.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/index.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/harness/communication-economy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/user-choice-prompt.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/project-context.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-offer-policy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/project-context.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/forms.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/angular.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command '$taskRegistry = Get-Content -Raw _refs/shared/system-registry.json | ConvertFrom-Json; $taskRegistry.tracks.angular | ConvertTo-Json -Depth 8; $taskRegistry.stack_profiles | ConvertTo-Json -Depth 5'"
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": false
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Invites wizard/drawer previews before choosing the direction.",
+            "correct_offer": true,
+            "missed_offer": false
+          }
+        },
+        {
+          "turn_index": 1,
+          "user": "Không xem preview trong phiên này. Tiếp tục bằng chữ.",
+          "prompt_hash": "1e409c6ae9883adf5b06ce5a5cdfac1507fbb02c478e0d379cc21d07e23b5ab2",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 71735,
+          "assistant": "Mình sẽ tiếp tục so sánh bằng chữ và giữ lựa chọn không xem preview trong suốt phiên này.\n\n\nMình ghi nhận **không xem preview trong phiên này** và sẽ không mời lại trừ khi bạn chủ động yêu cầu.\n\nVới màn xác nhận từ `sd-table`, có hai hướng:\n\n1. **Drawer — đề xuất nếu chỉ xem lại rồi xác nhận.** Người dùng chọn bản ghi, xem thông tin và tác động của thao tác, rồi bấm xác nhận. Cách này thuận tiện khi xử lý liên tiếp nhiều dòng; đánh đổi là không gian hẹp nếu nội dung dài.\n2. **Wizard — phù hợp nếu có các bước phụ thuộc nhau.** Người dùng bổ sung thông tin, kiểm tra tổng hợp rồi xác nhận ở bước cuối. Cách này giúp kiểm soát luồng phức tạp; đánh đổi là thêm thao tác chuyển bước.\n\nMình vẫn nghiêng về **drawer**, với giả định người dùng không phải hoàn thành nhiều bước trước khi xác nhận. Mức độ quan trọng của thao tác, tự nó, chưa phải lý do để dùng wizard.\n\nBạn muốn đi theo **1 — drawer** hay **2 — wizard**? Bạn cũng có thể trả lời **“bạn quyết định”**.",
+          "usage": {
+            "input_tokens": 136589,
+            "cached_input_tokens": 121856,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 778,
+            "reasoning_output_tokens": 253
+          },
+          "session_id": "01a085d1-7e82-79c1-a96e-c642a3616b16",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/runtime-protocols.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/project-context.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/index.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/decision-coverage.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/harness/communication-economy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/user-choice-prompt.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-offer-policy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/index.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/system-registry.json | ConvertFrom-Json | Select-Object -Property tracks,stack_profiles | ConvertTo-Json -Depth 6'"
+            }
+          ],
+          "observed": {
+            "possible_offer": true,
+            "preview_content": false
+          },
+          "requires_prior_offer": true,
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Honors the explicit session-wide refusal and asks a business question in text.",
+            "duplicate_offer": false
+          }
+        },
+        {
+          "turn_index": 2,
+          "user": "Riêng quyết định này, bật lại giúp mình và cho xem hai mockup.",
+          "prompt_hash": "6cb4f3e810f0834a72d2bd89a9722ab3a583a939772533209dc529e9a5b16dc9",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 143592,
+          "assistant": "Mình dùng `sdcorejs-brainstorming` để mở lại preview riêng cho lựa chọn wizard/drawer và dựng hai mockup cùng nội dung để bạn so sánh. Lựa chọn không xem preview ở phần còn lại của phiên vẫn được giữ.\n\n\nMình mở lại preview **chỉ cho quyết định wizard/drawer**; các quyết định khác trong phiên vẫn giữ chế độ bằng chữ.\n\nHai mockup dưới đây dùng cùng dữ liệu giả định: **HS-024**, chuyển từ **Chờ xác nhận → Đã xác nhận**.\n\n```svg\n<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1120 480\" role=\"img\" aria-labelledby=\"title desc\">\n  <title id=\"title\">Hai mockup: drawer và wizard cho màn xác nhận</title>\n  <desc id=\"desc\">Bên trái, drawer mở cạnh bảng và xác nhận trong một lượt. Bên phải, wizard hiển thị bước xác nhận cuối sau bước kiểm tra.</desc>\n  <rect width=\"1120\" height=\"480\" rx=\"16\" fill=\"#f1f5f9\"/>\n  <g font-family=\"Arial, sans-serif\" fill=\"#172033\">\n    <text x=\"24\" y=\"36\" font-size=\"21\" font-weight=\"700\">1. Drawer</text>\n    <text x=\"580\" y=\"36\" font-size=\"21\" font-weight=\"700\">2. Wizard</text>\n    <text x=\"24\" y=\"61\" font-size=\"14\" fill=\"#475569\">Xem lại và xác nhận trong một lượt</text>\n    <text x=\"580\" y=\"61\" font-size=\"14\" fill=\"#475569\">Tách kiểm tra và xác nhận thành hai bước</text>\n\n    <rect x=\"24\" y=\"82\" width=\"516\" height=\"330\" rx=\"10\" fill=\"#e2e8f0\" stroke=\"#cbd5e1\"/>\n    <text x=\"42\" y=\"113\" font-size=\"16\" font-weight=\"700\">Danh sách hồ sơ</text>\n    <rect x=\"38\" y=\"133\" width=\"176\" height=\"34\" rx=\"4\" fill=\"#cbd5e1\"/>\n    <text x=\"49\" y=\"155\" font-size=\"13\">Mã hồ sơ</text>\n    <rect x=\"38\" y=\"173\" width=\"176\" height=\"42\" rx=\"4\" fill=\"#dbeafe\"/>\n    <text x=\"49\" y=\"199\" font-size=\"14\" fill=\"#1e40af\">HS-024 · Đang chọn</text>\n    <text x=\"49\" y=\"244\" font-size=\"14\" fill=\"#64748b\">HS-025</text>\n    <path d=\"M38 259H214\" stroke=\"#cbd5e1\"/>\n    <text x=\"49\" y=\"287\" font-size=\"14\" fill=\"#64748b\">HS-026</text>\n    <path d=\"M38 302H214\" stroke=\"#cbd5e1\"/>\n\n    <rect x=\"228\" y=\"82\" width=\"312\" height=\"330\" rx=\"10\" fill=\"white\" stroke=\"#cbd5e1\"/>\n    <text x=\"250\" y=\"117\" font-size=\"18\" font-weight=\"700\">Xác nhận hồ sơ</text>\n    <text x=\"510\" y=\"117\" font-size=\"21\" fill=\"#64748b\">×</text>\n    <path d=\"M228 134H540\" stroke=\"#e2e8f0\"/>\n    <text x=\"250\" y=\"164\" font-size=\"13\" fill=\"#64748b\">HỒ SƠ ĐƯỢC CHỌN</text>\n    <text x=\"250\" y=\"192\" font-size=\"22\" font-weight=\"700\">HS-024</text>\n    <text x=\"250\" y=\"223\" font-size=\"14\">Hiện tại: Chờ xác nhận</text>\n    <rect x=\"248\" y=\"245\" width=\"270\" height=\"72\" rx=\"8\" fill=\"#eff6ff\"/>\n    <text x=\"262\" y=\"271\" font-size=\"14\" fill=\"#1e40af\">Sau khi xác nhận:</text>\n    <text x=\"262\" y=\"297\" font-size=\"16\" font-weight=\"700\" fill=\"#1e40af\">Đã xác nhận</text>\n    <path d=\"M228 343H540\" stroke=\"#e2e8f0\"/>\n    <rect x=\"250\" y=\"358\" width=\"76\" height=\"36\" rx=\"6\" fill=\"white\" stroke=\"#94a3b8\"/>\n    <text x=\"288\" y=\"381\" font-size=\"14\" text-anchor=\"middle\">Hủy</text>\n    <rect x=\"338\" y=\"358\" width=\"180\" height=\"36\" rx=\"6\" fill=\"#1d4ed8\"/>\n    <text x=\"428\" y=\"381\" font-size=\"14\" text-anchor=\"middle\" fill=\"white\">Xác nhận hồ sơ</text>\n\n    <rect x=\"580\" y=\"82\" width=\"516\" height=\"330\" rx=\"10\" fill=\"white\" stroke=\"#cbd5e1\"/>\n    <text x=\"602\" y=\"112\" font-size=\"18\" font-weight=\"700\">Xác nhận hồ sơ</text>\n    <text x=\"1074\" y=\"111\" font-size=\"13\" text-anchor=\"end\" fill=\"#64748b\">Bước 2/2</text>\n    <circle cx=\"621\" cy=\"149\" r=\"13\" fill=\"#dbeafe\"/>\n    <text x=\"621\" y=\"154\" font-size=\"14\" text-anchor=\"middle\" fill=\"#1e40af\">✓</text>\n    <text x=\"644\" y=\"154\" font-size=\"14\" fill=\"#475569\">1. Kiểm tra</text>\n    <path d=\"M730 149H817\" stroke=\"#94a3b8\"/>\n    <circle cx=\"840\" cy=\"149\" r=\"13\" fill=\"#1d4ed8\"/>\n    <text x=\"840\" y=\"154\" font-size=\"14\" text-anchor=\"middle\" fill=\"white\">2</text>\n    <text x=\"863\" y=\"154\" font-size=\"14\" font-weight=\"700\">Xác nhận</text>\n    <path d=\"M580 176H1096\" stroke=\"#e2e8f0\"/>\n    <text x=\"602\" y=\"206\" font-size=\"13\" fill=\"#64748b\">HỒ SƠ ĐƯỢC CHỌN</text>\n    <text x=\"602\" y=\"234\" font-size=\"22\" font-weight=\"700\">HS-024</text>\n    <text x=\"602\" y=\"265\" font-size=\"14\">Hiện tại: Chờ xác nhận</text>\n    <rect x=\"602\" y=\"281\" width=\"472\" height=\"44\" rx=\"8\" fill=\"#eff6ff\"/>\n    <text x=\"618\" y=\"308\" font-size=\"15\" fill=\"#1e40af\">Sau khi xác nhận: Đã xác nhận</text>\n    <path d=\"M580 343H1096\" stroke=\"#e2e8f0\"/>\n    <text x=\"602\" y=\"381\" font-size=\"14\" fill=\"#475569\">Hủy</text>\n    <rect x=\"776\" y=\"358\" width=\"98\" height=\"36\" rx=\"6\" fill=\"white\" stroke=\"#94a3b8\"/>\n    <text x=\"825\" y=\"381\" font-size=\"14\" text-anchor=\"middle\">Quay lại</text>\n    <rect x=\"886\" y=\"358\" width=\"188\" height=\"36\" rx=\"6\" fill=\"#1d4ed8\"/>\n    <text x=\"980\" y=\"381\" font-size=\"14\" text-anchor=\"middle\" fill=\"white\">Xác nhận hồ sơ</text>\n\n    <text x=\"24\" y=\"444\" font-size=\"14\" fill=\"#475569\">Giữ ngữ cảnh bảng · Không gian đọc hẹp hơn</text>\n    <text x=\"580\" y=\"444\" font-size=\"14\" fill=\"#475569\">Nhiều không gian đọc · Thêm lượt chuyển bước</text>\n  </g>\n</svg>\n```\n\n1. **Drawer — đề xuất:** phù hợp nếu chỉ xem lại rồi xác nhận; thuận tiện xử lý liên tiếp các dòng trong `sd-table`.\n2. **Wizard:** phù hợp khi có các bước nghiệp vụ phụ thuộc nhau; nếu nội dung chỉ như minh họa, bước chuyển sẽ hơi dư.\n\nBạn nghiêng về **1 — drawer** hay **2 — wizard**? Đây là chọn hướng thiết kế; triển khai vẫn cần duyệt spec và plan.",
+          "usage": {
+            "input_tokens": 195999,
+            "cached_input_tokens": 156416,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3145,
+            "reasoning_output_tokens": 643
+          },
+          "session_id": "01a085d2-95ee-7a23-bbd1-f3761cab96b1",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/runtime-protocols.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-offer-policy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/harness/communication-economy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/index.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/project-context.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-companion.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/user-choice-prompt.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-screen.schema.json'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/decision-coverage.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/index.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/user-choice-prompt.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Select-String -Path _refs/harness/capability-contract.json -Pattern 'visual_surface|static_html_artifact|live_visual_companion|persistent_local_process|browser_auto_open|visual.present' -Context 3,7\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command '$registry = Get-Content -Raw _refs/shared/system-registry.json | ConvertFrom-Json; $registry.tracks.angular; $registry.stack_profiles | Where-Object { $_.id -match '\"'angular' }\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/forms.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content _refs/sdlc/visual-screen.schema.json -TotalCount 105'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command '$registry = Get-Content -Raw _refs/shared/system-registry.json | ConvertFrom-Json; $registry.tracks | Where-Object { $_.id -eq '\"'angular' } | ConvertTo-Json -Depth 5; \"'$cap = Get-Content -Raw _refs/harness/capability-contract.json | ConvertFrom-Json; $cap.providers.codex.actions.'\"'visual.present' | ConvertTo-Json -Depth 4\""
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": true
+          },
+          "requires_prior_offer": false,
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Restricts re-enable to this decision and emits SVG mockups without another invitation.",
+            "redundant_preview_question": false,
+            "preview_missing": false
+          }
+        },
+        {
+          "turn_index": 3,
+          "user": "Sang bố trí dashboard ở thread khác, vẫn theo lựa chọn không preview của phiên.",
+          "prompt_hash": "7e3615c380bd01761090ea8734cbd806eea0a630baae6d065e95ab11c977b5d6",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 55944,
+          "assistant": "Mình dùng `sdcorejs-brainstorming` để tiếp tục trao đổi bố trí dashboard theo lựa chọn bằng chữ của phiên.\n\n\nMình sẽ trao đổi bố trí dashboard **bằng chữ**, giữ lựa chọn **không preview trong toàn phiên**, kể cả khi chuyển thread. Ngoại lệ vừa rồi chỉ áp dụng cho quyết định wizard/drawer.\n\nĐể bắt đầu bố trí dashboard: **người dùng cần biết hoặc xử lý điều gì đầu tiên khi mở màn này?**",
+          "usage": {
+            "input_tokens": 104464,
+            "cached_input_tokens": 75264,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 648,
+            "reasoning_output_tokens": 394
+          },
+          "session_id": "01a085d4-c87a-7220-9ca1-0a451342ca60",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/runtime-protocols.md', '_refs/sdlc/visual-offer-policy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/user-choice-prompt.md', '_refs/design/uiux/index.md', '_refs/harness/communication-economy.md', '_refs/shared/project-context.md', '_refs/shared/decision-coverage.md'\""
+            }
+          ],
+          "observed": {
+            "possible_offer": true,
+            "preview_content": false
+          },
+          "requires_prior_offer": false,
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Explicitly keeps the other dashboard thread text-only under the remaining session refusal.",
+            "duplicate_offer": false
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "native-and-visual",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "So sánh hai kiểu wizard, một trang dài và chia ba bước, bằng mockup để mình chọn.",
+          "prompt_hash": "027637429db653714a13851f4c7267fba83f1a82c6731d9153fc572f5c5d4edb",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 170496,
+          "assistant": "Mình sẽ dùng `sdcorejs-brainstorming` để làm rõ hai phương án qua mockup và giúp bạn chọn bố cục.\n\n\nHai mockup dùng cùng nội dung minh họa: **Thông tin → Bảng dữ liệu → Kiểm tra**. Bản ba bước được trình bày thành ba khung liên tiếp để bạn thấy cả luồng; khi sử dụng, mỗi lần chỉ hiện một bước.\n\n*Khung xem mockup mô phỏng — SVG:*\n\n```svg\n<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1000 720\" role=\"img\" aria-labelledby=\"title desc\">\n  <title id=\"title\">So sánh một trang dài và wizard ba bước</title>\n  <desc id=\"desc\">Bên trái hiển thị tất cả nhóm thông tin trên một trang cuộn. Bên phải chia cùng nội dung thành ba bước với nút quay lại và tiếp tục.</desc>\n  <rect width=\"1000\" height=\"720\" fill=\"#f1f5f9\"/>\n  <g font-family=\"Arial, sans-serif\" font-size=\"15\" fill=\"#1e293b\">\n    <text x=\"30\" y=\"38\" font-size=\"22\" font-weight=\"700\">1. Một trang dài</text>\n    <text x=\"520\" y=\"38\" font-size=\"22\" font-weight=\"700\">2. Chia ba bước</text>\n\n    <rect x=\"30\" y=\"60\" width=\"450\" height=\"600\" rx=\"12\" fill=\"white\" stroke=\"#cbd5e1\"/>\n    <text x=\"52\" y=\"96\" font-size=\"19\" font-weight=\"700\">Tạo mới</text>\n    <path d=\"M30 114H480\" stroke=\"#e2e8f0\"/>\n    <text x=\"52\" y=\"145\" fill=\"#475569\">Thông tin · Bảng dữ liệu · Kiểm tra</text>\n\n    <text x=\"52\" y=\"186\" font-weight=\"700\">Thông tin</text>\n    <text x=\"52\" y=\"216\">Tên</text>\n    <rect x=\"52\" y=\"226\" width=\"388\" height=\"36\" rx=\"5\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/>\n    <text x=\"64\" y=\"250\" fill=\"#64748b\">Mẫu minh họa</text>\n    <text x=\"52\" y=\"289\">Ghi chú</text>\n    <rect x=\"52\" y=\"299\" width=\"388\" height=\"48\" rx=\"5\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/>\n\n    <text x=\"52\" y=\"384\" font-weight=\"700\">Bảng dữ liệu</text>\n    <rect x=\"52\" y=\"399\" width=\"388\" height=\"112\" rx=\"5\" fill=\"white\" stroke=\"#cbd5e1\"/>\n    <path d=\"M53 432H439 M53 471H439 M150 399V511\" stroke=\"#e2e8f0\"/>\n    <text x=\"65\" y=\"422\" font-weight=\"700\">Mã</text>\n    <text x=\"166\" y=\"422\" font-weight=\"700\">Tên</text>\n    <text x=\"65\" y=\"457\">A</text>\n    <text x=\"166\" y=\"457\">Mục minh họa A</text>\n    <text x=\"65\" y=\"496\">B</text>\n    <text x=\"166\" y=\"496\">Mục minh họa B</text>\n\n    <text x=\"52\" y=\"548\" font-weight=\"700\">Kiểm tra</text>\n    <text x=\"52\" y=\"574\" fill=\"#475569\">Mẫu minh họa · 2 mục trong bảng</text>\n    <rect x=\"460\" y=\"166\" width=\"5\" height=\"414\" rx=\"2\" fill=\"#e2e8f0\"/>\n    <rect x=\"460\" y=\"166\" width=\"5\" height=\"174\" rx=\"2\" fill=\"#94a3b8\"/>\n    <path d=\"M30 599H480\" stroke=\"#e2e8f0\"/>\n    <text x=\"52\" y=\"633\" fill=\"#475569\">Hủy</text>\n    <rect x=\"319\" y=\"612\" width=\"121\" height=\"34\" rx=\"6\" fill=\"#1d4ed8\"/>\n    <text x=\"379\" y=\"634\" text-anchor=\"middle\" fill=\"white\">Hoàn tất</text>\n\n    <rect x=\"520\" y=\"60\" width=\"450\" height=\"190\" rx=\"12\" fill=\"white\" stroke=\"#cbd5e1\"/>\n    <text x=\"542\" y=\"91\" font-weight=\"700\" fill=\"#1d4ed8\">① Thông tin</text>\n    <text x=\"690\" y=\"91\" fill=\"#64748b\">② Bảng dữ liệu</text>\n    <text x=\"860\" y=\"91\" fill=\"#64748b\">③ Kiểm tra</text>\n    <text x=\"542\" y=\"124\">Tên</text>\n    <rect x=\"542\" y=\"134\" width=\"186\" height=\"37\" rx=\"5\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/>\n    <text x=\"552\" y=\"158\" fill=\"#64748b\">Mẫu minh họa</text>\n    <text x=\"746\" y=\"124\">Ghi chú</text>\n    <rect x=\"746\" y=\"134\" width=\"202\" height=\"37\" rx=\"5\" fill=\"#f8fafc\" stroke=\"#cbd5e1\"/>\n    <text x=\"542\" y=\"223\" fill=\"#475569\">Hủy</text>\n    <rect x=\"832\" y=\"198\" width=\"116\" height=\"35\" rx=\"6\" fill=\"#1d4ed8\"/>\n    <text x=\"890\" y=\"221\" text-anchor=\"middle\" fill=\"white\">Tiếp tục →</text>\n\n    <text x=\"745\" y=\"274\" text-anchor=\"middle\" fill=\"#64748b\">↓</text>\n    <rect x=\"520\" y=\"286\" width=\"450\" height=\"196\" rx=\"12\" fill=\"white\" stroke=\"#cbd5e1\"/>\n    <text x=\"542\" y=\"317\" fill=\"#475569\">✓ Thông tin</text>\n    <text x=\"690\" y=\"317\" font-weight=\"700\" fill=\"#1d4ed8\">② Bảng dữ liệu</text>\n    <text x=\"860\" y=\"317\" fill=\"#64748b\">③ Kiểm tra</text>\n    <rect x=\"542\" y=\"331\" width=\"406\" height=\"91\" rx=\"5\" fill=\"white\" stroke=\"#cbd5e1\"/>\n    <path d=\"M543 361H947 M543 391H947 M640 331V422\" stroke=\"#e2e8f0\"/>\n    <text x=\"555\" y=\"352\" font-weight=\"700\">Mã</text>\n    <text x=\"656\" y=\"352\" font-weight=\"700\">Tên</text>\n    <text x=\"555\" y=\"382\">A</text>\n    <text x=\"656\" y=\"382\">Mục minh họa A</text>\n    <text x=\"555\" y=\"413\">B</text>\n    <text x=\"656\" y=\"413\">Mục minh họa B</text>\n    <text x=\"542\" y=\"459\" fill=\"#475569\">← Quay lại</text>\n    <rect x=\"832\" y=\"435\" width=\"116\" height=\"34\" rx=\"6\" fill=\"#1d4ed8\"/>\n    <text x=\"890\" y=\"458\" text-anchor=\"middle\" fill=\"white\">Tiếp tục →</text>\n\n    <text x=\"745\" y=\"506\" text-anchor=\"middle\" fill=\"#64748b\">↓</text>\n    <rect x=\"520\" y=\"518\" width=\"450\" height=\"142\" rx=\"12\" fill=\"white\" stroke=\"#cbd5e1\"/>\n    <text x=\"542\" y=\"549\" fill=\"#475569\">✓ Thông tin</text>\n    <text x=\"690\" y=\"549\" fill=\"#475569\">✓ Bảng dữ liệu</text>\n    <text x=\"852\" y=\"549\" font-weight=\"700\" fill=\"#1d4ed8\">③ Kiểm tra</text>\n    <text x=\"542\" y=\"582\">Mẫu minh họa · 2 mục trong bảng</text>\n    <text x=\"542\" y=\"634\" fill=\"#475569\">← Quay lại</text>\n    <rect x=\"832\" y=\"612\" width=\"116\" height=\"34\" rx=\"6\" fill=\"#1d4ed8\"/>\n    <text x=\"890\" y=\"634\" text-anchor=\"middle\" fill=\"white\">Hoàn tất</text>\n\n    <text x=\"30\" y=\"697\" fill=\"#475569\">Cuộn để xem và sửa các phần.</text>\n    <text x=\"520\" y=\"697\" fill=\"#475569\">Tiến từng bước; quay lại để sửa phần trước.</text>\n  </g>\n</svg>\n```\n\n1. **Một trang dài:** phù hợp khi thường xuyên đối chiếu thông tin với bảng `sd-table`; sửa nhanh nhưng phải cuộn nhiều.\n2. **Chia ba bước — đề xuất nếu quy trình có nhiều thông tin:** mỗi màn hình tập trung vào một việc, tiến độ rõ; đổi lại cần thêm thao tác khi sửa phần trước.\n\nBạn chọn **1**, **2**, hoặc nói **“bạn quyết định”**. Lựa chọn này chốt hướng bố cục để tiếp tục làm rõ yêu cầu.",
+          "usage": {
+            "input_tokens": 191725,
+            "cached_input_tokens": 157440,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3477,
+            "reasoning_output_tokens": 662
+          },
+          "session_id": "01a085c6-5025-7010-a761-261f7fcd6b22",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/runtime-protocols.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/design/uiux/index.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/sdlc/visual-companion.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/shared/project-context.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/sdlc/visual-offer-policy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/shared/decision-coverage.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/harness/communication-economy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -Raw '_refs/shared/user-choice-prompt.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-offer-policy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-companion.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/index.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command '$registry = Get-Content -Raw _refs/shared/system-registry.json | ConvertFrom-Json; $registry.tracks.angular | ConvertTo-Json -Depth 8; $registry.stack_profiles | ConvertTo-Json -Depth 5; Select-String -Path _refs/harness/capability-contract.json -Pattern '\"'visual.present|visual_surface|static_html_artifact|native_structured_choice|live_visual_companion' -Context 4,12\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/forms.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content _refs/sdlc/visual-offer-policy.md | Select-Object -Skip 65; $registry = Get-Content -Raw _refs/shared/system-registry.json | ConvertFrom-Json; $registry.tracks | Where-Object { $_.id -eq '\"'angular' } | ConvertTo-Json -Depth 5; \"'$registry.stack_profiles | Where-Object { $_.id -in @('\"'unknown', 'core-ui-angular','legacy-core-ui-angular') } | ConvertTo-Json -Depth 4; \"'$contract = Get-Content -Raw _refs/harness/capability-contract.json | ConvertFrom-Json; $contract.adapters.codex.actions.'\"'visual.present' | ConvertTo-Json -Depth 4\""
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": true
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Emits two SVG wizard layouts and then asks for the design direction without re-asking about previews. This proves mockup content only, not actual renderer use.",
+            "redundant_preview_question": false,
+            "preview_missing": false
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "runtime-failure",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "Phiên live đã lỗi RUNTIME_UNAVAILABLE. Mình đã đồng ý xem mockup, hãy tiếp tục so sánh hai layout sidebar với cùng các phương án.",
+          "prompt_hash": "b53117493bbdd9bde0bf9be0b2750e471021b73f66e253df01ee37d45de7327e",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 58243,
+          "assistant": "Mình sẽ áp dụng `sdcorejs-brainstorming` để tiếp tục so sánh bằng mockup tĩnh sau lỗi phiên live, giữ nguyên sự đồng ý xem mockup của bạn.\n\n\nPhiên live gặp `RUNTIME_UNAVAILABLE`; mình sẽ dùng khung xem mockup ngay trong hội thoại và giữ nguyên sự đồng ý xem của bạn.\n\nNgữ cảnh hiện tại thiếu mô tả hai layout sidebar trước đó. Bạn nhắc lại **phương án 1 và phương án 2** để mình dựng bản so sánh đúng các phương án cũ nhé?",
+          "usage": {
+            "input_tokens": 106386,
+            "cached_input_tokens": 75136,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 970,
+            "reasoning_output_tokens": 567
+          },
+          "session_id": "01a085c8-bb4f-76e3-8dfd-25dddc27310a",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/user-choice-prompt.md' -Raw\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/harness/communication-economy.md' -Raw\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/sdlc/visual-offer-policy.md' -Raw\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/runtime-protocols.md' -Raw\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/sdlc/visual-companion.md' -Raw\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/decision-coverage.md' -Raw\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/project-context.md' -Raw\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"rg -n -C 3 'visual_surface|static_html_artifact|live_visual_companion|RUNTIME_UNAVAILABLE|native_structured_choice' _refs/harness/capability-contract.json\""
+            }
+          ],
+          "observed": {
+            "possible_offer": true,
+            "preview_content": false
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": null
+        }
+      ]
+    },
+    {
+      "scenario_id": "click-not-approval",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "Browser vừa chọn phương án A. Spec và plan chưa được duyệt; tiếp tục workflow đúng gate.",
+          "prompt_hash": "6ef38a6f0f229e49ee0c015007fa762b2f38a75afb793e02929d6c26d89fd380",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 60906,
+          "assistant": "Tôi sẽ áp dụng `sdcorejs-brainstorming` để xử lý lựa chọn A và kiểm tra gate tiếp theo.\n\nĐã ghi nhận A là **phản hồi lựa chọn thiết kế**. Spec và plan vẫn chưa được duyệt; lựa chọn trên browser không thay thế các gate này.\n\nBước tiếp theo là làm rõ nội dung A, chuyển thành yêu cầu và tiêu chí nghiệm thu, rồi trình **spec để duyệt riêng**. Sau khi spec được duyệt mới lập và trình duyệt plan.\n\nHiện hội thoại chưa có mô tả A. Bạn gửi nội dung phương án A hoặc bản spec nháp tương ứng để tôi tiếp tục đúng phạm vi nhé?",
+          "usage": {
+            "input_tokens": 134865,
+            "cached_input_tokens": 102912,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1045,
+            "reasoning_output_tokens": 570
+          },
+          "session_id": "01a085c9-9e25-7321-b9fa-03a5adeac652",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/runtime-protocols.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/user-choice-prompt.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/harness/communication-economy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-offer-policy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-companion.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/project-context.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/decision-coverage.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/angular.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/system-registry.json | ConvertFrom-Json | Select-Object schema_version, tracks, stack_profiles | ConvertTo-Json -Depth 7'"
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": false
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Explicitly treats browser A as supporting feedback and preserves separate unapproved spec/plan gates.",
+            "approval_violation": false
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "delegated-choice",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "Mình giao bạn tự chọn bố trí sidebar phù hợp nhất theo convention hiện có, không cần hỏi mình chọn.",
+          "prompt_hash": "512d849e9313cd6d55905c3587b067b450f876b430ad2c5d62c6f9498d08c1ca",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 51252,
+          "assistant": "Mình sẽ áp dụng `sdcorejs-brainstorming` để chọn bố trí sidebar theo convention hiện có, trong phạm vi mô phỏng này.\n\nMình chọn **sidebar dọc bên trái**, với nhãn menu dễ đọc và mục đang mở được đánh dấu rõ, ưu tiên diện tích nội dung cho `sd-table`.\n\nBố trí sẽ bám cấu trúc, thứ tự menu, bộ icon và khoảng cách hiện có; tận dụng chế độ thu gọn nếu portal đã hỗ trợ.\n\nFixture chưa cung cấp cấu hình sidebar hay token cụ thể, nên đây là hướng bố trí mình chọn, chưa phải kết quả đã xác minh khớp convention hoặc đã triển khai.",
+          "usage": {
+            "input_tokens": 105075,
+            "cached_input_tokens": 52608,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 888,
+            "reasoning_output_tokens": 420
+          },
+          "session_id": "01a085ca-8abb-7ff1-8873-2cb2232d46e6",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-offer-policy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/project-context.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/index.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/runtime-protocols.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/navigation.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/harness/communication-economy.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/decision-coverage.md'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command '$registry = Get-Content -Raw _refs/shared/system-registry.json | ConvertFrom-Json; $registry | Select-Object schema_version,tracks,stack_profiles | ConvertTo-Json -Depth 10'"
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": false
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Chooses the existing sidebar convention without asking for a user visual choice.",
+            "false_offer": false
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "keyword-only",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "Trong tài liệu UI Angular design, sửa typo \"digram\" thành \"diagram\".",
+          "prompt_hash": "82f594b0bb55b48dc23f3ba1bb588ddd9986e67c231ccde7c3827a55f2a55e9a",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 59774,
+          "assistant": "Mình sẽ áp dụng `sdcorejs-documentation` để kiểm tra đúng chỗ cần sửa trong fixture.\n\nBản sửa trong mô phỏng, tại tài liệu UI Angular design: `digram` → `diagram`. Chưa chỉnh sửa tệp thực tế.",
+          "usage": {
+            "input_tokens": 145587,
+            "cached_input_tokens": 125440,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 569,
+            "reasoning_output_tokens": 240
+          },
+          "session_id": "01a085cb-5333-70b0-90be-699caff51514",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "failed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/runtime-protocols.md'; Get-Content -LiteralPath 'skills/sdcorejs-documentation/SKILL.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"rg --files -g '*SKILL.md' -g '*angular*' -g '*design*'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "failed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"rg -n -i \\\"\\\\bdigram\\\\b\\\" .\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'rg --files skills | rg \"documentation|using-skills\"'"
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath 'skills/orchestration/documentation.md'\""
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": false
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Handles the exact diagram typo without a visual invitation.",
+            "false_offer": false
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "text-only-runtime",
+      "status": "REVIEW REQUIRED",
+      "reason": "Actual captured turns require semantic review; heuristic observations are not a verdict.",
+      "turns": [
+        {
+          "turn_index": 0,
+          "user": "Mình muốn so sánh hai cách bố trí sidebar ba cấp.",
+          "prompt_hash": "242a26d521b65b2b342a0abfadb4d15cd0c9e42131e3793a41bb089124879cf7",
+          "exit_code": 0,
+          "interrupted": null,
+          "duration_ms": 91501,
+          "assistant": "Mình sẽ dùng `sdcorejs-brainstorming` để làm rõ hai cách bố trí và tiêu chí so sánh.\n\n\nVới portal Angular dùng `sd-table`, mình đề xuất so sánh hai phương án dưới đây. Phiên này chưa có khung xem trước khả dụng, nên mình trình bày bằng văn bản.\n\n1. **Một sidebar, ba cấp thu gọn/mở rộng — đề xuất ban đầu.**  \n   Cấp 2 và 3 thụt vào dưới mục cha. Người dùng thấy rõ quan hệ phân cấp; dành được nhiều chiều ngang cho bảng. Đổi lại, menu dài sẽ cần cuộn, nhãn cấp 3 dễ bị chật.\n\n2. **Cấp 1 ở thanh riêng, cấp 2–3 ở panel bên cạnh.**  \n   Chọn một mục cấp 1 để xem các nhóm và trang thuộc mục đó. Phù hợp khi portal có nhiều phân hệ và người dùng thường xuyên chuyển giữa chúng. Đổi lại, hai vùng điều hướng chiếm thêm chiều ngang khi cùng mở, làm bảng hẹp hơn.\n\nMình nghiêng về **1** nếu ưu tiên đọc bảng nhiều cột; **2** nếu ưu tiên chuyển nhanh giữa nhiều phân hệ. Cả hai cần phân biệt rõ **trang đang xem** với **nhóm đang mở**, và hỗ trợ mở mục con bằng bàn phím.\n\nBạn muốn đi sâu vào phương án **1** hay **2**? Bạn cũng có thể trả lời “bạn chọn giúp”.",
+          "usage": {
+            "input_tokens": 178268,
+            "cached_input_tokens": 147328,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1419,
+            "reasoning_output_tokens": 630
+          },
+          "session_id": "01a085cc-4126-7800-b6d2-439beb632a91",
+          "tool_events": [
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/runtime-protocols.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/user-choice-prompt.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/decision-coverage.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/sdlc/visual-offer-policy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/design/uiux/index.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/harness/communication-economy.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/project-context.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/sdlc/visual-offer-policy.md','_refs/design/uiux/index.md'\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command '$registry = Get-Content -LiteralPath '\"'_refs/shared/system-registry.json' -Raw | ConvertFrom-Json; \"'$registry.tracks.angular | ConvertTo-Json -Depth 6; $registry.stack_profiles | Where-Object { $_.id -match '\"'angular' } | ConvertTo-Json -Depth 6\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command '$registry = Get-Content -LiteralPath '\"'_refs/shared/system-registry.json' -Raw | ConvertFrom-Json; \"'$registry.tracks | Where-Object { $_.id -in @('\"'angular', 'design') } | ConvertTo-Json -Depth 6\""
+            },
+            {
+              "type": "command_execution",
+              "status": "completed",
+              "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/design/uiux/navigation.md'\""
+            }
+          ],
+          "observed": {
+            "possible_offer": false,
+            "preview_content": false
+          },
+          "completed": true,
+          "failure": null,
+          "adjudication": {
+            "reviewer": "integration-owner: primary agent semantic transcript review",
+            "rationale": "Explains the missing preview surface and compares the alternatives in text without inviting unavailable Visual Companion.",
+            "false_offer": false
+          }
+        }
+      ]
+    }
+  ],
+  "continuation": {
+    "reason": "Keyword observation failed to recognize two actual invitations. Continue their captured completed prefixes unchanged; no prefix resampling.",
+    "initial_record_sha256": "d9af8c9c823a4b3306376fcd28c1ee7659497b4a725d4bfde88cf9f01689e620",
+    "started_at": "2026-09-09T10:56:50.246Z",
+    "initial_attempts": [
+      {
+        "scenario_id": "decline-handoff",
+        "status": "INCONCLUSIVE",
+        "reason": "Follow-up requires a preceding offer; review did not establish that precondition.",
+        "turns": [
+          {
+            "turn_index": 0,
+            "user": "So sánh hai cách navigation cho sidebar ba cấp để mình chọn.",
+            "prompt_hash": "4cfc91294a885d380cf703b0a7e67085fd047f1123f271af736d63b038092abc",
+            "exit_code": 0,
+            "interrupted": null,
+            "duration_ms": 60360,
+            "assistant": "Mình dùng `sdcorejs-brainstorming` để so sánh hai cách điều hướng và giúp bạn chọn hướng phù hợp cho portal hiện tại.\n\nVới sidebar ba cấp, hai cách đáng cân nhắc là:\n\n| Tiêu chí | **A — Cây mở/thu gọn (accordion)** | **B — Đi sâu từng cấp (drill-down)** |\n|---|---|---|\n| Cách dùng | Mở cấp 1 → hiện cấp 2 → mở tiếp cấp 3 ngay bên dưới | Chọn cấp 1 → sidebar hiện cấp 2; chọn tiếp → hiện cấp 3, có nút quay lại |\n| Điểm mạnh | Nhìn rõ phân cấp, chuyển giữa các nhánh thuận tiện | Gọn, ít mục xuất hiện cùng lúc, dành nhiều chiều ngang cho nhãn |\n| Đánh đổi | Menu dài phải cuộn; thụt lề ba cấp làm nhãn dễ bị chật | Chuyển sang nhánh khác cần quay lại; khó nhìn tổng thể |\n| Phù hợp | Thường xuyên chuyển qua lại giữa nhiều nhóm chức năng | Nhiều mục, tên dài, người dùng thường làm việc trong một nhánh |\n\n**Mình nghiêng về A** nếu người dùng portal thường chuyển giữa các màn hình bảng. B phù hợp hơn khi menu lớn và việc tập trung trong một nhánh quan trọng hơn chuyển nhanh.\n\nCả hai nên đánh dấu rõ trang đang mở, phân biệt thao tác mở nhóm với chuyển trang và hỗ trợ bàn phím.\n\nBạn có muốn xem **hai bản phác thảo đặt cạnh nhau, dùng cùng một menu ba cấp**, trước khi chọn không?\n\n1. **Có, xem phác thảo — khuyến nghị:** dễ so sánh độ dài menu và thao tác chuyển nhánh.\n2. **Không, tiếp tục bằng mô tả:** chọn hướng qua trao đổi bằng chữ.\n\nBạn trả lời **1** hoặc **2** nhé.",
+            "usage": {
+              "input_tokens": 101839,
+              "cached_input_tokens": 73728,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 898,
+              "reasoning_output_tokens": 261
+            },
+            "session_id": "01a085c3-c246-7441-959b-164df562a576",
+            "tool_events": [
+              {
+                "type": "command_execution",
+                "status": "completed",
+                "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/shared/runtime-protocols.md', '_refs/sdlc/visual-offer-policy.md', '_refs/shared/user-choice-prompt.md', '_refs/design/uiux/index.md', '_refs/harness/communication-economy.md'\""
+              },
+              {
+                "type": "command_execution",
+                "status": "completed",
+                "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command \"Get-Content -LiteralPath '_refs/design/uiux/navigation.md', '_refs/shared/project-context.md', '_refs/shared/decision-coverage.md'; \"'$registry = Get-Content -Raw -LiteralPath '\"'_refs/shared/system-registry.json' | ConvertFrom-Json; \"'$registry.tracks.angular | ConvertTo-Json -Depth 8; $registry.stack_profiles | Where-Object { $_.id -match '\"'angular' } | ConvertTo-Json -Depth 6\""
+              }
+            ],
+            "observed": {
+              "possible_offer": false,
+              "preview_content": false
+            },
+            "completed": true,
+            "failure": null,
+            "adjudication": null
+          }
+        ]
+      },
+      {
+        "scenario_id": "reenable",
+        "status": "INCONCLUSIVE",
+        "reason": "Follow-up requires a preceding offer; review did not establish that precondition.",
+        "turns": [
+          {
+            "turn_index": 0,
+            "user": "So sánh wizard với drawer cho màn xác nhận.",
+            "prompt_hash": "abbc7e43d0e0c49e0b72d8c063aaddfbd8f77caa7593cd4e076db175fb92b780",
+            "exit_code": 0,
+            "interrupted": null,
+            "duration_ms": 94703,
+            "assistant": "Mình dùng `sdcorejs-brainstorming` để so sánh hai cách xác nhận trong portal đang dùng `sd-table`.\n\n**Drawer hợp với xác nhận ngắn ngay từ `sd-table`; wizard hợp với quy trình có nhiều bước phụ thuộc nhau.** Wizard tổ chức luồng theo bước, còn drawer là khung trượt bên cạnh màn hiện tại.\n\n| Tiêu chí | Wizard | Drawer |\n|---|---|---|\n| Tình huống phù hợp | Cần bổ sung thông tin, kiểm tra rồi xác nhận | Xem lại thông tin và xác nhận trong một lượt |\n| Ngữ cảnh bảng | Người dùng tập trung vào luồng riêng | Giữ bảng phía sau, thuận tiện quay lại xử lý dòng tiếp theo |\n| Điểm mạnh | Chia nhỏ nội dung, thể hiện tiến độ rõ | Ít thao tác, phù hợp công việc lặp lại |\n| Đánh đổi | Thêm lượt “Tiếp tục/Quay lại”; dễ rườm rà nếu nội dung ít | Không gian hẹp, dễ phải cuộn khi thông tin dài |\n\nVới giả định màn này chỉ **kiểm tra bản ghi rồi xác nhận**, mình nghiêng về **drawer**. Nếu các bước có lựa chọn làm thay đổi nội dung bước sau, wizard hợp hơn. Cả hai cần nêu rõ bản ghi bị tác động và kết quả của thao tác xác nhận.\n\nBạn muốn xem **hai bố cục minh họa đặt cạnh nhau**, cùng nội dung xác nhận từ `sd-table`, trước khi chọn hướng không?\n\n1. **Có, xem minh họa — đề xuất:** dễ so sánh không gian và số bước.\n2. **Không, tiếp tục bằng chữ:** đối chiếu theo nghiệp vụ cụ thể.\n\nBạn có thể trả lời **1** hoặc **2**.",
+            "usage": {
+              "input_tokens": 139940,
+              "cached_input_tokens": 105344,
+              "cache_write_input_tokens": 0,
+              "output_tokens": 1190,
+              "reasoning_output_tokens": 366
+            },
+            "session_id": "01a085c4-af26-7502-a620-f687ffa9e051",
+            "tool_events": [
+              {
+                "type": "command_execution",
+                "status": "completed",
+                "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/runtime-protocols.md'"
+              },
+              {
+                "type": "command_execution",
+                "status": "completed",
+                "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/decision-coverage.md'"
+              },
+              {
+                "type": "command_execution",
+                "status": "completed",
+                "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/index.md'"
+              },
+              {
+                "type": "command_execution",
+                "status": "completed",
+                "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/harness/communication-economy.md'"
+              },
+              {
+                "type": "command_execution",
+                "status": "completed",
+                "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/user-choice-prompt.md'"
+              },
+              {
+                "type": "command_execution",
+                "status": "completed",
+                "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/project-context.md'"
+              },
+              {
+                "type": "command_execution",
+                "status": "completed",
+                "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/visual-offer-policy.md'"
+              },
+              {
+                "type": "command_execution",
+                "status": "completed",
+                "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/shared/project-context.md'"
+              },
+              {
+                "type": "command_execution",
+                "status": "completed",
+                "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/design/uiux/forms.md'"
+              },
+              {
+                "type": "command_execution",
+                "status": "completed",
+                "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command 'Get-Content -Raw _refs/sdlc/angular.md'"
+              },
+              {
+                "type": "command_execution",
+                "status": "completed",
+                "command": "\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\" -Command '$taskRegistry = Get-Content -Raw _refs/shared/system-registry.json | ConvertFrom-Json; $taskRegistry.tracks.angular | ConvertTo-Json -Depth 8; $taskRegistry.stack_profiles | ConvertTo-Json -Depth 5'"
+              }
+            ],
+            "observed": {
+              "possible_offer": false,
+              "preview_content": false
+            },
+            "completed": true,
+            "failure": null,
+            "adjudication": null
+          }
+        ]
+      }
+    ],
+    "finished_at": "2026-09-09T11:02:44.849Z"
+  },
+  "review_limitations": [
+    "runtime-failure is unreviewed: the fixture omits the two prior layout descriptions. Asking to recover missing options is appropriate but cannot prove successful preview fallback.",
+    "One capture per scenario with simulated capabilities and inherited unreported model/effort; no statistical reliability or real visual rendering claim.",
+    "This is the initial candidate plus unchanged-prefix continuation. A focused later repair is reported separately, not substituted into primary A/B rates."
+  ],
+  "reviewed_at": "2026-09-09T11:06:57.466Z"
+}
