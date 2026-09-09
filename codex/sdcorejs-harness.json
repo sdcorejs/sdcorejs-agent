@@ -2,8 +2,8 @@
   "schema_version": 1,
   "adapter": "codex",
   "source_path": "_refs/harness/capability-contract.json",
-  "source_hash": "sha256:cd864af235654e35ed199769d3ade3dd2b145f0f148f75de1f2df50ee551e096",
-  "content_hash": "sha256:f0c07fbc10c8007b3bee18f1b1259fdb6a4597db85dce030c08e61d7c3001954",
+  "source_hash": "sha256:57e326a1af1c4a038bfa2e6befc459252fd9209b822d6365939aa04e82688c56",
+  "content_hash": "sha256:428965a38bb10b8f72562c5ad0e6698eb1641d9fc87c806c4f972d59df89ccbe",
   "generated_path": "codex/sdcorejs-harness.json",
   "capabilities": {
     "runtime_context_channel": "unknown",
@@ -106,7 +106,7 @@
         "shell_command"
       ],
       "capability": "persistent_local_process",
-      "fallback": "Present the standalone static visual artifact, otherwise numbered Markdown, and keep the decision in the conversation."
+      "fallback": "Preserve the decision and use a supported native visual surface, then static HTML, then numbered Markdown; never infer runtime consent."
     },
     "visual.session.publish": {
       "status": "supported",
@@ -114,7 +114,7 @@
         "shell_command"
       ],
       "capability": "live_visual_companion",
-      "fallback": "Render the screen through the static visual composer, otherwise numbered Markdown."
+      "fallback": "Preserve the decision and use a supported native visual surface, then static HTML, then numbered Markdown; never infer runtime consent."
     },
     "visual.session.read": {
       "status": "supported",
@@ -431,7 +431,11 @@
         "progress.update",
         "user.choose",
         "user.approve",
-        "visual.present"
+        "visual.present",
+        "visual.session.start",
+        "visual.session.publish",
+        "visual.session.read",
+        "visual.session.stop"
       ]
     },
     "sdcorejs-nestjs": {

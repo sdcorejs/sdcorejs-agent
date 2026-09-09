@@ -294,8 +294,10 @@ explicitly confirms it for the current purpose.
 
 - It never authorizes a durable `.sdcorejs/**` artifact, source code, or Git
   state. Those stay under `writes_allowed` and the normal approval gates.
-- It never survives as a standing permission. Confirm it again for a new
-  purpose.
+- Reuse an explicit grant carried in runtime `visual_companion` context only
+  for the same session, scope and purpose. A skill/phase handoff alone is not a
+  new permission request. A new purpose requires its own consent; never load a
+  durable artifact as a standing runtime permission.
 - Read-only contexts keep it `false` even when a runtime is technically able to
   write.
 - Everything it authorizes is `local_only` under

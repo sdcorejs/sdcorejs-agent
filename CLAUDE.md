@@ -242,8 +242,10 @@ At the start of a target-project session:
   yes/no prompts, or mode selections.
 - Read `_refs/shared/artifact-lifecycle.md` before any `.sdcorejs/**` write or
   Git artifact handoff.
-- Read `_refs/sdlc/visual-companion.md` before offering a visual surface or
-  starting a companion session.
+- Read `_refs/sdlc/visual-offer-policy.md` before presenting or settling an open
+  user choice; simple fixed work needs no visual reference or invitation.
+- Read `_refs/sdlc/visual-companion.md` when preparing an accepted/requested
+  preview or its missing runtime consent. Preserve scoped responses across skills.
 
 ## Skill Groups
 

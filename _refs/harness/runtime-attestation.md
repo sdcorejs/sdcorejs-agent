@@ -49,3 +49,14 @@ because a different session or adapter exposed the feature previously.
 
 Record the attestation and opportunity report in the active harness context.
 They are runtime evidence, not mutable `.sdcorejs/**` checkpoint files.
+
+## Optional visual observations
+
+`attestRuntimeCapabilities` accepts a separate `visual_observations` map for
+`native_structured_choice`, `visual_surface`, `static_html_artifact`,
+`live_visual_companion`, `visual_event_bridge`, `persistent_local_process`
+and `browser_auto_open`. Each observation needs a tri-state status and current
+runtime evidence with source and detail. The optional `visual` group projects
+those capabilities; unobserved values stay unknown. It does not change the
+existing orchestration shape or delegation verdict. Evidence of capability is
+never permission; no browser or server launch is required to attest a surface.

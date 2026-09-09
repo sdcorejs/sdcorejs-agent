@@ -12,13 +12,11 @@ description: Session bootstrap and dispatch guide for sdcorejs skills. Use at se
 
 ## Bootstrap
 
-Match skill descriptions before reading bodies. Load
-`../_refs/shared/runtime-protocols.md`, then only the references required by the
-selected task. Current user instructions and current evidence override stored
-context. `../_refs/shared/system-registry.json` is the versioned source of truth
-for track, stack-profile, artifact-kind, repository-role, review, repair, ship,
-and evidence semantics. Read only the registry fields needed for the selected
-route; do not load every referenced track body during bootstrap.
+Match descriptions before reading skill bodies. Load
+`../_refs/shared/runtime-protocols.md`, then only task-relevant references.
+Current user instructions/evidence override stored context. Resolve track,
+profile, artifact, repository, review, repair, ship and evidence semantics from
+`../_refs/shared/system-registry.json`; read only fields needed for the route.
 
 Priority when several skills match:
 
@@ -48,12 +46,10 @@ Choose one path before loading a full workflow:
 - Ambiguous, architectural, cross-cutting, security-sensitive, destructive,
   concurrency-sensitive, or public-contract change: full workflow.
 
-Imperative verbs such as `implement`, `build`, or `create` express write intent
-only; they are not spec approval or plan approval. Apply the selected path's
-entry criteria and approval artifacts independently of the wording of the
-requested outcome. A fixture, lab, benchmark, or disposable repository does not
-waive a required approval gate, and an explicit scoped prompt is not a substitute
-for a required artifact.
+`implement`, `build` and `create` express write intent, not spec or plan approval.
+Apply the selected entry criteria and required artifacts regardless of wording;
+a fixture, lab, benchmark, disposable repository or scoped prompt never waives
+a required approval gate or artifact.
 
 A non-trivial implementation request without a valid approved plan must
 route to `sdcorejs-brainstorming`; it is not confirmed implementation. Do not load a track
@@ -80,10 +76,9 @@ Silence is never spec or plan approval. Do not generate code from ambiguous or
 unconfirmed scope. The product, design, test, and AI-agent tracks remain
 first-class; unsupported stacks use the generic execute-plan harness.
 
-Explicit approved-plan delegation uses `sdcorejs-subagent-driven-development`;
-safe waves may run in parallel, otherwise fresh workers run sequentially.
-Parent execution is the fallback. `sdcorejs-parallel-dispatch` remains the
-low-level scheduler for safe waves and read-only parallel audits.
+Explicit delegation uses `sdcorejs-subagent-driven-development`: safe parallel
+waves or sequential fresh workers, with parent fallback. The low-level
+`sdcorejs-parallel-dispatch` schedules waves and read-only parallel audits.
 
 ## Invariants
 
@@ -99,6 +94,9 @@ low-level scheduler for safe waves and read-only parallel audits.
 - Every durable `.sdcorejs/**` producer propagates `artifact_context`.
 - Finish gates, verification-before-done, and no-writes-after-branch-ready stay
   mandatory where the selected workflow requires them.
+- Open user choices, including direct Design: apply
+  `../_refs/sdlc/visual-offer-policy.md` before deciding; preserve `visual_companion`
+  across routing. Fixed work needs no visual loading or invitation.
 - Use `../_refs/shared/user-choice-prompt.md` only for real decisions. Supported
   native interaction may be used, but numbered Markdown is always available.
 - Match the user's language at runtime; keep reusable skill/reference prose and
@@ -110,8 +108,7 @@ low-level scheduler for safe waves and read-only parallel audits.
   `stack_profile` refines stack behavior; an optional `capability_profile`
   refines an approved domain capability; `repository_role` describes topology;
   `artifact_owner_repository_id` is the durable write owner; and
-  `execution_host_repository_id` is only the repository coordinating the run.
-  In plain language, keep the artifact owner separate from the execution host.
+  `execution_host_repository_id` is the execution host coordinating the run.
   Never infer artifact ownership from the current working directory.
 - Resolve aliases and unsupported stacks through
   `../_refs/shared/system-registry.mjs`. Unknown stacks use the declared generic

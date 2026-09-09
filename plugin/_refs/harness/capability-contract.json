@@ -152,7 +152,7 @@
             "shell_command"
           ],
           "capability": "persistent_local_process",
-          "fallback": "Present the standalone static visual artifact, otherwise numbered Markdown, and keep the decision in the conversation."
+          "fallback": "Preserve the decision and use a supported native visual surface, then static HTML, then numbered Markdown; never infer runtime consent."
         },
         "visual.session.publish": {
           "status": "supported",
@@ -160,7 +160,7 @@
             "shell_command"
           ],
           "capability": "live_visual_companion",
-          "fallback": "Render the screen through the static visual composer, otherwise numbered Markdown."
+          "fallback": "Preserve the decision and use a supported native visual surface, then static HTML, then numbered Markdown; never infer runtime consent."
         },
         "visual.session.read": {
           "status": "supported",
@@ -320,7 +320,7 @@
             "Bash"
           ],
           "capability": "persistent_local_process",
-          "fallback": "Present the standalone static visual artifact, otherwise numbered Markdown, and keep the decision in the conversation."
+          "fallback": "Preserve the decision and use a supported native visual surface, then static HTML, then numbered Markdown; never infer runtime consent."
         },
         "visual.session.publish": {
           "status": "supported",
@@ -328,7 +328,7 @@
             "Bash"
           ],
           "capability": "live_visual_companion",
-          "fallback": "Render the screen through the static visual composer, otherwise numbered Markdown."
+          "fallback": "Preserve the decision and use a supported native visual surface, then static HTML, then numbered Markdown; never infer runtime consent."
         },
         "visual.session.read": {
           "status": "supported",
@@ -475,13 +475,13 @@
           "status": "unknown",
           "native": [],
           "capability": "persistent_local_process",
-          "fallback": "Present the standalone static visual artifact, otherwise numbered Markdown, and keep the decision in the conversation."
+          "fallback": "Preserve the decision and use a supported native visual surface, then static HTML, then numbered Markdown; never infer runtime consent."
         },
         "visual.session.publish": {
           "status": "unknown",
           "native": [],
           "capability": "live_visual_companion",
-          "fallback": "Render the screen through the static visual composer, otherwise numbered Markdown."
+          "fallback": "Preserve the decision and use a supported native visual surface, then static HTML, then numbered Markdown; never infer runtime consent."
         },
         "visual.session.read": {
           "status": "unknown",
@@ -611,13 +611,13 @@
           "status": "unknown",
           "native": [],
           "capability": "persistent_local_process",
-          "fallback": "Present the standalone static visual artifact, otherwise numbered Markdown, and keep the decision in the conversation."
+          "fallback": "Preserve the decision and use a supported native visual surface, then static HTML, then numbered Markdown; never infer runtime consent."
         },
         "visual.session.publish": {
           "status": "unknown",
           "native": [],
           "capability": "live_visual_companion",
-          "fallback": "Render the screen through the static visual composer, otherwise numbered Markdown."
+          "fallback": "Preserve the decision and use a supported native visual surface, then static HTML, then numbered Markdown; never infer runtime consent."
         },
         "visual.session.read": {
           "status": "unknown",

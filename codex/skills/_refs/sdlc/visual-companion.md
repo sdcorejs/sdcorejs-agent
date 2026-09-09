@@ -7,19 +7,12 @@ spec and plan.
 A browser click is design feedback. It can never approve a spec, plan,
 implementation, dependency, permission, commit, push, or destructive action.
 
-## When To Offer
+## Recognition and invitation
 
-Offer it just in time when seeing alternatives materially improves the next
-decision: layout, navigation, visual hierarchy, screen flow, wireframe,
-before/after UX, diagram topology, or another spatial relationship.
-
-Keep requirements, scope, business rules, API design, data modeling, test
-strategy, acceptance criteria, naming, and implementation sequencing in text
-unless a diagram is necessary to understand a spatial relationship. A UI topic
-is not automatically a visual decision.
-
-Do not repeat an offer after the user declines unless a new and materially
-different visual decision appears.
+`_refs/sdlc/visual-offer-policy.md` owns the short just-in-time assessment,
+invitation, scoped response and handoff policy. Read that reference before
+inviting; read this lifecycle when preparing an accepted/requested preview or
+its missing runtime consent. A direct preview request is already visual intent.
 
 ## Surface Selection
 
@@ -48,12 +41,14 @@ that never opens.
 
 ## Consent Boundary
 
-A live session is two separate side effects, and each needs its own explicit
-confirmation:
+A live session has two separate permissions. Reuse explicit conversation grants
+only within the same session, scope and purpose carried in `visual_companion`;
+a change of skill or phase alone does not require another confirmation. Ask only
+for a missing permission required by the chosen surface:
 
 - **Local runtime writes.** The session writes under the execution host's
   `.sdcorejs/tmp/visual-companion/`. Confirm this before starting a session.
-  Without that confirmation the ladder starts at the static composer.
+  Without it, use native visual, then static HTML, then numbered Markdown.
 - **Browser auto-open.** Launching a browser is a visible action on the user's
   machine. It requires `browser_auto_open` to be `supported` and its own
   confirmation. Without it, present the session URL and let the user open it.
@@ -81,7 +76,7 @@ omitted. `start` additionally accepts `--host`, `--port`,
 `--allow-non-loopback`, `--idle-timeout-ms`, and `--start-timeout-ms`;
 `cleanup` accepts `--max-age-ms` and `--force`; `stop` accepts `--instance`.
 
-Pass `--owner-pid` with the process that owns the brainstorming turn. The server
+Pass `--owner-pid` with the process that owns the current visual thread. The server
 then exits when that process does. Without it the only backstop is the idle
 timeout, which defaults to four hours, so repeated starts leave background
 servers holding ports until then. `cleanup` removes stopped sessions, but it
@@ -114,7 +109,9 @@ Ordinary flow:
    forces it.
 
 Failure is never fatal to the turn. On any non-zero exit, state what failed,
-drop to the next surface on the ladder, and continue the decision in text.
+mark that surface failed and use the next supported surface, preserving the
+options and decision identity without repeating the invitation. Keep the
+numbered Markdown contract throughout.
 
 Stable codes: `SESSION_STARTED`, `SCREEN_PUBLISHED`, `EVENTS_READ`,
 `WAITING_PUBLISHED`, `SESSION_STOPPED`, `CLEANED`, and the error codes

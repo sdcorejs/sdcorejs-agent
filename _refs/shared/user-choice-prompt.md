@@ -5,19 +5,22 @@ response in the main conversation is always the source of truth.
 
 ## Presentation Priority
 
-Resolve the runtime capability as `supported`, `unsupported`, or `unknown`, then
-use the first available presentation:
+Resolve current capabilities as `supported`, `unsupported` or `unknown`.
+Before presenting an open choice, apply `_refs/sdlc/visual-offer-policy.md`.
+Use separate ladders, shared by `selectInteraction` and
+`resolveVisualCompanionPlan` in `_refs/harness/runtime-policy.mjs`:
 
-1. Native structured choice when the runtime actually exposes it.
-2. A typed visual screen when the decision is spatial or visual.
-3. The static visual composer when static HTML is supported but no event bridge
-   exists.
-4. Stable numbered Markdown in every environment.
+1. Visual decisions: live companion with supported runtime and scoped local
+   consent, then native visual, then static HTML, then numbered Markdown.
+2. Text decisions and every approval: native structured choice, then numbered
+   Markdown. The invitation may use a text picker, but the picker must not
+   replace a requested preview.
 
-`unknown` follows the portable fallback; never assume a native surface exists.
-Every native or visual presentation must include or preserve the numbered
-Markdown answer contract. The workflow must remain complete without clicks,
-JavaScript, a browser, or a local server.
+Unknown is not support; unknown browser auto-open does not disable visuals.
+Preserve numbered Markdown on every surface. If a surface fails, continue down
+its ladder with the same options and identity. Conversation replies remain
+valid without clicks, JavaScript, a browser or a local server. Read the detailed
+companion lifecycle only when preparing a preview or its runtime consent.
 
 ## Decision Discipline
 
@@ -29,8 +32,9 @@ JavaScript, a browser, or a local server.
   answer can change a later option set.
 - Never group multiple approvals or dependent decisions.
 - A visual selection supplies design feedback; it is not approval to implement.
-- After a visual decline, do not offer the companion again unless a genuinely
-  new visual or spatial decision appears.
+- Preserve pending/accepted/declined `visual_companion` scope across skills and
+  phases. Do not repeat an invitation in a declined visual thread or session;
+  only an explicit user re-enable changes that scope.
 
 ## Normalization
 

@@ -652,8 +652,8 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(codexGitSkill, /REDACTED|redact/i);
 
   const choicePrompt = await readFile(new URL('../../_refs/shared/user-choice-prompt.md', import.meta.url), 'utf8');
-  assert.match(choicePrompt, /Native structured choice when the runtime actually exposes it/);
-  assert.match(choicePrompt, /Stable numbered Markdown in every environment/);
+  assert.match(choicePrompt, /Text decisions and every approval: native structured choice, then numbered\s+Markdown/);
+  assert.match(choicePrompt, /Preserve numbered Markdown on every surface/);
   assert.match(choicePrompt, /Reply with `1`, `2`, or `3`/);
 
   for (const skill of pack.sourceSkills) {
@@ -907,11 +907,11 @@ test('phase 1: frontend architecture workflow preserves approval and review-dime
 
   assert.match(
     usingSkills,
-    /imperative verbs such as `implement`, `build`, or `create` express write intent\s+only[\s\S]*not spec approval or plan approval/i,
+    /`implement`, `build` and `create` express write intent, not spec or plan approval/i,
   );
   assert.match(
     usingSkills,
-    /fixture, lab, benchmark, or disposable repository[\s\S]*does not\s+waive[\s\S]*approval gate/i,
+    /fixture, lab, benchmark, disposable repository or scoped prompt never waives[\s\S]*approval gate/i,
   );
   assert.match(
     usingSkills,
@@ -1950,23 +1950,24 @@ test('phase 1: brainstorming visual companion stays optional and gated', async (
   const brainstorming = sourceByName.get('sdcorejs-brainstorming');
 
   assert.match(brainstorming, /## Optional Visual Companion/);
-  assert.match(brainstorming, /Do not offer the visual companion upfront/);
+  assert.match(brainstorming, /invite just in time before choosing a direction/);
   assert.match(brainstorming, /visual-companion\.md/);
-  assert.match(brainstorming, /Reply with `1` or `2`/);
-  assert.match(brainstorming, /main conversation remains the source of truth/i);
-  assert.match(brainstorming, /acceptance criteria and testable\s+behavior/);
-  assert.doesNotMatch(brainstorming, /_refs\/sdlc\/visual-companion\.md/);
+  assert.match(brainstorming, /Conversation feedback\s+owns the direction/);
+  assert.match(brainstorming, /acceptance criteria/);
+  const offerPolicy = await readFile(new URL('../../_refs/sdlc/visual-offer-policy.md', import.meta.url), 'utf8');
+  assert.match(offerPolicy, /user-choice-prompt\.md/);
+  assert.match(offerPolicy, /Declined means continue in text/);
+  assert.match(offerPolicy, /A new decision ID, wording, skill or phase/);
+  assert.match(offerPolicy, /A browser selection is supporting feedback only, never approval/);
 
   // The live runtime exists, so the skill must drive it rather than forbid it.
   assert.doesNotMatch(brainstorming, /Do not start or invent a local server\/event bridge/);
-  assert.match(brainstorming, /live_visual_companion/);
-  assert.match(brainstorming, /Confirm that separately before starting/);
-  assert.match(brainstorming, /Auto-opening a browser is a second, separate consent/);
-  assert.match(brainstorming, /supporting feedback, not approval/);
+  assert.match(brainstorming, /missing runtime consent/);
+  assert.match(offerPolicy, /Visual intent, local runtime writes and browser opening are separate/);
 
   const visualCompanion = await readFile(new URL('../../_refs/sdlc/visual-companion.md', import.meta.url), 'utf8');
   assert.match(visualCompanion, /optional decision aid for spatial or visual choices/);
-  assert.match(visualCompanion, /Do not repeat an offer after the user declines/);
+  assert.match(visualCompanion, /visual-offer-policy\.md/);
   assert.match(visualCompanion, /native structured choice/);
   assert.match(visualCompanion, /typed native visual surface/);
   assert.match(visualCompanion, /static-visual-composer\.mjs/);

@@ -52,3 +52,18 @@ package/lockfile dependency names for provider SDKs. Authorized live evidence
 resolves approval and transcript hashes and derives its aggregate status and
 token total from target/revision-bound provider run receipts for the complete
 scenario set.
+
+## Visual offer regression and dialogue evaluation
+
+The bounded Visual Companion change uses existing shared-reference and
+executable-helper surfaces, not a new public skill. Run
+`npm run test:e2e:visual-offer` for semantic policy, state, consent, fallback
+and runner-integrity regression; run `npm run eval:visual-offer` for offline
+natural-language scenario validation. These make zero provider calls.
+
+[Visual offer evals](evals/visual-offer/README.md) documents explicitly authorized
+CLI A/B capture against immutable source snapshots, actual multi-turn transcripts,
+manual semantic review, denominators and NOT RUN handling. Simulated capability
+fixtures and deterministic tests never prove natural-language recognition or a
+real visual surface. Keep these records separate from the existing ten-scenario
+skill-authoring live matrix.

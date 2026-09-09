@@ -9,7 +9,6 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, WebFetc
 
 # 07 — Write Code (Orchestrator)
 
-
 ## Approval preflight — first action, fail closed
 
 Before project classification, TDD, frontend architecture, or reading any implementation reference, locate and verify the approved spec, approved plan, and completed `frontend_architecture` artifact.
@@ -18,17 +17,18 @@ When required approved artifacts are absent, remain read-only and must not modif
 A fixture, lab, benchmark, disposable repository, hidden acceptance test, or generic-harness possibility never bypasses this gate. Eligibility may route only after the approval gate has passed.
 A request combining a summary, filters, a result table, bulk actions, and workflow controls is non-trivial; without approved frontend architecture/spec/plan, stop before writing code and return to the owning gate.
 
+For unresolved visual decisions, apply `_refs/sdlc/visual-offer-policy.md`;
+forward `requirement_context.visual_companion` through `context.pass`
+(portable `state_delta.visual_companion`) to the owning workflow.
+
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and
-`_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through
-the finishing tail.
+Read `_refs/shared/runtime-protocols.md` and `_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through the finishing tail.
 
 ## Purpose
 
-Single entry point for generating SDCoreJS/Core UI Angular portal code.
-Transforms an approved plan from `sdcorejs-execute-plan` plus the user's
-confirmed Core UI portal scope into complete CRUD entity code:
+Generate SDCoreJS/Core UI Angular portal code from an approved `sdcorejs-execute-plan`
+and confirmed Core UI portal scope, producing complete CRUD entity code:
 - Domain and transport contracts where required (DTO, SaveReq, validators)
 - Data-access services and justified feature collaborators
 - Lazy route/page containers

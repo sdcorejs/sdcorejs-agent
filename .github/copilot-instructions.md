@@ -110,6 +110,10 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
   code map.
 - Apply `_refs/shared/artifact-lifecycle.md` to every `.sdcorejs/**` write and
   Git artifact handoff.
+- Apply `_refs/sdlc/visual-offer-policy.md` before presenting or settling an open
+  user choice; skip visual loading for simple fixed work. Read the detailed
+  `_refs/sdlc/visual-companion.md` only when preparing an accepted/requested
+  preview or its missing runtime consent. Preserve scoped responses across skills.
 - A Visual Companion session needs its own explicit consent for local runtime
   writes, and a second one to open a browser. Capability is never permission.
   Session state under `.sdcorejs/tmp/visual-companion/**` is `local_only`, and a

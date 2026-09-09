@@ -14,6 +14,7 @@ import {
   selectInteraction,
   selectWorkerPolicy,
   shouldOfferVisual,
+  recordVisualResponse,
   validateCapabilityContract,
   validateDisjointOwnership,
   validateProviderNeutralText,
@@ -112,6 +113,7 @@ test('capability contract is structurally valid and drives native-or-Markdown in
     capabilities: scenarios.capabilities.live_visual,
     options: ['left', 'right'],
     visual_spatial: true,
+    consent: { local_runtime_writes: true },
   }).kind, 'live-visual-companion');
   assert.equal(selectInteraction({
     capabilities: scenarios.capabilities.live_visual,
@@ -123,9 +125,11 @@ test('capability contract is structurally valid and drives native-or-Markdown in
     capabilities: scenarios.capabilities.live_visual,
     options: ['left', 'right'],
     visual_spatial: true,
+    consent: { local_runtime_writes: true },
   }).event_channel, 'live');
   assert.equal(selectInteraction({
     capabilities: scenarios.capabilities.live_visual_no_bridge,
+    consent: { local_runtime_writes: true },
     options: ['left', 'right'],
     visual_spatial: true,
   }).event_channel, 'conversation', 'without an event bridge the reply comes back through the conversation');
@@ -135,7 +139,7 @@ test('capability contract is structurally valid and drives native-or-Markdown in
       'typed-visual-screen': scenarios.capabilities.typed_visual,
       'static-visual-composer': scenarios.capabilities.static_visual,
     }[kind];
-    const interaction = selectInteraction({ capabilities, options: ['left', 'right'], visual_spatial: true });
+    const interaction = selectInteraction({ capabilities, options: ['left', 'right'], visual_spatial: true, consent: { local_runtime_writes: true } });
     assert.equal(interaction.kind, kind);
     assert.equal(interaction.supporting_feedback_only, true, `${kind} is supporting feedback only`);
     assert.match(interaction.fallback_markdown, /^1\. .*\n2\. /m);
@@ -465,11 +469,15 @@ test('task briefs and review packages reject embedded delivery artifacts and inv
   }).join('\n'), /instead of embedding it/);
 });
 
-test('visual offer is limited to a new visual or spatial decision and is not repeated after decline', () => {
-  assert.equal(shouldOfferVisual({ decision: 'Choose a screen layout', visual_spatial: true, previous_response: null }), true);
-  assert.equal(shouldOfferVisual({ decision: 'Choose a worker', visual_spatial: false, previous_response: null }), false);
-  assert.equal(shouldOfferVisual({ decision: 'Choose a screen layout', visual_spatial: true, previous_response: 'declined' }), false);
-  assert.equal(shouldOfferVisual({ decision: 'Choose a different navigation map', visual_spatial: true, previous_response: 'declined', new_visual_decision: true }), true);
+test('visual offer requires a grounded comparison and preserves scoped decline', () => {
+  const decision = { session_id: 's1', visual_thread_id: 'nav', decision_id: 'D-001',
+    open: true, requires_user_choice: true, options: ['Tree navigation', 'Section navigation'],
+    material_tradeoff: true, visual_benefit: true, reason: 'Compare hierarchy and space.' };
+  const capabilities = { visual_surface: 'supported' };
+  assert.equal(shouldOfferVisual({ decision, capabilities }), true);
+  assert.equal(shouldOfferVisual({ visual_spatial: true }), false);
+  const context = recordVisualResponse({ decision, response: 'declined' });
+  assert.equal(shouldOfferVisual({ decision: { ...decision, decision_id: 'D-002' }, context, capabilities }), false);
 });
 
 test('a live companion session requires both capability and explicit local-runtime consent', async () => {
@@ -490,10 +498,10 @@ test('a live companion session requires both capability and explicit local-runti
     capabilities: scenarios.capabilities.live_visual,
     consent: {},
   });
-  assert.equal(withoutConsent.mode, 'static');
+  assert.equal(withoutConsent.mode, 'native');
   assert.equal(withoutConsent.local_runtime_writes, false);
   assert.equal(withoutConsent.auto_open, false);
-  assert.match(withoutConsent.reason, /consent/);
+  assert.match(withoutConsent.reason, /without a local runtime session/);
 
   const withoutBrowserConsent = resolveVisualCompanionPlan({
     capabilities: scenarios.capabilities.live_visual,

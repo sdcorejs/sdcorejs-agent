@@ -402,6 +402,8 @@ export function selectInteraction({
   options = [],
   visual_spatial = false,
   approval = false,
+  consent = {},
+  failed_surfaces = [],
 } = {}) {
   const labels = options.map((item) => String(item));
   const markdown = numberedMarkdown(labels);
@@ -428,36 +430,8 @@ export function selectInteraction({
   const status = (name) => normalizeCapabilityStatus(capabilities[name]);
 
   if (visual_spatial && !approval) {
-    if (
-      status('live_visual_companion') === 'supported' &&
-      status('persistent_local_process') === 'supported'
-    ) {
-      return {
-        ...base,
-        kind: 'live-visual-companion',
-        supporting_feedback_only: true,
-        event_channel: status('visual_event_bridge') === 'supported' ? 'live' : 'conversation',
-        reason: 'a spatial decision is clearer on the live companion surface',
-      };
-    }
-    if (status('visual_surface') === 'supported') {
-      return {
-        ...base,
-        kind: 'typed-visual-screen',
-        supporting_feedback_only: true,
-        event_channel: 'conversation',
-        reason: 'a typed visual surface is available for a spatial decision',
-      };
-    }
-    if (status('static_html_artifact') === 'supported') {
-      return {
-        ...base,
-        kind: 'static-visual-composer',
-        supporting_feedback_only: true,
-        event_channel: 'conversation',
-        reason: 'a standalone static artifact is available for a spatial decision',
-      };
-    }
+    const surface = resolveVisualCompanionPlan({ capabilities, consent, failed_surfaces });
+    return { ...base, ...surface, kind: VISUAL_MODE_KINDS[surface.mode] };
   }
 
   if (status('native_structured_choice') === 'supported') {
@@ -486,36 +460,32 @@ export function selectInteraction({
 export function resolveVisualCompanionPlan({
   capabilities = {},
   consent = {},
+  failed_surfaces = [],
 } = {}) {
   const status = (name) => normalizeCapabilityStatus(capabilities[name]);
-  const localRuntimeConsent = consent.local_runtime_writes === true;
+  const available = (mode) => !failed_surfaces.includes(VISUAL_MODE_KINDS[mode]);
   const liveCapable =
     status('live_visual_companion') === 'supported' &&
-    status('persistent_local_process') === 'supported';
-
-  if (!liveCapable || !localRuntimeConsent) {
-    const staticCapable = status('static_html_artifact') === 'supported';
-    return {
-      mode: staticCapable ? 'static' : 'markdown',
-      event_channel: 'conversation',
-      auto_open: false,
-      local_runtime_writes: false,
-      supporting_feedback_only: true,
-      reason: !liveCapable
-        ? `live companion capability is ${status('live_visual_companion')} and persistent local process is ${status('persistent_local_process')}`
-        : 'local runtime writes were not consented to',
-    };
-  }
-
+    status('persistent_local_process') === 'supported' && available('live');
+  const mode = liveCapable && consent.local_runtime_writes === true ? 'live'
+    : status('visual_surface') === 'supported' && available('native') ? 'native'
+      : status('static_html_artifact') === 'supported' && available('static') ? 'static' : 'markdown';
   return {
-    mode: 'live',
-    event_channel: status('visual_event_bridge') === 'supported' ? 'live' : 'conversation',
-    auto_open: status('browser_auto_open') === 'supported' && consent.browser_open === true,
-    local_runtime_writes: true,
+    mode,
+    event_channel: mode === 'live' && status('visual_event_bridge') === 'supported' ? 'live' : 'conversation',
+    auto_open: mode === 'live' && status('browser_auto_open') === 'supported' && consent.browser_open === true,
+    local_runtime_writes: mode === 'live',
     supporting_feedback_only: true,
-    reason: 'the runtime can host a local companion session and the user consented',
+    consent_required: mode === 'markdown' && liveCapable && consent.local_runtime_writes === undefined
+      ? ['local_runtime_writes'] : [],
+    reason: mode === 'live' ? 'supported live runtime with explicit scoped consent'
+      : mode === 'markdown' ? 'no currently usable visual surface; continue in conversation'
+        : `supported ${mode} visual surface without a local runtime session`,
   };
 }
+
+const VISUAL_MODE_KINDS = Object.freeze({ live: 'live-visual-companion', native: 'typed-visual-screen',
+  static: 'static-visual-composer', markdown: 'markdown-numbered-choice' });
 
 export function normalizeChoiceResponse(response, options = [], { recommended } = {}) {
   const raw = String(response ?? '').trim();
@@ -711,14 +681,134 @@ export function validateDisjointOwnership(units = []) {
   return [...new Set(errors)];
 }
 
-export function shouldOfferVisual({
-  visual_spatial = false,
-  previous_response = null,
-  new_visual_decision = false,
-} = {}) {
-  if (!visual_spatial) return false;
-  if (previous_response === 'declined' && !new_visual_decision) return false;
-  return true;
+// These helpers enforce a semantic assessment made by the decision owner. They
+// do not classify natural language or count as evidence that an agent recognized it.
+export function shouldOfferVisual(input = {}) {
+  return evaluateVisualOffer(input).action === 'offer';
+}
+
+const VISUAL_SCOPES = new Set(['decision', 'visual-thread', 'session']);
+const VISUAL_ID_FIELDS = ['session_id', 'visual_thread_id', 'decision_id'];
+const VISUAL_STATES = new Set(['not-evaluated', 'not-applicable', 'pending', 'accepted', 'declined']);
+
+function visualIdentity(decision) {
+  if (!isPlainObject(decision) || VISUAL_ID_FIELDS.some((key) => !isNonEmptyString(decision[key]))) return null;
+  return Object.fromEntries(VISUAL_ID_FIELDS.map((key) => [key, decision[key]]));
+}
+
+function visualContext(context = {}) {
+  if (!isPlainObject(context)) throw new TypeError('visual_companion context must be an object');
+  const state = { schema_version: 1, decisions: [], responses: [], consents: [] };
+  if (typeof context.artifact_write_approved === 'boolean') state.artifact_write_approved = context.artifact_write_approved;
+  if (context.schema_version !== undefined && context.schema_version !== 1) throw new TypeError('unsupported visual context version');
+  // Old booleans do not establish identity or consent. Preserve their no-repeat signal.
+  if (context.offered === true || context.selected === true || context.legacy_offered === true) state.legacy_offered = true;
+  for (const field of ['decisions', 'responses', 'consents']) {
+    if (context[field] === undefined) continue;
+    if (!Array.isArray(context[field])) throw new TypeError(`${field} must be an array`);
+    state[field] = context[field].map((record) => {
+      const identity = visualIdentity(record);
+      if (!identity) throw new TypeError(`${field} requires decision identity`);
+      if (field === 'decisions') {
+        if (!VISUAL_STATES.has(record.status) || !isNonEmptyString(record.reason)) throw new TypeError('invalid decision status or reason');
+        if (record.surface !== null && !Object.hasOwn(VISUAL_MODE_KINDS, record.surface)) throw new TypeError('invalid visual surface');
+        const failed = record.failed_surfaces ?? [];
+        if (!Array.isArray(failed) || failed.some((kind) => !VISUAL_INTERACTION_KINDS.includes(kind))) throw new TypeError('invalid failed visual surface');
+        return { ...identity, status: record.status, reason: record.reason, surface: record.surface, failed_surfaces: [...new Set(failed)] };
+      }
+      if (!VISUAL_SCOPES.has(record.scope)) throw new TypeError('invalid visual scope');
+      const scoped = { ...identity, scope: record.scope };
+      if (field === 'responses') {
+        if (!['pending', 'accepted', 'declined'].includes(record.status)) throw new TypeError('invalid visual response');
+        return { ...scoped, status: record.status };
+      }
+      if (!['local_runtime_writes', 'browser_open'].includes(record.kind) || typeof record.granted !== 'boolean' || !isNonEmptyString(record.purpose_id)) {
+        throw new TypeError('invalid visual consent kind, grant or purpose');
+      }
+      return { ...scoped, kind: record.kind, granted: record.granted, purpose_id: record.purpose_id };
+    });
+  }
+  return state;
+}
+
+function matchesVisualScope(record, decision) {
+  return record.session_id === decision.session_id && (record.scope === 'session'
+    || record.visual_thread_id === decision.visual_thread_id && (record.scope === 'visual-thread'
+      || record.decision_id === decision.decision_id));
+}
+
+function sameVisualScope(left, right) {
+  return left.scope === right.scope && matchesVisualScope(left, right);
+}
+
+function putVisualRecord(state, field, record) {
+  state[field] = state[field].filter((old) => !(sameVisualScope(old, record)
+    && (field !== 'consents' || old.kind === record.kind && old.purpose_id === record.purpose_id)));
+  state[field].push(record); // Last applicable conversation response wins, including a narrow re-enable.
+  return state;
+}
+
+function scopedVisualInput(decision, scope, source) {
+  const identity = visualIdentity(decision);
+  if (!identity) throw new TypeError('visual decision identity is required');
+  if (!VISUAL_SCOPES.has(scope)) throw new TypeError('invalid visual scope');
+  if (source !== 'conversation') throw new TypeError('only an explicit conversation response can record preference or consent');
+  return { ...identity, scope };
+}
+
+export function recordVisualResponse({ context, decision, response, scope = 'visual-thread', source = 'conversation' } = {}) {
+  if (!['accepted', 'declined'].includes(response)) throw new TypeError('response must be accepted or declined');
+  return putVisualRecord(visualContext(context), 'responses', {
+    ...scopedVisualInput(decision, scope, source), status: response,
+  });
+}
+
+export function recordVisualConsent({ context, decision, kind, granted, scope = 'visual-thread', source = 'conversation' } = {}) {
+  const scoped = scopedVisualInput(decision, scope, source);
+  if (!isNonEmptyString(decision.purpose_id)) throw new TypeError('consent requires a purpose_id');
+  if (!['local_runtime_writes', 'browser_open'].includes(kind) || typeof granted !== 'boolean') throw new TypeError('invalid consent kind or grant');
+  return putVisualRecord(visualContext(context), 'consents', { ...scoped, kind, granted, purpose_id: decision.purpose_id });
+}
+
+export function evaluateVisualOffer({ decision, context, capabilities = {}, failed_surfaces = [] } = {}) {
+  let state = visualContext(context);
+  const identity = visualIdentity(decision);
+  if (!identity) return { action: 'continue-text', status: 'not-evaluated', reason: 'no grounded decision identity', context: state };
+  if (!Array.isArray(failed_surfaces) || failed_surfaces.some((kind) => !VISUAL_INTERACTION_KINDS.includes(kind))) throw new TypeError('invalid failed visual surface');
+  const prior = state.decisions.find((old) => VISUAL_ID_FIELDS.every((key) => old[key] === identity[key]));
+  const failed = [...new Set([...(prior?.failed_surfaces ?? []), ...failed_surfaces])];
+  const finish = (action, status, reason, surface = null) => {
+    state.decisions = state.decisions.filter((old) => !VISUAL_ID_FIELDS.every((key) => old[key] === identity[key]));
+    state.decisions.push({ ...identity, status, reason, surface: surface?.mode ?? null, failed_surfaces: failed });
+    return { action, status, reason, surface, context: state };
+  };
+  if (decision.explicit_visual_request === true) {
+    state = recordVisualResponse({ context: state, decision, response: 'accepted', scope: 'decision' });
+  }
+  const response = state.responses.findLast((record) => matchesVisualScope(record, decision));
+  if (response?.status === 'declined') return finish('continue-text', 'declined', 'conversation decline applies to this visual scope');
+  // A requested preview may illustrate an approved decision; it never reopens that decision.
+  if (decision.explicit_visual_request !== true && (decision.open !== true || decision.approved === true
+    || decision.delegated === true || decision.requires_user_choice !== true
+    || !Array.isArray(decision.options) || decision.options.some((option) => !isNonEmptyString(option))
+    || new Set(decision.options.map((option) => option.trim().toLowerCase())).size < 2
+    || decision.material_tradeoff !== true || decision.visual_benefit !== true || !isNonEmptyString(decision.reason))) {
+    return finish('continue-text', 'not-applicable', 'no open user choice with grounded alternatives and a material visual benefit');
+  }
+  const consent = {};
+  for (const grant of state.consents) {
+    if (matchesVisualScope(grant, decision) && grant.purpose_id === decision.purpose_id) consent[grant.kind] = grant.granted;
+  }
+  const surface = resolveVisualCompanionPlan({ capabilities, consent, failed_surfaces: failed });
+  if (response?.status === 'accepted') {
+    const action = surface.consent_required.length ? 'request-consent'
+      : surface.mode === 'markdown' ? 'continue-text' : 'present';
+    return finish(action, 'accepted', surface.reason, surface);
+  }
+  if (response?.status === 'pending' || state.legacy_offered) return finish('wait', 'pending', 'an invitation already awaits a scoped conversation response', surface);
+  if (surface.mode === 'markdown' && surface.consent_required.length === 0) return finish('continue-text', 'not-applicable', surface.reason, surface);
+  putVisualRecord(state, 'responses', { ...identity, scope: 'visual-thread', status: 'pending' });
+  return finish('offer', 'pending', decision.reason, surface);
 }
 
 function isFastWorkerEligible(task, category) {

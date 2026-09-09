@@ -11,15 +11,9 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and
-`_refs/shared/artifact-lifecycle.md`; load
-`_refs/shared/design-handoff.md` for durable handoffs. Consume canonical
-track/profile and artifact values from `_refs/shared/system-registry.json`,
-canonical artifact roots from `_refs/shared/artifact-paths.mjs`, verify approved
-spec/plan parents with `_refs/shared/approved-artifact.mjs`, and resolve semantic
-ownership with `_refs/shared/repository-contract.mjs`. Emit `artifact_context`
-for every design artifact and ledger written. Never rebuild a Design path by
-hand.
+Read `_refs/shared/runtime-protocols.md` and `_refs/shared/artifact-lifecycle.md`; load `_refs/shared/design-handoff.md` for durable handoffs.
+Resolve track/profile and artifact values from `_refs/shared/system-registry.json`, roots from `_refs/shared/artifact-paths.mjs`, approved spec/plan parents with `_refs/shared/approved-artifact.mjs`, and ownership with `_refs/shared/repository-contract.mjs`.
+Emit `artifact_context` for every design artifact and ledger written. Never rebuild a Design path by hand.
 
 ## Purpose
 Create FE handoff artifacts from product intent. The output should let Angular/Next.js executors implement screens without guessing layout, states, copy, interactions, or responsive behavior.
@@ -87,8 +81,14 @@ roles. A small spacing/focus improvement may use the bounded path from
 handoff. If a durable handoff is requested, its existing approval, resolver and
 lifecycle gates still apply. Independent review belongs to `sdcorejs-review`; critique here improves the author's own design.
 
-For significant layout tradeoffs, use the existing Visual Companion when useful, available and explicitly consented through `_refs/sdlc/visual-companion.md`.
-Text/ASCII comparison is the fallback; no additional runtime or selection UI.
+Before presenting or settling an open layout/flow decision, including direct
+Design entry, apply `_refs/sdlc/visual-offer-policy.md`: actively assess and
+invite at the first useful visual comparison. Preserve `visual_companion`
+identity, pending/accepted/declined scope and consent through handoffs; restore
+and forward portable `state_delta.visual_companion`. A direct
+preview request proceeds to a supported surface without another invitation;
+fixed or approved designs stay settled. Load the detailed companion lifecycle
+only when preparing that surface or its required consent.
 
 ## Inputs
 
