@@ -183,6 +183,11 @@ review, do not load this contract and record
 
 ## Step 2 - Load Applicable References
 
+For UI/UX scope only, read `_refs/design/uiux/index.md` for topic selection and
+the existing finding contract's UI/UX fields. Keep this review read-only and its
+requested dimensions unchanged; source-only evidence cannot prove rendered or
+interaction behavior. Aesthetic preferences stay advisory, never auto-repaired.
+
 Load track-specific refs only when `track_profile` matches the ref scope. Load
 shared refs for shared dimensions when applicable. If a ref is absent or not
 applicable, record it under `refs_skipped` with a reason; do not fabricate a

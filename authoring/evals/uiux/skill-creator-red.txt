@@ -1,0 +1,161 @@
+✖ R1: exact docs resolve a hoisted dependency from the application workspace (15.5588ms)
+✖ R1: an application-local installation shadows the hoisted package (7.5181ms)
+✖ R2: the application declaration selects its alias when both are installed (10.8645ms)
+✖ R2: lockfile fallback also respects the declared alias (6.3667ms)
+✖ R2: missing or ambiguous package identity cannot certify the other alias (5.6099ms)
+✖ R3: native navigation selects existing mobile rules without web-only references (0.71ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 0
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 119.5944
+
+✖ failing tests:
+
+test at test\e2e\uiux-skill-creator-regression.test.mjs:26:1
+✖ R1: exact docs resolve a hoisted dependency from the application workspace (15.5588ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + null
+  - {
+  -   name: '@sdcorejs/angular',
+  -   version: '19.2.4'
+  - }
+
+      at file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:35:14
+      at async fixture (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:18:9)
+      at async TestContext.<anonymous> (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:27:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: { name: '@sdcorejs/angular', version: '19.2.4' },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test\e2e\uiux-skill-creator-regression.test.mjs:42:1
+✖ R1: an application-local installation shadows the hoisted package (7.5181ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + null
+  - {
+  -   name: '@sd-angular/core',
+  -   version: '19.3.0'
+  - }
+
+      at file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:49:12
+      at async fixture (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:18:9)
+      at async TestContext.<anonymous> (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:43:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: { name: '@sd-angular/core', version: '19.3.0' },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test\e2e\uiux-skill-creator-regression.test.mjs:53:1
+✖ R2: the application declaration selects its alias when both are installed (10.8645ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    {
+  +   name: '@sdcorejs/angular',
+  +   version: '21.0.7'
+  -   name: '@sd-angular/core',
+  -   version: '19.2.4'
+    }
+
+      at file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:59:49
+      at async fixture (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:18:9)
+      at async TestContext.<anonymous> (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:54:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { name: '@sdcorejs/angular', version: '21.0.7' },
+    expected: { name: '@sd-angular/core', version: '19.2.4' },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test\e2e\uiux-skill-creator-regression.test.mjs:65:1
+✖ R2: lockfile fallback also respects the declared alias (6.3667ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    {
+  +   name: '@sdcorejs/angular',
+  +   version: '21.0.7'
+  -   name: '@sd-angular/core',
+  -   version: '19.2.4'
+    }
+
+      at file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:72:12
+      at async fixture (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:18:9)
+      at async TestContext.<anonymous> (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:66:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { name: '@sdcorejs/angular', version: '21.0.7' },
+    expected: { name: '@sd-angular/core', version: '19.2.4' },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test\e2e\uiux-skill-creator-regression.test.mjs:76:1
+✖ R2: missing or ambiguous package identity cannot certify the other alias (5.6099ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + {
+  +   name: '@sdcorejs/angular',
+  +   version: '21.0.7'
+  + }
+  - null
+
+      at file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:80:12
+      at async fixture (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:18:9)
+      at async TestContext.<anonymous> (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:77:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { name: '@sdcorejs/angular', version: '21.0.7' },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\e2e\uiux-skill-creator-regression.test.mjs:86:1
+✖ R3: native navigation selects existing mobile rules without web-only references (0.71ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'no-match'
+  - 'matched'
+
+      at TestContext.<anonymous> (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:88:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'no-match',
+    expected: 'matched',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

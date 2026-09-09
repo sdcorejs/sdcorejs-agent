@@ -2,7 +2,22 @@
 
 Current validation snapshot for the SDCoreJS SDLC Agent repository.
 
-Date: 2026-09-04
+Date: 2026-09-09
+
+## Shared UI/UX reference upgrade - 2026-09-09
+
+`npm run test:e2e:uiux` covers reference selection, no-match handling, real
+Core UI version evidence, read-only finding scope, semantic ownership, routing
+and unchanged public inventory. The 26 checks include the recorded authoring
+evidence validator, three original independent-review regression cases and six
+skill-creator review cases for hoisting, alias identity and native navigation.
+
+The source assessment, eight-scenario mapping, actual RED/GREEN/REFACTOR outputs,
+later review repairs and source hashes are under `authoring/evals/uiux/`.
+The original ten-scenario authoring suite remains independent. These are
+deterministic/source checks; no target-project live-agent or visual verification
+is claimed. Change-scoped delivery evidence is in
+`.sdcorejs/docs/workflow/2026-09-09-uiux-knowledge.md`.
 
 ## Current Layout
 
@@ -195,15 +210,15 @@ working-tree diff:
 
 | Measure | Baseline | Current working tree |
 |---|---:|---:|
-| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,846 |
-| Always-loaded bootstrap words | 2,361 | 2,348 |
-| Aggregate just-in-time scenario bytes | 514,603 | 656,066 |
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,928 |
+| Always-loaded bootstrap words | 2,361 | 2,358 |
+| Aggregate just-in-time scenario bytes | 514,603 | 656,832 |
 | Aggregate visible output bytes | 42,558 | 2,802 |
 | Aggregate visible output words | 3,961 | 337 |
 | Portable fallback handoff bytes | 0 | 25,383 |
 | Supported runtime context channel bytes | 0 | 1,819 |
 | Repeated-block bytes | 2,319 | 0 |
-| Total measured communication bytes | 577,334 | 705,916 |
+| Total measured communication bytes | 577,334 | 706,764 |
 | Consumer-required authoritative fields | 361 | 361 preserved |
 
 The report includes ten scenarios, per-scenario selected paths, bytes, words,

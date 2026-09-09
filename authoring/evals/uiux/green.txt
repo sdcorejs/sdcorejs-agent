@@ -1,0 +1,28 @@
+
+> sdcorejs-agent@0.8.0 test:e2e:uiux
+> node --test test/e2e/uiux-knowledge.test.mjs
+
+✔ on-demand reference selection: sidebar (1.424ms)
+✔ on-demand reference selection: mobile-table (0.168ms)
+✔ on-demand reference selection: portal-crud (0.1571ms)
+✔ on-demand reference selection: landing (0.16ms)
+✔ on-demand reference selection: review (0.1106ms)
+✔ on-demand reference selection: focus-fix (0.1147ms)
+✔ on-demand reference selection: spacing-fix (0.1134ms)
+✔ unknown topics and surfaces never manufacture a marketing match (0.319ms)
+✔ Q&A and non-UI work load no knowledge and malformed requests fail closed (0.3843ms)
+✔ the catalog has resolvable rule locations and no hidden eager file loading (7.3864ms)
+✔ Core UI exact docs selection supports aliases and refuses version guessing (0.3362ms)
+✔ exact-version resolution uses package evidence without stripping ranges or guessing text locks (17.7982ms)
+✔ UI review requires verification, keeps preferences advisory, and forbids writes (0.8593ms)
+✔ feature decisions use the existing semantic-owner paths and closure (0.7003ms)
+✔ routing preserves design, implementation, independent review and direct answers (2.5982ms)
+✔ public inventory is unchanged from the recorded main revision (52.2358ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 187.6589

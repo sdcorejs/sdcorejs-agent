@@ -105,12 +105,18 @@ h2 { font-size: clamp(1.5rem, 3vw, 2.5rem); }
 h3 { font-size: clamp(1.25rem, 2vw, 1.75rem); }
 ```
 
-Body text stays at `16px` (`text-base`); do not shrink it for mobile because
-that harms accessibility and conversion.
+Preserve the project's readable body-text tokens. `16px` (`text-base` with a
+16px root) is a common starting point, not a universal accessibility threshold.
+Verify actual content at text zoom and narrow widths; do not shrink text merely
+to hide overflow.
 
-## Touch targets — minimum 44×44 px
+## Touch targets - task ergonomics and applicable criteria
 
-WCAG / Apple HIG / Material guideline. Every interactive element on mobile must be at least 44px square.
+Use `_refs/shared/review-accessibility.md` (UX-A11Y-TARGET) for WCAG version,
+level and exceptions. Comfortable 44px targets are a design heuristic, not a
+universal WCAG AA rule. The examples below assume the existing project uses
+these Tailwind utilities and a 16px root font; verify rendered size and preserve
+the installed stack's tokens. Native platform units/guidelines are separate.
 
 ```tsx
 // ✓ Adequate touch target
@@ -122,8 +128,8 @@ WCAG / Apple HIG / Material guideline. Every interactive element on mobile must 
   <Menu className="size-5" />
 </button>
 
-// ✗ Too small (32px height, fails 44px guideline)
-<button className="h-8 px-3 text-sm">×</button>
+// Dense 32px candidate: verify spacing, task ergonomics and applicable exceptions.
+<button className="h-8 px-3 text-sm" aria-label="<localized close label>">×</button>
 ```
 
 For closely-stacked elements (footer links, table rows), increase `py-` and `gap-` so users don't mis-tap.
@@ -221,7 +227,7 @@ Run for every new page / major section:
    - Desktop 1280, 1440, 1920 — test xl+ breakpoints
 2. **Touch targets**: tap-test all buttons / links / form fields on the iPhone SE preset.
 3. **Horizontal scroll**: confirm `<html>` doesn't horizontally scroll on any breakpoint. (Most common cause: a child with explicit width > viewport, or negative margin overflowing.)
-4. **Font readability**: body text must be ≥16px. Don't reduce for mobile.
+4. **Font readability**: verify the project's text tokens at 200% text zoom and the applicable reflow dimensions in UX-A11Y-REFLOW. Do not infer conformance from a font size.
 5. **Image LCP**: hero loads in <2.5s on slow 4G (Chrome Network → Slow 4G throttle).
 6. **No layout shift**: page elements shouldn't jump as images load (CLS < 0.1). Explicit width/height on images prevents this.
 
@@ -233,7 +239,7 @@ Run for every new page / major section:
 | Hero text unreadable | White text on light image | Add `bg-black/40` overlay between image and text |
 | Image stretched / squished | Missing `object-cover` or wrong `width:height` ratio | Add `className="object-cover"` and use ratio container if `fill` |
 | Nav links overlap on tablet | `flex-wrap` missing; or inline nav shown below md breakpoint | Audit `md:hidden` / `md:flex` classes |
-| Button taps don't register | Too small (<44px) | Add `min-h-11 min-w-11` |
+| Button taps don't register | Hit-area size, spacing, overlap or event handling | Inspect the rendered hit area and handler; apply UX-A11Y-TARGET and task ergonomics before changing tokens |
 | Slow LCP | Hero image too large / not optimized | Confirm `priority`, `sizes`, `next/image` (not `<img>`) |
 | Layout jumps as images load | Missing width/height on `<Image>` | Add explicit dimensions OR use aspect-ratio container with `fill` |
 
@@ -244,8 +250,8 @@ Run for every new page / major section:
 - Use `next/image` for every raster image — never `<img>`
 - Provide `sizes` prop on responsive images
 - Provide `alt` on every image (empty `alt=""` only for decorative)
-- Touch targets ≥ 44×44 px
-- Body text ≥ 16px on all breakpoints
+- Verify target size/spacing against UX-A11Y-TARGET, including applicable exceptions
+- Verify readable text, zoom and reflow using the project's typography tokens
 - `priority` ONLY on the page's hero image (1 per page)
 - Use `max-w-container` + `mx-auto` + `px-4 md:px-6 lg:px-8` for section wrappers
 - Test on iPhone SE width (375px) — narrowest common device
@@ -254,7 +260,7 @@ Run for every new page / major section:
 - Use `<img>` instead of `next/image`
 - Skip `alt` on images (a11y + SEO penalty)
 - Hardcode pixel widths > 320 (will cause horizontal scroll on phone)
-- Shrink body text below 16px on mobile
+- Shrink body text merely to conceal overflow or missing responsive layout
 - Use breakpoint prefixes inversely (`lg:grid-cols-1 grid-cols-3`) — fights mobile-first
 - Animate layout on resize (causes jank)
 - Use `priority` on multiple images (defeats the purpose)

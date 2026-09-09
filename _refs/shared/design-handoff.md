@@ -148,6 +148,47 @@ revision evidence; otherwise use `candidate`, `unknown`, or `new`.
 Existing design-system reuse and deviations are explicit. Responsive coverage,
 component evidence, and reuse inspection are gates, not prose-only claims.
 
+## Shared Baseline And Feature Exceptions
+
+Use the existing handoff fields and decision/spec documents; no new artifact
+kind, root, global editable master or token-value registry is introduced.
+`design_system_reuse.evidence_refs` identifies actual token/style/component
+sources with repository/path/revision. Relevant accepted/observed conventions
+are read through `convention_context`. Reference existing values rather than
+copying them into a parallel palette or `design-system/MASTER.md`.
+
+Record feature differences only in the resolver's `decisions_path`, summarize
+them in the handoff spec and `design_system_reuse.deviations`, and include these
+documents in `buildDesignArtifactContext` closure and the existing Design ledger.
+Use a compact decision table within those documents:
+
+| Decision ID | Baseline source/revision | Screen/region scope | Difference | Rationale | Status and decision reference | Verification |
+|---|---|---|---|---|---|---|
+| <existing decision identity> | <repo:path@revision> | <feature/screen> | <delta only> | <task benefit> | <candidate or approved decision reference> | <check/result or NOT RUN> |
+
+Keep vocabulary in its owning schema: source observations are `observed`
+conventions (advisory), proposed design/component choices are `candidate`, and
+an `approved` design decision needs the actual approved artifact identity/hash.
+The convention schema calls an enforceable rule `accepted`, not `approved`;
+never add a new convention status or promote a candidate automatically.
+Component mapping still uses `confirmed | candidate | unknown | new`, with
+`confirmed` requiring source evidence rather than aesthetic approval.
+
+An exception cannot relax mandatory accessibility or an approved invariant.
+When code, stored design and approved decisions disagree, name the conflicting
+sources and unresolved decision; do not silently overwrite or treat current
+code as permission to violate an approved contract. Follow the existing stale
+convention classification where source evidence has changed. Persistence of
+project conventions remains owned by authorized `sdcorejs-explore`, never design
+or review. Upstream suggestions remain reference data.
+
+Module baselines/exceptions stay with the module semantic owner. Portal shell
+and integration may reference them through existing immutable provenance;
+cross-module composition never duplicates editable module design. Missing module
+ownership blocks the write even for a small exception. Every durable output
+uses the existing resolver/lifecycle; root-level design/product/design-system
+directories are not output targets.
+
 ## Cross-Repository References
 
 True cross-module experience references use:

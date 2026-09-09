@@ -1,0 +1,14 @@
+✔ R1: exact docs resolve a hoisted dependency from the application workspace (37.7552ms)
+✔ R1: an application-local installation shadows the hoisted package (10.658ms)
+✔ R2: the application declaration selects its alias when both are installed (13.0578ms)
+✔ R2: lockfile fallback also respects the declared alias (7.6133ms)
+✔ R2: missing or ambiguous package identity cannot certify the other alias (10.705ms)
+✔ R3: native navigation selects existing mobile rules without web-only references (0.4206ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 157.4313

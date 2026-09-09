@@ -31,6 +31,12 @@ Turn a request into a confirmed requirement contract. This skill now owns both j
 
 Output dialogue only. Do not write specs, plans, or code here.
 
+For an unsettled UI question, use `../_refs/design/uiux/index.md` to select only
+the relevant surface and topic; compare current UI evidence and candidate
+improvements. Do not infer a full design-system task from a small UI question.
+Q&A and bounded explicit fixes retain their existing lightweight routing.
+Backend-only questions do not load UI/UX references.
+
 ## Process
 
 ### 0. Detect execution context

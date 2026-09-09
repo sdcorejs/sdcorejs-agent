@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-08-09T00:00:00.000Z
+generated_at: 2026-09-09T00:00:00.000Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks: [workflow, ai-agent, angular, nestjs, nextjs, product, design, test]
@@ -14,7 +14,7 @@ evidence:
   key_entrypoints: [AGENTS.md, CLAUDE.md, skills/orchestration/using-skills.md, scripts/sync-skills.mjs, plugin/hooks/session-start, .github/copilot-instructions.md, .cursor/rules/sdcorejs-agent.mdc, site/src/pages/index.astro]
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:6265ea96334d928c96d3d520fb7c8cbe032aa1c266127b7ae39e5a448e79c1db
+  dependency_manifests: sha256:f4fde05fb187c3e61238689dbfc25ec69568218f6ce9820cd30923eecdc297e3
   source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
@@ -31,7 +31,7 @@ owner: integration-owner
 
 ## Purpose
 
-`sdcorejs-agent` is the authoring repository for a 22-skill engineering pack
+`sdcorejs-agent` is the authoring repository for an engineering skill pack
 for developers and technical teams. It defines reusable software-delivery
 workflows for governed architecture and AI-agent applications, Angular,
 NestJS, Next.js, product, design, test, documentation, review, ship, Git, and

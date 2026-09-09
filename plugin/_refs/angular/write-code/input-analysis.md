@@ -51,15 +51,23 @@ https://sdcorejs.github.io/sdcorejs-angular/docs/versions.json
 Use the on-demand fetcher instead of memorized APIs:
 
 ```bash
-node _refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed --list
-node _refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed --print assets/STYLE-GUIDE
-node _refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed --print <component-or-service-id>
+node _refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed --exact-version --list
+node _refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed --exact-version --print assets/STYLE-GUIDE
+node _refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed --exact-version --print <component-or-service-id>
 ```
 
 The fetcher resolves the installed `@sdcorejs/angular` or `@sd-angular/core`
-version from target project evidence, loads `versions.json`, prefers an exact
-docs match, falls back to a compatible same-major docs version, and then falls
-back to cache when needed. The `--require-installed` mode fails before any
+version from target project evidence. The nearest application manifest selects
+the package alias; installed metadata can be hoisted in ancestor `node_modules`.
+If both aliases are declared or identity remains ambiguous, resolve the target
+package/usage before fetching instead of choosing an alias by priority.
+`--exact-version` loads only that version's
+docs/cache and refuses an unresolved range or a conflicting explicit version.
+When exact docs are unavailable, use installed source/exports and proven local
+usage, or state the unverified API/blocker; never invent an API. Without this
+flag the legacy nearest-version mode may return another major, which is reference
+discovery only, not compatibility evidence. Both modes report resolved version
+provenance on stderr. The `--require-installed` mode fails before any
 network/cache lookup when neither Core UI package is installed; that failure is
 the `plain-angular` routing signal, not a docs outage.
 

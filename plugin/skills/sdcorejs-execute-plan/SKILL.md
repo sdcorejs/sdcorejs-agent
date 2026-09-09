@@ -11,7 +11,7 @@ allowed-tools: Agent, AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, 
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md`. Apply
+Read `_refs/shared/runtime-protocols.md`; UI executors select topics via `_refs/design/uiux/index.md` without imposing Core UI on plain stacks. Non-UI units load none. Apply
 `_refs/shared/artifact-lifecycle.md` and preserve/merge `artifact_context` from
 the approved spec, plan, and every producer. Use these executable sources of
 truth before any write or dispatch:

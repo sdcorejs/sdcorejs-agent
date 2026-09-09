@@ -1,0 +1,25 @@
+✖ exact-version resolution uses package evidence without stripping ranges or guessing text locks (11.5981ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 121.8383
+
+✖ failing tests:
+
+test at test\e2e\uiux-knowledge.test.mjs:89:1
+✖ exact-version resolution uses package evidence without stripping ranges or guessing text locks (11.5981ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///<authoring-worktree>/test/e2e/uiux-knowledge.test.mjs:95:14)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /exact/,
+    operator: 'throws',
+    diff: 'simple'
+  }

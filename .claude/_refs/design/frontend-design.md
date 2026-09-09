@@ -25,8 +25,8 @@ layout, states, copy, and interaction while preserving the product requirements
 as the behavior source of truth.
 
 For operational portals and admin tools, distinctive does not mean decorative.
-Prefer dense, calm, scannable work surfaces with one memorable product-specific
-choice over hero-style marketing composition.
+Prefer calm, scannable work surfaces with density suited to the user's task and
+existing design. A new memorable visual detail is optional.
 
 ## Subject Grounding
 
@@ -49,9 +49,11 @@ section markers unless they encode something useful about the content.
 
 ### Pass 1 - Design Plan
 
-Create a compact frontend design plan before writing wireframes or PNG exports.
-Persist the plan in `.sdcorejs/design/decisions/<feature>.md` and summarize it inside
-`.sdcorejs/design/specs/<feature>.md`.
+Use `_refs/design/uiux/index.md` to load only affected topics. Distinguish a new
+screen from an improvement to an existing region. For a durable handoff, create
+a compact frontend design plan before wireframes/PNG; resolve the decision/spec
+paths through the existing design-handoff resolver. A bounded improvement can
+keep a compact analysis in the response instead of producing a full handoff.
 
 Include:
 
@@ -66,21 +68,21 @@ Include:
 ### Visual Direction
 - One-sentence concept:
 - Product-specific rationale:
-- Intentional risk:
+- Existing design evidence and unresolved conflicts:
 
 ### Tokens
-Use this structure for the token plan. Do not copy placeholder values; in the
-actual design plan, replace them with 4-6 subject-specific named colors and real
-hex values derived from the brief.
+Reference actual source variables/styles/components and revisions. Do not create
+a parallel list of values. Record a candidate value only for an evidenced missing
+role; no color-count quota applies.
 
-| Token | Role | Hex | Intended use |
+| Token/source reference | Role | Evidence or candidate | Intended use |
 |---|---|---:|---|
-| <Subject surface name> | Primary page surface | <hex> | Main background |
-| <Raised surface name> | Elevated or inset surface | <hex> | Cards, panels, overlays |
-| <Primary text name> | Primary text | <hex> | Headlines and body copy |
-| <Muted text name> | Secondary text | <hex> | Captions, metadata, helper copy |
-| <Accent/action name> | Brand/action accent | <hex> | Primary CTA, key interactive moments |
-| <State/focus name> | Status or focus color | <hex> | Focus rings, errors, confirmations, warnings |
+| <Subject surface name> | Primary page surface | <source reference or missing-role candidate> | Main background |
+| <Raised surface name> | Elevated or inset surface | <source reference or missing-role candidate> | Cards, panels, overlays |
+| <Primary text name> | Primary text | <source reference or missing-role candidate> | Headlines and body copy |
+| <Muted text name> | Secondary text | <source reference or missing-role candidate> | Captions, metadata, helper copy |
+| <Accent/action name> | Brand/action accent | <source reference or missing-role candidate> | Primary CTA, key interactive moments |
+| <State/focus name> | Status or focus color | <source reference or missing-role candidate> | Focus rings, errors, confirmations, warnings |
 
 ### Type
 | Role | Typeface / stack | Weight | Usage |
@@ -94,9 +96,9 @@ hex values derived from the brief.
 - Tablet:
 - Mobile:
 
-### Signature Element
-- The one memorable detail:
-- Why it fits this feature:
+### Optional Distinctive Detail
+- Useful deviation from the current system, if any:
+- Task benefit and decision status:
 
 ### Copy Voice
 - Register:
@@ -106,19 +108,17 @@ hex values derived from the brief.
 
 Token rules:
 
-- Use 4-6 named colors with hex values and clear roles.
+- Reuse existing named color roles and source references; identify gaps explicitly.
 - For Core UI portals, map tokens to existing app variables or utility classes
   when possible; mark new visual tokens as `candidate`.
-- Do not use a one-note palette dominated by a single hue family.
+- A restrained or single-hue palette is valid when existing roles remain clear.
 - Do not default to warm cream plus serif, near-black plus acid accent, or
   broadsheet newspaper styling unless the brief truly calls for it.
 - Color choices must be usable, not just attractive. In the design plan,
-  identify the main text/background, muted text/background, CTA, focus, and
-  status-state pairings, and choose values with WCAG AA intent for normal
-  interface text wherever practical. Focus indicators must be visible against
-  both the component and surrounding surface. Status, error, warning, and
-  success states must not rely on color alone; pair color with text, iconography,
-  shape, pattern, or explicit state labels.
+  identify the main text/background, muted text/background, CTA, focus and
+  status pairings. Use `_refs/shared/review-accessibility.md` for role-specific
+  contrast, focus and non-color checks, with the required WCAG version/level and
+  actual verification evidence. Aesthetic intent is not conformance evidence.
 - Pick type roles deliberately. If custom fonts are unavailable, describe the
   intended system stack and type treatment instead of inventing unavailable
   assets.
@@ -133,12 +133,9 @@ Token rules:
 
 Before producing final handoff artifacts, review the plan against the brief:
 
-- Generic check: would the same plan fit a different CRUD feature with only the
-  entity name changed?
-- Subject check: does the signature element come from the feature's real domain
-  or workflow?
-- Restraint check: is boldness concentrated in one place while the rest stays
-  disciplined?
+- Reuse check: does the plan preserve useful established patterns and token sources?
+- Subject check: does the design support the feature's actual task and constraints?
+- Scope check: are deviations justified, bounded and correctly marked as candidates?
 - Operational check: for portals, does the UI remain fast to scan, compare,
   filter, edit, and repeat?
 - Copy check: do labels and actions use words users recognize instead of system
@@ -174,8 +171,8 @@ For admin/portal screens:
 
 - Prefer a full-width work surface with constrained inner content or clear page
   bands, not nested decorative cards.
-- Keep repeated item cards to 8px radius or less unless the existing design
-  system requires otherwise.
+- Derive radius, borders and shadow from the existing system and grouping needs;
+  do not enforce a universal radius limit.
 - Use icon buttons for familiar tools and clear text buttons for commands where
   the action must be explicit.
 - Show dense but readable data. Do not hide core work behind oversized hero
@@ -185,8 +182,8 @@ For admin/portal screens:
 
 Motion should serve the subject:
 
-- Use one orchestrated interaction or micro-interaction when it clarifies state,
-  progress, or hierarchy.
+- Use an interaction or micro-interaction only when it clarifies state,
+  progress, or hierarchy; no animation is also a valid choice.
 - Respect reduced motion in the design notes.
 - Avoid scattered animation that makes the design feel generated rather than
   intentional.

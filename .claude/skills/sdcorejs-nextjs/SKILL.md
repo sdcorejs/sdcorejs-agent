@@ -63,6 +63,13 @@ Before writing any helper, formatter, validator, mapper, paging/filter helper, r
 
 ## Dispatch table
 
+For approved UI work, read `_refs/design/uiux/index.md` and select only the
+surface/topics being implemented. Respect approved design and content, current
+tokens/components/icons and the detected Next.js/router/package versions.
+Use actual framework docs/source for version-dependent APIs and preserve
+Server/Client boundaries. UI/UX guidance cannot add fields/features, alter APIs
+or architecture, install dependencies, or impose Core UI conventions.
+
 Read the approved plan and the resolved `approved_features`. Match only those
 work items to reference packs and read each pack on demand. Requirement,
 approved spec, approved plan, or an explicit approved website profile may

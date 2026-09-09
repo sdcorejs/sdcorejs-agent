@@ -1,0 +1,40 @@
+✖ R1: exact docs resolve a hoisted dependency from the application workspace (22.4263ms)
+✔ R1: an application-local installation shadows the hoisted package (11.3802ms)
+✔ R2: the application declaration selects its alias when both are installed (13.0736ms)
+✔ R2: lockfile fallback also respects the declared alias (8.1658ms)
+✔ R2: missing or ambiguous package identity cannot certify the other alias (11.3065ms)
+✔ R3: native navigation selects existing mobile rules without web-only references (0.3736ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 5
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 142.7506
+
+✖ failing tests:
+
+test at test\e2e\uiux-skill-creator-regression.test.mjs:26:1
+✖ R1: exact docs resolve a hoisted dependency from the application workspace (22.4263ms)
+  AssertionError [ERR_ASSERTION]: a sibling plain Angular app must not inherit another workspace package's Core UI identity
+  + actual - expected
+
+  + {
+  +   name: '@sdcorejs/angular',
+  +   version: '19.2.4'
+  + }
+  - null
+
+      at file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:39:16
+      at async fixture (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:18:9)
+      at async TestContext.<anonymous> (file:///C:/Users/Admin/.config/superpowers/worktrees/sdcorejs-agent/uiux-knowledge/test/e2e/uiux-skill-creator-regression.test.mjs:27:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: { name: '@sdcorejs/angular', version: '19.2.4' },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
