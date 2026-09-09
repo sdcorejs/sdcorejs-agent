@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-09-09T00:00:00.000Z
+generated_at: 2026-09-09T16:17:05.274Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks: [workflow, ai-agent, angular, nestjs, nextjs, product, design, test]
@@ -14,7 +14,7 @@ evidence:
   key_entrypoints: [AGENTS.md, CLAUDE.md, skills/orchestration/using-skills.md, scripts/sync-skills.mjs, plugin/hooks/session-start, .github/copilot-instructions.md, .cursor/rules/sdcorejs-agent.mdc, site/src/pages/index.astro]
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:f4fde05fb187c3e61238689dbfc25ec69568218f6ce9820cd30923eecdc297e3
+  dependency_manifests: sha256:c34b1446a6ed73b9102cfa6a204e2133705cc6e9abaf65a992f93133c8bc5718
   source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
@@ -169,6 +169,10 @@ canonical source and rerun synchronization.
   behavioral matrix, public-skill ceiling, and non-distribution boundary.
 - `npm run test:e2e:harness` runs behavioral sentinels, summary mutations, and
   static visual safety tests.
+- `npm run test:e2e:visual-offer` checks scoped visual preference, consent,
+  fallback, handoff behavior, and evaluation-runner integrity.
+- `npm run eval:visual-offer` validates the visual-offer scenario inventory
+  offline; live dialogue capture requires its explicit `--live` invocation.
 - `npm run test:e2e:artifact-paths` runs the Product/Design canonical path
   sentinel, both artifact contracts, and lifecycle closure tests.
 - `npm run test:e2e:conventions` runs the convention schema/path/precedence
@@ -212,6 +216,9 @@ canonical source and rerun synchronization.
   belongs in the repository.
 - Project context assembly is read-only unless a distinct artifact write is
   explicitly authorized.
+- `_refs/sdlc/visual-offer-policy.md` owns when to invite or present a preview.
+  Scoped responses and consent pass through runtime context across skills;
+  visual feedback never grants implementation approval or runtime permission.
 - Summary freshness uses bounded workspace, dependency, source-root, and
   declared/discovered entrypoint fingerprints rather than branch/commit
   identity.
@@ -243,6 +250,7 @@ canonical source and rerun synchronization.
 | Change action/capability mapping | `_refs/harness/capability-contract.json` | generated adapter manifests and behavioral sentinels |
 | Change delegation tiers/roles | `_refs/harness/delegation-policy.json` | task-brief contract and behavioral sentinels |
 | Change static visual behavior | `_refs/sdlc/static-visual-composer.mjs` | screen schema and safety tests |
+| Change visual offers or scoped preferences | `_refs/sdlc/visual-offer-policy.md`, `_refs/harness/runtime-policy.mjs` | `test/e2e/visual-offer-policy.test.mjs`, `authoring/evals/visual-offer/` |
 | Change project context | `_refs/shared/project-context.md` | `_refs/shared/project-context.mjs` |
 | Change artifact closure | `_refs/shared/artifact-lifecycle.md` | `_refs/shared/artifact-lifecycle.mjs` |
 | Change an SDLC gate | `skills/shared/sdlc/` | `_refs/sdlc/` |

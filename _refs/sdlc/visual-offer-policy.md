@@ -98,6 +98,12 @@ decision assessment; they are not a language classifier or behavioral evidence:
   asks only for the missing runtime permission after visual intent is established.
 - `recordVisualResponse` records an explicit conversation acceptance/decline;
   default scope is `visual-thread`, with `decision` and `session` supported.
+  Record a new preview request for an already assessed decision as `accepted`
+  in the requested scope before calling `evaluateVisualOffer`. The assessment's
+  `explicit_visual_request` flag seeds acceptance only on its first evaluation;
+  preserving that flag through handoff must not replay an old user response or
+  overwrite a later decline. Explicitly recording a new response still permits
+  re-enabling that same decision.
 - `recordVisualConsent` records `local_runtime_writes` or `browser_open` with
   a purpose and scope. Capability and supporting feedback cannot grant either.
 - `resolveVisualCompanionPlan` and `selectInteraction` share the same ladder.

@@ -86,6 +86,45 @@ test('case-visual-offer-ac-009-policy: explicit narrow re-enable leaves the wide
   assert.equal(direct.surface.auto_open, false);
 });
 
+test('a replayed preview request preserves a later decline across handoffs', () => {
+  const request = decision({ explicit_visual_request: true });
+  for (const scope of ['decision', 'visual-thread', 'session']) {
+    for (const localRuntime of [false, true]) {
+      let context = evaluateVisualOffer({ decision: request, capabilities: caps }).context;
+      context = recordVisualConsent({ context, decision: request, kind: 'local_runtime_writes', granted: localRuntime });
+      context = recordVisualResponse({ context, decision: request, response: 'declined', scope });
+      const restored = JSON.parse(JSON.stringify(context));
+      const replay = evaluateVisualOffer({ decision: request, context: restored, capabilities: caps });
+      assert.equal(replay.action, 'continue-text', `${scope}, local runtime ${localRuntime}`);
+      assert.equal(replay.status, 'declined');
+      assert.equal(replay.surface, null, 'a declined preview must not select a live runtime');
+      assert.deepEqual(replay.context.responses, restored.responses, 'assessment must not invent another user response');
+      assert.deepEqual(replay.context.consents, restored.consents);
+      const nextHandoff = evaluateVisualOffer({ decision: request, context: JSON.parse(JSON.stringify(replay.context)), capabilities: caps });
+      assert.equal(nextHandoff.action, 'continue-text');
+
+      const enabled = recordVisualResponse({ context: nextHandoff.context, decision: request, response: 'accepted', scope: 'decision' });
+      const preview = evaluateVisualOffer({ decision: request, context: enabled, capabilities: caps });
+      assert.equal(preview.action, 'present', 'a new explicit conversation request can re-enable the same decision');
+      assert.equal(preview.surface.mode, localRuntime ? 'live' : 'native');
+      if (scope !== 'decision') {
+        assert.equal(evaluateVisualOffer({ decision: decision({ decision_id: 'D-002' }), context: preview.context, capabilities: caps }).status, 'declined');
+      }
+    }
+  }
+});
+
+test('a fresh conversation request can accept a pending invitation without replaying the seed flag', () => {
+  const pending = evaluateVisualOffer({ decision: decision(), capabilities: caps });
+  const request = decision({ explicit_visual_request: true });
+  const replay = evaluateVisualOffer({ decision: request, context: pending.context, capabilities: caps });
+  assert.equal(replay.action, 'wait', 'an assessed decision needs an explicit response event');
+  const accepted = recordVisualResponse({ context: pending.context, decision: request, response: 'accepted', scope: 'decision' });
+  const result = evaluateVisualOffer({ decision: request, context: accepted, capabilities: caps });
+  assert.equal(result.action, 'present');
+  assert.deepEqual(result.context.responses, accepted.responses);
+});
+
 test('case-visual-offer-ac-010-policy: surface selection shares one consent-aware visual ladder', () => {
   assert.equal(selectInteraction({ capabilities: caps, options: ['A', 'B'], visual_spatial: true }).kind, 'typed-visual-screen');
   assert.equal(resolveVisualCompanionPlan({ capabilities: caps }).mode, 'native');

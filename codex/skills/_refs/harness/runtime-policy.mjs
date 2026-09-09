@@ -782,7 +782,9 @@ export function evaluateVisualOffer({ decision, context, capabilities = {}, fail
     state.decisions.push({ ...identity, status, reason, surface: surface?.mode ?? null, failed_surfaces: failed });
     return { action, status, reason, surface, context: state };
   };
-  if (decision.explicit_visual_request === true) {
+  // Seed a direct request once. Replaying its assessment is not a new user
+  // response; later requests use recordVisualResponse before evaluation.
+  if (decision.explicit_visual_request === true && !prior) {
     state = recordVisualResponse({ context: state, decision, response: 'accepted', scope: 'decision' });
   }
   const response = state.responses.findLast((record) => matchesVisualScope(record, decision));
