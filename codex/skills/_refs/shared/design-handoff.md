@@ -1,5 +1,141 @@
 # Design Handoff Contract
 
+## Schema 2 and verification authority
+
+New handoffs use schema 2. `validateDesignHandoff` is a **pure structural**
+validator; `createDesignHandoff` normalizes data and does not approve it.
+`adaptLegacyDesignHandoff` exposes schema 1 as read-only, unverified data. Never
+bulk-migrate history or rewrite an immutable approved snapshot to change schema.
+The legacy field reference below describes schema 1 only.
+
+`verifyDesignHandoff` in `design-verification.mjs` is the implementation gate.
+Its host-created `createDesignVerificationRuntime` receives repository roots and
+roles from the registry/topology, independently selected expected spec/plan and
+Design approval references, and a parser for actual approved artifact files.
+It reads those files, verifies their canonical approval hashes and complete parent
+graph, and binds repository, revision, contract, requirement, and change identity.
+A caller-provided hash, `status`, serialized runtime, or verification result is
+never read/approval evidence. Missing host/verifier/source blocks verification.
+Results separate `structural`, `parents`, `approval`, and `evidence`; PASS means
+the required focused checks passed, not semantic equivalence or blanket UI quality.
+
+The approved spec body supplies `design_requirements` (a JSON object, or a
+`design-requirements` fenced JSON block). It declares `required`, `feature`,
+`experience_kind`, the complete `owner` identity, `surfaces` with `id`,
+`required`, `rendered_required`, `interaction_required`, and `reason` for an
+inapplicable surface. The approved plan cannot waive these requirements. The
+host pins actual artifact references outside the handoff. Missing requirements
+are a limitation; an explicit approved `required: false` with a reason permits
+a non-Design path for that approved semantic owner only. Surface behavior descriptions are design intent; rendered
+and interaction checks require separate current receipts.
+
+The following is the executable schema-2 example. Fixtures substitute only
+environment identities, actual hashes/references, and observed evidence. The
+same payload goes to the structural helper and Angular/Next.js/generic consumers.
+
+<!-- design-handoff-v2-example -->
+```json
+{
+  "metadata": {
+    "schema_version": 2,
+    "artifact_id": "design-handoff:orders",
+    "artifact_kind": "design-handoff",
+    "contract_id": "contract:orders",
+    "requirement_id": "requirement:orders",
+    "change_ref": "orders-change",
+    "track": "design",
+    "stack_profile": "design",
+    "feature": "orders",
+    "experience_kind": "standalone",
+    "owner_repository_id": "github.com/example/orders",
+    "owner_repository_role": "standalone",
+    "owner_module_id": null,
+    "ownership_scope": "repository",
+    "repository_relative_path": ".sdcorejs/docs/design/orders.md",
+    "source_revision": "0000000000000000000000000000000000000000",
+    "parent_references": []
+  },
+  "lifecycle": { "state": "draft" },
+  "documents": [
+    { "path": ".sdcorejs/design/specs/orders.md", "sha256": "<observed sha256>" },
+    { "path": ".sdcorejs/design/flows/orders.md", "sha256": "<observed sha256>" },
+    { "path": ".sdcorejs/design/decisions/orders.md", "sha256": "<observed sha256>" }
+  ],
+  "editable_source": {
+    "status": "available",
+    "path": ".sdcorejs/design/wireframes/orders/list.html",
+    "format": "html",
+    "sha256": "<observed sha256>"
+  },
+  "editable_sources": [],
+  "static_exports": [],
+  "product_screenshots": [],
+  "responsive": { "surfaces": [
+    { "id": "mobile", "applicability": "required", "behavior": "Single-column layout with keyboard and touch access.", "rendered_evidence": null, "interaction_evidence": null }
+  ] },
+  "component_mapping": [],
+  "design_system_reuse": { "inspected": true, "evidence_refs": [], "deviations": [] },
+  "cross_repository_references": [],
+  "production_code_paths": []
+}
+```
+
+Schema-2 `experience_kind` separates module, portal-shell, portal-composition,
+cross-module, standalone, and component-library experiences from registry
+repository roles. Standalone/library use repository ownership; cross-module
+uses its explicit integration owner and actual distinct module references.
+Missing/unwritable owners block; module ownership never falls back to portal.
+The metadata path is the Design ledger; spec/flow/decisions are design assets.
+All assets use canonical depth/extensions, one editable owner, and contained
+real paths in the expected Git root. Full closure includes every feature asset
+observed on disk as well as the ledger; omitting an export is a blocker.
+`editable_source` is the primary editable file; `editable_sources` lists any
+additional screen/state files with the same path/format/status/sha256 fields.
+Each static export's `source_editable_sha256` binds its actual primary or
+additional editable source in this handoff; an unknown source hash is invalid.
+Surface receipts cover the approved surface's `source_paths`, or all editable
+files when that requirement does not narrow the checked source set.
+Real product captures additionally require that surface's approved
+`app_source_paths`. A receipt must cover those application files and the image;
+hashing only the PNG cannot prove a current application capture. Missing app
+scope blocks, and changed app bytes invalidate evidence even at the same HEAD.
+
+Drafts may exist under explicit exploration authority without approved parents.
+They never authorize implementation. A reviewed handoff requires a real loaded
+Design approval at the independently pinned ledger reference. Material changes
+return to the decision/approval owner. A trusted host review may accept content
+hash changes within the already approved scope; it must inspect current bytes,
+confirm unchanged behavior/requirements, and return current fingerprints.
+Payload labels such as `minor` cannot grant that authority. This permits a
+bounded spacing correction without another human approval ceremony.
+For a new material approval, use the existing change-scoped revision lifecycle
+and a new approved bundle identity/feature slug; retain the previous immutable
+approval and its source bundle. Never update a historical approval just to make
+the current payload or schema validate.
+
+Evidence references use `{artifact_ref, approval_hash}` pointing to actual
+`release-evidence` artifacts with contract `design-command-receipt:v2`, pinned
+by the host command/capture runner. Receipt bodies contain nonempty `command`,
+`cwd`, `owner_repository_id`, `exit_code`, `surface_id`, `kind`, `scope`, and
+`fingerprints` of all checked files. `kind` distinguishes `rendered-wireframe`,
+`interaction`, and `real-product-screenshot`; real captures additionally bind
+the app revision and capture provenance. Use the existing approval/evidence
+verifier infrastructure. Never manufacture a receipt to fill an evidence gap.
+Same HEAD with changed content is stale. Generated mockups cannot satisfy real
+product screenshot requirements. Confirmed components and reuse observations
+require actual readable source path/revision/hash references.
+
+Angular/Next.js profile-only resolution remains available but is not production
+eligibility. Their execution resolvers accept a separate trusted runtime argument
+and invoke verification themselves. Generic `prepareExecution` requires the
+same gate for UI tracks or approved artifacts declaring `design_requirements`.
+Portable payloads must be reverified at the consuming host. Visual Companion
+feedback remains supporting feedback and never approval.
+The Design producer's approved plan authorizes artifact creation. Its completed
+handoff is postflight output, not a prerequisite for creating that output.
+
+## Shared artifact layout and legacy compatibility
+
 Use this contract for every durable Design handoff. Its deterministic helper is
 `_refs/shared/design-handoff.mjs`. Resolve track/profile, artifact kind,
 repository role, ownership scope, and canonical artifact roots from
@@ -34,9 +170,9 @@ behavior beyond requirements, or create module code.
 
 Module-specific handoffs live in the module's semantic owner repository. A
 missing, ambiguous, unavailable, or unwritable module owner blocks the write;
-portal fallback is forbidden. The portal owns only portal shell design,
-composition design, and a true cross-module experience. A cross-module handoff
-has one explicit portal/integration owner and references module handoffs by
+portal fallback is forbidden. Portal shell/composition belongs to the portal. Standalone websites/apps and
+component libraries belong to their own registry owners. A cross-module handoff
+has one explicit integration owner and references module handoffs by
 durable repository/artifact/path/revision/hash identity. It never creates a
 duplicate editable module handoff.
 
@@ -45,7 +181,8 @@ duplicate editable module handoff.
 | Operation | Function |
 | --- | --- |
 | Resolve semantic owner and the complete canonical path bundle | `resolveDesignHandoffTarget` |
-| Validate approved parents, source, images, responsive/component evidence, ownership, canonical paths, and hashes | `validateDesignHandoff` |
+| Pure structural validation, never approval or source-read evidence | `validateDesignHandoff` |
+| Actual parents, Design approval, content and applicable evidence | `verifyDesignHandoff` in `design-verification.mjs` |
 | Create a normalized handoff with `artifact_hash` | `createDesignHandoff` |
 | Resolve canonical-first reads with an explicit legacy fallback | `resolveDesignArtifactSources` |
 | Plan a scoped legacy-to-canonical migration | `planDesignArtifactMigration` |
@@ -57,7 +194,7 @@ handoff spec), `ledger_relative_path`, `artifact_root`, `ledger_root`,
 `reference_directory`, and per-screen paths when `screens` is supplied. Callers
 write the Design bundle from that result instead of rebuilding path strings.
 
-## Path Gates
+## Legacy structural path gates
 
 `validateDesignHandoff` fails closed unless every path is canonical:
 
@@ -69,9 +206,9 @@ write the Design bundle from that result instead of rebuilding path strings.
 | `product_screenshots[].path` | `.sdcorejs/design/references/` | `INVALID_PRODUCT_SCREENSHOT_PROVENANCE` plus `LEGACY_DESIGN_ARTIFACT_PATH` |
 | `cross_repository_references[].repository_relative_path` | `.sdcorejs/design/specs/` | `INVALID_CROSS_REPOSITORY_DESIGN_REFERENCE` plus `LEGACY_DESIGN_ARTIFACT_PATH` |
 
-## Lifecycle Identity
+## Legacy schema-1 identity (read-only)
 
-Each handoff uses:
+The compatibility adapter reads this older shape; new handoffs use the schema-2 example above:
 
 ```yaml
 schema_version: 1
@@ -97,8 +234,8 @@ approval_hash: <sha256:v1 identity when applicable | null>
 artifact_hash: sha256:v1:<64 lowercase hex>
 ```
 
-The handoff must verify an approved spec and approved plan. It reads those
-artifacts; it must not mutate approved inputs or silently expand their scope.
+Only the schema-2 verified entrypoint grants implementation eligibility. It reads
+approved artifacts; it must not mutate approved inputs or silently expand scope.
 
 ## Editable Source And Visual Provenance
 
@@ -139,7 +276,7 @@ PNG as the source of truth.
 
 ## Responsive, Components, And Existing Design System
 
-The handoff preserves desktop, tablet, and mobile behavior, including mobile
+The handoff describes approved applicable surfaces, including mobile
 touch/keyboard/safe-area/zoom/reduced-motion considerations. Inspect the
 existing design system before proposing components, tokens, copy patterns, or
 new dependencies. A `confirmed` component mapping requires repository/path/
@@ -191,7 +328,9 @@ directories are not output targets.
 
 ## Cross-Repository References
 
-True cross-module experience references use:
+Schema-2 cross-module references use the actual approved module ledger identity
+below. The host supplies a separate verified runtime for each module; neither
+a caller revision map nor a serialized PASS substitutes for source reads:
 
 ```yaml
 repository_id:
@@ -200,12 +339,12 @@ artifact_id:
 artifact_kind: design-handoff
 repository_relative_path:
 revision:
-artifact_hash:
+approval_hash:
 editable: false
 ```
 
 At least two distinct module sources are required. Every
-`repository_relative_path` must be a canonical `.sdcorejs/design/specs/` path.
+`repository_relative_path` must be a canonical `.sdcorejs/docs/design/<feature>.md` ledger.
 Duplicate identities, editable copies, malformed hashes, legacy root-level paths,
 and revisions that do not match the current repository revision map fail closed.
 

@@ -45,6 +45,23 @@ permission is constrained by `plan_context.allowed_paths`,
 working-tree preflight below.
 
 ## Preconditions
+
+For UI implementation tracks and any approved parent declaring
+`design_requirements`, `prepareExecution` consumes `design_handoff` and a
+separate host-created `design_runtime` from
+`_refs/shared/design-verification.mjs`. It binds that runtime to the exact
+spec/plan hashes already verified here and invokes the full verification path.
+Structural validation never grants implementation authority. A missing source,
+draft, stale parent/content, required surface without evidence, or unverified
+legacy handoff blocks. Generic frontend work must carry Design applicability
+in its approved spec; a recorded approved non-Design reason is the only waiver.
+Preserve complete `artifact_context` and reverify portable handoffs at use.
+
+For the Design producer itself, the approved plan authorizes bounded artifact
+creation; do not require its future completed handoff as a precondition. Run
+Design postflight after authoring and enforce the verified path at the frontend
+implementation boundary. An exploratory Design draft never grants code writes.
+
 - The approved spec and plan snapshots are available as paths or in context.
 - `plan_context` is present, including `approved_spec_hash`,
   `approved_plan_hash`, `target_root_kind`, `stack_profile`, `allowed_paths`,

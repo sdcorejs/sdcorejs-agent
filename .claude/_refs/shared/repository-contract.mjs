@@ -1,3 +1,5 @@
+import { systemRegistry } from './system-registry.mjs';
+
 const ABSOLUTE_WINDOWS_PATH = /^[A-Za-z]:[\\/]/u;
 const GIT_REVISION = /^[a-f0-9]{40}$/u;
 const RESULTS = new Set([
@@ -58,11 +60,24 @@ export function resolveArtifactOwner({
   scope,
   module,
   portal,
+  repository,
   execution_host_repository_id: executionHostRepositoryId,
 }) {
   requiredString(artifactKind, 'artifact_kind');
   requiredString(scope, 'scope');
   requiredString(executionHostRepositoryId, 'execution_host_repository_id');
+  if (scope === 'repository' || (scope === 'cross-repository-aggregate' && repository)) {
+    requiredString(repository?.repository_id, 'repository.repository_id');
+    if (!systemRegistry.repository_roles.includes(repository.role)) throw new TypeError('unknown repository role');
+    if (repository.role === 'module') throw new TypeError('module artifacts require module ownership');
+    return {
+      artifact_kind: artifactKind,
+      owner_repository_id: repository.repository_id,
+      owner_repository_role: repository.role,
+      owner_module_id: null,
+      execution_host_repository_id: executionHostRepositoryId,
+    };
+  }
   if (scope === 'module') {
     requiredString(module?.id, 'module.id');
     requiredString(module?.repository_id, 'module.repository_id');

@@ -19,6 +19,16 @@ forward `requirement_context.visual_companion` through `context.pass`
 
 Read `../_refs/shared/runtime-protocols.md` and `../_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through the finishing tail.
 
+For required Design input, load `../_refs/shared/design-handoff.md` and use
+`resolveNextjsExecution(request, { design_runtime })` with the host-created
+runtime from `../_refs/shared/design-verification.mjs`. It reads pinned actual
+approved parents and Design approval, verifies applicable evidence, and checks
+current content. Profile-only resolution has no write target or production
+eligibility. A missing handoff, structural PASS, draft, legacy payload or cached
+verification result cannot waive Design requirements. Derive responsive surfaces
+from approved requirements; behavior descriptions do not prove rendered checks.
+Only an explicit approved non-UI reason permits the non-Design path.
+
 ## Purpose
 Single entry point for generating approved Next.js website code. This skill is the
 dispatch layer between an approved plan from `sdcorejs-execute-plan` and the

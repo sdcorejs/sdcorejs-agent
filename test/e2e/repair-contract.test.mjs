@@ -1,3 +1,5 @@
+import { simplifyFixture } from './support/simplify-contract-fixture.mjs';
+import { evaluateSimplifyPreflight } from '../../_refs/simplify/simplify-contract.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
@@ -1164,4 +1166,20 @@ test('canonical repair workflow exposes external feedback mode without a new pub
   assert.match(reference, /understand.*re-read.*verify.*classify.*write tier.*re-run.*pushback/is);
   assert.match(reference, /correct.*VALID.*stale.*STALE.*not-applicable.*MIS-SCOPED.*unclear.*UNCLEAR.*conflicting.*CONFLICTING/is);
   assert.match(reference, /public API rename.*migration.*compatibility/is);
+});
+
+
+test('case-simplify-hardening-ac-009 repair preserves simplify context and closes recursion', async t => {
+  const f = await simplifyFixture(t, { session: { repository_id: OWNER_REPOSITORY_ID } });
+  const result = f.finish(f.preflight());
+  const c = contract({ simplify_context: result.context });
+  const original = structuredClone(c.simplify_context);
+  const repaired = evaluateRepairContract(c, f.runtime);
+  assert.equal(repaired.repair_authorized, true, JSON.stringify(repaired));
+  assert.deepEqual(repaired.simplify_context, original);
+  assert.equal(repaired.simplify_again_allowed, false);
+  Object.assign(f.context, result.context, { phase: 'preflight', preflight_ref: null });
+  f.context.baseline.snapshot = f.session.captureSnapshot();
+  f.context.verification.before = [f.session.runVerification(f.command)];
+  assert.equal(evaluateSimplifyPreflight(f.context, f.runtime).write_authorized, false);
 });

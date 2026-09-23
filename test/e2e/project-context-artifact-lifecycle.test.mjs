@@ -12,6 +12,24 @@ import {
 import { tmpdir } from 'node:os';
 import path, { join } from 'node:path';
 import test from 'node:test';
+import { designFixture } from './support/design-handoff-fixture.mjs';
+
+test('case-design-scope-inventory-contract: approved sources remain immutable and closure carries all observed outputs', async t => {
+  const { verifyDesignHandoff } = await import('../../_refs/shared/design-verification.mjs');
+  const f = designFixture(t), options = f.options();
+  const sources = [options.expected.spec, options.expected.plan, options.expected.design];
+  const before = sources.map(ref => f.read(ref.repository_relative_path));
+  const result = verifyDesignHandoff(f.handoff, { runtime: await f.runtime() });
+  assert.equal(result.verified, true, JSON.stringify(result));
+  assert.deepEqual(sources.map(ref => f.read(ref.repository_relative_path)), before);
+  assert.deepEqual(new Set(result.artifact_context.required_with_change.map(entry => entry.path)), new Set([...f.handoff.documents.map(asset => asset.path), f.handoff.editable_source.path, f.handoff.metadata.repository_relative_path]));
+  f.put('.sdcorejs/design/wireframes/orders/forgotten.svg', '<svg/>');
+  assert.equal(verifyDesignHandoff(f.handoff, { runtime: await f.runtime() }).verified, false);
+  const { digest } = await import('./support/design-handoff-fixture.mjs');
+  f.handoff.editable_sources.push({ status: 'available', path: '.sdcorejs/design/wireframes/orders/forgotten.svg', format: 'svg', sha256: digest('<svg/>') });
+  f.approveDesign();
+  assert.equal(verifyDesignHandoff(f.handoff, { runtime: await f.runtime() }).verified, true);
+});
 import { promisify } from 'node:util';
 import { deflateSync } from 'node:zlib';
 import {

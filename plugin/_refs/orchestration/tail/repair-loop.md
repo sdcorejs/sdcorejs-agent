@@ -116,7 +116,11 @@ Rules:
   only the failed criterion.
 - If the source is `linter`, `typecheck`, or `test`, re-run the discovered
   original commands where possible.
-- If `simplify_context` is present, preserve its original selected files/hunks,
+- If `simplify_context` is present, use the canonical v2 schema and
+  `evaluateSimplifyConsumer` from `_refs/simplify/simplify-contract.mjs` with the
+  trusted host session. Record the terminal repair event using
+  `session.recordRepair()`; no payload depth/empty ledger can reset it.
+  Preserve its original selected files/hunks,
   preserved surfaces, baseline commands, and pass ledger. A repair write makes
   affected simplification and test/review evidence stale. Re-run the affected
   focused commands and do not start another simplification pass automatically.

@@ -41,8 +41,10 @@ Use `planning-handoff` for:
 - caching, retry, timeout, concurrency, transaction, or persistence-policy
   changes;
 - agent/tool/prompt/approval/session/evidence/eval contract changes;
-- user-visible behavior changes;
-- scope without a suitable verification oracle.
+- user-visible behavior changes.
+
+Scope without a suitable behavior/preservation oracle defaults to Analyze-only.
+Creating or changing the oracle belongs to its owning workflow, outside simplify.
 
 ## Scope resolution
 
@@ -60,9 +62,17 @@ changed hunks, not whole files merely because they contain one changed hunk.
 Do not assume `origin/main` is the diff baseline. Prefer same-change execution
 evidence and distinguish user-owned changes from current-workflow edits.
 
-Adjacent untouched code may change only when compilation or a local invariant
-requires it. Record the path, hunk, reason, and verification impact. Never use
-adjacency as permission for opportunistic cleanup.
+Adjacent untouched code requires recorded path/hunk, reason, verification
+impact and fresh approval from the user and plan owner when applicable. Return
+to planning for expansion; a self-declared expansion is not permission.
+
+The executable v2 preflight derives the intersection of trusted user scope,
+approved plan paths, source eligibility and observed current-diff hunks.
+Postflight checks the entire observed diff, including paths omitted by the agent.
+Use strict relative paths and actual Git-root/realpath containment. Unknown
+ownership, symlinks, nested repositories or hunk mappings fail closed. Preserve
+user-owned changes; a green test never authorizes their overwrite. See the
+canonical schema and host API in `verification.md`.
 
 ## Execution limits
 
@@ -163,8 +173,12 @@ Never alter the literal and then update its test oracle to hide behavior drift.
 
 ## Preserved surfaces
 
-Record applicable fields before edits. Use `not-applicable`, never silent
-omission, for important surfaces that do not apply.
+Record applicability before edits; schema v2 starts these fields as `pending`.
+The trusted preservation adapter checks actual before/after bytes and supplies
+content-bound reasons. Only postflight issues verified statuses. Use
+`not-applicable`, never silent omission, for surfaces that do not apply.
+This list describes preservation obligations; `verification.md` owns the runtime
+schema. Agent-declared statuses are not evidence.
 
 ```yaml
 preserved_surfaces:

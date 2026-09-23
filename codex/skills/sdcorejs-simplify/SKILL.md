@@ -21,7 +21,7 @@ description: Behavior-preserving code simplification utility for recently change
 4. Apply `../_refs/shared/artifact-lifecycle.md` only when an explicitly requested
    durable report is necessary. Never create a mutable session/checkpoint.
 5. Read `../_refs/shared/user-choice-prompt.md` before any user-facing choice or
-   write-mode override.
+   scope/authority decision.
 6. Localize runtime prose. Keep identifiers, commands, paths, and reusable
    source English.
 
@@ -136,9 +136,12 @@ Apply actions require current baseline verification:
 4. Reuse `test_context` evidence only when it covers the same current diff and
    selected hunks and is not stale.
 
-If no runnable behavior oracle exists, downgrade to analyze-only. Write mode
-requires a separate explicit override after warning and must report
-`behavior_verification: limited`; never call it verified behavior preservation.
+Use schema 2 and the trusted host session in `../_refs/simplify/verification.md`.
+`evaluateSimplifyPreflight` checks current before receipts and grants only the
+intersection of user, approved-plan and eligible source/hunk authority. It does
+not require after receipts. Missing behavior/preservation oracle means
+Analyze-only; no limited-write override exists. Legacy v1 contexts remain
+read-only and cannot satisfy current verification.
 
 ## Step 5 - Apply bounded passes
 
@@ -147,15 +150,20 @@ patterns in the scope reference.
 
 For each pass:
 
-1. Capture the exact pre-pass diff/snippets for the selected hunks.
-2. Apply the smallest clarity improvement inside scope.
+1. Capture the whole repository snapshot and selected pre-pass hunks through
+   `createSimplifyEvidenceSession`; keep raw bytes local-only.
+2. Use the issued preflight reference with `session.applyEdits`. Recheck actual
+   scope and baseline at the edit boundary; preserve user-owned changes.
 3. Preserve protected literals, contracts, ordering, metadata, and dependency
    boundaries.
 4. Run the matching focused post-change verification.
-5. Inspect the diff for scope or protected-surface drift.
+5. Call `evaluateSimplifyPostflight` with real after receipts. It checks all
+   observed writes, including omitted/generated/protected paths, preservation
+   and content freshness. Postflight cannot authorize edits retrospectively.
 6. If the pass regresses, undo only that pass with exact scoped edits from the
    pre-pass snapshot; never use destructive Git restore.
-7. Stop when no clear improvement remains.
+7. Copy the host-owned pass ledger. Never reset history to bypass the cap.
+   Stop when no clear improvement remains. After repair, never run simplify again.
 
 ## Step 6 - Finalize evidence
 

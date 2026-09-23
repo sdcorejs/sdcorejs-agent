@@ -1,5 +1,29 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { designFixture } from './support/design-handoff-fixture.mjs';
+
+test('case-design-real-consumer-enforcement: Next.js revalidates draft and missing handoffs', async t => {
+  const { resolveNextjsExecution } = await import('../../_refs/nextjs/execution-contract.mjs');
+  const f = designFixture(t), runtime = await f.runtime();
+  const request = { project_profile: 'nextjs-build-website', execution_profile: 'developer', website_profile: 'basic', explicit_profile_approval: true, scope: 'site', site: { repository_id: f.repo }, execution_host_repository_id: f.repo, design_handoff: f.handoff };
+  assert.equal(resolveNextjsExecution(request, { design_runtime: runtime }).production_eligible, true);
+  assert.equal(resolveNextjsExecution({ ...request, design_handoff: undefined }, { design_runtime: runtime }).status, 'blocked');
+  f.handoff.lifecycle.state = 'draft';
+  assert.equal(resolveNextjsExecution(request, { design_runtime: runtime }).status, 'blocked');
+  assert.equal(resolveNextjsExecution({ ...request, design_verification: { verified: true } }).production_eligible, false);
+});
+
+test('only a loaded approved non-Design applicability reason can waive the handoff', async t => {
+  const { resolveNextjsExecution } = await import('../../_refs/nextjs/execution-contract.mjs');
+  const f = designFixture(t);
+  f.requirements.required = false; f.requirements.reason = 'Approved server-only maintenance without UI changes.'; f.parents();
+  const request = { project_profile: 'nextjs-build-website', execution_profile: 'developer', website_profile: 'basic', explicit_profile_approval: true, scope: 'site', site: { repository_id: f.repo }, execution_host_repository_id: f.repo };
+  const runtime = await f.runtime();
+  assert.equal(resolveNextjsExecution(request, { design_runtime: runtime }).production_eligible, true);
+  assert.equal(resolveNextjsExecution({ ...request, site: { repository_id: 'github.com/foreign/site' } }, { design_runtime: runtime }).status, 'blocked', 'non-Design applicability is scoped to its approved owner');
+  delete f.requirements.reason; f.parents();
+  assert.equal(resolveNextjsExecution(request, { design_runtime: await f.runtime() }).status, 'blocked');
+});
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -25,7 +49,8 @@ test('basic Next.js profile does not infer i18n, contact, analytics, CMS, or adv
     requested_features: ['init-site', 'theme', 'pages', 'responsive'],
   });
   assert.equal(result.status, 'resolved');
-  assert.equal(result.production_eligible, true);
+  assert.equal(result.production_eligible, false);
+  assert.equal(result.write_target, null);
   for (const feature of [
     'i18n',
     'contact-form',

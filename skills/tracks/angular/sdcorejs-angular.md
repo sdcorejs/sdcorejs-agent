@@ -22,6 +22,16 @@ forward `requirement_context.visual_companion` through `context.pass`
 
 Read `_refs/shared/runtime-protocols.md` and `_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through the finishing tail.
 
+For required Design input, load `_refs/shared/design-handoff.md` and use
+`resolveAngularExecution(request, { design_runtime })`. The host runtime pins
+actual spec/plan/Design approval sources and runner evidence through
+`_refs/shared/design-verification.mjs`; the resolver calls the verified path.
+Profile-only resolution has no write target or production eligibility. An
+omitted handoff, schema-valid draft, legacy payload, or serialized PASS cannot
+waive an approved Design requirement. Preserve full artifact closure and
+reverify fingerprints after source changes. An approved non-UI applicability
+reason can explicitly take the non-Design path; do not invent one.
+
 ## Purpose
 
 Generate SDCoreJS/Core UI Angular portal code from an approved `sdcorejs-execute-plan`

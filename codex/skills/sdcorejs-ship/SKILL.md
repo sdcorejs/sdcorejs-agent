@@ -408,16 +408,19 @@ zero-tolerance gate blocks readiness.
 
 ## Simplification delivery evidence
 
-When `simplify_context` is present, freshness-check its diff-scope hash,
-selected files/hunks, preserved surfaces, baseline commands, pass ledger,
-post-change commands, and current test/review association.
+When `simplify_context` is present, use the canonical v2 schema in
+`../_refs/simplify/verification.md` and `evaluateSimplifyConsumer` with the trusted
+host session. Check actual content fingerprint, owner/root, selected files/hunks,
+preservation receipts, pass ledger and current test/review association.
+Same HEAD and a portable hash alone do not establish freshness.
 
 Block readiness when any simplification write has stale post-simplification evidence,
 `behavior_verification: not-verified`, protected strings/prompts/contracts
-changed, public API/config/dependency drift occurred outside approved scope, a
+changed, public API/config/dependency drift occurred, a
 failed pass was not reverted, or affected test/review evidence is stale.
-`behavior_verification: limited` requires an explicit risk and deferral; never
-describe it as verified behavior preservation.
+Legacy `behavior_verification: limited` is read-only/unverified compatibility
+input and cannot satisfy this gate. There is no v2 limited-write override.
+PASS reports the focused commands that ran, not semantic equivalence.
 
 ## Secret And PII Redaction
 

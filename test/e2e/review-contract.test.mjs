@@ -1,3 +1,4 @@
+import { simplifyFixture, sourcePath, originalSource } from './support/simplify-contract-fixture.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
@@ -154,4 +155,14 @@ test('mutated approval hash and unsupported review profiles fail closed', () => 
   );
   assert.equal(unsupported.status, 'blocked');
   assert.match(unsupported.blockers.join(' '), /does not match registry profile/iu);
+});
+
+
+test('case-simplify-hardening-ac-010 review checks actual simplify freshness', async t => {
+  const f = await simplifyFixture(t); const result = f.finish(f.preflight());
+  const c = context({ owner_repository_id: result.context.artifact_identity.owner_repository_id, simplify_context: result.context });
+  assert.equal(evaluateReviewContract(c, f.runtime).status, 'reviewed');
+  assert.equal(evaluateReviewContract(c).status, 'blocked');
+  f.write(sourcePath, originalSource);
+  assert.match(evaluateReviewContract(c, f.runtime).blockers.join(' '), /stale/u);
 });

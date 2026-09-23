@@ -1,3 +1,5 @@
+import { evaluateSimplifyConsumer } from '../simplify/simplify-contract.mjs';
+import { resolveEvidenceArtifact } from '../shared/evidence-artifact.mjs';
 import { systemRegistry } from '../shared/system-registry.mjs';
 import { verifyApprovedArtifact } from '../shared/approved-artifact.mjs';
 
@@ -83,40 +85,6 @@ function migrationDecisionIdentity(proposedChange) {
   };
 }
 
-function resolveEvidenceArtifact(reference, artifacts, contractId, blockers, label) {
-  if (
-    !isObject(reference) ||
-    !safeRelativePath(reference.artifact_ref) ||
-    !APPROVAL_HASH.test(reference.approval_hash ?? '')
-  ) {
-    blockers.push(`${label} must be a canonical artifact reference and approval hash`);
-    return null;
-  }
-  if (!Array.isArray(artifacts)) {
-    blockers.push(`${label} requires a trusted loaded evidence artifact collection`);
-    return null;
-  }
-  const matches = artifacts.filter((artifact) =>
-    artifact?.metadata?.repository_relative_path === reference.artifact_ref);
-  if (matches.length !== 1) {
-    blockers.push(`${label} artifact is missing or ambiguous: ${reference.artifact_ref}`);
-    return null;
-  }
-  try {
-    const artifact = matches[0];
-    const verified = verifyApprovedArtifact(artifact);
-    if (artifact.metadata.approval_hash !== reference.approval_hash) throw new Error('artifact hash mismatch');
-    if (verified.metadata.artifact_kind !== 'release-evidence' || verified.metadata.contract_id !== contractId) {
-      throw new Error(`expected ${contractId}`);
-    }
-    const body = JSON.parse(artifact.body);
-    if (!isObject(body)) throw new Error('artifact body must be a JSON object');
-    return { body, metadata: verified.metadata };
-  } catch (error) {
-    blockers.push(`${label} artifact is invalid or stale: ${error?.message ?? String(error)}`);
-    return null;
-  }
-}
 
 function resolveRepositorySnapshot(reference, artifacts, repositoryId, blockers) {
   const resolved = resolveEvidenceArtifact(
@@ -647,7 +615,7 @@ function validateAttemptIntegrity(attempt, {
   );
 }
 
-export function evaluateRepairContract(contract = {}) {
+export function evaluateRepairContract(contract = {}, runtime = {}) {
   contract = isObject(contract) ? contract : {};
   const blockers = [];
   const identity = isObject(contract?.artifact_identity) ? contract.artifact_identity : {};
@@ -760,6 +728,12 @@ export function evaluateRepairContract(contract = {}) {
     }
   }
 
+  const simplify = contract.simplify_context === undefined ? null : evaluateSimplifyConsumer(contract.simplify_context, { ...runtime, consumer: 'sdcorejs-repair-loop' });
+  if (simplify) {
+    blockers.push(...simplify.blockers.map(message => `simplify: ${message}`));
+    if (identity.owner_repository_id !== contract.simplify_context?.artifact_identity?.owner_repository_id) blockers.push('simplify: repair owner mismatch');
+    if (blockers.length === 0) runtime.session.recordRepair();
+  }
   const latestResult = attemptResults.at(-1) ?? null;
   const unresolved = latestResult !== 'PASSED';
   return {
@@ -768,6 +742,7 @@ export function evaluateRepairContract(contract = {}) {
     subject_track: contract?.subject_track ?? null,
     status: blockers.length > 0 ? 'blocked' : unresolved ? 'repairing' : 'resolved',
     repair_authorized: blockers.length === 0,
+    ...(simplify ? { simplify, simplify_context: structuredClone(contract.simplify_context), simplify_again_allowed: false } : {}),
     owner_repository_id: identity.owner_repository_id ?? null,
     execution_host_repository_id: identity.execution_host_repository_id ?? null,
     attempts_used: Array.isArray(attempts) ? attempts.length : 0,

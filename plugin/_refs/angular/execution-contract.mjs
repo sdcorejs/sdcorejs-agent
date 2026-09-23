@@ -1,5 +1,6 @@
 import { resolveRequirementOwnership } from '../shared/repository-contract.mjs';
 import { systemRegistry } from '../shared/system-registry.mjs';
+import { evaluateDesignExecution } from '../shared/design-verification.mjs';
 
 const ANGULAR_PROJECT_PROFILES = new Set([
   'core-ui-angular',
@@ -44,7 +45,7 @@ function validateProfile(profile, field) {
   return null;
 }
 
-export function resolveAngularExecution(request) {
+export function resolveAngularExecution(request, { design_runtime } = {}) {
   const projectProfile = request?.project_profile;
   const executionProfile = request?.execution_profile;
   const executionHostRepositoryId = request?.execution_host_repository_id;
@@ -137,12 +138,16 @@ export function resolveAngularExecution(request) {
     return blocked([`unsupported Angular ownership scope: ${request.scope}`]);
   }
 
+  const design = evaluateDesignExecution(request.design_handoff, { runtime: design_runtime, ...identity });
+  if (design_runtime && !design.verified) return blocked(design.blockers, identity);
   return {
     status: 'resolved',
-    production_eligible: executionProfile === 'developer',
+    production_eligible: executionProfile === 'developer' && design.verified,
     project_profile: projectProfile,
     execution_profile: executionProfile,
     ...identity,
+    write_target: design.verified ? identity.write_target : null,
+    design_verification: design,
     approved_optional_features: [...requestedOptional].sort(),
     blockers: [],
   };

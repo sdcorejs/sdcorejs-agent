@@ -1,3 +1,4 @@
+import { evaluateSimplifyConsumer } from '../simplify/simplify-contract.mjs';
 import {
   CONSISTENCY_FINDING_KINDS,
   validateConsistencyFinding,
@@ -60,8 +61,16 @@ function finding(id, severity, kind, observation, requiredFix) {
   };
 }
 
-export function evaluateReviewContract(context) {
+export function evaluateReviewContract(context, runtime = {}) {
   const blockers = [];
+  const simplify = context?.simplify_context === undefined ? null : evaluateSimplifyConsumer(context.simplify_context, { ...runtime, consumer: 'sdcorejs-review' });
+  if (simplify) {
+    blockers.push(...simplify.blockers.map(message => `simplify: ${message}`));
+    if (context.owner_repository_id !== context.simplify_context?.artifact_identity?.owner_repository_id) blockers.push('simplify: review owner mismatch');
+    for (const evidence of context.test_evidence ?? []) {
+      if (evidence.repository_id === simplify.owner_repository_id && evidence.source_fingerprint !== simplify.source_fingerprint) blockers.push('simplify: affected test evidence is stale');
+    }
+  }
   const track = systemRegistry.tracks.find(({ id }) => id === context?.subject_track);
   if (context?.schema_version !== 1) blockers.push('review schema_version must be 1');
   if (!track) {
@@ -299,6 +308,7 @@ export function evaluateReviewContract(context) {
     review_profile: context?.review_profile ?? null,
     owner_repository_id: context?.owner_repository_id ?? null,
     execution_host_repository_id: context?.execution_host_repository_id ?? null,
+    ...(simplify ? { simplify } : {}),
     requested_dimensions: [...requestedDimensions],
     consistency_scope: consistency.scope,
     consistency_scope_reason: consistency.reason,

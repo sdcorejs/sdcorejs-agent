@@ -108,7 +108,11 @@ attempts, and repaired evidence linkage.
   make a finding disappear, and pass the final `convention_context` to the
   separate convention sync step.
 - When `simplify_context` is present, preserve the original
-  `simplify_context` exactly. Do not turn behavior-preserving refinement into a
+  `simplify_context` exactly. Validate its v2 schema through
+  `evaluateSimplifyConsumer` and the trusted session; rollback an unverified
+  failed pass before repair. Record `session.recordRepair()` at authorized repair
+  entry, retain history, and never invoke simplify after repair. Use the canonical
+  `_refs/simplify/verification.md` contract. Do not turn refinement into a
   semantic refactor, widen its scope, or change protected contracts. Every
   repair write makes affected simplification/test/review evidence stale and
   requires the source-specific verification to run again. Architecture or

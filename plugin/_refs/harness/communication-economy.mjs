@@ -1,3 +1,4 @@
+import { validateSimplifyContext } from '../simplify/simplify-contract.mjs';
 import { isDeepStrictEqual } from 'node:util';
 import {
   validateDispatchContext,
@@ -375,7 +376,13 @@ export const CONSUMER_REQUIRED_FIELD_KINDS = deepFreeze({
   },
   simplify_context: {
     schema_version: 'number',
-    'baseline.commands': 'array',
+    baseline: 'object',
+    'verification.before': 'array',
+    'verification.after': 'array',
+    artifact_identity: 'object',
+    approved_plan_step: 'nullable-object',
+    preflight_ref: 'nullable-object',
+    limits: 'object',
     scope: 'object',
     preserved_surfaces: 'object',
     passes: 'array',
@@ -827,54 +834,11 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
     ],
   },
   simplify_context: {
-    'sdcorejs-test': [
-      'schema_version',
-      'action',
-      'target_root',
-      'target_root_kind',
-      'baseline.HEAD',
-      'baseline.diff_scope_hash',
-      'baseline.commands',
-      'scope',
-      'preserved_surfaces',
-      'passes',
-      'result',
-      'verification',
-      'artifact_context',
-    ],
-    'sdcorejs-review': [
-      'schema_version',
-      'action',
-      'baseline.HEAD',
-      'baseline.diff_scope_hash',
-      'scope',
-      'preserved_surfaces',
-      'passes',
-      'result',
-      'verification',
-      'artifact_context',
-    ],
-    'sdcorejs-ship': [
-      'schema_version',
-      'action',
-      'baseline.HEAD',
-      'baseline.diff_scope_hash',
-      'scope',
-      'preserved_surfaces',
-      'passes',
-      'result',
-      'verification',
-      'artifact_context',
-    ],
-    'sdcorejs-git': [
-      'schema_version',
-      'action',
-      'baseline.HEAD',
-      'baseline.diff_scope_hash',
-      'result.files_changed',
-      'verification',
-      'artifact_context',
-    ],
+    'sdcorejs-test': ['schema_version', 'source', 'phase', 'session_id', 'action', 'invocation', 'artifact_identity', 'source_revision', 'approved_plan_step', 'target_root', 'target_root_kind', 'baseline', 'preflight_ref', 'scope', 'preserved_surfaces', 'limits', 'passes', 'result', 'verification', 'artifact_context', 'verification.before', 'verification.after', 'result.files_changed'],
+    'sdcorejs-review': ['schema_version', 'source', 'phase', 'session_id', 'action', 'invocation', 'artifact_identity', 'source_revision', 'approved_plan_step', 'target_root', 'target_root_kind', 'baseline', 'preflight_ref', 'scope', 'preserved_surfaces', 'limits', 'passes', 'result', 'verification', 'artifact_context', 'verification.before', 'verification.after', 'result.files_changed'],
+    'sdcorejs-repair-loop': ['schema_version', 'source', 'phase', 'session_id', 'action', 'invocation', 'artifact_identity', 'source_revision', 'approved_plan_step', 'target_root', 'target_root_kind', 'baseline', 'preflight_ref', 'scope', 'preserved_surfaces', 'limits', 'passes', 'result', 'verification', 'artifact_context', 'verification.before', 'verification.after', 'result.files_changed'],
+    'sdcorejs-ship': ['schema_version', 'source', 'phase', 'session_id', 'action', 'invocation', 'artifact_identity', 'source_revision', 'approved_plan_step', 'target_root', 'target_root_kind', 'baseline', 'preflight_ref', 'scope', 'preserved_surfaces', 'limits', 'passes', 'result', 'verification', 'artifact_context', 'verification.before', 'verification.after', 'result.files_changed'],
+    'sdcorejs-git': ['schema_version', 'source', 'phase', 'session_id', 'action', 'invocation', 'artifact_identity', 'source_revision', 'approved_plan_step', 'target_root', 'target_root_kind', 'baseline', 'preflight_ref', 'scope', 'preserved_surfaces', 'limits', 'passes', 'result', 'verification', 'artifact_context', 'verification.before', 'verification.after', 'result.files_changed'],
   },
   ship_context: {
     'sdcorejs-git': [
@@ -1787,6 +1751,9 @@ function validateFieldKind(kind, value) {
 
 function validateContextSemantics(contextType, consumer, context) {
   const errors = [];
+  if (contextType === 'simplify_context') {
+    errors.push(...validateSimplifyContext(context).blockers.map(message => `simplify_context: ${message}`));
+  }
   if (contextType === 'test_context' && context.redaction_applied !== true) {
     errors.push(`${contextType} invalid required field for ${consumer}: redaction_applied must record true`);
   }

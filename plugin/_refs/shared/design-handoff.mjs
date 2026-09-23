@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
 import {
   CANONICAL_DESIGN_HANDOFF_PREFIX,
+  classifyDesignArtifactPath,
+  safeDesignPath,
   CANONICAL_DESIGN_PNG_EXPORT_PREFIX,
   CANONICAL_DESIGN_REFERENCE_PREFIX,
   CANONICAL_DESIGN_WIREFRAME_PREFIX,
@@ -30,6 +32,75 @@ const EXPERIENCE_SCOPES = new Set([
   'portal-composition',
   'cross-module',
 ]);
+const EXPERIENCE_KINDS = new Set([...EXPERIENCE_SCOPES, 'standalone', 'component-library']);
+
+function designMember(value, category, feature) {
+  if (!safeDesignPath(value)) return false;
+  const result = classifyDesignArtifactPath(value);
+  return result.ok && result.location === 'canonical' &&
+    (category === 'ledger' ? result.kind === 'design-handoff' : result.category === category) &&
+    (!feature || result.feature === feature);
+}
+
+function validateV2(handoff, errors) {
+  const m = handoff.metadata ?? {};
+  for (const field of ['artifact_id', 'contract_id', 'requirement_id', 'change_ref', 'owner_repository_id']) requiredString(m[field], `metadata.${field}`, errors);
+  if (m.artifact_kind !== 'design-handoff' || m.track !== 'design' || m.stack_profile !== 'design') errors.push({ code: 'INVALID_DESIGN_IDENTITY' });
+  if (!SAFE_FEATURE.test(m.feature ?? '') || !designMember(m.repository_relative_path, 'ledger', m.feature)) errors.push({ code: 'INVALID_DESIGN_HANDOFF_PATH' });
+  if (!EXPERIENCE_KINDS.has(m.experience_kind)) errors.push({ code: 'UNKNOWN_DESIGN_EXPERIENCE_KIND' });
+  if (!systemRegistry.repository_roles.includes(m.owner_repository_role) || !systemRegistry.ownership_scopes.includes(m.ownership_scope)) errors.push({ code: 'UNKNOWN_DESIGN_OWNER' });
+  if (!GIT_REVISION.test(m.source_revision ?? '')) errors.push({ code: 'INVALID_DESIGN_SOURCE_REVISION' });
+  const moduleOwned = m.owner_repository_role === 'module';
+  if (moduleOwned ? !m.owner_module_id || m.ownership_scope !== 'module' : m.owner_module_id !== null || m.ownership_scope === 'module') errors.push({ code: 'DESIGN_OWNER_SCOPE_MISMATCH' });
+  const expectedScope = m.experience_kind === 'module' ? 'module' : m.experience_kind === 'cross-module' ? 'cross-repository-aggregate' : ['portal-shell', 'portal-composition'].includes(m.experience_kind) ? 'portal-composition' : 'repository';
+  if (m.ownership_scope !== expectedScope) errors.push({ code: 'DESIGN_OWNER_SCOPE_MISMATCH' });
+  if ((m.experience_kind === 'module' && !moduleOwned) || (m.experience_kind?.startsWith?.('portal-') && m.owner_repository_role !== 'portal') || (m.experience_kind === 'standalone' && m.owner_repository_role !== 'standalone') || (m.experience_kind === 'component-library' && m.owner_repository_role !== 'library') || (m.experience_kind === 'cross-module' && m.ownership_scope !== 'cross-repository-aggregate')) errors.push({ code: 'DESIGN_EXPERIENCE_OWNER_MISMATCH' });
+  if (!['draft', 'reviewed'].includes(handoff.lifecycle?.state)) errors.push({ code: 'INVALID_DESIGN_LIFECYCLE' });
+  if (!Array.isArray(m.parent_references)) errors.push({ code: 'INVALID_DESIGN_PARENT_REFERENCES' });
+  else {
+    for (const ref of m.parent_references) validateReference(ref, 'parent_references', errors, { artifact: true, approval: true });
+    if (handoff.lifecycle?.state !== 'draft' && !['spec', 'plan'].every(kind => m.parent_references.some(ref => ref.artifact_kind === kind))) errors.push({ code: 'MISSING_APPROVED_SPEC_OR_PLAN' });
+  }
+  const asset = (value, category) => {
+    if (!designMember(value?.path, category, m.feature) || !CONTENT_HASH.test(value?.sha256 ?? '')) errors.push({ code: 'INVALID_DESIGN_ASSET', path: value?.path });
+  };
+  if (!Array.isArray(handoff.documents) || handoff.documents.length !== 3) errors.push({ code: 'MISSING_DESIGN_DOCUMENTS' });
+  for (const category of ['spec', 'flow', 'decisions']) {
+    const values = handoff.documents?.filter(value => designMember(value?.path, category, m.feature)) ?? [];
+    if (values.length !== 1) errors.push({ code: 'MISSING_DESIGN_DOCUMENT', category });
+    else asset(values[0], category);
+  }
+  asset(handoff.editable_source, 'wireframe');
+  if (handoff.editable_source?.status !== 'available' || !['html', 'svg'].includes(handoff.editable_source?.format) || !handoff.editable_source?.path?.endsWith(`.${handoff.editable_source.format}`)) errors.push({ code: 'EDITABLE_SOURCE_UNAVAILABLE' });
+  if (!Array.isArray(handoff.editable_sources)) errors.push({ code: 'INVALID_EDITABLE_SOURCES' });
+  else for (const source of handoff.editable_sources) {
+    asset(source, 'wireframe');
+    if (source?.status !== 'available' || !['html', 'svg'].includes(source?.format) || !source.path?.endsWith(`.${source.format}`)) errors.push({ code: 'INVALID_EDITABLE_SOURCE_FORMAT' });
+  }
+  const editableHashes = new Set([handoff.editable_source, ...(Array.isArray(handoff.editable_sources) ? handoff.editable_sources : [])].map(source => source?.sha256));
+  for (const [field, category] of [['static_exports', 'png_export'], ['product_screenshots', 'reference']]) {
+    if (!Array.isArray(handoff[field])) { errors.push({ code: 'INVALID_DESIGN_VISUALS', field }); continue; }
+    for (const value of handoff[field]) {
+      asset(value, category);
+      if (field === 'static_exports' ? !['generated-mockup', 'illustration'].includes(value.classification) || !editableHashes.has(value.source_editable_sha256) : value.classification !== 'real-product-screenshot' || !value.evidence_ref) errors.push({ code: 'INVALID_DESIGN_VISUAL_PROVENANCE', field });
+    }
+  }
+  const surfaces = handoff.responsive?.surfaces;
+  if (!Array.isArray(surfaces) || new Set(surfaces.map(s => s.id)).size !== surfaces.length) errors.push({ code: 'INVALID_DESIGN_SURFACES' });
+  else for (const s of surfaces) {
+    requiredString(s.id, 'surface.id', errors);
+    if (!['required', 'not-applicable'].includes(s.applicability)) errors.push({ code: 'INVALID_SURFACE_APPLICABILITY' });
+    requiredString(s.applicability === 'required' ? s.behavior : s.reason, 'surface.behavior_or_reason', errors);
+  }
+  if (!Array.isArray(handoff.component_mapping)) errors.push({ code: 'INVALID_COMPONENT_MAPPING' });
+  else for (const component of handoff.component_mapping) {
+    if (!['confirmed', 'candidate', 'unknown', 'new'].includes(component.status)) errors.push({ code: 'INVALID_COMPONENT_STATUS' });
+    if (component.status === 'confirmed' && !component.evidence_refs?.length) errors.push({ code: 'CONFIRMED_COMPONENT_REQUIRES_SOURCE' });
+  }
+  if (!handoff.design_system_reuse || !Array.isArray(handoff.design_system_reuse.evidence_refs) || !Array.isArray(handoff.design_system_reuse.deviations)) errors.push({ code: 'INVALID_DESIGN_REUSE' });
+  if (!Array.isArray(handoff.cross_repository_references)) errors.push({ code: 'INVALID_CROSS_REPOSITORY_DESIGN_REFERENCE' });
+  if (!Array.isArray(handoff.production_code_paths) || handoff.production_code_paths.length) errors.push({ code: 'PRODUCTION_CODE_AUTHORITY_FORBIDDEN' });
+}
 
 function canonicalize(value) {
   if (Array.isArray(value)) return value.map(canonicalize);
@@ -157,7 +228,7 @@ function validateMetadata(metadata, errors) {
   if (
     !isRelativePath(metadata.repository_relative_path) ||
     !metadata.repository_relative_path.startsWith(CANONICAL_DESIGN_HANDOFF_PREFIX) ||
-    !metadata.repository_relative_path.endsWith('.md')
+    !designMember(metadata.repository_relative_path, 'spec')
   ) {
     errors.push({
       code: 'INVALID_DESIGN_HANDOFF_PATH',
@@ -246,7 +317,7 @@ function validateEditableSource(source, errors) {
   }
   if (
     !isRelativePath(source.path) ||
-    !source.path.startsWith(CANONICAL_DESIGN_WIREFRAME_PREFIX)
+    !designMember(source.path, 'wireframe')
   ) {
     errors.push({ code: 'INVALID_EDITABLE_SOURCE_PATH', path: source.path });
     rejectLegacyDesignPath(source.path, 'editable_source.path', errors);
@@ -432,6 +503,12 @@ export function validateDesignHandoff(
 ) {
   const handoff = structuredClone(input ?? {});
   const errors = [];
+  if (handoff.metadata?.schema_version === 2) {
+    try { validateV2(handoff, errors); }
+    catch { errors.push({ code: 'INVALID_DESIGN_STRUCTURE' }); }
+    if (handoff.metadata.artifact_hash && handoff.metadata.artifact_hash !== calculateArtifactHash(handoff)) errors.push({ code: 'DESIGN_ARTIFACT_HASH_MISMATCH' });
+    return { ok: errors.length === 0, verified: false, compatibility: 'canonical-v2', handoff, errors };
+  }
   validateMetadata(handoff.metadata, errors);
   validateEditableSource(handoff.editable_source, errors);
   validateVisuals(handoff, errors);
@@ -449,7 +526,12 @@ export function validateDesignHandoff(
   ) {
     errors.push({ code: 'DESIGN_ARTIFACT_HASH_MISMATCH' });
   }
-  return { ok: errors.length === 0, handoff, errors };
+  return { ok: errors.length === 0, verified: false, compatibility: 'legacy-read-only', handoff, errors };
+}
+
+export function adaptLegacyDesignHandoff(input) {
+  if (input?.metadata?.schema_version !== 1) throw new TypeError('legacy adapter requires schema 1');
+  return validateDesignHandoff(input);
 }
 
 export function createDesignHandoff(input) {
@@ -476,12 +558,24 @@ export function createDesignHandoff(input) {
 
 export function resolveDesignHandoffTarget({
   experience_scope: experienceScope,
+  experience_kind: experienceKind,
   feature,
   module,
   portal,
+  repository,
   screens = [],
   execution_host_repository_id: executionHostRepositoryId,
 } = {}) {
+  if (experienceKind) {
+    if (!EXPERIENCE_KINDS.has(experienceKind)) throw new TypeError('unsupported design experience kind');
+    const semanticOwner = experienceKind === 'module' ? module : experienceKind.startsWith('portal-') ? portal : repository;
+    if (!semanticOwner?.repository_id || semanticOwner.available !== true || semanticOwner.writable !== true) return { status: 'blocked', blockers: ['design owner is missing, unavailable or unwritable; fallback is forbidden'] };
+    const scope = experienceKind === 'module' ? 'module' : experienceKind === 'cross-module' ? 'cross-repository-aggregate' : experienceKind.startsWith('portal-') ? 'portal-composition' : 'repository';
+    const owner = resolveArtifactOwner({ artifact_kind: 'design-handoff', scope, module, portal, repository, execution_host_repository_id: executionHostRepositoryId });
+    if ((experienceKind === 'standalone' && owner.owner_repository_role !== 'standalone') || (experienceKind === 'component-library' && owner.owner_repository_role !== 'library')) return { status: 'blocked', blockers: ['experience does not match semantic owner'] };
+    const bundle = resolveDesignArtifactPaths(feature, { screens });
+    return { status: 'resolved', experience_kind: experienceKind, ownership_scope: scope, ...owner, ...bundle, repository_relative_path: bundle.ledger_relative_path, blockers: [] };
+  }
   if (!EXPERIENCE_SCOPES.has(experienceScope)) {
     throw new TypeError(`unsupported design experience scope: ${experienceScope}`);
   }
@@ -694,7 +788,7 @@ export function buildDesignArtifactContext({
   // durable export never-commit.
   const localOnly = diagnostics.map((candidate) => {
     const normalized = String(candidate ?? '').replaceAll('\\', '/');
-    const allowed = DESIGN_LOCAL_ONLY_DIRECTORIES.some((directory) =>
+    const allowed = safeDesignPath(candidate) && DESIGN_LOCAL_ONLY_DIRECTORIES.some((directory) =>
       normalized.startsWith(`${DESIGN_ARTIFACT_ROOT}/${directory}/`),
     );
     if (!allowed) {

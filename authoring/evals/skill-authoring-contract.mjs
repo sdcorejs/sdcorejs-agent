@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { verifyApprovedArtifact } from '../../_refs/shared/approved-artifact.mjs';
+import { stableRepositoryId } from '../../_refs/shared/repository-contract.mjs';
 
 export const AUTHORING_SCHEMA_VERSION = 1;
 export const PUBLIC_SKILL_CEILING = 23;
@@ -238,16 +239,13 @@ function currentRepositoryId() {
       encoding: 'utf8',
       windowsHide: true,
     }).trim();
-    const scp = remote.match(/^git@([^:]+):(.+)$/u);
-    if (scp) return `${scp[1].toLowerCase()}/${scp[2].replace(/\.git\/?$/u, '').toLowerCase()}`;
-    const parsed = new URL(remote.replace(/^git\+/u, ''));
-    return `${parsed.hostname.toLowerCase()}/${parsed.pathname.replace(/^\/+|\/+$/gu, '').toLowerCase()}`;
+    return stableRepositoryId({ remote_url: remote });
   } catch {
     return null;
   }
 }
 
-function validateBoundManifest(manifest, expectedHash, errors, label, expectedPaths = null) {
+function validateBoundManifest(manifest, expectedHash, errors, label, expectedPaths = null, revision = null) {
   if (!Array.isArray(manifest) || manifest.length === 0) {
     errors.push(`${label} must be a non-empty repository file manifest`);
     return null;
@@ -260,12 +258,13 @@ function validateBoundManifest(manifest, expectedHash, errors, label, expectedPa
       continue;
     }
     paths.push(binding.path);
-    const actual = fileHash(binding.path);
+    const historical = revision === null ? null : gitFileAtRevision(revision, binding.path);
+    const actual = revision === null ? fileHash(binding.path) : historical && digestEntries([[binding.path, historical]]);
     if (actual === null || actual !== binding.sha256) {
       errors.push(`${label}[${index}] source is missing or stale`);
       continue;
     }
-    entries.push([binding.path, readFileSync(path.join(REPOSITORY_ROOT, binding.path))]);
+    entries.push([binding.path, revision === null ? readFileSync(path.join(REPOSITORY_ROOT, binding.path)) : historical]);
   }
   if (new Set(paths).size !== paths.length) errors.push(`${label} paths must be unique`);
   const sortedPaths = [...paths].sort();
@@ -730,6 +729,10 @@ export function evaluateNewSkillDecision(input = {}) {
 }
 
 export function validateAuthoringEvidence(record = {}) {
+  return validateEvidence(record);
+}
+
+function validateEvidence(record, historicalContractRevision = null) {
   const errors = [];
   if (!isObject(record)) return result(['authoring evidence must be an object']);
   if (record.schema_version !== AUTHORING_SCHEMA_VERSION) errors.push('schema_version must be 1');
@@ -743,7 +746,8 @@ export function validateAuthoringEvidence(record = {}) {
     if (!SHA256.test(record[field] ?? '')) errors.push(`${field} must be a sha256 binding`);
   }
   validateBoundManifest(record.source_state_manifest, record.source_state_hash, errors, 'source_state_manifest');
-  validateBoundManifest(record.contract_manifest, record.contract_hash, errors, 'contract_manifest');
+  validateBoundManifest(record.contract_manifest, record.contract_hash, errors, 'contract_manifest', null,
+    record.phase === 'REFACTOR' ? historicalContractRevision : null);
   validateBoundManifest(record.behavior_manifest, record.behavior_contract_hash, errors, 'behavior_manifest');
   validateLifecycleManifestRoles(record, errors);
   if (record.previous_record_id !== null && !SAFE_ID.test(record.previous_record_id ?? '')) errors.push('previous_record_id must be null or a stable identity');
@@ -781,13 +785,19 @@ export function validateAuthoringEvidence(record = {}) {
   return result(errors);
 }
 
-export function validateAuthoringLifecycle(records = []) {
+export function validateAuthoringLifecycle(records = [], { historical_revision: historicalRevision = null } = {}) {
   const errors = [];
+  // Historical inspection never certifies the current helper. The default
+  // remains a strict current-content gate; callers must opt into a real commit.
+  const scope = { evidence_scope: historicalRevision === null ? 'current' : 'historical', current: historicalRevision === null };
+  if (historicalRevision !== null && !repositoryRevisionExists(historicalRevision)) {
+    return result(['historical_revision must resolve to a repository commit'], { ...scope, current: false });
+  }
   if (!Array.isArray(records) || records.length !== 3) return result(['authoring lifecycle must contain exactly RED, GREEN, and REFACTOR records']);
   const phases = records.map((record) => record?.phase);
   if (!exactArray(phases, ['RED', 'GREEN', 'REFACTOR'])) errors.push('authoring lifecycle phase order must be RED, GREEN, REFACTOR');
   for (const [index, record] of records.entries()) {
-    const validated = validateAuthoringEvidence(record);
+    const validated = validateEvidence(record, historicalRevision);
     errors.push(...validated.errors.map((error) => `records[${index}]: ${error}`));
   }
   const [red, green, refactor] = records;
@@ -799,16 +809,20 @@ export function validateAuthoringLifecycle(records = []) {
   if (red?.contract_hash === green?.contract_hash || red?.behavior_contract_hash === green?.behavior_contract_hash) errors.push('GREEN must replace the failing RED contract');
   if (green?.behavior_contract_hash !== refactor?.behavior_contract_hash) errors.push('REFACTOR must preserve the GREEN behavior contract hash');
   if (new Set(records.map((record) => record?.source_state_hash)).size !== 3) errors.push('RED, GREEN, and REFACTOR must have distinct source-state hashes');
-  const currentContractHash = hashFilesSync(REPOSITORY_ROOT, AUTHORING_CONTRACT_PATHS);
-  if (refactor?.contract_hash !== currentContractHash) errors.push('terminal REFACTOR contract_hash must match the current authoring contract');
+  const historicalEntries = historicalRevision === null ? null : [...AUTHORING_CONTRACT_PATHS].sort()
+    .map(file => [file, gitFileAtRevision(historicalRevision, file)]);
+  const contractHash = historicalEntries === null ? hashFilesSync(REPOSITORY_ROOT, AUTHORING_CONTRACT_PATHS)
+    : historicalEntries.every(([, bytes]) => bytes !== null) ? digestEntries(historicalEntries) : null;
+  if (refactor?.contract_hash !== contractHash) errors.push(`terminal REFACTOR contract_hash must match the ${scope.evidence_scope} authoring contract`);
   validateBoundManifest(
     refactor?.contract_manifest,
     refactor?.contract_hash,
     errors,
     'terminal contract_manifest',
     AUTHORING_CONTRACT_PATHS,
+    historicalRevision,
   );
-  return result(errors);
+  return result(errors, { ...scope, current: scope.current && errors.length === 0 });
 }
 
 function validateScenarioSet(scenarios, errors) {

@@ -359,7 +359,7 @@ function assertVerificationContract(source) {
   assert.match(source, /post-change verification/i, 'post-change verification exists');
   assert.match(source, /exact scoped edits/i, 'failed pass uses exact edits');
   assert.match(source, /behavior_verification/);
-  assert.match(source, /covered-by-current-tests\s*\|\s*limited\s*\|\s*not-verified/);
+  assert.match(source, /covered-by-current-tests\s*\|\s*not-verified/);
   assert.match(source, /simplify_context:/);
   assert.match(source, /artifact_context:/);
   const preservedSurfaces = source.match(

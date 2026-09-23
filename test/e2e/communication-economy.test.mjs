@@ -1,3 +1,4 @@
+import { documentedSimplifyContext, simplifyFixture, sourcePath, originalSource } from './support/simplify-contract-fixture.mjs';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
@@ -200,6 +201,12 @@ function assertRepairSourceDimensionParity(sourceText, expected) {
 }
 
 function contextFor(contextType, consumer) {
+  if (contextType === 'simplify_context') {
+    const c = documentedSimplifyContext();
+    c.source_revision = 'a'.repeat(40);
+    c.baseline.snapshot = { artifact_ref: '.sdcorejs/evidence/structural-fixture.json', approval_hash: `sha256:v1:${'a'.repeat(64)}` };
+    return c; // Transport-only shape fixture, never live authority or evidence.
+  }
   const matrix = requireObject('CONSUMER_REQUIRED_FIELDS');
   const context = {};
   for (const field of matrix[contextType][consumer]) {
@@ -2245,3 +2252,17 @@ async function listRelativeFiles(directory) {
   }
   return output.sort();
 }
+
+
+test('case-simplify-hardening-ac-010 portable simplify transports the documented context without upgrading evidence', async t => {
+  const f = await simplifyFixture(t);
+  const result = f.finish(f.preflight());
+  const handoff = runtimePolicy.buildPortableHandoff({ contextType: 'simplify_context', context: result.context, consumer: 'sdcorejs-ship', redactionApplied: true });
+  assert.ok(handoff);
+  assert.deepEqual(runtimePolicy.validateRequiredHandoffFields({ contextType: 'simplify_context', consumer: 'sdcorejs-repair-loop', context: result.context }), []);
+  const malformed = structuredClone(result.context); malformed.passes[0].verification_result = 'PASSED';
+  assert.ok(runtimePolicy.validateRequiredHandoffFields({ contextType: 'simplify_context', consumer: 'sdcorejs-ship', context: malformed }).length);
+  f.write(sourcePath, originalSource);
+  const { evaluateSimplifyConsumer } = await import('../../_refs/simplify/simplify-contract.mjs');
+  assert.equal(evaluateSimplifyConsumer(result.context, { ...f.runtime, consumer: 'sdcorejs-ship' }).evidence_current, false);
+});

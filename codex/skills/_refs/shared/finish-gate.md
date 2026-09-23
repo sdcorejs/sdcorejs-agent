@@ -204,6 +204,13 @@ branch-ready.
   entity X with full tests and create the user guide"), pre-fill the gate from those
   answers and present it for a quick confirm rather than re-asking blindly.
 
+For the selected simplify option, use the canonical v2 preflight/postflight
+contract in `_refs/simplify/verification.md`. Preflight uses before evidence;
+postflight inspects actual writes and after receipts. Missing oracle means
+Analyze-only. Every write stales affected test/review/ship evidence until rerun.
+Keep the host-owned ledger through portable handoff; never automatically run
+another simplify pass after repair. Legacy limited evidence cannot satisfy ship.
+
 ## Order of execution after the gate
 
 1. (if tests not skipped) `sdcorejs-test` - execute the approved

@@ -185,8 +185,11 @@ credentials merely to discover whether a live check is possible.
 
 ## Simplification context
 
-When `simplify_context` is present, consume its selected files/hunks, diff
-scope hash, preserved surfaces, baseline commands, and pass ledger. Keep
+When `simplify_context` is present, validate the canonical v2 payload from
+`_refs/simplify/verification.md` with `evaluateSimplifyConsumer` and the trusted
+host session. Consume selected files/hunks, content fingerprint, preservation,
+command receipts and the host-owned pass ledger. Stale input is a revalidation
+request, never current evidence. Legacy payloads remain read-only. Keep
 pre-simplification and post-simplification command evidence as distinct
 append-only runs. Rerun the affected focused commands after every successful
 write pass and associate the result with the current diff.

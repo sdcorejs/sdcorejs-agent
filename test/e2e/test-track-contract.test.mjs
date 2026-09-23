@@ -1,3 +1,5 @@
+import { simplifyFixture, sourcePath, originalSource } from './support/simplify-contract-fixture.mjs';
+import { evaluateSimplifyConsumer } from '../../_refs/simplify/simplify-contract.mjs';
 import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -981,4 +983,15 @@ test('forward fixtures emit context, ownership, commands, blockers, and artifact
       }
     });
   }
+});
+
+
+test('case-simplify-hardening-ac-010 test consumes stale simplify as revalidation input only', async t => {
+  const f = await simplifyFixture(t); const result = f.finish(f.preflight());
+  assert.equal(evaluateSimplifyConsumer(result.context, { ...f.runtime, consumer: 'sdcorejs-test' }).status, 'verified');
+  f.write(sourcePath, originalSource);
+  const stale = evaluateSimplifyConsumer(result.context, { ...f.runtime, consumer: 'sdcorejs-test' });
+  assert.equal(stale.status, 'revalidation-required');
+  assert.equal(stale.evidence_current, false);
+  assert.equal(stale.write_authorized, false);
 });

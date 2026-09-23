@@ -1,5 +1,18 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { designFixture } from './support/design-handoff-fixture.mjs';
+
+test('case-design-real-consumer-enforcement: Angular requires current verified Design authority', async t => {
+  const { resolveAngularExecution } = await import('../../_refs/angular/execution-contract.mjs');
+  const f = designFixture(t), runtime = await f.runtime();
+  const request = { project_profile: 'core-ui-angular', execution_profile: 'developer', scope: 'application', application: { repository_id: f.repo }, execution_host_repository_id: f.repo, design_handoff: f.handoff };
+  assert.equal(resolveAngularExecution(request).production_eligible, false);
+  assert.equal(resolveAngularExecution(request, { design_runtime: runtime }).production_eligible, true);
+  assert.equal(resolveAngularExecution({ ...request, design_handoff: undefined }, { design_runtime: runtime }).status, 'blocked');
+  f.put(f.handoff.editable_source.path, '<main>Unverified change</main>');
+  const result = resolveAngularExecution(request, { design_runtime: runtime });
+  assert.equal(result.status, 'blocked'); assert.equal(result.write_target, null);
+});
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';

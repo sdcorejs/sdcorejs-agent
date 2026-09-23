@@ -2,6 +2,28 @@ import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
+import { designFixture } from './support/design-handoff-fixture.mjs';
+
+test('case-design-path-and-root-containment: unsafe paths, other Git roots and symlinks block', async t => {
+  const { verifyDesignHandoff, createDesignVerificationRuntime } = await import('../../_refs/shared/design-verification.mjs');
+  const { validateDesignHandoff } = await import('../../_refs/shared/design-handoff.mjs');
+  const { mkdirSync, symlinkSync, unlinkSync } = await import('node:fs');
+  const f = designFixture(t), runtime = await f.runtime();
+  for (const unsafe of ['../outside.html', '/absolute.html', 'C:/absolute.html', 'C:relative.html', '.sdcorejs/design/wireframes/orders/list.exe', '.sdcorejs/design/wireframes/orders/extra/list.html']) {
+    const h = structuredClone(f.handoff); h.editable_source.path = unsafe;
+    assert.equal(validateDesignHandoff(h).ok, false, unsafe);
+  }
+  for (const unsafe of ['.sdcorejs/docs/design/orders.png', '.sdcorejs/docs/design/sub/orders.md']) assert.equal(classifyDesignArtifactPath(unsafe).ok, false);
+  const opts = f.options(); opts.repositories[0].root = path.join(f.root, 'src');
+  assert.equal(verifyDesignHandoff(f.handoff, { runtime: createDesignVerificationRuntime(opts) }).verified, false);
+  mkdirSync(path.join(f.root, '.sdcorejs/design/wireframes/orders/.git'));
+  assert.equal(verifyDesignHandoff(f.handoff, { runtime }).verified, false);
+  const g = designFixture(t), target = path.join(g.root, g.handoff.editable_source.path);
+  unlinkSync(target);
+  try { symlinkSync(path.join(f.root, 'src/tokens.css'), target, 'file'); }
+  catch (error) { if (['EPERM', 'EACCES'].includes(error.code)) { t.diagnostic('NOT RUN: file symlink creation unavailable on this host'); return; } throw error; }
+  assert.equal(verifyDesignHandoff(g.handoff, { runtime: await g.runtime() }).verified, false);
+});
 import {
   ARCHITECTURE_ARTIFACT_ROOT,
   DESIGN_ARTIFACT_ROOT,

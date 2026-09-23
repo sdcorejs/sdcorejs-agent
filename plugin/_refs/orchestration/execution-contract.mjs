@@ -12,6 +12,7 @@ import { validateArchitecturePlanHandoff } from '../shared/architecture-contract
 import { validateRepositoryPlan } from '../shared/repository-contract.mjs';
 import { resolveTrack } from '../shared/system-registry.mjs';
 import { planWaves } from './parallel-protocol.mjs';
+import { evaluateDesignExecution, readDesignRequirements } from '../shared/design-verification.mjs';
 
 const MUTABLE_ACTIONS = new Set(['CREATE', 'EDIT', 'VERIFY-THEN-EDIT']);
 const PARALLEL_CAPABILITIES = new Set(['supported']);
@@ -77,6 +78,8 @@ export function prepareExecution({
   repository_plan: repositoryPlan,
   owner_revisions: ownerRevisions,
   plan_context: planContext,
+  design_handoff: designHandoff,
+  design_runtime: designRuntime,
 }) {
   if (planContext === undefined || planContext === null) {
     throw new TypeError('plan_context is required and cannot be omitted or null');
@@ -196,8 +199,24 @@ export function prepareExecution({
     validateApprovedWriteScope(planVerification.metadata, step);
   }
 
+  let designVerification = { status: 'NOT APPLICABLE', verified: false };
+  if (planVerification.metadata.track === 'design') designVerification = { status: 'NOT RUN', verified: false, reason: 'Design producer requires postflight before implementation consumption' };
+  // Design production is authorized by its approved plan. Its output is checked
+  // after authoring, before a frontend implementation consumes that handoff.
+  if (planVerification.metadata.track !== 'design' &&
+      (['angular', 'nextjs', 'react', 'fullstack'].includes(planVerification.metadata.track) ||
+      readDesignRequirements(approvedSpec) !== null || readDesignRequirements(approvedPlan) !== null || designHandoff || designRuntime)) {
+    designVerification = evaluateDesignExecution(designHandoff, {
+      runtime: designRuntime,
+      expected_spec_hash: specVerification.approval_hash,
+      expected_plan_hash: planVerification.approval_hash,
+    });
+    if (!designVerification.verified) throw new Error(`Design handoff blocked: ${designVerification.blockers.join('; ')}`);
+  }
+
   return {
     valid: true,
+    design_verification: designVerification,
     track: resolveTrack(planVerification.metadata.track),
     stack_profile: planVerification.metadata.stack_profile,
     owner_repository_id: planOwner,

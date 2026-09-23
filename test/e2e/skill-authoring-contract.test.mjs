@@ -177,6 +177,38 @@ function distinctProposal(overrides = {}) {
   };
 }
 
+test('authoring approvals bind canonical HTTPS and SSH identity and reject a foreign owner', () => {
+  const proposal = distinctProposal();
+  const trigger = newTriggerApproval(proposal);
+  const ceiling = ceilingChangeApproval(proposal);
+  proposal.approvals = { new_trigger: trigger.reference, ceiling_change: ceiling.reference };
+  proposal.approval_artifacts = [trigger.artifact, ceiling.artifact];
+  const script = `import { evaluateNewSkillDecision } from './authoring/evals/skill-authoring-contract.mjs';
+    console.log(JSON.stringify(evaluateNewSkillDecision(JSON.parse(process.argv[1]))));`;
+  const evaluateAtRemote = (remote) => JSON.parse(execFileSync(process.execPath,
+    ['--input-type=module', '-e', script, JSON.stringify(proposal)], {
+      cwd: root, encoding: 'utf8', windowsHide: true,
+      // Child-only config: never mutate the user's Git remote or checkout.
+      env: { ...process.env, GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'remote.origin.url', GIT_CONFIG_VALUE_0: remote },
+    }));
+  for (const remote of [
+    'https://github.com/sdcorejs/sdcorejs-agent.git',
+    'https://github.com/sdcorejs/sdcorejs-agent',
+    'git@github.com:sdcorejs/sdcorejs-agent.git',
+    'ssh://git@github.com/sdcorejs/sdcorejs-agent.git',
+  ]) {
+    const actual = evaluateAtRemote(remote);
+    assert.equal(actual.valid, true, `${remote}: ${actual.errors.join('\n')}`);
+    assert.equal(actual.create_public_skill, true);
+  }
+  for (const remote of ['https://github.com/other/sdcorejs-agent.git', 'git@github.com:other/sdcorejs-agent.git']) {
+    const actual = evaluateAtRemote(remote);
+    assert.equal(actual.valid, false, remote);
+    assert.equal(actual.create_public_skill, false);
+    assert.match(actual.errors.join('\n'), /different repository/);
+  }
+});
+
 test('new-skill decision gate defaults to reuse and enforces inventory approvals', () => {
   assert.equal(AUTHORING_SCHEMA_VERSION, 1);
   assert.equal(PUBLIC_SKILL_CEILING, 23);
@@ -311,10 +343,20 @@ test('behavioral evidence rejects fabricated telemetry and incomplete lifecycle 
     'new-skill-pressure-green.json',
     'new-skill-pressure-refactor.json',
   ].map(async (file) => JSON.parse(await readFile(path.join(recordRoot, file), 'utf8'))));
+  const historicalRevision = 'ac820d70bd247a04f977aab9bbb864f6a054acb7';
+  const historical = candidate => validateAuthoringLifecycle(candidate, { historical_revision: historicalRevision });
   const [baseline, green] = records;
   const result = validateAuthoringEvidence(baseline);
   assert.equal(result.valid, true, result.errors.join('\n'));
-  assert.equal(validateAuthoringLifecycle(records).valid, true, validateAuthoringLifecycle(records).errors.join('\n'));
+  const historicalResult = historical(records);
+  assert.equal(historicalResult.valid, true, historicalResult.errors.join('\n'));
+  assert.equal(historicalResult.evidence_scope, 'historical');
+  assert.equal(historicalResult.current, false);
+  const stale = validateAuthoringLifecycle(records);
+  assert.equal(stale.valid, false, 'historical REFACTOR cannot certify current changed sources');
+  assert.equal(stale.current, false);
+  assert.match(stale.errors.join('\n'), /current authoring contract/);
+  assert.equal(validateAuthoringLifecycle(records, { historical_revision: 'f'.repeat(40) }).valid, false);
   assert.equal(baseline.result, 'EXPECTED_FAIL');
   assert.equal(green.result, 'PASS');
   assert.equal(baseline.fresh_target_project_validation, false);
@@ -374,19 +416,19 @@ test('behavioral evidence rejects fabricated telemetry and incomplete lifecycle 
 
   const brokenSequence = structuredClone(records);
   brokenSequence[2].behavior_contract_hash = `sha256:${'f'.repeat(64)}`;
-  assert.equal(validateAuthoringLifecycle(brokenSequence).valid, false);
+  assert.equal(historical(brokenSequence).valid, false);
 
   const fabricatedRevision = structuredClone(records);
   fabricatedRevision[1].source_revision = 'f'.repeat(40);
-  assert.equal(validateAuthoringLifecycle(fabricatedRevision).valid, false);
+  assert.equal(historical(fabricatedRevision).valid, false);
 
   const fabricatedState = structuredClone(records);
   fabricatedState[1].source_state_hash = `sha256:${'f'.repeat(64)}`;
-  assert.equal(validateAuthoringLifecycle(fabricatedState).valid, false);
+  assert.equal(historical(fabricatedState).valid, false);
 
   const missingTranscript = structuredClone(records);
   missingTranscript[1].sanitized_transcript_ref = 'does/not/exist.json';
-  assert.equal(validateAuthoringLifecycle(missingTranscript).valid, false);
+  assert.equal(historical(missingTranscript).valid, false);
 
   assert.doesNotThrow(() => validateAuthoringLifecycle([null, null, null]));
   assert.equal(validateAuthoringLifecycle([null, null, null]).valid, false);
@@ -401,10 +443,15 @@ test('behavioral evidence rejects fabricated telemetry and incomplete lifecycle 
     const unrelatedSubstitution = structuredClone(records);
     unrelatedSubstitution[0][manifestField] = [{ path: unrelatedPath, sha256: unrelatedHash }];
     unrelatedSubstitution[0][hashField] = unrelatedHash;
-    assert.equal(validateAuthoringLifecycle(unrelatedSubstitution).valid, false, manifestField);
+    assert.equal(historical(unrelatedSubstitution).valid, false, manifestField);
   }
 
-  assert.equal(records[2].contract_hash, await hashAuthoringContract(root));
+  assert.notEqual(records[2].contract_hash, await hashAuthoringContract(root));
+  for (const file of ['new-skill-pressure-baseline.json', 'new-skill-pressure-green.json', 'new-skill-pressure-refactor.json']) {
+    const historicalText = execFileSync('git', ['show', `${historicalRevision}:authoring/evals/records/${file}`],
+      { cwd: root, encoding: 'utf8', windowsHide: true });
+    assert.equal(await readFile(path.join(recordRoot, file), 'utf8'), historicalText, 'retain historical evidence verbatim');
+  }
 });
 
 test('deterministic matrix runs all required safety scenarios without a provider', async () => {

@@ -322,7 +322,11 @@ export function classifyDesignArtifactPath(value) {
     return { ok: false, code: 'INVALID_RELATIVE_PATH', path };
   }
   if (path === DESIGN_LEDGER_ROOT || path.startsWith(CANONICAL_DESIGN_LEDGER_PREFIX)) {
-    return { ok: true, track: 'design', location: 'canonical', kind: 'design-handoff', path };
+    const member = path.slice(CANONICAL_DESIGN_LEDGER_PREFIX.length);
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/u.test(member)) {
+      return { ok: false, code: 'INVALID_DESIGN_LEDGER_PATH', path };
+    }
+    return { ok: true, track: 'design', location: 'canonical', kind: 'design-handoff', feature: member.slice(0, -3), path };
   }
   for (const [location, root] of [
     ['canonical', DESIGN_ARTIFACT_ROOT],
@@ -381,6 +385,13 @@ export function classifyDesignArtifactPath(value) {
     };
   }
   return { ok: false, code: 'OUTSIDE_DESIGN_ROOTS', path };
+}
+
+/** Strict portable file identity, before any path normalization or filesystem IO. */
+export function safeDesignPath(value) {
+  return typeof value === 'string' && value !== '' && value.trim() === value &&
+    !/[\\:\0\r\n*?]/u.test(value) && !value.startsWith('/') &&
+    !value.split('/').some(segment => !segment || segment === '.' || segment === '..' || /[. ]$/u.test(segment) || /^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/iu.test(segment));
 }
 
 export function isLegacyProductDocumentPath(value) {

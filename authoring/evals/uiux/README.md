@@ -76,6 +76,24 @@ prior final hashes bound to its source revision and adds the current contract
 manifest and captured output. It does not relabel historical phase transcripts
 or claim fresh target-project, live-agent or visual rendering coverage.
 
+The Design handoff integration uses `design-handoff-integration.json` as a
+separate evidence record. `records.json`, snapshots and historical transcripts
+remain unchanged. Its `base_record` pins that historical delivery to a real Git
+revision and content hash; historical `final_sources` are checked at that
+revision. They are not evidence for the current working tree.
+
+The new record binds an actual 25-case deterministic command, cwd, repository
+owner, timestamps, exit code, complete TAP output, source manifest and content
+fingerprint. The manifest includes the historical source inventory, every skill
+read by routing, the test contracts and their local static module/data imports.
+Hashes use UTF-8 text with LF line endings. Source bytes are observed before and
+after the command; a changed manifest prevents recording success. The evidence
+validator checks current contents even when HEAD has not changed and rejects
+omitted paths, unavailable sources and altered command/output bindings. Updating
+this record requires another real run, never copying a historical PASS forward.
+Its result remains deterministic contract evidence: live-agent, target-product
+rendering and interaction checks remain NOT RUN.
+
 Before commit, four RED transcripts had trailing horizontal whitespace removed
 to satisfy Git diff hygiene. `transcript_normalization` retains each original
 hash and the exact removed line suffixes, so the original normalized output can

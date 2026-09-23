@@ -1,5 +1,6 @@
 import { resolveRequirementOwnership } from '../shared/repository-contract.mjs';
 import { systemRegistry } from '../shared/system-registry.mjs';
+import { evaluateDesignExecution } from '../shared/design-verification.mjs';
 
 const FEATURES = new Set([
   'init-site',
@@ -68,7 +69,7 @@ function knownRegistryProfile(profile, field) {
     : `${field} is not declared in _refs/shared/system-registry.json: ${profile}`;
 }
 
-export function resolveNextjsExecution(request) {
+export function resolveNextjsExecution(request, { design_runtime } = {}) {
   const profileErrors = [
     knownRegistryProfile(request?.project_profile, 'project_profile'),
     knownRegistryProfile(request?.execution_profile, 'execution_profile'),
@@ -147,9 +148,11 @@ export function resolveNextjsExecution(request) {
     return blocked([`unsupported Next.js ownership scope: ${request.scope}`]);
   }
 
+  const design = evaluateDesignExecution(request.design_handoff, { runtime: design_runtime, ...identity });
+  if (design_runtime && !design.verified) return blocked(design.blockers, identity);
   return {
     status: 'resolved',
-    production_eligible: request.execution_profile === 'developer',
+    production_eligible: request.execution_profile === 'developer' && design.verified,
     registry_version: systemRegistry.registry_version,
     artifact_identity: {
       track: 'nextjs',
@@ -162,6 +165,8 @@ export function resolveNextjsExecution(request) {
     execution_profile: request.execution_profile,
     website_profile: request.website_profile,
     ...identity,
+    write_target: design.verified ? identity.write_target : null,
+    design_verification: design,
     approved_features: [...requested].sort(),
     blockers: [],
   };

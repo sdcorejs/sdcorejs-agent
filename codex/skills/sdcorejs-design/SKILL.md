@@ -16,6 +16,14 @@ Read `../_refs/shared/runtime-protocols.md` and `../_refs/shared/artifact-lifecy
 Resolve track/profile and artifact values from `../_refs/shared/system-registry.json`, roots from `../_refs/shared/artifact-paths.mjs`, approved spec/plan parents with `../_refs/shared/approved-artifact.mjs`, and ownership with `../_refs/shared/repository-contract.mjs`.
 Emit `artifact_context` for every design artifact and ledger written. Never rebuild a Design path by hand.
 
+Use the schema-2 payload example in `../_refs/shared/design-handoff.md` as the
+single handoff schema. `validateDesignHandoff` checks structure only.
+`verifyDesignHandoff` in `../_refs/shared/design-verification.mjs` reads actual
+approved parents and Design approval through a trusted host runtime, then
+checks current content and applicable evidence. Keep structural, parent,
+approval/review, and rendered/interaction results separate. Missing verifier
+or evidence is a limitation/blocker, never a PASS.
+
 ## Purpose
 Create FE handoff artifacts from product intent. The output should let Angular/Next.js executors implement screens without guessing layout, states, copy, interactions, or responsive behavior.
 
@@ -119,7 +127,7 @@ If product stories or acceptance criteria are missing, write only an exploratory
 
 ## Output Paths
 
-Resolve `experience_scope` and the semantic owner before any output path:
+Resolve schema-2 `experience_kind` and the registry semantic owner before any output path:
 
 - `module` design belongs in the module repository; an unavailable/unwritable
   owner blocks and portal fallback is forbidden.
@@ -127,6 +135,12 @@ Resolve `experience_scope` and the semantic owner before any output path:
 - `cross-module` belongs to one explicit portal/integration owner and references
   module handoffs using immutable repository/artifact/path/revision/hash
   identities. Never duplicate an editable module handoff.
+- `standalone` belongs to a standalone website/app repository; use repository scope.
+- `component-library` belongs to its library repository, including
+  `sdcorejs/angular`; do not pretend it is a module or portal.
+
+All owners must be available and writable. Separate these experience kinds
+from `owner_repository_role` in the registry; do not create another role enum.
 
 Obtain the complete path bundle from `resolveDesignHandoffTarget` in
 `../_refs/shared/design-handoff.mjs`. For a feature in the resolved owner:
@@ -271,7 +285,7 @@ Use `confirmed`, `candidate`, `unknown`, or `new`. Mark paths `candidate` or
 <labels, buttons, empty states, validation messages>
 
 ## Responsive Rules
-<desktop/tablet/mobile notes; include safe-area, keyboard, touch target, reachability, small/large phone, dynamic type/zoom, and reduced-motion notes when mobile applies>
+<approved applicable surface behavior; include safe-area, keyboard, touch target, reachability, small/large phone, dynamic type/zoom, and reduced-motion notes when mobile applies>
 
 ## Accessibility
 <keyboard order, labels, contrast, focus, error messaging>
@@ -294,7 +308,7 @@ and implementation-oriented:
 - reflect the confirmed mobile design plan when relevant, including safe areas,
   keyboard space, reachable primary actions, gesture alternatives, and
   interruption/offline/permission states
-- include stable dimensions for desktop and mobile frames
+- include stable dimensions for the surfaces required by approved requirements
 - avoid decorative marketing art for operational tools
 - include `data-story`, `data-ac`, or comments that link the wireframe section back to product IDs
 
@@ -335,65 +349,31 @@ source pass. A PNG alone never satisfies the handoff.
 
 ### 5. Write the design ledger
 
-Write `.sdcorejs/docs/design/<feature>.md`:
+Write the ledger at `.sdcorejs/docs/design/<feature>.md` using the canonical
+schema-2 JSON handoff in `../_refs/shared/design-handoff.md`. Its metadata path is
+the ledger; flow/spec/decisions remain `design-asset` files. Record traceability
+and FE handoff notes in those documents and include their actual content hashes.
+The ledger's approved-artifact envelope retains approval schema 1; that is
+separate from the schema-2 handoff in its body. Use the existing approval owner
+and canonical approved-artifact helper; never fabricate approval fields or
+rewrite an immutable approved ledger. A new approval uses the existing revision
+lifecycle and independently pinned reference.
 
-```markdown
----
-schema_version: 1
-artifact_id: design-handoff:<feature>
-artifact_kind: design-handoff
-contract_id: <approved contract id>
-requirement_id: <requirement id>
-change_ref: <change id>
-track: design
-stack_profile: design
-experience_scope: module | portal-shell | portal-composition | cross-module
-owner_repository_id: <stable repository id>
-owner_repository_role: module | portal
-owner_module_id: <module id | null>
-ownership_scope: module | portal-composition | cross-repository-aggregate
-repository_relative_path: .sdcorejs/design/specs/<feature>.md
-source_revision: <40-character Git revision>
-parent_references: [<approved spec ref>, <approved plan ref>]
-supersedes: <artifact id | null>
-approval_hash: <sha256:v1 hash when applicable | null>
-artifact_hash: <sha256:v1 hash from design-handoff.mjs>
-source_spec: <repo-relative path | none>
-source_plan: <repo-relative path | none>
-commit_policy: with-change
-owner: sdcorejs-design
-feature: <kebab-feature>
-status: draft | reviewed | approved | partial
-sourceUserStories: .sdcorejs/product/user-stories/<feature>.md
-sourceAcceptanceCriteria: .sdcorejs/product/acceptance-criteria/<feature>.md
-updatedAt: <ISO-8601 timestamp>
-editable_source_status: available | unavailable
----
+An exploratory draft may lack approved parents when exploration authority is
+explicit. Keep `lifecycle.state: draft`; it is never an implementation contract.
+A reviewed handoff requires actual approved spec/plan parents and loaded Design
+approval. Material changes return to the decision/approval owner. A bounded
+spacing change may reuse the existing approved scope only after the trusted
+host reviews actual current content and refreshes affected evidence. Payload
+labels or Visual Companion feedback cannot grant that review authority.
 
-# Design Ledger - <Feature>
-
-## Outputs
-- Flow: .sdcorejs/design/flows/<feature>.md
-- Spec: .sdcorejs/design/specs/<feature>.md
-- Decisions: .sdcorejs/design/decisions/<feature>.md
-- Wireframes: .sdcorejs/design/wireframes/<feature>/<screen>.html
-- PNG exports: .sdcorejs/design/exports/png/<feature>/<screen>.png
-- Product screenshot references: .sdcorejs/design/references/<feature>/<screen>.png
-
-## Traceability
-| User Story | Acceptance Criteria | Design Artifact | Status |
-|---|---|---|---|
-
-## FE Handoff Notes
-- <implementation notes for frontend track>
-- Frontend design plan:
-- Mobile design plan:
-- Confirmed token/component/copy decisions:
-- Inferred or open visual decisions:
-
-## Open Questions
-- <question or None>
-```
+Derive required responsive surfaces from approved requirements and target.
+Record a reason for approved `not-applicable` surfaces. Designed behavior,
+rendered wireframe checks and interaction checks are distinct: required missing
+receipts remain gaps. Do not assert desktop/tablet/mobile were all checked.
+Generate real command/capture receipts with current fingerprints; same HEAD
+alone does not keep evidence current. Confirmed component mappings require
+actual source reads with repository, path, revision and content hash.
 
 Emit this ledger plus every created or updated spec, flow, decision log, editable
 wireframe, durable export, and approved screenshot reference in

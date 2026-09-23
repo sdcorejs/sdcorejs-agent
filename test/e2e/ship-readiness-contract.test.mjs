@@ -1,3 +1,4 @@
+import { simplifyFixture, sourcePath, originalSource } from './support/simplify-contract-fixture.mjs';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
@@ -388,4 +389,25 @@ test('published is asserted only when immutable tag and release really exist', (
   result = evaluateShipReadiness(published);
   assert.equal(result.stages.actually_published.status, 'PUBLISHED');
   assert.ok(result.prohibited_automatic_actions.includes('publish'));
+});
+
+
+test('case-simplify-hardening-ac-010 ship cannot turn stale or limited simplify into readiness', async t => {
+  const f = await simplifyFixture(t); const result = f.finish(f.preflight());
+  const c = validContract({ simplify_context: result.context });
+  const checked = evaluateShipReadiness(c, f.runtime).simplify;
+  assert.equal(checked.evidence_current, true);
+  assert.equal(evaluateShipReadiness(c, f.runtime).stages.ready_to_ship.status, 'BLOCKED', 'older ship source is stale even after fresh simplify verification');
+  c.source_identity.modules.push({ module_id: 'simplified-owner', repository_id: checked.owner_repository_id, revision: checked.source_revision, pinned_revision: checked.source_revision, source_fingerprint: checked.source_fingerprint, required_for_release: false });
+  const revisionMap = { ...MODULE_MAP, 'simplified-owner': checked.source_revision };
+  for (const entry of c.evidence) entry.module_revision_map = revisionMap;
+  const convergence = convergenceInput(revisionMap);
+  c.convergence_result = evaluateConvergence(convergence);
+  c.convergence_receipt = createConvergenceReceiptArtifact(convergence);
+  assert.equal(evaluateShipReadiness(c, f.runtime).stages.ready_to_ship.status, 'READY', JSON.stringify(evaluateShipReadiness(c, f.runtime).stages.ready_to_ship));
+  f.write(sourcePath, originalSource);
+  assert.equal(evaluateShipReadiness(c, f.runtime).stages.ready_to_ship.status, 'BLOCKED');
+  assert.match(evaluateShipReadiness(c, f.runtime).stages.ready_to_ship.blockers.join(' '), /simplify/u);
+  const limited = structuredClone(result.context); limited.verification.behavior_verification = 'limited';
+  assert.equal(evaluateShipReadiness(validContract({ simplify_context: limited }), f.runtime).stages.ready_to_ship.status, 'BLOCKED');
 });

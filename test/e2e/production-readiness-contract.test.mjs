@@ -4,6 +4,30 @@ import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import { designExecutionFixture, designFixture } from './support/design-handoff-fixture.mjs';
+
+test('case-design-real-consumer-enforcement: generic execution cannot omit or substitute Design approval', async t => {
+  const { prepareExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = designFixture(t), args = await designExecutionFixture(f);
+  assert.equal(prepareExecution(args).design_verification.verified, true);
+  assert.throws(() => prepareExecution({ ...args, design_runtime: undefined }), /Design handoff blocked/u);
+  assert.throws(() => prepareExecution({ ...args, design_handoff: undefined }), /Design handoff blocked/u);
+  const g = designFixture(t);
+  const foreignRuntime = await g.runtime();
+  assert.throws(() => prepareExecution({ ...args, design_runtime: foreignRuntime }), /Design handoff blocked/u);
+  f.put(f.handoff.metadata.repository_relative_path, f.read(f.handoff.metadata.repository_relative_path) + '\nmutated');
+  assert.throws(() => prepareExecution(args), /Design handoff blocked/u);
+});
+
+test('Design producer preflight does not depend on its future postflight handoff', async t => {
+  const { prepareExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = designFixture(t);
+  const plan = f.artifacts.get('plan');
+  f.approve('plan', plan.metadata.repository_relative_path, plan.body, plan.metadata.parent_references, { track: 'design', stack_profile: 'design', allowed_paths: ['src/**'], prohibited_paths: [] });
+  const args = await designExecutionFixture(f);
+  const result = prepareExecution({ ...args, design_runtime: undefined, design_handoff: undefined });
+  assert.equal(result.valid, true); assert.equal(result.design_verification.status, 'NOT RUN');
+});
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -486,7 +510,7 @@ test('execute-plan verifies artifacts, source freshness, owner root, and path sc
     metadata: baseArtifact({
       artifact_id: 'spec-contract-a-r1',
       artifact_kind: 'spec',
-      repository_relative_path: '.sdcorejs/specs/angular/contract-a.md',
+      repository_relative_path: '.sdcorejs/specs/node/contract-a.md',
       source_revision: 'b'.repeat(40),
       parent_repository_id: null,
       parent_references: [],
@@ -497,9 +521,9 @@ test('execute-plan verifies artifacts, source freshness, owner root, and path sc
     metadata: baseArtifact({
       artifact_id: 'plan-contract-a-r1',
       artifact_kind: 'plan',
-      track: 'angular',
-      stack_profile: 'plain-angular',
-      repository_relative_path: '.sdcorejs/plans/angular/contract-a.md',
+      track: 'node',
+      stack_profile: 'node-general',
+      repository_relative_path: '.sdcorejs/plans/node/contract-a.md',
       source_revision: 'c'.repeat(40),
       allowed_paths: ['src/orders/**'],
       prohibited_paths: ['src/orders/generated/**', '.env'],
@@ -557,7 +581,7 @@ test('execute-plan verifies artifacts, source freshness, owner root, and path sc
     },
   });
   assert.equal(prepared.valid, true);
-  assert.equal(prepared.track.id, 'angular');
+  assert.equal(prepared.track.id, 'node');
   assert.deepEqual(
     resolveExecutionTarget({
       step: repositoryPlan.steps[0],

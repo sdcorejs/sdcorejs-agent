@@ -25,6 +25,18 @@ screen nor a directory of arbitrary wrappers.
 
 ## When This Gate Is Required
 
+When Design supplies the implementation handoff, consume schema 2 through
+`_refs/shared/design-verification.mjs`, never through structural validation
+alone. Repository role and experience kind are independent: module, portal,
+standalone and library sources retain their semantic owner. Read actual approved
+parents and Design approval, inspect source evidence before confirming component
+paths, and carry the complete artifact closure. Required surfaces come from
+approved requirements; designed responsive behavior is separate from rendered
+and interaction evidence. Generated mockups never become real product captures.
+Drafts and Visual Companion feedback do not authorize implementation. Material
+scope changes return to the decision owner; bounded spacing changes may reuse
+existing authority with a current content review and refreshed evidence.
+
 Complete this preflight when a task adds or materially changes any routed page,
 screen, form, table, child collection, workflow panel, modal/drawer, interactive
 island, frontend service, query, facade, store, or public component contract.

@@ -212,13 +212,13 @@ working-tree diff:
 |---|---:|---:|
 | Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,955 |
 | Always-loaded bootstrap words | 2,361 | 2,337 |
-| Aggregate just-in-time scenario bytes | 514,603 | 659,868 |
+| Aggregate just-in-time scenario bytes | 514,603 | 663,573 |
 | Aggregate visible output bytes | 42,558 | 2,802 |
 | Aggregate visible output words | 3,961 | 337 |
 | Portable fallback handoff bytes | 0 | 25,383 |
 | Supported runtime context channel bytes | 0 | 1,819 |
 | Repeated-block bytes | 2,319 | 0 |
-| Total measured communication bytes | 577,334 | 709,827 |
+| Total measured communication bytes | 577,334 | 713,532 |
 | Consumer-required authoritative fields | 361 | 361 preserved |
 
 The report includes ten scenarios, per-scenario selected paths, bytes, words,
