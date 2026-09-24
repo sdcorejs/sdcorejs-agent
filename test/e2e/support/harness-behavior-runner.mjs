@@ -3,6 +3,7 @@ export function runScenario(policy, scenario, capabilities) {
   const action = policy.resolveAction({ task: scenario, classification });
   const interaction = policy.selectInteraction({
     capabilities,
+    runtime: scenario.choice_runtime,
     options: Array.isArray(scenario.options) ? scenario.options : [],
     visual_spatial: scenario.visual_spatial === true,
     approval: scenario.approval === true,

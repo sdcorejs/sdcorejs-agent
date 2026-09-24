@@ -1,4 +1,5 @@
 import { evaluateSimplifyConsumer } from '../simplify/simplify-contract.mjs';
+import { evaluateFinishInvocation } from '../shared/finish-gate.mjs';
 import { evaluateUiReviewConsumer } from '../shared/ui-review-contract.mjs';
 import { resolveEvidenceArtifact } from '../shared/evidence-artifact.mjs';
 import { systemRegistry } from '../shared/system-registry.mjs';
@@ -619,6 +620,8 @@ function validateAttemptIntegrity(attempt, {
 export function evaluateRepairContract(contract = {}, runtime = {}) {
   contract = isObject(contract) ? contract : {};
   const blockers = [];
+  const finish = evaluateFinishInvocation(contract.finish_context, runtime.finish_runtime, 'repair');
+  blockers.push(...finish.blockers);
   const ui = contract.review_context || runtime.ui_review_runtime
     ? evaluateUiReviewConsumer(contract.review_context, { runtime: runtime.ui_review_runtime, consumer: 'sdcorejs-repair-loop', phase: 'repair' }) : null;
   if (ui) blockers.push(...ui.blockers.map(message => 'UI review: ' + message));

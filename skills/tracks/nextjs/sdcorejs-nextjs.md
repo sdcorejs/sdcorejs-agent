@@ -137,50 +137,27 @@ may fan out after their approved page inputs exist.
 
 ## After all dispatched packs complete
 
-### MANDATORY FINISH GATE (always — standalone trigger OR full SDLC flow)
+### MANDATORY FINISH GATE
 
-**STOP and present the consolidated finish gate from [`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md) before running ANY tail step.** UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add a page", "add a section") — NOT only inside the spec→plan flow. The gate surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review choices with defaults so the user always knows these steps exist and can opt out of new user/technical docs. "Small change" is not a reason to skip the gate.
+Use `completeNextjsExecution` with `finish_context` and the current host runtime from
+`_refs/shared/finish-gate.md`. Consume its `next_actions` after each owner
+returns; the shared resolver owns the order and completion status. The gate
+is mandatory after code generation, including direct requests; only unresolved
+choices prompt. Reuse scope-bound decisions. Defer stops this tail without a
+done claim. Review-only never dispatches repair or UI auto-fix. Workers return
+unit evidence; only the integration owner runs the shared final gate.
 
-Then run the tail-call chain, honoring the gate's answers (skip = omit that step; everything not skipped runs):
+The entrypoint is in `_refs/nextjs/execution-contract.mjs`. Preserve approved
+page, responsive, accessibility, security and feature-specific tests; source-only
+UI inspection never substitutes required rendered or interaction evidence.
+Resolve test strategy before production writes. No finish choice cancels AC.
 
-Documentation supplement: immediately after the Finish Gate test decision, run
-`sdcorejs-documentation (documentation-gate mode)` and read
-`_refs/documentation/gate.md`. This gate asks or loads saved project
-preferences from `<target>/.sdcorejs/documentation/preferences.md` for
-`user-guide` and `technical-doc` only. It must ask before
-creating a missing corresponding user-guide or technical-doc for a new feature.
-`code-documentation` is automatic for touched source files and is not controlled
-by this approval gate.
-
-```
-FINISH GATE (always, unconditional) ← surfaces the choices below
-   ↓
-sdcorejs-test  (if Tests not skipped)  ← happy-path tests for each generated page
-   ↓
-sdcorejs-review (if Review not skipped) ← convention check; Critical / Important / Minor findings
-   |
-sdcorejs-repair-loop (if Review not skipped) - apply findings, iterate to clean
-   |
-sdcorejs-documentation (code-documentation mode) - automatic source-code documentation for touched source files; no approval ASK; rules in _refs/documentation/code-documentation.md
-   |
-sdcorejs-product (when user-visible feature traceability is needed) - update .sdcorejs/docs/product/ ledger
-   |
-sdcorejs-documentation (write-technical-doc mode, if Technical doc approved) - create/update the approved technical doc from source evidence
-   |
-_refs/orchestration/tail/auto-docs.md (always) - change-scoped execution record to .sdcorejs/docs/nextjs/
-   |
-sdcorejs-documentation (write-user-guide mode, if User guide approved) - create/update touched module's .sdcorejs/documentation/user-guides/<module>/<module>.md only when approved by the documentation gate or explicitly requested
-   |
-_refs/orchestration/tail/auto-task-tracker.md (integration/sequential owner only) - reconcile durable backlog, never live progress
-   |
-sdcorejs-explore (memories mode) - durable knowledge (when applicable)
-   |
-sdcorejs-ship verify-before-done mode (always) - BLOCK "done" until acceptance criteria from selected scope are verified or deferred
-   |
-sdcorejs-ship (branch-ready mode) (always) - final read-only gate over the final diff before any Git artifact handoff. No writes after branch-ready unless branch-ready is run again.
-```
-
-The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLAUDE.md / AGENTS.md / copilot-instructions.md). The always-on plumbing steps run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)`; that is how acceptance criteria slip.
+Register touched-source code-documentation, applicable product traceability,
+auto-docs execution records, authorized auto-task-tracker/backlog and memories,
+and approved technical-doc/user-guide updates as scoped hooks. Reuse existing
+policy through `_refs/documentation/gate.md`; missing new docs still require
+creation authority. Revalidate affected checks after these writes, then Ship
+verify-before-done and final read-only branch-ready. No automatic Git actions.
 
 ## Data Contract & View Model Rules
 
@@ -198,7 +175,7 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
   `progress.create`, with one item per planned unit and the finishing steps (tests, optional behavior-preserving simplification, review, code-documentation, technical-doc, user-guide).
   Keep one item `in_progress`, call `progress.update` after each unit, and never
   mirror live progress to a repository file.
-- Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
+- Resolve the **MANDATORY FINISH GATE** through `completeNextjsExecution`; prompt only for unresolved scope-bound choices.
 - Read the approved plan BEFORE dispatching — never invent scope
 - Resolve `approved_features`, artifact identity, and semantic owner with
   `_refs/nextjs/execution-contract.mjs`; consume
@@ -228,7 +205,7 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 
 ### Documentation Gate Rule
 
-- Inside the mandatory finish gate, run `_refs/documentation/gate.md` immediately after the test decision. It owns user-guide / technical-doc creation or update approval. `code-documentation` is automatic and is not controlled by this gate.
+- Reuse documentation decisions through `_refs/documentation/gate.md`; ask only the unresolved creation/update scope. Source documentation remains a scoped owner hook.
 
 ### MUST NOT
 - Generate code from memory when a pack covers the concern — read the pack

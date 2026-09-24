@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
 import test from 'node:test';
+import { documentedInteraction } from './support/interaction-finish-fixture.mjs';
 import {
   CANONICAL_BEHAVIOR_ENTRYPOINTS,
   VISUAL_INTERACTION_KINDS,
@@ -35,6 +36,66 @@ const fixtureUrl = new URL('./fixtures/harness-behavior-scenarios.json', import.
 const capabilityUrl = new URL('../../_refs/harness/capability-contract.json', import.meta.url);
 const delegationUrl = new URL('../../_refs/harness/delegation-policy.json', import.meta.url);
 
+test('case-interaction-finish-native-runtime: static metadata and forbidden modes never enable approval', async () => {
+  const contract = await json(capabilityUrl);
+  assert.equal(resolveAction({ contract, adapter: 'claude-code', action: 'user.approve' }).mode, 'fallback');
+  const observation = { session_id: 'session-a', mode: 'default', tools: [{ name: 'choice', actions: ['user.choose', 'user.approve'], modes: ['default'] }] };
+  assert.equal(selectInteraction({ approval: true, options: ['Approve', 'Change', 'Cancel'], runtime: observation }).kind, 'native-structured-choice');
+  assert.equal(selectInteraction({ options: ['A', 'B'], visual_spatial: true, capabilities: { visual_surface: 'supported' }, runtime: observation }).kind, 'native-structured-choice');
+  assert.equal(selectInteraction({ approval: true, options: ['Approve', 'Change', 'Cancel'], runtime: { ...observation, tools: [{ ...observation.tools[0], forbidden_actions: ['user.approve'] }] } }).kind, 'markdown-numbered-choice');
+  assert.equal(selectInteraction({ approval: true, options: ['Approve', 'Change', 'Cancel'], runtime: { ...observation, mode: 'restricted' } }).kind, 'markdown-numbered-choice');
+  assert.equal(selectInteraction({ approval: true, options: ['Approve', 'Change', 'Cancel'], runtime: { ...observation, tools: [] } }).kind, 'markdown-numbered-choice');
+});
+
+test('case-interaction-finish-native-failure: one fallback keeps decision and options', () => {
+  const input = { approval: true, decision_id: 'plan:r1', options: ['Approve', 'Change', 'Cancel'], capabilities: { native_structured_choice: 'supported' }, runtime: { session_id: 's', mode: 'default', tools: [{ name: 'choice', actions: ['user.approve'], modes: ['default'] }] }, failed_surfaces: ['native-structured-choice'] };
+  const result = selectInteraction(input);
+  assert.equal(result.kind, 'markdown-numbered-choice');
+  assert.equal(result.decision_id, input.decision_id);
+  assert.deepEqual(selectInteraction(input), result);
+  assert.match(result.markdown, /1\. Approve\n2\. Change\n3\. Cancel/u);
+});
+
+test('case-interaction-finish-reply-normalization: localized aliases are explicit; incidental and negated numbers are not approvals', () => {
+  const options = [{ id: 'approve', label: 'Duyệt spec', aliases: ['duyệt'] }, { id: 'change', label: 'Yêu cầu chỉnh sửa', aliases: [] }, { id: 'cancel', label: 'Hủy', aliases: ['hủy'] }];
+  for (const reply of ['1', 'Duyệt spec', 'duyệt']) assert.equal(normalizeChoiceResponse(reply, options, { approval: true }).selected, 'Duyệt spec');
+  for (const reply of ['không chọn 1', '1?', 'version 1', '1 hoặc 2', '', 'cảm ơn']) assert.notEqual(normalizeChoiceResponse(reply, options, { approval: true }).status, 'selected');
+});
+
+test('case-interaction-finish-separate-approval: single-option and delegated recommendations never approve', () => {
+  assert.notEqual(selectInteraction({ approval: true, options: ['Approve'] }).kind, 'auto-select');
+  assert.notEqual(selectInteraction({ options: [{ value: 'apply', label: 'Apply' }] }).kind, 'auto-select');
+  assert.notEqual(normalizeChoiceResponse('you decide', ['Approve', 'Change', 'Cancel'], { approval: true, recommended: 'Approve' }).status, 'selected');
+  assert.notEqual(normalizeChoiceResponse('you decide', [{ label: 'Apply', value: 'apply' }], { recommended: 'Apply' }).status, 'selected');
+});
+
+test('case-interaction-finish-ambiguous-gates: bare reply never chooses between pending gates', async () => {
+  const api = await import('../../_refs/harness/runtime-policy.mjs');
+  assert.equal(typeof api.resolveDecision, 'function');
+  const context = documentedInteraction(), decision = context.decision;
+  const event = { id: 'reply-1', text: '1', decision_fingerprint: api.decisionFingerprint(decision) };
+  const runtime = { read_response: id => id === event.id ? event : null };
+  const result = api.resolveDecision({ ...context, reply_ref: event.id, pending_decisions: [decision, { ...decision, gate: 'plan:approval' }] }, runtime);
+  assert.equal(result.status, 'ambiguous');
+  event.question_id = decision.id;
+  assert.equal(api.resolveDecision({ ...context, reply_ref: event.id, pending_decisions: [decision] }, runtime).status, 'resolved');
+});
+
+test('case-interaction-finish-reuse-choice and case-interaction-finish-stale-choice: exact host reply reuses; changed gate/scope/revision does not', async () => {
+  const api = await import('../../_refs/harness/runtime-policy.mjs');
+  assert.equal(typeof api.resolveDecision, 'function');
+  const context = documentedInteraction(), decision = context.decision;
+  const event = { id: 'reply-1', text: '1', question_id: decision.id, decision_fingerprint: api.decisionFingerprint(decision) };
+  const runtime = { read_response: id => id === event.id ? event : null };
+  const resolved = api.resolveDecision({ ...context, reply_ref: event.id }, runtime);
+  assert.equal(resolved.status, 'resolved');
+  assert.equal(api.resolveDecision({ ...context, resolutions: [resolved.resolution] }, runtime).status, 'resolved');
+  assert.notEqual(api.resolveDecision({ ...context, resolutions: [resolved.resolution] }).status, 'resolved');
+  for (const change of [{ gate: 'plan:approval' }, { revision: 'r2' }, { scope_fingerprint: 'sha256:' + 'b'.repeat(64) }, { owner_repository_id: 'another-owner' }]) {
+    assert.notEqual(api.resolveDecision({ ...context, decision: { ...decision, ...change }, resolutions: [resolved.resolution] }, runtime).status, 'resolved');
+  }
+});
+
 async function json(url) { return JSON.parse(await readFile(url, 'utf8')); }
 
 test('capability contract is structurally valid and drives native-or-Markdown interaction', async () => {
@@ -66,6 +127,7 @@ test('capability contract is structurally valid and drives native-or-Markdown in
     adapter: 'codex',
     action: 'user.choose',
     runtimeCapabilities: { native_structured_choice: 'supported' },
+    runtime: scenarios.choice_runtime,
   }).mode, 'native');
   assert.equal(resolveAction({
     contract,
@@ -97,7 +159,7 @@ test('capability contract is structurally valid and drives native-or-Markdown in
   assert.equal(delegation.fan_in_policy.ownership_conflict, 'block');
   assert.equal(delegation.fan_in_policy.parent_rereads_diff_and_evidence, true);
   assert.ok(validateCapabilityContract({ ...contract, provider_tool: 'vendor-only-choice-api' }).length > 0, 'canonical contracts reject provider-tool leakage');
-  assert.equal(selectInteraction({ capabilities: scenarios.capabilities.structured, options: ['sequential', 'parallel'] }).kind, 'native-structured-choice');
+  assert.equal(selectInteraction({ capabilities: scenarios.capabilities.structured, runtime: scenarios.choice_runtime, options: ['sequential', 'parallel'] }).kind, 'native-structured-choice');
   // A visual decision runs its own ladder. Native structured choice no longer
   // shadows a visual surface, which is why a spatial question used to arrive as
   // a picker on every runtime that could also draw it.
@@ -117,6 +179,7 @@ test('capability contract is structurally valid and drives native-or-Markdown in
   }).kind, 'live-visual-companion');
   assert.equal(selectInteraction({
     capabilities: scenarios.capabilities.live_visual,
+    runtime: scenarios.choice_runtime,
     options: ['left', 'right'],
   }).kind, 'native-structured-choice', 'a non-spatial decision never starts a companion');
   assert.equal(selectInteraction({ capabilities: scenarios.capabilities.typed_visual, options: ['left', 'right'], visual_spatial: true }).kind, 'typed-visual-screen');
@@ -146,8 +209,9 @@ test('capability contract is structurally valid and drives native-or-Markdown in
   }
   // An approval is never routed to a surface whose only output is a click.
   const approval = selectInteraction({
+    runtime: scenarios.choice_runtime,
     capabilities: scenarios.capabilities.live_visual,
-    options: ['approve', 'change'],
+    options: ['approve', 'change', 'cancel'],
     visual_spatial: true,
     approval: true,
   });
@@ -155,7 +219,7 @@ test('capability contract is structurally valid and drives native-or-Markdown in
   assert.notEqual(approval.supporting_feedback_only, true);
   assert.equal(selectInteraction({
     capabilities: { ...scenarios.capabilities.live_visual, native_structured_choice: 'unsupported' },
-    options: ['approve', 'change'],
+    options: ['approve', 'change', 'cancel'],
     visual_spatial: true,
     approval: true,
   }).kind, 'markdown-numbered-choice');

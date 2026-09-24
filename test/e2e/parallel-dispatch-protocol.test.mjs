@@ -1,4 +1,13 @@
 import assert from 'node:assert/strict';
+import { finishFixture } from './support/interaction-finish-fixture.mjs';
+
+test('case-interaction-finish-worker-entrypoint: worker completion has no shared prompts or docs', async t => {
+  const { completeDelegatedUnit } = await import('../../_refs/orchestration/parallel-protocol.mjs');
+  const f = await finishFixture(t, { worker: true, policy: { decisions: {} } });
+  for (const phase of ['baseline','unit-review-a','unit-review-b']) f.run(phase);
+  const result = completeDelegatedUnit({ finish_context: f.context }, f.runtime);
+  assert.equal(result.status, 'unit-complete'); assert.deepEqual(result.next_actions, []);
+});
 import { execFileSync } from 'node:child_process';
 import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import os from 'node:os';

@@ -196,3 +196,15 @@ ship_context:
 - Supplemental smoke cannot satisfy Full E2E or a required module matrix.
 - `release_ready` never implies `actually_published`; publication requires an
   existing immutable tag and Release evidence.
+
+## Canonical finish continuation
+
+When invoked by an executor tail, preserve `finish_context` and pass it to
+`evaluateShipReadiness` with the current `finish_runtime` from
+`_refs/shared/finish-gate.md`. Set `finish_phase` to `verify` or
+`branch-ready` only for that phase's preflight; handoff requires completed,
+current proof. This avoids requiring future receipts before their command runs.
+Defer, unresolved required Design/UI/test gaps, stale content or blocking review
+cannot become done. Final gates are read-only. Any later write invalidates
+affected evidence and requires the parent to resume the canonical resolver.
+Ship does not reopen resolved policy or grant commit/push/deploy authority.

@@ -96,7 +96,7 @@ their dedicated owners.
   executable source after a green baseline.
 - Use `sdcorejs-ship` for final gate, verify-before-done, branch-ready checks, ready-to-merge, ship, and release.
 - Use `sdcorejs-git` for commit, PR, changelog, and release notes.
-- Present the finish gate after every code-generation run.
+- Resolve the canonical finish gate after every code-generation run; prompt only for unresolved decisions.
 - Verify with real command output before claiming success.
 - Write `.sdcorejs/*` artifacts to the target project only.
 - Keep live progress in the current thread/harness; never mirror it to a
@@ -126,3 +126,9 @@ their dedicated owners.
 - `skills/tracks/design/sdcorejs-design.md`
 - `skills/tracks/test/sdcorejs-test.md`
 - `skills/tracks/ai-agent/sdcorejs-ai-agent.md`
+
+## Canonical interaction and completion
+
+Use `_refs/shared/user-choice-prompt.md` for native-first decisions and reuse of scoped explicit choices.
+Resolve completion through `_refs/shared/finish-gate.md`; only the integration owner runs final finish.
+Prompts are conditional; required acceptance/evidence remain mandatory. No writes after branch-ready, the final read-only gate, unless affected verification and that gate run again. No automatic commit/push/deploy.

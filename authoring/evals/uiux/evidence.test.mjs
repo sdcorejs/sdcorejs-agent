@@ -5,7 +5,9 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import path from 'node:path';
 import test from 'node:test';
 import ts from 'typescript';
+import { parse } from 'yaml';
 import { stableRepositoryId } from '../../../_refs/shared/repository-contract.mjs';
+import { verifyApprovedArtifactGraph } from '../../../_refs/shared/approved-artifact.mjs';
 
 const root = new URL('../../../', import.meta.url);
 const read = async (path) => (await readFile(new URL(path, root), 'utf8')).replace(/\r\n?/g, '\n');
@@ -21,13 +23,20 @@ const contractPaths = [
 ];
 const command = `node --test --test-reporter=tap ${contractPaths.join(' ')}`;
 const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', windowsHide: true }).trim();
-const atRevision = (revision, file) => execFileSync('git', ['show', `${revision}:${file}`],
-  { cwd: root, encoding: 'utf8', windowsHide: true }).replace(/\r\n?/g, '\n');
+const historicalBlobs = new Map();
+const atRevision = (revision, file) => {
+  assert.match(revision, /^[a-f0-9]{40}$/u);
+  const key = `${revision}:${file}`;
+  if (!historicalBlobs.has(key)) historicalBlobs.set(key, execFileSync('git', ['show', key],
+    { cwd: root, encoding: 'utf8', windowsHide: true }).replace(/\r\n?/g, '\n'));
+  return historicalBlobs.get(key);
+};
+const historicalSkills = revision => git('ls-tree', '-r', '--name-only', revision, '--', 'skills').split(/\r?\n/u).filter(file => file.endsWith('.md'));
 
 // Bind the inputs read by the behavior suites: retained source inventory, all
 // routed skills, test contracts, and their local static module/data dependencies.
-async function currentSourcePaths(record) {
-  const skills = (await readdir(new URL('skills/', root), { recursive: true }))
+async function currentSourcePaths(record, readSource = read, skillPaths = null) {
+  const skills = skillPaths ?? (await readdir(new URL('skills/', root), { recursive: true }))
     .map(file => `skills/${String(file).replaceAll('\\', '/')}`).filter(file => file.endsWith('.md'));
   const paths = new Set([...record.final_sources.map(entry => entry.path), ...skills,
     ...contractPaths, '_refs/shared/ui-review.md', '_refs/shared/test-ui-evidence.md',
@@ -36,7 +45,7 @@ async function currentSourcePaths(record) {
     'test/e2e/support/test-track-forward-harness.mjs', 'authoring/evals/uiux/evidence.test.mjs', 'package.json', 'package-lock.json']);
   for (const file of paths) {
     if (!file.endsWith('.mjs')) continue;
-    const text = await read(file);
+    const text = await readSource(file);
     // Parse actual imports; code embedded in fixture strings is not a module input.
     const visit = node => {
       const specifier = ts.isImportDeclaration(node) || ts.isExportDeclaration(node) ? node.moduleSpecifier
@@ -53,7 +62,7 @@ async function currentSourcePaths(record) {
   return [...paths].sort();
 }
 
-async function validateCurrentIntegration(record, integration, readSource = read) {
+async function validateCurrentIntegration(record, integration, readSource = read, skillPaths = null) {
   assert.equal(integration.schema_version, 1);
   assert.equal(integration.change_ref, 'ui-review-contract-20260923');
   assert.equal(integration.evidence_class, 'deterministic-contract');
@@ -90,17 +99,20 @@ async function validateCurrentIntegration(record, integration, readSource = read
   assert.equal(hash(red.transcript), red.output_sha256);
   assert.match(red.transcript, /^# fail 4$/m);
   for (const entry of red.source_manifest) assert.equal(hash(atRevision(red.source_revision, entry.path)), entry.sha256);
-  assert.deepEqual(integration.source_manifest.map(entry => entry.path), await currentSourcePaths(record));
+  assert.deepEqual(integration.source_manifest.map(entry => entry.path), await currentSourcePaths(record, readSource, skillPaths));
   assert.equal(hash(JSON.stringify(integration.source_manifest)), integration.content_fingerprint);
   for (const entry of integration.source_manifest) {
     assert.equal(hash(await readSource(entry.path)), entry.sha256, `current evidence is stale: ${entry.path}`);
   }
 }
 
-test('UI/UX authoring evidence binds real baseline, transcripts and current sources', async () => {
+test('UI/UX authoring evidence binds real baseline, transcripts and historical sources', async () => {
   const record = JSON.parse(await read(historyPath));
   const integration = JSON.parse(await read(integrationPath));
-  await validateCurrentIntegration(record, integration);
+  const continuation = JSON.parse(await read(continuationPath));
+  const revision = continuation.previous_integration.revision;
+  assert.equal(hash(atRevision(revision, integrationPath)), continuation.previous_integration.sha256);
+  await validateCurrentIntegration(record, integration, file => atRevision(revision, file), historicalSkills(revision));
   assert.equal(execFileSync('git', ['rev-parse', `${record.base_revision}^{commit}`], { encoding: 'utf8', windowsHide: true }).trim(), record.base_revision);
   const absent = spawnSync('git', ['cat-file', '-e', `${record.base_revision}:_refs/design/uiux/select-references.mjs`], { windowsHide: true });
   assert.notEqual(absent.status, 0);
@@ -166,6 +178,9 @@ test('UI/UX authoring evidence binds real baseline, transcripts and current sour
 test('current UI/UX evidence fails closed for omitted, stale, missing or altered inputs', async () => {
   const record = JSON.parse(await read(historyPath));
   const integration = JSON.parse(await read(integrationPath));
+  const continuation = JSON.parse(await read(continuationPath)), revision = continuation.previous_integration.revision;
+  const readHistorical = file => atRevision(revision, file), skills = historicalSkills(revision);
+  await validateCurrentIntegration(record, integration, readHistorical, skills);
   for (const mutate of [
     value => { value.source_manifest.pop(); value.content_fingerprint = hash(JSON.stringify(value.source_manifest)); },
     value => { value.verification.command = ''; },
@@ -182,14 +197,171 @@ test('current UI/UX evidence fails closed for omitted, stale, missing or altered
   ]) {
     const candidate = structuredClone(integration);
     mutate(candidate);
-    await assert.rejects(validateCurrentIntegration(record, candidate));
+    await assert.rejects(validateCurrentIntegration(record, candidate, readHistorical, skills));
   }
   const changed = '_refs/shared/design-handoff.md';
   await assert.rejects(validateCurrentIntegration(record, integration, async file =>
-    file === changed ? `${await read(file)}\nsource changed at the same HEAD\n` : read(file)), /current evidence is stale/);
+    file === changed ? `${readHistorical(file)}\nsource changed at the same HEAD\n` : readHistorical(file), skills), /current evidence is stale/);
   await assert.rejects(validateCurrentIntegration(record, integration, async file => {
     if (file === changed) throw new Error('source missing');
-    return read(file);
-  }), /source missing/);
+    return readHistorical(file);
+  }, skills), /source missing/);
   await assert.rejects(validateCurrentIntegration(record, undefined));
+});
+
+const continuationPath = 'authoring/evals/interaction-finish-contract.json';
+const continuationPlan = '.sdcorejs/plans/workflow/2026-09-24-12-57-interaction-finish-contract-r2.md';
+const continuationPlanHash = 'sha256:v1:115d2a72425a4fbd512b2e072c2abe412217df2442d678adbfd191492ce241f3';
+const finishTests = ['harness-behavioral-sentinel','communication-economy','skill-pack-runner','parallel-dispatch-protocol',
+  'production-readiness-contract','angular-production-contract','nextjs-production-contract','review-contract',
+  'repair-contract','ship-readiness-contract','test-track-contract','simplify-skill-contract','visual-offer-policy'].map(name => `test/e2e/${name}.test.mjs`);
+const finishCommand = `node --test --test-concurrency=1 ${finishTests.join(' ')}`;
+const currentUiCommand = `node --test --test-concurrency=1 --test-reporter=tap ${contractPaths.join(' ')}`;
+
+async function readApproved(file, readSource) {
+  const text = await readSource(file), match = text.match(/^---\n([\s\S]*?)\n---\n/u);
+  assert.ok(match, 'approved artifact frontmatter is required');
+  return { metadata: parse(match[1]), body: text.slice(match[0].length) };
+}
+
+async function continuationSources(plan, historical, readSource) {
+  const canonical = plan.metadata.allowed_paths.filter(file =>
+    !/^(?:\.claude\/|plugin\/|codex\/|\.cursor\/)/u.test(file) && !/sdcorejs-harness\.json$/u.test(file) &&
+    !file.startsWith('.sdcorejs/') && file !== continuationPath && file !== 'VALIDATION.md');
+  const skills = (await readdir(new URL('skills/', root), { recursive: true }))
+    .map(file => `skills/${String(file).replaceAll('\\', '/')}`).filter(file => file.endsWith('.md'));
+  const roots = [...new Set([...canonical, ...skills, ...historical.source_manifest.map(entry => entry.path),
+    'authoring/README.md','authoring/skills/sdcorejs-skill-authoring/SKILL.md','authoring/evals/scenarios.json',
+    'authoring/evals/skill-authoring-contract.mjs','authoring/evals/run-deterministic.mjs',
+    'test/e2e/documentation-layout-contract.test.mjs','test/e2e/skill-authoring-contract.test.mjs',
+    'scripts/sync-skills.mjs','.claude/sync-skills.ps1','scripts/check-text-hygiene.mjs','scripts/check-executable-references.mjs',
+    'scripts/measure-communication-economy.mjs','package.json','package-lock.json'])].sort();
+  const paths = new Set(roots);
+  for (const file of paths) {
+    if (!file.endsWith('.mjs')) continue;
+    const source = await readSource(file);
+    const visit = node => {
+      const specifier = ts.isImportDeclaration(node) || ts.isExportDeclaration(node) ? node.moduleSpecifier
+        : ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword ? node.arguments[0]
+          : ts.isNewExpression(node) && node.expression.getText() === 'URL' ? node.arguments?.[0] : null;
+      if (specifier && ts.isStringLiteral(specifier) && specifier.text.startsWith('.')) {
+        const dependency = path.posix.normalize(path.posix.join(path.posix.dirname(file), specifier.text));
+        if (/\.(?:mjs|json|md)$/u.test(dependency)) paths.add(dependency);
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS));
+  }
+  return { roots, paths: [...paths].sort() };
+}
+
+function assertRun(run, expectedCommand, prefix, minimum, caseIds) {
+  assert.equal(run.command, expectedCommand); assert.equal(run.exit_code, 0);
+  assert.equal(hash(run.transcript), run.output_sha256);
+  assert.ok(Number.isInteger(run.tests) && run.tests >= minimum);
+  assert.equal(run.passed, run.tests); assert.equal(run.failed, 0);
+  for (const line of [`tests ${run.tests}`, `pass ${run.tests}`, 'fail 0', 'cancelled 0', 'skipped 0', 'todo 0'])
+    assert.ok(run.transcript.split('\n').includes(`${prefix} ${line}`), `missing successful summary: ${line}`);
+  for (const id of caseIds) assert.ok(run.transcript.split('\n').some(line =>
+    (prefix === '#' ? /^ok \d+ - /u : /^✔ /u).test(line) && line.includes(id)), `missing passing case: ${id}`);
+}
+
+async function validateEvidenceContinuation(value, readSource = read) {
+  assert.equal(value.schema_version, 1); assert.equal(value.change_ref, 'interaction-finish-contract-20260924');
+  assert.equal(value.evidence_class, 'deterministic-contract'); assert.equal(value.cwd, '.');
+  assert.equal(value.owner_repository_id, stableRepositoryId({ remote_url: git('config', '--get', 'remote.origin.url') }));
+  assert.equal(value.scope_plan, continuationPlan);
+  const plan = await readApproved(value.scope_plan, readSource);
+  assert.equal(plan.metadata.approval_hash, continuationPlanHash, 'only the actual approved r2 scope is authority');
+  const spec = await readApproved(plan.metadata.source_spec, readSource), architecture = await readApproved(plan.metadata.source_architecture, readSource);
+  verifyApprovedArtifactGraph(plan, [architecture, spec]);
+  assert.equal(plan.metadata.owner_repository_id, value.owner_repository_id);
+  assert.equal(plan.metadata.change_ref, value.change_ref);
+  assert.equal(value.source_revision, plan.metadata.source_revision);
+  assert.equal(git('rev-parse', `${value.source_revision}^{commit}`), value.source_revision);
+  assert.equal(value.previous_integration.path, integrationPath);
+  assert.equal(value.previous_integration.revision, value.source_revision);
+  const historicalText = atRevision(value.previous_integration.revision, integrationPath);
+  assert.equal(hash(historicalText), value.previous_integration.sha256);
+  assert.equal(hash(await readSource(integrationPath)), value.previous_integration.sha256, 'history must remain immutable');
+  const historical = JSON.parse(historicalText), record = JSON.parse(await readSource(historyPath));
+  assert.equal(hash(await readSource(historyPath)), historical.base_record.sha256, 'base UI history must remain immutable');
+  assert.equal(hash(await readSource(previousPath)), historical.previous_integration.sha256, 'Design history must remain immutable');
+  await validateCurrentIntegration(record, historical, file => atRevision(value.source_revision, file), historicalSkills(value.source_revision));
+  const expected = await continuationSources(plan, historical, readSource);
+  assert.deepEqual(value.source_roots, expected.roots);
+  assert.deepEqual(value.source_manifest.map(entry => entry.path), expected.paths);
+  assert.equal(hash(JSON.stringify(value.source_manifest)), value.content_fingerprint);
+  for (const entry of value.source_manifest) assert.equal(hash(await readSource(entry.path)), entry.sha256, `current continuation is stale: ${entry.path}`);
+  assert.equal(value.content_normalization, 'UTF-8 with LF line endings');
+  assertRun(value.verification, finishCommand, /^# tests /mu.test(value.verification.transcript) ? '#' : 'ℹ', 28, [
+    'native-runtime','native-failure','reply-normalization','separate-approval','ambiguous-gates','reuse-choice','stale-choice',
+    'worker-entrypoint','simplify-grant','simplify-owner','repair-recursion','assessment-binding','command-scope','required-phase',
+    'hook-boundary','tdd-order','canonical-callers','evidence-order','resolved-small-fix','defer','review-only','integration-owner',
+    'skip-review','simplify-semantics','repair-consumer','review-consumer','ship-consumer'].map(id => 'case-interaction-finish-' + id));
+  assertRun(value.ui_verification, currentUiCommand, '#', 60, [
+    'independence','purposes','source-limits','mockup-denial','target-provenance','content-staleness','missing-baseline','aesthetic-advisory',
+    'conformance-classification','observed-read-only','narrow-scope','real-consumers','owner-repair','smoke-fixtures','legacy-history','scope-and-checks'
+  ].map(id => 'case-ui-review-' + id + ':'));
+  assert.equal(value.ui_verification.source_fingerprint, value.content_fingerprint);
+  assert.equal(value.ui_verification.content_stable, true);
+  assert.equal(value.ui_verification.interrupted, false);
+  assert.equal(value.ui_verification.cwd, '.');
+  assert.equal(value.ui_verification.owner_repository_id, value.owner_repository_id);
+  assert.ok(Number.isFinite(Date.parse(value.ui_verification.started_at)));
+  assert.ok(Date.parse(value.ui_verification.finished_at) >= Date.parse(value.ui_verification.started_at));
+  assert.equal(value.verification.source_fingerprint, value.content_fingerprint);
+  assert.equal(value.verification.content_stable, true); assert.equal(value.verification.interrupted, false);
+  assert.equal(value.verification.cwd, '.'); assert.equal(value.verification.owner_repository_id, value.owner_repository_id);
+  assert.equal(value.live_agent, 'NOT RUN'); assert.equal(value.visual, 'NOT RUN');
+  assert.equal(value.native_picker_automation, 'NOT RUN'); assert.equal(value.live_target_project, false);
+  assert.equal(value.tokens, null); assert.equal(value.provider_calls, 0);
+}
+
+test('interaction/finish continuation verifies current content separately from historical UI approval', async () => {
+  const continuation = JSON.parse(await read('authoring/evals/interaction-finish-contract.json'));
+  await validateEvidenceContinuation(continuation);
+});
+
+test('interaction/finish continuation rejects omitted, stale, mutated and fabricated current evidence', async () => {
+  const original = JSON.parse(await read('authoring/evals/interaction-finish-contract.json'));
+  await validateEvidenceContinuation(original);
+  for (const mutate of [
+    value => { value.source_manifest.pop(); value.content_fingerprint = hash(JSON.stringify(value.source_manifest)); },
+    value => { value.source_roots.pop(); },
+    value => { value.owner_repository_id = 'github.com/foreign/repository'; },
+    value => { value.source_revision = 'f'.repeat(40); value.previous_integration.revision = value.source_revision; },
+    value => { value.scope_plan = '.sdcorejs/plans/foreign.md'; },
+    value => { value.previous_integration.sha256 = 'mutated'; },
+    value => { value.verification.command = ''; },
+    value => { value.verification.exit_code = 1; },
+    value => { value.verification.failed = 1; },
+    value => { value.verification.content_stable = false; },
+    value => { value.verification.source_fingerprint = 'sha256:' + '0'.repeat(64); },
+    value => { value.verification.transcript = ''; value.verification.output_sha256 = hash(''); },
+    value => { value.verification.transcript = value.verification.transcript.replace(/([ℹ#]) fail 0/u, '$1 fail 1'); value.verification.output_sha256 = hash(value.verification.transcript); },
+    value => { value.verification = null; },
+    value => { value.ui_verification = null; },
+    value => { value.ui_verification = { ...value.ui_verification, command: '', exit_code: 0 }; },
+    value => { value.ui_verification.content_stable = false; },
+    value => { value.ui_verification.interrupted = true; },
+    value => { value.ui_verification.source_fingerprint = 'sha256:' + '0'.repeat(64); },
+    value => { value.ui_verification.owner_repository_id = 'github.com/foreign/repository'; },
+    value => { value.ui_verification.exit_code = 1; },
+    value => { value.ui_verification.transcript = value.ui_verification.transcript.replace('# fail 0', '# fail 1'); value.ui_verification.output_sha256 = hash(value.ui_verification.transcript); },
+    value => { value.ui_verification.transcript = ''; value.ui_verification.output_sha256 = hash(''); },
+    value => { value.ui_verification.tests = 0; value.ui_verification.passed = 0; },
+    value => { value.visual = 'PASS'; },
+  ]) {
+    const candidate = structuredClone(original); mutate(candidate);
+    await assert.rejects(validateEvidenceContinuation(candidate));
+  }
+  for (const changed of ['_refs/shared/finish-gate.mjs', '_refs/shared/user-choice-prompt.md', continuationPlan, integrationPath, historyPath, previousPath]) {
+    await assert.rejects(validateEvidenceContinuation(original, async file =>
+      file === changed ? `${await read(file)}\nmutated at the same HEAD\n` : read(file)));
+    await assert.rejects(validateEvidenceContinuation(original, async file => {
+      if (file === changed) throw new Error('source missing'); return read(file);
+    }), /source missing/);
+  }
+  await assert.rejects(validateEvidenceContinuation(undefined));
 });

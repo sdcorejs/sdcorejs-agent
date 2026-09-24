@@ -1,4 +1,5 @@
 {
+  "choice_runtime": {"session_id":"fixture-session","mode":"default","tools":[{"name":"fixture-choice","actions":["user.choose","user.approve"],"modes":["default"]}]},
   "capabilities": {
     "structured": { "native_structured_choice": "supported" },
     "typed_visual": { "native_structured_choice": "unsupported", "visual_surface": "supported", "static_html_artifact": "supported" },

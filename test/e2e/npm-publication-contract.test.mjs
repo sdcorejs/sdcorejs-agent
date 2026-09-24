@@ -9,6 +9,13 @@ const EXPECTED_RELEASE_VERSION = '0.8.0';
 const EXPECTED_SKILL_COUNT = 23;
 const EXPECTED_ROOT_NODE_RANGE = '^22.22.3 || ^24.15.0 || >=26.0.0';
 const CONTRACT_PATH = 'test/e2e/npm-publication-contract.test.mjs';
+// These immutable/history-linked JSON records contain quoted test transcripts,
+// not executable root publication configuration. Credential residue screening
+// still includes them, as it does every other evaluation artifact.
+const EVALUATION_EVIDENCE_RECORDS = new Set([
+  'authoring/evals/interaction-finish-contract.json',
+  'authoring/evals/uiux/ui-review-integration.json',
+]);
 const VISUAL_COMPANION_NODE18_COMMAND =
   'node --test test/e2e/visual-companion-runtime.test.mjs test/e2e/static-visual-composer.test.mjs';
 
@@ -144,6 +151,20 @@ test('npm publication: delegated executable and configuration surfaces stay in s
 test('npm publication: repository residue scan excludes its own contract source', () => {
   assert.equal(isRepositoryResidueScanTarget(CONTRACT_PATH), false);
   assert.equal(isRepositoryResidueScanTarget('scripts/release.mjs'), true);
+});
+
+test('npm publication: evidence data is distinct from executable authoring configuration', () => {
+  for (const file of EVALUATION_EVIDENCE_RECORDS) {
+    assert.equal(isActiveRootPublicationSurface(file), false, file);
+    assert.equal(isRepositoryResidueScanTarget(file), true, 'evidence still receives credential screening');
+  }
+  for (const file of ['authoring/release.mjs', 'authoring/package.json',
+    'authoring/evals/release.sh', 'authoring/evals/unknown.json']) {
+    assert.equal(isActiveRootPublicationSurface(file), true, file);
+    assert.equal(isRepositoryResidueScanTarget(file), true, file);
+  }
+  assert.match('NPM_TOKEN=fixture', PUBLICATION_AUTH_PATTERN);
+  assert.match('//registry.npmjs.org/:_authToken=fixture', /\/\/registry\.npmjs\.org\/:_authToken/i);
 });
 
 test('npm publication: root manifest is private tooling without publication metadata', async () => {
@@ -366,6 +387,9 @@ async function activeDocumentationFiles() {
 function isActiveRootPublicationSurface(path) {
   const name = path.replaceAll('\\', '/').toLowerCase();
   if (!isRepositoryResidueScanTarget(name)) {
+    return false;
+  }
+  if (EVALUATION_EVIDENCE_RECORDS.has(name)) {
     return false;
   }
   if (name === 'package-lock.json' || name.endsWith('/package-lock.json')) {

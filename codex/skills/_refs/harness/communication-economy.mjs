@@ -1,6 +1,7 @@
 import { validateSimplifyContext } from '../simplify/simplify-contract.mjs';
 import { validateUiReviewContext } from '../shared/ui-review-contract.mjs';
 import { isDeepStrictEqual } from 'node:util';
+import { decisionFingerprint } from './runtime-policy.mjs';
 import {
   validateDispatchContext,
   validateResultIdentity,
@@ -1222,6 +1223,12 @@ export function buildPortableHandoff({
     envelopeErrors.push('evidence_refs entries must be non-empty string references');
   }
   if (!isPlainObject(stateDelta)) envelopeErrors.push('state_delta must be an object');
+  for (const field of ['interaction_context', 'finish_context']) {
+    if (context?.[field] !== undefined) {
+      if (stateDelta[field] !== undefined && !isDeepStrictEqual(stateDelta[field], context[field])) envelopeErrors.push(`${field} differs between producer and state_delta`);
+      else stateDelta = { ...stateDelta, [field]: structuredClone(context[field]) };
+    } else if (stateDelta?.[field] !== undefined) envelopeErrors.push(`${field} has no matching producer context`);
+  }
   if (!isNonEmptyString(resolvedNextAction)) {
     envelopeErrors.push('next_action must be a non-empty string');
   }
@@ -1675,7 +1682,7 @@ function validateRequiredFieldValue(contextType, field, value) {
   // ordinary review producer schema. Legacy handoffs retain their field matrix.
   const uiKind = contextType === 'review_context'
     ? { schema_version: 'number', write_actions: 'array', ui_review: 'object', reported_findings: 'array' }[field] : null;
-  const kind = uiKind ?? CONSUMER_REQUIRED_FIELD_KINDS[contextType]?.[field] ?? 'scalar';
+  const kind = ['interaction_context','finish_context'].includes(field) ? 'object' : uiKind ?? CONSUMER_REQUIRED_FIELD_KINDS[contextType]?.[field] ?? 'scalar';
   const kindError = validateFieldKind(kind, value);
   if (kindError) return kindError;
 
@@ -1756,6 +1763,20 @@ function validateFieldKind(kind, value) {
 
 function validateContextSemantics(contextType, consumer, context) {
   const errors = [];
+  if (context.interaction_context !== undefined) {
+    try {
+      if (context.interaction_context?.schema_version !== 1) throw new Error('unsupported interaction context');
+      decisionFingerprint(context.interaction_context.decision);
+    } catch (error) { errors.push(error.message); }
+  }
+  if (context.finish_context !== undefined) {
+    const finish = context.finish_context;
+    if (finish?.schema_version !== 1 || !isPlainObject(finish.identity) || !isPlainObject(finish.choices) || !isPlainObject(finish.phase_receipts) ||
+        !['integration','worker'].includes(finish.actor?.role) || !/^sha256:[a-f0-9]{64}$/u.test(finish.identity?.scope_fingerprint ?? '')) errors.push('invalid finish context; status alone is not completion evidence');
+    for (const choice of Object.values(finish?.choices ?? {})) {
+      try { decisionFingerprint(choice?.decision); } catch (error) { errors.push(error.message); }
+    }
+  }
   if (contextType === 'review_context' && (context.purpose !== undefined || context.ui_review !== undefined)) {
     errors.push(...validateUiReviewContext(context).blockers.map(message => 'review_context: ' + message));
   }
@@ -1786,7 +1807,8 @@ function validateContextSemantics(contextType, consumer, context) {
 }
 
 function requiredHandoffFields(contextType, consumer, context) {
-  const fields = CONSUMER_REQUIRED_FIELDS[contextType]?.[consumer];
+  const base = CONSUMER_REQUIRED_FIELDS[contextType]?.[consumer];
+  const fields = base ? [...base, ...['interaction_context','finish_context'].filter(field => context?.[field] !== undefined)] : base;
   if (!fields || contextType !== 'review_context') return fields;
   if (context?.purpose === undefined && context?.ui_review === undefined &&
       !context?.validation_map?.some(row => row.ui_review)) return fields;

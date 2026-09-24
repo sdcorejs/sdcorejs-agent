@@ -21,8 +21,7 @@ for draft self-review, and `validateArchitecturePlanHandoff` only after approval
 
 Forward runtime `requirement_context.visual_companion` via `context.pass` (portable
 `state_delta.visual_companion`); preserve identity, scopes, surface and
-consent. Apply `_refs/sdlc/visual-offer-policy.md` for unresolved choices; never
-persist runtime permission in approved artifacts or reopen settled choices.
+consent. Apply `_refs/sdlc/visual-offer-policy.md` for unresolved choices; never persist runtime permission in approved artifacts or reopen settled choices.
 
 ## Purpose
 Translate an approved spec into the exact contract `sdcorejs-execute-plan` runs, hold approval, and persist the approved plan corpus inside this skill.
@@ -34,8 +33,7 @@ Translate an approved spec into the exact contract `sdcorejs-execute-plan` runs,
 - `architecture_gate` is an exact valid classifier result. Required work has the immutable
   artifact plus validated `architecture_context`; not-applicable work uses null plus its bypass.
 
-If the spec is missing or unapproved, route to `sdcorejs-spec`.
-Run `validateArchitecturePrePlanHandoff` before drafting. Required work uses approved spec ->
+If the spec is missing or unapproved, route to `sdcorejs-spec`. Run `validateArchitecturePrePlanHandoff` before drafting. Required work uses approved spec ->
 approved architecture -> approved plan; a concrete bypass uses approved spec -> approved plan.
 Missing parents, identity drift, mutation, unknown profiles, or owner mismatch block planning.
 
@@ -48,8 +46,7 @@ side_effects_allowed: true
 ```
 
 Plan writes are limited to owned draft/approved plan artifacts; stale summary never authorizes
-a refresh. Preserve contract/requirement/target/track/profile and repository identities plus the
-approved spec path/revision/hash from `spec_context`. Preserve `decision_coverage`,
+a refresh. Preserve contract/requirement/target/track/profile and repository identities plus the approved spec path/revision/hash from `spec_context`. Preserve `decision_coverage`,
 `goal_backward_review`, the exact `architecture_gate`/`architecture_context`, and any required
 approved architecture path/hash/reference without renumbering or inference.
 
@@ -78,15 +75,12 @@ Read:
   `package.json` scripts. Record package manager/script evidence instead of
   guessing commands.
 
-Keep the approved spec as the `what`, `why`, constraints, and acceptance source
-of truth. The plan references its path/hash and carries only the short scope
-delta needed to explain the `how`, order, commands, and file-level changes; it
-must not copy the full spec body.
+Keep the approved spec as the `what`, `why`, constraints, and acceptance source of truth. The plan references its path/hash and carries only the short scope
+delta needed to explain the `how`, order, commands, and file-level changes; it must not copy the full spec body.
 
 For any non-trivial frontend task, also read
 `_refs/shared/frontend-architecture.md` and inspect nearby route/page,
-component, state, service/data-access, provider/registration, public API, and
-test evidence. The approved plan must carry the completed frontend architecture
+component, state, service/data-access, provider/registration, public API, and test evidence. The approved plan must carry the completed frontend architecture
 contract; planning from a generic folder recipe is not sufficient.
 
 ### 2. Check paths
@@ -151,9 +145,7 @@ If unrelated dirty files exist, execution asks:
 3. Stop so the user can clean or stash changes first
 ```
 
-Do not plan edits to prohibited paths, env values, secrets, generated/vendor/
-build output, lockfiles, or package manifests unless the approved plan allows
-them.
+Do not plan edits to prohibited paths, env values, secrets, generated/vendor/ build output, lockfiles, or package manifests unless the approved plan allows them.
 
 ### 2.2 Run the goal-backward approval gate
 
@@ -163,28 +155,22 @@ new public skill. Work backward from each goal and every `R-###`, `AC-###`,
 `D-###`, and `INV-###` record to concrete `TASK-###` entries. Each `AC-###`
 also appears in at least one `EVIDENCE-###` row owned by a task in that AC's
 `task_refs`. Each task declares one repository owner, explicit dependencies,
-planned paths, evidence, and justification. Each invariant maps to both an
-enforcing task and planned evidence. Decision records, goals, tasks, and
+planned paths, evidence, and justification. Each invariant maps to both an enforcing task and planned evidence. Decision records, goals, tasks, and
 repository inventory must each be non-empty.
 
-Build `repository_inventory` from inspected repository paths. The checker
-derives each planned path as `existing`, `intended-new`, or `missing`:
+Build `repository_inventory` from inspected repository paths. The checker derives each planned path as `existing`, `intended-new`, or `missing`:
 
 - `existing` paths appear in the inspected inventory;
 - `intended-new` paths have exactly one explicit declaration whose
   `owner_task_id` matches the task using the path;
 - every other path is `missing` and blocks approval.
 
-Require safe normalized repository-relative paths with forward slashes for all
-task and repository inventory paths. Reject absolute, drive-qualified,
+Require safe normalized repository-relative paths with forward slashes for all task and repository inventory paths. Reject absolute, drive-qualified,
 backslash, empty-segment, dot-segment, and traversal forms.
 
-Reject duplicate or conflicting path ownership, dangling/mismatched task or
-evidence references, uncovered records or goals, unjustified task scope,
-dependency cycles, and invariant enforcement gaps. Record each deterministic
-self-critique round with the exact checker version and partition every blocker
-into resolved or unresolved. Carry unresolved blockers into the next round.
-Stop after at most three rounds; unresolved blockers after three rounds block
+Reject duplicate or conflicting path ownership, dangling/mismatched task or evidence references, uncovered records or goals, unjustified task scope,
+dependency cycles, and invariant enforcement gaps. Record each deterministic self-critique round with the exact checker version and partition every blocker
+into resolved or unresolved. Carry unresolved blockers into the next round. Stop after at most three rounds; unresolved blockers after three rounds block
 approval and execution, and a fourth round is forbidden.
 
 ### 3. Draft the plan
@@ -387,6 +373,11 @@ Fix the plan before presenting if any checklist item fails:
 - No write-producing step occurs after final branch-ready.
 
 ### 5. Present the approval gate
+
+Use `resolveDecision` and the native-first presentation contract in `_refs/shared/user-choice-prompt.md`.
+Bind this plan gate to its current artifact revision and exact scope; spec approval cannot approve plan.
+Reuse matching explicit choices, ask only unresolved deltas, and preserve all three numbered fallback options.
+
 Show a concise summary:
 
 ```text
@@ -504,3 +495,8 @@ Abort:
 ## Design and UI review integration
 
 For applicable Design/UI requirements, use the optional validation_map row ui_review schema from _refs/shared/ui-review.md. Preserve existing dimensions and owner authority. Emit the same targets/obligations as a ui-review-requirements JSON block in the approved body so actual-source consumers can detect omitted runtime payloads; reject drift between these projections. Record independent-review applicability separately from source/rendered/interaction evidence and invocation permission. Do not add a mandatory independent-review or approval gate to every UI edit.
+
+## Finish policy projection
+Resolve test strategy and docs/review policy in planning. Include the `finish-policy` JSON fence from `_refs/shared/finish-gate.md` in new approved bodies and preserve it in `finish_context`.
+Reusable `interaction-policy` entries bind fingerprints to option IDs; they never auto-approve artifacts or Simplify Apply.
+Keep legacy approved snapshots immutable; use explicit scoped authority or re-plan changed scope. No bulk migration.

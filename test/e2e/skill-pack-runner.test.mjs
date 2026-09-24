@@ -182,18 +182,20 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
   const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
 
+  const finish = await readFile(new URL('../../_refs/shared/finish-gate.md', import.meta.url), 'utf8');
+  const docsGate = await readFile(new URL('../../_refs/documentation/gate.md', import.meta.url), 'utf8');
   for (const name of ['sdcorejs-angular', 'sdcorejs-nestjs', 'sdcorejs-nextjs']) {
     const text = sourceByName.get(name);
     assert.ok(text, `${name} exists`);
     assert.match(text, /_refs\/shared\/finish-gate\.md/, `${name} presents the finish gate`);
     assert.match(text, /_refs\/documentation\/gate\.md/, `${name} runs documentation gate`);
-    assert.match(text, /\.sdcorejs\/documentation\/preferences\.md/, `${name} supports saved documentation preferences`);
-    assert.match(text, /finishing steps \(tests,\s+optional behavior-preserving simplification, review, code-documentation, technical-doc, user-guide\)/, `${name} progress checklist includes simplify and technical-doc`);
-    assert.match(text, /sdcorejs-ship \(verify-before-done mode\)/, `${name} runs acceptance verification`);
-    assert.match(text, /sdcorejs-ship \(branch-ready mode\)/, `${name} runs branch-ready`);
-    assert.match(text, /_refs\/orchestration\/tail\/auto-docs\.md/, `${name} writes auto-docs`);
-    assert.match(text, /_refs\/orchestration\/tail\/auto-task-tracker\.md/, `${name} updates task tracker`);
-    assert.match(text, /memories mode/, `${name} hands off durable memories when needed`);
+    assert.ok(docsGate.includes('.sdcorejs/documentation/preferences.md'), 'canonical docs gate preserves preferences');
+    assert.match(text, /complete(?:Angular|Nextjs)?Execution/, 'caller uses the actual completion entrypoint');
+    assert.match(text, /Review-only|Review-only/i, 'read-only mode cannot repair');
+    assert.match(finish, /verify-before-done/, 'canonical acceptance verification');
+    assert.match(finish, /final read-only branch-ready/, 'canonical final gate');
+    assert.match(finish, /execution\/traceability records/, 'required execution records');
+    assert.match(finish, /owned backlog\/memory\/convention sync/, 'owned durable hooks');
   }
 
   const angularSkill = sourceByName.get('sdcorejs-angular');
@@ -324,7 +326,8 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(repairRef, /package manager|lockfile|`package\.json` scripts/i);
   assert.match(repairRef, /Silence is not approval/);
   assert.match(repairRef, /Do not edit tests merely to make production code pass/);
-  assert.match(repairRef, /return to the caller's tail chain/);
+  assert.match(repairRef, /return `finish_context`/);
+  assert.match(repairRef, /completeExecution/);
   assert.match(repairRef, /sdcorejs-ship \(verify-before-done mode\)/);
   assert.match(repairRef, /debug_context/);
 
@@ -652,7 +655,8 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(codexGitSkill, /REDACTED|redact/i);
 
   const choicePrompt = await readFile(new URL('../../_refs/shared/user-choice-prompt.md', import.meta.url), 'utf8');
-  assert.match(choicePrompt, /Text decisions and every approval: native structured choice, then numbered\s+Markdown/);
+  assert.match(choicePrompt, /Actual permitted structured choice is first/);
+  assert.match(choicePrompt, /directly to numbered fallback once/);
   assert.match(choicePrompt, /Preserve numbered Markdown on every surface/);
   assert.match(choicePrompt, /Reply with `1`, `2`, or `3`/);
 
@@ -665,21 +669,15 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   }
 
   const finishGate = await readFile(new URL('../../_refs/shared/finish-gate.md', import.meta.url), 'utf8');
-  assert.match(finishGate, /Finish step 1\/4: tests/);
-  assert.match(finishGate, /Finish step 3\/4: behavior-preserving code simplification/);
-  assert.match(finishGate, /Finish step 4\/4: review/);
-  assert.match(finishGate, /Documentation approval gate/);
-  assert.match(finishGate, /single combined gate/);
-  assert.match(finishGate, /Skip new user\/technical docs/);
-  assert.match(finishGate, /user_guide: skip[\s\S]*technical_doc: skip[\s\S]*requirement_record: skip/);
-  assert.match(finishGate, /`sdcorejs-documentation \(code-documentation mode\)` - automatic/);
-  assert.match(finishGate, /Run review only - read-only review/);
-  assert.match(finishGate, /Run review and repair loop/);
-  assert.match(finishGate, /repair-loop receives the original `review_context`/);
-  assert.match(finishGate, /`sdcorejs-review` only; it must[\s\S]*include `review_context`/);
-  assert.match(finishGate, /write-producing[\s\S]*before final branch-ready/i);
-  assert.match(finishGate, /No writes after branch-ready unless branch-ready is run again/i);
-  assert.match(finishGate, /branch-ready.*final read-only gate|final read-only gate.*branch-ready/i);
+  assert.match(finishGate, /resolveFinish/, 'one canonical finish resolver');
+  assert.match(finishGate, /Reuse authorized docs\/test policy/, 'no repeated policy prompts');
+  assert.match(finishGate, /never create missing guides/, 'preferences do not grant creation');
+  assert.match(finishGate, /source documentation/, 'touched-source documentation remains owned');
+  assert.match(finishGate, /review-only[^]*no repair or UI auto-fix/u);
+  assert.match(finishGate, /review-and-repair[^]*existing owner\/tier\/scope/u);
+  assert.match(finishGate, /original `review_context`/, 'repair retains selected finding evidence');
+  assert.match(finishGate, /revalidate affected evidence[^]*final read-only branch-ready/u);
+  assert.match(finishGate, /Any later write requires affected checks/);
   assert.doesNotMatch(finishGate, /sdcorejs-ship \(branch-ready mode\)` \(unless deferred\)\.[\s\S]*auto-docs tail ref/);
   assert.doesNotMatch(finishGate, /code_documentation: skip/);
   assert.doesNotMatch(finishGate, /Codes:/);

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "adapter": "codex",
   "source_path": "_refs/harness/capability-contract.json",
-  "source_hash": "sha256:57e326a1af1c4a038bfa2e6befc459252fd9209b822d6365939aa04e82688c56",
-  "content_hash": "sha256:428965a38bb10b8f72562c5ad0e6698eb1641d9fc87c806c4f972d59df89ccbe",
+  "source_hash": "sha256:039bf98637e563fe7aab4f11606287892047e881f1e232159f8ba1c521be856e",
+  "content_hash": "sha256:1dce01c1f58ab46f0e541b28e6dd08e509877c2514cbd82f5936bc0c55392db4",
   "generated_path": "codex/sdcorejs-harness.json",
   "capabilities": {
     "runtime_context_channel": "unknown",
@@ -55,7 +55,8 @@
     "user.choose": {
       "status": "unknown",
       "native": [
-        "request_user_input"
+        "request_user_input",
+        "request_user_input_async"
       ],
       "capability": "native_structured_choice",
       "fallback": "Render stable numbered Markdown choices and accept a written reply."
@@ -63,7 +64,8 @@
     "user.approve": {
       "status": "unknown",
       "native": [
-        "request_user_input"
+        "request_user_input",
+        "request_user_input_async"
       ],
       "capability": "native_structured_choice",
       "fallback": "Render one numbered approval gate and accept a written reply."

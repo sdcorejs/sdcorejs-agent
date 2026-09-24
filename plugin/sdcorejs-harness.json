@@ -2,7 +2,7 @@
   "schema_version": 1,
   "adapter": "claude-code",
   "source_path": "_refs/harness/capability-contract.json",
-  "source_hash": "sha256:57e326a1af1c4a038bfa2e6befc459252fd9209b822d6365939aa04e82688c56",
+  "source_hash": "sha256:039bf98637e563fe7aab4f11606287892047e881f1e232159f8ba1c521be856e",
   "content_hash": "sha256:2ff6499b687b2ccd148785b39ac350df1ca8a15dd0420fbfa49a8fe0d22f203f",
   "generated_path": "plugin/sdcorejs-harness.json",
   "capabilities": {

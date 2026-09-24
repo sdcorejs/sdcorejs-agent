@@ -61,3 +61,9 @@ Rules:
 - Explore codebase context with `sdcorejs-explore`; verify and ship through `sdcorejs-ship`; commit, PR, changelog, and release notes through `sdcorejs-git`.
 - Preserve the user's language and locale marks.
 - Verify before claiming pass/fixed/done.
+
+## Canonical interaction and completion
+
+Use `_refs/shared/user-choice-prompt.md` for native-first decisions and reuse of scoped explicit choices.
+Resolve completion through `_refs/shared/finish-gate.md`; only the integration owner runs final finish.
+Prompts are conditional; required acceptance/evidence remain mandatory. No writes after branch-ready, the final read-only gate, unless affected verification and that gate run again. No automatic commit/push/deploy.

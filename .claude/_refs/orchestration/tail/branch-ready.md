@@ -352,3 +352,15 @@ as info.
 - `sdcorejs-git (commit mode)` - consumes branch-ready evidence for commits.
 - `sdcorejs-git (PR mode)` - consumes branch-ready evidence for PRs.
 - `sdcorejs-debug` - use when a blocker is a failing test or command that needs root-cause work.
+
+## Canonical finish continuation
+
+When invoked by an executor tail, preserve `finish_context` and pass it to
+`evaluateShipReadiness` with the current `finish_runtime` from
+`_refs/shared/finish-gate.md`. Set `finish_phase` to `verify` or
+`branch-ready` only for that phase's preflight; handoff requires completed,
+current proof. This avoids requiring future receipts before their command runs.
+Defer, unresolved required Design/UI/test gaps, stale content or blocking review
+cannot become done. Final gates are read-only. Any later write invalidates
+affected evidence and requires the parent to resume the canonical resolver.
+Ship does not reopen resolved policy or grant commit/push/deploy authority.

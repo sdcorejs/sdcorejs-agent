@@ -2,6 +2,7 @@
   "schema_version": 1,
   "localization_fixture": true,
   "description": "Natural-language and multi-turn visual offer evaluation. Expected labels are evaluator-only; assistant turns must come from actual runs.",
+  "choice_runtime": {"session_id":"fixture-session","mode":"default","tools":[{"name":"fixture-choice","actions":["user.choose","user.approve"],"modes":["default"]}]},
   "capabilities": {
     "native_structured_choice": "supported",
     "visual_surface": "supported",

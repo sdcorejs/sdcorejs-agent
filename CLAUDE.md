@@ -200,7 +200,7 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
    track detection, Angular Core UI/plain Angular classification,
    AI-agent/product/design/test routing, generic fallback, and execution-mode
    resolution.
-5. **Finish gate.** Every code-generation run presents the finish gate before tail steps, even direct one-line requests.
+5. **Finish gate.** Every code-generation run resolves the canonical finish gate; prompt only for unresolved decisions.
 6. **Evidence before claims.** Never claim pass, built, fixed, or done without running and reading the relevant verification command in the current turn.
 7. **Runtime-localized.** Respond in the user's language; preserve locale-specific marks; keep identifiers and route paths in English.
 8. **Mojibake guard.** Treat encoding corruption as blocking in docs, skills, prompts, comments, and user-facing strings.
@@ -254,7 +254,7 @@ At the start of a target-project session:
 | SDLC | `sdcorejs-brainstorming`, `sdcorejs-spec`, `sdcorejs-plan` |
 | Execution | `sdcorejs-execute-plan`, `sdcorejs-ai-agent`, other track executors, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` |
 | Delegated execution | `sdcorejs-subagent-driven-development`; `sdcorejs-parallel-dispatch` schedules safe waves; workspace isolation is a provider-neutral orchestration action |
-| Finish | `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)`, `sdcorejs-explore (conventions-sync-write-approved)`, `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode as the final read-only gate)` |
+| Finish | `_refs/shared/finish-gate.md` canonical resolver; stack-specific scoped hooks |
 | Utilities | `sdcorejs-simplify`, `sdcorejs-explore`, `sdcorejs-git`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, `sdcorejs-documentation` |
 
 ## Mirrors
@@ -269,3 +269,9 @@ Generated mirrors:
 - `.cursor/rules/sdcorejs-agent.mdc`
 
 Run `npm run sync:skills` after editing source skills, `_refs`, or `AGENTS.md`.
+
+## Canonical interaction and completion
+
+Use `_refs/shared/user-choice-prompt.md` for native-first decisions and reuse of scoped explicit choices.
+Resolve completion through `_refs/shared/finish-gate.md`; only the integration owner runs final finish.
+Prompts are conditional; required acceptance/evidence remain mandatory. No writes after branch-ready, the final read-only gate, unless affected verification and that gate run again. No automatic commit/push/deploy.

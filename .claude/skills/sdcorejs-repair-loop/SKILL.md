@@ -67,7 +67,7 @@ attempts, and repaired evidence linkage.
 
 ## Handoff
 - After convergence, return to the caller's tail chain.
-- If invoked from a finish-gate review, complete write-producing documentation, auto-docs, user guide, task tracker, and memory steps first, then run `sdcorejs-ship (verify-before-done mode)` and `sdcorejs-ship (branch-ready mode)` as the final read-only gate over the final diff. No writes after branch-ready unless branch-ready is run again.
+- If invoked from a finish-gate review, return `finish_context`, scoped repair results and affected-evidence invalidation to the integration owner. The caller resumes `completeExecution` from `_refs/shared/finish-gate.md`; repair does not run shared docs, reopen choices or dispatch simplify. Existing finding/tier/scope preflight remains mandatory.
 - If invoked directly by the user, run discovered verification commands and offer explicit numbered next steps: run `sdcorejs-ship (verify-before-done mode)`, stop after the repair summary, or prepare a commit only after ship and branch-ready pass for the current `HEAD` or diff.
 - If `sdcorejs-debug` was used inside the loop, carry its `debug_context` into
   the repair summary and subsequent ship gates.

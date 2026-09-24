@@ -178,3 +178,14 @@ contract. The deterministic report reads baseline schema surfaces from the
 declared source commit and combines them with sanitized scenario inputs; it is
 not a captured live-agent transcript or token-usage result. The helpers perform
 no repository writes and create no server, database, or mutable checkpoint.
+
+### Scoped decisions and finish continuation
+
+When present, pass `interaction_context` and `finish_context` unchanged in
+portable `state_delta`, matching the producer context. The builder and validator
+check these conditional fields; do not drop them to reopen a resolved decision
+or bypass the selected review/defer mode. They carry identities/references,
+not authority: consumers re-read user events, approved policy and content-bound
+proof. Unknown/malformed schema blocks; legacy absence never proves tail completion.
+Use the canonical payloads in `_refs/shared/user-choice-prompt.md` and
+`_refs/shared/finish-gate.md`; no additional state store or checkpoint file.

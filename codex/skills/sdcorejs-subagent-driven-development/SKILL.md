@@ -119,10 +119,13 @@ transfer. Any repair invalidates prior unit and review evidence.
 
 Invoke `sdcorejs-parallel-dispatch` for deterministic fan-in. Integrate in the
 approved order, validate every immutable ref or exact diff, probe after each
-application, run global verification on the integrated state, then execute the
-mandatory finish and final read-only branch-ready gates. `sdcorejs-git` may run
-only after fan-in and current ship evidence; workers must not commit, push, or
-open pull requests.
+application and run global verification on the integrated state. Workers use
+`completeDelegatedUnit` in `../_refs/orchestration/parallel-protocol.mjs` for
+unit verification and Stage A/B evidence only; no shared finish prompts/docs.
+The parent uses `completeExecution` once per integrated change, consuming
+`finish_context` and `next_actions` from `../_refs/shared/finish-gate.md`.
+No worker may commit, push, or open pull requests. Any Git handoff still requires
+explicit user authority and current final ship evidence.
 
 ## Runtime output
 

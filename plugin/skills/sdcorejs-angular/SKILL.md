@@ -214,47 +214,31 @@ For UI-affecting work, the final response must also include the concise
 sections named `Core reuse summary` and `UI check`, as defined in
 `_refs/angular/write-code/input-analysis.md`.
 
-#### MANDATORY FINISH GATE (always — standalone trigger OR full SDLC flow)
+#### MANDATORY FINISH GATE
 
-**STOP and present the consolidated finish gate from [`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md) before running ANY tail step.** This is UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add entity", "create module X") — NOT only inside the spec→plan flow. The gate surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review choices with defaults so the user always knows these steps exist and can opt out of new user/technical docs. "Small change" is not a reason to skip the gate. Read the ref for the exact prompt + rules.
+Use `completeAngularExecution` with `finish_context` and the current host runtime from
+`_refs/shared/finish-gate.md`. Consume its `next_actions` after each owner
+returns; the shared resolver owns the order and completion status. The gate
+is mandatory after code generation, including direct requests; only unresolved
+choices prompt. Reuse scope-bound decisions. Defer stops this tail without a
+done claim. Review-only never dispatches repair or UI auto-fix. Workers return
+unit evidence; only the integration owner runs the shared final gate.
 
-Test authoring and the RED/GREEN/refactor loop are mandatory implementation
-work completed before production code and cannot be disabled here. The finish
-gate controls only extra integration/E2E execution plus optional documentation,
-simplification, and review work. It cannot retroactively skip authored unit and
-contract tests or convert a RED/GREEN failure into success.
+The completion entrypoint is in `_refs/angular/execution-contract.mjs`.
+Test authoring and the RED/GREEN/refactor loop remain mandatory before the
+corresponding production code. Always run the smallest relevant unit and
+contract tests; finish choices cannot remove required tests or AC. Unavailable
+infrastructure is NOT RUN. Never label post-hoc tests RED-first.
 
-Then run the tail in this order, honoring only those finish-gate choices:
-
-Documentation supplement: immediately after the Finish Gate test decision, run
-`sdcorejs-documentation (documentation-gate mode)` and read
-`_refs/documentation/gate.md`. This gate asks or loads saved project
-preferences from `<target>/.sdcorejs/documentation/preferences.md` for
-`user-guide` and `technical-doc` only. It must ask before
-creating a missing corresponding user-guide or technical-doc for a new feature.
-`code-documentation` is automatic for touched source files and is not controlled
-by this approval gate.
-
-1. `sdcorejs-test` (sdcorejs-test) - ALWAYS run the smallest relevant unit and contract tests already written RED-first and report pass/fail + failing names. The finish gate may enable or decline only additional integration/E2E execution; unavailable infrastructure is reported as `NOT RUN`, never pass. If any testable file still lacks a required spec, return to the TDD gate before continuing.
-2. *(if Review not skipped)* `sdcorejs-review` (skills/shared/workflow/review.md; auto-detects Angular and loads `_refs/angular/review-code.md`) - convention check; actionable Angular code-review table with severity, group, file/line, risk, fix, and gate
-3. *(if Review not skipped)* `sdcorejs-repair-loop` - apply findings, iterate until `BLOCKER`/`REQUIRED` findings are fixed or explicitly deferred
-4. `sdcorejs-documentation (code-documentation mode)` - automatically apply concise source-code documentation rules to touched source files. Do NOT ASK for approval. Cross-track baseline + per-track addenda live in `_refs/documentation/code-documentation.md`
-5. *(if UI-affecting)* Angular UI check from `_refs/angular/write-code/input-analysis.md` - run browser/preview verification when available; otherwise perform and report a code-level UI review. Fix confirmed UI issues only within current executor/repair write authority; review-only checks report findings without edits. If this changes code, rerun the smallest relevant check.
-6. `sdcorejs-product` *(when user-visible feature traceability is needed)* - seed/update `.sdcorejs/docs/product/` with requirement, implementation, and test mapping
-7. *(if Technical doc approved)* `sdcorejs-documentation (write-technical-doc mode)` - create/update the approved technical doc from source evidence.
-8. `_refs/orchestration/tail/auto-docs.md` *(always)* - change-scoped execution record written to `<target>/.sdcorejs/docs/angular/`
-9. *(if User guide approved)* `sdcorejs-documentation (write-user-guide mode)` - create/update the touched module's `.sdcorejs/documentation/user-guides/<module>/<module>.md` only when approved by the documentation gate or explicitly requested. Per-module incremental; after all module updates, the aggregate rebuilds exactly once when a guide changed, when explicitly requested, or when stale inside approved scope.
-10. `_refs/orchestration/tail/auto-task-tracker.md` *(only when the sequential workflow or integration owner is authorized to update the shared backlog)* - reconcile durable follow-up work; never mirror live progress
-11. `sdcorejs-explore (memories mode)` - only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
-12. `sdcorejs-ship (verify-before-done mode)` *(always)* - BLOCK "done" until acceptance criteria from the selected scope are verified or explicitly deferred
-13. `sdcorejs-ship (branch-ready mode)` *(always)* - final read-only branch-ready gate over the final diff before any Git artifact handoff. No writes after branch-ready unless branch-ready is run again.
-
-The FINISH GATE itself is mandatory and unconditional. Change execution
-records, relevant memories, `sdcorejs-ship (verify-before-done mode)`, and final
-`sdcorejs-ship (branch-ready mode)` run regardless of gate answers. Durable
-backlog reconciliation runs only with sequential/integration ownership. Do NOT
-skip `sdcorejs-ship (verify-before-done mode)`; that is how acceptance criteria
-silently slip.
+Retain the Angular UI check from `_refs/angular/write-code/input-analysis.md`:
+report source/rendered/interaction evidence separately; fixes need current
+executor/repair authority. Source documentation for touched files, product
+traceability when applicable, change execution records, authorized backlog,
+memories, convention sync and approved guides are scoped owner hooks. Resolve
+missing documentation authority with `_refs/documentation/gate.md` only for
+unresolved scope; preference cannot authorize a new missing document. Merge
+`artifact_context`, revalidate affected evidence after writes, then run Ship
+verify-before-done and final read-only branch-ready. No automatic Git actions.
 
 ## When to Use
 
@@ -422,7 +406,7 @@ the dispatched per-file reference and the approved frontend architecture.
 - Run `_refs/angular/write-code/mock-api-input.md` when UI generation is driven by mock API docs, OpenAPI/Swagger, Postman/Insomnia, MSW/WireMock/Prism/JSON Server specs, endpoint tables, schemas, JSON fixtures, or sample cURL. Produce the mock API contract mapping before writing models, services, or screens.
 - Run the `@sdcorejs/utils` reuse preflight before writing helper/formatter/validator/mapper/pipe utility code; report which utilities were reused and why any custom helper remains necessary.
 - After generating UI, show the **Core UI usage summary** table (every `@sdcorejs/angular` component/service/directive actually used + a one-line, feature-specific purpose, in the user's language) so the user sees the building blocks at a glance. List only what was used. Persist the same table into the module user guide at write-user-guide.
-- Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces extra integration/E2E execution, user-guide, technical-doc, behavior-preserving simplification, and review choices. Test authoring and the required unit/contract run are not opt-outs.
+- Resolve the **MANDATORY FINISH GATE** through `completeAngularExecution`; prompt only for unresolved scope-bound choices.
 - Test authoring is mandatory and written RED-first at `standard` coverage by default (see the TDD Gate). The finish gate controls only additional integration/E2E execution; it cannot skip authored tests after RED/GREEN or downgrade a failure. NEVER ask a separate coverage question outside approved planning.
 - Resolve semantic application/module ownership and optional-feature approval through `_refs/angular/execution-contract.mjs`, which consumes `_refs/shared/system-registry.json`. Portal is not a fallback owner for a module artifact.
 - Run `admin-screens` only when admin/auth/account/role/permission is named in an approved requirement or explicit approved profile/template contract.
@@ -443,7 +427,7 @@ the dispatched per-file reference and the approved frontend architecture.
 
 ### Documentation Gate Rule
 
-- Inside the mandatory finish gate, run `_refs/documentation/gate.md` immediately after the test decision. It owns user-guide / technical-doc creation or update approval. `code-documentation` is automatic and is not controlled by this gate.
+- Resolve only missing documentation authority with `_refs/documentation/gate.md`; preserve exact approved docs scope and reuse current choices. Source documentation remains a scoped hook.
 
 ### MUST NOT
 - Hand-write CSS for flex / spacing / alignment / color / typography that a STYLE-GUIDE utility class already covers, or fill a component `.scss` with rules that duplicate shipped utilities — this is the "too many unnecessary CSS classes" anti-pattern. Put the utilities on the template; keep the `.scss` near-empty. Never use Bootstrap class names (`btn`, `card`, `form-control`, `modal` — they don't exist) or Tailwind syntax when the consumer has no Tailwind.

@@ -4,6 +4,211 @@ import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import { documentedFinish, finishFixture } from './support/interaction-finish-fixture.mjs';
+import { simplifyFixture, documentedSimplifyContext } from './support/simplify-contract-fixture.mjs';
+
+test('case-interaction-finish-simplify-grant: pure resolution preserves the single owner preflight grant', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const { resolveFinish } = await import('../../_refs/shared/finish-gate.mjs');
+  const { createSimplifyEvidenceSession } = await import('../../_refs/simplify/repository-evidence.mjs');
+  const { evaluateSimplifyPostflight } = await import('../../_refs/simplify/simplify-contract.mjs');
+  const f = await finishFixture(t, { simplify: 'apply', review: 'skip' });
+  const context = documentedSimplifyContext(), hunks = [{ path: 'src/value.mjs', start_line: 1, end_line: 1 }];
+  const command = { command: [process.execPath, 'oracle.mjs'], cwd: '.', scope: hunks };
+  const session = createSimplifyEvidenceSession({ root: f.root,
+    repository_id: f.context.identity.owner_repository_id, change_ref: f.context.identity.change_ref,
+    user_scope: hunks, workflow_hunks: hunks, verification_commands: [command],
+    classify_source: () => ({ kind: 'executable', hunks, protected_surfaces: [] }),
+    verify_preservation: ({ before, after }) => {
+      const stripComment = bytes => bytes.toString().replace(/ \/\/ changed/u, '');
+      const unchanged = stripComment(before['src/value.mjs']) === stripComment(after['src/value.mjs']);
+      return Object.fromEntries(Object.keys(context.preserved_surfaces).map(key => [key, {
+        status: unchanged ? 'verified' : 'blocked', reason: 'Exact non-comment bytes and executed constant-value oracle.',
+      }]));
+    },
+  });
+  context.session_id = session.id; context.target_root = f.root;
+  context.source_revision = f.plan.metadata.source_revision;
+  context.artifact_identity.owner_repository_id = f.context.identity.owner_repository_id;
+  context.artifact_identity.execution_host_repository_id = f.context.identity.owner_repository_id;
+  context.artifact_context.change_ref = f.context.identity.change_ref;
+  context.scope.requested = ['src/value.mjs']; context.scope.eligible_files = ['src/value.mjs']; context.scope.eligible_hunks = hunks;
+  context.baseline.snapshot = session.captureSnapshot(); context.verification.before = [session.runVerification(command)];
+  f.context.simplify_context = context; f.runtime.simplify_runtime = { session }; f.run('baseline');
+  for (let i = 0; i < 2; i++) {
+    const next = resolveFinish(f.context, f.runtime).next_actions[0];
+    assert.equal(next.preflight_required, true); assert.equal(next.source_write_allowed, false);
+  }
+  assert.equal(session.ledger().length, 0, 'read-only resolution cannot consume pass authority');
+  const authorized = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(authorized.status, 'pending-action', JSON.stringify(authorized));
+  const next = authorized.next_actions[0];
+  assert.equal(next.source_write_allowed, true); assert.equal(next.preflight_required, false); assert.ok(next.preflight_ref);
+  session.applyEdits(next.preflight_ref, [{ path: 'src/value.mjs', content: 'export const value = 1;\n' }]);
+  const post = { ...structuredClone(context), phase: 'postflight', preflight_ref: next.preflight_ref, passes: session.ledger() };
+  post.verification.after = [session.runVerification(command)];
+  const verified = evaluateSimplifyPostflight(post, { session }); assert.equal(verified.status, 'verified');
+  f.context.simplify_context = verified.context; f.run('simplify');
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).next_actions[0].phase, 'reverify');
+});
+
+test('case-interaction-finish-simplify-owner: a valid foreign preflight cannot authorize this finish write', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await finishFixture(t, { simplify: 'apply' }), foreign = await simplifyFixture(t);
+  f.run('baseline'); f.context.simplify_context = foreign.context; f.runtime.simplify_runtime = foreign.runtime;
+  const result = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(result.status, 'blocked'); assert.match(result.blockers.join(' '), /simplify.*finish.*owner|simplify.*scope/u);
+  assert.equal(foreign.preflight().write_authorized, true, 'the foreign authority remains valid for its own owner');
+});
+
+test('case-interaction-finish-repair-recursion: completed repair never reopens simplify', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await finishFixture(t, { simplify: 'apply', review: 'review-and-repair' });
+  for (const phase of ['baseline','review','repair']) f.run(phase);
+  const result = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(result.next_actions[0].phase, 'verify');
+  f.choose('review', 'review-only');
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).status, 'blocked');
+});
+
+test('case-interaction-finish-assessment-binding: changing the loaded assessment invalidates review proof', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await finishFixture(t); f.run('baseline'); f.run('review');
+  f.assessment.blocking_findings.push('new-finding');
+  const out = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(out.status, 'pending-action'); assert.equal(out.next_actions[0].phase, 'review');
+});
+
+test('case-interaction-finish-command-scope: final proof must cover the complete authorized scope', async t => {
+  const f = await finishFixture(t, { commands: { verify: { command: [process.execPath, 'oracle.mjs'], cwd: '.', scope: ['oracle.mjs'] } } });
+  assert.throws(() => f.run('verify'), /complete finish scope/u);
+});
+
+test('case-interaction-finish-required-phase: unknown required checks cannot silently disappear', async t => {
+  await assert.rejects(() => finishFixture(t, { policy: { required_phases: ['unknown-required-check'] } }), /required phase/u);
+});
+
+test('case-interaction-finish-hook-boundary: unrelated empty directories are writes too', async t => {
+  const f = await finishFixture(t, { policy: { hooks: [{ id: 'docs', owner: 'sdcorejs-documentation', paths: ['guide.md'] }] } });
+  const { mkdirSync } = await import('node:fs');
+  const before = f.observation.snapshot(); mkdirSync(path.join(f.root, 'unapproved'));
+  assert.throws(() => f.observation.recordHook('docs', before.fingerprint), /outside authorized/u);
+});
+
+test('case-interaction-finish-tdd-order: observed RED precedes production; final writes stale prior evidence', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await finishFixture(t, { review: 'skip', policy: { test_strategy: 'tdd', hooks: [
+    { id: 'implementation', owner: 'executor', paths: ['src/value.mjs'] },
+    { id: 'docs', owner: 'sdcorejs-documentation', paths: ['guide.md'], inputs: ['src/value.mjs'] },
+  ] } });
+  f.write('src/value.mjs', 'export const value = 2;\n'); f.run('red');
+  const before = f.observation.snapshot(); f.write('src/value.mjs', 'export const value = 1;\n');
+  f.context.phase_receipts.implementation = f.observation.recordHook('implementation', before.fingerprint);
+  f.run('baseline'); f.run('verify'); f.run('branch-ready');
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).next_actions[0].phase, 'docs');
+  const docsBefore = f.observation.snapshot(); f.write('guide.md', 'Approved guide.\n');
+  f.context.phase_receipts.docs = f.observation.recordHook('docs', docsBefore.fingerprint);
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).next_actions[0].phase, 'verify');
+  f.run('verify'); f.run('branch-ready');
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).branch_ready, true);
+  f.write('src/value.mjs', 'export const value = 2;\n'); f.run('red');
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).status, 'blocked', 'late RED cannot retroactively justify implementation');
+});
+
+test('case-interaction-finish-canonical-callers: documented completion payload is consumed by every stack', async () => {
+  const execution = await import('../../_refs/orchestration/execution-contract.mjs');
+  const angular = await import('../../_refs/angular/execution-contract.mjs');
+  const next = await import('../../_refs/nextjs/execution-contract.mjs');
+  assert.equal(typeof execution.completeExecution, 'function');
+  assert.equal(typeof angular.completeAngularExecution, 'function');
+  assert.equal(typeof next.completeNextjsExecution, 'function');
+  for (const complete of [execution.completeExecution, angular.completeAngularExecution, next.completeNextjsExecution]) {
+    const result = complete({ finish_context: documentedFinish() });
+    assert.equal(result.status, 'blocked', 'payload alone cannot fabricate verified phase evidence');
+    assert.equal(result.branch_ready, false);
+  }
+});
+
+test('case-interaction-finish-evidence-order: serialized ready flags and same HEAD never substitute host observation', async () => {
+  const execution = await import('../../_refs/orchestration/execution-contract.mjs');
+  assert.equal(typeof execution.completeExecution, 'function');
+  const context = documentedFinish();
+  context.status = 'tail-complete';
+  context.phase_receipts = { baseline: { status: 'PASS' }, verify: { status: 'PASS' }, 'branch-ready': { status: 'PASS' } };
+  const result = execution.completeExecution({ finish_context: context });
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.branch_ready, false);
+});
+
+test('case-interaction-finish-resolved-small-fix: all actual completion callers share one tail without repeated prompts', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const { completeAngularExecution } = await import('../../_refs/angular/execution-contract.mjs');
+  const { completeNextjsExecution } = await import('../../_refs/nextjs/execution-contract.mjs');
+  const f = await finishFixture(t, { direct: true }), dispatched = [];
+  for (const phase of ['baseline','review','verify','branch-ready']) {
+    for (const complete of [completeExecution,completeAngularExecution,completeNextjsExecution]) {
+      const out = complete({ finish_context: f.context }, f.runtime);
+      assert.equal(out.status, 'pending-action', JSON.stringify({ phase, caller: complete.name, blockers: out.blockers })); assert.equal(out.next_actions[0].phase, phase);
+    }
+    dispatched.push(phase); f.run(phase);
+  }
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).status, 'tail-complete');
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).next_actions.length, 0);
+  assert.deepEqual(dispatched, ['baseline','review','verify','branch-ready']);
+});
+
+test('case-interaction-finish-defer: no baseline, repair, docs or final gate runs after defer', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await finishFixture(t, { review: 'defer' });
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).status, 'deferred');
+  assert.deepEqual(f.context.phase_receipts, {});
+});
+
+test('case-interaction-finish-review-only: blocking findings never dispatch repair', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await finishFixture(t); f.assessment.blocking_findings = ['finding-1']; f.run('baseline'); f.run('review');
+  const out = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(out.status, 'blocked'); assert.deepEqual(out.next_actions, []);
+  f.choose('review', 'review-and-repair');
+  const repair = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(repair.next_actions[0].phase, 'repair');
+  assert.match(repair.next_actions[0].authority, /tier\/scope/u);
+});
+
+test('case-interaction-finish-integration-owner: delegated workers stop after unit verification/review', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await finishFixture(t, { worker: true, policy: { decisions: {} } });
+  for (const phase of ['baseline','unit-review-a','unit-review-b']) f.run(phase);
+  const out = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(out.status, 'unit-complete'); assert.equal(out.branch_ready, false); assert.deepEqual(out.next_actions, []);
+});
+
+test('case-interaction-finish-skip-review: optional skip continues verification; required review remains a gate', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await finishFixture(t, { review: 'skip', policy: { required_phases: ['review'] } }); f.run('baseline');
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).status, 'blocked');
+});
+
+test('case-interaction-finish-evidence-order: same-HEAD edits after branch-ready invalidate affected proof', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await finishFixture(t); for (const phase of ['baseline','review','verify','branch-ready']) f.run(phase);
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).branch_ready, true);
+  f.write('src/value.mjs', 'export const value = 1; // changed again\n');
+  const out = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(out.branch_ready, false); assert.equal(out.next_actions[0].phase, 'reverify');
+});
+
+test('case-interaction-finish-simplify-semantics: no-op omits the choice; Analyze and Apply have separate authority', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const noOp = await finishFixture(t, { classify_source: () => ({ kind: 'protected' }), policy: { decisions: { review: 'skip' } } });
+  noOp.context.choices.simplify = undefined; noOp.run('baseline');
+  assert.equal(completeExecution({ finish_context: noOp.context }, noOp.runtime).next_actions[0].phase, 'verify');
+  const f = await finishFixture(t, { simplify: 'analyze' }); f.run('baseline');
+  const analyze = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(analyze.next_actions[0].phase, 'simplify'); assert.equal(analyze.next_actions[0].source_write_allowed, false);
+  f.choose('simplify', 'apply');
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).status, 'blocked', 'no hardened preflight proof');
+});
 import { designExecutionFixture, designFixture } from './support/design-handoff-fixture.mjs';
 
 test('case-design-real-consumer-enforcement: generic execution cannot omit or substitute Design approval', async t => {

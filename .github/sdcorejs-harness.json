@@ -2,7 +2,7 @@
   "schema_version": 1,
   "adapter": "copilot",
   "source_path": "_refs/harness/capability-contract.json",
-  "source_hash": "sha256:57e326a1af1c4a038bfa2e6befc459252fd9209b822d6365939aa04e82688c56",
+  "source_hash": "sha256:039bf98637e563fe7aab4f11606287892047e881f1e232159f8ba1c521be856e",
   "content_hash": "sha256:d5e7e73f482933b8d35d5bbfe007b641aa7e2798ba72b18b8ab339d898c272d4",
   "generated_path": ".github/sdcorejs-harness.json",
   "capabilities": {

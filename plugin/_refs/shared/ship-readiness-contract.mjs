@@ -1,4 +1,5 @@
 import { evaluateSimplifyConsumer } from '../simplify/simplify-contract.mjs';
+import { evaluateFinishConsumer } from './finish-gate.mjs';
 import { evaluateUiReviewConsumer } from './ui-review-contract.mjs';
 import { verifyApprovedArtifactGraph } from './approved-artifact.mjs';
 import { evaluateConvergenceHandoff } from './convergence-contract.mjs';
@@ -282,6 +283,8 @@ export function evaluateShipReadiness(contract, runtime = {}) {
       ? contract.source_identity
       : {};
   const productionBlockers = [];
+  const finish = evaluateFinishConsumer(contract.finish_context, runtime.finish_runtime, { consumer: 'sdcorejs-ship', phase: runtime.finish_phase ?? 'handoff' });
+  productionBlockers.push(...finish.blockers);
   const ui = evaluateUiReviewConsumer(contract.review_context, { runtime: runtime.ui_review_runtime,
     consumer: 'sdcorejs-ship', validation_map: contract.validation_map ?? [],
     approved_artifacts: (contract.approved_artifacts ?? []).map(record => record.artifact) });

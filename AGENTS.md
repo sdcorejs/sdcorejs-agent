@@ -59,9 +59,7 @@ source refinement.
 ```text
 brainstorming -> spec -> architecture when required -> plan -> execute-plan
   -> selected executor or generic harness -> mandatory finish gate
-  -> test -> optional simplify -> focused tests -> review -> repair
-  -> required docs/traceability -> authorized convention sync
-  -> validation evidence -> convergence -> final read-only branch-ready
+  -> canonical _refs/shared/finish-gate.md resolver and scoped stack hooks
 ```
 
 Project conventions live under `.sdcorejs/conventions/**`, one rule per file.
@@ -75,8 +73,8 @@ Decision identities, conditional architecture, validation-map evidence, and
 convergence are executable gates. Repair classifies external feedback before
 writes. Internal `authoring/**` skills are never public or mirrored.
 
-No write-producing step may run after final branch-ready unless branch-ready is
-run again before any Git artifact handoff.
+No writes after branch-ready, the final read-only gate, unless affected
+verification and branch-ready run again before any Git artifact handoff.
 
 `sdcorejs-execute-plan` preserves the approved execution policy. Explicit
 approved-plan delegation or parallel-agent splitting uses

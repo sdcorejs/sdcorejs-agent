@@ -1247,7 +1247,10 @@ test('concrete not-applicable gate preserves the direct spec to plan graph', () 
 });
 
 test('execution enforces the same conditional architecture graph before write authorization', () => {
-  const requiredGraph = approvedGraph();
+  // This fixture exercises the stack-independent architecture gate. Frontend
+  // execution additionally requires observed Design applicability below.
+  const metadata_overrides = { track: 'workflow', stack_profile: 'markdown-skill-pack' };
+  const requiredGraph = approvedGraph({ metadata_overrides });
   const requiredGate = classifyArchitectureGate({
     signals: requiredGraph.context.trigger.signals,
     rationale: requiredGraph.context.trigger.rationale,
@@ -1261,7 +1264,13 @@ test('execution enforces the same conditional architecture graph before write au
   missing.approved_architecture = null;
   assert.throws(() => prepareExecution(missing), /architecture handoff blocked/iu);
 
-  const bypassGraph = approvedGraph({ required: false });
+  const frontendGraph = approvedGraph();
+  assert.throws(
+    () => prepareExecution(executionInput(frontendGraph, requiredGate, frontendGraph.context)),
+    /Design handoff blocked: trusted Design applicability\/runtime is unavailable/u,
+  );
+
+  const bypassGraph = approvedGraph({ required: false, metadata_overrides });
   const bypassGate = classifyArchitectureGate({
     signals: [],
     bypass: { kind: 'bounded-bug-fix', rationale: 'All accepted boundaries remain unchanged.' },

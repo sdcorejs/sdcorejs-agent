@@ -81,9 +81,13 @@ changes and fail closed on overlapping paths.
    the approved broader verification. Live compatibility claims require
    separate current evidence and are never inferred from offline fixtures.
 9. Emit `ai_agent_context` for downstream owners.
-10. Enter the mandatory finish chain: test, review, repair when findings exist,
-    code documentation, product traceability when user-visible, user-guide
-    decision, relevant memory, verify-before-done, then branch-ready.
+10. Resolve the mandatory finish gate through `completeExecution` in
+    `_refs/orchestration/execution-contract.mjs` with `finish_context` and
+    current host evidence. Consume the canonical `next_actions` from
+    `_refs/shared/finish-gate.md`; ask only unresolved choices. Preserve offline
+    evals, focused tests and explicitly scoped documentation/traceability hooks.
+    Review-only cannot repair; defer stops; writes stale affected evidence.
+    Workers return unit proof; only the integration owner runs final finish.
 
 The executor must not invoke Git. Git artifacts remain owned by
 `sdcorejs-git` after the final read-only gates.

@@ -1,6 +1,6 @@
 # User/Technical Documentation Approval Gate
 
-Internal reference loaded by track executors after the test decision and before
+Internal reference loaded by track executors for unresolved documentation authority before
 user-guide or technical-doc generation. This file is not a dispatchable skill.
 Load `_refs/shared/documentation-layout.md` before probing any documentation
 path.
@@ -90,8 +90,9 @@ for this gate and drop them the next time preferences are saved.
    normalization, blocks update, migration, aggregate, and export until it is
    resolved. An equivalent pair selects canonical without silently deleting
    legacy.
-5. If this is a new feature and either corresponding doc is missing, ask the
-   approval gate below before creating any missing file.
+5. Reuse explicit current user/approved-plan authority for the exact doc paths.
+   If this is a new feature and a corresponding doc is missing with unresolved
+   creation authority, ask the approval gate below before creating that file.
 6. If corresponding docs already exist, saved preferences may default whether
    to update them. Current-turn explicit instructions still override saved
    preferences.
@@ -113,8 +114,10 @@ Current-turn explicit instructions override saved preferences. Examples:
 
 ## Approval Gate Prompt
 
-Localize the prompt. Ask immediately after the final test approval/decision
-step and before any user-guide or technical-doc file is generated.
+Localize the prompt and use `_refs/shared/user-choice-prompt.md`. Ask only the
+unresolved delta before writing the affected user-guide or technical-doc.
+The parent consumes this scoped hook through `_refs/shared/finish-gate.md`;
+do not reopen resolved tests/docs policy or initiate a second finish tail.
 
 When a new feature has no corresponding docs:
 

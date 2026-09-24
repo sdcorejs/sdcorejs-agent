@@ -60,3 +60,17 @@ runtime evidence with source and detail. The optional `visual` group projects
 those capabilities; unobserved values stay unknown. It does not change the
 existing orchestration shape or delegation verdict. Evidence of capability is
 never permission; no browser or server launch is required to attest a surface.
+
+## Current choice exposure
+
+For user.choose/user.approve, call `observeChoiceTools(runtime, action)` with
+host-observed `session_id`, `mode`, and `tools` entries containing `name`,
+permitted `actions`, permitted `modes`, optional `disabled` and
+`forbidden_actions`. Read tool exposure and constraints in this invocation.
+Static adapter defaults and historical visual attestation are insufficient.
+Unknown or unsupported exposure uses numbered Markdown. A tool exposed only
+in another mode or forbidden for approvals is not available for this action.
+Do not change mode, enable flags or probe a forbidden tool to gain capability.
+Pass this same observation as `runtime` to `resolveAction` and
+`selectInteraction`. Failed native pickers remain in the decision's
+`failed_surfaces`; do not retry them. Adapter mappings are candidates only.

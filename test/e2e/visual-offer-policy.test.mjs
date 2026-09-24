@@ -57,7 +57,7 @@ test('case-visual-offer-ac-005-policy: fixed, delegated, nonvisual and fake choi
 
 test('case-visual-offer-ac-006-policy: approval stays text and an approved layout is not reopened', () => {
   assert.equal(evaluateVisualOffer({ decision: decision({ approved: true }), capabilities: caps }).action, 'continue-text');
-  assert.equal(selectInteraction({ capabilities: caps, options: ['Approve', 'Change'], visual_spatial: true, approval: true }).kind, 'native-structured-choice');
+  assert.equal(selectInteraction({ runtime: { session_id: 'fixture', mode: 'default', tools: [{ name: 'fixture-choice', actions: ['user.approve'], modes: ['default'] }] }, capabilities: caps, options: ['Approve', 'Change', 'Cancel'], visual_spatial: true, approval: true }).kind, 'native-structured-choice');
 });
 
 test('case-visual-offer-ac-007-policy: assessment can become eligible after factual blockers resolve', () => {

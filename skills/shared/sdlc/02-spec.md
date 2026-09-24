@@ -260,6 +260,18 @@ Fix the spec before presenting if any checklist item fails:
   evidence boundary.
 
 ### 4. Present the approval gate
+
+Resolve `interaction_context` with `resolveDecision` from
+`_refs/harness/runtime-policy.mjs` before presenting. Bind the gate, artifact
+revision, owner/change, scope fingerprint and option mapping as documented in
+`_refs/shared/user-choice-prompt.md`. Use current exposed, action/mode-permitted
+native choice first. On unavailable/failed native choice show all three options:
+1. Approve; 2. Request changes; 3. Cancel (localized at runtime). Accept exact
+numbers, labels or localized aliases. A failed picker falls back once with the
+same identity/options. Reuse only an explicit matching resolution, never a
+bare ambiguous number, silence, thanks or visual feedback. Spec approval does
+not approve plan. Changed revision/scope requires resolving its delta.
+
 Show a concise summary, not the whole spec:
 
 ```text

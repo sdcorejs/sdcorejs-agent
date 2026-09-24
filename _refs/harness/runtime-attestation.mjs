@@ -1,4 +1,20 @@
 const STATUSES = new Set(['supported', 'unsupported', 'unknown']);
+
+// This argument is supplied by the current host, separately from portable contexts.
+// Static adapter metadata and historical attestations cannot replace it.
+export function observeChoiceTools(runtime, action) {
+  if (!['user.choose', 'user.approve'].includes(action) || !runtime ||
+      typeof runtime.session_id !== 'string' || !runtime.session_id.trim() ||
+      typeof runtime.mode !== 'string' || !runtime.mode.trim() || !Array.isArray(runtime.tools)) {
+    return { status: 'unknown', tools: [], reason: 'current tool exposure and mode are unobserved' };
+  }
+  const tools = runtime.tools.filter(tool => tool && typeof tool.name === 'string' && tool.name.trim() &&
+    Array.isArray(tool.actions) && tool.actions.includes(action) &&
+    Array.isArray(tool.modes) && tool.modes.includes(runtime.mode) && tool.disabled !== true &&
+    (tool.forbidden_actions === undefined || Array.isArray(tool.forbidden_actions) && !tool.forbidden_actions.includes(action))).map(tool => tool.name);
+  return { status: tools.length ? 'supported' : 'unsupported', tools: [...new Set(tools)],
+    reason: tools.length ? 'tool exposed and permitted for current action/mode' : 'no exposed permitted choice tool' };
+}
 const OBSERVABLE_CAPABILITIES = Object.freeze([
   'subagents',
   'concurrent_dispatch',

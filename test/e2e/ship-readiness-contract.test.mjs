@@ -2,6 +2,18 @@ import { simplifyFixture, sourcePath, originalSource } from './support/simplify-
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
+import { finishFixture } from './support/interaction-finish-fixture.mjs';
+
+test('case-interaction-finish-ship-consumer: future proof is unnecessary at preflight, defer never ships', async t => {
+  const f = await finishFixture(t, { review: 'skip' }); f.run('baseline');
+  const input = validContract({ finish_context: f.context });
+  const preflight = evaluateShipReadiness(input, { finish_runtime: f.runtime, finish_phase: 'verify' });
+  assert.doesNotMatch(JSON.stringify(preflight), /cannot claim completion from pending-action/u);
+  const handoff = evaluateShipReadiness(input, { finish_runtime: f.runtime });
+  assert.match(JSON.stringify(handoff), /cannot claim completion from pending-action/u);
+  f.choose('review', 'defer');
+  assert.match(JSON.stringify(evaluateShipReadiness(input, { finish_runtime: f.runtime })), /cannot claim completion from deferred/u);
+});
 
 import {
   createApprovedArtifact,

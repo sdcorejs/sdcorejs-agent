@@ -1,4 +1,5 @@
 import { evaluateSimplifyConsumer } from '../simplify/simplify-contract.mjs';
+import { evaluateFinishInvocation } from './finish-gate.mjs';
 import { evaluateUiReview, validateUiReviewFinding, reviewFindingSeverities } from './ui-review-contract.mjs';
 import {
   CONSISTENCY_FINDING_KINDS,
@@ -63,6 +64,8 @@ function finding(id, severity, kind, observation, requiredFix) {
 
 export function evaluateReviewContract(context, runtime = {}) {
   const blockers = [];
+  const finish = evaluateFinishInvocation(context?.finish_context, runtime.finish_runtime, 'review');
+  blockers.push(...finish.blockers);
   const ui = context?.purpose !== undefined || context?.ui_review !== undefined
     ? evaluateUiReview(context, { runtime: runtime.ui_review_runtime }) : null;
   if (ui) blockers.push(...ui.blockers.map(message => 'UI review: ' + message));

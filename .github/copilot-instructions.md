@@ -100,7 +100,7 @@ Do not say "done", "ready", or "safe to ship" unless verification is complete or
   security, destructive action, ambiguity, conflict, blockers, or failed
   verification. Pass full typed context only to its consumer; use a portable
   handoff when `runtime_context_channel` is unsupported or unknown.
-- Every code-generation run presents the finish gate before tail steps.
+- Every code-generation run resolves the canonical finish gate; prompt only for unresolved decisions.
 - Never claim pass, built, fixed, or done without current verification output.
 - Write `.sdcorejs/*` artifacts to the target project only.
 - Keep live progress in the current thread/harness; never mirror it to a
@@ -146,3 +146,9 @@ Edit `skills/`, `_refs/`, and entrypoint files. Regenerate mirrors with:
 ```bash
 npm run sync:skills
 ```
+
+## Canonical interaction and completion
+
+Use `_refs/shared/user-choice-prompt.md` for native-first decisions and reuse of scoped explicit choices.
+Resolve completion through `_refs/shared/finish-gate.md`; only the integration owner runs final finish.
+Prompts are conditional; required acceptance/evidence remain mandatory. No writes after branch-ready, the final read-only gate, unless affected verification and that gate run again. No automatic commit/push/deploy.

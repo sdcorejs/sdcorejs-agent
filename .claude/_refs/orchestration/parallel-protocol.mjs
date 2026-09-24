@@ -6,6 +6,12 @@ import {
   verifyApprovedArtifact,
 } from '../shared/approved-artifact.mjs';
 import { systemRegistry } from '../shared/system-registry.mjs';
+import { resolveFinish } from '../shared/finish-gate.mjs';
+
+export function completeDelegatedUnit({ finish_context } = {}, runtime = {}) {
+  if (finish_context?.actor?.role !== 'worker') return { status: 'blocked', branch_ready: false, next_actions: [], blockers: ['delegated unit cannot claim integration finish ownership'] };
+  return resolveFinish(finish_context, runtime);
+}
 
 const WRITE_RESULT_TYPES = new Set(['commit', 'patch', 'working-tree-diff']);
 const AUTHORITIES = new Set(['read-only', 'read-write']);

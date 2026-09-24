@@ -6,16 +6,14 @@ required-actions: artifact.read, artifact.write, context.pass, verification.run,
 
 # 04 - Execute Plan
 
-For unresolved visual decisions, apply `_refs/sdlc/visual-offer-policy.md`;
-forward `requirement_context.visual_companion` through `context.pass`
+For unresolved visual decisions, apply `_refs/sdlc/visual-offer-policy.md`; forward `requirement_context.visual_companion` through `context.pass`
 (portable `state_delta.visual_companion`) to the owning workflow.
 
 ## Shared Protocols
 
 Read `_refs/shared/runtime-protocols.md`; UI executors select topics via `_refs/design/uiux/index.md` without imposing Core UI on plain stacks. Non-UI units load none. Apply
 `_refs/shared/artifact-lifecycle.md` and preserve/merge `artifact_context` from
-the approved spec, plan, and every producer. Use these executable sources of
-truth before any write or dispatch:
+the approved spec, plan, and every producer. Use these executable sources of truth before any write or dispatch:
 
 - `_refs/shared/approved-artifact.mjs` for approval identity and parent graph.
 - `_refs/shared/system-registry.json` for track/profile routing.
@@ -38,8 +36,7 @@ Run the approved plan as the execution contract. This handoff between planning a
 3. Whether Angular work is Core UI portal work or plain Angular work.
 4. Whether NestJS, Next.js, React, Node/general, migration, product, design, or test work needs a track executor or the generic harness fallback.
 
-The generic harness is write-capable because it is the approved-plan fallback
-executor for unsupported stacks and explicit CREATE/EDIT tasks. Write
+The generic harness is write-capable because it is the approved-plan fallback executor for unsupported stacks and explicit CREATE/EDIT tasks. Write
 permission is constrained by `plan_context.allowed_paths`,
 `plan_context.prohibited_paths`, dependency/env/migration boundaries, and the
 working-tree preflight below.
@@ -50,17 +47,12 @@ For UI implementation tracks and any approved parent declaring
 `design_requirements`, `prepareExecution` consumes `design_handoff` and a
 separate host-created `design_runtime` from
 `_refs/shared/design-verification.mjs`. It binds that runtime to the exact
-spec/plan hashes already verified here and invokes the full verification path.
-Structural validation never grants implementation authority. A missing source,
-draft, stale parent/content, required surface without evidence, or unverified
-legacy handoff blocks. Generic frontend work must carry Design applicability
-in its approved spec; a recorded approved non-Design reason is the only waiver.
-Preserve complete `artifact_context` and reverify portable handoffs at use.
+spec/plan hashes already verified here and invokes the full verification path. Structural validation never grants implementation authority. A missing source,
+draft, stale parent/content, required surface without evidence, or unverified legacy handoff blocks. Generic frontend work must carry Design applicability
+in its approved spec; a recorded approved non-Design reason is the only waiver. Preserve complete `artifact_context` and reverify portable handoffs at use.
 
-For the Design producer itself, the approved plan authorizes bounded artifact
-creation; do not require its future completed handoff as a precondition. Run
-Design postflight after authoring and enforce the verified path at the frontend
-implementation boundary. An exploratory Design draft never grants code writes.
+For the Design producer itself, the approved plan authorizes bounded artifact creation; do not require its future completed handoff as a precondition. Run
+Design postflight after authoring and enforce the verified path at the frontend implementation boundary. An exploratory Design draft never grants code writes.
 
 - The approved spec and plan snapshots are available as paths or in context.
 - `plan_context` is present, including `approved_spec_hash`,
@@ -68,27 +60,20 @@ implementation boundary. An exploratory Design draft never grants code writes.
   `prohibited_paths`, dependency/env/migration boundaries, verification
   strategy, and parallel candidates.
 
-For a schema-v2 `plan_context`, `decision_coverage`, `goal_backward_review`,
-and a validated `validation_map` are required, and `architecture_gate` plus
+For a schema-v2 `plan_context`, `decision_coverage`, `goal_backward_review`, and a validated `validation_map` are required, and `architecture_gate` plus
 `architecture_context` are mandatory (`architecture_context: null` only for a
 concrete not-applicable gate). `prepareExecution` accepts
 `approved_architecture` when required and validates their exact
-identity, strict execution-stage readiness, task/path/evidence coverage, and
-critique result plus the spec -> architecture -> plan graph before any write
-authorization. Schema v1 without these fields
-remains input-only compatibility; a malformed or incomplete schema-v2 context
-must never fall back to that legacy path.
+identity, strict execution-stage readiness, task/path/evidence coverage, and critique result plus the spec -> architecture -> plan graph before any write
+authorization. Schema v1 without these fields remains input-only compatibility; a malformed or incomplete schema-v2 context must never fall back to that legacy path.
 
 `plan_context` is required: an omitted or null value blocks execution. Only an
 explicit `plan_context` with `schema_version: 1` selects legacy compatibility.
 
-If the plan is missing or unapproved, route back to `sdcorejs-plan`.
-Before every write, `prepareExecution` MUST verify the approved spec,
+If the plan is missing or unapproved, route back to `sdcorejs-plan`. Before every write, `prepareExecution` MUST verify the approved spec,
 `approved_architecture` when required, approved plan, exact conditional parent
-graph, schema, hash, track, profile, artifact owner, and `source_revision`
-against `repository_revision_map`. Reject missing/stale/mutated architecture,
-unknown schema/track, owner mismatch, or path/hash/reference mismatch. Do not mutate approved
-artifacts to make execution pass.
+graph, schema, hash, track, profile, artifact owner, and `source_revision` against `repository_revision_map`. Reject missing/stale/mutated architecture,
+unknown schema/track, owner mismatch, or path/hash/reference mismatch. Do not mutate approved artifacts to make execution pass.
 
 For each mutable plan step, resolve the current Git root and call
 `authorizePlanWrite`. The current repository must be the step's sole Git root
@@ -96,10 +81,8 @@ and `owner_repository_id`; the target must match `allowed_paths` and not
 `prohibited_paths`. Reauthorize every path, including generic-harness writes.
 After final branch-ready, no write is valid until the Finish gate is rerun.
 
-Resolve every step with `resolveExecutionTarget`. If work starts in a portal but
-the step owner is a module, execute in the module repository. Missing,
-unavailable, or unwritable module repositories block execution; never author
-module output into the portal. A review finding is not an authorized write
+Resolve every step with `resolveExecutionTarget`. If work starts in a portal but the step owner is a module, execute in the module repository. Missing,
+unavailable, or unwritable module repositories block execution; never author module output into the portal. A review finding is not an authorized write
 unless the user or approved repair scope selected it.
 
 ## Step 0 - Context preflight
@@ -120,8 +103,7 @@ Before loading the plan or dispatching an executor, assemble `project_context`.
 
 ## Step 0.5 - Working-tree preflight
 
-Before any edit or subagent dispatch, inspect the current working tree and
-compare it to `plan_context`:
+Before any edit or subagent dispatch, inspect the current working tree and compare it to `plan_context`:
 
 - `git status --short`
 - staged diffstat
@@ -149,15 +131,13 @@ Options:
 Reply with `1`, `2`, or `3`.
 ```
 
-Do not edit prohibited paths without explicit approval and plan revision. Do not
-edit env files, secret files, generated/vendor/build output, lockfiles, package
+Do not edit prohibited paths without explicit approval and plan revision. Do not edit env files, secret files, generated/vendor/build output, lockfiles, package
 manifests, or migrations unless `plan_context` explicitly allows it. If
 `target_root_kind` is `sdcorejs-agent-authoring-repo` or
 `skill-pack-authoring-repo`, confirm that the authoring repo itself is the
 intended target before writing.
 
-For direct `sdcorejs-parallel-dispatch` entry, pass this same preflight as the
-protocol-v2 `working_tree` block. Direct dispatch is not permission to bypass
+For direct `sdcorejs-parallel-dispatch` entry, pass this same preflight as the protocol-v2 `working_tree` block. Direct dispatch is not permission to bypass
 branch/HEAD, dirty-state, untracked-file, or intended-output checks.
 
 ## Process
@@ -181,16 +161,14 @@ Extract:
 - Solution-root layout when present (`backend/`, `frontend/`, `test/`, `.sdcorejs/`, including the `.sdcorejs/product/` and `.sdcorejs/design/` artifact roots).
 
 ### 2. Detect execution track
-Resolve the verified plan track through `_refs/shared/system-registry.json`.
-Canonical tracks use their declared executor. Aliases resolve to their canonical
+Resolve the verified plan track through `_refs/shared/system-registry.json`. Canonical tracks use their declared executor. Aliases resolve to their canonical
 track; an unsupported signal resolves deterministically to the registry's
 `general` generic-harness fallback. The profile classification gates below
 refine executor eligibility but cannot replace or mutate verified plan identity.
 
 #### Angular project classification preflight
 
-Before dispatching any Angular executor, classify the target project. Use the
-approved plan, package manifests, lockfiles, existing imports, and current user
+Before dispatching any Angular executor, classify the target project. Use the approved plan, package manifests, lockfiles, existing imports, and current user
 request. Record the classification in the execution summary.
 
 | Classification | Evidence | Executor/fallback |
@@ -207,21 +185,17 @@ portal creation. Do not treat broad Angular signals alone (`angular.json`,
 `@angular/core`, components, routes, or `src/libs/**`) as permission to run the
 Core UI portal executor.
 
-For `plain-angular`, run the generic harness. It must follow the real project
-structure, never import `@sdcorejs/angular` or `@sd-angular/core`, never fetch
-Core UI docs, never emit a Core UI usage summary, never force admin screens,
-never assume `src/libs/**/features/**` when the project uses another structure,
+For `plain-angular`, run the generic harness. It must follow the real project structure, never import `@sdcorejs/angular` or `@sd-angular/core`, never fetch
+Core UI docs, never emit a Core UI usage summary, never force admin screens, never assume `src/libs/**/features/**` when the project uses another structure,
 and must ask for explicit approval before adding `@sdcorejs/angular`,
 `@sd-angular/core`, or `@angular/material`.
 
-Do not route plain Angular to `sdcorejs-angular` by default; `plain-angular`
-uses the generic harness unless the approved plan is a migration request or
+Do not route plain Angular to `sdcorejs-angular` by default; `plain-angular` uses the generic harness unless the approved plan is a migration request or
 brand-new SDCoreJS portal creation.
 
 #### NestJS project classification preflight
 
-Use approved plan metadata, package manifests, imports, modules/controllers/
-providers, and tests.
+Use approved plan metadata, package manifests, imports, modules/controllers/ providers, and tests.
 
 | Classification | Evidence | Executor/fallback |
 |---|---|---|
@@ -229,14 +203,12 @@ providers, and tests.
 | `plain-nestjs` | `nest-cli.json`, `@nestjs/*`, modules/controllers/providers, or Nest tests without SDCoreJS Nest evidence | generic harness fallback |
 | `migration-request` | Approved plan explicitly adopts SDCoreJS Nest conventions | `sdcorejs-nestjs` only when dependency/migration scope is approved |
 
-Do not route plain NestJS to `sdcorejs-nestjs` by default. Do not assume
-TypeORM, PostgreSQL, Zod, SdContext, `@HasPermission`, or `@sdcorejs/nestjs`
+Do not route plain NestJS to `sdcorejs-nestjs` by default. Do not assume TypeORM, PostgreSQL, Zod, SdContext, `@HasPermission`, or `@sdcorejs/nestjs`
 for `plain-nestjs` unless detected or approved.
 
 #### Next.js and React classification preflight
 
-Use approved plan metadata, `next.config.*`, React/Vite/CRA config, routes,
-content/i18n structure, and tests.
+Use approved plan metadata, `next.config.*`, React/Vite/CRA config, routes, content/i18n structure, and tests.
 
 | Classification | Evidence | Executor/fallback |
 |---|---|---|
@@ -258,21 +230,17 @@ directly from the plan; do not infer or create a universal repository layout.
 
 #### AI-agent architecture preflight
 
-For approved `track: ai-agent`, require `plan_context.agent_architecture` and
-apply `_refs/sdlc/ai-agent.md`. Verify `approved_spec_hash` and
+For approved `track: ai-agent`, require `plan_context.agent_architecture` and apply `_refs/sdlc/ai-agent.md`. Verify `approved_spec_hash` and
 `approved_plan_hash`, then resolve `engine_profile` and `capability_profile`
 exactly once from `_refs/ai-agent/manifest.json`. Block and return to
 `sdcorejs-plan` when either profile is missing, the architecture block is
-incomplete, provider storage lacks explicit governance, paths exceed approved
-scope, or the selected capability weakens
+incomplete, provider storage lacks explicit governance, paths exceed approved scope, or the selected capability weakens
 `_refs/ai-agent/profiles/common.md`.
 
 #### Shared frontend architecture gate
 
-Before the execution-mode question, detect frontend scope from the approved
-plan, stack/profile, UI routes/screens/components, or frontend file tasks. This
-gate applies to track executors and to generic-harness work, including plain
-Angular, plain Next.js, React, Vue, Svelte, and other frontend stacks.
+Before the execution-mode question, detect frontend scope from the approved plan, stack/profile, UI routes/screens/components, or frontend file tasks. This
+gate applies to track executors and to generic-harness work, including plain Angular, plain Next.js, React, Vue, Svelte, and other frontend stacks.
 
 For every non-trivial frontend task:
 
@@ -290,14 +258,12 @@ For every non-trivial frontend task:
 5. Allow `required: false` only when the plan gives a concrete backend-only or
    trivial frontend reason.
 
-The route/page shell is a minimum boundary, not permission for a monolithic
-screen. Conversely, the gate must not invent child components, facades, stores,
+The route/page shell is a minimum boundary, not permission for a monolithic screen. Conversely, the gate must not invent child components, facades, stores,
 or public barrels without a meaningful responsibility and lifecycle reason.
 
 ### 3. Select execution mode
 
-Count units after dependency, ownership, workspace, and runtime checks. Validate
-attestation, then call `compileParallelContext`; dependencies form safe waves.
+Count units after dependency, ownership, workspace, and runtime checks. Validate attestation, then call `compileParallelContext`; dependencies form safe waves.
 
 - Delegation unsupported or unknown: execute in the parent sequentially.
 - Delegation supported without safe concurrency: use sequential fresh workers
@@ -305,8 +271,7 @@ attestation, then call `compileParallelContext`; dependencies form safe waves.
 - Safe delegation and concurrency: invoke that skill with approved
   `execution_policy` (`auto`, `sequential`, or `parallel-preferred`).
 
-Approved policy does not trigger another prompt; `unknown` never enables a
-native path. Ask once only for a legacy plan with both modes genuinely feasible.
+Approved policy does not trigger another prompt; `unknown` never enables a native path. Ask once only for a legacy plan with both modes genuinely feasible.
 
 When both modes are feasible, use `_refs/shared/user-choice-prompt.md`:
 
@@ -322,21 +287,17 @@ Options:
 Reply with `1` or `2`.
 ```
 
-Translate at runtime. Do not execute until the user answers this real choice.
-If the user delegates the decision, choose the recommendation and state it.
+Translate at runtime. Do not execute until the user answers this real choice. If the user delegates the decision, choose the recommendation and state it.
 
 ### 4. If delegated execution is selected
 
-Invoke `sdcorejs-subagent-driven-development` for fresh workers, waves, Stage
-A/Stage B review, owner-scoped repair, and evidence; it calls the low-level scheduler.
+Invoke `sdcorejs-subagent-driven-development` for fresh workers, waves, Stage A/Stage B review, owner-scoped repair, and evidence; it calls the low-level scheduler.
 
-On a `SEQUENTIAL` safety verdict, use sequential fresh workers without reopening
-approved policy; use parent fallback only when delegation is unavailable.
+On a `SEQUENTIAL` safety verdict, use sequential fresh workers without reopening approved policy; use parent fallback only when delegation is unavailable.
 
 ### 5. If parent execution is selected
 
-If the user requested isolation, or the plan is risky enough that isolation is
-needed, read `_refs/orchestration/workspace-isolation.md` and resolve the
+If the user requested isolation, or the plan is risky enough that isolation is needed, read `_refs/orchestration/workspace-isolation.md` and resolve the
 `workspace.isolate` semantic action before dispatching. Workspace creation is
 an orchestration precondition, not a `sdcorejs-git` artifact mode.
 
@@ -368,9 +329,15 @@ Use the generic harness when no track-specific orchestrator matches.
 5. Run every verification command from `plan_context.commands_planned`; record
    commands_run with exit codes and commands_skipped with reasons when a script,
    tool, package manager, service, or environment is unavailable.
-6. If code changed, present the standard finish gate, run write-producing docs
-   or task artifacts before ship, then run `sdcorejs-ship (verify-before-done
-   mode)` and `sdcorejs-ship (branch-ready mode)` as the final read-only gate.
+6. If code changed, resolve `completeExecution({ finish_context }, runtime)`
+   from `_refs/orchestration/execution-contract.mjs` and consume its
+   `next_actions` per `_refs/shared/finish-gate.md`. Reuse current explicit
+   choices and approved policy; ask only unresolved deltas. Workers use
+   `completeDelegatedUnit` and return unit proof without shared prompts/docs.
+   The integration owner alone completes the tail. Preserve acceptance and
+   required tests, scoped documentation/traceability hooks, and artifact closure.
+   Review-only never repairs; defer stops. Revalidate after all authorized writes
+   before final verify-before-done and read-only branch-ready. No automatic Git.
 7. If only docs/config changed, still run the planned verification and report
    evidence.
 
@@ -380,8 +347,7 @@ The harness is intentionally conservative. If a task needs a domain-specific pat
 Before handing off, pausing, or reporting, build the complete
 `execution_context` for the exact next consumer. Pass it through
 `context.pass`; if `runtime_context_channel` is unsupported or unknown, use
-the validated portable handoff. User-facing output projects only the outcome,
-changed paths, verification, blockers, risks, skipped checks, and real next
+the validated portable handoff. User-facing output projects only the outcome, changed paths, verification, blockers, risks, skipped checks, and real next
 action. Do not echo this full schema by default:
 
 ```yaml

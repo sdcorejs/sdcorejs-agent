@@ -74,21 +74,19 @@ so would make the route surface implicit.
 
 ## Completion
 
-Create a progress checklist that includes the finishing steps (tests,
-optional behavior-preserving simplification, review, code-documentation, technical-doc, user-guide).
-Present the consolidated finish
-gate from `../_refs/shared/finish-gate.md`, then run
-`sdcorejs-documentation (documentation-gate mode)` with
-`../_refs/documentation/gate.md`. Load saved user-guide and technical-doc preferences
-from `.sdcorejs/documentation/preferences.md`; code-documentation remains automatic
-for touched source.
+Use `completeExecution` with `finish_context` and the current host runtime from
+`../_refs/shared/finish-gate.md`. Consume its `next_actions` after each owner
+returns; the shared resolver owns the order and completion status. The gate
+is mandatory after code generation, including direct requests; only unresolved
+choices prompt. Reuse scope-bound decisions. Defer stops this tail without a
+done claim. Review-only never dispatches repair or UI auto-fix. Workers return
+unit evidence; only the integration owner runs the shared final gate.
 
-After the selected test/review/documentation work, apply
-`../_refs/orchestration/tail/auto-docs.md` and
-`../_refs/orchestration/tail/auto-task-tracker.md` only when the sequential
-workflow or integration owner is authorized to update the durable backlog.
-Hand durable project knowledge to
-`sdcorejs-explore (memories mode)` when relevant. Always finish with
-`sdcorejs-ship (verify-before-done mode)` followed by
-`sdcorejs-ship (branch-ready mode)`. Do not invoke `sdcorejs-git` until both
-gates pass or a verification deferral is explicitly recorded.
+The entrypoint is in `../_refs/orchestration/execution-contract.mjs`. Preserve
+NestJS TDD, route/auth/security and contract tests; optional finish choices
+cannot remove required verification. Retain code-documentation for touched
+source, auto-docs execution records, owned auto-task-tracker/backlog, and relevant
+memories as scoped hooks. Reuse docs policy through `../_refs/documentation/gate.md`;
+preferences never authorize creating missing guides. Revalidate affected checks
+after writes; Ship verify-before-done and branch-ready are read-only final gates.
+No automatic commit/push or live services.

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "adapter": "cursor",
   "source_path": "_refs/harness/capability-contract.json",
-  "source_hash": "sha256:57e326a1af1c4a038bfa2e6befc459252fd9209b822d6365939aa04e82688c56",
+  "source_hash": "sha256:039bf98637e563fe7aab4f11606287892047e881f1e232159f8ba1c521be856e",
   "content_hash": "sha256:dfadc1388d32b4bd0f6aff38cd94ab9eb46a6204ee185c45d6fe9d8e89e727e0",
   "generated_path": ".cursor/sdcorejs-harness.json",
   "capabilities": {

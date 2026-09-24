@@ -14,6 +14,19 @@ import { resolveTrack } from '../shared/system-registry.mjs';
 import { planWaves } from './parallel-protocol.mjs';
 import { evaluateDesignExecution, readDesignRequirements } from '../shared/design-verification.mjs';
 import { evaluateUiReviewConsumer } from '../shared/ui-review-contract.mjs';
+import { resolveFinish } from '../shared/finish-gate.mjs';
+import { evaluateSimplifyPreflight } from '../simplify/simplify-contract.mjs';
+
+// Completion is deliberately separate from implementation preflight.
+export function completeExecution({ finish_context } = {}, runtime = {}) {
+  const outcome = resolveFinish(finish_context, runtime);
+  const next = outcome.next_actions[0];
+  if (next?.phase !== 'simplify' || !next.preflight_required) return outcome;
+  // The execution owner issues the real grant, outside the read-only resolver.
+  const preflight = evaluateSimplifyPreflight(finish_context.simplify_context, runtime.simplify_runtime);
+  if (!preflight.write_authorized) return { status: 'blocked', branch_ready: false, next_actions: [], blockers: preflight.blockers ?? ['simplify preflight failed'] };
+  return { ...outcome, next_actions: [{ ...next, preflight_required: false, source_write_allowed: true, preflight_ref: preflight.preflight_ref }] };
+}
 
 const MUTABLE_ACTIONS = new Set(['CREATE', 'EDIT', 'VERIFY-THEN-EDIT']);
 const PARALLEL_CAPABILITIES = new Set(['supported']);

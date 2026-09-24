@@ -243,3 +243,13 @@ Read-only actions stop after their report/runtime context and must not dirty
 ## Design and UI review integration
 
 For required Design/UI evidence, use the shared contract in _refs/shared/ui-review.md with the existing ui-evidence-capture action. Test owns executed commands, captures and interaction receipts; Review reads them. Bind screen/state/viewport, semantic owner, exact source/build content and actual command/cwd/exit code. Adapt documentation capture v1 explicitly; no guide is required for a generic UI check. Required evidence does not itself authorize a new test invocation, runner install or app start. Relevant edits stale evidence at the same HEAD; missing/limited proof never becomes rendered/interaction PASS.
+
+## Finish evidence ownership
+
+Test strategy is settled in planning/implementation. TDD RED must precede its
+production write; post-code tests never become RED-first retroactively. Required
+tests and AC survive every finish choice, including Skip review. In executor
+tails, consume `finish_context` and the phase selected by
+`_refs/shared/finish-gate.md`; return actual command/cwd/exit/scope and current
+source/build/content proof to the integration owner. Reverification refreshes
+only affected evidence. Test does not run a second shared finish/docs ceremony.

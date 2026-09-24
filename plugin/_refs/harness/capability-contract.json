@@ -101,7 +101,8 @@
         "user.choose": {
           "status": "unknown",
           "native": [
-            "request_user_input"
+            "request_user_input",
+            "request_user_input_async"
           ],
           "capability": "native_structured_choice",
           "fallback": "Render stable numbered Markdown choices and accept a written reply."
@@ -109,7 +110,8 @@
         "user.approve": {
           "status": "unknown",
           "native": [
-            "request_user_input"
+            "request_user_input",
+            "request_user_input_async"
           ],
           "capability": "native_structured_choice",
           "fallback": "Render one numbered approval gate and accept a written reply."

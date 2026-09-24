@@ -489,21 +489,12 @@ Reply with `1`, `2`, or `3`.
 
 ## Convergence Handoff
 
-After convergence, return to the caller's tail chain.
-
-If invoked from a finish-gate review, continue in this order:
-
-1. `sdcorejs-documentation (code-documentation mode)`, if source changed.
-2. `sdcorejs-documentation (write-technical-doc mode)`, if selected.
-3. `_refs/orchestration/tail/auto-docs.md`.
-4. `sdcorejs-documentation (write-user-guide mode)`, if selected.
-5. `_refs/orchestration/tail/auto-task-tracker.md`.
-6. `sdcorejs-explore (memories mode)`, if durable knowledge surfaced.
-7. `sdcorejs-ship (verify-before-done mode)`.
-8. `sdcorejs-ship (branch-ready mode)` as the final read-only gate over the
-   final diff.
-
-No writes after branch-ready unless branch-ready is run again.
+After convergence, return `finish_context`, scoped findings/results and affected
+evidence invalidation to the integration owner. The caller resumes
+`completeExecution` through `_refs/shared/finish-gate.md`. Do not maintain a
+second tail order, reopen resolved choices, run shared docs or restart simplify.
+Review-and-repair never widens the selected finding/tier/path authority.
+No writes after branch-ready without rerunning affected verification and gate.
 
 If invoked directly by the user, run discovered verification commands, then
 offer explicit next steps:

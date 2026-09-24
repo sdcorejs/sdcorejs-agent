@@ -8,6 +8,18 @@ import { pathToFileURL } from 'node:url';
 import test from 'node:test';
 import { isMap, isScalar, isSeq, parseDocument } from 'yaml';
 import * as runtimePolicy from '../../_refs/harness/runtime-policy.mjs';
+import { documentedInteraction, documentedFinish } from './support/interaction-finish-fixture.mjs';
+
+test('case-interaction-finish-portable: documented conditional contexts survive actual handoff without invented proof', () => {
+  const context = { ...contextFor('review_context', 'sdcorejs-repair-loop'), interaction_context: documentedInteraction(), finish_context: documentedFinish() };
+  const args = { contextType: 'review_context', context, consumer: 'sdcorejs-repair-loop', currentHeadOrDiff: 'fixture', redactionApplied: true };
+  const handoff = runtimePolicy.buildPortableHandoff(args);
+  assert.deepEqual(handoff.state_delta.interaction_context, context.interaction_context);
+  assert.deepEqual(handoff.state_delta.finish_context, context.finish_context);
+  assert.throws(() => runtimePolicy.buildPortableHandoff({ ...args, stateDelta: { finish_context: { schema_version: 99 } } }), /differs/u);
+  context.finish_context.schema_version = 99;
+  assert.throws(() => runtimePolicy.buildPortableHandoff(args), /finish/u);
+});
 
 test('UI review portable handoff preserves purpose and refuses malformed or omitted proof fields', async () => {
   const doc = await readFile(new URL('../../_refs/shared/ui-review.md', import.meta.url), 'utf8');

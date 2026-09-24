@@ -1,3 +1,7 @@
+import { createHash } from 'node:crypto';
+import { verifyApprovedArtifactGraph } from '../shared/approved-artifact.mjs';
+import { observeChoiceTools } from './runtime-attestation.mjs';
+
 const ACTIONS = [
   'progress.create',
   'progress.update',
@@ -266,6 +270,7 @@ export function resolveAction({
   action,
   runtimeCapabilities = {},
   runtimeActions = {},
+  runtime,
 } = {}) {
   if (classification || task) {
     const resolvedClassification = classification ?? classifyTask(task);
@@ -282,6 +287,13 @@ export function resolveAction({
   }
   const mapping = contract.adapters?.[adapter]?.actions?.[action];
   if (!mapping) return { mode: 'blocked', action, reason: 'adapter action mapping is missing' };
+
+  if (action === 'user.choose' || action === 'user.approve') {
+    const observed = observeChoiceTools(runtime, action);
+    return observed.status === 'supported'
+      ? { mode: 'native', action, native: observed.tools, fallback: mapping.fallback }
+      : { mode: 'fallback', action, native: [], fallback: mapping.fallback, reason: observed.reason };
+  }
 
   const runtimeCapabilityDeclared =
     mapping.capability && Object.hasOwn(runtimeCapabilities, mapping.capability);
@@ -388,10 +400,9 @@ export const VISUAL_INTERACTION_KINDS = Object.freeze([
 /**
  * Select the surface for one decision.
  *
- * Visual and non-visual decisions run on separate priority ladders. A single
- * ladder that put native structured choice first meant a genuinely spatial
- * decision never reached a visual surface at all, because every runtime that
- * can show a picture can also show a picker.
+ * Actual exposed choice tools own decisions. Visuals can still provide
+ * supporting spatial feedback, but static capability metadata cannot select
+ * a native decision tool or substitute for explicit written approval.
  *
  * An approval never reaches a visual surface. A browser click is design
  * feedback; routing an approval through it would let a click stand in for a
@@ -404,10 +415,13 @@ export function selectInteraction({
   approval = false,
   consent = {},
   failed_surfaces = [],
+  runtime,
+  decision_id = null,
 } = {}) {
-  const labels = options.map((item) => String(item));
+  const labels = options.map((item) => typeof item === 'string' ? item : item.label);
   const markdown = numberedMarkdown(labels);
-  const base = { options: labels, markdown, fallback_markdown: markdown };
+  const base = { options: labels, markdown, fallback_markdown: markdown, decision_id };
+  if (approval && labels.length !== 3) return { ...base, kind: 'invalid-approval-options', reason: 'approval requires all three Approve/Request changes/Cancel options' };
 
   if (labels.length === 0) {
     return {
@@ -417,7 +431,8 @@ export function selectInteraction({
       fallback_markdown: '',
     };
   }
-  if (labels.length === 1) {
+  const explicitWrite = options.some(option => ['apply', 'apply-current-diff'].includes(typeof option === 'string' ? option.toLowerCase() : option?.value));
+  if (labels.length === 1 && !approval && !explicitWrite) {
     return {
       kind: 'auto-select',
       selected: labels[0],
@@ -427,21 +442,20 @@ export function selectInteraction({
     };
   }
 
-  const status = (name) => normalizeCapabilityStatus(capabilities[name]);
-
-  if (visual_spatial && !approval) {
-    const surface = resolveVisualCompanionPlan({ capabilities, consent, failed_surfaces });
-    return { ...base, ...surface, kind: VISUAL_MODE_KINDS[surface.mode] };
-  }
-
-  if (status('native_structured_choice') === 'supported') {
+  const observed = observeChoiceTools(runtime, approval ? 'user.approve' : 'user.choose');
+  if (observed.status === 'supported' && !failed_surfaces.includes('native-structured-choice')) {
     return {
       ...base,
       kind: 'native-structured-choice',
+      tools: observed.tools,
       reason: approval && visual_spatial
         ? 'an approval stays on a non-visual surface'
         : 'native structured choice is available',
     };
+  }
+  if (visual_spatial && !approval && !failed_surfaces.includes('native-structured-choice')) {
+    const surface = resolveVisualCompanionPlan({ capabilities, consent, failed_surfaces });
+    return { ...base, ...surface, kind: VISUAL_MODE_KINDS[surface.mode] };
   }
   return {
     ...base,
@@ -487,31 +501,95 @@ export function resolveVisualCompanionPlan({
 const VISUAL_MODE_KINDS = Object.freeze({ live: 'live-visual-companion', native: 'typed-visual-screen',
   static: 'static-visual-composer', markdown: 'markdown-numbered-choice' });
 
-export function normalizeChoiceResponse(response, options = [], { recommended } = {}) {
+export function normalizeChoiceResponse(response, options = [], { recommended, approval = false } = {}) {
   const raw = String(response ?? '').trim();
-  const normalized = raw.toLowerCase();
-  const labels = options.map((item) => String(item));
+  const normalized = raw.normalize('NFC').toLowerCase();
+  const labels = options.map((item) => typeof item === 'string' ? item : item?.label);
   const delegated = /^(?:you decide|decide for me|use (?:the )?recommend(?:ed|ation)|choose (?:the )?default)$/i.test(raw);
 
-  if (delegated && labels.includes(recommended)) {
+  const recommendedOption = options[labels.indexOf(recommended)];
+  const recommendedValue = typeof recommendedOption === 'string' ? recommendedOption.toLowerCase() : recommendedOption?.value;
+  if (delegated && !approval && labels.includes(recommended) && !['apply','apply-current-diff'].includes(recommendedValue)) {
     return { status: 'selected', selected: recommended, source: 'recommended' };
   }
 
   const selectors = [...normalized.matchAll(/\b(\d+)\b/g)]
     .map((match) => Number(match[1]))
     .filter((value) => value >= 1 && value <= labels.length);
-  if (new Set(selectors).size === 1) {
+  if (/^\d+[.)]?$/u.test(normalized) && new Set(selectors).size === 1) {
     return { status: 'selected', selected: labels[selectors[0] - 1], source: 'numeric' };
   }
   if (new Set(selectors).size > 1) {
     return { status: 'ambiguous', selected: null, source: 'multiple-selectors' };
   }
 
-  const exact = labels.filter((label) => label.toLowerCase() === normalized);
+  const exact = labels.filter((label, index) => typeof label === 'string' &&
+    [label, ...(typeof options[index] === 'object' && Array.isArray(options[index]?.aliases) ? options[index].aliases : [])]
+      .some(value => typeof value === 'string' && value.trim().normalize('NFC').toLowerCase() === normalized));
   if (exact.length === 1) {
     return { status: 'selected', selected: exact[0], source: 'label' };
   }
   return { status: 'ambiguous', selected: null, source: 'unrecognized' };
+}
+
+function stableDecisionValue(value) {
+  if (Array.isArray(value)) return value.map(stableDecisionValue);
+  if (value && typeof value === 'object') return Object.fromEntries(Object.keys(value).sort().map(key => [key, stableDecisionValue(value[key])]));
+  return value;
+}
+
+/** Bind the presented localized labels/aliases as well as semantic option values. */
+export function decisionFingerprint(decision) {
+  const nonempty = value => typeof value === 'string' && value.trim() !== '';
+  if (decision?.schema_version !== 1 || !['id', 'gate', 'purpose', 'change_ref', 'owner_repository_id', 'scope_fingerprint'].every(key => nonempty(decision[key])) ||
+      !/^sha256:[a-f0-9]{64}$/u.test(decision.scope_fingerprint) ||
+      !(decision.artifact_id === null || nonempty(decision.artifact_id)) || !(decision.revision === null || nonempty(decision.revision)) ||
+      (decision.artifact_id !== null && !nonempty(decision.revision)) || typeof decision.approval !== 'boolean' ||
+      !Array.isArray(decision.options) || !decision.options.length ||
+      decision.options.some((option, index) => !nonempty(option.id) || !nonempty(option.value) || !nonempty(option.label) || option.selector !== index + 1 || !Array.isArray(option.aliases) || option.aliases.some(alias => !nonempty(alias))) ||
+      new Set(decision.options.map(option => option.id)).size !== decision.options.length) throw new TypeError('invalid scoped decision identity/options');
+  if (decision.approval && (decision.options.some(option => option.id !== option.value) || JSON.stringify(decision.options.map(option => option.id)) !== JSON.stringify(['approve', 'change', 'cancel']))) throw new TypeError('approval requires Approve/Change/Cancel options');
+  const identity = Object.fromEntries(['schema_version','id','gate','purpose','change_ref','owner_repository_id','artifact_id','revision','scope_fingerprint','approval'].map(key => [key, decision[key]]));
+  identity.options = decision.options.map(({ id, selector, value, label, aliases }) => ({ id, selector, value, label, aliases }));
+  return 'sha256:' + createHash('sha256').update(JSON.stringify(stableDecisionValue(identity))).digest('hex');
+}
+
+/** Resolve against host-read user events or a loaded, verified plan, never provenance labels. */
+export function resolveDecision(context, runtime = {}) {
+  if (context?.schema_version !== 1) return { status: 'blocked', reason: 'unsupported interaction_context schema' };
+  const decision = context?.decision;
+  let fingerprint;
+  try { fingerprint = decisionFingerprint(decision); } catch (error) { return { status: 'blocked', reason: error.message }; }
+  const pending = context.pending_decisions ?? [decision];
+  const candidates = [...(context.resolutions ?? [])].filter(record => record.decision_fingerprint === fingerprint);
+  if (context.reply_ref) candidates.unshift({ response_ref: context.reply_ref, decision_fingerprint: fingerprint });
+  for (const candidate of candidates) {
+    if (!candidate.response_ref || typeof runtime.read_response !== 'function') continue;
+    const event = runtime.read_response(candidate.response_ref);
+    if (!event || event.id !== candidate.response_ref || event.decision_fingerprint !== fingerprint) continue;
+    if (event.question_id ? event.question_id !== decision.id : pending.length !== 1 || pending[0].id !== decision.id) {
+      return { status: 'ambiguous', reason: 'reply is not bound to exactly one pending gate' };
+    }
+    const parsed = normalizeChoiceResponse(event.text, decision.options, { approval: decision.approval });
+    if (parsed.status !== 'selected') return { status: 'ambiguous', reason: parsed.source };
+    const selected = decision.options.find(option => option.label === parsed.selected);
+    if (!selected) return { status: 'blocked', reason: 'option mapping changed' };
+    return { status: 'resolved', value: selected.value, option_id: selected.id, resolution: { schema_version: 1, decision_fingerprint: fingerprint, response_ref: event.id, option_id: selected.id, value: selected.value, source: 'explicit-user' } };
+  }
+  if (!decision.approval && typeof runtime.load_plan === 'function') {
+    try {
+      const loaded = runtime.load_plan();
+      verifyApprovedArtifactGraph(loaded.artifact, loaded.parents);
+      const metadata = loaded.artifact.metadata;
+      if (metadata.artifact_kind !== 'plan' || metadata.owner_repository_id !== decision.owner_repository_id || metadata.change_ref !== decision.change_ref || metadata.source_revision !== runtime.current_revision) throw new Error('approved policy owner/change/revision mismatch');
+      const block = loaded.artifact.body.match(/```interaction-policy\r?\n([\s\S]*?)\r?\n```/u);
+      const policies = block ? JSON.parse(block[1]) : [];
+      const matches = policies.filter(policy => policy.decision_fingerprint === fingerprint);
+      const selected = decision.options.find(option => option.id === matches[0]?.option_id);
+      if (matches.length === 1 && selected && !['apply', 'apply-current-diff'].includes(selected.value)) return { status: 'resolved', value: selected.value, option_id: selected.id, resolution: { schema_version: 1, decision_fingerprint: fingerprint, plan_ref: metadata.repository_relative_path, approval_hash: metadata.approval_hash, option_id: selected.id, value: selected.value, source: 'verified-plan' } };
+    } catch (error) { return { status: 'blocked', reason: error.message }; }
+  }
+  return { status: 'pending', reason: 'no current explicit decision authority', decision_fingerprint: fingerprint };
 }
 
 export function selectWorkerPolicy(task = {}) {

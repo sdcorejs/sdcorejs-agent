@@ -3,6 +3,18 @@ import { evaluateSimplifyPreflight } from '../../_refs/simplify/simplify-contrac
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { finishFixture } from './support/interaction-finish-fixture.mjs';
+
+test('case-interaction-finish-repair-consumer: review-only blocks repair; opt-in retains existing scope gates', async t => {
+  const f = await finishFixture(t);
+  const input = { ...contract(), finish_context: f.context };
+  assert.match(evaluateRepairContract(input, { finish_runtime: f.runtime }).blockers.join(' '), /not authorized/u);
+  f.choose('review', 'review-and-repair');
+  const allowed = evaluateRepairContract(input, { finish_runtime: f.runtime });
+  assert.doesNotMatch(allowed.blockers.join(' '), /not authorized by the scoped finish choice/u);
+  const missing = evaluateRepairContract({ finish_context: f.context }, { finish_runtime: f.runtime });
+  assert.ok(missing.blockers.length, 'finish choice does not replace finding/owner/tier preflight');
+});
 
 import {
   evaluateExternalReviewFeedback,

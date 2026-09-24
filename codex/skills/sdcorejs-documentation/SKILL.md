@@ -118,13 +118,13 @@ asks for multiple outputs.
 ### Documentation Gate Tail
 
 When called by `sdcorejs-angular`, `sdcorejs-nestjs`, `sdcorejs-nextjs`, or
-direct `sdcorejs-test` after the test decision:
+direct `sdcorejs-test` for unresolved documentation authority:
 
 1. Load `../_refs/documentation/gate.md`.
 2. Identify whether corresponding `user-guide` and `technical-doc` files
    already exist for the touched feature/module.
-3. Ask the approval gate before creating any missing user-guide or technical-doc
-   for a new feature. Saved preferences may default updates, but must not
+3. Reuse exact current explicit user/approved-plan choices; ask only unresolved
+   creation authority for a missing user-guide or technical-doc. Saved preferences may default updates, but must not
    silently authorize new doc file creation.
 4. Pass the captured choices to the documentation tail modes below.
 
@@ -225,3 +225,8 @@ document copy in the portal.
 - `../_refs/shared/finish-gate.md` - surfaces the documentation gate inside code-generation flows
 - `../_refs/orchestration/tail/auto-docs.md` - change-scoped execution records, distinct from evergreen documentation
 - `sdcorejs-explore` - project discovery, summaries, code maps, flow traces, env setup, and documentation harvests
+
+In a finish tail, return owned changed paths and `artifact_context` to the
+integration owner's `finish_context` through `../_refs/shared/finish-gate.md`.
+Do not start another finish ceremony. Writes invalidate affected proof before
+final verification; read-only/deferred callers grant no documentation writes.

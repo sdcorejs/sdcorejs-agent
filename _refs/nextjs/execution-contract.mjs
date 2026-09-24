@@ -2,6 +2,11 @@ import { resolveRequirementOwnership } from '../shared/repository-contract.mjs';
 import { systemRegistry } from '../shared/system-registry.mjs';
 import { evaluateDesignExecution } from '../shared/design-verification.mjs';
 import { evaluateUiReviewConsumer } from '../shared/ui-review-contract.mjs';
+import { completeExecution } from '../orchestration/execution-contract.mjs';
+
+export function completeNextjsExecution(request, runtime = {}) {
+  return completeExecution(request, runtime);
+}
 
 const FEATURES = new Set([
   'init-site',

@@ -689,3 +689,41 @@ $codex = Get-ChildItem -Recurse -File -Path codex\skills -Filter SKILL.md
 ```
 
 Removed-name scan should return no matches for deleted design skills in source docs and tests.
+
+## Interaction and finish contract — current change (2026-09-24)
+
+This section records `interaction-finish-contract-20260924` at base HEAD
+`7e7f4288717a983a5f51ab43af24af4ce423a1d4`. Earlier sections and evidence
+records remain historical; they are not rewritten as current verification.
+The approved implementation is dirty working-tree content. Explicitly approved
+r2 adds the historical UI evidence reader: previous sources are verified at the
+base revision, while a separate continuation binds current source/dependency
+content and actual command receipts. The complete 13-suite regression passes
+321/321; current UI/review passes 72/72; the evidence validator passes 4/4.
+Five independently reproduced clean-HEAD failures and interrupted broad checks
+remain disclosed. Full repository PASS is not claimed.
+
+The deterministic communication report preserves all 361 consumer-required
+fields. Visible fixture output and bootstrap size decrease; the expanded
+just-in-time contract increases aggregate measured bytes. These are source-bound
+measurements, not live-agent token or latency claims.
+
+| Measurement | Baseline | Current |
+| --- | ---: | ---: |
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,850 |
+| Always-loaded bootstrap words | 2,361 | 2,319 |
+| Aggregate just-in-time scenario bytes | 514,603 | 677,988 |
+| Aggregate visible output bytes | 42,558 | 2,802 |
+| Aggregate visible output words | 3,961 | 337 |
+| Portable fallback handoff bytes | 0 | 25,383 |
+| Supported runtime context channel bytes | 0 | 1,819 |
+| Repeated-block bytes | 2,319 | 0 |
+| Total measured communication bytes | 577,334 | 727,842 |
+| Consumer-required authoritative fields | 361 | 361 preserved |
+
+Current commands, content manifest and limitations are retained in
+`authoring/evals/interaction-finish-contract.json` and the scoped delivery at
+`.sdcorejs/docs/workflow/2026-09-24-11-35-interaction-finish-contract-delivery.md`.
+The full generated-app/container matrix, live provider/target-project A/B,
+native-picker automation, browser capture and paid services are **NOT RUN**.
+No dependency, commit or push is authorized by this evidence.

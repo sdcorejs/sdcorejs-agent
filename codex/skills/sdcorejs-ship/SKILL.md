@@ -12,13 +12,11 @@ description: Final delivery and dependency-update gate. Use for verify-before-do
 
 ## Purpose And Boundary
 
-Own the final delivery readiness boundary: prove the work satisfies the right
-contract, prove the branch hygiene evidence is current, and then hand off to
+Own the final delivery readiness boundary: prove the work satisfies the right contract, prove the branch hygiene evidence is current, and then hand off to
 artifact workflows only when the user explicitly asks for them.
 
 `sdcorejs-ship` decides readiness. `sdcorejs-git` creates Git artifacts only
-after current ship and branch-ready evidence exists and the user explicitly asks
-for commit, PR, push, changelog, tag, or release artifacts.
+after current ship and branch-ready evidence exists and the user explicitly asks for commit, PR, push, changelog, tag, or release artifacts.
 
 `sdcorejs-ship` is responsible for:
 
@@ -47,14 +45,11 @@ Read `../_refs/shared/runtime-protocols.md` and
 `../_refs/shared/artifact-lifecycle.md`; consume and pass through the current
 change's `artifact_context`. For production/release claims, also load
 `../_refs/shared/ship-readiness-contract.mjs`; it consumes the common approved
-artifact, repository, source revision map, and evidence identities. Redact
-suspected secrets before printing evidence. Read
+artifact, repository, source revision map, and evidence identities. Redact suspected secrets before printing evidence. Read
 `../_refs/shared/decision-coverage.md`, preserve `decision_coverage` and
 `goal_backward_review`, and block readiness when either reports an uncovered
-record, invariant evidence gap, or unresolved critique blocker.
-Preserve `architecture_context` and the exact `architecture_gate`. For required
-architecture, verify the immutable spec -> architecture -> plan graph and
-current `INV-*` conformance; missing/stale/mutated architecture or mismatched
+record, invariant evidence gap, or unresolved critique blocker. Preserve `architecture_context` and the exact `architecture_gate`. For required
+architecture, verify the immutable spec -> architecture -> plan graph and current `INV-*` conformance; missing/stale/mutated architecture or mismatched
 path/hash/reference blocks readiness. A concrete not-applicable gate retains
 `architecture_context: null` and must not be upgraded to PASS by inference.
 Read `../_refs/shared/validation-map.md`; preserve the validation map's approved evidence evaluation. Read `../_refs/shared/convergence-contract.mjs`; verify-before-done evaluates and seals a receipt, while branch-ready verifies both against approved change/mode and current identity.
@@ -69,10 +64,8 @@ Read `../_refs/shared/validation-map.md`; preserve the validation map's approved
 | `dependency-update` | "update dependencies", "update package", "bump <pkg>", "outdated", "audit fix" | protected-branch-safe dependency workflow plus regression evidence |
 | `release-ready` | "release readiness", "prepare tag", "publish", "next tag" | release ledger, risk notes, final readiness verdict |
 
-If the user asks only for an artifact-only commit, PR, changelog, or release
-notes action, route to `sdcorejs-git`; that skill still rejects missing or stale
-ship evidence before creating delivery artifacts. If the prompt asks whether
-work is ready, should be pushed, can be merged, can be released, or is safe to
+If the user asks only for an artifact-only commit, PR, changelog, or release notes action, route to `sdcorejs-git`; that skill still rejects missing or stale
+ship evidence before creating delivery artifacts. If the prompt asks whether work is ready, should be pushed, can be merged, can be released, or is safe to
 ship, stay in `sdcorejs-ship`.
 
 ## Verification Mode Classification
@@ -136,8 +129,7 @@ Rules:
 
 ## Evidence And Command Discipline
 
-Discover verification commands from package manager, lockfiles, workspace
-configuration, package.json scripts, project config, original failing command,
+Discover verification commands from package manager, lockfiles, workspace configuration, package.json scripts, project config, original failing command,
 `test_context`, `debug_context`, `review_context`, `repair_source`, selected
 acceptance criteria, and repo docs.
 
@@ -159,8 +151,7 @@ Rules:
 
 ## Mode: verify-before-done
 
-Read `../_refs/orchestration/tail/verify-before-done.md` completely, then run the
-selected verification mode.
+Read `../_refs/orchestration/tail/verify-before-done.md` completely, then run the selected verification mode.
 
 Feature acceptance:
 
@@ -217,11 +208,9 @@ Do not patch source directly inside `verify-before-done`.
 
 ## Mode: branch-ready
 
-Read `../_refs/orchestration/tail/branch-ready.md` completely, then run its
-read-only hygiene checks.
+Read `../_refs/orchestration/tail/branch-ready.md` completely, then run its read-only hygiene checks.
 
-Branch-ready is the final read-only gate immediately before `sdcorejs-git`
-creates commit, PR, push, tag, or release artifacts. No writes after
+Branch-ready is the final read-only gate immediately before `sdcorejs-git` creates commit, PR, push, tag, or release artifacts. No writes after
 branch-ready unless branch-ready is run again.
 
 Rules:
@@ -238,8 +227,7 @@ Rules:
 
 ## Mode: ship
 
-Use for "done, ship it", "push it", "ready to merge", "create PR", or release
-requests.
+Use for "done, ship it", "push it", "ready to merge", "create PR", or release requests.
 
 Preferred order:
 
@@ -262,9 +250,7 @@ Preferred order:
 8. Delegate to `sdcorejs-git` only if the user explicitly asked for commit, PR,
    push, changelog, tag, or release artifacts and final evidence is current.
 
-If any workflow verifies before docs or changelog writes, re-run branch-ready
-after those writes. No writes after branch-ready unless branch-ready is run
-again.
+If any workflow verifies before docs or changelog writes, re-run branch-ready after those writes. No writes after branch-ready unless branch-ready is run again.
 
 ## Mode: dependency-update
 
@@ -272,12 +258,10 @@ Use dependency updates as a protected-branch-safe delivery workflow.
 
 ### Protected Branch Hard Stop
 
-Dependency updates on protected branches are a hard stop. Protected branches
-include `main`, `master`, `trunk`, `production`, `stable`, `release/*`, and any
+Dependency updates on protected branches are a hard stop. Protected branches include `main`, `master`, `trunk`, `production`, `stable`, `release/*`, and any
 repo-defined protected branch.
 
-Do not modify package manifests, lockfiles, or config on a protected branch.
-There is no continue-on-protected-branch option. Offer only:
+Do not modify package manifests, lockfiles, or config on a protected branch. There is no continue-on-protected-branch option. Offer only:
 
 1. Create a feature branch and continue.
 2. Create an isolated worktree.
@@ -296,15 +280,12 @@ Classify update type:
 - `runtime`
 - `toolchain`
 
-Do not update multiple unrelated dependency groups unless the user approved that
-scope. Do not silently change package manager or lockfile format. Do not run
-broad update, audit fix, or force commands that modify many packages unless the
-user explicitly requested and approved the exact action.
+Do not update multiple unrelated dependency groups unless the user approved that scope. Do not silently change package manager or lockfile format. Do not run
+broad update, audit fix, or force commands that modify many packages unless the user explicitly requested and approved the exact action.
 
 ### Package-Manager-Specific Command Matrix
 
-Detect the actual package manager first. If project policy uses a custom
-dependency script, follow that script instead of generic commands.
+Detect the actual package manager first. If project policy uses a custom dependency script, follow that script instead of generic commands.
 
 | Package manager | Install existing lockfile | Add/update package | Update existing package | Audit |
 |---|---|---|---|---|
@@ -332,20 +313,13 @@ Collect the complete `release_evidence` schema from
 `commit_ready`, `push_ready`, `pr_ready`, `release_ready`, and
 `actually_published` independently.
 
-A local verification pass is not a commit, remote branch, PR, immutable tag,
-GitHub Release, or publication. Never collapse these states.
+A local verification pass is not a commit, remote branch, PR, immutable tag, GitHub Release, or publication. Never collapse these states.
 
-Release readiness is blocked by unresolved Critical/High findings; failed or
-mutated approved artifacts; missing/current-source-mismatched Angular golden,
-Next.js production build, NestJS production OIDC/JWKS authentication, or Full
-E2E evidence; portal/module revision mismatch; or `NOT RUN` evidence for a
-release-required module. Supplemental smoke evidence never satisfies a full
-matrix. A full live-agent coverage claim requires a current complete live
-matrix.
+Release readiness is blocked by unresolved Critical/High findings; failed or mutated approved artifacts; missing/current-source-mismatched Angular golden,
+Next.js production build, NestJS production OIDC/JWKS authentication, or Full E2E evidence; portal/module revision mismatch; or `NOT RUN` evidence for a
+release-required module. Supplemental smoke evidence never satisfies a full matrix. A full live-agent coverage claim requires a current complete live matrix.
 
-Every evidence row must retain its evidence class, actual command, result,
-source SHA/fingerprint, portal SHA, module SHA/pinned-SHA map, environment
-fingerprint, and timestamp.
+Every evidence row must retain its evidence class, actual command, result, source SHA/fingerprint, portal SHA, module SHA/pinned-SHA map, environment fingerprint, and timestamp.
 
 Rules:
 
@@ -377,57 +351,43 @@ Consume evidence from:
 
 For test evidence, prefer `test_context.schema_version: 2`,
 `test_status`, and `test_evidence.schema_version: 2`. Legacy v1 is readable
-only as historical context; map it conservatively and require a current v2 run
-for verification. Authored/written tests are not verified until the matching
-case ran against the current `associated_HEAD_or_diff` and the independent
-result is passing.
+only as historical context; map it conservatively and require a current v2 run for verification. Authored/written tests are not verified until the matching
+case ran against the current `associated_HEAD_or_diff` and the independent result is passing.
 
-Validate multi-run evidence rather than a single last command: required cases
-must map to fresh run IDs, cleanup must succeed, skipped commands remain
+Validate multi-run evidence rather than a single last command: required cases must map to fresh run IDs, cleanup must succeed, skipped commands remain
 skipped, and blockers remain blocking. For guide screenshots, consume
 `test_evidence.captures` and `ui_capture_context`; capture evidence is valid
-only when target state, real-UI auth provenance, PII screening, hash, and
-artifact classification are current.
+only when target state, real-UI auth provenance, PII screening, hash, and artifact classification are current.
 
 Treat context evidence as stale if files changed after it was produced or if
 `associated_HEAD_or_diff` does not match the current diff. Re-run relevant
-checks when evidence is stale. Do not substitute review, test, or debug evidence
-for an AC unless it actually verifies that criterion.
+checks when evidence is stale. Do not substitute review, test, or debug evidence for an AC unless it actually verifies that criterion.
 
 ## AI-agent delivery evidence
 
-When `ai_agent_context` is present, freshness-check its approved spec/plan
-hashes, resolved profiles, contract/target paths, validator fixtures,
-deterministic evals, server-denial tests, review/repair evidence, and current
-diff association. Keep offline conformance, simulated behavioral evidence, and
-authorized live engine/model evidence as separate rows. Missing live evidence
-is an explicit deferral, never an inferred pass. Any profile drift, provider
-storage without governance, raw tool exposure, stale approval behavior,
-cross-tenant reuse, invented evidence, unsafe trace payload, or weakened
+When `ai_agent_context` is present, freshness-check its approved spec/plan hashes, resolved profiles, contract/target paths, validator fixtures,
+deterministic evals, server-denial tests, review/repair evidence, and current diff association. Keep offline conformance, simulated behavioral evidence, and
+authorized live engine/model evidence as separate rows. Missing live evidence is an explicit deferral, never an inferred pass. Any profile drift, provider
+storage without governance, raw tool exposure, stale approval behavior, cross-tenant reuse, invented evidence, unsafe trace payload, or weakened
 zero-tolerance gate blocks readiness.
 
 ## Simplification delivery evidence
 
 When `simplify_context` is present, use the canonical v2 schema in
 `../_refs/simplify/verification.md` and `evaluateSimplifyConsumer` with the trusted
-host session. Check actual content fingerprint, owner/root, selected files/hunks,
-preservation receipts, pass ledger and current test/review association.
+host session. Check actual content fingerprint, owner/root, selected files/hunks, preservation receipts, pass ledger and current test/review association.
 Same HEAD and a portable hash alone do not establish freshness.
 
 Block readiness when any simplification write has stale post-simplification evidence,
 `behavior_verification: not-verified`, protected strings/prompts/contracts
-changed, public API/config/dependency drift occurred, a
-failed pass was not reverted, or affected test/review evidence is stale.
-Legacy `behavior_verification: limited` is read-only/unverified compatibility
-input and cannot satisfy this gate. There is no v2 limited-write override.
+changed, public API/config/dependency drift occurred, a failed pass was not reverted, or affected test/review evidence is stale.
+Legacy `behavior_verification: limited` is read-only/unverified compatibility input and cannot satisfy this gate. There is no v2 limited-write override.
 PASS reports the focused commands that ran, not semantic equivalence.
 
 ## Secret And PII Redaction
 
-Never echo secret values from `.env`, CI files, shell output, source files,
-stack traces, audit output, package-manager logs, Git diffs, network logs,
-Authorization headers, cookies, JWTs, API keys, database URLs, private keys,
-passwords, customer PII, or production payloads.
+Never echo secret values from `.env`, CI files, shell output, source files, stack traces, audit output, package-manager logs, Git diffs, network logs,
+Authorization headers, cookies, JWTs, API keys, database URLs, private keys, passwords, customer PII, or production payloads.
 
 Rules:
 
@@ -455,8 +415,7 @@ Rules:
 
 ## ship_context Output
 
-Read `../_refs/orchestration/tail/ship-context.md` completely before emitting the
-redacted output. Every mode returns the full contract from that reference; this
+Read `../_refs/orchestration/tail/ship-context.md` completely before emitting the redacted output. Every mode returns the full contract from that reference; this
 compact projection highlights the delivery-critical fields:
 
 ```yaml
@@ -484,9 +443,7 @@ ship_context:
   git_handoff_reason:
 ```
 
-Never include secrets, skipped commands as passes, stale diff evidence, or a
-true `git_handoff_allowed` when writes followed branch-ready or artifact closure
-is not complete.
+Never include secrets, skipped commands as passes, stale diff evidence, or a true `git_handoff_allowed` when writes followed branch-ready or artifact closure is not complete.
 
 ## Cross-References
 
@@ -508,3 +465,13 @@ is not complete.
 ## Design and UI review integration
 
 Consume required Design/UI obligations using ../_refs/shared/ui-review.md and the shared verified path. Schema valid, reviewed/completed or caller PASS does not mean blocker-free. Recheck current source/build/capture identities even at the same HEAD. Required missing/stale source/rendered/interaction or independent-review proof stays a gap. Existing authorized manual/deferred risk policy remains explicit and never becomes automated PASS. Missing design permits unavailable/not-applicable comparison only where approved applicability allows it.
+
+## Canonical finish continuation
+
+When invoked by an executor tail, preserve `finish_context` and pass it to
+`evaluateShipReadiness` with the current `finish_runtime` from
+`../_refs/shared/finish-gate.md`. Set `finish_phase` to `verify` or
+`branch-ready` only for that phase's preflight; handoff requires completed,
+current proof. This avoids requiring future receipts before their command runs. Defer, unresolved required Design/UI/test gaps, stale content or blocking review
+cannot become done. Final gates are read-only. Any later write invalidates affected evidence and requires the parent to resume the canonical resolver.
+Ship does not reopen resolved policy or grant commit/push/deploy authority.

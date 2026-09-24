@@ -1,6 +1,17 @@
 import { simplifyFixture, sourcePath, originalSource } from './support/simplify-contract-fixture.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { finishFixture } from './support/interaction-finish-fixture.mjs';
+
+test('case-interaction-finish-review-consumer: defer blocks invocation and worker cannot run shared review', async t => {
+  const f = await finishFixture(t, { review: 'defer' });
+  const input = context({ finish_context: f.context });
+  assert.match(evaluateReviewContract(input, { finish_runtime: f.runtime }).blockers.join(' '), /not authorized/u);
+  f.choose('review', 'review-only');
+  assert.doesNotMatch(evaluateReviewContract(input, { finish_runtime: f.runtime }).blockers.join(' '), /not authorized/u);
+  f.context.actor.role = 'worker';
+  assert.match(evaluateReviewContract(input, { finish_runtime: f.runtime }).blockers.join(' '), /integration owner/u);
+});
 import { uiReviewFixture } from './support/ui-review-fixture.mjs';
 import { evaluateUiReviewConsumer, validateUiReviewContext, recordUiEvidence, createUiReviewRuntime,
   beginUiReviewObservation, readUiReviewRequirements } from '../../_refs/shared/ui-review-contract.mjs';
@@ -478,7 +489,8 @@ test('mutated approval hash and unsupported review profiles fail closed', () => 
 test('case-simplify-hardening-ac-010 review checks actual simplify freshness', async t => {
   const f = await simplifyFixture(t); const result = f.finish(f.preflight());
   const c = context({ owner_repository_id: result.context.artifact_identity.owner_repository_id, simplify_context: result.context });
-  assert.equal(evaluateReviewContract(c, f.runtime).status, 'reviewed');
+  const reviewed = evaluateReviewContract(c, f.runtime);
+  assert.equal(reviewed.status, 'reviewed', JSON.stringify({ postflight: result.blockers, review: reviewed.blockers }));
   assert.equal(evaluateReviewContract(c).status, 'blocked');
   f.write(sourcePath, originalSource);
   assert.match(evaluateReviewContract(c, f.runtime).blockers.join(' '), /stale/u);

@@ -7,15 +7,11 @@ required-actions: artifact.read, artifact.write, context.pass, verification.run,
 # Review (profile + dimension aware)
 
 ## Purpose
-One read-only review skill for code, architecture, security, performance, and
-accessibility. It classifies both `track` and `track_profile` before loading
-track-specific references so plain Angular, NestJS, Next.js, and general
-projects are not reviewed against SDCoreJS framework conventions they do not
-use.
+One read-only review skill for code, architecture, security, performance, and accessibility. It classifies both `track` and `track_profile` before loading
+track-specific references so plain Angular, NestJS, Next.js, and general projects are not reviewed against SDCoreJS framework conventions they do not use.
 
 `sdcorejs-review` must not edit source code. Direct user-requested review is
-strict read-only by default and must not silently write `.sdcorejs` artifacts or
-auto-run `sdcorejs-repair-loop`. Repair belongs to `sdcorejs-repair-loop` after
+strict read-only by default and must not silently write `.sdcorejs` artifacts or auto-run `sdcorejs-repair-loop`. Repair belongs to `sdcorejs-repair-loop` after
 an explicit user or finish-gate choice.
 
 Resolve `track` and its durable `review_profile` from
@@ -29,14 +25,11 @@ Read `_refs/shared/runtime-protocols.md`. Apply
 `_refs/shared/artifact-lifecycle.md` only when the user explicitly chooses to
 persist the report. Read `_refs/shared/decision-coverage.md`; preserve
 `decision_coverage` and `goal_backward_review`, and report drift, missing task
-or evidence mappings, invariant gaps, or unresolved critique blockers without
-renumbering or repairing the approved records.
-Preserve `architecture_context` and the exact conditional gate from the
-approved plan. Architecture review compares changed boundaries, ownership,
+or evidence mappings, invariant gaps, or unresolved critique blockers without renumbering or repairing the approved records.
+Preserve `architecture_context` and the exact conditional gate from the approved plan. Architecture review compares changed boundaries, ownership,
 public contracts, profile blocks, and validation evidence with approved
 `INV-*`; a stale/missing/mutated required context is a finding, never permission
-to rewrite architecture or conventions.
-Read `_refs/shared/validation-map.md`; preserve the approved `validation_map`
+to rewrite architecture or conventions. Read `_refs/shared/validation-map.md`; preserve the approved `validation_map`
 and report drift from mapped cases or current evidence without rewriting rows.
 
 ## When to use
@@ -65,10 +58,8 @@ Before detecting profile/dimension or reading files under review, run
 
 Then run `sdcorejs-explore (conventions-read)` through
 `_refs/shared/convention-context.md` for the categories this review touches. It
-never creates the capture policy and never refreshes evidence; a missing registry
-is a context signal, not a blocker and not write permission.
-Read `_refs/shared/convergence-contract.mjs`; emit `convergence_findings` from
-current review evidence. Architecture violations and accepted convention
+never creates the capture policy and never refreshes evidence; a missing registry is a context signal, not a blocker and not write permission.
+Read `_refs/shared/convergence-contract.mjs`; emit `convergence_findings` from current review evidence. Architecture violations and accepted convention
 violations may block; observed convention candidates stay advisory.
 
 Determine review scope in this order:
@@ -81,20 +72,16 @@ Determine review scope in this order:
 6. ask the user for one numbered scope choice if the repo is too large and no
    clear scope exists.
 
-When current `test_context`, `test_status`, or `test_evidence` is available,
-consume it as read-only review input. Build a compact test matrix mapping
-requirements/risks to authored cases, executed runs, results, blockers,
-environment/persona coverage, data cleanup, and UI captures. Test evidence must
-match the current `associated_HEAD_or_diff`; written-but-unexecuted cases and
-legacy/stale runs remain gaps. Do not run missing tests merely to complete a
+When current `test_context`, `test_status`, or `test_evidence` is available, consume it as read-only review input. Build a compact test matrix mapping
+requirements/risks to authored cases, executed runs, results, blockers, environment/persona coverage, data cleanup, and UI captures. Test evidence must
+match the current `associated_HEAD_or_diff`; written-but-unexecuted cases and legacy/stale runs remain gaps. Do not run missing tests merely to complete a
 review unless the user expands the request. Preserve `ui_capture_context` and
 `artifact_context` classifications; diagnostic/local-only artifacts are not
 review deliverables.
 
 Exclude generated/vendor/build output by default: `node_modules`, `dist`,
 `build`, `coverage`, `.next`, `.turbo`, `.angular`, generated clients,
-lockfiles unless relevant, and generated Codex/Claude/plugin mirrors unless the
-review is about skills/mirrors. "Read every file under review" means every file
+lockfiles unless relevant, and generated Codex/Claude/plugin mirrors unless the review is about skills/mirrors. "Read every file under review" means every file
 inside the selected `file_scope`, not the entire repository by default.
 
 ## Step 1 - Classify Track, Track Profile, Dimension, and Mode
@@ -103,11 +90,8 @@ inside the selected `file_scope`, not the entire repository by default.
 
 Classify `track_profile` before loading any track-specific ref:
 
-First resolve the first-class artifact track and `review_profile` from the
-central registry. The stack-specific table below refines executable-code
-reviews only; AI-agent, design, documentation, workflow, product, test, React,
-Node, fullstack, and general remain durable review profiles rather than orphan
-sections.
+First resolve the first-class artifact track and `review_profile` from the central registry. The stack-specific table below refines executable-code
+reviews only; AI-agent, design, documentation, workflow, product, test, React, Node, fullstack, and general remain durable review profiles rather than orphan sections.
 
 | track | track_profile | Required evidence |
 |---|---|---|
@@ -150,21 +134,15 @@ Dimension comes from user intent. Ids come from `review_dimensions` in
 | `ALL` | "comprehensive audit", "full review", "enterprise readiness"; run every applicable dimension and mark non-applicable dimensions as N/A. |
 | `site-audit` | Next.js existing whole-site audit; only use build-website site audit when `track_profile=nextjs-build-website`, otherwise run table review and report site-audit N/A. |
 
-Preserve dimensions. A security review remains `security`; do not relabel it as
-generic `code`. Accessibility is N/A for backend-only profiles unless the user
-asks for API usability/error-shape accessibility or a generated docs/UI review.
-Consistency coverage resolves through `resolveConsistencyScope` in
+Preserve dimensions. A security review remains `security`; do not relabel it as generic `code`. Accessibility is N/A for backend-only profiles unless the user
+asks for API usability/error-shape accessibility or a generated docs/UI review. Consistency coverage resolves through `resolveConsistencyScope` in
 `_refs/shared/review-contract.mjs`: never relabel a consistency issue as code
 style, never let a narrow dimension expand into a full audit.
 
-Frontend architecture comparison is active only when the scope is frontend and
-the selected dimensions include `code`, `architecture`, or `ALL`. When active,
-locate the selected approved plan/spec from the current execution context or the
-matching `.sdcorejs/plans/<track>/` contract. Read its `frontend_architecture`
-block when present; do not blindly select the newest plan. Record the selected
-path/hash or state that no approved architecture plan is available for
-comparison. For a security-, performance-, or accessibility-only frontend
-review, do not load this contract and record
+Frontend architecture comparison is active only when the scope is frontend and the selected dimensions include `code`, `architecture`, or `ALL`. When active,
+locate the selected approved plan/spec from the current execution context or the matching `.sdcorejs/plans/<track>/` contract. Read its `frontend_architecture`
+block when present; do not blindly select the newest plan. Record the selected path/hash or state that no approved architecture plan is available for
+comparison. For a security-, performance-, or accessibility-only frontend review, do not load this contract and record
 `approved_frontend_architecture.status: not-applicable`.
 
 ### Review mode and scored support
@@ -180,15 +158,11 @@ review, do not load this contract and record
 
 ## Step 2 - Load Applicable References
 
-For UI/UX scope only, read `_refs/design/uiux/index.md` for topic selection and
-the existing finding contract's UI/UX fields. Keep this review read-only and its
-requested dimensions unchanged; source-only evidence cannot prove rendered or
-interaction behavior. Aesthetic preferences stay advisory, never auto-repaired.
+For UI/UX scope only, read `_refs/design/uiux/index.md` for topic selection and the existing finding contract's UI/UX fields. Keep this review read-only and its
+requested dimensions unchanged; source-only evidence cannot prove rendered or interaction behavior. Aesthetic preferences stay advisory, never auto-repaired.
 
-Load track-specific refs only when `track_profile` matches the ref scope. Load
-shared refs for shared dimensions when applicable. If a ref is absent or not
-applicable, record it under `refs_skipped` with a reason; do not fabricate a
-missing ref and do not silently fail.
+Load track-specific refs only when `track_profile` matches the ref scope. Load shared refs for shared dimensions when applicable. If a ref is absent or not
+applicable, record it under `refs_skipped` with a reason; do not fabricate a missing ref and do not silently fail.
 
 | track_profile | code | security | performance | accessibility | architecture |
 |---|---|---|---|---|---|
@@ -201,16 +175,13 @@ missing ref and do not silently fail.
 | `plain-nextjs` | `_refs/shared/review-code.md` plus generic/local Next.js checks only | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
 | `general` | `_refs/shared/review-code.md` | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
 
-Load `_refs/shared/review-consistency.md` whenever the resolved consistency
-scope is not `none`. It is profile-neutral; track refs add boundary examples but
+Load `_refs/shared/review-consistency.md` whenever the resolved consistency scope is not `none`. It is profile-neutral; track refs add boundary examples but
 never fork its semantic rules.
 
 When frontend architecture comparison is active, load
 `_refs/shared/frontend-architecture.md` and compare the implementation with the
-approved component tree, reuse decisions, responsibilities, state/service
-ownership, provider lifecycle, registration, public exports, and architecture
-tests. Framework-specific refs add detail; they do not replace the shared
-comparison.
+approved component tree, reuse decisions, responsibilities, state/service ownership, provider lifecycle, registration, public exports, and architecture
+tests. Framework-specific refs add detail; they do not replace the shared comparison.
 
 Plain-profile guardrails:
 
@@ -228,11 +199,8 @@ Plain-profile guardrails:
 
 ## Step 3 - Probe Discipline and Secret Redaction
 
-Discover review and verification commands from package manager, lockfile,
-workspace configuration, `package.json` scripts, installed tools, and original
-failing commands. Do not hardcode `npm` or `tsc`. Do not invent missing
-scripts. Do not download probe tools with `npx --yes` or similar without
-explicit approval.
+Discover review and verification commands from package manager, lockfile, workspace configuration, `package.json` scripts, installed tools, and original
+failing commands. Do not hardcode `npm` or `tsc`. Do not invent missing scripts. Do not download probe tools with `npx --yes` or similar without explicit approval.
 
 Rules:
 
@@ -282,22 +250,19 @@ Security redaction is mandatory:
    pass it through `context.pass`. Show the user a localized projection with
    every finding, strength, N/A dimension/ref, and verification gap.
 
-If evidence is incomplete, mark the finding `UNCLEAR` or `Needs verification`
-instead of presenting it as a definite blocker. Do not inflate style
-preferences into blockers.
+If evidence is incomplete, mark the finding `UNCLEAR` or `Needs verification` instead of presenting it as a definite blocker. Do not inflate style preferences into blockers.
 
 ## Post-review Behavior
 
-When `sdcorejs-review` is called from a code-generation finish gate, return the
-report to the caller. The caller owns repair-loop, acceptance verification,
-branch-ready, documentation/task tracker artifacts, and memories. The caller may
-invoke `sdcorejs-repair-loop` only when the finish-gate review choice was "Run
-review and repair loop"; a skipped finish-gate review or direct read-only review
-must not auto-edit.
+When `sdcorejs-review` is called from a code-generation finish gate, return the report to the caller. The caller owns repair-loop, acceptance verification,
+branch-ready, documentation/task tracker artifacts, and memories. The caller may invoke `sdcorejs-repair-loop` only when the finish-gate review choice was "Run
+review and repair loop"; a skipped finish-gate review or direct read-only review must not auto-edit.
 
-The caller must complete any write-producing documentation, task tracker,
-memory, convention-sync, changelog, or release-note steps before the final
-branch-ready gate. No writes after branch-ready unless it is run again.
+Pass `finish_context` to `evaluateReviewContract` with its host runtime so
+`evaluateFinishInvocation` enforces the selected scoped choice. Return the
+assessment to the integration owner, which resumes `completeExecution` using
+`_refs/shared/finish-gate.md`. This review must not run shared docs or its own
+finish ceremony. The caller revalidates affected evidence after authorized writes before final branch-ready. No automatic Git actions.
 
 If a finding is a concrete single bug rather than a findings set, keep it in
 `review_context` as evidence. Repair-loop may delegate that one item to
@@ -306,8 +271,7 @@ tail chain.
 
 Convention persistence is the caller's separate
 `sdcorejs-explore (conventions-sync-write-approved)` step. Direct review returns
-candidates plus whether an approved `after-review` policy authorizes a later
-sync; finish-gate review passes `convention_context` through the tail so the
+candidates plus whether an approved `after-review` policy authorizes a later sync; finish-gate review passes `convention_context` through the tail so the
 sync sees the final code writes.
 
 When `sdcorejs-review` is invoked directly by the user:
@@ -327,22 +291,18 @@ Next step:
 Reply with `1`, `2`, or `3`.
 ```
 
-Only option `2` may write a review artifact, and only after the user explicitly
-chooses it. Persist it as a change-scoped durable artifact with
+Only option `2` may write a review artifact, and only after the user explicitly chooses it. Persist it as a change-scoped durable artifact with
 `commit_policy: with-change` when it belongs to the change, then emit
 `artifact_context.required_with_change`. If relationship metadata is
 insufficient, classify it as `conditional` and do not imply Git inclusion.
 
 ## Output Format
 
-Match the user's language at runtime. Keep identifiers, paths, env keys, route
-paths, and permission codes exact. Build the complete `review_context` for
+Match the user's language at runtime. Keep identifiers, paths, env keys, route paths, and permission codes exact. Build the complete `review_context` for
 repair-loop/ship compatibility, but do not render or echo the full
 `review_context` in user-facing output by default. Findings in the user
-projection must still include severity, evidence, `file:line` or exact scope,
-risk, repair tier, and suggested action. Use the validated portable handoff
-when `runtime_context_channel` is unsupported or unknown. Show the full
-structured context only when the user requests it or validation requires it.
+projection must still include severity, evidence, `file:line` or exact scope, risk, repair tier, and suggested action. Use the validated portable handoff
+when `runtime_context_channel` is unsupported or unknown. Show the full structured context only when the user requests it or validation requires it.
 
 ````markdown
 # Authoritative runtime context (not user-visible by default)
@@ -433,30 +393,22 @@ Findings rules:
 
 ## AI-agent review
 
-When `ai_agent_context` is present, preserve its approved hashes, selected
-profiles, contract/target paths, and offline/live evidence status. Load only the
-applicable `_refs/ai-agent/**` contracts. Review trust and tenant derivation,
-server-side authorization, business-shaped tool boundaries, mutation approval,
-idempotency/resource versions, session isolation, provider storage governance,
-evidence provenance/freshness, trace/audit redaction, budgets/limits,
-deterministic security gates, dependency/runtime ownership, and honest live
-claims. Treat any silent weakening of the common floor as a blocking
+When `ai_agent_context` is present, preserve its approved hashes, selected profiles, contract/target paths, and offline/live evidence status. Load only the
+applicable `_refs/ai-agent/**` contracts. Review trust and tenant derivation, server-side authorization, business-shaped tool boundaries, mutation approval,
+idempotency/resource versions, session isolation, provider storage governance, evidence provenance/freshness, trace/audit redaction, budgets/limits,
+deterministic security gates, dependency/runtime ownership, and honest live claims. Treat any silent weakening of the common floor as a blocking
 security-policy finding and `user-decision`, not an automatic style repair.
 
 ## Simplification review
 
 When `simplify_context` is present, preserve the canonical v2 payload from
 `_refs/simplify/verification.md`. Use `evaluateSimplifyConsumer` with the trusted
-host session before reviewing selected files/hunks, the actual repository diff
-and content-bound preservation receipts. A matching HEAD is insufficient;
-legacy and limited claims cannot satisfy current verification. Check for
-scope expansion, protected file or protected content changes, public-contract
-drift, string/prompt changes, framework metadata changes, auth/tenant/permission
-drift, side-effect or ordering drift, over-simplification, stale test evidence,
+host session before reviewing selected files/hunks, the actual repository diff and content-bound preservation receipts. A matching HEAD is insufficient;
+legacy and limited claims cannot satisfy current verification. Check for scope expansion, protected file or protected content changes, public-contract
+drift, string/prompt changes, framework metadata changes, auth/tenant/permission drift, side-effect or ordering drift, over-simplification, stale test evidence,
 and dependency/config churn.
 
-Treat missing post-change verification, changed protected literals, an
-unreverted failed pass, or `behavior_verification: not-verified` as blocking.
+Treat missing post-change verification, changed protected literals, an unreverted failed pass, or `behavior_verification: not-verified` as blocking.
 Review remains read-only and does not widen the simplification scope.
 
 ## Rules

@@ -113,7 +113,7 @@ test('simplify: execute-plan does not gain a simplify implementation track', asy
   assert.match(execute, /angular[\s\S]*nestjs[\s\S]*nextjs[\s\S]*ai-agent/i);
 });
 
-test('simplify: finish gate is a visible four-step opt-in with fresh post-write evidence', async () => {
+test('simplify: finish gate resolves scoped opt-in with fresh post-write evidence', async () => {
   const finish = await readFile(join(ROOT, '_refs', 'shared', 'finish-gate.md'), 'utf8');
   assertFinishGateContract(finish);
 });
@@ -210,12 +210,12 @@ test('simplify: mutation guards detect removed safety and routing invariants', a
   assertMutationFails(verification, /    return_values:/, assertVerificationContract, /preserved surface schema/);
   assertMutationFails(verification, /    change_ref:/, assertVerificationContract, /artifact identity field/);
 
-  assertMutationFails(finish, /never auto-run simplification/i, assertFinishGateContract, /opt-in simplification/);
+  assertMutationFails(finish, /explicit invocation opt-in plus hardened/i, assertFinishGateContract, /opt-in simplification/);
   assertMutationFails(
     finish,
-    /Finish step 3\/4/i,
+    /Simplify `skip`: never dispatch/i,
     assertFinishGateContract,
-    /four finish decisions|simplification choice/,
+    /simplification choice/,
   );
 
   assertMutationFails(runner, /hasBehaviorPreservationIntent/, assertRoutingContract, /behavior-preservation detector/);
@@ -389,14 +389,15 @@ function assertVerificationContract(source) {
 }
 
 function assertFinishGateContract(source) {
-  const steps = [...source.matchAll(/Finish step ([1-4])\/4/gi)].map(match => Number(match[1]));
-  assert.deepEqual([...new Set(steps)], [1, 2, 3, 4], 'four finish decisions exist');
-  assert.match(source, /behavior-preserving code simplification/i, 'simplification choice exists');
-  assert.match(source, /never auto-run simplification/i, 'opt-in simplification is explicit');
-  assert.match(source, /Skip simplification for this run/i);
-  assert.match(source, /Analyze eligible changed code/i);
-  assert.match(source, /Simplify eligible changed source code after a green baseline/i);
-  assert.match(source, /tests?[\s\S]*simplif[\s\S]*post-simplification[\s\S]*review/i);
+  assert.match(source, /resolveFinish/, 'one canonical completion resolver');
+  assert.match(source, /unresolved decisions/i, 'only unresolved choices prompt');
+  assert.match(source, /Simplify `skip`: never dispatch/, 'simplification choice exists');
+  assert.match(source, /explicit invocation opt-in plus hardened/i, 'opt-in simplification is explicit');
+  assert.match(source, /`analyze`: report without source writes/i);
+  assert.match(source, /Missing oracle means Analyze-only/i);
+  assert.match(source, /Baseline\/test[^]*optional simplify[^]*affected re-verification[^]*review\/repair/u);
+  assert.match(source, /Never simplify again after repair/i);
+  assert.match(source, /PASS means focused verification ran, not semantic equivalence/i);
 }
 
 function assertRoutingContract(source) {
