@@ -1,4 +1,5 @@
 import { evaluateSimplifyConsumer } from '../simplify/simplify-contract.mjs';
+import { evaluateUiReviewConsumer } from './ui-review-contract.mjs';
 import { verifyApprovedArtifactGraph } from './approved-artifact.mjs';
 import { evaluateConvergenceHandoff } from './convergence-contract.mjs';
 
@@ -281,6 +282,10 @@ export function evaluateShipReadiness(contract, runtime = {}) {
       ? contract.source_identity
       : {};
   const productionBlockers = [];
+  const ui = evaluateUiReviewConsumer(contract.review_context, { runtime: runtime.ui_review_runtime,
+    consumer: 'sdcorejs-ship', validation_map: contract.validation_map ?? [],
+    approved_artifacts: (contract.approved_artifacts ?? []).map(record => record.artifact) });
+  productionBlockers.push(...ui.blockers.map(message => 'UI review: ' + message));
   const simplify = contract.simplify_context === undefined ? null : evaluateSimplifyConsumer(contract.simplify_context, { ...runtime, consumer: 'sdcorejs-ship' });
   if (simplify) {
     productionBlockers.push(...simplify.blockers.map(message => `simplify: ${message}`));
@@ -381,6 +386,7 @@ export function evaluateShipReadiness(contract, runtime = {}) {
     source_identity:
       Object.keys(sourceIdentity).length > 0 ? structuredClone(sourceIdentity) : null,
     convergence: structuredClone(convergence),
+    ui_review_verification: ui,
     ...(simplify ? { simplify } : {}),
     stages: {
       ready_to_ship: stage(

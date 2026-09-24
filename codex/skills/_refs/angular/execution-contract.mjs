@@ -1,6 +1,7 @@
 import { resolveRequirementOwnership } from '../shared/repository-contract.mjs';
 import { systemRegistry } from '../shared/system-registry.mjs';
 import { evaluateDesignExecution } from '../shared/design-verification.mjs';
+import { evaluateUiReviewConsumer } from '../shared/ui-review-contract.mjs';
 
 const ANGULAR_PROJECT_PROFILES = new Set([
   'core-ui-angular',
@@ -45,7 +46,7 @@ function validateProfile(profile, field) {
   return null;
 }
 
-export function resolveAngularExecution(request, { design_runtime } = {}) {
+export function resolveAngularExecution(request, { design_runtime, ui_review_runtime } = {}) {
   const projectProfile = request?.project_profile;
   const executionProfile = request?.execution_profile;
   const executionHostRepositoryId = request?.execution_host_repository_id;
@@ -140,6 +141,9 @@ export function resolveAngularExecution(request, { design_runtime } = {}) {
 
   const design = evaluateDesignExecution(request.design_handoff, { runtime: design_runtime, ...identity });
   if (design_runtime && !design.verified) return blocked(design.blockers, identity);
+  const ui = evaluateUiReviewConsumer(request.review_context, { runtime: ui_review_runtime,
+    source_runtime: design_runtime, consumer: 'sdcorejs-angular', phase: 'preflight' });
+  if (!ui.verified) return blocked(ui.blockers, identity);
   return {
     status: 'resolved',
     production_eligible: executionProfile === 'developer' && design.verified,
@@ -148,6 +152,7 @@ export function resolveAngularExecution(request, { design_runtime } = {}) {
     ...identity,
     write_target: design.verified ? identity.write_target : null,
     design_verification: design,
+    ui_review_verification: ui,
     approved_optional_features: [...requestedOptional].sort(),
     blockers: [],
   };

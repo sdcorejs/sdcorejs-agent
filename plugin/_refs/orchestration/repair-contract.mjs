@@ -1,4 +1,5 @@
 import { evaluateSimplifyConsumer } from '../simplify/simplify-contract.mjs';
+import { evaluateUiReviewConsumer } from '../shared/ui-review-contract.mjs';
 import { resolveEvidenceArtifact } from '../shared/evidence-artifact.mjs';
 import { systemRegistry } from '../shared/system-registry.mjs';
 import { verifyApprovedArtifact } from '../shared/approved-artifact.mjs';
@@ -618,6 +619,13 @@ function validateAttemptIntegrity(attempt, {
 export function evaluateRepairContract(contract = {}, runtime = {}) {
   contract = isObject(contract) ? contract : {};
   const blockers = [];
+  const ui = contract.review_context || runtime.ui_review_runtime
+    ? evaluateUiReviewConsumer(contract.review_context, { runtime: runtime.ui_review_runtime, consumer: 'sdcorejs-repair-loop', phase: 'repair' }) : null;
+  if (ui) blockers.push(...ui.blockers.map(message => 'UI review: ' + message));
+  if (ui && !contract.review_context?.reported_findings?.some(value => value.id === contract.finding?.id &&
+      value.repository_id === contract.finding?.repository_id)) blockers.push('UI repair finding must belong to the observed assessment');
+  if (contract.finding?.uiux?.classification === 'aesthetic' &&
+      (contract.finding.repair_tier === 'auto' || contract.finding.write_tier === 'auto' || contract.finding.eligible_for_automatic_repair === true)) blockers.push('UI aesthetic preference cannot auto-repair');
   const identity = isObject(contract?.artifact_identity) ? contract.artifact_identity : {};
   const finding = isObject(contract?.finding) ? contract.finding : {};
   const authority = isObject(contract?.write_authority) ? contract.write_authority : {};
@@ -742,6 +750,7 @@ export function evaluateRepairContract(contract = {}, runtime = {}) {
     subject_track: contract?.subject_track ?? null,
     status: blockers.length > 0 ? 'blocked' : unresolved ? 'repairing' : 'resolved',
     repair_authorized: blockers.length === 0,
+    ...(ui ? { ui_review_verification: ui, affected_ui_evidence: 'REVERIFY AFTER WRITE', simplify_again_allowed: false } : {}),
     ...(simplify ? { simplify, simplify_context: structuredClone(contract.simplify_context), simplify_again_allowed: false } : {}),
     owner_repository_id: identity.owner_repository_id ?? null,
     execution_host_repository_id: identity.execution_host_repository_id ?? null,

@@ -1,6 +1,7 @@
 import { resolveRequirementOwnership } from '../shared/repository-contract.mjs';
 import { systemRegistry } from '../shared/system-registry.mjs';
 import { evaluateDesignExecution } from '../shared/design-verification.mjs';
+import { evaluateUiReviewConsumer } from '../shared/ui-review-contract.mjs';
 
 const FEATURES = new Set([
   'init-site',
@@ -69,7 +70,7 @@ function knownRegistryProfile(profile, field) {
     : `${field} is not declared in _refs/shared/system-registry.json: ${profile}`;
 }
 
-export function resolveNextjsExecution(request, { design_runtime } = {}) {
+export function resolveNextjsExecution(request, { design_runtime, ui_review_runtime } = {}) {
   const profileErrors = [
     knownRegistryProfile(request?.project_profile, 'project_profile'),
     knownRegistryProfile(request?.execution_profile, 'execution_profile'),
@@ -150,6 +151,9 @@ export function resolveNextjsExecution(request, { design_runtime } = {}) {
 
   const design = evaluateDesignExecution(request.design_handoff, { runtime: design_runtime, ...identity });
   if (design_runtime && !design.verified) return blocked(design.blockers, identity);
+  const ui = evaluateUiReviewConsumer(request.review_context, { runtime: ui_review_runtime,
+    source_runtime: design_runtime, consumer: 'sdcorejs-nextjs', phase: 'preflight' });
+  if (!ui.verified) return blocked(ui.blockers, identity);
   return {
     status: 'resolved',
     production_eligible: request.execution_profile === 'developer' && design.verified,
@@ -167,6 +171,7 @@ export function resolveNextjsExecution(request, { design_runtime } = {}) {
     ...identity,
     write_target: design.verified ? identity.write_target : null,
     design_verification: design,
+    ui_review_verification: ui,
     approved_features: [...requested].sort(),
     blockers: [],
   };

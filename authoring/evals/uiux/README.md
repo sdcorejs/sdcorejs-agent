@@ -110,3 +110,13 @@ The independent review found and prompted repairs for exact-version range
 guessing, aesthetic automatic-repair flags, narrow dimension expansion and
 contradictory active accessibility addenda. Final repository gate results belong
 in the change-scoped `.sdcorejs/docs/workflow/` delivery record.
+
+The UI review integration adds ui-review-integration.json as the current evidence
+record. It preserves both older records byte-for-byte, anchors their hashes to
+Git, and binds a new real command plus the 16 UI review acceptance cases to
+current canonical input contents. Its baseline replay runs four regressions
+against unchanged pre-implementation Git sources in an isolated temporary copy;
+this is separately identified from the original chronological RED run. Fixture
+images and interactions verify contracts only. No browser, live product or paid
+provider is exercised. Host receipt retention is process-local; portable claims
+without original observations remain unverified.

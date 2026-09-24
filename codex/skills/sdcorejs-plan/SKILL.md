@@ -501,3 +501,7 @@ Abort:
 - `sdcorejs-spec` - approved spec input
 - `sdcorejs-execute-plan` - runs the approved plan
 - `../_refs/sdlc/plan-approval-artifact.md` - approved snapshot schema and handoff
+
+## Design and UI review integration
+
+For applicable Design/UI requirements, use the optional validation_map row ui_review schema from ../_refs/shared/ui-review.md. Preserve existing dimensions and owner authority. Emit the same targets/obligations as a ui-review-requirements JSON block in the approved body so actual-source consumers can detect omitted runtime payloads; reject drift between these projections. Record independent-review applicability separately from source/rendered/interaction evidence and invocation permission. Do not add a mandatory independent-review or approval gate to every UI edit.

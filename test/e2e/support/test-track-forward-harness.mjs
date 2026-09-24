@@ -1,5 +1,6 @@
 import { access, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { recordUiEvidence } from '../../../_refs/shared/ui-review-contract.mjs';
 import {
   validateGuideImageRelationship,
 } from '../../../_refs/shared/documentation-layout.mjs';
@@ -332,7 +333,12 @@ function captureArtifacts(request, head, runnerName, command) {
   };
 }
 
-export async function projectTestFixture(root, request) {
+export async function projectTestFixture(root, request, runtime = {}) {
+  if (request.ui_review_evidence) {
+    if (request.action !== 'ui-evidence-capture') throw new Error('UI evidence belongs to the authorized Test capture action');
+    const evidence = recordUiEvidence(runtime.ui_review_runtime, request.ui_review_evidence);
+    return { ui_review_evidence: evidence, test_status: { execution: 'executed', result: 'pass', evidence: 'current' } };
+  }
   const pkg = await findPackage(root);
   const deps = dependencies(pkg);
   const packageManager = await discoverPackageManager(root);

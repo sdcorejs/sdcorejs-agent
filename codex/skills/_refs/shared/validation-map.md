@@ -117,3 +117,7 @@ for a required class.
 
 Legacy coverage lists are historical input only. They may inform a new approved
 map, but they are not silently treated as complete or current evidence.
+
+## Design and UI review integration
+
+An optional row ui_review block uses schema_version: 1, purpose, target_id, evidence_kinds, independent_review_required and baseline_required from _refs/shared/ui-review.md. It does not add a dimension or evidence class. Keep exact approved applicability through projection and evaluate current evidence with the shared verifier. Required evidence and review/test invocation authority are distinct. Parent ui-review-requirements JSON uses the same targets/obligations; omitted payloads cannot erase them. Manual/deferred policy stays explicit and never upgrades to automated PASS.

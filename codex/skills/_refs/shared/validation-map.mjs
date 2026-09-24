@@ -1,4 +1,5 @@
 import { isDeepStrictEqual } from 'node:util';
+import { validateUiReviewObligation, evaluateUiReviewConsumer } from './ui-review-contract.mjs';
 
 import {
   validateDecisionCoverage,
@@ -53,6 +54,7 @@ const FINGERPRINT = /^sha256:v1:[a-f0-9]{64}$/u;
 const SHA256 = /^[a-f0-9]{64}$/u;
 const BOUNDARY_KINDS = new Set(['authorization', 'none']);
 const ROW_KEYS = new Set([
+  'ui_review',
   'requirement_id',
   'acceptance_criterion_id',
   'invariant_refs',
@@ -368,6 +370,9 @@ export function validateValidationMap(input, { decision_coverage: decisionCovera
       continue;
     }
     findThresholdFields(row, path, blockerValues);
+    if (row.ui_review !== undefined) {
+      for (const message of validateUiReviewObligation(row.ui_review)) blockerValues.push(issue('UI_REVIEW_OBLIGATION_INVALID', path + '.ui_review', message));
+    }
     for (const key of Object.keys(row)) {
       if (!ROW_KEYS.has(key)) {
         blockerValues.push(issue('ROW_FIELD_UNKNOWN', `${path}.${key}`, 'is outside the closed validation row schema'));
@@ -619,9 +624,14 @@ export function evaluateValidationEvidence({
   test_evidence: testEvidence,
   current,
   decision_coverage: decisionCoverage,
+  review_context: reviewContext,
+  ui_review_runtime: uiReviewRuntime,
 } = {}) {
   const mapResult = validateValidationMap(validationMap, { decision_coverage: decisionCoverage });
   const blockerValues = [...mapResult.blockers, ...mapResult.readiness_blockers];
+  const ui = evaluateUiReviewConsumer(reviewContext, { runtime: uiReviewRuntime,
+    consumer: 'validation-map', validation_map: validationMap ?? [] });
+  for (const message of ui.blockers) blockerValues.push(issue('UI_REVIEW_EVIDENCE_GAP', 'validation_evidence.ui_review', message));
   const lifecycleValues = [];
   if (!Array.isArray(validationMap) || !mapResult.valid || !mapResult.approval_ready) {
     return resultFrom(blockerValues, { ready: false, result: 'FAIL', lifecycle: lifecycleValues });

@@ -265,3 +265,7 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Tail-call chain: see CLAUDE.md workflow chart
 - Parallel execution: `sdcorejs-parallel-dispatch`
 - Shared frontend architecture gate: `_refs/shared/frontend-architecture.md`
+
+## Design and UI review integration
+
+Use _refs/shared/ui-review.md and the shared verified consumer path for applicable Design review before implementation and UI conformance after implementation. Preserve approved applicability; stack checks are additive. Missing design permits scoped review with unavailable or justified not-applicable conformance, without inventing a baseline. Review-only checks never fix source; authorized owner writes invalidate affected evidence.

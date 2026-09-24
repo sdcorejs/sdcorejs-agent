@@ -1,4 +1,5 @@
 import { validateSimplifyContext } from '../simplify/simplify-contract.mjs';
+import { validateUiReviewContext } from '../shared/ui-review-contract.mjs';
 import { isDeepStrictEqual } from 'node:util';
 import {
   validateDispatchContext,
@@ -1163,7 +1164,7 @@ export function shouldEmitProgress({
 }
 
 export function validateRequiredHandoffFields({ contextType, consumer, context } = {}) {
-  const fields = CONSUMER_REQUIRED_FIELDS[contextType]?.[consumer];
+  const fields = requiredHandoffFields(contextType, consumer, context);
   if (!fields) return [`no consumer field contract for ${contextType ?? '<unknown>'} -> ${consumer ?? '<unknown>'}`];
   if (!isPlainObject(context)) return [`${contextType} must be an object`];
 
@@ -1278,7 +1279,7 @@ export function buildPortableHandoff({
     throw error;
   }
 
-  const requiredFields = CONSUMER_REQUIRED_FIELDS[contextType][consumer];
+  const requiredFields = requiredHandoffFields(contextType, consumer, normalizedContext);
   const authoritative = pickPaths(normalizedContext, requiredFields);
   const embeddedAuthoritativePath = findForbiddenEmbeddedArtifact(authoritative);
   if (embeddedAuthoritativePath) {
@@ -1670,7 +1671,11 @@ function normalizeCompatibilityInput(contextType, context) {
 }
 
 function validateRequiredFieldValue(contextType, field, value) {
-  const kind = CONSUMER_REQUIRED_FIELD_KINDS[contextType]?.[field] ?? 'scalar';
+  // Conditional UI fields come from the private documented extension, not the
+  // ordinary review producer schema. Legacy handoffs retain their field matrix.
+  const uiKind = contextType === 'review_context'
+    ? { schema_version: 'number', write_actions: 'array', ui_review: 'object', reported_findings: 'array' }[field] : null;
+  const kind = uiKind ?? CONSUMER_REQUIRED_FIELD_KINDS[contextType]?.[field] ?? 'scalar';
   const kindError = validateFieldKind(kind, value);
   if (kindError) return kindError;
 
@@ -1751,6 +1756,9 @@ function validateFieldKind(kind, value) {
 
 function validateContextSemantics(contextType, consumer, context) {
   const errors = [];
+  if (contextType === 'review_context' && (context.purpose !== undefined || context.ui_review !== undefined)) {
+    errors.push(...validateUiReviewContext(context).blockers.map(message => 'review_context: ' + message));
+  }
   if (contextType === 'simplify_context') {
     errors.push(...validateSimplifyContext(context).blockers.map(message => `simplify_context: ${message}`));
   }
@@ -1775,6 +1783,16 @@ function validateContextSemantics(contextType, consumer, context) {
     errors.push(...validateParallelContextSemantics(consumer, context));
   }
   return errors;
+}
+
+function requiredHandoffFields(contextType, consumer, context) {
+  const fields = CONSUMER_REQUIRED_FIELDS[contextType]?.[consumer];
+  if (!fields || contextType !== 'review_context') return fields;
+  if (context?.purpose === undefined && context?.ui_review === undefined &&
+      !context?.validation_map?.some(row => row.ui_review)) return fields;
+  return [...new Set([...fields, 'schema_version', 'subject_track', 'review_profile',
+    'mode', 'write_actions', 'owner_repository_id', 'execution_host_repository_id',
+    'change_ref', 'purpose', 'ui_review', 'reported_findings'])];
 }
 
 function validateTestEvidenceSemantics(consumer, context) {

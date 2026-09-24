@@ -141,6 +141,31 @@ export function readDesignRequirements(artifact) {
   }
 }
 
+// Read actual pinned parent sources without requiring a completed Design.
+// Candidate assessment uses this path; implementation still uses the full
+// verifyDesignHandoff approval/evidence gate below.
+export function readVerifiedDesignSources(runtime) {
+  const options = runtimes.get(runtime);
+  requireThat(options, 'trusted artifact source runtime is unavailable');
+  const io = observer(options), loader = artifactLoader(options, io);
+  requireThat(options.expected?.spec?.artifact_kind === 'spec', 'expected spec source is required');
+  const spec = loader.graph(options.expected.spec);
+  const plan = options.expected.plan ? loader.graph(options.expected.plan) : null;
+  if (plan) {
+    const descends = artifact => artifact.metadata.parent_references.some(ref =>
+      sameReference(ref, options.expected.spec) || descends(loader.cache.get(key(ref))));
+    requireThat(descends(plan), 'plan does not descend from expected spec');
+  }
+  const pinned = [...Object.values(options.expected).filter(v => v?.artifact_id), ...(options.artifact_references ?? [])];
+  const load = reference => {
+    requireThat(pinned.some(pin => sameReference(pin, reference) && pin.repository_relative_path === reference.repository_relative_path), 'artifact was not pinned by host');
+    return loader.graph(reference);
+  };
+  io.finish();
+  return { spec, plan, expected: structuredClone(options.expected), load,
+    read: io.read, repository: io.repository, finish: io.finish };
+}
+
 function verifyParents(options, io, loader) {
   const expected = options.expected;
   requireThat(['contract_id', 'requirement_id', 'change_ref'].every(field => nonempty(expected?.[field])), 'expected change identity is unavailable');

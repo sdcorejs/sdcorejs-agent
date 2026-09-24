@@ -498,3 +498,7 @@ Review remains read-only and does not widen the simplification scope.
 - Repair loop: `sdcorejs-repair-loop`
 - Single-bug root cause: `sdcorejs-debug`
 - Verification: `sdcorejs-ship (verify-before-done mode)`
+
+## Design and UI review integration
+
+For Design/UI scope, select purpose design-artifact or implemented-ui-conformance and load _refs/shared/ui-review.md. Use the complete documented schema-1 ui_review extension and evaluateReviewContract with a host-created UI runtime. Structural validity, reviewed/completed, independent assessment, conformance, and source/rendered/interaction evidence are separate. A read-only declaration is not observed no-write proof. Review never captures, repairs or persists outside separate authority. Missing evidence is a verification gap; pure aesthetics stay advisory; a supported approved behavior violation remains conformance. Preserve narrow dimensions/files/topics and pass required gaps and exact evidence references to consumers.

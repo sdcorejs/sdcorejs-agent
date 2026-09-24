@@ -121,3 +121,7 @@ the test track owns the real UI capture and technical evidence.
 The runtime channel or portable handoff carries only exact consumer-required
 fields and stable path/hash/evidence references, not the full guide, spec, plan,
 diff, or log.
+
+## Design and UI review integration
+
+The existing documentation capture schema 1 remains valid. For Design/UI review, adapt it only with host-observed execution and current source/build content using _refs/shared/ui-review.md. Keep documentation classification/guide ownership intact; generic UI review does not require a fabricated guide. Source, rendered and interaction proof remain separate, and mockups cannot become product captures. Test owns production of receipts; Review consumes them read-only. Scope every receipt to screen/state/viewport and invalidate affected evidence after writes.

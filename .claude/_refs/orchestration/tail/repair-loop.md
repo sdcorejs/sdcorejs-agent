@@ -563,3 +563,7 @@ those gates with any verification deferral recorded.
 - `sdcorejs-ship (verify-before-done mode)` - acceptance verification after
   convergence.
 - `sdcorejs-ship (branch-ready mode)` - branch hygiene before commit or PR.
+
+## Design and UI review integration
+
+UI conformance repairs preserve _refs/shared/ui-review.md: Review assesses read-only, Test produces evidence, and the selected executor/repair owner writes only with current authority. Aesthetic preferences never auto-repair. Required behavior violations stay conformance, missing evidence stays a gap. After a write, reverify affected captures/assessment; do not start another simplify loop.

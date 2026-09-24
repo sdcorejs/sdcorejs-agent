@@ -1,0 +1,474 @@
+{
+  "schema_version": 1,
+  "change_ref": "ui-review-contract-20260923",
+  "evidence_class": "deterministic-contract",
+  "base_record": {
+    "path": "authoring/evals/uiux/records.json",
+    "revision": "ac820d70bd247a04f977aab9bbb864f6a054acb7",
+    "sha256": "sha256:c7c4e37c531583c074a7f37c5555c097f7db7ae2dd53eb29e5cef45ee0e88bce"
+  },
+  "previous_integration": {
+    "path": "authoring/evals/uiux/design-handoff-integration.json",
+    "revision": "1054c8180f15b140c7224e48d0f21514c5787ab8",
+    "sha256": "sha256:55990972a14d4ec33785bef8470230e420fc974752910b4a3fd79a04878addff"
+  },
+  "owner_repository_id": "github.com/sdcorejs/sdcorejs-agent",
+  "cwd": ".",
+  "source_revision": "1054c8180f15b140c7224e48d0f21514c5787ab8",
+  "content_normalization": "UTF-8 with LF line endings",
+  "source_manifest": [
+    {
+      "path": "_refs/angular/core-docs-fetch.mjs",
+      "sha256": "sha256:5ddadf5c69b5686f70a844a601f6ffa40a4cbbd14759b7ef3f206bea7c8a8e46"
+    },
+    {
+      "path": "_refs/angular/execution-contract.mjs",
+      "sha256": "sha256:5cab2e037b0a0d2cba3dea2aa40a255becf789deaabe3b121938516abc8b531f"
+    },
+    {
+      "path": "_refs/angular/review-accessibility.md",
+      "sha256": "sha256:758532551b4e908866a95aeb20f9b7596f80691c78ad0c56a9ec0ae2430bede5"
+    },
+    {
+      "path": "_refs/angular/write-code/input-analysis.md",
+      "sha256": "sha256:55e5091a628536218255ff25227a186b1788fd7267a212195dd0657c45424908"
+    },
+    {
+      "path": "_refs/design/frontend-design.md",
+      "sha256": "sha256:40181e495cdbcff8f8375efdffdc3a8f89d8301abf8806c8381cef8d13b848ee"
+    },
+    {
+      "path": "_refs/design/mobile-design.md",
+      "sha256": "sha256:92bc975d5d33b9081f26c4bb43609ef6fceb97ad97c09e7cac2718c84ad05587"
+    },
+    {
+      "path": "_refs/design/uiux/catalog.json",
+      "sha256": "sha256:247d420f509b6fc73b10f19103b3d6c62f2e7473c52d4bfee69e0cb3f69229ff"
+    },
+    {
+      "path": "_refs/design/uiux/charts.md",
+      "sha256": "sha256:18d07aebcdf81cc029e8a15f74361b1115520c9cf078605ae94795a8ffaa01cf"
+    },
+    {
+      "path": "_refs/design/uiux/forms.md",
+      "sha256": "sha256:e0c691dee24229d2183f6fcf63776d2df6cfdc42bd431b7d1002070280483261"
+    },
+    {
+      "path": "_refs/design/uiux/index.md",
+      "sha256": "sha256:713c56c1c942e6cafbaaa7d0b35f7d70860528f96ebbd4408b3098bb0b89ac5a"
+    },
+    {
+      "path": "_refs/design/uiux/navigation.md",
+      "sha256": "sha256:396fb9e47024aa1fe86ef66edb55bcd2028bc86a9a3c6df409ff891e20f1c808"
+    },
+    {
+      "path": "_refs/design/uiux/public-web.md",
+      "sha256": "sha256:18f55e3fcb3b8d5dcbfd7d52a38d12c7d8da87ef260ee0bcca12de95e4f56fad"
+    },
+    {
+      "path": "_refs/design/uiux/select-references.mjs",
+      "sha256": "sha256:5bf4dbbcb46ebcb83e85318f55498b7a00123fb59a57dc39496402b39f8edd75"
+    },
+    {
+      "path": "_refs/design/uiux/sources.md",
+      "sha256": "sha256:c686481c4d4c87994d84edfe2ee55474eb9d645cbc73416532577f5bc3532e81"
+    },
+    {
+      "path": "_refs/design/uiux/states.md",
+      "sha256": "sha256:febbea087c19ac5a950303e8afcbbacb459207c8ecace1a93692816e0cd65744"
+    },
+    {
+      "path": "_refs/design/uiux/tables.md",
+      "sha256": "sha256:c8a3830c7cf135c557dd4d684e68d516a288e085a386aa6ef74c52f283c7b169"
+    },
+    {
+      "path": "_refs/design/uiux/upstream-license.txt",
+      "sha256": "sha256:738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014"
+    },
+    {
+      "path": "_refs/design/uiux/visual.md",
+      "sha256": "sha256:a8d67199953355a62b817b6b4b2d620263cc910fd905510f47ae05f0b75a8222"
+    },
+    {
+      "path": "_refs/harness/capability-contract.json",
+      "sha256": "sha256:57e326a1af1c4a038bfa2e6befc459252fd9209b822d6365939aa04e82688c56"
+    },
+    {
+      "path": "_refs/harness/communication-economy.mjs",
+      "sha256": "sha256:c81c835beca59c493326fbb2c52578b545bbc36a71fed1faca2a8452ec9d7fca"
+    },
+    {
+      "path": "_refs/harness/runtime-policy.mjs",
+      "sha256": "sha256:a4ba49f265c418fc28f09b1b28e211c5745363f6d252aa614a241bee37a7e027"
+    },
+    {
+      "path": "_refs/nextjs/build-website/review-accessibility.md",
+      "sha256": "sha256:55aaad9a5b56da98a33a0516993c020e1f0ee02edf43935fd280f263d2f5d68b"
+    },
+    {
+      "path": "_refs/nextjs/build-website/write-code/responsive.md",
+      "sha256": "sha256:cb852fd68412f825b63c0eecf9f7e387d2957e467d0dee78c0999103aa88d17b"
+    },
+    {
+      "path": "_refs/nextjs/execution-contract.mjs",
+      "sha256": "sha256:470eeb9fb69b4349643d81345f1dbf9a77be91fefcc902550497c28313ecae13"
+    },
+    {
+      "path": "_refs/orchestration/execution-contract.mjs",
+      "sha256": "sha256:e61e2f6d6e95359cc17ac4ff54eeb7a05819cc6e6a2c7aafa7e7f5a87a0e2bc0"
+    },
+    {
+      "path": "_refs/orchestration/parallel-protocol.mjs",
+      "sha256": "sha256:73cbf745e92dbf1694a43cea98c50e3e1fe62bff5cbd05383c6ed119de358482"
+    },
+    {
+      "path": "_refs/orchestration/repair-contract.mjs",
+      "sha256": "sha256:dd81c2c176fca5a2b7f993a1f5ace04cfd408cc744e8e336246109aaca7c655b"
+    },
+    {
+      "path": "_refs/orchestration/tail/repair-loop.md",
+      "sha256": "sha256:60756250679a46b79d7a08492454e7a53e3b00736d87be497cda3c81c36306a8"
+    },
+    {
+      "path": "_refs/shared/approved-artifact.mjs",
+      "sha256": "sha256:4cd23e59812cb0b3e58448755df66a99c3e864fcf908fb2ba505a7f18ce46795"
+    },
+    {
+      "path": "_refs/shared/architecture-contract.mjs",
+      "sha256": "sha256:f11da9b0f3fe9af83a1d046e8dbf146eccb6632d65ffb3e878e8985c86e87025"
+    },
+    {
+      "path": "_refs/shared/artifact-paths.mjs",
+      "sha256": "sha256:9c64a7825f72e0e4e7ff31a781e36ef07bed7a6242c0fd7c2f5bff473db93d86"
+    },
+    {
+      "path": "_refs/shared/convention-contract.mjs",
+      "sha256": "sha256:ad2d960349898fc73c81f2d4d1cd3c5eaa5552b8084b77a270400828216ee5c9"
+    },
+    {
+      "path": "_refs/shared/convention-paths.mjs",
+      "sha256": "sha256:a4d06cd8e6690160719a3be89aa977080499b0082e3732385150ccb17a9ce5ce"
+    },
+    {
+      "path": "_refs/shared/convergence-contract.mjs",
+      "sha256": "sha256:4c156e274874c6a27f6efdc0f755c14b897dd0d69f29bef3b3b72dc1d02f3abe"
+    },
+    {
+      "path": "_refs/shared/decision-coverage.mjs",
+      "sha256": "sha256:1d3e5dcb12d2b0db1e354d37e9ebaa325cef41e750500d30dbfe5f953e6965ea"
+    },
+    {
+      "path": "_refs/shared/design-handoff.md",
+      "sha256": "sha256:e2836127e75b1b22c1c1fcb3df0bc4ddf42c933523798d6833a67fc34b5f05fe"
+    },
+    {
+      "path": "_refs/shared/design-handoff.mjs",
+      "sha256": "sha256:54e6582a115f1132fa7f580d286837457c3b64401f25de37fdfe07b8e8defd16"
+    },
+    {
+      "path": "_refs/shared/design-verification.mjs",
+      "sha256": "sha256:89792edffb7a2e026ea332d00a10d1c44188e5be3c0b95823c6d5b58574fe35f"
+    },
+    {
+      "path": "_refs/shared/documentation-layout.mjs",
+      "sha256": "sha256:1de1054fb98ad3a5c95388b4a8c6761a74217f5ed4fc3c12234805784ca6d2d3"
+    },
+    {
+      "path": "_refs/shared/evidence-artifact.mjs",
+      "sha256": "sha256:bb01fa9e9430b05eeb336d6a4468f72ac06f9fcedfe7b77ae9da9eda8f8b14b8"
+    },
+    {
+      "path": "_refs/shared/frontend-architecture.md",
+      "sha256": "sha256:89d6ad5e4e3e277ed13dd06cf1b748cfdaa39b97b0a89a89f55b2aff6fce99d7"
+    },
+    {
+      "path": "_refs/shared/module-e2e-contract.mjs",
+      "sha256": "sha256:c880ef97ee240ec5c054907554cdbd909aead65c99d927f6709d59535f099f07"
+    },
+    {
+      "path": "_refs/shared/repository-contract.mjs",
+      "sha256": "sha256:bdb0095b5bbb0a70a10537c2482258a352901aca4e1971b04413ba7d336a42e7"
+    },
+    {
+      "path": "_refs/shared/repository-observation.mjs",
+      "sha256": "sha256:1ae2d72a83c123d3b62d202a4957c7d470b11cd23b6adba9a0175e918da8feff"
+    },
+    {
+      "path": "_refs/shared/review-accessibility.md",
+      "sha256": "sha256:280abe7bfa5f27e781d53dffd156c554bd629f5ffc6d6a996b2654164e0bc2c2"
+    },
+    {
+      "path": "_refs/shared/review-contract.mjs",
+      "sha256": "sha256:4c67f46c1591dd444deef8aeb23cb1e14f6638e4f93cc03d7e0f270bd526e03f"
+    },
+    {
+      "path": "_refs/shared/ship-readiness-contract.mjs",
+      "sha256": "sha256:40636c5e932f0847bc2a7e70e9cc07f35751aac0a09fbc97b735d1a824bc3e63"
+    },
+    {
+      "path": "_refs/shared/system-registry.json",
+      "sha256": "sha256:3129b4e2f18d1579431075501034d184900cf9c3998680dea98793c2ee2cfb13"
+    },
+    {
+      "path": "_refs/shared/system-registry.mjs",
+      "sha256": "sha256:230518edc3e527ee48e86a63257696ba76715762a53aaf94795512b6d757b561"
+    },
+    {
+      "path": "_refs/shared/test-ui-evidence.md",
+      "sha256": "sha256:411764ff5f46b860678592d47529fe4116a03d21f3c78b970dc345d264e5db39"
+    },
+    {
+      "path": "_refs/shared/ui-review-contract.mjs",
+      "sha256": "sha256:402a02891481527111351c9969300f583243909054f1de7adae4541009a94eb4"
+    },
+    {
+      "path": "_refs/shared/ui-review.md",
+      "sha256": "sha256:7f37aa451c3f5f715b2ace72d637396b0d143e09c07a92cdb1603c7242f9904b"
+    },
+    {
+      "path": "_refs/shared/validation-map.md",
+      "sha256": "sha256:3539ec48cb403d9426034d3148c12aeab365e85fff1dec288c623ac6ea822003"
+    },
+    {
+      "path": "_refs/shared/validation-map.mjs",
+      "sha256": "sha256:60ea476552abb1e81bd22d69f6ddbb49df58254073eeae07c1f61898070ff04a"
+    },
+    {
+      "path": "_refs/simplify/repository-evidence.mjs",
+      "sha256": "sha256:14cc9fb92fb783f0af4bccf9d6632552553d648075294d681115b70bca6c0afd"
+    },
+    {
+      "path": "_refs/simplify/simplify-contract.mjs",
+      "sha256": "sha256:56a6b48f219bdbe543e0c823c1eb02dac06b303a6bf92d9ade29f4c095364e24"
+    },
+    {
+      "path": "authoring/evals/uiux/evidence.test.mjs",
+      "sha256": "sha256:e265f5ffd12475f55ae71903ae8b53774d0f5435e4f79461b322cd55ae717ea8"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "sha256:758f3e6d3f2e3e2b61046b2443f8ca8ba50efe5d3f8df0af8a1411f388df8108"
+    },
+    {
+      "path": "package.json",
+      "sha256": "sha256:27b9e87e415e27a1e6aff693ba58fe234c58d746713b84bcc361b650eaaf17a2"
+    },
+    {
+      "path": "scripts/measure-communication-economy.mjs",
+      "sha256": "sha256:533b6569a4a5942b8649fb5580595c3e8006c2379c1db5e16945245343a966fa"
+    },
+    {
+      "path": "skills/orchestration/documentation.md",
+      "sha256": "sha256:6f8cf63b611e463b973c1fc736993ff20ff201d515bf4d3eae1e825e961e5bd4"
+    },
+    {
+      "path": "skills/orchestration/parallel-dispatch.md",
+      "sha256": "sha256:59167bc6b22b3fb41fa4e0890ba6ab8cf835166087c3634382c633d6911347a3"
+    },
+    {
+      "path": "skills/orchestration/repair-loop.md",
+      "sha256": "sha256:a44239913367e40303cb371a499dd2f120e2740a3848b7f031b1575169b96207"
+    },
+    {
+      "path": "skills/orchestration/subagent-driven-development.md",
+      "sha256": "sha256:f4c9ecb8525f31f05a21e13ac36ea40834c1bcc0022a654793bdc339dc29a9ff"
+    },
+    {
+      "path": "skills/orchestration/using-skills.md",
+      "sha256": "sha256:848fb674eb8702755325d963ddef37b43dce79262fa8e540255ee9b032fabf5f"
+    },
+    {
+      "path": "skills/shared/sdlc/01-brainstorming.md",
+      "sha256": "sha256:61cdbf1daca3938a0dc4adb18c5bd60f8a3cbf73a9ccbe8ddfee32635e8907a4"
+    },
+    {
+      "path": "skills/shared/sdlc/02-spec.md",
+      "sha256": "sha256:2c5f5074ecabeba1a2ae4dc6aa5d4fdaac594dd24e04b4c4913b3c599b55058d"
+    },
+    {
+      "path": "skills/shared/sdlc/03-plan.md",
+      "sha256": "sha256:5c49931ff8f1724804314801bcaa7b23b6e9edc93859eb27b1d4c7764964dff6"
+    },
+    {
+      "path": "skills/shared/sdlc/04-execute-plan.md",
+      "sha256": "sha256:dbac29b10518c09655ab1e16b819d597443663c195e0d6ebc8228ecec3281fe7"
+    },
+    {
+      "path": "skills/shared/sdlc/architecture.md",
+      "sha256": "sha256:581d0b6f63d3579cf238b15f2933f938ea4731f3faa0e4ed60bbd4a9251638cb"
+    },
+    {
+      "path": "skills/shared/workflow/debug.md",
+      "sha256": "sha256:84c83bf9764f85f484ec9d56deedb359caa7c2c991cb1355912fd3b5d3fa7027"
+    },
+    {
+      "path": "skills/shared/workflow/explore.md",
+      "sha256": "sha256:8d30ad46be311ef11ab8db50cd1d7e41352b465036a0cf377aab9ad29353f672"
+    },
+    {
+      "path": "skills/shared/workflow/git.md",
+      "sha256": "sha256:d6b1418c2f0355e6709309668b18242e358ad6541e1c12c52463789c22528de9"
+    },
+    {
+      "path": "skills/shared/workflow/review.md",
+      "sha256": "sha256:f6ba9e5a20bf3df539f03e39a69772bc840e93cf1f1502eab186edd0367959e9"
+    },
+    {
+      "path": "skills/shared/workflow/ship.md",
+      "sha256": "sha256:443789dc10d2b4644bd8bf597ed42ab900efcbb7a39fd0b0210cfef30fa2410e"
+    },
+    {
+      "path": "skills/shared/workflow/simplify.md",
+      "sha256": "sha256:6cfed8e0dc0e9c702921239524a567570bd1e0945e0541267ca839a9290e84b0"
+    },
+    {
+      "path": "skills/tracks/ai-agent/sdcorejs-ai-agent.md",
+      "sha256": "sha256:4d6325d740b47159a4544ce239f5bf66098e794a0187e18ae2f198b0e6357a5f"
+    },
+    {
+      "path": "skills/tracks/angular/sdcorejs-angular.md",
+      "sha256": "sha256:a133566a915f877ff43020ce09421fa728bff880a01dd95fe3419a7e8b04dd2a"
+    },
+    {
+      "path": "skills/tracks/design/sdcorejs-design.md",
+      "sha256": "sha256:394b1f2d21d0bea0ba49e12eb910c72b8699ba322d1142732520879f2e558008"
+    },
+    {
+      "path": "skills/tracks/nestjs/sdcorejs-nestjs.md",
+      "sha256": "sha256:ebfc3efd48d8b4550caf046b2e39d6f946e46a2fc80c3b9fb3b41c2381b1ec2b"
+    },
+    {
+      "path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
+      "sha256": "sha256:a2f8266f48c0fda204a9d59c2d79d54419ae85fadfd2d7870c95a63a6a2fffe0"
+    },
+    {
+      "path": "skills/tracks/product/sdcorejs-product.md",
+      "sha256": "sha256:5c6bc67c73e49a2c9533ba8dec2266bb0912ee0f0f49dd12308f32ff4c7b3cdb"
+    },
+    {
+      "path": "skills/tracks/test/sdcorejs-test.md",
+      "sha256": "sha256:f9d28a952a3655449e6f358e0f601cf705bf00ee1f0296c5b230182af5b1ea16"
+    },
+    {
+      "path": "test/e2e/communication-economy.test.mjs",
+      "sha256": "sha256:208c2867f49e737c66d0499661225d46e6b4fc4bfe762c04bf69bd38c39092fe"
+    },
+    {
+      "path": "test/e2e/fixtures/communication-economy-baseline.json",
+      "sha256": "sha256:16955db306dfb416d0323a96f1ebd6866057370ad282758c382e20590451dabf"
+    },
+    {
+      "path": "test/e2e/fixtures/communication-economy-live-ab.json",
+      "sha256": "sha256:0ce610371092129c6530cf1a6f1df5ba28c878c3893b98fd80502c7c4f7703e4"
+    },
+    {
+      "path": "test/e2e/fixtures/communication-economy-scenarios.json",
+      "sha256": "sha256:6d47619cef576e4a2351a87d6329a2d56d71fabfa2ad1d322a0eccd42d97c454"
+    },
+    {
+      "path": "test/e2e/review-contract.test.mjs",
+      "sha256": "sha256:f8b66af8f0d181fa445cd1ff15f6657ed3ea47cc046f4ce730b06802fe235fc2"
+    },
+    {
+      "path": "test/e2e/support/design-handoff-fixture.mjs",
+      "sha256": "sha256:471b642cafd83604deaa2641118db23e57b64dea1bb8b1ebad7461b6b365fe8f"
+    },
+    {
+      "path": "test/e2e/support/simplify-contract-fixture.mjs",
+      "sha256": "sha256:d666b34ffb05bf79e489e2dbb26c5667df51252f2e0ca6ea4e3459cde352aa1a"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "sha256:b44663116fb3fade03a9c571feeffc415614e63393f85b0ba588f29179f0cc82"
+    },
+    {
+      "path": "test/e2e/support/test-track-forward-harness.mjs",
+      "sha256": "sha256:289c8acea5cf32393ef7a257ecbd05bde168b157d60628b1b763f48acb160426"
+    },
+    {
+      "path": "test/e2e/support/ui-review-fixture.mjs",
+      "sha256": "sha256:f9b4edcaa8f1c5919cc987069fe4d18fb975dd4926410434af6be601256784ad"
+    },
+    {
+      "path": "test/e2e/uiux-knowledge.test.mjs",
+      "sha256": "sha256:e451f0271de570daa203e1399f2e28d5dc261825ecd85bca0c44ed9ce833f605"
+    },
+    {
+      "path": "test/e2e/uiux-review-regression.test.mjs",
+      "sha256": "sha256:fb4b5075bd6e7a224d8c16bd45084c2114a332e932f53b11ed412a09fe519f9a"
+    },
+    {
+      "path": "test/e2e/uiux-skill-creator-regression.test.mjs",
+      "sha256": "sha256:179f5e965d2acfb4a1302daeb76fa9f6ff3a9c6fde79c08539776155d21aa098"
+    }
+  ],
+  "content_fingerprint": "sha256:05c397ccd0f744c7e1fe89b7c7ba56eacb7278df816d3cae265f0a14c6c8e048",
+  "baseline_replay": {
+    "phase": "RED replay",
+    "command": "node --test --test-reporter=tap baseline-probe.mjs",
+    "source_revision": "1054c8180f15b140c7224e48d0f21514c5787ab8",
+    "source_manifest": [
+      {
+        "path": "_refs/shared/approved-artifact.mjs",
+        "sha256": "sha256:4cd23e59812cb0b3e58448755df66a99c3e864fcf908fb2ba505a7f18ce46795"
+      },
+      {
+        "path": "_refs/shared/convention-contract.mjs",
+        "sha256": "sha256:ad2d960349898fc73c81f2d4d1cd3c5eaa5552b8084b77a270400828216ee5c9"
+      },
+      {
+        "path": "_refs/shared/convention-paths.mjs",
+        "sha256": "sha256:a4d06cd8e6690160719a3be89aa977080499b0082e3732385150ccb17a9ce5ce"
+      },
+      {
+        "path": "_refs/shared/evidence-artifact.mjs",
+        "sha256": "sha256:bb01fa9e9430b05eeb336d6a4468f72ac06f9fcedfe7b77ae9da9eda8f8b14b8"
+      },
+      {
+        "path": "_refs/shared/review-contract.mjs",
+        "sha256": "sha256:5bbd7ff81cbea76025125dc62355d8dde3145ae478a202a521b650038e7c3b7f"
+      },
+      {
+        "path": "_refs/shared/system-registry.json",
+        "sha256": "sha256:3129b4e2f18d1579431075501034d184900cf9c3998680dea98793c2ee2cfb13"
+      },
+      {
+        "path": "_refs/shared/system-registry.mjs",
+        "sha256": "sha256:230518edc3e527ee48e86a63257696ba76715762a53aaf94795512b6d757b561"
+      },
+      {
+        "path": "_refs/simplify/repository-evidence.mjs",
+        "sha256": "sha256:0a8ddb870c29c4d4be5dcc957cadf22840cb585b725188227661f4e11508b178"
+      },
+      {
+        "path": "_refs/simplify/simplify-contract.mjs",
+        "sha256": "sha256:56a6b48f219bdbe543e0c823c1eb02dac06b303a6bf92d9ade29f4c095364e24"
+      }
+    ],
+    "probe": "import assert from 'node:assert/strict';\nimport test from 'node:test';\nimport {evaluateReviewContract} from './_refs/shared/review-contract.mjs';\nfunction context(overrides = {}) {\n  return {\n    schema_version: 1,\n    subject_track: 'general',\n    review_profile: 'general',\n    mode: 'read-only',\n    write_actions: [],\n    owner_repository_id: 'github.com/acme/module-a',\n    execution_host_repository_id: 'github.com/acme/portal',\n    current_revision_map: {\n      'github.com/acme/module-a': 'a'.repeat(40),\n    },\n    portal_pinned_module_revision_map: { 'module-a': 'a'.repeat(40) },\n    artifacts: [],\n    test_evidence: [],\n    provider_evidence: [],\n    reported_findings: [],\n    ...overrides,\n  };\n}\n\ntest('empty declaration is not observed read-only proof',()=>assert.equal(evaluateReviewContract(context()).read_only_proven,false));\ntest('UI review cannot promote unobserved rendered or interaction evidence', () => {\n  for (const evidence_kind of ['rendered', 'interaction']) {\n    const result = evaluateReviewContract(context({\n      purpose: 'implemented-ui-conformance',\n      ui_review: { schema_version: 1, claimed_result: 'PASS' },\n      dimensions: ['code'],\n      reported_findings: [{ id: 'unobserved-ui', kind: 'uiux', severity: 'High',\n        dimension: 'code', gate: 'REQUIRED', evidence: 'caller assertion', locator: 'src/page.ts:1',\n        repository_id: 'github.com/acme/module-a', impact: 'Unknown runtime behavior',\n        required_fix: 'Verify the actual target first', uiux: { classification: 'functional',\n          evidence_kind, rule_id: 'popover', verification: 'PASS' } }],\n    }));\n    assert.equal(result.status, 'blocked', evidence_kind);\n  }\n});\n\ntest('UI review cannot ignore current-content drift at the same HEAD', () => {\n  const result = evaluateReviewContract(context({\n    purpose: 'implemented-ui-conformance',\n    ui_review: { schema_version: 1, claimed_result: 'PASS' },\n    test_evidence: [{ repository_id: 'github.com/acme/module-a', source_revision: 'a'.repeat(40),\n      status: 'current', source_fingerprint: 'old-content', evidence_ref: 'capture' }],\n    current_source_fingerprints: { 'github.com/acme/module-a': 'edited-content' },\n  }));\n  assert.equal(result.status, 'blocked');\n});\n\ntest('UI review does not prove no writes from an empty declaration', () => {\n  const result = evaluateReviewContract(context({\n    purpose: 'design-artifact', ui_review: { schema_version: 1 },\n    persistence: { performed: true, path: 'report.md' },\n  }));\n  assert.equal(result.read_only_proven, false);\n  assert.equal(result.status, 'blocked');\n});\n\n",
+    "probe_sha256": "sha256:b29a4a71169d330028f8a22aee73c0b656c6204c25f1ff0101952fcb1f659037",
+    "started_at": "2026-09-23T15:23:47.220Z",
+    "finished_at": "2026-09-23T15:23:47.574Z",
+    "exit_code": 1,
+    "transcript": "TAP version 13\n# Subtest: empty declaration is not observed read-only proof\nnot ok 1 - empty declaration is not observed read-only proof\n  ---\n  duration_ms: 2.037\n  type: 'test'\n  location: '<baseline-replay>\\\\baseline-probe.mjs:25:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    true !== false\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: false\n  actual: true\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (<baseline-replay>/baseline-probe.mjs:25:69)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1382:25)\n    Test.start (node:internal/test_runner/test:1242:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)\n  ...\n# Subtest: UI review cannot promote unobserved rendered or interaction evidence\nnot ok 2 - UI review cannot promote unobserved rendered or interaction evidence\n  ---\n  duration_ms: 0.41\n  type: 'test'\n  location: '<baseline-replay>\\\\baseline-probe.mjs:26:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    rendered\n    + actual - expected\n    \n    + 'reviewed'\n    - 'blocked'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'blocked'\n  actual: 'reviewed'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (<baseline-replay>/baseline-probe.mjs:38:12)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1382:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:960:18)\n    Test.postRun (node:internal/test_runner/test:1522:19)\n    Test.run (node:internal/test_runner/test:1447:12)\n    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)\n  ...\n# Subtest: UI review cannot ignore current-content drift at the same HEAD\nnot ok 3 - UI review cannot ignore current-content drift at the same HEAD\n  ---\n  duration_ms: 0.2082\n  type: 'test'\n  location: '<baseline-replay>\\\\baseline-probe.mjs:42:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'reviewed'\n    - 'blocked'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'blocked'\n  actual: 'reviewed'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (<baseline-replay>/baseline-probe.mjs:50:10)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1382:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:960:18)\n    Test.postRun (node:internal/test_runner/test:1522:19)\n    Test.run (node:internal/test_runner/test:1447:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)\n  ...\n# Subtest: UI review does not prove no writes from an empty declaration\nnot ok 4 - UI review does not prove no writes from an empty declaration\n  ---\n  duration_ms: 0.1689\n  type: 'test'\n  location: '<baseline-replay>\\\\baseline-probe.mjs:53:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    true !== false\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: false\n  actual: true\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (<baseline-replay>/baseline-probe.mjs:58:10)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1382:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:960:18)\n    Test.postRun (node:internal/test_runner/test:1522:19)\n    Test.run (node:internal/test_runner/test:1447:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)\n  ...\n1..4\n# tests 4\n# suites 0\n# pass 0\n# fail 4\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 185.9765\n",
+    "output_sha256": "sha256:2ed5d23ec237bf70f0e439ffa24fdf11061ac752694f5ae67e7852dabdb2c2ae",
+    "limitation": "Replay against unchanged Git inputs; not relabeled as the original chronological RED run.",
+    "transcript_normalization": {
+      "method": "Replace the actual temporary replay root and its file URL with <baseline-replay>; retain the original transcript digest locally.",
+      "original_output_sha256": "sha256:53ccc7607595b0abc9b7933fd4447951b45e6e23b3c28348ebb786a7d344183f"
+    }
+  },
+  "verification": {
+    "command": "node --test --test-reporter=tap test/e2e/uiux-knowledge.test.mjs test/e2e/uiux-review-regression.test.mjs test/e2e/uiux-skill-creator-regression.test.mjs test/e2e/review-contract.test.mjs",
+    "started_at": "2026-09-24T02:12:16.656Z",
+    "finished_at": "2026-09-24T02:19:55.370Z",
+    "exit_code": 0,
+    "tests": 71,
+    "transcript": "TAP version 13\n# warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it\n# Subtest: case-ui-review-independence: self-critique cannot satisfy independent review\nok 1 - case-ui-review-independence: self-critique cannot satisfy independent review\n  ---\n  duration_ms: 10274.5938\n  type: 'test'\n  ...\n# Subtest: case-ui-review-purposes: candidate Design assessment does not need its own approval\nok 2 - case-ui-review-purposes: candidate Design assessment does not need its own approval\n  ---\n  duration_ms: 7557.7756\n  type: 'test'\n  ...\n# Subtest: case-ui-review-source-limits: source inspection cannot pass rendered or interaction checks\nok 3 - case-ui-review-source-limits: source inspection cannot pass rendered or interaction checks\n  ---\n  duration_ms: 7081.5633\n  type: 'test'\n  ...\n# Subtest: case-ui-review-mockup-denial: generated image cannot become product evidence\nok 4 - case-ui-review-mockup-denial: generated image cannot become product evidence\n  ---\n  duration_ms: 5599.3539\n  type: 'test'\n  ...\n# Subtest: case-ui-review-target-provenance: command, source closure and viewport are bound\nok 5 - case-ui-review-target-provenance: command, source closure and viewport are bound\n  ---\n  duration_ms: 11707.2432\n  type: 'test'\n  ...\n# Subtest: case-ui-review-content-staleness: actual same-HEAD edit invalidates proof\nok 6 - case-ui-review-content-staleness: actual same-HEAD edit invalidates proof\n  ---\n  duration_ms: 21608.0939\n  type: 'test'\n  ...\n# Subtest: case-ui-review-missing-baseline: no fabricated design or mandatory new design\nok 7 - case-ui-review-missing-baseline: no fabricated design or mandatory new design\n  ---\n  duration_ms: 6344.8304\n  type: 'test'\n  ...\n# Subtest: implemented UI consumes an actual approved Design baseline and detects mutation\nok 8 - implemented UI consumes an actual approved Design baseline and detects mutation\n  ---\n  duration_ms: 11961.8752\n  type: 'test'\n  ...\n# Subtest: explicit scoped source review works without inventing spec/plan/Design approvals\nok 9 - explicit scoped source review works without inventing spec/plan/Design approvals\n  ---\n  duration_ms: 15419.4967\n  type: 'test'\n  ...\n# Subtest: case-ui-review-aesthetic-advisory: preference is never blocking or auto-repair\nok 10 - case-ui-review-aesthetic-advisory: preference is never blocking or auto-repair\n  ---\n  duration_ms: 8312.3762\n  type: 'test'\n  ...\n# Subtest: case-ui-review-conformance-classification: requirement violations cannot hide as taste\nok 11 - case-ui-review-conformance-classification: requirement violations cannot hide as taste\n  ---\n  duration_ms: 11571.5503\n  type: 'test'\n  ...\n# Subtest: case-ui-review-observed-read-only: undeclared writes and persistence are observed\n    # Subtest: src/page.css\n    ok 1 - src/page.css\n      ---\n      duration_ms: 5343.7254\n      type: 'test'\n      ...\n    # Subtest: unrequested-report.md\n    ok 2 - unrequested-report.md\n      ---\n      duration_ms: 4067.3243\n      type: 'test'\n      ...\n    # Subtest: .ignored-output\n    ok 3 - .ignored-output\n      ---\n      duration_ms: 4013.3387\n      type: 'test'\n      ...\n    1..3\nok 12 - case-ui-review-observed-read-only: undeclared writes and persistence are observed\n  ---\n  duration_ms: 13425.4979\n  type: 'test'\n  ...\n# Subtest: case-ui-review-narrow-scope: requested dimensions and files do not expand\nok 13 - case-ui-review-narrow-scope: requested dimensions and files do not expand\n  ---\n  duration_ms: 7875.7819\n  type: 'test'\n  ...\n# Subtest: case-ui-review-real-consumers: omitted required Design review blocks frontend entrypoints\nok 14 - case-ui-review-real-consumers: omitted required Design review blocks frontend entrypoints\n  ---\n  duration_ms: 56249.6552\n  type: 'test'\n  ...\n# Subtest: UI Test, validation and ship callers preserve required evidence gaps\nok 15 - UI Test, validation and ship callers preserve required evidence gaps\n  ---\n  duration_ms: 29710.6924\n  type: 'test'\n  ...\n# Subtest: post-implementation obligations do not require future evidence in preflight\nok 16 - post-implementation obligations do not require future evidence in preflight\n  ---\n  duration_ms: 11343.1383\n  type: 'test'\n  ...\n# Subtest: actual missing or mutated approved sources and unsupported runtime cannot verify UI\n    # Subtest: parent\n    ok 1 - parent\n      ---\n      duration_ms: 9150.323\n      type: 'test'\n      ...\n    # Subtest: viewport\n    ok 2 - viewport\n      ---\n      duration_ms: 11913.9504\n      type: 'test'\n      ...\n    # Subtest: path\n    ok 3 - path\n      ---\n      duration_ms: 8349.0629\n      type: 'test'\n      ...\n    # Subtest: command\n    ok 4 - command\n      ---\n      duration_ms: 7130.2028\n      type: 'test'\n      ...\n    # Subtest: output\n    ok 5 - output\n      ---\n      duration_ms: 8796.7419\n      type: 'test'\n      ...\n    1..5\nok 17 - actual missing or mutated approved sources and unsupported runtime cannot verify UI\n  ---\n  duration_ms: 45341.6028\n  type: 'test'\n  ...\n# Subtest: case-ui-review-owner-repair: stale review cannot grant repair or restart simplify\nok 18 - case-ui-review-owner-repair: stale review cannot grant repair or restart simplify\n  ---\n  duration_ms: 6519.5652\n  type: 'test'\n  ...\n# Subtest: current conformance failure remains repairable only through existing owner authority\nok 19 - current conformance failure remains repairable only through existing owner authority\n  ---\n  duration_ms: 14456.7486\n  type: 'test'\n  ...\n# Subtest: both purposes require current observed assessments, never a portable PASS\nok 20 - both purposes require current observed assessments, never a portable PASS\n  ---\n  duration_ms: 31391.6316\n  type: 'test'\n  ...\n# Subtest: malformed extension and drifted approved applicability fail closed\nok 21 - malformed extension and drifted approved applicability fail closed\n  ---\n  duration_ms: 2958.1629\n  type: 'test'\n  ...\n# Subtest: direct UI consumers enforce the ordinary review boundary and finding contract\nok 22 - direct UI consumers enforce the ordinary review boundary and finding contract\n  ---\n  duration_ms: 13388.1052\n  type: 'test'\n  ...\n# Subtest: case-ui-review-smoke-fixtures: popover, mobile table and standalone responsive page\n    # Subtest: action-popover\n    ok 1 - action-popover\n      ---\n      duration_ms: 23942.8425\n      type: 'test'\n      ...\n    # Subtest: mobile-table-selection\n    ok 2 - mobile-table-selection\n      ---\n      duration_ms: 22988.8123\n      type: 'test'\n      ...\n    # Subtest: standalone-responsive-page\n    ok 3 - standalone-responsive-page\n      ---\n      duration_ms: 22393.1476\n      type: 'test'\n      ...\n    1..3\nok 23 - case-ui-review-smoke-fixtures: popover, mobile table and standalone responsive page\n  ---\n  duration_ms: 69325.7872\n  type: 'test'\n  ...\n# Subtest: case-ui-review-legacy-history: structural validity and legacy completion are not proof\nok 24 - case-ui-review-legacy-history: structural validity and legacy completion are not proof\n  ---\n  duration_ms: 2688.234\n  type: 'test'\n  ...\n# Subtest: case-ui-review-scope-and-checks: no runner/capture/persistence during review\nok 25 - case-ui-review-scope-and-checks: no runner/capture/persistence during review\n  ---\n  duration_ms: 8447.437\n  type: 'test'\n  ...\n# Subtest: every first-class track has a durable central-registry review profile\nok 26 - every first-class track has a durable central-registry review profile\n  ---\n  duration_ms: 0.7334\n  type: 'test'\n  ...\n# Subtest: review is provably read-only and rejects write actions\nok 27 - review is provably read-only and rejects write actions\n  ---\n  duration_ms: 0.3999\n  type: 'test'\n  ...\n# Subtest: UI review cannot promote unobserved rendered or interaction evidence\nok 28 - UI review cannot promote unobserved rendered or interaction evidence\n  ---\n  duration_ms: 0.5868\n  type: 'test'\n  ...\n# Subtest: UI review cannot ignore current-content drift at the same HEAD\nok 29 - UI review cannot ignore current-content drift at the same HEAD\n  ---\n  duration_ms: 0.3516\n  type: 'test'\n  ...\n# Subtest: UI review does not prove no writes from an empty declaration\nok 30 - UI review does not prove no writes from an empty declaration\n  ---\n  duration_ms: 0.3219\n  type: 'test'\n  ...\n# Subtest: review detects module artifacts misplaced in portal and duplicate editable sources\nok 31 - review detects module artifacts misplaced in portal and duplicate editable sources\n  ---\n  duration_ms: 0.5536\n  type: 'test'\n  ...\n# Subtest: stale source/pinned evidence is a High finding\nok 32 - stale source/pinned evidence is a High finding\n  ---\n  duration_ms: 0.274\n  type: 'test'\n  ...\n# Subtest: fake provider remains Critical even when CI is green\nok 33 - fake provider remains Critical even when CI is green\n  ---\n  duration_ms: 0.3726\n  type: 'test'\n  ...\n# Subtest: mutated approval hash and unsupported review profiles fail closed\nok 34 - mutated approval hash and unsupported review profiles fail closed\n  ---\n  duration_ms: 0.403\n  type: 'test'\n  ...\n# Subtest: case-simplify-hardening-ac-010 review checks actual simplify freshness\nok 35 - case-simplify-hardening-ac-010 review checks actual simplify freshness\n  ---\n  duration_ms: 26799.8437\n  type: 'test'\n  ...\n# Subtest: on-demand reference selection: sidebar\nok 36 - on-demand reference selection: sidebar\n  ---\n  duration_ms: 4.7004\n  type: 'test'\n  ...\n# Subtest: on-demand reference selection: mobile-table\nok 37 - on-demand reference selection: mobile-table\n  ---\n  duration_ms: 0.4344\n  type: 'test'\n  ...\n# Subtest: on-demand reference selection: portal-crud\nok 38 - on-demand reference selection: portal-crud\n  ---\n  duration_ms: 0.3462\n  type: 'test'\n  ...\n# Subtest: on-demand reference selection: landing\nok 39 - on-demand reference selection: landing\n  ---\n  duration_ms: 0.3453\n  type: 'test'\n  ...\n# Subtest: on-demand reference selection: review\nok 40 - on-demand reference selection: review\n  ---\n  duration_ms: 0.3409\n  type: 'test'\n  ...\n# Subtest: on-demand reference selection: focus-fix\nok 41 - on-demand reference selection: focus-fix\n  ---\n  duration_ms: 0.2755\n  type: 'test'\n  ...\n# Subtest: on-demand reference selection: spacing-fix\nok 42 - on-demand reference selection: spacing-fix\n  ---\n  duration_ms: 0.3394\n  type: 'test'\n  ...\n# Subtest: unknown topics and surfaces never manufacture a marketing match\nok 43 - unknown topics and surfaces never manufacture a marketing match\n  ---\n  duration_ms: 0.9361\n  type: 'test'\n  ...\n# Subtest: Q&A and non-UI work load no knowledge and malformed requests fail closed\nok 44 - Q&A and non-UI work load no knowledge and malformed requests fail closed\n  ---\n  duration_ms: 5.7431\n  type: 'test'\n  ...\n# Subtest: the catalog has resolvable rule locations and no hidden eager file loading\nok 45 - the catalog has resolvable rule locations and no hidden eager file loading\n  ---\n  duration_ms: 25.1582\n  type: 'test'\n  ...\n# Subtest: Core UI exact docs selection supports aliases and refuses version guessing\nok 46 - Core UI exact docs selection supports aliases and refuses version guessing\n  ---\n  duration_ms: 1.2298\n  type: 'test'\n  ...\n# Subtest: exact-version resolution uses package evidence without stripping ranges or guessing text locks\nok 47 - exact-version resolution uses package evidence without stripping ranges or guessing text locks\n  ---\n  duration_ms: 74.0771\n  type: 'test'\n  ...\n# Subtest: UI review requires verification, keeps preferences advisory, and forbids writes\nok 48 - UI review requires verification, keeps preferences advisory, and forbids writes\n  ---\n  duration_ms: 4.7457\n  type: 'test'\n  ...\n# Subtest: feature decisions use the existing semantic-owner paths and closure\nok 49 - feature decisions use the existing semantic-owner paths and closure\n  ---\n  duration_ms: 2.9674\n  type: 'test'\n  ...\n# Subtest: routing preserves design, implementation, independent review and direct answers\nok 50 - routing preserves design, implementation, independent review and direct answers\n  ---\n  duration_ms: 13.4649\n  type: 'test'\n  ...\n# Subtest: public inventory is unchanged from the recorded main revision\nok 51 - public inventory is unchanged from the recorded main revision\n  ---\n  duration_ms: 592.9582\n  type: 'test'\n  ...\n# Subtest: aesthetic preferences cannot use either blocking gate label\nok 52 - aesthetic preferences cannot use either blocking gate label\n  ---\n  duration_ms: 8.2051\n  type: 'test'\n  ...\n# Subtest: UI convention metadata preserves applicable consistency in code reviews\nok 53 - UI convention metadata preserves applicable consistency in code reviews\n  ---\n  duration_ms: 1.1407\n  type: 'test'\n  ...\n# Subtest: narrow reviews admit only UI conventions that affect their requested dimension\nok 54 - narrow reviews admit only UI conventions that affect their requested dimension\n  ---\n  duration_ms: 0.8554\n  type: 'test'\n  ...\n# Subtest: R1: exact docs resolve a hoisted dependency from the application workspace\nok 55 - R1: exact docs resolve a hoisted dependency from the application workspace\n  ---\n  duration_ms: 140.6329\n  type: 'test'\n  ...\n# Subtest: R1: an application-local installation shadows the hoisted package\nok 56 - R1: an application-local installation shadows the hoisted package\n  ---\n  duration_ms: 25.3614\n  type: 'test'\n  ...\n# Subtest: R2: the application declaration selects its alias when both are installed\nok 57 - R2: the application declaration selects its alias when both are installed\n  ---\n  duration_ms: 104.3434\n  type: 'test'\n  ...\n# Subtest: R2: lockfile fallback also respects the declared alias\nok 58 - R2: lockfile fallback also respects the declared alias\n  ---\n  duration_ms: 21.4571\n  type: 'test'\n  ...\n# Subtest: R2: missing or ambiguous package identity cannot certify the other alias\nok 59 - R2: missing or ambiguous package identity cannot certify the other alias\n  ---\n  duration_ms: 27.4935\n  type: 'test'\n  ...\n# Subtest: R3: native navigation selects existing mobile rules without web-only references\nok 60 - R3: native navigation selects existing mobile rules without web-only references\n  ---\n  duration_ms: 2.4266\n  type: 'test'\n  ...\n1..60\n# tests 71\n# suites 0\n# pass 71\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 458274.6754\n",
+    "output_sha256": "sha256:5e96bf1f99f973b7beb2ac8a3dc16f65352b1eb2424fb4b26ec8387e7bcbc89a"
+  },
+  "live_target_project": false,
+  "live_agent": "NOT RUN",
+  "visual": "NOT RUN",
+  "tokens": null
+}

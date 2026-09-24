@@ -4,17 +4,20 @@ import { readFile, readdir } from 'node:fs/promises';
 import { execFileSync, spawnSync } from 'node:child_process';
 import path from 'node:path';
 import test from 'node:test';
+import ts from 'typescript';
 import { stableRepositoryId } from '../../../_refs/shared/repository-contract.mjs';
 
 const root = new URL('../../../', import.meta.url);
 const read = async (path) => (await readFile(new URL(path, root), 'utf8')).replace(/\r\n?/g, '\n');
 const hash = (text) => `sha256:${createHash('sha256').update(text).digest('hex')}`;
 const historyPath = 'authoring/evals/uiux/records.json';
-const integrationPath = 'authoring/evals/uiux/design-handoff-integration.json';
+const integrationPath = 'authoring/evals/uiux/ui-review-integration.json';
+const previousPath = 'authoring/evals/uiux/design-handoff-integration.json';
 const contractPaths = [
   'test/e2e/uiux-knowledge.test.mjs',
   'test/e2e/uiux-review-regression.test.mjs',
   'test/e2e/uiux-skill-creator-regression.test.mjs',
+  'test/e2e/review-contract.test.mjs',
 ];
 const command = `node --test --test-reporter=tap ${contractPaths.join(' ')}`;
 const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', windowsHide: true }).trim();
@@ -27,22 +30,36 @@ async function currentSourcePaths(record) {
   const skills = (await readdir(new URL('skills/', root), { recursive: true }))
     .map(file => `skills/${String(file).replaceAll('\\', '/')}`).filter(file => file.endsWith('.md'));
   const paths = new Set([...record.final_sources.map(entry => entry.path), ...skills,
-    ...contractPaths, 'authoring/evals/uiux/evidence.test.mjs', 'package.json', 'package-lock.json']);
+    ...contractPaths, '_refs/shared/ui-review.md', '_refs/shared/test-ui-evidence.md',
+    '_refs/shared/validation-map.md', '_refs/shared/frontend-architecture.md',
+    '_refs/orchestration/tail/repair-loop.md', 'test/e2e/communication-economy.test.mjs',
+    'test/e2e/support/test-track-forward-harness.mjs', 'authoring/evals/uiux/evidence.test.mjs', 'package.json', 'package-lock.json']);
   for (const file of paths) {
     if (!file.endsWith('.mjs')) continue;
     const text = await read(file);
-    for (const match of text.matchAll(/(?:\bfrom\s*|\bimport\s*\(|\bnew URL\s*\()\s*['"](\.[^'"]+)['"]/g)) {
-      const dependency = path.posix.normalize(path.posix.join(path.posix.dirname(file), match[1]));
-      if (/\.(?:mjs|json)$/.test(dependency)) paths.add(dependency);
-    }
+    // Parse actual imports; code embedded in fixture strings is not a module input.
+    const visit = node => {
+      const specifier = ts.isImportDeclaration(node) || ts.isExportDeclaration(node) ? node.moduleSpecifier
+        : ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword ? node.arguments[0]
+          : ts.isNewExpression(node) && node.expression.getText() === 'URL' ? node.arguments?.[0] : null;
+      if (specifier && ts.isStringLiteral(specifier) && specifier.text.startsWith('.')) {
+        const dependency = path.posix.normalize(path.posix.join(path.posix.dirname(file), specifier.text));
+        if (/\.(?:mjs|json)$/.test(dependency)) paths.add(dependency);
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS));
   }
   return [...paths].sort();
 }
 
 async function validateCurrentIntegration(record, integration, readSource = read) {
   assert.equal(integration.schema_version, 1);
-  assert.equal(integration.change_ref, 'design-handoff-contract-20260923');
+  assert.equal(integration.change_ref, 'ui-review-contract-20260923');
   assert.equal(integration.evidence_class, 'deterministic-contract');
+  assert.equal(integration.previous_integration.path, previousPath);
+  assert.equal(hash(await readSource(previousPath)), integration.previous_integration.sha256);
+  assert.equal(hash(atRevision(integration.previous_integration.revision, previousPath)), integration.previous_integration.sha256);
   assert.equal(integration.base_record.path, historyPath);
   assert.match(integration.base_record.revision, /^[a-f0-9]{40}$/);
   assert.equal(hash(await readSource(historyPath)), integration.base_record.sha256);
@@ -61,9 +78,18 @@ async function validateCurrentIntegration(record, integration, readSource = read
   assert.ok(Number.isFinite(Date.parse(verification.started_at)));
   assert.ok(Date.parse(verification.finished_at) >= Date.parse(verification.started_at));
   assert.equal(hash(verification.transcript), verification.output_sha256);
-  for (const summary of ['tests 25', 'pass 25', 'fail 0', 'cancelled 0', 'skipped 0', 'todo 0']) {
+  assert.ok(Number.isInteger(verification.tests) && verification.tests >= 60);
+  const caseIds = ['independence', 'purposes', 'source-limits', 'mockup-denial', 'target-provenance', 'content-staleness', 'missing-baseline', 'aesthetic-advisory', 'conformance-classification', 'observed-read-only', 'narrow-scope', 'real-consumers', 'owner-repair', 'smoke-fixtures', 'legacy-history', 'scope-and-checks'];
+  for (const id of caseIds) assert.match(verification.transcript, new RegExp('ok [0-9]+ - case-ui-review-' + id + ':'));
+  for (const summary of ['tests ' + verification.tests, 'pass ' + verification.tests, 'fail 0', 'cancelled 0', 'skipped 0', 'todo 0']) {
     assert.match(verification.transcript, new RegExp(`^# ${summary}$`, 'm'));
   }
+  const red = integration.baseline_replay;
+  assert.equal(red.exit_code, 1);
+  assert.equal(hash(red.probe), red.probe_sha256);
+  assert.equal(hash(red.transcript), red.output_sha256);
+  assert.match(red.transcript, /^# fail 4$/m);
+  for (const entry of red.source_manifest) assert.equal(hash(atRevision(red.source_revision, entry.path)), entry.sha256);
   assert.deepEqual(integration.source_manifest.map(entry => entry.path), await currentSourcePaths(record));
   assert.equal(hash(JSON.stringify(integration.source_manifest)), integration.content_fingerprint);
   for (const entry of integration.source_manifest) {
@@ -151,6 +177,8 @@ test('current UI/UX evidence fails closed for omitted, stale, missing or altered
     value => { value.owner_repository_id = 'github.com/foreign/repository'; },
     value => { value.cwd = '..'; },
     value => { value.visual = 'PASS'; },
+    value => { value.previous_integration.sha256 = 'mutated'; },
+    value => { value.baseline_replay.probe += 'changed'; },
   ]) {
     const candidate = structuredClone(integration);
     mutate(candidate);

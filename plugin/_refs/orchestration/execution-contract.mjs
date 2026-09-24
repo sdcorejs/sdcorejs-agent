@@ -13,6 +13,7 @@ import { validateRepositoryPlan } from '../shared/repository-contract.mjs';
 import { resolveTrack } from '../shared/system-registry.mjs';
 import { planWaves } from './parallel-protocol.mjs';
 import { evaluateDesignExecution, readDesignRequirements } from '../shared/design-verification.mjs';
+import { evaluateUiReviewConsumer } from '../shared/ui-review-contract.mjs';
 
 const MUTABLE_ACTIONS = new Set(['CREATE', 'EDIT', 'VERIFY-THEN-EDIT']);
 const PARALLEL_CAPABILITIES = new Set(['supported']);
@@ -80,6 +81,8 @@ export function prepareExecution({
   plan_context: planContext,
   design_handoff: designHandoff,
   design_runtime: designRuntime,
+  review_context: reviewContext,
+  ui_review_runtime: uiReviewRuntime,
 }) {
   if (planContext === undefined || planContext === null) {
     throw new TypeError('plan_context is required and cannot be omitted or null');
@@ -199,6 +202,10 @@ export function prepareExecution({
     validateApprovedWriteScope(planVerification.metadata, step);
   }
 
+  const uiReview = evaluateUiReviewConsumer(reviewContext, { runtime: uiReviewRuntime,
+    source_runtime: designRuntime, consumer: 'sdcorejs-execute-plan', phase: 'preflight',
+    approved_artifacts: [approvedSpec, approvedPlan], validation_map: planContext.validation_map ?? [] });
+  if (!uiReview.verified) throw new Error('UI review blocked: ' + uiReview.blockers.join('; '));
   let designVerification = { status: 'NOT APPLICABLE', verified: false };
   if (planVerification.metadata.track === 'design') designVerification = { status: 'NOT RUN', verified: false, reason: 'Design producer requires postflight before implementation consumption' };
   // Design production is authorized by its approved plan. Its output is checked
@@ -217,6 +224,7 @@ export function prepareExecution({
   return {
     valid: true,
     design_verification: designVerification,
+    ui_review_verification: uiReview,
     track: resolveTrack(planVerification.metadata.track),
     stack_profile: planVerification.metadata.stack_profile,
     owner_repository_id: planOwner,

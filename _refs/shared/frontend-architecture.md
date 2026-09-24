@@ -319,3 +319,7 @@ symbols exported globally, cross-feature deep imports, unjustified monoliths,
 and arbitrary wrappers. If implementation intentionally differs, require an
 updated approved plan or documented compatibility reason; do not use a hard
 component line-count failure.
+
+## Design and UI review integration
+
+Plan applicable Design/UI obligations with _refs/shared/ui-review.md. Use the same semantics for Angular, Next.js and generic frontend, adding stack-specific checks only. Do not turn source inspection into runtime verification or add independent review/approval ceremonies for every spacing edit. Required Design review is pre-implementation; implemented UI evidence is post-implementation. Executor/repair writes use existing authority and stale affected evidence.

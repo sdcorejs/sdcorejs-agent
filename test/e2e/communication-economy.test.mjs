@@ -9,6 +9,22 @@ import test from 'node:test';
 import { isMap, isScalar, isSeq, parseDocument } from 'yaml';
 import * as runtimePolicy from '../../_refs/harness/runtime-policy.mjs';
 
+test('UI review portable handoff preserves purpose and refuses malformed or omitted proof fields', async () => {
+  const doc = await readFile(new URL('../../_refs/shared/ui-review.md', import.meta.url), 'utf8');
+  const ui = JSON.parse(doc.match(/<!-- ui-review-v1-example -->\s*~~~json\n([\s\S]*?)\n~~~/u)[1]);
+  const context = { ...contextFor('review_context', 'sdcorejs-repair-loop'), ...ui };
+  const handoff = runtimePolicy.buildPortableHandoff({ contextType: 'review_context', context,
+    consumer: 'sdcorejs-repair-loop', currentHeadOrDiff: 'fixture-ui-diff', redactionApplied: true });
+  assert.equal(handoff.authoritative.purpose, ui.purpose);
+  assert.deepEqual(handoff.authoritative.ui_review, ui.ui_review);
+  assert.deepEqual(handoff.authoritative.reported_findings, []);
+  const missing = structuredClone(handoff.authoritative); delete missing.ui_review;
+  assert.ok(runtimePolicy.validateRequiredHandoffFields({ contextType: 'review_context', consumer: 'sdcorejs-repair-loop', context: missing }).length);
+  const unknown = structuredClone(context); unknown.ui_review.schema_version = 99;
+  assert.throws(() => runtimePolicy.buildPortableHandoff({ contextType: 'review_context', context: unknown,
+    consumer: 'sdcorejs-repair-loop', currentHeadOrDiff: 'fixture-ui-diff' }), /UI review/);
+});
+
 const root = path.resolve(new URL('../..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
 const baselineUrl = new URL('./fixtures/communication-economy-baseline.json', import.meta.url);
 const scenarioFixtureUrl = new URL(

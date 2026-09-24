@@ -503,3 +503,7 @@ is not complete.
 - `sdcorejs-test` - test authoring and test evidence.
 - `sdcorejs-review` - read-only quality evidence.
 - `sdcorejs-explore` - project context and recovery evidence.
+
+## Design and UI review integration
+
+Consume required Design/UI obligations using _refs/shared/ui-review.md and the shared verified path. Schema valid, reviewed/completed or caller PASS does not mean blocker-free. Recheck current source/build/capture identities even at the same HEAD. Required missing/stale source/rendered/interaction or independent-review proof stays a gap. Existing authorized manual/deferred risk policy remains explicit and never becomes automated PASS. Missing design permits unavailable/not-applicable comparison only where approved applicability allows it.

@@ -477,3 +477,7 @@ returns `not-required`, `migration-required`, or `blocked` plus the exact
 - `sdcorejs-parallel-dispatch` - can run Design as one role in full-stack role split.
 - `sdcorejs-angular` / `sdcorejs-nextjs` - consume `.sdcorejs/design/specs/**` and `.sdcorejs/design/wireframes/**` during FE implementation.
 - `sdcorejs-test` - maps UAT/e2e coverage back to designed flows.
+
+## Design and UI review integration
+
+Design owns artifacts and self-critique. Self-critique does not satisfy independent review. When requested or workflow-authorized, sdcorejs-review purpose design-artifact assesses requirements/AC against flows/screens/states/copy/responsive/accessibility/component mapping via _refs/shared/ui-review.md. It may assess an authorized candidate before Design approval and does not grant implementation authority. Use a separate reviewer context when available; disclose missing separation. Model/provider diversity is not a requirement. Visual Companion feedback still does not replace approval.

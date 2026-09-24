@@ -125,3 +125,7 @@ Rule fields distinguish `heuristic` from standards-based checks. Aesthetic
 heuristics are candidates until accepted through existing project decisions;
 they never acquire authority from upstream or a search match. Sources and the
 reviewed upstream revision are recorded in [sources.md](sources.md).
+
+## Design and UI review integration
+
+Use _refs/shared/ui-review.md for the existing Review purposes design-artifact and implemented-ui-conformance. Design self-critique remains distinct from independent review; Test owns captures/interaction execution. Preserve topic selection and dimensions. Source-only cannot prove clipping, real contrast, responsive rendering, focus or keyboard flow; mockups are not implemented-product screenshots. Report verification gaps without inventing bugs or baselines. Aesthetics remain advisory; approved behavior/invariant violations remain conformance.

@@ -239,7 +239,7 @@ by this approval gate.
 2. *(if Review not skipped)* `sdcorejs-review` (skills/shared/workflow/review.md; auto-detects Angular and loads `_refs/angular/review-code.md`) - convention check; actionable Angular code-review table with severity, group, file/line, risk, fix, and gate
 3. *(if Review not skipped)* `sdcorejs-repair-loop` - apply findings, iterate until `BLOCKER`/`REQUIRED` findings are fixed or explicitly deferred
 4. `sdcorejs-documentation (code-documentation mode)` - automatically apply concise source-code documentation rules to touched source files. Do NOT ASK for approval. Cross-track baseline + per-track addenda live in `_refs/documentation/code-documentation.md`
-5. *(if UI-affecting)* Angular UI check from `_refs/angular/write-code/input-analysis.md` - run browser/preview verification when available; otherwise perform and report a code-level UI review. Fix obvious UI issues before continuing. If this changes code, rerun the smallest relevant check.
+5. *(if UI-affecting)* Angular UI check from `_refs/angular/write-code/input-analysis.md` - run browser/preview verification when available; otherwise perform and report a code-level UI review. Fix confirmed UI issues only within current executor/repair write authority; review-only checks report findings without edits. If this changes code, rerun the smallest relevant check.
 6. `sdcorejs-product` *(when user-visible feature traceability is needed)* - seed/update `.sdcorejs/docs/product/` with requirement, implementation, and test mapping
 7. *(if Technical doc approved)* `sdcorejs-documentation (write-technical-doc mode)` - create/update the approved technical doc from source evidence.
 8. `_refs/orchestration/tail/auto-docs.md` *(always)* - change-scoped execution record written to `<target>/.sdcorejs/docs/angular/`
@@ -510,3 +510,7 @@ Before returning generated code:
 ## Example: Complete Employee Entity Generation
 
 A worked end-to-end example (user request → EntitySchema → final file tree, following `init-entity.md`) lives in [`_refs/angular/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity`](_refs/angular/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity). Read it when you want to see how the dispatch table cashes out on a real request.
+
+## Design and UI review integration
+
+Use _refs/shared/ui-review.md and the shared verified consumer path for applicable Design review before implementation and UI conformance after implementation. Preserve approved applicability; stack checks are additive. Required post-implementation captures remain pending in preflight. A review-only invocation never fixes source; authorized executor/repair writes retain owner/scope and invalidate affected evidence.

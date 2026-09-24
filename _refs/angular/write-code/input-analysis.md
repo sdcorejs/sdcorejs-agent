@@ -311,7 +311,7 @@ Check:
   no unrelated refactors, and conformance with the approved component tree,
   state ownership, provider scope, registration, and public API decisions
 
-Fix obvious UI issues before continuing. If the UI check changes code, rerun the
+Fix confirmed UI issues only within current executor/repair write authority; review-only checks report findings without edits. If the UI check changes code, rerun the
 smallest relevant verification command before final response.
 
 ## Final Response Requirements
@@ -339,3 +339,7 @@ UI check:
 Also report commands run and assumptions. Do not claim a user-guide or
 technical-doc file was created unless the documentation gate approved it or the
 user explicitly requested it.
+
+## Design and UI review integration
+
+For a review-only request, use the existing sdcorejs-review purpose and _refs/shared/ui-review.md; never turn UI checks into implicit fixes. Source inspection cannot prove rendering, contrast, clipping, responsive or keyboard/focus behavior. Test owns actual captures/interactions; missing proof is a verification gap. Authorized executor or repair-loop fixes stay owner-scoped and invalidate affected evidence.

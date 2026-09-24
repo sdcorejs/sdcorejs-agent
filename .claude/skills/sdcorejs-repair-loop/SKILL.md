@@ -117,3 +117,7 @@ attempts, and repaired evidence linkage.
   repair write makes affected simplification/test/review evidence stale and
   requires the source-specific verification to run again. Architecture or
   public-behavior changes return to spec/plan.
+
+## Design and UI review integration
+
+UI findings use _refs/shared/ui-review.md and the shared verified consumer. Pure aesthetic preferences are advisory and cannot auto-repair; approved requirement/invariant violations remain conformance. Missing evidence is a verification gap, not permission to change source. Selected valid repairs still require current owner/scope/tier authority. Any implementation write invalidates affected capture and assessment; return to focused Test/Review verification and never restart simplify.

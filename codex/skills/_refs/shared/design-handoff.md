@@ -383,3 +383,7 @@ a non-canonical or wrong-extension artifact path, and a diagnostic outside
 `.sdcorejs/design/{diagnostics,failures,tmp}/` all throw. A typo must not remove
 an approved handoff document from the commit closure, and a diagnostic entry must
 not mark a durable export never-commit.
+
+## Design and UI review integration
+
+Independent design-artifact assessment belongs to sdcorejs-review under _refs/shared/ui-review.md when requested or workflow-authorized. Design self-critique and Visual Companion feedback are not independent approval. A candidate can be assessed before its own approval; implemented-ui-conformance requires actual approved Design or an explicit authorized visual contract. Preserve this handoff schema, existing editable-source primacy, owner/parent/closure verification and candidate component evidence requirements.

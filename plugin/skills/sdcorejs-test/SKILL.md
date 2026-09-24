@@ -242,3 +242,7 @@ After scoped work:
 
 Read-only actions stop after their report/runtime context and must not dirty
 `.sdcorejs`. This tail still never invokes Git.
+
+## Design and UI review integration
+
+For required Design/UI evidence, use the shared contract in _refs/shared/ui-review.md with the existing ui-evidence-capture action. Test owns executed commands, captures and interaction receipts; Review reads them. Bind screen/state/viewport, semantic owner, exact source/build content and actual command/cwd/exit code. Adapt documentation capture v1 explicitly; no guide is required for a generic UI check. Required evidence does not itself authorize a new test invocation, runner install or app start. Relevant edits stale evidence at the same HEAD; missing/limited proof never becomes rendered/interaction PASS.

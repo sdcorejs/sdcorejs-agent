@@ -514,3 +514,7 @@ execution_context:
 - `sdcorejs-ai-agent`, `sdcorejs-angular`, `sdcorejs-nestjs`, `sdcorejs-nextjs`, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` - track executors
 - `sdcorejs-ship (verify-before-done mode)` - acceptance verification gate
 - `_refs/shared/frontend-architecture.md` - mandatory non-trivial frontend architecture preflight and execution contract
+
+## Design and UI review integration
+
+For applicable UI scope, prepareExecution consumes review_context and a separate host-created ui_review_runtime through _refs/shared/ui-review.md. Check required independent Design assessment before implementation only when approved/requested. Post-implementation capture/conformance obligations remain pending for Test/Review/Ship. Missing design does not fabricate a baseline. Generic, Angular and Next.js consumers share these semantics; source writes invalidate affected evidence. Do not call capture/repair from a review-only path.
