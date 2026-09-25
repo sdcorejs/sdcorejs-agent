@@ -70,6 +70,11 @@ const BASELINE_CONTEXT_SCHEMA_PATHS = {
   ai_agent_context: 'skills/tracks/ai-agent/sdcorejs-ai-agent.md',
   parallel_context: '_refs/orchestration/parallel-protocol.md',
 };
+// Current canonical producers; BASELINE paths stay bound to the audited commit.
+const CURRENT_CONTEXT_SCHEMA_PATHS = {
+  ...BASELINE_CONTEXT_SCHEMA_PATHS,
+  review_context: '_refs/review/output-contract.md',
+};
 
 const REQUIRED_EXPORTS = [
   'CONSUMER_REQUIRED_FIELD_KINDS',
@@ -596,14 +601,14 @@ test('canonical context producers stay structurally aligned with portable consum
   const matrix = requireObject('CONSUMER_REQUIRED_FIELDS');
   requireObject('CONSUMER_REQUIRED_FIELD_KINDS');
   assert.deepEqual(
-    Object.keys(BASELINE_CONTEXT_SCHEMA_PATHS).sort(),
+    Object.keys(CURRENT_CONTEXT_SCHEMA_PATHS).sort(),
     Object.keys(matrix).sort(),
     'every portable context has exactly one canonical producer schema source',
   );
 
   const parityErrors = [];
   for (const [contextType, consumers] of Object.entries(matrix)) {
-    const sourcePath = BASELINE_CONTEXT_SCHEMA_PATHS[contextType];
+    const sourcePath = CURRENT_CONTEXT_SCHEMA_PATHS[contextType];
     const sourceText = await readFile(path.join(root, sourcePath), 'utf8');
     const { fieldKinds } = canonicalContextContract(sourceText, contextType, sourcePath);
     parityErrors.push(...consumerProducerParityErrors(contextType, fieldKinds));
@@ -2293,4 +2298,22 @@ test('case-simplify-hardening-ac-010 portable simplify transports the documented
   f.write(sourcePath, originalSource);
   const { evaluateSimplifyConsumer } = await import('../../_refs/simplify/simplify-contract.mjs');
   assert.equal(evaluateSimplifyConsumer(result.context, { ...f.runtime, consumer: 'sdcorejs-ship' }).evidence_current, false);
+});
+
+test('case-progressive-load-metrics: review scenarios count every private reference they must load', async () => {
+  const fixture = JSON.parse(await readFile(scenarioFixtureUrl, 'utf8'));
+  const required = ['_refs/review/profiles-and-refs.md', '_refs/review/probes.md', '_refs/review/output-contract.md'];
+  for (const name of ['direct-review', 'review-repair-ship']) {
+    const paths = fixture.scenarios[name].current_jit_paths;
+    const body = paths.indexOf('skills/shared/workflow/review.md');
+    assert.ok(body >= 0, `${name} loads the review body`);
+    for (const reference of required) {
+      assert.ok(paths.includes(reference), `${name} counts ${reference}`);
+      await readFile(path.join(root, reference), 'utf8');
+    }
+  }
+  const reportModule = await import(reportModuleUrl);
+  const report = await reportModule.buildCommunicationEconomyReport({ root });
+  assert.equal(report.aggregate.preserved_fields, report.aggregate.required_fields);
+  assert.equal(report.live_ab_eval.status, 'skipped');
 });

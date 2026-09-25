@@ -205,8 +205,9 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(angularSkill, /generic harness/);
   assert.match(angularSkill, /Do not fetch Core UI docs/);
   assert.match(angularSkill, /_refs\/angular\/write-code\/input-analysis\.md/);
-  assert.match(angularSkill, /SDCoreJS Core reuse analysis/);
-  assert.match(angularSkill, /mandatory UI check/);
+  const angularGenerationProcess = await readFile(new URL('../../_refs/angular/write-code/generation-process.md', import.meta.url), 'utf8');
+  assert.match(angularGenerationProcess, /SDCoreJS Core reuse analysis/);
+  assert.match(angularGenerationProcess, /mandatory UI check/);
   assert.match(angularSkill, /Core reuse summary/);
 
   const angularInputAnalysis = await readFile(new URL('../../_refs/angular/write-code/input-analysis.md', import.meta.url), 'utf8');
@@ -248,7 +249,8 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
   assert.match(reviewSkill, /Do not write `.sdcorejs` docs/);
   assert.match(reviewSkill, /Do not auto-run `sdcorejs-repair-loop`/);
   assert.match(reviewSkill, /REDACTED|redact/i);
-  assert.match(reviewSkill, /npx --yes[\s\S]*explicit approval/);
+  const reviewProbes = await readFile(new URL('../../_refs/review/probes.md', import.meta.url), 'utf8');
+  assert.match(reviewProbes, /npx --yes[\s\S]*explicit approval/);
   assert.doesNotMatch(reviewSkill, /npm run lint && tsc --noEmit/);
 
   const repairSkill = sourceByName.get('sdcorejs-repair-loop');
@@ -889,8 +891,10 @@ test('phase 1: frontend architecture preflight covers decomposition and anti-ove
   assert.doesNotMatch(angularInitModule, /base-select[^\n]*✅ Always/);
   assert.match(angularReview, /Approved frontend architecture conformance/);
   assert.match(nextjsReview, /Approved frontend architecture conformance/);
-  assert.match(reviewSkill, /approved_frontend_architecture:/);
-  assert.match(designSkill, /Implementation Component Map[\s\S]*Data and Interaction Map/);
+  const reviewOutput = await readFile(new URL('../../_refs/review/output-contract.md', import.meta.url), 'utf8');
+  const designAuthoring = await readFile(new URL('../../_refs/design/handoff-authoring.md', import.meta.url), 'utf8');
+  assert.match(reviewOutput, /approved_frontend_architecture:/);
+  assert.match(designAuthoring, /Implementation Component Map[\s\S]*Data and Interaction Map/);
   assert.match(designReference, /confirmed \/ candidate \/ unknown \/ new/);
 });
 
@@ -1617,7 +1621,10 @@ test('phase 1: explore encodes read-only-safe context production invariants', as
   assert.ok(codexExplore, 'sdcorejs-explore Codex mirror exists');
   assert.match(explore, /^description:\s*(?:"[^"\n]+?"|'[^'\n]+?'|>-)$/m, 'explore description is quoted or folded for strict YAML');
 
-  for (const text of [explore, codexExplore]) {
+  // Action detail lives in explore's private references; each distribution resolves its own copy.
+  const exploreRefs = async base => (await Promise.all(['read-actions.md', 'authorized-persistence.md']
+    .map(file => readFile(new URL(`${base}explore/${file}`, import.meta.url), 'utf8')))).join('\n');
+  for (const text of [`${explore}\n${await exploreRefs('../../_refs/')}`, `${codexExplore}\n${await exploreRefs('../../codex/skills/_refs/')}`]) {
     assert.match(text, /explore_action/);
     assert.match(text, /summary-read/);
     assert.match(text, /summary-refresh/);
@@ -2017,8 +2024,9 @@ test('phase 1: angular side-drawer detail rules prefer read-only facts and immut
   const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
   const angularSkill = sourceByName.get('sdcorejs-angular');
 
-  assert.match(angularSkill, /business identifiers are create-only\/edit-locked by default/i);
-  assert.match(angularSkill, /compact read-only facts over a disabled edit form/i);
+  const angularGenerationProcess = await readFile(new URL('../../_refs/angular/write-code/generation-process.md', import.meta.url), 'utf8');
+  assert.match(angularGenerationProcess, /business identifiers are create-only\/edit-locked by default/i);
+  assert.match(angularGenerationProcess, /compact read-only facts over a disabled edit form/i);
 
   const initEntity = await readFile(new URL('../../_refs/angular/write-code/init-entity.md', import.meta.url), 'utf8');
   assert.match(initEntity, /Business identifier \/ business key/);
@@ -2052,11 +2060,13 @@ test('phase 1: Angular technical prototype is explicit, role-neutral, and featur
   const angularSkill = sourceByName.get('sdcorejs-angular');
 
   assert.match(angularSkill, /_refs\/angular\/write-code\/po-ba-prototype\.md/);
-  assert.match(angularSkill, /explicitly approved registry `technical-prototype`/i);
-  assert.match(angularSkill, /not production/i);
+  const angularGenerationProcess = await readFile(new URL('../../_refs/angular/write-code/generation-process.md', import.meta.url), 'utf8');
+  const angularFinishing = await readFile(new URL('../../_refs/angular/write-code/finishing.md', import.meta.url), 'utf8');
+  assert.match(angularGenerationProcess, /explicitly approved registry `technical-prototype`/i);
+  assert.match(angularGenerationProcess, /not production/i);
   assert.match(angularSkill, /Never infer.*PO\/BA role|Infer `technical-prototype` from a PO\/BA/i);
   assert.match(angularSkill, /admin-screens.*approved/i);
-  assert.match(angularSkill, /seed-data.*approved/i);
+  assert.match(angularFinishing, /seed-data.*approved/i);
   assert.doesNotMatch(angularSkill, /PO\/BA Prototype Portal Mode/);
 
   for (const existingRef of [

@@ -1022,7 +1022,7 @@ test('execute, test, review, verify, branch-ready, ship, and Git preserve conver
   const files = Object.fromEntries(await Promise.all([
     'skills/shared/sdlc/04-execute-plan.md',
     'skills/tracks/test/sdcorejs-test.md',
-    'skills/shared/workflow/review.md',
+    '_refs/review/output-contract.md',
     '_refs/orchestration/tail/verify-before-done.md',
     '_refs/orchestration/tail/branch-ready.md',
     '_refs/orchestration/tail/ship-context.md',
@@ -1031,7 +1031,7 @@ test('execute, test, review, verify, branch-ready, ship, and Git preserve conver
   ].map(async (file) => [file, await readFile(path.resolve(file), 'utf8')])));
   assert.match(files['skills/shared/sdlc/04-execute-plan.md'], /convergence_trace:[\s\S]*task_id:[\s\S]*changed_path_refs:[\s\S]*changed_symbol_refs:[\s\S]*acceptance_criterion_refs:[\s\S]*invariant_refs:[\s\S]*evidence_refs:/u);
   assert.match(files['skills/tracks/test/sdcorejs-test.md'], /convergence_evidence_refs/iu);
-  assert.match(files['skills/shared/workflow/review.md'], /convergence_findings:[\s\S]*architecture[\s\S]*convention/iu);
+  assert.match(files['_refs/review/output-contract.md'], /convergence_findings:[\s\S]*architecture[\s\S]*convention/iu);
   assert.match(files['_refs/orchestration/tail/verify-before-done.md'], /evaluateConvergence/iu);
   assert.match(files['_refs/orchestration/tail/branch-ready.md'], /evaluateConvergenceHandoff/iu);
   assert.match(files['_refs/orchestration/tail/ship-context.md'], /convergence_result:/u);

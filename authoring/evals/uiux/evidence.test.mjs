@@ -224,10 +224,10 @@ async function readApproved(file, readSource) {
   return { metadata: parse(match[1]), body: text.slice(match[0].length) };
 }
 
-async function continuationSources(plan, historical, readSource) {
+async function continuationSources(plan, historical, readSource, recordPath = continuationPath) {
   const canonical = plan.metadata.allowed_paths.filter(file =>
     !/^(?:\.claude\/|plugin\/|codex\/|\.cursor\/)/u.test(file) && !/sdcorejs-harness\.json$/u.test(file) &&
-    !file.startsWith('.sdcorejs/') && file !== continuationPath && file !== 'VALIDATION.md');
+    !file.startsWith('.sdcorejs/') && file !== recordPath && file !== 'VALIDATION.md');
   const skills = (await readdir(new URL('skills/', root), { recursive: true }))
     .map(file => `skills/${String(file).replaceAll('\\', '/')}`).filter(file => file.endsWith('.md'));
   const roots = [...new Set([...canonical, ...skills, ...historical.source_manifest.map(entry => entry.path),
@@ -318,14 +318,20 @@ async function validateEvidenceContinuation(value, readSource = read) {
   assert.equal(value.tokens, null); assert.equal(value.provider_calls, 0);
 }
 
-test('interaction/finish continuation verifies current content separately from historical UI approval', async () => {
+// The interaction/finish record is immutable history once its content was committed; the
+// skill-body progressive-loading continuation below owns proof for the current tree.
+const interactionFinishRevision = 'b6e6c0cfbef80d93a0c90f6dc4e8a02c2d7cbb87';
+const interactionFinishRead = async file => atRevision(interactionFinishRevision, file);
+
+test('interaction/finish continuation verifies its committed content separately from historical UI approval', async () => {
+  assert.equal(hash(await read(continuationPath)), hash(atRevision(interactionFinishRevision, continuationPath)), 'history must remain immutable');
   const continuation = JSON.parse(await read('authoring/evals/interaction-finish-contract.json'));
-  await validateEvidenceContinuation(continuation);
+  await validateEvidenceContinuation(continuation, interactionFinishRead);
 });
 
 test('interaction/finish continuation rejects omitted, stale, mutated and fabricated current evidence', async () => {
   const original = JSON.parse(await read('authoring/evals/interaction-finish-contract.json'));
-  await validateEvidenceContinuation(original);
+  await validateEvidenceContinuation(original, interactionFinishRead);
   for (const mutate of [
     value => { value.source_manifest.pop(); value.content_fingerprint = hash(JSON.stringify(value.source_manifest)); },
     value => { value.source_roots.pop(); },
@@ -354,14 +360,107 @@ test('interaction/finish continuation rejects omitted, stale, mutated and fabric
     value => { value.visual = 'PASS'; },
   ]) {
     const candidate = structuredClone(original); mutate(candidate);
-    await assert.rejects(validateEvidenceContinuation(candidate));
+    await assert.rejects(validateEvidenceContinuation(candidate, interactionFinishRead));
   }
   for (const changed of ['_refs/shared/finish-gate.mjs', '_refs/shared/user-choice-prompt.md', continuationPlan, integrationPath, historyPath, previousPath]) {
     await assert.rejects(validateEvidenceContinuation(original, async file =>
-      file === changed ? `${await read(file)}\nmutated at the same HEAD\n` : read(file)));
+      file === changed ? `${await interactionFinishRead(file)}\nmutated at the same HEAD\n` : interactionFinishRead(file)));
     await assert.rejects(validateEvidenceContinuation(original, async file => {
-      if (file === changed) throw new Error('source missing'); return read(file);
+      if (file === changed) throw new Error('source missing'); return interactionFinishRead(file);
     }), /source missing/);
   }
   await assert.rejects(validateEvidenceContinuation(undefined));
+});
+
+const progressivePath = 'authoring/evals/skill-body-progressive-loading.json';
+const progressivePlan = '.sdcorejs/plans/workflow/2026-09-25-11-17-skill-body-progressive-loading.md';
+const progressivePlanHash = 'sha256:v1:5e1637d40af0a2c9eb2a607ed826981e0e630d14a82fbc55cd3155c8bba13646';
+const progressiveTests = ['production-readiness-contract', 'ai-agent-track-contract', 'angular-production-contract', 'architecture-contract',
+  'artifact-path-convention', 'communication-economy', 'convention-artifact-lifecycle', 'convention-contract', 'convention-review',
+  'convergence-contract', 'decision-coverage-contract', 'design-handoff-contract', 'documentation-layout-contract', 'explore-topology',
+  'harness-behavioral-sentinel', 'project-context-artifact-lifecycle', 'review-contract', 'simplify-protected-contract',
+  'simplify-skill-contract', 'skill-pack-runner', 'test-track-contract', 'uiux-knowledge', 'uiux-review-regression',
+  'visual-offer-policy'].map(name => `test/e2e/${name}.test.mjs`);
+const progressiveCommand = `node --test --test-concurrency=1 ${progressiveTests.join(' ')}`;
+
+async function validateProgressiveContinuation(value, readSource = read) {
+  assert.equal(value.schema_version, 1); assert.equal(value.change_ref, 'skill-body-progressive-loading-20260925');
+  assert.equal(value.evidence_class, 'deterministic-contract'); assert.equal(value.cwd, '.');
+  assert.equal(value.owner_repository_id, stableRepositoryId({ remote_url: git('config', '--get', 'remote.origin.url') }));
+  assert.equal(value.scope_plan, progressivePlan);
+  const plan = await readApproved(value.scope_plan, readSource);
+  assert.equal(plan.metadata.approval_hash, progressivePlanHash, 'only the actual approved plan is authority');
+  const spec = await readApproved(plan.metadata.source_spec, readSource);
+  verifyApprovedArtifactGraph(plan, [spec]);
+  assert.equal(plan.metadata.owner_repository_id, value.owner_repository_id);
+  assert.equal(plan.metadata.change_ref, value.change_ref);
+  assert.equal(value.source_revision, plan.metadata.source_revision);
+  assert.equal(git('rev-parse', `${value.source_revision}^{commit}`), value.source_revision);
+  assert.equal(value.previous_continuation.path, continuationPath);
+  assert.equal(value.previous_continuation.revision, value.source_revision);
+  const previousText = atRevision(value.previous_continuation.revision, continuationPath);
+  assert.equal(hash(previousText), value.previous_continuation.sha256);
+  assert.equal(hash(await readSource(continuationPath)), value.previous_continuation.sha256, 'history must remain immutable');
+  const expected = await continuationSources(plan, JSON.parse(previousText), readSource, progressivePath);
+  assert.deepEqual(value.source_roots, expected.roots);
+  assert.deepEqual(value.source_manifest.map(entry => entry.path), expected.paths);
+  assert.equal(hash(JSON.stringify(value.source_manifest)), value.content_fingerprint);
+  for (const entry of value.source_manifest) assert.equal(hash(await readSource(entry.path)), entry.sha256, `current continuation is stale: ${entry.path}`);
+  assert.equal(value.content_normalization, 'UTF-8 with LF line endings');
+  assertRun(value.verification, progressiveCommand, /^# tests /mu.test(value.verification.transcript) ? '#' : 'ℹ', 500, [
+    'body-size', 'inventory-routing', 'angular-gates', 'review-boundary', 'design-boundary', 'explore-boundary', 'reference-loading',
+    'canonical-owner', 'single-schema', 'test-integrity', 'distribution', 'metrics'].map(id => 'case-progressive-load-' + id));
+  assertRun(value.ui_verification, currentUiCommand, '#', 60, [
+    'independence','purposes','source-limits','mockup-denial','target-provenance','content-staleness','missing-baseline','aesthetic-advisory',
+    'conformance-classification','observed-read-only','narrow-scope','real-consumers','owner-repair','smoke-fixtures','legacy-history','scope-and-checks'
+  ].map(id => 'case-ui-review-' + id + ':'));
+  for (const run of [value.verification, value.ui_verification]) {
+    assert.equal(run.source_fingerprint, value.content_fingerprint);
+    assert.equal(run.content_stable, true); assert.equal(run.interrupted, false);
+    assert.equal(run.cwd, '.'); assert.equal(run.owner_repository_id, value.owner_repository_id);
+    assert.ok(Number.isFinite(Date.parse(run.started_at)));
+    assert.ok(Date.parse(run.finished_at) >= Date.parse(run.started_at));
+  }
+  assert.equal(value.live_agent, 'NOT RUN'); assert.equal(value.visual, 'NOT RUN');
+  assert.equal(value.live_target_project, false); assert.equal(value.tokens, null); assert.equal(value.provider_calls, 0);
+}
+
+test('case-progressive-load-evidence-continuation: current content is bound to the approved plan and actual runs', async () => {
+  await validateProgressiveContinuation(JSON.parse(await read(progressivePath)));
+});
+
+test('case-progressive-load-evidence-continuation: omitted, stale, mutated and fabricated evidence is rejected', async () => {
+  const original = JSON.parse(await read(progressivePath));
+  await validateProgressiveContinuation(original);
+  for (const mutate of [
+    value => { value.source_manifest.pop(); value.content_fingerprint = hash(JSON.stringify(value.source_manifest)); },
+    value => { value.source_roots.pop(); },
+    value => { value.owner_repository_id = 'github.com/foreign/repository'; },
+    value => { value.source_revision = 'f'.repeat(40); value.previous_continuation.revision = value.source_revision; },
+    value => { value.scope_plan = '.sdcorejs/plans/foreign.md'; },
+    value => { value.previous_continuation.sha256 = 'mutated'; },
+    value => { value.verification.command = ''; },
+    value => { value.verification.exit_code = 1; },
+    value => { value.verification.failed = 1; },
+    value => { value.verification.content_stable = false; },
+    value => { value.verification.source_fingerprint = 'sha256:' + '0'.repeat(64); },
+    value => { value.verification.transcript = ''; value.verification.output_sha256 = hash(''); },
+    value => { value.verification = null; },
+    value => { value.ui_verification = null; },
+    value => { value.ui_verification.interrupted = true; },
+    value => { value.ui_verification.owner_repository_id = 'github.com/foreign/repository'; },
+    value => { value.visual = 'PASS'; },
+    value => { value.tokens = 1; },
+  ]) {
+    const candidate = structuredClone(original); mutate(candidate);
+    await assert.rejects(validateProgressiveContinuation(candidate));
+  }
+  for (const changed of ['skills/shared/workflow/review.md', '_refs/review/output-contract.md', progressivePlan, continuationPath]) {
+    await assert.rejects(validateProgressiveContinuation(original, async file =>
+      file === changed ? `${await read(file)}\nmutated at the same HEAD\n` : read(file)));
+    await assert.rejects(validateProgressiveContinuation(original, async file => {
+      if (file === changed) throw new Error('source missing'); return read(file);
+    }), /source missing/);
+  }
+  await assert.rejects(validateProgressiveContinuation(undefined));
 });

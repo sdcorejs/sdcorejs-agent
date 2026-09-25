@@ -14,6 +14,7 @@ const CONTRACT_PATH = 'test/e2e/npm-publication-contract.test.mjs';
 // still includes them, as it does every other evaluation artifact.
 const EVALUATION_EVIDENCE_RECORDS = new Set([
   'authoring/evals/interaction-finish-contract.json',
+  'authoring/evals/skill-body-progressive-loading.json',
   'authoring/evals/uiux/ui-review-integration.json',
 ]);
 const VISUAL_COMPANION_NODE18_COMMAND =

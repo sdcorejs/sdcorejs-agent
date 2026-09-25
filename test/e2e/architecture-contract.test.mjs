@@ -1376,7 +1376,7 @@ test('canonical architecture reference states lean ownership and lifecycle bound
 });
 
 test('canonical SDLC producers and consumers preserve the conditional architecture handoff', async () => {
-  const [spec, plan, executePlan, testContext, review, ship, shipContext] = await Promise.all([
+  const [spec, plan, executePlan, testContext, review, ship, shipContext, reviewOutput] = await Promise.all([
     readFile(new URL('../../skills/shared/sdlc/02-spec.md', import.meta.url), 'utf8'),
     readFile(new URL('../../skills/shared/sdlc/03-plan.md', import.meta.url), 'utf8'),
     readFile(new URL('../../skills/shared/sdlc/04-execute-plan.md', import.meta.url), 'utf8'),
@@ -1384,6 +1384,7 @@ test('canonical SDLC producers and consumers preserve the conditional architectu
     readFile(new URL('../../skills/shared/workflow/review.md', import.meta.url), 'utf8'),
     readFile(new URL('../../skills/shared/workflow/ship.md', import.meta.url), 'utf8'),
     readFile(new URL('../../_refs/orchestration/tail/ship-context.md', import.meta.url), 'utf8'),
+    readFile(new URL('../../_refs/review/output-contract.md', import.meta.url), 'utf8'),
   ]);
   assert.match(spec, /classifyArchitectureGate/u);
   assert.match(spec, /required.*sdcorejs-architecture.*not-applicable.*sdcorejs-plan/is);
@@ -1407,7 +1408,7 @@ test('canonical SDLC producers and consumers preserve the conditional architectu
     ['plan', plan],
     ['execute-plan', executePlan],
     ['test-context', testContext],
-    ['review', review],
+    ['review', reviewOutput],
     ['ship', ship],
     ['ship-context', shipContext],
   ]) assert.match(source, exactGate, `${name} must preserve the exact six-field gate`);

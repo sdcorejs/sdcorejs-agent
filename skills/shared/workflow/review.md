@@ -93,30 +93,10 @@ Classify `track_profile` before loading any track-specific ref:
 First resolve the first-class artifact track and `review_profile` from the central registry. The stack-specific table below refines executable-code
 reviews only; AI-agent, design, documentation, workflow, product, test, React, Node, fullstack, and general remain durable review profiles rather than orphan sections.
 
-| track | track_profile | Required evidence |
-|---|---|---|
-| angular | `core-ui-angular` | Angular signals plus `@sdcorejs/angular` in `package.json` or strong existing imports/usages. |
-| angular | `legacy-core-ui-angular` | Angular signals plus `@sd-angular/core` in `package.json` or strong existing imports/usages. |
-| angular | `plain-angular` | Angular signals but neither Core UI package/convention is installed or used. |
-| nestjs | `sdcorejs-nestjs` | NestJS signals plus `@sdcorejs/nestjs` or strong SDCoreJS NestJS conventions/libraries. |
-| nestjs | `plain-nestjs` | NestJS signals without `@sdcorejs/nestjs` or SDCoreJS NestJS conventions. |
-| nextjs | `nextjs-build-website` | Next.js signals plus build-website/public-site evidence such as `src/app/[locale]`, typed i18n navigation, content/public-site structure, build-website summary/plan/spec/task context, or explicit public-site scope. |
-| nextjs | `plain-nextjs` | Next.js signals without build-website/public-site evidence. |
-| general | `general` | No known track can be confidently classified, or mixed/unknown stack where only shared rules are safe. |
-
-Rules:
-
-- Do not treat Angular as Core UI Angular merely because `angular.json` or
-  `@angular/core` exists.
-- Do not treat NestJS as SDCoreJS NestJS merely because `@nestjs/*` exists.
-- Do not treat Next.js as build-website merely because `next.config.*` or
-  `next` exists.
-- Do not enforce Zod, TypeORM, PostgreSQL, `@sdcorejs/nestjs`, Core UI,
-  `[locale]`, typed i18n navigation, or build-website caching/layout patterns
-  unless the classified profile or actual installed/used stack supports them.
-- If the user explicitly asks to review a migration/install to an SDCoreJS
-  framework profile, classify the migration scope separately and review only the
-  approved migration evidence.
+For executable-code reviews, read `_refs/review/profiles-and-refs.md` before
+classifying `track_profile` and before loading any track-specific ref. It owns
+the profile evidence table, false-profile rules, the reference matrix, and
+plain-profile guardrails.
 
 ### Dimensions
 
@@ -164,16 +144,9 @@ requested dimensions unchanged; source-only evidence cannot prove rendered or in
 Load track-specific refs only when `track_profile` matches the ref scope. Load shared refs for shared dimensions when applicable. If a ref is absent or not
 applicable, record it under `refs_skipped` with a reason; do not fabricate a missing ref and do not silently fail.
 
-| track_profile | code | security | performance | accessibility | architecture |
-|---|---|---|---|---|---|
-| `core-ui-angular` | `_refs/angular/review-code.md` | `_refs/shared/review-security.md` + `_refs/angular/review-security.md` | `_refs/shared/review-performance.md` + `_refs/angular/review-performance.md` | `_refs/shared/review-accessibility.md` + `_refs/angular/review-accessibility.md` | `_refs/shared/review-architecture.md` |
-| `legacy-core-ui-angular` | `_refs/angular/review-code.md` | same as Core UI Angular | same as Core UI Angular | same as Core UI Angular | `_refs/shared/review-architecture.md` |
-| `plain-angular` | `_refs/shared/review-code.md` plus generic/local Angular checks only | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
-| `sdcorejs-nestjs` | `_refs/nestjs/review-code.md` | `_refs/shared/review-security.md` + `_refs/nestjs/review-security.md` | `_refs/shared/review-performance.md` + `_refs/nestjs/review-performance.md` | N/A unless API usability/docs/UI scope requested | `_refs/shared/review-architecture.md` |
-| `plain-nestjs` | `_refs/shared/review-code.md` plus generic/local NestJS checks only | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | N/A unless API usability/docs/UI scope requested | `_refs/shared/review-architecture.md` |
-| `nextjs-build-website` | `_refs/nextjs/build-website/review-code.md` | `_refs/shared/review-security.md` + `_refs/nextjs/build-website/review-security.md` | `_refs/shared/review-performance.md` + `_refs/nextjs/build-website/review-performance.md` | `_refs/shared/review-accessibility.md` + `_refs/nextjs/build-website/review-accessibility.md` | `_refs/shared/review-architecture.md` |
-| `plain-nextjs` | `_refs/shared/review-code.md` plus generic/local Next.js checks only | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
-| `general` | `_refs/shared/review-code.md` | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
+Select the exact refs from the reference matrix in
+`_refs/review/profiles-and-refs.md` only after `track_profile` and dimensions
+are classified.
 
 Load `_refs/shared/review-consistency.md` whenever the resolved consistency scope is not `none`. It is profile-neutral; track refs add boundary examples but
 never fork its semantic rules.
@@ -183,38 +156,15 @@ When frontend architecture comparison is active, load
 approved component tree, reuse decisions, responsibilities, state/service ownership, provider lifecycle, registration, public exports, and architecture
 tests. Framework-specific refs add detail; they do not replace the shared comparison.
 
-Plain-profile guardrails:
-
-- `plain-angular`: must not flag missing `Sd*` components/services, Core UI
-  imports, `autoId`, Core UI style utilities, `src/libs/**/features/**`,
-  `MockCrudStore`, `SdTable`, `SdNotifyService`, forced admin screens, or Core
-  UI usage summaries unless the project already uses SDCoreJS Core UI.
-- `plain-nestjs`: must not enforce `@sdcorejs/nestjs`, Zod, TypeORM,
-  PostgreSQL, base repositories/services, or a specific module layout unless
-  detected in the target project. If the project uses Prisma, class-validator,
-  Mongoose, Fastify, or another stack, review against that actual stack.
-- `plain-nextjs`: must not enforce `[locale]`, `setRequestLocale`, typed i18n
-  navigation, content/public-site folders, landing-site metadata conventions, or
-  build-website caching rules unless detected.
+Apply the plain-profile guardrails from `_refs/review/profiles-and-refs.md`
+for `plain-angular`, `plain-nestjs`, and `plain-nextjs`.
 
 ## Step 3 - Probe Discipline and Secret Redaction
 
-Discover review and verification commands from package manager, lockfile, workspace configuration, `package.json` scripts, installed tools, and original
-failing commands. Do not hardcode `npm` or `tsc`. Do not invent missing scripts. Do not download probe tools with `npx --yes` or similar without explicit approval.
-
-Rules:
-
-- Detect package manager from lockfiles and `package.json`.
-- Do not mix `npm`, `yarn`, `pnpm`, and `bun`.
-- Use existing `package.json` scripts only.
-- Prefer the project's own build, lint, typecheck, test, audit, Lighthouse,
-  pa11y, axe, load-test, and bundle-analysis scripts when present.
-- Respect workspace scripts in monorepos when detectable.
-- Do not assume `src/libs`, `src/app/[locale]`, `src/modules`, or any source
-  root unless the project evidence shows it.
-- If a probe cannot run, add it to `probes_skipped` with evidence, for example
-  `no lint script found in package.json`, `tool not installed`, `network not
-  allowed`, `not applicable to backend-only profile`, or `user approval required`.
+Before running any review or verification probe, read
+`_refs/review/probes.md` for command discovery, package-manager discipline,
+and skipped-probe recording. Do not download probe tools without explicit
+approval.
 
 Security redaction is mandatory:
 
@@ -304,109 +254,21 @@ repair-loop/ship compatibility, but do not render or echo the full
 projection must still include severity, evidence, `file:line` or exact scope, risk, repair tier, and suggested action. Use the validated portable handoff
 when `runtime_context_channel` is unsupported or unknown. Show the full structured context only when the user requests it or validation requires it.
 
-````markdown
-# Authoritative runtime context (not user-visible by default)
-
-The following schema is passed to the consumer or reduced by the declared
-consumer-required-field matrix for a portable handoff.
-
-# Review - <module/feature> - <track> - <track_profile> - <dimension(s)> - <date>
-
-```yaml
-review_context:
-  source: sdcorejs-review
-  decision_coverage:
-    contract: <exact current decision coverage>
-  goal_backward_review:
-    contract: <exact current goal-backward review>
-  architecture_gate: { valid: true, required: true | false, status: required | not-applicable, signals: [], bypass: <exact bypass object or null>, rationale: <exact normalized rationale> }
-  architecture_context: null # exact approved object when required
-  validation_map: [] # exact approved plan authority
-  convergence_findings: { architecture: { status: <conformant|violated|stale>, violated_invariant_refs: [] }, convention: { accepted_violations: [], observed_findings: [] } }
-  track: <central-registry track id>
-  review_profile: <track.review_profile from central registry>
-  track_profile: <detected stack profile or not-applicable>
-  artifact_identity:
-    contract: <owner repository/module and execution host identities>
-  approved_artifact:
-    contract: <path, approved/current hashes, and freshness>
-  source_revision_map: {}
-  portal_pinned_module_revision_map: {}
-  dimensions: [code, architecture, consistency, security, performance, accessibility, ALL]
-  consistency_scope: complete | applicable | structural | dimension-affecting-only | none
-  review_mode: quick-table | table | scored | blocking | site-audit
-  approved_frontend_architecture:
-    contract: <plan path/hash and compared/unavailable/not-applicable status>
-  file_scope: [<path or glob>]
-  refs_loaded: [<_refs path>]
-  refs_skipped: [<ref and not-applicable reason>]
-  package_manager: npm | pnpm | yarn | bun | unknown
-  probes_run:
-    - <actual command, exit, and redacted notes>
-  probes_skipped:
-    - <probe and concrete skip reason>
-  test_evidence_summary:
-    contract: <matrix status, associated HEAD/diff, and gaps>
-  finding_ids: [R1, R2]
-  findings:
-    - <id, severity/gate, dimension, locator, issue, evidence, risk, action, repair tier>
-  repair_gate_mapping:
-    blocking: Critical/Important or BLOCKER/REQUIRED
-    confirm: semantic/non-mechanical fixes
-    user_decision: product/contract/security-policy decisions
-  convention_context: <read-only block from _refs/shared/convention-context.md>
-```
-
-## Findings
-| ID | Severity/Gate | Dimension | File/Line or Artifact Locator | Repository/Module | Issue | Evidence | Impact | Required fix | Repair tier | Gate |
-|---|---|---|---|---|---|---|---|---|---|
-| R1 | High/REQUIRED | security | src/auth.guard.ts:42 | repo-id / module-id | Missing permission check | redacted/summarized evidence | Unauthorized access | Add resource permission guard | confirm | REQUIRED |
-
-## Strengths
-| File/Line or Scope | What's good | Reuse where |
-|---|---|---|
-
-## N/A And Skipped
-| Item | Reason |
-|---|---|
-
-## Next Action
-- Blocking findings -> `sdcorejs-repair-loop` only after explicit user/finish-gate choice.
-- User-decision findings -> ask for the decision before editing.
-- Probe gaps -> run skipped probes only after prerequisites/approval exist.
-````
-
-Findings rules:
-
-- Cite `file:line` for every file-level finding. If no file/line exists, mark
-  the finding as scope-level or architecture-level.
-- Do not omit Suggested fix for blocking findings unless the finding is
-  `user-decision` or an architecture decision; in those cases, say what decision
-  is needed.
-- Use `auto` only for mechanical low-risk fixes. Use `confirm` for semantic or
-  non-mechanical fixes. Use `user-decision` for product, contract,
-  architecture, migration, security-policy, or UX decisions.
-- In table mode, accepted gate values are `BLOCKER`, `REQUIRED`, `ADVISORY`,
-  and `N/A`.
-- In quick-table mode, a severity table with no rows must contain `_none_`; do
-  not omit the heading.
+Before building `review_context` or rendering the report, read
+`_refs/review/output-contract.md` for the schema, findings table, strengths,
+N/A and next-action layout, and findings rules.
 
 ## AI-agent review
 
-When `ai_agent_context` is present, preserve its approved hashes, selected profiles, contract/target paths, and offline/live evidence status. Load only the
-applicable `_refs/ai-agent/**` contracts. Review trust and tenant derivation, server-side authorization, business-shaped tool boundaries, mutation approval,
-idempotency/resource versions, session isolation, provider storage governance, evidence provenance/freshness, trace/audit redaction, budgets/limits,
-deterministic security gates, dependency/runtime ownership, and honest live claims. Treat any silent weakening of the common floor as a blocking
-security-policy finding and `user-decision`, not an automatic style repair.
+When `ai_agent_context` is present, read the AI-agent section of
+`_refs/review/context-extensions.md` before reviewing. Treat any silent
+weakening of the common floor as a blocking security-policy finding and
+`user-decision`, not an automatic style repair.
 
 ## Simplification review
 
-When `simplify_context` is present, preserve the canonical v2 payload from
-`_refs/simplify/verification.md`. Use `evaluateSimplifyConsumer` with the trusted
-host session before reviewing selected files/hunks, the actual repository diff and content-bound preservation receipts. A matching HEAD is insufficient;
-legacy and limited claims cannot satisfy current verification. Check for scope expansion, protected file or protected content changes, public-contract
-drift, string/prompt changes, framework metadata changes, auth/tenant/permission drift, side-effect or ordering drift, over-simplification, stale test evidence,
-and dependency/config churn.
+When `simplify_context` is present, read the simplification section of
+`_refs/review/context-extensions.md` before reviewing selected files/hunks.
 
 Treat missing post-change verification, changed protected literals, an unreverted failed pass, or `behavior_verification: not-verified` as blocking.
 Review remains read-only and does not widen the simplification scope.

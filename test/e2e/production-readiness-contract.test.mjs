@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { mkdtemp, readdir, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -1352,4 +1352,348 @@ test('executable-reference validator covers marked fences and localization conte
       'invalid.ts',
     ).length > 0,
   );
+});
+
+const progressiveBaseRevision = 'b6e6c0cfbef80d93a0c90f6dc4e8a02c2d7cbb87';
+const progressiveRoot = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
+const progressiveSkills = {
+  angular: {
+    body: 'skills/tracks/angular/sdcorejs-angular.md',
+    privateRefs: ['_refs/angular/write-code/generation-process.md', '_refs/angular/write-code/finishing.md'],
+    owners: ['_refs/angular/write-code/po-ba-prototype.md', '_refs/angular/write-code/generation-rules.md',
+      '_refs/angular/write-code/screen-detail.md', '_refs/angular/write-code/init-entity.md', '_refs/angular/write-code/input-analysis.md',
+      '_refs/angular/write-code/reuse-existing-entities.md', '_refs/angular/write-code/mock-api-input.md', '_refs/angular/styling.md',
+      '_refs/shared/sdcorejs-utils.md'],
+  },
+  review: {
+    body: 'skills/shared/workflow/review.md',
+    privateRefs: ['_refs/review/profiles-and-refs.md', '_refs/review/probes.md', '_refs/review/output-contract.md', '_refs/review/context-extensions.md'],
+    owners: [],
+  },
+  design: {
+    body: 'skills/tracks/design/sdcorejs-design.md',
+    privateRefs: ['_refs/design/handoff-authoring.md'],
+    owners: ['_refs/design/mobile-design.md', '_refs/design/frontend-design.md', '_refs/shared/design-handoff.md'],
+  },
+  explore: {
+    body: 'skills/shared/workflow/explore.md',
+    privateRefs: ['_refs/explore/read-actions.md', '_refs/explore/authorized-persistence.md'],
+    owners: ['_refs/shared/explore-context.md'],
+  },
+};
+const progressiveRetargetedTests = [
+  'test/e2e/ai-agent-track-contract.test.mjs', 'test/e2e/angular-production-contract.test.mjs', 'test/e2e/architecture-contract.test.mjs',
+  'test/e2e/artifact-path-convention.test.mjs', 'test/e2e/communication-economy.test.mjs', 'test/e2e/convention-artifact-lifecycle.test.mjs',
+  'test/e2e/convention-contract.test.mjs', 'test/e2e/convention-review.test.mjs', 'test/e2e/convergence-contract.test.mjs',
+  'test/e2e/decision-coverage-contract.test.mjs', 'test/e2e/design-handoff-contract.test.mjs', 'test/e2e/documentation-layout-contract.test.mjs',
+  'test/e2e/explore-topology.test.mjs', 'test/e2e/harness-behavioral-sentinel.test.mjs', 'test/e2e/project-context-artifact-lifecycle.test.mjs',
+  'test/e2e/review-contract.test.mjs', 'test/e2e/simplify-protected-contract.test.mjs', 'test/e2e/simplify-skill-contract.test.mjs',
+  'test/e2e/skill-pack-runner.test.mjs', 'test/e2e/test-track-contract.test.mjs', 'test/e2e/uiux-knowledge.test.mjs',
+  'test/e2e/uiux-review-regression.test.mjs', 'test/e2e/visual-offer-policy.test.mjs', 'test/e2e/production-readiness-contract.test.mjs',
+  'test/e2e/support/skill-pack-runner.mjs', 'test/e2e/support/visual-offer-eval-runner.mjs', 'test/e2e/support/ui-review-fixture.mjs',
+];
+
+function progressiveAtBase(file) {
+  const result = spawnSync('git', ['show', `${progressiveBaseRevision}:${file}`], { cwd: progressiveRoot, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  assert.equal(result.status, 0, `baseline source must resolve: ${file}`);
+  return result.stdout.replace(/\r\n?/gu, '\n');
+}
+async function progressiveCurrent(file) {
+  return (await readFile(path.join(progressiveRoot, file), 'utf8')).replace(/\r\n?/gu, '\n');
+}
+function progressiveFrontmatter(text) {
+  return text.match(/^---\n[\s\S]*?\n---\n/u)[0];
+}
+function progressiveSection(text, heading) {
+  const lines = text.split('\n');
+  const start = lines.findIndex(line => /^#+\s/u.test(line) && line.replace(/^#+\s+/u, '') === heading);
+  if (start < 0) return null;
+  const level = lines[start].match(/^#+/u)[0].length;
+  let end = start + 1;
+  while (end < lines.length && !(new RegExp(`^#{1,${level}}\\s`, 'u').test(lines[end]))) end += 1;
+  return lines.slice(start, end).join('\n').trimEnd();
+}
+// Units are paragraphs, list items and table rows outside fences; fences stay whole.
+function progressiveUnits(text) {
+  const lines = text.replace(/^---\n[\s\S]*?\n---\n/u, '').split('\n');
+  const units = [], fences = [];
+  let paragraph = [];
+  const flush = () => { if (paragraph.length) units.push(paragraph.join(' ')); paragraph = []; };
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    const fence = line.trim().match(/^(`{3,})/u);
+    if (fence) {
+      flush();
+      const block = [line];
+      index += 1;
+      while (index < lines.length && !lines[index].trim().startsWith(fence[1])) { block.push(lines[index]); index += 1; }
+      block.push(lines[index] ?? '');
+      fences.push(block.join('\n'));
+      continue;
+    }
+    if (line.trim() === '' || /^#{1,6}\s/u.test(line)) { flush(); continue; }
+    if (/^\s*(?:[-*]|\d+\.|✅)\s+/u.test(line) || /^\s*\|/u.test(line)) {
+      flush();
+      paragraph = [line];
+      while (index + 1 < lines.length && /^\s{2,}\S/u.test(lines[index + 1]) && !/^\s*(?:[-*]|\d+\.|✅|\|)/u.test(lines[index + 1])) {
+        index += 1; paragraph.push(lines[index]);
+      }
+      flush();
+      continue;
+    }
+    paragraph.push(line);
+  }
+  flush();
+  return { units, fences };
+}
+function progressiveNormalize(text) {
+  return ` ${text
+    .replace(/\]\([^)]*\)/gu, ']')
+    .replace(/(^|\n)\s*(?:[-*]|\d+\.|✅)\s+/gu, '$1')
+    .replace(/(^|\n)#{1,6}\s+/gu, '$1')
+    .replace(/\s+/gu, ' ')
+    .trim()} `;
+}
+
+// Units deduplicated into an existing owner that already states the same rule; every clause needs owner evidence.
+const progressiveGenerationRules = '_refs/angular/write-code/generation-rules.md';
+const progressivePrototype = '_refs/angular/write-code/po-ba-prototype.md';
+const progressiveStyling = '_refs/angular/styling.md';
+const progressiveFinishing = '_refs/angular/write-code/finishing.md';
+const progressiveTemplateFirst = [[progressivePrototype, '## Template-first invariant'], [progressivePrototype, 'New portal: run `init-portal.md` first'],
+  [progressivePrototype, 'Existing portal: modify the existing Core UI portal shell, routes, menu, and component conventions in place.'],
+  [progressivePrototype, 'Do not design a custom portal shell, bespoke sidebar/header/menu, standalone dashboard, raw list/table, or hand-built create/update/detail form']];
+const progressiveEquivalents = {
+  'skills/tracks/angular/sdcorejs-angular.md': [
+    { unit: 'Template-first is mandatory for an approved technical prototype:', evidence: progressiveTemplateFirst },
+    { unit: 'New portal: run `init-portal.md` first, preserve the Core UI starter template', evidence: progressiveTemplateFirst },
+    { unit: 'Existing portal: extend the existing Core UI portal shell', evidence: progressiveTemplateFirst },
+    { unit: 'Do not create a parallel custom portal shell', evidence: progressiveTemplateFirst },
+    { unit: 'Enforce template-first technical-prototype generation', evidence: progressiveTemplateFirst },
+    { unit: 'Design a custom portal shell, landing page, dashboard', evidence: progressiveTemplateFirst },
+    { unit: 'Keep independent child CRUD scoped to the parent DETAIL screen', evidence: [
+      [progressiveGenerationRules, 'Keep independent child CRUD inside the parent DETAIL screen and use a modal or side drawer rather than separate child routes.'],
+      [progressiveGenerationRules, 'Pass, prefill, and lock the current parent id in the child form.'],
+      [progressiveGenerationRules, 'Refresh only the child collection after success and preserve the parent route plus active tab/section.']] },
+    { unit: 'Navigate from a parent DETAIL child collection', evidence: [[progressiveGenerationRules, 'use a modal or side drawer rather than separate child routes.']] },
+    { unit: 'Show independent child create/edit/delete actions', evidence: [[progressiveGenerationRules, 'Hide independent child actions in parent CREATE/UPDATE.']] },
+    { unit: 'Use inline `FormArray` for independently persisted child CRUD', evidence: [[progressiveGenerationRules, 'Use `FormArray` only when child rows are saved in the same parent payload.']] },
+    { unit: 'Style utility-first', evidence: [[progressiveStyling, 'utility-first, minimal custom CSS'], [progressiveStyling, 'absolute px, integer 0–200'],
+      [progressiveStyling, 'Use **multiples of 4**'], [progressiveStyling, 'Tailwind (if the consumer ships it)'], [progressiveStyling, 'Only when no utility fits'],
+      [progressiveStyling, 'Add a one-line `// why:` comment'], [progressiveStyling, 'Reuse Core UI tokens inside it']] },
+    { unit: 'Hand-write CSS for flex / spacing / alignment / color / typography', evidence: [[progressiveStyling, 'too many unnecessary CSS classes'],
+      [progressiveStyling, 'Bootstrap class names (`btn`, `card`, `form-control`, `alert`, `modal`)'], [progressiveStyling, 'Tailwind syntax when the consumer has no Tailwind.'],
+      [progressiveStyling, 'component `.scss` is near-empty']] },
+    { unit: 'Generate every component with `changeDetection: ChangeDetectionStrategy.OnPush`', evidence: [[progressiveGenerationRules, '`changeDetection: ChangeDetectionStrategy.OnPush`'],
+      [progressiveFinishing, 'Every generated component imports and declares `changeDetection: ChangeDetectionStrategy.OnPush`']] },
+    { unit: 'Omit `ChangeDetectionStrategy.OnPush` from generated components.', evidence: [[progressiveGenerationRules, '`changeDetection: ChangeDetectionStrategy.OnPush`']] },
+    { unit: 'Precompute all values displayed or bound in templates', evidence: [[progressiveGenerationRules, 'Use `signal()` for mutable state and `computed()` for derived display'],
+      [progressiveGenerationRules, 'Do not call methods/getters from interpolation or property/class/style/ structural bindings to calculate displayed values.']] },
+    { unit: 'Call component methods/getters from HTML', evidence: [[progressiveGenerationRules, 'Do not call methods/getters from interpolation'], [progressiveGenerationRules, 'Allow event handlers']] },
+    { unit: 'Keep Service models as Service-owned contracts.', evidence: [[progressiveGenerationRules, 'as Service/Component contracts rather than forced copies of raw API payloads.'],
+      [progressiveGenerationRules, 'Put UI-only fields in a local ViewModel, signal, or a documented Service mapper output.']] },
+    { unit: 'Treat Service DTOs as scratch objects', evidence: [[progressiveGenerationRules, 'Do not add UI-only fields such as `checked`, `selected`, `expanded`'],
+      [progressiveGenerationRules, 'Put UI-only fields in a local ViewModel, signal, or a documented Service mapper output.']] },
+  ],
+};
+async function progressiveEquivalent(body, needle) {
+  const entry = (progressiveEquivalents[body] ?? []).find(item => needle.trim().startsWith(progressiveNormalize(item.unit).trim()));
+  if (!entry) return false;
+  for (const [owner, literal] of entry.evidence) {
+    assert.ok(progressiveNormalize(await progressiveCurrent(owner)).includes(progressiveNormalize(literal).trim()), `${owner} proves ${literal}`);
+  }
+  return true;
+}
+const progressiveAssertCounts = text => (text.match(/\bassert\.[A-Za-z]+\(/gu) ?? []).length;
+const progressiveSkipCounts = text => (text.match(/\b(?:test|it|describe)\.(?:skip|only|todo)\(|\{\s*(?:skip|only|todo)\s*:/gu) ?? []).length;
+
+test('case-progressive-load-body-size: each refactored skill body is smaller than its baseline', async () => {
+  for (const { body } of Object.values(progressiveSkills)) {
+    const before = Buffer.byteLength(progressiveAtBase(body));
+    const after = Buffer.byteLength(await progressiveCurrent(body));
+    assert.ok(after < before, `${body} must shrink: ${after} >= ${before}`);
+  }
+});
+
+test('case-progressive-load-inventory-routing: frontmatter, name, description and required-actions stay byte-identical', async () => {
+  for (const { body } of Object.values(progressiveSkills)) {
+    assert.equal(progressiveFrontmatter(await progressiveCurrent(body)), progressiveFrontmatter(progressiveAtBase(body)), body);
+  }
+});
+
+test('case-progressive-load-angular-gates: approval preflight stays first and gates stay in the body', async () => {
+  const { body } = progressiveSkills.angular;
+  const [current, baseline] = [await progressiveCurrent(body), progressiveAtBase(body)];
+  const heading = 'Approval preflight — first action, fail closed';
+  assert.equal(current.split('\n').find(line => /^##\s/u.test(line)), `## ${heading}`);
+  const approval = progressiveSection(current, heading);
+  assert.equal(approval, progressiveSection(baseline, heading));
+  assert.ok(current.indexOf(approval) + approval.length <= current.search(/_refs\/angular\/write-code\//u), 'approval precedes every implementation reference');
+  for (const literal of ['## Eligibility preflight', '`plain-angular` | Stop and return to `sdcorejs-execute-plan` generic harness', 'technical-prototype',
+    '_refs/shared/frontend-architecture.md', '`frontend_architecture`', '_refs/shared/design-handoff.md', 'resolveAngularExecution',
+    'completeAngularExecution', 'RED-first', '`standard`', 'Core UI usage summary', 'Test authoring', 'must not create or self-approve']) {
+    assert.ok(current.includes(literal), `angular body keeps ${literal}`);
+  }
+});
+
+test('case-progressive-load-review-boundary: direct review stays read-only in the body', async () => {
+  const current = await progressiveCurrent(progressiveSkills.review.body);
+  for (const literal of ['`sdcorejs-review` must not edit source code', 'strict read-only by default', 'must not silently write `.sdcorejs` artifacts',
+    'Do not auto-run `sdcorejs-repair-loop`.', 'Only option `2` may write a review artifact', 'Classify `track_profile` before loading refs.',
+    'design-artifact', 'implemented-ui-conformance', '_refs/shared/ui-review.md', 'evaluateReviewContract', 'Redact secrets',
+    '| `code` |', '| `architecture` |', '| `consistency` |', '| `security` |', '| `performance` |', '| `accessibility` |', '| `ALL` |', '| `site-audit` |']) {
+    assert.ok(current.includes(literal), `review body keeps ${literal}`);
+  }
+});
+
+test('case-progressive-load-design-boundary: existing design, draft/approval and ownership stay in the body', async () => {
+  const { body } = progressiveSkills.design;
+  const [current, baseline] = [await progressiveCurrent(body), progressiveAtBase(body)];
+  assert.equal(progressiveSection(current, 'Existing Design First'), progressiveSection(baseline, 'Existing Design First'));
+  for (const literal of ['lifecycle.state: draft', 'it is never an implementation contract', 'Material changes return to the decision/approval owner',
+    'portal fallback is forbidden', 'resolveDesignHandoffTarget', 'verifyDesignHandoff', 'validateDesignHandoff', 'Emitting only the ledger is',
+    'Root-level `design/**` is never a write target', 'Claim a design is approved without explicit user approval']) {
+    assert.ok(current.includes(literal), `design body keeps ${literal}`);
+  }
+});
+
+test('case-progressive-load-explore-boundary: action boundaries, guard and redaction stay in the body', async () => {
+  const { body } = progressiveSkills.explore;
+  const [current, baseline] = [await progressiveCurrent(body), progressiveAtBase(body)];
+  for (const heading of ['Target Root And Authoring-Repo Guard', 'Global Secret And PII Redaction']) {
+    assert.equal(progressiveSection(current, heading), progressiveSection(baseline, heading), heading);
+  }
+  for (const row of progressiveSection(baseline, 'Step 0 - Classify `explore_action`').split('\n').filter(line => /^\| `/u.test(line))) {
+    assert.ok(current.includes(row), `explore body keeps action row ${row.slice(0, 40)}`);
+  }
+  for (const literal of ['Read-only explore actions must not write', 'Write-approved actions must record the approval source']) {
+    assert.ok(current.includes(literal), literal);
+  }
+  const persistenceUse = progressiveUnits(current).units.find(unit => unit.includes('_refs/explore/authorized-persistence.md'));
+  assert.match(persistenceUse ?? '', /write-approved/u);
+  assert.match(persistenceUse ?? '', /\b(?:only|after)\b/u);
+  const readActions = await progressiveCurrent('_refs/explore/read-actions.md');
+  assert.doesNotMatch(readActions, /artifact_kind:\s*(?:persona|memory)/u, 'read-only reference carries no persistence template');
+});
+
+test('case-progressive-load-reference-loading: private references resolve, load conditionally and form no cycles', async () => {
+  const privateRefs = Object.values(progressiveSkills).flatMap(skill => skill.privateRefs);
+  const graph = new Map();
+  for (const skill of Object.values(progressiveSkills)) {
+    const { units } = progressiveUnits(await progressiveCurrent(skill.body));
+    for (const ref of skill.privateRefs) {
+      const text = await progressiveCurrent(ref);
+      assert.ok(text.trim().length > 0, `${ref} exists`);
+      assert.doesNotMatch(text, /(?:^|[\s(`])(?:\.\.\/)*skills\//u, `${ref} does not link back to a skill body`);
+      const uses = units.filter(unit => unit.includes(ref));
+      assert.ok(uses.length > 0, `${skill.body} names ${ref}`);
+      assert.ok(uses.every(unit => /\b(?:when|before|after|only|if|for)\b/iu.test(unit)), `${ref} has an explicit load condition`);
+      graph.set(ref, privateRefs.filter(other => other !== ref && text.includes(other)));
+    }
+  }
+  const visiting = new Set(), done = new Set();
+  const visit = node => {
+    assert.ok(!visiting.has(node), `private reference cycle through ${node}`);
+    if (done.has(node)) return;
+    visiting.add(node); for (const next of graph.get(node) ?? []) visit(next); visiting.delete(node); done.add(node);
+  };
+  for (const node of graph.keys()) visit(node);
+});
+
+test('case-progressive-load-canonical-owner: every baseline unit survives verbatim in the body or one declared owner', async () => {
+  for (const skill of Object.values(progressiveSkills)) {
+    const current = await progressiveCurrent(skill.body);
+    const bodyText = progressiveNormalize(current);
+    const privateTexts = await Promise.all(skill.privateRefs.map(progressiveCurrent));
+    const ownerTexts = [...privateTexts, ...await Promise.all(skill.owners.map(progressiveCurrent))];
+    const privateNormalized = privateTexts.map(progressiveNormalize);
+    const ownerNormalized = ownerTexts.map(progressiveNormalize);
+    const { units, fences } = progressiveUnits(progressiveAtBase(skill.body));
+    for (const unit of units) {
+      const needle = progressiveNormalize(unit);
+      const inBody = bodyText.includes(needle);
+      assert.ok(inBody || ownerNormalized.some(text => text.includes(needle)) || await progressiveEquivalent(skill.body, needle),
+        `${skill.body} lost unit: ${unit.slice(0, 120)}`);
+      if (inBody && needle.trim().length > 40) {
+        assert.ok(!privateNormalized.some(text => text.includes(needle)), `${skill.body} duplicates moved unit: ${unit.slice(0, 120)}`);
+      }
+    }
+    for (const fence of fences) {
+      assert.ok(current.includes(fence) || ownerTexts.some(text => text.includes(fence)), `${skill.body} lost fence: ${fence.slice(0, 80)}`);
+    }
+  }
+});
+
+test('case-progressive-load-single-schema: moved schemas and templates keep one byte-identical copy', async () => {
+  const moved = [
+    ['review', /````markdown\n# Authoritative runtime context[\s\S]*?\n````/u],
+    ['design', /```markdown\n# Design Spec - <Feature>[\s\S]*?\n```/u],
+    ['explore', /```markdown\n---\nartifact_id: project-persona[\s\S]*?\n```/u],
+    ['explore', /```yaml\n---\nartifact_id: memory-<scope>-<timestamp>[\s\S]*?\n```/u],
+  ];
+  for (const [key, pattern] of moved) {
+    const skill = progressiveSkills[key];
+    const block = progressiveAtBase(skill.body).match(pattern)?.[0];
+    assert.ok(block, `baseline ${key} schema exists`);
+    const files = [skill.body, ...skill.privateRefs, ...skill.owners];
+    const copies = (await Promise.all(files.map(progressiveCurrent))).reduce((total, text) => total + text.split(block).length - 1, 0);
+    assert.equal(copies, 1, `${key} schema has exactly one canonical copy`);
+    assert.ok(!(await progressiveCurrent(skill.body)).includes(block), `${key} schema moved out of the body`);
+  }
+});
+
+test('case-progressive-load-test-integrity: retargeted suites keep every assertion and add no skips', async () => {
+  for (const file of progressiveRetargetedTests) {
+    const [before, after] = [progressiveAtBase(file), await progressiveCurrent(file)];
+    assert.ok(progressiveAssertCounts(after) >= progressiveAssertCounts(before), `${file} assertion count must not decrease`);
+    assert.ok(progressiveSkipCounts(after) <= progressiveSkipCounts(before), `${file} must not add skip/only/todo`);
+  }
+});
+
+test('case-progressive-load-distribution: every private reference is mirrored byte-identically', async () => {
+  for (const ref of Object.values(progressiveSkills).flatMap(skill => skill.privateRefs)) {
+    const source = await progressiveCurrent(ref);
+    for (const mirrorRoot of ['.claude/_refs', 'plugin/_refs', 'codex/skills/_refs']) {
+      assert.equal(await progressiveCurrent(`${mirrorRoot}/${ref.slice('_refs/'.length)}`), source, `${mirrorRoot} mirrors ${ref}`);
+    }
+  }
+});
+
+const progressiveSkillName = text => text.match(/^name:\s*(\S+)/mu)?.[1];
+
+test('case-progressive-load-explore-inventory: explore refactor adds no public memory, persona or conventions skill', async () => {
+  const currentFiles = (await readdir(path.join(progressiveRoot, 'skills'), { recursive: true }))
+    .map(file => `skills/${String(file).replaceAll('\\', '/')}`).filter(file => file.endsWith('.md'));
+  const baselineFiles = spawnSync('git', ['ls-tree', '-r', '--name-only', progressiveBaseRevision, '--', 'skills'],
+    { cwd: progressiveRoot, encoding: 'utf8' }).stdout.split(/\r?\n/u).filter(file => file.endsWith('.md'));
+  const current = (await Promise.all(currentFiles.map(progressiveCurrent))).map(progressiveSkillName).sort();
+  const baseline = baselineFiles.map(file => progressiveSkillName(progressiveAtBase(file))).sort();
+  assert.equal(current.length, 23);
+  assert.deepEqual(current, baseline, 'public skill names stay identical to the baseline');
+  for (const name of current) assert.doesNotMatch(name, /memor|persona|convention/iu, `${name} is not a new memory, persona or conventions skill`);
+  for (const ref of progressiveSkills.explore.privateRefs) {
+    assert.doesNotMatch(await progressiveCurrent(ref), /^---\n[\s\S]*?^name:/mu, `${ref} is a private reference, not a skill`);
+  }
+  for (const mirrorRoot of ['.claude/skills', 'plugin/skills', 'codex/skills']) {
+    const entries = await readdir(path.join(progressiveRoot, mirrorRoot), { withFileTypes: true });
+    const exposed = entries.filter(entry => entry.isDirectory() && entry.name !== '_refs').map(entry => entry.name).sort();
+    assert.deepEqual(exposed, current, `${mirrorRoot} exposes exactly the public inventory`);
+  }
+});
+
+test('case-progressive-load-distribution-resolution: mirrored skill bodies resolve every private reference', async () => {
+  for (const skill of Object.values(progressiveSkills)) {
+    const name = progressiveSkillName(await progressiveCurrent(skill.body));
+    for (const distribution of [
+      { body: `.claude/skills/${name}/SKILL.md`, mention: ref => ref, resolve: ref => `.claude/${ref}` },
+      { body: `plugin/skills/${name}/SKILL.md`, mention: ref => ref, resolve: ref => `plugin/${ref}` },
+      { body: `codex/skills/${name}/SKILL.md`, mention: ref => `../${ref}`, resolve: ref => path.posix.join(`codex/skills/${name}`, `../${ref}`) },
+    ]) {
+      const mirrored = await progressiveCurrent(distribution.body);
+      for (const ref of skill.privateRefs) {
+        assert.ok(mirrored.includes(distribution.mention(ref)), `${distribution.body} names ${distribution.mention(ref)}`);
+        assert.equal(await progressiveCurrent(distribution.resolve(ref)), await progressiveCurrent(ref), `${distribution.body} resolves ${ref}`);
+      }
+    }
+  }
 });

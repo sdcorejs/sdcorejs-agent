@@ -71,7 +71,8 @@ test('explore skill and context expose registry-backed topology without document
   assert.match(combined, /absolute checkout paths.*never durable/isu);
   assert.match(combined, /summary.*code map.*owned by.*sdcorejs-explore/isu);
   assert.doesNotMatch(combined, /documentation owns.*(?:summary|code map)/iu);
-  assert.match(skill, /Never\s+select.*artifact.*newest/iu);
+  const readActions = await readFile(new URL('../../_refs/explore/read-actions.md', import.meta.url), 'utf8');
+  assert.match(readActions, /Never\s+select.*artifact.*newest/iu);
 });
 
 test('explore writes require explicit or assigned authority and default to read-only', () => {

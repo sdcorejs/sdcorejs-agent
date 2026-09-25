@@ -132,7 +132,8 @@ test('simplify: downstream owners consume or preserve simplify_context', async (
     assert.match(source, /simplify_context/, `${id} handles simplify_context`);
   }
   assert.match(files.get('test'), /pre-simplification[\s\S]*post-simplification/i);
-  assert.match(files.get('review'), /protected (?:file|content)|scope expansion/i);
+  const reviewExtensions = await readFile(join(ROOT, '_refs/review/context-extensions.md'), 'utf8');
+  assert.match(reviewExtensions, /protected (?:file|content)|scope expansion/i);
   assert.match(files.get('repair'), /preserve.*simplify_context/is);
   assert.match(files.get('debug'), /pre-existing[\s\S]*regression/i);
   assertShipContract(files.get('ship'));

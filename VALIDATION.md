@@ -727,3 +727,48 @@ Current commands, content manifest and limitations are retained in
 The full generated-app/container matrix, live provider/target-project A/B,
 native-picker automation, browser capture and paid services are **NOT RUN**.
 No dependency, commit or push is authorized by this evidence.
+
+## Skill body progressive loading — current change (2026-09-25)
+
+Four canonical skill bodies were restructured into private references loaded per
+action. Public inventory (23), names, descriptions and `required-actions` are
+unchanged; `case-progressive-load-*` checks bind every baseline paragraph, list
+item, table row and fence of the four bodies to the current body, a declared
+owner reference, or an explicitly evidenced equivalent owner rule.
+
+| Skill body | Baseline bytes / lines | Current bytes / lines | New private references |
+| --- | ---: | ---: | --- |
+| `skills/tracks/angular/sdcorejs-angular.md` | 45,361 / 498 | 23,004 / 298 | `_refs/angular/write-code/generation-process.md`, `finishing.md` |
+| `skills/shared/workflow/review.md` | 29,321 / 457 | 19,335 / 318 | `_refs/review/profiles-and-refs.md`, `probes.md`, `output-contract.md`, `context-extensions.md` |
+| `skills/tracks/design/sdcorejs-design.md` | 25,595 / 484 | 18,793 / 323 | `_refs/design/handoff-authoring.md` |
+| `skills/shared/workflow/explore.md` | 24,062 / 500 | 14,812 / 278 | `_refs/explore/read-actions.md`, `authorized-persistence.md` |
+
+These are byte and line counts, not token or cost measurements. Loading scope
+changes: a direct or finish-gate review now loads the review body plus the
+profile, probe and output references, so the two review scenarios below grow
+slightly; AI-agent and simplification review criteria load only when their
+context is present; Angular generation and finishing detail, Design authoring
+detail and Explore persistence templates load only for the actions that need
+them.
+
+| Measure | Baseline | Current working tree |
+| --- | ---: | ---: |
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,850 |
+| Always-loaded bootstrap words | 2,361 | 2,319 |
+| Aggregate just-in-time scenario bytes | 514,603 | 679,422 |
+| Aggregate visible output bytes | 42,558 | 2,802 |
+| Aggregate visible output words | 3,961 | 337 |
+| Portable fallback handoff bytes | 0 | 25,383 |
+| Supported runtime context channel bytes | 0 | 1,819 |
+| Repeated-block bytes | 2,319 | 0 |
+| Total measured communication bytes | 577,334 | 729,276 |
+| Consumer-required authoritative fields | 361 | 361 preserved |
+
+The just-in-time aggregate moves from 677,988 to 679,422 bytes because the
+`direct-review` and `review-repair-ship` fixtures now list the private review
+references those scenarios must load; no scenario omits a required reference to
+show a smaller number. Commands, results and limitations are retained in
+`authoring/evals/skill-body-progressive-loading.json` and
+`.sdcorejs/docs/workflow/2026-09-25-11-17-skill-body-progressive-loading-delivery.md`.
+Live agent, browser, provider and generated-app/container layers are **NOT RUN**.
+No dependency, commit or push is authorized by this evidence.
