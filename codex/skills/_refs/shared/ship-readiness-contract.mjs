@@ -292,7 +292,9 @@ export function evaluateShipReadiness(contract, runtime = {}) {
   const simplify = contract.simplify_context === undefined ? null : evaluateSimplifyConsumer(contract.simplify_context, { ...runtime, consumer: 'sdcorejs-ship' });
   if (simplify) {
     productionBlockers.push(...simplify.blockers.map(message => `simplify: ${message}`));
-    if (simplify.evidence_current && contract.simplify_context.action.startsWith('apply-')) {
+    // Current verified Apply evidence comes from the consumer result, never from the
+    // serialized context, which may be null or relabeled for host-verified evidence.
+    if (simplify.verification_current) {
       const sources = [{ ...sourceIdentity, repository_id: sourceIdentity.portal_repository_id }, ...(sourceIdentity.modules ?? [])];
       const ownerSource = sources.find(source => source.repository_id === simplify.owner_repository_id);
       if (!ownerSource || (ownerSource.source_revision ?? ownerSource.revision) !== simplify.source_revision || ownerSource.source_fingerprint !== simplify.source_fingerprint) {

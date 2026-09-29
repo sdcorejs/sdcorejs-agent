@@ -271,6 +271,7 @@ export function resolveAction({
   runtimeCapabilities = {},
   runtimeActions = {},
   runtime,
+  failed_surfaces = [],
 } = {}) {
   if (classification || task) {
     const resolvedClassification = classification ?? classifyTask(task);
@@ -289,6 +290,8 @@ export function resolveAction({
   if (!mapping) return { mode: 'blocked', action, reason: 'adapter action mapping is missing' };
 
   if (action === 'user.choose' || action === 'user.approve') {
+    // A native surface that already failed for this decision is not offered again.
+    if (failed_surfaces.includes('native-structured-choice')) return { mode: 'fallback', action, native: [], fallback: mapping.fallback, reason: 'native choice surface failed for this decision' };
     const observed = observeChoiceTools(runtime, action);
     return observed.status === 'supported'
       ? { mode: 'native', action, native: observed.tools, fallback: mapping.fallback }
@@ -408,19 +411,32 @@ export const VISUAL_INTERACTION_KINDS = Object.freeze([
  * feedback; routing an approval through it would let a click stand in for a
  * spec, plan, dependency, permission, or destructive-action gate.
  */
+/** Gates whose resolution grants authority; they are always asked explicitly. */
+export const AUTHORITY_GRANTING_GATES = Object.freeze(['finish:policy']);
+const POLICY_HASH_VALUE = /^sha256:[a-f0-9]{64}$/u;
+const choiceValue = option => typeof option === 'string' ? option.toLowerCase() : option?.value;
+// An option grants authority when it authorizes a source write or binds a policy hash.
+const grantsAuthority = value => typeof value === 'string' && (['apply', 'apply-current-diff'].includes(value) || POLICY_HASH_VALUE.test(value));
+// The gate comes from the decision object; the gate parameter is an optional fallback.
+const authorityDecision = ({ approval = false, gate, decision } = {}) =>
+  Boolean(approval) || decision?.approval === true || AUTHORITY_GRANTING_GATES.includes(decision?.gate ?? gate);
+
 export function selectInteraction({
   capabilities = {},
   options = [],
   visual_spatial = false,
-  approval = false,
+  approval: approvalFlag = false,
   consent = {},
   failed_surfaces = [],
   runtime,
   decision_id = null,
+  gate,
+  decision,
 } = {}) {
   const labels = options.map((item) => typeof item === 'string' ? item : item.label);
   const markdown = numberedMarkdown(labels);
   const base = { options: labels, markdown, fallback_markdown: markdown, decision_id };
+  const approval = Boolean(approvalFlag) || decision?.approval === true;
   if (approval && labels.length !== 3) return { ...base, kind: 'invalid-approval-options', reason: 'approval requires all three Approve/Request changes/Cancel options' };
 
   if (labels.length === 0) {
@@ -431,8 +447,8 @@ export function selectInteraction({
       fallback_markdown: '',
     };
   }
-  const explicitWrite = options.some(option => ['apply', 'apply-current-diff'].includes(typeof option === 'string' ? option.toLowerCase() : option?.value));
-  if (labels.length === 1 && !approval && !explicitWrite) {
+  const authority = authorityDecision({ approval, gate, decision }) || options.some(option => grantsAuthority(choiceValue(option)));
+  if (labels.length === 1 && !authority) {
     return {
       kind: 'auto-select',
       selected: labels[0],
@@ -501,15 +517,15 @@ export function resolveVisualCompanionPlan({
 const VISUAL_MODE_KINDS = Object.freeze({ live: 'live-visual-companion', native: 'typed-visual-screen',
   static: 'static-visual-composer', markdown: 'markdown-numbered-choice' });
 
-export function normalizeChoiceResponse(response, options = [], { recommended, approval = false } = {}) {
+export function normalizeChoiceResponse(response, options = [], { recommended, approval = false, gate, decision } = {}) {
   const raw = String(response ?? '').trim();
   const normalized = raw.normalize('NFC').toLowerCase();
   const labels = options.map((item) => typeof item === 'string' ? item : item?.label);
   const delegated = /^(?:you decide|decide for me|use (?:the )?recommend(?:ed|ation)|choose (?:the )?default)$/i.test(raw);
 
-  const recommendedOption = options[labels.indexOf(recommended)];
-  const recommendedValue = typeof recommendedOption === 'string' ? recommendedOption.toLowerCase() : recommendedOption?.value;
-  if (delegated && !approval && labels.includes(recommended) && !['apply','apply-current-diff'].includes(recommendedValue)) {
+  // Delegation never selects an authority-granting option or resolves an authority gate.
+  const recommendedValue = choiceValue(options[labels.indexOf(recommended)]);
+  if (delegated && !authorityDecision({ approval, gate, decision }) && labels.includes(recommended) && !grantsAuthority(recommendedValue)) {
     return { status: 'selected', selected: recommended, source: 'recommended' };
   }
 
@@ -570,7 +586,7 @@ export function resolveDecision(context, runtime = {}) {
     if (event.question_id ? event.question_id !== decision.id : pending.length !== 1 || pending[0].id !== decision.id) {
       return { status: 'ambiguous', reason: 'reply is not bound to exactly one pending gate' };
     }
-    const parsed = normalizeChoiceResponse(event.text, decision.options, { approval: decision.approval });
+    const parsed = normalizeChoiceResponse(event.text, decision.options, { approval: decision.approval, decision });
     if (parsed.status !== 'selected') return { status: 'ambiguous', reason: parsed.source };
     const selected = decision.options.find(option => option.label === parsed.selected);
     if (!selected) return { status: 'blocked', reason: 'option mapping changed' };
@@ -586,7 +602,7 @@ export function resolveDecision(context, runtime = {}) {
       const policies = block ? JSON.parse(block[1]) : [];
       const matches = policies.filter(policy => policy.decision_fingerprint === fingerprint);
       const selected = decision.options.find(option => option.id === matches[0]?.option_id);
-      if (matches.length === 1 && selected && !['apply', 'apply-current-diff'].includes(selected.value)) return { status: 'resolved', value: selected.value, option_id: selected.id, resolution: { schema_version: 1, decision_fingerprint: fingerprint, plan_ref: metadata.repository_relative_path, approval_hash: metadata.approval_hash, option_id: selected.id, value: selected.value, source: 'verified-plan' } };
+      if (matches.length === 1 && selected && !grantsAuthority(selected.value) && !authorityDecision({ decision })) return { status: 'resolved', value: selected.value, option_id: selected.id, resolution: { schema_version: 1, decision_fingerprint: fingerprint, plan_ref: metadata.repository_relative_path, approval_hash: metadata.approval_hash, option_id: selected.id, value: selected.value, source: 'verified-plan' } };
     } catch (error) { return { status: 'blocked', reason: error.message }; }
   }
   return { status: 'pending', reason: 'no current explicit decision authority', decision_fingerprint: fingerprint };

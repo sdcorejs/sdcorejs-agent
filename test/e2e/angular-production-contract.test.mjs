@@ -137,3 +137,15 @@ test('Angular policy makes TDD authoring mandatory and admin/prototype condition
   assert.match(adminReference, /approved requirement|approved.*profile/iu);
   assert.doesNotMatch(adminReference.slice(0, 300), /\bALWAYS\b/u);
 });
+
+// Audit repair (UR-1): Angular preflight does not treat an ordinary review_context as UI review.
+test('case-repair-ordinary-review: Angular execution accepts an ordinary review_context', async t => {
+  const { uiReviewFixture } = await import('./support/ui-review-fixture.mjs');
+  const { resolveAngularExecution } = await import('../../_refs/angular/execution-contract.mjs');
+  const f = uiReviewFixture(t);
+  const request = { project_profile: 'core-ui-angular', execution_profile: 'developer', scope: 'application', application: { repository_id: f.repo },
+    execution_host_repository_id: f.repo, design_handoff: f.handoff, review_context: { schema_version: 1, source: 'sdcorejs-review', subject_track: 'workflow',
+      review_profile: 'workflow', mode: 'read-only', dimensions: ['security'], write_actions: [], reported_findings: [] } };
+  const result = resolveAngularExecution(request, { design_runtime: f.designRuntime, ui_review_runtime: f.uiRuntime });
+  assert.equal(result.production_eligible, true, JSON.stringify(result.blockers));
+});

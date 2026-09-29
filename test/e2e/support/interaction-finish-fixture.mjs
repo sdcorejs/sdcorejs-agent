@@ -50,6 +50,8 @@ export async function finishFixture(t, options = {}) {
   cpSync(seedRepository(), root, { recursive: true });
   const write = (file, content) => { mkdirSync(path.dirname(path.join(root, file)), { recursive: true }); writeFileSync(path.join(root, file), content); };
   write('src/value.mjs', 'export const value = 1; // changed\n');
+  // Audit repair fixtures add ignored output, links or helper commands before the host observes.
+  options.setup?.({ root, write });
   const owner = 'github.com/example/app', change = path.basename(root), scope = options.scope ?? ['src/value.mjs', 'guide.md'];
   const revision = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8', windowsHide: true }).trim();
   const fingerprint = repositoryScopeFingerprint(scope);
@@ -59,7 +61,8 @@ export async function finishFixture(t, options = {}) {
     track: 'workflow', stack_profile: 'markdown-skill-pack', owner_repository_id: owner, owner_repository_role: 'standalone', owner_module_id: null,
     parent_repository_id: null, parent_references: [], repository_relative_path: '.sdcorejs/plans/workflow/fixture.md', source_revision: revision,
     allowed_paths: scope, prohibited_paths: [], approval_source: 'explicit-user-choice', approved_by: 'fixture-user', approved_at: new Date().toISOString(), supersedes: null };
-  const plan = createApprovedArtifact({ metadata, body: '```finish-policy\n' + JSON.stringify(policy) + '\n```\n' });
+  // Audit repair fixtures may add further approved fences, such as simplify-host-policy.
+  const plan = createApprovedArtifact({ metadata, body: '```finish-policy\n' + JSON.stringify(policy) + '\n```\n' + (options.planBody ?? '') });
   const context = documentedFinish();
   context.identity = { change_ref: change, owner_repository_id: owner, integration_owner_repository_id: owner, scope_fingerprint: fingerprint };
   context.actor = { role: options.worker ? 'worker' : 'integration', repository_id: owner };
@@ -86,7 +89,7 @@ export async function finishFixture(t, options = {}) {
   events.set('policy-event', { id: 'policy-event', question_id: 'direct-policy', decision_fingerprint: decisionFingerprint(policyDecision.decision), text: '1' });
   const observation = createRepositoryObservationRuntime({ root, repository_id: owner, change_ref: change, scope, commands: { ...commands, ...options.commands }, read_review: () => assessment,
     ...(options.direct ? { policy, policy_decision: policyDecision } : { load_plan: () => ({ artifact: plan, parents: [] }) }),
-    read_response: id => events.get(id), classify_source: options.classify_source ?? (() => ({ kind: 'executable' })) });
+    read_response: id => events.get(id), classify_source: options.classify_source ?? (() => ({ kind: 'executable' })), ...options.runtime });
   return { root, write, context, policy, plan, choose, assessment, observation,
     runtime: { observation, read_review: () => assessment }, run: phase => context.phase_receipts[phase] = observation.run(phase) };
 }

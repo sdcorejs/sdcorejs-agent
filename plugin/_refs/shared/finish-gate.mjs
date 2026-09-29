@@ -2,11 +2,15 @@ import { decisionFingerprint, resolveDecision } from '../harness/runtime-policy.
 import { realpathSync } from 'node:fs';
 import { observeRepositoryRuntime, verifyRepositoryPhase, readRepositoryReview } from './repository-observation.mjs';
 import { evaluateSimplifyConsumer } from '../simplify/simplify-contract.mjs';
+import { findSimplifySession } from '../simplify/repository-evidence.mjs';
 
+// Canonical phase owners; hooks use the owner declared in the approved policy.
 const owners = Object.freeze({ baseline: 'sdcorejs-test', simplify: 'sdcorejs-simplify', reverify: 'sdcorejs-test',
-  review: 'sdcorejs-review', repair: 'sdcorejs-repair-loop', verify: 'sdcorejs-ship', 'branch-ready': 'sdcorejs-ship' });
+  review: 'sdcorejs-review', 'unit-review-a': 'sdcorejs-review', 'unit-review-b': 'sdcorejs-review',
+  repair: 'sdcorejs-repair-loop', verify: 'sdcorejs-ship', 'branch-ready': 'sdcorejs-ship' });
 const result = (status, extra = {}) => ({ status, branch_ready: status === 'tail-complete', next_actions: [], blockers: [], ...extra });
-const action = (phase, extra = {}) => result('pending-action', { next_actions: [{ phase, owner: owners[phase] ?? 'sdcorejs-documentation', ...extra }] });
+const blocked = (...blockers) => result('blocked', { blockers });
+const SIMPLIFY_OUTCOMES = new Set(['simplified', 'unchanged', 'reverted', 'analyzed']);
 
 function matchesSimplifyOwner(context, observed) {
   try {
@@ -31,12 +35,28 @@ function scopedChoice(context, key, observed) {
   return resolved;
 }
 
+// The host, not the payload, knows whether a simplify pass is still open: an
+// in-process session with an unfinished grant or a runner dispatch without a
+// verified receipt blocks even when the payload omits simplify_context. A completed
+// session pass (verified or rolled back) is host state just like a verified dispatch.
+function hostSimplifyState(observed) {
+  const session = findSimplifySession(observed.root, observed.change_ref);
+  const dispatches = observed.simplify_dispatches ?? [];
+  const blockers = [];
+  if (session?.pending) blockers.push('an authorized simplify pass is not verified or rolled back; complete or roll it back before finish');
+  if (dispatches.some(dispatch => dispatch.status === 'open')) blockers.push('a simplify runner dispatch is open; record its receipt before finish');
+  if (dispatches.some(dispatch => dispatch.status === 'failed')) blockers.push('a simplify runner dispatch has no verified receipt; its writes stay unverified');
+  const completedPasses = (session?.ledger ?? []).filter(pass => pass.verification_result === 'passed' || pass.reverted === true).length;
+  return { active: Boolean(session) || dispatches.length > 0, session: Boolean(session),
+    verified: completedPasses > 0 || dispatches.some(dispatch => dispatch.status === 'verified'), blockers };
+}
+
 /** One completion owner; no source writes, tool dispatch, or persistence here. */
 export function resolveFinish(context, runtime = {}) {
   let observed;
-  try { observed = observeRepositoryRuntime(runtime.observation); } catch (error) { return result('blocked', { blockers: [error.message] }); }
-  if (context?.schema_version !== 1 || context.identity?.owner_repository_id !== observed.repository_id || context.identity?.change_ref !== observed.change_ref || context.identity?.scope_fingerprint !== observed.scope_fingerprint) return result('blocked', { blockers: ['finish identity/scope does not match the observed owner'] });
-  if (!['integration','worker'].includes(context.actor?.role) || context.actor.repository_id !== observed.repository_id) return result('blocked', { blockers: ['finish actor ownership is invalid'] });
+  try { observed = observeRepositoryRuntime(runtime.observation); } catch (error) { return blocked(error.message); }
+  if (context?.schema_version !== 1 || context.identity?.owner_repository_id !== observed.repository_id || context.identity?.change_ref !== observed.change_ref || context.identity?.scope_fingerprint !== observed.scope_fingerprint) return blocked('finish identity/scope does not match the observed owner');
+  if (!['integration','worker'].includes(context.actor?.role) || context.actor.repository_id !== observed.repository_id) return blocked('finish actor ownership is invalid');
   const proofs = context.phase_receipts ?? {};
   const verified = new Map();
   const proof = phase => {
@@ -44,75 +64,117 @@ export function resolveFinish(context, runtime = {}) {
     return verified.get(phase);
   };
   const invalid = Object.keys(proofs).map(phase => proof(phase)).find(value => !value.valid);
-  if (invalid) return result('blocked', { blockers: invalid.blockers });
+  if (invalid) return blocked(...invalid.blockers);
+  // `phase` is the only receipt key: the host records the next receipt at
+  // phase_receipts[phase]. `intent` says whether that receipt is new or a refresh.
+  const next = (phase, extra = {}) => {
+    const owner = extra.owner ?? owners[phase];
+    if (typeof owner !== 'string' || !owner) return blocked(`finish phase ${phase} has no owner; declare it in the approved policy`);
+    return result('pending-action', { next_actions: [{ ...extra, phase, owner, intent: proofs[phase] ? 'refresh' : 'produce' }] });
+  };
   const reviewChoice = scopedChoice(context, 'review', observed);
   if (reviewChoice.value === 'defer') return result('deferred', { reason: 'explicit defer stops the remaining tail; no done claim' });
   if (observed.policy.test_strategy === 'tdd') {
     const red = proof('red'), implementation = proof('implementation');
-    if (!red?.valid || !implementation?.valid || red.body.event_sequence >= implementation.body.event_sequence || red.body.source_fingerprint !== implementation.body.before_fingerprint) return result('blocked', { blockers: ['TDD requires observed RED before the corresponding implementation write'] });
+    if (!red?.valid || !implementation?.valid || red.body.event_sequence >= implementation.body.event_sequence || red.body.source_fingerprint !== implementation.body.before_fingerprint) return blocked('TDD requires observed RED before the corresponding implementation write');
   }
   const baseline = proof('baseline');
-  if (!baseline) return action('baseline');
+  if (!baseline) return next('baseline');
   if (context.actor.role === 'worker') {
-    if (!baseline.current) return action('baseline');
+    if (!baseline.current) return next('baseline');
     for (const phase of ['unit-review-a', 'unit-review-b']) {
-      if (!proof(phase)?.current) return action('review', { evidence_phase: phase, unit_only: true });
+      if (!proof(phase)?.current) return next(phase, { unit_only: true });
     }
     return result('unit-complete', { reason: 'return unit evidence to the integration owner; no shared finish prompts or docs' });
   }
-  if (context.identity.integration_owner_repository_id !== observed.repository_id) return result('blocked', { blockers: ['only the integration owner may run final finish'] });
-  let simplifyChoice = { status: 'resolved', value: 'skip', reason: 'observed scope has no eligible changed executable source' };
-  if (observed.eligible_paths.length || !observed.eligibility_known) simplifyChoice = scopedChoice(context, 'simplify', observed);
+  if (context.identity.integration_owner_repository_id !== observed.repository_id) return blocked('only the integration owner may run final finish');
+  const host = hostSimplifyState(observed);
+  if (host.blockers.length) return blocked(...host.blockers);
+  // Default skip applies only when nothing is eligible, no choice resolved and the host holds no simplify activity.
+  let simplifyChoice;
+  if (observed.eligible_paths.length || !observed.eligibility_known || host.active) simplifyChoice = scopedChoice(context, 'simplify', observed);
+  else {
+    const recorded = context.choices?.simplify ? scopedChoice(context, 'simplify', observed) : null;
+    simplifyChoice = recorded?.status === 'resolved' ? recorded : { status: 'resolved', value: 'skip', source: 'not-eligible', reason: 'observed scope has no eligible changed executable source' };
+  }
   if (simplifyChoice.status !== 'resolved') return result(simplifyChoice.status === 'blocked' ? 'blocked' : 'pending-choice', { decision: 'simplify', blockers: simplifyChoice.status === 'blocked' ? [simplifyChoice.reason] : [] });
-  if (!['skip','analyze','apply'].includes(simplifyChoice.value)) return result('blocked', { blockers: ['unknown simplify decision'] });
+  if (!['skip','analyze','apply'].includes(simplifyChoice.value)) return blocked('unknown simplify decision');
+  // A skip cannot hide a pass the host already completed.
+  if (simplifyChoice.value === 'skip' && host.verified) return blocked('the host holds a completed simplify pass; a skip cannot hide it, record its proof under the selected mode');
+  const simplifySource = simplifyChoice.source === 'not-eligible' ? 'not-eligible' : simplifyChoice.resolution?.source === 'explicit-user' ? 'explicit' : 'verified-plan';
+  let simplifyOutcome = 'skipped';
   // A resumed repair never opens a second simplify invocation, even with an old Apply resolution.
   const repaired = proof('repair');
-  if (simplifyChoice.value !== 'skip' && !proof('simplify') && !repaired) {
+  const simplifyProof = proof('simplify');
+  // A verified runner dispatch or a completed session pass is host state: dropping its
+  // proof or its session context cannot reopen Apply, and a repair receipt cannot skip it.
+  if (host.verified && !simplifyProof) return blocked('the host holds a verified simplify dispatch or completed session pass; record its proof in phase_receipts.simplify');
+  if (simplifyChoice.value !== 'skip' && !simplifyProof && !repaired) {
     if (simplifyChoice.value === 'apply') {
-      if (!baseline.current) return action('baseline');
-      if (!observed.eligibility_known || !observed.eligible_paths.length) return result('blocked', { blockers: ['Apply eligibility is unproven'] });
-      if (!matchesSimplifyOwner(context.simplify_context, observed)) return result('blocked', { blockers: ['simplify context differs from the finish owner/root/change/scope'] });
-      if (context.simplify_context.scope.eligible_files.some(file => !observed.eligible_paths.includes(file))) return result('blocked', { blockers: ['simplify scope is not eligible in the observed finish scope'] });
-      return action('simplify', { mode: 'apply', source_write_allowed: false, preflight_required: true });
+      if (!baseline.current) return next('baseline');
+      if (!observed.eligibility_known || !observed.eligible_paths.length) return blocked('Apply eligibility is unproven');
+      // Without an in-process session, Apply runs in the canonical host runner; the
+      // host records the dispatch through beginSimplify/recordSimplify. A session held
+      // by the host for this root/change is never bypassed by dropping its context.
+      if (context.simplify_context == null && host.session) return blocked('the host holds a simplify session for this change; supply its simplify_context');
+      if (context.simplify_context == null && observed.simplify_runner_available) return next('simplify', { mode: 'apply', runner: 'host-runner', source_write_allowed: false });
+      if (!matchesSimplifyOwner(context.simplify_context, observed)) return blocked('simplify context differs from the finish owner/root/change/scope');
+      if (context.simplify_context.scope.eligible_files.some(file => !observed.eligible_paths.includes(file))) return blocked('simplify scope is not eligible in the observed finish scope');
+      return next('simplify', { mode: 'apply', source_write_allowed: false, preflight_required: true });
     }
-    return action('simplify', { mode: simplifyChoice.value, source_write_allowed: simplifyChoice.value === 'apply' });
+    return next('simplify', { mode: simplifyChoice.value, source_write_allowed: false });
   }
-  if (proof('simplify')) {
-    if (!matchesSimplifyOwner(context.simplify_context, observed)) return result('blocked', { blockers: ['simplify postflight differs from the finish owner/root/change/scope'] });
-    const simplified = evaluateSimplifyConsumer(context.simplify_context, { ...runtime.simplify_runtime, consumer: 'sdcorejs-test' });
-    if (simplified.blockers?.length || !repaired && !simplified.evidence_current) return result('blocked', { blockers: simplified.blockers?.length ? simplified.blockers : ['simplify postflight is unverified'] });
-    if (simplifyChoice.value === 'apply' && !proof('reverify')?.current) return action('reverify');
+  if (simplifyProof) {
+    // Analyze needs current analysis; Apply needs current verification.
+    const currentFor = evidence => simplifyChoice.value === 'analyze' ? evidence.analysis_current : simplifyChoice.value === 'apply' ? evidence.verification_current : evidence.evidence_current;
+    if (simplifyProof.body.kind === 'simplify') {
+      // Runner dispatch: read the host-verified receipt, never the serialized context.
+      const read = evaluateSimplifyConsumer(context.simplify_context, { observation: runtime.observation, proof: proofs.simplify, consumer: 'sdcorejs-test' });
+      if (read.status === 'blocked' || (!repaired && !currentFor(read))) return blocked(...(read.blockers?.length ? read.blockers : ['simplify dispatch evidence is not current']));
+      simplifyOutcome = read.outcome;
+    } else {
+      if (!matchesSimplifyOwner(context.simplify_context, observed)) return blocked('simplify postflight differs from the finish owner/root/change/scope');
+      const simplified = evaluateSimplifyConsumer(context.simplify_context, { ...runtime.simplify_runtime, consumer: 'sdcorejs-test' });
+      if (simplified.blockers?.length || (!repaired && !currentFor(simplified))) return blocked(...(simplified.blockers?.length ? simplified.blockers : ['simplify postflight is unverified']));
+      // The outcome comes from the host-held completion, not the payload.
+      simplifyOutcome = simplified.outcome;
+    }
+    if (!SIMPLIFY_OUTCOMES.has(simplifyOutcome)) return blocked('simplify evidence does not record a completed pass');
+    if (simplifyChoice.value === 'apply' && !proof('reverify')?.current) return next('reverify');
   }
   if (reviewChoice.status !== 'resolved') return result(reviewChoice.status === 'blocked' ? 'blocked' : 'pending-choice', { decision: 'review', blockers: reviewChoice.status === 'blocked' ? [reviewChoice.reason] : [] });
-  if (!['skip','review-only','review-and-repair'].includes(reviewChoice.value)) return result('blocked', { blockers: ['unknown review choice'] });
-  if (repaired && reviewChoice.value !== 'review-and-repair') return result('blocked', { blockers: ['repair evidence cannot broaden the selected read-only/skip mode'] });
-  if (reviewChoice.value === 'skip' && observed.policy.required_phases.includes('review')) return result('blocked', { blockers: ['required review cannot be removed by skip'] });
-  if (reviewChoice.value !== 'skip' && !proof('review') && !baseline.current && !proof('reverify')?.current) return action('reverify', { evidence_phase: 'baseline', reason: 'reverify changed inputs before review' });
-  if (reviewChoice.value !== 'skip' && !proof('review')) return action('review', { mode: 'read-only', repair_authorized: false });
+  if (!['skip','review-only','review-and-repair'].includes(reviewChoice.value)) return blocked('unknown review choice');
+  if (repaired && reviewChoice.value !== 'review-and-repair') return blocked('repair evidence cannot broaden the selected read-only/skip mode');
+  if (reviewChoice.value === 'skip' && observed.policy.required_phases.includes('review')) return blocked('required review cannot be removed by skip');
+  // The latest test evidence (reverify after a simplify pass, otherwise baseline) is refreshed before review.
+  const testPhase = proof('reverify') ? 'reverify' : 'baseline';
+  const readOnly = { mode: 'read-only', repair_authorized: false };
   if (reviewChoice.value !== 'skip') {
-    if (!proof('review').current) return action('reverify', { evidence_phase: 'review', owner: 'sdcorejs-review', mode: 'read-only', reason: 'review inputs changed; refresh assessment before considering repairs' });
+    if (!proof(testPhase).current) return next(testPhase, { reason: 'refresh verification of changed inputs before review' });
+    if (!proof('review')) return next('review', readOnly);
+    if (!proof('review').current) return next('review', { ...readOnly, reason: 'review inputs changed; refresh the assessment before considering repairs' });
     const review = readRepositoryReview(runtime.observation, proof('review'));
-    if (!review) return action('review', { mode: 'read-only', reason: 'assessment changed or its host loader is unavailable' });
-    if (!review || review.owner_repository_id !== observed.repository_id || review.change_ref !== observed.change_ref || !Array.isArray(review.blocking_findings)) return result('blocked', { blockers: ['review assessment identity is invalid'] });
+    if (!review) return next('review', { ...readOnly, reason: 'assessment changed or its host loader is unavailable' });
+    if (review.owner_repository_id !== observed.repository_id || review.change_ref !== observed.change_ref || !Array.isArray(review.blocking_findings)) return blocked('review assessment identity is invalid');
     if (review.blocking_findings.length && !repaired) {
-      if (reviewChoice.value === 'review-only') return result('blocked', { blockers: ['read-only review has blocking findings; no repair authority'] });
-      return action('repair', { authority: 'existing finding/tier/scope owner preflight required', finding_refs: review.blocking_findings });
+      if (reviewChoice.value === 'review-only') return blocked('read-only review has blocking findings; no repair authority');
+      return next('repair', { authority: 'existing finding/tier/scope owner preflight required', finding_refs: review.blocking_findings });
     }
-    if (repaired && review.blocking_findings.length) return result('blocked', { blockers: ['repair did not resolve the current blocking findings'] });
+    if (repaired && review.blocking_findings.length) return blocked('repair did not resolve the current blocking findings');
   }
   for (const hook of observed.policy.hooks.filter(item => item.id !== 'implementation')) {
-    if (!hook.id || !hook.owner || !Array.isArray(hook.paths) || hook.paths.some(file => !observed.scope.includes(file))) return result('blocked', { blockers: ['write-producing hook lacks exact owner/path authority'] });
-    if (!proof(hook.id)) return action(hook.id, { owner: hook.owner, allowed_paths: hook.paths });
+    if (!hook.id || !hook.owner || !Array.isArray(hook.paths) || hook.paths.some(file => !observed.scope.includes(file))) return blocked('write-producing hook lacks exact owner/path authority');
+    if (!proof(hook.id)) return next(hook.id, { owner: hook.owner, allowed_paths: hook.paths });
   }
-  // Complete phase records retain progress, but stale inputs are rechecked after writes.
-  const evidencePhases = ['baseline', ...(proof('reverify') ? ['reverify'] : []), ...(proof('review') ? ['review'] : []), ...(repaired ? ['repair'] : [])];
-  for (const phase of evidencePhases) if (!proof(phase)?.current) return action('reverify', { evidence_phase: phase, reason: 'affected content changed after verification' });
-  for (const hook of observed.policy.hooks.filter(item => item.id !== 'implementation')) if (!proof(hook.id)?.current) return action(hook.id, { owner: hook.owner, allowed_paths: hook.paths, reason: 'hook inputs changed; revalidate through its owner' });
-  for (const phase of ['verify', 'branch-ready']) if (!proof(phase)?.current) return action(phase);
+  // Complete phase records retain progress, but stale inputs are refreshed under their own phase after writes.
+  const evidencePhases = [testPhase, ...(proof('review') ? ['review'] : []), ...(repaired ? ['repair'] : [])];
+  for (const phase of evidencePhases) if (!proof(phase)?.current) return next(phase, { ...(phase === 'review' ? readOnly : {}), reason: 'affected content changed after verification' });
+  for (const hook of observed.policy.hooks.filter(item => item.id !== 'implementation')) if (!proof(hook.id)?.current) return next(hook.id, { owner: hook.owner, allowed_paths: hook.paths, reason: 'hook inputs changed; revalidate through its owner' });
+  for (const phase of ['verify', 'branch-ready']) if (!proof(phase)?.current) return next(phase);
   const lastWork = Math.max(...Object.entries(proofs).filter(([phase]) => !['verify','branch-ready','red','implementation'].includes(phase)).map(([phase]) => proof(phase).body.event_sequence));
-  if (proof('verify').body.event_sequence <= lastWork) return action('verify');
-  if (proof('branch-ready').body.event_sequence <= proof('verify').body.event_sequence) return action('branch-ready');
-  return result('tail-complete', { source_fingerprint: observed.source_fingerprint, simplify: simplifyChoice.value,
+  if (proof('verify').body.event_sequence <= lastWork) return next('verify');
+  if (proof('branch-ready').body.event_sequence <= proof('verify').body.event_sequence) return next('branch-ready');
+  return result('tail-complete', { source_fingerprint: observed.source_fingerprint, simplify: simplifyChoice.value, simplify_source: simplifySource, simplify_outcome: simplifyOutcome,
     reason: 'current focused verification and final read-only gate; no Git authority or semantic equivalence claim' });
 }
 

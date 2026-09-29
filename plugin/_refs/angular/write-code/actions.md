@@ -108,7 +108,7 @@ The literal HTML / TypeScript snippets for action wiring live in this reference 
 ### Detail headerRight — full state-aware example
 
 ```html
-<div class="d-flex align-items-center" style="gap: 8px" headerRight>
+<div class="d-flex align-items-center gap-8" headerRight>
   <sd-button title="<localized text>" (click)="onBack()" color="primary"></sd-button>
 
   @if (state() === 'DETAIL' && entity.id) {

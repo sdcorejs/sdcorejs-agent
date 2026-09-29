@@ -94,6 +94,9 @@ Load action detail just in time:
   the read-only scanning that precedes any write-approved action, read
   `_refs/explore/read-actions.md` for stack-profile rules, scanning and command
   discipline, and the per-action procedure. It grants no write authority.
+- Before `conventions-read` and before the scan that precedes `summary-refresh`,
+  also apply the scanning and command discipline in
+  `_refs/explore/read-actions.md`; it grants no write authority.
 - Only for `summary-refresh` and `*-write-approved` actions, and only after the
   approval source, authoring-repo guard, target path and artifact-lifecycle
   checks pass, read `_refs/explore/authorized-persistence.md` for the bounded

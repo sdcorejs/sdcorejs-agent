@@ -160,13 +160,16 @@ For each pass:
    observed writes, including omitted/generated/protected paths, preservation
    and content freshness. Postflight cannot authorize edits retrospectively.
 6. If the pass regresses, undo only that pass with exact scoped edits from the
-   pre-pass snapshot; never use destructive Git restore.
+   pre-pass snapshot; never use destructive Git restore. Concurrent changes
+   outside the pass paths stay and are reported in `result.concurrent_changes`;
+   a concurrent change to a pass path, protected path or verification input blocks.
 7. Copy the host-owned pass ledger. Never reset history to bypass the cap.
    Stop when no clear improvement remains. After repair, never run simplify again.
 
 ## Step 6 - Finalize evidence
 
-Run the final focused commands and `git diff --check`. Confirm:
+Run the final focused commands. Postflight checks whitespace only on the lines
+each pass added, with the repository whitespace/eol rules. Confirm:
 
 - selected scope did not expand silently;
 - protected file/content and string/prompt content did not change;
@@ -184,7 +187,9 @@ simplification report unless the user explicitly requests a real handoff.
 When invoked from the finish gate:
 
 1. consume the selected test baseline and changed source scope;
-2. honor Skip, Analyze-only, or Apply;
+2. honor Skip, Analyze-only, or Apply; Apply without an in-process session runs
+   one pass in the canonical host runner `_refs/simplify/host-runner.mjs`, and
+   the host records it with `beginSimplify` and `recordSimplify`;
 3. after Apply, rerun affected focused tests and append evidence;
 4. pass `simplify_context` to review and the remaining tail;
 5. never auto-run a second simplification after repair-loop.

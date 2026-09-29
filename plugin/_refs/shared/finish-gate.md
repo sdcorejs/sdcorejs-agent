@@ -17,6 +17,20 @@ contracts. Keep implementation preflight separate from completion: preflight
 never requires future postflight evidence. Call completion after each owner
 action and consume its actual `next_actions`; do not maintain a stack-local order.
 
+Each next action names `phase`, `owner` and `intent`. `phase` is the only
+receipt key: record exactly one receipt at `phase_receipts[<phase>]` with
+`runtime.run(phase)` for a command phase, `runtime.recordHook(phase, before)`
+for a hook, `runtime.recordSimplify(token, receipt)` for a runner simplify pass
+and `runtime.run('simplify')` for a session simplify pass. Owners come from one
+table: `baseline` and `reverify` → `sdcorejs-test`; `simplify` →
+`sdcorejs-simplify`; `review`, `unit-review-a` and `unit-review-b` →
+`sdcorejs-review`; `repair` → `sdcorejs-repair-loop`; `verify` and
+`branch-ready` → `sdcorejs-ship`. A hook uses the owner its policy entry
+declares; a phase without an owner blocks. `intent: produce` creates the first
+receipt. `intent: refresh` replaces a stale one: a command phase only reruns its
+check, a hook reruns inside its `paths`, and `repair` reruns its verification
+without editing code again. An invalid receipt blocks and names the phase to run again.
+
 The parent/integration owner runs final finish once per change. Workers return
 current unit verification and Stage A/B review as `unit-complete`, without
 finish prompts or shared docs/backlog/memory tail. Preserve stack test/security/UI hooks.
@@ -42,6 +56,29 @@ thanks, preselection, recommendation and visual feedback never approve.
   consumes that grant through the existing simplify session; do not run preflight
   a second time or invent a receipt. Complete/rollback that pending pass before
   asking the resolver for the next action. The resolver itself never edits source.
+  Without a host session for this root/change and without a session
+  `simplify_context`, Apply routes to the canonical host runner
+  (`runner: host-runner`, `source_write_allowed: false`) when the observation
+  runtime has a host `simplify_verifier`; a host session is never bypassed by
+  dropping its `simplify_context`, and a `simplify_context` without its host
+  session blocks. Inject
+  `createFinishSimplifyVerifier({ step_id })` from `_refs/simplify/host-runner.mjs`.
+  `runtime.beginSimplify()` returns a one-time token, the host-snapshot anchor
+  (taken before the first dispatch and shared by the chain) and the verified
+  `chain`; the host runs `_refs/simplify/host-runner.mjs` with that chain as
+  `prior_receipts`, then `runtime.recordSimplify(token, receipt | null)` verifies
+  the dispatch and its proof goes to `phase_receipts.simplify`. A verified
+  dispatch or a completed session pass (verified or rolled back) without that
+  proof blocks; it never reopens Apply, and neither a `skip` resolution nor a
+  repair receipt can hide it.
+  Simplify state comes from the host, never the payload: the session registry
+  for this root/change and the runner dispatch records. A pending, failed, open
+  or crashed pass blocks even when `simplify_context` is omitted. Default skip
+  applies only when no source is eligible, no choice resolved and the host holds
+  no pass. Analyze needs current analysis; Apply needs current verification.
+  `tail-complete` reports `simplify`, `simplify_source` (`explicit`,
+  `verified-plan` or `not-eligible`) and `simplify_outcome` (`simplified`,
+  `unchanged`, `reverted`, `analyzed` or `skipped`).
 - Review `review-only`: read-only assessment, no repair or UI auto-fix.
   `review-and-repair`: route selected findings to existing owner/tier/scope
   authority; it does not grant unlimited finding repair.
@@ -74,9 +111,26 @@ Use existing repository observation, hashing and command-receipt infrastructure.
 host-read policy and proof; it is not a portable authorization store.
 `load_plan` reads the actual immutable plan and parents. Its `finish-policy`
 JSON fence binds `schema_version: 1`, `scope_fingerprint`, `test_strategy`,
-`required_phases`, `decisions` and `hooks`. Hook entries name `id`, semantic
-`owner`, exact `paths` and optional source `inputs`. Plan metadata still limits
-paths. Missing source/verifier blocks; never fabricate receipts or PASS flags.
+`required_phases`, `decisions`, `hooks` and optional `volatile_paths`. Hook
+entries name `id`, semantic `owner`, exact `paths` and optional source `inputs`.
+Plan metadata still limits paths. Missing source/verifier blocks; never
+fabricate receipts or PASS flags.
+
+Observation hashes tracked and untracked non-ignored files. It records only
+`lstat` metadata for ignored entries, links (with their `readlink` target, never
+followed) and nested worktrees; a nested `.git` is one entry and is not entered.
+Every metadata change is a write. Finish scope, hook paths/inputs, command
+scopes, simplify scope and UI paths, and their parents, must not be links.
+
+`volatile_paths` lists exact paths or `dir/**` patterns for ignored command
+output such as caches. A pattern may match ignored metadata entries only and
+may not intersect the finish scope, hook paths/inputs, command scopes, simplify
+scope or an edit set. One host ledger per root and change records their state
+for every runtime. Host command windows (`runtime.run`, simplify verification,
+UI `run_command`) and a runner dispatch may change them; hooks, simplify writes
+and rollback may not. Any other change blocks with "volatile path changed
+outside a host command window". `stable_fingerprint` excludes volatile entries
+and backs every currency check. A direct-fix `policy` binds the same list.
 
 Host-selected command specs have a non-empty argument-array `command`, `cwd`
 and exact input `scope`. `runtime.run(phase)` executes the command and records
@@ -142,6 +196,9 @@ The decision has gate `finish:policy`, current HEAD as revision, exact owner,
 change/scope fingerprint and an explicitly selected option whose value is
 `sha256:` plus SHA-256 of `JSON.stringify(policy)`. Bind the actual user event
 when resolving those stated decisions; no synthesized approval or status flag.
+`finish:policy` grants authority, so it is always asked: a single option never
+auto-selects, delegation and recommendations never resolve it, and a verified
+plan cannot preselect it. The prompt shows the policy, including `volatile_paths`.
 This adapter reuses existing context and explicit authority, creates no plan or
 state store, and grants no new docs/source scope. Missing authority blocks.
 

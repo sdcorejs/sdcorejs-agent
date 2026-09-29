@@ -793,3 +793,13 @@ test('canonical plan, test, and ship surfaces share one validation map authority
   assert.equal(packageJson.scripts['test:e2e:validation-map'], 'node --test test/e2e/validation-map-contract.test.mjs');
   assert.match(packageJson.scripts['test:e2e:repository'], /validation-map-contract\.test\.mjs/u);
 });
+
+// Audit repair (UR-1): validation evidence consumes UI applicability through its real caller.
+const repairOrdinaryReview = () => ({ schema_version: 1, source: 'sdcorejs-review', subject_track: 'workflow', review_profile: 'workflow',
+  mode: 'read-only', dimensions: ['security'], write_actions: [], reported_findings: [] });
+
+test('case-repair-ordinary-review: validation evidence reports no UI gap for an ordinary review_context', async () => {
+  const { evaluateValidationEvidence } = await import('../../_refs/shared/validation-map.mjs');
+  const result = evaluateValidationEvidence({ validation_map: [], review_context: repairOrdinaryReview() });
+  assert.equal(result.blockers.some(blocker => blocker.code === 'UI_REVIEW_EVIDENCE_GAP'), false, JSON.stringify(result.blockers));
+});

@@ -72,7 +72,10 @@ export function evaluateReviewContract(context, runtime = {}) {
   const simplify = context?.simplify_context === undefined ? null : evaluateSimplifyConsumer(context.simplify_context, { ...runtime, consumer: 'sdcorejs-review' });
   if (simplify) {
     blockers.push(...simplify.blockers.map(message => `simplify: ${message}`));
-    if (context.owner_repository_id !== context.simplify_context?.artifact_identity?.owner_repository_id) blockers.push('simplify: review owner mismatch');
+    // The owner comes from host evidence (observed receipt, runner receipt or session);
+    // the payload identity is only a fallback when the evidence carries none.
+    const simplifyOwner = simplify.owner_repository_id ?? context.simplify_context?.artifact_identity?.owner_repository_id;
+    if (context.owner_repository_id !== simplifyOwner) blockers.push('simplify: review owner mismatch');
     for (const evidence of context.test_evidence ?? []) {
       if (evidence.repository_id === simplify.owner_repository_id && evidence.source_fingerprint !== simplify.source_fingerprint) blockers.push('simplify: affected test evidence is stale');
     }

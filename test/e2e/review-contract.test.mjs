@@ -213,8 +213,12 @@ test('actual missing or mutated approved sources and unsupported runtime cannot 
   for (const mutation of ['parent', 'viewport', 'path', 'command', 'output']) await t.test(mutation, t => {
     const f = uiReviewFixture(t, { required: ['rendered'] });
     if (mutation === 'command') {
+      // Audit repair UR-2 (D-002): a completed failing run is recorded as FAIL evidence; it still cannot verify UI.
       f.reset({ run_command: args => ({ ...f.host.run_command(args), exit_code: 1 }) });
-      assert.throws(() => f.capture('rendered'), /execute successfully/); return;
+      f.capture('rendered'); f.start();
+      const failing = uiResult(f);
+      assert.equal(failing.ui_review.coverage[0].rendered, 'FAIL');
+      assert.equal(failing.ui_review.verified, false); return;
     }
     f.capture('rendered'); f.start();
     if (mutation === 'parent') f.put(f.specRef.repository_relative_path, 'mutated parent');
@@ -241,6 +245,8 @@ test('current conformance failure remains repairable only through existing owner
   finding.uiux.classification = 'functional';
   f.context.reported_findings = [finding]; f.start();
   const { evaluateRepairContract } = await import('../../_refs/orchestration/repair-contract.mjs');
+  // Repair consumes the assessment that the review recorded in this host runtime.
+  uiResult(f);
   const result = evaluateRepairContract({ review_context: f.context, finding }, { ui_review_runtime: f.uiRuntime });
   assert.equal(result.ui_review_verification.verified, true, result.ui_review_verification.blockers.join('; '));
   assert.equal(result.ui_review_verification.conformance, 'FAIL');
@@ -343,40 +349,43 @@ test('review is provably read-only and rejects write actions', () => {
   assert.match(result.blockers.join(' '), /cannot contain write actions/iu);
 });
 
-test('UI review cannot promote unobserved rendered or interaction evidence', () => {
+// Audit repair UR-5: these three guards use the documented, structurally valid UI payload,
+// so each result is blocked only by the guard it names.
+test('UI review cannot promote unobserved rendered or interaction evidence', t => {
   for (const evidence_kind of ['rendered', 'interaction']) {
-    const result = evaluateReviewContract(context({
-      purpose: 'implemented-ui-conformance',
-      ui_review: { schema_version: 1, claimed_result: 'PASS' },
-      dimensions: ['code'],
-      reported_findings: [{ id: 'unobserved-ui', kind: 'uiux', severity: 'High',
-        dimension: 'code', gate: 'REQUIRED', evidence: 'caller assertion', locator: 'src/page.ts:1',
-        repository_id: 'github.com/acme/module-a', impact: 'Unknown runtime behavior',
-        required_fix: 'Verify the actual target first', uiux: { classification: 'functional',
-          evidence_kind, rule_id: 'popover', verification: 'PASS' } }],
-    }));
+    const f = uiReviewFixture(t);
+    f.context.reported_findings = [{ id: 'unobserved-ui', kind: 'uiux', severity: 'High',
+      dimension: 'code', gate: 'REQUIRED', evidence: 'src/page.html:1', locator: 'src/page.html:1',
+      repository_id: f.repo, impact: 'Unknown runtime behavior', required_fix: 'Verify the actual target first',
+      uiux: { classification: 'functional', evidence_kind, evidence_ref: 'capture.png', rule_id: 'popover', verification: 'Run the popover interaction.' } }];
+    assert.equal(validateUiReviewContext(f.context).valid, true, evidence_kind);
+    f.start();
+    const result = uiResult(f);
     assert.equal(result.status, 'blocked', evidence_kind);
+    assert.match(result.blockers.join(' '), /lacks verified target runtime evidence/u, evidence_kind);
   }
 });
 
-test('UI review cannot ignore current-content drift at the same HEAD', () => {
-  const result = evaluateReviewContract(context({
-    purpose: 'implemented-ui-conformance',
-    ui_review: { schema_version: 1, claimed_result: 'PASS' },
-    test_evidence: [{ repository_id: 'github.com/acme/module-a', source_revision: 'a'.repeat(40),
-      status: 'current', source_fingerprint: 'old-content', evidence_ref: 'capture' }],
-    current_source_fingerprints: { 'github.com/acme/module-a': 'edited-content' },
-  }));
+test('UI review cannot ignore current-content drift at the same HEAD', t => {
+  const f = uiReviewFixture(t, { required: ['rendered'] });
+  // Edit after capture but before the review observation starts, so only the
+  // receipt content guard (not the read-only observation guard) can block.
+  f.capture('rendered'); f.put('src/page.html', '<main>Edited after capture</main>'); f.start();
+  assert.equal(validateUiReviewContext(f.context).valid, true);
+  const result = uiResult(f);
   assert.equal(result.status, 'blocked');
+  assert.equal(result.read_only_proven, true, 'the edit precedes the observed review window');
+  assert.match(result.blockers.join(' '), /stale UI source\/build content/u);
 });
 
-test('UI review does not prove no writes from an empty declaration', () => {
-  const result = evaluateReviewContract(context({
-    purpose: 'design-artifact', ui_review: { schema_version: 1 },
-    persistence: { performed: true, path: 'report.md' },
-  }));
+test('UI review does not prove no writes from an empty declaration', t => {
+  const f = uiReviewFixture(t, { purpose: 'design-artifact' });
+  assert.equal(validateUiReviewContext(f.context).valid, true);
+  f.start(); f.put('report.md', 'Persisted without authority');
+  const result = uiResult(f);
   assert.equal(result.read_only_proven, false);
   assert.equal(result.status, 'blocked');
+  assert.match(result.blockers.join(' '), /observation changed/u);
 });
 
 test('review detects module artifacts misplaced in portal and duplicate editable sources', () => {
@@ -494,4 +503,197 @@ test('case-simplify-hardening-ac-010 review checks actual simplify freshness', a
   assert.equal(evaluateReviewContract(c).status, 'blocked');
   f.write(sourcePath, originalSource);
   assert.match(evaluateReviewContract(c, f.runtime).blockers.join(' '), /stale/u);
+});
+
+// ---------------------------------------------------------------------------
+// Audit repair (audit-findings-repair-20260928): UI applicability, failing
+// receipts, the closed source-only claim rule (D-009) and canonical gates.
+// ---------------------------------------------------------------------------
+import { mkdirSync as repairMkdir, writeFileSync as repairWrite } from 'node:fs';
+import repairPath from 'node:path';
+
+const repairOrdinary = () => ({ schema_version: 1, source: 'sdcorejs-review', subject_track: 'workflow', review_profile: 'workflow',
+  mode: 'read-only', dimensions: ['security'], write_actions: [], reported_findings: [] });
+
+test('case-repair-ordinary-review: an ordinary review_context is not a UI review unless an obligation exists', t => {
+  for (const consumer of ['sdcorejs-ship', 'sdcorejs-repair-loop', 'sdcorejs-angular', 'validation-map', 'sdcorejs-nextjs']) {
+    const result = evaluateUiReviewConsumer(repairOrdinary(), { consumer, validation_map: [], approved_artifacts: [] });
+    assert.equal(result.status, 'NOT APPLICABLE', `${consumer}: ${JSON.stringify(result.blockers)}`);
+    assert.equal(result.verified, true, consumer);
+  }
+  const f = uiReviewFixture(t, { required: ['rendered'] });
+  const obligated = evaluateUiReviewConsumer(repairOrdinary(), { consumer: 'sdcorejs-ship', validation_map: [{ ui_review: f.policy.obligations[0] }] });
+  assert.equal(obligated.status, 'BLOCKED', 'an ordinary context cannot mask an approved UI obligation');
+  assert.equal(evaluateUiReviewConsumer(repairOrdinary(), { runtime: f.uiRuntime, consumer: 'sdcorejs-ship' }).status, 'BLOCKED', 'runtime obligations are never masked');
+  f.capture('rendered'); f.start();
+  assert.equal(evaluateUiReviewConsumer(f.context, { runtime: f.uiRuntime, consumer: 'sdcorejs-ship' }).verified, true, 'valid UI payloads keep their behavior');
+});
+
+test('case-repair-failing-receipt: a completed failing run is FAIL evidence; incomplete or stale runs stay gaps', t => {
+  const f = uiReviewFixture(t, { required: ['interaction'] });
+  f.reset({ run_command: args => ({ ...f.host.run_command(args), exit_code: 1, assertions: [{ id: 'fixture-keyboard', result: 'FAIL' }] }) });
+  const ref = f.capture('interaction');
+  f.context.reported_findings = [{ id: 'keyboard-trap', kind: 'uiux', severity: 'High', dimension: 'code', gate: 'REQUIRED',
+    evidence: 'src/page.html:1: the menu has no Escape handler', locator: 'src/page.html:1', repository_id: f.repo,
+    impact: 'Keyboard users cannot leave the menu', required_fix: 'Restore Escape handling', repair_tier: 'confirm',
+    uiux: { classification: 'functional', evidence_kind: 'interaction', evidence_ref: ref.artifact_ref, rule_id: 'popover', verification: 'Run the keyboard interaction.' } }];
+  f.start();
+  const review = uiResult(f);
+  assert.equal(review.ui_review.coverage[0].interaction, 'FAIL', JSON.stringify(review.ui_review.coverage));
+  assert.ok(review.ui_review.failures.length > 0, 'failures are separate from gaps');
+  assert.doesNotMatch(review.blockers.join(' '), /lacks verified target runtime evidence/u, 'a finding may cite its current FAIL receipt');
+  const ship = evaluateUiReviewConsumer(f.context, { runtime: f.uiRuntime, consumer: 'sdcorejs-ship' });
+  assert.equal(ship.verified, false);
+  assert.match(ship.blockers.join(' '), /FAIL/u, 'ship blocks a failing run as a defect');
+  const repair = evaluateUiReviewConsumer(f.context, { runtime: f.uiRuntime, consumer: 'sdcorejs-repair-loop', phase: 'repair', repair_finding: f.context.reported_findings[0] });
+  assert.equal(repair.verified, true, `repair accepts the failing evidence as its input: ${repair.blockers?.join('; ')}`);
+  for (const [name, result] of [['interrupted', { interrupted: true }], ['timeout', { timed_out: true }], ['missing flags', { interrupted: undefined }]]) {
+    const g = uiReviewFixture(t, { required: ['interaction'] });
+    g.reset({ run_command: args => ({ ...g.host.run_command(args), exit_code: 1, ...result }) });
+    assert.throws(() => g.capture('interaction'), /execute successfully|incomplete/u, name);
+  }
+  const stale = uiReviewFixture(t, { required: ['rendered'] });
+  stale.capture('rendered');
+  stale.reset({ run_command: ({ command, target, kind }) => ({ command, cwd: '.', exit_code: 1, interrupted: false, timed_out: false, target, kind,
+    artifact_path: 'capture.png', provenance: 'real-product', build_id: 'synthetic-fixture-build', image_width: 1, image_height: 1, assertions: [] }) });
+  assert.throws(() => stale.capture('rendered'), /output/u, 'an old output left behind is not evidence of this run');
+});
+
+test('case-repair-ui-claims-gates-tests: source-only runtime claims fail by structure and gates are canonical', t => {
+  const f = uiReviewFixture(t); f.start();
+  const finding = (overrides = {}) => ({ id: 'source-finding', kind: 'uiux', severity: 'Medium', dimension: 'code', gate: 'REQUIRED',
+    evidence: 'src/page.html:1: the close control is a <div> with no keydown handler', locator: 'src/page.html:1', repository_id: f.repo,
+    impact: 'Keyboard users may be unable to close the menu', required_fix: 'Use a button with a keyboard handler', repair_tier: 'confirm',
+    ...overrides,
+    uiux: { classification: 'functional', evidence_kind: 'source', rule_id: 'popover', verification: 'Render and inspect the accessible name of each control.',
+      limitation: 'Keyboard behavior not run.', ...overrides.uiux } });
+  // Each verdict is its own assessment, so the existing stale-assessment guard
+  // cannot stand in for the rule under test.
+  let round = 0;
+  const verdict = item => { f.context.reported_findings = [item]; f.context.ui_review.assessment_id = `source-claims-${round += 1}`; return uiResult(f); };
+  const rejected = (result, pattern, label) => { assert.equal(result.status, 'blocked', label); assert.match(result.blockers.join(' '), pattern, label); };
+  assert.notEqual(verdict(finding()).status, 'blocked', 'an imperative method, a located source fact and a marked limitation are valid');
+  for (const verification of ['Keyboard focus moves correctly.', 'Verified focus order.', 'Rendered fine.', 'Inspect: rendered output is correct.']) {
+    rejected(verdict(finding({ uiux: { verification } })), /source-only/u, verification);
+  }
+  for (const evidence of ['Focus works correctly in src/page.html:1', 'The popover renders above the table.']) {
+    rejected(verdict(finding({ evidence })), /source-only/u, evidence);
+  }
+  rejected(verdict(finding({ uiux: { limitation: 'Keyboard behavior checked.' } })), /source-only/u, 'a limitation needs the canonical marker');
+  for (const gate of ['blocker', 'Required', 'MAYBE']) rejected(verdict(finding({ gate })), /non-canonical gate/u, gate);
+  assert.notEqual(verdict(finding({ gate: 'ADVISORY' })).status, 'blocked');
+});
+
+test('case-repair-volatile-paths: a UI command window may rewrite only the plan-declared cache', t => {
+  const writer = f => args => {
+    const out = f.host.run_command(args);
+    repairMkdir(repairPath.join(f.root, '.cache'), { recursive: true });
+    repairWrite(repairPath.join(f.root, '.cache/ui.json'), String(process.hrtime.bigint()));
+    return out;
+  };
+  const f = uiReviewFixture(t, { required: ['rendered'], planExtras: { finish_policy: { volatile_paths: ['.cache/**'] } } });
+  f.put('.gitignore', '.cache/\n'); f.reset({ run_command: writer(f) });
+  assert.ok(f.capture('rendered').artifact_ref, 'the declared cache may change inside the command window');
+  const g = uiReviewFixture(t, { required: ['rendered'] });
+  g.put('.gitignore', '.cache/\n'); g.reset({ run_command: writer(g) });
+  assert.throws(() => g.capture('rendered'), /outside authorized outputs/u, 'undeclared ignored writes stay detected');
+});
+
+// Second review follow-up (repair selected by the user) ---------------------------
+test('case-repair-claim-lexicon-negations: only a negated completion is a disclaimer; other negations are claims', t => {
+  const f = uiReviewFixture(t); f.start();
+  let round = 0;
+  const verdict = item => { f.context.reported_findings = [item]; f.context.ui_review.assessment_id = `claim-negations-${round += 1}`; return uiResult(f); };
+  const finding = (uiux, overrides = {}) => ({ id: 'negation-finding', kind: 'uiux', severity: 'Medium', dimension: 'code', gate: 'REQUIRED',
+    evidence: 'src/page.html:1: the close control is a <div> with no keydown handler', locator: 'src/page.html:1', repository_id: f.repo,
+    impact: 'Keyboard users may be unable to close the menu', required_fix: 'Use a button with a keyboard handler', repair_tier: 'confirm', ...overrides,
+    uiux: { classification: 'functional', evidence_kind: 'source', rule_id: 'popover', verification: 'Render and inspect the accessible name of each control.', limitation: 'Keyboard behavior not yet run.', ...uiux } });
+  for (const limitation of ['Keyboard behavior not yet run.', 'Keyboard behavior was never run.', 'Focus order has not been verified.',
+    // Third review follow-up: manner adverbs that carry no outcome may separate the negation too.
+    'Keyboard behavior was not manually tested.', 'Contrast was not visually verified.', 'Focus order has not yet been independently verified.']) {
+    assert.notEqual(verdict(finding({ limitation })).status, 'blocked', `a negated completion with only auxiliaries or manner adverbs is a valid limitation: ${limitation}`);
+  }
+  // Inline code is code, not prose: a CSS value such as `none` is not a negation.
+  assert.notEqual(verdict(finding({}, { evidence: 'src/page.css:3: `outline: none` found on button:focus' })).status, 'blocked', 'inline code is not a negated finding');
+  assert.equal(verdict(finding({ limitation: 'Contrast not correctly rendered.' })).status, 'blocked', 'an outcome adverb is not a manner adverb');
+  // Fourth review follow-up: inline code hides no outcome word and bridges no disclaimer.
+  assert.notEqual(verdict(finding({ limitation: 'Keyboard check: `NOT RUN`.' })).status, 'blocked', 'a disclaimer in inline code is still a disclaimer');
+  for (const [label, item] of [
+    ['outcome word in inline code (verification)', finding({ verification: 'Check focus order: `passes`.' })],
+    ['outcome words in inline code (evidence)', finding({}, { evidence: 'src/menu.html:3: keyboard focus `works correctly`' })],
+    ['inline code bridging a disclaimer', finding({ limitation: 'Focus order was not `broken and it was` verified.' })],
+  ]) {
+    const result = verdict(item);
+    assert.equal(result.status, 'blocked', label);
+    assert.match(result.blockers.join(' '), /source-only/u, label);
+  }
+  for (const [label, item] of [
+    // A negation separated from the completion by other words negates a result, not the run.
+    ...['Keyboard navigation never works when tested.', 'Contrast not correct once rendered.', 'Focus handling never fails when tested.',
+      'Keyboard checks: none found.', 'Focus: nothing observed failing.', 'Zero focus issues found.'].map(limitation => [limitation, finding({ limitation })]),
+    // none/nothing/zero/never with a finding verb report a run result in any field.
+    ['none in evidence', finding({}, { evidence: 'src/page.html:1: keyboard checks - none found' })],
+    ['nothing in impact', finding({}, { impact: 'Focus: nothing observed failing.' })],
+    ['zero in impact', finding({}, { impact: 'Zero focus issues found.' })],
+    ['never in impact', finding({}, { impact: 'Keyboard traps were never seen.' })],
+    ['never in verification', finding({ verification: 'Focus handling never fails when tested.' })],
+  ]) {
+    const result = verdict(item);
+    assert.equal(result.status, 'blocked', label);
+    assert.match(result.blockers.join(' '), /source-only/u, label);
+  }
+});
+
+test('case-repair-window-release: a failed observation inside a UI command window still closes the window', async t => {
+  const { captureRepository, registerVolatileLedger } = await import('../../_refs/shared/repository-observation.mjs');
+  const { realpathSync, unlinkSync, symlinkSync } = await import('node:fs');
+  const f = uiReviewFixture(t, { required: ['rendered'], planExtras: { finish_policy: { volatile_paths: ['.cache/**'] } } });
+  f.put('.gitignore', '.cache/\n');
+  f.reset({ run_command: args => {
+    const out = f.host.run_command(args);
+    // The runner leaves a link at the guarded output path, so the post-command capture throws.
+    unlinkSync(repairPath.join(f.root, 'capture.png'));
+    symlinkSync(repairPath.join(f.root, 'src'), repairPath.join(f.root, 'capture.png'), process.platform === 'win32' ? 'junction' : 'dir');
+    return out;
+  } });
+  assert.throws(() => f.capture('rendered'), /symlink/u);
+  const root = realpathSync.native(f.root);
+  const ledger = registerVolatileLedger({ root, change_ref: f.context.change_ref, volatile_paths: ['.cache/**'],
+    snapshot: captureRepository({ root, owner: f.repo, volatile: ['.cache/**'], guarded: [] }) });
+  assert.equal(ledger.open, 0, 'the command window was closed although the capture failed');
+});
+
+test('case-repair-simplify-owner: review takes the simplify owner from host evidence, not the payload', async t => {
+  const g = await finishFixture(t, { simplify: 'apply', review: 'skip',
+    runtime: { simplify_verifier: () => ({ verified: true, outcome: 'simplified', pass_paths: ['src/value.mjs'], blockers: [] }) } });
+  g.run('baseline');
+  const dispatch = g.observation.beginSimplify();
+  g.write('src/value.mjs', 'export const value = 1; // simplified\n');
+  const recorded = g.observation.recordSimplify(dispatch.token, { schema_version: 1, kind: 'simplify-host-receipt:v1', status: 'verified', pass_paths: ['src/value.mjs'] });
+  assert.equal(recorded.valid, true, JSON.stringify(recorded));
+  const result = evaluateReviewContract(context({ owner_repository_id: g.context.identity.owner_repository_id, simplify_context: null }), { observation: g.observation, proof: recorded.proof });
+  assert.equal(result.blockers.some(message => /owner mismatch/u.test(message)), false, JSON.stringify(result.blockers));
+});
+
+// Review follow-up (repair selected by the user): "no <outcome> observed" is a claim.
+test('case-repair-claim-lexicon: negated success claims are outcome claims; only a negated runtime activity is a disclaimer', t => {
+  const f = uiReviewFixture(t); f.start();
+  let round = 0;
+  const verdict = item => { f.context.reported_findings = [item]; f.context.ui_review.assessment_id = `claim-lexicon-${round += 1}`; return uiResult(f); };
+  const finding = (overrides = {}) => ({ id: 'lexicon-finding', kind: 'uiux', severity: 'Medium', dimension: 'code', gate: 'REQUIRED',
+    evidence: 'src/page.html:1: the close control is a <div> with no keydown handler', locator: 'src/page.html:1', repository_id: f.repo,
+    impact: 'Keyboard users may be unable to close the menu', required_fix: 'Use a button with a keyboard handler', repair_tier: 'confirm', ...overrides,
+    uiux: { classification: 'functional', evidence_kind: 'source', rule_id: 'popover', verification: 'Render and inspect the accessible name of each control.',
+      limitation: 'No rendering observed.', ...overrides.uiux } });
+  assert.notEqual(verdict(finding()).status, 'blocked', 'a negated runtime activity is a valid limitation');
+  for (const [label, item] of [
+    ['verification claim', finding({ uiux: { verification: 'Focus: no failures observed.' } })],
+    ['evidence claim', finding({ evidence: 'src/m.html:4: keyboard trap - no issues observed' })],
+    ['topic-led claim', finding({ evidence: 'src/page.html:1: no keyboard traps observed' })],
+    ['limitation claim', finding({ uiux: { limitation: 'Keyboard navigation: no regressions confirmed.' } })],
+  ]) {
+    const result = verdict(item);
+    assert.equal(result.status, 'blocked', label);
+    assert.match(result.blockers.join(' '), /source-only/u, label);
+  }
 });

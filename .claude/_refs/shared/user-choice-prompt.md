@@ -32,9 +32,15 @@ companion lifecycle only when preparing a preview or its runtime consent.
 ## Decision Discipline
 
 - Ask only when two or more valid options have a material trade-off.
-- For non-approval decisions only, one valid option may be selected with a
-  reason. Never auto-approve or grant Simplify Apply/write authority. Approval
-  always retains Approve, Change and Cancel.
+- For ordinary non-approval decisions only, one valid option may be selected
+  with a reason. Never auto-approve or grant Simplify Apply/write authority.
+  Approval always retains Approve, Change and Cancel.
+- Authority-granting choices are always asked: approvals, options whose value
+  is `apply` or `apply-current-diff`, options whose value is a
+  `sha256:<64 hex>` policy binding, and gates in `AUTHORITY_GRANTING_GATES`
+  (currently `finish:policy`). `selectInteraction` and `normalizeChoiceResponse`
+  read the gate from the `decision` object (a `gate` argument is only a
+  fallback) and never auto-select or delegate these choices.
 - Ask at most one approval or other high-impact decision per turn.
 - Two to four independent factual blockers may be grouped when no earlier
   answer can change a later option set.
@@ -50,7 +56,8 @@ companion lifecycle only when preparing a preview or its runtime consent.
 - Mark the recommendation in the option label and explain the trade-off.
 - Accept the number, the full option label, or a clear localized equivalent.
 - A delegated recommendation may resolve a non-approval preference only. It
-  never approves an artifact, Simplify Apply, or expanded write scope.
+  never approves an artifact, Simplify Apply, expanded write scope, or an
+  authority-granting gate such as `finish:policy`.
 - Do not guess from an ambiguous response. Ask one short follow-up with the
   same selectors.
 - Approval gates use `1. Approve`, `2. Change`, `3. Cancel`.
@@ -126,7 +133,8 @@ actual approved plan through `load_plan() -> {artifact, parents}` with the
 current repository revision. A plan may carry an `interaction-policy` JSON
 fence containing `{decision_fingerprint, option_id}` entries. The graph,
 owner, change, revision and exact decision are verified before reuse. Plan
-preferences never auto-approve spec/plan or auto-select Simplify Apply.
+preferences never auto-approve spec/plan, auto-select Simplify Apply, or
+preselect an authority-granting gate.
 Spec approval cannot satisfy the distinct plan gate. Missing source/verifier
 is unresolved, never an implicit approval. A producer consumes the resolved
 event once for its exact artifact; inspect an existing matching snapshot
@@ -134,7 +142,8 @@ before creating another on a repeated reply.
 
 Native failure adds `native-structured-choice` to this decision's
 `failed_surfaces`; fall back once with the same ID, revision and options.
-Do not retry the picker. Native preselection without submission has no effect.
+Pass `failed_surfaces` to `resolveAction` and `selectInteraction`; neither
+offers the failed native surface again for this decision. Do not retry the picker. Native preselection without submission has no effect.
 Reusing resolved policy asks no confirmation; ask only unresolved scope deltas.
 Preserve this conditional context in portable `state_delta`, then reverify at
 the consumer. Do not create a global decision journal or session file.

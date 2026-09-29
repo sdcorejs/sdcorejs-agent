@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { lstatSync, readFileSync, realpathSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -298,6 +298,251 @@ export function verifyApprovedArtifactGraph(artifact, parentArtifacts = []) {
     ...result,
     parent_references_verified: result.metadata.parent_references.length,
   };
+}
+
+// Canonical approved-artifact file loader. Runtime code must stay dependency-free,
+// so frontmatter uses a restricted YAML subset: exactly what the canonical writer
+// emits. Every other construct fails closed instead of being guessed.
+const FRONTMATTER_KEY = /^([A-Za-z_][A-Za-z0-9_-]*):(?: (.*))?$/u;
+const DOUBLE_QUOTED_ESCAPES = Object.freeze({
+  0: '\0', a: '\x07', b: '\b', t: '\t', '\t': '\t', n: '\n', v: '\v', f: '\f', r: '\r', e: '\x1b',
+  ' ': ' ', '"': '"', '/': '/', '\\': '\\', N: '\x85', _: '\xa0', L: '\u2028', P: '\u2029',
+});
+// Step 1 snapshots hashed their body without the blank separator line; step 2-3
+// snapshots hashed it. Only snapshots approved before this cutoff may use the
+// excluded variant; newer snapshots must verify byte-for-byte.
+export const APPROVED_SEPARATOR_CUTOFF = '2026-09-27T00:00:00.000Z';
+
+function resolvePlainScalar(value) {
+  if (value === '' || value === '~' || value === 'null' || value === 'Null' || value === 'NULL') return null;
+  if (['true', 'True', 'TRUE'].includes(value)) return true;
+  if (['false', 'False', 'FALSE'].includes(value)) return false;
+  if (/^[-+]?[0-9]+$/u.test(value)) return Number(value);
+  if (/^0o[0-7]+$/u.test(value)) return Number.parseInt(value.slice(2), 8);
+  if (/^0x[0-9a-fA-F]+$/u.test(value)) return Number.parseInt(value.slice(2), 16);
+  if (/^[-+]?(?:\.[0-9]+|[0-9]+(?:\.[0-9]*)?)(?:[eE][-+]?[0-9]+)?$/u.test(value)) return Number(value);
+  if (/^[-+]?\.(?:inf|Inf|INF)$/u.test(value)) return value.startsWith('-') ? -Infinity : Infinity;
+  if (/^\.(?:nan|NaN|NAN)$/u.test(value)) return Number.NaN;
+  return value;
+}
+
+export function parseApprovedFrontmatter(text) {
+  if (typeof text !== 'string') throw new TypeError('approved frontmatter must be text');
+  if (text.includes('\t')) throw new Error('unsupported approved frontmatter: tab characters');
+  const lines = text.replace(/\r\n?/gu, '\n').split('\n');
+  while (lines.length > 0 && lines.at(-1) === '') lines.pop();
+  let index = 0;
+  const indentOf = (line) => line.length - line.trimStart().length;
+  const fail = (message) => {
+    throw new Error(`unsupported approved frontmatter at line ${index + 1}: ${message}`);
+  };
+
+  function parseDoubleQuoted(parts) {
+    const raw = parts.join('\n');
+    let output = '';
+    let position = 1;
+    while (position < raw.length) {
+      const character = raw[position];
+      if (character === '"') {
+        if (raw.slice(position + 1).trim() !== '') fail('content after a closing quote');
+        return output;
+      }
+      if (character === '\\') {
+        const next = raw[position + 1];
+        if (next === '\n') {
+          position += 2;
+          continue;
+        }
+        if (next === 'x' || next === 'u' || next === 'U') {
+          const width = { x: 2, u: 4, U: 8 }[next];
+          const digits = raw.slice(position + 2, position + 2 + width);
+          if (!new RegExp(`^[0-9a-fA-F]{${width}}$`, 'u').test(digits)) fail('invalid hexadecimal escape');
+          output += String.fromCodePoint(Number.parseInt(digits, 16));
+          position += 2 + width;
+          continue;
+        }
+        if (!Object.hasOwn(DOUBLE_QUOTED_ESCAPES, next)) fail('unsupported escape');
+        output += DOUBLE_QUOTED_ESCAPES[next];
+        position += 2;
+        continue;
+      }
+      if (character === '\n') {
+        let breaks = 0;
+        while (raw[position] === '\n') {
+          breaks += 1;
+          position += 1;
+        }
+        output = output.replace(/[ ]+$/u, '');
+        output += breaks === 1 ? ' ' : '\n'.repeat(breaks - 1);
+        continue;
+      }
+      output += character;
+      position += 1;
+    }
+    return fail('unterminated double-quoted scalar');
+  }
+
+  function parseScalar(first, parentIndent) {
+    const continuation = [];
+    while (index < lines.length) {
+      const line = lines[index];
+      if (line.trim() === '') {
+        let look = index;
+        while (look < lines.length && lines[look].trim() === '') look += 1;
+        if (look < lines.length && indentOf(lines[look]) > parentIndent) {
+          for (let blank = index; blank < look; blank += 1) continuation.push('');
+          index = look;
+          continue;
+        }
+        break;
+      }
+      if (indentOf(line) <= parentIndent) break;
+      continuation.push(line.trim());
+      index += 1;
+    }
+    if (first.startsWith('"')) return parseDoubleQuoted([first, ...continuation]);
+    if (continuation.length === 0 && first === '[]') return [];
+    if (continuation.length === 0 && first === '{}') return {};
+    const pieces = [first, ...continuation.filter((part) => part !== '')];
+    if (/^[&*!|>'%@`[{"]/u.test(first) || pieces.some((part) => /(?:^|\s)#/u.test(part) || /:(?:\s|$)/u.test(part))) {
+      fail('unsupported scalar construct');
+    }
+    if (continuation.length === 0) return resolvePlainScalar(first);
+    let output = first;
+    let pending = 0;
+    for (const part of continuation) {
+      if (part === '') {
+        pending += 1;
+        continue;
+      }
+      output += pending > 0 ? '\n'.repeat(pending) : ' ';
+      output += part;
+      pending = 0;
+    }
+    return output;
+  }
+
+  function parseNested(parentIndent) {
+    if (index < lines.length && lines[index].trim() !== '' && indentOf(lines[index]) > parentIndent) {
+      return parseBlock(indentOf(lines[index]));
+    }
+    return null;
+  }
+
+  function parseSequence(indent) {
+    const result = [];
+    while (index < lines.length) {
+      const line = lines[index];
+      if (line.trim() === '') fail('blank line inside a sequence');
+      const current = indentOf(line);
+      if (current < indent) break;
+      if (current > indent) fail('unexpected sequence indentation');
+      const rest = line.slice(indent);
+      if (rest !== '-' && !rest.startsWith('- ')) break;
+      const item = rest === '-' ? '' : rest.slice(2);
+      if (item === '') {
+        index += 1;
+        result.push(parseNested(indent));
+      } else if (FRONTMATTER_KEY.test(item)) {
+        lines[index] = `${' '.repeat(indent + 2)}${item}`;
+        result.push(parseMapping(indent + 2));
+      } else if (item === '-' || item.startsWith('- ')) {
+        fail('nested inline sequences are not supported');
+      } else {
+        index += 1;
+        result.push(parseScalar(item, indent));
+      }
+    }
+    return result;
+  }
+
+  function parseMapping(indent) {
+    const result = {};
+    while (index < lines.length) {
+      const line = lines[index];
+      if (line.trim() === '') fail('blank line inside a mapping');
+      const current = indentOf(line);
+      if (current < indent) break;
+      if (current > indent) fail('unexpected mapping indentation');
+      const match = line.slice(indent).match(FRONTMATTER_KEY);
+      if (!match) fail('expected a plain mapping key');
+      const key = match[1];
+      if (Object.hasOwn(result, key)) fail(`duplicate key ${key}`);
+      index += 1;
+      if (match[2] === undefined || match[2] === '') {
+        const next = lines[index];
+        if (next !== undefined && indentOf(next) === indent && /^- |^-$/u.test(next.slice(indent))) {
+          result[key] = parseSequence(indent);
+        } else {
+          result[key] = parseNested(indent);
+        }
+      } else {
+        result[key] = parseScalar(match[2], indent);
+      }
+    }
+    return result;
+  }
+
+  function parseBlock(indent) {
+    const rest = lines[index].slice(indent);
+    return rest === '-' || rest.startsWith('- ') ? parseSequence(indent) : parseMapping(indent);
+  }
+
+  if (lines.length === 0) fail('empty frontmatter');
+  if (indentOf(lines[0]) !== 0) fail('frontmatter must start at column zero');
+  const value = parseBlock(0);
+  if (index < lines.length) fail('unparsed trailing content');
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) fail('frontmatter must be a mapping');
+  return value;
+}
+
+export function parseApprovedArtifactText(text, { expected_path: expectedPath } = {}) {
+  if (typeof text !== 'string') throw new TypeError('approved artifact must be text');
+  if (text.charCodeAt(0) === 0xfeff) throw new Error('approved artifact must not start with a byte order mark');
+  const normalized = text.replace(/\r\n?/gu, '\n');
+  const match = normalized.match(/^---\n([\s\S]*?)\n---\n/u);
+  if (!match) throw new Error('approved artifact frontmatter is required');
+  const metadata = parseApprovedFrontmatter(match[1]);
+  if (expectedPath !== undefined && metadata.repository_relative_path !== expectedPath) {
+    throw new Error(`approved artifact path mismatch: ${String(metadata.repository_relative_path)} is not ${expectedPath}`);
+  }
+  const after = normalized.slice(match[0].length);
+  const attempt = (body) => {
+    try {
+      return { verified: verifyApprovedArtifact({ metadata, body }), body };
+    } catch (error) {
+      return { error };
+    }
+  };
+  const exact = attempt(after);
+  if (!exact.error) {
+    return { artifact: { metadata: structuredClone(metadata), body: after }, approval_hash: exact.verified.approval_hash, separator: after.startsWith('\n') ? 'included' : 'none' };
+  }
+  const legacy = after.startsWith('\n') && !after.startsWith('\n\n') && typeof metadata.approved_at === 'string' &&
+    Date.parse(metadata.approved_at) < Date.parse(APPROVED_SEPARATOR_CUTOFF);
+  if (legacy) {
+    const stripped = attempt(after.slice(1));
+    if (!stripped.error) {
+      return { artifact: { metadata: structuredClone(metadata), body: stripped.body }, approval_hash: stripped.verified.approval_hash, separator: 'excluded' };
+    }
+  }
+  throw exact.error;
+}
+
+export function readApprovedArtifactFile(root, relativePath) {
+  validateRelativePath(relativePath, 'repository_relative_path');
+  if (relativePath.includes('\\') || relativePath.split('/').some((segment) => segment === '' || segment === '.')) {
+    throw new TypeError('repository_relative_path must use normalized forward slashes');
+  }
+  const realRoot = realpathSync.native(root);
+  let cursor = realRoot;
+  for (const segment of relativePath.split('/')) {
+    cursor = path.join(cursor, segment);
+    if (lstatSync(cursor).isSymbolicLink()) throw new Error(`approved artifact path crosses a symbolic link: ${relativePath}`);
+  }
+  const relative = path.relative(realRoot, realpathSync.native(cursor));
+  if (relative.startsWith('..') || path.isAbsolute(relative)) throw new Error(`approved artifact escapes the repository root: ${relativePath}`);
+  return { ...parseApprovedArtifactText(readFileSync(cursor, 'utf8'), { expected_path: relativePath }), path: relativePath };
 }
 
 function parseCliArguments(argumentsList) {

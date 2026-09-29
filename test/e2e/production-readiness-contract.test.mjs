@@ -195,7 +195,9 @@ test('case-interaction-finish-evidence-order: same-HEAD edits after branch-ready
   assert.equal(completeExecution({ finish_context: f.context }, f.runtime).branch_ready, true);
   f.write('src/value.mjs', 'export const value = 1; // changed again\n');
   const out = completeExecution({ finish_context: f.context }, f.runtime);
-  assert.equal(out.branch_ready, false); assert.equal(out.next_actions[0].phase, 'reverify');
+  // Audit repair IF-2 (D-007): the next action's phase is the receipt key, so the stale
+  // baseline is refreshed under its own phase instead of an undocumented evidence_phase.
+  assert.equal(out.branch_ready, false); assert.equal(out.next_actions[0].phase, 'baseline'); assert.equal(out.next_actions[0].intent, 'refresh');
 });
 
 test('case-interaction-finish-simplify-semantics: no-op omits the choice; Analyze and Apply have separate authority', async t => {
@@ -1495,6 +1497,14 @@ const progressiveEquivalents = {
     { unit: 'Treat Service DTOs as scratch objects', evidence: [[progressiveGenerationRules, 'Do not add UI-only fields such as `checked`, `selected`, `expanded`'],
       [progressiveGenerationRules, 'Put UI-only fields in a local ViewModel, signal, or a documented Service mapper output.']] },
   ],
+  // Audit repair ST-4: stale position pointers now name the private reference that owns the moved content.
+  'skills/shared/workflow/review.md': [
+    { unit: 'First resolve the first-class artifact track and `review_profile` from the central registry.', evidence: [
+      ['skills/shared/workflow/review.md', 'The stack-specific profile table in `_refs/review/profiles-and-refs.md` refines executable-code reviews only'],
+      ['skills/shared/workflow/review.md', 'remain durable review profiles rather than orphan sections']] },
+    { unit: 'Run applicable probes using the command discipline above.', evidence: [
+      ['skills/shared/workflow/review.md', 'Run applicable probes using the command discipline in `_refs/review/probes.md`.']] },
+  ],
 };
 async function progressiveEquivalent(body, needle) {
   const entry = (progressiveEquivalents[body] ?? []).find(item => needle.trim().startsWith(progressiveNormalize(item.unit).trim()));
@@ -1695,5 +1705,592 @@ test('case-progressive-load-distribution-resolution: mirrored skill bodies resol
         assert.equal(await progressiveCurrent(distribution.resolve(ref)), await progressiveCurrent(ref), `${distribution.body} resolves ${ref}`);
       }
     }
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Audit repair (audit-findings-repair-20260928): regression-first cases for the
+// observer, finish tail, host-runner routing, loader and skill structure.
+// ---------------------------------------------------------------------------
+import { mkdirSync as repairMkdir, mkdtempSync as repairMkdtemp, realpathSync as repairRealpath, rmSync as repairRm, symlinkSync as repairSymlink, writeFileSync as repairWrite } from 'node:fs';
+import { execFileSync as repairExec } from 'node:child_process';
+import { parse as repairYaml } from 'yaml';
+
+const repairLink = (target, link) => repairSymlink(target, link, process.platform === 'win32' ? 'junction' : 'dir');
+function repairTemp(t, prefix) {
+  const root = repairMkdtemp(path.join(tmpdir(), prefix));
+  t.after(() => {
+    assert.equal(repairRealpath.native(path.dirname(root)), repairRealpath.native(tmpdir()));
+    assert.ok(path.basename(root).startsWith(prefix));
+    repairRm(root, { recursive: true, force: true });
+  });
+  return root;
+}
+function repairRepository(t, files) {
+  const root = repairTemp(t, 'repair-observer-');
+  for (const [file, content] of Object.entries(files)) {
+    repairMkdir(path.dirname(path.join(root, file)), { recursive: true });
+    repairWrite(path.join(root, file), content);
+  }
+  const git = (...args) => repairExec('git', args, { cwd: root, encoding: 'utf8', windowsHide: true });
+  git('init', '--quiet'); git('config', 'core.autocrlf', 'false'); git('add', '.');
+  git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '--quiet', '-m', 'fixture');
+  return root;
+}
+const repairGitStatus = () => spawnSync('git', ['--no-optional-locks', 'status', '--porcelain'], { cwd: progressiveRoot, encoding: 'utf8' }).stdout;
+
+// AC-021 / G-1 --------------------------------------------------------------
+const repairSnapshotRoots = ['.sdcorejs/specs/workflow', '.sdcorejs/architecture/workflow', '.sdcorejs/plans/workflow'];
+const repairExpectedSeparator = {
+  '.sdcorejs/specs/workflow/2026-09-22-12-43-simplify-contract-hardening.md': 'excluded',
+  '.sdcorejs/architecture/workflow/2026-09-22-12-54-simplify-contract-hardening.md': 'excluded',
+  '.sdcorejs/plans/workflow/2026-09-22-13-00-simplify-contract-hardening.md': 'excluded',
+  '.sdcorejs/plans/workflow/2026-09-22-22-14-simplify-contract-hardening-r2.md': 'excluded',
+  '.sdcorejs/architecture/workflow/2026-09-23-10-37-design-handoff-contract.md': 'included',
+  '.sdcorejs/specs/workflow/2026-09-23-17-25-ui-review-contract.md': 'included',
+  '.sdcorejs/architecture/workflow/2026-09-23-17-34-ui-review-contract.md': 'included',
+};
+async function repairSnapshots() {
+  const files = [];
+  for (const directory of repairSnapshotRoots) {
+    for (const name of await readdir(path.join(progressiveRoot, directory))) {
+      if (/^2026-09-2\d-.+\.md$/u.test(name)) files.push(`${directory}/${name}`);
+    }
+  }
+  return files.sort();
+}
+
+test('case-repair-artifact-loader: one dependency-free loader verifies every step 1-5 snapshot without edits', async () => {
+  const api = await importRepoModule('_refs/shared/approved-artifact.mjs');
+  for (const name of ['readApprovedArtifactFile', 'parseApprovedArtifactText', 'parseApprovedFrontmatter']) assert.equal(typeof api[name], 'function', name);
+  const files = await repairSnapshots();
+  assert.ok(files.length >= 20, `steps 1-5 snapshots are discovered: ${files.length}`);
+  for (const file of files) {
+    const bytes = await readFile(path.join(progressiveRoot, file));
+    const loaded = api.readApprovedArtifactFile(progressiveRoot, file);
+    assert.equal(loaded.artifact.metadata.repository_relative_path, file);
+    assert.equal(loaded.separator, repairExpectedSeparator[file] ?? 'none', file);
+    const frontmatter = bytes.toString('utf8').replace(/\r\n?/gu, '\n').match(/^---\n([\s\S]*?)\n---\n/u)[1];
+    assert.deepEqual(api.parseApprovedFrontmatter(frontmatter), repairYaml(frontmatter), `${file}: restricted parser matches yaml`);
+    assert.ok((await readFile(path.join(progressiveRoot, file))).equals(bytes), `${file} is not modified`);
+  }
+});
+
+test('case-repair-artifact-loader: mutation, BOM, wrong path, extra separators and unsupported YAML fail closed', async () => {
+  const api = await importRepoModule('_refs/shared/approved-artifact.mjs');
+  const read = async file => (await readFile(path.join(progressiveRoot, file), 'utf8')).replace(/\r\n?/gu, '\n');
+  const legacy = '.sdcorejs/specs/workflow/2026-09-22-12-43-simplify-contract-hardening.md';
+  const current = '.sdcorejs/specs/workflow/2026-09-28-00-22-audit-findings-repair.md';
+  const [legacyText, currentText] = [await read(legacy), await read(current)];
+  assert.equal(api.parseApprovedArtifactText(currentText, { expected_path: current }).separator, 'none');
+  assert.equal(api.parseApprovedArtifactText(legacyText, { expected_path: legacy }).separator, 'excluded');
+  const flip = text => `${text.slice(0, -2)}${text.at(-2) === 'x' ? 'y' : 'x'}\n`;
+  assert.throws(() => api.parseApprovedArtifactText(flip(currentText), { expected_path: current }), /hash/u);
+  assert.throws(() => api.parseApprovedArtifactText(`\uFEFF${currentText}`, { expected_path: current }));
+  assert.throws(() => api.parseApprovedArtifactText(currentText, { expected_path: legacy }), /path/u);
+  const addBlank = text => text.replace(/^(---\n[\s\S]*?\n---\n)/u, '$1\n');
+  assert.throws(() => api.parseApprovedArtifactText(addBlank(currentText), { expected_path: current }), 'new snapshots require the exact body');
+  assert.throws(() => api.parseApprovedArtifactText(addBlank(addBlank(legacyText)), { expected_path: legacy }), 'only one separator line is tolerated');
+  for (const unsupported of ['a: &x 1\nb: *x\n', 'a: |\n  text\n', 'a: >\n  text\n', 'a: !tag x\n', 'a: [1, 2]\n', 'a: {b: 1}\n', "a: 'single'\n", 'a: 1 # comment\n']) {
+    assert.throws(() => api.parseApprovedFrontmatter(unsupported), `unsupported YAML fails closed: ${JSON.stringify(unsupported)}`);
+  }
+  const supported = 'a: []\nb: {}\nc: null\nd: true\ne: 12\nf: "x\\"y"\ng:\n  - h: 1\n    i: two words\n  - plain\nj: long plain\n  continued line\n';
+  assert.deepEqual(api.parseApprovedFrontmatter(supported), repairYaml(supported));
+});
+
+// AC-001 / IF-1, S-1 ---------------------------------------------------------
+test('case-repair-observer-real-repo: the canonical observer captures this repository with ignored output as metadata', async () => {
+  const { captureRepository } = await importRepoModule('_refs/shared/repository-observation.mjs');
+  const before = repairGitStatus();
+  const snapshot = captureRepository({ root: repairRealpath.native(progressiveRoot), owner: 'github.com/sdcorejs/sdcorejs-agent' });
+  assert.equal(snapshot.complete, true);
+  assert.equal(snapshot.files['package.json'].class, 'content');
+  assert.ok(Buffer.isBuffer(snapshot.bytes['package.json']));
+  const ignored = Object.keys(snapshot.files).find(file => file.startsWith('node_modules/') && snapshot.files[file].kind === 'file');
+  assert.ok(ignored, 'ignored dependency output is observed');
+  assert.equal(snapshot.files[ignored].class, 'metadata');
+  assert.equal(snapshot.bytes[ignored], undefined, 'ignored bytes are never read');
+  assert.match(snapshot.stable_fingerprint, /^sha256:[a-f0-9]{64}$/u);
+  assert.equal(repairGitStatus(), before, 'observation is read-only');
+});
+
+test('case-repair-observer-real-repo: ignored links, nested repositories and ignored writes stay observable as metadata', async t => {
+  const { captureRepository } = await importRepoModule('_refs/shared/repository-observation.mjs');
+  const root = repairRepository(t, { '.gitignore': 'node_modules/\n', 'src/value.mjs': 'export const value = 1;\n' });
+  const outside = repairTemp(t, 'repair-outside-');
+  repairWrite(path.join(outside, 'secret.txt'), 'outside\n');
+  repairMkdir(path.join(root, 'node_modules/pkg'), { recursive: true });
+  repairWrite(path.join(root, 'node_modules/pkg/index.js'), 'module.exports = 1;\n');
+  repairLink(outside, path.join(root, 'node_modules/link'));
+  repairExec('git', ['init', '--quiet', 'nested'], { cwd: root, windowsHide: true });
+  repairWrite(path.join(root, 'nested/file.txt'), 'nested\n');
+  const state = { root: repairRealpath.native(root), owner: 'github.com/example/app' };
+  const first = captureRepository(state);
+  assert.equal(first.files['node_modules/link'].kind, 'symlink');
+  assert.equal(first.files['node_modules/pkg/index.js'].class, 'metadata');
+  assert.equal(first.files['nested/.git'].kind, 'nested-repository');
+  assert.equal(first.files['nested/file.txt'].class, 'metadata');
+  assert.equal(Object.keys(first.files).some(file => file.startsWith('node_modules/link/')), false, 'links are never followed');
+  assert.equal(first.files['src/value.mjs'].class, 'content');
+  repairWrite(path.join(root, 'node_modules/pkg/index.js'), 'module.exports = 22;\n');
+  const second = captureRepository(state);
+  assert.notEqual(second.fingerprint, first.fingerprint, 'ignored writes remain observable');
+  repairWrite(path.join(root, 'nested/file.txt'), 'nested changed\n');
+  assert.notEqual(captureRepository(state).fingerprint, second.fingerprint, 'nested worktree writes remain observable');
+});
+
+test('case-repair-observer-real-repo: the finish runtime starts beside ignored links', async t => {
+  const outside = repairTemp(t, 'repair-outside-');
+  const f = await finishFixture(t, { setup: ({ root, write }) => {
+    write('.gitignore', 'node_modules/\n'); write('node_modules/pkg/index.js', '1\n'); repairLink(outside, path.join(root, 'node_modules/link'));
+  } });
+  f.run('baseline');
+  assert.ok(f.context.phase_receipts.baseline);
+});
+
+// AC-002 / D-001 volatile paths ------------------------------------------------
+const repairWriterSetup = ({ write }) => {
+  write('.gitignore', '.cache/\nbuild/\n');
+  write('writer.mjs', "import { mkdirSync, writeFileSync } from 'node:fs';\nimport './oracle.mjs';\nmkdirSync('.cache', { recursive: true });\nwriteFileSync('.cache/run.json', JSON.stringify({ at: process.hrtime.bigint().toString() }));\n");
+};
+const repairWriterCommands = phases => Object.fromEntries(phases.map(phase => [phase, {
+  command: [process.execPath, 'writer.mjs'], cwd: '.', scope: ['verify', 'branch-ready'].includes(phase) ? ['src/value.mjs', 'guide.md', 'oracle.mjs'] : ['src/value.mjs', 'oracle.mjs'],
+}]));
+
+test('case-repair-volatile-paths: declared caches may change only inside host command windows', async t => {
+  const { observeRepositoryRuntime, verifyRepositoryPhase } = await importRepoModule('_refs/shared/repository-observation.mjs');
+  const f = await finishFixture(t, { setup: repairWriterSetup, commands: repairWriterCommands(['baseline']),
+    policy: { volatile_paths: ['.cache/**'], hooks: [{ id: 'docs', owner: 'sdcorejs-documentation', paths: ['guide.md'] }] } });
+  f.run('baseline'); f.run('baseline');
+  const proof = verifyRepositoryPhase(f.observation, f.context.phase_receipts.baseline, 'baseline', observeRepositoryRuntime(f.observation));
+  assert.equal(proof.valid, true, JSON.stringify(proof.blockers));
+  assert.equal(proof.current, true, 'a command rewriting its declared cache stays current');
+  const before = f.observation.snapshot();
+  f.write('guide.md', 'Approved guide.\n'); f.write('.cache/hook.json', '{}');
+  assert.throws(() => f.observation.recordHook('docs', before.fingerprint), /volatile/u, 'hooks never write volatile paths');
+});
+
+test('case-repair-volatile-paths: cache drift outside windows, undeclared ignored writes and invalid patterns block', async t => {
+  const { observeRepositoryRuntime } = await importRepoModule('_refs/shared/repository-observation.mjs');
+  const f = await finishFixture(t, { setup: repairWriterSetup, commands: repairWriterCommands(['baseline']), policy: { volatile_paths: ['.cache/**'] } });
+  f.run('baseline');
+  f.write('.cache/run.json', '{"outside":true}');
+  assert.throws(() => observeRepositoryRuntime(f.observation), /volatile path changed outside a host command window/u);
+  const g = await finishFixture(t, { setup: repairWriterSetup, commands: repairWriterCommands(['baseline']), policy: { volatile_paths: ['.cache/**'] } });
+  g.write('build/out.txt', 'generated\n');
+  assert.throws(() => observeRepositoryRuntime(g.observation), /outside the observed finish scope/u, 'ignored but undeclared writes stay detected');
+  await assert.rejects(() => finishFixture(t, { setup: repairWriterSetup, policy: { volatile_paths: ['src/**'] } }), /volatile/u, 'tracked content cannot be volatile');
+  await assert.rejects(() => finishFixture(t, { setup: repairWriterSetup, policy: { volatile_paths: ['.cache/**', 'guide.md'] } }), /volatile/u, 'a write scope cannot be volatile');
+});
+
+// AC-003 ------------------------------------------------------------------------
+test('case-repair-symlink-scope: links outside scope are metadata; links inside a write scope stay blocked', async t => {
+  const outside = repairTemp(t, 'repair-outside-');
+  const f = await finishFixture(t, { setup: ({ root, write }) => {
+    write('.gitignore', 'vendor/\n'); repairMkdir(path.join(root, 'vendor'), { recursive: true }); repairLink(outside, path.join(root, 'vendor/link'));
+  } });
+  f.run('baseline');
+  assert.ok(f.context.phase_receipts.baseline, 'a link outside the write scope does not block observation');
+  await assert.rejects(() => finishFixture(t, { scope: ['linked/value.mjs', 'guide.md'], setup: ({ root }) => repairLink(outside, path.join(root, 'linked')) }), /symlink/u);
+});
+
+// AC-004 / IF-2 ---------------------------------------------------------------
+async function repairDrive(f, complete, { steps = 16, onAction } = {}) {
+  const seen = [];
+  for (let step = 0; step < steps; step += 1) {
+    const out = complete({ finish_context: f.context }, f.runtime);
+    if (out.status !== 'pending-action') return { out, seen };
+    const next = out.next_actions[0];
+    assert.equal(Object.hasOwn(next, 'evidence_phase'), false, `phase is the only receipt key: ${JSON.stringify(next)}`);
+    assert.ok(['produce', 'refresh'].includes(next.intent), JSON.stringify(next));
+    assert.equal(typeof next.owner, 'string', JSON.stringify(next));
+    seen.push(`${next.phase}:${next.intent}`);
+    if (onAction?.(next)) continue;
+    f.run(next.phase);
+  }
+  assert.fail(`finish did not converge: ${seen.join(' -> ')}`);
+}
+
+test('case-repair-finish-convergence: a host recording receipts by phase reaches tail-complete again after a write', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await finishFixture(t, { review: 'review-only' });
+  const first = await repairDrive(f, completeExecution);
+  assert.equal(first.out.status, 'tail-complete', JSON.stringify(first));
+  f.write('src/value.mjs', 'export const value = 1; // changed after branch-ready\n');
+  const again = await repairDrive(f, completeExecution);
+  assert.equal(again.out.status, 'tail-complete', JSON.stringify(again));
+  assert.ok(again.seen.includes('baseline:refresh'), again.seen.join(','));
+});
+
+test('case-repair-finish-convergence: worker stage A/B and repair converge through the documented phase keys', async t => {
+  const { completeDelegatedUnit } = await import('../../_refs/orchestration/parallel-protocol.mjs');
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const worker = await finishFixture(t, { worker: true, policy: { decisions: {} } });
+  const unit = await repairDrive(worker, completeDelegatedUnit);
+  assert.equal(unit.out.status, 'unit-complete', JSON.stringify(unit));
+  assert.deepEqual(unit.seen.filter(item => item.startsWith('unit-review')), ['unit-review-a:produce', 'unit-review-b:produce']);
+  const f = await finishFixture(t, { review: 'review-and-repair' });
+  f.assessment.blocking_findings = ['finding-1'];
+  const repaired = await repairDrive(f, completeExecution, { onAction: next => {
+    if (next.phase !== 'repair' || next.intent !== 'produce') return false;
+    f.write('src/value.mjs', 'export const value = 1; // repaired\n');
+    f.assessment.blocking_findings = [];
+    f.run('repair');
+    return true;
+  } });
+  assert.equal(repaired.out.status, 'tail-complete', JSON.stringify(repaired));
+});
+
+test('case-repair-finish-convergence: an invalid receipt names the phase to run again', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await finishFixture(t); f.run('baseline'); f.run('review');
+  f.context.phase_receipts.verify = f.context.phase_receipts.baseline;
+  const out = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(out.status, 'blocked');
+  assert.match(out.blockers.join(' '), /\bverify\b/u);
+});
+
+// AC-005 / S-4, IF-5 ------------------------------------------------------------
+async function repairSimplifyGrant(t, f) {
+  const { createSimplifyEvidenceSession } = await import('../../_refs/simplify/repository-evidence.mjs');
+  const context = documentedSimplifyContext(), hunks = [{ path: 'src/value.mjs', start_line: 1, end_line: 1 }];
+  const command = { command: [process.execPath, 'oracle.mjs'], cwd: '.', scope: hunks };
+  const session = createSimplifyEvidenceSession({ root: f.root,
+    repository_id: f.context.identity.owner_repository_id, change_ref: f.context.identity.change_ref,
+    user_scope: hunks, workflow_hunks: hunks, verification_commands: [command],
+    classify_source: () => ({ kind: 'executable', hunks, protected_surfaces: [] }),
+    verify_preservation: () => Object.fromEntries(Object.keys(context.preserved_surfaces).map(key => [key, { status: 'verified', reason: 'Fixture oracle.' }])),
+  });
+  context.session_id = session.id; context.target_root = f.root;
+  context.source_revision = f.plan.metadata.source_revision;
+  context.artifact_identity.owner_repository_id = f.context.identity.owner_repository_id;
+  context.artifact_identity.execution_host_repository_id = f.context.identity.owner_repository_id;
+  context.artifact_context.change_ref = f.context.identity.change_ref;
+  context.scope.requested = ['src/value.mjs']; context.scope.eligible_files = ['src/value.mjs']; context.scope.eligible_hunks = hunks;
+  context.baseline.snapshot = session.captureSnapshot(); context.verification.before = [session.runVerification(command)];
+  f.context.simplify_context = context; f.runtime.simplify_runtime = { session };
+  return { session, context, command };
+}
+
+test('case-repair-simplify-pending: an authorized pass that never completed blocks tail-complete even with a net-zero diff', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await finishFixture(t, { simplify: 'apply', review: 'skip' });
+  await repairSimplifyGrant(t, f); f.run('baseline');
+  const authorized = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.ok(authorized.next_actions[0]?.preflight_ref, JSON.stringify(authorized));
+  f.write('src/value.mjs', 'export const value = 1;\n');
+  for (const phase of ['baseline', 'verify', 'branch-ready']) f.run(phase);
+  const withContext = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(withContext.status, 'blocked', JSON.stringify(withContext));
+  delete f.context.simplify_context; delete f.runtime.simplify_runtime;
+  const omitted = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(omitted.status, 'blocked', `omitting the payload cannot hide the pending host pass: ${JSON.stringify(omitted)}`);
+});
+
+test('case-repair-simplify-pending: tail-complete reports the recorded simplify choice, its source and the outcome', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await finishFixture(t, { simplify: 'skip', review: 'review-only' });
+  const done = await repairDrive(f, completeExecution);
+  assert.equal(done.out.status, 'tail-complete', JSON.stringify(done));
+  assert.equal(done.out.simplify, 'skip'); assert.equal(done.out.simplify_source, 'explicit'); assert.equal(done.out.simplify_outcome, 'skipped');
+  const noOp = await finishFixture(t, { classify_source: () => ({ kind: 'protected' }), policy: { decisions: { review: 'skip' } } });
+  noOp.context.choices.simplify = undefined;
+  const skipped = await repairDrive(noOp, completeExecution);
+  assert.equal(skipped.out.status, 'tail-complete', JSON.stringify(skipped));
+  assert.equal(skipped.out.simplify_source, 'not-eligible');
+});
+
+// AC-011 (finish part) / S-7 ------------------------------------------------------
+test('case-repair-host-runner: finish routes Apply to the host runner and accepts only host-verified dispatches', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const { readRepositorySimplify } = await importRepoModule('_refs/shared/repository-observation.mjs');
+  const calls = [];
+  const verifier = input => { calls.push(input); return input.receipt?.status === 'verified'
+    ? { verified: true, outcome: 'simplified', pass_paths: ['src/value.mjs'], blockers: [] }
+    : { verified: false, outcome: 'blocked', pass_paths: [], blockers: ['runner produced no verified receipt'] }; };
+  const f = await finishFixture(t, { simplify: 'apply', review: 'skip', runtime: { simplify_verifier: verifier } });
+  f.run('baseline');
+  const routed = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(routed.status, 'pending-action', JSON.stringify(routed));
+  assert.equal(routed.next_actions[0].phase, 'simplify');
+  assert.equal(routed.next_actions[0].runner, 'host-runner');
+  assert.equal(routed.next_actions[0].source_write_allowed, false);
+  const crashed = f.observation.beginSimplify();
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).status, 'blocked', 'an open dispatch blocks');
+  f.write('src/value.mjs', 'export const value = 1; // runner crashed mid-pass\n');
+  const failed = f.observation.recordSimplify(crashed.token, null);
+  assert.equal(failed.valid, false);
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).status, 'blocked', 'a dispatch without a verified receipt blocks');
+
+  const g = await finishFixture(t, { simplify: 'apply', review: 'skip', runtime: { simplify_verifier: verifier } });
+  g.run('baseline');
+  const dispatch = g.observation.beginSimplify();
+  assert.equal(dispatch.anchor.kind, 'host-snapshot');
+  g.write('src/value.mjs', 'export const value = 1; // simplified\n');
+  const receipt = { schema_version: 1, kind: 'simplify-host-receipt:v1', status: 'verified', pass_paths: ['src/value.mjs'] };
+  const recorded = g.observation.recordSimplify(dispatch.token, receipt);
+  assert.equal(recorded.valid, true, JSON.stringify(recorded));
+  assert.equal(calls.at(-1).anchor.stable_fingerprint, dispatch.anchor.fingerprint, 'the verifier receives the host-held anchor');
+  assert.throws(() => g.observation.recordSimplify(dispatch.token, receipt), /token/u, 'a dispatch token is consumed once');
+  g.context.phase_receipts.simplify = recorded.proof;
+  const read = readRepositorySimplify(g.observation, g.context.phase_receipts.simplify);
+  assert.equal(read.verified, true); assert.equal(read.current, true);
+  const next = completeExecution({ finish_context: g.context }, g.runtime);
+  assert.equal(next.next_actions[0]?.phase, 'reverify', JSON.stringify(next));
+});
+
+// AC-017 .. AC-020 / ST-1 .. ST-5 -------------------------------------------------
+const repairGenerationLoad = /\bevery\b[^.]*\bgeneration action\b/iu;
+const repairScanLoad = unit => unit.includes('`conventions-read`') && unit.includes('`summary-refresh`') && /scanning/u.test(unit) && /command discipline/u.test(unit);
+
+test('case-repair-styling-reachable: every Angular generation action loads the utility-first styling reference', async () => {
+  const body = await progressiveCurrent('skills/tracks/angular/sdcorejs-angular.md');
+  const loads = progressiveUnits(body).units.filter(unit => unit.includes('_refs/angular/styling.md'));
+  assert.ok(loads.some(unit => repairGenerationLoad.test(unit)), 'the body loads styling.md for every generation action');
+  assert.doesNotMatch(await progressiveCurrent('_refs/angular/write-code/actions.md'), /\sstyle="/u, 'action templates use utility classes, not inline styles');
+});
+
+test('case-repair-explore-scan-pointers: scanning discipline loads for conventions-read and summary-refresh; review names its refs', async () => {
+  const explore = await progressiveCurrent('skills/shared/workflow/explore.md');
+  assert.ok(progressiveUnits(explore).units.filter(unit => unit.includes('_refs/explore/read-actions.md')).some(repairScanLoad),
+    'conventions-read and summary-refresh load scanning and command discipline');
+  const review = await progressiveCurrent('skills/shared/workflow/review.md');
+  assert.doesNotMatch(review, /\btable below\b|\bdiscipline above\b/u);
+  assert.ok(review.includes('The stack-specific profile table in `_refs/review/profiles-and-refs.md`'));
+  assert.ok(review.includes('Run applicable probes using the command discipline in `_refs/review/probes.md`.'));
+});
+
+const repairPlacement = [
+  { rule: 'utility-first', owner: '_refs/angular/styling.md', body: 'skills/tracks/angular/sdcorejs-angular.md', loads: unit => repairGenerationLoad.test(unit) },
+  { rule: '## Scanning Discipline', owner: '_refs/explore/read-actions.md', body: 'skills/shared/workflow/explore.md', loads: repairScanLoad },
+  { rule: '## Package Manager And Command Discipline', owner: '_refs/explore/read-actions.md', body: 'skills/shared/workflow/explore.md', loads: repairScanLoad },
+  { rule: '## Track profile evidence', owner: '_refs/review/profiles-and-refs.md', body: 'skills/shared/workflow/review.md', loads: unit => /\bbefore\b/iu.test(unit) },
+  { rule: '# Review Probe Discipline', owner: '_refs/review/probes.md', body: 'skills/shared/workflow/review.md', loads: unit => /\bbefore\b/iu.test(unit) },
+];
+function repairPlacementViolations(texts) {
+  const violations = [];
+  for (const item of repairPlacement) {
+    if (!texts[item.owner]?.includes(item.rule)) violations.push(`${item.rule} is not owned by ${item.owner}`);
+    if (!progressiveUnits(texts[item.body] ?? '').units.filter(unit => unit.includes(item.owner)).some(item.loads)) {
+      violations.push(`${item.body} does not load ${item.owner} for ${item.rule}`);
+    }
+  }
+  return violations;
+}
+
+test('case-repair-placement-tests: rules sit in their owner and load under the conditions that need them', async () => {
+  const files = [...new Set(repairPlacement.flatMap(item => [item.owner, item.body]))];
+  const texts = Object.fromEntries(await Promise.all(files.map(async file => [file, await progressiveCurrent(file)])));
+  assert.deepEqual(repairPlacementViolations(texts), []);
+  const moved = { ...texts, '_refs/angular/styling.md': texts['_refs/angular/styling.md'].replaceAll('utility-first', 'utility-led') };
+  assert.ok(repairPlacementViolations(moved).some(item => item.startsWith('utility-first is not owned')), 'a rule moved out of its owner is detected');
+  const angular = 'skills/tracks/angular/sdcorejs-angular.md';
+  const narrowed = { ...texts, [angular]: texts[angular].replace(/\bevery\b([^.]*\bgeneration action\b)/iu, 'the screen-list$1') };
+  assert.ok(repairPlacementViolations(narrowed).some(item => item.includes('does not load _refs/angular/styling.md')), 'a narrowed load condition is detected');
+});
+
+test('case-repair-schema-parity: the documented review_context example carries every consumer-required field', async () => {
+  const { CONSUMER_REQUIRED_FIELDS, CONSUMER_REQUIRED_FIELD_KINDS } = await importRepoModule('_refs/harness/communication-economy.mjs');
+  const doc = await progressiveCurrent('_refs/review/output-contract.md');
+  const block = doc.match(/```yaml\n(review_context:[\s\S]*?)```/u)[1];
+  const documented = new Set([...block.matchAll(/^ {2}([a-z_]+):/gmu)].map(match => match[1]));
+  const parity = keys => {
+    const missing = [];
+    for (const [consumer, fields] of Object.entries(CONSUMER_REQUIRED_FIELDS.review_context)) {
+      for (const field of fields) if (!keys.has(field.split('.')[0])) missing.push(`${consumer}:${field}`);
+    }
+    for (const field of Object.keys(CONSUMER_REQUIRED_FIELD_KINDS.review_context ?? {})) if (!keys.has(field.split('.')[0])) missing.push(`kind:${field}`);
+    return missing;
+  };
+  assert.deepEqual(parity(documented), []);
+  const withoutTrackProfile = new Set([...documented].filter(key => key !== 'track_profile'));
+  assert.ok(parity(withoutTrackProfile).length > 0, 'dropping a consumer-required field from the example is detected');
+});
+
+// ---------------------------------------------------------------------------
+// Review follow-up (audit-findings-repair-20260928, repair selected by the user):
+// the finish dispatch is verified by the canonical adapter from host-held step,
+// scope, ownership, anchor and chain, and consumers read host evidence safely.
+// ---------------------------------------------------------------------------
+import { readFileSync as followupRead } from 'node:fs';
+import { createHash as followupHash } from 'node:crypto';
+
+const followupSurfaces = ['return_values', 'output_shape', 'public_exports', 'public_types', 'public_API_and_signatures',
+  'routes_status_errors_validation_order', 'side_effects_and_order', 'async_concurrency_transaction', 'retry_timeout_cache',
+  'auth_permissions_tenant_approval', 'persistence_and_query', 'rendering_DOM_accessibility', 'telemetry_and_audit',
+  'strings_and_prompts', 'framework_metadata', 'dependencies_and_config'];
+const followupClassify = "export function classify_source({ path, content }) {\n  const lines = content.toString('utf8').replace(/\\n$/u, '').split('\\n').length;\n  return path.startsWith('src/') ? { kind: 'executable', hunks: [{ path, start_line: 1, end_line: lines }], protected_surfaces: [] } : { kind: 'protected', hunks: [], protected_surfaces: ['all'] };\n}\n";
+const followupPreserve = `const SURFACES = ${JSON.stringify(followupSurfaces)};\nexport function verify_preservation({ before, after }) {\n  const value = text => String(text ?? '').match(/export const value = (\\d+)/u)?.[1];\n  const ok = Object.keys(after).every(file => value(before[file]) !== undefined && value(before[file]) === value(after[file]));\n  return Object.fromEntries(SURFACES.map(surface => [surface, { status: ok ? 'verified' : 'blocked', reason: 'Fixture value guard.' }]));\n}\n`;
+const followupSha = text => `sha256:${followupHash('sha256').update(text).digest('hex')}`;
+const followupStep = owner => ({ step_id: 'finish-simplify', owner_repository_id: owner, allowed_paths: ['src/value.mjs', 'guide.md'], prohibited_paths: [],
+  verification_commands: [{ command: [process.execPath, 'oracle.mjs'], cwd: '.', scope: [{ path: 'src/value.mjs', start_line: 1, end_line: 1 }] }],
+  oracles: { classify_source: 'oracles/classify.mjs#classify_source', verify_preservation: 'oracles/preserve.mjs#verify_preservation' } });
+
+async function followupFinish(t, verifier) {
+  const setup = ({ root, write }) => {
+    write('oracles/classify.mjs', followupClassify); write('oracles/preserve.mjs', followupPreserve);
+    const git = (...args) => repairExec('git', args, { cwd: root, encoding: 'utf8', windowsHide: true });
+    git('add', '.');
+    git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '--quiet', '-m', 'trusted oracles');
+  };
+  const f = await finishFixture(t, { simplify: 'apply', review: 'skip', setup,
+    planBody: '```simplify-host-policy\n' + JSON.stringify({ schema_version: 1, steps: [followupStep('github.com/example/app')] }) + '\n```\n',
+    policy: { hooks: [{ id: 'implementation', owner: 'executor', paths: ['src/value.mjs'] }] },
+    runtime: { simplify_verifier: verifier } });
+  // The generated code is written inside an observed implementation window after the runtime started.
+  const before = f.observation.snapshot();
+  f.write('src/value.mjs', 'export const value = 1;   // generated\n');
+  f.context.phase_receipts.implementation = f.observation.recordHook('implementation', before.fingerprint);
+  f.run('baseline');
+  return f;
+}
+
+// Emulates one runner pass; the receipt is only an index over the host's own anchor.
+function followupPass(f, dispatch, content, patch = {}) {
+  const previous = followupRead(path.join(f.root, 'src/value.mjs'), 'utf8');
+  f.write('src/value.mjs', content);
+  return f.observation.recordSimplify(dispatch.token, { schema_version: 1, kind: 'simplify-host-receipt:v1',
+    repository_id: f.context.identity.owner_repository_id, change_ref: f.context.identity.change_ref,
+    plan: { path: f.plan.metadata.repository_relative_path, approval_hash: f.plan.metadata.approval_hash, step_id: 'finish-simplify' },
+    anchor: { kind: 'host-snapshot', fingerprint: dispatch.anchor.fingerprint }, base_revision: dispatch.anchor.revision, action: 'apply-explicit-scope',
+    chain_index: dispatch.chain?.length ?? 0, status: 'verified', pass_paths: ['src/value.mjs'],
+    before: { 'src/value.mjs': followupSha(previous) }, after: { 'src/value.mjs': followupSha(content) }, hunks: 1, commands: [], blockers: [], ...patch });
+}
+const followupVerifier = async () => (await importRepoModule('_refs/simplify/host-runner.mjs')).createFinishSimplifyVerifier({ step_id: 'finish-simplify' });
+
+test('case-repair-finish-verifier: the canonical adapter verifies a real pass and rejects forged, widened or behavior-changing receipts', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await followupFinish(t, await followupVerifier());
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).next_actions[0]?.runner, 'host-runner');
+  const dispatch = f.observation.beginSimplify();
+  const recorded = followupPass(f, dispatch, 'export const value = 1; // generated\n');
+  assert.equal(recorded.valid, true, JSON.stringify(recorded));
+  f.context.phase_receipts.simplify = recorded.proof;
+  assert.equal(completeExecution({ finish_context: f.context }, f.runtime).next_actions[0]?.phase, 'reverify');
+  for (const [label, content, patch] of [
+    ['behavior change', 'export const value = 2; // generated\n', {}],
+    ['forged after hash', 'export const value = 1; // generated\n', { after: { 'src/value.mjs': `sha256:${'0'.repeat(64)}` } }],
+    ['widened scope', 'export const value = 1; // generated\n', { pass_paths: ['src/value.mjs', 'guide.md'] }],
+    ['foreign plan', 'export const value = 1; // generated\n', { plan: { path: 'other.md', approval_hash: `sha256:v1:${'1'.repeat(64)}`, step_id: 'finish-simplify' } }],
+  ]) {
+    const g = await followupFinish(t, await followupVerifier());
+    assert.equal(followupPass(g, g.observation.beginSimplify(), content, patch).valid, false, label);
+  }
+});
+
+test('case-repair-dispatch-chain: dispatches share the first anchor, count caps across the chain and need the recorded proof', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await followupFinish(t, await followupVerifier());
+  const first = f.observation.beginSimplify();
+  assert.equal(followupPass(f, first, 'export const value = 1;  // generated\n').valid, true);
+  const omitted = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(omitted.status, 'blocked', `an omitted proof cannot reopen Apply: ${JSON.stringify(omitted)}`);
+  assert.match(omitted.blockers.join(' '), /verified simplify dispatch/u);
+  const second = f.observation.beginSimplify();
+  assert.equal(second.anchor.fingerprint, first.anchor.fingerprint, 'every dispatch keeps the first host anchor');
+  assert.equal(second.chain.length, 1, 'the host hands its verified chain to the next dispatch');
+  assert.equal(followupPass(f, second, 'export const value = 1; // generated\n').valid, true);
+  const capped = followupPass(f, f.observation.beginSimplify(), 'export const value = 1; //generated\n');
+  assert.equal(capped.valid, false);
+  assert.match(capped.blockers.join(' '), /pass cap/u);
+});
+
+test('case-repair-observed-consumers: repair reads stale host-verified evidence diagnostically while ship blocks it', async t => {
+  const { evaluateSimplifyConsumer } = await importRepoModule('_refs/simplify/simplify-contract.mjs');
+  const f = await followupFinish(t, await followupVerifier());
+  const recorded = followupPass(f, f.observation.beginSimplify(), 'export const value = 1; // generated\n');
+  assert.equal(recorded.valid, true, JSON.stringify(recorded));
+  const runtime = consumer => ({ observation: f.observation, proof: recorded.proof, consumer });
+  assert.equal(evaluateSimplifyConsumer(undefined, runtime('sdcorejs-ship')).verification_current, true);
+  f.write('src/value.mjs', 'export const value = 1; // repaired\n');
+  const repair = evaluateSimplifyConsumer(undefined, runtime('sdcorejs-repair-loop'));
+  assert.deepEqual(repair.blockers, [], JSON.stringify(repair));
+  assert.equal(repair.evidence_current, false);
+  assert.ok(evaluateSimplifyConsumer(undefined, runtime('sdcorejs-ship')).blockers.length > 0, 'ship still blocks stale evidence');
+});
+
+test('case-repair-outcome-source: a dispatch verdict must name its outcome; the host never defaults it', async t => {
+  const f = await finishFixture(t, { simplify: 'apply', review: 'skip',
+    runtime: { simplify_verifier: () => ({ verified: true, pass_paths: ['src/value.mjs'], blockers: [] }) } });
+  f.run('baseline');
+  const dispatch = f.observation.beginSimplify();
+  f.write('src/value.mjs', 'export const value = 1; // simplified\n');
+  const recorded = f.observation.recordSimplify(dispatch.token, { schema_version: 1, kind: 'simplify-host-receipt:v1', status: 'verified', pass_paths: ['src/value.mjs'] });
+  assert.equal(recorded.valid, false, JSON.stringify(recorded));
+  assert.match(recorded.blockers.join(' '), /outcome/u);
+});
+
+// Second review follow-up: routing follows host-held simplify state, never the payload.
+test('case-repair-host-state-routing: host-held passes decide routing; a dropped payload or a skip cannot hide them', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const { evaluateSimplifyPostflight } = await importRepoModule('_refs/simplify/simplify-contract.mjs');
+  const f = await finishFixture(t, { simplify: 'apply', review: 'skip',
+    runtime: { simplify_verifier: () => ({ verified: true, outcome: 'simplified', pass_paths: ['src/value.mjs'], blockers: [] }) } });
+  const { session, context, command } = await repairSimplifyGrant(t, f); f.run('baseline');
+  const granted = completeExecution({ finish_context: f.context }, f.runtime).next_actions[0];
+  assert.ok(granted?.preflight_ref, JSON.stringify(granted));
+  session.applyEdits(granted.preflight_ref, [{ path: 'src/value.mjs', content: 'export const value = 1; // simplified\n' }]);
+  const post = { ...structuredClone(context), phase: 'postflight', preflight_ref: granted.preflight_ref, passes: session.ledger() };
+  post.verification.after = [session.runVerification(command)];
+  const verified = evaluateSimplifyPostflight(post, { session });
+  assert.equal(verified.status, 'verified');
+  // The payload keeps the session context but omits the simplify proof: Apply never reopens.
+  f.context.simplify_context = verified.context; f.run('baseline');
+  const unproven = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(unproven.status, 'blocked', JSON.stringify(unproven));
+  assert.match(unproven.blockers.join(' '), /completed session pass/u);
+  // A skip cannot hide the completed session pass.
+  f.choose('simplify', 'skip');
+  const hidden = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(hidden.status, 'blocked', JSON.stringify(hidden));
+  assert.match(hidden.blockers.join(' '), /skip cannot hide/u);
+  f.choose('simplify', 'apply');
+  // The payload drops both the session context and the simplify receipt.
+  f.context.simplify_context = null; delete f.runtime.simplify_runtime; f.run('baseline');
+  const dropped = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(dropped.status, 'blocked', `a completed session pass is not rerouted to the runner: ${JSON.stringify(dropped)}`);
+  // A host session without a completed pass is not bypassed by dropping its context either.
+  const h = await finishFixture(t, { simplify: 'apply', review: 'skip',
+    runtime: { simplify_verifier: () => ({ verified: true, outcome: 'simplified', pass_paths: ['src/value.mjs'], blockers: [] }) } });
+  await repairSimplifyGrant(t, h); h.run('baseline');
+  h.context.simplify_context = null; delete h.runtime.simplify_runtime;
+  const bypassed = completeExecution({ finish_context: h.context }, h.runtime);
+  assert.equal(bypassed.status, 'blocked', `a host session is not bypassed through the runner: ${JSON.stringify(bypassed)}`);
+  assert.match(bypassed.blockers.join(' '), /simplify session/u);
+  const g = await followupFinish(t, await followupVerifier());
+  assert.equal(followupPass(g, g.observation.beginSimplify(), 'export const value = 1; // generated\n').valid, true);
+  g.choose('simplify', 'skip');
+  const skipped = completeExecution({ finish_context: g.context }, g.runtime);
+  assert.equal(skipped.status, 'blocked', `a skip cannot hide a verified dispatch: ${JSON.stringify(skipped)}`);
+  assert.match(skipped.blockers.join(' '), /skip cannot hide/u);
+});
+
+// Third review follow-up: a repair receipt does not hide a verified pass without its proof.
+test('case-repair-repaired-host-pass: a repair receipt cannot skip the proof of a verified simplify pass', async t => {
+  const { completeExecution } = await import('../../_refs/orchestration/execution-contract.mjs');
+  const f = await finishFixture(t, { simplify: 'apply', review: 'review-and-repair',
+    runtime: { simplify_verifier: () => ({ verified: true, outcome: 'simplified', pass_paths: ['src/value.mjs'], blockers: [] }) } });
+  f.run('baseline');
+  const dispatch = f.observation.beginSimplify();
+  f.write('src/value.mjs', 'export const value = 1; // simplified\n');
+  const recorded = f.observation.recordSimplify(dispatch.token, { schema_version: 1, kind: 'simplify-host-receipt:v1', status: 'verified', pass_paths: ['src/value.mjs'] });
+  assert.equal(recorded.valid, true, JSON.stringify(recorded));
+  for (const phase of ['baseline', 'review', 'repair']) f.run(phase);
+  const result = completeExecution({ finish_context: f.context }, f.runtime);
+  assert.equal(result.status, 'blocked', JSON.stringify(result));
+  assert.match(result.blockers.join(' '), /verified simplify dispatch/u);
+});
+
+test('case-repair-nested-metadata: nested repositories and links record their lstat size and mtime', async t => {
+  const { captureRepository } = await importRepoModule('_refs/shared/repository-observation.mjs');
+  const root = repairRealpath.native(repairRepository(t, { '.gitignore': 'vendor/\n', 'src/a.mjs': 'export const a = 1;\n' }));
+  repairMkdir(path.join(root, 'vendor/nested'), { recursive: true });
+  repairExec('git', ['init', '--quiet'], { cwd: path.join(root, 'vendor/nested'), windowsHide: true });
+  repairLink(path.join(root, 'src'), path.join(root, 'vendor/link'));
+  const snapshot = captureRepository({ root, owner: 'github.com/example/app', volatile: [], guarded: [] });
+  for (const [file, kind] of [['vendor/nested/.git', 'nested-repository'], ['vendor/link', 'symlink']]) {
+    const entry = snapshot.files[file];
+    assert.equal(entry?.kind, kind, JSON.stringify(entry));
+    assert.ok(entry.size !== undefined && entry.mtime_ns !== undefined, `${file}: ${JSON.stringify(entry)}`);
   }
 });

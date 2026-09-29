@@ -4,7 +4,7 @@ import { designFixture } from './design-handoff-fixture.mjs';
 import { createDesignVerificationRuntime } from '../../../_refs/shared/design-verification.mjs';
 import { createUiReviewRuntime, beginUiReviewObservation, recordUiEvidence } from '../../../_refs/shared/ui-review-contract.mjs';
 
-export function uiReviewFixture(t, { scenario = 'action-popover', purpose = 'implemented-ui-conformance', required = ['source'], independent = false, baseline = false, authority = {}, reviewer = {} } = {}) {
+export function uiReviewFixture(t, { scenario = 'action-popover', purpose = 'implemented-ui-conformance', required = ['source'], independent = false, baseline = false, authority = {}, reviewer = {}, planExtras = {} } = {}) {
   const f = designFixture(t);
   const doc = readFileSync(new URL('../../../_refs/shared/ui-review.md', import.meta.url), 'utf8');
   const sample = doc.match(/<!-- ui-review-v1-example -->\s*~~~json\n([\s\S]*?)\n~~~/u);
@@ -29,7 +29,7 @@ export function uiReviewFixture(t, { scenario = 'action-popover', purpose = 'imp
   const visual = { owner_repository_id: f.repo, change_ref: context.change_ref, target_ids: [target.id] };
   const parentBody = { design_requirements: f.requirements, ui_review_requirements: policy, visual_contract: visual };
   const spec = f.approve('spec', '.sdcorejs/specs/design/orders.md', parentBody);
-  const plan = f.approve('plan', '.sdcorejs/plans/design/orders.md', parentBody, [spec], { allowed_paths: ['src/**'], prohibited_paths: [] });
+  const plan = f.approve('plan', '.sdcorejs/plans/design/orders.md', { ...parentBody, ...planExtras }, [spec], { allowed_paths: ['src/**'], prohibited_paths: [] });
   f.handoff.metadata.parent_references = [spec, plan];
   const design = f.approve('design-handoff', f.handoff.metadata.repository_relative_path, f.handoff, [spec, plan]);
   if (baseline) context.ui_review.baseline = { kind: 'visual-contract', artifact_ref: spec, reason: null };
@@ -48,7 +48,8 @@ export function uiReviewFixture(t, { scenario = 'action-popover', purpose = 'imp
       const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
       const output = kind === 'rendered' ? Buffer.from(png, 'base64') : Buffer.from('{"keyboard":"executed-fixture"}');
       execFileSync(process.execPath, ['-e', 'require("node:fs").writeFileSync(process.argv[1],Buffer.from(process.argv[2],"base64"))', artifactPath, output.toString('base64')], { cwd, windowsHide: true });
-      return { command, cwd: '.', exit_code: 0, target: observedTarget, kind, artifact_path: artifactPath,
+      // A completed run reports explicit interruption/timeout flags (audit repair UR-2).
+      return { command, cwd: '.', exit_code: 0, interrupted: false, timed_out: false, target: observedTarget, kind, artifact_path: artifactPath,
         provenance: 'real-product', build_id: 'synthetic-fixture-build', image_width: 1, image_height: 1,
         assertions: [{ id: 'fixture-keyboard', result: 'PASS' }] };
     },

@@ -1,0 +1,1268 @@
+{
+  "schema_version": 1,
+  "change_ref": "audit-findings-repair-20260928",
+  "evidence_class": "deterministic-contract",
+  "owner_repository_id": "github.com/sdcorejs/sdcorejs-agent",
+  "cwd": ".",
+  "source_revision": "70c933c3fc59a98b92c03004de902bc96250fba6",
+  "working_tree_dirty": true,
+  "content_normalization": "UTF-8 with LF line endings",
+  "scope_plan": ".sdcorejs/plans/workflow/2026-09-28-11-06-audit-findings-repair.md",
+  "previous_continuation": {
+    "path": "authoring/evals/skill-body-progressive-loading.json",
+    "revision": "70c933c3fc59a98b92c03004de902bc96250fba6",
+    "sha256": "sha256:6fb1acdcf4d27a38f4bc9d4fd8f78b9d3c449516a200c626dc9da42cf3a399b5"
+  },
+  "source_roots": [
+    ".claude/skills/sdcorejs-using-skills/SKILL.md",
+    ".claude/sync-skills.ps1",
+    ".clinerules",
+    ".github/chatmodes/sdcorejs.chatmode.md",
+    ".github/copilot-instructions.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "VALIDATION.md",
+    "_refs/angular/core-docs-fetch.mjs",
+    "_refs/angular/core-version.md",
+    "_refs/angular/execution-contract.mjs",
+    "_refs/angular/review-accessibility.md",
+    "_refs/angular/review-code.md",
+    "_refs/angular/styling.md",
+    "_refs/angular/templates/entity-skeleton.md",
+    "_refs/angular/templates/feature-component-boundaries.md",
+    "_refs/angular/templates/init-module-templates.md",
+    "_refs/angular/templates/orchestrator-step-examples.md",
+    "_refs/angular/templates/screen-detail-component.md",
+    "_refs/angular/test-e2e.md",
+    "_refs/angular/test-integration.md",
+    "_refs/angular/test-unit.md",
+    "_refs/angular/write-code/actions.md",
+    "_refs/angular/write-code/finishing.md",
+    "_refs/angular/write-code/generation-process.md",
+    "_refs/angular/write-code/generation-rules.md",
+    "_refs/angular/write-code/init-entity.md",
+    "_refs/angular/write-code/init-module.md",
+    "_refs/angular/write-code/init-portal.md",
+    "_refs/angular/write-code/input-analysis.md",
+    "_refs/angular/write-code/mock-api-input.md",
+    "_refs/angular/write-code/po-ba-prototype.md",
+    "_refs/angular/write-code/reuse-existing-entities.md",
+    "_refs/angular/write-code/screen-detail.md",
+    "_refs/angular/write-code/screen-list.md",
+    "_refs/design/frontend-design.md",
+    "_refs/design/handoff-authoring.md",
+    "_refs/design/mobile-design.md",
+    "_refs/design/uiux/catalog.json",
+    "_refs/design/uiux/charts.md",
+    "_refs/design/uiux/forms.md",
+    "_refs/design/uiux/index.md",
+    "_refs/design/uiux/navigation.md",
+    "_refs/design/uiux/public-web.md",
+    "_refs/design/uiux/select-references.mjs",
+    "_refs/design/uiux/sources.md",
+    "_refs/design/uiux/states.md",
+    "_refs/design/uiux/tables.md",
+    "_refs/design/uiux/upstream-license.txt",
+    "_refs/design/uiux/visual.md",
+    "_refs/documentation/gate.md",
+    "_refs/documentation/write-user-guide.md",
+    "_refs/explore/authorized-persistence.md",
+    "_refs/explore/read-actions.md",
+    "_refs/harness/capability-contract.json",
+    "_refs/harness/communication-economy.md",
+    "_refs/harness/communication-economy.mjs",
+    "_refs/harness/delegation-policy.json",
+    "_refs/harness/runtime-attestation.md",
+    "_refs/harness/runtime-attestation.mjs",
+    "_refs/harness/runtime-policy.mjs",
+    "_refs/nestjs/review-code.md",
+    "_refs/nestjs/test-e2e.md",
+    "_refs/nestjs/test-integration.md",
+    "_refs/nestjs/test-unit.md",
+    "_refs/nextjs/build-website/review-accessibility.md",
+    "_refs/nextjs/build-website/review-code.md",
+    "_refs/nextjs/build-website/test-e2e.md",
+    "_refs/nextjs/build-website/write-code/init-site.md",
+    "_refs/nextjs/build-website/write-code/pages-and-blocks.md",
+    "_refs/nextjs/build-website/write-code/responsive.md",
+    "_refs/nextjs/execution-contract.mjs",
+    "_refs/orchestration/execution-contract.mjs",
+    "_refs/orchestration/parallel-protocol.md",
+    "_refs/orchestration/parallel-protocol.mjs",
+    "_refs/orchestration/release-changelog.md",
+    "_refs/orchestration/repair-contract.mjs",
+    "_refs/orchestration/tail/branch-ready.md",
+    "_refs/orchestration/tail/repair-loop.md",
+    "_refs/orchestration/tail/ship-context.md",
+    "_refs/orchestration/tail/verify-before-done.md",
+    "_refs/orchestration/workspace-isolation.md",
+    "_refs/review/context-extensions.md",
+    "_refs/review/output-contract.md",
+    "_refs/review/probes.md",
+    "_refs/review/profiles-and-refs.md",
+    "_refs/sdlc/angular.md",
+    "_refs/sdlc/architecture.md",
+    "_refs/sdlc/nextjs.md",
+    "_refs/sdlc/static-visual-composer.md",
+    "_refs/sdlc/static-visual-composer.mjs",
+    "_refs/sdlc/visual-companion.md",
+    "_refs/sdlc/visual-companion/renderer.mjs",
+    "_refs/sdlc/visual-companion/screen.mjs",
+    "_refs/sdlc/visual-offer-policy.md",
+    "_refs/sdlc/visual-screen.schema.json",
+    "_refs/shared/approved-artifact.mjs",
+    "_refs/shared/architecture-contract.mjs",
+    "_refs/shared/artifact-lifecycle.mjs",
+    "_refs/shared/artifact-paths.mjs",
+    "_refs/shared/convention-contract.mjs",
+    "_refs/shared/convention-paths.mjs",
+    "_refs/shared/convergence-contract.mjs",
+    "_refs/shared/debug-command-discovery.md",
+    "_refs/shared/debug-context.md",
+    "_refs/shared/debug-environment-guard.md",
+    "_refs/shared/debugging-discipline.md",
+    "_refs/shared/decision-coverage.md",
+    "_refs/shared/decision-coverage.mjs",
+    "_refs/shared/design-handoff.md",
+    "_refs/shared/design-handoff.mjs",
+    "_refs/shared/design-verification.mjs",
+    "_refs/shared/documentation-layout.mjs",
+    "_refs/shared/evidence-artifact.mjs",
+    "_refs/shared/explore-context.md",
+    "_refs/shared/explore-contract.mjs",
+    "_refs/shared/finish-gate.md",
+    "_refs/shared/finish-gate.mjs",
+    "_refs/shared/frontend-architecture.md",
+    "_refs/shared/module-e2e-contract.mjs",
+    "_refs/shared/product-ledger.mjs",
+    "_refs/shared/project-context.md",
+    "_refs/shared/project-context.mjs",
+    "_refs/shared/repository-contract.mjs",
+    "_refs/shared/repository-observation.mjs",
+    "_refs/shared/review-accessibility.md",
+    "_refs/shared/review-architecture.md",
+    "_refs/shared/review-code.md",
+    "_refs/shared/review-consistency.md",
+    "_refs/shared/review-contract.mjs",
+    "_refs/shared/review-performance.md",
+    "_refs/shared/review-security.md",
+    "_refs/shared/runtime-protocols.md",
+    "_refs/shared/sdcorejs-utils.md",
+    "_refs/shared/ship-readiness-contract.mjs",
+    "_refs/shared/system-registry.json",
+    "_refs/shared/system-registry.mjs",
+    "_refs/shared/test-command-discovery.md",
+    "_refs/shared/test-context.md",
+    "_refs/shared/test-environment-guard.md",
+    "_refs/shared/test-generic.md",
+    "_refs/shared/test-ui-evidence.md",
+    "_refs/shared/ui-review-contract.mjs",
+    "_refs/shared/ui-review.md",
+    "_refs/shared/user-choice-prompt.md",
+    "_refs/shared/user-guide-template.md",
+    "_refs/shared/validation-map.md",
+    "_refs/shared/validation-map.mjs",
+    "_refs/simplify/host-runner.mjs",
+    "_refs/simplify/repository-evidence.mjs",
+    "_refs/simplify/scope-and-invariants.md",
+    "_refs/simplify/simplify-contract.mjs",
+    "_refs/simplify/verification.md",
+    "authoring/README.md",
+    "authoring/evals/run-deterministic.mjs",
+    "authoring/evals/scenarios.json",
+    "authoring/evals/skill-authoring-contract.mjs",
+    "authoring/evals/uiux/evidence.test.mjs",
+    "authoring/skills/sdcorejs-skill-authoring/SKILL.md",
+    "codex/skills/_refs/orchestration/tail/repair-loop.md",
+    "codex/skills/_refs/shared/debug-context.md",
+    "codex/skills/_refs/shared/review-code.md",
+    "docs/po-ba-prototype-examples.md",
+    "package-lock.json",
+    "package.json",
+    "scripts/check-executable-references.mjs",
+    "scripts/check-text-hygiene.mjs",
+    "scripts/measure-communication-economy.mjs",
+    "scripts/sync-skills.mjs",
+    "skills/orchestration/documentation.md",
+    "skills/orchestration/parallel-dispatch.md",
+    "skills/orchestration/repair-loop.md",
+    "skills/orchestration/subagent-driven-development.md",
+    "skills/orchestration/using-skills.md",
+    "skills/shared/sdlc/01-brainstorming.md",
+    "skills/shared/sdlc/02-spec.md",
+    "skills/shared/sdlc/03-plan.md",
+    "skills/shared/sdlc/04-execute-plan.md",
+    "skills/shared/sdlc/architecture.md",
+    "skills/shared/workflow/debug.md",
+    "skills/shared/workflow/explore.md",
+    "skills/shared/workflow/git.md",
+    "skills/shared/workflow/review.md",
+    "skills/shared/workflow/ship.md",
+    "skills/shared/workflow/simplify.md",
+    "skills/tracks/ai-agent/sdcorejs-ai-agent.md",
+    "skills/tracks/angular/sdcorejs-angular.md",
+    "skills/tracks/design/sdcorejs-design.md",
+    "skills/tracks/nestjs/sdcorejs-nestjs.md",
+    "skills/tracks/nextjs/sdcorejs-nextjs.md",
+    "skills/tracks/product/sdcorejs-product.md",
+    "skills/tracks/test/sdcorejs-test.md",
+    "test/e2e/ai-agent-track-contract.test.mjs",
+    "test/e2e/angular-production-contract.test.mjs",
+    "test/e2e/architecture-contract.test.mjs",
+    "test/e2e/artifact-path-convention.test.mjs",
+    "test/e2e/communication-economy.test.mjs",
+    "test/e2e/convention-artifact-lifecycle.test.mjs",
+    "test/e2e/convention-contract.test.mjs",
+    "test/e2e/convention-review.test.mjs",
+    "test/e2e/convergence-contract.test.mjs",
+    "test/e2e/decision-coverage-contract.test.mjs",
+    "test/e2e/design-handoff-contract.test.mjs",
+    "test/e2e/documentation-layout-contract.test.mjs",
+    "test/e2e/explore-topology.test.mjs",
+    "test/e2e/fixtures/communication-economy-baseline.json",
+    "test/e2e/fixtures/communication-economy-live-ab.json",
+    "test/e2e/fixtures/communication-economy-scenarios.json",
+    "test/e2e/fixtures/harness-behavior-scenarios.json",
+    "test/e2e/fixtures/prompt-evals.json",
+    "test/e2e/fixtures/visual-offer-scenarios.json",
+    "test/e2e/harness-behavioral-sentinel.test.mjs",
+    "test/e2e/nextjs-production-contract.test.mjs",
+    "test/e2e/npm-publication-contract.test.mjs",
+    "test/e2e/parallel-dispatch-protocol.test.mjs",
+    "test/e2e/production-readiness-contract.test.mjs",
+    "test/e2e/project-context-artifact-lifecycle.test.mjs",
+    "test/e2e/repair-contract.test.mjs",
+    "test/e2e/review-contract.test.mjs",
+    "test/e2e/ship-readiness-contract.test.mjs",
+    "test/e2e/simplify-protected-contract.test.mjs",
+    "test/e2e/simplify-skill-contract.test.mjs",
+    "test/e2e/skill-authoring-contract.test.mjs",
+    "test/e2e/skill-pack-runner.test.mjs",
+    "test/e2e/support/cli-adapters.mjs",
+    "test/e2e/support/design-handoff-fixture.mjs",
+    "test/e2e/support/harness-behavior-runner.mjs",
+    "test/e2e/support/interaction-finish-fixture.mjs",
+    "test/e2e/support/simplify-contract-fixture.mjs",
+    "test/e2e/support/skill-pack-runner.mjs",
+    "test/e2e/support/test-track-forward-harness.mjs",
+    "test/e2e/support/ui-review-fixture.mjs",
+    "test/e2e/support/visual-offer-eval-runner.mjs",
+    "test/e2e/test-track-contract.test.mjs",
+    "test/e2e/uiux-knowledge.test.mjs",
+    "test/e2e/uiux-review-regression.test.mjs",
+    "test/e2e/uiux-skill-creator-regression.test.mjs",
+    "test/e2e/validation-map-contract.test.mjs",
+    "test/e2e/visual-offer-policy.test.mjs"
+  ],
+  "source_manifest": [
+    {
+      "path": ".claude/skills/sdcorejs-using-skills/SKILL.md",
+      "sha256": "sha256:179c95de5a9b3094357d4019d1646916f5edf494cef3a98d7ad7796a7bfb3953"
+    },
+    {
+      "path": ".claude/sync-skills.ps1",
+      "sha256": "sha256:5a15efa8f5d6b755de964990ce9f13cf888a4f05008ec86b8e8f66e8c9ba1eb3"
+    },
+    {
+      "path": ".clinerules",
+      "sha256": "sha256:af81621c3968963a2275ebf336d34bf080a691bf79c0be35e6b93400eb4d7c6c"
+    },
+    {
+      "path": ".github/chatmodes/sdcorejs.chatmode.md",
+      "sha256": "sha256:6eb464680592d72fd9645fed5930bc3029cc1da49b3f78a5b86276e0d2a9b821"
+    },
+    {
+      "path": ".github/copilot-instructions.md",
+      "sha256": "sha256:7a1f271fad51fbfdefba9450e28560d5a16adf55d96946f85fc187db84c9de04"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "sha256:e52677420ce2fa0a91e725bf087eebfba1c9ebf32e0195b923e2a90645dc5340"
+    },
+    {
+      "path": "CLAUDE.md",
+      "sha256": "sha256:7659551d7bffd26f19bb9fa014a73d020b58bd60956366b40205524de9764dd2"
+    },
+    {
+      "path": "VALIDATION.md",
+      "sha256": "sha256:6577f6815fb568408df4c1c95fb610c8773bca44d33df272402049d847c23d63"
+    },
+    {
+      "path": "_refs/angular/core-docs-fetch.mjs",
+      "sha256": "sha256:5ddadf5c69b5686f70a844a601f6ffa40a4cbbd14759b7ef3f206bea7c8a8e46"
+    },
+    {
+      "path": "_refs/angular/core-version.md",
+      "sha256": "sha256:3f1714db523f23924376db81596b4386d7b6ec0e3e451b0f6732050f70fe5fb4"
+    },
+    {
+      "path": "_refs/angular/execution-contract.mjs",
+      "sha256": "sha256:484023791a1f953d2df848732850360716a83d861fcf9d8ff8021a351dde2b52"
+    },
+    {
+      "path": "_refs/angular/review-accessibility.md",
+      "sha256": "sha256:758532551b4e908866a95aeb20f9b7596f80691c78ad0c56a9ec0ae2430bede5"
+    },
+    {
+      "path": "_refs/angular/review-code.md",
+      "sha256": "sha256:83ccecb1d1507541084728ace43d1d683c677bc6fd2e127ca2f15f1b7f805639"
+    },
+    {
+      "path": "_refs/angular/styling.md",
+      "sha256": "sha256:bd9daf4cb94576198af145f01f43c36cba5428c74edb69247ae805e7e1f766f3"
+    },
+    {
+      "path": "_refs/angular/templates/entity-skeleton.md",
+      "sha256": "sha256:0845d59b290366ff01bf6868e8c3063c66afc05eb42117ff53a270c30464e3d4"
+    },
+    {
+      "path": "_refs/angular/templates/feature-component-boundaries.md",
+      "sha256": "sha256:bf33fe29f5e6a0766284e2fcd7bcf19527084d35bd2ba0dd45a83ce9233b8a5d"
+    },
+    {
+      "path": "_refs/angular/templates/init-module-templates.md",
+      "sha256": "sha256:d1a6872cda5831374f1bd7f16f66f98e6f54bc565b6f2b0e8bc8a53f4fffe6a9"
+    },
+    {
+      "path": "_refs/angular/templates/orchestrator-step-examples.md",
+      "sha256": "sha256:a9cde18c27a17be743433b21238a219e44f6ea8cebfaa3bc57ea3bdb869a93fc"
+    },
+    {
+      "path": "_refs/angular/templates/screen-detail-component.md",
+      "sha256": "sha256:fde9daf5ac59e4ad3aafeb09dd4f86eef1694c090397c1bb14ead3e0bb9e0678"
+    },
+    {
+      "path": "_refs/angular/test-e2e.md",
+      "sha256": "sha256:a8ba93e89eb3d7611256b1221ff62274b66cdae3918e6cdb7ac612f89594b2c3"
+    },
+    {
+      "path": "_refs/angular/test-integration.md",
+      "sha256": "sha256:7eda9da7adde782ed6d7b46569a75cf0b1a308c2ee5453c95f2b02bce6e93450"
+    },
+    {
+      "path": "_refs/angular/test-unit.md",
+      "sha256": "sha256:8186e1c5275cae50183a9bc64aadb146bfd4be130e415bb5cc6a9d5e87573262"
+    },
+    {
+      "path": "_refs/angular/write-code/actions.md",
+      "sha256": "sha256:8593ac340014ddcfcb090ff6a8cd98c5b2833843d6c10d0696901b8ab408894f"
+    },
+    {
+      "path": "_refs/angular/write-code/finishing.md",
+      "sha256": "sha256:79a77030c0f49855a179e96139909943988e5b0737d0b8e97283ae0851a966d8"
+    },
+    {
+      "path": "_refs/angular/write-code/generation-process.md",
+      "sha256": "sha256:9ad313de9ed063277cfa72185775ffac5d6a91ade840a1ee8bff833cf73d8302"
+    },
+    {
+      "path": "_refs/angular/write-code/generation-rules.md",
+      "sha256": "sha256:dd8e225e1e1fe1219be0a6bf17ead207f0e63bea963d8a1d26d17f32eed40756"
+    },
+    {
+      "path": "_refs/angular/write-code/init-entity.md",
+      "sha256": "sha256:9e0e4379dce0ff450813b2f0f12f1a9c462afa7a82bdfe4763674dacb87ad11c"
+    },
+    {
+      "path": "_refs/angular/write-code/init-module.md",
+      "sha256": "sha256:08fc1557129393e199286f294f7e4b675eab1c3936c48aae95aef1598d8545eb"
+    },
+    {
+      "path": "_refs/angular/write-code/init-portal.md",
+      "sha256": "sha256:c7d78a75a8af7716ff420cd08a62e5c15ea84b4ea88317f308906a05d0f1d4d0"
+    },
+    {
+      "path": "_refs/angular/write-code/input-analysis.md",
+      "sha256": "sha256:55e5091a628536218255ff25227a186b1788fd7267a212195dd0657c45424908"
+    },
+    {
+      "path": "_refs/angular/write-code/mock-api-input.md",
+      "sha256": "sha256:d9b0439559bdf7fbdc746837fff084f66f41af1e52fbe69009b4841a1e5f2528"
+    },
+    {
+      "path": "_refs/angular/write-code/po-ba-prototype.md",
+      "sha256": "sha256:04574152e5afe029a80a5eff2e248f1e8de1c41823185a0c95bbfac6c052a7b2"
+    },
+    {
+      "path": "_refs/angular/write-code/reuse-existing-entities.md",
+      "sha256": "sha256:973e436fdc9a1db5a0a1c93b5ba50185a94bf0379b17147fb95820c9ce2f5aa4"
+    },
+    {
+      "path": "_refs/angular/write-code/screen-detail.md",
+      "sha256": "sha256:fc6b5882166adb3425a6440041aab8654da955bcf27f481d03cdfcbee66a226d"
+    },
+    {
+      "path": "_refs/angular/write-code/screen-list.md",
+      "sha256": "sha256:6c8611d04cb4ab6f7a62f4b56d59c53c0093536eb8dbdfc28b86fe54da8f95f0"
+    },
+    {
+      "path": "_refs/design/frontend-design.md",
+      "sha256": "sha256:40181e495cdbcff8f8375efdffdc3a8f89d8301abf8806c8381cef8d13b848ee"
+    },
+    {
+      "path": "_refs/design/handoff-authoring.md",
+      "sha256": "sha256:2ad57f3aec48f8a375c97698d6051ff2483bb0168585d0507a5686c185f6caae"
+    },
+    {
+      "path": "_refs/design/mobile-design.md",
+      "sha256": "sha256:92bc975d5d33b9081f26c4bb43609ef6fceb97ad97c09e7cac2718c84ad05587"
+    },
+    {
+      "path": "_refs/design/uiux/catalog.json",
+      "sha256": "sha256:247d420f509b6fc73b10f19103b3d6c62f2e7473c52d4bfee69e0cb3f69229ff"
+    },
+    {
+      "path": "_refs/design/uiux/charts.md",
+      "sha256": "sha256:18d07aebcdf81cc029e8a15f74361b1115520c9cf078605ae94795a8ffaa01cf"
+    },
+    {
+      "path": "_refs/design/uiux/forms.md",
+      "sha256": "sha256:e0c691dee24229d2183f6fcf63776d2df6cfdc42bd431b7d1002070280483261"
+    },
+    {
+      "path": "_refs/design/uiux/index.md",
+      "sha256": "sha256:713c56c1c942e6cafbaaa7d0b35f7d70860528f96ebbd4408b3098bb0b89ac5a"
+    },
+    {
+      "path": "_refs/design/uiux/navigation.md",
+      "sha256": "sha256:396fb9e47024aa1fe86ef66edb55bcd2028bc86a9a3c6df409ff891e20f1c808"
+    },
+    {
+      "path": "_refs/design/uiux/public-web.md",
+      "sha256": "sha256:18f55e3fcb3b8d5dcbfd7d52a38d12c7d8da87ef260ee0bcca12de95e4f56fad"
+    },
+    {
+      "path": "_refs/design/uiux/select-references.mjs",
+      "sha256": "sha256:5bf4dbbcb46ebcb83e85318f55498b7a00123fb59a57dc39496402b39f8edd75"
+    },
+    {
+      "path": "_refs/design/uiux/sources.md",
+      "sha256": "sha256:c686481c4d4c87994d84edfe2ee55474eb9d645cbc73416532577f5bc3532e81"
+    },
+    {
+      "path": "_refs/design/uiux/states.md",
+      "sha256": "sha256:febbea087c19ac5a950303e8afcbbacb459207c8ecace1a93692816e0cd65744"
+    },
+    {
+      "path": "_refs/design/uiux/tables.md",
+      "sha256": "sha256:c8a3830c7cf135c557dd4d684e68d516a288e085a386aa6ef74c52f283c7b169"
+    },
+    {
+      "path": "_refs/design/uiux/upstream-license.txt",
+      "sha256": "sha256:738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014"
+    },
+    {
+      "path": "_refs/design/uiux/visual.md",
+      "sha256": "sha256:a8d67199953355a62b817b6b4b2d620263cc910fd905510f47ae05f0b75a8222"
+    },
+    {
+      "path": "_refs/documentation/gate.md",
+      "sha256": "sha256:4c791b6052f032c62ff30a4a6fd132d22996b72d6cca78056fbbc7eebedb7bdf"
+    },
+    {
+      "path": "_refs/documentation/write-user-guide.md",
+      "sha256": "sha256:6e20da637f7f4c0ff2ee3caf8deb20268ba7545770f87b2e7efbfa43c4427248"
+    },
+    {
+      "path": "_refs/explore/authorized-persistence.md",
+      "sha256": "sha256:5d562bf9701e2f10500d82fb5c496d5397e5d37abe152fcab63027b3c8421673"
+    },
+    {
+      "path": "_refs/explore/read-actions.md",
+      "sha256": "sha256:8f35b51251f683fa4ac87efa1b9f3f29477e056b59a2f73924f3042faeaf616c"
+    },
+    {
+      "path": "_refs/harness/capability-contract.json",
+      "sha256": "sha256:039bf98637e563fe7aab4f11606287892047e881f1e232159f8ba1c521be856e"
+    },
+    {
+      "path": "_refs/harness/communication-economy.md",
+      "sha256": "sha256:bee06c3a94d38db2a1f02e0bc169ebe596a9af30a6ebc646dcf904853f4908ee"
+    },
+    {
+      "path": "_refs/harness/communication-economy.mjs",
+      "sha256": "sha256:11e2e02c6cdbee80b2e57cbc68a3777bc7850aa1204d4535ad32646943602e87"
+    },
+    {
+      "path": "_refs/harness/delegation-policy.json",
+      "sha256": "sha256:1dc65ca512930f6c994f5953927c9e4f6b46b7abd8bbe40ff08884c6cb980a7e"
+    },
+    {
+      "path": "_refs/harness/runtime-attestation.md",
+      "sha256": "sha256:ecdcaaecd3aec4997dcb465026520e4f17e1a5c2cf940dd460739acf142f6b57"
+    },
+    {
+      "path": "_refs/harness/runtime-attestation.mjs",
+      "sha256": "sha256:4855e7b66866dd47cc28000540965431a31c4c3536c0b14102261f42d464650b"
+    },
+    {
+      "path": "_refs/harness/runtime-policy.mjs",
+      "sha256": "sha256:e3da8dbe25fd64ea4f0d06db8cfb38d73a05aed1058ed0135fe952de09ceb902"
+    },
+    {
+      "path": "_refs/nestjs/review-code.md",
+      "sha256": "sha256:ace6fe05ea3808c67df7c37b4f0859f5e224e3dc16ade37e1cf9829f95b35082"
+    },
+    {
+      "path": "_refs/nestjs/test-e2e.md",
+      "sha256": "sha256:896315c74284a5c7206c4d87e09d459a577ad34bafc4eb7192219f93f001c56d"
+    },
+    {
+      "path": "_refs/nestjs/test-integration.md",
+      "sha256": "sha256:739ce13e47982a1c98887a807e82dd06cadb12d43dbda24b7117658251289066"
+    },
+    {
+      "path": "_refs/nestjs/test-unit.md",
+      "sha256": "sha256:12edfa18d45d24e798266f600de3a0ca5a72812f2ec61d19d71b7c0c4dd0e5c9"
+    },
+    {
+      "path": "_refs/nextjs/build-website/review-accessibility.md",
+      "sha256": "sha256:55aaad9a5b56da98a33a0516993c020e1f0ee02edf43935fd280f263d2f5d68b"
+    },
+    {
+      "path": "_refs/nextjs/build-website/review-code.md",
+      "sha256": "sha256:e3e07d3eb2058117f7ce20f8ef7ff69704531dd036a681b1e12e0cb07bb5acbb"
+    },
+    {
+      "path": "_refs/nextjs/build-website/test-e2e.md",
+      "sha256": "sha256:c4cd0dbde2cd42d3b207fea6463c302a7f70d4e759ede63acdea31da14492c35"
+    },
+    {
+      "path": "_refs/nextjs/build-website/write-code/init-site.md",
+      "sha256": "sha256:a8d4f59b77d6867f52fa8daef3fb710fdc56fb3ba0447cc576762f3829dd72b3"
+    },
+    {
+      "path": "_refs/nextjs/build-website/write-code/pages-and-blocks.md",
+      "sha256": "sha256:85091870bd98a52f1c3b9222df5fa9fc538fbe4d92ebd9f93134de1ad1dc812c"
+    },
+    {
+      "path": "_refs/nextjs/build-website/write-code/responsive.md",
+      "sha256": "sha256:cb852fd68412f825b63c0eecf9f7e387d2957e467d0dee78c0999103aa88d17b"
+    },
+    {
+      "path": "_refs/nextjs/execution-contract.mjs",
+      "sha256": "sha256:1c8d1d2f43dae52f3af390e9e753e33d1221af41fb5ab2d50b84bd71e31f14cd"
+    },
+    {
+      "path": "_refs/orchestration/execution-contract.mjs",
+      "sha256": "sha256:8002e3a265db1a61f6542578c236d796c89167dd028789d2e0000dfd3f09368f"
+    },
+    {
+      "path": "_refs/orchestration/parallel-protocol.md",
+      "sha256": "sha256:58d80f37764e4c31cad959ad3b4e486bc7371d913f2756123fccd2ee2c3acd9e"
+    },
+    {
+      "path": "_refs/orchestration/parallel-protocol.mjs",
+      "sha256": "sha256:d81f73adeedc70f1aa837e5df4acf0f0c86e816f4517908c97343cb3525bd680"
+    },
+    {
+      "path": "_refs/orchestration/release-changelog.md",
+      "sha256": "sha256:00f214155da94585b588bbb2414631c146ca2140b21f966930d1317f2e0a2552"
+    },
+    {
+      "path": "_refs/orchestration/repair-contract.mjs",
+      "sha256": "sha256:401816ef5f3bcc1edb284e14d758217b2341d9f06067a8cec6ff7e06858f24ab"
+    },
+    {
+      "path": "_refs/orchestration/tail/branch-ready.md",
+      "sha256": "sha256:2a9529fe7a9aa40632947f5f9226822895e6675e64d31964778dd8eb799bb591"
+    },
+    {
+      "path": "_refs/orchestration/tail/repair-loop.md",
+      "sha256": "sha256:524d0f2535249fe6059fab77b761ce61dc07c90592b104ac6ad80e0c62dda18e"
+    },
+    {
+      "path": "_refs/orchestration/tail/ship-context.md",
+      "sha256": "sha256:1c977b362db13932235b9e0cfa4bf1658e90b234b1538e181e9579340816f829"
+    },
+    {
+      "path": "_refs/orchestration/tail/verify-before-done.md",
+      "sha256": "sha256:54710d7180c406f62a6805aa703c71153ae427c255961a3c23b90fa7d376dac5"
+    },
+    {
+      "path": "_refs/orchestration/workspace-isolation.md",
+      "sha256": "sha256:0b608bebef4af394c5ef5cd7bdae10154e9e3551aaeba7fc3b59334051905724"
+    },
+    {
+      "path": "_refs/review/context-extensions.md",
+      "sha256": "sha256:7deb6d7c92a6c965c1574b3470301940c6927072ee99eb59d1ff8930637d92a0"
+    },
+    {
+      "path": "_refs/review/output-contract.md",
+      "sha256": "sha256:3fb93e198dc2e29adf6b0b02fe2c86c30b950b78915eaad1d0971ed022cbf217"
+    },
+    {
+      "path": "_refs/review/probes.md",
+      "sha256": "sha256:4760b13b5f8f79d0a6edb8112a3c81b794d481ab7a8e9254656f5c88ccf7e2c5"
+    },
+    {
+      "path": "_refs/review/profiles-and-refs.md",
+      "sha256": "sha256:08adf352c0d4a83deeee20678371eb01ea3fec027b73b1dbbd5a89a378371418"
+    },
+    {
+      "path": "_refs/sdlc/angular.md",
+      "sha256": "sha256:35bd85f20add5bac4d963865cda021a2e68795f719ef58fbd73f727e2cb5a4f0"
+    },
+    {
+      "path": "_refs/sdlc/architecture.md",
+      "sha256": "sha256:01df46407ad59e00b038e908adb229409498a1bd4ebf9a2e352d1fc314ffd4da"
+    },
+    {
+      "path": "_refs/sdlc/nextjs.md",
+      "sha256": "sha256:05403f1ca849fae9ffbf61f175d72eff468df9be64061f2a5aa1ae0740cc0a66"
+    },
+    {
+      "path": "_refs/sdlc/static-visual-composer.md",
+      "sha256": "sha256:dc61ba3bc2791dad2263cadb83368a240372b76f1b221fcf78c3c230efd1468b"
+    },
+    {
+      "path": "_refs/sdlc/static-visual-composer.mjs",
+      "sha256": "sha256:79deb8c9a3e07d49407a125de8000aa3756d1341a99a2b5adb332b5f7a82880c"
+    },
+    {
+      "path": "_refs/sdlc/visual-companion.md",
+      "sha256": "sha256:d5f883ce006016ebefb2ad8b9e39dd7d7ebdd3b1ef94db09957c7fc799735ae6"
+    },
+    {
+      "path": "_refs/sdlc/visual-companion/renderer.mjs",
+      "sha256": "sha256:07deeefde106fb20ffb187970bc33e79747c8a41eecc8a52f10a3eab81f6c116"
+    },
+    {
+      "path": "_refs/sdlc/visual-companion/screen.mjs",
+      "sha256": "sha256:bb68c5c53a97b42076be6ccf6c327f81925515a587b3fd0aa658af645c8ff08c"
+    },
+    {
+      "path": "_refs/sdlc/visual-offer-policy.md",
+      "sha256": "sha256:1cb10059f13bd977da876ce1607fa3555faf4e8b845f5b1fa6f966314d9101c0"
+    },
+    {
+      "path": "_refs/sdlc/visual-screen.schema.json",
+      "sha256": "sha256:123b29750124f0df2b275e9d4e2afe9ef1b5ec1491ef7d4227f25acf884556ab"
+    },
+    {
+      "path": "_refs/shared/approved-artifact.mjs",
+      "sha256": "sha256:ae6ae2614aa22fcac45b42d85d026c8123f373364669a28f4df33b8f15b669d2"
+    },
+    {
+      "path": "_refs/shared/architecture-contract.mjs",
+      "sha256": "sha256:f11da9b0f3fe9af83a1d046e8dbf146eccb6632d65ffb3e878e8985c86e87025"
+    },
+    {
+      "path": "_refs/shared/artifact-lifecycle.mjs",
+      "sha256": "sha256:fbcb19f3e76689d7e479856e90f524553cc5583be8d8adff4eba0f14866beebd"
+    },
+    {
+      "path": "_refs/shared/artifact-paths.mjs",
+      "sha256": "sha256:9c64a7825f72e0e4e7ff31a781e36ef07bed7a6242c0fd7c2f5bff473db93d86"
+    },
+    {
+      "path": "_refs/shared/convention-contract.mjs",
+      "sha256": "sha256:ad2d960349898fc73c81f2d4d1cd3c5eaa5552b8084b77a270400828216ee5c9"
+    },
+    {
+      "path": "_refs/shared/convention-paths.mjs",
+      "sha256": "sha256:a4d06cd8e6690160719a3be89aa977080499b0082e3732385150ccb17a9ce5ce"
+    },
+    {
+      "path": "_refs/shared/convergence-contract.mjs",
+      "sha256": "sha256:4c156e274874c6a27f6efdc0f755c14b897dd0d69f29bef3b3b72dc1d02f3abe"
+    },
+    {
+      "path": "_refs/shared/debug-command-discovery.md",
+      "sha256": "sha256:5c919439455bfa8c357c3bd3b9e79bfe7f37b1035a6a4e613f36463694b13a99"
+    },
+    {
+      "path": "_refs/shared/debug-context.md",
+      "sha256": "sha256:61019311a5f29162653ad1b27d0ef5d83c723e297a84925180495049bbcad5a8"
+    },
+    {
+      "path": "_refs/shared/debug-environment-guard.md",
+      "sha256": "sha256:1e17777cd38517488e42cdd6fb8fb7a16e17f882199408349c6c3584c647f8ef"
+    },
+    {
+      "path": "_refs/shared/debugging-discipline.md",
+      "sha256": "sha256:8f48bc832150576fb38e377562cc8285ebee05df8db99396468ae0fe81bffe49"
+    },
+    {
+      "path": "_refs/shared/decision-coverage.md",
+      "sha256": "sha256:327dfa68fd8b50b6cbb299c3bbd3783a6e3ca84977a7773604d88683268877c0"
+    },
+    {
+      "path": "_refs/shared/decision-coverage.mjs",
+      "sha256": "sha256:1d3e5dcb12d2b0db1e354d37e9ebaa325cef41e750500d30dbfe5f953e6965ea"
+    },
+    {
+      "path": "_refs/shared/design-handoff.md",
+      "sha256": "sha256:9737731897161b0d0db9e4e71b29b49edbd06108767f0d37ad57aa6b1af27504"
+    },
+    {
+      "path": "_refs/shared/design-handoff.mjs",
+      "sha256": "sha256:76e954ad318edf4dedda6437ce3c0dd627d84208653d995ffb926d74f0281110"
+    },
+    {
+      "path": "_refs/shared/design-verification.mjs",
+      "sha256": "sha256:12fa03a261793883bb82d164aeb423bac4f2f4cea43b899081bb4a8f023a2f01"
+    },
+    {
+      "path": "_refs/shared/documentation-layout.mjs",
+      "sha256": "sha256:1de1054fb98ad3a5c95388b4a8c6761a74217f5ed4fc3c12234805784ca6d2d3"
+    },
+    {
+      "path": "_refs/shared/evidence-artifact.mjs",
+      "sha256": "sha256:bb01fa9e9430b05eeb336d6a4468f72ac06f9fcedfe7b77ae9da9eda8f8b14b8"
+    },
+    {
+      "path": "_refs/shared/explore-context.md",
+      "sha256": "sha256:c84e32cf2c8fbaacf8db92b78fae8701197e765c70e2e4971440a5dadbb640f5"
+    },
+    {
+      "path": "_refs/shared/explore-contract.mjs",
+      "sha256": "sha256:58ed9a36130ba2d9163bf82ccb9d170d99e349609a7be094bafcd99e4b415aec"
+    },
+    {
+      "path": "_refs/shared/finish-gate.md",
+      "sha256": "sha256:0effcb49c13ea01b83b22100902a74fbc146367698451b049abdbeac2ab4cacf"
+    },
+    {
+      "path": "_refs/shared/finish-gate.mjs",
+      "sha256": "sha256:57c7edebbcc40c92d209a4f097e30f50eddaac16bb252d5cf13ff4487cae27bd"
+    },
+    {
+      "path": "_refs/shared/frontend-architecture.md",
+      "sha256": "sha256:89d6ad5e4e3e277ed13dd06cf1b748cfdaa39b97b0a89a89f55b2aff6fce99d7"
+    },
+    {
+      "path": "_refs/shared/module-e2e-contract.mjs",
+      "sha256": "sha256:c880ef97ee240ec5c054907554cdbd909aead65c99d927f6709d59535f099f07"
+    },
+    {
+      "path": "_refs/shared/product-ledger.mjs",
+      "sha256": "sha256:4b1c7b4a573a1b428a27ea5b396e1e68fd3b615503b207f22ef03c30803062f0"
+    },
+    {
+      "path": "_refs/shared/project-context.md",
+      "sha256": "sha256:0afba63de412d38e0ca6b5d46cc79cd800d75091d05ea1acc3c52b6837446376"
+    },
+    {
+      "path": "_refs/shared/project-context.mjs",
+      "sha256": "sha256:918ee807cde0cd650c9535438cb8b92af380973db73ca640c258bc1b5b1832a2"
+    },
+    {
+      "path": "_refs/shared/repository-contract.mjs",
+      "sha256": "sha256:bdb0095b5bbb0a70a10537c2482258a352901aca4e1971b04413ba7d336a42e7"
+    },
+    {
+      "path": "_refs/shared/repository-observation.mjs",
+      "sha256": "sha256:06a46d89e3295d89ae0605a671f128d4599f1bdcaa2c6a887a0467e6df420be9"
+    },
+    {
+      "path": "_refs/shared/review-accessibility.md",
+      "sha256": "sha256:280abe7bfa5f27e781d53dffd156c554bd629f5ffc6d6a996b2654164e0bc2c2"
+    },
+    {
+      "path": "_refs/shared/review-architecture.md",
+      "sha256": "sha256:e3ae4a0b9f4ba8de70b5ad07b56839029fc07dd8ad741099ccb5b45d78ed54df"
+    },
+    {
+      "path": "_refs/shared/review-code.md",
+      "sha256": "sha256:16c2f7b1922e94d9d125acdb24cac2e071269b3a0ff2339fb60fe8281b92d823"
+    },
+    {
+      "path": "_refs/shared/review-consistency.md",
+      "sha256": "sha256:c6d40eaa9d381dba35491c13ed0535e289f4ce6fcd0acf076d851b7722d58d81"
+    },
+    {
+      "path": "_refs/shared/review-contract.mjs",
+      "sha256": "sha256:9ab137b97065bdd6e87a4da32816a8be31d92b27b097028c9fcf0eef3d644e10"
+    },
+    {
+      "path": "_refs/shared/review-performance.md",
+      "sha256": "sha256:096a2d1eaebd79a49430a555429f1653789aacb157e8e078f9c8bc939c906572"
+    },
+    {
+      "path": "_refs/shared/review-security.md",
+      "sha256": "sha256:80631b96075a2c7fd3f801159c377e4e288d4e0158a6c82859dbadcb63778dab"
+    },
+    {
+      "path": "_refs/shared/runtime-protocols.md",
+      "sha256": "sha256:7bcd47a1c5efebafc7f146a172cd012185c12b9144dfb78e818a62e4db2cad82"
+    },
+    {
+      "path": "_refs/shared/sdcorejs-utils.md",
+      "sha256": "sha256:312c860408d0becc21558002835b86d9902ec107f0aa25fba5b49763ac482e04"
+    },
+    {
+      "path": "_refs/shared/ship-readiness-contract.mjs",
+      "sha256": "sha256:464b5669ff353bf10749ecfd09deaffd37a7057718006d10cee93cf66e97d3ec"
+    },
+    {
+      "path": "_refs/shared/system-registry.json",
+      "sha256": "sha256:3129b4e2f18d1579431075501034d184900cf9c3998680dea98793c2ee2cfb13"
+    },
+    {
+      "path": "_refs/shared/system-registry.mjs",
+      "sha256": "sha256:230518edc3e527ee48e86a63257696ba76715762a53aaf94795512b6d757b561"
+    },
+    {
+      "path": "_refs/shared/test-command-discovery.md",
+      "sha256": "sha256:08ace741236498e6f04e8aa95f9fa005031cc4b49e846096e299b03764b720df"
+    },
+    {
+      "path": "_refs/shared/test-context.md",
+      "sha256": "sha256:feaa047328d0ab37e6c6ad56ccab13ad398d237433281fb7941677cf450c89d6"
+    },
+    {
+      "path": "_refs/shared/test-environment-guard.md",
+      "sha256": "sha256:58693b3007a08150dd6ad35e51263a34f667ab224184ecb28525433992a3f014"
+    },
+    {
+      "path": "_refs/shared/test-generic.md",
+      "sha256": "sha256:dfa7170fb45c52e3871fdb6d175697f125ae63d070dc661a88dbc6e15c9642a2"
+    },
+    {
+      "path": "_refs/shared/test-scope-and-coverage.md",
+      "sha256": "sha256:32afe22c6a550dc8e6ebaacc876255a2decae811287e01ec9603111929216b8b"
+    },
+    {
+      "path": "_refs/shared/test-ui-evidence.md",
+      "sha256": "sha256:5468f3510415b623638c58522791c91222519faec271ed31f45bd6cecdd79796"
+    },
+    {
+      "path": "_refs/shared/ui-review-contract.mjs",
+      "sha256": "sha256:7b63308b69bf966e6fec3fbd4022a87d124dca81652a34cf907fdcdfe6f5cfe0"
+    },
+    {
+      "path": "_refs/shared/ui-review.md",
+      "sha256": "sha256:c3bed5ad4b9dd51ee28212079b88d57fc1890596a304c992bd1221580ce02bf6"
+    },
+    {
+      "path": "_refs/shared/user-choice-prompt.md",
+      "sha256": "sha256:27641190399e161f55a580078b2f6fc812e2a3d849d5198da8af2f195dbdf2d6"
+    },
+    {
+      "path": "_refs/shared/user-guide-template.md",
+      "sha256": "sha256:c2538577cb5ed7c0fbce98209f20843f10e5224411862988ee549295c9a5dc7f"
+    },
+    {
+      "path": "_refs/shared/validation-map.md",
+      "sha256": "sha256:3539ec48cb403d9426034d3148c12aeab365e85fff1dec288c623ac6ea822003"
+    },
+    {
+      "path": "_refs/shared/validation-map.mjs",
+      "sha256": "sha256:60ea476552abb1e81bd22d69f6ddbb49df58254073eeae07c1f61898070ff04a"
+    },
+    {
+      "path": "_refs/simplify/host-runner.mjs",
+      "sha256": "sha256:028544936ec570cb1ace442f02cf3033af14273ca378fd9b8c1e58a4a14487b7"
+    },
+    {
+      "path": "_refs/simplify/repository-evidence.mjs",
+      "sha256": "sha256:dea4505088a0966cb91abda62512001251e36b88acaf6fcd0635083af41765fb"
+    },
+    {
+      "path": "_refs/simplify/scope-and-invariants.md",
+      "sha256": "sha256:d3b551749a7b70c0d116125db4720fb0a651c01109abad82cadcec7da99cb8bb"
+    },
+    {
+      "path": "_refs/simplify/simplify-contract.mjs",
+      "sha256": "sha256:8f7cef2064e7bbe42d8fd15cf0a8eedad626181757bf0cf0e0692b9bb43764f5"
+    },
+    {
+      "path": "_refs/simplify/verification.md",
+      "sha256": "sha256:a90a564df248512ceaae401d64cb8b86faaac29571b29d8f63f094ab6bea169b"
+    },
+    {
+      "path": "authoring/README.md",
+      "sha256": "sha256:fd4bf2fbbf4332edaf4b37a97c8226d6a6bf70a7ddbaf119c83ed0fc975fdde2"
+    },
+    {
+      "path": "authoring/evals/run-deterministic.mjs",
+      "sha256": "sha256:8c0a7358fb4c0ac2bbbf1a5aac224e3f27a70e6325aa4e0967f7d707b06f8456"
+    },
+    {
+      "path": "authoring/evals/scenarios.json",
+      "sha256": "sha256:b99d1f396884d395fe6e9bfb90eace091e9848da0390b18d000cb57df78c4e60"
+    },
+    {
+      "path": "authoring/evals/skill-authoring-contract.mjs",
+      "sha256": "sha256:8f6b2f8082c61da0830bafd62e36565e26f1013395f703b45026250170ec8da7"
+    },
+    {
+      "path": "authoring/evals/uiux/evidence.test.mjs",
+      "sha256": "sha256:9452eddbd76786bf1de1e1a45ba4b8de762636532df7a4eb8d8444625faf7a6a"
+    },
+    {
+      "path": "authoring/skills/sdcorejs-skill-authoring/SKILL.md",
+      "sha256": "sha256:58d1309fc2242034eb50cbd0fe108c1c4aeaa3f524c2c010f367c77f9428863c"
+    },
+    {
+      "path": "codex/skills/_refs/orchestration/tail/repair-loop.md",
+      "sha256": "sha256:524d0f2535249fe6059fab77b761ce61dc07c90592b104ac6ad80e0c62dda18e"
+    },
+    {
+      "path": "codex/skills/_refs/shared/debug-context.md",
+      "sha256": "sha256:61019311a5f29162653ad1b27d0ef5d83c723e297a84925180495049bbcad5a8"
+    },
+    {
+      "path": "codex/skills/_refs/shared/review-code.md",
+      "sha256": "sha256:16c2f7b1922e94d9d125acdb24cac2e071269b3a0ff2339fb60fe8281b92d823"
+    },
+    {
+      "path": "docs/po-ba-prototype-examples.md",
+      "sha256": "sha256:bef093893c7fb4f65f1c9953a3506ca51a928d34b501ca2c89d3e6298c7d1606"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "sha256:758f3e6d3f2e3e2b61046b2443f8ca8ba50efe5d3f8df0af8a1411f388df8108"
+    },
+    {
+      "path": "package.json",
+      "sha256": "sha256:27b9e87e415e27a1e6aff693ba58fe234c58d746713b84bcc361b650eaaf17a2"
+    },
+    {
+      "path": "scripts/check-executable-references.mjs",
+      "sha256": "sha256:038205ac6c6618e66714a3d7ef687ccdd62ab9dd3204231496a2e3065c371d08"
+    },
+    {
+      "path": "scripts/check-text-hygiene.mjs",
+      "sha256": "sha256:512b37db9fe21981e5341952be0f562a95683090c621efcedd5ab95eda3178bc"
+    },
+    {
+      "path": "scripts/measure-communication-economy.mjs",
+      "sha256": "sha256:533b6569a4a5942b8649fb5580595c3e8006c2379c1db5e16945245343a966fa"
+    },
+    {
+      "path": "scripts/sync-skills.mjs",
+      "sha256": "sha256:995c72e772f59453ce7e7ad81c352a08af049131c3f305541c6ac50a88951077"
+    },
+    {
+      "path": "skills/orchestration/documentation.md",
+      "sha256": "sha256:e9db793f5b582f517f8d6e04896574fdd7c6642da0cc6bb53590c2448dfd8e3b"
+    },
+    {
+      "path": "skills/orchestration/parallel-dispatch.md",
+      "sha256": "sha256:59167bc6b22b3fb41fa4e0890ba6ab8cf835166087c3634382c633d6911347a3"
+    },
+    {
+      "path": "skills/orchestration/repair-loop.md",
+      "sha256": "sha256:696a05fc9419ba72b3efaac363b686e1aba5978bd9544202c1123b871b35cb50"
+    },
+    {
+      "path": "skills/orchestration/subagent-driven-development.md",
+      "sha256": "sha256:d99746490af02ae01ea898578696a889fbdc1b6c8a5239b22c11a621876f0d85"
+    },
+    {
+      "path": "skills/orchestration/using-skills.md",
+      "sha256": "sha256:848fb674eb8702755325d963ddef37b43dce79262fa8e540255ee9b032fabf5f"
+    },
+    {
+      "path": "skills/shared/sdlc/01-brainstorming.md",
+      "sha256": "sha256:61cdbf1daca3938a0dc4adb18c5bd60f8a3cbf73a9ccbe8ddfee32635e8907a4"
+    },
+    {
+      "path": "skills/shared/sdlc/02-spec.md",
+      "sha256": "sha256:804db5da573957f305b7e6aedc024d111fe2c46dc9b15a52e2a8b5a715425c94"
+    },
+    {
+      "path": "skills/shared/sdlc/03-plan.md",
+      "sha256": "sha256:217a9dd9c0956f10d83ffc0ec484346b06ed1f6311c1b73ec92711e529aef4fe"
+    },
+    {
+      "path": "skills/shared/sdlc/04-execute-plan.md",
+      "sha256": "sha256:d9c52c36d40ffd7dfb577865b5944cbff5b234f1dc08bafb407e14f33f34b141"
+    },
+    {
+      "path": "skills/shared/sdlc/architecture.md",
+      "sha256": "sha256:a39f3eab58d8f10a874f06a62be271aa38cb534c97b1ab2d2f1f99e351157b51"
+    },
+    {
+      "path": "skills/shared/workflow/debug.md",
+      "sha256": "sha256:84c83bf9764f85f484ec9d56deedb359caa7c2c991cb1355912fd3b5d3fa7027"
+    },
+    {
+      "path": "skills/shared/workflow/explore.md",
+      "sha256": "sha256:482897b6ebfc4a013e6cf50713bf3b170acf640bf46274a1e5fa97ad0114e0d7"
+    },
+    {
+      "path": "skills/shared/workflow/git.md",
+      "sha256": "sha256:d6b1418c2f0355e6709309668b18242e358ad6541e1c12c52463789c22528de9"
+    },
+    {
+      "path": "skills/shared/workflow/review.md",
+      "sha256": "sha256:6e1ea9e505869a235e2ab9c7fe6f1ca482f5205b0c878dcd585f7b8ebcbe08ab"
+    },
+    {
+      "path": "skills/shared/workflow/ship.md",
+      "sha256": "sha256:13bc124f33704b8d2596bc3e9d33fb9ab43ff5a84149d6060403e482e6975a90"
+    },
+    {
+      "path": "skills/shared/workflow/simplify.md",
+      "sha256": "sha256:6f3eaf2377f6571e32486e12f74b67a91a35476d5045f60b913a6ccc85c96763"
+    },
+    {
+      "path": "skills/tracks/ai-agent/sdcorejs-ai-agent.md",
+      "sha256": "sha256:74d6a2dc62df19b00fef3492019c7479553d7c44269d40a5b9f85ab03138b63c"
+    },
+    {
+      "path": "skills/tracks/angular/sdcorejs-angular.md",
+      "sha256": "sha256:5df6261c3f9322b7460e509062007e991e55132df8ca9928a485a47c5360c2d4"
+    },
+    {
+      "path": "skills/tracks/design/sdcorejs-design.md",
+      "sha256": "sha256:913db219077d9a9db25c94ccd0ac7e97ee65311d28db945c57dcb91a447ebfd9"
+    },
+    {
+      "path": "skills/tracks/nestjs/sdcorejs-nestjs.md",
+      "sha256": "sha256:d8eff8214d49f7be9987424c75b19c0027d25538d0d9e3c68a342befd070adda"
+    },
+    {
+      "path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
+      "sha256": "sha256:c462c26dce8e32ebe47564e7d3a940b07f8fd9cad113898a634e83528ce16732"
+    },
+    {
+      "path": "skills/tracks/product/sdcorejs-product.md",
+      "sha256": "sha256:5c6bc67c73e49a2c9533ba8dec2266bb0912ee0f0f49dd12308f32ff4c7b3cdb"
+    },
+    {
+      "path": "skills/tracks/test/sdcorejs-test.md",
+      "sha256": "sha256:2f792ff3813782bdd9c75373ce6c7191c1573d922e905a8e8582915955982059"
+    },
+    {
+      "path": "test/e2e/ai-agent-track-contract.test.mjs",
+      "sha256": "sha256:7f6e3009b1bbedf9ffd690974e0371c903fb96dddb3cb49d06de62c3591d3165"
+    },
+    {
+      "path": "test/e2e/angular-production-contract.test.mjs",
+      "sha256": "sha256:fd4c9249da20fdab7eb5913ea615fde75aef6582b6529eeb3365e8adc8d33643"
+    },
+    {
+      "path": "test/e2e/architecture-contract.test.mjs",
+      "sha256": "sha256:7462853458d32afdd8e5860368c725f1a0940bd3381e5d20e68d804344274a3c"
+    },
+    {
+      "path": "test/e2e/artifact-path-convention.test.mjs",
+      "sha256": "sha256:1a81232a164b93f4b48591df5c1d3154950bf02b21925692fff53518b1ec05d4"
+    },
+    {
+      "path": "test/e2e/communication-economy.test.mjs",
+      "sha256": "sha256:488b07c3c79adc4ba3f8c325807584504f432ccb974ba1d09f425f768a4a1556"
+    },
+    {
+      "path": "test/e2e/convention-artifact-lifecycle.test.mjs",
+      "sha256": "sha256:0b272c5374cc8ee79e1011704278d27b0c4fbc2f5d0a0c01d8627af3208294f7"
+    },
+    {
+      "path": "test/e2e/convention-contract.test.mjs",
+      "sha256": "sha256:102a04e5d21345d4f23b05e43a236565a34e7824a1974d4f2a2a943b80e8cb07"
+    },
+    {
+      "path": "test/e2e/convention-review.test.mjs",
+      "sha256": "sha256:b8aa37b932b722d031a75b772c6fba10decd366ad1d7e9a724d536085fd16026"
+    },
+    {
+      "path": "test/e2e/convergence-contract.test.mjs",
+      "sha256": "sha256:df9a61116e0335c376a898122d7db0d7bf9521349e603ff8df360a588f3936a2"
+    },
+    {
+      "path": "test/e2e/decision-coverage-contract.test.mjs",
+      "sha256": "sha256:8ae83ab64186131988623646edacebb71375a7b744b45c078712adf3e923cb74"
+    },
+    {
+      "path": "test/e2e/design-handoff-contract.test.mjs",
+      "sha256": "sha256:14b8e5c2eb9c3276a9077716d150c430b9649ab50ad97fcdab4c892b74fece0f"
+    },
+    {
+      "path": "test/e2e/documentation-layout-contract.test.mjs",
+      "sha256": "sha256:1950ae06b25fc1194448c54f11b586f1a77ccc3915ea03d98b4fca5e2d9b643b"
+    },
+    {
+      "path": "test/e2e/explore-topology.test.mjs",
+      "sha256": "sha256:d3bf209fe7f73dcd6f24d9fffe372a32c4fe8d3bb3ef332cced386184d1c153a"
+    },
+    {
+      "path": "test/e2e/fixtures/communication-economy-baseline.json",
+      "sha256": "sha256:16955db306dfb416d0323a96f1ebd6866057370ad282758c382e20590451dabf"
+    },
+    {
+      "path": "test/e2e/fixtures/communication-economy-live-ab.json",
+      "sha256": "sha256:0ce610371092129c6530cf1a6f1df5ba28c878c3893b98fd80502c7c4f7703e4"
+    },
+    {
+      "path": "test/e2e/fixtures/communication-economy-scenarios.json",
+      "sha256": "sha256:181939e77385eb87d4abd056b0b4bf8651009873bc054c020881bdc083eafb65"
+    },
+    {
+      "path": "test/e2e/fixtures/harness-behavior-scenarios.json",
+      "sha256": "sha256:e2072c76eaef77e281d8c45d55f6df8674658d389aa61ecd6be8725f0cdc26b7"
+    },
+    {
+      "path": "test/e2e/fixtures/prompt-evals.json",
+      "sha256": "sha256:9f0f13c3da12ea09bc163d2261ff24de63b34de7d1b039dbe07281e085f7b74a"
+    },
+    {
+      "path": "test/e2e/fixtures/visual-offer-scenarios.json",
+      "sha256": "sha256:57532dd49552ba775a749dc0d0cf4b25ce1dbd5d6e866e5a6626849f4b086387"
+    },
+    {
+      "path": "test/e2e/harness-behavioral-sentinel.test.mjs",
+      "sha256": "sha256:863b515e3e06205517132739f13b193df3c6f299d7bc49226acd9ba9aebcecf6"
+    },
+    {
+      "path": "test/e2e/nextjs-production-contract.test.mjs",
+      "sha256": "sha256:4080567202710024cba103edf2c9aba208d7eef8cb19ba0f8bc1c3ca8d6a79e6"
+    },
+    {
+      "path": "test/e2e/npm-publication-contract.test.mjs",
+      "sha256": "sha256:67e6371aa0ffc96ff27ceb379801b97944bcb778f6bac95d13519225b4321b12"
+    },
+    {
+      "path": "test/e2e/parallel-dispatch-protocol.test.mjs",
+      "sha256": "sha256:0f5f634dda4946b6fa1f1c9ef40f0aa3508f8b15ba7749b2143a9c6197c9b742"
+    },
+    {
+      "path": "test/e2e/production-readiness-contract.test.mjs",
+      "sha256": "sha256:c5c59855ab76c6838620f307a08b2394210ed98db6c247e7d927d62570f96dc6"
+    },
+    {
+      "path": "test/e2e/project-context-artifact-lifecycle.test.mjs",
+      "sha256": "sha256:50784f6077c8f15f054a60eca984198e331b28100587a2abf95c1d68823990df"
+    },
+    {
+      "path": "test/e2e/repair-contract.test.mjs",
+      "sha256": "sha256:1f02f59f0a87b7ed03f123737106c6f280b79600fdc1bdbba0a6bfa5da73d461"
+    },
+    {
+      "path": "test/e2e/review-contract.test.mjs",
+      "sha256": "sha256:25149442e41ef2838a58f5dbf1d68833ca305de92a6c0f594d1b5034d8b18b8c"
+    },
+    {
+      "path": "test/e2e/ship-readiness-contract.test.mjs",
+      "sha256": "sha256:1dd557862a8b6c6ff2da199d63368d5a0aff7b9f7d3e1a9169cd1d5bb3c7831c"
+    },
+    {
+      "path": "test/e2e/simplify-protected-contract.test.mjs",
+      "sha256": "sha256:3101e7720516b24364a12602080b2fe673feb663122d788bb36665362fb29925"
+    },
+    {
+      "path": "test/e2e/simplify-skill-contract.test.mjs",
+      "sha256": "sha256:659c3649890bada3fc7e8aa0d4f69d67bf0740775d77e700d7ec71cc12c16685"
+    },
+    {
+      "path": "test/e2e/skill-authoring-contract.test.mjs",
+      "sha256": "sha256:708429b08c704e23e4994ad0db93dcdbe8c910938aabe4b232f09b0338bca956"
+    },
+    {
+      "path": "test/e2e/skill-pack-runner.test.mjs",
+      "sha256": "sha256:4eb7e91430782c749d95c84b603ae90954ff6ad34e8e602b27303bf2c0a61a4a"
+    },
+    {
+      "path": "test/e2e/support/cli-adapters.mjs",
+      "sha256": "sha256:406bd23cf2eccd1b6340a3abdfbb507ae9f4a88566717c6b0af42dd70b1e1b7e"
+    },
+    {
+      "path": "test/e2e/support/design-handoff-fixture.mjs",
+      "sha256": "sha256:471b642cafd83604deaa2641118db23e57b64dea1bb8b1ebad7461b6b365fe8f"
+    },
+    {
+      "path": "test/e2e/support/harness-behavior-runner.mjs",
+      "sha256": "sha256:5542cdbede75501915eda9c80c0bc7dd85232229f7c34c58f68c65d8f954a1ad"
+    },
+    {
+      "path": "test/e2e/support/interaction-finish-fixture.mjs",
+      "sha256": "sha256:ee33e7fd68b2b83a6a82e44d7f8f1e12ade469f79fddf4c5f5f0f7935e00f747"
+    },
+    {
+      "path": "test/e2e/support/simplify-contract-fixture.mjs",
+      "sha256": "sha256:d666b34ffb05bf79e489e2dbb26c5667df51252f2e0ca6ea4e3459cde352aa1a"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "sha256:b44663116fb3fade03a9c571feeffc415614e63393f85b0ba588f29179f0cc82"
+    },
+    {
+      "path": "test/e2e/support/test-track-forward-harness.mjs",
+      "sha256": "sha256:289c8acea5cf32393ef7a257ecbd05bde168b157d60628b1b763f48acb160426"
+    },
+    {
+      "path": "test/e2e/support/ui-review-fixture.mjs",
+      "sha256": "sha256:dc1079ce3598da3c1cf92f52da367a1d166d0e125e240cc240b592900fcc7ede"
+    },
+    {
+      "path": "test/e2e/support/visual-offer-eval-runner.mjs",
+      "sha256": "sha256:95be69b538893c1c975a4e015b3dbfd90aa425cf6f19f775a5857d06f6a848e0"
+    },
+    {
+      "path": "test/e2e/test-track-contract.test.mjs",
+      "sha256": "sha256:f8da5f122ddb0192a836eff7fe6eb69efe4c81a7e413b15a5fce824308f6d455"
+    },
+    {
+      "path": "test/e2e/uiux-knowledge.test.mjs",
+      "sha256": "sha256:e451f0271de570daa203e1399f2e28d5dc261825ecd85bca0c44ed9ce833f605"
+    },
+    {
+      "path": "test/e2e/uiux-review-regression.test.mjs",
+      "sha256": "sha256:fb4b5075bd6e7a224d8c16bd45084c2114a332e932f53b11ed412a09fe519f9a"
+    },
+    {
+      "path": "test/e2e/uiux-skill-creator-regression.test.mjs",
+      "sha256": "sha256:179f5e965d2acfb4a1302daeb76fa9f6ff3a9c6fde79c08539776155d21aa098"
+    },
+    {
+      "path": "test/e2e/validation-map-contract.test.mjs",
+      "sha256": "sha256:17ee07f1d32470f276e7184ed8602a897e3bc5c0f5026e5ee773754ca33e29b6"
+    },
+    {
+      "path": "test/e2e/visual-offer-policy.test.mjs",
+      "sha256": "sha256:7eaeb8b11b195f54facac8363fc9da1422d8c0ef2bb32af8052e05da84cea03f"
+    }
+  ],
+  "content_fingerprint": "sha256:e50d01769f3ac8ae4a5e02a2dc4409e5f2b600aba67b875fafd96f1c64b6b816",
+  "manifest_method": "Approved repair plan canonical paths, every skill body, the previous continuation manifest, authoring/tooling roots and their static relative module closure; generated mirrors, .sdcorejs artifacts, VALIDATION.md and this record are excluded.",
+  "verification": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap test/e2e/production-readiness-contract.test.mjs test/e2e/harness-behavioral-sentinel.test.mjs test/e2e/simplify-protected-contract.test.mjs test/e2e/simplify-skill-contract.test.mjs test/e2e/explore-topology.test.mjs test/e2e/communication-economy.test.mjs",
+    "cwd": ".",
+    "owner_repository_id": "github.com/sdcorejs/sdcorejs-agent",
+    "source_revision": "70c933c3fc59a98b92c03004de902bc96250fba6",
+    "source_fingerprint": "sha256:e50d01769f3ac8ae4a5e02a2dc4409e5f2b600aba67b875fafd96f1c64b6b816",
+    "content_stable": true,
+    "started_at": "2026-09-29T07:06:10.234Z",
+    "finished_at": "2026-09-29T08:07:49.070Z",
+    "exit_code": 0,
+    "interrupted": false,
+    "tests": 240,
+    "passed": 240,
+    "failed": 0,
+    "transcript_kind": "test and summary excerpt",
+    "transcript": "ok 1 - case-interaction-finish-portable: documented conditional contexts survive actual handoff without invented proof\nok 2 - UI review portable handoff preserves purpose and refuses malformed or omitted proof fields\nok 3 - Communication Economy Policy is a JIT public contract with deterministic helpers\nok 4 - profile resolution honors explicit requests and mandatory clarity escalation\nok 5 - progress is event-driven and does not duplicate a final response\nok 6 - canonical context producers stay structurally aligned with portable consumer contracts\nok 7 - canonical context schema parity guards fail under structural mutations\nok 8 - repair source dimensions stay in exact parity with the central review registry\nok 9 - consumer field matrix fails closed for every typed runtime context\nok 10 - portable handoff preserves every required field for every supported context\nok 11 - portable test evidence preserves manual acknowledgements for every consumer\nok 12 - requirement context accepts the legacy scope alias only at input and emits non_goals\nok 13 - portable compatibility preserves test lifecycle, test evidence, and parallel fan-in state\nok 14 - runtime channel keeps authoritative context internal while unknown uses a portable handoff\nok 15 - portable handoff preserves required identity, freshness, evidence, and artifact closure fields\nok 16 - projection preserves exact content, review findings, and approval or security clarity\nok 17 - related artifact selection prefers relationships and never loads unrelated newest bodies for style\nok 18 - compact, standard, and detailed projections keep semantic outcome and evidence parity\nok 19 - context-budget report records smaller visible projection and removes repeated final-summary blocks\nok 20 - context capability is provider-neutral, tri-state, mapped, and portable by default\nok 21 - canonical workflows integrate compact projection, event progress, and relationship-scoped loading\nok 22 - public documentation and site describe the communication contract without marketing token claims\nok 23 - deterministic report compares ten scenarios without invented token counts\nok 24 - optional live report validates sanitized A/B evidence without changing the deterministic default\nok 25 - baseline snapshot matches the audited commit when history is available\nok 26 - deterministic report does not require audited commit history\nok 27 - deterministic report rejects corrupt baseline snapshots\nok 28 - runtime policy functions are side-effect free and create no mutable .sdcorejs state\nok 29 - case-simplify-hardening-ac-010 portable simplify transports the documented context without upgrading evidence\nok 30 - case-progressive-load-metrics: review scenarios count every private reference they must load\nok 31 - explore classification accepts every registry track including ai-agent\nok 32 - explore skill and context expose registry-backed topology without documentation ownership\nok 33 - explore writes require explicit or assigned authority and default to read-only\nok 34 - explore selects artifacts by relationship metadata rather than recency\nok 35 - explore discovers portal-module topology and reports ownership boundary defects read-only\nok 36 - explore blocks escaping .gitmodules paths before inspecting another repository\nok 37 - case-interaction-finish-native-runtime: static metadata and forbidden modes never enable approval\nok 38 - case-interaction-finish-native-failure: one fallback keeps decision and options\nok 39 - case-interaction-finish-reply-normalization: localized aliases are explicit; incidental and negated numbers are not approvals\nok 40 - case-interaction-finish-separate-approval: single-option and delegated recommendations never approve\nok 41 - case-interaction-finish-ambiguous-gates: bare reply never chooses between pending gates\nok 42 - case-interaction-finish-reuse-choice and case-interaction-finish-stale-choice: exact host reply reuses; changed gate/scope/revision does not\nok 43 - capability contract is structurally valid and drives native-or-Markdown interaction\nok 44 - canonical skills declare semantic actions while adapter manifests own provider mappings\nok 45 - action and workflow classification are deterministic for answer, low-risk fix, and ambiguity\nok 46 - execution selection separates delegation from concurrency and honors approved policy\nok 47 - runtime attestation preserves unknown defaults and accepts evidence-backed observations\nok 48 - runtime attestation fails closed without evidence or a coherent concurrency limit\nok 49 - choice normalization rejects ambiguity without selecting an option\nok 50 - worker policy reserves fast workers for bounded confirmed docs or tests\nok 51 - task briefs and review packages reject embedded delivery artifacts and invalid shape\nok 52 - visual offer requires a grounded comparison and preserves scoped decline\nok 53 - a live companion session requires both capability and explicit local-runtime consent\nok 54 - every adapter maps the live companion lifecycle to a capability and a portable fallback\nok 55 - case-repair-policy-ask-native: finish:policy never auto-selects or delegates; failed native surfaces are not reoffered\nok 56 - case-interaction-finish-simplify-grant: pure resolution preserves the single owner preflight grant\nok 57 - case-interaction-finish-simplify-owner: a valid foreign preflight cannot authorize this finish write\nok 58 - case-interaction-finish-repair-recursion: completed repair never reopens simplify\nok 59 - case-interaction-finish-assessment-binding: changing the loaded assessment invalidates review proof\nok 60 - case-interaction-finish-command-scope: final proof must cover the complete authorized scope\nok 61 - case-interaction-finish-required-phase: unknown required checks cannot silently disappear\nok 62 - case-interaction-finish-hook-boundary: unrelated empty directories are writes too\nok 63 - case-interaction-finish-tdd-order: observed RED precedes production; final writes stale prior evidence\nok 64 - case-interaction-finish-canonical-callers: documented completion payload is consumed by every stack\nok 65 - case-interaction-finish-evidence-order: serialized ready flags and same HEAD never substitute host observation\nok 66 - case-interaction-finish-resolved-small-fix: all actual completion callers share one tail without repeated prompts\nok 67 - case-interaction-finish-defer: no baseline, repair, docs or final gate runs after defer\nok 68 - case-interaction-finish-review-only: blocking findings never dispatch repair\nok 69 - case-interaction-finish-integration-owner: delegated workers stop after unit verification/review\nok 70 - case-interaction-finish-skip-review: optional skip continues verification; required review remains a gate\nok 71 - case-interaction-finish-evidence-order: same-HEAD edits after branch-ready invalidate affected proof\nok 72 - case-interaction-finish-simplify-semantics: no-op omits the choice; Analyze and Apply have separate authority\nok 73 - case-design-real-consumer-enforcement: generic execution cannot omit or substitute Design approval\nok 74 - Design producer preflight does not depend on its future postflight handoff\nok 75 - central registry is the versioned source of truth for tracks, profiles, repositories, and evidence\nok 76 - entrypoint routing and adapter manifests consume the central registry without stale enums\nok 77 - approved artifacts create and verify deterministic protected hashes\nok 78 - approved artifact verification rejects every protected identity mutation\nok 79 - approved artifact CLI creates and verifies specs and fails non-zero after mutation\nok 80 - spec gate uses the executable approval helper and semantic owner repository\nok 81 - approved plans verify their exact approved-spec parent and every registry track\nok 82 - multi-repository plan splitting rejects steps spanning Git roots\nok 83 - plan skill preserves shared artifact identity and repository-local boundaries\nok 84 - execute-plan verifies artifacts, source freshness, owner root, and path scope before writes\nok 85 - execute-plan mode selection is deterministic and capability-aware\nok 86 - execute-plan skill consumes registry identity and per-repository evidence\nok 87 - approved artifact validation is checkout-path independent and rejects stale schemas or tracks\nok 88 - repository identity, ownership, and write guards never depend on cwd or absolute checkout paths\nok 89 - brainstorming resolves module requirement ownership without portal fallback\nok 90 - brainstorming requirement_context consumes registry identity and remains read-only\nok 91 - module E2E discovery keeps module provenance and exact result classes\nok 92 - repository summary and template line endings remain valid on the current source\nok 93 - stale module evidence and unsafe manifests fail closed\nok 94 - generated NestJS production auth uses OIDC/JWKS instead of a deny-all production binding\nok 95 - executable-reference validator covers marked fences and localization context\nok 96 - case-progressive-load-body-size: each refactored skill body is smaller than its baseline\nok 97 - case-progressive-load-inventory-routing: frontmatter, name, description and required-actions stay byte-identical\nok 98 - case-progressive-load-angular-gates: approval preflight stays first and gates stay in the body\nok 99 - case-progressive-load-review-boundary: direct review stays read-only in the body\nok 100 - case-progressive-load-design-boundary: existing design, draft/approval and ownership stay in the body\nok 101 - case-progressive-load-explore-boundary: action boundaries, guard and redaction stay in the body\nok 102 - case-progressive-load-reference-loading: private references resolve, load conditionally and form no cycles\nok 103 - case-progressive-load-canonical-owner: every baseline unit survives verbatim in the body or one declared owner\nok 104 - case-progressive-load-single-schema: moved schemas and templates keep one byte-identical copy\nok 105 - case-progressive-load-test-integrity: retargeted suites keep every assertion and add no skips\nok 106 - case-progressive-load-distribution: every private reference is mirrored byte-identically\nok 107 - case-progressive-load-explore-inventory: explore refactor adds no public memory, persona or conventions skill\nok 108 - case-progressive-load-distribution-resolution: mirrored skill bodies resolve every private reference\nok 109 - case-repair-artifact-loader: one dependency-free loader verifies every step 1-5 snapshot without edits\nok 110 - case-repair-artifact-loader: mutation, BOM, wrong path, extra separators and unsupported YAML fail closed\nok 111 - case-repair-observer-real-repo: the canonical observer captures this repository with ignored output as metadata\nok 112 - case-repair-observer-real-repo: ignored links, nested repositories and ignored writes stay observable as metadata\nok 113 - case-repair-observer-real-repo: the finish runtime starts beside ignored links\nok 114 - case-repair-volatile-paths: declared caches may change only inside host command windows\nok 115 - case-repair-volatile-paths: cache drift outside windows, undeclared ignored writes and invalid patterns block\nok 116 - case-repair-symlink-scope: links outside scope are metadata; links inside a write scope stay blocked\nok 117 - case-repair-finish-convergence: a host recording receipts by phase reaches tail-complete again after a write\nok 118 - case-repair-finish-convergence: worker stage A/B and repair converge through the documented phase keys\nok 119 - case-repair-finish-convergence: an invalid receipt names the phase to run again\nok 120 - case-repair-simplify-pending: an authorized pass that never completed blocks tail-complete even with a net-zero diff\nok 121 - case-repair-simplify-pending: tail-complete reports the recorded simplify choice, its source and the outcome\nok 122 - case-repair-host-runner: finish routes Apply to the host runner and accepts only host-verified dispatches\nok 123 - case-repair-styling-reachable: every Angular generation action loads the utility-first styling reference\nok 124 - case-repair-explore-scan-pointers: scanning discipline loads for conventions-read and summary-refresh; review names its refs\nok 125 - case-repair-placement-tests: rules sit in their owner and load under the conditions that need them\nok 126 - case-repair-schema-parity: the documented review_context example carries every consumer-required field\nok 127 - case-repair-finish-verifier: the canonical adapter verifies a real pass and rejects forged, widened or behavior-changing receipts\nok 128 - case-repair-dispatch-chain: dispatches share the first anchor, count caps across the chain and need the recorded proof\nok 129 - case-repair-observed-consumers: repair reads stale host-verified evidence diagnostically while ship blocks it\nok 130 - case-repair-outcome-source: a dispatch verdict must name its outcome; the host never defaults it\nok 131 - case-repair-host-state-routing: host-held passes decide routing; a dropped payload or a skip cannot hide them\nok 132 - case-repair-repaired-host-pass: a repair receipt cannot skip the proof of a verified simplify pass\nok 133 - case-repair-nested-metadata: nested repositories and links record their lstat size and mtime\nok 134 - case-simplify-hardening-ac-002 document payload is the executable schema\nok 135 - case-simplify-hardening-ac-003 before-only authority then actual focused verification\nok 136 - case-simplify-hardening-ac-004 scope rejects empty\nok 137 - case-simplify-hardening-ac-004 scope rejects outside user authority\nok 138 - case-simplify-hardening-ac-004 scope rejects self-approved expansion\nok 139 - case-simplify-hardening-ac-004 scope rejects untrusted plan step\nok 140 - case-simplify-hardening-ac-005 reject unsafe path ../outside.mjs\nok 141 - case-simplify-hardening-ac-005 reject unsafe path src/../../outside.mjs\nok 142 - case-simplify-hardening-ac-005 reject unsafe path /tmp/outside.mjs\nok 143 - case-simplify-hardening-ac-005 reject unsafe path C:/outside.mjs\nok 144 - case-simplify-hardening-ac-005 reject unsafe path C:outside.mjs\nok 145 - case-simplify-hardening-ac-005 reject unsafe path \\\\\\\\server\\\\share\\\\outside.mjs\nok 146 - case-simplify-hardening-ac-005 reject unsafe path src\\\\value.mjs\nok 147 - case-simplify-hardening-ac-005 reject unsafe path src/value.mjs:stream\nok 148 - case-simplify-hardening-ac-005 root, nested Git root and junction containment\nok 149 - case-simplify-hardening-ac-004 actual omitted write: src/other.mjs\nok 150 - case-simplify-hardening-ac-004 actual omitted write: package.json\nok 151 - case-simplify-hardening-ac-004 actual omitted write: codex/skills/generated.mjs\nok 152 - case-simplify-hardening-ac-004 actual omitted write: build/generated.mjs\nok 153 - case-simplify-hardening-ac-004 actual omitted write: test/oracle.mjs\nok 154 - case-simplify-hardening-ac-004 guarded edits reject outside hunks and preserve dirty user content\nok 155 - case-simplify-hardening-ac-006 missing oracle and blank commands never grant Apply\nok 156 - case-simplify-hardening-ac-007 same HEAD changed bytes invalidates evidence and authority\nok 157 - case-simplify-hardening-ac-008 Analyze detects hidden source edits without a ledger\nok 158 - case-simplify-hardening-ac-009 failed pass requires actual rollback; repair ends simplify\nok 159 - case-simplify-hardening-ac-009 omitted ledger cannot reset pass cap\nok 160 - case-simplify-hardening-ac-009 completed pass cannot clear a later failed pass\nok 161 - case-simplify-hardening-ac-010 stale postflight and protected literal changes block consumers\nok 162 - case-simplify-hardening-ac-004 approved artifact scope intersects user source scope\nok 163 - case-simplify-hardening-ac-006 a command that writes source cannot certify it\nok 164 - case-simplify-hardening-ac-007 forged sessions and foreign snapshot receipts are rejected\nok 165 - case-simplify-hardening-ac-004 snapshot detects omitted delete change\nok 166 - case-simplify-hardening-ac-004 snapshot detects omitted rename change\nok 167 - case-simplify-hardening-ac-004 snapshot detects omitted staged change\nok 168 - case-simplify-hardening-ac-004 snapshot detects omitted untracked change\nok 169 - case-simplify-hardening-ac-004 dirty selected source remains user-owned by default\nok 170 - case-simplify-hardening-ac-009 protected classification and declared cap cannot be waived\nok 171 - case-simplify-hardening-ac-004 current-diff hunks preserve adjacent user changes\nok 172 - case-simplify-hardening-ac-009 actual hunk cap is enforced before any edit\nok 173 - case-simplify-hardening-ac-009 rejected actual hunk cap is retained after rollback\nok 174 - case-simplify-hardening-ac-009 unknown failed hunk history cannot become zero cost: binary-hunks\nok 175 - case-simplify-hardening-ac-009 unknown failed hunk history cannot become zero cost: unobservable-snapshot\nok 176 - case-simplify-hardening-ac-004 a later pass cannot reuse shifted user-owned line coordinates\nok 177 - case-simplify-hardening-ac-009 five per pass and eight total files are hard limits\nok 178 - every critical simplify surface is protected\nok 179 - legacy evidence is read-only and cannot authorize writes\nok 180 - simplify enforces two passes and rollback of a failed pass\nok 181 - analyze mode is read-only and generated mirrors are excluded\nok 182 - cross-root writes and simplify/repair recursion are denied\nok 183 - public behavior changes return to spec/plan and line count is not a goal\nok 184 - case-simplify-hardening-ac-001 legacy regression: empty scope with write\nok 185 - case-simplify-hardening-ac-001 legacy regression: write outside declared scope\nok 186 - case-simplify-hardening-ac-001 legacy regression: write outside plan scope\nok 187 - case-simplify-hardening-ac-001 legacy regression: hidden generated write\nok 188 - case-simplify-hardening-ac-001 legacy regression: hidden protected write\nok 189 - case-simplify-hardening-ac-001 legacy regression: traversal\nok 190 - case-simplify-hardening-ac-001 legacy regression: nested traversal\nok 191 - case-simplify-hardening-ac-001 legacy regression: absolute path\nok 192 - case-simplify-hardening-ac-001 legacy regression: other Git root\nok 193 - case-simplify-hardening-ac-001 legacy regression: symlink claim\nok 194 - case-simplify-hardening-ac-001 legacy regression: missing commands\nok 195 - case-simplify-hardening-ac-001 legacy regression: empty commands\nok 196 - case-simplify-hardening-ac-001 legacy regression: blank commands\nok 197 - case-simplify-hardening-ac-001 legacy regression: same HEAD different content\nok 198 - case-simplify-hardening-ac-001 legacy regression: Analyze hidden write\nok 199 - case-simplify-hardening-ac-001 legacy regression: lowercase failed pass\nok 200 - case-simplify-hardening-ac-001 legacy regression: pass id beyond cap\nok 201 - case-simplify-hardening-ac-001 legacy regression: reset repair depth\nok 202 - case-repair-observer-real-repo: a simplify session starts beside ignored output and ignored links\nok 203 - case-repair-symlink-scope: a session scope under a junction stays blocked while outside links are metadata\nok 204 - case-repair-volatile-paths: verification may rewrite a declared cache; edits and drift outside windows are blocked\nok 205 - case-repair-analyze-honest: Analyze never carries verified status for checks it did not run\nok 206 - case-repair-diff-check-scope: existing whitespace outside the pass never blocks; whitespace the pass adds does\nok 207 - case-repair-scoped-rollback: restoring the pass paths reverts while concurrent unrelated edits are preserved and listed\nok 208 - case-repair-hardlink-target: a write target with more than one link is refused before any byte is written\nok 209 - case-repair-host-runner: one runner process completes a pass; a separate consumer recomputes before accepting\nok 210 - case-repair-host-runner: requests cannot carry authority and the plan identity must match the host-issued hash\nok 211 - case-repair-host-runner: the receipt chain carries caps across invocations and a reset chain is refused\nok 212 - case-repair-host-runner: an oracle that imports a package is not trusted and Apply is refused\nok 213 - case-repair-untracked-ownership: a host-snapshot pass on a file that is not in HEAD still needs proven ownership\nok 214 - case-repair-runner-rollback: the chain hunk budget is checked before Apply and no write survives a refused pass\nok 215 - case-repair-filtered-blob: head anchors compare filtered HEAD content, so autocrlf work trees are not blocked\nok 216 - case-repair-runner-fingerprint: another-process consumers report the same source identity as host sessions\nok 217 - case-repair-oracle-imports: evasive package imports make the oracle untrusted\nok 218 - case-repair-direct-analyze: a direct fix without a plan step can Analyze through the runner but never Apply\nok 219 - case-repair-oracle-rollback: a concurrent change to an oracle module blocks the scoped rollback\nok 220 - case-repair-consumer-window: another-process revalidation runs its commands inside the shared host ledger\nok 221 - case-repair-rollback-conflict: a concurrent edit to a pass path blocks the runner rollback and is never overwritten\nok 222 - case-repair-oracle-specifier: a specifier that Node resolves to another file than the checked one is untrusted\nok 223 - case-repair-oracle-pathspec: a bracketed oracle path is checked literally, not as a Git glob\nok 224 - case-repair-oracle-commonjs: only ES module files join the oracle closure and crypto engines are refused\nok 225 - case-repair-session-outcome-composite: a rolled-back second session pass does not hide the simplified first pass\nok 226 - case-repair-reverted-outcome: a reverted receipt must restore its before-state and the outcome follows the composite diff\nok 227 - case-repair-oracle-builtins: only pure built-ins are trusted and computed code loading is refused\nok 228 - case-repair-outcome-source: the session consumer reports the host-held outcome, not the payload status\nok 229 - simplify: canonical utility exists exactly once and source count is 23\nok 230 - simplify: canonical references resolve and progressive disclosure stays bounded\nok 231 - simplify: actions, bounded scope, protected surfaces, and clarity rules fail closed\nok 232 - simplify: stack and AI-agent contracts cannot be simplified\nok 233 - simplify: baseline, post-change, pass-revert, Git, and context evidence are mandatory\nok 234 - simplify: execute-plan does not gain a simplify implementation track\nok 235 - simplify: finish gate resolves scoped opt-in with fresh post-write evidence\nok 236 - simplify: downstream owners consume or preserve simplify_context\nok 237 - simplify: compound routing selects the utility and preserves dedicated owners\nok 238 - simplify: routing detector is narrow rather than a broad keyword match\nok 239 - simplify: mutation guards detect removed safety and routing invariants\nok 240 - simplify: package, mirrors, refs, catalog, and dependency boundary agree on 23 skills\n# tests 240\n# suites 0\n# pass 240\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 3698387.4984",
+    "output_sha256": "sha256:90092ab458c0efbcea3405c45fe8f6fcc634e9ccdf35073acd1a7cbc856ce9d3",
+    "raw_output_sha256": "sha256:baa982d9688ece2f0ce50f695fef2c18fc6080d26d31e679e0765e9c7687cd91"
+  },
+  "ui_verification": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap test/e2e/review-contract.test.mjs test/e2e/ship-readiness-contract.test.mjs test/e2e/repair-contract.test.mjs test/e2e/validation-map-contract.test.mjs test/e2e/angular-production-contract.test.mjs test/e2e/nextjs-production-contract.test.mjs test/e2e/design-handoff-contract.test.mjs test/e2e/uiux-review-regression.test.mjs test/e2e/uiux-knowledge.test.mjs",
+    "cwd": ".",
+    "owner_repository_id": "github.com/sdcorejs/sdcorejs-agent",
+    "source_revision": "70c933c3fc59a98b92c03004de902bc96250fba6",
+    "source_fingerprint": "sha256:e50d01769f3ac8ae4a5e02a2dc4409e5f2b600aba67b875fafd96f1c64b6b816",
+    "content_stable": true,
+    "started_at": "2026-09-29T08:07:49.840Z",
+    "finished_at": "2026-09-29T08:25:42.715Z",
+    "exit_code": 0,
+    "interrupted": false,
+    "tests": 177,
+    "passed": 177,
+    "failed": 0,
+    "transcript_kind": "test and summary excerpt",
+    "transcript": "ok 1 - case-design-real-consumer-enforcement: Angular requires current verified Design authority\nok 2 - Angular execution contract resolves application and module owners without portal fallback\nok 3 - technical prototype and optional Angular packs require explicit approved scope\nok 4 - Angular policy makes TDD authoring mandatory and admin/prototype conditional\nok 5 - case-repair-ordinary-review: Angular execution accepts an ordinary review_context\nok 6 - case-design-owner-matrix: document payload supports each actual semantic owner\nok 7 - malformed canonical payloads fail structure without accidental legacy promotion\nok 8 - case-design-parent-authenticity: actual missing, mutated, stale and foreign parents block\nok 9 - case-design-verification-layers: structure, parent verification and Design approval are distinct\nok 10 - case-design-responsive-applicability: only approved applicable checks can pass\nok 11 - case-design-draft-and-material-change: exploration is not implementation approval\nok 12 - bounded spacing review reuses approval but requires current content attestation\nok 13 - case-design-cross-module-provenance: distinct actual module sources and current provenance are required\nok 14 - case-design-source-and-image-provenance: actual source and receipt fingerprints are current\nok 15 - case-design-artifact-closure: observed assets cannot be omitted from declared closure\nok 16 - additional wireframes retain their own PNG provenance and full closure\nok 17 - real screenshot claims require real-capture receipt kind and current app provenance\nok 18 - case-design-schema-compatibility: legacy data stays unverified and unknown versions fail\nok 19 - regression: diagnostics cannot traverse into durable exports\nok 20 - regression: canonical wireframe extension and document depth are enforced\nok 21 - regression: schema validation never claims verified approval\nok 22 - module design handoff routes to its module repository\nok 23 - design handoff validation rejects every root-level legacy write path\nok 24 - design artifact context covers the whole bundle and keeps diagnostics local\nok 25 - portal shell and composition handoffs remain portal-owned\nok 26 - cross-module design has an explicit integration owner and verified durable references\nok 27 - design handoff rejects production code authority and missing approved parents\nok 28 - editable-source and image provenance gates fail closed\nok 29 - design prose preserves handoff discipline without expanding implementation authority\nok 30 - case-repair-greenfield-design: an approved no-baseline record verifies when no mapping is confirmed\nok 31 - case-repair-greenfield-design: missing approval, a foreign approval ref, confirmed mappings or mixed evidence block\nok 32 - case-repair-design-docs: schema-2 editable formats and the resolver result match the helper\nok 33 - case-design-real-consumer-enforcement: Next.js revalidates draft and missing handoffs\nok 34 - only a loaded approved non-Design applicability reason can waive the handoff\nok 35 - basic Next.js profile does not infer i18n, contact, analytics, CMS, or advanced SEO\nok 36 - feature packs require approved requirements or an explicit approved profile\nok 37 - Next.js module artifacts route to module owner and never default to portal\nok 38 - Next.js skill dispatches only approved features and executable references validate\nok 39 - case-repair-ordinary-review: Next.js execution accepts an ordinary review_context\nok 40 - case-interaction-finish-repair-consumer: review-only blocks repair; opt-in retains existing scope gates\nok 41 - repair metadata and body derive every supported track from the central registry\nok 42 - AI-agent repair from portal stays in module owner and links evidence\nok 43 - review findings require explicit selection and write authority\nok 44 - repair loop enforces the three-attempt cap and escalation\nok 45 - repair denies cross-root paths and approved artifact mutation\nok 46 - repaired evidence must trace to the original failure and owner\nok 47 - repair and simplify recursion is bounded\nok 48 - correct external feedback is verified before tier selection and exact re-verification\nok 49 - signed review assessment binds conflicts, change kind, and migration decision identity\nok 50 - stale external line references do not create writes\nok 51 - a convention applied outside its owner scope is not applicable\nok 52 - feedback conflicting with approved architecture requires the owning decision\nok 53 - public API rename feedback without migration or compatibility decision is conflicting\nok 54 - incorrect feedback returns evidence-backed technical pushback without edits\nok 55 - external feedback rejects fabricated repository evidence and malformed top-level input\nok 56 - unclear external feedback remains read-only\nok 57 - external feedback cannot grant authority, weaken tests, or change re-verification\nok 58 - repair paths are canonical and remain inside feedback, finding, and owner scopes\nok 59 - confirm and user-decision repair tiers require typed, scoped approvals\nok 60 - migration and write authority resolve verified artifacts instead of inline claims\nok 61 - repair evidence is revision-bound, changes are nonempty, and test integrity is independently compared\nok 62 - repository snapshots and command receipts defeat co-mutated repair projections\nok 63 - malformed nested repair collections fail closed instead of throwing\nok 64 - canonical repair workflow exposes external feedback mode without a new public skill\nok 65 - case-simplify-hardening-ac-009 repair preserves simplify context and closes recursion\nok 66 - case-repair-ordinary-review: repairing a non-UI finding is not blocked by the UI consumer\nok 67 - case-repair-failing-receipt: repair accepts a current FAIL receipt as its input without gaining authority\nok 68 - case-repair-repair-finding-binding: the cited receipt comes from the observed finding, not the payload copy\nok 69 - case-repair-repair-assessment-recorded: repair consumes only an assessment recorded before it, not a fresh one\nok 70 - case-repair-simplify-owner: repair takes the simplify owner from host evidence, not the payload\nok 71 - case-repair-repair-fail-scope: repair accepts a FAIL receipt only as the input of the finding that cites it\nok 72 - case-interaction-finish-review-consumer: defer blocks invocation and worker cannot run shared review\nok 73 - case-ui-review-independence: self-critique cannot satisfy independent review\nok 74 - case-ui-review-purposes: candidate Design assessment does not need its own approval\nok 75 - case-ui-review-source-limits: source inspection cannot pass rendered or interaction checks\nok 76 - case-ui-review-mockup-denial: generated image cannot become product evidence\nok 77 - case-ui-review-target-provenance: command, source closure and viewport are bound\nok 78 - case-ui-review-content-staleness: actual same-HEAD edit invalidates proof\nok 79 - case-ui-review-missing-baseline: no fabricated design or mandatory new design\nok 80 - implemented UI consumes an actual approved Design baseline and detects mutation\nok 81 - explicit scoped source review works without inventing spec/plan/Design approvals\nok 82 - case-ui-review-aesthetic-advisory: preference is never blocking or auto-repair\nok 83 - case-ui-review-conformance-classification: requirement violations cannot hide as taste\nok 84 - case-ui-review-observed-read-only: undeclared writes and persistence are observed\nok 85 - case-ui-review-narrow-scope: requested dimensions and files do not expand\nok 86 - case-ui-review-real-consumers: omitted required Design review blocks frontend entrypoints\nok 87 - UI Test, validation and ship callers preserve required evidence gaps\nok 88 - post-implementation obligations do not require future evidence in preflight\nok 89 - actual missing or mutated approved sources and unsupported runtime cannot verify UI\nok 90 - case-ui-review-owner-repair: stale review cannot grant repair or restart simplify\nok 91 - current conformance failure remains repairable only through existing owner authority\nok 92 - both purposes require current observed assessments, never a portable PASS\nok 93 - malformed extension and drifted approved applicability fail closed\nok 94 - direct UI consumers enforce the ordinary review boundary and finding contract\nok 95 - case-ui-review-smoke-fixtures: popover, mobile table and standalone responsive page\nok 96 - case-ui-review-legacy-history: structural validity and legacy completion are not proof\nok 97 - case-ui-review-scope-and-checks: no runner/capture/persistence during review\nok 98 - every first-class track has a durable central-registry review profile\nok 99 - review is provably read-only and rejects write actions\nok 100 - UI review cannot promote unobserved rendered or interaction evidence\nok 101 - UI review cannot ignore current-content drift at the same HEAD\nok 102 - UI review does not prove no writes from an empty declaration\nok 103 - review detects module artifacts misplaced in portal and duplicate editable sources\nok 104 - stale source/pinned evidence is a High finding\nok 105 - fake provider remains Critical even when CI is green\nok 106 - mutated approval hash and unsupported review profiles fail closed\nok 107 - case-simplify-hardening-ac-010 review checks actual simplify freshness\nok 108 - case-repair-ordinary-review: an ordinary review_context is not a UI review unless an obligation exists\nok 109 - case-repair-failing-receipt: a completed failing run is FAIL evidence; incomplete or stale runs stay gaps\nok 110 - case-repair-ui-claims-gates-tests: source-only runtime claims fail by structure and gates are canonical\nok 111 - case-repair-volatile-paths: a UI command window may rewrite only the plan-declared cache\nok 112 - case-repair-claim-lexicon-negations: only a negated completion is a disclaimer; other negations are claims\nok 113 - case-repair-window-release: a failed observation inside a UI command window still closes the window\nok 114 - case-repair-simplify-owner: review takes the simplify owner from host evidence, not the payload\nok 115 - case-repair-claim-lexicon: negated success claims are outcome claims; only a negated runtime activity is a disclaimer\nok 116 - case-interaction-finish-ship-consumer: future proof is unnecessary at preflight, defer never ships\nok 117 - current full evidence can be release-ready without claiming publication\nok 118 - malformed readiness input fails closed instead of throwing\nok 119 - missing, blocked, deferred, stale, or source-mismatched convergence blocks ship and branch readiness\nok 120 - equivalent module revision maps are independent of object insertion order\nok 121 - stale evidence and portal/module revision mismatches block readiness\nok 122 - mutated approved artifact and unresolved Critical or High findings block\nok 123 - required module NOT RUN and fake production auth evidence are rejected\nok 124 - supplemental smoke cannot satisfy Full E2E or required evidence class\nok 125 - full live-agent claim requires a complete current live matrix\nok 126 - protected or dirty delivery state is distinct from production evidence\nok 127 - published is asserted only when immutable tag and release really exist\nok 128 - case-simplify-hardening-ac-010 ship cannot turn stale or limited simplify into readiness\nok 129 - case-repair-ordinary-review: ship treats an ordinary review_context as NOT APPLICABLE for UI\nok 130 - case-repair-failing-receipt: ship blocks a current FAIL receipt as a defect\nok 131 - case-repair-observed-consumers: ship reads host-verified simplify evidence without trusting a serialized context\nok 132 - on-demand reference selection: sidebar\nok 133 - on-demand reference selection: mobile-table\nok 134 - on-demand reference selection: portal-crud\nok 135 - on-demand reference selection: landing\nok 136 - on-demand reference selection: review\nok 137 - on-demand reference selection: focus-fix\nok 138 - on-demand reference selection: spacing-fix\nok 139 - unknown topics and surfaces never manufacture a marketing match\nok 140 - Q&A and non-UI work load no knowledge and malformed requests fail closed\nok 141 - the catalog has resolvable rule locations and no hidden eager file loading\nok 142 - Core UI exact docs selection supports aliases and refuses version guessing\nok 143 - exact-version resolution uses package evidence without stripping ranges or guessing text locks\nok 144 - UI review requires verification, keeps preferences advisory, and forbids writes\nok 145 - feature decisions use the existing semantic-owner paths and closure\nok 146 - routing preserves design, implementation, independent review and direct answers\nok 147 - public inventory is unchanged from the recorded main revision\nok 148 - aesthetic preferences cannot use either blocking gate label\nok 149 - UI convention metadata preserves applicable consistency in code reviews\nok 150 - narrow reviews admit only UI conventions that affect their requested dimension\nok 151 - validation map accepts canonical rows and the smallest proving layer\nok 152 - authorization rows require server or API denial evidence\nok 153 - row schema fails closed for malformed identities, enums, commands, paths, and thresholds\nok 154 - protected invariants and evidence references cannot be omitted or moved across typed fields\nok 155 - every AC is mapped and case IDs remain globally unique\nok 156 - manual and deferred rows require rationale, owner, and acknowledgement policy and never auto-pass\nok 157 - manual-only acknowledgement survives portable handoff and evaluates as MANUAL\nok 158 - coverage matrix is an exact runtime projection of planning authority\nok 159 - planned, authored, executed, and passed remain distinct lifecycle states\nok 160 - an unrelated passing run cannot satisfy an absent mapped AC case\nok 161 - freshness binds exact HEAD or diff, command, cwd, config, environment, and evidence class\nok 162 - contradictory top-level v2 evidence cannot return PASS\nok 163 - malformed or uncloneable map and evidence inputs fail closed without throwing\nok 164 - module full E2E delegates complete provenance to the canonical module contract\nok 165 - canonical plan, test, and ship surfaces share one validation map authority\nok 166 - case-repair-ordinary-review: validation evidence reports no UI gap for an ordinary review_context\n# tests 177\n# suites 0\n# pass 177\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1072333.0141",
+    "output_sha256": "sha256:50e40897b027baf1e2b39a562967fd3bf469bfd8fd0e04db3baf35970cf150cb",
+    "raw_output_sha256": "sha256:5bc2ecdd307fcb3b8bd27b0f5ebec8ae81df4c1bb1bd3d16ffe28cfebdf26dc2"
+  },
+  "model": "claude-opus-5-5",
+  "effort": "not exposed",
+  "runtime": "Claude Code (execution environment only)",
+  "provider_calls": 0,
+  "tokens": null,
+  "live_target_project": false,
+  "live_agent": "NOT RUN",
+  "visual": "NOT RUN",
+  "exact_limitation": "Deterministic local Node contract suites and temporary Git fixtures over repository sources. Proves the repaired contracts, regression cases, mirrors and retargeted assertions on this working tree; it does not prove live-agent behavior, real browser rendering or interaction, token or cost changes, or semantic equivalence beyond the checked cases."
+}

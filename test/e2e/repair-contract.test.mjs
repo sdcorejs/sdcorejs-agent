@@ -1195,3 +1195,123 @@ test('case-simplify-hardening-ac-009 repair preserves simplify context and close
   f.context.verification.before = [f.session.runVerification(f.command)];
   assert.equal(evaluateSimplifyPreflight(f.context, f.runtime).write_authorized, false);
 });
+
+// Audit repair (UR-1, UR-2): repair consumes UI applicability through its real caller.
+const repairOrdinaryReview = () => ({ schema_version: 1, source: 'sdcorejs-review', subject_track: 'workflow', review_profile: 'workflow',
+  mode: 'read-only', dimensions: ['security'], write_actions: [], reported_findings: [] });
+
+test('case-repair-ordinary-review: repairing a non-UI finding is not blocked by the UI consumer', async () => {
+  const { evaluateRepairContract } = await import('../../_refs/orchestration/repair-contract.mjs');
+  const finding = { id: 'R1', repository_id: 'github.com/acme/module-a', severity: 'High', gate: 'REQUIRED', dimension: 'security' };
+  const result = evaluateRepairContract({ schema_version: 1, review_context: repairOrdinaryReview(), finding }, {});
+  assert.equal(result.blockers.some(message => message.startsWith('UI review:')), false, JSON.stringify(result.blockers));
+  assert.equal(result.blockers.some(message => message.includes('UI repair finding')), false, JSON.stringify(result.blockers));
+});
+
+test('case-repair-failing-receipt: repair accepts a current FAIL receipt as its input without gaining authority', async t => {
+  const { uiReviewFixture } = await import('./support/ui-review-fixture.mjs');
+  const { evaluateRepairContract } = await import('../../_refs/orchestration/repair-contract.mjs');
+  const f = uiReviewFixture(t, { required: ['interaction'] });
+  f.reset({ run_command: args => ({ ...f.host.run_command(args), exit_code: 1, assertions: [{ id: 'fixture-keyboard', result: 'FAIL' }] }) });
+  const ref = f.capture('interaction');
+  const finding = { id: 'keyboard-trap', kind: 'uiux', severity: 'High', dimension: 'code', gate: 'REQUIRED',
+    evidence: 'src/page.html:1: the menu has no Escape handler', locator: 'src/page.html:1', repository_id: f.repo,
+    impact: 'Keyboard users cannot leave the menu', required_fix: 'Restore Escape handling', repair_tier: 'confirm',
+    uiux: { classification: 'functional', evidence_kind: 'interaction', evidence_ref: ref.artifact_ref, rule_id: 'popover', verification: 'Run the keyboard interaction.' } };
+  f.context.reported_findings = [finding]; f.start();
+  // Repair consumes the assessment that an earlier review recorded in this host runtime.
+  const { evaluateUiReview } = await import('../../_refs/shared/ui-review-contract.mjs');
+  evaluateUiReview(f.context, { runtime: f.uiRuntime });
+  const result = evaluateRepairContract({ review_context: f.context, finding }, { ui_review_runtime: f.uiRuntime });
+  assert.equal(result.ui_review_verification.verified, true, result.ui_review_verification.blockers?.join('; '));
+  assert.equal(result.repair_authorized, false, 'failing evidence never supplies write authority');
+});
+
+// Second review follow-up (repair selected by the user) ---------------------------
+test('case-repair-repair-finding-binding: the cited receipt comes from the observed finding, not the payload copy', async t => {
+  const { uiReviewFixture } = await import('./support/ui-review-fixture.mjs');
+  const { evaluateRepairContract } = await import('../../_refs/orchestration/repair-contract.mjs');
+  const f = uiReviewFixture(t, { required: ['interaction'] });
+  f.reset({ run_command: args => ({ ...f.host.run_command(args), exit_code: 1, assertions: [{ id: 'fixture-keyboard', result: 'FAIL' }] }) });
+  const ref = f.capture('interaction');
+  const unrelated = { id: 'label-gap', kind: 'uiux', severity: 'Medium', dimension: 'code', gate: 'REQUIRED',
+    evidence: 'src/page.html:1: the menu button has no visible label', locator: 'src/page.html:1', repository_id: f.repo,
+    impact: 'The control purpose is unclear', required_fix: 'Add a visible label', repair_tier: 'confirm',
+    uiux: { classification: 'functional', evidence_kind: 'source', rule_id: 'popover', verification: 'Render and inspect the button label.', limitation: 'Rendering not run.' } };
+  f.context.reported_findings = [unrelated]; f.start();
+  const { evaluateUiReview } = await import('../../_refs/shared/ui-review-contract.mjs');
+  evaluateUiReview(f.context, { runtime: f.uiRuntime });
+  // Same id, but the payload copy now claims the FAIL receipt as its evidence.
+  const forged = { ...unrelated, uiux: { ...unrelated.uiux, evidence_kind: 'interaction', evidence_ref: ref.artifact_ref } };
+  const result = evaluateRepairContract({ review_context: f.context, finding: forged }, { ui_review_runtime: f.uiRuntime });
+  assert.equal(result.ui_review_verification.verified, false, 'a forged payload finding cannot adopt an unrelated FAIL receipt');
+  assert.match(result.ui_review_verification.blockers.join(' '), /FAIL/u);
+});
+
+test('case-repair-repair-assessment-recorded: repair consumes only an assessment recorded before it, not a fresh one', async t => {
+  const { uiReviewFixture } = await import('./support/ui-review-fixture.mjs');
+  const { evaluateRepairContract } = await import('../../_refs/orchestration/repair-contract.mjs');
+  const { evaluateUiReview } = await import('../../_refs/shared/ui-review-contract.mjs');
+  const f = uiReviewFixture(t, { required: ['interaction'] });
+  f.reset({ run_command: args => ({ ...f.host.run_command(args), exit_code: 1, assertions: [{ id: 'fixture-keyboard', result: 'FAIL' }] }) });
+  const ref = f.capture('interaction');
+  const unrelated = { id: 'label-gap', kind: 'uiux', severity: 'Medium', dimension: 'code', gate: 'REQUIRED',
+    evidence: 'src/page.html:1: the menu button has no visible label', locator: 'src/page.html:1', repository_id: f.repo,
+    impact: 'The control purpose is unclear', required_fix: 'Add a visible label', repair_tier: 'confirm',
+    uiux: { classification: 'functional', evidence_kind: 'source', rule_id: 'popover', verification: 'Render and inspect the button label.', limitation: 'Rendering not run.' } };
+  f.context.reported_findings = [unrelated]; f.start();
+  evaluateUiReview(f.context, { runtime: f.uiRuntime });
+  // A fresh assessment id carries a rewritten copy of the finding that cites the FAIL receipt.
+  const forged = { ...unrelated, uiux: { ...unrelated.uiux, evidence_kind: 'interaction', evidence_ref: ref.artifact_ref } };
+  const replay = structuredClone(f.context);
+  replay.ui_review.assessment_id = 'fresh-repair-assessment'; replay.reported_findings = [forged];
+  const result = evaluateRepairContract({ review_context: structuredClone(replay), finding: forged }, { ui_review_runtime: f.uiRuntime });
+  assert.equal(result.ui_review_verification.verified, false, 'a fresh assessment cannot supply the repair input');
+  assert.match(result.ui_review_verification.blockers.join(' '), /recorded/u);
+  // Fourth review follow-up: the blocked repair call does not record the fresh assessment either.
+  const retry = evaluateRepairContract({ review_context: structuredClone(replay), finding: forged }, { ui_review_runtime: f.uiRuntime });
+  assert.equal(retry.ui_review_verification.verified, false, 'a retry cannot adopt the fresh assessment');
+  assert.match(retry.ui_review_verification.blockers.join(' '), /recorded/u);
+});
+
+test('case-repair-simplify-owner: repair takes the simplify owner from host evidence, not the payload', async t => {
+  const { finishFixture } = await import('./support/interaction-finish-fixture.mjs');
+  const { evaluateRepairContract } = await import('../../_refs/orchestration/repair-contract.mjs');
+  const g = await finishFixture(t, { simplify: 'apply', review: 'skip',
+    runtime: { simplify_verifier: () => ({ verified: true, outcome: 'simplified', pass_paths: ['src/value.mjs'], blockers: [] }) } });
+  g.run('baseline');
+  const dispatch = g.observation.beginSimplify();
+  g.write('src/value.mjs', 'export const value = 1; // simplified\n');
+  const recorded = g.observation.recordSimplify(dispatch.token, { schema_version: 1, kind: 'simplify-host-receipt:v1', status: 'verified', pass_paths: ['src/value.mjs'] });
+  assert.equal(recorded.valid, true, JSON.stringify(recorded));
+  const owner = g.context.identity.owner_repository_id;
+  const result = evaluateRepairContract({ schema_version: 1, simplify_context: null, artifact_identity: { owner_repository_id: owner },
+    finding: { id: 'R1', repository_id: owner, severity: 'High', gate: 'REQUIRED', dimension: 'security' } }, { observation: g.observation, proof: recorded.proof });
+  assert.equal(result.blockers.some(message => /owner mismatch/u.test(message)), false, JSON.stringify(result.blockers));
+});
+
+// Review follow-up (repair selected by the user): FAIL coverage is repair input only
+// for the finding that cites that receipt.
+test('case-repair-repair-fail-scope: repair accepts a FAIL receipt only as the input of the finding that cites it', async t => {
+  const { uiReviewFixture } = await import('./support/ui-review-fixture.mjs');
+  const { evaluateRepairContract } = await import('../../_refs/orchestration/repair-contract.mjs');
+  const f = uiReviewFixture(t, { required: ['interaction'] });
+  f.reset({ run_command: args => ({ ...f.host.run_command(args), exit_code: 1, assertions: [{ id: 'fixture-keyboard', result: 'FAIL' }] }) });
+  const ref = f.capture('interaction');
+  const cited = { id: 'keyboard-trap', kind: 'uiux', severity: 'High', dimension: 'code', gate: 'REQUIRED',
+    evidence: 'src/page.html:1: the menu has no Escape handler', locator: 'src/page.html:1', repository_id: f.repo,
+    impact: 'Keyboard users cannot leave the menu', required_fix: 'Restore Escape handling', repair_tier: 'confirm',
+    uiux: { classification: 'functional', evidence_kind: 'interaction', evidence_ref: ref.artifact_ref, rule_id: 'popover', verification: 'Run the keyboard interaction.' } };
+  const unrelated = { id: 'label-gap', kind: 'uiux', severity: 'Medium', dimension: 'code', gate: 'REQUIRED',
+    evidence: 'src/page.html:1: the menu button has no visible label', locator: 'src/page.html:1', repository_id: f.repo,
+    impact: 'The control purpose is unclear', required_fix: 'Add a visible label', repair_tier: 'confirm',
+    uiux: { classification: 'functional', evidence_kind: 'source', rule_id: 'popover', verification: 'Render and inspect the button label.', limitation: 'Rendering not run.' } };
+  f.context.reported_findings = [cited, unrelated]; f.start();
+  const { evaluateUiReview } = await import('../../_refs/shared/ui-review-contract.mjs');
+  evaluateUiReview(f.context, { runtime: f.uiRuntime });
+  const accepted = evaluateRepairContract({ review_context: f.context, finding: cited }, { ui_review_runtime: f.uiRuntime });
+  assert.equal(accepted.ui_review_verification.verified, true, accepted.ui_review_verification.blockers?.join('; '));
+  const other = evaluateRepairContract({ review_context: f.context, finding: unrelated }, { ui_review_runtime: f.uiRuntime });
+  assert.equal(other.ui_review_verification.verified, false, 'the FAIL coverage is not input for an unrelated finding');
+  assert.match(other.ui_review_verification.blockers.join(' '), /FAIL/u);
+});

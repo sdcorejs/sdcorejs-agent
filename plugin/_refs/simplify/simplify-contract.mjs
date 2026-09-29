@@ -1,5 +1,8 @@
+import { createHash } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
-import { evaluateRepositoryEvidence, safeSimplifyPath, simplifyLimits, simplifyPreservedSurfaces } from './repository-evidence.mjs';
+import { evaluateRepositoryEvidence, revalidateSimplifyHostReceipt, safeSimplifyPath, simplifyLimits, simplifyPreservedSurfaces } from './repository-evidence.mjs';
+import { loadSimplifyHostAuthority } from './host-runner.mjs';
+import { captureRepository, readRepositorySimplify } from '../shared/repository-observation.mjs';
 
 const APPLY_ACTIONS = new Set(['apply-current-diff', 'apply-explicit-scope']);
 const ANALYZE_ACTIONS = new Set(['analyze-current-diff', 'analyze-explicit-scope']);
@@ -139,7 +142,7 @@ export function validateSimplifyContext(context, { phase = context?.phase } = {}
   const errors = [];
   const require = (condition, message) => { if (!condition) errors.push(message); };
   if (!isObject(context)) return { valid: false, blockers: ['simplify_context must be an object'] };
-  const fields = ['schema_version', 'source', 'phase', 'session_id', 'action', 'invocation', 'artifact_identity', 'source_revision', 'approved_plan_step', 'target_root', 'target_root_kind', 'baseline', 'preflight_ref', 'scope', 'preserved_surfaces', 'limits', 'passes', 'result', 'verification', 'artifact_context'];
+  const fields = ['schema_version', 'source', 'phase', 'session_id', 'action', 'invocation', 'artifact_identity', 'source_revision', 'approved_plan_step', 'target_root', 'target_root_kind', 'baseline', 'preflight_ref', 'scope', 'preserved_surfaces', 'limits', 'passes', 'result', 'verification', 'artifact_context', 'host_kind', 'anchor', 'host_receipt_digest'];
   require(Object.keys(context).every(key => fields.includes(key)), 'unknown simplify_context field; use the canonical v2 schema');
   require(context.schema_version === 2, 'simplify schema_version must be 2');
   require(context.source === 'sdcorejs-simplify', 'simplify source is required');
@@ -147,16 +150,30 @@ export function validateSimplifyContext(context, { phase = context?.phase } = {}
   require(phase === 'consumer' || context.phase === phase, 'simplify phase mismatch');
   require(APPLY_ACTIONS.has(context.action) || ANALYZE_ACTIONS.has(context.action) || context.action === 'planning-handoff', 'unsupported simplify action');
   require(['direct', 'finish-gate', 'approved-plan'].includes(context.invocation), 'unsupported simplify invocation');
-  require(isText(context.session_id), 'host session_id is required');
+  // host_kind session (default) references an in-process session; runner contexts
+  // carry no session refs, only the anchor and the digest of the host receipt.
+  const runner = context.host_kind === 'runner';
+  require(context.host_kind === undefined || ['session', 'runner'].includes(context.host_kind), 'simplify host_kind must be session or runner');
+  if (runner) {
+    require(context.session_id === null && context.baseline?.snapshot === null && context.preflight_ref === null, 'runner simplify_context carries no session references');
+    require(['head', 'host-snapshot'].includes(context.anchor?.kind), 'runner simplify_context requires a head or host-snapshot anchor');
+    require(/^sha256:[a-f0-9]{64}$/u.test(context.host_receipt_digest ?? ''), 'runner simplify_context requires host_receipt_digest');
+  } else {
+    require(context.anchor === undefined && context.host_receipt_digest === undefined, 'session simplify_context cannot carry runner fields');
+    require(isText(context.session_id), 'host session_id is required');
+  }
   require(isText(context.target_root), 'target_root is required');
   require(['target-project', 'sdcorejs-agent-authoring-repo', 'skill-pack-authoring-repo', 'unknown'].includes(context.target_root_kind), 'target_root_kind is invalid');
   require(isText(context.artifact_identity?.owner_repository_id) && isText(context.artifact_identity?.execution_host_repository_id), 'simplify owner and execution host are required');
   require(context.artifact_identity?.owner_module_id === null || isText(context.artifact_identity?.owner_module_id), 'owner_module_id must be explicit');
   require(/^[a-f0-9]{40}$/u.test(context.source_revision ?? ''), 'source_revision is required');
   require(context.approved_plan_step === null || (isRef(context.approved_plan_step) && isText(context.approved_plan_step.step_id)), 'approved_plan_step must be null or an approved artifact/step reference');
-  require(isRef(context.baseline?.snapshot), 'baseline snapshot reference is required');
-  require(context.preflight_ref === null || isRef(context.preflight_ref), 'preflight_ref is invalid');
-  require(context.phase !== 'postflight' || isRef(context.preflight_ref), 'postflight needs an actual preflight reference');
+  if (!runner) {
+    require(isRef(context.baseline?.snapshot), 'baseline snapshot reference is required');
+    require(context.preflight_ref === null || isRef(context.preflight_ref), 'preflight_ref is invalid');
+    require(context.phase !== 'postflight' || isRef(context.preflight_ref), 'postflight needs an actual preflight reference');
+  }
+  require(context.result?.concurrent_changes === undefined || (Array.isArray(context.result.concurrent_changes) && context.result.concurrent_changes.every(safeSimplifyPath)), 'result concurrent_changes must be safe paths');
   require(isDeepStrictEqual(context.limits, simplifyLimits), 'simplify caps must remain 2/5/8/20');
   for (const key of ['requested', 'eligible_files']) {
     const paths = context.scope?.[key];
@@ -213,11 +230,74 @@ export function adaptLegacySimplifyContext(context) {
   };
 }
 
+const blockedConsumer = blockers => ({ schema_version: 2, status: 'blocked', write_authorized: false, evidence_current: false, analysis_current: false, verification_current: false, blockers });
+
+// Test and repair may read stale evidence for revalidation or diagnostics; they
+// never promote it to current verification.
+const STALE_READERS = new Set(['sdcorejs-test', 'sdcorejs-repair-loop']);
+
+// Same-flow consumers read the host-verified simplify phase receipt through the
+// observation runtime; nothing is trusted from the serialized context.
+function consumeObservedSimplify(runtime) {
+  let read;
+  try { read = readRepositorySimplify(runtime.observation, runtime.proof); } catch (error) { return blockedConsumer([error.message]); }
+  if (!read.verified) return blockedConsumer(read.blockers);
+  return { schema_version: 2, status: read.current ? 'verified' : 'revalidation-required', write_authorized: false,
+    evidence_current: read.current, analysis_current: false, verification_current: read.current, outcome: read.outcome,
+    owner_repository_id: read.owner_repository_id, source_revision: read.source_revision, source_fingerprint: read.source_fingerprint,
+    blockers: read.current || STALE_READERS.has(runtime.consumer) ? [] : read.blockers };
+}
+
+// Cross-process consumers re-derive a runner receipt from HEAD and current content.
+function consumeRunnerReceipt(context, runtime) {
+  if (context.host_kind !== 'runner') return blockedConsumer(['a host receipt is consumed only with a runner simplify_context']);
+  const receipt = runtime.host_receipt;
+  const digest = `sha256:${createHash('sha256').update(JSON.stringify(receipt)).digest('hex')}`;
+  if (digest !== context.host_receipt_digest) return blockedConsumer(['host receipt differs from the digest bound in simplify_context']);
+  if (context.anchor.kind !== 'head') {
+    return { schema_version: 2, status: 'revalidation-required', write_authorized: false, evidence_current: false, analysis_current: false, verification_current: false,
+      blockers: ['host-snapshot anchors are verifiable only by the host that captured them'] };
+  }
+  // An Analyze receipt carries no re-derivable result, so another process cannot
+  // treat it as current analysis.
+  if (receipt?.status === 'analyzed') {
+    return { schema_version: 2, status: 'revalidation-required', write_authorized: false, evidence_current: false, analysis_current: false, verification_current: false,
+      blockers: ['an Analyze receipt is not re-derivable in another process; run Analyze in the consuming host'] };
+  }
+  // The root and plan identity come only from the consumer's trusted handoff.
+  const expected = runtime.expected_plan ?? {};
+  if (!isText(expected.root) || !isText(expected.path) || !isText(expected.approval_hash) || !isText(expected.step_id)) return blockedConsumer(['consumer expected_plan needs root, path, approval_hash and step_id']);
+  let authority;
+  try {
+    authority = loadSimplifyHostAuthority({ root: expected.root, repository_id: context.artifact_identity.owner_repository_id,
+      change_ref: context.artifact_context.change_ref, plan: { path: expected.path, approval_hash: expected.approval_hash }, parents: expected.parents ?? [], step_id: expected.step_id });
+  } catch (error) { return blockedConsumer([error.message]); }
+  if (!authority.oracles.available) return blockedConsumer([`no trusted oracle for revalidation: ${authority.oracles.reason}`]);
+  const verdict = revalidateSimplifyHostReceipt({ root: authority.root, receipt, chain: runtime.host_chain ?? [], anchor: { kind: 'head' },
+    authority: { plan: authority.plan_ref, step: authority.step, commands: authority.commands, oracles: authority.oracles },
+    requested_scope: { files: context.scope.requested, hunks: context.scope.eligible_hunks }, volatile_paths: authority.volatile,
+    repository_id: context.artifact_identity.owner_repository_id, change_ref: context.artifact_context.change_ref, run_verification: true });
+  if (!verdict.verified) return blockedConsumer(verdict.blockers);
+  // Source identity uses the same stable fingerprint as host sessions (bound to the
+  // owner), so review and ship compare runner evidence with their own source identity.
+  let observed;
+  try { observed = captureRepository({ root: authority.root, owner: context.artifact_identity.owner_repository_id, volatile: authority.volatile, guarded: [] }); }
+  catch (error) { return blockedConsumer([error.message]); }
+  return { schema_version: 2, status: 'verified', write_authorized: false, evidence_current: true, analysis_current: false, verification_current: true, outcome: verdict.outcome, pass_paths: verdict.pass_paths,
+    owner_repository_id: context.artifact_identity.owner_repository_id, source_revision: observed.revision, source_fingerprint: observed.stable_fingerprint, blockers: [] };
+}
+
 function evaluate(context, runtime, phase) {
+  if (phase === 'consumer' && runtime?.observation && runtime?.proof) return consumeObservedSimplify(runtime);
   if (context?.schema_version === 1) return adaptLegacySimplifyContext(context);
   const validation = validateSimplifyContext(context, { phase });
   if (!validation.valid) return { status: 'blocked', write_authorized: false, evidence_current: false, blockers: validation.blockers };
   if (context.action === 'planning-handoff') return { status: 'planning-handoff', write_authorized: false, evidence_current: false, blockers: ['semantic changes require spec/plan revision'] };
+  if (context.host_kind === 'runner') {
+    if (phase !== 'consumer') return blockedConsumer(['runner simplify_context is consumer input only']);
+    if (!runtime?.host_receipt) return blockedConsumer(['runner simplify evidence needs the host receipt and the consumer expected plan']);
+    return consumeRunnerReceipt(context, runtime);
+  }
   return { schema_version: 2, blockers: [], ...evaluateRepositoryEvidence(context, runtime, phase) };
 }
 

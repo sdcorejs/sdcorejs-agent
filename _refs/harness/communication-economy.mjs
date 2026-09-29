@@ -378,6 +378,8 @@ export const CONSUMER_REQUIRED_FIELD_KINDS = deepFreeze({
   },
   simplify_context: {
     schema_version: 'number',
+    // Runner contexts (host_kind: runner) carry no session; validateSimplifyContext enforces the kind.
+    session_id: 'nullable-scalar',
     baseline: 'object',
     'verification.before': 'array',
     'verification.after': 'array',

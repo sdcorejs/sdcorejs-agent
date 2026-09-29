@@ -116,6 +116,8 @@ For each scope item in the approved plan dispatched by
 
 Read ON DEMAND only — load the one reference for the step you are executing, not all of them. Each reference further links to the literal code templates under `_refs/angular/templates/`.
 
+Before writing or changing any template, every generation action (portal, module, entity, list, detail, action and approved admin screens) also reads `_refs/angular/styling.md`: utility classes from the fetched STYLE-GUIDE, the spacing contract and minimal custom CSS.
+
 ### Step 0 — Read-oriented project context
 
 Before dispatching any reference, assemble read-only `project_context`. Use

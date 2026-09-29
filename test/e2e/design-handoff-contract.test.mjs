@@ -742,3 +742,66 @@ test('design prose preserves handoff discipline without expanding implementation
     assert.doesNotMatch(contract, legacyWrite);
   }
 });
+
+// ---------------------------------------------------------------------------
+// Audit repair (audit-findings-repair-20260928): greenfield no-baseline record
+// (DH-1, D-003) and documentation parity with the helper (DH-2, DH-3).
+// ---------------------------------------------------------------------------
+function repairGreenfield(t, { baseline = { kind: 'none', reason: 'Greenfield product: no existing UI or design system to inspect.' } } = {}) {
+  const f = designFixture(t);
+  if (baseline) f.requirements.design_baseline = baseline;
+  f.parents();
+  const specRef = f.handoff.metadata.parent_references[0];
+  f.handoff.design_system_reuse = { inspected: true, evidence_refs: [], deviations: [],
+    no_baseline: { reason: 'Greenfield product: no existing UI or design system to inspect.', approval_ref: specRef } };
+  f.handoff.component_mapping = f.handoff.component_mapping.map(row => ({ ...row, status: 'candidate' }));
+  f.approveDesign();
+  return { f, specRef };
+}
+
+test('case-repair-greenfield-design: an approved no-baseline record verifies when no mapping is confirmed', async t => {
+  const { f } = repairGreenfield(t);
+  assert.equal(validateDesignHandoff(f.handoff).ok, true, JSON.stringify(validateDesignHandoff(f.handoff).errors));
+  const result = await verifyV2(f);
+  assert.equal(result.verified, true, JSON.stringify(result.blockers));
+});
+
+test('case-repair-greenfield-design: missing approval, a foreign approval ref, confirmed mappings or mixed evidence block', async t => {
+  const withoutApproval = repairGreenfield(t, { baseline: null });
+  assert.equal((await verifyV2(withoutApproval.f)).verified, false, 'requirements must declare the absent baseline');
+  const foreign = repairGreenfield(t);
+  foreign.f.handoff.design_system_reuse.no_baseline.approval_ref = foreign.f.handoff.metadata.parent_references[1];
+  foreign.f.approveDesign();
+  assert.equal((await verifyV2(foreign.f)).verified, false, 'approval_ref must be the verified spec');
+  const confirmed = repairGreenfield(t);
+  confirmed.f.handoff.component_mapping = [{ need: 'Order table', component: 'OrderTable', decision: 'reuse', status: 'confirmed',
+    evidence_refs: confirmed.f.handoff.metadata.parent_references.slice(0, 0) }];
+  confirmed.f.approveDesign();
+  assert.equal((await verifyV2(confirmed.f)).verified, false, 'no mapping may be confirmed without a baseline');
+  const mixed = designFixture(t);
+  mixed.handoff.design_system_reuse.no_baseline = { reason: 'Mixed claim.', approval_ref: mixed.handoff.metadata.parent_references[0] };
+  mixed.approveDesign();
+  assert.equal((await verifyV2(mixed)).verified, false, 'cited sources and a no-baseline record cannot coexist');
+  const existing = designFixture(t);
+  existing.handoff.design_system_reuse.evidence_refs = [];
+  existing.approveDesign();
+  assert.equal((await verifyV2(existing)).verified, false, 'a project with UI still has to cite real sources');
+});
+
+test('case-repair-design-docs: schema-2 editable formats and the resolver result match the helper', async t => {
+  const doc = await readFile(new URL('../../_refs/shared/design-handoff.md', import.meta.url), 'utf8');
+  const formats = doc.match(/Valid editable formats are ([^.]+)\./u)?.[1] ?? '';
+  assert.doesNotMatch(formats, /Figma|FigJam/u, 'schema 2 accepts only html and svg editable sources');
+  assert.match(formats, /HTML/u); assert.match(formats, /SVG/u);
+  const f = designFixture(t);
+  for (const [format, ok] of [['html', true], ['svg', true], ['fig', false]]) {
+    const candidate = structuredClone(f.handoff);
+    candidate.editable_source.format = format;
+    candidate.editable_source.path = candidate.editable_source.path.replace(/\.[a-z]+$/u, `.${format}`);
+    assert.equal(validateDesignHandoff(candidate).errors.some(error => error.code === 'EDITABLE_SOURCE_UNAVAILABLE'), !ok, format);
+  }
+  const owner = { repository_id: f.repo, role: 'standalone', id: null, available: true, writable: true };
+  const target = resolveDesignHandoffTarget({ experience_kind: 'standalone', feature: 'orders', repository: owner, execution_host_repository_id: f.repo });
+  assert.equal(target.repository_relative_path, target.ledger_relative_path);
+  assert.match(doc, /`repository_relative_path` \(the ledger path/u, 'the resolver documentation names the ledger path');
+});

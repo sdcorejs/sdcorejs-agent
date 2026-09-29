@@ -1,10 +1,12 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { readFileSync, realpathSync } from 'node:fs';
+import { lstatSync, readFileSync, realpathSync } from 'node:fs';
+import path from 'node:path';
 import { isDeepStrictEqual as equal } from 'node:util';
 import { createApprovedArtifact } from './approved-artifact.mjs';
 import { resolveEvidenceArtifact } from './evidence-artifact.mjs';
 import { stableRepositoryId } from './repository-contract.mjs';
-import { captureRepository, containedRepositoryFile, repositoryGit, safeRepositoryPath } from './repository-observation.mjs';
+import { assertVolatileLedger, beginVolatileWindow, captureRepository, changedRepositoryPaths, containedRepositoryFile, endVolatileWindow,
+  registerVolatileLedger, repositoryGit, safeRepositoryPath, validateVolatilePaths } from './repository-observation.mjs';
 import { readVerifiedDesignSources, verifyDesignHandoff } from './design-verification.mjs';
 import { validateDocumentationVisualEvidence } from './documentation-layout.mjs';
 import { systemRegistry } from './system-registry.mjs';
@@ -26,6 +28,70 @@ const sameTarget = (a, b) => equal(a, b);
 const receiptContract = 'ui-command-receipt:v1';
 const array = v => Array.isArray(v) ? v : [];
 
+/** Canonical, case-sensitive finding gates. A gate is optional; any other value is rejected. */
+export const UI_REVIEW_GATES = Object.freeze(['BLOCKER', 'REQUIRED', 'ADVISORY', 'N/A']);
+
+// Closed lexicons for source-only findings (D-009). Prose is never evidence:
+// runtime status comes only from host receipts. These lists lint the sentences
+// that mention runtime behavior so a source-only finding cannot claim a result.
+export const UI_RUNTIME_TOPICS = Object.freeze(['render', 'interact', 'keyboard', 'focus', 'tab order', 'tabbing', 'tab key', 'hover', 'click',
+  'contrast', 'clip', 'viewport', 'responsive', 'screen reader', 'screen-reader', 'scroll', 'zoom', 'assistive technology', 'assistive-technology']);
+export const UI_IMPERATIVE_VERBS = Object.freeze(['render', 'run', 'open', 'inspect', 'check', 'verify', 'test', 'press', 'tab', 'click', 'hover',
+  'focus', 'navigate', 'resize', 'scroll', 'zoom', 'capture', 'compare', 'measure', 'execute', 'load', 'trigger', 'observe', 'use', 'record', 'confirm']);
+export const UI_RUNTIME_OUTCOME_WORDS = Object.freeze(['works', 'worked', 'working', 'pass', 'passes', 'passed', 'correct', 'correctly', 'fine', 'ok', 'okay',
+  'verified', 'confirmed', 'behaves', 'behaved', 'succeeds', 'succeeded', 'successful', 'successfully', 'properly', 'as expected', 'as intended']);
+// "no failures observed", "none found", "nothing observed failing", "zero issues found",
+// "never fails": a negated finding reports a run result. A negated runtime activity is
+// stripped first as a disclaimer.
+const NEGATED_FINDING_PATTERN = '\\b(?:no|none|nothing|zero|never)\\b[^.;]*?\\b(?:observed|found|detected|seen|confirmed|verified|reported|noticed|fails?|failed|failing)\\b';
+const words = list => list.map(item => item.replace(/[-\s]/gu, '[-\\s]')).join('|');
+const RUNTIME_TOPIC = new RegExp(`\\b(?:${words(UI_RUNTIME_TOPICS)})\\w*`, 'iu');
+const OUTCOME_WORDS = new RegExp(`\\b(?:${words(UI_RUNTIME_OUTCOME_WORDS)})\\b`, 'iu');
+const NEGATED_FINDING = new RegExp(NEGATED_FINDING_PATTERN, 'iu');
+// Disclaimers negate the runtime activity itself: "not run", "NOT RUN", "not yet verified",
+// "has not been rendered", "was never run", "was not manually tested", or
+// "no <runtime activity> <completion>" such as "no rendering observed". Only auxiliaries and
+// the closed manner adverbs below may separate the negation from the completion verb;
+// "never works when tested" or "not correct once rendered" negates a result instead.
+const COMPLETION_VERBS = '(?:run|ran|executed|verified|confirmed|observed|rendered|tested|checked|exercised|inspected|captured|measured)';
+const NEGATION_AUXILIARIES = '(?:has|have|had|was|were|is|are|been|be|being|yet)';
+export const UI_DISCLAIMER_ADVERBS = Object.freeze(['manually', 'visually', 'independently', 'automatically', 'fully', 'actually', 'formally',
+  'directly', 'locally', 'separately', 'interactively', 'programmatically', 'physically', 'explicitly']);
+const NOT_RUN_PATTERN = `\\b(?:not|never)(?:\\s+(?:${NEGATION_AUXILIARIES}|${UI_DISCLAIMER_ADVERBS.join('|')}))*\\s+${COMPLETION_VERBS}\\b|\\bno\\s+(?:${words(UI_RUNTIME_TOPICS)})\\w*\\s+${COMPLETION_VERBS}\\b`;
+const NOT_RUN = new RegExp(NOT_RUN_PATTERN, 'iu');
+// A repository file (with extension) under a directory, or file:line.
+const LOCATOR = /(?:[\w@.-]+\/)+[\w@-]+\.\w+(?::\d+)?|\b[\w@-]+\.\w+:\d+/u;
+const RUNTIME_RESULT_FIELDS = Object.freeze(['evidence_ref', 'result', 'outcome', 'status', 'assertions', 'coverage']);
+const sentences = value => String(value ?? '').split(/(?<=[.!?;])\s+|\r?\n+/u).map(item => item.trim()).filter(Boolean);
+// A disclaimer ("keyboard behavior not run") makes no runtime claim; lint the rest of the sentence.
+const claimPart = sentence => sentence.replace(new RegExp(NOT_RUN_PATTERN, 'giu'), ' ');
+// Inline code (`…`) is code, not prose, so it cannot form a negated finding: a CSS value such
+// as `none` is no negation. Topics, locators, outcome words and disclaimers are still read
+// from the whole sentence, so code can neither hide a result claim nor bridge a disclaimer.
+const prose = sentence => sentence.replace(/`[^`\n]*`/gu, ' ');
+const outcomeClaim = sentence => OUTCOME_WORDS.test(claimPart(sentence)) || NEGATED_FINDING.test(claimPart(prose(sentence)));
+const imperative = sentence => UI_IMPERATIVE_VERBS.includes((sentence.replace(/^[\s\-*>#`\d.)]+/u, '').match(/^[A-Za-z]+/u)?.[0] ?? '').toLowerCase());
+
+function sourceOnlyClaimError(item) {
+  const u = item.uiux;
+  if (RUNTIME_RESULT_FIELDS.some(field => Object.hasOwn(u, field))) return 'is source-only and cannot carry runtime evidence or result fields';
+  for (const sentence of sentences(u.verification)) {
+    if (RUNTIME_TOPIC.test(claimPart(sentence)) && (!imperative(sentence) || outcomeClaim(sentence))) return 'is source-only; its runtime verification must be an imperative method without a result claim';
+  }
+  for (const sentence of sentences(item.evidence)) {
+    if (RUNTIME_TOPIC.test(claimPart(sentence)) && (!LOCATOR.test(sentence) || outcomeClaim(sentence))) return 'is source-only; evidence about runtime behavior needs a source locator and no result claim';
+  }
+  for (const sentence of sentences(u.limitation)) {
+    if (RUNTIME_TOPIC.test(sentence) && (!NOT_RUN.test(sentence) || outcomeClaim(sentence))) return 'is source-only; its limitation must mark runtime checks as not run or not verified';
+  }
+  for (const field of ['impact', 'required_fix']) {
+    for (const sentence of sentences(item[field])) {
+      if (RUNTIME_TOPIC.test(claimPart(sentence)) && outcomeClaim(sentence)) return `is source-only and its ${field} claims a runtime result`;
+    }
+  }
+  return null;
+}
+
 /** One UI finding contract for ordinary Review and direct UI consumers. */
 export function validateUiReviewFinding(item, dimensions = []) {
   if (!object(item) || !reviewFindingSeverities.includes(item.severity) ||
@@ -34,6 +100,11 @@ export function validateUiReviewFinding(item, dimensions = []) {
   const u = item.uiux;
   if (!object(u) || !Object.hasOwn(findingDimensions, u.classification) || !kinds.includes(u.evidence_kind) ||
       !text(u.rule_id) || !text(u.verification) || u.evidence_kind === 'source' && !text(u.limitation)) return 'lacks UI/UX classification, evidence scope, verification, or source-only limitation';
+  if (item.gate !== undefined && !UI_REVIEW_GATES.includes(item.gate)) return 'uses a non-canonical gate; use BLOCKER, REQUIRED, ADVISORY or N/A';
+  if (u.evidence_kind === 'source') {
+    const claim = sourceOnlyClaimError(item);
+    if (claim) return claim;
+  }
   if (u.classification === 'aesthetic' && (!['Minor', 'Low', 'Info'].includes(item.severity) ||
       ['BLOCKER', 'REQUIRED'].includes(item.gate) || item.repair_tier === 'auto' || item.write_tier === 'auto' || item.eligible_for_automatic_repair === true)) return 'cannot make an aesthetic preference blocking';
   if (!systemRegistry.review_dimensions.some(d => d.id === item.dimension) ||
@@ -135,7 +206,34 @@ export function validateUiReviewContext(context) {
 
 function observe(state) {
   need(stableRepositoryId({ remote_url: repositoryGit(state, ['remote', 'get-url', 'origin']).trim() }) === state.owner, 'UI owner differs from actual repository');
-  return captureRepository(state);
+  const snapshot = captureRepository(state);
+  assertVolatileLedger(state.ledger, snapshot);
+  return snapshot;
+}
+
+// Volatile paths come only from the verified plan's finish policy; a direct
+// review without a plan has none, and an unreadable plan grants no exemption.
+function planVolatilePaths(state) {
+  if (!state.source_runtime) return { change_ref: state.authority.change_ref, volatile: [] };
+  try {
+    const sources = readVerifiedDesignSources(state.source_runtime);
+    let body;
+    try { body = JSON.parse(sources.plan?.body); } catch { /* Markdown plans use the finish-policy fence. */ }
+    const block = sources.plan?.body?.match(/\x60{3}finish-policy\r?\n([\s\S]*?)\r?\n\x60{3}/u);
+    const policy = body?.finish_policy ?? (block ? JSON.parse(block[1]) : null);
+    sources.finish();
+    return { change_ref: sources.spec.metadata.change_ref, volatile: validateVolatilePaths(policy?.volatile_paths ?? []) };
+  } catch { return { change_ref: state.authority.change_ref, volatile: [] }; }
+}
+
+// Output freshness uses lstat metadata as well as bytes: a rerun that writes the
+// same bytes is still new, while an output left by an earlier run is not.
+function outputState(state, file) {
+  if (!safeRepositoryPath(file)) return { exists: false };
+  let stat;
+  try { stat = lstatSync(path.join(state.root, file), { bigint: true }); } catch { return { exists: false }; }
+  return { exists: true, mtime_ns: String(stat.mtimeNs), ino: String(stat.ino), size: String(stat.size),
+    sha256: hash(readFileSync(containedRepositoryFile(state, file))) };
 }
 function manifest(snapshot, target) {
   return Object.fromEntries([...target.source_paths, ...target.build_paths].sort().map(p => {
@@ -173,7 +271,15 @@ export function createUiReviewRuntime(options = {}) {
   try {
     state.root = realpathSync.native(state.root);
     need(text(state.owner) && state.authority?.owner_repository_id === state.owner, 'UI host owner authority unavailable');
+    const { change_ref: changeRef, volatile } = planVolatilePaths(state);
+    // UI inputs and outputs may not be links, and never volatile.
+    state.guarded = [...new Set([...array(state.authority.targets).flatMap(t => [...array(t?.source_paths), ...array(t?.build_paths)]), ...array(state.authority.output_paths)])];
+    for (const file of state.guarded) {
+      need(!volatile.some(pattern => file === pattern || (pattern.endsWith('/**') && file.startsWith(pattern.slice(0, -2)))), 'volatile path intersects UI input/output: ' + file);
+    }
+    state.volatile = volatile;
     state.before = observe(state);
+    state.ledger = registerVolatileLedger({ root: state.root, change_ref: changeRef, volatile_paths: volatile, snapshot: state.before });
   } catch (error) { state.initial_error = error.message; }
   runtimes.set(token, state);
   return token;
@@ -195,29 +301,44 @@ export function recordUiEvidence(runtime, request) {
   const target = policy.targets.find(t => t.id === request.target_id);
   need(target && kinds.includes(request.kind), 'unknown evidence target or kind');
   const before = observe(state), inputs = manifest(before, target);
-  let execution = null, output = null;
+  let execution = null, output = null, outcome = 'PASS';
   if (request.kind !== 'source') {
     need(text(request.command) && state.authority.commands?.includes(request.command) && typeof state.run_command === 'function', 'command is not authorized or runner unavailable');
     need(target.viewport !== null, 'runtime evidence requires a viewport');
-    execution = state.run_command({ command: request.command, cwd: state.root, target: structuredClone(target), kind: request.kind });
-    need(execution?.command === request.command && execution.cwd === '.' && execution.exit_code === 0, 'UI command did not execute successfully');
+    const outputsBefore = Object.fromEntries(array(state.authority.output_paths).map(file => [file, outputState(state, file)]));
+    // The command is a host window: only declared volatile paths may change inside it.
+    const window = beginVolatileWindow(state.ledger, 'command', before);
+    // A failed capture still closes the window; without a snapshot nothing is recorded.
+    let windowAfter;
+    try {
+      try { execution = state.run_command({ command: request.command, cwd: state.root, target: structuredClone(target), kind: request.kind }); }
+      finally { windowAfter = captureRepository(state); }
+    } finally { endVolatileWindow(window, windowAfter); }
+    need(execution?.command === request.command && execution.cwd === '.', 'UI command did not execute successfully');
+    // A completed run has an integer exit code and reports neither interruption nor timeout.
+    need(Number.isInteger(execution.exit_code) && execution.interrupted === false && execution.timed_out === false,
+      'UI command run is incomplete: interrupted, timed out, or missing its exit code or completion flags');
     need(execution.kind === request.kind && sameTarget(execution.target, target), 'runner target/kind mismatch');
     need(execution.provenance === 'real-product' && text(execution.build_id), 'mockup or unknown product provenance');
     need(safeRepositoryPath(execution.artifact_path) && state.authority.output_paths?.includes(execution.artifact_path), 'output path is not authorized');
+    const produced = outputState(state, execution.artifact_path);
+    need(produced.exists && !equal(produced, outputsBefore[execution.artifact_path]), 'UI output was not produced by this run');
     const bytes = readFileSync(containedRepositoryFile(state, execution.artifact_path));
     need(bytes.length > 0, 'empty UI output');
     if (request.kind === 'rendered') need(validateRaster(bytes, execution, before.revision), 'rendered output is not a valid decoded image');
-    if (request.kind === 'interaction') need(execution.assertions?.length > 0 && execution.assertions.every(a => a.result === 'PASS' && text(a.id)), 'interaction assertions were not executed');
+    if (request.kind === 'interaction') need(execution.assertions?.length > 0 && execution.assertions.every(a => text(a.id) && ['PASS', 'FAIL'].includes(a.result)), 'interaction assertions were not executed');
+    // A completed failing run is FAIL evidence, not a gap.
+    outcome = execution.exit_code === 0 && array(execution.assertions).every(a => a.result === 'PASS') ? 'PASS' : 'FAIL';
     output = { path: execution.artifact_path, sha256: hash(bytes) };
   }
   const after = observe(state);
   need(equal(inputs, manifest(after, target)), 'source/build changed during evidence execution');
-  const changed = Object.keys({ ...before.files, ...after.files }).filter(p => !equal(before.files[p], after.files[p]));
+  const changed = changedRepositoryPaths(before, after);
   need(before.revision === after.revision && before.index_hash === after.index_hash, 'Git changed during UI execution');
   need(changed.every(p => state.authority.output_paths?.includes(p) || after.files[p]?.kind === 'directory' && state.authority.output_paths.some(o => o.startsWith(p + '/'))), 'Test command wrote outside authorized outputs');
   sources.finish();
   const id = randomUUID(), artifactPath = '.sdcorejs/evidence/ui/' + id + '.json';
-  const body = { kind: request.kind, target, inputs, source_revision: after.revision, execution, output };
+  const body = { kind: request.kind, target, inputs, source_revision: after.revision, execution, output, outcome };
   const artifact = createApprovedArtifact({ metadata: {
     schema_version: 1, artifact_id: id, artifact_kind: 'release-evidence', contract_id: receiptContract,
     requirement_id: sources.spec?.metadata.requirement_id ?? state.authority.request_id,
@@ -243,7 +364,8 @@ function verifyReceipt(state, reference, target, snapshot, change) {
   need(body.kind === reference.kind && sameTarget(body.target, target), 'UI receipt target mismatch');
   need(equal(body.inputs, manifest(snapshot, target)), 'stale UI source/build content');
   if (reference.kind !== 'source') {
-    need(text(body.execution?.command) && body.execution.cwd === '.' && body.execution.exit_code === 0 && body.execution.provenance === 'real-product', 'unverified UI execution');
+    need(text(body.execution?.command) && body.execution.cwd === '.' && Number.isInteger(body.execution.exit_code) && body.execution.interrupted === false &&
+      body.execution.timed_out === false && body.execution.provenance === 'real-product' && ['PASS', 'FAIL'].includes(body.outcome), 'unverified UI execution');
     need(hash(readFileSync(containedRepositoryFile(state, body.output.path))) === body.output.sha256, 'stale UI output content');
   }
   return body;
@@ -252,7 +374,7 @@ function verifyReceipt(state, reference, target, snapshot, change) {
 export function evaluateUiReview(context, { runtime } = {}) {
   const structural = validateUiReviewContext(context);
   const result = { valid: structural.valid, verified: false, assessment_completed: false, independence: 'unverified',
-    read_only_proven: false, conformance: 'NOT RUN', coverage: [], gaps: [], blockers: [...structural.blockers], limitations: [], findings: [] };
+    read_only_proven: false, conformance: 'NOT RUN', coverage: [], gaps: [], failures: [], blockers: [...structural.blockers], limitations: [], findings: [] };
   const state = runtimes.get(runtime);
   try {
     need(structural.valid, 'UI structure invalid');
@@ -310,8 +432,12 @@ export function evaluateUiReview(context, { runtime } = {}) {
         const references = context.ui_review.evidence_refs.filter(e => e.target_id === target.id && e.kind === kind);
         need(references.length <= 1, 'duplicate UI evidence for target/kind');
         if (references.length) {
-          try { verifyReceipt(state, references[0], target, current, context.change_ref); row[kind] = 'PASS'; }
-          catch (error) { row[kind] = /stale/.test(error.message) ? 'STALE' : 'GAP'; result.gaps.push(error.message); }
+          try {
+            const body = verifyReceipt(state, references[0], target, current, context.change_ref);
+            row[kind] = kind === 'source' ? 'PASS' : body.outcome;
+            // A completed failing run is a reported defect, kept apart from missing proof.
+            if (row[kind] === 'FAIL') result.failures.push(kind + ' evidence FAIL for ' + target.id);
+          } catch (error) { row[kind] = /stale/.test(error.message) ? 'STALE' : 'GAP'; result.gaps.push(error.message); }
         } else if (required.has(kind) && kind !== 'source') {
           row[kind] = 'GAP'; result.gaps.push('Missing ' + kind + ' evidence for ' + target.id);
         }
@@ -322,9 +448,10 @@ export function evaluateUiReview(context, { runtime } = {}) {
       if (!finding.uiux) continue;
       const u = finding.uiux;
       if (u.classification === 'aesthetic') need(!(u.requirement_refs?.length || u.invariant_refs?.length), 'approved conformance cannot be downgraded to aesthetic');
+      // A runtime finding cites a current receipt (PASS or FAIL) of its target and kind;
+      // source-only claims are closed structurally by validateUiReviewFinding.
       if (u.evidence_kind !== 'source') need(context.ui_review.evidence_refs.some(e => e.artifact_ref === u.evidence_ref &&
-        e.kind === u.evidence_kind && result.coverage.find(r => r.target_id === e.target_id)?.[e.kind] === 'PASS'), 'finding lacks verified target runtime evidence');
-      if (u.evidence_kind === 'source') need(!/\b(?:rendered|interaction|clipping|contrast|keyboard|focus)\b.{0,35}\bPASS\b/i.test(u.verification ?? ''), 'source-only finding claims runtime PASS');
+        e.kind === u.evidence_kind && ['PASS', 'FAIL'].includes(result.coverage.find(r => r.target_id === e.target_id)?.[e.kind])), 'finding lacks verified target runtime evidence');
       if (u.classification !== 'aesthetic' && ['BLOCKER', 'REQUIRED'].includes(finding.gate)) result.conformance = 'FAIL';
     }
     sources.finish();
@@ -339,7 +466,7 @@ export function evaluateUiReview(context, { runtime } = {}) {
     result.assessment_completed = true;
     state.review_completed = true;
     result.assessment_verified = result.gaps.length === 0;
-    result.verified = result.gaps.length === 0 && result.conformance !== 'FAIL';
+    result.verified = result.gaps.length === 0 && result.failures.length === 0 && result.conformance !== 'FAIL';
   } catch (error) { result.blockers.push(error.message); }
   result.blockers.push(...result.gaps);
   result.findings = result.gaps.map((gap, index) => ({
@@ -352,7 +479,7 @@ export function evaluateUiReview(context, { runtime } = {}) {
   return result;
 }
 
-export function evaluateUiReviewConsumer(context, { runtime, source_runtime, consumer, phase = 'postflight', approved_artifacts = [], validation_map = [] } = {}) {
+export function evaluateUiReviewConsumer(context, { runtime, source_runtime, consumer, phase = 'postflight', approved_artifacts = [], validation_map = [], repair_finding } = {}) {
   const state = runtimes.get(runtime);
   let required = array(validation_map).filter(r => r?.ui_review).map(r => r.ui_review);
   try {
@@ -365,11 +492,32 @@ export function evaluateUiReviewConsumer(context, { runtime, source_runtime, con
     if (state) required.push(...authoritySources(state).policy.obligations);
     required = required.filter(o => phase !== 'preflight' || o.purpose === 'design-artifact');
     for (const obligation of required) need(!validateUiReviewObligation(obligation).length, 'invalid UI applicability');
-    if (!required.length && !context) return { verified: true, status: 'NOT APPLICABLE', blockers: [], pending_postflight: phase === 'preflight' };
+    // A UI review context names a UI purpose or carries ui_review. An ordinary review
+    // context is NOT APPLICABLE only when no source declares an obligation; it never masks one.
+    const uiContext = object(context) && (purposes.includes(context.purpose) || context.ui_review !== undefined);
+    if (!required.length && !uiContext) return { verified: true, status: 'NOT APPLICABLE', blockers: [], pending_postflight: phase === 'preflight' };
     if (phase === 'preflight' && context?.purpose === 'implemented-ui-conformance' && !required.length) return { verified: true, status: 'NOT RUN', blockers: [], pending_postflight: true };
-    need(context, 'required UI review/evidence payload missing');
+    need(uiContext, 'required UI review/evidence payload missing');
+    // Repair consumes only an assessment that an earlier review recorded in this host runtime.
+    // It is checked before evaluating, because evaluation records an assessment: a repair call
+    // never records one, so a fresh assessment id cannot rewrite the finding, even on a retry.
+    need(phase !== 'repair' || Boolean(state?.assessments?.has(context?.ui_review?.assessment_id)),
+      'repair needs the UI assessment recorded by an earlier review in this host runtime');
     const result = evaluateUiReview(context, { runtime });
+    // Repair accepts a completed failing run only as the input of the finding it repairs,
+    // the finding whose runtime evidence cites that receipt; every other case requires PASS.
+    // The citation comes from the observed assessment entry with the same identity,
+    // never from the caller's copy of the finding.
+    const observedFinding = phase === 'repair' && object(repair_finding)
+      ? array(context.reported_findings).find(item => item?.id === repair_finding.id && item?.repository_id === repair_finding.repository_id) : null;
+    const cited = text(observedFinding?.uiux?.evidence_ref)
+      ? array(context.ui_review?.evidence_refs).find(ref => ref.artifact_ref === observedFinding.uiux.evidence_ref && ref.kind === observedFinding.uiux.evidence_kind) : null;
+    const repairInput = (targetId, kind) => Boolean(cited) && cited.target_id === targetId && cited.kind === kind;
+    const accepted = (targetId, kind, value) => value === 'PASS' || (value === 'FAIL' && repairInput(targetId, kind));
     const assessmentAcceptable = value => phase === 'repair' ? value.assessment_verified === true : value.verified;
+    for (const failure of result.failures) {
+      if (!(cited && failure === `${cited.kind} evidence FAIL for ${cited.target_id}`)) result.blockers.push('UI ' + failure + ' is a product defect');
+    }
     if (!assessmentAcceptable(result) && !result.blockers.length) result.blockers.push('UI assessment contains a conformance blocker');
     const prior = new Map();
     // Other purposes must be rechecked through their original opaque host runtime;
@@ -382,8 +530,12 @@ export function evaluateUiReviewConsumer(context, { runtime, source_runtime, con
     }
     for (const obligation of required) {
       const assessment = obligation.purpose === context.purpose ? result : prior.get(obligation.purpose);
-      if (!assessment || !assessmentAcceptable(assessment) || !assessment.coverage.some(row => row.target_id === obligation.target_id &&
-        obligation.evidence_kinds.every(k => row[k] === 'PASS'))) result.blockers.push('required UI coverage missing for ' + obligation.target_id);
+      const row = assessment?.coverage.find(item => item.target_id === obligation.target_id);
+      if (!assessment || !assessmentAcceptable(assessment) || !row || !obligation.evidence_kinds.every(k => accepted(obligation.target_id, k, row[k]))) {
+        result.blockers.push(row && obligation.evidence_kinds.some(k => row[k] === 'FAIL')
+          ? 'required UI evidence FAIL for ' + obligation.target_id + ': a completed run failed'
+          : 'required UI coverage missing for ' + obligation.target_id);
+      }
       if (obligation.independent_review_required && assessment?.independence !== 'independent') result.blockers.push('required independent review missing');
       if (obligation.baseline_required && !(phase === 'repair' ? ['PASS', 'FAIL'] : ['PASS']).includes(assessment?.conformance)) result.blockers.push('required design conformance unavailable');
     }

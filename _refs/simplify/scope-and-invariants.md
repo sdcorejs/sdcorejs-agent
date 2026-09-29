@@ -70,7 +70,8 @@ The executable v2 preflight derives the intersection of trusted user scope,
 approved plan paths, source eligibility and observed current-diff hunks.
 Postflight checks the entire observed diff, including paths omitted by the agent.
 Use strict relative paths and actual Git-root/realpath containment. Unknown
-ownership, symlinks, nested repositories or hunk mappings fail closed. Preserve
+ownership or hunk mappings fail closed, and so do links or nested repositories on
+scope and command paths; elsewhere they are observed as metadata. Preserve
 user-owned changes; a green test never authorizes their overwrite. See the
 canonical schema and host API in `verification.md`.
 

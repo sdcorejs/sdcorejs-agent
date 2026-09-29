@@ -147,3 +147,16 @@ test('Next.js skill dispatches only approved features and executable references 
   );
   assert.deepEqual(await validateNextjsExecutableReferences(), []);
 });
+
+// Audit repair (UR-1): Next.js preflight does not treat an ordinary review_context as UI review.
+test('case-repair-ordinary-review: Next.js execution accepts an ordinary review_context', async t => {
+  const { uiReviewFixture } = await import('./support/ui-review-fixture.mjs');
+  const { resolveNextjsExecution } = await import('../../_refs/nextjs/execution-contract.mjs');
+  const f = uiReviewFixture(t);
+  const request = { project_profile: 'nextjs-build-website', execution_profile: 'developer', website_profile: 'basic', explicit_profile_approval: true,
+    scope: 'site', site: { repository_id: f.repo }, execution_host_repository_id: f.repo, design_handoff: f.handoff,
+    review_context: { schema_version: 1, source: 'sdcorejs-review', subject_track: 'workflow', review_profile: 'workflow', mode: 'read-only',
+      dimensions: ['security'], write_actions: [], reported_findings: [] } };
+  const result = resolveNextjsExecution(request, { design_runtime: f.designRuntime, ui_review_runtime: f.uiRuntime });
+  assert.equal(result.production_eligible, true, JSON.stringify(result.blockers));
+});

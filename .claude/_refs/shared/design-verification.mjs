@@ -183,6 +183,7 @@ function verifyParents(options, io, loader) {
   requireThat(isDeepStrictEqual({ repository_id: repo.repository_id, role: repo.role, module_id: repo.module_id ?? null }, owner), 'approved semantic owner disagrees with topology');
   requireThat(repo.writable === true, 'semantic owner is unwritable; fallback is forbidden');
   if (!requirements.required) { requireThat(nonempty(requirements.reason), 'non-Design applicability requires an approved reason'); return requirements; }
+  requireThat(requirements.design_baseline === undefined || (requirements.design_baseline?.kind === 'none' && nonempty(requirements.design_baseline.reason)), 'approved design_baseline must be { kind: none, reason }');
   requireThat(Array.isArray(requirements.surfaces) && new Set(requirements.surfaces.map(s => s.id)).size === requirements.surfaces.length, 'approved surface applicability is unavailable');
   for (const surface of requirements.surfaces) {
     requireThat(nonempty(surface.id) && ['required', 'rendered_required', 'interaction_required'].every(field => typeof surface[field] === 'boolean'), 'invalid approved surface requirements');
@@ -238,8 +239,18 @@ export function verifyDesignHandoff(input, { runtime } = {}) {
       requireThat(io.repository(reference.repository_id).revision === reference.revision, 'stale component/source revision');
       requireThat(hash(io.read(reference.repository_id, reference.path)) === reference.sha256, 'stale component/source content');
     };
-    requireThat(h.design_system_reuse.inspected === true && h.design_system_reuse.evidence_refs.length > 0, 'existing design inspection requires observed source');
-    h.design_system_reuse.evidence_refs.forEach(source);
+    const reuse = h.design_system_reuse;
+    requireThat(reuse.inspected === true, 'existing design inspection requires observed source');
+    if (reuse.no_baseline) {
+      // Greenfield (D-003): the approved requirements declare no baseline and the
+      // record points at the verified spec; cited sources and confirmed mappings are absent.
+      requireThat(requirements.design_baseline?.kind === 'none' && nonempty(requirements.design_baseline.reason), 'no-baseline record requires approved design_requirements.design_baseline kind none');
+      requireThat(sameReference(reuse.no_baseline.approval_ref, options.expected.spec), 'no-baseline approval_ref must be the verified spec');
+      requireThat(reuse.evidence_refs.length === 0 && !h.component_mapping.some(c => c.status === 'confirmed'), 'no-baseline record cannot coexist with cited sources or confirmed mappings');
+    } else {
+      requireThat(reuse.evidence_refs.length > 0, 'existing design inspection requires observed source');
+    }
+    reuse.evidence_refs.forEach(source);
     h.component_mapping.filter(c => c.status === 'confirmed').forEach(c => c.evidence_refs.forEach(source));
     const receipt = (ref, kind, surface, requiredPaths) => {
       const pins = (options.evidence ?? []).filter(pin => pin.artifact_ref === ref?.artifact_ref && pin.approval_hash === ref?.approval_hash);

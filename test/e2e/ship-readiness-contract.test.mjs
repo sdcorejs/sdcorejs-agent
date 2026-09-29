@@ -423,3 +423,47 @@ test('case-simplify-hardening-ac-010 ship cannot turn stale or limited simplify 
   const limited = structuredClone(result.context); limited.verification.behavior_verification = 'limited';
   assert.equal(evaluateShipReadiness(validContract({ simplify_context: limited }), f.runtime).stages.ready_to_ship.status, 'BLOCKED');
 });
+
+// Audit repair (UR-1, UR-2): ship consumes UI applicability through its real caller.
+const repairOrdinaryReview = () => ({ schema_version: 1, source: 'sdcorejs-review', subject_track: 'workflow', review_profile: 'workflow',
+  mode: 'read-only', dimensions: ['security'], write_actions: [], reported_findings: [] });
+
+test('case-repair-ordinary-review: ship treats an ordinary review_context as NOT APPLICABLE for UI', async () => {
+  const { evaluateShipReadiness } = await import('../../_refs/shared/ship-readiness-contract.mjs');
+  const result = evaluateShipReadiness({ schema_version: 1, review_context: repairOrdinaryReview(), validation_map: [] }, {});
+  assert.equal(result.ui_review_verification.status, 'NOT APPLICABLE', JSON.stringify(result.ui_review_verification));
+  const blockers = result.stages.ready_to_ship.blockers;
+  assert.equal(blockers.some(message => message.startsWith('UI review:')), false, JSON.stringify(blockers));
+});
+
+test('case-repair-failing-receipt: ship blocks a current FAIL receipt as a defect', async t => {
+  const { uiReviewFixture } = await import('./support/ui-review-fixture.mjs');
+  const { evaluateShipReadiness } = await import('../../_refs/shared/ship-readiness-contract.mjs');
+  const f = uiReviewFixture(t, { required: ['interaction'] });
+  f.reset({ run_command: args => ({ ...f.host.run_command(args), exit_code: 1, assertions: [{ id: 'fixture-keyboard', result: 'FAIL' }] }) });
+  f.capture('interaction'); f.start();
+  const result = evaluateShipReadiness({ schema_version: 1, review_context: f.context, validation_map: [{ ui_review: f.policy.obligations[0] }] }, { ui_review_runtime: f.uiRuntime });
+  assert.equal(result.ui_review_verification.verified, false);
+  const blockers = result.stages.ready_to_ship.blockers;
+  assert.ok(blockers.some(message => message.startsWith('UI review:') && /FAIL/u.test(message)), JSON.stringify(blockers));
+});
+
+// Review follow-up (repair selected by the user): host-verified runner evidence never
+// depends on the serialized simplify_context.
+test('case-repair-observed-consumers: ship reads host-verified simplify evidence without trusting a serialized context', async t => {
+  const { finishFixture } = await import('./support/interaction-finish-fixture.mjs');
+  const { evaluateShipReadiness } = await import('../../_refs/shared/ship-readiness-contract.mjs');
+  const f = await finishFixture(t, { simplify: 'apply', review: 'skip',
+    runtime: { simplify_verifier: () => ({ verified: true, outcome: 'simplified', pass_paths: ['src/value.mjs'], blockers: [] }) } });
+  f.run('baseline');
+  const dispatch = f.observation.beginSimplify();
+  f.write('src/value.mjs', 'export const value = 1; // simplified\n');
+  const recorded = f.observation.recordSimplify(dispatch.token, { schema_version: 1, kind: 'simplify-host-receipt:v1', status: 'verified', pass_paths: ['src/value.mjs'] });
+  assert.equal(recorded.valid, true, JSON.stringify(recorded));
+  for (const simplifyContext of [null, { action: 'analyze-current-diff' }]) {
+    let result;
+    assert.doesNotThrow(() => { result = evaluateShipReadiness({ schema_version: 1, simplify_context: simplifyContext }, { observation: f.observation, proof: recorded.proof }); }, JSON.stringify(simplifyContext));
+    const blockers = result.stages.ready_to_ship.blockers;
+    assert.ok(blockers.some(message => /simplify: ship\/test\/review source identity is stale/u.test(message)), `${JSON.stringify(simplifyContext)}: ${JSON.stringify(blockers)}`);
+  }
+});

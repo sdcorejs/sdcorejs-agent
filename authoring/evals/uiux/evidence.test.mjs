@@ -5,9 +5,8 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import path from 'node:path';
 import test from 'node:test';
 import ts from 'typescript';
-import { parse } from 'yaml';
 import { stableRepositoryId } from '../../../_refs/shared/repository-contract.mjs';
-import { verifyApprovedArtifactGraph } from '../../../_refs/shared/approved-artifact.mjs';
+import { parseApprovedArtifactText, verifyApprovedArtifactGraph } from '../../../_refs/shared/approved-artifact.mjs';
 
 const root = new URL('../../../', import.meta.url);
 const read = async (path) => (await readFile(new URL(path, root), 'utf8')).replace(/\r\n?/g, '\n');
@@ -218,10 +217,10 @@ const finishTests = ['harness-behavioral-sentinel','communication-economy','skil
 const finishCommand = `node --test --test-concurrency=1 ${finishTests.join(' ')}`;
 const currentUiCommand = `node --test --test-concurrency=1 --test-reporter=tap ${contractPaths.join(' ')}`;
 
+// The canonical approved-artifact loader parses and hash-verifies the snapshot
+// (current or historical bytes) and binds it to its repository-relative path.
 async function readApproved(file, readSource) {
-  const text = await readSource(file), match = text.match(/^---\n([\s\S]*?)\n---\n/u);
-  assert.ok(match, 'approved artifact frontmatter is required');
-  return { metadata: parse(match[1]), body: text.slice(match[0].length) };
+  return parseApprovedArtifactText(await readSource(file), { expected_path: file }).artifact;
 }
 
 async function continuationSources(plan, historical, readSource, recordPath = continuationPath) {
@@ -425,13 +424,19 @@ async function validateProgressiveContinuation(value, readSource = read) {
   assert.equal(value.live_target_project, false); assert.equal(value.tokens, null); assert.equal(value.provider_calls, 0);
 }
 
-test('case-progressive-load-evidence-continuation: current content is bound to the approved plan and actual runs', async () => {
-  await validateProgressiveContinuation(JSON.parse(await read(progressivePath)));
+// The progressive-loading record is immutable history once its content was committed
+// (70c933c); the audit-findings-repair continuation below owns proof for the current tree.
+const progressiveRevision = '70c933c3fc59a98b92c03004de902bc96250fba6';
+const progressiveRead = async file => atRevision(progressiveRevision, file);
+
+test('case-progressive-load-evidence-continuation: committed content is bound to the approved plan and actual runs', async () => {
+  assert.equal(hash(await read(progressivePath)), hash(atRevision(progressiveRevision, progressivePath)), 'history must remain immutable');
+  await validateProgressiveContinuation(JSON.parse(await read(progressivePath)), progressiveRead);
 });
 
 test('case-progressive-load-evidence-continuation: omitted, stale, mutated and fabricated evidence is rejected', async () => {
   const original = JSON.parse(await read(progressivePath));
-  await validateProgressiveContinuation(original);
+  await validateProgressiveContinuation(original, progressiveRead);
   for (const mutate of [
     value => { value.source_manifest.pop(); value.content_fingerprint = hash(JSON.stringify(value.source_manifest)); },
     value => { value.source_roots.pop(); },
@@ -453,14 +458,111 @@ test('case-progressive-load-evidence-continuation: omitted, stale, mutated and f
     value => { value.tokens = 1; },
   ]) {
     const candidate = structuredClone(original); mutate(candidate);
-    await assert.rejects(validateProgressiveContinuation(candidate));
+    await assert.rejects(validateProgressiveContinuation(candidate, progressiveRead));
   }
   for (const changed of ['skills/shared/workflow/review.md', '_refs/review/output-contract.md', progressivePlan, continuationPath]) {
     await assert.rejects(validateProgressiveContinuation(original, async file =>
-      file === changed ? `${await read(file)}\nmutated at the same HEAD\n` : read(file)));
+      file === changed ? `${await progressiveRead(file)}\nmutated at the same HEAD\n` : progressiveRead(file)));
     await assert.rejects(validateProgressiveContinuation(original, async file => {
-      if (file === changed) throw new Error('source missing'); return read(file);
+      if (file === changed) throw new Error('source missing'); return progressiveRead(file);
     }), /source missing/);
   }
   await assert.rejects(validateProgressiveContinuation(undefined));
+});
+
+// Audit-findings repair continuation: the current tree is bound to the approved
+// repair plan, the progressive record as immutable history, and actual runs.
+const auditPath = 'authoring/evals/audit-findings-repair.json';
+const auditPlan = '.sdcorejs/plans/workflow/2026-09-28-11-06-audit-findings-repair.md';
+const auditPlanHash = 'sha256:v1:e731b03d8f72e530d4f71d665838fc3e51e1f226e6ce07a3f3fbe54e7774a480';
+const auditFocusedTests = ['production-readiness-contract', 'harness-behavioral-sentinel', 'simplify-protected-contract',
+  'simplify-skill-contract', 'explore-topology', 'communication-economy'].map(name => `test/e2e/${name}.test.mjs`);
+const auditUiTests = ['review-contract', 'ship-readiness-contract', 'repair-contract', 'validation-map-contract', 'angular-production-contract',
+  'nextjs-production-contract', 'design-handoff-contract', 'uiux-review-regression', 'uiux-knowledge'].map(name => `test/e2e/${name}.test.mjs`);
+const auditFocusedCommand = `node --test --test-concurrency=1 --test-reporter=tap ${auditFocusedTests.join(' ')}`;
+const auditUiCommand = `node --test --test-concurrency=1 --test-reporter=tap ${auditUiTests.join(' ')}`;
+const auditFocusedCases = ['artifact-loader', 'observer-real-repo', 'volatile-paths', 'symlink-scope', 'finish-convergence', 'simplify-pending',
+  'host-runner', 'policy-ask-native', 'analyze-honest', 'diff-check-scope', 'scoped-rollback', 'hardlink-target', 'styling-reachable',
+  'explore-scan-pointers', 'placement-tests', 'schema-parity'].map(id => 'case-repair-' + id);
+const auditUiCases = ['ordinary-review', 'failing-receipt', 'ui-claims-gates-tests', 'volatile-paths', 'greenfield-design', 'design-docs']
+  .map(id => 'case-repair-' + id);
+
+async function validateAuditRepairContinuation(value, readSource = read) {
+  assert.equal(value.schema_version, 1); assert.equal(value.change_ref, 'audit-findings-repair-20260928');
+  assert.equal(value.evidence_class, 'deterministic-contract'); assert.equal(value.cwd, '.');
+  assert.equal(value.owner_repository_id, stableRepositoryId({ remote_url: git('config', '--get', 'remote.origin.url') }));
+  assert.equal(value.scope_plan, auditPlan);
+  const plan = await readApproved(value.scope_plan, readSource);
+  assert.equal(plan.metadata.approval_hash, auditPlanHash, 'only the actual approved repair plan is authority');
+  const architecture = await readApproved(plan.metadata.source_architecture, readSource), spec = await readApproved(plan.metadata.source_spec, readSource);
+  verifyApprovedArtifactGraph(plan, [architecture, spec]);
+  assert.equal(plan.metadata.owner_repository_id, value.owner_repository_id);
+  assert.equal(plan.metadata.change_ref, value.change_ref);
+  assert.equal(value.source_revision, plan.metadata.source_revision);
+  assert.equal(git('rev-parse', `${value.source_revision}^{commit}`), value.source_revision);
+  assert.equal(value.previous_continuation.path, progressivePath);
+  assert.equal(value.previous_continuation.revision, value.source_revision);
+  const previousText = atRevision(value.previous_continuation.revision, progressivePath);
+  assert.equal(hash(previousText), value.previous_continuation.sha256);
+  assert.equal(hash(await readSource(progressivePath)), value.previous_continuation.sha256, 'history must remain immutable');
+  const expected = await continuationSources(plan, JSON.parse(previousText), readSource, auditPath);
+  assert.deepEqual(value.source_roots, expected.roots);
+  assert.deepEqual(value.source_manifest.map(entry => entry.path), expected.paths);
+  assert.equal(hash(JSON.stringify(value.source_manifest)), value.content_fingerprint);
+  for (const entry of value.source_manifest) assert.equal(hash(await readSource(entry.path)), entry.sha256, `current continuation is stale: ${entry.path}`);
+  assert.equal(value.content_normalization, 'UTF-8 with LF line endings');
+  assertRun(value.verification, auditFocusedCommand, '#', 200, auditFocusedCases);
+  assertRun(value.ui_verification, auditUiCommand, '#', 150, auditUiCases);
+  for (const run of [value.verification, value.ui_verification]) {
+    assert.equal(run.source_fingerprint, value.content_fingerprint);
+    assert.equal(run.content_stable, true); assert.equal(run.interrupted, false);
+    assert.equal(run.cwd, '.'); assert.equal(run.owner_repository_id, value.owner_repository_id);
+    assert.ok(Number.isFinite(Date.parse(run.started_at)));
+    assert.ok(Date.parse(run.finished_at) >= Date.parse(run.started_at));
+  }
+  assert.equal(value.live_agent, 'NOT RUN'); assert.equal(value.visual, 'NOT RUN');
+  assert.equal(value.live_target_project, false); assert.equal(value.tokens, null); assert.equal(value.provider_calls, 0);
+}
+
+test('case-repair-evidence-continuation: current content is bound to the approved repair plan and actual runs', async () => {
+  await validateAuditRepairContinuation(JSON.parse(await read(auditPath)));
+});
+
+test('case-repair-evidence-continuation: omitted, stale, mutated and fabricated evidence is rejected', async () => {
+  const original = JSON.parse(await read(auditPath));
+  await validateAuditRepairContinuation(original);
+  for (const mutate of [
+    value => { value.source_manifest.pop(); value.content_fingerprint = hash(JSON.stringify(value.source_manifest)); },
+    value => { value.source_roots.pop(); },
+    value => { value.owner_repository_id = 'github.com/foreign/repository'; },
+    value => { value.source_revision = 'f'.repeat(40); value.previous_continuation.revision = value.source_revision; },
+    value => { value.scope_plan = '.sdcorejs/plans/foreign.md'; },
+    value => { value.previous_continuation.sha256 = 'mutated'; },
+    value => { value.verification.command = ''; },
+    value => { value.verification.exit_code = 1; },
+    value => { value.verification.failed = 1; },
+    value => { value.verification.content_stable = false; },
+    value => { value.verification.source_fingerprint = 'sha256:' + '0'.repeat(64); },
+    value => { value.verification.transcript = ''; value.verification.output_sha256 = hash(''); },
+    value => { value.verification.transcript = value.verification.transcript.replace('# fail 0', '# fail 1'); value.verification.output_sha256 = hash(value.verification.transcript); },
+    value => { value.verification.transcript = value.verification.transcript.replaceAll('case-repair-host-runner', 'case-repair-fabricated'); value.verification.output_sha256 = hash(value.verification.transcript); },
+    value => { value.verification = null; },
+    value => { value.ui_verification = null; },
+    value => { value.ui_verification.interrupted = true; },
+    value => { value.ui_verification.owner_repository_id = 'github.com/foreign/repository'; },
+    value => { value.visual = 'PASS'; },
+    value => { value.live_agent = 'PASS'; },
+    value => { value.tokens = 1; },
+  ]) {
+    const candidate = structuredClone(original); mutate(candidate);
+    await assert.rejects(validateAuditRepairContinuation(candidate));
+  }
+  for (const changed of ['_refs/shared/finish-gate.mjs', '_refs/simplify/host-runner.mjs', '_refs/shared/ui-review-contract.mjs', auditPlan, progressivePath]) {
+    await assert.rejects(validateAuditRepairContinuation(original, async file =>
+      file === changed ? `${await read(file)}\nmutated at the same HEAD\n` : read(file)));
+    await assert.rejects(validateAuditRepairContinuation(original, async file => {
+      if (file === changed) throw new Error('source missing'); return read(file);
+    }), /source missing/);
+  }
+  await assert.rejects(validateAuditRepairContinuation(undefined));
 });

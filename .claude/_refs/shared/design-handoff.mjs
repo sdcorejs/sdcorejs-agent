@@ -97,7 +97,17 @@ function validateV2(handoff, errors) {
     if (!['confirmed', 'candidate', 'unknown', 'new'].includes(component.status)) errors.push({ code: 'INVALID_COMPONENT_STATUS' });
     if (component.status === 'confirmed' && !component.evidence_refs?.length) errors.push({ code: 'CONFIRMED_COMPONENT_REQUIRES_SOURCE' });
   }
-  if (!handoff.design_system_reuse || !Array.isArray(handoff.design_system_reuse.evidence_refs) || !Array.isArray(handoff.design_system_reuse.deviations)) errors.push({ code: 'INVALID_DESIGN_REUSE' });
+  const reuse = handoff.design_system_reuse;
+  if (!reuse || !Array.isArray(reuse.evidence_refs) || !Array.isArray(reuse.deviations)) errors.push({ code: 'INVALID_DESIGN_REUSE' });
+  else if (reuse.no_baseline !== undefined) {
+    // Greenfield record (D-003): it replaces cited sources, never supplements them,
+    // and no component can be confirmed without a baseline.
+    const record = reuse.no_baseline, ref = record?.approval_ref;
+    if (typeof record?.reason !== 'string' || !record.reason.trim() || ref?.artifact_kind !== 'spec' ||
+        !['repository_id', 'artifact_id', 'revision', 'approval_hash'].every(field => typeof ref[field] === 'string' && ref[field].trim())) errors.push({ code: 'INVALID_DESIGN_NO_BASELINE' });
+    if (reuse.evidence_refs.length) errors.push({ code: 'DESIGN_NO_BASELINE_WITH_SOURCES' });
+    if (Array.isArray(handoff.component_mapping) && handoff.component_mapping.some(component => component?.status === 'confirmed')) errors.push({ code: 'DESIGN_NO_BASELINE_CONFIRMED_COMPONENT' });
+  }
   if (!Array.isArray(handoff.cross_repository_references)) errors.push({ code: 'INVALID_CROSS_REPOSITORY_DESIGN_REFERENCE' });
   if (!Array.isArray(handoff.production_code_paths) || handoff.production_code_paths.length) errors.push({ code: 'PRODUCTION_CODE_AUTHORITY_FORBIDDEN' });
 }

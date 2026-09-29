@@ -644,3 +644,27 @@ async function listFiles(directoryUrl, extension) {
   }));
   return nested.flat();
 }
+
+// Audit repair (IF-3, IF-4): authority-granting choices never auto-resolve and a failed
+// native surface is never offered again for the same decision.
+test('case-repair-policy-ask-native: finish:policy never auto-selects or delegates; failed native surfaces are not reoffered', async () => {
+  const contract = await json(capabilityUrl);
+  const policyValue = `sha256:${'a'.repeat(64)}`;
+  const policyOption = { id: 'confirmed-policy', value: policyValue, label: 'Confirmed scoped policy' };
+  const decision = { gate: 'finish:policy', approval: false };
+  assert.notEqual(selectInteraction({ decision, options: [policyOption] }).kind, 'auto-select', 'decision gate finish:policy');
+  assert.notEqual(selectInteraction({ options: [policyOption] }).kind, 'auto-select', 'policy-hash value without a gate');
+  assert.notEqual(selectInteraction({ gate: 'finish:policy', options: ['Confirmed scoped policy'] }).kind, 'auto-select', 'explicit gate parameter');
+  assert.notEqual(normalizeChoiceResponse('you decide', [policyOption], { recommended: 'Confirmed scoped policy' }).status, 'selected');
+  assert.notEqual(normalizeChoiceResponse('you decide', ['Confirmed scoped policy', 'Other'], { recommended: 'Confirmed scoped policy', gate: 'finish:policy' }).status, 'selected');
+  assert.notEqual(normalizeChoiceResponse('you decide', ['Confirmed scoped policy', 'Other'], { recommended: 'Confirmed scoped policy', decision }).status, 'selected');
+  assert.equal(selectInteraction({ options: ['sequential'] }).kind, 'auto-select', 'ordinary single-option choices keep auto-select');
+  assert.equal(normalizeChoiceResponse('you decide', ['A', 'B'], { recommended: 'A' }).status, 'selected', 'ordinary delegation is unchanged');
+  const runtime = { session_id: 's', mode: 'default', tools: [{ name: 'choice', actions: ['user.choose', 'user.approve'], modes: ['default'] }] };
+  assert.equal(resolveAction({ contract, adapter: 'claude-code', action: 'user.choose', runtime }).mode, 'native');
+  for (const action of ['user.choose', 'user.approve']) {
+    const failed = resolveAction({ contract, adapter: 'claude-code', action, runtime, failed_surfaces: ['native-structured-choice'] });
+    assert.equal(failed.mode, 'fallback', action);
+    assert.deepEqual(failed.native, [], action);
+  }
+});

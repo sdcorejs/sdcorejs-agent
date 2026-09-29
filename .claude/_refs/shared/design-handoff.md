@@ -23,7 +23,9 @@ The approved spec body supplies `design_requirements` (a JSON object, or a
 `design-requirements` fenced JSON block). It declares `required`, `feature`,
 `experience_kind`, the complete `owner` identity, `surfaces` with `id`,
 `required`, `rendered_required`, `interaction_required`, and `reason` for an
-inapplicable surface. The approved plan cannot waive these requirements. The
+inapplicable surface, plus an optional `design_baseline: { kind: none, reason }`
+for greenfield work with no existing UI or design system. The approved plan
+cannot waive these requirements. The
 host pins actual artifact references outside the handoff. Missing requirements
 are a limitation; an explicit approved `required: false` with a reason permits
 a non-Design path for that approved semantic owner only. Surface behavior descriptions are design intent; rendered
@@ -188,11 +190,14 @@ duplicate editable module handoff.
 | Plan a scoped legacy-to-canonical migration | `planDesignArtifactMigration` |
 | Build `artifact_context` closure entries for the whole Design bundle | `buildDesignArtifactContext` |
 
-`resolveDesignHandoffTarget` returns `repository_relative_path` (the canonical
-handoff spec), `ledger_relative_path`, `artifact_root`, `ledger_root`,
+For an `experience_kind` request (schema 2), `resolveDesignHandoffTarget`
+returns `repository_relative_path` (the ledger path, equal to
+`ledger_relative_path`), `artifact_root`, `ledger_root`, `spec_path`,
 `flow_path`, `decisions_path`, `wireframe_directory`, `png_export_directory`,
-`reference_directory`, and per-screen paths when `screens` is supplied. Callers
-write the Design bundle from that result instead of rebuilding path strings.
+`reference_directory`, and per-screen paths when `screens` is supplied. The
+legacy `experience_scope` form keeps `repository_relative_path` as the handoff
+spec for schema-1 compatibility. Callers write the Design bundle from that
+result instead of rebuilding path strings.
 
 ## Legacy structural path gates
 
@@ -239,8 +244,9 @@ approved artifacts; it must not mutate approved inputs or silently expand scope.
 
 ## Editable Source And Visual Provenance
 
-Produce editable source before PNG. Valid editable formats are HTML, SVG,
-Figma, or FigJam and carry a durable artifact hash. Editable source lives under
+Produce editable source before PNG. Valid editable formats are HTML or SVG and
+carry a durable artifact hash. Legacy schema-1 handoffs that name another
+editable format stay read-only and unverified. Editable source lives under
 `.sdcorejs/design/wireframes/`. Every generated static PNG lives under
 `.sdcorejs/design/exports/png/`, links that hash, and is explicitly classified as
 `generated-mockup` or `illustration`.
@@ -293,6 +299,17 @@ kind, root, global editable master or token-value registry is introduced.
 sources with repository/path/revision. Relevant accepted/observed conventions
 are read through `convention_context`. Reference existing values rather than
 copying them into a parallel palette or `design-system/MASTER.md`.
+
+Greenfield work with no existing UI or design system declares
+`design_requirements.design_baseline: { kind: none, reason }` in the approved
+spec, and the plan repeats it exactly. The handoff then records
+`design_system_reuse.no_baseline: { reason, approval_ref }`. `approval_ref` is
+the exact verified spec reference (`repository_id`, `artifact_id`,
+`artifact_kind: spec`, `revision`, `approval_hash`), and `inspected: true` means
+the inspection found no baseline. `evidence_refs` is empty exactly when
+`no_baseline` is present, and no component mapping may be `confirmed`.
+Verification blocks when any of these conditions fails. A project that does not
+declare `none` still cites real sources.
 
 Record feature differences only in the resolver's `decisions_path`, summarize
 them in the handoff spec and `design_system_reuse.deviations`, and include these

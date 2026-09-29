@@ -125,3 +125,5 @@ diff, or log.
 ## Design and UI review integration
 
 The existing documentation capture schema 1 remains valid. For Design/UI review, adapt it only with host-observed execution and current source/build content using _refs/shared/ui-review.md. Keep documentation classification/guide ownership intact; generic UI review does not require a fabricated guide. Source, rendered and interaction proof remain separate, and mockups cannot become product captures. Test owns production of receipts; Review consumes them read-only. Scope every receipt to screen/state/viewport and invalidate affected evidence after writes.
+
+A UI command runner reports an integer `exit_code` and boolean `interrupted` and `timed_out` flags; the full result schema is in _refs/shared/ui-review.md. A completed run with fresh, kind-valid output becomes a receipt with `outcome` PASS or FAIL. A failing run is FAIL evidence of a product defect, not a gap; an interrupted or timed-out run, or an output left by an earlier run, yields no receipt. Only repair accepts FAIL coverage, as input for the finding it repairs.

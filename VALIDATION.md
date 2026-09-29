@@ -772,3 +772,148 @@ show a smaller number. Commands, results and limitations are retained in
 `.sdcorejs/docs/workflow/2026-09-25-11-17-skill-body-progressive-loading-delivery.md`.
 Live agent, browser, provider and generated-app/container layers are **NOT RUN**.
 No dependency, commit or push is authorized by this evidence.
+
+## Audit findings repair — current change (2026-09-28)
+
+This section records `audit-findings-repair-20260928` at base HEAD
+`70c933c3fc59a98b92c03004de902bc96250fba6`. It repairs the 26 confirmed findings
+of the step-6 audit through the approved spec, architecture and plan
+(`sha256:v1:e731b03d8f72e530d4f71d665838fc3e51e1f226e6ce07a3f3fbe54e7774a480`).
+Earlier sections and evidence records remain historical. The step-5 record
+`authoring/evals/skill-body-progressive-loading.json` is now verified as history
+at 70c933c, and `authoring/evals/audit-findings-repair.json` binds the current
+content and actual command runs. Public inventory stays at 23 skills; no
+dependency is added.
+
+| Finding | Severity | Regression case | At 70c933c | Current |
+| --- | --- | --- | --- | --- |
+| IF-1 / S-1 | High | `case-repair-observer-real-repo`, `case-repair-volatile-paths`, `case-repair-symlink-scope` | FAIL | PASS |
+| UR-1 | Medium | `case-repair-ordinary-review` (review, ship, repair, validation-map, Angular, Next.js) | FAIL | PASS |
+| IF-2 | Medium | `case-repair-finish-convergence`, `case-interaction-finish-evidence-order` | FAIL | PASS |
+| S-4 / IF-5 | Medium / Low | `case-repair-simplify-pending` | FAIL | PASS |
+| S-2 | Medium | `case-repair-analyze-honest` | FAIL | PASS |
+| S-3 | Medium | `case-repair-diff-check-scope` | FAIL | PASS |
+| UR-2 | Medium | `case-repair-failing-receipt` (review, ship, repair) | FAIL | PASS |
+| DH-1 | Medium | `case-repair-greenfield-design` | FAIL | PASS |
+| ST-1 | Medium | `case-repair-styling-reachable` | FAIL | PASS |
+| S-7 | Medium | `case-repair-host-runner` (simplify runner and finish routing) | FAIL | PASS |
+| ST-4, ST-5 | Low | `case-repair-explore-scan-pointers` | FAIL | PASS |
+| ST-2 | Low | `case-repair-placement-tests` | FAIL | PASS |
+| ST-3 | Low | `case-repair-schema-parity` plus the correction below | PASS (schema unchanged; the negative control is detected) | PASS |
+| S-5 | Low | `case-repair-scoped-rollback` | FAIL | PASS |
+| S-6 | Low | `case-repair-hardlink-target` | FAIL | PASS |
+| IF-3, IF-4 | Low | `case-repair-policy-ask-native` | FAIL | PASS |
+| UR-3, UR-4 | Low | `case-repair-ui-claims-gates-tests` | FAIL | PASS |
+| UR-5 | Low | three rebuilt UI guard tests in `review-contract.test.mjs` | test defect, not product behavior; removing each guard in a sandbox copy fails its test | PASS |
+| DH-2, DH-3 | Low | `case-repair-design-docs` | FAIL | PASS |
+| G-1 | Low | `case-repair-artifact-loader` | FAIL | PASS |
+
+The Current column reports the regression cases above. Four read-only reviews
+of this diff then found defects in the repairs themselves that those cases did
+not cover. The user selected repair within the approved plan scope and paths;
+the third round was the last repair attempt of the loop. The fourth review's
+findings in round-3 changes (R4 rows) were corrected because those changes broke
+or weakened behavior. For its three findings in older code the user then
+approved one extra round beyond the loop limit (R5 rows). Each fix has a
+regression that failed on the unfixed code before the fix (in a sandbox copy of
+the unfixed tree where noted) and passes now.
+
+| Review finding | Severity | Regression case | Before fix | Current |
+| --- | --- | --- | --- | --- |
+| R1: `recordSimplify` input shape; the finish verifier did not derive step, scope and hunk ownership (A7) | High | `case-repair-finish-verifier` | FAIL | PASS |
+| R1: host-snapshot ownership skipped files that are not in HEAD | High | `case-repair-untracked-ownership` | FAIL | PASS |
+| R1: pass caps and the anchor counted per dispatch, not per chain | Medium | `case-repair-dispatch-chain` | FAIL | PASS |
+| R1: a runner failure after Apply left its writes in place | Medium | `case-repair-runner-rollback` | FAIL | PASS |
+| R1: `head` anchors compared the unfiltered HEAD blob (`core.autocrlf=true`) | Medium | `case-repair-filtered-blob` | FAIL | PASS |
+| R1: consumers mishandled stale, null-context and owner-less fingerprint evidence | Medium | `case-repair-observed-consumers` (finish, ship), `case-repair-runner-fingerprint` | FAIL | PASS |
+| R1: "no failures observed" was accepted as a disclaimer | Medium | `case-repair-claim-lexicon` | FAIL | PASS |
+| R1: five import forms evaded the oracle check | Medium | `case-repair-oracle-imports` | FAIL (the first run passed only because the package was not installed; the fixture now installs an untracked package) | PASS |
+| R1: a direct fix could not Analyze through the runner | Low | `case-repair-direct-analyze` | FAIL | PASS |
+| R1: rollback ignored the oracle closure; runner rollback and consumer commands ran outside a volatile window | Low | `case-repair-oracle-rollback`, `case-repair-consumer-window` | FAIL | PASS |
+| R1: repair accepted FAIL coverage for every obligation | Low | `case-repair-repair-fail-scope` | FAIL | PASS |
+| R1: `simplify_outcome` came from the payload | Low | `case-repair-outcome-source` (finish, simplify) | FAIL | PASS |
+| R1: nested `.git` entries and links had no size and mtime | Low | `case-repair-nested-metadata` | FAIL | PASS |
+| R2: runner rollback overwrote a concurrent edit to a pass path | High | `case-repair-rollback-conflict` | FAIL (sandbox copy; the first run hit the 120 s spawn limit, now 600 s) | PASS |
+| R2: a `reverted` receipt could change content and its status overrode the composite diff | Medium | `case-repair-reverted-outcome` | FAIL | PASS |
+| R2: runner routing followed the payload, not the host session; `skip` hid a verified pass | Medium | `case-repair-host-state-routing` | FAIL | PASS |
+| R2: the disclaimer pattern accepted negated results; none/nothing/zero/never findings passed | Medium | `case-repair-claim-lexicon-negations` | FAIL | PASS |
+| R2: a failed capture left a volatile window open | Low | `case-repair-window-release` | FAIL | PASS |
+| R2: the oracle built-in check was a denylist | Low | `case-repair-oracle-builtins` | FAIL | PASS |
+| R2: the repair FAIL citation came from the payload finding | Low | `case-repair-repair-finding-binding` | FAIL | PASS |
+| R2: review and repair read the simplify owner from the payload | Low | `case-repair-simplify-owner` (review, repair) | FAIL | PASS |
+| R3: an oracle import specifier with `%XX` or `#fragment` loaded another file than the checked one | Low | `case-repair-oracle-specifier` | FAIL | PASS |
+| R3: repair accepted a fresh assessment id that carried a rewritten finding | Low | `case-repair-repair-assessment-recorded` | FAIL | PASS |
+| R3: a repair receipt skipped the proof of a verified simplify pass | Low | `case-repair-repaired-host-pass` | FAIL | PASS |
+| R3: the disclaimer rule rejected manner adverbs and inline code | Low | `case-repair-claim-lexicon-negations` | FAIL | PASS |
+| R3: `\u` and `\x` escapes spelled refused oracle names | Low | `case-repair-oracle-builtins` | FAIL | PASS |
+| R3: a refused runner rollback dropped its pass paths and hashes | Low | `case-repair-rollback-conflict` | FAIL | PASS |
+| R3: a session reported `reverted` over code simplified by an earlier pass | Low | `case-repair-session-outcome-composite` | FAIL (after a test-setup fix of the second pass's hunk coordinates) | PASS |
+| R4: the R3 recorded-assessment check left one existing repair test unretargeted, and a retry adopted the fresh assessment | Medium | `current conformance failure remains repairable only through existing owner authority` (now runs the review first), `case-repair-repair-assessment-recorded` (retry) | FAIL | PASS |
+| R4: the R3 inline-code rule hid outcome words, bridged a disclaimer and rejected a coded `NOT RUN` | Low | `case-repair-claim-lexicon-negations` | FAIL | PASS |
+| R5: the oracle closure checked paths as Git pathspecs, so `oracles/[id].mjs` matched a tracked file as a glob | Low | `case-repair-oracle-pathspec` | FAIL | PASS |
+| R5: a CommonJS oracle helper reached `require` through `arguments`; the allowlisted `node:crypto` exposed `setEngine` | Low | `case-repair-oracle-commonjs` | FAIL (the `setEngine` case through a negative control) | PASS |
+| R5: a refused runner rollback receipt dropped the postflight failure that triggered it | Low | `case-repair-rollback-conflict` | FAIL | PASS |
+
+Where a regression stopped at an earlier assertion on the unfixed code, a
+negative control removed that one guard in a sandbox copy of the fixed tree and
+the regression failed: four round-1 guards, the three UR-5 guards, five
+round-2 guards and the round-5 `setEngine` guard. Round-3 regressions failed at their targeted assertion; the
+lexicon cases also failed through `validateUiReviewFinding` on the unfixed
+source. Only the UI command window has a window-release regression; the
+rollback and consumer windows use the same close pattern. Existing repair tests
+now run the review that records the assessment before repair consumes it.
+
+Residual limits, disclosed rather than closed:
+
+- The oracle source scan is a conservative heuristic, not a sandbox. Computed
+  access, such as a concatenated property name, can still reach the Function
+  constructor. Trust rests on tracked, unchanged, plan-named oracles; running
+  oracles in a separate process would close this and needs a decision.
+- The claim lexicon is a lint and prose is never evidence (D-009). It still
+  accepts some negated results ("Keyboard traps were never observed", "Found no
+  keyboard traps") and still rejects some legitimate source wording ("no
+  `:focus-visible` rule found", "confirm no focus trap is detected"). Changing
+  that balance is a policy decision.
+- Rollback compares bytes before it writes and takes no file lock, so a writer
+  racing between that check and the write is not excluded.
+- The repair-loop documents outside the approved paths still describe only the
+  session path.
+- Not verified: the fourth review suspects that the current-diff boundary in
+  `_refs/simplify/repository-evidence.mjs` has the same Git glob behavior for
+  bracketed source paths such as `app/[slug]/page.tsx`; it predates this change
+  and was neither probed nor changed.
+
+The regressions were written first and run on the unchanged 70c933c sources:
+17 of 18 finish/observer/loader/structure cases, 1 of 1 interaction case, 11 of
+11 simplify cases, the 5 new or changed UI review cases, 7 of 7 UI consumer
+cases and 3 of 3 Design cases failed. Governance continuation is
+`case-repair-evidence-continuation`.
+
+Correction to step 5: `skill-body-progressive-loading-20260925` reported
+AC-013 (single-schema) as "the review_context example matches review-contract.mjs
+through a test". At 70c933c no test compared the documented example with the
+consumer-required fields. `case-repair-schema-parity` now checks every
+consumer-required `review_context` field against the example in
+`_refs/review/output-contract.md` and detects a dropped field; the schema is
+unchanged. The step-5 section above is kept as history.
+
+| Measure | Baseline | Current working tree |
+| --- | ---: | ---: |
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,850 |
+| Always-loaded bootstrap words | 2,361 | 2,319 |
+| Aggregate just-in-time scenario bytes | 514,603 | 689,344 |
+| Aggregate visible output bytes | 42,558 | 2,802 |
+| Aggregate visible output words | 3,961 | 337 |
+| Portable fallback handoff bytes | 0 | 25,383 |
+| Supported runtime context channel bytes | 0 | 1,819 |
+| Repeated-block bytes | 2,319 | 0 |
+| Total measured communication bytes | 577,334 | 739,198 |
+| Consumer-required authoritative fields | 361 | 361 preserved |
+
+The just-in-time aggregate moves from 679,422 to 689,344 bytes because
+`_refs/shared/finish-gate.md`, `_refs/shared/user-choice-prompt.md`,
+`skills/shared/workflow/review.md` and `_refs/review/output-contract.md` now
+document next-action phase/intent/owner, volatile paths, the host runner,
+host-held simplify state, authority-granting choices, named review references
+and the host-evidence simplify owner. These are byte counts, not token or cost
+measurements.

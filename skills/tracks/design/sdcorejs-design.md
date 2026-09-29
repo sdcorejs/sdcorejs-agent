@@ -54,7 +54,8 @@ Before mapping stories to screens, assemble read-only `project_context`.
   code map. Do not refresh merely because design execution is write-approved.
 - For greenfield design before any app scaffold exists, continue from product
   docs and approved specs/plans, but mark UI component choices as `candidate`
-  until frontend/backend source evidence exists.
+  until frontend/backend source evidence exists. Record the absent baseline only
+  through the approved no-baseline record in `_refs/shared/design-handoff.md`.
 - If the summary conflicts with product stories, acceptance criteria, or current
   user attachments, surface the conflict instead of silently choosing one source.
 

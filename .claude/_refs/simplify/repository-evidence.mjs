@@ -1,4 +1,6 @@
-import { safeRepositoryPath as safeSimplifyPath, containedRepositoryFile as containedFile, repositoryGit as git, captureRepository as capture } from '../shared/repository-observation.mjs';
+import { safeRepositoryPath as safeSimplifyPath, containedRepositoryFile as containedFile, repositoryGit as git, captureRepository,
+  registerVolatileLedger, beginVolatileWindow, endVolatileWindow, assertVolatileLedger, assertSingleLinkWriteTarget, changedRepositoryPaths,
+  validateVolatilePaths } from '../shared/repository-observation.mjs';
 import { createHash, randomUUID } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { lstatSync, readdirSync, readFileSync, realpathSync, existsSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
@@ -29,6 +31,12 @@ const hash = value => `sha256:${createHash('sha256').update(value).digest('hex')
 const clone = value => structuredClone(value);
 const equal = isDeepStrictEqual;
 const text = value => typeof value === 'string' && value.trim() !== '';
+// Every equality check in a session uses the stable fingerprint: declared
+// volatile caches may change inside registered command windows only.
+const capture = state => {
+  const snapshot = captureRepository(state);
+  return { ...snapshot, fingerprint: snapshot.stable_fingerprint, full_fingerprint: snapshot.fingerprint };
+};
 
 export { safeSimplifyPath };
 function inside(root, file) {
@@ -77,7 +85,7 @@ function snapshotFrom(state, ref) {
 }
 
 function changedPaths(before, after) {
-  return [...new Set([...Object.keys(before.files), ...Object.keys(after.files)])].filter(file => !equal(before.files[file], after.files[file])).sort();
+  return changedRepositoryPaths(before, after);
 }
 
 function diffHunks(before, after) {
@@ -99,6 +107,11 @@ function diffHunks(before, after) {
     if (realpathSync.native(path.dirname(temporary)) !== realpathSync.native(tmpdir()) || !path.basename(temporary).startsWith('simplify-hunks-') || lstatSync(temporary).isSymbolicLink()) throw new Error('temporary diff cleanup containment failed');
     rmSync(temporary, { recursive: true, force: true });
   }
+}
+
+/** Actual text hunks (old/new coordinates) between two byte buffers. */
+export function simplifyDiffHunks(before, after) {
+  return diffHunks(Buffer.from(before ?? ''), Buffer.from(after ?? ''));
 }
 
 function covers(allowed, selected) {
@@ -212,8 +225,11 @@ function containedDirectory(state, relative) {
 
 function run(state, spec) {
   const cwd = validateCommand(state, spec), before = capture(state), started = new Date().toISOString();
+  const window = beginVolatileWindow(state.volatileLedger, 'command', before);
   const result = spawnSync(spec.command[0], spec.command.slice(1), { cwd, shell: false, windowsHide: true, encoding: 'utf8', timeout: 30000, maxBuffer: 4 * 1024 * 1024 });
-  const after = capture(state), stable = before.fingerprint === after.fingerprint;
+  let after;
+  try { after = capture(state); } finally { endVolatileWindow(window, after); }
+  const stable = before.fingerprint === after.fingerprint;
   return issue(state, COMMAND, {
     kind: 'command-receipt', command: clone(spec.command), cwd: spec.cwd, real_cwd: cwd,
     owner_repository_id: state.owner, root: state.root, scope: clone(spec.scope),
@@ -249,6 +265,7 @@ function preflight(state, context) {
   if (state.repaired) throw new Error('simplify/repair recursion is forbidden');
   if (!equal(context.passes, state.ledger)) throw new Error('pass ledger omitted, reset or forged');
   const before = snapshotFrom(state, context.baseline.snapshot), current = capture(state);
+  assertVolatileLedger(state.volatileLedger, current);
   if (before.fingerprint !== current.fingerprint || context.source_revision !== current.revision || current.fingerprint !== state.expectedFingerprint) throw new Error('preflight baseline is stale or contains unaccounted writes');
   const apply = context.action.startsWith('apply-');
   if (!apply && state.ledger.length) throw new Error('Analyze cannot replace verification of an earlier Apply pass');
@@ -306,6 +323,13 @@ function postflight(state, context) {
   const actual = changedPaths(grant.before, after), errors = [];
   if (!apply) {
     if (grant.before.fingerprint !== after.fingerprint) throw new Error('Analyze mode must remain read-only: actual repository writes observed');
+    // Analyze never carries caller-declared verification: every referenced receipt
+    // must resolve in this session, and unrun checks stay unrun.
+    for (const reference of [...context.verification.before, ...context.verification.after]) resolve(state, reference, COMMAND);
+    if (context.verification.preservation) resolve(state, context.verification.preservation, PRESERVATION);
+    output.verification.git_diff_check = 'not-run';
+    output.verification.behavior_verification = 'not-verified';
+    for (const surface of simplifyPreservedSurfaces) output.preserved_surfaces[surface] = 'pending';
     output.result.status = 'analyzed'; output.result.files_changed = [];
   } else {
     if (state.repaired) throw new Error('simplify/repair recursion is forbidden');
@@ -313,11 +337,27 @@ function postflight(state, context) {
     if (state.pending !== grant) throw new Error('no active simplify pass; completed authority cannot be replayed');
     const observed = observeActualChanges(grant.before, after);
     if (observed.unmapped.length) state.hunkHistoryUnproven = true;
-    try { actualScope(state, grant, after, observed); } catch (error) { errors.push(error.message); }
-    try { verifyCommands(state, context.verification.after, after, context.scope.eligible_hunks, grant.minimumAfterSequence); } catch (error) { errors.push(error.message); }
     const previouslyFailed = entry.verification_result === 'failed';
-    const reverted = previouslyFailed && after.fingerprint === grant.before.fingerprint;
-    if (previouslyFailed && !reverted) errors.push('failed simplify pass was not rolled back to its exact checkpoint');
+    // Path of the pass: its eligible files plus every path the host wrote for it.
+    const passPaths = [...new Set([...grant.context.scope.eligible_files, ...(grant.edited_paths ?? []), ...entry.changed_paths])].sort();
+    const concurrent = observed.files.filter(file => !passPaths.includes(file));
+    let reverted = false;
+    if (previouslyFailed) {
+      // Scoped rollback (D-005): pass paths return to the exact checkpoint; unrelated
+      // concurrent edits are preserved and listed; edits to pass paths, protected
+      // paths or verification inputs block.
+      const inputs = new Set(state.commands.flatMap(spec => spec.scope.map(item => item.path)));
+      for (const file of concurrent) {
+        if (protectedPath(file) || inputs.has(file)) errors.push(`concurrent change on a protected path or verification input blocks rollback: ${file}`);
+        if (state.oraclePaths.includes(file)) errors.push(`concurrent change on an oracle module blocks rollback: ${file}`);
+      }
+      reverted = passPaths.every(file => Buffer.from(after.bytes[file] ?? '').equals(Buffer.from(grant.before.bytes[file] ?? '')) && equal(after.files[file], grant.before.files[file]));
+      if (!reverted) errors.push('failed simplify pass was not rolled back to its exact checkpoint');
+      output.result.concurrent_changes = concurrent;
+    } else {
+      try { actualScope(state, grant, after, observed); } catch (error) { errors.push(error.message); }
+    }
+    try { verifyCommands(state, context.verification.after, after, context.scope.eligible_hunks, grant.minimumAfterSequence); } catch (error) { errors.push(error.message); }
     let preservation = null;
     try {
       const buffers = source => Object.fromEntries(Object.entries(source.bytes).map(([file, bytes]) => [file, Buffer.from(bytes)]));
@@ -330,10 +370,12 @@ function postflight(state, context) {
       if (capture(state).fingerprint !== after.fingerprint) throw new Error('preservation checker changed source');
       output.verification.preservation = issue(state, PRESERVATION, { before_fingerprint: grant.before.fingerprint, after_fingerprint: after.fingerprint, checks: preservation }, after.revision);
     } catch (error) { errors.push(error.message); }
+    // Whitespace check covers only lines this pass added, under repository rules.
     try {
-      git(state, ['diff', '--no-ext-diff', '--no-textconv', '--check']); git(state, ['diff', '--cached', '--no-ext-diff', '--no-textconv', '--check']);
-      output.verification.git_diff_check = 'passed';
-    } catch { errors.push('git diff --check failed'); output.verification.git_diff_check = 'failed'; }
+      const whitespace = passWhitespaceErrors(state, grant.before, after, passPaths);
+      if (whitespace.length) { errors.push(...whitespace.map(message => `git diff --check failed: ${message}`)); output.verification.git_diff_check = 'failed'; }
+      else output.verification.git_diff_check = 'passed';
+    } catch (error) { errors.push(`git diff --check failed: ${error.message}`); output.verification.git_diff_check = 'failed'; }
     if (capture(state).fingerprint !== after.fingerprint) errors.push('repository changed during postflight; evidence is stale');
     const observedSnapshot = saveSnapshot(state, after);
     if (reverted && !errors.length) {
@@ -371,15 +413,234 @@ function consume(state, context, consumer) {
   // diagnostics. They never promote it to current verification or write authority.
   const pending = state.pending;
   const observed = capture(state);
-  let current = false;
+  let current = false, outcome = null;
   if (context.result.receipt) {
     resolve(state, context.result.receipt, COMPLETION);
     const completion = state.completions.get(context.result.receipt.approval_hash);
     current = Boolean(completion && equal(context, completion.context) && equal(context.passes, state.ledger) && !state.repaired && !pending && completion.fingerprint === observed.fingerprint);
+    // The outcome comes from the host-held completion, never from the payload. Like a runner
+    // verdict it follows the composite diff: when any pass path still differs from the
+    // session start, simplified code is in the tree, whatever the last pass did.
+    const status = completion?.context?.result?.status ?? null;
+    const passPaths = new Set(state.ledger.flatMap(entry => entry.changed_paths ?? []));
+    const netChanged = (completion?.context?.result?.files_changed ?? []).some(file => passPaths.has(file));
+    outcome = ['reverted', 'unchanged'].includes(status) && netChanged ? 'simplified' : status;
   }
   if (!current && !['sdcorejs-test', 'sdcorejs-repair-loop'].includes(consumer)) throw new Error('stale or unverified post-simplification evidence');
   if (consumer === 'sdcorejs-repair-loop' && pending) throw new Error('failed or pending simplify pass must be verified or rolled back before repair');
-  return { status: current ? (context.action.startsWith('apply-') ? 'verified' : 'analyzed') : 'revalidation-required', evidence_current: current, source_revision: observed.revision, source_fingerprint: observed.fingerprint, owner_repository_id: state.owner, write_authorized: false, blockers: [] };
+  const applied = context.action.startsWith('apply-');
+  return { status: current ? (applied ? 'verified' : 'analyzed') : 'revalidation-required', evidence_current: current, outcome,
+    analysis_current: current && !applied, verification_current: current && applied,
+    source_revision: observed.revision, source_fingerprint: observed.fingerprint, owner_repository_id: state.owner, write_authorized: false, blockers: [] };
+}
+
+// Read-only registry query: finish looks up the in-process session for (root, change)
+// so omitting simplify_context cannot hide a pending pass.
+export function findSimplifySession(root, changeRef) {
+  let key;
+  try { key = `${realpathSync.native(root)}\0${changeRef}`; } catch { return null; }
+  const session = activeChanges.get(key);
+  const state = session && sessions.get(session);
+  if (!state) return null;
+  return { session_id: state.id, pending: Boolean(state.pending), repaired: state.repaired, ledger: clone(state.ledger) };
+}
+
+function whitespaceRules(state, file) {
+  const rules = { 'blank-at-eol': true, 'space-before-tab': true, 'blank-at-eof': true, 'cr-at-eol': false };
+  const apply = spec => {
+    for (const token of String(spec ?? '').split(',').map(item => item.trim()).filter(Boolean)) {
+      const enabled = !token.startsWith('-'), name = token.replace(/^-/u, '');
+      if (name === 'trailing-space') { rules['blank-at-eol'] = enabled; rules['blank-at-eof'] = enabled; }
+      else if (Object.hasOwn(rules, name)) rules[name] = enabled;
+    }
+  };
+  apply(git(state, ['config', '--get', 'core.whitespace'], [0, 1]).trim());
+  const attributes = Object.fromEntries(git(state, ['check-attr', 'whitespace', 'eol', '--', file]).split(/\r?\n/u).filter(Boolean)
+    .map(line => line.split(': ').slice(1)).filter(parts => parts.length === 2));
+  if (attributes.whitespace === 'unset') for (const key of Object.keys(rules)) rules[key] = false;
+  else if (attributes.whitespace && !['set', 'unspecified'].includes(attributes.whitespace)) apply(attributes.whitespace);
+  if (attributes.eol === 'crlf') rules['cr-at-eol'] = true;
+  return rules;
+}
+
+// Whitespace errors introduced by the lines a pass added, compared with its checkpoint.
+function passWhitespaceErrors(state, before, after, files) {
+  const errors = [];
+  for (const file of files) {
+    const previous = Buffer.from(before.bytes[file] ?? ''), next = after.bytes[file] ? Buffer.from(after.bytes[file]) : null;
+    if (!next || previous.equals(next)) continue;
+    const rules = whitespaceRules(state, file);
+    const previousText = previous.toString('utf8'), nextText = next.toString('utf8');
+    // A checkpoint that already used CRLF line endings keeps CR as part of the line ending.
+    const crlf = rules['cr-at-eol'] || (previousText.includes('\r\n') && !/(^|[^\r])\n/u.test(previousText));
+    const lines = nextText.split('\n');
+    for (const hunk of diffHunks(previous, next)) {
+      for (let number = hunk.new_start; number < hunk.new_start + hunk.new_count; number += 1) {
+        let line = lines[number - 1] ?? '';
+        if (crlf && line.endsWith('\r')) line = line.slice(0, -1);
+        if (rules['blank-at-eol'] && /[ \t\r]+$/u.test(line)) errors.push(`${file}:${number}: trailing whitespace`);
+        if (rules['space-before-tab'] && / \t/u.test(line.match(/^[ \t]*/u)[0])) errors.push(`${file}:${number}: space before tab in indent`);
+        if (/^(?:<{7}|>{7}|={7})(?: |$)/u.test(line)) errors.push(`${file}:${number}: leftover conflict marker`);
+      }
+    }
+    if (rules['blank-at-eof'] && /\n[ \t\r]*\n$/u.test(nextText) && !/\n[ \t\r]*\n$/u.test(previousText)) errors.push(`${file}: new blank line at end of file`);
+  }
+  return errors;
+}
+
+/**
+ * HEAD content as checkout writes it (smudge filters and end-of-line conversion),
+ * so an autocrlf work tree compares equal to its committed file. Null when absent.
+ */
+export function filteredHeadBlob(root, file) {
+  const result = spawnSync('git', ['--no-optional-locks', 'cat-file', '--filters', `HEAD:${file}`], { cwd: root, windowsHide: true, shell: false, timeout: 30000, maxBuffer: 16 * 1024 * 1024 });
+  return result.error || result.status !== 0 ? null : Buffer.from(result.stdout);
+}
+const headBlob = filteredHeadBlob;
+
+const hunkRange = (file, hunk) => ({ path: file, start_line: Math.max(hunk.new_start, 1), end_line: Math.max(hunk.new_start, 1) + Math.max(hunk.new_count, 1) - 1 });
+
+/**
+ * Hunk ownership for a host-snapshot anchor (A7), in anchor coordinates. Workflow
+ * hunks come from observed implementation windows whose output is still the anchor
+ * content. User-owned hunks are the lines already dirty against HEAD when the
+ * runtime started; when such a file changed afterwards, the whole file stays
+ * user-owned because its line mapping is unproven.
+ */
+export function deriveHostHunkOwnership({ root, files = [], anchor, initial, windows = [] } = {}) {
+  const workflow = [], userOwned = [];
+  for (const file of files) {
+    if (!anchor?.bytes?.[file]) continue;
+    const anchored = Buffer.from(anchor.bytes[file]), head = headBlob(root, file);
+    const start = initial?.bytes?.[file] ? Buffer.from(initial.bytes[file]) : null;
+    if (start && !(head && head.equals(start))) {
+      if (anchored.equals(start)) userOwned.push(...diffHunks(head ?? Buffer.alloc(0), start).map(hunk => hunkRange(file, hunk)));
+      else userOwned.push({ path: file, start_line: 1, end_line: Math.max(lineCount(anchored), 1) });
+    }
+    for (const window of windows) {
+      const written = window?.after?.bytes?.[file] ? Buffer.from(window.after.bytes[file]) : null;
+      const previous = window?.before?.bytes?.[file] ? Buffer.from(window.before.bytes[file]) : Buffer.alloc(0);
+      if (!written || !written.equals(anchored) || previous.equals(written)) continue;
+      workflow.push(...diffHunks(previous, written).map(hunk => hunkRange(file, hunk)));
+    }
+  }
+  return { workflow_hunks: workflow, user_owned_hunks: userOwned };
+}
+
+function stepAllows(step, file) {
+  const matches = pattern => pattern === file || pattern === '**' || (pattern.endsWith('/**') && file.startsWith(pattern.slice(0, -2)));
+  return Array.isArray(step?.allowed_paths) && step.allowed_paths.some(matches) && !(step.prohibited_paths ?? []).some(matches);
+}
+
+function hunkInside(hunk, allowed, lines) {
+  return allowed.some(a => a.path === hunk.path && (hunk.old_count === 0
+    ? hunk.old_start >= a.start_line && (hunk.old_start < a.end_line || (hunk.old_start === a.end_line && a.end_line === lines))
+    : hunk.old_start >= a.start_line && hunk.old_start + hunk.old_count - 1 <= a.end_line));
+}
+
+/**
+ * Consumer-side re-derivation of a host-runner receipt (D-004). The before-state
+ * comes only from the consumer's own anchor: a host-held snapshot or HEAD. Every
+ * receipt field is an index that must match what the consumer recomputes.
+ */
+export function revalidateSimplifyHostReceipt(input = {}) {
+  const blockers = [];
+  const result = extra => ({ verified: blockers.length === 0, outcome: blockers.length ? 'blocked' : extra.outcome, pass_paths: blockers.length ? [] : extra.pass_paths, blockers });
+  const { receipt, authority, anchor } = input;
+  const chain = [...(input.chain ?? []), receipt];
+  try {
+    if (!['head', 'host-snapshot'].includes(anchor?.kind)) throw new Error('a head or host-snapshot anchor held by the consumer is required');
+    if (anchor.kind === 'host-snapshot' && !anchor.snapshot?.bytes) throw new Error('host-snapshot anchors can only be revalidated by the host that captured them');
+    for (const [index, item] of chain.entries()) {
+      if (item?.kind !== 'simplify-host-receipt:v1' || item.schema_version !== 1) throw new Error('host receipt kind/schema is invalid');
+      if (item.repository_id !== input.repository_id || item.change_ref !== input.change_ref) throw new Error('host receipt identity differs from the consumer');
+      if (item.plan?.approval_hash !== authority?.plan?.approval_hash || item.plan?.step_id !== authority?.step?.step_id) throw new Error('host receipt plan identity differs from the consumer authority');
+      if (!['verified', 'reverted'].includes(item.status)) throw new Error(`host receipt ${index + 1} is not a completed pass (${item.status})`);
+      if (!Array.isArray(item.pass_paths) || item.pass_paths.length > simplifyLimits.max_files_per_pass || new Set(item.pass_paths).size !== item.pass_paths.length || !item.pass_paths.every(safeSimplifyPath)) throw new Error('host receipt pass paths are invalid');
+    }
+    if (chain.length > simplifyLimits.max_passes) throw new Error('simplify pass cap exceeded across the receipt chain');
+    const root = realpathSync.native(input.root);
+    const union = [...new Set(chain.flatMap(item => item.pass_paths))].sort();
+    if (union.length > simplifyLimits.max_total_files_without_reconfirmation) throw new Error('simplify total file cap exceeded across the receipt chain');
+    const requested = input.requested_scope ?? {};
+    const anchorBytes = file => anchor.kind === 'host-snapshot' ? (anchor.snapshot.bytes[file] ? Buffer.from(anchor.snapshot.bytes[file]) : null) : headBlob(root, file);
+    const currentBytes = file => (input.after?.bytes?.[file] ? Buffer.from(input.after.bytes[file]) : (() => { try { return readFileSync(containedFile({ root }, file)); } catch { return null; } })());
+    const before = {}, after = {};
+    for (const file of union) {
+      if (protectedPath(file)) throw new Error(`protected simplify path: ${file}`);
+      if (!stepAllows(authority.step, file)) throw new Error(`outside the approved plan step: ${file}`);
+      if (!Array.isArray(requested.files) || !requested.files.includes(file)) throw new Error(`outside the requested simplify scope: ${file}`);
+      before[file] = anchorBytes(file); after[file] = currentBytes(file);
+      if (!before[file]) throw new Error(`before-state of ${file} is unavailable at the ${anchor.kind} anchor`);
+      if (!after[file]) throw new Error(`current content of ${file} is unavailable`);
+    }
+    // Chain continuity: the first pass starts at the anchor, each pass starts where the previous ended.
+    const expected = Object.fromEntries(union.map(file => [file, hash(before[file])]));
+    for (const item of chain) {
+      for (const file of item.pass_paths) {
+        if (item.before?.[file] !== expected[file]) throw new Error(`receipt before-state of ${file} does not match the ${anchor.kind} anchor or the previous pass`);
+        // A reverted pass restored its checkpoint, so its after-state is its before-state.
+        if (item.status === 'reverted' && item.after?.[file] !== item.before?.[file]) throw new Error(`reverted receipt does not restore the before-state of ${file}`);
+        expected[file] = item.after?.[file];
+      }
+    }
+    for (const file of union) if (expected[file] !== hash(after[file])) throw new Error(`receipt after-state of ${file} does not match current content`);
+    let hunkTotal = 0, changed = false;
+    for (const file of union) {
+      if (before[file].equals(after[file])) continue;
+      changed = true;
+      const hunks = diffHunks(before[file], after[file]).map(hunk => ({ path: file, ...hunk }));
+      hunkTotal += hunks.length;
+      const lines = lineCount(before[file]);
+      if (hunks.some(hunk => !hunkInside(hunk, requested.hunks ?? [], lines))) throw new Error(`actual change outside the requested hunks: ${file}`);
+      const classification = authority.oracles?.classify_source?.({ path: file, content: Buffer.from(before[file]), fingerprint: hash(before[file]) });
+      if (classification?.kind !== 'executable' || !Array.isArray(classification.hunks) || !Array.isArray(classification.protected_surfaces) || classification.protected_surfaces.length) throw new Error(`source eligibility is unproven: ${file}`);
+      if (hunks.some(hunk => !hunkInside(hunk, classification.hunks, lines))) throw new Error(`actual change outside eligible source hunks: ${file}`);
+      // A file that is not in HEAD is dirty too: its changed lines need proven ownership.
+      const head = anchor.kind === 'host-snapshot' ? headBlob(root, file) : null;
+      if (anchor.kind === 'host-snapshot' && !(head && head.equals(before[file]))) {
+        const overlaps = (a, b) => a.path === b.path && a.start_line <= b.old_start + Math.max(b.old_count, 1) - 1 && b.old_start <= a.end_line;
+        if (hunks.some(hunk => (input.user_owned_hunks ?? []).some(owned => overlaps(owned, hunk)))) throw new Error(`user-owned changes are protected: ${file}`);
+        if (hunks.some(hunk => !hunkInside(hunk, input.workflow_hunks ?? [], lines))) throw new Error(`dirty source ownership is unproven: ${file}`);
+      }
+    }
+    if (hunkTotal > simplifyLimits.max_hunks_without_reconfirmation) throw new Error('simplify hunk cap exceeded across the receipt chain');
+    if (changed) {
+      // Oracles receive Buffer copies, as in a host session (a structured clone would
+      // hand them Uint8Arrays and silently change how they read text).
+      const buffers = source => Object.fromEntries(Object.entries(source).map(([file, bytes]) => [file, Buffer.from(bytes)]));
+      const preservation = authority.oracles?.verify_preservation?.({ before: buffers(before), after: buffers(after), changed_paths: union.filter(file => !before[file].equals(after[file])), before_fingerprint: hash(JSON.stringify(expected)), after_fingerprint: hash(JSON.stringify(union.map(file => hash(after[file])))) });
+      for (const surface of simplifyPreservedSurfaces) {
+        const item = preservation?.[surface];
+        if (!item || !text(item.reason) || !['verified', 'not-applicable'].includes(item.status) || (['strings_and_prompts', 'dependencies_and_config'].includes(surface) && item.status !== 'verified')) throw new Error(`preservation unproven: ${surface}`);
+      }
+    }
+    if (input.run_verification !== false) {
+      if (!Array.isArray(authority.commands) || authority.commands.length === 0) throw new Error('fresh verification commands are required');
+      // Fresh commands run inside command windows of the shared host ledger, so a
+      // finish or UI runtime in this process accepts their declared cache writes.
+      const volatile = validateVolatilePaths(input.volatile_paths ?? []);
+      const observe = () => captureRepository({ root, owner: input.repository_id, volatile, guarded: [] });
+      const ledger = registerVolatileLedger({ root, change_ref: input.change_ref, volatile_paths: volatile, snapshot: observe() });
+      for (const spec of authority.commands) {
+        const window = beginVolatileWindow(ledger, 'command', observe());
+        // A failed capture still closes the window; without a snapshot nothing is recorded.
+        let run, observed;
+        try {
+          run = spawnSync(spec.command[0], spec.command.slice(1), { cwd: spec.cwd === '.' ? root : containedDirectory({ root }, spec.cwd), shell: false, windowsHide: true, encoding: 'utf8', timeout: 120000, maxBuffer: 4 * 1024 * 1024 });
+          observed = observe();
+        } finally { endVolatileWindow(window, observed); }
+        if (run.error || run.signal || run.status !== 0) throw new Error(`fresh verification failed: ${spec.command.join(' ')}`);
+      }
+      for (const file of union) if (!currentBytes(file)?.equals(after[file])) throw new Error(`verification changed ${file}`);
+    }
+    // The outcome follows the composite diff: simplified code in the tree is never
+    // reported as reverted, whatever the last pass did.
+    return result({ outcome: changed ? 'simplified' : receipt.status === 'reverted' ? 'reverted' : 'unchanged', pass_paths: union });
+  } catch (error) {
+    blockers.push(error.message);
+    return result({});
+  }
 }
 
 export function evaluateRepositoryEvidence(context, runtime, phase) {
@@ -402,7 +663,18 @@ export function createSimplifyEvidenceSession(options) {
     userScope: clone(options.user_scope ?? []), userOwned: clone(options.user_owned_hunks ?? []), workflowHunks: clone(options.workflow_hunks ?? []),
     classify: options.classify_source, preserve: options.verify_preservation, commands: clone(options.verification_commands ?? []),
     artifacts: [], snapshots: new Map(), grants: new Map(), completions: new Map(), ledger: [], sequence: 0, pending: null, repaired: false, hunkHistoryUnproven: false, plan: null,
+    volatile: validateVolatilePaths(options.volatile_paths ?? []),
+    // The trusted oracle import closure; a concurrent change to it blocks rollback.
+    oraclePaths: [...new Set(options.oracle_paths ?? [])],
   };
+  if (!state.oraclePaths.every(safeSimplifyPath)) throw new Error('oracle paths must be safe repository paths');
+  // Scope, command and oracle paths (and their ancestors) may never be links; volatile
+  // paths may never be scope or verification inputs.
+  state.guarded = [...new Set([...state.userScope.map(item => item?.path), ...state.commands.flatMap(spec => (spec?.scope ?? []).map(item => item?.path)), ...state.oraclePaths].filter(file => typeof file === 'string'))];
+  for (const file of state.guarded) {
+    const pattern = state.volatile.find(item => file === item || (item.endsWith('/**') && (file === item.slice(0, -3) || file.startsWith(item.slice(0, -2)))));
+    if (pattern) throw new Error(`volatile path ${pattern} intersects simplify scope ${file}`);
+  }
   const key = `${state.root}\0${state.change}`;
   if (activeChanges.has(key)) throw new Error('reuse the existing host session; change history cannot be reset');
   if (options.approved_plan) {
@@ -416,6 +688,7 @@ export function createSimplifyEvidenceSession(options) {
   }
   state.initial = capture(state);
   if (options.approved_plan && options.approved_plan.artifact.metadata.source_revision !== state.initial.revision) throw new Error('approved plan source revision is stale');
+  state.volatileLedger = registerVolatileLedger({ root: state.root, change_ref: state.change, volatile_paths: state.volatile, snapshot: state.initial });
   state.expectedFingerprint = state.initial.fingerprint;
   state.initialDirty = new Set([
     ...git(state, ['diff', 'HEAD', '--name-only', '-z']).split('\0'),
@@ -436,17 +709,23 @@ export function createSimplifyEvidenceSession(options) {
       if (!Array.isArray(edits) || !edits.length || new Set(edits.map(e => e.path)).size !== edits.length) throw new Error('edits must be a non-empty unique file list');
       const candidate = { ...current, files: clone(current.files), bytes: { ...current.bytes } };
       for (const edit of edits) {
-        const file = containedFile(state, edit.path);
+        // Every target is checked before any byte is written, including its link count.
+        const file = assertSingleLinkWriteTarget(state, edit.path);
         if (typeof edit.content !== 'string') throw new Error('source edit content must be text');
         const bytes = Buffer.from(edit.content);
         candidate.bytes[edit.path] = bytes;
-        candidate.files[edit.path] = { kind: 'file', mode: lstatSync(file).mode, sha256: hash(bytes) };
+        candidate.files[edit.path] = { class: 'content', kind: 'file', mode: lstatSync(file).mode, sha256: hash(bytes) };
       }
       actualScope(state, grant, candidate);
       // Host must hold exclusive edit ownership for this synchronous batch. Other
       // writers invalidate snapshots; this API is not an OS filesystem sandbox.
-      for (const edit of edits) writeFileSync(containedFile(state, edit.path), candidate.bytes[edit.path]);
-      grant.edited = true;
+      const window = beginVolatileWindow(state.volatileLedger, 'apply', current);
+      let after;
+      try {
+        for (const edit of edits) writeFileSync(assertSingleLinkWriteTarget(state, edit.path), candidate.bytes[edit.path]);
+        after = capture(state);
+      } finally { endVolatileWindow(window, after); }
+      grant.edited = true; grant.edited_paths = edits.map(edit => edit.path);
       return { evidence_stale: ['test', 'review', 'simplify', 'ship'] };
     },
   });

@@ -93,8 +93,9 @@ inside the selected `file_scope`, not the entire repository by default.
 
 Classify `track_profile` before loading any track-specific ref:
 
-First resolve the first-class artifact track and `review_profile` from the central registry. The stack-specific table below refines executable-code
-reviews only; AI-agent, design, documentation, workflow, product, test, React, Node, fullstack, and general remain durable review profiles rather than orphan sections.
+First resolve the first-class artifact track and `review_profile` from the central registry.
+The stack-specific profile table in `_refs/review/profiles-and-refs.md` refines executable-code reviews only;
+AI-agent, design, documentation, workflow, product, test, React, Node, fullstack, and general remain durable review profiles rather than orphan sections.
 
 For executable-code reviews, read `_refs/review/profiles-and-refs.md` before
 classifying `track_profile` and before loading any track-specific ref. It owns
@@ -184,7 +185,8 @@ Security redaction is mandatory:
 ## Step 4 - Review
 
 1. Read every file inside the selected `file_scope`.
-2. Run applicable probes using the command discipline above.
+2. Run applicable probes using the command discipline in `_refs/review/probes.md`.
+   Load that reference first if Step 3 has not loaded it.
 3. When frontend architecture comparison is active, compare the actual file
    decisions, route/page and child tree, state owners, service/data flow,
    provider scope, declarations/registration, private/public exports, and tests
@@ -275,6 +277,8 @@ When `simplify_context` is present, read the simplification section of
 
 Treat missing post-change verification, changed protected literals, an unreverted failed pass, or `behavior_verification: not-verified` as blocking.
 Review remains read-only and does not widen the simplification scope.
+
+The simplify owner comes from host evidence; the payload identity is only a fallback when that evidence is blocked.
 
 ## Rules
 

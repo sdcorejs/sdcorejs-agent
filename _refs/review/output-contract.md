@@ -87,6 +87,6 @@ Findings rules:
   non-mechanical fixes. Use `user-decision` for product, contract,
   architecture, migration, security-policy, or UX decisions.
 - In table mode, accepted gate values are `BLOCKER`, `REQUIRED`, `ADVISORY`,
-  and `N/A`.
+  and `N/A`. UI findings use the same case-sensitive values in every mode.
 - In quick-table mode, a severity table with no rows must contain `_none_`; do
   not omit the heading.

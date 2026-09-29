@@ -623,9 +623,10 @@ export function evaluateRepairContract(contract = {}, runtime = {}) {
   const finish = evaluateFinishInvocation(contract.finish_context, runtime.finish_runtime, 'repair');
   blockers.push(...finish.blockers);
   const ui = contract.review_context || runtime.ui_review_runtime
-    ? evaluateUiReviewConsumer(contract.review_context, { runtime: runtime.ui_review_runtime, consumer: 'sdcorejs-repair-loop', phase: 'repair' }) : null;
+    ? evaluateUiReviewConsumer(contract.review_context, { runtime: runtime.ui_review_runtime, consumer: 'sdcorejs-repair-loop', phase: 'repair', repair_finding: contract.finding }) : null;
   if (ui) blockers.push(...ui.blockers.map(message => 'UI review: ' + message));
-  if (ui && !contract.review_context?.reported_findings?.some(value => value.id === contract.finding?.id &&
+  // A non-UI finding with an ordinary review_context is NOT APPLICABLE for UI membership.
+  if (ui && ui.status !== 'NOT APPLICABLE' && !contract.review_context?.reported_findings?.some(value => value.id === contract.finding?.id &&
       value.repository_id === contract.finding?.repository_id)) blockers.push('UI repair finding must belong to the observed assessment');
   if (contract.finding?.uiux?.classification === 'aesthetic' &&
       (contract.finding.repair_tier === 'auto' || contract.finding.write_tier === 'auto' || contract.finding.eligible_for_automatic_repair === true)) blockers.push('UI aesthetic preference cannot auto-repair');
@@ -742,8 +743,13 @@ export function evaluateRepairContract(contract = {}, runtime = {}) {
   const simplify = contract.simplify_context === undefined ? null : evaluateSimplifyConsumer(contract.simplify_context, { ...runtime, consumer: 'sdcorejs-repair-loop' });
   if (simplify) {
     blockers.push(...simplify.blockers.map(message => `simplify: ${message}`));
-    if (identity.owner_repository_id !== contract.simplify_context?.artifact_identity?.owner_repository_id) blockers.push('simplify: repair owner mismatch');
-    if (blockers.length === 0) runtime.session.recordRepair();
+    // The owner comes from host evidence (observed receipt, runner receipt or session);
+    // the payload identity is only a fallback when the evidence carries none.
+    const simplifyOwner = simplify.owner_repository_id ?? contract.simplify_context?.artifact_identity?.owner_repository_id;
+    if (identity.owner_repository_id !== simplifyOwner) blockers.push('simplify: repair owner mismatch');
+    // Session evidence closes the in-process ledger; runner and observed evidence
+    // close the chain through the host's repaired flag (simplify_again_allowed: false).
+    if (blockers.length === 0 && runtime.session) runtime.session.recordRepair();
   }
   const latestResult = attemptResults.at(-1) ?? null;
   const unresolved = latestResult !== 'PASSED';

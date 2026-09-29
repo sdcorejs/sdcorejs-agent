@@ -130,6 +130,13 @@ Use `confirmed`, `candidate`, `unknown`, or `new`. Mark paths `candidate` or
 
 For SDCoreJS Angular, prefer Core UI components and name expected components in the spec. If the Core UI fit is unknown, say `candidate` instead of inventing an API.
 
+For greenfield work with no existing UI or design system, the approved spec
+declares `design_requirements.design_baseline: { kind: none, reason }`. Record
+`design_system_reuse.no_baseline` with that reason and the verified spec
+reference, leave `evidence_refs` empty, and keep every mapping `candidate`,
+`unknown` or `new`. Without that approved declaration, cite real sources; see
+`_refs/shared/design-handoff.md`.
+
 ### 3. Produce editable wireframes
 
 Write one HTML or SVG per important screen/state into
