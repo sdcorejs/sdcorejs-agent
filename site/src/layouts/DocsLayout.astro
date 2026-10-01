@@ -1,0 +1,80 @@
+---
+import '../styles/global.css';
+import Search from '../components/Search.astro';
+import { getNavigation, revision } from '../data/navigation';
+import {messages,localeUrl,locales,type Locale} from '../data/i18n';
+interface Props { locale:Locale; pagePath?:string; canonicalPath?:string; title: string; description: string; section?: string; headings?: {depth:number;slug:string;text:string}[]; wide?: boolean; }
+const { locale='vi', pagePath='/', canonicalPath=Astro.url.pathname, title, description, section = messages[locale].docs, headings = [], wide = false } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const ui=messages[locale],navigation=getNavigation(locale);
+const url = (path: string) => localeUrl(locale,path,base);
+const copyUi={copy:ui.copy,copied:ui.copied,copyFailed:ui.copyFailed,copyLabel:ui.copyLabel,tableLabel:ui.tableLabel};
+const current = Astro.url.pathname.replace(/\/$/, '');
+const canonical = new URL(canonicalPath, Astro.site);
+const toc = headings.filter(h => h.depth === 2);
+---
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · SDCoreJS Agent</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0d2748" />
+    <link rel="canonical" href={canonical} />
+    {locales.map(language=><link rel="alternate" hreflang={language} href={new URL(localeUrl(language,pagePath,base),Astro.site)}/>)}
+    <link rel="alternate" hreflang="x-default" href={new URL(localeUrl('vi',pagePath,base),Astro.site)}/>
+    <link rel="icon" type="image/png" href={`${base}/icon.png`} />
+    <meta property="og:title" content={`${title} · SDCoreJS Agent`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={new URL(`${base}/icon.png`, Astro.site).href} />
+  </head>
+  <body data-copy-ui={JSON.stringify(copyUi)}>
+    <a class="skip-link" href="#main">{ui.skip}</a>
+    <header class="topbar">
+      <a class="brand" href={url('/')} aria-label={`SDCoreJS Agent — ${ui.overview}`}>
+        <img src={`${base}/icon.png`} alt="" width="30" height="30" />
+        <span>SDCoreJS <strong>Agent</strong></span><span class="brand-divider">/</span><span class="brand-docs">Docs</span>
+      </a>
+      <div class="top-actions"><Search locale={locale} /><nav class="language-switch" aria-label={ui.languageNav}>{locales.map(language=><a href={localeUrl(language,pagePath,base)} lang={language} hreflang={language} aria-label={language==='vi'?ui.switchVi:ui.switchEn} aria-current={language===locale?'true':undefined}>{language.toUpperCase()}</a>)}</nav><a class="repo-link" href="https://github.com/sdcorejs/sdcorejs-agent">GitHub <span aria-hidden="true">↗</span></a></div>
+    </header>
+    <div class="workspace">
+      <aside class="sidebar">
+        <div class="sidebar-meta"><span class="status-dot" aria-hidden="true"></span> Engineering skill pack</div>
+        <details class="mobile-nav">
+          <summary>{ui.navToggle}</summary>
+          <nav aria-label={ui.mobileNav}>{navigation.map(group => <div class="nav-group"><p>{group.label}</p>{group.items.map(([label,path]) => <a href={url(path)} aria-current={current === url(path).replace(/\/$/,'') ? 'page' : undefined}>{label}</a>)}</div>)}</nav>
+        </details>
+        <nav class="desktop-nav" aria-label={ui.nav}>{navigation.map(group => <div class="nav-group"><p>{group.label}</p>{group.items.map(([label,path]) => <a href={url(path)} aria-current={current === url(path).replace(/\/$/,'') ? 'page' : undefined}>{label}</a>)}</div>)}</nav>
+        <a class="sidebar-source" href={url('/docs/versions/')}><strong>{ui.versionTitle}</strong><span>main · {revision.slice(0,7)}</span><span>{ui.versionLink}</span></a>
+      </aside>
+      <main id="main" tabindex="-1" class:list={['main-content', {wide}]}>
+        <div class="breadcrumb"><a href={url('/')}>Docs</a><span aria-hidden="true">/</span><span>{section}</span></div>
+        <slot />
+        <footer class="page-footer"><span>{ui.footer}</span><a href={url('/docs/versions/')}>{ui.sourceLimits}</a></footer>
+      </main>
+      {toc.length > 0 && <aside class="toc"><nav aria-label={ui.toc}><p>{ui.toc}</p>{toc.map(h => <a href={`#${h.slug}`}>{h.text}</a>)}</nav><div class="toc-note">{ui.tocNote.split('|').map(line=><>{line}<br/></>)}</div></aside>}
+    </div>
+    <script>
+      const ui=JSON.parse(document.body.dataset.copyUi!);
+      document.querySelectorAll('pre').forEach(pre => {
+        const button = document.createElement('button');
+        button.type = 'button'; button.className = 'copy-code'; button.textContent = ui.copy;
+        button.setAttribute('aria-label', ui.copyLabel);
+        button.addEventListener('click', async () => {
+          try { await navigator.clipboard.writeText(pre.querySelector('code')?.textContent ?? ''); button.textContent = ui.copied; }
+          catch { button.textContent = ui.copyFailed; }
+          setTimeout(() => { button.textContent = ui.copy; }, 2500);
+        });
+        pre.append(button);
+      });
+      document.querySelectorAll('.prose table').forEach(table => {
+        const wrap = document.createElement('div'); wrap.className = 'table-scroll'; wrap.tabIndex = 0;
+        wrap.setAttribute('role', 'region'); wrap.setAttribute('aria-label', ui.tableLabel);
+        table.parentNode?.insertBefore(wrap, table); wrap.append(table);
+      });
+    </script>
+  </body>
+</html>

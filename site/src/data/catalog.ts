@@ -1,0 +1,55 @@
+import { readFileSync, readdirSync } from 'node:fs';
+import { resolve, relative } from 'node:path';
+import {englishNotes} from './catalog-en';
+import type {Locale} from './i18n';
+
+type Notes = [string,string,string,string,string,string,string];
+// Editorial guidance is separate from the canonical inventory, which is read at build time.
+const notes: Record<string,Notes> = {
+  'sdcorejs-using-skills':['Workflow','Chọn đúng skill và mức workflow khi bắt đầu phiên.','Intent và instructions của target repo.','Routing, context cần đọc và fallback phù hợp.','Không coi write intent là spec/plan approval.','Dùng SDCoreJS để chọn workflow cho yêu cầu này; nêu nguồn và blockers.','/docs/workflows/'],
+  'sdcorejs-explore':['Workflow','Hiểu repo, code map, trace-flow và context trước khi sửa.','Repo, vùng cần hiểu hoặc câu hỏi cụ thể.','Read-only context; persist summary/conventions chỉ ở action được cho phép.','Missing/stale summary không tự cho phép ghi; không làm technical doc thay Documentation.','Dùng sdcorejs-explore summary-read cho repo này. Không ghi file; nêu phần chưa kiểm chứng.','/docs/quickstart/'],
+  'sdcorejs-brainstorming':['Workflow','Làm rõ yêu cầu và blockers trước spec.','Mục tiêu, nguồn behavior, constraints và non-goals.','Scope được xác nhận, track/profile và inputs cho spec.','Không viết implementation từ scope chưa xác nhận.','Dùng sdcorejs-brainstorming làm rõ feature này; chỉ hỏi blockers cần để viết spec.','/docs/recipes/feature/'],
+  'sdcorejs-spec':['Workflow','Viết và duyệt đặc tả hành vi.','Requirements đã xác nhận và source evidence.','Draft spec, approval và immutable approved snapshot.','Silence không phải approval; không âm thầm sửa snapshot đã duyệt.','Dùng sdcorejs-spec từ requirement đã xác nhận; trình scope và AC để tôi duyệt.','/docs/artifacts/'],
+  'sdcorejs-architecture':['Workflow','Quyết định kiến trúc khi scope thực sự cần.','Approved spec và dấu hiệu architecture significance.','Architecture decisions/artifact hoặc lý do not-applicable rõ ràng.','Không biến thành gate bắt buộc cho mọi việc nhỏ.','Đánh giá change này có cần sdcorejs-architecture không; dẫn evidence về boundary và public contract.','/docs/artifacts/'],
+  'sdcorejs-plan':['Workflow','Chuyển approved intent thành kế hoạch có verification.','Approved spec, architecture khi cần, owned paths và AC.','Numbered units, dependencies, validation map và approved plan snapshot.','Không thay approval bằng lời yêu cầu implement.','Dùng sdcorejs-plan từ approved spec; nối mỗi AC với tasks, paths và verification.','/docs/recipes/feature/'],
+  'sdcorejs-execute-plan':['Workflow','Chọn track và thực thi approved plan.','Verified approved artifacts, scope và runtime capabilities.','Executor/generic harness, execution policy và finish gate.','Unknown stack không tự có kiến thức chuyên biệt; giữ owner và authority.','Thực thi approved plan này bằng sdcorejs-execute-plan; kiểm tra ownership và verification trước writes.','/docs/workflows/'],
+  'sdcorejs-subagent-driven-development':['Workflow','Điều phối fresh workers theo dependency units.','Approved plan, bounded briefs, owned paths và capability evidence.','Safe worker waves hoặc sequential fresh-worker/parent fallback.','Không delegate scope chưa duyệt; không coi adapter metadata là attestation.','Đánh giá delegation cho approved plan này; chỉ chạy waves khi ownership và runtime capability đã được xác minh.','/docs/workflows/'],
+  'sdcorejs-parallel-dispatch':['Workflow','Kiểm tra an toàn của waves và fan-in.','Units, dependencies, exclusive resources và runtime evidence.','Wave verdict, ownership/fan-in protocol và blockers.','Đây là scheduler cấp thấp; không thay lifecycle của delegated executor.','Dùng sdcorejs-parallel-dispatch kiểm tra wave này ở chế độ read-only.','/docs/workflows/'],
+  'sdcorejs-product':['Product & Design','Chuyển mục tiêu thành PRD, stories, AC, UAT và traceability.','Business rules, actors, non-goals và sources.','Product artifacts và ledger trong owning target repo.','Không tạo app code; test execution thuộc Test.','Dùng sdcorejs-product tạo stories và AC cho feature; tách assumptions chưa xác nhận.','/docs/recipes/feature/'],
+  'sdcorejs-design':['Product & Design','Chốt layout, states, interactions và frontend handoff.','Product intent, UI hiện có, tokens/conventions và constraints.','Flows, handoff specs, editable wireframes, verified PNG nếu render.','Không viết production frontend; PNG không thay editable source; independent review thuộc Review.','Dùng sdcorejs-design cải thiện UI này; giữ behavior/components và cho editable handoff.','/docs/recipes/ui/'],
+  'sdcorejs-angular':['Implementation','Triển khai Angular Core UI portal và feature.','Verified approved spec/plan, frontend architecture, design và installed Core UI evidence.','Portal/module/entity/list/detail/actions trong approved paths, tests và finish tail.','Angular thuần dùng generic harness; prototype cần scope rõ, không suy ra production readiness.','Triển khai approved feature bằng sdcorejs-angular; giữ package alias/version và dùng design handoff hiện có.','/angular/'],
+  'sdcorejs-nestjs':['Implementation','Triển khai NestJS module, entity, API và business logic.','Approved spec/plan, API/data contracts và conventions.','Scoped backend code, focused tests, documentation và finish evidence.','Không thêm production SDLC scope ngoài authority.','Dùng sdcorejs-nestjs thực thi approved backend plan; kiểm tra authorization và focused tests.','/docs/recipes/feature/'],
+  'sdcorejs-nextjs':['Implementation','Triển khai website Next.js theo stack thực tế.','Approved spec/plan, router/version, content/design và requirements.','Scoped site code, SEO/i18n/cache theo scope, tests và finish tail.','Audit site thuộc Review; không tự thêm UI libraries/dependencies.','Dùng sdcorejs-nextjs thực thi approved site plan; giữ router và components hiện có.','/docs/workflows/'],
+  'sdcorejs-ai-agent':['Implementation','Author contracts và integration cho ứng dụng AI-agent.','Approved plan/spec, một engine và một capability; trust/tool/eval policies.','Application contracts/code, deterministic evals và ai_agent_context.','Không phải hosted runtime; không gọi live provider; offline evidence tách live evidence.','Làm rõ reporting assistant theo SDCoreJS flow; chốt engine/capability, trust và approvals trước implementation.','/docs/recipes/ai-agent/'],
+  'sdcorejs-test':['Quality','Lập, viết, chạy tests và UI evidence từ requirements.','AC, test layer, runner/environment và auth được phép.','Test plan/cases/runs, UAT và verified UI capture khi thực sự chạy.','Không suy ra live evidence từ fixtures; debug fix thuộc Debug.','Dùng sdcorejs-test kiểm tra AC của change; chạy commands có sẵn và ghi NOT RUN cho environment thiếu.','/docs/recipes/feature/'],
+  'sdcorejs-review':['Quality','Review độc lập, read-only với dimensions phù hợp.','Scope/diff/revision, conventions và rendered evidence nếu có.','Findings có severity, location, impact và verification.','Không tự sửa code; aesthetic preference là advisory; source-only không chứng minh rendered behavior.','Dùng sdcorejs-review audit diff read-only; nêu findings và verification gaps theo evidence hiện có.','/docs/recipes/ui/'],
+  'sdcorejs-repair-loop':['Quality','Xác minh feedback và sửa trong authority của owner.','Findings/report, approved scope, paths/revision và verification.','Scoped repair, rechecks hoặc revision-bound pushback/escalation.','Không coi feedback là fact; không sửa API migration chưa duyệt.','Dùng sdcorejs-repair-loop xác minh findings đã chọn và sửa trong authority hiện có; rerun focused checks.','/docs/recipes/debug/'],
+  'sdcorejs-debug':['Quality','Tìm root cause từ repro, log và failing behavior.','Expected/actual, failing command và source scope.','Diagnosis có evidence, scoped fix và regression verification.','Không fast-fix bằng phỏng đoán; không xóa tests để xanh.','Dùng sdcorejs-debug cho repro này; xác minh cause trước fix và giữ contracts hiện có.','/docs/recipes/debug/'],
+  'sdcorejs-simplify':['Quality','Làm rõ executable source trong scope, giữ hành vi.','Diff/explicit scope; green focused baseline cho apply.','Read-only analysis hoặc opt-in refinements và cùng verification rerun.','Docs/prompts/config/strings/tests/contracts/dependencies được bảo vệ; tests không là semantic-equivalence proof.','Dùng sdcorejs-simplify analyze-current-diff, read-only; giữ behavior và loại protected surfaces.','/docs/capabilities/'],
+  'sdcorejs-documentation':['Delivery','Viết technical docs, guides, comments và requirement records từ nguồn.','Source code/API/artifacts hoặc verified UI evidence cho guide.','Scoped docs, correct links và explicit limitations.','Project summary thuộc Explore; product/design/test artifacts có owners riêng.','Dùng sdcorejs-documentation viết technical doc từ source này; không invent behavior và kiểm tra links.','/docs/artifacts/'],
+  'sdcorejs-ship':['Delivery','Kiểm tra readiness, validation và convergence trước handoff.','Approved scope, current source, test/review/docs và required artifacts.','Verification evidence, convergence và final read-only branch-ready.','Không phải tự động deploy; writes sau branch-ready buộc rerun gate.','Dùng sdcorejs-ship kiểm tra readiness read-only; ghi blockers và checks chưa chạy.','/docs/artifacts/'],
+  'sdcorejs-git':['Delivery','Tạo Git artifacts sau required readiness evidence.','Current branch/diff, required artifacts, ship evidence và authorization.','Stage/commit/PR hoặc Git action đúng phạm vi được cho phép.','Không suy ra quyền push/merge/deploy từ readiness; không sở hữu convention generation.','Dùng sdcorejs-git đọc trạng thái và đề xuất handoff; chưa commit/push/PR khi chưa được cho phép.','/docs/artifacts/'],
+};
+
+const root = resolve(process.cwd(), '..');
+function walk(dir:string):string[] {
+  return readdirSync(dir,{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?walk(resolve(dir,entry.name)):entry.name.endsWith('.md')?[resolve(dir,entry.name)]:[]);
+}
+export const skills = walk(resolve(root,'skills')).flatMap(path=>{
+  const body=readFileSync(path,'utf8');
+  const id=body.match(/^name: (.+)$/m)?.[1].trim();
+  if(!id)return [];
+  const note=notes[id];
+  if(!note)throw new Error(`Missing editorial reference for ${id}`);
+  const [group,summary,input,output,boundary,prompt,recipe]=note;
+  return [{id,group,summary,input,output,boundary,prompt,recipe,path:relative(root,path).replace(/\\/g,'/')}];
+});
+if(skills.length!==Object.keys(notes).length || new Set(skills.map(s=>s.id)).size!==skills.length) throw new Error('Skill reference inventory drift');
+export const groups=[...new Set(skills.map(s=>s.group))];
+if(Object.keys(englishNotes).length!==skills.length || skills.some(s=>!englishNotes[s.id])) throw new Error('English skill reference inventory drift');
+export function getSkills(locale:Locale) {
+  return locale==='vi'?skills:skills.map(skill=>{
+    const [group,summary,input,output,boundary,prompt,recipe]=englishNotes[skill.id];
+    return {...skill,group,summary,input,output,boundary,prompt,recipe};
+  });
+}

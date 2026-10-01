@@ -1,0 +1,6 @@
+---
+import LegacyRedirect from '../../components/LegacyRedirect.astro';
+import {skills} from '../../data/catalog';
+export function getStaticPaths(){return skills.map(skill=>({params:{slug:skill.id}}));}
+---
+<LegacyRedirect path={`/skills/${Astro.params.slug}/`}/>

@@ -1,0 +1,32 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import {revision} from '../data/navigation';
+import {home} from '../data/home';
+import {messages,localeUrl,type Locale} from '../data/i18n';
+const {locale}=Astro.props as {locale:Locale};
+const h=home[locale],ui=messages[locale];
+const url=(path:string)=>localeUrl(locale,path);
+---
+<DocsLayout locale={locale} pagePath="/" title={h.title} description={h.description} section={ui.overview} wide>
+  <section class="home-intro">
+    <p class="eyebrow">{h.eyebrow}</p>
+    <h1>{h.headline1}<br/>{h.headline2}</h1>
+    <p class="lead">{h.lead}</p>
+    <div class="actions"><a class="button primary" href={url('/docs/quickstart/')}>{h.start} <span aria-hidden="true">→</span></a><a class="button" href={url('/docs/workflows/')}>{h.workflow}</a></div>
+    <div class="source-strip"><span class="status-dot" aria-hidden="true"></span><span>{h.snapshot} · {revision.slice(0,7)}</span><span aria-hidden="true">/</span><a href={url('/docs/versions/')}>{h.versions}</a></div>
+  </section>
+  <section aria-labelledby="task-title">
+    <div class="section-title"><h2 id="task-title">{h.taskTitle}</h2><a href={url('/docs/workflows/')}>{h.allWorkflows}</a></div>
+    <div class="task-grid">{h.tasks.map(([symbol,title,description,path,label])=><a class="task-card" href={url(path)}><span class="card-symbol" aria-hidden="true">{symbol}</span><h3>{title}</h3><p>{description}</p><span class="card-link">{label} <span aria-hidden="true">→</span></span></a>)}</div>
+  </section>
+  <section aria-labelledby="flow-title">
+    <div class="section-title"><h2 id="flow-title">{h.flowTitle}</h2><a href={url('/docs/artifacts/')}>{h.approvals}</a></div>
+    <div class="workflow-strip">{h.steps.map(([n,title,detail,path])=><a href={url(path)}><span class="step-index">{n}</span><strong>{title}</strong><small>{detail}</small></a>)}</div>
+    <p class="flow-note">{h.flowNote}</p>
+  </section>
+  <div class="split-section">
+    <section><h2>{h.capabilityTitle}</h2><div class="capability-lines"><div><strong>Product & Design</strong><span>PRD, AC, flows, wireframes, handoff</span></div><div><strong>Implementation</strong><span>Angular Core UI, NestJS, Next.js, AI-agent</span></div><div><strong>Quality & Delivery</strong><span>Tests, review, repair, docs, readiness</span></div></div><p><a href={url('/skills/')}>{h.skillLink}</a></p></section>
+    <section class="recipe-preview"><p class="eyebrow">{h.recipeEyebrow}</p><h2>{h.recipeTitle}</h2><p>{h.recipeBody}</p><a href={url('/docs/recipes/feature/')}>{h.recipeLink}</a></section>
+  </div>
+  <div class="notice"><p>{h.notice}</p></div>
+</DocsLayout>

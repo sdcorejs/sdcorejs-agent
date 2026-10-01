@@ -121,7 +121,8 @@ test('phase 1: retired standalone skills and exclusive refs stay absent from act
     '.github/copilot-instructions.md',
     '.github/chatmodes/sdcorejs.chatmode.md',
     '.cursor/rules/sdcorejs-agent.mdc',
-    'site/src/components/SkillCatalog.astro',
+    'site/src/data/catalog.ts',
+    'site/src/data/catalog-en.ts',
   ];
   for (const path of activeSurfacePaths) {
     const text = await readFile(new URL(`../../${path}`, import.meta.url), 'utf8');

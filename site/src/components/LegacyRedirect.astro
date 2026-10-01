@@ -1,0 +1,6 @@
+---
+import {localeUrl} from '../data/i18n';
+const {path='/'}=Astro.props;
+const vi=localeUrl('vi',path),en=localeUrl('en',path);
+---
+<!doctype html><html lang="vi"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta http-equiv="refresh" content={`0;url=${vi}`}/><link rel="canonical" href={new URL(vi,Astro.site)}/><title>Tiếp tục tới tài liệu · Continue to documentation</title></head><body><main id="main"><h1>Tiếp tục tới tài liệu</h1><p><a href={vi}>Mở trang này bằng tiếng Việt</a></p><p lang="en"><a href={en}>Read this page in English</a></p></main></body></html>

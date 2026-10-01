@@ -17,7 +17,7 @@ export default defineConfig({
     inlineStylesheets: 'auto',
   },
   compressHTML: true,
+  markdown: { shikiConfig: { theme: 'github-light' } },
   // No integrations, no UI framework. The site is intentionally tiny —
-  // vanilla Astro + scoped CSS + a few CSS animations + IntersectionObserver
-  // for scroll reveals. Keeps the build fast and the output footprint small.
+  // vanilla Astro + CSS + small progressive interactions for docs/search.
 });
