@@ -64,6 +64,14 @@ After implementation, complete tests, review/repair for findings, docs/traceabil
 
 `branch-ready` is the final read-only gate. If code/docs are written afterward, rerun it before Git handoff. `sdcorejs-git` creates commits/PRs or Git actions only within existing authority; readiness does not authorize publication or deployment.
 
+## Communication Economy Policy
+
+This policy helps teams receive concise, complete responses while preserving evidence. The `compact`, `standard` and `detailed` profiles adjust detail; approval, security, destructive actions, ambiguity, blockers and failed verification need full explanations. The policy does not promise token or cost reduction.
+
+**Runtime context** preserves the full typed information, scope, IDs, hashes and evidence required by the consumer. **User projection** presents what the user needs to understand the outcome and next decision. When `runtime_context_channel` is unsupported or unknown, a **portable handoff** preserves the exact consumer-required fields and bounded artifact/evidence references. Preserve authority and evidence relationships; do not copy full artifact bodies into the handoff or user response.
+
+For example, an ordinary progress update needs an outcome and blockers. Before approval or handoff, request explicit scope, checks run/skipped and limits. Read the [canonical policy](https://github.com/sdcorejs/sdcorejs-agent/blob/ac820d70bd247a04f977aab9bbb864f6a054acb7/_refs/harness/communication-economy.md) for this version's profiles and fallback.
+
 ## Handoff checklist
 
 - Does the implemented scope match the spec/plan and approved revision?

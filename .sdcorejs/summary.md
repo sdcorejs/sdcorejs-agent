@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-09-09T16:17:05.274Z
+generated_at: 2026-10-01T16:11:20.631Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks: [workflow, ai-agent, angular, nestjs, nextjs, product, design, test]
@@ -14,7 +14,7 @@ evidence:
   key_entrypoints: [AGENTS.md, CLAUDE.md, skills/orchestration/using-skills.md, scripts/sync-skills.mjs, plugin/hooks/session-start, .github/copilot-instructions.md, .cursor/rules/sdcorejs-agent.mdc, site/src/pages/index.astro]
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:c34b1446a6ed73b9102cfa6a204e2133705cc6e9abaf65a992f93133c8bc5718
+  dependency_manifests: sha256:49daa2e6daf2c89051642de620b240ebc9d612215314703641e9320794f81f13
   source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
@@ -68,7 +68,9 @@ for routine work.
 - The root package is private and uses npm.
 - Most source assets are Markdown instructions plus small JavaScript helpers.
 - Tests use the built-in Node.js test runner.
-- The documentation site is an Astro workspace under `site/`.
+- The documentation site is an Astro workspace under `site/`, with matching
+  `/vi/` and `/en/` guides, skill references and locale-specific search indexes.
+  Former unprefixed URLs remain HTML aliases to their Vietnamese counterpart.
 - Git hooks are installed through Lefthook during package preparation.
 - No package-manager workspace declaration couples the root and site packages.
 
@@ -96,7 +98,7 @@ Dependency evidence:
 | Cursor adapter | `.cursor/rules/` | Generated repository rule | `.cursor/rules/sdcorejs-agent.mdc` | `AGENTS.md` |
 | Copilot adapter | `.github/` | Copilot instructions and chat mode | `.github/copilot-instructions.md` | canonical policy |
 | Contract tests | `test/e2e/` | Routing, mirror, protocol, and golden tests | `test/e2e/skill-pack-runner.test.mjs` | all pack surfaces |
-| Documentation site | `site/` | Public skill-pack documentation | `site/src/pages/index.astro` | published behavior |
+| Documentation site | `site/` | Bilingual guides, workflows and skill references | `site/src/pages/[locale]/index.astro`; root `index.astro` is a legacy alias | canonical skill inventory and pinned source snapshots |
 | Durable context | `.sdcorejs/` | Approved specs, plans, docs, memories, summary | `.sdcorejs/summary.md` | lifecycle rules |
 
 ## Entrypoints and Main Runtime Flows
@@ -185,6 +187,9 @@ canonical source and rerun synchronization.
 - `npm run check:text-hygiene` checks encoding and source-language hygiene.
 - `npm run check:nestjs-pack` performs NestJS pack-specific checks.
 - `npm run build:site` builds the Astro documentation site.
+- `npm --prefix site run check:links` validates the built VI/EN routes, language
+  links, translation structure, local assets and pinned source paths. Run it
+  after build with the same `SITE_BASE`.
 - `npm run check:audit` audits root production dependencies.
 - `npm run check:site:audit` audits site production dependencies.
 
@@ -266,7 +271,7 @@ canonical source and rerun synchronization.
 | Change finish behavior | `_refs/shared/finish-gate.md` | `_refs/orchestration/tail/` |
 | Change mirror generation | `scripts/sync-skills.mjs` | `MIRROR_POLICY.md` |
 | Add repository contracts | `test/e2e/` | support fixtures and adapters |
-| Change public documentation | `site/src/` | `npm run build:site` |
+| Change public documentation | `site/src/`, `site/README.md` | `npm run build:site`; `npm --prefix site run check:links`; corresponding VI/EN content and browser checks |
 
 ## Known Unknowns
 

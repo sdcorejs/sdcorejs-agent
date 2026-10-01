@@ -1663,7 +1663,11 @@ test('public documentation and site describe the communication contract without 
     ])
   ));
   const combined = Object.values(documents).join('\n');
-  const site = await readFile(path.join(root, 'site/src/pages/index.astro'), 'utf8');
+  const siteVersions = await Promise.all([
+    'site/src/content/docs/artifacts.md',
+    'site/src/content/en/docs/artifacts.md',
+  ].map(relativePath => readFile(path.join(root, relativePath), 'utf8')));
+  const site = siteVersions.join('\n');
 
   for (const relativePath of [
     'README.md',
@@ -1697,13 +1701,15 @@ test('public documentation and site describe the communication contract without 
   assert.match(documents['TESTING.md'], /test:e2e:communication-economy/);
   assert.match(documents['VALIDATION.md'], /report:communication-economy/);
 
-  assert.match(site, /Communication Economy Policy/);
-  assert.match(site, /compact/i);
-  assert.match(site, /standard/i);
-  assert.match(site, /detailed/i);
-  assert.match(site, /portable handoff/i);
-  assert.match(site, /runtime context/i);
-  assert.match(site, /user projection/i);
+  for (const version of siteVersions) {
+    assert.match(version, /Communication Economy Policy/);
+    assert.match(version, /compact/i);
+    assert.match(version, /standard/i);
+    assert.match(version, /detailed/i);
+    assert.match(version, /portable handoff/i);
+    assert.match(version, /runtime context/i);
+    assert.match(version, /user projection/i);
+  }
 
   assert.doesNotMatch(
     combined + site,

@@ -259,11 +259,17 @@ test('simplify: package, mirrors, refs, catalog, and dependency boundary agree o
   const publicSources = await Promise.all([
     'README.md',
     'VALIDATION.md',
-    'site/src/components/SkillCatalog.astro',
-    'site/src/pages/index.astro',
     'site/README.md',
   ].map(file => readFile(join(ROOT, file), 'utf8')));
   assert.ok(publicSources.every(source => /\b23\b/.test(source)), 'public inventories show 23');
+
+  for (const catalogPath of ['site/src/data/catalog.ts', 'site/src/data/catalog-en.ts']) {
+    const catalog = await readFile(join(ROOT, catalogPath), 'utf8');
+    const ids = [...catalog.matchAll(/^\s{2}'(sdcorejs-[^']+)':/gm)].map(match => match[1]);
+    assert.equal(ids.length, 23, `${catalogPath} documents all public skills`);
+    assert.equal(new Set(ids).size, 23, `${catalogPath} has unique skill identities`);
+    assert.ok(ids.includes('sdcorejs-simplify'), `${catalogPath} includes simplify`);
+  }
 
   const lock = JSON.parse(await readFile(join(ROOT, 'package-lock.json'), 'utf8'));
   assert.equal(lock.packages[''].version, '0.8.0');

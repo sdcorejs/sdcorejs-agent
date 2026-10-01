@@ -64,6 +64,14 @@ Sau implementation, hoàn tất tests, review/repair khi có findings, docs/trac
 
 `branch-ready` là gate read-only cuối. Nếu còn ghi code/docs sau đó, phải chạy lại trước Git handoff. `sdcorejs-git` chỉ tạo commit/PR hoặc thao tác Git theo authority đã có; readiness không phải quyền tự publish/deploy.
 
+## Communication Economy Policy
+
+Policy này giúp team nhận câu trả lời gọn, đủ ý và giữ nguyên bằng chứng. Các profile `compact`, `standard` và `detailed` điều chỉnh mức chi tiết; approval, security, thao tác destructive, ambiguity, blockers và verification thất bại cần giải thích đầy đủ. Đây không phải cam kết giảm token hay chi phí.
+
+**Runtime context** giữ đầy đủ thông tin có kiểu, scope, IDs, hashes và evidence cho consumer. **User projection** chỉ trình bày phần cần thiết để người dùng hiểu kết quả và quyết định tiếp theo. Khi `runtime_context_channel` là unsupported hoặc unknown, **portable handoff** giữ đúng các fields consumer yêu cầu và các tham chiếu artifact/evidence trong phạm vi cần thiết. Giữ authority và liên kết bằng chứng; không copy toàn bộ artifact bodies vào handoff hoặc phần trả lời cho người dùng.
+
+Ví dụ: yêu cầu update tiến độ thường chỉ cần outcome và blocker; trước approval hoặc bàn giao, yêu cầu nêu rõ scope, checks đã chạy/chưa chạy và giới hạn. Xem [canonical policy](https://github.com/sdcorejs/sdcorejs-agent/blob/ac820d70bd247a04f977aab9bbb864f6a054acb7/_refs/harness/communication-economy.md) để biết profile và fallback của phiên bản này.
+
 ## Checklist khi nhận kết quả
 
 - Scope thực thi có khớp spec/plan và approved revision không?
