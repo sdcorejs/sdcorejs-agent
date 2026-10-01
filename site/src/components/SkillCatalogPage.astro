@@ -1,0 +1,23 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import {getSkills,groups} from '../data/catalog';
+import {messages,format,localeUrl,type Locale} from '../data/i18n';
+const {locale}=Astro.props as {locale:Locale};
+const skills=getSkills(locale),ui=messages[locale];
+const url=(path:string)=>localeUrl(locale,path);
+---
+<DocsLayout locale={locale} pagePath="/skills/" title={ui.catalogTitle} description={ui.catalogDescription} section={ui.catalogTitle} wide>
+  <header class="page-header"><p class="eyebrow">Skill reference</p><h1>{ui.catalogHeading}</h1><p class="lead">{format(ui.catalogLead,skills.length)}</p></header>
+  <div class="catalog-controls" data-ui={JSON.stringify({count:ui.catalogCount,empty:ui.catalogEmpty})}><label>{ui.catalogQuery}<input type="search" id="skill-query" placeholder={ui.catalogPlaceholder} /></label><label>{ui.catalogGroup}<select id="skill-group"><option value="">{ui.catalogAll}</option>{groups.map(group=><option>{group}</option>)}</select></label></div>
+  <p id="catalog-status" role="status" aria-live="polite">{format(ui.catalogCount,skills.length)}</p>
+  <div class="catalog-list">{skills.map(skill=><article class="catalog-card" data-group={skill.group} data-search={`${skill.id} ${skill.summary} ${skill.input} ${skill.output} ${skill.boundary}`}><small>{skill.group}</small><h2><a href={url(`/skills/${skill.id}/`)}>{skill.id}</a></h2><p>{skill.summary}</p><a href={url(`/skills/${skill.id}/`)}>{ui.catalogLink} <span aria-hidden="true">→</span></a></article>)}</div>
+  <noscript><p>{ui.catalogNoJs}</p></noscript>
+</DocsLayout>
+<script>
+  const ui=JSON.parse(document.querySelector<HTMLElement>('.catalog-controls')!.dataset.ui!);
+  const query=document.querySelector<HTMLInputElement>('#skill-query')!,group=document.querySelector<HTMLSelectElement>('#skill-group')!;
+  const cards=[...document.querySelectorAll<HTMLElement>('.catalog-card')];
+  const normalize=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');
+  function filter(){let count=0;const words=normalize(query.value).trim().split(/\s+/).filter(Boolean);cards.forEach(card=>{const match=(!group.value||group.value===card.dataset.group)&&words.every(w=>normalize(card.dataset.search!).includes(w));card.hidden=!match;if(match)count++;});document.querySelector('#catalog-status')!.textContent=count?ui.count.replace('{count}',String(count)):ui.empty;}
+  query.addEventListener('input',filter);group.addEventListener('change',filter);
+</script>

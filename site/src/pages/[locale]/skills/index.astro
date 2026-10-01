@@ -1,0 +1,6 @@
+---
+import SkillCatalogPage from '../../../components/SkillCatalogPage.astro';
+import {locales} from '../../../data/i18n';
+export function getStaticPaths(){return locales.map(locale=>({params:{locale}}));}
+---
+<SkillCatalogPage locale={Astro.params.locale}/>

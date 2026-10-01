@@ -1,0 +1,7 @@
+---
+import SkillReferencePage from '../../../components/SkillReferencePage.astro';
+import {skills} from '../../../data/catalog';
+import {locales} from '../../../data/i18n';
+export function getStaticPaths(){return locales.flatMap(locale=>skills.map(skill=>({params:{locale,slug:skill.id}})));}
+---
+<SkillReferencePage locale={Astro.params.locale} id={Astro.params.slug}/>

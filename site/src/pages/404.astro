@@ -1,0 +1,9 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import {messages,localeUrl} from '../data/i18n';
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+---
+<DocsLayout locale="vi" pagePath="/404/" canonicalPath={`${base}/404.html`} title="Không tìm thấy trang · Page not found" description="Quay lại tài liệu · Return to documentation" section="404" wide>
+  <h1>Không tìm thấy trang</h1><p>{messages.vi.notFoundBody}</p><div class="actions"><a class="button primary" href={localeUrl('vi','/')}>{messages.vi.homeLink}</a><a class="button" href={localeUrl('vi','/skills/')}>{messages.vi.skillsLink}</a></div>
+  <section lang="en"><h2>Page not found</h2><p>{messages.en.notFoundBody}</p><div class="actions"><a class="button primary" href={localeUrl('en','/')}>{messages.en.homeLink}</a><a class="button" href={localeUrl('en','/skills/')}>{messages.en.skillsLink}</a></div></section>
+</DocsLayout>

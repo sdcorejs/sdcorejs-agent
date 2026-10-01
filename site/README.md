@@ -1,76 +1,94 @@
-# Doc site - SDCoreJS Agent
+# SDCoreJS Agent documentation site
 
-The presenter-deck documentation site for the SDCoreJS skill pack, hosted on GitHub Pages.
+Task-oriented Vietnamese and English docs for developers and team leads. Astro 7
+static HTML, vanilla CSS and small progressive JavaScript interactions; no UI
+framework or new dependency. Blue/orange identity and system fonts are retained.
 
-- Tech: [Astro](https://astro.build/) static, vanilla CSS, no UI framework, no Tailwind, no JS framework.
-- Theme: light only. Palette derived from the brand logo, with per-track accent colors.
-- Output: pure HTML/CSS/JS in `dist/`, deployed by `.github/workflows/deploy-site.yml`.
+## Local preview
 
-## Local development
+From `site/`, with Node.js >=22.12.0:
 
 ```bash
-cd site
-npm install        # one-time
-npm run dev        # http://localhost:4321
-npm run build      # output -> site/dist/
-npm run preview    # serve the built dist locally
+npm ci
+npm run build
+npm run check:links
+npm run preview -- --host 127.0.0.1 --port 4321
 ```
 
-The dev server uses Astro's default base `/`. The production build uses
-`/sdcorejs-agent/` (set in `astro.config.mjs`) because GitHub Pages serves repo
-sites under `<owner>.github.io/<repo>/`. The CI workflow overrides via
-`SITE_BASE` if the repo is renamed.
+Vietnamese: `http://127.0.0.1:4321/sdcorejs-agent/vi/`.
+English: `http://127.0.0.1:4321/sdcorejs-agent/en/`.
+Both dev and production use `SITE_BASE`, default `/sdcorejs-agent/`. Override
+`SITE_BASE=/` for a root-mounted build and pass the same environment to the
+checker. Astro 7 can run preview in the background; use
+`npm run astro -- preview status` and `npm run astro -- preview stop` when needed.
+The preview is local to the host; it is not an iOS-accessible public URL.
 
-## Sections
+## Information architecture and locales
 
-The home page is a no-scroll presentation deck. It advances with Back/Next
-buttons instead of vertical page scrolling, so each screen can be used directly
-in a stakeholder presentation.
+Every content route has `/vi/` and `/en/` counterparts: 37 pages per language.
+The native language links retain the corresponding page. Each page emits its
+own canonical URL and alternate language links, with Vietnamese as `x-default`.
+The paths below follow either locale prefix:
 
-1. **Opening** - promise, pack stats, and audience framing.
-2. **Problem** - why prompt-only coding is not enough.
-3. **Input context** - images, PRD, API docs, code, logs, and constraints.
-4. **5-step SDLC** - discovery, spec, plan, dispatch, finish.
-5. **Explore** - project-context, summary, docs, memories, tasks, persona.
-6. **Spec gate** - explicit approval before planning.
-7. **Plan gate** - file-by-file plan and sequential/parallel choice.
-8. **Track dispatch** - product, design, angular, nestjs, nextjs, test, generic.
-9. **Finish gate** - tests, documentation choice, opt-in behavior-preserving
-   simplification, review, then the ordered docs/tasks/memories and ship tail.
-10. **Memory handoff** - auto-docs, task tracker, memories, persona.
-11. **Claude setup** - install and smoke prompts.
-12. **Codex setup** - AGENTS.md-compatible usage and smoke prompts.
-13. **Skill pack tests** - local verification commands.
-14. **Angular Portal usage** - Core UI, code-map, autoId, permissions, tests, docs.
-15. **Short prompt examples** - simple real prompts plus the rule that the agent auto-loads context and asks when context is missing or contradictory.
-16. **Safety behavior** - agent asks when context is missing or contradictory.
-17. **Demo script** - a short presenter flow.
-18. **Closing** - context -> spec -> plan -> execute -> verify -> remember.
+- `/`: orientation and task-based starting points.
+- `/docs/capabilities/`: outcomes, tracks, eligibility and scope boundaries.
+- `/docs/quickstart/`: source-backed installation paths and smoke prompts.
+- `/docs/workflows/`: choose the owner from the problem and required output.
+- `/docs/recipes/`: feature, UI, debug and AI-agent examples.
+- `/skills/`: searchable/filterable catalog and 23 public skill references.
+- `/angular/`: Angular adoption guide.
+- `/docs/artifacts/`: approval, ownership, artifact layout and evidence layers.
+- `/docs/troubleshooting/`: installation/context/gate/environment diagnosis.
+- `/docs/versions/`: main snapshot, candidate boundary and evidence limits.
 
-The home page is intentionally page-local in `src/pages/index.astro` because it
-is a presentation deck. Shared shell pieces remain in `src/components/`.
-The deck locks body scrolling on the home page and uses local button state for
-slide navigation.
+The 37 former unprefixed content URLs are static HTML aliases that redirect to
+their Vietnamese counterpart with a meta refresh and visible VI/EN links.
+These are not HTTP 301 redirects. Each locale has a `/404/` help page; the global
+`404.html` includes both languages because static hosting has one fallback file.
 
-## Current facts reflected by the site
+## Maintain content
 
-- 23 dispatchable public skills; internal skill-authoring is not distributed.
-- 8 executor tracks: AI-agent, product, design, angular, nestjs, nextjs, test, generic.
-- 2 always-present approval gates: spec and plan.
-- 1 conditional architecture gate plus validation-map and convergence checks.
-- 12 deterministic E2E smoke checks.
-- Current scope boundary: verified local delivery is covered; production SDLC expansion needs explicit approval/spec/plan.
+Author UTF-8 Markdown in `src/content/docs/` and corresponding English files in
+`src/content/en/docs/`, with matching `slug` and localized `title`/`description`.
+Angular guides live in `src/content/angular.md` and `src/content/en/angular.md`.
+Use site-root Markdown links such as `[Quickstart](/docs/quickstart/)`.
+`src/data/content.ts` rewrites compiled page links under the configured base and
+current locale; static assets retain the base without a locale. Do not pre-add
+the base or locale to authored links. Astro's Markdown processor stays in place.
 
-## Branding assets
+`src/data/navigation.ts` owns navigation and the pinned source snapshot.
+`src/data/catalog.ts` reads canonical skill names/paths and pairs them with
+Vietnamese notes; `catalog-en.ts` holds English input/output/boundary/prompt
+notes for the same 23 skills. Inventory drift fails the build. `home.ts` holds
+localized overview content, and `i18n.ts` holds shared UI and state messages.
+Runtime skills and generated mirrors are read-only inputs. Updating a revision
+requires factual review of claims, commands and boundaries in both languages;
+changing only the link hash is insufficient. Main snapshots and candidates must
+remain clearly distinguished from verified releases.
 
-`public/icon.png` and `public/logo-text.png` are copies of the originals in the
-repo's `images/` directory. The `public/flow-*.svg` files are small diagram
-assets used by the SDLC flow board. `public/skill-flow-summary.png` is the
-large summary workflow image used on the final presenter slide.
+Static `vi/search-index.json` and `en/search-index.json` each cover all 37 pages,
+including Angular body text and skill notes. Search results stay in the active
+locale. The modal supports Tab/Enter/Escape and `/`; search and catalog filtering
+normalize Vietnamese accents. Navigation, guides, language links and all skill
+references remain accessible without JavaScript. Native `<details>` provides
+mobile navigation; code remains selectable if clipboard access fails.
 
-## A note on caching
+## Verification
 
-GitHub Pages serves static files only: no Next.js SSR, no ISR, and no configurable
-cache TTL. Pages' default `Cache-Control` is `max-age=600` for HTML and immutable
-for hashed assets. If a longer cache is needed later, deploy this site to Vercel
-or Netlify where ISR and custom headers are first-class.
+Build first, then run `npm run check:links` with the same `SITE_BASE`. The checker
+validates HTML links/assets/fragments, both locale route sets and search indexes,
+language-switch targets, canonical/alternate links, legacy aliases, main
+landmarks, encoding and 40 pinned GitHub source paths against local Git objects.
+It also checks the 12 Markdown pairs for section counts, source URL parity and
+unchanged executable Bash/PowerShell blocks. These structural checks do not
+prove translation quality, external HTTP availability or WCAG conformance.
+
+For UI edits, inspect both languages at desktop, 390px mobile and 320px reflow.
+Exercise keyboard navigation, search empty/loading/error states, focus return,
+filters, clipboard, language-switch page retention and no-JavaScript fallbacks.
+Capture real local-preview screenshots. Screen-reader and real iOS/Safari checks
+need separate evidence.
+
+The existing Pages workflow deploys source built from `main`. Publishing requires
+an explicitly authorized Git delivery; a local build or ZIP does not publish it.
+This site adds no tracking, hosting service or paid dependency.

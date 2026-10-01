@@ -1,0 +1,15 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import {withLocale} from '../../../data/content';
+import {getDocs} from '../../../data/pages';
+import {locales,messages,type Locale} from '../../../data/i18n';
+export function getStaticPaths(){return locales.flatMap(locale=>getDocs(locale).map(page=>({params:{locale,slug:page.frontmatter.slug},props:{page}})));}
+const {page}=Astro.props;
+const locale=Astro.params.locale as Locale,ui=messages[locale];
+const {frontmatter,getHeadings}=page;
+const html=withLocale(await page.compiledContent(),import.meta.env.BASE_URL.replace(/\/$/,''),locale);
+---
+<DocsLayout locale={locale} pagePath={`/docs/${frontmatter.slug}/`} title={frontmatter.title} description={frontmatter.description} section={frontmatter.section??frontmatter.title} headings={getHeadings()}>
+  <header class="page-header"><p class="eyebrow">{frontmatter.kicker??ui.guide}</p><h1>{frontmatter.title}</h1><p class="lead">{frontmatter.description}</p></header>
+  <article class="prose" set:html={html}/>
+</DocsLayout>

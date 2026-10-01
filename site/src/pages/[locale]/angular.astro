@@ -1,0 +1,12 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import * as vi from '../../content/angular.md';
+import * as en from '../../content/en/angular.md';
+import {withLocale} from '../../data/content';
+import {locales,messages,type Locale} from '../../data/i18n';
+export function getStaticPaths(){return locales.map(locale=>({params:{locale}}));}
+const locale=Astro.params.locale as Locale,ui=messages[locale];
+const {compiledContent,frontmatter,getHeadings}=locale==='vi'?vi:en;
+const html=withLocale(await compiledContent(),import.meta.env.BASE_URL.replace(/\/$/,''),locale);
+---
+<DocsLayout locale={locale} pagePath="/angular/" title={frontmatter.title} description={frontmatter.description} section="Angular Core UI" headings={getHeadings()}><header class="page-header"><p class="eyebrow">{ui.implementationGuide}</p><h1>{frontmatter.title}</h1><p class="lead">{frontmatter.description}</p></header><article class="prose" set:html={html}/></DocsLayout>

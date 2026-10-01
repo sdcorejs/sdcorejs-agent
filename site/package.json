@@ -3,10 +3,11 @@
   "version": "0.8.0",
   "private": true,
   "type": "module",
-  "description": "Showcase site for the SDCoreJS engineering skill pack.",
+  "description": "Task-oriented documentation for the SDCoreJS engineering skill pack.",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "check:links": "node scripts/check-site.mjs",
     "check:audit": "npm audit --omit=dev",
     "preview": "astro preview",
     "astro": "astro"

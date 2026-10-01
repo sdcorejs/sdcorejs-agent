@@ -1,0 +1,66 @@
+---
+import {messages,localeUrl,type Locale} from '../data/i18n';
+const {locale}=Astro.props as {locale:Locale};
+const ui=messages[locale];
+const url=(path:string)=>localeUrl(locale,path);
+---
+<a class="search-trigger" href={url('/skills/')} aria-label={ui.search} data-search-trigger><span class="search-label">{ui.search}</span><svg class="search-icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m15 15 5 5" stroke="currentColor" stroke-width="1.8"/></svg> <kbd>/</kbd></a>
+<dialog class="search-dialog" aria-labelledby="search-title" data-search-index={url('/search-index.json')} data-ui={JSON.stringify({ready:ui.searchReady,loading:ui.searchLoading,count:ui.searchCount,empty:ui.searchEmpty,error:ui.searchError})}>
+  <div class="search-heading"><h2 id="search-title">{ui.searchTitle}</h2><button type="button" class="search-close" aria-label={ui.searchClose}>✕</button></div>
+  <label for="docs-query">{ui.searchLabel}</label>
+  <input id="docs-query" type="search" placeholder={ui.searchPlaceholder} autocomplete="off" />
+  <p class="search-status" role="status" aria-live="polite">{ui.searchInitial}</p>
+  <ul class="search-results"></ul>
+  <p class="search-help">{ui.searchHelp}</p>
+</dialog>
+<script>
+  type Entry = {title:string;url:string;section:string;body:string};
+  const dialog = document.querySelector<HTMLDialogElement>('.search-dialog')!;
+  const ui=JSON.parse(dialog.dataset.ui!);
+  const query = dialog.querySelector<HTMLInputElement>('input')!;
+  const results = dialog.querySelector<HTMLUListElement>('.search-results')!;
+  const status = dialog.querySelector<HTMLElement>('.search-status')!;
+  const trigger = document.querySelector<HTMLAnchorElement>('[data-search-trigger]')!;
+  let entries:Entry[] = [], loaded = false, loading:Promise<void> | undefined;
+  let previousFocus:HTMLElement | null = null;
+  const normalize = (s:string) => s.toLocaleLowerCase(document.documentElement.lang).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');
+  function render() {
+    results.replaceChildren();
+    if (!loaded) return;
+    const words = normalize(query.value).trim().split(/\s+/).filter(Boolean);
+    if (!words.length) { status.textContent = ui.ready; return; }
+    const matches = entries.map(entry => {
+      const title = normalize(entry.title), content = normalize(`${entry.title} ${entry.section} ${entry.body}`);
+      return {entry, score: words.every(w=>content.includes(w)) ? words.reduce((n,w)=>n+(title.includes(w)?3:1),0) : 0};
+    }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score);
+    status.textContent = matches.length ? ui.count.replace('{count}',String(matches.length)) : ui.empty;
+    matches.slice(0,15).forEach(({entry})=>{
+      const li=document.createElement('li'),a=document.createElement('a'),strong=document.createElement('strong'),small=document.createElement('small');
+      a.href=entry.url;strong.textContent=entry.title;small.textContent=entry.section;a.append(strong,small);li.append(a);results.append(li);
+    });
+  }
+  async function open() {
+    previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    dialog.showModal();query.focus();
+    if (!loaded) {
+      status.textContent=ui.loading;
+      loading ??= fetch(dialog.dataset.searchIndex!).then(async response=>{
+        if (!response.ok) throw new Error('index unavailable');
+        entries=await response.json();loaded=true;
+      }).finally(()=>{loading=undefined;});
+      try { await loading; } catch { status.textContent=ui.error;return; }
+    }
+    render();
+  }
+  trigger.addEventListener('click',event=>{event.preventDefault();void open();});
+  dialog.querySelector('.search-close')!.addEventListener('click',()=>dialog.close());
+  dialog.addEventListener('keydown',event=>{
+    // Search inputs can consume Escape to clear text before the dialog closes.
+    if(event.key==='Escape'){event.preventDefault();dialog.close();}
+  });
+  dialog.addEventListener('close',()=>previousFocus?.isConnected && previousFocus.focus());
+  query.addEventListener('input',render);
+  document.addEventListener('keydown',event=>{
+    if(event.key==='/'&&!dialog.open&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&!(event.target instanceof HTMLElement&&event.target.closest('input,textarea,select,[contenteditable]'))){event.preventDefault();void open();}
+  });
+</script>

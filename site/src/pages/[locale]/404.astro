@@ -1,0 +1,7 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import {locales,messages,localeUrl,type Locale} from '../../data/i18n';
+export function getStaticPaths(){return locales.map(locale=>({params:{locale}}));}
+const locale=Astro.params.locale as Locale,ui=messages[locale],url=(path:string)=>localeUrl(locale,path);
+---
+<DocsLayout locale={locale} pagePath="/404/" title={ui.notFound} description={ui.notFoundDescription} section="404" wide><h1>{ui.notFound}</h1><p>{ui.notFoundBody}</p><div class="actions"><a class="button primary" href={url('/')}>{ui.homeLink}</a><a class="button" href={url('/skills/')}>{ui.skillsLink}</a></div></DocsLayout>

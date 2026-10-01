@@ -1,0 +1,6 @@
+---
+import LegacyRedirect from '../../components/LegacyRedirect.astro';
+import {getDocs} from '../../data/pages';
+export function getStaticPaths(){return getDocs('vi').map(page=>({params:{slug:page.frontmatter.slug}}));}
+---
+<LegacyRedirect path={`/docs/${Astro.params.slug}/`}/>
