@@ -50,6 +50,7 @@ Request
        sdcorejs-test -> optional sdcorejs-simplify -> affected focused tests
        -> sdcorejs-review / repair-loop, including verified external feedback
        write-producing docs/task/memory artifacts first
+       -> authorized current-task cleanup -> affected verification
        -> sdcorejs-ship (validation-map and convergence verification)
        -> sdcorejs-ship (branch-ready mode as the final read-only gate)
 ```
@@ -97,7 +98,7 @@ run again before Git artifacts.
   proof. Unclear/conflicting feedback and unapproved API migrations do not write.
 - Internal `sdcorejs-skill-authoring` lives under `authoring/**` and is excluded
   from public inventories, mirrors, manifests, and the site. The public ceiling
-  remains 23 skills. Its gate derives inventory/routing hashes from the repo and
+  is 24 skills after the approved cleanup utility addition. Its gate derives inventory/routing hashes from the repo and
   validates linked RED/GREEN/REFACTOR records and complete live-matrix schemas.
 - Deterministic contract tests, prepared-environment Full E2E, and authorized
   live-agent evidence are separate layers. A deterministic pass never implies a
@@ -310,6 +311,48 @@ contracts are protected. The finish gate presents simplification as a visible
 opt-in step; it never auto-runs, and current tests are evidence rather than a
 general semantic-equivalence proof.
 
+## Cleanup workflow utility
+
+`sdcorejs-cleanup` keeps a bounded repository/workspace scope clean after
+AI-assisted development. Its `analyze` and `plan` actions are read-only;
+`apply`, `restore` and `task-tail-cleanup` use the shared cleanup engine.
+Analyze/plan are portable. Windows local-drive apply/restore uses the existing PowerShell
+native backend. Linux/macOS mutation requires a selected existing trusted
+CPython executable, a frozen native profile and explicitly approved cooperative
+maintenance; initial profiles are Linux local ext4 and macOS local APFS.
+Missing runtime, native or filesystem evidence blocks mutation. No runtime
+installation or existing permission change is performed. Real Linux/macOS
+acceptance remains `NOT_RUN` on the current Windows execution host.
+Automatic analysis is not automatic deletion, accepting an offer is not
+mutation approval, and `local_only` is not disposable.
+
+Only an approved task policy can automatically remove LOW-risk artifacts:
+current-task owned, reproducible, finished producer and no longer needed as
+review/debug/recovery evidence. Other MEDIUM actions need bounded batch
+approval; HIGH actions need explicit file/group approval. Active/modified
+files, unknown owners, unsafe paths and unreliable recovery are blocked.
+Age, `.gitignore`, equal hashes or missing imports never grant authority.
+Public assets, immutable approved artifacts, unique historical docs, reference
+screenshots/baselines, brand copies, fixtures and mirrors stay protected or
+require conservative review. Source-code refinement remains with Simplify.
+
+Explore and other workflows may emit significant hygiene signals after their
+primary result. One coordinator offers bounded analysis once, groups related
+findings and honors decline/session disable across workflows. It creates no
+persistent global queue or background scan. Task-tail cleanup examines only
+current-task outputs after durable artifacts finish and before affected
+verification, convergence and final branch-ready. Later mutations invalidate
+readiness. Quarantine is recoverable but needs mutation authority and does not
+reclaim space on the same filesystem; restore never overwrites an occupied
+path. Receipts distinguish removed active paths, held bytes, reclaimed bytes
+and partial failures.
+
+See [Cleanup](skills/shared/workflow/cleanup.md) for modes and authority,
+and [_refs/cleanup/workflow.md](_refs/cleanup/workflow.md) for engine calls,
+offer handoff and task-tail integration. Git history/worktrees, dependencies,
+Docker, databases, cloud data, global caches and code refactors are outside
+this utility's scope.
+
 ## Quick Start
 
 This repository is public source, while the root repository tooling manifest
@@ -402,7 +445,7 @@ transcripts, see:
 ## Repo Layout
 
 ```text
-skills/                 source skills, 23 dispatchable skill files
+skills/                 source skills, 24 dispatchable skill files
 _refs/                  source reference docs
 _refs/harness/          actions, capabilities, model roles, runtime envelopes
 .claude/skills/         generated Claude mirror

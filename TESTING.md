@@ -1,6 +1,6 @@
 # Testing the SDCoreJS SDLC Agent
 
-Repository-level tests for the current 23-skill SDCoreJS Agent layout.
+Repository-level tests for the current 24-skill SDCoreJS Agent layout.
 
 The pack is documentation-driven, with deterministic executable contracts for
 capabilities, entry gating, delegation boundaries, summary freshness, and the
@@ -41,10 +41,10 @@ scheduled/manual `Full E2E` workflow runs phase 4 with `SDCOREJS_E2E_FULL=1`.
 
 ## Expected Inventory
 
-- Source skills: 23
-- `.claude/skills`: 23
-- `plugin/skills`: 23
-- `codex/skills`: 23 skill folders plus shared `_refs`
+- Source skills: 24
+- `.claude/skills`: 24
+- `plugin/skills`: 24
+- `codex/skills`: 24 skill folders plus shared `_refs`
 - Adapter harness manifests: 5 generated files with one canonical source hash
 - `_refs/**/*.md`: at least 60 committed markdown refs; Core UI component docs are fetched on demand
 - Internal `authoring/skills/sdcorejs-skill-authoring`: 1, excluded from every
@@ -177,6 +177,16 @@ single-invocation finish-tail rule. Repository E2E includes this file directly.
 It does not install Pandoc, open a browser, access a network, or mutate a
 consumer repository.
 
+### Cleanup utility and authority boundaries
+
+`node --test test/e2e/cleanup-*.test.mjs` exercises isolated fixture cleanup,
+exact frozen plans, stale approval/path/reference guards, quarantine/restore,
+intentional duplicates and immutable artifacts, task-tail scope, partial
+receipts and runtime offer suppression. The skill-pack routing suite pairs
+workspace/assets/docs cleanup with simplify/test/review negative controls.
+Tests operate on temporary fixtures, never live user repositories. Deterministic
+results do not establish live-agent recognition or platform-native interaction.
+
 ### npm Publication Contract
 
 ```bash
@@ -186,7 +196,7 @@ node --test test/e2e/npm-publication-contract.test.mjs
 Verifies that the private root tooling workspace has no npm publication
 metadata, scripts, lifecycle hooks, workflow credentials, registry commands, or
 dependency-install documentation while preserving npm development commands,
-release-version synchronization, and the 23-skill source/mirror inventories.
+release-version synchronization, and the 24-skill source/mirror inventories.
 
 ### Phase 1: Skill Pack Runner
 

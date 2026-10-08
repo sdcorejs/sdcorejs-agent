@@ -174,6 +174,16 @@ branch-ready.
   `simplify_context` through the remaining tail.
 - Convention sync is a write-producing step. When it writes files after an
   earlier verification, rerun every affected final gate before branch-ready.
+- Task-tail cleanup is bounded to already-known current-task artifacts after
+  tests/review/fixes and durable finalization. Read `_refs/cleanup/workflow.md`
+  when those artifacts or significant producer signals exist. Only an approved
+  policy may automatically remove qualifying LOW reproducible task output;
+  `local_only` does not imply disposable, and accepting analysis does not
+  approve mutation. Failed, cancelled or interrupted tasks retain diagnostics.
+- Workers emit cleanup findings only. The sequential/fan-in owner deduplicates
+  signals, honors runtime decline/session-disable suppression across workflows,
+  and presents at most one offer after primary work. Never scan the full repo
+  on every task or interrupt debugging merely to offer housekeeping.
 - Do not automatically simplify again after `sdcorejs-repair-loop`. A new pass
   requires a separate invocation.
 - If the user chooses "Skip new user/technical docs" at Finish step 2, do not
@@ -247,13 +257,25 @@ branch-ready.
     merges its `artifact_context` into the same-change closure. Never run it
     from a parallel worker, and never add convention sync to `sdcorejs-git`;
     Git consumes already-produced artifacts.
-14. `sdcorejs-ship (verify-before-done mode)` (unless deferred).
-15. `sdcorejs-ship (branch-ready mode)` (unless deferred) - final read-only
+14. `sdcorejs-cleanup (task-tail-cleanup)` only when the finalized current task
+    has known candidate artifacts or accepted bounded analysis. Apply only
+    exact current-task LOW actions covered by an approved policy, or separately
+    approved frozen actions. Keep durable/needed/unrelated/unknown files.
+15. After any cleanup mutation, run affected verification and pass the exact
+    receipt, independently captured current snapshot, and current mapped
+    command/path evidence to ship/convergence. Filesystem checks alone are not
+    affected verification; partial/failed actions remain blockers.
+16. `sdcorejs-ship (verify-before-done mode)` (unless deferred).
+17. `sdcorejs-ship (branch-ready mode)` (unless deferred) - final read-only
     gate over the final diff.
 
 Every producer passes its `artifact_context` to the next step. Ship merges the
 same-change closure and forwards it to `sdcorejs-git` when the user requests a
 Git artifact.
+Cleanup receipts and offer suppression remain runtime handoffs. Cleanup
+delete/move/quarantine/archive/restore after branch-ready invalidates that
+evidence and requires affected verification, convergence and final branch-ready
+again before Git handoff.
 
 `sdcorejs-git` is not part of the automatic finish-gate tail. It may run next
 only when the user requests a Git artifact and current ship evidence plus final

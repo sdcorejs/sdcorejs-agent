@@ -63,6 +63,10 @@ top-level projections:
 - verification order, artifact closure, and thread ownership in `lifecycle`;
 - the selected debug, documentation-hygiene, or dependency-regression mode
   contract.
+- Optional `cleanup` with exact engine receipts in apply order, independently
+  captured `current_snapshot`, and canonical `evidence_refs`. Omit this field
+  when no cleanup occurred. It adds no new artifact lifecycle class or global
+  state.
 
 Repository revisions are lowercase 40-character revisions. Evidence carries
 the exact source revision, source fingerprint, portal revision, and module
@@ -169,6 +173,31 @@ the evaluator; its metadata also binds input/projection hashes, change, mode,
 repository, and revision.
 
 ## Integration boundary
+
+### Cleanup mutation evidence
+
+Cleanup runs after durable finalization and before affected verification and
+these final read-only gates; see `_refs/cleanup/workflow.md`. When cleanup is
+present, `evaluateCleanupLifecycle` validates receipt hashes, exact actions,
+byte accounting, snapshot chain and current mapped affected-check command/path
+evidence. An `applied` receipt with built-in filesystem checks and
+`affected_checks: NOT RUN` blocks, as do partial apply and unresolved errors.
+Cleanup failure uses the existing `POST_VERIFICATION_WRITE` drift guard;
+snapshot mismatch uses `CONFORMANCE_EVIDENCE_STALE_OR_CONFLICTED`. The stable
+twenty drift guards remain unchanged.
+
+Cleanup command evidence must join the current evidence graph, cover every
+mutated active path, and match the current source revision/fingerprint. The
+optional compact `cleanup_receipt_ids` projection binds the resulting cleanup
+state. At handoff, the caller supplies current receipt IDs along with current
+source identity. Older convergence cannot remain valid merely because removed
+local-only output was excluded from the Git fingerprint.
+
+Engine receipts hash ordered actions, command arguments and snapshot chains.
+Canonical convergence receipt serialization preserves array order within the
+optional `cleanup` subtree and every `actual_command`, so persisting/rechecking convergence does not
+invalidate those engine identities. Other v1 convergence canonicalization is
+unchanged. No receipt grants cleanup or Git authority.
 
 The load-bearing consumers are existing workflows, not a new public skill:
 

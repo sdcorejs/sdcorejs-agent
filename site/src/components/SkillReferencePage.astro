@@ -1,21 +1,24 @@
 ---
 import DocsLayout from '../layouts/DocsLayout.astro';
 import {getSkills} from '../data/catalog';
-import {source,revision} from '../data/navigation';
+import {source,revision,hasPublishedSource} from '../data/navigation';
 import {messages,localeUrl,type Locale} from '../data/i18n';
 const {locale,id}=Astro.props as {locale:Locale;id:string};
 const skill=getSkills(locale).find(s=>s.id===id)!;
 const ui=messages[locale],url=(path:string)=>localeUrl(locale,path);
+const published=hasPublishedSource(skill.path);
+const candidateLabel=locale==='vi'?'Candidate · chưa phát hành':'Candidate · unpublished';
+const candidateNote=locale==='vi'?'Canonical source này đang ở working tree và chưa có trong snapshot được dẫn. Chưa có source link phát hành.':'This canonical source is in the working tree and absent from the documented snapshot. A published source link is not available yet.';
 const headings=[['inputs',ui.inputs],['outputs',ui.outputs],['limits',ui.limits],['prompt',ui.prompt],['next',ui.next]].map(([slug,text])=>({depth:2,slug,text}));
 ---
 <DocsLayout locale={locale} pagePath={`/skills/${skill.id}/`} title={skill.id} description={skill.summary} section="Skill reference" headings={headings}>
-  <header class="page-header"><p class="eyebrow">{skill.group}</p><h1 style="overflow-wrap:anywhere">{skill.id}</h1><p class="lead">{skill.summary}</p><div class="skill-meta"><span class="tag">{ui.current} {revision.slice(0,7)}</span><a href={url('/skills/')}>{ui.allSkills}</a></div></header>
+  <header class="page-header"><p class="eyebrow">{skill.group}</p><h1 style="overflow-wrap:anywhere">{skill.id}</h1><p class="lead">{skill.summary}</p><div class="skill-meta"><span class="tag" data-source-status={published?'published':'candidate'}>{published?`${ui.current} ${revision.slice(0,7)}`:candidateLabel}</span><a href={url('/skills/')}>{ui.allSkills}</a></div></header>
   <article class="prose">
     <h2 id="inputs">{ui.inputs}</h2><p>{skill.input}</p>
     <h2 id="outputs">{ui.outputs}</h2><p>{skill.output}</p>
     <h2 id="limits">{ui.limits}</h2><p>{skill.boundary}</p><p>{ui.limitsNote}</p>
     <h2 id="prompt">{ui.prompt}</h2><pre><code>{skill.prompt}</code></pre><p>{ui.promptNote}</p>
-    <h2 id="next">{ui.next}</h2><p><a href={url(skill.recipe)}>{ui.relatedGuide}</a></p><p>{ui.sourceIntro} <a href={source(skill.path)}>{skill.path}</a>. {ui.sourceNote}</p>
+    <h2 id="next">{ui.next}</h2><p><a href={url(skill.recipe)}>{ui.relatedGuide}</a></p><p>{ui.sourceIntro} {published?<a href={source(skill.path)}>{skill.path}</a>:<code>{skill.path}</code>}. {published?ui.sourceNote:candidateNote}</p>
     <p><a href={url('/docs/versions/')}>{ui.evidenceLink}</a>.</p>
   </article>
 </DocsLayout>

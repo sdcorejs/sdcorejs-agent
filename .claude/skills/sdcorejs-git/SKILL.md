@@ -71,6 +71,9 @@ handoff is allowed only when `ship_context.git_handoff_allowed` is true, the
 `associated_HEAD_or_diff` matches the current `HEAD` or dirty diff,
 `writes_after_branch_ready` is empty, and `branch_ready_evidence` is current.
 Missing, blocked, deferred, or stale convergence always refuses handoff; so does unreceipted, vacuous, or plan-mismatched convergence.
+When cleanup occurred, pass the exact runtime `cleanup`, mapped `evidence`, and
+`branch_ready_cleanup_receipt_ids` to repository closure. Apply and restore have
+separate sealed event identities; stale or unverified cleanup blocks staging.
 
 Do not create commits, pushes, or PRs as a substitute for verification. If the
 prompt is delivery-oriented and evidence is absent or stale, stop and delegate:

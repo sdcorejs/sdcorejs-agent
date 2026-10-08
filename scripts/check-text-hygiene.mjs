@@ -32,6 +32,7 @@ const textExtensions = new Set([
   '.mdc',
   '.mjs',
   '.ps1',
+  '.py',
   '.scss',
   '.sh',
   '.ts',

@@ -1,5 +1,6 @@
 import { verifyApprovedArtifactGraph } from './approved-artifact.mjs';
 import { evaluateConvergenceHandoff } from './convergence-contract.mjs';
+import { evaluateCleanupLifecycle } from '../cleanup/offer-policy.mjs';
 
 const REVISION = /^[a-f0-9]{40}$/u;
 const PASS = 'PASSED';
@@ -121,7 +122,7 @@ function validateSourceIdentity(sourceIdentity, blockers) {
   }
 }
 
-function currentConvergenceIdentity(sourceIdentity, approvedContext) {
+function currentConvergenceIdentity(sourceIdentity, approvedContext, cleanupReceiptIds) {
   const modules = Array.isArray(sourceIdentity?.modules) ? sourceIdentity.modules : [];
   return {
     repository_id: sourceIdentity?.portal_repository_id,
@@ -133,6 +134,7 @@ function currentConvergenceIdentity(sourceIdentity, approvedContext) {
     owner_thread_id: sourceIdentity?.owner_thread_id,
     change_ref: approvedContext.change_ref,
     mode: approvedContext.mode,
+    ...(cleanupReceiptIds !== undefined ? { cleanup_receipt_ids: cleanupReceiptIds } : {}),
   };
 }
 
@@ -284,9 +286,17 @@ export function evaluateShipReadiness(contract) {
   validateApprovedArtifacts(contract, productionBlockers);
   const approvedConvergence = approvedConvergenceContext(contract, productionBlockers);
   validateRequiredEvidence(contract, productionBlockers);
+  const cleanup = contract.cleanup === undefined ? null : evaluateCleanupLifecycle({
+    ...contract.cleanup,
+    evidence: contract.evidence,
+    current_source: sourceIdentity,
+  });
+  for (const blocker of cleanup?.blockers ?? []) {
+    pushUnique(productionBlockers, `cleanup ${blocker.code}: ${blocker.message}`);
+  }
   const convergence = evaluateConvergenceHandoff({
     result: contract.convergence_result,
-    current: currentConvergenceIdentity(sourceIdentity, approvedConvergence),
+    current: currentConvergenceIdentity(sourceIdentity, approvedConvergence, cleanup?.receipt_ids),
     receipt: contract.convergence_receipt,
   });
   for (const blocker of convergence.blockers) {
@@ -310,6 +320,17 @@ export function evaluateShipReadiness(contract) {
   const readyToShip = productionBlockers.length === 0;
   const branchBlockers = [];
   if (!readyToShip) branchBlockers.push('ship verification is blocked');
+  if (cleanup?.applicable) {
+    const finalCleanup = evaluateCleanupLifecycle({
+      ...contract.cleanup,
+      evidence: contract.evidence,
+      current_source: sourceIdentity,
+      branch_ready: { cleanup_receipt_ids: contract.delivery?.branch_ready_cleanup_receipt_ids },
+    });
+    for (const blocker of finalCleanup.blockers.filter(({ code }) => code === 'CLEANUP_AFTER_BRANCH_READY')) {
+      pushUnique(branchBlockers, blocker.message);
+    }
+  }
   if (contract.delivery?.branch_ready_result !== 'READY') {
     branchBlockers.push('branch-ready evidence is not READY');
   }

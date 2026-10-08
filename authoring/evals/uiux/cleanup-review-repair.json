@@ -1,0 +1,305 @@
+{
+  "schema_version": 1,
+  "kind": "uiux-cleanup-review-repair-continuation",
+  "change_ref": "sdcorejs-cleanup",
+  "source_revision": "03563d26837751d67a354d38589c6ed0fe67ed24",
+  "observed_at": "2026-10-02T01:17:22.027Z",
+  "finding_ids": [
+    "F-03"
+  ],
+  "previous_continuation": {
+    "path": "authoring/evals/uiux/cleanup-continuation.json",
+    "sha256": "sha256:3b11fe3cd6a3ddccbe8dcb4832ce71ebb64f85451d98dda141c1b9ce946b0e4e"
+  },
+  "previous_sources": [
+    {
+      "path": "_refs/angular/core-docs-fetch.mjs",
+      "sha256": "sha256:5ddadf5c69b5686f70a844a601f6ffa40a4cbbd14759b7ef3f206bea7c8a8e46"
+    },
+    {
+      "path": "_refs/angular/review-accessibility.md",
+      "sha256": "sha256:758532551b4e908866a95aeb20f9b7596f80691c78ad0c56a9ec0ae2430bede5"
+    },
+    {
+      "path": "_refs/angular/write-code/input-analysis.md",
+      "sha256": "sha256:3048612c06352c9bf1ccbac8d0ecf67ff8ccade5ee3f13cb6797af694c392590"
+    },
+    {
+      "path": "_refs/design/frontend-design.md",
+      "sha256": "sha256:40181e495cdbcff8f8375efdffdc3a8f89d8301abf8806c8381cef8d13b848ee"
+    },
+    {
+      "path": "_refs/design/mobile-design.md",
+      "sha256": "sha256:92bc975d5d33b9081f26c4bb43609ef6fceb97ad97c09e7cac2718c84ad05587"
+    },
+    {
+      "path": "_refs/design/uiux/catalog.json",
+      "sha256": "sha256:247d420f509b6fc73b10f19103b3d6c62f2e7473c52d4bfee69e0cb3f69229ff"
+    },
+    {
+      "path": "_refs/design/uiux/charts.md",
+      "sha256": "sha256:18d07aebcdf81cc029e8a15f74361b1115520c9cf078605ae94795a8ffaa01cf"
+    },
+    {
+      "path": "_refs/design/uiux/forms.md",
+      "sha256": "sha256:e0c691dee24229d2183f6fcf63776d2df6cfdc42bd431b7d1002070280483261"
+    },
+    {
+      "path": "_refs/design/uiux/index.md",
+      "sha256": "sha256:307d3eccbc7b0426f8d870153135f15a94cbee73cd628482fee397f7c867f609"
+    },
+    {
+      "path": "_refs/design/uiux/navigation.md",
+      "sha256": "sha256:396fb9e47024aa1fe86ef66edb55bcd2028bc86a9a3c6df409ff891e20f1c808"
+    },
+    {
+      "path": "_refs/design/uiux/public-web.md",
+      "sha256": "sha256:18f55e3fcb3b8d5dcbfd7d52a38d12c7d8da87ef260ee0bcca12de95e4f56fad"
+    },
+    {
+      "path": "_refs/design/uiux/select-references.mjs",
+      "sha256": "sha256:5bf4dbbcb46ebcb83e85318f55498b7a00123fb59a57dc39496402b39f8edd75"
+    },
+    {
+      "path": "_refs/design/uiux/sources.md",
+      "sha256": "sha256:c686481c4d4c87994d84edfe2ee55474eb9d645cbc73416532577f5bc3532e81"
+    },
+    {
+      "path": "_refs/design/uiux/states.md",
+      "sha256": "sha256:febbea087c19ac5a950303e8afcbbacb459207c8ecace1a93692816e0cd65744"
+    },
+    {
+      "path": "_refs/design/uiux/tables.md",
+      "sha256": "sha256:c8a3830c7cf135c557dd4d684e68d516a288e085a386aa6ef74c52f283c7b169"
+    },
+    {
+      "path": "_refs/design/uiux/upstream-license.txt",
+      "sha256": "sha256:738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014"
+    },
+    {
+      "path": "_refs/design/uiux/visual.md",
+      "sha256": "sha256:a8d67199953355a62b817b6b4b2d620263cc910fd905510f47ae05f0b75a8222"
+    },
+    {
+      "path": "_refs/nextjs/build-website/review-accessibility.md",
+      "sha256": "sha256:55aaad9a5b56da98a33a0516993c020e1f0ee02edf43935fd280f263d2f5d68b"
+    },
+    {
+      "path": "_refs/nextjs/build-website/write-code/responsive.md",
+      "sha256": "sha256:cb852fd68412f825b63c0eecf9f7e387d2957e467d0dee78c0999103aa88d17b"
+    },
+    {
+      "path": "_refs/shared/design-handoff.md",
+      "sha256": "sha256:747b25aaedaff6c3b1c8098a49f35acc38fdae86aee58cd6e0608008bc936b4e"
+    },
+    {
+      "path": "_refs/shared/review-accessibility.md",
+      "sha256": "sha256:280abe7bfa5f27e781d53dffd156c554bd629f5ffc6d6a996b2654164e0bc2c2"
+    },
+    {
+      "path": "_refs/shared/review-contract.mjs",
+      "sha256": "sha256:f268334733e255677268692b9e7740d259b6121b4a81c194dca9f0170c139a62"
+    },
+    {
+      "path": "skills/orchestration/using-skills.md",
+      "sha256": "sha256:32752f94ea02b255f7c1a5fe69d1a159f32a86a917d591379e99c14f2069d85b"
+    },
+    {
+      "path": "skills/shared/sdlc/01-brainstorming.md",
+      "sha256": "sha256:61cdbf1daca3938a0dc4adb18c5bd60f8a3cbf73a9ccbe8ddfee32635e8907a4"
+    },
+    {
+      "path": "skills/shared/sdlc/04-execute-plan.md",
+      "sha256": "sha256:d164568a8675d87264c2f044eecd3385366be982751a0b5ba4b848276c76cda0"
+    },
+    {
+      "path": "skills/shared/workflow/review.md",
+      "sha256": "sha256:36932bf0ef95cc369b005992deb5e753a7ca90c4120ba3baf2875c4c5f45c11b"
+    },
+    {
+      "path": "skills/tracks/angular/sdcorejs-angular.md",
+      "sha256": "sha256:53e01ad40945a1bc38999d8a9ddffc70b4cf646c56858295deffa0919892c389"
+    },
+    {
+      "path": "skills/tracks/design/sdcorejs-design.md",
+      "sha256": "sha256:5821395d976bbffa2f57e341055c915530666c6638235e8b170fa8a13f3c7e2e"
+    },
+    {
+      "path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
+      "sha256": "sha256:4b3faeb2131e6c374bf0266097d88e7d53770f76c9a1c452a92fdb304bbefbb5"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "sha256:4b3569b7406ddae58f9068c3e5d0ab354e2591b88a233d1fd9ba8da581765cb8"
+    },
+    {
+      "path": "test/e2e/uiux-knowledge.test.mjs",
+      "sha256": "sha256:f54c3aa686bda7863b0c10e8b77adcf8a92486171dfc07e9131479a170df980f"
+    },
+    {
+      "path": "test/e2e/uiux-review-regression.test.mjs",
+      "sha256": "sha256:fb4b5075bd6e7a224d8c16bd45084c2114a332e932f53b11ed412a09fe519f9a"
+    },
+    {
+      "path": "test/e2e/uiux-skill-creator-regression.test.mjs",
+      "sha256": "sha256:179f5e965d2acfb4a1302daeb76fa9f6ff3a9c6fde79c08539776155d21aa098"
+    }
+  ],
+  "current_sources": [
+    {
+      "path": "_refs/angular/core-docs-fetch.mjs",
+      "sha256": "sha256:5ddadf5c69b5686f70a844a601f6ffa40a4cbbd14759b7ef3f206bea7c8a8e46"
+    },
+    {
+      "path": "_refs/angular/review-accessibility.md",
+      "sha256": "sha256:758532551b4e908866a95aeb20f9b7596f80691c78ad0c56a9ec0ae2430bede5"
+    },
+    {
+      "path": "_refs/angular/write-code/input-analysis.md",
+      "sha256": "sha256:3048612c06352c9bf1ccbac8d0ecf67ff8ccade5ee3f13cb6797af694c392590"
+    },
+    {
+      "path": "_refs/design/frontend-design.md",
+      "sha256": "sha256:40181e495cdbcff8f8375efdffdc3a8f89d8301abf8806c8381cef8d13b848ee"
+    },
+    {
+      "path": "_refs/design/mobile-design.md",
+      "sha256": "sha256:92bc975d5d33b9081f26c4bb43609ef6fceb97ad97c09e7cac2718c84ad05587"
+    },
+    {
+      "path": "_refs/design/uiux/catalog.json",
+      "sha256": "sha256:247d420f509b6fc73b10f19103b3d6c62f2e7473c52d4bfee69e0cb3f69229ff"
+    },
+    {
+      "path": "_refs/design/uiux/charts.md",
+      "sha256": "sha256:18d07aebcdf81cc029e8a15f74361b1115520c9cf078605ae94795a8ffaa01cf"
+    },
+    {
+      "path": "_refs/design/uiux/forms.md",
+      "sha256": "sha256:e0c691dee24229d2183f6fcf63776d2df6cfdc42bd431b7d1002070280483261"
+    },
+    {
+      "path": "_refs/design/uiux/index.md",
+      "sha256": "sha256:307d3eccbc7b0426f8d870153135f15a94cbee73cd628482fee397f7c867f609"
+    },
+    {
+      "path": "_refs/design/uiux/navigation.md",
+      "sha256": "sha256:396fb9e47024aa1fe86ef66edb55bcd2028bc86a9a3c6df409ff891e20f1c808"
+    },
+    {
+      "path": "_refs/design/uiux/public-web.md",
+      "sha256": "sha256:18f55e3fcb3b8d5dcbfd7d52a38d12c7d8da87ef260ee0bcca12de95e4f56fad"
+    },
+    {
+      "path": "_refs/design/uiux/select-references.mjs",
+      "sha256": "sha256:5bf4dbbcb46ebcb83e85318f55498b7a00123fb59a57dc39496402b39f8edd75"
+    },
+    {
+      "path": "_refs/design/uiux/sources.md",
+      "sha256": "sha256:c686481c4d4c87994d84edfe2ee55474eb9d645cbc73416532577f5bc3532e81"
+    },
+    {
+      "path": "_refs/design/uiux/states.md",
+      "sha256": "sha256:febbea087c19ac5a950303e8afcbbacb459207c8ecace1a93692816e0cd65744"
+    },
+    {
+      "path": "_refs/design/uiux/tables.md",
+      "sha256": "sha256:c8a3830c7cf135c557dd4d684e68d516a288e085a386aa6ef74c52f283c7b169"
+    },
+    {
+      "path": "_refs/design/uiux/upstream-license.txt",
+      "sha256": "sha256:738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014"
+    },
+    {
+      "path": "_refs/design/uiux/visual.md",
+      "sha256": "sha256:a8d67199953355a62b817b6b4b2d620263cc910fd905510f47ae05f0b75a8222"
+    },
+    {
+      "path": "_refs/nextjs/build-website/review-accessibility.md",
+      "sha256": "sha256:55aaad9a5b56da98a33a0516993c020e1f0ee02edf43935fd280f263d2f5d68b"
+    },
+    {
+      "path": "_refs/nextjs/build-website/write-code/responsive.md",
+      "sha256": "sha256:cb852fd68412f825b63c0eecf9f7e387d2957e467d0dee78c0999103aa88d17b"
+    },
+    {
+      "path": "_refs/shared/design-handoff.md",
+      "sha256": "sha256:747b25aaedaff6c3b1c8098a49f35acc38fdae86aee58cd6e0608008bc936b4e"
+    },
+    {
+      "path": "_refs/shared/review-accessibility.md",
+      "sha256": "sha256:280abe7bfa5f27e781d53dffd156c554bd629f5ffc6d6a996b2654164e0bc2c2"
+    },
+    {
+      "path": "_refs/shared/review-contract.mjs",
+      "sha256": "sha256:f268334733e255677268692b9e7740d259b6121b4a81c194dca9f0170c139a62"
+    },
+    {
+      "path": "skills/orchestration/using-skills.md",
+      "sha256": "sha256:32752f94ea02b255f7c1a5fe69d1a159f32a86a917d591379e99c14f2069d85b"
+    },
+    {
+      "path": "skills/shared/sdlc/01-brainstorming.md",
+      "sha256": "sha256:61cdbf1daca3938a0dc4adb18c5bd60f8a3cbf73a9ccbe8ddfee32635e8907a4"
+    },
+    {
+      "path": "skills/shared/sdlc/04-execute-plan.md",
+      "sha256": "sha256:d164568a8675d87264c2f044eecd3385366be982751a0b5ba4b848276c76cda0"
+    },
+    {
+      "path": "skills/shared/workflow/review.md",
+      "sha256": "sha256:36932bf0ef95cc369b005992deb5e753a7ca90c4120ba3baf2875c4c5f45c11b"
+    },
+    {
+      "path": "skills/tracks/angular/sdcorejs-angular.md",
+      "sha256": "sha256:53e01ad40945a1bc38999d8a9ddffc70b4cf646c56858295deffa0919892c389"
+    },
+    {
+      "path": "skills/tracks/design/sdcorejs-design.md",
+      "sha256": "sha256:5821395d976bbffa2f57e341055c915530666c6638235e8b170fa8a13f3c7e2e"
+    },
+    {
+      "path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
+      "sha256": "sha256:4b3faeb2131e6c374bf0266097d88e7d53770f76c9a1c452a92fdb304bbefbb5"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "sha256:d92fe6d021fb29c158ab373bc5f44ffb7ee496257a0a599f8ae1d0209a4411a7"
+    },
+    {
+      "path": "test/e2e/uiux-knowledge.test.mjs",
+      "sha256": "sha256:f54c3aa686bda7863b0c10e8b77adcf8a92486171dfc07e9131479a170df980f"
+    },
+    {
+      "path": "test/e2e/uiux-review-regression.test.mjs",
+      "sha256": "sha256:fb4b5075bd6e7a224d8c16bd45084c2114a332e932f53b11ed412a09fe519f9a"
+    },
+    {
+      "path": "test/e2e/uiux-skill-creator-regression.test.mjs",
+      "sha256": "sha256:179f5e965d2acfb4a1302daeb76fa9f6ff3a9c6fde79c08539776155d21aa098"
+    }
+  ],
+  "changed_paths": [
+    "test/e2e/support/skill-pack-runner.mjs"
+  ],
+  "verification": {
+    "command": "node --test test/e2e/uiux-knowledge.test.mjs test/e2e/uiux-review-regression.test.mjs test/e2e/uiux-skill-creator-regression.test.mjs",
+    "exit_code": 0,
+    "tests": 25,
+    "pass": 25,
+    "fail": 0,
+    "node": "v22.22.3",
+    "transcript": {
+      "path": "authoring/evals/uiux/cleanup-review-repair.txt",
+      "sha256": "sha256:cb2c46687b2e78429d5cf4af1997bf4084ef9e9f825c28b9dae9157063f7a646"
+    }
+  },
+  "live_agent": {
+    "result": "NOT RUN"
+  },
+  "visual": {
+    "result": "NOT RUN"
+  },
+  "tokens": null,
+  "evidence_limit": "Deterministic routing and UIUX fixture evidence; no provider or live-agent run. Historical continuation and transcripts remain unchanged."
+}

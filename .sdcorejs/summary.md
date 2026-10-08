@@ -1,20 +1,48 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-10-06T08:59:49.397Z
+generated_at: 2026-10-08T17:05:24.660Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
-tracks: [workflow, ai-agent, angular, nestjs, nextjs, product, design, test]
-stack_profiles: [node-esm, markdown-skill-pack, astro-site]
+tracks:
+  - workflow
+  - ai-agent
+  - angular
+  - nestjs
+  - nextjs
+  - product
+  - design
+  - test
+stack_profiles:
+  - node-esm
+  - markdown-skill-pack
+  - astro-site
 summary_scope: skill-pack architecture, mirrors, adapters, and verification
-source_roots: [_refs, authoring, plugin, scripts, site, skills, test]
+source_roots:
+  - _refs
+  - authoring
+  - plugin
+  - scripts
+  - site
+  - skills
+  - test
 evidence:
   workspace_configs: []
-  package_manifests: [package.json, site/package.json]
-  key_entrypoints: [AGENTS.md, CLAUDE.md, skills/orchestration/using-skills.md, scripts/sync-skills.mjs, plugin/hooks/session-start, .github/copilot-instructions.md, .cursor/rules/sdcorejs-agent.mdc, site/src/pages/index.astro]
+  package_manifests:
+    - package.json
+    - site/package.json
+  key_entrypoints:
+    - AGENTS.md
+    - CLAUDE.md
+    - skills/orchestration/using-skills.md
+    - scripts/sync-skills.mjs
+    - plugin/hooks/session-start
+    - .github/copilot-instructions.md
+    - .cursor/rules/sdcorejs-agent.mdc
+    - site/src/pages/index.astro
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:ae664b56caef99dd2d4628c64e46d02a6d77dd195d4b21714ef96e157c9efea9
+  dependency_manifests: sha256:8a81142acfc84be1e5b3dc667dae48b7307fb0b49dcc6ffa94878d93c1a9b313
   source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
@@ -35,8 +63,10 @@ owner: integration-owner
 for developers and technical teams. It defines reusable software-delivery
 workflows for governed architecture and AI-agent applications, Angular,
 NestJS, Next.js, product, design, test, documentation, review, ship, Git, and
-generic execution. A separate internal skill-authoring lifecycle lives under
+generic execution. The bounded cleanup utility lives in `skills/shared/workflow/cleanup.md` and `_refs/cleanup/`; it is not an implementation track. A separate internal skill-authoring lifecycle lives under
 `authoring/` and is never part of the public pack or generated mirrors.
+
+Cleanup mutation has one canonical policy and platform adapters: pinned Windows PowerShell handles, or an explicitly selected existing CPython stdlib/ctypes helper on admitted Linux ext4/macOS APFS under scoped cooperative maintenance. Exact native profiles, source/parent identities, copy-before-capture recovery and retained transaction journals are part of its approval boundary. Missing native capability remains read-only; no runtime provisioning or permission repair belongs to this utility.
 
 The private root workspace distributes the same canonical behavior through
 repository/plugin adapters for Codex, Claude Code, Cursor, and GitHub Copilot;

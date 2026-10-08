@@ -1415,8 +1415,8 @@ test('architecture and delegated execution each exist once at the skill ceiling'
   })));
   const architectureSources = sources.filter(({ text }) => /^name:\s*sdcorejs-architecture$/mu.test(text));
   const delegatedSources = sources.filter(({ text }) => /^name:\s*sdcorejs-subagent-driven-development$/mu.test(text));
-  assert.equal(sources.length, 23);
-  assert.ok(sources.length <= 23);
+  assert.equal(sources.length, 24);
+  assert.ok(sources.length <= 24);
   assert.equal(architectureSources.length, 1);
   assert.equal(architectureSources[0].file.replaceAll('\\', '/'), 'shared/sdlc/architecture.md');
   assert.equal(delegatedSources.length, 1);

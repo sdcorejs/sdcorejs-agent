@@ -13,6 +13,7 @@ import {
   planRepositoryLocalClosures,
 } from '../../_refs/shared/git-closure-contract.mjs';
 import { convergenceFixture } from '../../authoring/evals/run-deterministic.mjs';
+import { cleanupFingerprint } from '../../_refs/cleanup/cleanup-contract.mjs';
 
 const REVISION = 'a'.repeat(40);
 const FINGERPRINT = `sha256:v1:${'b'.repeat(64)}`;
@@ -217,6 +218,37 @@ test('module and portal produce independent complete closures and commit units',
       ),
     ),
   );
+});
+
+test('Git closure binds verified cleanup events to independently current and final branch-ready identities', () => {
+  const input = convergenceInput();
+  const command = ['node', 'fixture-affected-check.mjs'];
+  const snapshot = { fingerprint: FINGERPRINT, revision: REVISION, git_state_fingerprint: FINGERPRINT };
+  const payload = { schema_version: 1, plan_id: FINGERPRINT, root_id: 'C:/fixture', task_id: 'fixture-task',
+    status: 'verified', actions: [{ id: 'cleanup-1', path: '.sdcorejs/tmp/task/render.html', action: 'delete',
+      status: 'removed', fingerprint: `sha256:${'a'.repeat(64)}`, bytes: 8, reclaimed_bytes: 4096 }], errors: [],
+    source_before: snapshot, source_after: snapshot,
+    metrics: { removed_active_bytes: 8, quarantine_bytes: 0, reclaimed_bytes: 4096, archived_bytes: 0 },
+    verification: { result: 'PASSED', affected_checks: 'PASSED', checks: [{ result: 'PASSED', actual_command: command, evidence: 'deterministic contract fixture' }] } };
+  const receipt = { ...payload, receipt_id: cleanupFingerprint(payload) };
+  input.evidence[0].actual_command = command;
+  input.evidence[0].cleanup_receipt_ids = [receipt.receipt_id];
+  input.evidence[0].path_refs.push(payload.actions[0].path);
+  input.cleanup = { receipts: [receipt], current_snapshot: snapshot, evidence_refs: [input.evidence[0].id] };
+  const current = contract([repository()], { cleanup: input.cleanup, evidence: input.evidence,
+    branch_ready_cleanup_receipt_ids: [receipt.receipt_id],
+    convergence_result: evaluateConvergence(input), convergence_receipt: createConvergenceReceiptArtifact(input) });
+  assert.equal(planRepositoryLocalClosures(current).status, 'complete');
+  for (const mutation of [
+    { branch_ready_cleanup_receipt_ids: [] },
+    { cleanup: { ...input.cleanup, current_snapshot: { fingerprint: `sha256:v1:${'c'.repeat(64)}` } } },
+    { cleanup: undefined },
+    { evidence: [] },
+  ]) {
+    const blocked = planRepositoryLocalClosures({ ...current, ...mutation });
+    assert.equal(blocked.status, 'blocked');
+    assert.deepEqual(blocked.closures[0].staging_commands, []);
+  }
 });
 
 test('Git closure refuses missing, blocked, deferred, stale, or source-mismatched convergence', () => {

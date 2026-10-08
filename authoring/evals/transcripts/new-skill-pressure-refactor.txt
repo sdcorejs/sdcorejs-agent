@@ -1,1 +1,1 @@
-The refactored authoring gate preserves the GREEN behavior while separating repository-derived inventory, lifecycle validation, and live-evidence validation.
+The current deterministic authoring regression preserves GREEN safety behavior with the approved ceiling of 24 and binds the historical RED ceiling to its original scenario. The focused approval/inventory/live-evidence guard suite passed 5/5; the unchanged deterministic matrix passed 10/10 with zero provider calls. The original baseline and live NOT RUN evidence are retained.

@@ -31,6 +31,25 @@ export const CANONICAL_NEXTJS_EXECUTABLE_REFERENCE_FILES = Object.freeze([
   '_refs/nextjs/build-website/write-code/i18n.md',
   '_refs/nextjs/build-website/write-code/seo.md',
 ]);
+export const CANONICAL_CLEANUP_PYTHON_REFERENCE_FILES = Object.freeze([
+  '_refs/cleanup/safe-file-operation.py',
+]);
+
+export async function validateCleanupPythonReferences(python) {
+  if (!python || !path.isAbsolute(python) || !existsSync(python)) {
+    return ['Cleanup Python syntax check requires an explicitly selected existing absolute SDCOREJS_CLEANUP_PYTHON executable.'];
+  }
+  const errors = [];
+  for (const relativeFile of CANONICAL_CLEANUP_PYTHON_REFERENCE_FILES) {
+    const source = await readFile(path.join(repoRoot, relativeFile), 'utf8');
+    const result = spawnSync(python, ['-I', '-S', '-B', '-c',
+      "import json,sys; item=json.load(sys.stdin); compile(item['source'],item['file'],'exec')"], {
+      encoding: 'utf8', input: JSON.stringify({ source, file: relativeFile }), windowsHide: true,
+    });
+    if (result.status !== 0) errors.push(`${relativeFile}: Python syntax check failed: ${(result.stderr || result.error?.message || 'runtime unavailable').trim()}`);
+  }
+  return errors;
+}
 
 async function walkMarkdown(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -332,9 +351,11 @@ export async function validateNextjsExecutableReferences() {
 }
 
 async function main() {
+  const python = process.env.SDCOREJS_CLEANUP_PYTHON;
   const errors = [
     ...(await validateCanonicalExecutableReferences()),
     ...(await validateNextjsExecutableReferences()),
+    ...(python ? await validateCleanupPythonReferences(python) : []),
   ];
   if (errors.length > 0) {
     console.error(errors.join('\n'));
@@ -347,6 +368,8 @@ async function main() {
       CANONICAL_NEXTJS_EXECUTABLE_REFERENCE_FILES.length
     } classified files; typed/JSON/shell syntax and localization contexts are valid.`,
   );
+  console.log(python ? 'Cleanup Python syntax: PASSED (in-memory compile; no native execution proof).' :
+    'Cleanup Python syntax: NOT_RUN (select an existing absolute SDCOREJS_CLEANUP_PYTHON executable).');
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

@@ -46,7 +46,7 @@ If several skills match, apply this priority before reading a body:
 3. Product docs and traceability: `sdcorejs-product`.
 4. Design handoff artifacts: `sdcorejs-design`.
 5. Test-only work: `sdcorejs-test`, except failing-test root cause/fix goes to `sdcorejs-debug`.
-6. Dedicated utility intent: `sdcorejs-simplify`, `sdcorejs-explore`,
+6. Dedicated utility intent: `sdcorejs-cleanup`, `sdcorejs-simplify`, `sdcorejs-explore`,
    `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-repair-loop`,
    `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
 7. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
@@ -58,6 +58,9 @@ Routing clarifications:
 - Failing-test root-cause/fix intent routes to `sdcorejs-debug`.
 - Writing, running, or planning tests without root-cause/fix intent routes to `sdcorejs-test`.
 - Review findings repair routes to `sdcorejs-repair-loop`.
+- Repository/workspace output hygiene, duplicate assets/files and superseded-doc
+  analysis use `sdcorejs-cleanup`, a utility with read-only default. Analysis
+  approval and proactive offers never authorize deletion or quarantine.
 - Recently changed or explicitly scoped executable-source cleanup that must
   preserve behavior routes to `sdcorejs-simplify`. It is a utility, not a
   track. Broad refactors and public-contract changes return to planning; bugs,
@@ -110,6 +113,7 @@ sdcorejs-test
 -> _refs/orchestration/tail/auto-task-tracker.md when the sequential/integration owner updates durable backlog
 -> sdcorejs-explore (memories mode) when durable knowledge surfaced
 -> sdcorejs-explore (conventions-sync-write-approved) when convention candidates exist and policy or explicit authority permits persistence
+-> authorized current-task cleanup and affected verification
 -> sdcorejs-ship (verify-before-done mode)
 -> sdcorejs-ship (branch-ready mode as the final read-only gate)
 ```
@@ -255,7 +259,7 @@ At the start of a target-project session:
 | Execution | `sdcorejs-execute-plan`, `sdcorejs-ai-agent`, other track executors, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` |
 | Delegated execution | `sdcorejs-subagent-driven-development`; `sdcorejs-parallel-dispatch` schedules safe waves; workspace isolation is a provider-neutral orchestration action |
 | Finish | `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)`, `sdcorejs-explore (conventions-sync-write-approved)`, `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode as the final read-only gate)` |
-| Utilities | `sdcorejs-simplify`, `sdcorejs-explore`, `sdcorejs-git`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, `sdcorejs-documentation` |
+| Utilities | `sdcorejs-cleanup`, `sdcorejs-simplify`, `sdcorejs-explore`, `sdcorejs-git`, `sdcorejs-review`, `sdcorejs-debug`, `sdcorejs-ship`, `sdcorejs-documentation` |
 
 ## Mirrors
 

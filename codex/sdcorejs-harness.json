@@ -3,7 +3,7 @@
   "adapter": "codex",
   "source_path": "_refs/harness/capability-contract.json",
   "source_hash": "sha256:57e326a1af1c4a038bfa2e6befc459252fd9209b822d6365939aa04e82688c56",
-  "content_hash": "sha256:428965a38bb10b8f72562c5ad0e6698eb1641d9fc87c806c4f972d59df89ccbe",
+  "content_hash": "sha256:bf8c6f349ae63e306572951526809204dd391bdd5c5b367364ff3e6b60b4efd3",
   "generated_path": "codex/sdcorejs-harness.json",
   "capabilities": {
     "runtime_context_channel": "unknown",
@@ -320,6 +320,18 @@
         "context.pass",
         "verification.run",
         "user.approve"
+      ]
+    },
+    "sdcorejs-cleanup": {
+      "source_path": "skills/shared/workflow/cleanup.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "context.pass",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose"
       ]
     },
     "sdcorejs-debug": {

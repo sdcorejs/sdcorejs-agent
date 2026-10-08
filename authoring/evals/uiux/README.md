@@ -76,6 +76,14 @@ prior final hashes bound to its source revision and adds the current contract
 manifest and captured output. It does not relabel historical phase transcripts
 or claim fresh target-project, live-agent or visual rendering coverage.
 
+The approved cleanup utility is a separate continuation. Its
+`cleanup-continuation.json` binds a fresh 25-case deterministic UI/UX regression,
+the current routing/bootstrap/test sources and the exact approved inventory
+delta from 23 to 24 skills. The evidence guard verifies the historical delivery
+at `03563d26837751d67a354d38589c6ed0fe67ed24`, keeps all original phase records and
+transcripts unchanged, and rejects drift in the current continuation. This
+regression adds no live-agent, target-project or visual coverage.
+
 Before commit, four RED transcripts had trailing horizontal whitespace removed
 to satisfy Git diff hygiene. `transcript_normalization` retains each original
 hash and the exact removed line suffixes, so the original normalized output can

@@ -51,7 +51,7 @@ const MIRROR_PATHS = [
   'codex/skills/sdcorejs-simplify/SKILL.md',
 ];
 
-test('simplify: canonical utility exists exactly once and source count is 23', async () => {
+test('simplify: canonical utility exists exactly once and source count is 24', async () => {
   const skillFiles = await listFiles(join(ROOT, 'skills'), file => file.endsWith('.md'));
   const namedSkills = await Promise.all(skillFiles.map(async file => ({
     file,
@@ -59,7 +59,7 @@ test('simplify: canonical utility exists exactly once and source count is 23', a
   })));
   const simplifySkills = namedSkills.filter(item => item.name === 'sdcorejs-simplify');
 
-  assert.equal(namedSkills.length, 23);
+  assert.equal(namedSkills.length, 24);
   assert.equal(simplifySkills.length, 1);
   assert.equal(simplifySkills[0].file, SKILL_PATH);
 
@@ -235,7 +235,7 @@ test('simplify: mutation guards detect removed safety and routing invariants', a
   assertMutationFails(ship, /stale post-simplification evidence/i, assertShipContract, /stale evidence/);
 });
 
-test('simplify: package, mirrors, refs, catalog, and dependency boundary agree on 23 skills', async () => {
+test('simplify: package, mirrors, refs, catalog, and dependency boundary agree on 24 skills', async () => {
   const pkg = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8'));
   assert.equal(pkg.version, '0.8.0');
   assert.equal(pkg.packageManager, 'npm@10.9.2');
@@ -261,13 +261,13 @@ test('simplify: package, mirrors, refs, catalog, and dependency boundary agree o
     'VALIDATION.md',
     'site/README.md',
   ].map(file => readFile(join(ROOT, file), 'utf8')));
-  assert.ok(publicSources.every(source => /\b23\b/.test(source)), 'public inventories show 23');
+  assert.ok(publicSources.every(source => /\b24\b/.test(source)), 'public inventories show 24');
 
   for (const catalogPath of ['site/src/data/catalog.ts', 'site/src/data/catalog-en.ts']) {
     const catalog = await readFile(join(ROOT, catalogPath), 'utf8');
     const ids = [...catalog.matchAll(/^\s{2}'(sdcorejs-[^']+)':/gm)].map(match => match[1]);
-    assert.equal(ids.length, 23, `${catalogPath} documents all public skills`);
-    assert.equal(new Set(ids).size, 23, `${catalogPath} has unique skill identities`);
+    assert.equal(ids.length, 24, `${catalogPath} documents all public skills`);
+    assert.equal(new Set(ids).size, 24, `${catalogPath} has unique skill identities`);
     assert.ok(ids.includes('sdcorejs-simplify'), `${catalogPath} includes simplify`);
   }
 

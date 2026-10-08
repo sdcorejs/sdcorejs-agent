@@ -1,0 +1,172 @@
+TAP version 13
+# Subtest: POSIX admission requires scoped owner, participant and descriptor evidence rather than a producer boolean
+ok 1 - POSIX admission requires scoped owner, participant and descriptor evidence rather than a producer boolean
+  ---
+  duration_ms: 1.597
+  type: 'test'
+  ...
+# Subtest: POSIX boundary pins native runtime, helper, profile and maintenance identity without old approval fallback
+ok 2 - POSIX boundary pins native runtime, helper, profile and maintenance identity without old approval fallback
+  ---
+  duration_ms: 0.896
+  type: 'test'
+  ...
+# Subtest: unsupported hosts disclose missing native POSIX capability without running an interpreter
+ok 3 - unsupported hosts disclose missing native POSIX capability without running an interpreter
+  ---
+  duration_ms: 0.6042
+  type: 'test'
+  ...
+# Subtest: canonical helper has current hashable bytes and does not expose command-line test barriers
+ok 4 - canonical helper has current hashable bytes and does not expose command-line test barriers
+  ---
+  duration_ms: 5.053
+  type: 'test'
+  ...
+# Subtest: pure POSIX authority contract excludes old policies and stale boundary approvals
+ok 5 - pure POSIX authority contract excludes old policies and stale boundary approvals
+  ---
+  duration_ms: 2.7364
+  type: 'test'
+  ...
+# Subtest: pure restore authority binds a fresh maintenance window to the exact recovery receipt
+ok 6 - pure restore authority binds a fresh maintenance window to the exact recovery receipt
+  ---
+  duration_ms: 0.4913
+  type: 'test'
+  ...
+# Subtest: real POSIX native operations require a supported target; Windows supplies no Linux/macOS acceptance evidence
+ok 7 - real POSIX native operations require a supported target; Windows supplies no Linux/macOS acceptance evidence # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 1.2048
+  type: 'test'
+  ...
+# Subtest: native POSIX admission and drift fixtures preserve approved source and unrelated files
+ok 8 - native POSIX admission and drift fixtures preserve approved source and unrelated files # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.1013
+  type: 'test'
+  ...
+# Subtest: native copy is verified while the active source still exists and the stable lock inode remains after release
+ok 9 - native copy is verified while the active source still exists and the stable lock inode remains after release # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.0763
+  type: 'test'
+  ...
+# Subtest: native final revalidation blocks same-hash-replacement before capture
+ok 10 - native final revalidation blocks same-hash-replacement before capture # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.0796
+  type: 'test'
+  ...
+# Subtest: native final revalidation blocks late-hardlink before capture
+ok 11 - native final revalidation blocks late-hardlink before capture # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.1437
+  type: 'test'
+  ...
+# Subtest: native final revalidation blocks parent-moved before capture
+ok 12 - native final revalidation blocks parent-moved before capture # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.0733
+  type: 'test'
+  ...
+# Subtest: native final revalidation blocks parent-symlink before capture
+ok 13 - native final revalidation blocks parent-symlink before capture # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.1332
+  type: 'test'
+  ...
+# Subtest: native final revalidation blocks nested-git before capture
+ok 14 - native final revalidation blocks nested-git before capture # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.0657
+  type: 'test'
+  ...
+# Subtest: native final revalidation blocks nanosecond-drift before capture
+ok 15 - native final revalidation blocks nanosecond-drift before capture # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.302
+  type: 'test'
+  ...
+# Subtest: native final revalidation blocks recovery-corrupt before capture
+ok 16 - native final revalidation blocks recovery-corrupt before capture # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.2676
+  type: 'test'
+  ...
+# Subtest: native final revalidation blocks destination-occupied before capture
+ok 17 - native final revalidation blocks destination-occupied before capture # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.0894
+  type: 'test'
+  ...
+# Subtest: out-of-contract unexpected-capture is a retained partial breach and supplies no invariant-success evidence
+ok 18 - out-of-contract unexpected-capture is a retained partial breach and supplies no invariant-success evidence # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.0368
+  type: 'test'
+  ...
+# Subtest: out-of-contract private-replacement is a retained partial breach and supplies no invariant-success evidence
+ok 19 - out-of-contract private-replacement is a retained partial breach and supplies no invariant-success evidence # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.027
+  type: 'test'
+  ...
+# Subtest: actual native parallel writers use the same retained fence inode
+ok 20 - actual native parallel writers use the same retained fence inode # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.0234
+  type: 'test'
+  ...
+# Subtest: actual process interruption at PREPARED retains exact journal/object states without automatic restart
+ok 21 - actual process interruption at PREPARED retains exact journal/object states without automatic restart # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.0232
+  type: 'test'
+  ...
+# Subtest: actual process interruption at RECOVERY_VERIFIED retains exact journal/object states without automatic restart
+ok 22 - actual process interruption at RECOVERY_VERIFIED retains exact journal/object states without automatic restart # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.0219
+  type: 'test'
+  ...
+# Subtest: actual process interruption at CAPTURED retains exact journal/object states without automatic restart
+ok 23 - actual process interruption at CAPTURED retains exact journal/object states without automatic restart # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.0223
+  type: 'test'
+  ...
+# Subtest: actual process interruption at VALIDATED retains exact journal/object states without automatic restart
+ok 24 - actual process interruption at VALIDATED retains exact journal/object states without automatic restart # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.024
+  type: 'test'
+  ...
+# Subtest: actual process interruption at COMMITTED retains exact journal/object states without automatic restart
+ok 25 - actual process interruption at COMMITTED retains exact journal/object states without automatic restart # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.0218
+  type: 'test'
+  ...
+# Subtest: actual process interruption at VERIFIED retains exact journal/object states without automatic restart
+ok 26 - actual process interruption at VERIFIED retains exact journal/object states without automatic restart # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.0302
+  type: 'test'
+  ...
+# Subtest: occupied restore preserves both occupant and verified recovery bytes
+ok 27 - occupied restore preserves both occupant and verified recovery bytes # SKIP Required Linux/macOS native execution is NOT_RUN on this Windows host.
+  ---
+  duration_ms: 0.0216
+  type: 'test'
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 21
+# todo 0
+# duration_ms 109.7848

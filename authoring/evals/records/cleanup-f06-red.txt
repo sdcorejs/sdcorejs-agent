@@ -1,0 +1,113 @@
+TAP version 13
+# Subtest: review F-06: every coverage flag requires literal true before mutation assets/typed.avif
+not ok 1 - review F-06: every coverage flag requires literal true before mutation assets/typed.avif
+  ---
+  duration_ms: 7721.0792
+  type: 'test'
+  location: '<CANDIDATE_ROOT>\\test\\e2e\\cleanup-engine.test.mjs:550:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"relative":"assets/typed.avif","flag":"complete","value":"false"}
+    + actual - expected
+
+    + 'applied'
+    - 'blocked'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'blocked'
+  actual: 'applied'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///<CANDIDATE_ROOT>/test/e2e/cleanup-engine.test.mjs:568:14)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: review F-06: every coverage flag requires literal true before mutation assets/abandoned-typed.md
+not ok 2 - review F-06: every coverage flag requires literal true before mutation assets/abandoned-typed.md
+  ---
+  duration_ms: 7594.6502
+  type: 'test'
+  location: '<CANDIDATE_ROOT>\\test\\e2e\\cleanup-engine.test.mjs:550:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"relative":"assets/abandoned-typed.md","flag":"complete","value":"false"}
+    + actual - expected
+
+    + 'applied'
+    - 'blocked'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'blocked'
+  actual: 'applied'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///<CANDIDATE_ROOT>/test/e2e/cleanup-engine.test.mjs:568:14)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: review F-06: coverage containers and non-data flags fail closed at the helper boundary
+not ok 3 - review F-06: coverage containers and non-data flags fail closed at the helper boundary
+  ---
+  duration_ms: 276.0827
+  type: 'test'
+  location: '<CANDIDATE_ROOT>\\test\\e2e\\cleanup-engine.test.mjs:577:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'MEDIUM'
+    - 'BLOCKED'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'BLOCKED'
+  actual: 'MEDIUM'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///<CANDIDATE_ROOT>/test/e2e/cleanup-engine.test.mjs:589:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: review F-06: public CLI JSON analyze plan and apply retain malformed coverage
+not ok 4 - review F-06: public CLI JSON analyze plan and apply retain malformed coverage
+  ---
+  duration_ms: 139.1833
+  type: 'test'
+  location: '<CANDIDATE_ROOT>\\test\\e2e\\cleanup-engine.test.mjs:597:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"flag":"complete","value":"false","path":"assets/cli-abandoned.md"}
+    + actual - expected
+
+    + 'MEDIUM'
+    - 'BLOCKED'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'BLOCKED'
+  actual: 'MEDIUM'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///<CANDIDATE_ROOT>/test/e2e/cleanup-engine.test.mjs:615:14)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: review F-06: literal true coverage preserves CLI round trips and adjacent boolean retention
+ok 5 - review F-06: literal true coverage preserves CLI round trips and adjacent boolean retention
+  ---
+  duration_ms: 10756.6949
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 1
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 26567.6143

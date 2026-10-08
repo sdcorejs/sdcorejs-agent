@@ -1,0 +1,296 @@
+{
+  "schema_version": 1,
+  "kind": "cleanup-portability-implementation-evidence",
+  "change_ref": "sdcorejs-cleanup",
+  "observed_at": "2026-10-02T12:23:00.400157+00:00",
+  "authority": "User maintenance choice Sentinel_052de22014888191958bf0663470b688 and explicit parent end-to-end implementation delegation; no new platform assumption or Git authority.",
+  "source_bindings": [
+    {
+      "path": "_refs/cleanup/safe-file-operation.py",
+      "bytes": 32266,
+      "sha256": "91b6537da37caab4871f4970f741f1c6b0ffcea2a7f2d6040927e131fa1b4cf0"
+    },
+    {
+      "path": "_refs/cleanup/posix-file-operation.mjs",
+      "bytes": 10176,
+      "sha256": "d43a3cd811a17fc99fd8515a5ebd4c5a885acc6b59309f7e6032b4ba2e9bfc88"
+    },
+    {
+      "path": "_refs/cleanup/native-file-operation.mjs",
+      "bytes": 7795,
+      "sha256": "4a78d6433336631e5b6fc93b336ca1cb4cd29ea19351cd208636a39a8e44d25b"
+    },
+    {
+      "path": "_refs/cleanup/cleanup-engine.mjs",
+      "bytes": 44957,
+      "sha256": "c548941e23e46bf54ae69586bd3faeb2f32f93f37c8ddf4643fbbfcd5a3d0119"
+    },
+    {
+      "path": "_refs/cleanup/cleanup-contract.mjs",
+      "bytes": 11877,
+      "sha256": "7f98bbf4d32d08348e8f5e741a7d568733be023f36073782ae0f6233d9ae0379"
+    },
+    {
+      "path": "_refs/cleanup/cli.mjs",
+      "bytes": 2492,
+      "sha256": "58f91c5e475731adfab59a93dcaad77ff25199ddb160ee3c3279da62193c2787"
+    },
+    {
+      "path": "_refs/cleanup/workflow.md",
+      "bytes": 17968,
+      "sha256": "9561bd9f1077bc5f5c420eddeb9a355bcedec9bc683499a78c111bd60a3327be"
+    },
+    {
+      "path": "skills/shared/workflow/cleanup.md",
+      "bytes": 9778,
+      "sha256": "ac960df9f11c14b14bedbc726df0be35addf30874df0db735415209d70681ec1"
+    },
+    {
+      "path": "test/e2e/cleanup-engine.test.mjs",
+      "bytes": 91256,
+      "sha256": "2c6413f2f8346e10aaaec50934c84c9ac99c24fb0fd5b34bcf580aaaf2f47384"
+    },
+    {
+      "path": "test/e2e/cleanup-posix-contract.test.mjs",
+      "bytes": 7743,
+      "sha256": "38e1bf2db20c19b9c6574e865832784b12a3cf5283eeea54a1274f31ac1f9078"
+    },
+    {
+      "path": "test/e2e/cleanup-posix-native.test.mjs",
+      "bytes": 16363,
+      "sha256": "8672b370062ddfd031ca876d6c2033029df09ca5a4981a8f4c5d551733570918"
+    },
+    {
+      "path": "package.json",
+      "bytes": 7381,
+      "sha256": "5dba0dec7ab586a2150df40a997405e8dba5c42069aede2e152b7f84906c6428"
+    },
+    {
+      "path": "scripts/check-text-hygiene.mjs",
+      "bytes": 5584,
+      "sha256": "9215f6d16adf54bf8c6b6f6d1ede71d67855ba7eb1a7426124b6dcd51003746d"
+    },
+    {
+      "path": "scripts/check-executable-references.mjs",
+      "bytes": 14080,
+      "sha256": "c59fd1c47f6cdb1894dba3e3af50dbf2b3048dd574913369625444e6fd0e6b3a"
+    },
+    {
+      "path": "scripts/sync-skills.mjs",
+      "bytes": 22522,
+      "sha256": "2553c98646acd368bbd05040d6888d0b629e8d49bce51fd4b61d3a9e68854be0"
+    },
+    {
+      "path": "README.md",
+      "bytes": 28983,
+      "sha256": "85258916e97c0c92c4d3f016fb471b6c04b0e84291bd2f0ed1a514ba4ffe260b"
+    },
+    {
+      "path": ".sdcorejs/docs/workflow/cleanup-posix-implementation-evidence.md",
+      "bytes": 4478,
+      "sha256": "934725cc750ce4271cf7957dffeb5ce362967fcf861b7fa9697bbb8fcda46f58"
+    }
+  ],
+  "phases": [
+    {
+      "phase": "RED",
+      "status": "OBSERVED_EXPECTED_FAILURE",
+      "actual_command": [
+        "<EXISTING_NODE_RUNTIME>/node.exe",
+        "--test",
+        "test/e2e/cleanup-posix-contract.test.mjs",
+        "test/e2e/cleanup-posix-native.test.mjs"
+      ],
+      "exit_code": 1,
+      "tests": 2,
+      "pass": 0,
+      "fail": 2,
+      "skip": 0,
+      "transcript": {
+        "path": "authoring/evals/records/cleanup-portability-red.txt",
+        "bytes": 2706,
+        "sha256": "d51973c93e2fbb798a60107e9c0cd98c86c1126e101b0550240785ae68ae896a",
+        "original_sha256": "d0fd57596239daa3181fe5c39fda718a30fed35973d88b0f3f770a6fd48dd4b8",
+        "original_git_blob_sha256": "766415fe74f61b828602ba1a1447dfabf5a23b3126261fc57b0840283775ea58",
+        "original_bytes": 3194
+      },
+      "limitation": "New module was absent before implementation. No actual Linux/macOS RED run was available."
+    },
+    {
+      "phase": "GREEN",
+      "status": "SHARED_CONTRACT_PASS_NATIVE_NOT_RUN",
+      "actual_command": [
+        "<EXISTING_NODE_RUNTIME>/node.exe",
+        "--test",
+        "test/e2e/cleanup-posix-contract.test.mjs",
+        "test/e2e/cleanup-posix-native.test.mjs"
+      ],
+      "exit_code": 0,
+      "tests": 27,
+      "pass": 6,
+      "fail": 0,
+      "skip": 21,
+      "transcript": {
+        "path": "authoring/evals/records/cleanup-portability-green.txt",
+        "bytes": 8283,
+        "sha256": "7fe536929048eafd9b4b2183180b7dfd42535e0bc5208289978a7e9ebab03ece"
+      },
+      "source_before": {
+        "files": 1691,
+        "sha256": "dbc2662b1b46ed0e5c29b8b089ff9eaccc7f5e3d8746384e1f240cdd9f05d985"
+      },
+      "source_after": {
+        "files": 1691,
+        "sha256": "dbc2662b1b46ed0e5c29b8b089ff9eaccc7f5e3d8746384e1f240cdd9f05d985"
+      },
+      "limitation": "All 21 Linux/macOS native fixtures are NOT_RUN on Windows; these skips supply no native acceptance proof."
+    },
+    {
+      "phase": "REFACTOR",
+      "status": "SOURCE_AUTHORING_CHECKS_PASS",
+      "commands": [
+        {
+          "actual_command": [
+            "<EXISTING_NODE_RUNTIME>/node.exe",
+            "<EXISTING_NODE_RUNTIME>/node_modules\\npm\\bin\\npm-cli.js",
+            "run",
+            "check:skills"
+          ],
+          "started_at_utc": "2026-10-02T12:16:28.449905+00:00",
+          "finished_at_utc": "2026-10-02T12:16:33.117360+00:00",
+          "exit_code": 0
+        },
+        {
+          "actual_command": [
+            "<EXISTING_NODE_RUNTIME>/node.exe",
+            "<EXISTING_NODE_RUNTIME>/node_modules\\npm\\bin\\npm-cli.js",
+            "run",
+            "check:skills:ps"
+          ],
+          "started_at_utc": "2026-10-02T12:16:33.117385+00:00",
+          "finished_at_utc": "2026-10-02T12:16:38.967139+00:00",
+          "exit_code": 0
+        },
+        {
+          "actual_command": [
+            "<EXISTING_NODE_RUNTIME>/node.exe",
+            "<EXISTING_NODE_RUNTIME>/node_modules\\npm\\bin\\npm-cli.js",
+            "run",
+            "check:text-hygiene"
+          ],
+          "started_at_utc": "2026-10-02T12:16:38.967160+00:00",
+          "finished_at_utc": "2026-10-02T12:16:39.681939+00:00",
+          "exit_code": 0
+        },
+        {
+          "actual_command": [
+            "<EXISTING_NODE_RUNTIME>/node.exe",
+            "<EXISTING_NODE_RUNTIME>/node_modules\\npm\\bin\\npm-cli.js",
+            "run",
+            "check:executable-references"
+          ],
+          "started_at_utc": "2026-10-02T12:16:39.681961+00:00",
+          "finished_at_utc": "2026-10-02T12:16:41.561531+00:00",
+          "exit_code": 0
+        },
+        {
+          "actual_command": [
+            "<EXISTING_NODE_RUNTIME>/node.exe",
+            "<EXISTING_NODE_RUNTIME>/node_modules\\npm\\bin\\npm-cli.js",
+            "run",
+            "test:e2e:skill-authoring"
+          ],
+          "started_at_utc": "2026-10-02T12:16:41.561552+00:00",
+          "finished_at_utc": "2026-10-02T12:17:24.207542+00:00",
+          "exit_code": 0
+        },
+        {
+          "actual_command": [
+            "<EXISTING_NODE_RUNTIME>/node.exe",
+            "authoring/evals/run-deterministic.mjs"
+          ],
+          "started_at_utc": "2026-10-02T12:17:24.207569+00:00",
+          "finished_at_utc": "2026-10-02T12:17:24.361103+00:00",
+          "exit_code": 0
+        }
+      ],
+      "source_before": {
+        "files": 1690,
+        "sha256": "479150bb678c774dc96577f3e75a34a7f34484342ee4ebd8a21ba67a2fa87a28"
+      },
+      "source_after": {
+        "files": 1690,
+        "sha256": "479150bb678c774dc96577f3e75a34a7f34484342ee4ebd8a21ba67a2fa87a28"
+      },
+      "stdout_sha256": "e5ff7db8cabc69826962a31ab747b0d983519c533a7c40579825ae579161e97d",
+      "limitation": "Historical source/authoring checks precede final documentation/evidence files. Final stable aggregate/review evidence is external."
+    }
+  ],
+  "nextjs_golden": {
+    "exit_code": 0,
+    "tests": 2,
+    "pass": 2,
+    "fail": 0,
+    "skip": 0,
+    "commands": [
+      {
+        "actual_command": [
+          "<EXISTING_NODE_RUNTIME>/node.exe",
+          "<EXISTING_NODE_RUNTIME>/node_modules\\npm\\bin\\npm-cli.js",
+          "run",
+          "test:e2e:nextjs:golden"
+        ],
+        "started_at_utc": "2026-10-02T12:16:36.667822+00:00",
+        "finished_at_utc": "2026-10-02T12:17:57.540442+00:00",
+        "exit_code": 0
+      }
+    ],
+    "stdout_sha256": "17386bbd434471cd00da9fb674647d63f2d3ca1eb8dd54dce770c5393e24270e",
+    "process_local_swc_cache": "<PROCESS_LOCAL_SWC_CACHE>",
+    "source_before": {
+      "files": 1690,
+      "sha256": "479150bb678c774dc96577f3e75a34a7f34484342ee4ebd8a21ba67a2fa87a28"
+    },
+    "source_after": {
+      "files": 1690,
+      "sha256": "479150bb678c774dc96577f3e75a34a7f34484342ee4ebd8a21ba67a2fa87a28"
+    }
+  },
+  "swc_native_cache": {
+    "exit_code": 0,
+    "native_images": 1,
+    "tarball_integrity_verified": true,
+    "carrier_sha256": "94b2b86e1533b280b6b9822413141a5ed6b72db4c8ab196eae583091d82f969d",
+    "stdout_sha256": "08244d53fc9b67d33af36b6fef57530d634efdbebf815276f03deedcbcd4b2cd"
+  },
+  "immutable_history": {
+    "f06_snapshot_sha256": "5369b088488f511151dcb95282c88a5b9776090fcc3ecea25e99de28268ef660",
+    "paths_checked": 40,
+    "all_unchanged": true
+  },
+  "native_platform_gates": {
+    "windows": "Final shared regression result belongs to the final external validation record.",
+    "linux_ext4": "NOT_RUN",
+    "macos_apfs": "NOT_RUN",
+    "runtime_provisioning": "NOT_AUTHORIZED"
+  },
+  "readiness": "BLOCKED_REQUIRED_NATIVE_PLATFORM_EVIDENCE_AND_PENDING_INDEPENDENT_REVIEW",
+  "limitations": [
+    "Cooperative maintenance excludes known admitted writers; it does not exclude hidden uncooperative same-user or privileged writers.",
+    "Unexpected capture is retained as a partial contract breach, not exact-object invariant success.",
+    "Interrupted capture inspection/recovery requires separate authority; no automatic resume or overwrite compensation is implemented.",
+    "Extended ACLs, special BSD flags and unvalidated filesystem/ABI profiles fail closed.",
+    "Process-interruption fixtures do not prove hardware power-loss recovery; net volume reclamation is unmeasured."
+  ],
+  "public_projection": {
+    "original_sha256": "bc9e13accc722ae2b713ba65eb8182aaff4fe7e389ed35b8d8184897199bb1e5",
+    "redactions": [
+      "local_host_paths_or_private_review_locator"
+    ],
+    "original_snapshot_preserved_locally": true,
+    "projected_transcripts": [
+      "authoring/evals/records/cleanup-portability-red.txt"
+    ],
+    "note": "Redacted public projection of historical evidence. Original command/result/source hashes remain provenance; redaction supplies no new execution or approval evidence."
+  }
+}

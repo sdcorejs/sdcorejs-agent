@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 
 import { createApprovedArtifact, verifyApprovedArtifact } from './approved-artifact.mjs';
+import { evaluateCleanupLifecycle } from '../cleanup/offer-policy.mjs';
 
 /**
  * Deterministic delivery-convergence evaluator.
@@ -15,13 +16,17 @@ const CONVERGENCE_EVALUATOR_ID = 'sdcorejs-convergence:v1';
 const RECEIPT_HASH = /^sha256:v1:[a-f0-9]{64}$/u;
 const CONVERGENCE_RECEIPT_CONTRACT = 'convergence-result:v1';
 
-function canonicalizeReceipt(value) {
+function canonicalizeReceipt(value, preserveOrder = false) {
   if (Array.isArray(value)) {
-    return value.map(canonicalizeReceipt).sort((left, right) =>
+    const items = value.map((item) => canonicalizeReceipt(item, preserveOrder));
+    return preserveOrder ? items : items.sort((left, right) =>
       JSON.stringify(left).localeCompare(JSON.stringify(right), 'en'));
   }
   if (value && typeof value === 'object') {
-    return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalizeReceipt(value[key])]));
+    // Cleanup engine receipts bind ordered actions, command arguments, and
+    // snapshot chains. Sorting these arrays would invalidate their identities.
+    return Object.fromEntries(Object.keys(value).sort().map((key) =>
+      [key, canonicalizeReceipt(value[key], preserveOrder || key === 'cleanup' || key === 'actual_command')]));
   }
   return value;
 }
@@ -856,6 +861,16 @@ export function validateConvergenceInput(input) {
     validatePathArray(input.dependency_regression.manifest_paths, 'convergence.dependency_regression.manifest_paths', errors);
   }
 
+  if (input.cleanup !== undefined && requireObject(input.cleanup, 'convergence.cleanup', errors)) {
+    if (!Array.isArray(input.cleanup.receipts)) {
+      errors.push(issue('ARRAY_REQUIRED', 'convergence.cleanup.receipts', 'must be an explicit receipt array'));
+    }
+    validateRefs(input.cleanup.evidence_refs, 'convergence.cleanup.evidence_refs', ids.evidence, errors);
+    if (!isObject(input.cleanup.current_snapshot) || !FINGERPRINT.test(input.cleanup.current_snapshot.fingerprint ?? '')) {
+      errors.push(issue('FINGERPRINT_INVALID', 'convergence.cleanup.current_snapshot', 'must contain an independently captured current cleanup fingerprint'));
+    }
+  }
+
   if (isObject(input.lifecycle)) {
     if (!REVISION.test(input.lifecycle.verification_revision ?? '')) {
       errors.push(issue('REVISION_INVALID', 'convergence.lifecycle.verification_revision', 'must be a lowercase 40-character revision'));
@@ -933,6 +948,10 @@ function compactResult(input, blockers, { validationErrors = false } = {}) {
         .map(({ id }) => id)
         .filter(isText),
     ),
+    ...(input?.cleanup !== undefined ? {
+      cleanup_receipt_ids: (Array.isArray(input.cleanup?.receipts) ? input.cleanup.receipts : [])
+        .map((receipt) => receipt?.receipt_id).filter(isText),
+    } : {}),
     summary: {
       requirements: Array.isArray(input?.requirements) ? input.requirements.length : 0,
       acceptance_criteria: Array.isArray(input?.acceptance_criteria)
@@ -982,12 +1001,12 @@ function hasExecutionScope(input) {
 }
 
 function activeModeEvidenceRefs(input) {
-  return {
+  return [...{
     feature: [],
     bugfix: input.debug.evidence_refs,
     'docs-only': input.docs_hygiene.evidence_refs,
     'dependency-regression': input.dependency_regression.evidence_refs,
-  }[input.mode];
+  }[input.mode], ...(input.cleanup?.evidence_refs ?? [])];
 }
 
 function modeEvidenceCoversExecution(input, evidence) {
@@ -1591,6 +1610,18 @@ function evaluateArtifactsAndFreshness(input, blockers) {
 
 function evaluateDelivery(input, blockers) {
   const D = CONVERGENCE_DRIFT_CODES;
+  if (input.cleanup !== undefined) {
+    const cleanup = evaluateCleanupLifecycle({
+      ...input.cleanup,
+      evidence: input.evidence,
+      current_source: { source_revision: input.source.revision, source_fingerprint: input.source.fingerprint },
+    });
+    for (const blocker of cleanup.blockers) {
+      add(blockers, blocker.code === 'CLEANUP_SOURCE_MISMATCH'
+        ? D.CONFORMANCE_EVIDENCE_STALE_OR_CONFLICTED : D.POST_VERIFICATION_WRITE,
+        'convergence.cleanup', blocker.message);
+    }
+  }
   if (
     input.public_contract.changed === true &&
     !MIGRATION_DECISIONS.has(input.public_contract.migration_decision_status)
@@ -1760,6 +1791,14 @@ export function evaluateConvergenceHandoff(input = {}) {
     }
   }
   verifyConvergenceReceipt(receipt, result, blockers);
+  if (result?.cleanup_receipt_ids !== undefined || current?.cleanup_receipt_ids !== undefined) {
+    if (!Array.isArray(result?.cleanup_receipt_ids) || !Array.isArray(current?.cleanup_receipt_ids) ||
+        result.cleanup_receipt_ids.some((id) => !RECEIPT_HASH.test(id)) ||
+        !sameStringSet(result.cleanup_receipt_ids, current.cleanup_receipt_ids)) {
+      blockers.push(issue(B.CONVERGENCE_SOURCE_MISMATCH, 'convergence_result.cleanup_receipt_ids',
+        'cleanup occurred after convergence or cleanup receipt identity is missing; rerun verification and convergence'));
+    }
+  }
 
   const source = result?.source_identity;
   const identities = [

@@ -53,6 +53,25 @@ resolves approval and transcript hashes and derives its aggregate status and
 token total from target/revision-bound provider run receipts for the complete
 scenario set.
 
+## Cleanup utility authoring evidence
+
+The approved `sdcorejs-cleanup` addition raises the current public ceiling from
+23 to 24 through canonical trigger and ceiling-change approval artifacts.
+`evals/records/cleanup-authoring-deterministic.json` records the actual baseline
+decision and the independent cleanup routing RED/GREEN regression. The original
+gate's generic positive/negative scenario references establish the typed
+approval/inventory gate; they do not prove cleanup-specific routing. That proof
+comes from paired workspace/assets/docs/restore and simplify/test/review cases
+in the existing skill-pack routing harness.
+
+Keep baseline-bound approvals as evidence of the original decision; do not
+replay them against an edited inventory. Historical RED/GREEN observations,
+their stated ceiling of 23 and the fixed ten-scenario live `NOT RUN` matrix
+remain intact. The terminal REFACTOR manifest binds current authoring sources
+with a truthful deterministic continuation, not a fabricated isolated-agent run.
+Cleanup-specific evidence uses a separate scoped format because the original
+lifecycle requires an isolated baseline before the authoring contract existed.
+
 ## Visual offer regression and dialogue evaluation
 
 The bounded Visual Companion change uses existing shared-reference and

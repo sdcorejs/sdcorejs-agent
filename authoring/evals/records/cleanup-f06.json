@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "kind": "cleanup-f06-coverage-type-repair-evidence",
+  "change_ref": "sdcorejs-cleanup",
+  "observed_at": "2026-10-02T02:45:50.961584+00:00",
+  "external_review": {
+    "version": 2,
+    "lines_read": 518,
+    "rendered_review_text_sha256": "53a9b361077c5b05e478db6cec06ec0b177f9dc145a9e034e5dbd447ccf08929",
+    "reviewed_snapshot_files": 1670,
+    "reviewed_snapshot_sha256": "58887f59b8929133675c35ca61fffee5cea5db6248230b4919fb12a52c6c7f3b",
+    "pre_repair_snapshot_exact_match": true
+  },
+  "authority": "Parent explicitly authorized narrow F-06 evidence type validation inside the existing repair scope; no new approval fabricated.",
+  "finding_ids": [
+    "F-06"
+  ],
+  "invariant": "Consumer coverage is a plain data object; all five required flags must be own data properties with literal boolean true. Missing/null/string/numeric/array/object flag values, invalid containers, inherited flags and accessors never establish complete evidence.",
+  "historical_f05_record": {
+    "path": "authoring/evals/records/cleanup-f05.json",
+    "sha256": "395c95be323412da4df45b1413ebf12e2266ca16dcfde4572ccf859a9d6b629e"
+  },
+  "previous_f05_source_bindings": [
+    {
+      "path": "_refs/cleanup/cleanup-engine.mjs",
+      "bytes": 40616,
+      "sha256": "ea63c4462f7f5b132f7124beb2838db0f614af316fcdd70ff6282ef8748d57b2"
+    },
+    {
+      "path": "test/e2e/cleanup-engine.test.mjs",
+      "bytes": 79130,
+      "sha256": "02d3a1421c4008b676b518fea8c47fa0390026b56c5fa1b72808514edac218e9"
+    },
+    {
+      "path": ".claude/_refs/cleanup/cleanup-engine.mjs",
+      "bytes": 40616,
+      "sha256": "ea63c4462f7f5b132f7124beb2838db0f614af316fcdd70ff6282ef8748d57b2"
+    },
+    {
+      "path": "plugin/_refs/cleanup/cleanup-engine.mjs",
+      "bytes": 40616,
+      "sha256": "ea63c4462f7f5b132f7124beb2838db0f614af316fcdd70ff6282ef8748d57b2"
+    },
+    {
+      "path": "codex/skills/_refs/cleanup/cleanup-engine.mjs",
+      "bytes": 40616,
+      "sha256": "ea63c4462f7f5b132f7124beb2838db0f614af316fcdd70ff6282ef8748d57b2"
+    }
+  ],
+  "current_source_bindings": [
+    {
+      "path": "_refs/cleanup/cleanup-contract.mjs",
+      "previous_sha256": "a080dc8b12104c52b000b29353e674afde8882d71e61a342feeaade4df9a83d3",
+      "current_sha256": "1aa7caa5007b21b6b04be0e0b82333f8b6130f1161abdaa699a32d02e45840a3"
+    },
+    {
+      "path": "_refs/cleanup/cleanup-engine.mjs",
+      "previous_sha256": "ea63c4462f7f5b132f7124beb2838db0f614af316fcdd70ff6282ef8748d57b2",
+      "current_sha256": "4b3a0ba6fa81e483a3b816f2be2097e62113a0bb33fc3af23d24f921f93e575c"
+    },
+    {
+      "path": "test/e2e/cleanup-engine.test.mjs",
+      "previous_sha256": "02d3a1421c4008b676b518fea8c47fa0390026b56c5fa1b72808514edac218e9",
+      "current_sha256": "f6219efe763347cff5d0d7478b6c4add0d0a3eebde3dfa39fb2030bbb1af1add"
+    },
+    {
+      "path": ".claude/_refs/cleanup/cleanup-contract.mjs",
+      "previous_sha256": "a080dc8b12104c52b000b29353e674afde8882d71e61a342feeaade4df9a83d3",
+      "current_sha256": "1aa7caa5007b21b6b04be0e0b82333f8b6130f1161abdaa699a32d02e45840a3"
+    },
+    {
+      "path": ".claude/_refs/cleanup/cleanup-engine.mjs",
+      "previous_sha256": "ea63c4462f7f5b132f7124beb2838db0f614af316fcdd70ff6282ef8748d57b2",
+      "current_sha256": "4b3a0ba6fa81e483a3b816f2be2097e62113a0bb33fc3af23d24f921f93e575c"
+    },
+    {
+      "path": "plugin/_refs/cleanup/cleanup-contract.mjs",
+      "previous_sha256": "a080dc8b12104c52b000b29353e674afde8882d71e61a342feeaade4df9a83d3",
+      "current_sha256": "1aa7caa5007b21b6b04be0e0b82333f8b6130f1161abdaa699a32d02e45840a3"
+    },
+    {
+      "path": "plugin/_refs/cleanup/cleanup-engine.mjs",
+      "previous_sha256": "ea63c4462f7f5b132f7124beb2838db0f614af316fcdd70ff6282ef8748d57b2",
+      "current_sha256": "4b3a0ba6fa81e483a3b816f2be2097e62113a0bb33fc3af23d24f921f93e575c"
+    },
+    {
+      "path": "codex/skills/_refs/cleanup/cleanup-contract.mjs",
+      "previous_sha256": "a080dc8b12104c52b000b29353e674afde8882d71e61a342feeaade4df9a83d3",
+      "current_sha256": "1aa7caa5007b21b6b04be0e0b82333f8b6130f1161abdaa699a32d02e45840a3"
+    },
+    {
+      "path": "codex/skills/_refs/cleanup/cleanup-engine.mjs",
+      "previous_sha256": "ea63c4462f7f5b132f7124beb2838db0f614af316fcdd70ff6282ef8748d57b2",
+      "current_sha256": "4b3a0ba6fa81e483a3b816f2be2097e62113a0bb33fc3af23d24f921f93e575c"
+    }
+  ],
+  "phases": [
+    {
+      "phase": "RED",
+      "node": "v22.22.3",
+      "command": "node --test --test-name-pattern='review F-06' test/e2e/cleanup-engine.test.mjs",
+      "exit_code": 1,
+      "tests": 5,
+      "pass": 1,
+      "fail": 4,
+      "transcript": {
+        "path": "authoring/evals/records/cleanup-f06-red.txt",
+        "sha256": "947c6172c986bf1949750719055d47e1499833ad73236232059a1c6f245f0d95"
+      },
+      "raw_log_sha256": "f357c145c1fe48b5e6e99ce2724d8e2f19c6f1239fe1ef14fac791e873da3583",
+      "raw_log_included": false
+    },
+    {
+      "phase": "GREEN",
+      "node": "v22.22.3",
+      "command": "node --test --test-name-pattern='review F-0[1-6]|verified restore is a new|superseded unique docs|dynamic asset references|finished current-task local design' test/e2e/cleanup-engine.test.mjs test/e2e/cleanup-integration.test.mjs test/e2e/skill-pack-runner.test.mjs",
+      "exit_code": 0,
+      "tests": 18,
+      "pass": 18,
+      "fail": 0,
+      "transcript": {
+        "path": "authoring/evals/records/cleanup-f06-green.txt",
+        "sha256": "b978d2f00e27320504642847f9fd938c30d1ad9431ef7b57e956931a38c01ec9"
+      },
+      "raw_log_sha256": "54127a61886f170d3ae57c2889666ffb072ec69d2793862b453b6caa79cfd6a3",
+      "raw_log_included": false
+    }
+  ],
+  "behavior": {
+    "helper_flag_permutations": 130,
+    "invalid_values_per_required_flag": 13,
+    "required_flags": 5,
+    "consumer_paths": [
+      "assets/typed.avif",
+      "assets/abandoned-typed.md"
+    ],
+    "invalid_containers": 9,
+    "public_cli_json_cases": 25,
+    "cli_modes": [
+      "analyze",
+      "plan",
+      "apply"
+    ],
+    "positive": "Actual CLI exact-true AVIF/draft quarantine and separately approved restore",
+    "red_unexpected_quarantines_restored": true,
+    "adjacent_boolean_controls": [
+      "unique_information",
+      "durable_value",
+      "needed_for_evidence",
+      "active",
+      "immutable",
+      "approved",
+      "historical",
+      "intentional"
+    ],
+    "adjacent_audit": "Document discharge and reproducibility use literal false/true; malformed retention/activity flags retain or block. Reference completeness is computed as a boolean. No unrelated authority-policy rewrite."
+  },
+  "provider_calls": 0,
+  "tokens": null,
+  "live_agent": "NOT RUN",
+  "independent_final_review": "PENDING; implementer checks do not replace a separate independent review.",
+  "verification_scope": "Focused F-01 through F-06 controls and repository aggregate, including cleanup. Unrelated expensive golden checks not repeated.",
+  "limitations": [
+    "Previous full npm test remains historical with ERR_SWC_NATIVE_CACHE blocking; no environment/security changes.",
+    "Live-agent and POSIX native E2E not run; full original prompt context not reproduced in selected artifacts.",
+    "No real-user cleanup or Git artifact delivery."
+  ],
+  "public_projection": {
+    "original_sha256": "2951220d0967970b8f7a33faa9ebff5b391352a187b556aeffc06b894e9077f7",
+    "redactions": [
+      "local_host_paths_or_private_review_locator"
+    ],
+    "original_snapshot_preserved_locally": true,
+    "projected_transcripts": [],
+    "note": "Redacted public projection of historical evidence. Original command/result/source hashes remain provenance; redaction supplies no new execution or approval evidence.",
+    "predecessor_projections": [
+      {
+        "path": "authoring/evals/records/cleanup-f05.json",
+        "original_git_blob_sha256": "395c95be323412da4df45b1413ebf12e2266ca16dcfde4572ccf859a9d6b629e",
+        "public_projection_sha256": "3937a3b038f202c3078c82d9f3fbc7350ab7e3d4ccae085016e8cbbeed4c58d0"
+      }
+    ]
+  }
+}

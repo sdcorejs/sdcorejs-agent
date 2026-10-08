@@ -1,0 +1,125 @@
+TAP version 13
+# Subtest: review F-01: consumer coverage blocks AVIF, unknown formats and semantic assets before quarantine
+not ok 1 - review F-01: consumer coverage blocks AVIF, unknown formats and semantic assets before quarantine
+  ---
+  duration_ms: 114.7669
+  type: 'test'
+  location: '<CANDIDATE_ROOT>\\test\\e2e\\cleanup-engine.test.mjs:413:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    .sdcorejs/tmp/task/consumer.avif
+
+    'LOW' !== 'BLOCKED'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'BLOCKED'
+  actual: 'LOW'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///<CANDIDATE_ROOT>/test/e2e/cleanup-engine.test.mjs:422:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: review F-01: complete consumer evidence permits unknown assets but concatenated lookup stays unknown
+not ok 2 - review F-01: complete consumer evidence permits unknown assets but concatenated lookup stays unknown
+  ---
+  duration_ms: 52.0283
+  type: 'test'
+  location: '<CANDIDATE_ROOT>\\test\\e2e\\cleanup-engine.test.mjs:431:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'reproducible-output'
+    - 'unused-candidate'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'unused-candidate'
+  actual: 'reproducible-output'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///<CANDIDATE_ROOT>/test/e2e/cleanup-engine.test.mjs:438:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: review F-02: verified restore cannot omit an apply with failed affected verification
+not ok 3 - review F-02: verified restore cannot omit an apply with failed affected verification
+  ---
+  duration_ms: 8000.9903
+  type: 'test'
+  location: '<CANDIDATE_ROOT>\\test\\e2e\\cleanup-integration.test.mjs:280:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    omission/reordering cannot hide failed apply evidence
+
+    true !== false
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///<CANDIDATE_ROOT>/test/e2e/cleanup-integration.test.mjs:306:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: review F-03: review about cleanup preserves the review owner and genuine hygiene controls
+not ok 4 - review F-03: review about cleanup preserves the review owner and genuine hygiene controls
+  ---
+  duration_ms: 56.2651
+  type: 'test'
+  location: '<CANDIDATE_ROOT>\\test\\e2e\\skill-pack-runner.test.mjs:2344:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Audit security of the cleanup workflow files.
+    + actual - expected
+
+    + 'sdcorejs-cleanup'
+    - 'sdcorejs-review'
+                ^
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'sdcorejs-review'
+  actual: 'sdcorejs-cleanup'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///<CANDIDATE_ROOT>/test/e2e/skill-pack-runner.test.mjs:2356:13)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: review F-04: cleanup discovery discloses portable analysis and Windows mutation before selection
+not ok 5 - review F-04: cleanup discovery discloses portable analysis and Windows mutation before selection
+  ---
+  duration_ms: 34.0798
+  type: 'test'
+  location: '<CANDIDATE_ROOT>\\test\\e2e\\skill-pack-runner.test.mjs:2359:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /portable[\s\S]*analy[\s\S]*plan/iu. Input:
+
+    'Bounded repository/workspace hygiene utility for temporary outputs, finished caches, previews, diagnostics, duplicate assets/files, and superseded docs. Use to analyze cleanup candidates, freeze an exact plan, apply authorized actions, or restore a cleanup receipt. Default read-only; unused references and equal hashes are evidence, never deletion authority. Source refinement, test teardown, and code quality retain simplify, test, and review owners. Runtime-localized.'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: 'Bounded repository/workspace hygiene utility for temporary outputs, finished caches, previews, diagnostics, duplicate assets/files, and superseded docs. Use to analyze cleanup candidates, freeze an exact plan, apply authorized actions, or restore a cleanup receipt. Default read-only; unused references and equal hashes are evidence, never deletion authority. Source refinement, test teardown, and code quality retain simplify, test, and review owners. Runtime-localized.'
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///<CANDIDATE_ROOT>/test/e2e/skill-pack-runner.test.mjs:2362:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 0
+# fail 5
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8143.892
