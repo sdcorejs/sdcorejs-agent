@@ -1,5 +1,6 @@
 import { verifyApprovedArtifact } from './approved-artifact.mjs';
 import { evaluateConvergenceHandoff } from './convergence-contract.mjs';
+import { evaluateCleanupLifecycle } from '../cleanup/offer-policy.mjs';
 
 const REVISION = /^[a-f0-9]{40}$/u;
 const LEGACY_SINGLETON =
@@ -24,7 +25,7 @@ function validRelativePath(value) {
   );
 }
 
-function deriveConvergenceCurrent(contract) {
+function deriveConvergenceCurrent(contract, cleanupReceiptIds) {
   const blockers = [];
   const repositories = Array.isArray(contract?.repositories) ? contract.repositories : [];
   const planMetadata = [];
@@ -77,6 +78,7 @@ function deriveConvergenceCurrent(contract) {
       owner_thread_id: contract.active_thread_id,
       change_ref: changeRefs[0] ?? null,
       mode: modes[0] ?? null,
+      ...(cleanupReceiptIds !== undefined ? { cleanup_receipt_ids: cleanupReceiptIds } : {}),
     },
     blockers,
   };
@@ -294,13 +296,24 @@ export function planRepositoryLocalClosures(contract) {
   if (new Set(identities).size !== identities.length) {
     throw new TypeError('repository closures must have unique repository identities');
   }
-  const derivedConvergence = deriveConvergenceCurrent(contract);
+  const cleanup = contract.cleanup === undefined ? null : evaluateCleanupLifecycle({
+    ...contract.cleanup,
+    evidence: contract.evidence ?? [],
+    current_source: {
+      source_revision: contract.source_revision ?? contract.repositories.find(({ role }) => role === 'portal')?.source_revision
+        ?? contract.repositories[0]?.portal_pinned_revision,
+      source_fingerprint: contract.source_fingerprint,
+    },
+    branch_ready: { cleanup_receipt_ids: contract.branch_ready_cleanup_receipt_ids },
+  });
+  const derivedConvergence = deriveConvergenceCurrent(contract, cleanup?.receipt_ids);
   const convergenceEvaluation = evaluateConvergenceHandoff({
     result: contract.convergence_result,
     current: derivedConvergence.current,
     receipt: contract.convergence_receipt,
   });
   const convergenceBlockers = [
+    ...(cleanup?.blockers ?? []).map(({ code, message }) => `cleanup ${code}: ${message}`),
     ...derivedConvergence.blockers,
     ...convergenceEvaluation.blockers.map(
     ({ code, message }) => `convergence ${code}: ${message}`,

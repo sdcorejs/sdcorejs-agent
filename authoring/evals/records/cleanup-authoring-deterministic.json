@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "kind": "cleanup-authoring-deterministic-evidence",
+  "source_revision": "03563d26837751d67a354d38589c6ed0fe67ed24",
+  "source_state": "isolated uncommitted branch; disjoint worker edits; no publication",
+  "observed_at": "2026-10-01T17:34:12.891Z",
+  "historical_prechange_decision": {
+    "valid": true,
+    "decision": "create-public-skill",
+    "create_public_skill": true,
+    "current_public_count": 23,
+    "ceiling": 23,
+    "public_inventory_hash": "sha256:22175aacc7fe62b33ae6ff86ea262a58d61dcb74fbd1915178a339e48488dd56",
+    "post_change_count": 24,
+    "approvals_required": [],
+    "errors": [],
+    "provenance": "Actual evaluateNewSkillDecision result captured by the integration owner before canonical edits; baseline-bound approvals are not replayed against candidate inventory.",
+    "evidence_scope": "The initial typed helper used existing generic architecture positive/negative routing references. This proves baseline inventory and trigger/ceiling approval binding only; independent cleanup routing is established by the real RED/GREEN checks below."
+  },
+  "approvals": [
+    {
+      "artifact_ref": ".sdcorejs/approvals/sdcorejs-cleanup-new-trigger.json",
+      "approval_hash": "sha256:v1:077361d86162ba905177dfb2aa2160a5ae1135ce4203916b775e3a6c7822464c"
+    },
+    {
+      "artifact_ref": ".sdcorejs/approvals/sdcorejs-cleanup-ceiling-change.json",
+      "approval_hash": "sha256:v1:f8b60ea2bf405411399b9cec119992ea11013b9916fdd0643be68532be0784ab"
+    }
+  ],
+  "baseline": {
+    "command": "node --test test/e2e/skill-authoring-contract.test.mjs test/e2e/skill-pack-runner.test.mjs",
+    "exit": 0,
+    "tests": 38,
+    "result": "PASS",
+    "runtime": "v22.22.2"
+  },
+  "red": {
+    "command": "node --test --test-name-pattern='cleanup utility dispatch' test/e2e/skill-pack-runner.test.mjs",
+    "exit": 1,
+    "result": "EXPECTED_FAIL",
+    "observation": "Clean up this workspace temp folder, analyze only. routed sdcorejs-brainstorming instead of sdcorejs-cleanup.",
+    "runtime": "v22.22.2"
+  },
+  "green": {
+    "command": "node --test --test-name-pattern='cleanup utility dispatch' test/e2e/skill-pack-runner.test.mjs",
+    "exit": 0,
+    "tests": 1,
+    "paired_routing_checks": 10,
+    "result": "PASS",
+    "runtime": "v22.22.2",
+    "mutation": "Removing cleanup from sourceSkills prevents cleanup dispatch."
+  },
+  "provider_calls": 0,
+  "ambient_credentials_read": false,
+  "token_usage": null,
+  "live_agent": {
+    "result": "NOT RUN",
+    "exact_reason": "No credentialed provider/fresh target-project live evaluation authorized or executed."
+  },
+  "exact_limitation": "The existing deterministic routing harness covers paired English/localized controls and mutation, not natural-language live-agent behavior. Supported Node22.22.3 authoring/routing/site verification passed; official mirrors, integrated engine/offer/tail tests and final branch readiness belong to integration fan-in. No live provider/target-project validation, publication or user-data cleanup was performed. Historical prechange generic routing evidence is not cleanup-specific proof.",
+  "supported_runtime_verification": [
+    {
+      "command": "node --test test/e2e/skill-authoring-contract.test.mjs",
+      "exit": 0,
+      "tests": 6,
+      "result": "PASS",
+      "runtime": "v22.22.3"
+    },
+    {
+      "command": "node --test --test-name-pattern='cleanup utility dispatch|dispatches expected skills|direct .*prompts|AI-agent routing|documentation trigger' test/e2e/skill-pack-runner.test.mjs",
+      "exit": 0,
+      "tests": 8,
+      "result": "PASS",
+      "runtime": "v22.22.3"
+    },
+    {
+      "command": "node --test --test-name-pattern='cleanup utility dispatch' test/e2e/skill-pack-runner.test.mjs",
+      "exit": 0,
+      "tests": 1,
+      "paired_routing_checks": 12,
+      "result": "PASS",
+      "runtime": "v22.22.3"
+    },
+    {
+      "command": "node authoring/evals/run-deterministic.mjs",
+      "exit": 0,
+      "scenarios": 10,
+      "result": "PASS; zero provider calls; no ambient credential reads",
+      "runtime": "v22.22.3"
+    },
+    {
+      "command": "npm ci --ignore-scripts --offline",
+      "cwd": "site",
+      "exit": 0,
+      "result": "Installed192packages; manifest and lock unchanged",
+      "runtime": "v22.22.3"
+    },
+    {
+      "command": "npm run build",
+      "cwd": "site",
+      "exit": 0,
+      "result": "Astro117pages built",
+      "runtime": "v22.22.3"
+    },
+    {
+      "command": "npm run check:links",
+      "cwd": "site",
+      "exit": 0,
+      "result": "PASS;38search entries/locale;76total;4477local links/assets;41pinned sources; truthful unpublished cleanup candidate",
+      "runtime": "v22.22.3"
+    }
+  ],
+  "candidate_source_manifest": [
+    {
+      "path": "skills/shared/workflow/cleanup.md",
+      "sha256": "sha256:ff85f33646c54af8b5b0b24d05a2d9079abcac366df0c10f452536da66eb4cd4"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "sha256:b060d8d250b2ca307511bcde190413ed3e2a4fd5a7223c454b4a2ff59b254877"
+    },
+    {
+      "path": "test/e2e/skill-pack-runner.test.mjs",
+      "sha256": "sha256:3d2a06893a4b79dcb1d2cb1c41ce7451ebde5e80ed3fcd709ae7d99df82acc58"
+    },
+    {
+      "path": "authoring/evals/skill-authoring-contract.mjs",
+      "sha256": "sha256:bdc4134750a8e6fbc9019d60205622cf8f9625e4dee4a6e0f937746eac4756cb"
+    },
+    {
+      "path": "site/src/components/SkillReferencePage.astro",
+      "sha256": "sha256:d92d986606e9699a327d0ddf7a75b44fe0cbce0253fa4679d7af007e59bf3606"
+    },
+    {
+      "path": "site/src/data/navigation.ts",
+      "sha256": "sha256:6a7da0460cc62a6bbff204ee00bca045be364961b5d13289b9003611c538511a"
+    },
+    {
+      "path": "site/scripts/check-site.mjs",
+      "sha256": "sha256:241717e193156d34c5baa511d13e4ed852f3241b79767be0a0bd04ee12a708dd"
+    }
+  ],
+  "bootstrap_continuation": {
+    "observed_at": "2026-10-01T18:22:49.054Z",
+    "runtime": "v22.22.3",
+    "measurement_kind": "deterministic-source-bound-contract-projection",
+    "observed_live": false,
+    "command": "node scripts/measure-communication-economy.mjs",
+    "exit": 0,
+    "baseline": {
+      "paths": [
+        "AGENTS.md",
+        "skills/orchestration/using-skills.md",
+        "_refs/shared/runtime-protocols.md"
+      ],
+      "files": 3,
+      "utf8_bytes": 20173,
+      "semantic_bytes": 19723,
+      "lines": 387,
+      "words": 2361
+    },
+    "current": {
+      "files": 3,
+      "utf8_bytes": 19874,
+      "semantic_bytes": 19627,
+      "lines": 373,
+      "words": 2303
+    },
+    "authoritative_fields": {
+      "required": 361,
+      "preserved": 361
+    },
+    "checks": [
+      {
+        "command": "node --test --test-name-pattern='bootstrap|report exposes|deterministic report|budget' test/e2e/communication-economy.test.mjs",
+        "exit": 0,
+        "tests": 4
+      },
+      {
+        "command": "node --test test/e2e/entrypoint-smoke.test.mjs",
+        "exit": 0,
+        "tests": 6
+      },
+      {
+        "command": "npm run check:text-hygiene",
+        "exit": 0,
+        "files_scanned": 1358
+      },
+      {
+        "command": "git diff --check",
+        "exit": 0
+      }
+    ],
+    "change": "Condensed duplicate bootstrap instructions into mandatory JIT pointers; preserved cleanup routing, authority and ownership. Updated VALIDATION table from this measurement. Added supported-platform and source-allocation disclosure to cleanup skill.",
+    "limitation": "Deterministic source measurement and documentation checks only. This continuation does not claim live provider behavior, native helper execution, net volume savings or publication.",
+    "source_manifest": [
+      {
+        "path": "AGENTS.md",
+        "sha256": "sha256:f7cf3fe34acd450033f7aa450942a5d4a23b7a963455dca8b36af14b4f250ccd"
+      },
+      {
+        "path": "skills/orchestration/using-skills.md",
+        "sha256": "sha256:2b6a7fad10f8c4d321d53e293eaaf48330f40b5ea3c34ae6203529a46a049b14"
+      },
+      {
+        "path": "skills/shared/workflow/cleanup.md",
+        "sha256": "sha256:117d145d1c6a9acfdb0be512549d0c1181fa126c924160661b8a5bfce4e06a03"
+      }
+    ]
+  },
+  "candidate_source_manifest_scope": "Source bytes captured for the supported-runtime authoring/routing/site verification at observed_at. Subsequent integration edits are not covered by that captured manifest; final integrated source binding and verification belong to the integration owner."
+}

@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: review F-01: consumer coverage blocks AVIF, unknown formats and semantic assets before quarantine
+ok 1 - review F-01: consumer coverage blocks AVIF, unknown formats and semantic assets before quarantine
+  ---
+  duration_ms: 148.1859
+  type: 'test'
+  ...
+# Subtest: review F-01: complete consumer evidence permits unknown assets but concatenated lookup stays unknown
+ok 2 - review F-01: complete consumer evidence permits unknown assets but concatenated lookup stays unknown
+  ---
+  duration_ms: 7971.9375
+  type: 'test'
+  ...
+# Subtest: verified restore is a new cleanup event consumed by convergence and final branch readiness
+ok 3 - verified restore is a new cleanup event consumed by convergence and final branch readiness
+  ---
+  duration_ms: 8427.4822
+  type: 'test'
+  ...
+# Subtest: review F-02: verified restore cannot omit an apply with failed affected verification
+ok 4 - review F-02: verified restore cannot omit an apply with failed affected verification
+  ---
+  duration_ms: 7845.3107
+  type: 'test'
+  ...
+# Subtest: review F-03: review about cleanup preserves the review owner and genuine hygiene controls
+ok 5 - review F-03: review about cleanup preserves the review owner and genuine hygiene controls
+  ---
+  duration_ms: 43.4551
+  type: 'test'
+  ...
+# Subtest: review F-04: cleanup discovery discloses portable analysis and Windows mutation before selection
+ok 6 - review F-04: cleanup discovery discloses portable analysis and Windows mutation before selection
+  ---
+  duration_ms: 45.136
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 16381.9585

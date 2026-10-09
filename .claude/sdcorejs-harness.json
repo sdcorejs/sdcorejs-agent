@@ -3,7 +3,7 @@
   "adapter": "claude-code",
   "source_path": "_refs/harness/capability-contract.json",
   "source_hash": "sha256:57e326a1af1c4a038bfa2e6befc459252fd9209b822d6365939aa04e82688c56",
-  "content_hash": "sha256:2ff6499b687b2ccd148785b39ac350df1ca8a15dd0420fbfa49a8fe0d22f203f",
+  "content_hash": "sha256:76c5f2bad9da5bb852654b7069b4f0e76e5543800f60aa768cec8487ea49d0e8",
   "generated_path": ".claude/sdcorejs-harness.json",
   "capabilities": {
     "runtime_context_channel": "unknown",
@@ -321,6 +321,18 @@
         "context.pass",
         "verification.run",
         "user.approve"
+      ]
+    },
+    "sdcorejs-cleanup": {
+      "source_path": "skills/shared/workflow/cleanup.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "context.pass",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose"
       ]
     },
     "sdcorejs-debug": {

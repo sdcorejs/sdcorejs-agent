@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { verifyApprovedArtifact } from '../../_refs/shared/approved-artifact.mjs';
 
 export const AUTHORING_SCHEMA_VERSION = 1;
-export const PUBLIC_SKILL_CEILING = 23;
+export const PUBLIC_SKILL_CEILING = 24;
 export const AUTHORING_FALLBACKS = Object.freeze([
   'existing-skill-mode',
   'shared-reference',
@@ -478,8 +478,12 @@ function validateBaselineEvidence(record, errors) {
   ) {
     errors.push('baseline_execution post_change_count must derive from observed plus proposed skills');
   }
-  if (execution.ceiling !== PUBLIC_SKILL_CEILING) {
-    errors.push('baseline_execution ceiling must match the repository ceiling');
+  // The historical isolated scenario stated its ceiling in the prompt before
+  // the authoring contract existed. Its typed, hash-bound source snapshot also
+  // binds execution.ceiling. Today's authorized limit cannot rewrite that run.
+  const baselineCeiling = record.prompt?.match(/public ceiling of (\d+)/u)?.[1];
+  if (baselineCeiling === undefined || execution.ceiling !== Number(baselineCeiling)) {
+    errors.push('baseline_execution ceiling must match the historical scenario ceiling');
   }
 }
 
@@ -685,7 +689,7 @@ export function evaluateNewSkillDecision(input = {}) {
   } else if (input.proposed_public_skills.some((name) => repositoryState.public_names.includes(name))) {
     errors.push('proposed_public_skills must not duplicate the repository-derived inventory');
   }
-  if (input.ceiling !== PUBLIC_SKILL_CEILING) errors.push('ceiling must remain 23');
+  if (input.ceiling !== PUBLIC_SKILL_CEILING) errors.push(`ceiling must remain ${PUBLIC_SKILL_CEILING}`);
   if (!isObject(input.approvals) || !Object.hasOwn(input.approvals, 'new_trigger') || !Object.hasOwn(input.approvals, 'ceiling_change')) {
     errors.push('approvals must explicitly declare new_trigger and ceiling_change artifact references');
   }

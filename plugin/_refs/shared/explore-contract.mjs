@@ -5,6 +5,7 @@ import { promisify } from 'node:util';
 import { classifyConventionPath } from './convention-paths.mjs';
 import { stableRepositoryId } from './repository-contract.mjs';
 import { systemRegistry } from './system-registry.mjs';
+import { normalizeCleanupSignal } from '../cleanup/offer-policy.mjs';
 
 const execFileAsync = promisify(execFile);
 const READ_ONLY_ACTIONS = new Set([
@@ -40,6 +41,15 @@ const SKIPPED_ARTIFACT_DIRECTORIES = new Set([
   'tmp',
   'traces',
 ]);
+
+/** Build bounded runtime signals from observations already read by explore.
+ * This helper does not scan, persist state, present offers, or authorize writes.
+ */
+export function buildExploreCleanupSignals(observations = []) {
+  return observations.map((observation) => normalizeCleanupSignal({
+    ...observation, source: 'sdcorejs-explore',
+  })).filter(Boolean);
+}
 
 export function validateExploreClassification({
   tracks = [],

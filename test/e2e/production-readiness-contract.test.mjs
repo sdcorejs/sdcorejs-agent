@@ -134,6 +134,7 @@ test('entrypoint routing and adapter manifests consume the central registry with
     'skills/shared/workflow/debug.md',
     'skills/orchestration/repair-loop.md',
     'skills/shared/workflow/review.md',
+    'skills/shared/workflow/cleanup.md',
     'skills/shared/workflow/simplify.md',
     'skills/shared/workflow/git.md',
     'skills/shared/workflow/ship.md',
@@ -143,7 +144,7 @@ test('entrypoint routing and adapter manifests consume the central registry with
     assert.ok(name, `${relativePath} has a skill name`);
     sourceSkills.push(name);
   }
-  assert.equal(new Set(sourceSkills).size, 23);
+  assert.equal(new Set(sourceSkills).size, 24);
 
   const expectedRegistryHash = `sha256:${registry.registry_hash_input ?? ''}`;
   for (const relativePath of [

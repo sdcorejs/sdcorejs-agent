@@ -3,7 +3,7 @@
   "adapter": "copilot",
   "source_path": "_refs/harness/capability-contract.json",
   "source_hash": "sha256:57e326a1af1c4a038bfa2e6befc459252fd9209b822d6365939aa04e82688c56",
-  "content_hash": "sha256:d5e7e73f482933b8d35d5bbfe007b641aa7e2798ba72b18b8ab339d898c272d4",
+  "content_hash": "sha256:95096b3313565154fda2cf35224800016358f45aaae65ecbb1df7a0f828de233",
   "generated_path": ".github/sdcorejs-harness.json",
   "capabilities": {
     "runtime_context_channel": "unknown",
@@ -286,6 +286,18 @@
         "context.pass",
         "verification.run",
         "user.approve"
+      ]
+    },
+    "sdcorejs-cleanup": {
+      "source_path": "skills/shared/workflow/cleanup.md",
+      "required_actions": [
+        "artifact.read",
+        "artifact.write",
+        "context.pass",
+        "verification.run",
+        "progress.create",
+        "progress.update",
+        "user.choose"
       ]
     },
     "sdcorejs-debug": {

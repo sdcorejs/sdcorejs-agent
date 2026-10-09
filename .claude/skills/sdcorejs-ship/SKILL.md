@@ -158,8 +158,7 @@ Rules:
 
 ## Mode: verify-before-done
 
-Read `_refs/orchestration/tail/verify-before-done.md` completely, then run the
-selected verification mode.
+Read `_refs/orchestration/tail/verify-before-done.md` completely, then run the selected verification mode.
 
 Feature acceptance:
 
@@ -216,8 +215,7 @@ Do not patch source directly inside `verify-before-done`.
 
 ## Mode: branch-ready
 
-Read `_refs/orchestration/tail/branch-ready.md` completely, then run its
-read-only hygiene checks.
+Read `_refs/orchestration/tail/branch-ready.md` completely, then run its read-only hygiene checks.
 
 Branch-ready is the final read-only gate immediately before `sdcorejs-git`
 creates commit, PR, push, tag, or release artifacts. No writes after
@@ -253,12 +251,14 @@ Preferred order:
 4. Merge producer `artifact_context` entries for the same change. Preserve
    local-only and unrelated exclusions; require one explicit owner for shared
    artifacts.
-5. Run `verify-before-done` or the appropriate verification mode over the final
+5. Run `sdcorejs-cleanup (task-tail-cleanup)` for qualifying known task artifacts after durable finalization; follow `_refs/cleanup/workflow.md`.
+6. After mutation, consume exact receipts, independent current cleanup snapshot and current mapped affected checks; failures block readiness.
+7. Run `verify-before-done` or the appropriate verification mode over the final
    intended diff.
-6. Run `branch-ready`, including read-only SDCoreJS Artifact Closure, as the
+8. Run `branch-ready`, including read-only SDCoreJS Artifact Closure, as the
    final read-only gate over the final diff.
-7. Produce `ship_context`.
-8. Delegate to `sdcorejs-git` only if the user explicitly asked for commit, PR,
+9. Produce `ship_context`.
+10. Delegate to `sdcorejs-git` only if the user explicitly asked for commit, PR,
    push, changelog, tag, or release artifacts and final evidence is current.
 
 If any workflow verifies before docs or changelog writes, re-run branch-ready
@@ -474,6 +474,7 @@ ship_context:
   artifact_context:
     contract: <exact artifact closure context from the canonical lifecycle ref>
   writes_after_branch_ready: []
+  cleanup: null # optional exact receipts/current_snapshot/evidence_refs runtime projection
   branch_ready_evidence: { result: <result>, associated_HEAD_or_diff: <sha or diff> }
   final_verdict: READY | READY_WITH_WARNINGS | BLOCKED | DEFERRED
   git_handoff_allowed: true | false
@@ -487,16 +488,14 @@ is not complete.
 ## Cross-References
 
 - `_refs/shared/finish-gate.md` - consolidated post-code options and final branch-ready ordering.
-- `_refs/orchestration/tail/verify-before-done.md` - verification mode and
-  acceptance evidence gate.
+- `_refs/orchestration/tail/verify-before-done.md` - verification mode and acceptance evidence gate.
 - `_refs/orchestration/tail/branch-ready.md` - final read-only hygiene gate.
-- `_refs/orchestration/tail/ship-context.md` - complete output contract and
-  invariants.
+- `_refs/orchestration/tail/ship-context.md` - complete output contract and invariants.
 - `sdcorejs-git` - commit, PR, changelog, release notes, tag/release artifacts.
-- `_refs/angular/core-version.md` - pinned Core UI version guard for Angular
-  dependency updates.
+- `_refs/angular/core-version.md` - pinned Core UI version guard for Angular dependency updates.
 - `sdcorejs-repair-loop` - fixes failed review or verification findings.
 - `sdcorejs-debug` - root-cause workflow for concrete failures.
 - `sdcorejs-test` - test authoring and test evidence.
 - `sdcorejs-review` - read-only quality evidence.
 - `sdcorejs-explore` - project context and recovery evidence.
+- `sdcorejs-cleanup` - bounded current-task housekeeping before affected verification and readiness.

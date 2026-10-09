@@ -19,10 +19,39 @@ deterministic/source checks; no target-project live-agent or visual verification
 is claimed. Change-scoped delivery evidence is in
 `.sdcorejs/docs/workflow/2026-09-09-uiux-knowledge.md`.
 
+## Cleanup utility working-tree validation (unpublished)
+
+The approved cleanup utility adds the 24th public skill with separate read-only
+analysis, exact mutation authority and recoverable operations. Canonical
+trigger/ceiling approvals preserve the baseline inventory identity. Existing
+generic routing slots proved the typed authoring gate only; cleanup-specific
+routing is backed by its independent real RED/GREEN regression.
+
+Observed scoped commands below used supported Node `22.22.3` in the isolated
+uncommitted branch. These results do not claim live-agent, rendered-browser,
+published-source or real-user-repository cleanup coverage.
+
+| Command | Result |
+|---|---|
+| `node --test test/e2e/skill-authoring-contract.test.mjs` | PASS 6/6, including approval/count mutations, historical evidence integrity and live NOT RUN checks. |
+| `node authoring/evals/run-deterministic.mjs` | PASS 10/10; zero provider calls and no ambient credential reads. |
+| `node --test --test-name-pattern='cleanup utility dispatch' test/e2e/skill-pack-runner.test.mjs` | PASS 1/1 with 12 paired English/localized routing checks and missing-skill mutation. The pre-candidate RED failed on workspace cleanup routing. |
+| `npm ci --ignore-scripts --offline` in `site/` | PASS; package manifests/lock unchanged. |
+| `npm run build` and `npm run check:links` in `site/` | PASS; 117 HTML pages, 38 search entries per locale, candidate-source provenance and pinned published-source links checked. |
+| `npm run check:text-hygiene`, `git diff --check` | PASS at scoped handoff. |
+
+Evidence: `authoring/evals/records/cleanup-authoring-deterministic.json`.
+Historical RED/GREEN observations and their ceiling of 23 remain intact; the
+terminal authoring manifest includes a truthful deterministic continuation.
+Official mirror generation, integrated engine/offer/tail fixture tests and
+final branch readiness are verified by the integration owner after fan-in.
+Live provider/fresh-target evaluation remains NOT RUN; no publication or
+cleanup of real user data was performed.
+
 ## Current Layout
 
-- `skills/**/*.md` - 23 dispatchable public source skills; the enforced ceiling
-  is 23.
+- `skills/**/*.md` - 24 dispatchable public source skills; the enforced ceiling
+  is 24.
 - `authoring/**` - internal-only skill-authoring lifecycle and evaluation
   harness; it is not a public skill source or distribution input.
 - `_refs/**` - reference data loaded on demand.
@@ -34,16 +63,16 @@ is claimed. Change-scoped delivery evidence is in
 - `_refs/harness/**` - canonical semantic actions, tri-state capabilities,
   model/role policy, runtime envelopes, and deterministic sentinel policy.
 - `*/sdcorejs-harness.json` - generated adapter mappings with canonical content
-  hash and 23-skill action declarations.
+  hash and 24-skill action declarations.
 
 ## Inventory
 
 | Bucket | Count |
 |---|---:|
-| Source skills | 23 |
-| Claude Code mirror skills | 23 |
-| Plugin mirror skills | 23 |
-| Codex mirror skills | 23 |
+| Source skills | 24 |
+| Claude Code mirror skills | 24 |
+| Plugin mirror skills | 24 |
+| Codex mirror skills | 24 |
 | Internal-only authoring skills | 1 (excluded from all rows above) |
 
 ## Workflow Inventory
@@ -62,6 +91,7 @@ is claimed. Change-scoped delivery evidence is in
 | Test executor | `sdcorejs-test` |
 | Documentation executor | `sdcorejs-documentation` |
 | Simplification utility | `sdcorejs-simplify` |
+| Cleanup utility | `sdcorejs-cleanup` (default read-only) |
 | Delegated execution lifecycle | `sdcorejs-subagent-driven-development` |
 | Parallel scheduler | `sdcorejs-parallel-dispatch` |
 | Finish | `sdcorejs-ship (verify-before-done mode)`, `sdcorejs-ship (branch-ready mode)`, `_refs/orchestration/tail/auto-docs.md`, `sdcorejs-documentation (write-user-guide mode)`, `_refs/orchestration/tail/auto-task-tracker.md`, `sdcorejs-explore (memories mode)` when durable knowledge surfaced |
@@ -210,15 +240,15 @@ working-tree diff:
 
 | Measure | Baseline | Current working tree |
 |---|---:|---:|
-| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,955 |
-| Always-loaded bootstrap words | 2,361 | 2,337 |
-| Aggregate just-in-time scenario bytes | 514,603 | 659,868 |
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,919 |
+| Always-loaded bootstrap words | 2,361 | 2,307 |
+| Aggregate just-in-time scenario bytes | 514,603 | 669,659 |
 | Aggregate visible output bytes | 42,558 | 2,802 |
 | Aggregate visible output words | 3,961 | 337 |
 | Portable fallback handoff bytes | 0 | 25,383 |
 | Supported runtime context channel bytes | 0 | 1,819 |
 | Repeated-block bytes | 2,319 | 0 |
-| Total measured communication bytes | 577,334 | 709,827 |
+| Total measured communication bytes | 577,334 | 719,582 |
 | Consumer-required authoritative fields | 361 | 361 preserved |
 
 The report includes ten scenarios, per-scenario selected paths, bytes, words,
@@ -490,7 +520,7 @@ Evidence target:
 | `npm run test:e2e:phase1` | 0 | Repeated focused runs after the regression edit, mirror sync, and evidence write passed 29/29, including scoped fixed-component negative/mutation checks. |
 | `npm run test:e2e:repository` (60-second tool limit) | 124 | The first attempt was terminated by the command timeout before TAP output; this is not recorded as a test pass or test assertion failure. |
 | `npm run test:e2e:repository` (extended timeout) | 0 | Rerun passed 68/68 repository tests. The full target-app case remained explicit and opt-in. |
-| `npm run test:e2e` | 1 | Repository tests passed 68/68, then two NestJS generator cases failed because Windows supplied the short temp alias `C:\Users\NGHIAT~1\...` while the safety check resolved the long path. Golden tests were not reached in this attempt. |
+| `npm run test:e2e` | 1 | Repository tests passed 68/68, then two NestJS generator cases failed because Windows supplied the short temp alias `<USER_TEMP_PATH>` while the safety check resolved the long path. Golden tests were not reached in this attempt. |
 | `$env:TEMP=Join-Path $env:LOCALAPPDATA 'Temp'; $env:TMP=$env:TEMP; npm run test:e2e:nestjs` | 0 | Long-form temp-path diagnostic passed 24 tests with one Linux-only skip, confirming the preceding failures were Windows temp-path alias handling rather than frontend changes. No NestJS source was modified. |
 | `$env:TEMP=Join-Path $env:LOCALAPPDATA 'Temp'; $env:TMP=$env:TEMP; npm run test:e2e` | 0 | Both environment-compatible aggregate runs passed: repository 68/68; NestJS 24 pass plus one Linux-only skip; generated simple and enterprise golden projects 2/2. The second run occurred after this evidence section was added. |
 | `npm audit --omit=dev` | 0 | 0 production dependency vulnerabilities. |

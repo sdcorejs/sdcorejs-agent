@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-using-skills
-description: Session bootstrap and dispatch guide for sdcorejs skills. Use at session start, onboarding/help/list-skill requests, or any request matching an sdcorejs skill. Routes direct answers, bounded fast-fixes, and governed brainstorming-to-spec-to-plan execution while preserving approval, verification, and finish gates. Runtime-localized.
+description: Session bootstrap and dispatch for sdcorejs skills. Use at session start, onboarding/help/list-skill requests, or matching skill intent. Routes Q&A, bounded fast-fixes and governed execution with approval, verification and finish gates. Runtime-localized.
 allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 ---
 
@@ -25,7 +25,7 @@ Priority when several skills match:
 3. Product, design, and direct test work: `sdcorejs-product`,
    `sdcorejs-design`, `sdcorejs-test`; failing-test diagnosis uses
    `sdcorejs-debug`.
-4. Dedicated intent: `sdcorejs-simplify`, `sdcorejs-explore`,
+4. Dedicated intent: `sdcorejs-cleanup`, `sdcorejs-simplify`, `sdcorejs-explore`,
    `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-repair-loop`,
    `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
 5. Confirmed implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
@@ -54,11 +54,9 @@ A non-trivial implementation request without a valid approved plan must
 route to `sdcorejs-brainstorming`; it is not confirmed implementation. Do not load a track
 executor as an escape from the governed workflow.
 
-Fast-fix is not available for flaky/root-cause work or when a worker must infer
-behavior. If scope, ownership, risk, or public behavior grows during a
-fast-fix, stop and escalate to brainstorming. Fast-fix never bypasses working
-tree safety, artifact lifecycle, evidence-before-claims, or a required finish
-gate.
+Fast-fix excludes flaky/root-cause work or inferred behavior. Scope, ownership,
+risk or public behavior growth returns to brainstorming. Working-tree safety,
+artifact lifecycle, evidence and required finish gates still apply.
 
 ## Governed Workflow
 
@@ -71,9 +69,9 @@ brainstorming
   -> finish gate and mandatory tail
 ```
 
-Silence is never spec or plan approval. Do not generate code from ambiguous or
-unconfirmed scope. The product, design, test, and AI-agent tracks remain
-first-class; unsupported stacks use the generic execute-plan harness.
+Silence is never spec or plan approval; ambiguous/unconfirmed scope cannot
+generate code. Product/design/test/AI-agent stay first-class; unsupported
+stacks use the generic execute-plan harness.
 
 Explicit delegation uses `sdcorejs-subagent-driven-development`: safe parallel
 waves or sequential fresh workers, with parent fallback. The low-level
@@ -103,11 +101,10 @@ waves or sequential fresh workers, with parent fallback. The low-level
 - Do not add scope, dependencies, migrations, environment changes, commits,
   pushes, tags, releases, or new skills without the authority required by the
   selected contract.
-- Keep semantic identity separate: `track` selects the workflow/executor;
-  `stack_profile` refines stack behavior; an optional `capability_profile`
-  refines an approved domain capability; `repository_role` describes topology;
-  `artifact_owner_repository_id` is the durable write owner; and
-  `execution_host_repository_id` is the execution host coordinating the run.
+- Keep `track` (workflow/executor), `stack_profile` (stack), `capability_profile`
+  (approved domain), `repository_role` (topology),
+  `artifact_owner_repository_id` (durable artifact write owner) and
+  `execution_host_repository_id` (execution host/coordinator) separate.
   Never infer artifact ownership from the current working directory.
 - Resolve aliases and unsupported stacks through
   `_refs/shared/system-registry.mjs`. Unknown stacks use the declared generic
@@ -135,6 +132,11 @@ copying this table into durable artifacts.
 | `react` | `sdcorejs-execute-plan` generic harness |
 | `test` | `sdcorejs-test` |
 | `workflow` | `sdcorejs-execute-plan` generic harness |
+
+Output/asset/doc hygiene -> `sdcorejs-cleanup` (default read-only); offers grant
+analysis only. Load `_refs/cleanup/workflow.md` for exact mutation authority.
+Source refinement -> `sdcorejs-simplify`; test/data teardown -> `sdcorejs-test`;
+quality review -> `sdcorejs-review`.
 
 Broad simplification/refactor, under-specified AI-agent work, or unapproved
 production SDLC expansion returns to brainstorming. Project summary/code-map

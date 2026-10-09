@@ -108,6 +108,14 @@ Keep three separate layers:
    ID/path/hash references, bounded evidence references, state delta,
    blockers/unresolved items, and redaction status.
 
+Conditional shared runtime fields `cleanup_offer_state`, `cleanup_signals`,
+and `cleanup` also travel unchanged when present, including on the portable
+fallback. They preserve offer suppression and exact current mutation evidence
+across consumers; absent fields remain absent, and they never become project
+or session files. `sdcorejs-cleanup` consumes the existing `artifact_context`
+contract. Malformed optional shapes and embedded artifact bodies remain
+blocking; routine user projections do not echo these runtime fields.
+
 Reference specs, plans, diffs, logs, and repository summaries; never paste
 their full bodies into a handoff, including bodies nested inside an otherwise
 required context object or disguised inside a string-valued reference, delta,

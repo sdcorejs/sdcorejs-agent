@@ -6,6 +6,11 @@ import {
 
 const PROFILES = new Set(['compact', 'standard', 'detailed']);
 const CAPABILITY_STATUSES = new Set(['supported', 'unsupported', 'unknown']);
+const OPTIONAL_SHARED_RUNTIME_FIELDS = Object.freeze({
+  cleanup_offer_state: 'object',
+  cleanup_signals: 'array',
+  cleanup: 'nullable-object',
+});
 
 const CONTEXT_INPUT_ALIASES = deepFreeze({
   requirement_context: {
@@ -905,6 +910,17 @@ export const CONSUMER_REQUIRED_FIELDS = deepFreeze({
     ],
   },
   artifact_context: {
+    'sdcorejs-cleanup': [
+      'schema_version',
+      'change_ref',
+      'source_spec',
+      'source_plan',
+      'required_with_change',
+      'shared_owned',
+      'conditional',
+      'local_only',
+      'unrelated_observed',
+    ],
     'sdcorejs-ship': [
       'schema_version',
       'change_ref',
@@ -1206,6 +1222,17 @@ export function validateRequiredHandoffFields({ contextType, consumer, context }
   const compatibility = normalizeCompatibilityInput(contextType, context);
   const normalizedContext = compatibility.context;
   const errors = [...compatibility.errors];
+  // Shared cleanup state is conditional and remains runtime-only. Omitting it
+  // does not change an existing producer contract; a present malformed value
+  // must not be silently dropped or reset while crossing a workflow boundary.
+  for (const [field, kind] of Object.entries(OPTIONAL_SHARED_RUNTIME_FIELDS)) {
+    if (!Object.hasOwn(normalizedContext, field)) continue;
+    const value = normalizedContext[field];
+    const valid = kind === 'array' ? Array.isArray(value)
+      : kind === 'nullable-object' ? value === null || isPlainObject(value)
+        : isPlainObject(value);
+    if (!valid) errors.push(`${contextType} invalid optional runtime field: ${field} must be ${kind}`);
+  }
   for (const field of fields) {
     if (!pathExists(normalizedContext, field)) {
       errors.push(`${contextType} missing required field for ${consumer}: ${field}`);
@@ -1315,7 +1342,9 @@ export function buildPortableHandoff({
   }
 
   const requiredFields = CONSUMER_REQUIRED_FIELDS[contextType][consumer];
-  const authoritative = pickPaths(normalizedContext, requiredFields);
+  const sharedFields = Object.keys(OPTIONAL_SHARED_RUNTIME_FIELDS)
+    .filter((field) => Object.hasOwn(normalizedContext, field));
+  const authoritative = pickPaths(normalizedContext, [...new Set([...requiredFields, ...sharedFields])]);
   const embeddedAuthoritativePath = findForbiddenEmbeddedArtifact(authoritative);
   if (embeddedAuthoritativePath) {
     const error = new Error(

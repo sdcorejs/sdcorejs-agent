@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "kind": "cleanup-external-review-repair-evidence",
+  "change_ref": "sdcorejs-cleanup",
+  "base_revision": "03563d26837751d67a354d38589c6ed0fe67ed24",
+  "observed_at": "2026-10-02T01:28:16.324155+00:00",
+  "external_review": {
+    "name": "SDCoreJS-Cleanup-Independent-Review.md",
+    "lines_read": 203,
+    "raw_sha256": "27283de5d31a07e7f0ab6022b8f195c5826623db45fcaf028ce87a062394a318",
+    "reviewed_snapshot_files": 1662,
+    "reviewed_snapshot_sha256": "b97f10251d3ee98514e2ee0dc0ca3f136d23ec6465d6aa40518bb13c373f2631",
+    "pre_repair_snapshot_exact_match": true
+  },
+  "authority": "Explicit user approval of all four reported findings, relayed by parent; existing approved repair surface. No new platform approval fabricated.",
+  "finding_ids": [
+    "F-01",
+    "F-02",
+    "F-03",
+    "F-04"
+  ],
+  "repairs": [
+    {
+      "id": "F-01",
+      "behavior": "Semantic consumer paths, declared coverage and opaque formats require complete consumer evidence. Actual concatenated lookup remains unknown. Unknown assets with full positive evidence can still quarantine and restore."
+    },
+    {
+      "id": "F-02",
+      "behavior": "Every restore requires its apply receipt earlier in the supplied chain. Restore-only, failed affected apply checks and reordered chains block readiness; verified complete chain remains valid."
+    },
+    {
+      "id": "F-03",
+      "behavior": "Security, quality, correctness and performance review of cleanup artifacts retains review ownership. Genuine unused asset and restore hygiene controls retain cleanup ownership."
+    },
+    {
+      "id": "F-04",
+      "behavior": "Frontmatter and README/catalog discovery disclose portable analyze/plan and Windows local-drive apply/restore."
+    }
+  ],
+  "source_bindings": [
+    {
+      "path": "_refs/cleanup/cleanup-engine.mjs",
+      "previous_sha256": "b9527acd162dd62ede536b42c0fb9b9b354bb251e80adceb6b686a58edaecd09",
+      "current_sha256": "a9fe44b8d7852782a5e730d0953ba1be615b55d94cd4646ba4c5d1aba6d8ca9c",
+      "bytes": 40226
+    },
+    {
+      "path": "_refs/cleanup/offer-policy.mjs",
+      "previous_sha256": "92680a69d1c4a554ed178d39efafdbd734d59977e0e7c28b8dc43764eb0449b9",
+      "current_sha256": "f135c9133c4d1130bbdaece25f3e10e849d7865f2f2b6ff2e7563cdb064c2692",
+      "bytes": 19957
+    },
+    {
+      "path": "_refs/cleanup/workflow.md",
+      "previous_sha256": "9c45920852ffff4d2dbb0ea3bc3cc69770821560b9c44900f7082e9fb8a36226",
+      "current_sha256": "6a7dc4584122f8ee14220d2347a518027a4934eebd484e54bd19700d08ea3bcd",
+      "bytes": 13163
+    },
+    {
+      "path": "skills/shared/workflow/cleanup.md",
+      "previous_sha256": "117d145d1c6a9acfdb0be512549d0c1181fa126c924160661b8a5bfce4e06a03",
+      "current_sha256": "1410db39d12d74d573ac852532f6cd54ebd608d2d4cdf43faacd6c8c9fdf84cb",
+      "bytes": 8640
+    },
+    {
+      "path": "README.md",
+      "previous_sha256": "114bfdaa0b0df1802f252289cf5ba07d90b943e7303e95b6238e2de018bb5b6c",
+      "current_sha256": "4e67000cf033d4be4aa87b1eabf3bdd1aa5d28efd408015ba9d493d855d6623c",
+      "bytes": 28624
+    },
+    {
+      "path": "site/src/data/catalog-en.ts",
+      "previous_sha256": "a2df59c69085d2adb57fac158516ad51ac29926bc9b4fead581fbc2c7443c469",
+      "current_sha256": "5724b7223da5dbc8b93c30993d3871681f90c7b12af0e90edb3fa4b6143c97c6",
+      "bytes": 11028
+    },
+    {
+      "path": "site/src/data/catalog.ts",
+      "previous_sha256": "dd817d7487f37c1229ef363f6d20ff759a6e716e439d8e54ffe313b663db2f52",
+      "current_sha256": "55cfccc6e253ba0a395469e6bbdbce49028e9dc648a446e9b70454d63b80e991",
+      "bytes": 12403
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "previous_sha256": "4b3569b7406ddae58f9068c3e5d0ab354e2591b88a233d1fd9ba8da581765cb8",
+      "current_sha256": "d92fe6d021fb29c158ab373bc5f44ffb7ee496257a0a599f8ae1d0209a4411a7",
+      "bytes": 44691
+    },
+    {
+      "path": "test/e2e/skill-pack-runner.test.mjs",
+      "previous_sha256": "2c9364b4b08feb27d3b0d9f63629ba85dfa47e0280fdba3eca9fa67cd6eb8902",
+      "current_sha256": "3cf53ce66c4ce86def3bb753de44e021c3814e698aecae2e84651d630dd26fa5",
+      "bytes": 122824
+    },
+    {
+      "path": "test/e2e/cleanup-engine.test.mjs",
+      "previous_sha256": "9093480e0378e72f03ec4d44995e345350909e5a146b2284d8520175d221786a",
+      "current_sha256": "ff7a6675043bf97f62686079ded4e84ada89cf6c4adabad822723377739b26e6",
+      "bytes": 73271
+    },
+    {
+      "path": "test/e2e/cleanup-integration.test.mjs",
+      "previous_sha256": "22bedfda71c8c446c0dc6504b4fa619ded50c885c7320f291dda786662aa7f5f",
+      "current_sha256": "d770f3f9e5ce37524922e0011eeec3547eb768b2401c5c0844aa9167c380c894",
+      "bytes": 25731
+    },
+    {
+      "path": "authoring/evals/uiux/evidence.test.mjs",
+      "previous_sha256": "0bb4315916ecfa2b127271e8e31801273fccc539597c23889f70707356f885a8",
+      "current_sha256": "c1b641199e2a214f53167b3bb3b18b0df648a5856a5e224209be54ea0a7f454f",
+      "bytes": 13493
+    },
+    {
+      "path": "authoring/evals/uiux/cleanup-review-repair.json",
+      "previous_sha256": null,
+      "current_sha256": "29bb40fcb40ae3f525ed71f8b49e3ea133d3da50dc822d9a221c69ea433f9b00",
+      "bytes": 11568
+    },
+    {
+      "path": "authoring/evals/uiux/cleanup-review-repair.txt",
+      "previous_sha256": null,
+      "current_sha256": "cb2c46687b2e78429d5cf4af1997bf4084ef9e9f825c28b9dae9157063f7a646",
+      "bytes": 5042
+    }
+  ],
+  "phases": [
+    {
+      "phase": "RED",
+      "node": "v22.22.3",
+      "command": "node --test --test-name-pattern='review F-0[1-4]' test/e2e/cleanup-engine.test.mjs test/e2e/cleanup-integration.test.mjs test/e2e/skill-pack-runner.test.mjs",
+      "exit_code": 1,
+      "tests": 5,
+      "pass": 0,
+      "fail": 5,
+      "transcript": {
+        "path": "authoring/evals/records/cleanup-review-repair-red.txt",
+        "sha256": "fcd1205ab3f516c8324efb0c22978659ce7b1966014417ef9064033e587c1391"
+      },
+      "raw_log_sha256": "008739c3a50a64974b97051ac3b3cd5706e6c041a34b79d9601f99758514d4ff",
+      "raw_log_included": false
+    },
+    {
+      "phase": "GREEN",
+      "node": "v22.22.3",
+      "command": "node --test --test-name-pattern='review F-0[1-4]|verified restore is a new' test/e2e/cleanup-engine.test.mjs test/e2e/cleanup-integration.test.mjs test/e2e/skill-pack-runner.test.mjs",
+      "exit_code": 0,
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "transcript": {
+        "path": "authoring/evals/records/cleanup-review-repair-green.txt",
+        "sha256": "019a199bc8f826ddea360c1de2c8ee0b5b96ecea9bfcea65f78dbc4f81326bfc"
+      },
+      "raw_log_sha256": "4e7d78879151352771bb35c0b716003d027fc3c891aee868baccd5e3f3d8231f",
+      "raw_log_included": false
+    }
+  ],
+  "uiux_continuation": "authoring/evals/uiux/cleanup-review-repair.json",
+  "provider_calls": 0,
+  "tokens": null,
+  "live_agent": "NOT RUN",
+  "independent_final_review": "PENDING; these are implementer checks, not a fresh independent signoff.",
+  "limitations": [
+    "POSIX native E2E not run; mutation remains Windows local-drive only.",
+    "Aggregate gate and SWC environment blocker recorded in the dated execution document.",
+    "No real-user-data cleanup, ACL change, Git artifact or publication."
+  ],
+  "public_projection": {
+    "original_sha256": "925dc08aead78735c8d4677b2d1d4ea97335e45f8d7ebf77d6df11f0542ce0a3",
+    "redactions": [
+      "local_host_paths_or_private_review_locator"
+    ],
+    "original_snapshot_preserved_locally": true,
+    "projected_transcripts": [],
+    "note": "Redacted public projection of historical evidence. Original command/result/source hashes remain provenance; redaction supplies no new execution or approval evidence."
+  }
+}

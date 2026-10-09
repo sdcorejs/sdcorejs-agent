@@ -82,10 +82,10 @@ function markdownSection(source, heading) {
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
 
-  assert.equal(pack.sourceSkills.length, 23);
-  assert.equal(pack.claudeMirrorSkills.length, 23);
-  assert.equal(pack.pluginMirrorSkills.length, 23);
-  assert.equal(pack.codexMirrorSkills.length, 23);
+  assert.equal(pack.sourceSkills.length, 24);
+  assert.equal(pack.claudeMirrorSkills.length, 24);
+  assert.equal(pack.pluginMirrorSkills.length, 24);
+  assert.equal(pack.codexMirrorSkills.length, 24);
   // Core UI per-component docs are fetched on-demand (not committed), so this count
   // dropped from ~150 to ~69. Floor still catches accidental mass-deletion of refs.
   assert.ok(pack.referenceDocs.length >= 60, `referenceDocs=${pack.referenceDocs.length}`);
@@ -2316,6 +2316,57 @@ test('phase 3: AI-agent routing stays narrow and preserves dedicated intent owne
     'show me the monthly revenue report',
   ]) {
     assert.notEqual(dispatchPrompt(pack, prompt)?.name, 'sdcorejs-ai-agent', prompt);
+  }
+});
+
+test('cleanup utility dispatch distinguishes workspace hygiene from source, test and quality owners', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  for (const [prompt, expected] of [
+    ['Clean up this workspace temp folder, analyze only.', 'sdcorejs-cleanup'],
+    ['Review unused images and assets in public/ without deleting files.', 'sdcorejs-cleanup'],
+    ['Deduplicate superseded documentation files; show a read-only plan.', 'sdcorejs-cleanup'],
+    ['Inspect stale test-results/ traces and screenshots for cleanup.', 'sdcorejs-cleanup'],
+    ['Restore the quarantined cleanup files from this receipt.', 'sdcorejs-cleanup'],
+    ['Dọn dẹp workspace temp; chỉ phân tích, chưa xóa.', 'sdcorejs-cleanup'],
+    ['Dọn dẹp code vừa sửa nhưng giữ nguyên hành vi.', 'sdcorejs-simplify'],
+    ['Clean up this modified function for clarity while preserving its exact output.', 'sdcorejs-simplify'],
+    ['Write test case cleanup and data teardown for the integration tests.', 'sdcorejs-test'],
+    ['Review code quality and security in this module.', 'sdcorejs-review'],
+    ['Rewrite the documentation for clarity.', 'sdcorejs-documentation'],
+    ['Explore the repository code map.', 'sdcorejs-explore'],
+  ]) {
+    assert.equal(dispatchPrompt(pack, prompt)?.name, expected, prompt);
+  }
+  const withoutCleanup = { ...pack, sourceSkills: pack.sourceSkills.filter(skill => skill.name !== 'sdcorejs-cleanup') };
+  assert.notEqual(dispatchPrompt(withoutCleanup, 'Analyze cleanup of this workspace temp folder.')?.name, 'sdcorejs-cleanup');
+});
+
+test('review F-03: review about cleanup preserves the review owner and genuine hygiene controls', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  for (const [prompt, expected] of [
+    ['Audit security of the cleanup workflow files.', 'sdcorejs-review'],
+    ['Review security of the cleanup receipt files.', 'sdcorejs-review'],
+    ['Review the cleanup workflow files for correctness.', 'sdcorejs-review'],
+    ['Audit performance of cleanup assets and receipts.', 'sdcorejs-review'],
+    ['Review the cleanup code security in this repository.', 'sdcorejs-review'],
+    ['Use sdcorejs-review to review cleanup workflow files.', 'sdcorejs-review'],
+    ['Analyze unused AVIF images in this folder without deleting anything.', 'sdcorejs-cleanup'],
+    ['Review unused images and assets in public/ without deleting files.', 'sdcorejs-cleanup'],
+    ['Restore the quarantined cleanup files from this receipt.', 'sdcorejs-cleanup'],
+  ]) assert.equal(dispatchPrompt(pack, prompt)?.name, expected, prompt);
+});
+
+test('review F-04: cleanup discovery discloses portable analysis and Windows mutation before selection', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const description = pack.sourceSkills.find(({ name }) => name === 'sdcorejs-cleanup').description;
+  assert.match(description, /portable[\s\S]*analy[\s\S]*plan/iu);
+  assert.match(description, /Windows local-drive[\s\S]*apply[\s\S]*restore/iu);
+  for (const relative of ['README.md', 'site/src/data/catalog-en.ts', 'site/src/data/catalog.ts']) {
+    const text = await readFile(new URL('../../' + relative, import.meta.url), 'utf8');
+    const scope = relative === 'README.md' ? markdownSection(text, 'Cleanup workflow utility')
+      : text.split('\n').find((line) => line.includes("'sdcorejs-cleanup':"));
+    assert.match(scope, /Windows local.drive/iu, relative);
+    assert.match(scope, /apply[\s\S]*restore/iu, relative);
   }
 });
 

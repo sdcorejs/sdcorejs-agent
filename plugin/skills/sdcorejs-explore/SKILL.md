@@ -457,8 +457,7 @@ as evidence, not unquestionable truth.
 - If summary is stale/missing in read-only context, continue with targeted reads
   and report stale/missing context in `explore_context.commands_skipped` or
   `freshness`.
-- Explore may provide `next_skill_hint`; it must not execute unrelated
-  workflows automatically.
+- Explore may provide `next_skill_hint`; it must not execute unrelated workflows automatically. For `cleanup_signals`, follow `_refs/shared/explore-context.md`.
 
 ## Rules
 
@@ -489,8 +488,7 @@ as evidence, not unquestionable truth.
 - Write shared convention state from a parallel worker or a portal fallback.
 - Use a repository file as live task/session state.
 - Generate or commit a full codegraph.
-- Turn topology discovery into initialization, rewrite, migration, or artifact
-  relocation.
+- Turn topology discovery into initialization, rewrite, migration, or artifact relocation.
 
 ## Cross-References
 
@@ -500,3 +498,4 @@ as evidence, not unquestionable truth.
 - `sdcorejs-ship` - final verification and release readiness
 - `sdcorejs-git` - commit, PR, changelog, release notes
 - `sdcorejs-documentation` - documentation writing from harvested facts
+- `sdcorejs-cleanup` - bounded evidence-based housekeeping after separate authority

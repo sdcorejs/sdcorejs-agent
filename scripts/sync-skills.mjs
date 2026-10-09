@@ -473,14 +473,14 @@ async function listRefValidationFiles() {
   return files.filter((file) => {
     if (file.endsWith('.md') || file.endsWith('.mjs') || file.endsWith('.js')) return true;
     if (file.endsWith('.json') || file.endsWith('.yml') || file.endsWith('.yaml')) return true;
-    if (file.endsWith('.sh') || file.endsWith('.ps1')) return true;
+    if (file.endsWith('.sh') || file.endsWith('.ps1') || file.endsWith('.py')) return true;
     return path.basename(file).includes('Dockerfile');
   });
 }
 
 function findExactRefPaths(text) {
   const refs = new Set();
-  const pattern = /(?:^|[\s([{"'`])((?:\.\.\/)*_refs\/[A-Za-z0-9_./{}<>*?,-]+(?:\.json|\.ya?ml|\.mjs|\.js|\.md|\.sh|\.ps1|Dockerfile))/g;
+  const pattern = /(?:^|[\s([{"'`])((?:\.\.\/)*_refs\/[A-Za-z0-9_./{}<>*?,-]+(?:\.json|\.ya?ml|\.mjs|\.js|\.md|\.sh|\.ps1|\.py|Dockerfile))/g;
   for (const match of text.matchAll(pattern)) {
     const ref = match[1].replace(/^(?:\.\.\/)+/, '');
     if (/[{}<>*?]/.test(ref)) continue;

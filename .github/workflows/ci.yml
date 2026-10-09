@@ -22,12 +22,59 @@ jobs:
           node-version: 22.22.3
           cache: npm
 
+      - name: Prepare private native cleanup checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          ci_root="$(sudo mktemp -d /sdcorejs-cleanup-ci.XXXXXXXX)"
+          case "$ci_root" in /sdcorejs-cleanup-ci.*) ;; *) exit 1 ;; esac
+          test "$(dirname "$ci_root")" = /
+          test -d "$ci_root" && test ! -L "$ci_root"
+          sudo chown "$(id -u):$(id -g)" "$ci_root"
+          git clone --no-local --no-hardlinks --no-checkout "$GITHUB_WORKSPACE" "$ci_root/repository"
+          git -C "$ci_root/repository" checkout --detach "$GITHUB_SHA"
+          test "$(git -C "$ci_root/repository" rev-parse HEAD)" = "$GITHUB_SHA"
+          git -C "$ci_root/repository" remote set-url origin https://github.com/sdcorejs/sdcorejs-agent
+          printf '%s\n' \
+            "SDCOREJS_CLEANUP_CI_ROOT=$ci_root" \
+            "SDCOREJS_CLEANUP_CI_REPOSITORY=$ci_root/repository" >> "$GITHUB_ENV"
+
       - run: npm ci
+        working-directory: ${{ env.SDCOREJS_CLEANUP_CI_REPOSITORY }}
       - run: npm run check:text-hygiene
+        working-directory: ${{ env.SDCOREJS_CLEANUP_CI_REPOSITORY }}
       - run: npm run check:skills
+        working-directory: ${{ env.SDCOREJS_CLEANUP_CI_REPOSITORY }}
       - run: npm run check:nestjs-pack
+        working-directory: ${{ env.SDCOREJS_CLEANUP_CI_REPOSITORY }}
       - run: npm run check:audit
+        working-directory: ${{ env.SDCOREJS_CLEANUP_CI_REPOSITORY }}
+      - name: Admit native cleanup fixtures
+        shell: bash
+        working-directory: ${{ env.SDCOREJS_CLEANUP_CI_REPOSITORY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          export SDCOREJS_CLEANUP_POSIX_FIXTURE_ROOT="$SDCOREJS_CLEANUP_CI_ROOT/fixtures"
+          mkdir -- "$SDCOREJS_CLEANUP_POSIX_FIXTURE_ROOT"
+          export SDCOREJS_CLEANUP_PYTHON="$(readlink -f /usr/bin/python3)"
+          test -x "$SDCOREJS_CLEANUP_PYTHON"
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { inspectCleanupPosixCapabilities } from './_refs/cleanup/posix-file-operation.mjs';
+          const result = await inspectCleanupPosixCapabilities({
+            root: process.env.SDCOREJS_CLEANUP_POSIX_FIXTURE_ROOT,
+            python: process.env.SDCOREJS_CLEANUP_PYTHON,
+          });
+          assert.equal(result.supported, true, JSON.stringify(result));
+          assert.equal(result.profile.filesystem, 'ext4');
+          NODE
+          printf '%s\n' \
+            "SDCOREJS_CLEANUP_POSIX_FIXTURE_ROOT=$SDCOREJS_CLEANUP_POSIX_FIXTURE_ROOT" \
+            "SDCOREJS_CLEANUP_PYTHON=$SDCOREJS_CLEANUP_PYTHON" >> "$GITHUB_ENV"
       - run: npm run test:e2e
+        working-directory: ${{ env.SDCOREJS_CLEANUP_CI_REPOSITORY }}
 
   site:
     name: Site Build and Audit

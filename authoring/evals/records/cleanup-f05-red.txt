@@ -1,0 +1,106 @@
+TAP version 13
+# Subtest: review F-05: consumer evidence cannot discharge retained Markdown assets/credits.md
+not ok 1 - review F-05: consumer evidence cannot discharge retained Markdown assets/credits.md
+  ---
+  duration_ms: 7750.0423
+  type: 'test'
+  location: '<CANDIDATE_ROOT>\\test\\e2e\\cleanup-engine.test.mjs:550:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"relative":"assets/credits.md","state":{"doc_status":"superseded","unique_information":true,"durable_value":true},"coverage":{"complete":true,"dynamic":true,"globs":true,"exports":true,"external":true}}
+    + actual - expected
+
+    + 'applied'
+    - 'blocked'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'blocked'
+  actual: 'applied'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///<CANDIDATE_ROOT>/test/e2e/cleanup-engine.test.mjs:580:18)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: review F-05: consumer evidence cannot discharge retained Markdown docs/superseded.md
+not ok 2 - review F-05: consumer evidence cannot discharge retained Markdown docs/superseded.md
+  ---
+  duration_ms: 7579.7736
+  type: 'test'
+  location: '<CANDIDATE_ROOT>\\test\\e2e\\cleanup-engine.test.mjs:550:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"relative":"docs/superseded.md","state":{"doc_status":"superseded","unique_information":true,"durable_value":true},"coverage":{"complete":true,"dynamic":true,"globs":true,"exports":true,"external":true}}
+    + actual - expected
+
+    + 'applied'
+    - 'blocked'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'blocked'
+  actual: 'applied'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///<CANDIDATE_ROOT>/test/e2e/cleanup-engine.test.mjs:580:18)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: review F-05: consumer evidence cannot discharge retained Markdown .sdcorejs/tmp/task/retained.MD
+not ok 3 - review F-05: consumer evidence cannot discharge retained Markdown .sdcorejs/tmp/task/retained.MD
+  ---
+  duration_ms: 7581.0701
+  type: 'test'
+  location: '<CANDIDATE_ROOT>\\test\\e2e\\cleanup-engine.test.mjs:550:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"relative":".sdcorejs/tmp/task/retained.MD","state":{"doc_status":"superseded","unique_information":true,"durable_value":true},"coverage":{"complete":true,"dynamic":true,"globs":true,"exports":true,"external":true}}
+    + actual - expected
+
+    + 'applied'
+    - 'blocked'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'blocked'
+  actual: 'applied'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///<CANDIDATE_ROOT>/test/e2e/cleanup-engine.test.mjs:580:18)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: review F-05: discharged redundant drafts retain document identity and still require consumer coverage
+not ok 4 - review F-05: discharged redundant drafts retain document identity and still require consumer coverage
+  ---
+  duration_ms: 46.597
+  type: 'test'
+  location: '<CANDIDATE_ROOT>\\test\\e2e\\cleanup-engine.test.mjs:590:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'unused-candidate'
+    - 'abandoned-draft'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'abandoned-draft'
+  actual: 'unused-candidate'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///<CANDIDATE_ROOT>/test/e2e/cleanup-engine.test.mjs:600:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 0
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 23034.9139

@@ -94,6 +94,7 @@ explore_context:
   next_skill_hint:
     skill: <sdcorejs-* | none>
     reason: <why>
+  cleanup_signals: [] # bounded significant observations; see _refs/cleanup/workflow.md
 ```
 
 Rules:
@@ -110,8 +111,31 @@ Rules:
 - Use stable remote-derived repository IDs and repository-relative artifact
   paths. Absolute checkout paths are not durable identity.
 - Use `next_skill_hint` only as a routing hint.
+- Optional `cleanup_signals` contain source, scope, category, positive evidence,
+  observed state, unknowns and reason to offer. Produce them from paths already
+  inspected with `buildExploreCleanupSignals`; never expand a read-only explore
+  into a cleanup sweep or emit `safe_to_delete: true`. Pass signal and existing
+  runtime offer suppression to the sequential/fan-in coordinator after the
+  primary result. Keep them out of summary/persona/memory and persistent queues.
 - For approved writes, also emit the standard `artifact_context` from
   `_refs/shared/artifact-lifecycle.md`.
+
+## Cleanup Signals And Offers
+
+For significant hygiene evidence encountered during the selected action, use
+`buildExploreCleanupSignals` from `_refs/shared/explore-contract.mjs`. Old
+names, mtime, ignored output and missing grep matches alone are insufficient.
+Signals carry scope/category, positive evidence, observed state, unknowns and
+reason to offer, never `safe_to_delete: true` or mutation authority.
+
+Finish the primary explore result first. The sequential/fan-in coordinator
+may then offer bounded `sdcorejs-cleanup (analyze)` once. Read
+`_refs/cleanup/workflow.md` at that boundary for native structured choice,
+numbered fallback and runtime suppression. Workers emit findings only; a
+decline suppresses the same finding for this session, and session disable
+applies across producer workflows. Analysis acceptance does not approve
+deletion, movement, quarantine or archival. Keep offers/suppression out of
+project context, and do not scan merely to find something to offer.
 
 ## Summary Read
 

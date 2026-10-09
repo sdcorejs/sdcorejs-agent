@@ -1,0 +1,118 @@
+TAP version 13
+# Subtest: dynamic asset references, Angular copy configuration and public consumers stay conservative
+ok 1 - dynamic asset references, Angular copy configuration and public consumers stay conservative
+  ---
+  duration_ms: 158.5445
+  type: 'test'
+  ...
+# Subtest: review F-01: consumer coverage blocks AVIF, unknown formats and semantic assets before quarantine
+ok 2 - review F-01: consumer coverage blocks AVIF, unknown formats and semantic assets before quarantine
+  ---
+  duration_ms: 115.4702
+  type: 'test'
+  ...
+# Subtest: review F-01: complete consumer evidence permits unknown assets but concatenated lookup stays unknown
+ok 3 - review F-01: complete consumer evidence permits unknown assets but concatenated lookup stays unknown
+  ---
+  duration_ms: 8459.4075
+  type: 'test'
+  ...
+# Subtest: valid ADRs, approved artifacts and superseded unique docs survive age and newer replacements
+ok 4 - valid ADRs, approved artifacts and superseded unique docs survive age and newer replacements
+  ---
+  duration_ms: 114.2662
+  type: 'test'
+  ...
+# Subtest: review F-06: every coverage flag requires literal true before mutation assets/typed.avif
+ok 5 - review F-06: every coverage flag requires literal true before mutation assets/typed.avif
+  ---
+  duration_ms: 6501.1131
+  type: 'test'
+  ...
+# Subtest: review F-06: every coverage flag requires literal true before mutation assets/abandoned-typed.md
+ok 6 - review F-06: every coverage flag requires literal true before mutation assets/abandoned-typed.md
+  ---
+  duration_ms: 5931.1874
+  type: 'test'
+  ...
+# Subtest: review F-06: coverage containers and non-data flags fail closed at the helper boundary
+ok 7 - review F-06: coverage containers and non-data flags fail closed at the helper boundary
+  ---
+  duration_ms: 400.6825
+  type: 'test'
+  ...
+# Subtest: review F-06: public CLI JSON analyze plan and apply retain malformed coverage
+ok 8 - review F-06: public CLI JSON analyze plan and apply retain malformed coverage
+  ---
+  duration_ms: 10165.0315
+  type: 'test'
+  ...
+# Subtest: review F-06: literal true coverage preserves CLI round trips and adjacent boolean retention
+ok 9 - review F-06: literal true coverage preserves CLI round trips and adjacent boolean retention
+  ---
+  duration_ms: 11109.9694
+  type: 'test'
+  ...
+# Subtest: review F-05: consumer evidence cannot discharge retained Markdown assets/credits.md
+ok 10 - review F-05: consumer evidence cannot discharge retained Markdown assets/credits.md
+  ---
+  duration_ms: 3689.835
+  type: 'test'
+  ...
+# Subtest: review F-05: consumer evidence cannot discharge retained Markdown docs/superseded.md
+ok 11 - review F-05: consumer evidence cannot discharge retained Markdown docs/superseded.md
+  ---
+  duration_ms: 3754.1978
+  type: 'test'
+  ...
+# Subtest: review F-05: consumer evidence cannot discharge retained Markdown .sdcorejs/tmp/task/retained.MD
+ok 12 - review F-05: consumer evidence cannot discharge retained Markdown .sdcorejs/tmp/task/retained.MD
+  ---
+  duration_ms: 3691.7083
+  type: 'test'
+  ...
+# Subtest: review F-05: discharged redundant drafts retain document identity and still require consumer coverage
+ok 13 - review F-05: discharged redundant drafts retain document identity and still require consumer coverage
+  ---
+  duration_ms: 16739.1149
+  type: 'test'
+  ...
+# Subtest: finished current-task local design render diagnostics qualify for exact LOW policy cleanup
+ok 14 - finished current-task local design render diagnostics qualify for exact LOW policy cleanup
+  ---
+  duration_ms: 3980.5688
+  type: 'test'
+  ...
+# Subtest: verified restore is a new cleanup event consumed by convergence and final branch readiness
+ok 15 - verified restore is a new cleanup event consumed by convergence and final branch readiness
+  ---
+  duration_ms: 8912.8482
+  type: 'test'
+  ...
+# Subtest: review F-02: verified restore cannot omit an apply with failed affected verification
+ok 16 - review F-02: verified restore cannot omit an apply with failed affected verification
+  ---
+  duration_ms: 8514.8556
+  type: 'test'
+  ...
+# Subtest: review F-03: review about cleanup preserves the review owner and genuine hygiene controls
+ok 17 - review F-03: review about cleanup preserves the review owner and genuine hygiene controls
+  ---
+  duration_ms: 46.3336
+  type: 'test'
+  ...
+# Subtest: review F-04: cleanup discovery discloses portable analysis and Windows mutation before selection
+ok 18 - review F-04: cleanup discovery discloses portable analysis and Windows mutation before selection
+  ---
+  duration_ms: 31.1489
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 74903.7026

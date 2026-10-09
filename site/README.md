@@ -25,7 +25,7 @@ The preview is local to the host; it is not an iOS-accessible public URL.
 
 ## Information architecture and locales
 
-Every content route has `/vi/` and `/en/` counterparts: 37 pages per language.
+Every content route has `/vi/` and `/en/` counterparts: 38 pages per language.
 The native language links retain the corresponding page. Each page emits its
 own canonical URL and alternate language links, with Vietnamese as `x-default`.
 The paths below follow either locale prefix:
@@ -35,13 +35,13 @@ The paths below follow either locale prefix:
 - `/docs/quickstart/`: source-backed installation paths and smoke prompts.
 - `/docs/workflows/`: choose the owner from the problem and required output.
 - `/docs/recipes/`: feature, UI, debug and AI-agent examples.
-- `/skills/`: searchable/filterable catalog and 23 public skill references.
+- `/skills/`: searchable/filterable catalog and 24 public skill references.
 - `/angular/`: Angular adoption guide.
 - `/docs/artifacts/`: approval, ownership, artifact layout and evidence layers.
 - `/docs/troubleshooting/`: installation/context/gate/environment diagnosis.
 - `/docs/versions/`: main snapshot, candidate boundary and evidence limits.
 
-The 37 former unprefixed content URLs are static HTML aliases that redirect to
+The 38 unprefixed content URLs are static HTML aliases that redirect to
 their Vietnamese counterpart with a meta refresh and visible VI/EN links.
 These are not HTTP 301 redirects. Each locale has a `/404/` help page; the global
 `404.html` includes both languages because static hosting has one fallback file.
@@ -59,14 +59,21 @@ the base or locale to authored links. Astro's Markdown processor stays in place.
 `src/data/navigation.ts` owns navigation and the pinned source snapshot.
 `src/data/catalog.ts` reads canonical skill names/paths and pairs them with
 Vietnamese notes; `catalog-en.ts` holds English input/output/boundary/prompt
-notes for the same 23 skills. Inventory drift fails the build. `home.ts` holds
+notes for the same 24 skills. Inventory drift fails the build. `home.ts` holds
 localized overview content, and `i18n.ts` holds shared UI and state messages.
 Runtime skills and generated mirrors are read-only inputs. Updating a revision
 requires factual review of claims, commands and boundaries in both languages;
 changing only the link hash is insufficient. Main snapshots and candidates must
 remain clearly distinguished from verified releases.
 
-Static `vi/search-index.json` and `en/search-index.json` each cover all 37 pages,
+The current working-tree catalog includes the approved `sdcorejs-cleanup`
+utility as an unpublished candidate. Its canonical path does not exist in the
+documented pinned revision, so its page shows candidate status and the local
+source path without a GitHub blob link. The other 23 skill pages retain their
+pinned source links. `hasPublishedSource` checks local Git objects at build
+time; publishing the candidate remains a separately authorized Git delivery.
+
+Static `vi/search-index.json` and `en/search-index.json` each cover all 38 pages,
 including Angular body text and skill notes. Search results stay in the active
 locale. The modal supports Tab/Enter/Escape and `/`; search and catalog filtering
 normalize Vietnamese accents. Navigation, guides, language links and all skill
@@ -78,7 +85,10 @@ mobile navigation; code remains selectable if clipboard access fails.
 Build first, then run `npm run check:links` with the same `SITE_BASE`. The checker
 validates HTML links/assets/fragments, both locale route sets and search indexes,
 language-switch targets, canonical/alternate links, legacy aliases, main
-landmarks, encoding and 40 pinned GitHub source paths against local Git objects.
+landmarks, encoding and 41 pinned GitHub source paths against local Git objects.
+Search inventory derives from canonical skills, guides and the three overview
+pages. Each skill's published/candidate status and source-link availability are
+checked against the documented revision; candidates cannot link to absent blobs.
 It also checks the 12 Markdown pairs for section counts, source URL parity and
 unchanged executable Bash/PowerShell blocks. These structural checks do not
 prove translation quality, external HTTP availability or WCAG conformance.

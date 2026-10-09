@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "kind": "cleanup-f05-retention-repair-evidence",
+  "change_ref": "sdcorejs-cleanup",
+  "observed_at": "2026-10-02T02:03:33.243346+00:00",
+  "external_review": {
+    "version": 1,
+    "lines_read": 369,
+    "rendered_review_text_sha256": "04319ef66ffc9c6fa635b555ca839cdec0ca39b850159dc7e59288f422a49de1",
+    "reviewed_snapshot_files": 1667,
+    "reviewed_snapshot_sha256": "eca21593364ff02bc840cd6479d58fc193f787a7dc0a8e5651d4622870f9160d",
+    "pre_repair_snapshot_exact_match": true
+  },
+  "authority": "Parent explicitly authorized fixing F-05 within the previously approved repair surface; no new approval fabricated.",
+  "finding_ids": [
+    "F-05"
+  ],
+  "invariant": "Consumer coverage cannot discharge Markdown lifecycle, unique information or durable value. Only owner-confirmed abandoned drafts with unique_information false and durable_value false can become eligible, and consumer coverage adds restrictions when required.",
+  "historical_repair": {
+    "path": "authoring/evals/records/cleanup-review-repair.json",
+    "sha256": "925dc08aead78735c8d4677b2d1d4ea97335e45f8d7ebf77d6df11f0542ce0a3"
+  },
+  "previous_source_bindings": [
+    {
+      "path": "_refs/cleanup/cleanup-engine.mjs",
+      "bytes": 40226,
+      "sha256": "a9fe44b8d7852782a5e730d0953ba1be615b55d94cd4646ba4c5d1aba6d8ca9c"
+    },
+    {
+      "path": "_refs/cleanup/offer-policy.mjs",
+      "bytes": 19957,
+      "sha256": "f135c9133c4d1130bbdaece25f3e10e849d7865f2f2b6ff2e7563cdb064c2692"
+    },
+    {
+      "path": "_refs/cleanup/workflow.md",
+      "bytes": 13163,
+      "sha256": "6a7dc4584122f8ee14220d2347a518027a4934eebd484e54bd19700d08ea3bcd"
+    },
+    {
+      "path": "skills/shared/workflow/cleanup.md",
+      "bytes": 8640,
+      "sha256": "1410db39d12d74d573ac852532f6cd54ebd608d2d4cdf43faacd6c8c9fdf84cb"
+    },
+    {
+      "path": "README.md",
+      "bytes": 28624,
+      "sha256": "4e67000cf033d4be4aa87b1eabf3bdd1aa5d28efd408015ba9d493d855d6623c"
+    },
+    {
+      "path": "site/src/data/catalog-en.ts",
+      "bytes": 11028,
+      "sha256": "5724b7223da5dbc8b93c30993d3871681f90c7b12af0e90edb3fa4b6143c97c6"
+    },
+    {
+      "path": "site/src/data/catalog.ts",
+      "bytes": 12403,
+      "sha256": "55cfccc6e253ba0a395469e6bbdbce49028e9dc648a446e9b70454d63b80e991"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "bytes": 44691,
+      "sha256": "d92fe6d021fb29c158ab373bc5f44ffb7ee496257a0a599f8ae1d0209a4411a7"
+    },
+    {
+      "path": "test/e2e/skill-pack-runner.test.mjs",
+      "bytes": 122824,
+      "sha256": "3cf53ce66c4ce86def3bb753de44e021c3814e698aecae2e84651d630dd26fa5"
+    },
+    {
+      "path": "test/e2e/cleanup-engine.test.mjs",
+      "bytes": 73271,
+      "sha256": "ff7a6675043bf97f62686079ded4e84ada89cf6c4adabad822723377739b26e6"
+    },
+    {
+      "path": "test/e2e/cleanup-integration.test.mjs",
+      "bytes": 25731,
+      "sha256": "d770f3f9e5ce37524922e0011eeec3547eb768b2401c5c0844aa9167c380c894"
+    },
+    {
+      "path": "authoring/evals/uiux/evidence.test.mjs",
+      "bytes": 13493,
+      "sha256": "c1b641199e2a214f53167b3bb3b18b0df648a5856a5e224209be54ea0a7f454f"
+    },
+    {
+      "path": "authoring/evals/uiux/cleanup-review-repair.json",
+      "bytes": 11568,
+      "sha256": "29bb40fcb40ae3f525ed71f8b49e3ea133d3da50dc822d9a221c69ea433f9b00"
+    },
+    {
+      "path": "authoring/evals/uiux/cleanup-review-repair.txt",
+      "bytes": 5042,
+      "sha256": "cb2c46687b2e78429d5cf4af1997bf4084ef9e9f825c28b9dae9157063f7a646"
+    }
+  ],
+  "current_source_bindings": [
+    {
+      "path": "_refs/cleanup/cleanup-engine.mjs",
+      "previous_sha256": "a9fe44b8d7852782a5e730d0953ba1be615b55d94cd4646ba4c5d1aba6d8ca9c",
+      "current_sha256": "ea63c4462f7f5b132f7124beb2838db0f614af316fcdd70ff6282ef8748d57b2"
+    },
+    {
+      "path": "test/e2e/cleanup-engine.test.mjs",
+      "previous_sha256": "ff7a6675043bf97f62686079ded4e84ada89cf6c4adabad822723377739b26e6",
+      "current_sha256": "02d3a1421c4008b676b518fea8c47fa0390026b56c5fa1b72808514edac218e9"
+    },
+    {
+      "path": ".claude/_refs/cleanup/cleanup-engine.mjs",
+      "previous_sha256": "a9fe44b8d7852782a5e730d0953ba1be615b55d94cd4646ba4c5d1aba6d8ca9c",
+      "current_sha256": "ea63c4462f7f5b132f7124beb2838db0f614af316fcdd70ff6282ef8748d57b2"
+    },
+    {
+      "path": "plugin/_refs/cleanup/cleanup-engine.mjs",
+      "previous_sha256": "a9fe44b8d7852782a5e730d0953ba1be615b55d94cd4646ba4c5d1aba6d8ca9c",
+      "current_sha256": "ea63c4462f7f5b132f7124beb2838db0f614af316fcdd70ff6282ef8748d57b2"
+    },
+    {
+      "path": "codex/skills/_refs/cleanup/cleanup-engine.mjs",
+      "previous_sha256": "a9fe44b8d7852782a5e730d0953ba1be615b55d94cd4646ba4c5d1aba6d8ca9c",
+      "current_sha256": "ea63c4462f7f5b132f7124beb2838db0f614af316fcdd70ff6282ef8748d57b2"
+    }
+  ],
+  "phases": [
+    {
+      "phase": "RED",
+      "node": "v22.22.3",
+      "command": "node --test --test-name-pattern='review F-05' test/e2e/cleanup-engine.test.mjs",
+      "exit_code": 1,
+      "tests": 4,
+      "pass": 0,
+      "fail": 4,
+      "transcript": {
+        "path": "authoring/evals/records/cleanup-f05-red.txt",
+        "sha256": "864d2324badad1efec7f9ed4a83043d6c5f1449cf8734352d859381f6cf59006"
+      },
+      "raw_log_sha256": "30899d43ceb9f5d45ba1a8dfa59c551f426ff831ad9cd7bcad6ef791dbe559c3",
+      "raw_log_included": false
+    },
+    {
+      "phase": "GREEN",
+      "node": "v22.22.3",
+      "command": "node --test --test-name-pattern='review F-0[1-5]|verified restore is a new|superseded unique docs|dynamic asset references|finished current-task local design' test/e2e/cleanup-engine.test.mjs test/e2e/cleanup-integration.test.mjs test/e2e/skill-pack-runner.test.mjs",
+      "exit_code": 0,
+      "tests": 13,
+      "pass": 13,
+      "fail": 0,
+      "transcript": {
+        "path": "authoring/evals/records/cleanup-f05-green.txt",
+        "sha256": "5e259e4fee6f809d27a70eb34bd8b0f4c937fe6900a98fccbe1da3b2862b3e5c"
+      },
+      "raw_log_sha256": "8312a2aa58326047567ae763a15055df70a7a925cded344560348f208e261f4e",
+      "raw_log_included": false
+    }
+  ],
+  "behavior": {
+    "retained_markdown_paths": [
+      "assets/credits.md",
+      "docs/superseded.md",
+      ".sdcorejs/tmp/task/retained.MD"
+    ],
+    "retention_states_per_path": 9,
+    "coverage_states_per_retention_state": 3,
+    "negative_permutations": 81,
+    "exact_actions_denied": [
+      "quarantine",
+      "delete"
+    ],
+    "red_unexpected_quarantines_restored_before_assertion": true,
+    "positive_draft_paths": [
+      "assets/abandoned-draft.md",
+      "docs/abandoned-draft.md"
+    ],
+    "positive_round_trip": "Actual quarantine plus separately approved restore",
+    "unresolved_consumers": "Missing/incomplete/external coverage and concatenated lookup blocked"
+  },
+  "provider_calls": 0,
+  "tokens": null,
+  "live_agent": "NOT RUN",
+  "independent_final_review": "PENDING; implementer checks do not replace a separate independent re-review.",
+  "limitations": [
+    "Known NextJS SWC security gate remains blocking; no environment/security changes.",
+    "POSIX native E2E and live-agent evaluation not run.",
+    "No real-user cleanup or Git artifact delivery."
+  ],
+  "public_projection": {
+    "original_sha256": "395c95be323412da4df45b1413ebf12e2266ca16dcfde4572ccf859a9d6b629e",
+    "redactions": [
+      "local_host_paths_or_private_review_locator"
+    ],
+    "original_snapshot_preserved_locally": true,
+    "projected_transcripts": [],
+    "note": "Redacted public projection of historical evidence. Original command/result/source hashes remain provenance; redaction supplies no new execution or approval evidence.",
+    "predecessor_projections": [
+      {
+        "path": "authoring/evals/records/cleanup-review-repair.json",
+        "original_git_blob_sha256": "925dc08aead78735c8d4677b2d1d4ea97335e45f8d7ebf77d6df11f0542ce0a3",
+        "public_projection_sha256": "954c6892eb0d5586cacec353d8602189bb0611a88f2dd29a50192d2030dcf8a5"
+      }
+    ]
+  }
+}

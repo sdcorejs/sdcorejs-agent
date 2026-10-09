@@ -111,6 +111,7 @@ const SKILL_HINTS = [
   { skill: 'sdcorejs-design', words: ['design', 'ui', 'ux', 'screen', 'wireframe', 'mockup', 'png', 'preview', 'handoff', 'flow', 'flows', 'story', 'stories'] },
   { skill: 'sdcorejs-documentation', words: ['documentation', 'docs', 'doc', 'document', 'code-documentation', 'docstring', 'doc-comment', 'comment', 'comments', 'jsdoc', 'tsdoc', 'api', 'function', 'functions', 'class', 'classes', 'guide', 'user-guide', 'end-user', 'manual', 'technical', 'taskid', 'ticket', 'issue', 'record', 'save', 'convert', 'standardize', 'rewrite', 'improve', 'structure'] },
   { skill: 'sdcorejs-simplify', words: ['simplify', 'simplification', 'refine', 'refinement', 'clean-up', 'cleanup', 'clarity', 'maintainability', 'current-diff', 'behavior-preserving'] },
+  { skill: 'sdcorejs-cleanup', words: ['cleanup', 'quarantine', 'deduplicate', 'unused', 'temp', 'scratch', 'cache', 'previews', 'superseded'] },
   { skill: 'sdcorejs-explore', words: ['explore', 'summary', 'overview', 'project', 'codebase', 'repo', 'system', 'map', 'architecture', 'trace', 'flow', 'setup', 'env', 'environment', 'resume', 'recover', 'context', 'persona', 'memory', 'memories', 'remember', 'harvest'] },
   { skill: 'sdcorejs-review', words: ['review', 'audit', 'security', 'performance', 'accessibility', 'a11y', 'architecture', 'scored', 'full', 'comprehensive'] },
   { skill: 'sdcorejs-ship', words: ['verify', 'acceptance', 'criteria', 'final', 'gate', 'branch', 'ready', 'ship', 'push', 'release', 'tag', 'merge', 'dependency', 'dependencies', 'package', 'outdated', 'audit', 'bump'] },
@@ -153,6 +154,10 @@ const PRIORITY_RULES = [
       hasUnresolvedStandaloneAuthIntent(prompt, tokens) ||
       hasUnsupportedChatGptAppBuildIntent(prompt, tokens) ||
       hasUnderSpecifiedApplicationBuildIntent(prompt, tokens)
+  },
+  {
+    skill: 'sdcorejs-cleanup',
+    when: ({ prompt, tokens }) => hasDirectCleanupIntent(prompt, tokens)
   },
   {
     skill: 'sdcorejs-repair-loop',
@@ -435,6 +440,10 @@ export function dispatchPrompt(pack, prompt) {
           && !hasConfirmedAiAgentImplementationIntent(prompt.toLowerCase(), promptTokens)
         ) ||
         (
+          skill.name === 'sdcorejs-cleanup'
+          && !hasDirectCleanupIntent(prompt.toLowerCase(), promptTokens)
+        ) ||
+        (
           skill.name === 'sdcorejs-simplify'
           && !hasDirectSimplifyIntent(prompt.toLowerCase(), promptTokens)
         ) ||
@@ -698,6 +707,7 @@ function hasDirectTestWorkIntent(prompt, tokens) {
     (hasAny(tokens, ['run', 'execute']) && hasAny(tokens, ['test', 'tests'])) ||
     /\b(write|add|create)\b.*\btests?\b/.test(prompt) ||
     /\bviet\s+tests?\b/.test(prompt) ||
+    (hasAny(tokens, ['test', 'tests']) && hasAny(tokens, ['teardown', 'test-data', 'dataset'])) ||
     /\b(test|testing)\s+(plan|case|cases|coverage)\b/.test(prompt) ||
     /\bcoverage\b.*\b(test|tests|gap|gaps)\b/.test(prompt) ||
     (tokens.has('coverage') && hasAny(tokens, ['audit', 'review', 'gap', 'gaps']) && !hasProductCoverageIntent(prompt, tokens)) ||
@@ -749,6 +759,24 @@ function hasRepairLoopIntent(prompt, tokens) {
   );
 }
 
+function hasDirectCleanupIntent(prompt, tokens) {
+  // Hygiene is distinct from source refinement, test authoring and prose edits.
+  if (hasReviewIntent(prompt, tokens) && (hasAny(tokens, ['security', 'performance', 'accessibility', 'a11y', 'architecture', 'quality'])
+    || !hasAny(tokens, ['unused', 'superseded', 'duplicates', 'deduplicate', 'dedup', 'quarantine', 'quarantined']))) return false;
+  if (hasBehaviorPreservationIntent(prompt, tokens)) return false;
+  if (hasAny(tokens, ['teardown', 'test-data', 'dataset']) && hasAny(tokens, ['test', 'tests'])) return false;
+  if (/\b(write|add|create|run)\b.*\b(?:unit|integration|e2e|test case|tests?)\b/u.test(prompt)) return false;
+  if (hasAny(tokens, ['rewrite', 'restructure', 'grammar', 'docstring', 'jsdoc', 'tsdoc'])) return false;
+  const hygieneIntent = hasAny(tokens, ['cleanup', 'clean-up', 'quarantine', 'quarantined', 'deduplicate', 'dedup', 'duplicates', 'unused', 'superseded']) || /\bclean\s+up\b/u.test(prompt) || hasLocalizedCleanupIntent(prompt);
+  const artifactScope = hasAny(tokens, [
+    'workspace', 'folder', 'directory', 'temp', 'tmp', 'temporary', 'scratch',
+    'cache', 'caches', 'preview', 'previews', 'screenshots', 'traces', 'diagnostics',
+    'exports', 'test-results', 'assets', 'images', 'files', 'documentation', 'docs',
+    'receipt', 'outputs',
+  ]) || (hasAny(tokens, ['repo', 'repository']) && !hasAny(tokens, ['code', 'refactor', 'simplify']));
+  return hygieneIntent && artifactScope;
+}
+
 function hasDirectSimplifyIntent(prompt, tokens) {
   if (!hasSimplifyIntent(prompt, tokens)) return false;
   if (hasCompetingSimplifyOwnerIntent(prompt, tokens)) return false;
@@ -768,12 +796,16 @@ function hasSimplifyIntent(prompt, tokens) {
       'clean-up',
     ]) ||
     /\bclean\s+up\b/.test(prompt) ||
-    hasLocalizedSimplifyIntent(prompt)
+    hasLocalizedSimplifyIntent(prompt) || hasLocalizedCleanupIntent(prompt)
   );
 }
 
 function hasLocalizedSimplifyIntent(prompt) {
   return /\bdon\s+gian\s+hoa\b/.test(normalizePromptText(prompt));
+}
+
+function hasLocalizedCleanupIntent(prompt) {
+  return /\bdon\s+(?:dep|rac)\b/u.test(normalizePromptText(prompt));
 }
 
 function hasLocalizedBehaviorPreservationIntent(prompt) {

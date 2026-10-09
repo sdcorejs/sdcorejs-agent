@@ -1,6 +1,24 @@
+import { execFileSync } from 'node:child_process';
+import { resolve } from 'node:path';
+
 export const revision = 'ac820d70bd247a04f977aab9bbb864f6a054acb7';
 export const candidateRevision = '4703643432f7eda43a1c9ccb19db6669e56575f3';
 export const source = (path: string) => `https://github.com/sdcorejs/sdcorejs-agent/blob/${revision}/${path}`;
+const sourceAvailability = new Map<string,boolean>();
+// A working-tree skill can enter the catalog before it exists in the documented
+// snapshot. Keep published links pinned; never invent a blob for a candidate.
+export function hasPublishedSource(path:string):boolean {
+  if(sourceAvailability.has(path))return sourceAvailability.get(path)!;
+  let available=false;
+  if(!path.startsWith('/') && !path.includes('\\') && path.split('/').every(part=>part && part!=='.' && part!=='..')) {
+    try {
+      execFileSync('git',['cat-file','-e',`${revision}:${path}`],{cwd:resolve(process.cwd(),'..'),stdio:'ignore',windowsHide:true});
+      available=true;
+    } catch { available=false; }
+  }
+  sourceAvailability.set(path,available);
+  return available;
+}
 export const navigation = [
   { label: 'Khám phá', items: [
     ['Tổng quan', '/'], ['Năng lực & phạm vi', '/docs/capabilities/'],

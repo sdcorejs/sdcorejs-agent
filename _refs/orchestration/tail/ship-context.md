@@ -47,6 +47,7 @@ ship_context:
     blocker_codes: []
     blockers: []
     evidence_refs: []
+    cleanup_receipt_ids: [] # optional; exact current apply/restore event identities when cleanup occurred
     summary: { requirements: 0, acceptance_criteria: 0, tasks: 0, changed_paths: 0, evidence: 0 }
     provenance: { evaluator: sdcorejs-convergence:v1, input_hash: sha256:v1:<hash>, projection_hash: sha256:v1:<hash> }
   convergence_receipt: # verified approved release-evidence artifact whose body is the exact result
@@ -123,6 +124,11 @@ ship_context:
     commands_run:
     commands_skipped:
     associated_HEAD_or_diff:
+    cleanup_receipt_ids: [] # optional; must equal the final verified cleanup event set
+  cleanup: # optional runtime-only projection; no queue, global index, or current-state file
+    receipts: [] # sealed apply/restore receipts; restored events have their own identity
+    current_snapshot: { fingerprint: sha256:v1:<independently captured current hash> }
+    evidence_refs: [] # mapped actual affected-check commands and mutated paths
   dependency_evidence:
     update_type:
     package_manager:
@@ -185,6 +191,9 @@ ship_context:
   passing.
 - Tie evidence to the current diff or HEAD through `associated_HEAD_or_diff`.
 - Keep `git_handoff_allowed` false when `writes_after_branch_ready` is nonempty.
+- Preserve optional cleanup receipts, independent current snapshot, mapped command evidence,
+  and final branch-ready receipt identities through Git closure. Any later apply or restore
+  requires affected verification, convergence, and the final branch-ready gate again.
 - Keep `git_handoff_allowed` false when artifact closure is incomplete or
   ambiguous, a required artifact is missing, or local-only/unknown artifacts
   are staged.

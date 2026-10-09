@@ -1,0 +1,160 @@
+---
+name: sdcorejs-cleanup
+description: Bounded hygiene for repository temp outputs, finished caches, previews, diagnostics, duplicate assets/files and superseded docs. Portable analyze/plan are read-only. Windows local-drive apply/restore; Linux ext4/macOS APFS require existing trusted CPython, native capability and approved cooperative maintenance. Exact authority required; hashes never authorize deletion. Source refinement, test teardown and quality review retain simplify/test/review owners. Runtime-localized.
+allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
+---
+
+<!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
+
+
+# Cleanup
+
+## Shared protocols and ownership
+
+Read `_refs/shared/runtime-protocols.md`, then apply Project Context Preflight
+v2 from `_refs/shared/project-context.md`. Read repository instructions and
+current changes; resolve the target repository and explicitly bounded scope.
+Use `_refs/shared/tasklist.md` for non-trivial work and
+`_refs/shared/user-choice-prompt.md` before a decision. Keep reusable source
+English; localize runtime prose and preserve exact paths, hashes and commands.
+
+This utility owns filesystem hygiene, not an implementation track. Source
+refinement belongs to `sdcorejs-simplify`; tests and data teardown belong to
+`sdcorejs-test`; quality assessment belongs to `sdcorejs-review`; rewriting or
+consolidating docs belongs to `sdcorejs-documentation`. A candidate requiring
+imports, public API or code changes is a finding/handoff to its existing owner.
+
+Load [`_refs/cleanup/workflow.md`](../../../_refs/cleanup/workflow.md) for the
+runtime scope, offer and task-tail contract. Use the single engine
+[`_refs/cleanup/cleanup-engine.mjs`](../../../_refs/cleanup/cleanup-engine.mjs)
+and its pure policy
+[`_refs/cleanup/cleanup-contract.mjs`](../../../_refs/cleanup/cleanup-contract.mjs).
+Do not implement a second cleanup script or run `git clean -fdx` or equivalent.
+
+## Select one action
+
+| Action | Boundary |
+|---|---|
+| `analyze` | `scanCleanup`: read-only scan, evidence and classification of explicit scope. |
+| `plan` | `freezeCleanupPlan`: exact actions and current fingerprints, with no filesystem mutation. |
+| `apply` | `applyCleanupPlan`: separately authorized actions, immediate revalidation and affected verification. |
+| `restore` | `restoreCleanup`: recover exact receipt paths; fail if the destination is occupied or recovery bytes changed. |
+| `task-tail-cleanup` | Current-task artifacts only, after durable finalization and before convergence/final branch-ready. |
+
+Default to `analyze`. "Check this repo", "review this folder", "see what is
+unused", and accepting a proactive offer authorize analysis only. Analysis
+authority and mutation authority are separate. Quarantine and archive remove
+active paths and therefore also require mutation authority.
+
+## Evidence before action
+
+Separate evidence certainty from impact/recoverability. Preserve the existing
+artifact lifecycle for durable/shared durable and diagnostic outputs; reuse
+`required_with_change`, `shared_owned`, `conditional`, `local_only` and
+`unknown` buckets. `local_only` does not mean disposable. Keep debug, review,
+reproduction and recovery evidence, including failed/interrupted task outputs.
+Read `_refs/shared/artifact-lifecycle.md` before any affected durable artifact.
+
+Never infer disposal from age, naming, AI generation, `.gitignore`, equal
+hashes, or absence of an import/grep match. Assets require bounded reference
+coverage across dynamic/template paths, configured copies/globs, exports,
+runtime lookup, documentation, generated registries and external/public
+consumers. Incomplete coverage remains `unknown`.
+
+Classify docs as current, outdated-but-needed, superseded, historical,
+abandoned-draft, or unknown. Approved specs/plans/architecture/ADRs/decisions
+and unique historical evidence remain immutable; mark relationships or hand
+off an update rather than deleting history. Exact duplicates use size/hash
+evidence plus path semantics and ownership; brand variants, isolated fixtures,
+versioned docs and canonical distribution mirrors can be intentional. Near
+duplicates recommend review, never automatic deletion.
+
+| Risk | Mutation authority |
+|---|---|
+| `LOW` | Approved exact task policy only: task-owned, reproducible, finished producer and no longer needed as evidence. Otherwise obtain exact approval. |
+| `MEDIUM` | Bounded batch approval unless an explicit policy covers the exact action. |
+| `HIGH` | Explicit file or atomic-group approval for tracked/public assets, docs, baselines or unique content. |
+| `BLOCKED` | No mutation: changed/active files, unknown ownership/evidence, unsafe boundaries, sensitive paths or unreliable recovery. |
+
+Unknown never falls back to MEDIUM. HIGH-risk approval includes detailed
+file/group evidence; compact routine output cannot obscure a destructive
+decision's scope, count, action, reason, risk, recovery and verification.
+
+## Freeze, revalidate, apply and recover
+
+Resolve analysis/reference scope separately from mutation scope. Discovery
+globs do not authorize actions. Freeze exact file paths/actions with reason,
+evidence/unknowns, content and state fingerprints, recovery strategy and
+verification. Available actions are keep/review/quarantine/archive/delete;
+update or consolidation beyond cleanup authority remains a handoff.
+
+Bind approval to plan identity, exact actions and relevant state. Immediately
+before each apply, recheck content, references, ownership, Git state,
+directory inventory, symlink boundaries, producer completion and writer
+exclusion. Drift stops the stale action and requires replan/reapproval as
+appropriate. Never recursively remove a newly appeared file outside the plan.
+
+Fail closed on traversal, ambiguous roots, links/junctions, nested repositories
+or submodules without separate authority. Never follow a link target or expand
+into sibling repositories, global caches, containers, databases or cloud data.
+Use bounded engine operations and exact paths, never destructive shell globs.
+
+After apply, verify affected behavior and inspect the exact result. A receipt
+records completed, retained and failed actions and enough recovery evidence;
+partial apply is not total success. Report removed active paths, held
+quarantine bytes and actually reclaimed bytes separately. Same-filesystem
+quarantine does not reclaim space; archive is durable history, not quarantine.
+Restore never silently overwrites an occupied destination.
+
+Analysis is portable. Windows mutation uses the existing PowerShell helper
+with pinned native file handles. Linux/macOS mutation requires an explicitly
+selected existing trusted CPython 3.11-3.14 executable, a frozen native
+capability profile and separately approved cooperative maintenance. Initial
+POSIX profiles are local ext4 on Linux and local APFS on macOS, on x64/arm64;
+unsupported runtime, filesystem, ownership, ACL or flag checks block effects.
+No runtime is installed and no existing permission is changed.
+
+Before POSIX mutation approval, explain that all known content/name writers,
+watchers, children and retained writable descriptors must finish or stay
+quiescent under the same stable repository fence. Require current scoped
+owner/participant evidence and generation. Hidden uncooperative writers violate
+this operating prerequisite; advisory locking does not exclude them. An
+unexpected capture is a retained partial contract breach, never new authority
+to move/delete a replacement or automatically overwrite a rollback target.
+
+Recovery/archive copies are verified before capture/removal. Preserve exact
+journals, recovery paths and interrupted captures for separate inspection and
+recovery authority; never resume or purge them automatically. Report reclaimed
+bytes on the native source-allocation basis; net volume free-space change is
+unmeasured. Missing capability retains read-only analyze/plan. Release claims
+require actual native tests on each declared platform; skipped Linux/macOS
+fixtures are `NOT_RUN`, even when Windows and shared contract tests pass.
+
+## Offers, task tail and handoff
+
+Explore/test/review/design/documentation workers emit evidence signals only.
+The integration owner deduplicates them and uses
+[`_refs/cleanup/offer-policy.mjs`](../../../_refs/cleanup/offer-policy.mjs)
+at a safe boundary after the primary result. Offer at most one unresolved,
+significant bounded analysis; use native structured choices when supported,
+otherwise numbered Markdown. Honor decline for the same finding and session
+disable across workflows. Acceptance is not mutation approval. Do not
+interrupt root-cause debugging or create a persistent global queue/session
+index. A persistent preference needs explicit persistence authority and the
+existing preference owner.
+
+Task-tail cleanup scans only proven current-task artifacts. Preapproved LOW
+policy excludes unrelated tasks, durable docs/assets, public assets, baselines,
+unclear owners and needed diagnostics. Finalize durable artifacts first,
+apply authorized cleanup, rerun affected verification, then pass cleanup
+evidence to ship/convergence and final read-only branch-ready. Any later
+mutation invalidates readiness and requires the affected gates again.
+
+Keep plan, policy, offer/suppression and receipt state runtime-local unless an
+explicit durable artifact need follows the existing artifact owner and
+lifecycle. Never commit runtime outputs, quarantine or temporary files.
+
+No Git history/branch/worktree deletion, dependency pruning, refactor, Docker
+prune, database/cloud cleanup, system-wide scan, background daemon, cron or
+new hashing/graph/provider dependency. Findings may hand off to an existing
+owner within separately approved scope.

@@ -4,7 +4,7 @@ Entry point for AGENTS.md-aware tools: Codex, Cursor, OpenAI Agents SDK, and com
 Claude Code reads `CLAUDE.md`; Copilot reads `.github/copilot-instructions.md`.
 
 This repository is an engineering skill pack for developers and technical teams.
-Its root Node workspace is private and validation-only. Its 23 public skills cover
+Its root Node workspace is private and validation-only. Its 24 public skills cover
 governed requirements, product, design, tests, Angular,
 NestJS, Next.js, AI-agent contracts, documentation, review, delivery, and a
 generic harness for other stacks.
@@ -41,7 +41,7 @@ When multiple skills match, apply this priority before reading a body:
 3. Product, design, or direct test work: `sdcorejs-product`,
    `sdcorejs-design`, or `sdcorejs-test`; failing-test diagnosis uses
    `sdcorejs-debug`.
-4. Dedicated utility intent: `sdcorejs-simplify`, `sdcorejs-explore`,
+4. Dedicated utility intent: `sdcorejs-cleanup`, `sdcorejs-simplify`, `sdcorejs-explore`,
    `sdcorejs-documentation`, `sdcorejs-review`, `sdcorejs-repair-loop`,
    `sdcorejs-debug`, `sdcorejs-ship`, or `sdcorejs-git`.
 5. Confirmed track implementation: `sdcorejs-ai-agent`, `sdcorejs-angular`,
@@ -54,6 +54,10 @@ ship evidence. Broad refactors and under-specified AI-agent work return to
 brainstorming. `sdcorejs-simplify` is only for bounded, behavior-preserving
 source refinement.
 
+`sdcorejs-cleanup` owns bounded output/asset/doc hygiene (default read-only).
+Offers authorize analysis only; mutations require its exact authority gate.
+Load `_refs/cleanup/workflow.md` for risk, recovery and task-tail rules.
+
 ## Workflow
 
 ```text
@@ -61,6 +65,7 @@ brainstorming -> spec -> architecture when required -> plan -> execute-plan
   -> selected executor or generic harness -> mandatory finish gate
   -> test -> optional simplify -> focused tests -> review -> repair
   -> required docs/traceability -> authorized convention sync
+  -> authorized current-task cleanup -> affected verification
   -> validation evidence -> convergence -> final read-only branch-ready
 ```
 
@@ -95,14 +100,13 @@ tri-state capabilities live in `_refs/harness/capability-contract.json`.
 Unsupported or unknown capabilities use portable Markdown and sequential
 fallbacks.
 
-Communication defaults to compact, outcome-first, complete professional
-sentences. Load `_refs/harness/communication-economy.md` just in time for
-profile resolution, progress, context handoff, or related-artifact selection.
-Approval, security, destructive action, ambiguity, conflict, blockers, and
-failed verification automatically use detailed communication. Preserve exact
-code, commands, paths, IDs, hashes, errors, numbers, and evidence. Pass full
-typed context to its consumer without echoing it to the user; unsupported or
-unknown `runtime_context_channel` uses a validated portable handoff.
+Use compact, outcome-first communication with complete professional sentences. Load
+`_refs/harness/communication-economy.md` just in time for profiles, progress,
+context handoffs or artifact selection. Approval, security, destructive action,
+ambiguity, conflict, blockers and failed verification require detailed output.
+Preserve exact code/commands/paths/IDs/hashes/errors/numbers/evidence. Pass full
+typed context to its consumer; unsupported or unknown `runtime_context_channel`
+uses a validated portable handoff.
 
 ## Production SDLC Scope Decision
 
@@ -164,25 +168,14 @@ In a target project:
 
 ## Reference Loading
 
-Load references on demand:
+Follow `_refs/shared/runtime-protocols.md` for mandatory shared JIT hooks;
+its context, progress, communication, delegation and visual rules apply at
+their declared triggers. Additional loading:
 
-- `_refs/shared/runtime-protocols.md` to route shared references without
-  repeating them in every skill.
-- `_refs/harness/capability-contract.json` only when resolving a semantic
-  action or adapter capability.
-- `_refs/harness/communication-economy.md` only when resolving response
-  profiles, progress events, runtime handoffs, or related artifacts.
-- `_refs/harness/delegation-policy.json` and `_refs/harness/task-brief.md` only
-  when delegation is feasible.
-- `_refs/shared/project-context.md` before non-trivial skill execution.
-- `_refs/shared/artifact-lifecycle.md` before writing, verifying, staging,
-  committing, or pushing `.sdcorejs/**` artifacts.
-- Relevant `_refs/sdlc/*.md` during brainstorming, architecture, spec, or plan.
-- `_refs/shared/tasklist.md` for non-trivial execution tasks.
-- `_refs/shared/user-choice-prompt.md` before any user-facing choice, approval gate, yes/no question, or mode selection.
-- `_refs/sdlc/visual-offer-policy.md` before open choices; skip fixed work.
-- `_refs/sdlc/visual-companion.md` for requested/accepted previews or missing
-  runtime consent; preserve scoped responses.
+- `_refs/harness/capability-contract.json` for semantic action/capability resolution.
+- `_refs/shared/artifact-lifecycle.md` before `.sdcorejs/**` writes or Git closure.
+- `_refs/shared/user-choice-prompt.md` before choices, approvals or mode selection.
+- Relevant `_refs/sdlc/*.md` for brainstorming, architecture, spec or plan.
 - `_refs/shared/testing-philosophy.md` for test-track work.
 - Decision coverage, validation-map, and convergence references at their gates.
 - `_refs/simplify/**` for bounded behavior-preserving source refinement.

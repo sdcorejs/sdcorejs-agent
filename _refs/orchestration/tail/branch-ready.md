@@ -32,6 +32,13 @@ No writes after branch-ready unless branch-ready is run again. Writes include
 execution records, user guides, durable backlog updates, memories, changelog, release notes,
 generated mirrors, formatting, codegen, source edits, docs edits, dependency
 manifest changes, and lockfile updates.
+Cleanup deletion, movement, quarantine, archival and restore also invalidate
+branch-ready, including local-only paths excluded from the Git diff. Complete
+cleanup and affected verification before this gate; read
+`_refs/cleanup/workflow.md` when receipts are present. Call
+`evaluateCleanupLifecycle` against exact receipts, an independently captured
+current cleanup snapshot and current mapped command/path evidence. Partial
+apply, errors or `affected_checks: NOT RUN` block.
 Read `_refs/shared/convergence-contract.mjs` and call
 `evaluateConvergenceHandoff` with the compact result, verified receipt, current
 source/module/pin/owner-thread identity, and approved change/mode. Missing,
@@ -64,6 +71,7 @@ branch_ready_evidence:
   result:
   convergence_result: <exact compact result checked against current identity>
   convergence_receipt: <exact hash-verified release-evidence artifact>
+  cleanup_receipt_ids: [] # exact current cleanup receipts when present
   blockers_not_waivable: true
   writes_after_branch_ready:
 ```
@@ -72,6 +80,10 @@ The `associated_HEAD_or_diff` value must identify the current `HEAD` plus dirty
 diff state, or the exact clean `HEAD` when the tree is clean. If any file is
 written after this evidence is collected, the evidence is stale and branch-ready
 must run again before Git artifact handoff.
+When cleanup is present, pass these receipt IDs as the current
+`cleanup_receipt_ids` to `evaluateConvergenceHandoff`; a result from before
+cleanup is stale even when its Git source fingerprint is unchanged. Ship's
+release evidence records them in `delivery.branch_ready_cleanup_receipt_ids`.
 
 ## Package Manager And Script Discovery
 

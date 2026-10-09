@@ -26,6 +26,11 @@ Load only the references required by the selected task:
   direct Design; skip visual loading for fixed work.
 - Requested/accepted preview or missing runtime consent:
   `_refs/sdlc/visual-companion.md` for surfaces and lifecycle.
+- Significant hygiene observations from explore/test/review/design/docs, an
+  accepted cleanup offer, or current-task tail cleanup:
+  `_refs/cleanup/workflow.md`. One sequential/fan-in coordinator consumes
+  runtime signals and carries offer suppression across workflows. Analysis
+  acceptance never grants mutation authority; workers emit findings only.
 
 Current user instructions, files, diffs, logs, failing tests, and current
 command output override stored context. Match the user's language at runtime;

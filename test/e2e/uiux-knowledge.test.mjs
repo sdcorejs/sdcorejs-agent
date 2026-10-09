@@ -3,7 +3,9 @@ import { readFile, mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
+import { verifyApprovedArtifact } from '../../_refs/shared/approved-artifact.mjs';
 import { selectUiuxReferences } from '../../_refs/design/uiux/select-references.mjs';
 import { exactVersionCandidates, detectInstalledPackage } from '../../_refs/angular/core-docs-fetch.mjs';
 import { evaluateReviewContract } from '../../_refs/shared/review-contract.mjs';
@@ -184,9 +186,19 @@ test('routing preserves design, implementation, independent review and direct an
   assert.deepEqual(results.filter(({ pass }) => !pass), []);
 });
 
-test('public inventory is unchanged from the recorded main revision', () => {
+test('UI/UX preserves the recorded inventory with only the approved cleanup utility delta', async () => {
   const baseline = execFileSync('git', ['ls-tree', '-r', '--name-only', '4fa58c66bc8b96c3ddcad887403d1eb9cfb5c8f4', 'skills'], { encoding: 'utf8', windowsHide: true });
   const paths = baseline.trim().split('\n').filter((file) => file.endsWith('.md'));
-  assert.equal(pack.sourceSkills.length, paths.length);
+  assert.equal(paths.length, 23, 'the historical UI/UX upgrade added no public skill');
+  const currentPaths = pack.sourceSkills.map(({ path: skillPath }) => path.relative(fileURLToPath(root), skillPath).replaceAll('\\', '/'));
+  assert.deepEqual(currentPaths.sort(), [...paths, 'skills/shared/workflow/cleanup.md'].sort());
+  const approval = JSON.parse(await readFile(new URL('.sdcorejs/approvals/sdcorejs-cleanup-ceiling-change.json', root), 'utf8'));
+  verifyApprovedArtifact(approval);
+  const authorization = JSON.parse(approval.body);
+  assert.equal(authorization.status, 'approved');
+  assert.equal(authorization.capability_id, 'sdcorejs-cleanup');
+  assert.deepEqual(authorization.proposed_public_skills, ['sdcorejs-cleanup']);
+  assert.equal(authorization.from_ceiling, 23);
+  assert.equal(authorization.to_ceiling, 24);
   assert.ok(!pack.sourceSkills.some(({ name }) => name === 'sdcorejs-uiux'));
 });
