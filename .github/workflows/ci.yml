@@ -27,6 +27,27 @@ jobs:
       - run: npm run check:skills
       - run: npm run check:nestjs-pack
       - run: npm run check:audit
+      - name: Admit native cleanup fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          export SDCOREJS_CLEANUP_POSIX_FIXTURE_ROOT="$(mktemp -d "$HOME/sdcorejs-cleanup-ci.XXXXXXXX")"
+          export SDCOREJS_CLEANUP_PYTHON="$(readlink -f /usr/bin/python3)"
+          test -x "$SDCOREJS_CLEANUP_PYTHON"
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { inspectCleanupPosixCapabilities } from './_refs/cleanup/posix-file-operation.mjs';
+          const result = await inspectCleanupPosixCapabilities({
+            root: process.env.SDCOREJS_CLEANUP_POSIX_FIXTURE_ROOT,
+            python: process.env.SDCOREJS_CLEANUP_PYTHON,
+          });
+          assert.equal(result.supported, true, JSON.stringify(result));
+          assert.equal(result.profile.filesystem, 'ext4');
+          NODE
+          printf '%s\n' \
+            "SDCOREJS_CLEANUP_POSIX_FIXTURE_ROOT=$SDCOREJS_CLEANUP_POSIX_FIXTURE_ROOT" \
+            "SDCOREJS_CLEANUP_PYTHON=$SDCOREJS_CLEANUP_PYTHON" >> "$GITHUB_ENV"
       - run: npm run test:e2e
 
   site:
