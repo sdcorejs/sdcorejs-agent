@@ -271,6 +271,14 @@ class Pins:
                 os.mkdir(name, 0o700, dir_fd=parent)
                 os.fsync(parent)
                 fd = os.open(name, self.flags, dir_fd=parent)
+            except OSError as error:
+                if error.errno in (errno.ELOOP, errno.ENOTDIR):
+                    try:
+                        observed = os.stat(name, dir_fd=parent, follow_symlinks=False)
+                    except OSError:
+                        raise error
+                    require(not stat.S_ISLNK(observed.st_mode), 'SYMLINK_BOUNDARY')
+                raise
             self.fds.append(fd)
             observed = self.native.security(fd, directory=True)
             require(observed.st_dev == self.root_state.st_dev and self.native.profile(fd) == self.root_profile, 'MOUNT_BOUNDARY')
