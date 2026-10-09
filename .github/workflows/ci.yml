@@ -35,6 +35,29 @@ jobs:
           export SDCOREJS_CLEANUP_POSIX_FIXTURE_ROOT="$(mktemp -d "$HOME/sdcorejs-cleanup-ci.XXXXXXXX")"
           export SDCOREJS_CLEANUP_PYTHON="$(readlink -f /usr/bin/python3)"
           test -x "$SDCOREJS_CLEANUP_PYTHON"
+          "$SDCOREJS_CLEANUP_PYTHON" -I -S -B - <<'PY'
+          import errno, os
+          selected = [os.environ['SDCOREJS_CLEANUP_PYTHON'],
+                      os.path.join(os.getcwd(), '_refs/cleanup/safe-file-operation.py'),
+                      os.environ['SDCOREJS_CLEANUP_POSIX_FIXTURE_ROOT']]
+          checked = set()
+          for selected_path in selected:
+              current = os.path.realpath(selected_path)
+              while current not in checked:
+                  checked.add(current)
+                  for attribute in ('system.posix_acl_access', 'system.posix_acl_default'):
+                      try:
+                          os.getxattr(current, attribute)
+                      except OSError as error:
+                          if error.errno != errno.ENODATA:
+                              raise
+                      else:
+                          print('Native admission ACL boundary:', current, attribute)
+                  parent = os.path.dirname(current)
+                  if parent == current:
+                      break
+                  current = parent
+          PY
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
           import { inspectCleanupPosixCapabilities } from './_refs/cleanup/posix-file-operation.mjs';
