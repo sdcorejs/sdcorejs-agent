@@ -1,15 +1,10 @@
 # SDCoreJS SDLC Agent
 
-Entry point for AGENTS.md-aware tools: Codex, Cursor, OpenAI Agents SDK, and compatible assistants.
-Claude Code reads `CLAUDE.md`; Copilot reads `.github/copilot-instructions.md`.
+Shared instructions for Codex, Claude Code, Cursor, OpenAI Agents SDK and compatible agents. Copilot uses `.github/copilot-instructions.md`; CLAUDE.md is retained.
 
-This repository is an engineering skill pack for developers and technical teams.
-Its root Node workspace is private and validation-only. Its 24 public skills cover
-governed requirements, product, design, tests, Angular,
-NestJS, Next.js, AI-agent contracts, documentation, review, delivery, and a
-generic harness for other stacks.
+Engineering skill pack for developers and technical teams with 24 public skills: governed product/design/test work, Angular, NestJS, Next.js, AI-agent contracts and a generic harness. The private Node workspace is validation-only.
 
-All user-facing behavior is Runtime-localized: detect the user's language, respond in that language, and preserve locale-specific marks. Keep identifiers, permission codes, env keys, and route paths in English.
+Runtime-localized output uses the user's language and preserves locale marks. Keep identifiers, permission codes, env keys and route paths in English.
 
 ## Skill Source Language
 
@@ -119,12 +114,7 @@ Do **not** add new production-SDLC skills or refs for CI/CD pipelines, IaC, stag
 
 ## Mandatory Execution Discipline
 
-For any non-trivial execution task, the agent MUST use `_refs/shared/tasklist.md`.
-
-Create an outcome-based runtime tracker before work starts and update it only
-for meaningful progress events.
-
-Do not say "done", "ready", or "safe to ship" unless verification is complete or skipped verification is explicitly disclosed.
+For non-trivial execution, use `_refs/shared/tasklist.md`: create outcome-based runtime progress before work and update only for meaningful events. Completion or readiness claims require verification or explicit disclosure of skipped checks.
 
 ## Mandatory Rules
 
@@ -184,3 +174,7 @@ their declared triggers. Additional loading:
 - `_refs/orchestration/workspace-isolation.md` for execution workspace isolation.
 - `_refs/orchestration/tail/verify-before-done.md` during `sdcorejs-ship (verify-before-done mode)`.
 - `_refs/orchestration/tail/branch-ready.md` during `sdcorejs-ship (branch-ready mode)`.
+
+## Shared reference
+
+Before track execution or its finish chain, read the relevant executor/provider and tail sections in root-relative `AGENTS.reference.md`. This consolidates unique CLAUDE guidance without duplicating bootstrap policy. Keep shared conventions consistent across retained entrypoints.
