@@ -9,9 +9,9 @@ alwaysApply: true
 
 Shared instructions for Codex, Claude Code, Cursor, OpenAI Agents SDK and compatible agents. Copilot uses `.github/copilot-instructions.md`; CLAUDE.md is retained.
 
-Engineering skill pack with 24 public skills: governed product/design/test work, Angular, NestJS, Next.js, AI-agent contracts and a generic harness. The private Node workspace is validation-only.
+Engineering skill pack for developers and technical teams with 24 public skills: governed product/design/test work, Angular, NestJS, Next.js, AI-agent contracts and a generic harness. The private Node workspace is validation-only.
 
-Runtime-localize user output to their language and preserve locale marks. Keep identifiers, permission codes, env keys and route paths in English.
+Runtime-localized output uses the user's language and preserves locale marks. Keep identifiers, permission codes, env keys and route paths in English.
 
 ## Skill Source Language
 
