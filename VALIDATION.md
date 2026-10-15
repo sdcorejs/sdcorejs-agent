@@ -917,3 +917,96 @@ document next-action phase/intent/owner, volatile paths, the host runner,
 host-held simplify state, authority-granting choices, named review references
 and the host-evidence simplify owner. These are byte counts, not token or cost
 measurements.
+
+## Product task-breakdown mode — current change (2026-10-14, revised 2026-10-15)
+
+This section records `product-task-breakdown-mode-v1` at base HEAD
+`4703643432f7eda43a1c9ccb19db6669e56575f3`. It adds the task-breakdown mode of
+`sdcorejs-product` through the approved spec, architecture revision 2 and plan
+revision 4 (`sha256:v1:7868b0a5a4ea3417dd0e8f3bd520b39247c67074ff17a4493a0b40adeb06d6fd`).
+The mode turns PRDs and stories into fixed-format role tasks, sizes them with a
+rubric, suggests assignees from capacity, keeps project configuration under
+`.sdcorejs/projects/<slug>/`, and writes tracker tickets only through an
+approved write plan. Earlier sections and evidence records remain historical.
+The step-6 record `authoring/evals/audit-findings-repair.json` is verified as
+history at 4703643, and `authoring/evals/product-task-breakdown-mode.json` binds
+the current content and an actual command run. Public inventory stays at 23
+skills; no dependency is added.
+
+The first live run on Claude Code (VAL-004) failed. The model skipped the
+first-run wizard, the availability question, the proposal approval and the
+read-only fan-out, never ran the helpers, and called a tracker update that
+replaced a whole ticket description without a write plan or an approval; only
+the host permission layer stopped the write. The deterministic suite could not
+see this because it tested the helpers, not the flow. Architecture revision 2
+and plan revision 3 therefore turn the flow into mandatory gates G0..G8 and add
+the read-only check CLI `_refs/product/task-breakdown/check.mjs`, which the
+skill must run and cite before it writes a file or a ticket. The failed run is
+kept in `.sdcorejs/docs/workflow/2026-10-14-12-00-product-task-breakdown-mode-live-run.md`.
+
+The second live run, after plan revision 3, also failed
+(`.sdcorejs/docs/workflow/2026-10-15-10-10-product-task-breakdown-mode-live-run-r2.md`).
+In an interactive session the model could not find `_refs/`: the plugin and
+`.claude` mirrors keep `_refs/...` paths without a resolution rule, so it looked
+under the skill directory and then worked without the mode reference. This is a
+skill-pack defect that affects every skill in those layouts; it is fixed in a
+separate change, after which the live run is repeated. In a headless session
+the model read the gates but still did all the work in one reply. Plan revision
+4 adds a stop to the skill body and the reference: the first reply in this
+mode covers G0 only and then stops for the user. The manual criteria AC-002,
+AC-004, AC-011 and AC-016 remain unproven until that live run passes.
+
+| Area | Regression case | Before | Current |
+| --- | --- | --- | --- |
+| Task-breakdown helpers (workspace paths, config validator, task format, confidence, no code, PRD coverage, rubric, capacity, assignee, re-run identity, secret redaction, report) | `case-task-breakdown-*` in `test/e2e/product-task-breakdown-contract.test.mjs` | FAIL at 4703643 (`ERR_MODULE_NOT_FOUND`, 0 of 1) | PASS |
+| `renderTask` text and rich nodes, data block and rendered document, rich merge and fingerprints, update operations with format and fingerprints | `case-task-breakdown-render`, `-document`, `-rich-merge`, `-rerun-idempotent` | FAIL after plan r2 (`SyntaxError`: missing exports, 0 of 1) | PASS (21 of 21 in the file) |
+| Read-only check CLI: `--root`, workspace confinement and links, project, tasks, scan, balance, write gate, report, imports | `case-task-breakdown-cli-*` in `test/e2e/product-task-breakdown-cli.test.mjs` | FAIL after plan r2 (`SyntaxError`, 0 of 1) | PASS (9 of 9) |
+| Flow gates G0..G8 and their rules in the skill and refs, with a mutation guard | `case-task-breakdown-flow-gates` in `test/e2e/product-task-breakdown-flow-contract.test.mjs` | FAIL after plan r2 (0 of 2) | PASS (2 of 2) |
+| First reply covers G0 only, in the skill body and the reference | `case-task-breakdown-flow-gates` | FAIL after plan r3 (the new rule is missing in both files) | PASS (2 of 2) |
+| `source.read` and `tracker.write` actions, fail-closed connector observation, mirror `allowed-tools` | `case-task-breakdown-capability-contract` in `test/e2e/harness-behavioral-sentinel.test.mjs` | FAIL at 4703643 (18 of 20) | PASS (20 of 20) |
+| `project_workspaces` root, `project-config` and `task-breakdown` kinds | `case-task-breakdown-workspace-path` in `test/e2e/artifact-path-convention.test.mjs` | FAIL at 4703643 (21 of 23) | PASS (23 of 23) |
+| Routing of PRD, story and sprint task prompts to `sdcorejs-product` | `case-task-breakdown-routing` in `test/e2e/skill-pack-runner.test.mjs` | FAIL at 4703643 (32 of 33) | PASS (33 of 33) |
+| Governance continuation | `case-task-breakdown-evidence-continuation` in `authoring/evals/uiux/evidence.test.mjs` | FAIL while the record was bound to an earlier plan revision | PASS (10 of 10) |
+
+The focused command recorded in the continuation is
+`node --test --test-concurrency=1 --test-reporter=tap` over the six test files
+above: 108 tests. The text contract proves that the gate rules are present and
+cannot be deleted silently; it does not prove that a model follows them. That
+proof is the second live run, which is manual and recorded separately.
+
+Deviations from the plans, all inside the approved paths:
+
+- `skills/orchestration/using-skills.md` is unchanged. A routing paragraph there
+  exceeded the always-loaded bootstrap byte budget. Routing rests on the product
+  description, the `write-requirement` row of the documentation skill and
+  `_refs/product/task-breakdown.md`.
+- `sdcorejs-product` adds `web.fetch` to its required actions so the source
+  fallback chain `source.read` -> `web.fetch` -> `artifact.read` -> pasted text
+  is available. Generated `allowed-tools` still contain no connector tool.
+- The live run showed that a host mode which denies every tool not granted at
+  runtime also ignores the skill's `allowed-tools`. `_refs/harness/README.md`
+  now says so.
+
+| Measure | Baseline | Current working tree |
+| --- | ---: | ---: |
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,850 |
+| Always-loaded bootstrap words | 2,361 | 2,319 |
+| Aggregate just-in-time scenario bytes | 514,603 | 695,618 |
+| Aggregate visible output bytes | 42,558 | 2,802 |
+| Aggregate visible output words | 3,961 | 337 |
+| Portable fallback handoff bytes | 0 | 25,383 |
+| Supported runtime context channel bytes | 0 | 1,819 |
+| Repeated-block bytes | 2,319 | 0 |
+| Total measured communication bytes | 577,334 | 745,472 |
+| Consumer-required authoritative fields | 361 | 361 preserved |
+
+The just-in-time aggregate moves from 689,344 to 695,618 bytes (+6,274). Five
+scenarios load `_refs/shared/artifact-lifecycle.md`, which grows by 588 bytes for
+the two project-workspace artifact kinds (2,940 bytes). The no-runtime-context
+scenario loads `_refs/harness/capability-contract.json`, which grows by 3,183
+bytes for the two new actions and capabilities on four adapters. The delegated
+test and docs scenario loads `skills/orchestration/documentation.md`, which grows
+by 151 bytes for the task-breakdown routing note. The gates, the check CLI and
+the product refs are not loaded by any measured scenario, so revision 3 does not
+change these numbers. The always-loaded bootstrap is unchanged. These are byte
+counts, not token or cost measurements.

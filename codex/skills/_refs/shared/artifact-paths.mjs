@@ -9,6 +9,7 @@ export const PRODUCT_LEDGER_ROOT = systemRegistry.artifact_roots.product_ledger;
 export const DESIGN_ARTIFACT_ROOT = systemRegistry.artifact_roots.design_artifacts;
 export const DESIGN_LEDGER_ROOT = systemRegistry.artifact_roots.design_ledger;
 export const ARCHITECTURE_ARTIFACT_ROOT = systemRegistry.artifact_roots.architecture;
+export const PROJECT_WORKSPACE_ROOT = systemRegistry.artifact_roots.project_workspaces;
 export const LEGACY_PRODUCT_DOCUMENT_ROOT =
   systemRegistry.legacy_artifact_roots.product_documents;
 export const LEGACY_DESIGN_ARTIFACT_ROOT =
@@ -96,6 +97,36 @@ function assertSafeScreen(screen) {
     throw new TypeError('screen must be a lowercase kebab-case identifier');
   }
   return screen;
+}
+
+const PROJECT_SEGMENT_MAX_LENGTH = 63;
+const RESERVED_SEGMENT = /^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])$/iu;
+
+/** Project slug or task scope: the feature pattern, bounded length, no reserved device name. */
+export function isSafeProjectSegment(value) {
+  return typeof value === 'string' && value.length <= PROJECT_SEGMENT_MAX_LENGTH &&
+    SAFE_FEATURE.test(value) && !RESERVED_SEGMENT.test(value);
+}
+
+/**
+ * Project workspace layout under the registry root. A repository can serve
+ * several projects, so every file is scoped by the project slug.
+ */
+export function resolveProjectWorkspacePaths({ slug, scope } = {}) {
+  if (!isSafeProjectSegment(slug)) {
+    throw new TypeError('project slug must be a lowercase kebab-case identifier of at most 63 characters and not a reserved name');
+  }
+  if (scope !== undefined && !isSafeProjectSegment(scope)) {
+    throw new TypeError('task scope must be a lowercase kebab-case identifier of at most 63 characters and not a reserved name');
+  }
+  const root = `${PROJECT_WORKSPACE_ROOT}/${slug}`;
+  const paths = {
+    root,
+    project: `${root}/project.md`,
+    config: `${root}/task-breakdown.config.md`,
+    tasks_directory: `${root}/tasks`,
+  };
+  return scope === undefined ? paths : { ...paths, tasks: `${root}/tasks/${scope}.md` };
 }
 
 /**

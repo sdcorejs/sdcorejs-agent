@@ -82,7 +82,7 @@ asks for multiple outputs.
 | `code-documentation` | code documentation, document code, add comments, comment code, implementation comments, docstring, doc comment, JSDoc, TSDoc, document functions/classes/API, localized equivalents | `_refs/documentation/code-documentation.md` |
 | `write-user-guide` | user guide, user manual, module guide, aggregate guide, DOCX/PDF export, verified real-UI screenshots, legacy reverse-engineer guide | `_refs/documentation/write-user-guide.md` |
 | `write-technical-doc` | technical docs, API docs, architecture notes, module reference, integration guide, setup/implementation guide | `_refs/documentation/write-technical-doc.md` |
-| `write-requirement` | `TASKID`, task id, ticket id, "record requirement", "save requirement" | `_refs/documentation/write-requirement.md` |
+| `write-requirement` | an existing `TASKID`, task id, or ticket id whose requirement should be recorded, "record requirement", "save requirement"; breaking PRDs or stories into new tasks or tickets belongs to `sdcorejs-product` (task-breakdown) | `_refs/documentation/write-requirement.md` |
 | `document-operation` | rewrite, improve, structure, summarize, convert, or standardize existing docs/artifacts | `_refs/documentation/write-technical-doc.md` |
 
 ## Routing Rules

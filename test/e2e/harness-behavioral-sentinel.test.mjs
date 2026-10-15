@@ -103,14 +103,16 @@ test('capability contract is structurally valid and drives native-or-Markdown in
   assert.deepEqual(validateCapabilityContract(contract), []);
   assert.deepEqual(contract.required_actions.sort(), [
     'agent.dispatch', 'agent.interrupt', 'agent.resume', 'artifact.read',
-    'artifact.write', 'context.pass', 'progress.create', 'progress.update', 'user.approve',
+    'artifact.write', 'context.pass', 'progress.create', 'progress.update', 'source.read',
+    'tracker.write', 'user.approve',
     'user.choose', 'verification.run', 'visual.present', 'visual.session.publish',
     'visual.session.read', 'visual.session.start', 'visual.session.stop', 'web.fetch',
     'workspace.isolate',
   ]);
   assert.deepEqual(contract.required_capabilities.sort(), [
     'agent_cwd_binding', 'agent_resume_steer', 'artifact_write', 'browser',
-    'browser_auto_open', 'cancellation', 'concurrent_dispatch',
+    'browser_auto_open', 'cancellation', 'concurrent_dispatch', 'external_source_read',
+    'issue_tracker_write',
     'live_visual_companion', 'manual_git_worktree', 'native_structured_choice',
     'native_worktree',
     'per_agent_model_override', 'permission_approval', 'persistent_local_process',
@@ -667,4 +669,51 @@ test('case-repair-policy-ask-native: finish:policy never auto-selects or delegat
     assert.equal(failed.mode, 'fallback', action);
     assert.deepEqual(failed.native, [], action);
   }
+});
+
+test('case-task-breakdown-capability-contract: source.read and tracker.write resolve only from host-observed connectors', async () => {
+  const contract = await json(capabilityUrl);
+  const { observeConnectorTools } = await import('../../_refs/harness/runtime-attestation.mjs');
+  assert.equal(typeof observeConnectorTools, 'function');
+  for (const [adapterName, adapter] of Object.entries(contract.adapters)) {
+    for (const [action, capability] of [['source.read', 'external_source_read'], ['tracker.write', 'issue_tracker_write']]) {
+      const mapping = adapter.actions[action];
+      assert.deepEqual(mapping.native, [], `${adapterName} ${action} native`);
+      assert.equal(mapping.status, 'unknown', `${adapterName} ${action} status`);
+      assert.equal(mapping.capability, capability, `${adapterName} ${action} capability`);
+      assert.ok(typeof mapping.fallback === 'string' && mapping.fallback.length > 20, `${adapterName} ${action} fallback`);
+      assert.equal(adapter.capabilities[capability], 'unknown', `${adapterName} ${capability}`);
+    }
+  }
+  const runtime = {
+    session_id: 'fixture-session',
+    mode: 'default',
+    tools: [
+      { name: 'fixture-issue-reader', actions: ['source.read'], modes: ['default'], read_only: true },
+      { name: 'fixture-issue-writer', actions: ['tracker.write'], modes: ['default'] },
+      { name: 'fixture-undeclared', actions: ['source.read'], modes: ['default'] },
+      { name: 'fixture-disabled', actions: ['source.read'], modes: ['default'], read_only: true, disabled: true },
+    ],
+  };
+  assert.deepEqual(observeConnectorTools(runtime, 'source.read').tools, ['fixture-issue-reader']);
+  assert.deepEqual(observeConnectorTools(runtime, 'tracker.write').tools.sort(), ['fixture-issue-writer', 'fixture-undeclared']);
+  assert.equal(observeConnectorTools({ ...runtime, mode: 'plan' }, 'source.read').status, 'unsupported');
+  assert.equal(observeConnectorTools(undefined, 'source.read').status, 'unknown');
+  for (const adapter of ['claude-code', 'codex', 'cursor', 'copilot']) {
+    const read = resolveAction({ contract, adapter, action: 'source.read', runtime });
+    assert.deepEqual({ mode: read.mode, native: read.native }, { mode: 'native', native: ['fixture-issue-reader'] }, adapter);
+    const write = resolveAction({ contract, adapter, action: 'tracker.write', runtime });
+    assert.equal(write.mode, 'native', adapter);
+    assert.equal(resolveAction({ contract, adapter, action: 'tracker.write' }).mode, 'fallback', adapter);
+    assert.equal(resolveAction({ contract, adapter, action: 'source.read', runtime, runtimeCapabilities: { external_source_read: 'unsupported' } }).mode, 'fallback', adapter);
+    assert.equal(resolveAction({ contract, adapter, action: 'tracker.write', runtime, runtimeActions: { 'tracker.write': 'unsupported' } }).mode, 'fallback', adapter);
+  }
+  const productSource = await readFile(new URL('../../skills/tracks/product/sdcorejs-product.md', import.meta.url), 'utf8');
+  const requiredActions = productSource.match(/^required-actions:\s*(.+)$/mu)[1].split(',').map((value) => value.trim());
+  assert.ok(requiredActions.includes('source.read') && requiredActions.includes('tracker.write'));
+  const mirror = await readFile(new URL('../../.claude/skills/sdcorejs-product/SKILL.md', import.meta.url), 'utf8');
+  const allowedTools = (mirror.match(/^allowed-tools:\s*(.+)$/mu)?.[1] ?? '').split(',').map((value) => value.trim()).filter(Boolean).sort();
+  const expected = [...new Set(requiredActions.flatMap((action) => contract.adapters['claude-code'].actions[action]?.native ?? []))].sort();
+  assert.deepEqual(allowedTools, expected);
+  assert.ok(!allowedTools.some((tool) => /fixture|connector|mcp/iu.test(tool)));
 });

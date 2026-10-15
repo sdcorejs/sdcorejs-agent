@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { verifyApprovedArtifactGraph } from '../shared/approved-artifact.mjs';
-import { observeChoiceTools } from './runtime-attestation.mjs';
+import { observeChoiceTools, observeConnectorTools } from './runtime-attestation.mjs';
 
 const ACTIONS = [
   'progress.create',
@@ -18,6 +18,8 @@ const ACTIONS = [
   'visual.session.stop',
   'workspace.isolate',
   'web.fetch',
+  'source.read',
+  'tracker.write',
   'artifact.read',
   'artifact.write',
   'verification.run',
@@ -44,6 +46,8 @@ const CAPABILITIES = [
   'workspace_isolation',
   'browser',
   'web_fetch',
+  'external_source_read',
+  'issue_tracker_write',
   'artifact_write',
   'permission_approval',
 ];
@@ -293,6 +297,22 @@ export function resolveAction({
     // A native surface that already failed for this decision is not offered again.
     if (failed_surfaces.includes('native-structured-choice')) return { mode: 'fallback', action, native: [], fallback: mapping.fallback, reason: 'native choice surface failed for this decision' };
     const observed = observeChoiceTools(runtime, action);
+    return observed.status === 'supported'
+      ? { mode: 'native', action, native: observed.tools, fallback: mapping.fallback }
+      : { mode: 'fallback', action, native: [], fallback: mapping.fallback, reason: observed.reason };
+  }
+
+  if (action === 'source.read' || action === 'tracker.write') {
+    // Connector tools are discovered in the session, never declared statically.
+    // An unsupported capability or action always takes the portable fallback.
+    const connectorCapability = normalizeCapabilityStatus(
+      runtimeCapabilities[mapping.capability] ?? contract.adapters[adapter].capabilities[mapping.capability],
+    );
+    const connectorAction = normalizeCapabilityStatus(runtimeActions[action] ?? mapping.status);
+    if (connectorCapability === 'unsupported' || connectorAction === 'unsupported') {
+      return { mode: 'fallback', action, native: [], fallback: mapping.fallback, reason: 'capability unsupported' };
+    }
+    const observed = observeConnectorTools(runtime, action);
     return observed.status === 'supported'
       ? { mode: 'native', action, native: observed.tools, fallback: mapping.fallback }
       : { mode: 'fallback', action, native: [], fallback: mapping.fallback, reason: observed.reason };

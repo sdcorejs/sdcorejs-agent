@@ -7,6 +7,22 @@ Node workspace is not distributed through npm.
 
 ## Unreleased
 
+- Add the `task-breakdown` mode to `sdcorejs-product`: distill PRDs and user
+  stories from any board, sprint, key list, link, export, or pasted source into
+  role tasks with a fixed twelve-section format, Fibonacci rubric sizing,
+  capacity-based assignee suggestions (25/50/75/100 % availability, balanced by
+  total points), and per-task confidence when code cannot be read. Project
+  context lives in the new `project_workspaces` root (`.sdcorejs/projects/<slug>/`)
+  with shared `project-config` and `task-breakdown` artifact kinds. Add neutral
+  `source.read` and `tracker.write` capability actions resolved only from
+  host-observed connectors, with copy-paste fallback; tracker writes need an
+  approved write plan of the same run, drift checks, owned-region updates, and
+  read-back. Pure helpers live in `_refs/product/task-breakdown/`. The flow runs
+  as mandatory gates G0..G8 with a stop point and cited evidence each, checked by
+  the read-only CLI `_refs/product/task-breakdown/check.mjs`: a menu choice is
+  never write-plan approval, whole-description overwrites are refused, rich
+  tracker documents merge by marker nodes and keep media, and without the CLI
+  tracker writes fall back to copy-paste. The pack keeps 23 public skills.
 - Upgrade `sdcorejs-design` for focused improvements and existing-UI reuse, with
   shared UI/UX topic references for design, Angular, Next.js and read-only review.
   Preserve the 23 public skills, Core UI aliases, semantic artifact owners and

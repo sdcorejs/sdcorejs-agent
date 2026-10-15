@@ -146,7 +146,11 @@ test('canonical artifact roots live once in the system registry', () => {
     documentation: '.sdcorejs/documentation',
     architecture: '.sdcorejs/architecture',
     conventions: '.sdcorejs/conventions',
+    project_workspaces: '.sdcorejs/projects',
   });
+  assert.ok(systemRegistry.artifact_kinds.includes('project-config'));
+  assert.ok(systemRegistry.artifact_kinds.includes('task-breakdown'));
+  assert.ok(!systemRegistry.artifact_kinds.includes('task'));
   assert.deepEqual(systemRegistry.legacy_artifact_roots, {
     product_documents: 'product',
     design_artifacts: 'design',
@@ -726,4 +730,15 @@ test('downstream frontend and orchestration references consume canonical Design 
   assert.match(claude, /\.sdcorejs\/design\//);
   assert.match(readme, /\.sdcorejs\/design\/exports\/png\//);
   assert.match(readme, /\.sdcorejs\/design\/references\//);
+});
+
+test('case-task-breakdown-workspace-path: project workspace root is required, kinds are registered and paths classify as shared', async () => {
+  const { validateSystemRegistry: validate } = await import('../../_refs/shared/system-registry.mjs');
+  const broken = structuredClone(systemRegistry);
+  delete broken.artifact_roots.project_workspaces;
+  assert.ok(validate(broken).some((error) => /project_workspaces/u.test(error)));
+  const { classifyArtifact } = await import('../../_refs/shared/artifact-lifecycle.mjs');
+  assert.equal(classifyArtifact({ path: '.sdcorejs/projects/demo/project.md', metadata: {} }).kind, 'project-config');
+  assert.equal(classifyArtifact({ path: '.sdcorejs/projects/demo/tasks/sprint-18.md', metadata: {} }).kind, 'task-breakdown');
+  assert.equal(classifyArtifact({ path: '.sdcorejs/projects/demo/other.md', metadata: {} }).kind, 'unknown');
 });
