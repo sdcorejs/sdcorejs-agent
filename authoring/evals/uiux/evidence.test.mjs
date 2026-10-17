@@ -75,6 +75,7 @@ test('UI/UX authoring evidence binds real baseline, transcripts and current sour
   const context = await loadContinuationContext(record);
   validateCleanupContinuation(context.continuation, context);
   validateReviewRepairContinuation(context.repair, context);
+  validateStorageContinuation(context.storage, context);
 });
 
 test('UI/UX cleanup continuation rejects source drift, missing scope and unsupported evidence claims', async () => {
@@ -118,12 +119,18 @@ test('UI/UX review repair continuation rejects parent drift, missing current sco
 async function loadContinuationContext(record) {
   const continuationText = await read('authoring/evals/uiux/cleanup-continuation.json');
   const continuation = JSON.parse(continuationText);
-  const repair = JSON.parse(await read('authoring/evals/uiux/cleanup-review-repair.json'));
+  const repairText = await read('authoring/evals/uiux/cleanup-review-repair.json');
+  const repair = JSON.parse(repairText);
+  const storage = JSON.parse(await read('authoring/evals/records/cleanup-storage-audit.json'));
+  const atStorageBase = path => execFileSync('git', ['show', `${storage.base_revision}:${path}`], { encoding: 'utf8', windowsHide: true }).replace(/\r\n?/g, '\n');
+  assert.equal(hash(repairText), hash(atStorageBase('authoring/evals/uiux/cleanup-review-repair.json')), 'preserve the historical review-repair record');
   const historicalEntries = new Map([...record.final_sources, ...record.visual_offer_integration.verification.contract_manifest].map(entry => [entry.path, entry]));
   const currentSources = new Map(await Promise.all([...historicalEntries.keys()].map(async path => [path, hash(await read(path))])));
   return {
     continuation,
     repair,
+    storage,
+    repairSources: new Map([...historicalEntries.keys()].map(path => [path, hash(atStorageBase(path))])),
     continuationHash: hash(continuationText),
     record,
     historicalEntries,
@@ -189,7 +196,7 @@ function validateReviewRepairContinuation(repair, context) {
   assert.deepEqual(repair.finding_ids, ['F-03']);
   assert.deepEqual(repair.previous_sources, context.continuation.current_sources);
   assert.deepEqual(repair.current_sources.map(entry => entry.path).sort(), [...context.currentSources.keys()].sort());
-  for (const entry of repair.current_sources) assert.equal(entry.sha256, context.currentSources.get(entry.path), entry.path);
+  for (const entry of repair.current_sources) assert.equal(entry.sha256, context.repairSources.get(entry.path), entry.path);
   const previous = new Map(repair.previous_sources.map(entry => [entry.path, entry.sha256]));
   assert.deepEqual(repair.changed_paths, repair.current_sources.filter(entry => previous.get(entry.path) !== entry.sha256).map(entry => entry.path));
   assert.deepEqual(repair.changed_paths, ['test/e2e/support/skill-pack-runner.mjs']);
@@ -209,3 +216,25 @@ function validateReviewRepairContinuation(repair, context) {
   assert.equal(repair.visual.result, 'NOT RUN');
   assert.equal(repair.tokens, null);
 }
+
+function validateStorageContinuation(storage, context) {
+  // Historical UI/UX evidence stays pinned to the pre-storage Git snapshot;
+  // the storage record binds the shared routing source to its current bytes.
+  const bindings = new Map(storage.current_source_bindings.map(entry => [entry.path, `sha256:${entry.sha256}`]));
+  const changed = [...context.currentSources].filter(([path, digest]) => context.repairSources.get(path) !== digest);
+  assert.deepEqual(changed.map(([path]) => path), ['test/e2e/support/skill-pack-runner.mjs']);
+  for (const [path, digest] of changed) assert.equal(bindings.get(path), digest, path);
+}
+
+test('storage continuation preserves historical UI/UX evidence and rejects unbound current routing drift', async () => {
+  const context = await loadContinuationContext(JSON.parse(await read('authoring/evals/uiux/records.json')));
+  validateStorageContinuation(context.storage, context);
+  const candidate = structuredClone(context.storage);
+  candidate.current_source_bindings.find(entry => entry.path === 'test/e2e/support/skill-pack-runner.mjs').sha256 = '0'.repeat(64);
+  assert.throws(() => validateStorageContinuation(candidate, context));
+  const missing = structuredClone(context.storage);
+  missing.current_source_bindings = missing.current_source_bindings.filter(entry => entry.path !== 'test/e2e/support/skill-pack-runner.mjs');
+  assert.throws(() => validateStorageContinuation(missing, context));
+  context.currentSources.set('_refs/design/uiux/forms.md', `sha256:${'0'.repeat(64)}`);
+  assert.throws(() => validateStorageContinuation(context.storage, context));
+});

@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-cleanup
-description: Bounded hygiene for repository temp outputs, finished caches, previews, diagnostics, duplicate assets/files and superseded docs. Portable analyze/plan are read-only. Windows local-drive apply/restore; Linux ext4/macOS APFS require existing trusted CPython, native capability and approved cooperative maintenance. Exact authority required; hashes never authorize deletion. Source refinement, test teardown and quality review retain simplify/test/review owners. Runtime-localized.
+description: Use for low disk space, large caches/node_modules, explicit machine/Docker/WSL storage inspection, or bounded repository output/asset/doc hygiene. Storage-audit and portable analyze/plan are read-only. Windows local-drive apply/restore; Linux ext4/macOS APFS need existing trusted CPython and approved native maintenance. Exact authority required. Source refinement, test teardown and quality review retain their owners. Runtime-localized.
 allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 ---
 
@@ -24,17 +24,26 @@ refinement belongs to `sdcorejs-simplify`; tests and data teardown belong to
 consolidating docs belongs to `sdcorejs-documentation`. A candidate requiring
 imports, public API or code changes is a finding/handoff to its existing owner.
 
+For disk-space or dependency-size requests, select `storage-audit` and load
+[`_refs/cleanup/storage-audit.md`](../../../_refs/cleanup/storage-audit.md).
+It inventories explicit local roots by metadata without reading VM contents
+or hashing millions of files. Whole-machine inspection includes accessible
+fixed local volumes, not network/removable drives unless requested. Analysis
+does not authorize cache cleaning, dependency pruning or Docker changes.
+
 Load [`_refs/cleanup/workflow.md`](../../../_refs/cleanup/workflow.md) for the
 runtime scope, offer and task-tail contract. Use the single engine
 [`_refs/cleanup/cleanup-engine.mjs`](../../../_refs/cleanup/cleanup-engine.mjs)
 and its pure policy
 [`_refs/cleanup/cleanup-contract.mjs`](../../../_refs/cleanup/cleanup-contract.mjs).
-Do not implement a second cleanup script or run `git clean -fdx` or equivalent.
+The storage helpers are read-only observation tools, not a second mutation
+engine. Do not implement another cleanup executor or run `git clean -fdx`.
 
 ## Select one action
 
 | Action | Boundary |
 |---|---|
+| `storage-audit` | `runStorageAudit`: read-only metadata inventory of explicit local roots, including caches/dependencies and opaque virtual disks; no mutation plan or authority. |
 | `analyze` | `scanCleanup`: read-only scan, evidence and classification of explicit scope. |
 | `plan` | `freezeCleanupPlan`: exact actions and current fingerprints, with no filesystem mutation. |
 | `apply` | `applyCleanupPlan`: separately authorized actions, immediate revalidation and affected verification. |
@@ -45,6 +54,11 @@ Default to `analyze`. "Check this repo", "review this folder", "see what is
 unused", and accepting a proactive offer authorize analysis only. Analysis
 authority and mutation authority are separate. Quarantine and archive remove
 active paths and therefore also require mutation authority.
+
+For a disk-space request, default to `storage-audit`. Resolve authority from
+the full conversation: reuse existing matching authorization rather than
+asking again. Broader inspection does not broaden earlier mutation scope;
+existing exact-action/state gates still apply before a supported mutation.
 
 ## Evidence before action
 
@@ -155,6 +169,8 @@ explicit durable artifact need follows the existing artifact owner and
 lifecycle. Never commit runtime outputs, quarantine or temporary files.
 
 No Git history/branch/worktree deletion, dependency pruning, refactor, Docker
-prune, database/cloud cleanup, system-wide scan, background daemon, cron or
+prune, database/cloud cleanup, automatic system-wide scan, background daemon, cron or
 new hashing/graph/provider dependency. Findings may hand off to an existing
-owner within separately approved scope.
+owner within separately approved scope. Explicit storage-audit may observe
+machine-wide metadata; it does not expand the filesystem mutation engine,
+proactive offers or task-tail boundaries.

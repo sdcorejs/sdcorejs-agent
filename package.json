@@ -63,7 +63,7 @@
     "test:e2e:uiux": "node --test test/e2e/uiux-knowledge.test.mjs test/e2e/uiux-review-regression.test.mjs test/e2e/uiux-skill-creator-regression.test.mjs authoring/evals/uiux/evidence.test.mjs",
     "test:e2e:visual-offer": "node --test test/e2e/visual-offer-policy.test.mjs test/e2e/visual-offer-behavior.test.mjs",
     "eval:visual-offer": "node scripts/eval-visual-offer.mjs",
-    "test:e2e:cleanup": "node --test test/e2e/cleanup-contract.test.mjs test/e2e/cleanup-engine.test.mjs test/e2e/cleanup-offers.test.mjs test/e2e/cleanup-integration.test.mjs test/e2e/cleanup-handoff.test.mjs test/e2e/cleanup-posix-contract.test.mjs test/e2e/cleanup-posix-native.test.mjs"
+    "test:e2e:cleanup": "node --test test/e2e/cleanup-contract.test.mjs test/e2e/cleanup-engine.test.mjs test/e2e/cleanup-offers.test.mjs test/e2e/cleanup-integration.test.mjs test/e2e/cleanup-handoff.test.mjs test/e2e/cleanup-posix-contract.test.mjs test/e2e/cleanup-posix-native.test.mjs test/e2e/cleanup-storage.test.mjs"
   },
   "devDependencies": {
     "@angular/compiler": "22.2.1",

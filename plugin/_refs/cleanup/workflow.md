@@ -10,6 +10,7 @@ readiness policy live in `_refs/cleanup/offer-policy.mjs`.
 
 | Mode | Entry | Authority and outcome |
 |---|---|---|
+| `storage-audit` | Explicit disk-space, cache/dependency size or machine inspection | Read-only metadata of declared local roots; use `_refs/cleanup/storage-audit.md`. No cleanup plan, provider mutation or disposal authority. |
 | `analyze` | Explicit bounded inspection or accepted offer | Read-only scan and classification; report evidence, protected paths and unknowns. |
 | `plan` | Analysis with a proposed exact action list | Freeze exact paths/actions/state; no filesystem mutation. |
 | `apply` | Frozen plan and explicit matching mutation approval or approved LOW task policy | Revalidate, apply bounded actions, verify, and emit an exact receipt. |
@@ -22,12 +23,20 @@ quarantine, archival, or movement. Quarantine removes an active path and
 requires mutation authority. `local_only` is a commit classification, not
 disposability. Git ignore patterns are never cleanup allowlists.
 
-Read scope and mutation scope are separate. Pass explicit discovery `scope`
+Read scope and mutation scope are separate. An explicit storage-audit may
+inspect declared machine roots, nested workspaces and dependency sizes without
+extending repository mutation scope. Reuse current matching authorization from
+the conversation; do not require the user to repeat it. The engine's exact
+plan/action/state approval contract still applies. A new broad read request
+does not extend an earlier folder's deletion authority.
+
+For repository hygiene, pass explicit discovery `scope`
 and separately bounded `reference_scope` to `scanCleanup`. Reference coverage
 that does not resolve dynamic paths, templates, copy/glob configuration,
 exports and external/public consumers stays unknown. Do not expand into
 nested/submodule/sibling repositories, global caches, cloud, containers or
-databases. New scope requires new authority.
+databases during bounded repository analysis or mutation. New scope requires
+new authority. Storage reports never bypass these action boundaries.
 
 ## Exact Action Boundary
 
