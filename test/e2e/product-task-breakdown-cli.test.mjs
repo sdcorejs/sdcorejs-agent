@@ -11,6 +11,9 @@ import { RUBRIC_FACTORS, scoreTask } from '../../_refs/product/task-breakdown/si
 import { TASK_SECTION_KEYS, noneLabel, renderTasksDocument } from '../../_refs/product/task-breakdown/task-format.mjs';
 
 const CLI = fileURLToPath(new URL('../../_refs/product/task-breakdown/check.mjs', import.meta.url));
+const SOURCES = fileURLToPath(new URL('../../_refs/product/task-breakdown/sources.mjs', import.meta.url));
+const COMMANDS = ['project', 'tasks', 'scan', 'sources', 'balance', 'plan-approve', 'plan-verify', 'drift', 'merge', 'report'];
+const SOURCE_KINDS = ['issue-tracker', 'wiki', 'design-tool', 'api-spec', 'login-gated', 'file', 'unknown'];
 const HEAD = 'b'.repeat(40);
 const JWT = ['eyJhbGciOiJIUzI1NiJ9', 'eyJzdWIiOiIxMjM0NTYifQ', 'c2lnbmF0dXJlLXZhbHVlLWZha2U'].join('.');
 const UPDATE_ID = 'demo/DEMO-6020/fe/01';
@@ -326,20 +329,144 @@ test('case-task-breakdown-cli-report: report table uses the fixed columns and ti
   } finally { cleanup(env); }
 });
 
-test('case-task-breakdown-cli-read-only: the CLI imports no write, process or network API', () => {
-  const source = readFileSync(CLI, 'utf8');
-  const imports = [...source.matchAll(/^\s*import\s+([\s\S]*?)\s+from\s+['"]([^'"]+)['"]/gmu)].map(([, names, from]) => ({ names, from }));
-  assert.ok(imports.length > 0);
-  for (const { names, from } of imports) {
-    assert.ok(!/(?:^|node:)(?:child_process|net|http|https|http2|dgram|tls|dns|cluster|worker_threads|inspector|vm)$/u.test(from), `forbidden module ${from}`);
-    assert.ok(!/(?:^|node:)fs\/promises$/u.test(from), 'fs/promises is not needed by a read-only CLI');
-    if (/(?:^|node:)fs$/u.test(from)) {
-      const named = names.replace(/[{}]/gu, '').split(',').map((name) => name.trim().split(/\s+as\s+/u)[0]).filter(Boolean);
-      for (const name of named) assert.ok(['readFileSync', 'lstatSync', 'realpathSync', 'statSync', 'existsSync', 'readdirSync'].includes(name), `fs.${name} is not read-only`);
+test('case-task-breakdown-cli-sources-kinds: every source kind gets its own fixed guidance in vi and en', () => {
+  const env = fixture();
+  try {
+    const sources = SOURCE_KINDS.map((kind, index) => ({ ref: `https://k${index}.example.com/item/${index}`, kind, reason: 'connector not configured' }));
+    const seen = {};
+    for (const language of ['vi', 'en']) {
+      const run = cli(env, withRoot(env, 'sources', '-'), { language, sources });
+      assert.equal(run.status, 0, JSON.stringify(run.output.errors));
+      const { groups, table } = run.output.result;
+      assert.deepEqual(groups.map(({ kind }) => kind), SOURCE_KINDS);
+      assert.equal(new Set(groups.map(({ guidance }) => guidance)).size, SOURCE_KINDS.length, 'each kind has its own guidance');
+      const lines = table.trim().split('\n');
+      assert.equal(lines.length, SOURCE_KINDS.length + 2);
+      assert.equal(lines[0].split('|').length - 2, 5, 'the table has five fixed columns');
+      seen[language] = { header: lines[0], guidance: groups.map(({ guidance }) => guidance) };
     }
-    if (from.startsWith('.')) assert.ok(/^\.\.?\/(?:[\w.-]+\/)*[\w.-]+\.mjs$/u.test(from), from);
+    assert.notEqual(seen.vi.header, seen.en.header);
+    assert.notDeepEqual(seen.vi.guidance, seen.en.guidance);
+    const byKind = Object.fromEntries(SOURCE_KINDS.map((kind, index) => [kind, seen.en.guidance[index]]));
+    assert.match(byKind['issue-tracker'], /CSV/u);
+    assert.match(byKind['api-spec'], /read-only GET/u);
+    assert.match(byKind['login-gated'], /password/u);
+    const again = cli(env, withRoot(env, 'sources', '-'), { language: 'en', sources });
+    assert.deepEqual(again.output.result.groups.map(({ guidance }) => guidance), seen.en.guidance, 'the guidance of a kind is fixed');
+    const defaulted = cli(env, withRoot(env, 'sources', '-'), { sources });
+    assert.deepEqual(defaulted.output.result.groups.map(({ guidance }) => guidance), seen.en.guidance, 'the default language is en');
+  } finally { cleanup(env); }
+});
+
+test('case-task-breakdown-cli-sources-grouping: links are grouped by domain and kind in a stable order', () => {
+  const env = fixture();
+  try {
+    const sources = [
+      { ref: 'https://wiki.example.com/b', kind: 'wiki', reason: 'no connector' },
+      { ref: 'https://tracker.example.com/browse/DEMO-2', kind: 'issue-tracker', reason: 'no connector' },
+      { ref: 'https://wiki.example.com/a', kind: 'wiki', reason: 'no connector' },
+      { ref: 'https://WIKI.example.com/c', kind: 'login-gated', reason: 'single sign-on' },
+      { ref: 'Spec v2.pdf', kind: 'file', reason: 'not attached' },
+    ];
+    const run = cli(env, withRoot(env, 'sources', '-'), { language: 'en', sources });
+    assert.equal(run.status, 0, JSON.stringify(run.output.errors));
+    const groups = run.output.result.groups.map(({ domain, kind, refs, reasons }) => ({ domain, kind, refs, reasons }));
+    assert.deepEqual(groups, [
+      { domain: 'tracker.example.com', kind: 'issue-tracker', refs: ['https://tracker.example.com/browse/DEMO-2'], reasons: ['no connector'] },
+      { domain: 'wiki.example.com', kind: 'wiki', refs: ['https://wiki.example.com/a', 'https://wiki.example.com/b'], reasons: ['no connector'] },
+      { domain: 'wiki.example.com', kind: 'login-gated', refs: ['https://WIKI.example.com/c'], reasons: ['single sign-on'] },
+      { domain: null, kind: 'file', refs: ['Spec v2.pdf'], reasons: ['not attached'] },
+    ]);
+    assert.equal(run.output.result.table.trim().split('\n').length, groups.length + 2);
+    const reversed = cli(env, withRoot(env, 'sources', '-'), { language: 'en', sources: [...sources].reverse() });
+    assert.deepEqual(reversed.output.result, run.output.result, 'input order does not change the result');
+  } finally { cleanup(env); }
+});
+
+test('case-task-breakdown-cli-sources-errors: invalid input has stable codes and secret-shaped values are redacted', () => {
+  const env = fixture();
+  try {
+    const one = [{ ref: 'https://x.example.com/page', kind: 'wiki' }];
+    const wrongKind = cli(env, withRoot(env, 'sources', '-'), { sources: [{ ref: 'https://x.example.com/page', kind: 'jira' }] });
+    assert.equal(wrongKind.status, 1);
+    assert.ok(codes(wrongKind).includes('SOURCE_KIND_UNKNOWN'));
+    assert.equal(wrongKind.output.result, null);
+    const empty = cli(env, withRoot(env, 'sources', '-'), { sources: [] });
+    assert.equal(empty.status, 1);
+    assert.ok(codes(empty).includes('SOURCES_REQUIRED'));
+    const noRef = cli(env, withRoot(env, 'sources', '-'), { sources: [{ kind: 'wiki' }] });
+    assert.equal(noRef.status, 1);
+    assert.ok(codes(noRef).includes('SOURCE_REF_REQUIRED'));
+    const language = cli(env, withRoot(env, 'sources', '-'), { language: 'fr', sources: one });
+    assert.equal(language.status, 1);
+    assert.ok(codes(language).includes('LANGUAGE_INVALID'));
+    const notJson = cli(env, withRoot(env, 'sources', '-'), 'not json');
+    assert.equal(notJson.status, 2);
+    assert.ok(codes(notJson).includes('STDIN_INVALID'));
+    assert.equal(cli(env, ['sources', '-'], { sources: one }).status, 2, '--root stays required');
+
+    // Secret-shaped fixtures are assembled at runtime so no literal secret is committed.
+    const password = ['s3cr', 'etPa', 'ss99'].join('');
+    const tokenValue = ['tk', '7f3a9c2e', '41b8d6f0'].join('_');
+    const tokenParam = 'token';
+    const sources = [
+      { ref: `${['https://reader', password].join(':')}@docs.example.com/page`, kind: 'login-gated', reason: 'single sign-on' },
+      { ref: `https://wiki.example.com/raw?${tokenParam}=${tokenValue}`, kind: 'wiki', reason: 'raw link' },
+      { ref: 'https://tracker.example.com/browse/DEMO-1', kind: 'issue-tracker', reason: `copied header Bearer ${JWT}` },
+    ];
+    const redacted = cli(env, withRoot(env, 'sources', '-'), { language: 'en', sources });
+    assert.equal(redacted.status, 0, JSON.stringify(redacted.output.errors));
+    for (const value of [password, tokenValue, JWT]) assert.ok(!redacted.stdout.includes(value), 'a secret-shaped value reached the output');
+    assert.ok(redacted.output.result.table.includes('[REDACTED]'));
+    assert.ok(redacted.output.result.redactions.length >= 3);
+    assert.ok(redacted.output.result.groups.some(({ domain }) => domain === 'docs.example.com'), 'the domain survives redaction');
+  } finally { cleanup(env); }
+});
+
+test('case-task-breakdown-cli-help: --help, -h and help list every command without --root', () => {
+  const env = fixture();
+  try {
+    let first = null;
+    for (const flag of ['--help', '-h', 'help']) {
+      const run = cli(env, [flag]);
+      assert.equal(run.status, 0, JSON.stringify(run.output.errors));
+      assert.equal(run.output.command, 'help');
+      assert.equal(run.output.root, null);
+      assert.equal(run.output.valid, true);
+      const { usage, commands } = run.output.result;
+      assert.match(usage, /check\.mjs <command> --root <target-root>/u);
+      assert.deepEqual(commands.map(({ name }) => name), COMMANDS);
+      for (const entry of commands) {
+        assert.ok(entry.synopsis.startsWith(entry.name), entry.synopsis);
+        assert.equal(typeof entry.stdin, 'string');
+        assert.ok(entry.summary.length > 10, entry.name);
+      }
+      if (first) assert.deepEqual(run.output, first, `${flag} prints the same help`);
+      first = run.output;
+    }
+    const unknown = cli(env, ['nope', '--root', env.root]);
+    assert.equal(unknown.status, 2);
+    assert.ok(codes(unknown).includes('COMMAND_UNKNOWN'));
+    assert.match(unknown.output.errors[0].message, /--help/u);
+  } finally { cleanup(env); }
+});
+
+test('case-task-breakdown-cli-read-only: the CLI imports no write, process or network API', () => {
+  for (const file of [CLI, SOURCES]) {
+    const source = readFileSync(file, 'utf8');
+    const imports = [...source.matchAll(/^\s*import\s+([\s\S]*?)\s+from\s+['"]([^'"]+)['"]/gmu)].map(([, names, from]) => ({ names, from }));
+    assert.ok(imports.length > 0, file);
+    for (const { names, from } of imports) {
+      assert.ok(!/(?:^|node:)(?:child_process|net|http|https|http2|dgram|tls|dns|cluster|worker_threads|inspector|vm)$/u.test(from), `forbidden module ${from}`);
+      assert.ok(!/(?:^|node:)fs\/promises$/u.test(from), 'fs/promises is not needed by a read-only CLI');
+      if (/(?:^|node:)fs$/u.test(from)) {
+        const named = names.replace(/[{}]/gu, '').split(',').map((name) => name.trim().split(/\s+as\s+/u)[0]).filter(Boolean);
+        for (const name of named) assert.ok(['readFileSync', 'lstatSync', 'realpathSync', 'statSync', 'existsSync', 'readdirSync'].includes(name), `fs.${name} is not read-only`);
+      }
+      if (from.startsWith('.')) assert.ok(/^\.\.?\/(?:[\w.-]+\/)*[\w.-]+\.mjs$/u.test(from), from);
+    }
+    assert.ok(!/\bimport\s*\(/u.test(source), 'no dynamic import');
+    assert.ok(!/\brequire\s*\(/u.test(source), 'no require');
+    assert.ok(!/process\.binding|process\.dlopen|\beval\s*\(|new\s+Function\b/u.test(source), 'no escape hatches');
   }
-  assert.ok(!/\bimport\s*\(/u.test(source), 'no dynamic import');
-  assert.ok(!/\brequire\s*\(/u.test(source), 'no require');
-  assert.ok(!/process\.binding|process\.dlopen|\beval\s*\(|new\s+Function\b/u.test(source), 'no escape hatches');
 });

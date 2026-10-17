@@ -1056,3 +1056,51 @@ criteria is recorded separately in this change's live-run document.
 The communication economy report is unchanged by this change: the always-loaded
 bootstrap is measured on source files, which did not change. Its rows remain
 those recorded in the task-breakdown section above.
+
+## Task-breakdown source guidance — current change (2026-10-17)
+
+This section records `task-breakdown-source-guidance-v1` at base HEAD
+`fc8543881c9d82428d49f9e11809c81e0b53ed62`, through the approved spec and plan revision 2
+(`sha256:v1:315a2365cb5221ce5c085addae99e2a83009d68e92869793d559690b2fc130c0`).
+The architecture gate is not applicable (bounded bug fix). The mirror `_refs`
+resolution record `authoring/evals/mirror-refs-path-resolution.json` is now
+verified as history at fc85438, and
+`authoring/evals/task-breakdown-source-guidance.json` binds the current content
+and an actual command run.
+
+The third live run of the task-breakdown mode listed three unreadable sources
+without the per-source connector, export or paste guidance that
+`_refs/product/source-connectors.md` asks for, and `check.mjs --help` returned
+`COMMAND_UNKNOWN`. The check CLI now has a read-only `sources` command. It takes
+each unreadable source with a kind id chosen by the model, redacts secret-shaped
+values with the existing helper, groups links by domain and kind in a stable
+order, and returns a fixed guidance table in Vietnamese or English. G1 and G8
+print that table verbatim, the same way G8 already prints the report table. The
+CLI also answers `--help`, `-h` and `help` with the synopsis, stdin and purpose of
+every command, without `--root`.
+
+| Area | Regression case | Before | Current |
+| --- | --- | --- | --- |
+| Every source kind has its own fixed guidance in vi and en | `case-task-breakdown-cli-sources-kinds` | FAIL | PASS |
+| Links group by domain and kind; input order does not matter | `case-task-breakdown-cli-sources-grouping` | FAIL | PASS |
+| Invalid input has stable codes; secret-shaped values are redacted | `case-task-breakdown-cli-sources-errors` | FAIL | PASS |
+| `--help`, `-h` and `help` list every command; unknown commands point to `--help` | `case-task-breakdown-cli-help` | FAIL | PASS |
+| The new module imports no write, process or network API | `case-task-breakdown-cli-read-only` | FAIL (module missing) | PASS |
+| G1 and G8 print the sources table; command list and kind ids match the CLI | `case-task-breakdown-flow-source-guidance` | FAIL | PASS |
+| Sources, codex mirrors and `AGENTS.md` outputs keep their own path style | `case-mirror-refs-unchanged` | FAIL (byte comparison with 940fc0c) | PASS |
+| Governance continuation | `case-task-breakdown-source-guidance-evidence-continuation` | FAIL (record missing) | PASS |
+
+Plan revision 2 replaced the byte comparison in `case-mirror-refs-unchanged`.
+That case compared every Markdown file under `skills/**` and `codex/skills/**`
+with the fixed base 940fc0c, so any later change to a reference or skill failed
+it; this change edits two references whose codex copies follow. The case now
+checks the lasting property: no source, codex file or `AGENTS.md` output carries
+the Claude-layout path-resolution line, and every codex skill mirror keeps
+`../_refs/` without `../../_refs/`. The byte-identical proof of the mirror change
+remains in its record, verified as history.
+
+The scanner in `_refs/product/task-breakdown/safety.mjs` detects a `token=`
+query parameter but not `access_token=`, because the underscore is a word
+character. The redaction test therefore uses `token=`; widening the scanner is
+outside this change. The interactive live run that rechecks AC-002 is recorded
+separately in this change's live-run document.
