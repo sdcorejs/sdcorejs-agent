@@ -33,6 +33,8 @@ export const CANONICAL_NEXTJS_EXECUTABLE_REFERENCE_FILES = Object.freeze([
 ]);
 export const CANONICAL_CLEANUP_PYTHON_REFERENCE_FILES = Object.freeze([
   '_refs/cleanup/safe-file-operation.py',
+  '_refs/cleanup/storage_inventory.py',
+  '_refs/cleanup/inspect_npm.py',
 ]);
 
 export async function validateCleanupPythonReferences(python) {

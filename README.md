@@ -314,7 +314,12 @@ general semantic-equivalence proof.
 ## Cleanup workflow utility
 
 `sdcorejs-cleanup` keeps a bounded repository/workspace scope clean after
-AI-assisted development. Its `analyze` and `plan` actions are read-only;
+AI-assisted development and provides explicit read-only `storage-audit` for
+disk usage, cache/dependency footprints and local machine inspection.
+Storage inventory uses metadata instead of the bounded content-hashing engine;
+see [_refs/cleanup/storage-audit.md](_refs/cleanup/storage-audit.md) for the CLI,
+selected existing Python runtime, coverage and provider/recovery boundaries.
+Its `analyze` and `plan` actions are read-only;
 `apply`, `restore` and `task-tail-cleanup` use the shared cleanup engine.
 Analyze/plan are portable. Windows local-drive apply/restore uses the existing PowerShell
 native backend. Linux/macOS mutation requires a selected existing trusted
@@ -349,9 +354,11 @@ and partial failures.
 
 See [Cleanup](skills/shared/workflow/cleanup.md) for modes and authority,
 and [_refs/cleanup/workflow.md](_refs/cleanup/workflow.md) for engine calls,
-offer handoff and task-tail integration. Git history/worktrees, dependencies,
-Docker, databases, cloud data, global caches and code refactors are outside
-this utility's scope.
+offer handoff and task-tail integration. Storage-audit may observe declared
+dependency/global-cache and Docker/WSL metadata. Git history/worktree deletion,
+dependency pruning, Docker/database/cloud mutation and source refactors remain
+outside the filesystem mutation engine. Broad inspection never widens prior
+folder deletion authority or the automatic task-tail scope.
 
 ## Quick Start
 
