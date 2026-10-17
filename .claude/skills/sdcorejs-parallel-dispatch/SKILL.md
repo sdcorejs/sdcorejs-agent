@@ -6,21 +6,23 @@ allowed-tools: Agent, AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, 
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Parallel Dispatch
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and the complete
-`_refs/orchestration/parallel-protocol.md`; use its deterministic validators
+Read `../../_refs/shared/runtime-protocols.md` and the complete
+`../../_refs/orchestration/parallel-protocol.md`; use its deterministic validators
 rather than reimplementing them in prompts. For write-capable work, load
-`_refs/orchestration/workspace-isolation.md` and assign one owner for every
+`../../_refs/orchestration/workspace-isolation.md` and assign one owner for every
 shared artifact. Verify plan identity with
-`_refs/shared/approved-artifact.mjs`, resolve roles/tracks through
-`_refs/shared/system-registry.json`, and build every unit envelope with
-`_refs/orchestration/parallel-protocol.mjs`. Load
-`_refs/harness/delegation-policy.json` and
-`_refs/harness/task-brief.md` only after dispatch is feasible.
+`../../_refs/shared/approved-artifact.mjs`, resolve roles/tracks through
+`../../_refs/shared/system-registry.json`, and build every unit envelope with
+`../../_refs/orchestration/parallel-protocol.mjs`. Load
+`../../_refs/harness/delegation-policy.json` and
+`../../_refs/harness/task-brief.md` only after dispatch is feasible.
 
 ## Purpose
 
@@ -81,8 +83,8 @@ direct invocation is not a bypass.
 3. Capture current branch, HEAD, staged, unstaged, untracked, dirty-diff hash,
    unrelated dirty paths, and intended-output overlap.
 4. Build current-session evidence through
-   `_refs/harness/runtime-attestation.mjs`; static values in
-   `_refs/harness/capability-contract.json` are defaults, not runtime proof.
+   `../../_refs/harness/runtime-attestation.mjs`; static values in
+   `../../_refs/harness/capability-contract.json` are defaults, not runtime proof.
    Unknown capability never enables dispatch. Return a blocked parallel verdict
    to the caller so delegated execution can use sequential fresh workers before
    considering parent execution.
@@ -156,7 +158,7 @@ hash. Supported strategies are:
 - `worktree`, with a distinct unit worktree/result and separate integration
   workspace
 
-Create the exact runtime `task_brief` from `_refs/harness/task-brief.md`.
+Create the exact runtime `task_brief` from `../../_refs/harness/task-brief.md`.
 Its immutable `dispatch_envelope` carries contract ID, plan artifact ID/hash,
 repository ID/role, module ID, Git root, source revision, allowed/prohibited
 paths, read/write authority, required validations, and output evidence
@@ -169,7 +171,7 @@ creates the immutable snapshot from the mechanically validated worker diff.
 
 Select one role (`explorer`, `test_writer`, `docs_writer`, `reviewer`, or
 `implementation_worker`) and semantic model tier (`fast`, `balanced`, or
-`deep`) from `_refs/harness/delegation-policy.json`.
+`deep`) from `../../_refs/harness/delegation-policy.json`.
 
 - Fast workers are limited to bounded documentation or test scaffolding after
   behavior, acceptance criteria, test layer, and owned paths are confirmed.
@@ -296,11 +298,11 @@ local simulation from real runtime concurrency evidence.
 
 ## Cross-references
 
-- `_refs/orchestration/parallel-protocol.md` - normative schema, validators,
+- `../../_refs/orchestration/parallel-protocol.md` - normative schema, validators,
   state machine, fan-in, failure, repair, and evidence semantics.
-- `_refs/orchestration/parallel-protocol.mjs` - distributed deterministic
+- `../../_refs/orchestration/parallel-protocol.mjs` - distributed deterministic
   validator implementation used by runtime automation and tests.
-- `_refs/orchestration/workspace-isolation.md` - safe unit/integration workspace
+- `../../_refs/orchestration/workspace-isolation.md` - safe unit/integration workspace
   creation and cleanup ownership.
 - `sdcorejs-execute-plan` - approved-plan execution entrypoint.
 - `sdcorejs-subagent-driven-development` - fresh-worker lifecycle and fallback owner.

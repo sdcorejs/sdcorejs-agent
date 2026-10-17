@@ -6,20 +6,22 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Simplify
 
 ## Shared protocols
 
-1. Read `_refs/shared/runtime-protocols.md`, then
-   `_refs/shared/tasklist.md`; keep progress runtime-only.
+1. Read `../../_refs/shared/runtime-protocols.md`, then
+   `../../_refs/shared/tasklist.md`; keep progress runtime-only.
 2. Apply Project Context Preflight v2 from
-   `_refs/shared/project-context.md`.
+   `../../_refs/shared/project-context.md`.
 3. Read repository instructions, current diffs, relevant approved artifacts,
    and existing project commands before deciding scope.
-4. Apply `_refs/shared/artifact-lifecycle.md` only when an explicitly requested
+4. Apply `../../_refs/shared/artifact-lifecycle.md` only when an explicitly requested
    durable report is necessary. Never create a mutable session/checkpoint.
-5. Read `_refs/shared/user-choice-prompt.md` before any user-facing choice or
+5. Read `../../_refs/shared/user-choice-prompt.md` before any user-facing choice or
    scope/authority decision.
 6. Localize runtime prose. Keep identifiers, commands, paths, and reusable
    source English.
@@ -51,12 +53,12 @@ Keep dedicated ownership:
 
 Always read:
 
-- [`_refs/simplify/scope-and-invariants.md`](../../../_refs/simplify/scope-and-invariants.md)
-- [`_refs/simplify/verification.md`](../../../_refs/simplify/verification.md)
-- [`_refs/simplify/simplify-contract.mjs`](../../../_refs/simplify/simplify-contract.mjs)
+- [`../../_refs/simplify/scope-and-invariants.md`](../../_refs/simplify/scope-and-invariants.md)
+- [`../../_refs/simplify/verification.md`](../../_refs/simplify/verification.md)
+- [`../../_refs/simplify/simplify-contract.mjs`](../../_refs/simplify/simplify-contract.mjs)
 
 Read
-[`_refs/simplify/stack-guardrails.md`](../../../_refs/simplify/stack-guardrails.md)
+[`../../_refs/simplify/stack-guardrails.md`](../../_refs/simplify/stack-guardrails.md)
 only for the detected target stack or when AI-agent evidence exists. Do not load
 unrelated stack reference packs.
 
@@ -135,7 +137,7 @@ Apply actions require current baseline verification:
 4. Reuse `test_context` evidence only when it covers the same current diff and
    selected hunks and is not stale.
 
-Use schema 2 and the trusted host session in `_refs/simplify/verification.md`.
+Use schema 2 and the trusted host session in `../../_refs/simplify/verification.md`.
 `evaluateSimplifyPreflight` checks current before receipts and grants only the
 intersection of user, approved-plan and eligible source/hunk authority. It does
 not require after receipts. Missing behavior/preservation oracle means
@@ -188,7 +190,7 @@ When invoked from the finish gate:
 
 1. consume the selected test baseline and changed source scope;
 2. honor Skip, Analyze-only, or Apply; Apply without an in-process session runs
-   one pass in the canonical host runner `_refs/simplify/host-runner.mjs`, and
+   one pass in the canonical host runner `../../_refs/simplify/host-runner.mjs`, and
    the host records it with `beginSimplify` and `recordSimplify`;
 3. after Apply, rerun affected focused tests and append evidence;
 4. pass `simplify_context` to review and the remaining tail;

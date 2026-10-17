@@ -1695,8 +1695,8 @@ test('case-progressive-load-distribution-resolution: mirrored skill bodies resol
   for (const skill of Object.values(progressiveSkills)) {
     const name = progressiveSkillName(await progressiveCurrent(skill.body));
     for (const distribution of [
-      { body: `.claude/skills/${name}/SKILL.md`, mention: ref => ref, resolve: ref => `.claude/${ref}` },
-      { body: `plugin/skills/${name}/SKILL.md`, mention: ref => ref, resolve: ref => `plugin/${ref}` },
+      { body: `.claude/skills/${name}/SKILL.md`, mention: ref => `../../${ref}`, resolve: ref => path.posix.join(`.claude/skills/${name}`, `../../${ref}`) },
+      { body: `plugin/skills/${name}/SKILL.md`, mention: ref => `../../${ref}`, resolve: ref => path.posix.join(`plugin/skills/${name}`, `../../${ref}`) },
       { body: `codex/skills/${name}/SKILL.md`, mention: ref => `../${ref}`, resolve: ref => path.posix.join(`codex/skills/${name}`, `../${ref}`) },
     ]) {
       const mirrored = await progressiveCurrent(distribution.body);

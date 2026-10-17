@@ -6,6 +6,8 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Ship
 
@@ -40,18 +42,18 @@ after current ship and branch-ready evidence exists and the user explicitly asks
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and
-`_refs/shared/artifact-lifecycle.md`; consume and pass through the current
+Read `../../_refs/shared/runtime-protocols.md` and
+`../../_refs/shared/artifact-lifecycle.md`; consume and pass through the current
 change's `artifact_context`. For production/release claims, also load
-`_refs/shared/ship-readiness-contract.mjs`; it consumes the common approved
+`../../_refs/shared/ship-readiness-contract.mjs`; it consumes the common approved
 artifact, repository, source revision map, and evidence identities. Redact suspected secrets before printing evidence. Read
-`_refs/shared/decision-coverage.md`, preserve `decision_coverage` and
+`../../_refs/shared/decision-coverage.md`, preserve `decision_coverage` and
 `goal_backward_review`, and block readiness when either reports an uncovered
 record, invariant evidence gap, or unresolved critique blocker. Preserve `architecture_context` and the exact `architecture_gate`. For required
 architecture, verify the immutable spec -> architecture -> plan graph and current `INV-*` conformance; missing/stale/mutated architecture or mismatched
 path/hash/reference blocks readiness. A concrete not-applicable gate retains
 `architecture_context: null` and must not be upgraded to PASS by inference.
-Read `_refs/shared/validation-map.md`; preserve the validation map's approved evidence evaluation. Read `_refs/shared/convergence-contract.mjs`; verify-before-done evaluates and seals a receipt, while branch-ready verifies both against approved change/mode and current identity.
+Read `../../_refs/shared/validation-map.md`; preserve the validation map's approved evidence evaluation. Read `../../_refs/shared/convergence-contract.mjs`; verify-before-done evaluates and seals a receipt, while branch-ready verifies both against approved change/mode and current identity.
 
 ## Mode Selection
 
@@ -150,7 +152,7 @@ Rules:
 
 ## Mode: verify-before-done
 
-Read `_refs/orchestration/tail/verify-before-done.md` completely, then run the selected verification mode.
+Read `../../_refs/orchestration/tail/verify-before-done.md` completely, then run the selected verification mode.
 
 Feature acceptance:
 
@@ -207,7 +209,7 @@ Do not patch source directly inside `verify-before-done`.
 
 ## Mode: branch-ready
 
-Read `_refs/orchestration/tail/branch-ready.md` completely, then run its read-only hygiene checks.
+Read `../../_refs/orchestration/tail/branch-ready.md` completely, then run its read-only hygiene checks.
 
 Branch-ready is the final read-only gate immediately before `sdcorejs-git` creates commit, PR, push, tag, or release artifacts. No writes after
 branch-ready unless branch-ready is run again.
@@ -308,7 +310,7 @@ Rules:
 Use for release, tag, publish, version, or "next tag" requests.
 
 Collect the complete `release_evidence` schema from
-`_refs/orchestration/tail/ship-context.md`. Evaluate `ready_to_ship`,
+`../../_refs/orchestration/tail/ship-context.md`. Evaluate `ready_to_ship`,
 `commit_ready`, `push_ready`, `pr_ready`, `release_ready`, and
 `actually_published` independently.
 
@@ -373,7 +375,7 @@ zero-tolerance gate blocks readiness.
 ## Simplification delivery evidence
 
 When `simplify_context` is present, use the canonical v2 schema in
-`_refs/simplify/verification.md` and `evaluateSimplifyConsumer` with the trusted
+`../../_refs/simplify/verification.md` and `evaluateSimplifyConsumer` with the trusted
 host session. Check actual content fingerprint, owner/root, selected files/hunks, preservation receipts, pass ledger and current test/review association.
 Same HEAD and a portable hash alone do not establish freshness.
 
@@ -414,7 +416,7 @@ Rules:
 
 ## ship_context Output
 
-Read `_refs/orchestration/tail/ship-context.md` completely before emitting the redacted output. Every mode returns the full contract from that reference; this
+Read `../../_refs/orchestration/tail/ship-context.md` completely before emitting the redacted output. Every mode returns the full contract from that reference; this
 compact projection highlights the delivery-critical fields:
 
 ```yaml
@@ -446,14 +448,14 @@ Never include secrets, skipped commands as passes, stale diff evidence, or a tru
 
 ## Cross-References
 
-- `_refs/shared/finish-gate.md` - consolidated post-code options and final branch-ready ordering.
-- `_refs/orchestration/tail/verify-before-done.md` - verification mode and
+- `../../_refs/shared/finish-gate.md` - consolidated post-code options and final branch-ready ordering.
+- `../../_refs/orchestration/tail/verify-before-done.md` - verification mode and
   acceptance evidence gate.
-- `_refs/orchestration/tail/branch-ready.md` - final read-only hygiene gate.
-- `_refs/orchestration/tail/ship-context.md` - complete output contract and
+- `../../_refs/orchestration/tail/branch-ready.md` - final read-only hygiene gate.
+- `../../_refs/orchestration/tail/ship-context.md` - complete output contract and
   invariants.
 - `sdcorejs-git` - commit, PR, changelog, release notes, tag/release artifacts.
-- `_refs/angular/core-version.md` - pinned Core UI version guard for Angular
+- `../../_refs/angular/core-version.md` - pinned Core UI version guard for Angular
   dependency updates.
 - `sdcorejs-repair-loop` - fixes failed review or verification findings.
 - `sdcorejs-debug` - root-cause workflow for concrete failures.
@@ -463,13 +465,13 @@ Never include secrets, skipped commands as passes, stale diff evidence, or a tru
 
 ## Design and UI review integration
 
-Consume required Design/UI obligations using _refs/shared/ui-review.md and the shared verified path. Schema valid, reviewed/completed or caller PASS does not mean blocker-free. Recheck current source/build/capture identities even at the same HEAD. Required missing/stale source/rendered/interaction or independent-review proof stays a gap. Existing authorized manual/deferred risk policy remains explicit and never becomes automated PASS. Missing design permits unavailable/not-applicable comparison only where approved applicability allows it.
+Consume required Design/UI obligations using ../../_refs/shared/ui-review.md and the shared verified path. Schema valid, reviewed/completed or caller PASS does not mean blocker-free. Recheck current source/build/capture identities even at the same HEAD. Required missing/stale source/rendered/interaction or independent-review proof stays a gap. Existing authorized manual/deferred risk policy remains explicit and never becomes automated PASS. Missing design permits unavailable/not-applicable comparison only where approved applicability allows it.
 
 ## Canonical finish continuation
 
 When invoked by an executor tail, preserve `finish_context` and pass it to
 `evaluateShipReadiness` with the current `finish_runtime` from
-`_refs/shared/finish-gate.md`. Set `finish_phase` to `verify` or
+`../../_refs/shared/finish-gate.md`. Set `finish_phase` to `verify` or
 `branch-ready` only for that phase's preflight; handoff requires completed,
 current proof. This avoids requiring future receipts before their command runs. Defer, unresolved required Design/UI/test gaps, stale content or blocking review
 cannot become done. Final gates are read-only. Any later write invalidates affected evidence and requires the parent to resume the canonical resolver.

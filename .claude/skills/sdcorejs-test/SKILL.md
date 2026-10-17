@@ -6,6 +6,8 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Test Track
 
@@ -20,17 +22,17 @@ runtime unless the current request explicitly authorizes that exact action.
 
 ## Shared protocols
 
-1. Read `_refs/shared/runtime-protocols.md`, then
-   `_refs/shared/tasklist.md` for non-trivial work and
-   `_refs/shared/persona.md` when present.
-2. Apply Project Context Preflight v2 from `_refs/shared/project-context.md`.
+1. Read `../../_refs/shared/runtime-protocols.md`, then
+   `../../_refs/shared/tasklist.md` for non-trivial work and
+   `../../_refs/shared/persona.md` when present.
+2. Apply Project Context Preflight v2 from `../../_refs/shared/project-context.md`.
    Current request, files, diff, requirements, command output, and test failures
    override stored context. Missing or stale summary never blocks testing and
    does not authorize a refresh. Continue with targeted reads or a scoped code
    map.
-3. Apply `_refs/shared/artifact-lifecycle.md` whenever evidence or documentation
+3. Apply `../../_refs/shared/artifact-lifecycle.md` whenever evidence or documentation
    assets are created; return `artifact_context`.
-4. Apply `_refs/shared/user-choice-prompt.md` before presenting approval or
+4. Apply `../../_refs/shared/user-choice-prompt.md` before presenting approval or
    mode choices.
 5. Localize runtime-facing prose to the user's language. Keep schema keys,
    commands, identifiers, and canonical source English.
@@ -88,26 +90,26 @@ present.
 
 Always load:
 
-- `_refs/shared/testing-philosophy.md`
-- `_refs/shared/test-command-discovery.md`
-- `_refs/shared/test-environment-guard.md`
-- `_refs/shared/test-context.md`
-- `_refs/shared/test-scope-and-coverage.md`
-- `_refs/shared/validation-map.md`
-- `_refs/shared/convergence-contract.mjs`
-- `_refs/shared/test-auth-personas.md`
-- `_refs/shared/test-data-lifecycle.md`
+- `../../_refs/shared/testing-philosophy.md`
+- `../../_refs/shared/test-command-discovery.md`
+- `../../_refs/shared/test-environment-guard.md`
+- `../../_refs/shared/test-context.md`
+- `../../_refs/shared/test-scope-and-coverage.md`
+- `../../_refs/shared/validation-map.md`
+- `../../_refs/shared/convergence-contract.mjs`
+- `../../_refs/shared/test-auth-personas.md`
+- `../../_refs/shared/test-data-lifecycle.md`
 
-Load `_refs/shared/test-generic.md` for plain/general profiles. Load only the
-selected level from `_refs/angular/test-{unit,integration,e2e}.md`,
-`_refs/nestjs/test-{unit,integration,e2e}.md`, or
-`_refs/nextjs/build-website/test-e2e.md` when its profile applies. Load
-`_refs/angular/e2e-robot-conventions.md` only for detected Robot projects.
-Load `_refs/shared/test-playwright.md` only for detected/approved Playwright.
-TDD actions also load `_refs/shared/tdd.md`.
+Load `../../_refs/shared/test-generic.md` for plain/general profiles. Load only the
+selected level from `../../_refs/angular/test-{unit,integration,e2e}.md`,
+`../../_refs/nestjs/test-{unit,integration,e2e}.md`, or
+`../../_refs/nextjs/build-website/test-e2e.md` when its profile applies. Load
+`../../_refs/angular/e2e-robot-conventions.md` only for detected Robot projects.
+Load `../../_refs/shared/test-playwright.md` only for detected/approved Playwright.
+TDD actions also load `../../_refs/shared/tdd.md`.
 
 When topology contains modules, nested repositories, or submodules, also load
-`_refs/shared/module-e2e-contract.md` and execute its
+`../../_refs/shared/module-e2e-contract.md` and execute its
 `module-e2e-contract.mjs` validators. Behavior ownership controls authoring:
 module behavior keeps tests, fixtures, page objects, selectors, personas, and
 data contracts in the module repository; portal-shell behavior stays in the
@@ -116,12 +118,12 @@ may discover/run/aggregate but never copy a module suite or fall back to portal
 when the module is missing or non-writable.
 
 `ui-evidence-capture` additionally loads
-`_refs/shared/test-ui-evidence.md`. It must reuse the existing runner and return
+`../../_refs/shared/test-ui-evidence.md`. It must reuse the existing runner and return
 verified provenance; otherwise classify the capture as diagnostic/local-only.
 
 ## Step 4 - Build v2 preflight
 
-Before edits or commands, emit the schema from `_refs/shared/test-context.md`:
+Before edits or commands, emit the schema from `../../_refs/shared/test-context.md`:
 
 - `test_context.schema_version: 2`, current `associated_HEAD_or_diff`,
   classification, scope/owner, runner/config/cwd, environment/write policy,
@@ -186,7 +188,7 @@ credentials merely to discover whether a live check is possible.
 ## Simplification context
 
 When `simplify_context` is present, validate the canonical v2 payload from
-`_refs/simplify/verification.md` with `evaluateSimplifyConsumer` and the trusted
+`../../_refs/simplify/verification.md` with `evaluateSimplifyConsumer` and the trusted
 host session. Consume selected files/hunks, content fingerprint, preservation,
 command receipts and the host-owned pass ledger. Stale input is a revalidation
 request, never current evidence. Legacy payloads remain read-only. Keep
@@ -226,7 +228,7 @@ After scoped work:
 1. Run focused verification allowed by the action and finalize v2
    `test_context`, `test_status`, and multi-run `test_evidence`.
 2. Emit `ui_capture_context` only when the internal capture action actually ran.
-3. Apply `_refs/documentation/gate.md` only when documentation was explicitly
+3. Apply `../../_refs/documentation/gate.md` only when documentation was explicitly
    requested or the test change introduced a reusable harness, user-visible
    flow evidence, or documentation-relevant behavior. Internal unit tests alone
    do not require a user guide.
@@ -245,7 +247,7 @@ Read-only actions stop after their report/runtime context and must not dirty
 
 ## Design and UI review integration
 
-For required Design/UI evidence, use the shared contract in _refs/shared/ui-review.md with the existing ui-evidence-capture action. Test owns executed commands, captures and interaction receipts; Review reads them. Bind screen/state/viewport, semantic owner, exact source/build content and actual command/cwd/exit code. Adapt documentation capture v1 explicitly; no guide is required for a generic UI check. Required evidence does not itself authorize a new test invocation, runner install or app start. Relevant edits stale evidence at the same HEAD; missing/limited proof never becomes rendered/interaction PASS.
+For required Design/UI evidence, use the shared contract in ../../_refs/shared/ui-review.md with the existing ui-evidence-capture action. Test owns executed commands, captures and interaction receipts; Review reads them. Bind screen/state/viewport, semantic owner, exact source/build content and actual command/cwd/exit code. Adapt documentation capture v1 explicitly; no guide is required for a generic UI check. Required evidence does not itself authorize a new test invocation, runner install or app start. Relevant edits stale evidence at the same HEAD; missing/limited proof never becomes rendered/interaction PASS.
 
 ## Finish evidence ownership
 
@@ -253,6 +255,6 @@ Test strategy is settled in planning/implementation. TDD RED must precede its
 production write; post-code tests never become RED-first retroactively. Required
 tests and AC survive every finish choice, including Skip review. In executor
 tails, consume `finish_context` and the phase selected by
-`_refs/shared/finish-gate.md`; return actual command/cwd/exit/scope and current
+`../../_refs/shared/finish-gate.md`; return actual command/cwd/exit/scope and current
 source/build/content proof to the integration owner. Reverification refreshes
 only affected evidence. Test does not run a second shared finish/docs ceremony.

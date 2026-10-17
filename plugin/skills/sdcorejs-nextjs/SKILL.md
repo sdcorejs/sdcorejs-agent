@@ -6,21 +6,23 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, WebFetc
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Build Website — Write Code Orchestrator
 
 
-For unresolved visual decisions, apply `_refs/sdlc/visual-offer-policy.md`;
+For unresolved visual decisions, apply `../../_refs/sdlc/visual-offer-policy.md`;
 forward `requirement_context.visual_companion` through `context.pass`
 (portable `state_delta.visual_companion`) to the owning workflow.
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and `_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through the finishing tail.
+Read `../../_refs/shared/runtime-protocols.md` and `../../_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through the finishing tail.
 
-For required Design input, load `_refs/shared/design-handoff.md` and use
+For required Design input, load `../../_refs/shared/design-handoff.md` and use
 `resolveNextjsExecution(request, { design_runtime })` with the host-created
-runtime from `_refs/shared/design-verification.mjs`. It reads pinned actual
+runtime from `../../_refs/shared/design-verification.mjs`. It reads pinned actual
 approved parents and Design approval, verifies applicable evidence, and checks
 current content. Profile-only resolution has no write target or production
 eligibility. A missing handoff, structural PASS, draft, legacy payload or cached
@@ -33,7 +35,7 @@ Single entry point for generating approved Next.js website code. This skill is t
 dispatch layer between an approved plan from `sdcorejs-execute-plan` and the
 focused REFERENCE PACKS that hold the per-concern generation rules. It does NOT
 inline those rules — it reads the right pack on demand. The ten packs under
-`_refs/nextjs/build-website/write-code/` were standalone sub-skills before they
+`../../_refs/nextjs/build-website/write-code/` were standalone sub-skills before they
 were consolidated here so the track exposes one orchestrator instead of eleven.
 
 ## When invoked
@@ -57,25 +59,25 @@ summary v2 after scaffolding; an architecture-level refresh belongs only to the
 sequential workflow or integration owner.
 
 Before generating any non-trivial page, section, interactive block, form, or
-frontend data boundary, read `_refs/shared/frontend-architecture.md`. Require the
+frontend data boundary, read `../../_refs/shared/frontend-architecture.md`. Require the
 approved plan dispatched by `sdcorejs-execute-plan` to contain a completed
 `frontend_architecture` contract. This executor must not create or self-approve a
 missing contract. Stop and return to `sdcorejs-plan` through
 `sdcorejs-execute-plan` when the gate is missing, incomplete, or contradicted by
 current code evidence.
 
-Before dispatch, call `_refs/nextjs/execution-contract.mjs` with the central
+Before dispatch, call `../../_refs/nextjs/execution-contract.mjs` with the central
 registry identity, semantic site/module/portal-composition owner, explicit
 website profile, approved requirement features, and requested features. Stop on
 an unresolved owner or unapproved feature. A module/site artifact never falls
 back to the portal repository; portal ownership exists only for explicit
 portal-composition scope.
 
-Before writing any helper, formatter, validator, mapper, paging/filter helper, random-id helper, query-param helper, upload/download helper, clipboard/browser helper, API-route utility, hook utility, or `src/lib/utils.ts` addition, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior. Keep `next-intl` only when `i18n` is approved; use `@sdcorejs/utils` for shared pure helper behavior. The package must be a direct target-project dependency before generated code imports it.
+Before writing any helper, formatter, validator, mapper, paging/filter helper, random-id helper, query-param helper, upload/download helper, clipboard/browser helper, API-route utility, hook utility, or `src/lib/utils.ts` addition, read `../../_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior. Keep `next-intl` only when `i18n` is approved; use `@sdcorejs/utils` for shared pure helper behavior. The package must be a direct target-project dependency before generated code imports it.
 
 ## Dispatch table
 
-For approved UI work, read `_refs/design/uiux/index.md` and select only the
+For approved UI work, read `../../_refs/design/uiux/index.md` and select only the
 surface/topics being implemented. Respect approved design and content, current
 tokens/components/icons and the detected Next.js/router/package versions.
 Use actual framework docs/source for version-dependent APIs and preserve
@@ -90,18 +92,18 @@ authorize a feature; the existence of a "full build" sequence does not.
 | User intent / plan item | Reference pack to read | Phase |
 |---|---|---|
 | Approved new-site baseline | the approved subset of the sequence below | Profile build |
-| "Init project only" | [`_refs/nextjs/build-website/write-code/init-site.md`](_refs/nextjs/build-website/write-code/init-site.md) | Bootstrap |
-| "Pick / change theme" | [`_refs/nextjs/build-website/write-code/theme.md`](_refs/nextjs/build-website/write-code/theme.md) | Tokens |
-| "Add a page" / "add page X" / "add hero / testimonials block" / localized equivalents | [`_refs/nextjs/build-website/write-code/pages-and-blocks.md`](_refs/nextjs/build-website/write-code/pages-and-blocks.md) | Composition |
-| "Set up SEO" / "fix meta tags" | [`_refs/nextjs/build-website/write-code/seo.md`](_refs/nextjs/build-website/write-code/seo.md) | SEO |
-| "OG preview broken" / "social preview image missing" | [`_refs/nextjs/build-website/write-code/og-preview.md`](_refs/nextjs/build-website/write-code/og-preview.md) | OG |
-| "Add English" / "add EN" | [`_refs/nextjs/build-website/write-code/i18n.md`](_refs/nextjs/build-website/write-code/i18n.md) | i18n |
-| "Cache duration is too long/short", "ISR settings" | [`_refs/nextjs/build-website/write-code/caching.md`](_refs/nextjs/build-website/write-code/caching.md) | Cache |
-| "Responsive layout broken on mobile" | [`_refs/nextjs/build-website/write-code/responsive.md`](_refs/nextjs/build-website/write-code/responsive.md) | Responsive |
-| "Contact form does not send email" / "real form" | [`_refs/nextjs/build-website/write-code/contact-form.md`](_refs/nextjs/build-website/write-code/contact-form.md) | Form |
-| "Thin content" / "review content" / "language parity" / "Article schema" / localized equivalents | [`_refs/nextjs/build-website/write-code/content-quality.md`](_refs/nextjs/build-website/write-code/content-quality.md) | Content |
+| "Init project only" | [`../../_refs/nextjs/build-website/write-code/init-site.md`](../../_refs/nextjs/build-website/write-code/init-site.md) | Bootstrap |
+| "Pick / change theme" | [`../../_refs/nextjs/build-website/write-code/theme.md`](../../_refs/nextjs/build-website/write-code/theme.md) | Tokens |
+| "Add a page" / "add page X" / "add hero / testimonials block" / localized equivalents | [`../../_refs/nextjs/build-website/write-code/pages-and-blocks.md`](../../_refs/nextjs/build-website/write-code/pages-and-blocks.md) | Composition |
+| "Set up SEO" / "fix meta tags" | [`../../_refs/nextjs/build-website/write-code/seo.md`](../../_refs/nextjs/build-website/write-code/seo.md) | SEO |
+| "OG preview broken" / "social preview image missing" | [`../../_refs/nextjs/build-website/write-code/og-preview.md`](../../_refs/nextjs/build-website/write-code/og-preview.md) | OG |
+| "Add English" / "add EN" | [`../../_refs/nextjs/build-website/write-code/i18n.md`](../../_refs/nextjs/build-website/write-code/i18n.md) | i18n |
+| "Cache duration is too long/short", "ISR settings" | [`../../_refs/nextjs/build-website/write-code/caching.md`](../../_refs/nextjs/build-website/write-code/caching.md) | Cache |
+| "Responsive layout broken on mobile" | [`../../_refs/nextjs/build-website/write-code/responsive.md`](../../_refs/nextjs/build-website/write-code/responsive.md) | Responsive |
+| "Contact form does not send email" / "real form" | [`../../_refs/nextjs/build-website/write-code/contact-form.md`](../../_refs/nextjs/build-website/write-code/contact-form.md) | Form |
+| "Thin content" / "review content" / "language parity" / "Article schema" / localized equivalents | [`../../_refs/nextjs/build-website/write-code/content-quality.md`](../../_refs/nextjs/build-website/write-code/content-quality.md) | Content |
 
-Read ON DEMAND only — load the one pack for the step you are executing. Each pack further links to track-level reference data under `_refs/nextjs/build-website/`.
+Read ON DEMAND only — load the one pack for the step you are executing. Each pack further links to track-level reference data under `../../_refs/nextjs/build-website/`.
 
 ## Approved-feature execution sequence
 
@@ -143,14 +145,14 @@ may fan out after their approved page inputs exist.
 ### MANDATORY FINISH GATE
 
 Use `completeNextjsExecution` with `finish_context` and the current host runtime from
-`_refs/shared/finish-gate.md`. Consume its `next_actions` after each owner
+`../../_refs/shared/finish-gate.md`. Consume its `next_actions` after each owner
 returns; the shared resolver owns the order and completion status. The gate
 is mandatory after code generation, including direct requests; only unresolved
 choices prompt. Reuse scope-bound decisions. Defer stops this tail without a
 done claim. Review-only never dispatches repair or UI auto-fix. Workers return
 unit evidence; only the integration owner runs the shared final gate.
 
-The entrypoint is in `_refs/nextjs/execution-contract.mjs`. Preserve approved
+The entrypoint is in `../../_refs/nextjs/execution-contract.mjs`. Preserve approved
 page, responsive, accessibility, security and feature-specific tests; source-only
 UI inspection never substitutes required rendered or interaction evidence.
 Resolve test strategy before production writes. No finish choice cancels AC.
@@ -158,7 +160,7 @@ Resolve test strategy before production writes. No finish choice cancels AC.
 Register touched-source code-documentation, applicable product traceability,
 auto-docs execution records, authorized auto-task-tracker/backlog and memories,
 and approved technical-doc/user-guide updates as scoped hooks. Reuse existing
-policy through `_refs/documentation/gate.md`; missing new docs still require
+policy through `../../_refs/documentation/gate.md`; missing new docs still require
 creation authority. Revalidate affected checks after these writes, then Ship
 verify-before-done and final read-only branch-ready. No automatic Git actions.
 
@@ -181,10 +183,10 @@ verify-before-done and final read-only branch-ready. No automatic Git actions.
 - Resolve the **MANDATORY FINISH GATE** through `completeNextjsExecution`; prompt only for unresolved scope-bound choices.
 - Read the approved plan BEFORE dispatching — never invent scope
 - Resolve `approved_features`, artifact identity, and semantic owner with
-  `_refs/nextjs/execution-contract.mjs`; consume
-  `_refs/shared/system-registry.json` and block portal fallback for site/module
+  `../../_refs/nextjs/execution-contract.mjs`; consume
+  `../../_refs/shared/system-registry.json` and block portal fallback for site/module
   artifacts
-- Apply `_refs/shared/frontend-architecture.md` before non-trivial frontend
+- Apply `../../_refs/shared/frontend-architecture.md` before non-trivial frontend
   generation and derive page, feature-local, shared, client-island, data-boundary,
   registration/export, and test files from the approved architecture contract
 - Dispatch only approved packs in dependency order; i18n/contact/advanced
@@ -208,7 +210,7 @@ verify-before-done and final read-only branch-ready. No automatic Git actions.
 
 ### Documentation Gate Rule
 
-- Reuse documentation decisions through `_refs/documentation/gate.md`; ask only the unresolved creation/update scope. Source documentation remains a scoped owner hook.
+- Reuse documentation decisions through `../../_refs/documentation/gate.md`; ask only the unresolved creation/update scope. Source documentation remains a scoped owner hook.
 
 ### MUST NOT
 - Generate code from memory when a pack covers the concern — read the pack
@@ -240,12 +242,12 @@ verify-before-done and final read-only branch-ready. No automatic Git actions.
 
 ## Cross-references
 - Inputs: approved plan from `sdcorejs-plan` / `sdcorejs-execute-plan` + `sdcorejs-brainstorming` outputs
-- Reference packs: `_refs/nextjs/build-website/write-code/{init-site,theme,pages-and-blocks,seo,og-preview,i18n,caching,responsive,contact-form,content-quality}.md`
+- Reference packs: `../../_refs/nextjs/build-website/write-code/{init-site,theme,pages-and-blocks,seo,og-preview,i18n,caching,responsive,contact-form,content-quality}.md`
 - Audit an existing site (separate entry, read-only): `sdcorejs-review`
 - Tail-call chain: see CLAUDE.md workflow chart
 - Parallel execution: `sdcorejs-parallel-dispatch`
-- Shared frontend architecture gate: `_refs/shared/frontend-architecture.md`
+- Shared frontend architecture gate: `../../_refs/shared/frontend-architecture.md`
 
 ## Design and UI review integration
 
-Use _refs/shared/ui-review.md and the shared verified consumer path for applicable Design review before implementation and UI conformance after implementation. Preserve approved applicability; stack checks are additive. Missing design permits scoped review with unavailable or justified not-applicable conformance, without inventing a baseline. Review-only checks never fix source; authorized owner writes invalidate affected evidence.
+Use ../../_refs/shared/ui-review.md and the shared verified consumer path for applicable Design review before implementation and UI conformance after implementation. Preserve approved applicability; stack checks are additive. Missing design permits scoped review with unavailable or justified not-applicable conformance, without inventing a baseline. Review-only checks never fix source; authorized owner writes invalidate affected evidence.

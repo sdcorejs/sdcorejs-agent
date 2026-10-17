@@ -6,26 +6,28 @@ allowed-tools: Agent, AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, 
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Repair Loop
 
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and load only the references needed by
+Read `../../_refs/shared/runtime-protocols.md` and load only the references needed by
 the scoped finding.
 
-Thin dispatch skill for applying findings and re-verifying them. The detailed loop lives in `_refs/orchestration/tail/repair-loop.md`.
+Thin dispatch skill for applying findings and re-verifying them. The detailed loop lives in `../../_refs/orchestration/tail/repair-loop.md`.
 
-Resolve supported tracks from `_refs/shared/system-registry.json`; do not keep a
+Resolve supported tracks from `../../_refs/shared/system-registry.json`; do not keep a
 framework-only enum. Validate every repair with
-`_refs/orchestration/repair-contract.mjs`, which binds the original evidence,
+`../../_refs/orchestration/repair-contract.mjs`, which binds the original evidence,
 artifact/implementation owner, execution host, approved write scope, bounded
 attempts, and repaired evidence linkage.
 
 ## Workflow
 1. Determine and preserve the source of findings: `review-code`, `external-review-feedback`, `verify-before-done`, `linter`, `typecheck`, `test`, or `manual`.
-2. Read `_refs/orchestration/tail/repair-loop.md` completely.
+2. Read `../../_refs/orchestration/tail/repair-loop.md` completely.
 3. If the source is `sdcorejs-review`, preserve the original `review_context` exactly, including `track`, `track_profile`, dimensions, mode, `file_scope`, refs loaded/skipped, probes run/skipped, and package manager.
    Preserve any `test_context`, `test_status`, `test_evidence`,
    `ui_capture_context`, `ai_agent_context`, `simplify_context`,
@@ -67,7 +69,7 @@ attempts, and repaired evidence linkage.
 
 ## Handoff
 - After convergence, return to the caller's tail chain.
-- If invoked from a finish-gate review, return `finish_context`, scoped repair results and affected-evidence invalidation to the integration owner. The caller resumes `completeExecution` from `_refs/shared/finish-gate.md`; repair does not run shared docs, reopen choices or dispatch simplify. Existing finding/tier/scope preflight remains mandatory.
+- If invoked from a finish-gate review, return `finish_context`, scoped repair results and affected-evidence invalidation to the integration owner. The caller resumes `completeExecution` from `../../_refs/shared/finish-gate.md`; repair does not run shared docs, reopen choices or dispatch simplify. Existing finding/tier/scope preflight remains mandatory.
 - If invoked directly by the user, run discovered verification commands and offer explicit numbered next steps: run `sdcorejs-ship (verify-before-done mode)`, stop after the repair summary, or prepare a commit only after ship and branch-ready pass for the current `HEAD` or diff.
 - If `sdcorejs-debug` was used inside the loop, carry its `debug_context` into
   the repair summary and subsequent ship gates.
@@ -112,7 +114,7 @@ attempts, and repaired evidence linkage.
   `evaluateSimplifyConsumer` and the trusted session; rollback an unverified
   failed pass before repair. Record `session.recordRepair()` at authorized repair
   entry, retain history, and never invoke simplify after repair. Use the canonical
-  `_refs/simplify/verification.md` contract. Do not turn refinement into a
+  `../../_refs/simplify/verification.md` contract. Do not turn refinement into a
   semantic refactor, widen its scope, or change protected contracts. Every
   repair write makes affected simplification/test/review evidence stale and
   requires the source-specific verification to run again. Architecture or
@@ -120,4 +122,4 @@ attempts, and repaired evidence linkage.
 
 ## Design and UI review integration
 
-UI findings use _refs/shared/ui-review.md and the shared verified consumer. Pure aesthetic preferences are advisory and cannot auto-repair; approved requirement/invariant violations remain conformance. Missing evidence is a verification gap, not permission to change source. Selected valid repairs still require current owner/scope/tier authority. Any implementation write invalidates affected capture and assessment; return to focused Test/Review verification and never restart simplify.
+UI findings use ../../_refs/shared/ui-review.md and the shared verified consumer. Pure aesthetic preferences are advisory and cannot auto-repair; approved requirement/invariant violations remain conformance. Missing evidence is a verification gap, not permission to change source. Selected valid repairs still require current owner/scope/tier authority. Any implementation write invalidates affected capture and assessment; return to focused Test/Review verification and never restart simplify.
