@@ -6,16 +6,18 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Using sdcorejs Skills
 
 ## Bootstrap
 
 Match descriptions before reading skill bodies. Load
-`_refs/shared/runtime-protocols.md`, then only task-relevant references.
+`../../_refs/shared/runtime-protocols.md`, then only task-relevant references.
 Current user instructions/evidence override stored context. Resolve track,
 profile, artifact, repository, review, repair, ship and evidence semantics from
-`_refs/shared/system-registry.json`; read only fields needed for the route.
+`../../_refs/shared/system-registry.json`; read only fields needed for the route.
 
 Priority when several skills match:
 
@@ -38,7 +40,7 @@ Priority when several skills match:
 Choose one path before loading a full workflow:
 
 - Pure Q&A with no authorized write: answer directly.
-- UI work selects topics via `_refs/design/uiux/index.md`; backend/Q&A load none.
+- UI work selects topics via `../../_refs/design/uiux/index.md`; backend/Q&A load none.
 - Small, explicit, low-risk fix: targeted context, smallest scoped edit,
   focused verification, and concise review. Behavior, acceptance criteria,
   ownership, and verification must already be bounded.
@@ -82,7 +84,7 @@ waves or sequential fresh workers, with parent fallback. The low-level
 ## Invariants
 
 - Run current verification before claiming pass, fixed, built, or done.
-- Apply `_refs/harness/communication-economy.md` just in time for response
+- Apply `../../_refs/harness/communication-economy.md` just in time for response
   profiles, progress, runtime-context handoff, or related-artifact selection.
   Default routine output to compact professional sentences; expand for
   approval, security, destructive action, ambiguity, failure, or blockers.
@@ -94,9 +96,9 @@ waves or sequential fresh workers, with parent fallback. The low-level
 - Finish gates, verification-before-done, and no-writes-after-branch-ready stay
   mandatory where the selected workflow requires them.
 - Open user choices, including direct Design: apply
-  `_refs/sdlc/visual-offer-policy.md` before deciding; preserve `visual_companion`
+  `../../_refs/sdlc/visual-offer-policy.md` before deciding; preserve `visual_companion`
   across routing. Fixed work needs no visual loading or invitation.
-- Use `_refs/shared/user-choice-prompt.md` only for real decisions. Supported
+- Use `../../_refs/shared/user-choice-prompt.md` only for real decisions. Supported
   native interaction may be used, but numbered Markdown is always available.
 - Match the user's language at runtime; keep reusable skill/reference prose and
   identifiers in English.
@@ -110,14 +112,14 @@ waves or sequential fresh workers, with parent fallback. The low-level
   `execution_host_repository_id` is the execution host coordinating the run.
   Never infer artifact ownership from the current working directory.
 - Resolve aliases and unsupported stacks through
-  `_refs/shared/system-registry.mjs`. Unknown stacks use the declared generic
+  `../../_refs/shared/system-registry.mjs`. Unknown stacks use the declared generic
   harness fallback; unknown runtime capabilities use the portable fallback
   from the capability contract.
 
 ## Track Map
 
 This display is checked deterministically against
-`_refs/shared/system-registry.json`; consumers resolve the registry rather than
+`../../_refs/shared/system-registry.json`; consumers resolve the registry rather than
 copying this table into durable artifacts.
 
 | Canonical track | Executor |

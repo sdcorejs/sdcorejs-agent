@@ -1010,3 +1010,49 @@ by 151 bytes for the task-breakdown routing note. The gates, the check CLI and
 the product refs are not loaded by any measured scenario, so revision 3 does not
 change these numbers. The always-loaded bootstrap is unchanged. These are byte
 counts, not token or cost measurements.
+
+## Mirror _refs resolution — current change (2026-10-16)
+
+This section records `mirror-refs-path-resolution-v1` at base HEAD
+`940fc0c3cf6b096cbd289771d92bc2a1556b8303`, through the approved spec and plan
+(`sha256:v1:e49359ff0c53620602602d99c5eccdbe56d98b5dc76b70edc2139bf0769188bc`).
+The architecture gate is not applicable (bounded bug fix). The task-breakdown
+record `authoring/evals/product-task-breakdown-mode.json` is now verified as
+history at 940fc0c, and `authoring/evals/mirror-refs-path-resolution.json` binds
+the current content and an actual command run.
+
+The second task-breakdown live run showed that the generated `plugin/` and
+`.claude/` mirrors kept bare `_refs/...` paths while the references live two
+levels above each skill folder; the model looked under the skill directory and
+ran without the mode reference. The sync script now writes every reference that
+is followed by a path segment as `../../_refs/...` in those mirrors and adds one
+path-resolution line to the adapter header. A bare mention of the directory,
+such as "contains `_refs/`", and a path anchored by a placeholder root, such as
+`<skill-pack-root>/_refs/...`, are left as they are. The session-start hook
+replaces `../../_refs/` in the injected bootstrap with absolute paths under the
+real plugin root, because that text has no base directory. Source skills, the
+codex mirror and the `AGENTS.md` outputs are unchanged.
+
+| Area | Regression case | At 940fc0c | Current |
+| --- | --- | --- | --- |
+| Claude-layout mirrors write `../../_refs/` and carry one path-resolution line | `case-mirror-refs-rewritten` | FAIL | PASS |
+| Concrete references resolve from each `SKILL.md`; templated ones keep the prefix | `case-mirror-refs-resolve`, `case-progressive-load-distribution-resolution` | FAIL | PASS |
+| Bootstrap injected by every hook branch uses absolute paths that exist | `case-mirror-refs-bootstrap-absolute` | FAIL | PASS |
+| The checker rejects bare, wrong-depth, header-less and unresolved mirrors | `case-mirror-refs-mutation` | FAIL | PASS |
+| A bare `_refs/` mention keeps its meaning | `case-mirror-refs-header` | PASS (guard) | PASS |
+| Sources, codex mirrors and `AGENTS.md` outputs stay byte-identical | `case-mirror-refs-unchanged` | PASS (guard) | PASS |
+| Governance continuation | `case-mirror-refs-evidence-continuation` | FAIL (record missing) | PASS |
+
+The new test file failed 4 of 6 cases at the base commit; the two guard cases
+passed by design. That RED run predates a rewrite of the unpublished base, which
+replaced real names and internal ticket keys in product test fixtures and became
+940fc0c; the mirror sources and the hook were not touched by the rewrite.
+The retargeted distribution case failed until the sync script changed.
+The evidence manifest excludes `plugin/**`, as earlier continuations did, so the
+hook source is proven by `case-mirror-refs-bootstrap-absolute` rather than by the
+manifest hash. The interactive live run that rechecks the task-breakdown manual
+criteria is recorded separately in this change's live-run document.
+
+The communication economy report is unchanged by this change: the always-loaded
+bootstrap is measured on source files, which did not change. Its rows remain
+those recorded in the task-breakdown section above.

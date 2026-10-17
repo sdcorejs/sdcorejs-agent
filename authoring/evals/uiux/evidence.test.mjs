@@ -621,13 +621,19 @@ async function validateTaskBreakdownContinuation(value, readSource = read) {
   assert.equal(value.live_target_project, false); assert.equal(value.tokens, null); assert.equal(value.provider_calls, 0);
 }
 
-test('case-task-breakdown-evidence-continuation: current content is bound to the approved plan r4 and an actual run', async () => {
-  await validateTaskBreakdownContinuation(JSON.parse(await read(taskBreakdownPath)));
+// The task-breakdown record is immutable history once its content was committed
+// (940fc0c); the mirror _refs resolution continuation below owns proof for the current tree.
+const taskBreakdownRevision = '940fc0c3cf6b096cbd289771d92bc2a1556b8303';
+const taskBreakdownRead = async file => atRevision(taskBreakdownRevision, file);
+
+test('case-task-breakdown-evidence-continuation: committed content is bound to the approved plan r4 and an actual run', async () => {
+  assert.equal(hash(await read(taskBreakdownPath)), hash(atRevision(taskBreakdownRevision, taskBreakdownPath)), 'history must remain immutable');
+  await validateTaskBreakdownContinuation(JSON.parse(await read(taskBreakdownPath)), taskBreakdownRead);
 });
 
 test('case-task-breakdown-evidence-continuation: omitted, stale, mutated and fabricated evidence is rejected', async () => {
   const original = JSON.parse(await read(taskBreakdownPath));
-  await validateTaskBreakdownContinuation(original);
+  await validateTaskBreakdownContinuation(original, taskBreakdownRead);
   for (const mutate of [
     value => { value.source_manifest.pop(); value.content_fingerprint = hash(JSON.stringify(value.source_manifest)); },
     value => { value.source_roots.pop(); },
@@ -650,14 +656,100 @@ test('case-task-breakdown-evidence-continuation: omitted, stale, mutated and fab
     value => { value.tokens = 1; },
   ]) {
     const candidate = structuredClone(original); mutate(candidate);
-    await assert.rejects(validateTaskBreakdownContinuation(candidate));
+    await assert.rejects(validateTaskBreakdownContinuation(candidate, taskBreakdownRead));
   }
   for (const changed of ['_refs/product/task-breakdown/safety.mjs', '_refs/harness/runtime-policy.mjs', taskBreakdownPlan, auditPath]) {
     await assert.rejects(validateTaskBreakdownContinuation(original, async file =>
-      file === changed ? `${await read(file)}\nmutated at the same HEAD\n` : read(file)));
+      file === changed ? `${await taskBreakdownRead(file)}\nmutated at the same HEAD\n` : taskBreakdownRead(file)));
     await assert.rejects(validateTaskBreakdownContinuation(original, async file => {
-      if (file === changed) throw new Error('source missing'); return read(file);
+      if (file === changed) throw new Error('source missing'); return taskBreakdownRead(file);
     }), /source missing/);
   }
   await assert.rejects(validateTaskBreakdownContinuation(undefined));
+});
+
+// Mirror _refs resolution continuation: the current tree is bound to the approved
+// plan, the task-breakdown record as immutable history, and an actual run.
+const mirrorRefsPath = 'authoring/evals/mirror-refs-path-resolution.json';
+const mirrorRefsPlan = '.sdcorejs/plans/workflow/2026-10-16-10-35-mirror-refs-path-resolution.md';
+const mirrorRefsPlanHash = 'sha256:v1:e49359ff0c53620602602d99c5eccdbe56d98b5dc76b70edc2139bf0769188bc';
+const mirrorRefsTests = ['mirror-refs-resolution', 'production-readiness-contract', 'project-context-artifact-lifecycle'].map(name => `test/e2e/${name}.test.mjs`);
+const mirrorRefsCommand = `node --test --test-concurrency=1 --test-reporter=tap ${mirrorRefsTests.join(' ')}`;
+const mirrorRefsCases = [...['rewritten', 'resolve', 'header', 'bootstrap-absolute', 'unchanged', 'mutation'].map(id => 'case-mirror-refs-' + id),
+  'case-progressive-load-distribution-resolution'];
+
+async function validateMirrorRefsContinuation(value, readSource = read) {
+  assert.equal(value.schema_version, 1); assert.equal(value.change_ref, 'mirror-refs-path-resolution-v1');
+  assert.equal(value.evidence_class, 'deterministic-contract'); assert.equal(value.cwd, '.');
+  assert.equal(value.owner_repository_id, stableRepositoryId({ remote_url: git('config', '--get', 'remote.origin.url') }));
+  assert.equal(value.scope_plan, mirrorRefsPlan);
+  const plan = await readApproved(value.scope_plan, readSource);
+  assert.equal(plan.metadata.approval_hash, mirrorRefsPlanHash, 'only the actual approved plan is authority');
+  const spec = await readApproved(plan.metadata.source_spec, readSource);
+  verifyApprovedArtifactGraph(plan, [spec]);
+  assert.equal(plan.metadata.owner_repository_id, value.owner_repository_id);
+  assert.equal(plan.metadata.change_ref, value.change_ref);
+  assert.equal(value.source_revision, plan.metadata.source_revision);
+  assert.equal(git('rev-parse', `${value.source_revision}^{commit}`), value.source_revision);
+  assert.equal(value.previous_continuation.path, taskBreakdownPath);
+  assert.equal(value.previous_continuation.revision, value.source_revision);
+  const previousText = atRevision(value.previous_continuation.revision, taskBreakdownPath);
+  assert.equal(hash(previousText), value.previous_continuation.sha256);
+  assert.equal(hash(await readSource(taskBreakdownPath)), value.previous_continuation.sha256, 'history must remain immutable');
+  const expected = await continuationSources(plan, JSON.parse(previousText), readSource, mirrorRefsPath);
+  assert.deepEqual(value.source_roots, expected.roots);
+  assert.deepEqual(value.source_manifest.map(entry => entry.path), expected.paths);
+  assert.equal(hash(JSON.stringify(value.source_manifest)), value.content_fingerprint);
+  for (const entry of value.source_manifest) assert.equal(hash(await readSource(entry.path)), entry.sha256, `current continuation is stale: ${entry.path}`);
+  assert.equal(value.content_normalization, 'UTF-8 with LF line endings');
+  assertRun(value.verification, mirrorRefsCommand, '#', 50, mirrorRefsCases);
+  const run = value.verification;
+  assert.equal(run.source_fingerprint, value.content_fingerprint);
+  assert.equal(run.content_stable, true); assert.equal(run.interrupted, false);
+  assert.equal(run.cwd, '.'); assert.equal(run.owner_repository_id, value.owner_repository_id);
+  assert.ok(Number.isFinite(Date.parse(run.started_at)));
+  assert.ok(Date.parse(run.finished_at) >= Date.parse(run.started_at));
+  assert.equal(value.live_agent, 'NOT RUN'); assert.equal(value.visual, 'NOT RUN');
+  assert.equal(value.live_target_project, false); assert.equal(value.tokens, null); assert.equal(value.provider_calls, 0);
+}
+
+test('case-mirror-refs-evidence-continuation: current content is bound to the approved plan and an actual run', async () => {
+  await validateMirrorRefsContinuation(JSON.parse(await read(mirrorRefsPath)));
+});
+
+test('case-mirror-refs-evidence-continuation: omitted, stale, mutated and fabricated evidence is rejected', async () => {
+  const original = JSON.parse(await read(mirrorRefsPath));
+  await validateMirrorRefsContinuation(original);
+  for (const mutate of [
+    value => { value.source_manifest.pop(); value.content_fingerprint = hash(JSON.stringify(value.source_manifest)); },
+    value => { value.source_roots.pop(); },
+    value => { value.owner_repository_id = 'github.com/foreign/repository'; },
+    value => { value.source_revision = 'f'.repeat(40); value.previous_continuation.revision = value.source_revision; },
+    value => { value.scope_plan = '.sdcorejs/plans/foreign.md'; },
+    value => { value.previous_continuation.sha256 = 'mutated'; },
+    value => { value.verification.command = ''; },
+    value => { value.verification.exit_code = 1; },
+    value => { value.verification.failed = 1; },
+    value => { value.verification.content_stable = false; },
+    value => { value.verification.interrupted = true; },
+    value => { value.verification.source_fingerprint = 'sha256:' + '0'.repeat(64); },
+    value => { value.verification.transcript = ''; value.verification.output_sha256 = hash(''); },
+    value => { value.verification.transcript = value.verification.transcript.replace('# fail 0', '# fail 1'); value.verification.output_sha256 = hash(value.verification.transcript); },
+    value => { value.verification.transcript = value.verification.transcript.replaceAll('case-mirror-refs-resolve', 'case-mirror-refs-fabricated'); value.verification.output_sha256 = hash(value.verification.transcript); },
+    value => { value.verification = null; },
+    value => { value.visual = 'PASS'; },
+    value => { value.live_agent = 'PASS'; },
+    value => { value.tokens = 1; },
+  ]) {
+    const candidate = structuredClone(original); mutate(candidate);
+    await assert.rejects(validateMirrorRefsContinuation(candidate));
+  }
+  for (const changed of ['scripts/sync-skills.mjs', '_refs/shared/artifact-lifecycle.mjs', mirrorRefsPlan, taskBreakdownPath]) {
+    await assert.rejects(validateMirrorRefsContinuation(original, async file =>
+      file === changed ? `${await read(file)}\nmutated at the same HEAD\n` : read(file)));
+    await assert.rejects(validateMirrorRefsContinuation(original, async file => {
+      if (file === changed) throw new Error('source missing'); return read(file);
+    }), /source missing/);
+  }
+  await assert.rejects(validateMirrorRefsContinuation(undefined));
 });

@@ -6,6 +6,8 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, WebFetc
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # SDCoreJS AI Agent
 
@@ -30,18 +32,18 @@ Require all of the following before writing:
 If any item is absent, ambiguous, stale, or hash-invalid, stop and return to the
 owning workflow gate. Do not infer a profile from prose after plan approval.
 Create and verify approved spec/plan identity only through
-`_refs/shared/approved-artifact.mjs`; do not use a track-local hash scheme.
+`../../_refs/shared/approved-artifact.mjs`; do not use a track-local hash scheme.
 When a legacy portable handoff names these values `approved_spec_hash` and
 `approved_plan_hash`, each value must equal the corresponding shared
 `approval_hash`; the aliases do not authorize an independent hash contract.
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md`, `_refs/shared/system-registry.json`,
-and `_refs/ai-agent/manifest.json`. Apply
-`_refs/shared/artifact-lifecycle.md` when `.sdcorejs/**` is written. Use
-`_refs/shared/repository-contract.mjs` for repository ownership and
-`_refs/ai-agent/execution-identity.mjs` for profile resolution, approved graph
+Read `../../_refs/shared/runtime-protocols.md`, `../../_refs/shared/system-registry.json`,
+and `../../_refs/ai-agent/manifest.json`. Apply
+`../../_refs/shared/artifact-lifecycle.md` when `.sdcorejs/**` is written. Use
+`../../_refs/shared/repository-contract.mjs` for repository ownership and
+`../../_refs/ai-agent/execution-identity.mjs` for profile resolution, approved graph
 verification, runtime approval fingerprints, downstream artifact identity, and
 offline/live evidence classification.
 
@@ -79,9 +81,9 @@ changes and fail closed on overlapping paths.
    separate current evidence and are never inferred from offline fixtures.
 9. Emit `ai_agent_context` for downstream owners.
 10. Resolve the mandatory finish gate through `completeExecution` in
-    `_refs/orchestration/execution-contract.mjs` with `finish_context` and
+    `../../_refs/orchestration/execution-contract.mjs` with `finish_context` and
     current host evidence. Consume the canonical `next_actions` from
-    `_refs/shared/finish-gate.md`; ask only unresolved choices. Preserve offline
+    `../../_refs/shared/finish-gate.md`; ask only unresolved choices. Preserve offline
     evals, focused tests and explicitly scoped documentation/traceability hooks.
     Review-only cannot repair; defer stops; writes stale affected evidence.
     Workers return unit proof; only the integration owner runs final finish.
@@ -151,10 +153,10 @@ ai_agent_context:
   capability_profile: <resolved capability id>
   capability_profile_path: <resolved path>
   runtime_owner: <application component>
-  common_security_floor: _refs/ai-agent/profiles/common.md
-  manifest: _refs/ai-agent/manifest.json
-  profile_contract: _refs/ai-agent/profile-contract.json
-  validator: _refs/ai-agent/validate-agent-contract.mjs
+  common_security_floor: ../../_refs/ai-agent/profiles/common.md
+  manifest: ../../_refs/ai-agent/manifest.json
+  profile_contract: ../../_refs/ai-agent/profile-contract.json
+  validator: ../../_refs/ai-agent/validate-agent-contract.mjs
   agent_contract_paths: [<path>]
   target_paths: [<path>]
   trusted_context_sources: [<server or job source>]

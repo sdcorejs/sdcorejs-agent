@@ -6,6 +6,8 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, WebFetc
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # SDCoreJS NestJS Executor
 
@@ -13,20 +15,20 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, WebFetc
 
 Before execution:
 
-1. Read `_refs/shared/runtime-protocols.md`, then apply
-   `_refs/shared/tasklist.md`.
-2. Read and apply `_refs/shared/project-context.md` as a read-only,
+1. Read `../../_refs/shared/runtime-protocols.md`, then apply
+   `../../_refs/shared/tasklist.md`.
+2. Read and apply `../../_refs/shared/project-context.md` as a read-only,
    relevance-first context assembler.
-3. Read `_refs/shared/artifact-lifecycle.md` and merge producer
+3. Read `../../_refs/shared/artifact-lifecycle.md` and merge producer
    `artifact_context` through the finishing tail.
-4. Read and apply `_refs/shared/user-choice-prompt.md` before any user-facing
+4. Read and apply `../../_refs/shared/user-choice-prompt.md` before any user-facing
    choice, approval, or finish gate.
 5. Use valid summary sections when available. Missing or stale summary never
    blocks generation; continue with targeted reads or a scoped code map.
-6. Read `_refs/nestjs/pack-manifest.json`,
-   `_refs/nestjs/profile-contract.json`, and
-   `_refs/nestjs/core-catalog.md`.
-7. Before authoring a helper, read `_refs/shared/sdcorejs-utils.md`.
+6. Read `../../_refs/nestjs/pack-manifest.json`,
+   `../../_refs/nestjs/profile-contract.json`, and
+   `../../_refs/nestjs/core-catalog.md`.
+7. Before authoring a helper, read `../../_refs/shared/sdcorejs-utils.md`.
 
 ## Resolve the generation contract once
 
@@ -48,14 +50,14 @@ Fail before writing when:
 
 Read packs on demand in manifest dependency order:
 
-1. `_refs/nestjs/write-code/init-project.md` for a new backend.
-2. `_refs/nestjs/write-code/init-admin.md` for the required authn/authz authority.
-3. `_refs/nestjs/write-code/init-module.md` for each bounded context.
-4. `_refs/nestjs/write-code/init-entity.md` for explicit entity routes and stacks.
-5. `_refs/nestjs/write-code/actions.md` for workflow, import, export, or custom actions.
+1. `../../_refs/nestjs/write-code/init-project.md` for a new backend.
+2. `../../_refs/nestjs/write-code/init-admin.md` for the required authn/authz authority.
+3. `../../_refs/nestjs/write-code/init-module.md` for each bounded context.
+4. `../../_refs/nestjs/write-code/init-entity.md` for explicit entity routes and stacks.
+5. `../../_refs/nestjs/write-code/actions.md` for workflow, import, export, or custom actions.
 
 The deterministic golden generator is
-`_refs/nestjs/generator/generate-project.mjs`. It proves the canonical sample
+`../../_refs/nestjs/generator/generate-project.mjs`. It proves the canonical sample
 contract; packs explain how to generalize that contract to the approved domain.
 
 ## Mandatory TDD and safety gates
@@ -74,18 +76,18 @@ so would make the route surface implicit.
 ## Completion
 
 Use `completeExecution` with `finish_context` and the current host runtime from
-`_refs/shared/finish-gate.md`. Consume its `next_actions` after each owner
+`../../_refs/shared/finish-gate.md`. Consume its `next_actions` after each owner
 returns; the shared resolver owns the order and completion status. The gate
 is mandatory after code generation, including direct requests; only unresolved
 choices prompt. Reuse scope-bound decisions. Defer stops this tail without a
 done claim. Review-only never dispatches repair or UI auto-fix. Workers return
 unit evidence; only the integration owner runs the shared final gate.
 
-The entrypoint is in `_refs/orchestration/execution-contract.mjs`. Preserve
+The entrypoint is in `../../_refs/orchestration/execution-contract.mjs`. Preserve
 NestJS TDD, route/auth/security and contract tests; optional finish choices
 cannot remove required verification. Retain code-documentation for touched
 source, auto-docs execution records, owned auto-task-tracker/backlog, and relevant
-memories as scoped hooks. Reuse docs policy through `_refs/documentation/gate.md`;
+memories as scoped hooks. Reuse docs policy through `../../_refs/documentation/gate.md`;
 preferences never authorize creating missing guides. Revalidate affected checks
 after writes; Ship verify-before-done and branch-ready are read-only final gates.
 No automatic commit/push or live services.

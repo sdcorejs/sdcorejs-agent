@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-10-15T04:09:11.616Z
+generated_at: 2026-10-16T04:39:56.769Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks: [workflow, ai-agent, angular, nestjs, nextjs, product, design, test]
@@ -14,7 +14,7 @@ evidence:
   key_entrypoints: [AGENTS.md, CLAUDE.md, skills/orchestration/using-skills.md, scripts/sync-skills.mjs, plugin/hooks/session-start, .github/copilot-instructions.md, .cursor/rules/sdcorejs-agent.mdc, site/src/pages/index.astro]
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:8148c1d7a31af4d1da8792a6f226049225359fb9926269ba297ec423e704c6bf
+  dependency_manifests: sha256:f5e50d12a841c4168982708b326c030dd168fb7b874c52e8accd06272d579d80
   source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
@@ -106,6 +106,9 @@ Authoring flow:
 1. Edit canonical instructions in `skills/`, `_refs/`, or top-level entrypoints.
 2. Run `scripts/sync-skills.mjs` through `npm run sync:skills`.
 3. The sync script validates source skills and regenerates tool-specific mirrors.
+   Claude-layout mirrors (`plugin/`, `.claude/`) write references as
+   `../../_refs/...`; codex mirrors use `../_refs/...`; the plugin
+   session-start hook injects the bootstrap with absolute reference paths.
 4. Contract tests exercise routing, decision and architecture gates, validation
    maps, convergence, generated content, adapters, and fixtures.
 5. `npm run check:skills` reconstructs mirrors in a temporary directory and

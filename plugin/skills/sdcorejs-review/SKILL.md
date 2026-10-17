@@ -6,6 +6,8 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Review (profile + dimension aware)
 
@@ -18,21 +20,21 @@ strict read-only by default and must not silently write `.sdcorejs` artifacts or
 an explicit user or finish-gate choice.
 
 Resolve `track` and its durable `review_profile` from
-`_refs/shared/system-registry.json`, then validate context/findings with
-`_refs/shared/review-contract.mjs`. Do not maintain a separate first-class
+`../../_refs/shared/system-registry.json`, then validate context/findings with
+`../../_refs/shared/review-contract.mjs`. Do not maintain a separate first-class
 track enum in this skill.
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md`. Apply
-`_refs/shared/artifact-lifecycle.md` only when the user explicitly chooses to
-persist the report. Read `_refs/shared/decision-coverage.md`; preserve
+Read `../../_refs/shared/runtime-protocols.md`. Apply
+`../../_refs/shared/artifact-lifecycle.md` only when the user explicitly chooses to
+persist the report. Read `../../_refs/shared/decision-coverage.md`; preserve
 `decision_coverage` and `goal_backward_review`, and report drift, missing task
 or evidence mappings, invariant gaps, or unresolved critique blockers without renumbering or repairing the approved records.
 Preserve `architecture_context` and the exact conditional gate from the approved plan. Architecture review compares changed boundaries, ownership,
 public contracts, profile blocks, and validation evidence with approved
 `INV-*`; a stale/missing/mutated required context is a finding, never permission
-to rewrite architecture or conventions. Read `_refs/shared/validation-map.md`; preserve the approved `validation_map`
+to rewrite architecture or conventions. Read `../../_refs/shared/validation-map.md`; preserve the approved `validation_map`
 and report drift from mapped cases or current evidence without rewriting rows.
 
 ## When to use
@@ -45,7 +47,7 @@ and report drift from mapped cases or current evidence without rewriting rows.
 ## Step 0 - Context and Scope Preflight
 
 Before detecting profile/dimension or reading files under review, run
-`sdcorejs-explore (summary-read)` through `_refs/shared/project-context.md`.
+`sdcorejs-explore (summary-read)` through `../../_refs/shared/project-context.md`.
 
 - For an existing target project, read `<target>/.sdcorejs/summary.md` when it
   exists so review scope, module boundaries, route conventions, stack profile,
@@ -60,9 +62,9 @@ Before detecting profile/dimension or reading files under review, run
   override stored summary context.
 
 Then run `sdcorejs-explore (conventions-read)` through
-`_refs/shared/convention-context.md` for the categories this review touches. It
+`../../_refs/shared/convention-context.md` for the categories this review touches. It
 never creates the capture policy and never refreshes evidence; a missing registry is a context signal, not a blocker and not write permission.
-Read `_refs/shared/convergence-contract.mjs`; emit `convergence_findings` from current review evidence. Architecture violations and accepted convention
+Read `../../_refs/shared/convergence-contract.mjs`; emit `convergence_findings` from current review evidence. Architecture violations and accepted convention
 violations may block; observed convention candidates stay advisory.
 
 Determine review scope in this order:
@@ -94,10 +96,10 @@ inside the selected `file_scope`, not the entire repository by default.
 Classify `track_profile` before loading any track-specific ref:
 
 First resolve the first-class artifact track and `review_profile` from the central registry.
-The stack-specific profile table in `_refs/review/profiles-and-refs.md` refines executable-code reviews only;
+The stack-specific profile table in `../../_refs/review/profiles-and-refs.md` refines executable-code reviews only;
 AI-agent, design, documentation, workflow, product, test, React, Node, fullstack, and general remain durable review profiles rather than orphan sections.
 
-For executable-code reviews, read `_refs/review/profiles-and-refs.md` before
+For executable-code reviews, read `../../_refs/review/profiles-and-refs.md` before
 classifying `track_profile` and before loading any track-specific ref. It owns
 the profile evidence table, false-profile rules, the reference matrix, and
 plain-profile guardrails.
@@ -105,7 +107,7 @@ plain-profile guardrails.
 ### Dimensions
 
 Dimension comes from user intent. Ids come from `review_dimensions` in
-`_refs/shared/system-registry.json`; keep no second enum here.
+`../../_refs/shared/system-registry.json`; keep no second enum here.
 
 | Dimension | Use when |
 |---|---|
@@ -120,7 +122,7 @@ Dimension comes from user intent. Ids come from `review_dimensions` in
 
 Preserve dimensions. A security review remains `security`; do not relabel it as generic `code`. Accessibility is N/A for backend-only profiles unless the user
 asks for API usability/error-shape accessibility or a generated docs/UI review. Consistency coverage resolves through `resolveConsistencyScope` in
-`_refs/shared/review-contract.mjs`: never relabel a consistency issue as code
+`../../_refs/shared/review-contract.mjs`: never relabel a consistency issue as code
 style, never let a narrow dimension expand into a full audit.
 
 Frontend architecture comparison is active only when the scope is frontend and the selected dimensions include `code`, `architecture`, or `ALL`. When active,
@@ -134,7 +136,7 @@ comparison. For a security-, performance-, or accessibility-only frontend review
 - Default mode is `quick-table` or `table`.
 - Angular/NestJS code quick reviews may use table mode.
 - Scored review is currently supported only for `core-ui-angular` and
-  `legacy-core-ui-angular` using `_refs/angular/review-code.md`.
+  `legacy-core-ui-angular` using `../../_refs/angular/review-code.md`.
 - For `plain-angular`, `sdcorejs-nestjs`, `plain-nestjs`,
   `nextjs-build-website`, `plain-nextjs`, and `general`, state that scored mode
   is unavailable unless a repo-defined rubric exists, then run table mode
@@ -142,31 +144,31 @@ comparison. For a security-, performance-, or accessibility-only frontend review
 
 ## Step 2 - Load Applicable References
 
-For UI/UX scope only, read `_refs/design/uiux/index.md` for topic selection and the existing finding contract's UI/UX fields. Keep this review read-only and its
+For UI/UX scope only, read `../../_refs/design/uiux/index.md` for topic selection and the existing finding contract's UI/UX fields. Keep this review read-only and its
 requested dimensions unchanged; source-only evidence cannot prove rendered or interaction behavior. Aesthetic preferences stay advisory, never auto-repaired.
 
 Load track-specific refs only when `track_profile` matches the ref scope. Load shared refs for shared dimensions when applicable. If a ref is absent or not
 applicable, record it under `refs_skipped` with a reason; do not fabricate a missing ref and do not silently fail.
 
 Select the exact refs from the reference matrix in
-`_refs/review/profiles-and-refs.md` only after `track_profile` and dimensions
+`../../_refs/review/profiles-and-refs.md` only after `track_profile` and dimensions
 are classified.
 
-Load `_refs/shared/review-consistency.md` whenever the resolved consistency scope is not `none`. It is profile-neutral; track refs add boundary examples but
+Load `../../_refs/shared/review-consistency.md` whenever the resolved consistency scope is not `none`. It is profile-neutral; track refs add boundary examples but
 never fork its semantic rules.
 
 When frontend architecture comparison is active, load
-`_refs/shared/frontend-architecture.md` and compare the implementation with the
+`../../_refs/shared/frontend-architecture.md` and compare the implementation with the
 approved component tree, reuse decisions, responsibilities, state/service ownership, provider lifecycle, registration, public exports, and architecture
 tests. Framework-specific refs add detail; they do not replace the shared comparison.
 
-Apply the plain-profile guardrails from `_refs/review/profiles-and-refs.md`
+Apply the plain-profile guardrails from `../../_refs/review/profiles-and-refs.md`
 for `plain-angular`, `plain-nestjs`, and `plain-nextjs`.
 
 ## Step 3 - Probe Discipline and Secret Redaction
 
 Before running any review or verification probe, read
-`_refs/review/probes.md` for command discovery, package-manager discipline,
+`../../_refs/review/probes.md` for command discovery, package-manager discipline,
 and skipped-probe recording. Do not download probe tools without explicit
 approval.
 
@@ -185,7 +187,7 @@ Security redaction is mandatory:
 ## Step 4 - Review
 
 1. Read every file inside the selected `file_scope`.
-2. Run applicable probes using the command discipline in `_refs/review/probes.md`.
+2. Run applicable probes using the command discipline in `../../_refs/review/probes.md`.
    Load that reference first if Step 3 has not loaded it.
 3. When frontend architecture comparison is active, compare the actual file
    decisions, route/page and child tree, state owners, service/data flow,
@@ -216,7 +218,7 @@ review and repair loop"; a skipped finish-gate review or direct read-only review
 Pass `finish_context` to `evaluateReviewContract` with its host runtime so
 `evaluateFinishInvocation` enforces the selected scoped choice. Return the
 assessment to the integration owner, which resumes `completeExecution` using
-`_refs/shared/finish-gate.md`. This review must not run shared docs or its own
+`../../_refs/shared/finish-gate.md`. This review must not run shared docs or its own
 finish ceremony. The caller revalidates affected evidence after authorized writes before final branch-ready. No automatic Git actions.
 
 If a finding is a concrete single bug rather than a findings set, keep it in
@@ -260,20 +262,20 @@ projection must still include severity, evidence, `file:line` or exact scope, ri
 when `runtime_context_channel` is unsupported or unknown. Show the full structured context only when the user requests it or validation requires it.
 
 Before building `review_context` or rendering the report, read
-`_refs/review/output-contract.md` for the schema, findings table, strengths,
+`../../_refs/review/output-contract.md` for the schema, findings table, strengths,
 N/A and next-action layout, and findings rules.
 
 ## AI-agent review
 
 When `ai_agent_context` is present, read the AI-agent section of
-`_refs/review/context-extensions.md` before reviewing. Treat any silent
+`../../_refs/review/context-extensions.md` before reviewing. Treat any silent
 weakening of the common floor as a blocking security-policy finding and
 `user-decision`, not an automatic style repair.
 
 ## Simplification review
 
 When `simplify_context` is present, read the simplification section of
-`_refs/review/context-extensions.md` before reviewing selected files/hunks.
+`../../_refs/review/context-extensions.md` before reviewing selected files/hunks.
 
 Treat missing post-change verification, changed protected literals, an unreverted failed pass, or `behavior_verification: not-verified` as blocking.
 Review remains read-only and does not widen the simplification scope.
@@ -294,7 +296,7 @@ The simplify owner comes from host evidence; the payload identity is only a fall
 - Mark backend-only accessibility as N/A unless explicitly scoped.
 - Distinguish real bugs from style preferences.
 - When frontend architecture comparison is active, load
-  `_refs/shared/frontend-architecture.md` and compare implementation against the
+  `../../_refs/shared/frontend-architecture.md` and compare implementation against the
   selected approved architecture plan when one exists.
 
 ### MUST NOT
@@ -311,15 +313,15 @@ The simplify owner comes from host evidence; the payload identity is only a fall
 - Duplicate findings across dimensions.
 
 ## Cross-references
-- General fallback: `_refs/shared/review-code.md`
-- Shared baselines: `_refs/shared/review-{architecture,security,performance,accessibility,consistency}.md`, `_refs/shared/convention-context.md`
-- Angular Core UI refs: `_refs/angular/review-{code,security,performance,accessibility}.md`
-- NestJS SDCoreJS refs: `_refs/nestjs/review-{code,security,performance}.md`
-- Next.js build-website refs: `_refs/nextjs/build-website/review-{code,security,performance,accessibility}.md`
+- General fallback: `../../_refs/shared/review-code.md`
+- Shared baselines: `../../_refs/shared/review-{architecture,security,performance,accessibility,consistency}.md`, `../../_refs/shared/convention-context.md`
+- Angular Core UI refs: `../../_refs/angular/review-{code,security,performance,accessibility}.md`
+- NestJS SDCoreJS refs: `../../_refs/nestjs/review-{code,security,performance}.md`
+- Next.js build-website refs: `../../_refs/nextjs/build-website/review-{code,security,performance,accessibility}.md`
 - Repair loop: `sdcorejs-repair-loop`
 - Single-bug root cause: `sdcorejs-debug`
 - Verification: `sdcorejs-ship (verify-before-done mode)`
 
 ## Design and UI review integration
 
-For Design/UI scope, select purpose design-artifact or implemented-ui-conformance and load _refs/shared/ui-review.md. Use the complete documented schema-1 ui_review extension and evaluateReviewContract with a host-created UI runtime. Structural validity, reviewed/completed, independent assessment, conformance, and source/rendered/interaction evidence are separate. A read-only declaration is not observed no-write proof. Review never captures, repairs or persists outside separate authority. Missing evidence is a verification gap; pure aesthetics stay advisory; a supported approved behavior violation remains conformance. Preserve narrow dimensions/files/topics and pass required gaps and exact evidence references to consumers.
+For Design/UI scope, select purpose design-artifact or implemented-ui-conformance and load ../../_refs/shared/ui-review.md. Use the complete documented schema-1 ui_review extension and evaluateReviewContract with a host-created UI runtime. Structural validity, reviewed/completed, independent assessment, conformance, and source/rendered/interaction evidence are separate. A read-only declaration is not observed no-write proof. Review never captures, repairs or persists outside separate authority. Missing evidence is a verification gap; pure aesthetics stay advisory; a supported approved behavior violation remains conformance. Preserve narrow dimensions/files/topics and pass required gaps and exact evidence references to consumers.

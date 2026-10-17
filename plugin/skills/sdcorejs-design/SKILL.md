@@ -6,18 +6,20 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Design Track
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and `_refs/shared/artifact-lifecycle.md`; load `_refs/shared/design-handoff.md` for durable handoffs.
-Resolve track/profile and artifact values from `_refs/shared/system-registry.json`, roots from `_refs/shared/artifact-paths.mjs`, approved spec/plan parents with `_refs/shared/approved-artifact.mjs`, and ownership with `_refs/shared/repository-contract.mjs`.
+Read `../../_refs/shared/runtime-protocols.md` and `../../_refs/shared/artifact-lifecycle.md`; load `../../_refs/shared/design-handoff.md` for durable handoffs.
+Resolve track/profile and artifact values from `../../_refs/shared/system-registry.json`, roots from `../../_refs/shared/artifact-paths.mjs`, approved spec/plan parents with `../../_refs/shared/approved-artifact.mjs`, and ownership with `../../_refs/shared/repository-contract.mjs`.
 Emit `artifact_context` for every design artifact and ledger written. Never rebuild a Design path by hand.
 
-Use the schema-2 payload example in `_refs/shared/design-handoff.md` as the
+Use the schema-2 payload example in `../../_refs/shared/design-handoff.md` as the
 single handoff schema. `validateDesignHandoff` checks structure only.
-`verifyDesignHandoff` in `_refs/shared/design-verification.mjs` reads actual
+`verifyDesignHandoff` in `../../_refs/shared/design-verification.mjs` reads actual
 approved parents and Design approval through a trusted host runtime, then
 checks current content and applicable evidence. Keep structural, parent,
 approval/review, and rendered/interaction results separate. Missing verifier
@@ -32,11 +34,11 @@ artifact, invent behavior outside approved requirements, or create module code.
 PNG generation is feasible, but a PNG alone is not a reliable source of truth. For exact FE implementation, always pair PNG previews with editable design artifacts and a written handoff spec.
 
 Before designing UI from PRDs, user stories, acceptance criteria, or rough
-feature briefs, read `_refs/design/frontend-design.md`. Use it to create a
+feature briefs, read `../../_refs/design/frontend-design.md`. Use it to create a
 compact visual direction grounded in existing tokens, copy voice, and
 self-critique before writing final design specs or wireframes.
 
-For frontend handoff, also read `_refs/shared/frontend-architecture.md`. Use
+For frontend handoff, also read `../../_refs/shared/frontend-architecture.md`. Use
 repository evidence to produce an implementation-oriented component/data/
 interaction map. Design may propose `candidate` boundaries, but it must not claim
 exact code paths, providers, or public exports are `confirmed` when the target
@@ -44,7 +46,7 @@ codebase has not been inspected.
 
 When the target surface is a mobile app, PWA, responsive mobile web experience,
 or explicitly mobile-first screen/flow, also read
-`_refs/design/mobile-design.md`. Use it to add mobile context, platform fit,
+`../../_refs/design/mobile-design.md`. Use it to add mobile context, platform fit,
 touch ergonomics, navigation, mobile state coverage, and implementation
 governance to the handoff.
 
@@ -58,7 +60,7 @@ Before mapping stories to screens, assemble read-only `project_context`.
 - For greenfield design before any app scaffold exists, continue from product
   docs and approved specs/plans, but mark UI component choices as `candidate`
   until frontend/backend source evidence exists. Record the absent baseline only
-  through the approved no-baseline record in `_refs/shared/design-handoff.md`.
+  through the approved no-baseline record in `../../_refs/shared/design-handoff.md`.
 - If the summary conflicts with product stories, acceptance criteria, or current
   user attachments, surface the conflict instead of silently choosing one source.
 
@@ -81,7 +83,7 @@ brief or project-owner approval.
 
 ## Task-focused UI/UX knowledge
 
-Read `_refs/design/uiux/index.md` and select only references for the affected
+Read `../../_refs/design/uiux/index.md` and select only references for the affected
 surface, task and topics. For existing UI improvements, begin with the observed
 problem and preserve business behavior, route/permission logic, tokens and icon
 family. For new screens, reuse the surrounding design before proposing missing
@@ -91,7 +93,7 @@ handoff. If a durable handoff is requested, its existing approval, resolver and
 lifecycle gates still apply. Independent review belongs to `sdcorejs-review`; critique here improves the author's own design.
 
 Before presenting or settling an open layout/flow decision, including direct
-Design entry, apply `_refs/sdlc/visual-offer-policy.md`: actively assess and
+Design entry, apply `../../_refs/sdlc/visual-offer-policy.md`: actively assess and
 invite at the first useful visual comparison. Preserve `visual_companion`
 identity, pending/accepted/declined scope and consent through handoffs; restore
 and forward portable `state_delta.visual_companion`. A direct
@@ -109,10 +111,10 @@ Load what exists, in this order:
 4. `.sdcorejs/product/uat-checklists/<feature>.md`
 5. Approved specs/plans from `.sdcorejs/specs/` and `.sdcorejs/plans/`
 6. Existing design docs under `.sdcorejs/design/`
-7. Existing frontend conventions from `frontend/` or `_refs/angular/` / `_refs/nextjs/` when the target stack is known
-8. Frontend design guidance from `_refs/design/frontend-design.md` when the
+7. Existing frontend conventions from `frontend/` or `../../_refs/angular/` / `../../_refs/nextjs/` when the target stack is known
+8. Frontend design guidance from `../../_refs/design/frontend-design.md` when the
    work includes UI layout, visual direction, copy, or frontend handoff
-9. Mobile design guidance from `_refs/design/mobile-design.md` when the target
+9. Mobile design guidance from `../../_refs/design/mobile-design.md` when the target
    surface includes a mobile app, PWA, responsive mobile web, or mobile-first
    flow
 10. Legacy root-level `product/` or `design/` documents only as a read-only
@@ -120,7 +122,7 @@ Load what exists, in this order:
     [Legacy Layout Compatibility](#legacy-layout-compatibility).
 
 Resolve every Design read through `resolveDesignArtifactSources` in
-`_refs/shared/design-handoff.mjs` so canonical locations always win and a legacy
+`../../_refs/shared/design-handoff.mjs` so canonical locations always win and a legacy
 fallback is explicit.
 
 If product stories or acceptance criteria are missing, write only an exploratory design draft and mark requirements as `inferred - needs confirmation`.
@@ -143,7 +145,7 @@ All owners must be available and writable. Separate these experience kinds
 from `owner_repository_role` in the registry; do not create another role enum.
 
 Obtain the complete path bundle from `resolveDesignHandoffTarget` in
-`_refs/shared/design-handoff.mjs`. For a feature in the resolved owner:
+`../../_refs/shared/design-handoff.mjs`. For a feature in the resolved owner:
 
 ```text
 <semantic-owner-repository>/.sdcorejs/design/
@@ -176,12 +178,12 @@ Path roles:
 | Generated diagnostic or failure capture | `.sdcorejs/design/diagnostics/**`, always `local_only` |
 
 When authoring a handoff, choose the editable wireframe source with the rules
-in `_refs/design/handoff-authoring.md`.
+in `../../_refs/design/handoff-authoring.md`.
 
 ## Workflow
 
 Before creating or updating a durable handoff, read
-`_refs/design/handoff-authoring.md`. It owns the frontend design plan, the
+`../../_refs/design/handoff-authoring.md`. It owns the frontend design plan, the
 story-to-screen map, the design spec template, editable wireframes, PNG export
 and image provenance. Run its steps in order: 0 design plan, 1 screen map,
 2 design spec, 3 editable wireframes, 4 PNG export when requested or useful.
@@ -190,7 +192,7 @@ Then write the ledger below.
 ### 5. Write the design ledger
 
 Write the ledger at `.sdcorejs/docs/design/<feature>.md` using the canonical
-schema-2 JSON handoff in `_refs/shared/design-handoff.md`. Its metadata path is
+schema-2 JSON handoff in `../../_refs/shared/design-handoff.md`. Its metadata path is
 the ledger; flow/spec/decisions remain `design-asset` files. Record traceability
 and FE handoff notes in those documents and include their actual content hashes.
 The ledger's approved-artifact envelope retains approval schema 1; that is
@@ -246,9 +248,9 @@ target.
 6. A legacy path is never valid in newly generated metadata;
    `validateDesignHandoff` rejects it with `LEGACY_DESIGN_ARTIFACT_PATH`.
 
-The full matrix lives in `_refs/shared/design-handoff.md`.
+The full matrix lives in `../../_refs/shared/design-handoff.md`.
 
-Use `planDesignArtifactMigration` in `_refs/shared/design-handoff.mjs`. It
+Use `planDesignArtifactMigration` in `../../_refs/shared/design-handoff.mjs`. It
 returns `not-required`, `migration-required`, or `blocked` plus the exact
 `migrations`, `retirements`, `conflicts`, and blockers.
 
@@ -259,12 +261,12 @@ returns `not-required`, `migration-required`, or `blocked` plus the exact
 - Preserve the user's language for user-facing labels and copy.
 - Keep identifiers, route paths, permission codes, and component names in English.
 - Link every screen to user story and acceptance criterion IDs when available.
-- Read and apply `_refs/design/frontend-design.md` before producing UI
+- Read and apply `../../_refs/design/frontend-design.md` before producing UI
   handoff artifacts from PRDs or user stories.
-- Read and apply `_refs/shared/frontend-architecture.md` for frontend handoff;
+- Read and apply `../../_refs/shared/frontend-architecture.md` for frontend handoff;
   include the implementation component map and data/interaction map without
   overstating unsupported code-level details.
-- Read and apply `_refs/design/mobile-design.md` before producing mobile app,
+- Read and apply `../../_refs/design/mobile-design.md` before producing mobile app,
   PWA, responsive mobile web, or mobile-first handoff artifacts.
 - Record the frontend design plan, token source references, justified deviations, and critique
   in `.sdcorejs/design/decisions/<feature>.md`.
@@ -275,7 +277,7 @@ returns `not-required`, `migration-required`, or `blocked` plus the exact
 - Validate editable source, static visual classification, real screenshot
   provenance, responsive coverage, evidence-aware component mapping, existing
   design-system reuse, and cross-repository references through
-  `_refs/shared/design-handoff.mjs`.
+  `../../_refs/shared/design-handoff.mjs`.
 - Preserve approved spec/plan identities and hashes as parent references.
 - Verify PNG files exist before claiming they were generated.
 - Mark inferred design decisions clearly when product inputs are incomplete.
@@ -312,11 +314,11 @@ returns `not-required`, `migration-required`, or `blocked` plus the exact
 ## Cross-references
 
 - `sdcorejs-product` - source of PRDs, user stories, acceptance criteria, and UAT under `.sdcorejs/product/**`.
-- `_refs/shared/artifact-paths.mjs` - single canonical source for Product and Design roots.
-- `_refs/design/frontend-design.md` - visual direction, token plan, copy voice, and self-critique guidance for UI handoff.
-- `_refs/shared/frontend-architecture.md` - framework-neutral component,
+- `../../_refs/shared/artifact-paths.mjs` - single canonical source for Product and Design roots.
+- `../../_refs/design/frontend-design.md` - visual direction, token plan, copy voice, and self-critique guidance for UI handoff.
+- `../../_refs/shared/frontend-architecture.md` - framework-neutral component,
   responsibility, state, data, registration, and public API vocabulary for handoff.
-- `_refs/design/mobile-design.md` - mobile-first context, platform, ergonomics, state coverage, and implementation-governance guidance.
+- `../../_refs/design/mobile-design.md` - mobile-first context, platform, ergonomics, state coverage, and implementation-governance guidance.
 - `sdcorejs-execute-plan` - routes approved design plans here.
 - `sdcorejs-parallel-dispatch` - can run Design as one role in full-stack role split.
 - `sdcorejs-angular` / `sdcorejs-nextjs` - consume `.sdcorejs/design/specs/**` and `.sdcorejs/design/wireframes/**` during FE implementation.
@@ -324,4 +326,4 @@ returns `not-required`, `migration-required`, or `blocked` plus the exact
 
 ## Design and UI review integration
 
-Design owns artifacts and self-critique. Self-critique does not satisfy independent review. When requested or workflow-authorized, sdcorejs-review purpose design-artifact assesses requirements/AC against flows/screens/states/copy/responsive/accessibility/component mapping via _refs/shared/ui-review.md. It may assess an authorized candidate before Design approval and does not grant implementation authority. Use a separate reviewer context when available; disclose missing separation. Model/provider diversity is not a requirement. Visual Companion feedback still does not replace approval.
+Design owns artifacts and self-critique. Self-critique does not satisfy independent review. When requested or workflow-authorized, sdcorejs-review purpose design-artifact assesses requirements/AC against flows/screens/states/copy/responsive/accessibility/component mapping via ../../_refs/shared/ui-review.md. It may assess an authorized candidate before Design approval and does not grant implementation authority. Use a separate reviewer context when available; disclose missing separation. Model/provider diversity is not a requirement. Visual Companion feedback still does not replace approval.

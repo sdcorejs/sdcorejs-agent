@@ -1,13 +1,17 @@
 #!/usr/bin/env node
 
-import { readFile } from 'node:fs/promises';
+import { readFile, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const pluginRoot = path.resolve(scriptDir, '..');
 const bootstrapPath = path.join(pluginRoot, 'skills', 'sdcorejs-using-skills', 'SKILL.md');
-const bootstrapContent = await readFile(bootstrapPath, 'utf8').catch(
+// The injected bootstrap has no base directory, so its ../../_refs/ paths become
+// absolute paths under the real plugin root.
+const refsRoot = `${(await realpath(pluginRoot).catch(() => pluginRoot)).replaceAll('\\', '/')}/_refs/`;
+const bootstrapContent = await readFile(bootstrapPath, 'utf8').then(
+  (text) => text.replaceAll('../../_refs/', refsRoot),
   () => 'Error reading sdcorejs-using-skills skill'
 );
 

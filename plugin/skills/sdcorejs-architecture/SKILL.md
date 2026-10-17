@@ -6,18 +6,20 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Architecture
 
 ## Shared protocols
 
-Read `_refs/shared/runtime-protocols.md`, `_refs/shared/project-context.md`,
-`_refs/shared/artifact-lifecycle.md`, `_refs/shared/decision-coverage.md`, and
-`_refs/sdlc/architecture.md`. Resolve tracks, artifact roots/kinds, repository
-roles, and ownership from `_refs/shared/system-registry.json`. Use
-`_refs/shared/architecture-contract.mjs` as the only architecture gate/context,
+Read `../../_refs/shared/runtime-protocols.md`, `../../_refs/shared/project-context.md`,
+`../../_refs/shared/artifact-lifecycle.md`, `../../_refs/shared/decision-coverage.md`, and
+`../../_refs/sdlc/architecture.md`. Resolve tracks, artifact roots/kinds, repository
+roles, and ownership from `../../_refs/shared/system-registry.json`. Use
+`../../_refs/shared/architecture-contract.mjs` as the only architecture gate/context,
 ownership, path, lifecycle-handoff, revision, and write-scope authority. Reuse
-`_refs/shared/approved-artifact.mjs` for approval identity; never create a
+`../../_refs/shared/approved-artifact.mjs` for approval identity; never create a
 second hash implementation.
 
 ## Purpose and boundary
@@ -148,9 +150,9 @@ Required architecture has at least one testable invariant and validation
 obligation. Validate every typed reference with `validateArchitectureContext`.
 Do not invent file/task steps or record executed evidence here.
 
-Reuse `_refs/shared/frontend-architecture.md` and
+Reuse `../../_refs/shared/frontend-architecture.md` and
 `plan_context.frontend_architecture` for frontend component/state/provider/file
-and test decisions. Reuse `_refs/sdlc/ai-agent.md` and
+and test decisions. Reuse `../../_refs/sdlc/ai-agent.md` and
 `plan_context.agent_architecture` for engine/capability/runtime/tool decisions.
 Profile sections reference those blocks and prove conformance to relevant
 `INV-*`; they do not duplicate them.
@@ -158,9 +160,9 @@ Profile sections reference those blocks and prove conformance to relevant
 ## 4. Review and approval
 
 Resolve `interaction_context` with `resolveDecision` from
-`_refs/harness/runtime-policy.mjs` before presenting. Bind the gate, artifact
+`../../_refs/harness/runtime-policy.mjs` before presenting. Bind the gate, artifact
 revision, owner/change, scope fingerprint and option mapping as documented in
-`_refs/shared/user-choice-prompt.md`. Use current exposed, action/mode-permitted
+`../../_refs/shared/user-choice-prompt.md`. Use current exposed, action/mode-permitted
 native choice first. On unavailable/failed native choice show all three options:
 1. Approve; 2. Request changes; 3. Cancel (localized at runtime). Accept exact
 numbers, labels or localized aliases. A failed picker falls back once with the

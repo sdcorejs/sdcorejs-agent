@@ -7,6 +7,11 @@ Node workspace is not distributed through npm.
 
 ## Unreleased
 
+- Fix `_refs/` resolution in the generated `plugin/` and `.claude/` skill
+  mirrors: references are written as `../../_refs/...` relative to each
+  `SKILL.md`, with a path-resolution line in the adapter header, and the
+  session-start hook injects the bootstrap with absolute reference paths. Source
+  skills, the codex mirror and `AGENTS.md` outputs are unchanged.
 - Add the `task-breakdown` mode to `sdcorejs-product`: distill PRDs and user
   stories from any board, sprint, key list, link, export, or pasted source into
   role tasks with a fixed twelve-section format, Fibonacci rubric sizing,
