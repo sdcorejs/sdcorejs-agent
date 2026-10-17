@@ -9,14 +9,12 @@ import { fileURLToPath } from 'node:url';
 // from the SKILL.md directory, and the session-start bootstrap must carry
 // absolute reference paths, because the injected text has no base directory.
 const ROOT = fileURLToPath(new URL('../../', import.meta.url));
-const BASE_REVISION = '940fc0c3cf6b096cbd289771d92bc2a1556b8303';
 const CLAUDE_LAYOUTS = ['plugin/skills', '.claude/skills'];
 const PATH_LINE = '**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.';
 const REF_PATH = /_refs\/([A-Za-z0-9_./<>{}*-]*)/gu;
 const TEMPLATED = /[<>{}*]/u;
 
 const read = (file) => readFileSync(path.join(ROOT, file), 'utf8').replace(/\r\n?/gu, '\n');
-const atBase = (file) => execFileSync('git', ['show', `${BASE_REVISION}:${file}`], { cwd: ROOT, encoding: 'utf8', windowsHide: true }).replace(/\r\n?/gu, '\n');
 const skillNames = () => readdirSync(path.join(ROOT, 'plugin/skills')).filter((name) => name.startsWith('sdcorejs-')).sort();
 const mirrorFiles = () => CLAUDE_LAYOUTS.flatMap((layout) => skillNames().map((name) => `${layout}/${name}/SKILL.md`));
 
@@ -93,13 +91,36 @@ test('case-mirror-refs-bootstrap-absolute: every hook branch injects absolute _r
   }
 });
 
-test('case-mirror-refs-unchanged: sources, codex mirrors and AGENTS.md outputs are byte-identical to the base revision', () => {
-  const sources = execFileSync('git', ['ls-tree', '-r', '--name-only', BASE_REVISION, '--', 'skills', 'codex/skills'], { cwd: ROOT, encoding: 'utf8', windowsHide: true })
-    .split(/\r?\n/u).filter((file) => file.endsWith('.md'));
-  assert.ok(sources.length > 40);
-  for (const file of [...sources, 'AGENTS.md', '.cursor/rules/sdcorejs-agent.mdc', '.github/copilot-instructions.md']) {
-    assert.equal(read(file), atBase(file), file);
+// A property check rather than a byte comparison with one base revision, so later
+// changes to sources or refs keep it valid; the byte-identical proof of the mirror
+// change itself stays in its evidence record.
+function pathStyleProblems(files) {
+  const problems = [];
+  for (const [file, text] of files) {
+    if (text.includes(PATH_LINE)) problems.push(`${file} carries the Claude-layout path-resolution line`);
+    if (/^codex\/skills\/sdcorejs-[^/]+\/SKILL\.md$/u.test(file)) {
+      if (text.includes('../../_refs/')) problems.push(`${file} uses the Claude-layout ../../_refs/ prefix`);
+      if (!text.includes('../_refs/')) problems.push(`${file} lost the codex ../_refs/ prefix`);
+    }
   }
+  return problems;
+}
+
+test('case-mirror-refs-unchanged: sources, codex mirrors and AGENTS.md outputs keep their own path style', () => {
+  const tracked = execFileSync('git', ['ls-files', '--', 'skills', 'codex/skills'], { cwd: ROOT, encoding: 'utf8', windowsHide: true })
+    .split(/\r?\n/u).filter((file) => file.endsWith('.md'));
+  assert.ok(tracked.length > 40);
+  const files = new Map([...tracked, 'AGENTS.md', '.cursor/rules/sdcorejs-agent.mdc', '.github/copilot-instructions.md'].map((file) => [file, read(file)]));
+  const codexSkills = [...files.keys()].filter((file) => /^codex\/skills\/sdcorejs-[^/]+\/SKILL\.md$/u.test(file));
+  assert.equal(codexSkills.length, skillNames().length);
+  assert.deepEqual(pathStyleProblems(files), []);
+  const codexFile = 'codex/skills/sdcorejs-product/SKILL.md';
+  const leaked = new Map(files).set(codexFile, `${files.get(codexFile)}\n${PATH_LINE}\n`);
+  assert.ok(pathStyleProblems(leaked).some((problem) => problem.includes('path-resolution line')), 'a leaked Claude header is detected');
+  const deepened = new Map(files).set(codexFile, files.get(codexFile).replaceAll('../_refs/', '../../_refs/'));
+  assert.ok(pathStyleProblems(deepened).some((problem) => problem.includes('../../_refs/')), 'a Claude-layout prefix in codex is detected');
+  const source = 'skills/tracks/product/sdcorejs-product.md';
+  assert.ok(pathStyleProblems(new Map(files).set(source, `${files.get(source)}\n${PATH_LINE}\n`)).length > 0, 'a header in a source skill is detected');
 });
 
 test('case-mirror-refs-mutation: the checker rejects bare, wrong-depth and header-less mirrors', () => {

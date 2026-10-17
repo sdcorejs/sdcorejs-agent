@@ -7,6 +7,12 @@ Node workspace is not distributed through npm.
 
 ## Unreleased
 
+- Show per-source guidance for unreadable task-breakdown sources: the read-only
+  check CLI gains `check sources -`, which groups unreadable links by domain and
+  kind id, redacts secret-shaped values, and returns a fixed connector, export or
+  paste guidance table that G1 and G8 print verbatim. The CLI also answers
+  `--help`, `-h` and `help` with the synopsis, stdin and purpose of every
+  command, and an unknown command now points to `--help`.
 - Fix `_refs/` resolution in the generated `plugin/` and `.claude/` skill
   mirrors: references are written as `../../_refs/...` relative to each
   `SKILL.md`, with a path-resolution line in the adapter header, and the

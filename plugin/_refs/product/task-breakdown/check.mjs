@@ -11,10 +11,27 @@ import { isSafeProjectSegment } from '../../shared/artifact-paths.mjs';
 import { detectTicketDrift, mergeTicketContent, ownedRegionPlainText, parseOwnedRegions, parseOwnedRichRegions, richPlainText, ticketFingerprints } from './identity.mjs';
 import { approveWritePlan, buildWritePlan, redactValue, scanSecrets, stableJson, verifyWritePlan } from './safety.mjs';
 import { balanceLoad, suggestAssignees } from './sizing.mjs';
+import { sourceGuidance } from './sources.mjs';
 import { renderReport, renderTask, renderTasksDocument, reportRows, validateTasksDocument } from './task-format.mjs';
 import { validateProjectFileText } from './workspace.mjs';
 
-const COMMANDS = Object.freeze(['project', 'tasks', 'scan', 'balance', 'plan-approve', 'plan-verify', 'drift', 'merge', 'report']);
+const USAGE = 'node <pack-root>/_refs/product/task-breakdown/check.mjs <command> --root <target-root> [args]';
+const ROOT = '--root <target-root>';
+// One entry per command, in the order the refs list them; `--help` prints this table.
+const COMMAND_HELP = Object.freeze([
+  { name: 'project', synopsis: `project <file>|- [--kind project|task-breakdown-config] ${ROOT}`, stdin: 'file text when the target is -', summary: 'Validate project.md or task-breakdown.config.md.' },
+  { name: 'tasks', synopsis: `tasks <file>|- [--slug <slug> --scope <scope>] ${ROOT}`, stdin: 'document text or {data, write_plans} JSON when the target is -', summary: 'Validate a tasks document; with - render it from the data block first.' },
+  { name: 'scan', synopsis: `scan - [--source <name>] ${ROOT}`, stdin: 'source text', summary: 'Report secret-shaped values by location and return the redacted text.' },
+  { name: 'sources', synopsis: `sources - ${ROOT}`, stdin: '{language, sources: [{ref, kind, reason}]} JSON', summary: 'Group unreadable sources by domain and kind and return per-source guidance.' },
+  { name: 'balance', synopsis: `balance - ${ROOT}`, stdin: '{members, tasks or assignments, velocity_per_member, rules} JSON', summary: 'Suggest assignees and compute the load table.' },
+  { name: 'plan-approve', synopsis: `plan-approve <tasks-file> --run-id <id> --source-revision <sha> --owner-repository-id <id> --owner-repository-role <role> --owner-module-id <id|null> --approved-by <name> --approved-at <iso> ${ROOT}`, stdin: '{ops, current, ignore_attrs} JSON', summary: 'Bind the approved write plan to the run and return the document to write.' },
+  { name: 'plan-verify', synopsis: `plan-verify <tasks-file> --run-id <id> ${ROOT}`, stdin: '{ops} JSON', summary: 'Check that the operations about to run match the approved write plan.' },
+  { name: 'drift', synopsis: `drift <tasks-file> --run-id <id> --task-id <id> [--after-write] ${ROOT}`, stdin: '{format, content} JSON', summary: 'Detect ticket changes since approval, or check the read-back after a write.' },
+  { name: 'merge', synopsis: `merge <tasks-file> --run-id <id> --task-id <id> --format text|rich-json ${ROOT}`, stdin: '{content} JSON', summary: 'Merge the approved task into the owned region of the ticket.' },
+  { name: 'report', synopsis: `report <tasks-file> ${ROOT}`, stdin: 'none', summary: 'Render the run report table.' },
+]);
+const COMMANDS = Object.freeze(COMMAND_HELP.map(({ name }) => name));
+const HELP_FLAGS = Object.freeze(['--help', '-h', 'help']);
 const VALUE_FLAGS = Object.freeze(['root', 'kind', 'slug', 'scope', 'source', 'run-id', 'task-id', 'format', 'source-revision',
   'owner-repository-id', 'owner-repository-role', 'owner-module-id', 'approved-by', 'approved-at']);
 const BOOLEAN_FLAGS = Object.freeze(['after-write']);
@@ -339,6 +356,13 @@ const handlers = {
     return { valid: true, errors: [], result: { mode: merged.mode, content: merged.current, region_text: format === 'text' ? region.trim() : richPlainText(region).trim() } };
   },
 
+  sources() {
+    const input = readJsonStdin();
+    const outcome = sourceGuidance({ sources: input?.sources, language: input?.language ?? 'en' });
+    if (!outcome.valid) return { valid: false, errors: outcome.errors, result: null };
+    return { valid: true, errors: [], result: { groups: outcome.groups, table: outcome.table, redactions: outcome.redactions } };
+  },
+
   report(root, { positional }) {
     if (!positional[0]) throw usage('ARGUMENT_REQUIRED', 'report needs the tasks file');
     const tasks = loadTasks(root, positional[0]);
@@ -350,10 +374,13 @@ const handlers = {
 function main(argv) {
   let command = argv[0] ?? null;
   let root = null;
+  if (HELP_FLAGS.includes(command)) {
+    return { exitCode: 0, output: { command: 'help', root: null, valid: true, errors: [], result: { usage: USAGE, exit_codes: { 0: 'valid', 1: 'invalid', 2: 'usage or I/O error' }, commands: COMMAND_HELP } } };
+  }
   try {
     const parsed = parseArgs(argv);
     command = parsed.command ?? null;
-    if (!COMMANDS.includes(command)) throw usage('COMMAND_UNKNOWN', `command must be one of ${COMMANDS.join(', ')}`);
+    if (!COMMANDS.includes(command)) throw usage('COMMAND_UNKNOWN', `command must be one of ${COMMANDS.join(', ')}; run check.mjs --help for usage`);
     root = resolveRoot(parsed.flags);
     const outcome = handlers[command](root, parsed);
     return { exitCode: outcome.valid ? 0 : 1, output: { command, root, valid: outcome.valid, errors: outcome.errors, result: outcome.result ?? null } };
