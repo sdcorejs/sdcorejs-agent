@@ -6,6 +6,8 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Review (profile + dimension aware)
 
@@ -22,15 +24,15 @@ auto-run `sdcorejs-repair-loop`. Repair belongs to `sdcorejs-repair-loop` after
 an explicit user or finish-gate choice.
 
 Resolve `track` and its durable `review_profile` from
-`_refs/shared/system-registry.json`, then validate context/findings with
-`_refs/shared/review-contract.mjs`. Do not maintain a separate first-class
+`../../_refs/shared/system-registry.json`, then validate context/findings with
+`../../_refs/shared/review-contract.mjs`. Do not maintain a separate first-class
 track enum in this skill.
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md`. Apply
-`_refs/shared/artifact-lifecycle.md` only when the user explicitly chooses to
-persist the report. Read `_refs/shared/decision-coverage.md`; preserve
+Read `../../_refs/shared/runtime-protocols.md`. Apply
+`../../_refs/shared/artifact-lifecycle.md` only when the user explicitly chooses to
+persist the report. Read `../../_refs/shared/decision-coverage.md`; preserve
 `decision_coverage` and `goal_backward_review`, and report drift, missing task
 or evidence mappings, invariant gaps, or unresolved critique blockers without
 renumbering or repairing the approved records.
@@ -39,7 +41,7 @@ approved plan. Architecture review compares changed boundaries, ownership,
 public contracts, profile blocks, and validation evidence with approved
 `INV-*`; a stale/missing/mutated required context is a finding, never permission
 to rewrite architecture or conventions.
-Read `_refs/shared/validation-map.md`; preserve the approved `validation_map`
+Read `../../_refs/shared/validation-map.md`; preserve the approved `validation_map`
 and report drift from mapped cases or current evidence without rewriting rows.
 
 ## When to use
@@ -52,7 +54,7 @@ and report drift from mapped cases or current evidence without rewriting rows.
 ## Step 0 - Context and Scope Preflight
 
 Before detecting profile/dimension or reading files under review, run
-`sdcorejs-explore (summary-read)` through `_refs/shared/project-context.md`.
+`sdcorejs-explore (summary-read)` through `../../_refs/shared/project-context.md`.
 
 - For an existing target project, read `<target>/.sdcorejs/summary.md` when it
   exists so review scope, module boundaries, route conventions, stack profile,
@@ -67,10 +69,10 @@ Before detecting profile/dimension or reading files under review, run
   override stored summary context.
 
 Then run `sdcorejs-explore (conventions-read)` through
-`_refs/shared/convention-context.md` for the categories this review touches. It
+`../../_refs/shared/convention-context.md` for the categories this review touches. It
 never creates the capture policy and never refreshes evidence; a missing registry
 is a context signal, not a blocker and not write permission.
-Read `_refs/shared/convergence-contract.mjs`; emit `convergence_findings` from
+Read `../../_refs/shared/convergence-contract.mjs`; emit `convergence_findings` from
 current review evidence. Architecture violations and accepted convention
 violations may block; observed convention candidates stay advisory.
 
@@ -140,7 +142,7 @@ Rules:
 ### Dimensions
 
 Dimension comes from user intent. Ids come from `review_dimensions` in
-`_refs/shared/system-registry.json`; keep no second enum here.
+`../../_refs/shared/system-registry.json`; keep no second enum here.
 
 | Dimension | Use when |
 |---|---|
@@ -157,7 +159,7 @@ Preserve dimensions. A security review remains `security`; do not relabel it as
 generic `code`. Accessibility is N/A for backend-only profiles unless the user
 asks for API usability/error-shape accessibility or a generated docs/UI review.
 Consistency coverage resolves through `resolveConsistencyScope` in
-`_refs/shared/review-contract.mjs`: never relabel a consistency issue as code
+`../../_refs/shared/review-contract.mjs`: never relabel a consistency issue as code
 style, never let a narrow dimension expand into a full audit.
 
 Frontend architecture comparison is active only when the scope is frontend and
@@ -175,7 +177,7 @@ review, do not load this contract and record
 - Default mode is `quick-table` or `table`.
 - Angular/NestJS code quick reviews may use table mode.
 - Scored review is currently supported only for `core-ui-angular` and
-  `legacy-core-ui-angular` using `_refs/angular/review-code.md`.
+  `legacy-core-ui-angular` using `../../_refs/angular/review-code.md`.
 - For `plain-angular`, `sdcorejs-nestjs`, `plain-nestjs`,
   `nextjs-build-website`, `plain-nextjs`, and `general`, state that scored mode
   is unavailable unless a repo-defined rubric exists, then run table mode
@@ -183,7 +185,7 @@ review, do not load this contract and record
 
 ## Step 2 - Load Applicable References
 
-For UI/UX scope only, read `_refs/design/uiux/index.md` for topic selection and
+For UI/UX scope only, read `../../_refs/design/uiux/index.md` for topic selection and
 the existing finding contract's UI/UX fields. Keep this review read-only and its
 requested dimensions unchanged; source-only evidence cannot prove rendered or
 interaction behavior. Aesthetic preferences stay advisory, never auto-repaired.
@@ -195,21 +197,21 @@ missing ref and do not silently fail.
 
 | track_profile | code | security | performance | accessibility | architecture |
 |---|---|---|---|---|---|
-| `core-ui-angular` | `_refs/angular/review-code.md` | `_refs/shared/review-security.md` + `_refs/angular/review-security.md` | `_refs/shared/review-performance.md` + `_refs/angular/review-performance.md` | `_refs/shared/review-accessibility.md` + `_refs/angular/review-accessibility.md` | `_refs/shared/review-architecture.md` |
-| `legacy-core-ui-angular` | `_refs/angular/review-code.md` | same as Core UI Angular | same as Core UI Angular | same as Core UI Angular | `_refs/shared/review-architecture.md` |
-| `plain-angular` | `_refs/shared/review-code.md` plus generic/local Angular checks only | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
-| `sdcorejs-nestjs` | `_refs/nestjs/review-code.md` | `_refs/shared/review-security.md` + `_refs/nestjs/review-security.md` | `_refs/shared/review-performance.md` + `_refs/nestjs/review-performance.md` | N/A unless API usability/docs/UI scope requested | `_refs/shared/review-architecture.md` |
-| `plain-nestjs` | `_refs/shared/review-code.md` plus generic/local NestJS checks only | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | N/A unless API usability/docs/UI scope requested | `_refs/shared/review-architecture.md` |
-| `nextjs-build-website` | `_refs/nextjs/build-website/review-code.md` | `_refs/shared/review-security.md` + `_refs/nextjs/build-website/review-security.md` | `_refs/shared/review-performance.md` + `_refs/nextjs/build-website/review-performance.md` | `_refs/shared/review-accessibility.md` + `_refs/nextjs/build-website/review-accessibility.md` | `_refs/shared/review-architecture.md` |
-| `plain-nextjs` | `_refs/shared/review-code.md` plus generic/local Next.js checks only | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
-| `general` | `_refs/shared/review-code.md` | `_refs/shared/review-security.md` | `_refs/shared/review-performance.md` | `_refs/shared/review-accessibility.md` for UI scope only | `_refs/shared/review-architecture.md` |
+| `core-ui-angular` | `../../_refs/angular/review-code.md` | `../../_refs/shared/review-security.md` + `../../_refs/angular/review-security.md` | `../../_refs/shared/review-performance.md` + `../../_refs/angular/review-performance.md` | `../../_refs/shared/review-accessibility.md` + `../../_refs/angular/review-accessibility.md` | `../../_refs/shared/review-architecture.md` |
+| `legacy-core-ui-angular` | `../../_refs/angular/review-code.md` | same as Core UI Angular | same as Core UI Angular | same as Core UI Angular | `../../_refs/shared/review-architecture.md` |
+| `plain-angular` | `../../_refs/shared/review-code.md` plus generic/local Angular checks only | `../../_refs/shared/review-security.md` | `../../_refs/shared/review-performance.md` | `../../_refs/shared/review-accessibility.md` for UI scope only | `../../_refs/shared/review-architecture.md` |
+| `sdcorejs-nestjs` | `../../_refs/nestjs/review-code.md` | `../../_refs/shared/review-security.md` + `../../_refs/nestjs/review-security.md` | `../../_refs/shared/review-performance.md` + `../../_refs/nestjs/review-performance.md` | N/A unless API usability/docs/UI scope requested | `../../_refs/shared/review-architecture.md` |
+| `plain-nestjs` | `../../_refs/shared/review-code.md` plus generic/local NestJS checks only | `../../_refs/shared/review-security.md` | `../../_refs/shared/review-performance.md` | N/A unless API usability/docs/UI scope requested | `../../_refs/shared/review-architecture.md` |
+| `nextjs-build-website` | `../../_refs/nextjs/build-website/review-code.md` | `../../_refs/shared/review-security.md` + `../../_refs/nextjs/build-website/review-security.md` | `../../_refs/shared/review-performance.md` + `../../_refs/nextjs/build-website/review-performance.md` | `../../_refs/shared/review-accessibility.md` + `../../_refs/nextjs/build-website/review-accessibility.md` | `../../_refs/shared/review-architecture.md` |
+| `plain-nextjs` | `../../_refs/shared/review-code.md` plus generic/local Next.js checks only | `../../_refs/shared/review-security.md` | `../../_refs/shared/review-performance.md` | `../../_refs/shared/review-accessibility.md` for UI scope only | `../../_refs/shared/review-architecture.md` |
+| `general` | `../../_refs/shared/review-code.md` | `../../_refs/shared/review-security.md` | `../../_refs/shared/review-performance.md` | `../../_refs/shared/review-accessibility.md` for UI scope only | `../../_refs/shared/review-architecture.md` |
 
-Load `_refs/shared/review-consistency.md` whenever the resolved consistency
+Load `../../_refs/shared/review-consistency.md` whenever the resolved consistency
 scope is not `none`. It is profile-neutral; track refs add boundary examples but
 never fork its semantic rules.
 
 When frontend architecture comparison is active, load
-`_refs/shared/frontend-architecture.md` and compare the implementation with the
+`../../_refs/shared/frontend-architecture.md` and compare the implementation with the
 approved component tree, reuse decisions, responsibilities, state/service
 ownership, provider lifecycle, registration, public exports, and architecture
 tests. Framework-specific refs add detail; they do not replace the shared
@@ -397,7 +399,7 @@ review_context:
     blocking: Critical/Important or BLOCKER/REQUIRED
     confirm: semantic/non-mechanical fixes
     user_decision: product/contract/security-policy decisions
-  convention_context: <read-only block from _refs/shared/convention-context.md>
+  convention_context: <read-only block from ../../_refs/shared/convention-context.md>
 ```
 
 ## Findings
@@ -438,7 +440,7 @@ Findings rules:
 
 When `ai_agent_context` is present, preserve its approved hashes, selected
 profiles, contract/target paths, and offline/live evidence status. Load only the
-applicable `_refs/ai-agent/**` contracts. Review trust and tenant derivation,
+applicable `../../_refs/ai-agent/**` contracts. Review trust and tenant derivation,
 server-side authorization, business-shaped tool boundaries, mutation approval,
 idempotency/resource versions, session isolation, provider storage governance,
 evidence provenance/freshness, trace/audit redaction, budgets/limits,
@@ -473,7 +475,7 @@ Review remains read-only and does not widen the simplification scope.
 - Mark backend-only accessibility as N/A unless explicitly scoped.
 - Distinguish real bugs from style preferences.
 - When frontend architecture comparison is active, load
-  `_refs/shared/frontend-architecture.md` and compare implementation against the
+  `../../_refs/shared/frontend-architecture.md` and compare implementation against the
   selected approved architecture plan when one exists.
 
 ### MUST NOT
@@ -490,11 +492,11 @@ Review remains read-only and does not widen the simplification scope.
 - Duplicate findings across dimensions.
 
 ## Cross-references
-- General fallback: `_refs/shared/review-code.md`
-- Shared baselines: `_refs/shared/review-{architecture,security,performance,accessibility,consistency}.md`, `_refs/shared/convention-context.md`
-- Angular Core UI refs: `_refs/angular/review-{code,security,performance,accessibility}.md`
-- NestJS SDCoreJS refs: `_refs/nestjs/review-{code,security,performance}.md`
-- Next.js build-website refs: `_refs/nextjs/build-website/review-{code,security,performance,accessibility}.md`
+- General fallback: `../../_refs/shared/review-code.md`
+- Shared baselines: `../../_refs/shared/review-{architecture,security,performance,accessibility,consistency}.md`, `../../_refs/shared/convention-context.md`
+- Angular Core UI refs: `../../_refs/angular/review-{code,security,performance,accessibility}.md`
+- NestJS SDCoreJS refs: `../../_refs/nestjs/review-{code,security,performance}.md`
+- Next.js build-website refs: `../../_refs/nextjs/build-website/review-{code,security,performance,accessibility}.md`
 - Repair loop: `sdcorejs-repair-loop`
 - Single-bug root cause: `sdcorejs-debug`
 - Verification: `sdcorejs-ship (verify-before-done mode)`

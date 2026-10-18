@@ -2,8 +2,8 @@
   "schema_version": 1,
   "adapter": "claude-code",
   "source_path": "_refs/harness/capability-contract.json",
-  "source_hash": "sha256:57e326a1af1c4a038bfa2e6befc459252fd9209b822d6365939aa04e82688c56",
-  "content_hash": "sha256:76c5f2bad9da5bb852654b7069b4f0e76e5543800f60aa768cec8487ea49d0e8",
+  "source_hash": "sha256:d56e9766ccbbc98360fd42eea6df5aa6578fde5dec29656d74f4141f601c2bcd",
+  "content_hash": "sha256:72ec5003e751ad8928b7a54dfa0d023f41c37e1fc4ba2a2a592ba5b5615a2ce4",
   "generated_path": ".claude/sdcorejs-harness.json",
   "capabilities": {
     "runtime_context_channel": "unknown",
@@ -26,6 +26,8 @@
     "workspace_isolation": "unknown",
     "browser": "unknown",
     "web_fetch": "supported",
+    "external_source_read": "unknown",
+    "issue_tracker_write": "unknown",
     "artifact_write": "supported",
     "permission_approval": "supported"
   },
@@ -146,6 +148,18 @@
       "capability": "web_fetch",
       "fallback": "Use supplied local evidence or report that current web evidence is unavailable."
     },
+    "source.read": {
+      "status": "unknown",
+      "native": [],
+      "capability": "external_source_read",
+      "fallback": "Use only connector tools the host exposes as read-only in this session; otherwise try web.fetch for public links, then artifact.read for an exported file, then ask the user to paste the content. Record the source as unread and never invent its content."
+    },
+    "tracker.write": {
+      "status": "unknown",
+      "native": [],
+      "capability": "issue_tracker_write",
+      "fallback": "Render the approved ticket drafts for manual copy-paste and state that nothing was written to the tracker."
+    },
     "artifact.read": {
       "status": "supported",
       "native": [
@@ -176,7 +190,7 @@
   },
   "system_registry": {
     "source_path": "_refs/shared/system-registry.json",
-    "source_hash": "sha256:3129b4e2f18d1579431075501034d184900cf9c3998680dea98793c2ee2cfb13",
+    "source_hash": "sha256:0468dde0ade697cec41bdae79c720531ea7e53e094290c97e79e4b47c67a3208",
     "tracks": [
       "ai-agent",
       "angular",
@@ -490,7 +504,10 @@
         "progress.create",
         "progress.update",
         "user.choose",
-        "user.approve"
+        "user.approve",
+        "web.fetch",
+        "source.read",
+        "tracker.write"
       ]
     },
     "sdcorejs-test": {

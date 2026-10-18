@@ -2374,3 +2374,19 @@ async function loadPromptEvals() {
   const file = new URL('./fixtures/prompt-evals.json', import.meta.url);
   return JSON.parse(await readFile(file, 'utf8'));
 }
+
+test('case-task-breakdown-routing: task-breakdown prompts dispatch to sdcorejs-product while TASKID records stay with documentation', async () => {
+  const pack = await loadSkillPack(new URL('../..', import.meta.url));
+  const promptEvals = await loadPromptEvals();
+  const cases = promptEvals.filter((item) => item.id.startsWith('product-task-breakdown-') || item.id === 'record-requirement-taskid');
+  const results = runPromptEval(pack, cases);
+  assert.deepEqual(
+    results.map((result) => [result.id, result.actualSkill, result.pass]),
+    [
+      ['record-requirement-taskid', 'sdcorejs-documentation', true],
+      ['product-task-breakdown-prd', 'sdcorejs-product', true],
+      ['product-task-breakdown-sprint', 'sdcorejs-product', true],
+      ['product-task-breakdown-localized', 'sdcorejs-product', true],
+    ],
+  );
+});

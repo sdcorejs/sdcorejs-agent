@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-10-17T22:30:35.856Z
+generated_at: 2026-10-18T00:26:27.633Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks:
@@ -42,7 +42,7 @@ evidence:
     - site/src/pages/index.astro
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:7c22c188c2c84116565634f0952bfb33204219385fb6b9bac722f6b3e8193400
+  dependency_manifests: sha256:370dc92fdd5883816be4d68fbdf3a61178ffe084f000ed70826ebecd00d24c6c
   source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
@@ -138,6 +138,9 @@ Authoring flow:
 1. Edit canonical instructions in `skills/`, `_refs/`, or top-level entrypoints.
 2. Run `scripts/sync-skills.mjs` through `npm run sync:skills`.
 3. The sync script validates source skills and regenerates tool-specific mirrors.
+   Claude-layout mirrors (`plugin/`, `.claude/`) write references as
+   `../../_refs/...`; codex mirrors use `../_refs/...`; the plugin
+   session-start hook injects the bootstrap with absolute reference paths.
 4. Contract tests exercise routing, decision and architecture gates, validation
    maps, convergence, generated content, adapters, and fixtures.
 5. `npm run check:skills` reconstructs mirrors in a temporary directory and
@@ -207,6 +210,8 @@ canonical source and rerun synchronization.
   offline; live dialogue capture requires its explicit `--live` invocation.
 - `npm run test:e2e:artifact-paths` runs the Product/Design canonical path
   sentinel, both artifact contracts, and lifecycle closure tests.
+- `npm run test:e2e:task-breakdown` runs the `sdcorejs-product` task-breakdown
+  helper, read-only check CLI, and flow-gate contract tests.
 - `npm run test:e2e:conventions` runs the convention schema/path/precedence
   contract, the consistency review contract, and convention artifact lifecycle
   and closure tests.
@@ -264,6 +269,11 @@ canonical source and rerun synchronization.
   ledgers stay under `.sdcorejs/docs/product/**` and `.sdcorejs/docs/design/**`.
   Root-level `product/**` and `design/**` are legacy read-only compatibility
   inputs only.
+- Project workspaces live under `.sdcorejs/projects/<slug>/` as shared
+  `project-config` and `task-breakdown` artifacts written only by the
+  `sdcorejs-product` task-breakdown mode. Connector actions `source.read` and
+  `tracker.write` resolve only from host-observed tools, and tracker writes need
+  an approved write plan of the same run.
 - Project conventions live under `.sdcorejs/conventions/**`, one rule per file,
   resolved through `_refs/shared/convention-paths.mjs`. They are shared durable
   artifacts: `sdcorejs-review` reads them and reports drift read-only, and only

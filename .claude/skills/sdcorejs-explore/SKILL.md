@@ -6,6 +6,8 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, WebFetch, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Explore
 
@@ -42,16 +44,16 @@ If the user asks to edit documentation, route to `sdcorejs-documentation`.
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md`. Before deep refs, broad scans,
+Read `../../_refs/shared/runtime-protocols.md`. Before deep refs, broad scans,
 commands, or writes, classify `explore_action` and load project context with:
 
    - `caller_context: sdcorejs-explore`;
    - `context_mode: <explore_action>`;
    - `side_effects_allowed: false` for read-only actions.
 
-Apply `_refs/shared/artifact-lifecycle.md` before any write-approved action.
-Use `_refs/shared/system-registry.json` for every track/profile classification
-and `_refs/shared/explore-contract.mjs` for write authority and read-only
+Apply `../../_refs/shared/artifact-lifecycle.md` before any write-approved action.
+Use `../../_refs/shared/system-registry.json` for every track/profile classification
+and `../../_refs/shared/explore-contract.mjs` for write authority and read-only
 repository-topology discovery. Never reproduce their enums in prompts.
 
 Project-context must never recursively invoke `sdcorejs-explore` while
@@ -107,7 +109,7 @@ Detection signals:
 - `sdcorejs-agent-authoring-repo`: root contains `AGENTS.md`,
   `MIRROR_POLICY.md`, `skills/shared/workflow/explore.md`,
   `scripts/sync-skills.mjs`, and package name `sdcorejs-agent`.
-- `skill-pack-authoring-repo`: root contains source `skills/**`, `_refs/**`,
+- `skill-pack-authoring-repo`: root contains source `skills/**`, `../../_refs/**`,
   generated mirrors, or mirror policy for an agent skill pack.
 - `target-project`: root is the user's app/site/system target and not an
   authoring repo.
@@ -126,7 +128,7 @@ Every action that inspects project shape must classify `tracks`,
 `stack_profiles`, `profile_confidence`, and `profile_evidence`.
 
 Accept every first-class track and stack profile from
-`_refs/shared/system-registry.json`, including `ai-agent`, `fullstack`, and
+`../../_refs/shared/system-registry.json`, including `ai-agent`, `fullstack`, and
 future registry additions. Apply registry aliases before emitting
 `explore_context`; unknown values remain findings rather than locally invented
 enums.
@@ -164,7 +166,7 @@ tests. Do not record guesses as evidence.
 
 When `.gitmodules`, nested Git roots, portal/module metadata, module-owned
 artifacts, or multi-repository scope is present, run the read-only topology
-discovery from `_refs/shared/explore-contract.mjs`.
+discovery from `../../_refs/shared/explore-contract.mjs`.
 
 Record stable remote-derived repository IDs/roles, portal-module gitlink
 relationships, portal-pinned and module source revisions, artifact locations,
@@ -239,11 +241,11 @@ rotation only when appropriate.
 
 ## Output And Summary Contracts
 
-Read `_refs/shared/explore-context.md` completely before emitting
+Read `../../_refs/shared/explore-context.md` completely before emitting
 `explore_context`, running `summary-read`, or performing an approved
 `summary-refresh`. It owns the runtime schema, Summary v2 frontmatter/body, and
 freshness rules. Preserve the read-only `project_context` returned by
-`_refs/shared/project-context.md`.
+`../../_refs/shared/project-context.md`.
 
 Keep these invariants in the active skill:
 
@@ -271,7 +273,7 @@ analysis, composition hosts, frontend-to-persistence traces, unclear dependency
 direction, or a large repository where sequential reads would be wasteful.
 
 Return the bounded `code_context` node/edge contract from
-`_refs/shared/project-context.md`. Every node and edge cites repository-relative
+`../../_refs/shared/project-context.md`. Every node and edge cites repository-relative
 path evidence. Do not persist the map.
 
 When the repository already has a dependency graph, language/LSP index, or
@@ -400,14 +402,14 @@ set: <YYYY-MM-DD>   # use current date
 ---
 
 Persona for this project. Managed by `sdcorejs-explore (persona mode)`.
-See `_refs/shared/persona.md` for what each persona changes.
+See `../../_refs/shared/persona.md` for what each persona changes.
 ```
 
 ## Convention Actions
 
 `sdcorejs-explore` is the canonical reader and writer of project conventions.
-Read `_refs/shared/convention-context.md` before either action and validate with
-`_refs/shared/convention-contract.mjs`. Keep these invariants in the active
+Read `../../_refs/shared/convention-context.md` before either action and validate with
+`../../_refs/shared/convention-contract.mjs`. Keep these invariants in the active
 skill: accepted rules come only from authoritative sources, inferred patterns
 stay `observed`, exceptions and deprecation metadata are preserved, writes go
 only to the semantic owner repository, an unavailable or unwritable owner blocks
@@ -457,7 +459,7 @@ as evidence, not unquestionable truth.
 - If summary is stale/missing in read-only context, continue with targeted reads
   and report stale/missing context in `explore_context.commands_skipped` or
   `freshness`.
-- Explore may provide `next_skill_hint`; it must not execute unrelated workflows automatically. For `cleanup_signals`, follow `_refs/shared/explore-context.md`.
+- Explore may provide `next_skill_hint`; it must not execute unrelated workflows automatically. For `cleanup_signals`, follow `../../_refs/shared/explore-context.md`.
 
 ## Rules
 

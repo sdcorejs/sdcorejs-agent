@@ -6,24 +6,26 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Documentation
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md`; load
-`_refs/shared/documentation-layout.md` only for operations below
+Read `../../_refs/shared/runtime-protocols.md`; load
+`../../_refs/shared/documentation-layout.md` only for operations below
 `.sdcorejs/documentation/**`. Every `.sdcorejs/**` write applies
-`_refs/shared/artifact-lifecycle.md` and emits `artifact_context`. Resolve
-tracks through `_refs/shared/system-registry.json`, approved artifact identity
-through `_refs/shared/approved-artifact.mjs`, and semantic repository ownership
-through `_refs/shared/repository-contract.mjs`; checkout paths and the current
+`../../_refs/shared/artifact-lifecycle.md` and emits `artifact_context`. Resolve
+tracks through `../../_refs/shared/system-registry.json`, approved artifact identity
+through `../../_refs/shared/approved-artifact.mjs`, and semantic repository ownership
+through `../../_refs/shared/repository-contract.mjs`; checkout paths and the current
 working directory are never durable repository identity.
 
 ## Purpose
 
 Expose one documentation skill while keeping detailed documentation behaviors in
-refs. This skill chooses the mode, loads the matching `_refs/documentation/*`
+refs. This skill chooses the mode, loads the matching `../../_refs/documentation/*`
 reference, then executes it.
 
 Long-term documentation verbs owned here:
@@ -78,12 +80,12 @@ asks for multiple outputs.
 
 | Mode | Trigger examples | Reference |
 |---|---|---|
-| `documentation-gate` | user-guide/technical-doc approval, saved documentation preferences, `.sdcorejs/documentation/preferences.md` | `_refs/documentation/gate.md` |
-| `code-documentation` | code documentation, document code, add comments, comment code, implementation comments, docstring, doc comment, JSDoc, TSDoc, document functions/classes/API, localized equivalents | `_refs/documentation/code-documentation.md` |
-| `write-user-guide` | user guide, user manual, module guide, aggregate guide, DOCX/PDF export, verified real-UI screenshots, legacy reverse-engineer guide | `_refs/documentation/write-user-guide.md` |
-| `write-technical-doc` | technical docs, API docs, architecture notes, module reference, integration guide, setup/implementation guide | `_refs/documentation/write-technical-doc.md` |
-| `write-requirement` | `TASKID`, task id, ticket id, "record requirement", "save requirement" | `_refs/documentation/write-requirement.md` |
-| `document-operation` | rewrite, improve, structure, summarize, convert, or standardize existing docs/artifacts | `_refs/documentation/write-technical-doc.md` |
+| `documentation-gate` | user-guide/technical-doc approval, saved documentation preferences, `.sdcorejs/documentation/preferences.md` | `../../_refs/documentation/gate.md` |
+| `code-documentation` | code documentation, document code, add comments, comment code, implementation comments, docstring, doc comment, JSDoc, TSDoc, document functions/classes/API, localized equivalents | `../../_refs/documentation/code-documentation.md` |
+| `write-user-guide` | user guide, user manual, module guide, aggregate guide, DOCX/PDF export, verified real-UI screenshots, legacy reverse-engineer guide | `../../_refs/documentation/write-user-guide.md` |
+| `write-technical-doc` | technical docs, API docs, architecture notes, module reference, integration guide, setup/implementation guide | `../../_refs/documentation/write-technical-doc.md` |
+| `write-requirement` | an existing `TASKID`, task id, or ticket id whose requirement should be recorded, "record requirement", "save requirement"; breaking PRDs or stories into new tasks or tickets belongs to `sdcorejs-product` (task-breakdown) | `../../_refs/documentation/write-requirement.md` |
+| `document-operation` | rewrite, improve, structure, summarize, convert, or standardize existing docs/artifacts | `../../_refs/documentation/write-technical-doc.md` |
 
 ## Routing Rules
 
@@ -119,7 +121,7 @@ asks for multiple outputs.
 When called by `sdcorejs-angular`, `sdcorejs-nestjs`, `sdcorejs-nextjs`, or
 direct `sdcorejs-test` after the test decision:
 
-1. Load `_refs/documentation/gate.md`.
+1. Load `../../_refs/documentation/gate.md`.
 2. Identify whether corresponding `user-guide` and `technical-doc` files
    already exist for the touched feature/module.
 3. Ask the approval gate before creating any missing user-guide or technical-doc
@@ -132,7 +134,7 @@ direct `sdcorejs-test` after the test decision:
 When called by Angular/NestJS/Next.js track skills after source code was created
 or modified:
 
-1. Load `_refs/documentation/code-documentation.md`.
+1. Load `../../_refs/documentation/code-documentation.md`.
 2. Apply maintainability-focused source-code documentation automatically.
 3. Do not ask for approval and do not let user/technical-doc skips disable this
    step.
@@ -144,7 +146,7 @@ or modified:
 
 When called directly for code comments, docstrings, or documentation comments:
 
-1. Load `_refs/documentation/code-documentation.md`.
+1. Load `../../_refs/documentation/code-documentation.md`.
 2. Detect whether the user wants public contract docs, implementation comments, or both.
 3. Detect the language/framework from syntax, imports, decorators, filenames, and local style.
 4. Preserve executable code and update stale existing code documentation instead of adding duplicates.
@@ -153,7 +155,7 @@ When called directly for code comments, docstrings, or documentation comments:
 
 When called after the documentation gate:
 
-1. Load `_refs/documentation/write-technical-doc.md`.
+1. Load `../../_refs/documentation/write-technical-doc.md`.
 2. If `technical_doc=skip`, make no edits and report that technical docs were skipped.
 3. If `technical_doc=create`, create the approved technical doc from source evidence.
 4. If `technical_doc=update`, update the existing corresponding technical doc from source evidence.
@@ -162,7 +164,7 @@ When called after the documentation gate:
 
 When called after the documentation gate or direct requirement request:
 
-1. Load `_refs/documentation/write-requirement.md`.
+1. Load `../../_refs/documentation/write-requirement.md`.
 2. If the user provided a `TASKID`, write or update
    `<semantic-owner-repo>/.sdcorejs/documentation/requirements/<TASKID>/<TASKID>.md`.
 3. If no `TASKID` exists but the user wants a requirement record, ask for `TASKID` before writing.
@@ -172,7 +174,7 @@ When called after the documentation gate or direct requirement request:
 
 When called after `auto-docs` in a write-code flow:
 
-1. Load `_refs/documentation/write-user-guide.md`.
+1. Load `../../_refs/documentation/write-user-guide.md`.
 2. Run Mode 1 for every touched module when `user_guide=create` or
    `user_guide=update`, in that module's semantic owner repository.
 3. For required missing/stale images, request
@@ -192,10 +194,10 @@ For direct write/rewrite/improve/structure/summarize/convert/standardize request
 
 1. Identify the source docs or code artifacts from the user's request, current diff, or project context.
 2. If the request is really project discovery ("summarize this project", "map the repo", "trace this flow", "setup dev"), route to `sdcorejs-explore`.
-3. If the request includes `TASKID` or asks to record a requirement, load `_refs/documentation/write-requirement.md` and write/update the requirement record. Stop there unless the user also explicitly asked for technical docs.
-4. If the request asks for code comments, implementation comments, docstrings, doc comments, JSDoc, TSDoc, documentation comments, or public API documentation comments, load `_refs/documentation/code-documentation.md`, preserve executable behavior, and stop unless the user also explicitly asked for standalone technical docs.
+3. If the request includes `TASKID` or asks to record a requirement, load `../../_refs/documentation/write-requirement.md` and write/update the requirement record. Stop there unless the user also explicitly asked for technical docs.
+4. If the request asks for code comments, implementation comments, docstrings, doc comments, JSDoc, TSDoc, documentation comments, or public API documentation comments, load `../../_refs/documentation/code-documentation.md`, preserve executable behavior, and stop unless the user also explicitly asked for standalone technical docs.
 5. If the target artifact is ambiguous and no existing convention is discoverable, ask for the destination path.
-6. Load `_refs/documentation/write-technical-doc.md`.
+6. Load `../../_refs/documentation/write-technical-doc.md`.
 7. Preserve source meaning; do not invent requirements, APIs, constraints, or acceptance criteria.
 
 ## Artifact Output
@@ -216,11 +218,11 @@ document copy in the portal.
 
 ## Cross-References
 
-- `_refs/documentation/gate.md` - user-guide/technical-doc approval, saved preferences, and new-doc creation guard
-- `_refs/documentation/code-documentation.md` - source-code documentation, including public contracts and implementation comments
-- `_refs/documentation/write-user-guide.md` - end-user guide generation and aggregate/export flow
-- `_refs/documentation/write-technical-doc.md` - technical docs and document operations
-- `_refs/documentation/write-requirement.md` - task-level requirement record under `.sdcorejs/documentation/requirements/<TASKID>/<TASKID>.md`
-- `_refs/shared/finish-gate.md` - surfaces the documentation gate inside code-generation flows
-- `_refs/orchestration/tail/auto-docs.md` - change-scoped execution records, distinct from evergreen documentation
+- `../../_refs/documentation/gate.md` - user-guide/technical-doc approval, saved preferences, and new-doc creation guard
+- `../../_refs/documentation/code-documentation.md` - source-code documentation, including public contracts and implementation comments
+- `../../_refs/documentation/write-user-guide.md` - end-user guide generation and aggregate/export flow
+- `../../_refs/documentation/write-technical-doc.md` - technical docs and document operations
+- `../../_refs/documentation/write-requirement.md` - task-level requirement record under `.sdcorejs/documentation/requirements/<TASKID>/<TASKID>.md`
+- `../../_refs/shared/finish-gate.md` - surfaces the documentation gate inside code-generation flows
+- `../../_refs/orchestration/tail/auto-docs.md` - change-scoped execution records, distinct from evergreen documentation
 - `sdcorejs-explore` - project discovery, summaries, code maps, flow traces, env setup, and documentation harvests

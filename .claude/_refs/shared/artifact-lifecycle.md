@@ -27,7 +27,7 @@ discovery and classification helper. It never stages or commits files.
 | Lifecycle | Examples | Commit policy |
 |---|---|---|
 | Change-scoped durable | approved spec, approved architecture, approved plan, execution doc, product ledger, Product document, design handoff, Design spec/flow/decision/wireframe/export/reference, verified guide screenshot or documentation asset | `with-change` |
-| Shared durable | project summary, persona, memory, living track backlog, convention rule and capture policy | `conditional`, with an explicit owner |
+| Shared durable | project summary, persona, memory, living track backlog, convention rule and capture policy, project workspace config (`project-config`) and task breakdown (`task-breakdown`) | `conditional`, with an explicit owner |
 | Explicit handoff | requested change-scoped handoff | `conditional` or `with-change` |
 | Diagnostic/local | trace, video, raw report, coverage HTML, auth/storage state, failure screenshot or diagnostic screenshot, temp, cache, codegraph cache, legacy session checkpoint | `never` |
 | Unknown | unclassified path or insufficient relationship metadata | never auto-stage; report ambiguity |
@@ -41,6 +41,14 @@ shared current-state file.
 Canonical roots live once in `_refs/shared/system-registry.json` under
 `artifact_roots` and are resolved through `_refs/shared/artifact-paths.mjs`. No
 helper hardcodes them.
+
+`project_workspaces` (`.sdcorejs/projects/<slug>/`) holds one folder per
+project, because one repository can serve several projects. Inside it,
+`project.md` and `task-breakdown.config.md` classify as `project-config` and
+`tasks/<scope>.md` classifies as `task-breakdown`. Both kinds are shared
+durable state owned by `sdcorejs-product` (task-breakdown mode); other skills
+read them only. Slug and scope reuse the lowercase kebab-case pattern, stay at
+most 63 characters and reject reserved device names.
 
 | Root | Artifact kind | Contents |
 |---|---|---|

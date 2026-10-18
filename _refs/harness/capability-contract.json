@@ -21,6 +21,8 @@
     "visual.session.stop",
     "workspace.isolate",
     "web.fetch",
+    "source.read",
+    "tracker.write",
     "artifact.read",
     "artifact.write",
     "verification.run"
@@ -46,6 +48,8 @@
     "workspace_isolation",
     "browser",
     "web_fetch",
+    "external_source_read",
+    "issue_tracker_write",
     "artifact_write",
     "permission_approval"
   ],
@@ -72,6 +76,8 @@
         "workspace_isolation": "unknown",
         "browser": "unknown",
         "web_fetch": "unknown",
+        "external_source_read": "unknown",
+        "issue_tracker_write": "unknown",
         "artifact_write": "supported",
         "permission_approval": "supported"
       },
@@ -194,6 +200,18 @@
           "capability": "web_fetch",
           "fallback": "Use supplied local evidence or report that current web evidence is unavailable."
         },
+        "source.read": {
+          "status": "unknown",
+          "native": [],
+          "capability": "external_source_read",
+          "fallback": "Use only connector tools the host exposes as read-only in this session; otherwise try web.fetch for public links, then artifact.read for an exported file, then ask the user to paste the content. Record the source as unread and never invent its content."
+        },
+        "tracker.write": {
+          "status": "unknown",
+          "native": [],
+          "capability": "issue_tracker_write",
+          "fallback": "Render the approved ticket drafts for manual copy-paste and state that nothing was written to the tracker."
+        },
         "artifact.read": {
           "status": "supported",
           "native": [
@@ -242,6 +260,8 @@
         "workspace_isolation": "unknown",
         "browser": "unknown",
         "web_fetch": "supported",
+        "external_source_read": "unknown",
+        "issue_tracker_write": "unknown",
         "artifact_write": "supported",
         "permission_approval": "supported"
       },
@@ -362,6 +382,18 @@
           "capability": "web_fetch",
           "fallback": "Use supplied local evidence or report that current web evidence is unavailable."
         },
+        "source.read": {
+          "status": "unknown",
+          "native": [],
+          "capability": "external_source_read",
+          "fallback": "Use only connector tools the host exposes as read-only in this session; otherwise try web.fetch for public links, then artifact.read for an exported file, then ask the user to paste the content. Record the source as unread and never invent its content."
+        },
+        "tracker.write": {
+          "status": "unknown",
+          "native": [],
+          "capability": "issue_tracker_write",
+          "fallback": "Render the approved ticket drafts for manual copy-paste and state that nothing was written to the tracker."
+        },
         "artifact.read": {
           "status": "supported",
           "native": [
@@ -413,6 +445,8 @@
         "workspace_isolation": "unknown",
         "browser": "unknown",
         "web_fetch": "unknown",
+        "external_source_read": "unknown",
+        "issue_tracker_write": "unknown",
         "artifact_write": "unknown",
         "permission_approval": "unknown"
       },
@@ -506,6 +540,18 @@
           "native": [],
           "capability": "web_fetch",
           "fallback": "Use supplied local evidence or report that current web evidence is unavailable."
+        },
+        "source.read": {
+          "status": "unknown",
+          "native": [],
+          "capability": "external_source_read",
+          "fallback": "Use only connector tools the host exposes as read-only in this session; otherwise try web.fetch for public links, then artifact.read for an exported file, then ask the user to paste the content. Record the source as unread and never invent its content."
+        },
+        "tracker.write": {
+          "status": "unknown",
+          "native": [],
+          "capability": "issue_tracker_write",
+          "fallback": "Render the approved ticket drafts for manual copy-paste and state that nothing was written to the tracker."
         },
         "artifact.read": {
           "status": "supported",
@@ -549,6 +595,8 @@
         "workspace_isolation": "unknown",
         "browser": "unknown",
         "web_fetch": "unknown",
+        "external_source_read": "unknown",
+        "issue_tracker_write": "unknown",
         "artifact_write": "unknown",
         "permission_approval": "unknown"
       },
@@ -642,6 +690,18 @@
           "native": [],
           "capability": "web_fetch",
           "fallback": "Use supplied local evidence or report that current web evidence is unavailable."
+        },
+        "source.read": {
+          "status": "unknown",
+          "native": [],
+          "capability": "external_source_read",
+          "fallback": "Use only connector tools the host exposes as read-only in this session; otherwise try web.fetch for public links, then artifact.read for an exported file, then ask the user to paste the content. Record the source as unread and never invent its content."
+        },
+        "tracker.write": {
+          "status": "unknown",
+          "native": [],
+          "capability": "issue_tracker_write",
+          "fallback": "Render the approved ticket drafts for manual copy-paste and state that nothing was written to the tracker."
         },
         "artifact.read": {
           "status": "supported",

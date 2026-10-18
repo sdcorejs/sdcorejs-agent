@@ -198,8 +198,21 @@ function toClaudeSkill(skill, adapter) {
   return withTrailingNewline(
     `---\nname: ${skill.name}\ndescription: ${skill.description}${toolLine}\n---\n\n` +
     '<!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->\n\n' +
-    body
+    `${CLAUDE_PATH_RESOLUTION}\n\n` +
+    rewriteClaudeRefs(body)
   );
+}
+
+// Claude-layout mirrors (plugin/ and .claude/) keep _refs/ two levels above each
+// skill folder. Rewrite only references followed by a path segment, so a bare
+// mention of the directory keeps its meaning.
+const CLAUDE_PATH_RESOLUTION =
+  '**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.';
+
+function rewriteClaudeRefs(text) {
+  return text
+    .replace(/(?:\.\.\/)+_refs\/(?=[A-Za-z0-9<{*])/g, '../../_refs/')
+    .replace(/(^|[^./\w])_refs\/(?=[A-Za-z0-9<{*])/gm, '$1../../_refs/');
 }
 
 async function mirrorCodexSkill(sourceText, name, root) {

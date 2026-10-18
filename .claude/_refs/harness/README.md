@@ -14,8 +14,28 @@ Canonical skills request semantic actions:
 - `visual.present`
 - `workspace.isolate`
 - `web.fetch`
+- `source.read`, `tracker.write`
 - `artifact.read`, `artifact.write`
 - `verification.run`
+
+`source.read` and `tracker.write` are connector actions (capabilities
+`external_source_read` and `issue_tracker_write`). Every adapter maps them with
+`status: unknown` and empty `native`, so generated `allowed-tools` never
+pre-approves a connector tool. `resolveAction` uses
+`observeConnectorTools(runtime, action)` from `runtime-attestation.mjs`: only
+tools the host exposes in the current session and mode qualify, a tool counts as
+a reader only when the host marks it `read_only`, and a tool that claims
+`source.read` without that mark is treated as a writer. An `unsupported`
+capability or action always takes the portable fallback. The approval gate for
+tracker writes belongs to the calling skill, not to runtime permission prompts.
+
+Generated `allowed-tools` pre-approves tools; it does not restrict other tools.
+A live run confirmed that a connector tool missing from `allowed-tools` can still
+run once the host grants it at runtime. It also showed that a host mode which
+denies every tool not granted at runtime (a non-interactive "do not ask" mode)
+ignores the skill's `allowed-tools` as well: a listed tool was still denied. Do
+not rely on `allowed-tools` for availability; resolve each action through the
+capability contract and keep the portable fallback reachable.
 
 `capability-contract.json` maps these actions to each adapter. Provider tool
 names belong only in that mapping, generated adapter metadata, compatibility

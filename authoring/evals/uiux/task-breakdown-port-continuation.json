@@ -1,0 +1,470 @@
+{
+  "schema_version": 1,
+  "kind": "task-breakdown-main-port-continuation",
+  "change_ref": "task-breakdown-main-port-v1",
+  "source_revision": "1fca9c3fa90cd259056234b27cf978a606fd927b",
+  "scope_plan": {
+    "path": ".sdcorejs/plans/workflow/2026-10-18-07-15-task-breakdown-main-port-r2.md",
+    "approval_hash": "sha256:v1:6948139cc2cac271a75c2d0f1c77fb368b34d7fad466fcb88b90ffbd6f8e0e49"
+  },
+  "previous_continuation": {
+    "path": "authoring/evals/records/cleanup-storage-audit.json",
+    "sha256": "sha256:3539148debbc94898c2aee36b73a9a66768918884745409eb95c8f73f217a5f2"
+  },
+  "previous_sources": [
+    {
+      "path": "_refs/angular/core-docs-fetch.mjs",
+      "sha256": "sha256:5ddadf5c69b5686f70a844a601f6ffa40a4cbbd14759b7ef3f206bea7c8a8e46"
+    },
+    {
+      "path": "_refs/angular/review-accessibility.md",
+      "sha256": "sha256:758532551b4e908866a95aeb20f9b7596f80691c78ad0c56a9ec0ae2430bede5"
+    },
+    {
+      "path": "_refs/angular/write-code/input-analysis.md",
+      "sha256": "sha256:3048612c06352c9bf1ccbac8d0ecf67ff8ccade5ee3f13cb6797af694c392590"
+    },
+    {
+      "path": "_refs/design/frontend-design.md",
+      "sha256": "sha256:40181e495cdbcff8f8375efdffdc3a8f89d8301abf8806c8381cef8d13b848ee"
+    },
+    {
+      "path": "_refs/design/mobile-design.md",
+      "sha256": "sha256:92bc975d5d33b9081f26c4bb43609ef6fceb97ad97c09e7cac2718c84ad05587"
+    },
+    {
+      "path": "_refs/design/uiux/catalog.json",
+      "sha256": "sha256:247d420f509b6fc73b10f19103b3d6c62f2e7473c52d4bfee69e0cb3f69229ff"
+    },
+    {
+      "path": "_refs/design/uiux/charts.md",
+      "sha256": "sha256:18d07aebcdf81cc029e8a15f74361b1115520c9cf078605ae94795a8ffaa01cf"
+    },
+    {
+      "path": "_refs/design/uiux/forms.md",
+      "sha256": "sha256:e0c691dee24229d2183f6fcf63776d2df6cfdc42bd431b7d1002070280483261"
+    },
+    {
+      "path": "_refs/design/uiux/index.md",
+      "sha256": "sha256:307d3eccbc7b0426f8d870153135f15a94cbee73cd628482fee397f7c867f609"
+    },
+    {
+      "path": "_refs/design/uiux/navigation.md",
+      "sha256": "sha256:396fb9e47024aa1fe86ef66edb55bcd2028bc86a9a3c6df409ff891e20f1c808"
+    },
+    {
+      "path": "_refs/design/uiux/public-web.md",
+      "sha256": "sha256:18f55e3fcb3b8d5dcbfd7d52a38d12c7d8da87ef260ee0bcca12de95e4f56fad"
+    },
+    {
+      "path": "_refs/design/uiux/select-references.mjs",
+      "sha256": "sha256:5bf4dbbcb46ebcb83e85318f55498b7a00123fb59a57dc39496402b39f8edd75"
+    },
+    {
+      "path": "_refs/design/uiux/sources.md",
+      "sha256": "sha256:c686481c4d4c87994d84edfe2ee55474eb9d645cbc73416532577f5bc3532e81"
+    },
+    {
+      "path": "_refs/design/uiux/states.md",
+      "sha256": "sha256:febbea087c19ac5a950303e8afcbbacb459207c8ecace1a93692816e0cd65744"
+    },
+    {
+      "path": "_refs/design/uiux/tables.md",
+      "sha256": "sha256:c8a3830c7cf135c557dd4d684e68d516a288e085a386aa6ef74c52f283c7b169"
+    },
+    {
+      "path": "_refs/design/uiux/upstream-license.txt",
+      "sha256": "sha256:738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014"
+    },
+    {
+      "path": "_refs/design/uiux/visual.md",
+      "sha256": "sha256:a8d67199953355a62b817b6b4b2d620263cc910fd905510f47ae05f0b75a8222"
+    },
+    {
+      "path": "_refs/nextjs/build-website/review-accessibility.md",
+      "sha256": "sha256:55aaad9a5b56da98a33a0516993c020e1f0ee02edf43935fd280f263d2f5d68b"
+    },
+    {
+      "path": "_refs/nextjs/build-website/write-code/responsive.md",
+      "sha256": "sha256:cb852fd68412f825b63c0eecf9f7e387d2957e467d0dee78c0999103aa88d17b"
+    },
+    {
+      "path": "_refs/shared/design-handoff.md",
+      "sha256": "sha256:747b25aaedaff6c3b1c8098a49f35acc38fdae86aee58cd6e0608008bc936b4e"
+    },
+    {
+      "path": "_refs/shared/review-accessibility.md",
+      "sha256": "sha256:280abe7bfa5f27e781d53dffd156c554bd629f5ffc6d6a996b2654164e0bc2c2"
+    },
+    {
+      "path": "_refs/shared/review-contract.mjs",
+      "sha256": "sha256:f268334733e255677268692b9e7740d259b6121b4a81c194dca9f0170c139a62"
+    },
+    {
+      "path": "skills/orchestration/using-skills.md",
+      "sha256": "sha256:32752f94ea02b255f7c1a5fe69d1a159f32a86a917d591379e99c14f2069d85b"
+    },
+    {
+      "path": "skills/shared/sdlc/01-brainstorming.md",
+      "sha256": "sha256:61cdbf1daca3938a0dc4adb18c5bd60f8a3cbf73a9ccbe8ddfee32635e8907a4"
+    },
+    {
+      "path": "skills/shared/sdlc/04-execute-plan.md",
+      "sha256": "sha256:d164568a8675d87264c2f044eecd3385366be982751a0b5ba4b848276c76cda0"
+    },
+    {
+      "path": "skills/shared/workflow/review.md",
+      "sha256": "sha256:36932bf0ef95cc369b005992deb5e753a7ca90c4120ba3baf2875c4c5f45c11b"
+    },
+    {
+      "path": "skills/tracks/angular/sdcorejs-angular.md",
+      "sha256": "sha256:53e01ad40945a1bc38999d8a9ddffc70b4cf646c56858295deffa0919892c389"
+    },
+    {
+      "path": "skills/tracks/design/sdcorejs-design.md",
+      "sha256": "sha256:5821395d976bbffa2f57e341055c915530666c6638235e8b170fa8a13f3c7e2e"
+    },
+    {
+      "path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
+      "sha256": "sha256:4b3faeb2131e6c374bf0266097d88e7d53770f76c9a1c452a92fdb304bbefbb5"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "sha256:7e9e0d471bed39ef32f8b628e7d9e7e2f16eabc941ed67a8387d6c4d76a59016"
+    },
+    {
+      "path": "test/e2e/uiux-knowledge.test.mjs",
+      "sha256": "sha256:f54c3aa686bda7863b0c10e8b77adcf8a92486171dfc07e9131479a170df980f"
+    },
+    {
+      "path": "test/e2e/uiux-review-regression.test.mjs",
+      "sha256": "sha256:fb4b5075bd6e7a224d8c16bd45084c2114a332e932f53b11ed412a09fe519f9a"
+    },
+    {
+      "path": "test/e2e/uiux-skill-creator-regression.test.mjs",
+      "sha256": "sha256:179f5e965d2acfb4a1302daeb76fa9f6ff3a9c6fde79c08539776155d21aa098"
+    }
+  ],
+  "current_sources": [
+    {
+      "path": "_refs/angular/core-docs-fetch.mjs",
+      "sha256": "sha256:5ddadf5c69b5686f70a844a601f6ffa40a4cbbd14759b7ef3f206bea7c8a8e46"
+    },
+    {
+      "path": "_refs/angular/review-accessibility.md",
+      "sha256": "sha256:758532551b4e908866a95aeb20f9b7596f80691c78ad0c56a9ec0ae2430bede5"
+    },
+    {
+      "path": "_refs/angular/write-code/input-analysis.md",
+      "sha256": "sha256:3048612c06352c9bf1ccbac8d0ecf67ff8ccade5ee3f13cb6797af694c392590"
+    },
+    {
+      "path": "_refs/design/frontend-design.md",
+      "sha256": "sha256:40181e495cdbcff8f8375efdffdc3a8f89d8301abf8806c8381cef8d13b848ee"
+    },
+    {
+      "path": "_refs/design/mobile-design.md",
+      "sha256": "sha256:92bc975d5d33b9081f26c4bb43609ef6fceb97ad97c09e7cac2718c84ad05587"
+    },
+    {
+      "path": "_refs/design/uiux/catalog.json",
+      "sha256": "sha256:247d420f509b6fc73b10f19103b3d6c62f2e7473c52d4bfee69e0cb3f69229ff"
+    },
+    {
+      "path": "_refs/design/uiux/charts.md",
+      "sha256": "sha256:18d07aebcdf81cc029e8a15f74361b1115520c9cf078605ae94795a8ffaa01cf"
+    },
+    {
+      "path": "_refs/design/uiux/forms.md",
+      "sha256": "sha256:e0c691dee24229d2183f6fcf63776d2df6cfdc42bd431b7d1002070280483261"
+    },
+    {
+      "path": "_refs/design/uiux/index.md",
+      "sha256": "sha256:307d3eccbc7b0426f8d870153135f15a94cbee73cd628482fee397f7c867f609"
+    },
+    {
+      "path": "_refs/design/uiux/navigation.md",
+      "sha256": "sha256:396fb9e47024aa1fe86ef66edb55bcd2028bc86a9a3c6df409ff891e20f1c808"
+    },
+    {
+      "path": "_refs/design/uiux/public-web.md",
+      "sha256": "sha256:18f55e3fcb3b8d5dcbfd7d52a38d12c7d8da87ef260ee0bcca12de95e4f56fad"
+    },
+    {
+      "path": "_refs/design/uiux/select-references.mjs",
+      "sha256": "sha256:5bf4dbbcb46ebcb83e85318f55498b7a00123fb59a57dc39496402b39f8edd75"
+    },
+    {
+      "path": "_refs/design/uiux/sources.md",
+      "sha256": "sha256:c686481c4d4c87994d84edfe2ee55474eb9d645cbc73416532577f5bc3532e81"
+    },
+    {
+      "path": "_refs/design/uiux/states.md",
+      "sha256": "sha256:febbea087c19ac5a950303e8afcbbacb459207c8ecace1a93692816e0cd65744"
+    },
+    {
+      "path": "_refs/design/uiux/tables.md",
+      "sha256": "sha256:c8a3830c7cf135c557dd4d684e68d516a288e085a386aa6ef74c52f283c7b169"
+    },
+    {
+      "path": "_refs/design/uiux/upstream-license.txt",
+      "sha256": "sha256:738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014"
+    },
+    {
+      "path": "_refs/design/uiux/visual.md",
+      "sha256": "sha256:a8d67199953355a62b817b6b4b2d620263cc910fd905510f47ae05f0b75a8222"
+    },
+    {
+      "path": "_refs/nextjs/build-website/review-accessibility.md",
+      "sha256": "sha256:55aaad9a5b56da98a33a0516993c020e1f0ee02edf43935fd280f263d2f5d68b"
+    },
+    {
+      "path": "_refs/nextjs/build-website/write-code/responsive.md",
+      "sha256": "sha256:cb852fd68412f825b63c0eecf9f7e387d2957e467d0dee78c0999103aa88d17b"
+    },
+    {
+      "path": "_refs/shared/design-handoff.md",
+      "sha256": "sha256:747b25aaedaff6c3b1c8098a49f35acc38fdae86aee58cd6e0608008bc936b4e"
+    },
+    {
+      "path": "_refs/shared/review-accessibility.md",
+      "sha256": "sha256:280abe7bfa5f27e781d53dffd156c554bd629f5ffc6d6a996b2654164e0bc2c2"
+    },
+    {
+      "path": "_refs/shared/review-contract.mjs",
+      "sha256": "sha256:f268334733e255677268692b9e7740d259b6121b4a81c194dca9f0170c139a62"
+    },
+    {
+      "path": "skills/orchestration/using-skills.md",
+      "sha256": "sha256:32752f94ea02b255f7c1a5fe69d1a159f32a86a917d591379e99c14f2069d85b"
+    },
+    {
+      "path": "skills/shared/sdlc/01-brainstorming.md",
+      "sha256": "sha256:61cdbf1daca3938a0dc4adb18c5bd60f8a3cbf73a9ccbe8ddfee32635e8907a4"
+    },
+    {
+      "path": "skills/shared/sdlc/04-execute-plan.md",
+      "sha256": "sha256:d164568a8675d87264c2f044eecd3385366be982751a0b5ba4b848276c76cda0"
+    },
+    {
+      "path": "skills/shared/workflow/review.md",
+      "sha256": "sha256:36932bf0ef95cc369b005992deb5e753a7ca90c4120ba3baf2875c4c5f45c11b"
+    },
+    {
+      "path": "skills/tracks/angular/sdcorejs-angular.md",
+      "sha256": "sha256:53e01ad40945a1bc38999d8a9ddffc70b4cf646c56858295deffa0919892c389"
+    },
+    {
+      "path": "skills/tracks/design/sdcorejs-design.md",
+      "sha256": "sha256:5821395d976bbffa2f57e341055c915530666c6638235e8b170fa8a13f3c7e2e"
+    },
+    {
+      "path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
+      "sha256": "sha256:4b3faeb2131e6c374bf0266097d88e7d53770f76c9a1c452a92fdb304bbefbb5"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "sha256:212149d141e0eb892dff85dd59df164fb5f498368176a2c49c5f1e9c3c667812"
+    },
+    {
+      "path": "test/e2e/uiux-knowledge.test.mjs",
+      "sha256": "sha256:f54c3aa686bda7863b0c10e8b77adcf8a92486171dfc07e9131479a170df980f"
+    },
+    {
+      "path": "test/e2e/uiux-review-regression.test.mjs",
+      "sha256": "sha256:fb4b5075bd6e7a224d8c16bd45084c2114a332e932f53b11ed412a09fe519f9a"
+    },
+    {
+      "path": "test/e2e/uiux-skill-creator-regression.test.mjs",
+      "sha256": "sha256:179f5e965d2acfb4a1302daeb76fa9f6ff3a9c6fde79c08539776155d21aa098"
+    }
+  ],
+  "changed_paths": [
+    "test/e2e/support/skill-pack-runner.mjs"
+  ],
+  "port_sources": [
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "sha256:bc6a1af2ebeb04b995bac3b0e742d9a4656d43455b7d26bd0bed2e72839dbe1a"
+    },
+    {
+      "path": "SECURITY.md",
+      "sha256": "sha256:e61d49e3a0392908ccb8cb149fdc07262fd6b788b7cb732205be3413f88edb3f"
+    },
+    {
+      "path": "VALIDATION.md",
+      "sha256": "sha256:e03ba57b0288358a671162b13d961011279519d1fa888f3991821b6646fce40b"
+    },
+    {
+      "path": "_refs/harness/README.md",
+      "sha256": "sha256:1bb2e73ee0e93b0a7da7133557bf24a75ed34d1943bdd963d93b8a024e986487"
+    },
+    {
+      "path": "_refs/harness/capability-contract.json",
+      "sha256": "sha256:d56e9766ccbbc98360fd42eea6df5aa6578fde5dec29656d74f4141f601c2bcd"
+    },
+    {
+      "path": "_refs/harness/runtime-attestation.mjs",
+      "sha256": "sha256:5856e0825f4afd47d5a8e2e8d5dbd1c3347011495ed77bdf907328504be67a36"
+    },
+    {
+      "path": "_refs/harness/runtime-policy.mjs",
+      "sha256": "sha256:651967e7bc069a75b928fcbdb9508ea5b0e565ddd0db8a9360ef7b1143d0c5c4"
+    },
+    {
+      "path": "_refs/product/project-workspace.md",
+      "sha256": "sha256:e72b38964b176e90bb55dbfef9d6a4b65dc02a4c84d2cec40ac7c3136aac2f4e"
+    },
+    {
+      "path": "_refs/product/sizing-rubric.md",
+      "sha256": "sha256:1e2b70564b56b64fb470cf777fae974c8c566d47eb090c926593cf20510139b6"
+    },
+    {
+      "path": "_refs/product/source-connectors.md",
+      "sha256": "sha256:3e6e41859c087a2815493dadf19487a34cfa5a5784a99f71c2265695caefaeb5"
+    },
+    {
+      "path": "_refs/product/task-breakdown.md",
+      "sha256": "sha256:9a08ea127ddc44aaad69c1f002a6d52bf63ee006650cf3b5972f6f8bfd794926"
+    },
+    {
+      "path": "_refs/product/task-breakdown/check.mjs",
+      "sha256": "sha256:81d8641d70d2242a94319f9389f0379f47b9661441b4da6dad162cd3649e8e15"
+    },
+    {
+      "path": "_refs/product/task-breakdown/identity.mjs",
+      "sha256": "sha256:c3af061861848645f1ffd31d705302bde0415ee9bfc7b06918f6dd4c8e8c2d91"
+    },
+    {
+      "path": "_refs/product/task-breakdown/safety.mjs",
+      "sha256": "sha256:014628d2c273c2ef8f03cdb003a3952c4eccf1d98de8fff20c1334054b368b2b"
+    },
+    {
+      "path": "_refs/product/task-breakdown/sizing.mjs",
+      "sha256": "sha256:a5c0f011b8e5de141427823dcf77bc9a4cd2efe6e8572b4edc7e492555b9c605"
+    },
+    {
+      "path": "_refs/product/task-breakdown/sources.mjs",
+      "sha256": "sha256:29090637dbce1e31635fcc2c300a539ea6ee28dcc63b27abe8eff2f66004f842"
+    },
+    {
+      "path": "_refs/product/task-breakdown/task-format.mjs",
+      "sha256": "sha256:bd8f400b6483c5ac59eb4a8c5dda8adc0c66eb307167e4411b6345d566eca74f"
+    },
+    {
+      "path": "_refs/product/task-breakdown/workspace.mjs",
+      "sha256": "sha256:1395cd56e67a514ef358d34f0292fb4148c3cf162d140063428e1e4fc8676aa6"
+    },
+    {
+      "path": "_refs/product/task-format.md",
+      "sha256": "sha256:5ab48eb6ca4d21761a4914f6890f3a223492aacad271ae148e757df987ff2c0f"
+    },
+    {
+      "path": "_refs/shared/approved-artifact.mjs",
+      "sha256": "sha256:ec6ebc4601f55100f5794789d24fd3ecd1c59ee2681a66d88762f06c1b69f912"
+    },
+    {
+      "path": "_refs/shared/artifact-lifecycle.md",
+      "sha256": "sha256:e185e4935ade641046fd66a56d66766875aaf247f8c72a4f715b77f077433a98"
+    },
+    {
+      "path": "_refs/shared/artifact-lifecycle.mjs",
+      "sha256": "sha256:f61452ed8186c090feb8b97f20bfd1d437b4efd188de24a9e106445996406569"
+    },
+    {
+      "path": "_refs/shared/artifact-paths.mjs",
+      "sha256": "sha256:b0f45b59f606cc7db2a351f6b3e2c0d8375e0af5c210a439d27764022ff23a40"
+    },
+    {
+      "path": "_refs/shared/system-registry.json",
+      "sha256": "sha256:0468dde0ade697cec41bdae79c720531ea7e53e094290c97e79e4b47c67a3208"
+    },
+    {
+      "path": "_refs/shared/system-registry.mjs",
+      "sha256": "sha256:28c8d3babc4e5d8ad94def5ae29c30367bb37a58c0aafa25e73f887558ca69dd"
+    },
+    {
+      "path": "authoring/evals/uiux/evidence.test.mjs",
+      "sha256": "sha256:2d4078f9c420cd638bfbea04a788efa4796694ff5026954e4fe09829713dc396"
+    },
+    {
+      "path": "package.json",
+      "sha256": "sha256:25982918a077471e3dee598899eb5c8f360bdbdeeae5c8650ecedbb5ef1b8c29"
+    },
+    {
+      "path": "plugin/hooks/session-start.mjs",
+      "sha256": "sha256:0535f51bec9cfe2cea7e414dca17b8ae964e75524fe46b22e6cbcbcecbd6f21e"
+    },
+    {
+      "path": "scripts/sync-skills.mjs",
+      "sha256": "sha256:e265e9d708b4c7a82a8f5bf8021915a73f2df90cb63bfa56bd38dad9c2bb4870"
+    },
+    {
+      "path": "skills/orchestration/documentation.md",
+      "sha256": "sha256:a11ffc2af2d775ffca671dc7c2105200da3d1e53a6f5e1d601ef752bf69e0bb1"
+    },
+    {
+      "path": "skills/tracks/product/sdcorejs-product.md",
+      "sha256": "sha256:7af41ec1d95d510fea9402c39267efed3846b430f54af0b6f84620b9b9421a8e"
+    },
+    {
+      "path": "test/e2e/artifact-path-convention.test.mjs",
+      "sha256": "sha256:4b88900036da35969e98c1f464c6fc152b613a10e903b4678e3e18606df63cf8"
+    },
+    {
+      "path": "test/e2e/fixtures/prompt-evals.json",
+      "sha256": "sha256:4b98927515aab9ef3fb060c94cb3ccb9d175aaf819e19212a9e46c2cc4963bab"
+    },
+    {
+      "path": "test/e2e/harness-behavioral-sentinel.test.mjs",
+      "sha256": "sha256:083e0c46c53767041c84b7248b78268aec996be71d7055f996594e843d7e4dbb"
+    },
+    {
+      "path": "test/e2e/mirror-refs-resolution.test.mjs",
+      "sha256": "sha256:5dcbfd354a3e37b89b83a4e2ba635c199faa0abd6c114c683041275c40f2221e"
+    },
+    {
+      "path": "test/e2e/product-task-breakdown-cli.test.mjs",
+      "sha256": "sha256:5f7d736eb31223db3b90a76b7b159ceae06d0279aeac0a4c39fc356029c1c0f3"
+    },
+    {
+      "path": "test/e2e/product-task-breakdown-contract.test.mjs",
+      "sha256": "sha256:698f5c29ecb77f4d392662122f5b8f98f276d409def685243392561e7760864a"
+    },
+    {
+      "path": "test/e2e/product-task-breakdown-flow-contract.test.mjs",
+      "sha256": "sha256:124ad981b0dc744a66eb628b68b9b86bc6ba4d4f59a7523aba5ba67d3c54a178"
+    },
+    {
+      "path": "test/e2e/skill-pack-runner.test.mjs",
+      "sha256": "sha256:403d3bc6a59f16119d96104b78df8026eda58594a7cc2684de1313764806ff4a"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "sha256:212149d141e0eb892dff85dd59df164fb5f498368176a2c49c5f1e9c3c667812"
+    }
+  ],
+  "verification": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap test/e2e/product-task-breakdown-contract.test.mjs test/e2e/product-task-breakdown-cli.test.mjs test/e2e/product-task-breakdown-flow-contract.test.mjs test/e2e/mirror-refs-resolution.test.mjs test/e2e/harness-behavioral-sentinel.test.mjs test/e2e/artifact-path-convention.test.mjs test/e2e/skill-pack-runner.test.mjs",
+    "exit_code": 0,
+    "tests": 115,
+    "pass": 115,
+    "fail": 0,
+    "node": "v22.22.3",
+    "started_at": "2026-10-18T00:29:13.185Z",
+    "finished_at": "2026-10-18T00:29:35.187Z",
+    "transcript": {
+      "path": "authoring/evals/uiux/task-breakdown-port-continuation.txt",
+      "sha256": "sha256:a19e4a55f5c4dca4429d4c9b5a49b090edfff070a2165c7576a6b6977d596c31"
+    }
+  },
+  "exact_limitation": "Deterministic local Node suites over repository sources on the main base. Proves that the ported task-breakdown helpers, check CLI, flow-gate rules, connector capability contract, mirror _refs resolution and artifact path conventions pass on main; it does not prove live agent behavior, token or cost changes, or behavior on hosts other than the checked hook branches.",
+  "live_agent": {
+    "result": "NOT RUN",
+    "reason": "Live runs of the three changes apply because the mode skill, references and check CLI are byte-identical."
+  },
+  "visual": {
+    "result": "NOT RUN"
+  },
+  "tokens": null
+}

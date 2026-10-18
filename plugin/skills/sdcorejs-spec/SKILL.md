@@ -6,23 +6,25 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # 02 - Spec
 
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md`. Draft and approved spec artifacts
-apply `_refs/shared/artifact-lifecycle.md` and emit `artifact_context`. Resolve
-track/profile/repository semantics from `_refs/shared/system-registry.json`.
+Read `../../_refs/shared/runtime-protocols.md`. Draft and approved spec artifacts
+apply `../../_refs/shared/artifact-lifecycle.md` and emit `artifact_context`. Resolve
+track/profile/repository semantics from `../../_refs/shared/system-registry.json`.
 Create and verify every approval identity with the executable
-`_refs/shared/approved-artifact.mjs` helper. Read
-`_refs/shared/decision-coverage.md`, validate `decision_coverage` at the `spec`
-stage with `_refs/shared/decision-coverage.mjs`, and preserve its stable IDs,
+`../../_refs/shared/approved-artifact.mjs` helper. Read
+`../../_refs/shared/decision-coverage.md`, validate `decision_coverage` at the `spec`
+stage with `../../_refs/shared/decision-coverage.mjs`, and preserve its stable IDs,
 revision history, blockers, and future planning gaps.
-Read `_refs/sdlc/architecture.md` and classify the post-spec conditional gate
+Read `../../_refs/sdlc/architecture.md` and classify the post-spec conditional gate
 with `classifyArchitectureGate` from
-`_refs/shared/architecture-contract.mjs`. The spec records the classification;
+`../../_refs/shared/architecture-contract.mjs`. The spec records the classification;
 it does not author the architecture artifact.
 
 Preserve `requirement_context.visual_companion` as runtime context through
@@ -30,7 +32,7 @@ Preserve `requirement_context.visual_companion` as runtime context through
 actual surface and purpose-bound consent. Do not reset it when changing phase,
 persist runtime permission in approved artifacts, or reopen a settled visual
 choice. An unresolved choice returns to its owner under
-`_refs/sdlc/visual-offer-policy.md`; normal approval/change-control gates remain.
+`../../_refs/sdlc/visual-offer-policy.md`; normal approval/change-control gates remain.
 
 ## Purpose
 Turn the confirmed requirement contract into a durable spec, hold the user approval gate, and persist the approved spec corpus inside the same skill.
@@ -52,7 +54,7 @@ If these are missing, route back to `sdcorejs-brainstorming`.
 If the semantic owner repository is unavailable or not writable, block. Do not
 write a module spec into the portal as a fallback.
 
-Before drafting, apply `_refs/shared/project-context.md` with:
+Before drafting, apply `../../_refs/shared/project-context.md` with:
 
 ```text
 caller_context: sdcorejs-spec
@@ -69,10 +71,10 @@ targeted reads instead unless the user explicitly approved a summary refresh.
 ### 1. Load guidance and related artifacts
 Read the relevant guidance:
 
-- angular / nestjs / nextjs: `_refs/sdlc/<track>.md`
-- ai-agent: `_refs/sdlc/ai-agent.md` plus
-  `_refs/ai-agent/{manifest.json,profile-contract.json,profiles/common.md}`
-- test: `_refs/shared/testing-philosophy.md` plus the target stack test ref if known
+- angular / nestjs / nextjs: `../../_refs/sdlc/<track>.md`
+- ai-agent: `../../_refs/sdlc/ai-agent.md` plus
+  `../../_refs/ai-agent/{manifest.json,profile-contract.json,profiles/common.md}`
+- test: `../../_refs/shared/testing-philosophy.md` plus the target stack test ref if known
 - product: product ledgers related to the same requirement or module
 - generic harness: the canonical template plus available project scripts
 - package manager evidence: `packageManager`, lockfiles, workspace files, and
@@ -228,7 +230,7 @@ paths, trust/tenancy/data boundaries, provider storage posture,
 business-shaped tool contracts, guardrails, approvals, session/state,
 evidence, tracing/audit/usage, limits, reliability, deterministic evals,
 separate live-verification evidence, rollout, rollback, and non-goals. Apply
-`_refs/sdlc/ai-agent.md`; fail closed when any security or ownership decision is
+`../../_refs/sdlc/ai-agent.md`; fail closed when any security or ownership decision is
 unresolved.
 
 ### 3. Self-review before showing the user
@@ -241,7 +243,7 @@ Fix the spec before presenting if any checklist item fails:
 - Acceptance criteria have stable IDs such as `AC-001`, `AC-002`; mark manual
   or deferred criteria clearly.
 - Requirements, acceptance criteria, assumptions, and decisions contain the
-  complete type-specific fields from `_refs/shared/decision-coverage.md`.
+  complete type-specific fields from `../../_refs/shared/decision-coverage.md`.
 - Spec-stage decision coverage has no unresolved blocking decision or
   assumption, duplicate ID, invalid enum, or dangling reference.
 - Architecture matches the confirmed requirement contract.
@@ -302,7 +304,7 @@ Approve:
 
 Build the approved body and protected metadata as UTF-8, then call
 `createApprovedArtifact` (or CLI `create`) from
-`_refs/shared/approved-artifact.mjs`. Immediately call
+`../../_refs/shared/approved-artifact.mjs`. Immediately call
 `verifyApprovedArtifact` (or CLI `verify`) before persisting/handoff. The
 versioned `sha256:v1` algorithm normalizes line endings and field order,
 excludes only the self-referential `approval_hash`, and never includes an

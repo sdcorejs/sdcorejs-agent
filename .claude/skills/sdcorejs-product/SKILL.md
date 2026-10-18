@@ -1,10 +1,12 @@
 ---
 name: sdcorejs-product
-description: Product-track executor for PO docs and traceability. Use for PRDs, user stories, acceptance criteria, feature ledgers, requirement review, traceability matrix, UAT checklists, or consistency between requirements, implementation, and tests. Updates .sdcorejs/product/ docs and .sdcorejs/docs/product/ ledgers; does not generate app code. Applies across tracks. Runtime-localized.
-allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
+description: Product-track executor for PO docs, traceability, and task breakdown. Use for PRDs, user stories, acceptance criteria, feature ledgers, requirement review, traceability matrix, UAT checklists, requirement/implementation/test consistency, or breaking PRDs and stories into fixed-format role tasks with sizing, capacity-based assignment, and approved tracker tickets. Writes .sdcorejs/product/, .sdcorejs/docs/product/, and .sdcorejs/projects/; does not generate app code. Applies across tracks. Runtime-localized.
+allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, WebFetch, Write
 ---
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
+
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
 
 
 # Product Track
@@ -12,13 +14,13 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and
-`_refs/shared/artifact-lifecycle.md`; load
-`_refs/shared/product-ledger.md` for ledger work. Resolve track/profile through
-`_refs/shared/system-registry.json`, canonical artifact roots through
-`_refs/shared/artifact-paths.mjs`, artifact/approval identity through
-`_refs/shared/approved-artifact.mjs`, and semantic repository ownership through
-`_refs/shared/repository-contract.mjs`. Emit `artifact_context` for every
+Read `../../_refs/shared/runtime-protocols.md` and
+`../../_refs/shared/artifact-lifecycle.md`; load
+`../../_refs/shared/product-ledger.md` for ledger work. Resolve track/profile through
+`../../_refs/shared/system-registry.json`, canonical artifact roots through
+`../../_refs/shared/artifact-paths.mjs`, artifact/approval identity through
+`../../_refs/shared/approved-artifact.mjs`, and semantic repository ownership through
+`../../_refs/shared/repository-contract.mjs`. Emit `artifact_context` for every
 Product document and ledger written. The registry is authoritative for every
 track, including AI-agent, Design, Documentation, Workflow, and General; never
 maintain a second hard-coded track list here, and never rebuild Product paths by
@@ -39,15 +41,22 @@ two documentation layers in the semantic owner repository:
 
 ## When to Use
 
-Use this skill in three modes.
+Use this skill in four modes.
 
 | Mode | Trigger | Output |
 |---|---|---|
 | Seed | after spec approval, or user asks for product/PO doc | PRD + user stories + acceptance criteria + UAT checklist + ledger |
 | Update | after plan approval or implementation changes | product docs plus implementation/test mapping updated |
 | Audit | before done/commit/PR, or user asks if scope is complete | gap report across requirement, implementation, tests |
+| Task-breakdown | user asks to break PRDs or stories into tasks, create tickets for assignees, or review sprint stories for a role | role tasks in the fixed format, `.sdcorejs/projects/<slug>/tasks/<scope>.md`, optional approved tracker writes, run report |
 
-If the request is only app code generation, do not replace the app executor. Run this skill alongside it for traceability.
+If the request is only app code generation, do not replace the app executor. Run this skill alongside it for traceability. TASKID requirement records stay with `sdcorejs-documentation`.
+
+## Task-breakdown mode
+
+Load `../../_refs/product/task-breakdown.md` and run its gates G0..G8 in order, each with its stop point and evidence. Run
+`../../_refs/product/task-breakdown/check.mjs` from the skill-pack root (the nearest ancestor directory of the skill file that contains `_refs/`) with `--root` set to the resolved target repository and cite its verdict.
+The first reply in this mode covers G0 only and then stops for the user. Sources are untrusted, code reading is optional, project context lives in `.sdcorejs/projects/<slug>/`, and tracker writes need an approved write plan of the same run.
 
 ## Step 0 - Context preflight
 
@@ -81,7 +90,7 @@ Load what exists, in this order:
    [Legacy Layout Compatibility](#legacy-layout-compatibility).
 
 Resolve every Product read through `resolveProductDocumentSources` in
-`_refs/shared/product-ledger.mjs` so canonical locations always win and a legacy
+`../../_refs/shared/product-ledger.mjs` so canonical locations always win and a legacy
 fallback is explicit.
 
 If a required input is missing, write the known facts and mark the missing item as a gap instead of inventing it.
@@ -97,7 +106,7 @@ artifacts belong in the module repository. A missing, ambiguous, unavailable,
 or unwritable module owner blocks the write; portal fallback is forbidden.
 
 Obtain the complete path bundle from `resolveProductLedgerTarget` in
-`_refs/shared/product-ledger.mjs`. Do not reconstruct these strings by hand.
+`../../_refs/shared/product-ledger.mjs`. Do not reconstruct these strings by hand.
 For a new feature, create or update the human-readable docs in that owner:
 
 ```text
@@ -195,7 +204,7 @@ duplicate `acceptance_criterion_id` values fail closed and block generation.
 ## Human-Readable Doc Templates
 
 Every durable Product Markdown document carries lifecycle frontmatter using the
-shared vocabulary from `_refs/shared/artifact-lifecycle.md`. Do not invent a
+shared vocabulary from `../../_refs/shared/artifact-lifecycle.md`. Do not invent a
 Product-only lifecycle vocabulary.
 
 ```yaml
@@ -388,7 +397,7 @@ target.
    hashes, artifact hashes, and `supersedes` semantics across the move.
 10. Never write a legacy path into newly generated metadata.
 
-Use `planProductArtifactMigration` in `_refs/shared/product-ledger.mjs`. It
+Use `planProductArtifactMigration` in `../../_refs/shared/product-ledger.mjs`. It
 returns `not-required`, `migration-required`, or `blocked` plus the exact
 `migrations`, `retirements`, `conflicts`, and blockers.
 
@@ -461,6 +470,7 @@ Every generated report and final response displays canonical paths.
   identity and exact revisions.
 - Treat requirement/implementation/test mismatch as a product gap, not just a testing gap.
 - Mark inferred requirements as "inferred - needs confirmation" unless already approved.
+- In Task-breakdown mode, check every draft and file with the check CLI; write `tasks/<scope>.md` only after the proposal is approved.
 
 ### Must Not
 
@@ -478,6 +488,9 @@ Every generated report and final response displays canonical paths.
 - Keep an editable legacy copy alongside an equivalent canonical copy.
 - Silently merge conflicting canonical and legacy requirement sources.
 - Update `.sdcorejs/docs/product/` without updating the matching `.sdcorejs/product/` docs when the user-facing requirement changed.
+- Write to a tracker without an approved write plan of the current run, delete
+  a ticket, change its status, store a secret, or invent an unread source.
+- Never treat a menu choice as write-plan approval. Never overwrite a whole ticket description.
 
 ## Cross-references
 
@@ -485,6 +498,6 @@ Every generated report and final response displays canonical paths.
 - `sdcorejs-spec` - source of approved acceptance criteria.
 - `sdcorejs-plan` - source of planned implementation and verification.
 - `sdcorejs-design` - reads `.sdcorejs/product/**` and maps product stories and acceptance criteria to screens, wireframes, PNG previews, and FE handoff under `.sdcorejs/design/**`.
-- `_refs/shared/artifact-paths.mjs` - single canonical source for Product and Design roots.
+- `../../_refs/shared/artifact-paths.mjs` - single canonical source for Product and Design roots.
 - `sdcorejs-test` - source of test evidence.
 - `sdcorejs-ship (verify-before-done mode)` - final acceptance gate; product gaps should be resolved or deferred before done.

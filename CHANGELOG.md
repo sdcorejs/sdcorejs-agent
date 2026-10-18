@@ -7,6 +7,33 @@ Node workspace is not distributed through npm.
 
 ## Unreleased
 
+- Show per-source guidance for unreadable task-breakdown sources: the read-only
+  check CLI gains `check sources -`, which groups unreadable links by domain and
+  kind id, redacts secret-shaped values, and returns a fixed connector, export or
+  paste guidance table that G1 and G8 print verbatim. The CLI also answers
+  `--help`, `-h` and `help` with the synopsis, stdin and purpose of every
+  command, and an unknown command now points to `--help`.
+- Fix `_refs/` resolution in the generated `plugin/` and `.claude/` skill
+  mirrors: references are written as `../../_refs/...` relative to each
+  `SKILL.md`, with a path-resolution line in the adapter header, and the
+  session-start hook injects the bootstrap with absolute reference paths. Source
+  skills, the codex mirror and `AGENTS.md` outputs are unchanged.
+- Add the `task-breakdown` mode to `sdcorejs-product`: distill PRDs and user
+  stories from any board, sprint, key list, link, export, or pasted source into
+  role tasks with a fixed twelve-section format, Fibonacci rubric sizing,
+  capacity-based assignee suggestions (25/50/75/100 % availability, balanced by
+  total points), and per-task confidence when code cannot be read. Project
+  context lives in the new `project_workspaces` root (`.sdcorejs/projects/<slug>/`)
+  with shared `project-config` and `task-breakdown` artifact kinds. Add neutral
+  `source.read` and `tracker.write` capability actions resolved only from
+  host-observed connectors, with copy-paste fallback; tracker writes need an
+  approved write plan of the same run, drift checks, owned-region updates, and
+  read-back. Pure helpers live in `_refs/product/task-breakdown/`. The flow runs
+  as mandatory gates G0..G8 with a stop point and cited evidence each, checked by
+  the read-only CLI `_refs/product/task-breakdown/check.mjs`: a menu choice is
+  never write-plan approval, whole-description overwrites are refused, rich
+  tracker documents merge by marker nodes and keep media, and without the CLI
+  tracker writes fall back to copy-paste. The pack keeps 23 public skills.
 - Upgrade `sdcorejs-design` for focused improvements and existing-UI reuse, with
   shared UI/UX topic references for design, Angular, Next.js and read-only review.
   Preserve the 23 public skills, Core UI aliases, semantic artifact owners and

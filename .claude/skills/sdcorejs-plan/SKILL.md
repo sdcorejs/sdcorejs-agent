@@ -6,22 +6,24 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # 03 - Plan
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md`. Draft and approved plan artifacts apply
-`_refs/shared/artifact-lifecycle.md` and emit `artifact_context`. Resolve track,
-profile, and repository semantics from `_refs/shared/system-registry.json`; use
-`_refs/shared/approved-artifact.mjs` for approval identity and
-`_refs/shared/decision-coverage.md` and its `.mjs` authority for schema-v2 coverage and goal-backward gates.
-Read `_refs/sdlc/architecture.md`. From `_refs/shared/architecture-contract.mjs`, use
+Read `../../_refs/shared/runtime-protocols.md`. Draft and approved plan artifacts apply
+`../../_refs/shared/artifact-lifecycle.md` and emit `artifact_context`. Resolve track,
+profile, and repository semantics from `../../_refs/shared/system-registry.json`; use
+`../../_refs/shared/approved-artifact.mjs` for approval identity and
+`../../_refs/shared/decision-coverage.md` and its `.mjs` authority for schema-v2 coverage and goal-backward gates.
+Read `../../_refs/sdlc/architecture.md`. From `../../_refs/shared/architecture-contract.mjs`, use
 `validateArchitecturePrePlanHandoff` before drafting, `validateArchitectureDraftPlanHandoff`
 for draft self-review, and `validateArchitecturePlanHandoff` only after approval and in execution.
 
 Forward runtime `requirement_context.visual_companion` via `context.pass` (portable
 `state_delta.visual_companion`); preserve identity, scopes, surface and
-consent. Apply `_refs/sdlc/visual-offer-policy.md` for unresolved choices; never
+consent. Apply `../../_refs/sdlc/visual-offer-policy.md` for unresolved choices; never
 persist runtime permission in approved artifacts or reopen settled choices.
 
 ## Purpose
@@ -39,7 +41,7 @@ Run `validateArchitecturePrePlanHandoff` before drafting. Required work uses app
 approved architecture -> approved plan; a concrete bypass uses approved spec -> approved plan.
 Missing parents, identity drift, mutation, unknown profiles, or owner mismatch block planning.
 
-Before drafting, apply `_refs/shared/project-context.md` with:
+Before drafting, apply `../../_refs/shared/project-context.md` with:
 
 ```text
 caller_context: sdcorejs-plan
@@ -64,11 +66,11 @@ Read:
   approval metadata.
 - The exact conditional architecture handoff from `sdcorejs-spec` or
   `sdcorejs-architecture`, including the verified artifact when required.
-- Relevant `_refs/sdlc/<track>.md` for angular / nestjs / nextjs / ai-agent.
-- For ai-agent, also read `_refs/ai-agent/manifest.json`,
-  `_refs/ai-agent/profile-contract.json`, and
-  `_refs/ai-agent/profiles/common.md`.
-- `_refs/shared/testing-philosophy.md`, target stack test ref, and `_refs/shared/validation-map.md` for the approved AC-to-evidence authority.
+- Relevant `../../_refs/sdlc/<track>.md` for angular / nestjs / nextjs / ai-agent.
+- For ai-agent, also read `../../_refs/ai-agent/manifest.json`,
+  `../../_refs/ai-agent/profile-contract.json`, and
+  `../../_refs/ai-agent/profiles/common.md`.
+- `../../_refs/shared/testing-philosophy.md`, target stack test ref, and `../../_refs/shared/validation-map.md` for the approved AC-to-evidence authority.
 - Existing `.sdcorejs/docs/product/` ledgers for product-track plans.
 - Directly related approved plans under `.sdcorejs/plans/<track>/`, selected by
   metadata and request scope; use an unrelated prior plan only as explicit
@@ -84,7 +86,7 @@ delta needed to explain the `how`, order, commands, and file-level changes; it
 must not copy the full spec body.
 
 For any non-trivial frontend task, also read
-`_refs/shared/frontend-architecture.md` and inspect nearby route/page,
+`../../_refs/shared/frontend-architecture.md` and inspect nearby route/page,
 component, state, service/data-access, provider/registration, public API, and
 test evidence. The approved plan must carry the completed frontend architecture
 contract; planning from a generic folder recipe is not sufficient.
@@ -106,7 +108,7 @@ Before drafting:
   manifest, lockfile, or migration writes require explicit plan approval.
 - Every mutable `CREATE`, `EDIT`, or `VERIFY-THEN-EDIT` step names exactly one
   `owner_repository_id` and one matching Git root. Validate/split the result
-  with `_refs/shared/repository-contract.mjs`.
+  with `../../_refs/shared/repository-contract.mjs`.
 - A module-owned plan and its editable steps stay in the module repository, not
   the portal. The portal plan owns only shell/composition/cross-module
   integration, aggregate runner/report, and exact child references.
@@ -118,7 +120,7 @@ Before drafting:
 For a non-trivial frontend task:
 
 - complete the `Frontend architecture plan` from
-  `_refs/shared/frontend-architecture.md` before creating file tasks;
+  `../../_refs/shared/frontend-architecture.md` before creating file tasks;
 - derive every component, service/collaborator, provider, registration, public
   export, and test path from that approved component tree and service boundary;
 - preserve the target project's detected layout and import conventions;
@@ -158,7 +160,7 @@ them.
 ### 2.2 Run the goal-backward approval gate
 
 Run the `sdcorejs-plan:goal-backward` mode from
-`_refs/shared/decision-coverage.mjs`; this is a mode of `sdcorejs-plan`, not a
+`../../_refs/shared/decision-coverage.mjs`; this is a mode of `sdcorejs-plan`, not a
 new public skill. Work backward from each goal and every `R-###`, `AC-###`,
 `D-###`, and `INV-###` record to concrete `TASK-###` entries. Each `AC-###`
 also appears in at least one `EVIDENCE-###` row owned by a task in that AC's
@@ -289,7 +291,7 @@ plan_context:
     required: <true for ai-agent; false otherwise>
     conformance_invariant_refs: [<relevant INV-* IDs or empty when not applicable>]
     not_applicable_reason: <reason or null>
-    contract: <exact engine/capability/runtime/tool contract from _refs/sdlc/ai-agent.md>
+    contract: <exact engine/capability/runtime/tool contract from ../../_refs/sdlc/ai-agent.md>
   verification_strategy:
     package_manager: <npm|pnpm|yarn|bun|unknown>
     commands_planned: [<command/script and proof reason>]
@@ -364,10 +366,10 @@ Fix the plan before presenting if any checklist item fails:
 - Dependency/env/migration/package manifest/lockfile writes are explicitly
   approved or marked out of scope.
 - Every non-trivial frontend plan has a complete `frontend_architecture` block
-  sourced from `_refs/shared/frontend-architecture.md`; backend-only and trivial
+  sourced from `../../_refs/shared/frontend-architecture.md`; backend-only and trivial
   frontend plans record a concrete `not_applicable_reason`.
 - Every AI-agent plan has a complete `agent_architecture` block sourced from
-  `_refs/sdlc/ai-agent.md`; its two profile IDs resolve independently in the
+  `../../_refs/sdlc/ai-agent.md`; its two profile IDs resolve independently in the
   manifest, target paths and dependencies are approved, security-floor fields
   are complete, deterministic checks are offline, and live checks are
   separately authorized or explicitly deferred.
@@ -416,10 +418,10 @@ Translate at runtime.
 
 Approve:
 
-1. Read `_refs/sdlc/plan-approval-artifact.md` completely.
+1. Read `../../_refs/sdlc/plan-approval-artifact.md` completely.
 2. Write its immutable approved-plan snapshot in the semantic owner repository.
    Create and immediately verify the `sha256:v1` identity through
-   `_refs/shared/approved-artifact.mjs`; `approved_plan_hash` is the
+   `../../_refs/shared/approved-artifact.mjs`; `approved_plan_hash` is the
    compatibility projection of canonical `approval_hash`. Supply the approved plan body excluding frontmatter and the hash field as the helper body input;
    the omitted field is self-referential.
 3. Record the approved spec, required approved architecture (when applicable),
@@ -499,4 +501,4 @@ Abort:
 ## Cross-references
 - `sdcorejs-spec` - approved spec input
 - `sdcorejs-execute-plan` - runs the approved plan
-- `_refs/sdlc/plan-approval-artifact.md` - approved snapshot schema and handoff
+- `../../_refs/sdlc/plan-approval-artifact.md` - approved snapshot schema and handoff

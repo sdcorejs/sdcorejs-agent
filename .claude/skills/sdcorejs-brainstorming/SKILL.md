@@ -6,17 +6,19 @@ allowed-tools: AskUserQuestion, Bash, Glob, Grep, Read, WebFetch
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # 01 - Brainstorming
 
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md`. Load project context, choice, or
+Read `../../_refs/shared/runtime-protocols.md`. Load project context, choice, or
 visual references only when the current question requires them. Resolve track,
 stack profile, repository role, and artifact kinds from the versioned
-`_refs/shared/system-registry.json`; do not maintain a local competing enum.
-Read `_refs/shared/decision-coverage.md` and preserve stable requirement,
+`../../_refs/shared/system-registry.json`; do not maintain a local competing enum.
+Read `../../_refs/shared/decision-coverage.md` and preserve stable requirement,
 acceptance-criterion, assumption, decision, and invariant identities. Validate
 the graph at the `discovery` stage: future task/evidence mappings remain
 explicit `future_gaps`, while malformed identities, dangling references, and
@@ -30,7 +32,7 @@ Turn a request into a confirmed requirement contract. This skill now owns both j
 
 Output dialogue only. Do not write specs, plans, or code here.
 
-For an unsettled UI question, use `_refs/design/uiux/index.md` to select only
+For an unsettled UI question, use `../../_refs/design/uiux/index.md` to select only
 the relevant surface and topic; compare current UI evidence and candidate
 improvements. Do not infer a full design-system task from a small UI question.
 Q&A and bounded explicit fixes retain their existing lightweight routing.
@@ -41,7 +43,7 @@ Backend-only questions do not load UI/UX references.
 ### 0. Detect execution context
 Detect the target project root, `target_root_kind`, track, and
 `stack_profile` before asking blockers. Target-root discovery locates evidence;
-it does not establish artifact ownership. Use `_refs/shared/project-context.md`
+it does not establish artifact ownership. Use `../../_refs/shared/project-context.md`
 with:
 
 ```text
@@ -62,7 +64,7 @@ cd "$TARGET_ROOT"
 ```
 
 If multiple app roots exist, ask the user which root to target with a numbered
-list and short aliases from `_refs/shared/user-choice-prompt.md`. If no known
+list and short aliases from `../../_refs/shared/user-choice-prompt.md`. If no known
 stack is detected, resolve it through the `general` generic-harness fallback in
 the central registry.
 
@@ -80,7 +82,7 @@ repo itself is the target. Brainstorming remains read-only either way.
 ### 0.1 Resolve semantic repository ownership
 
 Discover repository topology and stable repository IDs using
-`_refs/shared/repository-contract.mjs` before creating the handoff. Record the
+`../../_refs/shared/repository-contract.mjs` before creating the handoff. Record the
 repository coordinating this conversation as `execution_host_repository_id`.
 Resolve the semantic requirement/spec owner independently:
 
@@ -179,8 +181,8 @@ Read only what changes the questions:
 - Related approved spec/plan frontmatter selected in order by the same
   `contract_id`, `change_ref`, `supersedes` relationship, requirement, exact
   module, or explicit user selection. Recency only breaks a relationship tie.
-- For angular / nestjs / nextjs / ai-agent: `_refs/sdlc/<track>.md`.
-- For test: `_refs/shared/testing-philosophy.md`, then the target stack test ref when known.
+- For angular / nestjs / nextjs / ai-agent: `../../_refs/sdlc/<track>.md`.
+- For test: `../../_refs/shared/testing-philosophy.md`, then the target stack test ref when known.
 - For product: product ledgers related to the exact requirement or module.
 - `package.json`, lockfiles, and workspace config only enough to identify
   package manager/script evidence; do not run installs or mutate dependencies.
@@ -210,11 +212,11 @@ Do not continue to blocker confirmation until the direction is selected or the u
 ## Optional Visual Companion
 
 Before presenting or settling an open decision, apply
-`_refs/sdlc/visual-offer-policy.md`. Assess actual alternatives and visual
+`../../_refs/sdlc/visual-offer-policy.md`. Assess actual alternatives and visual
 benefit, then invite just in time before choosing a direction. Direct preview
 requests already establish intent. Preserve scoped `visual_companion` state
 through handoffs; a skill or phase change does not reset a decline or pending
-invitation. Load the detailed `_refs/sdlc/visual-companion.md` only to prepare
+invitation. Load the detailed `../../_refs/sdlc/visual-companion.md` only to prepare
 an accepted/requested surface or its missing runtime consent.
 
 The visual companion remains an optional decision aid. Conversation feedback
@@ -419,8 +421,8 @@ or embedding source artifact bodies:
   redaction status
 
 ## Cross-references
-- `_refs/sdlc/<track>.md` - angular / nestjs / nextjs discovery, spec, and plan patterns
-- `_refs/shared/testing-philosophy.md` - test-track principles
+- `../../_refs/sdlc/<track>.md` - angular / nestjs / nextjs discovery, spec, and plan patterns
+- `../../_refs/shared/testing-philosophy.md` - test-track principles
 - `sdcorejs-product` - product ledger and traceability review
 - `sdcorejs-spec` - writes and reviews the spec gate
 - `sdcorejs-explore (memories mode)` - durable project preferences

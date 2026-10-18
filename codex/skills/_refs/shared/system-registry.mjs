@@ -145,6 +145,7 @@ const REQUIRED_ARTIFACT_ROOTS = [
   'documentation',
   'architecture',
   'conventions',
+  'project_workspaces',
 ];
 const REQUIRED_LEGACY_ARTIFACT_ROOTS = ['product_documents', 'design_artifacts'];
 

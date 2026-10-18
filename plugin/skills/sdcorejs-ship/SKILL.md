@@ -6,6 +6,8 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Ship
 
@@ -42,13 +44,13 @@ for commit, PR, push, changelog, tag, or release artifacts.
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and
-`_refs/shared/artifact-lifecycle.md`; consume and pass through the current
+Read `../../_refs/shared/runtime-protocols.md` and
+`../../_refs/shared/artifact-lifecycle.md`; consume and pass through the current
 change's `artifact_context`. For production/release claims, also load
-`_refs/shared/ship-readiness-contract.mjs`; it consumes the common approved
+`../../_refs/shared/ship-readiness-contract.mjs`; it consumes the common approved
 artifact, repository, source revision map, and evidence identities. Redact
 suspected secrets before printing evidence. Read
-`_refs/shared/decision-coverage.md`, preserve `decision_coverage` and
+`../../_refs/shared/decision-coverage.md`, preserve `decision_coverage` and
 `goal_backward_review`, and block readiness when either reports an uncovered
 record, invariant evidence gap, or unresolved critique blocker.
 Preserve `architecture_context` and the exact `architecture_gate`. For required
@@ -56,7 +58,7 @@ architecture, verify the immutable spec -> architecture -> plan graph and
 current `INV-*` conformance; missing/stale/mutated architecture or mismatched
 path/hash/reference blocks readiness. A concrete not-applicable gate retains
 `architecture_context: null` and must not be upgraded to PASS by inference.
-Read `_refs/shared/validation-map.md`; preserve the validation map's approved evidence evaluation. Read `_refs/shared/convergence-contract.mjs`; verify-before-done evaluates and seals a receipt, while branch-ready verifies both against approved change/mode and current identity.
+Read `../../_refs/shared/validation-map.md`; preserve the validation map's approved evidence evaluation. Read `../../_refs/shared/convergence-contract.mjs`; verify-before-done evaluates and seals a receipt, while branch-ready verifies both against approved change/mode and current identity.
 
 ## Mode Selection
 
@@ -158,7 +160,7 @@ Rules:
 
 ## Mode: verify-before-done
 
-Read `_refs/orchestration/tail/verify-before-done.md` completely, then run the selected verification mode.
+Read `../../_refs/orchestration/tail/verify-before-done.md` completely, then run the selected verification mode.
 
 Feature acceptance:
 
@@ -215,7 +217,7 @@ Do not patch source directly inside `verify-before-done`.
 
 ## Mode: branch-ready
 
-Read `_refs/orchestration/tail/branch-ready.md` completely, then run its read-only hygiene checks.
+Read `../../_refs/orchestration/tail/branch-ready.md` completely, then run its read-only hygiene checks.
 
 Branch-ready is the final read-only gate immediately before `sdcorejs-git`
 creates commit, PR, push, tag, or release artifacts. No writes after
@@ -251,7 +253,7 @@ Preferred order:
 4. Merge producer `artifact_context` entries for the same change. Preserve
    local-only and unrelated exclusions; require one explicit owner for shared
    artifacts.
-5. Run `sdcorejs-cleanup (task-tail-cleanup)` for qualifying known task artifacts after durable finalization; follow `_refs/cleanup/workflow.md`.
+5. Run `sdcorejs-cleanup (task-tail-cleanup)` for qualifying known task artifacts after durable finalization; follow `../../_refs/cleanup/workflow.md`.
 6. After mutation, consume exact receipts, independent current cleanup snapshot and current mapped affected checks; failures block readiness.
 7. Run `verify-before-done` or the appropriate verification mode over the final
    intended diff.
@@ -327,7 +329,7 @@ Rules:
 Use for release, tag, publish, version, or "next tag" requests.
 
 Collect the complete `release_evidence` schema from
-`_refs/orchestration/tail/ship-context.md`. Evaluate `ready_to_ship`,
+`../../_refs/orchestration/tail/ship-context.md`. Evaluate `ready_to_ship`,
 `commit_ready`, `push_ready`, `pr_ready`, `release_ready`, and
 `actually_published` independently.
 
@@ -451,7 +453,7 @@ Rules:
 
 ## ship_context Output
 
-Read `_refs/orchestration/tail/ship-context.md` completely before emitting the
+Read `../../_refs/orchestration/tail/ship-context.md` completely before emitting the
 redacted output. Every mode returns the full contract from that reference; this
 compact projection highlights the delivery-critical fields:
 
@@ -487,12 +489,12 @@ is not complete.
 
 ## Cross-References
 
-- `_refs/shared/finish-gate.md` - consolidated post-code options and final branch-ready ordering.
-- `_refs/orchestration/tail/verify-before-done.md` - verification mode and acceptance evidence gate.
-- `_refs/orchestration/tail/branch-ready.md` - final read-only hygiene gate.
-- `_refs/orchestration/tail/ship-context.md` - complete output contract and invariants.
+- `../../_refs/shared/finish-gate.md` - consolidated post-code options and final branch-ready ordering.
+- `../../_refs/orchestration/tail/verify-before-done.md` - verification mode and acceptance evidence gate.
+- `../../_refs/orchestration/tail/branch-ready.md` - final read-only hygiene gate.
+- `../../_refs/orchestration/tail/ship-context.md` - complete output contract and invariants.
 - `sdcorejs-git` - commit, PR, changelog, release notes, tag/release artifacts.
-- `_refs/angular/core-version.md` - pinned Core UI version guard for Angular dependency updates.
+- `../../_refs/angular/core-version.md` - pinned Core UI version guard for Angular dependency updates.
 - `sdcorejs-repair-loop` - fixes failed review or verification findings.
 - `sdcorejs-debug` - root-cause workflow for concrete failures.
 - `sdcorejs-test` - test authoring and test evidence.

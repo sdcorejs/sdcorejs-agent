@@ -122,6 +122,18 @@ const SKILL_HINTS = [
 
 const PRIORITY_RULES = [
   {
+    // Task-breakdown mode: new role tasks or tickets from PRDs, stories, a sprint
+    // or a board. Recording the requirement of one existing TASKID stays with
+    // documentation.
+    skill: 'sdcorejs-product',
+    when: ({ prompt, tokens }) =>
+      hasAny(tokens, ['task', 'tasks', 'ticket', 'tickets']) &&
+      hasAny(tokens, ['prd', 'prds', 'story', 'stories', 'us', 'sprint', 'board', 'backlog']) &&
+      (/\bbreak(?:s|ing)?\s+down\b/u.test(prompt) || /\b(?:tach|ra\s+soat)\b/u.test(prompt) ||
+        hasAny(tokens, ['create', 'tao', 'review'])) &&
+      !/\brecord\b/u.test(prompt)
+  },
+  {
     skill: null,
     when: ({ prompt, tokens }) =>
       /^what is the difference\b/u.test(prompt) &&

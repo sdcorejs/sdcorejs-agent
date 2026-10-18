@@ -13,6 +13,7 @@ import {
   DESIGN_LOCAL_ONLY_DIRECTORIES,
   PRODUCT_DOCUMENT_ROOT,
   PRODUCT_LEDGER_ROOT,
+  PROJECT_WORKSPACE_ROOT,
   classifyDesignArtifactPath,
   classifyProductArtifactPath,
   isSafeFeature,
@@ -104,6 +105,8 @@ const ARTIFACT_KIND_BY_PATH = [
   [/^\.sdcorejs\/documentation\//i, 'documentation-asset'],
   [/^\.sdcorejs\/handoffs\//i, 'handoff'],
   [/^\.sdcorejs\/memories\//i, 'memory'],
+  [new RegExp(`^${escapeForPattern(PROJECT_WORKSPACE_ROOT)}/[a-z0-9]+(?:-[a-z0-9]+)*/(?:project|task-breakdown\\.config)\\.md$`, 'i'), 'project-config'],
+  [new RegExp(`^${escapeForPattern(PROJECT_WORKSPACE_ROOT)}/[a-z0-9]+(?:-[a-z0-9]+)*/tasks/[a-z0-9]+(?:-[a-z0-9]+)*\\.md$`, 'i'), 'task-breakdown'],
   [/^\.sdcorejs\/tasks\//i, 'task'],
   [/^\.sdcorejs\/persona\.md$/i, 'persona'],
   [/^\.sdcorejs\/summary\.md$/i, 'summary'],
@@ -117,7 +120,15 @@ const ARTIFACT_KIND_BY_PATH = [
  * also what stops a parallel worker from staging one: shared writes are the
  * sequential or fan-in integration owner's job, merged once.
  */
-const SHARED_KINDS = new Set(['convention', 'memory', 'persona', 'summary', 'task']);
+const SHARED_KINDS = new Set([
+  'convention',
+  'memory',
+  'persona',
+  'project-config',
+  'summary',
+  'task',
+  'task-breakdown',
+]);
 const CHANGE_SCOPED_KINDS = new Set([
   'architecture',
   'design-asset',
