@@ -2,14 +2,14 @@
   "schema_version": 1,
   "kind": "task-breakdown-main-port-continuation",
   "change_ref": "task-breakdown-main-port-v1",
-  "source_revision": "fb64f8c2905cd79c6027e02ea847560cc09c8b42",
+  "source_revision": "1fca9c3fa90cd259056234b27cf978a606fd927b",
   "scope_plan": {
-    "path": ".sdcorejs/plans/workflow/2026-10-17-22-02-task-breakdown-main-port.md",
-    "approval_hash": "sha256:v1:d677d8a56540281a54391fcf17af3dd9dcf4d179bd9a3ec87bff2ca32f43e00d"
+    "path": ".sdcorejs/plans/workflow/2026-10-18-07-15-task-breakdown-main-port-r2.md",
+    "approval_hash": "sha256:v1:6948139cc2cac271a75c2d0f1c77fb368b34d7fad466fcb88b90ffbd6f8e0e49"
   },
   "previous_continuation": {
-    "path": "authoring/evals/uiux/cleanup-review-repair.json",
-    "sha256": "sha256:29bb40fcb40ae3f525ed71f8b49e3ea133d3da50dc822d9a221c69ea433f9b00"
+    "path": "authoring/evals/records/cleanup-storage-audit.json",
+    "sha256": "sha256:3539148debbc94898c2aee36b73a9a66768918884745409eb95c8f73f217a5f2"
   },
   "previous_sources": [
     {
@@ -130,7 +130,7 @@
     },
     {
       "path": "test/e2e/support/skill-pack-runner.mjs",
-      "sha256": "sha256:d92fe6d021fb29c158ab373bc5f44ffb7ee496257a0a599f8ae1d0209a4411a7"
+      "sha256": "sha256:7e9e0d471bed39ef32f8b628e7d9e7e2f16eabc941ed67a8387d6c4d76a59016"
     },
     {
       "path": "test/e2e/uiux-knowledge.test.mjs",
@@ -264,7 +264,7 @@
     },
     {
       "path": "test/e2e/support/skill-pack-runner.mjs",
-      "sha256": "sha256:113f4a95de9d42f3fb15623040010b8c1ef21fa345d1906b802763dcfe5e5e4e"
+      "sha256": "sha256:212149d141e0eb892dff85dd59df164fb5f498368176a2c49c5f1e9c3c667812"
     },
     {
       "path": "test/e2e/uiux-knowledge.test.mjs",
@@ -293,7 +293,7 @@
     },
     {
       "path": "VALIDATION.md",
-      "sha256": "sha256:975ac5effad9db3af72e7dc779e381988de2322ca8fe7f74bd80bdc80c0d5df8"
+      "sha256": "sha256:e03ba57b0288358a671162b13d961011279519d1fa888f3991821b6646fce40b"
     },
     {
       "path": "_refs/harness/README.md",
@@ -385,11 +385,11 @@
     },
     {
       "path": "authoring/evals/uiux/evidence.test.mjs",
-      "sha256": "sha256:d308bd417155c3a9b42fdd9a3f1dac54beb17ce8ebc2cf335f7d3d291df2e7e1"
+      "sha256": "sha256:2d4078f9c420cd638bfbea04a788efa4796694ff5026954e4fe09829713dc396"
     },
     {
       "path": "package.json",
-      "sha256": "sha256:20582f2e26b83088f4247ee708443f3b29107df907ccd934d5e5905d246c6ba8"
+      "sha256": "sha256:25982918a077471e3dee598899eb5c8f360bdbdeeae5c8650ecedbb5ef1b8c29"
     },
     {
       "path": "plugin/hooks/session-start.mjs",
@@ -441,7 +441,7 @@
     },
     {
       "path": "test/e2e/support/skill-pack-runner.mjs",
-      "sha256": "sha256:113f4a95de9d42f3fb15623040010b8c1ef21fa345d1906b802763dcfe5e5e4e"
+      "sha256": "sha256:212149d141e0eb892dff85dd59df164fb5f498368176a2c49c5f1e9c3c667812"
     }
   ],
   "verification": {
@@ -451,11 +451,11 @@
     "pass": 115,
     "fail": 0,
     "node": "v22.22.3",
-    "started_at": "2026-10-17T23:18:29.832Z",
-    "finished_at": "2026-10-17T23:19:00.954Z",
+    "started_at": "2026-10-18T00:29:13.185Z",
+    "finished_at": "2026-10-18T00:29:35.187Z",
     "transcript": {
       "path": "authoring/evals/uiux/task-breakdown-port-continuation.txt",
-      "sha256": "sha256:bb61e016d9e83741b77d08182d34ae1e96774794c26bdbef99b0271bac5524cd"
+      "sha256": "sha256:a19e4a55f5c4dca4429d4c9b5a49b090edfff070a2165c7576a6b6977d596c31"
     }
   },
   "exact_limitation": "Deterministic local Node suites over repository sources on the main base. Proves that the ported task-breakdown helpers, check CLI, flow-gate rules, connector capability contract, mirror _refs resolution and artifact path conventions pass on main; it does not prove live agent behavior, token or cost changes, or behavior on hosts other than the checked hook branches.",

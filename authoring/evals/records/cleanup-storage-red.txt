@@ -1,0 +1,6 @@
+Existing cleanup source at the clean main base omitted disk-space storage inspection.
+A fresh isolated authoring agent ran source inspection, existing deterministic routing, and rejected CLI inputs before canonical edits.
+Four storage/dependency/disk-pressure positives selected review/explore/ship/repair rather than cleanup. Seven paired safety/source/test controls retained their owners.
+The original CLI rejected storage-audit with UNKNOWN_CLEANUP_MODE. Existing mutation safety was retained.
+The new six-case storage CLI suite then failed 0/6 against the unchanged canonical implementation.
+No provider API, machine mutation or full live-agent matrix was run.

@@ -722,10 +722,12 @@ Removed-name scan should return no matches for deleted design skills in source d
 
 ## Task-breakdown mode port to main — current change (2026-10-18)
 
-This section records `task-breakdown-main-port-v1` at base HEAD
-`fb64f8c2905cd79c6027e02ea847560cc09c8b42`, through approved spec r3, approved
-architecture r3 and the approved plan
-(`sha256:v1:d677d8a56540281a54391fcf17af3dd9dcf4d179bd9a3ec87bff2ca32f43e00d`).
+This section records `task-breakdown-main-port-v1` through approved spec r3,
+approved architecture r3 and approved plan r2
+(`sha256:v1:6948139cc2cac271a75c2d0f1c77fb368b34d7fad466fcb88b90ffbd6f8e0e49`).
+The port was built on `main` at `fb64f8c2905cd79c6027e02ea847560cc09c8b42`.
+Plan r2 merges `main` at `1fca9c3fa90cd259056234b27cf978a606fd927b` (the
+cleanup storage audit) into the branch with a merge commit.
 
 The change brings three approved changes onto `main`: the `task-breakdown` mode
 of `sdcorejs-product`, the `_refs/` path resolution of the generated `plugin/`
@@ -755,11 +757,13 @@ Of the 40 source files of the three changes:
 - this file and `authoring/evals/uiux/evidence.test.mjs` are rewritten for the
   `main` structure.
 
-The evidence chain continues from `main`. The cleanup review-repair
-continuation is now verified as history at fb64f8c, and
-`authoring/evals/uiux/task-breakdown-port-continuation.json` binds the current
-content, the approved port plan and an actual focused run. Its only changed
-bound path is `test/e2e/support/skill-pack-runner.mjs`.
+The evidence chain continues from `main`. The cleanup storage continuation
+(`authoring/evals/records/cleanup-storage-audit.json`) is now verified as
+history at `1fca9c3`, and
+`authoring/evals/uiux/task-breakdown-port-continuation.json` follows it. The
+port continuation binds the current content, approved plan r2 and an actual
+focused run. Its only changed bound path is
+`test/e2e/support/skill-pack-runner.mjs`.
 
 | Area | Regression case | Before | Current |
 | --- | --- | --- | --- |

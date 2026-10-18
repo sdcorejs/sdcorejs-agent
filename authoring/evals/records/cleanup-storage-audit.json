@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "kind": "cleanup-storage-existing-mode-evidence",
+  "base_revision": "fb64f8c2905cd79c6027e02ea847560cc09c8b42",
+  "source_state": "Feature branch created from refreshed origin/main; this evidence records pre-commit dirty verification and binds current authored source bytes. Git determines later commit/push status.",
+  "authority": "User explicitly requested a branch from main and improvement of the existing cleanup skill after the authorized machine inspection. No new public skill, inventory-ceiling change, provider mutation or external live A/B is implied.",
+  "public_skill_count_before": 24,
+  "public_skill_count_after": 24,
+  "new_public_skill": false,
+  "baseline_source_bindings": [
+    {
+      "path": "skills/shared/workflow/cleanup.md",
+      "revision": "fb64f8c2905cd79c6027e02ea847560cc09c8b42",
+      "sha256": "44e14450d827e22d4afff18ae2b5973481e14365e7aff16f86a1bcccd034bbe8"
+    },
+    {
+      "path": "_refs/cleanup/cli.mjs",
+      "revision": "fb64f8c2905cd79c6027e02ea847560cc09c8b42",
+      "sha256": "58f91c5e475731adfab59a93dcaad77ff25199ddb160ee3c3279da62193c2787"
+    },
+    {
+      "path": "_refs/cleanup/workflow.md",
+      "revision": "fb64f8c2905cd79c6027e02ea847560cc09c8b42",
+      "sha256": "9561bd9f1077bc5f5c420eddeb9a355bcedec9bc683499a78c111bd60a3327be"
+    },
+    {
+      "path": "_refs/cleanup/cleanup-engine.mjs",
+      "revision": "fb64f8c2905cd79c6027e02ea847560cc09c8b42",
+      "sha256": "5ca524423f672d646682c7706f3a13e73393a0b1cd9943fe3258691f382f7dc4"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "revision": "fb64f8c2905cd79c6027e02ea847560cc09c8b42",
+      "sha256": "d92fe6d021fb29c158ab373bc5f44ffb7ee496257a0a599f8ae1d0209a4411a7"
+    }
+  ],
+  "current_source_bindings": [
+    {
+      "path": "skills/shared/workflow/cleanup.md",
+      "sha256": "ffa76a94e921ffb8d269765e6c191c8bd6efc85c086937729a851dadea697b54"
+    },
+    {
+      "path": "_refs/cleanup/cli.mjs",
+      "sha256": "5439d858569c88c05f6e1ea209533b5bc682919e751cd4987f0bd216e529904b"
+    },
+    {
+      "path": "_refs/cleanup/workflow.md",
+      "sha256": "5a922f3d906ef4578d0950c4de712b266a528e3d548a8f642f92bd44a235a9ce"
+    },
+    {
+      "path": "_refs/cleanup/storage-audit.md",
+      "sha256": "925af47349fdd497eb9f0a3d06ec4955ddc708ea941663910432b95a87a78dcd"
+    },
+    {
+      "path": "_refs/cleanup/storage-audit.mjs",
+      "sha256": "d77d53dbab529e86ca107a82455a0b8334bd8b33251f8d62c039fb64bfc970b4"
+    },
+    {
+      "path": "_refs/cleanup/storage_inventory.py",
+      "sha256": "a2eb64655be70dc5ae62dc3ace7e4c564e6821604b9915bf802966c70285ab71"
+    },
+    {
+      "path": "_refs/cleanup/inspect_npm.py",
+      "sha256": "ee4bc364e2e94e057d04fb7f6fa594d0b9d8f09b38416699ac4c71e810dbaa89"
+    },
+    {
+      "path": "test/e2e/cleanup-storage.test.mjs",
+      "sha256": "8725c8b84c4e564ed4f2882124e49b52a57b8f885ce8723cfbc1c555ff6ff9ac"
+    },
+    {
+      "path": "test/e2e/fixtures/cleanup-storage-tools.py",
+      "sha256": "08af7a5c08a97b8bd37df771c313a720009245f9d45fe7b02862137f4a5e622a"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "7e9e0d471bed39ef32f8b628e7d9e7e2f16eabc941ed67a8387d6c4d76a59016"
+    },
+    {
+      "path": "authoring/evals/uiux/evidence.test.mjs",
+      "sha256": "d49c828b3d969245e30235db9f0a938ff8b18e7869ec800265796ad9bd37b7bb"
+    }
+  ],
+  "baseline": {
+    "transcript_ref": "authoring/evals/records/cleanup-storage-red.txt",
+    "sha256": "df6d2bc863b6637b20ee1156077bd41c8bbc24da5d622b6c72d4150cb942aff5",
+    "method": "isolated subagent source/deterministic routing; baseline CLI rejections",
+    "model": null,
+    "effort": null,
+    "tokens": null,
+    "exact_limitation": "Provider model/effort/tokens were not exposed; no credentialed provider or live target-project execution.",
+    "visible_output_bytes": 671,
+    "turns": null,
+    "transcript_hash_basis": "Repository LF-normalized UTF-8 bytes; historical visible-output byte metric is preserved.",
+    "transcript_stored_bytes": 665
+  },
+  "red": {
+    "command": "node --test test/e2e/cleanup-storage.test.mjs (selected existing Python)",
+    "tests": 6,
+    "failed": 6,
+    "result": "EXPECTED_FAIL",
+    "observation": "Missing storage routing, UNKNOWN_CLEANUP_MODE and missing helpers."
+  },
+  "green": {
+    "transcript_ref": "authoring/evals/records/cleanup-storage-green.txt",
+    "sha256": "5b054ca30d54124886e4240428c3ba31178d8ad8a6dca57886e1e67e89167e8b",
+    "method": "fresh isolated subagent forward test plus regression fixtures",
+    "model": null,
+    "effort": null,
+    "tokens": null,
+    "routing_cases_passed": 12,
+    "focused_python_probes_passed": 14,
+    "node_cli_cases_passed": 6,
+    "python_regression_cases_passed": 16,
+    "exact_limitation": "Deterministic harness and isolated fixtures only; not full natural-language execution or live provider/machine mutation proof.",
+    "visible_output_bytes": 1179,
+    "turns": null,
+    "transcript_hash_basis": "Repository LF-normalized UTF-8 bytes; historical visible-output byte metric is preserved.",
+    "transcript_stored_bytes": 1171
+  },
+  "refactor": {
+    "result": "PASS",
+    "observation": "Reused the existing cleanup mode/CLI and mutation engine; compact trigger, progressive reference, explicit report outputs, sanitized runtime fields and paired owner controls; mirrors generated by sync-skills."
+  },
+  "verification": {
+    "cleanup": {
+      "passed": 136,
+      "skipped": 21,
+      "failed": 0,
+      "limitation": "Linux/macOS native cases NOT_RUN on Windows; unchanged mutation engine exercised with isolated Windows fixtures."
+    },
+    "routing_authoring": {
+      "passed": 41,
+      "failed": 0
+    },
+    "adapters_context_toolchain": {
+      "passed": 41,
+      "failed": 0
+    },
+    "authoring_matrix": {
+      "result": "PASS",
+      "provider_calls": 0,
+      "ambient_credentials_read": false
+    },
+    "full_track_golden_e2e": "NOT_RUN; unrelated track implementation unchanged",
+    "external_live_ab_matrix": "NOT_RUN; not requested/authorized"
+  },
+  "preserved_mutation_engine_sha256": "5ca524423f672d646682c7706f3a13e73393a0b1cd9943fe3258691f382f7dc4",
+  "observed_at": "2026-10-17T15:06:20.691221+00:00",
+  "pre_review_source_bindings": {
+    "observed_at": "2026-10-17T15:06:20.691221+00:00",
+    "status": "historical-pre-review-hashes; current files are bound separately",
+    "sources": [
+      {
+        "path": "skills/shared/workflow/cleanup.md",
+        "sha256": "ffa76a94e921ffb8d269765e6c191c8bd6efc85c086937729a851dadea697b54"
+      },
+      {
+        "path": "_refs/cleanup/cli.mjs",
+        "sha256": "5439d858569c88c05f6e1ea209533b5bc682919e751cd4987f0bd216e529904b"
+      },
+      {
+        "path": "_refs/cleanup/workflow.md",
+        "sha256": "5a922f3d906ef4578d0950c4de712b266a528e3d548a8f642f92bd44a235a9ce"
+      },
+      {
+        "path": "_refs/cleanup/storage-audit.md",
+        "sha256": "938c796531a5a512671650433aef986d9edc39a7a43880e6966ecf51ed485d04"
+      },
+      {
+        "path": "_refs/cleanup/storage-audit.mjs",
+        "sha256": "f785728b82a374fa70713388f1d4a836acfce4f3e3d8407755790b09c77447ab"
+      },
+      {
+        "path": "_refs/cleanup/storage_inventory.py",
+        "sha256": "a5553d6cb1a7196376c7e77303715db0cd96bcf98a78b1894a65cc173607ae26"
+      },
+      {
+        "path": "_refs/cleanup/inspect_npm.py",
+        "sha256": "ea137b8810320fe6b5840252e16380d477fe19996f3f2aacd06c6d9cef0e7e66"
+      },
+      {
+        "path": "test/e2e/cleanup-storage.test.mjs",
+        "sha256": "bda687e796bfc4334b0e1bcdf28d1e1044d2ea9c888c5cb64d9164677a614e9d"
+      },
+      {
+        "path": "test/e2e/fixtures/cleanup-storage-tools.py",
+        "sha256": "5b2c6b7b32df07a47569455b780eb9ec2cda80b65a121b078a2044c435467a2f"
+      },
+      {
+        "path": "test/e2e/support/skill-pack-runner.mjs",
+        "sha256": "ad268b10edd7ee8e4ea442c70a3d2c890d65aec9bf685802b3535aaeb8f966b3"
+      }
+    ]
+  },
+  "verification_observed_at": "2026-10-17T15:06:20.691221+00:00",
+  "review_repair": {
+    "observed_on": "2026-10-18",
+    "status": "PASS",
+    "findings": [
+      {
+        "id": "R1",
+        "severity": "P2",
+        "issue": "Windows short aliases bypassed direct helper report containment and Node CLI containment when used for the root",
+        "repair": "Compare physical root/output identities in Python helpers and Node wrapper, rejecting redirected report parents before exclusive creation"
+      },
+      {
+        "id": "R2",
+        "severity": "P2",
+        "issue": "Node range syntax accepted invalid repeated operators and rejected spaced comparators",
+        "repair": "Conservative common-range grammar, including numeric prerelease rules"
+      },
+      {
+        "id": "R3",
+        "severity": "P2",
+        "issue": "Declared pnpm/Yarn/Bun manager could receive an npm ci recovery recipe",
+        "repair": "Hold competing manager ownership and omit npm recipe"
+      },
+      {
+        "id": "R4",
+        "severity": "P2",
+        "issue": "Dependency/AppData debug requests were captured by cleanup; bare disk pressure was missed",
+        "repair": "Require storage meaning for contextual nouns and admit direct disk pressure"
+      },
+      {
+        "id": "R5",
+        "severity": "P2",
+        "issue": "Direct Python scan accepted nonfinite budgets and root/outside exclusions",
+        "repair": "Validate finite nonnegative budgets and absolute descendant exclusions before traversal"
+      },
+      {
+        "id": "R6",
+        "severity": "P2",
+        "issue": "8.3 exclusion aliases silently included excluded contents with complete coverage",
+        "repair": "Reject noncanonical or redirected exclusions explicitly"
+      }
+    ],
+    "red": "Actual isolated regressions failed before repair; no live machine mutation",
+    "historical_evidence": "October 17 green/verification results and October 2 UI/UX records remain historical, not claims about this repair",
+    "integration_repairs": [
+      "Pin historical UI/UX repair evidence to the pre-storage Git snapshot and validate current routing against the storage source binding",
+      "Refresh the project-summary dependency fingerprint after adding the storage test command"
+    ],
+    "live_provider": "NOT RUN; not requested; no ambient credentials inspected",
+    "python_regression_cases_passed": 21,
+    "finding_outcome": "All six verified findings repaired; no residual finding in independent focused rechecks",
+    "repository_verification": [
+      {
+        "tests": 631,
+        "passed": 631,
+        "failed": 0,
+        "skipped": 0
+      },
+      {
+        "tests": 157,
+        "passed": 136,
+        "failed": 0,
+        "skipped": 21
+      }
+    ],
+    "latest_affected_verification": {
+      "command": "node --test test/e2e/cleanup-storage.test.mjs",
+      "node_cases_passed": 6,
+      "python_cases_passed": 21,
+      "failed": 0,
+      "reason": "Rerun after the final Node root-alias containment correction; unchanged broad checks reused"
+    },
+    "source_binding_correction": "Pre-review hashes preserved independently from the mutable current manifest; historical byte-normalization basis explicit",
+    "independent_recheck": "Correctness: 25 repaired-case checks plus final ordinary/8.3 exclusion pair passed. Routing: 2 focused tests passed. UI/UX evidence: 4 tests passed.",
+    "limitations": [
+      "21 native Linux/macOS cases skipped on Windows",
+      "Unchanged Angular/NestJS/Next.js golden projects and external live A/B not run"
+    ],
+    "authority": "User explicitly requested review, fix findings, commit and push this feature branch."
+  }
+}

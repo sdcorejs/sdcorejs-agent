@@ -1,0 +1,8 @@
+A fresh isolated forward-testing agent evaluated the candidate using in-memory routing and tiny synthetic fixtures.
+It found report overwrite through direct Python --out, runtime-file comment disclosure/invalid-version certainty, and storage owner-selection regressions.
+Each confirmed defect received a failing regression before repair. Report writes now refuse in-scope or existing targets; version reports parse numeric requirements and omit comments; test/review exclusions precede storage selection.
+The final independent recheck passed 12/12 deterministic paired routing cases and retained 14/14 passing focused Python probes.
+The repository regression suite passed six Node CLI cases, including sixteen Python helper cases.
+Partial coverage, hardlink accounting, private-registry uncertainty, active/local-edit limitations, scope separation and task-tail controls remained intact.
+No live machine scan, provider GC, reinstall, Docker start/prune/compaction, or native POSIX mutation was proved.
+The unbounded report-size observation is documented with the CLI transport limit and partition/direct-report workflow; no large-scale performance acceptance is claimed.
