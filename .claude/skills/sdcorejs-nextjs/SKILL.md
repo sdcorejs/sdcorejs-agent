@@ -6,24 +6,26 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, WebFetc
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Build Website — Write Code Orchestrator
 
 
-For unresolved visual decisions, apply `_refs/sdlc/visual-offer-policy.md`;
+For unresolved visual decisions, apply `../../_refs/sdlc/visual-offer-policy.md`;
 forward `requirement_context.visual_companion` through `context.pass`
 (portable `state_delta.visual_companion`) to the owning workflow.
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and `_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through the finishing tail.
+Read `../../_refs/shared/runtime-protocols.md` and `../../_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through the finishing tail.
 
 ## Purpose
 Single entry point for generating approved Next.js website code. This skill is the
 dispatch layer between an approved plan from `sdcorejs-execute-plan` and the
 focused REFERENCE PACKS that hold the per-concern generation rules. It does NOT
 inline those rules — it reads the right pack on demand. The ten packs under
-`_refs/nextjs/build-website/write-code/` were standalone sub-skills before they
+`../../_refs/nextjs/build-website/write-code/` were standalone sub-skills before they
 were consolidated here so the track exposes one orchestrator instead of eleven.
 
 ## When invoked
@@ -47,25 +49,25 @@ summary v2 after scaffolding; an architecture-level refresh belongs only to the
 sequential workflow or integration owner.
 
 Before generating any non-trivial page, section, interactive block, form, or
-frontend data boundary, read `_refs/shared/frontend-architecture.md`. Require the
+frontend data boundary, read `../../_refs/shared/frontend-architecture.md`. Require the
 approved plan dispatched by `sdcorejs-execute-plan` to contain a completed
 `frontend_architecture` contract. This executor must not create or self-approve a
 missing contract. Stop and return to `sdcorejs-plan` through
 `sdcorejs-execute-plan` when the gate is missing, incomplete, or contradicted by
 current code evidence.
 
-Before dispatch, call `_refs/nextjs/execution-contract.mjs` with the central
+Before dispatch, call `../../_refs/nextjs/execution-contract.mjs` with the central
 registry identity, semantic site/module/portal-composition owner, explicit
 website profile, approved requirement features, and requested features. Stop on
 an unresolved owner or unapproved feature. A module/site artifact never falls
 back to the portal repository; portal ownership exists only for explicit
 portal-composition scope.
 
-Before writing any helper, formatter, validator, mapper, paging/filter helper, random-id helper, query-param helper, upload/download helper, clipboard/browser helper, API-route utility, hook utility, or `src/lib/utils.ts` addition, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior. Keep `next-intl` only when `i18n` is approved; use `@sdcorejs/utils` for shared pure helper behavior. The package must be a direct target-project dependency before generated code imports it.
+Before writing any helper, formatter, validator, mapper, paging/filter helper, random-id helper, query-param helper, upload/download helper, clipboard/browser helper, API-route utility, hook utility, or `src/lib/utils.ts` addition, read `../../_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior. Keep `next-intl` only when `i18n` is approved; use `@sdcorejs/utils` for shared pure helper behavior. The package must be a direct target-project dependency before generated code imports it.
 
 ## Dispatch table
 
-For approved UI work, read `_refs/design/uiux/index.md` and select only the
+For approved UI work, read `../../_refs/design/uiux/index.md` and select only the
 surface/topics being implemented. Respect approved design and content, current
 tokens/components/icons and the detected Next.js/router/package versions.
 Use actual framework docs/source for version-dependent APIs and preserve
@@ -80,18 +82,18 @@ authorize a feature; the existence of a "full build" sequence does not.
 | User intent / plan item | Reference pack to read | Phase |
 |---|---|---|
 | Approved new-site baseline | the approved subset of the sequence below | Profile build |
-| "Init project only" | [`_refs/nextjs/build-website/write-code/init-site.md`](_refs/nextjs/build-website/write-code/init-site.md) | Bootstrap |
-| "Pick / change theme" | [`_refs/nextjs/build-website/write-code/theme.md`](_refs/nextjs/build-website/write-code/theme.md) | Tokens |
-| "Add a page" / "add page X" / "add hero / testimonials block" / localized equivalents | [`_refs/nextjs/build-website/write-code/pages-and-blocks.md`](_refs/nextjs/build-website/write-code/pages-and-blocks.md) | Composition |
-| "Set up SEO" / "fix meta tags" | [`_refs/nextjs/build-website/write-code/seo.md`](_refs/nextjs/build-website/write-code/seo.md) | SEO |
-| "OG preview broken" / "social preview image missing" | [`_refs/nextjs/build-website/write-code/og-preview.md`](_refs/nextjs/build-website/write-code/og-preview.md) | OG |
-| "Add English" / "add EN" | [`_refs/nextjs/build-website/write-code/i18n.md`](_refs/nextjs/build-website/write-code/i18n.md) | i18n |
-| "Cache duration is too long/short", "ISR settings" | [`_refs/nextjs/build-website/write-code/caching.md`](_refs/nextjs/build-website/write-code/caching.md) | Cache |
-| "Responsive layout broken on mobile" | [`_refs/nextjs/build-website/write-code/responsive.md`](_refs/nextjs/build-website/write-code/responsive.md) | Responsive |
-| "Contact form does not send email" / "real form" | [`_refs/nextjs/build-website/write-code/contact-form.md`](_refs/nextjs/build-website/write-code/contact-form.md) | Form |
-| "Thin content" / "review content" / "language parity" / "Article schema" / localized equivalents | [`_refs/nextjs/build-website/write-code/content-quality.md`](_refs/nextjs/build-website/write-code/content-quality.md) | Content |
+| "Init project only" | [`../../_refs/nextjs/build-website/write-code/init-site.md`](../../_refs/nextjs/build-website/write-code/init-site.md) | Bootstrap |
+| "Pick / change theme" | [`../../_refs/nextjs/build-website/write-code/theme.md`](../../_refs/nextjs/build-website/write-code/theme.md) | Tokens |
+| "Add a page" / "add page X" / "add hero / testimonials block" / localized equivalents | [`../../_refs/nextjs/build-website/write-code/pages-and-blocks.md`](../../_refs/nextjs/build-website/write-code/pages-and-blocks.md) | Composition |
+| "Set up SEO" / "fix meta tags" | [`../../_refs/nextjs/build-website/write-code/seo.md`](../../_refs/nextjs/build-website/write-code/seo.md) | SEO |
+| "OG preview broken" / "social preview image missing" | [`../../_refs/nextjs/build-website/write-code/og-preview.md`](../../_refs/nextjs/build-website/write-code/og-preview.md) | OG |
+| "Add English" / "add EN" | [`../../_refs/nextjs/build-website/write-code/i18n.md`](../../_refs/nextjs/build-website/write-code/i18n.md) | i18n |
+| "Cache duration is too long/short", "ISR settings" | [`../../_refs/nextjs/build-website/write-code/caching.md`](../../_refs/nextjs/build-website/write-code/caching.md) | Cache |
+| "Responsive layout broken on mobile" | [`../../_refs/nextjs/build-website/write-code/responsive.md`](../../_refs/nextjs/build-website/write-code/responsive.md) | Responsive |
+| "Contact form does not send email" / "real form" | [`../../_refs/nextjs/build-website/write-code/contact-form.md`](../../_refs/nextjs/build-website/write-code/contact-form.md) | Form |
+| "Thin content" / "review content" / "language parity" / "Article schema" / localized equivalents | [`../../_refs/nextjs/build-website/write-code/content-quality.md`](../../_refs/nextjs/build-website/write-code/content-quality.md) | Content |
 
-Read ON DEMAND only — load the one pack for the step you are executing. Each pack further links to track-level reference data under `_refs/nextjs/build-website/`.
+Read ON DEMAND only — load the one pack for the step you are executing. Each pack further links to track-level reference data under `../../_refs/nextjs/build-website/`.
 
 ## Approved-feature execution sequence
 
@@ -132,13 +134,13 @@ may fan out after their approved page inputs exist.
 
 ### MANDATORY FINISH GATE (always — standalone trigger OR full SDLC flow)
 
-**STOP and present the consolidated finish gate from [`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md) before running ANY tail step.** UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add a page", "add a section") — NOT only inside the spec→plan flow. The gate surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review choices with defaults so the user always knows these steps exist and can opt out of new user/technical docs. "Small change" is not a reason to skip the gate.
+**STOP and present the consolidated finish gate from [`../../_refs/shared/finish-gate.md`](../../_refs/shared/finish-gate.md) before running ANY tail step.** UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add a page", "add a section") — NOT only inside the spec→plan flow. The gate surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review choices with defaults so the user always knows these steps exist and can opt out of new user/technical docs. "Small change" is not a reason to skip the gate.
 
 Then run the tail-call chain, honoring the gate's answers (skip = omit that step; everything not skipped runs):
 
 Documentation supplement: immediately after the Finish Gate test decision, run
 `sdcorejs-documentation (documentation-gate mode)` and read
-`_refs/documentation/gate.md`. This gate asks or loads saved project
+`../../_refs/documentation/gate.md`. This gate asks or loads saved project
 preferences from `<target>/.sdcorejs/documentation/preferences.md` for
 `user-guide` and `technical-doc` only. It must ask before
 creating a missing corresponding user-guide or technical-doc for a new feature.
@@ -154,17 +156,17 @@ sdcorejs-review (if Review not skipped) ← convention check; Critical / Importa
    |
 sdcorejs-repair-loop (if Review not skipped) - apply findings, iterate to clean
    |
-sdcorejs-documentation (code-documentation mode) - automatic source-code documentation for touched source files; no approval ASK; rules in _refs/documentation/code-documentation.md
+sdcorejs-documentation (code-documentation mode) - automatic source-code documentation for touched source files; no approval ASK; rules in ../../_refs/documentation/code-documentation.md
    |
 sdcorejs-product (when user-visible feature traceability is needed) - update .sdcorejs/docs/product/ ledger
    |
 sdcorejs-documentation (write-technical-doc mode, if Technical doc approved) - create/update the approved technical doc from source evidence
    |
-_refs/orchestration/tail/auto-docs.md (always) - change-scoped execution record to .sdcorejs/docs/nextjs/
+../../_refs/orchestration/tail/auto-docs.md (always) - change-scoped execution record to .sdcorejs/docs/nextjs/
    |
 sdcorejs-documentation (write-user-guide mode, if User guide approved) - create/update touched module's .sdcorejs/documentation/user-guides/<module>/<module>.md only when approved by the documentation gate or explicitly requested
    |
-_refs/orchestration/tail/auto-task-tracker.md (integration/sequential owner only) - reconcile durable backlog, never live progress
+../../_refs/orchestration/tail/auto-task-tracker.md (integration/sequential owner only) - reconcile durable backlog, never live progress
    |
 sdcorejs-explore (memories mode) - durable knowledge (when applicable)
    |
@@ -191,13 +193,13 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
   `progress.create`, with one item per planned unit and the finishing steps (tests, optional behavior-preserving simplification, review, code-documentation, technical-doc, user-guide).
   Keep one item `in_progress`, call `progress.update` after each unit, and never
   mirror live progress to a repository file.
-- Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
+- Present the **MANDATORY FINISH GATE** ([`../../_refs/shared/finish-gate.md`](../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review so the user always knows these exist. NEVER silently end after generating code, and NEVER skip the gate because the request was a one-liner.
 - Read the approved plan BEFORE dispatching — never invent scope
 - Resolve `approved_features`, artifact identity, and semantic owner with
-  `_refs/nextjs/execution-contract.mjs`; consume
-  `_refs/shared/system-registry.json` and block portal fallback for site/module
+  `../../_refs/nextjs/execution-contract.mjs`; consume
+  `../../_refs/shared/system-registry.json` and block portal fallback for site/module
   artifacts
-- Apply `_refs/shared/frontend-architecture.md` before non-trivial frontend
+- Apply `../../_refs/shared/frontend-architecture.md` before non-trivial frontend
   generation and derive page, feature-local, shared, client-island, data-boundary,
   registration/export, and test files from the approved architecture contract
 - Dispatch only approved packs in dependency order; i18n/contact/advanced
@@ -221,7 +223,7 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 
 ### Documentation Gate Rule
 
-- Inside the mandatory finish gate, run `_refs/documentation/gate.md` immediately after the test decision. It owns user-guide / technical-doc creation or update approval. `code-documentation` is automatic and is not controlled by this gate.
+- Inside the mandatory finish gate, run `../../_refs/documentation/gate.md` immediately after the test decision. It owns user-guide / technical-doc creation or update approval. `code-documentation` is automatic and is not controlled by this gate.
 
 ### MUST NOT
 - Generate code from memory when a pack covers the concern — read the pack
@@ -253,8 +255,8 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 
 ## Cross-references
 - Inputs: approved plan from `sdcorejs-plan` / `sdcorejs-execute-plan` + `sdcorejs-brainstorming` outputs
-- Reference packs: `_refs/nextjs/build-website/write-code/{init-site,theme,pages-and-blocks,seo,og-preview,i18n,caching,responsive,contact-form,content-quality}.md`
+- Reference packs: `../../_refs/nextjs/build-website/write-code/{init-site,theme,pages-and-blocks,seo,og-preview,i18n,caching,responsive,contact-form,content-quality}.md`
 - Audit an existing site (separate entry, read-only): `sdcorejs-review`
 - Tail-call chain: see CLAUDE.md workflow chart
 - Parallel execution: `sdcorejs-parallel-dispatch`
-- Shared frontend architecture gate: `_refs/shared/frontend-architecture.md`
+- Shared frontend architecture gate: `../../_refs/shared/frontend-architecture.md`

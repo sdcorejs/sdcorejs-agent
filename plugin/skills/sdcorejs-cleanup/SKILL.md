@@ -6,16 +6,18 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Cleanup
 
 ## Shared protocols and ownership
 
-Read `_refs/shared/runtime-protocols.md`, then apply Project Context Preflight
-v2 from `_refs/shared/project-context.md`. Read repository instructions and
+Read `../../_refs/shared/runtime-protocols.md`, then apply Project Context Preflight
+v2 from `../../_refs/shared/project-context.md`. Read repository instructions and
 current changes; resolve the target repository and explicitly bounded scope.
-Use `_refs/shared/tasklist.md` for non-trivial work and
-`_refs/shared/user-choice-prompt.md` before a decision. Keep reusable source
+Use `../../_refs/shared/tasklist.md` for non-trivial work and
+`../../_refs/shared/user-choice-prompt.md` before a decision. Keep reusable source
 English; localize runtime prose and preserve exact paths, hashes and commands.
 
 This utility owns filesystem hygiene, not an implementation track. Source
@@ -24,11 +26,11 @@ refinement belongs to `sdcorejs-simplify`; tests and data teardown belong to
 consolidating docs belongs to `sdcorejs-documentation`. A candidate requiring
 imports, public API or code changes is a finding/handoff to its existing owner.
 
-Load [`_refs/cleanup/workflow.md`](../../../_refs/cleanup/workflow.md) for the
+Load [`../../_refs/cleanup/workflow.md`](../../_refs/cleanup/workflow.md) for the
 runtime scope, offer and task-tail contract. Use the single engine
-[`_refs/cleanup/cleanup-engine.mjs`](../../../_refs/cleanup/cleanup-engine.mjs)
+[`../../_refs/cleanup/cleanup-engine.mjs`](../../_refs/cleanup/cleanup-engine.mjs)
 and its pure policy
-[`_refs/cleanup/cleanup-contract.mjs`](../../../_refs/cleanup/cleanup-contract.mjs).
+[`../../_refs/cleanup/cleanup-contract.mjs`](../../_refs/cleanup/cleanup-contract.mjs).
 Do not implement a second cleanup script or run `git clean -fdx` or equivalent.
 
 ## Select one action
@@ -53,7 +55,7 @@ artifact lifecycle for durable/shared durable and diagnostic outputs; reuse
 `required_with_change`, `shared_owned`, `conditional`, `local_only` and
 `unknown` buckets. `local_only` does not mean disposable. Keep debug, review,
 reproduction and recovery evidence, including failed/interrupted task outputs.
-Read `_refs/shared/artifact-lifecycle.md` before any affected durable artifact.
+Read `../../_refs/shared/artifact-lifecycle.md` before any affected durable artifact.
 
 Never infer disposal from age, naming, AI generation, `.gitignore`, equal
 hashes, or absence of an import/grep match. Assets require bounded reference
@@ -134,7 +136,7 @@ fixtures are `NOT_RUN`, even when Windows and shared contract tests pass.
 
 Explore/test/review/design/documentation workers emit evidence signals only.
 The integration owner deduplicates them and uses
-[`_refs/cleanup/offer-policy.mjs`](../../../_refs/cleanup/offer-policy.mjs)
+[`../../_refs/cleanup/offer-policy.mjs`](../../_refs/cleanup/offer-policy.mjs)
 at a safe boundary after the primary result. Offer at most one unresolved,
 significant bounded analysis; use native structured choices when supported,
 otherwise numbered Markdown. Honor decline for the same finding and session

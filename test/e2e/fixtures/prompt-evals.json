@@ -288,6 +288,24 @@
     "phase": 3
   },
   {
+    "id": "product-task-breakdown-prd",
+    "prompt": "break down this PRD into FE and BE tasks and create tickets for the assignees",
+    "expectedSkill": "sdcorejs-product",
+    "phase": 3
+  },
+  {
+    "id": "product-task-breakdown-sprint",
+    "prompt": "review the user stories on the sprint board and create FE tasks for each story",
+    "expectedSkill": "sdcorejs-product",
+    "phase": 3
+  },
+  {
+    "id": "product-task-breakdown-localized",
+    "prompt": "ra soat US trong sprint va tao task FE cho tung US",
+    "expectedSkill": "sdcorejs-product",
+    "phase": 3
+  },
+  {
     "id": "commit",
     "prompt": "commit changes",
     "expectedSkill": "sdcorejs-git",

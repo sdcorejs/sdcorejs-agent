@@ -1,3 +1,5 @@
+import { observeConnectorTools } from './runtime-attestation.mjs';
+
 const ACTIONS = [
   'progress.create',
   'progress.update',
@@ -14,6 +16,8 @@ const ACTIONS = [
   'visual.session.stop',
   'workspace.isolate',
   'web.fetch',
+  'source.read',
+  'tracker.write',
   'artifact.read',
   'artifact.write',
   'verification.run',
@@ -40,6 +44,8 @@ const CAPABILITIES = [
   'workspace_isolation',
   'browser',
   'web_fetch',
+  'external_source_read',
+  'issue_tracker_write',
   'artifact_write',
   'permission_approval',
 ];
@@ -266,6 +272,7 @@ export function resolveAction({
   action,
   runtimeCapabilities = {},
   runtimeActions = {},
+  runtime,
 } = {}) {
   if (classification || task) {
     const resolvedClassification = classification ?? classifyTask(task);
@@ -282,6 +289,22 @@ export function resolveAction({
   }
   const mapping = contract.adapters?.[adapter]?.actions?.[action];
   if (!mapping) return { mode: 'blocked', action, reason: 'adapter action mapping is missing' };
+
+  if (action === 'source.read' || action === 'tracker.write') {
+    // Connector tools are discovered in the session, never declared statically.
+    // An unsupported capability or action always takes the portable fallback.
+    const connectorCapability = normalizeCapabilityStatus(
+      runtimeCapabilities[mapping.capability] ?? contract.adapters[adapter].capabilities[mapping.capability],
+    );
+    const connectorAction = normalizeCapabilityStatus(runtimeActions[action] ?? mapping.status);
+    if (connectorCapability === 'unsupported' || connectorAction === 'unsupported') {
+      return { mode: 'fallback', action, native: [], fallback: mapping.fallback, reason: 'capability unsupported' };
+    }
+    const observed = observeConnectorTools(runtime, action);
+    return observed.status === 'supported'
+      ? { mode: 'native', action, native: observed.tools, fallback: mapping.fallback }
+      : { mode: 'fallback', action, native: [], fallback: mapping.fallback, reason: observed.reason };
+  }
 
   const runtimeCapabilityDeclared =
     mapping.capability && Object.hasOwn(runtimeCapabilities, mapping.capability);

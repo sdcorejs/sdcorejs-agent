@@ -6,6 +6,8 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Debug - Evidence-Driven Root-Cause Workflow
 
@@ -30,16 +32,16 @@ green result.
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and load only the references needed by
+Read `../../_refs/shared/runtime-protocols.md` and load only the references needed by
 the current failure.
 
 After the shared protocols and before edits, read these debugging refs:
 
-- `_refs/shared/debugging-discipline.md`
-- `_refs/shared/debug-command-discovery.md`
-- `_refs/shared/debug-environment-guard.md`
-- `_refs/shared/debug-context.md`
-- `_refs/shared/debug-contract.mjs`
+- `../../_refs/shared/debugging-discipline.md`
+- `../../_refs/shared/debug-command-discovery.md`
+- `../../_refs/shared/debug-environment-guard.md`
+- `../../_refs/shared/debug-context.md`
+- `../../_refs/shared/debug-contract.mjs`
 
 The executable debug contract consumes the central registry and stable
 artifact/repository identity. It binds the failing implementation, semantic
@@ -199,7 +201,7 @@ React and general:
 
 ## Step 3 - Command Discovery And Environment Guard
 
-Use `_refs/shared/debug-command-discovery.md` as the canonical command policy.
+Use `../../_refs/shared/debug-command-discovery.md` as the canonical command policy.
 Before running repro or verification, discover the package manager, lockfiles,
 workspace config, relevant `package.json` scripts, runner configs, original
 failing command, and CI output. Prefer focused repro first, focused regression
@@ -208,7 +210,7 @@ scripts, assume npm/npx/tsc commands, install tools, or run browser installs
 without explicit approval; record missing, unsafe, or environment-blocked
 commands in `commands_skipped`.
 
-Use `_refs/shared/debug-environment-guard.md` as the canonical environment
+Use `../../_refs/shared/debug-environment-guard.md` as the canonical environment
 policy. Before any repro touches browsers, APIs, databases, external systems,
 or persistent state, classify the environment as `local | dev | staging | prod
 | unknown | mock`, block destructive production/external side effects, and
@@ -419,7 +421,7 @@ confidence.
 ## Required Output
 
 Every `sdcorejs-debug` session ends with a redacted `debug_context` block. The
-canonical schema lives in `_refs/shared/debug-context.md`; do not duplicate or
+canonical schema lives in `../../_refs/shared/debug-context.md`; do not duplicate or
 drift it in this skill body. The final block must include at minimum:
 
 ```text

@@ -6,32 +6,34 @@ allowed-tools: Agent, AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, 
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # 04 - Execute Plan
 
-For unresolved visual decisions, apply `_refs/sdlc/visual-offer-policy.md`;
+For unresolved visual decisions, apply `../../_refs/sdlc/visual-offer-policy.md`;
 forward `requirement_context.visual_companion` through `context.pass`
 (portable `state_delta.visual_companion`) to the owning workflow.
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md`; UI executors select topics via `_refs/design/uiux/index.md` without imposing Core UI on plain stacks. Non-UI units load none. Apply
-`_refs/shared/artifact-lifecycle.md` and preserve/merge `artifact_context` from
+Read `../../_refs/shared/runtime-protocols.md`; UI executors select topics via `../../_refs/design/uiux/index.md` without imposing Core UI on plain stacks. Non-UI units load none. Apply
+`../../_refs/shared/artifact-lifecycle.md` and preserve/merge `artifact_context` from
 the approved spec, plan, and every producer. Use these executable sources of
 truth before any write or dispatch:
 
-- `_refs/shared/approved-artifact.mjs` for approval identity and parent graph.
-- `_refs/shared/system-registry.json` for track/profile routing.
-- `_refs/shared/decision-coverage.md` and its executable validator for strict
+- `../../_refs/shared/approved-artifact.mjs` for approval identity and parent graph.
+- `../../_refs/shared/system-registry.json` for track/profile routing.
+- `../../_refs/shared/decision-coverage.md` and its executable validator for strict
   decision/task/path/evidence coverage.
-- `_refs/shared/architecture-contract.mjs` for the conditional approved
+- `../../_refs/shared/architecture-contract.mjs` for the conditional approved
   architecture graph, exact handoff identity, and invariant ownership.
-- `_refs/shared/convergence-contract.mjs` for exact executed task/change trace rows.
-- `_refs/orchestration/execution-contract.mjs` for execution preparation,
+- `../../_refs/shared/convergence-contract.mjs` for exact executed task/change trace rows.
+- `../../_refs/orchestration/execution-contract.mjs` for execution preparation,
   current-root/path authorization, owner routing, working-tree boundaries, and
   execution-mode selection.
-- `_refs/harness/runtime-attestation.mjs` for observed delegation/concurrency;
-  `_refs/orchestration/parallel-protocol.mjs` builds waves and opportunity evidence.
+- `../../_refs/harness/runtime-attestation.mjs` for observed delegation/concurrency;
+  `../../_refs/orchestration/parallel-protocol.mjs` builds waves and opportunity evidence.
 
 ## Purpose
 Run the approved plan as the execution contract. This handoff between planning and doing owns four decisions:
@@ -167,7 +169,7 @@ Extract:
 - Solution-root layout when present (`backend/`, `frontend/`, `test/`, `.sdcorejs/`, including the `.sdcorejs/product/` and `.sdcorejs/design/` artifact roots).
 
 ### 2. Detect execution track
-Resolve the verified plan track through `_refs/shared/system-registry.json`.
+Resolve the verified plan track through `../../_refs/shared/system-registry.json`.
 Canonical tracks use their declared executor. Aliases resolve to their canonical
 track; an unsupported signal resolves deterministically to the registry's
 `general` generic-harness fallback. The profile classification gates below
@@ -245,13 +247,13 @@ directly from the plan; do not infer or create a universal repository layout.
 #### AI-agent architecture preflight
 
 For approved `track: ai-agent`, require `plan_context.agent_architecture` and
-apply `_refs/sdlc/ai-agent.md`. Verify `approved_spec_hash` and
+apply `../../_refs/sdlc/ai-agent.md`. Verify `approved_spec_hash` and
 `approved_plan_hash`, then resolve `engine_profile` and `capability_profile`
-exactly once from `_refs/ai-agent/manifest.json`. Block and return to
+exactly once from `../../_refs/ai-agent/manifest.json`. Block and return to
 `sdcorejs-plan` when either profile is missing, the architecture block is
 incomplete, provider storage lacks explicit governance, paths exceed approved
 scope, or the selected capability weakens
-`_refs/ai-agent/profiles/common.md`.
+`../../_refs/ai-agent/profiles/common.md`.
 
 #### Shared frontend architecture gate
 
@@ -262,7 +264,7 @@ Angular, plain Next.js, React, Vue, Svelte, and other frontend stacks.
 
 For every non-trivial frontend task:
 
-1. Read `_refs/shared/frontend-architecture.md`.
+1. Read `../../_refs/shared/frontend-architecture.md`.
 2. Require `plan_context.frontend_architecture.required: true` and verify that
    it records inspected project conventions, a route/page and child-component
    tree, reuse/extend/wrap/create/inline file decisions, responsibilities, state
@@ -294,7 +296,7 @@ attestation, then call `compileParallelContext`; dependencies form safe waves.
 Approved policy does not trigger another prompt; `unknown` never enables a
 native path. Ask once only for a legacy plan with both modes genuinely feasible.
 
-When both modes are feasible, use `_refs/shared/user-choice-prompt.md`:
+When both modes are feasible, use `../../_refs/shared/user-choice-prompt.md`:
 
 ```text
 Execution mode?
@@ -322,7 +324,7 @@ approved policy; use parent fallback only when delegation is unavailable.
 ### 5. If parent execution is selected
 
 If the user requested isolation, or the plan is risky enough that isolation is
-needed, read `_refs/orchestration/workspace-isolation.md` and resolve the
+needed, read `../../_refs/orchestration/workspace-isolation.md` and resolve the
 `workspace.isolate` semantic action before dispatching. Workspace creation is
 an orchestration precondition, not a `sdcorejs-git` artifact mode.
 
@@ -457,7 +459,7 @@ execution_context:
   `test_context`, independent `test_status`, append-oriented `test_evidence`,
   and `artifact_context`. Do not infer execution/pass from authored tests.
 - Use the generic harness fallback when no track matches.
-- Apply `_refs/shared/frontend-architecture.md` to every non-trivial frontend
+- Apply `../../_refs/shared/frontend-architecture.md` to every non-trivial frontend
   plan, including generic plain-framework work, and block generation when the
   approved architecture contract is missing or incomplete.
 - Perform working-tree preflight before edits.
@@ -496,7 +498,7 @@ execution_context:
 ## Cross-references
 - `sdcorejs-plan` - approved execution contract
 - `sdcorejs-subagent-driven-development` - fresh-worker lifecycle; `sdcorejs-parallel-dispatch` - safe-wave scheduler and fan-in
-- `_refs/orchestration/workspace-isolation.md` - provider-neutral workspace ownership
+- `../../_refs/orchestration/workspace-isolation.md` - provider-neutral workspace ownership
 - `sdcorejs-ai-agent`, `sdcorejs-angular`, `sdcorejs-nestjs`, `sdcorejs-nextjs`, `sdcorejs-product`, `sdcorejs-design`, `sdcorejs-test` - track executors
 - `sdcorejs-ship (verify-before-done mode)` - acceptance verification gate
-- `_refs/shared/frontend-architecture.md` - mandatory non-trivial frontend architecture preflight and execution contract
+- `../../_refs/shared/frontend-architecture.md` - mandatory non-trivial frontend architecture preflight and execution contract

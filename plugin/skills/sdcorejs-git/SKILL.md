@@ -6,6 +6,8 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Git
 
@@ -26,10 +28,10 @@ substitute for verification.
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md`. Apply
-`_refs/shared/artifact-lifecycle.md` and run SDCoreJS Artifact Closure before staging, commit, or push. For multiple worktrees, nested repositories, or
-submodules, load `_refs/shared/git-closure-contract.mjs`; it verifies approved artifacts, emits exact repository-local path sets, and delegates freshness to
-`_refs/shared/convergence-contract.mjs#evaluateConvergenceHandoff` with its verified receipt.
+Read `../../_refs/shared/runtime-protocols.md`. Apply
+`../../_refs/shared/artifact-lifecycle.md` and run SDCoreJS Artifact Closure before staging, commit, or push. For multiple worktrees, nested repositories, or
+submodules, load `../../_refs/shared/git-closure-contract.mjs`; it verifies approved artifacts, emits exact repository-local path sets, and delegates freshness to
+`../../_refs/shared/convergence-contract.mjs#evaluateConvergenceHandoff` with its verified receipt.
 
 ## Mode Selection
 
@@ -46,7 +48,7 @@ delivery, dependency updates, release readiness, and "is this ready" belong to
 
 An explicit worktree/isolation request is not an artifact mode. Forward it to
 the canonical `workspace.isolate` owner in
-`_refs/orchestration/workspace-isolation.md`, then return the resulting
+`../../_refs/orchestration/workspace-isolation.md`, then return the resulting
 workspace identity to the execution caller. Do not perform commit, PR, push, or
 changelog work during that handoff.
 
@@ -150,7 +152,7 @@ git diff --name-status -- .sdcorejs
 git diff --cached --name-status -- .sdcorejs
 ```
 
-Use `_refs/shared/artifact-lifecycle.md` as the normative contract. When the
+Use `../../_refs/shared/artifact-lifecycle.md` as the normative contract. When the
 mirrored helper is available, the following produces a deterministic
 classification without staging:
 
@@ -213,7 +215,7 @@ cannot run Git artifact creation for its partial unit.
 
 ## Commit Scope Ledger
 
-Before staging or commit, read `_refs/shared/git-commit-scope.md` completely
+Before staging or commit, read `../../_refs/shared/git-commit-scope.md` completely
 and show its visible Commit Scope Ledger. At minimum preserve this ownership
 projection:
 
@@ -331,7 +333,7 @@ Scope hints:
 - `skills/shared/workflow/review.md` -> `review`
 - `skills/shared/` -> `shared`
 - `skills/orchestration/` -> `orchestration`
-- `_refs/orchestration/` -> `orchestration`
+- `../../_refs/orchestration/` -> `orchestration`
 - `.github/` -> `github`
 - `.claude/` -> `claude`
 - mixed concerns -> omit scope or use the smallest honest shared parent
@@ -435,7 +437,7 @@ If pushing is part of PR or delivery:
 
 ## Mode: changelog
 
-Read `_refs/orchestration/release-changelog.md` completely, then generate or
+Read `../../_refs/orchestration/release-changelog.md` completely, then generate or
 update release notes:
 
 - inspect `git status --short` before writing;
@@ -493,6 +495,6 @@ If release or tag behavior is mentioned:
 ## Cross-References
 
 - `sdcorejs-ship` - final gate, verify-before-done, branch readiness, release readiness
-- `_refs/orchestration/workspace-isolation.md` - canonical orchestration owner for workspace/worktree isolation
-- `_refs/orchestration/tail/branch-ready.md` - branch hygiene checklist
-- `_refs/orchestration/release-changelog.md` - release notes and CHANGELOG workflow
+- `../../_refs/orchestration/workspace-isolation.md` - canonical orchestration owner for workspace/worktree isolation
+- `../../_refs/orchestration/tail/branch-ready.md` - branch hygiene checklist
+- `../../_refs/orchestration/release-changelog.md` - release notes and CHANGELOG workflow

@@ -1,0 +1,123 @@
+ok 1 - canonical artifact roots live once in the system registry
+ok 2 - product resolver returns canonical documents and keeps the ledger root
+ok 3 - design resolver returns canonical artifacts and keeps the ledger root
+ok 4 - path classification separates canonical, legacy, ledger, and diagnostic locations
+ok 5 - category membership gates extension and path depth, not just the directory prefix
+ok 6 - durable metadata path validation rejects ledgers, diagnostics, and bare directories
+ok 7 - artifact inventories accept the documented shapes and never pass silently when omitted
+ok 8 - canonical and legacy copies differing only by line endings stay equivalent as bytes
+ok 9 - new metadata rejects root-level Product and Design paths
+ok 10 - canonical-only artifact reads and writes canonical without a legacy copy
+ok 11 - legacy-only artifact is a read-only fallback and a migration target
+ok 12 - legacy Design bundle migration is scoped to the requested feature
+ok 13 - an equivalent legacy copy is retired instead of staying editable
+ok 14 - a conflicting legacy copy blocks instead of merging competing sources
+ok 15 - migration never produces a duplicate editable artifact
+ok 16 - local-only classification is directory-driven and never overrides a designed failure state
+ok 17 - gitignore keeps every declared local-only Design directory untracked
+ok 18 - canonical sources never carry an active root-level Product or Design write path
+ok 19 - the path-convention sentinel fails on active instructions and allows legacy context
+ok 20 - generated mirrors stay free of active root-level Product or Design write paths
+ok 21 - downstream frontend and orchestration references consume canonical Design paths
+ok 22 - case-task-breakdown-workspace-path: project workspace root is required, kinds are registered and paths classify as shared
+ok 23 - capability contract is structurally valid and drives native-or-Markdown interaction
+ok 24 - canonical skills declare semantic actions while adapter manifests own provider mappings
+ok 25 - action and workflow classification are deterministic for answer, low-risk fix, and ambiguity
+ok 26 - execution selection separates delegation from concurrency and honors approved policy
+ok 27 - runtime attestation preserves unknown defaults and accepts evidence-backed observations
+ok 28 - runtime attestation fails closed without evidence or a coherent concurrency limit
+ok 29 - choice normalization rejects ambiguity without selecting an option
+ok 30 - worker policy reserves fast workers for bounded confirmed docs or tests
+ok 31 - task briefs and review packages reject embedded delivery artifacts and invalid shape
+ok 32 - visual offer requires a grounded comparison and preserves scoped decline
+ok 33 - a live companion session requires both capability and explicit local-runtime consent
+ok 34 - every adapter maps the live companion lifecycle to a capability and a portable fallback
+ok 35 - case-task-breakdown-capability-contract: source.read and tracker.write resolve only from host-observed connectors
+ok 36 - case-mirror-refs-rewritten: plugin and .claude mirrors write every _refs path as ../../_refs/ with one path-resolution line
+ok 37 - case-mirror-refs-resolve: concrete references resolve from the SKILL.md directory and templated ones keep the prefix
+ok 38 - case-mirror-refs-header: a bare mention of the _refs directory keeps its meaning
+ok 39 - case-mirror-refs-bootstrap-absolute: every hook branch injects absolute _refs paths that exist
+ok 40 - case-mirror-refs-unchanged: sources, codex mirrors and AGENTS.md outputs keep their own path style
+ok 41 - case-mirror-refs-mutation: the checker rejects bare, wrong-depth and header-less mirrors
+ok 42 - case-task-breakdown-cli-root: --root is required, resolved and echoed; cwd is never used
+ok 43 - case-task-breakdown-cli-confinement: only files under the resolved project workspace are read
+ok 44 - case-task-breakdown-cli-project: project files are validated, including the live-run shape
+ok 45 - case-task-breakdown-cli-tasks: documents are rendered from data, validated and checked across sibling files
+ok 46 - case-task-breakdown-cli-scan: secrets are reported by location and never echoed
+ok 47 - case-task-breakdown-cli-balance: assignee suggestions and load table come from the sizing helpers
+ok 48 - case-task-breakdown-cli-write-gate: approve, verify, drift and merge are bound to the approved run
+ok 49 - case-task-breakdown-cli-report: report table uses the fixed columns and ticket keys from the data block
+ok 50 - case-task-breakdown-cli-sources-kinds: every source kind gets its own fixed guidance in vi and en
+ok 51 - case-task-breakdown-cli-sources-grouping: links are grouped by domain and kind in a stable order
+ok 52 - case-task-breakdown-cli-sources-errors: invalid input has stable codes and secret-shaped values are redacted
+ok 53 - case-task-breakdown-cli-help: --help, -h and help list every command without --root
+ok 54 - case-task-breakdown-cli-read-only: the CLI imports no write, process or network API
+ok 55 - case-task-breakdown-workspace-path: project workspace resolves from the registry root with safe segments
+ok 56 - case-task-breakdown-workspace-path: lifecycle classifies project workspace files as shared kinds
+ok 57 - case-task-breakdown-config-validator: config schema, lifecycle fields, roster and run rules
+ok 58 - case-task-breakdown-config-validator: file text scan covers frontmatter, preserved fields and body
+ok 59 - case-task-breakdown-task-format: twelve keyed sections in fixed order with localized None
+ok 60 - case-task-breakdown-confidence: verified, stale and none carry their evidence
+ok 61 - case-task-breakdown-no-code: a run without code access completes with confidence none and a note
+ok 62 - case-task-breakdown-prd-coverage: every in-scope PRD requirement maps to a task or a role exclusion
+ok 63 - case-task-breakdown-rubric: six factors map to Fibonacci points with a split flag and optional days
+ok 64 - case-task-breakdown-capacity: balance by total points with absolute and relative modes
+ok 65 - case-task-breakdown-assignee: suggestions respect role, capacity and run rules without persisting them
+ok 66 - case-task-breakdown-rerun-idempotent: task identity, sequence allocation, tombstones and markers
+ok 67 - case-task-breakdown-rerun-idempotent: ticket drift between approval and write is detected
+ok 68 - case-task-breakdown-secret-redaction: secrets are reported by location and never echoed
+ok 69 - case-task-breakdown-rerun-idempotent: write plan approval is bound to the run and exact operations
+ok 70 - case-task-breakdown-report: run report uses the fixed column set
+ok 71 - case-task-breakdown-capability-contract: new product skill and refs stay provider neutral
+ok 72 - case-task-breakdown-render: renderTask renders the fixed sections as text and as minimal rich nodes
+ok 73 - case-task-breakdown-document: tasks document carries a data block, rendered tasks and write plan blocks
+ok 74 - case-task-breakdown-rich-merge: rich documents merge by marker nodes and keep media outside the region
+ok 75 - case-task-breakdown-rerun-idempotent: update operations carry their format and approval-time fingerprints
+ok 76 - case-task-breakdown-flow-gates: refs and skill state the mandatory gates G0..G8 and their rules
+ok 77 - case-task-breakdown-flow-gates: removing any required rule or gate is detected
+ok 78 - case-task-breakdown-flow-source-guidance: G1 and G8 print the sources table and the refs match the CLI
+ok 79 - case-task-breakdown-flow-source-guidance: drift between the refs and the CLI is detected
+ok 80 - phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls
+ok 81 - phase 1: retired standalone skills and exclusive refs stay absent from active surfaces
+ok 82 - phase 1: markdown fences stay balanced across skills, refs, and mirrors
+ok 83 - phase 1: skills preserve progressive disclosure and validator-safe descriptions
+ok 84 - phase 1: mandatory workflow invariants are encoded in source skills and refs
+ok 85 - phase 1: frontend architecture preflight covers decomposition and anti-over-splitting regressions
+ok 86 - phase 1: frontend architecture workflow preserves approval and review-dimension gates
+ok 87 - phase 1: Angular architecture templates keep selectors, providers, routes, and paths coherent
+ok 88 - phase 1: frontend architecture references remain progressive and assertion-backed
+ok 89 - phase 1: Core docs fetcher prefers installed lockfile version over package range
+ok 90 - phase 1: Core docs fetcher requires an installed Core UI package when requested
+ok 91 - phase 1: Core docs fetcher detects the legacy Core UI package name
+ok 92 - phase 1: long references expose a top-of-file contents map
+ok 93 - phase 1: skill metadata stays concise and production scope stays explicit
+ok 94 - phase 1: explore encodes read-only-safe context production invariants
+ok 95 - phase 1: SDLC harness encodes contract-driven profile-aware execution invariants
+ok 96 - phase 1: reusable skill source stays English-only while runtime output is localized
+ok 97 - phase 1: localization fixtures may contain non-English intent prompts
+ok 98 - phase 1: generated mirrors do not inject global response-style modifiers
+ok 99 - phase 1: text hygiene scanner rejects hidden control and bidi characters
+ok 100 - phase 1: public validation docs separate validation tiers and evidence limits
+ok 101 - phase 1: brainstorming visual companion stays optional and gated
+ok 102 - phase 1: angular side-drawer detail rules prefer read-only facts and immutable identifiers
+ok 103 - phase 1: Angular technical prototype is explicit, role-neutral, and feature-gated
+ok 104 - phase 1: deterministic prompt eval dispatches expected skills
+ok 105 - phase 3: direct review prompts dispatch to sdcorejs-review
+ok 106 - phase 3: direct test prompts dispatch to sdcorejs-test or debug handoff
+ok 107 - phase 3: direct debug prompts dispatch to sdcorejs-debug
+ok 108 - phase 3: direct explore prompts dispatch to sdcorejs-explore
+ok 109 - phase 3: SDLC harness prompts dispatch to the owning workflow skills
+ok 110 - phase 1: documentation trigger does not steal user-management implementation prompts
+ok 111 - phase 3: AI-agent routing stays narrow and preserves dedicated intent owners
+ok 112 - cleanup utility dispatch distinguishes workspace hygiene from source, test and quality owners
+ok 113 - review F-03: review about cleanup preserves the review owner and genuine hygiene controls
+ok 114 - review F-04: cleanup discovery discloses portable analysis and Windows mutation before selection
+ok 115 - case-task-breakdown-routing: task-breakdown prompts dispatch to sdcorejs-product while TASKID records stay with documentation
+# tests 115
+# suites 0
+# pass 115
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 30620.9139

@@ -6,6 +6,8 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, WebFetc
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # 07 — Write Code (Orchestrator)
 
@@ -17,13 +19,13 @@ When required approved artifacts are absent, remain read-only and must not modif
 A fixture, lab, benchmark, disposable repository, hidden acceptance test, or generic-harness possibility never bypasses this gate. Eligibility may route only after the approval gate has passed.
 A request combining a summary, filters, a result table, bulk actions, and workflow controls is non-trivial; without approved frontend architecture/spec/plan, stop before writing code and return to the owning gate.
 
-For unresolved visual decisions, apply `_refs/sdlc/visual-offer-policy.md`;
+For unresolved visual decisions, apply `../../_refs/sdlc/visual-offer-policy.md`;
 forward `requirement_context.visual_companion` through `context.pass`
 (portable `state_delta.visual_companion`) to the owning workflow.
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and `_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through the finishing tail.
+Read `../../_refs/shared/runtime-protocols.md` and `../../_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through the finishing tail.
 
 ## Purpose
 
@@ -48,7 +50,7 @@ target project using the same vocabulary as `sdcorejs-execute-plan`:
 |---|---|
 | `core-ui-angular` | Continue. Use `@sdcorejs/angular` imports and fetch version-matched Core UI docs with `--require-installed`. |
 | `legacy-core-ui-angular` | Continue. Preserve `@sd-angular/core` imports and fetch version-matched Core UI docs with `--require-installed`. |
-| New SDCoreJS portal creation | Continue through `init-portal.md`; use `_refs/angular/core-version.md` as the install/version source before the package exists. |
+| New SDCoreJS portal creation | Continue through `init-portal.md`; use `../../_refs/angular/core-version.md` as the install/version source before the package exists. |
 | Approved `migration-request` | Continue only when the approved spec/plan explicitly includes installing or migrating to SDCoreJS Core UI. |
 | `plain-angular` | Stop and return to `sdcorejs-execute-plan` generic harness. Do not fetch Core UI docs, import Core UI APIs, emit Core UI summaries, force admin screens, or assume `src/libs/**/features/**`. |
 
@@ -92,29 +94,29 @@ Template-first is mandatory for an approved technical prototype:
   landing/dashboard layout, or hand-built list/detail/form primitives when the
   Core UI starter template and screen refs already cover the need.
 
-This skill is an **orchestrator**: it does NOT inline the full generation rules for every file type. It picks the right **reference pack** for each scope item and reads it on demand. The detailed rules + code-template links for each concern live in `_refs/angular/write-code/*.md` (formerly the 10/11/12/20/21/31 sub-skills — consolidated here so the track exposes one skill instead of seven).
+This skill is an **orchestrator**: it does NOT inline the full generation rules for every file type. It picks the right **reference pack** for each scope item and reads it on demand. The detailed rules + code-template links for each concern live in `../../_refs/angular/write-code/*.md` (formerly the 10/11/12/20/21/31 sub-skills — consolidated here so the track exposes one skill instead of seven).
 
 ## Dispatch table
 
 For each scope item in the approved plan dispatched by
-`sdcorejs-execute-plan`, READ the matching reference pack; UI work also reads `_refs/design/uiux/index.md` for focused topics and exact-version Core UI evidence within existing approval/eligibility boundaries:
+`sdcorejs-execute-plan`, READ the matching reference pack; UI work also reads `../../_refs/design/uiux/index.md` for focused topics and exact-version Core UI evidence within existing approval/eligibility boundaries:
 
 | Scope item | Reference pack to read |
 |---|---|
-| New portal (no existing project yet) | [`_refs/angular/write-code/init-portal.md`](_refs/angular/write-code/init-portal.md) (template baseline; run FIRST before any module work) |
-| Approved admin/auth/account/role/permission scope only | [`_refs/angular/write-code/admin-screens.md`](_refs/angular/write-code/admin-screens.md) (conditional; never a portal default) |
-| New module (`src/libs/<module>/`) | [`_refs/angular/write-code/init-module.md`](_refs/angular/write-code/init-module.md) |
-| New entity with full CRUD (domain/data contracts + data-access services and justified collaborators + routes/page containers + architecture-derived feature components) | [`_refs/angular/write-code/init-entity.md`](_refs/angular/write-code/init-entity.md) |
-| Shared frontend architecture preflight before non-trivial UI generation | [`_refs/shared/frontend-architecture.md`](_refs/shared/frontend-architecture.md) |
-| Image/PRD/UI reuse preflight before UI-affecting work | [`_refs/angular/write-code/input-analysis.md`](_refs/angular/write-code/input-analysis.md) |
-| Explicitly approved `technical-prototype` profile | [`_refs/angular/write-code/po-ba-prototype.md`](_refs/angular/write-code/po-ba-prototype.md) |
-| Mock API/OpenAPI/Postman/cURL contract to UI/service mapping | [`_refs/angular/write-code/mock-api-input.md`](_refs/angular/write-code/mock-api-input.md) |
-| Entity/model/service reuse preflight before generating or extending entity contracts | [`_refs/angular/write-code/reuse-existing-entities.md`](_refs/angular/write-code/reuse-existing-entities.md) |
-| List page only (entity already exists) | [`_refs/angular/write-code/screen-list.md`](_refs/angular/write-code/screen-list.md) |
-| Detail component — any state (CREATE / UPDATE / DETAIL), parent detail-scoped child CRUD, or form refinement (validators, FormArray, async validators) | [`_refs/angular/write-code/screen-detail.md`](_refs/angular/write-code/screen-detail.md) |
-| Action buttons — workflow transitions, bulk operations, custom side-effects (export, re-sync, etc.) | [`_refs/angular/write-code/actions.md`](_refs/angular/write-code/actions.md) |
+| New portal (no existing project yet) | [`../../_refs/angular/write-code/init-portal.md`](../../_refs/angular/write-code/init-portal.md) (template baseline; run FIRST before any module work) |
+| Approved admin/auth/account/role/permission scope only | [`../../_refs/angular/write-code/admin-screens.md`](../../_refs/angular/write-code/admin-screens.md) (conditional; never a portal default) |
+| New module (`src/libs/<module>/`) | [`../../_refs/angular/write-code/init-module.md`](../../_refs/angular/write-code/init-module.md) |
+| New entity with full CRUD (domain/data contracts + data-access services and justified collaborators + routes/page containers + architecture-derived feature components) | [`../../_refs/angular/write-code/init-entity.md`](../../_refs/angular/write-code/init-entity.md) |
+| Shared frontend architecture preflight before non-trivial UI generation | [`../../_refs/shared/frontend-architecture.md`](../../_refs/shared/frontend-architecture.md) |
+| Image/PRD/UI reuse preflight before UI-affecting work | [`../../_refs/angular/write-code/input-analysis.md`](../../_refs/angular/write-code/input-analysis.md) |
+| Explicitly approved `technical-prototype` profile | [`../../_refs/angular/write-code/po-ba-prototype.md`](../../_refs/angular/write-code/po-ba-prototype.md) |
+| Mock API/OpenAPI/Postman/cURL contract to UI/service mapping | [`../../_refs/angular/write-code/mock-api-input.md`](../../_refs/angular/write-code/mock-api-input.md) |
+| Entity/model/service reuse preflight before generating or extending entity contracts | [`../../_refs/angular/write-code/reuse-existing-entities.md`](../../_refs/angular/write-code/reuse-existing-entities.md) |
+| List page only (entity already exists) | [`../../_refs/angular/write-code/screen-list.md`](../../_refs/angular/write-code/screen-list.md) |
+| Detail component — any state (CREATE / UPDATE / DETAIL), parent detail-scoped child CRUD, or form refinement (validators, FormArray, async validators) | [`../../_refs/angular/write-code/screen-detail.md`](../../_refs/angular/write-code/screen-detail.md) |
+| Action buttons — workflow transitions, bulk operations, custom side-effects (export, re-sync, etc.) | [`../../_refs/angular/write-code/actions.md`](../../_refs/angular/write-code/actions.md) |
 
-Read ON DEMAND only — load the one reference for the step you are executing, not all of them. Each reference further links to the literal code templates under `_refs/angular/templates/`.
+Read ON DEMAND only — load the one reference for the step you are executing, not all of them. Each reference further links to the literal code templates under `../../_refs/angular/templates/`.
 
 ### Step 0 — Read-oriented project context
 
@@ -126,7 +128,7 @@ summary is absent. A brand-new approved `init-portal` may create summary v2
 after the scaffold exists; an architecture-level refresh belongs only to the
 sequential workflow or integration owner.
 
-Read `_refs/shared/frontend-architecture.md` before formulating or presenting any
+Read `../../_refs/shared/frontend-architecture.md` before formulating or presenting any
 architecture decision for a non-trivial routed screen, form, table, child
 collection, drawer, workflow panel, or frontend service.
 Verify that the approved plan dispatched by `sdcorejs-execute-plan` contains the completed
@@ -138,7 +140,7 @@ For any UI-affecting request, and always when the input includes a screenshot,
 wireframe, mockup, Figma export, PRD, requirement document, user story, feature
 description, acceptance criteria, mock API, OpenAPI/Swagger file, Postman
 collection, MSW handler, endpoint table, JSON fixture, schema, or sample cURL,
-read `_refs/angular/write-code/input-analysis.md` before choosing components,
+read `../../_refs/angular/write-code/input-analysis.md` before choosing components,
 services, or templates. For eligible Core UI projects this preflight owns Core
 UI docs registry resolution; for plain Angular projects the work should already
 have been routed away from this skill. It also owns project-local reuse
@@ -147,23 +149,23 @@ API/service assumptions, and the mandatory post-implementation UI check. Present
 the required reuse analysis/mapping before implementation.
 
 If the approved execution profile is `technical-prototype`, also read
-`_refs/angular/write-code/po-ba-prototype.md` immediately after
+`../../_refs/angular/write-code/po-ba-prototype.md` immediately after
 `input-analysis.md`. Validate the profile, semantic owner, optional-feature
 approvals, and prototype assumptions with
-`_refs/angular/execution-contract.mjs`. Generate only the approved fields,
+`../../_refs/angular/execution-contract.mjs`. Generate only the approved fields,
 screens, routes, validators, actions, and demo data. Enforce the template-first
 invariant from that reference before code generation.
 
 If a mock API, OpenAPI/Swagger file, Postman collection, MSW handler, mock
 endpoint list, JSON fixture, API schema, or sample cURL drives the UI, also read
-`_refs/angular/write-code/mock-api-input.md` before building `EntitySchema` or
+`../../_refs/angular/write-code/mock-api-input.md` before building `EntitySchema` or
 writing models/services. The PRD/acceptance criteria are the behavior source of
 truth; the API artifact is the data/endpoint contract. A mock API document alone
 does not authorize live API integration.
 
-Before generating or extending any model, interface, type, service, store, repository, or API client, also run the entity reuse preflight in `_refs/angular/write-code/reuse-existing-entities.md`. This is mandatory for API docs, mock API contracts, PRDs, Figma/image/screenshot input, business descriptions, schemas, and any feature with related entities. The codebase is the source of truth for reuse decisions; the external artifact is only the new contract.
+Before generating or extending any model, interface, type, service, store, repository, or API client, also run the entity reuse preflight in `../../_refs/angular/write-code/reuse-existing-entities.md`. This is mandatory for API docs, mock API contracts, PRDs, Figma/image/screenshot input, business descriptions, schemas, and any feature with related entities. The codebase is the source of truth for reuse decisions; the external artifact is only the new contract.
 
-Before writing any helper, formatter, validator, mapper, pipe utility, paging/filter helper, random-id helper, query-param helper, upload/download helper, or clipboard/browser helper, read `_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior. The package must be a direct target-project dependency before generated code imports it; do not rely on Core UI's transitive dependencies.
+Before writing any helper, formatter, validator, mapper, pipe utility, paging/filter helper, random-id helper, query-param helper, upload/download helper, or clipboard/browser helper, read `../../_refs/shared/sdcorejs-utils.md` and reuse `@sdcorejs/utils` when it covers the behavior. The package must be a direct target-project dependency before generated code imports it; do not rely on Core UI's transitive dependencies.
 
 ### Execution order + hand-off
 
@@ -202,11 +204,11 @@ emitted.
 
 For UI-affecting work, the final response must also include the concise
 sections named `Core reuse summary` and `UI check`, as defined in
-`_refs/angular/write-code/input-analysis.md`.
+`../../_refs/angular/write-code/input-analysis.md`.
 
 #### MANDATORY FINISH GATE (always — standalone trigger OR full SDLC flow)
 
-**STOP and present the consolidated finish gate from [`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md) before running ANY tail step.** This is UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add entity", "create module X") — NOT only inside the spec→plan flow. The gate surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review choices with defaults so the user always knows these steps exist and can opt out of new user/technical docs. "Small change" is not a reason to skip the gate. Read the ref for the exact prompt + rules.
+**STOP and present the consolidated finish gate from [`../../_refs/shared/finish-gate.md`](../../_refs/shared/finish-gate.md) before running ANY tail step.** This is UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add entity", "create module X") — NOT only inside the spec→plan flow. The gate surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review choices with defaults so the user always knows these steps exist and can opt out of new user/technical docs. "Small change" is not a reason to skip the gate. Read the ref for the exact prompt + rules.
 
 Test authoring and the RED/GREEN/refactor loop are mandatory implementation
 work completed before production code and cannot be disabled here. The finish
@@ -218,7 +220,7 @@ Then run the tail in this order, honoring only those finish-gate choices:
 
 Documentation supplement: immediately after the Finish Gate test decision, run
 `sdcorejs-documentation (documentation-gate mode)` and read
-`_refs/documentation/gate.md`. This gate asks or loads saved project
+`../../_refs/documentation/gate.md`. This gate asks or loads saved project
 preferences from `<target>/.sdcorejs/documentation/preferences.md` for
 `user-guide` and `technical-doc` only. It must ask before
 creating a missing corresponding user-guide or technical-doc for a new feature.
@@ -226,15 +228,15 @@ creating a missing corresponding user-guide or technical-doc for a new feature.
 by this approval gate.
 
 1. `sdcorejs-test` (sdcorejs-test) - ALWAYS run the smallest relevant unit and contract tests already written RED-first and report pass/fail + failing names. The finish gate may enable or decline only additional integration/E2E execution; unavailable infrastructure is reported as `NOT RUN`, never pass. If any testable file still lacks a required spec, return to the TDD gate before continuing.
-2. *(if Review not skipped)* `sdcorejs-review` (skills/shared/workflow/review.md; auto-detects Angular and loads `_refs/angular/review-code.md`) - convention check; actionable Angular code-review table with severity, group, file/line, risk, fix, and gate
+2. *(if Review not skipped)* `sdcorejs-review` (skills/shared/workflow/review.md; auto-detects Angular and loads `../../_refs/angular/review-code.md`) - convention check; actionable Angular code-review table with severity, group, file/line, risk, fix, and gate
 3. *(if Review not skipped)* `sdcorejs-repair-loop` - apply findings, iterate until `BLOCKER`/`REQUIRED` findings are fixed or explicitly deferred
-4. `sdcorejs-documentation (code-documentation mode)` - automatically apply concise source-code documentation rules to touched source files. Do NOT ASK for approval. Cross-track baseline + per-track addenda live in `_refs/documentation/code-documentation.md`
-5. *(if UI-affecting)* Angular UI check from `_refs/angular/write-code/input-analysis.md` - run browser/preview verification when available; otherwise perform and report a code-level UI review. Fix obvious UI issues before continuing. If this changes code, rerun the smallest relevant check.
+4. `sdcorejs-documentation (code-documentation mode)` - automatically apply concise source-code documentation rules to touched source files. Do NOT ASK for approval. Cross-track baseline + per-track addenda live in `../../_refs/documentation/code-documentation.md`
+5. *(if UI-affecting)* Angular UI check from `../../_refs/angular/write-code/input-analysis.md` - run browser/preview verification when available; otherwise perform and report a code-level UI review. Fix obvious UI issues before continuing. If this changes code, rerun the smallest relevant check.
 6. `sdcorejs-product` *(when user-visible feature traceability is needed)* - seed/update `.sdcorejs/docs/product/` with requirement, implementation, and test mapping
 7. *(if Technical doc approved)* `sdcorejs-documentation (write-technical-doc mode)` - create/update the approved technical doc from source evidence.
-8. `_refs/orchestration/tail/auto-docs.md` *(always)* - change-scoped execution record written to `<target>/.sdcorejs/docs/angular/`
+8. `../../_refs/orchestration/tail/auto-docs.md` *(always)* - change-scoped execution record written to `<target>/.sdcorejs/docs/angular/`
 9. *(if User guide approved)* `sdcorejs-documentation (write-user-guide mode)` - create/update the touched module's `.sdcorejs/documentation/user-guides/<module>/<module>.md` only when approved by the documentation gate or explicitly requested. Per-module incremental; after all module updates, the aggregate rebuilds exactly once when a guide changed, when explicitly requested, or when stale inside approved scope.
-10. `_refs/orchestration/tail/auto-task-tracker.md` *(only when the sequential workflow or integration owner is authorized to update the shared backlog)* - reconcile durable follow-up work; never mirror live progress
+10. `../../_refs/orchestration/tail/auto-task-tracker.md` *(only when the sequential workflow or integration owner is authorized to update the shared backlog)* - reconcile durable follow-up work; never mirror live progress
 11. `sdcorejs-explore (memories mode)` - only if durable knowledge surfaced (recurring convention, stakeholder constraint, anti-pattern)
 12. `sdcorejs-ship (verify-before-done mode)` *(always)* - BLOCK "done" until acceptance criteria from the selected scope are verified or explicitly deferred
 13. `sdcorejs-ship (branch-ready mode)` *(always)* - final read-only branch-ready gate over the final diff before any Git artifact handoff. No writes after branch-ready unless branch-ready is run again.
@@ -265,13 +267,13 @@ When user requests a new entity in a module, or any of the dispatch-table scope 
 Only after explicit opt-in and approved assumptions:
 
 - Resolve application/module ownership with
-  `_refs/angular/execution-contract.mjs`; an unresolved module blocks writes and
+  `../../_refs/angular/execution-contract.mjs`; an unresolved module blocks writes and
   never falls back to the portal repository.
 - Use only approved assumptions to fill missing API/design details. Do not infer
   extra screens, admin/auth, roles, permissions, seed data, or workflow actions.
 - Record every authorized assumption under `Prototype assumptions` and present
   the required `Technical Prototype Plan` block from
-  `_refs/angular/write-code/po-ba-prototype.md` before writing code.
+  `../../_refs/angular/write-code/po-ba-prototype.md` before writing code.
 - Run `reuse-existing-entities.md` before creating or extending any entity
   contract, even in mock-first prototype mode.
 
@@ -298,7 +300,7 @@ Before generating an entity, clarify with user:
    - Detail layout: choose side-drawer or full-page from approved complexity and
      design handoff
    - Search/filter/delete/export exist only when approved. If asking,
-     ask each toggle sequentially with `_refs/shared/user-choice-prompt.md`
+     ask each toggle sequentially with `../../_refs/shared/user-choice-prompt.md`
      using `1. Yes` / `2. No`.
    - Permissions: use default naming pattern or custom? (default: {{ MODULE }}_{{ ENTITY }}_CREATE, etc.)
 
@@ -334,7 +336,7 @@ Before writing any production file (model / service / list / detail), invoke `sd
 2. Generate the production file with minimal passing code → run test → confirm GREEN
 3. Refactor if needed → run test → confirm still GREEN
 
-Applies to: model (validators / type contracts), service (CRUD method contracts), list component (rendering + actions), detail component (form + state transitions). Default `standard` coverage = `should create` + route-permission + list data/sort + detail save-flow/state, per `_refs/angular/templates/entity-tests.md`.
+Applies to: model (validators / type contracts), service (CRUD method contracts), list component (rendering + actions), detail component (form + state transitions). Default `standard` coverage = `should create` + route-permission + list data/sort + detail save-flow/state, per `../../_refs/angular/templates/entity-tests.md`.
 
 Skip RED-first for: `mock-data` seed rows (pure data, no testable logic) and `routes.ts` (Angular config — but its `*.routes.spec.ts` permission-validation spec IS still written).
 
@@ -343,18 +345,18 @@ Skip RED-first for: `mock-data` seed rows (pure data, no testable logic) and `ro
 From user input, product docs, design handoff, mock API contracts, or semantic inference, construct `EntitySchema` with all field metadata. The schema is the single input every reference pack consumes — init-entity, screen-list, and screen-detail all read these names + field flags (`visibleInList`, `visibleInDetail`, `type`, `required`, permission codes).
 
 Before building the schema from visual or requirement input, complete the
-`_refs/angular/write-code/input-analysis.md` planning output. Use the PRD or
+`../../_refs/angular/write-code/input-analysis.md` planning output. Use the PRD or
 acceptance criteria as the behavior source of truth, visual input as layout
 direction, and Core UI/local project conventions as implementation primitives.
 For an approved `technical-prototype`, complete
-`_refs/angular/write-code/po-ba-prototype.md` before finalizing `EntitySchema`.
+`../../_refs/angular/write-code/po-ba-prototype.md` before finalizing `EntitySchema`.
 Use approved requirements and assumptions first, then existing conventions and
 Core UI patterns. Keep Service contracts separate as DTO,
 ListRes, DetailRes, CreateReq, UpdateReq, SaveReq, and Component ViewModel when
 the prototype needs different read/write/UI shapes.
 
 Before building the schema from mock API/API-contract input, complete
-`_refs/angular/write-code/mock-api-input.md`. Use its endpoint inventory and
+`../../_refs/angular/write-code/mock-api-input.md`. Use its endpoint inventory and
 contract mapping to decide request types, response DTOs, validators, list
 columns, detail read-only fields, lookup relations, custom actions, and mock
 service behavior.
@@ -371,7 +373,7 @@ Before finalizing `EntitySchema`, identify the primary entity and every related 
 
 Before outputting code, present a short reuse summary: existing model/service found, imports to reuse, files to extend, files to create, and why duplicate contracts are not being created.
 
-For two worked examples (user-supplied Product fields + inferred Promotion schema), see [`_refs/angular/templates/orchestrator-step-examples.md#step-1--build-entityschema`](_refs/angular/templates/orchestrator-step-examples.md#step-1--build-entityschema).
+For two worked examples (user-supplied Product fields + inferred Promotion schema), see [`../../_refs/angular/templates/orchestrator-step-examples.md#step-1--build-entityschema`](../../_refs/angular/templates/orchestrator-step-examples.md#step-1--build-entityschema).
 
 ### Step 2: Generate per the dispatched reference
 
@@ -379,12 +381,12 @@ Once the EntitySchema exists, generate each file by following the reference pack
 
 | File(s) | Reference + worked-code template |
 |---|---|
-| `<entity>.model.ts` (SaveReq / DTO / constants) | `init-entity.md` → [`orchestrator-step-examples.md#step-2--generate-model`](_refs/angular/templates/orchestrator-step-examples.md#step-2--generate-model-productmodelts) |
-| `<entity>.mock-data.ts` + `<entity>.service.ts` (mock-first CRUD, 20–40 domain-realistic rows) | `init-entity.md` → [`orchestrator-step-examples.md#step-3--generate-mock-data--service`](_refs/angular/templates/orchestrator-step-examples.md#step-3--generate-mock-data--service) |
-| `<entity>.routes.ts` (lazy-loaded, `data.permission`, provider placement from the approved lifecycle plan) | `init-entity.md` → [`orchestrator-step-examples.md#step-4--generate-routes`](_refs/angular/templates/orchestrator-step-examples.md#step-4--generate-routes-productroutests) |
-| `pages/list/list.component.ts` | `screen-list.md` (+ `_refs/angular/templates/screen-list-component.md`) |
+| `<entity>.model.ts` (SaveReq / DTO / constants) | `init-entity.md` → [`orchestrator-step-examples.md#step-2--generate-model`](../../_refs/angular/templates/orchestrator-step-examples.md#step-2--generate-model-productmodelts) |
+| `<entity>.mock-data.ts` + `<entity>.service.ts` (mock-first CRUD, 20–40 domain-realistic rows) | `init-entity.md` → [`orchestrator-step-examples.md#step-3--generate-mock-data--service`](../../_refs/angular/templates/orchestrator-step-examples.md#step-3--generate-mock-data--service) |
+| `<entity>.routes.ts` (lazy-loaded, `data.permission`, provider placement from the approved lifecycle plan) | `init-entity.md` → [`orchestrator-step-examples.md#step-4--generate-routes`](../../_refs/angular/templates/orchestrator-step-examples.md#step-4--generate-routes-productroutests) |
+| `pages/list/list.component.ts` | `screen-list.md` (+ `../../_refs/angular/templates/screen-list-component.md`) |
 | `pages/detail/detail.component.ts` (CREATE / UPDATE / DETAIL + form) | `screen-detail.md` (+ `screen-detail-component.md`, `reactive-form-templates.md`) |
-| Feature-local list/detail children, optional facade/form builder/mapper, and their contract tests | `screen-list.md` / `screen-detail.md` (+ `_refs/angular/templates/feature-component-boundaries.md`) |
+| Feature-local list/detail children, optional facade/form builder/mapper, and their contract tests | `screen-list.md` / `screen-detail.md` (+ `../../_refs/angular/templates/feature-component-boundaries.md`) |
 | Action buttons (workflow / bulk / custom) | `actions.md` |
 
 For a full new entity, read `init-entity.md` end-to-end (it covers model → service → routes → list → detail in one pass). For a single-file refinement on an existing entity, read just the screen-list / screen-detail / actions reference.
@@ -392,7 +394,7 @@ For a full new entity, read `init-entity.md` end-to-end (it covers model → ser
 ## Cross-Cutting Generation Rules
 
 Before writing files, read
-`_refs/angular/write-code/generation-rules.md` completely. It owns the shared
+`../../_refs/angular/write-code/generation-rules.md` completely. It owns the shared
 file/naming fallback, reuse and strict-TypeScript rules, OnPush/signal template
 discipline, Service/ViewModel boundaries, validation, parent-detail child CRUD,
 error handling, and code-documentation requirements. Apply it together with
@@ -406,34 +408,34 @@ the dispatched per-file reference and the approved frontend architecture.
   Keep one item `in_progress`, call `progress.update` after each unit, and never
   mirror live progress to a repository file.
 - Run the entity reuse preflight before generating model/service/entity code; identify primary + related entities, scan existing model/interface/type/dto/service/api/repository/store files, and decide reuse/extend/create new before writing code.
-- Run `_refs/angular/write-code/input-analysis.md` before UI-affecting work, image/screenshot/Figma input, PRDs, user stories, feature descriptions, or acceptance criteria. Produce the SDCoreJS Core reuse analysis and the matching UI decomposition, requirement mapping, or image+PRD mapping before implementation.
-- Run `_refs/angular/write-code/po-ba-prototype.md` only for an explicitly approved registry `technical-prototype` profile. Emit the required Technical Prototype Plan, mark it not production, and record approved Prototype assumptions before code generation.
+- Run `../../_refs/angular/write-code/input-analysis.md` before UI-affecting work, image/screenshot/Figma input, PRDs, user stories, feature descriptions, or acceptance criteria. Produce the SDCoreJS Core reuse analysis and the matching UI decomposition, requirement mapping, or image+PRD mapping before implementation.
+- Run `../../_refs/angular/write-code/po-ba-prototype.md` only for an explicitly approved registry `technical-prototype` profile. Emit the required Technical Prototype Plan, mark it not production, and record approved Prototype assumptions before code generation.
 - Enforce template-first technical-prototype generation: new portal prototypes run `init-portal.md` only when portal creation is approved; existing prototypes extend the existing Core UI shell/routes/menu. Do not create a parallel custom portal shell or bespoke list/detail/form layout system.
-- Run `_refs/angular/write-code/mock-api-input.md` when UI generation is driven by mock API docs, OpenAPI/Swagger, Postman/Insomnia, MSW/WireMock/Prism/JSON Server specs, endpoint tables, schemas, JSON fixtures, or sample cURL. Produce the mock API contract mapping before writing models, services, or screens.
+- Run `../../_refs/angular/write-code/mock-api-input.md` when UI generation is driven by mock API docs, OpenAPI/Swagger, Postman/Insomnia, MSW/WireMock/Prism/JSON Server specs, endpoint tables, schemas, JSON fixtures, or sample cURL. Produce the mock API contract mapping before writing models, services, or screens.
 - Run the `@sdcorejs/utils` reuse preflight before writing helper/formatter/validator/mapper/pipe utility code; report which utilities were reused and why any custom helper remains necessary.
 - After generating UI, show the **Core UI usage summary** table (every `@sdcorejs/angular` component/service/directive actually used + a one-line, feature-specific purpose, in the user's language) so the user sees the building blocks at a glance. List only what was used. Persist the same table into the module user guide at write-user-guide.
-- Present the **MANDATORY FINISH GATE** ([`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces extra integration/E2E execution, user-guide, technical-doc, behavior-preserving simplification, and review choices. Test authoring and the required unit/contract run are not opt-outs.
+- Present the **MANDATORY FINISH GATE** ([`../../_refs/shared/finish-gate.md`](../../_refs/shared/finish-gate.md)) after EVERY code-gen — standalone trigger or full SDLC flow. It surfaces extra integration/E2E execution, user-guide, technical-doc, behavior-preserving simplification, and review choices. Test authoring and the required unit/contract run are not opt-outs.
 - Test authoring is mandatory and written RED-first at `standard` coverage by default (see the TDD Gate). The finish gate controls only additional integration/E2E execution; it cannot skip authored tests after RED/GREEN or downgrade a failure. NEVER ask a separate coverage question outside approved planning.
-- Resolve semantic application/module ownership and optional-feature approval through `_refs/angular/execution-contract.mjs`, which consumes `_refs/shared/system-registry.json`. Portal is not a fallback owner for a module artifact.
+- Resolve semantic application/module ownership and optional-feature approval through `../../_refs/angular/execution-contract.mjs`, which consumes `../../_refs/shared/system-registry.json`. Portal is not a fallback owner for a module artifact.
 - Run `admin-screens` only when admin/auth/account/role/permission is named in an approved requirement or explicit approved profile/template contract.
 - Detect the installed Core UI package FIRST — a project is a Core UI portal if `package.json`, a lockfile, installed package metadata, or existing imports show EITHER `@sdcorejs/angular` (new default) OR `@sd-angular/core` (legacy alias — same code, same version, actively co-deployed). Treat both as equal: NEVER skip doc discovery just because the project uses the legacy name, and generate imports with whichever prefix the project installed. If neither package is present and the request is not new portal creation or an approved migration, stop and return to `sdcorejs-execute-plan` generic harness as `plain-angular`.
-- Discover Core UI on-demand before generating (docs are NOT committed — pulled fresh from the published site, version-matched, cached): for existing Core UI projects run `node _refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed --list` to see the component inventory, then `node _refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed <id>` (e.g. `sd-button`, or `--print <id>` for inline content) to read a component's full API BEFORE using it. Before writing any template styling, ALWAYS fetch the Core UI style guide first — `node _refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed --print assets/STYLE-GUIDE` — the single authoritative list of shipped utility classes. New portal creation may pass `--version <CORE_VERSION>` from `_refs/angular/core-version.md` before install. Never rely on hardcoded/memorized class names. Prefer a Core UI component when one fits; if none does, scaffold a skeleton + `alert('TODO: ...')` and flag it. It mojibake-guards upstream + falls back to cache offline. If a Core UI package exists but no remote/cache docs are available, continue only from local Core UI evidence and explicitly report the docs gap. If no Core UI package exists, do not use this docs fallback; route as `plain-angular`.
-- For any detail/create/update screen, apply the Core UI component selection gate in [`_refs/angular/write-code/screen-detail.md`](../../../_refs/angular/write-code/screen-detail.md) before writing markup. Child arrays/line items saved with the parent payload must use the documented `FormArray` + Core UI table/grid or sectioned row-editor pattern; independent child CRUD must use the parent detail-scoped modal/drawer pattern and never self-draw a native table or unmanaged repeated divs.
-- Before generating an entity detail or side-drawer view, classify fields by role via [`_refs/angular/write-code/init-entity.md`](../../../_refs/angular/write-code/init-entity.md): business identifiers, primary display, lifecycle/status, long text, visual identity, and server/audit. Business identifiers are create-only/edit-locked by default; DETAIL/side-drawer view should prefer compact read-only facts over a disabled edit form for simple data.
+- Discover Core UI on-demand before generating (docs are NOT committed — pulled fresh from the published site, version-matched, cached): for existing Core UI projects run `node ../../_refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed --list` to see the component inventory, then `node ../../_refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed <id>` (e.g. `sd-button`, or `--print <id>` for inline content) to read a component's full API BEFORE using it. Before writing any template styling, ALWAYS fetch the Core UI style guide first — `node ../../_refs/angular/core-docs-fetch.mjs --cwd <target-project> --require-installed --print assets/STYLE-GUIDE` — the single authoritative list of shipped utility classes. New portal creation may pass `--version <CORE_VERSION>` from `../../_refs/angular/core-version.md` before install. Never rely on hardcoded/memorized class names. Prefer a Core UI component when one fits; if none does, scaffold a skeleton + `alert('TODO: ...')` and flag it. It mojibake-guards upstream + falls back to cache offline. If a Core UI package exists but no remote/cache docs are available, continue only from local Core UI evidence and explicitly report the docs gap. If no Core UI package exists, do not use this docs fallback; route as `plain-angular`.
+- For any detail/create/update screen, apply the Core UI component selection gate in [`../../_refs/angular/write-code/screen-detail.md`](../../_refs/angular/write-code/screen-detail.md) before writing markup. Child arrays/line items saved with the parent payload must use the documented `FormArray` + Core UI table/grid or sectioned row-editor pattern; independent child CRUD must use the parent detail-scoped modal/drawer pattern and never self-draw a native table or unmanaged repeated divs.
+- Before generating an entity detail or side-drawer view, classify fields by role via [`../../_refs/angular/write-code/init-entity.md`](../../_refs/angular/write-code/init-entity.md): business identifiers, primary display, lifecycle/status, long text, visual identity, and server/audit. Business identifiers are create-only/edit-locked by default; DETAIL/side-drawer view should prefer compact read-only facts over a disabled edit form for simple data.
 - Keep independent child CRUD scoped to the parent DETAIL screen: use modal/drawer flows, pass the current parent id into the child form, refresh the child collection after success, and preserve the parent route plus active tab/section.
-- Style utility-first — see [`_refs/angular/styling.md`](../../../_refs/angular/styling.md). Lean on the Core UI utility classes from the STYLE-GUIDE (`d-flex`, `flex-1`, `justify-content-between`, `gap-16`, `m-*`/`p-*`, `w-full`, `rounded-8`, `text-primary`, `T14M`, `row`/`col-*`, `grid-container`/`grid-cols-*`, `mat-elevation-z*`) for layout / spacing / sizing / color / typography. If the consumer app ships Tailwind (`tailwind.config.*` or a `tailwindcss` dependency), use Tailwind utilities too, matching whatever the existing components use. Core UI spacing/sizing utilities are **px-based, integer 0–200** (`mb-16` = 16px — NOT a Bootstrap multiplier); use multiples of 4. Write custom component `.scss` ONLY when no utility fits, keep it token-based (`var(--sd-*)`), and flag each rule with a one-line `// why:`.
+- Style utility-first — see [`../../_refs/angular/styling.md`](../../_refs/angular/styling.md). Lean on the Core UI utility classes from the STYLE-GUIDE (`d-flex`, `flex-1`, `justify-content-between`, `gap-16`, `m-*`/`p-*`, `w-full`, `rounded-8`, `text-primary`, `T14M`, `row`/`col-*`, `grid-container`/`grid-cols-*`, `mat-elevation-z*`) for layout / spacing / sizing / color / typography. If the consumer app ships Tailwind (`tailwind.config.*` or a `tailwindcss` dependency), use Tailwind utilities too, matching whatever the existing components use. Core UI spacing/sizing utilities are **px-based, integer 0–200** (`mb-16` = 16px — NOT a Bootstrap multiplier); use multiples of 4. Write custom component `.scss` ONLY when no utility fits, keep it token-based (`var(--sd-*)`), and flag each rule with a one-line `// why:`.
 - Enforce the approved dependency order (application baseline → module → entity → screens → actions), inserting optional packs only where the approved plan names them.
 - Generate every component with `changeDetection: ChangeDetectionStrategy.OnPush`; treat a missing OnPush decorator entry or missing import as a generation defect to fix before review.
 - Precompute all values displayed or bound in templates with `signal()`, `computed()`, pure pipes, or view-model fields. Do not bind to component methods/getters for display, visibility, title/color, disabled/loading, permission, or list-derived values.
 - Keep Service models as Service-owned contracts. Do not force them to equal the raw backend API when the Service maps the payload, and do not add UI-only fields to `SaveReq`/`DTO` unless the Service actually accepts/returns/derives those fields.
 - For an approved technical prototype, stay mock-first within its assumptions unless a runnable backend endpoint, base URL/configuration, auth expectation, and project service convention are explicitly approved for live integration.
-- For UI-affecting changes, perform the mandatory UI check from `_refs/angular/write-code/input-analysis.md` before final response. Prefer an actual browser/preview check when available; otherwise perform a code-level UI review and state that limitation honestly.
+- For UI-affecting changes, perform the mandatory UI check from `../../_refs/angular/write-code/input-analysis.md` before final response. Prefer an actual browser/preview check when available; otherwise perform a code-level UI review and state that limitation honestly.
 - Run the full tail chain after the last step.
 - Never handle `plain-angular` inside this skill. The generic harness owns plain Angular and must never import `@sdcorejs/angular` or `@sd-angular/core`, fetch Core UI docs, emit Core UI usage summaries, force admin screens, or assume `src/libs/**/features/**`.
 
 ### Documentation Gate Rule
 
-- Inside the mandatory finish gate, run `_refs/documentation/gate.md` immediately after the test decision. It owns user-guide / technical-doc creation or update approval. `code-documentation` is automatic and is not controlled by this gate.
+- Inside the mandatory finish gate, run `../../_refs/documentation/gate.md` immediately after the test decision. It owns user-guide / technical-doc creation or update approval. `code-documentation` is automatic and is not controlled by this gate.
 
 ### MUST NOT
 - Hand-write CSS for flex / spacing / alignment / color / typography that a STYLE-GUIDE utility class already covers, or fill a component `.scss` with rules that duplicate shipped utilities — this is the "too many unnecessary CSS classes" anti-pattern. Put the utilities on the template; keep the `.scss` near-empty. Never use Bootstrap class names (`btn`, `card`, `form-control`, `modal` — they don't exist) or Tailwind syntax when the consumer has no Tailwind.
@@ -499,4 +501,4 @@ Before returning generated code:
 
 ## Example: Complete Employee Entity Generation
 
-A worked end-to-end example (user request → EntitySchema → final file tree, following `init-entity.md`) lives in [`_refs/angular/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity`](_refs/angular/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity). Read it when you want to see how the dispatch table cashes out on a real request.
+A worked end-to-end example (user request → EntitySchema → final file tree, following `init-entity.md`) lives in [`../../_refs/angular/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity`](../../_refs/angular/templates/orchestrator-step-examples.md#worked-end-to-end--employee-entity). Read it when you want to see how the dispatch table cashes out on a real request.

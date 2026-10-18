@@ -6,26 +6,28 @@ allowed-tools: Agent, AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, 
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Repair Loop
 
 
 ## Shared Protocols
 
-Read `_refs/shared/runtime-protocols.md` and load only the references needed by
+Read `../../_refs/shared/runtime-protocols.md` and load only the references needed by
 the scoped finding.
 
-Thin dispatch skill for applying findings and re-verifying them. The detailed loop lives in `_refs/orchestration/tail/repair-loop.md`.
+Thin dispatch skill for applying findings and re-verifying them. The detailed loop lives in `../../_refs/orchestration/tail/repair-loop.md`.
 
-Resolve supported tracks from `_refs/shared/system-registry.json`; do not keep a
+Resolve supported tracks from `../../_refs/shared/system-registry.json`; do not keep a
 framework-only enum. Validate every repair with
-`_refs/orchestration/repair-contract.mjs`, which binds the original evidence,
+`../../_refs/orchestration/repair-contract.mjs`, which binds the original evidence,
 artifact/implementation owner, execution host, approved write scope, bounded
 attempts, and repaired evidence linkage.
 
 ## Workflow
 1. Determine and preserve the source of findings: `review-code`, `external-review-feedback`, `verify-before-done`, `linter`, `typecheck`, `test`, or `manual`.
-2. Read `_refs/orchestration/tail/repair-loop.md` completely.
+2. Read `../../_refs/orchestration/tail/repair-loop.md` completely.
 3. If the source is `sdcorejs-review`, preserve the original `review_context` exactly, including `track`, `track_profile`, dimensions, mode, `file_scope`, refs loaded/skipped, probes run/skipped, and package manager.
    Preserve any `test_context`, `test_status`, `test_evidence`,
    `ui_capture_context`, `ai_agent_context`, `simplify_context`,

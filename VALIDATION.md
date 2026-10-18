@@ -242,13 +242,13 @@ working-tree diff:
 |---|---:|---:|
 | Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,967 |
 | Always-loaded bootstrap words | 2,361 | 2,304 |
-| Aggregate just-in-time scenario bytes | 514,603 | 669,659 |
+| Aggregate just-in-time scenario bytes | 514,603 | 675,933 |
 | Aggregate visible output bytes | 42,558 | 2,802 |
 | Aggregate visible output words | 3,961 | 337 |
 | Portable fallback handoff bytes | 0 | 25,383 |
 | Supported runtime context channel bytes | 0 | 1,819 |
 | Repeated-block bytes | 2,319 | 0 |
-| Total measured communication bytes | 577,334 | 719,630 |
+| Total measured communication bytes | 577,334 | 725,904 |
 | Consumer-required authoritative fields | 361 | 361 preserved |
 
 The report includes ten scenarios, per-scenario selected paths, bytes, words,
@@ -719,3 +719,63 @@ $codex = Get-ChildItem -Recurse -File -Path codex\skills -Filter SKILL.md
 ```
 
 Removed-name scan should return no matches for deleted design skills in source docs and tests.
+
+## Task-breakdown mode port to main — current change (2026-10-18)
+
+This section records `task-breakdown-main-port-v1` at base HEAD
+`fb64f8c2905cd79c6027e02ea847560cc09c8b42`, through approved spec r3, approved
+architecture r3 and the approved plan
+(`sha256:v1:d677d8a56540281a54391fcf17af3dd9dcf4d179bd9a3ec87bff2ca32f43e00d`).
+
+The change brings three approved changes onto `main`: the `task-breakdown` mode
+of `sdcorejs-product`, the `_refs/` path resolution of the generated `plugin/`
+and `.claude/` mirrors, and the per-source guidance and help output of the
+task-breakdown check CLI. Those changes were first built on an unmerged branch.
+The port takes their content from commit `f19c72c` and does not bring any other
+work of that branch. The only base pieces it needs are:
+
+- the frontmatter parser block of `_refs/shared/approved-artifact.mjs`
+  (`FRONTMATTER_KEY`, `DOUBLE_QUOTED_ESCAPES`, `resolvePlainScalar`,
+  `parseApprovedFrontmatter`), byte-identical to the base;
+- the `runtime` option of `resolveAction`, which the connector branch for
+  `source.read` and `tracker.write` reads.
+
+Of the 40 source files of the three changes:
+
+- 25 are byte-identical to `f19c72c`;
+- 7 take the changes of the three changes through a clean three-way merge onto
+  the `main` version;
+- 5 needed a resolved merge (`package.json`, `runtime-attestation.mjs`,
+  `runtime-policy.mjs`, `harness-behavioral-sentinel.test.mjs`, and the parser
+  block in `approved-artifact.mjs`);
+- `test/e2e/mirror-refs-resolution.test.mjs` counts mirrors from the skill list
+  instead of the fixed 46, because `main` has 24 public skills;
+- `test/e2e/production-readiness-contract.test.mjs` keeps the `main` version,
+  because the case the mirror change edited exists only on the base branch;
+- this file and `authoring/evals/uiux/evidence.test.mjs` are rewritten for the
+  `main` structure.
+
+The evidence chain continues from `main`. The cleanup review-repair
+continuation is now verified as history at fb64f8c, and
+`authoring/evals/uiux/task-breakdown-port-continuation.json` binds the current
+content, the approved port plan and an actual focused run. Its only changed
+bound path is `test/e2e/support/skill-pack-runner.mjs`.
+
+| Area | Regression case | Before | Current |
+| --- | --- | --- | --- |
+| Task-breakdown helpers, check CLI and flow gates | `case-task-breakdown-*` | absent on main | PASS |
+| Connector actions resolve only from host-observed tools | `case-task-breakdown-capability-contract` | absent on main | PASS |
+| Claude-layout mirrors resolve `../../_refs/` for every skill | `case-mirror-refs-rewritten`, `case-mirror-refs-resolve` | absent on main | PASS |
+| Sources, codex mirrors and `AGENTS.md` outputs keep their own path style | `case-mirror-refs-unchanged` | absent on main | PASS |
+| Governance continuation | `case-port-evidence-continuation` | FAIL (record missing) | PASS |
+
+The communication economy rows above were refreshed: the just-in-time scenario
+bytes grow by 6,274 because the product skill now carries the task-breakdown
+mode; the always-loaded bootstrap does not change.
+
+On this machine the `main` baseline of `npm run test:e2e:repository` is 627 of
+630: three `skill-authoring-contract` cases fail because `currentRepositoryId`
+keeps the `.git` suffix of an https remote. The port does not change that
+helper, so the same three cases remain the only failures. The interactive live
+runs recorded for the three changes still apply, because the files of the mode
+skill, references and check CLI are byte-identical to the versions that ran.

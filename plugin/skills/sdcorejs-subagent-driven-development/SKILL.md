@@ -6,6 +6,8 @@ allowed-tools: Agent, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 
 <!-- claude-adapter: generated from required-actions; do not edit mirror by hand -->
 
+**Path resolution:** Resolve `../../_refs/...` relative to this `SKILL.md`. Resolve another SDCoreJS skill by opening the sibling folder `../<skill-name>/SKILL.md`.
+
 
 # Subagent-Driven Development
 
@@ -32,16 +34,16 @@ source reads or a scoped code map before dispatch, and never infer missing facts
 
 Read these references completely before dispatch:
 
-- `_refs/shared/runtime-protocols.md`
-- `_refs/harness/runtime-attestation.md`
-- `_refs/harness/delegation-policy.json`
-- `_refs/harness/task-brief.md`
-- `_refs/orchestration/parallel-protocol.md`
-- `_refs/orchestration/workspace-isolation.md` for write-capable isolated units
+- `../../_refs/shared/runtime-protocols.md`
+- `../../_refs/harness/runtime-attestation.md`
+- `../../_refs/harness/delegation-policy.json`
+- `../../_refs/harness/task-brief.md`
+- `../../_refs/orchestration/parallel-protocol.md`
+- `../../_refs/orchestration/workspace-isolation.md` for write-capable isolated units
 
-Use `_refs/harness/runtime-attestation.mjs` for current-session capability
+Use `../../_refs/harness/runtime-attestation.mjs` for current-session capability
 evidence and `compileParallelContext` from
-`_refs/orchestration/parallel-protocol.mjs` for the dependency waves and
+`../../_refs/orchestration/parallel-protocol.mjs` for the dependency waves and
 parallel opportunity report.
 
 ## Execution workflow

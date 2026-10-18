@@ -3,13 +3,17 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { execFileSync, spawnSync } from 'node:child_process';
 import test from 'node:test';
-import { verifyApprovedArtifact } from '../../../_refs/shared/approved-artifact.mjs';
+import { parseApprovedFrontmatter, verifyApprovedArtifact, verifyApprovedArtifactGraph } from '../../../_refs/shared/approved-artifact.mjs';
 
 const root = new URL('../../../', import.meta.url);
 const read = async (path) => (await readFile(new URL(path, root), 'utf8')).replace(/\r\n?/g, '\n');
 const hash = (text) => `sha256:${createHash('sha256').update(text).digest('hex')}`;
 const deliveryRevision = '03563d26837751d67a354d38589c6ed0fe67ed24';
 const historicalRead = (path) => execFileSync('git', ['show', `${deliveryRevision}:${path}`], { encoding: 'utf8', windowsHide: true }).replace(/\r\n?/g, '\n');
+// The cleanup review-repair continuation is history once main moved past it (fb64f8c);
+// the task-breakdown port continuation below owns proof for the current tree.
+const portBaseRevision = 'fb64f8c2905cd79c6027e02ea847560cc09c8b42';
+const atRevision = (revision, path) => execFileSync('git', ['show', `${revision}:${path}`], { encoding: 'utf8', windowsHide: true }).replace(/\r\n?/g, '\n');
 
 test('UI/UX authoring evidence binds real baseline, transcripts and current sources', async () => {
   const record = JSON.parse(await read('authoring/evals/uiux/records.json'));
@@ -120,7 +124,7 @@ async function loadContinuationContext(record) {
   const continuation = JSON.parse(continuationText);
   const repair = JSON.parse(await read('authoring/evals/uiux/cleanup-review-repair.json'));
   const historicalEntries = new Map([...record.final_sources, ...record.visual_offer_integration.verification.contract_manifest].map(entry => [entry.path, entry]));
-  const currentSources = new Map(await Promise.all([...historicalEntries.keys()].map(async path => [path, hash(await read(path))])));
+  const currentSources = new Map([...historicalEntries.keys()].map(path => [path, hash(atRevision(portBaseRevision, path))]));
   return {
     continuation,
     repair,
@@ -209,3 +213,129 @@ function validateReviewRepairContinuation(repair, context) {
   assert.equal(repair.visual.result, 'NOT RUN');
   assert.equal(repair.tokens, null);
 }
+
+// Task-breakdown port continuation: binds the current tree to the approved port plan,
+// the cleanup review-repair continuation as history, and an actual focused run.
+const portPath = 'authoring/evals/uiux/task-breakdown-port-continuation.json';
+const portTranscriptPath = 'authoring/evals/uiux/task-breakdown-port-continuation.txt';
+const portRepairPath = 'authoring/evals/uiux/cleanup-review-repair.json';
+const portPlanPath = '.sdcorejs/plans/workflow/2026-10-17-22-02-task-breakdown-main-port.md';
+const portPlanHash = 'sha256:v1:d677d8a56540281a54391fcf17af3dd9dcf4d179bd9a3ec87bff2ca32f43e00d';
+const portTests = ['product-task-breakdown-contract', 'product-task-breakdown-cli', 'product-task-breakdown-flow-contract', 'mirror-refs-resolution',
+  'harness-behavioral-sentinel', 'artifact-path-convention', 'skill-pack-runner'].map(name => `test/e2e/${name}.test.mjs`);
+const portCommand = `node --test --test-concurrency=1 --test-reporter=tap ${portTests.join(' ')}`;
+const portCases = ['case-task-breakdown-rubric', 'case-task-breakdown-cli-write-gate', 'case-task-breakdown-cli-sources-kinds', 'case-task-breakdown-cli-help',
+  'case-task-breakdown-flow-gates', 'case-task-breakdown-flow-source-guidance', 'case-task-breakdown-capability-contract',
+  'case-mirror-refs-rewritten', 'case-mirror-refs-bootstrap-absolute', 'case-mirror-refs-unchanged'];
+const portSourcePaths = ['CHANGELOG.md', 'SECURITY.md', 'VALIDATION.md', '_refs/harness/README.md', '_refs/harness/capability-contract.json',
+  '_refs/harness/runtime-attestation.mjs', '_refs/harness/runtime-policy.mjs', '_refs/product/project-workspace.md', '_refs/product/sizing-rubric.md',
+  '_refs/product/source-connectors.md', '_refs/product/task-breakdown.md', '_refs/product/task-breakdown/check.mjs', '_refs/product/task-breakdown/identity.mjs',
+  '_refs/product/task-breakdown/safety.mjs', '_refs/product/task-breakdown/sizing.mjs', '_refs/product/task-breakdown/sources.mjs',
+  '_refs/product/task-breakdown/task-format.mjs', '_refs/product/task-breakdown/workspace.mjs', '_refs/product/task-format.md',
+  '_refs/shared/approved-artifact.mjs', '_refs/shared/artifact-lifecycle.md', '_refs/shared/artifact-lifecycle.mjs', '_refs/shared/artifact-paths.mjs',
+  '_refs/shared/system-registry.json', '_refs/shared/system-registry.mjs', 'authoring/evals/uiux/evidence.test.mjs', 'package.json',
+  'plugin/hooks/session-start.mjs', 'scripts/sync-skills.mjs', 'skills/orchestration/documentation.md', 'skills/tracks/product/sdcorejs-product.md',
+  'test/e2e/artifact-path-convention.test.mjs', 'test/e2e/fixtures/prompt-evals.json', 'test/e2e/harness-behavioral-sentinel.test.mjs',
+  'test/e2e/mirror-refs-resolution.test.mjs', 'test/e2e/product-task-breakdown-cli.test.mjs', 'test/e2e/product-task-breakdown-contract.test.mjs',
+  'test/e2e/product-task-breakdown-flow-contract.test.mjs', 'test/e2e/skill-pack-runner.test.mjs', 'test/e2e/support/skill-pack-runner.mjs'];
+
+// Approved artifacts are parsed with the shared frontmatter parser and verified by the shared hash helper.
+function approvedFromText(text) {
+  const match = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/u);
+  assert.ok(match, 'approved artifact frontmatter is missing');
+  const artifact = { metadata: parseApprovedFrontmatter(match[1]), body: match[2] };
+  assert.equal(verifyApprovedArtifact(artifact).valid, true);
+  return artifact;
+}
+
+async function loadPortContext(readSource = read) {
+  const port = JSON.parse(await readSource(portPath));
+  const repairText = await readSource(portRepairPath);
+  const record = JSON.parse(await readSource('authoring/evals/uiux/records.json'));
+  const boundPaths = [...new Set([...record.final_sources, ...record.visual_offer_integration.verification.contract_manifest].map(entry => entry.path))];
+  const current = new Map(await Promise.all([...new Set([...boundPaths, ...portSourcePaths])].map(async path => [path, hash(await readSource(path))])));
+  return { port, repair: JSON.parse(repairText), repairHash: hash(repairText), boundPaths, current, transcript: await readSource(portTranscriptPath), readSource };
+}
+
+async function validatePortContinuation(port, context) {
+  assert.equal(port.schema_version, 1);
+  assert.equal(port.kind, 'task-breakdown-main-port-continuation');
+  assert.equal(port.change_ref, 'task-breakdown-main-port-v1');
+  assert.equal(port.scope_plan.path, portPlanPath);
+  const plan = approvedFromText(await context.readSource(portPlanPath));
+  assert.equal(plan.metadata.approval_hash, portPlanHash, 'only the actual approved port plan is authority');
+  assert.equal(port.scope_plan.approval_hash, portPlanHash);
+  const architecture = approvedFromText(await context.readSource(plan.metadata.source_architecture));
+  const spec = approvedFromText(await context.readSource(plan.metadata.source_spec));
+  verifyApprovedArtifactGraph(architecture, [spec]);
+  verifyApprovedArtifactGraph(plan, [architecture]);
+  assert.equal(port.source_revision, plan.metadata.source_revision);
+  assert.equal(port.source_revision, portBaseRevision);
+  assert.equal(execFileSync('git', ['rev-parse', `${port.source_revision}^{commit}`], { encoding: 'utf8', windowsHide: true }).trim(), port.source_revision);
+  assert.equal(port.previous_continuation.path, portRepairPath);
+  assert.equal(port.previous_continuation.sha256, context.repairHash, 'history must remain immutable');
+  assert.equal(hash(atRevision(portBaseRevision, portRepairPath)), context.repairHash);
+  assert.deepEqual(port.previous_sources, context.repair.current_sources);
+  assert.deepEqual(port.current_sources.map(entry => entry.path).sort(), [...context.boundPaths].sort());
+  for (const entry of port.current_sources) assert.equal(entry.sha256, context.current.get(entry.path), `current continuation is stale: ${entry.path}`);
+  const previous = new Map(port.previous_sources.map(entry => [entry.path, entry.sha256]));
+  assert.deepEqual(port.changed_paths, port.current_sources.filter(entry => previous.get(entry.path) !== entry.sha256).map(entry => entry.path));
+  assert.deepEqual(port.changed_paths, ['test/e2e/support/skill-pack-runner.mjs']);
+  assert.deepEqual(port.port_sources.map(entry => entry.path), portSourcePaths);
+  for (const entry of port.port_sources) assert.equal(entry.sha256, context.current.get(entry.path), `current continuation is stale: ${entry.path}`);
+  const verification = port.verification;
+  assert.equal(verification.command, portCommand);
+  assert.equal(verification.exit_code, 0);
+  assert.ok(Number.isInteger(verification.tests) && verification.tests >= 100);
+  assert.equal(verification.pass, verification.tests);
+  assert.equal(verification.fail, 0);
+  assert.equal(verification.node, 'v22.22.3');
+  assert.equal(verification.transcript.path, portTranscriptPath);
+  assert.equal(hash(context.transcript), verification.transcript.sha256);
+  const lines = context.transcript.split('\n');
+  for (const line of [`# tests ${verification.tests}`, `# pass ${verification.tests}`, '# fail 0']) assert.ok(lines.includes(line), `missing summary: ${line}`);
+  for (const id of portCases) assert.ok(lines.some(line => /^ok \d+ - /u.test(line) && line.includes(id)), `missing passing case: ${id}`);
+  assert.ok(!lines.some(line => /^not ok /u.test(line)), 'the focused run has a failing case');
+  assert.equal(port.live_agent.result, 'NOT RUN');
+  assert.equal(port.visual.result, 'NOT RUN');
+  assert.equal(port.tokens, null);
+}
+
+test('case-port-evidence-continuation: current content is bound to the approved port plan and an actual run', async () => {
+  const context = await loadPortContext();
+  await validatePortContinuation(context.port, context);
+});
+
+test('case-port-evidence-continuation: omitted, stale, mutated and fabricated evidence is rejected', async () => {
+  const context = await loadPortContext();
+  await validatePortContinuation(context.port, context);
+  for (const mutate of [
+    item => { item.previous_continuation.sha256 = `sha256:${'0'.repeat(64)}`; },
+    item => { item.previous_sources[0].sha256 = `sha256:${'0'.repeat(64)}`; },
+    item => { item.current_sources[0].sha256 = `sha256:${'0'.repeat(64)}`; },
+    item => { item.current_sources.pop(); },
+    item => { item.changed_paths.push('_refs/design/uiux/forms.md'); },
+    item => { item.port_sources.pop(); },
+    item => { item.port_sources[0].sha256 = `sha256:${'0'.repeat(64)}`; },
+    item => { item.scope_plan.approval_hash = `sha256:v1:${'0'.repeat(64)}`; },
+    item => { item.source_revision = 'f'.repeat(40); },
+    item => { item.verification.command = ''; },
+    item => { item.verification.exit_code = 1; },
+    item => { item.verification.fail = 1; },
+    item => { item.verification.transcript.sha256 = `sha256:${'0'.repeat(64)}`; },
+    item => { item.live_agent.result = 'PASS'; },
+    item => { item.tokens = 42; },
+  ]) {
+    const candidate = structuredClone(context.port);
+    mutate(candidate);
+    await assert.rejects(validatePortContinuation(candidate, context));
+  }
+  const rejectsWith = (readSource) => assert.rejects(async () => {
+    const mutated = await loadPortContext(readSource);
+    await validatePortContinuation(mutated.port, mutated);
+  });
+  for (const changed of ['_refs/product/task-breakdown/check.mjs', '_refs/harness/runtime-policy.mjs', portPlanPath, portRepairPath]) {
+    await rejectsWith(async path => (path === changed ? `${await read(path)}\nmutated at the same HEAD\n` : read(path)));
+  }
+  await rejectsWith(async path => (path === portTranscriptPath ? (await read(path)).replace('case-mirror-refs-rewritten', 'case-mirror-refs-fabricated') : read(path)));
+});

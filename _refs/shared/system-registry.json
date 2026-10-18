@@ -225,7 +225,9 @@
     "e2e-test",
     "review-report",
     "repair-report",
-    "release-evidence"
+    "release-evidence",
+    "project-config",
+    "task-breakdown"
   ],
   "artifact_roots": {
     "product_documents": ".sdcorejs/product",
@@ -234,7 +236,8 @@
     "design_ledger": ".sdcorejs/docs/design",
     "documentation": ".sdcorejs/documentation",
     "architecture": ".sdcorejs/architecture",
-    "conventions": ".sdcorejs/conventions"
+    "conventions": ".sdcorejs/conventions",
+    "project_workspaces": ".sdcorejs/projects"
   },
   "legacy_artifact_roots": {
     "product_documents": "product",

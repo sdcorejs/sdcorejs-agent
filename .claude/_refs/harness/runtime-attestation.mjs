@@ -265,3 +265,25 @@ export function toParallelRuntimeCapabilities(attestation = {}) {
     effective_max_concurrency: attestation.effective_max_concurrency,
   };
 }
+
+// Connector tools for source.read / tracker.write come only from the host's
+// current-session exposure. Classification is fail-closed: a tool counts as a
+// reader only when the host itself marks it read_only; a tool that claims
+// source.read without that mark is treated as a writer and goes through the
+// tracker.write gate. Connector-supplied descriptions are never trusted for this.
+export function observeConnectorTools(runtime, action) {
+  if (!['source.read', 'tracker.write'].includes(action) || !runtime ||
+      typeof runtime.session_id !== 'string' || !runtime.session_id.trim() ||
+      typeof runtime.mode !== 'string' || !runtime.mode.trim() || !Array.isArray(runtime.tools)) {
+    return { status: 'unknown', tools: [], reason: 'current connector exposure and mode are unobserved' };
+  }
+  const usable = runtime.tools.filter(tool => tool && typeof tool.name === 'string' && tool.name.trim() &&
+    Array.isArray(tool.actions) && Array.isArray(tool.modes) && tool.modes.includes(runtime.mode) &&
+    tool.disabled !== true &&
+    (tool.forbidden_actions === undefined || Array.isArray(tool.forbidden_actions) && !tool.forbidden_actions.includes(action)));
+  const tools = usable.filter(tool => action === 'source.read'
+    ? tool.actions.includes('source.read') && tool.read_only === true
+    : tool.actions.includes('tracker.write') || (tool.actions.includes('source.read') && tool.read_only !== true)).map(tool => tool.name);
+  return { status: tools.length ? 'supported' : 'unsupported', tools: [...new Set(tools)],
+    reason: tools.length ? 'connector tool exposed and permitted for current action/mode' : 'no exposed permitted connector tool' };
+}
