@@ -67,9 +67,9 @@
     "test:e2e:cleanup": "node --test test/e2e/cleanup-contract.test.mjs test/e2e/cleanup-engine.test.mjs test/e2e/cleanup-offers.test.mjs test/e2e/cleanup-integration.test.mjs test/e2e/cleanup-handoff.test.mjs test/e2e/cleanup-posix-contract.test.mjs test/e2e/cleanup-posix-native.test.mjs test/e2e/cleanup-storage.test.mjs"
   },
   "devDependencies": {
-    "@angular/compiler": "22.2.1",
-    "lefthook": "^2.1.16",
-    "typescript": "5.9.3",
+    "@angular/compiler": "22.2.3",
+    "lefthook": "^2.2.2",
+    "typescript": "7.0.2",
     "yaml": "2.9.1"
   }
 }
