@@ -1,0 +1,10 @@
+{
+  "baseline": "pack-amber",
+  "candidate": "pack-cobalt",
+  "revisions": {
+    "pack-amber": "97cc700ef7201a3074c57aedff89cbe131f9ee6f",
+    "pack-cobalt": "be1c4963fa2e0f5b32d9523d9601b3dc634db289"
+  },
+  "isolation": "separate immutable Git archive copies; shared host, instruction-bounded worker reads; no security sandbox claimed",
+  "node_modules": "shared existing dependencies; package and lockfiles unchanged between commits"
+}

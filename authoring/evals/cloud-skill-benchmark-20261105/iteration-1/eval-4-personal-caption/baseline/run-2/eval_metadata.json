@@ -1,0 +1,12 @@
+{
+  "eval_id": 4,
+  "eval_name": "personal-caption",
+  "prompt": "Viết một caption Facebook cá nhân, tối đa hai câu, về ý tưởng cuối tuần đi dạo ở Hội An. Mình chưa từng đến đó. Giọng bình dị, không emoji, không mời bình luận. Không thêm giá, giờ mở cửa hay trải nghiệm cụ thể chưa có. Chỉ cần caption dùng được; không lưu hồ sơ giọng viết hoặc đăng bài.",
+  "assertions": [
+    "Produces a usable Vietnamese Facebook caption of no more than two sentences.",
+    "Does not claim a prior visit, sensory memory or other unsupplied personal experience.",
+    "Does not invent prices, opening times or local factual details.",
+    "Uses the requested plain tone without emoji or invitation to comment.",
+    "Delivers the small caption directly without an engineering artifact chain, unnecessary consent question, profile persistence or posting."
+  ]
+}

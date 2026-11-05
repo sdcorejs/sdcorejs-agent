@@ -1,0 +1,74 @@
+{
+  "expectations": [
+    {
+      "text": "Provides a concrete spec and plan outline covering trimming/lowercasing, null/undefined behavior, owned paths and the actual test command.",
+      "passed": true,
+      "evidence": "Response defines AC-001 mixed-case trimming, AC-002 empty/whitespace strings, AC-003 null and AC-004 undefined. Its ordered plan verifies the two paths, edits `test/category.test.mjs`, implements `src/category.mjs`, and verifies with exactly `node --test test/category.test.mjs`."
+    },
+    {
+      "text": "Uses the explicit delegation without another document-approval or disjoint-dirty consent question.",
+      "passed": true,
+      "evidence": "Response opens \"No additional document-approval response is needed\" and says disjoint notes.md \"does not require another approval.\" The next action continues to execute-plan under delegation; trace records no user questions."
+    },
+    {
+      "text": "Records delegated-session-scope with this real request as the instruction source and document_review_performed false; does not invent reviewed snapshots or hashes.",
+      "passed": true,
+      "evidence": "YAML uses `approval_source: delegated-session-scope`, quotes the exact real delegation sentence, and sets `document_review_performed: false`. approved_at/approved_by are null with truthful comments; response separates agent self-review from user review and says snapshot identities, revisions and hashes are omitted because none were created or verified."
+    },
+    {
+      "text": "Treats notes.md as unrelated and untouched while allowing the scoped work to continue.",
+      "passed": true,
+      "evidence": "Response explicitly keeps the disjoint modified notes.md \"untouched and unstaged\" and lists it in prohibited_paths, with only source/test in allowed_paths. It carries the supplied known baseline forward and allows the scoped workflow to continue."
+    },
+    {
+      "text": "Names a scoped next action and verification without claiming code edits, test execution or external actions occurred.",
+      "passed": true,
+      "evidence": "Response names proposed persistence/verification of real spec then plan snapshots followed by sequential test-first work, with the exact test command in the plan. It closes \"no target edits, snapshots, or tests have been executed,\" and the trace lists only reads and capture writes/assertions."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "Every required behavior has a planned acceptance case and verification task.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "AC-001 through AC-004 cover trim/lowercase, empty strings, null and undefined; tests and final verification both invoke the supplied command."
+    },
+    {
+      "claim": "Delegation is the actual authority source, not user document review.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The YAML quotes the exact delegation sentence from the prompt, sets approval_source=delegated-session-scope and document_review_performed=false, and explicitly separates the agent's self-review."
+    },
+    {
+      "claim": "Snapshots and target verification are proposed rather than completed.",
+      "type": "process",
+      "verified": true,
+      "evidence": "Response labels the immediate action \"proposed only\" and says no snapshots/tests were executed; the self-reported trace lists source reads plus output-authoring/content assertions only."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "Target repository/validators were not inspected or run; ownership/baseline are supplied facts.",
+      "Real snapshot identities, timestamps, revisions and hashes were unavailable and deliberately omitted."
+    ],
+    "needs_review": [],
+    "workarounds": [
+      "Supplied proposed provenance and next actions without persisting live artifacts because of the capture-only instruction."
+    ]
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Uses the explicit delegation without another document-approval or disjoint-dirty consent question.",
+        "reason": "The response demonstrates correct delegated-authority handling, but the capture stops before any live artifact transition and the prompt explicitly forbids implementation. Add a separate writable temporary-project scenario where the agent must persist truthful authority and continue across spec/plan gates without another consent question while preserving unrelated notes.md."
+      }
+    ],
+    "overall": "The frozen assertions meaningfully check the requested outline, real delegation provenance and disjoint scope. They establish intended continuation rather than actual live handoff success. Process/no-execution claims rely on self-reported traces and artifacts; no metrics, timing or user_notes.md were supplied."
+  }
+}

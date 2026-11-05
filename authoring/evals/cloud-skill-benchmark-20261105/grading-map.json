@@ -1,0 +1,194 @@
+[
+  {
+    "eval_id": 6,
+    "configuration": "candidate",
+    "repetition": 1,
+    "sample": "sample-01",
+    "run": "iteration-1/eval-6-feedback-and-voice/candidate/run-1",
+    "grader_record_sha256": "5f06395c67c43520d727176c1cf1d43faed53dfebca50e40d6915f62de4cbbc4"
+  },
+  {
+    "eval_id": 3,
+    "configuration": "candidate",
+    "repetition": 1,
+    "sample": "sample-02",
+    "run": "iteration-1/eval-3-dirty-preflight/candidate/run-1",
+    "grader_record_sha256": "3e73f8658d87391ded22852c0d72ffa2494bb63e3d9ea38e2283c2650d3f8c8e"
+  },
+  {
+    "eval_id": 2,
+    "configuration": "baseline",
+    "repetition": 1,
+    "sample": "sample-03",
+    "run": "iteration-1/eval-2-review-only-plan/baseline/run-1",
+    "grader_record_sha256": "1f3a74fe24ed8c0b13a17ff1742669b85560bd2a534fce22b857b8f2348fd309"
+  },
+  {
+    "eval_id": 6,
+    "configuration": "baseline",
+    "repetition": 1,
+    "sample": "sample-04",
+    "run": "iteration-1/eval-6-feedback-and-voice/baseline/run-1",
+    "grader_record_sha256": "7032bdedb847389396d0023479580b2a55454e430f47fe3bb69aa208e0333164"
+  },
+  {
+    "eval_id": 5,
+    "configuration": "candidate",
+    "repetition": 1,
+    "sample": "sample-05",
+    "run": "iteration-1/eval-5-tech-product-script/candidate/run-1",
+    "grader_record_sha256": "44e320052c114038997c6d022a6feedbb453a4de128c9f88d000a1291af19f99"
+  },
+  {
+    "eval_id": 1,
+    "configuration": "candidate",
+    "repetition": 1,
+    "sample": "sample-06",
+    "run": "iteration-1/eval-1-delegated-plan/candidate/run-1",
+    "grader_record_sha256": "2cd29c9290b8209a98b83a9746a591ce1dfb88d8e283c146db1f44f37ea9951d"
+  },
+  {
+    "eval_id": 1,
+    "configuration": "candidate",
+    "repetition": 2,
+    "sample": "sample-07",
+    "run": "iteration-1/eval-1-delegated-plan/candidate/run-2",
+    "grader_record_sha256": "e2a47b67d03d03239a6d3dc4fc96bd7e10a7ad8a6dc0bde33b5445616575fcb6"
+  },
+  {
+    "eval_id": 4,
+    "configuration": "baseline",
+    "repetition": 1,
+    "sample": "sample-08",
+    "run": "iteration-1/eval-4-personal-caption/baseline/run-1",
+    "grader_record_sha256": "08945e570e11f72c7a59ea95e21a6ac6c459a450b297fcc5c6ba4fde364726b6"
+  },
+  {
+    "eval_id": 5,
+    "configuration": "candidate",
+    "repetition": 2,
+    "sample": "sample-09",
+    "run": "iteration-1/eval-5-tech-product-script/candidate/run-2",
+    "grader_record_sha256": "285324ce76cfef822611dcb64a17628e8f631e92725e0aee682895ae1859ec3b"
+  },
+  {
+    "eval_id": 4,
+    "configuration": "baseline",
+    "repetition": 2,
+    "sample": "sample-10",
+    "run": "iteration-1/eval-4-personal-caption/baseline/run-2",
+    "grader_record_sha256": "f8f04484fc53ef66df594f8b2138aa9f0d653c4e24953de3a2f13f600e0e33ac"
+  },
+  {
+    "eval_id": 2,
+    "configuration": "baseline",
+    "repetition": 2,
+    "sample": "sample-11",
+    "run": "iteration-1/eval-2-review-only-plan/baseline/run-2",
+    "grader_record_sha256": "d8de9d7e0c7eaa93ce635290825cfdd0752354b5f249d52d3714777b39103efa"
+  },
+  {
+    "eval_id": 4,
+    "configuration": "candidate",
+    "repetition": 1,
+    "sample": "sample-12",
+    "run": "iteration-1/eval-4-personal-caption/candidate/run-1",
+    "grader_record_sha256": "14e4e3f21ebb6618e63647629d615a417935960fa5479d4505ca3e20b9fbf4b3"
+  },
+  {
+    "eval_id": 3,
+    "configuration": "baseline",
+    "repetition": 2,
+    "sample": "sample-13",
+    "run": "iteration-1/eval-3-dirty-preflight/baseline/run-2",
+    "grader_record_sha256": "2947193ad20c8822ecf99302db63f34db793ca56008e3aa702718a464f4d3052"
+  },
+  {
+    "eval_id": 3,
+    "configuration": "baseline",
+    "repetition": 1,
+    "sample": "sample-14",
+    "run": "iteration-1/eval-3-dirty-preflight/baseline/run-1",
+    "grader_record_sha256": "90c996e59971fcd2ffa21ef0b025439897548fe71e17a7feacc60af3a53610c7"
+  },
+  {
+    "eval_id": 1,
+    "configuration": "baseline",
+    "repetition": 1,
+    "sample": "sample-15",
+    "run": "iteration-1/eval-1-delegated-plan/baseline/run-1",
+    "grader_record_sha256": "7ff9f74ca4afc9d8ad9688b0cbf90557ccb1d39148144ecaee66ce42352d4501"
+  },
+  {
+    "eval_id": 3,
+    "configuration": "candidate",
+    "repetition": 2,
+    "sample": "sample-16",
+    "run": "iteration-1/eval-3-dirty-preflight/candidate/run-2",
+    "grader_record_sha256": "c99eee7c9e473607066605f26bbe64164886afaddb5b3a7379c36032c1d14831"
+  },
+  {
+    "eval_id": 5,
+    "configuration": "baseline",
+    "repetition": 1,
+    "sample": "sample-17",
+    "run": "iteration-1/eval-5-tech-product-script/baseline/run-1",
+    "grader_record_sha256": "a857342ee7ad4fb450f3b2969c1369355c1b9aa92b3d3c3b33a107e03e0a5e52"
+  },
+  {
+    "eval_id": 2,
+    "configuration": "candidate",
+    "repetition": 2,
+    "sample": "sample-18",
+    "run": "iteration-1/eval-2-review-only-plan/candidate/run-2",
+    "grader_record_sha256": "96319b9181300d21b276ee9657cf815d85f3d3307d3f48cdd5f4e4bbef4c0f28"
+  },
+  {
+    "eval_id": 4,
+    "configuration": "candidate",
+    "repetition": 2,
+    "sample": "sample-19",
+    "run": "iteration-1/eval-4-personal-caption/candidate/run-2",
+    "grader_record_sha256": "4d31025d52134cbd87596bc16174bce25c7642e56fb77dc185bc377237dd85e6"
+  },
+  {
+    "eval_id": 1,
+    "configuration": "baseline",
+    "repetition": 2,
+    "sample": "sample-20",
+    "run": "iteration-1/eval-1-delegated-plan/baseline/run-2",
+    "grader_record_sha256": "5c91f25e1c56ca8e9e9b17f2ab34511ae4899b77d79185455a87629b9348ff1d"
+  },
+  {
+    "eval_id": 5,
+    "configuration": "baseline",
+    "repetition": 2,
+    "sample": "sample-21",
+    "run": "iteration-1/eval-5-tech-product-script/baseline/run-2",
+    "grader_record_sha256": "2afb20ad3b764e345cd4f6b102dc2756d907c422cd96f773a03c5b6b8040121a"
+  },
+  {
+    "eval_id": 6,
+    "configuration": "baseline",
+    "repetition": 2,
+    "sample": "sample-22",
+    "run": "iteration-1/eval-6-feedback-and-voice/baseline/run-2",
+    "grader_record_sha256": "6b7b17ce2197c0c9dd8fe17688d595136159da9f44e755bde8e55dc111d72736"
+  },
+  {
+    "eval_id": 6,
+    "configuration": "candidate",
+    "repetition": 2,
+    "sample": "sample-23",
+    "run": "iteration-1/eval-6-feedback-and-voice/candidate/run-2",
+    "grader_record_sha256": "570f1b70d9ef60beb79bda0ad19e9dd1d8da9466b8a5810a76265c522a82373c"
+  },
+  {
+    "eval_id": 2,
+    "configuration": "candidate",
+    "repetition": 1,
+    "sample": "sample-24",
+    "run": "iteration-1/eval-2-review-only-plan/candidate/run-1",
+    "grader_record_sha256": "bd348dc4499fd41f217b43724e5c51b5c0c7018c4cfb6d2089670bb54eaf1983"
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "A": {
+    "status": "decision-required",
+    "unrelated_dirty_paths": [
+      "src"
+    ],
+    "intended_dirty_overlaps": [
+      "src/**"
+    ],
+    "write_authorized": false
+  },
+  "B": {
+    "status": "dirty-disjoint",
+    "unrelated_dirty_paths": [
+      "notes.md"
+    ],
+    "intended_dirty_overlaps": [],
+    "write_authorized": true
+  }
+}

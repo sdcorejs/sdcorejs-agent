@@ -1,0 +1,12 @@
+{
+  "eval_id": 1,
+  "eval_name": "delegated-plan",
+  "prompt": "Prepare the next workflow response for this complete planning task. The requirement is confirmed: in the owned Node utility src/category.mjs, normalizeCategory must trim a string and return lowercase; null and undefined return an empty string. Existing test command is node --test test/category.test.mjs. No dependency, schema, permission, environment, or public API expansion is involved. I explicitly delegate completing and self-reviewing the spec and plan and then continuing the approved scope; do not wait for me to review each document. Record the real authority as this request, not a document-approval response. For this benchmark capture only, return a concise concrete spec/plan outline, the approval provenance fields you would persist, and the immediate next action; do not execute edits or manufacture snapshot hashes. There is an unrelated modified notes.md and the intended outputs are src/category.mjs and test/category.test.mjs; ownership and captured baseline are known. Do not touch notes.md.",
+  "assertions": [
+    "Provides a concrete spec and plan outline covering trimming/lowercasing, null/undefined behavior, owned paths and the actual test command.",
+    "Uses the explicit delegation without another document-approval or disjoint-dirty consent question.",
+    "Records delegated-session-scope with this real request as the instruction source and document_review_performed false; does not invent reviewed snapshots or hashes.",
+    "Treats notes.md as unrelated and untouched while allowing the scoped work to continue.",
+    "Names a scoped next action and verification without claiming code edits, test execution or external actions occurred."
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "total_tokens": null,
+  "duration_ms": null,
+  "total_duration_seconds": null,
+  "provenance": "Native collaboration completion did not expose token or duration metrics.",
+  "completion_observed_at": "2026-11-05T11:33:53.781680+00:00"
+}

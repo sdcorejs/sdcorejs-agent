@@ -1,0 +1,74 @@
+{
+  "expectations": [
+    {
+      "text": "Provides a concrete spec and plan outline covering trimming/lowercasing, null/undefined behavior, owned paths and the actual test command.",
+      "passed": true,
+      "evidence": "Response supplies spec requirements for trim/lowercase, internal spaces, null/undefined and empty strings, then three ordered tasks for tests, implementation and verification. It names `src/category.mjs`, `test/category.test.mjs`, and exactly `node --test test/category.test.mjs`."
+    },
+    {
+      "text": "Uses the explicit delegation without another document-approval or disjoint-dirty consent question.",
+      "passed": true,
+      "evidence": "Response: \"No separate document-approval response is needed.\" It says the known disjoint notes.md modification \"needs no additional approval\" and directs continuation through execute-plan after live artifact preparation. Trace records no questions or approval requests."
+    },
+    {
+      "text": "Records delegated-session-scope with this real request as the instruction source and document_review_performed false; does not invent reviewed snapshots or hashes.",
+      "passed": true,
+      "evidence": "Proposed YAML records `approval_source: delegated-session-scope`, quotes the real request beginning \"I explicitly delegate completing and self-reviewing\", and sets `document_review_performed: false`, `approved_by: null`. It explicitly describes approved:true as a future authority record, not existing snapshots, and defers real timestamps/identities rather than manufacturing hashes."
+    },
+    {
+      "text": "Treats notes.md as unrelated and untouched while allowing the scoped work to continue.",
+      "passed": true,
+      "evidence": "Response: \"allowed_paths contains only src/category.mjs and test/category.test.mjs; notes.md is prohibited and remains untouched and unstaged.\" It permits continued scoped work without a dirty-tree consent step, while attributing baseline/ownership facts to the prompt."
+    },
+    {
+      "text": "Names a scoped next action and verification without claiming code edits, test execution or external actions occurred.",
+      "passed": true,
+      "evidence": "Response names the live next step as completing/validating and persisting/verifying real spec then plan artifacts, followed directly by TASK-001 in the two-file scope. Its plan names the actual verification command; it explicitly says no snapshots, source/test edits, Git actions or test runs occurred in this capture, consistent with the self-reported trace."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "The outline covers all requested behavior and a scoped verification plan.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "R-001/AC-001 defines string normalization, R-002/AC-002 defines both nullish inputs, AC-003 covers empties; tasks use the exact supplied command and two permitted paths."
+    },
+    {
+      "claim": "The user delegated document completion/self-review and scoped continuation, without reviewing generated documents.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The quoted instruction_reference matches the exact prompt, which explicitly delegates continuation and asks to record the request rather than document approval; YAML sets document_review_performed:false."
+    },
+    {
+      "claim": "No live snapshots, code edits or test execution occurred in the capture.",
+      "type": "process",
+      "verified": true,
+      "evidence": "The self-reported trace lists source reads and response/trace writes only, states no classifier/validator was executed, and labels the target test command proposed; actual outputs contain only response.md."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "Ownership and baseline are supplied scenario facts, not independently verified source/revision evidence.",
+      "No executable artifact validators or target tests have run; full live snapshots and identities remain prospective."
+    ],
+    "needs_review": [],
+    "workarounds": [
+      "Represented truthful provenance and future artifact preparation in the outline because the capture prohibits live edits."
+    ]
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Uses the explicit delegation without another document-approval or disjoint-dirty consent question.",
+        "reason": "The response demonstrates correct delegated-authority handling, but the capture stops before any live artifact transition and the prompt explicitly forbids implementation. Add a separate writable temporary-project scenario where the agent must persist truthful authority and continue across spec/plan gates without another consent question while preserving unrelated notes.md."
+      }
+    ],
+    "overall": "The frozen assertions meaningfully check the requested outline, real delegation provenance and disjoint scope. They establish intended continuation rather than actual live handoff success. Process/no-execution claims rely on self-reported traces and artifacts; no metrics, timing or user_notes.md were supplied."
+  }
+}

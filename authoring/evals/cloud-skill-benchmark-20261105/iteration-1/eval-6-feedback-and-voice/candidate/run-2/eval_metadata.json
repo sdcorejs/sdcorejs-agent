@@ -1,0 +1,12 @@
+{
+  "eval_id": 6,
+  "eval_name": "feedback-and-voice",
+  "prompt": "Interpret these Facebook results and give a bounded next experiment: Monday organic educational post: 5,000 reach, 100 link clicks. Friday product-offer post boosted for $150: 20,000 reach, 250 link clicks. Friday used a provocative hook; Monday did not. Does this establish that Friday and provocative hooks work better? In this conversation, use shorter sentences and no emojis for both my personal posts and the QueryLane product brand. I have not supplied profile paths or asked you to persist preferences. Keep the two voices distinct. Do not schedule or publish anything.",
+  "assertions": [
+    "Correctly separates raw reach/click counts and, if computing clicks/reach, reports 2% for Monday and 1.25% for Friday.",
+    "Does not infer causal hook/day/algorithm superiority from confounded paid/organic, topic and offer changes.",
+    "Proposes a bounded next experiment with a defined comparison, metric and observation window.",
+    "Applies the accepted short-sentence/no-emoji preference in-session while keeping personal and product voices distinct.",
+    "Does not persist the preference or publish/schedule content, and does not re-ask permission merely to apply the already accepted in-session preference."
+  ]
+}

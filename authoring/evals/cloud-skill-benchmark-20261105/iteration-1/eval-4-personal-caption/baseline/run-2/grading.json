@@ -1,0 +1,77 @@
+{
+  "expectations": [
+    {
+      "text": "Produces a usable Vietnamese Facebook caption of no more than two sentences.",
+      "passed": true,
+      "evidence": "outputs/response.md contains only this usable Vietnamese personal caption: \"Mình chưa từng đến Hội An, nên đang nghĩ cuối tuần ghé đó đi dạo một chút.\" It has 1 sentence(s), names Hội An, and expresses a weekend walk idea directly."
+    },
+    {
+      "text": "Does not claim a prior visit, sensory memory or other unsupplied personal experience.",
+      "passed": true,
+      "evidence": "\"Mình chưa từng đến Hội An\" retains the supplied fact, and \"đang nghĩ cuối tuần ghé đó\" presents the outing as an idea. No sensory memory, completed trip or specific firsthand anecdote is introduced."
+    },
+    {
+      "text": "Does not invent prices, opening times or local factual details.",
+      "passed": true,
+      "evidence": "The complete caption adds no prices, opening hours, itinerary logistics or destination-specific factual claims. Its only location is the user-supplied Hội An; the walk remains a proposed personal activity."
+    },
+    {
+      "text": "Uses the requested plain tone without emoji or invitation to comment.",
+      "passed": true,
+      "evidence": "The wording is everyday Vietnamese with the personal \"mình\" narrator. The complete response contains no emoji, hashtag, question to readers or invitation to comment. The plain tone is usable as supplied."
+    },
+    {
+      "text": "Delivers the small caption directly without an engineering artifact chain, unnecessary consent question, profile persistence or posting.",
+      "passed": true,
+      "evidence": "The trace says \"No questions asked\" and \"No engineering workflow, tests, or approval questionnaire was needed.\" The actual response is only the caption, without headings, consent prompts or an artifact chain. trace.md reports only authorized response/trace capture and no profile persistence or publication. Source-guidance reads and capture files are not an engineering deliverable chain. Non-action evidence remains self-reported."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "The deliverable is a Vietnamese caption of 1 sentence(s).",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The complete response is \"Mình chưa từng đến Hội An, nên đang nghĩ cuối tuần ghé đó đi dạo một chút.\". It is a direct caption with 1 terminal period(s), no prefatory explanation or trailing note."
+    },
+    {
+      "claim": "The author’s never-visited status is preserved without invented firsthand experience.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "\"Mình chưa từng đến Hội An\" retains the supplied fact, and \"đang nghĩ cuối tuần ghé đó\" presents the outing as an idea."
+    },
+    {
+      "claim": "No prices, opening hours, unsupported destination logistics, emoji or engagement invitation appear.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "Inspection of the complete response finds only a prospective weekend walk and the supplied never-visited fact. No public-source travel claims are needed to support the caption."
+    },
+    {
+      "claim": "The commands and readback checks listed in the action record executed successfully.",
+      "type": "process",
+      "verified": false,
+      "evidence": "trace.md explicitly identifies itself as a self-reported record, not a native tool transcript. The delivered response can be inspected, but individual command execution and exit statuses cannot be independently authenticated from these artifacts. This is an evidence limitation, not a finding that the commands failed."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "No user_notes.md exists. The trace reports no external research or destination-logistics verification; the caption contains no such claims."
+    ],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Delivers the small caption directly without an engineering artifact chain, unnecessary consent question, profile persistence or posting.",
+        "reason": "The benchmark boundary described in trace.md independently restricts external actions and writes. The no-publication/no-persistence portion is therefore partly harness-constrained. A complete native action log, or an isolated mock service where the decision is genuinely available, would make this check more discriminating. Current judgments concern the supplied record; they do not certify absence of unrecorded side effects."
+      }
+    ],
+    "overall": "The content assertions check meaningful semantic restrictions, including prospective intent and absence of invented experience. The direct-caption requirement is verifiable from the actual output. Profile/publication behavior is assessed from a self-reported record under benchmark restrictions, not a native action audit. No metrics.json or timing.json exists; no execution timing or tool counts are inferred."
+  }
+}

@@ -1,0 +1,755 @@
+{
+  "scope": "Reviewed evaluation evidence; raw diagnostics remain local",
+  "files": [
+    {
+      "path": ".sdcorejs/docs/workflow/2026-11-05-cloud-skill-benchmark.md",
+      "bytes": 3770,
+      "sha256": "7cf11eafd0a53ab26ce89bf814c44fdb28313592fe9eced800ccfba7e27f5ea9"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/README.md",
+      "bytes": 7270,
+      "sha256": "a6c62d3d5c17c480db38146f501e142f41ded7f717fc0d0549c85d19e5faca73"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/authoring-matrix.json",
+      "bytes": 9112,
+      "sha256": "6b87e8ab288504e8e7a45afe7589d636a89bb3c74d1ef2f27d40f35559d9caf6"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/codex-adaptation.md",
+      "bytes": 1163,
+      "sha256": "7222da5a6b7a0e39c4fa49bc39083b0c5f605c3a9cdb750d74af8abf343ace7e"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/deterministic-results.json",
+      "bytes": 25663,
+      "sha256": "7750612d0dead066fd24073091a340193f2edebb97d27a78cc46a662d0419b00"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/evals.json",
+      "bytes": 5499,
+      "sha256": "bab82a669e6f08d152408ff28b8b9a71223c34362a5662451aec929fc4de7b93"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/grading-criteria.json",
+      "bytes": 3662,
+      "sha256": "e483e323fa5eb46210954f2c4b5e1c1fb4d2cabe4db644894947a597bf6f6bd1"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/grading-criteria.sha256",
+      "bytes": 65,
+      "sha256": "fc0e6811ff3d5444fc9ac214b7cf05b5a7eb192c367ba2afecd599de011a54d6"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/grading-map.json",
+      "bytes": 6467,
+      "sha256": "04923dd3658b5167f91eba75bc81d1cde2c6db16e65f6b4a7bcba0e03f5ce8b9"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/install-receipt.json",
+      "bytes": 6938,
+      "sha256": "7f51128cb38405498ed7b60fabb04844bc314f95f95cbd706537691ba65ae7ae"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/benchmark.json",
+      "bytes": 78077,
+      "sha256": "5fde81885918d1f5df748584e3fe49bde71d2d104fadfe3fc7a21469c89cf62d"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/baseline/run-1/action-record.json",
+      "bytes": 9617,
+      "sha256": "610f8b629b3a253140183272147238a45a0084798a8c8c8414ca0611997e4034"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/baseline/run-1/eval_metadata.json",
+      "bytes": 1744,
+      "sha256": "43c5a8ff972c5114bad2101ad2fdf4d3bfd1023476137f80fca281326f113c81"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/baseline/run-1/grading.json",
+      "bytes": 5145,
+      "sha256": "7ff9f74ca4afc9d8ad9688b0cbf90557ccb1d39148144ecaee66ce42352d4501"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/baseline/run-1/outputs/response.md",
+      "bytes": 4493,
+      "sha256": "f150371e22a075cc7362484b70d7b2efe4ab0a5ed6be087bc193d9a7cadf281c"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/baseline/run-1/timing.json",
+      "bytes": 241,
+      "sha256": "fea333354e56bd8998bd963aee58781ecb4b4f379cd7769932ee4f09baca1509"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/baseline/run-2/action-record.json",
+      "bytes": 7511,
+      "sha256": "1c4052fbaf5c262bf0703df92242b7bef257206b41e8ed9b578a2f935ab8361a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/baseline/run-2/eval_metadata.json",
+      "bytes": 1744,
+      "sha256": "43c5a8ff972c5114bad2101ad2fdf4d3bfd1023476137f80fca281326f113c81"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/baseline/run-2/grading.json",
+      "bytes": 5117,
+      "sha256": "5c91f25e1c56ca8e9e9b17f2ab34511ae4899b77d79185455a87629b9348ff1d"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/baseline/run-2/outputs/response.md",
+      "bytes": 4030,
+      "sha256": "87bada6fd59a5aedace771dc3d8b628720fc1dcddcc8c21ec8083bb6acd3aa3e"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/baseline/run-2/timing.json",
+      "bytes": 241,
+      "sha256": "74190d01d39c67cf420f7445d12bea2157c819bc9349a1b34b76ef04d7d399fb"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/candidate/run-1/action-record.json",
+      "bytes": 7576,
+      "sha256": "787daf20415475df3d009ead1a57b8ba4ae5d7662f1335253ca7a8eb2b85441f"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/candidate/run-1/eval_metadata.json",
+      "bytes": 1744,
+      "sha256": "43c5a8ff972c5114bad2101ad2fdf4d3bfd1023476137f80fca281326f113c81"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/candidate/run-1/grading.json",
+      "bytes": 5216,
+      "sha256": "2cd29c9290b8209a98b83a9746a591ce1dfb88d8e283c146db1f44f37ea9951d"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/candidate/run-1/outputs/response.md",
+      "bytes": 3512,
+      "sha256": "e649aa223bdf1254b6819ee70a33dbba097c3ced3e3f673594cc4e9bbd06b917"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/candidate/run-1/timing.json",
+      "bytes": 241,
+      "sha256": "f1eb85cf094af4b1a28192187ba20eb046eef37c7090b3cc87733b6d5b535aa2"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/candidate/run-2/action-record.json",
+      "bytes": 7524,
+      "sha256": "0ca85231f0563545ae23f887d5538635fea638a28458c2235e3db31a3accae80"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/candidate/run-2/eval_metadata.json",
+      "bytes": 1744,
+      "sha256": "43c5a8ff972c5114bad2101ad2fdf4d3bfd1023476137f80fca281326f113c81"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/candidate/run-2/grading.json",
+      "bytes": 4927,
+      "sha256": "e2a47b67d03d03239a6d3dc4fc96bd7e10a7ad8a6dc0bde33b5445616575fcb6"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/candidate/run-2/outputs/response.md",
+      "bytes": 3325,
+      "sha256": "238a6f412e22430cdfa0fce800c0b5bfa4f3e2489c143d28a772529538a4f02f"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/candidate/run-2/timing.json",
+      "bytes": 241,
+      "sha256": "3f8a5ffc7b8a37e7693ce095edcb7efbd0c2e6faf87e3d18d69d62473f56e261"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-1-delegated-plan/eval_metadata.json",
+      "bytes": 1744,
+      "sha256": "43c5a8ff972c5114bad2101ad2fdf4d3bfd1023476137f80fca281326f113c81"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/baseline/run-1/action-record.json",
+      "bytes": 11628,
+      "sha256": "663ac609c46cfcf8aa66173ab4c1b9fd0188a33bb348492a0674619412cf96a7"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/baseline/run-1/eval_metadata.json",
+      "bytes": 1274,
+      "sha256": "7b1a3fb03a036f86a6ebc076c7ee605337a99c177050513b06c4c0542cf39445"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/baseline/run-1/grading.json",
+      "bytes": 5360,
+      "sha256": "1f3a74fe24ed8c0b13a17ff1742669b85560bd2a534fce22b857b8f2348fd309"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/baseline/run-1/outputs/response.md",
+      "bytes": 4895,
+      "sha256": "5bf9d533f4e28ec502ca4613bc44f84140808f6734117f420b3217dd9aabe86c"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/baseline/run-1/timing.json",
+      "bytes": 241,
+      "sha256": "19e2162516cfe01951ffa42290f7182a893544c8d6162823b5faaeb6ea73bb2a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/baseline/run-2/action-record.json",
+      "bytes": 7295,
+      "sha256": "8c49b630392170601251bb4539687c77d7332a0b4811c6972fa53a1ddf117df3"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/baseline/run-2/eval_metadata.json",
+      "bytes": 1274,
+      "sha256": "7b1a3fb03a036f86a6ebc076c7ee605337a99c177050513b06c4c0542cf39445"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/baseline/run-2/grading.json",
+      "bytes": 4940,
+      "sha256": "d8de9d7e0c7eaa93ce635290825cfdd0752354b5f249d52d3714777b39103efa"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/baseline/run-2/outputs/response.md",
+      "bytes": 3549,
+      "sha256": "90f022e05b0203710edc5dc254abd9ae02a6f9b2afb49d9570ea8d9604d49de8"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/baseline/run-2/timing.json",
+      "bytes": 241,
+      "sha256": "5bc4f3441fad4ce4758df65af66294000dbb49478b8e8bc3315e01dcf549f208"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/candidate/run-1/action-record.json",
+      "bytes": 9043,
+      "sha256": "70d6686dff504f450a7c69eca33ddf66cb293fbca03071f260c2c7f9e410cbac"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/candidate/run-1/eval_metadata.json",
+      "bytes": 1274,
+      "sha256": "7b1a3fb03a036f86a6ebc076c7ee605337a99c177050513b06c4c0542cf39445"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/candidate/run-1/grading.json",
+      "bytes": 4970,
+      "sha256": "bd348dc4499fd41f217b43724e5c51b5c0c7018c4cfb6d2089670bb54eaf1983"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/candidate/run-1/outputs/response.md",
+      "bytes": 4667,
+      "sha256": "1e5d97c10e1925f672bc431832d8e87f99d5fb25c0ad35332d38d28ce9f0dfad"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/candidate/run-1/timing.json",
+      "bytes": 241,
+      "sha256": "2fe0b02e38cb7081d552e276aa4b88e19e8482f97711f6a4c1c943c9d007652a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/candidate/run-2/action-record.json",
+      "bytes": 6481,
+      "sha256": "ff2902500c21fe8185654f2b1483fd683a60c90a8fc63a99aa9e7f36c2ab0e37"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/candidate/run-2/eval_metadata.json",
+      "bytes": 1274,
+      "sha256": "7b1a3fb03a036f86a6ebc076c7ee605337a99c177050513b06c4c0542cf39445"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/candidate/run-2/grading.json",
+      "bytes": 5111,
+      "sha256": "96319b9181300d21b276ee9657cf815d85f3d3307d3f48cdd5f4e4bbef4c0f28"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/candidate/run-2/outputs/response.md",
+      "bytes": 4335,
+      "sha256": "e247d9dcd319f81f9e6d0e0907aa8bf90b180dba848135218c182ea390ffa27d"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/candidate/run-2/timing.json",
+      "bytes": 241,
+      "sha256": "4e6b0ee4595c16b563f1a42ac99b31bc28268f0be67067723a30c3f251c9beb4"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-2-review-only-plan/eval_metadata.json",
+      "bytes": 1274,
+      "sha256": "7b1a3fb03a036f86a6ebc076c7ee605337a99c177050513b06c4c0542cf39445"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/baseline/run-1/action-record.json",
+      "bytes": 11751,
+      "sha256": "7823786568ec4409104379e841b8645aae6bc6cf4c013409c5e975c8432d0d8a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/baseline/run-1/eval_metadata.json",
+      "bytes": 1380,
+      "sha256": "c6129579de16b56168d92cb912a7171ca002ac3d2a7e6980c1ce2b44323f4c3a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/baseline/run-1/grading.json",
+      "bytes": 6586,
+      "sha256": "90c996e59971fcd2ffa21ef0b025439897548fe71e17a7feacc60af3a53610c7"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/baseline/run-1/outputs/helper-results.json",
+      "bytes": 328,
+      "sha256": "1f69105507ad5b08a86ee260fe895f0e7b1025f202e8d0695bef01fba3d54830"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/baseline/run-1/outputs/response.md",
+      "bytes": 1230,
+      "sha256": "33196a4eff840f1c37a5bcc16f62435678daf91f897bd7a8d0f7acfc34c5e256"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/baseline/run-1/timing.json",
+      "bytes": 241,
+      "sha256": "2b70c783da5b4c371f7217aa2df8a5eb989bf534f672947ee9c1fc8d2b3cb95a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/baseline/run-2/action-record.json",
+      "bytes": 11252,
+      "sha256": "1789056479e1007aca8a25de6a409776504d5d01155c68968334d1b0e4ecf15e"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/baseline/run-2/eval_metadata.json",
+      "bytes": 1380,
+      "sha256": "c6129579de16b56168d92cb912a7171ca002ac3d2a7e6980c1ce2b44323f4c3a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/baseline/run-2/grading.json",
+      "bytes": 6640,
+      "sha256": "2947193ad20c8822ecf99302db63f34db793ca56008e3aa702718a464f4d3052"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/baseline/run-2/outputs/helper-results.json",
+      "bytes": 328,
+      "sha256": "1f69105507ad5b08a86ee260fe895f0e7b1025f202e8d0695bef01fba3d54830"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/baseline/run-2/outputs/response.md",
+      "bytes": 1066,
+      "sha256": "3007a7eb6a4456830e41a05e002d0cbcef4840fa5d073756f42179a86640bb2f"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/baseline/run-2/timing.json",
+      "bytes": 241,
+      "sha256": "1c87a65a68838e8138344f338f902f3383ec29e385d5254395e5c3950f67deac"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/candidate/run-1/action-record.json",
+      "bytes": 10621,
+      "sha256": "d02f73c44751dbf87d73851d5f27120ab9dc22d3df9b63f3969cbea73a7342eb"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/candidate/run-1/eval_metadata.json",
+      "bytes": 1380,
+      "sha256": "c6129579de16b56168d92cb912a7171ca002ac3d2a7e6980c1ce2b44323f4c3a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/candidate/run-1/grading.json",
+      "bytes": 5584,
+      "sha256": "3e73f8658d87391ded22852c0d72ffa2494bb63e3d9ea38e2283c2650d3f8c8e"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/candidate/run-1/outputs/helper-results.json",
+      "bytes": 352,
+      "sha256": "38afb1bb71ecd77d7e9a7569376a60c8e0d5cdd2b710e4ffd4d5f36d1812eda1"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/candidate/run-1/outputs/response.md",
+      "bytes": 699,
+      "sha256": "49bf68c5556803148ac143f3c916b1a795feda5b8b8bff5e739ec8954912fa1d"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/candidate/run-1/timing.json",
+      "bytes": 241,
+      "sha256": "e35bf3e5b96104854246fbf7539dc3da38018a9ffc3e58b967a7b0e9b15b432c"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/candidate/run-2/action-record.json",
+      "bytes": 10247,
+      "sha256": "2ac3f37af91c3f98756926f28bc7a474194d264432fe598ba9c708ad789d1f54"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/candidate/run-2/eval_metadata.json",
+      "bytes": 1380,
+      "sha256": "c6129579de16b56168d92cb912a7171ca002ac3d2a7e6980c1ce2b44323f4c3a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/candidate/run-2/grading.json",
+      "bytes": 5287,
+      "sha256": "c99eee7c9e473607066605f26bbe64164886afaddb5b3a7379c36032c1d14831"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/candidate/run-2/outputs/helper-results.json",
+      "bytes": 352,
+      "sha256": "38afb1bb71ecd77d7e9a7569376a60c8e0d5cdd2b710e4ffd4d5f36d1812eda1"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/candidate/run-2/outputs/response.md",
+      "bytes": 754,
+      "sha256": "e04a9f41fa1734dcd2ee7d682f8c06a15f98a8d1f0e8cbd254bcf450adf27b32"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/candidate/run-2/timing.json",
+      "bytes": 241,
+      "sha256": "1c413643991fac1e49fe8596b95d1c4c5777136d851a144b029ef0e5d711944e"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-3-dirty-preflight/eval_metadata.json",
+      "bytes": 1380,
+      "sha256": "c6129579de16b56168d92cb912a7171ca002ac3d2a7e6980c1ce2b44323f4c3a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/baseline/run-1/action-record.json",
+      "bytes": 6254,
+      "sha256": "91e4dd76a1abfd91df2cfda0459373ae97319e092c98f3b77cf773f76039e68b"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/baseline/run-1/eval_metadata.json",
+      "bytes": 939,
+      "sha256": "495bc7c46d13a4877bbf7c35f841942213ba86d1894ae5d17cda546d959a31b2"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/baseline/run-1/grading.json",
+      "bytes": 5388,
+      "sha256": "08945e570e11f72c7a59ea95e21a6ac6c459a450b297fcc5c6ba4fde364726b6"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/baseline/run-1/outputs/response.md",
+      "bytes": 161,
+      "sha256": "e6d768c958af5df8c883fdbc0c521b08ff5977dbea82adfbd1892ef2f5b28ab5"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/baseline/run-1/timing.json",
+      "bytes": 241,
+      "sha256": "944a1eaa5078fb44f761457e30f569bc2d825c333d6db57740076f05279c62fa"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/baseline/run-2/action-record.json",
+      "bytes": 5495,
+      "sha256": "14f5b7bddd81f00f42d1ed9c5e146d0bb84d4a3742f2a1b762df9f5142667c15"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/baseline/run-2/eval_metadata.json",
+      "bytes": 939,
+      "sha256": "495bc7c46d13a4877bbf7c35f841942213ba86d1894ae5d17cda546d959a31b2"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/baseline/run-2/grading.json",
+      "bytes": 5219,
+      "sha256": "f8f04484fc53ef66df594f8b2138aa9f0d653c4e24953de3a2f13f600e0e33ac"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/baseline/run-2/outputs/response.md",
+      "bytes": 100,
+      "sha256": "6cdcd176c4672ed7e2bdd101236a44b469656ad29e588a090504c12fd433b6d5"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/baseline/run-2/timing.json",
+      "bytes": 241,
+      "sha256": "4757b88509f4d1543d8ac1e682483b9ff6ea169257831088be5d234c2857b933"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/candidate/run-1/action-record.json",
+      "bytes": 5011,
+      "sha256": "46c4c894a25491db0496922abaae5f46deef4ec0fa239484cf6b03040f997a4b"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/candidate/run-1/eval_metadata.json",
+      "bytes": 939,
+      "sha256": "495bc7c46d13a4877bbf7c35f841942213ba86d1894ae5d17cda546d959a31b2"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/candidate/run-1/grading.json",
+      "bytes": 5357,
+      "sha256": "14e4e3f21ebb6618e63647629d615a417935960fa5479d4505ca3e20b9fbf4b3"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/candidate/run-1/outputs/response.md",
+      "bytes": 136,
+      "sha256": "35b1c264496a0087705da1e3f6edeabb0b189711d349e48a72e23ee9e79b06ea"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/candidate/run-1/timing.json",
+      "bytes": 241,
+      "sha256": "119066e8acf9b6864d4252b7dafb2c1d223fddb30868f61b1c4a67b962af8538"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/candidate/run-2/action-record.json",
+      "bytes": 5730,
+      "sha256": "3927be0a5695fe358a50433f936430016d9b0c36e2aedb56ec4e8dfa86df7934"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/candidate/run-2/eval_metadata.json",
+      "bytes": 939,
+      "sha256": "495bc7c46d13a4877bbf7c35f841942213ba86d1894ae5d17cda546d959a31b2"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/candidate/run-2/grading.json",
+      "bytes": 5306,
+      "sha256": "4d31025d52134cbd87596bc16174bce25c7642e56fb77dc185bc377237dd85e6"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/candidate/run-2/outputs/response.md",
+      "bytes": 141,
+      "sha256": "c1eef0e3f4215260154c9c8cfdc7c5249f81d9206d73c826692794587d3eee53"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/candidate/run-2/timing.json",
+      "bytes": 241,
+      "sha256": "e78e48f3715de72b42235c50f80008c2f220d230ed445aab7a917d63c274a3ad"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-4-personal-caption/eval_metadata.json",
+      "bytes": 939,
+      "sha256": "495bc7c46d13a4877bbf7c35f841942213ba86d1894ae5d17cda546d959a31b2"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/baseline/run-1/action-record.json",
+      "bytes": 6664,
+      "sha256": "bf2398060fb73140f28a033bceee9cf0480f23f443db73738b677e545cefeeb4"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/baseline/run-1/eval_metadata.json",
+      "bytes": 1377,
+      "sha256": "b87939e3c33f2bad7dba95ed6ad1b84f733a0706ef3afe9031dcece66a7622f5"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/baseline/run-1/grading.json",
+      "bytes": 6604,
+      "sha256": "a857342ee7ad4fb450f3b2969c1369355c1b9aa92b3d3c3b33a107e03e0a5e52"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/baseline/run-1/outputs/response.md",
+      "bytes": 1457,
+      "sha256": "dfba6a03a8cddebe2f217bb6aafefb962f7b314759489184be7ddb55ff5b95e3"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/baseline/run-1/timing.json",
+      "bytes": 241,
+      "sha256": "6bb6c4ce4c76329b06ad3c93d4d0173a1d8ee01c24ea8d9a3d6814a80db5c671"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/baseline/run-2/action-record.json",
+      "bytes": 6650,
+      "sha256": "141e6c4a28712e013405d5005b7779653c2a1ba4ada4b590e270cddb6bcb64fc"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/baseline/run-2/eval_metadata.json",
+      "bytes": 1377,
+      "sha256": "b87939e3c33f2bad7dba95ed6ad1b84f733a0706ef3afe9031dcece66a7622f5"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/baseline/run-2/grading.json",
+      "bytes": 7001,
+      "sha256": "2afb20ad3b764e345cd4f6b102dc2756d907c422cd96f773a03c5b6b8040121a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/baseline/run-2/outputs/response.md",
+      "bytes": 1451,
+      "sha256": "ddf008d58557725da895c2077df1a5fb378894bb86b46fe287bc9f00f04e93fc"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/baseline/run-2/timing.json",
+      "bytes": 241,
+      "sha256": "f740873ddc2468e6d8bac5d4694bba94c7d558b9ad928d0bf4566a2132f99cdc"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/candidate/run-1/action-record.json",
+      "bytes": 6816,
+      "sha256": "a84f3072f2360cf679713121575f01e6f89c6fdf37b1e747ebb5b0df3a990e53"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/candidate/run-1/eval_metadata.json",
+      "bytes": 1377,
+      "sha256": "b87939e3c33f2bad7dba95ed6ad1b84f733a0706ef3afe9031dcece66a7622f5"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/candidate/run-1/grading.json",
+      "bytes": 6649,
+      "sha256": "44e320052c114038997c6d022a6feedbb453a4de128c9f88d000a1291af19f99"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/candidate/run-1/outputs/response.md",
+      "bytes": 1452,
+      "sha256": "6176c906d27a865c733ab56609fd9f7e4c3ec33acc3bb7f3758395123a9054c7"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/candidate/run-1/timing.json",
+      "bytes": 241,
+      "sha256": "82876e1bf192b650b4e391f87506bd9cb0955254ece47503dcfeb5c6462ce49b"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/candidate/run-2/action-record.json",
+      "bytes": 8055,
+      "sha256": "bf1ec6fb953bf63c3e8849591965d102a50a1e906e9a8b2315165a4f6c3f1e05"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/candidate/run-2/eval_metadata.json",
+      "bytes": 1377,
+      "sha256": "b87939e3c33f2bad7dba95ed6ad1b84f733a0706ef3afe9031dcece66a7622f5"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/candidate/run-2/grading.json",
+      "bytes": 6674,
+      "sha256": "285324ce76cfef822611dcb64a17628e8f631e92725e0aee682895ae1859ec3b"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/candidate/run-2/outputs/response.md",
+      "bytes": 1586,
+      "sha256": "4ead38a2d142aaea053b0568e2c89b9ad0f4ad9850b9a9a34b2dcd73157878f4"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/candidate/run-2/timing.json",
+      "bytes": 241,
+      "sha256": "98771a7df4293821956de53c05bd111d3a12b7ab6e0bf9e20d837d0c631dfe80"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-5-tech-product-script/eval_metadata.json",
+      "bytes": 1377,
+      "sha256": "b87939e3c33f2bad7dba95ed6ad1b84f733a0706ef3afe9031dcece66a7622f5"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/baseline/run-1/action-record.json",
+      "bytes": 6570,
+      "sha256": "a43da13a7d1e647d42dd306f6710a5d5275bed0446cfa5807776dedca62f2b1d"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/baseline/run-1/eval_metadata.json",
+      "bytes": 1297,
+      "sha256": "328ab15f50a6f1ddf0858ffb1b161110b8b87a1e2586726a17e356448d16c43a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/baseline/run-1/grading.json",
+      "bytes": 6294,
+      "sha256": "7032bdedb847389396d0023479580b2a55454e430f47fe3bb69aa208e0333164"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/baseline/run-1/outputs/response.md",
+      "bytes": 2532,
+      "sha256": "044d2a5bd330eeba8398e1001a63fc5b4939056c81e5d0a3452bce76d02b3fd0"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/baseline/run-1/timing.json",
+      "bytes": 241,
+      "sha256": "6a9bfcec68d1f4afb0bd47d00f34d4a8485e5bd662b41980964c06c56f089c2b"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/baseline/run-2/action-record.json",
+      "bytes": 5820,
+      "sha256": "d1e61b772a6fe38583ec819f81ecd6b3fb5bfa830f7f0acdcc440358238baf08"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/baseline/run-2/eval_metadata.json",
+      "bytes": 1297,
+      "sha256": "328ab15f50a6f1ddf0858ffb1b161110b8b87a1e2586726a17e356448d16c43a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/baseline/run-2/grading.json",
+      "bytes": 6263,
+      "sha256": "6b7b17ce2197c0c9dd8fe17688d595136159da9f44e755bde8e55dc111d72736"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/baseline/run-2/outputs/response.md",
+      "bytes": 2587,
+      "sha256": "b961c6378a1c7d641ec57d3b454d53d0b7cfa5e02f24a980c8dd8c076d0c15ce"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/baseline/run-2/timing.json",
+      "bytes": 241,
+      "sha256": "71c5f6af6ddf5648865dcb18be6e154c2758f6c053e2952fd4ea71658544273c"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/candidate/run-1/action-record.json",
+      "bytes": 8761,
+      "sha256": "79878f86a95ecb525e79448626f3b8413149aca252bc7761c45596941d5cef99"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/candidate/run-1/eval_metadata.json",
+      "bytes": 1297,
+      "sha256": "328ab15f50a6f1ddf0858ffb1b161110b8b87a1e2586726a17e356448d16c43a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/candidate/run-1/grading.json",
+      "bytes": 6454,
+      "sha256": "5f06395c67c43520d727176c1cf1d43faed53dfebca50e40d6915f62de4cbbc4"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/candidate/run-1/outputs/response.md",
+      "bytes": 2360,
+      "sha256": "809e7c0be649ba4f3736c4d07bc1fc88b2a7aed0230d0b4b5b39b139ac79e148"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/candidate/run-1/timing.json",
+      "bytes": 241,
+      "sha256": "3ffd8a4f7ae460fbc5f4af72f23d55560d5df43f13f4ecfc786ec29d19fafb0f"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/candidate/run-2/action-record.json",
+      "bytes": 6500,
+      "sha256": "b5d297c0fdf1217e6073c694adb30f00f7ebd1fbf43f2266ad545e44dd07e896"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/candidate/run-2/eval_metadata.json",
+      "bytes": 1297,
+      "sha256": "328ab15f50a6f1ddf0858ffb1b161110b8b87a1e2586726a17e356448d16c43a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/candidate/run-2/grading.json",
+      "bytes": 6141,
+      "sha256": "570f1b70d9ef60beb79bda0ad19e9dd1d8da9466b8a5810a76265c522a82373c"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/candidate/run-2/outputs/response.md",
+      "bytes": 2665,
+      "sha256": "c17ebeb926a7137751003e5ff45afc4fbe82cdfdf1ef17fb1e84464fa5a252f6"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/candidate/run-2/timing.json",
+      "bytes": 241,
+      "sha256": "14844b496f68400e3817eb0f52b78f42e6e8f4be189152612530df84416f2c38"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/iteration-1/eval-6-feedback-and-voice/eval_metadata.json",
+      "bytes": 1297,
+      "sha256": "328ab15f50a6f1ddf0858ffb1b161110b8b87a1e2586726a17e356448d16c43a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/review.html",
+      "bytes": 320932,
+      "sha256": "b36f4635c66e2ee8dde0883622c616470752624cdda69eeb2da810d90d6fb9ee"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/snapshot-identities.json",
+      "bytes": 438,
+      "sha256": "ae435b576c96198ed357ab74e96e731786317621f75ab3b7eaf77e0bc5ede35a"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/snapshot-verification.json",
+      "bytes": 694,
+      "sha256": "be5cc6c6207eef5e0ea585d0ed11180b86938fb79a88e72253da68f4e9e234c4"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/tools/aggregate_codex.py",
+      "bytes": 4245,
+      "sha256": "1bdb6d45e8943fb64de7b769556b6ad917274c6e96d528f93024457c724d9ce9"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/tools/deterministic.mjs",
+      "bytes": 4194,
+      "sha256": "d1a7807de1af987e84cb6e0d8af7735d9ee15ec6aacc0622a8a4570c0ee70ead"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/tools/render_review.py",
+      "bytes": 1302,
+      "sha256": "8f0d74c88632c8ab2eef1f66d68f98de0f4a0d8b9d12dfcb5884c20814feda9d"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/tools/test_aggregate_adapter.py",
+      "bytes": 2010,
+      "sha256": "6f124f3a39caed9ac26c19f97280ecdd74e8f740c8f2c80879279b0401df57aa"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/verification.json",
+      "bytes": 4738,
+      "sha256": "165fb0ae1c7f40aa527955a578b1bf7c4524cbe7c2e88a596fc994da67f5c3e5"
+    },
+    {
+      "path": "authoring/evals/cloud-skill-benchmark-20261105/worker-instructions.md",
+      "bytes": 1252,
+      "sha256": "79a3c9c4bb8bb843914d1857cf04cb0e60829d019696f686ed2f32a71ffba6af"
+    }
+  ]
+}
