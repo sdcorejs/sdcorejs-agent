@@ -7,6 +7,9 @@ required-actions: artifact.read, artifact.write, context.pass, verification.run,
 # 02 - Spec
 
 
+Read `_refs/shared/session-authority.md` before classification or any approval/finish
+transition. Reuse scoped session authority; preserve unresolved risk decisions.
+
 ## Shared Protocols
 
 Read `_refs/shared/runtime-protocols.md`. Draft and approved spec artifacts

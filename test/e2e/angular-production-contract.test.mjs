@@ -1,6 +1,7 @@
+import { readPublishedContract as readFile } from './support/published-contract.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { readFile } from 'node:fs/promises';
+import { } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -108,14 +109,14 @@ test('technical prototype and optional Angular packs require explicit approved s
   );
 });
 
-test('Angular policy makes TDD authoring mandatory and admin/prototype conditional', async () => {
+test('Angular policy keeps meaningful verification mandatory and admin/prototype conditional', async () => {
   const [skill, prototypeReference, adminReference] = await Promise.all([
     readFile(path.join(repoRoot, 'skills/tracks/angular/sdcorejs-angular.md'), 'utf8'),
     readFile(path.join(repoRoot, '_refs/angular/write-code/po-ba-prototype.md'), 'utf8'),
     readFile(path.join(repoRoot, '_refs/angular/write-code/admin-screens.md'), 'utf8'),
   ]);
   assert.match(skill, /technical-prototype.*explicit/isu);
-  assert.match(skill, /test authoring.*mandatory/isu);
+  assert.match(skill, /Verification is mandatory and risk-based[\s\S]*TDD or post-hoc/isu);
   assert.match(skill, /finish gate.*integration.*E2E/isu);
   assert.doesNotMatch(skill, /admin-screens.*ALWAYS runs/isu);
   assert.doesNotMatch(skill, /Every generated portal includes the admin screens/isu);

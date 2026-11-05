@@ -55,7 +55,7 @@ export function deriveEntrypointRoutingContext(profile) {
     approvedPlanExecution: /sdcorejs-execute-plan/.test(text) && /approved plan|plan approval|approved-plan/.test(text),
     directParallelDispatch,
     delegatedExecution,
-    requiresApprovedPlanForWrites: /before (the )?plan approval|before (an )?approved plan|starting code before.*plan approval|approved plans? (go|execute|run)|approval gate/.test(text),
+    requiresApprovedPlanForWrites: /before (the )?plan approval|before (an )?approved plan|starting code before.*plan approval|approved plans? (go|execute|run)|approval gate|unapproved writes return to planning/.test(text),
     readOnlyParallel: /read-only parallel|parallel read-only|read-only fan-out/.test(text),
     contradictions
   };

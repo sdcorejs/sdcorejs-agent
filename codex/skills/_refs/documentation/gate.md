@@ -90,8 +90,9 @@ for this gate and drop them the next time preferences are saved.
    normalization, blocks update, migration, aggregate, and export until it is
    resolved. An equivalent pair selects canonical without silently deleting
    legacy.
-5. If this is a new feature and either corresponding doc is missing, ask the
-   approval gate below before creating any missing file.
+5. Resolve `_refs/shared/session-authority.md` first. For missing docs, ask the
+   approval gate below only when no existing scoped request/delegation authorizes
+   their creation. Saved update preferences alone cannot authorize new docs.
 6. If corresponding docs already exist, saved preferences may default whether
    to update them. Current-turn explicit instructions still override saved
    preferences.
@@ -104,17 +105,18 @@ for this gate and drop them the next time preferences are saved.
 8. If the current request explicitly asks to create or update `user-guide` or
    `technical-doc`, treat that as approval for the requested doc type and report
    it before writing.
-9. If a `TASKID`, task id, ticket id, or issue id is present, write/update the
-   requirement record through `_refs/documentation/write-requirement.md`
-   without blocking the user-guide/technical-doc gate.
+9. A `TASKID`, ticket or issue identifier supplies context, not output intent.
+   Write a requirement record through `_refs/documentation/write-requirement.md`
+   only when the requested action or authorized workflow includes recording it.
+   Summarizing a ticket or commenting code does not authorize requirement writes.
 
 Current-turn explicit instructions override saved preferences. Examples:
 "skip docs this time", "create both docs", "technical doc only", "do not save".
 
 ## Approval Gate Prompt
 
-Localize the prompt. Ask immediately after the final test approval/decision
-step and before any user-guide or technical-doc file is generated.
+Localize the prompt. When authority remains unresolved, ask after the final test
+decision and before creating the affected user-guide or technical-doc.
 
 When a new feature has no corresponding docs:
 

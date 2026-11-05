@@ -260,190 +260,18 @@ Keep these invariants in the active skill:
 - write-approved actions emit `artifact_context`;
 - missing or stale summary is never itself permission to write.
 
-## `code-map-readonly`
+## Action references
 
-First decide whether targeted reads already answer the question. Do not create
-a code map for a few named files, a known entrypoint, or a relationship
-answerable from `rg`, manifests, routes, or module config.
+Load only the selected action reference after classifying authority:
 
-Use a scoped map for cross-module/package/layer work, impact or ownership
-analysis, composition hosts, frontend-to-persistence traces, unclear dependency
-direction, or a large repository where sequential reads would be wasteful.
-
-Return the bounded `code_context` node/edge contract from
-`../_refs/shared/project-context.md`. Every node and edge cites repository-relative
-path evidence. Do not persist the map.
-
-When the repository already has a dependency graph, language/LSP index, or
-build graph:
-
-- detect it from config, scripts, or documented tooling;
-- use only a documented read-only scoped query;
-- do not install or download a tool;
-- record provider evidence and limitations;
-- classify any generated provider cache as `local_only`;
-- keep current code/config as the higher source of truth.
-
-Do not generate, embed, auto-refresh, or commit a repository-wide codegraph.
-`code-map-write-approved` may persist only the explicitly approved task-scoped
-map under its semantic owner repository. Missing owner repositories block; a
-portal is not a fallback for a module-owned map.
-
-## `documentation-harvest-readonly`
-
-Documentation harvest must first detect the actual stack_profile and libraries
-in use. Do not assume SDCoreJS/Core UI/TypeORM/build-website conventions for
-plain projects.
-
-Profile-aware harvest rules:
-
-- Core UI harvest columns/checks apply only to `core-ui-angular` or
-  `legacy-core-ui-angular`.
-- SDCoreJS Nest, TypeORM, PostgreSQL, and permission decorator harvest applies
-  only when those technologies are detected.
-- Plain Angular harvests actual routes, UI libraries, components, forms,
-  validators, services, state, and local component conventions.
-- Plain NestJS harvests actual controllers, services, modules, DTOs,
-  validation, database technology, persistence layer, and integration clients.
-- Plain Next.js harvests actual app/pages routes, data fetching, components,
-  server/client boundaries, route handlers, server actions, caching, and
-  public/internal site structure.
-- If the project uses Prisma, Mongoose, class-validator, Zod, Angular Material,
-  PrimeNG, Tailwind, local components, or another library, describe actual usage
-  instead of forcing SDCoreJS assumptions.
-- Do not create false gaps based on absent SDCoreJS conventions.
-
-Output a facts table with path evidence and `unknown - reason` for gaps that
-cannot be proven.
-
-## `trace-flow-readonly`
-
-Trace actual code paths, not assumed conventions:
-
-1. Start from the explicit user-provided entrypoint if present.
-2. If no entrypoint is provided, infer candidates and ask for selection when
-   ambiguous.
-3. For frontend-to-backend traces, map UI action -> route/client call -> API
-   endpoint -> service/domain/data layer -> response/render/update.
-4. For backend traces, map controller/handler -> guards/middleware/pipes/
-   interceptors -> service/domain -> persistence/integration -> response/error
-   path.
-5. For Next.js, distinguish app router/pages router, server/client components,
-   route handlers, server actions, caching, and runtime only when detected.
-6. For Angular and NestJS, apply Core UI or SDCoreJS rules only when the
-   `stack_profile` evidence supports them.
-
-Do not write diagrams or files unless the user explicitly asks.
-
-## Env Setup Actions
-
-`env-setup-readonly` is the default. It may read README, package manifests,
-lockfiles, Docker Compose, devcontainer files, env examples, and scripts. It
-outputs setup commands/instructions and required env key names only.
-
-It must not create `.env`, `.env.local`, config files, or secrets by default.
-It must never overwrite existing env files. It must never insert real secret
-values. It must not install packages, download tools, or start services unless
-explicitly requested.
-
-`env-setup-write-approved` may create a safe env file from an example only after
-explicit approval. Use placeholders only, preserve existing files, and record
-the write in `explore_context`.
-
-## `recovery-readonly`
-
-Recovery mode is read-only. Read valid summary sections, the directly related
-approved spec/plan, change-scoped execution docs, an explicit handoff when one
-exists, relevant memory metadata, Git status/diff/log, and current user scope.
-Select artifacts by exact `contract_id`, `requirement_id`, `change_ref`,
-parent/supersedes links, and repository/module owner before path hints. Never
-select a durable artifact merely because it is newest.
-
-Ignore legacy session checkpoint files. Do not auto-resume work, create a
-handoff, or refresh summary.
-
-End with one numbered choice prompt:
-
-```text
-What would you like to do next?
-
-1. Continue the previous task
-2. Start a new task from current context
-3. Inspect a specific document or file
-4. Refresh project summary
-5. Stop after this recovery summary
-
-Reply with `1`, `2`, `3`, `4`, or `5`.
-```
-
-## Persona Actions
-
-`persona-read` reads the current persona only.
-
-`persona-write-approved` requires explicit user request or approval. Do not
-write persona into the `sdcorejs-agent` authoring repo or another skill-pack
-authoring repo unless explicitly targeted. Do not include secrets or PII.
-
-Persona file template:
-
-```markdown
----
-artifact_id: project-persona
-artifact_kind: persona
-change_ref: shared-project-persona
-source_spec: none
-source_plan: none
-commit_policy: conditional
-owner: sdcorejs-explore
-persona: non-tech   # tech | non-tech
-set: <YYYY-MM-DD>   # use current date
----
-
-Persona for this project. Managed by `sdcorejs-explore (persona mode)`.
-See `../_refs/shared/persona.md` for what each persona changes.
-```
-
-## Convention Actions
-
-`sdcorejs-explore` is the canonical reader and writer of project conventions.
-Read `../_refs/shared/convention-context.md` before either action and validate with
-`../_refs/shared/convention-contract.mjs`. Keep these invariants in the active
-skill: accepted rules come only from authoritative sources, inferred patterns
-stay `observed`, exceptions and deprecation metadata are preserved, writes go
-only to the semantic owner repository, an unavailable or unwritable owner blocks
-that rule rather than redirecting it, and unchanged evidence produces no write.
-
-## Memory Actions
-
-`memories-read` loads only relevant memory index/metadata first, not every
-memory body.
-
-`memories-write-approved` requires explicit durable knowledge and user approval.
-Do not save secrets, credentials, PII, transient task state, speculation, or
-uncertain facts as memory. Do not default every memory to angular.
-
-Memory entries should include:
-
-```yaml
----
-artifact_id: memory-<scope>-<timestamp>
-artifact_kind: memory
-change_ref: shared-project-memory
-source_spec: <path | none>
-source_plan: <path | none>
-commit_policy: conditional
-owner: sdcorejs-explore
-track: general
-stack_profile: general
-source_skill: sdcorejs-explore
-applies_to: <scope>
-created_at: <ISO timestamp>
-evidence: <source>
-confidence: high | medium | low
----
-```
-
-Supported track labels include: general, angular, nestjs, nextjs, react, product, design, test, documentation, workflow, and repo-specific labels.
+- code-map-readonly: `../_refs/shared/explore-code-map-readonly.md`.
+- documentation-harvest-readonly: `../_refs/shared/explore-documentation-harvest-readonly.md`.
+- trace-flow-readonly: `../_refs/shared/explore-trace-flow-readonly.md`.
+- Env Setup Actions: `../_refs/shared/explore-env-setup-actions.md`.
+- recovery-readonly: `../_refs/shared/explore-recovery-readonly.md`.
+- Persona Actions: `../_refs/shared/explore-persona-actions.md`.
+- Convention Actions: `../_refs/shared/explore-convention-actions.md`.
+- Memory Actions: `../_refs/shared/explore-memory-actions.md`.
 
 ## Downstream Interaction
 
@@ -501,3 +329,12 @@ as evidence, not unquestionable truth.
 - `sdcorejs-cleanup` - bounded evidence-based housekeeping after separate authority
 
 For authorized project AGENTS projection, follow `../_refs/shared/project-bootstrap.md`; read-only modes never persist instructions.
+
+## Action-specific authority
+
+`resolveExploreWriteAuthority` requires explicit authority for the exact env,
+persona or memory action. Integration ownership alone is not that permission.
+Approved initialization or an assigned refresh may authorize summary-refresh;
+the committed after-review policy may authorize convention sync. Unknown roles
+and parallel workers never write shared state. Carry existing session decisions
+without re-asking, but do not widen them to other actions.

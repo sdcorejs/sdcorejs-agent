@@ -95,10 +95,18 @@ Always load:
 - `../../_refs/shared/test-environment-guard.md`
 - `../../_refs/shared/test-context.md`
 - `../../_refs/shared/test-scope-and-coverage.md`
-- `../../_refs/shared/validation-map.md`
-- `../../_refs/shared/convergence-contract.mjs`
-- `../../_refs/shared/test-auth-personas.md`
-- `../../_refs/shared/test-data-lifecycle.md`
+Conditional contracts:
+
+- `../../_refs/shared/validation-map.md` for governed acceptance/coverage mapping.
+- `../../_refs/shared/convergence-contract.md` when producing governed convergence
+  evidence; execute `../../_refs/shared/convergence-contract.mjs` validators at that
+  gate. Read implementation details only to diagnose a validator issue.
+- `../../_refs/shared/test-auth-personas.md` for authenticated/protected behavior.
+- `../../_refs/shared/test-data-lifecycle.md` when tests create or mutate fixtures,
+  accounts or persistent state.
+
+A single existing unit-test run needs no auth/data/convergence body when those
+concerns are absent. Preserve current command, owner, scope and result identity.
 
 Load `../../_refs/shared/test-generic.md` for plain/general profiles. Load only the
 selected level from `../../_refs/angular/test-{unit,integration,e2e}.md`,
@@ -127,8 +135,10 @@ Before edits or commands, emit the schema from `../../_refs/shared/test-context.
 
 - `test_context.schema_version: 2`, current `associated_HEAD_or_diff`,
   classification, scope/owner, runner/config/cwd, environment/write policy,
-  auth/personas, data ownership/cleanup, execution plan, the exact approved
-  validation map, and its `projectCoverageMatrix` runtime projection;
+  applicable auth/personas and data ownership/cleanup, execution plan; when
+  governed, the exact approved validation map and its `projectCoverageMatrix`
+  runtime projection. Ungoverned unit runs leave plan/map references absent or
+  empty as allowed by the consumer; never fabricate an approved map;
 - independent `test_status` fields for planning, authoring, executability,
   execution, result, evidence, and documentation;
 - `test_evidence.schema_version: 2` with append-oriented runs, cases, captures,
@@ -156,9 +166,11 @@ module release check.
 4. For state changes, prove run ownership and idempotent cleanup first. Block
    unsafe staging/production effects and real email, SMS, or payments.
 5. Run the narrowest relevant command before broader verification. Preserve
-   exact exit code and a redacted summary. Append mapped runs/cases, then call
-   `evaluateValidationEvidence`; emit exact current `convergence_evidence_refs`
-   from approved row evidence IDs, and record skipped commands explicitly.
+   exact exit code and a redacted summary; append current runs/cases and record
+   skipped commands explicitly. For an approved/governed validation map, call
+   `evaluateValidationEvidence` and emit exact current `convergence_evidence_refs`
+   from approved row evidence IDs. An ungoverned unit run reports its observed
+   result without mapped acceptance/convergence claims.
 6. On a source failure, do not silently fix production code outside `tdd-cycle`;
    route to `sdcorejs-debug`.
 
@@ -169,54 +181,12 @@ reason, GREEN command and result, refactor result, and associated diff. RED must
 fail for the intended missing behavior. A compile/config/environment failure is
 blocked, not a valid RED.
 
-## AI-agent context
+## Conditional downstream context
 
-When the subject carries `ai_agent_context`, verify its approved hashes,
-resolved engine/capability profiles, contract paths, target paths, and
-offline/live evidence boundary before authoring cases. Preserve the context in
-`test_context`; do not reinterpret profile policy from implementation prose.
-
-Test server-side denial independently from model behavior: untrusted/model
-tenant selection, missing permissions, raw tools, stale/unbound approval,
-self-approval, cross-tenant session reuse, provider storage without governance,
-invented evidence, unsafe trace payloads, and exhausted limits must fail
-deterministically. Run offline contract fixtures and deterministic gates
-separately from any authorized live behavioral check. Never promote an offline
-pass to live engine/model compatibility evidence, and never read ambient
-credentials merely to discover whether a live check is possible.
-
-## Simplification context
-
-When `simplify_context` is present, consume its selected files/hunks, diff
-scope hash, preserved surfaces, baseline commands, and pass ledger. Keep
-pre-simplification and post-simplification command evidence as distinct
-append-only runs. Rerun the affected focused commands after every successful
-write pass and associate the result with the current diff.
-
-Do not edit expectations, fixtures, snapshots, prompts, strings, or contracts
-to legitimize a behavior change. Authored tests without a passing run are not a
-green baseline. A simplification write makes prior affected test evidence
-stale; only a current post-simplification run can restore it.
-
-## Parallel and downstream handoff
-
-Use one writer for shared runner config, persona catalogs, environment files,
-global setup, snapshots, and aggregate reports. Module workers own only their
-assigned test paths and must not edit shared config.
-
-Return localized summary plus:
-
-- `test_context`, `test_status`, and `test_evidence`;
-- current `convergence_evidence_refs` (never authored, stale, skipped, or invented IDs);
-- authored/changed files and coverage matrix gaps;
-- exact commands run/skipped, exit codes, cleanup outcome, and blockers;
-- `ui_capture_context` when applicable;
-- complete `artifact_context` lifecycle identity plus `required_with_change`,
-  `shared_owned`, `conditional`, `local_only`, and `unrelated_observed`.
-
-Never claim tests passed from authored files, old reports, or legacy v1
-evidence. Do not invoke Git; callers decide review, repair, documentation, ship,
-and Git transitions.
+For AI-agent tests, simplification verification or parallel/delegated results,
+load `../../_refs/shared/test-downstream-context.md` and only the matching section.
+Preserve current test evidence identities, independent test status and owner
+handoff; workers never claim integration verification from unit results.
 
 ## Direct invocation tail
 

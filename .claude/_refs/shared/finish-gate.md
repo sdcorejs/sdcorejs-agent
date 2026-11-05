@@ -1,4 +1,4 @@
-# Finish Gate (cross-track) - consolidated finishing-steps ASK
+# Finish Gate (cross-track) - finishing assessment
 
 ## Contents
 
@@ -7,157 +7,34 @@
 - [Rules](#rules)
 - [Execution Order](#order-of-execution-after-the-gate)
 
-Loaded by every track write-code orchestrator (`sdcorejs-angular`,
-`sdcorejs-nestjs`, `sdcorejs-nextjs`). The gate is MANDATORY and
-UNCONDITIONAL: present it after EVERY code-generation run, whether the skill
-was reached through the full SDLC flow or triggered standalone (for example
-"add entity", "create module X", "add a page"). It exists so the user always
-knows these finishing steps exist and can choose; the steps are never silently
-skipped, and never silently auto-run without the user seeing them.
-
-Why this gate exists: standalone skill triggers used to stop right after
-code-gen, so tests, user/technical documentation, optional behavior-preserving
-simplification, review, and shipping checks silently never happened. The gate
-makes the whole finishing chain visible, every time.
+Read `_refs/shared/session-authority.md` first. This gate is MANDATORY after
+every code-generation run, including standalone and fast-fix requests. It
+assesses verification, concise review, applicable documentation and delivery.
+It does not require a new user choice when current session authority covers the
+action. Report the selected finishing scope and continue authorized work.
 
 ## When to present
 
-Immediately after the last code-generating reference pack finishes, and BEFORE
-running any tail step. Present exactly once per code-gen invocation. This
-applies even to a one-line standalone request. "Small change" is not a reason
-to skip the gate.
+After the last code-generating step, before the tail. For a bounded fix, apply
+targeted tests and concise review without creating spec/plan artifacts. For
+governed work, carry the approved plan and session choices.
 
 ## Prompt Sequence
 
-Adapt every prompt to the user's language. Ask the finish decisions
-sequentially and wait for each answer before asking the next one. The
-user/technical documentation decision is a single combined gate because both
-artifacts share the same new-file approval boundary.
-
-### Step 1 - Tests
-
-```text
-Code generated for <scope>. Finish step 1/4: tests.
-
-1. Standard tests - write now, RED-first, standard coverage. [Recommended]
-2. Minimal tests - fastest useful coverage.
-3. Full tests - broader edge-case and integration coverage.
-4. Skip tests - only if the user explicitly accepts the risk.
-
-Reply with `1`, `2`, `3`, or `4`.
-```
-
-### Step 2 - User/Technical Documentation
-
-`code-documentation` is not part of this approval gate. Track skills apply
-source-code documentation automatically when they create or modify source code.
-
-Immediately after Step 1, inspect whether this run implemented a new feature and
-whether corresponding `user-guide` and `technical-doc` files already exist. If a
-new feature has no corresponding docs, ask:
-
-```text
-Finish step 2/4: user/technical documentation.
-Documentation approval gate:
-This appears to be a new feature and I did not find an existing corresponding `user-guide` or `technical-doc`.
-
-Should I create documentation for this feature?
-
-Options:
-1. Create/update `user-guide` - task-oriented documentation for end users, admins, support staff, or operators.
-2. Create/update `technical-doc` - developer/operator-facing documentation for architecture, API, integration, deployment, troubleshooting, configuration, or security.
-3. Create both - create/update both `user-guide` and `technical-doc`. [Recommended for user-visible features with developer-facing behavior]
-4. Skip new user/technical docs for this change - no new user-guide or technical-doc file will be created.
-
-Reply with `1`, `2`, `3`, or `4`.
-```
-
-When corresponding docs already exist, use the same gate wording but replace the
-second sentence with the paths found and treat the selected options as updates.
-Saved preferences may prefill the recommended option for updates, but they must
-not silently create a missing `user-guide` or `technical-doc` for a new feature.
-
-When the user chooses `4`, set the effective documentation choices explicitly:
-
-```yaml
-user_guide: skip
-technical_doc: skip
-requirement_record: skip
-preference_saved: false
-```
-
-### Step 3 - Behavior-preserving simplification
-
-Never auto-run simplification. Present the decision even when a simplification
-recommendation is Skip. Resolve eligibility from changed executable source,
-protected-file/content boundaries, and the selected test baseline.
-
-```text
-Finish step 3/4: behavior-preserving code simplification.
-
-1. Skip simplification for this run.
-2. Analyze eligible changed code and report opportunities only; do not edit.
-3. Simplify eligible changed source code after a green baseline, then rerun the same focused verification.
-
-Recommendation: <option> because <evidence-based reason>.
-
-Reply with `1`, `2`, or `3`.
-```
-
-Recommend:
-
-- `1` for docs/config/test-only/trivial changes, protected files, missing scope,
-  or no runnable behavior oracle;
-- `2` when scope or risk is not clear enough for an edit;
-- `3` only for non-trivial eligible executable code with a bounded scope and a
-  runnable green baseline.
-
-If the user explicitly requested simplification in the same turn, prefill
-option `3`, but still enforce the green baseline. When tests were skipped and
-there is no current green evidence, block option `3`; allow analyze-only or
-return to the required focused tests.
-
-### Step 4 - Review
-
-```text
-Finish step 4/4: review.
-
-1. Ship now - skip review for this run and continue acceptance verification.
-2. Run review only - read-only review; do not edit code.
-3. Run review and repair loop. [Recommended]
-4. Defer - stop before review/ship tail so the user can continue later.
-
-Reply with `1`, `2`, `3`, or `4`.
-```
-
-Option `2` authorizes read-only `sdcorejs-review` only. Option `3` explicitly
-authorizes the finish-gate caller to run the read-only `sdcorejs-review` and
-then `sdcorejs-repair-loop` for blocking findings with the original
-`review_context`. Option `1` skips review/repair and continues to acceptance
-verification. Option `4` stops the tail chain before review/ship and returns a
-runtime-only status update. Create a durable handoff only when the user asks or
-a real blocked/deferred transfer needs it. A direct
-user-requested `sdcorejs-review` outside this finish gate remains strict
-read-only and may only offer repair-loop or artifact persistence as explicit
-next steps.
-
-After these answers, state the selected choices and the always-on steps:
-write-producing documentation/task/memory artifacts first, then verification,
-then branch-ready as the final read-only gate before any Git artifact handoff.
-All write-producing steps run before final branch-ready.
-All write-producing steps emit and merge `artifact_context` before final
-branch-ready.
+Read `_refs/shared/finish-decisions.md` only for an unresolved material choice.
+Ask that choice alone; keep independent work moving. Do not reconfirm explicit
+session instructions or turn optional simplify/docs choices into blockers.
 
 ## Rules
 
 - UNCONDITIONAL. The gate fires for standalone single-skill triggers too, not
   only the SDLC flow. A one-line "add entity" still gets the gate.
-- Tests default ON (RED-first, `standard`). The user may opt out (`skip`) or
-  change the level. If the user says nothing about tests, write them; silence
-  means accept the default, never skip.
+- Tests use the risk-appropriate agreed strategy (TDD or post-hoc). Existing
+  focused tests may suffice for low-risk changes; skip reasons remain visible.
+  Silence does not authorize an optional effect or waive required verification.
 - Code documentation is automatic for Angular/NestJS/Next.js source-code
   changes. It is not optional in this gate and does not require approval.
-- User/technical documentation default is visible choice. Read
+- Apply existing documentation authority first. For new unresolved scope read
   `_refs/documentation/gate.md` before asking.
   If `<target>/.sdcorejs/documentation/preferences.md` exists with
   `ask_each_time: false`, it may apply to updates of existing docs, but it must
@@ -189,12 +66,12 @@ branch-ready.
 - If the user chooses "Skip new user/technical docs" at Finish step 2, do not
   create new user-guide or technical-doc files for this run. Existing docs may
   still be updated only when the current request explicitly asked for that.
-- Review default is a visible choice. `Run review only` must not edit code.
-  Repair-loop is part of review only when the user chose
-  "Run review and repair loop"; do not auto-edit after a direct read-only
+- Scoped review is part of completing an implementation request. `Run review only` must not edit code.
+  Repair-loop runs when the session authorizes repair, including an explicit
+  implementation-and-fix request; do not auto-edit after a direct read-only
   review.
 - Execute the tail steps honoring the sequential answers, in the orchestrator's
-  defined order. A skipped step is omitted; everything not skipped runs.
+  defined order. A skipped optional step is omitted; run only applicable authorized steps.
 - Unless the user chose `Defer`, plumbing runs after the chosen review mode:
   all selected write-producing tail steps first, then
   `sdcorejs-ship (verify-before-done mode)`, then
@@ -210,9 +87,8 @@ branch-ready.
   the current `HEAD` or diff.
 - Localize the prompt; keep identifiers, permission codes, and route paths in
   English in every language.
-- If the user already gave explicit instructions this turn (for example "add
-  entity X with full tests and create the user guide"), pre-fill the gate from those
-  answers and present it for a quick confirm rather than re-asking blindly.
+- Reuse explicit instructions from the current session and execute them; no
+  quick confirmation is needed solely because a skill or phase changed.
 
 ## Order of execution after the gate
 
@@ -249,7 +125,8 @@ branch-ready.
 11. `_refs/orchestration/tail/auto-task-tracker.md` only when the sequential
    workflow or integration owner is authorized to reconcile the shared durable
    backlog (and unless deferred). Never use it for live progress.
-12. `sdcorejs-explore (memories mode)` when durable knowledge surfaced.
+12. `sdcorejs-explore (memories-readonly)` when durable knowledge surfaced;
+    persist only with action-specific memory-write authority.
 13. `sdcorejs-explore (conventions-sync-write-approved)` only when convention
     candidates or rule updates exist AND the project capture policy or explicit
     workflow authorization permits persistence. It runs after every other
@@ -285,7 +162,7 @@ explicitly deferred with the required risk note.
 ## Approved finish scope and fast fixes
 
 When the user already approved exact tests, review and documentation in the
-current plan, carry out those choices and show their status without asking them
+current session or plan, carry out those choices and show their status without asking them
 again. Ask only for a genuinely unresolved finish decision. Every code change,
 including fast-fix, retains the proportional baseline from
 `_refs/harness/runtime-policy.mjs` and the evidence contract in

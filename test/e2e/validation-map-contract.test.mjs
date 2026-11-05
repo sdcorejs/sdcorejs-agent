@@ -1,5 +1,6 @@
+import { readPublishedContract as readFile } from './support/published-contract.mjs';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { } from 'node:fs/promises';
 import test from 'node:test';
 
 import { buildPortableHandoff } from '../../_refs/harness/communication-economy.mjs';

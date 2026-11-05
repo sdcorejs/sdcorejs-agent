@@ -11,6 +11,9 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, Write
 
 # Simplify
 
+Read `../../_refs/shared/session-authority.md` before classification or any approval/finish
+transition. Reuse scoped session authority; preserve unresolved risk decisions.
+
 ## Shared protocols
 
 1. Read `../../_refs/shared/runtime-protocols.md`, then
@@ -104,8 +107,10 @@ Never default to the whole repository. For a current-diff action, select only
 eligible changed hunks. Touch adjacent unchanged code only when compilation or
 a local invariant requires it, and record the expansion.
 
-If dirty files overlap the intended write paths, stop and use the repository's
-numbered dirty-tree choice. Do not overwrite or revert user-owned changes.
+Same-change authorized dirty hunks may proceed after a captured green baseline
+and operation-specific rollback. Unknown or unrelated overlapping edits block
+the affected writes; preserve disjoint user edits. Apply the shared session
+authority policy and `evaluateWorkingTree`; never auto-stash/reset user work.
 
 ## Step 3 - Freeze the preservation contract
 

@@ -10,6 +10,7 @@ For unresolved visual decisions, apply `_refs/sdlc/visual-offer-policy.md`;
 forward `requirement_context.visual_companion` through `context.pass`
 (portable `state_delta.visual_companion`) to the owning workflow.
 
+Apply `_refs/shared/session-authority.md` across classification and approval/finish transitions.
 ## Shared Protocols
 
 Read `_refs/shared/runtime-protocols.md`; UI executors select topics via `_refs/design/uiux/index.md` without imposing Core UI on plain stacks. Non-UI units load none. Apply
@@ -29,7 +30,6 @@ truth before any write or dispatch:
   execution-mode selection.
 - `_refs/harness/runtime-attestation.mjs` for observed delegation/concurrency;
   `_refs/orchestration/parallel-protocol.mjs` builds waves and opportunity evidence.
-
 ## Purpose
 Run the approved plan as the execution contract. This handoff between planning and doing owns four decisions:
 
@@ -43,7 +43,6 @@ executor for unsupported stacks and explicit CREATE/EDIT tasks. Write
 permission is constrained by `plan_context.allowed_paths`,
 `plan_context.prohibited_paths`, dependency/env/migration boundaries, and the
 working-tree preflight below.
-
 ## Preconditions
 - The approved spec and plan snapshots are available as paths or in context.
 - `plan_context` is present, including `approved_spec_hash`,
@@ -84,7 +83,6 @@ the step owner is a module, execute in the module repository. Missing,
 unavailable, or unwritable module repositories block execution; never author
 module output into the portal. A review finding is not an authorized write
 unless the user or approved repair scope selected it.
-
 ## Step 0 - Context preflight
 
 Before loading the plan or dispatching an executor, assemble `project_context`.
@@ -100,7 +98,6 @@ Before loading the plan or dispatching an executor, assemble `project_context`.
   sequential workflow or integration owner owns that shared write.
 - Treat the approved plan and current evidence as stronger than stored context
   when they conflict.
-
 ## Step 0.5 - Working-tree preflight
 
 Before any edit or subagent dispatch, inspect the current working tree and
@@ -348,7 +345,8 @@ Use the generic harness when no track-specific orchestrator matches.
 3. Execute tasks in the approved order using the normal editing and shell tools,
    including Write only for approved CREATE tasks.
 4. Keep edits inside `allowed_paths` and outside `prohibited_paths`; retain the proportional baseline from `_refs/shared/finish-gate.md`.
-5. Run every verification command from `plan_context.commands_planned`; record
+5. Use `resolveVerificationCommands` from `_refs/orchestration/execution-contract.mjs`.
+   Run every verification command from `plan_context.verification_strategy.commands_planned`; record
    commands_run with exit codes and commands_skipped with reasons when a script,
    tool, package manager, service, or environment is unavailable.
 6. If code changed, present the standard finish gate, run write-producing docs

@@ -186,12 +186,12 @@ test('routing preserves design, implementation, independent review and direct an
   assert.deepEqual(results.filter(({ pass }) => !pass), []);
 });
 
-test('UI/UX preserves the recorded inventory with only the approved cleanup utility delta', async () => {
+test('UI/UX preserves the recorded inventory with the approved cleanup and Content deltas', async () => {
   const baseline = execFileSync('git', ['ls-tree', '-r', '--name-only', '4fa58c66bc8b96c3ddcad887403d1eb9cfb5c8f4', 'skills'], { encoding: 'utf8', windowsHide: true });
   const paths = baseline.trim().split('\n').filter((file) => file.endsWith('.md'));
   assert.equal(paths.length, 23, 'the historical UI/UX upgrade added no public skill');
   const currentPaths = pack.sourceSkills.map(({ path: skillPath }) => path.relative(fileURLToPath(root), skillPath).replaceAll('\\', '/'));
-  assert.deepEqual(currentPaths.sort(), [...paths, 'skills/shared/workflow/cleanup.md'].sort());
+  assert.deepEqual(currentPaths.sort(), [...paths, 'skills/shared/workflow/cleanup.md', 'skills/tracks/content/sdcorejs-content.md'].sort());
   const approval = JSON.parse(await readFile(new URL('.sdcorejs/approvals/sdcorejs-cleanup-ceiling-change.json', root), 'utf8'));
   verifyApprovedArtifact(approval);
   const authorization = JSON.parse(approval.body);

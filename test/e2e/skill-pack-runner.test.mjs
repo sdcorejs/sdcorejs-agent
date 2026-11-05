@@ -1,6 +1,8 @@
+import { readPublishedContract as readFile } from './support/published-contract.mjs';
+import { publishedContract } from './support/published-contract.mjs';
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
-import { mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdtemp, readdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -82,10 +84,10 @@ function markdownSection(source, heading) {
 test('phase 1: deterministic runner loads source skills, mirrors, and refs without LLM/tool calls', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
 
-  assert.equal(pack.sourceSkills.length, 24);
-  assert.equal(pack.claudeMirrorSkills.length, 24);
-  assert.equal(pack.pluginMirrorSkills.length, 24);
-  assert.equal(pack.codexMirrorSkills.length, 24);
+  assert.equal(pack.sourceSkills.length, 25);
+  assert.equal(pack.claudeMirrorSkills.length, 25);
+  assert.equal(pack.pluginMirrorSkills.length, 25);
+  assert.equal(pack.codexMirrorSkills.length, 25);
   // Core UI per-component docs are fetched on-demand (not committed), so this count
   // dropped from ~150 to ~69. Floor still catches accidental mass-deletion of refs.
   assert.ok(pack.referenceDocs.length >= 60, `referenceDocs=${pack.referenceDocs.length}`);
@@ -181,7 +183,7 @@ test('phase 1: skills preserve progressive disclosure and validator-safe descrip
 
 test('phase 1: mandatory workflow invariants are encoded in source skills and refs', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
-  const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
+  const sourceByName = new Map(await Promise.all(pack.sourceSkills.map(async (skill) => [skill.name, await publishedContract(skill.text)])));
 
   for (const name of ['sdcorejs-angular', 'sdcorejs-nestjs', 'sdcorejs-nextjs']) {
     const text = sourceByName.get(name);
@@ -194,7 +196,7 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
     assert.match(text, /sdcorejs-ship \(branch-ready mode\)/, `${name} runs branch-ready`);
     assert.match(text, /_refs\/orchestration\/tail\/auto-docs\.md/, `${name} writes auto-docs`);
     assert.match(text, /_refs\/orchestration\/tail\/auto-task-tracker\.md/, `${name} updates task tracker`);
-    assert.match(text, /memories mode/, `${name} hands off durable memories when needed`);
+    assert.match(text, /memories(?: mode|-readonly)/, `${name} hands off durable memories when needed`);
   }
 
   const angularSkill = sourceByName.get('sdcorejs-angular');
@@ -665,12 +667,12 @@ test('phase 1: mandatory workflow invariants are encoded in source skills and re
     );
   }
 
-  const finishGate = await readFile(new URL('../../_refs/shared/finish-gate.md', import.meta.url), 'utf8');
+  const finishGate = await readFile(new URL('../../_refs/shared/finish-gate.md', import.meta.url), 'utf8') + await readFile(new URL('../../_refs/shared/finish-decisions.md', import.meta.url), 'utf8');
   assert.match(finishGate, /Finish step 1\/4: tests/);
   assert.match(finishGate, /Finish step 3\/4: behavior-preserving code simplification/);
   assert.match(finishGate, /Finish step 4\/4: review/);
   assert.match(finishGate, /Documentation approval gate/);
-  assert.match(finishGate, /single combined gate/);
+  assert.match(finishGate, /only for an unresolved material choice/);
   assert.match(finishGate, /Skip new user\/technical docs/);
   assert.match(finishGate, /user_guide: skip[\s\S]*technical_doc: skip[\s\S]*requirement_record: skip/);
   assert.match(finishGate, /`sdcorejs-documentation \(code-documentation mode\)` - automatic/);
@@ -926,44 +928,14 @@ test('phase 1: frontend architecture workflow preserves approval and review-dime
   assert.match(nextjsSkill, /must not create\s+or self-approve a\s+missing contract/i);
   assert.match(
     angularSkill,
-    /`implement`, `build`, or `create`[\s\S]*write intent\s+only[\s\S]*not spec approval or plan approval/i,
+    /verbs `implement`, `build` or `create` alone are not document approval/i,
   );
-  assert.match(
-    angularSkill,
-    /summary[\s\S]*filters[\s\S]*result table[\s\S]*bulk actions[\s\S]*workflow[\s\S]*stop before writing code/i,
-  );
-  assert.match(
-    angularSkill,
-    /must never treat the current prompt as the\s+controlling approved scope/i,
-  );
-  assert.match(
-    angularSkill,
-    /approved artifacts are absent[\s\S]*remain read-only[\s\S]*must not modify source or test files/i,
-  );
-  assert.match(
-    angularSkill,
-    /read `_refs\/shared\/frontend-architecture\.md` before formulating[\s\S]*architecture decision/i,
-  );
-  assert.match(
-    angularSkill,
-    /route must not own all[\s\S]*summary[\s\S]*filters[\s\S]*result table[\s\S]*selection[\s\S]*bulk actions[\s\S]*workflow/i,
-  );
-  assert.match(
-    angularSkill,
-    /approval preflight[\s\S]*first action[\s\S]*fail closed/i,
-  );
-  assert.match(
-    angularSkill,
-    /before project classification[\s\S]*TDD[\s\S]*frontend architecture[\s\S]*implementation reference/i,
-  );
-  assert.match(
-    angularSkill,
-    /stop this skill immediately[\s\S]*no project classification[\s\S]*TDD[\s\S]*architecture planning[\s\S]*implementation-reference reads/i,
-  );
-  assert.match(
-    angularSkill,
-    /eligibility may route only after[\s\S]*approval gate[\s\S]*passed/i,
-  );
+  assert.match(angularSkill, /First classify scope and risk[\s\S]*bounded authorized[\s\S]*without spec\/plan artifacts/i);
+  assert.match(angularSkill, /Permission\/tenant\/public-contract changes are not[\s\S]*fast-fixes/i);
+  assert.match(angularSkill, /For non-trivial work[\s\S]*verify the approved spec, plan[\s\S]*before implementation-reference reads or writes/i);
+  assert.match(angularSkill, /Missing required authority keeps the[\s\S]*writes read-only/i);
+  assert.match(angularSkill, /must not create\s+or self-approve a\s+missing contract/i);
+  assert.match(angularSkill, /route must not own all[\s\S]*summary[\s\S]*filters[\s\S]*result table/i);
 
   assert.match(
     planSkill,
@@ -1610,9 +1582,9 @@ test('phase 1: skill metadata stays concise and production scope stays explicit'
 
 test('phase 1: explore encodes read-only-safe context production invariants', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
-  const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
+  const sourceByName = new Map(await Promise.all(pack.sourceSkills.map(async (skill) => [skill.name, await publishedContract(skill.text)])));
   const explore = sourceByName.get('sdcorejs-explore');
-  const codexExplore = pack.codexMirrorSkills.find((skill) => skill.name === 'sdcorejs-explore')?.text;
+  const codexExplore = await publishedContract(pack.codexMirrorSkills.find((skill) => skill.name === 'sdcorejs-explore')?.text ?? '');
   const projectContext = await readFile(new URL('../../_refs/shared/project-context.md', import.meta.url), 'utf8');
   const runtimeProtocols = await readFile(new URL('../../_refs/shared/runtime-protocols.md', import.meta.url), 'utf8');
 
@@ -1692,7 +1664,7 @@ test('phase 1: explore encodes read-only-safe context production invariants', as
 test('phase 1: SDLC harness encodes contract-driven profile-aware execution invariants', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
   const sourceSkillByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill]));
-  const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
+  const sourceByName = new Map(await Promise.all(pack.sourceSkills.map(async (skill) => [skill.name, await publishedContract(skill.text)])));
   const brainstorming = sourceByName.get('sdcorejs-brainstorming');
   const brainstormingMeta = sourceSkillByName.get('sdcorejs-brainstorming');
   const spec = sourceByName.get('sdcorejs-spec');
@@ -1702,7 +1674,7 @@ test('phase 1: SDLC harness encodes contract-driven profile-aware execution inva
   const parallel = sourceByName.get('sdcorejs-parallel-dispatch');
   const subagentDriven = sourceByName.get('sdcorejs-subagent-driven-development');
   const agents = await readFile(new URL('../../AGENTS.md', import.meta.url), 'utf8');
-  const finishGate = await readFile(new URL('../../_refs/shared/finish-gate.md', import.meta.url), 'utf8');
+  const finishGate = await readFile(new URL('../../_refs/shared/finish-gate.md', import.meta.url), 'utf8') + await readFile(new URL('../../_refs/shared/finish-decisions.md', import.meta.url), 'utf8');
 
   assert.match(brainstormingMeta.description, /React/);
   assert.match(brainstormingMeta.description, /Node/);
@@ -1947,7 +1919,7 @@ test('phase 1: public validation docs separate validation tiers and evidence lim
 
 test('phase 1: brainstorming visual companion stays optional and gated', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
-  const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
+  const sourceByName = new Map(await Promise.all(pack.sourceSkills.map(async (skill) => [skill.name, await publishedContract(skill.text)])));
   const brainstorming = sourceByName.get('sdcorejs-brainstorming');
 
   assert.match(brainstorming, /## Optional Visual Companion/);
@@ -2017,7 +1989,7 @@ test('phase 1: brainstorming visual companion stays optional and gated', async (
 
 test('phase 1: angular side-drawer detail rules prefer read-only facts and immutable identifiers', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
-  const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
+  const sourceByName = new Map(await Promise.all(pack.sourceSkills.map(async (skill) => [skill.name, await publishedContract(skill.text)])));
   const angularSkill = sourceByName.get('sdcorejs-angular');
 
   assert.match(angularSkill, /business identifiers are create-only\/edit-locked by default/i);
@@ -2051,7 +2023,7 @@ test('phase 1: angular side-drawer detail rules prefer read-only facts and immut
 
 test('phase 1: Angular technical prototype is explicit, role-neutral, and feature-gated', async () => {
   const pack = await loadSkillPack(new URL('../..', import.meta.url));
-  const sourceByName = new Map(pack.sourceSkills.map((skill) => [skill.name, skill.text]));
+  const sourceByName = new Map(await Promise.all(pack.sourceSkills.map(async (skill) => [skill.name, await publishedContract(skill.text)])));
   const angularSkill = sourceByName.get('sdcorejs-angular');
 
   assert.match(angularSkill, /_refs\/angular\/write-code\/po-ba-prototype\.md/);

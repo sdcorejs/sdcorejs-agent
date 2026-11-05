@@ -6,6 +6,9 @@ required-actions: artifact.read, artifact.write, context.pass, verification.run,
 
 # Debug - Evidence-Driven Root-Cause Workflow
 
+Read `_refs/shared/session-authority.md` before classification or any approval/finish
+transition. Reuse scoped session authority; preserve unresolved risk decisions.
+
 ## Purpose
 
 `sdcorejs-debug` owns safe root-cause analysis for concrete failures:
@@ -41,8 +44,24 @@ After the shared protocols and before edits, read these debugging refs:
 The executable debug contract consumes the central registry and stable
 artifact/repository identity. It binds the failing implementation, semantic
 owner repository/module, execution host, test evidence, environment
-fingerprint, approved plan step, source fingerprint, and per-repository source
-revision map. Validate it before any write handoff.
+fingerprint, approved plan step or bounded direct session authorization, source
+fingerprint, and per-repository source revision map. Call
+`evaluateDebugArtifact(artifact, {phase: 'attempt'})` before a write handoff.
+After the fix, call with `{phase: 'completion'}` and current
+`test_evidence.result: PASSED`; flaky completion also needs at least three
+consecutive post-fix passes. First-attempt eligibility never requires future
+post-fix evidence. A ready attempt is not a fixed claim.
+
+`direct_authorization` is a trusted runtime projection of the actual user request:
+`source: explicit-user-request`, nonempty `request_id`, exact owner, revision,
+source fingerprint, allowed paths and `bounded_low_risk: true`. Establish risk
+and authority from the session first; arbitrary caller JSON is not permission.
+Invalid plan metadata cannot fall back to direct authorization. Retain the
+returned `attempt_context` unchanged for a direct fix. At completion, supply
+host-observed `post_fix_changed_paths` and current post-fix source/test identity;
+the helper binds the attempt to the original authorization without rewriting its
+baseline fingerprint. Neither context is an authorization token from untrusted
+input; the host must derive it from the observed attempt and filesystem delta.
 
 ## Routing Boundary
 

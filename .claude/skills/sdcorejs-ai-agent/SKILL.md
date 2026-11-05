@@ -16,6 +16,13 @@ application contracts, integration code, deterministic tests, and verification
 evidence. It does not install a provider runtime into this skill pack and it
 does not perform live provider calls.
 
+Read `../../_refs/shared/session-authority.md` before classification or any approval/finish
+transition. Reuse scoped session authority; preserve unresolved risk decisions.
+
+Bounded low-risk corrections to existing code may use the shared generic
+fast-fix path; changes to tool authority, persistence, approval or trust boundaries
+require the governed track below. Existing scoped delegation is carried forward.
+
 ## Entry Gate
 
 Require all of the following before writing:

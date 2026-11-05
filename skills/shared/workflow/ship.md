@@ -6,6 +6,8 @@ required-actions: artifact.read, artifact.write, context.pass, verification.run,
 
 # Ship
 
+Read `_refs/shared/git-disposition.md` and `_refs/shared/session-authority.md`
+before artifact handoff. Keep acceptance disposition separate from hygiene.
 ## Purpose And Boundary
 
 Own the final delivery readiness boundary: prove the work satisfies the right
@@ -36,7 +38,6 @@ for commit, PR, push, changelog, tag, or release artifacts.
 - silently installing tools or downloading probe tools;
 - bypassing `sdcorejs-review`, `sdcorejs-test`, `sdcorejs-debug`,
   `sdcorejs-repair-loop`, `sdcorejs-git`, or `sdcorejs-explore`.
-
 ## Shared Protocols
 
 Read `_refs/shared/runtime-protocols.md` and
@@ -54,7 +55,6 @@ current `INV-*` conformance; missing/stale/mutated architecture or mismatched
 path/hash/reference blocks readiness. A concrete not-applicable gate retains
 `architecture_context: null` and must not be upgraded to PASS by inference.
 Read `_refs/shared/validation-map.md`; preserve the validation map's approved evidence evaluation. Read `_refs/shared/convergence-contract.mjs`; verify-before-done evaluates and seals a receipt, while branch-ready verifies both against approved change/mode and current identity.
-
 ## Mode Selection
 
 | Mode | Trigger examples | Output |
@@ -70,7 +70,6 @@ notes action, route to `sdcorejs-git`; that skill still rejects missing or stale
 ship evidence before creating delivery artifacts. If the prompt asks whether
 work is ready, should be pushed, can be merged, can be released, or is safe to
 ship, stay in `sdcorejs-ship`.
-
 ## Verification Mode Classification
 
 Classify `verification_mode` before selecting commands or criteria:
@@ -94,7 +93,6 @@ Rules:
 - Release/tag/publish requests use `release-readiness`; do not run tag, push,
   version bump, publish, or GitHub release commands from ship.
 - Record `verification_mode` in `ship_context`.
-
 ## Acceptance Scope Selection
 
 Select `acceptance_scope` in this order:
@@ -226,9 +224,10 @@ Rules:
 - If any source, docs, mirror, changelog, release-note, task, memory,
   formatting, codegen, or lockfile write happens after branch-ready, evidence is
   stale and branch-ready must run again.
-- Branch-ready blockers are not waivable for commit, PR, push, tag, or release
-  artifacts. A user may request draft/manual notes, but the branch-ready verdict
-  remains `BLOCKED`.
+- Hygiene blockers are not waivable for commit, PR, push, tag, or release.
+  Explicit acceptance deferral is separate: apply the shared disposition table
+  for local/draft delivery, preserve DEFERRED acceptance and require current
+  READY hygiene. Manual notes never authorize a remote draft PR.
 
 ## Mode: ship
 

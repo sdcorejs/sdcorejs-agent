@@ -11,6 +11,9 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, Write
 
 # Using sdcorejs Skills
 
+Read `../../_refs/shared/session-authority.md` before classification or any approval/finish
+transition. Reuse scoped session authority; preserve unresolved risk decisions.
+
 ## Bootstrap
 
 Match descriptions before reading skill bodies. Load
@@ -24,7 +27,8 @@ Priority when several skills match:
 1. Explicit skill named by the user.
 2. Approved plan: `sdcorejs-subagent-driven-development` for explicit
    delegation; otherwise `sdcorejs-execute-plan`.
-3. Product, design, and direct test work: `sdcorejs-product`,
+3. Social editorial work: `sdcorejs-content` (brief through draft/review; no
+   engineering artifact chain or publishing authority). Product, design, and direct test work: `sdcorejs-product`,
    `sdcorejs-design`, `sdcorejs-test`; failing-test diagnosis uses
    `sdcorejs-debug`.
 4. Dedicated intent: `sdcorejs-cleanup`, `sdcorejs-simplify`, `sdcorejs-explore`,

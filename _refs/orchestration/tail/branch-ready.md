@@ -1,5 +1,8 @@
 # Branch Ready - Hygiene Gate Before Commit/PR
 
+Read `_refs/shared/git-disposition.md` and `_refs/shared/session-authority.md`
+before artifact handoff. Keep acceptance disposition separate from hygiene.
+
 ## Contents
 
 - [Purpose](#purpose)
@@ -39,7 +42,7 @@ cleanup and affected verification before this gate; read
 `evaluateCleanupLifecycle` against exact receipts, an independently captured
 current cleanup snapshot and current mapped command/path evidence. Partial
 apply, errors or `affected_checks: NOT RUN` block.
-Read `_refs/shared/convergence-contract.mjs` and call
+For governed-plan delivery, read `_refs/shared/convergence-contract.mjs` and call
 `evaluateConvergenceHandoff` with the compact result, verified receipt, current
 source/module/pin/owner-thread identity, and approved change/mode. Missing,
 blocked, deferred, stale, vacuous, unreceipted, or mismatched convergence is a

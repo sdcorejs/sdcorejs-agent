@@ -1,3 +1,4 @@
+import { readPublishedContract } from './support/published-contract.mjs';
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import test from 'node:test';
@@ -51,7 +52,7 @@ const MIRROR_PATHS = [
   'codex/skills/sdcorejs-simplify/SKILL.md',
 ];
 
-test('simplify: canonical utility exists exactly once and source count is 24', async () => {
+test('simplify: canonical utility exists exactly once and source count is 25', async () => {
   const skillFiles = await listFiles(join(ROOT, 'skills'), file => file.endsWith('.md'));
   const namedSkills = await Promise.all(skillFiles.map(async file => ({
     file,
@@ -59,7 +60,7 @@ test('simplify: canonical utility exists exactly once and source count is 24', a
   })));
   const simplifySkills = namedSkills.filter(item => item.name === 'sdcorejs-simplify');
 
-  assert.equal(namedSkills.length, 24);
+  assert.equal(namedSkills.length, 25);
   assert.equal(simplifySkills.length, 1);
   assert.equal(simplifySkills[0].file, SKILL_PATH);
 
@@ -114,7 +115,7 @@ test('simplify: execute-plan does not gain a simplify implementation track', asy
 });
 
 test('simplify: finish gate is a visible four-step opt-in with fresh post-write evidence', async () => {
-  const finish = await readFile(join(ROOT, '_refs', 'shared', 'finish-gate.md'), 'utf8');
+  const finish = await readFile(join(ROOT, '_refs', 'shared', 'finish-decisions.md'), 'utf8') + '\n' + await readFile(join(ROOT, '_refs', 'shared', 'finish-gate.md'), 'utf8');
   assertFinishGateContract(finish);
 });
 
@@ -126,7 +127,7 @@ test('simplify: downstream owners consume or preserve simplify_context', async (
     ['debug', 'skills/shared/workflow/debug.md'],
     ['ship', 'skills/shared/workflow/ship.md'],
     ['git', 'skills/shared/workflow/git.md'],
-  ].map(async ([id, file]) => [id, await readFile(join(ROOT, file), 'utf8')])));
+  ].map(async ([id, file]) => [id, await readPublishedContract(join(ROOT, file), 'utf8')])));
 
   for (const [id, source] of files) {
     assert.match(source, /simplify_context/, `${id} handles simplify_context`);
@@ -190,7 +191,7 @@ test('simplify: mutation guards detect removed safety and routing invariants', a
   const scope = await readFile(join(REF_ROOT, 'scope-and-invariants.md'), 'utf8');
   const stack = await readFile(join(REF_ROOT, 'stack-guardrails.md'), 'utf8');
   const verification = await readFile(join(REF_ROOT, 'verification.md'), 'utf8');
-  const finish = await readFile(join(ROOT, '_refs', 'shared', 'finish-gate.md'), 'utf8');
+  const finish = await readFile(join(ROOT, '_refs', 'shared', 'finish-decisions.md'), 'utf8') + '\n' + await readFile(join(ROOT, '_refs', 'shared', 'finish-gate.md'), 'utf8');
   const runner = await readFile(join(ROOT, 'test', 'e2e', 'support', 'skill-pack-runner.mjs'), 'utf8');
   const ship = await readFile(join(ROOT, 'skills', 'shared', 'workflow', 'ship.md'), 'utf8');
 
@@ -235,7 +236,7 @@ test('simplify: mutation guards detect removed safety and routing invariants', a
   assertMutationFails(ship, /stale post-simplification evidence/i, assertShipContract, /stale evidence/);
 });
 
-test('simplify: package, mirrors, refs, catalog, and dependency boundary agree on 24 skills', async () => {
+test('simplify: package, mirrors, refs, catalog, and dependency boundary agree on 25 skills', async () => {
   const pkg = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8'));
   assert.equal(pkg.version, '0.8.0');
   assert.equal(pkg.packageManager, 'npm@10.9.2');
@@ -261,13 +262,13 @@ test('simplify: package, mirrors, refs, catalog, and dependency boundary agree o
     'VALIDATION.md',
     'site/README.md',
   ].map(file => readFile(join(ROOT, file), 'utf8')));
-  assert.ok(publicSources.every(source => /\b24\b/.test(source)), 'public inventories show 24');
+  assert.ok(publicSources.every(source => /\b25\b/.test(source)), 'public inventories show 25');
 
   for (const catalogPath of ['site/src/data/catalog.ts', 'site/src/data/catalog-en.ts']) {
     const catalog = await readFile(join(ROOT, catalogPath), 'utf8');
     const ids = [...catalog.matchAll(/^\s{2}'(sdcorejs-[^']+)':/gm)].map(match => match[1]);
-    assert.equal(ids.length, 24, `${catalogPath} documents all public skills`);
-    assert.equal(new Set(ids).size, 24, `${catalogPath} has unique skill identities`);
+    assert.equal(ids.length, 25, `${catalogPath} documents all public skills`);
+    assert.equal(new Set(ids).size, 25, `${catalogPath} has unique skill identities`);
     assert.ok(ids.includes('sdcorejs-simplify'), `${catalogPath} includes simplify`);
   }
 
@@ -279,7 +280,7 @@ test('simplify: package, mirrors, refs, catalog, and dependency boundary agree o
     'site/package-lock.json',
     '.claude-plugin/marketplace.json',
     'plugin/.claude-plugin/plugin.json',
-  ].map(async file => [file, JSON.parse(await readFile(join(ROOT, file), 'utf8'))]));
+  ].map(async file => [file, JSON.parse(await readPublishedContract(join(ROOT, file), 'utf8'))]));
   for (const [file, metadata] of versionedMetadata) {
     if (file === '.claude-plugin/marketplace.json') {
       assert.equal(metadata.plugins[0].version, '0.8.0', file);
