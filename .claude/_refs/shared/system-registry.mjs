@@ -72,6 +72,14 @@ export function validateSystemRegistry(registry = systemRegistry) {
       errors.push(`${field} must be a non-empty array`);
     }
   }
+  for (const capability of registry.editorial_capabilities ?? []) {
+    if (capability.id !== 'content' || capability.skill !== 'sdcorejs-content' ||
+        capability.engineering_finish_required !== false || capability.publication_authority !== 'separate-explicit-action' ||
+        capability.catalog !== '_refs/content/catalog.json' || capability.review_owner !== 'sdcorejs-content' ||
+        !Array.isArray(capability.lifecycle) || !['brief','strategy','research','draft','edit','repurpose','review','feedback'].every(action => capability.lifecycle.includes(action))) {
+      errors.push('editorial capability must preserve content lifecycle and action authority');
+    }
+  }
   errors.push(...validateArtifactRoots(registry));
   errors.push(...validateReviewDimensions(registry));
   errors.push(...validateConventionVocabulary(registry));

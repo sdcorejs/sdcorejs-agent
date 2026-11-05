@@ -14,6 +14,12 @@ technical teams working across the software delivery lifecycle:
 - A first-class test track
 - A generic execution harness for unsupported stacks or non-track plans
 
+Social editorial work (captions, posts, video scripts, voice, repurposing and
+feedback) routes to `sdcorejs-content`; technical docs, PRDs and code keep their
+own owners. Content drafts require no engineering artifact chain and grant no
+publishing/scheduling/messaging permission. Apply `_refs/shared/session-authority.md`
+at workflow transitions; reuse scoped authorization without inventing review.
+
 ## Skill Source Language
 
 Author this skill pack in English only. `skills/**`, `_refs/**`, prompts,

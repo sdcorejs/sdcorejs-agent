@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "approval_source": "user-approved-skill-trigger",
+    "approved_at": "2026-11-05T09:29:23.091Z",
+    "approved_by": "requesting-user",
+    "artifact_id": "sdcorejs-content-new-trigger",
+    "artifact_kind": "release-evidence",
+    "change_ref": "sdcorejs-content",
+    "commit_policy": "with-change",
+    "contract_id": "skill-authoring-approval:v1",
+    "owner": "sdcorejs-plan",
+    "owner_module_id": null,
+    "owner_repository_id": "github.com/sdcorejs/sdcorejs-agent",
+    "owner_repository_role": "standalone",
+    "parent_references": [],
+    "parent_repository_id": null,
+    "repository_relative_path": ".sdcorejs/approvals/sdcorejs-content-new-trigger.json",
+    "requirement_id": "sdcorejs-content",
+    "schema_version": 1,
+    "source_revision": "0066f195a2f42bc35a9e223fb75fae88f3ce31f0",
+    "stack_profile": "markdown-skill-pack",
+    "supersedes": null,
+    "track": "workflow",
+    "approval_hash": "sha256:v1:81524a38a5742c4b85287088bd785c98b46d032b5108b8541ae49f3382ee3505"
+  },
+  "body": "{\"schema_version\":1,\"kind\":\"approved-new-trigger\",\"status\":\"approved\",\"approval_id\":\"approval:sdcorejs-content:new-trigger\",\"actor\":\"requesting-user\",\"capability_id\":\"sdcorejs-content\",\"proposed_public_skills\":[\"sdcorejs-content\"],\"public_inventory_hash\":\"sha256:2b70bff2cce15808fef8e2760ce3cb17f792af1b2a6c098088453afb06181cd8\",\"source_revision\":\"0066f195a2f42bc35a9e223fb75fae88f3ce31f0\",\"evaluation_only\":false,\"from_ceiling\":24,\"to_ceiling\":25,\"authority_source\":\"Current user task on 2026-11-05, allowed scope item 5: create sdcorejs-content and update inventory, registry, routing, documentation and generated mirrors as needed. The same task authorizes autonomous completion/execution of spec/plan. No separate document approval occurred. This records that existing authorization, not a simulated review response.\",\"document_review_performed\":false}\n"
+}

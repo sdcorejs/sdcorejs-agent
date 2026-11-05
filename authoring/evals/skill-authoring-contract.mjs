@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { verifyApprovedArtifact } from '../../_refs/shared/approved-artifact.mjs';
 
 export const AUTHORING_SCHEMA_VERSION = 1;
-export const PUBLIC_SKILL_CEILING = 24;
+export const PUBLIC_SKILL_CEILING = JSON.parse(readFileSync(new URL('./inventory-policy.json', import.meta.url), 'utf8')).public_skill_ceiling;
 export const AUTHORING_FALLBACKS = Object.freeze([
   'existing-skill-mode',
   'shared-reference',
@@ -26,11 +26,12 @@ const SAFE_ID = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/u;
 const TOKEN_SOURCES = new Set(['provider-dashboard', 'provider-response']);
 const AUTHORING_CONTRACT_PATHS = Object.freeze([
   'authoring/evals/scenarios.json',
+  'authoring/evals/inventory-policy.json',
   'authoring/evals/skill-authoring-contract.mjs',
   'authoring/skills/sdcorejs-skill-authoring/SKILL.md',
 ]);
 const AUTHORING_BASELINE_CANDIDATE_PATHS = Object.freeze(
-  [...AUTHORING_CONTRACT_PATHS].sort(),
+  AUTHORING_CONTRACT_PATHS.filter(p => p !== 'authoring/evals/inventory-policy.json').sort(),
 );
 const AUTHORING_APPROVAL_CONTRACT = 'skill-authoring-approval:v1';
 const LIVE_APPROVAL_CONTRACT = 'skill-authoring-live-approval:v1';
@@ -241,7 +242,7 @@ function currentRepositoryId() {
     const scp = remote.match(/^git@([^:]+):(.+)$/u);
     if (scp) return `${scp[1].toLowerCase()}/${scp[2].replace(/\.git\/?$/u, '').toLowerCase()}`;
     const parsed = new URL(remote.replace(/^git\+/u, ''));
-    return `${parsed.hostname.toLowerCase()}/${parsed.pathname.replace(/^\/+|\/+$/gu, '').toLowerCase()}`;
+    return `${parsed.hostname.toLowerCase()}/${parsed.pathname.replace(/^\/+|\/+$/gu, '').replace(/\.git$/u, '').toLowerCase()}`;
   } catch {
     return null;
   }
@@ -1034,11 +1035,7 @@ async function hashFiles(root, files) {
 }
 
 export function hashAuthoringContract(root) {
-  return hashFiles(root, [
-    'authoring/evals/scenarios.json',
-    'authoring/evals/skill-authoring-contract.mjs',
-    'authoring/skills/sdcorejs-skill-authoring/SKILL.md',
-  ]);
+  return hashFiles(root, AUTHORING_CONTRACT_PATHS);
 }
 
 export { hashFiles as hashAuthoringFiles };

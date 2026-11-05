@@ -166,9 +166,9 @@ function distinctProposal(overrides = {}) {
       artifact_sha256: repositoryState.routing_matrix_hash,
     }],
     acceptable_surface_cost: true,
-    current_public_count: 24,
+    current_public_count: 25,
     proposed_public_skills: ['sdcorejs-example'],
-    ceiling: 24,
+    ceiling: 25,
     inventory_hash: repositoryState.public_inventory_hash,
     approvals: { new_trigger: null, ceiling_change: null },
     approval_artifacts: [],
@@ -179,7 +179,7 @@ function distinctProposal(overrides = {}) {
 
 test('new-skill decision gate defaults to reuse and enforces inventory approvals', () => {
   assert.equal(AUTHORING_SCHEMA_VERSION, 1);
-  assert.equal(PUBLIC_SKILL_CEILING, 24);
+  assert.equal(PUBLIC_SKILL_CEILING, 25);
 
   const overlap = evaluateNewSkillDecision(distinctProposal({
     capability_id: 'tdd',
@@ -195,9 +195,9 @@ test('new-skill decision gate defaults to reuse and enforces inventory approvals
     },
   }));
   assert.equal(overlap.decision, 'use-existing-surface');
-  assert.equal(overlap.current_public_count, 24);
-  assert.equal(overlap.post_change_count, 26);
-  assert.equal(overlap.ceiling, 24);
+  assert.equal(overlap.current_public_count, 25);
+  assert.equal(overlap.post_change_count, 27);
+  assert.equal(overlap.ceiling, 25);
   assert.equal(overlap.create_public_skill, false);
   assert.deepEqual(overlap.approvals_required.sort(), ['ceiling-change', 'new-trigger']);
 
@@ -216,7 +216,7 @@ test('new-skill decision gate defaults to reuse and enforces inventory approvals
   const approvedDecision = evaluateNewSkillDecision(approvedProposal);
   assert.equal(approvedDecision.valid, true, approvedDecision.errors.join('\n'));
   assert.equal(approvedDecision.decision, 'create-public-skill');
-  assert.equal(approvedDecision.post_change_count, 25);
+  assert.equal(approvedDecision.post_change_count, 26);
 
   const overCeilingProposal = distinctProposal({
     proposed_public_skills: ['sdcorejs-example', 'sdcorejs-example-two'],
@@ -235,7 +235,7 @@ test('new-skill decision gate defaults to reuse and enforces inventory approvals
   assert.equal(overCeilingDecision.valid, true, overCeilingDecision.errors.join('\n'));
   assert.equal(overCeilingDecision.decision, 'create-public-skill');
   assert.equal(overCeilingDecision.create_public_skill, true);
-  assert.equal(overCeilingDecision.post_change_count, 26);
+  assert.equal(overCeilingDecision.post_change_count, 27);
   assert.deepEqual(overCeilingDecision.approvals_required, []);
 
   const staleApproval = structuredClone(approvedProposal);
@@ -245,8 +245,8 @@ test('new-skill decision gate defaults to reuse and enforces inventory approvals
   );
   assert.equal(evaluateNewSkillDecision(staleApproval).valid, false);
 
-  assert.equal(repositoryState.public_count, 24);
-  assert.equal(repositoryState.public_names.length, 24);
+  assert.equal(repositoryState.public_count, 25);
+  assert.equal(repositoryState.public_names.length, 25);
 
   const missingEvidence = distinctProposal({
     positive_routing_evidence: [],
@@ -278,7 +278,7 @@ test('new-skill decision gate defaults to reuse and enforces inventory approvals
     proposed_public_skills: ['sdcorejs-example', 'sdcorejs-example-two'],
   }));
   assert.equal(forgedInventory.valid, false);
-  assert.equal(forgedInventory.current_public_count, 24);
+  assert.equal(forgedInventory.current_public_count, 25);
   assert.equal(forgedInventory.create_public_skill, false);
 
   const emptyProposal = evaluateNewSkillDecision(distinctProposal({ proposed_public_skills: [] }));
@@ -311,7 +311,7 @@ test('behavioral evidence rejects fabricated telemetry and incomplete lifecycle 
   const records = await Promise.all([
     'new-skill-pressure-baseline.json',
     'new-skill-pressure-green.json',
-    'new-skill-pressure-refactor.json',
+    'new-skill-pressure-refactor-20261105.json',
   ].map(async (file) => JSON.parse(await readFile(path.join(recordRoot, file), 'utf8'))));
   const [baseline, green] = records;
   const result = validateAuthoringEvidence(baseline);
@@ -637,14 +637,14 @@ test('internal authoring capability is initialized but excluded from every publi
   assert.match(skill, /^name:\s*sdcorejs-skill-authoring$/mu);
   assert.match(skill, /^description:\s*Use when\b/mu);
   assert.match(skill, /RED[\s\S]*GREEN[\s\S]*REFACTOR/u);
-  assert.match(skill, /public count[\s\S]*ceiling 24/iu);
+  assert.match(skill, /public count[\s\S]*ceiling 25/iu);
   assert.match(skill, /positive[\s\S]*negative[\s\S]*(?:pressure|mutation)/iu);
   assert.match(metadata, /allow_implicit_invocation:\s*false/u);
   assert.match(readme, /internal-only/iu);
   assert.match(readme, /must not be installed/iu);
 
   const publicFiles = await markdownFiles(path.join(root, 'skills'));
-  assert.equal(publicFiles.length, 24);
+  assert.equal(publicFiles.length, 25);
   assert.equal(publicFiles.some((file) => file.includes('skill-authoring')), false);
   for (const mirror of ['skills', '.claude', 'plugin', 'codex', '.cursor', '.github', 'site']) {
     if (!await exists(path.join(root, mirror))) continue;

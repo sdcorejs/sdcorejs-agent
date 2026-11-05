@@ -120,7 +120,16 @@ const SKILL_HINTS = [
   { skill: 'sdcorejs-debug', words: ['debug', 'root-cause', 'bug', 'repro', 'failing', 'failure', 'failed', 'fail', 'error', 'wrong', 'flaky', 'ci-only', 'prod-only', 'runtime', 'stack', 'trace', 'investigate', 'resolve', 'slow', 'broken', 'throws'] }
 ];
 
+function hasContentIntent(prompt) {
+  const text=normalizePromptText(prompt);
+  const channel=/\b(facebook|tiktok|instagram|linkedin|youtube|social)\b/u.test(text);
+  const editorial=/\b(caption|post|posts|editorial|repurpose|storyboard|video script|marketing video|content strategy)\b/u.test(text);
+  const code=/\b(oauth|endpoint|api|code|component|implement|debug|test|login|prd|acceptance criteria)\b/u.test(text);
+  return (channel && editorial && !code) || (/\b(personal brand|brand voice|content strategy)\b/u.test(text) && !code);
+}
+
 const PRIORITY_RULES = [
+  { skill: 'sdcorejs-content', when: ({prompt}) => hasContentIntent(prompt) },
   {
     // Task-breakdown mode: new role tasks or tickets from PRDs, stories, a sprint
     // or a board. Recording the requirement of one existing TASKID stays with
@@ -450,6 +459,9 @@ export function dispatchPrompt(pack, prompt) {
         (
           skill.name === 'sdcorejs-ai-agent'
           && !hasConfirmedAiAgentImplementationIntent(prompt.toLowerCase(), promptTokens)
+        ) ||
+        (
+          skill.name === 'sdcorejs-content' && !hasContentIntent(prompt)
         ) ||
         (
           skill.name === 'sdcorejs-cleanup'
