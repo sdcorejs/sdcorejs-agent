@@ -3,6 +3,7 @@ import {
   validateConsistencyFinding,
 } from './convention-contract.mjs';
 import { systemRegistry } from './system-registry.mjs';
+import { evaluateRiskAssessment } from './review-risk-contract.mjs';
 
 const SEVERITIES = new Set(['Critical', 'High', 'Important', 'Medium', 'Minor', 'Low', 'Info']);
 const UIUX_DIMENSIONS = Object.freeze({ functional: 'code', accessibility: 'accessibility', convention: 'consistency', aesthetic: 'code' });
@@ -62,6 +63,8 @@ function finding(id, severity, kind, observation, requiredFix) {
 
 export function evaluateReviewContract(context) {
   const blockers = [];
+  const riskAssessment = evaluateRiskAssessment(context);
+  blockers.push(...riskAssessment.errors);
   const track = systemRegistry.tracks.find(({ id }) => id === context?.subject_track);
   if (context?.schema_version !== 1) blockers.push('review schema_version must be 1');
   if (!track) {
@@ -302,6 +305,8 @@ export function evaluateReviewContract(context) {
     requested_dimensions: [...requestedDimensions],
     consistency_scope: consistency.scope,
     consistency_scope_reason: consistency.reason,
+    risk_coverage: riskAssessment.coverage,
+    risk_gaps: riskAssessment.gaps,
     convention_context_read_only:
       conventionContext == null
         ? null

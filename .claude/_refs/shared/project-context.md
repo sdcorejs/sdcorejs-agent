@@ -303,3 +303,11 @@ explicitly confirms it for the current purpose.
 - Everything it authorizes is `local_only` under
   `_refs/shared/artifact-lifecycle.md`: never staged, never committed, and
   never read back as project context.
+
+## Bootstrap visibility
+
+collectConventionProjection includes a compact project_bootstrap projection only
+when a valid policy has that extension. Its authority is not-evaluated-read-only:
+loading instructions grants no write. Apply effective nested instruction scope
+before any change, and use _refs/shared/project-bootstrap.md only for authorized
+Explore persistence. Missing bootstrap is disabled, not an invitation to install.

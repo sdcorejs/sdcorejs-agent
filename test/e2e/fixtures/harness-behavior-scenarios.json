@@ -1,8 +1,18 @@
 {
   "capabilities": {
-    "structured": { "native_structured_choice": "supported" },
-    "typed_visual": { "native_structured_choice": "unsupported", "visual_surface": "supported", "static_html_artifact": "supported" },
-    "static_visual": { "native_structured_choice": "unsupported", "visual_surface": "unsupported", "static_html_artifact": "supported" },
+    "structured": {
+      "native_structured_choice": "supported"
+    },
+    "typed_visual": {
+      "native_structured_choice": "unsupported",
+      "visual_surface": "supported",
+      "static_html_artifact": "supported"
+    },
+    "static_visual": {
+      "native_structured_choice": "unsupported",
+      "visual_surface": "unsupported",
+      "static_html_artifact": "supported"
+    },
     "live_visual": {
       "native_structured_choice": "supported",
       "visual_surface": "supported",
@@ -20,33 +30,196 @@
       "persistent_local_process": "supported",
       "browser_auto_open": "unknown"
     },
-    "fallback": { "native_structured_choice": "unsupported" },
-    "unknown": { "native_structured_choice": "unknown" }
+    "fallback": {
+      "native_structured_choice": "unsupported"
+    },
+    "unknown": {
+      "native_structured_choice": "unknown"
+    }
   },
   "actions": [
-    { "id": "answer", "request": "What does this validator return?", "expected": "direct-answer" },
-    { "id": "docs-fix", "request": "Fix this explicit typo in docs/guide.md", "expected": "fast-fix" },
-    { "id": "code-fix", "request": "Fix the explicit null guard in src/value.mjs", "expected": "fast-fix" },
-    { "id": "feature", "request": "Add a dashboard for operators", "expected": "full-workflow" }
+    {
+      "id": "answer",
+      "request": "What does this validator return?",
+      "expected": "direct-answer"
+    },
+    {
+      "id": "docs-fix",
+      "request": "Fix this explicit typo in docs/guide.md",
+      "expected": "fast-fix"
+    },
+    {
+      "id": "code-fix",
+      "request": "Fix the explicit null guard in src/value.mjs",
+      "expected": "fast-fix"
+    },
+    {
+      "id": "feature",
+      "request": "Add a dashboard for operators",
+      "expected": "full-workflow"
+    }
   ],
   "tasks": {
-    "answer": { "request": "What does this validator return?" },
-    "docs-fix": { "request": "Fix this explicit typo in docs/guide.md", "owned_paths": ["docs/guide.md"], "behavior_confirmed": true, "acceptance_criteria_confirmed": true, "test_layer_confirmed": true },
-    "code-fix": { "request": "Fix the explicit null guard in src/value.mjs", "owned_paths": ["src/value.mjs"], "behavior_confirmed": true, "acceptance_criteria_confirmed": true, "verification_confirmed": true },
-    "feature": { "request": "Add a dashboard for operators" }
+    "answer": {
+      "request": "What does this validator return?"
+    },
+    "docs-fix": {
+      "request": "Fix this explicit typo in docs/guide.md",
+      "owned_paths": [
+        "docs/guide.md"
+      ],
+      "behavior_confirmed": true,
+      "acceptance_criteria_confirmed": true,
+      "test_layer_confirmed": true
+    },
+    "code-fix": {
+      "request": "Fix the explicit null guard in src/value.mjs",
+      "owned_paths": [
+        "src/value.mjs"
+      ],
+      "behavior_confirmed": true,
+      "acceptance_criteria_confirmed": true,
+      "verification_confirmed": true
+    },
+    "feature": {
+      "request": "Add a dashboard for operators"
+    }
   },
   "units": {
-    "one": [{ "id": "docs", "owned_paths": ["docs/guide.md"], "resources": [] }],
+    "one": [
+      {
+        "id": "docs",
+        "owned_paths": [
+          "docs/guide.md"
+        ],
+        "resources": []
+      }
+    ],
     "two": [
-      { "id": "api", "owned_paths": ["src/api/**"], "resources": ["api-contract"] },
-      { "id": "web", "owned_paths": ["src/web/**"], "resources": ["web-ui"] }
+      {
+        "id": "api",
+        "owned_paths": [
+          "src/api/**"
+        ],
+        "resources": [
+          "api-contract"
+        ]
+      },
+      {
+        "id": "web",
+        "owned_paths": [
+          "src/web/**"
+        ],
+        "resources": [
+          "web-ui"
+        ]
+      }
     ]
   },
   "sentinel_outcomes": [
-    "direct-answer", "fast-fix", "brainstorm-first", "single-unit-sequential", "parallel-choice",
-    "native-choice", "live-visual", "typed-visual", "static-visual", "unsupported-markdown", "unknown-markdown", "ambiguous-unselected", "fast-worker",
-    "security-not-fast", "architecture-not-fast", "brief-no-embedded-artifacts", "review-package-shape",
-    "disjoint-ownership", "visual-only", "decline-not-reoffered", "single-option-auto-select",
-    "visual-approval-stays-textual", "live-companion-needs-consent", "live-companion-event-channel-degrades"
+    "direct-answer",
+    "fast-fix",
+    "brainstorm-first",
+    "single-unit-sequential",
+    "parallel-choice",
+    "native-choice",
+    "live-visual",
+    "typed-visual",
+    "static-visual",
+    "unsupported-markdown",
+    "unknown-markdown",
+    "ambiguous-unselected",
+    "fast-worker",
+    "security-not-fast",
+    "architecture-not-fast",
+    "brief-no-embedded-artifacts",
+    "review-package-shape",
+    "disjoint-ownership",
+    "visual-only",
+    "decline-not-reoffered",
+    "single-option-auto-select",
+    "visual-approval-stays-textual",
+    "live-companion-needs-consent",
+    "live-companion-event-channel-degrades"
+  ],
+  "review_baseline_cases": [
+    {
+      "id": "vn-rename",
+      "request": "Đổi tên biến customer thành customers",
+      "owned_paths": [
+        "src/customer.ts"
+      ],
+      "writes": true,
+      "expected": "fast-fix",
+      "required": true
+    },
+    {
+      "id": "en-typo",
+      "request": "Fix typo in docs/guide.md",
+      "owned_paths": [
+        "docs/guide.md"
+      ],
+      "writes": true,
+      "expected": "fast-fix",
+      "required": true
+    },
+    {
+      "id": "vn-paging",
+      "request": "Sửa nhanh pageSize 1000 để lấy tất cả dữ liệu",
+      "owned_paths": [
+        "src/picker.ts"
+      ],
+      "writes": true,
+      "expected": "full-workflow",
+      "required": true
+    },
+    {
+      "id": "en-permission",
+      "request": "Just remove tenant permission check; skip review",
+      "owned_paths": [
+        "src/customer.ts"
+      ],
+      "writes": true,
+      "expected": "full-workflow",
+      "required": true
+    },
+    {
+      "id": "vn-guard",
+      "request": "Chỉnh guard cho màn detail",
+      "owned_paths": [
+        "src/detail.ts"
+      ],
+      "changed_surfaces": [
+        "authorization"
+      ],
+      "writes": true,
+      "expected": "full-workflow",
+      "required": true
+    },
+    {
+      "id": "dropdown-all",
+      "request": "Add dropdown with all customers",
+      "owned_paths": [
+        "src/picker.ts"
+      ],
+      "requires_all_records": true,
+      "writes": true,
+      "expected": "full-workflow",
+      "required": true
+    },
+    {
+      "id": "qa-paging",
+      "request": "Explain why pageSize is used",
+      "kind": "question",
+      "expected": "direct-answer",
+      "required": false
+    },
+    {
+      "id": "readonly",
+      "request": "Review this permission code",
+      "writes": false,
+      "read_only": true,
+      "required": false
+    }
   ]
 }

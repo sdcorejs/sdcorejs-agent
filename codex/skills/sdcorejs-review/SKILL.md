@@ -499,3 +499,5 @@ Review remains read-only and does not widen the simplification scope.
 - Repair loop: `sdcorejs-repair-loop`
 - Single-bug root cause: `sdcorejs-debug`
 - Verification: `sdcorejs-ship (verify-before-done mode)`
+
+Emit and validate the risk baseline in `../_refs/shared/review-code.md#evidence-backed-risk-baseline`, preserving dimensions and evidence limitations.

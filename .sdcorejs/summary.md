@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-10-18T00:26:27.633Z
+generated_at: 2026-11-04T11:07:18.493Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks:
@@ -42,7 +42,7 @@ evidence:
     - site/src/pages/index.astro
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:370dc92fdd5883816be4d68fbdf3a61178ffe084f000ed70826ebecd00d24c6c
+  dependency_manifests: sha256:36d543a6b202c8fd6b6cf15931f378e9249a2ad129d1355b482a6fba2074990e
   source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
@@ -334,3 +334,29 @@ Refresh this summary only when durable project structure changes:
 
 Ordinary feature edits, unrelated commits, verification results, and live work
 progress do not require a summary refresh.
+
+## Review Behavior and Project Bootstrap
+
+The review baseline covers semantic naming, route consistency, effective guard
+protection, screen patterns, hardcoded assumptions, data completeness, and test
+adequacy. Evidence is scoped to the repository, revision, diff and reviewed
+surfaces. Missing evidence remains a gap; legacy contexts remain unknown.
+
+- `_refs/shared/review-risk-contract.mjs` validates assessment coverage and
+  actionable findings; `review-code.md` owns the review instructions.
+- `_refs/shared/review-data-completeness.md` covers pagination continuation,
+  server limits, partial errors and legitimate bounded or partial results.
+- `_refs/shared/project-bootstrap.mjs` supports an opt-in managed block in
+  the owning project's `AGENTS.md`. Detailed rules stay in convention files.
+  Review stays read-only. Writes require verified owner authority, unchanged
+  bytes and an admitted cooperative-writer boundary; otherwise only propose.
+- `_refs/harness/runtime-policy.mjs` carries a risk baseline for small changes
+  and escalates sensitive behavior independently of line count.
+- `authoring/evals/review-behavior/` separates deterministic fixtures from
+  live reviewer evidence. Passing fixtures does not prove agent judgment.
+
+Focused commands are `npm run test:e2e:review-behavior`,
+`npm run test:e2e:project-bootstrap`, and `npm run eval:review:offline`.
+They exercise real synthetic paging and HTTP-denial paths, mutation controls,
+filesystem preservation, evidence integrity and distribution contracts without
+provider calls or consumer-project writes.

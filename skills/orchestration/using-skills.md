@@ -145,3 +145,5 @@ to `sdcorejs-review` with the `consistency` dimension. Review stays read-only.
 Reading or persisting `.sdcorejs/conventions/**` belongs to `sdcorejs-explore`
 (`conventions-read` and `conventions-sync-write-approved`); `sdcorejs-git` never
 generates or updates conventions.
+
+Keep the risk baseline in `_refs/shared/finish-gate.md` on fast-fix paths.

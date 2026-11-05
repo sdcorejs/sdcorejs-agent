@@ -351,7 +351,7 @@ Use the generic harness when no track-specific orchestrator matches.
    folder recipe.
 3. Execute tasks in the approved order using the normal editing and shell tools,
    including Write only for approved CREATE tasks.
-4. Keep edits inside `allowed_paths` and outside `prohibited_paths`.
+4. Keep edits inside `allowed_paths` and outside `prohibited_paths`; retain the proportional baseline from `../_refs/shared/finish-gate.md`.
 5. Run every verification command from `plan_context.commands_planned`; record
    commands_run with exit codes and commands_skipped with reasons when a script,
    tool, package manager, service, or environment is unavailable.

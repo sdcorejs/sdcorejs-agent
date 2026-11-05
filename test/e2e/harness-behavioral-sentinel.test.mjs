@@ -629,3 +629,30 @@ test('case-task-breakdown-capability-contract: source.read and tracker.write res
   assert.deepEqual(allowedTools, expected);
   assert.ok(!allowedTools.some((tool) => /fixture|connector|mcp/iu.test(tool)));
 });
+
+test('small edits keep a scoped baseline and one-line risk changes escalate in both languages', async () => {
+  const fixtures = await json(fixtureUrl);
+  for (const scenario of fixtures.review_baseline_cases) {
+    const task = { behavior_confirmed: true, acceptance_criteria_confirmed: true, verification_confirmed: true, ...scenario };
+    const result = runScenario({ classifyTask, resolveAction, selectInteraction }, task, fixtures.capabilities.unknown);
+    assert.equal(result.classification.review_baseline?.required, scenario.required, scenario.id);
+    if (scenario.expected) assert.equal(result.classification.action, scenario.expected, scenario.id);
+  }
+});
+
+test('inspected text-only edits do not promote lexical candidates to confirmed risks', () => {
+  const task = { owned_paths: ['docs/authorization.md'], changed_surfaces: ['text-only'], writes: true, behavior_confirmed: true, acceptance_criteria_confirmed: true, verification_confirmed: true };
+  for (const request of ['Fix the typo in the authorization guide', 'Fix the typo beside pageSize in the guide']) {
+    const result = classifyTask({ ...task, request });
+    assert.equal(result.action, 'fast-fix');
+    assert.equal(result.review_baseline.required, true);
+    assert.deepEqual(result.review_baseline.risks, []);
+  }
+  assert.equal(classifyTask({ ...task, request: 'Update authorization policy', changed_surfaces: ['authorization'] }).action, 'full-workflow');
+  assert.equal(classifyTask({ ...task, request: 'Update the external contract', public_contract: true }).action, 'full-workflow');
+  assert.equal(classifyTask({ ...task, request: 'Change pageSize', changed_surfaces: [] }).action, 'full-workflow');
+  const page = { ...task, request: 'Change pageSize from 20 to 50 on this paged list', owned_paths: ['src/customers.ts'], changed_surfaces: ['visible-page'], requires_all_records: false };
+  assert.equal(classifyTask(page).action, 'fast-fix');
+  assert.equal(classifyTask({ ...page, requires_all_records: true }).action, 'full-workflow');
+  assert.equal(classifyTask({ ...page, changed_surfaces: ['visible-page', 'data-completeness'] }).action, 'full-workflow');
+});

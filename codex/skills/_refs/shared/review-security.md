@@ -39,10 +39,17 @@ paths or key names instead of full matching lines.
 - Refresh-token rotation present (each refresh issues a new RT + invalidates the old)
 
 ### B. Authorization (RBAC / permissions)
-- **NestJS**: every controller method has `@HasPermission(...)` or explicit `@Public()`; `AuthGuard`/`RolesGuard` registered global or per-controller
-- **Angular**: every route has the right `canActivate`; permission codes are typed (string-literal union, not free strings)
-- Permission naming consistent `<MODULE>_<RESOURCE>_<ACTION>` (e.g. `CATALOG_C_PRODUCT_CREATE`)
+- **NestJS**: trace effective global/controller/method guards, inherited metadata, overrides and public exemptions. Require `@HasPermission` only where the detected SDCoreJS profile and project contract use it; plain NestJS may use another verified mechanism.
+- **Angular**: trace parent/child route guards, lazy boundaries and action permissions; a UI guard never substitutes for server authorization.
+- Compare permission names within the project's vocabulary and operation boundary; do not impose an SDCoreJS naming scheme on another profile.
 - No "magic boolean" admin checks — use roles/permissions
+
+Build an operation/permission/owner/tenant/denial-test matrix for changed surfaces.
+Verify unauthenticated, wrong-role, wrong-owner and cross-tenant requests against
+the real enforcement layer. A decorator's presence alone is not enforcement;
+its absence is not a defect when an effective global/inherited guard covers it.
+See `_refs/shared/review-screen-patterns.md` for UI/API parity. Missing evidence
+is a gap, not proof of a vulnerability. Keep one primary finding per root cause.
 
 ### C. Input validation
 - **NestJS**: DTOs use the project's validation pipe consistently (this stack often uses custom validators, NOT `class-validator` — confirm before flagging); no `req.body as any`

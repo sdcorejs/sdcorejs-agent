@@ -492,3 +492,9 @@ test('the shared consistency reference stays profile-neutral and documents the g
   assert.ok(text.includes('structure on an unrelated profile'));
   assert.ok(text.includes('not a casing linter'));
 });
+
+test('risk categories keep security review narrow rather than imposing naming rules', async () => {
+  const { requiredRiskCategories } = await import('../../_refs/shared/review-risk-contract.mjs');
+  assert.deepEqual(requiredRiskCategories(['security']), ['protection', 'test-adequacy']);
+  assert.equal(requiredRiskCategories(['code']).includes('naming'), true);
+});

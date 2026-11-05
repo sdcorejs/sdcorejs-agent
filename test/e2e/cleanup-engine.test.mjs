@@ -7,6 +7,8 @@ import { promisify } from 'node:util';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
+import { acquireSafeCleanupWriter, releaseSafeCleanupWriter, performSafeFileOperation } from '../../_refs/cleanup/native-file-operation.mjs';
 import {
   scanCleanup, freezeCleanupPlan as freezePlan, applyCleanupPlan as applyPlan, restoreCleanup as restorePlan, captureCleanupState,
 } from '../../_refs/cleanup/cleanup-engine.mjs';
@@ -21,6 +23,27 @@ const OUTPUT = Object.freeze({ owner: 'fixture-producer', task_id: TASK.id, prod
 const OWNED = '.sdcorejs/tmp/task';
 const CLI = fileURLToPath(new URL('../../_refs/cleanup/cli.mjs', import.meta.url));
 const posixContexts = new Map();
+
+test('Windows created-file receipts describe closed handles and still reject tampering', { skip: process.platform !== 'win32' }, async t => {
+  const root = await fixture(t, { 'source.txt': 'recovery bytes' });
+  const root_state = await lstat(root);
+  const observed = stat => ({ size: stat.size, mtime: stat.mtimeMs, ctime: stat.ctimeMs, ino: stat.ino, dev: stat.dev, mode: stat.mode, nlink: stat.nlink });
+  const writer = await acquireSafeCleanupWriter({ root, root_state, identity: 'sha256:v1:' + 'a'.repeat(64) });
+  assert.equal(writer.lock_created, true, JSON.stringify(writer));
+  assert.deepEqual(writer.state, observed(await lstat(path.join(root, writer.path))));
+  assert.equal((await releaseSafeCleanupWriter({ root, root_state, writer })).released, true);
+  const second = await acquireSafeCleanupWriter({ root, root_state, identity: 'sha256:v1:' + 'b'.repeat(64) });
+  await writeFile(path.join(root, second.path), 'tampered');
+  assert.equal((await releaseSafeCleanupWriter({ root, root_state, writer: second })).released, false);
+  assert.equal(await readFile(path.join(root, second.path), 'utf8'), 'tampered');
+  const copy = await performSafeFileOperation({ root, root_state, source: 'source.txt', destination: 'recovery.txt',
+    fingerprint: 'sha256:' + createHash('sha256').update(await readFile(path.join(root, 'source.txt'))).digest('hex'), state: observed(await lstat(path.join(root, 'source.txt'))), remove_source: false });
+  assert.equal(copy.copy_verified, true, JSON.stringify(copy));
+  assert.deepEqual(copy.destination_state, observed(await lstat(path.join(root, 'recovery.txt'))));
+  const restore = await performSafeFileOperation({ root, root_state, source: 'recovery.txt', destination: 'restored.txt', fingerprint: copy.fingerprint, state: copy.destination_state });
+  assert.equal(restore.source_removed, true, JSON.stringify(restore));
+  assert.equal(await readFile(path.join(root, 'restored.txt'), 'utf8'), 'recovery bytes');
+});
 
 function freezeCleanupPlan(analysis, options = {}) {
   const context = posixContexts.get(analysis.root_id);
@@ -1328,7 +1351,9 @@ test('needed design failure captures, shared PNG exports and approved design met
   for (const relative of paths) assert.equal(await present(root, relative), true);
 });
 
-test('a final restore state-capture failure returns a sealed partial receipt with the completed restored bytes', { timeout: 20000 }, async (t) => {
+// Apply and restore each start several native helpers. Allow Windows startup
+// overhead while retaining a bounded watchdog and every safety assertion below.
+test('a final restore state-capture failure returns a sealed partial receipt with the completed restored bytes', { timeout: process.platform === 'win32' ? 120000 : 20000 }, async (t) => {
   const relative = `${OWNED}/capture-failure.html`, contents = 'capture failure fixture bytes';
   const root = await fixture(t, { [relative]: contents });
   const prepared = await prepare(root, [relative], { actions: [{ path: relative, action: 'quarantine' }] });

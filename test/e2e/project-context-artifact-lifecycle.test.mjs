@@ -1437,3 +1437,20 @@ function execFileResult(file, args, options = {}) {
     });
   });
 }
+
+test('bootstrap context projection is read-only and does not infer authority from policy text', async () => {
+  const { collectConventionProjection } = await import('../../_refs/shared/project-context.mjs');
+  const { DEFAULT_CONVENTION_POLICY } = await import('../../_refs/shared/convention-contract.mjs');
+  const root = await mkdtemp(join(tmpdir(), 'bootstrap-context-'));
+  try {
+    await mkdir(join(root, '.sdcorejs/conventions'), { recursive: true });
+    const policy = { ...structuredClone(DEFAULT_CONVENTION_POLICY), project_bootstrap: { schema_version: 1, mode: 'manual', target: 'AGENTS.md', template_version: 1, managed_block_id: 'sdcorejs-project-baseline' } };
+    const policyPath = join(root, '.sdcorejs/conventions/policy.yaml');
+    await writeFile(policyPath, JSON.stringify(policy));
+    const before = await readFile(policyPath);
+    const context = await collectConventionProjection(root);
+    assert.equal(context.project_bootstrap.authority, 'not-evaluated-read-only');
+    assert.deepEqual(await readFile(policyPath), before);
+    await assert.rejects(access(join(root, 'AGENTS.md')));
+  } finally { await rm(root, { recursive: true, force: true }); }
+});

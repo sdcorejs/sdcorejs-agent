@@ -538,3 +538,27 @@ review rules.
 ## License
 
 MIT
+
+## Review consistency and project bootstrap
+
+Review now records evidence coverage for semantic naming/routes, effective
+permissions/owner/tenant protection, list/detail/form patterns and hardcoded
+assumptions. Complete-data consumers must account for continuation and server
+limits: pageSize 1000 does not prove that 1,001 records were loaded. Findings
+include a trigger, source location, impact and the missing proving test.
+Calendar dates, timestamps, durations, maps and irregular plurals are classified
+by meaning; accepted public aliases and scoped exceptions are preserved.
+
+Small fixes retain a proportional baseline. Optional project AGENTS setup is
+owned by Explore and described in [_refs/shared/project-bootstrap.md](_refs/shared/project-bootstrap.md).
+It defaults to disabled. Manual setup needs explicit authority; standing sync
+needs a trusted policy and completed convention sync. Human text outside the
+managed block is preserved. If safe writer ownership cannot be established,
+Explore returns a patch proposal. Disable stops future sync without deleting rules.
+
+Legacy review contexts report unknown coverage. New contexts cannot claim a
+complete baseline with missing/stale evidence. Run the focused regression suites
+with npm run test:e2e:review-behavior and npm run test:e2e:project-bootstrap.
+The internal npm run eval:review:offline checks fixtures, routing and contracts;
+it does not prove that a language model detects defects. Real fresh-reviewer
+captures and adjudication remain a separate capability acceptance step.

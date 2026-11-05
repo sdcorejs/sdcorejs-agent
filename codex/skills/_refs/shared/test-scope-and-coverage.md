@@ -91,3 +91,14 @@ artifacts. Assign one auth setup writer per persona/environment state.
 The coordinator merges case IDs, coverage rows, run IDs, artifact contexts, and
 shared configuration after deterministic fan-in without dropping prior
 evidence. Global verification and any Git handoff happen only after fan-in.
+
+## Risk-to-test adequacy
+
+A green unrelated suite or assertion on pageSize cannot prove all data arrived.
+Trace finding -> trigger -> expected failure -> assertion -> case -> exact command
+and current source/diff. Use a dataset beyond the bound, verify last record and
+set/order, and exercise server clamps/continuation/error paths. For authorization,
+exercise the server boundary with owner/tenant/permission denial. Confirm a
+mutation removing the relevant behavior is killed by that assertion. Distinguish
+unit/contract, executable fixture/integration and fresh reviewer evidence; their
+results are not interchangeable. Unknown or stale runs remain evidence gaps.

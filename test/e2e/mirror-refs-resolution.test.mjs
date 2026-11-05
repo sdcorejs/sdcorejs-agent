@@ -140,3 +140,11 @@ test('case-mirror-refs-mutation: the checker rejects bare, wrong-depth and heade
   const broken = original.replace('../../_refs/product/task-breakdown.md', '../../_refs/product/missing-ref.md');
   assert.ok(mirrorRefProblems(broken, dir).some((problem) => problem.includes('does not resolve')));
 });
+
+test('review risk and bootstrap runtime resources resolve in generated distributions', () => {
+  for (const base of ['plugin/_refs', 'codex/skills/_refs']) {
+    for (const name of ['review-risk-contract.mjs', 'project-bootstrap.mjs', 'project-bootstrap-template.md', 'review-data-completeness.md', 'review-screen-patterns.md']) {
+      assert.equal(existsSync(path.join(ROOT, base, 'shared', name)), true, base + '/' + name);
+    }
+  }
+});

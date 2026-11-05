@@ -1,0 +1,997 @@
+{
+  "schema_version": 1,
+  "task": "Independent frozen-pack source review for RB-017 and RB-018",
+  "status": "source_review_complete_with_evidence_gaps",
+  "runtime_identity": {
+    "agent": "Codex subagent",
+    "model_family": "GPT-6, as declared in host instructions",
+    "exact_model_variant": "unknown; not exposed to this agent",
+    "reasoning_effort": "unknown; not independently exposed",
+    "shell": "PowerShell via exec_command",
+    "platform": "win32",
+    "node_version_used_for_report_validation": "v22.14.0",
+    "claim_scope": "Source reasoning plus structural report validation only; no application-runtime, HTTP, UI, production, or test evidence."
+  },
+  "request_ids": [
+    "RB-017",
+    "RB-018"
+  ],
+  "results": [
+    {
+      "id": "RB-017",
+      "prompt": "Review effective authorization of this detail operation, including inherited routing behavior.",
+      "target_symbol": "inheritedDetail",
+      "source": "source/protection-inheritance.mjs",
+      "status": "no_finding",
+      "findings": [],
+      "no_finding_rationale": "The exported inheritedDetail wrapper at line 17 enters dispatchDetail. The route at line 8 has no public exemption, so line 14 evaluates the global guard and both controller guards. A missing identity is rejected before identity fields are accessed; a tenant mismatch or owner mismatch makes every(...) false and returns 403. Only a matching tenant and owner reaches the handler. Absent method-level metadata therefore correctly inherits effective protection and is not itself a defect.",
+      "evidence": [
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 4,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        },
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 5,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        },
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 6,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        },
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 8,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        },
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 14,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        },
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 15,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        },
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 17,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        }
+      ],
+      "confidence": "high",
+      "evidence_gaps": [
+        "Source-only review. No test files, test runners, fixture runtime, HTTP server, UI, or production environment were inspected or executed.",
+        "The authenticated-host assertion is the supplied synthetic contract; identity provenance and actual deployment authentication are not independently verified.",
+        "No package.json, .sdcorejs/summary.md, or .sdcorejs/conventions/policy.yaml exists at the isolated root. No approved plan, decision coverage, architecture context, or validation map was supplied.",
+        "Revision and diff identity are host-manifest values. Git access was prohibited; the selected source and loaded references were checked against manifest SHA256 values instead."
+      ],
+      "test_gap": "Denied and allowed operation cases are unobserved because tests are prohibited. Proposed proof: at the enforcement boundary, cover same-tenant owner allowed, same-tenant non-owner denied, cross-tenant owner-id collision denied, and absent identity denied; assert the unauthorized response contains no customer body."
+    },
+    {
+      "id": "RB-018",
+      "prompt": "Review effective authorization of this customer detail operation and its route metadata.",
+      "target_symbol": "exemptedDetail",
+      "source": "source/protection-inheritance.mjs",
+      "status": "finding",
+      "findings": [
+        {
+          "id": "R1",
+          "request_id": "RB-018",
+          "target_symbol": "exemptedDetail",
+          "severity": "Critical",
+          "gate": "BLOCKER",
+          "dimension": "security",
+          "kind": "authorization-bypass",
+          "path": "source/protection-inheritance.mjs",
+          "line": 9,
+          "locator": "source/protection-inheritance.mjs:9",
+          "repository_id": "isolated-review-fixture",
+          "module_id": null,
+          "issue": "Public route metadata bypasses the tenant and owner protection required for customer details.",
+          "trigger": "Call exemptedDetail with an authenticated identity whose tenant differs from customer.tenant or whose id differs from customer.ownerId.",
+          "evidence": "Line 9 sets public: true. Line 14 runs globalGuards and controllerGuards only when route.public !== true. The exemption therefore skips the identity guard at line 4 and both tenant/owner guards at lines 5-6. Lines 15 and 18 then return the customer through the exported detail operation. Lines 1-3 state that customer details are private to their tenant and owner.",
+          "related_evidence": [
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 2,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            },
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 4,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            },
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 5,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            },
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 6,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            },
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 9,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            },
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 14,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            },
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 15,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            },
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 18,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            }
+          ],
+          "impact": "Within the supplied routing contract, a cross-tenant caller or non-owner receives status 200 and the private customer body. A direct call without identity also bypasses local checks, although reachability without authentication through the real host is not established.",
+          "recommended_fix": "Remove public: true from exemptedDetail so the existing global and controller guards are inherited. Retain the established tenant-and-owner requirement and verify denial cases before treating the operation as authorized.",
+          "required_fix": "Remove the public exemption from this private detail route and prove cross-tenant and wrong-owner denial through the enforcement boundary.",
+          "confidence": "high",
+          "test_gap": "Denied and allowed operation cases are unobserved because tests are prohibited. Proposed proof: at the enforcement boundary, cover same-tenant owner allowed, same-tenant non-owner denied, cross-tenant owner-id collision denied, and absent identity denied; assert the unauthorized response contains no customer body.",
+          "repair_tier": "confirm",
+          "eligible_for_automatic_repair": false,
+          "source_only": true,
+          "risk": {
+            "category": "protection",
+            "path": "source/protection-inheritance.mjs",
+            "semantic_role": "private customer detail operation",
+            "trigger": "Authenticated cross-tenant or wrong-owner caller invokes exemptedDetail.",
+            "rule_source": "source/protection-inheritance.mjs:2-3; skills/_refs/shared/review-security.md#b-authorization-rbac--permissions",
+            "confidence": "high",
+            "test_gap": "Denied and allowed operation cases are unobserved because tests are prohibited. Proposed proof: at the enforcement boundary, cover same-tenant owner allowed, same-tenant non-owner denied, cross-tenant owner-id collision denied, and absent identity denied; assert the unauthorized response contains no customer body.",
+            "root_cause": "private-customer-detail-public-exemption"
+          }
+        }
+      ],
+      "no_finding_rationale": null,
+      "evidence_gaps": [
+        "Source-only review. No test files, test runners, fixture runtime, HTTP server, UI, or production environment were inspected or executed.",
+        "The authenticated-host assertion is the supplied synthetic contract; identity provenance and actual deployment authentication are not independently verified.",
+        "No package.json, .sdcorejs/summary.md, or .sdcorejs/conventions/policy.yaml exists at the isolated root. No approved plan, decision coverage, architecture context, or validation map was supplied.",
+        "Revision and diff identity are host-manifest values. Git access was prohibited; the selected source and loaded references were checked against manifest SHA256 values instead."
+      ]
+    }
+  ],
+  "authorization_matrix": [
+    {
+      "operation": "inheritedDetail",
+      "route_metadata": "No public exemption",
+      "effective_guard": "Boolean identity AND matching customer tenant AND matching owner id",
+      "expected_denials": [
+        "absent identity",
+        "cross-tenant",
+        "wrong-owner"
+      ],
+      "evidence": [
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 4,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        },
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 5,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        },
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 6,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        },
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 8,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        },
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 14,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        },
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 17,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        }
+      ],
+      "denial_tests": "not inspected or run"
+    },
+    {
+      "operation": "exemptedDetail",
+      "route_metadata": "public: true",
+      "effective_guard": "None in dispatchDetail for this route",
+      "expected_denials": [
+        "cross-tenant",
+        "wrong-owner"
+      ],
+      "source_behavior": "Returns status 200 with customer body regardless of those guard predicates",
+      "evidence": [
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 9,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        },
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 14,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        },
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 15,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        },
+        {
+          "path": "source/protection-inheritance.mjs",
+          "line": 18,
+          "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+          "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+        }
+      ],
+      "denial_tests": "not inspected or run"
+    }
+  ],
+  "input_identity": {
+    "source_path": "source/protection-inheritance.mjs",
+    "source_sha256": "a9f0f67b8f4ad46fe6d138e9acda15050df74f33bcbe00ea61070a3438a7e26d",
+    "source_manifest_sha256": "a9f0f67b8f4ad46fe6d138e9acda15050df74f33bcbe00ea61070a3438a7e26d",
+    "source_hash_match": true,
+    "requests_sha256": "b67ae34edcc42519576b4ef5c91bab7d7181ab0c4ceeed92f246d4cf16a2b24d",
+    "agents_sha256": "2c3b9fe5eb30d288826f1dcb32f92f4f867a008b5e44cb0cb18f7fec0037cd4b",
+    "host_identity_sha256": "88f9130f7cd6070e4f007169ffe77169b5d9c61c03bdbbf1f12d36e1c7e06d18",
+    "host_claimed_repository_id": "isolated-review-fixture",
+    "host_claimed_revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+    "host_claimed_diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d",
+    "host_claimed_pack_manifest_hash": "c9329fedd99988ef96077f6ca9335ee3dd7cb8f3b368cd14741ce7fc4a9d6194",
+    "host_claimed_fixture_manifest_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d",
+    "host_claimed_input_manifest_hash": "711a3df08d3418ff1d22fd616cc9819681b4414592d3c750b9c4899e6762cf59",
+    "scope": "Selected source and loaded reference bytes matched individually. Aggregate manifest hashes and live Git revision were not independently reconstructed."
+  },
+  "review_context": {
+    "schema_version": 1,
+    "source": "sdcorejs-review",
+    "mode": "read-only",
+    "write_actions": [],
+    "subject_track": "general",
+    "track": "general",
+    "review_profile": "general",
+    "track_profile": "general",
+    "classification_rationale": "Small synthetic ECMAScript module with no framework imports or package manifest. No NestJS, Angular, Next.js or SDCoreJS framework assumptions are warranted.",
+    "dimensions": [
+      "security"
+    ],
+    "review_mode": "table",
+    "consistency_scope": "dimension-affecting-only",
+    "owner_repository_id": "isolated-review-fixture",
+    "execution_host_repository_id": "isolated-review-fixture",
+    "current_revision_map": {
+      "isolated-review-fixture": "ee172c5bdd5e1a545e9f44d86be3067e50000000"
+    },
+    "current_diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d",
+    "source_revision_map": {
+      "isolated-review-fixture": "ee172c5bdd5e1a545e9f44d86be3067e50000000"
+    },
+    "portal_pinned_module_revision_map": {},
+    "artifact_identity": {
+      "owner_repository_id": "isolated-review-fixture",
+      "execution_host_repository_id": "isolated-review-fixture",
+      "source": "host-input-identity.json",
+      "live_git_verified": false
+    },
+    "approved_artifact": null,
+    "decision_coverage": null,
+    "goal_backward_review": null,
+    "architecture_gate": null,
+    "architecture_context": null,
+    "validation_map": [],
+    "approved_context_limitation": "Direct source-only review; no approved plan/spec/gate/decision records supplied. None synthesized.",
+    "approved_frontend_architecture": {
+      "status": "not-applicable",
+      "reason": "Security-only backend routing review; no frontend scope."
+    },
+    "convergence_findings": {
+      "architecture": {
+        "status": "not-applicable",
+        "violated_invariant_refs": [],
+        "rationale": "No approved architecture invariants supplied; no architecture approval or convergence claim made."
+      },
+      "convention": {
+        "accepted_violations": [],
+        "observed_findings": []
+      }
+    },
+    "file_scope": [
+      "source/protection-inheritance.mjs"
+    ],
+    "symbol_scope": [
+      "inheritedDetail",
+      "exemptedDetail",
+      "dispatchDetail",
+      "globalGuards",
+      "controllerGuards",
+      "routes"
+    ],
+    "refs_loaded": [
+      "skills/sdcorejs-review/SKILL.md",
+      "skills/_refs/shared/project-context.md",
+      "skills/_refs/shared/convention-context.md",
+      "skills/_refs/shared/runtime-protocols.md",
+      "skills/_refs/shared/decision-coverage.md",
+      "skills/_refs/shared/validation-map.md",
+      "skills/_refs/shared/system-registry.json",
+      "skills/_refs/shared/system-registry.mjs",
+      "skills/_refs/shared/review-code.md",
+      "skills/_refs/shared/review-security.md",
+      "skills/_refs/shared/review-screen-patterns.md",
+      "skills/_refs/shared/review-consistency.md",
+      "skills/_refs/shared/review-risk-contract.mjs",
+      "skills/_refs/shared/review-contract.mjs",
+      "skills/_refs/shared/convergence-contract.mjs",
+      "skills/_refs/shared/convention-contract.mjs",
+      "skills/_refs/shared/convention-paths.mjs",
+      "skills/_refs/harness/communication-economy.md",
+      "skills/_refs/shared/tasklist.md"
+    ],
+    "refs_skipped": [
+      {
+        "ref": "skills/_refs/angular/**; skills/_refs/nestjs/**; skills/_refs/nextjs/**",
+        "reason": "No framework profile evidence."
+      },
+      {
+        "ref": "skills/_refs/design/uiux/**; skills/_refs/shared/frontend-architecture.md; skills/_refs/shared/review-accessibility.md",
+        "reason": "Backend security-only scope, no rendered or interaction review."
+      },
+      {
+        "ref": "skills/_refs/shared/review-data-completeness.md",
+        "reason": "Authorization-only request; no complete-data collection, cap or paging claim in selected operations."
+      },
+      {
+        "ref": "skills/_refs/shared/artifact-lifecycle.md",
+        "reason": "No .sdcorejs artifact or policy persistence authorized; only task-requested isolated output.json."
+      }
+    ],
+    "package_manager": "unknown",
+    "probes_run": [
+      {
+        "probe": "evaluateReviewContract",
+        "kind": "structural review-output validation only",
+        "source_runtime_executed": false
+      }
+    ],
+    "probes_skipped": [
+      {
+        "probe": "source tests and execution",
+        "reason": "Explicitly prohibited by task."
+      },
+      {
+        "probe": "live HTTP, UI, production checks",
+        "reason": "Not supplied; task is source-only and network is prohibited."
+      },
+      {
+        "probe": "Git and external repository inspection",
+        "reason": "Explicitly prohibited."
+      }
+    ],
+    "test_evidence": [],
+    "provider_evidence": [],
+    "artifacts": [],
+    "test_evidence_summary": {
+      "status": "not-observed",
+      "associated_HEAD_or_diff": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d",
+      "authored": "not-inspected",
+      "executed": false,
+      "gaps": [
+        "Denied and allowed operation cases are unobserved because tests are prohibited. Proposed proof: at the enforcement boundary, cover same-tenant owner allowed, same-tenant non-owner denied, cross-tenant owner-id collision denied, and absent identity denied; assert the unauthorized response contains no customer body."
+      ],
+      "evidence_class": "source-only"
+    },
+    "convention_context": {
+      "schema_version": 1,
+      "mode": "read-only",
+      "write_actions": [],
+      "scope": {
+        "repositories": [
+          "isolated-review-fixture"
+        ],
+        "modules": [],
+        "boundaries": [
+          "customer-detail-authorization"
+        ],
+        "files": [
+          "source/protection-inheritance.mjs"
+        ],
+        "change_ref": null
+      },
+      "policy": {
+        "status": "missing",
+        "path": "none",
+        "capture_mode": "disabled",
+        "write_authority": "none"
+      },
+      "loaded_rules": {
+        "accepted": [],
+        "observed": [],
+        "conflicted": [],
+        "deprecated": [],
+        "stale": [],
+        "invalid": []
+      },
+      "findings": {
+        "direct_violations": [],
+        "semantic_alias_drift": [],
+        "term_collisions": [],
+        "cross_layer_drift": [],
+        "mapping_gaps": [],
+        "public_contract_drift": []
+      },
+      "candidates": [],
+      "conflicts": [],
+      "stale_rules": [],
+      "exceptions": [],
+      "ownership": {
+        "execution_host_repository_id": "isolated-review-fixture",
+        "integration_owner_repository_id": null,
+        "target_owner_repository_ids": [
+          "isolated-review-fixture"
+        ],
+        "unresolved_owners": []
+      },
+      "persistence": {
+        "requested": false,
+        "authorized": false,
+        "performed": false,
+        "sync_required": false,
+        "target_paths": [],
+        "blocked_reasons": []
+      },
+      "redaction": {
+        "applied": true,
+        "notes": "No secrets or actual customer records were encountered."
+      }
+    },
+    "reported_findings": [
+      {
+        "id": "R1",
+        "request_id": "RB-018",
+        "target_symbol": "exemptedDetail",
+        "severity": "Critical",
+        "gate": "BLOCKER",
+        "dimension": "security",
+        "kind": "authorization-bypass",
+        "path": "source/protection-inheritance.mjs",
+        "line": 9,
+        "locator": "source/protection-inheritance.mjs:9",
+        "repository_id": "isolated-review-fixture",
+        "module_id": null,
+        "issue": "Public route metadata bypasses the tenant and owner protection required for customer details.",
+        "trigger": "Call exemptedDetail with an authenticated identity whose tenant differs from customer.tenant or whose id differs from customer.ownerId.",
+        "evidence": "Line 9 sets public: true. Line 14 runs globalGuards and controllerGuards only when route.public !== true. The exemption therefore skips the identity guard at line 4 and both tenant/owner guards at lines 5-6. Lines 15 and 18 then return the customer through the exported detail operation. Lines 1-3 state that customer details are private to their tenant and owner.",
+        "related_evidence": [
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 2,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 4,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 5,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 6,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 9,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 14,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 15,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 18,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          }
+        ],
+        "impact": "Within the supplied routing contract, a cross-tenant caller or non-owner receives status 200 and the private customer body. A direct call without identity also bypasses local checks, although reachability without authentication through the real host is not established.",
+        "recommended_fix": "Remove public: true from exemptedDetail so the existing global and controller guards are inherited. Retain the established tenant-and-owner requirement and verify denial cases before treating the operation as authorized.",
+        "required_fix": "Remove the public exemption from this private detail route and prove cross-tenant and wrong-owner denial through the enforcement boundary.",
+        "confidence": "high",
+        "test_gap": "Denied and allowed operation cases are unobserved because tests are prohibited. Proposed proof: at the enforcement boundary, cover same-tenant owner allowed, same-tenant non-owner denied, cross-tenant owner-id collision denied, and absent identity denied; assert the unauthorized response contains no customer body.",
+        "repair_tier": "confirm",
+        "eligible_for_automatic_repair": false,
+        "source_only": true,
+        "risk": {
+          "category": "protection",
+          "path": "source/protection-inheritance.mjs",
+          "semantic_role": "private customer detail operation",
+          "trigger": "Authenticated cross-tenant or wrong-owner caller invokes exemptedDetail.",
+          "rule_source": "source/protection-inheritance.mjs:2-3; skills/_refs/shared/review-security.md#b-authorization-rbac--permissions",
+          "confidence": "high",
+          "test_gap": "Denied and allowed operation cases are unobserved because tests are prohibited. Proposed proof: at the enforcement boundary, cover same-tenant owner allowed, same-tenant non-owner denied, cross-tenant owner-id collision denied, and absent identity denied; assert the unauthorized response contains no customer body.",
+          "root_cause": "private-customer-detail-public-exemption"
+        }
+      }
+    ],
+    "finding_ids": [
+      "R1"
+    ],
+    "findings": [
+      {
+        "id": "R1",
+        "request_id": "RB-018",
+        "target_symbol": "exemptedDetail",
+        "severity": "Critical",
+        "gate": "BLOCKER",
+        "dimension": "security",
+        "kind": "authorization-bypass",
+        "path": "source/protection-inheritance.mjs",
+        "line": 9,
+        "locator": "source/protection-inheritance.mjs:9",
+        "repository_id": "isolated-review-fixture",
+        "module_id": null,
+        "issue": "Public route metadata bypasses the tenant and owner protection required for customer details.",
+        "trigger": "Call exemptedDetail with an authenticated identity whose tenant differs from customer.tenant or whose id differs from customer.ownerId.",
+        "evidence": "Line 9 sets public: true. Line 14 runs globalGuards and controllerGuards only when route.public !== true. The exemption therefore skips the identity guard at line 4 and both tenant/owner guards at lines 5-6. Lines 15 and 18 then return the customer through the exported detail operation. Lines 1-3 state that customer details are private to their tenant and owner.",
+        "related_evidence": [
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 2,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 4,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 5,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 6,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 9,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 14,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 15,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 18,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          }
+        ],
+        "impact": "Within the supplied routing contract, a cross-tenant caller or non-owner receives status 200 and the private customer body. A direct call without identity also bypasses local checks, although reachability without authentication through the real host is not established.",
+        "recommended_fix": "Remove public: true from exemptedDetail so the existing global and controller guards are inherited. Retain the established tenant-and-owner requirement and verify denial cases before treating the operation as authorized.",
+        "required_fix": "Remove the public exemption from this private detail route and prove cross-tenant and wrong-owner denial through the enforcement boundary.",
+        "confidence": "high",
+        "test_gap": "Denied and allowed operation cases are unobserved because tests are prohibited. Proposed proof: at the enforcement boundary, cover same-tenant owner allowed, same-tenant non-owner denied, cross-tenant owner-id collision denied, and absent identity denied; assert the unauthorized response contains no customer body.",
+        "repair_tier": "confirm",
+        "eligible_for_automatic_repair": false,
+        "source_only": true,
+        "risk": {
+          "category": "protection",
+          "path": "source/protection-inheritance.mjs",
+          "semantic_role": "private customer detail operation",
+          "trigger": "Authenticated cross-tenant or wrong-owner caller invokes exemptedDetail.",
+          "rule_source": "source/protection-inheritance.mjs:2-3; skills/_refs/shared/review-security.md#b-authorization-rbac--permissions",
+          "confidence": "high",
+          "test_gap": "Denied and allowed operation cases are unobserved because tests are prohibited. Proposed proof: at the enforcement boundary, cover same-tenant owner allowed, same-tenant non-owner denied, cross-tenant owner-id collision denied, and absent identity denied; assert the unauthorized response contains no customer body.",
+          "root_cause": "private-customer-detail-public-exemption"
+        }
+      }
+    ],
+    "review_baseline_version": 1,
+    "reviewed_complete": false,
+    "risk_assessment": {
+      "schema_version": 1,
+      "repository_id": "isolated-review-fixture",
+      "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+      "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d",
+      "dimensions": [
+        "security"
+      ],
+      "categories": [
+        {
+          "category": "protection",
+          "status": "checked",
+          "finding_refs": [
+            "R1"
+          ],
+          "evidence": [
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 4,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            },
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 5,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            },
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 8,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            },
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 9,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            },
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 14,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            },
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 17,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            },
+            {
+              "path": "source/protection-inheritance.mjs",
+              "line": 18,
+              "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+              "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+            }
+          ],
+          "rule_source": "skills/_refs/shared/review-security.md#b-authorization-rbac--permissions",
+          "confidence": "high"
+        },
+        {
+          "category": "test-adequacy",
+          "status": "gap",
+          "finding_refs": [],
+          "reason": "Denied and allowed operation cases are unobserved because tests are prohibited. Proposed proof: at the enforcement boundary, cover same-tenant owner allowed, same-tenant non-owner denied, cross-tenant owner-id collision denied, and absent identity denied; assert the unauthorized response contains no customer body."
+        }
+      ]
+    },
+    "repair_gate_mapping": {
+      "blocking": "Critical/BLOCKER",
+      "confirm": "Semantic authorization repair; review does not authorize edits.",
+      "user_decision": "No change to the supplied private-data policy is proposed."
+    }
+  },
+  "contract_validation": {
+    "schema_version": 1,
+    "registry_version": "1.0.0",
+    "status": "reviewed",
+    "read_only_proven": true,
+    "subject_track": "general",
+    "review_profile": "general",
+    "owner_repository_id": "isolated-review-fixture",
+    "execution_host_repository_id": "isolated-review-fixture",
+    "requested_dimensions": [
+      "security"
+    ],
+    "consistency_scope": "dimension-affecting-only",
+    "consistency_scope_reason": "narrow dimension reports consistency only where it affects that dimension",
+    "risk_coverage": "incomplete",
+    "risk_gaps": [
+      {
+        "category": "test-adequacy",
+        "reason": "Denied and allowed operation cases are unobserved because tests are prohibited. Proposed proof: at the enforcement boundary, cover same-tenant owner allowed, same-tenant non-owner denied, cross-tenant owner-id collision denied, and absent identity denied; assert the unauthorized response contains no customer body."
+      }
+    ],
+    "convention_context_read_only": true,
+    "findings": [
+      {
+        "id": "R1",
+        "request_id": "RB-018",
+        "target_symbol": "exemptedDetail",
+        "severity": "Critical",
+        "gate": "BLOCKER",
+        "dimension": "security",
+        "kind": "authorization-bypass",
+        "path": "source/protection-inheritance.mjs",
+        "line": 9,
+        "locator": "source/protection-inheritance.mjs:9",
+        "repository_id": "isolated-review-fixture",
+        "module_id": null,
+        "issue": "Public route metadata bypasses the tenant and owner protection required for customer details.",
+        "trigger": "Call exemptedDetail with an authenticated identity whose tenant differs from customer.tenant or whose id differs from customer.ownerId.",
+        "evidence": "Line 9 sets public: true. Line 14 runs globalGuards and controllerGuards only when route.public !== true. The exemption therefore skips the identity guard at line 4 and both tenant/owner guards at lines 5-6. Lines 15 and 18 then return the customer through the exported detail operation. Lines 1-3 state that customer details are private to their tenant and owner.",
+        "related_evidence": [
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 2,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 4,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 5,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 6,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 9,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 14,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 15,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          },
+          {
+            "path": "source/protection-inheritance.mjs",
+            "line": 18,
+            "revision": "ee172c5bdd5e1a545e9f44d86be3067e50000000",
+            "diff_hash": "4776db355e27413e54451934c9ad0d620c0e3f58f213254360d57beb9fc58e6d"
+          }
+        ],
+        "impact": "Within the supplied routing contract, a cross-tenant caller or non-owner receives status 200 and the private customer body. A direct call without identity also bypasses local checks, although reachability without authentication through the real host is not established.",
+        "recommended_fix": "Remove public: true from exemptedDetail so the existing global and controller guards are inherited. Retain the established tenant-and-owner requirement and verify denial cases before treating the operation as authorized.",
+        "required_fix": "Remove the public exemption from this private detail route and prove cross-tenant and wrong-owner denial through the enforcement boundary.",
+        "confidence": "high",
+        "test_gap": "Denied and allowed operation cases are unobserved because tests are prohibited. Proposed proof: at the enforcement boundary, cover same-tenant owner allowed, same-tenant non-owner denied, cross-tenant owner-id collision denied, and absent identity denied; assert the unauthorized response contains no customer body.",
+        "repair_tier": "confirm",
+        "eligible_for_automatic_repair": false,
+        "source_only": true,
+        "risk": {
+          "category": "protection",
+          "path": "source/protection-inheritance.mjs",
+          "semantic_role": "private customer detail operation",
+          "trigger": "Authenticated cross-tenant or wrong-owner caller invokes exemptedDetail.",
+          "rule_source": "source/protection-inheritance.mjs:2-3; skills/_refs/shared/review-security.md#b-authorization-rbac--permissions",
+          "confidence": "high",
+          "test_gap": "Denied and allowed operation cases are unobserved because tests are prohibited. Proposed proof: at the enforcement boundary, cover same-tenant owner allowed, same-tenant non-owner denied, cross-tenant owner-id collision denied, and absent identity denied; assert the unauthorized response contains no customer body.",
+          "root_cause": "private-customer-detail-public-exemption"
+        }
+      }
+    ],
+    "blockers": [],
+    "scope": "Structural output contract validation only; status reviewed does not establish runtime correctness or complete test coverage."
+  },
+  "refs_loaded": [
+    {
+      "path": "skills/sdcorejs-review/SKILL.md",
+      "sha256": "cd55589a4be83b2289dbc9bc338cb2f0db7e54994447af544c1fb8edd1e9db4c",
+      "manifest_match": true,
+      "scope": "Read applicable reference"
+    },
+    {
+      "path": "skills/_refs/shared/project-context.md",
+      "sha256": "3e6a9055b156ae1bdf3aa2da9c4b378f708e8bf18fcf48dc818503260ee37c52",
+      "manifest_match": true,
+      "scope": "Read applicable reference"
+    },
+    {
+      "path": "skills/_refs/shared/convention-context.md",
+      "sha256": "38a07021cb087864292840fd9e52df2e08ecbc3614e542a6db58fc664ccf6a0a",
+      "manifest_match": true,
+      "scope": "Relevant read-only, ownership, scope, source precedence, authorization/routing and reporting sections; some earlier broad output was truncated"
+    },
+    {
+      "path": "skills/_refs/shared/runtime-protocols.md",
+      "sha256": "7e716334efb19adff8189283c8446e9f54ee337ba8234b7607c8db69b760fa9d",
+      "manifest_match": true,
+      "scope": "Read applicable reference"
+    },
+    {
+      "path": "skills/_refs/shared/decision-coverage.md",
+      "sha256": "327dfa68fd8b50b6cbb299c3bbd3783a6e3ca84977a7773604d88683268877c0",
+      "manifest_match": true,
+      "scope": "Read applicable reference"
+    },
+    {
+      "path": "skills/_refs/shared/validation-map.md",
+      "sha256": "300e0a9d17cf26733644e2c42b55b91a2050e8f71f0cc73cc6307895e9889f2e",
+      "manifest_match": true,
+      "scope": "Read applicable reference"
+    },
+    {
+      "path": "skills/_refs/shared/system-registry.json",
+      "sha256": "0468dde0ade697cec41bdae79c720531ea7e53e094290c97e79e4b47c67a3208",
+      "manifest_match": true,
+      "scope": "General/Node track and review dimension projections; also loaded by validator"
+    },
+    {
+      "path": "skills/_refs/shared/system-registry.mjs",
+      "sha256": "28c8d3babc4e5d8ad94def5ae29c30367bb37a58c0aafa25e73f887558ca69dd",
+      "manifest_match": true,
+      "scope": "Targeted imports/header inspection; module loaded transitively by review validator"
+    },
+    {
+      "path": "skills/_refs/shared/review-code.md",
+      "sha256": "e23da510ee31e76ff194a4334c39abbb77f6d77e13ce2ccf1ca570c9301c1fa8",
+      "manifest_match": true,
+      "scope": "Read applicable reference"
+    },
+    {
+      "path": "skills/_refs/shared/review-security.md",
+      "sha256": "07a7117dc1ca19d754b2c9bb31332fc10f396222b6388c0df20f9d5433fd6e8b",
+      "manifest_match": true,
+      "scope": "Read applicable reference"
+    },
+    {
+      "path": "skills/_refs/shared/review-screen-patterns.md",
+      "sha256": "fd595dbfcfd9257358ed1b9300a6eaba305857016c2c20c4043b7e5078517481",
+      "manifest_match": true,
+      "scope": "Read applicable reference"
+    },
+    {
+      "path": "skills/_refs/shared/review-consistency.md",
+      "sha256": "f8a257d08839fb26707e445583c05f1a2812e70c4ba56f5ba59e137f84cfb175",
+      "manifest_match": true,
+      "scope": "Relevant read-only, ownership, scope, source precedence, authorization/routing and reporting sections; some earlier broad output was truncated"
+    },
+    {
+      "path": "skills/_refs/shared/review-risk-contract.mjs",
+      "sha256": "a2eac306987c77ca0ee6d134116aad313e3cec3f9b40fbad7abf4bf56d170e5d",
+      "manifest_match": true,
+      "scope": "Read applicable reference"
+    },
+    {
+      "path": "skills/_refs/shared/review-contract.mjs",
+      "sha256": "fbf5883ba22d7125010f780d60a82abbb74e03bbc540f4d94e48e38e7c4c483e",
+      "manifest_match": true,
+      "scope": "Read applicable reference"
+    },
+    {
+      "path": "skills/_refs/shared/convergence-contract.mjs",
+      "sha256": "eb1f4754d84215ed00ed1314ce984cff1106c9fc2cf41eb3e53f85a89f16573a",
+      "manifest_match": true,
+      "scope": "Targeted architecture/convention review logic and status definitions; no convergence execution"
+    },
+    {
+      "path": "skills/_refs/shared/convention-contract.mjs",
+      "sha256": "2d85dc73d18ee39616aa121434ba116d0f1c30cedfcb087226bcee6d41b41eaa",
+      "manifest_match": true,
+      "scope": "Targeted imports/header inspection; module loaded transitively by review validator"
+    },
+    {
+      "path": "skills/_refs/shared/convention-paths.mjs",
+      "sha256": "a4d06cd8e6690160719a3be89aa977080499b0082e3732385150ccb17a9ce5ce",
+      "manifest_match": true,
+      "scope": "Targeted imports/header inspection; module loaded transitively by review validator"
+    },
+    {
+      "path": "skills/_refs/harness/communication-economy.md",
+      "sha256": "44b72876081b1a49765e5bbd9b076aea66a1a5b79c29fb6f773af0dd4a93c890",
+      "manifest_match": true,
+      "scope": "Read applicable reference"
+    },
+    {
+      "path": "skills/_refs/shared/tasklist.md",
+      "sha256": "b3bf2914c204e631d874883f5ca13dd7263d895f4b18be7fe457921425636d40",
+      "manifest_match": true,
+      "scope": "Read applicable reference"
+    }
+  ],
+  "evidence_gaps": [
+    "Source-only review. No test files, test runners, fixture runtime, HTTP server, UI, or production environment were inspected or executed.",
+    "The authenticated-host assertion is the supplied synthetic contract; identity provenance and actual deployment authentication are not independently verified.",
+    "No package.json, .sdcorejs/summary.md, or .sdcorejs/conventions/policy.yaml exists at the isolated root. No approved plan, decision coverage, architecture context, or validation map was supplied.",
+    "Revision and diff identity are host-manifest values. Git access was prohibited; the selected source and loaded references were checked against manifest SHA256 values instead."
+  ],
+  "access_notes": [
+    "Only RB-017 and RB-018 were analyzed. The initial requests.json read displayed the full request list; no other source file was read or reviewed.",
+    "The host manifest contains paths for unrelated references; those entries were data only. No test, evaluation/oracle/history asset was opened.",
+    "All data/reference reads stayed under the isolated root. No original repository, network, Git, installation or spawned agents were used.",
+    "One overbroad manifest display was interrupted to bound output; targeted manifest parsing subsequently completed.",
+    "Review-context write_actions is empty for source/policy operations. The sole actual file write is the separately authorized report listed below."
+  ],
+  "writes_performed": [
+    {
+      "path": "output.json",
+      "operation": "create complete JSON review result",
+      "authority": "Explicit parent task instruction",
+      "source_or_policy_edit": false
+    }
+  ],
+  "source_writes": [],
+  "policy_writes": [],
+  "tests_run": [],
+  "read_only_source_review": true
+}

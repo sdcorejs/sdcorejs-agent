@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "synthetic": true,
+  "reviewer_inputs": [
+    "paging.mjs",
+    "protection-server.mjs",
+    "naming-routing.ts",
+    "screens.ts",
+    "protection-inheritance.mjs"
+  ],
+  "oracle_visibility": "adjudicator-only",
+  "cases": [
+    {
+      "id": "paging-cap",
+      "source": "paging.mjs",
+      "symbol": "loadCustomers",
+      "expected": "incomplete above 1000"
+    },
+    {
+      "id": "paging-control",
+      "source": "paging.mjs",
+      "symbol": "collectCustomers",
+      "expected": "continuation checked"
+    },
+    {
+      "id": "preview-control",
+      "source": "paging.mjs",
+      "symbol": "customerPreview",
+      "expected": "intentional partial result"
+    },
+    {
+      "id": "protection",
+      "source": "protection-server.mjs",
+      "symbol": "startProtectionServer",
+      "expected": "enforce false permits unauthorized access"
+    },
+    {
+      "id": "naming",
+      "source": "naming-routing.ts",
+      "symbol": "schedule",
+      "expected": "collection and calendar-date naming drift"
+    },
+    {
+      "id": "route",
+      "source": "naming-routing.ts",
+      "symbol": "routes",
+      "expected": "singular resource differs from peers"
+    },
+    {
+      "id": "aliases-control",
+      "source": "naming-routing.ts",
+      "symbol": "legacyAlias",
+      "expected": "preserve accepted compatibility alias"
+    },
+    {
+      "id": "screen",
+      "source": "screens.ts",
+      "symbol": "deleteAction",
+      "expected": "UI and server permission mismatch"
+    },
+    {
+      "id": "inherited-protection-control",
+      "source": "protection-inheritance.mjs",
+      "symbol": "inheritedDetail",
+      "expected": "global and controller guards protect methods without own metadata"
+    },
+    {
+      "id": "public-override",
+      "source": "protection-inheritance.mjs",
+      "symbol": "exemptedDetail",
+      "expected": "public exemption bypasses private customer protection"
+    }
+  ]
+}

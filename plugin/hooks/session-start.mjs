@@ -18,6 +18,7 @@ const bootstrapContent = await readFile(bootstrapPath, 'utf8').then(
 const additionalContext = [
   '<EXTREMELY_IMPORTANT>',
   'You have the sdcorejs SDLC skill pack.',
+  'Keep a proportional review baseline for small code changes: naming/routes, effective protection, screen patterns, hardcoded assumptions, data completeness and proving tests. Project AGENTS bootstrap is opt-in; review never writes instructions.',
   '',
   "**Below is the full content of your 'sdcorejs-using-skills' bootstrap - how to find and dispatch sdcorejs skills. For all other skills, use the 'Skill' tool:**",
   '',

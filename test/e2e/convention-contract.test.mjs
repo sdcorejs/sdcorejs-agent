@@ -827,3 +827,10 @@ test('project-context projection stays compact and identifier-only', () => {
 
   assert.equal(projectConventionContext({}).policy_path, 'none');
 });
+
+test('bootstrap extension cannot widen legacy convention authority by version or path', () => {
+  const base = structuredClone(DEFAULT_CONVENTION_POLICY);
+  for (const target of ['../AGENTS.md', 'C:/AGENTS.md', 'nested/../AGENTS.md', 'nul/AGENTS.md']) {
+    assert.equal(validateConventionPolicy({ ...base, project_bootstrap: { schema_version: 1, mode: 'manual', target, template_version: 1, managed_block_id: 'sdcorejs-project-baseline' } }).ok, false);
+  }
+});

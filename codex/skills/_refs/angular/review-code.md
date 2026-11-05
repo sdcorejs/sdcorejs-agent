@@ -528,3 +528,11 @@ Score each of these 13 categories. For every category output **Score (1–10)**,
 ```
 
 Overall score = weighted by the priority lens (Performance/Maintainability heaviest), not a flat average — state the weighting if it changes the headline number.
+
+## Effective behavior and comparable patterns
+
+Preserve detected Core UI versus plain Angular boundaries. Trace query state, selection across pages, detail refresh and duplicate-submit handling.
+Use _refs/shared/review-screen-patterns.md for the operation/permission/owner/tenant
+matrix and _refs/shared/review-data-completeness.md for complete-data consumers.
+Retain source locators and denial/boundary test gaps. Accepted inheritance and
+intentional bounded previews are controls, not automatic findings.
