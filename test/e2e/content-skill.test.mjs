@@ -9,6 +9,39 @@ test('content positive and paired negative routing uses the existing pack runner
  for(const [prompt,expected] of [['Write API documentation for the orders service.','sdcorejs-documentation'],['Create a PRD and acceptance criteria for this product.','sdcorejs-product'],['Review this code for authorization defects.','sdcorejs-review'],['Implement a Facebook OAuth login endpoint from the approved plan.','sdcorejs-execute-plan']]) assert.equal(dispatchPrompt(pack,prompt)?.name,expected,prompt);
 });
 
+test('social tech topics stay editorial while software deliverables keep their owners',async()=>{
+ const pack=await loadSkillPack(root);
+ for(const prompt of [
+  'Write a Facebook post about clean code.',
+  'Write a Facebook post about clean design.',
+  'Draft a TikTok video script explaining API versioning for my personal tech brand.',
+  'Draft a TikTok video script explaining product pricing for my personal brand.',
+  'Create a Facebook caption announcing our new API product.',
+  'Review this LinkedIn post about how to debug an OAuth endpoint.',
+  'Repurpose this API documentation into a Facebook post.',
+  'Write a Facebook post about why we test login components.',
+  'Fix the grammar in this Facebook caption about API testing.',
+  'Create a Facebook post covering clean code.',
+  'Create a Facebook caption for our Angular component launch.',
+  'Write a Facebook post on testing components.',
+ ]) assert.equal(dispatchPrompt(pack,prompt)?.name,'sdcorejs-content',prompt);
+ for(const prompt of [
+  'Implement a Facebook OAuth login endpoint from the approved plan.',
+  'Write API documentation for the Facebook POST endpoint.',
+  'Debug the Facebook post editor component.',
+  'Implement a TikTok video script editor from the approved plan.',
+  'Create a PRD and acceptance criteria for a social post scheduler.',
+  'Write tests for the Facebook POST endpoint.',
+  'Build an Angular component that previews a caption for Instagram.',
+  'Create a Facebook caption generator component in Angular.',
+  'In our existing Angular app, implement the caption preview component for Facebook.',
+  'Please fix the Angular component that renders Facebook post previews.',
+  'Build Facebook caption previews in an Angular component.',
+  'Create a Facebook post editing UI component in Angular.',
+ ]) assert.notEqual(dispatchPrompt(pack,prompt)?.name,'sdcorejs-content',prompt);
+ assert.equal(dispatchPrompt(pack,'Use sdcorejs-review to review code for the Facebook post editor.')?.name,'sdcorejs-review');
+});
+
 test('reference selection is orthogonal, no-match is explicit, and every selected ref has provenance',async()=>{
  const {selectContentReferences}=await import('../../_refs/content/content-contract.mjs');
  const result=selectContentReferences({action:'draft',channels:['tiktok'],formats:['short-video'],domains:['travel-lifestyle'],voice:true,claims:true});

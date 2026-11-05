@@ -121,11 +121,20 @@ const SKILL_HINTS = [
 ];
 
 function hasContentIntent(prompt) {
-  const text=normalizePromptText(prompt);
-  const channel=/\b(facebook|tiktok|instagram|linkedin|youtube|social)\b/u.test(text);
-  const editorial=/\b(caption|post|posts|editorial|repurpose|storyboard|video script|marketing video|content strategy)\b/u.test(text);
-  const code=/\b(oauth|endpoint|api|code|component|implement|debug|test|login|prd|acceptance criteria)\b/u.test(text);
-  return (channel && editorial && !code) || (/\b(personal brand|brand voice|content strategy)\b/u.test(text) && !code);
+  const text = normalizePromptText(prompt);
+  const channel = /\b(facebook|tiktok|instagram|linkedin|youtube|social)\b/u.test(text);
+  // Classify the requested output, not technical vocabulary in its topic/source.
+  const destination = /\brepurpose\b/u.test(text) ? text.split(/\binto\b/u).at(-1) : text;
+  const request = destination.split(/\b(?:about|explaining|covering|discussing|why|how|on|for|ve)\b/u, 1)[0];
+  const editorial = /\b(caption|post|posts|editorial|repurpose|storyboard|video script|marketing video|content strategy)\b/u.exec(request);
+  const software = /\b(?:prd|acceptance criteria|api documentation|api docs|tests|code|components?|endpoints?|functions?|modules?)\b/u.exec(request);
+  const action = /\b(?:implement|debug|refactor)\b/u.exec(request);
+  const softwareAction = (action && action.index < (editorial?.index ?? Infinity)) ||
+    (/\b(?:build|create|generate|develop|implement|fix)\b/u.test(request) && software !== null);
+  const softwareOutput = (software && software.index < (editorial?.index ?? Infinity)) ||
+    /\b(?:post (?:endpoint|route)|(?:post|caption|video script) (?:(?:preview|generator|editing) )?(?:editor|scheduler|component|generator))\b/u.test(request);
+  return !softwareAction && !softwareOutput &&
+    ((channel && editorial !== null) || /\b(personal brand|brand voice|content strategy)\b/u.test(request));
 }
 
 const PRIORITY_RULES = [
