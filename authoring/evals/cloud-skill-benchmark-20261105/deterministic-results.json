@@ -1,0 +1,894 @@
+{
+  "measurement": "deterministic contract and test-harness behavior; not model routing or timing",
+  "provider_calls": 0,
+  "known_regression_and_review_controls": true,
+  "new_cases": 2,
+  "variants": [
+    {
+      "variant": "candidate",
+      "revision": "be1c4963fa2e0f5b32d9523d9601b3dc634db289",
+      "cases": [
+        {
+          "kind": "routing",
+          "basis": "regression",
+          "prompt": "Write a Facebook post about clean code.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-content",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Write a Facebook post about clean design.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-content",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "regression",
+          "prompt": "Draft a TikTok video script explaining API versioning for my personal tech brand.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-content",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Draft a TikTok video script explaining product pricing for my personal brand.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-content",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "regression",
+          "prompt": "Create a Facebook caption announcing our new API product.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-content",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "regression",
+          "prompt": "Repurpose this API documentation into a Facebook post.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-content",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Create a Facebook caption for our Angular component launch.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-content",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Review this LinkedIn post about how to debug an OAuth endpoint.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-content",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Write API documentation for the orders service.",
+          "expected": "sdcorejs-documentation",
+          "actual": "sdcorejs-documentation",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Create a PRD and acceptance criteria for this product.",
+          "expected": "sdcorejs-product",
+          "actual": "sdcorejs-product",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Review this code for authorization defects.",
+          "expected": "sdcorejs-review",
+          "actual": "sdcorejs-review",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Implement a Facebook OAuth login endpoint from the approved plan.",
+          "expected": "sdcorejs-execute-plan",
+          "actual": "sdcorejs-execute-plan",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "review-control",
+          "prompt": "Build an Angular component that previews a caption for Instagram.",
+          "expected": "sdcorejs-angular",
+          "actual": "sdcorejs-angular",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "review-control",
+          "prompt": "Create a Facebook caption generator component in Angular.",
+          "expected": "sdcorejs-angular",
+          "actual": "sdcorejs-angular",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "review-control",
+          "prompt": "Build Facebook caption previews in an Angular component.",
+          "expected": "sdcorejs-angular",
+          "actual": "sdcorejs-angular",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "review-control",
+          "prompt": "Create a Facebook post editing UI component in Angular.",
+          "expected": "sdcorejs-angular",
+          "actual": "sdcorejs-angular",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "new-case",
+          "prompt": "Draft a LinkedIn post explaining how our API examples help support teams.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-content",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "new-case",
+          "prompt": "Create API documentation for the Instagram POST endpoint.",
+          "expected": "sdcorejs-documentation",
+          "actual": "sdcorejs-documentation",
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "equal-root",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src"
+            ],
+            "intended_output_paths": [
+              "src/**"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "src"
+            ],
+            "intended_dirty_overlaps": [
+              "src/**"
+            ],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "reverse-root",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/**"
+            ],
+            "intended_output_paths": [
+              "src"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "src/**"
+            ],
+            "intended_dirty_overlaps": [
+              "src"
+            ],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "slash-control",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/"
+            ],
+            "intended_output_paths": [
+              "src/**"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "src/"
+            ],
+            "intended_dirty_overlaps": [
+              "src/**"
+            ],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "child-control",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/a.ts"
+            ],
+            "intended_output_paths": [
+              "src/**"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "src/a.ts"
+            ],
+            "intended_dirty_overlaps": [
+              "src/**"
+            ],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "exact-control",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/a.ts"
+            ],
+            "intended_output_paths": [
+              "src/a.ts"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "src/a.ts"
+            ],
+            "intended_dirty_overlaps": [
+              "src/a.ts"
+            ],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "root-scope",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/a.ts"
+            ],
+            "intended_output_paths": [
+              "**"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "src/a.ts"
+            ],
+            "intended_dirty_overlaps": [
+              "**"
+            ],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "partial-glob",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/order.ts"
+            ],
+            "intended_output_paths": [
+              "src/ord*.ts"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "src/order.ts"
+            ],
+            "intended_dirty_overlaps": [
+              "src/ord*.ts"
+            ],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "disjoint-file",
+          "input": {
+            "unrelated_dirty_paths": [
+              "notes.md"
+            ],
+            "intended_output_paths": [
+              "src/a.ts"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": true,
+          "actual": {
+            "status": "dirty-disjoint",
+            "unrelated_dirty_paths": [
+              "notes.md"
+            ],
+            "intended_dirty_overlaps": [],
+            "write_authorized": true
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "disjoint-directory",
+          "input": {
+            "unrelated_dirty_paths": [
+              "docs"
+            ],
+            "intended_output_paths": [
+              "src/**"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": true,
+          "actual": {
+            "status": "dirty-disjoint",
+            "unrelated_dirty_paths": [
+              "docs"
+            ],
+            "intended_dirty_overlaps": [],
+            "write_authorized": true
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "unknown-scope",
+          "input": {
+            "unrelated_dirty_paths": [
+              "notes.md"
+            ],
+            "intended_output_paths": []
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "notes.md"
+            ],
+            "intended_dirty_overlaps": [],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "case-insensitive",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/Foo.ts"
+            ],
+            "intended_output_paths": [
+              "src/foo.ts"
+            ]
+          },
+          "options": {
+            "caseInsensitive": true
+          },
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "src/Foo.ts"
+            ],
+            "intended_dirty_overlaps": [
+              "src/foo.ts"
+            ],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "case-sensitive",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/Foo.ts"
+            ],
+            "intended_output_paths": [
+              "src/foo.ts"
+            ]
+          },
+          "options": {
+            "caseInsensitive": false
+          },
+          "expected_write_authorized": true,
+          "actual": {
+            "status": "dirty-disjoint",
+            "unrelated_dirty_paths": [
+              "src/Foo.ts"
+            ],
+            "intended_dirty_overlaps": [],
+            "write_authorized": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": 30,
+      "total": 30
+    },
+    {
+      "variant": "baseline",
+      "revision": "97cc700ef7201a3074c57aedff89cbe131f9ee6f",
+      "cases": [
+        {
+          "kind": "routing",
+          "basis": "regression",
+          "prompt": "Write a Facebook post about clean code.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-debug",
+          "passed": false
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Write a Facebook post about clean design.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-content",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "regression",
+          "prompt": "Draft a TikTok video script explaining API versioning for my personal tech brand.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-documentation",
+          "passed": false
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Draft a TikTok video script explaining product pricing for my personal brand.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-content",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "regression",
+          "prompt": "Create a Facebook caption announcing our new API product.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-documentation",
+          "passed": false
+        },
+        {
+          "kind": "routing",
+          "basis": "regression",
+          "prompt": "Repurpose this API documentation into a Facebook post.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-documentation",
+          "passed": false
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Create a Facebook caption for our Angular component launch.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-angular",
+          "passed": false
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Review this LinkedIn post about how to debug an OAuth endpoint.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-review",
+          "passed": false
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Write API documentation for the orders service.",
+          "expected": "sdcorejs-documentation",
+          "actual": "sdcorejs-documentation",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Create a PRD and acceptance criteria for this product.",
+          "expected": "sdcorejs-product",
+          "actual": "sdcorejs-product",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Review this code for authorization defects.",
+          "expected": "sdcorejs-review",
+          "actual": "sdcorejs-review",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "control",
+          "prompt": "Implement a Facebook OAuth login endpoint from the approved plan.",
+          "expected": "sdcorejs-execute-plan",
+          "actual": "sdcorejs-execute-plan",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "review-control",
+          "prompt": "Build an Angular component that previews a caption for Instagram.",
+          "expected": "sdcorejs-angular",
+          "actual": "sdcorejs-angular",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "review-control",
+          "prompt": "Create a Facebook caption generator component in Angular.",
+          "expected": "sdcorejs-angular",
+          "actual": "sdcorejs-angular",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "review-control",
+          "prompt": "Build Facebook caption previews in an Angular component.",
+          "expected": "sdcorejs-angular",
+          "actual": "sdcorejs-angular",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "review-control",
+          "prompt": "Create a Facebook post editing UI component in Angular.",
+          "expected": "sdcorejs-angular",
+          "actual": "sdcorejs-angular",
+          "passed": true
+        },
+        {
+          "kind": "routing",
+          "basis": "new-case",
+          "prompt": "Draft a LinkedIn post explaining how our API examples help support teams.",
+          "expected": "sdcorejs-content",
+          "actual": "sdcorejs-documentation",
+          "passed": false
+        },
+        {
+          "kind": "routing",
+          "basis": "new-case",
+          "prompt": "Create API documentation for the Instagram POST endpoint.",
+          "expected": "sdcorejs-documentation",
+          "actual": "sdcorejs-documentation",
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "equal-root",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src"
+            ],
+            "intended_output_paths": [
+              "src/**"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "dirty-disjoint",
+            "unrelated_dirty_paths": [
+              "src"
+            ],
+            "intended_dirty_overlaps": [],
+            "write_authorized": true
+          },
+          "passed": false
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "reverse-root",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/**"
+            ],
+            "intended_output_paths": [
+              "src"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "dirty-disjoint",
+            "unrelated_dirty_paths": [
+              "src/**"
+            ],
+            "intended_dirty_overlaps": [],
+            "write_authorized": true
+          },
+          "passed": false
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "slash-control",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/"
+            ],
+            "intended_output_paths": [
+              "src/**"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "src/"
+            ],
+            "intended_dirty_overlaps": [
+              "src/**"
+            ],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "child-control",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/a.ts"
+            ],
+            "intended_output_paths": [
+              "src/**"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "src/a.ts"
+            ],
+            "intended_dirty_overlaps": [
+              "src/**"
+            ],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "exact-control",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/a.ts"
+            ],
+            "intended_output_paths": [
+              "src/a.ts"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "src/a.ts"
+            ],
+            "intended_dirty_overlaps": [
+              "src/a.ts"
+            ],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "root-scope",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/a.ts"
+            ],
+            "intended_output_paths": [
+              "**"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "src/a.ts"
+            ],
+            "intended_dirty_overlaps": [
+              "**"
+            ],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "partial-glob",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/order.ts"
+            ],
+            "intended_output_paths": [
+              "src/ord*.ts"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "src/order.ts"
+            ],
+            "intended_dirty_overlaps": [
+              "src/ord*.ts"
+            ],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "disjoint-file",
+          "input": {
+            "unrelated_dirty_paths": [
+              "notes.md"
+            ],
+            "intended_output_paths": [
+              "src/a.ts"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": true,
+          "actual": {
+            "status": "dirty-disjoint",
+            "unrelated_dirty_paths": [
+              "notes.md"
+            ],
+            "intended_dirty_overlaps": [],
+            "write_authorized": true
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "disjoint-directory",
+          "input": {
+            "unrelated_dirty_paths": [
+              "docs"
+            ],
+            "intended_output_paths": [
+              "src/**"
+            ]
+          },
+          "options": {},
+          "expected_write_authorized": true,
+          "actual": {
+            "status": "dirty-disjoint",
+            "unrelated_dirty_paths": [
+              "docs"
+            ],
+            "intended_dirty_overlaps": [],
+            "write_authorized": true
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "unknown-scope",
+          "input": {
+            "unrelated_dirty_paths": [
+              "notes.md"
+            ],
+            "intended_output_paths": []
+          },
+          "options": {},
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "decision-required",
+            "unrelated_dirty_paths": [
+              "notes.md"
+            ],
+            "intended_dirty_overlaps": [],
+            "write_authorized": false
+          },
+          "passed": true
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "case-insensitive",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/Foo.ts"
+            ],
+            "intended_output_paths": [
+              "src/foo.ts"
+            ]
+          },
+          "options": {
+            "caseInsensitive": true
+          },
+          "expected_write_authorized": false,
+          "actual": {
+            "status": "dirty-disjoint",
+            "unrelated_dirty_paths": [
+              "src/Foo.ts"
+            ],
+            "intended_dirty_overlaps": [],
+            "write_authorized": true
+          },
+          "passed": false
+        },
+        {
+          "kind": "dirty-contract",
+          "id": "case-sensitive",
+          "input": {
+            "unrelated_dirty_paths": [
+              "src/Foo.ts"
+            ],
+            "intended_output_paths": [
+              "src/foo.ts"
+            ]
+          },
+          "options": {
+            "caseInsensitive": false
+          },
+          "expected_write_authorized": true,
+          "actual": {
+            "status": "dirty-disjoint",
+            "unrelated_dirty_paths": [
+              "src/Foo.ts"
+            ],
+            "intended_dirty_overlaps": [],
+            "write_authorized": true
+          },
+          "passed": true
+        }
+      ],
+      "passed": 20,
+      "total": 30
+    }
+  ]
+}

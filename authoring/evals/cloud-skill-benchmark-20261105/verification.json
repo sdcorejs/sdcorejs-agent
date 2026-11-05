@@ -1,0 +1,109 @@
+{
+  "captured_at": "2026-11-05T11:56:12.285081+00:00",
+  "tested_source_revision": "be1c4963fa2e0f5b32d9523d9601b3dc634db289",
+  "scope": "Reviewed benchmark evidence and local cloud tooling; no canonical/public source edit",
+  "checks": [
+    {
+      "command": "npm run test:e2e:skill-authoring",
+      "result": "PASS: 6 tests",
+      "local_log": "authoring-tests.log",
+      "local_log_sha256": "f140fd7099c1c209e107e751aec82e0a85e866f08790032081552d59f077fbdf"
+    },
+    {
+      "command": "npm run check:skills",
+      "result": "PASS: 25 skills and all mirrors match",
+      "local_log": "check-skills.log",
+      "local_log_sha256": "b9b8a89457d5633010831c4f44b407758c0c8f9f2eb264941c19aa5ef44a4a09"
+    },
+    {
+      "command": "npm run check:text-hygiene",
+      "result": "PASS",
+      "local_log": "check-text.log",
+      "local_log_sha256": "40b4f4e6206c78e452bf29383777d76d0d8cb591c29e53a9a689c6f9b97c6b08"
+    },
+    {
+      "command": "npm run check:executable-references",
+      "result": "PASS for classified references; cleanup Python syntax NOT RUN",
+      "local_log": "check-references.log",
+      "local_log_sha256": "0ef5a37bc13c50bb2b1dff740b12605f4c08aa78af24cc6fbf76d1ae93c3c82b"
+    },
+    {
+      "command": "SDCOREJS_CLEANUP_PYTHON=<existing-python3> npm run check:executable-references",
+      "result": "PASS including in-memory Python compilation; native cleanup NOT RUN",
+      "local_log": "check-references-python.log",
+      "local_log_sha256": "58ca802701b7ba54371a4f91ea38cc4b8f8991da72e5563ae80a6617d5364559"
+    },
+    {
+      "command": "python test_aggregate_adapter.py",
+      "result": "PASS: 4 controls",
+      "local_log": "adapter-tests.log",
+      "local_log_sha256": "80144f3bf12d071a1497821467ab02765712cb11da3f547a5e2b5cf79f938e9a"
+    }
+  ],
+  "deterministic_replay": {
+    "command": "node tools/deterministic.mjs <absolute-benchmark-workspace>",
+    "result": "PASS: byte-identical deterministic-results.json"
+  },
+  "installed_skills": {
+    "result": "PASS: 3/3 official OpenAI structural validation; all 37 recorded installed file hashes still match",
+    "limitation": "Not semantic skill correctness or persistence across environments"
+  },
+  "grading_integrity": {
+    "records": 24,
+    "result": "PASS: original grader hashes match published bytes"
+  },
+  "independent_evidence_review": {
+    "agent": "/root/benchmark_grade_workflow",
+    "finding": "README originally attributed repeated disjoint-work consent to the baseline helper; actual helper results authorize disjoint work and the contradiction is in baseline prose.",
+    "disposition": "Corrected and independently rechecked; no remaining blocker in the bounded evidence review.",
+    "verified": [
+      "24 grading hashes/mappings",
+      "frozen prompts and assertions",
+      "both Git archive identities",
+      "150 manifest entries",
+      "aggregate results reproduced except timestamp",
+      "no credential-like content or remote HTML assets"
+    ],
+    "limits": [
+      "Reviewer did not replay native jobs or browser checks",
+      "Self-reported actions do not prove unrestricted live behavior"
+    ]
+  },
+  "viewer": {
+    "result": "PASS: bounded browser render smoke",
+    "artifact_sha256": "b36f4635c66e2ee8dde0883622c616470752624cdda69eeb2da810d90d6fb9ee",
+    "browser": "Chromium 155.0.8059.79",
+    "playwright_cli": "0.1.23",
+    "observed": [
+      "24 outputs",
+      "exact prompt visible",
+      "Candidate and Baseline 100% with all six evals",
+      "two repetitions per eval/configuration",
+      "no time/token metric rows"
+    ],
+    "console": {
+      "errors": 1,
+      "warnings": 0,
+      "explanation": "Expected /api/feedback 404 from plain static server; client catches absence and falls back locally"
+    },
+    "harness_error": "One stale element reference after navigation; refreshed reference succeeded. No product defect inferred.",
+    "feedback_submitted": false,
+    "session_closed": true,
+    "local_server_stopped": true,
+    "not_tested": [
+      "User review/feedback submission",
+      "Target-project UI",
+      "Public hosting"
+    ]
+  },
+  "not_run": [
+    "Claude CLI trigger optimizer (CLI unavailable)",
+    "Historical ten-scenario credentialed-provider matrix",
+    "All-25-skill or no-skill comparison",
+    "Fresh target-project implementation",
+    "Cross-session voice persistence",
+    "Full composite/native-cleanup/golden builds"
+  ],
+  "prior_evidence": "Core 760/760 belongs to prior repair at the frozen candidate revision; it was not rerun here.",
+  "authority": "Latest user request to install recommendations and run benchmark; original authorization to commit/push/update review PR. No document review or merge approval fabricated."
+}

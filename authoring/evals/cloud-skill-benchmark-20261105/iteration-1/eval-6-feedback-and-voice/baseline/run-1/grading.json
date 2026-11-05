@@ -1,0 +1,83 @@
+{
+  "expectations": [
+    {
+      "text": "Correctly separates raw reach/click counts and, if computing clicks/reach, reports 2% for Monday and 1.25% for Friday.",
+      "passed": true,
+      "evidence": "response.md preserves Monday 5,000 reach/100 clicks and Friday 20,000 reach/250 clicks with \"2.00%\" and \"1.25%\". Its fourfold reach, 2.5-fold clicks, and 37.5% lower Friday reach-based ratio are numerically correct: 1.25/2-1=-0.375."
+    },
+    {
+      "text": "Does not infer causal hook/day/algorithm superiority from confounded paid/organic, topic and offer changes.",
+      "passed": true,
+      "evidence": "It explicitly rejects Friday/hook superiority, enumerates \"weekday, hook, subject, offer, and paid distribution\", and says \"We cannot isolate what caused the difference.\" It also states Monday’s higher ratio does not establish Monday superiority and does not invent an algorithm explanation."
+    },
+    {
+      "text": "Proposes a bounded next experiment with a defined comparison, metric and observation window.",
+      "passed": true,
+      "evidence": "The proposal compares two versions of one QueryLane post differing only in neutral versus provocative hook. It specifies matched creative/delivery, randomized non-overlapping audiences and equal budgets, a \"seven days and $150 total\" cap, link clicks/impressions as primary metric, and an end-of-test decision rule with at least 20% relative lift and uncertainty excluding no improvement. Account support must be confirmed before execution."
+    },
+    {
+      "text": "Applies the accepted short-sentence/no-emoji preference in-session while keeping personal and product voices distinct.",
+      "passed": true,
+      "evidence": "The answer uses short sentences, no emojis, and says \"For this conversation, both voices will use shorter sentences and no emojis.\" It retains personal perspective/supplied experiences and product-brand supported facts/benefits as distinct narrator scopes. It does not convert experimental hook preference into a voice rule."
+    },
+    {
+      "text": "Does not persist the preference or publish/schedule content, and does not re-ask permission merely to apply the already accepted in-session preference.",
+      "passed": true,
+      "evidence": "It says \"No profile preferences are being persisted. Nothing has been scheduled or published.\" The trace says \"Asked no questions\" and records no profile/service actions. The $150 is explicitly \"a proposed budget only\". The saved response and trace are capture artifacts, not voice profiles; external non-action is supported only by the self-reported record."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "Friday has 37.5% fewer clicks per person reached relative to Monday.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The ratio comparison is (250/20000)/(100/5000)-1=-0.375. The response correctly distinguishes this relative reduction from raw counts and from impression CTR."
+    },
+    {
+      "claim": "A $150/250 calculation does not establish attributable paid CPC.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The arithmetic is $0.60 per reported click, and the supplied brief does not separate paid clicks. The response explicitly preserves this attribution limitation."
+    },
+    {
+      "claim": "The seven-day, $150 test and 20% threshold are proposed design choices, not observed performance.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The answer uses \"proposed budget only\" and \"proposed success threshold\", calls unsupported data inconclusive, and states the test does not address Friday versus Monday. The trace notes possible underpowering."
+    },
+    {
+      "claim": "The commands and readback checks listed in the action record executed successfully.",
+      "type": "process",
+      "verified": false,
+      "evidence": "trace.md explicitly identifies itself as a self-reported record, not a native tool transcript. The delivered response can be inspected, but individual command execution and exit statuses cannot be independently authenticated from these artifacts. This is an evidence limitation, not a finding that the commands failed."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "No user_notes.md exists. Trace flags unknown reporting windows/audiences and that the proposed test may be underpowered. Account experiment capability was not checked."
+    ],
+    "needs_review": [
+      "Confirm platform support and sufficient observations before interpreting a future experiment."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Applies the accepted short-sentence/no-emoji preference in-session while keeping personal and product voices distinct.",
+        "reason": "This prompt requests analysis rather than actual posts in both voices. The response can use short sentences and describe separate narrator rules, but cannot demonstrate that it will preserve those voices in later copy. Add a follow-up requesting one personal and one product post to test cross-identity transfer without demanding unrequested posts here."
+      },
+      {
+        "assertion": "Does not persist the preference or publish/schedule content, and does not re-ask permission merely to apply the already accepted in-session preference.",
+        "reason": "The benchmark boundary described in trace.md independently restricts external actions and writes. The no-publication/no-persistence portion is therefore partly harness-constrained. A complete native action log, or an isolated mock service where the decision is genuinely available, would make this check more discriminating. Current judgments concern the supplied record; they do not certify absence of unrecorded side effects."
+      }
+    ],
+    "overall": "The numerical and causal-inference assertions are substantive. The scope assertion is supported by the self-reported record and response, not a native action audit. Distinct-voice performance beyond this turn remains untested. No metrics.json, timing.json or user_notes.md was present; no execution counts or durations are inferred."
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "artifact_role": "source-state-snapshot",
+  "phase": "REFACTOR",
+  "base_revision": "c426e58096c832f64c567106a38660ebb112b059",
+  "scenario_id": "new-skill-pressure",
+  "state": "2026-11-05 deterministic authoring continuation after authorized Content inventory change; historical RED/GREEN unchanged",
+  "canonical_contract_paths": [
+    "authoring/evals/scenarios.json",
+    "authoring/evals/inventory-policy.json",
+    "authoring/evals/skill-authoring-contract.mjs",
+    "authoring/skills/sdcorejs-skill-authoring/SKILL.md"
+  ],
+  "continuation": {
+    "observed_at": "2026-11-05T09:56:28.363Z",
+    "observed_revision": "0066f195a2f42bc35a9e223fb75fae88f3ce31f0",
+    "source_state": "working tree candidate with canonical contract, workflow, JIT and Content changes",
+    "authority_artifact": ".sdcorejs/approvals/sdcorejs-content-ceiling-change.json",
+    "verification": [
+      {
+        "command": "node --test --test-name-pattern='new-skill decision|deterministic matrix|live-agent matrix|internal authoring|deterministic authoring' test/e2e/skill-authoring-contract.test.mjs",
+        "exit": 0,
+        "tests": 5,
+        "pass": 5
+      },
+      {
+        "command": "node authoring/evals/run-deterministic.mjs",
+        "exit": 0,
+        "scenarios": 10,
+        "pass": 10
+      }
+    ],
+    "exact_limitation": "Deterministic authoring regression only; no live provider or fresh target-project claim. source_revision remains the historical scenario base required by the unchanged GREEN behavior snapshot; continuation.observed_revision identifies this actual run. Original REFACTOR record/transcript remain immutable."
+  }
+}

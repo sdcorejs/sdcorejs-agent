@@ -1,0 +1,50 @@
+
+> sdcorejs-agent@0.8.0 test:e2e:skill-audit
+> node --test test/e2e/audit-contract-regression.test.mjs test/e2e/audit-template-producers.test.mjs test/e2e/audit-workflow-behavior.test.mjs test/e2e/content-skill.test.mjs
+
+✔ F-001 spec: literal published metadata survives hash, serialization, parse and verify (12.649707ms)
+✔ F-001 spec: alias-free control validates and protected body/owner/parent hashes reject tampering (5.493865ms)
+✔ F-001 spec: mismatched compatibility self alias rejects (6.426946ms)
+✔ F-001 plan: literal published metadata survives hash, serialization, parse and verify (5.438834ms)
+✔ F-001 plan: alias-free control validates and protected body/owner/parent hashes reject tampering (4.764175ms)
+✔ F-001 plan: mismatched compatibility self alias rejects (1.886617ms)
+✔ F-002 control: actual read-only contract and dispatch validation pass, topology permits fan-out without per-agent cwd (4.385141ms)
+✔ F-002 read-only compiler output passes dispatch validation with no invented plan identity or writable paths (1.138964ms)
+✔ F-002 negative controls: read-only writes, identity confusion, Git and artifact mutations remain denied (0.993616ms)
+✔ F-003 first authorized flaky repair attempt does not need post-fix passes (1.025448ms)
+✔ F-003 completion requires three consecutive post-fix passes and defaults do not change diagnose-only (0.406157ms)
+✔ F-003 bounded direct authorization supports a fix without inventing an approved plan (0.266655ms)
+✔ F-003 negative controls: absent, stale, wrong-owner, unbounded and out-of-scope direct authority are rejected (0.327493ms)
+✔ F-003 negative controls: valid plan does not bypass stale evidence, wrong owner, traversal or unverified root (0.164319ms)
+✔ F-004 env-setup-write-approved: integration ownership or initialization alone cannot grant authority (0.149238ms)
+✔ F-004 env-setup-write-approved: exact action authorization works only for allowed roles (0.131873ms)
+✔ F-004 persona-write-approved: integration ownership or initialization alone cannot grant authority (0.778764ms)
+✔ F-004 persona-write-approved: exact action authorization works only for allowed roles (0.091172ms)
+✔ F-004 memories-write-approved: integration ownership or initialization alone cannot grant authority (0.09089ms)
+✔ F-004 memories-write-approved: exact action authorization works only for allowed roles (0.034849ms)
+✔ F-004 summary initialization and convention policy remain usable without authorizing other actions (0.136143ms)
+✔ F-012 related memories are selectively discoverable as advisory; explicit current source remains evidence (37.090314ms)
+✔ F-012 no relevant relationship or request does not select all memories by recency (34.248127ms)
+✔ review regression: malformed retry counts and missing post-fix pass never prove completion (0.421778ms)
+✔ review regression: direct fix completion preserves authorized baseline and binds post-fix evidence (0.311574ms)
+✔ F-006: recipe basic config and golden producer agree, i18n is opt-in (46.006926ms)
+✔ F-007: literal plan verification block reaches executor and rejects a flat impostor (13.254922ms)
+✔ F-005/009: bounded same-change flow preserves dirty baseline and unrelated edits; risk growth escalates (22.794978ms)
+✔ F-010: one Git/Ship table distinguishes local, notes, remote draft and ready PR (0.640724ms)
+✔ F-010 negative controls: missing consent, stale/dirty evidence and non-waivable hygiene block all Git mutations (1.212578ms)
+✔ review regression: dirty parent/glob overlap and malformed Git flags fail closed (0.775858ms)
+✔ parallel preflight shares disjoint dirty policy and preserves overlap denial (3.234484ms)
+✔ F-011: identical ticket IDs preserve summarize, comments and requirement output intent (1.03524ms)
+✔ content positive and paired negative routing uses the existing pack runner (53.094595ms)
+✔ reference selection is orthogonal, no-match is explicit, and every selected ref has provenance (5.498348ms)
+✔ claim review distinguishes supplied experience, supported proof and unsupported marketing (0.719315ms)
+✔ Content registry is editorial and cannot enable engineering gates or publication implicitly (2.759238ms)
+✔ Content inventory increase binds the actual 24-to-25 decision and user authority (12.824831ms)
+ℹ tests 38
+ℹ suites 0
+ℹ pass 38
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 297.587809

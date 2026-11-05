@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "channels": {
+    "facebook": "channels/facebook.md",
+    "tiktok": "channels/tiktok.md"
+  },
+  "channel_fallback": "channels/general.md",
+  "formats": {
+    "text-post": "formats/text-post.md",
+    "carousel": "formats/carousel.md",
+    "short-video": "formats/short-video.md",
+    "long-form": "formats/long-form.md"
+  },
+  "domains": {
+    "tech": "domains/tech.md",
+    "marketing-business": "domains/marketing-business.md",
+    "travel-lifestyle": "domains/travel-lifestyle.md"
+  },
+  "actions": {
+    "brief": [
+      "core/brief.md"
+    ],
+    "strategy": [
+      "core/brief.md",
+      "workflows/strategy-and-calendar.md"
+    ],
+    "research": [
+      "core/research-and-claims.md"
+    ],
+    "draft": [],
+    "edit": [],
+    "repurpose": [
+      "workflows/repurpose.md"
+    ],
+    "review": [
+      "core/editorial-review.md"
+    ],
+    "feedback": [
+      "core/learning-from-results.md"
+    ]
+  }
+}

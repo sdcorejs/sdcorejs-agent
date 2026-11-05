@@ -142,6 +142,7 @@ test('one successful flaky retry is not proof of a fix', () => {
         consecutive_post_fix_passes: 1,
       },
     }),
+    { phase: 'completion' },
   );
   assert.equal(result.write_authorized, false);
   assert.match(result.blockers.join(' '), /one flaky retry pass/iu);

@@ -1,0 +1,65 @@
+✔ debug artifact links current evidence, environment, plan, and owner identity (2.156782ms)
+✔ diagnose-only requests remain read-only without a plan step (0.447197ms)
+✔ stale test evidence is detected against source revision and fingerprint (1.19596ms)
+✔ wrong repository owner and cross-root plan scope block write handoff (0.844107ms)
+✔ repository-relative traversal cannot inherit approved debug write scope (1.170419ms)
+✔ unverified hypotheses cannot authorize a fix (1.231848ms)
+✔ one successful flaky retry is not proof of a fix (0.500648ms)
+✔ debug redaction removes secrets, bearer tokens, and email PII (1.098095ms)
+✔ skill invokes a distributed deterministic protocol validator (9.947723ms)
+✔ long protocol reference exposes a top-of-file contents map (1.32362ms)
+✔ protocol v2 validates distinct approved-plan and read-only contracts (2.050458ms)
+✔ read-only dispatch envelopes use request identity without approved-plan fields (0.829877ms)
+✔ dispatch envelope preserves approved artifact and repository identity (6.538671ms)
+✔ worker authority denies cross-root, read-only writes, Git mutations, and approved artifact mutation (1.624125ms)
+✔ approved-plan contracts require complete frozen-contract identity (0.359477ms)
+✔ contract revisions and hash mismatches stale affected results and evidence (0.282771ms)
+✔ write dispatch requires working-tree, workspace, base, result, verification, and final-tail identity (2.741224ms)
+✔ working-tree preflight fails closed on branch, HEAD, dirty, untracked, and output overlap (0.764472ms)
+✔ working-tree preflight rejects parent-child output overlap in both directions (0.436348ms)
+✔ topology classification supports two expensive units, heterogeneous units, read-only audits, DAGs, and resource conflicts (3.332999ms)
+✔ topology separates repository-local paths but detects generated, shared-config, and gitlink conflicts (0.527975ms)
+✔ classification catches parent/child globs and case-only ownership conflicts (0.156543ms)
+✔ DAG waves do not force five roles and defer cross-stack execution until integration (0.314512ms)
+✔ execute-plan and parallel protocol agree on dependency waves (0.524688ms)
+✔ compact plan compilation emits a deterministic opportunity report (1.699281ms)
+✔ runtime capability negotiation demotes or fails closed safely (0.418906ms)
+✔ workspace validation rejects wrong cwd, nesting, dirty integration, stale base, and non-descendant result (0.293429ms)
+✔ workspace validation rejects assignments that contain an existing worktree (0.106071ms)
+✔ result validation rejects crashes, missing results, non-zero claimed success, stale refs, and read-only writes (0.322998ms)
+✔ path validator catches overlap, case-only conflict, rename, untracked files, lockfiles, formatter spill, and fake reports (17.860034ms)
+✔ path validator rejects symlink escape, new files below symlink, and nested repositories (3.667971ms)
+✔ path validator rejects an in-repository symlink that escapes unit ownership (2.819926ms)
+✔ deterministic fan-in honors order, probes, blockers, conflicts, atomicity, and global failure (1.771616ms)
+✔ failure policy retries transient failures but not deterministic violations (0.632826ms)
+✔ unit policy handles timeout, crash, fail-fast, and best-effort result states (10.926086ms)
+✔ unit policy proves bounded overlap only with explicit concurrency support (141.605244ms)
+✔ fail-fast distinguishes in-flight work from work that never started (19.851856ms)
+✔ repairs stay with the original owner/workspace and invalidate evidence (0.919145ms)
+✔ evidence is bound to command, cwd, result identity, output digest, and exact state (0.989324ms)
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: will change to "main" in Git 3.0. To configure the initial branch name
+hint: to use in all of your new repositories, which will suppress this warning,
+hint: call:
+hint:
+hint: 	git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint: 	git branch -m <name>
+hint:
+hint: Disable this message with "git config set advice.defaultBranchName false"
+Preparing worktree (new branch 'unit/a')
+Preparing worktree (new branch 'unit/b')
+Preparing worktree (new branch 'keep/me')
+✔ temporary Git worktrees use one base, distinct result commits, ancestry checks, and safe cleanup (126.40103ms)
+✔ temporary Git fan-in exposes deterministic cherry-pick conflicts (101.880441ms)
+ℹ tests 41
+ℹ suites 0
+ℹ pass 41
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 621.655439

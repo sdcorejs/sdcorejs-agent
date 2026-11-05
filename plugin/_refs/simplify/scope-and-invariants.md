@@ -64,6 +64,10 @@ Adjacent untouched code may change only when compilation or a local invariant
 requires it. Record the path, hunk, reason, and verification impact. Never use
 adjacency as permission for opportunistic cleanup.
 
+Same-change authorized dirty hunks are valid input after a green baseline and
+pre-operation recovery capture. Unknown overlapping hunks require a scope
+decision. Preserve unrelated disjoint edits; rollback only this operation.
+
 ## Execution limits
 
 ```yaml

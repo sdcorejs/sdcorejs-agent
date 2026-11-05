@@ -6,6 +6,9 @@ required-actions: artifact.read, artifact.write, context.pass, verification.run,
 
 # Git
 
+Read `_refs/shared/git-disposition.md` and `_refs/shared/session-authority.md`
+before artifact handoff. Keep acceptance disposition separate from hygiene.
+
 ## Purpose
 
 One skill for Git artifacts:
@@ -56,18 +59,16 @@ intent such as ship, ready, done, push, merge, release, create PR, open PR,
 submit PR, or ready to merge and current ship evidence is missing or stale for
 the current `HEAD` or diff.
 
-`sdcorejs-git` may proceed only when at least one condition is true:
-
-- the user explicitly requested an artifact-only action, such as "commit these docs" or "write changelog";
-- `sdcorejs-ship (verify-before-done mode)` and `sdcorejs-ship (branch-ready mode)` have already passed for the current `HEAD` or diff;
-- the caller explicitly delegated from `sdcorejs-ship` after passing those gates;
-- the user explicitly accepted a docs-only, prompt-only, chore-only, or unverified artifact with the verification caveat recorded.
+Use the shared Git disposition table for every artifact action. Artifact-only
+intent is authorization for that action, not an exemption from read-only hygiene
+or artifact closure. Verified delivery consumes current Ship evidence; explicit
+acceptance deferral permits only the table's local/draft actions with a risk note.
 
 When `ship_context` is available, consume it before artifact creation. Git
 handoff is allowed only when `ship_context.git_handoff_allowed` is true, the
 `associated_HEAD_or_diff` matches the current `HEAD` or dirty diff,
 `writes_after_branch_ready` is empty, and `branch_ready_evidence` is current.
-Missing, blocked, deferred, or stale convergence always refuses handoff; so does unreceipted, vacuous, or plan-mismatched convergence.
+For governed-plan delivery, missing, blocked, deferred, or stale convergence always refuses handoff; so does unreceipted, vacuous, or plan-mismatched convergence.
 When cleanup occurred, pass the exact runtime `cleanup`, mapped `evidence`, and
 `branch_ready_cleanup_receipt_ids` to repository closure. Apply and restore have
 separate sealed event identities; stale or unverified cleanup blocks staging.
@@ -377,12 +378,13 @@ gh pr view --json number,url,title,baseRefName,headRefName
 gh pr list --head <current-branch> --json number,url,title,baseRefName,headRefName
 ```
 
-12. If an existing PR exists, ask:
+12. If an existing PR exists and the session already requested its update,
+    update it within scope without another confirmation. Otherwise ask:
     `1. Update existing PR body` / `2. Create a new PR only if the platform allows and user confirms` / `3. Stop`.
 13. Push only the current branch if needed, using the explicit branch name.
 14. Write the PR body to a UTF-8 temporary file owned by the current run. Create
     with `gh pr create --body-file <body-file>` or update with the equivalent
-    body-file option only after confirmation when there is an existing PR or
+    body-file option using existing scoped session authority, or after resolving an unapproved existing PR action or
     ambiguity. Remove only that exact temporary file afterward.
 
 Never use unqualified two-dot or three-dot HEAD ranges in PR mode. Bind PR
@@ -442,7 +444,8 @@ update release notes:
 - redact suspected secrets from commit bodies or diff-derived notes;
 - classify Conventional Commits into Keep a Changelog sections;
 - suggest the semver bump and explain the reason in chat;
-- ask before creating a missing `CHANGELOG.md` or writing a versioned release entry;
+- create a missing `CHANGELOG.md` when the user explicitly requested it;
+  versioned release operations still require their matching authorization;
 - surface untyped commits, breaking changes, and security-adjacent fixes for human review.
 
 Do not tag, push tags, bump versions, create GitHub releases, or create release

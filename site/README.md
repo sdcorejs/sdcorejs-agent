@@ -35,7 +35,7 @@ The paths below follow either locale prefix:
 - `/docs/quickstart/`: source-backed installation paths and smoke prompts.
 - `/docs/workflows/`: choose the owner from the problem and required output.
 - `/docs/recipes/`: feature, UI, debug and AI-agent examples.
-- `/skills/`: searchable/filterable catalog and 24 public skill references.
+- `/skills/`: searchable/filterable catalog and 25 public skill references.
 - `/angular/`: Angular adoption guide.
 - `/docs/artifacts/`: approval, ownership, artifact layout and evidence layers.
 - `/docs/troubleshooting/`: installation/context/gate/environment diagnosis.
@@ -59,7 +59,7 @@ the base or locale to authored links. Astro's Markdown processor stays in place.
 `src/data/navigation.ts` owns navigation and the pinned source snapshot.
 `src/data/catalog.ts` reads canonical skill names/paths and pairs them with
 Vietnamese notes; `catalog-en.ts` holds English input/output/boundary/prompt
-notes for the same 24 skills. Inventory drift fails the build. `home.ts` holds
+notes for the same 25 skills. Inventory drift fails the build. `home.ts` holds
 localized overview content, and `i18n.ts` holds shared UI and state messages.
 Runtime skills and generated mirrors are read-only inputs. Updating a revision
 requires factual review of claims, commands and boundaries in both languages;
@@ -69,7 +69,7 @@ remain clearly distinguished from verified releases.
 The current working-tree catalog includes the approved `sdcorejs-cleanup`
 utility as an unpublished candidate. Its canonical path does not exist in the
 documented pinned revision, so its page shows candidate status and the local
-source path without a GitHub blob link. The other 23 skill pages retain their
+source path without a GitHub blob link. The other 24 skill pages retain their
 pinned source links. `hasPublishedSource` checks local Git objects at build
 time; publishing the candidate remains a separately authorized Git delivery.
 

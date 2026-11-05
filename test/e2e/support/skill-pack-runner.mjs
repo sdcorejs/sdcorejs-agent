@@ -120,7 +120,25 @@ const SKILL_HINTS = [
   { skill: 'sdcorejs-debug', words: ['debug', 'root-cause', 'bug', 'repro', 'failing', 'failure', 'failed', 'fail', 'error', 'wrong', 'flaky', 'ci-only', 'prod-only', 'runtime', 'stack', 'trace', 'investigate', 'resolve', 'slow', 'broken', 'throws'] }
 ];
 
+function hasContentIntent(prompt) {
+  const text = normalizePromptText(prompt);
+  const channel = /\b(facebook|tiktok|instagram|linkedin|youtube|social)\b/u.test(text);
+  // Classify the requested output, not technical vocabulary in its topic/source.
+  const destination = /\brepurpose\b/u.test(text) ? text.split(/\binto\b/u).at(-1) : text;
+  const request = destination.split(/\b(?:about|explaining|covering|discussing|why|how|on|for|ve)\b/u, 1)[0];
+  const editorial = /\b(caption|post|posts|editorial|repurpose|storyboard|video script|marketing video|content strategy)\b/u.exec(request);
+  const software = /\b(?:prd|acceptance criteria|api documentation|api docs|tests|code|components?|endpoints?|functions?|modules?)\b/u.exec(request);
+  const action = /\b(?:implement|debug|refactor)\b/u.exec(request);
+  const softwareAction = (action && action.index < (editorial?.index ?? Infinity)) ||
+    (/\b(?:build|create|generate|develop|implement|fix)\b/u.test(request) && software !== null);
+  const softwareOutput = (software && software.index < (editorial?.index ?? Infinity)) ||
+    /\b(?:post (?:endpoint|route)|(?:post|caption|video script) (?:(?:preview|generator|editing) )?(?:editor|scheduler|component|generator))\b/u.test(request);
+  return !softwareAction && !softwareOutput &&
+    ((channel && editorial !== null) || /\b(personal brand|brand voice|content strategy)\b/u.test(request));
+}
+
 const PRIORITY_RULES = [
+  { skill: 'sdcorejs-content', when: ({prompt}) => hasContentIntent(prompt) },
   {
     // Task-breakdown mode: new role tasks or tickets from PRDs, stories, a sprint
     // or a board. Recording the requirement of one existing TASKID stays with
@@ -450,6 +468,9 @@ export function dispatchPrompt(pack, prompt) {
         (
           skill.name === 'sdcorejs-ai-agent'
           && !hasConfirmedAiAgentImplementationIntent(prompt.toLowerCase(), promptTokens)
+        ) ||
+        (
+          skill.name === 'sdcorejs-content' && !hasContentIntent(prompt)
         ) ||
         (
           skill.name === 'sdcorejs-cleanup'

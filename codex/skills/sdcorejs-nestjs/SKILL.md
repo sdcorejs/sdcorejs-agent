@@ -10,6 +10,9 @@ description: NestJS code executor for approved/direct backend work with confirme
 
 # SDCoreJS NestJS Executor
 
+Read `../_refs/shared/session-authority.md` before classification or any approval/finish
+transition. Reuse scoped session authority; preserve unresolved risk decisions.
+
 ## Shared protocols
 
 Before execution:
@@ -28,6 +31,10 @@ Before execution:
    `../_refs/nestjs/profile-contract.json`, and
    `../_refs/nestjs/core-catalog.md`.
 7. Before authoring a helper, read `../_refs/shared/sdcorejs-utils.md`.
+
+For bounded low-risk existing-code fixes, use the shared fast-fix policy with
+only affected references, installed dependencies and current tests. Do not infer
+a generation profile or auth/tenant scope from a small request.
 
 ## Resolve the generation contract once
 
@@ -59,9 +66,10 @@ The deterministic golden generator is
 `../_refs/nestjs/generator/generate-project.mjs`. It proves the canonical sample
 contract; packs explain how to generalize that contract to the approved domain.
 
-## Mandatory TDD and safety gates
+## Verification strategy and safety gates
 
-Before each behavior-producing change, invoke `sdcorejs-test (tdd mode)`:
+For changed behavior, invoke `sdcorejs-test` with the agreed TDD/post-hoc
+strategy and meaningful risk coverage. When TDD is selected:
 
 1. Add a focused test and observe the intended RED failure.
 2. Add the minimum implementation and observe GREEN.
@@ -76,8 +84,7 @@ so would make the route surface implicit.
 
 Create a progress checklist that includes the finishing steps (tests,
 optional behavior-preserving simplification, review, code-documentation, technical-doc, user-guide).
-Present the consolidated finish
-gate from `../_refs/shared/finish-gate.md`, then run
+Apply the mandatory finish assessment from `../_refs/shared/finish-gate.md`, then run
 `sdcorejs-documentation (documentation-gate mode)` with
 `../_refs/documentation/gate.md`. Load saved user-guide and technical-doc preferences
 from `.sdcorejs/documentation/preferences.md`; code-documentation remains automatic
@@ -88,7 +95,9 @@ After the selected test/review/documentation work, apply
 `../_refs/orchestration/tail/auto-task-tracker.md` only when the sequential
 workflow or integration owner is authorized to update the durable backlog.
 Hand durable project knowledge to
-`sdcorejs-explore (memories mode)` when relevant. Always finish with
+`sdcorejs-explore (memories-readonly)` when relevant; persistence needs action
+authority. Honor Defer by stopping the remaining tail without completion claims.
+Review-only never authorizes repair. Otherwise finish with
 `sdcorejs-ship (verify-before-done mode)` followed by
 `sdcorejs-ship (branch-ready mode)`. Do not invoke `sdcorejs-git` until both
 gates pass or a verification deferral is explicitly recorded.

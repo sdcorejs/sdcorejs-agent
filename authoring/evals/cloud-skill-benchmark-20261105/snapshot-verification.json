@@ -1,0 +1,18 @@
+[
+  {
+    "snapshot": "pack-amber",
+    "revision": "97cc700ef7201a3074c57aedff89cbe131f9ee6f",
+    "files_verified": 2061,
+    "archive_sha256": "0e875d1847c7b73df13d52a994cf5aa18a4c2a8639c61f1cd26411f006021023",
+    "file_manifest_sha256": "841ab41d41bb372c24f34c0b06677f6e4a2896ee1627a247fe68ad9a682a0229",
+    "modified_source_files": []
+  },
+  {
+    "snapshot": "pack-cobalt",
+    "revision": "be1c4963fa2e0f5b32d9523d9601b3dc634db289",
+    "files_verified": 2086,
+    "archive_sha256": "36b9018128b3721c8b5ad61758d7d52da58158b3036d72e34192f06f20fae798",
+    "file_manifest_sha256": "d008b6d534993dc6cbd756f8e0e1058775a84dd9e65a2768ff4948edce3cb351",
+    "modified_source_files": []
+  }
+]

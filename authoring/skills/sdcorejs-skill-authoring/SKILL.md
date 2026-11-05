@@ -50,8 +50,11 @@ claims cannot replace them. Proposals are nonempty and cannot duplicate the
 inventory. Adding a trigger needs a canonical approved artifact resolved from
 the trusted loader and bound to actor, proposal scope, the current Git revision,
 and current inventory hash. A colocated JSON file and its caller-computed hash
-are not approval. The public count has ceiling 24;
-a boolean or owner instruction cannot override it.
+are not approval. The public count has ceiling 25, versioned in `authoring/evals/inventory-policy.json`;
+the approved Content addition is recorded against the pre-change inventory.
+Future additions still require exact scoped trigger/ceiling artifacts; a boolean
+or unrelated owner instruction cannot override the gate. Preserve historical
+records and append new continuations when canonical authoring sources change.
 
 ## RED-GREEN-REFACTOR
 

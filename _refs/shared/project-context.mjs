@@ -126,6 +126,7 @@ export async function assembleProjectContext({
         invalidated_sections: summaryResult.invalidatedSections,
       },
       related_artifacts: relatedArtifacts,
+      memory_policy: { authority: 'advisory', current_source_precedence: true },
       conventions,
       code_context: codeContext,
       current_evidence: {
@@ -692,6 +693,7 @@ async function findRelatedArtifacts(root, { requestScope, changeRef }) {
     docs: [],
     handoffs: [],
     tasks: [],
+    memories: [],
   };
   const base = path.join(root, '.sdcorejs');
   if (!(await exists(base))) return buckets;
@@ -735,12 +737,14 @@ async function findRelatedArtifacts(root, { requestScope, changeRef }) {
       (normalizedChangeRef === '' && tokens.length === 0) ||
       scopedMetadataMatch;
     if (!relevant) continue;
+    if (relative.startsWith('memories/') && !relationshipMatch && !scopedMetadataMatch) continue;
     const repoPath = `.sdcorejs/${normalizeRelativePath(relative)}`;
     if (relative.startsWith('specs/')) buckets.specs.push(repoPath);
     else if (relative.startsWith('plans/')) buckets.plans.push(repoPath);
     else if (relative.startsWith('docs/')) buckets.docs.push(repoPath);
     else if (relative.startsWith('handoffs/')) buckets.handoffs.push(repoPath);
     else if (relative.startsWith('tasks/')) buckets.tasks.push(repoPath);
+    else if (relative.startsWith('memories/')) buckets.memories.push(repoPath);
   }
   return buckets;
 }

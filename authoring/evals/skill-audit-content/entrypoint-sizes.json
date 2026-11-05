@@ -1,0 +1,229 @@
+{
+  "measurement": "UTF-8 source bytes and lines, not tokens or actual runtime context",
+  "skills": [
+    {
+      "path": "skills/orchestration/documentation.md",
+      "baseline_bytes": 14400,
+      "baseline_lines": 223,
+      "candidate_bytes": 14699,
+      "candidate_lines": 226,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "F-011 intent routing and gate corrected. Language-specific code-documentation extraction deferred; no behavioral defect reproduced there."
+    },
+    {
+      "path": "skills/orchestration/parallel-dispatch.md",
+      "baseline_bytes": 15945,
+      "baseline_lines": 306,
+      "candidate_bytes": 16331,
+      "candidate_lines": 310,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "F-002 read-only compiler plus paired root/glob dirty-overlap controls. Existing worker/result ownership retained."
+    },
+    {
+      "path": "skills/orchestration/repair-loop.md",
+      "baseline_bytes": 8415,
+      "baseline_lines": 112,
+      "candidate_bytes": 8582,
+      "candidate_lines": 115,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "Session authority carried forward. Host-adapter/receipt coverage remains a source-risk; no production host defect claimed."
+    },
+    {
+      "path": "skills/orchestration/subagent-driven-development.md",
+      "baseline_bytes": 7761,
+      "baseline_lines": 163,
+      "candidate_bytes": 7761,
+      "candidate_lines": 163,
+      "disposition": "Retained: no confirmed need for entrypoint rewrite",
+      "assessment": "Retained independent review/owner boundaries. Reviewer-count and concurrency overhead tuning deferred without comparative quality evidence."
+    },
+    {
+      "path": "skills/orchestration/using-skills.md",
+      "baseline_bytes": 7454,
+      "baseline_lines": 149,
+      "candidate_bytes": 7751,
+      "candidate_lines": 153,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "Canonical session authority and Content intent routing; bounded fast-fix priority retained."
+    },
+    {
+      "path": "skills/shared/sdlc/01-brainstorming.md",
+      "baseline_bytes": 20728,
+      "baseline_lines": 423,
+      "candidate_bytes": 20728,
+      "candidate_lines": 423,
+      "disposition": "Retained: no confirmed need for entrypoint rewrite",
+      "assessment": "Retained current dialogue and reuse boundaries. Broad trigger/schema extraction deferred; no confirmed functional defect."
+    },
+    {
+      "path": "skills/shared/sdlc/02-spec.md",
+      "baseline_bytes": 19518,
+      "baseline_lines": 458,
+      "candidate_bytes": 19685,
+      "candidate_lines": 461,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "F-001 self alias verified through actual template. Scoped delegation provenance added; broad boilerplate/page heuristics deferred."
+    },
+    {
+      "path": "skills/shared/sdlc/03-plan.md",
+      "baseline_bytes": 24375,
+      "baseline_lines": 499,
+      "candidate_bytes": 18604,
+      "candidate_lines": 362,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "F-001/F-007; plan template extracted, nested commands canonical, dirty-disjoint and TDD/post-hoc aligned. Critique iteration redesign deferred."
+    },
+    {
+      "path": "skills/shared/sdlc/04-execute-plan.md",
+      "baseline_bytes": 25822,
+      "baseline_lines": 499,
+      "candidate_bytes": 26025,
+      "candidate_lines": 497,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "Nested verification commands and session delegation aligned. Read-only independent diagnosis remains allowed."
+    },
+    {
+      "path": "skills/shared/sdlc/architecture.md",
+      "baseline_bytes": 9415,
+      "baseline_lines": 210,
+      "candidate_bytes": 9415,
+      "candidate_lines": 210,
+      "disposition": "Retained: no confirmed need for entrypoint rewrite",
+      "assessment": "Retained conditional risk/boundary gate. Literal-example/schema consolidation is an opportunity, no demonstrated defect."
+    },
+    {
+      "path": "skills/shared/workflow/cleanup.md",
+      "baseline_bytes": 10881,
+      "baseline_lines": 180,
+      "candidate_bytes": 10881,
+      "candidate_lines": 180,
+      "disposition": "Retained: no confirmed need for entrypoint rewrite",
+      "assessment": "Retained exact authority, recovery and portability gates. No mutation defect confirmed; native platform acceptance unavailable here."
+    },
+    {
+      "path": "skills/shared/workflow/debug.md",
+      "baseline_bytes": 23374,
+      "baseline_lines": 469,
+      "candidate_bytes": 24690,
+      "candidate_lines": 488,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "F-003 attempt/completion split and bounded direct authority; current post-fix evidence remains mandatory."
+    },
+    {
+      "path": "skills/shared/workflow/explore.md",
+      "baseline_bytes": 24338,
+      "baseline_lines": 499,
+      "candidate_bytes": 18203,
+      "candidate_lines": 336,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "F-004 action-specific authority; F-012 selective advisory memories. Eight action references extracted; current evidence overrides memory."
+    },
+    {
+      "path": "skills/shared/workflow/git.md",
+      "baseline_bytes": 22722,
+      "baseline_lines": 495,
+      "candidate_bytes": 22917,
+      "candidate_lines": 498,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "F-010 shared disposition table and session commit/PR continuation; explicit staging and hygiene retained."
+    },
+    {
+      "path": "skills/shared/workflow/review.md",
+      "baseline_bytes": 28244,
+      "baseline_lines": 499,
+      "candidate_bytes": 24224,
+      "candidate_lines": 411,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "Output schema extracted; convergence loading conditional. Risk-to-assertion/naming/protection/completeness baseline preserved; statistical quality calibration deferred."
+    },
+    {
+      "path": "skills/shared/workflow/ship.md",
+      "baseline_bytes": 23502,
+      "baseline_lines": 498,
+      "candidate_bytes": 23768,
+      "candidate_lines": 497,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "F-010 distinguishes acceptance deferral from non-waivable hygiene. Release/dependency reference extraction deferred; no new release capabilities."
+    },
+    {
+      "path": "skills/shared/workflow/simplify.md",
+      "baseline_bytes": 8666,
+      "baseline_lines": 198,
+      "candidate_bytes": 8990,
+      "candidate_lines": 203,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "F-009 authorized same-change hunks with captured dirty baseline; unknown overlap and protected paths still stop writes."
+    },
+    {
+      "path": "skills/tracks/ai-agent/sdcorejs-ai-agent.md",
+      "baseline_bytes": 10443,
+      "baseline_lines": 217,
+      "candidate_bytes": 10849,
+      "candidate_lines": 224,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "Scoped authority/generic bounded corrections clarified. Planned AI track keeps trust/tool/persistence gates. Live adapter enforcement expansion deferred."
+    },
+    {
+      "path": "skills/tracks/angular/sdcorejs-angular.md",
+      "baseline_bytes": 47926,
+      "baseline_lines": 499,
+      "candidate_bytes": 11461,
+      "candidate_lines": 157,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "F-005 classify before artifact chain; large workflow/generation bodies moved to JIT, risk-based verification and finish authority aligned."
+    },
+    {
+      "path": "skills/tracks/design/sdcorejs-design.md",
+      "baseline_bytes": 24324,
+      "baseline_lines": 499,
+      "candidate_bytes": 24324,
+      "candidate_lines": 499,
+      "disposition": "Retained: no confirmed need for entrypoint rewrite",
+      "assessment": "Existing bounded polish retained. Durable-plan ambiguity/critique split deferred pending a targeted behavior fixture; no server-side-effect violation claimed."
+    },
+    {
+      "path": "skills/tracks/nestjs/sdcorejs-nestjs.md",
+      "baseline_bytes": 4401,
+      "baseline_lines": 90,
+      "candidate_bytes": 5012,
+      "candidate_lines": 99,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "Agreed TDD/post-hoc, finish authority and bounded correction route aligned. Existing tenant/profile default risk not reproduced as protection loss; no broad profile rewrite."
+    },
+    {
+      "path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
+      "baseline_bytes": 18766,
+      "baseline_lines": 257,
+      "candidate_bytes": 19118,
+      "candidate_lines": 271,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "F-006 shared maintained config producer, basic/i18n golden; finish/defer/repair and agreed strategy aligned. Latest-version bootstrap policy remains a reproducibility opportunity."
+    },
+    {
+      "path": "skills/tracks/product/sdcorejs-product.md",
+      "baseline_bytes": 21293,
+      "baseline_lines": 498,
+      "candidate_bytes": 21314,
+      "candidate_lines": 498,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "F-008 actual template IDs feed ledger unchanged validator. Multi-template extraction deferred; no blanket document-bundle generation added."
+    },
+    {
+      "path": "skills/tracks/test/sdcorejs-test.md",
+      "baseline_bytes": 13608,
+      "baseline_lines": 252,
+      "candidate_bytes": 12264,
+      "candidate_lines": 222,
+      "disposition": "JIT extraction / contract alignment",
+      "assessment": "AI/simplify/parallel context extracted. Auth/data/map/convergence references conditional with transitive map gates aligned; actual command/owner/freshness preserved."
+    }
+  ],
+  "baseline_revision": "af42f21a36f12ae31c09abac1009f41f51b3d87f",
+  "observed_revision": "930cc9d67eac64d91e4a55a9b7d32693576ee8db",
+  "source_state": "working tree candidate; exact final source hashes in source-manifest.json",
+  "totals": {
+    "baseline_bytes": 436321,
+    "candidate_bytes": 387596
+  },
+  "new_content_bytes": 5749
+}

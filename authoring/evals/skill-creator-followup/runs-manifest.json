@@ -1,0 +1,121 @@
+{
+  "base_revision": "97cc700ef7201a3074c57aedff89cbe131f9ee6f",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3593,
+      "sha256": "d0a5fb4f36bdebe95ae7b614564d7bfb710c4c63d8a71aa73d84dbab497def21"
+    },
+    {
+      "path": "authoring-matrix-final.json",
+      "bytes": 9112,
+      "sha256": "efe7b6906e29de2746671b22bb98e49a71944b81129c3716c8ab0b5417a38ce4"
+    },
+    {
+      "path": "communication-economy.json",
+      "bytes": 29526,
+      "sha256": "af0cc64dc6c2c2388bee8cfcf32ad4f60e37984e514452dae2a429ba879e3e79"
+    },
+    {
+      "path": "independent-review.md",
+      "bytes": 25215,
+      "sha256": "d0126f4ff11c37c4e4e104d786421fe707add38a09b494cfd066acd29e1aaff0"
+    },
+    {
+      "path": "official-validation.json",
+      "bytes": 3058,
+      "sha256": "ca51ccfd0af58e83c8b2e49a8a473a822b2992e7175e345bf409d45eba80b0aa"
+    },
+    {
+      "path": "runs/affected-final.log.gz",
+      "bytes": 5960,
+      "sha256": "2713930a3746e89c0c4ce5621c59f8da5b22349002ab7cd824262b8b39359a68"
+    },
+    {
+      "path": "runs/affected.log.gz",
+      "bytes": 10938,
+      "sha256": "142241a45397f373c7bccab3788f4a0569e5da78e12aa690992aa4eccc2ed500"
+    },
+    {
+      "path": "runs/convergence-precommit.log.gz",
+      "bytes": 1010,
+      "sha256": "0cac83578d9c3e6889f3de88ee0cd59c0fe243939764f5f296c70cfe16a1e99f"
+    },
+    {
+      "path": "runs/executable-references-python.log.gz",
+      "bytes": 219,
+      "sha256": "1c4dee09b146f877c368be49a5834b588f59cfef7a0873dee65ac086c949cb8d"
+    },
+    {
+      "path": "runs/executable-references.log.gz",
+      "bytes": 238,
+      "sha256": "af467253468c335be3ac226a58ce9908a00bdad5947f33098dfc9d2fccb4d1fb"
+    },
+    {
+      "path": "runs/focused.log.gz",
+      "bytes": 1875,
+      "sha256": "3c454cf94b7bca7bc4dc6815d26f251e66b45a51fde872312ee87598b7edd9eb"
+    },
+    {
+      "path": "runs/green-contract-routing.log.gz",
+      "bytes": 847,
+      "sha256": "7ec32d64d326e9f195e50281a94d6daa9cb341567a1310e029ec00c3081bc979"
+    },
+    {
+      "path": "runs/mirror-final.log.gz",
+      "bytes": 213,
+      "sha256": "1bfd2bf5576d3d0c04fb2ddd2a6ff5fd5578d32abb328478b0687d453019e5db"
+    },
+    {
+      "path": "runs/mirror-packaged.log.gz",
+      "bytes": 213,
+      "sha256": "1bfd2bf5576d3d0c04fb2ddd2a6ff5fd5578d32abb328478b0687d453019e5db"
+    },
+    {
+      "path": "runs/red.log.gz",
+      "bytes": 1309,
+      "sha256": "5cc040328d4331387b0572c37c9f310dd2ff0d733efa49e1bfb21c5f59165fd8"
+    },
+    {
+      "path": "runs/repository-core-final-router.log.gz",
+      "bytes": 25175,
+      "sha256": "7cf8b794eef33cc8a561d0a3de252390306c67f5cbde16f13e258ef22e5bcbe9"
+    },
+    {
+      "path": "runs/repository-core-final.log.gz",
+      "bytes": 25160,
+      "sha256": "28886461d35cb9f97c609c23679b5d80f38d3f06a0cd3bbd3a98249c8c6f2cf1"
+    },
+    {
+      "path": "runs/repository-core.log.gz",
+      "bytes": 25504,
+      "sha256": "4caea4c12893dcdc0bdd0cdcedda2cdaf6df01f890373f96291fac8fc713bed1"
+    },
+    {
+      "path": "runs/routing-recheck.log.gz",
+      "bytes": 454,
+      "sha256": "182df1ec8804a14823483396b68c97f55749cd9fd2a74dc57b665f9f8a9625b8"
+    },
+    {
+      "path": "runs/sync-final.log.gz",
+      "bytes": 549,
+      "sha256": "42a6d55d3b8f4ab0404e566fda990319b07c78402dc789eb565a80085f14ff55"
+    },
+    {
+      "path": "runs/text-final.log.gz",
+      "bytes": 127,
+      "sha256": "372edbe5ddc243794de9e9cdf250b0366864e1b4faf88dec1ca33d97bc813e6b"
+    },
+    {
+      "path": "runs/text-packaged.log.gz",
+      "bytes": 127,
+      "sha256": "48adcf185cd91c2447876c2f21b74689cb0adbd88826ffd3a0f433dbc93d4fd9"
+    },
+    {
+      "path": "source-manifest.json",
+      "bytes": 5021,
+      "sha256": "0a7feb2b5c50a91fd5d88d5af4587ab57208c48601c0d9fc2376407d9b4b279f"
+    }
+  ],
+  "historical_runs_rewritten": false
+}

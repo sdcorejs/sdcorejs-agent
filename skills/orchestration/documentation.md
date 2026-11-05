@@ -185,11 +185,14 @@ When called after `auto-docs` in a write-code flow:
 
 ## Direct Documentation Requests
 
-For direct write/rewrite/improve/structure/summarize/convert/standardize requests on docs or source artifacts:
+For direct write/rewrite/improve/structure/summarize/convert/standardize requests,
+use `resolveDocumentationAction` from `_refs/documentation/intent.mjs` with the
+actual requested action; a ticket identifier is context, never write authority:
 
 1. Identify the source docs or code artifacts from the user's request, current diff, or project context.
-2. If the request is really project discovery ("summarize this project", "map the repo", "trace this flow", "setup dev"), route to `sdcorejs-explore`.
-3. If the request includes `TASKID` or asks to record a requirement, load `_refs/documentation/write-requirement.md` and write/update the requirement record. Stop there unless the user also explicitly asked for technical docs.
+2. For summarize-only requests, return the requested summary without writing a
+   requirement record; ticket IDs do not change intent. If the request is really project discovery ("summarize this project", "map the repo", "trace this flow", "setup dev"), route to `sdcorejs-explore`.
+3. If the requested action is to record/create/update a requirement (a `TASKID` alone is only context), load `_refs/documentation/write-requirement.md` and write/update the requirement record. Stop there unless the user also explicitly asked for technical docs.
 4. If the request asks for code comments, implementation comments, docstrings, doc comments, JSDoc, TSDoc, documentation comments, or public API documentation comments, load `_refs/documentation/code-documentation.md`, preserve executable behavior, and stop unless the user also explicitly asked for standalone technical docs.
 5. If the target artifact is ambiguous and no existing convention is discoverable, ask for the destination path.
 6. Load `_refs/documentation/write-technical-doc.md`.

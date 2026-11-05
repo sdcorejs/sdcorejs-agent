@@ -1,4 +1,5 @@
 import { isDeepStrictEqual } from 'node:util';
+import path from 'node:path';
 
 import {
   validateApprovedWriteScope,
@@ -11,7 +12,7 @@ import {
 import { validateArchitecturePlanHandoff } from '../shared/architecture-contract.mjs';
 import { validateRepositoryPlan } from '../shared/repository-contract.mjs';
 import { resolveTrack } from '../shared/system-registry.mjs';
-import { planWaves } from './parallel-protocol.mjs';
+import { planWaves, repositoryPathsOverlap } from './parallel-protocol.mjs';
 
 const MUTABLE_ACTIONS = new Set(['CREATE', 'EDIT', 'VERIFY-THEN-EDIT']);
 const PARALLEL_CAPABILITIES = new Set(['supported']);
@@ -26,13 +27,13 @@ function normalizeRepositoryPath(value) {
   requiredString(value, 'repository_relative_path');
   const normalized = value.replaceAll('\\', '/').replace(/^\.\/+/u, '');
   if (
-    normalized.startsWith('/') ||
+    normalized.includes('\0') || normalized.startsWith('/') ||
     /^[A-Za-z]:\//u.test(normalized) ||
     normalized.split('/').includes('..')
   ) {
     throw new TypeError('repository_relative_path must remain inside the repository');
   }
-  return normalized;
+  return path.posix.normalize(normalized);
 }
 
 function escapeRegex(value) {
@@ -289,18 +290,19 @@ export function authorizePlanWrite({
 export function evaluateWorkingTree({
   unrelated_dirty_paths: unrelatedDirtyPaths = [],
   intended_output_paths: intendedOutputPaths = [],
-}) {
+}, { caseInsensitive = process.platform === 'win32' } = {}) {
   if (!Array.isArray(unrelatedDirtyPaths) || !Array.isArray(intendedOutputPaths)) {
     throw new TypeError('working-tree path collections must be arrays');
   }
   const dirty = unrelatedDirtyPaths.map(normalizeRepositoryPath);
   const intended = intendedOutputPaths.map(normalizeRepositoryPath);
-  const overlaps = intended.filter((path) => dirty.includes(path));
+  const overlaps = intended.filter(candidate => dirty.some(entry =>
+    repositoryPathsOverlap(candidate, entry, caseInsensitive)));
   return {
-    status: dirty.length === 0 ? 'clear' : 'decision-required',
+    status: overlaps.length > 0 || (dirty.length > 0 && intended.length === 0) ? 'decision-required' : dirty.length > 0 ? 'dirty-disjoint' : 'clear',
     unrelated_dirty_paths: dirty,
     intended_dirty_overlaps: overlaps,
-    write_authorized: dirty.length === 0,
+    write_authorized: overlaps.length === 0 && !(dirty.length > 0 && intended.length === 0),
   };
 }
 
@@ -381,4 +383,14 @@ export function selectExecutionMode({
     reason: 'sequential and parallel execution are both feasible',
     waves,
   };
+}
+
+// Consume only the canonical plan producer shape; never fall back to a flat alias.
+export function resolveVerificationCommands(planContext) {
+  const commands = planContext?.verification_strategy?.commands_planned;
+  if (!Array.isArray(commands)) throw new TypeError('verification_strategy.commands_planned must be an array');
+  if (commands.some((command) => typeof command !== 'string' || command.trim() === '')) {
+    throw new TypeError('each planned command must be a non-empty string');
+  }
+  return [...commands];
 }

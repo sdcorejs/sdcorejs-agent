@@ -1,5 +1,6 @@
+import { readPublishedContract as readFile } from './support/published-contract.mjs';
 import assert from 'node:assert/strict';
-import { readFile, readdir } from 'node:fs/promises';
+import { readdir } from 'node:fs/promises';
 import test from 'node:test';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -61,7 +62,7 @@ const GOLDEN_FIXTURES = [
   'fixtures/golden/openai-agents-sdk-multi-agent-supervisor.json',
 ];
 
-test('ai-agent: canonical skill exists exactly once and source count is 24', async () => {
+test('ai-agent: canonical skill exists exactly once and source count is 25', async () => {
   const skillFiles = await listFiles(join(ROOT, 'skills'), file => file.endsWith('.md'));
   const namedSkills = await Promise.all(skillFiles.map(async file => ({
     file,
@@ -69,7 +70,7 @@ test('ai-agent: canonical skill exists exactly once and source count is 24', asy
   })));
   const aiSkills = namedSkills.filter(item => item.name === 'sdcorejs-ai-agent');
 
-  assert.equal(namedSkills.length, 24);
+  assert.equal(namedSkills.length, 25);
   assert.equal(aiSkills.length, 1);
   assert.equal(aiSkills[0].file, SKILL_PATH);
 

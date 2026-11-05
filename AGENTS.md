@@ -1,10 +1,16 @@
 # SDCoreJS SDLC Agent
 
-Shared instructions for Codex, Claude Code, Cursor, OpenAI Agents SDK and compatible agents. Copilot uses `.github/copilot-instructions.md`; CLAUDE.md is retained.
+Shared workflow policy; provider guidance lives in retained entrypoints.
 
-Engineering skill pack for developers and technical teams with 24 public skills: governed product/design/test work, Angular, NestJS, Next.js, AI-agent contracts and a generic harness. The private Node workspace is validation-only.
+Engineering skill pack for developers and technical teams with 25 public skills: governed product/design/test work, Angular, NestJS, Next.js, AI-agent contracts and a generic harness. The private Node workspace is validation-only.
 
-Runtime-localized output uses the user's language and preserves locale marks. Keep identifiers, permission codes, env keys and route paths in English.
+Runtime-localized output preserves locale marks; identifiers, permissions, env keys and routes stay English.
+
+Social editorial work (captions, posts, video scripts, voice, repurposing and
+feedback) routes to `sdcorejs-content`; technical docs, PRDs and code keep their
+own owners. Content drafts require no engineering artifact chain and grant no
+publishing/scheduling/messaging permission. Apply `_refs/shared/session-authority.md`
+at workflow transitions; reuse scoped authorization without inventing review.
 
 ## Skill Source Language
 
@@ -119,7 +125,7 @@ For non-trivial execution, use `_refs/shared/tasklist.md`: create outcome-based 
    `_refs/shared/project-context.md`; use summary when valid and targeted reads
    when it is missing or stale.
 2. Requirements before code: use `sdcorejs-brainstorming` until minimum blockers are confirmed.
-3. Approval gates: `sdcorejs-spec` and `sdcorejs-plan` require explicit approval. Silence is not approval.
+3. Spec/plan gates use explicit approval or scoped session delegation; silence is neither.
 4. Approved snapshots: `sdcorejs-spec` and `sdcorejs-plan` write approved snapshots themselves before the next phase.
 5. Execute approved plans through `sdcorejs-execute-plan`; it owns track,
    profile, generic fallback, and execution-mode resolution.
@@ -134,24 +140,15 @@ For non-trivial execution, use `_refs/shared/tasklist.md`: create outcome-based 
 11. Keep source English-only and localize generated runtime output.
 12. Do not author new skills without explicit user approval.
 13. Do not expand into production SDLC skill/ref coverage without the explicit approval described in **Production SDLC Scope Decision**.
-14. Local runtime state, such as a Visual Companion session, requires its own
-    explicit consent and stays `local_only`. Capability is never permission,
-    auto-opening a browser is a separate consent, and a visual selection is
-    supporting feedback that never satisfies an approval gate.
+14. Local runtime/Visual Companion state needs purpose-bound consent and stays
+    `local_only`. Capability and visual selection are not approval; browser
+    opening has separate consent.
 
 ## Session-Start Ritual
 
-In a target project:
-
-- Apply `_refs/shared/project-context.md` for the current request.
-- Read explicit user evidence first, then valid summary sections.
-- Select specs, plans, docs, handoffs, memories, and durable backlog entries by
-  relationship metadata and request relevance; do not load the latest files by
-  default.
-- Ignore legacy session checkpoint files. Live progress belongs to the current
-  thread/harness.
-- Read `.sdcorejs/persona.md` if relevant; otherwise default to technical style
-  unless `sdcorejs-explore (persona mode)` is triggered.
+Apply `_refs/shared/project-context.md`: explicit/current evidence first, then
+valid summary sections and relationship-matched artifacts. Ignore legacy session
+checkpoints. Read persona only when relevant; live progress stays in the runtime.
 
 ## Reference Loading
 
@@ -174,6 +171,6 @@ their declared triggers. Additional loading:
 
 ## Shared reference
 
-Before track execution or its finish chain, read the relevant executor/provider and tail sections in root-relative `AGENTS.reference.md`. This consolidates unique CLAUDE guidance without duplicating bootstrap policy. Keep shared conventions consistent across retained entrypoints.
+Before track execution or its finish chain, read the relevant executor/provider and tail sections of `AGENTS.reference.md`.
 
 For small edits, apply the risk baseline in `_refs/shared/finish-gate.md`.

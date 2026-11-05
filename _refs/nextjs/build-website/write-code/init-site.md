@@ -181,26 +181,25 @@ REVALIDATE_SECRET=
 
 **`.env.local`** (gitignored, copied from `.env.example` with real values during dev).
 
-**`next.config.ts`**:
+**`next.config.ts`** (basic; no optional feature imports):
 ```typescript
-import { NextConfig } from 'next';
-import createNextIntlPlugin from 'next-intl/plugin';
-
-const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+import type { NextConfig } from 'next';
 
 const config: NextConfig = {
-  images: {
-    formats: ['image/avif', 'image/webp'],
-    qualities: [75, 85, 95],
-  },
-  experimental: {
-    // Enable per-route "use cache" + cacheLife (Next 16 caching APIs)
-    useCache: true,
-  },
+  poweredByHeader: false,
 };
 
-export default withNextIntl(config);
+export default config;
 ```
+
+Use `renderNextConfig(profile)` from `_refs/nextjs/generator/next-config.mjs`
+as the maintained config producer. Golden projects consume this same function;
+the regression checks the literal basic block above against its output. For an
+approved `i18n` profile only, select `renderNextConfig('i18n')`, install the
+matching `next-intl` version and create `src/i18n/request.ts` from the i18n
+reference. Basic/contact must not import that plugin or create i18n files. Add
+image/cache configuration only for a verified, required feature and installed
+Next.js version; do not copy experimental flags from another version.
 
 **`tailwind.config.ts`** — minimal stub; tokens added by `theme.md`:
 ```typescript

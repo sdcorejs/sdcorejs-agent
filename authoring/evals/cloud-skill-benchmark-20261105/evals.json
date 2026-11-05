@@ -1,0 +1,63 @@
+{
+  "skill_name": "sdcorejs-agent-review-followup",
+  "baseline_revision": "97cc700ef7201a3074c57aedff89cbe131f9ee6f",
+  "candidate_revision": "be1c4963fa2e0f5b32d9523d9601b3dc634db289",
+  "repetitions": 2,
+  "evals": [
+    {
+      "id": 1,
+      "name": "delegated-plan",
+      "prompt": "Prepare the next workflow response for this complete planning task. The requirement is confirmed: in the owned Node utility src/category.mjs, normalizeCategory must trim a string and return lowercase; null and undefined return an empty string. Existing test command is node --test test/category.test.mjs. No dependency, schema, permission, environment, or public API expansion is involved. I explicitly delegate completing and self-reviewing the spec and plan and then continuing the approved scope; do not wait for me to review each document. Record the real authority as this request, not a document-approval response. For this benchmark capture only, return a concise concrete spec/plan outline, the approval provenance fields you would persist, and the immediate next action; do not execute edits or manufacture snapshot hashes. There is an unrelated modified notes.md and the intended outputs are src/category.mjs and test/category.test.mjs; ownership and captured baseline are known. Do not touch notes.md.",
+      "refs": [
+        "skills/shared/sdlc/02-spec.md",
+        "skills/shared/sdlc/03-plan.md",
+        "skills/shared/sdlc/04-execute-plan.md",
+        "_refs/shared/session-authority.md"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "review-only-plan",
+      "prompt": "The approved spec for our existing utility says normalizeCategory trims strings and lowercases them, returning an empty string for null/undefined. Target paths and owner are known: src/category.mjs and test/category.test.mjs in this standalone target project. Existing verification command is node --test test/category.test.mjs; no dependencies or environment changes. Write a draft implementation plan for my review. I have not authorized plan approval, an approved-plan snapshot, or execution. Return the plan and what you need next. This is a capture exercise: write only your response in the assigned output folder, not repository artifacts.",
+      "refs": [
+        "skills/shared/sdlc/03-plan.md",
+        "_refs/shared/session-authority.md"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "dirty-preflight",
+      "prompt": "An approved plan has two possible independent work units. Inspect the real working-tree helper supplied in this skill pack and evaluate these inputs without editing any target file: A has unrelated_dirty_paths [\"src\"] and intended_output_paths [\"src/**\"]; B has unrelated_dirty_paths [\"notes.md\"] and intended_output_paths [\"src/category.mjs\"]. All paths are repository-relative, ownership is known, and unrelated changes are outside this task. I authorize plan-scoped work that does not touch unrelated edits. Return the exact helper results in helper-results.json and a concise response saying which unit can proceed and which needs a decision, including any discrepancy you observe between the helper and prose policy. Do not invent permission to overwrite user work.",
+      "refs": [
+        "skills/shared/sdlc/04-execute-plan.md",
+        "_refs/shared/session-authority.md",
+        "_refs/orchestration/execution-contract.mjs"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "personal-caption",
+      "prompt": "Viết một caption Facebook cá nhân, tối đa hai câu, về ý tưởng cuối tuần đi dạo ở Hội An. Mình chưa từng đến đó. Giọng bình dị, không emoji, không mời bình luận. Không thêm giá, giờ mở cửa hay trải nghiệm cụ thể chưa có. Chỉ cần caption dùng được; không lưu hồ sơ giọng viết hoặc đăng bài.",
+      "refs": [
+        "skills/tracks/content/sdcorejs-content.md"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "tech-product-script",
+      "prompt": "Write a roughly 20-second TikTok product video script for QueryLane, aimed at small engineering teams. The supplied product facts are: it stores API request examples and lets teammates comment on them; it does not run the requests or generate production code. The proposed hook is \"Ship APIs 10x faster — trusted by 1,000 teams\" and a quote \"It cut our review time in half.\" We have no benchmark, customer count, actual customer source or quote permission. Keep a practical demo structure and a low-pressure invitation to explore QueryLane. Script and proposed shots only; no media generation, account access, posting or scheduling.",
+      "refs": [
+        "skills/tracks/content/sdcorejs-content.md"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "feedback-and-voice",
+      "prompt": "Interpret these Facebook results and give a bounded next experiment: Monday organic educational post: 5,000 reach, 100 link clicks. Friday product-offer post boosted for $150: 20,000 reach, 250 link clicks. Friday used a provocative hook; Monday did not. Does this establish that Friday and provocative hooks work better? In this conversation, use shorter sentences and no emojis for both my personal posts and the QueryLane product brand. I have not supplied profile paths or asked you to persist preferences. Keep the two voices distinct. Do not schedule or publish anything.",
+      "refs": [
+        "skills/tracks/content/sdcorejs-content.md",
+        "_refs/shared/session-authority.md"
+      ]
+    }
+  ]
+}

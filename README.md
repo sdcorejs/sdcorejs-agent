@@ -98,7 +98,7 @@ run again before Git artifacts.
   proof. Unclear/conflicting feedback and unapproved API migrations do not write.
 - Internal `sdcorejs-skill-authoring` lives under `authoring/**` and is excluded
   from public inventories, mirrors, manifests, and the site. The public ceiling
-  is 24 skills after the approved cleanup utility addition. Its gate derives inventory/routing hashes from the repo and
+  is 25 skills after the authorized Content addition. Its gate derives inventory/routing hashes from the repo and
   validates linked RED/GREEN/REFACTOR records and complete live-matrix schemas.
 - Deterministic contract tests, prepared-environment Full E2E, and authorized
   live-agent evidence are separate layers. A deterministic pass never implies a
@@ -452,7 +452,7 @@ transcripts, see:
 ## Repo Layout
 
 ```text
-skills/                 source skills, 24 dispatchable skill files
+skills/                 source skills, 25 dispatchable skill files
 _refs/                  source reference docs
 _refs/harness/          actions, capabilities, model roles, runtime envelopes
 .claude/skills/         generated Claude mirror
@@ -562,3 +562,12 @@ with npm run test:e2e:review-behavior and npm run test:e2e:project-bootstrap.
 The internal npm run eval:review:offline checks fixtures, routing and contracts;
 it does not prove that a language model detects defects. Real fresh-reviewer
 captures and adjudication remain a separate capability acceptance step.
+
+## Social content
+
+`sdcorejs-content` serves personal brands and product marketing with brief,
+strategy, research, drafting/editing, repurposing, editorial review and real
+feedback. Facebook/TikTok, formats and tech/marketing/travel references load
+independently. A caption needs no engineering workflow. Personal and product
+voices stay separate; claims need evidence. Drafting never authorizes posting,
+scheduling, messaging or persistent voice-profile changes.

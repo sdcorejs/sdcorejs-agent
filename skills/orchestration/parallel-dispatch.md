@@ -73,7 +73,8 @@ direct invocation is not a bypass.
 1. Assemble read-only `project_context`. Use valid summary sections when
    available; otherwise continue with targeted reads or a scoped code map. Do
    not refresh the summary merely because execution is write-approved.
-2. Verify the immutable approved artifact and validate the contract union,
+2. For writes verify the immutable approved artifact; for read-only work verify
+   request/scope identity with no plan fields. Validate the contract union,
    artifact ID/hash, repository owner, registry role, and source revision.
 3. Capture current branch, HEAD, staged, unstaged, untracked, dirty-diff hash,
    unrelated dirty paths, and intended-output overlap.
@@ -84,9 +85,12 @@ direct invocation is not a bypass.
    to the caller so delegated execution can use sequential fresh workers before
    considering parent execution.
 5. Derive paths, stacks, executors, commands, roles, and resources from the
-   approved plan and target evidence. Do not assume a framework or directory
+   approved plan for writes or the read-only request scope for reports, plus target evidence. Do not assume a framework or directory
    layout.
-6. Call `compileParallelContext` for dependency waves and the parallel
+6. Call `compileParallelContext({plan_context, runtime_capabilities})` for writes,
+   or `compileParallelContext({read_only_context, runtime_capabilities})` for a
+   validated read-only context. Preserve empty writable paths, report results
+   and denied mutations. The helper produces dependency waves and the parallel
    opportunity report, then complete every dispatch-readiness field.
 7. Emit the complete `parallel_context` from the protocol reference. Keep it
    authoritative and internal by default; pass it to the execute-plan parent or

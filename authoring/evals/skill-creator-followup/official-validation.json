@@ -1,0 +1,132 @@
+{
+  "upstream_revision": "49f948faa9258a0c61caceaf225e179651397431",
+  "rows": [
+    {
+      "path": "codex/skills/sdcorejs-ai-agent",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-angular",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-architecture",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-brainstorming",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-cleanup",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-content",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-debug",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-design",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-documentation",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-execute-plan",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-explore",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-git",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-nestjs",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-nextjs",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-parallel-dispatch",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-plan",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-product",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-repair-loop",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-review",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-ship",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-simplify",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-spec",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-subagent-driven-development",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-test",
+      "valid": true,
+      "message": "Skill is valid!"
+    },
+    {
+      "path": "codex/skills/sdcorejs-using-skills",
+      "valid": true,
+      "message": "Skill is valid!"
+    }
+  ],
+  "passed": 25,
+  "count": 25
+}

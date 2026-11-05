@@ -622,3 +622,13 @@ test('cross-repository prose matches the runtime acceptance identity contract', 
     assert.match(section, /(?:fail closed|block generation)/iu, file);
   }
 });
+
+// Read the actual published producer table, then feed its identifier to the ledger.
+test('F-008: published acceptance table survives ledger normalization and aggregation', async () => {
+  const source = await readFile(new URL('../../skills/tracks/product/sdcorejs-product.md', import.meta.url), 'utf8');
+  const id = source.match(/\| (AC[-0-9]+) \| US1 \|/)?.[1];
+  assert.ok(id);
+  const ledger = createProductLedger({metadata: ledgerMetadata(), traceability: traceability({acceptance_criterion_id:id}), source_artifacts:[]});
+  assert.equal(ledger.traceability[0].acceptance_criterion_id, 'AC-001');
+  assert.throws(() => createProductLedger({metadata:ledgerMetadata(), traceability:traceability({acceptance_criterion_id:'AC0'}), source_artifacts:[]}), /INVALID_ACCEPTANCE_CRITERION_ID/);
+});

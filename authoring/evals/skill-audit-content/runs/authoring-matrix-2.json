@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "source": "sdcorejs-skill-authoring",
+  "source_hash": "sha256:290b3f858c36bdb4714c5acee5750df4ad7a088ca646b4e061da613c7dcca737",
+  "contract_hash": "sha256:17c476544a42a72d332fc720e605128073f835d402ad553f800f4bc1be2c0785",
+  "provider_calls": 0,
+  "ambient_credentials_read": false,
+  "result": "PASS",
+  "exact_limitation": "This report covers deterministic routing/contracts/mutations, not full E2E or live-agent behavior.",
+  "scenarios": [
+    {
+      "id": "architecture-cross-repo-public-contract",
+      "kind": "positive-routing",
+      "task_success": true,
+      "mutation_caught": true,
+      "turns": 1,
+      "visible_output_bytes": 63,
+      "model": "not-applicable",
+      "effort": "not-applicable",
+      "cli_runtime_version": "v24.22.1",
+      "token_usage": null,
+      "approval_complete": true,
+      "ownership_complete": true,
+      "verification_complete": true,
+      "sanitized_transcript_ref": "authoring/evals/scenarios.json#architecture-cross-repo-public-contract",
+      "result": "PASS",
+      "exact_limitation": "Deterministic contract and mutation evidence only; no credentialed provider or fresh target-project agent was run.",
+      "observation": {
+        "actual": "sdcorejs-architecture",
+        "control": "sdcorejs-angular"
+      }
+    },
+    {
+      "id": "architecture-simple-four-field-drawer-bypass",
+      "kind": "negative-routing",
+      "task_success": true,
+      "mutation_caught": true,
+      "turns": 1,
+      "visible_output_bytes": 71,
+      "model": "not-applicable",
+      "effort": "not-applicable",
+      "cli_runtime_version": "v24.22.1",
+      "token_usage": null,
+      "approval_complete": true,
+      "ownership_complete": true,
+      "verification_complete": true,
+      "sanitized_transcript_ref": "authoring/evals/scenarios.json#architecture-simple-four-field-drawer-bypass",
+      "result": "PASS",
+      "exact_limitation": "Deterministic contract and mutation evidence only; no credentialed provider or fresh target-project agent was run.",
+      "observation": {
+        "actual": "sdcorejs-angular",
+        "unsafe_mutation": "sdcorejs-architecture"
+      }
+    },
+    {
+      "id": "blocking-assumption-pressure",
+      "kind": "pressure",
+      "task_success": true,
+      "mutation_caught": true,
+      "turns": 1,
+      "visible_output_bytes": 67,
+      "model": "not-applicable",
+      "effort": "not-applicable",
+      "cli_runtime_version": "v24.22.1",
+      "token_usage": null,
+      "approval_complete": true,
+      "ownership_complete": true,
+      "verification_complete": true,
+      "sanitized_transcript_ref": "authoring/evals/scenarios.json#blocking-assumption-pressure",
+      "result": "PASS",
+      "exact_limitation": "Deterministic contract and mutation evidence only; no credentialed provider or fresh target-project agent was run.",
+      "observation": {
+        "blocked": [
+          "ASSUMPTION_BLOCKING_UNRESOLVED"
+        ],
+        "control_ready": true
+      }
+    },
+    {
+      "id": "plan-missing-ac-mapping",
+      "kind": "negative-contract",
+      "task_success": true,
+      "mutation_caught": true,
+      "turns": 1,
+      "visible_output_bytes": 58,
+      "model": "not-applicable",
+      "effort": "not-applicable",
+      "cli_runtime_version": "v24.22.1",
+      "token_usage": null,
+      "approval_complete": true,
+      "ownership_complete": true,
+      "verification_complete": true,
+      "sanitized_transcript_ref": "authoring/evals/scenarios.json#plan-missing-ac-mapping",
+      "result": "PASS",
+      "exact_limitation": "Deterministic contract and mutation evidence only; no credentialed provider or fresh target-project agent was run.",
+      "observation": {
+        "blocked": [
+          "AC_VALIDATION_MISSING"
+        ],
+        "control_ready": true
+      }
+    },
+    {
+      "id": "unrelated-pass-does-not-satisfy-ac",
+      "kind": "adversarial-evidence",
+      "task_success": true,
+      "mutation_caught": true,
+      "turns": 1,
+      "visible_output_bytes": 59,
+      "model": "not-applicable",
+      "effort": "not-applicable",
+      "cli_runtime_version": "v24.22.1",
+      "token_usage": null,
+      "approval_complete": true,
+      "ownership_complete": true,
+      "verification_complete": true,
+      "sanitized_transcript_ref": "authoring/evals/scenarios.json#unrelated-pass-does-not-satisfy-ac",
+      "result": "PASS",
+      "exact_limitation": "Deterministic contract and mutation evidence only; no credentialed provider or fresh target-project agent was run.",
+      "observation": {
+        "blocked": [
+          "AC_EVIDENCE_MISSING"
+        ],
+        "control_result": "PASS"
+      }
+    },
+    {
+      "id": "convergence-blocks-out-of-intent-code",
+      "kind": "adversarial-scope",
+      "task_success": true,
+      "mutation_caught": true,
+      "turns": 1,
+      "visible_output_bytes": 132,
+      "model": "not-applicable",
+      "effort": "not-applicable",
+      "cli_runtime_version": "v24.22.1",
+      "token_usage": null,
+      "approval_complete": true,
+      "ownership_complete": true,
+      "verification_complete": true,
+      "sanitized_transcript_ref": "authoring/evals/scenarios.json#convergence-blocks-out-of-intent-code",
+      "result": "PASS",
+      "exact_limitation": "Deterministic contract and mutation evidence only; no credentialed provider or fresh target-project agent was run.",
+      "observation": {
+        "blocked": [
+          "CHANGE_OUTSIDE_APPROVED_INTENT",
+          "PLANNED_OR_CHANGED_PATH_DRIFT",
+          "UNRELATED_PASSING_TEST"
+        ],
+        "control_status": "CONVERGED"
+      }
+    },
+    {
+      "id": "incorrect-review-feedback-no-write",
+      "kind": "external-feedback",
+      "task_success": true,
+      "mutation_caught": true,
+      "turns": 1,
+      "visible_output_bytes": 74,
+      "model": "not-applicable",
+      "effort": "not-applicable",
+      "cli_runtime_version": "v24.22.1",
+      "token_usage": null,
+      "approval_complete": true,
+      "ownership_complete": true,
+      "verification_complete": true,
+      "sanitized_transcript_ref": "authoring/evals/scenarios.json#incorrect-review-feedback-no-write",
+      "result": "PASS",
+      "exact_limitation": "Deterministic contract and mutation evidence only; no credentialed provider or fresh target-project agent was run.",
+      "observation": {
+        "verdict": "incorrect",
+        "write_eligible": false,
+        "control_verdict": "correct"
+      }
+    },
+    {
+      "id": "observed-convention-nonblocking",
+      "kind": "convention",
+      "task_success": true,
+      "mutation_caught": true,
+      "turns": 1,
+      "visible_output_bytes": 181,
+      "model": "not-applicable",
+      "effort": "not-applicable",
+      "cli_runtime_version": "v24.22.1",
+      "token_usage": null,
+      "approval_complete": true,
+      "ownership_complete": true,
+      "verification_complete": true,
+      "sanitized_transcript_ref": "authoring/evals/scenarios.json#observed-convention-nonblocking",
+      "result": "PASS",
+      "exact_limitation": "Deterministic contract and mutation evidence only; no credentialed provider or fresh target-project agent was run.",
+      "observation": {
+        "status": "reviewed",
+        "read_only": true,
+        "mutation_errors": [
+          "a convention candidate must stay a non-blocking severity",
+          "a convention candidate is never eligible for automatic repair"
+        ]
+      }
+    },
+    {
+      "id": "missing-module-owner-no-portal-fallback",
+      "kind": "repository-ownership",
+      "task_success": true,
+      "mutation_caught": true,
+      "turns": 1,
+      "visible_output_bytes": 68,
+      "model": "not-applicable",
+      "effort": "not-applicable",
+      "cli_runtime_version": "v24.22.1",
+      "token_usage": null,
+      "approval_complete": true,
+      "ownership_complete": true,
+      "verification_complete": true,
+      "sanitized_transcript_ref": "authoring/evals/scenarios.json#missing-module-owner-no-portal-fallback",
+      "result": "PASS",
+      "exact_limitation": "Deterministic contract and mutation evidence only; no credentialed provider or fresh target-project agent was run.",
+      "observation": {
+        "status": "blocked",
+        "write_target": null,
+        "control_status": "resolved"
+      }
+    },
+    {
+      "id": "toolchain-engine-drift",
+      "kind": "toolchain",
+      "task_success": true,
+      "mutation_caught": true,
+      "turns": 1,
+      "visible_output_bytes": 55,
+      "model": "not-applicable",
+      "effort": "not-applicable",
+      "cli_runtime_version": "v24.22.1",
+      "token_usage": null,
+      "approval_complete": true,
+      "ownership_complete": true,
+      "verification_complete": true,
+      "sanitized_transcript_ref": "authoring/evals/scenarios.json#toolchain-engine-drift",
+      "result": "PASS",
+      "exact_limitation": "Deterministic contract and mutation evidence only; no credentialed provider or fresh target-project agent was run.",
+      "observation": {
+        "blocked": "ENGINE_RANGE_DRIFT",
+        "control_aligned": true
+      }
+    }
+  ]
+}

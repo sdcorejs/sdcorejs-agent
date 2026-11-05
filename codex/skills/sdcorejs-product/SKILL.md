@@ -252,7 +252,7 @@ owner: sdcorejs-product
 
 | ID | As a | I want to | So that | Priority | Acceptance Criteria |
 |---|---|---|---|---|---|
-| US1 | <role> | <action> | <benefit> | Must | AC1, AC2 |
+| US1 | <role> | <action> | <benefit> | Must | AC-001, AC-002 |
 ```
 
 ### Acceptance Criteria
@@ -262,7 +262,7 @@ owner: sdcorejs-product
 
 | ID | User Story | Criterion | Verification | Status |
 |---|---|---|---|---|
-| AC1 | US1 | <observable behavior> | unit / integration / e2e / UAT | agreed |
+| AC-001 | US1 | <observable behavior> | unit / integration / e2e / UAT | agreed |
 ```
 
 ### UAT Checklist
@@ -332,12 +332,12 @@ owner: sdcorejs-product
 ## Requirement Contract
 | ID | Requirement / Acceptance Criterion | Priority | Source | Status |
 |---|---|---|---|---|
-| AC1 | <criterion> | Must | spec/user | agreed |
+| AC-001 | <criterion> | Must | spec/user | agreed |
 
 ## Traceability Map
 | Requirement | AC | Design | Plan | Implementation | Test | Evidence | Delivery |
 |---|---|---|---|---|---|---|---|
-| <requirement id/ref> | AC1 | <handoff ref or missing> | <plan ref or missing> | <repository/path/revision or missing> | <test ref or missing> | <class/result/revision or missing> | draft / planned / implemented / verified / partial / stale / blocked / deferred |
+| <requirement id/ref> | AC-001 | <handoff ref or missing> | <plan ref or missing> | <repository/path/revision or missing> | <test ref or missing> | <class/result/revision or missing> | draft / planned / implemented / verified / partial / stale / blocked / deferred |
 
 ## UAT Checklist
 | Scenario | Steps | Expected Result | Owner | Status |
@@ -435,8 +435,8 @@ Product traceability - <feature>
 
 | AC | Requirement | Implementation | Test | Status |
 |---|---|---|---|---|
-| AC1 | agreed | done | done | done |
-| AC2 | agreed | partial | missing | blocker |
+| AC-001 | agreed | done | done | done |
+| AC-002 | agreed | partial | missing | blocker |
 
 Verdict: done | partial | blocked
 Ledger: `.sdcorejs/docs/product/<file>.md`

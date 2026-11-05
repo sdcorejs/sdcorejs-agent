@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "observed_revision": "930cc9d67eac64d91e4a55a9b7d32693576ee8db",
+  "source_state": "working tree candidate; source-manifest.json binds final implementation; earlier run states are chronological and not claims about the final source",
+  "logs": [
+    {
+      "path": "authoring/evals/skill-audit-content/runs/angular-golden.log",
+      "sha256": "d965eb34c43e91a39485e86f5ffb9d514e6fc7041c0e86463bb1f11dd20f14a3",
+      "bytes": 350
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/audit-suite-3.log",
+      "sha256": "9725a8153a0f770991449a7a4ca4d5a0d8995d2adcd5344fa140be2b5725d5da",
+      "bytes": 4443
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/authoring-full-2.log",
+      "sha256": "45e0560b51b621ef7f17444b4087542c7c3613f0d5a9042eb4f43d5804eaf0ad",
+      "bytes": 815
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/authoring-matrix-2.json",
+      "sha256": "371e768776c8b643e92fbbc5fc5aae77ad444d49e8b98b34b1045b268437a176",
+      "bytes": 9112
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/baseline-tests.log",
+      "sha256": "81f5de4d888ed86ab2729d7201d1d772c6c5da37045af3890d56e35325a918ac",
+      "bytes": 4739
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/cleanup-portable.log",
+      "sha256": "46d84ef4c390c6ead74e691c5e01ce38a5a4a159e029252fb2488c4ddf6572a6",
+      "bytes": 4907
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/content-routing-fixture-error.log.gz",
+      "sha256": "2fa27739dc364532054747ec7e3b42dbfb54f5dea0adc9ac0c15d32a908a8ec4",
+      "bytes": 509
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/content-routing-green.log",
+      "sha256": "c2f0d4724aee8cb0a6745bd97132c694e6d206b947eac05a2960fbbe08274940",
+      "bytes": 208
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/content-routing-red.log.gz",
+      "sha256": "84efb5a5f972dcc4350511482bce26de88215414d40b24dd54546d0bb4573a3a",
+      "bytes": 516
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/contract-probe-fixture-error-initial.tap.gz",
+      "sha256": "0c9eb4d51d06af9fc6ff87da3285a4bef516657c6e385305c7ada2ff636181dd",
+      "bytes": 2240
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/executable-references-python.log",
+      "sha256": "58ca802701b7ba54371a4f91ea38cc4b8f8991da72e5563ae80a6617d5364559",
+      "bytes": 289
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/full-test.log.gz",
+      "sha256": "d94dab84175caba134af2c923714f3a3585847e386f7ff428209bfe638811271",
+      "bytes": 36209
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/jit-final.log",
+      "sha256": "05dd6b58aec784cc4af72608c333790e1cd05fc91c8477f85643ba4fa233edbb",
+      "bytes": 12700
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/nestjs-golden.log",
+      "sha256": "a419fa04bc47d1305cfe82468efab4a082d55d34ca55c9a6e17752bca6916b1e",
+      "bytes": 397
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/nestjs-suite.log",
+      "sha256": "7099df99a024d21c30c761c075f213eb743ab9567a723afac8af9ecc8861de41",
+      "bytes": 2516
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/nextjs-golden.log",
+      "sha256": "e069016660c5849f68da3b8a4e9f3c60920b8442a7371480893997c724be1fda",
+      "bytes": 444
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/repository-1.log.gz",
+      "sha256": "db40b8a9280330c2a68492695dff510e78aab4b3f1ae1be61da300ae585658eb",
+      "bytes": 35391
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/repository-2.log.gz",
+      "sha256": "1a98a724f036679ab05a0dc52b0b4a6c0b2b9df1675890e960f183e10d9dc5fa",
+      "bytes": 79036
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/repository-3.log.gz",
+      "sha256": "b2757e61a019e0e9b705888943b855be786453d64ece726659f8cad07f750dd1",
+      "bytes": 34828
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/repository-core-final.log",
+      "sha256": "3d9acfbbdfb6652e21acadbb74cc82354de2060cbf0330c23ee50eab55a42683",
+      "bytes": 75623
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/repository-core-packaged.log",
+      "sha256": "70ada681a4b8bbd7d144b6ebe81c8b2cc44c7da5b05c0ff0c95c178be2703a75",
+      "bytes": 75587
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/site-build.log.gz",
+      "sha256": "f5fc8931749f4e0cac56c68c434a3aeed4852ca39e8a033f0d286c3df71e11db",
+      "bytes": 1120
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/target-fast-fix-evaluation-original.md.gz",
+      "sha256": "879da4f0472a94acdd29737e1e70a9f1f61e829794a136cad43aecd2d50e7d26",
+      "bytes": 6808
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/templates-green.log",
+      "sha256": "bddc6776be99137ce53dba5e48e368cb46cdc769cea33fa2cfdfedad1ca53176",
+      "bytes": 1559
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/templates-red-consumer.log.gz",
+      "sha256": "fa2c36376892913efbab72eefcc890f580142a1a1b5c69df662bcb5fd8786a0d",
+      "bytes": 1000
+    },
+    {
+      "path": "authoring/evals/skill-audit-content/runs/templates-red.log.gz",
+      "sha256": "a93ab98c99cd9936f55993b55f850c7ba1a8d4781d4999386b3de87df7ecf724",
+      "bytes": 1633
+    }
+  ],
+  "excluded_from_baseline_claims": [
+    "contract-probe-fixture-error-initial.tap.gz",
+    "content-routing-fixture-error.log.gz",
+    "templates-red.log.gz"
+  ],
+  "composite_run": "full-test.log.gz: npm test stopped after core756 PASS at native cleanup setup (44 pass,110 fail,5 skip); supported native operations NOT RUN on overlayfs. Do not report npm test or test:e2e:repository as green.",
+  "lossless_compressed_baseline": "authoring/evals/skill-audit-content/contract-baseline-red.tap.gz"
+}

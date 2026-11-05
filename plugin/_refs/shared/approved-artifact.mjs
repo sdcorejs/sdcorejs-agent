@@ -216,6 +216,11 @@ function validateMetadata(input) {
     throw new TypeError('supersedes must be null or an artifact id');
   }
   delete metadata.approval_hash;
+  // Only the artifact's own compatibility alias is derived. Parent identities
+  // (for example approved_spec_hash on a plan) remain protected metadata.
+  if (['spec', 'plan'].includes(metadata.artifact_kind)) {
+    delete metadata[`approved_${metadata.artifact_kind}_hash`];
+  }
   return canonicalize(metadata);
 }
 
@@ -254,6 +259,12 @@ export function verifyApprovedArtifact(artifact) {
   }
   const protectedMetadata = validateMetadata(artifact.metadata);
   const expectedHash = calculateApprovalHash(protectedMetadata, artifact.body);
+  if (['spec', 'plan'].includes(artifact.metadata.artifact_kind)) {
+    const alias = `approved_${artifact.metadata.artifact_kind}_hash`;
+    if (Object.hasOwn(artifact.metadata, alias) && artifact.metadata[alias] !== suppliedHash) {
+      throw new Error(`${alias} must equal canonical approval_hash`);
+    }
+  }
   if (suppliedHash !== expectedHash) {
     throw new Error(`approval hash mismatch: expected ${expectedHash}, received ${suppliedHash}`);
   }

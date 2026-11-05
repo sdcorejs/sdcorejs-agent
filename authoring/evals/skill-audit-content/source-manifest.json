@@ -1,0 +1,549 @@
+{
+  "schema_version": 1,
+  "baseline_revision": "af42f21a36f12ae31c09abac1009f41f51b3d87f",
+  "observed_head": "930cc9d67eac64d91e4a55a9b7d32693576ee8db",
+  "source_state": "final working-tree implementation; commits may package this exact source without changing bytes",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "c803350db1776107f1c4e7495d7a22103049e9f782091d15354e2f620159563f",
+      "bytes": 10017
+    },
+    {
+      "path": "CLAUDE.md",
+      "sha256": "cda42bba1314af1cb1ca3bf15f0d010f78df0e8fcae03fdea26222c2a3e48fcc",
+      "bytes": 16949
+    },
+    {
+      "path": "_refs/angular/orchestrator-generation.md",
+      "sha256": "2856b4ddd5447e5d82a075b143f6523f62c6ca75217dd3d733f74be85d00a050",
+      "bytes": 25825
+    },
+    {
+      "path": "_refs/angular/orchestrator-workflow.md",
+      "sha256": "7fab20652ff819f7044cc0a1a6462163ebb0feab1076f87413e5bbabc0e79ede",
+      "bytes": 10658
+    },
+    {
+      "path": "_refs/content/catalog.json",
+      "sha256": "7bf2d38d2c4ae7ce2973c2be4f1a0d60ed6741be8404dc9426abb6f0b108742d",
+      "bytes": 940
+    },
+    {
+      "path": "_refs/content/channels/facebook.md",
+      "sha256": "2fad4ca1b8c8e34e67468b05db6d0eb236d00dd4fc5da01272cf3e2d0532af73",
+      "bytes": 1326
+    },
+    {
+      "path": "_refs/content/channels/general.md",
+      "sha256": "f9918c4a70754907b90991e4f3ac0ef37099ce5dcfab84527b9afac27bc821f5",
+      "bytes": 1114
+    },
+    {
+      "path": "_refs/content/channels/tiktok.md",
+      "sha256": "448554514e29c8bbc28ee61b8333e41220a9e8b2e5a3e21bb3eeda0a18d02b4c",
+      "bytes": 1233
+    },
+    {
+      "path": "_refs/content/content-contract.mjs",
+      "sha256": "53d8e7b6176d8ee5a587faf48be03cf573294f9f3e66e427ee02e4ce4bb0a7f5",
+      "bytes": 3291
+    },
+    {
+      "path": "_refs/content/core/brief.md",
+      "sha256": "150aafc8398f6623ef49a02718f25aaff79417269e1bc8c731db0fc8f87f00a3",
+      "bytes": 1288
+    },
+    {
+      "path": "_refs/content/core/editorial-review.md",
+      "sha256": "0472ea84f093a1becfa38ef973ca45859a9776cb180d9141d1bb9fe7f66ae9e1",
+      "bytes": 1412
+    },
+    {
+      "path": "_refs/content/core/learning-from-results.md",
+      "sha256": "91aaf0ed04ce0296f892ec263ebd7d26992f14ad846804e4e8e0448eac6db5bf",
+      "bytes": 1469
+    },
+    {
+      "path": "_refs/content/core/research-and-claims.md",
+      "sha256": "7e6d13de6185996ae416ca095f771dae1a140ce6f1bb0fe514daefdc041fc30a",
+      "bytes": 1983
+    },
+    {
+      "path": "_refs/content/core/voice.md",
+      "sha256": "089a83e81599895ddc44a99dc92e096ac1a816ee42c70002b07396c9dd107edc",
+      "bytes": 1488
+    },
+    {
+      "path": "_refs/content/domains/marketing-business.md",
+      "sha256": "45510c0d9c7051ede3dfa67a89b9568c3c4abb51f98ce3d6e715f80d0ce4c97f",
+      "bytes": 1094
+    },
+    {
+      "path": "_refs/content/domains/tech.md",
+      "sha256": "dbea11f30a10c5e1344c34aaf392e6e8d6fbfbe065d8d22740a18f648468a5ec",
+      "bytes": 1047
+    },
+    {
+      "path": "_refs/content/domains/travel-lifestyle.md",
+      "sha256": "c4aa1ea9199549a232387d69c331028b7887e44b5c68f6038730591e95164f66",
+      "bytes": 1079
+    },
+    {
+      "path": "_refs/content/formats/carousel.md",
+      "sha256": "f431e47f0d22bc7f750650e52c0d9c0cc9eba022a219517beb6731a5e4a662a5",
+      "bytes": 925
+    },
+    {
+      "path": "_refs/content/formats/long-form.md",
+      "sha256": "1c189dd88571087a5a857876a065fbfa84d2df58f9182a2e5fea3ebb3345d825",
+      "bytes": 973
+    },
+    {
+      "path": "_refs/content/formats/short-video.md",
+      "sha256": "bed3596d3d47e976cb692055c5641049caa4c85f5f1a4bffb57a2dd8da939fca",
+      "bytes": 971
+    },
+    {
+      "path": "_refs/content/formats/text-post.md",
+      "sha256": "2e6193a53730ba4f1b85de06be693f2181295407ee22d761d9297d9f3ebbca22",
+      "bytes": 842
+    },
+    {
+      "path": "_refs/content/workflows/repurpose.md",
+      "sha256": "e39c954b549e1f91441e0acbdbf4fd660a17ce20098050b0f3275380afae2713",
+      "bytes": 1141
+    },
+    {
+      "path": "_refs/content/workflows/strategy-and-calendar.md",
+      "sha256": "bf70716a4d7ad32d51244cd55abe941d8b8fa8906a03de91b903973bd6d61e3c",
+      "bytes": 1217
+    },
+    {
+      "path": "_refs/documentation/gate.md",
+      "sha256": "e23acd71801159da9e37927dfcf7fc0c95e54d6501c5a1a7118d514a623c6b8e",
+      "bytes": 10863
+    },
+    {
+      "path": "_refs/documentation/intent.mjs",
+      "sha256": "0dcbbbae6239d09cdcb4ef62ea1587ffedc2c2fafc4ac8fb8de40916c701225b",
+      "bytes": 622
+    },
+    {
+      "path": "_refs/nextjs/build-website/write-code/init-site.md",
+      "sha256": "dbd999166bdf066616858d16d69e726343968285366729d3f03b62c83be47ea2",
+      "bytes": 14033
+    },
+    {
+      "path": "_refs/nextjs/generator/generate-golden-project.mjs",
+      "sha256": "e02f2d35da95b31465fbdf12add8af38c00be1884e5efb2f196569c0ca857640",
+      "bytes": 10224
+    },
+    {
+      "path": "_refs/nextjs/generator/next-config.mjs",
+      "sha256": "597fb4410893d6b879234dfecf9c381beb2b30a77bf463834d330185455d6e7a",
+      "bytes": 557
+    },
+    {
+      "path": "_refs/orchestration/execution-contract.mjs",
+      "sha256": "b9bdba712c7af8561e4c61c82ab581b1dec64ba81e496ba878ca816c61284c34",
+      "bytes": 15131
+    },
+    {
+      "path": "_refs/orchestration/parallel-protocol.mjs",
+      "sha256": "0cd3113cb2f4c2ede3da564eab90b0a46aac0ab76af78d67aea7e2e3a4923b96",
+      "bytes": 54525
+    },
+    {
+      "path": "_refs/orchestration/tail/branch-ready.md",
+      "sha256": "a7fddf4c535116be1070154c26cbf3588494589aa1e09a77ac634dd06236dc82",
+      "bytes": 15099
+    },
+    {
+      "path": "_refs/sdlc/plan-approval-artifact.md",
+      "sha256": "c7c61eeb427a00807657e07729c5c95b7515fd21b05e2f3ee9bd7460fba9a062",
+      "bytes": 5829
+    },
+    {
+      "path": "_refs/sdlc/plan-template.md",
+      "sha256": "87618c130594fde57c58fa2e2e8a5d83017b04f46b1fc1dfe679eb8b769ef640",
+      "bytes": 6565
+    },
+    {
+      "path": "_refs/shared/approved-artifact.mjs",
+      "sha256": "80ae04165e3da63604a2c8aca542b786dd135fb78011301c67f873324f2efb9a",
+      "bytes": 20024
+    },
+    {
+      "path": "_refs/shared/debug-contract.mjs",
+      "sha256": "24e8f699e516a2068bfe5b689bd775bb29f1f47354ddafce5d791d367fdaa0c9",
+      "bytes": 9319
+    },
+    {
+      "path": "_refs/shared/explore-code-map-readonly.md",
+      "sha256": "ee2755df0ea0d559022a6bff1ae45e340092910781b1070e9666810d7d472564",
+      "bytes": 1347
+    },
+    {
+      "path": "_refs/shared/explore-contract.mjs",
+      "sha256": "4ee8036196955c1f4bfeca699b45ce48be3098a5a0db72918bdcaa23beb65467",
+      "bytes": 18548
+    },
+    {
+      "path": "_refs/shared/explore-convention-actions.md",
+      "sha256": "de71df619708131b1a35b3e352a01c5b25455096dbe0d60bb6342b9ae6ed775b",
+      "bytes": 606
+    },
+    {
+      "path": "_refs/shared/explore-documentation-harvest-readonly.md",
+      "sha256": "842357f5eee36bad8268deea3f995f989aec75f55532167eb4c4e399d16f9216",
+      "bytes": 1337
+    },
+    {
+      "path": "_refs/shared/explore-env-setup-actions.md",
+      "sha256": "b5176bfd3d7c8240505d823aa41e5dbb13fff19be8468f71e11268545847b384",
+      "bytes": 723
+    },
+    {
+      "path": "_refs/shared/explore-memory-actions.md",
+      "sha256": "f288b96fe162289c18ae92bded335b36d2fa810e2fe4c5bbf74104d806d4b8f7",
+      "bytes": 930
+    },
+    {
+      "path": "_refs/shared/explore-persona-actions.md",
+      "sha256": "a91e384fd6986e37168013537d8994d242eba6cb02c592b28abb7b7acaa3bd9c",
+      "bytes": 757
+    },
+    {
+      "path": "_refs/shared/explore-recovery-readonly.md",
+      "sha256": "0991b9b0b2f19a7154a0b55252ab3ae050d5862169364b362aa8b14ce086c14c",
+      "bytes": 897
+    },
+    {
+      "path": "_refs/shared/explore-trace-flow-readonly.md",
+      "sha256": "34c541fe0f2ca538b930dc65522a47c6bfba5e9b2ef6040016f2aeb6cce7138b",
+      "bytes": 907
+    },
+    {
+      "path": "_refs/shared/finish-decisions.md",
+      "sha256": "dbfc86870718bd20d8ab4d2d6cf84673e266b3ff58a0974ebe9761fbc745f0ba",
+      "bytes": 5130
+    },
+    {
+      "path": "_refs/shared/finish-gate.md",
+      "sha256": "4aad56aa055d74a3198bcc4e82e675731be4cfc5275508aab48baaab2253fa49",
+      "bytes": 10925
+    },
+    {
+      "path": "_refs/shared/git-disposition.md",
+      "sha256": "6e5f63616e020059fc93961d9f70ec1fed5b7306b78e6c43bf2f40b9b1fdf3bb",
+      "bytes": 2011
+    },
+    {
+      "path": "_refs/shared/project-context.md",
+      "sha256": "28a10013c43128b621864318277a26cf6f11b105f400c247f5a59f3e619b519e",
+      "bytes": 12659
+    },
+    {
+      "path": "_refs/shared/project-context.mjs",
+      "sha256": "b8ac19c00f42714612f828fe1cbc260eb2ba2e78d19286349cfcdb1959830557",
+      "bytes": 33343
+    },
+    {
+      "path": "_refs/shared/review-output.md",
+      "sha256": "3bc50a5ae72d6cba493838ba6136285d20aeec97c17fa43a15b471704075e4c1",
+      "bytes": 4723
+    },
+    {
+      "path": "_refs/shared/session-authority.md",
+      "sha256": "2188aa5a39221d152dd98511341704435488609c672ad22da03cec2059053f2a",
+      "bytes": 3377
+    },
+    {
+      "path": "_refs/shared/ship-readiness-contract.mjs",
+      "sha256": "b6a393e16579b13015cb989cffa6226e460fdfc28a8d22fce21c8d4c89653b99",
+      "bytes": 18296
+    },
+    {
+      "path": "_refs/shared/system-registry.json",
+      "sha256": "2062836adbf0a1c0f7e54989da092004d3523c3a1495414a3eb6a032371c9dec",
+      "bytes": 9225
+    },
+    {
+      "path": "_refs/shared/system-registry.mjs",
+      "sha256": "490ec31714b0618ab77372e77e40df126e4de61b700859878a18fb522a893790",
+      "bytes": 8329
+    },
+    {
+      "path": "_refs/shared/test-context.md",
+      "sha256": "1711efd24e8dcd6f2e705a74cbd7130ff5365e85b7538355053e5ab4dbf64f05",
+      "bytes": 10207
+    },
+    {
+      "path": "_refs/shared/test-downstream-context.md",
+      "sha256": "d62651e79119f9c13aaa24d9b2eea1bc9af750036355e3678f2a4411a34acf59",
+      "bytes": 2622
+    },
+    {
+      "path": "_refs/simplify/scope-and-invariants.md",
+      "sha256": "d0164e1a00239f09f511773f9ead4020285471094a255b7fb6480debe1dd0e29",
+      "bytes": 10250
+    },
+    {
+      "path": "authoring/evals/inventory-policy.json",
+      "sha256": "850a59519cb768d595895b8848e088b6b517300f7041d40c5163650ded9e9818",
+      "bytes": 349
+    },
+    {
+      "path": "authoring/evals/skill-authoring-contract.mjs",
+      "sha256": "b6f53e2df086aa198ce7424e5bbe301e9fd61c78192034e2e25177dcb76c2366",
+      "bytes": 52196
+    },
+    {
+      "path": "authoring/skills/sdcorejs-skill-authoring/SKILL.md",
+      "sha256": "240fc1eb06e62e1dd658bc0fc5fb38da6185b5052b60425e0b669028723dd028",
+      "bytes": 7089
+    },
+    {
+      "path": "package.json",
+      "sha256": "fc9ba476c6abaaa6cf05c9ac1a0cea51d4ae6ff77739207a9280e80cdc9f6c02",
+      "bytes": 8855
+    },
+    {
+      "path": "site/src/data/catalog-en.ts",
+      "sha256": "d553708634a975f096faa4fd11732430ce65d376cf7b8c38ec789ec977b4d8f5",
+      "bytes": 11656
+    },
+    {
+      "path": "site/src/data/catalog.ts",
+      "sha256": "3a5bf0484a2a0826744f46facd8a94521b26330eef373d1fb8438eb2ee43bda2",
+      "bytes": 13077
+    },
+    {
+      "path": "skills/orchestration/documentation.md",
+      "sha256": "c26421f886db88e940794a09e1c808ce22bcd2ac114d6086306da0afbf629b40",
+      "bytes": 14699
+    },
+    {
+      "path": "skills/orchestration/parallel-dispatch.md",
+      "sha256": "939812df2ddd5e5e9bc1cb4f0b8818b5c7fabb5816a78734c80523bb1980bf19",
+      "bytes": 16331
+    },
+    {
+      "path": "skills/orchestration/repair-loop.md",
+      "sha256": "444b234e9d8746ab2b4e5c92a72e6dc77b6a5eb68ac4949b7754e2fe877a6830",
+      "bytes": 8582
+    },
+    {
+      "path": "skills/orchestration/using-skills.md",
+      "sha256": "fc19f940b124e6b2e354d567a381e31f7da4b6ff521b8a676983959783afab52",
+      "bytes": 7751
+    },
+    {
+      "path": "skills/shared/sdlc/02-spec.md",
+      "sha256": "3cb5c3dbbb9de2fa37db67c6d8b584c956d90aa213589ce8dd4c24e7239ada8c",
+      "bytes": 19685
+    },
+    {
+      "path": "skills/shared/sdlc/03-plan.md",
+      "sha256": "fc0c0b9314ae734b899872f0c130b0af8dbe9e91d2b7a090e4da955844b8af32",
+      "bytes": 18604
+    },
+    {
+      "path": "skills/shared/sdlc/04-execute-plan.md",
+      "sha256": "783811263c7582bae17033e1dbfb5733beadc93b67548c463c5825b1b61344ea",
+      "bytes": 26025
+    },
+    {
+      "path": "skills/shared/workflow/debug.md",
+      "sha256": "f3388d609f4387d2c5d16db5b801d9156161e9548c696957dc01b4e23e4334a2",
+      "bytes": 24690
+    },
+    {
+      "path": "skills/shared/workflow/explore.md",
+      "sha256": "4b6cad9c23d287085bacf566c8cc0358473a684fdf3d991dfb532958225b0701",
+      "bytes": 18203
+    },
+    {
+      "path": "skills/shared/workflow/git.md",
+      "sha256": "314c94aa6a7983786e885bb1ec597ffc7f74739fba80c848be8214ba46bbfe1b",
+      "bytes": 22917
+    },
+    {
+      "path": "skills/shared/workflow/review.md",
+      "sha256": "7c8195872179a8f61d076697b00fa58ed807e6a2a76458b0fe5f6db3b6504824",
+      "bytes": 24224
+    },
+    {
+      "path": "skills/shared/workflow/ship.md",
+      "sha256": "ca0a40fd163f216c9f992beaca8d197100261ca98c4d715e9555e9be0566ecca",
+      "bytes": 23768
+    },
+    {
+      "path": "skills/shared/workflow/simplify.md",
+      "sha256": "3cc9ce79f7eac78e9d62c439d5fe501c61cdbf68ad9b404f86bc4961351a3a91",
+      "bytes": 8990
+    },
+    {
+      "path": "skills/tracks/ai-agent/sdcorejs-ai-agent.md",
+      "sha256": "dcaf65008c73f017341ad3fe68627da6f3f71123f5fc2102d77840bce97471e0",
+      "bytes": 10849
+    },
+    {
+      "path": "skills/tracks/angular/sdcorejs-angular.md",
+      "sha256": "3d0d32c97bb926144c2c8ce1f09e255f4a95d7182d87d1198b49028e7c8b4b73",
+      "bytes": 11461
+    },
+    {
+      "path": "skills/tracks/content/sdcorejs-content.md",
+      "sha256": "60a8bc398356323bb75ceae64e9118805d766fc146335d07e3e6cdf2bfec4b55",
+      "bytes": 5749
+    },
+    {
+      "path": "skills/tracks/nestjs/sdcorejs-nestjs.md",
+      "sha256": "a96fd8d7d421e98c042b36dae4e6ae9dc98fd0794f8f425b6610a98ebcd95ecf",
+      "bytes": 5012
+    },
+    {
+      "path": "skills/tracks/nextjs/sdcorejs-nextjs.md",
+      "sha256": "239d63cbb7454e2dc5975e5876192262de05ec9be0e89123480738826ef53689",
+      "bytes": 19118
+    },
+    {
+      "path": "skills/tracks/product/sdcorejs-product.md",
+      "sha256": "22668c2bf4ed9bb971c0ed2a44a9914fd8110b2104af5511c2c941bc6d98f12f",
+      "bytes": 21314
+    },
+    {
+      "path": "skills/tracks/test/sdcorejs-test.md",
+      "sha256": "0ab8f30501b5615966fc95845e7d5bffc4232136b59552be8448e5a0b081b4b2",
+      "bytes": 12264
+    },
+    {
+      "path": "test/e2e/ai-agent-track-contract.test.mjs",
+      "sha256": "8047b82c2c5dde6d5ee6c7aa8d5f1f7bfc265cca3b0a3081022eeca151cba8ec",
+      "bytes": 20031
+    },
+    {
+      "path": "test/e2e/angular-production-contract.test.mjs",
+      "sha256": "3002f6292a1222e68b460469028aafe2c1833af3df5f2232782b0db4f2f1a72b",
+      "bytes": 4878
+    },
+    {
+      "path": "test/e2e/architecture-contract.test.mjs",
+      "sha256": "1b8f0e4088f1521ded8966b2fddebaeec0040119df4d538d1916e8e4bd36f389",
+      "bytes": 59033
+    },
+    {
+      "path": "test/e2e/audit-contract-regression.test.mjs",
+      "sha256": "bc2083c7c7702ad21e31de25ddefb78bec17c398bdfd33408ee6af94ca1985fa",
+      "bytes": 22114
+    },
+    {
+      "path": "test/e2e/audit-template-producers.test.mjs",
+      "sha256": "fd765d912892a2ec22e27f3b285ff04d585819b020372403b4d8f0d26787f691",
+      "bytes": 2902
+    },
+    {
+      "path": "test/e2e/audit-workflow-behavior.test.mjs",
+      "sha256": "aad84266e76cf7363b2e88d7043d4e9f3c1f9ab08de4d68331780742116c3aeb",
+      "bytes": 6789
+    },
+    {
+      "path": "test/e2e/communication-economy.test.mjs",
+      "sha256": "9f67e5f337e39b0a03a1ed6e643f30adb7ad94e4dcfcda08df720f4c42f93dad",
+      "bytes": 85253
+    },
+    {
+      "path": "test/e2e/content-skill.test.mjs",
+      "sha256": "0885fe695522064f2f71be45df6b7beb76fe5941f45ed66457d59c1079717a26",
+      "bytes": 6378
+    },
+    {
+      "path": "test/e2e/convergence-contract.test.mjs",
+      "sha256": "d5db55bdc9cedd3560bdae6c2c7a3c82d628539c1cfdee1dd345d7340af3d059",
+      "bytes": 38321
+    },
+    {
+      "path": "test/e2e/debug-contract.test.mjs",
+      "sha256": "e91e6db56c1e196c0e8ac6235e25862b2f109e580a16d71a60c45190d49ee5df",
+      "bytes": 5180
+    },
+    {
+      "path": "test/e2e/explore-topology.test.mjs",
+      "sha256": "3ac060ae2537865d811cf834c998c44c6c7068e43ee42d403b9fc9682df5bf81",
+      "bytes": 10220
+    },
+    {
+      "path": "test/e2e/harness-behavioral-sentinel.test.mjs",
+      "sha256": "8f1addb317a60c4af866344823ab43d4c4fd977f6a8e51dad916378db72cd9a6",
+      "bytes": 35023
+    },
+    {
+      "path": "test/e2e/npm-publication-contract.test.mjs",
+      "sha256": "b0fea9eb9ebdd04d951aa14ecade7dcd1ecf5ee474b1a9af14b33e799b269b95",
+      "bytes": 15630
+    },
+    {
+      "path": "test/e2e/parallel-dispatch-protocol.test.mjs",
+      "sha256": "bfbcda99dca92b90935fe3c7c411107ea4ad742e68b0f104252930a0c83b7aa0",
+      "bytes": 49315
+    },
+    {
+      "path": "test/e2e/product-ledger-contract.test.mjs",
+      "sha256": "869c149f0055b37da8aeff73adeff307378e0af34e539a616134b3c052bfb2fe",
+      "bytes": 22651
+    },
+    {
+      "path": "test/e2e/production-readiness-contract.test.mjs",
+      "sha256": "0af2d037cc635357c2cd3459759fa2db870db02e048dba7246c6be9498522e3d",
+      "bytes": 39142
+    },
+    {
+      "path": "test/e2e/simplify-skill-contract.test.mjs",
+      "sha256": "958b4520ce294e630cbdee2be653ac3f68fd2b5ee5272c4b8c802fa8d1f8d8e8",
+      "bytes": 22077
+    },
+    {
+      "path": "test/e2e/skill-authoring-contract.test.mjs",
+      "sha256": "2e73e83a829eedb1c0b123c4805b2204779379add132fbde20492a7efe39edbc",
+      "bytes": 31200
+    },
+    {
+      "path": "test/e2e/skill-pack-runner.test.mjs",
+      "sha256": "dfc76b1f5c2b5f60d5f7477db6c6ffaa0685f3984b1079fbe7ec3df22efb8770",
+      "bytes": 123717
+    },
+    {
+      "path": "test/e2e/support/entrypoint-smoke.mjs",
+      "sha256": "a071e2f9e53f41d36212c948d786414e597edd2b6095db59851646249652917f",
+      "bytes": 4508
+    },
+    {
+      "path": "test/e2e/support/published-contract.mjs",
+      "sha256": "bdf20c17e50aaae8a159b401bb8788eaa1b9f9414fb21cab6101aae226ce7907",
+      "bytes": 1509
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "07a08ace78531c570dae9d40843f057ecdd544b9fb9ca62abbdf1fd9292a5c0c",
+      "bytes": 47840
+    },
+    {
+      "path": "test/e2e/test-track-contract.test.mjs",
+      "sha256": "1c7f240eaab83d501fa8ea0e08fd3d8ab2efbb427c2bb3a5e8d4a90a4f32ae85",
+      "bytes": 43123
+    },
+    {
+      "path": "test/e2e/uiux-knowledge.test.mjs",
+      "sha256": "6896cb298f9c1da5886353a65e2f677a77629e1d09d1a58b4ef710ef773e4008",
+      "bytes": 12832
+    },
+    {
+      "path": "test/e2e/validation-map-contract.test.mjs",
+      "sha256": "a2904c7a7ce662c369716b51bcc6b13239a185b81694390eaa1fb1d02f4766be",
+      "bytes": 31869
+    }
+  ],
+  "bundle_sha256": "32220c10081e05ae1cef7977940ef8354baa23ef3f1c72950e04dc9d204cb350"
+}

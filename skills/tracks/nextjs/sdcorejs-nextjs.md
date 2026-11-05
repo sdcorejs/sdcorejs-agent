@@ -11,6 +11,9 @@ For unresolved visual decisions, apply `_refs/sdlc/visual-offer-policy.md`;
 forward `requirement_context.visual_companion` through `context.pass`
 (portable `state_delta.visual_companion`) to the owning workflow.
 
+Read `_refs/shared/session-authority.md` before classification or any approval/finish
+transition. Reuse scoped session authority; preserve unresolved risk decisions.
+
 ## Shared Protocols
 
 Read `_refs/shared/runtime-protocols.md` and `_refs/shared/artifact-lifecycle.md`; merge producer `artifact_context` through the finishing tail.
@@ -22,6 +25,11 @@ focused REFERENCE PACKS that hold the per-concern generation rules. It does NOT
 inline those rules — it reads the right pack on demand. The ten packs under
 `_refs/nextjs/build-website/write-code/` were standalone sub-skills before they
 were consolidated here so the track exposes one orchestrator instead of eleven.
+
+Bounded low-risk corrections to existing code use the shared generic fast-fix
+path with targeted references, installed dependencies and focused verification.
+The plan and generation-pack gates below apply to non-trivial track generation;
+permission, tenant and public-contract changes cannot use this exception.
 
 ## When invoked
 - After `sdcorejs-execute-plan` dispatches an approved Next.js plan
@@ -129,7 +137,7 @@ may fan out after their approved page inputs exist.
 
 ### MANDATORY FINISH GATE (always — standalone trigger OR full SDLC flow)
 
-**STOP and present the consolidated finish gate from [`_refs/shared/finish-gate.md`](../../../_refs/shared/finish-gate.md) before running ANY tail step.** UNCONDITIONAL: it fires even when this skill was triggered directly for a one-line request (e.g. "add a page", "add a section") — NOT only inside the spec→plan flow. The gate surfaces tests / user-guide / technical-doc / behavior-preserving simplification / review choices with defaults so the user always knows these steps exist and can opt out of new user/technical docs. "Small change" is not a reason to skip the gate.
+Apply `_refs/shared/finish-gate.md` after every code-generation run, including standalone requests. Resolve existing session authority and saved choices first; ask only for unresolved optional actions. Mandatory assessment is proportional to risk and preserves required verification and review.
 
 Then run the tail-call chain, honoring the gate's answers (skip = omit that step; everything not skipped runs):
 
@@ -137,8 +145,8 @@ Documentation supplement: immediately after the Finish Gate test decision, run
 `sdcorejs-documentation (documentation-gate mode)` and read
 `_refs/documentation/gate.md`. This gate asks or loads saved project
 preferences from `<target>/.sdcorejs/documentation/preferences.md` for
-`user-guide` and `technical-doc` only. It must ask before
-creating a missing corresponding user-guide or technical-doc for a new feature.
+`user-guide` and `technical-doc` only. Ask before creating missing docs only when existing scoped session authority
+does not cover that creation.
 `code-documentation` is automatic for touched source files and is not controlled
 by this approval gate.
 
@@ -149,7 +157,7 @@ sdcorejs-test  (if Tests not skipped)  ← happy-path tests for each generated p
    ↓
 sdcorejs-review (if Review not skipped) ← convention check; Critical / Important / Minor findings
    |
-sdcorejs-repair-loop (if Review not skipped) - apply findings, iterate to clean
+sdcorejs-repair-loop (if repair is authorized) - apply findings, iterate to clean
    |
 sdcorejs-documentation (code-documentation mode) - automatic source-code documentation for touched source files; no approval ASK; rules in _refs/documentation/code-documentation.md
    |
@@ -163,14 +171,20 @@ sdcorejs-documentation (write-user-guide mode, if User guide approved) - create/
    |
 _refs/orchestration/tail/auto-task-tracker.md (integration/sequential owner only) - reconcile durable backlog, never live progress
    |
-sdcorejs-explore (memories mode) - durable knowledge (when applicable)
+sdcorejs-explore (memories-readonly) - relevant durable knowledge; persist only with action-specific authority
    |
 sdcorejs-ship verify-before-done mode (always) - BLOCK "done" until acceptance criteria from selected scope are verified or deferred
    |
 sdcorejs-ship (branch-ready mode) (always) - final read-only gate over the final diff before any Git artifact handoff. No writes after branch-ready unless branch-ready is run again.
 ```
 
-The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLAUDE.md / AGENTS.md / copilot-instructions.md). The always-on plumbing steps run regardless of gate answers. Do NOT skip `sdcorejs-ship (verify-before-done mode)`; that is how acceptance criteria slip.
+The finish assessment is mandatory. `Run review only` never authorizes repair.
+`Defer` stops the remaining tail, including durable writes and Ship, with a
+concise status and no completion claim. Otherwise run only applicable,
+authorized steps; preserve acceptance verification and final read-only
+branch-ready before any authorized Git artifact. Memory persistence requires
+its separate action authority; backlog reconciliation requires owner authority.
+
 
 ## Data Contract & View Model Rules
 
@@ -201,9 +215,9 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
   SEO/analytics/CMS are absent when not approved
 - Pass the `sdcorejs-brainstorming` requirement contract to each pack as context
 - Use parallel dispatch only when `parallel-dispatch` decision tree allows
-- Run the tail-call chain in full — no shortcuts
+- Run the applicable authorized tail; honor Defer and read-only review
 - Report progress after each pack is applied (1 line per pack)
-- Invoke `sdcorejs-test (tdd mode)` for any pack that writes testable logic (custom hooks, server actions, API route handlers, form validation in `contact-form.md`, utility functions) — write failing tests first, then implement
+- Invoke `sdcorejs-test` for affected testable logic using the agreed TDD/post-hoc strategy. TDD runs the failing test first; post-hoc verifies after implementation.
 - Run the `@sdcorejs/utils` reuse preflight before adding helper logic in `src/lib`, API routes, hooks, forms, content mappers, or client components; report reused utilities and justify any custom helper.
 - Keep raw API/provider payloads behind typed server mappers; expose truthful page/component data contracts only.
 - Keep route pages as Server Component composition/data boundaries where
@@ -229,7 +243,7 @@ The FINISH GATE is mandatory and unconditional (per the cross-track rules in CLA
 - Skip `sdcorejs-ship (verify-before-done mode)` because tests passed — acceptance criteria are independent
 - Apply packs out of order (e.g. pages before theme)
 - Mark "done" before `sdcorejs-ship (verify-before-done mode)` returns green
-- Skip `sdcorejs-test (tdd mode)` for packs that write logic — config files and content may bypass; custom code must not
+- Skip meaningful verification for changed logic or silently replace the agreed TDD/post-hoc strategy
 - Recreate helper behavior already covered by `@sdcorejs/utils`, deep-import from `@sdcorejs/utils/dist/*`, or import `BrowserUtilities` from server components, route handlers, metadata, sitemap, or other server-only code
 - Add UI-only fields to server DTOs or upstream payload types unless the mapper explicitly derives and guarantees them.
 - Force a meaningful one-off interactive block inline into a monolithic

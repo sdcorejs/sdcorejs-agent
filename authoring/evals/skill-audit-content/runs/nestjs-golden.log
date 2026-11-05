@@ -1,0 +1,14 @@
+
+> sdcorejs-agent@0.8.0 test:e2e:nestjs:golden
+> node --test test/e2e/nestjs-golden-project.test.mjs
+
+✔ generated simple NestJS project builds and passes behavioral tests (24026.6487ms)
+✔ generated enterprise NestJS project builds and passes behavioral tests (17770.301199ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 41879.301502

@@ -1,6 +1,7 @@
+import { readPublishedContract as readFile } from './support/published-contract.mjs';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -124,6 +125,7 @@ test('entrypoint routing and adapter manifests consume the central registry with
     'skills/orchestration/subagent-driven-development.md',
     'skills/shared/workflow/explore.md',
     'skills/orchestration/documentation.md',
+    'skills/tracks/content/sdcorejs-content.md',
     'skills/tracks/product/sdcorejs-product.md',
     'skills/tracks/design/sdcorejs-design.md',
     'skills/tracks/ai-agent/sdcorejs-ai-agent.md',
@@ -144,7 +146,7 @@ test('entrypoint routing and adapter manifests consume the central registry with
     assert.ok(name, `${relativePath} has a skill name`);
     sourceSkills.push(name);
   }
-  assert.equal(new Set(sourceSkills).size, 24);
+  assert.equal(new Set(sourceSkills).size, 25);
 
   const expectedRegistryHash = `sha256:${registry.registry_hash_input ?? ''}`;
   for (const relativePath of [
@@ -465,7 +467,7 @@ test('plan skill preserves shared artifact identity and repository-local boundar
   assert.match(combined, /_refs\/shared\/approved-artifact\.mjs/u);
   assert.match(combined, /_refs\/shared\/system-registry\.json/u);
   assert.match(combined, /one Git root/iu);
-  assert.match(combined, /test.*before.*production code/isu);
+  assert.match(combined, /Choose TDD or post-hoc before implementation/isu);
   assert.match(combined, /module-owned plan.*portal/isu);
   assert.doesNotMatch(
     approvalRef,
@@ -601,7 +603,7 @@ test('execute-plan verifies artifacts, source freshness, owner root, and path sc
       unrelated_dirty_paths: ['docs/unrelated.md'],
       intended_output_paths: ['src/orders/order.service.ts'],
     }).status,
-    'decision-required',
+    'dirty-disjoint',
   );
 
   assert.equal(

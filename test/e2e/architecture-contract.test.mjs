@@ -1,5 +1,6 @@
+import { readPublishedContract as readFile } from './support/published-contract.mjs';
 import assert from 'node:assert/strict';
-import { readFile, readdir } from 'node:fs/promises';
+import { readdir } from 'node:fs/promises';
 import test from 'node:test';
 
 import { prepareExecution } from '../../_refs/orchestration/execution-contract.mjs';
@@ -1415,8 +1416,8 @@ test('architecture and delegated execution each exist once at the skill ceiling'
   })));
   const architectureSources = sources.filter(({ text }) => /^name:\s*sdcorejs-architecture$/mu.test(text));
   const delegatedSources = sources.filter(({ text }) => /^name:\s*sdcorejs-subagent-driven-development$/mu.test(text));
-  assert.equal(sources.length, 24);
-  assert.ok(sources.length <= 24);
+  assert.equal(sources.length, 25);
+  assert.ok(sources.length <= 25);
   assert.equal(architectureSources.length, 1);
   assert.equal(architectureSources[0].file.replaceAll('\\', '/'), 'shared/sdlc/architecture.md');
   assert.equal(delegatedSources.length, 1);

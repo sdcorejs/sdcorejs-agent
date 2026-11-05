@@ -1,0 +1,37 @@
+
+> sdcorejs-agent@0.8.0 test:e2e:nestjs
+> node --test test/e2e/nestjs-pack-contract.test.mjs test/e2e/nestjs-pack-generation.test.mjs test/e2e/nestjs-pack-security.test.mjs test/e2e/nestjs-pack-runtime.test.mjs
+
+✔ canonical NestJS pack exposes a manifest and profile contract (7.499793ms)
+✔ canonical NestJS sources contain no corruption token or mojibake (30.138769ms)
+✔ forbidden-token scanner accepts clean text and rejects the invalid fixture (2.331882ms)
+✔ TypeScript fence scanner identifies balanced and malformed fixtures (62.662865ms)
+✔ every long canonical NestJS Markdown pack has a contents map (9.068265ms)
+✔ focused canonical validator reports no contract error (41.668187ms)
+✔ canonical generator and both profile contracts exist (10.533079ms)
+✔ manifest declares simple and enterprise generation with non-mutating verification (3.204918ms)
+✔ orchestrator resolves one profile and propagates it to every pack (1.550327ms)
+✔ generator renders deterministic simple and enterprise projects (232.074174ms)
+✔ generator rejects an output path that escapes the declared output root (65.633969ms)
+✔ read-only generation emits no mutation controller or route audit record (126.999039ms)
+✔ force generation rejects symlink or junction ancestors before deleting outside data (59.386657ms)
+✔ force generation rejects a case-different sibling outside output root on Linux (70.436992ms)
+✔ production runtime contract is strict and bounded (15.674821ms)
+✔ admin and Keycloak contract has no privileged bootstrap and isolates secrets (12.81116ms)
+✔ workflow, import, and export contracts are concurrency and resource safe (2.578713ms)
+✔ executable admin templates encode typed permissions and scoped role uniqueness (2.265636ms)
+✔ executable Keycloak templates resolve UUIDs, isolate secrets, and reconcile outcomes (7.347008ms)
+✔ generated controller contract requires explicit route auth and fail-closed metadata (6.540704ms)
+✔ generated auth boundary verifies bearer tokens before policy evaluation (3.201451ms)
+✔ route audit derives real controller metadata (1.377344ms)
+✔ enterprise contract denies cross-tenant access before actor or ownership checks (2.336509ms)
+✔ mutation policy uses authenticated actor and ignores DTO capability flags (1.330078ms)
+✔ enterprise executable action templates preserve actor and scope invariants (5.870723ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1392.982282

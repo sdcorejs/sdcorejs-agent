@@ -12,6 +12,9 @@ allowed-tools: Agent, AskUserQuestion, Bash, Edit, Glob, Grep, Read, TodoWrite, 
 # Repair Loop
 
 
+Read `../../_refs/shared/session-authority.md` before classification or any approval/finish
+transition. Reuse scoped session authority; preserve unresolved risk decisions.
+
 ## Shared Protocols
 
 Read `../../_refs/shared/runtime-protocols.md` and load only the references needed by

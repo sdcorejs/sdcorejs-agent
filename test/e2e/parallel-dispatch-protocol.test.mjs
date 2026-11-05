@@ -368,7 +368,7 @@ test('working-tree preflight fails closed on branch, HEAD, dirty, untracked, and
     staged_paths: ['shared.ts'], unstaged_paths: ['src/a.ts'], untracked_paths: ['src/new.ts'],
     unrelated_dirty_paths: ['shared.ts'], intended_output_paths: ['src/new.ts', 'src/existing.ts'], existing_paths: ['src/existing.ts']
   });
-  assert.match(errors.join('\n'), /branch mismatch.*HEAD mismatch.*unrelated dirty.*existing output/s);
+  assert.match(errors.join('\n'), /branch mismatch.*HEAD mismatch.*existing output/s);
 });
 
 test('working-tree preflight rejects parent-child output overlap in both directions', () => {

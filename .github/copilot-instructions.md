@@ -2,6 +2,12 @@
 
 Use this repo as a Runtime-localized SDLC skill pack for AI-agent, Angular, NestJS, Next.js, product-track, design-track, test-track, and generic harness work.
 
+Social editorial work (captions, posts, video scripts, voice, repurposing and
+feedback) routes to `sdcorejs-content`; technical docs, PRDs and code keep their
+own owners. Content drafts require no engineering artifact chain and grant no
+publishing/scheduling/messaging permission. Apply `_refs/shared/session-authority.md`
+at workflow transitions; reuse scoped authorization without inventing review.
+
 ## Dispatch
 
 1. Glob `skills/**/*.md` and read frontmatter only.

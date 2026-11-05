@@ -1,6 +1,7 @@
+import { readPublishedContract as readFile } from './support/published-contract.mjs';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, mkdtemp, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -1624,7 +1625,7 @@ test('canonical workflows integrate compact projection, event progress, and rela
 
   const skillFiles = (await listRelativeFiles(path.join(root, 'skills')))
     .filter((relativePath) => relativePath.endsWith('.md'));
-  assert.equal(skillFiles.length, 24);
+  assert.equal(skillFiles.length, 25);
   for (const relativePath of skillFiles) {
     const text = await readFile(path.join(root, 'skills', relativePath), 'utf8');
     const actions = text.match(/^required-actions:\s*(.+)$/m)?.[1]

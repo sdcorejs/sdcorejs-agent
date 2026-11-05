@@ -21,7 +21,7 @@ through `context.pass`. User-facing output projects the requirement-linked
 result, exact commands and exit codes, failures, skipped checks, blockers, and
 next action; it does not echo the full structures by default. Use the validated
 portable handoff when `runtime_context_channel` is unsupported or unknown.
-Read `_refs/shared/decision-coverage.md`. Preserve the approved
+For governed plan consumers, read `_refs/shared/decision-coverage.md`. Preserve the approved
 `decision_coverage` and `goal_backward_review` objects unchanged; test planning
 may add current run evidence elsewhere, but it must not renumber records,
 rewrite plan task ownership, or hide invariant evidence gaps.
@@ -29,8 +29,13 @@ Preserve `architecture_gate` and `architecture_context` unchanged from the
 approved plan. Test planning projects architecture `validation_obligations`
 into cases/evidence; it must not replace the approved spine, reclassify the
 gate, or claim profile conformance without relevant `INV-*` evidence.
-Read `_refs/shared/validation-map.md`. Preserve the exact approved
+When an approved/governed validation map applies, read
+`_refs/shared/validation-map.md`. Preserve the exact approved
 `plan_context.validation_map`; `coverage_matrix` is only its runtime projection.
+For direct ungoverned unit runs, retain current owner, command, environment,
+result and freshness evidence without manufacturing decision/architecture/map
+approvals. Use absent/null/empty optional plan fields as the consumer permits;
+do not call mapped acceptance/convergence gates with a fabricated empty map.
 
 ## Test context
 

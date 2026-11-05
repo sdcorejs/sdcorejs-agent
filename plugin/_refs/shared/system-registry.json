@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "registry_version": "1.0.0",
+  "registry_version": "1.1.0",
   "generic_harness_fallback": {
     "track": "general",
     "executor": "sdcorejs-execute-plan",
@@ -355,5 +355,25 @@
     "copy-ready",
     "partial-example",
     "pseudocode"
+  ],
+  "editorial_capabilities": [
+    {
+      "id": "content",
+      "skill": "sdcorejs-content",
+      "lifecycle": [
+        "brief",
+        "strategy",
+        "research",
+        "draft",
+        "edit",
+        "repurpose",
+        "review",
+        "feedback"
+      ],
+      "review_owner": "sdcorejs-content",
+      "engineering_finish_required": false,
+      "publication_authority": "separate-explicit-action",
+      "catalog": "_refs/content/catalog.json"
+    }
   ]
 }
