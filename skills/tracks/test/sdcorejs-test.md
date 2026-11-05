@@ -236,3 +236,17 @@ After scoped work:
 
 Read-only actions stop after their report/runtime context and must not dirty
 `.sdcorejs`. This tail still never invokes Git.
+
+## Prove the affected risk
+
+When testing review or a small fix, map the actual failure trigger to the smallest
+layer that observes its consequence. Reuse the approved validation-map and test
+context; do not introduce a parallel coverage enum. For complete-data claims,
+derive the effective cap N and assert exact results/final IDs at N-1, N and N+1,
+including configured caps, server clamps and later-page errors.
+For protection, call the real enforcement boundary with unauthenticated, wrong
+permission, wrong owner and cross-tenant identities. UI visibility is not denial.
+A targeted mutation removing continuation or enforcement must fail the relevant
+assertion, not an import/build/setup step. Preserve negative controls, current
+revision/diff, exact command and test case IDs. Do not require new tests for a
+formatting-only change with no behavior risk.

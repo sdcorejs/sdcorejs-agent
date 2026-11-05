@@ -364,3 +364,12 @@ as info.
 - `sdcorejs-git (commit mode)` - consumes branch-ready evidence for commits.
 - `sdcorejs-git (PR mode)` - consumes branch-ready evidence for PRs.
 - `sdcorejs-debug` - use when a blocker is a failing test or command that needs root-cause work.
+
+## Review baseline freshness
+
+For the new review producer, verify risk_coverage and current revision/diff scope
+from review-risk-contract. Report unknown/incomplete coverage explicitly; legacy
+contexts remain readable but cannot claim the new baseline. Confirm that small
+fixes retained applicable naming/routes/protection/completeness checks and that
+all authorized convention/bootstrap writes preceded final verification. This
+read-only gate cannot repair AGENTS or promote an observed rule.

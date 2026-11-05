@@ -281,3 +281,20 @@ again before Git handoff.
 only when the user requests a Git artifact and current ship evidence plus final
 branch-ready evidence is present for the final current `HEAD` or diff, or
 explicitly deferred with the required risk note.
+
+## Approved finish scope and fast fixes
+
+When the user already approved exact tests, review and documentation in the
+current plan, carry out those choices and show their status without asking them
+again. Ask only for a genuinely unresolved finish decision. Every code change,
+including fast-fix, retains the proportional baseline from
+`_refs/harness/runtime-policy.mjs` and the evidence contract in
+`_refs/shared/review-risk-contract.mjs`. Inspect applicable naming/routes,
+effective protection, comparable screen states, hardcoded/completeness assumptions
+and the assertion proving each affected risk. Use the field contract in
+`_refs/shared/review-code.md#evidence-backed-risk-baseline`; record unavailable
+evidence and reasons for non-applicability. Formatting-only changes do not
+automatically require new tests. A small diff does not make
+permission, tenant or complete-data behavior low risk. Complete authorized
+Explore convention/bootstrap sync before affected verification and the final
+read-only branch-ready check; never write AGENTS from review.

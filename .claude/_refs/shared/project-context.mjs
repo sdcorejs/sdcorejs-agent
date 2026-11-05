@@ -175,6 +175,7 @@ export async function collectConventionProjection(
     () => null,
   );
   let policyStatus = 'missing';
+  let bootstrapPolicy;
   if (policyText != null) {
     const parsed = await parseConventionDocument(policyText);
     policyStatus = parsed.ok
@@ -182,6 +183,7 @@ export async function collectConventionProjection(
         ? 'valid'
         : 'invalid'
       : 'invalid';
+    if (policyStatus === 'valid') bootstrapPolicy = parsed.document.project_bootstrap;
   }
 
   const categoryFilter = new Set(categories);
@@ -222,12 +224,19 @@ export async function collectConventionProjection(
     rules.push({ ...parsed.document, artifact_path: repositoryRelativePath });
   }
 
-  return projectConventionContext({
+  const projection = projectConventionContext({
     policy_status: policyStatus,
     policy_path: policyStatus === 'missing' ? 'none' : CONVENTION_POLICY_PATH,
     rules,
     invalid_paths: invalidPaths,
   });
+  if (bootstrapPolicy) projection.project_bootstrap = {
+    mode: bootstrapPolicy.mode,
+    target: bootstrapPolicy.target ?? null,
+    template_version: bootstrapPolicy.template_version ?? null,
+    authority: 'not-evaluated-read-only',
+  };
+  return projection;
 }
 
 async function collectFiles(base, current, result, unreadable = []) {

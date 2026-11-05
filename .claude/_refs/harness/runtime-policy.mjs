@@ -216,7 +216,25 @@ export function validateCapabilityContract(contract) {
   return errors;
 }
 
+// Lexical signals are conservative routing candidates; source review resolves them.
+// The caller supplies changed surfaces after inspecting the diff, not line count.
+export function assessChangeBaseline(task = {}) {
+  const request = String(task.request ?? task.objective ?? '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().replaceAll('đ', 'd');
+  const surfaces = new Set(task.changed_surfaces ?? []);
+  const question = task.kind === 'question' || (/^(?:what|why|how|explain|describe)\b/u.test(request) && task.writes !== true && !(task.owned_paths?.length));
+  if (question || task.read_only === true || task.writes === false) return { required: false, risks: [], checks: [], reason: 'read-only request or pure question' };
+  const risks = [];
+  const confirmedTextOnly = task.behavior_confirmed === true && surfaces.size === 1 && surfaces.has('text-only');
+  const confirmedVisiblePage = task.behavior_confirmed === true && task.requires_all_records === false && surfaces.size === 1 && surfaces.has('visible-page');
+  if (['authorization', 'tenant', 'permissions'].some(s => surfaces.has(s)) || (!confirmedTextOnly && /\b(?:tenant|permission|authorization|rbac|authguard|canactivate)\b|auth guard|chinh guard/u.test(request))) risks.push('authorization');
+  if (surfaces.has('public-contract') || task.public_contract === true) risks.push('public-contract');
+  if (surfaces.has('data-completeness') || task.requires_all_records === true || (!confirmedTextOnly && !confirmedVisiblePage && /pagesize|lay (?:tat ca|toan bo)|(?:load|fetch|export) all/u.test(request))) risks.push('data-completeness');
+  const docsOnly = task.owned_paths?.length > 0 && task.owned_paths.every(p => /\.(?:md|txt)$/iu.test(p));
+  return { required: true, risks, checks: docsOnly ? ['instruction-scope', 'text-hygiene'] : ['instruction-scope', 'semantic-neighbors', 'protection', 'data-completeness', 'risk-to-test'], reason: 'changed surfaces require a proportional baseline regardless of diff size' };
+}
+
 export function classifyTask(task = {}) {
+  const reviewBaseline = assessChangeBaseline(task);
   const request = String(task.request ?? task.objective ?? '').trim();
   const normalized = request.toLowerCase();
   const ownedPaths = Array.isArray(task.owned_paths) ? task.owned_paths : [];
@@ -231,12 +249,14 @@ export function classifyTask(task = {}) {
       action: 'direct-answer',
       entry_gate: 'none',
       reason: 'request asks for an answer and does not authorize a write',
+      review_baseline: reviewBaseline,
     };
   }
 
   const category = inferTaskCategory(task);
   const highRisk =
     task.high_risk === true ||
+    reviewBaseline.risks.length > 0 ||
     ['security', 'architecture', 'public-contract', 'concurrency'].includes(category);
   const fullWorkflow =
     task.ambiguous === true ||
@@ -251,6 +271,7 @@ export function classifyTask(task = {}) {
       action: 'fast-fix',
       entry_gate: 'targeted-context',
       reason: 'scope, behavior, acceptance, ownership, and verification layer are bounded',
+      review_baseline: reviewBaseline,
     };
   }
 
@@ -258,6 +279,7 @@ export function classifyTask(task = {}) {
     kind: 'governed-change',
     action: 'full-workflow',
     entry_gate: 'brainstorm-first',
+    review_baseline: reviewBaseline,
     reason: highRisk
       ? 'security, architecture, concurrency, or public-contract work needs the full workflow'
       : 'scope or behavior is not bounded enough for fast-fix',

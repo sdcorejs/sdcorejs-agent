@@ -69,7 +69,7 @@ def inventory(root, excludes=(), budget=0, output=None):
           'skipped_reparse_count':0,'skipped_reparse_sample':[],'records':[],'candidates':[],'dependency_roots':[],
           'measurement':'Logical sums may count hardlinks more than once. Allocation is measured only for top large files. Candidate names are discovery hints, never deletion authority.'}
     data['volume_before']=shutil.disk_usage(root)._asdict()
-    start=last=time.monotonic(); large=[]; timed_out=False
+    start=last=time.perf_counter(); large=[]; timed_out=False
     def walk(path,depth=0,outer=None,module_owner=None):
         nonlocal last,timed_out
         data['directories']+=1
@@ -81,7 +81,7 @@ def inventory(root, excludes=(), budget=0, output=None):
         try:
             with os.scandir(path) as entries:
                 for e in entries:
-                    if budget and time.monotonic()-start>=budget:
+                    if budget and time.perf_counter()-start>=budget:
                         timed_out=True; complete=False; data['status']='partial'; break
                     try:
                         if os.path.normcase(os.path.abspath(e.path)) in ex:
@@ -113,13 +113,13 @@ def inventory(root, excludes=(), budget=0, output=None):
         if depth<=3 or size>=100_000_000: data['records'].append(rec)
         if kind: data['candidates'].append({**rec,'kind':kind,'decision':'inspect'})
         if module_root: data['dependency_roots'].append({**rec,'kind':'node_modules','decision':'inspect'})
-        if time.monotonic()-last>=25:
-            print(json.dumps({'elapsed_seconds':round(time.monotonic()-start),'files':data['files'],'current':str(path)}),file=sys.stderr,flush=True)
-            last=time.monotonic()
+        if time.perf_counter()-last>=25:
+            print(json.dumps({'elapsed_seconds':round(time.perf_counter()-start),'files':data['files'],'current':str(path)}),file=sys.stderr,flush=True)
+            last=time.perf_counter()
         return size,count,errs,links,complete
     data['logical_bytes']=walk(root)[0]
     data['budget_exhausted']=timed_out
-    data['duration_seconds']=time.monotonic()-start
+    data['duration_seconds']=time.perf_counter()-start
     data['finished_at_epoch']=time.time()
     data['volume_after']=shutil.disk_usage(root)._asdict()
     data['large_files']=[{'path':p,'logical_bytes':s,'allocation_bytes':allocation(p),'mtime_epoch':t} for s,p,t in sorted(large,reverse=True)]

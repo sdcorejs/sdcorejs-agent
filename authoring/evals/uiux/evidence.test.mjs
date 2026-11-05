@@ -11,9 +11,14 @@ const hash = (text) => `sha256:${createHash('sha256').update(text).digest('hex')
 const deliveryRevision = '03563d26837751d67a354d38589c6ed0fe67ed24';
 const historicalRead = (path) => execFileSync('git', ['show', `${deliveryRevision}:${path}`], { encoding: 'utf8', windowsHide: true }).replace(/\r\n?/g, '\n');
 // The cleanup storage continuation is history once main moved past it (1fca9c3);
-// the task-breakdown port continuation below owns proof for the current tree.
+// the task-breakdown port continuation below binds its own delivered revision.
 const portSourceRevision = '1fca9c3fa90cd259056234b27cf978a606fd927b';
-const atRevision = (revision, path) => execFileSync('git', ['show', `${revision}:${path}`], { encoding: 'utf8', windowsHide: true }).replace(/\r\n?/g, '\n');
+const immutableSources = new Map();
+const atRevision = (revision, path) => {
+  const key = `${revision}:${path}`;
+  if (!immutableSources.has(key)) immutableSources.set(key, execFileSync('git', ['show', key], { encoding: 'utf8', windowsHide: true }).replace(/\r\n?/g, '\n'));
+  return immutableSources.get(key);
+};
 
 test('UI/UX authoring evidence binds real baseline, transcripts and current sources', async () => {
   const record = JSON.parse(await read('authoring/evals/uiux/records.json'));
@@ -243,8 +248,10 @@ test('storage continuation preserves historical UI/UX evidence and rejects unbou
   assert.throws(() => validateStorageContinuation(context.storage, context));
 });
 
-// Task-breakdown port continuation: binds the current tree to the approved port plan,
-// the cleanup storage continuation as history, and an actual focused run.
+// Task-breakdown port delivery is immutable history once later approved work changes
+// shared sources. Bind its original content and receipt to the delivered main revision.
+// New work has its own current-source tests and execution evidence.
+const portDeliveryRevision = 'ee172c5bdd5e1a545e9f44d86be3067e50000000';
 const portPath = 'authoring/evals/uiux/task-breakdown-port-continuation.json';
 const portTranscriptPath = 'authoring/evals/uiux/task-breakdown-port-continuation.txt';
 const portPreviousPath = 'authoring/evals/records/cleanup-storage-audit.json';
@@ -277,7 +284,8 @@ function approvedFromText(text) {
   return artifact;
 }
 
-async function loadPortContext(readSource = read) {
+const readPortSource = async path => atRevision(portDeliveryRevision, path);
+async function loadPortContext(readSource = readPortSource) {
   const port = JSON.parse(await readSource(portPath));
   const previousText = await readSource(portPreviousPath);
   const record = JSON.parse(await readSource('authoring/evals/uiux/records.json'));
@@ -331,7 +339,7 @@ async function validatePortContinuation(port, context) {
   assert.equal(port.tokens, null);
 }
 
-test('case-port-evidence-continuation: current content is bound to the approved port plan and an actual run', async () => {
+test('case-port-evidence-continuation: delivered content is bound to the approved port plan and an actual run', async () => {
   const context = await loadPortContext();
   await validatePortContinuation(context.port, context);
 });
@@ -365,7 +373,7 @@ test('case-port-evidence-continuation: omitted, stale, mutated and fabricated ev
     await validatePortContinuation(mutated.port, mutated);
   });
   for (const changed of ['_refs/product/task-breakdown/check.mjs', '_refs/harness/runtime-policy.mjs', portPlanPath, portPreviousPath]) {
-    await rejectsWith(async path => (path === changed ? `${await read(path)}\nmutated at the same HEAD\n` : read(path)));
+    await rejectsWith(async path => (path === changed ? `${await readPortSource(path)}\nmutated at the same revision\n` : readPortSource(path)));
   }
-  await rejectsWith(async path => (path === portTranscriptPath ? (await read(path)).replace('case-mirror-refs-rewritten', 'case-mirror-refs-fabricated') : read(path)));
+  await rejectsWith(async path => (path === portTranscriptPath ? (await readPortSource(path)).replace('case-mirror-refs-rewritten', 'case-mirror-refs-fabricated') : readPortSource(path)));
 });

@@ -155,3 +155,10 @@ test('mutated approval hash and unsupported review profiles fail closed', () => 
   assert.equal(unsupported.status, 'blocked');
   assert.match(unsupported.blockers.join(' '), /does not match registry profile/iu);
 });
+
+test('legacy review explicitly reports unknown risk coverage without inventing defects', () => {
+  const result = evaluateReviewContract(context());
+  assert.equal(result.risk_coverage, 'unknown');
+  assert.deepEqual(result.risk_gaps, []);
+  assert.deepEqual(result.findings, []);
+});

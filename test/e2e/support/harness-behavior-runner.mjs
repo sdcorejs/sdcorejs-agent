@@ -9,7 +9,7 @@ export function runScenario(policy, scenario, capabilities) {
     consent: scenario.consent ?? {},
     failed_surfaces: scenario.failed_surfaces ?? [],
   });
-  return { classification, action, interaction };
+  return { classification, action, interaction, review_baseline: classification.review_baseline ?? null };
 }
 
 export function assertNoEmbeddedArtifactFields(errors) {

@@ -154,3 +154,42 @@ probes_skipped:
 - Treating absent scripts or absent tools as code defects.
 - Printing secrets or full lines containing secrets.
 - Turning preferences into blockers.
+
+## Behavioral consistency baseline
+
+Apply _refs/shared/review-consistency.md to naming/routes and comparable peers.
+Load _refs/shared/review-data-completeness.md for data consumers, limits and
+hardcoded assumptions; load _refs/shared/review-screen-patterns.md for UI flows.
+Follow values through callers and server contracts. Test assertions must prove
+the risk boundary (for example the final record beyond a cap), not merely the
+request shape. Record missing evidence even in a one-line fix review.
+
+
+## Evidence-backed risk baseline
+
+For each review, preserve requested dimensions and emit review_baseline_version: 1.
+Use requiredRiskCategories from _refs/shared/review-risk-contract.mjs. Emit a
+risk_assessment with schema_version: 1, repository_id, current revision/diff_hash,
+exact dimensions, and one row per required category. Rows contain category,
+status (checked | not-applicable | no-evidence | gap), finding_refs, and either
+fresh evidence (repository-relative path, one-based line, revision, diff_hash),
+rule_source and confidence, or a concrete reason. Record source-only limitations.
+Derive applicability from changed surfaces and bounded semantic neighbors;
+never skip the baseline because the diff is small. Document-only scopes can
+mark code categories not-applicable with the inspected scope as the reason.
+
+Read _refs/shared/review-data-completeness.md for hardcoded assumptions and
+complete-data claims; read _refs/shared/review-screen-patterns.md for comparable
+list/detail/form/action flows. Read naming/route guidance in review-consistency.
+Do not let exhaustive checklist reporting bury actionable findings.
+
+Risk findings add risk: { category, path, semantic_role, trigger, rule_source, confidence,
+test_gap, root_cause } to the existing durable finding shape. Link them from
+assessment.finding_refs; retain existing severity, dimension and convention
+classification. related_to may link secondary effects to the primary finding.
+Use current_revision_map and current_diff_hash for freshness. A checked row
+requires inspected source evidence; a missing repository is no-evidence.
+Run evaluateReviewContract. risk_coverage unknown/incomplete prevents a
+reviewed-complete claim; it does not fabricate a product defect. Legacy contexts
+remain readable with unknown coverage. Structural validation never proves
+source-to-finding effectiveness or rendered UI behavior.

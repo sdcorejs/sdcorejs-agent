@@ -112,3 +112,11 @@ Only `.env.example` (placeholders) is committed. **Critical** if a real `.env*` 
 ## Cross-references
 - Contact-form generation: `_refs/nextjs/build-website/write-code/contact-form.md`
 - Code review (server/client boundary overlap): `sdcorejs-review`
+
+## Effective behavior and comparable patterns
+
+Trace middleware matcher plus Route Handler and Server Action checks. Layout redirects and hidden client controls do not protect direct requests.
+Use _refs/shared/review-screen-patterns.md for the operation/permission/owner/tenant
+matrix and _refs/shared/review-data-completeness.md for complete-data consumers.
+Retain source locators and denial/boundary test gaps. Accepted inheritance and
+intentional bounded previews are controls, not automatic findings.

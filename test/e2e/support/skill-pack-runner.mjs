@@ -1191,3 +1191,14 @@ function toPath(rootUrlOrPath) {
   if (rootUrlOrPath instanceof URL) return fileURLToPath(rootUrlOrPath);
   return path.resolve(String(rootUrlOrPath));
 }
+
+/** Explicit projection: oracle and author conversation never become reviewer input. */
+export async function buildReviewScenarioInput(rootUrlOrPath, scenario) {
+  const root = rootUrlOrPath instanceof URL ? fileURLToPath(rootUrlOrPath) : path.resolve(rootUrlOrPath);
+  if (!/^[a-z-]+\.(?:mjs|ts)$/u.test(scenario.source ?? '')) throw new Error('invalid review fixture source');
+  const relative = 'test/e2e/fixtures/review-behavior/' + scenario.source;
+  const content = await readFile(path.join(root, relative), 'utf8');
+  if (!/^[A-Za-z_$][\w$]*$/u.test(scenario.symbol ?? '') || !content.includes(scenario.symbol)) throw new Error('review fixture symbol is missing');
+  return { scenario_id: scenario.id, prompt: scenario.prompt, target_symbol: scenario.symbol,
+    source: { path: relative, content } };
+}

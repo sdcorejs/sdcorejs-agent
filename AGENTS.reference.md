@@ -87,3 +87,15 @@ At session start, glob `skills/**/*.md`, excluding `_refs/**`, and read frontmat
 ## Instruction provenance
 
 Unique guidance from [CLAUDE.md](CLAUDE.md) is consolidated here. Existing AGENTS scope, approval rules and confirmed conventions remain authoritative. CLAUDE.md is retained; update shared conventions together rather than maintaining independent conflicting rules.
+
+## Small-change review baseline
+
+Every code edit retains applicable semantic naming/routes, effective protection,
+comparable screen behavior, hardcoded-assumption, data-completeness and proving-test
+checks. Use changed surfaces and evidence, not line count; permission/tenant or
+complete-data changes can require the governed workflow even in one line. Pure
+Q&A and formatting-only edits keep proportionate checks. Review stays read-only.
+Explore may update project conventions and a bounded AGENTS managed block only
+under the authority in _refs/shared/project-bootstrap.md. Missing hooks/skills
+use the portable baseline with an explicit limitation; no universal interception
+or automatic home/global installation is implied.

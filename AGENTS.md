@@ -85,23 +85,20 @@ Read-only parallel audits use the low-level `sdcorejs-parallel-dispatch`
 scheduler. Both paths require safe ownership, isolation, and deterministic
 fan-in; unapproved writes return to planning.
 
-Pure Q&A answers directly. A small, explicit, low-risk fix may use targeted
-context, the smallest edit, focused verification, and concise review without
-spec/plan artifacts. Scope, ownership, risk, or behavior growth escalates to
-the full workflow.
+Answer pure Q&A directly. Bounded low-risk fixes use targeted context, minimal
+edits, focused verification and concise review without spec/plan artifacts.
+Scope, ownership, risk or behavior growth requires the full workflow.
 
 Canonical skills declare semantic `required-actions`; provider mappings and
 tri-state capabilities live in `_refs/harness/capability-contract.json`.
 Unsupported or unknown capabilities use portable Markdown and sequential
 fallbacks.
 
-Use compact, outcome-first communication with complete professional sentences. Load
-`_refs/harness/communication-economy.md` just in time for profiles, progress,
-context handoffs or artifact selection. Approval, security, destructive action,
-ambiguity, conflict, blockers and failed verification require detailed output.
-Preserve exact code/commands/paths/IDs/hashes/errors/numbers/evidence. Pass full
-typed context to its consumer; unsupported or unknown `runtime_context_channel`
-uses a validated portable handoff.
+Use compact, complete professional sentences. Use detailed output for approval,
+security, destructive actions, ambiguity, conflicts, blockers and failed checks.
+Load `_refs/harness/communication-economy.md` for profiles, progress and handoffs.
+Preserve exact identifiers, evidence and typed context. Use validated portable
+handoffs when runtime context channels are unsupported or unknown.
 
 ## Production SDLC Scope Decision
 
@@ -178,3 +175,5 @@ their declared triggers. Additional loading:
 ## Shared reference
 
 Before track execution or its finish chain, read the relevant executor/provider and tail sections in root-relative `AGENTS.reference.md`. This consolidates unique CLAUDE guidance without duplicating bootstrap policy. Keep shared conventions consistent across retained entrypoints.
+
+For small edits, apply the risk baseline in `_refs/shared/finish-gate.md`.

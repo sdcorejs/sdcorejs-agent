@@ -218,6 +218,21 @@ public static class CleanupNativeOperation {
             stream.Position = 0; return result;
         }
     }
+    static State FinalizeCreatedFile(ref SafeFileHandle handle, ref FileStream stream,
+        SafeFileHandle parent, string component, string exactPath, State written, string fingerprint) {
+        // Windows finalizes ChangeTime when the last write handle closes. Reopen
+        // relative to the pinned parent and prove identity, other state and bytes
+        // before accepting that one timestamp transition for our newly created file.
+        stream.Dispose(); stream = null; handle.Dispose(); handle = null;
+        handle = OpenRelative(parent, component, READ, 1, false);
+        stream = new FileStream(handle, FileAccess.Read);
+        State closed = Observe(handle, exactPath);
+        double[] expected = written.Values(); expected[2] = closed.ctime;
+        VerifyState(closed, expected);
+        if (Hash(stream) != fingerprint) Fail("CREATED_FILE_FINGERPRINT_CHANGED");
+        VerifyState(Observe(handle, exactPath), closed.Values());
+        return closed;
+    }
     public static double[] DecodeNumbers(string wire, int count) {
         byte[] bytes = Convert.FromBase64String(wire);
         if (bytes.Length != count * 8) Fail("INVALID_EXPECTED_STATE");
@@ -233,7 +248,8 @@ public static class CleanupNativeOperation {
         Result result = new Result(); List<SafeFileHandle> pins = new List<SafeFileHandle>();
         SafeFileHandle sourceHandle = null, destinationHandle = null;
         FileStream sourceStream = null, destinationStream = null;
-        string destinationPath = null;
+        string destinationPath = null, destinationComponent = null;
+        SafeFileHandle destinationParent = null;
         try {
             if (!System.Text.RegularExpressions.Regex.IsMatch(fingerprint ?? "", "^sha256:[a-f0-9]{64}$")) Fail("EXPECTED_FINGERPRINT_REQUIRED");
             string[] sourceParts = RelativeParts(source);
@@ -253,7 +269,8 @@ public static class CleanupNativeOperation {
             if (Hash(sourceStream) != fingerprint) Fail("SOURCE_FINGERPRINT_CHANGED");
             VerifyState(Observe(sourceHandle, sourcePath), expected);
             if (destination != null) {
-                SafeFileHandle destinationParent = PinParents(root, rootHandle, destinationParts, true, pins);
+                destinationParent = PinParents(root, rootHandle, destinationParts, true, pins);
+                destinationComponent = destinationParts[destinationParts.Length - 1];
                 destinationPath = Path.Combine(root, destination.Replace('/', '\\'));
                 destinationHandle = OpenRelative(destinationParent, destinationParts[destinationParts.Length - 1], READ | WRITE | DELETE, 2, false);
                 result.copy_created = true; result.destination = destination;
@@ -264,6 +281,8 @@ public static class CleanupNativeOperation {
                 result.fingerprint = Hash(destinationStream);
                 result.destination_state = Observe(destinationHandle, destinationPath);
                 if (result.fingerprint != fingerprint || result.destination_state.size != result.source_state.size) Fail("RECOVERY_COPY_INVALID");
+                result.destination_state = FinalizeCreatedFile(ref destinationHandle, ref destinationStream,
+                    destinationParent, destinationComponent, destinationPath, result.destination_state, result.fingerprint);
                 result.copy_verified = true;
             }
             VerifyState(Observe(sourceHandle, sourcePath), expected);
@@ -290,6 +309,11 @@ public static class CleanupNativeOperation {
                 } catch { }
                 try { result.fingerprint = Hash(destinationStream); } catch { if (!result.copy_verified) result.fingerprint = null; }
                 try { result.destination_state = Observe(destinationHandle, destinationPath); } catch { if (!result.copy_verified) result.destination_state = null; }
+                if (!result.copy_verified && result.destination_state != null && result.fingerprint != null) {
+                    try { result.destination_state = FinalizeCreatedFile(ref destinationHandle, ref destinationStream,
+                        destinationParent, destinationComponent, destinationPath, result.destination_state, result.fingerprint); }
+                    catch { result.destination_state = null; result.errors.Add(new Failure { code = "PARTIAL_COPY_STATE_UNVERIFIED", path = destination }); }
+                }
             }
             if (destinationStream != null) destinationStream.Dispose();
             if (sourceStream != null) sourceStream.Dispose();
@@ -322,6 +346,8 @@ public static class CleanupNativeOperation {
                 string expected = "sha256:" + BitConverter.ToString(hash.ComputeHash(bytes)).Replace("-", "").ToLowerInvariant();
                 if (expected != result.fingerprint || result.destination_state.size != bytes.Length) Fail("WRITER_VERIFICATION_FAILED");
             }
+            result.destination_state = FinalizeCreatedFile(ref writer, ref stream, parent,
+                parts[parts.Length - 1], exactPath, result.destination_state, result.fingerprint);
             RecheckNestedRepositories(pins);
             result.copy_verified = true;
         } catch (BoundaryException error) {

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "status": "NOT RUN",
+  "evidence_layer": "fresh-reviewer",
+  "scenario_id": null,
+  "runtime": null,
+  "model": null,
+  "pack_manifest_hash": null,
+  "fixture_manifest_hash": null,
+  "input_manifest_hash": null,
+  "original_prompt": null,
+  "transcript": null,
+  "transcript_ref": null,
+  "transcript_hash": null,
+  "captured_at": null,
+  "oracle_exposed": null,
+  "synthetic": null,
+  "capture_receipt": null,
+  "adjudication": null
+}

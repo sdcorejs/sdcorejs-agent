@@ -103,3 +103,12 @@ async function loadPromptEvals() {
   const file = new URL('./fixtures/prompt-evals.json', import.meta.url);
   return JSON.parse(await readFile(file, 'utf8'));
 }
+
+test('entrypoints retain small-change risk baseline and read-only review authority', async () => {
+  for (const file of ['AGENTS.md', 'AGENTS.reference.md', 'CLAUDE.md', '.github/copilot-instructions.md']) {
+    const text = await readFile(new URL('../../' + file, import.meta.url), 'utf8');
+    assert.match(text, /Small-change review baseline|risk baseline/);
+    assert.match(text, /Review stays read-only|read-only/);
+    assert.match(text, /project-bootstrap\.md|finish-gate\.md/);
+  }
+});

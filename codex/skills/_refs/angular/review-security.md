@@ -105,3 +105,11 @@ A `returnUrl` from query params passed to `navigateByUrl` must be a validated sa
 
 ## Cross-references
 - Code review (guard/permission overlap): `sdcorejs-review` · Core UI inventory (on-demand, not committed): `node _refs/angular/core-docs-fetch.mjs --list`
+
+## Effective behavior and comparable patterns
+
+Trace inherited canActivate/canActivateChild, lazy routes, deep links and permission directives. Check corresponding server enforcement separately.
+Use _refs/shared/review-screen-patterns.md for the operation/permission/owner/tenant
+matrix and _refs/shared/review-data-completeness.md for complete-data consumers.
+Retain source locators and denial/boundary test gaps. Accepted inheritance and
+intentional bounded previews are controls, not automatic findings.

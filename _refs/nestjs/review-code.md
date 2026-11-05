@@ -54,3 +54,11 @@ missing or inconsistent mapper, not the casing difference itself.
 Report severity, confidence, file:line evidence, impact, and a concrete fix.
 Distinguish verified defects from questions. Hand verified findings to
 `sdcorejs-repair-loop`; do not edit during review.
+
+## Effective behavior and comparable patterns
+
+Trace DTO -> service -> repository -> response paging metadata. Defaults, server clamps and stable ordering must match the consumer contract.
+Use _refs/shared/review-screen-patterns.md for the operation/permission/owner/tenant
+matrix and _refs/shared/review-data-completeness.md for complete-data consumers.
+Retain source locators and denial/boundary test gaps. Accepted inheritance and
+intentional bounded previews are controls, not automatic findings.

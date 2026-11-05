@@ -1,0 +1,20 @@
+import { readFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { validateScenarioDataset } from './evidence-contract.mjs';
+import { buildReviewScenarioInput, loadSkillPack, dispatchPrompt } from '../../../test/e2e/support/skill-pack-runner.mjs';
+
+const root = new URL('../../../', import.meta.url);
+const dataset = JSON.parse(await readFile(new URL('./scenarios.json', import.meta.url), 'utf8'));
+const validation = validateScenarioDataset(dataset);
+if (!validation.valid) throw new Error(validation.errors.join('; '));
+const pack = await loadSkillPack(root);
+const inputs = [];
+for (const scenario of dataset.scenarios) inputs.push(await buildReviewScenarioInput(root, scenario));
+const route = dispatchPrompt(pack, 'Review code consistency, naming and pagination');
+if (route?.name !== 'sdcorejs-review') throw new Error('review scenario routed to the wrong skill');
+const result = spawnSync(process.execPath, ['--test', 'test/e2e/review-behavior-fixtures.test.mjs', 'test/e2e/review-test-adequacy.test.mjs', 'test/e2e/review-agent-evaluation.test.mjs'], { cwd: fileURLToPath(root), encoding: 'utf8' });
+process.stdout.write(result.stdout ?? ''); process.stderr.write(result.stderr ?? '');
+console.log(JSON.stringify({ evidence_layer: 'offline-fixture-and-contract', scenarios: inputs.length, routing: route.name, fixture_exit_code: result.status, fresh_reviewer: 'NOT RUN', semantic_detection_proven: false }, null, 2));
+if (result.error) throw result.error;
+process.exitCode = result.status ?? 1;

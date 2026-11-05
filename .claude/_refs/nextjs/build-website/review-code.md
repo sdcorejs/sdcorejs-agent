@@ -347,3 +347,11 @@ Apply the shared semantic rules; this section only names the Next.js boundaries.
 - Security audit (cross-cutting): `sdcorejs-review`
 - Repair loop: `sdcorejs-repair-loop`
 - Source conventions: `_refs/nextjs/build-website/write-code/{init-site,theme,pages-and-blocks,seo,og-preview,i18n,caching,responsive,contact-form,content-quality}.md`
+
+## Effective behavior and comparable patterns
+
+Compare list/detail/form states and query/cache invalidation within the detected router. Preserve public-site versus application archetypes.
+Use _refs/shared/review-screen-patterns.md for the operation/permission/owner/tenant
+matrix and _refs/shared/review-data-completeness.md for complete-data consumers.
+Retain source locators and denial/boundary test gaps. Accepted inheritance and
+intentional bounded previews are controls, not automatic findings.

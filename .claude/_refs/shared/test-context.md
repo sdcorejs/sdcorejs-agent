@@ -256,3 +256,13 @@ coverage, or documentation verification. Re-run under v2 for a current claim.
 respective boundaries. Never retain credential values, cookies, tokens,
 authorization headers, storageState contents, PII, database dumps, secret URLs,
 or raw provider payloads.
+
+## Review effectiveness evidence
+
+Risk-to-test mapping uses existing validation-map IDs and evidence classes.
+Record current case, command, revision/diff, observed assertion and boundary.
+Fixture execution proves a seeded defect/control; schema checks prove record
+shape. Neither proves that a reviewer found a source defect. Fresh reviewer
+results need independently captured prompts/transcripts and pack/fixture
+identity, with oracle hidden during review. Missing runs are NOT RUN; hand-written
+or expected-result transcripts cannot stand in for a live run.

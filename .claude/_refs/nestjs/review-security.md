@@ -28,3 +28,11 @@ idempotency, retry-safe state transitions, compensation rules, and reconciliatio
 of ambiguous outcomes.
 
 Report only evidence-backed findings with safe reproduction steps.
+
+## Effective behavior and comparable patterns
+
+Resolve global APP_GUARD, controller/method/inherited guards and metadata precedence. HasPermission is profile-specific; check its guard actually executes and public overrides are intentional.
+Use _refs/shared/review-screen-patterns.md for the operation/permission/owner/tenant
+matrix and _refs/shared/review-data-completeness.md for complete-data consumers.
+Retain source locators and denial/boundary test gaps. Accepted inheritance and
+intentional bounded previews are controls, not automatic findings.

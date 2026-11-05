@@ -410,7 +410,22 @@ export function validateConventionPolicy(document, { path: candidatePath = null 
     errors.push('capture.ownership.shared_writes must be integration-owner-only');
   }
 
+  errors.push(...validateProjectBootstrapPolicy(document.project_bootstrap).errors);
   return { ok: errors.length === 0, errors, policy: errors.length === 0 ? document : null };
+}
+
+export function validateProjectBootstrapPolicy(value) {
+  if (value === undefined) return { ok: true, errors: [], mode: 'disabled' };
+  const errors = [];
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return { ok: false, errors: ['project_bootstrap must be a mapping'], mode: 'disabled' };
+  if (value.schema_version !== 1) errors.push('project_bootstrap schema_version must be 1');
+  if (!['disabled', 'manual', 'after-convention-sync'].includes(value.mode)) errors.push('project_bootstrap mode is invalid');
+  if (value.mode !== 'disabled') {
+    const target = value.target;
+    if (typeof target !== 'string' || !/^(?:[A-Za-z0-9_-]+\/)*AGENTS\.md$/u.test(target) || target.split('/').some(p => /^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])$/iu.test(p))) errors.push('project_bootstrap target must be a safe repository-relative AGENTS.md path');
+    if (value.template_version !== 1 || value.managed_block_id !== 'sdcorejs-project-baseline') errors.push('unsupported project_bootstrap managed template identity');
+  }
+  return { ok: errors.length === 0, errors, mode: errors.length ? 'disabled' : value.mode };
 }
 
 // ---------------------------------------------------------------------------

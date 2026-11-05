@@ -484,3 +484,26 @@ An observed candidate is never a release blocker.
 - Reporting the same issue once per dimension.
 - Persisting a convention from inside review.
 - Storing secret values, tokens, headers, customer data, or PII in evidence.
+
+## Semantic neighbor sampling for small changes
+
+For a changed identifier or route, inspect its type, producer/consumer and two
+comparable current examples when available. State limited sampling when fewer
+exist. Prefer explicit accepted conventions and schemas over a majority vote;
+conflicted/stale/observed rules remain advisory under convention-context.
+
+- A calendar date may use deliveryDate under the local rule. An instant may use
+  createdAt and a duration elapsedMs; do not append Date solely because the type
+  is string or Date. Verify semantics, serialization, units and timezone.
+- A collection may use customers or customerList consistently with the project.
+  Preserve irregular plurals such as people; customerById is a map, not a list.
+  Check destructuring, DTO mappings and public aliases before suggesting rename.
+- Compare singular/plural routes at the same resource boundary and version.
+  Resource collections differ from singleton settings, commands and RPC routes.
+  Public /person aliases may intentionally coexist with /people. Renames need
+  compatibility/migration decisions, not automatic style repair.
+
+Cite both the changed location and the comparator or authoritative rule. Report
+why the distinction misleads a caller; if no convention is established, propose
+an observed candidate with confidence and uncertainty. Never silently promote
+that candidate by writing AGENTS during review.

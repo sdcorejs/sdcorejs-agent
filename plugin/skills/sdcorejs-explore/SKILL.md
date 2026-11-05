@@ -13,8 +13,7 @@ allowed-tools: AskUserQuestion, Bash, Edit, Glob, Grep, Read, WebFetch, Write
 
 ## Purpose
 
-`sdcorejs-explore` is the canonical producer of project context, stack profile
-evidence, and safe exploration output for downstream SDCoreJS skills.
+`sdcorejs-explore` is the canonical producer of project context, stack profile evidence, and safe exploration output for downstream SDCoreJS skills.
 
 It is read-only by default. It writes only when the selected `explore_action`
 is explicitly write-approved, the target root is safe for that write, and the
@@ -501,3 +500,5 @@ as evidence, not unquestionable truth.
 - `sdcorejs-git` - commit, PR, changelog, release notes
 - `sdcorejs-documentation` - documentation writing from harvested facts
 - `sdcorejs-cleanup` - bounded evidence-based housekeeping after separate authority
+
+For authorized project AGENTS projection, follow `../../_refs/shared/project-bootstrap.md`; read-only modes never persist instructions.

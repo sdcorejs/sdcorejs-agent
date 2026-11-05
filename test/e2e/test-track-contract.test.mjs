@@ -982,3 +982,13 @@ test('forward fixtures emit context, ownership, commands, blockers, and artifact
     });
   }
 });
+
+test('paging evidence needs behavioral assertions beyond a correct request shape', async () => {
+  const { createPageSource, loadCustomers, collectCustomers } = await import('./fixtures/review-behavior/paging.mjs');
+  const source = createPageSource(1001);
+  const capped = await loadCustomers(source);
+  const complete = await collectCustomers(source);
+  assert.equal(capped.length, 1000);
+  assert.equal(complete.at(-1).id, 1000);
+  assert.notDeepEqual(capped, complete);
+});
