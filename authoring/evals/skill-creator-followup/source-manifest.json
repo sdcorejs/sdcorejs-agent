@@ -1,0 +1,128 @@
+{
+  "base_revision": "97cc700ef7201a3074c57aedff89cbe131f9ee6f",
+  "state": "tested working tree; commits do not change file bytes",
+  "scope": "Changed canonical sources, generated mirrors, tests and current validation table; follow-up evidence/document packaging checked separately",
+  "source_state_sha256": "aab0dec954dfa4d36ba09bd6a18ffead9696d10a64cfe7522792bccf28bc8317",
+  "files": [
+    {
+      "path": ".claude/_refs/orchestration/execution-contract.mjs",
+      "sha256": "fb01f71303f66249bacb61562f3f1f809a5ff0d9d5fdd89b97b96079a85d2d2a"
+    },
+    {
+      "path": ".claude/_refs/orchestration/parallel-protocol.mjs",
+      "sha256": "eb32e545b00d988b7f64990550fa525b4b601f5801aa7c8ff6710c17e40dbe5f"
+    },
+    {
+      "path": ".claude/_refs/sdlc/plan-approval-artifact.md",
+      "sha256": "7f5989311565bda025fba8da49c2f5637550c9aad4eee30e775242727cdd14dd"
+    },
+    {
+      "path": ".claude/skills/sdcorejs-execute-plan/SKILL.md",
+      "sha256": "961cfa02269cf37d52e40cad1cce34d49acd71c03bfe39f1e2f820260da18c11"
+    },
+    {
+      "path": ".claude/skills/sdcorejs-plan/SKILL.md",
+      "sha256": "4dc0eebeff2797b471343b60ffe86328cddc1b69f24265e501e9c9b06a3213cf"
+    },
+    {
+      "path": ".claude/skills/sdcorejs-spec/SKILL.md",
+      "sha256": "047d8c2602564b0d00534efb5801de1d2e16f3541f042031a23823bba7e73b2c"
+    },
+    {
+      "path": "VALIDATION.md",
+      "sha256": "54fe57944ffdb641d746aa1effb6a0e60c778d7d5549ffef7046337c10684553"
+    },
+    {
+      "path": "_refs/orchestration/execution-contract.mjs",
+      "sha256": "fb01f71303f66249bacb61562f3f1f809a5ff0d9d5fdd89b97b96079a85d2d2a"
+    },
+    {
+      "path": "_refs/orchestration/parallel-protocol.mjs",
+      "sha256": "eb32e545b00d988b7f64990550fa525b4b601f5801aa7c8ff6710c17e40dbe5f"
+    },
+    {
+      "path": "_refs/sdlc/plan-approval-artifact.md",
+      "sha256": "7f5989311565bda025fba8da49c2f5637550c9aad4eee30e775242727cdd14dd"
+    },
+    {
+      "path": "codex/skills/_refs/orchestration/execution-contract.mjs",
+      "sha256": "fb01f71303f66249bacb61562f3f1f809a5ff0d9d5fdd89b97b96079a85d2d2a"
+    },
+    {
+      "path": "codex/skills/_refs/orchestration/parallel-protocol.mjs",
+      "sha256": "eb32e545b00d988b7f64990550fa525b4b601f5801aa7c8ff6710c17e40dbe5f"
+    },
+    {
+      "path": "codex/skills/_refs/sdlc/plan-approval-artifact.md",
+      "sha256": "7f5989311565bda025fba8da49c2f5637550c9aad4eee30e775242727cdd14dd"
+    },
+    {
+      "path": "codex/skills/sdcorejs-execute-plan/SKILL.md",
+      "sha256": "93ce3094d5ac93aa90a9302e0c8f8842c7698ac5b8a9f08f1d96188e0ef72f64"
+    },
+    {
+      "path": "codex/skills/sdcorejs-plan/SKILL.md",
+      "sha256": "3d4d25ef75b5521578cb7475a15d975380eb43f8052e2e6626094bd1fdbae485"
+    },
+    {
+      "path": "codex/skills/sdcorejs-spec/SKILL.md",
+      "sha256": "286ea44d3b2f8b78d7bcc0f6a9b07278f7185439aa7fa5126082389b951a247d"
+    },
+    {
+      "path": "plugin/_refs/orchestration/execution-contract.mjs",
+      "sha256": "fb01f71303f66249bacb61562f3f1f809a5ff0d9d5fdd89b97b96079a85d2d2a"
+    },
+    {
+      "path": "plugin/_refs/orchestration/parallel-protocol.mjs",
+      "sha256": "eb32e545b00d988b7f64990550fa525b4b601f5801aa7c8ff6710c17e40dbe5f"
+    },
+    {
+      "path": "plugin/_refs/sdlc/plan-approval-artifact.md",
+      "sha256": "7f5989311565bda025fba8da49c2f5637550c9aad4eee30e775242727cdd14dd"
+    },
+    {
+      "path": "plugin/skills/sdcorejs-execute-plan/SKILL.md",
+      "sha256": "961cfa02269cf37d52e40cad1cce34d49acd71c03bfe39f1e2f820260da18c11"
+    },
+    {
+      "path": "plugin/skills/sdcorejs-plan/SKILL.md",
+      "sha256": "4dc0eebeff2797b471343b60ffe86328cddc1b69f24265e501e9c9b06a3213cf"
+    },
+    {
+      "path": "plugin/skills/sdcorejs-spec/SKILL.md",
+      "sha256": "047d8c2602564b0d00534efb5801de1d2e16f3541f042031a23823bba7e73b2c"
+    },
+    {
+      "path": "skills/shared/sdlc/02-spec.md",
+      "sha256": "7ceb9dc1c60fe5743f659964d271d775f87b73eadb3de055a0b0db593423ebeb"
+    },
+    {
+      "path": "skills/shared/sdlc/03-plan.md",
+      "sha256": "59b5cb7f78b9d04eb87964346f231a6dff9fb920530df5a1e932797cfb05c977"
+    },
+    {
+      "path": "skills/shared/sdlc/04-execute-plan.md",
+      "sha256": "9c3302ca04fe09a6bc98af6762110db2b2cd93690c9290ae7dd349f02c71c6e8"
+    },
+    {
+      "path": "test/e2e/audit-contract-regression.test.mjs",
+      "sha256": "47afeb51cf9065890c919e38790c8e0c7ee74165571ad088975be9f1c919134d"
+    },
+    {
+      "path": "test/e2e/audit-workflow-behavior.test.mjs",
+      "sha256": "0913ba61374663e666a99631de27a564994f548631cd13e410cc406eeae805eb"
+    },
+    {
+      "path": "test/e2e/content-skill.test.mjs",
+      "sha256": "1656be6d64f239fa43891929f7139188a9f9c31092926dc523884f73ea80a366"
+    },
+    {
+      "path": "test/e2e/skill-pack-runner.test.mjs",
+      "sha256": "46b21c8a34db13e3b30334132b2005d6dc396ada33f0f00d46d1d108e7c38500"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "9f88fad31a5577399a7128fa1e9037877de02765648fb635f25496dfa6342904"
+    }
+  ]
+}
