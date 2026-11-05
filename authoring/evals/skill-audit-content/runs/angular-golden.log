@@ -1,0 +1,13 @@
+
+> sdcorejs-agent@0.8.0 test:e2e:angular:golden
+> node --test test/e2e/angular-golden-project.test.mjs
+
+✔ generated Angular project typechecks, validates templates, builds, tests, lints, and routes to module owner (40475.856166ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 40572.088995

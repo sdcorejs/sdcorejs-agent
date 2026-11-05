@@ -1,0 +1,1053 @@
+{
+  "schema_version": 1,
+  "measurement_kind": "deterministic-source-bound-contract-projection",
+  "source": {
+    "current_HEAD": "930cc9d67eac64d91e4a55a9b7d32693576ee8db",
+    "working_tree_dirty": true
+  },
+  "baseline": {
+    "source_commit": "ec6afdb4e2494416d985be610837e728a9278a2f",
+    "fixture": "test/e2e/fixtures/communication-economy-baseline.json",
+    "visible_output": {
+      "observed_live": false,
+      "source": "source-bound-fixture",
+      "method": "Baseline scenario measurements, source paths, blob OIDs, and the duplicate progress rule are captured from the audited source_commit in this deterministic fixture and checked against that commit when history is available. Runtime report generation requires neither a live transcript nor baseline Git history.",
+      "duplicate_progress_rule": {
+        "path": "_refs/shared/tasklist.md",
+        "blob_oid": "5ba7f76bda55fc9dc1d406950f6178a176c8ccfc",
+        "rule": "Before the final response, make one final runtime progress update."
+      }
+    }
+  },
+  "tokenizer": {
+    "status": "unavailable",
+    "reason": "The repository has no tokenizer dependency; the report records UTF-8 bytes, semantic bytes, lines, and words without inventing token counts."
+  },
+  "bootstrap": {
+    "baseline": {
+      "paths": [
+        "AGENTS.md",
+        "skills/orchestration/using-skills.md",
+        "_refs/shared/runtime-protocols.md"
+      ],
+      "files": 3,
+      "utf8_bytes": 20173,
+      "semantic_bytes": 19723,
+      "lines": 387,
+      "words": 2361
+    },
+    "current": {
+      "files": 3,
+      "utf8_bytes": 19939,
+      "semantic_bytes": 19698,
+      "lines": 369,
+      "words": 2283
+    }
+  },
+  "scenarios": {
+    "pure-qa": {
+      "profile": "compact",
+      "profile_reason": "default compact profile",
+      "handoff_mode": "none",
+      "jit_context": {
+        "baseline": {
+          "files": 0,
+          "utf8_bytes": 0,
+          "lines": 0,
+          "words": 0
+        },
+        "current": {
+          "files": 0,
+          "utf8_bytes": 0,
+          "semantic_bytes": 0,
+          "lines": 0,
+          "words": 0
+        },
+        "selected_paths": []
+      },
+      "visible_output": {
+        "baseline": {
+          "utf8_bytes": 134,
+          "semantic_bytes": 131,
+          "lines": 5,
+          "words": 17
+        },
+        "current": {
+          "utf8_bytes": 98,
+          "semantic_bytes": 98,
+          "lines": 1,
+          "words": 12
+        },
+        "baseline_source_paths": [],
+        "baseline_source_blobs": [],
+        "observed_live": false
+      },
+      "repeated_block_bytes": {
+        "baseline": 0,
+        "current": 0
+      },
+      "portable_handoff_utf8_bytes": 0,
+      "runtime_context_channel_utf8_bytes": 0,
+      "authoritative_field_coverage": {
+        "required": 0,
+        "preserved": 0,
+        "missing": []
+      },
+      "rendered_semantic_coverage": {
+        "required": 1,
+        "preserved": 1,
+        "missing": [],
+        "parity": true
+      },
+      "profile_semantic_parity": true,
+      "profile_semantic_audits": {
+        "compact": {
+          "required": 1,
+          "preserved": 1,
+          "missing": [],
+          "parity": true
+        },
+        "standard": {
+          "required": 1,
+          "preserved": 1,
+          "missing": [],
+          "parity": true
+        },
+        "detailed": {
+          "required": 1,
+          "preserved": 1,
+          "missing": [],
+          "parity": true
+        }
+      },
+      "semantic_parity": true
+    },
+    "small-docs-fast-fix": {
+      "profile": "compact",
+      "profile_reason": "default compact profile",
+      "handoff_mode": "none",
+      "jit_context": {
+        "baseline": {
+          "files": 2,
+          "utf8_bytes": 13814,
+          "lines": 383,
+          "words": 1821
+        },
+        "current": {
+          "files": 2,
+          "utf8_bytes": 16400,
+          "semantic_bytes": 16058,
+          "lines": 420,
+          "words": 2118
+        },
+        "selected_paths": [
+          "_refs/shared/project-context.md",
+          "_refs/shared/tasklist.md"
+        ]
+      },
+      "visible_output": {
+        "baseline": {
+          "utf8_bytes": 496,
+          "semantic_bytes": 413,
+          "lines": 31,
+          "words": 54
+        },
+        "current": {
+          "utf8_bytes": 193,
+          "semantic_bytes": 188,
+          "lines": 11,
+          "words": 23
+        },
+        "baseline_source_paths": [],
+        "baseline_source_blobs": [],
+        "observed_live": false
+      },
+      "repeated_block_bytes": {
+        "baseline": 205,
+        "current": 0
+      },
+      "portable_handoff_utf8_bytes": 0,
+      "runtime_context_channel_utf8_bytes": 0,
+      "authoritative_field_coverage": {
+        "required": 0,
+        "preserved": 0,
+        "missing": []
+      },
+      "rendered_semantic_coverage": {
+        "required": 5,
+        "preserved": 5,
+        "missing": [],
+        "parity": true
+      },
+      "profile_semantic_parity": true,
+      "profile_semantic_audits": {
+        "compact": {
+          "required": 5,
+          "preserved": 5,
+          "missing": [],
+          "parity": true
+        },
+        "standard": {
+          "required": 5,
+          "preserved": 5,
+          "missing": [],
+          "parity": true
+        },
+        "detailed": {
+          "required": 5,
+          "preserved": 5,
+          "missing": [],
+          "parity": true
+        }
+      },
+      "semantic_parity": true
+    },
+    "small-production-fast-fix": {
+      "profile": "compact",
+      "profile_reason": "default compact profile",
+      "handoff_mode": "runtime-context-channel",
+      "jit_context": {
+        "baseline": {
+          "files": 3,
+          "utf8_bytes": 26383,
+          "lines": 635,
+          "words": 3555
+        },
+        "current": {
+          "files": 3,
+          "utf8_bytes": 27325,
+          "semantic_bytes": 26761,
+          "lines": 598,
+          "words": 3532
+        },
+        "selected_paths": [
+          "_refs/shared/project-context.md",
+          "_refs/shared/tasklist.md",
+          "_refs/shared/finish-gate.md"
+        ]
+      },
+      "visible_output": {
+        "baseline": {
+          "utf8_bytes": 2466,
+          "semantic_bytes": 2172,
+          "lines": 99,
+          "words": 241
+        },
+        "current": {
+          "utf8_bytes": 217,
+          "semantic_bytes": 212,
+          "lines": 11,
+          "words": 25
+        },
+        "baseline_source_paths": [
+          "skills/shared/sdlc/04-execute-plan.md"
+        ],
+        "baseline_source_blobs": [
+          "24864a8602abbbc6a8cea56ee934f11384de1f73"
+        ],
+        "observed_live": false
+      },
+      "repeated_block_bytes": {
+        "baseline": 223,
+        "current": 0
+      },
+      "portable_handoff_utf8_bytes": 0,
+      "runtime_context_channel_utf8_bytes": 890,
+      "authoritative_field_coverage": {
+        "required": 18,
+        "preserved": 18,
+        "missing": []
+      },
+      "rendered_semantic_coverage": {
+        "required": 5,
+        "preserved": 5,
+        "missing": [],
+        "parity": true
+      },
+      "profile_semantic_parity": true,
+      "profile_semantic_audits": {
+        "compact": {
+          "required": 5,
+          "preserved": 5,
+          "missing": [],
+          "parity": true
+        },
+        "standard": {
+          "required": 5,
+          "preserved": 5,
+          "missing": [],
+          "parity": true
+        },
+        "detailed": {
+          "required": 5,
+          "preserved": 5,
+          "missing": [],
+          "parity": true
+        }
+      },
+      "semantic_parity": true
+    },
+    "spec-approval": {
+      "profile": "detailed",
+      "profile_reason": "safety, approval, failure, or decision clarity requires detailed communication",
+      "handoff_mode": "portable-handoff",
+      "jit_context": {
+        "baseline": {
+          "files": 5,
+          "utf8_bytes": 53954,
+          "lines": 1326,
+          "words": 6971
+        },
+        "current": {
+          "files": 5,
+          "utf8_bytes": 63523,
+          "semantic_bytes": 62381,
+          "lines": 1449,
+          "words": 8039
+        },
+        "selected_paths": [
+          "_refs/shared/project-context.md",
+          "_refs/shared/user-choice-prompt.md",
+          "_refs/shared/artifact-lifecycle.md",
+          "skills/shared/sdlc/02-spec.md",
+          "_refs/harness/communication-economy.md"
+        ]
+      },
+      "visible_output": {
+        "baseline": {
+          "utf8_bytes": 1653,
+          "semantic_bytes": 1521,
+          "lines": 60,
+          "words": 166
+        },
+        "current": {
+          "utf8_bytes": 484,
+          "semantic_bytes": 470,
+          "lines": 29,
+          "words": 61
+        },
+        "baseline_source_paths": [
+          "skills/shared/sdlc/02-spec.md"
+        ],
+        "baseline_source_blobs": [
+          "66b7488ca092b58d0d8f59fa74e1eaf74748a05c"
+        ],
+        "observed_live": false
+      },
+      "repeated_block_bytes": {
+        "baseline": 0,
+        "current": 0
+      },
+      "portable_handoff_utf8_bytes": 1368,
+      "runtime_context_channel_utf8_bytes": 0,
+      "authoritative_field_coverage": {
+        "required": 22,
+        "preserved": 22,
+        "missing": []
+      },
+      "rendered_semantic_coverage": {
+        "required": 9,
+        "preserved": 9,
+        "missing": [],
+        "parity": true
+      },
+      "profile_semantic_parity": true,
+      "profile_semantic_audits": {
+        "compact": {
+          "required": 3,
+          "preserved": 3,
+          "missing": [],
+          "parity": true
+        },
+        "standard": {
+          "required": 3,
+          "preserved": 3,
+          "missing": [],
+          "parity": true
+        },
+        "detailed": {
+          "required": 3,
+          "preserved": 3,
+          "missing": [],
+          "parity": true
+        }
+      },
+      "semantic_parity": true
+    },
+    "approved-plan-execution": {
+      "profile": "compact",
+      "profile_reason": "default compact profile",
+      "handoff_mode": "portable-handoff",
+      "jit_context": {
+        "baseline": {
+          "files": 6,
+          "utf8_bytes": 67185,
+          "lines": 1637,
+          "words": 8566
+        },
+        "current": {
+          "files": 6,
+          "utf8_bytes": 81514,
+          "semantic_bytes": 80118,
+          "lines": 1685,
+          "words": 10269
+        },
+        "selected_paths": [
+          "_refs/shared/project-context.md",
+          "_refs/shared/tasklist.md",
+          "_refs/shared/artifact-lifecycle.md",
+          "skills/shared/sdlc/04-execute-plan.md",
+          "_refs/shared/finish-gate.md",
+          "_refs/harness/communication-economy.md"
+        ]
+      },
+      "visible_output": {
+        "baseline": {
+          "utf8_bytes": 8939,
+          "semantic_bytes": 7737,
+          "lines": 283,
+          "words": 854
+        },
+        "current": {
+          "utf8_bytes": 258,
+          "semantic_bytes": 252,
+          "lines": 13,
+          "words": 26
+        },
+        "baseline_source_paths": [
+          "skills/shared/sdlc/03-plan.md",
+          "skills/shared/sdlc/04-execute-plan.md"
+        ],
+        "baseline_source_blobs": [
+          "a0612dda03399feda127d95337ce940c656c4073",
+          "24864a8602abbbc6a8cea56ee934f11384de1f73"
+        ],
+        "observed_live": false
+      },
+      "repeated_block_bytes": {
+        "baseline": 270,
+        "current": 0
+      },
+      "portable_handoff_utf8_bytes": 3241,
+      "runtime_context_channel_utf8_bytes": 0,
+      "authoritative_field_coverage": {
+        "required": 49,
+        "preserved": 49,
+        "missing": []
+      },
+      "rendered_semantic_coverage": {
+        "required": 6,
+        "preserved": 6,
+        "missing": [],
+        "parity": true
+      },
+      "profile_semantic_parity": true,
+      "profile_semantic_audits": {
+        "compact": {
+          "required": 6,
+          "preserved": 6,
+          "missing": [],
+          "parity": true
+        },
+        "standard": {
+          "required": 6,
+          "preserved": 6,
+          "missing": [],
+          "parity": true
+        },
+        "detailed": {
+          "required": 6,
+          "preserved": 6,
+          "missing": [],
+          "parity": true
+        }
+      },
+      "semantic_parity": true
+    },
+    "direct-review": {
+      "profile": "standard",
+      "profile_reason": "message kind needs normal explanation",
+      "handoff_mode": "runtime-context-channel",
+      "jit_context": {
+        "baseline": {
+          "files": 4,
+          "utf8_bytes": 42786,
+          "lines": 955,
+          "words": 5484
+        },
+        "current": {
+          "files": 5,
+          "utf8_bytes": 58658,
+          "semantic_bytes": 57913,
+          "lines": 1217,
+          "words": 7387
+        },
+        "selected_paths": [
+          "_refs/shared/project-context.md",
+          "_refs/shared/tasklist.md",
+          "skills/shared/workflow/review.md",
+          "_refs/shared/review-code.md",
+          "_refs/harness/communication-economy.md"
+        ]
+      },
+      "visible_output": {
+        "baseline": {
+          "utf8_bytes": 2343,
+          "semantic_bytes": 2095,
+          "lines": 83,
+          "words": 254
+        },
+        "current": {
+          "utf8_bytes": 328,
+          "semantic_bytes": 322,
+          "lines": 13,
+          "words": 40
+        },
+        "baseline_source_paths": [
+          "skills/shared/workflow/review.md"
+        ],
+        "baseline_source_blobs": [
+          "e429e522431dacbef96cc5b9209d6e4e424af54f"
+        ],
+        "observed_live": false
+      },
+      "repeated_block_bytes": {
+        "baseline": 354,
+        "current": 0
+      },
+      "portable_handoff_utf8_bytes": 0,
+      "runtime_context_channel_utf8_bytes": 929,
+      "authoritative_field_coverage": {
+        "required": 22,
+        "preserved": 22,
+        "missing": []
+      },
+      "rendered_semantic_coverage": {
+        "required": 9,
+        "preserved": 9,
+        "missing": [],
+        "parity": true
+      },
+      "profile_semantic_parity": true,
+      "profile_semantic_audits": {
+        "compact": {
+          "required": 9,
+          "preserved": 9,
+          "missing": [],
+          "parity": true
+        },
+        "standard": {
+          "required": 9,
+          "preserved": 9,
+          "missing": [],
+          "parity": true
+        },
+        "detailed": {
+          "required": 9,
+          "preserved": 9,
+          "missing": [],
+          "parity": true
+        }
+      },
+      "semantic_parity": true
+    },
+    "review-repair-ship": {
+      "profile": "compact",
+      "profile_reason": "default compact profile",
+      "handoff_mode": "portable-handoff",
+      "jit_context": {
+        "baseline": {
+          "files": 10,
+          "utf8_bytes": 117368,
+          "lines": 2861,
+          "words": 15335
+        },
+        "current": {
+          "files": 12,
+          "utf8_bytes": 173095,
+          "semantic_bytes": 169382,
+          "lines": 3872,
+          "words": 21770
+        },
+        "selected_paths": [
+          "_refs/shared/project-context.md",
+          "_refs/shared/tasklist.md",
+          "_refs/shared/artifact-lifecycle.md",
+          "skills/shared/workflow/review.md",
+          "skills/orchestration/repair-loop.md",
+          "skills/shared/workflow/ship.md",
+          "_refs/orchestration/tail/repair-loop.md",
+          "_refs/orchestration/tail/verify-before-done.md",
+          "_refs/orchestration/tail/branch-ready.md",
+          "_refs/orchestration/tail/ship-context.md",
+          "_refs/shared/test-context.md",
+          "_refs/harness/communication-economy.md"
+        ]
+      },
+      "visible_output": {
+        "baseline": {
+          "utf8_bytes": 10706,
+          "semantic_bytes": 9316,
+          "lines": 411,
+          "words": 996
+        },
+        "current": {
+          "utf8_bytes": 255,
+          "semantic_bytes": 249,
+          "lines": 13,
+          "words": 34
+        },
+        "baseline_source_paths": [
+          "skills/shared/workflow/review.md",
+          "skills/shared/sdlc/04-execute-plan.md",
+          "_refs/shared/test-context.md",
+          "_refs/shared/test-context.md",
+          "_refs/shared/test-context.md",
+          "_refs/shared/artifact-lifecycle.md",
+          "_refs/orchestration/tail/ship-context.md"
+        ],
+        "baseline_source_blobs": [
+          "e429e522431dacbef96cc5b9209d6e4e424af54f",
+          "24864a8602abbbc6a8cea56ee934f11384de1f73",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "d040a4d837fbdcf6c337c0bb30ce77ab55de76e9",
+          "f8b5ca84e76f9a10a0617e5e924b8eecfbcad95b"
+        ],
+        "observed_live": false
+      },
+      "repeated_block_bytes": {
+        "baseline": 280,
+        "current": 0
+      },
+      "portable_handoff_utf8_bytes": 7755,
+      "runtime_context_channel_utf8_bytes": 0,
+      "authoritative_field_coverage": {
+        "required": 118,
+        "preserved": 118,
+        "missing": []
+      },
+      "rendered_semantic_coverage": {
+        "required": 8,
+        "preserved": 8,
+        "missing": [],
+        "parity": true
+      },
+      "profile_semantic_parity": true,
+      "profile_semantic_audits": {
+        "compact": {
+          "required": 8,
+          "preserved": 8,
+          "missing": [],
+          "parity": true
+        },
+        "standard": {
+          "required": 8,
+          "preserved": 8,
+          "missing": [],
+          "parity": true
+        },
+        "detailed": {
+          "required": 8,
+          "preserved": 8,
+          "missing": [],
+          "parity": true
+        }
+      },
+      "semantic_parity": true
+    },
+    "security-destructive": {
+      "profile": "detailed",
+      "profile_reason": "safety, approval, failure, or decision clarity requires detailed communication",
+      "handoff_mode": "portable-handoff",
+      "jit_context": {
+        "baseline": {
+          "files": 5,
+          "utf8_bytes": 60588,
+          "lines": 1396,
+          "words": 8271
+        },
+        "current": {
+          "files": 6,
+          "utf8_bytes": 84307,
+          "semantic_bytes": 83277,
+          "lines": 1767,
+          "words": 11176
+        },
+        "selected_paths": [
+          "_refs/shared/user-choice-prompt.md",
+          "_refs/shared/artifact-lifecycle.md",
+          "_refs/shared/review-security.md",
+          "skills/shared/workflow/ship.md",
+          "skills/shared/workflow/git.md",
+          "_refs/harness/communication-economy.md"
+        ]
+      },
+      "visible_output": {
+        "baseline": {
+          "utf8_bytes": 3793,
+          "semantic_bytes": 3289,
+          "lines": 159,
+          "words": 351
+        },
+        "current": {
+          "utf8_bytes": 479,
+          "semantic_bytes": 466,
+          "lines": 27,
+          "words": 58
+        },
+        "baseline_source_paths": [
+          "_refs/orchestration/tail/ship-context.md",
+          "_refs/shared/artifact-lifecycle.md"
+        ],
+        "baseline_source_blobs": [
+          "f8b5ca84e76f9a10a0617e5e924b8eecfbcad95b",
+          "d040a4d837fbdcf6c337c0bb30ce77ab55de76e9"
+        ],
+        "observed_live": false
+      },
+      "repeated_block_bytes": {
+        "baseline": 484,
+        "current": 0
+      },
+      "portable_handoff_utf8_bytes": 2254,
+      "runtime_context_channel_utf8_bytes": 0,
+      "authoritative_field_coverage": {
+        "required": 33,
+        "preserved": 33,
+        "missing": []
+      },
+      "rendered_semantic_coverage": {
+        "required": 8,
+        "preserved": 8,
+        "missing": [],
+        "parity": true
+      },
+      "profile_semantic_parity": true,
+      "profile_semantic_audits": {
+        "compact": {
+          "required": 3,
+          "preserved": 3,
+          "missing": [],
+          "parity": true
+        },
+        "standard": {
+          "required": 3,
+          "preserved": 3,
+          "missing": [],
+          "parity": true
+        },
+        "detailed": {
+          "required": 3,
+          "preserved": 3,
+          "missing": [],
+          "parity": true
+        }
+      },
+      "semantic_parity": true
+    },
+    "delegated-test-docs": {
+      "profile": "compact",
+      "profile_reason": "default compact profile",
+      "handoff_mode": "portable-handoff",
+      "jit_context": {
+        "baseline": {
+          "files": 8,
+          "utf8_bytes": 79972,
+          "lines": 2032,
+          "words": 8353
+        },
+        "current": {
+          "files": 11,
+          "utf8_bytes": 132066,
+          "semantic_bytes": 128665,
+          "lines": 2815,
+          "words": 15797
+        },
+        "selected_paths": [
+          "_refs/shared/tasklist.md",
+          "_refs/harness/delegation-policy.json",
+          "_refs/harness/task-brief.md",
+          "_refs/orchestration/parallel-protocol.md",
+          "skills/tracks/test/sdcorejs-test.md",
+          "skills/orchestration/parallel-dispatch.md",
+          "skills/orchestration/documentation.md",
+          "_refs/shared/test-context.md",
+          "_refs/shared/artifact-lifecycle.md",
+          "_refs/shared/documentation-layout.md",
+          "_refs/harness/communication-economy.md"
+        ]
+      },
+      "visible_output": {
+        "baseline": {
+          "utf8_bytes": 9610,
+          "semantic_bytes": 8163,
+          "lines": 398,
+          "words": 795
+        },
+        "current": {
+          "utf8_bytes": 282,
+          "semantic_bytes": 275,
+          "lines": 15,
+          "words": 35
+        },
+        "baseline_source_paths": [
+          "_refs/shared/test-context.md",
+          "_refs/shared/test-context.md",
+          "_refs/shared/test-context.md",
+          "_refs/orchestration/parallel-protocol.md",
+          "_refs/shared/test-ui-evidence.md",
+          "_refs/shared/artifact-lifecycle.md"
+        ],
+        "baseline_source_blobs": [
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "ac7a9227df33d1fbcad4493b1d63085c0904af52",
+          "738feda7ff4a4dad637cee75264af261bfb2805f",
+          "84fc6024761167ff8e0f52d98425c6bd7e0b449a",
+          "d040a4d837fbdcf6c337c0bb30ce77ab55de76e9"
+        ],
+        "observed_live": false
+      },
+      "repeated_block_bytes": {
+        "baseline": 298,
+        "current": 0
+      },
+      "portable_handoff_utf8_bytes": 9303,
+      "runtime_context_channel_utf8_bytes": 0,
+      "authoritative_field_coverage": {
+        "required": 76,
+        "preserved": 76,
+        "missing": []
+      },
+      "rendered_semantic_coverage": {
+        "required": 7,
+        "preserved": 7,
+        "missing": [],
+        "parity": true
+      },
+      "profile_semantic_parity": true,
+      "profile_semantic_audits": {
+        "compact": {
+          "required": 7,
+          "preserved": 7,
+          "missing": [],
+          "parity": true
+        },
+        "standard": {
+          "required": 7,
+          "preserved": 7,
+          "missing": [],
+          "parity": true
+        },
+        "detailed": {
+          "required": 7,
+          "preserved": 7,
+          "missing": [],
+          "parity": true
+        }
+      },
+      "semantic_parity": true
+    },
+    "no-runtime-context-channel": {
+      "profile": "compact",
+      "profile_reason": "default compact profile",
+      "handoff_mode": "portable-handoff",
+      "jit_context": {
+        "baseline": {
+          "files": 6,
+          "utf8_bytes": 52553,
+          "lines": 1593,
+          "words": 4976
+        },
+        "current": {
+          "files": 2,
+          "utf8_bytes": 35897,
+          "semantic_bytes": 29466,
+          "lines": 917,
+          "words": 3417
+        },
+        "selected_paths": [
+          "_refs/harness/capability-contract.json",
+          "_refs/harness/communication-economy.md"
+        ]
+      },
+      "visible_output": {
+        "baseline": {
+          "utf8_bytes": 2418,
+          "semantic_bytes": 2136,
+          "lines": 95,
+          "words": 233
+        },
+        "current": {
+          "utf8_bytes": 208,
+          "semantic_bytes": 204,
+          "lines": 9,
+          "words": 23
+        },
+        "baseline_source_paths": [
+          "skills/shared/sdlc/04-execute-plan.md"
+        ],
+        "baseline_source_blobs": [
+          "24864a8602abbbc6a8cea56ee934f11384de1f73"
+        ],
+        "observed_live": false
+      },
+      "repeated_block_bytes": {
+        "baseline": 205,
+        "current": 0
+      },
+      "portable_handoff_utf8_bytes": 1462,
+      "runtime_context_channel_utf8_bytes": 0,
+      "authoritative_field_coverage": {
+        "required": 23,
+        "preserved": 23,
+        "missing": []
+      },
+      "rendered_semantic_coverage": {
+        "required": 5,
+        "preserved": 5,
+        "missing": [],
+        "parity": true
+      },
+      "profile_semantic_parity": true,
+      "profile_semantic_audits": {
+        "compact": {
+          "required": 5,
+          "preserved": 5,
+          "missing": [],
+          "parity": true
+        },
+        "standard": {
+          "required": 5,
+          "preserved": 5,
+          "missing": [],
+          "parity": true
+        },
+        "detailed": {
+          "required": 5,
+          "preserved": 5,
+          "missing": [],
+          "parity": true
+        }
+      },
+      "semantic_parity": true
+    }
+  },
+  "aggregate": {
+    "baseline_jit_utf8_bytes": 514603,
+    "current_jit_utf8_bytes": 672785,
+    "baseline_visible_utf8_bytes": 42558,
+    "current_visible_utf8_bytes": 2802,
+    "baseline_visible_words": 3961,
+    "current_visible_words": 337,
+    "baseline_repeated_block_bytes": 2319,
+    "current_repeated_block_bytes": 0,
+    "current_portable_handoff_utf8_bytes": 25383,
+    "current_runtime_context_channel_utf8_bytes": 1819,
+    "required_fields": 361,
+    "preserved_fields": 361,
+    "baseline_total_communication_utf8_bytes": 577334,
+    "current_total_communication_utf8_bytes": 722728
+  },
+  "duplication_pairs": {
+    "spec-plan": {
+      "baseline": {
+        "total_utf8_bytes": 471,
+        "repeated_block_bytes": 197,
+        "repeated_ratio": 0.4182590233545648
+      },
+      "current": {
+        "total_utf8_bytes": 162,
+        "repeated_block_bytes": 0,
+        "repeated_ratio": 0
+      }
+    },
+    "plan-execution": {
+      "baseline": {
+        "total_utf8_bytes": 354,
+        "repeated_block_bytes": 149,
+        "repeated_ratio": 0.4209039548022599
+      },
+      "current": {
+        "total_utf8_bytes": 155,
+        "repeated_block_bytes": 0,
+        "repeated_ratio": 0
+      }
+    },
+    "execution-test-review-ship": {
+      "baseline": {
+        "total_utf8_bytes": 597,
+        "repeated_block_bytes": 396,
+        "repeated_ratio": 0.6633165829145728
+      },
+      "current": {
+        "total_utf8_bytes": 235,
+        "repeated_block_bytes": 0,
+        "repeated_ratio": 0
+      }
+    },
+    "progress-final": {
+      "baseline": {
+        "total_utf8_bytes": 178,
+        "repeated_block_bytes": 88,
+        "repeated_ratio": 0.4943820224719101
+      },
+      "current": {
+        "total_utf8_bytes": 119,
+        "repeated_block_bytes": 0,
+        "repeated_ratio": 0
+      }
+    }
+  },
+  "duplication_pair_basis": {
+    "observed_live": false,
+    "method": "Sanitized deterministic contract-pair fixtures; use live A/B transcripts for provider token claims."
+  },
+  "broad_read_audit": {
+    "replaced": [
+      {
+        "path": "skills/shared/sdlc/02-spec.md",
+        "baseline_behavior": "Load the latest one to three approved specs to mirror style.",
+        "classification": "style-only broad read",
+        "replacement": "relationship metadata, then frontmatter/headings or the canonical template"
+      },
+      {
+        "path": "skills/shared/sdlc/01-brainstorming.md",
+        "baseline_behavior": "Load latest approved artifact frontmatter and latest product docs.",
+        "classification": "recency-biased read",
+        "replacement": "relationship metadata and exact request scope"
+      },
+      {
+        "path": "_refs/documentation/write-user-guide.md",
+        "baseline_behavior": "Fall back to the most recent track spec.",
+        "classification": "unrelated fallback read",
+        "replacement": "same contract, change, requirement, module, or explicit user selection"
+      },
+      {
+        "path": "_refs/shared/review-security.md",
+        "baseline_behavior": "Read the latest twenty commits.",
+        "classification": "broad history probe",
+        "replacement": "current diff or an explicit bounded review range"
+      },
+      {
+        "path": "_refs/shared/review-performance.md",
+        "baseline_behavior": "Read the latest twenty commits.",
+        "classification": "broad history probe",
+        "replacement": "current diff or an explicit bounded review range"
+      }
+    ],
+    "retained_for_correctness": [
+      "Every file inside an explicitly selected review scope.",
+      "Explicit release range, latest tag, and changelog ordering for release artifacts.",
+      "Version-aware Core UI documentation fallback.",
+      "Recently changed executable source as an explicit simplify scope."
+    ]
+  },
+  "live_ab_eval": {
+    "status": "skipped",
+    "observed_live": false,
+    "reason": "The deterministic suite does not invoke a credentialed live agent CLI or claim usage telemetry without a trusted isolated run and actual usage reporting."
+  }
+}

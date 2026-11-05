@@ -1,0 +1,23 @@
+✔ F-006: recipe basic config and golden producer agree, i18n is opt-in (27.5632ms)
+✔ F-007: literal plan verification block reaches executor and rejects a flat impostor (9.573323ms)
+✔ every central registry track is representable in a product ledger (7.599598ms)
+✔ product ledger emits canonical acceptance IDs and rejects invalid or duplicate normalized IDs (1.304875ms)
+✔ legacy acceptance IDs verify their input hash before canonical hash emission (1.513658ms)
+✔ AI-agent, design, documentation, workflow, and general fixtures preserve lifecycle identity (2.373127ms)
+✔ module-owned ledgers route to the module and never fall back to the portal (1.610831ms)
+✔ cross-repository product view keeps provenance and rejects editable or duplicate module sources (1.386392ms)
+✔ cross-repository acceptance identities survive reorder and insertion and fail closed (1.793264ms)
+✔ stale or missing test evidence cannot produce a verified delivery status (0.6007ms)
+✔ product ledger metadata accepts only canonical document paths (2.853976ms)
+✔ product artifact context covers every written document plus the ledger (0.718292ms)
+✔ product prose consumes the registry and does not compete with spec, plan, test, or code owners (9.790868ms)
+✔ cross-repository prose matches the runtime acceptance identity contract (1.574242ms)
+✔ F-008: published acceptance table survives ledger normalization and aggregation (1.485746ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 149.41875

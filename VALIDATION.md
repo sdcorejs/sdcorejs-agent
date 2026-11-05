@@ -783,3 +783,26 @@ keeps the `.git` suffix of an https remote. The port does not change that
 helper, so the same three cases remain the only failures. The interactive live
 runs recorded for the three changes still apply, because the files of the mode
 skill, references and check CLI are byte-identical to the versions that ran.
+
+## Current authorized inventory: 2026-11-05
+
+25 public skills, including sdcorejs-content. Historical counts and run records
+above remain observations at their recorded source identities. New audit/Content
+runs and limitations are recorded separately under authoring/evals/skill-audit-content.
+
+## 2026-11-05 audit continuation measurements
+
+New deterministic run; preceding historical tables are preserved. Baseline is the original communication-economy fixture, not this audit base. These are source bytes and synthetic contract projections, not live tokens. Total scenario bytes increased; no full-workflow token reduction is claimed. Per-skill audit-base comparisons and independent evaluations are recorded separately under `authoring/evals/skill-audit-content/`.
+
+| Metric | Historical baseline | Current candidate |
+|---|---:|---:|
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,939 |
+| Always-loaded bootstrap words | 2,361 | 2,283 |
+| Aggregate just-in-time scenario bytes | 514,603 | 672,785 |
+| Aggregate visible output bytes | 42,558 | 2,802 |
+| Aggregate visible output words | 3,961 | 337 |
+| Portable fallback handoff bytes | 0 | 25,383 |
+| Supported runtime context channel bytes | 0 | 1,819 |
+| Repeated-block bytes | 2,319 | 0 |
+| Total measured communication bytes | 577,334 | 722,728 |
+| Consumer-required authoritative fields | 361 | 361 preserved |

@@ -1,0 +1,55 @@
+{
+  "captured_at": "2026-11-05T09:22:10.720695+00:00",
+  "evidence_kind": "executable-local-contract-regression",
+  "repository_revision": "af42f21a36f12ae31c09abac1009f41f51b3d87f",
+  "runtime": "v24.22.1",
+  "command": "node --test --test-reporter=tap /workspace/work/skill-audit/contract-regression.test.mjs",
+  "counts": {
+    "tests": 23,
+    "pass": 13,
+    "fail": 10,
+    "skipped": 0
+  },
+  "expected_result": "RED before correction",
+  "findings": {
+    "F-001": {
+      "confirmed": true,
+      "failures": 2,
+      "observed": "Published spec and plan metadata with compatibility self hash fail verifyApprovedArtifact after serialization and parse; alias-free counterparts validate."
+    },
+    "F-002": {
+      "confirmed": true,
+      "failures": 1,
+      "observed": "Valid read-only contract/context and READ_ONLY_FANOUT topology pass independent helpers; compiler throws plan_context.parallel_candidates.units must be an array."
+    },
+    "F-003": {
+      "confirmed": true,
+      "failures": 2,
+      "observed": "First authorized flaky attempt blocked for lacking post-fix passes; explicit bounded direct authorization blocked for lacking a plan."
+    },
+    "F-004": {
+      "confirmed": true,
+      "failures": 3,
+      "observed": "Integration-owner assignment alone returns write_allowed:true for env, persona, memories actions."
+    },
+    "F-012": {
+      "confirmed": true,
+      "failures": 2,
+      "observed": "Related documentation is found but related_artifacts.memories is undefined, even for exact matching change_ref."
+    }
+  },
+  "limits": [
+    "In-memory contracts and isolated filesystem fixture only; no live provider or model-instruction-following evaluation.",
+    "F-001 consumes literal published frontmatter populated with synthetic values, not a model-authored approved artifact; full immutable parent graph was not exercised.",
+    "F-002 compilation is exercised through dispatch validation, but no real scheduler agents are launched.",
+    "Direct authorization is a trusted runtime projection of established user session evidence, not authorization conferred by arbitrary caller JSON.",
+    "F-012 advisory/current-source policy is an API contract, not an automatic semantic conflict detector; stale source is not declared verified.",
+    "Initial fixture typo (unknown nestjs-basic profile) output is retained separately and excluded from findings/counts."
+  ],
+  "files": {
+    "contract-regression.test.mjs": "659e90d62ed1b2d9729647a0d2ba59e7839e54e262d3db98d9e667cbf32ba49b",
+    "contract-baseline-red.tap": "1079a2b4886bcb17eb584101ceacdb68702ccdf2036cad943a08f77d4bd69387",
+    "contract-baseline-source.json": "acd7850121360dffea55488c03db4a28cab8de923f2a76ff2bace58f9b32e685",
+    "contract-probe-fixture-error-initial.tap": "4b5811244e341e67490aac2463c39c50cb3ea3b4e85283d93316f1bc9c69fbac"
+  }
+}

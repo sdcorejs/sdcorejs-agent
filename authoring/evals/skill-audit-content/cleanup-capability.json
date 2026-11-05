@@ -1,0 +1,16 @@
+{
+  "errors": [
+    {
+      "code": "FILESYSTEM_UNSUPPORTED",
+      "path": null
+    }
+  ],
+  "supported": false,
+  "actual_command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/workspace/sdcorejs-agent/_refs/cleanup/safe-file-operation.py"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "captured_at": "2026-11-05T09:17:41.995303+00:00",
+  "repository": "/workspace/sdcorejs-agent",
+  "revision": "af42f21a36f12ae31c09abac1009f41f51b3d87f",
+  "git_status_short": "",
+  "node_version": "v24.22.1",
+  "files": {
+    "AGENTS.md": "728e064e01d806854919294f1e376376eb6ee00dc26820b8bed06d9a2f2db5f9",
+    ".sdcorejs/handoffs/workflow/2026-11-05-skill-audit-content-handoff.md": "c5b70f415d2e92f0cbe32e4a477574406297c1a6c6679d23fb72887e86eb4d31",
+    "_refs/shared/approved-artifact.mjs": "ec6ebc4601f55100f5794789d24fd3ecd1c59ee2681a66d88762f06c1b69f912",
+    "_refs/shared/debug-contract.mjs": "d32772564369779177f286cf6c3060bfe655e0ea1fe95a3b638e20bc3c114443",
+    "_refs/shared/explore-contract.mjs": "403704bf366127f4f365e770b0aff3cec23808e66ec41e7488f9aada81311fa3",
+    "_refs/shared/project-context.mjs": "d0ca1631967a416a366f762f8e9e7f667566480d91943fa1211fec560dfcbe28",
+    "_refs/shared/project-context.md": "3e6a9055b156ae1bdf3aa2da9c4b378f708e8bf18fcf48dc818503260ee37c52",
+    "_refs/orchestration/parallel-protocol.mjs": "73cbf745e92dbf1694a43cea98c50e3e1fe62bff5cbd05383c6ed119de358482",
+    "skills/shared/sdlc/02-spec.md": "2c5f5074ecabeba1a2ae4dc6aa5d4fdaac594dd24e04b4c4913b3c599b55058d",
+    "_refs/sdlc/plan-approval-artifact.md": "5df631ed381dae3e2bb568c15ad55d5a96785da666ac636f611bdef3553a06c4",
+    "package.json": "5a9e77d9327ee2bfe99f900042188d47280d7ce0b8244f845036d3d69e335dbc"
+  }
+}

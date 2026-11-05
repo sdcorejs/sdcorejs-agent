@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-11-05T03:24:02.664Z
+generated_at: 2026-11-05T10:15:46.119Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks:
@@ -42,7 +42,7 @@ evidence:
     - site/src/pages/index.astro
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:b9d55c752271ac6479b4d49aac13dcf0175224e01da8b52d3c6be4ca862817a4
+  dependency_manifests: sha256:93bfc0a5a0d12415dbb8bd4eae9d268fb6a2e811814d2032f7d35af6ea4e728f
   source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
@@ -63,7 +63,7 @@ owner: integration-owner
 for developers and technical teams. It defines reusable software-delivery
 workflows for governed architecture and AI-agent applications, Angular,
 NestJS, Next.js, product, design, test, documentation, review, ship, Git, and
-generic execution. The bounded cleanup utility lives in `skills/shared/workflow/cleanup.md` and `_refs/cleanup/`; it is not an implementation track. A separate internal skill-authoring lifecycle lives under
+generic execution. The 25th public skill, `sdcorejs-content`, owns social editorial work for personal and product voices with orthogonal channel/format/domain references; drafting never authorizes publication, scheduling or messages. Session authority carries across workflow transitions; bounded fixes retain proportional verification and review. The bounded cleanup utility lives in `skills/shared/workflow/cleanup.md` and `_refs/cleanup/`; it is not an implementation track. A separate internal skill-authoring lifecycle lives under
 `authoring/` and is never part of the public pack or generated mirrors.
 
 Cleanup mutation has one canonical policy and platform adapters: pinned Windows PowerShell handles, or an explicitly selected existing CPython stdlib/ctypes helper on admitted Linux ext4/macOS APFS under scoped cooperative maintenance. Exact native profiles, source/parent identities, copy-before-capture recovery and retained transaction journals are part of its approval boundary. Missing native capability remains read-only; no runtime provisioning or permission repair belongs to this utility.

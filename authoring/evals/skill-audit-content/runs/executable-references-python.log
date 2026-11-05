@@ -1,0 +1,6 @@
+
+> sdcorejs-agent@0.8.0 check:executable-references
+> node scripts/check-executable-references.mjs
+
+Executable references valid: 10 classified files; typed/JSON/shell syntax and localization contexts are valid.
+Cleanup Python syntax: PASSED (in-memory compile; no native execution proof).

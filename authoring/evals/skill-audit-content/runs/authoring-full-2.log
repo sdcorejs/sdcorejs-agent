@@ -1,0 +1,18 @@
+
+> sdcorejs-agent@0.8.0 test:e2e:skill-authoring
+> node --test test/e2e/skill-authoring-contract.test.mjs
+
+✔ new-skill decision gate defaults to reuse and enforces inventory approvals (80.9221ms)
+✔ behavioral evidence rejects fabricated telemetry and incomplete lifecycle proof (2902.285881ms)
+✔ deterministic matrix runs all required safety scenarios without a provider (86.067374ms)
+✔ live-agent matrix is structured NOT RUN evidence without fabricated coverage (129.341037ms)
+✔ internal authoring capability is initialized but excluded from every public distribution surface (1276.651346ms)
+✔ deterministic authoring sources cannot access ambient credentials or providers (3.492794ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4610.05711
