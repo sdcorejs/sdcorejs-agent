@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-11-04T11:07:18.493Z
+generated_at: 2026-11-05T03:24:02.664Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks:
@@ -42,7 +42,7 @@ evidence:
     - site/src/pages/index.astro
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:36d543a6b202c8fd6b6cf15931f378e9249a2ad129d1355b482a6fba2074990e
+  dependency_manifests: sha256:b9d55c752271ac6479b4d49aac13dcf0175224e01da8b52d3c6be4ca862817a4
   source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true

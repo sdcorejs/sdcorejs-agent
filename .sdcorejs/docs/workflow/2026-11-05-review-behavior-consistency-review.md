@@ -155,3 +155,23 @@ report; commit-tree equivalence is checked again before push and PR creation.
 Root lint, typecheck and build scripts do not exist; skill/mirror and executable
 reference checks provide the applicable static checks. Framework golden suites
 and the site build are outside this change's affected paths and were not rerun.
+
+## Pre-merge CI repair, 2026-11-05
+
+After the user requested merge and local branch/worktree cleanup, GitHub run
+41960045619 passed Skills and E2E, PowerShell Skill Check, and Visual Companion,
+but failed Site Build and Audit on three high-severity dependency findings.
+This supersedes the earlier decision to leave site verification outside scope.
+
+The bounded fix updates only the site's resolved dependency graph: undici
+8.10.2 to 8.12.2, Vite 8.1.3 to 8.1.6, and Zod 4.5.4 to 4.6.6, with Vite's
+required Rolldown 1.1.5 bindings, matching OXC types and compatible picomatch.
+The site manifest, Astro version, root dependencies, engine requirements,
+audit thresholds and workflow are unchanged. Summary dependency fingerprints
+are refreshed; previous approval snapshots and reviewer captures are preserved.
+
+Local verification on supported Node 24.19.0: `npm ci --ignore-scripts` validates
+the lockfile; `npm run check:audit` reports zero vulnerabilities; `npm run build`
+generates 117 pages; `npm run check:links` passes 4477 local links/assets,
+76 search entries and 41 pinned source paths. These commands run in `site/`.
+The final PR-head CI must pass before the authorized merge.
