@@ -23,9 +23,10 @@ Write an immutable snapshot:
 Create and verify the immutable identity with
 `_refs/shared/approved-artifact.mjs`. Its versioned `sha256:v1`
 canonicalization includes body and protected metadata, normalizes UTF-8 line
-endings/field order, excludes only `approval_hash`, and excludes absolute
+endings/field order, excludes `approval_hash` and the exact matching self-hash projection, and excludes absolute
 checkout paths. `approved_plan_hash` is the compatibility projection of
-canonical `approval_hash`.
+canonical `approval_hash`; verification rejects a mismatched alias. A parent
+`approved_spec_hash` remains protected metadata.
 
 ## Repository Ownership
 

@@ -97,8 +97,7 @@ export function resolveExploreWriteAuthority({
     action === 'conventions-sync-write-approved' && conventionCaptureMode === 'after-review';
   const assigned =
     explicitAuthority === true ||
-    approvedInitialization === true ||
-    integrationOwnerAssigned === true ||
+    (action === 'summary-refresh' && (approvedInitialization === true || integrationOwnerAssigned === true)) ||
     policyAuthorized;
   // Allowlist, not a denylist: an unrecognized or misspelled role must not fall
   // through into write authority just because it is not the one role we named.

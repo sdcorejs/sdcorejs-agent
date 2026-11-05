@@ -1,4 +1,5 @@
 import { isDeepStrictEqual } from 'node:util';
+import path from 'node:path';
 
 import {
   validateApprovedWriteScope,
@@ -26,13 +27,13 @@ function normalizeRepositoryPath(value) {
   requiredString(value, 'repository_relative_path');
   const normalized = value.replaceAll('\\', '/').replace(/^\.\/+/u, '');
   if (
-    normalized.startsWith('/') ||
+    normalized.includes('\0') || normalized.startsWith('/') ||
     /^[A-Za-z]:\//u.test(normalized) ||
     normalized.split('/').includes('..')
   ) {
     throw new TypeError('repository_relative_path must remain inside the repository');
   }
-  return normalized;
+  return path.posix.normalize(normalized);
 }
 
 function escapeRegex(value) {
@@ -295,12 +296,21 @@ export function evaluateWorkingTree({
   }
   const dirty = unrelatedDirtyPaths.map(normalizeRepositoryPath);
   const intended = intendedOutputPaths.map(normalizeRepositoryPath);
-  const overlaps = intended.filter((path) => dirty.includes(path));
+  const scopeRoot = value => {
+    const prefix = value.split(/[!*?+@{([]/, 1)[0];
+    return prefix === value ? value.replace(/\/$/, '') : prefix.slice(0, Math.max(0, prefix.lastIndexOf('/')));
+  };
+  const overlaps = intended.filter((candidate) => dirty.some((entry) => {
+    const root = scopeRoot(candidate);
+    const dirtyRoot = scopeRoot(entry);
+    return !root || !dirtyRoot || root === '.' || dirtyRoot === '.' || candidate === entry || root.startsWith(`${dirtyRoot}/`) ||
+      dirtyRoot.startsWith(`${root}/`) || pathMatches(entry, [candidate]) || pathMatches(candidate, [entry]);
+  }));
   return {
-    status: dirty.length === 0 ? 'clear' : 'decision-required',
+    status: overlaps.length > 0 || (dirty.length > 0 && intended.length === 0) ? 'decision-required' : dirty.length > 0 ? 'dirty-disjoint' : 'clear',
     unrelated_dirty_paths: dirty,
     intended_dirty_overlaps: overlaps,
-    write_authorized: dirty.length === 0,
+    write_authorized: overlaps.length === 0 && !(dirty.length > 0 && intended.length === 0),
   };
 }
 
@@ -381,4 +391,14 @@ export function selectExecutionMode({
     reason: 'sequential and parallel execution are both feasible',
     waves,
   };
+}
+
+// Consume only the canonical plan producer shape; never fall back to a flat alias.
+export function resolveVerificationCommands(planContext) {
+  const commands = planContext?.verification_strategy?.commands_planned;
+  if (!Array.isArray(commands)) throw new TypeError('verification_strategy.commands_planned must be an array');
+  if (commands.some((command) => typeof command !== 'string' || command.trim() === '')) {
+    throw new TypeError('each planned command must be a non-empty string');
+  }
+  return [...commands];
 }

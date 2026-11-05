@@ -58,8 +58,9 @@ export function redactDebugText(value) {
     );
 }
 
-export function evaluateDebugArtifact(artifact) {
+export function evaluateDebugArtifact(artifact, { phase = 'attempt' } = {}) {
   const blockers = [];
+  if (!['attempt', 'completion'].includes(phase)) blockers.push('unknown debug lifecycle phase');
   const trackIds = new Set(systemRegistry.tracks.map(({ id }) => id));
   if (artifact?.schema_version !== 1) blockers.push('debug artifact schema_version must be 1');
   if (!trackIds.has(artifact?.subject_track)) {
@@ -135,7 +136,28 @@ export function evaluateDebugArtifact(artifact) {
     );
     if (!root) blockers.push('fix intent requires a verified root hypothesis');
     const planStep = artifact.approved_plan_step;
-    if (!planStep || !SHA256.test(planStep.approval_hash ?? '')) {
+    if (planStep === undefined || planStep === null) {
+      // Trusted host projection of the actual session request, not standalone
+      // caller JSON. Scope/risk classification must precede this projection.
+      const direct = artifact.direct_authorization;
+      const attempt = artifact.attempt_context;
+      const currentAuthority = phase === 'attempt'
+        ? direct?.source_revision === implementation?.source_revision && direct?.source_fingerprint === artifact.source_fingerprint
+        : attempt?.request_id === direct?.request_id && attempt?.owner_repository_id === direct?.owner_repository_id &&
+          attempt?.source_revision === direct?.source_revision && attempt?.source_fingerprint === direct?.source_fingerprint &&
+          attempt?.implementation_path === implementation?.path &&
+          JSON.stringify(attempt?.allowed_paths) === JSON.stringify(direct?.allowed_paths) &&
+          Array.isArray(artifact.post_fix_changed_paths) && artifact.post_fix_changed_paths.length > 0 &&
+          artifact.post_fix_changed_paths.every(p => Array.isArray(direct?.allowed_paths) && pathOwned(p, direct.allowed_paths));
+      if (!direct || direct.source !== 'explicit-user-request' ||
+          !nonEmpty(direct.request_id) || direct.bounded_low_risk !== true ||
+          direct.owner_repository_id !== artifact.owner_repository_id ||
+          !currentAuthority ||
+          !Array.isArray(direct.allowed_paths) ||
+          !pathOwned(implementation?.path ?? '', direct.allowed_paths)) {
+        blockers.push('fix intent requires a verified approved plan step or current bounded direct authority');
+      }
+    } else if (typeof planStep !== 'object' || Array.isArray(planStep) || !SHA256.test(planStep.approval_hash ?? '')) {
       blockers.push('fix intent requires a verified approved plan step');
     } else {
       if (planStep.owner_repository_id !== artifact.owner_repository_id) {
@@ -149,16 +171,26 @@ export function evaluateDebugArtifact(artifact) {
       }
     }
     if (
-      artifact.debug_mode === 'flaky' &&
-      (artifact.retry_evidence?.consecutive_post_fix_passes ?? 0) < 3
+      phase === 'completion' && artifact.debug_mode === 'flaky' &&
+      (!Number.isInteger(artifact.retry_evidence?.consecutive_post_fix_passes) || artifact.retry_evidence.consecutive_post_fix_passes < 3)
     ) {
       blockers.push('one flaky retry pass is not proof of a fix');
     }
-    writeAuthorized = blockers.length === 0;
+    if (phase === 'completion' && artifact.test_evidence?.result !== 'PASSED') {
+      blockers.push('completion requires current passing post-fix test evidence');
+    }
+    writeAuthorized = phase === 'attempt' && blockers.length === 0;
   }
 
   return {
     schema_version: 1,
+    phase,
+    attempt_context: phase === 'attempt' && writeAuthorized && artifact?.direct_authorization && !artifact?.approved_plan_step
+      ? {request_id:artifact.direct_authorization.request_id, owner_repository_id:artifact.owner_repository_id,
+        source_revision:implementation.source_revision, source_fingerprint:artifact.source_fingerprint,
+        implementation_path:implementation.path, allowed_paths:[...artifact.direct_authorization.allowed_paths]}
+      : null,
+    completion_verified: phase === 'completion' && artifact?.intent === 'fix' && blockers.length === 0,
     registry_version: systemRegistry.registry_version,
     status: blockers.length === 0 ? 'ready' : 'blocked',
     intent: artifact?.intent ?? null,

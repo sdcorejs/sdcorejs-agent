@@ -311,3 +311,12 @@ when a valid policy has that extension. Its authority is not-evaluated-read-only
 loading instructions grants no write. Apply effective nested instruction scope
 before any change, and use _refs/shared/project-bootstrap.md only for authorized
 Explore persistence. Missing bootstrap is disabled, not an invitation to install.
+
+## Selective memory retrieval
+
+`related_artifacts.memories` lists matching relationship/request paths only; an
+empty scope does not load every memory. This is advisory retrieval, never a
+freshness or authority assertion. Read only relevant bodies, compare source
+revision and current files/diffs/tests, and label stale or conflicting memory
+explicitly. Current source and user evidence take precedence. Do not auto-update
+or promote stored recollections into approved decisions.

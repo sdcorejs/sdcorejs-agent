@@ -436,3 +436,35 @@ export function evaluateShipReadiness(contract) {
     ],
   };
 }
+
+// Narrow Git-artifact disposition; this never changes production readiness.
+// Inputs are host-observed checks and scoped session decisions, not user payload.
+export function evaluateGitArtifactDisposition({
+  action, authorized_actions = [], current_identity, hygiene, acceptance,
+  governed = false, convergence, commit_created = false, remote_branch_exists = false,
+} = {}) {
+  const blockers = [];
+  const actions = ['local-commit', 'manual-notes', 'push', 'draft-pr', 'ready-pr'];
+  if (!actions.includes(action)) blockers.push('unknown Git disposition');
+  if (!Array.isArray(authorized_actions) || !authorized_actions.includes(action)) blockers.push('action is not authorized');
+  const notes = action === 'manual-notes';
+  if (!notes) {
+    if (typeof current_identity !== 'string' || current_identity.length === 0 ||
+        hygiene?.associated_identity !== current_identity || hygiene?.status !== 'READY') blockers.push('current read-only hygiene evidence required');
+    if (!Array.isArray(hygiene?.blockers) || hygiene.blockers.length > 0) blockers.push('hygiene blockers cannot be waived');
+    if (hygiene?.artifact_closure !== 'complete') blockers.push('artifact closure incomplete');
+    if (hygiene?.writes_after_check !== false) blockers.push('post-check writes invalidate hygiene');
+    if (governed && (convergence?.status !== 'PASS' || convergence?.associated_identity !== current_identity || convergence?.receipt_verified !== true)) blockers.push('current governed convergence receipt required');
+    const verified = acceptance?.status === 'PASS' && acceptance?.associated_identity === current_identity;
+    const deferred = acceptance?.status === 'DEFERRED' && acceptance?.associated_identity === current_identity &&
+      acceptance?.deferral?.source === 'explicit-user-request' &&
+      typeof acceptance.deferral.reason === 'string' && acceptance.deferral.reason.trim() !== '';
+    if (!verified && !(['local-commit','push','draft-pr'].includes(action) && deferred)) blockers.push('acceptance is neither verified nor explicitly deferred for this action');
+    if (['push','draft-pr','ready-pr'].includes(action) && commit_created !== true) blockers.push('no included commit');
+    if (['draft-pr','ready-pr'].includes(action) && remote_branch_exists !== true) blockers.push('remote branch missing');
+  }
+  return {allowed:blockers.length === 0, action, blockers,
+    completion_claim_allowed:!notes && blockers.length === 0 && acceptance?.status === 'PASS',
+    draft_required:acceptance?.status === 'DEFERRED',
+    caveat_required:notes || acceptance?.status !== 'PASS'};
+}

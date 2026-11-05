@@ -346,7 +346,12 @@ export function validateWorkingTree(tree = {}, { caseInsensitive = process.platf
   const errors = [];
   if (tree.expected_branch && tree.current_branch !== tree.expected_branch) errors.push('branch mismatch');
   if (tree.expected_head && tree.current_head !== tree.expected_head) errors.push('HEAD mismatch');
-  if ((tree.unrelated_dirty_paths ?? []).length > 0 && !tree.user_dirty_tree_decision) errors.push('unrelated dirty paths require a user decision');
+  const unrelated = tree.unrelated_dirty_paths ?? [];
+  const intended = tree.intended_output_paths ?? [];
+  if (unrelated.length > 0 && !tree.user_dirty_tree_decision &&
+      (intended.length === 0 || unrelated.some(dirty => intended.some(output => repositoryPathsOverlap(normalizeRelative(dirty), normalizeRelative(output), caseInsensitive))))) {
+    errors.push('unrelated dirty overlap or unknown output scope requires a user decision');
+  }
   const occupied = [
     ...(tree.staged_paths ?? []),
     ...(tree.unstaged_paths ?? []),
@@ -532,8 +537,36 @@ export function planWaves(units) {
 
 export function compileParallelContext({
   plan_context: planContext = {},
+  read_only_context: readOnlyContext,
   runtime_capabilities: runtimeCapabilities = {},
 } = {}) {
+  if (readOnlyContext !== undefined) {
+    if (Object.keys(planContext).length > 0) throw new TypeError('select one contract branch');
+    const context = structuredClone(readOnlyContext);
+    if (context.contract?.source !== 'read-only-request') throw new TypeError('read_only_context requires a read-only-request');
+    context.runtime_capabilities = structuredClone(runtimeCapabilities);
+    const errors = validateDispatchContext(context);
+    if (errors.length > 0) throw new TypeError(errors.join('; '));
+    const policy = context.execution_policy ?? 'auto';
+    if (!['auto', 'sequential', 'parallel-preferred'].includes(policy)) throw new TypeError('invalid execution_policy');
+    const waves = planWaves(context.units);
+    const topology = classifyTopology({contract: context.contract, units: context.units, runtimeCapabilities});
+    const limit = runtimeCapabilities.supports_parallel_dispatch === true && Number.isInteger(runtimeCapabilities.effective_max_concurrency)
+      ? Math.max(1, runtimeCapabilities.effective_max_concurrency) : 1;
+    const eligible = runtimeCapabilities.supports_subagents === true && limit >= 2 &&
+      topology.verdict === 'PARALLEL-CANDIDATE' && waves.some(wave => wave.length >= 2);
+    const fallback = runtimeCapabilities.supports_subagents === true ? 'delegated-sequential' : 'parent-sequential';
+    return {
+      parallel_context: {...context, waves, execution_policy: policy},
+      opportunity_report: {schema_version:1, execution_policy:policy,
+        eligibility:eligible ? 'parallel' : fallback,
+        selected_mode:eligible && policy !== 'sequential' ? 'parallel' : fallback,
+        topology:topology.kind, verdict:topology.verdict, waves,
+        max_parallelism:Math.min(limit, Math.max(0, ...waves.map(wave => wave.length))),
+        blockers:eligible ? [] : [topology.reason || 'read-only concurrency unavailable or no independent wave'],
+        repair_suggestions:eligible ? [] : ['use the sequential fallback; do not invent write scope or plan approval']},
+    };
+  }
   const compact = planContext.parallel_candidates;
   if (!compact || typeof compact !== 'object' || !Array.isArray(compact.units)) {
     throw new TypeError('plan_context.parallel_candidates.units must be an array');
@@ -941,9 +974,14 @@ function estimateWaveCost(costs, maxConcurrency) {
 
 function repositoryPathsOverlap(left, right, caseInsensitive) {
   const normalizeCase = (value) => caseInsensitive ? value.toLowerCase() : value;
-  const a = normalizeCase(left).replace(/\/$/, '');
-  const b = normalizeCase(right).replace(/\/$/, '');
-  return a === b || a.startsWith(`${b}/`) || b.startsWith(`${a}/`);
+  const scopeRoot = value => {
+    const normalized = normalizeCase(value);
+    const prefix = normalized.split(/[!*?+@{([]/, 1)[0];
+    return prefix === normalized ? normalized.replace(/\/$/, '') : prefix.slice(0, Math.max(0, prefix.lastIndexOf('/')));
+  };
+  const a = scopeRoot(left);
+  const b = scopeRoot(right);
+  return !a || !b || a === '.' || b === '.' || a === b || a.startsWith(`${b}/`) || b.startsWith(`${a}/`);
 }
 
 function isLockfile(rel) {
