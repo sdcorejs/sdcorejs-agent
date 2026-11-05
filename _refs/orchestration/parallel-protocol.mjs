@@ -972,7 +972,8 @@ function estimateWaveCost(costs, maxConcurrency) {
   return Math.max(...lanes, 0);
 }
 
-function repositoryPathsOverlap(left, right, caseInsensitive) {
+// Inputs are normalized repository-relative paths; uncertain glob scopes overlap.
+export function repositoryPathsOverlap(left, right, caseInsensitive = process.platform === 'win32') {
   const normalizeCase = (value) => caseInsensitive ? value.toLowerCase() : value;
   const scopeRoot = value => {
     const normalized = normalizeCase(value);

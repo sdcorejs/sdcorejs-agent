@@ -1,7 +1,8 @@
 # Approved Plan Artifact
 
-Read this reference after the user explicitly approves an `sdcorejs-plan`
-draft.
+Read this reference after explicit approval of an `sdcorejs-plan` draft or
+after self-review under current scoped session delegation. Apply
+`_refs/shared/session-authority.md`; missing authority still blocks snapshots.
 
 ## Contents
 
@@ -67,7 +68,9 @@ contract_id: <contract id>
 requirement_id: <requirement id>
 approved_at: <ISO-8601 UTC timestamp>
 approved_by: <safe session identity or null>
-approval_source: explicit-user-choice | imported-approved-plan
+approval_source: explicit-user-choice | delegated-session-scope | imported-approved-plan
+instruction_reference: <real scoped instruction reference or null>
+document_review_performed: true | false
 track: <canonical track from _refs/shared/system-registry.json>
 sourceSpecPath: .sdcorejs/specs/<track>/<timestamp>-<topic>.md
 approved_spec_reference:
@@ -127,21 +130,26 @@ change_control:
 ---
 ```
 
+For `delegated-session-scope`, retain the real instruction reference and set
+`document_review_performed: false`. Explicit/imported approval records only
+review that actually occurred; self-review never implies user document review.
+
 ## Body
 
 ```markdown
 # <Title> - Approved Plan
 
-> Snapshot of what the user approved at the `sdcorejs-plan` gate. Do not edit by hand; re-author through `sdcorejs-plan` if the contract changes.
+> Immutable contract authorized by the recorded approval source. Delegated authority does not mean the user reviewed this document. Re-author through `sdcorejs-plan` if the contract changes.
 
 ## Approved contract
 <verbatim approved plan content>
 
-## Decisions captured during review
-- <what changed during review, or `(approved as drafted)`>
+## Authority and review provenance
+- <real instruction/decision reference, scope, and whether user document review occurred>
+- <self-review decisions; user review decisions only when observed>
 
 ## Skill provenance
-sdcorejs-plan (approved on attempt <N> / 3)
+sdcorejs-plan (self-review attempt <N> / 3; authority: <recorded approval source>)
 ```
 
 ## Handoff

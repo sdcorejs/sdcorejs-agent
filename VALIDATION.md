@@ -240,15 +240,15 @@ working-tree diff:
 
 | Measure | Baseline | Current working tree |
 |---|---:|---:|
-| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,968 |
-| Always-loaded bootstrap words | 2,361 | 2,309 |
-| Aggregate just-in-time scenario bytes | 514,603 | 686,534 |
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,939 |
+| Always-loaded bootstrap words | 2,361 | 2,283 |
+| Aggregate just-in-time scenario bytes | 514,603 | 674,037 |
 | Aggregate visible output bytes | 42,558 | 2,802 |
 | Aggregate visible output words | 3,961 | 337 |
 | Portable fallback handoff bytes | 0 | 25,383 |
 | Supported runtime context channel bytes | 0 | 1,819 |
 | Repeated-block bytes | 2,319 | 0 |
-| Total measured communication bytes | 577,334 | 736,506 |
+| Total measured communication bytes | 577,334 | 723,980 |
 | Consumer-required authoritative fields | 361 | 361 preserved |
 
 The report includes ten scenarios, per-scenario selected paths, bytes, words,
@@ -798,11 +798,11 @@ New deterministic run; preceding historical tables are preserved. Baseline is th
 |---|---:|---:|
 | Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,939 |
 | Always-loaded bootstrap words | 2,361 | 2,283 |
-| Aggregate just-in-time scenario bytes | 514,603 | 672,785 |
+| Aggregate just-in-time scenario bytes | 514,603 | 674,037 |
 | Aggregate visible output bytes | 42,558 | 2,802 |
 | Aggregate visible output words | 3,961 | 337 |
 | Portable fallback handoff bytes | 0 | 25,383 |
 | Supported runtime context channel bytes | 0 | 1,819 |
 | Repeated-block bytes | 2,319 | 0 |
-| Total measured communication bytes | 577,334 | 722,728 |
+| Total measured communication bytes | 577,334 | 723,980 |
 | Consumer-required authoritative fields | 361 | 361 preserved |

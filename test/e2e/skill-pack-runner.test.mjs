@@ -1725,7 +1725,7 @@ test('phase 1: SDLC harness encodes contract-driven profile-aware execution inva
   assert.match(spec, /stack_profile/);
   assert.match(spec, /acceptance_criteria_count/);
   assert.match(spec, /manual_criteria_count/);
-  assert.match(spec, /approval_source:\s*explicit-user-choice\s*\|\s*imported-approved-spec\s*\|\s*equivalent-complete-input/);
+  assert.match(spec, /approval_source:\s*explicit-user-choice\s*\|\s*delegated-session-scope\s*\|\s*imported-approved-spec\s*\|\s*equivalent-complete-input/);
   assert.match(spec, /change_control:[\s\S]*supersedes[\s\S]*change_reason/);
   assert.match(spec, /immutable/i);
   assert.match(spec, /approved contract body excluding frontmatter and (?:the |this )?hash field/i);

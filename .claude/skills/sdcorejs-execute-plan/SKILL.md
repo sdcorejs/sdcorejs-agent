@@ -108,20 +108,17 @@ Before loading the plan or dispatching an executor, assemble `project_context`.
 Before any edit or subagent dispatch, inspect the current working tree and
 compare it to `plan_context`:
 
-- `git status --short`
-- staged diffstat
-- unstaged diffstat
-- untracked files
-- current branch
-- current_HEAD
-- target_root_kind
-- allowed_paths
-- prohibited_paths
+- `git status --short`, staged/unstaged diffstat, and untracked files
+- current branch and `current_HEAD`
+- `target_root_kind`, `allowed_paths`, and `prohibited_paths`
 - unrelated dirty files
 - status snapshot hash and dirty diff hash
 - intended output paths that already exist or overlap dirty paths
 
-If unrelated dirty files exist, ask one numbered decision before editing:
+Proceed with captured same-change edits or known disjoint unrelated paths under
+the current authority; leave unrelated changes untouched and unstaged. Ask this
+decision only for unknown ownership or overlapping unrelated paths, and block
+the affected writes while continuing independent read-only work:
 
 ```text
 Working tree has changes outside this approved plan.

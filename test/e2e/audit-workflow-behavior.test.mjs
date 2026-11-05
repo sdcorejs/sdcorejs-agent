@@ -69,6 +69,24 @@ test('parallel preflight shares disjoint dirty policy and preserves overlap deni
  assert.ok(validateWorkingTree({unrelated_dirty_paths:['src/orders/service.ts'],unstaged_paths:['src/orders/service.ts'],intended_output_paths:['src/orders/service.ts']}).length>0);
 });
 
+test('skill-creator review: directory/glob roots and host case policy agree across execution modes',()=>{
+ for (const [dirty,intended,overlap] of [
+  ['src','src/**',true], ['src/**','src',true], ['src/','src/**',true],
+  ['src/fix.ts','src/**',true], ['src','src/fix.ts',true],
+  ['src/fix.ts','src/fix.ts',true], ['docs','src/**',false],
+  ['src-old','src/**',false],
+ ]) {
+  const tree={unrelated_dirty_paths:[dirty],intended_output_paths:[intended]};
+  assert.equal(evaluateWorkingTree(tree).write_authorized,!overlap,`${dirty} vs ${intended}`);
+  assert.equal(validateWorkingTree(tree).length>0,overlap,`${dirty} vs ${intended}`);
+ }
+ const tree={unrelated_dirty_paths:['src/Foo.ts'],intended_output_paths:['src/foo.ts']};
+ for (const caseInsensitive of [true,false]) {
+  assert.equal(evaluateWorkingTree(tree,{caseInsensitive}).write_authorized,!caseInsensitive);
+  assert.equal(validateWorkingTree(tree,{caseInsensitive}).length>0,caseInsensitive);
+ }
+});
+
 test('F-011: identical ticket IDs preserve summarize, comments and requirement output intent',async()=>{
  const {resolveDocumentationAction}=await import('../../_refs/documentation/intent.mjs');
  for(const [action,mode,writes] of [['summarize','summarize',false],['comments','code-documentation',true],['record-requirement','write-requirement',true]])assert.deepEqual(resolveDocumentationAction({requested_action:action,ticket_id:'TASK-123'}),{mode,writes,ticket_id:'TASK-123'});

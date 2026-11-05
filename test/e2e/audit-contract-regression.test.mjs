@@ -23,12 +23,13 @@ const parentHash = `sha256:v1:${'c'.repeat(64)}`;
 
 // Read the published source itself; fill every scalar while retaining the
 // actual nested structure. This detects producer/consumer composition defects.
-async function publishedArtifact(kind, { withAlias = true } = {}) {
+async function publishedArtifact(kind, { withAlias = true, delegated = false } = {}) {
   const source = await readFile(path.join(REPO, kind === 'spec'
     ? 'skills/shared/sdlc/02-spec.md' : '_refs/sdlc/plan-approval-artifact.md'), 'utf8');
   const template = [...source.matchAll(/```yaml\n---\n([\s\S]*?)\n---\n```/gu)]
     .map((match) => match[1]).find((block) => block.includes(`artifact_kind: ${kind}\n`));
   assert.ok(template, `published ${kind} frontmatter exists`);
+  if (delegated) assert.match(template, /^approval_source:.*delegated-session-scope/m);
   let sequenceField;
   const values = {
     artifact_id: `${kind}-audit-r1`, artifact_kind: kind, schema_version: 1,
@@ -38,7 +39,9 @@ async function publishedArtifact(kind, { withAlias = true } = {}) {
     owner_repository_id: owner, owner_repository_role: 'standalone', owner_module_id: null,
     repository_relative_path: `.sdcorejs/${kind}s/nestjs/orders.md`, source_revision: revision,
     parent_repository_id: null, approved_at: '2026-11-05T00:00:00.000Z', approved_by: null,
-    approval_source: 'explicit-user-choice', track: 'nestjs', target_root_kind: 'target-project',
+    approval_source: delegated ? 'delegated-session-scope' : 'explicit-user-choice',
+    instruction_reference: delegated ? 'session/request/implement-orders' : null,
+    document_review_performed: !delegated, track: 'nestjs', target_root_kind: 'target-project',
     stack_profile: 'plain-nestjs', profile_confidence: 'high', sourceDraftPath: '.sdcorejs/docs/nestjs/orders-spec.md',
     approval_hash: parentHash, approved_spec_hash: parentHash, approved_plan_hash: parentHash,
     acceptance_criteria_count: 1, manual_criteria_count: 0, redaction_applied: true,
@@ -93,6 +96,21 @@ function yaml(value, indent = 0) {
 }
 
 for (const kind of ['spec', 'plan']) {
+  test(`skill-creator review ${kind}: delegated provenance survives the literal template and remains tamper-sensitive`, async () => {
+    const artifact = await publishedArtifact(kind, { delegated: true });
+    const serialized = `---\n${yaml(artifact.metadata)}\n---\n${artifact.body}`;
+    const [, frontmatter, body] = serialized.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/u);
+    const consumed = { metadata: approval.parseApprovedFrontmatter(frontmatter), body };
+    assert.equal(approval.verifyApprovedArtifact(consumed).valid, true);
+    assert.equal(consumed.metadata.approval_source, 'delegated-session-scope');
+    assert.equal(consumed.metadata.instruction_reference, 'session/request/implement-orders');
+    assert.equal(consumed.metadata.document_review_performed, false);
+    for (const field of ['instruction_reference', 'document_review_performed', 'approval_source']) {
+      const corrupted = structuredClone(consumed);
+      corrupted.metadata[field] = field === 'document_review_performed' ? true : 'invented';
+      assert.throws(() => approval.verifyApprovedArtifact(corrupted), /hash mismatch/u);
+    }
+  });
   test(`F-001 ${kind}: literal published metadata survives hash, serialization, parse and verify`, async () => {
     const artifact = await publishedArtifact(kind);
     const serialized = `---\n${yaml(artifact.metadata)}\n---\n${artifact.body}`;

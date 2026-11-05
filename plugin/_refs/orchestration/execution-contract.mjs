@@ -12,7 +12,7 @@ import {
 import { validateArchitecturePlanHandoff } from '../shared/architecture-contract.mjs';
 import { validateRepositoryPlan } from '../shared/repository-contract.mjs';
 import { resolveTrack } from '../shared/system-registry.mjs';
-import { planWaves } from './parallel-protocol.mjs';
+import { planWaves, repositoryPathsOverlap } from './parallel-protocol.mjs';
 
 const MUTABLE_ACTIONS = new Set(['CREATE', 'EDIT', 'VERIFY-THEN-EDIT']);
 const PARALLEL_CAPABILITIES = new Set(['supported']);
@@ -290,22 +290,14 @@ export function authorizePlanWrite({
 export function evaluateWorkingTree({
   unrelated_dirty_paths: unrelatedDirtyPaths = [],
   intended_output_paths: intendedOutputPaths = [],
-}) {
+}, { caseInsensitive = process.platform === 'win32' } = {}) {
   if (!Array.isArray(unrelatedDirtyPaths) || !Array.isArray(intendedOutputPaths)) {
     throw new TypeError('working-tree path collections must be arrays');
   }
   const dirty = unrelatedDirtyPaths.map(normalizeRepositoryPath);
   const intended = intendedOutputPaths.map(normalizeRepositoryPath);
-  const scopeRoot = value => {
-    const prefix = value.split(/[!*?+@{([]/, 1)[0];
-    return prefix === value ? value.replace(/\/$/, '') : prefix.slice(0, Math.max(0, prefix.lastIndexOf('/')));
-  };
-  const overlaps = intended.filter((candidate) => dirty.some((entry) => {
-    const root = scopeRoot(candidate);
-    const dirtyRoot = scopeRoot(entry);
-    return !root || !dirtyRoot || root === '.' || dirtyRoot === '.' || candidate === entry || root.startsWith(`${dirtyRoot}/`) ||
-      dirtyRoot.startsWith(`${root}/`) || pathMatches(entry, [candidate]) || pathMatches(candidate, [entry]);
-  }));
+  const overlaps = intended.filter(candidate => dirty.some(entry =>
+    repositoryPathsOverlap(candidate, entry, caseInsensitive)));
   return {
     status: overlaps.length > 0 || (dirty.length > 0 && intended.length === 0) ? 'decision-required' : dirty.length > 0 ? 'dirty-disjoint' : 'clear',
     unrelated_dirty_paths: dirty,
