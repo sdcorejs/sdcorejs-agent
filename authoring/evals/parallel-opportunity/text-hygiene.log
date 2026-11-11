@@ -1,0 +1,5 @@
+
+> sdcorejs-agent@0.8.0 check:text-hygiene
+> node scripts/check-text-hygiene.mjs
+
+Text hygiene check passed (1911 file(s) scanned).

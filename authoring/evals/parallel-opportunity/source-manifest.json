@@ -1,0 +1,104 @@
+{
+  "base_revision": "bdc22462070f9e52bb7900619970d8f8f17c5c50",
+  "source_state_hash": "sha256:b272b08dd462d9ff31f4e536cff90dd635b1d1a9d54ebe644dbc2de9502a6e02",
+  "sources": [
+    {
+      "path": ".github/chatmodes/sdcorejs.chatmode.md",
+      "sha256": "sha256:429204a18d5dbebc577c7f6c2ee84c283331ce5087aaeb2139b659b72875a564"
+    },
+    {
+      "path": ".github/copilot-instructions.md",
+      "sha256": "sha256:a71bdde7403c1f6e1bcd0488243d6f70688454d63119747b9fd6246036107354"
+    },
+    {
+      "path": ".sdcorejs/summary.md",
+      "sha256": "sha256:6b19e94c022cf9e89ece98e79f9f0bf5f6c42902075101dc00bd9b37cc0e8b5b"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "sha256:0486d95778c6dde645355ee650489e5d5192cadec1db0254f43cbbd34c8e51f4"
+    },
+    {
+      "path": "CLAUDE.md",
+      "sha256": "sha256:278f38c7dbcbaa3a90a357a3651129488302e956a6879202d0411000d387a58d"
+    },
+    {
+      "path": "README.md",
+      "sha256": "sha256:54f9b557365fc952fc42cd2e145d6a64d32d373f8a4870b911b942ca1cd86dcc"
+    },
+    {
+      "path": "VALIDATION.md",
+      "sha256": "sha256:61a96b5e5da0690351c382cbf03d813628793e15f203c8cfce475ec838b8ab95"
+    },
+    {
+      "path": "_refs/harness/task-brief.md",
+      "sha256": "sha256:ab698866014a046518b6778bd1d241ff30b8614d6436875884f7eddd269f497f"
+    },
+    {
+      "path": "_refs/orchestration/parallel-protocol.md",
+      "sha256": "sha256:9b6594be6e4c0c7cb80209fd6813d776b8b4f5e7c50828477a09445258e42c96"
+    },
+    {
+      "path": "_refs/orchestration/parallel-protocol.mjs",
+      "sha256": "sha256:bcd0727fcf16602a99ad1c1f007bdbfc344bab6aac2be230521b876e653d7b32"
+    },
+    {
+      "path": "package.json",
+      "sha256": "sha256:f72886fdc2b4a03d3f743be060ab1e5c61459b36cfb7de72d044bd1af729c8c4"
+    },
+    {
+      "path": "skills/orchestration/parallel-dispatch.md",
+      "sha256": "sha256:45090969b6e5e83e2d63864a083817ffea69e21106293ca86571a7a95f2d791f"
+    },
+    {
+      "path": "skills/orchestration/using-skills.md",
+      "sha256": "sha256:caa45ce242bf80223767d24a33b314de255511d2c593291b6eb0d47002184f98"
+    },
+    {
+      "path": "skills/shared/workflow/debug.md",
+      "sha256": "sha256:2b8d7de1c46da85ed8bfce973487075f4a9ae984ce03a87ba105b0b7b7961cee"
+    },
+    {
+      "path": "skills/shared/workflow/explore.md",
+      "sha256": "sha256:f1a6d5fe837a1ffadbc0474b67a0b324e80223b336d7dd8bc2b11909d9221223"
+    },
+    {
+      "path": "skills/shared/workflow/review.md",
+      "sha256": "sha256:02f2da8bc0bca6af1ff8992c04363ebb12d2a7619df9e3a1f7a5296ec12931ab"
+    },
+    {
+      "path": "test/e2e/fixtures/parallel-opportunity-scenarios.json",
+      "sha256": "sha256:84e7f2f1a9efbdc561d4bab5c15ae7a72e57de8509735cbf3c245fcf7652beed"
+    },
+    {
+      "path": "test/e2e/parallel-opportunity.test.mjs",
+      "sha256": "sha256:c686267ea13bc359188f7fc085f37c4d2555b8323ad44f71897963bef3fdee9f"
+    },
+    {
+      "path": "test/e2e/support/entrypoint-smoke.mjs",
+      "sha256": "sha256:09d19051ca2f1800f9a648ffd0bb6120389777c82d9f55642d6c5d74b3a96e6d"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "sha256:24c2878154e837a0ed75480cafc34fdf1b36d9bfad9027d5e65ec6f3438ea1a5"
+    }
+  ],
+  "authoring_contract_sources": [
+    {
+      "path": "authoring/evals/scenarios.json",
+      "sha256": "sha256:b99d1f396884d395fe6e9bfb90eace091e9848da0390b18d000cb57df78c4e60"
+    },
+    {
+      "path": "authoring/evals/inventory-policy.json",
+      "sha256": "sha256:850a59519cb768d595895b8848e088b6b517300f7041d40c5163650ded9e9818"
+    },
+    {
+      "path": "authoring/evals/skill-authoring-contract.mjs",
+      "sha256": "sha256:b6f53e2df086aa198ce7424e5bbe301e9fd61c78192034e2e25177dcb76c2366"
+    },
+    {
+      "path": "authoring/skills/sdcorejs-skill-authoring/SKILL.md",
+      "sha256": "sha256:240fc1eb06e62e1dd658bc0fc5fb38da6185b5052b60425e0b669028723dd028"
+    }
+  ]
+}

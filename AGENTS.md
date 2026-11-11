@@ -84,12 +84,12 @@ writes. Internal `authoring/**` skills are never public or mirrored.
 No write-producing step may run after final branch-ready unless branch-ready is
 run again before any Git artifact handoff.
 
-`sdcorejs-execute-plan` preserves the approved execution policy. Explicit
-approved-plan delegation or parallel-agent splitting uses
-`sdcorejs-subagent-driven-development`; parent execution is the fallback.
-Read-only parallel audits use the low-level `sdcorejs-parallel-dispatch`
-scheduler. Both paths require safe ownership, isolation, and deterministic
-fan-in; unapproved writes return to planning.
+Approved-plan delegation uses `sdcorejs-subagent-driven-development`, with
+parent fallback. Read-only parallel audits use `sdcorejs-parallel-dispatch`.
+Debug/review/explore also assess 2+ substantial independent domains without
+parallel wording; owner hooks preserve host/session authority, sequential/no-agent
+choices and non-recursion. Require safe ownership, isolation and fan-in;
+unknown independence stays with the owner. Unapproved writes return to planning.
 
 Answer pure Q&A directly. Bounded low-risk fixes use targeted context, minimal
 edits, focused verification and concise review without spec/plan artifacts.

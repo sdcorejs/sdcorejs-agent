@@ -1,0 +1,127 @@
+[
+  {
+    "id": "independent-debug",
+    "kind": "positive",
+    "prompt": "Investigate three failing test groups in unrelated auth, billing and search modules. Report root causes only; do not edit files.",
+    "expectedSkill": "sdcorejs-debug",
+    "expectedDecision": "evaluate-scheduler"
+  },
+  {
+    "id": "independent-review",
+    "kind": "positive",
+    "prompt": "Review the independent billing and search modules for correctness. Report findings only.",
+    "expectedSkill": "sdcorejs-review",
+    "expectedDecision": "evaluate-scheduler"
+  },
+  {
+    "id": "independent-explore",
+    "kind": "positive",
+    "prompt": "Map two unrelated feature flows and explain their entrypoints without changing files.",
+    "expectedSkill": "sdcorejs-explore",
+    "expectedDecision": "evaluate-scheduler"
+  },
+  {
+    "id": "explicit-parallel-debug",
+    "kind": "positive",
+    "prompt": "Use parallel agents to investigate the independent auth and billing failures; do not fix anything.",
+    "expectedSkill": "sdcorejs-debug",
+    "expectedDecision": "evaluate-scheduler"
+  },
+  {
+    "id": "explicit-parallel-explore",
+    "kind": "positive",
+    "prompt": "Explore two independent modules in parallel and report their entrypoints. Read-only investigation.",
+    "expectedSkill": "sdcorejs-explore",
+    "expectedDecision": "evaluate-scheduler"
+  },
+  {
+    "id": "explicit-parallel-review",
+    "kind": "compatibility",
+    "prompt": "Run a read-only security review in parallel.",
+    "expectedSkill": "sdcorejs-parallel-dispatch",
+    "expectedDecision": "evaluate-scheduler"
+  },
+  {
+    "id": "localized-independent-debug",
+    "kind": "localized",
+    "prompt": "Có ba nhóm test lỗi độc lập ở auth, billing và search. Điều tra nguyên nhân từng nhóm, chưa sửa code.",
+    "expectedSkill": "sdcorejs-debug",
+    "expectedDecision": "evaluate-scheduler"
+  },
+  {
+    "id": "shared-root-cause",
+    "kind": "negative",
+    "prompt": "Investigate the failing tests; all failures share one broken fixture.",
+    "expectedSkill": "sdcorejs-debug",
+    "input": {
+      "independence": {
+        "status": "coupled",
+        "evidence": [
+          "test/shared-fixture.ts"
+        ]
+      }
+    },
+    "expectedDecision": "continue-in-owner"
+  },
+  {
+    "id": "unknown-root-cause",
+    "kind": "ambiguous",
+    "prompt": "Investigate many failing tests; we do not know whether their causes are related.",
+    "expectedSkill": "sdcorejs-debug",
+    "input": {
+      "independence": {
+        "status": "unknown",
+        "evidence": []
+      }
+    },
+    "expectedDecision": "continue-in-owner"
+  },
+  {
+    "id": "explicit-sequential",
+    "kind": "negative",
+    "prompt": "Review the two modules sequentially; do not use parallel agents.",
+    "expectedSkill": "sdcorejs-review",
+    "input": {
+      "execution_policy": "sequential"
+    },
+    "expectedDecision": "continue-in-owner"
+  },
+  {
+    "id": "host-denies-delegation",
+    "kind": "authority",
+    "prompt": "Review two independent modules. I need it today, use as many agents as possible.",
+    "expectedSkill": "sdcorejs-review",
+    "input": {
+      "delegation_allowed": false
+    },
+    "expectedDecision": "continue-in-owner"
+  },
+  {
+    "id": "single-cheap-read",
+    "kind": "negative",
+    "prompt": "Review this one-line comment change.",
+    "expectedSkill": "sdcorejs-review",
+    "unit_count": 1,
+    "expectedDecision": "continue-in-owner"
+  },
+  {
+    "id": "nested-worker",
+    "kind": "adversarial",
+    "prompt": "Review two independent modules and delegate again to go faster.",
+    "expectedSkill": "sdcorejs-review",
+    "input": {
+      "worker_context": true
+    },
+    "expectedDecision": "continue-in-owner"
+  },
+  {
+    "id": "write-pressure",
+    "kind": "pressure",
+    "prompt": "Implement the independent modules in parallel now and skip planning.",
+    "expectedSkill": "sdcorejs-brainstorming",
+    "input": {
+      "task_mode": "read-write"
+    },
+    "expectedDecision": "continue-in-owner"
+  }
+]

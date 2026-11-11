@@ -13,9 +13,8 @@ transition. Reuse scoped session authority; preserve unresolved risk decisions.
 
 Match descriptions before reading skill bodies. Load
 `_refs/shared/runtime-protocols.md`, then only task-relevant references.
-Current user instructions/evidence override stored context. Resolve track,
-profile, artifact, repository, review, repair, ship and evidence semantics from
-`_refs/shared/system-registry.json`; read only fields needed for the route.
+Current instructions/evidence override stored context. Resolve route semantics
+from `_refs/shared/system-registry.json`; read needed fields.
 
 Priority when several skills match:
 
@@ -74,9 +73,10 @@ Silence is never spec or plan approval; ambiguous/unconfirmed scope cannot
 generate code. Product/design/test/AI-agent stay first-class; unsupported
 stacks use the generic execute-plan harness.
 
-Explicit delegation uses `sdcorejs-subagent-driven-development`: safe parallel
-waves or sequential fresh workers, with parent fallback. The low-level
-`sdcorejs-parallel-dispatch` schedules waves and read-only parallel audits.
+`sdcorejs-subagent-driven-development` owns approved-plan delegation.
+Debug/review/explore assess 2+ substantial independent read-only domains via
+`sdcorejs-parallel-dispatch` without parallel wording. Owner hooks retain
+authority, execution-choice and non-recursion gates.
 
 ## Invariants
 

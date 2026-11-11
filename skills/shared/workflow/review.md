@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-review
-description: Read-only review/audit skill for every central-registry track, including Angular, NestJS, Next.js, AI-agent, product, design, documentation, workflow, test, React, Node, fullstack, and general. Reviews code/artifacts, ownership, security, evidence, traceability, and generated/reference validity; emits durable findings without writing or auto-repair. Runtime-localized.
+description: Read-only review/audit for every central-registry track. Reviews code/artifacts, correctness, security, accessibility, performance, ownership, consistency, evidence and traceability. Checks parallel opportunities for substantial independent review scopes. Returns findings without writing or auto-repair. Runtime-localized.
 required-actions: artifact.read, artifact.write, context.pass, verification.run, progress.create, progress.update, user.choose
 ---
 
@@ -98,6 +98,19 @@ Exclude generated/vendor/build output by default: `node_modules`, `dist`,
 lockfiles unless relevant, and generated Codex/Claude/plugin mirrors unless the
 review is about skills/mirrors. "Read every file under review" means every file
 inside the selected `file_scope`, not the entire repository by default.
+
+### Independent review check
+
+When the bounded scope contains two or more substantial independent review
+domains, apply `assessReadOnlyOpportunity` in
+`_refs/orchestration/parallel-protocol.mjs` and its reference contract without
+waiting for explicit parallel wording. On `evaluate-scheduler`, use
+`sdcorejs-parallel-dispatch` with `read-only-request`; preserve the selected
+dimensions, scope and no-write policy in every brief. Respect host restrictions
+and sequential/no-agent choices. Shared invariant or cross-layer checks remain
+with this review owner; do not split a single end-to-end contract by file count.
+Deduplicate and verify returned findings, reconcile conflicting claims, and own
+the final severity and report. Delegation grants no repair or persistence rights.
 
 ## Step 1 - Classify Track, Track Profile, Dimension, and Mode
 

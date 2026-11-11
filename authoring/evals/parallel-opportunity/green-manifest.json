@@ -1,0 +1,79 @@
+{
+  "base_revision": "bdc22462070f9e52bb7900619970d8f8f17c5c50",
+  "snapshot": "green-sources.json.gz",
+  "sha256": "sha256:744f51f9248ed5f49b9feb03f508bc4e072acbc19d94d836a257f86c9ff74778",
+  "sources": [
+    {
+      "path": ".github/chatmodes/sdcorejs.chatmode.md",
+      "sha256": "sha256:429204a18d5dbebc577c7f6c2ee84c283331ce5087aaeb2139b659b72875a564"
+    },
+    {
+      "path": ".github/copilot-instructions.md",
+      "sha256": "sha256:a71bdde7403c1f6e1bcd0488243d6f70688454d63119747b9fd6246036107354"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "sha256:72d92b7996d3df0e224abd95788c9f99a5c5026d692a08325a707222061efd27"
+    },
+    {
+      "path": "CLAUDE.md",
+      "sha256": "sha256:278f38c7dbcbaa3a90a357a3651129488302e956a6879202d0411000d387a58d"
+    },
+    {
+      "path": "_refs/harness/task-brief.md",
+      "sha256": "sha256:ab698866014a046518b6778bd1d241ff30b8614d6436875884f7eddd269f497f"
+    },
+    {
+      "path": "_refs/orchestration/parallel-protocol.md",
+      "sha256": "sha256:9b6594be6e4c0c7cb80209fd6813d776b8b4f5e7c50828477a09445258e42c96"
+    },
+    {
+      "path": "_refs/orchestration/parallel-protocol.mjs",
+      "sha256": "sha256:bf5034c73d4d16cc1e1a8a95bdcc532f1f31cd8c28ec8d0b6788d563c5aa3668"
+    },
+    {
+      "path": "_refs/shared/runtime-protocols.md",
+      "sha256": "sha256:d5bb4e066980622a909402b78e1ffeb47bed6c3445e525de7198ec9807083984"
+    },
+    {
+      "path": "package.json",
+      "sha256": "sha256:f72886fdc2b4a03d3f743be060ab1e5c61459b36cfb7de72d044bd1af729c8c4"
+    },
+    {
+      "path": "skills/orchestration/parallel-dispatch.md",
+      "sha256": "sha256:45090969b6e5e83e2d63864a083817ffea69e21106293ca86571a7a95f2d791f"
+    },
+    {
+      "path": "skills/orchestration/using-skills.md",
+      "sha256": "sha256:7609563742428222cbda7cc848b019847fa9dfc3211cda7cdb1e629e3e49ceec"
+    },
+    {
+      "path": "skills/shared/workflow/debug.md",
+      "sha256": "sha256:d31b590d9749881205eb830541cd074055024b60ae4ab2e7fce2d83d815b843f"
+    },
+    {
+      "path": "skills/shared/workflow/explore.md",
+      "sha256": "sha256:f1a6d5fe837a1ffadbc0474b67a0b324e80223b336d7dd8bc2b11909d9221223"
+    },
+    {
+      "path": "skills/shared/workflow/review.md",
+      "sha256": "sha256:02f2da8bc0bca6af1ff8992c04363ebb12d2a7619df9e3a1f7a5296ec12931ab"
+    },
+    {
+      "path": "test/e2e/fixtures/parallel-opportunity-scenarios.json",
+      "sha256": "sha256:061499b0c7ae8c8224bbed2d2dbd5713aa8cd98f8c0b795bf46f5d5e2196035b"
+    },
+    {
+      "path": "test/e2e/parallel-opportunity.test.mjs",
+      "sha256": "sha256:9729d5d3bd5bc1f144ba6c76da2deb5d5f5dfc8c93caee134e58b979ad15b446"
+    },
+    {
+      "path": "test/e2e/support/entrypoint-smoke.mjs",
+      "sha256": "sha256:498f17093398652df71c112320ea59ae5759d02c53b3a860f03db59705cc5698"
+    },
+    {
+      "path": "test/e2e/support/skill-pack-runner.mjs",
+      "sha256": "sha256:d458b84ae853e7394104a5bd09ee2f87b3380c3220d2f99aa3622c058a1bbd22"
+    }
+  ]
+}

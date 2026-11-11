@@ -1,6 +1,6 @@
 ---
 name: sdcorejs-explore
-description: "Project exploration and durable context skill. Use to understand/map a codebase, trace feature flows, find reusable components/services, refresh .sdcorejs/summary.md, recover context, set/read persona, save/read memories, harvest documentation facts, or inspect local env shape. Modes: summary-read, summary-refresh, code-map, trace-flow, env-setup, recovery, persona, memories, conventions, documentation-harvest. Runtime-localized."
+description: "Explore/map a codebase, trace feature flows, find reusable code, read/refresh project summary, recover context, manage persona/memories/conventions, harvest documentation facts, or inspect env shape. Includes a parallel-opportunity check for substantial independent read-only investigations. Modes: summary-read, summary-refresh, code-map, trace-flow, env-setup, recovery, persona, memories, conventions, documentation-harvest. Runtime-localized."
 required-actions: artifact.read, artifact.write, context.pass, verification.run, user.choose, web.fetch
 ---
 
@@ -82,6 +82,19 @@ artifacts. Missing or stale summary is not itself permission to write.
 
 Write-approved actions must record the approval source, target path, reason, and
 write outcome in `explore_context.writes` and emit `artifact_context`.
+
+## Independent Exploration Check
+
+After bounded scope discovery, apply `assessReadOnlyOpportunity` in
+`_refs/orchestration/parallel-protocol.mjs` and its reference contract when two
+or more substantial independent maps, traces, or fact-harvests are available.
+The user need not request parallelism. On `evaluate-scheduler`, use
+`sdcorejs-parallel-dispatch` with `read-only-request`; preserve this action's
+scope, read-only boundary, host restrictions and sequential/no-agent choices.
+Do not split one causal flow or a quick lookup into workers. Reconcile shared
+relationships and verify report evidence here; workers never refresh summaries,
+save memories, write maps, or persist conventions. Any later write remains with
+the explicitly authorized sequential/integration owner.
 
 ## Target Root And Authoring-Repo Guard
 

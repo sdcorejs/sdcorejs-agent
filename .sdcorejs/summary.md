@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-11-05T10:15:46.119Z
+generated_at: 2026-11-11T18:27:09.888Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks:
@@ -42,7 +42,7 @@ evidence:
     - site/src/pages/index.astro
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:93bfc0a5a0d12415dbb8bd4eae9d268fb6a2e811814d2032f7d35af6ea4e728f
+  dependency_manifests: sha256:d7b00d361507e8d74d6e7775e1e60e063d86e487a2b6051e140df6a39cfc1398
   source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
@@ -132,6 +132,14 @@ Dependency evidence:
 | Durable context | `.sdcorejs/` | Approved specs, plans, docs, memories, summary | `.sdcorejs/summary.md` | lifecycle rules |
 
 ## Entrypoints and Main Runtime Flows
+
+Debug, review, and explore now assess substantial independent read-only domains
+after scoped evidence gathering, without explicit parallel wording. Their
+`assessReadOnlyOpportunity` hook reuses the existing parallel scheduler while
+retaining semantic ownership, actual session/host authority, no-agent/sequential
+choices, bounded fresh contexts, and report-only fan-in. The scheduler checks
+typed and hierarchical resources for both read-only and write-capable work.
+Parallel fixes still require an approved plan; public skill count remains 25.
 
 Authoring flow:
 

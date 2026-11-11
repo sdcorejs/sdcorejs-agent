@@ -1,6 +1,7 @@
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { assessReadOnlyOpportunity } from '../../../_refs/orchestration/parallel-protocol.mjs';
 
 const STOP_WORDS = new Set([
   'a',
@@ -190,12 +191,17 @@ const PRIORITY_RULES = [
     when: ({ prompt, tokens }) => hasDirectCleanupIntent(prompt, tokens)
   },
   {
+    skill: 'sdcorejs-brainstorming',
+    when: ({ prompt, tokens }) => hasUnapprovedParallelWriteIntent(prompt, tokens)
+  },
+  {
     skill: 'sdcorejs-repair-loop',
     when: ({ prompt, tokens }) => hasRepairLoopIntent(prompt, tokens)
   },
   {
     skill: 'sdcorejs-parallel-dispatch',
     when: ({ prompt, tokens }) =>
+      !declinesParallel(prompt) &&
       hasAny(tokens, ['parallel']) &&
       hasAny(tokens, ['review', 'audit']) &&
       (/\bread[- ]only\b/.test(prompt) || !hasAny(tokens, ['fix', 'repair', 'implement', 'write', 'edit']))
@@ -242,13 +248,6 @@ const PRIORITY_RULES = [
         !hasAny(tokens, ['execute', 'run', 'continue', 'resume', 'implement', 'generate', 'parallel', 'split', 'agent', 'agents']) ||
         /\blap\s+(?:ke\s+hoach|plan)\b/.test(prompt)
       )
-  },
-  {
-    skill: 'sdcorejs-brainstorming',
-    when: ({ tokens }) =>
-      tokens.has('parallel') &&
-      hasAny(tokens, ['implement', 'build', 'create', 'write', 'edit']) &&
-      !hasAny(tokens, ['approved', 'approve', 'plan', 'snapshot', 'worktree', 'git'])
   },
   {
     skill: 'sdcorejs-subagent-driven-development',
@@ -298,6 +297,7 @@ const PRIORITY_RULES = [
       (
         hasDirectTestWorkIntent(prompt, tokens) &&
         !hasProductCoverageIntent(prompt, tokens) &&
+        !hasDiagnosticRequest(prompt) &&
         !hasAny(tokens, ['debug', 'root-cause', 'fix', 'repair', 'resolve']) &&
         !hasDocumentationIntent(prompt, tokens)
       )
@@ -313,6 +313,7 @@ const PRIORITY_RULES = [
     skill: 'sdcorejs-debug',
     when: ({ prompt, tokens }) =>
       (
+        hasDiagnosticRequest(prompt) ||
         hasAny(tokens, ['debug', 'root-cause', 'repro', 'failing', 'failure', 'failed', 'fail', 'error', 'wrong', 'bug', 'flaky', 'investigate', 'resolve', 'broken', 'throws']) ||
         /\bfix\b.*\bbug\b/.test(prompt) ||
         /\bstack\b.*\btrace\b/.test(prompt) ||
@@ -453,6 +454,19 @@ export function runPromptEval(pack, cases) {
       actualSkill,
       pass: actualSkill === item.expectedSkill
     };
+  });
+}
+
+// Offline routing and contract evaluation. Semantic inputs are evaluator facts,
+// not NLP predictions or evidence of real worker dispatch.
+export function runParallelOpportunityEval(pack, cases) {
+  return cases.map(item => {
+    const skill = dispatchPrompt(pack, item.prompt);
+    const input = { ...item.opportunity_input, owner_skill: skill?.name };
+    const opportunity = skill?.text.includes('assessReadOnlyOpportunity')
+      ? assessReadOnlyOpportunity(input)
+      : { decision: 'continue-in-owner', reason: 'owner has no opportunity hook', dispatch_authorized: false };
+    return { id: item.id, actualSkill: skill?.name ?? null, opportunity };
   });
 }
 
@@ -770,6 +784,7 @@ function hasTestWorkExclusion(prompt) {
 }
 
 function hasFailingOutputTriageIntent(prompt, tokens) {
+  if (hasDiagnosticRequest(prompt)) return false;
   return (
     hasAny(tokens, ['failing', 'failure', 'error']) &&
     hasAny(tokens, ['test', 'tests']) &&
@@ -782,14 +797,45 @@ function hasFailingOutputTriageIntent(prompt, tokens) {
 }
 
 function hasRepairLoopIntent(prompt, tokens) {
+  // A prohibition such as "do not fix" or "chua sua" is not repair intent.
+  const actions = positiveActionText(prompt);
+  const actionTokens = tokenizeWithAliases(actions);
   return (
     (
-      hasAny(tokens, ['fix', 'apply', 'repair', 'resolve']) &&
+      hasAny(actionTokens, ['fix', 'apply', 'repair', 'resolve']) &&
       hasAny(tokens, ['finding', 'findings', 'review', 'issues', 'issue', 'critical', 'failed', 'failures', 'verify-before-done'])
     ) ||
-    /\bapply\b.*\breview findings\b/.test(prompt) ||
-    /\brepair\b.*\bverify-before-done\b/.test(prompt)
+    /\bapply\b.*\breview findings\b/.test(actions) ||
+    /\brepair\b.*\bverify-before-done\b/.test(actions)
   );
+}
+
+function positiveActionText(prompt) {
+  return normalizePromptText(prompt).replace(
+    /\b(?:do not|don't|without|never|chua|khong)\s+(?:fix(?:ing)?|repair(?:ing)?|apply(?:ing)?|resolve|sua|edit(?:ing)?|writ(?:e|ing)|implement(?:ing)?)\b/gu,
+    '',
+  );
+}
+
+export function hasUnapprovedParallelWriteIntent(prompt, tokens = tokenizeWithAliases(prompt)) {
+  if (!tokens.has('parallel') || declinesParallel(prompt) || hasAny(tokens, ['worktree', 'git'])) return false;
+  // Operation names inside a report scope ("review the write path") are not writes.
+  if ((hasReviewIntent(prompt, tokens) || hasDiagnosticRequest(prompt) || /\b(?:explore|map|trace)\b/u.test(prompt))
+      && !hasRepairLoopIntent(prompt, tokens)) return false;
+  const text = positiveActionText(prompt);
+  const approved = /\b(?:approved|confirmed)\s+plan\b|\bplan\s+(?:da\s+)?(?:approve|approved|duyet)\b/u.test(text)
+    && !/\b(?:no|without|unapproved)\s+(?:an?\s+)?(?:approved\s+)?plan\b/u.test(text);
+  const write = /\b(?:implement|build|create|write|edit)\b/u.test(text)
+    || (/\b(?:fix|repair|sua)\b/u.test(text) && /\bin parallel\b|\bparallel (?:agents?|workers?)\b|\bsong song\b/u.test(text));
+  return write && !approved;
+}
+
+function hasDiagnosticRequest(prompt) {
+  return /\b(?:investigate|debug|diagnose|root[- ]cause|dieu tra|tim nguyen nhan)\b/u.test(normalizePromptText(prompt));
+}
+
+export function declinesParallel(prompt) {
+  return /\b(?:sequential(?:ly)?|no (?:parallel |sub)?agents?|(?:do not|don't|never) use (?:parallel|agents?|subagents?)|without using (?:any )?(?:agents?|subagents?|parallel workers?)|khong dung agent|tuan tu)\b/u.test(normalizePromptText(prompt));
 }
 
 function hasDirectCleanupIntent(prompt, tokens) {
