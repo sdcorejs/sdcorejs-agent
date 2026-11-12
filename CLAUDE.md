@@ -141,6 +141,13 @@ may use a `read-only-request` contract with writes denied; write work requires
 the approved-plan protocol, working-tree preflight, mechanical ownership checks,
 per-unit isolation, and deterministic fan-in.
 
+Debug, review, and explore check for two or more substantial independent
+investigation domains after initial scoped reads, without requiring parallel
+wording. Their `assessReadOnlyOpportunity` hook uses `sdcorejs-parallel-dispatch`
+for read-only evidence only. Preserve host/session authority, sequential/no-agent
+choices and worker non-recursion; unknown independence stays with the owner.
+Parallel investigation does not authorize parallel fixes.
+
 Pure Q&A answers directly. A small, explicit, low-risk fix uses targeted
 context, the smallest edit, focused verification, and concise review. Scope,
 ownership, risk, or behavior growth escalates to the full workflow.

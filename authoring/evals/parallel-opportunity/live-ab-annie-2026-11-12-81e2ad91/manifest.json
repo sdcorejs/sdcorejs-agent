@@ -1,0 +1,343 @@
+{
+  "schema_version": 1,
+  "requested_runs": 24,
+  "authorized_ceiling_usd": 10,
+  "model_effort": "medium",
+  "models": {
+    "codex": "gpt-6.1-sol",
+    "claude": "claude-sonnet-5-5"
+  },
+  "source_revisions": {
+    "baseline": "bdc22462070f9e52bb7900619970d8f8f17c5c50",
+    "candidate": "81e2ad91acddfd82c865ca501fcda18c3fa53c24"
+  },
+  "fixture": {
+    "path": "authoring/evals/parallel-opportunity/initial-scenarios.json",
+    "sha256": "5f80cee3992286de01acbcdcfd655d0ccba71c5decb7fa9fecd90c15659295c5"
+  },
+  "cases": [
+    {
+      "id": "independent-debug",
+      "prompt": "Investigate three failing test groups in unrelated auth, billing and search modules. Report root causes only; do not edit files.",
+      "expected_owner": "sdcorejs-debug",
+      "expected_decision": "evaluate-scheduler",
+      "facts": "Initial evidence: the auth failures use local session fixtures, the billing failures use isolated invoice fixtures, and the search failures use an in-memory index. Each group has multiple failing cases and different setup. No shared failing producer was observed."
+    },
+    {
+      "id": "independent-review",
+      "prompt": "Review the independent billing and search modules for correctness. Report findings only.",
+      "expected_owner": "sdcorejs-review",
+      "expected_decision": "evaluate-scheduler",
+      "facts": "Initial evidence: the billing scope covers invoice rounding and state transitions. The search scope covers indexing and relevance ranking. Each is a substantial correctness review with its own tests; the scopes have no shared writer or output dependency."
+    },
+    {
+      "id": "independent-explore",
+      "prompt": "Map two unrelated feature flows and explain their entrypoints without changing files.",
+      "expected_owner": "sdcorejs-explore",
+      "expected_decision": "evaluate-scheduler",
+      "facts": "Initial evidence: one trace follows invoice creation through validation, persistence and rendering. The other follows offline search from query parsing through index scoring and results rendering. The traces have distinct entry points and implementations."
+    },
+    {
+      "id": "shared-root-cause",
+      "prompt": "Investigate the failing tests; all failures share one broken fixture.",
+      "expected_owner": "sdcorejs-debug",
+      "expected_decision": "continue-in-owner",
+      "facts": "Initial evidence: the different suites all fail before their assertions at the same shared fixture setup call."
+    },
+    {
+      "id": "explicit-sequential",
+      "prompt": "Review the two modules sequentially; do not use parallel agents.",
+      "expected_owner": "sdcorejs-review",
+      "expected_decision": "continue-in-owner",
+      "facts": "Initial evidence: both review scopes are substantial and independent. The user requests sequential review."
+    },
+    {
+      "id": "single-cheap-read",
+      "prompt": "Review this one-line comment change.",
+      "expected_owner": "sdcorejs-review",
+      "expected_decision": "continue-in-owner",
+      "facts": "Initial evidence: one comment changed on one line, with no behavioral change and no additional review scope."
+    }
+  ],
+  "selectors": [
+    [
+      "AGENTS.md",
+      [
+        [
+          null,
+          "## Production SDLC Scope Decision"
+        ]
+      ]
+    ],
+    [
+      "skills/shared/workflow/debug.md",
+      [
+        [
+          null,
+          "## Step 2 -"
+        ],
+        [
+          "## Step 4 -",
+          "## Step 5 -"
+        ]
+      ]
+    ],
+    [
+      "skills/shared/workflow/review.md",
+      [
+        [
+          null,
+          "## Step 1 -"
+        ]
+      ]
+    ],
+    [
+      "skills/shared/workflow/explore.md",
+      [
+        [
+          null,
+          "## Target Root"
+        ]
+      ]
+    ],
+    [
+      "skills/orchestration/parallel-dispatch.md",
+      [
+        [
+          null,
+          "## Workflow"
+        ]
+      ]
+    ],
+    [
+      "_refs/orchestration/parallel-protocol.md",
+      [
+        [
+          "## Contract Union",
+          "## Required Context"
+        ]
+      ]
+    ]
+  ],
+  "public_source": {
+    "baseline": [
+      {
+        "path": "AGENTS.md",
+        "file_sha256": "c803350db1776107f1c4e7495d7a22103049e9f782091d15354e2f620159563f",
+        "excerpt_sha256": "bcaebbd808f15deeeee59444a996c30122adcf6aec37f1257b628eaf6da850d1"
+      },
+      {
+        "path": "skills/shared/workflow/debug.md",
+        "file_sha256": "f3388d609f4387d2c5d16db5b801d9156161e9548c696957dc01b4e23e4334a2",
+        "excerpt_sha256": "7f66e8c0b015fd80734581614020b3f7dc20a5545edee4a8e20e5693f8d240f6"
+      },
+      {
+        "path": "skills/shared/workflow/review.md",
+        "file_sha256": "7c8195872179a8f61d076697b00fa58ed807e6a2a76458b0fe5f6db3b6504824",
+        "excerpt_sha256": "8caa9bb46ffeccdc54429a0dfff8b2e96326601dcfaa29110b48f467cbc4b819"
+      },
+      {
+        "path": "skills/shared/workflow/explore.md",
+        "file_sha256": "4b6cad9c23d287085bacf566c8cc0358473a684fdf3d991dfb532958225b0701",
+        "excerpt_sha256": "432a4e81fde42e82a5c2f14a190022790b0c411fe6daf2680bba35694fec0d74"
+      },
+      {
+        "path": "skills/orchestration/parallel-dispatch.md",
+        "file_sha256": "939812df2ddd5e5e9bc1cb4f0b8818b5c7fabb5816a78734c80523bb1980bf19",
+        "excerpt_sha256": "604b415031f1aa6f6411c8d91a22ddc395577443f38e1d71a5e31aa2d6ba8d4f"
+      },
+      {
+        "path": "_refs/orchestration/parallel-protocol.md",
+        "file_sha256": "58d80f37764e4c31cad959ad3b4e486bc7371d913f2756123fccd2ee2c3acd9e",
+        "excerpt_sha256": "f51bd4f74f58266b50add4f5894cbf04cee0f399151eeab3df0974665a53913b"
+      }
+    ],
+    "candidate": [
+      {
+        "path": "AGENTS.md",
+        "file_sha256": "0486d95778c6dde645355ee650489e5d5192cadec1db0254f43cbbd34c8e51f4",
+        "excerpt_sha256": "0c36518ab3efbad02e334e00233c5fc892d90e544aa371df01bdd002794bc830"
+      },
+      {
+        "path": "skills/shared/workflow/debug.md",
+        "file_sha256": "2b8d7de1c46da85ed8bfce973487075f4a9ae984ce03a87ba105b0b7b7961cee",
+        "excerpt_sha256": "247669613e77be506628c9b98e9a48e1fcaaefe31b4781603b2db6ae9a9cfba4"
+      },
+      {
+        "path": "skills/shared/workflow/review.md",
+        "file_sha256": "02f2da8bc0bca6af1ff8992c04363ebb12d2a7619df9e3a1f7a5296ec12931ab",
+        "excerpt_sha256": "772addf285fa00827e29f08e6f5bb443b1d87c0b76447be0a1edca00536bc990"
+      },
+      {
+        "path": "skills/shared/workflow/explore.md",
+        "file_sha256": "f1a6d5fe837a1ffadbc0474b67a0b324e80223b336d7dd8bc2b11909d9221223",
+        "excerpt_sha256": "8236c104c3a20e04810b439699043407168ed252af633f14ff6bfb4ee75b08fc"
+      },
+      {
+        "path": "skills/orchestration/parallel-dispatch.md",
+        "file_sha256": "45090969b6e5e83e2d63864a083817ffea69e21106293ca86571a7a95f2d791f",
+        "excerpt_sha256": "27c3356ff9f41ebcf0365500b9de654427c637a7d8603bd855ed5346f52d8b45"
+      },
+      {
+        "path": "_refs/orchestration/parallel-protocol.md",
+        "file_sha256": "9b6594be6e4c0c7cb80209fd6813d776b8b4f5e7c50828477a09445258e42c96",
+        "excerpt_sha256": "4e5d3819e9a71055a53cda5c4c2446f279ed53b6fe02823ceb5738c12d218c31"
+      }
+    ]
+  },
+  "prompts": [
+    {
+      "arm": "baseline",
+      "case": "independent-debug",
+      "file": "baseline-independent-debug.prompt.txt",
+      "bytes": 33303,
+      "sha256": "998a057b34c98b3a9e1c21edff652b6eb08fd313a2f1450068ac1ad6dc751014"
+    },
+    {
+      "arm": "baseline",
+      "case": "independent-review",
+      "file": "baseline-independent-review.prompt.txt",
+      "bytes": 33254,
+      "sha256": "5a8e20592265dd43eabb574749f2569936e2747790b15799e3634a911becbd7b"
+    },
+    {
+      "arm": "baseline",
+      "case": "independent-explore",
+      "file": "baseline-independent-explore.prompt.txt",
+      "bytes": 33252,
+      "sha256": "9786c83ee6710276231987ca3df23de215fa469aed3352d11b96578d8e2cb477"
+    },
+    {
+      "arm": "baseline",
+      "case": "shared-root-cause",
+      "file": "baseline-shared-root-cause.prompt.txt",
+      "bytes": 33091,
+      "sha256": "6f5e2c4fbfa89273959789a588aa6f35283de4042b8633d5cba174cb38d71ada"
+    },
+    {
+      "arm": "baseline",
+      "case": "explicit-sequential",
+      "file": "baseline-explicit-sequential.prompt.txt",
+      "bytes": 33082,
+      "sha256": "5383f486eb0a0457a1d0d9e5406d30751af3878c5eb477decf0d2bae4fc7e538"
+    },
+    {
+      "arm": "baseline",
+      "case": "single-cheap-read",
+      "file": "baseline-single-cheap-read.prompt.txt",
+      "bytes": 33056,
+      "sha256": "79a166d1a49dea3b2f6901af2170163e2411599ad641aa2ab9c2c27eb2fc995c"
+    },
+    {
+      "arm": "candidate",
+      "case": "independent-debug",
+      "file": "candidate-independent-debug.prompt.txt",
+      "bytes": 41502,
+      "sha256": "a256855ab68c7ec3c89ed8403d0ab1a5214efbe4630411b53a5457fedba6528a"
+    },
+    {
+      "arm": "candidate",
+      "case": "independent-review",
+      "file": "candidate-independent-review.prompt.txt",
+      "bytes": 41453,
+      "sha256": "af1c7ea9d4659df11d32fa6d724e4280d07e6a77479ca0777fd3269f4698ef33"
+    },
+    {
+      "arm": "candidate",
+      "case": "independent-explore",
+      "file": "candidate-independent-explore.prompt.txt",
+      "bytes": 41451,
+      "sha256": "aee3419581a007155dea5bf55220afc4c811bd6398aabc6c07a66fdb380d4d30"
+    },
+    {
+      "arm": "candidate",
+      "case": "shared-root-cause",
+      "file": "candidate-shared-root-cause.prompt.txt",
+      "bytes": 41290,
+      "sha256": "840dc133db3c95ab1993245917fe8981d65629fa186a95567f452a03077eeb71"
+    },
+    {
+      "arm": "candidate",
+      "case": "explicit-sequential",
+      "file": "candidate-explicit-sequential.prompt.txt",
+      "bytes": 41281,
+      "sha256": "70f78964c5f0a7f119204516b2a4f5ff7d9c373f7505638fda60d8cd3b3bca31"
+    },
+    {
+      "arm": "candidate",
+      "case": "single-cheap-read",
+      "file": "candidate-single-cheap-read.prompt.txt",
+      "bytes": 41255,
+      "sha256": "765d43dc5e46576c78e97f2533356cbf75855dbff941ac2a9d06587e7b059314"
+    }
+  ],
+  "run_order": [
+    {
+      "case": "independent-debug",
+      "arm": "baseline"
+    },
+    {
+      "case": "independent-debug",
+      "arm": "candidate"
+    },
+    {
+      "case": "independent-review",
+      "arm": "candidate"
+    },
+    {
+      "case": "independent-review",
+      "arm": "baseline"
+    },
+    {
+      "case": "independent-explore",
+      "arm": "baseline"
+    },
+    {
+      "case": "independent-explore",
+      "arm": "candidate"
+    },
+    {
+      "case": "shared-root-cause",
+      "arm": "candidate"
+    },
+    {
+      "case": "shared-root-cause",
+      "arm": "baseline"
+    },
+    {
+      "case": "explicit-sequential",
+      "arm": "baseline"
+    },
+    {
+      "case": "explicit-sequential",
+      "arm": "candidate"
+    },
+    {
+      "case": "single-cheap-read",
+      "arm": "candidate"
+    },
+    {
+      "case": "single-cheap-read",
+      "arm": "baseline"
+    }
+  ],
+  "cwd_policy": "isolated empty cwd, preselected public text via stdin, no tools or subagents",
+  "runtime_versions": {
+    "codex": "0.162.1",
+    "claude": "2.1.319",
+    "node": "v26.12.0"
+  },
+  "host": "Annie",
+  "platform": "win32",
+  "billing": {
+    "codex": "existing ChatGPT session with available credits",
+    "claude": "existing Claude Team session",
+    "limit_usd": 10,
+    "accounting": "Conservative Standard-equivalent estimates; Claude also reports a client-side API-equivalent estimate. Actual subscription charges are not exposed per call.",
+    "codex_credit_reference_usd": 0.05,
+    "in_flight_reservation_usd": {
+      "codex": 2.1,
+      "claude": 0.55
+    }
+  }
+}

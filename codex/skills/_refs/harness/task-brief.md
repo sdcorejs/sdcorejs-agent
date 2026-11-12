@@ -52,6 +52,21 @@ paths, mutates approved artifacts, stages, commits, or pushes. The primary
 integration agent validates the returned diff and creates any integration
 snapshot required by the result protocol.
 
+For a `read-only-request`, use the discriminated envelope from
+`_refs/orchestration/parallel-protocol.md`: `source`, `request_hash`, `scope_hash`,
+`write_policy: deny`, `authority: read-only`, empty `allowed_paths`, and report
+output. Omit `contract_id`, `plan_artifact_id`, and `plan_approval_hash`; set the
+outer `plan_step` to `not-applicable: read-only request`. `owned_paths` is empty.
+Include exact diagnostic questions/errors and expected versus observed behavior
+when relevant. Verification commands must themselves preserve the read-only
+contract; a test that writes caches or a database is not automatically read-only.
+
+Supply the brief to a fresh isolated context rather than inheriting the parent
+history. Report-only workers return citations, observations, hypotheses and
+confidence, conflicts, unresolved questions, and actual commands/results. They
+do not declare a fix or start new workers. The parent validates this evidence
+and reconciles shared relationships before returning one answer.
+
 ## Review Package
 
 ```yaml

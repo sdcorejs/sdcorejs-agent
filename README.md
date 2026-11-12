@@ -66,6 +66,14 @@ workers, or parent execution without treating static adapter metadata as proof.
 No write-producing step may run after final branch-ready unless branch-ready is
 run again before Git artifacts.
 
+Ordinary debug, review, and exploration requests also check for substantial
+independent work after initial scoped reads; you do not need to name a parallel
+skill. For example, unrelated failure groups can be investigated concurrently
+and returned as one evidence-backed diagnosis. Shared causes, small tasks,
+unknown independence, and sequential/no-agent requests stay with the owner.
+Read-only investigation never grants fix permission; parallel implementation
+still follows the approved-plan lifecycle and current host capabilities.
+
 ## Governance Contracts
 
 - Decision coverage preserves current assumptions, decisions, requirements,

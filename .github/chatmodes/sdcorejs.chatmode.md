@@ -46,6 +46,13 @@ a `read-only-request` contract with writes denied. Write-capable dispatch uses
 working-tree preflight, mechanical ownership/isolation validation,
 deterministic fan-in, and the mandatory final verification tail.
 
+Debug, review, and explore check for two or more substantial independent
+investigation domains after initial scoped reads, without requiring parallel
+wording. Their `assessReadOnlyOpportunity` hook uses `sdcorejs-parallel-dispatch`
+for read-only evidence only. Preserve host/session authority, sequential/no-agent
+choices and worker non-recursion; unknown independence stays with the owner.
+Parallel investigation does not authorize parallel fixes.
+
 Pure Q&A answers directly. A bounded low-risk fix may use targeted context,
 smallest edit, focused verification, and concise review; scope growth escalates
 to the full workflow. Unsupported or unknown native capabilities use portable

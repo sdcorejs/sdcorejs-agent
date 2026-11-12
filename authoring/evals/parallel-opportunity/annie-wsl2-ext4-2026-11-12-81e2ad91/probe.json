@@ -1,0 +1,31 @@
+{
+  "durability": "fsync file and relevant directories; process-interruption recovery, no hardware power-loss guarantee",
+  "errors": [],
+  "helper_sha256": "3da8412349e2b01599a55ce732569cafee6e3f7c8532675ec7aa024c566cd794",
+  "primitive_behavior": "Must be demonstrated by the real native isolated acceptance suite; this probe is read-only.",
+  "profile": {
+    "architecture": "x64",
+    "filesystem": "ext4",
+    "mount_id": "1113",
+    "os_release": "6.18.33.1-microsoft-standard-WSL2",
+    "platform": "linux",
+    "primitive": "renameat2"
+  },
+  "python": {
+    "executable": "/usr/bin/python3.12",
+    "version": "3.12.3",
+    "sha256": "a92f0f95e883390c7256b2e441484aac06b1002dbe1d924141a77c8d82f96223"
+  },
+  "root_state": {
+    "dev": "2128",
+    "ino": "46426"
+  },
+  "supported": true,
+  "actual_command": [
+    "/usr/bin/python3.12",
+    "-I",
+    "-S",
+    "-B",
+    "/home/sdcorejs-validation/parallel-opportunity-81e2ad91/checkout/_refs/cleanup/safe-file-operation.py"
+  ]
+}

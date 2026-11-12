@@ -12,6 +12,7 @@ cannot authorize dispatch.
 ## Contents
 
 - [Contract Union](#contract-union)
+- [Read-only Opportunity Discovery](#read-only-opportunity-discovery)
 - [Required Context](#required-context)
 - [Working-tree Preflight](#working-tree-preflight)
 - [Runtime Capability Fallback](#runtime-capability-fallback)
@@ -57,6 +58,67 @@ The `read-only-request` branch must omit approved-plan fields. Its unit
 allowlists are empty, workspace strategy is `shared-readonly`, result type is
 `report`, and before/after changed paths must be empty. A detected write is
 `PATH_VIOLATION -> UNIT_FAILED`.
+
+## Read-only Opportunity Discovery
+
+`sdcorejs-debug`, `sdcorejs-review`, and `sdcorejs-explore` screen substantial
+independent domains after their initial scoped reads, without requiring the
+user to say "parallel". Call `assessReadOnlyOpportunity` before constructing a
+full read-only contract. This small runtime projection is not a durable artifact
+or a second scheduler:
+
+| Input | Evidence required |
+|---|---|
+| `owner_skill` | The selected debug/review/explore owner, or direct parallel-dispatch entry. |
+| `task_mode` | `read-only` for this investigation phase; fixing remains a later owner action. |
+| `delegation_allowed` | `true` only when the actual host/session policy permits this delegation. An explicit-only host needs an actual user request; capability alone is not authority. |
+| `worker_context` | `false` only for the coordinating owner; workers never recurse. |
+| `execution_policy` | `auto` or `parallel-preferred`; explicit sequential/no-agent choices suppress fan-out. |
+| `independence` | `status: confirmed` and nonempty `evidence` paths/report references from the initial investigation. Unknown or coupled work stays with the owner. |
+| `units` | At least two units with unique `id`, specific `objective`, bounded `readable_paths`, `substantial: true`, and explicit empty `depends_on`. |
+| `units[].ownership` | Empty `allowed_paths`, classified `exclusive_resources` and `shared_readonly_resources`. Reads may share source; mutable resources cannot overlap another unit's readers or writers. |
+
+The host derives these facts from current instructions and inspected evidence,
+not by trusting a user-supplied JSON object, file names, or task counts. A unit is
+substantial when its investigation has enough independent analysis to justify a
+fresh context and result review; a one-command lookup or a tiny diff is not.
+Classify shared fixtures, common services, initialization, mutable caches, ports,
+database namespaces and output dependencies before claiming independence. A
+different test filename is not evidence of a different problem domain.
+
+`evaluate-scheduler` is only a discovery result. It always carries
+`dispatch_authorized: false`, `contract_source: read-only-request`, and
+`write_policy: deny`. The owner must still bind the actual request/scope hashes,
+attest the current runtime, fill and validate the complete v2 contract, and call
+`compileParallelContext`. Unknown capability, unavailable isolated context, or
+missing evidence retains a parent/sequential fallback. `continue-in-owner`
+keeps work moving without prompting merely to make parallelism possible.
+
+Examples:
+
+- Auth and billing failures with separate repro evidence and no common failing
+  dependency: one evidence-only investigation per problem domain.
+- Two substantial module reviews: scoped reviewers, with shared invariants and
+  cross-module checks retained by the parent.
+- Two unrelated feature traces: bounded explorers return paths and edges;
+  the parent reconciles shared relationships.
+- Ten failures caused by one fixture, an unknown regression, a dependent trace,
+  one cheap command, or an explicit no-agent request: keep one investigation.
+
+Issue ready worker dispatches without waiting for each prior result when the
+runtime actually supports concurrency; tool-call grouping alone is not proof
+of parallel execution. Bound the wave by current concurrency limits. Start
+fresh isolated contexts, not forks of the parent conversation. Every brief
+contains one objective, exact scope, relevant failures/questions, bounded source
+references, constraints, expected evidence and escalation conditions.
+
+For report fan-in, the owner verifies unchanged workspace/source identity,
+spot-checks citations and hypotheses, deduplicates findings, reconciles conflicts,
+and reports missing/failed units. A newly discovered shared cause returns to one
+investigation. Read-only fan-in applies no patches, reruns no mutating repros,
+refreshes no summaries, and creates no Git artifacts. Only write-capable
+execution has the implementation repair and final ship tail; report verification
+is proportional to the original question.
 
 ## Required Context
 

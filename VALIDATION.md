@@ -806,3 +806,24 @@ New deterministic run; preceding historical tables are preserved. Baseline is th
 | Repeated-block bytes | 2,319 | 0 |
 | Total measured communication bytes | 577,334 | 723,980 |
 | Consumer-required authoritative fields | 361 | 361 preserved |
+
+## 2026-11-12 parallel opportunity continuation
+
+Existing historical measurements remain unchanged. This continuation measures the
+current parallel-opportunity sources with the same deterministic report. These
+are source bytes and synthetic projections, not observed tokens or target-project
+agent execution. Details and limitations are in
+`authoring/evals/parallel-opportunity/README.md`.
+
+| Measure | Baseline | Current working tree |
+|---|---:|---:|
+| Always-loaded bootstrap UTF-8 bytes | 20,173 | 19,962 |
+| Always-loaded bootstrap words | 2,361 | 2,278 |
+| Aggregate just-in-time scenario bytes | 514,603 | 683,521 |
+| Aggregate visible output bytes | 42,558 | 2,802 |
+| Aggregate visible output words | 3,961 | 337 |
+| Portable fallback handoff bytes | 0 | 25,383 |
+| Supported runtime context channel bytes | 0 | 1,819 |
+| Repeated-block bytes | 2,319 | 0 |
+| Total measured communication bytes | 577,334 | 733,487 |
+| Consumer-required authoritative fields | 361 | 361 preserved |

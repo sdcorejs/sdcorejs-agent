@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { runPromptEval } from './skill-pack-runner.mjs';
+import { declinesParallel, hasUnapprovedParallelWriteIntent, runPromptEval } from './skill-pack-runner.mjs';
 
 const PROFILE_FILES = {
   codex: ['AGENTS.md'],
@@ -66,13 +66,13 @@ function applyEntrypointPolicy(actualSkill, prompt, context) {
   const directSplit = /\b(split|dispatch)\b.*\bparallel\b|\bparallel agents?\b/.test(normalized) && /\bapproved plan\b/.test(normalized);
   const directDelegation = /\b(subagents?|delegat(?:e|ed|ion)|fleet)\b|\bfresh\s+(?:sub)?agents?\b/.test(normalized) && /\bapproved plan\b/.test(normalized);
   const approvedExecution = /\b(execute|run|continue|implement)\b.*\bapproved plan\b/.test(normalized);
-  const readOnly = /\b(read-only|review|audit)\b/.test(normalized) && /\bparallel\b/.test(normalized);
-  const unapprovedWrite = /\b(implement|build|create|write|edit)\b/.test(normalized) && /\bparallel\b/.test(normalized) && !/\bapproved plan\b/.test(normalized) && !/\b(worktree|git)\b/.test(normalized);
+  const readOnly = /\b(review|audit)\b/.test(normalized) && /\bparallel\b/.test(normalized) && !declinesParallel(normalized);
+  const unapprovedWrite = hasUnapprovedParallelWriteIntent(normalized);
   if (context.contradictions.includes('delegated-execution-disabled') && (directSplit || directDelegation)) return null;
   if (context.contradictions.includes('parallel-write-planning') && unapprovedWrite) return null;
   if (directSplit || directDelegation) return context.delegatedExecution ? 'sdcorejs-subagent-driven-development' : null;
   if (approvedExecution) return context.approvedPlanExecution ? 'sdcorejs-execute-plan' : null;
-  if (readOnly) return context.readOnlyParallel ? 'sdcorejs-parallel-dispatch' : null;
+  if (readOnly && actualSkill === 'sdcorejs-parallel-dispatch') return context.readOnlyParallel ? actualSkill : null;
   if (unapprovedWrite) return context.requiresApprovedPlanForWrites ? 'sdcorejs-brainstorming' : null;
   return actualSkill;
 }

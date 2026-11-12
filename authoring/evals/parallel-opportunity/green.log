@@ -1,0 +1,13 @@
+✔ opportunity scenarios retain the existing semantic owners (136.993602ms)
+✔ read-only opportunity assessment is implemented in the existing scheduler (0.44225ms)
+✔ positive, negative, ambiguous and pressure scenarios evaluate the secondary route (106.948895ms)
+✔ opportunity requires observed independence, substantial bounded units and permission (3.416798ms)
+✔ source hook removal is observable without pretending lexical tests are live execution (161.947804ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 572.114958

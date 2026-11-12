@@ -1,0 +1,75 @@
+
+> sdcorejs-agent@0.8.0 test:e2e:parallel
+> node --test test/e2e/parallel-dispatch-protocol.test.mjs test/e2e/parallel-opportunity.test.mjs test/e2e/entrypoint-smoke.test.mjs
+
+✔ phase 3: Codex, Claude Code, Copilot, and Cursor entrypoints advertise runtime-localized skills (11.103109ms)
+✔ phase 3: entrypoint-aware smoke evaluates the same cases under each profile policy (252.841838ms)
+✔ phase 3: each profile text participates in routing and mutations stay profile-local (55.846884ms)
+✔ phase 3: routing context distinguishes execution, direct split, planning, and read-only fan-out (6.096585ms)
+✔ phase 3: every entrypoint advertises the first-class AI-agent boundary (3.349141ms)
+✔ phase 3: every entrypoint advertises the bounded simplify utility boundary (3.559017ms)
+✔ entrypoints retain small-change risk baseline and read-only review authority (4.796811ms)
+✔ skill invokes a distributed deterministic protocol validator (24.871532ms)
+✔ long protocol reference exposes a top-of-file contents map (1.865911ms)
+✔ protocol v2 validates distinct approved-plan and read-only contracts (1.526718ms)
+✔ read-only dispatch envelopes use request identity without approved-plan fields (0.924918ms)
+✔ dispatch envelope preserves approved artifact and repository identity (6.667929ms)
+✔ worker authority denies cross-root, read-only writes, Git mutations, and approved artifact mutation (2.474671ms)
+✔ approved-plan contracts require complete frozen-contract identity (0.259724ms)
+✔ contract revisions and hash mismatches stale affected results and evidence (0.2725ms)
+✔ write dispatch requires working-tree, workspace, base, result, verification, and final-tail identity (3.135898ms)
+✔ working-tree preflight fails closed on branch, HEAD, dirty, untracked, and output overlap (1.682301ms)
+✔ working-tree preflight rejects parent-child output overlap in both directions (0.44558ms)
+✔ topology classification supports two expensive units, heterogeneous units, read-only audits, DAGs, and resource conflicts (8.6398ms)
+✔ topology separates repository-local paths but detects generated, shared-config, and gitlink conflicts (0.753476ms)
+✔ classification catches parent/child globs and case-only ownership conflicts (0.551613ms)
+✔ DAG waves do not force five roles and defer cross-stack execution until integration (0.369191ms)
+✔ execute-plan and parallel protocol agree on dependency waves (1.210161ms)
+✔ compact plan compilation emits a deterministic opportunity report (1.765366ms)
+✔ runtime capability negotiation demotes or fails closed safely (0.510873ms)
+✔ workspace validation rejects wrong cwd, nesting, dirty integration, stale base, and non-descendant result (0.307338ms)
+✔ workspace validation rejects assignments that contain an existing worktree (0.9464ms)
+✔ result validation rejects crashes, missing results, non-zero claimed success, stale refs, and read-only writes (0.482784ms)
+✔ path validator catches overlap, case-only conflict, rename, untracked files, lockfiles, formatter spill, and fake reports (25.533606ms)
+✔ path validator rejects symlink escape, new files below symlink, and nested repositories (9.635285ms)
+✔ path validator rejects an in-repository symlink that escapes unit ownership (10.716798ms)
+✔ deterministic fan-in honors order, probes, blockers, conflicts, atomicity, and global failure (2.261058ms)
+✔ failure policy retries transient failures but not deterministic violations (1.169925ms)
+✔ unit policy handles timeout, crash, fail-fast, and best-effort result states (11.927764ms)
+✔ unit policy proves bounded overlap only with explicit concurrency support (142.801262ms)
+✔ fail-fast distinguishes in-flight work from work that never started (21.079445ms)
+✔ repairs stay with the original owner/workspace and invalidate evidence (1.403178ms)
+✔ evidence is bound to command, cwd, result identity, output digest, and exact state (0.693089ms)
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: will change to "main" in Git 3.0. To configure the initial branch name
+hint: to use in all of your new repositories, which will suppress this warning,
+hint: call:
+hint:
+hint: 	git config --global init.defaultBranch <name>
+hint:
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint:
+hint: 	git branch -m <name>
+hint:
+hint: Disable this message with "git config set advice.defaultBranchName false"
+Preparing worktree (new branch 'unit/a')
+Preparing worktree (new branch 'unit/b')
+Preparing worktree (new branch 'keep/me')
+✔ temporary Git worktrees use one base, distinct result commits, ancestry checks, and safe cleanup (170.674334ms)
+✔ temporary Git fan-in exposes deterministic cherry-pick conflicts (206.766163ms)
+✔ opportunity scenarios retain the existing semantic owners (121.905169ms)
+✔ read-only opportunity assessment is implemented in the existing scheduler (0.512377ms)
+✔ positive, negative, ambiguous and pressure scenarios evaluate the secondary route (41.209922ms)
+✔ opportunity requires observed independence, substantial bounded units and permission (3.756657ms)
+✔ source hook removal is observable without pretending lexical tests are live execution (59.468538ms)
+✔ read-only compiler enforces resource collisions even without the discovery hook (6.17519ms)
+✔ read-only compilation preserves shared reads, runtime fallback, policy and no-write branch (1.917454ms)
+ℹ tests 47
+ℹ suites 0
+ℹ pass 47
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 837.257131

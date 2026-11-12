@@ -493,7 +493,15 @@ export async function runUnitsWithPolicy(units, policy = {}) {
 export function classifyTopology({ contract, units = [], runtimeCapabilities = {} }) {
   const readOnly = contract?.source === 'read-only-request';
   const runtime = validateRuntimeCapabilities(runtimeCapabilities, !readOnly);
-  if (readOnly) return { kind: 'READ_ONLY_FANOUT', verdict: runtime.mode === 'PARALLEL' ? 'PARALLEL-CANDIDATE' : 'SEQUENTIAL', runtime };
+  if (readOnly) {
+    const resourceConflict = resourcesOverlap(units);
+    return {
+      kind: 'READ_ONLY_FANOUT',
+      verdict: runtime.mode === 'PARALLEL' && !resourceConflict ? 'PARALLEL-CANDIDATE' : 'SEQUENTIAL',
+      runtime,
+      ...(resourceConflict ? { reason: 'resource overlap or invalid resource claim' } : {}),
+    };
+  }
   if (['BLOCKED', 'SEQUENTIAL', 'SEQUENTIAL_WAVES'].includes(runtime.mode)) return { kind: 'SEQUENTIAL_DAG', verdict: 'SEQUENTIAL', runtime, reason: runtime.reason };
   if (runtime.mode === 'DISJOINT_SAME_TREE_ONLY' && units.some((unit) => unit.workspace?.strategy !== 'disjoint-same-tree' || !isDisjointSameTreeSafe(unit))) {
     return { kind: 'SEQUENTIAL_DAG', verdict: 'SEQUENTIAL', runtime, reason: 'runtime lacks safe per-agent cwd' };
@@ -533,6 +541,51 @@ export function planWaves(units) {
     for (const id of wave) { remaining.delete(id); done.add(id); }
   }
   return waves;
+}
+
+/** Screen evidence-only work before building the full protocol; never grants dispatch authority. */
+export function assessReadOnlyOpportunity(input = {}) {
+  const owners = ['sdcorejs-debug', 'sdcorejs-review', 'sdcorejs-explore', 'sdcorejs-parallel-dispatch'];
+  const text = value => typeof value === 'string' && value.trim().length > 0;
+  const strings = value => Array.isArray(value) && value.every(text);
+  const result = reason => ({
+    owner_skill: input?.owner_skill ?? null,
+    decision: reason ? 'continue-in-owner' : 'evaluate-scheduler',
+    reason: reason || 'independent substantial read-only domains',
+    candidate_units: reason ? [] : input.units.map(unit => unit.id),
+    contract_source: 'read-only-request',
+    write_policy: 'deny',
+    dispatch_authorized: false,
+  });
+  if (!input || !owners.includes(input.owner_skill)) return result('unsupported owner');
+  if (input.worker_context !== false) return result('worker or unknown delegation depth');
+  if (input.delegation_allowed !== true) return result('session or host does not authorize delegation');
+  if (!['auto', 'parallel-preferred'].includes(input.execution_policy)) return result('sequential or unknown execution policy');
+  if (input.task_mode !== 'read-only') return result('write work remains with its authorized owner');
+  const independence = input.independence;
+  if (independence?.status !== 'confirmed' || !strings(independence.evidence) || !independence.evidence.length) {
+    return result('independence is unproven or domains are coupled');
+  }
+  const units = input.units;
+  if (!Array.isArray(units) || units.length < 2) return result('fewer than two substantial domains');
+  const ids = new Set();
+  for (const unit of units) {
+    if (!unit || !text(unit.id) || ids.has(unit.id) || !text(unit.objective) ||
+        unit.substantial !== true || !strings(unit.readable_paths) || !unit.readable_paths.length) {
+      return result('units need unique identity, bounded scope and substantial work');
+    }
+    ids.add(unit.id);
+    if (!Array.isArray(unit.depends_on) || unit.depends_on.length) return result('dependent or unclassified domains');
+    const ownership = unit.ownership;
+    if (!ownership || !Array.isArray(ownership.allowed_paths) || ownership.allowed_paths.length) {
+      return result('read-only units must explicitly deny writable paths');
+    }
+    if (!strings(ownership.exclusive_resources) || !strings(ownership.shared_readonly_resources)) {
+      return result('resource use must be classified');
+    }
+  }
+  if (resourcesOverlap(units)) return result('shared or invalid mutable resource requires serial investigation');
+  return result(null);
 }
 
 export function compileParallelContext({
@@ -923,10 +976,23 @@ function ownershipPathClaims(unit) {
 }
 
 function resourcesOverlap(units) {
-  const claimed = [];
-  for (const unit of units) for (const resource of exclusiveResourceKeys(unit)) {
-    if (claimed.some((item) => resourceClaimsOverlap(item, resource))) return true;
-    claimed.push(resource);
+  let claims;
+  try {
+    claims = units.map(unit => ({
+      exclusive: exclusiveResourceKeys(unit),
+      shared: (unit.ownership?.shared_readonly_resources ?? []).map(normalizeExclusiveResource),
+    }));
+  } catch {
+    return true; // Unclassified/malformed resources cannot enable concurrency.
+  }
+  if (claims.some(({ exclusive, shared }) => [...exclusive, ...shared].some(claim => claim.invalid))) return true;
+  for (let i = 0; i < claims.length; i += 1) {
+    for (let j = i + 1; j < claims.length; j += 1) {
+      const a = claims[i];
+      const b = claims[j];
+      if (a.exclusive.some(left => [...b.exclusive, ...b.shared].some(right => resourceClaimsOverlap(left, right))) ||
+          b.exclusive.some(left => a.shared.some(right => resourceClaimsOverlap(left, right)))) return true;
+    }
   }
   return false;
 }
@@ -1049,10 +1115,15 @@ async function failIntegration(reason, integrated, integration, rollback, status
 
 function exclusiveResourceKeys(unit) {
   const ownership = unit.ownership ?? {};
+  for (const field of ['database_namespace', 'temp_root', 'cache_root', 'coverage_root']) {
+    const value = ownership[field];
+    if (value != null && (typeof value !== 'string' || !value.trim())) return [{ invalid: true }];
+  }
   const values = [
     ...(ownership.exclusive_resources ?? []).map(normalizeExclusiveResource),
-    ...(ownership.allocated_ports ?? []).map((item) => ({ type: 'port', value: String(item).toLowerCase(), hierarchical: false })),
-    ownership.database_namespace && { type: 'db', value: String(ownership.database_namespace).toLowerCase(), hierarchical: false },
+    ...(ownership.allocated_ports ?? []).map(item => ['string', 'number'].includes(typeof item)
+      ? normalizeExclusiveResource(`port:${item}`) : { invalid: true }),
+    ownership.database_namespace && normalizeExclusiveResource(`db:${ownership.database_namespace}`),
     ownership.temp_root && pathResource('temp', ownership.temp_root),
     ownership.cache_root && pathResource('cache', ownership.cache_root),
     ownership.coverage_root && pathResource('coverage', ownership.coverage_root)
@@ -1079,25 +1150,33 @@ function isParentValidationPass(verdict, unit, kind) {
 }
 
 function normalizeExclusiveResource(value) {
+  if (typeof value !== 'string' || !value.trim()) return { invalid: true };
   const raw = String(value).trim();
   const match = raw.match(/^(port|db|temp|cache|coverage):(.*)$/i);
   if (!match) return { type: 'exclusive', value: raw.toLowerCase(), hierarchical: false };
   const type = match[1].toLowerCase();
+  const resource = match[2].trim();
+  if (!resource) return { invalid: true };
+  if (type === 'port') {
+    const port = Number(resource);
+    return { type, value: String(port), hierarchical: false, invalid: !/^\d+$/u.test(resource) || !Number.isInteger(port) || port < 1 || port > 65535 };
+  }
   return ['temp', 'cache', 'coverage'].includes(type)
-    ? pathResource(type, match[2])
-    : { type, value: match[2].toLowerCase(), hierarchical: false };
+    ? pathResource(type, resource)
+    : { type, value: resource.toLowerCase(), hierarchical: false };
 }
 
 function pathResource(type, value) {
   const raw = String(value).replaceAll('\\', '/');
   const normalized = path.posix.normalize(raw).replace(/^\.\//, '').replace(/\/$/, '').toLowerCase();
-  const invalid = path.posix.isAbsolute(raw) || normalized === '..' || normalized.startsWith('../');
+  const invalid = !raw.trim() || path.posix.isAbsolute(raw) || /^[A-Za-z]:\//u.test(raw) || /[*?\[\]{}]/u.test(raw) || normalized === '..' || normalized.startsWith('../');
   return { type, value: normalized, hierarchical: true, invalid };
 }
 
 function resourceClaimsOverlap(left, right) {
   if (left.invalid || right.invalid) return true;
-  if (left.type !== right.type) return false;
+  if (left.type !== right.type && !(left.hierarchical && right.hierarchical)) return false;
   if (!left.hierarchical || !right.hierarchical) return left.value === right.value;
+  if (left.value === '.' || right.value === '.') return true;
   return left.value === right.value || left.value.startsWith(`${right.value}/`) || right.value.startsWith(`${left.value}/`);
 }

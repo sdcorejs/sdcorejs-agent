@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "base_revision": "bdc22462070f9e52bb7900619970d8f8f17c5c50",
+  "selected_surface": "existing-skill-mode",
+  "public_inventory": {
+    "before": 25,
+    "after": 25,
+    "new_skills": 0,
+    "new_dependencies": 0
+  },
+  "authorization": {
+    "source": "explicit-user-request",
+    "scope": "Improve existing parallel triggers following the completed assessment; retain a compact high-quality developer skill pack.",
+    "document_review_performed": false
+  },
+  "upstream": {
+    "repository": "obra/superpowers",
+    "path": "skills/dispatching-parallel-agents/SKILL.md",
+    "git_blob": "3fa091b348bbe0a18eaa0e17e9092c97f7005cbe"
+  },
+  "lifecycle": [
+    {
+      "phase": "RED",
+      "source_revision": "bdc22462070f9e52bb7900619970d8f8f17c5c50",
+      "tests": 5,
+      "passed": 0,
+      "failed": 5,
+      "log": "red.log.gz",
+      "limitation": "Captured before canonical edits; regression tests were newly authored and later refactored."
+    },
+    {
+      "phase": "GREEN",
+      "source_manifest": "green-manifest.json",
+      "source_snapshot_sha256": "sha256:744f51f9248ed5f49b9feb03f508bc4e072acbc19d94d836a257f86c9ff74778",
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "log": "green.log",
+      "behavior_contract": {
+        "path": "authoring/evals/parallel-opportunity/initial-scenarios.json",
+        "sha256": "sha256:5f80cee3992286de01acbcdcfd655d0ccba71c5decb7fa9fecd90c15659295c5"
+      },
+      "limitation": "Initial focused pass; broad verification and independent review still found gaps."
+    },
+    {
+      "phase": "REFACTOR",
+      "source_manifest": "source-manifest.json",
+      "source_state_hash": "sha256:b272b08dd462d9ff31f4e536cff90dd635b1d1a9d54ebe644dbc2de9502a6e02",
+      "behavior_contract": {
+        "path": "authoring/evals/parallel-opportunity/initial-scenarios.json",
+        "sha256": "sha256:5f80cee3992286de01acbcdcfd655d0ccba71c5decb7fa9fecd90c15659295c5"
+      },
+      "initial_cases_preserved": 14,
+      "additional_cases": 5,
+      "review_fixes": [
+        "read-only normalized exclusive/shared resource enforcement",
+        "malformed resource scalar rejection",
+        "diagnostic and no-agent paraphrases",
+        "parallel-fix planning gate",
+        "report scope vocabulary and shared entrypoint classifier"
+      ],
+      "limitation": "The initial fourteen-case contract is preserved; five supplementary review cases extend it. No live reliability claim."
+    }
+  ],
+  "checks": [
+    {
+      "command": "npm run test:e2e:parallel",
+      "status": "PASS",
+      "tests": 47,
+      "passed": 47,
+      "log": "focused.log"
+    },
+    {
+      "command": "node authoring/evals/run-deterministic.mjs",
+      "status": "PASS",
+      "scenarios": 10,
+      "provider_calls": 0,
+      "ambient_credentials_read": false,
+      "log": "authoring.json"
+    },
+    {
+      "command": "npm test",
+      "status": "FAILED_ENVIRONMENT",
+      "log": "full-suite.log.gz",
+      "repository_phase": {
+        "tests": 767,
+        "passed": 767,
+        "failed": 0
+      },
+      "cleanup_phase": {
+        "tests": 159,
+        "passed": 44,
+        "failed": 110,
+        "skipped": 5
+      },
+      "reason": "Native cleanup requires an explicitly selected trusted ext4/APFS fixture and Python; /workspace and /tmp are overlayfs. Gates were not bypassed. Remaining script groups were run separately."
+    },
+    {
+      "command": "npm run test:e2e:angular:golden",
+      "status": "PASS",
+      "tests": 1,
+      "log": "angular-golden.log"
+    },
+    {
+      "command": "npm run test:e2e:nestjs",
+      "status": "PASS",
+      "tests": 25,
+      "log": "nestjs.log"
+    },
+    {
+      "command": "npm run test:e2e:nestjs:golden",
+      "status": "PASS",
+      "tests": 2,
+      "log": "nestjs-golden.log"
+    },
+    {
+      "command": "npm run test:e2e:nextjs:golden",
+      "status": "PASS",
+      "tests": 2,
+      "log": "nextjs-golden.log"
+    },
+    {
+      "command": "npm run check:text-hygiene",
+      "status": "PASS",
+      "log": "text-hygiene.log"
+    },
+    {
+      "command": "npm run check:executable-references",
+      "status": "PASS_WITH_LIMITATION",
+      "log": "executable-references.log",
+      "limitation": "Unchanged cleanup Python syntax layer NOT_RUN without explicitly selected interpreter."
+    },
+    {
+      "command": "npm run check:skills",
+      "status": "PASS",
+      "public_skills": 25,
+      "log": "mirrors.log"
+    }
+  ],
+  "isolated_assessment": {
+    "record": {
+      "path": "authoring/evals/parallel-opportunity/instruction-assessments.md",
+      "sha256": "sha256:8f3fd217f206e485f6148d4739b5af01e878b92338455eb683f3aca18f9246a3"
+    },
+    "reviewers": 2,
+    "context": "fresh isolated instruction assessments; candidate review shared the dirty authoring workspace",
+    "reported_code_findings_resolved": true,
+    "model": null,
+    "effort": null,
+    "token_usage": null,
+    "limitation": "Not controlled provider A/B or target-project concurrent execution."
+  },
+  "external_provider_ab": {
+    "status": "NOT RUN",
+    "reason": "No authorization for credentialed provider A/B was requested or inferred.",
+    "transcript": null,
+    "tokens": null
+  },
+  "target_project_concurrent_workers": {
+    "status": "NOT RUN",
+    "reason": "Tests and reviewers exercised authoring contracts; no consuming-project worker workflow was executed."
+  },
+  "logs": [
+    {
+      "path": "authoring/evals/parallel-opportunity/red.log.gz",
+      "sha256": "sha256:da5c6d1f406a7502aebfa11bf49f1cfa27bd41aa38215f7da73bb28b6be8ff45"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/green.log",
+      "sha256": "sha256:c7ffa8294ddd027a0909b3e528e0a8a832b437559647bc6027b2d3ff95ea70eb"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/resource-red.log.gz",
+      "sha256": "sha256:dd3cbae29d45e225bda61508e063c64686c71c995ad6543e56112ab8437ef76e"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/paraphrase-red.log.gz",
+      "sha256": "sha256:137ec110df7f27849a93ed5c0382ce67d915372583c2f2da086f1b8ac39ce733"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/review-red.log.gz",
+      "sha256": "sha256:a9a72b168d5ff7d814098540b6d073778c845d5200eaffc7c6947c844561f6de"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/repository-initial-failures.log.gz",
+      "sha256": "sha256:721c9eba1ae811d5bceb37758f059f2515f06ebbca894586e053c989154cbef1"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/full-suite.log.gz",
+      "sha256": "sha256:fb1a9471a44571ffb2550fbe36c6599d0a3020209d340a2b2f17cdfabaae8fba"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/focused.log",
+      "sha256": "sha256:ed170ae675a865b0f3ff468dbe62d1bd38c08392a49ed55989fee364219df774"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/authoring.json",
+      "sha256": "sha256:079a1b6e6fdfaaae7b1c868d91c2bb8c1605a4094e03292a753dd090821a7930"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/communication.json",
+      "sha256": "sha256:ac8616d69c792b04b781b2468b771229f5255fe204ed68b068650507b6ebd07f"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/text-hygiene.log",
+      "sha256": "sha256:bcdc5bb0b93a40e906b7685a33774b9dda03040b6296929655ef645cf480162d"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/executable-references.log",
+      "sha256": "sha256:0ef5a37bc13c50bb2b1dff740b12605f4c08aa78af24cc6fbf76d1ae93c3c82b"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/angular-golden.log",
+      "sha256": "sha256:2d2c2c20e90b09a805bfe85363a674d6db6e4cde8725ab6647e1425d9ab4597c"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/nestjs.log",
+      "sha256": "sha256:68bbb1a04a021f30261d297de59e1f77332af61e894ed7b9776ce86f3b4c360f"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/nestjs-golden.log",
+      "sha256": "sha256:44de7af65444147219c25ae3102f42ca2943a499d334dd01e76e5f18be9016ab"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/nextjs-golden.log",
+      "sha256": "sha256:bb325452b90a9a4e2fc2576e5d55bfed233e99bccb2a6b3ab86d6653b7fb8fdb"
+    },
+    {
+      "path": "authoring/evals/parallel-opportunity/mirrors.log",
+      "sha256": "sha256:b9b8a89457d5633010831c4f44b407758c0c8f9f2eb264941c19aa5ef44a4a09"
+    }
+  ],
+  "source_manifest_verified": true
+}
