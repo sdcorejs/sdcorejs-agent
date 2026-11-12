@@ -155,7 +155,7 @@ test('case-sac-shared-ref-neutrality: shared reference is English, project-neutr
   assert.ok(tableKeys.some((line) => /sonarjs\/|@angular-eslint\/|@typescript-eslint\//u.test(line)), 'examples must include an ESLint rule');
 });
 
-test('case-sac-advisory-evidence-gated: guidance is advisory, evidence-gated and non-mutating', async () => {
+test('case-sac-executor-advisory-evidence-gated: executor guidance is advisory, evidence-gated and non-mutating', async () => {
   const ref = await read(SHARED_REF);
   assert.match(ref, /advisory/iu);
   assert.match(ref, /`Low`/u);
@@ -166,11 +166,9 @@ test('case-sac-advisory-evidence-gated: guidance is advisory, evidence-gated and
   assert.match(ref, /lint configuration/u);
   assert.match(ref, /CI/u);
   assert.match(ref, /stronger severity/u, 'existing stronger rules must keep their severity');
-  for (const consumer of ['_refs/angular/orchestrator-generation.md', '_refs/angular/review-code.md']) {
-    assert.match(await read(consumer), /advisory/iu, `${consumer} must describe advisory handling`);
-  }
-  const security = await read('_refs/angular/review-security.md');
-  assert.match(security, /^## AG-3: `bypassSecurityTrust\*` is justified$/mu, 'AG-3 must keep its rule and severity');
+  const executor = await read('_refs/angular/orchestrator-generation.md');
+  assert.match(executor, /advisory/iu, 'executor guidance must describe advisory handling');
+  assert.match(executor, /explicit user approval/u, 'executor must not change analyzer configuration or dependencies without approval');
 
   const registry = JSON.parse(await read('_refs/shared/system-registry.json'));
   assert.deepEqual(
@@ -181,6 +179,16 @@ test('case-sac-advisory-evidence-gated: guidance is advisory, evidence-gated and
   const manifest = JSON.parse(await read('package.json'));
   assert.equal(manifest.dependencies, undefined, 'INV-001: no runtime dependency is added');
   assert.deepEqual(Object.keys(manifest.devDependencies).sort(), ['@angular/compiler', 'lefthook', 'typescript', 'yaml']);
+});
+
+test('case-sac-review-advisory: review guidance stays advisory and keeps stronger existing rules', async () => {
+  const review = await read('_refs/angular/review-code.md');
+  assert.match(review, /advisory/iu, 'code review must describe advisory handling');
+  assert.match(review, /never block a gate solely because an analyzer would report a pattern/u);
+  assert.match(review, /stronger severity/u, 'existing stronger rules keep their severity');
+  const security = await read('_refs/angular/review-security.md');
+  assert.match(security, /^## AG-3: `bypassSecurityTrust\*` is justified$/mu, 'AG-3 must keep its rule and severity');
+  assert.match(security, /keep AG-3 severity/u, 'analyzer mapping must keep AG-3 severity');
 });
 
 test('case-sac-click-host-guidance: Core UI button host bindings stay unchanged and guidance blocks double-fire fixes', async () => {
