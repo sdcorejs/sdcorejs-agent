@@ -1,0 +1,9 @@
+{
+  "version": "1.3.1",
+  "peerDependencies": {
+    "typeorm": "https://raw.githubusercontent.com/sdcorejs/sdcorejs-nestjs/0daebd798700ab3e58a5c0d060759ff3a0e4b8d7/backports/typeorm-0.3.31-sdcorejs.1.tgz",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/platform-express": "https://raw.githubusercontent.com/sdcorejs/sdcorejs-nestjs/0daebd798700ab3e58a5c0d060759ff3a0e4b8d7/backports/nestjs-platform-express-11.2.8-sdcorejs.1.tgz"
+  }
+}

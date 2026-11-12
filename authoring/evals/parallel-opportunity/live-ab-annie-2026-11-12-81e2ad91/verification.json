@@ -1,0 +1,91 @@
+{
+  "status": "COMPLETE",
+  "attempted": 24,
+  "valid": 24,
+  "planned": 24,
+  "authorized_ceiling_usd": 10,
+  "conservative_estimated_usd": 1.2437159999999998,
+  "api_equivalent_estimated_usd": 1.1333950000000002,
+  "abort_reason": null,
+  "matrix": [
+    {
+      "provider": "codex",
+      "arm": "baseline",
+      "attempted": 6,
+      "completed": 6,
+      "passed": 3,
+      "owner_correct": 6,
+      "positive_triggers": 0,
+      "negative_false_positives": 0,
+      "standard_estimate_usd": 0.2099172
+    },
+    {
+      "provider": "codex",
+      "arm": "candidate",
+      "attempted": 6,
+      "completed": 6,
+      "passed": 6,
+      "owner_correct": 6,
+      "positive_triggers": 3,
+      "negative_false_positives": 0,
+      "standard_estimate_usd": 0.23136679999999998
+    },
+    {
+      "provider": "claude",
+      "arm": "baseline",
+      "attempted": 6,
+      "completed": 6,
+      "passed": 6,
+      "owner_correct": 6,
+      "positive_triggers": 3,
+      "negative_false_positives": 0,
+      "standard_estimate_usd": 0.3141584
+    },
+    {
+      "provider": "claude",
+      "arm": "candidate",
+      "attempted": 6,
+      "completed": 6,
+      "passed": 6,
+      "owner_correct": 6,
+      "positive_triggers": 3,
+      "negative_false_positives": 0,
+      "standard_estimate_usd": 0.37795259999999997
+    }
+  ],
+  "windows_checkout_status_unchanged": true,
+  "unattempted": [],
+  "interpretation": "Single paired pass on six fixtures. Measures routing decisions from public workflow excerpts, not worker dispatch or statistical reliability.",
+  "source_revisions": {
+    "baseline": "bdc22462070f9e52bb7900619970d8f8f17c5c50",
+    "candidate": "81e2ad91acddfd82c865ca501fcda18c3fa53c24"
+  },
+  "models": {
+    "codex": "gpt-6.1-sol",
+    "claude": "claude-sonnet-5-5"
+  },
+  "model_effort": "medium",
+  "files": [
+    {
+      "path": "manifest.json",
+      "sha256": "430232418ff7cb76514452b480d7a2d31e058be7bc4adc246cac7284c299605e"
+    },
+    {
+      "path": "runs.jsonl",
+      "sha256": "f8852094f342974b498840005bca2af8b609090853782d323c7ebd5ea2ed083b"
+    },
+    {
+      "path": "prompts.json.gz",
+      "sha256": "57a5e01443afd4c317dc5b30d660f691798eb3f25c8e25a8678c9de8cd26914e"
+    }
+  ],
+  "provider_transcript_policy": "Normalized replies, token usage and raw-response digests are preserved here. Provider session identifiers remain local to the temporary Windows CLI outputs.",
+  "checks": [
+    "24 unique completed cases",
+    "source hashes match the commits",
+    "paired user requests and fixture observations match",
+    "prompt and raw-response hashes match",
+    "scores and estimated spend independently recomputed",
+    "working tree has no tracked diff"
+  ]
+}

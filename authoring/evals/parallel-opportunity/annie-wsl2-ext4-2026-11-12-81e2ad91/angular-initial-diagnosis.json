@@ -1,0 +1,10 @@
+[
+  {
+    "command": "locate ChromeHeadless runtime",
+    "cwd": "/home/sdcorejs-validation/parallel-opportunity-81e2ad91/fixtures/tmp/sdcorejs-angular-golden-vUVPFt/golden",
+    "exitCode": 1,
+    "signal": null,
+    "stdout": "",
+    "stderr": "Chrome/Chromium is required for the real Angular unit test run."
+  }
+]

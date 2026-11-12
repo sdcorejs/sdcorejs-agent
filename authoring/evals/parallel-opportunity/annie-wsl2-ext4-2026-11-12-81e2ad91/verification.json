@@ -1,0 +1,401 @@
+{
+  "schema_version": 1,
+  "source_revision": "81e2ad91acddfd82c865ca501fcda18c3fa53c24",
+  "branch": "feat/parallel-opportunity-triggers",
+  "host": "Annie",
+  "runtime": {
+    "distribution": "Ubuntu 24.04.5 LTS",
+    "wsl_version": "2.7.8.0",
+    "wsl_distribution_version": 2,
+    "kernel": "6.18.33.1-microsoft-standard-WSL2",
+    "architecture": "x64",
+    "filesystem": "ext4",
+    "filesystem_mount": "read-write, local WSL2 VHD",
+    "node": "22.22.3",
+    "node_engines": "^22.22.3 || ^24.15.0 || >=26.0.0",
+    "npm_versions": [
+      "10.9.8",
+      "10.9.2"
+    ],
+    "repository_package_manager": "npm@10.9.2",
+    "cpython": "3.12.3",
+    "chrome_for_testing_headless_shell": "157.0.8103.78",
+    "chrome_archive_sha256": "f90329720fb61e5a76da9b6b509b6ad12a484c9c5df0359403e935177c6d153a",
+    "checkout": "/home/sdcorejs-validation/parallel-opportunity-81e2ad91/checkout",
+    "environment_file": "/home/sdcorejs-validation/parallel-opportunity-81e2ad91/native-env.sh",
+    "SDCOREJS_CLEANUP_POSIX_FIXTURE_ROOT": "/home/sdcorejs-validation/parallel-opportunity-81e2ad91/fixtures",
+    "SDCOREJS_CLEANUP_PYTHON": "/usr/bin/python3.12",
+    "TMPDIR": "/home/sdcorejs-validation/parallel-opportunity-81e2ad91/fixtures/tmp",
+    "notes": [
+      "The exact remote revision was checked out from a verified Git bundle after direct WSL HTTPS timed out.",
+      "Root dependencies came from the existing lockfile via npm ci --offline --no-audit --engine-strict.",
+      "Golden installs used a temporary Windows HTTPS tunnel restricted to the npm registry.",
+      "The Chrome launcher wrapper supplies verified shared libraries and forwards original browser arguments."
+    ]
+  },
+  "probe": {
+    "command": "inspectCleanupPosixCapabilities({root, python})",
+    "status": "PASS",
+    "profile": {
+      "architecture": "x64",
+      "filesystem": "ext4",
+      "mount_id": "1113",
+      "os_release": "6.18.33.1-microsoft-standard-WSL2",
+      "platform": "linux",
+      "primitive": "renameat2"
+    },
+    "log": "probe.json"
+  },
+  "checks": [
+    {
+      "command": "npm run test:e2e:cleanup",
+      "status": "PASS",
+      "exit_code": 0,
+      "finished_at": "2026-11-12T08:13:31+07:00",
+      "phases": [
+        {
+          "phase": "test:e2e:cleanup",
+          "tests": 159,
+          "pass": 158,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 1,
+          "todo": 0
+        }
+      ],
+      "log": "cleanup.log.gz",
+      "npm": "10.9.8",
+      "platform_skip": "Windows created-file receipts describe closed handles and still reject tampering"
+    },
+    {
+      "command": "npm run test:e2e:parallel",
+      "status": "PASS",
+      "exit_code": 0,
+      "finished_at": "2026-11-12T08:13:32+07:00",
+      "phases": [
+        {
+          "phase": "test:e2e:parallel",
+          "tests": 47,
+          "pass": 47,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        }
+      ],
+      "log": "parallel.log.gz",
+      "npm": "10.9.8"
+    },
+    {
+      "command": "npm test",
+      "status": "FAIL",
+      "exit_code": 1,
+      "finished_at": "2026-11-12T08:13:55+07:00",
+      "phases": [
+        {
+          "phase": "test:e2e:repository",
+          "tests": 767,
+          "pass": 767,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        {
+          "phase": "test:e2e:cleanup",
+          "tests": 159,
+          "pass": 158,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 1,
+          "todo": 0
+        },
+        {
+          "phase": "test:e2e:angular:golden",
+          "tests": 1,
+          "pass": 0,
+          "fail": 1,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        }
+      ],
+      "log": "npm-test.log.gz",
+      "npm": "10.9.8",
+      "failure": "Angular golden preflight could not find Chrome/Chromium. See angular-initial-diagnosis.json."
+    },
+    {
+      "command": "npm test",
+      "status": "FAIL",
+      "exit_code": 1,
+      "finished_at": "2026-11-12T08:22:00+07:00",
+      "phases": [
+        {
+          "phase": "test:e2e:repository",
+          "tests": 767,
+          "pass": 767,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        {
+          "phase": "test:e2e:cleanup",
+          "tests": 159,
+          "pass": 158,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 1,
+          "todo": 0
+        },
+        {
+          "phase": "test:e2e:angular:golden",
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        {
+          "phase": "test:e2e:nestjs",
+          "tests": 25,
+          "pass": 25,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        {
+          "phase": "test:e2e:nestjs:golden",
+          "tests": 2,
+          "pass": 0,
+          "fail": 2,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        }
+      ],
+      "log": "npm-test-chrome.log.gz",
+      "npm": "10.9.8",
+      "dependency_metadata": "nestjs-peer-metadata.json",
+      "failure": "Both NestJS golden profiles resolved @sdcorejs/nestjs@1.3.1 from ^1.0.0. The published package requires a commit-pinned @nestjs/platform-express backport tarball as a peer. The golden generator instead requests the registry semver range ^11.0.0, which resolved to 11.2.9. npm rejected the peer tree with ERESOLVE.",
+      "phases_after_failure": [
+        {
+          "command": "npm run test:e2e:nextjs:golden",
+          "status_in_npm_test": "NOT RUN",
+          "standalone_status": "PASS"
+        }
+      ]
+    },
+    {
+      "command": "npm run test:e2e:nestjs:golden",
+      "status": "FAIL",
+      "exit_code": 1,
+      "finished_at": "2026-11-12T08:16:47+07:00",
+      "phases": [
+        {
+          "phase": "test:e2e:nestjs:golden",
+          "tests": 2,
+          "pass": 0,
+          "fail": 2,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        }
+      ],
+      "log": "nestjs-golden.log.gz",
+      "npm": "10.9.8"
+    },
+    {
+      "command": "npm run test:e2e:nextjs:golden",
+      "status": "PASS",
+      "exit_code": 0,
+      "finished_at": "2026-11-12T08:21:15+07:00",
+      "phases": [
+        {
+          "phase": "test:e2e:nextjs:golden",
+          "tests": 2,
+          "pass": 2,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        }
+      ],
+      "log": "nextjs-golden.log.gz",
+      "npm": "10.9.8"
+    },
+    {
+      "command": "npm test",
+      "status": "FAIL",
+      "exit_code": 1,
+      "finished_at": "2026-11-12T08:24:15+07:00",
+      "phases": [
+        {
+          "phase": "test:e2e:repository",
+          "tests": 767,
+          "pass": 767,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        {
+          "phase": "test:e2e:cleanup",
+          "tests": 159,
+          "pass": 158,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 1,
+          "todo": 0
+        },
+        {
+          "phase": "test:e2e:angular:golden",
+          "tests": 1,
+          "pass": 1,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        {
+          "phase": "test:e2e:nestjs",
+          "tests": 25,
+          "pass": 25,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        {
+          "phase": "test:e2e:nestjs:golden",
+          "tests": 2,
+          "pass": 0,
+          "fail": 2,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        }
+      ],
+      "log": "npm-test-exact-npm.log.gz",
+      "npm": "10.9.2",
+      "failure": "Both NestJS golden profiles resolved @sdcorejs/nestjs@1.3.1 from ^1.0.0. The published package requires a commit-pinned @nestjs/platform-express backport tarball as a peer. The golden generator instead requests the registry semver range ^11.0.0, which resolved to 11.2.9. npm rejected the peer tree with ERESOLVE.",
+      "dependency_metadata": "nestjs-peer-metadata.json",
+      "phases_after_failure": [
+        {
+          "command": "npm run test:e2e:nextjs:golden",
+          "status_in_npm_test": "NOT RUN",
+          "standalone_status": "PASS"
+        }
+      ]
+    },
+    {
+      "command": "npm run test:e2e:nextjs:golden",
+      "status": "PASS",
+      "exit_code": 0,
+      "finished_at": "2026-11-12T08:24:47+07:00",
+      "phases": [
+        {
+          "phase": "test:e2e:nextjs:golden",
+          "tests": 2,
+          "pass": 2,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        }
+      ],
+      "log": "nextjs-golden-exact-npm.log.gz",
+      "npm": "10.9.2"
+    },
+    {
+      "command": "npm run check:skills",
+      "status": "PASS",
+      "exit_code": 0,
+      "finished_at": "2026-11-12T08:13:56+07:00",
+      "phases": [],
+      "log": "public-skills.log.gz",
+      "npm": "10.9.8",
+      "public_skills": 25
+    }
+  ],
+  "apfs_native_cleanup": {
+    "status": "NOT RUN",
+    "reason": "The native run used Linux ext4. macOS APFS acceptance requires its own run."
+  },
+  "target_project_concurrent_workers": {
+    "status": "NOT RUN",
+    "reason": "Awaiting the path to the consuming repository on Annie."
+  },
+  "external_provider_ab": {
+    "status": "NOT RUN",
+    "reason": "Provider, model and budget require separate confirmation."
+  },
+  "logs": [
+    {
+      "path": "setup-bundle.log.gz",
+      "sha256": "sha256:27b24af0dbc767f56f8261d1661824f7e9875d9c7dd679e3c6fa87c2063dc0e3"
+    },
+    {
+      "path": "npm-ci.log.gz",
+      "sha256": "sha256:de44186f8fa714c2becfb870f82041fee57e8f69d177e8a4393576f337790144"
+    },
+    {
+      "path": "cleanup.log.gz",
+      "sha256": "sha256:1eed757ca0cb27a738bf6052d6ad8857e420538237b3279075d62d115e022b3d"
+    },
+    {
+      "path": "parallel.log.gz",
+      "sha256": "sha256:3128b4e075bdb30d7ebbc659d8e141abe30b9d0556442e7f87f1762de5aa9d3e"
+    },
+    {
+      "path": "npm-test.log.gz",
+      "sha256": "sha256:5fef23bab1d30961f91e379120d1add4d59f0897d0a549a72e962b85fe650a34"
+    },
+    {
+      "path": "angular-initial-diagnosis.json",
+      "sha256": "sha256:937004e31934d65feb1bb38466fc80f7b32f9548cd3d62e1a5c89b8bccbbda6c"
+    },
+    {
+      "path": "chrome-smoke.log.gz",
+      "sha256": "sha256:c1d7c4922fcae3b39818ed9610543eb2f85c40ff088830b884cb182254f6cabe"
+    },
+    {
+      "path": "npm-test-chrome.log.gz",
+      "sha256": "sha256:b71ab2629979ec63a1ec3648feea6a710b6b839318e02b1c9f999a5907b60e4b"
+    },
+    {
+      "path": "nestjs-golden.log.gz",
+      "sha256": "sha256:d80a120aef60daea5c3f364a5d37fa5bb7be62014dbf12d0e14d42591c4692c3"
+    },
+    {
+      "path": "nextjs-golden.log.gz",
+      "sha256": "sha256:353bb1b5d235d2e8446ba5edaf765c83a045dfb311c7d2c7e059faa9bdc53540"
+    },
+    {
+      "path": "public-skills.log.gz",
+      "sha256": "sha256:51d21c0e98d014040875043025e14d47dd4705e35c8b8c1d1927c3aebace4b2c"
+    },
+    {
+      "path": "probe.json",
+      "sha256": "sha256:a6cf19ec34c055f3d7ba06d7fd8fdbfd3971442e49dfa0302c09e0b2d7852bab"
+    },
+    {
+      "path": "nestjs-peer-metadata.json",
+      "sha256": "sha256:7fd819f252be8414937ba442c9c3b7794666b24fe53198375ebdc16202a68bc4"
+    },
+    {
+      "path": "npm-10.9.2-setup.log.gz",
+      "sha256": "sha256:0f1bd53c5b79c51bf829315d037ae1d844c3771af6ee85990c2d9350bff69cfc"
+    },
+    {
+      "path": "npm-test-exact-npm.log.gz",
+      "sha256": "sha256:c248116278df6b6f5d974de388c9f72c183dfd3f6ca33752482f9d9c14ad040c"
+    },
+    {
+      "path": "nextjs-golden-exact-npm.log.gz",
+      "sha256": "sha256:e272475eabf89a729667a56b6343671b2cc448cd02e964c8bdc38aa2e4c2f46d"
+    }
+  ]
+}
