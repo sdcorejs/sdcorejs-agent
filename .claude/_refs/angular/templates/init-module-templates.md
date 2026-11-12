@@ -368,8 +368,8 @@ import { SdFilter, SdOrder, SdSize, SdUnwrapSignal, SdUtilities } from '<CORE_UI
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BaseSelectComponent<T = any> {
-  #cdr = inject(ChangeDetectorRef);
-  #baseService = inject(BaseService);
+  readonly #cdr = inject(ChangeDetectorRef);
+  readonly #baseService = inject(BaseService);
 
   // ──────────────────────────────────────────────────────────────────
   // 1. PRIMITIVE INPUTS (passthrough to <sd-select>)

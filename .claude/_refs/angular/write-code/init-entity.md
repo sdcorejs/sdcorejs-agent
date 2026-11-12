@@ -224,7 +224,7 @@ Before writing formatter, validator, mapper, pipe helper, mock-data helper, pagi
 - If required UI is not available in Core UI, generate a custom UI skeleton instead of skipping:
   - add `// CUSTOM_UI: <reason>` comment in component
   - render placeholder block for that UI area
-  - wire actions to `alert('TODO: <EventName> - implement here')`
+  - render its actions disabled with a `<localized label>` hint that the action is not implemented yet (no alert calls or TODO tags)
   - include warning in generation summary: `Custom UI required: <ComponentName> - no Core UI equivalent`
 - Run tests immediately after module/entity generation:
   - preferred: `npm run test -- --watch=false --include=src/libs/<module>/**/*.spec.ts`

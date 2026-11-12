@@ -1,7 +1,7 @@
 ---
 schema_version: 2
 kind: project-summary
-generated_at: 2026-11-11T18:27:09.888Z
+generated_at: 2026-11-12T07:20:10.168Z
 generator: sdcorejs-explore
 target_root_kind: sdcorejs-agent-authoring-repo
 tracks:
@@ -42,7 +42,7 @@ evidence:
     - site/src/pages/index.astro
 fingerprints:
   workspace_structure: sha256:906a06a701cde74f2c95fcd722a40f1e16e5b1f58c99713e0be73a15003de2b7
-  dependency_manifests: sha256:d7b00d361507e8d74d6e7775e1e60e063d86e487a2b6051e140df6a39cfc1398
+  dependency_manifests: sha256:7dea6fd5d06fe68bf0d12f55939a06ff64b3237d82b62fe07d7346bdc0055f6a
   source_roots: sha256:508baa56dd6505fd53a32eda54b77fa80c253c0d67e29f6b93e939bafa41cad2
   entrypoint_contract: sha256:3330dc8119e60e0b139cfa106d604450da4cb11f6cd591ab9fcb2c8537965a12
 redaction_applied: true
@@ -206,6 +206,9 @@ canonical source and rerun synchronization.
 - `npm run test:e2e:architecture` validates conditional applicability,
   ownership, approval lineage, module boundaries, and conformance.
 - `npm run test:e2e:validation-map` validates plan-owned acceptance evidence.
+- `npm run test:e2e:static-analysis` checks that Angular guidance avoids
+  self-reported analyzer patterns and that the shared static-analysis
+  compatibility reference stays neutral and advisory.
 - `npm run test:e2e:convergence` validates delivery closure and compact
   handoffs across execute, test, review, ship, branch-ready, and Git.
 - `npm run test:e2e:skill-authoring` validates the internal lifecycle,
@@ -264,6 +267,9 @@ canonical source and rerun synchronization.
   belongs in the repository.
 - Project context assembly is read-only unless a distinct artifact write is
   explicitly authorized.
+- Static-analysis guidance in `_refs/shared/static-analysis-compatibility.md`
+  is tool- and project-neutral and advisory; analyzer configuration, lint/CI
+  configuration and dependencies change only with explicit user approval.
 - `_refs/sdlc/visual-offer-policy.md` owns when to invite or present a preview.
   Scoped responses and consent pass through runtime context across skills;
   visual feedback never grants implementation approval or runtime permission.

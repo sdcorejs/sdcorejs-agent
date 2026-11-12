@@ -103,6 +103,9 @@ A `returnUrl` from query params passed to `navigateByUrl` must be a validated sa
 - Tokens in `localStorage` on a portal with any `bypassSecurityTrust*` — one XSS exfiltrates every session
 - Shipping prod source maps publicly — keep them internal-only
 
+## Analyzer mapping (advisory)
+Analyzer reports for sanitization bypass map to AG-3 and keep AG-3 severity. A cross-window message without an explicit target origin or a pseudo-random value used for tokens or identifiers is an advisory finding unless an existing AG rule assigns a stronger severity. Use [`_refs/shared/static-analysis-compatibility.md`](../shared/static-analysis-compatibility.md) for neutral remediation and proposal format.
+
 ## Cross-references
 - Code review (guard/permission overlap): `sdcorejs-review` · Core UI inventory (on-demand, not committed): `node _refs/angular/core-docs-fetch.mjs --list`
 

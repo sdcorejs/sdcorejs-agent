@@ -283,7 +283,7 @@ describe('generated Angular golden app', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('h1').textContent).toContain('Create product');
-    expect(fixture.nativeElement.querySelectorAll('input').length).toBe(2);
+    expect(fixture.nativeElement.querySelectorAll('input')).toHaveSize(2);
 
     fixture.componentInstance.setState('DETAIL');
     fixture.detectChanges();
