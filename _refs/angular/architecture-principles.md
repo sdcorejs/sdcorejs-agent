@@ -272,7 +272,7 @@ Order of preference when picking a UI primitive:
    ```ts
    // CUSTOM_UI: <reason — what Core UI lacks>
    ```
-   Render placeholder block, wire actions to `alert('TODO: <EventName>')`, and surface in generation summary.
+   Render a placeholder block, render its actions disabled with a `<localized label>` hint that the action is not implemented yet, and list each one in the generation summary. Do not wire alert calls or TODO tags (see [`_refs/shared/static-analysis-compatibility.md`](../shared/static-analysis-compatibility.md)).
 
 **Why**: Core UI ships consistent a11y, theming, RTL support, and behavior. Custom UI re-litigates these per-component, badly. The flagged exception forces the conversation: "<localized text>"
 

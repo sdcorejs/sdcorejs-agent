@@ -434,6 +434,10 @@ Core UI components accept an `autoId` input, emitted as `data-autoId` / `data-au
 - Monolithic forms/tables/workflow pages with unrelated responsibilities, and
   pass-through wrappers extracted only to reduce line count
 
+#### Static-analysis compatibility (advisory)
+- Apply [`_refs/shared/static-analysis-compatibility.md`](../shared/static-analysis-compatibility.md) inside the existing `code`, `security` and `accessibility` dimensions. Flag async lifecycle hooks, injected fields that are not readonly, alert or TODO placeholders and generic test assertions as advisory findings (`Low`/`RECOMMENDED`).
+- Emit analyzer-specific proposals only when the target project shows analyzer evidence, never block a gate solely because an analyzer would report a pattern, and keep any stronger severity an existing rule already assigns.
+
 ## Verification commands (run, include exit codes in the report)
 For Core UI portals, prefer the commands below. For `plain-angular`, discover
 and run the target project's existing lint/build/test scripts instead; do not

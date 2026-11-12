@@ -310,7 +310,12 @@ togglePermission(code: string, checked: boolean): void {
   this.form.patchValue({ permissions: [...next] });
 }
 
-async ngOnInit() {
+ngOnInit(): void {
+  // Keep the lifecycle hook synchronous; the loader handles its own rejection.
+  this.loadPermissionData().catch(() => this.notify.error('<localized text>'));
+}
+
+private async loadPermissionData(): Promise<void> {
   // Load permission registry in parallel with role (when UPDATE)
   const [perms] = await Promise.all([
     firstValueFrom(this.roleApi.listPermissions()),
@@ -679,8 +684,9 @@ Use a tree layout (Angular CDK `<cdk-tree>` or the Core UI `SdTree` component if
 Each node displays `code` + `name`. Root nodes have `parentCode === null`.
 
 > If `SdTree` is not in the Core UI catalog, fall back to a flat `SdTable` with an indented
-> `name` column that prefixes child rows with `<localized text>`. Mark the fallback with
-> `alert('TODO: replace flat table with SdTree when available')`.
+> `name` column that prefixes child rows with `<localized text>`. Mark the fallback with a
+> `// CUSTOM_UI: flat SdTable until SdTree is available` comment and list it in the
+> generation summary; do not add an alert or a TODO tag.
 
 Tree-building logic sketch:
 
@@ -765,8 +771,13 @@ These controls are bound to the `@Scoped` fields added to `user` and `role` in t
 readonly tenants = signal<TenantDTO[]>([]);
 readonly departments = signal<DepartmentDTO[]>([]);
 
-async ngOnInit() {
+ngOnInit(): void {
   // existing init logic ...
+  // Keep the lifecycle hook synchronous; the loader handles its own rejection.
+  this.loadTenants().catch(() => this.notify.error('<localized text>'));
+}
+
+private async loadTenants(): Promise<void> {
   const [tenantList] = await Promise.all([
     firstValueFrom(this.tenantApi.paging({ page: 1, size: 200 })),
     // existing calls ...
